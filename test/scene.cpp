@@ -5,6 +5,7 @@
 #include "scene/Scene.h"
 #include "scene/SceneComponent.h"
 #include "scene/SceneHost.h"
+#include "scene/SceneNodeRef.h"
 #include "scene/SceneObject.h"
 #include "scene/TransformSystem.h"
 
@@ -1194,4 +1195,100 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.errorSemantics") {
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {
     CHECK(vm.callFunc(vm.findFunc("testSceneSerializeAndPick"), vm).toBool());
+}
+
+TEST_CASE("Scene.nodeRef.transformsAndStructure") {
+    Scene *mod = Scene::create();
+    mod->mountAs("refs", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
+
+    SceneNodeRef ref("refs", "child");
+    CHECK(ref.isValid());
+    CHECK_EQ(ref.getHostName(), std::string("refs"));
+    CHECK_EQ(ref.getNodeId(), std::string("child"));
+    CHECK_EQ(ref.getParentId(), std::string("root"));
+    CHECK_EQ(ref.getChildCount(), 0);
+    CHECK(ref.getChildIdAt(0).empty());
+    CHECK_EQ(ref.getPath(), std::string("root/child"));
+
+    CHECK(ref.setPosition(4.f, 5.f, 6.f));
+    CHECK(approxEq(ref.getPositionX(), 4.f));
+    CHECK(approxEq(ref.getPositionY(), 5.f));
+    CHECK(approxEq(ref.getPositionZ(), 6.f));
+    const auto pos = ref.getPosition();
+    REQUIRE_EQ(pos.size(), 3u);
+    CHECK(approxEq(pos[0], 4.f));
+    CHECK(approxEq(pos[2], 6.f));
+
+    CHECK(ref.setRotation(10.f, 20.f, 30.f));
+    CHECK(approxEq(ref.getRotationYaw(), 10.f));
+    CHECK(approxEq(ref.getRotationPitch(), 20.f));
+    CHECK(approxEq(ref.getRotationRoll(), 30.f));
+    const auto rot = ref.getRotation();
+    REQUIRE_EQ(rot.size(), 3u);
+    CHECK(approxEq(rot[0], 10.f));
+    CHECK(ref.setRotation(0.f, 0.f, 0.f));  // reset so world axes are identity
+
+    CHECK(ref.setScale(2.f, 3.f, 4.f));
+    CHECK(approxEq(ref.getScaleX(), 2.f));
+    CHECK(approxEq(ref.getScaleY(), 3.f));
+    CHECK(approxEq(ref.getScaleZ(), 4.f));
+    const auto sc = ref.getScale();
+    REQUIRE_EQ(sc.size(), 3u);
+    CHECK(approxEq(sc[1], 3.f));
+
+    CHECK(ref.setVisible(false));
+    CHECK(!ref.isVisible());
+    CHECK(ref.setVisible(true));
+    CHECK(ref.isVisible());
+
+    mod->updateTransformsAll();
+    const auto wp = ref.getWorldPosition();
+    REQUIRE_EQ(wp.size(), 3u);
+    CHECK(approxEq(wp[0], 4.f));  // parent root at origin -> world == local
+    CHECK(approxEq(wp[1], 5.f));
+    CHECK(approxEq(wp[2], 6.f));
+    CHECK(approxEq(ref.getWorldPositionX(), 4.f));
+    CHECK(approxEq(ref.getWorldPositionY(), 5.f));
+    CHECK(approxEq(ref.getWorldPositionZ(), 6.f));
+    const auto wm = ref.getWorldMatrix();
+    CHECK_EQ(wm.size(), 16u);
+    const auto fwd = ref.getForward();
+    CHECK(approxEq(fwd[2], 1.f, 1e-3f));  // identity orientation
+    const auto right = ref.getRight();
+    CHECK(approxEq(right[0], 1.f, 1e-3f));
+    const auto up = ref.getUp();
+    CHECK(approxEq(up[1], 1.f, 1e-3f));
+}
+
+TEST_CASE("Scene.nodeRef.invalidRefs") {
+    Scene *mod = Scene::create();
+    mod->mountAs("refs2", node("root", {node("child")}));
+
+    SceneNodeRef missing("refs2", "nope");
+    CHECK(!missing.isValid());
+    CHECK(!missing.setPosition(1.f, 2.f, 3.f));
+    CHECK(!missing.setRotation(1.f, 2.f, 3.f));
+    CHECK(!missing.setScale(1.f, 2.f, 3.f));
+    CHECK(!missing.setVisible(false));
+    CHECK_EQ(missing.getPositionX(), 0.f);
+    CHECK_EQ(missing.getPositionY(), 0.f);
+    CHECK_EQ(missing.getPositionZ(), 0.f);
+    CHECK_EQ(missing.getPosition().size(), 3u);
+    CHECK_EQ(missing.getWorldMatrix().size(), 16u);
+    CHECK_EQ(missing.getForward()[2], 1.f);
+    CHECK_EQ(missing.getRight()[0], 1.f);
+    CHECK_EQ(missing.getUp()[1], 1.f);
+    CHECK(missing.getParentId().empty());
+    CHECK_EQ(missing.getChildCount(), 0);
+    CHECK(missing.getChildIdAt(0).empty());
+    CHECK(missing.getPath().empty());
+
+    SceneNodeRef badHost("missing-host", "child");
+    CHECK(!badHost.isValid());
+    CHECK(!badHost.setPosition(1.f, 2.f, 3.f));
+
+    SceneNodeRef emptyRef;
+    CHECK(emptyRef.getHostName().empty());
+    CHECK(emptyRef.getNodeId().empty());
+    CHECK(!emptyRef.isValid());
 }

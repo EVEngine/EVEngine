@@ -1030,3 +1030,131 @@ TEST_CASE("tensor.debug.dumpStage3") {
         }
     }
 }
+
+TEST_CASE("tensor.eager.binaryAndUnaryOps") {
+    auto *tf = TF::create();
+    std::unique_ptr<Tensor> a(tf->fill2(2, 2, 4.f));
+    std::unique_ptr<Tensor> b(tf->fill2(2, 2, 2.f));
+    std::unique_ptr<Tensor> sub(tf->sub(a.get(), b.get()));
+    CHECK(std::fabs(sub->get(0) - 2.f) < 1e-5f);
+    std::unique_ptr<Tensor> div(tf->div(a.get(), b.get()));
+    CHECK(std::fabs(div->get(0) - 2.f) < 1e-5f);
+    std::unique_ptr<Tensor> neg(tf->neg(a.get()));
+    CHECK(std::fabs(neg->get(0) + 4.f) < 1e-5f);
+    std::unique_ptr<Tensor> negB(tf->fill1(3, -3.f));
+    std::unique_ptr<Tensor> absv(tf->abs(negB.get()));
+    CHECK(std::fabs(absv->get1(0) - 3.f) < 1e-5f);
+    std::unique_ptr<Tensor> sq(tf->fill1(3, 9.f));
+    std::unique_ptr<Tensor> sqrtv(tf->sqrt(sq.get()));
+    CHECK(std::fabs(sqrtv->get1(0) - 3.f) < 1e-5f);
+    std::unique_ptr<Tensor> zero(tf->zeros1(3));
+    std::unique_ptr<Tensor> expv(tf->exp(zero.get()));
+    CHECK(std::fabs(expv->get1(0) - 1.f) < 1e-5f);
+    std::unique_ptr<Tensor> one(tf->fill1(3, std::exp(1.f)));
+    std::unique_ptr<Tensor> logv(tf->log(one.get()));
+    CHECK(std::fabs(logv->get1(0) - 1.f) < 1e-4f);
+    std::unique_ptr<Tensor> sinv(tf->sin(zero.get()));
+    CHECK(std::fabs(sinv->get1(0)) < 1e-6f);
+    std::unique_ptr<Tensor> cosv(tf->cos(zero.get()));
+    CHECK(std::fabs(cosv->get1(0) - 1.f) < 1e-6f);
+    std::unique_ptr<Tensor> tanhv(tf->tanh(zero.get()));
+    CHECK(std::fabs(tanhv->get1(0)) < 1e-6f);
+    std::unique_ptr<Tensor> sig(tf->sigmoid(zero.get()));
+    CHECK(std::fabs(sig->get1(0) - 0.5f) < 1e-6f);
+    std::unique_ptr<Tensor> powv(tf->powScalar(b.get(), 3.f));
+    CHECK(std::fabs(powv->get(0) - 8.f) < 1e-5f);
+    std::unique_ptr<Tensor> cl(tf->fill1(3, 2.f));
+    std::unique_ptr<Tensor> clamped(tf->clamp(cl.get(), 0.f, 1.f));
+    CHECK(std::fabs(clamped->get1(0) - 1.f) < 1e-6f);
+    std::unique_ptr<Tensor> mx(tf->maximumScalar(cl.get(), 3.f));
+    CHECK(std::fabs(mx->get1(0) - 3.f) < 1e-6f);
+    std::unique_ptr<Tensor> mn(tf->minimumScalar(cl.get(), 1.f));
+    CHECK(std::fabs(mn->get1(0) - 1.f) < 1e-6f);
+}
+
+TEST_CASE("tensor.eager.inplaceAndDot") {
+    auto *tf = TF::create();
+    std::unique_ptr<Tensor> p(tf->fill2(2, 2, 3.f));
+    std::unique_ptr<Tensor> q(tf->fill2(2, 2, 2.f));
+    p->addInPlace(q.get());        // 5
+    p->multiplyInPlace(q.get());   // 10
+    p->addScalarInPlace(1.f);      // 11
+    CHECK(std::fabs(p->get(0) - 11.f) < 1e-5f);
+    p->mulScalarInPlace(0.5f);     // 5.5
+    CHECK(std::fabs(p->get(3) - 5.5f) < 1e-5f);
+
+    std::unique_ptr<Tensor> v1(tf->zeros1(3));
+    v1->set1(0, 1.f);
+    v1->set1(1, 2.f);
+    v1->set1(2, 3.f);
+    std::unique_ptr<Tensor> v2(tf->zeros1(3));
+    v2->set1(0, 4.f);
+    v2->set1(1, 5.f);
+    v2->set1(2, 6.f);
+    CHECK(std::fabs(v1->dot(v2.get()) - 32.f) < 1e-5f);
+}
+
+TEST_CASE("tensor.eager.factoriesAndAxisReduces") {
+    auto *tf = TF::create();
+    std::unique_ptr<Tensor> z5(tf->zeros5(1, 2, 3, 4, 5));
+    CHECK_EQ(z5->getRank(), 5);
+    CHECK_EQ(z5->getSize(), 120);
+    std::unique_ptr<Tensor> z6(tf->zeros6(1, 1, 1, 1, 1, 2));
+    CHECK_EQ(z6->getRank(), 6);
+    CHECK_EQ(z6->getSize(), 2);
+    std::unique_ptr<Tensor> o3(tf->ones3(2, 2, 2));
+    CHECK(std::fabs(o3->reduceSum() - 8.f) < 1e-5f);
+    std::unique_ptr<Tensor> o4(tf->ones4(1, 2, 1, 2));
+    CHECK_EQ(o4->getSize(), 4);
+    std::unique_ptr<Tensor> f3(tf->fill3(2, 1, 1, 5.f));
+    CHECK(std::fabs(f3->reduceSum() - 10.f) < 1e-5f);
+    std::unique_ptr<Tensor> f4(tf->fill4(1, 1, 2, 2, 7.f));
+    CHECK(std::fabs(f4->reduceSum() - 28.f) < 1e-5f);
+    std::unique_ptr<Tensor> eye(tf->eye(3));
+    CHECK(std::fabs(eye->get2(0, 0) - 1.f) < 1e-5f);
+    CHECK(std::fabs(eye->get2(1, 1) - 1.f) < 1e-5f);
+    CHECK(std::fabs(eye->get2(0, 1)) < 1e-6f);
+    std::unique_ptr<Tensor> cs(tf->constantScalar(3.5f));
+    CHECK_EQ(cs->getSize(), 1);
+    CHECK(std::fabs(cs->get(0) - 3.5f) < 1e-5f);
+    std::unique_ptr<Tensor> ru1(tf->randomUniform1(8));
+    CHECK(ru1->reduceMin() >= 0.f);
+    CHECK(ru1->reduceMax() <= 1.f);
+    std::unique_ptr<Tensor> rn1(tf->randomNormal1(8));
+    CHECK(std::isfinite(rn1->reduceSum()));
+    std::unique_ptr<Tensor> ru4(tf->randomUniform4(1, 1, 2, 2));
+    CHECK_EQ(ru4->getSize(), 4);
+
+    std::unique_ptr<Tensor> x(tf->zeros2(2, 3));
+    x->set2(0, 0, 1.f); x->set2(0, 1, 2.f); x->set2(0, 2, 3.f);
+    x->set2(1, 0, 4.f); x->set2(1, 1, 5.f); x->set2(1, 2, 6.f);
+    std::unique_ptr<Tensor> mean(tf->meanAxis(x.get(), 1, 0));
+    CHECK_EQ(mean->getRank(), 1);
+    CHECK(std::fabs(mean->get1(0) - 2.f) < 1e-5f);
+    CHECK(std::fabs(mean->get1(1) - 5.f) < 1e-5f);
+    std::unique_ptr<Tensor> mn(tf->minAxis(x.get(), 1, 0));
+    CHECK(std::fabs(mn->get1(0) - 1.f) < 1e-5f);
+    std::unique_ptr<Tensor> mx(tf->maxAxis(x.get(), 1, 1));
+    CHECK_EQ(mx->getRank(), 2);
+    CHECK(std::fabs(mx->get2(1, 0) - 6.f) < 1e-5f);
+    std::unique_ptr<Tensor> keep(tf->sumAxis(x.get(), 1, 1));
+    CHECK_EQ(keep->getDim1(), 1);
+    CHECK(std::fabs(keep->get2(0, 0) - 6.f) < 1e-5f);
+}
+
+TEST_CASE("tensor.eager.castAndMaskedSdpa") {
+    auto *tf = TF::create();
+    std::unique_ptr<Tensor> c(tf->cast(tf->fill2(2, 2, 2.9f), "int32"));
+    CHECK_EQ(c->getDtype(), std::string("int32"));
+    CHECK(std::fabs(c->get(0) - 2.9f) < 1e-5f);  // int32 stored losslessly as float
+
+    std::unique_ptr<Tensor> q(tf->randomNormal4(1, 1, 2, 4));
+    std::unique_ptr<Tensor> k(tf->randomNormal4(1, 1, 2, 4));
+    std::unique_ptr<Tensor> v(tf->randomNormal4(1, 1, 2, 4));
+    std::unique_ptr<Tensor> mask(tf->ones4(1, 1, 2, 2));
+    std::unique_ptr<Tensor> ref(tf->sdpa(q.get(), k.get(), v.get(), 0.5f));
+    std::unique_ptr<Tensor> masked(tf->sdpaMasked(q.get(), k.get(), v.get(), mask.get(), 0.5f));
+    REQUIRE_EQ(masked->getSize(), ref->getSize());
+    for (int i = 0; i < masked->getSize(); ++i)
+        CHECK(std::fabs(masked->get(i) - ref->get(i)) < 1e-4f);
+}

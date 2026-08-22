@@ -70,6 +70,7 @@ file(GLOB all_test_cpp
   inventory.cpp
   building.cpp
   buildingfx.cpp
+  camera.cpp
   card.cpp
   card_reload.cpp
   i18n.cpp
@@ -347,6 +348,7 @@ set(EVELIBS
   EVBuilding
   EVBuildingFx
   EVCard
+  EVCamera
   EVAvatar
   EVDialogue
   EVProcgen
