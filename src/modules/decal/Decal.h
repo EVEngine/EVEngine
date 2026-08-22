@@ -51,4 +51,7 @@ public:
     void setEnabled(graphics::Graphics *gfx, bool enabled);
 };
 
+/** @brief Register the IDecalQuery capability (implemented in DecalCapabilities.cpp). */
+void registerDecalCapabilities();
+
 }  // namespace eve::decal

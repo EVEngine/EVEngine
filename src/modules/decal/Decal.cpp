@@ -13,6 +13,7 @@ namespace eve::decal {
 Module_IMPL(Decal, new Decal());
 
 Decal::Decal() {
+    registerDecalCapabilities();
     graphics::RenderSystem3D::addDecalExtraDrawer(
         [](graphics::Graphics &gfx, const graphics::Camera3D::Data &cam,
            const glm::mat4 &viewProj, float aspect) {

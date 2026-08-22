@@ -2,7 +2,10 @@
 #include "zeroerr/unittest.h"
 
 #include "Fixtures.h"
+#include "common/Capability.h"
+#include "common/DecalQuery.h"
 #include "decal/DecalManager.h"
+#include "decal/Decal.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
@@ -111,6 +114,22 @@ TEST_CASE("decal.managerAtlasBlendSetters") {
 
     CHECK(mgr.setTextures(id, nullptr, nullptr));
     CHECK(!mgr.setUvRect(99999, 0.f, 0.f, 1.f, 1.f));  // unknown id
+}
+
+TEST_CASE("decal.capabilityProvidedToConsumers") {
+    // Instantiate the decal module (registers the drawer + capability).
+    eve::ModuleManager::requireInstance<eve::decal::Decal>("Decal");
+    auto *q = eve::cap::query<eve::IDecalQuery>();
+    REQUIRE(q != nullptr);
+    q->clearAll();
+    CHECK(q->count() == 0);
+    q->setLimit("blood", 1);
+    const int id = q->project(0.f, 0.f, 0.f, 0.f, 1.f, 0.f, nullptr, "blood", 0.5f, 0.15f, false,
+                              0, 0.f, 0.f, 0.f);
+    CHECK(id > 0);
+    CHECK(q->count() == 1);
+    CHECK(q->remove(id));
+    CHECK(q->count() == 0);
 }
 
 TEST_CASE("decal.renderControlFeatureGatesPass") {
