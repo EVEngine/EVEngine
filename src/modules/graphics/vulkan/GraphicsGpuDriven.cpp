@@ -8,6 +8,7 @@
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/GraphicsInternal.h"
 #include "graphics/vulkan/Canvas.h"
+#include "common/Assert.h"
 #include "graphics/IndirectBuilder.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
