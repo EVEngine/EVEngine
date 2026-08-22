@@ -404,3 +404,35 @@ TEST_CASE("map.path.astar.routePreview") {
     delete pf;
     win->close();
 }
+
+TEST_CASE("map.path.accessorRoundTrips") {
+    auto *mod = Map::create();
+    Pathfinder *pf = mod->newPathfinderSize(4, 4);
+    REQUIRE(pf != nullptr);
+
+    pf->setDiagonal(true);
+    CHECK(pf->getDiagonal());
+    pf->setDiagonal(false);
+    CHECK(!pf->getDiagonal());
+
+    pf->setBlockEmpty(true);
+    CHECK(pf->getBlockEmpty());
+    pf->setBlockEmpty(false);
+    CHECK(!pf->getBlockEmpty());
+
+    pf->setCellCost(1, 1, 2.5f);
+    CHECK_EQ(pf->getCellCost(1, 1), 2.5f);
+    CHECK_EQ(pf->getCellCost(9, 9), 0.f);  // out of bounds
+
+    pf->blockGid(7);
+    pf->setBlocked(0, 0, true);
+    pf->unblockGid(7);
+    pf->clearBlockedGids();
+    pf->invalidateCache();
+    // setBlocked cells stay blocked until explicitly cleared; gid blocking is gone.
+    CHECK(!pf->isWalkable(0, 0));
+    pf->setBlocked(0, 0, false);
+    CHECK(pf->isWalkable(0, 0));
+
+    delete pf;
+}

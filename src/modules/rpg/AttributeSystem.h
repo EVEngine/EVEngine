@@ -19,7 +19,7 @@ namespace eve::rpg {
 class RPGActor;
 
 /** @brief 自定义 op 注册表：opName -> f(currentResult, modifierValue) -> newResult。 */
-class AttributeOpTable {
+struct AttributeOpTable {
 public:
     using Fn = std::function<double(double current, double value)>;
 

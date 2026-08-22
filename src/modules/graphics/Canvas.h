@@ -15,6 +15,11 @@ class Texture;
 
 class Canvas : public Drawable {
 public:
+    // Canvas adds a canvas-to-canvas composite overload; keep the base
+    // Drawable::draw(Graphics*, mat4) visible (it is overridden by the
+    // concrete canvas implementations).
+    using Drawable::draw;
+
     Canvas() {}
     ~Canvas() override {}
 

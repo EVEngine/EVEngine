@@ -116,7 +116,7 @@ function buildPanel() {
     ui.beginWindow("LINEAR STRUCTURES", "root");
     ui.text("TILEABLE PROCEDURAL PROPS", "eyebrow");
     ui.text(STRUCT_RECIPES[active].id, "sample");
-    ui.slider("Segments", segments, 1.0, 24.0, "segments");
+    ui.slider("Segments", segments.tofloat(), 1.0, 24.0, "segments");
     ui.slider("Unit length", segLength, 0.5, 6.0, "segLength");
     ui.button("Next structure", "next");
     ui.button("Rebuild", "rebuild");

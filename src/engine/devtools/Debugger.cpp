@@ -2,6 +2,8 @@
 
 #include "devtools/RenderVision.hpp"
 
+#include "common/ScriptError.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -174,7 +176,7 @@ std::vector<VariableInfo> enumerateAt(HSQUIRRELVM vm, SQInteger idx) {
     std::vector<VariableInfo> out;
     const SQObjectType t = sq_gettype(vm, idx);
     const SQInteger top  = sq_gettop(vm);
-    const int absIdx     = idx < 0 ? top + static_cast<int>(idx) + 1 : static_cast<int>(idx);
+    const int absIdx     = idx < 0 ? static_cast<int>(top) + static_cast<int>(idx) + 1 : static_cast<int>(idx);
 
     if (t == OT_ARRAY) {
         const SQInteger size = sq_getsize(vm, idx);
@@ -235,7 +237,7 @@ std::vector<VariableInfo> enumerateAt(HSQUIRRELVM vm, SQInteger idx) {
 
     if (t == OT_INSTANCE) {
         sq_getclass(vm, absIdx);  // class at top
-        const int clsAbs = sq_gettop(vm);
+        const int clsAbs = static_cast<int>(sq_gettop(vm));
         sq_pushinteger(vm, 0);
         while (SQ_SUCCEEDED(sq_next(vm, clsAbs))) {
             const SQChar* s = nullptr;
@@ -568,11 +570,27 @@ bool Debugger::onScriptLine(const SourceLoc& loc) {
 }
 
 void Debugger::waitWhilePaused(const std::function<void()>& pump) {
-    while (mode_.load() == RunMode::Paused) {
-        if (pump) pump();
-        else if (pump_) pump_();
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        if (!vm_) break;
+    // Re-entrancy guard: evaluating an expression (eve_eval / watches /
+    // breakpoint conditions) while already paused runs bytecode on this VM,
+    // whose line hook reports "paused" and would otherwise block again on the
+    // same thread — deadlocking the pause pump. The nested caller only wants
+    // the eval to finish, so let it run instead of blocking a second time.
+    static thread_local int pausePumpDepth = 0;
+    if (pausePumpDepth > 0) return;
+    ++pausePumpDepth;
+    struct Guard {
+        ~Guard() { --pausePumpDepth; }
+    } guard;
+    try {
+        while (mode_.load() == RunMode::Paused) {
+            if (pump) pump();
+            else if (pump_) pump_();
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+            if (!vm_) break;
+        }
+    } catch (...) {
+        // Keep the pump re-entrancy state consistent; the caller's hook is
+        // responsible for surfacing the failure.
     }
 }
 
@@ -837,7 +855,7 @@ bool Debugger::pushPathValue(HSQUIRRELVM vm, VarKind kind, int frame,
     const size_t start = (kind == VarKind::Globals) ? 0 : 1;
     for (size_t i = start; i < path.size(); ++i) {
         const SQInteger before = sq_gettop(vm);
-        const int curAbs       = before;
+        const int curAbs       = static_cast<int>(before);
         sq_pushstring(vm, path[i].c_str(), -1);
         if (SQ_FAILED(sq_get(vm, curAbs))) {
             sq_settop(vm, top);
@@ -905,7 +923,12 @@ VariableInfo Debugger::evaluate(const std::string& expression, int frameLevel) c
     if (SQ_FAILED(sq_compilebuffer(vm, src.c_str(), static_cast<SQInteger>(src.size()),
                                    _SC("eval"), SQTrue))) {
         sq_settop(vm, top);
-        return evaluateLegacy(expression);
+        eve::script::ScriptErrorContext ctx = eve::script::captureCompileError(vm);
+        VariableInfo info;
+        info.name = expression;
+        info.type = "error";
+        info.value = ctx.empty() ? "compile error" : eve::script::formatScriptError(ctx);
+        return info;
     }
     // stack: [env, closure]
     sq_push(vm, -2);                 // [env, closure, env]
@@ -916,8 +939,9 @@ VariableInfo Debugger::evaluate(const std::string& expression, int frameLevel) c
     if (SQ_SUCCEEDED(sq_call(vm, 1, SQTrue, SQFalse))) {
         info = describeAt(vm, -1);
     } else {
+        eve::script::ScriptErrorContext ctx = eve::script::takeLastScriptError(vm);
         info.type  = "error";
-        info.value = "eval error";
+        info.value = ctx.empty() ? "eval error" : eve::script::formatScriptError(ctx);
     }
     sq_settop(vm, top);
     return info;

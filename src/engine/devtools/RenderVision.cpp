@@ -36,7 +36,7 @@ const char* kSystemPrompt =
     "and reference the parameter names verbatim.";
 
 // Splits "http://host[:port][/basepath]" into host, port and base path.
-void splitBaseUrl(const std::string& url, std::string& host, unsigned& port,
+void splitBaseUrl(const std::string& url, std::string& host, Poco::UInt16& port,
                   std::string& basePath) {
     host     = "127.0.0.1";
     port     = 80;
@@ -53,7 +53,7 @@ void splitBaseUrl(const std::string& url, std::string& host, unsigned& port,
     if (colon != std::string::npos) {
         host = authority.substr(0, colon);
         try {
-            port = static_cast<unsigned>(std::stoi(authority.substr(colon + 1)));
+            port = static_cast<Poco::UInt16>(std::stoi(authority.substr(colon + 1)));
         } catch (...) {
             port = 80;
         }
@@ -61,16 +61,6 @@ void splitBaseUrl(const std::string& url, std::string& host, unsigned& port,
         host = authority;
     }
     if (host.empty()) host = "127.0.0.1";
-}
-
-std::string base64Encode(const void* data, size_t size) {
-    std::ostringstream oss;
-    {
-        Poco::Base64Encoder enc(oss);
-        enc.write(static_cast<const char*>(data), static_cast<std::streamsize>(size));
-        enc.close();
-    }
-    return oss.str();
 }
 
 }  // namespace
@@ -259,7 +249,7 @@ std::string RenderVision::doDescribe(eve::IRenderCapture* cap, const std::string
 
     // --- HTTP POST ---
     std::string host;
-    unsigned    port = 80;
+    Poco::UInt16 port = 80;
     std::string basePath;
     splitBaseUrl(baseUrl, host, port, basePath);
     std::string endpoint = basePath + path;
@@ -268,7 +258,8 @@ std::string RenderVision::doDescribe(eve::IRenderCapture* cap, const std::string
     std::string responseBody;
     try {
         Poco::Net::HTTPClientSession session(host, port);
-        session.setTimeout(Poco::Timespan(timeoutMs / 1000, (timeoutMs % 1000) * 1000));
+        session.setTimeout(
+            Poco::Timespan(static_cast<long long>(timeoutMs) * 1000));
         session.setKeepAlive(false);
         Poco::Net::HTTPRequest req(Poco::Net::HTTPRequest::HTTP_POST, endpoint,
                                    Poco::Net::HTTPMessage::HTTP_1_1);

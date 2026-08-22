@@ -25,6 +25,20 @@ std::string checkDropEvents();
 std::string getExecutablePath();
 
 /**
+ * Points the Vulkan loader at a MoltenVK bundled next to the executable
+ * (../lib or ../Frameworks) and returns the directory that contains the
+ * bundled loader + ICD manifest, or an empty string when no bundled Vulkan
+ * layout is present.
+ *
+ * Sets VK_ICD_FILENAMES to the bundled MoltenVK_icd.json (unless the caller
+ * already set it), so a packaged eve runs without the LunarG Vulkan SDK
+ * installed. Call before creating any SDL Vulkan window.
+ *
+ * @return directory of the bundled libvulkan.1.dylib, or empty if not found.
+ **/
+std::string bootstrapBundledVulkan();
+
+/**
  * Bounce the dock icon, if the app isn't in the foreground.
  **/
 void requestAttention(bool continuous);

@@ -17,7 +17,7 @@ public:
     Window();
     ~Window();
 
-    void setSize(int width, int height) override;
+    void setSize(int w, int h) override;
     int  getWidth() const override;
     int  getHeight() const override;
 
@@ -65,14 +65,14 @@ public:
     std::string             getDisplayName(int display) const override;
     std::string             getDisplayOrientation(int display) const override;
     std::vector<WindowSize> getFullscreenSizes(int display) const override;
-    void getDesktopDimensions(int display, int& width, int& height) const override;
+    void getDesktopDimensions(int display, int& outWidth, int& outHeight) const override;
 
-    bool showMessageBox(const std::string& title, const std::string& message,
+    bool showMessageBox(const std::string& caption, const std::string& message,
                         const std::string& type, bool attachToWindow) override;
     int  showMessageBoxData(const MessageBoxData& data) override;
     void requestAttention(bool continuous) override;
 
-    bool setIconRGBA(const uint8_t* rgba, int width, int height) override;
+    bool setIconRGBA(const uint8_t* rgba, int w, int h) override;
 
     /** @brief Used by event backend on resize to refresh drawable size / viewport. */
     void updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport);

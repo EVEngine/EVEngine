@@ -178,9 +178,9 @@ int HotReload::watchTree(std::string root) {
             continue;
         }
 
-        for (const auto &name : items) {
-            if (name.empty() || name == "." || name == "..") continue;
-            const std::string child = (dir == "." || dir.empty()) ? name : joinDir(dir, name);
+        for (const auto &item : items) {
+            if (item.empty() || item == "." || item == "..") continue;
+            const std::string child = (dir == "." || dir.empty()) ? item : joinDir(dir, item);
             Filesystem::Info info{};
             if (!fs->getInfo(child, info)) continue;
             if (info.type == "directory") stack.push_back(child);
@@ -246,7 +246,7 @@ bool HotReload::fetchManifest(std::vector<RemoteFile> &out) {
         Poco::JSON::Array::Ptr arr = result.extract<Poco::JSON::Array::Ptr>();
         if (!arr) return false;
         for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o = arr->getObject(i);
+            Poco::JSON::Object::Ptr o = arr->getObject(static_cast<unsigned int>(i));
             if (!o) continue;
             RemoteFile f;
             f.path = o->optValue<std::string>("path", "");
@@ -283,7 +283,7 @@ std::map<std::string, std::pair<int64_t, int64_t>> HotReload::loadRecord() const
         Poco::JSON::Array::Ptr arr = result.extract<Poco::JSON::Array::Ptr>();
         if (!arr) return record;
         for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o = arr->getObject(i);
+            Poco::JSON::Object::Ptr o = arr->getObject(static_cast<unsigned int>(i));
             if (!o) continue;
             const std::string path = o->optValue<std::string>("path", "");
             if (path.empty()) continue;

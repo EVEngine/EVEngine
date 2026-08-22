@@ -9,13 +9,6 @@ const CAT_PICKUP = 32;
 const CAT_HAZARD = 64;
 
 if (!("game" in getroottable())) game <- null;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-
-function clampf(v, lo, hi) {
-    if (v < lo) return lo;
-    if (v > hi) return hi;
-    return v;
-}
 
 function absf(v) { return v < 0.0 ? -v : v; }
 
@@ -28,11 +21,7 @@ function keyDown(primary, alternate = "") {
 }
 
 function keyPressed(primary, alternate = "") {
-    local now = keyDown(primary, alternate);
-    local key = primary + ":" + alternate;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- now;
-    return now && !was;
+    return key_just_pressed(primary, alternate);
 }
 
 function bodyPair(a, b) {

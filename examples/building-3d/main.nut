@@ -27,11 +27,7 @@ const GRID_H = 16;
 const CELL = 1.0;
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
 function mousePressed(button) {

@@ -52,6 +52,10 @@
 #include "graphics/shaders/textured_frag_spv.inc"
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_vert_spv.inc"
+#include "graphics/shaders/resolve_vis_frag_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
@@ -433,24 +437,38 @@ void Graphics::destroyGBufferResources() {
         slot.normalTex.gpuHandle = nullptr;
         slot.depthColorTex.gpuHandle = nullptr;
         slot.albedoTex.gpuHandle = nullptr;
+        slot.visIDTex.gpuHandle = nullptr;
+        slot.visBaryTex.gpuHandle = nullptr;
         slot.depthTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
             device->destroyFramebuffer(slot.framebuffer);
             slot.framebuffer = vk::Framebuffer{};
         }
+        if (slot.visFramebuffer) {
+            device->destroyFramebuffer(slot.visFramebuffer);
+            slot.visFramebuffer = vk::Framebuffer{};
+        }
         destroySampler(device, slot.normalGpu.sampler);
         destroySampler(device, slot.depthColorGpu.sampler);
         destroySampler(device, slot.albedoGpu.sampler);
+        destroySampler(device, slot.visIDGpu.sampler);
+        destroySampler(device, slot.visBaryGpu.sampler);
         destroySampler(device, slot.depthGpu.sampler);
     }
     gbufferSlots.clear();
     post2Sets.clear();
     destroyPipeline(device, gbufferPipeline);
     destroyPipeline(device, gbufferAlphaPipeline);
+    destroyPipeline(device, gbufferVisPipeline);
+    destroyPipeline(device, gbufferVgVisPipeline);
     destroyPipelineLayout(device, gbufferPipelineLayout);
     if (gbufferRenderPass) {
         device->destroyRenderPass(gbufferRenderPass);
         gbufferRenderPass = {};
+    }
+    if (gbufferVisRenderPass) {
+        device->destroyRenderPass(gbufferVisRenderPass);
+        gbufferVisRenderPass = {};
     }
     gbufferWidth = 0;
     gbufferHeight = 0;
@@ -480,8 +498,8 @@ void Graphics::destroySceneColorResources() {
     sceneColorSamples = vk::SampleCountFlagBits::e1;
 }
 
-void Graphics::createUiColorResources(int width, int height) {
-    if (width <= 0 || height <= 0) return;
+void Graphics::createUiColorResources(int uiW, int uiH) {
+    if (uiW <= 0 || uiH <= 0) return;
     const vk::Format colorFmt = swapchain.image_format;
     if (colorFmt == vk::Format::eUndefined) return;
 
@@ -522,17 +540,17 @@ void Graphics::createUiColorResources(int width, int height) {
 
     if (!texSetLayout || !descriptorPool) return;
 
-    if (!uiColorSlots.empty() && uiColorWidth == width && uiColorHeight == height &&
+    if (!uiColorSlots.empty() && uiColorWidth == uiW && uiColorHeight == uiH &&
         uiColorFormat == colorFmt && uiColorSamples == samples)
         return;
     destroyUiColorTargets();
 
-    uiColorWidth = width;
-    uiColorHeight = height;
+    uiColorWidth = uiW;
+    uiColorHeight = uiH;
     uiColorFormat = colorFmt;
     uiColorSamples = samples;
-    const uint32_t w = uint32_t(width);
-    const uint32_t h = uint32_t(height);
+    const uint32_t w = uint32_t(uiW);
+    const uint32_t h = uint32_t(uiH);
     const bool msaa = samples != vk::SampleCountFlagBits::e1;
 
     uiColorSlots.resize(kAsyncResourceCopies);
@@ -642,24 +660,28 @@ bool Graphics::renderUiOverlayPass() {
 }
 
 
-void Graphics::createGBufferResources(int width, int height) {
-    if (width <= 0 || height <= 0) return;
-    if (!gbufferSlots.empty() && gbufferWidth == width && gbufferHeight == height && gbufferPipeline)
+void Graphics::createGBufferResources(int gbufW, int gbufH) {
+    if (gbufW <= 0 || gbufH <= 0) return;
+    if (!gbufferSlots.empty() && gbufferWidth == gbufW && gbufferHeight == gbufH && gbufferPipeline)
         return;
     destroyGBufferResources();
 
-    gbufferWidth = width;
-    gbufferHeight = height;
-    const uint32_t w = uint32_t(width);
-    const uint32_t h = uint32_t(height);
+    gbufferWidth = gbufW;
+    gbufferHeight = gbufH;
+    const uint32_t w = uint32_t(gbufW);
+    const uint32_t h = uint32_t(gbufH);
     const vk::Format colorFmt = pickGBufferColorFormat(device);
     const vk::Format depthFmt = vk::Format::eD32Sfloat;
+    const vk::Format visIDFmt = vk::Format::eR32G32Uint;
+    const vk::Format visBaryFmt = vk::Format::eR16G16Sfloat;
 
     gbufferSlots.resize(kAsyncResourceCopies);
     for (auto &slot : gbufferSlots) {
         slot.normal = device.createColorTarget(w, h, colorFmt);
         slot.depthColor = device.createColorTarget(w, h, colorFmt);
         slot.albedo = device.createColorTarget(w, h, colorFmt);
+        slot.visID = device.createColorTarget(w, h, visIDFmt);
+        slot.visBary = device.createColorTarget(w, h, visBaryFmt);
         slot.depth = device.createDepthTarget(w, h, depthFmt, true);
     }
 
@@ -756,12 +778,15 @@ void Graphics::createGBufferResources(int width, int height) {
         makeSampleTex(slot.normalGpu, slot.normalTex, slot.normal.imageView());
         makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColor.imageView());
         makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedo.imageView());
+        makeSampleTex(slot.visIDGpu, slot.visIDTex, slot.visID.imageView());
+        makeSampleTex(slot.visBaryGpu, slot.visBaryTex, slot.visBary.imageView());
         makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());
     }
+    createGpuDrivenVisResources(width, height);
 }
 
-void Graphics::createSceneColorResources(int width, int height) {
-    if (width <= 0 || height <= 0) return;
+void Graphics::createSceneColorResources(int sceneW, int sceneH) {
+    if (sceneW <= 0 || sceneH <= 0) return;
     if (!texSetLayout || !descriptorPool) return;
     const vk::Format colorFmt = swapchain.image_format;
     if (colorFmt == vk::Format::eUndefined) return;
@@ -771,17 +796,17 @@ void Graphics::createSceneColorResources(int width, int height) {
     if (desired != appliedMsaa) appliedMsaa = desired;
     const vk::SampleCountFlagBits samples = sampleCountFlagFor(clampMsaaSamples(appliedMsaa));
 
-    if (!sceneColorSlots.empty() && sceneColorWidth == width && sceneColorHeight == height &&
+    if (!sceneColorSlots.empty() && sceneColorWidth == sceneW && sceneColorHeight == sceneH &&
         sceneColorFormat == colorFmt && sceneColorSamples == samples && sceneColorRenderPass)
         return;
     destroySceneColorResources();
 
-    sceneColorWidth = width;
-    sceneColorHeight = height;
+    sceneColorWidth = sceneW;
+    sceneColorHeight = sceneH;
     sceneColorFormat = colorFmt;
     sceneColorSamples = samples;
-    const uint32_t w = uint32_t(width);
-    const uint32_t h = uint32_t(height);
+    const uint32_t w = uint32_t(sceneW);
+    const uint32_t h = uint32_t(sceneH);
     const vk::Format depthFmt = depthFormat;
     const bool msaa = samples != vk::SampleCountFlagBits::e1;
 
@@ -940,11 +965,20 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
 
     destroyPipeline(device, mesh3dPipeline);
     destroyPipeline(device, mesh3dClusteredPipeline);
+    destroyPipeline(device, mesh3dGpuDrivenPipeline);
+    destroyPipeline(device, resolveVisPipeline);
     destroyPipeline(device, voxelRectPipeline);
 
     mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
                                                embeddedSpirv(mesh3d_frag_spv),
                                                mesh3dPipelineLayout, target, samples);
+    if (mesh3dGpuDrivenPipelineLayout) {
+        mesh3dGpuDrivenPipeline =
+            createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
+                                      embeddedSpirv(mesh3d_gpudriven_frag_spv),
+                                      mesh3dGpuDrivenPipelineLayout, target, samples);
+        createResolveVisPipeline(target, samples);
+    }
     mesh3dClusteredPipeline =
         createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
                                   embeddedSpirv(mesh3d_clustered_frag_spv),
@@ -1256,7 +1290,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
                                                  vk::SampleCountFlagBits samples) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    vk::Pipeline pipeline =
+    vk::Pipeline pipe =
         device.createPipeline()
             .useClassicPipeline(vertModule, fragModule)
             .setPipelineLayout(layout)
@@ -1272,7 +1306,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
             .build(rp);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
-    return pipeline;
+    return pipe;
 }
 
 vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
@@ -1282,7 +1316,7 @@ vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &ver
                                                 vk::SampleCountFlagBits samples) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    vk::Pipeline pipeline =
+    vk::Pipeline pipe =
         device.createPipeline()
             .useClassicPipeline(vertModule, fragModule)
             .setPipelineLayout(layout)
@@ -1299,7 +1333,7 @@ vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &ver
             .build(rp);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
-    return pipeline;
+    return pipe;
 }
 
 vk::Pipeline Graphics::createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
@@ -1309,7 +1343,7 @@ vk::Pipeline Graphics::createMesh3DXrayPipeline(const std::vector<uint32_t> &ver
                                                 vk::SampleCountFlagBits samples) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    vk::Pipeline pipeline =
+    vk::Pipeline pipe =
         device.createPipeline()
             .useClassicPipeline(vertModule, fragModule)
             .setPipelineLayout(layout)
@@ -1328,7 +1362,7 @@ vk::Pipeline Graphics::createMesh3DXrayPipeline(const std::vector<uint32_t> &ver
             .build(rp);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
-    return pipeline;
+    return pipe;
 }
 
 void Graphics::ensureOffscreenPipelines() {

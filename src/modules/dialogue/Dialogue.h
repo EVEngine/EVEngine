@@ -1,10 +1,12 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/StateValue.h"
 
 #include <squirrel.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -231,11 +233,26 @@ public:
     /** @brief 重置舞台与台词状态。 */
     void reset();
 
+    /** @brief Serialize conversation state (vars, rng, phase, choices, stage). */
+    bool captureState(StateValue& out) const;
+
+    /**
+     * @brief Restore conversation state captured by captureState().
+     * @return false when the captured
+     * state is malformed; the reload session
+     *         then falls back to resetToDefaults().
+     */
+    bool restoreState(const StateValue& in, std::string* err = nullptr);
+
+    /** @brief Reset stage and line state (restore fallback). */
+    bool resetToDefaults();
+
 private:
     struct Character {
         std::string id;
         std::string displayName;
         avatar::AvatarInstance *avatar = nullptr;
+        std::optional<size_t> avatarHook;  // destroy-hook id on the bound avatar
         std::string slot;
         bool shown = false;
     };

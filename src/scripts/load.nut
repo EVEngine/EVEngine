@@ -38,6 +38,40 @@ function has_module(slot) {
     return slot in getroottable() && getroottable()[slot] != null;
 }
 
+// ---------------------------------------------------------------------------
+// 通用游戏开发辅助（在 main.nut 之前定义；示例脚本可直接使用，
+// 游戏脚本里可以按需用同名定义覆盖）。
+// ---------------------------------------------------------------------------
+
+_input_edge_state <- { };
+
+// 边沿检测：只在“刚按下”的那一帧返回 true。用于按键（可带备用键名）。
+// 状态跨热重载保留，所以改脚本保存后不会丢按键边沿。
+function key_just_pressed(name, alternate = "") {
+    local down = keyboard.isDown(name) ||
+                 (alternate != "" && keyboard.isDown(alternate));
+    local key = (alternate == "") ? ("k_" + name) : (name + ":" + alternate);
+    local was = (key in _input_edge_state) ? _input_edge_state[key] : false;
+    _input_edge_state[key] <- down;
+    return down && !was;
+}
+
+// 数值裁剪。
+function clampf(v, lo, hi) {
+    if (v < lo) return lo;
+    if (v > hi) return hi;
+    return v;
+}
+
+// 热重载持久化：name 已存在于根表则直接返回，否则调用 init() 创建并保存。
+// 约定：`x <- persist("x", function() { return <初始值>; });`
+function persist(name, init) {
+    local root = getroottable();
+    if (!(name in root))
+        root[name] <- init();
+    return root[name];
+}
+
 config <- {
     width = 800
     height = 600
@@ -157,7 +191,65 @@ function track_script(path) {
     watched_scripts.append(p);
 }
 
+// ---------------------------------------------------------------------------
+// State hot reload helpers (capture -> reload -> restore).
+// Old state is authoritative (captured by beginStateReload); fields the new
+// script adds are kept, and scripts may rebuild class instances in
+// eve_after_reload() using migrate_instance / remap_instances.
+// ---------------------------------------------------------------------------
+
+// Copy the enumerable fields of an old instance/table into a fresh instance
+// of NewClass; fields missing on the new class keep their defaults.
+function migrate_instance(old, NewClass) {
+    local n = NewClass();
+    if (old == null) return n;
+    foreach (k, v in old) {
+        try {
+            n[k] <- v;
+        } catch (e) {
+            // Not assignable on the new class; keep the default.
+        }
+    }
+    return n;
+}
+
+// Replace every element/field of an array/table with a migrated instance.
+function remap_instances(container, NewClass) {
+    if (typeof container == "array") {
+        for (local i = 0; i < container.len(); ++i) {
+            container[i] = migrate_instance(container[i], NewClass);
+        }
+    } else if (typeof container == "table") {
+        local keys = [];
+        foreach (k, v in container) keys.append(k);
+        foreach (k in keys) {
+            container[k] = migrate_instance(container[k], NewClass);
+        }
+    }
+    return container;
+}
+
 function soft_reload_scripts() {
+    // ① optional script hook: finalize transient state before capture.
+    if ("eve_before_reload" in getroottable()) {
+        try {
+            eve_before_reload();
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("eve_before_reload failed: " + e + "\n");
+        }
+    }
+    // ② capture: script state roots + native IStateProvider states.
+    local hasSession = ("dev" in eve) && ("beginStateReload" in eve.dev);
+    if (hasSession) {
+        local e = eve.dev.beginStateReload();
+        if (e != "") {
+            if ("dev" in eve) eve.dev.reportError("state reload: capture failed: " + e);
+            print("state reload: capture failed: " + e + "\n");
+            return;
+        }
+    }
+    // ③ reload: re-dofile tracked scripts (fresh definitions).
     foreach (p in watched_scripts) {
         if (!file_exists(p)) continue;
         try {
@@ -166,6 +258,24 @@ function soft_reload_scripts() {
         } catch (e) {
             if ("dev" in eve) eve.dev.reportError("" + e);
             print("hot-reload script failed: " + p + ": " + e + "\n");
+        }
+    }
+    // ④ restore: captured values win, newly added fields kept; native
+    //    providers are restored / reset by the session.
+    if (hasSession) {
+        local e = eve.dev.commitStateReload();
+        if (e != "") {
+            if ("dev" in eve) eve.dev.reportError("state reload: restore failed: " + e);
+            print("state reload: restore failed: " + e + "\n");
+        }
+    }
+    // ⑤ optional script hook: rebuild class instances from restored state.
+    if ("eve_after_reload" in getroottable()) {
+        try {
+            eve_after_reload();
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("eve_after_reload failed: " + e + "\n");
         }
     }
     if ("eve_reload" in getroottable()) {
@@ -438,10 +548,14 @@ eve_frame <- function() {
         if ("async_pump" in getroottable())
             async_pump();
         if (dev_should_update()) {
-            eve_update(dt);
-            // Flush reactions scheduled during eve_update.
-            if ("async_pump" in getroottable())
-                async_pump();
+            // Playground pause: the page sets the eve_playground_paused root
+            // flag to freeze game logic while the render keeps presenting.
+            if (!("eve_playground_paused" in getroottable()) || !eve_playground_paused) {
+                eve_update(dt);
+                // Flush reactions scheduled during eve_update.
+                if ("async_pump" in getroottable())
+                    async_pump();
+            }
             dev_notify_frame_done();
         }
         eve_render();

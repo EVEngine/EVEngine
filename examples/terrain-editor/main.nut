@@ -23,8 +23,6 @@ const H = 64;
 const CELL = 0.5;      // world units per heightmap cell
 const HSCALE = 3.2;    // world units per unit of height
 
-function clampf(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
-
 function regenTerrain() {
     local p = procgen.newParams();
     p.setSize(W, H);

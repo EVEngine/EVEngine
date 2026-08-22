@@ -34,7 +34,7 @@ local yaw = 0.0;
 // Called each frame from the host loop.
 function vg_step() {
     yaw += 0.012;
-    renderer.setCameraSimple(0.0, 0.0, camDist);
+    renderer.setCameraSimple(0.0, 0.0, camDist, 0.1, 100.0);
     renderer.setModelYaw(yaw);
 
     // GPU-driven culling + software rasterization into the visibility buffer.
@@ -46,6 +46,6 @@ function vg_step() {
         print("visible clusters=" + visible + " / " + renderer.getClusterCount()
               + " LODmax=" + renderer.getMaxLodLevel()
               + " view=" + renderer.getViewWidth() + "x" + renderer.getViewHeight()
-              + " rgbaBytes=" + rgba.getSize() + "\n");
+              + " rgbaBytes=" + (renderer.getViewWidth() * renderer.getViewHeight() * 4) + "\n");
     }
 }

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "common/Capability.h"
 #include "common/Module.h"
+#include "common/ServiceInterfaces.h"
 
 #include <cstdint>
 
@@ -10,7 +12,7 @@ namespace eve::timer {
  * @brief High-resolution frame/elapsed timer backed by SDL_GetPerformanceCounter().
  * Script: `timer <- eve.Timer();`
  */
-class Timer : public Module {
+class Timer : public Module, public eve::service::ITimer {
 public:
     Module_REG(Timer);
     Timer();
@@ -25,6 +27,8 @@ public:
     float getDelta() const;
     /** @brief Advances the frame clock and returns the new delta in seconds. */
     float step();
+
+    double elapsedSeconds() override { return getTime(); }
 
 private:
     uint64_t freq_  = 0;

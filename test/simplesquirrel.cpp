@@ -30,7 +30,7 @@ public:
         if (name.size() < 32) {
             strncpy(data, name.c_str(), name.size());
             data[name.size()] = '\0';
-            size              = name.size();
+            size              = static_cast<int>(name.size());
         }
     }
     char* data;
@@ -97,8 +97,8 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
             printf("%s ", _string(t->_nodes[i].key)->_val);
             auto p = t->_nodes[i].val;
             if (sq_type(p) == OT_INTEGER) {
-                if(_isfield(p)) { printf("field %d\n", _member_idx(p));}
-                if(_ismethod(p)) {printf("method %d\n", _member_idx(p));}
+                if (_isfield(p)) { printf("field %d\n", static_cast<int>(_member_idx(p))); }
+                if (_ismethod(p)) { printf("method %d\n", static_cast<int>(_member_idx(p))); }
             }
         }
     }

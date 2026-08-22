@@ -121,7 +121,7 @@ public:
                       const std::vector<std::uint32_t> &inTris,
                       const std::vector<std::uint32_t> &verts,
                       std::vector<std::uint32_t> &outTris, float &outError)
-        : srcPos_(positions), outTris_(outTris), outError_(outError), verts_(verts) {
+        : srcPos_(positions), verts_(verts), outTris_(outTris), outError_(outError) {
         tris_ = inTris;
         pos_ = positions;      // mutable working copy for flip tests
         initPos_ = positions;  // original positions for the error metric
@@ -173,7 +173,7 @@ public:
                 outTris_.push_back(c);
             }
         }
-        outError_ = std::sqrt(maxCost);
+        outError_ = static_cast<float>(std::sqrt(maxCost));
     }
 
 private:

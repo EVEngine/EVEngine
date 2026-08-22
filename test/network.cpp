@@ -439,7 +439,7 @@ TEST_CASE("network.NetWriterReaderRoundtrip") {
     w.writeBool(false);
     w.writeString("hello");
     w.writeString(std::string("a\0b", 3));
-    const char raw[] = {0x00, 0x01, (char)0xFE, (char)0xFF};
+    const char raw[] = {0x00, 0x01, '\xFE', '\xFF'};
     w.writeBytes(raw, sizeof(raw));
 
     REQUIRE(w.size() > 0);
@@ -463,8 +463,8 @@ TEST_CASE("network.NetWriterReaderRoundtrip") {
     REQUIRE(b.size() == sizeof(raw));
     CHECK(b[0] == 0x00);
     CHECK(b[1] == 0x01);
-    CHECK(b[2] == (char)0xFE);
-    CHECK(b[3] == (char)0xFF);
+    CHECK(b[2] == '\xFE');
+    CHECK(b[3] == '\xFF');
     CHECK(r.remaining() == 0);
     CHECK(r.ok());
     CHECK(r.pos() == w.size());

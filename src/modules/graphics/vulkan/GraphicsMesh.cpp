@@ -114,18 +114,20 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     for (unsigned m = 0; m < mesh.mNumAnimMeshes; ++m) {
         const aiAnimMesh *am = mesh.mAnimMeshes[m];
         if (!am || !am->mVertices || am->mNumVertices != mesh.mNumVertices) continue;
-        std::string name = am->mName.length ? am->mName.C_Str() : ("morph" + std::to_string(m));
+        std::string morphName =
+            am->mName.length ? am->mName.C_Str() : ("morph" + std::to_string(m));
         std::vector<float> absPos(size_t(am->mNumVertices) * 3u);
         for (unsigned i = 0; i < am->mNumVertices; ++i) {
             absPos[size_t(i) * 3u + 0] = am->mVertices[i].x;
             absPos[size_t(i) * 3u + 1] = am->mVertices[i].y;
             absPos[size_t(i) * 3u + 2] = am->mVertices[i].z;
         }
-        handle->addMorphTargetAbsolute(name, absPos.data());
+        handle->addMorphTargetAbsolute(morphName, absPos.data());
     }
     handle->markMorphClean();
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -180,8 +182,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     }
 
     // Non-owning view — do not let aiMesh destructor free borrowed pointers.
-    aiMesh tmp;
-    std::memset(&tmp, 0, sizeof(tmp));
+    aiMesh tmp{};
     tmp.mPrimitiveTypes = mesh.mPrimitiveTypes;
     tmp.mNumVertices = mesh.mNumVertices;
     tmp.mVertices = positions.data();
@@ -236,6 +237,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     raw->computeBounds(posXYZ, vertexCount);
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -414,6 +416,7 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -523,6 +526,7 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -682,18 +686,18 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         if (offscreen3DPassOpen)
             throw Exception("drawMeshShader: custom mesh shader in offscreen 3D pass is unsupported");
         auto *gs = static_cast<GpuShader *>(shader->gpuHandle);
-        vk::Pipeline pipeline = gs->mesh3dPipeline;
+        vk::Pipeline activePipeline = gs->mesh3dPipeline;
         if (shader->isXray()) {
             // X-ray silhouette pass: depth test/write off + alpha blend so the
             // occluded part paints over the building. The pipeline is created
             // with the shader (see newMeshShaderFromSpv); do not compile it
             // here — a render pass is already open.
-            pipeline = gs->mesh3dXrayPipeline;
+            activePipeline = gs->mesh3dXrayPipeline;
         }
-        if (!pipeline) return;
-        if (pipeline != lastMesh3dPipeline) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-            lastMesh3dPipeline = pipeline;
+        if (!activePipeline) return;
+        if (activePipeline != lastMesh3dPipeline) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, activePipeline);
+            lastMesh3dPipeline = activePipeline;
         }
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set,
                               2, dynOffsets);

@@ -20,7 +20,7 @@ bool readViaPhysFS(const char* path, std::string& out) {
     if (!f) return false;
     const PHYSFS_uint64 len = PHYSFS_fileLength(f);
     out.resize(static_cast<size_t>(len));
-    if (len > 0 && PHYSFS_readBytes(f, out.data(), len) != len) {
+    if (len > 0 && PHYSFS_readBytes(f, out.data(), len) != static_cast<PHYSFS_sint64>(len)) {
         PHYSFS_close(f);
         out.clear();
         return false;
@@ -144,9 +144,14 @@ SQInteger sq_file(HSQUIRRELVM vm) {
     }
 
     sq_newtable(vm);                       // the handle table (becomes 'this')
-    sq_pushstring(vm, path, -1);           // _path
+    // Squirrel 的 sq_newslot(-3) 需要 [table, key, value] 三层栈；
+    // 只推一个值会把目标错指到调用帧的 mode 参数上（非表对象会被静默跳过），
+    // 导致句柄永远没有 _path/_data，read()/getSize() 报 "file not readable"。
+    sq_pushstring(vm, "_path", -1);        // key
+    sq_pushstring(vm, path, -1);           // value
     sq_newslot(vm, -3, SQFalse);
-    sq_pushstring(vm, content.c_str(), static_cast<SQInteger>(content.size()));  // _data
+    sq_pushstring(vm, "_data", -1);        // key
+    sq_pushstring(vm, content.c_str(), static_cast<SQInteger>(content.size()));  // value
     sq_newslot(vm, -3, SQFalse);
 
     struct { const SQChar* name; SQFUNCTION fn; } methods[] = {

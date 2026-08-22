@@ -24,12 +24,12 @@
 | Timer | `src/modules/timer/Timer.cpp` | `test/timer.nut`、`test/timer_cpp.cpp` | 确认秒单位、单次 step 与暂停大 dt 风险 |
 | System | `src/modules/system/System.cpp` | `test/system.cpp` | 区分 wall time、帧计时和阻塞 sleep |
 | Keyboard | `src/modules/keyboard/Keyboard.cpp` | `test/keyboard_cpp.cpp` | 说明状态查询、边沿检测、key/scancode 和文本输入 |
-| Mouse | `src/modules/mouse/Mouse.cpp` | `test/mouse.nut`、`test/mouse_cpp.cpp` | 明确当前脚本没有相对模式 setter |
+| Mouse | `src/modules/mouse/Mouse.cpp` | `test/mouse.nut`、`test/mouse_cpp.cpp` | 已补齐相对模式、可见性、位置与抓取的脚本绑定 |
 | Touch | `src/modules/touch/Touch.cpp` | `test/touch.cpp` | 明确触点索引仅当前帧有效 |
-| Joystick | `src/modules/joystick/Joystick.cpp` | `test/joystick_cpp.cpp` | 明确当前只绑定数量与 mapping，未绑定轴/按钮 |
+| Joystick | `src/modules/joystick/Joystick.cpp` | `test/joystick_cpp.cpp`、`test/joystick_script.cpp` | 已补齐 Pad 对象与轴/按钮/hat/振动绑定 |
 | Filesystem / HotReload | `src/modules/filesystem/Filesystem.cpp`、`HotReload.cpp` | `test/filesystem.nut`、`test/hotreload.cpp` | 区分虚拟路径、写目录、watch 与资源替换 |
 | Data | `src/modules/data/DataModule.cpp` | `test/data.cpp` | 区分 ByteData 所有权、DataView 引用和文档树 |
-| Image | `src/modules/image/Image.cpp` | `test/image.cpp` | 发现并明确：C++ 图像方法当前未暴露给脚本 |
+| Image | `src/modules/image/Image.cpp` | `test/image.cpp`、`test/image_script.cpp` | 已补齐 newImageData/newImageDataFromFile 与 ImageData 类绑定 |
 | Font | `src/modules/font/Font.cpp` | `test/font.cpp`、`test/graphics_font.cpp` | 补充 advance/bearing/kerning 的布局职责 |
 | Sound | `src/modules/sound/Sound.cpp` | `test/sound.cpp` | 区分 Decoder、PCM SoundData 和 Audio Source |
 | Audio | `src/modules/audio/Audio.cpp` | `test/audio.cpp` | 补充 listener/source、3D/relative 与资源生命周期 |

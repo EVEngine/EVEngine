@@ -8,9 +8,8 @@ from __future__ import annotations
 import json
 import os
 import subprocess
-import sys
 import time
-from typing import Dict, Optional
+from typing import Dict
 
 from .cache import AssetCache
 from .report import BlenderResult

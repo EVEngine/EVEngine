@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
@@ -151,17 +152,6 @@ struct Bounds {
     }
 };
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 512, int h = 512) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width  = static_cast<uint16_t>(w);
-    s.height = static_cast<uint16_t>(h);
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 void resetScene3D() {
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {

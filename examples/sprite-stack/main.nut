@@ -35,10 +35,7 @@ local tints = {
 };
 
 function pressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevKeys ? prevKeys[k] : false;
-    prevKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function rebuildStack() {

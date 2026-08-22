@@ -61,6 +61,18 @@ if [ "$PLAT" = "android" ]; then
   fi
   TEMPLATE="$SDK/platform/apk"
   [ -f "$TEMPLATE/gradlew" ] || [ -f "$TEMPLATE/gradlew.bat" ] || fail "android SDK missing gradle template"
+  # The packaged game must launch the game host when the user taps the icon.
+  # EVTestActivity is the unit-test host and is started explicitly (am start);
+  # if it leaks back into the launcher slot the game never starts.
+  MANIFEST="$TEMPLATE/app/src/main/AndroidManifest.xml"
+  if ! sed -n '/android:name="\.EVEngineActivity"/,/<\/activity>/p' "$MANIFEST" \
+       | grep -q 'android.intent.action.MAIN'; then
+    fail "android template launcher must be EVEngineActivity (MAIN intent missing)"
+  fi
+  if sed -n '/android:name="\.EVTestActivity"/,/<\/activity>/p' "$MANIFEST" \
+       | grep -q 'android.intent.action.MAIN'; then
+    fail "android template launcher must be EVEngineActivity (EVTestActivity has MAIN)"
+  fi
 
   JNI="$TEMPLATE/app/src/main/jniLibs/arm64-v8a"
   mkdir -p "$JNI"
@@ -114,6 +126,8 @@ esac
 [ -d "$SDK/platform" ] || fail "missing platform/"
 [ -f "$SDK/share/eve/TARGET_PLATFORM" ] || fail "missing share/eve/TARGET_PLATFORM"
 [ -f "$SDK/share/eve/VERSION" ] || fail "missing share/eve/VERSION"
+[ -f "$SDK/share/eve/examples/basic/config.nut" ] || fail "missing share/eve/examples/basic/config.nut"
+[ -f "$SDK/share/eve/examples/basic/main.nut" ] || fail "missing share/eve/examples/basic/main.nut"
 TP="$(cat "$SDK/share/eve/TARGET_PLATFORM")"
 [ "$TP" = "$PLAT" ] || fail "TARGET_PLATFORM '$TP' != expected '$PLAT'"
 echo "OK: SDK layout + markers"

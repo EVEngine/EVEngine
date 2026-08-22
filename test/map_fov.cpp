@@ -475,3 +475,39 @@ TEST_CASE("map.fov.gpuMaskTexture") {
     delete fov;
     win->close();
 }
+
+TEST_CASE("map.fov.accessorRoundTrips") {
+    auto *mod = Map::create();
+    Fov  *fov = mod->newFovSize(4, 4);
+    REQUIRE(fov != nullptr);
+
+    fov->setCornerPeek(true);
+    CHECK(fov->getCornerPeek());
+    fov->setCornerPeek(false);
+    CHECK(!fov->getCornerPeek());
+
+    fov->setEyeOffset(1.f);
+    CHECK_EQ(fov->getEyeOffset(), 1.f);
+
+    fov->setCliffBlock(0.5f);
+    CHECK_EQ(fov->getCliffBlock(), 0.5f);
+
+    fov->setVerticalRange(3);
+    CHECK_EQ(fov->getVerticalRange(), 3);
+
+    fov->setPerceptionRadiusScale(1.5f);
+    CHECK_EQ(fov->getPerceptionRadiusScale(), 1.5f);
+
+    const int id = fov->addRevealer(1, 1, 2);
+    REQUIRE(id >= 0);
+    fov->setRevealerPosition3(id, 2, 3, 1);
+    fov->setRevealerRadius(id, 4);
+    fov->setRevealerPerception(id, 2.f);
+    CHECK_EQ(fov->getRevealerPerception(id), 2.f);
+    CHECK_EQ(fov->getRevealerCount(), 1);
+    fov->setRevealerEnabled(id, false);
+    CHECK_EQ(fov->getRevealerCount(), 1);  // disabled revealers stay registered
+    CHECK_EQ(fov->getRevealerPerception(999), 0.f);  // unknown id
+
+    delete fov;
+}

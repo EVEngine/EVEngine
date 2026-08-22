@@ -1,22 +1,4 @@
-/**
- * Copyright (c) 2006-2021 LOVE Development Team
- *
- * This software is provided 'as-is', without any express or implied
- * warranty.  In no event will the authors be held liable for any damages
- * arising from the use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software
- *    in a product, an acknowledgment in the product documentation would be
- *    appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- **/
+
 
 #include "ImageData.h"
 #include "Image.h"
@@ -95,8 +77,13 @@ eve::image::ImageData *ImageData::clone() const {
     }
 }
 
-void ImageData::create(int width, int height, std::string format, void *data) {
-    size_t datasize = width * height * getPixelFormatSize(getPixelFormatFromName(format));
+void ImageData::create(int w, int h, std::string pixelFormat, void *pixels) {
+    // Reject negative dimensions only: negative ints wrap to huge size_t
+    // allocations. Zero-sized images are valid (e.g. empty font atlases).
+    if (w < 0 || h < 0)
+        throw eve::Exception("ImageData: invalid dimensions (%dx%d)", w, h);
+    size_t datasize =
+        w * h * getPixelFormatSize(getPixelFormatFromName(pixelFormat));
 
     try {
         this->data = new unsigned char[datasize];
@@ -104,16 +91,16 @@ void ImageData::create(int width, int height, std::string format, void *data) {
         throw eve::Exception("Out of memory");
     }
 
-    if (data) memcpy(this->data, data, datasize);
+    if (pixels) memcpy(this->data, pixels, datasize);
 
     decodeHandler = nullptr;
-    this->format  = format;
+    this->format  = pixelFormat;
 
-    pixelSetFunction = getPixelSetFunction(format);
-    pixelGetFunction = getPixelGetFunction(format);
+    pixelSetFunction = getPixelSetFunction(pixelFormat);
+    pixelGetFunction = getPixelGetFunction(pixelFormat);
 }
 
-void ImageData::decode(Data *data) {
+void ImageData::decode(Data *source) {
     FormatHandler              *decoder = nullptr;
     FormatHandler::DecodedImage decodedimage;
 
@@ -122,16 +109,17 @@ void ImageData::decode(Data *data) {
     if (module == nullptr) throw eve::Exception("eve.image must be loaded in order to decode an ImageData.");
 
     for (FormatHandler *handler : module->getFormatHandlers()) {
-        if (handler->canDecode((const char*)data->getData(), data->getSize())) {
+        if (handler->canDecode((const char*)source->getData(), source->getSize())) {
             decoder = handler;
             break;
         }
     }
 
-    if (decoder) decodedimage = decoder->decode((const char*)data->getData(), data->getSize());
+    if (decoder)
+        decodedimage = decoder->decode((const char*)source->getData(), source->getSize());
 
     if (decodedimage.data == nullptr) {
-        auto filedata = dynamic_cast<filesystem::FileData *>(data);
+        auto filedata = dynamic_cast<filesystem::FileData *>(source);
 
         if (filedata != nullptr) {
             const std::string &name = filedata->getFilename();
@@ -140,7 +128,9 @@ void ImageData::decode(Data *data) {
             throw eve::Exception("Could not decode data to ImageData: unsupported encoded format");
     }
 
-    if (decodedimage.size != decodedimage.width * decodedimage.height * getPixelFormatSize(decodedimage.format)) {
+    if (decodedimage.size !=
+        size_t(decodedimage.width) * size_t(decodedimage.height) *
+            size_t(getPixelFormatSize(decodedimage.format))) {
         decoder->freeRawPixels(decodedimage.data);
         throw eve::Exception("Could not convert image!");
     }
@@ -290,8 +280,8 @@ static void setPixelRG16(const Colorf &c, ImageData::Pixel *p) {
 
 static void setPixelRGBA16(const Colorf &c, ImageData::Pixel *p) {
     p->rgba16[0] = (uint16_t)(clamp01(c.r) * 65535.0f + 0.5f);
-    p->rgba16[1] = (uint16_t)(clamp01(c.b) * 65535.0f + 0.5f);
-    p->rgba16[2] = (uint16_t)(clamp01(c.g) * 65535.0f + 0.5f);
+    p->rgba16[1] = (uint16_t)(clamp01(c.g) * 65535.0f + 0.5f);
+    p->rgba16[2] = (uint16_t)(clamp01(c.b) * 65535.0f + 0.5f);
     p->rgba16[3] = (uint16_t)(clamp01(c.a) * 65535.0f + 0.5f);
 }
 
@@ -493,23 +483,27 @@ static void getPixelRG11B10F(const ImageData::Pixel *p, Colorf &c) {
 void ImageData::setPixel(int x, int y, const Colorf &c) {
     if (!inside(x, y)) throw eve::Exception("Attempt to set out-of-range pixel!");
 
-    size_t pixelsize = getPixelSize();
-    Pixel *p         = (Pixel *)(data + ((y * width + x) * pixelsize));
-
     if (pixelSetFunction == nullptr) throw eve::Exception("Unhandled pixel format %s in ImageData::setPixel", format.c_str());
 
-    pixelSetFunction(c, p);
+    // Packed formats (RGBA4 / RGB5A1 / RGB565) place pixels at 2-byte
+    // granularity, which can violate the Pixel union's 4-byte alignment.
+    // Encode into an aligned local and copy the bytes back instead of
+    // accessing a possibly-misaligned union member (UBSan).
+    const size_t pixelsize = getPixelSize();
+    Pixel tmp;
+    pixelSetFunction(c, &tmp);
+    std::memcpy(data + ((y * width + x) * pixelsize), &tmp, pixelsize);
 }
 
 void ImageData::getPixel(int x, int y, Colorf &c) const {
     if (!inside(x, y)) throw eve::Exception("Attempt to get out-of-range pixel!");
 
-    size_t       pixelsize = getPixelSize();
-    const Pixel *p         = (const Pixel *)(data + ((y * width + x) * pixelsize));
-
     if (pixelGetFunction == nullptr) throw eve::Exception("Unhandled pixel format %s in ImageData::getPixel", format.c_str());
 
-    pixelGetFunction(p, c);
+    const size_t pixelsize = getPixelSize();
+    Pixel tmp;
+    std::memcpy(&tmp, data + ((y * width + x) * pixelsize), pixelsize);
+    pixelGetFunction(&tmp, c);
 }
 
 Colorf ImageData::getPixel(int x, int y) const {

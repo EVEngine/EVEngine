@@ -22,7 +22,7 @@
 
 namespace eve::rpg {
 
-class SettlementContext;
+struct SettlementContext;
 
 /** @brief RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。 */
 class RPG : public Module {

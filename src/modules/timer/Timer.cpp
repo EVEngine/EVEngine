@@ -10,6 +10,7 @@ Module_IMPL(Timer, new Timer());
 
 Timer::Timer() {
     SDL_InitSubSystem(SDL_INIT_TIMER);
+    eve::cap::provide<eve::service::ITimer>(this);
     freq_  = SDL_GetPerformanceFrequency();
     start_ = SDL_GetPerformanceCounter();
     prev_  = start_;

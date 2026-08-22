@@ -37,11 +37,6 @@ public:
 protected:
     Model* model;
 
-    void update() {
-        for (int i = 0; i < model->instances.size(); ++i) {
-        }
-    }
-
     void expose(ssq::VM& vm) {
         ModuleManager::expose(vm);
         auto eve = vm.find("eve").toTable();
@@ -68,10 +63,10 @@ protected:
                     auto p = t->_nodes[i].val;
                     if (sq_type(p) == OT_INTEGER) {
                         if (_isfield(p)) {
-                            printf("field %d\n", _member_idx(p));
+                            printf("field %d\n", static_cast<int>(_member_idx(p)));
                         }
                         if (_ismethod(p)) {
-                            printf("method %d\n", _member_idx(p));
+                            printf("method %d\n", static_cast<int>(_member_idx(p)));
                         }
                     }
                 }

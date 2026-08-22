@@ -136,6 +136,187 @@ Graphics::~Graphics() {
     if (surface) inst.instance.destroySurfaceKHR(surface);
 }
 
+void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames, void *nativeWindow,
+                                       vk::SurfaceKHR *surfaceOut) {
+    vkb::InstanceBuilder builder;
+    builder.require_api_version(1, 0);
+#if !defined(EVENGINE_IOS)
+    // Khronos validation on every draw / descriptor update is typically 5–20×
+    // slower. Opt in with EVENGINE_VULKAN_VALIDATION=1 (any value except "0").
+    const char *vkVal = std::getenv("EVENGINE_VULKAN_VALIDATION");
+    const bool wantValidation = vkVal && vkVal[0] != '\0' && vkVal[0] != '0';
+    if (wantValidation) {
+        builder.request_validation_layers();
+        builder.use_default_debug_messenger();
+        std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
+    }
+#endif
+    for (auto *extName : extNames) builder.enable_extension(extName);
+    // No window / no surface: create a truly headless instance so the device
+    // selector does not demand a presentable queue family or a VkSurfaceKHR.
+    if (nativeWindow == nullptr) builder.set_headless(true);
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+    // SDL already supplies surface extensions; avoid duplicating them via
+    // InstanceBuilder's non-headless window path, and enable MoltenVK portability.
+    builder.set_headless(true);
+    // Portability enumeration comes from the Khronos loader. iOS links MoltenVK
+    // directly, so the extension is absent there and asking for it aborts
+    // instance creation.
+    if (vkb::SystemInfo::query().is_extension_available(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)) {
+        builder.enable_extension(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        builder.add_flags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
+    }
+#endif
+    {
+        StartupStage stage("  vulkan: instance + surface");
+        inst = builder.build();
+
+        if (nativeWindow != nullptr && surfaceOut != nullptr) {
+            auto *window = static_cast<SDL_Window *>(nativeWindow);
+            VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
+            if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
+                throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
+            surface = rawSurface;
+            *surfaceOut = rawSurface;
+        }
+    }
+
+    {
+        StartupStage stage("  vulkan: physical device + device");
+        auto selector = inst.selectPhysicalDevice();
+        selector.set_minimum_version(1, 0);
+        if (surface) {
+            selector.set_surface(surface);
+        } else {
+            // Headless: pick a device without requiring a presentable surface.
+            // VKBuilder's instance.headless flag is not propagated from
+            // InstanceBuilder, so defer_surface_initialization() is the
+            // supported way to select a device with no VkSurfaceKHR.
+            selector.defer_surface_initialization();
+        }
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+        selector.add_required_extension("VK_KHR_portability_subset");
+#endif
+        auto phys = selector.select();
+        {
+            const vk::PhysicalDeviceFeatures supported = phys->getFeatures();
+            if (supported.samplerAnisotropy) {
+                phys.features.samplerAnisotropy = VK_TRUE;
+                maxSamplerAnisotropy = phys.properties.limits.maxSamplerAnisotropy;
+                if (maxSamplerAnisotropy < 1.f) maxSamplerAnisotropy = 1.f;
+            } else {
+                maxSamplerAnisotropy = 1.f;
+            }
+            // Probe Vulkan 1.2 GPU-driven capabilities (bindless tables + GPU
+            // cull chain). The vendored headers omit `computeShader` / draw
+            // features from VkPhysicalDeviceFeatures; compute is core and
+            // universal, so treat it as present.
+            gpuDrivenCaps_ = GpuDrivenCaps{};
+            vk::PhysicalDeviceVulkan12Features vk12{};
+            vk::PhysicalDeviceFeatures2 features2{};
+            vk12.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+            features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+            features2.pNext = &vk12;
+            phys->getFeatures2(&features2);
+            gpuDrivenCaps_.api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            gpuDrivenCaps_.computeShader = true;
+            gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
+            gpuDrivenCaps_.shaderSampledImageArrayDynamicIndexing =
+                supported.shaderSampledImageArrayDynamicIndexing == VK_TRUE;
+            gpuDrivenCaps_.drawIndirectCount = vk12.drawIndirectCount == VK_TRUE;
+            gpuDrivenCaps_.descriptorIndexing = vk12.descriptorIndexing == VK_TRUE;
+            gpuDrivenCaps_.samplerArrayCapacity =
+                phys.properties.limits.maxPerStageDescriptorSamplers >= kMaxBindlessTextures;
+            if (gpuDrivenCaps_.gpuDrivenAvailable()) {
+                phys.features.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
+                phys.features.shaderStorageBufferArrayDynamicIndexing = VK_TRUE;
+                phys.features.multiDrawIndirect = VK_TRUE;
+            }
+        }
+        vkb::DeviceBuilder deviceBuilder = phys.createDevice();
+        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws).
+        vk::PhysicalDeviceVulkan12Features vk12Enable{};
+        vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+        if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
+        deviceBuilder.add_pNext(&vk12Enable);
+        device = deviceBuilder.build();
+        maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
+    }
+}
+
+void Graphics::initHeadless(int width, int height) {
+    StartupStage initStage("graphics: initHeadless (total)");
+    if (initialized) {
+        if (headless_) {
+            // Re-entrant: test cases share the process-wide Graphics singleton.
+            // Update the logical viewport and keep the existing device.
+            setViewportSize(width, height, width, height);
+            return;
+        }
+        throw Exception("Graphics::initHeadless: already initialized with a window");
+    }
+    if (width <= 0 || height <= 0) throw Exception("Graphics::initHeadless: invalid size");
+
+    // No window, no surface extensions, no swapchain: a bare Vulkan device that
+    // renders into offscreen canvases and reads pixels back on the CPU.
+    createInstanceAndDevice({}, nullptr, nullptr);
+
+    uploadPool = device.createCommandPool();
+    setViewportSize(width, height, width, height);
+    headless_ = true;
+
+    {
+        StartupStage stage("  vulkan: headless renderpass + pipelines");
+        // Plain color+depth render pass mirroring the swapchain pass format so
+        // the shared pipeline builders can reuse it; nothing is ever presented.
+        vkb::RenderPassBuilder rpBuilder{device};
+        renderpass =
+            rpBuilder.addPresentAttachment(vk::Format::eB8G8R8A8Unorm, vk::AttachmentLoadOp::eClear)
+                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare)
+                .addSubpass(vkb::SubpassBuilder()
+                                .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                .setDepthStencilAttachment(
+                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addDependency(VK_SUBPASS_EXTERNAL, 0,
+                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                               {},
+                               vk::AccessFlagBits::eColorAttachmentRead |
+                                   vk::AccessFlagBits::eColorAttachmentWrite |
+                                   vk::AccessFlagBits::eDepthStencilAttachmentWrite)
+                .build();
+        depthImage = vkb::DepthStencilImage{device, uint32_t(width), uint32_t(height), depthFormat};
+        pipelineLayout = createPipelineLayout(device);
+        createTexturedPipeline();
+        createMesh3DPipeline();
+        createMesh3DClusteredPipeline();
+        createVoxelRectPipeline();
+    }
+
+    // Must be set before createShadowResources(): it clears the shadow cascade
+    // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
+    // asserts `initialized` is already true.
+    initialized = true;
+    {
+        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        createShadowResources();
+    }
+    {
+        StartupStage stage("  vulkan: white texture");
+        const uint8_t whitePixel[4] = {255, 255, 255, 255};
+        whiteTexture = newTexture(1, 1, whitePixel);
+        const std::vector<uint8_t> cubePx(6 * 4, 255);
+        defaultBindlessCube = newCubemap(1, cubePx.data());
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
+        initGpuDrivenResources();
+    }
+}
+
 void Graphics::initWithWindow(void *nativeWindow) {
     StartupStage initStage("graphics: initWithWindow (total)");
     if (initialized) {
@@ -167,64 +348,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
     if (!SDL_Vulkan_GetInstanceExtensions(window, &count, extNames.data()))
         throw Exception("SDL_Vulkan_GetInstanceExtensions failed: %s", SDL_GetError());
 
-    vkb::InstanceBuilder builder;
-    builder.require_api_version(1, 0);
-#if !defined(EVENGINE_IOS)
-    // Khronos validation on every draw / descriptor update is typically 5–20×
-    // slower. Opt in with EVENGINE_VULKAN_VALIDATION=1 (any value except "0").
-    const char *vkVal = std::getenv("EVENGINE_VULKAN_VALIDATION");
-    const bool wantValidation = vkVal && vkVal[0] != '\0' && vkVal[0] != '0';
-    if (wantValidation) {
-        builder.request_validation_layers();
-        builder.use_default_debug_messenger();
-        std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
-    }
-#endif
-    for (auto *name : extNames) builder.enable_extension(name);
-#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
-    // SDL already supplies surface extensions; avoid duplicating them via
-    // InstanceBuilder's non-headless window path, and enable MoltenVK portability.
-    builder.set_headless(true);
-    // Portability enumeration comes from the Khronos loader. iOS links MoltenVK
-    // directly, so the extension is absent there and asking for it aborts
-    // instance creation.
-    if (vkb::SystemInfo::query().is_extension_available(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)) {
-        builder.enable_extension(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        builder.add_flags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
-    }
-#endif
-    {
-        StartupStage stage("  vulkan: instance + surface");
-        inst = builder.build();
-
-        VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
-        if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
-            throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
-        surface = rawSurface;
-    }
-
-    {
-        StartupStage stage("  vulkan: physical device + device");
-        auto selector = inst.selectPhysicalDevice();
-        selector.set_surface(surface).set_minimum_version(1, 0);
-#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
-        selector.add_required_extension("VK_KHR_portability_subset");
-#endif
-        auto phys = selector.select();
-        {
-            const vk::PhysicalDeviceFeatures supported = phys->getFeatures();
-            if (supported.samplerAnisotropy) {
-                phys.features.samplerAnisotropy = VK_TRUE;
-                maxSamplerAnisotropy = phys.properties.limits.maxSamplerAnisotropy;
-                if (maxSamplerAnisotropy < 1.f) maxSamplerAnisotropy = 1.f;
-            } else {
-                maxSamplerAnisotropy = 1.f;
-            }
-        }
-        vkb::DeviceBuilder deviceBuilder = phys.createDevice();
-        device = deviceBuilder.build();
-        maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
-    }
+    createInstanceAndDevice(extNames, nativeWindow, &surface);
 
     uploadPool = device.createCommandPool();
 
@@ -266,6 +390,12 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: white texture");
         const uint8_t whitePixel[4] = {255, 255, 255, 255};
         whiteTexture = newTexture(1, 1, whitePixel);
+        const std::vector<uint8_t> cubePx(6 * 4, 255);
+        defaultBindlessCube = newCubemap(1, cubePx.data());
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
+        initGpuDrivenResources();
     }
 }
 
@@ -295,7 +425,9 @@ void Graphics::destroySwapchainResources() {
     swapchainPass = {};
     presentModel.destroy();
     presentModel = vkb::Present{};
+    destroyGpuDrivenCullResources();
     depthImage = vkb::DepthStencilImage{};
+    destroyReadbackResources();
     // Release reused per-frame vertex buffers. Callers hold a device-wide
     // waitIdle before this runs.
     for (auto &fb : frame2dBuffers) releaseFrame2dBuffers(fb);
@@ -424,127 +556,12 @@ void Graphics::dropPendingOffscreenPasses() {
     gbufferPassDraws.clear();
 }
 
-void Graphics::recordPendingShadowPasses() {
-    if (shadowPendingMask == 0 || !shadowPipeline || shadowMaps.empty()) {
-        shadowPendingMask = 0;
-        for (auto &d : shadowCascadeDraws) d.clear();
-        return;
-    }
-    auto &slot = currentShadowMap();
-    auto &cb = currentPresentCb();
-    slot.image.beginDepthAttachment();
-    const uint32_t size = uint32_t(ShadowConfig::kMapSize);
-    vk::ClearValue clear{};
-    clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-        if ((shadowPendingMask & (1u << c)) == 0) continue;
-        vk::RenderPassBeginInfo rpBegin{};
-        rpBegin.renderPass = shadowRenderPass;
-        rpBegin.framebuffer = slot.framebuffers[c];
-        rpBegin.renderArea = vk::Rect2D{{0, 0}, {size, size}};
-        rpBegin.clearValueCount = 1;
-        rpBegin.pClearValues = &clear;
-        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-        setViewportAndScissor(cb, size, size);
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
-        bool alphaBound = false;
-        for (const auto &d : shadowCascadeDraws[c]) {
-            if (!d.mesh || !d.mesh->gpuHandle) continue;
-            const bool wantAlpha = d.alphaTest && shadowAlphaPipeline;
-            if (wantAlpha != alphaBound) {
-                cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                wantAlpha ? shadowAlphaPipeline : shadowPipeline);
-                alphaBound = wantAlpha;
-            }
-            auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-            if (wantAlpha) {
-                Texture *alb = d.albedo ? d.albedo : whiteTexture;
-                if (alb && alb->gpuHandle && texSetLayout) {
-                    auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
-                    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                          shadowAlphaPipelineLayout, 0, 1,
-                                          gpuTex->descriptorSet.ptr(), 0, nullptr);
-                }
-            }
-            cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
-                             vk::ShaderStageFlagBits::eVertex, 0,
-                             sizeof(glm::mat4), &d.mvp);
-            drawIndexedMesh(cb, *gpuMesh);
-        }
-        cb.endRenderPass();
-        shadowCascadeDraws[c].clear();
-    }
-    slot.image.endSampledLayout();
-    shadowPendingMask = 0;
-}
-
-void Graphics::recordPendingGBufferPass() {
-    if (!gbufferPending) return;
-    gbufferPending = false;
-    auto *slot = currentGBufferSlot();
-    if (!slot || !gbufferPipeline || !gbufferRenderPass || !slot->framebuffer) {
-        gbufferPassDraws.clear();
-        return;
-    }
-    auto &cb = currentPresentCb();
-    const uint32_t w = uint32_t(gbufferWidth);
-    const uint32_t h = uint32_t(gbufferHeight);
-    std::array<vk::ClearValue, 4> clears{};
-    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-    clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
-    clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    vk::RenderPassBeginInfo rpBegin{};
-    rpBegin.renderPass = gbufferRenderPass;
-    rpBegin.framebuffer = slot->framebuffer;
-    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
-    rpBegin.clearValueCount = uint32_t(clears.size());
-    rpBegin.pClearValues = clears.data();
-    slot->normal.beginColorAttachment();
-    slot->depthColor.beginColorAttachment();
-    slot->albedo.beginColorAttachment();
-    slot->depth.beginDepthAttachment();
-    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-    setViewportAndScissor(cb, w, h);
-    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
-    bool alphaBound = false;
-    for (const auto &d : gbufferPassDraws) {
-        if (!d.mesh || !d.mesh->gpuHandle) continue;
-        const bool wantAlpha = d.alphaTest && gbufferAlphaPipeline;
-        if (wantAlpha != alphaBound) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                            wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
-            alphaBound = wantAlpha;
-        }
-        auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-        Texture *alb = d.albedo ? d.albedo : whiteTexture;
-        if (alb && alb->gpuHandle && texSetLayout) {
-            auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
-            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout, 0, 1,
-                                  gpuTex->descriptorSet.ptr(), 0, nullptr);
-        }
-        cb.pushConstants(gbufferPipelineLayout,
-                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
-                         sizeof(GBufferPush), &d.push);
-        drawIndexedMesh(cb, *gpuMesh);
-    }
-    cb.endRenderPass();
-    gbufferPassDraws.clear();
-    if (slot) {
-        slot->normal.endSampledLayout();
-        slot->depthColor.endSampledLayout();
-        slot->albedo.endSampledLayout();
-        slot->depth.endSampledLayout();
-    }
-}
-
 bool Graphics::beginSwapchainRenderPass() {
     if (!beginPresentCommandBuffer()) {
         dropPendingOffscreenPasses();
         return false;
     }
-    recordPendingShadowPasses();
-    recordPendingGBufferPass();
+    recordDeferredFrameGraph();
     beginSwapchainColorPass();
     return true;
 }
@@ -673,6 +690,7 @@ void Graphics::recreateSurfaceForResume() {
 
 void Graphics::present() {
     if (!initialized) return;
+    if (headless_) return;
     if (!isActive()) return;
     if (isCanvasActive()) throw Exception("present: cannot present while a Canvas is active");
     if (!isRenderSurfaceReady()) {
