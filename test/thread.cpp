@@ -447,6 +447,31 @@ TEST_CASE("thread.jobsystem.dependencies") {
     delete b;
 }
 
+TEST_CASE("thread.jobsystem.heapDeleteWhileCompletingStress") {
+    // Regression for a heap-use-after-free in releaseDependents: with the
+    // completionDone flag and the dependents-release split across two lock
+    // acquisitions, a waiter could return from wait() and delete the heap job
+    // while the completing worker was still iterating job->dependents (ASan:
+    // voxel.world.cross_chunk_seam_culled). Deleting immediately after wait()
+    // from the waiting thread widens the race; 200 iterations raise the odds.
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(4));
+    std::atomic<int> ran{0};
+    for (int i = 0; i < 200; ++i) {
+        eve::thread::Job *child =
+            js->createJob([&ran] { ran.fetch_add(1, std::memory_order_relaxed); });
+        eve::thread::Job *dependent = js->createJob([] {});
+        dependent->addDependency(child);
+        js->schedule(child);
+        js->schedule(dependent);
+        child->wait();
+        delete child;  // frees the dependents vector while the worker may
+                       // still be in completeJob's tail (pre-fix UAF)
+        dependent->wait();
+        delete dependent;
+    }
+    CHECK_EQ(ran.load(), 200);
+}
+
 TEST_CASE("thread.jobsystem.dependencyOnCompletedJobIsNoOp") {
     std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
     std::atomic<int> counter{0};
