@@ -276,14 +276,32 @@ void main() {
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
 
-    // Screen-space decal layer: premultiplied albedo + coverage (binding 8).
-    // When the decal feature is off this sampler is a 1x1 transparent texture,
-    // so decalCov is 0 and nothing changes.
+    vec3 emissive = vec3(0.0);
+    // Screen-space decal layer (bindings 8/9/10). When the decal feature is
+    // off these samplers are 1x1 placeholders, so every coverage is 0 and
+    // nothing changes. Albedo coverage is the master alpha; normal carries its
+    // own strength-scaled alpha; params damp the stored values by strength.
     vec2 decalUV = gl_FragCoord.xy / vec2(textureSize(decalAlbedoSampler, 0));
     vec4 decalA = texture(decalAlbedoSampler, decalUV);
     float decalCov = clamp(decalA.a, 0.0, 1.0);
     if (decalCov > 0.001) {
-        albedo = mix(albedo, decalA.rgb / max(decalCov, 1e-3), decalCov);
+        albedo = mix(albedo, decalA.rgb, decalCov);
+
+        vec4 decalN = texture(decalNormalSampler, decalUV);
+        float nWeight = clamp(decalN.a, 0.0, 1.0);
+        if (nWeight > 0.001) {
+            vec3 decalNormal = normalize(decalN.rgb * 2.0 - 1.0);
+            N = normalize(mix(N, decalNormal, nWeight));
+        }
+
+        vec4 decalP = texture(decalParamsSampler, decalUV);
+        float pWeight = clamp(decalP.a, 0.0, 1.0);
+        if (pWeight > 0.001) {
+            roughness = mix(roughness, decalP.r, pWeight);
+            metallic = mix(metallic, decalP.g, pWeight);
+            // Emissive: decal color scaled by the params intensity channel.
+            emissive += decalA.rgb * decalP.b;
+        }
     }
 
     vec3 Lo = vec3(0.0);
@@ -344,6 +362,7 @@ void main() {
     }
 
     color = tonemapPeak(color);
+    color += emissive;
 
     float nearZ = max(ubo.clipInfo.x, 1e-4);
     float farZ = max(ubo.clipInfo.y, nearZ + 1e-3);

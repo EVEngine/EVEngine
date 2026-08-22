@@ -30,16 +30,20 @@ int Decal::project(float x, float y, float z, float nx, float ny, float nz,
 
 bool Decal::setStrength(int id, float normalStrength, float roughnessStrength, float metalStrength,
                         float emissiveStrength) {
-    for (auto &d : DecalManager::inst().instances()) {
-        if (d.id == id) {
-            d.normalStrength = normalStrength;
-            d.roughnessStrength = roughnessStrength;
-            d.metalStrength = metalStrength;
-            d.emissiveStrength = emissiveStrength;
-            return true;
-        }
-    }
-    return false;
+    return DecalManager::inst().setStrength(id, normalStrength, roughnessStrength,
+                                            metalStrength, emissiveStrength);
+}
+
+bool Decal::setUvRect(int id, float x, float y, float w, float h) {
+    return DecalManager::inst().setUvRect(id, x, y, w, h);
+}
+
+bool Decal::setTextures(int id, graphics::Texture *normal, graphics::Texture *params) {
+    return DecalManager::inst().setTextures(id, normal, params);
+}
+
+bool Decal::setBlend(int id, const std::string &mode) {
+    return DecalManager::inst().setBlend(id, mode);
 }
 
 bool Decal::remove(int id) { return DecalManager::inst().remove(id); }
@@ -73,6 +77,9 @@ void Decal::expose(ssq::Class &cls) {
     cls.addFunc("getName", &Decal::getName);
     cls.addFunc("project", &Decal::project);
     cls.addFunc("setStrength", &Decal::setStrength);
+    cls.addFunc("setUvRect", &Decal::setUvRect);
+    cls.addFunc("setTextures", &Decal::setTextures);
+    cls.addFunc("setBlend", &Decal::setBlend);
     cls.addFunc("remove", &Decal::remove);
     cls.addFunc("clearAll", &Decal::clearAll);
     cls.addFunc("count", &Decal::count);

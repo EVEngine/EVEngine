@@ -8,6 +8,7 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
+#include "image/ImageData.h"
 #include "window/Window.h"
 
 #include <SDL2/SDL.h>
@@ -90,6 +91,26 @@ TEST_CASE("decal.managerOtherKindNotEvicted") {
                     0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
     CHECK(mgr.count() == 2);
     CHECK(mgr.remove(dirt));
+}
+
+TEST_CASE("decal.managerAtlasBlendSetters") {
+    auto &mgr = DecalManager::inst();
+    mgr.clearAll();
+    const int id = mgr.project(0.f, 0.f, 0.f, 0.f, 1.f, 0.f, nullptr, "", 0.5f, 0.15f, false, 0,
+                               0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+    CHECK(id > 0);
+    CHECK(mgr.setUvRect(id, 0.25f, 0.25f, 0.5f, 0.5f));
+    CHECK(mgr.instances()[0].uvRect[0] == 0.25f);
+    CHECK(mgr.instances()[0].uvRect[3] == 0.5f);
+
+    CHECK(mgr.setBlend(id, "add"));
+    CHECK(mgr.instances()[0].blendMode == 1);
+    CHECK(mgr.setBlend(id, "over"));
+    CHECK(mgr.instances()[0].blendMode == 0);
+    CHECK(!mgr.setBlend(id, "bogus"));  // unknown mode rejected
+
+    CHECK(mgr.setTextures(id, nullptr, nullptr));
+    CHECK(!mgr.setUvRect(99999, 0.f, 0.f, 1.f, 1.f));  // unknown id
 }
 
 TEST_CASE("decal.renderControlFeatureGatesPass") {
@@ -199,4 +220,105 @@ TEST_CASE("decal.gpuProjectBlendsIntoForward") {
 
     DecalManager::inst().clearAll();
     win->close();
+}
+
+// Emissive decals use the additive layer pipeline: a red glow on a dark plane
+// must visibly brighten the screen center vs. the unlit corner.
+TEST_CASE("decal.gpuEmissiveAdditiveGlow") {
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+
+    auto *mesh = makePlane(gfx, 2.f);
+    REQUIRE(mesh != nullptr);
+
+    auto *cam = Camera3D::createCamera();
+    cam->data()->eyeZ = 2.6f;
+
+    auto *ent = Renderable3D::create();
+    ent->meshRenderer()->mesh = mesh;
+    ent->meshRenderer()->texture = makeSolidTex(gfx, 60, 60, 60);  // dark base
+    RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
+
+    static bool sGlowDrawer = false;
+    if (!sGlowDrawer) {
+        sGlowDrawer = true;
+        RenderSystem3D::addDecalExtraDrawer(
+            [](eve::graphics::Graphics &g, const Camera3D::Data &camData,
+               const glm::mat4 &viewProj, float aspect) {
+                DecalManager::inst().drawAll(g, camData, viewProj, aspect);
+            });
+    }
+    gfx->getRenderControl()->enable("decal");
+    gfx->getRenderControl()->compile();
+
+    auto *glowColor = makeSolidTex(gfx, 200, 20, 20);  // red glow color
+    auto *glowParams = makeSolidTex(gfx, 0, 0, 255);   // B = emissive intensity
+    DecalManager::inst().clearAll();
+    const int id = DecalManager::inst().project(0.f, 0.f, 0.f, 0.f, 0.f, 1.f, glowColor, "glow",
+                                                1.2f, 0.1f, false, 0, 0.f, 0.f, 0.f, 0.f, 0.f,
+                                                0.f, 0.f);
+    CHECK(id > 0);
+    CHECK(DecalManager::inst().setTextures(id, nullptr, glowParams));
+    CHECK(DecalManager::inst().setBlend(id, "add"));
+    CHECK(DecalManager::inst().setStrength(id, 0.f, 0.f, 0.f, 1.f));
+
+    gfx->setScreenReadbackEnabled(true);
+    for (int i = 0; i < 3; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+    }
+
+    const int W = gfx->getWidth();
+    const int H = gfx->getHeight();
+    const Color center = gfx->getPixel(W / 2, H / 2);
+    const Color corner = gfx->getPixel(4, 4);
+    CHECK_GT(center.r, corner.r + 0.2f);  // emissive red lifts the center
+    CHECK_GT(center.r - center.g, 0.1f);  // ... toward red, not white
+
+    DecalManager::inst().clearAll();
+    win->close();
+}
+
+// Headless verification of the decal pass itself: queue a G-buffer plane + one
+// decal, then read the DecalLayer back to CPU. Works without a swapchain, so it
+// also runs when the interactive GPU/surface is busy.
+TEST_CASE("decal.gpuHeadlessProjectionReadback") {
+    eve::graphics::Graphics *gfx = nullptr;
+    openHeadlessGfx(gfx, 160, 120);
+
+    auto *mesh = makePlane(gfx, 2.f);
+    REQUIRE(mesh != nullptr);
+    gfx->getRenderControl()->enable("decal");
+    gfx->getRenderControl()->compile();
+
+    gfx->beginGBufferPass(160, 120);
+    gfx->drawMeshGBuffer(mesh, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f,
+                         makeSolidTex(gfx, 255, 255, 255));
+    gfx->endGBufferPass();
+
+    auto *decalTex = makeSolidTex(gfx, 200, 20, 20);
+    gfx->beginDecalPass(160, 120);
+    gfx->setDecalCamera(glm::mat4(1.f), 0.1f, 100.f);
+    // Identity box at the origin covers the screen center.
+    gfx->drawDecal(glm::mat4(1.f), decalTex, nullptr, nullptr, nullptr, 1.f, 0.f, 0.f, 0.f, 0.f);
+    gfx->endDecalPass();
+
+    auto *img = gfx->readDecalLayerToImageData("albedo");
+    REQUIRE(img != nullptr);
+    CHECK_EQ(img->getWidth(), 160);
+    CHECK_EQ(img->getHeight(), 120);
+
+    const uint8_t *px = static_cast<const uint8_t *>(img->getData());
+    auto at = [&](int x, int y) { return px + (size_t(y) * 160u + size_t(x)) * 4u; };
+    const uint8_t *center = at(80, 60);
+    CHECK_GT(center[0], 150);  // red decal written at the center
+    CHECK_LT(center[1], 80);
+    const uint8_t *corner = at(4, 4);
+    CHECK_LT(corner[0], 20);  // outside the unit box -> layer stays cleared
+    delete img;
 }

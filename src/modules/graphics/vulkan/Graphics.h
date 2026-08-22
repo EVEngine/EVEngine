@@ -358,6 +358,7 @@ public:
         const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
         int width, int height) override;
     image::ImageData *readGBufferToImageData(const std::string &name) override;
+    image::ImageData *readDecalLayerToImageData(const std::string &attachment) override;
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
@@ -400,7 +401,7 @@ public:
     void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override;
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
-                   float metalStrength, float emissiveStrength) override;
+                   float metalStrength, float emissiveStrength, int blendMode = 0) override;
     void endDecalPass() override;
 
     Canvas *newCanvas(int width, int height) override;
@@ -450,6 +451,7 @@ private:
     struct DecalSlot;
     struct DecalSetKey;
     struct DecalSetKeyHash;
+    struct GBufferSlot;
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
     void createLit2DPipeline();
@@ -468,6 +470,7 @@ private:
     void createDecalResources(int width, int height);
     void destroyDecalResources();
     void recordDecalPass();
+    void recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBufferSlot &gslot);
     void ensureDecalUnitBox();
     void ensureDecalPlaceholders();
     vkb::BoundSet decalSetFor(DecalSlot &slot, GpuTexture *albedo, GpuTexture *normal,
@@ -989,18 +992,21 @@ private:
 
     // Screen-space decal layer: box-projected decals write albedo/normal/params
     // targets after the G-buffer; mesh3d.frag samples them before lighting.
-    struct DecalPush {
+    /** @brief Per-instance GPU data (std140, matches decal_box.vert). */
+    struct DecalInstanceData {
         glm::mat4 model{1.f};
         glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
         glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};   // fade, normalStrength, roughStrength, metalStrength
         glm::vec4 extraParams{0.f, 0.f, 0.f, 0.f};  // emissiveStrength, blendMode, pad, pad
     };
-    static_assert(sizeof(DecalPush) == 112, "DecalPush push constants must be 112 bytes");
+    static_assert(sizeof(DecalInstanceData) == 112, "DecalInstanceData must be 112 bytes");
     struct DecalCameraUBO {
         glm::mat4 viewProj{1.f};
         glm::mat4 invViewProj{1.f};
         glm::vec4 nearFarTexel{0.1f, 100.f, 0.f, 0.f};  // x=near, y=far, z=1/w, w=1/h
     };
+    /** @brief Hard cap on decal instances per frame (SSBO capacity). */
+    static constexpr size_t kMaxDecalInstances = 512;
     struct DecalDraw {
         glm::mat4 model{1.f};
         Texture *albedo = nullptr;
@@ -1012,6 +1018,7 @@ private:
         float roughnessStrength = 0.f;
         float metalStrength = 0.f;
         float emissiveStrength = 0.f;
+        int blendMode = 0;  // 0 = premultiplied over, 1 = additive (emissive)
     };
     struct DecalSetKey {
         GpuTexture *albedo = nullptr;
@@ -1045,6 +1052,7 @@ private:
         Texture normalTex{};
         Texture paramsTex{};
         vkb::GenericBuffer cameraUbo;  // capacity 1 per frame slot
+        vkb::GenericBuffer instanceBuf;  // kMaxDecalInstances * DecalInstanceData
         std::unordered_map<DecalSetKey, vkb::BoundSet, DecalSetKeyHash> sets;
     };
     int decalWidth = 0;
@@ -1061,6 +1069,7 @@ private:
      *  samples placeholders so stale layer data never leaks in). */
     bool decalLayerFresh = false;
     std::vector<DecalDraw> decalPassDraws;
+    vk::Pipeline lastDecalPipeline = nullptr;
     Mesh *decalUnitBox = nullptr;
     /** @brief 1x1 placeholders for decal atlas slots / layer when feature is off. */
     Texture *decalFlatAlbedo = nullptr;

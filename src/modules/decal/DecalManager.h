@@ -35,6 +35,7 @@ struct DecalInstance {
     float roughnessStrength = 0.f;
     float metalStrength = 0.f;
     float emissiveStrength = 0.f;
+    int blendMode = 0;  // 0 = premultiplied over, 1 = additive (emissive)
     std::string kind;  // quota group ("blood", "dirt", ...)
 };
 
@@ -61,6 +62,11 @@ public:
     bool remove(int id);
     void clearAll();
     int count() const;
+    bool setStrength(int id, float normalStrength, float roughnessStrength, float metalStrength,
+                     float emissiveStrength);
+    bool setUvRect(int id, float x, float y, float w, float h);
+    bool setTextures(int id, graphics::Texture *normal, graphics::Texture *params);
+    bool setBlend(int id, const std::string &mode);
 
     /** @brief Per-kind quota ("blood" -> 64 etc.); oldest of the kind is evicted. */
     void setLimit(const std::string &kind, int limit);

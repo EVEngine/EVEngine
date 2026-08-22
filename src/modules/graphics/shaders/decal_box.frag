@@ -17,12 +17,20 @@ layout(set = 0, binding = 5, std140) uniform Camera {
     vec4 nearFarTexel; // x = near, y = far, z = 1/width, w = 1/height
 } cam;
 
-layout(push_constant) uniform Push {
+struct DecalInstanceData {
     mat4 model;
-    vec4 uvRect;    // atlas region [x, y, w, h]
-    vec4 fadeParams;   // x = fade, y = normalStrength, z = roughStrength, w = metalStrength
-    vec4 extraParams;  // x = emissiveStrength, y = blendMode, z/w unused
-} pc;
+    vec4 uvRect;
+    vec4 fadeParams;
+    vec4 extraParams;
+};
+layout(set = 0, binding = 6, std140) readonly buffer DecalInstances {
+    DecalInstanceData instances[];
+} inst;
+
+layout(location = 0) flat in vec4 vUV;
+layout(location = 1) flat in vec4 vFade;
+layout(location = 2) flat in vec4 vExtra;
+layout(location = 3) flat in int vInstance;
 
 layout(location = 0) out vec4 outAlbedo;
 layout(location = 1) out vec4 outNormal;
@@ -42,33 +50,40 @@ void main() {
     vec3 worldPos = wp.xyz / max(wp.w, 1e-6);
 
     // Decal local space: unit box [-0.5, 0.5]^3, +Z = decal forward.
-    vec4 lp = inverse(pc.model) * vec4(worldPos, 1.0);
+    // Reconstruct the per-instance model on the CPU side is not possible in a
+    // read-only pass, so inverse() is computed here (small boxes only).
+    vec4 lp = inverse(inst.instances[vInstance].model) * vec4(worldPos, 1.0);
     vec3 local = lp.xyz / max(lp.w, 1e-6);
     if (any(greaterThan(abs(local), vec3(0.5)))) discard;
 
     // Backface test: the surface must face the decal projection axis.
     vec3 surfaceN = texture(gbNormalTex, uv).xyz * 2.0 - 1.0;
-    vec3 decalFwd = normalize(mat3(pc.model) * vec3(0.0, 0.0, 1.0));
+    vec3 decalFwd = normalize(mat3(inst.instances[vInstance].model) * vec3(0.0, 0.0, 1.0));
     if (dot(surfaceN, decalFwd) < 0.1) discard;
 
     vec2 decalUV = clamp(local.xy + 0.5, 0.0, 1.0);
-    vec2 atl = pc.uvRect.xy + decalUV * pc.uvRect.zw;
+    vec2 atl = vUV.xy + decalUV * vUV.zw;
     vec4 alb = texture(decalAlbedo, atl);
     vec4 nrm = texture(decalNormal, atl);
     vec4 prm = texture(decalParams, atl);
 
-    float cov = alb.a * clamp(pc.fadeParams.x, 0.0, 1.0);
+    float cov = alb.a * clamp(vFade.x, 0.0, 1.0);
     // Feather the box edges so decals do not show a hard rectangle.
     vec2 edge = smoothstep(vec2(0.0), vec2(0.06), decalUV) *
                 smoothstep(vec2(1.0), vec2(0.94), decalUV);
     cov *= edge.x * edge.y;
     if (cov <= 0.001) discard;
 
-    // Premultiplied contributions; per-channel strengths baked per decal.
-    outAlbedo = vec4(alb.rgb * cov, cov);
-    outNormal = vec4(nrm.rgb * cov * clamp(pc.fadeParams.y, 0.0, 1.0), cov);
-    outParams = vec4(prm.r * cov * clamp(pc.fadeParams.z, 0.0, 1.0),
-                     prm.g * cov * clamp(pc.fadeParams.w, 0.0, 1.0),
-                     prm.b * cov * clamp(pc.extraParams.x, 0.0, 1.0),
+    // Non-premultiplied "over" contributions (alpha-over compositing in the
+    // layer, decoded directly in mesh3d.frag); strengths damp the values.
+    outAlbedo = vec4(alb.rgb, cov);
+    // Normal: value is premultiplied by coverage, weight is coverage * strength.
+    // step() zeroes the value when strength is 0 so additive-mode decals never
+    // pollute the accumulated normal with the flat placeholder.
+    outNormal = vec4(nrm.rgb * step(0.001, vFade.y), cov * clamp(vFade.y, 0.0, 1.0));
+    // Params: strengths damp the stored target values; coverage rides in alpha.
+    outParams = vec4(prm.r * clamp(vFade.z, 0.0, 1.0),
+                     prm.g * clamp(vFade.w, 0.0, 1.0),
+                     prm.b * clamp(vExtra.x, 0.0, 1.0),
                      cov);
 }

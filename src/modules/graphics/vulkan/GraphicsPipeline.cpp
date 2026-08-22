@@ -864,6 +864,9 @@ void Graphics::createDecalResources(int decalW, int decalH) {
         slot.params = device.createColorTarget(w, h, colorFmt);
         slot.cameraUbo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer,
                                 sizeof(DecalCameraUBO), kHostVisibleCoherent);
+        slot.instanceBuf.allocate(
+            frameToken(), device, vk::BufferUsageFlagBits::eStorageBuffer,
+            vk::DeviceSize(kMaxDecalInstances) * sizeof(DecalInstanceData), kHostVisibleCoherent);
     }
 
     auto decalPass =
@@ -900,36 +903,19 @@ void Graphics::createDecalResources(int decalW, int decalH) {
                    vk::ShaderStageFlagBits::eFragment, 1)
             .buffer(5, vk::DescriptorType::eUniformBufferDynamic,
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
+            .buffer(6, vk::DescriptorType::eStorageBuffer,
+                    vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     decalSetLayout = *decalSetLayoutUnique;
-    const auto pcr =
-        pushConstantRange(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
-                          sizeof(DecalPush));
-    decalPipelineLayout = createPipelineLayout(device, decalSetLayout, &pcr);
+    decalPipelineLayout = createPipelineLayout(device, decalSetLayout);
 
     std::vector<uint32_t> vert(decal_box_vert_spv, decal_box_vert_spv + decal_box_vert_spv_count);
     std::vector<uint32_t> frag(decal_box_frag_spv, decal_box_frag_spv + decal_box_frag_spv_count);
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
 
-    // Premultiplied-alpha "over" accumulation for the three layer targets.
-    vk::PipelineColorBlendAttachmentState premul{};
-    premul.colorWriteMask =
-        vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-        vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-    premul.blendEnable = true;
-    premul.srcColorBlendFactor = vk::BlendFactor::eOne;
-    premul.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-    premul.colorBlendOp = vk::BlendOp::eAdd;
-    premul.srcAlphaBlendFactor = vk::BlendFactor::eOne;
-    premul.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-    premul.alphaBlendOp = vk::BlendOp::eAdd;
-    const std::array<vk::PipelineColorBlendAttachmentState, 3> premulAtts = {premul, premul,
-                                                                             premul};
-    vk::PipelineColorBlendStateCreateInfo blendInfo{};
-    blendInfo.attachmentCount = uint32_t(premulAtts.size());
-    blendInfo.pAttachments = premulAtts.data();
-
+    // Alpha-over compositing for the three layer targets (non-premultiplied
+    // decal output; the shader writes rgb + coverage in alpha).
     decalPipeline = device.createPipeline()
                         .useClassicPipeline(vertModule, fragModule)
                         .setPipelineLayout(decalPipelineLayout)
@@ -941,7 +927,7 @@ void Graphics::createDecalResources(int decalW, int decalH) {
                                        vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
                         .setMultisampler(false, vk::SampleCountFlagBits::e1)
                         .setDepthStencil(false, false, vk::CompareOp::eAlways)
-                        .setColorBlending(blendInfo)
+                        .setAlphaBlending(3)
                         .build(decalPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
@@ -986,6 +972,7 @@ void Graphics::destroyDecalResources() {
         destroySampler(device, slot.normalGpu.sampler);
         destroySampler(device, slot.paramsGpu.sampler);
         slot.cameraUbo.release();
+        slot.instanceBuf.release();
         slot.sets.clear();
     }
     decalSlots.clear();
@@ -1031,6 +1018,8 @@ vkb::BoundSet Graphics::decalSetFor(DecalSlot &slot, GpuTexture *albedo, GpuText
         .image(vkb::SampledImage::forLaterSample(gbNormal->sampler, gbNormal->imageView()))
         .beginBuffers(5, 0, vk::DescriptorType::eUniformBufferDynamic)
         .buffer(slot.cameraUbo.buffer, 0, slot.cameraUbo.size)
+        .beginBuffers(6, 0, vk::DescriptorType::eStorageBuffer)
+        .buffer(slot.instanceBuf.buffer, 0, slot.instanceBuf.size)
         .update(device.instance);
 
     vkb::BoundSet bound = std::move(unbound).publish();

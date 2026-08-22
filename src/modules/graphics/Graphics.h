@@ -593,7 +593,7 @@ public:
     virtual void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                            Texture *params, const float uvRect[4], float fade,
                            float normalStrength, float roughnessStrength, float metalStrength,
-                           float emissiveStrength) = 0;
+                           float emissiveStrength, int blendMode = 0) = 0;
     virtual void endDecalPass() = 0;
 
     /**
@@ -659,6 +659,16 @@ public:
      * Caller owns the returned ImageData*. Returns nullptr when unsupported.
      */
     virtual image::ImageData *readGBufferToImageData(const std::string &attachment) {
+        (void)attachment;
+        return nullptr;
+    }
+    /**
+     * @brief Read back a DecalLayer attachment ("albedo" | "normal" | "params")
+     * to CPU. Renders the pending G-buffer + decal passes in one immediate
+     * submit first, so it also works headless (no swapchain). Nullptr when
+     * unsupported or no resources.
+     */
+    virtual image::ImageData *readDecalLayerToImageData(const std::string &attachment) {
         (void)attachment;
         return nullptr;
     }

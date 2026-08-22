@@ -10,13 +10,26 @@ layout(set = 0, binding = 5, std140) uniform Camera {
     vec4 nearFarTexel; // x = near, y = far, z = 1/width, w = 1/height
 } cam;
 
-layout(push_constant) uniform Push {
+struct DecalInstanceData {
     mat4 model;
-    vec4 uvRect;    // atlas region [x, y, w, h]
-    vec4 fadeParams;   // x = fade, y = normalStrength, z = roughStrength, w = metalStrength
-    vec4 extraParams;  // x = emissiveStrength, y = blendMode, z/w unused
-} pc;
+    vec4 uvRect;      // atlas region [x, y, w, h]
+    vec4 fadeParams;  // x = fade, y = normalStrength, z = roughStrength, w = metalStrength
+    vec4 extraParams; // x = emissiveStrength, y = blendMode, z/w unused
+};
+layout(set = 0, binding = 6, std140) readonly buffer DecalInstances {
+    DecalInstanceData instances[];
+} inst;
+
+layout(location = 0) flat out vec4 vUV;
+layout(location = 1) flat out vec4 vFade;
+layout(location = 2) flat out vec4 vExtra;
+layout(location = 3) flat out int vInstance;
 
 void main() {
-    gl_Position = cam.viewProj * pc.model * vec4(aPos, 1.0);
+    DecalInstanceData d = inst.instances[gl_InstanceIndex];
+    gl_Position = cam.viewProj * d.model * vec4(aPos, 1.0);
+    vUV = d.uvRect;
+    vFade = d.fadeParams;
+    vExtra = d.extraParams;
+    vInstance = gl_InstanceIndex;
 }

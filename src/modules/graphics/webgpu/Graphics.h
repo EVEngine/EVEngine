@@ -260,10 +260,10 @@ public:
     }
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
-                   float metalStrength, float emissiveStrength) override {
+                   float metalStrength, float emissiveStrength, int blendMode = 0) override {
         (void)model; (void)albedo; (void)normal; (void)params; (void)uvRect;
         (void)fade; (void)normalStrength; (void)roughnessStrength; (void)metalStrength;
-        (void)emissiveStrength;
+        (void)emissiveStrength; (void)blendMode;
     }
     void endDecalPass() override {}
 

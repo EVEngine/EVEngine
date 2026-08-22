@@ -659,7 +659,7 @@ void Graphics::setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ
 void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                          Texture *params, const float uvRect[4], float fade,
                          float normalStrength, float roughnessStrength, float metalStrength,
-                         float emissiveStrength) {
+                         float emissiveStrength, int blendMode) {
     if (!decalPassActive) throw Exception("drawDecal: call beginDecalPass first");
     DecalDraw d{};
     d.model = model;
@@ -674,6 +674,8 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
     d.roughnessStrength = roughnessStrength;
     d.metalStrength = metalStrength;
     d.emissiveStrength = emissiveStrength;
+    d.blendMode = blendMode == 1 ? 1 : 0;
+    if (decalPassDraws.size() >= kMaxDecalInstances) return;  // SSBO capacity guard
     decalPassDraws.push_back(d);
 }
 
@@ -705,6 +707,10 @@ void Graphics::recordDecalPass() {
     }
 
     auto &cb = currentPresentCb();
+    recordDecalPassInto(cb, *slot, *gslot);
+}
+
+void Graphics::recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBufferSlot &gslot) {
     const uint32_t w = uint32_t(decalWidth);
     const uint32_t h = uint32_t(decalHeight);
     if (w == 0 || h == 0) {
@@ -717,18 +723,18 @@ void Graphics::recordDecalPass() {
     cam.invViewProj = glm::inverse(decalViewProj);
     cam.nearFarTexel =
         glm::vec4(decalNear, decalFar, 1.f / float(w), 1.f / float(h));
-    updateRingLocal(slot->cameraUbo, 0, &cam, sizeof(cam));
+    updateRingLocal(slot.cameraUbo, 0, &cam, sizeof(cam));
 
-    slot->albedo.beginColorAttachment();
-    slot->normal.beginColorAttachment();
-    slot->params.beginColorAttachment();
+    slot.albedo.beginColorAttachment();
+    slot.normal.beginColorAttachment();
+    slot.params.beginColorAttachment();
     std::array<vk::ClearValue, 3> clears{};
     clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
     clears[1].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
     clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
     vk::RenderPassBeginInfo rpBegin{};
     rpBegin.renderPass = decalRenderPass;
-    rpBegin.framebuffer = slot->framebuffer;
+    rpBegin.framebuffer = slot.framebuffer;
     rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
     rpBegin.clearValueCount = uint32_t(clears.size());
     rpBegin.pClearValues = clears.data();
@@ -740,6 +746,20 @@ void Graphics::recordDecalPass() {
     ensureDecalPlaceholders();
     auto *gpuMesh = static_cast<GpuMesh *>(decalUnitBox->gpuHandle);
     const uint32_t dynOffset = 0;
+
+    // Group draws by (atlas textures, blend mode) so each group is one
+    // instanced draw call; per-instance data lives in the slot SSBO.
+    struct DrawGroup {
+        GpuTexture *albedo = nullptr;
+        GpuTexture *normal = nullptr;
+        GpuTexture *params = nullptr;
+        int blendMode = 0;
+        uint32_t first = 0;
+        uint32_t count = 0;
+    };
+    std::vector<DrawGroup> groups;
+    std::vector<DecalInstanceData> instances;
+    instances.reserve(decalPassDraws.size());
     for (const auto &d : decalPassDraws) {
         GpuTexture *gpuAlb = d.albedo && d.albedo->gpuHandle
                                  ? static_cast<GpuTexture *>(d.albedo->gpuHandle)
@@ -750,27 +770,48 @@ void Graphics::recordDecalPass() {
         GpuTexture *gpuPrm = d.params && d.params->gpuHandle
                                  ? static_cast<GpuTexture *>(d.params->gpuHandle)
                                  : static_cast<GpuTexture *>(decalFlatParams->gpuHandle);
-        vkb::BoundSet set = decalSetFor(*slot, gpuAlb, gpuNrm, gpuPrm, &gslot->depthGpu,
-                                        &gslot->normalGpu);
+        auto groupIt = std::find_if(groups.begin(), groups.end(), [&](const DrawGroup &g) {
+            return g.albedo == gpuAlb && g.normal == gpuNrm && g.params == gpuPrm &&
+                   g.blendMode == d.blendMode;
+        });
+        if (groupIt == groups.end()) {
+            groups.push_back(
+                DrawGroup{gpuAlb, gpuNrm, gpuPrm, d.blendMode, uint32_t(instances.size()), 0});
+            groupIt = groups.end() - 1;
+        }
+        DecalInstanceData inst{};
+        inst.model = d.model;
+        inst.uvRect = glm::vec4(d.uvRect[0], d.uvRect[1], d.uvRect[2], d.uvRect[3]);
+        inst.fadeParams =
+            glm::vec4(d.fade, d.normalStrength, d.roughnessStrength, d.metalStrength);
+        inst.extraParams = glm::vec4(d.emissiveStrength, float(d.blendMode), 0.f, 0.f);
+        instances.push_back(inst);
+        ++groupIt->count;
+    }
+    if (!instances.empty()) {
+        updateRingLocal(slot.instanceBuf, 0, instances.data(),
+                        vk::DeviceSize(instances.size()) * sizeof(DecalInstanceData));
+    }
+    lastDecalPipeline = nullptr;
+    for (const auto &g : groups) {
+        vkb::BoundSet set =
+            decalSetFor(slot, g.albedo, g.normal, g.params, &gslot.depthGpu, &gslot.normalGpu);
+        if (decalPipeline != lastDecalPipeline) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, decalPipeline);
+            lastDecalPipeline = decalPipeline;
+        }
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0, 1,
                               set.ptr(), 1, &dynOffset);
-
-        DecalPush push{};
-        push.model = d.model;
-        push.uvRect = glm::vec4(d.uvRect[0], d.uvRect[1], d.uvRect[2], d.uvRect[3]);
-        push.fadeParams =
-            glm::vec4(d.fade, d.normalStrength, d.roughnessStrength, d.metalStrength);
-        push.extraParams = glm::vec4(d.emissiveStrength, 0.f, 0.f, 0.f);
-        cb.pushConstants(decalPipelineLayout,
-                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
-                         sizeof(push), &push);
-        drawIndexedMesh(cb, *gpuMesh);
+        const vk::DeviceSize vboffset = 0;
+        cb.bindVertexBuffers(0, 1, meshDrawVertices(*gpuMesh), &vboffset);
+        cb.bindIndexBuffer(meshDrawIndices(*gpuMesh).buffer, 0, gpuMesh->indexType);
+        cb.drawIndexed(gpuMesh->indexCount, g.count, 0, 0, g.first);
     }
     decalPassDraws.clear();
     cb.endRenderPass();
-    slot->albedo.endSampledLayout();
-    slot->normal.endSampledLayout();
-    slot->params.endSampledLayout();
+    slot.albedo.endSampledLayout();
+    slot.normal.endSampledLayout();
+    slot.params.endSampledLayout();
 }
 
 void Graphics::ensureDefaultEnvCubemap() {

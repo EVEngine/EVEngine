@@ -35,6 +35,12 @@ public:
     /** @brief Per-channel blend strengths for a live decal (0 disables). */
     bool setStrength(int id, float normalStrength, float roughnessStrength, float metalStrength,
                      float emissiveStrength);
+    /** @brief Atlas region [x, y, w, h] (normalized) for a live decal. */
+    bool setUvRect(int id, float x, float y, float w, float h);
+    /** @brief Optional normal / params (roughness, metallic, emissive) textures. */
+    bool setTextures(int id, graphics::Texture *normal, graphics::Texture *params);
+    /** @brief Blend mode: "over" (default) or "add" (emissive). */
+    bool setBlend(int id, const std::string &mode);
     bool remove(int id);
     void clearAll();
     int count();
