@@ -747,6 +747,57 @@ TEST_CASE("cmdline.buildAndroidSkipsTemplateBuildOutputs") {
     std::filesystem::remove_all(out, ec);
 }
 
+TEST_CASE("cmdline.packageUsesTargetSdkRuntimeAndBundledDlls") {
+    // 跨平台打包：win32 SDK 的包用 eve.exe + SDK 内置的运行时 DLL；linux SDK
+    // 的包用 eve。宿主是哪个平台不应影响产物。
+    const auto game = tempDir("eve_ut_cmdline_pkg_game");
+    writeFile(game / "main.nut", "eve_init = function() {}\n");
+
+    // win32 目标 SDK：运行时 + 内置 DLL（vulkan 加载器 / VC 运行库）。
+    const auto winSdk = tempDir("eve_ut_cmdline_pkg_sdk_win32");
+    writeFile(winSdk / "share" / "eve" / "TARGET_PLATFORM", "win32\n");
+    writeFile(winSdk / "bin" / "eve.exe", "win runtime");
+    writeFile(winSdk / "bin" / "vulkan-1.dll", "loader");
+    writeFile(winSdk / "bin" / "vcruntime140.dll", "crt");
+    const auto winOut = tempDir("eve_ut_cmdline_pkg_out_win32");
+    {
+        CaptureStreams cap;
+        const int      rc = runCli(
+            {"eve", "package", game.string(), "--sdk", winSdk.string(), "-o", winOut.string()});
+        REQUIRE(rc == 0);
+        std::error_code ec;
+        REQUIRE(std::filesystem::is_regular_file(winOut / "eve.exe", ec));
+        REQUIRE(std::filesystem::is_regular_file(winOut / "vulkan-1.dll", ec));
+        REQUIRE(std::filesystem::is_regular_file(winOut / "vcruntime140.dll", ec));
+        REQUIRE(std::filesystem::is_regular_file(winOut / "game.eve", ec));
+        REQUIRE(!std::filesystem::exists(winOut / "eve", ec));
+        CHECK(cap.out().find("eve.exe") != std::string::npos);
+    }
+
+    // linux 目标 SDK：运行时名是 eve（不是宿主平台的 eve.exe）。
+    const auto linSdk = tempDir("eve_ut_cmdline_pkg_sdk_linux");
+    writeFile(linSdk / "share" / "eve" / "TARGET_PLATFORM", "linux\n");
+    writeFile(linSdk / "bin" / "eve", "linux runtime");
+    const auto linOut = tempDir("eve_ut_cmdline_pkg_out_linux");
+    {
+        CaptureStreams cap;
+        const int      rc = runCli(
+            {"eve", "package", game.string(), "--sdk", linSdk.string(), "-o", linOut.string()});
+        REQUIRE(rc == 0);
+        std::error_code ec;
+        REQUIRE(std::filesystem::is_regular_file(linOut / "eve", ec));
+        REQUIRE(std::filesystem::is_regular_file(linOut / "game.eve", ec));
+        REQUIRE(!std::filesystem::exists(linOut / "eve.exe", ec));
+    }
+
+    std::error_code ec;
+    std::filesystem::remove_all(game, ec);
+    std::filesystem::remove_all(winSdk, ec);
+    std::filesystem::remove_all(winOut, ec);
+    std::filesystem::remove_all(linSdk, ec);
+    std::filesystem::remove_all(linOut, ec);
+}
+
 TEST_CASE("cmdline.getUnsupportedPlatformFails") {
     CaptureStreams cap;
     const int      rc = runCli({"eve", "get", "ios"});
