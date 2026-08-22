@@ -650,7 +650,7 @@ jobs:
           # CTEST_JOBS=2: Lavapipe renders several window/GPU tests in
           # parallel; -j4 hits a pre-existing race (voxel.render.sceneHillsIsland
           # SEGFAULT) that is not reproducible in isolation.
-          xvfb-run -a make test/linux-debug CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2
 
       - name: Run headless GPU tests without Xvfb
         timeout-minutes: 15
@@ -670,14 +670,14 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a bash scripts/smoke_examples.sh
+          xvfb-run -a -s "-screen 0 1280x800x24" bash scripts/smoke_examples.sh
 
       - name: DevLab developer-experience test (hot reload + DevTools)
         timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a bash scripts/test_devlab.sh "$PWD/build/linux-debug/src/engine/eve"
+          xvfb-run -a -s "-screen 0 1280x800x24" bash scripts/test_devlab.sh "$PWD/build/linux-debug/src/engine/eve"
 
   linux-release:
     name: Linux (Release)
@@ -743,7 +743,7 @@ jobs:
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
-        run: xvfb-run -a make test/linux
+        run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
 
   linux-asan:
     name: Linux (ASan+UBSan)
@@ -813,7 +813,7 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a make test/linux-asan CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-asan CTEST_JOBS=2
 
   linux-coverage:
     name: Linux (Coverage)
@@ -878,7 +878,7 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a make test/linux-coverage CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-coverage CTEST_JOBS=2
 
       - name: Generate coverage report
         timeout-minutes: 10
