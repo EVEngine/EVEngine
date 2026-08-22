@@ -654,6 +654,19 @@ jobs:
           # SEGFAULT) that is not reproducible in isolation.
           xvfb-run -a make test/linux-debug CTEST_JOBS=2
 
+      - name: Run headless GPU tests without Xvfb
+        timeout-minutes: 15
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VIEW_SECONDS: "0.3"
+          EVENGINE_PERF_FRAMES: "30"
+        run: |
+          # The headless GPU suites must run without any display server,
+          # proving the headless-vs-window policy in docs/dev/测试覆盖.md §0.
+          # (These files never create an SDL window: canvas/device readback only.)
+          ctest --test-dir build/linux-debug --output-on-failure -j 2 \
+            -R '^bundle/(graphics_font|TextureSampler|gpgpu|tensor|virtualgeometry_gpu|graphics_headless)\.cpp$'
+
       - name: Smoke all examples (headless)
         timeout-minutes: 20
         env:
