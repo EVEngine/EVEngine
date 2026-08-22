@@ -138,7 +138,9 @@ PYEOF
 
 # Launcher must be the game host (regression guard for the EVTestActivity bug).
 if [ -n "${ANDROID_HOME:-}" ]; then
-  AAPT="$(find "$ANDROID_HOME/build-tools" -name 'aapt' -o -name 'aapt.exe' 2>/dev/null | sort -V | tail -1)"
+  # set -o pipefail would abort on a missing build-tools dir; the launcher
+  # check is best-effort so the failure mode is a WARN, not a hard exit.
+  AAPT="$(find "$ANDROID_HOME/build-tools" -name 'aapt' -o -name 'aapt.exe' 2>/dev/null | sort -V | tail -1 || true)"
   if [ -n "$AAPT" ] && "$AAPT" dump badging "$APK" 2>/dev/null | grep -q 'launchable-activity.*EVEngineActivity'; then
     echo "OK: APK launcher = EVEngineActivity"
   else
