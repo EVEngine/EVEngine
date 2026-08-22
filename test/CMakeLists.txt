@@ -331,6 +331,7 @@ set(EVELIBS
   EVTensor
   EVNetwork
   EVDatabase
+  EVEconomy
   EVData
   EVI18n
   EVSound
