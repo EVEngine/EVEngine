@@ -37,4 +37,5 @@ eve run examples/weather
 | `rpg` | <img src="rpg.png" width="360"> | 2D 地牢生存 RPG：属性 / 效果 / 状态 / 技能 / 结算五套系统 | `eve run examples/rpg` |
 
 > 提示：更多示例见 `examples/`，部分示例以交互为主（如编辑器、卡牌、对话），
-> 静态截图不足以体现其交互性，因此未收录在本画廊中。
+> 静态截图不足以体现其交互性，因此未收录在本画廊中。`voxel`（体素流式地形 +
+> 建造/破坏）同样是交互式示例，由 `scripts/smoke_examples.sh` 在 CI 冒烟覆盖。

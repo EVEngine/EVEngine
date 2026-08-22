@@ -8,6 +8,7 @@ Evolutionary Vision Engine
 
 ## Documentation
 
+- Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.md) — every screenshot is a real presented frame written by the engine itself.
 - [Game developer docs](docs/usr/README.md): download the engine, create and run a game, debug, and publish; the [module handbook](docs/usr/MODULES.md) covers the script APIs and examples one by one.
 - [Online API reference (Doxygen)](https://evengine.github.io/EVEngine/): published continuously to GitHub Pages; includes the C++ API and the user manual.
 - [Engine developer docs](docs/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
