@@ -175,8 +175,9 @@ std::filesystem::path fakeSdkRoot(const char* tag, const char* platform) {
 }
 
 // A fake gradle distribution whose launcher records the invocation and writes
-// the APK output that `eve build android` checks for.
-void writeFakeGradle(const std::filesystem::path& gradleHome) {
+// the APK output that `eve build android` checks for. unsignedOnly mimics a
+// release build without a signing config (AGP emits app-release-unsigned.apk).
+void writeFakeGradle(const std::filesystem::path& gradleHome, bool unsignedOnly = false) {
     const auto bin = gradleHome / "bin";
     std::error_code ec;
     std::filesystem::create_directories(bin, ec);
@@ -186,14 +187,18 @@ void writeFakeGradle(const std::filesystem::path& gradleHome) {
               "echo FAKE_GRADLE %* > gradle-invoked.txt\r\n"
               "mkdir app\\build\\outputs\\apk\\release 2>nul\r\n"
               "mkdir app\\build\\outputs\\apk\\debug 2>nul\r\n"
-              "echo ok > app\\build\\outputs\\apk\\release\\app-release.apk\r\n"
+              "echo ok > app\\build\\outputs\\apk\\release\\" +
+                  std::string(unsignedOnly ? "app-release-unsigned.apk" : "app-release.apk") +
+                  "\r\n"
               "echo ok > app\\build\\outputs\\apk\\debug\\app-debug.apk\r\n");
 #else
     writeFile(bin / "gradle",
               "#!/bin/sh\n"
               "echo \"FAKE_GRADLE $*\" > gradle-invoked.txt\n"
               "mkdir -p app/build/outputs/apk/release app/build/outputs/apk/debug\n"
-              "echo ok > app/build/outputs/apk/release/app-release.apk\n"
+              "echo ok > app/build/outputs/apk/release/" +
+                  std::string(unsignedOnly ? "app-release-unsigned.apk" : "app-release.apk") +
+                  "\n"
               "echo ok > app/build/outputs/apk/debug/app-debug.apk\n");
     std::filesystem::permissions(bin / "gradle",
                                  std::filesystem::perms::owner_all |
@@ -347,13 +352,13 @@ TEST_CASE("cmdline.buildAndroidAssemblesApkFromSdk") {
 
     // Game assets + prebuilt libs + sdk.dir landed in the assembled project.
     std::error_code ec;
-    CHECK(std::filesystem::is_regular_file(
+    REQUIRE(std::filesystem::is_regular_file(
         out / "apk" / "app" / "src" / "main" / "assets" / "game" / "main.nut", ec));
-    CHECK(std::filesystem::is_regular_file(
+    REQUIRE(std::filesystem::is_regular_file(
         out / "apk" / "app" / "src" / "main" / "assets" / "game" / "scripts" / "a.nut", ec));
-    CHECK(std::filesystem::is_regular_file(
+    REQUIRE(std::filesystem::is_regular_file(
         out / "apk" / "app" / "src" / "main" / "jniLibs" / "arm64-v8a" / "libmain.so", ec));
-    CHECK(std::filesystem::is_regular_file(
+    REQUIRE(std::filesystem::is_regular_file(
         out / "apk" / "app" / "src" / "main" / "jniLibs" / "arm64-v8a" / "libSDL2.so", ec));
     REQUIRE(std::filesystem::is_regular_file(out / "apk" / "local.properties", ec));
     {
@@ -372,7 +377,7 @@ TEST_CASE("cmdline.buildAndroidAssemblesApkFromSdk") {
         std::getline(in, s);
         CHECK(s.find("assembleRelease") != std::string::npos);
     }
-    CHECK(cap.out().find("app-release.apk") != std::string::npos);
+    REQUIRE(cap.out().find("app-release.apk") != std::string::npos);
 
     // Debug variant picks the assembleDebug task.
     CaptureStreams cap2;
@@ -385,7 +390,7 @@ TEST_CASE("cmdline.buildAndroidAssemblesApkFromSdk") {
         std::getline(in, s);
         CHECK(s.find("assembleDebug") != std::string::npos);
     }
-    CHECK(cap2.out().find("app-debug.apk") != std::string::npos);
+    REQUIRE(cap2.out().find("app-debug.apk") != std::string::npos);
 
     std::filesystem::remove_all(sdk, ec);
     std::filesystem::remove_all(tools, ec);
@@ -401,6 +406,32 @@ TEST_CASE("cmdline.buildWrongSdkPlatformFails") {
     CHECK(cap.all().find("not android") != std::string::npos);
     std::error_code ec;
     std::filesystem::remove_all(sdk, ec);
+}
+
+TEST_CASE("cmdline.buildAndroidReportsUnsignedApk") {
+    const auto sdk   = fakeSdkRoot("eve_ut_cmdline_sdk_unsigned", "android");
+    const auto tools = tempDir("eve_ut_cmdline_android_tools_unsigned");
+    writeFakeGradle(tools / "gradle-8.5", /*unsignedOnly=*/true);
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", tools.string());
+    ScopedEnv javaEnv("JAVA_HOME", tools.string());
+    ScopedEnv gradleEnv("GRADLE_HOME", (tools / "gradle-8.5").string());
+
+    const auto game = tempDir("eve_ut_cmdline_game_unsigned");
+    writeFile(game / "main.nut", "eve_init = function() {}\n");
+    const auto out = tempDir("eve_ut_cmdline_apk_out_unsigned");
+
+    CaptureStreams cap;
+    const int      rc = runCli(
+        {"eve", "build", "android", game.string(), "--sdk", sdk.string(), "-o", out.string()});
+    REQUIRE(rc == 0);
+    REQUIRE(cap.out().find("app-release-unsigned.apk") != std::string::npos);
+    REQUIRE(cap.out().find("unsigned") != std::string::npos);
+
+    std::error_code ec;
+    std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(tools, ec);
+    std::filesystem::remove_all(game, ec);
+    std::filesystem::remove_all(out, ec);
 }
 
 TEST_CASE("cmdline.buildMissingPlatformFails") {

@@ -441,7 +441,9 @@ void copyOne(const std::filesystem::path& from, const std::filesystem::path& to,
             it.disable_recursion_pending();
             continue;
         }
-        const auto dst = (contentsOnly ? to : to / rel);
+        // 无论是否 contentsOnly，目标都按相对路径落位（contentsOnly 时 to 就是
+        // 目标根目录，rel 相对源根目录）。
+        const auto dst = to / rel;
         if (it->is_directory()) {
             std::filesystem::create_directories(dst, ec);
         } else if (it->is_regular_file()) {

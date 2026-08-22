@@ -221,16 +221,32 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
         return 4;
     }
 
-    // 6. 输出 APK 路径。
+    // 6. 输出 APK 路径（release 未配置签名时 AGP 产出 app-release-unsigned.apk）。
     const std::string variant = debug ? "debug" : "release";
-    const fs::path apk = fs::path(apkDir) / "app" / "build" / "outputs" / "apk" / variant /
-                         ("app-" + variant + ".apk");
-    if (!fs::is_regular_file(apk, ec)) {
-        cerr << rang::fg::yellow << "note: gradle finished but no APK found at " << apk.string()
+    fs::path apk;
+    {
+        std::vector<std::string> names = {"app-" + variant + ".apk"};
+        if (!debug) names.push_back("app-release-unsigned.apk");
+        for (const auto& n : names) {
+            const fs::path candidate = fs::path(apkDir) / "app" / "build" / "outputs" / "apk" /
+                                       variant / n;
+            if (fs::is_regular_file(candidate, ec)) {
+                apk = candidate;
+                break;
+            }
+        }
+    }
+    if (apk.empty()) {
+        cerr << rang::fg::yellow
+             << "note: gradle finished but no APK found under "
+             << (fs::path(apkDir) / "app" / "build" / "outputs" / "apk").string()
              << rang::fg::reset << endl;
         return 0;
     }
-    cout << rang::fg::green << "Built APK -> " << rang::fg::reset << apk.string() << endl;
+    cout << rang::fg::green << "Built APK -> " << rang::fg::reset << apk.string();
+    if (apk.filename() == "app-release-unsigned.apk")
+        cout << " (unsigned; add a signing config to release properly)";
+    cout << endl;
     return 0;
 }
 
