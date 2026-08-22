@@ -313,7 +313,7 @@ WidgetDesc progress(float fraction, std::string id, std::string overlay) {
 }
 
 WidgetDesc combo(std::string label, std::vector<std::string> options, int selected,
-                 std::string id, std::function<void(int)> onValue) {
+                 std::string id, std::function<void(float)> onValue) {
     WidgetDesc d;
     d.type = NodeType::Combo;
     d.id = std::move(id);

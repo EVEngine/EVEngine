@@ -481,9 +481,9 @@ void DebugAdapter::handleRequest(const std::string& json) {
         if (command == "launch" || command == "attach") {
             if (args) {
                 // Prefer explicit cwd / program from the VS Code launch config.
-                std::string root = args->optValue<std::string>("cwd", "");
-                if (root.empty()) root = args->optValue<std::string>("program", "");
-                if (!root.empty()) setSourceRoot(std::move(root));
+                std::string cwd = args->optValue<std::string>("cwd", "");
+                if (cwd.empty()) cwd = args->optValue<std::string>("program", "");
+                if (!cwd.empty()) setSourceRoot(std::move(cwd));
                 stopOnEntry_ = args->optValue<bool>("stopOnEntry", false);
             }
             sendMessage(makeResponse(0, reqSeq, command, true, "{}"));
@@ -527,7 +527,7 @@ void DebugAdapter::handleRequest(const std::string& json) {
                 auto arr = args->getArray("breakpoints");
                 if (arr) {
                     for (size_t i = 0; i < arr->size(); ++i) {
-                        auto bp = arr->getObject(i);
+                        auto bp = arr->getObject(static_cast<unsigned int>(i));
                         if (!bp) continue;
                         const int line = bp->optValue<int>("line", 0);
                         const std::string condition =
@@ -768,7 +768,8 @@ void DebugAdapter::handleRequest(const std::string& json) {
                 auto filters = args->getArray("filters");
                 if (filters) {
                     for (size_t i = 0; i < filters->size(); ++i) {
-                        const std::string f = filters->get(i).convert<std::string>();
+                        const std::string f =
+                            filters->get(static_cast<unsigned int>(i)).convert<std::string>();
                         if (f == "all" || f == "uncaught" || f == "script_error" ||
                             f == "runtime_error") {
                             on = true;

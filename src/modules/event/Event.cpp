@@ -39,11 +39,11 @@ void Event::push(Message* msg) {
     wakeWaiters();
 }
 
-void Event::pushData(std::string name, std::string data) {
+void Event::pushData(std::string eventName, std::string data) {
     std::vector<Variant> args;
     if (!data.empty())
         args.push_back(Variant::makeString(std::move(data)));
-    push(new Message(std::move(name), args));
+    push(new Message(std::move(eventName), args));
 }
 
 Message* Event::poll() {

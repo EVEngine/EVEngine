@@ -92,7 +92,7 @@ public:
      * @param external Bool for whether
      * Android should use external file storage.
      **/
-    virtual void setAndroidSaveExternal(bool useExternal = false) { this->useExternal = useExternal; }
+    virtual void setAndroidSaveExternal(bool external = false) { this->useExternal = external; }
 
     /**
      * @brief Gets whether the Android save is external.

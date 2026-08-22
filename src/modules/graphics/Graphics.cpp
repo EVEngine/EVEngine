@@ -152,7 +152,9 @@ void Graphics::render3D() {
 }
 
 void Graphics::renderScene3DToCanvas(Canvas *canvas, Camera3D *camera) {
+    pushValidationScope();
     RenderSystem3D::renderToCanvas(*this, canvas, camera);
+    popValidationScope();
 }
 
 Shader* Graphics::prepareSceneColorResolveShader(Texture* scene) {
@@ -728,6 +730,7 @@ void Graphics::expose(ssq::Class& cls) {
                                    int, ssq::Array, int)>(updateMeshVerticesScript));
     cls.addFunc("bakeMeshMorph", &Graphics::bakeMeshMorph);
     cls.addFunc("newShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShader));
+    cls.addFunc("newShaderFromWgsl", &Graphics::newShaderFromWgsl);
     cls.addFunc("newMeshShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newMeshShader));
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);

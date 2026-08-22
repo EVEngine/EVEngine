@@ -32,7 +32,7 @@ inline bool rawDeflate(const char* in, size_t inLen, std::vector<char>& out) {
     if (deflateInit2(&stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -15, 8, Z_DEFAULT_STRATEGY) != Z_OK)
         return false;
 
-    out.resize(inLen > 0 ? static_cast<size_t>(deflateBound(&stream, inLen)) : 1024);
+    out.resize(inLen > 0 ? static_cast<size_t>(deflateBound(&stream, static_cast<uLong>(inLen))) : 1024);
 
     stream.next_out  = reinterpret_cast<Bytef*>(out.data());
     stream.avail_out = static_cast<uInt>(out.size());

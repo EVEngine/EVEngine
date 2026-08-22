@@ -47,11 +47,20 @@ option(EVENGINE_ENABLE_ASSERTS
     "Keep zeroerr ASSERT checks (parameter validation, invariants) in non-Debug builds.
      Debug builds always enable them; this option is for Release-style builds."
     OFF)
+option(EVENGINE_ENABLE_STRICT_WARNINGS
+    "Treat compiler warnings as errors on EVEngine's own targets.
+     GCC/Clang: -Wall -Wextra -Werror (unused-parameter and
+     missing-field-initializers are suppressed until the legacy callback API
+     and Vulkan aggregate-init debt are cleaned up).
+     MSVC: /W4 /WX.
+     Third-party targets are not affected."
+    OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
 message("Build Android test app: " ${EVENGINE_ANDROID_TEST_APP})
 message("Build iOS test app: " ${EVENGINE_IOS_TEST_APP})
 message("Enable asserts in non-Debug builds: " ${EVENGINE_ENABLE_ASSERTS})
+message("Enable strict warnings (warnings as errors): " ${EVENGINE_ENABLE_STRICT_WARNINGS})
 if (CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
 endif()
@@ -90,6 +99,83 @@ function(main)
         # /bigobj: /GL (LTO, check_ipo()) puts every function into a COMDAT section,
         # and large TUs (e.g. Graphics.cpp) exceed the default COFF section limit (C1128).
         add_compile_options(/utf-8 /EHsc /FS /bigobj)
+    endif()
+
+    # Strict-warnings gate. Applied through the shared INTERFACE target so every
+    # engine module, platform library and test runner inherits it while
+    # third-party (ExternalProject / add_subdirectory deps) stays untouched.
+    # Enabled by CI via -DEVENGINE_ENABLE_STRICT_WARNINGS=ON; local opt-in:
+    #   make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+    if(EVENGINE_ENABLE_STRICT_WARNINGS)
+        target_compile_options(eve_engine_includes INTERFACE
+            $<$<CXX_COMPILER_ID:MSVC>:/W4>
+            $<$<CXX_COMPILER_ID:MSVC>:/WX>
+            # C4251/C4275: STL members/base classes in __declspec(dllexport)
+            # classes are safe with MSVC's own STL; the warnings are noise for
+            # an engine DLL. C4100 mirrors the GCC side's -Wno-unused-parameter:
+            # callback APIs keep unused parameters for stability until the
+            # legacy interface is cleaned up. C4244 loss-of-data conversions
+            # stay enabled and are fixed at the call sites.
+            # /external:W0 silences warnings from third-party headers marked
+            # with eve_external_include() (defined below), so /W4 /WX applies
+            # only to EVEngine's own code.
+            # _CRT_SECURE_NO_WARNINGS: the engine deliberately uses standard C
+            # APIs (getenv, etc.) for portability; MSVC's secure-CRT
+            # deprecations are reviewed in code review instead of forcing
+            # _s variants at every call site.
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4251>
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4275>
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4100>
+            # C4702: unreachable code emitted by third-party header-only code
+            # (vkbuilder.hpp) at flow-analysis level; engine-side dead code is
+            # removed at the call sites instead.
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4702>
+            # C4456/4457/4458: "declaration hides class member" family. The
+            # legacy codebase pervasively names parameters after the member they
+            # set (setWidth(int width) etc.); renaming ~60+ call sites is a
+            # dedicated cleanup PR, not a gate blocker. C4244/C4267/C4099/
+            # C4389/C4189 stay enabled and are fixed at the call sites.
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4456>
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4457>
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4458>
+            $<$<CXX_COMPILER_ID:MSVC>:/external:W0>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wextra>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Werror>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-unused-parameter>
+            # -Wno-unused-function: shared per-TU helper headers (GraphicsInternal.h,
+            # SceneInternal.h, ...) deliberately give every including TU its own
+            # internal copy, so a helper unused in one TU is structural, not a
+            # defect. Unused variables and unused-but-set stay enabled.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-unused-function>
+            # Third-party template headers (simplesquirrel) emit these during
+            # instantiation in engine TUs. The third-party install root stays a
+            # plain -I (marking it -isystem would demote it below the Vulkan SDK
+            # -I and flip which <vulkan/vulkan.hpp> wins, breaking VKBuilder),
+            # so the leaks cannot be silenced per-directory on GCC and are
+            # downgraded from errors to warnings here. Engine-side instances of
+            # these warnings are still reported.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-variable>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-but-set-parameter>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=sign-compare>
+            # Poco::Data Date/Time implicit-copy deprecations and
+            # -Wdelete-non-virtual-dtor (the ECS.hpp base Entity has virtuals
+            # but no virtual dtor) fire from third-party headers during template
+            # instantiation in engine TUs; same treatment as above.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=deprecated-copy>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=delete-non-virtual-dtor>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-missing-field-initializers>)
+        target_compile_definitions(eve_engine_includes INTERFACE
+            $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
+            # POSIX-name deprecations (fileno etc.) are the same category as
+            # the secure-CRT warnings above; the ISO C++ name is used where
+            # practical.
+            $<$<CXX_COMPILER_ID:MSVC>:_CRT_NONSTDC_NO_WARNINGS>)
+        # Vendored third-party source roots (third-party/Box2D, imgui, ...) are
+        # external for warning purposes. Safe on GCC: the third-party install
+        # tree stays a plain -I and is searched first, so the vendored
+        # vulkan.hpp still beats the SDK's.
+        eve_external_include(${CMAKE_SOURCE_DIR}/third-party)
     endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
@@ -312,6 +398,30 @@ macro(create_module libname folder)
 endmacro()
 
 
+# Mark a third-party include root as "external" for strict builds, so the
+# warning-as-error flags stay scoped to EVEngine's own code:
+#   MSVC: /external:I + /external:W0 (does not change search order)
+#   GCC/Clang: -isystem (suppresses header warnings from template
+#              instantiations), except the third-party install tree: on GCC a
+#              directory listed in both -I and -isystem has its -I entry
+#              ignored and is searched after every -I, which would flip which
+#              <vulkan/vulkan.hpp> wins (the vendored 261 must beat the SDK's).
+function(eve_external_include dir)
+    if(EVENGINE_ENABLE_STRICT_WARNINGS)
+        if(MSVC)
+            target_compile_options(eve_engine_includes INTERFACE "/external:I${dir}")
+        else()
+            # The third-party install tree stays a plain -I on GCC (see the
+            # function comment); everything else (external/*, header-only
+            # vendored roots) can be marked system without reordering.
+            if(NOT dir MATCHES "third-party-binary")
+                target_compile_options(eve_engine_includes INTERFACE "-isystem${dir}")
+            endif()
+        endif()
+    endif()
+endfunction()
+
+
 # This function will set the include directories for the project
 function(set_include)
     target_include_directories(eve_engine_includes INTERFACE
@@ -340,7 +450,18 @@ function(set_include)
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
             # Dungeon Template Library (header-only)
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+        # Third-party headers are external for warning purposes on strict
+        # builds (vendored header-only libraries).
+        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include)
+        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include)
+        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
     endif()
+    # Third-party headers are external for warning purposes on MSVC strict
+    # builds (submodule / vendored header-only libraries).
+    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src)
+    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp)
+    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include)
+    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include)
 
     # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.
     # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
@@ -736,15 +857,18 @@ function(check_third_party_project name repo)
         endif()
         add_custom_target(${name})
         target_include_directories(eve_engine_includes INTERFACE "${_eve_tp_binary}/include")
+        eve_external_include("${_eve_tp_binary}/include")
         # SDL2 and FreeType install their public headers one level below include/.
         # Their sources use <SDL.h> and <ft2build.h>, so expose those roots too.
         if(IS_DIRECTORY "${_eve_tp_binary}/include/SDL2")
             target_include_directories(eve_engine_includes INTERFACE
                 "${_eve_tp_binary}/include/SDL2")
+            eve_external_include("${_eve_tp_binary}/include/SDL2")
         endif()
         if(IS_DIRECTORY "${_eve_tp_binary}/include/freetype2")
             target_include_directories(eve_engine_includes INTERFACE
                 "${_eve_tp_binary}/include/freetype2")
+            eve_external_include("${_eve_tp_binary}/include/freetype2")
         endif()
         target_link_directories(eve_engine_includes INTERFACE "${_eve_tp_binary}/lib")
         message(STATUS "third-party: using read-only prebuilt tree ${_eve_tp_binary}")
@@ -881,6 +1005,8 @@ function(check_third_party_project name repo)
     endif()
     target_include_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
+    eve_external_include(
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     target_link_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
 endfunction()
@@ -918,6 +1044,7 @@ function(load_third_party)
         endif()
         message(STATUS "third-party: using read-only prebuilt install ${_eve_prebuilt_tp}")
         target_include_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/include")
+        eve_external_include("${_eve_prebuilt_tp}/include")
         target_link_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/lib")
         set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL
             "Use installed third-party prefix" FORCE)

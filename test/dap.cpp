@@ -738,7 +738,7 @@ TEST_CASE("devtools.dap.uncaughtErrorPausesAtThrowSite") {
     REQUIRE(scopes);
     int localsRef = -1;
     for (size_t i = 0; i < scopes->size(); ++i) {
-        auto s = scopes->getObject(i);
+        auto s = scopes->getObject(static_cast<unsigned int>(i));
         if (s->optValue<std::string>("name", "") == "Locals")
             localsRef = s->optValue<int>("variablesReference", -1);
     }
@@ -751,7 +751,7 @@ TEST_CASE("devtools.dap.uncaughtErrorPausesAtThrowSite") {
     REQUIRE(vars);
     bool foundX = false;
     for (size_t i = 0; i < vars->size(); ++i) {
-        auto vv = vars->getObject(i);
+        auto vv = vars->getObject(static_cast<unsigned int>(i));
         if (vv->optValue<std::string>("name", "") == "x" &&
             vv->optValue<std::string>("value", "").find("1") != std::string::npos)
             foundX = true;
@@ -998,7 +998,7 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     REQUIRE(scopes);
     int localsRef = -1;
     for (size_t i = 0; i < scopes->size(); ++i) {
-        auto s = scopes->getObject(i);
+        auto s = scopes->getObject(static_cast<unsigned int>(i));
         if (s->optValue<std::string>("name", "") == "Locals")
             localsRef = s->optValue<int>("variablesReference", -1);
     }
@@ -1012,7 +1012,7 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     REQUIRE(vars);
     bool foundO1 = false;
     for (size_t i = 0; i < vars->size(); ++i) {
-        auto vv = vars->getObject(i);
+        auto vv = vars->getObject(static_cast<unsigned int>(i));
         const std::string name = vv->optValue<std::string>("name", "");
         if (name == "o1" && vv->optValue<std::string>("value", "").find("99") !=
                                 std::string::npos)
@@ -1032,7 +1032,7 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     int tabRef = -1;
     int arrRef = -1;
     for (size_t i = 0; i < innerVars->size(); ++i) {
-        auto vv = innerVars->getObject(i);
+        auto vv = innerVars->getObject(static_cast<unsigned int>(i));
         const std::string name = vv->optValue<std::string>("name", "");
         if (name == "tab") tabRef = vv->optValue<int>("variablesReference", -1);
         if (name == "arr") arrRef = vv->optValue<int>("variablesReference", -1);
@@ -1054,7 +1054,7 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     REQUIRE(tabVars);
     bool foundX = false;
     for (size_t i = 0; i < tabVars->size(); ++i) {
-        auto vv = tabVars->getObject(i);
+        auto vv = tabVars->getObject(static_cast<unsigned int>(i));
         if (vv->optValue<std::string>("name", "") == "x" &&
             vv->optValue<std::string>("value", "").find("5") != std::string::npos)
             foundX = true;

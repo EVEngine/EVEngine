@@ -49,16 +49,22 @@ Uint32 messageBoxFlag(const std::string& type) {
 }  // namespace
 
 Window::Window() : open(false) {
+#if defined(__EMSCRIPTEN__)
+    // Bind SDL keyboard to the render canvas instead of the whole window, so
+    // typing in the playground editor / REPL never reaches the game. The
+    // canvas must be focused (tabindex + click) to deliver keys.
+    SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "canvas");
+#endif
     if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
         throw Exception("Could not initialize SDL video subsystem (%s)", SDL_GetError());
 }
 
 Window::~Window() { SDL_QuitSubSystem(SDL_INIT_VIDEO); }
 
-void Window::setSize(int width, int height) {
+void Window::setSize(int w, int h) {
     WindowSettings f = settings;
-    f.width          = width;
-    f.height         = height;
+    f.width          = static_cast<uint16_t>(w);
+    f.height         = static_cast<uint16_t>(h);
 
     setWindowSettings(f);
 }
@@ -76,8 +82,8 @@ bool Window::setWindowSettings(WindowSettings f) {
     if (f.width == 0 || f.height == 0) {
         SDL_DisplayMode mode = {};
         SDL_GetDesktopDisplayMode(f.display, &mode);
-        f.width  = mode.w;
-        f.height = mode.h;
+        f.width  = static_cast<uint16_t>(mode.w);
+        f.height = static_cast<uint16_t>(mode.h);
     }
 
     Uint32 sdlflags = 0;
@@ -434,20 +440,20 @@ std::vector<Window::WindowSize> Window::getFullscreenSizes(int display) const {
     return out;
 }
 
-void Window::getDesktopDimensions(int display, int& width, int& height) const {
-    width = height = 0;
+void Window::getDesktopDimensions(int display, int& outWidth, int& outHeight) const {
+    outWidth = outHeight = 0;
     if (display < 0 || display >= getDisplayCount()) return;
     SDL_DisplayMode mode = {};
     if (SDL_GetDesktopDisplayMode(display, &mode) == 0) {
-        width  = mode.w;
-        height = mode.h;
+        outWidth  = mode.w;
+        outHeight = mode.h;
     }
 }
 
-bool Window::showMessageBox(const std::string& title, const std::string& message,
+bool Window::showMessageBox(const std::string& caption, const std::string& message,
                             const std::string& type, bool attachToWindow) {
     SDL_Window* parent = (attachToWindow && window) ? window : nullptr;
-    return SDL_ShowSimpleMessageBox(messageBoxFlag(type), title.c_str(), message.c_str(), parent) == 0;
+    return SDL_ShowSimpleMessageBox(messageBoxFlag(type), caption.c_str(), message.c_str(), parent) == 0;
 }
 
 int Window::showMessageBoxData(const MessageBoxData& data) {
@@ -484,8 +490,8 @@ void Window::requestAttention(bool continuous) {
 #endif
 }
 
-bool Window::setIconRGBA(const uint8_t* rgba, int width, int height) {
-    if (!rgba || width <= 0 || height <= 0) return false;
+bool Window::setIconRGBA(const uint8_t* rgba, int w, int h) {
+    if (!rgba || w <= 0 || h <= 0) return false;
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     const Uint32 rmask = 0xFF000000;
@@ -500,7 +506,7 @@ bool Window::setIconRGBA(const uint8_t* rgba, int width, int height) {
 #endif
 
     SDL_Surface* surface =
-        SDL_CreateRGBSurfaceFrom(const_cast<uint8_t*>(rgba), width, height, 32, width * 4, rmask, gmask, bmask, amask);
+        SDL_CreateRGBSurfaceFrom(const_cast<uint8_t*>(rgba), w, h, 32, w * 4, rmask, gmask, bmask, amask);
     if (!surface) {
         throw Exception("Could not create window icon surface: %s", SDL_GetError());
     }
@@ -510,13 +516,13 @@ bool Window::setIconRGBA(const uint8_t* rgba, int width, int height) {
 
     SDL_FreeSurface(surface);
 
-    iconRgba.assign(rgba, rgba + static_cast<size_t>(width) * height * 4);
-    iconWidth  = width;
-    iconHeight = height;
+    iconRgba.assign(rgba, rgba + static_cast<size_t>(w) * h * 4);
+    iconWidth  = w;
+    iconHeight = h;
 
 #ifdef EVENGINE_MACOSX
     // SDL only updates the titlebar/mini window icon on macOS; refresh the Dock icon too.
-    eve::macosx::setIconRGBA(rgba, width, height);
+    eve::macosx::setIconRGBA(rgba, w, h);
 #endif
 
     return true;
@@ -543,7 +549,6 @@ bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowfla
 
     if (!window) {
         throw Exception("Window Create Failed: %s", SDL_GetError());
-        return false;
     }
 
     return true;

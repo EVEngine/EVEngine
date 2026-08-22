@@ -107,7 +107,7 @@ public:
 
     void setName(const std::string &name);
     const std::string &getName();
-    void setOwnerId(uint32_t id) { meta()->ownerId = id; }
+    void setOwnerId(uint32_t ownerId) { meta()->ownerId = ownerId; }
     uint32_t getOwnerId() { return meta()->ownerId; }
 
     /** @brief Full replace. */
@@ -158,8 +158,8 @@ public:
     void markTransformDirty() { tree()->transformDirty = true; }
     /** @brief Mark a node's subtree for world recompute (recompute it + descendants). */
     void markSubtreeDirty(int nodeIndex);
-    void markSubtreeDirtyById(const std::string &id) {
-        markSubtreeDirty(findIndexById(id));
+    void markSubtreeDirtyById(const std::string &nodeId) {
+        markSubtreeDirty(findIndexById(nodeId));
     }
     void invalidateIndex() { tree()->indexValid = false; }
 

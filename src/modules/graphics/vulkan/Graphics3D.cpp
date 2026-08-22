@@ -122,10 +122,10 @@ void Graphics::begin3DFrame() {
 }
 
 void Graphics::ensureOffscreen3DResources() {
-    auto &device = getDevice();
+    auto &dev = getDevice();
     if (!offscreen3DRenderPass) {
         offscreen3DRenderPass =
-            device.createRenderPass()
+            dev.createRenderPass()
                 .addSampledColorAttachment(vk::Format::eR8G8B8A8Unorm)
                 .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
                                     vk::AttachmentStoreOp::eDontCare)
@@ -142,27 +142,27 @@ void Graphics::ensureOffscreen3DResources() {
     if (!offscreen3DPool) {
         vk::CommandPoolCreateInfo poolInfo{};
         poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
-        offscreen3DPool = device->createCommandPool(poolInfo);
+        offscreen3DPool = dev->createCommandPool(poolInfo);
         vk::CommandBufferAllocateInfo allocInfo{};
         allocInfo.commandPool = offscreen3DPool;
         allocInfo.level = vk::CommandBufferLevel::ePrimary;
         allocInfo.commandBufferCount = 1;
-        auto bufs = device->allocateCommandBuffers(allocInfo);
+        auto bufs = dev->allocateCommandBuffers(allocInfo);
         offscreen3DCB = bufs[0];
         vk::FenceCreateInfo fenceInfo{};
         fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;  // first wait passes immediately
-        offscreen3DFence = device->createFence(fenceInfo);
+        offscreen3DFence = dev->createFence(fenceInfo);
     }
 }
 
 void Graphics::destroyOffscreen3DResources() {
-    auto &device = getDevice();
+    auto &dev = getDevice();
     if (offscreen3DFence) {
-        device->destroyFence(offscreen3DFence);
+        dev->destroyFence(offscreen3DFence);
         offscreen3DFence = nullptr;
     }
     if (offscreen3DPool) {
-        device->destroyCommandPool(offscreen3DPool);
+        dev->destroyCommandPool(offscreen3DPool);
         offscreen3DPool = nullptr;
     }
     offscreen3DCB = nullptr;
@@ -497,7 +497,7 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
 
 void Graphics::setMesh3DNormalTexture(Texture *normal) { mesh3dNormalTexture = normal; }
 
-void Graphics::setMesh3DHeightTexture(Texture *height) { mesh3dHeightTexture = height; }
+void Graphics::setMesh3DHeightTexture(Texture *heightTex) { mesh3dHeightTexture = heightTex; }
 
 void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
 
@@ -555,13 +555,13 @@ void Graphics::endShadowPass() {
     // ping-pong copy for this frame slot.
 }
 
-void Graphics::beginGBufferPass(int width, int height) {
+void Graphics::beginGBufferPass(int w, int h) {
     ASSERT(initialized);
     if (!initialized) throw Exception("beginGBufferPass: graphics not initialized");
-    if (width <= 0 || height <= 0) throw Exception("beginGBufferPass: invalid size");
+    if (w <= 0 || h <= 0) throw Exception("beginGBufferPass: invalid size");
     if (!texSetLayout || !descriptorPool)
         throw Exception("beginGBufferPass: textured descriptor layout not ready");
-    createGBufferResources(width, height);
+    createGBufferResources(w, h);
     gbufferPassActive = true;
     gbufferPassDraws.clear();
 }

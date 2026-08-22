@@ -20,7 +20,7 @@ bool readViaPhysFS(const char* path, std::string& out) {
     if (!f) return false;
     const PHYSFS_uint64 len = PHYSFS_fileLength(f);
     out.resize(static_cast<size_t>(len));
-    if (len > 0 && PHYSFS_readBytes(f, out.data(), len) != len) {
+    if (len > 0 && PHYSFS_readBytes(f, out.data(), len) != static_cast<PHYSFS_sint64>(len)) {
         PHYSFS_close(f);
         out.clear();
         return false;

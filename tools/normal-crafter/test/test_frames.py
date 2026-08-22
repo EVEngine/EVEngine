@@ -2,7 +2,6 @@ import os
 import tempfile
 
 import numpy as np
-import pytest
 
 from normal_crafter.frames import (
     _frame_number,

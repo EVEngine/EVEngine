@@ -14,7 +14,6 @@ The fixed task prompt lives here so consumers do not repeat it; a per-scene
 
 from __future__ import annotations
 
-import base64
 import json
 import re
 from typing import Optional, Sequence

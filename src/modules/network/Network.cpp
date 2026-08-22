@@ -29,19 +29,6 @@ namespace eve::network {
 
 namespace {
 
-void callScript1(const ssq::Object& obj, const std::string& s) {
-    if (obj.isEmpty()) return;
-    ssq::Function f = obj.toFunction();
-    if (f.isEmpty()) return;
-    HSQUIRRELVM raw = f.getHandle();
-    SQInteger top = sq_gettop(raw);
-    sq_pushobject(raw, f.getRaw());
-    sq_pushroottable(raw);
-    ssq::detail::pushValue(raw, s);
-    sq_call(raw, 2, SQFalse, SQTrue);
-    sq_settop(raw, top);
-}
-
 void callScript2(const ssq::Object& obj, int64_t a, const std::string& s) {
     if (obj.isEmpty()) return;
     ssq::Function f = obj.toFunction();

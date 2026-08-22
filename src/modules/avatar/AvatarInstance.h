@@ -1,7 +1,9 @@
 #pragma once
 
+#include <functional>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace eve::graphics {
@@ -50,6 +52,9 @@ using Live2DBackendFactory = ILive2DBackend *(*)();
  */
 class AvatarInstance {
 public:
+    /** @brief Callback fired exactly once, when the instance is destroyed. */
+    using DestroyHook = std::function<void(AvatarInstance *)>;
+
     explicit AvatarInstance(std::string kind);
     ~AvatarInstance();
 
@@ -89,6 +94,11 @@ public:
     void sync();
 
     void release();
+
+    /** @brief Register a destruction hook; returns an id usable with removeDestroyHook(). */
+    size_t addDestroyHook(DestroyHook hook);
+    /** @brief Remove a previously registered destruction hook. */
+    void removeDestroyHook(size_t id);
 
     // ---- image kind ----
     bool addLayer(const std::string &name, graphics::Texture *texture, int zIndex);
@@ -165,6 +175,8 @@ private:
     // image
     std::vector<Layer> layers_;
     std::unordered_map<std::string, std::string> expressionDefs_;
+    std::vector<std::pair<size_t, DestroyHook>> destroyHooks_;
+    size_t nextDestroyHookId_ = 0;
 
     // live2d
     ILive2DBackend *live2d_ = nullptr;

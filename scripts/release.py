@@ -499,7 +499,6 @@ def cmd_start(
         raise SystemExit(1)
 
     new_text = write_version(text, incoming.official())
-    changed = new_text != text
     _store_cmake(runner, cmake_path, new_text, dry_run=dry_run)
     touched = ["CMakeLists.txt"]
     touched += sync_version_files(repo_root, incoming.official(), dry_run=dry_run)

@@ -245,11 +245,11 @@ Color Graphics::getPixel(int x, int y) {
 
 image::ImageData *Graphics::renderEntityIdMask(
     const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
-    int width, int height) {
-    if (!initialized || width <= 0 || height <= 0) return nullptr;
+    int maskW, int maskH) {
+    if (!initialized || maskW <= 0 || maskH <= 0) return nullptr;
     // G-buffer pipeline / render pass are created lazily by createGBufferResources,
     // so that must run before the availability check.
-    createGBufferResources(width, height);
+    createGBufferResources(maskW, maskH);
     if (!gbufferPipeline || !gbufferRenderPass) return nullptr;
     auto *slot = currentGBufferSlot();
     if (!slot || !slot->framebuffer || !whiteTexture) return nullptr;
@@ -279,8 +279,8 @@ image::ImageData *Graphics::renderEntityIdMask(
     }
     if (idDraws.empty()) return nullptr;
 
-    const uint32_t w = uint32_t(width);
-    const uint32_t h = uint32_t(height);
+    const uint32_t w = uint32_t(maskW);
+    const uint32_t h = uint32_t(maskH);
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
                                vk::MemoryPropertyFlagBits::eHostVisible |
@@ -354,16 +354,16 @@ image::ImageData *Graphics::renderEntityIdMask(
     return img;
 }
 
-image::ImageData *Graphics::readGBufferToImageData(const std::string &name) {
+image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment) {
     if (!initialized) return nullptr;
     auto *slot = currentGBufferSlot();
     if (!slot) return nullptr;
     vkb::ColorTarget *src = nullptr;
-    if (name == "depth")
+    if (attachment == "depth")
         src = &slot->depthColor;  // RGBA8 linear depth
-    else if (name == "normal")
+    else if (attachment == "normal")
         src = &slot->normal;
-    else if (name == "albedo")
+    else if (attachment == "albedo")
         src = &slot->albedo;
     else
         return nullptr;
@@ -1009,11 +1009,11 @@ vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
     return bound;
 }
 
-void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
+void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline litPipeline,
                               std::vector<LitBatch> &batches,
                               std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex,
                               bool offscreen) {
-    if (!pipeline || batches.empty() || !lit2dPipelineLayout) return;
+    if (!litPipeline || batches.empty() || !lit2dPipelineLayout) return;
     lighting2dFrame.meta.y = float(viewW);
     lighting2dFrame.meta.z = float(viewH);
     vkb::GenericBuffer &ubo = offscreen ? offscreenLighting2dUbo : currentLighting2dUbo();
@@ -1039,7 +1039,7 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pi
         vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
         vk::DescriptorSet set = lit2dSetFor(albedoGpu, normalGpu, offscreen);
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, litPipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, lit2dPipelineLayout, 0, 1, &set, 0,
                               nullptr);
         vk::DeviceSize offset = 0;
@@ -1207,6 +1207,11 @@ Shader *Graphics::newMeshShader(const std::string &vertGlsl, const std::string &
 Shader *Graphics::newMeshShaderFromWgsl(const std::string &, const std::string &) {
     throw Exception("newMeshShaderFromWgsl: WGSL mesh shaders are only supported on the "
                     "WebGPU backend; use newMeshShaderFromSpv on Vulkan.");
+}
+
+Shader *Graphics::newShaderFromWgsl(const std::string &, const std::string &) {
+    throw Exception("newShaderFromWgsl: WGSL shaders are only supported on the WebGPU "
+                    "backend; use newShaderFromSpv on Vulkan.");
 }
 
 void Graphics::flushBatch() {

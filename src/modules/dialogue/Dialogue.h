@@ -6,6 +6,7 @@
 #include <squirrel.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -251,6 +252,7 @@ private:
         std::string id;
         std::string displayName;
         avatar::AvatarInstance *avatar = nullptr;
+        std::optional<size_t> avatarHook;  // destroy-hook id on the bound avatar
         std::string slot;
         bool shown = false;
     };

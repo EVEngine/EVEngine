@@ -23,7 +23,6 @@ constexpr float kSkyCubeSize = 64;         // per-face resolution of the procedu
 constexpr int kMaxFireflies = 8;
 
 // Night light names (script-facing) — index maps to the Impl flags array.
-const char *kNames[] = {"moonlight", "starlight", "fire", "fireflies"};
 
 inline float deg2rad(float d) { return d * kPi / 180.f; }
 
@@ -353,9 +352,11 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
         const int bucket = int(elevDeg) + int(azimDeg / 4.f) * 1000;
         if (bucket != impl_->lastSkyBucket) {
             impl_->lastSkyBucket = bucket;
-            std::vector<uint8_t> faces(size_t(kSkyCubeSize) * kSkyCubeSize * 4 * 6);
+            std::vector<uint8_t> faces(
+                size_t(kSkyCubeSize) * size_t(kSkyCubeSize) * 4 * 6);
             for (int f = 0; f < 6; ++f) {
-                std::vector<uint8_t> face(size_t(kSkyCubeSize) * kSkyCubeSize * 4);
+                std::vector<uint8_t> face(
+                    size_t(kSkyCubeSize) * size_t(kSkyCubeSize) * 4);
                 fillSkyFace(face, int(kSkyCubeSize), f, impl_->sunDir,
                             impl_->sunEnergy, nightAmount, cubeDir);
                 std::memcpy(faces.data() + size_t(f) * face.size(), face.data(), face.size());

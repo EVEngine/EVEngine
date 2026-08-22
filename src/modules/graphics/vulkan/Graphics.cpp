@@ -151,7 +151,7 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
         std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
     }
 #endif
-    for (auto *name : extNames) builder.enable_extension(name);
+    for (auto *extName : extNames) builder.enable_extension(extName);
     // No window / no surface: create a truly headless instance so the device
     // selector does not demand a presentable queue family or a VkSurfaceKHR.
     if (nativeWindow == nullptr) builder.set_headless(true);

@@ -176,7 +176,7 @@ std::vector<VariableInfo> enumerateAt(HSQUIRRELVM vm, SQInteger idx) {
     std::vector<VariableInfo> out;
     const SQObjectType t = sq_gettype(vm, idx);
     const SQInteger top  = sq_gettop(vm);
-    const int absIdx     = idx < 0 ? top + static_cast<int>(idx) + 1 : static_cast<int>(idx);
+    const int absIdx     = idx < 0 ? static_cast<int>(top) + static_cast<int>(idx) + 1 : static_cast<int>(idx);
 
     if (t == OT_ARRAY) {
         const SQInteger size = sq_getsize(vm, idx);
@@ -237,7 +237,7 @@ std::vector<VariableInfo> enumerateAt(HSQUIRRELVM vm, SQInteger idx) {
 
     if (t == OT_INSTANCE) {
         sq_getclass(vm, absIdx);  // class at top
-        const int clsAbs = sq_gettop(vm);
+        const int clsAbs = static_cast<int>(sq_gettop(vm));
         sq_pushinteger(vm, 0);
         while (SQ_SUCCEEDED(sq_next(vm, clsAbs))) {
             const SQChar* s = nullptr;
@@ -855,7 +855,7 @@ bool Debugger::pushPathValue(HSQUIRRELVM vm, VarKind kind, int frame,
     const size_t start = (kind == VarKind::Globals) ? 0 : 1;
     for (size_t i = start; i < path.size(); ++i) {
         const SQInteger before = sq_gettop(vm);
-        const int curAbs       = before;
+        const int curAbs       = static_cast<int>(before);
         sq_pushstring(vm, path[i].c_str(), -1);
         if (SQ_FAILED(sq_get(vm, curAbs))) {
             sq_settop(vm, top);

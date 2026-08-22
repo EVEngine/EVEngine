@@ -14,7 +14,7 @@ Rules (as specified):
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from .protocol import EMPTY_MODEL_RESULT, ModelResult, ProblemRegion, ProblemType
 
@@ -60,7 +60,6 @@ class RuleOutcome:
 
 def evaluate(geometry: str, prompt: str, model_regions: List[ProblemRegion]) -> RuleOutcome:
     """Combine geometry hint + model perception into a deterministic rating."""
-    ctx = RuleContext(geometry=geometry, prompt=prompt, model_regions=model_regions)
     out = RuleOutcome()
     road_present = _geometry_mentions_road(geometry)
 

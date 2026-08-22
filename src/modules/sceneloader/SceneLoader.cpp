@@ -16,6 +16,8 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "animation/AnimImporter.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/AnimClip.h"
 #include "thread/ThreadPool.h"
 #include "common/ECS.h"
 #include "common/Resource.h"

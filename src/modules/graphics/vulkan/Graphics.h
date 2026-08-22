@@ -183,6 +183,10 @@ struct GpuShader {
 
 class Graphics final : public eve::graphics::Graphics {
 public:
+    // Keep the base draw(Drawable*, mat4) overload visible alongside the
+    // canvas composite overloads below.
+    using eve::graphics::Graphics::draw;
+
     ~Graphics() override;
 
     std::string getBackendName() const override;
@@ -327,6 +331,8 @@ public:
                                  const std::vector<uint32_t> &fragSpv) override;
     Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
                                   const std::string &fragWgsl) override;
+    Shader *newShaderFromWgsl(const std::string &vertWgsl,
+                              const std::string &fragWgsl) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
@@ -369,6 +375,7 @@ public:
                          float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DClusteredActive(bool active) override;
+    void setMesh3DSSAO(float intensity) override { (void)intensity; }
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;
