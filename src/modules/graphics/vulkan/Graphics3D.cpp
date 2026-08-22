@@ -72,7 +72,9 @@ void Graphics::begin3DFrame() {
     // settling after orientation change; throwing would abort the whole script.
     if (!beginPresentCommandBuffer())
         return;
+    decalLayerFresh = false;
     recordDeferredFrameGraph();
+    recordDecalPass();
     vgAnyThisFrame_ = false;
     currentFrameArena().reset();
     ensureGpuDrivenCullResources(gbufferWidth > 0 ? gbufferWidth : int(swapchain.extent.width),
@@ -229,6 +231,7 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     offscreen3DPassOpen = true;
     frameHad3D = true;
     hasPendingClear = false;
+    decalLayerFresh = false;
 }
 
 void Graphics::end3DFrameToCanvas() {
@@ -626,6 +629,150 @@ void Graphics::endGBufferPass() {
     }
 }
 
+void Graphics::ensureDecalPlaceholders() {
+    if (decalFlatAlbedo) return;
+    const uint8_t transparent[4] = {0, 0, 0, 0};
+    const uint8_t flatNormal[4] = {128, 128, 255, 255};
+    const uint8_t neutralParams[4] = {128, 128, 0, 255};
+    decalFlatAlbedo = newTexture(1, 1, transparent);
+    decalFlatNormal = newTexture(1, 1, flatNormal);
+    decalFlatParams = newTexture(1, 1, neutralParams);
+}
+
+void Graphics::beginDecalPass(int w, int h) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("beginDecalPass: graphics not initialized");
+    if (w <= 0 || h <= 0) throw Exception("beginDecalPass: invalid size");
+    if (!texSetLayout || !descriptorPool)
+        throw Exception("beginDecalPass: textured descriptor layout not ready");
+    createDecalResources(w, h);
+    decalPassActive = true;
+    decalPassDraws.clear();
+}
+
+void Graphics::setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) {
+    decalViewProj = viewProj;
+    decalNear = nearZ > 1e-4f ? nearZ : 0.1f;
+    decalFar = farZ > decalNear ? farZ : decalNear + 1.f;
+}
+
+void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
+                         Texture *params, const float uvRect[4], float fade,
+                         float normalStrength, float roughnessStrength, float metalStrength,
+                         float emissiveStrength) {
+    if (!decalPassActive) throw Exception("drawDecal: call beginDecalPass first");
+    DecalDraw d{};
+    d.model = model;
+    d.albedo = albedo;
+    d.normal = normal;
+    d.params = params;
+    if (uvRect) {
+        for (int i = 0; i < 4; ++i) d.uvRect[i] = uvRect[i];
+    }
+    d.fade = fade;
+    d.normalStrength = normalStrength;
+    d.roughnessStrength = roughnessStrength;
+    d.metalStrength = metalStrength;
+    d.emissiveStrength = emissiveStrength;
+    decalPassDraws.push_back(d);
+}
+
+void Graphics::endDecalPass() {
+    if (!decalPassActive) throw Exception("endDecalPass: no active decal pass");
+    decalPassActive = false;
+    auto *slot = currentDecalSlot();
+    if (!decalPipeline || !decalRenderPass || !slot || !slot->framebuffer) {
+        decalPassDraws.clear();
+        decalPending = false;
+        return;
+    }
+    decalPending = true;
+}
+
+void Graphics::recordDecalPass() {
+    if (!decalPending) return;
+    decalPending = false;
+    auto *slot = currentDecalSlot();
+    if (!slot || !decalPipeline || !decalRenderPass || !slot->framebuffer) {
+        decalPassDraws.clear();
+        return;
+    }
+    ensureDecalUnitBox();
+    auto *gslot = currentGBufferSlot();
+    if (!decalUnitBox || !decalUnitBox->gpuHandle || !gslot) {
+        decalPassDraws.clear();
+        return;
+    }
+
+    auto &cb = currentPresentCb();
+    const uint32_t w = uint32_t(decalWidth);
+    const uint32_t h = uint32_t(decalHeight);
+    if (w == 0 || h == 0) {
+        decalPassDraws.clear();
+        return;
+    }
+
+    DecalCameraUBO cam{};
+    cam.viewProj = decalViewProj;
+    cam.invViewProj = glm::inverse(decalViewProj);
+    cam.nearFarTexel =
+        glm::vec4(decalNear, decalFar, 1.f / float(w), 1.f / float(h));
+    updateRingLocal(slot->cameraUbo, 0, &cam, sizeof(cam));
+
+    slot->albedo.beginColorAttachment();
+    slot->normal.beginColorAttachment();
+    slot->params.beginColorAttachment();
+    std::array<vk::ClearValue, 3> clears{};
+    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[1].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = decalRenderPass;
+    rpBegin.framebuffer = slot->framebuffer;
+    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+    rpBegin.clearValueCount = uint32_t(clears.size());
+    rpBegin.pClearValues = clears.data();
+    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    setViewportAndScissor(cb, w, h);
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, decalPipeline);
+    decalLayerFresh = true;
+
+    ensureDecalPlaceholders();
+    auto *gpuMesh = static_cast<GpuMesh *>(decalUnitBox->gpuHandle);
+    const uint32_t dynOffset = 0;
+    for (const auto &d : decalPassDraws) {
+        GpuTexture *gpuAlb = d.albedo && d.albedo->gpuHandle
+                                 ? static_cast<GpuTexture *>(d.albedo->gpuHandle)
+                                 : static_cast<GpuTexture *>(decalFlatAlbedo->gpuHandle);
+        GpuTexture *gpuNrm = d.normal && d.normal->gpuHandle
+                                 ? static_cast<GpuTexture *>(d.normal->gpuHandle)
+                                 : static_cast<GpuTexture *>(decalFlatNormal->gpuHandle);
+        GpuTexture *gpuPrm = d.params && d.params->gpuHandle
+                                 ? static_cast<GpuTexture *>(d.params->gpuHandle)
+                                 : static_cast<GpuTexture *>(decalFlatParams->gpuHandle);
+        vkb::BoundSet set = decalSetFor(*slot, gpuAlb, gpuNrm, gpuPrm, &gslot->depthGpu,
+                                        &gslot->normalGpu);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0, 1,
+                              set.ptr(), 1, &dynOffset);
+
+        DecalPush push{};
+        push.model = d.model;
+        push.uvRect = glm::vec4(d.uvRect[0], d.uvRect[1], d.uvRect[2], d.uvRect[3]);
+        push.fadeParams =
+            glm::vec4(d.fade, d.normalStrength, d.roughnessStrength, d.metalStrength);
+        push.extraParams = glm::vec4(d.emissiveStrength, 0.f, 0.f, 0.f);
+        cb.pushConstants(decalPipelineLayout,
+                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
+                         sizeof(push), &push);
+        drawIndexedMesh(cb, *gpuMesh);
+    }
+    decalPassDraws.clear();
+    cb.endRenderPass();
+    slot->albedo.endSampledLayout();
+    slot->normal.endSampledLayout();
+    slot->params.endSampledLayout();
+}
+
 void Graphics::ensureDefaultEnvCubemap() {
     if (defaultEnvCubemap) return;
     const uint8_t black[4] = {0, 0, 0, 255};
@@ -715,16 +862,22 @@ void Graphics::ensureFlatHeightTexture3D() {
 
 vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
                                      GpuTexture *heightTex, GpuTexture *depthTex,
+                                     GpuTexture *decalAlbedo, GpuTexture *decalNormal,
+                                     GpuTexture *decalParams,
                                      Mesh3dFrameSlots &fslots) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
     ASSERT(heightTex != nullptr);
+    ASSERT(decalAlbedo != nullptr);
+    ASSERT(decalNormal != nullptr);
+    ASSERT(decalParams != nullptr);
     ASSERT(currentShadowArrayView());
     ASSERT(fslots.uboRing.buffer);
     ASSERT(fslots.shadowRing.buffer);
 
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, depthTex};
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, depthTex,
+                     decalAlbedo, decalNormal, decalParams};
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
 
@@ -752,6 +905,12 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
         .image(vkb::SampledImage::forLaterSample(heightTex->sampler, heightTex->imageView()))
         .beginImages(7, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(depthTex->sampler, depthTex->imageView()))
+        .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalAlbedo->sampler, decalAlbedo->imageView()))
+        .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalNormal->sampler, decalNormal->imageView()))
+        .beginImages(10, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalParams->sampler, decalParams->imageView()))
         .update(device.instance);
 
     vkb::BoundSet bound = std::move(unbound).publish();

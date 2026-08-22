@@ -48,6 +48,9 @@ layout(set = 0, binding = 4, std140) uniform ShadowFrame {
 } shadow;
 
 layout(set = 0, binding = 5) uniform sampler2DArrayShadow shadowMap;
+layout(set = 0, binding = 8) uniform sampler2D decalAlbedoSampler;
+layout(set = 0, binding = 9) uniform sampler2D decalNormalSampler;
+layout(set = 0, binding = 10) uniform sampler2D decalParamsSampler;
 
 layout(location = 0) out vec4 outColor;
 
@@ -272,6 +275,17 @@ void main() {
     vec3 nSample = textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot).xyz;
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
+
+    // Screen-space decal layer: premultiplied albedo + coverage (binding 8).
+    // When the decal feature is off this sampler is a 1x1 transparent texture,
+    // so decalCov is 0 and nothing changes.
+    vec2 decalUV = gl_FragCoord.xy / vec2(textureSize(decalAlbedoSampler, 0));
+    vec4 decalA = texture(decalAlbedoSampler, decalUV);
+    float decalCov = clamp(decalA.a, 0.0, 1.0);
+    if (decalCov > 0.001) {
+        albedo = mix(albedo, decalA.rgb / max(decalCov, 1e-3), decalCov);
+    }
+
     vec3 Lo = vec3(0.0);
     // Splits are camera-forward distances (view-space +Z), not euclidean length.
     float viewDepth = max(-vViewPos.z, 0.0);

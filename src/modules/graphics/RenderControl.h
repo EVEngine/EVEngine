@@ -33,6 +33,8 @@ class Graphics;
  *   "aa"            — FXAA resolve of the 3D scene color into the swapchain (default on)
  *   "msaa"          — hardware MSAA on the 3D scene color pass (default on; sample count via
  *                     Graphics.setMsaaSamples, default 4, clamped to device support)
+ *   "decal"         — screen-space decal layer pass between gbuffer and forward
+ *                     (implies gbuffer; default off)
  *
  * 3D draws into a sampleable scene color target (not the swapchain). Present
  * resolves that target (FXAA when "aa" is on), then composites AO/HUD.

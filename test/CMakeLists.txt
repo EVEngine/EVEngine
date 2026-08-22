@@ -359,6 +359,7 @@ set(EVELIBS
   EVHouseGen
   EVVoxel
   EVStylize
+  EVDecal
   EVSpriteStack
   EVEditor)
 
