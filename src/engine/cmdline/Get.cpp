@@ -13,7 +13,9 @@ namespace eve::cmd {
 struct GetArgs : Handler {
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         auto subcmd = app.add_subcommand(
-            "get", "Download and install a platform SDK (e.g. `eve get android`)");
+            "get",
+            "Download and install a platform SDK matching the current eve version "
+            "(e.g. `eve get android`)");
         subcmd->allow_extras();
     }
 

@@ -28,8 +28,30 @@ std::string getEnv(const std::string& name, const std::string& def = "");
 void setEnv(const std::string& name, const std::string& value);
 
 /**
+ * @brief 当前 eve 版本对应的发布 tag（v0.1.0-dev → v0.1.0）。
+ * 可用 EVE_SDK_TAG 覆盖（dev 构建 / 测试）。解析失败时返回空串。
+ */
+std::string sdkVersionTag();
+
+/**
+ * @brief EVEngine 官方 SDK 安装根目录（Windows: %LOCALAPPDATA%/EVEngine/sdk，
+ * POSIX: $XDG_DATA_HOME/EVEngine/sdk），可用 EVE_SDK_INSTALL_ROOT 覆盖。
+ * 各平台 SDK 安装在 <root>/<platform> 下。
+ */
+std::string eveSdkInstallRoot();
+
+/**
+ * @brief 官方 SDK 下载基址（GitHub Release 对应 tag），可用 EVE_SDK_BASE_URL
+ * 覆盖（镜像 / 测试，如 file://...）。
+ */
+std::string eveSdkBaseUrl();
+
+/** @brief 计算文件的 SHA-256（小写十六进制）；失败返回空串。 */
+std::string fileSha256(const std::string& path);
+
+/**
  * @brief 定位 EVEngine SDK 根目录：--sdk 参数 > $EVENGINE_SDK > 可执行文件
- * 所在位置的 ../（<sdk>/bin/eve）> 当前目录。
+ * 所在位置的 ../（<sdk>/bin/eve）> 当前目录 > `eve get` 安装的 SDK。
  * @return SDK 根目录绝对路径；找不到时返回空串。
  */
 std::string findSdkRoot(const std::string& sdkArg);
@@ -57,8 +79,16 @@ bool copyTreeContents(const std::string& from, const std::string& to);
 /** @brief 判断 Android SDK 是否已安装（cmdline-tools 的 sdkmanager 存在）。 */
 bool isAndroidSdkInstalled(const std::string& root);
 
-/** @brief 自动下载并安装 Android SDK（cmdline-tools / platform-tools /
- * build-tools / platform / NDK）和 JDK 17，返回退出码。 */
+/**
+ * @brief 下载并安装 EVEngine 官方 <platform> SDK（zip 内 eve-sdk/<platform>/，
+ * 从 GitHub Release 按当前 eve 版本挑选），校验 SHA256 后落位到
+ * <eveSdkInstallRoot()>/<platform>。
+ */
+int installEveSdk(Platform p);
+
+/** @brief 自动下载并安装 Android 工具链：EVEngine 官方 android SDK +
+ * cmdline-tools / platform-tools / build-tools / platform + JDK 17 + Gradle，
+ * 返回退出码。 */
 int installAndroidSdk();
 
 }  // namespace eve::cmd::sdk

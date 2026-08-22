@@ -118,11 +118,25 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
         return 2;
     }
 
-    // 1. 定位 EVEngine SDK（无需源码/Makefile/cmake）。
+    // 1. Android SDK 工具链目录（`eve get android` 安装）。先读它写的
+    // eve-android.env（ANDROID_HOME / JAVA_HOME / GRADLE_HOME / EVENGINE_SDK），
+    // 再据此定位 EVEngine SDK。
+    const std::string asdk = androidSdkRoot();
+    std::error_code  ec;
+    if (!fs::is_directory(asdk, ec)) {
+        cerr << rang::fg::red << "Android SDK not found at " << asdk << ". Run `eve get android` "
+             << "first, or set ANDROID_HOME / EVENGINE_ANDROID_SDK."
+             << rang::fg::reset << endl;
+        return 2;
+    }
+    applyEnvFile((fs::path(asdk) / "eve-android.env").string());
+
+    // 2. 定位 EVEngine SDK（无需源码/Makefile/cmake）：--sdk > $EVENGINE_SDK
+    // （含 env 文件注入）> eve 可执行文件位置 > `eve get` 安装目录。
     std::string root = findSdkRoot(sdkRoot);
     if (root.empty()) {
         cerr << "eve build: cannot locate the EVEngine SDK. Pass --sdk <dir>, set "
-                "$EVENGINE_SDK, or run eve from <sdk>/bin."
+                "$EVENGINE_SDK, or run `eve get android` first."
              << endl;
         return 2;
     }
@@ -133,16 +147,7 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
         return 2;
     }
 
-    // 2. Android SDK 工具链（`eve get android` 安装）。
-    const std::string asdk = androidSdkRoot();
-    std::error_code  ec;
-    if (!fs::is_directory(asdk, ec)) {
-        cerr << rang::fg::red << "Android SDK not found at " << asdk << ". Run `eve get android` "
-             << "first, or set ANDROID_HOME / EVENGINE_ANDROID_SDK."
-             << rang::fg::reset << endl;
-        return 2;
-    }
-    applyEnvFile((fs::path(asdk) / "eve-android.env").string());
+    // 3. JDK / Gradle 由 `eve get android` 安装（env 文件已注入）。
     const std::string javaHome = getEnv("JAVA_HOME");
     const std::string gradleHome = getEnv("GRADLE_HOME");
     if (javaHome.empty() || gradleHome.empty() ||
@@ -154,7 +159,7 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
     setEnv("ANDROID_HOME", asdk);
     setEnv("ANDROID_SDK_ROOT", asdk);
 
-    // 3. 游戏目录：默认当前目录；位于 SDK 根时用自带的 demo 壳。
+    // 4. 游戏目录：默认当前目录；位于 SDK 根时用自带的 demo 壳。
     std::string game = path;
     if (game.empty() || game == ".") game = fs::absolute(".").string();
     else game = fs::absolute(game, ec).string();
@@ -168,7 +173,7 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
         if (fs::is_directory(demo, ec)) game = demo.string();
     }
 
-    // 4. 组装 APK 工程到输出目录（模板 + 游戏资源 + 预编译 .so，不动 SDK）。
+    // 5. 组装 APK 工程到输出目录（模板 + 游戏资源 + 预编译 .so，不动 SDK）。
     const std::string outDir = output.empty()
                                    ? (fs::current_path() / "build" / "eve-android").string()
                                    : fs::absolute(output, ec).string();
@@ -211,7 +216,7 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
         f << "sdk.dir=" << sdkProp << "\n";
     }
 
-    // 5. Gradle 组装 APK。
+    // 6. Gradle 组装 APK。
     const std::string cmd = gradleCommand(apkDir, gradleHome, debug);
     cout << "eve build: " << cmd << endl;
     const int rc = runShell(cmd);
@@ -221,7 +226,7 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
         return 4;
     }
 
-    // 6. 输出 APK 路径（release 未配置签名时 AGP 产出 app-release-unsigned.apk）。
+    // 7. 输出 APK 路径（release 未配置签名时 AGP 产出 app-release-unsigned.apk）。
     const std::string variant = debug ? "debug" : "release";
     fs::path apk;
     {

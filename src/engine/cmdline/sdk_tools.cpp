@@ -1,12 +1,16 @@
 #include "cmdline/sdk_tools.h"
 
+#include "common/config.h"
+
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #if defined(_WIN32)
 #include <windows.h>
+#include <process.h>
 #else
 #include <unistd.h>
 #endif
@@ -23,6 +27,14 @@ std::string lower(std::string s) {
     for (char& c : s)
         if (c >= 'A' && c <= 'Z') c = static_cast<char>(c - 'A' + 'a');
     return s;
+}
+
+int processId() {
+#if defined(_WIN32)
+    return _getpid();
+#else
+    return static_cast<int>(getpid());
+#endif
 }
 
 }  // namespace
@@ -61,13 +73,84 @@ void setEnv(const std::string& name, const std::string& value) {
 #endif
 }
 
+std::string sdkVersionTag() {
+    const std::string override = getEnv("EVE_SDK_TAG");
+    if (!override.empty()) return override;
+    std::string v = EVENGINE_VERSION;
+    const size_t dash = v.find('-');
+    if (dash != std::string::npos) v = v.substr(0, dash);
+    if (v.empty()) return "";
+    if (v[0] != 'v') v = "v" + v;
+    return v;
+}
+
+std::string eveSdkInstallRoot() {
+    const std::string override = getEnv("EVE_SDK_INSTALL_ROOT");
+    if (!override.empty()) return override;
+#if defined(_WIN32)
+    std::string base = getEnv("LOCALAPPDATA");
+    if (base.empty()) base = getEnv("USERPROFILE");
+    return base.empty() ? std::string("EVEngine/sdk") : base + "/EVEngine/sdk";
+#else
+    std::string base = getEnv("XDG_DATA_HOME");
+    if (base.empty()) {
+        const std::string home = getEnv("HOME");
+        base = home.empty() ? std::string("") : home + "/.local/share";
+    }
+    return base.empty() ? std::string("EVEngine/sdk") : base + "/EVEngine/sdk";
+#endif
+}
+
+std::string eveSdkBaseUrl() {
+    const std::string override = getEnv("EVE_SDK_BASE_URL");
+    if (!override.empty()) return override;
+    return std::string("https://github.com/EVEngine/EVEngine/releases/download/") +
+           sdkVersionTag();
+}
+
+std::string fileSha256(const std::string& path) {
+    std::error_code ec;
+    const auto      tmp = std::filesystem::temp_directory_path(ec) / "eve-sha256.txt";
+    if (ec) return "";
+    const std::string cmd =
+#if defined(_WIN32)
+        "certutil -hashfile \"" + path + "\" SHA256 > \"" + tmp.string() + "\"";
+#else
+        "sha256sum \"" + path + "\" > \"" + tmp.string() + "\"";
+#endif
+    if (runShell(cmd) != 0) return "";
+    std::ifstream in(tmp);
+    std::string   line, hex;
+    while (std::getline(in, line)) {
+        std::istringstream iss(line);
+        std::string        tok;
+        while (iss >> tok) {
+            if (tok.size() != 64) continue;
+            bool ok = true;
+            for (const char c : tok) {
+                if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
+                      (c >= 'A' && c <= 'F'))) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) {
+                hex = lower(tok);
+                break;
+            }
+        }
+        if (!hex.empty()) break;
+    }
+    std::filesystem::remove(tmp, ec);
+    return hex;
+}
+
 namespace {
 
 bool isSdkRoot(const std::filesystem::path& dir) {
     std::error_code ec;
     return std::filesystem::is_regular_file(
-               std::filesystem::path(dir) / "share" / "eve" / "TARGET_PLATFORM", ec) ||
-           std::filesystem::is_regular_file(std::filesystem::path(dir) / "platform", ec);
+        std::filesystem::path(dir) / "share" / "eve" / "TARGET_PLATFORM", ec);
 }
 
 }  // namespace
@@ -101,7 +184,174 @@ std::string findSdkRoot(const std::string& sdkArg) {
 
     const auto cwd = std::filesystem::current_path(ec);
     if (!ec && isSdkRoot(cwd)) return cwd.string();
+
+    // `eve get <platform>` 安装的 SDK（<installRoot>/<platform>）。优先返回
+    // android（build 目前唯一支持的平台），其次任意 SDK 根。
+    const auto  installRoot = std::filesystem::path(eveSdkInstallRoot());
+    std::string fallback;
+    if (std::filesystem::is_directory(installRoot, ec)) {
+        std::filesystem::directory_iterator it(installRoot, ec), end;
+        for (; it != end; it.increment(ec)) {
+            if (ec) {
+                ec.clear();
+                continue;
+            }
+            if (!it->is_directory(ec) || !isSdkRoot(it->path())) continue;
+            const std::string plat = sdkTargetPlatform(it->path().string());
+            if (plat == "android") return it->path().string();
+            if (fallback.empty()) fallback = it->path().string();
+        }
+    }
+    return fallback;
+}
+
+namespace {
+
+// 从 SHA256SUMS 文本里找 "<hex>  <name>" 行，返回小写 hex；找不到返回空串。
+std::string sha256ForName(const std::string& sums, const std::string& name) {
+    std::istringstream iss(sums);
+    std::string        line;
+    while (std::getline(iss, line)) {
+        const size_t sp = line.find(' ');
+        if (sp == std::string::npos) continue;
+        const std::string hex = line.substr(0, sp);
+        std::string       rest = line.substr(sp + 1);
+        while (!rest.empty() && (rest.front() == ' ' || rest.front() == '\t'))
+            rest.erase(rest.begin());
+        while (!rest.empty() &&
+               (rest.back() == '\r' || rest.back() == ' ' || rest.back() == '\t'))
+            rest.pop_back();
+        if (rest == name) return lower(hex);
+    }
     return "";
+}
+
+// 读取 <root>/share/eve/VERSION；文件缺失或为空时返回空串。
+std::string sdkVersion(const std::string& root) {
+    std::ifstream in(std::filesystem::path(root) / "share" / "eve" / "VERSION");
+    std::string   s;
+    std::getline(in, s);
+    return s;
+}
+
+// moveOrCopy 定义在本文件较后位置（下载/解压工具区），这里前向声明。
+bool moveOrCopy(const std::filesystem::path& from, const std::filesystem::path& to);
+
+}  // namespace
+
+int installEveSdk(Platform p) {
+    namespace fs = std::filesystem;
+    if (p == Platform::Unknown) return 3;
+    const std::string plat = platformName(p);
+    const std::string tag = sdkVersionTag();
+    if (tag.empty() || tag[0] != 'v') {
+        std::cerr << "eve get: cannot determine the current EVEngine version. "
+                     "Set EVE_SDK_TAG to the release tag (e.g. EVE_SDK_TAG=v0.1.0)."
+                  << std::endl;
+        return 3;
+    }
+    const std::string expectedVer = tag.substr(1);
+    const std::string installRoot = eveSdkInstallRoot();
+    const std::string destRoot = (fs::path(installRoot) / plat).string();
+    std::error_code  ec;
+
+    // 已安装同版本则直接复用，避免重复下载。
+    const std::string currentVer = sdkVersion(destRoot);
+    if (!currentVer.empty() && currentVer == expectedVer) {
+        std::cout << "eve get: EVEngine " << plat << " SDK already installed at "
+                  << destRoot << " (" << tag << ")" << std::endl;
+        return 0;
+    }
+
+    const std::string base = eveSdkBaseUrl();
+    const std::string zipName = "eve-sdk-" + plat + "-" + tag + ".zip";
+    const std::string zipUrl = base + "/" + zipName;
+    const std::string sumsUrl = base + "/SHA256SUMS";
+    const auto work =
+        fs::temp_directory_path(ec) / ("eve-get-" + plat + "-" + std::to_string(processId()));
+    if (ec) {
+        std::cerr << "eve get: no temporary directory available" << std::endl;
+        return 3;
+    }
+    fs::remove_all(work, ec);
+    fs::create_directories(work, ec);
+    const std::string zipPath = (work / zipName).string();
+    const std::string sumsPath = (work / "SHA256SUMS").string();
+
+    std::cout << "eve get: downloading " << zipName << " (" << zipUrl << ")...\n";
+    if (runShell("curl -fL --retry 3 -o \"" + zipPath + "\" \"" + zipUrl + "\"") != 0) {
+        std::cerr << "eve get: download failed: " << zipUrl << std::endl;
+        fs::remove_all(work, ec);
+        return 3;
+    }
+    if (runShell("curl -fL --retry 3 -o \"" + sumsPath + "\" \"" + sumsUrl + "\"") != 0) {
+        std::cerr << "eve get: failed to download the checksum file: " << sumsUrl
+                  << std::endl;
+        fs::remove_all(work, ec);
+        return 3;
+    }
+    {
+        std::ifstream in(sumsPath);
+        const std::string sums(
+            (std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+        const std::string expected = sha256ForName(sums, zipName);
+        const std::string actual = fileSha256(zipPath);
+        if (expected.empty() || actual.empty() || lower(expected) != lower(actual)) {
+            std::cerr << "eve get: SHA-256 verification failed for " << zipName
+                      << " (expected "
+                      << (expected.empty() ? std::string("<missing in SHA256SUMS>") : expected)
+                      << ", got " << (actual.empty() ? std::string("<error>") : actual) << ").\n"
+                      << "The download may be corrupt; retry, or point EVE_SDK_BASE_URL "
+                         "at a mirror."
+                      << std::endl;
+            fs::remove_all(work, ec);
+            return 3;
+        }
+    }
+
+    const std::string extractDir = (work / "extract").string();
+    fs::create_directories(extractDir, ec);
+    if (runShell("tar -xf \"" + zipPath + "\" -C \"" + extractDir + "\"") != 0) {
+        std::cerr << "eve get: failed to extract " << zipName
+                  << " (need a zip-capable tar)" << std::endl;
+        fs::remove_all(work, ec);
+        return 3;
+    }
+    const auto srcRoot = fs::path(extractDir) / "eve-sdk" / plat;
+    if (!fs::is_directory(srcRoot, ec)) {
+        std::cerr << "eve get: unexpected SDK archive layout (expected eve-sdk/"
+                  << plat << "/ at the archive root): " << zipName << std::endl;
+        fs::remove_all(work, ec);
+        return 3;
+    }
+    {
+        const std::string platMarker = sdkTargetPlatform(srcRoot.string());
+        const std::string verMarker = sdkVersion(srcRoot.string());
+        if (platMarker != plat) {
+            std::cerr << "eve get: " << zipName << " targets '" << platMarker
+                      << "', not '" << plat << "'." << std::endl;
+            fs::remove_all(work, ec);
+            return 3;
+        }
+        if (verMarker != expectedVer) {
+            std::cerr << "eve get: " << zipName << " contains version '" << verMarker
+                      << "', expected '" << expectedVer << "'." << std::endl;
+            fs::remove_all(work, ec);
+            return 3;
+        }
+    }
+
+    fs::create_directories(installRoot, ec);
+    if (!moveOrCopy(srcRoot, fs::path(destRoot))) {
+        std::cerr << "eve get: failed to install the SDK into " << destRoot
+                  << std::endl;
+        fs::remove_all(work, ec);
+        return 3;
+    }
+    fs::remove_all(work, ec);
+    std::cout << "eve get: EVEngine " << plat << " SDK " << tag << " installed at "
+              << destRoot << std::endl;
+    return 0;
 }
 
 std::string sdkTargetPlatform(const std::string& sdkRoot) {
@@ -321,6 +571,10 @@ bool isAndroidSdkInstalled(const std::string& root) {
 }
 
 int installAndroidSdk() {
+    // EVEngine 官方 android SDK 优先：预编译 native 库 + APK 模板按当前 eve
+    // 版本从 GitHub Release 下载（校验 SHA256）。
+    if (installEveSdk(Platform::Android) != 0) return 3;
+
     const std::string root = androidSdkRoot();
     std::error_code ec;
     std::filesystem::create_directories(root, ec);
@@ -398,13 +652,16 @@ int installAndroidSdk() {
     if (!gradleInstalled(gradleHome) && installGradle(root) != 0) return 3;
 
     // 记录环境，供 `eve build android` 在环境变量未设置时使用。
+    const std::string eveSdkRoot =
+        (std::filesystem::path(eveSdkInstallRoot()) / "android").string();
     {
         std::ofstream f(std::filesystem::path(root) / "eve-android.env",
                         std::ios::binary | std::ios::trunc);
         f << "ANDROID_HOME=" << root << "\n"
           << "ANDROID_SDK_ROOT=" << root << "\n"
           << "JAVA_HOME=" << javaHome << "\n"
-          << "GRADLE_HOME=" << gradleHome << "\n";
+          << "GRADLE_HOME=" << gradleHome << "\n"
+          << "EVENGINE_SDK=" << eveSdkRoot << "\n";
     }
 
     std::cout << "eve get: Android SDK ready at " << root << "\n"

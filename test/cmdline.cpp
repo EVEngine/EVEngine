@@ -3,6 +3,7 @@
 
 #include "cmdline/cmdline.h"
 #include "cmdline/sdk_tools.h"
+#include "cmdline/zip_writer.h"
 #include "common/Module.h"
 
 #include <algorithm>
@@ -138,6 +139,26 @@ void unsetEnvVar(const char* name) {
 #endif
 }
 
+// RAII env removal; restores the previous value (or leaves it unset) afterwards.
+class ScopedUnsetEnv {
+public:
+    explicit ScopedUnsetEnv(const char* name) : name_(name) {
+        const char* old = std::getenv(name);
+        if (old) {
+            had_ = true;
+            old_ = old;
+            unsetEnvVar(name);
+        }
+    }
+    ~ScopedUnsetEnv() {
+        if (had_) setEnvVar(name_.c_str(), old_);
+    }
+
+private:
+    std::string name_, old_;
+    bool        had_ = false;
+};
+
 // RAII env override; restores the previous value (or removes it) afterwards so
 // tests sharing a process cannot leak settings into each other.
 class ScopedEnv {
@@ -206,6 +227,76 @@ void writeFakeGradle(const std::filesystem::path& gradleHome, bool unsignedOnly 
                                      std::filesystem::perms::others_read,
                                  ec);
 #endif
+}
+
+// A fake sdkmanager whose only job is to exit 0 for --licenses and package
+// installs, so `eve get android` skips the real command-line-tools download.
+void writeFakeSdkmanager(const std::filesystem::path& sdkRoot) {
+    const auto bin = sdkRoot / "cmdline-tools" / "latest" / "bin";
+    std::error_code ec;
+    std::filesystem::create_directories(bin, ec);
+#if defined(_WIN32)
+    writeFile(bin / "sdkmanager.bat", "@exit /b 0\r\n");
+#else
+    writeFile(bin / "sdkmanager", "#!/bin/sh\nexit 0\n");
+    std::filesystem::permissions(bin / "sdkmanager",
+                                 std::filesystem::perms::owner_all |
+                                     std::filesystem::perms::group_read |
+                                     std::filesystem::perms::others_read,
+                                 ec);
+#endif
+}
+
+// 版本号去前缀 v（share/eve/VERSION 里不带 v）。
+std::string sdkVersionNoV() {
+    std::string tag = eve::cmd::sdk::sdkVersionTag();
+    return tag.empty() ? std::string("0.0.0") : tag.substr(1);
+}
+
+// file:// URL（供 curl 读取本地 fake release）。
+std::string fileUrl(const std::filesystem::path& p) {
+    std::string s = p.lexically_normal().string();
+    std::replace(s.begin(), s.end(), '\\', '/');
+    if (s.empty() || s[0] != '/') s = "/" + s;
+    return "file://" + s;
+}
+
+// 写一个和官方 zip-sdk.py 布局一致的 fake SDK 包：
+// 顶层 eve-sdk/android/...（含标记、lib、platform 模板）。
+void writeFakeEveSdkZip(const std::filesystem::path& zipPath, const std::string& ver) {
+    eve::cmdline::ZipWriter zw;
+    REQUIRE(zw.open(zipPath.string()));
+    const auto add = [&](const std::string& rel, const std::string& data) {
+        REQUIRE(zw.addFile(rel, data.data(), data.size()));
+    };
+    add("eve-sdk/android/share/eve/TARGET_PLATFORM", "android\n");
+    add("eve-sdk/android/share/eve/VERSION", ver + "\n");
+    add("eve-sdk/android/lib/libmain.so", "fake so");
+    add("eve-sdk/android/lib/libSDL2.so", "fake so");
+    add("eve-sdk/android/platform/apk/template.txt", "apk template");
+    add("eve-sdk/android/platform/game-shell/config.nut", "width=800\n");
+    REQUIRE(zw.finish());
+}
+
+// 为 fake release 目录写 SHA256SUMS（correct=false 时放一个错误摘要）。
+void writeSha256Sums(const std::filesystem::path& releaseDir,
+                     const std::filesystem::path& zipPath, bool correct) {
+    const std::string hex =
+        correct ? eve::cmd::sdk::fileSha256(zipPath.string()) : std::string(64, '0');
+    writeFile(releaseDir / "SHA256SUMS",
+              hex + "  " + zipPath.filename().string() + "\n");
+}
+
+// 在 EVEngine SDK 安装根预置一个 android SDK（跳过下载路径）。
+std::filesystem::path fakeInstalledEveSdk(const std::filesystem::path& installRoot) {
+    const auto sdk = installRoot / "android";
+    writeFile(sdk / "share" / "eve" / "TARGET_PLATFORM", "android\n");
+    writeFile(sdk / "share" / "eve" / "VERSION", sdkVersionNoV() + "\n");
+    writeFile(sdk / "lib" / "libmain.so", "fake so");
+    writeFile(sdk / "lib" / "libSDL2.so", "fake so");
+    writeFile(sdk / "platform" / "apk" / "template.txt", "apk template");
+    writeFile(sdk / "platform" / "game-shell" / "config.nut", "width=800\n");
+    return sdk;
 }
 
 }  // namespace
@@ -399,13 +490,16 @@ TEST_CASE("cmdline.buildAndroidAssemblesApkFromSdk") {
 }
 
 TEST_CASE("cmdline.buildWrongSdkPlatformFails") {
-    const auto sdk = fakeSdkRoot("eve_ut_cmdline_sdk_win32", "win32");
+    const auto sdk   = fakeSdkRoot("eve_ut_cmdline_sdk_win32", "win32");
+    const auto tools = tempDir("eve_ut_cmdline_android_tools_wrong");
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", tools.string());
     CaptureStreams cap;
     const int      rc = runCli({"eve", "build", "android", "--sdk", sdk.string()});
     CHECK(rc == 2);
     CHECK(cap.all().find("not android") != std::string::npos);
     std::error_code ec;
     std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(tools, ec);
 }
 
 TEST_CASE("cmdline.buildAndroidReportsUnsignedApk") {
@@ -461,36 +555,161 @@ TEST_CASE("cmdline.buildMissingAndroidSdkFails") {
 
 TEST_CASE("cmdline.getAndroidAlreadyInstalled") {
     const auto sdk = tempDir("eve_ut_cmdline_android_installed");
-    const auto bin = sdk / "cmdline-tools" / "latest" / "bin";
-    std::error_code ec;
-    std::filesystem::create_directories(bin, ec);
-#if defined(_WIN32)
-    std::ofstream(bin / "sdkmanager.bat", std::ios::binary | std::ios::trunc) << "@exit /b 0\r\n";
-#else
-    std::ofstream(bin / "sdkmanager", std::ios::binary | std::ios::trunc)
-        << "#!/bin/sh\nexit 0\n";
-    std::filesystem::permissions(bin / "sdkmanager",
-                                 std::filesystem::perms::owner_all |
-                                     std::filesystem::perms::group_read |
-                                     std::filesystem::perms::others_read,
-                                 ec);
-#endif
+    writeFakeSdkmanager(sdk);
     writeFakeGradle(sdk / "gradle-8.5");
+    const auto installRoot = tempDir("eve_ut_cmdline_eve_sdk_installed");
+    fakeInstalledEveSdk(installRoot);
 
+    ScopedEnv rootEnv("EVE_SDK_INSTALL_ROOT", installRoot.string());
     ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", sdk.string());
     ScopedEnv javaEnv("JAVA_HOME", sdk.string());  // non-empty -> skip JDK download
     CaptureStreams cap;
     const int      rc = runCli({"eve", "get", "android"});
     CHECK(rc == 0);
     CHECK(cap.out().find("already installed") != std::string::npos);
+    std::error_code ec;
     REQUIRE(std::filesystem::is_regular_file(sdk / "eve-android.env", ec));
     {
         std::ifstream in(sdk / "eve-android.env");
         std::string   s((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         CHECK(s.find("GRADLE_HOME=") != std::string::npos);
         CHECK(s.find("ANDROID_HOME=") != std::string::npos);
+        CHECK(s.find("EVENGINE_SDK=") != std::string::npos);
     }
     std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(installRoot, ec);
+}
+
+TEST_CASE("cmdline.sdkVersionTagNormalizesDevBuild") {
+    // 当前 dev 构建版本是 v0.1.0-dev，归一化后应得到干净的 release tag。
+    const std::string tag = eve::cmd::sdk::sdkVersionTag();
+    CHECK(tag.rfind("v", 0) == 0);
+    CHECK(tag.find("dev") == std::string::npos);
+    CHECK(tag.find('-') == std::string::npos);
+    // EVE_SDK_TAG 覆盖（不得重复加 v）。
+    ScopedEnv tagEnv("EVE_SDK_TAG", "v9.8.7");
+    CHECK(eve::cmd::sdk::sdkVersionTag() == "v9.8.7");
+}
+
+TEST_CASE("cmdline.getAndroidInstallsEveSdkFromRelease") {
+    // 端到端：EVE_SDK_BASE_URL 指向本地 file:// fake release，get 应下载、
+    // 校验 SHA256 并把 zip 里的 eve-sdk/android 安装到 EVE_SDK_INSTALL_ROOT。
+    const std::string tag = eve::cmd::sdk::sdkVersionTag();
+    const std::string ver = sdkVersionNoV();
+    const auto        rel = tempDir("eve_ut_cmdline_release");
+    const auto zipPath = rel / ("eve-sdk-android-" + tag + ".zip");
+    writeFakeEveSdkZip(zipPath, ver);
+    writeSha256Sums(rel, zipPath, /*correct=*/true);
+
+    const auto tools = tempDir("eve_ut_cmdline_android_tools_get");
+    writeFakeSdkmanager(tools);
+    writeFakeGradle(tools / "gradle-8.5");
+    const auto installRoot = tempDir("eve_ut_cmdline_eve_sdk_install");
+
+    ScopedEnv baseEnv("EVE_SDK_BASE_URL", fileUrl(rel));
+    ScopedEnv tagEnv("EVE_SDK_TAG", tag);
+    ScopedEnv rootEnv("EVE_SDK_INSTALL_ROOT", installRoot.string());
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", tools.string());
+    ScopedEnv javaEnv("JAVA_HOME", tools.string());  // skip JDK download
+
+    {
+        CaptureStreams cap;
+        const int      rc = runCli({"eve", "get", "android"});
+        REQUIRE(rc == 0);
+        CHECK(cap.out().find("installed at") != std::string::npos);
+    }
+
+    const auto eveSdk = installRoot / "android";
+    std::error_code ec;
+    REQUIRE(std::filesystem::is_regular_file(
+        eveSdk / "share" / "eve" / "TARGET_PLATFORM", ec));
+    REQUIRE(std::filesystem::is_regular_file(eveSdk / "share" / "eve" / "VERSION", ec));
+    REQUIRE(std::filesystem::is_regular_file(eveSdk / "lib" / "libmain.so", ec));
+    REQUIRE(std::filesystem::is_regular_file(
+        eveSdk / "platform" / "apk" / "template.txt", ec));
+    {
+        std::ifstream in(eveSdk / "share" / "eve" / "VERSION");
+        std::string   s;
+        std::getline(in, s);
+        CHECK(s == ver);
+    }
+
+    // env 文件记录 EVENGINE_SDK，供 `eve build android` 发现安装的 SDK。
+    REQUIRE(std::filesystem::is_regular_file(tools / "eve-android.env", ec));
+    {
+        std::ifstream in(tools / "eve-android.env");
+        std::string   s((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+        CHECK(s.find("EVENGINE_SDK=" + eveSdk.string()) != std::string::npos);
+        CHECK(s.find("ANDROID_HOME=") != std::string::npos);
+        CHECK(s.find("GRADLE_HOME=") != std::string::npos);
+    }
+
+    // 幂等：第二次运行不重新下载，直接复用已安装 SDK。
+    {
+        CaptureStreams cap;
+        const int      rc = runCli({"eve", "get", "android"});
+        REQUIRE(rc == 0);
+        CHECK(cap.out().find("already installed") != std::string::npos);
+    }
+
+    std::filesystem::remove_all(rel, ec);
+    std::filesystem::remove_all(tools, ec);
+    std::filesystem::remove_all(installRoot, ec);
+}
+
+TEST_CASE("cmdline.getAndroidChecksumMismatchFails") {
+    const std::string tag = eve::cmd::sdk::sdkVersionTag();
+    const auto        rel = tempDir("eve_ut_cmdline_release_bad");
+    const auto zipPath = rel / ("eve-sdk-android-" + tag + ".zip");
+    writeFakeEveSdkZip(zipPath, sdkVersionNoV());
+    writeSha256Sums(rel, zipPath, /*correct=*/false);
+    const auto installRoot = tempDir("eve_ut_cmdline_eve_sdk_install_bad");
+
+    ScopedEnv baseEnv("EVE_SDK_BASE_URL", fileUrl(rel));
+    ScopedEnv tagEnv("EVE_SDK_TAG", tag);
+    ScopedEnv rootEnv("EVE_SDK_INSTALL_ROOT", installRoot.string());
+
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "get", "android"});
+    REQUIRE(rc == 3);
+    CHECK(cap.all().find("SHA-256 verification failed") != std::string::npos);
+    std::error_code ec;
+    REQUIRE(!std::filesystem::exists(installRoot / "android", ec));
+    std::filesystem::remove_all(rel, ec);
+    std::filesystem::remove_all(installRoot, ec);
+}
+
+TEST_CASE("cmdline.buildAndroidUsesGetInstalledSdk") {
+    // `eve get android` 安装的 SDK 应能被 build 自动发现（无 --sdk / EVENGINE_SDK）。
+    const auto installRoot = tempDir("eve_ut_cmdline_eve_sdk_use");
+    fakeInstalledEveSdk(installRoot);
+    const auto tools = tempDir("eve_ut_cmdline_android_tools_use");
+    writeFakeGradle(tools / "gradle-8.5");
+
+    ScopedEnv rootEnv("EVE_SDK_INSTALL_ROOT", installRoot.string());
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", tools.string());
+    ScopedEnv javaEnv("JAVA_HOME", tools.string());
+    ScopedEnv gradleEnv("GRADLE_HOME", (tools / "gradle-8.5").string());
+    ScopedUnsetEnv unsetSdk("EVENGINE_SDK");
+
+    const auto game = tempDir("eve_ut_cmdline_game_use_get");
+    writeFile(game / "main.nut", "eve_init = function() {}\n");
+    const auto out = tempDir("eve_ut_cmdline_apk_out_use_get");
+
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "build", "android", game.string(), "-o", out.string()});
+    REQUIRE(rc == 0);
+    std::error_code ec;
+    REQUIRE(std::filesystem::is_regular_file(
+        out / "apk" / "app" / "src" / "main" / "assets" / "game" / "main.nut", ec));
+    REQUIRE(std::filesystem::is_regular_file(
+        out / "apk" / "app" / "src" / "main" / "jniLibs" / "arm64-v8a" / "libmain.so", ec));
+    REQUIRE(cap.out().find("app-release.apk") != std::string::npos);
+
+    std::filesystem::remove_all(installRoot, ec);
+    std::filesystem::remove_all(tools, ec);
+    std::filesystem::remove_all(game, ec);
+    std::filesystem::remove_all(out, ec);
 }
 
 TEST_CASE("cmdline.getUnsupportedPlatformFails") {
