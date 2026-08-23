@@ -43,11 +43,13 @@ Procgen::Procgen() {
     setPaletteGid("default", "dirt", 7);
     setPaletteGid("default", "stone", 8);
     setPaletteGid("default", "snow", 9);
+    setPaletteGid("default", "road", 3);
     setPaletteGid("dungeon_default", "empty", 0);
     setPaletteGid("dungeon_default", "wall", 1);
     setPaletteGid("dungeon_default", "floor", 2);
     setPaletteGid("dungeon_default", "corridor", 2);
     setPaletteGid("dungeon_default", "door", 3);
+    setPaletteGid("dungeon_default", "road", 3);
 }
 
 Params *Procgen::newParams() { return new Params(); }

@@ -18,6 +18,7 @@ constexpr uint32_t Dirt     = 7;
 constexpr uint32_t Stone    = 8;
 constexpr uint32_t Snow     = 9;
 constexpr uint32_t Door     = 10;
+constexpr uint32_t Road     = 11;
 }  // namespace Semantic
 
 const char *semanticName(uint32_t id);

@@ -84,6 +84,7 @@ file(GLOB all_test_cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
   procgen.cpp
+  urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
   procgen_simulation.cpp
