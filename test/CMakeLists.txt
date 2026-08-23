@@ -4,6 +4,8 @@ file(GLOB all_test_cpp
   ECS.cpp
   capability.cpp
   data.cpp
+  decal.cpp
+  decal_script.cpp
   resource.cpp
   state_value.cpp
   json.cpp
