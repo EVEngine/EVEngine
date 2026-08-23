@@ -81,7 +81,7 @@ function regenTerrain() {
 
     if (terrainMesh == null) {
         snow.applyToHeightmap(sf, terrainHm, combinedHm, SNOW_SCALE);
-        terrainMesh = editor.newHeightmapMesh(combinedHm, CELL, HSCALE);
+        terrainMesh = editor.newHeightmapMeshSmooth(combinedHm, CELL, HSCALE);
         terrainEnt = eve.Renderable3D();
         terrainEnt.setMesh(terrainMesh);
         terrainEnt.setTint(1.0, 1.0, 1.0, 1.0);
@@ -113,7 +113,7 @@ function regenTerrain() {
 function rebuildTerrain() {
     if (terrainMesh == null) return;
     snow.applyToHeightmap(sf, terrainHm, combinedHm, SNOW_SCALE);
-    editor.updateHeightmapMesh(terrainMesh, gfx, combinedHm, CELL, HSCALE);
+    editor.updateHeightmapMeshSmooth(terrainMesh, gfx, combinedHm, CELL, HSCALE);
     if (sf.isDirty()) {
         snow.updateTexture(sf, terrainTexA, gfx, "albedo");
         snow.updateTexture(sf, terrainTexN, gfx, "normal");

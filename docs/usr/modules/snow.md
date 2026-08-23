@@ -34,7 +34,8 @@ sf.addSnowfall(dt * 0.05);
 // 4. 真实位移：合成最终高度图并原地重建地形网格
 local outHm = procgen.newHeightmap(W, H);
 snow.applyToHeightmap(sf, terrainHm, outHm, 0.07);   // out = terrain + snow*scale
-editor.updateHeightmapMesh(terrainMesh, gfx, outHm, CELL, HSCALE);
+editor.updateHeightmapMeshSmooth(terrainMesh, gfx, outHm, CELL, HSCALE);
+// 用 Smooth 变体：顶点法线来自高度场梯度，坑壁连续着色而不是平直三角片
 
 // 5. POM 微细节：同一雪场导出三张纹理——albedo（雪/地颜色）、normal（深度梯度
 //    法线，让坑壁被光照出来）、height（R = 雪深，白 = 隆起）
@@ -83,8 +84,9 @@ snow.updateTexture(sf, texH, gfx, "height");
 
 - **数据**：纯 CPU 浮点网格（`src/modules/snow/SnowField.h`），无图形依赖，
   便于单元测试；渲染桥接在 `Snow` 模块（`uploadTexture` / `applyToHeightmap`）。
-- **位移**：复用 `editor.newHeightmapMesh / updateHeightmapMesh` 的高度图网格，
-  雪深直接加到高度值上，法线随重建自动重算，所以坑壁明暗正确。
+- **位移**：复用 `editor.newHeightmapMeshSmooth / updateHeightmapMeshSmooth`
+  的高度图网格（顶点法线 = 高度场梯度，坑壁连续着色、无平直三角片），
+  雪深直接加到高度值上，法线随重建自动重算。
 - **POM**：引擎自带 `parallax_map.glsl`（陡峭视差 + 线性细化，TBN 由屏幕导数
   构造），在 `mesh3d.frag` / `mesh3d_clustered.frag` 中先做 UV 位移再采样
   albedo。雪场导出**三张独立纹理**：height（R = 雪深，驱动 POM）、albedo
