@@ -137,6 +137,39 @@ TEST_CASE("weapon.fire.noReserveCannotReload") {
     CHECK_EQ(mod.getEventCount(), 0);
 }
 
+TEST_CASE("weapon.fire.autoReloadOnEmpty") {
+    Weapon mod;
+    mod.registerWeaponsFromJson(kDefs);
+    WeaponEntity* w = mod.newWeapon("cannon");
+    REQUIRE(w != nullptr);
+    mod.clearEvents();
+
+    // 打空弹匣：冷却结束 + 有备弹时，update 应自动开始装填（无需游戏侧手动调用）。
+    CHECK(mod.fireAt(w, 0.f, 0.f, 0.f));
+    CHECK_EQ(w->state()->magAmmo, 0);
+    mod.update(4.0f);  // cooldown 4.0s 结束
+    CHECK(w->state()->reloading);
+    CHECK_EQ(mod.getEventCount(), 1);
+    CHECK_EQ(mod.getEventType(0), std::string("reload_start"));
+
+    mod.update(2.0f);
+    CHECK(w->state()->reloading);
+    mod.update(4.0f);  // 累计 6s = reloadTime
+    CHECK(!w->state()->reloading);
+    CHECK_EQ(w->state()->magAmmo, 1);
+    CHECK_EQ(w->state()->reserveAmmo, 39);
+    CHECK_EQ(mod.getEventType(1), std::string("reload_end"));
+
+    // 无备弹的武器不会被自动装填反复触发事件。
+    mod.clearEvents();
+    WeaponEntity* nr = mod.newWeapon("noreload");
+    REQUIRE(nr != nullptr);
+    for (int i = 0; i < 5; ++i) CHECK(mod.fireAt(nr, 0.f, 0.f, 0.f));
+    mod.update(2.0f);
+    CHECK(!nr->state()->reloading);
+    CHECK_EQ(mod.getEventCount(), 0);
+}
+
 TEST_CASE("weapon.fire.burst") {
     Weapon mod;
     mod.registerWeaponsFromJson(kDefs);

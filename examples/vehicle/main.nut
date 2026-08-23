@@ -40,6 +40,7 @@ if (!("texCarBlue" in getroottable())) texCarBlue <- null;
 if (!("texCarBlueTurret" in getroottable())) texCarBlueTurret <- null;
 if (!("texCarRed" in getroottable())) texCarRed <- null;
 if (!("texCarRedTurret" in getroottable())) texCarRedTurret <- null;
+if (!("hudBuilt" in getroottable())) hudBuilt <- false;
 
 const PLAYER_DRIVER = 1;
 const PLAYER_GUNNER = 2;
@@ -97,6 +98,12 @@ function clampf(v, lo, hi) {
 
 function randf(a, b) {
     return a + (b - a) * (rand().tofloat() / 2147483647.0);
+}
+
+// 贴图按宽高比绘制：给定宽度，返回保持纵横比的高度
+function texHeight(tex, width) {
+    if (tex == null) return width;
+    return width * tex.getHeight().tofloat() / tex.getWidth().tofloat();
 }
 
 function keyPressed(name) {
@@ -172,6 +179,19 @@ eve_init = function() {
     try { texCarRed = gfx.newTextureFromFile("assets/car_red_body.png"); } catch (e) { texCarRed = null; }
     try { texCarRedTurret = gfx.newTextureFromFile("assets/car_red_turret.png"); } catch (e) { texCarRedTurret = null; }
 
+    if (!hudBuilt) {
+        ui.setTheme("dark");
+        ui.beginBuild();
+        ui.beginWindow("载具框架演示", "hud");
+        ui.text("左键=坦克移动   右键=攻击敌车   W/A/S/D=开车   Space=机枪   E=上下车", "help");
+        ui.text("S=坦克停   H=待命   T=巡逻   白色角标=玩家车", "help2");
+        ui.separator("sep1");
+        ui.text("", "log");
+        ui.end();
+        ui.mountBuildAs("vehdemo");
+        hudBuilt = true;
+    }
+
     logLine("左键=坦克移动 右键=攻击  W/A/S/D=开车  Space=机枪  E=上下车");
     logLine("S=坦克停  H=待命  T=巡逻  （蓝车带白色角标=玩家）");
 };
@@ -200,11 +220,11 @@ function aimAt(mount, fromX, fromY, toX, toY, baseHeading) {
 
 eve_update = function(dt) {
     // ============ RTS 指挥（命令队列 + 自动瞄准） ============
-    if (mousePressed(0)) {
+    if (!ui.wantCaptureMouse() && mousePressed(0)) {
         vehicle.moveTo(rtsTank, mouse.getX().tofloat(), mouse.getY().tofloat());
         logLine("命令：移动到 (" + mouse.getX() + ", " + mouse.getY() + ")");
     }
-    if (mousePressed(2)) {
+    if (!ui.wantCaptureMouse() && mousePressed(2)) {
         vehicle.attack(rtsTank, vehicle.getX(enemyCar), vehicle.getY(enemyCar), 0);
         logLine("命令：攻击敌车");
     }
@@ -263,6 +283,16 @@ eve_update = function(dt) {
     vehicle.update(dt);
     if (world != null) world.update(dt);
     weapon.update(dt);
+
+    // 刷新 HUD 日志（可读文本；真实游戏可在这里接 UI 系统）
+    if (hudBuilt) {
+        local lines = "";
+        for (local i = 0; i < eventLog.len(); i += 1) {
+            if (i > 0) lines += "\n";
+            lines += eventLog[i];
+        }
+        ui.setText("log", lines);
+    }
 
     // ============ 载具事件（命令完成/击毁） ============
     for (local i = 0; i < vehicle.getEventCount(); i += 1) {
@@ -364,16 +394,18 @@ eve_render = function() {
         local r = 18.0;
         local destroyed = e.isDestroyed();
         local bodyTex = null, turretTex = null;
-        local bodySize = 36.0, turretSize = 22.0;
+        local bodyW = 36.0, turretW = 22.0;
         if (e.getFaction() == "yellow") {
             bodyTex = texTankBody; turretTex = texTankTurret;
-            bodySize = 46.0; turretSize = 34.0;
+            bodyW = 46.0; turretW = 26.0;
         }
         if (e.getFaction() == "blue") {
             bodyTex = texCarBlue; turretTex = texCarBlueTurret;
+            bodyW = 34.0; turretW = 20.0;
         }
         if (e.getFaction() == "red") {
             bodyTex = texCarRed; turretTex = texCarRedTurret;
+            bodyW = 34.0; turretW = 20.0;
         }
         local colorR = 0.4, colorG = 0.4, colorB = 0.4;
         if (e.getFaction() == "yellow") { colorR = 0.9; colorG = 0.8; colorB = 0.25; }
@@ -382,7 +414,7 @@ eve_render = function() {
 
         // 车体：贴图按 heading 旋转（贴图朝上，heading 0=+X，故 +90°）；缺失时回退色块
         if (bodyTex != null) {
-            gfx.drawTexturedRectRotated(bodyTex, x, y, bodySize, bodySize,
+            gfx.drawTexturedRectRotated(bodyTex, x, y, bodyW, texHeight(bodyTex, bodyW),
                                         e.getHeading() + 90.0,
                                         destroyed ? 0.45 : 1.0, destroyed ? 0.45 : 1.0,
                                         destroyed ? 0.45 : 1.0, destroyed ? 0.8 : 1.0);
@@ -395,7 +427,7 @@ eve_render = function() {
             local m = e.getMount(i);
             if (m == null) continue;
             if (turretTex != null) {
-                gfx.drawTexturedRectRotated(turretTex, x, y, turretSize, turretSize,
+                gfx.drawTexturedRectRotated(turretTex, x, y, turretW, texHeight(turretTex, turretW),
                                             e.getHeading() + m.getYaw() + 90.0, 1.0, 1.0, 1.0, 1.0);
             } else {
                 local ay = (e.getHeading() + m.getYaw()) * PI / 180.0;
@@ -427,11 +459,6 @@ eve_render = function() {
         gfx.drawSolidRect(t.x - 3.0, t.y - 3.0, 6.0, 6.0, 1.0, 0.9, 0.4, 1.0);
     }
 
-    // 事件日志（色块代替文字；真实游戏用 eve.Font() 绘制文本）
-    local lineY = 34.0;
-    gfx.drawSolidRect(0.0, 12.0, 460.0, 10.0 + eventLog.len() * 18.0, 0.10, 0.12, 0.16, 0.85);
-    foreach (t in eventLog) {
-        gfx.drawSolidRect(10.0, lineY, 8.0 + t.len() * 7.0, 14.0, 0.35, 0.45, 0.55, 1.0);
-        lineY += 18.0;
-    }
+    // HUD 窗口（操作说明 + 事件日志）
+    ui.beginFrameAndRender();
 };

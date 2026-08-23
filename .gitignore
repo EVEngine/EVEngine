@@ -39,6 +39,7 @@ docs/api/
 # Never commit anything under .local-debug/.
 .local-debug/
 examples/native-plugin/build/
+**/imgui.ini
 platform/android/apk/local.properties
 platform/android/apk/.gradle/
 platform/android/apk/app/build/

@@ -725,9 +725,20 @@ void Vehicle::autoAim(VehicleEntity& v) {
     if (localYaw < 0.f) localYaw += 360.f;
     localYaw -= 180.f;
 
+    const float dist = std::sqrt((cur->x - mo->x) * (cur->x - mo->x) +
+                                 (cur->y - mo->y) * (cur->y - mo->y));
     for (const VehicleEntity::MountSlot& slot : v.mounts()->list) {
         if (slot.mount == nullptr || slot.mount->state()->destroyed) continue;
-        if (slot.aimMode == "auto") wmod->mountAimAt(slot.mount, localYaw, 0.f);
+        if (slot.aimMode != "auto") continue;
+        wmod->mountAimAt(slot.mount, localYaw, 0.f);
+        // 攻击命令：炮塔在射程内自动开火；attackMove 只负责边走边瞄准。
+        if (cur->type != VehicleOrderType::Attack) continue;
+        eve::weapon::WeaponEntity* w = wmod->mountGetWeapon(slot.mount);
+        if (w == nullptr || !wmod->canFire(w)) continue;
+        const std::string& defId = w->identity()->defId;
+        const float        range = wmod->getWeaponDefinitionRange(defId);
+        if (range > 0.f && dist > range) continue;
+        wmod->fireAt(w, cur->x, cur->y, 0.f, cur->targetId);
     }
 }
 

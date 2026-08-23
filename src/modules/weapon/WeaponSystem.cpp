@@ -81,6 +81,11 @@ void WeaponSystem::update(WeaponEntity& w, float dt) {
     auto state      = w.state();
     state->cooldown = std::max(0.f, state->cooldown - dt);
 
+    // 自动装填：弹匣打空、冷却结束且有备弹时自动开始（事件照发，游戏侧可覆盖/取消）。
+    if (!state->reloading && state->magAmmo <= 0 && state->cooldown <= 0.f && !state->jammed) {
+        startReload(w);
+    }
+
     // 装填推进
     if (state->reloading) {
         state->reloadProgress += dt;
