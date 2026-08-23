@@ -54,6 +54,7 @@ src/modules/fluids/
 ├── FluidSurfaceBinding.{h,cpp} 动态三角形表面地址、运动与拓扑迁移
 ├── SurfaceDropletSimulation.{h,cpp} 动态表面水滴 CPU 参考求解器
 ├── SurfaceFluidRenderData.{h,cpp} 局部切平面椭球实例与湿润 PBR 参数
+├── SurfaceFluidSceneRenderer.{h,cpp} 主场景深度/PBR 水滴 cap 绘制桥接
 ├── SurfaceWetnessField.{h,cpp} 随网格变形的顶点湿膜、扩散与蒸发
 └── Fluids.{h,cpp}          模块工厂 + Squirrel 绑定（FluidSim / FluidSurface）
 ```
@@ -104,7 +105,7 @@ r.writePpm("fluid.ppm");                 // 调试输出
 ## 测试
 
 原有 `test/fluids.cpp` 的 16 个球面流体用例保持不变；新增动态表面能力放在
-`test/fluids_surface.cpp` 的 11 个独立用例中（均按 CTest 进程隔离）：
+`test/fluids_surface.cpp` 的 12 个独立用例中（均按 CTest 进程隔离）：
 
 - 数学核函数、SDF（球/平面/三角网格对比解析球）；
 - CPU：表面下流、粘度阻尼、PBF 解压、cohesion 成团、adhesion 挂壁、
@@ -144,6 +145,8 @@ r.writePpm("fluid.ppm");                 // 调试输出
 - `SurfaceFluidRenderData` 把水滴转换为面积守恒的局部切平面椭球实例，速度只改变
   长宽比；同时把湿度映射为 roughness、specular、darkening 和法线强度，供
   Vulkan/WebGPU 湿润材质直接消费。
+- `SurfaceFluidSceneRenderer` 已把这些实例桥接到 graphics 3D 路径：Vulkan 下使用
+  椭球 cap 写入正常场景深度并接受 PBR/环境光照，WebGPU 使用相同模型矩阵降级。
 - `examples/surface-fluid-dynamic` 沿用原有球面参考场景，在球体轻微摆动时验证动态
   附着，并生成可复现的细水滴/湿痕参考帧。
 

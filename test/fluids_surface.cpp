@@ -4,6 +4,7 @@
 #include "fluids/FluidSurfaceBinding.h"
 #include "fluids/SurfaceDropletSimulation.h"
 #include "fluids/SurfaceFluidRenderData.h"
+#include "fluids/SurfaceFluidSceneRenderer.h"
 #include "fluids/SurfaceWetnessField.h"
 
 #include <cmath>
@@ -179,4 +180,18 @@ TEST_CASE("fluids.surfaceRenderData.wetnessDrivesPbrResponse") {
     CHECK(wet.specular > dry.specular);
     CHECK(wet.darkening > dry.darkening);
     CHECK(wet.normalStrength > dry.normalStrength);
+}
+
+TEST_CASE("fluids.surfaceSceneRenderer.capModelTouchesBoundSurface") {
+    SurfaceDropletRenderInstance instance;
+    instance.position = glm::vec3(2.f, 3.f, 4.f);
+    instance.normal = glm::normalize(glm::vec3(0.2f, 1.f, 0.3f));
+    instance.majorAxis = glm::vec3(0.4f, 0.f, 0.f);
+    instance.minorAxis = glm::vec3(0.f, 0.f, 0.2f);
+    instance.capHeight = 0.1f;
+    const glm::mat4 model = SurfaceFluidSceneRenderer::modelMatrix(instance);
+    const glm::vec3 lowerPole = glm::vec3(model * glm::vec4(0.f, -1.f, 0.f, 1.f));
+    CHECK(glm::distance(lowerPole, instance.position) < 1e-6f);
+    CHECK(glm::distance(glm::vec3(model[0]), instance.majorAxis) < 1e-6f);
+    CHECK(glm::distance(glm::vec3(model[2]), instance.minorAxis) < 1e-6f);
 }
