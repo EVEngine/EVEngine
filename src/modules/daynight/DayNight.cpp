@@ -256,6 +256,18 @@ float DayNight::getSunDirX() const { return impl_->sunDir[0]; }
 float DayNight::getSunDirY() const { return impl_->sunDir[1]; }
 float DayNight::getSunDirZ() const { return impl_->sunDir[2]; }
 float DayNight::getSunIntensity() const { return impl_->sunEnergy; }
+float DayNight::getSunR() const {
+    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).x *
+           impl_->sunEnergy;
+}
+float DayNight::getSunG() const {
+    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).y *
+           impl_->sunEnergy;
+}
+float DayNight::getSunB() const {
+    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).z *
+           impl_->sunEnergy;
+}
 void DayNight::setTurbidity(float v) {
     impl_->turbidity = std::clamp(v, 1.5f, 10.f);
     impl_->lastSkyBucket = -1;
@@ -522,6 +534,9 @@ void DayNight::expose(ssq::Class &cls) {
     cls.addFunc("getSunDirY", &DayNight::getSunDirY);
     cls.addFunc("getSunDirZ", &DayNight::getSunDirZ);
     cls.addFunc("getSunIntensity", &DayNight::getSunIntensity);
+    cls.addFunc("getSunR", &DayNight::getSunR);
+    cls.addFunc("getSunG", &DayNight::getSunG);
+    cls.addFunc("getSunB", &DayNight::getSunB);
     cls.addFunc("setTurbidity", &DayNight::setTurbidity);
     cls.addFunc("getTurbidity", &DayNight::getTurbidity);
     cls.addFunc("setSkyExposure", &DayNight::setSkyExposure);

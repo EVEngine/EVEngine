@@ -3,6 +3,7 @@
 
 #include "daynight/DayNight.h"
 
+#include <algorithm>
 #include <cmath>
 
 using namespace eve::daynight;
@@ -54,6 +55,20 @@ TEST_CASE("daynight.sunDirectionNormalized") {
     const float x = d.getSunDirX(), y = d.getSunDirY(), z = d.getSunDirZ();
     const float len = std::sqrt(x * x + y * y + z * z);
     CHECK(std::fabs(len - 1.0f) < 1e-3f);
+}
+
+TEST_CASE("daynight.sunColorWarmsNearHorizon") {
+    DayNight d;
+    d.setTimeOfDay(12.0f);
+    const float noonBlueRatio = d.getSunB() / std::max(d.getSunR(), 1e-6f);
+    d.setTimeOfDay(7.0f);
+    CHECK(d.getSunR() >= d.getSunG());
+    CHECK(d.getSunG() >= d.getSunB());
+    CHECK(d.getSunB() / std::max(d.getSunR(), 1e-6f) < noonBlueRatio);
+    d.setTimeOfDay(0.0f);
+    CHECK(d.getSunR() == 0.0f);
+    CHECK(d.getSunG() == 0.0f);
+    CHECK(d.getSunB() == 0.0f);
 }
 
 TEST_CASE("daynight.ambientBounded") {

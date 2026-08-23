@@ -33,6 +33,10 @@ daynight.update(dt, gfx);
 camera.setAmbient(daynight.getAmbientR(),
                   daynight.getAmbientG(),
                   daynight.getAmbientB());
+
+// 用同一套太阳方向和大气衰减颜色驱动体积云，日落霞光会与天空一致。
+cloud.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(), daynight.getSunDirZ());
+cloud.setCloudLightColor(daynight.getSunR(), daynight.getSunG(), daynight.getSunB());
 gfx.render3D();
 ```
 

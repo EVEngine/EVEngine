@@ -69,6 +69,12 @@ public:
     float getSunDirZ() const;
     /** @brief 0..1 sun energy; ramps to 0 below the horizon. */
     float getSunIntensity() const;
+    /** @brief Atmosphere-attenuated direct sunlight red channel, including intensity. */
+    float getSunR() const;
+    /** @brief Atmosphere-attenuated direct sunlight green channel, including intensity. */
+    float getSunG() const;
+    /** @brief Atmosphere-attenuated direct sunlight blue channel, including intensity. */
+    float getSunB() const;
 
     // ---- atmosphere ----
     /** @brief Set aerosol turbidity. 1.5 is very clear; 10 is hazy. */
