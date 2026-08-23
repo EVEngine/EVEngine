@@ -72,10 +72,11 @@ std::string bootstrapBundledVulkan() {
     const std::string exeDir = exe.substr(0, slash);
 
     // Packaged EVEngine distributions ship the loader + MoltenVK next to the
-    // executable: ../lib in the flat SDK layout (dist/eve-sdk/macosx), or
+    // executable: ../lib in the flat SDK layout (dist/eve-sdk/macosx), lib in
+    // a packaged game (eve package copies the SDK lib/ tree to <out>/lib), or
     // ../Frameworks inside an .app bundle.
     const std::string dir = [&]() -> std::string {
-        for (const char *rel : {"../lib", "../Frameworks"}) {
+        for (const char *rel : {"../lib", "lib", "../Frameworks"}) {
             const std::string candidate = exeDir + "/" + rel;
             if (::access((candidate + "/libvulkan.1.dylib").c_str(), R_OK) == 0)
                 return candidate;
