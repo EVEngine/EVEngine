@@ -56,6 +56,7 @@
 - [Sprite-Stacking](modules/spritestack.md)：把 3D 模型切成多层 RGBA 图，以叠片方式渲染成伪 3D 物体（经典 billboard 切片 / 水平俯视切片）。
 - [昼夜循环](modules/daynight.md)：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。
 - [天气系统](modules/weather.md)：实时降水 / 闪电 / 风场，含雨、雪、雷暴预置与风暴氛围。
+- [可交互积雪](modules/snow.md)：深度场积雪，真实位移深坑 + POM 微细节 + 降雪回填（脚印 / 弹坑 / 行走痕迹）。
 - [Avatar 分层渲染](modules/avatar.md)：Image 图层 / Live2D / VRoid 立绘，表达式、口型与动作。
 - [对话与剧情](modules/dialogue.md)：角色舞台、打字机、选项分支、口型与台词池（.dnut）。
 - [3D 相机控制器](modules/camera.md)：跟随 / 环绕 / 俯视 / 第一人称 / 过场视角序列。

@@ -225,10 +225,17 @@ bool Graphics::releaseTexture(Texture *texture) {
 bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     if (!tex || !data) return false;
     if (data->getFormat() != "RGBA8") return false;
-    const int w = data->getWidth();
-    const int h = data->getHeight();
-    const auto *rgba = static_cast<const uint8_t *>(data->getData());
-    if (w <= 0 || h <= 0 || !rgba) return false;
+    return replaceTexturePixelsRGBA(tex, data->getWidth(), data->getHeight(),
+                                    static_cast<const uint8_t *>(data->getData()));
+}
+
+bool Graphics::updateTexture(Texture *tex, int width, int height, const uint8_t *rgba) {
+    if (!tex || width <= 0 || height <= 0 || !rgba) return false;
+    return replaceTexturePixelsRGBA(tex, width, height, rgba);
+}
+
+bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_t *rgba) {
+    if (!tex || !rgba || w <= 0 || h <= 0 || !initialized) return false;
 
     TextureCreateInfo info;
     info.sampler = tex->sampler;

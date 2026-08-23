@@ -36,6 +36,15 @@ for (local i = 0; i < gizmo.getPartCount(); i++) {
 }
 ```
 
+```squirrel
+// 高度图地形网格（配合 procgen.generateHeightmap / procgen.newHeightmap）。
+// Smooth 变体用高度场梯度生成平滑顶点法线，坑/坡连续着色（无平直三角片）。
+local mesh = editor.newHeightmapMeshSmooth(hm, 0.5, 3.2);
+terrainEnt.setMesh(mesh);
+// 高度图编辑后原地更新（复用 GPU 缓冲，指针不变）
+editor.updateHeightmapMeshSmooth(mesh, gfx, hm, 0.5, 3.2);
+```
+
 ## 地图笔刷
 
 ```squirrel
@@ -100,7 +109,7 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory`
+- 模块：`newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
 - Gizmo：`setMode` / `setSpace` / `setPosition` / `setRotationEuler` / `setScale` / `setBounds` / `setSnap*` / `pick` / `beginDrag` / `updateDrag` / `endDrag` / `getPart*`
 - Manager：`set*Enabled` / `attach` / `detach` / `getGizmo` / `pick` / `beginDrag` / `updateDrag`
 - Brush：`setTool` / `setSize` / `setShape` / `setTile` / `paintAt` / `eraseAt` / `floodFill` / `paintLine` / `paintRect` / `preview*` / `getChange*`
