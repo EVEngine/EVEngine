@@ -63,7 +63,8 @@ eve_update = function(dt) {
 
     local mx = mouse.getX();
     local my = mouse.getY();
-    local left = mouse.isDown(0);
+    // 1 = 左键，2 = 右键（与 engine mouse::isDown 一致）。
+    local left = mouse.isDown(1);
     local right = mouse.isDown(2);
 
     // Cloth grab on the left half; fluid interact on the tank.

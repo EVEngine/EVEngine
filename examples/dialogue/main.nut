@@ -36,7 +36,8 @@ function keyPressed(name) {
 }
 
 function mouseClicked() {
-    return edgePressed("m0", mouse.isDown(0));
+    // 1 = 左键（与 engine mouse::isDown 一致）。
+    return edgePressed("m0", mouse.isDown(1));
 }
 
 function touchTapped() {
