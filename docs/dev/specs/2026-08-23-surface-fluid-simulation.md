@@ -1,8 +1,24 @@
 # 表面流体模拟（Surface Fluid Simulation）
 
-EVEngine 的可交互表面流体方案：粒子被约束在模型的有符号距离场（SDF）上，在
-重力切向分量驱动下沿表面流动，通过 PBF 密度约束、Akinci 式凝聚力/粘附力形成
-液滴，用 Bingham 屈服应力模拟污泥，最后用屏幕空间表面重建（SSF）管线渲染。
+EVEngine 的可交互表面流体方案，目标是建筑、玻璃、角色、机械和植被上的水珠、
+流痕与薄湿膜，而不是通用体积 3D 流体。动态模型以“三角形 id + 重心坐标”保存
+稳定的材质空间地址；连续湿膜将使用表面场，凸起水滴使用表面粒子，脱离后转为
+世界空间粒子。SDF 保留为世界空间撞击、重新附着与无网格数据时的降级碰撞表示。
+
+## 动态表面架构
+
+`FluidSurfaceBinding` 是动态表面的统一基础：
+
+- 静态/刚体模型通过 `setTransform` 更新当前和上一帧世界空间顶点；
+- 蒙皮、morph 和程序化植被通过 `setDeformedPositions` 提交变形后顶点；
+- 水滴地址不保存世界位置，而保存三角形与重心坐标，因此随模型稳定运动；
+- 三角形邻接负责跨面推进，开放边缘返回未消费位移供脱离逻辑使用；
+- 表面点速度由当前/上一帧重心插值位置计算。
+
+`SurfaceDropletSimulation` 是 CPU 参考水滴求解器：切向重力在表面参考系中积分，
+模型加速度作为相对惯性参与运动；水滴在附着不足或到达开放边缘时输出
+`DetachedDroplet` 世界空间状态；CPU 路径已支持合并、湿痕沉积与重新附着，GPU
+镜像在后续阶段接入。
 
 ## 背景与选型
 
@@ -35,6 +51,9 @@ src/modules/fluids/
 ├── FluidGpuKernels.h       GLSL 求解内核（clear/build/densityLambda/delta/apply/integrate）
 ├── FluidSurfaceRenderer.{h,cpp} SSF 渲染器（CPU 参考 + GPU 内核编排）
 ├── FluidSsfKernels.h       GLSL SSF 内核（clear/splat/smooth/normal/shade）
+├── FluidSurfaceBinding.{h,cpp} 动态三角形表面地址、运动与拓扑迁移
+├── SurfaceDropletSimulation.{h,cpp} 动态表面水滴 CPU 参考求解器
+├── SurfaceWetnessField.{h,cpp} 随网格变形的顶点湿膜、扩散与蒸发
 └── Fluids.{h,cpp}          模块工厂 + Squirrel 绑定（FluidSim / FluidSurface）
 ```
 
@@ -83,13 +102,15 @@ r.writePpm("fluid.ppm");                 // 调试输出
 
 ## 测试
 
-`test/fluids.cpp`（17 个用例，按 CTest 进程隔离）：
+`test/fluids.cpp`（25 个用例，按 CTest 进程隔离）：
 
 - 数学核函数、SDF（球/平面/三角网格对比解析球）；
 - CPU：表面下流、粘度阻尼、PBF 解压、cohesion 成团、adhesion 挂壁、
   Bingham 冻结低剪切运动、密度为正；
 - GPU（headless Vulkan）：表面下流、PBF+cohesion 聚类、SSF 管线
   （单粒子深度≈相机距、法线朝向相机、厚度/透明度为正、PPM 导出）。
+- 动态表面：刚体/变形 pose、重心插值速度、跨三角形推进、开放边缘脱离、
+  切向重力与表面加速度破坏附着。
 
 ## 性能预算
 
@@ -97,11 +118,37 @@ r.writePpm("fluid.ppm");                 // 调试输出
 粒子数、PBF/平滑迭代、分辨率全部可调；SSF 的窄带优化（NB-SSF）是后续
 降本项。
 
-## 已知后续工作（不在本 PR）
+## 分阶段路线
+
+1. **动态表面基础**：三角形/重心绑定、刚体和变形 pose、表面速度、跨面与开放
+   边缘；CPU 参考水滴支持切向重力、摩擦、动态惯性和脱离。
+2. **水滴系统**：GPU 常驻状态、邻域合并、接触角、尺寸相关附着、空间粒子撞击与
+   重新绑定，并接入 model3d/animation 的 pose 数据。
+3. **湿膜场**：独立 fluid UV/atlas 上的厚度、速度和 wetness；水滴轨迹沉积、
+   蒸发/吸收、聚集再生水滴以及 chart 接缝通量。
+4. **生产渲染**：湿润 PBR 材质、ellipsoid/sphere splat、场景深度/颜色合成、
+   折射、吸收、IBL/SSR、运动向量和 TAA。
+5. **质量与性能**：GPU compaction、稀疏图集、LOD/降频、窄带 SSF 与编辑器调试
+   视图。
+
+## 已实现的动态表面切片
+
+- `FluidSurfaceBinding` 使用三角形编号和重心坐标保存水滴地址，统一计算刚体、
+  蒙皮、形变及程序化动画的当前/上一帧 pose 和表面速度。
+- `SurfaceDropletSimulation` 已具备相对于表面加速度的重力、接触角尺寸、保体积
+  合并、开放边缘/惯性脱离、空间飞行及重新附着。
+- `SurfaceWetnessField` 在材质空间保存逐顶点湿膜。水滴滑行时留下湿痕，湿痕可
+  扩散和蒸发，不会因为模型平移、旋转或顶点形变而漂移。
+- `examples/surface-fluid-dynamic` 使用生产求解代码生成可复现的动态玻璃参考帧，
+  可在没有特定 GPU 的环境中进行视觉回归检查。
+
+![动态表面的水滴与湿痕](../../images/surface-fluid-dynamic.png)
+
+## 已知后续工作
 
 - 生产级 splat 渲染通道：需要给 graphics 2D 管线增加一个“存储缓冲 + 纹理”
   的自定义描述符集（或复用 gpgpu 缓冲作为 bindless SSBO），把 SSF 输出合成
   进主场景（GBuffer 深度/颜色做折射与遮挡），并支持鼠标拾取模型表面喷射。
-- 网格 SDF 资产管线：把 `MeshSdf::makeFromTriangles` 接到 model3d 加载路径，
-  支持任意模型与动态变换矩阵。
+- model3d/animation 接入：向 `FluidSurfaceBinding` 提供导入网格拓扑、专用 fluid UV
+  以及 CPU/GPU 蒙皮后的当前/上一帧 pose。
 - 高质量档：离屏低分辨率 marching cubes 表面重建。
