@@ -323,7 +323,6 @@ void FluidSurfaceRenderer::renderCpu() {
                 const float d  = smooth[size_t(yy) * size_t(W) + size_t(xx)];
                 return d < 1e29f ? d : smooth[idx];
             };
-            const float     d   = smooth[idx];
             const glm::vec3 dpx = (viewPos(x + 1, y, sd(1, 0)) - viewPos(x - 1, y, sd(-1, 0))) * 0.5f;
             const glm::vec3 dpy = (viewPos(x, y + 1, sd(0, 1)) - viewPos(x, y - 1, sd(0, -1))) * 0.5f;
             glm::vec3       n   = glm::normalize(glm::cross(dpx, dpy));

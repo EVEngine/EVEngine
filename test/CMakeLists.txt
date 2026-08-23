@@ -9,6 +9,7 @@ file(GLOB all_test_cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
+  fluids.cpp
   graphic.cpp
   graphics_font.cpp
   graphics_headless.cpp
