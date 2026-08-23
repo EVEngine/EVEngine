@@ -86,8 +86,10 @@ void SnowField::stampFootprint(float cx, float cz, float dirX, float dirZ, float
                                       (perp / across) * (perp / across));
             if (n > 1.2f) continue;
 
-            const float fall = smoothstep(0.f, 1.f, n);
-            const float depression = d * (1.f - fall);
+            // Flat-bottomed step profile: full depth out to ~72% of the
+            // footprint, then steep walls rising to the surface. Reads much
+            // clearer than a soft bowl once the mesh is smooth-shaded.
+            const float depression = d * (1.f - smoothstep(0.72f, 1.f, n));
             // Kicked-snow mounds ringing the footprint: a per-cell hash makes
             // the raised rim lumpy (snow thrown to the side while walking),
             // instead of a perfect smooth ring.
@@ -166,10 +168,11 @@ std::vector<uint8_t> SnowField::toAlbedoRGBA() const {
     for (int z = 0; z < height_; ++z) {
         for (int x = 0; x < width_; ++x) {
             const float s = data_[size_t(z) * width_ + x];
+            const float t = s * s;  // quadratic: floors show ground sooner
             const float n = (cellNoise(x, z) - 0.5f) * 0.05f;
             const size_t i = (size_t(z) * width_ + x) * 4;
             for (int c = 0; c < 3; ++c) {
-                const float v = kGround[c] + (kSnow[c] - kGround[c]) * s + n;
+                const float v = kGround[c] + (kSnow[c] - kGround[c]) * t + n;
                 rgba[i + c] = uint8_t(std::clamp(v * 255.f, 0.f, 255.f) + 0.5f);
             }
             rgba[i + 3] = 255;
@@ -179,7 +182,7 @@ std::vector<uint8_t> SnowField::toAlbedoRGBA() const {
 }
 
 std::vector<uint8_t> SnowField::toNormalRGBA() const {
-    constexpr float kStrength = 5.f;
+    constexpr float kStrength = 9.f;
     std::vector<uint8_t> rgba(size_t(width_) * size_t(height_) * 4, 0);
     if (width_ <= 0 || height_ <= 0) return rgba;
     auto sample = [&](int x, int z) -> float {

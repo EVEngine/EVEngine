@@ -44,7 +44,7 @@ const W = 96;            // heightmap cells
 const H = 96;
 const CELL = 0.5;        // world units per cell
 const HSCALE = 3.2;      // world units per unit of height
-const SNOW_SCALE = 0.07; // snow depth added to the heightmap (x HSCALE = world)
+const SNOW_SCALE = 0.09; // snow depth added to the heightmap (x HSCALE = world)
 const POM_SCALE = 0.06;  // parallax strength for the snow height texture
 
 function surfaceHeight(wx, wz) {
@@ -181,7 +181,7 @@ eve_update = function(dt) {
     local g = groundFromMouse(mouse.getX(), mouse.getY());
     if (g != null && mousePressed(0)) {
         sf.stampFootprint(g[0] / CELL, g[1] / CELL,
-                          cos(camAngle), sin(camAngle), 1.7, 0.52);
+                          cos(camAngle), sin(camAngle), 1.7, 0.75);
         rebuildTerrain();
     }
     if (g != null && mousePressed(2)) {
@@ -215,7 +215,7 @@ eve_update = function(dt) {
         stepTimer -= dt;
         if (stepTimer <= 0.0) {
             sf.stampFootprint(wx / CELL, wz / CELL, -sin(walkAngle), cos(walkAngle),
-                              1.6, 0.5);
+                              1.6, 0.7);
             stepTimer = 0.22;
         }
     } else {

@@ -135,9 +135,10 @@ TEST_CASE("SnowField.albedoBlendsSnowToGround") {
     CHECK(int(rgba[0]) <= 245);
     CHECK(int(rgba[3]) == 255);
 
-    // Albedo is a color ramp, not a copy of the height channel: at s = 0.5 the
-    // red channel must differ from the POM height texture's red (128).
-    f.fill(0.5f);
+    // Albedo is a color ramp, not a copy of the height channel: at s = 0.25 the
+    // red channel (~101, mostly ground) must differ from the height texture's
+    // red (64).
+    f.fill(0.25f);
     const int albedoR = int(f.toAlbedoRGBA()[0]);
     const int heightR = int(f.toHeightRGBA()[0]);
     CHECK(std::abs(albedoR - heightR) > 20);

@@ -33,7 +33,7 @@ sf.addSnowfall(dt * 0.05);
 
 // 4. 真实位移：合成最终高度图并原地重建地形网格
 local outHm = procgen.newHeightmap(W, H);
-snow.applyToHeightmap(sf, terrainHm, outHm, 0.07);   // out = terrain + snow*scale
+snow.applyToHeightmap(sf, terrainHm, outHm, 0.09);   // out = terrain + snow*scale
 editor.updateHeightmapMeshSmooth(terrainMesh, gfx, outHm, CELL, HSCALE);
 // 用 Smooth 变体：顶点法线来自高度场梯度，坑壁连续着色而不是平直三角片
 
