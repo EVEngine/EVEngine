@@ -2270,6 +2270,109 @@ TEST_CASE("voxel.terrain.fill_columns") {
     CHECK_EQ(highWorld.getChunk(0, 1, 0)->totalRectCount(), 0);
 }
 
+TEST_CASE("voxel.terrain.param_api_sand_band") {
+    VoxelWorld world;
+    world.setTerrainParam("seed", 123);
+    world.setTerrainParam("base", 0.f);
+    world.setTerrainParam("amplitude", 36.f);
+    world.setTerrainParam("scale", 1.f / 48.f);
+    world.setTerrainParam("island", 0.40f);
+    world.setTerrainParam("worldWidth", 512);
+    world.setTerrainParam("worldHeight", 512);
+    world.setTerrainParam("top", 1);
+    world.setTerrainParam("sub", 2);
+    world.setTerrainParam("stone", 3);
+    world.setTerrainParam("sand", 5);
+    world.setTerrainParam("sandLevel", 0.40f);
+    world.setTerrainParam("enable", 1.f);
+    CHECK(world.terrainEnabled());
+    const int created = world.streamAround(8, 0, 8, 0).created;
+    CHECK_EQ(created, 1);
+
+    Chunk *c = world.getChunk(8, 0, 8);
+    REQUIRE(c != nullptr);
+
+    // Same sampler config as the world uses (base/amplitude are the voxel-side
+    // height mapping; the sampler itself stays in normalized [0, 1]).
+    eve::procgen::TerrainSampler sampler;
+    sampler.setSeed(123);
+    sampler.setFrequency(1.f / 48.f);
+    sampler.setIsland(0.40f);
+    sampler.setWorldSize(512, 512);
+
+    int sandSeen = 0;
+    int grassSeen = 0;
+    for (int lx = 0; lx < 32; ++lx) {
+        for (int lz = 0; lz < 32; ++lz) {
+            const float e = sampler.sample(float(8 * 32 + lx), float(8 * 32 + lz));
+            const int h = int(std::floor(0.f + 36.f * e));
+            if (h < 0 || h >= 32) continue;
+            const uint8_t top = c->get(lx, h, lz);
+            if (e <= 0.40f) {
+                CHECK_EQ(int(top), 5);  // sand band
+                ++sandSeen;
+            } else {
+                CHECK_EQ(int(top), 1);  // grass elsewhere
+                ++grassSeen;
+            }
+        }
+    }
+    CHECK(sandSeen > 0);
+    CHECK(grassSeen > 0);
+
+    // Disabling the sand band restores the configured top texture everywhere.
+    VoxelWorld noSand;
+    noSand.setTerrainParam("seed", 123);
+    noSand.setTerrainParam("base", 0.f);
+    noSand.setTerrainParam("amplitude", 36.f);
+    noSand.setTerrainParam("scale", 1.f / 48.f);
+    noSand.setTerrainParam("island", 0.40f);
+    noSand.setTerrainParam("worldWidth", 512);
+    noSand.setTerrainParam("worldHeight", 512);
+    noSand.setTerrainParam("top", 1);
+    noSand.setTerrainParam("sub", 2);
+    noSand.setTerrainParam("stone", 3);
+    noSand.setTerrainParam("sand", 5);
+    noSand.setTerrainParam("sandLevel", 0.f);  // off
+    noSand.setTerrainParam("enable", 1.f);
+    noSand.streamAround(8, 0, 8, 0);
+    Chunk *ns = noSand.getChunk(8, 0, 8);
+    REQUIRE(ns != nullptr);
+    for (int lx = 0; lx < 32; ++lx)
+        for (int lz = 0; lz < 32; ++lz) {
+            const int h = noSand.terrainHeightAt(8 * 32 + lx, 8 * 32 + lz);
+            if (h < 0 || h >= 32) continue;
+            CHECK_EQ(int(ns->get(lx, h, lz)), 1);
+        }
+}
+
+TEST_CASE("voxel.terrain.param_api_deterministic_and_distinct") {
+    VoxelWorld a, b;
+    a.setTerrainParam("seed", 7);
+    a.setTerrainParam("island", 0.4f);
+    a.setTerrainParam("ridge", 0.7f);
+    a.setTerrainParam("worldWidth", 512);
+    a.setTerrainParam("worldHeight", 512);
+    a.setTerrainParam("enable", 1.f);
+    b.setTerrainParam("seed", 7);
+    b.setTerrainParam("island", 0.4f);
+    b.setTerrainParam("ridge", 0.7f);
+    b.setTerrainParam("worldWidth", 512);
+    b.setTerrainParam("worldHeight", 512);
+    b.setTerrainParam("enable", 1.f);
+    for (int i = 0; i < 100; ++i)
+        CHECK_EQ(a.terrainHeightAt(i * 5, i * 9), b.terrainHeightAt(i * 5, i * 9));
+
+    // Island falloff (worldSize + island) changes the shape vs the simple
+    // base/amplitude mapping of setTerrainParams.
+    VoxelWorld plain;
+    plain.setTerrainParams(7, 1, 2, 3, 8.f, 14.f, 1.f / 32.f);
+    bool anyDiff = false;
+    for (int i = 0; i < 400 && !anyDiff; ++i)
+        if (a.terrainHeightAt(i, i * 2) != plain.terrainHeightAt(i, i * 2)) anyDiff = true;
+    CHECK(anyDiff);
+}
+
 TEST_CASE("voxel.world.streamAround_evicts_and_creates") {
     VoxelWorld world;
     StreamStats s1 = world.streamAround(0, 0, 0, 2);
