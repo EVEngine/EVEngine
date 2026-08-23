@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "editor/Brush.h"
+#include "editor/BrushKernel.h"
 #include "editor/Editor.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
@@ -125,6 +126,40 @@ TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
     session.bindTarget(&terrain);
     CHECK(session.context().targetCapability<IScalarFieldTarget>() == scalars);
     CHECK(session.context().targetCapability<IIntFieldTarget>() == nullptr);
+}
+
+TEST_CASE("editor.brush_kernel.separates_shape_and_falloff") {
+    LinearBrushFalloff linear;
+    CircleBrushKernel circle(&linear);
+    BrushSample sample;
+    sample.centerX = 2.f;
+    sample.centerY = 2.f;
+    sample.radius = 2.f;
+    BrushSampleBuffer points;
+    circle.sample(sample, points);
+    CHECK(points.size() > 1);
+    bool foundCenter = false;
+    bool foundEdge = false;
+    for (int i = 0; i < points.size(); ++i) {
+        const auto &point = points.point(i);
+        if (point.x == 2 && point.y == 2) {
+            foundCenter = true;
+            CHECK_EQ(point.weight, 1.f);
+        }
+        if (point.x == 4 && point.y == 2) {
+            foundEdge = true;
+            CHECK_EQ(point.weight, 0.f);
+        }
+    }
+    CHECK(foundCenter);
+    CHECK(foundEdge);
+
+    ConstantBrushFalloff hard;
+    BoxBrushKernel box(&hard);
+    points.clear();
+    sample.radius = 1.f;
+    box.sample(sample, points);
+    CHECK_EQ(points.size(), 9);
 }
 
 TEST_CASE("editor.module.name") {
