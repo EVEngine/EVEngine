@@ -432,9 +432,11 @@ void Editor::expose(ssq::Table &table) {
     hist.addFunc("getLastTileNewGid", &EditorHistory::getLastTileNewGid);
 
     auto session = table.addClass<EditorSession>(
-        "EditorSession", std::function<EditorSession *()>([]() -> EditorSession * { return nullptr; }), true);
-    session.addFunc("addTool", std::function<bool(EditorSession *, ScriptEditorTool *)>(
-                                    [](EditorSession *self, ScriptEditorTool *tool) { return self->addTool(tool); }));
+        "EditorSession",
+        std::function<EditorSession *()>([]() -> EditorSession * { return nullptr; }), true);
+    session.addFunc(
+        "addTool", std::function<bool(EditorSession *, ScriptEditorTool *)>(
+                       [](EditorSession *self, ScriptEditorTool *tool) { return self->addTool(tool); }));
     session.addFunc("removeTool", &EditorSession::removeTool);
     session.addFunc("clearTools", &EditorSession::clearTools);
     session.addFunc("activateTool", &EditorSession::activateTool);
@@ -466,7 +468,8 @@ void Editor::expose(ssq::Table &table) {
                         }));
 
     auto scriptTool = table.addClass<ScriptEditorTool>(
-        "ScriptEditorTool", std::function<ScriptEditorTool *()>([]() -> ScriptEditorTool * { return nullptr; }), true);
+        "ScriptEditorTool",
+        std::function<ScriptEditorTool *()>([]() -> ScriptEditorTool * { return nullptr; }), true);
     scriptTool.addFunc("setShortcut", &ScriptEditorTool::setShortcut);
     scriptTool.addFunc("setActivateCallback", &ScriptEditorTool::setActivateCallback);
     scriptTool.addFunc("setDeactivateCallback", &ScriptEditorTool::setDeactivateCallback);

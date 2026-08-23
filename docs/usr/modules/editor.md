@@ -2,7 +2,19 @@
 
 **脚本入口：** `eve.Editor()`
 
-引擎**不附带**完整 3D 场景编辑器或 2D 地图编辑器，而是提供组装自定义编辑器所需的构件：3D 变换操作框、地图笔刷、以及 Toolbar / Inspector / Dock / History 等 UI 状态辅助。
+引擎**不附带**完整 3D 场景编辑器或 2D 地图编辑器，而是提供组装自定义编辑器所需的构件。新的工具协议不在核心中枚举“瓦片笔刷、地形隆起、摆放单位”等工具类型；任何实现 `IEditorTool` 的代码都能进入同一个会话。
+
+推荐把编辑器拆成五类可替换组件：
+
+| 协议 | 职责 |
+|------|------|
+| `IEditorTool` | 生命周期、输入与手势；原生或 Squirrel 工具一视同仁 |
+| `IEditableTarget` + capability | 被编辑对象；工具只查询自己需要的能力 |
+| `IBrushKernel` / `IFieldBrushOperation` | 笔刷形状、衰减和“画什么”分别组合 |
+| `IEditCommand` / `IEditConstraint` | 通用撤销事务与项目美术/玩法限制 |
+| `IEditorOverlay` / `IEditorInspector` | 与渲染器和 UI 框架无关的预览、属性呈现 |
+
+因此红警 2 / 帝国时代 2 风格的格子地图、魔兽 3 风格的 3D 地图和连续高度场不需要三套会话。它们分别提供目标 capability、工具和视口坐标转换即可。
 
 设计参考了 Three.js `TransformControls`、Babylon.js `GizmoManager`、ImGuizmo、Unity `GridBrushBase` 与 Godot 编辑器插件的常见 API 形态；详见[编辑器模块设计](../../dev/编辑器模块设计.md)。
 
@@ -45,7 +57,66 @@ terrainEnt.setMesh(mesh);
 editor.updateHeightmapMeshSmooth(mesh, gfx, hm, 0.5, 3.2);
 ```
 
+## 接口式工具会话（C++）
+
+```cpp
+EditorSession session;
+TileBufferTarget target("ground", &tiles);
+ConstantBrushFalloff hardEdge;
+CircleBrushKernel circle(&hardEdge);
+PaintIntFieldOperation paintGrass(17);
+FieldBrushTool paint("paint-grass", "Paint Grass", &circle, &paintGrass);
+
+session.bindTarget(&target);
+session.addTool(&paint);              // 接受任意 IEditorTool
+session.activateTool("paint-grass");
+
+EditorPointerEvent down;
+down.phase = EditorPointerEvent::Phase::Down;
+down.x = tileX;
+down.y = tileY;
+session.dispatchPointer(down);        // 自动开启一次可撤销 stroke
+```
+
+将 `TileBufferTarget` 换成 `HeightmapTarget`、把操作换成 `AddScalarFieldOperation`，同一个 `FieldBrushTool` 就成为带衰减的地形升降笔刷。项目也可以实现新的 `IEditableTarget` capability（对象放置、道路、区域、体素等）以及对应操作；无需修改 `EditorSession`。
+
+### 项目限制
+
+实现 `IEditConstraint::evaluate()` 并注册到 `session.constraints()`。约束可以允许、给出警告或拒绝任意 `IEditCommand`，例如锁定水岸坡度、限定可用 tile、吸附建筑朝向、阻止穿过地图边界。所有命令都经 `EditorContext::execute()` 进入约束和事务，拒绝的命令不会污染撤销栈。
+
+### 自定义呈现
+
+视口实现 `IEditorOverlay`，Inspector 实现 `IEditorInspector`。工具只输出圆、线、矩形、文本和属性意图，所以可同时接入 2.5D 正交视口、3D 透视视口、ImGui 或游戏自己的 UI。
+
+## Squirrel 自定义工具
+
+脚本工具也实现相同的 `IEditorTool` 协议。回调返回位标志：`1` 表示已处理，`2` 表示捕获指针，`4` 表示释放指针。
+
+```squirrel
+local editor = eve.Editor();
+local session = editor.newSession();
+local road = editor.newScriptTool("road", "Road");
+
+road.setActivateCallback(function() { previewRoad(); });
+road.setPointerCallback(function(phase, pointerId, button, x, y, dx, dy,
+                                 pressure, shift, control, alt) {
+    if (phase == 0) { beginRoad(x, y); return 1 | 2; } // Down
+    if (phase == 1) { updateRoad(x, y); return 1; }    // Move
+    if (phase == 2) { finishRoad(); return 1 | 4; }    // Up
+    cancelRoad(); return 1 | 4;
+});
+
+session.addTool(road);
+session.activateTool("road");
+// 视口负责把屏幕/射线坐标变换到工具坐标后转发。
+session.dispatchPointer(0, 0, 0, mapX, mapY, 0.0, 0.0, 1.0);
+```
+
+`EditorSession` 和工具都是非拥有关系；脚本必须像上例一样持有 `road`，直到从会话移除。
+
 ## 地图笔刷
+
+旧的 `Brush` / `EditorHistory` API 为兼容已有脚本保留。新编辑器优先使用上面的协议式会话；旧 API 适合很小的纯 tile 工具。
 
 ```squirrel
 local buf = editor.newTileBuffer(64, 64);
@@ -109,7 +180,8 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- 模块：`newSession` / `newScriptTool` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- 会话：`addTool` / `removeTool` / `activateTool` / `dispatchPointer` / `update` / `undo` / `redo`
 - Gizmo：`setMode` / `setSpace` / `setPosition` / `setRotationEuler` / `setScale` / `setBounds` / `setSnap*` / `pick` / `beginDrag` / `updateDrag` / `endDrag` / `getPart*`
 - Manager：`set*Enabled` / `attach` / `detach` / `getGizmo` / `pick` / `beginDrag` / `updateDrag`
 - Brush：`setTool` / `setSize` / `setShape` / `setTile` / `paintAt` / `eraseAt` / `floodFill` / `paintLine` / `paintRect` / `preview*` / `getChange*`
