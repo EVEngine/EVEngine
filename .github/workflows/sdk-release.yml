@@ -744,6 +744,13 @@ jobs:
         timeout-minutes: 20
         run: |
           set -euo pipefail
+          # Git Bash passes RUNNER_TEMP in Windows form (D:\a\_temp); normalize
+          # before mkdir/tar (see consumer-test.sh for the same fix).
+          case "$(uname -s)" in
+            MINGW*|MSYS*|CYGWIN*)
+              RUNNER_TEMP="$(cygpath -u "$RUNNER_TEMP")"
+              ;;
+          esac
           found=0
           for tgz in packages/*/pkg-win32.tar.gz; do
             [ -f "$tgz" ] || continue
