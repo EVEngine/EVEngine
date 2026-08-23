@@ -6,6 +6,8 @@ file(GLOB all_test_cpp
   data.cpp
   decal.cpp
   decal_script.cpp
+  crowd.cpp
+  crowd_script.cpp
   resource.cpp
   state_value.cpp
   json.cpp

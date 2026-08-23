@@ -366,7 +366,7 @@ TEST_CASE("crowd.sim.removeAgentSwapPop") {
     crowd->buildFlowField(4, 4);
     const int a = crowd->addAgent(0.f, 0.f, 0.f, 4.f);
     const int b = crowd->addAgent(32.f, 0.f, 0.f, 4.f);
-    const int c = crowd->addAgent(64.f, 0.f, 0.f, 4.f);
+    crowd->addAgent(64.f, 0.f, 0.f, 4.f);
     REQUIRE_EQ(crowd->getAgentCount(), 3);
 
     REQUIRE(crowd->removeAgent(b));
