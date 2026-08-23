@@ -1,12 +1,14 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 namespace eve::editor {
 
 class EditorSession;
 class IEditableTarget;
 class EditorTransactions;
+class IEditCommand;
 
 /** @brief Pointer input normalized by an editor viewport adapter. */
 struct EditorPointerEvent {
@@ -62,6 +64,8 @@ public:
     /** @brief Target currently bound to the session, or nullptr. */
     IEditableTarget *target() const { return target_; }
     EditorTransactions &transactions() const;
+    /** @brief Send a command through constraints into the active transaction. */
+    bool execute(std::unique_ptr<IEditCommand> command) const;
 
     template <typename Capability>
     Capability *targetCapability() const;

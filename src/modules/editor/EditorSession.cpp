@@ -8,6 +8,15 @@ EditorSession::EditorSession() : context_(this) {}
 
 EditorTransactions &EditorContext::transactions() const { return session_->transactions(); }
 
+bool EditorContext::execute(std::unique_ptr<IEditCommand> command) const {
+    return session_ && session_->execute(std::move(command));
+}
+
+bool EditorSession::execute(std::unique_ptr<IEditCommand> command) {
+    if (!command || !constraints_.evaluate(context_, *command)) return false;
+    return transactions_.execute(std::move(command));
+}
+
 EditorSession::~EditorSession() { deactivateCurrent(); }
 
 bool EditorSession::addTool(IEditorTool *tool) {

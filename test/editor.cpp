@@ -9,6 +9,7 @@
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorTransactions.h"
+#include "editor/EditConstraint.h"
 #include "editor/EditorToolbar.h"
 #include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
@@ -51,6 +52,15 @@ public:
     int pointerEvents = 0;
     int keyEvents = 0;
     int updates = 0;
+};
+
+class RejectLargeEdit final : public IEditConstraint {
+public:
+    ConstraintResult evaluate(EditorContext &, IEditCommand &command) override {
+        const EditRegion region = command.dirtyRegion();
+        if (!region.empty() && region.maxX - region.minX > 1) return ConstraintResult::reject("edit too wide");
+        return ConstraintResult::warning("checked");
+    }
 };
 }  // namespace
 
@@ -191,6 +201,30 @@ TEST_CASE("editor.transactions.undo_redo_and_rollback_any_field") {
     CHECK_EQ(buffer.getGid(0, 0), 9);
     CHECK(transactions.rollback());
     CHECK_EQ(buffer.getGid(0, 0), 0);
+}
+
+TEST_CASE("editor.constraints.accept_warn_and_reject_without_core_types") {
+    TileBuffer buffer(4, 2);
+    TileBufferTarget target("tiles", &buffer);
+    EditorSession session;
+    session.bindTarget(&target);
+    RejectLargeEdit constraint;
+    CHECK(session.constraints().add(&constraint));
+    CHECK(session.transactions().begin("constrained"));
+
+    auto allowed = std::make_unique<IntFieldEditCommand>("small", &target);
+    CHECK(allowed->record(0, 0, 1));
+    CHECK(session.context().execute(std::move(allowed)));
+    CHECK_EQ(session.constraints().diagnosticCount(), 1);
+    CHECK_EQ(session.constraints().diagnostic(0), std::string("checked"));
+
+    auto rejected = std::make_unique<IntFieldEditCommand>("wide", &target);
+    CHECK(rejected->record(0, 1, 2));
+    CHECK(rejected->record(3, 1, 2));
+    CHECK(!session.context().execute(std::move(rejected)));
+    CHECK(session.constraints().rejected());
+    CHECK_EQ(buffer.getGid(0, 1), 0);
+    CHECK(session.transactions().commit());
 }
 
 TEST_CASE("editor.module.name") {

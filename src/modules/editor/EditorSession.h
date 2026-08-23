@@ -2,6 +2,7 @@
 
 #include "editor/EditorTool.h"
 #include "editor/EditorTransactions.h"
+#include "editor/EditConstraint.h"
 
 #include <string>
 #include <vector>
@@ -55,6 +56,9 @@ public:
     void bindTarget(IEditableTarget *target) { context_.target_ = target; }
     IEditableTarget *target() const { return context_.target_; }
     EditorTransactions &transactions() { return transactions_; }
+    EditConstraintPipeline &constraints() { return constraints_; }
+    /** @brief Validate then execute a command in the active transaction. */
+    bool execute(std::unique_ptr<IEditCommand> command);
 
 private:
     void deactivateCurrent();
@@ -64,6 +68,7 @@ private:
     int capturedPointerId_ = -1;
     EditorContext context_;
     EditorTransactions transactions_;
+    EditConstraintPipeline constraints_;
 };
 
 }  // namespace eve::editor
