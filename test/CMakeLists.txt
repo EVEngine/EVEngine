@@ -86,6 +86,7 @@ file(GLOB all_test_cpp
   dialogue_proc_script.cpp
   physics_cloth.cpp
   procgen.cpp
+  urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
   procgen_simulation.cpp
