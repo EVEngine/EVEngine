@@ -15,6 +15,7 @@ if (!("uiReady" in getroottable())) uiReady <- false;
 if (!("camAngle" in getroottable())) camAngle <- 0.0;
 if (!("autoOrbit" in getroottable())) autoOrbit <- true;
 if (!("props" in getroottable())) props <- [];
+if (!("clouds" in getroottable())) clouds <- null;
 
 // Firefly spawn ring around the campfire.
 fireflies <- [];
@@ -122,6 +123,19 @@ eve_init = function() {
     daynight.setNightLight("fire", true);
     daynight.setNightLight("fireflies", true);
     daynight.setSkyboxEnabled(true);
+
+    // Render a bounded cloud deck from the same sun direction/color as DayNight.
+    local rc = gfx.getRenderControl();
+    rc.enable("gbuffer");
+    rc.compile();
+    clouds = gfx.newVolumetric();
+    clouds.setMode("cloud");
+    clouds.setQuality("high");
+    clouds.setCloudLayer(8.0, 15.0);
+    clouds.setCloudCoverage(0.62);
+    clouds.setCloudDensity(1.05);
+    clouds.setCloudScale(20.0);
+    clouds.setCloudWind(0.7, 0.22);
 };
 
 eve_update = function(dt) {
@@ -141,6 +155,12 @@ eve_update = function(dt) {
     if (key_just_pressed("left")) daynight.setTimeOfDay(12.0);
 
     daynight.update(dt, gfx);
+
+    clouds.setCamera(math.polarX(17.0, camAngle), 7.5, math.polarY(17.0, camAngle),
+        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 55.0, 1.6, 0.1, 100.0);
+    clouds.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(), daynight.getSunDirZ());
+    clouds.setCloudLightColor(daynight.getSunR(), daynight.getSunG(), daynight.getSunB());
+    clouds.setTime(daynight.getTimeOfDay() * 12.0);
 
     // Feed the module's ambient / sky into the camera each frame.
     camera.setAmbient(daynight.getAmbientR(), daynight.getAmbientG(), daynight.getAmbientB());
@@ -162,5 +182,7 @@ eve_update = function(dt) {
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
+    local gbuffer = gfx.getRenderControl().getGBuffer();
+    if (gbuffer.isValid()) clouds.renderClouds(gfx, gbuffer.getDepthTexture());
     ui.beginFrameAndRender();
 };
