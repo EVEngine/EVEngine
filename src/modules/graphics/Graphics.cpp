@@ -490,11 +490,20 @@ void Graphics::expose(ssq::Table& table) {
     vol.addFunc("setFogStart", &Volumetric::setFogStart);
     vol.addFunc("setFogEnd", &Volumetric::setFogEnd);
     vol.addFunc("setFogNoise", &Volumetric::setFogNoise);
+    vol.addFunc("setCloudLayer", &Volumetric::setCloudLayer);
+    vol.addFunc("setCloudCoverage", &Volumetric::setCloudCoverage);
+    vol.addFunc("setCloudDensity", &Volumetric::setCloudDensity);
+    vol.addFunc("setCloudScale", &Volumetric::setCloudScale);
+    vol.addFunc("setCloudWind", &Volumetric::setCloudWind);
+    vol.addFunc("setCloudLightColor", &Volumetric::setCloudLightColor);
     vol.addFunc("applyFog", &Volumetric::applyFog);
     vol.addFunc("applyFogTo", &Volumetric::applyFogTo);
+    vol.addFunc("renderClouds", &Volumetric::renderClouds);
+    vol.addFunc("renderCloudsTo", &Volumetric::renderCloudsTo);
     vol.addFunc("getShader", &Volumetric::getShader);
     vol.addFunc("getRayMarchShader", &Volumetric::getRayMarchShader);
     vol.addFunc("getFogShader", &Volumetric::getFogShader);
+    vol.addFunc("getCloudShader", &Volumetric::getCloudShader);
 
     auto grassField = table.addClass<GrassField>(
         "GrassField", std::function<GrassField*()>([]() -> GrassField* { return nullptr; }), true);

@@ -15,6 +15,7 @@ FRAGS = [
     "volumetric_post.frag",
     "volumetric_raymarch.frag",
     "volumetric_fog.frag",
+    "volumetric_cloud.frag",
 ]
 
 

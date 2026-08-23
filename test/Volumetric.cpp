@@ -279,6 +279,31 @@ TEST_CASE("volumetric.modeAndRayMarchQuality") {
     CHECK(vol->getSampleCount() == 48);
 }
 
+TEST_CASE("volumetric.cloudModeParametersAndQuality") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol != nullptr);
+    REQUIRE(vol->getCloudShader() != nullptr);
+    vol->setMode("cloud");
+    vol->setCloudLayer(6.f, 14.f);
+    vol->setCloudCoverage(0.72f);
+    vol->setCloudDensity(1.3f);
+    vol->setCloudScale(22.f);
+    vol->setCloudWind(2.f, -0.5f);
+    vol->setCloudLightColor(1.f, 0.65f, 0.35f);
+    CHECK(std::fabs(vol->getFloat("cloudBottom") - 6.f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("cloudTop") - 14.f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("cloudCoverage") - 0.72f) < 1e-5f);
+    vol->setQuality("low");
+    CHECK(vol->getSampleCount() == 16);
+    vol->setQuality("high");
+    CHECK(vol->getSampleCount() == 64);
+    win->close();
+}
+
 namespace {
 
 struct BoxDepth {
