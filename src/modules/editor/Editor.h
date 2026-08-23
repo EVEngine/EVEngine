@@ -2,6 +2,8 @@
 
 #include "common/Module.h"
 
+#include <string>
+
 namespace eve {
 namespace graphics {
 class Graphics;
@@ -25,6 +27,8 @@ class EditorInspector;
 class EditorDock;
 class EditorHistory;
 class EditorSession;
+class TileBufferTarget;
+class HeightmapTarget;
 
 /**
  * @brief Editor building blocks — not a shipped 3D/map editor app.
@@ -51,8 +55,11 @@ public:
     EditorHistory   *newHistory();
     /** @brief Create a host for interchangeable IEditorTool implementations. */
     EditorSession   *newSession();
-
+    /** @brief Adapt existing fields to capability-based editor targets. */
+    TileBufferTarget *newTileBufferTarget(const std::string &id, TileBuffer *buffer);
 #ifdef EVENGINE_HAS_PROCGEN
+    HeightmapTarget  *newHeightmapTarget(const std::string &id, procgen::Heightmap *heightmap);
+
     /**
      * Build a flat-shaded terrain mesh from a heightmap (grid of cells,
      * X/Z in world units = index * cellSize, Y = height * heightScale).

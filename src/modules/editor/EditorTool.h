@@ -5,6 +5,7 @@
 namespace eve::editor {
 
 class EditorSession;
+class IEditableTarget;
 
 /** @brief Pointer input normalized by an editor viewport adapter. */
 struct EditorPointerEvent {
@@ -57,9 +58,16 @@ public:
 
     /** @brief Session currently dispatching the tool callback. */
     EditorSession *session() const { return session_; }
+    /** @brief Target currently bound to the session, or nullptr. */
+    IEditableTarget *target() const { return target_; }
+
+    template <typename Capability>
+    Capability *targetCapability() const;
 
 private:
+    friend class EditorSession;
     EditorSession *session_ = nullptr;
+    IEditableTarget *target_ = nullptr;
 };
 
 /** @brief UI-facing metadata supplied by a tool implementation. */
@@ -110,5 +118,16 @@ public:
     /** @brief Cancel the active gesture while keeping the tool selected. */
     virtual void cancel(EditorContext &context) { (void)context; }
 };
+
+}  // namespace eve::editor
+
+#include "editor/EditorTarget.h"
+
+namespace eve::editor {
+
+template <typename Capability>
+Capability *EditorContext::targetCapability() const {
+    return target_ ? target_->query<Capability>() : nullptr;
+}
 
 }  // namespace eve::editor

@@ -6,6 +6,7 @@
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
+#include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
@@ -151,7 +152,16 @@ EditorHistory *Editor::newHistory() { return new EditorHistory(); }
 
 EditorSession *Editor::newSession() { return new EditorSession(); }
 
+TileBufferTarget *Editor::newTileBufferTarget(const std::string &id, TileBuffer *buffer) {
+    return new TileBufferTarget(id, buffer);
+}
+
 #ifdef EVENGINE_HAS_PROCGEN
+HeightmapTarget *Editor::newHeightmapTarget(const std::string &id,
+                                            procgen::Heightmap *heightmap) {
+    return new HeightmapTarget(id, heightmap);
+}
+
 graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,
                                          float heightScale) {
     auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");

@@ -50,6 +50,9 @@ public:
     int capturedPointerId() const { return capturedPointerId_; }
     EditorContext &context() { return context_; }
     const EditorContext &context() const { return context_; }
+    /** @brief Bind a non-owning editable target available to every tool callback. */
+    void bindTarget(IEditableTarget *target) { context_.target_ = target; }
+    IEditableTarget *target() const { return context_.target_; }
 
 private:
     void deactivateCurrent();

@@ -8,11 +8,13 @@
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
+#include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
 
 #include "common/Exception.h"
+#include "procgen/heightmap/Heightmap.h"
 
 #include <cmath>
 #include <memory>
@@ -94,6 +96,35 @@ TEST_CASE("editor.session.routes_tool_lifecycle_and_capture") {
     CHECK(session.removeTool("second"));
     CHECK_EQ(second.deactivations, 1);
     CHECK_EQ(session.activeToolId(), std::string(""));
+}
+
+TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
+    TileBuffer buffer(4, 3);
+    TileBufferTarget tiles("ground", &buffer);
+    IEditableTarget *base = &tiles;
+    auto *ints = base->query<IIntFieldTarget>();
+    CHECK(ints != nullptr);
+    CHECK(base->query<IScalarFieldTarget>() == nullptr);
+    CHECK(ints->writeInt(2, 1, 9));
+    CHECK(!ints->writeInt(2, 1, 9));
+    CHECK_EQ(ints->readInt(2, 1), 9);
+    CHECK_EQ(tiles.revision(), 1ULL);
+    CHECK_EQ(tiles.dirtyRegion().minX, 2);
+    tiles.clearDirtyRegion();
+    CHECK(tiles.dirtyRegion().empty());
+
+    eve::procgen::Heightmap heightmap(3, 3);
+    HeightmapTarget terrain("height", &heightmap);
+    auto *scalars = terrain.query<IScalarFieldTarget>();
+    CHECK(scalars != nullptr);
+    CHECK(scalars->writeScalar(1, 1, 0.75f));
+    CHECK_EQ(scalars->readScalar(1, 1), 0.75f);
+    CHECK(scalars->sampleScalar(1.f, 1.f) == 0.75f);
+
+    EditorSession session;
+    session.bindTarget(&terrain);
+    CHECK(session.context().targetCapability<IScalarFieldTarget>() == scalars);
+    CHECK(session.context().targetCapability<IIntFieldTarget>() == nullptr);
 }
 
 TEST_CASE("editor.module.name") {
