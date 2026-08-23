@@ -31,8 +31,8 @@ function rebuildBush() {
     p.setFloat("height", 1.7);
     p.setFloat("width", 2.6);
     p.setInt("blobs", 12);
-    p.setInt("rings", 3);
-    p.setInt("radialSegments", 8);
+    p.setInt("rings", 5);
+    p.setInt("radialSegments", 12);
     p.setFloat("leafSize", 0.32);
     p.setInt("twigs", 6);
     bushMesh = procgen.generateMesh("mesh.bush", p, gfx);
