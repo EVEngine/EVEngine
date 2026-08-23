@@ -7,6 +7,7 @@
 #include <sys/syslimits.h>
 #include <unistd.h>
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -91,8 +92,37 @@ std::string bootstrapBundledVulkan() {
     // VK_ICD_FILENAMES at <dir>/MoltenVK_icd.json is enough. Respect an
     // explicit user override.
     const std::string icd = dir + "/MoltenVK_icd.json";
-    if (::access(icd.c_str(), R_OK) == 0 && ::getenv("VK_ICD_FILENAMES") == nullptr)
+    if (::access(icd.c_str(), R_OK) == 0 && ::getenv("VK_ICD_FILENAMES") == nullptr) {
+        // The Khronos loader resolves library_path with dlopen() and searches
+        // the process cwd / system directories — NOT the manifest directory —
+        // so a relative "libMoltenVK.dylib" never loads and the ICD is ignored
+        // (surface extensions then appear missing). Rewrite the manifest with
+        // the absolute dylib path before pointing the loader at it.
+        std::string json;
+        if (FILE *f = std::fopen(icd.c_str(), "rb")) {
+            char buf[512];
+            size_t n;
+            while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) json.append(buf, n);
+            std::fclose(f);
+        }
+        const std::string absLib = dir + "/libMoltenVK.dylib";
+        const std::string key = "\"library_path\"";
+        const auto keyPos = json.find(key);
+        if (keyPos != std::string::npos) {
+            const auto colonPos = json.find(':', keyPos);
+            const auto q1 = json.find('"', colonPos);
+            const auto q2 = json.find('"', q1 + 1);
+            if (colonPos != std::string::npos && q1 != std::string::npos &&
+                q2 != std::string::npos && q2 > q1) {
+                json.replace(q1, q2 - q1 + 1, "\"" + absLib + "\"");
+                if (FILE *f = std::fopen(icd.c_str(), "wb")) {
+                    std::fwrite(json.data(), 1, json.size(), f);
+                    std::fclose(f);
+                }
+            }
+        }
         ::setenv("VK_ICD_FILENAMES", icd.c_str(), 1);
+    }
 
     return dir;
 }
