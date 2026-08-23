@@ -103,6 +103,8 @@ public:
     void clear();
 
 private:
+    void stepSubstep(float dt, float poseDt);
+
     FluidSurfaceBinding*          binding_ = nullptr;
     SurfaceDropletParams          params_;
     SurfaceWetnessField*          wetness_ = nullptr;

@@ -40,17 +40,25 @@ bool SurfaceDropletSimulation::addDroplet(const SurfaceLocation& location, float
 void SurfaceDropletSimulation::step(float dt) {
     detached_.clear();
     if (!binding_ || !binding_->isValid() || dt <= 0.f || (droplets_.empty() && airborne_.empty())) return;
-    dt = std::min(dt, 0.05f);
+    float remaining = dt;
+    while (remaining > 1e-7f) {
+        const float substep = std::min(remaining, 0.05f);
+        stepSubstep(substep, dt);
+        remaining -= substep;
+    }
+}
+
+void SurfaceDropletSimulation::stepSubstep(float dt, float poseDt) {
 
     std::vector<SurfaceDroplet> attached;
     attached.reserve(droplets_.size());
     for (SurfaceDroplet droplet : droplets_) {
         const SurfaceLocation previousLocation = droplet.location;
-        const SurfaceSample previousSample = binding_->evaluate(previousLocation, dt);
-        const SurfaceSample sample = binding_->evaluate(droplet.location, dt);
+        const SurfaceSample previousSample = binding_->evaluate(previousLocation, poseDt);
+        const SurfaceSample sample = binding_->evaluate(droplet.location, poseDt);
         glm::vec3 surfaceAcceleration(0.f);
         if (droplet.hasPreviousSurfaceVelocity)
-            surfaceAcceleration = (sample.velocity - droplet.previousSurfaceVelocity) / dt;
+            surfaceAcceleration = (sample.velocity - droplet.previousSurfaceVelocity) / poseDt;
 
         const glm::vec3 relativeAcceleration = params_.gravity - surfaceAcceleration;
         const float outwardAcceleration = glm::dot(relativeAcceleration, sample.normal);
@@ -76,13 +84,13 @@ void SurfaceDropletSimulation::step(float dt) {
         if (!walk.valid) continue;
         droplet.location = walk.location;
         if (walk.reachedBoundary) {
-            const SurfaceSample edge = binding_->evaluate(walk.location, dt);
+            const SurfaceSample edge = binding_->evaluate(walk.location, poseDt);
             detached_.push_back({edge.position, edge.velocity + droplet.relativeVelocity, droplet.volume});
             airborne_.push_back({edge.position, edge.velocity + droplet.relativeVelocity, droplet.volume, 0.f});
             continue;
         }
 
-        const SurfaceSample end = binding_->evaluate(droplet.location, dt);
+        const SurfaceSample end = binding_->evaluate(droplet.location, poseDt);
         droplet.relativeVelocity -= end.normal * glm::dot(droplet.relativeVelocity, end.normal);
         droplet.previousSurfaceVelocity = end.velocity;
         droplet.hasPreviousSurfaceVelocity = true;
@@ -97,9 +105,9 @@ void SurfaceDropletSimulation::step(float dt) {
 
     // Merge overlapping spherical caps without depending on mesh UV seams.
     for (size_t i = 0; i < droplets_.size(); ++i) {
-        const SurfaceSample a = binding_->evaluate(droplets_[i].location, dt);
+        const SurfaceSample a = binding_->evaluate(droplets_[i].location, poseDt);
         for (size_t j = i + 1u; j < droplets_.size();) {
-            const SurfaceSample b = binding_->evaluate(droplets_[j].location, dt);
+            const SurfaceSample b = binding_->evaluate(droplets_[j].location, poseDt);
             const float mergeDistance = params_.mergeRadiusScale *
                 (dropletRadius(droplets_[i].volume) + dropletRadius(droplets_[j].volume));
             if (glm::distance2(a.position, b.position) > mergeDistance * mergeDistance) {
@@ -125,7 +133,7 @@ void SurfaceDropletSimulation::step(float dt) {
         SurfaceLocation hit;
         if (drop.age > 0.08f &&
             binding_->project(drop.position, std::max(0.f, params_.reattachDistance), hit)) {
-            const SurfaceSample surface = binding_->evaluate(hit, dt);
+            const SurfaceSample surface = binding_->evaluate(hit, poseDt);
             if (glm::dot(drop.velocity - surface.velocity, surface.normal) <= 0.f) {
                 addDroplet(hit, drop.volume, drop.velocity - surface.velocity);
                 if (wetness_) wetness_->deposit(hit, drop.volume * 0.15f);

@@ -105,7 +105,7 @@ r.writePpm("fluid.ppm");                 // 调试输出
 ## 测试
 
 原有 `test/fluids.cpp` 的 16 个球面流体用例保持不变；新增动态表面能力放在
-`test/fluids_surface.cpp` 的 12 个独立用例中（均按 CTest 进程隔离）：
+`test/fluids_surface.cpp` 的 14 个独立用例中（均按 CTest 进程隔离）：
 
 - 数学核函数、SDF（球/平面/三角网格对比解析球）；
 - CPU：表面下流、粘度阻尼、PBF 解压、cohesion 成团、adhesion 挂壁、

@@ -3,13 +3,17 @@
 #include "fluids/FluidSurfaceBinding.h"
 
 #include <vector>
+#include <utility>
 
 namespace eve::fluids {
 
 /** @brief Parameters controlling persistent wet-film traces on a triangle surface. */
 struct SurfaceWetnessParams {
+    /** @brief Material-space diffusion rate per second. */
     float diffusion = 0.18f;
+    /** @brief Exponential evaporation rate per second. */
     float evaporation = 0.025f;
+    /** @brief Saturation limit for each field vertex. */
     float maxWetness = 1.f;
 };
 
@@ -42,6 +46,7 @@ public:
 private:
     std::vector<float>              values_;
     std::vector<std::vector<int>>   neighbors_;
+    std::vector<std::pair<uint32_t, uint32_t>> edges_;
     std::vector<glm::uvec3>         triangles_;
 };
 

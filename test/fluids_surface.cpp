@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <numeric>
 #include <vector>
 
 using namespace eve::fluids;
@@ -89,6 +90,34 @@ TEST_CASE("fluids.surfaceDroplet.gravityFlowsTangentially") {
     CHECK(drop.relativeVelocity.y < 0.f);
 }
 
+TEST_CASE("fluids.surfaceDroplet.largeStepMatchesFixedSubsteps") {
+    const std::vector<glm::vec3> positions = {
+        {-10.f, -10.f, 0.f}, {10.f, -10.f, 0.f}, {-10.f, 10.f, 0.f},
+    };
+    FluidSurfaceBinding oneFrameBinding;
+    FluidSurfaceBinding fixedBinding;
+    REQUIRE(oneFrameBinding.build(positions, {0, 1, 2}));
+    REQUIRE(fixedBinding.build(positions, {0, 1, 2}));
+    SurfaceDropletParams params;
+    params.friction = 0.f;
+    SurfaceDropletSimulation oneFrame(&oneFrameBinding, params);
+    SurfaceDropletSimulation fixed(&fixedBinding, params);
+    const SurfaceLocation start{0, glm::vec3(0.25f, 0.25f, 0.5f)};
+    REQUIRE(oneFrame.addDroplet(start));
+    REQUIRE(fixed.addDroplet(start));
+    oneFrame.step(0.2f);
+    for (int i = 0; i < 4; ++i) fixed.step(0.05f);
+    REQUIRE(oneFrame.droplets().size() == 1u);
+    REQUIRE(fixed.droplets().size() == 1u);
+    const glm::vec3 oneFramePosition =
+        oneFrameBinding.evaluate(oneFrame.droplets().front().location, 0.f).position;
+    const glm::vec3 fixedPosition =
+        fixedBinding.evaluate(fixed.droplets().front().location, 0.f).position;
+    CHECK(glm::distance(oneFramePosition, fixedPosition) < 1e-4f);
+    CHECK(glm::distance(oneFrame.droplets().front().relativeVelocity,
+                        fixed.droplets().front().relativeVelocity) < 1e-4f);
+}
+
 TEST_CASE("fluids.surfaceDroplet.openEdgeDetachesToWorld") {
     FluidSurfaceBinding binding;
     REQUIRE(binding.build({{0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}}, {0, 1, 2}));
@@ -150,6 +179,23 @@ TEST_CASE("fluids.surfaceWetness.depositDiffuseAndEvaporate") {
     wetness.step(0.1f, params);
     CHECK(wetness.values()[1] > 0.f);
     CHECK(wetness.values()[0] < 1.f);
+}
+
+TEST_CASE("fluids.surfaceWetness.diffusionConservesFilmMass") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {1.f, 1.f, 0.f}},
+                          {0, 1, 2, 2, 1, 3}));
+    SurfaceWetnessField wetness;
+    REQUIRE(wetness.build(binding));
+    wetness.deposit({0, glm::vec3(1.f, 0.f, 0.f)}, 0.8f);
+    const float before = std::accumulate(wetness.values().begin(), wetness.values().end(), 0.f);
+    SurfaceWetnessParams params;
+    params.diffusion = 1.f;
+    params.evaporation = 0.f;
+    params.maxWetness = 10.f;
+    wetness.step(0.1f, params);
+    const float after = std::accumulate(wetness.values().begin(), wetness.values().end(), 0.f);
+    CHECK(std::fabs(after - before) < 1e-6f);
 }
 
 TEST_CASE("fluids.surfaceRenderData.buildsTangentAreaPreservingCaps") {
