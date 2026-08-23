@@ -4,6 +4,7 @@
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
+#include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
 #include "editor/GizmoManager.h"
 #include "editor/TileBuffer.h"
@@ -147,6 +148,8 @@ EditorInspector *Editor::newInspector() { return new EditorInspector(); }
 EditorDock *Editor::newDock() { return new EditorDock(); }
 
 EditorHistory *Editor::newHistory() { return new EditorHistory(); }
+
+EditorSession *Editor::newSession() { return new EditorSession(); }
 
 #ifdef EVENGINE_HAS_PROCGEN
 graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,

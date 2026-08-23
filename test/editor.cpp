@@ -6,6 +6,7 @@
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
+#include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
 #include "editor/GizmoManager.h"
 #include "editor/TileBuffer.h"
@@ -18,6 +19,82 @@
 #include <string>
 
 using namespace eve::editor;
+
+namespace {
+class TestEditorTool final : public IEditorTool {
+public:
+    explicit TestEditorTool(std::string id) { desc.id = std::move(id); }
+    const ToolDescriptor &descriptor() const override { return desc; }
+    void activate(EditorContext &) override { ++activations; }
+    void deactivate(EditorContext &) override { ++deactivations; }
+    void cancel(EditorContext &) override { ++cancellations; }
+    ToolResponse pointerEvent(EditorContext &, const EditorPointerEvent &event) override {
+        ++pointerEvents;
+        if (event.phase == EditorPointerEvent::Phase::Down) return ToolResponse::capture();
+        if (event.phase == EditorPointerEvent::Phase::Up) return ToolResponse::release();
+        return ToolResponse::consumed();
+    }
+    ToolResponse keyEvent(EditorContext &, const EditorKeyEvent &) override {
+        ++keyEvents;
+        return ToolResponse::consumed();
+    }
+    void update(EditorContext &, float) override { ++updates; }
+
+    ToolDescriptor desc;
+    int activations = 0;
+    int deactivations = 0;
+    int cancellations = 0;
+    int pointerEvents = 0;
+    int keyEvents = 0;
+    int updates = 0;
+};
+}  // namespace
+
+TEST_CASE("editor.session.routes_tool_lifecycle_and_capture") {
+    EditorSession session;
+    TestEditorTool first("first");
+    TestEditorTool second("second");
+    CHECK(session.addTool(&first));
+    CHECK(session.addTool(&second));
+    CHECK(!session.addTool(&first));
+    CHECK_EQ(session.getToolCount(), 2);
+    CHECK(session.activateTool("first"));
+    CHECK_EQ(first.activations, 1);
+
+    EditorPointerEvent down;
+    down.phase = EditorPointerEvent::Phase::Down;
+    down.pointerId = 7;
+    CHECK(session.dispatchPointer(down).handled);
+    CHECK(session.hasPointerCapture());
+    CHECK_EQ(session.capturedPointerId(), 7);
+
+    EditorPointerEvent other = down;
+    other.phase = EditorPointerEvent::Phase::Move;
+    other.pointerId = 8;
+    CHECK(!session.dispatchPointer(other).handled);
+    CHECK_EQ(first.pointerEvents, 1);
+
+    EditorPointerEvent up = down;
+    up.phase = EditorPointerEvent::Phase::Up;
+    CHECK(session.dispatchPointer(up).releasePointer);
+    CHECK(!session.hasPointerCapture());
+
+    EditorKeyEvent key;
+    key.key = "W";
+    key.pressed = true;
+    CHECK(session.dispatchKey(key).handled);
+    session.update(0.016f);
+    CHECK_EQ(first.keyEvents, 1);
+    CHECK_EQ(first.updates, 1);
+
+    CHECK(session.activateTool("second"));
+    CHECK_EQ(first.cancellations, 1);
+    CHECK_EQ(first.deactivations, 1);
+    CHECK_EQ(second.activations, 1);
+    CHECK(session.removeTool("second"));
+    CHECK_EQ(second.deactivations, 1);
+    CHECK_EQ(session.activeToolId(), std::string(""));
+}
 
 TEST_CASE("editor.module.name") {
     auto *mod = Editor::create();

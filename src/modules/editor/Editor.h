@@ -24,6 +24,7 @@ class EditorToolbar;
 class EditorInspector;
 class EditorDock;
 class EditorHistory;
+class EditorSession;
 
 /**
  * @brief Editor building blocks — not a shipped 3D/map editor app.
@@ -48,6 +49,8 @@ public:
     EditorInspector *newInspector();
     EditorDock      *newDock();
     EditorHistory   *newHistory();
+    /** @brief Create a host for interchangeable IEditorTool implementations. */
+    EditorSession   *newSession();
 
 #ifdef EVENGINE_HAS_PROCGEN
     /**
