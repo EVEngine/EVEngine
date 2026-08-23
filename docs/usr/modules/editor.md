@@ -53,8 +53,11 @@ for (local i = 0; i < gizmo.getPartCount(); i++) {
 // Smooth 变体用高度场梯度生成平滑顶点法线，坑/坡连续着色（无平直三角片）。
 local mesh = editor.newHeightmapMeshSmooth(hm, 0.5, 3.2);
 terrainEnt.setMesh(mesh);
+// 原生圆形线性衰减笔刷；strength 为正时升高，为负时降低，返回实际修改的采样数。
+local changed = editor.applyHeightmapBrush(hm, cellX, cellY, radius, strength);
 // 高度图编辑后原地更新（复用 GPU 缓冲，指针不变）
-editor.updateHeightmapMeshSmooth(mesh, gfx, hm, 0.5, 3.2);
+if (changed > 0)
+    editor.updateHeightmapMeshSmooth(mesh, gfx, hm, 0.5, 3.2);
 ```
 
 ## 接口式工具会话（C++）
@@ -180,7 +183,7 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newSession` / `newScriptTool` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- 模块：`newSession` / `newScriptTool` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
 - 会话：`addTool` / `removeTool` / `clearTools` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo`
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - Gizmo：`setMode` / `setSpace` / `setPosition` / `setRotationEuler` / `setScale` / `setBounds` / `setSnap*` / `pick` / `beginDrag` / `updateDrag` / `endDrag` / `getPart*`
