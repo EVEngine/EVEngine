@@ -27,6 +27,8 @@ std::string targetRuntimeName(const std::string& sdkRoot) {
     std::ifstream in(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
     std::string   plat;
     std::getline(in, plat);
+    while (!plat.empty() && (plat.back() == '\r' || plat.back() == '\n' || plat.back() == ' '))
+        plat.pop_back();
     return plat == "win32" ? "eve.exe" : "eve";
 }
 
@@ -189,14 +191,23 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     }
 
 #ifdef EVENGINE_MACOSX
-    // 2b. macOS: bundle the runtime dylibs (Vulkan loader, zlib, ...) that the
-    // executable links from the SDK's lib/ directory, so the packaged game is
-    // self-contained next to the eve binary.
+    // 2b. macOS: copy the SDK's lib/ tree (Vulkan loader + MoltenVK + ICD
+    // manifest + zlib/PNG dylibs) into <out>/lib. eve carries INSTALL_RPATH
+    // "@loader_path/../lib", and platform/macosx bootstrapBundledVulkan points
+    // SDL at <out>/lib/libvulkan.1.dylib + <out>/lib/MoltenVK_icd.json, so the
+    // packaged game is self-contained next to the eve binary. Copying the tree
+    // (not just *.dylib) keeps the ICD manifest and any subdirectories.
     if (exists(sdkLib)) {
-        for (const auto& entry : directory_iterator(sdkLib, ec)) {
-            if (entry.is_regular_file() && entry.path().extension() == ".dylib")
-                copyFileIf(entry.path(), outDir / entry.path().filename());
-        }
+        std::ifstream platIn(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
+        std::string   plat;
+        std::getline(platIn, plat);
+        while (!plat.empty() && (plat.back() == '\r' || plat.back() == '\n' || plat.back() == ' '))
+            plat.pop_back();
+        // Only macOS-target packages get the dylib tree; cross-packaged
+        // win32/linux games must stay clean.
+        if (plat == "macosx")
+            copy(sdkLib, outDir / "lib",
+                 copy_options::recursive | copy_options::overwrite_existing, ec);
         ec.clear();
     }
 #endif  // EVENGINE_MACOSX

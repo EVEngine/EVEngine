@@ -3,7 +3,7 @@ project(EVEngine)
 
 set(EVENGINE_MAJOR_VERSION "0")
 set(EVENGINE_MINOR_VERSION "2")
-set(EVENGINE_PATCH_VERSION "0")
+set(EVENGINE_PATCH_VERSION "1")
 set(EVENGINE_DEV_VERSION "")
 
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
@@ -950,6 +950,15 @@ function(check_third_party_project name repo)
     set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
         COMMAND ${CMAKE_COMMAND}
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/third-party-squirrel-ssq-export.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Third patch: ssq class allocators must translate C++ exceptions from
+    # module constructors into Squirrel errors. Without this, a throwing ctor
+    # (e.g. Audio with no audio device) escapes the native call, corrupts the
+    # VM's exception state and hangs during sq_close (SQInstance::Release).
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 

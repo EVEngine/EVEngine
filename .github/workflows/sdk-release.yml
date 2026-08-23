@@ -589,6 +589,13 @@ jobs:
       TAG: ${{ inputs.tag }}
       HOST: linux
       EVE_CROSS_TARGETS: win32
+      # Headless runners have no sound card; OpenAL's ALSA backend fails and
+      # the Audio module would be left uninitialized. Use the null backend
+      # (same pattern as the unit tests in AGENTS.md) so the packaged game
+      # exercises the full startup path.
+      # Quoted: an unquoted YAML null would set an EMPTY variable, which
+      # OpenAL treats as "no driver override" (ALSA still gets tried).
+      ALSOFT_DRIVERS: "null"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -602,7 +609,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             libx11-6 libxrandr2 libxi6 libxcursor1 libxss1 libxinerama1 \
-            libxxf86vm1 libasound2 libgl1 \
+            libxxf86vm1 libasound2t64 libgl1 \
             mesa-vulkan-drivers xvfb
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -629,7 +636,10 @@ jobs:
       - name: Run consumer test (get android -> build android -> package -> run + cross win32)
         timeout-minutes: 90
         run: |
-          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd.*.json | head -1)"
+          # Ubuntu ships the Lavapipe manifest as lvp_icd.json (no suffix);
+          # a glob that requires a suffix leaves VK_ICD_FILENAMES empty and the
+          # loader finds no ICD, so SDL_Vulkan_CreateSurface fails.
+          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null | head -1)"
           xvfb-run -a bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
 
       - name: Upload cross win32 package (produced on linux)
@@ -704,6 +714,12 @@ jobs:
       run:
         shell: bash
     steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
       - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
@@ -728,6 +744,13 @@ jobs:
         timeout-minutes: 20
         run: |
           set -euo pipefail
+          # Git Bash passes RUNNER_TEMP in Windows form (D:\a\_temp); normalize
+          # before mkdir/tar (see consumer-test.sh for the same fix).
+          case "$(uname -s)" in
+            MINGW*|MSYS*|CYGWIN*)
+              RUNNER_TEMP="$(cygpath -u "$RUNNER_TEMP")"
+              ;;
+          esac
           found=0
           for tgz in packages/*/pkg-win32.tar.gz; do
             [ -f "$tgz" ] || continue
@@ -760,13 +783,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
       - name: Install headless runtime deps
         timeout-minutes: 10
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             libx11-6 libxrandr2 libxi6 libxcursor1 libxss1 libxinerama1 \
-            libxxf86vm1 libasound2 libgl1 \
+            libxxf86vm1 libasound2t64 libgl1 \
             mesa-vulkan-drivers xvfb
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -785,7 +814,8 @@ jobs:
           set -euo pipefail
           tar -xzf packages/pkg-linux.tar.gz -C packages
           chmod +x packages/eve
-          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd.*.json | head -1)"
+          # Ubuntu names the Lavapipe manifest lvp_icd.json (no suffix).
+          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null | head -1)"
           export ALSOFT_DRIVERS=null
           xvfb-run -a bash -c 'cd packages && exec ./eve > run.log 2>&1' &
           pid=$!
