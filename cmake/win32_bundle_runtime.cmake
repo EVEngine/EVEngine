@@ -81,6 +81,28 @@ foreach(_eve_ms_root IN ITEMS
 endforeach()
 list(REMOVE_DUPLICATES _eve_crt_subs)
 
+# Prefer the NEWEST VC++ redistributable. The globs above collect every
+# version installed on the machine, and GitHub-hosted VS2022 images also ship
+# VS2019-era redists (e.g. 14.29.x). Bundling an old msvcp140.dll with a
+# binary built by a newer toolset breaks the STL ABI (std::mutex moved to an
+# in-situ layout) and eve.exe crashes at startup inside std::mutex::lock when
+# OpenAL spins up its WASAPI worker. Older binaries run fine on newer
+# runtimes, so the newest installed redist is always the safe choice. A plain
+# path sort is not enough here (VS root folders like "18" vs "2022" sort
+# before the version), so pick the candidate with the maximum version.
+set(_eve_best_ver "")
+set(_eve_best_subs "")
+foreach(_eve_dir IN LISTS _eve_crt_subs)
+    get_filename_component(_eve_ver_dir "${_eve_dir}" DIRECTORY)
+    get_filename_component(_eve_ver_dir "${_eve_ver_dir}" DIRECTORY)
+    get_filename_component(_eve_ver "${_eve_ver_dir}" NAME)
+    if(NOT _eve_best_ver OR _eve_ver VERSION_GREATER _eve_best_ver)
+        set(_eve_best_ver "${_eve_ver}")
+        set(_eve_best_subs "${_eve_dir}")
+    endif()
+endforeach()
+set(_eve_crt_subs "${_eve_best_subs}")
+
 set(_eve_crt_dlls
     msvcp140.dll msvcp140_1.dll msvcp140_2.dll msvcp140_codecvt_ids.dll
     vcruntime140.dll vcruntime140_1.dll concrt140.dll
