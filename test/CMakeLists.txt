@@ -93,6 +93,7 @@ file(GLOB all_test_cpp
   spritestack.cpp
   daynight.cpp
   weather.cpp
+  weapon.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
@@ -302,6 +303,7 @@ set(EVELIBS
   EVBuilding
   EVBuildingFx
   EVCard
+  EVWeapon
   EVAvatar
   EVDialogue
   EVProcgen
