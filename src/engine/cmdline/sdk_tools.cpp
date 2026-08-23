@@ -100,9 +100,6 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
         const uint16_t extraLen = le16(pos + 30);
         const uint16_t commentLen = le16(pos + 32);
         const uint32_t localOff = le32(pos + 42);
-        // Unix mode lives in the upper 16 bits of the central-directory
-        // external attributes; captured before pos advances past this entry.
-        const uint32_t extAttr = le32(pos + 38);
         if (pos + 46 + nameLen + extraLen + commentLen > cdEnd) return false;
         const std::string name(data.data() + pos + 46, nameLen);
         pos += 46 + nameLen + extraLen + commentLen;
@@ -157,6 +154,8 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
         // Preserve the unix mode recorded in the zip's external attributes
         // (bits 16-23) so extracted tools stay executable: gradle, sdkmanager,
         // aapt/adb all ship as scripts/binaries with +x in their archives.
+        // Captured before pos advances past this central-directory entry.
+        const uint32_t extAttr = le32(pos + 38);
         const auto mode = static_cast<unsigned>((extAttr >> 16) & 0xFFFF);
         if (mode & 0111) {
             std::error_code pec;
