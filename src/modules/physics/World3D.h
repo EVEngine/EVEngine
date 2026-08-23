@@ -12,6 +12,19 @@ class Body3D;
 class Shape3D;
 
 /**
+ * @brief Result of a 3D point probe: deepest non-sensor shape within radius.
+ * Normal points from the shape toward the probed point (meters).
+ */
+struct ClothContact3D {
+    bool   hit = false;
+    float  nx = 0.f;
+    float  ny = 0.f;
+    float  nz = 0.f;
+    float  depth = 0.f;  // radius - distance (meters); > 0 when inside
+    Body3D *body = nullptr;
+};
+
+/**
  * @brief Box3D rigid-body world. Script coordinates are meters (Box3D native),
  * unlike 2D World which uses pixels + Physics.setMeter.
  */
@@ -69,6 +82,12 @@ public:
 
     /** @brief True while the underlying Box3D world is alive. */
     bool      isValid() const;
+
+    /**
+     * @brief Probe the deepest non-sensor shape within `radius` of a meter-space point.
+     * Returns false when nothing is hit. Used by Cloth3D for particle-vs-body collision.
+     */
+    bool pointProbe(float x, float y, float z, float radius, ClothContact3D *out) const;
     /** @brief Raw Box3D world id. */
     b3WorldId raw() const { return worldId_; }
 
