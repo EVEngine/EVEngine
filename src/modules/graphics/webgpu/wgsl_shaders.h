@@ -884,7 +884,9 @@ struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) uv: vec2f,
     @location(1) tint: vec4f,
-    @location(2) @interpolate(flat) vAO: f32,
+    @location(2) vAO: f32,
+    @location(3) @interpolate(flat) atlasBase: vec2f,
+    @location(4) @interpolate(flat) tileScale: f32,
 };
 @group(0) @binding(0) var<uniform> pc: PC;
 @vertex
@@ -894,8 +896,8 @@ fn vs_main(in: VSIn) -> VSOut {
     let px = f32(in.packed & 31u);
     let py = f32((in.packed >> 5u) & 31u);
     let pz = f32((in.packed >> 10u) & 31u);
-    let w = f32((in.packed >> 15u) & 31u);
-    let h = f32((in.packed >> 20u) & 31u);
+    let w = f32((in.packed >> 15u) & 31u) + 1.0;
+    let h = f32((in.packed >> 20u) & 31u) + 1.0;
     let tex = f32((in.packed >> 25u) & 127u);
     // Per-instance AO word: 2 bits per corner (0..3), Vulkan corner order.
     let ao0 = in.aoWord & 3u;
@@ -909,20 +911,22 @@ fn vs_main(in: VSIn) -> VSOut {
     let face = i32(pc.chunkOrigin.w + 0.5);
     var u: f32 = in.corner.x;
     var v: f32 = in.corner.y;
-    if (face == 0) { world += vec3f(0.0, v * h, u * w); }
-    else if (face == 1) { world += vec3f(0.0, v * h, w - u * w); }
-    else if (face == 2) { world += vec3f(u * w, 0.0, v * h); }
-    else if (face == 3) { world += vec3f(w - u * w, 0.0, v * h); }
-    else if (face == 4) { world += vec3f(u * w, v * h, 0.0); }
-    else { world += vec3f(w - u * w, v * h, 0.0); }
+    if (face == 0) { world += vec3f(1.0, v * h, u * w); }
+    else if (face == 1) { world += vec3f(0.0, v * h, (1.0 - u) * w); }
+    else if (face == 2) { world += vec3f(u * w, 1.0, v * h); }
+    else if (face == 3) { world += vec3f(u * w, 0.0, (1.0 - v) * h); }
+    else if (face == 4) { world += vec3f((1.0 - u) * w, v * h, 1.0); }
+    else { world += vec3f(u * w, v * h, 0.0); }
     out.pos = pc.viewProj * vec4f(world, 1.0);
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     out.pos.y = -out.pos.y;
     let tiles = max(pc.atlasInfo.x, 1.0);
     let tw = 1.0 / tiles;
-    let col = floor(tex / tiles);
-    let row = tex - col * tiles;
-    out.uv = vec2f((u + row) * tw, (v + col) * tw);
+    let col = tex - floor(tex / tiles) * tiles;
+    let row = floor(tex / tiles);
+    out.uv = in.corner * vec2f(w, h);
+    out.atlasBase = vec2f(col, row);
+    out.tileScale = tw;
     out.tint = pc.tint;
     out.vAO = f32(ao) / 3.0;
     return out;
@@ -933,7 +937,9 @@ inline const char *kVoxelRectFragWgsl = R"wgsl(
 struct FSIn {
     @location(0) uv: vec2f,
     @location(1) tint: vec4f,
-    @location(2) @interpolate(flat) vAO: f32,
+    @location(2) vAO: f32,
+    @location(3) @interpolate(flat) atlasBase: vec2f,
+    @location(4) @interpolate(flat) tileScale: f32,
 };
 @group(0) @binding(1) var atlas: texture_2d<f32>;
 @group(0) @binding(2) var atlasSamp: sampler;
@@ -941,7 +947,10 @@ struct FSIn {
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     // Vertex ambient occlusion (0..1): darkens corners near other voxels.
     let aoShade = 0.35 + 0.65 * in.vAO;
-    return textureSample(atlas, atlasSamp, in.uv) * in.tint * aoShade;
+    let atlasUV = (in.atlasBase + fract(in.uv)) * in.tileScale;
+    let dx = dpdx(in.uv) * in.tileScale;
+    let dy = dpdy(in.uv) * in.tileScale;
+    return textureSampleGrad(atlas, atlasSamp, atlasUV, dx, dy) * in.tint * aoShade;
 }
 )wgsl";
 

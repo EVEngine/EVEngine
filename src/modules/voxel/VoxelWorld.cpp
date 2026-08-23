@@ -379,18 +379,28 @@ void VoxelWorld::selectVisible(const float *viewProj16, float eyeX, float eyeY, 
 
         visibleChunkKeys_.push_back(kv.first);
 
-        const float toCamX = eyeX - cx;
-        const float toCamY = eyeY - cy;
-        const float toCamZ = eyeZ - cz;
         for (int i = 0; i < faceDirCount(); ++i) {
             const FaceDir dir = FaceDir(i);
             const int count = chunk->faceRectCount(dir);
             if (count <= 0) continue;
 
             if (faceCull) {
-                float nx, ny, nz;
-                faceNormal(dir, nx, ny, nz);
-                if (nx * toCamX + ny * toCamY + nz * toCamZ <= 0.f) continue;
+                // A perspective camera has a different view vector at every surface point.
+                // Reject a direction only when every possible face plane in the chunk faces
+                // away from the eye.  Testing against the chunk centre is not conservative:
+                // when the eye crosses that centre plane it can discard faces on the far half
+                // of the chunk that are still front-facing and visible (notably cave walls).
+                bool allBackFacing = false;
+                switch (dir) {
+                    case FaceDir::PosX: allBackFacing = eyeX <= minX; break;
+                    case FaceDir::NegX: allBackFacing = eyeX >= maxX; break;
+                    case FaceDir::PosY: allBackFacing = eyeY <= minY; break;
+                    case FaceDir::NegY: allBackFacing = eyeY >= maxY; break;
+                    case FaceDir::PosZ: allBackFacing = eyeZ <= minZ; break;
+                    case FaceDir::NegZ: allBackFacing = eyeZ >= maxZ; break;
+                    case FaceDir::Count: break;
+                }
+                if (allBackFacing) continue;
             }
 
             DrawBatch batch;
