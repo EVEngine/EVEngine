@@ -303,7 +303,7 @@ bool Ledger::restoreJson(const std::string& json) {
     auto                               plans           = root.get("plans");
     for (size_t i = 0; i < plans.size(); ++i) {
         auto     value = plans.at(i);
-        State    state;
+        State    state = State::Open;
         uint64_t nextOperation = 0, nextEvent = 0;
         if (!value.isObject() || !parseState(value.getString("state"), state) ||
             !parseU64(value.get("nextOperation"), nextOperation) || nextOperation == 0 ||

@@ -82,7 +82,7 @@ float DecisionContext::utility(const std::string& s) {
     while (std::getline(in, p, ',')) {
         auto c = p.find(':');
         if (c == std::string::npos) continue;
-        float v, a;
+        float v = 0, a = 0;
         if (num(p.substr(0, c), v) && num(p.substr(c + 1), a) && a > 0) {
             sum += std::clamp(v, 0.f, 1.f) * a;
             w += a;

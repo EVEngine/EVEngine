@@ -119,7 +119,7 @@ bool PolicyRegistry::mutate(bool replace, const std::string& domain, const std::
                             bool enabled, const std::string& kindName, const std::string& schemaId,
                             const std::string& metadataJson) {
     lastError_.clear();
-    ImplementationKind kind;
+    ImplementationKind kind = ImplementationKind::Builtin;
     if (domain.empty() || name.empty())
         lastError_ = "policy domain and name must not be empty";
     else if (version <= 0)

@@ -357,7 +357,7 @@ bool ProductionQueue::restore(const std::string& json) {
         auto      value    = root.get("tasks").at(i);
         auto      task     = std::make_unique<ProductionTask>();
         uint64_t  sequence = 0;
-        TaskState state;
+        TaskState state = TaskState::Queued;
         if (!value.isObject() || !value.get("id").isString() || !value.get("owner").isString() ||
             !value.get("kind").isString() || !value.get("product").isString() || !value.get("duration").isNumber() ||
             !value.get("progress").isNumber() || !value.get("priority").isNumber() || !value.get("state").isString() ||
