@@ -6,12 +6,15 @@ file(GLOB all_test_cpp
   data.cpp
   decal.cpp
   decal_script.cpp
+  crowd.cpp
+  crowd_script.cpp
   resource.cpp
   state_value.cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
   fluids.cpp
+  fluids_surface.cpp
   graphic.cpp
   graphics_font.cpp
   graphics_headless.cpp
@@ -214,6 +217,7 @@ file(GLOB all_test_scripts
   window.nut
   timer.nut
   decal.nut
+  crowd.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"

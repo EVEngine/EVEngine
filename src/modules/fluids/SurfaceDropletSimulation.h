@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 
+#include <cstdint>
 #include <vector>
 
 namespace eve::fluids {
@@ -35,6 +36,7 @@ struct SurfaceDropletParams {
 
 /** @brief One droplet addressed in material space on a dynamic triangle surface. */
 struct SurfaceDroplet {
+    uint64_t        id = 0;
     SurfaceLocation location;
     glm::vec3       relativeVelocity{0.f};
     glm::vec3       previousSurfaceVelocity{0.f};
@@ -94,16 +96,22 @@ public:
     /** @return mutable solver parameters. */
     SurfaceDropletParams& params() { return params_; }
 
+    /** @return solver parameters. */
+    const SurfaceDropletParams& params() const { return params_; }
+
     /** @brief Remove attached droplets and pending detach events. */
     void clear();
 
 private:
+    void stepSubstep(float dt, float poseDt);
+
     FluidSurfaceBinding*          binding_ = nullptr;
     SurfaceDropletParams          params_;
     SurfaceWetnessField*          wetness_ = nullptr;
     std::vector<SurfaceDroplet>   droplets_;
     std::vector<DetachedDroplet>  detached_;
     std::vector<AirborneDroplet>  airborne_;
+    uint64_t                      nextDropletId_ = 1;
 };
 
 }  // namespace eve::fluids

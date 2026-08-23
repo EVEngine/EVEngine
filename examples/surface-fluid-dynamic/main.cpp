@@ -1,24 +1,29 @@
 #include "fluids/FluidSurfaceBinding.h"
 #include "fluids/SurfaceDropletSimulation.h"
+#include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceWetnessField.h"
 
-#include <glm/gtx/norm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <string>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 using namespace eve::fluids;
 
 namespace {
 
-struct Rgb {
-    float r = 0.f;
-    float g = 0.f;
-    float b = 0.f;
+struct Rgb { float r = 0.f, g = 0.f, b = 0.f; };
+struct TrailSegment {
+    SurfaceLocation from;
+    SurfaceLocation to;
+    float strength = 0.f;
+    float width = 1.f;
 };
 
 Rgb mix(Rgb a, Rgb b, float t) {
@@ -31,155 +36,200 @@ void blend(std::vector<Rgb>& image, int width, int height, int x, int y, Rgb col
     image[size_t(y * width + x)] = mix(image[size_t(y * width + x)], color, alpha);
 }
 
+std::pair<std::vector<glm::vec3>, std::vector<uint32_t>> makeSphere(int subdivisions) {
+    const float t = (1.f + std::sqrt(5.f)) * 0.5f;
+    std::vector<glm::vec3> vertices = {
+        glm::normalize(glm::vec3(-1.f, t, 0.f)), glm::normalize(glm::vec3(1.f, t, 0.f)),
+        glm::normalize(glm::vec3(-1.f, -t, 0.f)), glm::normalize(glm::vec3(1.f, -t, 0.f)),
+        glm::normalize(glm::vec3(0.f, -1.f, t)), glm::normalize(glm::vec3(0.f, 1.f, t)),
+        glm::normalize(glm::vec3(0.f, -1.f, -t)), glm::normalize(glm::vec3(0.f, 1.f, -t)),
+        glm::normalize(glm::vec3(t, 0.f, -1.f)), glm::normalize(glm::vec3(t, 0.f, 1.f)),
+        glm::normalize(glm::vec3(-t, 0.f, -1.f)), glm::normalize(glm::vec3(-t, 0.f, 1.f)),
+    };
+    std::vector<uint32_t> triangles = {
+        0, 11, 5, 0, 5, 1, 0, 1, 7, 0, 7, 10, 0, 10, 11, 1, 5, 9, 5, 11, 4,
+        11, 10, 2, 10, 7, 6, 7, 1, 8, 3, 9, 4, 3, 4, 2, 3, 2, 6, 3, 6, 8,
+        3, 8, 9, 4, 9, 5, 2, 4, 11, 6, 2, 10, 8, 6, 7, 9, 8, 1,
+    };
+    for (int level = 0; level < subdivisions; ++level) {
+        std::vector<uint32_t> next;
+        next.reserve(triangles.size() * 4u);
+        for (size_t i = 0; i < triangles.size(); i += 3u) {
+            const uint32_t a = triangles[i], b = triangles[i + 1u], c = triangles[i + 2u];
+            const uint32_t ab = uint32_t(vertices.size());
+            vertices.push_back(glm::normalize(vertices[a] + vertices[b]));
+            const uint32_t bc = uint32_t(vertices.size());
+            vertices.push_back(glm::normalize(vertices[b] + vertices[c]));
+            const uint32_t ca = uint32_t(vertices.size());
+            vertices.push_back(glm::normalize(vertices[c] + vertices[a]));
+            next.insert(next.end(), {a, ab, ca, b, bc, ab, c, ca, bc, ab, bc, ca});
+        }
+        triangles.swap(next);
+    }
+    return {std::move(vertices), std::move(triangles)};
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
-    constexpr int columns = 42;
-    constexpr int rows = 30;
-    constexpr int width = 960;
-    constexpr int height = 640;
+    constexpr int width = 960, height = 640, centerX = 480, centerY = 324;
+    constexpr float spherePixels = 252.f;
     const std::string output = argc > 1 ? argv[1] : "surface-fluid-dynamic.ppm";
 
-    std::vector<glm::vec3> rest;
-    std::vector<glm::vec2> uvs;
-    std::vector<uint32_t> indices;
-    rest.reserve(columns * rows);
-    uvs.reserve(columns * rows);
-    for (int y = 0; y < rows; ++y) {
-        for (int x = 0; x < columns; ++x) {
-            const glm::vec2 uv(float(x) / float(columns - 1), float(y) / float(rows - 1));
-            rest.emplace_back(glm::mix(-1.65f, 1.65f, uv.x), glm::mix(-1.08f, 1.08f, uv.y), 0.f);
-            uvs.push_back(uv);
-        }
-    }
-    for (int y = 0; y + 1 < rows; ++y) {
-        for (int x = 0; x + 1 < columns; ++x) {
-            const uint32_t a = uint32_t(y * columns + x);
-            const uint32_t b = a + 1u;
-            const uint32_t c = a + uint32_t(columns);
-            const uint32_t d = c + 1u;
-            indices.insert(indices.end(), {a, b, c, c, b, d});
-        }
-    }
-
+    auto [rest, indices] = makeSphere(3);
     FluidSurfaceBinding binding;
-    if (!binding.build(rest, indices, uvs)) return 2;
+    if (!binding.build(rest, indices)) return 2;
     SurfaceWetnessField wetness;
     if (!wetness.build(binding)) return 3;
+
     SurfaceDropletParams params;
-    params.gravity = glm::vec3(0.32f, -3.1f, 0.f);
-    params.friction = 2.8f;
-    params.adhesionAcceleration = 18.f;
-    params.contactAngleDegrees = 68.f;
-    params.mergeRadiusScale = 0.82f;
-    params.trailDeposition = 520.f;
-    params.reattachDistance = 0.045f;
+    params.gravity = glm::vec3(0.18f, -2.8f, 0.f);
+    params.friction = 3.2f;
+    params.adhesionAcceleration = 24.f;
+    params.contactAngleDegrees = 62.f;
+    params.mergeRadiusScale = 0.55f;
+    params.trailDeposition = 180.f;
     SurfaceDropletSimulation simulation(&binding, params, &wetness);
 
     const glm::vec2 seeds[] = {
-        {0.16f, 0.90f}, {0.24f, 0.82f}, {0.31f, 0.94f}, {0.43f, 0.84f}, {0.48f, 0.91f},
-        {0.58f, 0.87f}, {0.67f, 0.95f}, {0.72f, 0.79f}, {0.82f, 0.91f}, {0.88f, 0.84f},
-        {0.38f, 0.72f}, {0.62f, 0.70f}, {0.76f, 0.68f},
+        {-0.48f, 0.72f}, {-0.28f, 0.83f}, {-0.06f, 0.70f}, {0.18f, 0.86f},
+        {0.39f, 0.69f}, {0.57f, 0.55f}, {-0.60f, 0.43f}, {-0.20f, 0.48f},
+        {0.08f, 0.57f}, {0.34f, 0.42f}, {0.66f, 0.25f},
     };
     for (size_t i = 0; i < std::size(seeds); ++i) {
+        const float z = -std::sqrt(std::max(0.f, 1.f - glm::dot(seeds[i], seeds[i])));
         SurfaceLocation location;
-        const glm::vec3 point(glm::mix(-1.65f, 1.65f, seeds[i].x),
-                              glm::mix(-1.08f, 1.08f, seeds[i].y), 0.f);
-        if (binding.project(point, 0.2f, location)) {
-            const float volume = 0.00115f + 0.00032f * float(i % 4u);
-            simulation.addDroplet(location, volume, glm::vec3(0.08f * std::sin(float(i)), 0.f, 0.f));
-            wetness.deposit(location, 0.22f);
+        if (binding.project(glm::vec3(seeds[i], z), 0.12f, location)) {
+            const float volume = 0.000012f + 0.000004f * float(i % 3u);
+            simulation.addDroplet(location, volume);
         }
     }
 
-    std::vector<glm::vec3> pose = rest;
+    std::vector<TrailSegment> trails;
     SurfaceWetnessParams wetParams;
-    wetParams.diffusion = 0.34f;
-    wetParams.evaporation = 0.012f;
-    for (int frame = 0; frame < 62; ++frame) {
+    wetParams.diffusion = 0.08f;
+    wetParams.evaporation = 0.035f;
+    for (int frame = 0; frame < 44; ++frame) {
         const float time = float(frame) / 60.f;
-        for (size_t i = 0; i < rest.size(); ++i) {
-            const glm::vec2 uv = uvs[i];
-            pose[i] = rest[i];
-            pose[i].z = 0.105f * std::sin(uv.x * 7.2f + time * 2.1f) *
-                        std::sin(uv.y * 4.1f + time * 1.4f);
-            pose[i].x += 0.035f * std::sin(time * 1.7f + uv.y * 3.f);
-        }
-        binding.setDeformedPositions(pose);
+        const glm::mat4 pose = glm::rotate(glm::mat4(1.f), 0.10f * std::sin(time * 1.5f),
+                                           glm::normalize(glm::vec3(0.3f, 1.f, 0.1f)));
+        binding.setTransform(pose);
+        std::unordered_map<uint64_t, SurfaceLocation> previous;
+        for (const SurfaceDroplet& drop : simulation.droplets()) previous.emplace(drop.id, drop.location);
         simulation.step(1.f / 60.f);
         wetness.step(1.f / 60.f, wetParams);
+        for (const SurfaceDroplet& drop : simulation.droplets()) {
+            const auto prior = previous.find(drop.id);
+            if (prior == previous.end()) continue;
+            trails.push_back({prior->second, drop.location, 0.105f,
+                              std::clamp(simulation.dropletRadius(drop.volume) * 95.f, 0.7f, 1.8f)});
+        }
+        for (TrailSegment& trail : trails) trail.strength *= 0.992f;
     }
+
+    // A recent fine spray provides the stationary micro-droplet layer seen on wet glass.
+    for (int i = 0; i < 18; ++i) {
+        const float x = -0.74f + 1.48f * float((i * 7) % 19) / 18.f;
+        const float y = -0.38f + 1.12f * float((i * 11) % 17) / 16.f;
+        const float r2 = x * x + y * y;
+        if (r2 >= 0.92f) continue;
+        SurfaceLocation location;
+        if (binding.project(glm::vec3(x, y, -std::sqrt(1.f - r2)), 0.1f, location))
+            simulation.addDroplet(location, 0.0000025f + 0.000001f * float(i % 3));
+    }
+    SurfaceFluidRenderParams renderParams;
+    renderParams.velocityStretch = 0.34f;
+    SurfaceFluidRenderData renderData;
+    renderData.update(binding, simulation, &wetness, renderParams);
 
     std::vector<Rgb> image(size_t(width * height));
     for (int y = 0; y < height; ++y) {
         const float v = float(y) / float(height - 1);
-        const Rgb top{0.035f, 0.065f, 0.10f};
-        const Rgb bottom{0.005f, 0.012f, 0.025f};
         for (int x = 0; x < width; ++x) {
-            const float glow = std::exp(-std::pow((float(x) / width - 0.68f) * 2.4f, 2.f) -
-                                        std::pow((v - 0.30f) * 2.1f, 2.f));
-            image[size_t(y * width + x)] = mix(top, bottom, v * 0.82f);
-            image[size_t(y * width + x)] = mix(image[size_t(y * width + x)], {0.10f, 0.22f, 0.31f}, glow * 0.18f);
+            const float u = float(x) / float(width - 1);
+            const float halo = std::exp(-std::pow((u - 0.62f) * 2.2f, 2.f) -
+                                        std::pow((v - 0.34f) * 2.0f, 2.f));
+            image[size_t(y * width + x)] = mix({0.008f, 0.015f, 0.027f},
+                                                {0.045f, 0.095f, 0.13f}, (1.f - v) * 0.72f);
+            image[size_t(y * width + x)] = mix(image[size_t(y * width + x)],
+                                                {0.10f, 0.25f, 0.33f}, halo * 0.16f);
         }
     }
 
-    const int left = 78, right = width - 78, top = 54, bottom = height - 48;
-    for (int py = top; py <= bottom; ++py) {
-        const float v = 1.f - float(py - top) / float(bottom - top);
-        const float gy = v * float(rows - 1);
-        const int y0 = std::min(rows - 2, int(gy));
-        const float fy = gy - float(y0);
-        for (int px = left; px <= right; ++px) {
-            const float u = float(px - left) / float(right - left);
-            const float gx = u * float(columns - 1);
-            const int x0 = std::min(columns - 2, int(gx));
-            const float fx = gx - float(x0);
-            const size_t i00 = size_t(y0 * columns + x0);
-            const size_t i10 = i00 + 1u;
-            const size_t i01 = i00 + size_t(columns);
-            const size_t i11 = i01 + 1u;
-            const float w0 = glm::mix(wetness.values()[i00], wetness.values()[i10], fx);
-            const float w1 = glm::mix(wetness.values()[i01], wetness.values()[i11], fx);
-            const float wet = std::clamp(glm::mix(w0, w1, fy) * 7.2f, 0.f, 1.f);
-            const float z0 = glm::mix(pose[i00].z, pose[i10].z, fx);
-            const float z1 = glm::mix(pose[i01].z, pose[i11].z, fx);
-            const float curve = glm::mix(z0, z1, fy);
-            const float diagonal = std::pow(std::max(0.f, 1.f - std::fabs(u - v * 0.43f - 0.35f) * 7.f), 4.f);
-            Rgb glass = {0.055f + curve * 0.15f, 0.105f + curve * 0.20f, 0.145f + curve * 0.28f};
-            glass = mix(glass, {0.08f, 0.31f, 0.43f}, wet * 0.70f);
-            glass = mix(glass, {0.34f, 0.65f, 0.76f}, diagonal * (0.05f + wet * 0.16f));
-            image[size_t(py * width + px)] = glass;
+    for (int py = centerY - int(spherePixels); py <= centerY + int(spherePixels); ++py) {
+        for (int px = centerX - int(spherePixels); px <= centerX + int(spherePixels); ++px) {
+            const float nx = float(px - centerX) / spherePixels;
+            const float ny = -float(py - centerY) / spherePixels;
+            const float r2 = nx * nx + ny * ny;
+            if (r2 > 1.f) continue;
+            const float nz = -std::sqrt(1.f - r2);
+            const glm::vec3 normal(nx, ny, nz);
+            const float facing = std::clamp(-nz, 0.f, 1.f);
+            const float fresnel = std::pow(1.f - facing, 3.2f);
+            const float band = std::pow(std::max(0.f, glm::dot(normal,
+                glm::normalize(glm::vec3(-0.55f, 0.35f, -0.75f)))), 18.f);
+            const float window = std::pow(std::max(0.f, 1.f - std::fabs(nx + ny * 0.28f + 0.23f) * 5.f), 7.f);
+            const float horizon = std::pow(std::max(0.f, 1.f - std::fabs(ny - 0.12f) * 8.f), 5.f);
+            Rgb surface = mix({0.025f, 0.075f, 0.105f}, {0.08f, 0.19f, 0.24f}, 0.45f + ny * 0.18f);
+            surface = mix(surface, {0.20f, 0.43f, 0.49f}, fresnel * 0.72f);
+            surface = mix(surface, {0.48f, 0.74f, 0.76f}, band * 0.42f);
+            surface = mix(surface, {0.30f, 0.56f, 0.61f}, window * 0.22f + horizon * 0.10f);
+            image[size_t(py * width + px)] = surface;
         }
     }
 
-    for (const SurfaceDroplet& drop : simulation.droplets()) {
-        const SurfaceSample sample = binding.evaluate(drop.location, 1.f / 60.f);
-        const int cx = left + int((sample.position.x + 1.65f) / 3.3f * float(right - left));
-        const int cy = bottom - int((sample.position.y + 1.08f) / 2.16f * float(bottom - top));
-        const int radius = std::max(4, int(simulation.dropletRadius(drop.volume) / 3.3f * float(right - left) * 1.45f));
-        for (int dy = -radius; dy <= radius; ++dy) {
-            for (int dx = -radius; dx <= radius; ++dx) {
-                const float nx = float(dx) / float(radius);
-                const float ny = float(dy) / float(radius);
-                const float d2 = nx * nx + ny * ny;
-                if (d2 > 1.f) continue;
-                const float rim = std::pow(std::clamp((d2 - 0.48f) / 0.52f, 0.f, 1.f), 1.8f);
-                const float highlight = std::exp(-((nx + 0.34f) * (nx + 0.34f) +
-                                                   (ny + 0.38f) * (ny + 0.38f)) * 26.f);
-                blend(image, width, height, cx + dx, cy + dy,
-                      mix({0.07f, 0.23f, 0.31f}, {0.68f, 0.92f, 1.f}, highlight + rim * 0.55f),
-                      0.34f + rim * 0.52f + highlight * 0.55f);
+    for (const TrailSegment& trail : trails) {
+        const SurfaceSample a = binding.evaluate(trail.from, 1.f / 60.f);
+        const SurfaceSample b = binding.evaluate(trail.to, 1.f / 60.f);
+        if (a.position.z > 0.12f || b.position.z > 0.12f) continue;
+        const glm::vec2 p0(centerX + a.position.x * spherePixels, centerY - a.position.y * spherePixels);
+        const glm::vec2 p1(centerX + b.position.x * spherePixels, centerY - b.position.y * spherePixels);
+        const int steps = std::max(1, int(glm::distance(p0, p1) * 1.5f));
+        for (int step = 0; step <= steps; ++step) {
+            const float t = float(step) / float(steps);
+            const glm::vec2 p = glm::mix(p0, p1, t);
+            const int radius = std::max(1, int(trail.width * glm::mix(0.55f, 1.f, t)));
+            for (int dy = -radius; dy <= radius; ++dy) {
+                for (int dx = -radius; dx <= radius; ++dx) {
+                    const float d2 = float(dx * dx + dy * dy) / float(radius * radius);
+                    if (d2 > 1.f) continue;
+                    blend(image, width, height, int(p.x) + dx, int(p.y) + dy,
+                          {0.16f, 0.42f, 0.48f}, trail.strength * std::exp(-d2 * 1.5f));
+                }
             }
         }
     }
 
-    for (int x = left; x <= right; ++x) {
-        blend(image, width, height, x, top, {0.38f, 0.66f, 0.74f}, 0.65f);
-        blend(image, width, height, x, bottom, {0.18f, 0.40f, 0.48f}, 0.55f);
-    }
-    for (int y = top; y <= bottom; ++y) {
-        blend(image, width, height, left, y, {0.38f, 0.66f, 0.74f}, 0.65f);
-        blend(image, width, height, right, y, {0.18f, 0.40f, 0.48f}, 0.55f);
+    for (const SurfaceDropletRenderInstance& drop : renderData.droplets()) {
+        if (drop.position.z > 0.08f) continue;
+        const int cx = centerX + int(drop.position.x * spherePixels);
+        const int cy = centerY - int(drop.position.y * spherePixels);
+        const int rx = std::clamp(int(glm::length(drop.minorAxis) * spherePixels), 3, 10);
+        const int ry = std::clamp(int(glm::length(drop.majorAxis) * spherePixels * 1.18f), 5, 18);
+        for (int dy = -ry; dy <= ry; ++dy) {
+            for (int dx = -rx; dx <= rx; ++dx) {
+                const float d2 = std::pow(float(dx) / float(rx), 2.f) +
+                                 std::pow(float(dy) / float(ry), 2.f);
+                if (d2 <= 1.f)
+                    blend(image, width, height, cx + dx + 1, cy + dy + 2,
+                          {0.004f, 0.012f, 0.016f}, 0.16f * (1.f - d2));
+            }
+        }
+        for (int dy = -ry; dy <= ry; ++dy) {
+            const float ny = float(dy) / float(ry);
+            const float taper = std::clamp(0.72f + 0.28f * ny, 0.42f, 1.f);
+            for (int dx = -rx; dx <= rx; ++dx) {
+                const float nx = float(dx) / (float(rx) * taper);
+                const float d2 = nx * nx + ny * ny;
+                if (d2 > 1.f) continue;
+                const float rim = std::pow(std::clamp((d2 - 0.60f) / 0.40f, 0.f, 1.f), 1.5f);
+                const float highlight = std::exp(-((nx + 0.32f) * (nx + 0.32f) +
+                                                   (ny + 0.40f) * (ny + 0.40f)) * 28.f);
+                blend(image, width, height, cx + dx, cy + dy,
+                      mix({0.035f, 0.13f, 0.17f}, {0.72f, 0.94f, 0.96f}, highlight + rim * 0.45f),
+                      0.30f + rim * 0.46f + highlight * 0.65f);
+            }
+        }
     }
 
     std::ofstream file(output, std::ios::binary);
