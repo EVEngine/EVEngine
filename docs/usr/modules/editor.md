@@ -181,7 +181,8 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 ## API 快查
 
 - 模块：`newSession` / `newScriptTool` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
-- 会话：`addTool` / `removeTool` / `activateTool` / `dispatchPointer` / `update` / `undo` / `redo`
+- 会话：`addTool` / `removeTool` / `clearTools` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo`
+- 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - Gizmo：`setMode` / `setSpace` / `setPosition` / `setRotationEuler` / `setScale` / `setBounds` / `setSnap*` / `pick` / `beginDrag` / `updateDrag` / `endDrag` / `getPart*`
 - Manager：`set*Enabled` / `attach` / `detach` / `getGizmo` / `pick` / `beginDrag` / `updateDrag`
 - Brush：`setTool` / `setSize` / `setShape` / `setTile` / `paintAt` / `eraseAt` / `floodFill` / `paintLine` / `paintRect` / `preview*` / `getChange*`
