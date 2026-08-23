@@ -27,6 +27,7 @@ if (!("terrainMesh" in getroottable())) terrainMesh <- null;
 if (!("terrainEnt" in getroottable())) terrainEnt <- null;
 if (!("terrainTex" in getroottable())) terrainTex <- null;
 if (!("walker" in getroottable())) walker <- null;
+if (!("sun" in getroottable())) sun <- null;
 if (!("cam" in getroottable())) cam <- null;
 if (!("camAngle" in getroottable())) camAngle <- 0.0;
 if (!("walkDemo" in getroottable())) walkDemo <- false;
@@ -144,7 +145,14 @@ eve_init = function() {
     cam.setAmbient(0.52, 0.56, 0.62);
     cam.setActive(true);
     gfx.setBackgroundColor(0.66, 0.72, 0.80, 1.0);
-    gfx.setDirectionalLight(-0.45, 0.85, 0.35, 1.75, 1.62, 1.50);
+    // CSM shadows need a Light3D directional caster; the legacy
+    // gfx.setDirectionalLight path never casts.
+    sun = eve.Light3D();
+    sun.setType("dir");
+    sun.setDirection(-0.45, 0.85, 0.35);
+    sun.setColor(1.05, 1.02, 0.98, 1.5);
+    sun.setCastShadow(true);
+    sun.setShadowStrength(1.0);
 
     if (!helpPrinted) {
         print("interactive snow: LMB = footprint, RMB = crater, W = walker, " +

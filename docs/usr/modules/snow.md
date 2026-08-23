@@ -40,6 +40,12 @@ local tex = snow.uploadTexture(sf, gfx);             // 只建一次
 terrainEnt.setTexture(tex);
 terrainEnt.setHeightTexture(tex);
 terrainEnt.setParallax(0.045, 8, 32);                // scale / minLayers / maxLayers
+// 6. 阴影：给太阳创建带 castShadow 的 Light3D 平行光（旧 setDirectionalLight 不投影）
+local sun = eve.Light3D();
+sun.setType("dir");
+sun.setDirection(-0.45, 0.85, 0.35);
+sun.setColor(1.05, 1.02, 0.98, 1.5);
+sun.setCastShadow(true);
 // 雪变脏后原地更新（指针不变，无新纹理分配）：
 snow.updateTexture(sf, tex, gfx);
 ```
