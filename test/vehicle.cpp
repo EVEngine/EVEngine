@@ -394,3 +394,35 @@ UnitSciptTest(VehicleViewScriptTest, kViewScript);
 TEST_CASE_FIXTURE(VehicleViewScriptTest, "vehicle.script.viewSeesNewVehicle") {
     CHECK(vm.callFunc(vm.findFunc("testVehicleCppView"), vm).toBool());
 }
+
+static const char* kRtsFlowScript = R"SQ(
+function testVehicleRtsFlow() {
+    local weapon = eve.Weapon()
+    weapon.registerWeaponsFromJson("[{\"id\":\"cannon\",\"logic\":\"hitscan\",\"cooldown\":1.0,\"ammo\":{\"mag\":5,\"reserve\":20,\"reload\":2.0}}]")
+    local vehicle = eve.Vehicle()
+    vehicle.registerVehiclesFromJson("[{\"id\":\"tank\",\"mobility\":\"kinematic\",\"maxSpeed\":100,\"accel\":80,\"turnRate\":90,\"maxHealth\":300,\"mounts\":[{\"name\":\"turret\",\"weapon\":\"cannon\",\"type\":\"turret\",\"rotSpeed\":90,\"aimMode\":\"auto\"}]}]")
+    local v = vehicle.newVehicle("tank", 0.0, 0.0)
+    if (v == null) return false
+
+    vehicle.moveTo(v, 100.0, 0.0)
+    for (local i = 0; i < 300 && !vehicle.isArrived(v); i += 1) vehicle.update(0.1)
+    if (!vehicle.isArrived(v)) return false
+
+    local m = vehicle.getMount(v, 0)
+    if (m == null) return false
+    local w = weapon.mountGetWeapon(m)
+    if (w == null) return false
+    vehicle.attack(v, 200.0, 0.0, 0)
+    for (local i = 0; i < 20; i += 1) { vehicle.update(0.1); weapon.update(0.1) }
+    if (!weapon.canFire(w)) return false   // 开火后进入冷却
+
+    vehicle.applyDamage(v, 100.0, "", 0)
+    return vehicle.getHealth(v) == 200.0
+}
+)SQ";
+
+UnitSciptTest(VehicleRtsFlowTest, kRtsFlowScript);
+
+TEST_CASE_FIXTURE(VehicleRtsFlowTest, "vehicle.script.rtsFlow") {
+    CHECK(vm.callFunc(vm.findFunc("testVehicleRtsFlow"), vm).toBool());
+}
