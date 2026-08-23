@@ -51,13 +51,13 @@ function buildScene() {
         world3 = physics.newWorld3D(0.0, -9.8, 0.0, true);
         // Ground (top at y = 0).
         local ground = world3.newBody("static", 0.0, -0.5, 0.0);
-        ground.newBoxShape(12.0, 1.0, 12.0);
+        ground.newBoxShape(12.0, 1.0, 12.0, 1.0, 0.2, 0.0);
         // A box platform the curtain drapes over.
         local box = world3.newBody("static", 0.0, 0.4, 0.0);
-        box.newBoxShape(2.2, 0.8, 2.2);
+        box.newBoxShape(2.2, 0.8, 2.2, 1.0, 0.2, 0.0);
         // A sphere obstacle beside it.
         local ball = world3.newBody("static", 1.4, 0.5, 1.2);
-        ball.newSphereShape(0.5);
+        ball.newSphereShape(0.5, 1.0, 0.2, 0.0);
     }
 
     if (cloth == null) {
@@ -155,7 +155,7 @@ eve_update = function(dt) {
 
     if (windOn) {
         windT += dt;
-        cloth.applyForce(math.sin(windT * 1.3) * 1.8, 0.0, math.cos(windT * 0.9) * 0.6);
+        cloth.applyForce(math.polarY(1.8, windT * 1.3), 0.0, math.polarX(0.6, windT * 0.9));
     }
 
     // Pointer field: right mouse repels nearby particles (Fluid-style).

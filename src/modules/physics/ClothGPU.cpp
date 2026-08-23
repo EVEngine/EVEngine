@@ -508,7 +508,6 @@ float ClothGPU::getParticleY(int index) const {
 }
 
 void ClothGPU::reset() {
-    const int count = getParticleCount();
     for (int r = 0; r < rows_; ++r) {
         for (int c = 0; c < cols_; ++c) {
             const size_t i = static_cast<size_t>(r * cols_ + c);

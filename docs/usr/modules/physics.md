@@ -175,11 +175,11 @@ fluid.draw(gfx);
 
 - `applyAngularImpulse()`、`applyForce()`、`applyForceAt()`、`applyLinearImpulse()`、`clear()`、`clearBounds()`、`destroy()`、`destroyBody()`
 - `draw()`、`drawDebug()`、`emit()`、`getAngle()`、`getAngularVelocity()`、`getAngularVelocityX()`、`getAngularVelocityY()`、`getAngularVelocityZ()`、`getBody()`、`getCapacity()`、`getCols()`
-- `getDamping()`、`getDensity()`、`getFriction()`、`getGrabIndex()`、`getGravityX()`、`getGravityY()`、`getGravityZ()`、`getId()`、`getIterations()`
+- `getCollideWorld()`、`getDamping()`、`getDensity()`、`getFoldStiffness()`、`getFriction()`、`getGrabIndex()`、`getGravityX()`、`getGravityY()`、`getGravityZ()`、`getId()`、`getIterations()`
 - `getLinearVelocityX()`、`getLinearVelocityY()`、`getLinearVelocityZ()`、`getMass()`、`getMeter()`、`getName()`、`getNearPressureStiffness()`、`getParticleCount()`、`getParticleMass()`、`getParticleSize()`、`getParticleVx()`
-- `getParticleVy()`、`getParticleVx()`、`getParticleX()`、`getParticleY()`、`getParticleZ()`、`getPressureStiffness()`、`getQueryBodyId()`、`getQueryCount()`、`getRayHitBodyId()`、`getRayHitFraction()`
+- `getMaxFoldAngle()`、`getParticleVy()`、`getParticleVx()`、`getParticleX()`、`getParticleY()`、`getParticleZ()`、`getPressureStiffness()`、`getQueryBodyId()`、`getQueryCount()`、`getRayHitBodyId()`、`getRayHitFraction()`
 - `getRayHitNormalX()`、`getRayHitNormalY()`、`getRayHitNormalZ()`、`getRayHitX()`、`getRayHitY()`、`getRayHitZ()`、`getRestDensity()`、`getRestitution()`、`getRotW()`、`getRotX()`、`getRotY()`、`getRotZ()`、`getRows()`、`getSmoothingRadius()`
-- `getSpacing()`、`getStiffness()`、`getType()`、`getViscosity()`、`getX()`、`getY()`、`getZ()`、`grabAt()`、`hasRayHit()`
+- `getOriginX()`、`getOriginY()`、`getOriginZ()`、`getSelfCollision()`、`getSpacing()`、`getStiffness()`、`getType()`、`getViscosity()`、`getX()`、`getY()`、`getZ()`、`grabAt()`、`hasRayHit()`
 - `interactAt()`、`isActive()`、`isAwake()`、`isBullet()`、`isFixedRotation()`、`isGrabbing()`、`isPinned()`、`isSensor()`
 - `moveGrab()`、`newBody()`、`newBoxShape()`、`newCapsuleShape()`、`newCircleFixture()`、`newCloth()`、`newCloth3D()`、`newClothGPU()`、`newFluid()`、`newRectangleFixture()`、`newSphereShape()`、`newWorld()`、`newWorld3D()`、`pin()`
 - `pinTopRow()`、`queryAABB()`、`rayCast()`、`releaseGrab()`、`reset()`、`setActive()`、`setAngle()`、`setAngularVelocity()`、`setAwake()`
