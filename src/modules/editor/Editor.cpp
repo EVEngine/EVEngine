@@ -83,6 +83,32 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
                 n[2] = nz;
             }
         }
+
+        // Smooth terrain can share the heightmap's grid vertices. Positions,
+        // normals and UVs change while sculpting; the indexed topology does not.
+        out.pos.reserve(size_t(w) * size_t(h) * 3u);
+        out.nrm.reserve(size_t(w) * size_t(h) * 3u);
+        out.uv.reserve(size_t(w) * size_t(h) * 2u);
+        out.idx.reserve(size_t(w - 1) * size_t(h - 1) * 6u);
+        for (int z = 0; z < h; ++z) {
+            for (int x = 0; x < w; ++x) {
+                out.pos.insert(out.pos.end(),
+                               {float(x) * cell, hm.height(x, z) * hScale, float(z) * cell});
+                const float *n = &smoothNrm[(size_t(z) * size_t(w) + size_t(x)) * 3u];
+                out.nrm.insert(out.nrm.end(), {n[0], n[1], n[2]});
+                out.uv.insert(out.uv.end(), {float(x) / uw, float(z) / uh});
+            }
+        }
+        for (int z = 0; z < h - 1; ++z) {
+            for (int x = 0; x < w - 1; ++x) {
+                const uint32_t i00 = uint32_t(z * w + x);
+                const uint32_t i10 = i00 + 1u;
+                const uint32_t i01 = i00 + uint32_t(w);
+                const uint32_t i11 = i01 + 1u;
+                out.idx.insert(out.idx.end(), {i00, i01, i10, i10, i01, i11});
+            }
+        }
+        return;
     }
 
     auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx,
@@ -124,9 +150,13 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
             const float h01 = hm.height(x, y + 1);
             const float h11 = hm.height(x + 1, y + 1);
             // Grid is XZ; y in the function is the XZ "row" axis.
-            addTri(float(x), float(y), h00, float(x + 1), float(y), h10, float(x), float(y + 1), h01);
-            addTri(float(x + 1), float(y), h10, float(x + 1), float(y + 1), h11, float(x),
-                   float(y + 1), h01);
+            // Counter-clockwise when viewed from above (+Y).  Besides matching
+            // the renderer's front face, this keeps the flat-shaded cross
+            // product pointing upward instead of into the terrain.
+            addTri(float(x), float(y), h00, float(x), float(y + 1), h01, float(x + 1),
+                   float(y), h10);
+            addTri(float(x + 1), float(y), h10, float(x), float(y + 1), h01,
+                   float(x + 1), float(y + 1), h11);
         }
     }
 }
@@ -167,6 +197,32 @@ HeightmapTarget *Editor::newHeightmapTarget(const std::string &id,
     return new HeightmapTarget(id, heightmap);
 }
 
+int Editor::applyHeightmapBrush(procgen::Heightmap *hm, float centerX, float centerY,
+                                float radius, float strength) {
+    if (!hm || radius < 0.f || strength == 0.f) return 0;
+    const int minX = std::max(0, int(std::floor(centerX - radius)));
+    const int maxX = std::min(hm->getWidth() - 1, int(std::ceil(centerX + radius)));
+    const int minY = std::max(0, int(std::floor(centerY - radius)));
+    const int maxY = std::min(hm->getHeight() - 1, int(std::ceil(centerY + radius)));
+    const float edge = radius + 0.5f;
+    int changed = 0;
+    for (int y = minY; y <= maxY; ++y) {
+        for (int x = minX; x <= maxX; ++x) {
+            const float dx = float(x) - centerX;
+            const float dy = float(y) - centerY;
+            const float distance = std::sqrt(dx * dx + dy * dy);
+            if (distance > radius) continue;
+            const float falloff = 1.f - distance / edge;
+            const float oldHeight = hm->height(x, y);
+            const float newHeight = std::clamp(oldHeight + strength * falloff, 0.f, 1.f);
+            if (newHeight == oldHeight) continue;
+            hm->setHeight(x, y, newHeight);
+            ++changed;
+        }
+    }
+    return changed;
+}
+
 graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,
                                          float heightScale) {
     auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
@@ -185,7 +241,7 @@ bool Editor::updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
     buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
     if (a.idx.empty()) return false;
     return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
-                                   int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+                                   int(a.pos.size() / 3), nullptr, 0);
 }
 
 graphics::Mesh *Editor::newHeightmapMeshSmooth(procgen::Heightmap *hm, float cellSize,
@@ -207,7 +263,7 @@ bool Editor::updateHeightmapMeshSmooth(graphics::Mesh *mesh, graphics::Graphics 
     buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
     if (a.idx.empty()) return false;
     return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
-                                   int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+                                   int(a.pos.size() / 3), nullptr, 0);
 }
 #endif
 
@@ -496,6 +552,7 @@ void Editor::expose(ssq::Class &cls) {
     cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
     cls.addFunc("newHeightmapMeshSmooth", &Editor::newHeightmapMeshSmooth);
     cls.addFunc("updateHeightmapMeshSmooth", &Editor::updateHeightmapMeshSmooth);
+    cls.addFunc("applyHeightmapBrush", &Editor::applyHeightmapBrush);
 #endif
 }
 

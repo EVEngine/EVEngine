@@ -64,6 +64,18 @@ public:
     HeightmapTarget  *newHeightmapTarget(const std::string &id, procgen::Heightmap *heightmap);
 
     /**
+     * @brief Apply a circular linear-falloff brush to a heightmap in one native call.
+     * @param hm Heightmap to edit.
+     * @param centerX Brush center in heightmap-cell coordinates.
+     * @param centerY Brush center in heightmap-cell coordinates.
+     * @param radius Radius in cells; values below zero are rejected.
+     * @param strength Signed center-height delta (positive raises, negative lowers).
+     * @return Number of heightmap samples changed.
+     */
+    int applyHeightmapBrush(procgen::Heightmap *hm, float centerX, float centerY, float radius,
+                            float strength);
+
+    /**
      * Build a flat-shaded terrain mesh from a heightmap (grid of cells,
      * X/Z in world units = index * cellSize, Y = height * heightScale).
      * Caller attaches it to a Renderable3D via setMesh(). Returns nullptr on
@@ -77,7 +89,8 @@ public:
     /**
      * @brief Heightmap mesh with smooth per-vertex normals (gradient of the
      * height field), so bowls/craters shade continuously instead of showing
-     * flat-shaded triangle facets. Same geometry as newHeightmapMesh.
+     * flat-shaded triangle facets. Uses one shared vertex per heightmap sample
+     * and a static indexed topology, reducing update bandwidth substantially.
      */
     graphics::Mesh *newHeightmapMeshSmooth(procgen::Heightmap *hm, float cellSize,
                                            float heightScale);
