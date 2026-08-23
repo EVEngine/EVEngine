@@ -25,7 +25,9 @@ if (!("terrainHm" in getroottable())) terrainHm <- null;
 if (!("combinedHm" in getroottable())) combinedHm <- null;
 if (!("terrainMesh" in getroottable())) terrainMesh <- null;
 if (!("terrainEnt" in getroottable())) terrainEnt <- null;
-if (!("terrainTex" in getroottable())) terrainTex <- null;
+if (!("terrainTexA" in getroottable())) terrainTexA <- null;
+if (!("terrainTexN" in getroottable())) terrainTexN <- null;
+if (!("terrainTexH" in getroottable())) terrainTexH <- null;
 if (!("walker" in getroottable())) walker <- null;
 if (!("sun" in getroottable())) sun <- null;
 if (!("cam" in getroottable())) cam <- null;
@@ -43,7 +45,7 @@ const H = 96;
 const CELL = 0.5;        // world units per cell
 const HSCALE = 3.2;      // world units per unit of height
 const SNOW_SCALE = 0.07; // snow depth added to the heightmap (x HSCALE = world)
-const POM_SCALE = 0.045; // parallax strength for the snow height texture
+const POM_SCALE = 0.06;  // parallax strength for the snow height texture
 
 function surfaceHeight(wx, wz) {
     local cx = clampf((wx / CELL).tointeger(), 0, W - 1);
@@ -86,11 +88,14 @@ function regenTerrain() {
         terrainEnt.setRoughness(0.95);
         terrainEnt.setMetallic(0.0);
         terrainEnt.setReceiveShadow(true);
-        // One RGBA texture, two roles: albedo (G/B/A snow color) and the POM
-        // height map (R = snow depth, white = raised).
-        terrainTex = snow.uploadTexture(sf, gfx);
-        terrainEnt.setTexture(terrainTex);
-        terrainEnt.setHeightTexture(terrainTex);
+        // Three views of the same SnowField: albedo (snow/ground color),
+        // normal (depth-gradient shading) and POM height (R = depth).
+        terrainTexA = snow.uploadTexture(sf, gfx, "albedo");
+        terrainTexN = snow.uploadTexture(sf, gfx, "normal");
+        terrainTexH = snow.uploadTexture(sf, gfx, "height");
+        terrainEnt.setTexture(terrainTexA);
+        terrainEnt.setNormalTexture(terrainTexN);
+        terrainEnt.setHeightTexture(terrainTexH);
         terrainEnt.setParallax(POM_SCALE, 8.0, 32.0);
         terrainEnt.setPosition(0.0, 0.0, 0.0);
         terrainEnt.setVisible(true);
@@ -110,7 +115,9 @@ function rebuildTerrain() {
     snow.applyToHeightmap(sf, terrainHm, combinedHm, SNOW_SCALE);
     editor.updateHeightmapMesh(terrainMesh, gfx, combinedHm, CELL, HSCALE);
     if (sf.isDirty()) {
-        snow.updateTexture(sf, terrainTex, gfx);
+        snow.updateTexture(sf, terrainTexA, gfx, "albedo");
+        snow.updateTexture(sf, terrainTexN, gfx, "normal");
+        snow.updateTexture(sf, terrainTexH, gfx, "height");
         sf.clearDirty();
     }
 }
@@ -142,15 +149,15 @@ eve_init = function() {
 
     cam = eve.Camera3D();
     cam.setFov(50.0);
-    cam.setAmbient(0.52, 0.56, 0.62);
+    cam.setAmbient(0.42, 0.45, 0.50);
     cam.setActive(true);
     gfx.setBackgroundColor(0.66, 0.72, 0.80, 1.0);
     // CSM shadows need a Light3D directional caster; the legacy
     // gfx.setDirectionalLight path never casts.
     sun = eve.Light3D();
     sun.setType("dir");
-    sun.setDirection(-0.45, 0.85, 0.35);
-    sun.setColor(1.05, 1.02, 0.98, 1.5);
+    sun.setDirection(-0.55, 0.62, 0.40);
+    sun.setColor(1.02, 1.00, 0.97, 1.45);
     sun.setCastShadow(true);
     sun.setShadowStrength(1.0);
 
@@ -174,7 +181,7 @@ eve_update = function(dt) {
     local g = groundFromMouse(mouse.getX(), mouse.getY());
     if (g != null && mousePressed(0)) {
         sf.stampFootprint(g[0] / CELL, g[1] / CELL,
-                          cos(camAngle), sin(camAngle), 1.6, 0.45);
+                          cos(camAngle), sin(camAngle), 1.7, 0.52);
         rebuildTerrain();
     }
     if (g != null && mousePressed(2)) {
@@ -208,7 +215,7 @@ eve_update = function(dt) {
         stepTimer -= dt;
         if (stepTimer <= 0.0) {
             sf.stampFootprint(wx / CELL, wz / CELL, -sin(walkAngle), cos(walkAngle),
-                              1.5, 0.4);
+                              1.6, 0.5);
             stepTimer = 0.22;
         }
     } else {

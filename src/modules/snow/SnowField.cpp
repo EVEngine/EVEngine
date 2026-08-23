@@ -69,7 +69,7 @@ void SnowField::stampFootprint(float cx, float cz, float dirX, float dirZ, float
     const float r = std::max(radius, 0.25f);
     const float d = std::clamp(depth, 0.f, 1.f);
     const float across = r * 0.55f;  // footprints are longer than they are wide
-    const float margin = r * 1.2f;
+    const float margin = r * 1.25f;
     const int x0 = int(std::floor(cx - margin));
     const int x1 = int(std::floor(cx + margin));
     const int z0 = int(std::floor(cz - margin));
@@ -88,8 +88,13 @@ void SnowField::stampFootprint(float cx, float cz, float dirX, float dirZ, float
 
             const float fall = smoothstep(0.f, 1.f, n);
             const float depression = d * (1.f - fall);
-            const float rim = d * 0.3f * smoothstep(0.7f, 1.f, n) *
-                              (1.f - smoothstep(1.f, 1.15f, n));
+            // Kicked-snow mounds ringing the footprint: a per-cell hash makes
+            // the raised rim lumpy (snow thrown to the side while walking),
+            // instead of a perfect smooth ring.
+            const float ring = smoothstep(0.72f, 1.f, n) *
+                               (1.f - smoothstep(1.f, 1.18f, n));
+            const float rnd = 0.35f + 0.65f * cellNoise(x, z);
+            const float rim = d * 0.5f * ring * rnd;
             float &cell = data_[size_t(z) * width_ + x];
             cell = clamp01(cell - depression + rim);
         }
@@ -102,7 +107,7 @@ void SnowField::stampImpact(float cx, float cz, float radius, float depth) {
 
     const float r = std::max(radius, 0.25f);
     const float d = std::clamp(depth, 0.f, 1.f);
-    const float margin = r * 1.4f;
+    const float margin = r * 1.45f;
     const int x0 = int(std::floor(cx - margin));
     const int x1 = int(std::floor(cx + margin));
     const int z0 = int(std::floor(cz - margin));
@@ -115,11 +120,15 @@ void SnowField::stampImpact(float cx, float cz, float radius, float depth) {
             const float dz = float(z) - cz;
             const float dist = std::sqrt(dx * dx + dz * dz);
             const float n = dist / r;
-            if (n > 1.4f) continue;
+            if (n > 1.45f) continue;
 
             const float bowl = d * (1.f - n) * (1.f - n);
-            const float rim = d * 0.4f * smoothstep(0.8f, 1.f, n) *
-                              (1.f - smoothstep(1.f, 1.35f, n));
+            // Random ejecta ring: snow thrown out of the crater piles up in
+            // lumpy mounds around the rim (hash-randomized height per cell).
+            const float ring = smoothstep(0.85f, 1.f, n) *
+                               (1.f - smoothstep(1.f, 1.4f, n));
+            const float rnd = 0.3f + 0.7f * cellNoise(x, z);
+            const float rim = d * 0.75f * ring * rnd;
             float &cell = data_[size_t(z) * width_ + x];
             cell = clamp01(cell - bowl + rim);
         }
@@ -135,19 +144,62 @@ void SnowField::addSnowfall(float amount) {
     dirty_ = true;
 }
 
-std::vector<uint8_t> SnowField::toRGBA() const {
+std::vector<uint8_t> SnowField::toHeightRGBA() const {
     std::vector<uint8_t> rgba(size_t(width_) * size_t(height_) * 4, 0);
-    constexpr float kAlbedo[3] = {0.93f, 0.96f, 1.00f};  // cool white
     for (int z = 0; z < height_; ++z) {
         for (int x = 0; x < width_; ++x) {
             const float s = data_[size_t(z) * width_ + x];
-            const float shade = 0.25f + 0.75f * s;
-            const float n = (cellNoise(x, z) - 0.5f) * 0.06f;
             const size_t i = (size_t(z) * width_ + x) * 4;
             rgba[i + 0] = uint8_t(std::clamp(s * 255.f, 0.f, 255.f) + 0.5f);
-            rgba[i + 1] = uint8_t(std::clamp((kAlbedo[0] * shade + n) * 255.f, 0.f, 255.f) + 0.5f);
-            rgba[i + 2] = uint8_t(std::clamp((kAlbedo[1] * shade + n) * 255.f, 0.f, 255.f) + 0.5f);
-            rgba[i + 3] = uint8_t(std::clamp((kAlbedo[2] * shade + n) * 255.f, 0.f, 255.f) + 0.5f);
+            rgba[i + 1] = 0;
+            rgba[i + 2] = 0;
+            rgba[i + 3] = 255;
+        }
+    }
+    return rgba;
+}
+
+std::vector<uint8_t> SnowField::toAlbedoRGBA() const {
+    constexpr float kSnow[3] = {0.93f, 0.96f, 1.00f};    // cool white
+    constexpr float kGround[3] = {0.36f, 0.30f, 0.24f};  // dark soil
+    std::vector<uint8_t> rgba(size_t(width_) * size_t(height_) * 4, 0);
+    for (int z = 0; z < height_; ++z) {
+        for (int x = 0; x < width_; ++x) {
+            const float s = data_[size_t(z) * width_ + x];
+            const float n = (cellNoise(x, z) - 0.5f) * 0.05f;
+            const size_t i = (size_t(z) * width_ + x) * 4;
+            for (int c = 0; c < 3; ++c) {
+                const float v = kGround[c] + (kSnow[c] - kGround[c]) * s + n;
+                rgba[i + c] = uint8_t(std::clamp(v * 255.f, 0.f, 255.f) + 0.5f);
+            }
+            rgba[i + 3] = 255;
+        }
+    }
+    return rgba;
+}
+
+std::vector<uint8_t> SnowField::toNormalRGBA() const {
+    constexpr float kStrength = 5.f;
+    std::vector<uint8_t> rgba(size_t(width_) * size_t(height_) * 4, 0);
+    if (width_ <= 0 || height_ <= 0) return rgba;
+    auto sample = [&](int x, int z) -> float {
+        x = std::clamp(x, 0, width_ - 1);
+        z = std::clamp(z, 0, height_ - 1);
+        return data_[size_t(z) * width_ + x];
+    };
+    for (int z = 0; z < height_; ++z) {
+        for (int x = 0; x < width_; ++x) {
+            const float dhdu = (sample(x + 1, z) - sample(x - 1, z)) * 0.5f * kStrength;
+            const float dhdv = (sample(x, z + 1) - sample(x, z - 1)) * 0.5f * kStrength;
+            const float len = std::sqrt(dhdu * dhdu + dhdv * dhdv + 1.f);
+            const float nx = -dhdu / len;
+            const float ny = -dhdv / len;
+            const float nz = 1.f / len;
+            const size_t i = (size_t(z) * width_ + x) * 4;
+            rgba[i + 0] = uint8_t(std::clamp((nx * 0.5f + 0.5f) * 255.f, 0.f, 255.f) + 0.5f);
+            rgba[i + 1] = uint8_t(std::clamp((ny * 0.5f + 0.5f) * 255.f, 0.f, 255.f) + 0.5f);
+            rgba[i + 2] = uint8_t(std::clamp((nz * 0.5f + 0.5f) * 255.f, 0.f, 255.f) + 0.5f);
+            rgba[i + 3] = 255;
         }
     }
     return rgba;

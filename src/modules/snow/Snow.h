@@ -49,17 +49,21 @@ public:
                           procgen::Heightmap *out, float heightScale);
 
     /**
-     * @brief Upload the field as an RGBA8 texture (R = POM height).
+     * @brief Upload the field as an RGBA8 texture.
+     * @param kind "height" (R = snow depth, POM height map), "albedo"
+     * (snow/ground color) or "normal" (tangent-space from the depth gradient).
      * Borrowed handle owned by Graphics; call once, then updateTexture().
      */
-    graphics::Texture *uploadTexture(SnowField *field, graphics::Graphics *gfx);
+    graphics::Texture *uploadTexture(SnowField *field, graphics::Graphics *gfx,
+                                     const std::string &kind);
 
     /**
      * @brief Replace an uploaded snow texture's pixels in place.
+     * @param kind one of "height" | "albedo" | "normal" (must match the upload).
      * Returns false when unsupported (e.g. WebGPU backend).
      */
     bool updateTexture(SnowField *field, graphics::Texture *texture,
-                       graphics::Graphics *gfx);
+                       graphics::Graphics *gfx, const std::string &kind);
 };
 
 }  // namespace eve::snow

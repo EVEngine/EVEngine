@@ -67,8 +67,23 @@ TEST_CASE("SnowField.impactCraterBowlAndRim") {
 
     CHECK(f.height(10, 10) < 0.21f);       // deep bowl center
     CHECK(f.height(13, 10) < 0.78f);       // shallow bowl near the edge
-    CHECK(f.height(14, 10) > 0.85f);       // raised rim outside the bowl
+    CHECK(f.height(14, 10) > 0.85f);       // raised ejecta ring outside the bowl
     CHECK(f.height(16, 10) == 0.8f);       // outside the rim band
+
+    // Ejecta is intentionally lumpy: ring heights vary per cell instead of
+    // forming a perfect smooth ring.
+    float lo = 1.f, hi = 0.f;
+    for (int z = 5; z <= 15; ++z) {
+        for (int x = 5; x <= 15; ++x) {
+            const float dx = float(x) - 10.f;
+            const float dz = float(z) - 10.f;
+            const float n = std::sqrt(dx * dx + dz * dz) / 4.f;
+            if (n < 0.95f || n > 1.4f) continue;
+            lo = std::min(lo, f.height(x, z));
+            hi = std::max(hi, f.height(x, z));
+        }
+    }
+    CHECK(hi - lo > 0.05f);
 }
 
 TEST_CASE("SnowField.snowfallRecovery") {
@@ -86,19 +101,70 @@ TEST_CASE("SnowField.snowfallRecovery") {
     CHECK_EQ(f.height(0, 0), 1.f);
 }
 
-TEST_CASE("SnowField.textureLayout") {
+TEST_CASE("SnowField.heightTexture") {
     SnowField f(3, 2);
     f.fill(1.f);
-    std::vector<uint8_t> rgba = f.toRGBA();
+    std::vector<uint8_t> rgba = f.toHeightRGBA();
     CHECK_EQ(int(rgba.size()), 3 * 2 * 4);
     CHECK_EQ(int(rgba[0]), 255);   // R = height
     CHECK_EQ(int(rgba[12]), 255);  // R of the last cell
+    CHECK_EQ(int(rgba[1]), 0);     // G/B stay 0 so albedo stays clean
+    CHECK_EQ(int(rgba[2]), 0);
 
     f.setHeight(0, 0, 0.5f);
-    rgba = f.toRGBA();
+    rgba = f.toHeightRGBA();
     CHECK(int(rgba[0]) >= 126);
     CHECK(int(rgba[0]) <= 130);
     CHECK_EQ(int(rgba[3]), 255);   // alpha always opaque
+}
+
+TEST_CASE("SnowField.albedoBlendsSnowToGround") {
+    SnowField f(4, 4);
+    f.fill(0.f);
+    std::vector<uint8_t> rgba = f.toAlbedoRGBA();
+    CHECK(int(rgba[0]) >= 85);   // dark soil
+    CHECK(int(rgba[0]) <= 100);
+    CHECK(int(rgba[1]) >= 70);
+    CHECK(int(rgba[1]) <= 85);
+    CHECK(int(rgba[2]) >= 55);
+    CHECK(int(rgba[2]) <= 68);
+
+    f.fill(1.f);
+    rgba = f.toAlbedoRGBA();
+    CHECK(int(rgba[0]) >= 230);  // cool white snow
+    CHECK(int(rgba[0]) <= 245);
+    CHECK(int(rgba[3]) == 255);
+
+    // Albedo is a color ramp, not a copy of the height channel: at s = 0.5 the
+    // red channel must differ from the POM height texture's red (128).
+    f.fill(0.5f);
+    const int albedoR = int(f.toAlbedoRGBA()[0]);
+    const int heightR = int(f.toHeightRGBA()[0]);
+    CHECK(std::abs(albedoR - heightR) > 20);
+}
+
+TEST_CASE("SnowField.normalMapFromGradient") {
+    SnowField f(16, 16);
+    f.fill(0.5f);
+    std::vector<uint8_t> flat = f.toNormalRGBA();
+    CHECK(int(flat[0]) >= 126);  // flat = 128,128,255
+    CHECK(int(flat[0]) <= 130);
+    CHECK(int(flat[1]) >= 126);
+    CHECK(int(flat[1]) <= 130);
+    CHECK(int(flat[2]) >= 252);
+
+    // Linearly rising snow toward +X tilts the normal away from +U.
+    for (int z = 0; z < 16; ++z) {
+        for (int x = 0; x < 16; ++x) {
+            f.setHeight(x, z, 0.4f + 0.05f * float(x));
+        }
+    }
+    std::vector<uint8_t> slope = f.toNormalRGBA();
+    const size_t i = (8 * 16 + 8) * 4;
+    CHECK(int(slope[i + 0]) < 120);  // nx < 0 -> R below mid gray
+    CHECK(int(slope[i + 1]) >= 126);
+    CHECK(int(slope[i + 1]) <= 130);
+    CHECK(int(slope[i + 2]) >= 245);
 }
 
 TEST_CASE("SnowField.applyToHeightmapAddsSnow") {

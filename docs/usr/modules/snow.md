@@ -24,7 +24,8 @@ local sf = snow.newField(W, H);
 sf.fill(0.85);
 
 // 2. 交互（cx/cz 为网格坐标，可带小数；radius/depth 单位均为格子/0..1）
-sf.stampFootprint(playerX / CELL, playerZ / CELL, dirX, dirZ, 1.6, 0.45);
+//    脚印/弹坑会在边缘留下随机化隆起的踢雪堆（每格哈希决定堆雪高度）
+sf.stampFootprint(playerX / CELL, playerZ / CELL, dirX, dirZ, 1.7, 0.52);
 sf.stampImpact(hitX / CELL, hitZ / CELL, 3.0, 0.9);
 
 // 3. 降雪回填（每帧调用，amount = dt × 速率）
@@ -35,19 +36,25 @@ local outHm = procgen.newHeightmap(W, H);
 snow.applyToHeightmap(sf, terrainHm, outHm, 0.07);   // out = terrain + snow*scale
 editor.updateHeightmapMesh(terrainMesh, gfx, outHm, CELL, HSCALE);
 
-// 5. POM 微细节：上传/原地更新纹理并绑定为 albedo + height
-local tex = snow.uploadTexture(sf, gfx);             // 只建一次
-terrainEnt.setTexture(tex);
-terrainEnt.setHeightTexture(tex);
-terrainEnt.setParallax(0.045, 8, 32);                // scale / minLayers / maxLayers
+// 5. POM 微细节：同一雪场导出三张纹理——albedo（雪/地颜色）、normal（深度梯度
+//    法线，让坑壁被光照出来）、height（R = 雪深，白 = 隆起）
+local texA = snow.uploadTexture(sf, gfx, "albedo");   // 只建一次
+local texN = snow.uploadTexture(sf, gfx, "normal");
+local texH = snow.uploadTexture(sf, gfx, "height");
+terrainEnt.setTexture(texA);
+terrainEnt.setNormalTexture(texN);
+terrainEnt.setHeightTexture(texH);
+terrainEnt.setParallax(0.06, 8.0, 32.0);              // scale / minLayers / maxLayers
 // 6. 阴影：给太阳创建带 castShadow 的 Light3D 平行光（旧 setDirectionalLight 不投影）
 local sun = eve.Light3D();
 sun.setType("dir");
-sun.setDirection(-0.45, 0.85, 0.35);
-sun.setColor(1.05, 1.02, 0.98, 1.5);
+sun.setDirection(-0.55, 0.62, 0.40);
+sun.setColor(1.02, 1.00, 0.97, 1.45);
 sun.setCastShadow(true);
 // 雪变脏后原地更新（指针不变，无新纹理分配）：
-snow.updateTexture(sf, tex, gfx);
+snow.updateTexture(sf, texA, gfx, "albedo");
+snow.updateTexture(sf, texN, gfx, "normal");
+snow.updateTexture(sf, texH, gfx, "height");
 ```
 
 ## 参数与 API
@@ -58,8 +65,8 @@ snow.updateTexture(sf, tex, gfx);
 |---|---|
 | `newField(w, h)` | 新建空雪场（调用方持有） |
 | `applyToHeightmap(field, terrain, out, scale)` | `out(x,y) = terrain + field*scale`，用于网格位移重建 |
-| `uploadTexture(field, gfx)` | 上传 RGBA8 纹理（R = POM 高度；G/B/A = 随雪深变暗的雪 albedo） |
-| `updateTexture(field, texture, gfx)` | 原地替换纹理像素（返回 false 表示后端不支持，如 WebGPU） |
+| `uploadTexture(field, gfx, kind)` | 上传 RGBA8 纹理；kind = `"height"`（R = 雪深，POM 高度图）、`"albedo"`（雪/地颜色）或 `"normal"`（深度梯度法线） |
+| `updateTexture(field, texture, gfx, kind)` | 原地替换对应纹理像素（返回 false 表示后端不支持，如 WebGPU） |
 
 ### SnowField
 
@@ -67,8 +74,8 @@ snow.updateTexture(sf, tex, gfx);
 |---|---|
 | `resize(w, h)` / `getWidth()` / `getHeight()` | 网格尺寸 |
 | `fill(v)` / `setHeight(x, y, v)` / `height(x, y)` | 读写单格（自动裁剪到 [0,1]；越界读 0、写忽略） |
-| `stampFootprint(cx, cz, dirX, dirZ, radius, depth)` | 沿移动方向的椭圆脚印：碗状下陷 + 边缘堆雪 |
-| `stampImpact(cx, cz, radius, depth)` | 抛物弹坑：中心深、边缘浅，坑沿外有一圈堆雪 |
+| `stampFootprint(cx, cz, dirX, dirZ, radius, depth)` | 沿移动方向的椭圆脚印：碗状下陷 + 边缘随机化踢雪堆 |
+| `stampImpact(cx, cz, radius, depth)` | 抛物弹坑：中心深、边缘浅，坑沿外一圈随机化溅射雪堆 |
 | `addSnowfall(amount)` | 全格抬升到 [0,1]，用于降雪恢复 |
 | `isDirty()` / `clearDirty()` | 脏标记：有编辑后为 true，重建/上传后手动清除 |
 
@@ -80,7 +87,9 @@ snow.updateTexture(sf, tex, gfx);
   雪深直接加到高度值上，法线随重建自动重算，所以坑壁明暗正确。
 - **POM**：引擎自带 `parallax_map.glsl`（陡峭视差 + 线性细化，TBN 由屏幕导数
   构造），在 `mesh3d.frag` / `mesh3d_clustered.frag` 中先做 UV 位移再采样
-  albedo，因此同一纹理既当 albedo 又当 height map 时坑位会自动变暗。
+  albedo。雪场导出**三张独立纹理**：height（R = 雪深，驱动 POM）、albedo
+  （雪/地颜色渐变）、normal（深度梯度法线，让坑壁与踢雪堆被光照出来）；
+  三张都随 `updateTexture` 原地刷新，指针不变。
 - **纹理更新**：`Graphics::updateTexture`（本模块新增）原地替换像素，
   交互式雪无需每帧新建纹理。
 

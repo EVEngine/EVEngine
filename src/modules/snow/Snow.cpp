@@ -39,18 +39,39 @@ bool Snow::applyToHeightmap(SnowField *field, procgen::Heightmap *terrain,
     return true;
 }
 
-graphics::Texture *Snow::uploadTexture(SnowField *field, graphics::Graphics *gfx) {
+namespace {
+
+bool snowPixels(const SnowField &field, const std::string &kind, std::vector<uint8_t> &rgba) {
+    if (kind == "height") {
+        rgba = field.toHeightRGBA();
+        return true;
+    }
+    if (kind == "albedo") {
+        rgba = field.toAlbedoRGBA();
+        return true;
+    }
+    if (kind == "normal") {
+        rgba = field.toNormalRGBA();
+        return true;
+    }
+    return false;
+}
+
+}  // namespace
+
+graphics::Texture *Snow::uploadTexture(SnowField *field, graphics::Graphics *gfx,
+                                       const std::string &kind) {
     if (!field || !gfx) return nullptr;
-    const std::vector<uint8_t> rgba = field->toRGBA();
-    if (rgba.empty()) return nullptr;
+    std::vector<uint8_t> rgba;
+    if (!snowPixels(*field, kind, rgba) || rgba.empty()) return nullptr;
     return gfx->newTexture(field->getWidth(), field->getHeight(), rgba.data(), false, false);
 }
 
 bool Snow::updateTexture(SnowField *field, graphics::Texture *texture,
-                         graphics::Graphics *gfx) {
+                         graphics::Graphics *gfx, const std::string &kind) {
     if (!field || !texture || !gfx) return false;
-    const std::vector<uint8_t> rgba = field->toRGBA();
-    if (rgba.empty()) return false;
+    std::vector<uint8_t> rgba;
+    if (!snowPixels(*field, kind, rgba) || rgba.empty()) return false;
     return gfx->updateTexture(texture, field->getWidth(), field->getHeight(), rgba.data());
 }
 

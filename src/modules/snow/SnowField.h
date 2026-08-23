@@ -63,11 +63,22 @@ public:
     void addSnowfall(float amount);
 
     /**
-     * @brief RGBA8 bytes (width*height*4). R = snow height for POM; G/B/A =
-     * a cool-white snow albedo modulated by depth plus a tiny per-cell hash,
-     * so bare ground reads dark and deep snow reads white.
+     * @brief POM height map as RGBA8 (width*height*4): R = snow depth, G = B = 0,
+     * A = 255 (white = raised toward the viewer, matches parallax_map.glsl).
      */
-    std::vector<uint8_t> toRGBA() const;
+    std::vector<uint8_t> toHeightRGBA() const;
+
+    /**
+     * @brief Albedo as RGBA8: cool-white snow blended to dark ground by depth,
+     * plus a tiny per-cell hash, so bare ground reads dark and deep snow white.
+     */
+    std::vector<uint8_t> toAlbedoRGBA() const;
+
+    /**
+     * @brief Tangent-space normal map as RGBA8 derived from the snow-depth
+     * gradient (flat = 128,128,255, OpenGL-style, matches applyNormalMap).
+     */
+    std::vector<uint8_t> toNormalRGBA() const;
 
     const std::vector<float> &data() const { return data_; }
 
