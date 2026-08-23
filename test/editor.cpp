@@ -13,6 +13,7 @@
 #include "editor/EditConstraint.h"
 #include "editor/EditorToolbar.h"
 #include "editor/FieldTargets.h"
+#include "editor/FieldBrushTool.h"
 #include "editor/GizmoManager.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
@@ -153,6 +154,44 @@ TEST_CASE("editor.presentation.is_host_and_renderer_independent") {
     CHECK_EQ(tool.inspections, 1);
     CHECK_EQ(presentation.primitives, 1);
     CHECK_EQ(tool.radius, 6.f);
+}
+
+TEST_CASE("editor.field_brush.composes_kernel_and_operation") {
+    ConstantBrushFalloff hard;
+    CircleBrushKernel kernel(&hard);
+    PaintIntFieldOperation paint(7);
+    FieldBrushTool tool("paint", "Paint", &kernel, &paint);
+    tool.setRadius(0.5f);
+
+    TileBuffer buffer(4, 4);
+    TileBufferTarget tiles("tiles", &buffer);
+    EditorSession session;
+    session.bindTarget(&tiles);
+    CHECK(session.addTool(&tool));
+    CHECK(session.activateTool("paint"));
+
+    EditorPointerEvent event;
+    event.phase = EditorPointerEvent::Phase::Down;
+    event.x = 1.f;
+    event.y = 2.f;
+    CHECK(session.dispatchPointer(event).capturePointer);
+    event.phase = EditorPointerEvent::Phase::Up;
+    CHECK(session.dispatchPointer(event).releasePointer);
+    CHECK_EQ(buffer.getGid(1, 2), 7);
+    CHECK(session.transactions().undo());
+    CHECK_EQ(buffer.getGid(1, 2), 0);
+
+    eve::procgen::Heightmap heightmap(4, 4);
+    HeightmapTarget terrain("terrain", &heightmap);
+    AddScalarFieldOperation raise;
+    tool.setOperation(&raise);
+    tool.setStrength(0.25f);
+    session.bindTarget(&terrain);
+    event.phase = EditorPointerEvent::Phase::Down;
+    CHECK(session.dispatchPointer(event).handled);
+    event.phase = EditorPointerEvent::Phase::Up;
+    session.dispatchPointer(event);
+    CHECK_EQ(terrain.readScalar(1, 2), 0.25f);
 }
 
 TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
