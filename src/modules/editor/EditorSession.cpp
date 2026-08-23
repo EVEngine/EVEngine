@@ -6,6 +6,8 @@ namespace eve::editor {
 
 EditorSession::EditorSession() : context_(this) {}
 
+EditorTransactions &EditorContext::transactions() const { return session_->transactions(); }
+
 EditorSession::~EditorSession() { deactivateCurrent(); }
 
 bool EditorSession::addTool(IEditorTool *tool) {

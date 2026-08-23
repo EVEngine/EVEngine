@@ -8,6 +8,7 @@
 #include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
+#include "editor/EditorTransactions.h"
 #include "editor/EditorToolbar.h"
 #include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
@@ -160,6 +161,36 @@ TEST_CASE("editor.brush_kernel.separates_shape_and_falloff") {
     sample.radius = 1.f;
     box.sample(sample, points);
     CHECK_EQ(points.size(), 9);
+}
+
+TEST_CASE("editor.transactions.undo_redo_and_rollback_any_field") {
+    TileBuffer buffer(3, 3);
+    TileBufferTarget target("tiles", &buffer);
+    EditorTransactions transactions;
+    CHECK(transactions.begin("paint"));
+    auto first = std::make_unique<IntFieldEditCommand>("paint", &target);
+    CHECK(first->record(1, 1, 5));
+    CHECK(transactions.execute(std::move(first)));
+    auto second = std::make_unique<IntFieldEditCommand>("paint", &target);
+    CHECK(second->record(1, 1, 7));
+    CHECK(second->record(2, 1, 4));
+    CHECK(transactions.execute(std::move(second)));
+    CHECK_EQ(buffer.getGid(1, 1), 7);
+    CHECK(transactions.commit());
+    CHECK_EQ(transactions.undoCount(), 1);
+    CHECK(transactions.undo());
+    CHECK_EQ(buffer.getGid(1, 1), 0);
+    CHECK_EQ(buffer.getGid(2, 1), 0);
+    CHECK(transactions.redo());
+    CHECK_EQ(buffer.getGid(1, 1), 7);
+
+    CHECK(transactions.begin("cancel"));
+    auto cancelled = std::make_unique<IntFieldEditCommand>("paint", &target);
+    CHECK(cancelled->record(0, 0, 9));
+    CHECK(transactions.execute(std::move(cancelled)));
+    CHECK_EQ(buffer.getGid(0, 0), 9);
+    CHECK(transactions.rollback());
+    CHECK_EQ(buffer.getGid(0, 0), 0);
 }
 
 TEST_CASE("editor.module.name") {

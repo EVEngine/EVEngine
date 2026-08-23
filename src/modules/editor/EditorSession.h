@@ -1,6 +1,7 @@
 #pragma once
 
 #include "editor/EditorTool.h"
+#include "editor/EditorTransactions.h"
 
 #include <string>
 #include <vector>
@@ -53,6 +54,7 @@ public:
     /** @brief Bind a non-owning editable target available to every tool callback. */
     void bindTarget(IEditableTarget *target) { context_.target_ = target; }
     IEditableTarget *target() const { return context_.target_; }
+    EditorTransactions &transactions() { return transactions_; }
 
 private:
     void deactivateCurrent();
@@ -61,6 +63,7 @@ private:
     IEditorTool *activeTool_ = nullptr;
     int capturedPointerId_ = -1;
     EditorContext context_;
+    EditorTransactions transactions_;
 };
 
 }  // namespace eve::editor

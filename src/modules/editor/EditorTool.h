@@ -6,6 +6,7 @@ namespace eve::editor {
 
 class EditorSession;
 class IEditableTarget;
+class EditorTransactions;
 
 /** @brief Pointer input normalized by an editor viewport adapter. */
 struct EditorPointerEvent {
@@ -60,6 +61,7 @@ public:
     EditorSession *session() const { return session_; }
     /** @brief Target currently bound to the session, or nullptr. */
     IEditableTarget *target() const { return target_; }
+    EditorTransactions &transactions() const;
 
     template <typename Capability>
     Capability *targetCapability() const;
