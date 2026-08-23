@@ -952,6 +952,15 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/third-party-squirrel-ssq-export.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Third patch: ssq class allocators must translate C++ exceptions from
+    # module constructors into Squirrel errors. Without this, a throwing ctor
+    # (e.g. Audio with no audio device) escapes the native call, corrupts the
+    # VM's exception state and hangs during sq_close (SQInstance::Release).
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which
