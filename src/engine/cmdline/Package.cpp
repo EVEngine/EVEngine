@@ -191,14 +191,15 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     }
 
 #ifdef EVENGINE_MACOSX
-    // 2b. macOS: bundle the runtime dylibs (Vulkan loader, zlib, ...) that the
-    // executable links from the SDK's lib/ directory, so the packaged game is
-    // self-contained next to the eve binary.
+    // 2b. macOS: copy the SDK's lib/ tree (Vulkan loader + MoltenVK + ICD
+    // manifest + zlib/PNG dylibs) into <out>/lib. eve carries INSTALL_RPATH
+    // "@loader_path/../lib", and platform/macosx bootstrapBundledVulkan points
+    // SDL at <out>/lib/libvulkan.1.dylib + <out>/lib/MoltenVK_icd.json, so the
+    // packaged game is self-contained next to the eve binary. Copying the tree
+    // (not just *.dylib) keeps the ICD manifest and any subdirectories.
     if (exists(sdkLib)) {
-        for (const auto& entry : directory_iterator(sdkLib, ec)) {
-            if (entry.is_regular_file() && entry.path().extension() == ".dylib")
-                copyFileIf(entry.path(), outDir / entry.path().filename());
-        }
+        copy(sdkLib, outDir / "lib",
+             copy_options::recursive | copy_options::overwrite_existing, ec);
         ec.clear();
     }
 #endif  // EVENGINE_MACOSX
