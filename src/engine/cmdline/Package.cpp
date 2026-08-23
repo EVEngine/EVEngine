@@ -198,7 +198,7 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     // packaged game is self-contained next to the eve binary. Copying the tree
     // (not just *.dylib) keeps the ICD manifest and any subdirectories.
     if (exists(sdkLib)) {
-        std::ifstream platIn(sdkRoot / "share" / "eve" / "TARGET_PLATFORM");
+        std::ifstream platIn(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
         std::string   plat;
         std::getline(platIn, plat);
         while (!plat.empty() && (plat.back() == '\r' || plat.back() == '\n' || plat.back() == ' '))
