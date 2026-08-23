@@ -28,6 +28,7 @@ bool SurfaceDropletSimulation::addDroplet(const SurfaceLocation& location, float
         volume <= 0.f)
         return false;
     SurfaceDroplet droplet;
+    droplet.id               = nextDropletId_++;
     droplet.location         = location;
     droplet.volume           = volume;
     const SurfaceSample sample = binding_->evaluate(location, 0.f);
@@ -140,6 +141,7 @@ void SurfaceDropletSimulation::clear() {
     droplets_.clear();
     detached_.clear();
     airborne_.clear();
+    nextDropletId_ = 1;
 }
 
 }  // namespace eve::fluids

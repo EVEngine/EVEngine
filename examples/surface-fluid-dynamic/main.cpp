@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <fstream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,12 @@ using namespace eve::fluids;
 namespace {
 
 struct Rgb { float r = 0.f, g = 0.f, b = 0.f; };
-struct TrailMark { SurfaceLocation location; float strength = 0.f; };
+struct TrailSegment {
+    SurfaceLocation from;
+    SurfaceLocation to;
+    float strength = 0.f;
+    float width = 1.f;
+};
 
 Rgb mix(Rgb a, Rgb b, float t) {
     t = std::clamp(t, 0.f, 1.f);
@@ -98,7 +104,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    std::vector<TrailMark> trails;
+    std::vector<TrailSegment> trails;
     SurfaceWetnessParams wetParams;
     wetParams.diffusion = 0.08f;
     wetParams.evaporation = 0.035f;
@@ -107,10 +113,28 @@ int main(int argc, char** argv) {
         const glm::mat4 pose = glm::rotate(glm::mat4(1.f), 0.10f * std::sin(time * 1.5f),
                                            glm::normalize(glm::vec3(0.3f, 1.f, 0.1f)));
         binding.setTransform(pose);
+        std::unordered_map<uint64_t, SurfaceLocation> previous;
+        for (const SurfaceDroplet& drop : simulation.droplets()) previous.emplace(drop.id, drop.location);
         simulation.step(1.f / 60.f);
         wetness.step(1.f / 60.f, wetParams);
-        for (const SurfaceDroplet& drop : simulation.droplets()) trails.push_back({drop.location, 0.13f});
-        for (TrailMark& trail : trails) trail.strength *= 0.992f;
+        for (const SurfaceDroplet& drop : simulation.droplets()) {
+            const auto prior = previous.find(drop.id);
+            if (prior == previous.end()) continue;
+            trails.push_back({prior->second, drop.location, 0.105f,
+                              std::clamp(simulation.dropletRadius(drop.volume) * 95.f, 0.7f, 1.8f)});
+        }
+        for (TrailSegment& trail : trails) trail.strength *= 0.992f;
+    }
+
+    // A recent fine spray provides the stationary micro-droplet layer seen on wet glass.
+    for (int i = 0; i < 18; ++i) {
+        const float x = -0.74f + 1.48f * float((i * 7) % 19) / 18.f;
+        const float y = -0.38f + 1.12f * float((i * 11) % 17) / 16.f;
+        const float r2 = x * x + y * y;
+        if (r2 >= 0.92f) continue;
+        SurfaceLocation location;
+        if (binding.project(glm::vec3(x, y, -std::sqrt(1.f - r2)), 0.1f, location))
+            simulation.addDroplet(location, 0.0000025f + 0.000001f * float(i % 3));
     }
 
     std::vector<Rgb> image(size_t(width * height));
@@ -139,24 +163,34 @@ int main(int argc, char** argv) {
             const float fresnel = std::pow(1.f - facing, 3.2f);
             const float band = std::pow(std::max(0.f, glm::dot(normal,
                 glm::normalize(glm::vec3(-0.55f, 0.35f, -0.75f)))), 18.f);
+            const float window = std::pow(std::max(0.f, 1.f - std::fabs(nx + ny * 0.28f + 0.23f) * 5.f), 7.f);
+            const float horizon = std::pow(std::max(0.f, 1.f - std::fabs(ny - 0.12f) * 8.f), 5.f);
             Rgb surface = mix({0.025f, 0.075f, 0.105f}, {0.08f, 0.19f, 0.24f}, 0.45f + ny * 0.18f);
             surface = mix(surface, {0.20f, 0.43f, 0.49f}, fresnel * 0.72f);
             surface = mix(surface, {0.48f, 0.74f, 0.76f}, band * 0.42f);
+            surface = mix(surface, {0.30f, 0.56f, 0.61f}, window * 0.22f + horizon * 0.10f);
             image[size_t(py * width + px)] = surface;
         }
     }
 
-    for (const TrailMark& trail : trails) {
-        const SurfaceSample sample = binding.evaluate(trail.location, 1.f / 60.f);
-        if (sample.position.z > 0.12f) continue;
-        const int x = centerX + int(sample.position.x * spherePixels);
-        const int y = centerY - int(sample.position.y * spherePixels);
-        for (int dy = -2; dy <= 2; ++dy) {
-            for (int dx = -2; dx <= 2; ++dx) {
-                const float d2 = float(dx * dx + dy * dy);
-                if (d2 > 4.5f) continue;
-                blend(image, width, height, x + dx, y + dy, {0.22f, 0.55f, 0.62f},
-                      trail.strength * std::exp(-d2 * 0.55f));
+    for (const TrailSegment& trail : trails) {
+        const SurfaceSample a = binding.evaluate(trail.from, 1.f / 60.f);
+        const SurfaceSample b = binding.evaluate(trail.to, 1.f / 60.f);
+        if (a.position.z > 0.12f || b.position.z > 0.12f) continue;
+        const glm::vec2 p0(centerX + a.position.x * spherePixels, centerY - a.position.y * spherePixels);
+        const glm::vec2 p1(centerX + b.position.x * spherePixels, centerY - b.position.y * spherePixels);
+        const int steps = std::max(1, int(glm::distance(p0, p1) * 1.5f));
+        for (int step = 0; step <= steps; ++step) {
+            const float t = float(step) / float(steps);
+            const glm::vec2 p = glm::mix(p0, p1, t);
+            const int radius = std::max(1, int(trail.width * glm::mix(0.55f, 1.f, t)));
+            for (int dy = -radius; dy <= radius; ++dy) {
+                for (int dx = -radius; dx <= radius; ++dx) {
+                    const float d2 = float(dx * dx + dy * dy) / float(radius * radius);
+                    if (d2 > 1.f) continue;
+                    blend(image, width, height, int(p.x) + dx, int(p.y) + dy,
+                          {0.16f, 0.42f, 0.48f}, trail.strength * std::exp(-d2 * 1.5f));
+                }
             }
         }
     }
@@ -169,6 +203,15 @@ int main(int argc, char** argv) {
         const float speed = glm::length(drop.relativeVelocity);
         const int rx = std::clamp(int(simulation.dropletRadius(drop.volume) * spherePixels * 0.72f), 4, 10);
         const int ry = std::clamp(int(float(rx) * (1.25f + speed * 0.22f)), 6, 17);
+        for (int dy = -ry; dy <= ry; ++dy) {
+            for (int dx = -rx; dx <= rx; ++dx) {
+                const float d2 = std::pow(float(dx) / float(rx), 2.f) +
+                                 std::pow(float(dy) / float(ry), 2.f);
+                if (d2 <= 1.f)
+                    blend(image, width, height, cx + dx + 1, cy + dy + 2,
+                          {0.004f, 0.012f, 0.016f}, 0.16f * (1.f - d2));
+            }
+        }
         for (int dy = -ry; dy <= ry; ++dy) {
             const float ny = float(dy) / float(ry);
             const float taper = std::clamp(0.72f + 0.28f * ny, 0.42f, 1.f);

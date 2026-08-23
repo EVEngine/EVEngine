@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 
+#include <cstdint>
 #include <vector>
 
 namespace eve::fluids {
@@ -35,6 +36,7 @@ struct SurfaceDropletParams {
 
 /** @brief One droplet addressed in material space on a dynamic triangle surface. */
 struct SurfaceDroplet {
+    uint64_t        id = 0;
     SurfaceLocation location;
     glm::vec3       relativeVelocity{0.f};
     glm::vec3       previousSurfaceVelocity{0.f};
@@ -104,6 +106,7 @@ private:
     std::vector<SurfaceDroplet>   droplets_;
     std::vector<DetachedDroplet>  detached_;
     std::vector<AirborneDroplet>  airborne_;
+    uint64_t                      nextDropletId_ = 1;
 };
 
 }  // namespace eve::fluids
