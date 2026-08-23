@@ -122,6 +122,17 @@ if(_has_physics)
   target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
 endif()
 
+# vehicle 在 physics 开启时会包含 physics 头文件（Body3D.h -> <box3d/id.h>），
+# 需要与 EVPhysics 相同的第三方头文件路径。
+eve_module_enabled(vehicle _has_vehicle)
+eve_module_enabled(physics _has_physics)
+if(_has_vehicle AND _has_physics)
+  target_include_directories(EVVehicle PRIVATE
+    ${CMAKE_SOURCE_DIR}/third-party
+    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include
+    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include)
+endif()
+
 eve_module_enabled(gpgpu _has_gpgpu)
 if(_has_gpgpu)
   target_include_directories(EVGpgpu BEFORE PRIVATE

@@ -200,6 +200,7 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
 # Depends on weapon so definitions can declare weapon mounts.
 eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
                    DEPS weapon
+                   OPTIONAL_DEPS physics
                    GROUP 2d 3d)
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
                    DEPS data filesystem graphics model3d

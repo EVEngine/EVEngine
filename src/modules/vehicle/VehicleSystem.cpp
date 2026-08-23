@@ -6,6 +6,12 @@
 #include <cmath>
 #include <unordered_map>
 
+#ifdef EVENGINE_HAS_PHYSICS
+#include "physics/Body.h"
+#include "physics/Body3D.h"
+#include "physics/World3D.h"
+#endif
+
 namespace eve::vehicle {
 
 namespace {
@@ -51,22 +57,47 @@ void finishOrder(VehicleEntity& v) {
     orders->current = orders->queue.empty() ? -1 : 0;
 }
 
-/** @brief RTS 顶视移动：油门加速 / 转向 / 位置积分（无需物理）。 */
-class KinematicMobility : public IVehicleMobility {
-public:
-    const char* name() const override { return "kinematic"; }
+float normalizeDeg(float deg) {
+    deg = std::fmod(deg, 360.f);
+    if (deg < 0.f) deg += 360.f;
+    return deg;
+}
 
-    void update(VehicleEntity& v, float dt) override {
+/** @brief 无物理的顶视移动：油门加速 / 转向 / 位置积分。 */
+void kinematicMove(VehicleEntity& v, float dt) {
+    const VehicleDefinition* def = v.definition()->def;
+    if (def == nullptr) return;
+    auto in = v.input();
+    auto mo = v.motion();
+
+    const float speedFactor = std::clamp(std::fabs(mo->speed) / def->maxSpeed, 0.f, 1.f);
+    const float turnPower   = 0.35f + 0.65f * speedFactor;  // 低速可原地转向
+    mo->heading             = normalizeDeg(mo->heading + in->steer * def->turnRate * turnPower * dt);
+
+    float target = in->throttle * def->maxSpeed;
+    if (in->brake > 0.f || in->handbrake) target = 0.f;
+    const float dv    = target - mo->speed;
+    const float maxDv = def->accel * dt;
+    mo->speed += std::clamp(dv, -maxDv, maxDv);
+
+    const float rad = mo->heading * kPi / 180.f;
+    mo->x += std::cos(rad) * mo->speed * dt;
+    mo->y += std::sin(rad) * mo->speed * dt;
+}
+
+/** @brief 轮式移动：2D/3D 物理体优先，无物理回退 kinematic。 */
+void wheelMove(VehicleEntity& v, float dt) {
+#ifdef EVENGINE_HAS_PHYSICS
+    if (eve::physics::Body* b = v.physicsBody()->body2d) {
         const VehicleDefinition* def = v.definition()->def;
         if (def == nullptr) return;
         auto in = v.input();
         auto mo = v.motion();
+        mo->x   = b->getX();  // 回写碰撞后的位置
+        mo->y   = b->getY();
 
         const float speedFactor = std::clamp(std::fabs(mo->speed) / def->maxSpeed, 0.f, 1.f);
-        const float turnPower   = 0.35f + 0.65f * speedFactor;  // 低速可原地转向
-        mo->heading += in->steer * def->turnRate * turnPower * dt;
-        mo->heading = std::fmod(mo->heading, 360.f);
-        if (mo->heading < 0.f) mo->heading += 360.f;
+        mo->heading = normalizeDeg(mo->heading + in->steer * def->turnRate * (0.35f + 0.65f * speedFactor) * dt);
 
         float target = in->throttle * def->maxSpeed;
         if (in->brake > 0.f || in->handbrake) target = 0.f;
@@ -75,12 +106,213 @@ public:
         mo->speed += std::clamp(dv, -maxDv, maxDv);
 
         const float rad = mo->heading * kPi / 180.f;
-        mo->x += std::cos(rad) * mo->speed * dt;
-        mo->y += std::sin(rad) * mo->speed * dt;
+        b->setAngle(rad);
+        b->setLinearVelocity(std::cos(rad) * mo->speed, std::sin(rad) * mo->speed);
+        return;
     }
+    if (eve::physics::Body3D* b = v.physicsBody()->body3d) {
+        const VehicleDefinition* def = v.definition()->def;
+        if (def == nullptr) return;
+        auto in = v.input();
+        auto mo = v.motion();
+        mo->x   = b->getX();
+        mo->y   = b->getZ();
+
+        const float speedFactor = std::clamp(std::fabs(mo->speed) / def->maxSpeed, 0.f, 1.f);
+        mo->heading = normalizeDeg(mo->heading + in->steer * def->turnRate * (0.35f + 0.65f * speedFactor) * dt);
+
+        float target = in->throttle * def->maxSpeed;
+        if (in->brake > 0.f || in->handbrake) target = 0.f;
+        const float dv    = target - mo->speed;
+        const float maxDv = def->accel * dt;
+        mo->speed += std::clamp(dv, -maxDv, maxDv);
+
+        const float rad = mo->heading * kPi / 180.f;
+        b->setRotation(0.f, std::sin(rad * 0.5f), 0.f, std::cos(rad * 0.5f));
+        // Y 速度清零 = 悬停语义（无悬架时不会坠落）
+        b->setLinearVelocity(std::sin(rad) * mo->speed, 0.f, std::cos(rad) * mo->speed);
+        return;
+    }
+#endif
+    kinematicMove(v, dt);
+}
+
+/** @brief 履带/坦克移动：差速转向（左右履带速度 = throttle ± steer）。 */
+void trackMove(VehicleEntity& v, float dt) {
+    const VehicleDefinition* def = v.definition()->def;
+    if (def == nullptr) return;
+    auto in = v.input();
+    auto mo = v.motion();
+
+#ifdef EVENGINE_HAS_PHYSICS
+    if (eve::physics::Body* b = v.physicsBody()->body2d) {
+        mo->x = b->getX();
+        mo->y = b->getY();
+    } else if (eve::physics::Body3D* b = v.physicsBody()->body3d) {
+        mo->x = b->getX();
+        mo->y = b->getZ();
+    }
+#endif
+
+    const float left  = std::clamp(in->throttle + in->steer, -1.f, 1.f);
+    const float right = std::clamp(in->throttle - in->steer, -1.f, 1.f);
+    const float drive = (left + right) * 0.5f;
+    const float rot   = (right - left) * 0.5f;
+
+    float target = drive * def->maxSpeed;
+    if (in->brake > 0.f || in->handbrake) target = 0.f;
+    const float dv    = target - mo->speed;
+    const float maxDv = def->accel * dt;
+    mo->speed += std::clamp(dv, -maxDv, maxDv);
+    mo->heading = normalizeDeg(mo->heading + rot * def->turnRate * dt);  // 原地转向
+
+    const float rad = mo->heading * kPi / 180.f;
+#ifdef EVENGINE_HAS_PHYSICS
+    if (eve::physics::Body* b = v.physicsBody()->body2d) {
+        b->setAngle(rad);
+        b->setLinearVelocity(std::cos(rad) * mo->speed, std::sin(rad) * mo->speed);
+        return;
+    }
+    if (eve::physics::Body3D* b = v.physicsBody()->body3d) {
+        b->setRotation(0.f, std::sin(rad * 0.5f), 0.f, std::cos(rad * 0.5f));
+        b->setLinearVelocity(std::sin(rad) * mo->speed, 0.f, std::cos(rad) * mo->speed);
+        return;
+    }
+#endif
+    mo->x += std::cos(rad) * mo->speed * dt;
+    mo->y += std::sin(rad) * mo->speed * dt;
+}
+
+#ifdef EVENGINE_HAS_PHYSICS
+/** @brief 3D raycast 悬架：每轮一根向下的射线，弹簧力 + 阻尼 + 驱动 + 侧向抓地。 */
+void suspensionMove3D(VehicleEntity& v, eve::physics::Body3D* b, float dt) {
+    const VehicleDefinition* def = v.definition()->def;
+    if (def == nullptr) return;
+    eve::physics::World3D* world = b->getWorld();
+    if (world == nullptr) {
+        kinematicMove(v, dt);
+        return;
+    }
+
+    auto in = v.input();
+    auto mo = v.motion();
+    mo->x   = b->getX();
+    mo->y   = b->getZ();
+
+    // 从四元数提取偏航（纯绕 Y 旋转假设）
+    const float qx     = b->getRotX();
+    const float qy     = b->getRotY();
+    const float qz     = b->getRotZ();
+    const float qw     = b->getRotW();
+    const float yaw    = std::atan2(2.f * (qw * qy + qx * qz), 1.f - 2.f * (qy * qy + qz * qz));
+    mo->heading        = normalizeDeg(yaw * 180.f / kPi);
+    const float yawRad = mo->heading * kPi / 180.f;
+    const float fx     = std::sin(yawRad);
+    const float fz     = std::cos(yawRad);
+
+    const auto& wheels = def->suspension.wheels;
+    auto        sus    = v.suspension();
+    if (sus->wheels.size() != wheels.size()) sus->wheels.resize(wheels.size());
+    const uint64_t chassisMask = ~uint64_t{2};  // 排除车体类别位，避免射到自己的底盘
+
+    for (size_t i = 0; i < wheels.size(); ++i) {
+        const SuspensionWheel& w  = wheels[i];
+        const float            wx = mo->x + w.x * std::cos(yawRad) + w.z * std::sin(yawRad);
+        const float            wz = mo->y - w.x * std::sin(yawRad) + w.z * std::cos(yawRad);
+        // 射线从悬架顶端（车体挂点 = 轮轴 + 静止长度）向下发出
+        const float mountY = b->getY() + w.y + w.restLength;
+        const float rayLen = w.restLength + w.radius + def->suspension.maxTravel;
+        const int   hit    = world->rayCastFiltered(wx, mountY, wz, wx, mountY - rayLen, wz, chassisMask);
+
+        float compression = 0.f;
+        if (hit >= 0) {
+            const float hitDist = mountY - world->getRayHitY();
+            compression         = std::clamp(w.restLength - (hitDist - w.radius), 0.f, def->suspension.maxTravel);
+        }
+
+        auto&       ws    = sus->wheels[i];
+        const float vel   = (compression - ws.prevCompression) / std::max(dt, 1e-4f);
+        const float force = w.stiffness * compression + w.damping * vel;
+        if (force > 0.f) b->applyForceAt(0.f, force, 0.f, wx, mountY, wz);
+        ws.prevCompression = compression;
+        ws.grounded        = hit >= 0;
+    }
+
+    // 驱动与转向
+    const float drive       = (in->brake > 0.f || in->handbrake) ? 0.f : in->throttle;
+    const float targetSpeed = drive * def->maxSpeed;
+    const float fwd =
+        std::fabs(targetSpeed) > 0.01f ? (b->getLinearVelocityX() * fx + b->getLinearVelocityZ() * fz) : 0.f;
+    float driveForce = def->suspension.driveForce * drive;
+    if (std::fabs(targetSpeed) > 0.01f) {
+        driveForce *= std::clamp(1.f - fwd / targetSpeed, 0.f, 1.f);  // 限速
+    }
+    b->applyForce(fx * driveForce, 0.f, fz * driveForce);
+    b->setAngularVelocity(0.f, in->steer * def->turnRate * kPi / 180.f, 0.f);
+
+    // 侧向抓地：衰减横向速度分量
+    const float vx   = b->getLinearVelocityX();
+    const float vy   = b->getLinearVelocityY();
+    const float vz   = b->getLinearVelocityZ();
+    const float rx   = fz;
+    const float rz   = -fx;
+    const float lat  = vx * rx + vz * rz;
+    const float grip = std::max(0.f, 1.f - def->suspension.lateralGrip * dt);
+    b->setLinearVelocity(fx * fwd + rx * lat * grip, vy, fz * fwd + rz * lat * grip);
+    mo->speed = fwd;
+}
+#endif
+
+/** @brief RTS 顶视移动（默认）：油门加速 / 转向 / 位置积分。 */
+class KinematicMobility : public IVehicleMobility {
+public:
+    const char* name() const override { return "kinematic"; }
+    void        update(VehicleEntity& v, float dt) override { kinematicMove(v, dt); }
 };
 
+/** @brief 轮式移动：有物理体时走物理，否则回退 kinematic。 */
+class WheelMobility : public IVehicleMobility {
+public:
+    const char* name() const override { return "wheel"; }
+    void        update(VehicleEntity& v, float dt) override { wheelMove(v, dt); }
+};
+
+/** @brief 船/水面移动：与轮式同构（油门/转向），语义上留给水面游戏。 */
+class ShipMobility : public IVehicleMobility {
+public:
+    const char* name() const override { return "ship"; }
+    void        update(VehicleEntity& v, float dt) override { wheelMove(v, dt); }
+};
+
+/** @brief 履带/坦克移动：差速转向。 */
+class TrackMobility : public IVehicleMobility {
+public:
+    const char* name() const override { return "track"; }
+    void        update(VehicleEntity& v, float dt) override { trackMove(v, dt); }
+};
+
+#ifdef EVENGINE_HAS_PHYSICS
+/** @brief 3D raycast 悬架移动（Battlefield 式车辆）。 */
+class SuspensionMobility3D : public IVehicleMobility {
+public:
+    const char* name() const override { return "suspension"; }
+    void        update(VehicleEntity& v, float dt) override {
+        if (eve::physics::Body3D* b = v.physicsBody()->body3d) {
+            suspensionMove3D(v, b, dt);
+            return;
+        }
+        kinematicMove(v, dt);
+    }
+};
+#endif
+
 KinematicMobility gKinematic;
+WheelMobility     gWheel;
+ShipMobility      gShip;
+TrackMobility     gTrack;
+#ifdef EVENGINE_HAS_PHYSICS
+SuspensionMobility3D gSuspension;
+#endif
 
 }  // namespace
 
@@ -183,7 +415,15 @@ namespace eve::vehicle {
 namespace {
 
 struct BuiltinMobilityRegistrar {
-    BuiltinMobilityRegistrar() { VehicleSystem::registerMobility(&gKinematic); }
+    BuiltinMobilityRegistrar() {
+        VehicleSystem::registerMobility(&gKinematic);
+        VehicleSystem::registerMobility(&gWheel);
+        VehicleSystem::registerMobility(&gShip);
+        VehicleSystem::registerMobility(&gTrack);
+#ifdef EVENGINE_HAS_PHYSICS
+        VehicleSystem::registerMobility(&gSuspension);
+#endif
+    }
 };
 
 BuiltinMobilityRegistrar gBuiltinRegistrar;

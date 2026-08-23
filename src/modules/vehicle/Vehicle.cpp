@@ -10,6 +10,14 @@
 #include <algorithm>
 #include <cmath>
 
+#ifdef EVENGINE_HAS_PHYSICS
+#include "physics/Body.h"
+#include "physics/Body3D.h"
+#include "physics/Shape3D.h"
+#include "physics/World.h"
+#include "physics/World3D.h"
+#endif
+
 namespace eve::vehicle {
 
 Module_IMPL(Vehicle, new Vehicle());
@@ -65,6 +73,28 @@ bool parseDefinition(Value o, std::unordered_map<std::string, VehicleDefinition>
             md.firingArc = m.getFloat("firingArc");
             md.aimMode   = m.getString("aimMode", "auto");
             def.mounts.push_back(md);
+        }
+    }
+
+    if (Value susp = o.get("suspension")) {
+        def.suspension.maxTravel   = susp.getFloat("maxTravel", 0.3f);
+        def.suspension.driveForce  = susp.getFloat("driveForce", 2000.f);
+        def.suspension.lateralGrip = susp.getFloat("lateralGrip", 12.f);
+        if (Value wheels = susp.get("wheels")) {
+            for (size_t i = 0; i < wheels.size(); ++i) {
+                Value           w = wheels.at(i);
+                SuspensionWheel sw;
+                sw.x          = w.getFloat("x");
+                sw.y          = w.getFloat("y");
+                sw.z          = w.getFloat("z");
+                sw.radius     = w.getFloat("radius", 0.3f);
+                sw.restLength = w.getFloat("rest", 0.4f);
+                sw.stiffness  = w.getFloat("stiffness", 60.f);
+                sw.damping    = w.getFloat("damping", 8.f);
+                sw.drive      = w.getBool("drive", true);
+                sw.steer      = w.getBool("steer", true);
+                def.suspension.wheels.push_back(sw);
+            }
         }
     }
 
@@ -156,6 +186,8 @@ VehicleEntity* VehicleEntity::createVehicle() {
     v->health();
     v->orders();
     v->mounts();
+    v->physicsBody();
+    v->suspension();
     return v;
 }
 
@@ -351,6 +383,112 @@ void Vehicle::setFaction(VehicleEntity* v, const std::string& faction) {
 }
 
 // ---------------------------------------------------------------------------
+// 驾驶输入与物理绑定
+// ---------------------------------------------------------------------------
+
+void Vehicle::setInput(VehicleEntity* v, float throttle, float steer, float brake, bool handbrake) {
+    if (v == nullptr) return;
+    auto in       = v->input();
+    in->throttle  = throttle;
+    in->steer     = steer;
+    in->brake     = brake;
+    in->handbrake = handbrake;
+}
+
+bool Vehicle::attachPhysics2D(VehicleEntity* v, eve::physics::World* world) {
+#ifdef EVENGINE_HAS_PHYSICS
+    if (v == nullptr || world == nullptr) return false;
+    detachPhysics(v);
+    const VehicleDefinition* def = v->definition()->def;
+    if (def == nullptr) return false;
+    auto mo = v->motion();
+
+    eve::physics::Body* b = world->newBody("dynamic", mo->x, mo->y);
+    if (b == nullptr) return false;
+    b->newCircleFixture(def->radius, 1.f, 0.6f, 0.f);
+    b->setAngle(mo->heading * kPi / 180.f);
+    v->physicsBody()->body2d = b;
+    v->physicsBody()->space  = "2d";
+    return true;
+#else
+    (void)v;
+    (void)world;
+    return false;
+#endif
+}
+
+bool Vehicle::attachPhysics3D(VehicleEntity* v, eve::physics::World3D* world, float heightY) {
+#ifdef EVENGINE_HAS_PHYSICS
+    if (v == nullptr || world == nullptr) return false;
+    detachPhysics(v);
+    const VehicleDefinition* def = v->definition()->def;
+    if (def == nullptr) return false;
+    auto mo = v->motion();
+
+    eve::physics::Body3D* b = world->newBody("dynamic", mo->x, heightY, mo->y);
+    if (b == nullptr) return false;
+    eve::physics::Shape3D* shape = b->newBoxShape(def->radius, 0.35f, def->radius, 1.f, 0.8f, 0.f);
+    // 类别位 2 = 车体；悬架射线掩码排除该位，避免射到自己的底盘
+    if (shape != nullptr) shape->setFilterBits(2, ~uint64_t{0});
+    const float rad = mo->heading * kPi / 180.f;
+    b->setRotation(0.f, std::sin(rad * 0.5f), 0.f, std::cos(rad * 0.5f));
+    b->setAwake(true);
+
+    v->physicsBody()->body3d = b;
+    v->physicsBody()->space  = "3d";
+    v->suspension()->wheels.assign(def->suspension.wheels.size(), {});
+    return true;
+#else
+    (void)v;
+    (void)world;
+    (void)heightY;
+    return false;
+#endif
+}
+
+bool Vehicle::detachPhysics(VehicleEntity* v) {
+    if (v == nullptr) return false;
+#ifdef EVENGINE_HAS_PHYSICS
+    auto pb  = v->physicsBody();
+    bool had = false;
+    if (pb->body2d != nullptr) {
+        pb->body2d->destroy();
+        had = true;
+    }
+    if (pb->body3d != nullptr) {
+        pb->body3d->destroy();
+        had = true;
+    }
+    pb->body2d = nullptr;
+    pb->body3d = nullptr;
+    pb->space.clear();
+    return had;
+#else
+    return false;
+#endif
+}
+
+bool Vehicle::hasPhysics(VehicleEntity* v) {
+    if (v == nullptr) return false;
+    return v->physicsBody()->body2d != nullptr || v->physicsBody()->body3d != nullptr;
+}
+
+std::string Vehicle::getPhysicsSpace(VehicleEntity* v) {
+    return v == nullptr ? std::string{} : v->physicsBody()->space;
+}
+
+float Vehicle::getHeight(VehicleEntity* v) {
+#ifdef EVENGINE_HAS_PHYSICS
+    if (v != nullptr && v->physicsBody()->body3d != nullptr) {
+        return v->physicsBody()->body3d->getY();
+    }
+#else
+    (void)v;
+#endif
+    return 0.f;
+}
+
+// ---------------------------------------------------------------------------
 // 挂点
 // ---------------------------------------------------------------------------
 
@@ -485,6 +623,7 @@ void Vehicle::expose(ssq::Class& cls) {
     cls.addFunc("clearOrders", &Vehicle::clearOrders);
     cls.addFunc("orderCount", &Vehicle::orderCount);
     cls.addFunc("getCurrentOrderType", &Vehicle::getCurrentOrderType);
+    cls.addFunc("setInput", &Vehicle::setInput);
     cls.addFunc("getX", &Vehicle::getX);
     cls.addFunc("getY", &Vehicle::getY);
     cls.addFunc("getHeading", &Vehicle::getHeading);
@@ -497,6 +636,14 @@ void Vehicle::expose(ssq::Class& cls) {
     cls.addFunc("getMaxHealth", &Vehicle::getMaxHealth);
     cls.addFunc("getFaction", &Vehicle::getFaction);
     cls.addFunc("setFaction", &Vehicle::setFaction);
+    cls.addFunc("detachPhysics", &Vehicle::detachPhysics);
+    cls.addFunc("hasPhysics", &Vehicle::hasPhysics);
+    cls.addFunc("getPhysicsSpace", &Vehicle::getPhysicsSpace);
+    cls.addFunc("getHeight", &Vehicle::getHeight);
+#ifdef EVENGINE_HAS_PHYSICS
+    cls.addFunc("attachPhysics2D", &Vehicle::attachPhysics2D);
+    cls.addFunc("attachPhysics3D", &Vehicle::attachPhysics3D);
+#endif
     cls.addFunc("getMountCount", &Vehicle::getMountCount);
     cls.addFunc("getMount", &Vehicle::getMount);
     cls.addFunc("update", &Vehicle::update);

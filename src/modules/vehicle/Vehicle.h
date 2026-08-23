@@ -18,6 +18,11 @@ namespace eve::weapon {
 class WeaponMountEntity;
 }
 
+namespace eve::physics {
+class World;
+class World3D;
+}  // namespace eve::physics
+
 namespace eve::vehicle {
 
 /** @brief 载具模块（eve.Vehicle）。 */
@@ -58,6 +63,9 @@ public:
     /** @brief 当前命令类型名（"move" / "attack_move" / "attack" / "stop" / "hold" / "none"）。 */
     std::string getCurrentOrderType(VehicleEntity* v);
 
+    /** @brief 直接驾驶输入（FPS / 脚本驱动；RTS 命令也会写 input）。 */
+    void setInput(VehicleEntity* v, float throttle, float steer, float brake = 0.f, bool handbrake = false);
+
     /** @brief 状态查询 / 设置。 */
     float       getX(VehicleEntity* v);
     float       getY(VehicleEntity* v);
@@ -71,6 +79,15 @@ public:
     float       getMaxHealth(VehicleEntity* v);
     std::string getFaction(VehicleEntity* v);
     void        setFaction(VehicleEntity* v, const std::string& faction);
+
+    /** @brief 物理绑定（physics 模块开启时可用；返回是否成功）。 */
+    bool        attachPhysics2D(VehicleEntity* v, eve::physics::World* world);
+    bool        attachPhysics3D(VehicleEntity* v, eve::physics::World3D* world, float heightY = 1.f);
+    bool        detachPhysics(VehicleEntity* v);
+    bool        hasPhysics(VehicleEntity* v);
+    std::string getPhysicsSpace(VehicleEntity* v);
+    /** @brief 3D 车身高度（无 3D 物理时返回 0）。 */
+    float getHeight(VehicleEntity* v);
 
     /** @brief 挂点查询（返回 weapon 模块的挂点实体）。 */
     int                             getMountCount(VehicleEntity* v);

@@ -17,6 +17,12 @@
 #include <string>
 #include <vector>
 
+// 只持有指针，不需要完整类型；physics 开启时才包含对应头文件。
+namespace eve::physics {
+class Body;
+class Body3D;
+}  // namespace eve::physics
+
 namespace eve::vehicle {
 
 /** @brief RTS 命令类型。 */
@@ -63,6 +69,31 @@ struct MountDef {
     std::string aimMode   = "auto";  // "auto" | "manual"
 };
 
+/** @brief 3D 悬架车轮配置（raycast 悬架用）。 */
+struct SuspensionWheel {
+    /** @brief 相对车体原点的局部偏移（米，+Y 向上）。 */
+    float x          = 0.f;
+    float y          = 0.f;
+    float z          = 0.f;
+    float radius     = 0.3f;
+    float restLength = 0.4f;  // 悬架静止长度
+    float stiffness  = 60.f;  // 弹簧刚度
+    float damping    = 8.f;   // 阻尼
+    bool  drive      = true;
+    bool  steer      = true;
+};
+
+/** @brief 3D 悬架参数（车辆模板的一部分）。 */
+struct SuspensionConfig {
+    /** @brief 悬架最大行程（米）。 */
+    float maxTravel = 0.3f;
+    /** @brief 驱动轮满油门牵引力（牛顿）。 */
+    float driveForce = 2000.f;
+    /** @brief 侧向抓地系数（越大越不容易侧滑）。 */
+    float                        lateralGrip = 12.f;
+    std::vector<SuspensionWheel> wheels;
+};
+
 /** @brief 载具模板（registerVehiclesFromJson 注册，进程级注册表）。 */
 struct VehicleDefinition {
     std::string id;
@@ -76,6 +107,7 @@ struct VehicleDefinition {
     float                    maxHealth = 100.f;
     std::vector<ArmorZone>   armorZones;
     std::vector<MountDef>    mounts;
+    SuspensionConfig         suspension;
     std::vector<std::string> tags;
 };
 
@@ -154,6 +186,22 @@ public:
         std::vector<MountSlot> list;
     };
 
+    /** @brief 物理刚体（不拥有；physics 模块管理生命周期）。 */
+    struct PhysicsBody {
+        eve::physics::Body*   body2d = nullptr;
+        eve::physics::Body3D* body3d = nullptr;
+        std::string           space;  // "2d" | "3d" | ""
+    };
+
+    /** @brief 悬架运行时状态（与模板 wheels 一一对应）。 */
+    struct SuspensionState {
+        struct WheelState {
+            float prevCompression = 0.f;
+            bool  grounded        = false;
+        };
+        std::vector<WheelState> wheels;
+    };
+
     COMPONENT(Identity, identity)
     COMPONENT(Definition, definition)
     COMPONENT(Input, input)
@@ -161,6 +209,8 @@ public:
     COMPONENT(Health, health)
     COMPONENT(Orders, orders)
     COMPONENT(Mounts, mounts)
+    COMPONENT(PhysicsBody, physicsBody)
+    COMPONENT(SuspensionState, suspension)
 
     /** @brief 创建并触摸全部组件。 */
     static VehicleEntity* createVehicle();
