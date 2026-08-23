@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 setlocal
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" (
