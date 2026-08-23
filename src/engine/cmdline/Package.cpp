@@ -198,8 +198,16 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     // packaged game is self-contained next to the eve binary. Copying the tree
     // (not just *.dylib) keeps the ICD manifest and any subdirectories.
     if (exists(sdkLib)) {
-        copy(sdkLib, outDir / "lib",
-             copy_options::recursive | copy_options::overwrite_existing, ec);
+        std::ifstream platIn(sdkRoot / "share" / "eve" / "TARGET_PLATFORM");
+        std::string   plat;
+        std::getline(platIn, plat);
+        while (!plat.empty() && (plat.back() == '\r' || plat.back() == '\n' || plat.back() == ' '))
+            plat.pop_back();
+        // Only macOS-target packages get the dylib tree; cross-packaged
+        // win32/linux games must stay clean.
+        if (plat == "macosx")
+            copy(sdkLib, outDir / "lib",
+                 copy_options::recursive | copy_options::overwrite_existing, ec);
         ec.clear();
     }
 #endif  // EVENGINE_MACOSX
