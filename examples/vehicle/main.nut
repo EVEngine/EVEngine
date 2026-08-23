@@ -34,6 +34,12 @@ if (!("eventLog" in getroottable())) eventLog <- [];
 if (!("tracers" in getroottable())) tracers <- [];
 if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("prevMouse" in getroottable())) prevMouse <- { left = false, right = false };
+if (!("texTankBody" in getroottable())) texTankBody <- null;
+if (!("texTankTurret" in getroottable())) texTankTurret <- null;
+if (!("texCarBlue" in getroottable())) texCarBlue <- null;
+if (!("texCarBlueTurret" in getroottable())) texCarBlueTurret <- null;
+if (!("texCarRed" in getroottable())) texCarRed <- null;
+if (!("texCarRedTurret" in getroottable())) texCarRedTurret <- null;
 
 const PLAYER_DRIVER = 1;
 const PLAYER_GUNNER = 2;
@@ -157,6 +163,14 @@ eve_init = function() {
     }
     if (fpsCar == null) spawnPlayerCar();
     if (enemyCar == null) spawnEnemyCar();
+
+    // 载具贴图（assets/ 下；缺失时渲染回退到色块）
+    try { texTankBody = gfx.newTextureFromFile("assets/tank_body.png"); } catch (e) { texTankBody = null; }
+    try { texTankTurret = gfx.newTextureFromFile("assets/tank_turret.png"); } catch (e) { texTankTurret = null; }
+    try { texCarBlue = gfx.newTextureFromFile("assets/car_blue_body.png"); } catch (e) { texCarBlue = null; }
+    try { texCarBlueTurret = gfx.newTextureFromFile("assets/car_blue_turret.png"); } catch (e) { texCarBlueTurret = null; }
+    try { texCarRed = gfx.newTextureFromFile("assets/car_red_body.png"); } catch (e) { texCarRed = null; }
+    try { texCarRedTurret = gfx.newTextureFromFile("assets/car_red_turret.png"); } catch (e) { texCarRedTurret = null; }
 
     logLine("左键=坦克移动 右键=攻击  W/A/S/D=开车  Space=机枪  E=上下车");
     logLine("S=坦克停  H=待命  T=巡逻  （蓝车带白色角标=玩家）");
@@ -348,20 +362,45 @@ eve_render = function() {
         local y = e.getY();
         local h = e.getHeading() * PI / 180.0;
         local r = 18.0;
+        local destroyed = e.isDestroyed();
+        local bodyTex = null, turretTex = null;
+        local bodySize = 36.0, turretSize = 22.0;
+        if (e.getFaction() == "yellow") {
+            bodyTex = texTankBody; turretTex = texTankTurret;
+            bodySize = 46.0; turretSize = 34.0;
+        }
+        if (e.getFaction() == "blue") {
+            bodyTex = texCarBlue; turretTex = texCarBlueTurret;
+        }
+        if (e.getFaction() == "red") {
+            bodyTex = texCarRed; turretTex = texCarRedTurret;
+        }
         local colorR = 0.4, colorG = 0.4, colorB = 0.4;
         if (e.getFaction() == "yellow") { colorR = 0.9; colorG = 0.8; colorB = 0.25; }
         if (e.getFaction() == "blue") { colorR = 0.25; colorG = 0.5; colorB = 0.95; }
         if (e.getFaction() == "red") { colorR = 0.9; colorG = 0.25; colorB = 0.2; }
 
-        gfx.drawSolidRect(x - r, y - r * 0.62, r * 2.0, r * 1.24, colorR, colorG, colorB, 1.0);
-        // 车头
-        gfx.drawSolidRect(x + cos(h) * 12.0 - 3.0, y + sin(h) * 12.0 - 3.0, 6.0, 6.0, 1.0, 1.0, 1.0, 1.0);
-        // 炮塔
+        // 车体：贴图按 heading 旋转（贴图朝上，heading 0=+X，故 +90°）；缺失时回退色块
+        if (bodyTex != null) {
+            gfx.drawTexturedRectRotated(bodyTex, x, y, bodySize, bodySize,
+                                        e.getHeading() + 90.0,
+                                        destroyed ? 0.45 : 1.0, destroyed ? 0.45 : 1.0,
+                                        destroyed ? 0.45 : 1.0, destroyed ? 0.8 : 1.0);
+        } else {
+            gfx.drawSolidRect(x - r, y - r * 0.62, r * 2.0, r * 1.24, colorR, colorG, colorB, 1.0);
+            gfx.drawSolidRect(x + cos(h) * 12.0 - 3.0, y + sin(h) * 12.0 - 3.0, 6.0, 6.0, 1.0, 1.0, 1.0, 1.0);
+        }
+        // 炮塔：随 heading + 挂点 yaw 独立旋转
         for (local i = 0; i < e.getMountCount(); i += 1) {
             local m = e.getMount(i);
             if (m == null) continue;
-            local ay = (e.getHeading() + m.getYaw()) * PI / 180.0;
-            gfx.drawSolidRect(x + cos(ay) * 26.0 - 2.0, y + sin(ay) * 26.0 - 2.0, 4.0, 4.0, 0.95, 0.95, 0.95, 1.0);
+            if (turretTex != null) {
+                gfx.drawTexturedRectRotated(turretTex, x, y, turretSize, turretSize,
+                                            e.getHeading() + m.getYaw() + 90.0, 1.0, 1.0, 1.0, 1.0);
+            } else {
+                local ay = (e.getHeading() + m.getYaw()) * PI / 180.0;
+                gfx.drawSolidRect(x + cos(ay) * 26.0 - 2.0, y + sin(ay) * 26.0 - 2.0, 4.0, 4.0, 0.95, 0.95, 0.95, 1.0);
+            }
         }
         // 血条
         local ratio = clampf(e.getHealth() / e.getMaxHealth(), 0.0, 1.0);
