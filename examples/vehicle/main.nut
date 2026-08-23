@@ -15,9 +15,10 @@ if (!("rtsTank" in getroottable())) rtsTank <- null;
 if (!("fpsCar" in getroottable())) fpsCar <- null;
 if (!("waypoint" in getroottable())) waypoint <- 0;
 if (!("eventLog" in getroottable())) eventLog <- [];
-if (!("fired" in getroottable())) fired <- false;
+if (!("respawnTimer" in getroottable())) respawnTimer <- -1.0;
 
-const PLAYER = 1;
+const PLAYER_DRIVER = 1;
+const PLAYER_GUNNER = 2;
 
 waypoints <- [
     { x = 140.0, y = 140.0 },
@@ -27,7 +28,7 @@ waypoints <- [
 ];
 
 weaponDefs <- @"[
-  {""id"":""cannon.125"",""logic"":""projectile"",""damage"":320,""penetration"":260,
+  {""id"":""cannon.125"",""logic"":""projectile"",""damage"":60,""penetration"":260,
    ""range"":600,""spread"":1.0,""cooldown"":3.0,
    ""ammo"":{""mag"":1,""reserve"":40,""reload"":5.0},
    ""projectile"":{""type"":""shell"",""speed"":900,""gravity"":0.0,""aoe"":30.0}},
@@ -42,7 +43,7 @@ vehicleDefs <- @"[
    ""mounts"":[{""name"":""turret"",""weapon"":""cannon.125"",""type"":""turret"",
                 ""limits"":[-180,180,-8,20],""rotSpeed"":60,""aimMode"":""auto""}]},
   {""id"":""car.fps"",""category"":""car"",""mobility"":""kinematic"",
-   ""maxSpeed"":160,""accel"":120,""turnRate"":140,""radius"":18,""maxHealth"":300,
+   ""maxSpeed"":160,""accel"":120,""turnRate"":140,""radius"":18,""maxHealth"":600,
    ""mounts"":[{""name"":""mg"",""weapon"":""mg.7.62"",""type"":""turret"",
                 ""limits"":[-120,120,-10,20],""rotSpeed"":120,""aimMode"":""manual""}],
    ""seats"":[{""name"":""driver"",""cameraMode"":""third""},
@@ -72,10 +73,10 @@ eve_init = function() {
     }
     if (fpsCar == null) {
         fpsCar = vehicle.newVehicle("car.fps", 450.0, 320.0, 0.0, "blue");
-        vehicle.enterSeat(fpsCar, 0, PLAYER);   // 驾驶座
-        vehicle.enterSeat(fpsCar, 1, PLAYER);   // 炮手座（同一玩家）
+        vehicle.enterSeat(fpsCar, 0, PLAYER_DRIVER);   // 驾驶座：玩家 1
+        vehicle.enterSeat(fpsCar, 1, PLAYER_GUNNER);   // 炮手座：玩家 2（独立控制源）
     }
-    logLine("初始化完成：RTS 坦克巡逻 + FPS 吉普（W/A/S/D 驾驶，Space 开火）");
+    logLine("蓝车 = 你驾驶（W/A/S/D + Space），红坦克 = RTS 自动巡逻");
 };
 
 eve_update = function(dt) {
@@ -88,11 +89,12 @@ eve_update = function(dt) {
     if (keyboard.isDown("d") || keyboard.isDown("D")) steer = 1.0;
     local fire = keyboard.isDown("Space");
 
-    // 炮手座自动跟踪 RTS 坦克（演示 aimYaw 驱动挂点）
+    // 炮手座：自动跟踪 RTS 坦克并持续开火（演示独立控制源 + 挂点瞄准/开火）
     local tx = vehicle.getX(rtsTank) - vehicle.getX(fpsCar);
     local ty = vehicle.getY(rtsTank) - vehicle.getY(fpsCar);
     local aimYaw = atan2(ty, tx) * 180.0 / 3.14159265;
-    vehicle.setPlayerControls(PLAYER, throttle, steer, 0.0, fire, aimYaw, 0.0);
+    vehicle.setPlayerControls(PLAYER_DRIVER, throttle, steer, 0.0, fire, aimYaw, 0.0);
+    vehicle.setPlayerControls(PLAYER_GUNNER, 0.0, 0.0, 0.0, true, aimYaw, 0.0);
 
     // ---- 推进载具与武器（先 vehicle 后 weapon，炮塔转动才正确）----
     vehicle.update(dt);
@@ -125,6 +127,22 @@ eve_update = function(dt) {
         }
     }
     weapon.clearEvents();
+
+    // 蓝车被击毁后自动重生
+    if (vehicle.isDestroyed(fpsCar)) {
+        if (respawnTimer < 0.0) {
+            respawnTimer = 2.0;
+            logLine("吉普被击毁，2 秒后重生");
+        }
+        respawnTimer -= dt;
+        if (respawnTimer <= 0.0) {
+            fpsCar = vehicle.newVehicle("car.fps", 450.0, 320.0, 0.0, "blue");
+            vehicle.enterSeat(fpsCar, 0, PLAYER_DRIVER);
+            vehicle.enterSeat(fpsCar, 1, PLAYER_GUNNER);
+            respawnTimer = -1.0;
+            logLine("吉普重生");
+        }
+    }
 
     // 巡逻：到达航点后去下一个
     if (vehicle.isArrived(rtsTank)) {
@@ -170,6 +188,17 @@ eve_render = function() {
 
     drawVehicle(rtsTank, 0.85, 0.25, 0.2);
     drawVehicle(fpsCar, 0.25, 0.5, 0.9);
+    // 玩家车辆高亮：白色角标
+    local cx = vehicle.getX(fpsCar);
+    local cy = vehicle.getY(fpsCar);
+    gfx.drawSolidRect(cx - 26.0, cy - 26.0, 8.0, 2.0, 1.0, 1.0, 1.0, 1.0);
+    gfx.drawSolidRect(cx - 26.0, cy - 26.0, 2.0, 8.0, 1.0, 1.0, 1.0, 1.0);
+    gfx.drawSolidRect(cx + 18.0, cy - 26.0, 8.0, 2.0, 1.0, 1.0, 1.0, 1.0);
+    gfx.drawSolidRect(cx + 24.0, cy - 26.0, 2.0, 8.0, 1.0, 1.0, 1.0, 1.0);
+    gfx.drawSolidRect(cx - 26.0, cy + 24.0, 8.0, 2.0, 1.0, 1.0, 1.0, 1.0);
+    gfx.drawSolidRect(cx - 26.0, cy + 18.0, 2.0, 8.0, 1.0, 1.0, 1.0, 1.0);
+    gfx.drawSolidRect(cx + 18.0, cy + 24.0, 8.0, 2.0, 1.0, 1.0, 1.0, 1.0);
+    gfx.drawSolidRect(cx + 24.0, cy + 18.0, 2.0, 8.0, 1.0, 1.0, 1.0, 1.0);
     drawHealthBar(rtsTank, vehicle.getX(rtsTank) - 26.0, vehicle.getY(rtsTank) + 26.0, 52.0);
     drawHealthBar(fpsCar, vehicle.getX(fpsCar) - 26.0, vehicle.getY(fpsCar) + 26.0, 52.0);
 
