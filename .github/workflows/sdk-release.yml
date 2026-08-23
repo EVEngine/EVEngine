@@ -714,6 +714,12 @@ jobs:
       run:
         shell: bash
     steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
       - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
@@ -770,6 +776,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
       - name: Install headless runtime deps
         timeout-minutes: 10
         run: |
@@ -795,7 +807,8 @@ jobs:
           set -euo pipefail
           tar -xzf packages/pkg-linux.tar.gz -C packages
           chmod +x packages/eve
-          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd.*.json | head -1)"
+          # Ubuntu names the Lavapipe manifest lvp_icd.json (no suffix).
+          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null | head -1)"
           export ALSOFT_DRIVERS=null
           xvfb-run -a bash -c 'cd packages && exec ./eve > run.log 2>&1' &
           pid=$!
