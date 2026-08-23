@@ -53,6 +53,7 @@ src/modules/fluids/
 ├── FluidSsfKernels.h       GLSL SSF 内核（clear/splat/smooth/normal/shade）
 ├── FluidSurfaceBinding.{h,cpp} 动态三角形表面地址、运动与拓扑迁移
 ├── SurfaceDropletSimulation.{h,cpp} 动态表面水滴 CPU 参考求解器
+├── SurfaceFluidRenderData.{h,cpp} 局部切平面椭球实例与湿润 PBR 参数
 ├── SurfaceWetnessField.{h,cpp} 随网格变形的顶点湿膜、扩散与蒸发
 └── Fluids.{h,cpp}          模块工厂 + Squirrel 绑定（FluidSim / FluidSurface）
 ```
@@ -103,7 +104,7 @@ r.writePpm("fluid.ppm");                 // 调试输出
 ## 测试
 
 原有 `test/fluids.cpp` 的 16 个球面流体用例保持不变；新增动态表面能力放在
-`test/fluids_surface.cpp` 的 9 个独立用例中（均按 CTest 进程隔离）：
+`test/fluids_surface.cpp` 的 11 个独立用例中（均按 CTest 进程隔离）：
 
 - 数学核函数、SDF（球/平面/三角网格对比解析球）；
 - CPU：表面下流、粘度阻尼、PBF 解压、cohesion 成团、adhesion 挂壁、
@@ -140,6 +141,9 @@ r.writePpm("fluid.ppm");                 // 调试输出
   合并、开放边缘/惯性脱离、空间飞行及重新附着。
 - `SurfaceWetnessField` 在材质空间保存逐顶点湿膜。水滴滑行时留下湿痕，湿痕可
   扩散和蒸发，不会因为模型平移、旋转或顶点形变而漂移。
+- `SurfaceFluidRenderData` 把水滴转换为面积守恒的局部切平面椭球实例，速度只改变
+  长宽比；同时把湿度映射为 roughness、specular、darkening 和法线强度，供
+  Vulkan/WebGPU 湿润材质直接消费。
 - `examples/surface-fluid-dynamic` 沿用原有球面参考场景，在球体轻微摆动时验证动态
   附着，并生成可复现的细水滴/湿痕参考帧。
 

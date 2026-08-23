@@ -17,6 +17,7 @@
 #include "fluids/FluidSurfaceRenderer.h"
 #include "fluids/FluidSurfaceBinding.h"
 #include "fluids/SurfaceDropletSimulation.h"
+#include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceWetnessField.h"
 
 #include <glm/glm.hpp>

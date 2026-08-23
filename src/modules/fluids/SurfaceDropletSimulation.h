@@ -96,6 +96,9 @@ public:
     /** @return mutable solver parameters. */
     SurfaceDropletParams& params() { return params_; }
 
+    /** @return solver parameters. */
+    const SurfaceDropletParams& params() const { return params_; }
+
     /** @brief Remove attached droplets and pending detach events. */
     void clear();
 

@@ -1,5 +1,6 @@
 #include "fluids/FluidSurfaceBinding.h"
 #include "fluids/SurfaceDropletSimulation.h"
+#include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceWetnessField.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -136,6 +137,10 @@ int main(int argc, char** argv) {
         if (binding.project(glm::vec3(x, y, -std::sqrt(1.f - r2)), 0.1f, location))
             simulation.addDroplet(location, 0.0000025f + 0.000001f * float(i % 3));
     }
+    SurfaceFluidRenderParams renderParams;
+    renderParams.velocityStretch = 0.34f;
+    SurfaceFluidRenderData renderData;
+    renderData.update(binding, simulation, &wetness, renderParams);
 
     std::vector<Rgb> image(size_t(width * height));
     for (int y = 0; y < height; ++y) {
@@ -195,14 +200,12 @@ int main(int argc, char** argv) {
         }
     }
 
-    for (const SurfaceDroplet& drop : simulation.droplets()) {
-        const SurfaceSample sample = binding.evaluate(drop.location, 1.f / 60.f);
-        if (sample.position.z > 0.08f) continue;
-        const int cx = centerX + int(sample.position.x * spherePixels);
-        const int cy = centerY - int(sample.position.y * spherePixels);
-        const float speed = glm::length(drop.relativeVelocity);
-        const int rx = std::clamp(int(simulation.dropletRadius(drop.volume) * spherePixels * 0.72f), 4, 10);
-        const int ry = std::clamp(int(float(rx) * (1.25f + speed * 0.22f)), 6, 17);
+    for (const SurfaceDropletRenderInstance& drop : renderData.droplets()) {
+        if (drop.position.z > 0.08f) continue;
+        const int cx = centerX + int(drop.position.x * spherePixels);
+        const int cy = centerY - int(drop.position.y * spherePixels);
+        const int rx = std::clamp(int(glm::length(drop.minorAxis) * spherePixels), 3, 10);
+        const int ry = std::clamp(int(glm::length(drop.majorAxis) * spherePixels * 1.18f), 5, 18);
         for (int dy = -ry; dy <= ry; ++dy) {
             for (int dx = -rx; dx <= rx; ++dx) {
                 const float d2 = std::pow(float(dx) / float(rx), 2.f) +

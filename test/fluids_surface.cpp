@@ -3,6 +3,7 @@
 
 #include "fluids/FluidSurfaceBinding.h"
 #include "fluids/SurfaceDropletSimulation.h"
+#include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceWetnessField.h"
 
 #include <cmath>
@@ -148,4 +149,34 @@ TEST_CASE("fluids.surfaceWetness.depositDiffuseAndEvaporate") {
     wetness.step(0.1f, params);
     CHECK(wetness.values()[1] > 0.f);
     CHECK(wetness.values()[0] < 1.f);
+}
+
+TEST_CASE("fluids.surfaceRenderData.buildsTangentAreaPreservingCaps") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{-2.f, -2.f, 0.f}, {2.f, -2.f, 0.f}, {-2.f, 2.f, 0.f}}, {0, 1, 2}));
+    SurfaceDropletParams params;
+    params.gravity = glm::vec3(0.f);
+    SurfaceDropletSimulation simulation(&binding, params);
+    REQUIRE(simulation.addDroplet({0, glm::vec3(0.25f, 0.25f, 0.5f)}, 0.001f,
+                                  glm::vec3(2.f, 0.f, 0.f)));
+    SurfaceFluidRenderData renderData;
+    renderData.update(binding, simulation);
+    REQUIRE(renderData.droplets().size() == 1u);
+    const SurfaceDropletRenderInstance& instance = renderData.droplets().front();
+    CHECK(std::fabs(glm::dot(instance.normal, instance.majorAxis)) < 1e-6f);
+    CHECK(std::fabs(glm::dot(instance.normal, instance.minorAxis)) < 1e-6f);
+    CHECK(glm::length(instance.majorAxis) > glm::length(instance.minorAxis));
+    const float footprint = glm::length(instance.majorAxis) * glm::length(instance.minorAxis);
+    const float radius = simulation.dropletRadius(0.001f);
+    CHECK(std::fabs(footprint - radius * radius) < 1e-6f);
+    CHECK(instance.capHeight > 0.f);
+}
+
+TEST_CASE("fluids.surfaceRenderData.wetnessDrivesPbrResponse") {
+    const WetSurfaceMaterialSample dry = SurfaceFluidRenderData::evaluateMaterial(0.f);
+    const WetSurfaceMaterialSample wet = SurfaceFluidRenderData::evaluateMaterial(1.f);
+    CHECK(wet.roughness < dry.roughness);
+    CHECK(wet.specular > dry.specular);
+    CHECK(wet.darkening > dry.darkening);
+    CHECK(wet.normalStrength > dry.normalStrength);
 }
