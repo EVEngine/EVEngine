@@ -524,6 +524,7 @@ void Graphics::expose(ssq::Table& table) {
     auto waterfall = table.addClass<Waterfall>(
         "Waterfall", std::function<Waterfall*()>([]() -> Waterfall* { return nullptr; }), true);
     waterfall.addFunc("createSheet", &Waterfall::createSheet);
+    waterfall.addFunc("createCurvedSheet", &Waterfall::createCurvedSheet);
     waterfall.addFunc("update", &Waterfall::update);
     waterfall.addFunc("setTime", &Waterfall::setTime);
     waterfall.addFunc("getTime", &Waterfall::getTime);

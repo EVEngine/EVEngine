@@ -42,6 +42,18 @@ public:
     /** @brief Build a vertical XY plane (facing +Z, Y-up world) sized w×h, UVs [0,1]². */
     void createSheet(float width, float height, int segX, int segY);
 
+    /**
+     * @brief Build a shaped water curtain with a convex cross-section and projecting lip.
+     * @param width Nominal width of the curtain at its upper edge.
+     * @param height Vertical fall distance.
+     * @param segX Horizontal tessellation count.
+     * @param segY Vertical tessellation count.
+     * @param curveDepth Maximum forward bow at the curtain centre.
+     * @param lipOverhang Additional forward projection at the upper lip.
+     */
+    void createCurvedSheet(float width, float height, int segX, int segY, float curveDepth,
+                           float lipOverhang);
+
     /** @brief Advance the animation clock by dt seconds. */
     void update(float dt);
     void setTime(float seconds);

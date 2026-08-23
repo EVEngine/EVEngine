@@ -120,7 +120,7 @@ inline float hashUnit(uint32_t x) { return float(hash13(x) % 10000u) / 9999.f; }
 // dirAt(x,y) writes the world direction (unnormalized ok) for a pixel.
 void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
                  const float sunDir[3], float sunEnergy, float nightAmount,
-                 float turbidity, float mieStrength, float exposure,
+                 float turbidity, float mieStrength, float exposure, float cloudiness,
                  void (*dirAt)(int face, int size, int x, int y, float out[3])) {
     const int n = size;
     for (int y = 0; y < n; ++y) {
@@ -161,7 +161,12 @@ void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
                     star = nightAmount * tw;
                 }
             }
-            color = add(color, scale(Vec3{0.9f, 0.95f, 1.f}, star));
+            color = add(color, scale(Vec3{0.9f, 0.95f, 1.f}, star * (1.f - cloudiness)));
+            const Vec3 overcast{0.075f + 0.035f * std::max(up, 0.f),
+                                0.090f + 0.045f * std::max(up, 0.f),
+                                0.125f + 0.060f * std::max(up, 0.f)};
+            color = add(scale(color, 1.f - cloudiness * 0.82f),
+                        scale(overcast, cloudiness));
             color = toneMapSky(color, exposure);
 
             const int i = (y * n + x) * 4;
@@ -206,6 +211,8 @@ struct DayNight::Impl {
     float turbidity = 2.5f;
     float skyExposure = 1.f;
     float mieStrength = 1.f;
+    float weatherCloudiness = 0.f;
+    float weatherFlash = 0.f;
 
     // sky cache (regenerate only when the sun bucket changes)
     bool skyboxEnabled = true;
@@ -258,15 +265,15 @@ float DayNight::getSunDirZ() const { return impl_->sunDir[2]; }
 float DayNight::getSunIntensity() const { return impl_->sunEnergy; }
 float DayNight::getSunR() const {
     return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).x *
-           impl_->sunEnergy;
+           impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness);
 }
 float DayNight::getSunG() const {
     return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).y *
-           impl_->sunEnergy;
+           impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness);
 }
 float DayNight::getSunB() const {
     return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).z *
-           impl_->sunEnergy;
+           impl_->sunEnergy * (1.f - 0.82f * impl_->weatherCloudiness);
 }
 void DayNight::setTurbidity(float v) {
     impl_->turbidity = std::clamp(v, 1.5f, 10.f);
@@ -289,24 +296,41 @@ float DayNight::getSkyR() const {
     const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
         {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
         impl_->mieStrength), impl_->skyExposure);
-    return c.x * impl_->sunEnergy + 0.012f * (1.f - impl_->sunEnergy);
+    const float clear = c.x * impl_->sunEnergy + 0.012f * (1.f - impl_->sunEnergy);
+    return clear * (1.f - impl_->weatherCloudiness * 0.72f) +
+           impl_->weatherCloudiness * 0.075f + impl_->weatherFlash * 0.38f;
 }
 float DayNight::getSkyG() const {
     const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
         {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
         impl_->mieStrength), impl_->skyExposure);
-    return c.y * impl_->sunEnergy + 0.020f * (1.f - impl_->sunEnergy);
+    const float clear = c.y * impl_->sunEnergy + 0.020f * (1.f - impl_->sunEnergy);
+    return clear * (1.f - impl_->weatherCloudiness * 0.72f) +
+           impl_->weatherCloudiness * 0.090f + impl_->weatherFlash * 0.48f;
 }
 float DayNight::getSkyB() const {
     const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
         {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
         impl_->mieStrength), impl_->skyExposure);
-    return c.z * impl_->sunEnergy + 0.060f * (1.f - impl_->sunEnergy);
+    const float clear = c.z * impl_->sunEnergy + 0.060f * (1.f - impl_->sunEnergy);
+    return clear * (1.f - impl_->weatherCloudiness * 0.62f) +
+           impl_->weatherCloudiness * 0.125f + impl_->weatherFlash * 0.68f;
 }
 float DayNight::getAmbientBrightness() const {
     const float night = impl_->nightLight[1] ? 1.0f : 0.6f;  // starlight boost
-    return 0.05f * night + impl_->sunEnergy * 0.5f;
+    return 0.05f * night + impl_->sunEnergy * 0.5f *
+           (1.f - impl_->weatherCloudiness * 0.68f) + impl_->weatherFlash * 0.45f;
 }
+
+void DayNight::setWeatherInfluence(float cloudiness, float lightningFlash) {
+    const float nextCloudiness = std::clamp(cloudiness, 0.f, 1.f);
+    if (std::fabs(nextCloudiness - impl_->weatherCloudiness) >= 0.04f)
+        impl_->lastSkyBucket = -1;
+    impl_->weatherCloudiness = nextCloudiness;
+    impl_->weatherFlash = std::clamp(lightningFlash, 0.f, 1.f);
+}
+float DayNight::getWeatherCloudiness() const { return impl_->weatherCloudiness; }
+float DayNight::getWeatherFlash() const { return impl_->weatherFlash; }
 float DayNight::getAmbientR() const {
     const float ab = getAmbientBrightness();
     return ab * 0.95f;
@@ -442,10 +466,13 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
     // different color/intensity than the sun slot).
     const Vec3 directSun = attenuatedSunColor(impl_->sunDir[1], impl_->turbidity,
                                                impl_->mieStrength);
+    const float weatherSun = 1.f - 0.82f * impl_->weatherCloudiness;
+    const Vec3 flashLight{impl_->weatherFlash * 0.75f, impl_->weatherFlash * 0.90f,
+                          impl_->weatherFlash * 1.20f};
     gfx->setDirectionalLight(impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2],
-                             directSun.x * impl_->sunEnergy,
-                             directSun.y * impl_->sunEnergy,
-                             directSun.z * impl_->sunEnergy);
+                             directSun.x * impl_->sunEnergy * weatherSun + flashLight.x,
+                             directSun.y * impl_->sunEnergy * weatherSun + flashLight.y,
+                             directSun.z * impl_->sunEnergy * weatherSun + flashLight.z);
 
     // Background matches the sky at the horizon for the clear color.
     const float skyR = getSkyR(), skyG = getSkyG(), skyB = getSkyB();
@@ -453,7 +480,8 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
 
     // --- procedural skybox (IBL env), regenerated per sun bucket ---
     if (impl_->skyboxEnabled) {
-        const int bucket = int(elevDeg) + int(azimDeg / 4.f) * 1000;
+        const int bucket = int(elevDeg) + int(azimDeg / 4.f) * 1000 +
+                           int(impl_->weatherCloudiness * 10.f) * 100000;
         if (bucket != impl_->lastSkyBucket) {
             impl_->lastSkyBucket = bucket;
             std::vector<uint8_t> faces(
@@ -463,7 +491,8 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
                     size_t(kSkyCubeSize) * size_t(kSkyCubeSize) * 4);
                 fillSkyFace(face, int(kSkyCubeSize), f, impl_->sunDir,
                             impl_->sunEnergy, nightAmount, impl_->turbidity,
-                            impl_->mieStrength, impl_->skyExposure, cubeDir);
+                            impl_->mieStrength, impl_->skyExposure,
+                            impl_->weatherCloudiness, cubeDir);
                 std::memcpy(faces.data() + size_t(f) * face.size(), face.data(), face.size());
             }
             // Replace the previous env cube; Graphics owns old textures.
@@ -550,6 +579,9 @@ void DayNight::expose(ssq::Class &cls) {
     cls.addFunc("getAmbientG", &DayNight::getAmbientG);
     cls.addFunc("getAmbientB", &DayNight::getAmbientB);
     cls.addFunc("getAmbientBrightness", &DayNight::getAmbientBrightness);
+    cls.addFunc("setWeatherInfluence", &DayNight::setWeatherInfluence);
+    cls.addFunc("getWeatherCloudiness", &DayNight::getWeatherCloudiness);
+    cls.addFunc("getWeatherFlash", &DayNight::getWeatherFlash);
     cls.addFunc("setSkyboxEnabled", &DayNight::setSkyboxEnabled);
     cls.addFunc("isSkyboxEnabled", &DayNight::isSkyboxEnabled);
     cls.addFunc("setNightLight", &DayNight::setNightLight);
