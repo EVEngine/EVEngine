@@ -89,6 +89,29 @@ public:
     /** @brief 3D 车身高度（无 3D 物理时返回 0）。 */
     float getHeight(VehicleEntity* v);
 
+    /** @brief 伤害管线：修饰器 → 装甲区倍率 → 扣血 → 事件。 */
+    void applyDamage(VehicleEntity* v, float amount, const std::string& zone = "", int sourceId = 0);
+    /** @brief 装甲区倍率（未命中任何区返回 1）。 */
+    float getArmorZoneMult(VehicleEntity* v, const std::string& zone);
+    /** @brief 是否已摧毁。 */
+    bool isDestroyed(VehicleEntity* v);
+
+    /** @brief 座位（FPS 面）。 */
+    int         getSeatCount(VehicleEntity* v);
+    std::string getSeatName(VehicleEntity* v, int seatIndex);
+    std::string getSeatCameraMode(VehicleEntity* v, int seatIndex);
+    bool        isSeatOccupied(VehicleEntity* v, int seatIndex);
+    int         getSeatOccupant(VehicleEntity* v, int seatIndex);
+    /** @brief 座位绑定的武器挂点（mountIndex 无效返回 nullptr）。 */
+    eve::weapon::WeaponMountEntity* getSeatMount(VehicleEntity* v, int seatIndex);
+    bool                            enterSeat(VehicleEntity* v, int seatIndex, int playerId);
+    bool                            exitSeat(VehicleEntity* v, int seatIndex);
+    int                             exitSeatByPlayer(VehicleEntity* v, int playerId);
+
+    /** @brief 写入玩家控制（归一化；角度为度）。 */
+    void setPlayerControls(int playerId, float throttle, float steer, float brake, bool fire, float aimYaw,
+                           float aimPitch);
+
     /** @brief 挂点查询（返回 weapon 模块的挂点实体）。 */
     int                             getMountCount(VehicleEntity* v);
     eve::weapon::WeaponMountEntity* getMount(VehicleEntity* v, int index);
@@ -108,6 +131,7 @@ public:
 
 private:
     void                     autoAim(VehicleEntity& v);
+    void                     updateSeats(VehicleEntity& v);
     const VehicleDefinition* findDef(const std::string& id) const;
 
     std::unordered_map<std::string, VehicleDefinition> defs_;

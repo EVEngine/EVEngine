@@ -46,6 +46,9 @@ struct VehicleInput {
     float steer     = 0.f;  // -1..1
     float brake     = 0.f;  // 0..1
     bool  handbrake = false;
+    bool  fire      = false;  // 武器座开火请求
+    float aimYaw    = 0.f;    // 武器座瞄准（度）
+    float aimPitch  = 0.f;
 };
 
 /** @brief 装甲区（Phase 4 伤害管线使用；Phase 2 仅作为定义数据保留）。 */
@@ -94,6 +97,14 @@ struct SuspensionConfig {
     std::vector<SuspensionWheel> wheels;
 };
 
+/** @brief 座位声明（载具模板的一部分，FPS 面）。 */
+struct SeatDef {
+    std::string name       = "passenger";
+    std::string driver     = "player";  // IVehicleDriver 注册名
+    std::string cameraMode = "third";   // "first" | "third" | "orbit"
+    int         mountIndex = -1;        // 该座位控制的挂点下标（-1 = 无武器）
+};
+
 /** @brief 载具模板（registerVehiclesFromJson 注册，进程级注册表）。 */
 struct VehicleDefinition {
     std::string id;
@@ -108,6 +119,7 @@ struct VehicleDefinition {
     std::vector<ArmorZone>   armorZones;
     std::vector<MountDef>    mounts;
     SuspensionConfig         suspension;
+    std::vector<SeatDef>     seats;
     std::vector<std::string> tags;
 };
 
@@ -152,6 +164,9 @@ public:
         float steer     = 0.f;
         float brake     = 0.f;
         bool  handbrake = false;
+        bool  fire      = false;
+        float aimYaw    = 0.f;
+        float aimPitch  = 0.f;
     };
 
     /** @brief 2D 运动状态（kinematic 直接持有；物理模式由 body 回写）。 */
@@ -202,6 +217,26 @@ public:
         std::vector<WheelState> wheels;
     };
 
+    /** @brief 座位槽位（运行时，与模板 seats 一一对应）。 */
+    struct SeatSlot {
+        std::string name;
+        std::string driver     = "player";
+        std::string cameraMode = "third";
+        int         mountIndex = -1;
+        int         occupant   = 0;  // 玩家/实体 id，0 = 空
+        bool        occupied   = false;
+    };
+
+    /** @brief 座位列表（FPS 面）。 */
+    struct Seats {
+        std::vector<SeatSlot> list;
+    };
+
+    /** @brief 通用标志位。 */
+    struct Flags {
+        bool destroyed = false;
+    };
+
     COMPONENT(Identity, identity)
     COMPONENT(Definition, definition)
     COMPONENT(Input, input)
@@ -211,9 +246,22 @@ public:
     COMPONENT(Mounts, mounts)
     COMPONENT(PhysicsBody, physicsBody)
     COMPONENT(SuspensionState, suspension)
+    COMPONENT(Seats, seats)
+    COMPONENT(Flags, stateFlags)
 
     /** @brief 创建并触摸全部组件。 */
     static VehicleEntity* createVehicle();
+};
+
+/** @brief 伤害修饰器（游戏侧注册，多重监听，按优先级调用）。 */
+class IVehicleDamageModifier {
+public:
+    static constexpr const char* capabilityName = "IVehicleDamageModifier";
+
+    virtual ~IVehicleDamageModifier() = default;
+
+    /** @brief 返回修正后的伤害（默认原值；装甲区倍率在修饰器之后应用）。 */
+    virtual float modifyDamage(VehicleEntity& v, float amount, const std::string& zone, int sourceId) = 0;
 };
 
 }  // namespace eve::vehicle

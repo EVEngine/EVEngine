@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "ScriptTest.h"
+#include "common/Capability.h"
 #include "common/ECS.h"
 #include "vehicle/Vehicle.h"
 #include "vehicle/VehicleMobility.h"
@@ -31,6 +32,16 @@ const char* kVehicleDefs = R"JSON(
              "limits":[-180,180,-8,20],"rotSpeed":45,"aimMode":"auto"}]},
  {"id":"apc","category":"apc","mobility":"kinematic",
   "maxSpeed":200,"accel":120,"turnRate":120,"radius":20,"maxHealth":300}]
+)JSON";
+
+const char* kFpsDefs = R"JSON(
+[{"id":"tank.fps","mobility":"kinematic","maxSpeed":120,"accel":80,"turnRate":90,
+  "radius":24,"maxHealth":600,
+  "armorZones":[{"name":"front","mult":1.0},{"name":"side","mult":0.5}],
+  "mounts":[{"name":"turret","weapon":"cannon.125","type":"turret",
+             "limits":[-180,180,-8,20],"rotSpeed":45,"aimMode":"manual"}],
+  "seats":[{"name":"driver","cameraMode":"first"},
+           {"name":"gunner","cameraMode":"third","mountIndex":0}]}]
 )JSON";
 
 eve::weapon::Weapon* weaponMod() { return eve::ModuleManager::requireInstance<eve::weapon::Weapon>("Weapon"); }
@@ -263,6 +274,106 @@ TEST_CASE("vehicle.physics3d.suspensionDrives") {
 }
 
 #endif  // EVENGINE_HAS_PHYSICS
+
+TEST_CASE("vehicle.seats.enterExit") {
+    Vehicle mod;
+    CHECK_EQ(mod.registerVehiclesFromJson(kFpsDefs), 1);
+    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+
+    CHECK_EQ(mod.getSeatCount(v), 2);
+    CHECK_EQ(mod.getSeatName(v, 0), std::string("driver"));
+    CHECK_EQ(mod.getSeatCameraMode(v, 1), std::string("third"));
+
+    CHECK(mod.enterSeat(v, 0, 1));
+    CHECK(mod.isSeatOccupied(v, 0));
+    CHECK_EQ(mod.getSeatOccupant(v, 0), 1);
+    CHECK(!mod.enterSeat(v, 0, 2));  // 已占用
+    CHECK(mod.enterSeat(v, 1, 2));
+    CHECK(!mod.enterSeat(v, 1, 3));  // 玩家2已在炮手座
+
+    CHECK_EQ(mod.exitSeatByPlayer(v, 1), 0);
+    CHECK(!mod.isSeatOccupied(v, 0));
+    CHECK(mod.isSeatOccupied(v, 1));
+}
+
+TEST_CASE("vehicle.driver.seatControlsDrive") {
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f, 0.f);
+    REQUIRE(v != nullptr);
+    CHECK(mod.enterSeat(v, 0, 7));
+
+    mod.setPlayerControls(7, 1.f, 0.f, 0.f, false, 0.f, 0.f);
+    for (int i = 0; i < 60; ++i) mod.update(1.f / 60.f);
+    CHECK_GT(mod.getX(v), 30.f);
+    CHECK_GT(mod.getSpeed(v), 60.f);
+}
+
+TEST_CASE("vehicle.driver.gunnerAimsAndFires") {
+    weaponMod()->registerWeaponsFromJson(kWeaponDefs);
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+    CHECK(mod.enterSeat(v, 1, 8));
+
+    eve::weapon::WeaponMountEntity* m = mod.getSeatMount(v, 1);
+    REQUIRE(m != nullptr);
+    eve::weapon::WeaponEntity* w = weaponMod()->mountGetWeapon(m);
+    REQUIRE(w != nullptr);
+
+    weaponMod()->clearEvents();
+    mod.setPlayerControls(8, 0.f, 0.f, 0.f, true, 90.f, 10.f);
+    mod.update(0.1f);
+
+    CHECK_EQ(w->aim()->desiredYaw, 90.f);
+    CHECK_GT(weaponMod()->getEventCount(), 0);
+    CHECK_EQ(weaponMod()->getEventType(0), std::string("fire"));
+}
+
+TEST_CASE("vehicle.damage.armorAndEvents") {
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+    mod.clearEvents();
+
+    CHECK_EQ(mod.getHealth(v), 600.f);
+    mod.applyDamage(v, 100.f, "side", 0);  // 100 * 0.5 = 50
+    CHECK_EQ(mod.getHealth(v), 550.f);
+    mod.applyDamage(v, 200.f, "front", 0);
+    CHECK_EQ(mod.getHealth(v), 350.f);
+    CHECK_EQ(mod.getEventCount(), 2);
+    CHECK_EQ(mod.getEventType(0), std::string("damaged"));
+    CHECK(!mod.isDestroyed(v));
+
+    mod.applyDamage(v, 1000.f, "front", 0);
+    CHECK_EQ(mod.getHealth(v), 0.f);
+    CHECK(mod.isDestroyed(v));
+    CHECK_EQ(mod.getEventType(mod.getEventCount() - 1), std::string("destroyed"));
+
+    mod.applyDamage(v, 50.f, "front", 0);  // 已毁不再受伤
+    CHECK_EQ(mod.getEventCount(), 3);
+}
+
+TEST_CASE("vehicle.damage.modifiers") {
+    class DoubleDamage : public IVehicleDamageModifier {
+    public:
+        float modifyDamage(VehicleEntity&, float amount, const std::string&, int) override { return amount * 2.f; }
+    };
+    DoubleDamage dmg;
+    eve::cap::addListener<IVehicleDamageModifier>(&dmg);
+
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+    mod.applyDamage(v, 100.f, "front", 0);  // 100 * 2 = 200
+    CHECK_EQ(mod.getHealth(v), 400.f);
+
+    eve::cap::removeListener<IVehicleDamageModifier>(&dmg);
+}
 
 static const char* kViewScript = R"SQ(
 function testVehicleCppView() {

@@ -1,5 +1,6 @@
 #include "vehicle/Vehicle.h"
 
+#include "common/Capability.h"
 #include "common/Json.h"
 #include "vehicle/VehicleSystem.h"
 #include "weapon/Weapon.h"
@@ -98,6 +99,18 @@ bool parseDefinition(Value o, std::unordered_map<std::string, VehicleDefinition>
         }
     }
 
+    if (Value seats = o.get("seats")) {
+        for (size_t i = 0; i < seats.size(); ++i) {
+            Value   s = seats.at(i);
+            SeatDef sd;
+            sd.name       = s.getString("name", "passenger" + std::to_string(i));
+            sd.driver     = s.getString("driver", "player");
+            sd.cameraMode = s.getString("cameraMode", "third");
+            sd.mountIndex = s.getInt("mountIndex", -1);
+            def.seats.push_back(sd);
+        }
+    }
+
     def.tags = o.getStringArray("tags");
     defs[id] = def;
     return true;
@@ -188,6 +201,8 @@ VehicleEntity* VehicleEntity::createVehicle() {
     v->mounts();
     v->physicsBody();
     v->suspension();
+    v->seats();
+    v->stateFlags();
     return v;
 }
 
@@ -287,6 +302,15 @@ VehicleEntity* Vehicle::newVehicle(const std::string& defId, float x, float y, f
         }
     }
 
+    for (const SeatDef& sd : def->seats) {
+        VehicleEntity::SeatSlot slot;
+        slot.name       = sd.name;
+        slot.driver     = sd.driver;
+        slot.cameraMode = sd.cameraMode;
+        slot.mountIndex = sd.mountIndex;
+        v->seats()->list.push_back(slot);
+    }
+
     vehicles_.push_back(ecs::handle_of(v));
     return v;
 }
@@ -380,6 +404,129 @@ std::string Vehicle::getFaction(VehicleEntity* v) { return v == nullptr ? std::s
 
 void Vehicle::setFaction(VehicleEntity* v, const std::string& faction) {
     if (v != nullptr) v->identity()->faction = faction;
+}
+
+// ---------------------------------------------------------------------------
+// 伤害管线
+// ---------------------------------------------------------------------------
+
+void Vehicle::applyDamage(VehicleEntity* v, float amount, const std::string& zone, int sourceId) {
+    if (v == nullptr || amount <= 0.f) return;
+    if (v->stateFlags()->destroyed) return;
+
+    // 修饰器（多重监听，游戏侧叠加规则，如科技减伤/暴击）
+    eve::cap::forEach<IVehicleDamageModifier>(
+        [&](IVehicleDamageModifier* m) { amount = m->modifyDamage(*v, amount, zone, sourceId); });
+    if (amount <= 0.f) return;
+
+    // 装甲区倍率
+    float mult = 1.f;
+    if (!zone.empty()) {
+        for (const ArmorZone& z : v->definition()->def->armorZones) {
+            if (z.name == zone) {
+                mult = z.mult;
+                break;
+            }
+        }
+    }
+
+    const float hp  = v->health()->hp - amount * mult;
+    v->health()->hp = std::max(0.f, hp);
+
+    VehicleEvent e;
+    e.vehicleId = v->identity()->id;
+    e.defId     = v->identity()->defId;
+    e.x         = v->motion()->x;
+    e.y         = v->motion()->y;
+    if (hp <= 0.f) {
+        v->stateFlags()->destroyed = true;
+        e.type                     = VehicleEventType::Destroyed;
+    } else {
+        e.type = VehicleEventType::Damaged;
+    }
+    events_.push_back(e);
+}
+
+float Vehicle::getArmorZoneMult(VehicleEntity* v, const std::string& zone) {
+    if (v == nullptr || v->definition()->def == nullptr || zone.empty()) return 1.f;
+    for (const ArmorZone& z : v->definition()->def->armorZones) {
+        if (z.name == zone) return z.mult;
+    }
+    return 1.f;
+}
+
+bool Vehicle::isDestroyed(VehicleEntity* v) { return v != nullptr && v->stateFlags()->destroyed; }
+
+// ---------------------------------------------------------------------------
+// 座位（FPS 面）
+// ---------------------------------------------------------------------------
+
+int Vehicle::getSeatCount(VehicleEntity* v) { return v == nullptr ? 0 : static_cast<int>(v->seats()->list.size()); }
+
+std::string Vehicle::getSeatName(VehicleEntity* v, int seatIndex) {
+    if (v == nullptr || seatIndex < 0 || static_cast<size_t>(seatIndex) >= v->seats()->list.size()) {
+        return std::string{};
+    }
+    return v->seats()->list[static_cast<size_t>(seatIndex)].name;
+}
+
+std::string Vehicle::getSeatCameraMode(VehicleEntity* v, int seatIndex) {
+    if (v == nullptr || seatIndex < 0 || static_cast<size_t>(seatIndex) >= v->seats()->list.size()) {
+        return std::string{};
+    }
+    return v->seats()->list[static_cast<size_t>(seatIndex)].cameraMode;
+}
+
+bool Vehicle::isSeatOccupied(VehicleEntity* v, int seatIndex) {
+    if (v == nullptr || seatIndex < 0 || static_cast<size_t>(seatIndex) >= v->seats()->list.size()) {
+        return false;
+    }
+    return v->seats()->list[static_cast<size_t>(seatIndex)].occupied;
+}
+
+int Vehicle::getSeatOccupant(VehicleEntity* v, int seatIndex) {
+    if (v == nullptr || seatIndex < 0 || static_cast<size_t>(seatIndex) >= v->seats()->list.size()) {
+        return 0;
+    }
+    return v->seats()->list[static_cast<size_t>(seatIndex)].occupant;
+}
+
+eve::weapon::WeaponMountEntity* Vehicle::getSeatMount(VehicleEntity* v, int seatIndex) {
+    if (v == nullptr || seatIndex < 0 || static_cast<size_t>(seatIndex) >= v->seats()->list.size()) {
+        return nullptr;
+    }
+    const VehicleEntity::SeatSlot& s = v->seats()->list[static_cast<size_t>(seatIndex)];
+    if (s.mountIndex < 0 || static_cast<size_t>(s.mountIndex) >= v->mounts()->list.size()) {
+        return nullptr;
+    }
+    return v->mounts()->list[static_cast<size_t>(s.mountIndex)].mount;
+}
+
+bool Vehicle::enterSeat(VehicleEntity* v, int seatIndex, int playerId) {
+    return v != nullptr && VehicleSystem::enterSeat(*v, seatIndex, playerId);
+}
+
+bool Vehicle::exitSeat(VehicleEntity* v, int seatIndex) {
+    return v != nullptr && VehicleSystem::exitSeat(*v, seatIndex);
+}
+
+int Vehicle::exitSeatByPlayer(VehicleEntity* v, int playerId) {
+    if (v == nullptr) return -1;
+    const int idx = VehicleSystem::findSeatByPlayer(*v, playerId);
+    if (idx >= 0) VehicleSystem::exitSeat(*v, idx);
+    return idx;
+}
+
+void Vehicle::setPlayerControls(int playerId, float throttle, float steer, float brake, bool fire, float aimYaw,
+                                float aimPitch) {
+    PlayerControl c;
+    c.throttle = throttle;
+    c.steer    = steer;
+    c.brake    = brake;
+    c.fire     = fire;
+    c.aimYaw   = aimYaw;
+    c.aimPitch = aimPitch;
+    VehicleSystem::setPlayerControls(playerId, c);
 }
 
 // ---------------------------------------------------------------------------
@@ -508,8 +655,55 @@ eve::weapon::WeaponMountEntity* Vehicle::getMount(VehicleEntity* v, int index) {
 void Vehicle::update(float dt) {
     for (const ecs::EntityHandle& h : vehicles_) {
         if (VehicleEntity* v = resolve<VehicleEntity>(h)) {
-            VehicleSystem::update(*v, dt);
-            autoAim(*v);
+            updateSeats(*v);                // 座位输入写入（无命令时生效）
+            VehicleSystem::update(*v, dt);  // 命令优先，然后移动
+            autoAim(*v);                    // RTS 攻击命令自动瞄准
+        }
+    }
+}
+
+void Vehicle::updateSeats(VehicleEntity& v) {
+    auto seats = v.seats();
+    if (seats->list.empty()) return;
+
+    eve::weapon::Weapon* wmod          = eve::ModuleManager::getInstance<eve::weapon::Weapon>("Weapon");
+    bool                 driverApplied = false;
+
+    for (const VehicleEntity::SeatSlot& s : seats->list) {
+        if (!s.occupied) continue;
+        IVehicleDriver* driver = VehicleSystem::findDriver(s.driver);
+        if (driver == nullptr) continue;
+
+        VehicleInput in;
+        if (!driver->sample(v, s.occupant, in)) continue;
+
+        // 驾驶员座位：写移动输入（只取第一个有效驾驶员）
+        if (!driverApplied && s.name == "driver") {
+            auto vi       = v.input();
+            vi->throttle  = in.throttle;
+            vi->steer     = in.steer;
+            vi->brake     = in.brake;
+            vi->handbrake = in.handbrake;
+            vi->fire      = in.fire;
+            vi->aimYaw    = in.aimYaw;
+            vi->aimPitch  = in.aimPitch;
+            driverApplied = true;
+        }
+
+        // 武器座位：瞄准 + 开火
+        if (s.mountIndex >= 0 && static_cast<size_t>(s.mountIndex) < v.mounts()->list.size() && wmod != nullptr) {
+            eve::weapon::WeaponMountEntity* m = v.mounts()->list[s.mountIndex].mount;
+            if (m == nullptr || m->state()->destroyed) continue;
+            wmod->mountAimAt(m, in.aimYaw, in.aimPitch);
+            if (in.fire) {
+                if (eve::weapon::WeaponEntity* w = wmod->mountGetWeapon(m)) {
+                    eve::weapon::FireRequest req;
+                    req.yaw       = in.aimYaw;
+                    req.pitch     = in.aimPitch;
+                    req.shooterId = s.occupant;
+                    wmod->fire(w, req);
+                }
+            }
         }
     }
 }
@@ -590,6 +784,7 @@ void Vehicle::expose(ssq::Table& table) {
     vCls.addFunc("getSpeed", [](VehicleEntity* v) -> float { return v ? v->motion()->speed : 0.f; });
     vCls.addFunc("getHealth", [](VehicleEntity* v) -> float { return v ? v->health()->hp : 0.f; });
     vCls.addFunc("getMaxHealth", [](VehicleEntity* v) -> float { return v ? v->health()->maxHp : 0.f; });
+    vCls.addFunc("isDestroyed", [](VehicleEntity* v) -> bool { return v != nullptr && v->stateFlags()->destroyed; });
     vCls.addFunc("isArrived", [](VehicleEntity* v) -> bool { return v != nullptr && v->motion()->arrived; });
     vCls.addFunc("getCurrentOrderType", [](VehicleEntity* v) -> std::string {
         if (v == nullptr) return "none";
@@ -636,6 +831,19 @@ void Vehicle::expose(ssq::Class& cls) {
     cls.addFunc("getMaxHealth", &Vehicle::getMaxHealth);
     cls.addFunc("getFaction", &Vehicle::getFaction);
     cls.addFunc("setFaction", &Vehicle::setFaction);
+    cls.addFunc("applyDamage", &Vehicle::applyDamage);
+    cls.addFunc("getArmorZoneMult", &Vehicle::getArmorZoneMult);
+    cls.addFunc("isDestroyed", &Vehicle::isDestroyed);
+    cls.addFunc("getSeatCount", &Vehicle::getSeatCount);
+    cls.addFunc("getSeatName", &Vehicle::getSeatName);
+    cls.addFunc("getSeatCameraMode", &Vehicle::getSeatCameraMode);
+    cls.addFunc("isSeatOccupied", &Vehicle::isSeatOccupied);
+    cls.addFunc("getSeatOccupant", &Vehicle::getSeatOccupant);
+    cls.addFunc("getSeatMount", &Vehicle::getSeatMount);
+    cls.addFunc("enterSeat", &Vehicle::enterSeat);
+    cls.addFunc("exitSeat", &Vehicle::exitSeat);
+    cls.addFunc("exitSeatByPlayer", &Vehicle::exitSeatByPlayer);
+    cls.addFunc("setPlayerControls", &Vehicle::setPlayerControls);
     cls.addFunc("detachPhysics", &Vehicle::detachPhysics);
     cls.addFunc("hasPhysics", &Vehicle::hasPhysics);
     cls.addFunc("getPhysicsSpace", &Vehicle::getPhysicsSpace);

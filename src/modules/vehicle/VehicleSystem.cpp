@@ -23,6 +23,16 @@ std::unordered_map<std::string, IVehicleMobility*>& mobilityRegistry() {
     return registry;
 }
 
+std::unordered_map<std::string, IVehicleDriver*>& driverRegistry() {
+    static std::unordered_map<std::string, IVehicleDriver*> registry;
+    return registry;
+}
+
+std::unordered_map<int, PlayerControl>& playerControlsTable() {
+    static std::unordered_map<int, PlayerControl> table;
+    return table;
+}
+
 VehicleEventSink& eventSink() {
     static VehicleEventSink sink;
     return sink;
@@ -314,6 +324,26 @@ TrackMobility     gTrack;
 SuspensionMobility3D gSuspension;
 #endif
 
+/** @brief 内置玩家驾驶者：从控制表读取玩家输入（VehicleSystem::setPlayerControls）。 */
+class PlayerDriver : public IVehicleDriver {
+public:
+    const char* name() const override { return "player"; }
+    bool        sample(VehicleEntity&, int occupantId, VehicleInput& out) override {
+        const PlayerControl* pc = VehicleSystem::playerControls(occupantId);
+        if (pc == nullptr) return false;
+        out.throttle  = pc->throttle;
+        out.steer     = pc->steer;
+        out.brake     = pc->brake;
+        out.handbrake = pc->handbrake;
+        out.fire      = pc->fire;
+        out.aimYaw    = pc->aimYaw;
+        out.aimPitch  = pc->aimPitch;
+        return true;
+    }
+};
+
+PlayerDriver gPlayerDriver;
+
 }  // namespace
 
 void VehicleSystem::registerMobility(IVehicleMobility* mobility) {
@@ -338,16 +368,19 @@ void VehicleSystem::update(VehicleEntity& v, float dt) {
 }
 
 void VehicleSystem::processOrders(VehicleEntity& v, float dt) {
+    auto orders = v.orders();
+    if (orders->current < 0 || static_cast<size_t>(orders->current) >= orders->queue.size()) {
+        return;  // 无命令时保留手动/座位输入
+    }
+
     auto in      = v.input();
     auto mo      = v.motion();
     in->throttle = 0.f;
     in->steer    = 0.f;
     in->brake    = 0.f;
-
-    auto orders = v.orders();
-    if (orders->current < 0 || static_cast<size_t>(orders->current) >= orders->queue.size()) {
-        return;
-    }
+    in->fire     = false;
+    in->aimYaw   = 0.f;
+    in->aimPitch = 0.f;
 
     const VehicleOrder& o = orders->queue[orders->current];
     switch (o.type) {
@@ -408,6 +441,58 @@ float VehicleSystem::steerToward(VehicleEntity& v, float targetHeadingDeg) {
     return std::clamp(delta / 90.f, -1.f, 1.f);
 }
 
+void VehicleSystem::registerDriver(IVehicleDriver* driver) {
+    if (driver == nullptr) return;
+    driverRegistry()[driver->name()] = driver;
+}
+
+IVehicleDriver* VehicleSystem::findDriver(const std::string& name) {
+    auto it = driverRegistry().find(name);
+    return it == driverRegistry().end() ? nullptr : it->second;
+}
+
+int VehicleSystem::driverCount() { return static_cast<int>(driverRegistry().size()); }
+
+void VehicleSystem::setPlayerControls(int playerId, const PlayerControl& control) {
+    playerControlsTable()[playerId] = control;
+}
+
+const PlayerControl* VehicleSystem::playerControls(int playerId) {
+    auto it = playerControlsTable().find(playerId);
+    return it == playerControlsTable().end() ? nullptr : &it->second;
+}
+
+bool VehicleSystem::enterSeat(VehicleEntity& v, int seatIndex, int playerId) {
+    auto seats = v.seats();
+    if (seatIndex < 0 || static_cast<size_t>(seatIndex) >= seats->list.size()) return false;
+    VehicleEntity::SeatSlot& s = seats->list[static_cast<size_t>(seatIndex)];
+    if (s.occupied) return false;
+    // 同一玩家不能同时占两个座位
+    for (VehicleEntity::SeatSlot& other : seats->list) {
+        if (other.occupied && other.occupant == playerId) return false;
+    }
+    s.occupant = playerId;
+    s.occupied = true;
+    return true;
+}
+
+bool VehicleSystem::exitSeat(VehicleEntity& v, int seatIndex) {
+    auto seats = v.seats();
+    if (seatIndex < 0 || static_cast<size_t>(seatIndex) >= seats->list.size()) return false;
+    VehicleEntity::SeatSlot& s = seats->list[static_cast<size_t>(seatIndex)];
+    s.occupied                 = false;
+    s.occupant                 = 0;
+    return true;
+}
+
+int VehicleSystem::findSeatByPlayer(VehicleEntity& v, int playerId) {
+    auto seats = v.seats();
+    for (size_t i = 0; i < seats->list.size(); ++i) {
+        if (seats->list[i].occupied && seats->list[i].occupant == playerId) return static_cast<int>(i);
+    }
+    return -1;
+}
+
 }  // namespace eve::vehicle
 
 // 静态注册内置移动模型（链接期执行，模块加载即生效）。
@@ -423,6 +508,7 @@ struct BuiltinMobilityRegistrar {
 #ifdef EVENGINE_HAS_PHYSICS
         VehicleSystem::registerMobility(&gSuspension);
 #endif
+        VehicleSystem::registerDriver(&gPlayerDriver);
     }
 };
 
