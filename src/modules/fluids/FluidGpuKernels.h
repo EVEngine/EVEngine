@@ -247,7 +247,11 @@ void main() {
     uint i = gl_GlobalInvocationID.x;
     uint n = uint(pc.d[0]);
     if (i >= n) return;
-    vec3 p = pos.p[i].xyz + grad.g[i].xyz;
+    vec3 delta = grad.g[i].xyz;
+    float maxD = 0.05 * pc.d[3];
+    float dl = length(delta);
+    if (dl > maxD && dl > 1e-9) delta *= maxD / dl;
+    vec3 p = pos.p[i].xyz + delta;
     float radius = pc.d[2];
     float d = sdfSample(p);
     if (d < radius) {

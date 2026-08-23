@@ -386,13 +386,18 @@ TEST_CASE("fluids.gpu.surfaceFlow") {
 
     float meanY1       = 0.f;
     bool  allOnSurface = true;
+    float maxP         = 0.f;
     for (const glm::vec3& p : pos) {
         meanY1 += p.y;
+        maxP = std::max(maxP, distToCenter(p));
         if (distToCenter(p) < 1.f - 0.05f) allOnSurface = false;
     }
     meanY1 /= float(pos.size());
     CHECK(meanY1 < meanY0 - 0.05f);
     CHECK(allOnSurface);
+    // Particles must stay glued to the SDF; a broken upload would let the
+    // projection push them straight off the model (regression guard).
+    CHECK(maxP < 3.f);
 }
 
 TEST_CASE("fluids.gpu.pbfCohesionCluster") {

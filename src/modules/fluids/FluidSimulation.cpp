@@ -175,6 +175,13 @@ void FluidSimulation::applyPositionCorrections() {
             }
         }
         glm::vec3   p = pi + delta / rho0;
+        // Clamp the PBF position correction (standard PBF stabilization):
+        // overlapping particles would otherwise amplify the spiky gradient
+        // unboundedly and fling the drop apart.
+        const float maxDelta = 0.05f * h;
+        const glm::vec3 correction = delta / rho0;
+        const float cl = glm::length(correction);
+        if (cl > maxDelta && cl > 1e-9f) p = pi + correction * (maxDelta / cl);
         const float d = sdf_.sample(p);
         if (d < radius) {
             glm::vec3   n  = sdf_.gradient(p);

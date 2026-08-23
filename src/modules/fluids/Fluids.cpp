@@ -226,6 +226,7 @@ bool FluidSimulator::ensureGpu() {
     }
     if (!seq_ || !seq_->isAvailable()) return false;
 
+    gpuOk_ = true;  // uploadSdf() guards on gpuOk_; set it before uploading.
     uploadSdf();
     shClear_->bindBuffer(2, bufHead_);
     shBuild_->bindBuffer(0, bufPos_);
@@ -252,7 +253,6 @@ bool FluidSimulator::ensureGpu() {
     shIntegrate_->bindBuffer(2, bufHead_);
     shIntegrate_->bindBuffer(3, bufNext_);
     shIntegrate_->bindBuffer(5, bufSdf_);
-    gpuOk_ = true;
     return true;
 }
 
