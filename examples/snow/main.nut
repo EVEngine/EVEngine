@@ -90,7 +90,7 @@ function regenTerrain() {
         terrainTex = snow.uploadTexture(sf, gfx);
         terrainEnt.setTexture(terrainTex);
         terrainEnt.setHeightTexture(terrainTex);
-        terrainEnt.setParallax(POM_SCALE, 8, 32);
+        terrainEnt.setParallax(POM_SCALE, 8.0, 32.0);
         terrainEnt.setPosition(0.0, 0.0, 0.0);
         terrainEnt.setVisible(true);
         walker = eve.Renderable3D();
@@ -220,7 +220,7 @@ eve_update = function(dt) {
 
     if (key_just_pressed("p") || key_just_pressed("P")) {
         parallaxOn = !parallaxOn;
-        terrainEnt.setParallax(parallaxOn ? POM_SCALE : 0.0, 8, 32);
+        terrainEnt.setParallax(parallaxOn ? POM_SCALE : 0.0, 8.0, 32.0);
     }
     if (key_just_pressed("r") || key_just_pressed("R")) {
         sf.fill(0.85);
