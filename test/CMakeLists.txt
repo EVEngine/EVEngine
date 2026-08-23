@@ -6,6 +6,8 @@ file(GLOB all_test_cpp
   data.cpp
   decal.cpp
   decal_script.cpp
+  crowd.cpp
+  crowd_script.cpp
   resource.cpp
   state_value.cpp
   json.cpp
@@ -198,6 +200,7 @@ file(GLOB all_test_scripts
   window.nut
   timer.nut
   decal.nut
+  crowd.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"
@@ -375,6 +378,7 @@ set(EVELIBS
   EVStylize
   EVDecal
   EVSpriteStack
+  EVCrowd
   EVEditor)
 
 if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")))
