@@ -94,6 +94,7 @@ file(GLOB all_test_cpp
   daynight.cpp
   weather.cpp
   weapon.cpp
+  vehicle.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
@@ -304,6 +305,7 @@ set(EVELIBS
   EVBuildingFx
   EVCard
   EVWeapon
+  EVVehicle
   EVAvatar
   EVDialogue
   EVProcgen

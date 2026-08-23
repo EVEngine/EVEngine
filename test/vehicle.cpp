@@ -1,0 +1,185 @@
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "ScriptTest.h"
+#include "common/ECS.h"
+#include "vehicle/Vehicle.h"
+#include "vehicle/VehicleMobility.h"
+#include "weapon/Weapon.h"
+
+using namespace eve::vehicle;
+
+namespace {
+
+const char* kWeaponDefs = R"JSON(
+[{"id":"cannon.125","logic":"hitscan","damage":320,"cooldown":4.0,
+  "ammo":{"mag":1,"reserve":40,"reload":6.0}}]
+)JSON";
+
+const char* kVehicleDefs = R"JSON(
+[{"id":"tank.t90","category":"tank","mobility":"kinematic",
+  "maxSpeed":120,"accel":80,"turnRate":90,"radius":24,"maxHealth":600,
+  "armorZones":[{"name":"front","mult":1.0}],
+  "mounts":[{"name":"turret","weapon":"cannon.125","type":"turret",
+             "limits":[-180,180,-8,20],"rotSpeed":45,"aimMode":"auto"}]},
+ {"id":"apc","category":"apc","mobility":"kinematic",
+  "maxSpeed":200,"accel":120,"turnRate":120,"radius":20,"maxHealth":300}]
+)JSON";
+
+eve::weapon::Weapon* weaponMod() { return eve::ModuleManager::requireInstance<eve::weapon::Weapon>("Weapon"); }
+
+int countVehicleView() {
+    int  n    = 0;
+    auto view = ecs::View<VehicleEntity, VehicleEntity::Identity>();
+    for (auto it = view.begin(); it != view.end(); ++it) ++n;
+    return n;
+}
+
+/** @brief 自定义移动模型：每帧向东瞬移（验证扩展点）。 */
+class TeleportMobility : public IVehicleMobility {
+public:
+    const char* name() const override { return "test.teleport"; }
+    void        update(VehicleEntity& v, float) override { v.motion()->x += 10.f; }
+};
+
+}  // namespace
+
+TEST_CASE("vehicle.defs.registerJson") {
+    Vehicle mod;
+    CHECK_EQ(mod.registerVehiclesFromJson(kVehicleDefs), 2);
+    CHECK(mod.hasVehicleDefinition("tank.t90"));
+    CHECK_EQ(mod.getVehicleDefinitionMobility("tank.t90"), std::string("kinematic"));
+    CHECK_EQ(mod.getVehicleDefinitionMaxHealth("tank.t90"), 600.f);
+    CHECK_EQ(mod.registerVehiclesFromJson("[{\"name\":\"no-id\"}]"), 0);
+    CHECK_EQ(mod.registerVehiclesFromJson("not json"), 0);
+    CHECK_EQ(mod.getVehicleDefinitionMobility("missing"), std::string{});
+}
+
+TEST_CASE("vehicle.factory.newVehicleWithMounts") {
+    weaponMod()->registerWeaponsFromJson(kWeaponDefs);
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kVehicleDefs);
+    const int before = countVehicleView();
+
+    VehicleEntity* tank = mod.newVehicle("tank.t90", 100.f, 200.f, 0.f, "red");
+    REQUIRE(tank != nullptr);
+    CHECK_EQ(tank->identity()->defId, std::string("tank.t90"));
+    CHECK_EQ(tank->identity()->faction, std::string("red"));
+    CHECK_EQ(tank->health()->hp, 600.f);
+    CHECK_EQ(mod.getX(tank), 100.f);
+    CHECK_EQ(mod.getY(tank), 200.f);
+    CHECK_EQ(mod.getMountCount(tank), 1);
+    eve::weapon::WeaponMountEntity* m = mod.getMount(tank, 0);
+    REQUIRE(m != nullptr);
+    REQUIRE(weaponMod()->mountGetWeapon(m) != nullptr);
+
+    VehicleEntity* apc = mod.newVehicle("apc", 0.f, 0.f);
+    REQUIRE(apc != nullptr);
+    CHECK_EQ(mod.getMountCount(apc), 0);
+    CHECK_EQ(mod.newVehicle("missing", 0.f, 0.f), nullptr);
+    CHECK_EQ(countVehicleView(), before + 2);
+}
+
+TEST_CASE("vehicle.orders.moveAndArrive") {
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kVehicleDefs);
+    VehicleEntity* v = mod.newVehicle("apc", 100.f, 100.f, 0.f);
+    REQUIRE(v != nullptr);
+    mod.clearEvents();
+
+    mod.moveTo(v, 300.f, 100.f);
+    CHECK_EQ(mod.getCurrentOrderType(v), std::string("move"));
+    for (int i = 0; i < 200 && !mod.isArrived(v); ++i) mod.update(0.1f);
+
+    CHECK(mod.isArrived(v));
+    CHECK_GT(mod.getX(v), 200.f);
+    CHECK_LT(mod.getSpeed(v), 1.f);
+    CHECK_EQ(mod.getEventCount(), 1);
+    CHECK_EQ(mod.getEventType(0), std::string("order_completed"));
+    CHECK_EQ(mod.getEventOrderType(0), std::string("move"));
+    CHECK_EQ(mod.getCurrentOrderType(v), std::string("none"));
+}
+
+TEST_CASE("vehicle.orders.turnsTowardTarget") {
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kVehicleDefs);
+    VehicleEntity* v = mod.newVehicle("apc", 0.f, 0.f, 0.f);
+    REQUIRE(v != nullptr);
+    mod.moveTo(v, 0.f, 200.f);  // 目标正北
+    for (int i = 0; i < 50; ++i) mod.update(0.1f);
+    CHECK_GT(mod.getHeading(v), 30.f);  // 车头已向目标旋转
+    for (int i = 0; i < 200 && !mod.isArrived(v); ++i) mod.update(0.1f);
+    CHECK(mod.isArrived(v));
+    CHECK_GT(mod.getY(v), 100.f);
+}
+
+TEST_CASE("vehicle.orders.stopDecelerates") {
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kVehicleDefs);
+    VehicleEntity* v = mod.newVehicle("apc", 0.f, 0.f, 0.f);
+    REQUIRE(v != nullptr);
+    mod.moveTo(v, 1000.f, 0.f);
+    mod.update(1.0f);
+    CHECK_GT(mod.getSpeed(v), 50.f);
+
+    mod.stop(v);
+    CHECK_EQ(mod.getCurrentOrderType(v), std::string("stop"));
+    mod.update(1.0f);
+    CHECK_LT(mod.getSpeed(v), 1.f);
+    CHECK_EQ(mod.orderCount(v), 1);
+}
+
+TEST_CASE("vehicle.orders.attackAimsMount") {
+    weaponMod()->registerWeaponsFromJson(kWeaponDefs);
+    Vehicle mod;
+    mod.registerVehiclesFromJson(kVehicleDefs);
+    VehicleEntity* tank = mod.newVehicle("tank.t90", 0.f, 0.f, 0.f);
+    REQUIRE(tank != nullptr);
+
+    mod.attack(tank, 0.f, 100.f, 7);
+    eve::weapon::WeaponMountEntity* m = mod.getMount(tank, 0);
+    REQUIRE(m != nullptr);
+    eve::weapon::WeaponEntity* w = weaponMod()->mountGetWeapon(m);
+    REQUIRE(w != nullptr);
+
+    for (int i = 0; i < 30; ++i) {
+        mod.update(0.1f);
+        weaponMod()->update(0.1f);
+    }
+    CHECK_GT(std::fabs(w->aim()->desiredYaw), 80.f);                 // 朝向目标（本地角）
+    CHECK_LT(std::fabs(w->aim()->yaw - w->aim()->desiredYaw), 1.f);  // 已转到
+    CHECK_EQ(mod.getCurrentOrderType(tank), std::string("attack"));
+}
+
+TEST_CASE("vehicle.mobility.customRegistration") {
+    TeleportMobility mob;
+    Vehicle::registerMobility(&mob);
+    CHECK(Vehicle::getMobilityCount() >= 2);
+
+    Vehicle mod;
+    CHECK_EQ(mod.registerVehiclesFromJson("[{\"id\":\"hover\",\"mobility\":\"test.teleport\"}]"), 1);
+    VehicleEntity* v = mod.newVehicle("hover", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+    mod.update(0.1f);
+    CHECK_EQ(mod.getX(v), 10.f);
+}
+
+static const char* kViewScript = R"SQ(
+function testVehicleCppView() {
+    local vehicle = eve.Vehicle()
+    vehicle.registerVehiclesFromJson("[{\"id\":\"jeep\"}]")
+    local v = vehicle.newVehicle("jeep", 5.0, 6.0)
+    if (v == null) return false
+    local all = eve.view(eve.VehicleEntity)
+    foreach (e in all) {
+        if (e.getId() == v.getId()) return true
+    }
+    return false
+}
+)SQ";
+
+UnitSciptTest(VehicleViewScriptTest, kViewScript);
+
+TEST_CASE_FIXTURE(VehicleViewScriptTest, "vehicle.script.viewSeesNewVehicle") {
+    CHECK(vm.callFunc(vm.findFunc("testVehicleCppView"), vm).toBool());
+}
