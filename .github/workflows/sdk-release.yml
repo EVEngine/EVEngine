@@ -589,6 +589,11 @@ jobs:
       TAG: ${{ inputs.tag }}
       HOST: linux
       EVE_CROSS_TARGETS: win32
+      # Headless runners have no sound card; OpenAL's ALSA backend fails and
+      # the Audio module would be left uninitialized. Use the null backend
+      # (same pattern as the unit tests in AGENTS.md) so the packaged game
+      # exercises the full startup path.
+      ALSOFT_DRIVERS: null
     steps:
       - name: Checkout
         timeout-minutes: 10
