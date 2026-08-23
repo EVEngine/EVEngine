@@ -285,7 +285,7 @@ TEST_CASE("volumetric.cloudModeParametersAndQuality") {
     openGfxWindow(win, gfx);
 
     std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
-    REQUIRE(vol != nullptr);
+    REQUIRE(vol.get() != nullptr);
     REQUIRE(vol->getCloudShader() != nullptr);
     vol->setMode("cloud");
     vol->setCloudLayer(6.f, 14.f);
