@@ -89,6 +89,8 @@ eve_declare_module(NAME database LAYER 0 SCRIPT Database
                    THIRDPARTY poco_data poco)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 0 SCRIPT RPG)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
+eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
+                   GROUP minimal 2d 3d web)
 # PlacementWorld.cpp includes data/JsonDocument.h and Poco JSON (save/load).
 # THIRDPARTY poco is required so MSVC compiles those TUs with
 # POCO_NO_AUTOMATIC_LIBS; otherwise the obj records a link of
@@ -182,7 +184,7 @@ eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
                    THIRDPARTY sdl2 poco
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
-                   DEPS event graphics
+                   DEPS event graphics gpgpu
                    OPTIONAL_DEPS scene
                    THIRDPARTY box2d box3d
                    GROUP 2d 3d web)
@@ -202,6 +204,9 @@ eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT day
 eve_declare_module(NAME weather LAYER 4 SCRIPT Weather SLOT weather
                    DEPS graphics
                    GROUP 3d web)
+eve_declare_module(NAME decal LAYER 4 SCRIPT Decal SLOT decal
+                   DEPS graphics
+                   GROUP 3d)
 eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
                    GROUP 3d)
@@ -234,6 +239,11 @@ eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS animation data filesystem gpgpu graphics ik
                    THIRDPARTY poco
                    GROUP 2d 3d)
+# Surface fluid simulation: particles constrained to mesh SDFs (flow down
+# surfaces, droplet coalescence) with screen-space surface reconstruction.
+eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
+                   DEPS gpgpu graphics
+                   GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS graphics image map
                    GROUP 3d)
@@ -244,6 +254,9 @@ eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    GROUP 3d web)
 eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
                    DEPS data gpgpu graphics
+                   GROUP 3d)
+eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
+                   DEPS graphics procgen
                    GROUP 3d)
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS animation data filesystem graphics image model3d scene thread

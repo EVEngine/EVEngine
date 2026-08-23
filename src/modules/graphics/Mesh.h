@@ -19,6 +19,8 @@ class Mesh : public Drawable {
 public:
     int   indexCount = 0;
     void *gpuHandle  = nullptr;  // vulkan::GpuMesh*
+    /** @brief Vertex count of the GPU buffer (morph CPU base may be empty). */
+    int gpuVertexCount = 0;
 
     /**
      * @brief Model-space bounding sphere used for view/cascade frustum culling.

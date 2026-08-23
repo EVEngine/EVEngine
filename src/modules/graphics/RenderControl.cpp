@@ -5,7 +5,7 @@ namespace {
 
 const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
                                 "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa",
-                                "outline",   "gpuDriven", "visResolve", "frustumCull"};
+                                "outline",   "gpuDriven", "visResolve", "frustumCull", "decal"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -52,6 +52,7 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     if (feature == "gbufferAlbedo" && enabled) features_["gbuffer"] = true;
     if (feature == "ao" && enabled) features_["gbuffer"] = true;
     if (feature == "outline" && enabled) features_["gbuffer"] = true;
+    if (feature == "decal" && enabled) features_["gbuffer"] = true;
     // Stage 2 GPU cull needs the GBuffer depth as its HZB source.
     if (feature == "gpuDriven" && enabled) features_["gbuffer"] = true;
     if (feature == "gi" && enabled) {
@@ -63,6 +64,7 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
         features_["ao"] = false;
         features_["gi"] = false;
         features_["outline"] = false;
+        features_["decal"] = false;
     }
     dirty_ = true;
 }
@@ -81,6 +83,7 @@ void RenderControl::compile() {
     if (isEnabled("shadow")) passes_.push_back("shadow");
     if (isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi"))
         passes_.push_back("gbuffer");
+    if (isEnabled("decal")) passes_.push_back("decal");
     if (isEnabled("forward")) passes_.push_back("forward");
     if (isEnabled("hair")) passes_.push_back("hair");
     dirty_ = false;

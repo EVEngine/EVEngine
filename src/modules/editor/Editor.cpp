@@ -17,6 +17,8 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <vector>
 
@@ -35,9 +37,11 @@ struct HeightmapArrays {
     std::vector<uint32_t> idx;
 };
 
-/** Flat-shaded terrain mesh: two triangles per cell, 6 vertices per quad. */
+/** Terrain mesh: two triangles per cell, 6 vertices per quad. When
+ *  smoothNormals is set, vertex normals come from the height-field gradient
+ *  (continuous bowls); otherwise each triangle is flat-shaded. */
 void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float hScale,
-                          HeightmapArrays &out) {
+                          HeightmapArrays &out, bool smoothNormals) {
     out.pos.clear();
     out.nrm.clear();
     out.uv.clear();
@@ -48,25 +52,63 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
     const float uw = float(w - 1);
     const float uh = float(h - 1);
 
+    // Per-grid-vertex normals from central differences of the height field.
+    std::vector<float> smoothNrm;
+    if (smoothNormals) {
+        smoothNrm.resize(size_t(w) * size_t(h) * 3);
+        auto hs = [&](int x, int z) {
+            x = std::clamp(x, 0, w - 1);
+            z = std::clamp(z, 0, h - 1);
+            return hm.height(x, z);
+        };
+        for (int z = 0; z < h; ++z) {
+            for (int x = 0; x < w; ++x) {
+                const float dhdx = (hs(x + 1, z) - hs(x - 1, z)) * 0.5f * hScale / cell;
+                const float dhdz = (hs(x, z + 1) - hs(x, z - 1)) * 0.5f * hScale / cell;
+                float nx = -dhdx;
+                float ny = 1.f;
+                float nz = -dhdz;
+                const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+                if (len > 1e-8f) {
+                    nx /= len;
+                    ny /= len;
+                    nz /= len;
+                }
+                float *n = &smoothNrm[(size_t(z) * w + x) * 3];
+                n[0] = nx;
+                n[1] = ny;
+                n[2] = nz;
+            }
+        }
+    }
+
     auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx,
                       float cz, float cy) {
         const float p0x = ax * cell, p0y = ay * hScale, p0z = az * cell;
         const float p1x = bx * cell, p1y = by * hScale, p1z = bz * cell;
         const float p2x = cx * cell, p2y = cy * hScale, p2z = cz * cell;
-        const float e1x = p1x - p0x, e1y = p1y - p0y, e1z = p1z - p0z;
-        const float e2x = p2x - p0x, e2y = p2y - p0y, e2z = p2z - p0z;
-        float nx = e1y * e2z - e1z * e2y;
-        float ny = e1z * e2x - e1x * e2z;
-        float nz = e1x * e2y - e1y * e2x;
-        const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
-        if (len > 1e-8f) {
-            nx /= len;
-            ny /= len;
-            nz /= len;
-        }
         const uint32_t base = uint32_t(out.pos.size() / 3);
         out.pos.insert(out.pos.end(), {p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z});
-        out.nrm.insert(out.nrm.end(), {nx, ny, nz, nx, ny, nz, nx, ny, nz});
+        if (smoothNormals) {
+            const float *n0 = &smoothNrm[(size_t(int(az)) * w + int(ax)) * 3];
+            const float *n1 = &smoothNrm[(size_t(int(bz)) * w + int(bx)) * 3];
+            const float *n2 = &smoothNrm[(size_t(int(cz)) * w + int(cx)) * 3];
+            out.nrm.insert(out.nrm.end(),
+                           {n0[0], n0[1], n0[2], n1[0], n1[1], n1[2], n2[0], n2[1], n2[2]});
+        } else {
+            const float e1x = p1x - p0x, e1y = p1y - p0y, e1z = p1z - p0z;
+            const float e2x = p2x - p0x, e2y = p2y - p0y, e2z = p2z - p0z;
+            float nx = e1y * e2z - e1z * e2y;
+            float ny = e1z * e2x - e1x * e2z;
+            float nz = e1x * e2y - e1y * e2x;
+            const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+            if (len > 1e-8f) {
+                nx /= len;
+                ny /= len;
+                nz /= len;
+            }
+            out.nrm.insert(out.nrm.end(), {nx, ny, nz, nx, ny, nz, nx, ny, nz});
+        }
         out.uv.insert(out.uv.end(),
                       {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
         out.idx.insert(out.idx.end(), {base, base + 1, base + 2});
@@ -112,7 +154,7 @@ graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,
     auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
     if (!gfx || !hm) return nullptr;
     HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a);
+    buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
     if (a.idx.empty()) return nullptr;
     return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(),
                                   int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
@@ -122,7 +164,29 @@ bool Editor::updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
                                  procgen::Heightmap *hm, float cellSize, float heightScale) {
     if (!mesh || !gfx || !hm) return false;
     HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a);
+    buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
+    if (a.idx.empty()) return false;
+    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
+                                   int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+}
+
+graphics::Mesh *Editor::newHeightmapMeshSmooth(procgen::Heightmap *hm, float cellSize,
+                                               float heightScale) {
+    auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
+    if (!gfx || !hm) return nullptr;
+    HeightmapArrays a;
+    buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
+    if (a.idx.empty()) return nullptr;
+    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(),
+                                  int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+}
+
+bool Editor::updateHeightmapMeshSmooth(graphics::Mesh *mesh, graphics::Graphics *gfx,
+                                       procgen::Heightmap *hm, float cellSize,
+                                       float heightScale) {
+    if (!mesh || !gfx || !hm) return false;
+    HeightmapArrays a;
+    buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
     if (a.idx.empty()) return false;
     return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
                                    int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
@@ -363,6 +427,8 @@ void Editor::expose(ssq::Class &cls) {
 #ifdef EVENGINE_HAS_PROCGEN
     cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
     cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
+    cls.addFunc("newHeightmapMeshSmooth", &Editor::newHeightmapMeshSmooth);
+    cls.addFunc("updateHeightmapMeshSmooth", &Editor::updateHeightmapMeshSmooth);
 #endif
 }
 

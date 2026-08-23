@@ -1812,6 +1812,16 @@ bool Graphics::releaseTexture(Texture *texture) {
     return true;
 }
 
+bool Graphics::updateTexture(Texture *texture, int width, int height,
+                             const uint8_t *rgba) {
+    // WebGPU backend keeps texture images immutable; rebuild via newTexture.
+    (void)texture;
+    (void)width;
+    (void)height;
+    (void)rgba;
+    return false;
+}
+
 GpuTexture *Graphics::gpuForTexture(Texture *t) const {
     return t ? static_cast<GpuTexture *>(t->gpuHandle) : nullptr;
 }
@@ -2045,6 +2055,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
 
     auto *mesh       = new Mesh();
     mesh->indexCount = indexCount;
+    mesh->gpuVertexCount = vertexCount;
     mesh->gpuHandle  = gpu.get();
     mesh->computeBounds(posXYZ, vertexCount);
     ownedGpuMeshes.push_back(std::move(gpu));

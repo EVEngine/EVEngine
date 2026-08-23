@@ -161,6 +161,8 @@ public:
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
     bool releaseTexture(Texture *texture) override;
+    bool updateTexture(Texture *texture, int width, int height,
+                       const uint8_t *rgba) override;
 
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                           const Color &color) override;
@@ -252,6 +254,20 @@ public:
                               float nearZ, float farZ, Texture *albedo = nullptr, float tintR = 1.f,
                               float tintG = 1.f, float tintB = 1.f) override;
     void endGBufferPass() override;
+
+    bool supportsDecal() const override { return false; }
+    void beginDecalPass(int width, int height) override { (void)width; (void)height; }
+    void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override {
+        (void)viewProj; (void)nearZ; (void)farZ;
+    }
+    void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
+                   const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
+                   float metalStrength, float emissiveStrength, int blendMode = 0) override {
+        (void)model; (void)albedo; (void)normal; (void)params; (void)uvRect;
+        (void)fade; (void)normalStrength; (void)roughnessStrength; (void)metalStrength;
+        (void)emissiveStrength; (void)blendMode;
+    }
+    void endDecalPass() override {}
 
     Canvas *newCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;

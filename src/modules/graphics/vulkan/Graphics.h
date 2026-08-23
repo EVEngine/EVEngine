@@ -162,6 +162,7 @@ struct GpuMesh {
     /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
     uint64_t      dynamicWriteCount = 0;
     bool          dynamic           = false;
+    uint32_t      vertexCount       = 0;
     uint32_t      indexCount        = 0;
     vk::IndexType indexType         = vk::IndexType::eUint32;
     /** @brief Index into the GPU mesh table (GpuMeshRecord). */
@@ -303,7 +304,10 @@ public:
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
     bool releaseTexture(Texture *texture) override;
+    bool updateTexture(Texture *texture, int width, int height,
+                       const uint8_t *rgba) override;
     bool replaceTexturePixels(Texture *tex, image::ImageData *data);
+    bool replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_t *rgba);
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
     void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w, float h,
                                 const Color &color) override;
@@ -358,6 +362,7 @@ public:
         const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
         int width, int height) override;
     image::ImageData *readGBufferToImageData(const std::string &name) override;
+    image::ImageData *readDecalLayerToImageData(const std::string &attachment) override;
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
@@ -394,6 +399,14 @@ public:
                               float farZ, Texture *albedo = nullptr, float tintR = 1.f,
                               float tintG = 1.f, float tintB = 1.f) override;
     void endGBufferPass() override;
+
+    bool supportsDecal() const override { return true; }
+    void beginDecalPass(int width, int height) override;
+    void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override;
+    void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
+                   const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
+                   float metalStrength, float emissiveStrength, int blendMode = 0) override;
+    void endDecalPass() override;
 
     Canvas *newCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
@@ -439,6 +452,10 @@ public:
 private:
     struct Mesh3dFrameSlots;
     struct Mesh3dClusteredFrameSlots;
+    struct DecalSlot;
+    struct DecalSetKey;
+    struct DecalSetKeyHash;
+    struct GBufferSlot;
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
     void createLit2DPipeline();
@@ -454,6 +471,15 @@ private:
     void destroyShadowResources();
     void createGBufferResources(int width, int height);
     void destroyGBufferResources();
+    void createDecalResources(int width, int height);
+    void destroyDecalResources();
+    void recordDecalPass();
+    void recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBufferSlot &gslot);
+    void ensureDecalUnitBox();
+    void ensureDecalPlaceholders();
+    vkb::BoundSet decalSetFor(DecalSlot &slot, GpuTexture *albedo, GpuTexture *normal,
+                              GpuTexture *params, GpuTexture *depth, GpuTexture *gbNormal);
+    DecalSlot *currentDecalSlot();
     void createSceneColorResources(int width, int height);
     void destroySceneColorResources();
     void createUiColorResources(int width, int height);
@@ -479,8 +505,11 @@ private:
     void          ensureMesh3dStrides();
     void          ensureMesh3dRing(Mesh3dFrameSlots &fslots);
     void          ensureMesh3dClusteredRing(Mesh3dClusteredFrameSlots &fslots);
-    vkb::BoundSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                        GpuTexture *heightTex, Mesh3dClusteredFrameSlots &fslots);
+    vkb::BoundSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
+                                        GpuTexture *envTex, GpuTexture *heightTex,
+                                        GpuTexture *decalAlbedo, GpuTexture *decalNormal,
+                                        GpuTexture *decalParams,
+                                        Mesh3dClusteredFrameSlots &fslots);
     void          ensureOffscreenPipelines();
     void          ensureShaderOffscreenPipeline(Shader *shader);
     vk::Pipeline  createTexturedStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
@@ -537,8 +566,10 @@ private:
     /** @brief Release the readback staging ring (callers hold waitIdle). */
     void          destroyReadbackResources();
     void          ensurePresentCaptureHook();
-    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex, GpuTexture *heightTex,
-                               GpuTexture *depthTex, Mesh3dFrameSlots &fslots);
+    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
+                               GpuTexture *heightTex, GpuTexture *depthTex,
+                               GpuTexture *decalAlbedo, GpuTexture *decalNormal,
+                               GpuTexture *decalParams, Mesh3dFrameSlots &fslots);
     void          ensureDefaultEnvCubemap();
     void          ensureFlatNormalTexture3D();
     void          ensureFlatHeightTexture3D();
@@ -638,16 +669,23 @@ private:
         GpuTexture *env = nullptr;
         GpuTexture *height = nullptr;
         GpuTexture *depth = nullptr;
+        GpuTexture *decalAlbedo = nullptr;
+        GpuTexture *decalNormal = nullptr;
+        GpuTexture *decalParams = nullptr;
         bool operator==(const Mesh3dSetKey &o) const {
             return albedo == o.albedo && normal == o.normal && env == o.env && height == o.height &&
-                   depth == o.depth;
+                   depth == o.depth && decalAlbedo == o.decalAlbedo &&
+                   decalNormal == o.decalNormal && decalParams == o.decalParams;
         }
     };
     struct Mesh3dSetKeyHash {
         size_t operator()(const Mesh3dSetKey &k) const {
             return std::hash<GpuTexture *>()(k.albedo) ^ (std::hash<GpuTexture *>()(k.normal) << 1) ^
                    (std::hash<GpuTexture *>()(k.env) << 2) ^ (std::hash<GpuTexture *>()(k.height) << 3) ^
-                   (std::hash<GpuTexture *>()(k.depth) << 4);
+                   (std::hash<GpuTexture *>()(k.depth) << 4) ^
+                   (std::hash<GpuTexture *>()(k.decalAlbedo) << 5) ^
+                   (std::hash<GpuTexture *>()(k.decalNormal) << 6) ^
+                   (std::hash<GpuTexture *>()(k.decalParams) << 7);
         }
     };
     // Per-frame-slot UBO rings, keyed by Present::frames_in_flight so a frame
@@ -955,6 +993,95 @@ private:
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;
     GBufferSlot *currentGBufferSlot();
+
+    // Screen-space decal layer: box-projected decals write albedo/normal/params
+    // targets after the G-buffer; mesh3d.frag samples them before lighting.
+    /** @brief Per-instance GPU data (std140, matches decal_box.vert). */
+    struct DecalInstanceData {
+        glm::mat4 model{1.f};
+        glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
+        glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};   // fade, normalStrength, roughStrength, metalStrength
+        glm::vec4 extraParams{0.f, 0.f, 0.f, 0.f};  // emissiveStrength, blendMode, pad, pad
+    };
+    static_assert(sizeof(DecalInstanceData) == 112, "DecalInstanceData must be 112 bytes");
+    struct DecalCameraUBO {
+        glm::mat4 viewProj{1.f};
+        glm::mat4 invViewProj{1.f};
+        glm::vec4 nearFarTexel{0.1f, 100.f, 0.f, 0.f};  // x=near, y=far, z=1/w, w=1/h
+    };
+    /** @brief Hard cap on decal instances per frame (SSBO capacity). */
+    static constexpr size_t kMaxDecalInstances = 512;
+    struct DecalDraw {
+        glm::mat4 model{1.f};
+        Texture *albedo = nullptr;
+        Texture *normal = nullptr;
+        Texture *params = nullptr;
+        float uvRect[4] = {0.f, 0.f, 1.f, 1.f};
+        float fade = 1.f;
+        float normalStrength = 0.f;
+        float roughnessStrength = 0.f;
+        float metalStrength = 0.f;
+        float emissiveStrength = 0.f;
+        int blendMode = 0;  // 0 = premultiplied over, 1 = additive (emissive)
+    };
+    struct DecalSetKey {
+        GpuTexture *albedo = nullptr;
+        GpuTexture *normal = nullptr;
+        GpuTexture *params = nullptr;
+        GpuTexture *depth = nullptr;
+        GpuTexture *gbNormal = nullptr;
+        bool operator==(const DecalSetKey &o) const {
+            return albedo == o.albedo && normal == o.normal && params == o.params &&
+                   depth == o.depth && gbNormal == o.gbNormal;
+        }
+    };
+    struct DecalSetKeyHash {
+        size_t operator()(const DecalSetKey &k) const {
+            return std::hash<GpuTexture *>()(k.albedo) ^
+                   (std::hash<GpuTexture *>()(k.normal) << 1) ^
+                   (std::hash<GpuTexture *>()(k.params) << 2) ^
+                   (std::hash<GpuTexture *>()(k.depth) << 3) ^
+                   (std::hash<GpuTexture *>()(k.gbNormal) << 4);
+        }
+    };
+    struct DecalSlot {
+        vkb::ColorTarget albedo;
+        vkb::ColorTarget normal;
+        vkb::ColorTarget params;
+        vk::Framebuffer framebuffer{};
+        GpuTexture albedoGpu{};
+        GpuTexture normalGpu{};
+        GpuTexture paramsGpu{};
+        Texture albedoTex{};
+        Texture normalTex{};
+        Texture paramsTex{};
+        vkb::GenericBuffer cameraUbo;  // capacity 1 per frame slot
+        vkb::GenericBuffer instanceBuf;  // kMaxDecalInstances * DecalInstanceData
+        std::unordered_map<DecalSetKey, vkb::BoundSet, DecalSetKeyHash> sets;
+    };
+    int decalWidth = 0;
+    int decalHeight = 0;
+    std::vector<DecalSlot> decalSlots;
+    vkb::BuiltRenderPass decalRenderPass{};
+    vk::DescriptorSetLayout decalSetLayout;
+    vk::UniqueDescriptorSetLayout decalSetLayoutUnique;
+    vk::PipelineLayout decalPipelineLayout{};
+    vk::Pipeline decalPipeline{};
+    bool decalPassActive = false;
+    bool decalPending = false;
+    /** @brief True once the decal layer was recorded this frame (else mesh3d
+     *  samples placeholders so stale layer data never leaks in). */
+    bool decalLayerFresh = false;
+    std::vector<DecalDraw> decalPassDraws;
+    vk::Pipeline lastDecalPipeline = nullptr;
+    Mesh *decalUnitBox = nullptr;
+    /** @brief 1x1 placeholders for decal atlas slots / layer when feature is off. */
+    Texture *decalFlatAlbedo = nullptr;
+    Texture *decalFlatNormal = nullptr;
+    Texture *decalFlatParams = nullptr;
+    glm::mat4 decalViewProj{1.f};
+    float decalNear = 0.1f;
+    float decalFar = 100.f;
     // One FrameGraph per in-flight slot for the deferred passes: the 3 CSM
     // shadow cascades + the G-buffer fill are declarative passes in one layer,
     // recorded concurrently on JobSystem workers. Each graph's command buffer

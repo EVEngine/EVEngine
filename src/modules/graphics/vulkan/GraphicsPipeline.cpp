@@ -65,6 +65,8 @@
 #include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
+#include "graphics/shaders/decal_box_vert_spv.inc"
+#include "graphics/shaders/decal_box_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
@@ -350,6 +352,9 @@ void Graphics::createMesh3DPipeline() {
             .image(5, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(6, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(7, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(8, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(9, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(10, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
 
@@ -387,6 +392,9 @@ void Graphics::createMesh3DClusteredPipeline() {
             .buffer(7, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eFragment, 1)
             .image(8, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(9, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(10, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(11, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(12, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dClusteredSetLayout = *mesh3dClusteredSetLayoutUnique;
 
@@ -783,6 +791,240 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
         makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());
     }
     createGpuDrivenVisResources(width, height);
+}
+
+void Graphics::ensureDecalUnitBox() {
+    if (decalUnitBox) return;
+    // Unit cube [-0.5, 0.5]^3, one 4-vertex face per side with its own
+    // normal + UVs so the decal projection samples a clean square per face.
+    const float h = 0.5f;
+    const std::vector<glm::vec3> pos = {
+        // +Z
+        {-h, -h, h}, {h, -h, h}, {h, h, h}, {-h, h, h},
+        // -Z
+        {h, -h, -h}, {-h, -h, -h}, {-h, h, -h}, {h, h, -h},
+        // +X
+        {h, -h, h}, {h, -h, -h}, {h, h, -h}, {h, h, h},
+        // -X
+        {-h, -h, -h}, {-h, -h, h}, {-h, h, h}, {-h, h, -h},
+        // +Y
+        {-h, h, h}, {h, h, h}, {h, h, -h}, {-h, h, -h},
+        // -Y
+        {-h, -h, -h}, {h, -h, -h}, {h, -h, h}, {-h, -h, h},
+    };
+    const std::vector<glm::vec3> nrm = {
+        {0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1},
+        {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+        {1, 0, 0}, {1, 0, 0}, {1, 0, 0}, {1, 0, 0},
+        {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0},
+        {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0},
+        {0, -1, 0}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0},
+    };
+    const std::vector<glm::vec2> uv = {
+        {0, 0}, {1, 0}, {1, 1}, {0, 1},
+        {0, 0}, {1, 0}, {1, 1}, {0, 1},
+        {0, 0}, {1, 0}, {1, 1}, {0, 1},
+        {0, 0}, {1, 0}, {1, 1}, {0, 1},
+        {0, 0}, {1, 0}, {1, 1}, {0, 1},
+        {0, 0}, {1, 0}, {1, 1}, {0, 1},
+    };
+    const std::vector<uint32_t> idx = {
+        0, 1, 2, 0, 2, 3,       4, 5, 6, 4, 6, 7,
+        8, 9, 10, 8, 10, 11,    12, 13, 14, 12, 14, 15,
+        16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23,
+    };
+    std::vector<float> posF, nrmF, uvF;
+    posF.reserve(pos.size() * 3);
+    nrmF.reserve(nrm.size() * 3);
+    uvF.reserve(uv.size() * 2);
+    for (const auto &p : pos) posF.insert(posF.end(), {p.x, p.y, p.z});
+    for (const auto &n : nrm) nrmF.insert(nrmF.end(), {n.x, n.y, n.z});
+    for (const auto &t : uv) uvF.insert(uvF.end(), {t.x, t.y});
+    decalUnitBox =
+        newMeshFromArrays(posF.data(), nrmF.data(), uvF.data(), int(pos.size()), idx.data(),
+                          int(idx.size()));
+}
+
+void Graphics::createDecalResources(int decalW, int decalH) {
+    if (decalW <= 0 || decalH <= 0) return;
+    if (!decalSlots.empty() && decalWidth == decalW && decalHeight == decalH && decalPipeline)
+        return;
+    destroyDecalResources();
+
+    decalWidth = decalW;
+    decalHeight = decalH;
+    const uint32_t w = uint32_t(decalW);
+    const uint32_t h = uint32_t(decalH);
+    const vk::Format colorFmt = pickGBufferColorFormat(device);  // RGBA8
+
+    decalSlots.resize(kAsyncResourceCopies);
+    for (auto &slot : decalSlots) {
+        slot.albedo = device.createColorTarget(w, h, colorFmt);
+        slot.normal = device.createColorTarget(w, h, colorFmt);
+        slot.params = device.createColorTarget(w, h, colorFmt);
+        slot.cameraUbo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer,
+                                sizeof(DecalCameraUBO), kHostVisibleCoherent);
+        slot.instanceBuf.allocate(
+            frameToken(), device, vk::BufferUsageFlagBits::eStorageBuffer,
+            vk::DeviceSize(kMaxDecalInstances) * sizeof(DecalInstanceData), kHostVisibleCoherent);
+    }
+
+    auto decalPass =
+        device.createRenderPass()
+            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(colorFmt)
+            .addSubpass(vkb::SubpassBuilder()
+                            .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(1, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(2, vk::ImageLayout::eColorAttachmentOptimal))
+            .addExternalShaderReadDependencies()
+            .build();
+    decalRenderPass = decalPass;
+
+    for (auto &slot : decalSlots) {
+        slot.framebuffer = decalPass.createFramebuffer(
+            device, w, h,
+            {slot.albedo.asAttachment(), slot.normal.asAttachment(), slot.params.asAttachment()});
+    }
+
+    vkb::DescriptorSetLayoutBuilder layoutBuilder;
+    decalSetLayoutUnique =
+        layoutBuilder
+            .image(0, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eFragment, 1)
+            .image(1, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eFragment, 1)
+            .image(2, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eFragment, 1)
+            .image(3, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eFragment, 1)
+            .image(4, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eFragment, 1)
+            .buffer(5, vk::DescriptorType::eUniformBufferDynamic,
+                    vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
+            .buffer(6, vk::DescriptorType::eStorageBuffer,
+                    vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
+            .createUnique(device.instance);
+    decalSetLayout = *decalSetLayoutUnique;
+    decalPipelineLayout = createPipelineLayout(device, decalSetLayout);
+
+    std::vector<uint32_t> vert(decal_box_vert_spv, decal_box_vert_spv + decal_box_vert_spv_count);
+    std::vector<uint32_t> frag(decal_box_frag_spv, decal_box_frag_spv + decal_box_frag_spv_count);
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+
+    // Alpha-over compositing for the three layer targets (non-premultiplied
+    // decal output; the shader writes rgb + coverage in alpha).
+    decalPipeline = device.createPipeline()
+                        .useClassicPipeline(vertModule, fragModule)
+                        .setPipelineLayout(decalPipelineLayout)
+                        .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                 .addInputBinding<MeshVertex>()
+                                                 .addAttributeDescription<MeshVertex>())
+                        .setDynamicStatesViewportScissor()
+                        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                       vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+                        .setMultisampler(false, vk::SampleCountFlagBits::e1)
+                        .setDepthStencil(false, false, vk::CompareOp::eAlways)
+                        .setAlphaBlending(3)
+                        .build(decalPass);
+    device->destroyShaderModule(vertModule);
+    device->destroyShaderModule(fragModule);
+
+    auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
+        vkb::SamplerBuilder sb;
+        gpu.sampler = sb.nearestClamp().build(device);
+        auto sets = vkb::DescriptorSetBuilder()
+                        .layout(texSetLayout)
+                        .build(device.instance, descriptorPool);
+        gpu.descriptorSet = vkb::BoundSet{sets[0]};
+        gpu.width = decalW;
+        gpu.height = decalH;
+        gpu.viewOverride = view;
+        writeCombinedImageDescriptor(&gpu);
+        tex.width = decalW;
+        tex.height = decalH;
+        tex.pixelWidth = decalW;
+        tex.pixelHeight = decalH;
+        tex.gpuHandle = &gpu;
+    };
+    for (auto &slot : decalSlots) {
+        makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedo.imageView());
+        makeSampleTex(slot.normalGpu, slot.normalTex, slot.normal.imageView());
+        makeSampleTex(slot.paramsGpu, slot.paramsTex, slot.params.imageView());
+    }
+}
+
+void Graphics::destroyDecalResources() {
+    decalPassActive = false;
+    decalPending = false;
+    decalPassDraws.clear();
+    for (auto &slot : decalSlots) {
+        slot.albedoTex.gpuHandle = nullptr;
+        slot.normalTex.gpuHandle = nullptr;
+        slot.paramsTex.gpuHandle = nullptr;
+        if (slot.framebuffer) {
+            device->destroyFramebuffer(slot.framebuffer);
+            slot.framebuffer = vk::Framebuffer{};
+        }
+        destroySampler(device, slot.albedoGpu.sampler);
+        destroySampler(device, slot.normalGpu.sampler);
+        destroySampler(device, slot.paramsGpu.sampler);
+        slot.cameraUbo.release();
+        slot.instanceBuf.release();
+        slot.sets.clear();
+    }
+    decalSlots.clear();
+    destroyPipeline(device, decalPipeline);
+    destroyPipelineLayout(device, decalPipelineLayout);
+    if (decalSetLayoutUnique) decalSetLayoutUnique.reset();
+    if (decalRenderPass) {
+        device->destroyRenderPass(decalRenderPass);
+        decalRenderPass = {};
+    }
+    decalWidth = 0;
+    decalHeight = 0;
+}
+
+vkb::BoundSet Graphics::decalSetFor(DecalSlot &slot, GpuTexture *albedo, GpuTexture *normal,
+                                    GpuTexture *params, GpuTexture *depth, GpuTexture *gbNormal) {
+    ASSERT(albedo != nullptr);
+    ASSERT(normal != nullptr);
+    ASSERT(params != nullptr);
+    ASSERT(depth != nullptr);
+    ASSERT(gbNormal != nullptr);
+    DecalSetKey key{albedo, normal, params, depth, gbNormal};
+    auto it = slot.sets.find(key);
+    if (it != slot.sets.end()) return it->second;
+
+    vk::DescriptorSetAllocateInfo alloc{};
+    alloc.descriptorPool = descriptorPool;
+    alloc.descriptorSetCount = 1;
+    alloc.pSetLayouts = &decalSetLayout;
+    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
+
+    vkb::DescriptorSetUpdater updater(8, 8, 0);
+    updater.beginDescriptorSet(unbound)
+        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(albedo->sampler, albedo->imageView()))
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(normal->sampler, normal->imageView()))
+        .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(params->sampler, params->imageView()))
+        .beginImages(3, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(depth->sampler, depth->imageView()))
+        .beginImages(4, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(gbNormal->sampler, gbNormal->imageView()))
+        .beginBuffers(5, 0, vk::DescriptorType::eUniformBufferDynamic)
+        .buffer(slot.cameraUbo.buffer, 0, slot.cameraUbo.size)
+        .beginBuffers(6, 0, vk::DescriptorType::eStorageBuffer)
+        .buffer(slot.instanceBuf.buffer, 0, slot.instanceBuf.size)
+        .update(device.instance);
+
+    vkb::BoundSet bound = std::move(unbound).publish();
+    slot.sets.emplace(key, bound);
+    return bound;
 }
 
 void Graphics::createSceneColorResources(int sceneW, int sceneH) {
@@ -1234,16 +1476,22 @@ void Graphics::ensureMesh3dClusteredRing(Mesh3dClusteredFrameSlots &fslots) {
 
 vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
                                               GpuTexture *envTex, GpuTexture *heightTex,
+                                              GpuTexture *decalAlbedo, GpuTexture *decalNormal,
+                                              GpuTexture *decalParams,
                                               Mesh3dClusteredFrameSlots &fslots) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
     ASSERT(heightTex != nullptr);
+    ASSERT(decalAlbedo != nullptr);
+    ASSERT(decalNormal != nullptr);
+    ASSERT(decalParams != nullptr);
     ASSERT(currentShadowArrayView());
     ASSERT(fslots.uboRing.buffer);
     ASSERT(fslots.shadowRing.buffer);
 
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, nullptr};
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, nullptr,
+                     decalAlbedo, decalNormal, decalParams};
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
 
@@ -1276,6 +1524,12 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
         .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
         .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(heightTex->sampler, heightTex->imageView()))
+        .beginImages(10, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalAlbedo->sampler, decalAlbedo->imageView()))
+        .beginImages(11, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalNormal->sampler, decalNormal->imageView()))
+        .beginImages(12, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalParams->sampler, decalParams->imageView()))
         .update(device.instance);
 
     vkb::BoundSet bound = std::move(unbound).publish();

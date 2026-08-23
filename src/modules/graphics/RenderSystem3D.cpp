@@ -22,6 +22,7 @@ namespace {
 
 std::vector<RenderSystem3D::GBufferExtraDrawer> g_gbufferDrawers;
 std::vector<RenderSystem3D::ShadowExtraDrawer> g_shadowDrawers;
+std::vector<RenderSystem3D::DecalExtraDrawer> g_decalDrawers;
 
 glm::vec3 gLightDir = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
 glm::vec3 gLightColor = glm::vec3(1.f);
@@ -249,6 +250,8 @@ void Renderable3D::setScale(float sx, float sy, float sz) {
 
 void Renderable3D::setMesh(Mesh *mesh) { meshRenderer()->mesh = mesh; }
 
+Mesh *Renderable3D::getMesh() { return meshRenderer()->mesh; }
+
 void Renderable3D::setTexture(Texture *texture) { meshRenderer()->texture = texture; }
 
 void Renderable3D::setNormalTexture(Texture *texture) { meshRenderer()->normalTexture = texture; }
@@ -412,6 +415,11 @@ void RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
     g_shadowDrawers.push_back(std::move(drawer));
 }
 
+void RenderSystem3D::addDecalExtraDrawer(DecalExtraDrawer drawer) {
+    if (!drawer) return;
+    g_decalDrawers.push_back(std::move(drawer));
+}
+
 namespace {
 
 Light3D::Data *findShadowCasterDir(const std::vector<PackedLight3D> &packed) {
@@ -549,6 +557,7 @@ void RenderSystem3D::render(Graphics &gfx) {
     rc->ensureCompiled();
     const bool doShadow = rc->hasPass("shadow");
     const bool doGBuffer = rc->hasPass("gbuffer");
+    const bool doDecal = rc->hasPass("decal");
     const bool doForward = rc->hasPass("forward");
     const bool doHair = rc->hasPass("hair");
     const bool allowClustered = rc->isEnabled("clustered");
@@ -748,6 +757,22 @@ void RenderSystem3D::render(Graphics &gfx) {
         eve::debug::rtPassEnd("GBufferPass");
     } else if (!doGBuffer) {
         rc->getGBuffer()->clear();
+    }
+
+    // Screen-space decal layer: box-projected decals read the G-buffer
+    // depth/normal and write albedo/normal/params targets sampled by
+    // mesh3d.frag before lighting. Skipped when no decals are registered or
+    // the backend cannot run the pass (WebGPU).
+    if (doDecal && defaultCam && !g_decalDrawers.empty() && gfx.supportsDecal()) {
+        eve::debug::rtPassBegin("DecalPass");
+        const CameraView &cv = cams[0];
+        const int dw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
+        const int dh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
+        gfx.beginDecalPass(dw, dh);
+        gfx.setDecalCamera(cv.viewProj, cv.data->nearZ, cv.data->farZ);
+        for (const auto &drawer : g_decalDrawers) drawer(gfx, *cv.data, cv.viewProj, aspect);
+        gfx.endDecalPass();
+        eve::debug::rtPassEnd("DecalPass");
     }
 
     if (!doForward && !doHair) return;

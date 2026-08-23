@@ -4,11 +4,14 @@ file(GLOB all_test_cpp
   ECS.cpp
   capability.cpp
   data.cpp
+  decal.cpp
+  decal_script.cpp
   resource.cpp
   state_value.cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
+  fluids.cpp
   graphic.cpp
   graphics_font.cpp
   graphics_headless.cpp
@@ -81,12 +84,14 @@ file(GLOB all_test_cpp
   dialogue.cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
+  physics_cloth.cpp
   procgen.cpp
   housegen.cpp
   housegen_render.cpp
   procgen_simulation.cpp
   roguelike_generator.cpp
   stylize.cpp
+  snow.cpp
   Xray.cpp
   voxel.cpp
   voxel_render.cpp
@@ -99,6 +104,7 @@ file(GLOB all_test_cpp
   box3d.cpp
   binding_selfcheck.cpp
   softbody.cpp
+  softbody_gpu.cpp
   hotreload.cpp
   remotesync.cpp
   shader.cpp
@@ -119,6 +125,7 @@ file(GLOB all_test_cpp
   window_cpp.cpp
   image.cpp
   event.cpp
+  economy.cpp
   rx.cpp
   runtime.cpp
   timer.cpp
@@ -185,8 +192,10 @@ file(GLOB all_test_scripts
   model2.nut
   mouse.nut
   simplesquirrel.nut
+  physics_cloth.nut
   window.nut
   timer.nut
+  decal.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"
@@ -331,6 +340,7 @@ set(EVELIBS
   EVTensor
   EVNetwork
   EVDatabase
+  EVEconomy
   EVData
   EVI18n
   EVSound
@@ -340,6 +350,7 @@ set(EVELIBS
   EVScene
   EVSceneLoader
   EVParticles
+  EVFluids
   EVPhysics
   EVMap
   EVGpgpu
@@ -358,7 +369,9 @@ set(EVELIBS
   EVProcgen
   EVHouseGen
   EVVoxel
+  EVSnow
   EVStylize
+  EVDecal
   EVSpriteStack
   EVEditor)
 

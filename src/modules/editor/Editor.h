@@ -60,6 +60,17 @@ public:
     /** In-place vertex update after heightmap edits (reuses GPU buffers). */
     bool updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
                              procgen::Heightmap *hm, float cellSize, float heightScale);
+
+    /**
+     * @brief Heightmap mesh with smooth per-vertex normals (gradient of the
+     * height field), so bowls/craters shade continuously instead of showing
+     * flat-shaded triangle facets. Same geometry as newHeightmapMesh.
+     */
+    graphics::Mesh *newHeightmapMeshSmooth(procgen::Heightmap *hm, float cellSize,
+                                           float heightScale);
+    /** @brief In-place update of a smooth-normal heightmap mesh. */
+    bool updateHeightmapMeshSmooth(graphics::Mesh *mesh, graphics::Graphics *gfx,
+                                   procgen::Heightmap *hm, float cellSize, float heightScale);
 #endif
 };
 
