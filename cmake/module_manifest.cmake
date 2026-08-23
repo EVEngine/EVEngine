@@ -78,6 +78,10 @@ eve_declare_module(NAME thread LAYER 0 SCRIPT Thread SLOT thread
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
                    GROUP 2d 3d web)
+# Crowd: 连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群（纯 CPU 仿真，
+# 与渲染解耦；examples/crowd 演示渲染由游戏脚本自行完成）。
+eve_declare_module(NAME crowd LAYER 0 SCRIPT Crowd SLOT crowd
+                   GROUP 2d 3d web)
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
