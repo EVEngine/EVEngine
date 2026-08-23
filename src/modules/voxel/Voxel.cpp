@@ -3,6 +3,7 @@
 #include "voxel/FaceDir.h"
 
 #include "data/ByteData.h"
+#include "graphics/Graphics.h"
 #include "procgen/heightmap/TerrainSampler.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -56,6 +57,7 @@ void Voxel::expose(ssq::Table &table) {
                 w->setTerrainParams(uint32_t(seed), uint8_t(top), uint8_t(sub), uint8_t(stone),
                                     baseHeight, amplitude, scale);
             }));
+    world.addFunc("setTerrainParam", &VoxelWorld::setTerrainParam);
     world.addFunc("terrainHeightAt", &VoxelWorld::terrainHeightAt);
     world.addFunc("disableTerrain", &VoxelWorld::disableTerrain);
     world.addFunc("saveWorld", &VoxelWorld::saveWorld);
