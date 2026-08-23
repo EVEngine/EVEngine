@@ -14,7 +14,7 @@ if (!("weapon" in getroottable())) weapon <- null;
 if (!("rtsTank" in getroottable())) rtsTank <- null;
 if (!("fpsCar" in getroottable())) fpsCar <- null;
 if (!("waypoint" in getroottable())) waypoint <- 0;
-if (!("log" in getroottable())) log <- [];
+if (!("eventLog" in getroottable())) eventLog <- [];
 if (!("fired" in getroottable())) fired <- false;
 
 const PLAYER = 1;
@@ -26,33 +26,31 @@ waypoints <- [
     { x = 140.0, y = 500.0 }
 ];
 
-weaponDefs <- R"JSON(
-[{"id":"cannon.125","logic":"projectile","damage":320,"penetration":260,
-  "range":600,"spread":1.0,"cooldown":3.0,
-  "ammo":{"mag":1,"reserve":40,"reload":5.0},
-  "projectile":{"type":"shell","speed":900,"gravity":0.0,"aoe":30.0}},
- {"id":"mg.7.62","logic":"hitscan","damage":12,"range":400,"spread":2.0,
-  "fireMode":"auto","cooldown":0.12,
-  "ammo":{"mag":100,"reserve":400,"reload":2.5}}]
-)JSON";
+weaponDefs <- @"[
+  {""id"":""cannon.125"",""logic"":""projectile"",""damage"":320,""penetration"":260,
+   ""range"":600,""spread"":1.0,""cooldown"":3.0,
+   ""ammo"":{""mag"":1,""reserve"":40,""reload"":5.0},
+   ""projectile"":{""type"":""shell"",""speed"":900,""gravity"":0.0,""aoe"":30.0}},
+  {""id"":""mg.7.62"",""logic"":""hitscan"",""damage"":12,""range"":400,""spread"":2.0,
+   ""fireMode"":""auto"",""cooldown"":0.12,
+   ""ammo"":{""mag"":100,""reserve"":400,""reload"":2.5}}]";
 
-vehicleDefs <- R"JSON(
-[{"id":"tank.rts","category":"tank","mobility":"kinematic",
-  "maxSpeed":90,"accel":60,"turnRate":80,"radius":22,"maxHealth":500,
-  "armorZones":[{"name":"front","mult":1.0},{"name":"side","mult":0.6}],
-  "mounts":[{"name":"turret","weapon":"cannon.125","type":"turret",
-             "limits":[-180,180,-8,20],"rotSpeed":60,"aimMode":"auto"}]},
- {"id":"car.fps","category":"car","mobility":"kinematic",
-  "maxSpeed":160,"accel":120,"turnRate":140,"radius":18,"maxHealth":300,
-  "mounts":[{"name":"mg","weapon":"mg.7.62","type":"turret",
-             "limits":[-120,120,-10,20],"rotSpeed":120,"aimMode":"manual"}],
-  "seats":[{"name":"driver","cameraMode":"third"},
-           {"name":"gunner","cameraMode":"third","mountIndex":0}]}]
-)JSON";
+vehicleDefs <- @"[
+  {""id"":""tank.rts"",""category"":""tank"",""mobility"":""kinematic"",
+   ""maxSpeed"":90,""accel"":60,""turnRate"":80,""radius"":22,""maxHealth"":500,
+   ""armorZones"":[{""name"":""front"",""mult"":1.0},{""name"":""side"",""mult"":0.6}],
+   ""mounts"":[{""name"":""turret"",""weapon"":""cannon.125"",""type"":""turret"",
+                ""limits"":[-180,180,-8,20],""rotSpeed"":60,""aimMode"":""auto""}]},
+  {""id"":""car.fps"",""category"":""car"",""mobility"":""kinematic"",
+   ""maxSpeed"":160,""accel"":120,""turnRate"":140,""radius"":18,""maxHealth"":300,
+   ""mounts"":[{""name"":""mg"",""weapon"":""mg.7.62"",""type"":""turret"",
+                ""limits"":[-120,120,-10,20],""rotSpeed"":120,""aimMode"":""manual""}],
+   ""seats"":[{""name"":""driver"",""cameraMode"":""third""},
+              {""name"":""gunner"",""cameraMode"":""third"",""mountIndex"":0}]}]";
 
 function logLine(text) {
-    log.push(text);
-    while (log.len() > 5) log.remove(0);
+    eventLog.push(text);
+    while (eventLog.len() > 5) eventLog.remove(0);
 }
 
 function clampf(v, lo, hi) {
@@ -177,8 +175,8 @@ eve_render = function() {
 
     // 事件日志
     local lineY = 30.0;
-    gfx.drawSolidRect(0.0, 10.0, 420.0, 8.0 + log.len() * 18.0, 0.1, 0.12, 0.16, 0.8);
-    foreach (t in log) {
+    gfx.drawSolidRect(0.0, 10.0, 420.0, 8.0 + eventLog.len() * 18.0, 0.1, 0.12, 0.16, 0.8);
+    foreach (t in eventLog) {
         // 文本绘制需要字体模块；示例用色块代替，真实游戏用 eve.Font()
         gfx.drawSolidRect(10.0, lineY, 8.0 + t.len() * 7.0, 14.0, 0.35, 0.45, 0.55, 1.0);
         lineY += 18.0;
