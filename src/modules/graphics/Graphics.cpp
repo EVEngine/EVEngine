@@ -355,6 +355,7 @@ void Graphics::expose(ssq::Table& table) {
     ent.addFunc("getYaw", &Renderable3D::getYaw);
     ent.addFunc("setScale", &Renderable3D::setScale);
     ent.addFunc("setMesh", &Renderable3D::setMesh);
+    ent.addFunc("getMesh", &Renderable3D::getMesh);
     ent.addFunc("setTexture", &Renderable3D::setTexture);
     ent.addFunc("setNormalTexture", &Renderable3D::setNormalTexture);
     ent.addFunc("setHeightTexture", &Renderable3D::setHeightTexture);

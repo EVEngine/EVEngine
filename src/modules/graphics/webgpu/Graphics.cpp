@@ -2055,6 +2055,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
 
     auto *mesh       = new Mesh();
     mesh->indexCount = indexCount;
+    mesh->gpuVertexCount = vertexCount;
     mesh->gpuHandle  = gpu.get();
     mesh->computeBounds(posXYZ, vertexCount);
     ownedGpuMeshes.push_back(std::move(gpu));

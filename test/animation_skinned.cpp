@@ -584,6 +584,98 @@ TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
     CHECK(vertexDeltaMax(skinned0, skinnedLive) > 1e-4f);
 }
 
+TEST_CASE("animation.skinned.getSkinnedPositionsMatchesSkinPositionsTo") {
+    if (!ensureSkinnedAssets()) return;
+
+    eve::ref<eve::model3d::ModelData> model(
+        loadCesiumMan("ev_ut_animation_skinned_posarray"));
+    REQUIRE(model.get() != nullptr);
+    const int meshIndex = findFirstSkinnedMesh(model.get());
+    REQUIRE(meshIndex >= 0);
+
+    std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
+    REQUIRE(skeleton.get() != nullptr);
+    std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
+    REQUIRE(skin.get() != nullptr);
+
+    // Not skinned yet: packed getters are empty and the flags are false.
+    CHECK(skin->getSkinnedPositions().empty());
+    CHECK(skin->getSkinnedNormals().empty());
+    CHECK(!skin->hasSkinnedPositions());
+    CHECK(!skin->hasSkinnedNormals());
+
+    std::unique_ptr<AnimClip> clip(
+        AnimImporter::loadClipFromModel(model.get(), skeleton.get(), 0));
+    REQUIRE(clip.get() != nullptr);
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    clip->sample(clip->getDuration() * 0.25f, pose.get(), skeleton.get());
+    pose->computeWorld(skeleton.get());
+
+    REQUIRE(skin->updateSkinnedPositions(pose.get()));
+    CHECK(skin->hasSkinnedPositions());
+
+    std::vector<float> expected;
+    REQUIRE(skin->skinPositionsTo(pose.get(), expected));
+    const std::vector<float> packed = skin->getSkinnedPositions();
+    REQUIRE(packed.size() == expected.size());
+    CHECK(vertexDeltaMax(packed, expected) < 1e-5f);
+}
+
+TEST_CASE("animation.skinned.normalsFollowPose") {
+    if (!ensureSkinnedAssets()) return;
+
+    eve::ref<eve::model3d::ModelData> model(
+        loadCesiumMan("ev_ut_animation_skinned_normals"));
+    REQUIRE(model.get() != nullptr);
+    const int meshIndex = findFirstSkinnedMesh(model.get());
+    REQUIRE(meshIndex >= 0);
+    const aiMesh *ai = model->getMesh(meshIndex);
+    REQUIRE(ai != nullptr);
+    REQUIRE(ai->HasNormals());
+    REQUIRE(ai->mNormals != nullptr);
+
+    std::vector<float> bindNrm(size_t(ai->mNumVertices) * 3u);
+    for (int v = 0; v < int(ai->mNumVertices); ++v) {
+        bindNrm[size_t(v) * 3u + 0] = ai->mNormals[v].x;
+        bindNrm[size_t(v) * 3u + 1] = ai->mNormals[v].y;
+        bindNrm[size_t(v) * 3u + 2] = ai->mNormals[v].z;
+    }
+
+    std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
+    REQUIRE(skeleton.get() != nullptr);
+    std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
+    REQUIRE(skin.get() != nullptr);
+
+    // Bind pose: skin matrices are identity, so normals must stay in place.
+    std::unique_ptr<AnimPose> bind(new AnimPose());
+    skeleton->applyBindPose(bind.get());
+    bind->computeWorld(skeleton.get());
+    REQUIRE(skin->updateSkinnedNormals(bind.get()));
+    CHECK(skin->hasSkinnedNormals());
+    std::vector<float> bindSkinned = skin->getSkinnedNormals();
+    REQUIRE(bindSkinned.size() == bindNrm.size());
+    CHECK(vertexDeltaMax(bindSkinned, bindNrm) < 1e-3f);
+
+    // Mid-clip pose: at least one normal must rotate, and all stay unit length.
+    std::unique_ptr<AnimClip> clip(
+        AnimImporter::loadClipFromModel(model.get(), skeleton.get(), 0));
+    REQUIRE(clip.get() != nullptr);
+    std::unique_ptr<AnimPose> mid(new AnimPose());
+    clip->sample(clip->getDuration() * 0.5f, mid.get(), skeleton.get());
+    mid->computeWorld(skeleton.get());
+    REQUIRE(skin->updateSkinnedNormals(mid.get()));
+    const std::vector<float> midSkinned = skin->getSkinnedNormals();
+    REQUIRE(midSkinned.size() == bindNrm.size());
+    CHECK(vertexDeltaMax(midSkinned, bindNrm) > 1e-3f);
+    for (size_t i = 0; i + 2 < midSkinned.size(); i += 3) {
+        const float nx = midSkinned[i];
+        const float ny = midSkinned[i + 1];
+        const float nz = midSkinned[i + 2];
+        const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+        CHECK(std::fabs(len - 1.f) < 1e-3f);
+    }
+}
+
 TEST_CASE("animation.skinned.cesiumMan.animationFactory") {
     if (!ensureSkinnedAssets()) return;
 
@@ -639,4 +731,140 @@ TEST_CASE("animation.skinned.render.playerDriven") {
     REQUIRE(model.get() != nullptr);
     renderSkinnedAnimation(model.get(), "animation_skinned_player.png",
                            SkinnedRenderDriver::player, 60);
+}
+
+TEST_CASE("animation.skinned.render.applyToMesh") {
+    if (!ensureSkinnedAssets()) return;
+
+    eve::ref<eve::model3d::ModelData> model(
+        loadCesiumMan("ev_ut_animation_skinned_render_apply"));
+    REQUIRE(model.get() != nullptr);
+
+    const int meshIndex = findFirstSkinnedMesh(model.get());
+    REQUIRE(meshIndex >= 0);
+    const aiMesh *ai = model->getMesh(meshIndex);
+    REQUIRE(ai != nullptr);
+    REQUIRE(ai->mNumVertices > 0u);
+    REQUIRE(ai->mNumFaces > 0u);
+    const int vertexCount = static_cast<int>(ai->mNumVertices);
+
+    std::vector<float> pos, nrm, uv;
+    pos.reserve(size_t(vertexCount) * 3u);
+    for (int v = 0; v < vertexCount; ++v) {
+        pos.push_back(ai->mVertices[v].x);
+        pos.push_back(ai->mVertices[v].y);
+        pos.push_back(ai->mVertices[v].z);
+    }
+    if (ai->mNormals) {
+        nrm.reserve(size_t(vertexCount) * 3u);
+        for (int v = 0; v < vertexCount; ++v) {
+            nrm.push_back(ai->mNormals[v].x);
+            nrm.push_back(ai->mNormals[v].y);
+            nrm.push_back(ai->mNormals[v].z);
+        }
+    }
+    if (ai->mTextureCoords[0]) {
+        uv.reserve(size_t(vertexCount) * 2u);
+        for (int v = 0; v < vertexCount; ++v) {
+            uv.push_back(ai->mTextureCoords[0][v].x);
+            uv.push_back(ai->mTextureCoords[0][v].y);
+        }
+    }
+    std::vector<uint32_t> indices;
+    indices.reserve(size_t(ai->mNumFaces) * 3u);
+    for (unsigned f = 0; f < ai->mNumFaces; ++f) {
+        const aiFace &face = ai->mFaces[f];
+        REQUIRE(face.mNumIndices == 3u);
+        for (unsigned k = 0; k < 3u; ++k) indices.push_back(face.mIndices[k]);
+    }
+    const int indexCount = static_cast<int>(indices.size());
+
+    Bounds b;
+    for (int v = 0; v < vertexCount; ++v)
+        b.expand(ai->mVertices[v].x, ai->mVertices[v].y, ai->mVertices[v].z);
+    REQUIRE(b.valid);
+    const float cx = b.centerX(), cy = b.centerY(), cz = b.centerZ();
+    const float rad = std::max(0.5f, b.radius());
+
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    Texture *diffuse = loadCesiumManDiffuseTexture(gfx);
+    Texture *tex = diffuse ? diffuse : makeSolidGray(gfx, 200);
+
+    auto *ent = Renderable3D::create();
+    ent->setTexture(tex);
+    ent->setTint(1.f, 1.f, 1.f, 1.f);
+    ent->meshRenderer()->visible = true;
+    ent->meshRenderer()->castShadow = false;
+    ent->meshRenderer()->receiveShadow = false;
+
+    auto *cam = Camera3D::createCamera();
+    cam->setTarget(cx, cy, cz);
+    cam->setEye(cx + rad * 0.9f, cy + rad * 0.55f, cz + rad * 1.8f);
+    cam->data()->nearZ = std::max(0.05f, rad * 0.01f);
+    cam->data()->farZ = std::max(100.f, rad * 20.f);
+    cam->setAmbient(0.15f, 0.15f, 0.15f);
+    RenderSystem3D::setDirectionalLight(
+        cx - (cx + rad * 0.9f), cy - (cy + rad * 0.55f) + rad * 1.2f,
+        cz - (cz + rad * 1.8f), 1.8f, 1.8f, 1.8f);
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(Color(0.02f, 0.02f, 0.03f, 1.f));
+
+    // Mesh created once; skinned results are written back in place per frame.
+    Mesh *mesh = gfx->newMeshFromArrays(pos.data(), nrm.empty() ? nullptr : nrm.data(),
+                                        uv.empty() ? nullptr : uv.data(), vertexCount,
+                                        indices.data(), indexCount);
+    REQUIRE(mesh != nullptr);
+    CHECK(mesh->getVertexCount() == vertexCount);
+    ent->meshRenderer()->mesh = mesh;
+
+    std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
+    REQUIRE(skeleton.get() != nullptr);
+    std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
+    REQUIRE(skin.get() != nullptr);
+    CHECK(skin->getVertexCount() == vertexCount);
+    std::unique_ptr<AnimClip> clip(
+        AnimImporter::loadClipFromModel(model.get(), skeleton.get(), 0));
+    REQUIRE(clip.get() != nullptr);
+    std::unique_ptr<AnimPlayer> player(new AnimPlayer(skeleton.get()));
+    player->play(clip.get());
+
+    std::vector<float> firstLuma;
+    float maxDelta = -1.f;
+    bool first = true;
+    for (int i = 0; i < 30; ++i) {
+        player->update(1.f / 30.f);
+        AnimPose *pose = player->getPose();
+        REQUIRE(pose != nullptr);
+        pose->computeWorld(skeleton.get());
+        REQUIRE(skin->applyToMesh(gfx, mesh, pose));
+
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                win->close();
+                return;
+            }
+        }
+        SDL_Delay(16);
+
+        const auto L = captureLumaGrid(gfx);
+        if (first) {
+            firstLuma = L;
+            first = false;
+        } else {
+            maxDelta = std::max(maxDelta, maxLumaAbsDelta(gfx, firstLuma, L));
+        }
+    }
+
+    const auto last = captureLumaGrid(gfx);
+    CHECK(foregroundPixelCount(last, 0.15f) > 20);
+    CHECK(maxDelta > 0.01f);
+    savePng(gfx, "animation_skinned_apply.png");
+    win->close();
 }

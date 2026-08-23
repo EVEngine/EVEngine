@@ -22,6 +22,8 @@
 #include "animation/SpineSkeletonData.h"
 
 #include "common/Exception.h"
+#include "graphics/Graphics.h"
+#include "graphics/Mesh.h"
 
 #include <algorithm>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -445,6 +447,14 @@ void Animation::expose(ssq::Table &table) {
     skin.addFunc("getSkinnedPositionX", &AnimSkin::getSkinnedPositionX);
     skin.addFunc("getSkinnedPositionY", &AnimSkin::getSkinnedPositionY);
     skin.addFunc("getSkinnedPositionZ", &AnimSkin::getSkinnedPositionZ);
+    skin.addFunc("getSkinnedPositions", &AnimSkin::getSkinnedPositions);
+    skin.addFunc("updateSkinnedNormals", &AnimSkin::updateSkinnedNormals);
+    skin.addFunc("hasSkinnedNormals", &AnimSkin::hasSkinnedNormals);
+    skin.addFunc("getSkinnedNormals", &AnimSkin::getSkinnedNormals);
+    skin.addFunc("applyToMesh",
+                 std::function<bool(AnimSkin *, graphics::Graphics *,
+                                    graphics::Mesh *, AnimPose *)>(
+                     &AnimSkin::applyToMesh));
 
     auto lattice = table.addClass<AnimLattice>(
         "AnimLattice", std::function<AnimLattice *()>([]() -> AnimLattice * { return nullptr; }),

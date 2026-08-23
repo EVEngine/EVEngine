@@ -196,11 +196,21 @@ player.play(clip);
 player.update(dt);
 local pose = player.getPose();
 pose.computeWorld(sk);
-skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
+// 推荐：蒙皮（位置+法线）并原地写回渲染网格，每帧一行：
+skin.applyToMesh(gfx, mesh, pose); // mesh 与 skin 需同源（同一 ModelData/meshIndex）
+// 也可拆开用底层原语（与 AnimLattice 一致）：
+// skin.updateSkinnedPositions(pose);       // 脚本可读 getSkinnedPositionX/Y/Z(i)
+// skin.updateSkinnedNormals(pose);         // 用 fromModel 捕获的 bind 法线
+// gfx.updateMeshVertices(mesh, skin.getSkinnedPositions(), skin.getSkinnedNormals(),
+//                        [], skin.getVertexCount(), [], 0);
 // 也可交给粒子：emitter.setSkinSource(skin, pose) 从皮肤表面发射
 ```
 
 测试资源：`scripts/download_skinned_character.sh` 下载 Khronos **CesiumMan**（约 0.5 MB）到 `test/assets/skinned/`；CMake 选项 `EVENGINE_DOWNLOAD_SKINNED_CHARACTER`（默认 ON）会在构建 `unit_test` 时联网拉取。
+
+`model3d.createRenderable(gfx, model, meshIndex)` 建的网格可用
+`ent.getMesh()` 取回句柄交给 `applyToMesh`。蒙皮网格必须与 `AnimSkin` 同源，
+且上传时不要烘焙节点世界变换，否则回写的模型空间顶点会与网格对不上。
 
 ## 对象关系与调用时机
 
@@ -279,7 +289,7 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`getWorld*()`、`getWorldMatrixElement()`
-- `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`
+- `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
 - `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`update()`
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`

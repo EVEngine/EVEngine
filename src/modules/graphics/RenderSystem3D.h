@@ -174,6 +174,8 @@ public:
     float getYaw();
     void setScale(float sx, float sy, float sz);
     void setMesh(Mesh *mesh);
+    /** @brief Main (non-part) mesh attached via setMesh; nullptr when unset. */
+    Mesh *getMesh();
     void setTexture(Texture *texture);
     void setNormalTexture(Texture *texture);
     /** @brief Height map for parallax (R channel; white = raised). nullptr disables sampling. */

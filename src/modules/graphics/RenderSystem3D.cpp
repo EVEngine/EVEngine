@@ -250,6 +250,8 @@ void Renderable3D::setScale(float sx, float sy, float sz) {
 
 void Renderable3D::setMesh(Mesh *mesh) { meshRenderer()->mesh = mesh; }
 
+Mesh *Renderable3D::getMesh() { return meshRenderer()->mesh; }
+
 void Renderable3D::setTexture(Texture *texture) { meshRenderer()->texture = texture; }
 
 void Renderable3D::setNormalTexture(Texture *texture) { meshRenderer()->normalTexture = texture; }
