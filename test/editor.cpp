@@ -21,6 +21,8 @@
 #include "common/Exception.h"
 #include "procgen/heightmap/Heightmap.h"
 
+#include <simplesquirrel/simplesquirrel.hpp>
+
 #include <cmath>
 #include <memory>
 #include <string>
@@ -192,6 +194,32 @@ TEST_CASE("editor.field_brush.composes_kernel_and_operation") {
     event.phase = EditorPointerEvent::Phase::Up;
     session.dispatchPointer(event);
     CHECK_EQ(terrain.readScalar(1, 2), 0.25f);
+}
+
+TEST_CASE("editor.script_tool.implements_the_same_session_protocol") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        editor <- eve.Editor();
+        session <- editor.newSession();
+        tool <- editor.newScriptTool("custom", "Custom Tool");
+        activations <- 0;
+        pointerX <- -1.0;
+        tool.setActivateCallback(function() { activations += 1; });
+        tool.setPointerCallback(function(phase, pointerId, button, x, y, dx, dy, pressure,
+                                         shift, control, alt) {
+            pointerX = x;
+            return phase == 0 ? 3 : 5;
+        });
+        added <- session.addTool(tool);
+        selected <- session.activateTool("custom");
+        response <- session.dispatchPointer(0, 9, 0, 12.5, 4.0, 0.0, 0.0, 1.0);
+    )"));
+    CHECK(vm.find("added").toBool());
+    CHECK(vm.find("selected").toBool());
+    CHECK_EQ(vm.find("activations").toInt(), 1);
+    CHECK_EQ(vm.find("response").toInt(), 3);
+    CHECK_EQ(vm.find("pointerX").toFloat(), 12.5f);
 }
 
 TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {

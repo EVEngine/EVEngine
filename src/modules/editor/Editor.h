@@ -29,6 +29,7 @@ class EditorHistory;
 class EditorSession;
 class TileBufferTarget;
 class HeightmapTarget;
+class ScriptEditorTool;
 
 /**
  * @brief Editor building blocks — not a shipped 3D/map editor app.
@@ -57,6 +58,8 @@ public:
     EditorSession   *newSession();
     /** @brief Adapt existing fields to capability-based editor targets. */
     TileBufferTarget *newTileBufferTarget(const std::string &id, TileBuffer *buffer);
+    /** @brief Create a script-backed implementation of the IEditorTool protocol. */
+    ScriptEditorTool *newScriptTool(const std::string &id, const std::string &label);
 #ifdef EVENGINE_HAS_PROCGEN
     HeightmapTarget  *newHeightmapTarget(const std::string &id, procgen::Heightmap *heightmap);
 

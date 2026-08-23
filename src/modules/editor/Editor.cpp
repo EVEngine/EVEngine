@@ -7,6 +7,7 @@
 #include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
 #include "editor/FieldTargets.h"
+#include "editor/ScriptEditorTool.h"
 #include "editor/GizmoManager.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
@@ -154,6 +155,10 @@ EditorSession *Editor::newSession() { return new EditorSession(); }
 
 TileBufferTarget *Editor::newTileBufferTarget(const std::string &id, TileBuffer *buffer) {
     return new TileBufferTarget(id, buffer);
+}
+
+ScriptEditorTool *Editor::newScriptTool(const std::string &id, const std::string &label) {
+    return new ScriptEditorTool(id, label);
 }
 
 #ifdef EVENGINE_HAS_PROCGEN
@@ -425,6 +430,50 @@ void Editor::expose(ssq::Table &table) {
     hist.addFunc("getLastTileY", &EditorHistory::getLastTileY);
     hist.addFunc("getLastTileOldGid", &EditorHistory::getLastTileOldGid);
     hist.addFunc("getLastTileNewGid", &EditorHistory::getLastTileNewGid);
+
+    auto session = table.addClass<EditorSession>(
+        "EditorSession", std::function<EditorSession *()>([]() -> EditorSession * { return nullptr; }), true);
+    session.addFunc("addTool", std::function<bool(EditorSession *, ScriptEditorTool *)>(
+                                    [](EditorSession *self, ScriptEditorTool *tool) { return self->addTool(tool); }));
+    session.addFunc("removeTool", &EditorSession::removeTool);
+    session.addFunc("clearTools", &EditorSession::clearTools);
+    session.addFunc("activateTool", &EditorSession::activateTool);
+    session.addFunc("getToolCount", &EditorSession::getToolCount);
+    session.addFunc("getActiveToolId", &EditorSession::activeToolId);
+    session.addFunc("hasPointerCapture", &EditorSession::hasPointerCapture);
+    session.addFunc("update", &EditorSession::update);
+    session.addFunc("cancelActiveTool", &EditorSession::cancelActiveTool);
+    session.addFunc("undo", std::function<bool(EditorSession *)>(
+                                 [](EditorSession *self) { return self->transactions().undo(); }));
+    session.addFunc("redo", std::function<bool(EditorSession *)>(
+                                 [](EditorSession *self) { return self->transactions().redo(); }));
+    session.addFunc("dispatchPointer",
+                    std::function<int(EditorSession *, int, int, int, float, float, float, float, float)>(
+                        [](EditorSession *self, int phase, int pointerId, int button, float x, float y,
+                           float dx, float dy, float pressure) {
+                            EditorPointerEvent event;
+                            event.phase = static_cast<EditorPointerEvent::Phase>(phase);
+                            event.pointerId = pointerId;
+                            event.button = button;
+                            event.x = x;
+                            event.y = y;
+                            event.deltaX = dx;
+                            event.deltaY = dy;
+                            event.pressure = pressure;
+                            const ToolResponse response = self->dispatchPointer(event);
+                            return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
+                                   (response.releasePointer ? 4 : 0);
+                        }));
+
+    auto scriptTool = table.addClass<ScriptEditorTool>(
+        "ScriptEditorTool", std::function<ScriptEditorTool *()>([]() -> ScriptEditorTool * { return nullptr; }), true);
+    scriptTool.addFunc("setShortcut", &ScriptEditorTool::setShortcut);
+    scriptTool.addFunc("setActivateCallback", &ScriptEditorTool::setActivateCallback);
+    scriptTool.addFunc("setDeactivateCallback", &ScriptEditorTool::setDeactivateCallback);
+    scriptTool.addFunc("setPointerCallback", &ScriptEditorTool::setPointerCallback);
+    scriptTool.addFunc("setKeyCallback", &ScriptEditorTool::setKeyCallback);
+    scriptTool.addFunc("setUpdateCallback", &ScriptEditorTool::setUpdateCallback);
+    scriptTool.addFunc("setCancelCallback", &ScriptEditorTool::setCancelCallback);
 }
 
 void Editor::expose(ssq::Class &cls) {
@@ -437,6 +486,8 @@ void Editor::expose(ssq::Class &cls) {
     cls.addFunc("newInspector", &Editor::newInspector);
     cls.addFunc("newDock", &Editor::newDock);
     cls.addFunc("newHistory", &Editor::newHistory);
+    cls.addFunc("newSession", &Editor::newSession);
+    cls.addFunc("newScriptTool", &Editor::newScriptTool);
 #ifdef EVENGINE_HAS_PROCGEN
     cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
     cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
