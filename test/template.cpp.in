@@ -8,3 +8,4 @@ const char* model2_content         = R"content(@model2_content@)content";
 const char* timer_content          = R"content(@timer_content@)content";
 const char* i18n_content           = R"content(@i18n_content@)content";
 const char* dialogue_proc_script_content = R"content(@dialogue_proc_script_content@)content";
+const char* physics_cloth_content = R"content(@physics_cloth_content@)content";
