@@ -4,6 +4,8 @@ The scene also renders a procedural volumetric cloud deck. Its direct-light dire
 and atmosphere-attenuated RGB are read from `DayNight` every frame, so noon cloud
 silverlining and warm sunset glow remain synchronized with the sky and scene lighting.
 
+![Golden-hour volumetric clouds](../../docs/images/examples/daynight-volumetric-clouds.png)
+
 A 3D diorama that demonstrates the EVEngine **DayNight module**: a time-of-day
 solar orbit, a procedural skybox that rotates with the sun, and switchable
 night lighting systems (moonlight, starlight, fire, fireflies).

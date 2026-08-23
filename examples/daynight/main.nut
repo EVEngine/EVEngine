@@ -16,6 +16,8 @@ if (!("camAngle" in getroottable())) camAngle <- 0.0;
 if (!("autoOrbit" in getroottable())) autoOrbit <- true;
 if (!("props" in getroottable())) props <- [];
 if (!("clouds" in getroottable())) clouds <- null;
+if (!("cloudPreviewTime" in getroottable())) cloudPreviewTime <- 0.0;
+if (!("cloudPreviewSaved" in getroottable())) cloudPreviewSaved <- false;
 
 // Firefly spawn ring around the campfire.
 fireflies <- [];
@@ -103,8 +105,8 @@ function buildPanel() {
 
 eve_init = function() {
     camera = eve.Camera3D();
-    camera.setEye(0.0, 7.0, 16.0);
-    camera.setTarget(0.0, 1.0, 0.0);
+    camera.setEye(0.0, 5.0, 18.0);
+    camera.setTarget(0.0, 7.0, 0.0);
     camera.setFov(55.0);
 
     buildScene();
@@ -112,8 +114,8 @@ eve_init = function() {
 
     // Configure the cycle.
     daynight.init(gfx);
-    daynight.setTimeOfDay(9.0);
-    daynight.setSpeed(0.5);              // 1 full day every ~48 s
+    daynight.setTimeOfDay(17.0);         // golden hour showcases warm cloud scattering
+    daynight.setSpeed(0.0);
     daynight.setFirePosition(0.0, 0.6, 0.0);
     foreach (f in fireflies) {
         daynight.addFirefly(f[0], f[1], f[2]);
@@ -131,18 +133,19 @@ eve_init = function() {
     clouds = gfx.newVolumetric();
     clouds.setMode("cloud");
     clouds.setQuality("high");
-    clouds.setCloudLayer(8.0, 15.0);
-    clouds.setCloudCoverage(0.62);
-    clouds.setCloudDensity(1.05);
-    clouds.setCloudScale(20.0);
+    clouds.setCloudLayer(9.0, 18.0);
+    clouds.setCloudCoverage(0.42);
+    clouds.setCloudDensity(0.75);
+    clouds.setCloudScale(30.0);
     clouds.setCloudWind(0.7, 0.22);
 };
 
 eve_update = function(dt) {
+    cloudPreviewTime += dt;
     if (autoOrbit) {
         camAngle += dt * 0.18;
         local r = 17.0;
-        camera.setEye(math.polarX(r, camAngle), 7.5, math.polarY(r, camAngle));
+        camera.setEye(math.polarX(r, camAngle), 5.0, math.polarY(r, camAngle));
     }
 
     // Hotkeys.
@@ -156,8 +159,8 @@ eve_update = function(dt) {
 
     daynight.update(dt, gfx);
 
-    clouds.setCamera(math.polarX(17.0, camAngle), 7.5, math.polarY(17.0, camAngle),
-        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 55.0, 1.6, 0.1, 100.0);
+    clouds.setCamera(math.polarX(17.0, camAngle), 5.0, math.polarY(17.0, camAngle),
+        0.0, 7.0, 0.0, 0.0, 1.0, 0.0, 55.0, 1.6, 0.1, 100.0);
     clouds.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(), daynight.getSunDirZ());
     clouds.setCloudLightColor(daynight.getSunR(), daynight.getSunG(), daynight.getSunB());
     clouds.setTime(daynight.getTimeOfDay() * 12.0);
@@ -180,6 +183,14 @@ eve_update = function(dt) {
 };
 
 eve_render = function() {
+    // saveFramePng reads the previously presented frame. Saving once makes the
+    // example useful for visual regression reviews without external capture tools.
+    if (!cloudPreviewSaved && cloudPreviewTime > 2.0) {
+        if (gfx.saveFramePng("/tmp/evengine_daynight_clouds.png")) {
+            print("daynight cloud frame saved: /tmp/evengine_daynight_clouds.png\n");
+            cloudPreviewSaved = true;
+        }
+    }
     gfx.clear();
     gfx.render3D();
     local gbuffer = gfx.getRenderControl().getGBuffer();
