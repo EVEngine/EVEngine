@@ -9,6 +9,8 @@ class EditorSession;
 class IEditableTarget;
 class EditorTransactions;
 class IEditCommand;
+class IEditorOverlay;
+class IEditorInspector;
 
 /** @brief Pointer input normalized by an editor viewport adapter. */
 struct EditorPointerEvent {
@@ -119,6 +121,18 @@ public:
     virtual void update(EditorContext &context, float dt) {
         (void)context;
         (void)dt;
+    }
+
+    /** @brief Emit renderer-independent feedback for the active viewport. */
+    virtual void drawOverlay(EditorContext &context, IEditorOverlay &overlay) {
+        (void)context;
+        (void)overlay;
+    }
+
+    /** @brief Expose configurable settings through a host-provided inspector. */
+    virtual void inspect(EditorContext &context, IEditorInspector &inspector) {
+        (void)context;
+        (void)inspector;
     }
 
     /** @brief Cancel the active gesture while keeping the tool selected. */

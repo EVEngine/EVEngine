@@ -8,6 +8,7 @@
 #include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
+#include "editor/EditorPresentation.h"
 #include "editor/EditorTransactions.h"
 #include "editor/EditConstraint.h"
 #include "editor/EditorToolbar.h"
@@ -44,6 +45,14 @@ public:
         return ToolResponse::consumed();
     }
     void update(EditorContext &, float) override { ++updates; }
+    void drawOverlay(EditorContext &, IEditorOverlay &overlay) override {
+        ++overlays;
+        overlay.circle({1.f, 2.f, 3.f}, 4.f, {});
+    }
+    void inspect(EditorContext &, IEditorInspector &inspector) override {
+        ++inspections;
+        inspector.scalar("radius", "Radius", radius, 0.f, 10.f);
+    }
 
     ToolDescriptor desc;
     int activations = 0;
@@ -52,6 +61,28 @@ public:
     int pointerEvents = 0;
     int keyEvents = 0;
     int updates = 0;
+    int overlays = 0;
+    int inspections = 0;
+    float radius = 2.f;
+};
+
+class TestPresentation final : public IEditorOverlay, public IEditorInspector {
+public:
+    void line(const OverlayPoint &, const OverlayPoint &, const OverlayStyle &) override { ++primitives; }
+    void circle(const OverlayPoint &, float, const OverlayStyle &) override { ++primitives; }
+    void rectangle(const OverlayPoint &, const OverlayPoint &, const OverlayStyle &) override { ++primitives; }
+    void text(const OverlayPoint &, const std::string &, const OverlayStyle &) override { ++primitives; }
+    void beginGroup(const std::string &, const std::string &) override {}
+    void endGroup() override {}
+    bool boolean(const std::string &, const std::string &, bool &) override { return false; }
+    bool integer(const std::string &, const std::string &, int &, int, int) override { return false; }
+    bool scalar(const std::string &, const std::string &, float &value, float, float) override {
+        value = 6.f;
+        return true;
+    }
+    bool string(const std::string &, const std::string &, std::string &) override { return false; }
+
+    int primitives = 0;
 };
 
 class RejectLargeEdit final : public IEditConstraint {
@@ -108,6 +139,20 @@ TEST_CASE("editor.session.routes_tool_lifecycle_and_capture") {
     CHECK(session.removeTool("second"));
     CHECK_EQ(second.deactivations, 1);
     CHECK_EQ(session.activeToolId(), std::string(""));
+}
+
+TEST_CASE("editor.presentation.is_host_and_renderer_independent") {
+    EditorSession session;
+    TestEditorTool tool("presentable");
+    TestPresentation presentation;
+    CHECK(session.addTool(&tool));
+    CHECK(session.activateTool("presentable"));
+    session.drawOverlay(presentation);
+    session.inspect(presentation);
+    CHECK_EQ(tool.overlays, 1);
+    CHECK_EQ(tool.inspections, 1);
+    CHECK_EQ(presentation.primitives, 1);
+    CHECK_EQ(tool.radius, 6.f);
 }
 
 TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {

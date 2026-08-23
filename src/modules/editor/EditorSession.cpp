@@ -1,5 +1,7 @@
 #include "editor/EditorSession.h"
 
+#include "editor/EditorPresentation.h"
+
 #include <algorithm>
 
 namespace eve::editor {
@@ -95,6 +97,14 @@ ToolResponse EditorSession::dispatchKey(const EditorKeyEvent &event) {
 
 void EditorSession::update(float dt) {
     if (activeTool_) activeTool_->update(context_, dt);
+}
+
+void EditorSession::drawOverlay(IEditorOverlay &overlay) {
+    if (activeTool_) activeTool_->drawOverlay(context_, overlay);
+}
+
+void EditorSession::inspect(IEditorInspector &inspector) {
+    if (activeTool_) activeTool_->inspect(context_, inspector);
 }
 
 void EditorSession::cancelActiveTool() {

@@ -45,6 +45,10 @@ public:
     ToolResponse dispatchKey(const EditorKeyEvent &event);
     /** @brief Update the active tool. */
     void update(float dt);
+    /** @brief Ask the active tool to emit viewport feedback. */
+    void drawOverlay(IEditorOverlay &overlay);
+    /** @brief Ask the active tool to expose its configurable properties. */
+    void inspect(IEditorInspector &inspector);
     /** @brief Cancel its gesture and clear pointer capture. */
     void cancelActiveTool();
 
