@@ -593,7 +593,9 @@ jobs:
       # the Audio module would be left uninitialized. Use the null backend
       # (same pattern as the unit tests in AGENTS.md) so the packaged game
       # exercises the full startup path.
-      ALSOFT_DRIVERS: null
+      # Quoted: an unquoted YAML null would set an EMPTY variable, which
+      # OpenAL treats as "no driver override" (ALSA still gets tried).
+      ALSOFT_DRIVERS: "null"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -634,7 +636,10 @@ jobs:
       - name: Run consumer test (get android -> build android -> package -> run + cross win32)
         timeout-minutes: 90
         run: |
-          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd.*.json | head -1)"
+          # Ubuntu ships the Lavapipe manifest as lvp_icd.json (no suffix);
+          # a glob that requires a suffix leaves VK_ICD_FILENAMES empty and the
+          # loader finds no ICD, so SDL_Vulkan_CreateSurface fails.
+          export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null | head -1)"
           xvfb-run -a bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
 
       - name: Upload cross win32 package (produced on linux)
