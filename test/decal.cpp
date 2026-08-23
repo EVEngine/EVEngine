@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "Fixtures.h"
+#include "RenderImageAudit.h"
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
 #include "decal/DecalManager.h"
@@ -18,7 +19,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <algorithm>
 #include <cstdint>
+#include <cmath>
+#include <filesystem>
 #include <vector>
 
 using namespace eve::decal;
@@ -340,4 +344,204 @@ TEST_CASE("decal.gpuHeadlessProjectionReadback") {
     const uint8_t *corner = at(4, 4);
     CHECK_LT(corner[0], 20);  // outside the unit box -> layer stays cleared
     delete img;
+}
+
+namespace {
+
+float smoothstep(float e0, float e1, float x) {
+    const float t = std::clamp((x - e0) / (e1 - e0), 0.f, 1.f);
+    return t * t * (3.f - 2.f * t);
+}
+
+// Procedural decal art so the gallery needs no external assets.
+eve::graphics::Texture *makeChecker(eve::graphics::Graphics *gfx, int size, int cells) {
+    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            const bool dark = ((x * cells / size) + (y * cells / size)) % 2 == 0;
+            const uint8_t v = dark ? 150 : 205;
+            size_t i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
+            px[i] = v;
+            px[i + 1] = v;
+            px[i + 2] = v;
+            px[i + 3] = 255;
+        }
+    }
+    return gfx->newTexture(size, size, px.data());
+}
+
+eve::graphics::Texture *makeBloodSplat(eve::graphics::Graphics *gfx, int size) {
+    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            const float u = (float(x) + 0.5f) / float(size);
+            const float v = (float(y) + 0.5f) / float(size);
+            const float dx = u - 0.5f;
+            const float dy = v - 0.5f;
+            const float ang = std::atan2(dy, dx);
+            const float r = std::sqrt(dx * dx + dy * dy) * 2.f;
+            // Irregular splat edge: three-lobe wobble + inner core.
+            const float wob = 0.72f + 0.22f * std::sin(3.f * ang + 1.3f) +
+                              0.10f * std::sin(5.f * ang + 4.2f);
+            const float a = 1.f - smoothstep(0.30f, wob, r);
+            const float core = 1.f - smoothstep(0.0f, 0.34f, r);
+            size_t i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
+            px[i] = 130;
+            px[i + 1] = 14;
+            px[i + 2] = 24;
+            px[i + 3] = uint8_t(std::clamp((a * 0.55f + core * 0.45f) * 255.f, 0.f, 255.f));
+        }
+    }
+    return gfx->newTexture(size, size, px.data());
+}
+
+eve::graphics::Texture *makeDirt(eve::graphics::Graphics *gfx, int size) {
+    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
+    uint32_t seed = 12345u;
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            seed = seed * 1664525u + 1013904223u;
+            const float n = float(seed % 10000u) / 10000.f;
+            const float a = n < 0.62f ? 0.25f + 0.35f * n : 0.f;
+            size_t i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
+            px[i] = 118;
+            px[i + 1] = 102;
+            px[i + 2] = 82;
+            px[i + 3] = uint8_t(a * 255.f);
+        }
+    }
+    return gfx->newTexture(size, size, px.data());
+}
+
+eve::graphics::Texture *makeDentNormal(eve::graphics::Graphics *gfx, int size) {
+    // Concave dent: tangent-space normal tilts inward toward the center.
+    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            const float u = (float(x) + 0.5f) / float(size);
+            const float v = (float(y) + 0.5f) / float(size);
+            const float dx = (u - 0.5f) * 2.f;
+            const float dy = (v - 0.5f) * 2.f;
+            const float r = std::sqrt(dx * dx + dy * dy);
+            float tilt = 1.6f * std::exp(-r * r * 2.6f);
+            // Raised rim just outside the crater.
+            tilt -= 0.8f * std::exp(-(r - 0.55f) * (r - 0.55f) * 60.f);
+            glm::vec3 n = glm::normalize(glm::vec3(-dx * tilt, -dy * tilt, 1.f));
+            size_t i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
+            px[i] = uint8_t((n.x * 0.5f + 0.5f) * 255.f);
+            px[i + 1] = uint8_t((n.y * 0.5f + 0.5f) * 255.f);
+            px[i + 2] = uint8_t((n.z * 0.5f + 0.5f) * 255.f);
+            px[i + 3] = 255;
+        }
+    }
+    return gfx->newTexture(size, size, px.data());
+}
+
+eve::graphics::Texture *makeDentAlbedo(eve::graphics::Graphics *gfx, int size) {
+    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            const float u = (float(x) + 0.5f) / float(size);
+            const float v = (float(y) + 0.5f) / float(size);
+            const float dx = (u - 0.5f) * 2.f;
+            const float dy = (v - 0.5f) * 2.f;
+            const float r = std::sqrt(dx * dx + dy * dy);
+            const float crater = 1.f - smoothstep(0.f, 0.55f, r);
+            const float ring =
+                smoothstep(0.42f, 0.55f, r) * (1.f - smoothstep(0.55f, 0.68f, r));
+            const uint8_t val =
+                uint8_t(std::clamp((68.f + crater * -28.f + ring * 42.f), 0.f, 255.f));
+            size_t i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
+            px[i] = val;
+            px[i + 1] = uint8_t(val * 0.93f);
+            px[i + 2] = uint8_t(val * 0.88f);
+            px[i + 3] = 255;
+        }
+    }
+    return gfx->newTexture(size, size, px.data());
+}
+
+eve::graphics::Texture *makeRoughParams(eve::graphics::Graphics *gfx, int size, float rough) {
+    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
+    for (size_t i = 0; i < px.size(); i += 4) {
+        px[i] = uint8_t(rough * 255.f);  // R = target roughness
+        px[i + 1] = 0;                    // G = metallic
+        px[i + 2] = 0;                    // B = emissive
+        px[i + 3] = 255;
+    }
+    return gfx->newTexture(size, size, px.data());
+}
+
+}  // namespace
+
+// Gallery render: blood / dirt / dent decals projected onto a checker floor,
+// saved as PNG for visual review (build/<plat>/test/out/decal/).
+TEST_CASE("decal.renderGalleryPng") {
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 480, 360);
+
+    auto *mesh = makePlane(gfx, 3.f);
+    REQUIRE(mesh != nullptr);
+    auto *cam = Camera3D::createCamera();
+    cam->data()->eyeY = 1.9f;
+    cam->data()->eyeZ = 2.35f;
+    auto *ent = Renderable3D::create();
+    ent->meshRenderer()->mesh = mesh;
+    ent->transform()->pitch = -3.14159265f * 0.5f;  // lay the plane flat (normal +Y)
+    ent->meshRenderer()->texture = makeChecker(gfx, 64, 8);
+    RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
+
+    static bool sGalleryDrawer = false;
+    if (!sGalleryDrawer) {
+        sGalleryDrawer = true;
+        RenderSystem3D::addDecalExtraDrawer(
+            [](eve::graphics::Graphics &g, const Camera3D::Data &camData,
+               const glm::mat4 &viewProj, float aspect) {
+                DecalManager::inst().drawAll(g, camData, viewProj, aspect);
+            });
+    }
+    gfx->getRenderControl()->enable("decal");
+    gfx->getRenderControl()->compile();
+
+    DecalManager::inst().clearAll();
+    auto &mgr = DecalManager::inst();
+    // Blood: dark red splat, wet gloss (roughness down via params R).
+    const int blood = mgr.project(-0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f,
+                                  makeBloodSplat(gfx, 128), "blood", 1.05f, 0.12f, true, 7, 0.f,
+                                  0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+    CHECK(mgr.setTextures(blood, nullptr, makeRoughParams(gfx, 16, 0.28f)));
+    CHECK(mgr.setStrength(blood, 0.f, 1.f, 0.f, 0.f));
+    // Dirt: gray-brown speckle, rough + slight normal wobble.
+    const int dirt = mgr.project(0.f, 0.01f, 0.1f, 0.f, 1.f, 0.f, makeDirt(gfx, 128), "dirt",
+                                 1.3f, 0.12f, true, 23, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+    CHECK(mgr.setTextures(dirt, nullptr, makeRoughParams(gfx, 16, 0.85f)));
+    CHECK(mgr.setStrength(dirt, 0.35f, 1.f, 0.f, 0.f));
+    // Dent: concave normal map + crater albedo (real indentation shading).
+    const int dent = mgr.project(0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f, makeDentAlbedo(gfx, 128),
+                                 "dent", 1.05f, 0.12f, false, 0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
+                                 0.f);
+    CHECK(mgr.setTextures(dent, makeDentNormal(gfx, 128), makeRoughParams(gfx, 16, 0.6f)));
+    CHECK(mgr.setStrength(dent, 0.9f, 0.6f, 0.f, 0.f));
+
+    gfx->setScreenReadbackEnabled(true);
+    for (int i = 0; i < 3; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+    }
+    eve::image::ImageData *snap = gfx->newImageData();
+    REQUIRE(snap != nullptr);
+    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out/decal";
+    std::error_code ec;
+    std::filesystem::create_directories(outDir, ec);
+    REQUIRE(saveImagePng(*snap, outDir + "/decal_gallery.png"));
+    std::printf("decal gallery saved: %s/decal_gallery.png\n", outDir.c_str());
+    delete snap;
+
+    DecalManager::inst().clearAll();
+    win->close();
 }
