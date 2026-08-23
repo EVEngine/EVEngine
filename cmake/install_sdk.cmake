@@ -67,7 +67,10 @@ if(BUILD_PLATFORM STREQUAL "macosx")
     ")
     install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/macosx_bundle_vulkan.cmake")
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
-        INSTALL_RPATH "@loader_path/../lib;@loader_path"
+        # SDK layout is bin/eve + lib/ (-> ../lib). `eve package` copies the
+        # lib/ tree next to eve as <out>/lib (-> @loader_path/lib). Keep both
+        # so the same binary runs from the SDK and from a packaged game.
+        INSTALL_RPATH "@loader_path/../lib;@loader_path/lib;@loader_path"
     )
 endif()
 

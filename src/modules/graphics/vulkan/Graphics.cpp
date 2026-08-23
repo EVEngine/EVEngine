@@ -139,6 +139,19 @@ Graphics::~Graphics() {
 
 void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames, void *nativeWindow,
                                        vk::SurfaceKHR *surfaceOut) {
+#if defined(EVENGINE_MACOSX)
+    // Build the instance through the SAME Vulkan loader SDL loaded (the one
+    // bundled by the SDK). vk-bootstrap would otherwise dlopen its own copy
+    // (vulkan.hpp DynamicLoader or dlsym in load order) and
+    // SDL_Vulkan_CreateSurface then cannot resolve the surface functions on
+    // the vkb-created instance (its cached vkGetInstanceProcAddr belongs to a
+    // different loader -> "extensions are not enabled").
+    if (PFN_vkGetInstanceProcAddr sdlGpa =
+            reinterpret_cast<PFN_vkGetInstanceProcAddr>(SDL_Vulkan_GetVkGetInstanceProcAddr())) {
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(sdlGpa);
+        vkb::InstanceBuilder::loaded = true;
+    }
+#endif
     vkb::InstanceBuilder builder;
     builder.require_api_version(1, 0);
 #if !defined(EVENGINE_IOS)
