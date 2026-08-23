@@ -162,6 +162,7 @@ struct GpuMesh {
     /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
     uint64_t      dynamicWriteCount = 0;
     bool          dynamic           = false;
+    uint32_t      vertexCount       = 0;
     uint32_t      indexCount        = 0;
     vk::IndexType indexType         = vk::IndexType::eUint32;
     /** @brief Index into the GPU mesh table (GpuMeshRecord). */

@@ -307,6 +307,7 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
     // frames, just write the next copy.
     ensureDynamicRing(*gpu);
     writeDynamicMesh(*gpu, verts, getDevice(), frameToken(), indices, indexCount);
+    mesh->gpuVertexCount = int(gpu->vertexCount);
     mesh->indexCount = int(gpu->indexCount);
     return true;
 }

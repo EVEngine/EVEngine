@@ -100,7 +100,10 @@ bool Mesh::addMorphTargetAbsolute(const std::string &name, const float *absPosXY
     return true;
 }
 
-int Mesh::getVertexCount() const { return int(basePos_.size() / 3); }
+int Mesh::getVertexCount() const {
+    if (!basePos_.empty()) return int(basePos_.size() / 3);
+    return gpuVertexCount;
+}
 
 int Mesh::getMorphCount() const { return int(morphs_.size()); }
 
