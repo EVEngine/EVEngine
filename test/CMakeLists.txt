@@ -12,6 +12,7 @@ file(GLOB all_test_cpp
   filesystem.cpp
   filesystem_cpp.cpp
   fluids.cpp
+  fluids_surface.cpp
   graphic.cpp
   graphics_font.cpp
   graphics_headless.cpp
