@@ -102,7 +102,8 @@ r.writePpm("fluid.ppm");                 // 调试输出
 
 ## 测试
 
-`test/fluids.cpp`（25 个用例，按 CTest 进程隔离）：
+原有 `test/fluids.cpp` 的 16 个球面流体用例保持不变；新增动态表面能力放在
+`test/fluids_surface.cpp` 的 9 个独立用例中（均按 CTest 进程隔离）：
 
 - 数学核函数、SDF（球/平面/三角网格对比解析球）；
 - CPU：表面下流、粘度阻尼、PBF 解压、cohesion 成团、adhesion 挂壁、
@@ -139,8 +140,8 @@ r.writePpm("fluid.ppm");                 // 调试输出
   合并、开放边缘/惯性脱离、空间飞行及重新附着。
 - `SurfaceWetnessField` 在材质空间保存逐顶点湿膜。水滴滑行时留下湿痕，湿痕可
   扩散和蒸发，不会因为模型平移、旋转或顶点形变而漂移。
-- `examples/surface-fluid-dynamic` 使用生产求解代码生成可复现的动态玻璃参考帧，
-  可在没有特定 GPU 的环境中进行视觉回归检查。
+- `examples/surface-fluid-dynamic` 沿用原有球面参考场景，在球体轻微摆动时验证动态
+  附着，并生成可复现的细水滴/湿痕参考帧。
 
 ![动态表面的水滴与湿痕](../../images/surface-fluid-dynamic.png)
 
