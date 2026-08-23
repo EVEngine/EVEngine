@@ -70,6 +70,17 @@ public:
     /** @brief 0..1 sun energy; ramps to 0 below the horizon. */
     float getSunIntensity() const;
 
+    // ---- atmosphere ----
+    /** @brief Set aerosol turbidity. 1.5 is very clear; 10 is hazy. */
+    void setTurbidity(float turbidity);
+    float getTurbidity() const;
+    /** @brief Exposure used when mapping physical sky radiance to the RGBA8 sky cubemap. */
+    void setSkyExposure(float exposure);
+    float getSkyExposure() const;
+    /** @brief Relative Mie aerosol density; controls horizon haze and solar halo. */
+    void setMieStrength(float strength);
+    float getMieStrength() const;
+
     // ---- sky / ambient (sampled by the scene) ----
     float getSkyR() const;
     float getSkyG() const;
