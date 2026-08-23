@@ -46,6 +46,19 @@ public:
         float normalImpulse = 0.f;
         float tangentImpulse = 0.f;
     };
+
+    /**
+     * @brief Result of a point probe: deepest non-sensor fixture within radius.
+     * Normal points from the shape toward the probed point (pixels).
+     */
+    struct ClothContact {
+        bool   hit = false;
+        float  nx = 0.f;
+        float  ny = 0.f;
+        float  depth = 0.f;  // radius - distance (pixels); > 0 when inside
+        Body  *body = nullptr;
+    };
+
     /**
      * @brief Creates a physics world.
      * @param gravityX/gravityY  Gravity vector in pixels/s^2.
@@ -79,6 +92,15 @@ public:
     void destroyBody(Body *body);
     /** @brief Destroys the underlying Box2D world and resets event buffers. */
     void destroy();
+
+    /** @brief True while the underlying Box2D world is alive. */
+    bool isValid() const { return !destroyed_ && world_ != nullptr; }
+
+    /**
+     * @brief Probe the deepest non-sensor fixture within `radius` of a pixel point.
+     * Returns false when nothing is hit. Used by Cloth for particle-vs-body collision.
+     */
+    bool pointProbe(float x, float y, float radius, ClothContact *out) const;
 
     /** @brief Optional: draw fixture AABBs via Graphics::drawSolidRect. */
     void drawDebug(graphics::Graphics *gfx);

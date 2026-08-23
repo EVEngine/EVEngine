@@ -112,6 +112,10 @@ hair.setCastShadow(false)  // 发片通常不参与阴影投射
 - **screenspace**：`beginOcclusionMap` → `drawOccluders2D` → `scatter`；或 `applyFromScene`
 - **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`
 - **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
+- **cloud**：`setMode("cloud")`，用 `setCloudLayer`、`setCloudCoverage`、
+  `setCloudDensity`、`setCloudScale`、`setCloudWind` 和 `setCloudLightColor`
+  调整云层；线性深度输入通过 `renderClouds` 或 `renderCloudsTo` 渲染，
+  `getCloudShader` 可用于高级参数检查与调试。
 
 细节见 [`体积光模块设计.md`](../../dev/体积光模块设计.md)。
 

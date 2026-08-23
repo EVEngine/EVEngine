@@ -184,7 +184,7 @@ eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
                    THIRDPARTY sdl2 poco
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
-                   DEPS event graphics
+                   DEPS event graphics gpgpu
                    OPTIONAL_DEPS scene
                    THIRDPARTY box2d box3d
                    GROUP 2d 3d web)

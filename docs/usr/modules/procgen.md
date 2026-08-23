@@ -100,6 +100,47 @@ local grid = procgen.generate("level.roguelike", p);
 
 可运行脚本与快捷键见 [`examples/roguelike-generator`](../../../examples/roguelike-generator/README.md)。
 
+### 生成城区布局（`urban.parcels` / `mesh.urban`）
+
+`urban.parcels` 与 `mesh.urban` 是基于 Eurographics 2024 论文
+*Hierarchical Co-generation of Parcels and Streets in Urban Modeling*
+（Chen/Song/Ortner，CGF 43(2)）的引擎移植：从输入地块多边形层级化二分生成
+**地块（parcels）与街道（streets）** 协同的城区布局。核心流程：
+
+1. 每层对每个可分割地块计算 ~20 条流线候选（交叉场 + 超流线追踪，必要时回退
+   直线弦），用论文式 2 质量分 `Q = λ1·Qsize + λ2·Qregu + λ3·Qacce` 选最优分割线；
+2. 消除地块网格中的短边；
+3. 对不可达地块分组，生成 I 形/L 形街道入口，并用转角感知 Dijkstra 接入既有
+   街道网络，保证每个地块可达、网络连通；
+4. 全局几何优化（规则角、边/街平滑、交叉口直角、贴近初始），带“变差回滚”保护。
+
+```squirrel
+local p = gen.newParams();
+p.setSeed(20260823);
+p.setString("land", "rect");          // rect | triangle | ellipse | l | hexagon
+p.setFloat("landWidth", 100);
+p.setFloat("landHeight", 60);
+p.setFloat("minParcelArea", 4.0);
+p.setInt("targetParcels", 120);
+p.setString("streetPattern", "default"); // default | loop | culdesac | tree
+p.setInt("optimize", 1);
+
+// 1) 语义地图：路 = Semantic::Road(11)，地块 = Floor(2)，detail = 地块 id(1..N)
+local grid = gen.generate("urban.parcels", p);
+
+// 2) 城区网格：地块块 + 街道带（extrude>0 时挤压成体块）
+p.setFloat("extrude", 6.0);
+local mesh = gen.generateMesh("mesh.urban", p, gfx);
+```
+
+常用参数：`land` 也支持显式多边形（`"0,0;100,0;100,60;0,60"`）；
+`lambdaSize/lambdaRegu/lambdaAcce` 控制地块形状偏好（论文式 2 权重）；
+`orientation` 设为 `east-west` / `north-south` 可控制地块长边朝向；
+`boundaryStreet` 设为 `none` / `random` 可关闭或随机化地块边界街道；
+`cellSize`（栅格分辨率）、`extrude`（网格块高）。网格与地图的 metadata 记录
+`parcels` / `streets` / `junctions` / `streetLength` / `avgIrregularity`。
+交互示例与完整参数见 [`examples/urban-generator`](../../../examples/urban-generator/README.md)。
+
 ### 生成随机树木网格
 
 `mesh.tree` 生成可复现的树干、分枝和叶片网格。`branchAlgorithm` 的两个值互斥：

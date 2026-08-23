@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <limits>
 
 namespace eve::physics {
 namespace {
@@ -35,6 +36,128 @@ Body *bodyFromFixture(b2Fixture *f) {
 
 Fixture *fixtureFromRaw(b2Fixture *f) {
     return f ? static_cast<Fixture *>(f->GetUserData()) : nullptr;
+}
+
+// Signed distance from a world point to a shape (meters). Negative when inside.
+// `normal` points from the shape toward the point (world space, unit length).
+bool shapePointDistance(const b2Shape *shape, const b2Transform &xf, const b2Vec2 &p,
+                        float &dist, b2Vec2 &normal) {
+    dist   = 0.f;
+    normal = b2Vec2(0.f, 1.f);
+    if (!shape) return false;
+
+    if (shape->GetType() == b2Shape::e_circle) {
+        const auto *circle = static_cast<const b2CircleShape *>(shape);
+        const b2Vec2 center = b2Mul(xf, circle->m_p);
+        const b2Vec2 d      = p - center;
+        const float  r      = circle->m_radius;
+        dist = b2Distance(p, center) - r;
+        const float len = d.Length();
+        if (len > 1e-6f) {
+            normal = (1.f / len) * d;
+        } else if (r > 0.f) {
+            normal = b2Vec2(0.f, 1.f);
+        }
+        return true;
+    }
+
+    if (shape->GetType() == b2Shape::e_polygon) {
+        const auto *poly = static_cast<const b2PolygonShape *>(shape);
+        const b2Vec2 local = b2MulT(xf, p);
+        const int n = poly->m_count;
+        if (n < 3) return false;
+
+        // Signed distance to each edge: positive outside for Box2D CCW polygons
+        // (m_normals point outward). Inside when every side <= 0.
+        float minSide  = std::numeric_limits<float>::max();
+        float bestEdge = std::numeric_limits<float>::max();
+        b2Vec2 bestN(0.f, 1.f);
+        b2Vec2 bestQ;
+        bool inside = true;
+        for (int i = 0; i < n; ++i) {
+            const b2Vec2 &a = poly->m_vertices[i];
+            const b2Vec2 &b = poly->m_vertices[(i + 1) % n];
+            const float side = b2Dot(local - a, poly->m_normals[i]);
+            if (side > 0.f) inside = false;
+            if (side < minSide) {
+                minSide = side;
+                bestN   = poly->m_normals[i];
+            }
+            // Closest point on the edge segment.
+            const b2Vec2 ab = b - a;
+            const float len2 = b2Dot(ab, ab);
+            float t = 0.f;
+            if (len2 > 1e-12f) t = b2Clamp(b2Dot(local - a, ab) / len2, 0.f, 1.f);
+            const b2Vec2 q = a + t * ab;
+            const float d2 = b2DistanceSquared(local, q);
+            if (d2 < bestEdge) {
+                bestEdge = d2;
+                bestQ    = q;
+            }
+        }
+        if (inside) {
+            dist   = minSide;  // negative penetration
+            normal = b2Mul(xf.q, bestN);
+        } else {
+            dist = std::sqrt(bestEdge);
+            const b2Vec2 delta = local - bestQ;
+            if (delta.LengthSquared() > 1e-8f) {
+                normal = b2Mul(xf.q, (1.f / delta.Length()) * delta);
+            } else {
+                normal = b2Mul(xf.q, bestN);
+            }
+        }
+        return true;
+    }
+
+    if (shape->GetType() == b2Shape::e_edge) {
+        const auto *edge = static_cast<const b2EdgeShape *>(shape);
+        const b2Vec2 a = b2Mul(xf, edge->m_vertex1);
+        const b2Vec2 b = b2Mul(xf, edge->m_vertex2);
+        const b2Vec2 ab = b - a;
+        const float len2 = b2Dot(ab, ab);
+        float t = 0.f;
+        if (len2 > 1e-12f) t = b2Clamp(b2Dot(p - a, ab) / len2, 0.f, 1.f);
+        const b2Vec2 q = a + t * ab;
+        const b2Vec2 delta = p - q;
+        dist = delta.Length();
+        if (dist > 1e-6f) {
+            normal = (1.f / dist) * delta;
+        } else if (len2 > 1e-12f) {
+            normal = (1.f / std::sqrt(len2)) * b2Vec2(-ab.y, ab.x);
+        }
+        return true;
+    }
+
+    if (shape->GetType() == b2Shape::e_chain) {
+        const auto *chain = static_cast<const b2ChainShape *>(shape);
+        float best = std::numeric_limits<float>::max();
+        b2Vec2 bestN(0.f, 1.f);
+        for (int i = 0; i + 1 < chain->m_count; ++i) {
+            const b2Vec2 a = b2Mul(xf, chain->m_vertices[i]);
+            const b2Vec2 b = b2Mul(xf, chain->m_vertices[i + 1]);
+            const b2Vec2 ab = b - a;
+            const float len2 = b2Dot(ab, ab);
+            float t = 0.f;
+            if (len2 > 1e-12f) t = b2Clamp(b2Dot(p - a, ab) / len2, 0.f, 1.f);
+            const b2Vec2 q = a + t * ab;
+            const b2Vec2 delta = p - q;
+            const float d = delta.Length();
+            if (d < best) {
+                best = d;
+                bestN = d > 1e-6f
+                            ? (1.f / d) * delta
+                            : (len2 > 1e-12f ? (1.f / std::sqrt(len2)) * b2Vec2(-ab.y, ab.x)
+                                             : b2Vec2(0.f, 1.f));
+            }
+        }
+        if (best < std::numeric_limits<float>::max()) {
+            dist   = best;
+            normal = bestN;
+            return true;
+        }
+    }
+    return false;
 }
 
 World::ContactEvent contactEventFrom(b2Contact *contact) {
@@ -189,6 +312,52 @@ void World::destroy() {
     relay_ = nullptr;
     delete draw_;
     draw_ = nullptr;
+}
+
+bool World::pointProbe(float x, float y, float radius, ClothContact *out) const {
+    if (out) *out = ClothContact{};
+    if (!isValid() || radius <= 0.f) return false;
+
+    const float rM = toMeters(radius);
+    const b2Vec2 centerM(toMeters(x), toMeters(y));
+
+    struct Probe : b2QueryCallback {
+        const World    *world = nullptr;
+        ClothContact   *best  = nullptr;
+        b2Vec2          center;
+        float           radiusM = 0.f;
+
+        bool ReportFixture(b2Fixture *fixture) override {
+            if (!fixture || fixture->IsSensor()) return true;
+            const b2Shape *shape = fixture->GetShape();
+            if (!shape) return true;
+            float dist;
+            b2Vec2 normal;
+            if (!shapePointDistance(shape, fixture->GetBody()->GetTransform(), center, dist,
+                                    normal)) {
+                return true;
+            }
+            const float depth = radiusM - dist;
+            if (depth > 0.f && depth > best->depth) {
+                best->hit   = true;
+                best->depth = world->toPixels(depth);
+                best->nx    = normal.x;
+                best->ny    = normal.y;
+                best->body  = static_cast<Body *>(fixture->GetBody()->GetUserData());
+            }
+            return true;
+        }
+    } probe;
+    probe.world   = this;
+    probe.best    = out;
+    probe.center  = centerM;
+    probe.radiusM = rM;
+
+    b2AABB aabb;
+    aabb.lowerBound = centerM - b2Vec2(rM, rM);
+    aabb.upperBound = centerM + b2Vec2(rM, rM);
+    world_->QueryAABB(&probe, aabb);
+    return out->hit;
 }
 
 void World::update(float dt) { updateFull(dt, 8, 3); }

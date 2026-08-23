@@ -85,7 +85,9 @@ file(GLOB all_test_cpp
   dialogue.cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
+  physics_cloth.cpp
   procgen.cpp
+  urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
   procgen_simulation.cpp
@@ -104,6 +106,7 @@ file(GLOB all_test_cpp
   box3d.cpp
   binding_selfcheck.cpp
   softbody.cpp
+  softbody_gpu.cpp
   hotreload.cpp
   remotesync.cpp
   shader.cpp
@@ -191,6 +194,7 @@ file(GLOB all_test_scripts
   model2.nut
   mouse.nut
   simplesquirrel.nut
+  physics_cloth.nut
   window.nut
   timer.nut
   decal.nut
