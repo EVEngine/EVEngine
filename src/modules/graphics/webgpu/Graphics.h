@@ -253,6 +253,20 @@ public:
                               float tintG = 1.f, float tintB = 1.f) override;
     void endGBufferPass() override;
 
+    bool supportsDecal() const override { return false; }
+    void beginDecalPass(int width, int height) override { (void)width; (void)height; }
+    void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override {
+        (void)viewProj; (void)nearZ; (void)farZ;
+    }
+    void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
+                   const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
+                   float metalStrength, float emissiveStrength, int blendMode = 0) override {
+        (void)model; (void)albedo; (void)normal; (void)params; (void)uvRect;
+        (void)fade; (void)normalStrength; (void)roughnessStrength; (void)metalStrength;
+        (void)emissiveStrength; (void)blendMode;
+    }
+    void endDecalPass() override {}
+
     Canvas *newCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
     bool isCanvasActive() const override;

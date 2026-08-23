@@ -265,6 +265,17 @@ public:
     static void addGBufferExtraDrawer(GBufferExtraDrawer drawer);
 
     /**
+     * @brief Register a callback that draws screen-space decals (box-projected
+     * volumes writing the DecalLayer) after the G-buffer fill and before the
+     * forward pass. Invoked between gfx.beginDecalPass / endDecalPass; call
+     * gfx.drawDecal(...) there (optionally gfx.setDecalCamera first).
+     */
+    using DecalExtraDrawer =
+        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
+                           const glm::mat4 &viewProj, float aspect)>;
+    static void addDecalExtraDrawer(DecalExtraDrawer drawer);
+
+    /**
      * @brief Register a callback that casts shadows for geometry outside the
      * Renderable3D ECS (e.g. sprite-stack slices). Invoked inside each CSM
      * cascade pass with that cascade's light-view-projection; call
