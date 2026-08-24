@@ -1162,20 +1162,20 @@ bool ParticleEmitter::getLightsEnabled() { return config()->lights.enabled; }
 
 void ParticleEmitter::setBlendMode(const std::string &mode) {
     if (mode == "additive")
-        draw()->blend = graphics::BlendMode::Additive;
+        draw()->blend = BlendMode::Additive;
     else if (mode == "opaque")
-        draw()->blend = graphics::BlendMode::Opaque;
+        draw()->blend = BlendMode::Opaque;
     else
-        draw()->blend = graphics::BlendMode::Alpha;
+        draw()->blend = BlendMode::Alpha;
 }
 
 std::string ParticleEmitter::getBlendMode() {
     switch (draw()->blend) {
-        case graphics::BlendMode::Additive:
+        case BlendMode::Additive:
             return "additive";
-        case graphics::BlendMode::Opaque:
+        case BlendMode::Opaque:
             return "opaque";
-        case graphics::BlendMode::Alpha:
+        case BlendMode::Alpha:
         default:
             return "alpha";
     }
