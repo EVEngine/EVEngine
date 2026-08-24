@@ -186,6 +186,7 @@ file(GLOB all_test_cpp
   editor_selection_v2.cpp
   editor_task_diagnostic_v2.cpp
   editor_transaction_v2.cpp
+  editor_value_json_v2.cpp
   ik.cpp
   animation.cpp
   animation_retarget_compression.cpp

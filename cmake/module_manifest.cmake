@@ -85,7 +85,6 @@ eve_declare_module(NAME crowd LAYER 0 SCRIPT Crowd SLOT crowd
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   THIRDPARTY poco
                    GROUP 3d web
                    OPTIONAL_DEPS procgen)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins

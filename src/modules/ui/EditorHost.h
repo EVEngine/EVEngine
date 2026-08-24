@@ -86,7 +86,7 @@ public:
     // ---- misc --------------------------------------------------------------
     std::string runScript(const std::string& source);
     std::string capture(const std::string& path);
-    /** @brief Reload mcp.nut, mcp/*.nut, or editors/*.vm.nut|*.editor.json. */
+    /** @brief Reload mcp.nut, scripts under mcp, or editor VM and manifest files. */
     std::string reloadResource(const std::string& path);
     /** @brief Watch count, reload counters and latest diagnostic as compact JSON. */
     std::string hotReloadStatus() const;
