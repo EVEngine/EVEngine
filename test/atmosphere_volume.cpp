@@ -1,4 +1,5 @@
 #include "graphics/AtmosphereVolume.h"
+#include "graphics/AtmosphereClipmap.h"
 #include "graphics/FogVolume.h"
 
 #include "zeroerr/unittest.h"
@@ -6,6 +7,7 @@
 #include <cmath>
 
 using eve::graphics::AtmosphereVolume;
+using eve::graphics::AtmosphereClipmap;
 using eve::graphics::FogVolume;
 using eve::graphics::VolumetricLight;
 
@@ -102,4 +104,17 @@ TEST_CASE("atmosphereVolume.localLightAndTransparentDepthQuery") {
     const glm::vec4 farFog = volume.sampleIntegrated(0.5f, 0.5f, 20.f);
     CHECK(farFog.a < nearFog.a);
     CHECK(farFog.r > farFog.b);
+}
+
+TEST_CASE("atmosphereClipmap.snapsCentersAndChoosesFinestLevel") {
+    AtmosphereClipmap clipmap;
+    clipmap.configure(3, 8, 8.f);
+    clipmap.updateCenter(glm::vec3(1.1f, 0.f, 0.f));
+    const glm::vec3 firstCenter = clipmap.getLevel(0).center;
+    clipmap.updateCenter(glm::vec3(1.9f, 0.f, 0.f));
+    CHECK(clipmap.getLevel(0).center == firstCenter);
+    CHECK(clipmap.levelForPosition(glm::vec3(4.f, 0.f, 0.f)) == 0);
+    CHECK(clipmap.levelForPosition(glm::vec3(12.f, 0.f, 0.f)) == 1);
+    CHECK(clipmap.levelForPosition(glm::vec3(28.f, 0.f, 0.f)) == 2);
+    CHECK(clipmap.levelForPosition(glm::vec3(80.f, 0.f, 0.f)) == -1);
 }

@@ -112,6 +112,9 @@ public:
      */
     glm::vec4 sampleIntegrated(float u, float v, float distance) const;
 
+    /** @brief Sample raw media with normalized volume coordinates. */
+    FogFroxel sampleMedia(float u, float v, float w) const;
+
 private:
     std::size_t index(int x, int y, int z) const;
 

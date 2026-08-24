@@ -200,4 +200,12 @@ glm::vec4 AtmosphereVolume::sampleIntegrated(float u, float v, float distance) c
     return integratedAt(x, y, sliceForDistance(distance));
 }
 
+FogFroxel AtmosphereVolume::sampleMedia(float u, float v, float w) const {
+    if (media_.empty()) return {};
+    const int x = std::clamp(int(u * float(width_)), 0, width_ - 1);
+    const int y = std::clamp(int(v * float(height_)), 0, height_ - 1);
+    const int z = std::clamp(int(w * float(depth_)), 0, depth_ - 1);
+    return at(x, y, z);
+}
+
 }  // namespace eve::graphics
