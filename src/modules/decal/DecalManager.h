@@ -1,7 +1,5 @@
 #pragma once
 
-#include "graphics/RenderSystem3D.h"
-
 #include <glm/mat4x4.hpp>
 
 #include <cstdint>
@@ -74,8 +72,16 @@ public:
     /** @brief Advance instance ages; expire and evict finished decals. */
     void update(float dt);
 
-    /** @brief Draw all live instances into the active graphics decal pass. */
-    void drawAll(graphics::Graphics &gfx, const graphics::Camera3D::Data &cam,
+    /**
+     * @brief Draws all live instances into the active graphics decal pass.
+     * @param gfx Active graphics service.
+     * @param eyeX Camera world-space X coordinate.
+     * @param eyeY Camera world-space Y coordinate.
+     * @param eyeZ Camera world-space Z coordinate.
+     * @param viewProj Camera view-projection matrix.
+     * @param aspect Viewport aspect ratio.
+     */
+    void drawAll(graphics::Graphics &gfx, float eyeX, float eyeY, float eyeZ,
                  const glm::mat4 &viewProj, float aspect);
 
     std::vector<DecalInstance> &instances() { return decals_; }

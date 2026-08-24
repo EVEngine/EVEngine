@@ -17,7 +17,7 @@ Decal::Decal() {
     graphics::RenderSystem3D::addDecalExtraDrawer(
         [](graphics::Graphics &gfx, const graphics::Camera3D::Data &cam,
            const glm::mat4 &viewProj, float aspect) {
-            DecalManager::inst().drawAll(gfx, cam, viewProj, aspect);
+            DecalManager::inst().drawAll(gfx, cam.eyeX, cam.eyeY, cam.eyeZ, viewProj, aspect);
         });
 }
 
