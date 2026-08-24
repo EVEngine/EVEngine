@@ -552,16 +552,23 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
 }
 
 wgpu::BindGroupLayout Graphics::makeShadowBindGroupLayout() {
-    WGPUBindGroupLayoutEntry entries[1]{};
+    WGPUBindGroupLayoutEntry entries[3]{};
     entries[0].binding = 0;
     entries[0].visibility = WGPUShaderStage_Vertex;
     entries[0].buffer.type = WGPUBufferBindingType_Uniform;
     entries[0].buffer.hasDynamicOffset = true;
     entries[0].buffer.minBindingSize = 64;  // mat4 mvp
+    entries[1].binding = 1;
+    entries[1].visibility = WGPUShaderStage_Fragment;
+    entries[1].texture.sampleType = WGPUTextureSampleType_Float;
+    entries[1].texture.viewDimension = WGPUTextureViewDimension_2D;
+    entries[2].binding = 2;
+    entries[2].visibility = WGPUShaderStage_Fragment;
+    entries[2].sampler.type = WGPUSamplerBindingType_Filtering;
 
     WGPUBindGroupLayoutDescriptor desc{};
     desc.label = sv("eve_shadow");
-    desc.entryCount = 1;
+    desc.entryCount = 3;
     desc.entries = entries;
     return device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&desc));
 }
@@ -1271,6 +1278,19 @@ void Graphics::createShadowPipelines() {
     // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
     pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dShadowPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+
+    wgpu::ShaderModule alphaVertModule = makeWgslModule(device, kMesh3DShadowAlphaVertWgsl);
+    wgpu::ShaderModule alphaFragModule = makeWgslModule(device, kMesh3DShadowAlphaFragWgsl);
+    pd.label = sv("eve_shadow_alpha");
+    pd.vertex.module = alphaVertModule.Get();
+    WGPUFragmentState alphaFs{};
+    alphaFs.module = alphaFragModule.Get();
+    alphaFs.entryPoint = sv("fs_main");
+    alphaFs.targetCount = 0;
+    alphaFs.targets = nullptr;
+    pd.fragment = &alphaFs;
+    mesh3dShadowAlphaPipeline =
+        device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
 void Graphics::createGbufferPipelines() {
@@ -1329,6 +1349,12 @@ void Graphics::createGbufferPipelines() {
     // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
     pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dGbufferPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+
+    wgpu::ShaderModule alphaFragModule = makeWgslModule(device, kMesh3DGbufferAlphaFragWgsl);
+    pd.label = sv("eve_gbuffer_alpha");
+    fs.module = alphaFragModule.Get();
+    mesh3dGbufferAlphaPipeline =
+        device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
 void Graphics::createVoxelPipelines() {
@@ -3031,10 +3057,13 @@ void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) {
 }
 
 void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo) {
-    // WebGPU shadow pipeline has no alpha-cutout variant; fall back to the
-    // regular solid-quad shadow so callers keep working.
-    drawMeshShadow(mesh, lightMVP);
-    (void)albedo;
+    if (!mesh || !mesh->gpuHandle) return;
+    ShadowDraw d;
+    d.mesh = mesh;
+    d.albedo = albedo;
+    d.mvp = lightMVP;
+    d.alphaTest = true;
+    shadowPassDraws.push_back(d);
 }
 
 void Graphics::endShadowPass() {
@@ -3077,9 +3106,17 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
 void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                     float nearZ, float farZ, Texture *albedo, float tintR,
                                     float tintG, float tintB) {
-    // WebGPU gbuffer pipeline has no alpha-cutout variant; fall back to the
-    // regular fill (full quad depth) so callers keep working.
-    drawMeshGBuffer(mesh, mvp, model, nearZ, farZ, albedo, tintR, tintG, tintB);
+    if (!mesh || !mesh->gpuHandle) return;
+    GbufferDraw d;
+    d.mesh = mesh;
+    d.albedo = albedo;
+    d.mvp = mvp;
+    d.model = model;
+    d.nearZ = nearZ;
+    d.farZ = farZ;
+    d.tint = glm::vec4(tintR, tintG, tintB, 1.f);
+    d.alphaTest = true;
+    gbufferPassDraws.push_back(d);
 }
 
 void Graphics::endGBufferPass() {
@@ -3551,25 +3588,30 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass) {
     auto &uboArena = currentUboArena();
     ensureUboArena(uboArena, uboArena.used + 4096);
-    pass.SetPipeline(mesh3dShadowPipeline);
-
     for (int c = 0; c < ShadowConfig::kCascades; ++c) {
         if (shadowCascadeDraws[c].empty()) continue;
         for (auto &d : shadowCascadeDraws[c]) {
             auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
             if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
 
+            pass.SetPipeline(d.alphaTest ? mesh3dShadowAlphaPipeline : mesh3dShadowPipeline);
+
             uint32_t offset = uboArena.alloc(256, 256);
             queue.WriteBuffer(uboArena.buffer, offset, &d.mvp, sizeof(glm::mat4));
 
-            WGPUBindGroupEntry entry{};
-            entry.binding = 0;
-            entry.buffer = uboArena.buffer.Get();
-            entry.size = 64;
+            GpuTexture *albedo = gpuForTextureOrWhite(d.albedo);
+            WGPUBindGroupEntry entries[3]{};
+            entries[0].binding = 0;
+            entries[0].buffer = uboArena.buffer.Get();
+            entries[0].size = 64;
+            entries[1].binding = 1;
+            entries[1].textureView = albedo->view.Get();
+            entries[2].binding = 2;
+            entries[2].sampler = albedo->sampler.Get();
             WGPUBindGroupDescriptor bgd{};
             bgd.layout = shadowSetLayout.Get();
-            bgd.entryCount = 1;
-            bgd.entries = &entry;
+            bgd.entryCount = 3;
+            bgd.entries = entries;
             wgpu::BindGroup bg = device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&bgd));
             uint32_t offsets[1] = {offset};
             pass.SetBindGroup(0, bg, 1, offsets);
@@ -3593,11 +3635,11 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
     if (gbufferPassDraws.empty() || gbufferSlots.empty()) return;
     auto &uboArena = currentUboArena();
     ensureUboArena(uboArena, uboArena.used + gbufferPassDraws.size() * 512);
-    pass.SetPipeline(mesh3dGbufferPipeline);
-
     for (auto &d : gbufferPassDraws) {
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
+
+        pass.SetPipeline(d.alphaTest ? mesh3dGbufferAlphaPipeline : mesh3dGbufferPipeline);
 
         struct GbufferPush {
             glm::mat4 mvp;
@@ -3880,7 +3922,8 @@ void Graphics::present() {
 
     // 3. GBuffer pass.
     if (gbufferPassPending && !gbufferSlots.empty()) {
-        GbufferSlot &slot = gbufferSlots[currentFrameSlot()];
+        lastGbufferSlot = currentFrameSlot();
+        GbufferSlot &slot = gbufferSlots[lastGbufferSlot];
         WGPURenderPassColorAttachment colorAtts[3]{};
         for (int i = 0; i < 3; ++i) {
             colorAtts[i].depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
@@ -4227,6 +4270,27 @@ image::ImageData *Graphics::newImageDataImpl(OffscreenCanvas *canvas) {
         std::memcpy(img->getData(), rgba.data(), rgba.size());
     }
     return img;
+}
+
+image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment) {
+    if (!device || gbufferSlots.empty() || gbufferWidth <= 0 || gbufferHeight <= 0) return nullptr;
+    GbufferSlot &slot = gbufferSlots[std::min<size_t>(lastGbufferSlot, gbufferSlots.size() - 1)];
+    wgpu::Texture src;
+    if (attachment == "depth")
+        src = slot.depthColor;
+    else if (attachment == "normal")
+        src = slot.normal;
+    else if (attachment == "albedo")
+        src = slot.albedo;
+    else
+        return nullptr;
+
+    std::vector<uint8_t> rgba;
+    if (!copyTextureToCpu(instance, device, queue, src, gbufferWidth, gbufferHeight, rgba))
+        return nullptr;
+    auto *image = new image::ImageData(gbufferWidth, gbufferHeight, "RGBA8");
+    std::memcpy(image->getData(), rgba.data(), rgba.size());
+    return image;
 }
 
 // ---------------------------------------------------------------------------

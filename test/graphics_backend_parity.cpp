@@ -139,3 +139,38 @@ TEST_CASE("graphics.backendParity.dynamicMeshUpdate") {
     const uint32_t invalid[] = {0, 1, 3};
     CHECK(!gfx->updateMeshVertices(mesh, moved, nullptr, nullptr, 3, invalid, 3));
 }
+
+TEST_CASE("graphics.backendParity.gbufferAlphaCutout") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+
+    const float positions[] = {
+        -1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
+    };
+    const float normals[] = {
+        0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    };
+    const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+
+    const uint8_t cutoutTexture[] = {255, 0, 0, 0, 255, 0, 0, 255};
+    Texture *albedo = gfx->newTexture(2, 1, cutoutTexture);
+    REQUIRE(albedo != nullptr);
+
+    gfx->beginGBufferPass(64, 64);
+    gfx->drawMeshGBufferAlpha(mesh, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f, albedo);
+    gfx->endGBufferPass();
+    gfx->present();
+
+    std::unique_ptr<eve::image::ImageData> image(gfx->readGBufferToImageData("albedo"));
+    REQUIRE(image.get() != nullptr);
+    const uint8_t *discarded = pixel(*image, 8, 32);
+    CHECK(discarded[0] < 8);
+    const uint8_t *kept = pixel(*image, 56, 32);
+    CHECK(kept[0] > 247);
+    CHECK(kept[1] < 8);
+    CHECK(kept[2] < 8);
+    writeParityArtifact(*image, "gbuffer_alpha_cutout", gfx->getBackendName());
+}

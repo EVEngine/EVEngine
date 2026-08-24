@@ -33,8 +33,8 @@ and `test gap`.
 | Basic 3D/PBR | partial | WGSL forward path exists; lighting, normal, parallax, environment and cloud-shadow output are unverified | Add isolated material feature scenes |
 | Surface modes | supported, test gap | Blend mode, depth-write and double-sided state are captured per draw and select dedicated pipelines | Add ordering and culling image scenes |
 | Masked materials | partial | Surface mode, cutoff and SSAO strength now have independent UBO fields | Test cutoff, dither and coverage |
-| Alpha-cutout shadow | missing | `drawMeshShadowAlpha` falls back to opaque shadow drawing | Add albedo binding and alpha-discard shadow pipeline |
-| Alpha-cutout GBuffer | missing | `drawMeshGBufferAlpha` falls back to opaque GBuffer drawing | Add albedo/UV alpha-discard GBuffer pipeline |
+| Alpha-cutout shadow | supported | Dedicated albedo/UV alpha-discard depth pipeline | Add a shadow-depth coverage artifact when depth readback is available |
+| Alpha-cutout GBuffer | supported | Dedicated alpha-discard pipeline and backend-neutral pixel test | Keep the Vulkan/Dawn pixel artifact in CI |
 | Cascaded shadows | partial | Opaque CSM path exists; cascade selection/bias/output have no Vulkan comparison | Add cascade boundary and receiver tests |
 | GBuffer | partial | Normal/depth/albedo targets exist, but the backend reports `supportsGBufferPost=false` | Validate attachment conventions, then enable consumers incrementally |
 | SSAO | partial | Intensity is stored independently and reaches forward/clustered WGSL; GBuffer post remains disabled | Compare disabled/enabled images and enable completed consumers |
@@ -117,8 +117,8 @@ not an acceptable fix.
 
 ### P1: geometry visibility and deferred data
 
-- [ ] Implement alpha-cutout shadow rendering.
-- [ ] Implement alpha-cutout GBuffer rendering.
+- [x] Implement alpha-cutout shadow rendering.
+- [x] Implement alpha-cutout GBuffer rendering.
 - [ ] Lock GBuffer normal/depth/albedo conventions with tests.
 - [ ] Make SSAO intensity functional and enable GBuffer post capability for
       completed consumers.

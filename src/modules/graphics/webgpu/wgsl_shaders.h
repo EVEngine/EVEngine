@@ -742,6 +742,37 @@ fn vs_main(in: VSIn) -> @builtin(position) vec4f {
 }
 )wgsl";
 
+inline const char *kMesh3DShadowAlphaVertWgsl = R"wgsl(
+struct VSIn {
+    @location(0) pos: vec3f,
+    @location(1) normal: vec3f,
+    @location(2) uv: vec2f,
+};
+struct Push { mvp: mat4x4f, };
+struct VSOut {
+    @builtin(position) pos: vec4f,
+    @location(0) uv: vec2f,
+};
+@group(0) @binding(0) var<uniform> pc: Push;
+@vertex
+fn vs_main(in: VSIn) -> VSOut {
+    var out: VSOut;
+    let clipPos = pc.mvp * vec4f(in.pos, 1.0);
+    out.pos = vec4f(clipPos.x, -clipPos.y, clipPos.z, clipPos.w);
+    out.uv = in.uv;
+    return out;
+}
+)wgsl";
+
+inline const char *kMesh3DShadowAlphaFragWgsl = R"wgsl(
+@group(0) @binding(1) var albedoTexture: texture_2d<f32>;
+@group(0) @binding(2) var albedoSampler: sampler;
+@fragment
+fn fs_main(@location(0) uv: vec2f) {
+    if (textureSample(albedoTexture, albedoSampler, uv).a < 0.05) { discard; }
+}
+)wgsl";
+
 // ---- GBuffer pass (normal / linear-depth / albedo) -------------------------
 inline const char *kMesh3DGbufferVertWgsl = R"wgsl(
 struct VSIn {
@@ -809,6 +840,43 @@ fn fs_main(in: FSIn) -> GBufOut {
     let linear = nearZ * farZ / max(farZ - ndc * (farZ - nearZ), 1e-6);
     out.depthColor = vec4f(linear, linear, linear, 1.0);
     out.albedo = textureSample(albedoSampler, mainSamp, in.vUV);
+    return out;
+}
+)wgsl";
+
+inline const char *kMesh3DGbufferAlphaFragWgsl = R"wgsl(
+struct FSIn {
+    @location(0) vNormal: vec3f,
+    @location(1) vNdcZ: f32,
+    @location(2) vUV: vec2f,
+};
+struct Push {
+    mvp: mat4x4f,
+    modelR0: vec4f,
+    modelR1: vec4f,
+    modelR2: vec4f,
+    clip: vec4f,
+};
+struct GBufOut {
+    @location(0) normal: vec4f,
+    @location(1) depthColor: vec4f,
+    @location(2) albedo: vec4f,
+};
+@group(0) @binding(0) var<uniform> pc: Push;
+@group(0) @binding(1) var albedoTexture: texture_2d<f32>;
+@group(0) @binding(2) var albedoSampler: sampler;
+@fragment
+fn fs_main(in: FSIn) -> GBufOut {
+    let sampled = textureSample(albedoTexture, albedoSampler, in.vUV);
+    if (sampled.a < 0.05) { discard; }
+    var out: GBufOut;
+    out.normal = vec4f(in.vNormal * 0.5 + 0.5, 1.0);
+    let nearZ = max(pc.clip.x, 1e-4);
+    let farZ = max(pc.clip.y, nearZ + 1e-3);
+    let ndc = clamp(in.vNdcZ, 0.0, 1.0);
+    let linear = nearZ * farZ / max(farZ - ndc * (farZ - nearZ), 1e-6);
+    out.depthColor = vec4f(linear, linear, linear, 1.0);
+    out.albedo = sampled;
     return out;
 }
 )wgsl";

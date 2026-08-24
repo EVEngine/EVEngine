@@ -263,6 +263,7 @@ public:
                               float nearZ, float farZ, Texture *albedo = nullptr, float tintR = 1.f,
                               float tintG = 1.f, float tintB = 1.f) override;
     void endGBufferPass() override;
+    image::ImageData *readGBufferToImageData(const std::string &attachment) override;
 
     bool supportsDecal() const override { return false; }
     void beginDecalPass(int width, int height) override { (void)width; (void)height; }
@@ -352,7 +353,9 @@ private:
     };
     struct ShadowDraw {
         Mesh *mesh = nullptr;
+        Texture *albedo = nullptr;
         glm::mat4 mvp{1.f};
+        bool alphaTest = false;
     };
     struct GbufferDraw {
         Mesh *mesh = nullptr;
@@ -362,6 +365,7 @@ private:
         float nearZ = 0.1f;
         float farZ = 100.f;
         glm::vec4 tint{1.f};
+        bool alphaTest = false;
         uint32_t pushUboOffset = 0;
     };
     struct VoxelDraw {
@@ -579,7 +583,9 @@ private:
     std::array<wgpu::RenderPipeline, kMeshPipelineVariants> mesh3dPipelines;
     std::array<wgpu::RenderPipeline, kMeshPipelineVariants> mesh3dCanvasPipelines;
     wgpu::RenderPipeline mesh3dShadowPipeline;
+    wgpu::RenderPipeline mesh3dShadowAlphaPipeline;
     wgpu::RenderPipeline mesh3dGbufferPipeline;
+    wgpu::RenderPipeline mesh3dGbufferAlphaPipeline;
     wgpu::RenderPipeline voxelRectPipeline;
     wgpu::RenderPipeline lit2dPipeline;
     // RGBA8Unorm (offscreen canvas / scene) variants of the 2D pipelines.
@@ -721,6 +727,7 @@ private:
     };
     int gbufferWidth = 0, gbufferHeight = 0;
     std::vector<GbufferSlot> gbufferSlots;
+    uint32_t lastGbufferSlot = 0;
 
     // Canvas state.
     Canvas *activeCanvas = nullptr;
