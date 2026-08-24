@@ -84,12 +84,39 @@ void AtmosphereVolume::integrate(const glm::vec3 &lightColor, float phaseScale) 
                 const float integral = f.extinction > 1e-6f
                     ? (1.f - stepTransmittance) / f.extinction
                     : stepLength;
-                radiance += transmittance * (f.scattering * light + f.emissive) * integral;
+                radiance += transmittance *
+                    (f.scattering * light * f.lightVisibility + f.emissive) * integral;
                 transmittance *= stepTransmittance;
                 integrated_[index(x, y, z)] = glm::vec4(radiance, transmittance);
             }
         }
     }
+}
+
+void AtmosphereVolume::setLightVisibility(int x, int y, int z, float visibility) {
+    at(x, y, z).lightVisibility = std::clamp(visibility, 0.f, 1.f);
+}
+
+std::size_t AtmosphereVolume::blendHistory(const AtmosphereVolume &history, float historyWeight,
+                                           float rejectionThreshold) {
+    if (history.width_ != width_ || history.height_ != height_ || history.depth_ != depth_)
+        return integrated_.size();
+    const float baseWeight = std::clamp(historyWeight, 0.f, 1.f);
+    const float threshold = std::max(rejectionThreshold, 0.f);
+    std::size_t rejected = 0;
+    for (std::size_t i = 0; i < integrated_.size(); ++i) {
+        const glm::vec4 current = integrated_[i];
+        const glm::vec4 previous = history.integrated_[i];
+        const float currentLuma = glm::dot(glm::vec3(current), glm::vec3(0.2126f, 0.7152f, 0.0722f));
+        const float previousLuma = glm::dot(glm::vec3(previous), glm::vec3(0.2126f, 0.7152f, 0.0722f));
+        const float relativeDelta = std::fabs(currentLuma - previousLuma) /
+            std::max(std::max(currentLuma, previousLuma), 1e-4f);
+        const bool reject = relativeDelta > threshold;
+        if (reject) ++rejected;
+        const float weight = reject ? 0.f : baseWeight;
+        integrated_[i] = glm::mix(current, previous, weight);
+    }
+    return rejected;
 }
 
 const glm::vec4 &AtmosphereVolume::integratedAt(int x, int y, int z) const {

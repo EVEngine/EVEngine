@@ -14,6 +14,7 @@ struct FogFroxel {
     float extinction = 0.f;
     glm::vec3 emissive{0.f};
     float anisotropy = 0.f;
+    float lightVisibility = 1.f;
 };
 
 /** @brief Camera-frustum volume used by the volumetric fog passes and CPU references. */
@@ -60,6 +61,19 @@ public:
      * @param phaseScale Phase-function multiplier for this light direction.
      */
     void integrate(const glm::vec3 &lightColor, float phaseScale = 1.f);
+
+    /** @brief Set the main-light shadow visibility for one froxel. */
+    void setLightVisibility(int x, int y, int z, float visibility);
+
+    /**
+     * @brief Blend integrated lighting with a reprojected history volume.
+     * @param history Previous frame already mapped into this grid.
+     * @param historyWeight Base history weight in [0,1].
+     * @param rejectionThreshold Relative luminance delta that rejects history.
+     * @return Number of froxels whose history was rejected.
+     */
+    std::size_t blendHistory(const AtmosphereVolume &history, float historyWeight,
+                             float rejectionThreshold);
 
     /** @brief Cumulative RGB in-scattering and A transmittance at a froxel. */
     const glm::vec4 &integratedAt(int x, int y, int z) const;
