@@ -196,6 +196,20 @@ TEST_CASE("editor.field_brush.composes_kernel_and_operation") {
     CHECK_EQ(terrain.readScalar(1, 2), 0.25f);
 }
 
+TEST_CASE("editor.heightmap_brush.applies_native_circular_falloff") {
+    Editor editor;
+    eve::procgen::Heightmap heightmap(9, 9);
+    CHECK_EQ(editor.applyHeightmapBrush(&heightmap, 4.f, 4.f, 2.f, 0.5f), 13);
+    CHECK_EQ(heightmap.height(4, 4), 0.5f);
+    CHECK(heightmap.height(5, 4) > heightmap.height(6, 4));
+    CHECK_EQ(heightmap.height(0, 0), 0.f);
+
+    CHECK(editor.applyHeightmapBrush(&heightmap, 4.f, 4.f, 2.f, -0.25f) > 0);
+    CHECK_EQ(heightmap.height(4, 4), 0.25f);
+    CHECK_EQ(editor.applyHeightmapBrush(nullptr, 4.f, 4.f, 2.f, 1.f), 0);
+    CHECK_EQ(editor.applyHeightmapBrush(&heightmap, 4.f, 4.f, -1.f, 1.f), 0);
+}
+
 TEST_CASE("editor.script_tool.implements_the_same_session_protocol") {
     ssq::VM vm(1024, ssq::Libs::ALL);
     eve::ModuleManager::expose(vm);
