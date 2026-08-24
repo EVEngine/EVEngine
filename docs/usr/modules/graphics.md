@@ -173,6 +173,15 @@ rc.disable("msaa");             // 或通过 RenderControl 特性关
 
 `Camera3D.screenToRay(screenX, screenY, viewW, viewH)` 写入眼点与单位方向，用 `getScreenRayOrigin*` / `getScreenRayDir*` 读取，再对包围球/盒调用 Math 的 `raycastSphere` / `raycastBox`。
 
+### 曲面瀑布
+
+`Waterfall.createCurvedSheet(width, height, segX, segY, curveDepth, lipOverhang)` 创建带横向弧度和顶部探出段的细分瀑布网格，适合贴合崖壁并形成自然的离壁水帘；原有 `createSheet(width, height)` 仍用于平面瀑布。
+
+```squirrel
+local fall = gfx.newWaterfall();
+fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);
+```
+
 ## 常见问题
 
 - 忘记每帧 `clear()`，保留未定义的旧帧内容。

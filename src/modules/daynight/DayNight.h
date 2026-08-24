@@ -96,6 +96,16 @@ public:
     float getAmbientB() const;
     float getAmbientBrightness() const;
 
+    // ---- weather coupling ----
+    /**
+     * @brief Apply cloud cover and lightning exposure to the unified sky/lighting model.
+     * @param cloudiness Cloud attenuation in [0,1].
+     * @param lightningFlash Transient lightning energy in [0,1].
+     */
+    void setWeatherInfluence(float cloudiness, float lightningFlash);
+    float getWeatherCloudiness() const;
+    float getWeatherFlash() const;
+
     // ---- skybox ----
     void setSkyboxEnabled(bool enabled);
     bool isSkyboxEnabled() const;
