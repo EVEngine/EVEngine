@@ -309,5 +309,5 @@ eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
                    GROUP 3d)
-eve_declare_module(NAME dialogue LAYER 6 SCRIPT Dialogue SLOT dialogue
+eve_declare_module(NAME dialogue LAYER 6 SCRIPT Dialogue DialogueUX SLOT dialogue dialogueUX
                    DEPS avatar)

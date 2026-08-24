@@ -61,6 +61,24 @@ generator 的 yield 值。完整可运行示例见
   `getCurrentLineId/getCurrentLineMeta/getCurrentLineTags`。
 - 驱动：`update(dt)`、`reset()`。
 
+### `DialogueUX`（默认呈现辅助）
+
+构建包含 `dialogue` 时，根表同时提供 `dialogueUX`。它不强制使用某一种 UI，
+但为官方 `DefaultDialogueUI` 和自定义 UI 保存一致的呈现状态：
+
+- 历史：`record`、`clearHistory`、`getHistoryCount`、
+  `getHistoryLineId/getHistorySpeaker/getHistoryText`。
+- 富文本：`plainText` 去除 `[pause]`、`[speed]`、`[color]`、`[shake]` 控制标签；
+  `getTextActionCount` 返回控制动作数。
+- 自动播放：`setAutoMode/isAutoMode`、`setAutoDelay/getAutoDelay`、
+  `updateAuto(dt, voicePlaying)`、`resetAutoTimer`。
+- 跳过：`setSkipMode("off"|"read"|"all")`、`getSkipMode`、
+  `markRead/isRead/shouldSkip`。
+
+`make_default_dialogue_ui(dialogue, dialogueUX, ui)` 创建可直接挂载的默认 UI；
+调用返回对象的 `mount()`、每帧 `update(dt)` 和 `render()` 即可。项目可以完全替换
+这个脚本视图，而继续复用 `DialogueUX` 的历史、已读和自动推进状态。
+
 ## 生命周期
 
 - 角色注册幂等（重复注册覆盖显示名）；`bindAvatar` 接受 `avatar.newImageAvatar()`

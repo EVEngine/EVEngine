@@ -1,4 +1,5 @@
 #include "dialogue/Conversation.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 using namespace eve;
