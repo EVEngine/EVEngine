@@ -1,5 +1,17 @@
 #include "ui/UIAutomationCapabilities.h"
 
+#include "common/config.h"
+
+#if defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__)
+
+namespace eve::ui {
+
+void registerUIAutomationCapabilities() {}
+
+}  // namespace eve::ui
+
+#else
+
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/UIAutomation.h"
@@ -197,3 +209,5 @@ void registerUIAutomationCapabilities() {
 }
 
 }  // namespace eve::ui
+
+#endif

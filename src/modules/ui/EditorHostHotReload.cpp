@@ -1,5 +1,7 @@
 #include "ui/EditorHost.h"
 
+#include "common/config.h"
+
 #if defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__)
 
 namespace eve::ui {
