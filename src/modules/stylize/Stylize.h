@@ -25,13 +25,14 @@ namespace eve::stylize {
  *   - "watercolor" — paper / bleed post
  *   - "ink"        — ink-wash post (+ mesh)
  *   - "pixel"      — pixel-art post
+ *   - "xray"       — depth-aware mesh technique
  *
  * Extension points (keep these stable):
  *   - newPass / newPassFromShader — wrap built-in or custom SPIR-V post shaders
  *   - newMeshShader — object-space variants (cartoon/ink today)
  *   - StyleChain — multi-pass ping-pong (separable blur, outline+shade, …)
  *   - supports(style, feature) — "post" | "mesh" | "cpu" | "gbuffer"
- *     ("gbuffer" reserved: depth/normal-aware outline; currently always false)
+ *     ("gbuffer" is true when depth or normal inputs are required)
  *   - getStyleParam* — introspect push-constant knobs for tooling / UI
  *
  * Script: `stylize <- eve.Stylize();`
@@ -52,7 +53,8 @@ public:
      *   "post"    — StylePass / newPostShader
      *   "mesh"    — newMeshShader
      *   "cpu"     — processImage
-     *   "gbuffer" — reserved for depth/normal inputs (always false for now)
+     *   "depth" / "normal" — required scene inputs
+     *   "gbuffer" — shorthand for either depth or normal
      */
     bool supports(const std::string &style, const std::string &feature) const;
 

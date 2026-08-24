@@ -20,7 +20,13 @@
 namespace eve::stylize {
 namespace {
 
-const std::array<const char *, 5> kStyles = {"cartoon", "watercolor", "ink", "pixel", "xray"};
+const std::array<StyleDefinition, 5> kStyles = {{
+    {"cartoon", true, true, true, true, true},
+    {"watercolor", true, false, true, false, false},
+    {"ink", true, true, true, true, true},
+    {"pixel", true, false, true, false, false},
+    {"xray", false, true, false, true, false},
+}};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
@@ -152,22 +158,31 @@ fn fs_main(in: FSIn, @builtin(position) fragPos: vec4f) -> FSOut {
 
 }  // namespace
 
-bool isKnownStyle(const std::string &style) {
-    return std::find(kStyles.begin(), kStyles.end(), style) != kStyles.end();
+const StyleDefinition *findStyleDefinition(const std::string &style) {
+    const auto it = std::find_if(kStyles.begin(), kStyles.end(), [&](const StyleDefinition &def) {
+        return style == def.id;
+    });
+    return it == kStyles.end() ? nullptr : &*it;
 }
+
+bool isKnownStyle(const std::string &style) { return findStyleDefinition(style) != nullptr; }
 
 int styleCount() { return int(kStyles.size()); }
 
 std::string styleIdAt(int index) {
     if (index < 0 || index >= int(kStyles.size())) return {};
-    return kStyles[size_t(index)];
+    return kStyles[size_t(index)].id;
 }
 
 bool styleSupports(const std::string &style, const std::string &feature) {
-    if (!isKnownStyle(style)) return false;
-    if (feature == "post" || feature == "cpu") return true;
-    if (feature == "mesh") return style == "cartoon" || style == "ink" || style == "xray";
-    if (feature == "gbuffer") return true;  // depth/normal available via graphics.RenderControl
+    const StyleDefinition *def = findStyleDefinition(style);
+    if (!def) return false;
+    if (feature == "post") return def->post;
+    if (feature == "mesh") return def->mesh;
+    if (feature == "cpu") return def->cpu;
+    if (feature == "depth") return def->depth;
+    if (feature == "normal") return def->normal;
+    if (feature == "gbuffer") return def->depth || def->normal;
     return false;
 }
 
@@ -370,8 +385,10 @@ void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
 
 graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &style) {
     if (!gfx) throw eve::Exception("createPostShader: null graphics");
-    if (!isKnownStyle(style))
-        throw eve::Exception("createPostShader: unknown style '%s'", style.c_str());
+    const StyleDefinition *def = findStyleDefinition(style);
+    if (!def) throw eve::Exception("createPostShader: unknown style '%s'", style.c_str());
+    if (!def->post)
+        throw eve::Exception("createPostShader: style '%s' has no post technique", style.c_str());
 
     std::vector<uint32_t> frag;
     if (style == "cartoon")

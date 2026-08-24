@@ -235,22 +235,27 @@ TEST_CASE("stylize.styles.registry") {
     auto *mod = Stylize::create();
     REQUIRE(mod != nullptr);
     CHECK_EQ(mod->getName(), std::string("Stylize"));
-    CHECK_EQ(mod->getStyleCount(), 4);
+    CHECK_EQ(mod->getStyleCount(), 5);
     CHECK(mod->hasStyle("cartoon"));
     CHECK(mod->hasStyle("watercolor"));
     CHECK(mod->hasStyle("ink"));
     CHECK(mod->hasStyle("pixel"));
+    CHECK(mod->hasStyle("xray"));
     CHECK(!mod->hasStyle("oil"));
     CHECK(mod->hasMeshStyle("cartoon"));
     CHECK(mod->hasMeshStyle("ink"));
     CHECK(!mod->hasMeshStyle("watercolor"));
     CHECK(!mod->hasMeshStyle("pixel"));
+    CHECK(mod->hasMeshStyle("xray"));
 
     CHECK(mod->supports("cartoon", "post"));
     CHECK(mod->supports("cartoon", "mesh"));
     CHECK(mod->supports("watercolor", "cpu"));
     CHECK(!mod->supports("watercolor", "mesh"));
     CHECK(mod->supports("ink", "gbuffer"));  // depth/normal via graphics.RenderControl
+    CHECK(mod->supports("xray", "depth"));
+    CHECK(!mod->supports("xray", "post"));
+    CHECK(!mod->supports("xray", "cpu"));
     CHECK(!mod->supports("oil", "post"));
 
     CHECK_GT(mod->getStyleParamCount("pixel"), 0);

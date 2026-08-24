@@ -58,6 +58,8 @@ graphics::Shader *Stylize::newMeshShader(graphics::Graphics *gfx, const std::str
 
 image::ImageData *Stylize::processImage(image::ImageData *src, const std::string &style) {
     if (!hasStyle(style)) throw eve::Exception("Stylize.processImage: unknown style '%s'", style.c_str());
+    if (!supports(style, "cpu"))
+        throw eve::Exception("Stylize.processImage: style '%s' has no CPU technique", style.c_str());
     return processImageCpu(src, style);
 }
 

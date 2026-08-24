@@ -11,12 +11,25 @@ class Shader;
 
 namespace eve::stylize {
 
+/** @brief Immutable capability metadata for one built-in stylization recipe. */
+struct StyleDefinition {
+    const char *id;
+    bool post;
+    bool mesh;
+    bool cpu;
+    bool depth;
+    bool normal;
+};
+
+/** @brief Return a built-in definition, or nullptr when the id is unknown. */
+const StyleDefinition *findStyleDefinition(const std::string &style);
+
 /** Built-in style ids accepted by string APIs. */
 bool isKnownStyle(const std::string &style);
 int styleCount();
 std::string styleIdAt(int index);
 
-/** Feature flags: "post" | "mesh" | "cpu" | "gbuffer" (gbuffer reserved). */
+/** Feature flags: "post" | "mesh" | "cpu" | "depth" | "normal" | "gbuffer". */
 bool styleSupports(const std::string &style, const std::string &feature);
 
 /** Built-in post param name table (for tooling / UI introspection). */
