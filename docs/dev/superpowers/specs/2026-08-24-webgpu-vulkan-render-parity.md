@@ -36,7 +36,7 @@ and `test gap`.
 | Alpha-cutout shadow | supported | Dedicated albedo/UV alpha-discard depth pipeline | Add a shadow-depth coverage artifact when depth readback is available |
 | Alpha-cutout GBuffer | supported | Dedicated alpha-discard pipeline and backend-neutral pixel test | Keep the Vulkan/Dawn pixel artifact in CI |
 | Cascaded shadows | partial | Opaque CSM path exists; cascade selection/bias/output have no Vulkan comparison | Add cascade boundary and receiver tests |
-| GBuffer | partial | Normal/depth/albedo targets exist, but the backend reports `supportsGBufferPost=false` | Validate attachment conventions, then enable consumers incrementally |
+| GBuffer | partial | Normal/depth/albedo encoding and CPU readback match Vulkan; generic SPIR-V post remains disabled | Enable WGSL-native consumers incrementally |
 | SSAO | partial | Intensity is stored independently and reaches forward/clustered WGSL; GBuffer post remains disabled | Compare disabled/enabled images and enable completed consumers |
 | Decals | missing | `supportsDecal=false`; all decal methods are no-ops | Implement WebGPU decal targets, box pipeline and composition |
 | Outline | missing through public effect API | Built-in implementation creates SPIR-V shaders, which WebGPU rejects | Port built-in shader to WGSL and add depth/normal edge tests |
@@ -119,7 +119,7 @@ not an acceptable fix.
 
 - [x] Implement alpha-cutout shadow rendering.
 - [x] Implement alpha-cutout GBuffer rendering.
-- [ ] Lock GBuffer normal/depth/albedo conventions with tests.
+- [x] Lock GBuffer normal/depth/albedo conventions with tests.
 - [ ] Make SSAO intensity functional and enable GBuffer post capability for
       completed consumers.
 - [ ] Implement decals.

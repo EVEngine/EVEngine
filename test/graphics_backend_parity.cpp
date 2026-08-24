@@ -173,4 +173,23 @@ TEST_CASE("graphics.backendParity.gbufferAlphaCutout") {
     CHECK(kept[1] < 8);
     CHECK(kept[2] < 8);
     writeParityArtifact(*image, "gbuffer_alpha_cutout", gfx->getBackendName());
+
+    std::unique_ptr<eve::image::ImageData> normal(gfx->readGBufferToImageData("normal"));
+    REQUIRE(normal.get() != nullptr);
+    const uint8_t *encodedNormal = pixel(*normal, 56, 32);
+    const bool normalXCentered = encodedNormal[0] >= 127 && encodedNormal[0] <= 128;
+    const bool normalYCentered = encodedNormal[1] >= 127 && encodedNormal[1] <= 128;
+    CHECK(normalXCentered);
+    CHECK(normalYCentered);
+    CHECK(encodedNormal[2] > 247);
+    writeParityArtifact(*normal, "gbuffer_world_normal", gfx->getBackendName());
+
+    std::unique_ptr<eve::image::ImageData> depth(gfx->readGBufferToImageData("depth"));
+    REQUIRE(depth.get() != nullptr);
+    const uint8_t *linearDepth = pixel(*depth, 56, 32);
+    const bool expectedLinearDepth = linearDepth[0] >= 50 && linearDepth[0] <= 52;
+    CHECK(expectedLinearDepth);
+    CHECK(linearDepth[1] == linearDepth[0]);
+    CHECK(linearDepth[2] == linearDepth[0]);
+    writeParityArtifact(*depth, "gbuffer_linear_depth", gfx->getBackendName());
 }
