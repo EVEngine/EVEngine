@@ -5125,19 +5125,3 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
 }
 
 }  // namespace eve::graphics::webgpu
-
-namespace eve::graphics {
-// Font support lives in the font module, which is not part of the WebGPU/WASM
-// build. Fail loudly instead of leaving the interface unsatisfied at link time.
-Font *Graphics::newFont(font::FontData *, std::string) {
-    throw Exception(
-        "newFont: fonts are not supported on the WebGPU backend (font module is not "
-        "part of the WASM build)");
-}
-
-void Graphics::print(const std::string &, float, float, const Color &, float) {
-    throw Exception(
-        "print: fonts are not supported on the WebGPU backend (font module is not part "
-        "of the WASM build)");
-}
-}  // namespace eve::graphics

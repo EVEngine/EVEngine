@@ -684,11 +684,10 @@ macro(get_available_build)
 
     # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
     # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
-    # DataModule files that require Poco. graphics/Font.cpp needs the EVFont
-    # module (FreeType/Poco, skipped on WASM), so it is trimmed as well.
+    # DataModule files that require Poco. Font/FreeType is supported on WASM.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(EVENGINE_EXCLUDED_MODULE_FILES
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;Font.cpp;ImGuiHostPanels.cpp"
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp"
             CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten")
     else()
         set(EVENGINE_EXCLUDED_MODULE_FILES
