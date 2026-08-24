@@ -11,6 +11,7 @@
 #include "graphics/vulkan/Graphics.h"
 #endif
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/AlphaMask.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Font.h"
 #include "graphics/GlobalIllumination.h"
@@ -218,6 +219,26 @@ void Graphics::expose(ssq::Table& table) {
     canvasCls.addFunc("getHeight", &Canvas::getHeight);
     canvasCls.addFunc("getTexture", &Canvas::getTexture);
 
+#ifndef EVENGINE_WEBGPU
+    auto fontCls =
+        table.addClass<Font>("Font", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
+    fontCls.addFunc("getHeight", &Font::getHeight);
+    fontCls.addFunc("getAscent", &Font::getAscent);
+    fontCls.addFunc("getBaseline", &Font::getBaseline);
+    fontCls.addFunc("getWidth", &Font::getWidth);
+    fontCls.addFunc("hasGlyph", &Font::hasGlyph);
+#endif
+
+    auto maskCls = table.addClass<AlphaMask>(
+        "AlphaMask", std::function<AlphaMask *()>([]() -> AlphaMask * { return nullptr; }), true);
+    maskCls.addFunc("setThreshold", &AlphaMask::setThreshold);
+    maskCls.addFunc("getThreshold", &AlphaMask::getThreshold);
+    maskCls.addFunc("setSoftness", &AlphaMask::setSoftness);
+    maskCls.addFunc("getSoftness", &AlphaMask::getSoftness);
+    maskCls.addFunc("setInverted", &AlphaMask::setInverted);
+    maskCls.addFunc("getInverted", &AlphaMask::getInverted);
+    maskCls.addFunc("draw", &AlphaMask::draw);
+
     auto texCls =
         table.addClass<Texture>("Texture", std::function<Texture*()>([]() -> Texture* { return nullptr; }), true);
     texCls.addFunc("setCastOcclusion", &Texture::setCastOcclusion);
@@ -225,6 +246,8 @@ void Graphics::expose(ssq::Table& table) {
     texCls.addFunc("getWidth", &Texture::getWidth);
     texCls.addFunc("getHeight", &Texture::getHeight);
     texCls.addFunc("getMipmapCount", &Texture::getMipmapCount);
+    texCls.addFunc("setAlphaConvention", &Texture::setAlphaConvention);
+    texCls.addFunc("getAlphaConvention", &Texture::getAlphaConvention);
 
     // Texture / Mesh expose occlusion flags used by volumetric light shafts.
     // (create returns null — instances come from Graphics::newTexture / newMesh*)
@@ -459,6 +482,20 @@ void Graphics::expose(ssq::Table& table) {
     material.addFunc("getCastOcclusion", &Material::getCastOcclusion);
     material.addFunc("setHair", &Material::setHair);
     material.addFunc("getHair", &Material::getHair);
+    material.addFunc("setSurfaceMode", &Material::setSurfaceMode);
+    material.addFunc("getSurfaceMode", &Material::getSurfaceMode);
+    material.addFunc("setAlphaCutoff", &Material::setAlphaCutoff);
+    material.addFunc("getAlphaCutoff", &Material::getAlphaCutoff);
+    material.addFunc("setBlendMode", &Material::setBlendMode);
+    material.addFunc("getBlendMode", &Material::getBlendMode);
+    material.addFunc("setDepthWrite", &Material::setDepthWrite);
+    material.addFunc("getDepthWrite", &Material::getDepthWrite);
+    material.addFunc("setDoubleSided", &Material::setDoubleSided);
+    material.addFunc("getDoubleSided", &Material::getDoubleSided);
+    material.addFunc("setSortPriority", &Material::setSortPriority);
+    material.addFunc("getSortPriority", &Material::getSortPriority);
+    material.addFunc("setAlphaTechnique", &Material::setAlphaTechnique);
+    material.addFunc("getAlphaTechnique", &Material::getAlphaTechnique);
     material.addFunc("hasParam", &Material::hasParam);
     material.addFunc("setFloat", &Material::setFloat);
     material.addFunc("getFloat", &Material::getFloat);
@@ -767,6 +804,10 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("renderSprites", &Graphics::renderSprites);
     cls.addFunc("newSprite2D", &Graphics::newSprite2D);
     cls.addFunc("drawTexturedRectRotated", &Graphics::drawTexturedRectRotatedRGBA);
+    cls.addFunc("newFont", &Graphics::newFont);
+    cls.addFunc("setFont", &Graphics::setFont);
+    cls.addFunc("getFont", &Graphics::getFont);
+    cls.addFunc("print", &Graphics::printRGBA);
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
                 static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
@@ -826,6 +867,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
     cls.addFunc("newOutline", &Graphics::newOutline);
+    cls.addFunc("newAlphaMask", &Graphics::newAlphaMask);
     cls.addFunc("getOutline", &Graphics::pipelineOutline);
     cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
     cls.addFunc("newScreenSpaceReflection", &Graphics::newScreenSpaceReflection);
@@ -862,6 +904,7 @@ Volumetric* Graphics::newVolumetric() { return new Volumetric(this); }
 AmbientOcclusion* Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
 
 Outline* Graphics::newOutline() { return new Outline(this); }
+AlphaMask* Graphics::newAlphaMask() { return new AlphaMask(this); }
 
 GlobalIllumination* Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
 

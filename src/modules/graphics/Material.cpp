@@ -13,7 +13,10 @@ void Material::setShadingModel(const std::string &model) {
         shadingModel_ = "pbr";
     }
     if (shadingModel_ == "unlit") receiveLight_ = false;
-    if (shadingModel_ == "hair") isHair_ = true;
+    if (shadingModel_ == "hair") {
+        isHair_ = true;
+        surfaceMode_ = SurfaceMode::Transparent;
+    }
 }
 
 void Material::setTint(float r, float g, float b, float a) {
@@ -48,7 +51,52 @@ void Material::setParallax(float scale, float minLayers, float maxLayers) {
 
 void Material::setHair(bool hair) {
     isHair_ = hair;
-    if (hair) shadingModel_ = "hair";
+    if (hair) {
+        shadingModel_ = "hair";
+        surfaceMode_ = SurfaceMode::Transparent;
+    }
+}
+
+void Material::setSurfaceMode(const std::string &mode) {
+    if (mode == "masked")
+        surfaceMode_ = SurfaceMode::Masked;
+    else if (mode == "transparent" || mode == "blend")
+        surfaceMode_ = SurfaceMode::Transparent;
+    else
+        surfaceMode_ = SurfaceMode::Opaque;
+}
+
+std::string Material::getSurfaceMode() const {
+    if (surfaceMode_ == SurfaceMode::Masked) return "masked";
+    if (surfaceMode_ == SurfaceMode::Transparent) return "transparent";
+    return "opaque";
+}
+
+void Material::setAlphaCutoff(float cutoff) {
+    alphaCutoff_ = cutoff < 0.f ? 0.f : (cutoff > 1.f ? 1.f : cutoff);
+}
+
+void Material::setBlendMode(const std::string &mode) {
+    if (mode == "premultiplied" || mode == "premultiplied_alpha")
+        blendMode_ = BlendMode::Premultiplied;
+    else if (mode == "additive")
+        blendMode_ = BlendMode::Additive;
+    else if (mode == "multiply")
+        blendMode_ = BlendMode::Multiply;
+    else
+        blendMode_ = BlendMode::Alpha;
+}
+
+std::string Material::getBlendMode() const {
+    if (blendMode_ == BlendMode::Premultiplied) return "premultiplied";
+    if (blendMode_ == BlendMode::Additive) return "additive";
+    if (blendMode_ == BlendMode::Multiply) return "multiply";
+    return "alpha";
+}
+
+void Material::setAlphaTechnique(const std::string &technique) {
+    alphaTechnique_ =
+        (technique == "dither" || technique == "coverage") ? technique : "cutoff";
 }
 
 bool Material::hasParam(const std::string &name) const { return params_.count(name) > 0; }
@@ -70,6 +118,12 @@ bool Material::isTransparentHair() const {
 }
 
 void Material::bind(Graphics &gfx) const {
+    const BlendMode effectiveBlend =
+        albedo_ && albedo_->hasPremultipliedAlpha() && blendMode_ == BlendMode::Alpha
+            ? BlendMode::Premultiplied
+            : blendMode_;
+    gfx.setMesh3DSurface(surfaceMode_, effectiveBlend, depthWrite_, doubleSided_, alphaCutoff_,
+                         alphaTechnique_);
     gfx.setMesh3DMaterial(metallic_, roughness_);
     gfx.setMesh3DTexCellBomb(texBombScale_, texBombStrength_, texBombRot_);
     gfx.setMesh3DNormalTexture(normal_);

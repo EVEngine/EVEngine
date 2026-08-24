@@ -12,6 +12,8 @@ enum class BlendMode {
     Alpha = 0,
     Additive = 1,
     Opaque = 2,
+    Premultiplied = 3,
+    Multiply = 4,
 };
 
 }  // namespace eve

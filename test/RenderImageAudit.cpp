@@ -784,7 +784,8 @@ void resetScene3D() {
 }
 
 void auditGpuFrame(Graphics *gfx, const char *scene, const char *phase, const RenderAuditBg &bg,
-                   bool flicker = false, const std::function<void()> &after3D = {}) {
+                   bool flicker = false, const std::function<void()> &after3D = {},
+                   const char *rawCaptureName = nullptr) {
     auto drawOnce = [&]() {
         RenderSystem3D::render(*gfx);
         if (after3D) after3D();
@@ -796,6 +797,8 @@ void auditGpuFrame(Graphics *gfx, const char *scene, const char *phase, const Re
     drawOnce();
     std::unique_ptr<ImageData> a(gfx->newImageData());
     REQUIRE(a.get() != nullptr);
+    if (rawCaptureName)
+        REQUIRE(saveImagePng(*a, auditOutDir() + "/" + rawCaptureName));
     RenderAuditConfig cfg{scene, phase, "", 0};
     auto result = auditImage(*a, cfg, bg, /*step=*/2);
     if (flicker) {
@@ -3044,7 +3047,8 @@ TEST_CASE("graphics.imageAudit.materialHair") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
-    makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
+    auto *auditBanner =
+        makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
     studio.subject->setReceiveLight(false);
     studio.subject->setTexture(makeSolid(gfx, 220, 90, 70));
@@ -3063,6 +3067,35 @@ TEST_CASE("graphics.imageAudit.materialHair") {
     card->setPosition(0.f, 0.05f, 0.35f);
     card->setCastShadow(false);
     auditGpuFrame(gfx, "mathair", "hair_material", bg);
+
+    // General-purpose transparent PBR materials must use the transparent
+    // forward queue without pretending to be hair. Isolate this frame from the
+    // preceding hair audit, then place one overlapping card behind the opaque
+    // sphere and one in front to make depth testing and compositing unambiguous.
+    card->setPosition(100.f, 100.f, 100.f);
+    auditBanner->sprite()->visible = false;
+    studio.subject->setTexture(makeSolid(gfx, 205, 210, 220));
+    Material *glassBack = gfx->newMaterial();
+    glassBack->setSurfaceMode("transparent");
+    glassBack->setTint(0.08f, 0.35f, 1.f, 0.48f);
+    glassBack->setSortPriority(0);
+    auto *backCard = Renderable3D::create();
+    backCard->setMesh(makeHairCard(gfx));
+    backCard->setMaterial(glassBack);
+    backCard->setPosition(-0.22f, -0.05f, -0.3f);
+    backCard->setCastShadow(false);
+
+    Material *glassFront = gfx->newMaterial();
+    glassFront->setSurfaceMode("transparent");
+    glassFront->setTint(1.f, 0.12f, 0.04f, 0.42f);
+    glassFront->setSortPriority(0);
+    auto *frontCard = Renderable3D::create();
+    frontCard->setMesh(makeHairCard(gfx));
+    frontCard->setMaterial(glassFront);
+    frontCard->setPosition(0.22f, -0.05f, 0.65f);
+    frontCard->setCastShadow(false);
+    auditGpuFrame(gfx, "mathair", "transparent_pbr_overlap", bg, false, {},
+                  "mathair_transparent_pbr_overlap.png");
 
     studio.subject->setVisible(false);
     makeSprite(makeSolid(gfx, 90, 140, 200), 0.f, 0.f, 200.f, 150.f, false);

@@ -797,6 +797,18 @@ WGPUBlendState additiveBlend() {
     return b;
 }
 
+WGPUBlendState premultipliedBlend() {
+    WGPUBlendState b = alphaBlend();
+    b.color.srcFactor = WGPUBlendFactor_One;
+    return b;
+}
+
+WGPUBlendState multiplyBlend() {
+    WGPUBlendState b = alphaBlend();
+    b.color.srcFactor = WGPUBlendFactor_Dst;
+    return b;
+}
+
 }  // namespace
 
 namespace {
@@ -824,6 +836,10 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
     WGPUBlendState bs = alphaBlend();
     if (mode == BlendMode::Additive)
         bs = additiveBlend();
+    else if (mode == BlendMode::Premultiplied)
+        bs = premultipliedBlend();
+    else if (mode == BlendMode::Multiply)
+        bs = multiplyBlend();
     else if (mode == BlendMode::Opaque)
         bs = noBlend();
     if (mode != BlendMode::Opaque) target.blend = &bs;
@@ -888,6 +904,10 @@ wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLay
     WGPUBlendState bs = alphaBlend();
     if (mode == BlendMode::Additive)
         bs = additiveBlend();
+    else if (mode == BlendMode::Premultiplied)
+        bs = premultipliedBlend();
+    else if (mode == BlendMode::Multiply)
+        bs = multiplyBlend();
     else if (mode == BlendMode::Opaque)
         bs = noBlend();
     if (mode != BlendMode::Opaque) target.blend = &bs;
@@ -979,6 +999,13 @@ void Graphics::create2DPipelines() {
     colorAdditivePipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Additive);
     texturedAdditivePipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
                                                       BlendMode::Additive);
+    colorPremultipliedPipeline =
+        make2DColorPipeline(device, surfaceFormat, BlendMode::Premultiplied);
+    texturedPremultipliedPipeline = make2DTexturedPipeline(
+        device, tex2DPipelineLayout, surfaceFormat, BlendMode::Premultiplied);
+    colorMultiplyPipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Multiply);
+    texturedMultiplyPipeline = make2DTexturedPipeline(
+        device, tex2DPipelineLayout, surfaceFormat, BlendMode::Multiply);
     colorOpaquePipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Opaque);
     texturedOpaquePipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
                                                     BlendMode::Opaque);
@@ -994,6 +1021,15 @@ void Graphics::create2DPipelines() {
     offscreenTexturedAdditivePipeline =
         make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm,
                                BlendMode::Additive);
+    offscreenColorPremultipliedPipeline = make2DColorPipeline(
+        device, WGPUTextureFormat_RGBA8Unorm, BlendMode::Premultiplied);
+    offscreenTexturedPremultipliedPipeline = make2DTexturedPipeline(
+        device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm,
+        BlendMode::Premultiplied);
+    offscreenColorMultiplyPipeline = make2DColorPipeline(
+        device, WGPUTextureFormat_RGBA8Unorm, BlendMode::Multiply);
+    offscreenTexturedMultiplyPipeline = make2DTexturedPipeline(
+        device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Multiply);
     offscreenColorOpaquePipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm,
                                                        BlendMode::Opaque);
     offscreenTexturedOpaquePipeline =
@@ -1059,6 +1095,16 @@ void Graphics::createMesh3DPipelines() {
     // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
     pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+    // Transparent surfaces use the same PBR shader in a forward alpha pass:
+    // depth-test on, depth-write off, color blending on.
+    WGPUBlendState transparentBlend = alphaBlend();
+    target.blend = &transparentBlend;
+    ds.depthWriteEnabled = WGPUOptionalBool_False;
+    pd.label = sv("eve_mesh3d_transparent");
+    mesh3dTransparentPipeline =
+        device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+    target.blend = nullptr;
+    ds.depthWriteEnabled = WGPUOptionalBool_True;
     // 1x variant for the 3D-to-offscreen-canvas pass (canvases are 1-sample).
     pd.label = sv("eve_mesh3d_canvas");
     pd.multisample.count = 1;
@@ -2510,6 +2556,11 @@ void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH,
         switch (mode) {
             case BlendMode::Additive:
                 return offscreen ? offscreenColorAdditivePipeline : colorAdditivePipeline;
+            case BlendMode::Premultiplied:
+                return offscreen ? offscreenColorPremultipliedPipeline
+                                 : colorPremultipliedPipeline;
+            case BlendMode::Multiply:
+                return offscreen ? offscreenColorMultiplyPipeline : colorMultiplyPipeline;
             case BlendMode::Opaque:
                 return offscreen ? offscreenColorOpaquePipeline : colorOpaquePipeline;
             case BlendMode::Alpha:
@@ -2603,6 +2654,14 @@ void Graphics::drawTexturedBatch(wgpu::RenderPassEncoder pass, TexturedBatch &tb
         switch (tb.blend) {
             case BlendMode::Additive:
                 pipe = offscreen ? offscreenTexturedAdditivePipeline : texturedAdditivePipeline;
+                break;
+            case BlendMode::Premultiplied:
+                pipe = offscreen ? offscreenTexturedPremultipliedPipeline
+                                 : texturedPremultipliedPipeline;
+                break;
+            case BlendMode::Multiply:
+                pipe = offscreen ? offscreenTexturedMultiplyPipeline
+                                 : texturedMultiplyPipeline;
                 break;
             case BlendMode::Opaque:
                 pipe = offscreen ? offscreenTexturedOpaquePipeline : texturedOpaquePipeline;
@@ -2721,6 +2780,10 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     d.model = model;
     d.tint = tint;
     d.shader = shader;
+    d.surfaceMode = mesh3dSurfaceMode;
+    d.surfaceBlend = mesh3dSurfaceBlend;
+    d.alphaCutoff = mesh3dAlphaCutoff;
+    d.alphaTechnique = mesh3dAlphaTechnique;
     mesh3dDraws.push_back(d);
 }
 
@@ -2735,6 +2798,16 @@ void Graphics::setMesh3DSceneDepth(Texture *depth) {
 void Graphics::setMesh3DMaterial(float metallic, float roughness) {
     mesh3dMetallic = metallic;
     mesh3dRoughness = roughness;
+}
+void Graphics::setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                                bool doubleSided, float alphaCutoff,
+                                const std::string &alphaTechnique) {
+    mesh3dSurfaceMode = mode;
+    mesh3dSurfaceBlend = blend;
+    mesh3dSurfaceDepthWrite = depthWrite;
+    mesh3dSurfaceDoubleSided = doubleSided;
+    mesh3dAlphaCutoff = std::clamp(alphaCutoff, 0.f, 1.f);
+    mesh3dAlphaTechnique = alphaTechnique;
 }
 void Graphics::setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount) {
     mesh3dTexBombScale = cellScale;
@@ -3228,11 +3301,18 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         ubo.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), mesh3dMetallic);
         for (int i = 0; i < Lighting3DPack::kMaxLights; ++i)
             ubo.lights[i] = mesh3dLighting.lights[i];
-        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+        float surfaceCode = float(int(d.surfaceMode));
+        if (d.surfaceMode == SurfaceMode::Masked && d.alphaTechnique == "dither")
+            surfaceCode = 3.f;
+        else if (d.surfaceMode == SurfaceMode::Masked && d.alphaTechnique == "coverage")
+            surfaceCode = 4.f;
+        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot,
+                                surfaceCode);
         // SSAO strength rides in texBomb.w (the WGSL mix() factor).
         ubo.texBomb.w =
             (renderControl_ && renderControl_->isEnabled("ao")) ? 1.f : 0.f;
-        ubo.parallax = glm::vec4(mesh3dParallaxScale, mesh3dParallaxMin, mesh3dParallaxMax, 0.f);
+        ubo.parallax =
+            glm::vec4(mesh3dParallaxScale, mesh3dParallaxMin, mesh3dParallaxMax, d.alphaCutoff);
         ubo.view = mesh3dView;
         ubo.clipInfo = glm::vec4(mesh3dNear, mesh3dFar, 0.f, 0.f);
         ubo.cloud = mesh3dCloud;
@@ -3263,7 +3343,11 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         // Canvas targets are 1-sample; the default scene pipeline follows the
         // active MSAA count, so use the dedicated 1x variant there. Custom
         // WGSL mesh shaders fall back to the same 1x default pipeline.
-        wgpu::RenderPipeline pipe = canvasTarget ? mesh3dCanvasPipeline : mesh3dPipeline;
+        wgpu::RenderPipeline pipe =
+            canvasTarget ? mesh3dCanvasPipeline
+                         : (d.surfaceMode == SurfaceMode::Transparent
+                                ? mesh3dTransparentPipeline
+                                : mesh3dPipeline);
         const bool customShader = d.shader && d.shader->gpuHandle;
         if (d.shader && d.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(d.shader->gpuHandle);
@@ -3275,6 +3359,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             }
         }
         const bool useClustered = !canvasTarget && !customShader && mesh3dClusteredActive &&
+                                  d.surfaceMode != SurfaceMode::Transparent &&
                                   mesh3dClusteredPipeline && d.clusteredUboOffset;
         if (useClustered) pipe = mesh3dClusteredPipeline;
         if (!pipe) continue;

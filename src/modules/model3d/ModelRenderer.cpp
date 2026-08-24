@@ -5,6 +5,7 @@
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/IResourceFactory.h"
+#include "graphics/Material.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
 #include "image/Image.h"
@@ -23,6 +24,7 @@ namespace {
 
 using eve::graphics::IResourceFactory;
 using eve::graphics::Mesh;
+using eve::graphics::Material;
 using eve::graphics::Renderable3D;
 using eve::graphics::Texture;
 
@@ -94,6 +96,9 @@ struct TextureLook {
     float tr = 1.f, tg = 1.f, tb = 1.f, ta = 1.f;
     float metallic = 0.f;
     float roughness = 0.45f;
+    std::string alphaMode = "OPAQUE";
+    float alphaCutoff = 0.5f;
+    bool doubleSided = false;
 };
 
 TextureLook materialLook(IResourceFactory *gfx, ModelData *model, int matIndex, const ModelRenderOptions &options,
@@ -109,6 +114,10 @@ TextureLook materialLook(IResourceFactory *gfx, ModelData *model, int matIndex, 
         look.ta = model->getMaterialBaseColorA(matIndex);
         look.metallic = model->getMaterialMetallicFactor(matIndex);
         look.roughness = model->getMaterialRoughnessFactor(matIndex);
+        look.ta *= model->getMaterialOpacity(matIndex);
+        look.alphaMode = model->getMaterialAlphaMode(matIndex);
+        look.alphaCutoff = model->getMaterialAlphaCutoff(matIndex);
+        look.doubleSided = model->getMaterialTwoSided(matIndex);
         if (options.importAlbedo) {
             look.albedo = loadTextureSlot(gfx, model, matIndex, "base_color");
             if (!look.albedo) look.albedo = loadTextureSlot(gfx, model, matIndex, "diffuse");
@@ -140,12 +149,33 @@ Renderable3D *makeRenderable(IResourceFactory *gfx, ModelData *model, int meshIn
     Renderable3D *ent = Renderable3D::create();
     ent->meshRenderer()->visible = true;
     ent->setMesh(mesh);
+    // Preserve the established Renderable3D inspection API. The Material below
+    // is authoritative for drawing, while these mirrored fields keep imported
+    // models compatible with callers that query meshRenderer()/getTexture().
     if (look.albedo) ent->setTexture(look.albedo);
     if (look.normal) ent->setNormalTexture(look.normal);
     if (look.height) ent->setHeightTexture(look.height);
     ent->setTint(look.tr, look.tg, look.tb, look.ta);
     ent->setMetallic(look.metallic);
     ent->setRoughness(look.roughness);
+    // Keep imported surface semantics in one Material instead of losing glTF
+    // alphaMode/alphaCutoff on the legacy renderer fields.
+    Material *material = new Material();
+    material->setAlbedoTexture(look.albedo);
+    material->setNormalTexture(look.normal);
+    material->setHeightTexture(look.height);
+    material->setTint(look.tr, look.tg, look.tb, look.ta);
+    material->setMetallic(look.metallic);
+    material->setRoughness(look.roughness);
+    material->setDoubleSided(look.doubleSided);
+    material->setAlphaCutoff(look.alphaCutoff);
+    if (look.alphaMode == "MASK")
+        material->setSurfaceMode("masked");
+    else if (look.alphaMode == "BLEND")
+        material->setSurfaceMode("transparent");
+    else
+        material->setSurfaceMode("opaque");
+    ent->setMaterial(material);
     return ent;
 }
 

@@ -62,11 +62,10 @@ inline void sortDrawItems2D(std::vector<DrawItem2D> &items) {
         if (a.layer != b.layer) return a.layer < b.layer;
         if (a.hasOrder && b.hasOrder && a.order != b.order) return a.order < b.order;
         if (a.depthY != b.depthY) return a.depthY < b.depthY;
-        if (a.litPath != b.litPath) return !a.litPath && b.litPath;
-        if (a.shader != b.shader) return a.shader < b.shader;
-        if (a.blend != b.blend) return a.blend < b.blend;
-        if (a.texture != b.texture) return a.texture < b.texture;
-        return a.normal < b.normal;
+        // Do not use pipeline/texture state as a tie-breaker: alpha compositing is
+        // order-dependent. stable_sort preserves submission order for equal visual keys,
+        // while the backend still batches adjacent compatible items.
+        return false;
     });
 }
 

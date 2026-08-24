@@ -1165,6 +1165,10 @@ void ParticleEmitter::setBlendMode(const std::string &mode) {
         draw()->blend = BlendMode::Additive;
     else if (mode == "opaque")
         draw()->blend = BlendMode::Opaque;
+    else if (mode == "premultiplied" || mode == "premultiplied_alpha")
+        draw()->blend = BlendMode::Premultiplied;
+    else if (mode == "multiply")
+        draw()->blend = BlendMode::Multiply;
     else
         draw()->blend = BlendMode::Alpha;
 }
@@ -1175,6 +1179,10 @@ std::string ParticleEmitter::getBlendMode() {
             return "additive";
         case BlendMode::Opaque:
             return "opaque";
+        case BlendMode::Premultiplied:
+            return "premultiplied";
+        case BlendMode::Multiply:
+            return "multiply";
         case BlendMode::Alpha:
         default:
             return "alpha";

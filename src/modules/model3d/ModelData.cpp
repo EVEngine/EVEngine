@@ -188,6 +188,26 @@ bool ModelData::getMaterialTwoSided(int matIndex) const {
     return twoSided != 0;
 }
 
+std::string ModelData::getMaterialAlphaMode(int matIndex) const {
+    const aiMaterial *mat = materialAt(matIndex);
+    if (!mat) return "OPAQUE";
+    aiString mode;
+    if (mat->Get("$mat.gltf.alphaMode", 0, 0, mode) == AI_SUCCESS) {
+        const std::string value = mode.C_Str();
+        if (value == "MASK" || value == "BLEND") return value;
+    }
+    // Legacy formats generally expose opacity but no explicit alpha mode.
+    return getMaterialOpacity(matIndex) < 0.999f ? "BLEND" : "OPAQUE";
+}
+
+float ModelData::getMaterialAlphaCutoff(int matIndex) const {
+    const aiMaterial *mat = materialAt(matIndex);
+    if (!mat) return 0.5f;
+    float cutoff = 0.5f;
+    if (mat->Get("$mat.gltf.alphaCutoff", 0, 0, cutoff) != AI_SUCCESS) return 0.5f;
+    return cutoff < 0.f ? 0.f : (cutoff > 1.f ? 1.f : cutoff);
+}
+
 int ModelData::getMaterialTextureSlotCount(int matIndex, const std::string &type) const {
     const aiMaterial *mat = materialAt(matIndex);
     if (!mat) return 0;
