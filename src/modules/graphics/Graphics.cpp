@@ -1107,11 +1107,6 @@ void Graphics::setTextureSampler(Texture* texture, const std::string& filter, co
     setTextureSampler(texture, s);
 }
 
-void Graphics::setTextureSamplerParams(Texture* texture, const std::string& filter, const std::string& mipmap,
-                                       float maxAnisotropy, float lodBias) {
-    setTextureSampler(texture, filter, mipmap, maxAnisotropy, lodBias);
-}
-
 Quad* Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
 
 #ifndef EVENGINE_WEBGPU

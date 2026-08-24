@@ -686,15 +686,12 @@ ReflectedValue Runtime::readProperty(const ssq::Object& instance,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2))) {
-        sq_settop(squirrel, top);
         return {};
     }
     ReflectedValue value = valueFromStack(squirrel, -1);
-    sq_settop(squirrel, top);
     return value;
 }
 
@@ -705,18 +702,15 @@ bool Runtime::writeProperty(const ssq::Object& instance, const std::string& name
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());   // [instance]
     sq_pushstring(squirrel, name.c_str(), -1);    // [instance, name]
     if (SQ_FAILED(sq_get(squirrel, -2))) {        // [instance, current]
-        sq_settop(squirrel, top);
         return false;
     }
     const SQObjectType currentType = sq_gettype(squirrel, -1);
     sq_pop(squirrel, 1);                          // [instance]
     if (currentType == OT_CLOSURE || currentType == OT_NATIVECLOSURE ||
         currentType == OT_CLASS) {
-        sq_settop(squirrel, top);
         return false;
     }
     sq_pushstring(squirrel, name.c_str(), -1);    // [instance, name]
@@ -757,7 +751,6 @@ bool Runtime::writeProperty(const ssq::Object& instance, const std::string& name
     }
     // [instance, name, value] — sq_set pops the value and assigns the slot.
     const bool ok = SQ_SUCCEEDED(sq_set(squirrel, -3));
-    sq_settop(squirrel, top);
     return ok;
 }
 
@@ -768,18 +761,15 @@ ssq::Object Runtime::readObjectProperty(const ssq::Object& instance,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_INSTANCE) {
-        sq_settop(squirrel, top);
         return {};
     }
     ssq::Object out(squirrel);
     sq_getstackobj(squirrel, -1, &out.getRaw());
     sq_addref(squirrel, &out.getRaw());
-    sq_settop(squirrel, top);
     return out;
 }
 
@@ -789,16 +779,13 @@ size_t Runtime::arraySize(const ssq::Object& instance,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_ARRAY) {
-        sq_settop(squirrel, top);
         return 0;
     }
     const SQInteger len = sq_getsize(squirrel, -1);
-    sq_settop(squirrel, top);
     return len > 0 ? size_t(len) : 0;
 }
 
@@ -808,21 +795,17 @@ ReflectedValue Runtime::arrayGet(const ssq::Object& instance,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_ARRAY) {
-        sq_settop(squirrel, top);
         return {};
     }
     sq_pushinteger(squirrel, static_cast<SQInteger>(index));
     if (SQ_FAILED(sq_get(squirrel, -2))) {
-        sq_settop(squirrel, top);
         return {};
     }
     const ReflectedValue value = valueFromStack(squirrel, -1);
-    sq_settop(squirrel, top);
     return value;
 }
 
@@ -832,17 +815,14 @@ bool Runtime::arraySet(const ssq::Object& instance, const std::string& name,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());   // [instance]
     sq_pushstring(squirrel, name.c_str(), -1);    // [instance, name]
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_ARRAY) {   // [instance, array]
-        sq_settop(squirrel, top);
         return false;
     }
     sq_pushinteger(squirrel, static_cast<SQInteger>(index));  // [.., array, idx]
     if (SQ_FAILED(sq_get(squirrel, -2))) {        // [.., array, current]
-        sq_settop(squirrel, top);
         return false;
     }
     const SQObjectType currentType = sq_gettype(squirrel, -1);
@@ -850,7 +830,6 @@ bool Runtime::arraySet(const ssq::Object& instance, const std::string& name,
     sq_pushinteger(squirrel, static_cast<SQInteger>(index));  // [.., array, idx]
     pushConvertedValue(squirrel, currentType, value);          // [.., array, idx, val]
     const bool ok = SQ_SUCCEEDED(sq_set(squirrel, -3));
-    sq_settop(squirrel, top);
     return ok;
 }
 
@@ -860,17 +839,14 @@ bool Runtime::arrayAppend(const ssq::Object& instance, const std::string& name,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_ARRAY) {
-        sq_settop(squirrel, top);
         return false;
     }
     pushConvertedValue(squirrel, OT_NULL, value);  // value on top
     const bool ok = SQ_SUCCEEDED(sq_arrayappend(squirrel, -2));
-    sq_settop(squirrel, top);
     return ok;
 }
 
@@ -880,24 +856,20 @@ bool Runtime::arrayRemove(const ssq::Object& instance, const std::string& name,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_ARRAY) {
-        sq_settop(squirrel, top);
         return false;
     }
     // arr.remove(index) via the Squirrel array method.
     sq_pushstring(squirrel, "remove", -1);
     if (SQ_FAILED(sq_get(squirrel, -2))) {         // [.., array, remove]
-        sq_settop(squirrel, top);
         return false;
     }
     sq_push(squirrel, -2);                          // [.., array, remove, this]
     sq_pushinteger(squirrel, static_cast<SQInteger>(index));  // [.., this, idx]
     const bool ok = SQ_SUCCEEDED(sq_call(squirrel, 2, SQFalse, SQTrue));
-    sq_settop(squirrel, top);
     return ok;
 }
 
@@ -908,12 +880,10 @@ std::vector<std::string> Runtime::tableKeys(const ssq::Object& instance,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_TABLE) {
-        sq_settop(squirrel, top);
         return keys;
     }
     sq_pushnull(squirrel);
@@ -925,7 +895,6 @@ std::vector<std::string> Runtime::tableKeys(const ssq::Object& instance,
         }
         sq_pop(squirrel, 2);
     }
-    sq_settop(squirrel, top);
     std::sort(keys.begin(), keys.end());
     return keys;
 }
@@ -937,21 +906,17 @@ ReflectedValue Runtime::tableGet(const ssq::Object& instance,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_TABLE) {
-        sq_settop(squirrel, top);
         return {};
     }
     sq_pushstring(squirrel, key.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2))) {
-        sq_settop(squirrel, top);
         return {};
     }
     const ReflectedValue value = valueFromStack(squirrel, -1);
-    sq_settop(squirrel, top);
     return value;
 }
 
@@ -961,12 +926,10 @@ bool Runtime::tableSet(const ssq::Object& instance, const std::string& name,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_TABLE) {
-        sq_settop(squirrel, top);
         return false;
     }
     sq_pushstring(squirrel, key.c_str(), -1);
@@ -981,19 +944,17 @@ bool Runtime::tableSet(const ssq::Object& instance, const std::string& name,
     if (!ok) {
         // Squirrel 3.1's sq_set only updates existing keys; a missing key
         // needs sq_newslot to insert (v->Set raises "index does not exist").
-        sq_settop(squirrel, top);
+        sq_settop(squirrel, stack.top());
         sq_pushobject(squirrel, instance.getRaw());
         sq_pushstring(squirrel, name.c_str(), -1);
         if (SQ_FAILED(sq_get(squirrel, -2)) ||
             sq_gettype(squirrel, -1) != OT_TABLE) {
-            sq_settop(squirrel, top);
             return false;
         }
         sq_pushstring(squirrel, key.c_str(), -1);
         pushConvertedValue(squirrel, OT_NULL, value);
         ok = SQ_SUCCEEDED(sq_newslot(squirrel, -3, SQFalse));
     }
-    sq_settop(squirrel, top);
     return ok;
 }
 
@@ -1003,17 +964,14 @@ bool Runtime::tableRemove(const ssq::Object& instance, const std::string& name,
     auto scope = self->enter();
     auto stack = self->guard();
     HSQUIRRELVM squirrel = handle();
-    const SQInteger top = sq_gettop(squirrel);
     sq_pushobject(squirrel, instance.getRaw());
     sq_pushstring(squirrel, name.c_str(), -1);
     if (SQ_FAILED(sq_get(squirrel, -2)) ||
         sq_gettype(squirrel, -1) != OT_TABLE) {
-        sq_settop(squirrel, top);
         return false;
     }
     sq_pushstring(squirrel, key.c_str(), -1);
     const bool ok = SQ_SUCCEEDED(sq_deleteslot(squirrel, -2, SQFalse));
-    sq_settop(squirrel, top);
     return ok;
 }
 

@@ -112,8 +112,7 @@ TEST_CASE("GraphicsSmoke.setTextureSamplerValidatesStrings") {
     fx.gfx->setTextureSampler(tex, "nearest", "none", 1.f, 0.f);
     CHECK_EQ(static_cast<int>(tex->getSampler().min), static_cast<int>(FilterMode::Nearest));
 
-    // Deprecated alias keeps working.
-    fx.gfx->setTextureSamplerParams(tex, "linear", "linear", 8.f, 0.f);
+    fx.gfx->setTextureSampler(tex, "linear", "linear", 8.f, 0.f);
     CHECK_EQ(static_cast<int>(tex->getSampler().mipmap), static_cast<int>(MipmapMode::Linear));
 
     // Typos fail fast instead of silently falling back to linear.
