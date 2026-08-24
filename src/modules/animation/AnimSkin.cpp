@@ -199,6 +199,28 @@ float AnimSkin::getInverseBindElement(int skinBoneIndex, int elementIndex) const
     return inverseBind_[static_cast<size_t>(skinBoneIndex)].m[elementIndex];
 }
 
+bool AnimSkin::updateMatrixPalette(const AnimPose* pose) const {
+    matrixPaletteValid_ = false;
+    if (!pose) return false;
+    skinMatrices_.resize(inverseBind_.size());
+    for (size_t j = 0; j < inverseBind_.size(); ++j) {
+        const int  skelBone = skeletonBone_[j];
+        const Mat4 world    = Mat4::fromTRS(pose->world(skelBone));
+        skinMatrices_[j]    = Mat4::mul(world, inverseBind_[j]);
+    }
+    matrixPaletteValid_ = true;
+    return true;
+}
+
+float AnimSkin::getMatrixPaletteElement(int skinBoneIndex, int elementIndex) const {
+    requireSkinBone(skinBoneIndex);
+    if (!matrixPaletteValid_) throw Exception("AnimSkin.getMatrixPaletteElement: call updateMatrixPalette first");
+    if (elementIndex < 0 || elementIndex >= 16) {
+        throw Exception("AnimSkin.getMatrixPaletteElement: elementIndex must be 0..15");
+    }
+    return skinMatrices_[static_cast<size_t>(skinBoneIndex)].m[elementIndex];
+}
+
 float AnimSkin::getBindPositionX(int vertexIndex) const {
     requireVertex(vertexIndex);
     return bindPos_[static_cast<size_t>(vertexIndex) * 3u + 0];
@@ -235,13 +257,7 @@ void AnimSkin::skinPositions(const AnimPose* pose, float* outPosXYZ) const {
     if (!outPosXYZ) throw Exception("AnimSkin.skinPositions: outPosXYZ is null");
     if (vertexCount_ <= 0) return;
 
-    // Precompute skinMatrix[j] = boneWorld[skel] * inverseBind[j]
-    skinMatrices_.resize(inverseBind_.size());
-    for (size_t j = 0; j < inverseBind_.size(); ++j) {
-        const int  skelBone = skeletonBone_[j];
-        const Mat4 world    = Mat4::fromTRS(pose->world(skelBone));
-        skinMatrices_[j]    = Mat4::mul(world, inverseBind_[j]);
-    }
+    updateMatrixPalette(pose);
 
     for (int v = 0; v < vertexCount_; ++v) {
         const float bx = bindPos_[static_cast<size_t>(v) * 3u + 0];

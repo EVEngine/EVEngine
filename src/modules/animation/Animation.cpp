@@ -597,6 +597,8 @@ void Animation::expose(ssq::Table &table) {
     skin.addFunc("getSkeletonBone", &AnimSkin::getSkeletonBone);
     skin.addFunc("getSkinBoneName", &AnimSkin::getSkinBoneName);
     skin.addFunc("getInverseBindElement", &AnimSkin::getInverseBindElement);
+    skin.addFunc("updateMatrixPalette", &AnimSkin::updateMatrixPalette);
+    skin.addFunc("getMatrixPaletteElement", &AnimSkin::getMatrixPaletteElement);
     skin.addFunc("getBindPositionX", &AnimSkin::getBindPositionX);
     skin.addFunc("getBindPositionY", &AnimSkin::getBindPositionY);
     skin.addFunc("getBindPositionZ", &AnimSkin::getBindPositionZ);

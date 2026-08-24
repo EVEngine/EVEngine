@@ -56,6 +56,16 @@ public:
     float getInverseBindElement(int skinBoneIndex, int elementIndex) const;
 
     /**
+     * @brief Build and cache the column-major skinning matrix palette for a pose.
+     * The palette contains boneWorld * inverseBind and can be uploaded to a GPU
+     * storage/uniform buffer without CPU vertex deformation.
+     * @return False when pose is null, otherwise true.
+     */
+    bool updateMatrixPalette(const AnimPose* pose) const;
+    /** @brief Cached palette element for one skin bone (elementIndex 0..15). */
+    float getMatrixPaletteElement(int skinBoneIndex, int elementIndex) const;
+
+    /**
      * @brief Linear-blend skin bind-pose positions into outPosXYZ (vertexCount*3 floats).
      * pose must already have computeWorld(skeleton) applied and match the skeleton
      * used at fromModel time.
@@ -140,6 +150,7 @@ private:
     std::vector<float>         skinnedNrm_;      // xyz packed cache
     mutable std::vector<Mat4>  skinMatrices_;    // reused per-frame palette scratch
     mutable std::vector<float> normalMatrices_;  // reused 3x3 palette scratch
+    mutable bool               matrixPaletteValid_ = false;
     bool                       skinnedValid_    = false;
     bool                       skinnedNrmValid_ = false;
 };

@@ -391,7 +391,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`addEvent()`、`getEventCount()`、`getEventTime()`、`getEventName()`、`sample()`、`wrapTime()`
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`aimBone()`、`solveTwoBoneIK()`、`getWorld*()`、`getWorldMatrixElement()`
-- `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
+- `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`updateMatrixPalette()`、`getMatrixPaletteElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
 - `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`getRootMotionX()`、`getRootMotionY()`、`getRootMotionZ()`、`getRootMotionRotationX()`、`getRootMotionRotationY()`、`getRootMotionRotationZ()`、`getRootMotionRotationW()`、`consumeEvent()`、`setUpdateRate()`、`getUpdateRate()`、`update()`
 - `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`getPose()`、`update()`
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
@@ -408,6 +408,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - 3D clip 轨道使用二分查找采样，长动画不会随单轨关键帧数线性退化；Motion Database 应离线/加载时 bake，不要逐帧重建。
 - 远处角色可用 `AnimPlayer.setUpdateRate(hz)` 降低姿态求值频率（例如 15 Hz）；播放器会累积时间，达到间隔后一次推进，设为 `0` 恢复逐帧求值。姿态、Graph 中间结果以及 CPU 蒙皮矩阵均复用内部缓存，稳定播放不产生逐帧容器分配。
 - Graph、状态机或 Motion Matching 求值后，可对返回的 `AnimPose` 调用 `aimBone`（骨骼本地 +Z 朝向目标）或 `solveTwoBoneIK` 做世界空间后处理；两者都接受 `0..1` 权重并会更新 world pose。
+- GPU 蒙皮 shader 可调用 `AnimSkin.updateMatrixPalette(pose)` 后按骨骼读取 `getMatrixPaletteElement(bone, 0..15)` 上传调色板；顶点关节/权重由 `getVertexBone` / `getVertexWeight` 提供。CPU 路径复用同一调色板缓存。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/animation/`](../../../src/modules/animation/)
