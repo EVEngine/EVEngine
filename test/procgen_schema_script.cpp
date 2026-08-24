@@ -60,6 +60,14 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
         pbrNormalWidth <- pbrSet == null ? 0 : pbrSet.getNormal().getWidth();
         pbrHeightWidth <- pbrSet == null ? 0 : pbrSet.getHeight().getWidth();
         if (pbrSet != null) pbrSet.destroy();
+        meshParams <- procgen.newParams();
+        meshDefaultsApplied <- procgen.applyMeshRecipeDefaults("mesh.fence", meshParams);
+        meshSchema <- procgen.getMeshRecipeSchema("mesh.fence");
+        meshSegmentsFound <- false;
+        for (local i = 0; i < meshSchema.getParamCount(); ++i)
+            if (meshSchema.getParamKey(i) == "segments") meshSegmentsFound = true;
+        meshBuild <- procgen.buildMesh("mesh.fence", meshParams);
+        meshVertexCount <- meshBuild == null ? 0 : meshBuild.getVertexCount();
     )"));
 
     CHECK(vm.find("defaultsApplied").toBool());
@@ -83,4 +91,7 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
     CHECK_EQ(vm.find("pbrAlbedoWidth").toInt(), 16);
     CHECK_EQ(vm.find("pbrNormalWidth").toInt(), 16);
     CHECK_EQ(vm.find("pbrHeightWidth").toInt(), 16);
+    CHECK(vm.find("meshDefaultsApplied").toBool());
+    CHECK(vm.find("meshSegmentsFound").toBool());
+    CHECK_GT(vm.find("meshVertexCount").toInt(), 0);
 }

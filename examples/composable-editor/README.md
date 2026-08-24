@@ -11,8 +11,8 @@ The example demonstrates:
 - an MVVM-style reflected `WorldEditorVM` with two-way controls;
 - schema-driven procgen controls assembled by the project from reflected parameter
   types, bounds, defaults, advanced flags, and choices (no built-in procgen panel);
-- one reusable recipe-field builder shared by grid algorithms and procedural PBR
-  materials; the project chooses its fields and layout, then uploads generated
+- one reusable recipe-field builder compatible with grid, texture, PBR, and mesh
+  recipe schemas; the project chooses its fields and layout, then uploads generated
   albedo/normal/height maps into a normal engine `Material`;
 - a live embedded 3D runtime viewport using `procgen`, materials, and a field tool assembled
   from reusable target, kernel, falloff, operation, and transaction components;
@@ -43,3 +43,10 @@ the algorithm or the widget mapping produces a different tool without changing t
 The inspector uses that exact field builder with `pbr.rock`, filters the project-relevant
 knobs, and composes `ProcgenRecipeSchema`, `Params`, `ImageData`, GPU textures and
 `Material`; there is no C++ material-editor window.
+
+Mesh generators use the same contract: call `getMeshRecipeSchema` and
+`applyMeshRecipeDefaults`, pass the returned schema to `renderRecipeFields`, and feed
+the edited `Params` to `buildMesh` or `generateMesh`. Built-in schemas cover marching
+cubes, rocks, planets, trees, bushes, buildings, linear structures, and urban blocks;
+projects decide whether those become asset inspectors, world brushes, RTS construction
+tools, or runtime customization screens.

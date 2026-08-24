@@ -50,12 +50,13 @@ for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
 普通 `ui.slider` / `ui.checkbox` / `ui.combo`，C++ 没有固定 Procgen 面板。
 
 `getAlgorithmSchema` 返回通用 `ProcgenRecipeSchema`。同一个对象模型也由
-`getTextureRecipeSchema` 和 `getPbrRecipeSchema` 返回，因此项目只需要一个字段组件：
+`getTextureRecipeSchema`、`getPbrRecipeSchema` 和 `getMeshRecipeSchema` 返回，因此项目只需要一个字段组件：
 `getId`、`getDisplayName`、`getCategory`、`getParamCount`、`getParamKey`、
 `getParamLabel`、`getParamDescription`、`getParamCategory`、`getParamKind`、
 `getParamDefault`、`paramHasMinimum`、`paramHasMaximum`、`getParamMinimum`、
 `getParamMaximum`、`getParamStep`、`isParamAdvanced`、`getParamChoiceCount` 和
-`getParamChoice`。`applyTextureRecipeDefaults` / `applyPbrRecipeDefaults` 把缺失值写入
+`getParamChoice`。`applyTextureRecipeDefaults` / `applyPbrRecipeDefaults` /
+`applyMeshRecipeDefaults` 把缺失值写入
 `Params`，已有的项目覆盖值保持不变。
 
 ```squirrel
@@ -440,9 +441,9 @@ local mesh = gen.generateMesh("mesh.stonewall", p, gfx); // 或 mesh.fence / mes
 
 - `abort()`、`abortSystem()`、`add()`、`addObject()`、`addObjectAt()`、`applyToLayer()`、`autotileGrid()`、`beginSystem()`、`buildMesh()`、`clear()`、`clearObjects()`、`commitSystem()`、`deriveSeed()`、`empty()`、`excludeRadius()`、`fail()`、`fill()`、`filterDensity()`、`filterHeight()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
 - `generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
-- `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
+- `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeshRecipeSchema()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
-- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`
+- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`、`applyMeshRecipeDefaults()`
 - `getDensity()`、`getError()`、`getFloatAttribute()`、`getNormalX()`、`getNormalY()`、`getNormalZ()`、`getOutput()`、`getOutputCount()`、`getOutputName()`、`getPointSeed()`、`getScaleX()`、`getScaleY()`、`getScaleZ()`、`getStringAttribute()`、`getSystemDebugReport()`、`getSystemOutput()`、`getSystemOutputCount()`、`getSystemOutputName()`、`getSystemRevision()`、`getSystemSeed()`、`getTraceCount()`、`getTraceInputCount()`、`getTraceMilliseconds()`、`getTraceName()`、`getTraceOutputCount()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`hasFailed()`、`hasFloatAttribute()`、`hasOutput()`、`hasStringAttribute()`、`hasSystem()`、`isActive()`、`jitterPoints()`、`lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`newPointSet()`、`publish()`、`randomSeed()`、`removeSystem()`、`resize()`、`sampleGrid()`、`seedFor()`、`selfPrune()`、`setCell()`、`setDensity()`、`setDetail()`、`setFloat()`、`setFloatAttribute()`、`setInt()`
 - `setLayer()`、`setMeta()`、`setNormal()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setPointSeed()`、`setPosition()`、`setScale()`、`setSeed()`、`setSize()`、`setString()`、`setStringAttribute()`、`setYaw()`、`trace()`
 - `setTarget()`

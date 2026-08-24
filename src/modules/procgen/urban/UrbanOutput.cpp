@@ -329,8 +329,9 @@ bool generateUrbanMesh(const Params& params, MeshBuild& out, std::string& error)
     return true;
 }
 
-void registerUrbanGenerators(GeneratorRegistry& registry) {
-    GeneratorDescriptor descriptor{"urban.parcels", "Urban Parcels", "Urban", {}};
+static RecipeDescriptor makeUrbanDescriptor(std::string id, std::string name,
+                                            std::string category) {
+    RecipeDescriptor descriptor{std::move(id), std::move(name), std::move(category), {}};
     descriptor.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));
     descriptor.params.push_back(ParamDescriptor::choice("land", "Land Shape", "rect",
                                                         {"rect", "triangle", "ellipse", "l", "hexagon"}));
@@ -375,11 +376,22 @@ void registerUrbanGenerators(GeneratorRegistry& registry) {
     addAdvanced(ParamDescriptor::floating("optStre", "Optimize Streets", 1.f, 0.f, 100.f, 0.01f));
     addAdvanced(ParamDescriptor::floating("optJunc", "Optimize Junctions", 0.5f, 0.f, 100.f, 0.01f));
     addAdvanced(ParamDescriptor::floating("optClose", "Optimize Closure", 0.3f, 0.f, 100.f, 0.01f));
-    registry.registerAlgorithm(std::move(descriptor), generateUrbanGrid);
+    return descriptor;
+}
+
+void registerUrbanGenerators(GeneratorRegistry& registry) {
+    registry.registerAlgorithm(
+        makeUrbanDescriptor("urban.parcels", "Urban Parcels", "Urban"), generateUrbanGrid);
 }
 
 void registerUrbanMeshRecipes(MeshRecipeRegistry& registry) {
-    registry.registerRecipe("mesh.urban", generateUrbanMesh);
+    RecipeDescriptor descriptor =
+        makeUrbanDescriptor("mesh.urban", "Urban Blocks", "Urban");
+    descriptor.params.push_back(
+        ParamDescriptor::floating("extrude", "Extrusion Height", 0.f, 0.f, 1000.f, 0.1f));
+    descriptor.params.push_back(
+        ParamDescriptor::floating("uvScale", "UV Scale", 0.1f, 0.f, 100.f, 0.01f));
+    registry.registerRecipe(std::move(descriptor), generateUrbanMesh);
 }
 
 }  // namespace eve::procgen::urban

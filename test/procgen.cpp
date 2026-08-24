@@ -1932,6 +1932,29 @@ TEST_CASE("procgen.recipeSchemas.textureAndPbrDefaults") {
     CHECK_NE(copied.displayName, rock->displayName);
 }
 
+TEST_CASE("procgen.recipeSchemas.meshDefaults") {
+    auto &meshes = MeshRecipeRegistry::instance();
+    meshes.registerBuiltins();
+    for (const std::string &id : meshes.list()) {
+        const RecipeDescriptor *schema = meshes.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->id, id);
+        CHECK(!schema->displayName.empty());
+        CHECK(!schema->category.empty());
+        CHECK(schema->find("seed") != nullptr);
+    }
+
+    Params defaults;
+    REQUIRE(meshes.applyDefaults("mesh.fence", defaults));
+    CHECK_EQ(defaults.getInt("segments", 0), 6);
+    CHECK_EQ(defaults.getFloat("height", 0.f), 1.1f);
+    MeshBuild mesh;
+    std::string error;
+    REQUIRE(meshes.generate("mesh.fence", defaults, mesh, error));
+    CHECK_GT(mesh.getVertexCount(), 0);
+    CHECK(!meshes.applyDefaults("mesh.missing", defaults));
+}
+
 TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     const char *ids[] = {"pbr.soil",   "pbr.rock",   "pbr.marble", "pbr.water", "pbr.wood",

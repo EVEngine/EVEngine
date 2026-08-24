@@ -820,6 +820,18 @@ bool Procgen::hasMeshRecipe(const std::string &recipeId) const {
     return MeshRecipeRegistry::instance().has(recipeId);
 }
 
+RecipeDescriptor *Procgen::getMeshRecipeSchema(const std::string &recipeId) const {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    const RecipeDescriptor *schema = MeshRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyMeshRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    MeshRecipeRegistry::instance().registerBuiltins();
+    return MeshRecipeRegistry::instance().applyDefaults(recipeId, *params);
+}
+
 TerrainSampler *Procgen::newTerrainSampler() { return new TerrainSampler(); }
 
 Heightmap *Procgen::newHeightmap(int width, int height) {
@@ -1205,6 +1217,8 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
     cls.addFunc("getMeshRecipeId", &Procgen::getMeshRecipeId);
     cls.addFunc("hasMeshRecipe", &Procgen::hasMeshRecipe);
+    cls.addFunc("getMeshRecipeSchema", &Procgen::getMeshRecipeSchema);
+    cls.addFunc("applyMeshRecipeDefaults", &Procgen::applyMeshRecipeDefaults);
     cls.addFunc("newTerrainSampler", &Procgen::newTerrainSampler);
     cls.addFunc("newHeightmap", &Procgen::newHeightmap);
     cls.addFunc("generateHeightmap", &Procgen::generateHeightmap);

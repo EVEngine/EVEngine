@@ -242,6 +242,10 @@ public:
     int         getMeshRecipeCount() const;
     std::string getMeshRecipeId(int index) const;
     bool        hasMeshRecipe(const std::string &recipeId) const;
+    /** @brief Copy a mesh recipe schema. @param recipeId Recipe id. @return Caller-owned schema or nullptr. */
+    RecipeDescriptor *getMeshRecipeSchema(const std::string &recipeId) const;
+    /** @brief Fill missing mesh recipe parameters. @param recipeId Recipe id. @param params Values to update. @return False for invalid input or an unknown recipe. */
+    bool applyMeshRecipeDefaults(const std::string &recipeId, Params *params) const;
 
     // --- Phase D: terrain height sampling ---
     /** @brief Sampling function over continuous map coordinates (caller owns). */
