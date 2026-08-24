@@ -53,7 +53,7 @@ jobs:
             libgl1-mesa-dev \
             libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
-            mesa-vulkan-drivers vulkan-tools
+            mesa-vulkan-drivers libvulkan-dev vulkan-tools glslang-tools
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
