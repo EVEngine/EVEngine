@@ -17,6 +17,7 @@ namespace {
 
 class NonEmptyStringDomain final : public Domain<std::string, std::vector<char>> {
 public:
+    using ValueType  = std::string;
     using CorpusType = std::vector<char>;
 
     NonEmptyStringDomain() {
