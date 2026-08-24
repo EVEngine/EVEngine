@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/vec4.hpp>
+#include "common/RenderTypes.h"
 
 namespace eve::graphics {
 
@@ -10,6 +10,6 @@ namespace eve::graphics {
  * the global namespace. Kept in its own tiny header so modules that only need
  * the color type (e.g. map, particles) do not have to include Canvas.h.
  */
-using Color = glm::vec4;
+using Color = eve::Color;
 
 }  // namespace eve::graphics

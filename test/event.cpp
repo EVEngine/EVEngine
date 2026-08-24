@@ -4,11 +4,22 @@
 #include "event/Event.h"
 
 #include <chrono>
+#include <memory>
 #include <thread>
 
 using eve::event::Event;
 using eve::event::Message;
 using eve::event::Variant;
+
+namespace {
+
+struct TrackedPayload {
+    explicit TrackedPayload(int* destructions) : destructions(destructions) {}
+    ~TrackedPayload() { ++*destructions; }
+    int* destructions;
+};
+
+}  // namespace
 
 TEST_CASE("Event.quitMessageSurvivesPumpPoll") {
     auto* ev = Event::create();
@@ -50,6 +61,19 @@ TEST_CASE("event.Variant.makePtr") {
     auto v = Variant::makePtr(&x);
     CHECK(static_cast<int>(v.type) == static_cast<int>(Variant::Type::Ptr));
     CHECK(v.p == &x);
+    CHECK(!v.ownsPointer());
+}
+
+TEST_CASE("event.Variant.makeOwnedPtrSharesOneOwnerAcrossCopies") {
+    int destructions = 0;
+    {
+        auto a = Variant::makeOwnedPtr(new TrackedPayload(&destructions));
+        auto b = a;
+        CHECK(a.ownsPointer());
+        CHECK(b.ownsPointer());
+        CHECK(a.p == b.p);
+    }
+    CHECK_EQ(destructions, 1);
 }
 
 TEST_CASE("event.Message.withArgs") {
@@ -79,6 +103,36 @@ TEST_CASE("event.pushPollRoundTrip") {
     CHECK(m2->name == "second");
     delete m2;
     CHECK(ev->poll() == nullptr);
+}
+
+TEST_CASE("event.ownedPushPollDestroysPayloadWithMessage") {
+    auto* ev = Event::create();
+    int destructions = 0;
+    std::vector<Variant> args;
+    args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
+    ev->push(std::make_unique<Message>("owned", args));
+
+    {
+        auto message = ev->pollOwned();
+        REQUIRE(message.get() != nullptr);
+        REQUIRE(message->args.size() == 1u);
+        CHECK(message->args[0].ownsPointer());
+        CHECK_EQ(destructions, 0);
+    }
+    CHECK_EQ(destructions, 1);
+}
+
+TEST_CASE("event.clearDestroysOwnedPayloadExactlyOnce") {
+    auto* ev = Event::create();
+    int destructions = 0;
+    std::vector<Variant> args;
+    args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
+    ev->push(std::make_unique<Message>("unconsumed", args));
+
+    ev->clear();
+    CHECK_EQ(destructions, 1);
+    auto empty = ev->pollOwned();
+    CHECK(empty.get() == nullptr);
 }
 
 TEST_CASE("event.pollNameConsumesMessage") {

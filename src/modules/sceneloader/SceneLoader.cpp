@@ -52,6 +52,11 @@
 namespace eve {
 namespace sceneloader {
 
+SceneLoader::DecodedScene::DecodedScene() = default;
+SceneLoader::DecodedScene::~DecodedScene() = default;
+SceneLoader::DecodedScene::DecodedScene(DecodedScene &&) noexcept = default;
+SceneLoader::DecodedScene &SceneLoader::DecodedScene::operator=(DecodedScene &&) noexcept = default;
+
 Module_IMPL(SceneLoader, new SceneLoader());
 
 SceneLoader::~SceneLoader() {
@@ -837,14 +842,14 @@ bool SceneLoader::decode(const std::string &path, const LoadOptions &options, De
     out->path = normPath(path);
     out->md = md;
     out->options = options;
-    out->root = buildNodeDesc(md->getScene(), &out->slots);
+    out->root = std::make_unique<scene::NodeDesc>(buildNodeDesc(md->getScene(), &out->slots));
     collectCpuImages(md->getScene(), out->slots, options.mipmaps, out->cpuImages);
     return true;
 }
 
 scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
     scene::SceneHost *host = scene::SceneHost::createHost(d.path);
-    host->setTree(std::move(d.root));
+    host->setTree(std::move(*d.root));
 
     graphics::Graphics *gfx = currentGraphics();
     if (!d.slots.empty()) fillSceneBounds(host, d.slots);
@@ -883,7 +888,7 @@ scene::SceneHost *SceneLoader::load(const std::string &path, bool linkRenderable
     }
     if (!linkRenderables) {
         scene::SceneHost *host = scene::SceneHost::createHost(d.path);
-        host->setTree(std::move(d.root));
+        host->setTree(std::move(*d.root));
         scene::TransformSystem::updateHost(host);
         scenes_[d.path] = Loaded{d.path, host, nullptr, options, {}, {}, nullptr, {}};
         return host;
@@ -909,10 +914,10 @@ bool SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOpti
     DecodedScene d;
     if (!decode(path, options, &d)) return false;
 
-    SceneDiff diff = diffTree(ld.host, d.root);
+    SceneDiff diff = diffTree(ld.host, *d.root);
     if (out) *out = diff;
     if (!diff.empty()) {
-        applyTreeDiff(ld.host, d.root, diff, nullptr, nullptr);
+        applyTreeDiff(ld.host, *d.root, diff, nullptr, nullptr);
         MeshCache shared;
         linkMeshNodes(ld.host, d.slots, ld.gfx, options, textures_, shared, &d.cpuImages);
         scene::TransformSystem::updateHost(ld.host);

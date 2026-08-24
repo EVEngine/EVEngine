@@ -113,8 +113,8 @@ void Channel::feed(const std::vector<char>& bytes) {
                     bd = new eve::data::ByteData(c.bytes->data(), c.bytes->size());
                 std::vector<Variant> args;
                 args.push_back(Variant::makePtr(this));
-                args.push_back(Variant::makePtr(bd));
-                ev->push(new Message("chmsg", args));
+                args.push_back(Variant::makeOwnedPtr(bd));
+                ev->push(std::make_unique<Message>("chmsg", args));
             }
         }
     }

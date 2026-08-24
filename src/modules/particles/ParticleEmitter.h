@@ -1,8 +1,7 @@
 #pragma once
 
 #include "common/ECS.h"
-#include "graphics/BlendMode.h"
-#include "graphics/Color.h"
+#include "common/RenderTypes.h"
 #include "particles/ParticleCurve.h"
 
 #include <cstdint>
@@ -38,9 +37,7 @@ class GpuBuffer;
 
 namespace eve::particles {
 
-// Color lives in eve::graphics (see graphics/Canvas.h); re-expose it here so
-// particle code keeps the unqualified form.
-using eve::graphics::Color;
+using eve::Color;
 
 /** @brief Single live particle (CPU simulation). */
 struct Particle {
@@ -211,7 +208,7 @@ public:
         graphics::Texture *texture = nullptr;
         graphics::Canvas *canvas = nullptr;     // nullptr → screen
         graphics::Camera2D *camera = nullptr;   // nullptr → screen space (no camera)
-        graphics::BlendMode blend = graphics::BlendMode::Alpha;
+        BlendMode blend = BlendMode::Alpha;
         graphics::Shader *shader = nullptr;     // custom fragment pipeline (textured quads only)
         int layer = 0;
         bool visible = true;

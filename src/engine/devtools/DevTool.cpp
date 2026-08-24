@@ -480,8 +480,8 @@ void DevTool::pumpWhilePaused() {
 
     // Consume debug hotkeys so F5/F8/F10/F11 work while blocked in the line hook;
     // re-queue everything else for the main loop after resume.
-    std::vector<eve::event::Message*> keep;
-    while (eve::event::Message* msg = ev->poll()) {
+    std::vector<std::unique_ptr<eve::event::Message>> keep;
+    while (auto msg = ev->pollOwned()) {
         bool handled = false;
         if (msg->name == "keypressed" && !msg->args.empty() &&
             msg->args[0].type == eve::event::Variant::Type::String) {
@@ -491,12 +491,9 @@ void DevTool::pumpWhilePaused() {
                 handled = true;
             }
         }
-        if (handled)
-            delete msg;
-        else
-            keep.push_back(msg);
+        if (!handled) keep.push_back(std::move(msg));
     }
-    for (eve::event::Message* msg : keep) ev->push(msg);
+    for (auto& msg : keep) ev->push(std::move(msg));
 }
 
 void DevTool::sampleFrameLocals(HSQUIRRELVM vm, const SourceLoc& loc) {
