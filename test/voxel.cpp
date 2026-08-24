@@ -592,6 +592,28 @@ TEST_CASE("voxel.world.face_cull_all_six_axes") {
     }
 }
 
+TEST_CASE("voxel.world.perspective_face_cull_keeps_far_half_faces") {
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    // The camera is on the +X side of the chunk centre, but on the -X side of this
+    // voxel. Its -X face is therefore front-facing and must not be dropped with the
+    // whole direction batch.
+    world->getOrCreateChunk(0, 0, 0)->set(31, 16, 16, 1);
+    world->remeshDirty();
+
+    const float eyeX = 20.f, eyeY = 16.5f, eyeZ = 16.5f;
+    float view[16], proj[16], vp[16];
+    lookAtRH(eyeX, eyeY, eyeZ, 31.5f, 16.5f, 16.5f, 0, 1, 0, view);
+    perspectiveRH_ZO(60.f * 3.14159265f / 180.f, 1.f, 0.1f, 100.f, proj);
+    mul4(proj, view, vp);
+    world->selectVisible(vp, eyeX, eyeY, eyeZ, 100.f, true);
+
+    bool sawNegX = false;
+    for (int i = 0; i < world->getVisibleBatchCount(); ++i) {
+        if (world->getVisibleBatch(i).dir == FaceDir::NegX) sawNegX = true;
+    }
+    CHECK(sawNegX);
+}
+
 TEST_CASE("voxel.world.visible_batches_decode_on_chunk_origin") {
     std::unique_ptr<VoxelWorld> world(new VoxelWorld());
     Chunk *c = world->getOrCreateChunk(1, 2, 3);
@@ -2162,6 +2184,24 @@ TEST_CASE("voxel.ao.raised_neighbor_darkens_corner") {
     CHECK_EQ(q.ao[1], 3);
     CHECK(q.ao[2] < 3);  // NE corner adjacent to the raised voxel
     CHECK_EQ(q.ao[3], 3);
+}
+
+TEST_CASE("voxel.ao.nonuniform_cells_do_not_merge_into_brightness_blocks") {
+    Chunk chunk;
+    chunk.set(0, 0, 0, 1);
+    chunk.set(1, 0, 0, 1);
+    chunk.set(2, 1, 0, 1);  // Darkens only the outer corners of the second top face.
+    chunk.remesh();
+
+    int baseTopRects = 0;
+    int baseTopArea = 0;
+    for (const PackedRect &rect : chunk.faceRects(FaceDir::PosY)) {
+        if (rect.y() != 0) continue;
+        ++baseTopRects;
+        baseTopArea += rect.width() * rect.height();
+    }
+    CHECK_EQ(baseTopArea, 2);
+    CHECK_EQ(baseTopRects, 2);
 }
 
 TEST_CASE("voxel.world.serialize_roundtrip") {

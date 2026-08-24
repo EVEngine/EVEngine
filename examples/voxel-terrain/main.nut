@@ -8,9 +8,9 @@
 // 操作：
 //   WASD           前后左右移动      Space / C   上升 / 下降
 //   Shift          加速
-//   按住右键 + 拖拽  鼠标视角
+//   鼠标移动        第一人称视角      Esc        释放 / 捕获鼠标
 //   左键点击        在准星处放置木头块
-//   快速右键点击    破坏准星处方块
+//   右键点击        破坏准星处方块
 //   1 / 2 / 3 / 4  切换地形预设（群岛 / 大陆 / 山脉 / 沙海）
 //   R              用随机种子重新生成当前预设
 //   = / -          增大 / 减小流式半径（chunk）
@@ -30,12 +30,10 @@ if (!("elapsed" in getroottable())) elapsed <- 0.0;
 if (!("presetIdx" in getroottable())) presetIdx <- 0;
 if (!("seed" in getroottable())) seed <- 20260823;
 if (!("streamRadius" in getroottable())) streamRadius <- 3;
-if (!("lookDrag" in getroottable())) lookDrag <- false;
-if (!("dragMove" in getroottable())) dragMove <- 0.0;
-if (!("dragT" in getroottable())) dragT <- 0.0;
-if (!("lastLookX" in getroottable())) lastLookX <- 0.0;
-if (!("lastLookY" in getroottable())) lastLookY <- 0.0;
+if (!("mouseCaptured" in getroottable())) mouseCaptured <- false;
 if (!("prevLeft" in getroottable())) prevLeft <- false;
+if (!("prevRight" in getroottable())) prevRight <- false;
+if (!("lastEdit" in getroottable())) lastEdit <- "";
 if (!("fpsAvg" in getroottable())) fpsAvg <- 60.0;
 if (!("uiReady" in getroottable())) uiReady <- false;
 if (!("shownHelp" in getroottable())) shownHelp <- false;
@@ -271,44 +269,39 @@ function updateCamera(dt) {
         playerPos[1] -= speed * dt;
 }
 
+function setMouseCaptured(captured) {
+    mouseCaptured = captured;
+    mouse.setVisible(!captured);
+    local cx = config.width * 0.5;
+    local cy = config.height * 0.5;
+    if (captured) mouse.setPosition(cx, cy);
+}
+
 function updateMouseLook() {
-    local mx = mouse.getX();
-    local my = mouse.getY();
-    local rightDown = mouse.isDown(2);
+    if (key_just_pressed("escape", "Escape")) setMouseCaptured(!mouseCaptured);
+    if (!mouseCaptured) return;
 
-    if (rightDown && !lookDrag) {
-        // 刚按下：开始拖拽视角
-        lookDrag = true;
-        dragMove = 0.0;
-        dragT = elapsed;
-        lastLookX = mx;
-        lastLookY = my;
-    } else if (!rightDown && lookDrag) {
-        // 松开：若是“快速点按”（几乎没移动），视为右键破坏
-        if (dragMove < 8.0 && elapsed - dragT < 0.35) breakAtCrosshair();
-        lookDrag = false;
-    }
-
-    if (lookDrag) {
-        local dx = mx - lastLookX;
-        local dy = my - lastLookY;
-        dragMove += fabs(dx) + fabs(dy);
-        yaw -= dx * LOOK_SENS;
-        pitch += dy * LOOK_SENS;  // 屏幕 Y 向下
-        pitch = clampf(pitch, -1.5, 1.5);
-        // 回中光标，避免拖出窗口
-        local cx = config.width * 0.5;
-        local cy = config.height * 0.5;
-        mouse.setPosition(cx, cy);
-        lastLookX = cx;
-        lastLookY = cy;
-    }
+    local cx = config.width * 0.5;
+    local cy = config.height * 0.5;
+    local dx = mouse.getX() - cx;
+    local dy = mouse.getY() - cy;
+    yaw -= dx * LOOK_SENS;
+    pitch += dy * LOOK_SENS;  // 屏幕 Y 向下
+    pitch = clampf(pitch, -1.5, 1.5);
+    mouse.setPosition(cx, cy);
 }
 
 function mouseLeftPressed() {
     local down = mouse.isDown(1);  // 1 = 左键
     local was = prevLeft;
     prevLeft = down;
+    return down && !was;
+}
+
+function mouseRightPressed() {
+    local down = mouse.isDown(2);
+    local was = prevRight;
+    prevRight = down;
     return down && !was;
 }
 
@@ -319,17 +312,33 @@ function raycastCrosshair() {
 }
 
 function placeAtCrosshair() {
-    if (!raycastCrosshair()) return;
-    world.setVoxelByName(world.getRaycastHitX() + world.getRaycastFaceX(),
-                         world.getRaycastHitY() + world.getRaycastFaceY(),
-                         world.getRaycastHitZ() + world.getRaycastFaceZ(), "wood");
+    if (!raycastCrosshair()) {
+        lastEdit = "放置失败：准星没有命中方块";
+        return;
+    }
+    local x = world.getRaycastPrevX();
+    local y = world.getRaycastPrevY();
+    local z = world.getRaycastPrevZ();
+    world.setVoxelByName(x, y, z, "wood");
     world.remeshDirty();
+    lastEdit = (world.getCubeTypeName(x, y, z) == "wood")
+               ? format("已放置木块 (%d, %d, %d)", x, y, z)
+               : format("放置失败 (%d, %d, %d)", x, y, z);
 }
 
 function breakAtCrosshair() {
-    if (!raycastCrosshair()) return;
-    world.setVoxel(world.getRaycastHitX(), world.getRaycastHitY(), world.getRaycastHitZ(), 0);
+    if (!raycastCrosshair()) {
+        lastEdit = "破坏失败：准星没有命中方块";
+        return;
+    }
+    local x = world.getRaycastHitX();
+    local y = world.getRaycastHitY();
+    local z = world.getRaycastHitZ();
+    world.setVoxel(x, y, z, 0);
     world.remeshDirty();
+    lastEdit = (world.getVoxel(x, y, z) == 0)
+               ? format("已破坏方块 (%d, %d, %d)", x, y, z)
+               : format("破坏失败 (%d, %d, %d)", x, y, z);
 }
 
 // ---------------------------------------------------------------------------
@@ -360,9 +369,10 @@ function refreshHud() {
                playerPos[2], streamRadius) + "\n" +
         format("chunks %d   可见 %d   批次 %d   矩形 %d   FPS %.0f",
                world.getChunkCount(), world.getVisibleChunkCount(),
-               world.getVisibleBatchCount(), world.getVisibleRectCount(), fpsAvg));
+               world.getVisibleBatchCount(), world.getVisibleRectCount(), fpsAvg) +
+        (lastEdit == "" ? "" : "\n" + lastEdit));
     ui.setText("help",
-        "WASD 飞行  Space/C 升降  Shift 加速  右键拖拽视角  左键放置  右键点按破坏\n" +
+        "WASD 飞行  Space/C 升降  Shift 加速  鼠标视角  Esc释放/捕获  左键放置  右键破坏\n" +
         "1群岛 2大陆 3山脉 4沙海  R随机种子  =/-流式半径");
 }
 
@@ -375,9 +385,10 @@ eve_init = function() {
     buildHud();
     gfx.setBackgroundColor(0.42, 0.62, 0.82, 1.0);  // 天空蓝
     gfx.setDirectionalLight(-0.4, -1.0, -0.35, 1.15, 1.08, 0.96);
+    setMouseCaptured(true);
     if (!shownHelp) {
-        print("voxel-terrain test scene: WASD fly, drag right = look, left = place wood, " +
-              "quick right = break, 1-4 = presets, R = random seed\n");
+        print("voxel-terrain test scene: WASD fly, mouse = look, Esc = release/capture, " +
+              "left = place wood, right = break, 1-4 = presets, R = random seed\n");
         shownHelp = true;
     }
 };
@@ -390,6 +401,7 @@ eve_update = function(dt) {
     updateMouseLook();
 
     if (mouseLeftPressed()) placeAtCrosshair();
+    if (mouseRightPressed()) breakAtCrosshair();
 
     // 每帧保持玩家周围 chunk；跨 chunk 边界时自动补建/卸载
     streamWorld();

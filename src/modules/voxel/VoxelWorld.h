@@ -132,7 +132,8 @@ public:
      * @param viewProj16 column-major 4x4 RH+ZO view-projection (16 floats)
      * @param eyeX/Y/Z  camera eye world position
      * @param viewRange max distance from eye to chunk center (world units; ≤0 disables)
-     * @param faceCull  when true, drop face buffers whose outward normal points away
+     * @param faceCull  when true, conservatively drop face-direction buffers that are
+     *                  back-facing from every possible face plane in the chunk
      */
     void selectVisible(const float *viewProj16, float eyeX, float eyeY, float eyeZ, float viewRange,
                        bool faceCull = true);
