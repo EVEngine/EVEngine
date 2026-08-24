@@ -7,6 +7,8 @@
 
 namespace eve::procgen {
 
+class Heightmap;
+
 /** @brief One deterministic sample used by script-first procedural pipelines. */
 struct ProcgenPoint {
     float x = 0.f;
@@ -87,8 +89,14 @@ uint32_t deriveSeed(uint32_t parent, const std::string& scope);
 PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, float jitter);
 PointSet filterPointHeight(const PointSet& input, float minHeight, float maxHeight);
 PointSet filterPointDensity(const PointSet& input, float minDensity, float maxDensity);
+PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX,
+                        float maxY, float maxZ, bool invert);
+PointSet filterPointSlope(const PointSet& input, float minDegrees, float maxDegrees);
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius);
 PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amountX, float amountZ);
 PointSet selfPrunePoints(const PointSet& input, float radius);
+PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& heightmap,
+                                  float originX, float originZ, float cellSize,
+                                  float heightScale);
 
 }  // namespace eve::procgen

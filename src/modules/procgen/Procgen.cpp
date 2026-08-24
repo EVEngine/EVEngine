@@ -84,6 +84,32 @@ PointSet* Procgen::filterDensity(PointSet* input, float minDensity, float maxDen
     return new PointSet(filterPointDensity(*input, minDensity, maxDensity));
 }
 
+PointSet* Procgen::filterBox(PointSet* input, float minX, float minY, float minZ, float maxX,
+                             float maxY, float maxZ) {
+    if (!input) {
+        lastError_ = "filterBox: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointBox(*input, minX, minY, minZ, maxX, maxY, maxZ, false));
+}
+
+PointSet* Procgen::excludeBox(PointSet* input, float minX, float minY, float minZ, float maxX,
+                              float maxY, float maxZ) {
+    if (!input) {
+        lastError_ = "excludeBox: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointBox(*input, minX, minY, minZ, maxX, maxY, maxZ, true));
+}
+
+PointSet* Procgen::filterSlope(PointSet* input, float minDegrees, float maxDegrees) {
+    if (!input) {
+        lastError_ = "filterSlope: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointSlope(*input, minDegrees, maxDegrees));
+}
+
 PointSet* Procgen::excludeRadius(PointSet* input, float x, float z, float radius) {
     if (!input) {
         lastError_ = "excludeRadius: null input";
@@ -106,6 +132,20 @@ PointSet* Procgen::selfPrune(PointSet* input, float radius) {
         return nullptr;
     }
     return new PointSet(selfPrunePoints(*input, radius));
+}
+
+PointSet* Procgen::projectToHeightmap(PointSet* input, Heightmap* heightmap, float originX,
+                                      float originZ, float cellSize, float heightScale) {
+    if (!input || !heightmap) {
+        lastError_ = "projectToHeightmap: null input";
+        return nullptr;
+    }
+    if (cellSize <= 0.f) {
+        lastError_ = "projectToHeightmap: cellSize must be positive";
+        return nullptr;
+    }
+    return new PointSet(
+        projectPointsToHeightmap(*input, *heightmap, originX, originZ, cellSize, heightScale));
 }
 
 uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
@@ -790,9 +830,13 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("sampleGrid", &Procgen::sampleGrid);
     cls.addFunc("filterHeight", &Procgen::filterHeight);
     cls.addFunc("filterDensity", &Procgen::filterDensity);
+    cls.addFunc("filterBox", &Procgen::filterBox);
+    cls.addFunc("excludeBox", &Procgen::excludeBox);
+    cls.addFunc("filterSlope", &Procgen::filterSlope);
     cls.addFunc("excludeRadius", &Procgen::excludeRadius);
     cls.addFunc("jitterPoints", &Procgen::jitterPoints);
     cls.addFunc("selfPrune", &Procgen::selfPrune);
+    cls.addFunc("projectToHeightmap", &Procgen::projectToHeightmap);
     cls.addFunc("deriveSeed", &Procgen::deriveSeed);
     cls.addFunc("beginSystem", &Procgen::beginSystem);
     cls.addFunc("commitSystem", &Procgen::commitSystem);

@@ -1,5 +1,6 @@
 #include "procgen/PointSet.h"
 #include "procgen/Procgen.h"
+#include "procgen/heightmap/Heightmap.h"
 
 #include <zeroerr.hpp>
 
@@ -61,6 +62,45 @@ TEST_CASE("procgen.pointSet.invalidInputIsReported") {
     Procgen proc;
     CHECK(!proc.filterHeight(nullptr, 0.f, 1.f));
     CHECK_EQ(proc.lastError(), std::string("filterHeight: null input"));
+}
+
+TEST_CASE("procgen.pointSet.spatialFiltersAndHeightmapProjection") {
+    Procgen   proc;
+    PointSet source;
+    source.add(0.f, 0.f, 0.f);
+    source.add(1.f, 0.f, 1.f);
+    source.add(2.f, 0.f, 2.f);
+
+    PointSet* inside = proc.filterBox(&source, 0.5f, -1.f, 0.5f, 1.5f, 1.f, 1.5f);
+    REQUIRE(bool(inside));
+    CHECK_EQ(inside->getCount(), 1);
+    PointSet* outside = proc.excludeBox(&source, 0.5f, -1.f, 0.5f, 1.5f, 1.f, 1.5f);
+    REQUIRE(bool(outside));
+    CHECK_EQ(outside->getCount(), 2);
+
+    Heightmap heightmap(3, 3);
+    for (int z = 0; z < 3; ++z)
+        for (int x = 0; x < 3; ++x) heightmap.setHeight(x, z, float(x));
+    PointSet* projected = proc.projectToHeightmap(&source, &heightmap, 0.f, 0.f, 1.f, 2.f);
+    REQUIRE(bool(projected));
+    CHECK_EQ(projected->getY(0), 0.f);
+    CHECK_EQ(projected->getY(1), 2.f);
+    CHECK_EQ(projected->getY(2), 4.f);
+    CHECK(projected->getNormalX(1) < 0.f);
+    CHECK(projected->getNormalY(1) > 0.f);
+
+    PointSet* gentle = proc.filterSlope(projected, 0.f, 80.f);
+    REQUIRE(bool(gentle));
+    CHECK_EQ(gentle->getCount(), 3);
+    PointSet* flat = proc.filterSlope(projected, 0.f, 1.f);
+    REQUIRE(bool(flat));
+    CHECK_EQ(flat->getCount(), 0);
+
+    delete flat;
+    delete gentle;
+    delete projected;
+    delete outside;
+    delete inside;
 }
 
 TEST_CASE("procgen.system.commitIsAtomicAndFailureKeepsPreviousSnapshot") {

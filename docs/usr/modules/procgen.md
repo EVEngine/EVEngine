@@ -32,6 +32,17 @@ local outsideRoad = procgen.excludeRadius(candidates, 20.0, 12.0, 4.0);
 local trees = procgen.selfPrune(outsideRoad, 1.8);
 ```
 
+空间约束也可继续用纯函数串接。`filterBox` / `excludeBox` 接受世界空间 AABB，
+`projectToHeightmap` 按 origin、cellSize 和 heightScale 把点投射到已有高度图并写入
+地表法线，随后可用 `filterSlope` 按角度筛选：
+
+```squirrel
+local region = procgen.filterBox(candidates, 0, -100, 0, 512, 100, 512);
+local ground = procgen.projectToHeightmap(region, terrain, 0, 0, 2.0, 80.0);
+local buildable = procgen.filterSlope(ground, 0.0, 28.0);
+local outsideTown = procgen.excludeBox(buildable, 120, -100, 120, 240, 100, 240);
+```
+
 不要让不同内容共享一个可变随机流。用 `deriveSeed(root, "trees")`、
 `deriveSeed(root, "rocks")` 为分支派生稳定 seed；修改岩石管线不会扰动树木结果。
 

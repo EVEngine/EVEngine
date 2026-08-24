@@ -52,9 +52,16 @@ public:
     PointSet* sampleGrid(int width, int depth, float spacing, uint32_t seed, float jitter);
     PointSet* filterHeight(PointSet* input, float minHeight, float maxHeight);
     PointSet* filterDensity(PointSet* input, float minDensity, float maxDensity);
+    PointSet* filterBox(PointSet* input, float minX, float minY, float minZ, float maxX,
+                        float maxY, float maxZ);
+    PointSet* excludeBox(PointSet* input, float minX, float minY, float minZ, float maxX,
+                         float maxY, float maxZ);
+    PointSet* filterSlope(PointSet* input, float minDegrees, float maxDegrees);
     PointSet* excludeRadius(PointSet* input, float x, float z, float radius);
     PointSet* jitterPoints(PointSet* input, uint32_t seed, float amountX, float amountZ);
     PointSet* selfPrune(PointSet* input, float radius);
+    PointSet* projectToHeightmap(PointSet* input, Heightmap* heightmap, float originX,
+                                 float originZ, float cellSize, float heightScale);
     uint32_t  deriveSeed(uint32_t parent, const std::string& scope) const;
 
     // --- Atomic script rebuilds ---

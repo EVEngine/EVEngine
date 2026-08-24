@@ -1,5 +1,7 @@
 #include "procgen/PointSet.h"
 
+#include "procgen/heightmap/Heightmap.h"
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -203,6 +205,36 @@ PointSet filterPointDensity(const PointSet& input, float minDensity, float maxDe
     return output;
 }
 
+PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX,
+                        float maxY, float maxZ, bool invert) {
+    if (minX > maxX) std::swap(minX, maxX);
+    if (minY > maxY) std::swap(minY, maxY);
+    if (minZ > maxZ) std::swap(minZ, maxZ);
+    PointSet output;
+    for (const auto& point : input.points()) {
+        const bool inside = point.x >= minX && point.x <= maxX && point.y >= minY &&
+                            point.y <= maxY && point.z >= minZ && point.z <= maxZ;
+        if (inside != invert) output.points().push_back(point);
+    }
+    return output;
+}
+
+PointSet filterPointSlope(const PointSet& input, float minDegrees, float maxDegrees) {
+    if (minDegrees > maxDegrees) std::swap(minDegrees, maxDegrees);
+    minDegrees = std::clamp(minDegrees, 0.f, 180.f);
+    maxDegrees = std::clamp(maxDegrees, 0.f, 180.f);
+    constexpr float radiansToDegrees = 57.29577951308232f;
+    PointSet        output;
+    for (const auto& point : input.points()) {
+        const float length = std::sqrt(point.normalX * point.normalX + point.normalY * point.normalY +
+                                       point.normalZ * point.normalZ);
+        const float up     = length > 0.f ? std::clamp(point.normalY / length, -1.f, 1.f) : 1.f;
+        const float slope  = std::acos(up) * radiansToDegrees;
+        if (slope >= minDegrees && slope <= maxDegrees) output.points().push_back(point);
+    }
+    return output;
+}
+
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius) {
     PointSet    output;
     const float radiusSquared = std::max(0.f, radius) * std::max(0.f, radius);
@@ -242,6 +274,36 @@ PointSet selfPrunePoints(const PointSet& input, float radius) {
             }
         }
         if (keep) output.points().push_back(candidate);
+    }
+    return output;
+}
+
+PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& heightmap,
+                                  float originX, float originZ, float cellSize,
+                                  float heightScale) {
+    if (cellSize <= 0.f || heightmap.getWidth() <= 0 || heightmap.getHeight() <= 0) return {};
+    PointSet output = input;
+    for (auto& point : output.points()) {
+        const float hx = (point.x - originX) / cellSize;
+        const float hz = (point.z - originZ) / cellSize;
+        point.y        = heightmap.sampleBilinear(hx, hz) * heightScale;
+
+        const float left  = heightmap.sampleBilinear(hx - 0.5f, hz) * heightScale;
+        const float right = heightmap.sampleBilinear(hx + 0.5f, hz) * heightScale;
+        const float down  = heightmap.sampleBilinear(hx, hz - 0.5f) * heightScale;
+        const float up    = heightmap.sampleBilinear(hx, hz + 0.5f) * heightScale;
+        float       nx    = -(right - left) / cellSize;
+        float       ny    = 1.f;
+        float       nz    = -(up - down) / cellSize;
+        const float length = std::sqrt(nx * nx + ny * ny + nz * nz);
+        if (length > 0.f) {
+            nx /= length;
+            ny /= length;
+            nz /= length;
+        }
+        point.normalX = nx;
+        point.normalY = ny;
+        point.normalZ = nz;
     }
     return output;
 }
