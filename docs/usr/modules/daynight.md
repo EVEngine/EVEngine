@@ -57,6 +57,7 @@ gfx.render3D();
 | `setTurbidity(v)` / `getTurbidity()` | 大气浑浊度 `[1.5,10]`；越高，地平线雾霾与暖色霞光越强 |
 | `setMieStrength(v)` / `getMieStrength()` | 米氏气溶胶强度 `[0,4]`，控制太阳周围光晕与地平线泛白 |
 | `setSkyExposure(v)` / `getSkyExposure()` | 天空写入 RGBA8 cubemap 前的曝光 `[0.05,8]` |
+| `applyAtmosphere(volumetric)` | 将当前太阳方向、直射光、天空色和天气影响统一写入 `Volumetric` fog/cloud 对象，避免脚本分别维护不一致参数 |
 
 太阳高度角在正午达到约 `70°`，方位角在一天内转动 360°。
 

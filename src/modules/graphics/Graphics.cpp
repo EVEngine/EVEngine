@@ -537,6 +537,13 @@ void Graphics::expose(ssq::Table& table) {
     vol.addFunc("applyFogTo", &Volumetric::applyFogTo);
     vol.addFunc("renderClouds", &Volumetric::renderClouds);
     vol.addFunc("renderCloudsTo", &Volumetric::renderCloudsTo);
+    vol.addFunc("configureFroxelGrid", &Volumetric::configureFroxelGrid);
+    vol.addFunc("clearFroxelGrid", &Volumetric::clearFroxelGrid);
+    vol.addFunc("injectFroxelHeightFog", &Volumetric::injectFroxelHeightFog);
+    vol.addFunc("integrateFroxel", &Volumetric::integrateFroxel);
+    vol.addFunc("uploadFroxel", &Volumetric::uploadFroxel);
+    vol.addFunc("applyFroxel", &Volumetric::applyFroxel);
+    vol.addFunc("applyFroxelTo", &Volumetric::applyFroxelTo);
     vol.addFunc("getShader", &Volumetric::getShader);
     vol.addFunc("getRayMarchShader", &Volumetric::getRayMarchShader);
     vol.addFunc("getFogShader", &Volumetric::getFogShader);
