@@ -7,6 +7,86 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::avatar {
+namespace {
+
+template <class Map>
+std::vector<std::string> sortedKeys(const Map& values) {
+    std::vector<std::string> names;
+    names.reserve(values.size());
+    for (const auto& [name, value] : values) {
+        (void)value;
+        names.push_back(name);
+    }
+    std::sort(names.begin(), names.end());
+    return names;
+}
+
+}  // namespace
+
+void AvatarInstance::ensureParameter(const std::string& name, float value) {
+    if (name.empty()) return;
+    if (parameters_.find(name) == parameters_.end()) {
+        parameterOrder_.push_back(name);
+        parameterMetadata_.emplace(name, ParameterMetadata{value, 0.f, 1.f});
+    }
+    parameters_[name] = value;
+}
+
+bool AvatarInstance::defineParameter(const std::string& name, float defaultValue, float minimum,
+                                     float maximum) {
+    if (name.empty() || minimum > maximum) return false;
+    ensureParameter(name, defaultValue);
+    parameterMetadata_[name] = {defaultValue, minimum, maximum};
+    return true;
+}
+
+float AvatarInstance::getParameterDefault(const std::string& name) const {
+    const auto found = parameterMetadata_.find(name);
+    return found == parameterMetadata_.end() ? 0.f : found->second.defaultValue;
+}
+
+float AvatarInstance::getParameterMinimum(const std::string& name) const {
+    const auto found = parameterMetadata_.find(name);
+    return found == parameterMetadata_.end() ? 0.f : found->second.minimum;
+}
+
+float AvatarInstance::getParameterMaximum(const std::string& name) const {
+    const auto found = parameterMetadata_.find(name);
+    return found == parameterMetadata_.end() ? 1.f : found->second.maximum;
+}
+
+bool AvatarInstance::removeExpression(const std::string& name) {
+    return expressionDefs_.erase(name) > 0;
+}
+
+int AvatarInstance::getExpressionCount() const {
+    return static_cast<int>(expressionDefs_.size());
+}
+
+std::string AvatarInstance::getExpressionName(int index) const {
+    const std::vector<std::string> names = sortedKeys(expressionDefs_);
+    return index < 0 || index >= static_cast<int>(names.size()) ? std::string{}
+                                                               : names[static_cast<size_t>(index)];
+}
+
+bool AvatarInstance::unregisterMotion(const std::string& name) {
+    return motions_.erase(name) > 0;
+}
+
+int AvatarInstance::getMotionCount() const {
+    return static_cast<int>(motions_.size());
+}
+
+std::string AvatarInstance::getMotionName(int index) const {
+    const std::vector<std::string> names = sortedKeys(motions_);
+    return index < 0 || index >= static_cast<int>(names.size()) ? std::string{}
+                                                               : names[static_cast<size_t>(index)];
+}
+
+animation::AnimClip* AvatarInstance::getMotionClip(const std::string& name) const {
+    const auto found = motions_.find(name);
+    return found == motions_.end() ? nullptr : found->second;
+}
 
 Live2DBackendFactory Avatar::live2dFactory_ = &createNullLive2DBackend;
 
@@ -144,6 +224,10 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("hasParameter", &AvatarInstance::hasParameter);
     av.addFunc("getParameterCount", &AvatarInstance::getParameterCount);
     av.addFunc("getParameterName", &AvatarInstance::getParameterName);
+    av.addFunc("defineParameter", &AvatarInstance::defineParameter);
+    av.addFunc("getParameterDefault", &AvatarInstance::getParameterDefault);
+    av.addFunc("getParameterMinimum", &AvatarInstance::getParameterMinimum);
+    av.addFunc("getParameterMaximum", &AvatarInstance::getParameterMaximum);
     av.addFunc("update", &AvatarInstance::update);
     av.addFunc("sync", &AvatarInstance::sync);
     av.addFunc("release", &AvatarInstance::release);
@@ -173,6 +257,9 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("hasLayer", &AvatarInstance::hasLayer);
     av.addFunc("getLayerRenderable", &AvatarInstance::getLayerRenderable);
     av.addFunc("defineExpression", &AvatarInstance::defineExpression);
+    av.addFunc("removeExpression", &AvatarInstance::removeExpression);
+    av.addFunc("getExpressionCount", &AvatarInstance::getExpressionCount);
+    av.addFunc("getExpressionName", &AvatarInstance::getExpressionName);
     av.addFunc("applyExpression", &AvatarInstance::applyExpression);
     av.addFunc("transitionExpression", &AvatarInstance::transitionExpression);
 
@@ -197,6 +284,10 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("bindAnimLayerMixer", &AvatarInstance::bindAnimLayerMixer);
     av.addFunc("bindAnimSkin", &AvatarInstance::bindAnimSkin);
     av.addFunc("registerMotion", &AvatarInstance::registerMotion);
+    av.addFunc("unregisterMotion", &AvatarInstance::unregisterMotion);
+    av.addFunc("getMotionCount", &AvatarInstance::getMotionCount);
+    av.addFunc("getMotionName", &AvatarInstance::getMotionName);
+    av.addFunc("getMotionClip", &AvatarInstance::getMotionClip);
     av.addFunc("setMotionBlendTime", &AvatarInstance::setMotionBlendTime);
     av.addFunc("setApplyRootMotion", &AvatarInstance::setApplyRootMotion);
     av.addFunc("getApplyRootMotion", &AvatarInstance::getApplyRootMotion);
