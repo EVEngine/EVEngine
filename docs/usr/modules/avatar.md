@@ -44,10 +44,11 @@ av.applyExpression("shy");
 
 - `getName()`：模块名（"Avatar"）。
 - `newImageAvatar()`：新建 Image 分层立绘。
-- `newLive2DAvatar()`：新建 Live2D 头像（需已注册后端，见 `getLive2DBackendName`）。
+- `newLive2DAvatar()`：新建 Live2D 头像（需已注册真实后端，见 `getLive2DBackendName`）。
 - `newVroidAvatar()`：新建 VRoid（3D）头像。
 - `update(dt)` / `sync()` / `render(gfx)`：驱动全部实例。
-- `getAvatarCount()`、`getLive2DBackendName()` / `hasLive2DBackend()`。
+- `getAvatarCount()`、`getLive2DBackendName()` / `hasLive2DBackend()`；内置 `null`
+  后端只保存状态且不渲染，因此 `hasLive2DBackend()` 返回 false。
 
 ### `AvatarInstance`
 
@@ -57,13 +58,48 @@ av.applyExpression("shy");
   `getParameterCount/getParameterName`、`update/sync/release`。
 - 图层：`addLayer(name, texture, z)`、`setLayerTexture`、`setLayerVisible`、
   `setLayerOffset`、`setLayerColor`、`setLayerZ`、`setLayerSize`、
-  `getLayerCount/getLayerName/hasLayer`。
-- 表情：`defineExpression(name, spec)`、`applyExpression(name)`。
+  `getLayerCount/getLayerName/hasLayer`、`getLayerRenderable(name)`。
+- 表情：`defineExpression(name, spec)`、`applyExpression(name)`；
+  `transitionExpression(name, duration)` 对数值/布尔图层及 morph 通道做平滑过渡。
+
+`getLayerRenderable(name)` 返回该层原生的 `Renderable2D`。兼容的图层 setter
+仍可使用；需要完整 Sprite2D 能力时可直接调用 `setPosition`、`getX`、`getY`、
+`setRotation`、`getRotation`、`setScale`、`setSize`、`setColor`、`setLayer`、
+`getLayer`、`setVisible`、`isVisible`、`setTexture`、`setQuad`、
+`setReceiveLight`、`getReceiveLight`、
+`setCastOcclusion`、`getCastOcclusion`、`setBlendMode`、`getBlendMode`；混合模式可选
+alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐和
+相对层级，不会覆盖层上的旋转、Quad、Shader、Canvas、Camera 或光照设置。
 - Live2D：`loadLive2DModel(path)`、`getLive2DBackendName`、`hasLive2DBackend`。
+  真实插件可接收 Avatar transform、visibility、layer，并通过共享 2D draw queue
+  输出 drawable；`hasLive2DBackend` 只在后端 `isRuntimeAvailable()` 时为 true。
 - VRoid/3D：`loadVroidModelPath(path)`、`bindVroidModelData(data)`、
   `loadMorphNamesFromModel`、`setMesh`、`setTexture`、`setPosition3D`、
   `setRotation3D`、`setScale3D`、`getRenderable3D`、`getBoundMesh`、
   `getVroidModelPath`、`bakeMorphs`。
+- 3D 动画：`bindAnimPlayer`、`bindAnimStateMachine`、`bindAnimSkin`、
+  `registerMotion`、`setMotionBlendTime`；`setMotion(name)` 会播放已注册 Clip，
+  或向绑定的状态机发送同名 trigger。`setApplyRootMotion/getApplyRootMotion` 控制
+  根骨 X/Z 位移是否累加到 Avatar，`getRootMotionDeltaX/getRootMotionDeltaZ`
+  可供角色控制器自行消费。绑定 `AnimSkin` 后，`update(dt)` 会计算世界 Pose、
+  CPU skinning 并原位更新绑定 Mesh。
+- 动画分层：`bindAnimLayerMixer(mixer)` 让 Avatar 直接消费通用 Override/Additive
+  分层 Pose，并继续执行根运动、LookAt、蒙皮和骨骼附件。每帧事件可通过
+  `getAnimationEventCount()`、`getAnimationEventLayer()`、`getAnimationEventName()`、
+  `getAnimationEventPayload()` 读取。
+- VRM 运行时语义：`mapHumanoidBone` / `autoMapHumanoidBones` 把标准 humanoid
+  名称映射到当前动画骨架；`mapViseme` / `setViseme` 把口型语义映射到真实 mesh
+  morph，并在切换口型时清零上一个通道。当前不解析 VRM 扩展元数据；导入器重做前可由
+  游戏脚本或加载插件提供映射。`getHumanoidBoneName(semantic)` 返回已映射骨骼名。
+- VRM LookAt：`setLookAtTarget(x, y, z)` 设置世界空间注视点，
+  `setLookAtWeight(weight)` 控制影响强度，`clearLookAtTarget()` 关闭注视；运行时会限制
+  头部偏航和俯仰，并叠加到当前动画 Pose。
+- 骨骼附件：`attachToBone(name, semanticOrBone, renderable, ox, oy, oz)` 让现有
+  `Renderable3D` 每帧跟随骨骼世界位置和旋转；`detachAttachment` 只解除绑定，不销毁
+  外部对象，`getAttachmentCount` 返回当前附件数。
+- 场景：`linkSceneNode(scene, nodeId)` 把 Image Avatar 的透明变换锚点或 3D Avatar
+  的 `Renderable3D` 链接到 Scene 当前 Host；`isSceneLinked()` 查询状态。Image
+  图层会继承节点的平移、旋转、缩放和显隐；3D Avatar 链接后由 Scene 驱动世界变换。
 - 动画联动：`bindTween(tween)` / `unbindTween()` / `getBoundTween()`。
 
 ## 生命周期

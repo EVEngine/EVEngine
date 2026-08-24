@@ -17,6 +17,9 @@ AnimClip::~AnimClip() { AnimClipRegistry::unregister(this); }
 
 void AnimClip::setDuration(float seconds) {
     if (seconds < 0.f) throw Exception("AnimClip.setDuration: duration must be >= 0");
+    for (const auto& event : events_)
+        if (event.t > seconds)
+            throw Exception("AnimClip.setDuration: event '%s' lies past duration", event.name.c_str());
     duration_ = seconds;
 }
 
@@ -71,6 +74,30 @@ void AnimClip::addScaleKey(int boneIndex, float time, float x, float y, float z)
     std::sort(keys.begin(), keys.end(),
               [](const Vec3Key &a, const Vec3Key &b) { return a.t < b.t; });
     if (time > duration_) duration_ = time;
+}
+
+void AnimClip::addEvent(float time, const std::string& name, const std::string& payload) {
+    if (time < 0.f) throw Exception("AnimClip.addEvent: time must be >= 0");
+    if (duration_ > 0.f && time > duration_) throw Exception("AnimClip.addEvent: time lies past clip duration");
+    if (name.empty()) throw Exception("AnimClip.addEvent: name is empty");
+    events_.push_back({time, name, payload});
+    std::stable_sort(events_.begin(), events_.end(),
+                     [](const EventMarker& a, const EventMarker& b) { return a.t < b.t; });
+}
+
+float AnimClip::getEventTime(int index) const {
+    if (index < 0 || index >= getEventCount()) return 0.f;
+    return events_[static_cast<size_t>(index)].t;
+}
+
+std::string AnimClip::getEventName(int index) const {
+    if (index < 0 || index >= getEventCount()) return {};
+    return events_[static_cast<size_t>(index)].name;
+}
+
+std::string AnimClip::getEventPayload(int index) const {
+    if (index < 0 || index >= getEventCount()) return {};
+    return events_[static_cast<size_t>(index)].payload;
 }
 
 int AnimClip::getPositionKeyCount(int boneIndex) const {
@@ -292,6 +319,7 @@ void AnimClip::adopt(AnimClip& other) {
     std::swap(loop_, other.loop_);
     std::swap(sampleRate_, other.sampleRate_);
     std::swap(tracks_, other.tracks_);
+    std::swap(events_, other.events_);
 }
 
 }  // namespace eve::animation

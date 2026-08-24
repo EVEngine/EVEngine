@@ -2,6 +2,9 @@
 
 #include "animation/AnimPose.h"
 
+#include <string>
+#include <vector>
+
 namespace eve::animation {
 
 class AnimClip;
@@ -42,6 +45,15 @@ public:
     AnimClip *getClip() const { return clip_; }
     AnimPose *getPose();
 
+    /** @brief Number of events crossed by the most recent play/update call. */
+    int getEventCount() const { return static_cast<int>(events_.size()); }
+    /** @brief Name of a dispatched event, or empty for invalid index. */
+    std::string getEventName(int index) const;
+    /** @brief Payload of a dispatched event, or empty for invalid index. */
+    std::string getEventPayload(int index) const;
+    /** @brief Clear currently dispatched events. update() also clears them at frame start. */
+    void clearEvents() { events_.clear(); }
+
     /** @brief Advance playback and sample into internal pose. */
     void update(float dt);
 
@@ -63,6 +75,13 @@ private:
     bool          paused_           = false;
     bool          hasLoopOverride_  = false;
     bool          loopOverride_     = true;
+    struct DispatchedEvent {
+        std::string name;
+        std::string payload;
+    };
+    std::vector<DispatchedEvent> events_;
+
+    void dispatchEvents(float oldTime, float newTime);
 };
 
 }  // namespace eve::animation

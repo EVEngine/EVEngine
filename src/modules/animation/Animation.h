@@ -22,6 +22,8 @@ class AnimSkeleton;
 class AnimClip;
 class AnimPose;
 class AnimPlayer;
+class AnimBoneMask;
+class AnimLayerMixer;
 class AnimStateMachine;
 class MotionDatabase;
 class MotionMatcher;
@@ -105,6 +107,10 @@ public:
     AnimClip         *newClip(const std::string &name = "");
     AnimPose         *newPose(int boneCount = 0);
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
+    /** @brief Create a zero-weight per-bone animation mask. */
+    AnimBoneMask* newBoneMask(AnimSkeleton* skeleton);
+    /** @brief Create an override/additive animation layer mixer. */
+    AnimLayerMixer*   newLayerMixer(AnimSkeleton* skeleton);
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);

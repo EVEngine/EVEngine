@@ -295,7 +295,7 @@ eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS graphics image map
                    GROUP 3d)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
-                   DEPS animation graphics model3d)
+                   DEPS animation graphics model3d scene)
 eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    DEPS gpgpu
                    GROUP 3d web)
