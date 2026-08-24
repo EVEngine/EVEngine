@@ -45,6 +45,10 @@ layer.loadTilesetManifest("assets/tiles.tileset.json");
 ```squirrel
 layer.setRenderSpacing(1.12, 1.12); // 相对逻辑 tile 尺寸
 layer.setCellGap(8.0, 4.0);         // 或直接指定世界像素间隔
+local gapX = layer.getCellGapX();
+local gapY = layer.getCellGapY();
+local spacingX = layer.getRenderSpacingX();
+local spacingY = layer.getRenderSpacingY();
 ```
 
 间距同时用于正反坐标换算、拾取和深度排序，但不改变 GID、寻路邻接关系或移动成本。JSON 配置可使用 `"renderSpacing":[1.12,1.12]` 或 `"cellGap":[8,4]`。
