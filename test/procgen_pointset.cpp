@@ -307,3 +307,44 @@ TEST_CASE("procgen.system.automaticTraceTimingIsBalanced") {
     delete unfinished;
     delete measured;
 }
+
+TEST_CASE("procgen.system.previousRevisionSupportsHotReloadDiffs") {
+    Procgen  proc;
+    PointSet first;
+    first.add(1.f, 0.f, 1.f);
+    ProcgenContext* revision1 = proc.beginSystem("diff", 1);
+    REQUIRE(bool(revision1));
+    CHECK(revision1->captureDebug("trees", &first));
+    CHECK(proc.commitSystem(revision1));
+    CHECK_EQ(proc.getPreviousSystemRevision("diff"), uint64_t(0));
+    CHECK(!proc.getPreviousSystemDebugStage("diff", "trees"));
+
+    PointSet second = first;
+    second.add(2.f, 0.f, 2.f);
+    ProcgenContext* revision2 = proc.beginSystem("diff", 2);
+    REQUIRE(bool(revision2));
+    CHECK(revision2->captureDebug("trees", &second));
+    CHECK(revision2->captureDebug("roads", &first));
+    CHECK(proc.commitSystem(revision2));
+    CHECK_EQ(proc.getPreviousSystemRevision("diff"), uint64_t(1));
+    PointSet* previousTrees = proc.getPreviousSystemDebugStage("diff", "trees");
+    REQUIRE(bool(previousTrees));
+    CHECK_EQ(previousTrees->getCount(), 1);
+    const std::string report = proc.getSystemDebugDiffReport("diff");
+    CHECK(report.find("revision=1 -> 2") != std::string::npos);
+    CHECK(report.find("debug trees points=2 delta=+1") != std::string::npos);
+    CHECK(report.find("debug roads points=1 delta=+1") != std::string::npos);
+
+    ProcgenContext* failed = proc.beginSystem("diff", 3);
+    REQUIRE(bool(failed));
+    failed->fail("broken reload");
+    CHECK(!proc.commitSystem(failed));
+    CHECK_EQ(proc.getPreviousSystemRevision("diff"), uint64_t(1));
+    CHECK(proc.removeSystem("diff"));
+    CHECK_EQ(proc.getPreviousSystemRevision("diff"), uint64_t(0));
+
+    delete failed;
+    delete previousTrees;
+    delete revision2;
+    delete revision1;
+}

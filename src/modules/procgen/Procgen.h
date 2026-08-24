@@ -89,7 +89,14 @@ public:
     std::string     getSystemDebugStageName(const std::string& name, int index) const;
     PointSet*       getSystemDebugStage(const std::string& name,
                                         const std::string& stageName) const;
+    /** @brief Copy a named debug stage from the commit immediately before the current one. */
+    PointSet*       getPreviousSystemDebugStage(const std::string& name,
+                                                const std::string& stageName) const;
+    /** @brief Revision number of the snapshot retained for hot-reload comparison. */
+    uint64_t        getPreviousSystemRevision(const std::string& name) const;
     std::string     getSystemDebugReport(const std::string& name) const;
+    /** @brief Human-readable point-count changes between the current and previous commits. */
+    std::string     getSystemDebugDiffReport(const std::string& name) const;
 
     // --- Phase A: maps ---
     Grid2D *generate(const std::string &algorithmId, Params *params);
@@ -190,6 +197,7 @@ private:
     mutable std::vector<std::string> pbrRecipeIdsCache_;
     mutable std::vector<std::string> meshRecipeIdsCache_;
     std::unordered_map<std::string, ProcgenSystemSnapshot> systems_;
+    std::unordered_map<std::string, ProcgenSystemSnapshot> previousSystems_;
 };
 
 }  // namespace eve::procgen

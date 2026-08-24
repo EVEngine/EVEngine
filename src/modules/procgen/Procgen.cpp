@@ -243,6 +243,8 @@ bool Procgen::commitSystem(ProcgenContext* context) {
         return false;
     }
 
+    const auto current = systems_.find(context->name_);
+    if (current != systems_.end()) previousSystems_[context->name_] = current->second;
     auto& snapshot            = systems_[context->name_];
     snapshot.seed             = context->seed_;
     snapshot.revision         = snapshot.revision + 1u;
@@ -263,7 +265,10 @@ void Procgen::abortSystem(ProcgenContext* context) {
     if (context) context->abort();
 }
 
-bool Procgen::removeSystem(const std::string& name) { return systems_.erase(name) != 0; }
+bool Procgen::removeSystem(const std::string& name) {
+    previousSystems_.erase(name);
+    return systems_.erase(name) != 0;
+}
 
 bool Procgen::hasSystem(const std::string& name) const {
     return systems_.find(name) != systems_.end();
@@ -324,6 +329,19 @@ PointSet* Procgen::getSystemDebugStage(const std::string& name,
     return stage == system->second.debugStages.end() ? nullptr : new PointSet(stage->second);
 }
 
+PointSet* Procgen::getPreviousSystemDebugStage(const std::string& name,
+                                               const std::string& stageName) const {
+    const auto system = previousSystems_.find(name);
+    if (system == previousSystems_.end()) return nullptr;
+    const auto stage = system->second.debugStages.find(stageName);
+    return stage == system->second.debugStages.end() ? nullptr : new PointSet(stage->second);
+}
+
+uint64_t Procgen::getPreviousSystemRevision(const std::string& name) const {
+    const auto found = previousSystems_.find(name);
+    return found == previousSystems_.end() ? 0u : found->second.revision;
+}
+
 std::string Procgen::getSystemDebugReport(const std::string& name) const {
     const auto found = systems_.find(name);
     if (found == systems_.end()) return "system '" + name + "' is not committed";
@@ -343,6 +361,30 @@ std::string Procgen::getSystemDebugReport(const std::string& name) const {
     for (const auto& stageName : snapshot.debugStageOrder) {
         report << "\n  debug " << stageName << " points="
                << snapshot.debugStages.at(stageName).getCount();
+    }
+    return report.str();
+}
+
+std::string Procgen::getSystemDebugDiffReport(const std::string& name) const {
+    const auto current = systems_.find(name);
+    if (current == systems_.end()) return "system '" + name + "' is not committed";
+    const auto previous = previousSystems_.find(name);
+    if (previous == previousSystems_.end()) return name + " has no previous revision";
+
+    std::ostringstream report;
+    report << name << " revision=" << previous->second.revision << " -> " << current->second.revision;
+    for (const auto& stageName : current->second.debugStageOrder) {
+        const int  currentCount = current->second.debugStages.at(stageName).getCount();
+        const auto oldStage     = previous->second.debugStages.find(stageName);
+        const int oldCount = oldStage == previous->second.debugStages.end() ? 0 : oldStage->second.getCount();
+        report << "\n  debug " << stageName << " points=" << currentCount << " delta=";
+        if (currentCount >= oldCount) report << "+";
+        report << currentCount - oldCount;
+    }
+    for (const auto& stageName : previous->second.debugStageOrder) {
+        if (current->second.debugStages.find(stageName) != current->second.debugStages.end()) continue;
+        report << "\n  debug " << stageName << " removed delta=-"
+               << previous->second.debugStages.at(stageName).getCount();
     }
     return report.str();
 }
@@ -943,7 +985,10 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getSystemDebugStageCount", &Procgen::getSystemDebugStageCount);
     cls.addFunc("getSystemDebugStageName", &Procgen::getSystemDebugStageName);
     cls.addFunc("getSystemDebugStage", &Procgen::getSystemDebugStage);
+    cls.addFunc("getPreviousSystemDebugStage", &Procgen::getPreviousSystemDebugStage);
+    cls.addFunc("getPreviousSystemRevision", &Procgen::getPreviousSystemRevision);
     cls.addFunc("getSystemDebugReport", &Procgen::getSystemDebugReport);
+    cls.addFunc("getSystemDebugDiffReport", &Procgen::getSystemDebugDiffReport);
     cls.addFunc("generate", &Procgen::generate);
     cls.addFunc("generateTo", &Procgen::generateTo);
     cls.addFunc("applyToLayer", &Procgen::applyToLayer);

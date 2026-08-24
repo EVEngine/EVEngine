@@ -6,6 +6,7 @@ if (!("forestPoints" in getroottable())) forestPoints <- null;
 if (!("pipelineStatus" in getroottable())) pipelineStatus <- "not generated";
 if (!("debugStage" in getroottable())) debugStage <- "trees";
 if (!("debugPoints" in getroottable())) debugPoints <- null;
+if (!("previousDebugPoints" in getroottable())) previousDebugPoints <- null;
 if (!("roadPoints" in getroottable())) roadPoints <- null;
 
 gfx.setBackgroundColor(0.055, 0.075, 0.07, 1.0);
@@ -13,6 +14,7 @@ gfx.setBackgroundColor(0.055, 0.075, 0.07, 1.0);
 function selectDebugStage(name) {
     debugStage = name;
     debugPoints = procgen.getSystemDebugStage("forest", debugStage);
+    previousDebugPoints = procgen.getPreviousSystemDebugStage("forest", debugStage);
 }
 
 function rebuildForest() {
@@ -55,7 +57,9 @@ function rebuildForest() {
         forestPoints = procgen.getSystemOutput("forest", "trees");
         selectDebugStage(debugStage);
         pipelineStatus = procgen.getSystemDebugReport("forest");
+        local diff = procgen.getSystemDebugDiffReport("forest");
         print("\n" + pipelineStatus + "\n");
+        print(diff + "\n");
     } catch (error) {
         ctx.fail(error.tostring());
         // A failed commit closes staging but leaves the last committed forest intact.
@@ -85,6 +89,13 @@ eve_update <- function(dt) {
 
 eve_render <- function() {
     gfx.clear();
+    if (previousDebugPoints != null) {
+        for (local i = 0; i < previousDebugPoints.getCount(); i += 1) {
+            local x = 70.0 + previousDebugPoints.getX(i);
+            local y = 70.0 + previousDebugPoints.getZ(i);
+            gfx.drawSolidRect(x - 3.0, y - 3.0, 6.0, 6.0, 0.62, 0.16, 0.16, 0.45);
+        }
+    }
     if (roadPoints != null) {
         for (local i = 0; i < roadPoints.getCount(); i += 1) {
             gfx.drawSolidRect(68.0 + roadPoints.getX(i), 68.0 + roadPoints.getZ(i), 5.0, 5.0,

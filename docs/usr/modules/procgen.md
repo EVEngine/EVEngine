@@ -172,6 +172,20 @@ if (!ctx.endTrace(trees.getCount())) throw ctx.getError();
 存在未结束的计时器时，`commitSystem` 会拒绝提交并保留上一个快照。仍可使用
 `trace(name, inputCount, outputCount, milliseconds)` 导入外部测得的阶段数据。
 
+### 对比热重载前后的结果
+
+每次成功提交会额外保留上一版已提交快照。用
+`getPreviousSystemDebugStage(system, stage)` 取得上一版点集，与
+`getSystemDebugStage` 的当前点集叠加绘制；`getPreviousSystemRevision(system)` 返回
+对应 revision。`getSystemDebugDiffReport(system)` 会列出每个调试阶段的当前点数和
+相对上一版的增减，新增和移除的阶段也会明确显示。失败事务不会覆盖这组对比基线。
+
+```nut
+local before = procgen.getPreviousSystemDebugStage("forest", "trees");
+local after = procgen.getSystemDebugStage("forest", "trees");
+print(procgen.getSystemDebugDiffReport("forest") + "\n");
+```
+
 ## 目标导向指南
 
 ### 生成可玩的地牢层
