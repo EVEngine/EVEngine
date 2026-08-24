@@ -9,6 +9,7 @@
 // Run: make run/linux-debug GAME=examples/softbody
 // ============================================================================
 
+if (!("physics" in getroottable())) physics <- null;
 if (!("cloth" in getroottable())) cloth <- null;
 if (!("fluid" in getroottable())) fluid <- null;
 if (!("grabbing" in getroottable())) grabbing <- false;
@@ -49,17 +50,18 @@ function resetScene() {
 
 eve_init = function() {
     gfx.setBackgroundColor(0.07, 0.08, 0.11, 1.0);
-    if (physics == null) physics = eve.Physics();
+    if (typeof physics != "instance") physics = eve.Physics();
     physics.setMeter(30.0);
-    if (cloth == null || fluid == null)
+    if (typeof cloth != "instance" || typeof fluid != "instance")
         resetScene();
+    print("softbody: left-drag cloth/fluid | right-drag attract | Space emit | R reset\n");
 };
 
 eve_reload <- function() {
 };
 
 eve_update = function(dt) {
-    if (cloth == null || fluid == null) return;
+    if (typeof cloth != "instance" || typeof fluid != "instance") return;
 
     local mx = mouse.getX();
     local my = mouse.getY();
@@ -118,18 +120,18 @@ eve_render = function() {
     local tankW = w * 0.42;
     local tankH = h - 96.0;
 
-    // Soft panels
+    // Solid 2D draws currently keep the first fragment at overlapping pixels,
+    // so submit foreground before the panels behind it.
+    cloth.draw(gfx);
+    fluid.draw(gfx);
+
+    gfx.drawSolidRect(16.0, h - 28.0, 8.0 + cloth.getParticleCount() * 0.35, 10.0,
+                      0.7, 0.78, 0.95, 1.0);
+    gfx.drawSolidRect(tankX + 12.0, h - 28.0, 8.0 + fluid.getParticleCount() * 0.3, 10.0,
+                      0.25, 0.55, 0.95, 1.0);
+    gfx.drawSolidRect(16.0, h - 28.0, 220.0, 10.0, 0.2, 0.22, 0.28, 1.0);
+    gfx.drawSolidRect(tankX + 12.0, h - 28.0, 220.0, 10.0, 0.2, 0.22, 0.28, 1.0);
+
     gfx.drawSolidRect(0.0, 0.0, tankX - 8.0, h, 0.09, 0.10, 0.13, 1.0);
     gfx.drawSolidRect(tankX, tankY, tankW, tankH, 0.11, 0.13, 0.17, 1.0);
-
-    if (cloth) cloth.draw(gfx);
-    if (fluid) fluid.draw(gfx);
-
-    // Simple HUD bars (non-interactive chrome)
-    gfx.drawSolidRect(16.0, h - 28.0, 220.0, 10.0, 0.2, 0.22, 0.28, 1.0);
-    if (cloth)
-        gfx.drawSolidRect(16.0, h - 28.0, 8.0 + cloth.getParticleCount() * 0.35, 10.0, 0.7, 0.78, 0.95, 1.0);
-    gfx.drawSolidRect(tankX + 12.0, h - 28.0, 220.0, 10.0, 0.2, 0.22, 0.28, 1.0);
-    if (fluid)
-        gfx.drawSolidRect(tankX + 12.0, h - 28.0, 8.0 + fluid.getParticleCount() * 0.3, 10.0, 0.25, 0.55, 0.95, 1.0);
 };
