@@ -555,6 +555,8 @@ void Animation::expose(ssq::Table &table) {
     clip.addFunc("getRotationKeyCount", &AnimClip::getRotationKeyCount);
     clip.addFunc("getScaleKeyCount", &AnimClip::getScaleKeyCount);
     clip.addFunc("applyPlanarRootMotion", &AnimClip::applyPlanarRootMotion);
+    clip.addFunc("compress", &AnimClip::compress);
+    clip.addFunc("retarget", &AnimClip::retarget);
     clip.addFunc("sample", &AnimClip::sample);
     clip.addFunc("wrapTime", &AnimClip::wrapTime);
 

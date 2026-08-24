@@ -389,7 +389,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - `SpineAnim`：`setAtlas()`、`setPageTexture()`、`setPageTextureByName()`、`play()`、`setPosition()`、`setScale()`、`setFlipY()`、`apply()`、`update()`、`getDrawSlot*()`
 - 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newGraph()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
-- `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`addEvent()`、`getEventCount()`、`getEventTime()`、`getEventName()`、`sample()`、`wrapTime()`
+- `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`addEvent()`、`getEventCount()`、`getEventTime()`、`getEventName()`、`compress()`、`retarget()`、`sample()`、`wrapTime()`
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`aimBone()`、`solveTwoBoneIK()`、`getWorld*()`、`getWorldMatrixElement()`
 - `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`updateMatrixPalette()`、`getMatrixPaletteElement()`、`bindGpuMesh()`、`updateGpuMesh()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
 - `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`getRootMotionX()`、`getRootMotionY()`、`getRootMotionZ()`、`getRootMotionRotationX()`、`getRootMotionRotationY()`、`getRootMotionRotationZ()`、`getRootMotionRotationW()`、`consumeEvent()`、`setUpdateRate()`、`getUpdateRate()`、`update()`
@@ -410,6 +410,8 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - Graph、状态机或 Motion Matching 求值后，可对返回的 `AnimPose` 调用 `aimBone`（骨骼本地 +Z 朝向目标）或 `solveTwoBoneIK` 做世界空间后处理；两者都接受 `0..1` 权重并会更新 world pose。
 - GPU 蒙皮 shader 可调用 `AnimSkin.updateMatrixPalette(pose)` 后按骨骼读取 `getMatrixPaletteElement(bone, 0..15)` 上传调色板；顶点关节/权重由 `getVertexBone` / `getVertexWeight` 提供。CPU 路径复用同一调色板缓存。
 - 内建 GPU 蒙皮路径只需在 Mesh 创建后调用一次 `skin.bindGpuMesh(gfx, mesh)`，之后每帧在 `pose.computeWorld(skeleton)` 后调用 `skin.updateGpuMesh(mesh, pose)`；顶点保持 Bind Pose，Vulkan/WebGPU 顶点着色器读取四关节权重和最多 128 个骨骼矩阵完成变形，前向、阴影与 GBuffer 路径共享同一调色板。
+- 离线导入后可调用 `clip.compress(positionError, rotationErrorDegrees, scaleError)`，以逐轨道曲线误差为上限删除冗余关键帧；首尾关键帧、clip 属性和 gameplay notify 均保留。
+- `local targetClip = sourceClip.retarget(sourceSkeleton, targetSkeleton)` 按骨名匹配目标骨架，以源/目标 Bind Pose 的局部 TRS 差量重建轨道，并按对应骨段长度缩放位移。返回的新 clip 可继续压缩、进入状态机或 Animation Graph。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/animation/`](../../../src/modules/animation/)

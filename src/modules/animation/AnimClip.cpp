@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <utility>
 
 namespace eve::animation {
@@ -305,6 +306,138 @@ void AnimClip::sampleClamped(float time, AnimPose* out, const AnimSkeleton* skel
         const TransformTRS& fb = skeleton ? skeleton->bindLocal(i) : TransformTRS::identity();
         out->local(i)          = sampleBone(i, time, fb);
     }
+}
+
+int AnimClip::compress(float positionError, float rotationErrorDegrees, float scaleError) {
+    if (positionError < 0.f || rotationErrorDegrees < 0.f || scaleError < 0.f)
+        throw Exception("AnimClip.compress: tolerances must be >= 0");
+    const float rotationError = rotationErrorDegrees * 0.01745329251994329577f;
+    int removed = 0;
+    for (BoneTrack& track : tracks_) {
+        auto reduceVec3 = [&](std::vector<Vec3Key>& keys, float tolerance) {
+            if (keys.size() <= 2) return;
+            std::vector<unsigned char> keep(keys.size(), 0);
+            keep.front() = keep.back() = 1;
+            std::function<void(size_t, size_t)> split = [&](size_t first, size_t last) {
+                if (last <= first + 1) return;
+                const float span = keys[last].t - keys[first].t;
+                float worst = -1.f;
+                size_t worstIndex = first;
+                for (size_t i = first + 1; i < last; ++i) {
+                    const float alpha = span > 1e-8f ? (keys[i].t - keys[first].t) / span : 0.f;
+                    const float dx = keys[i].x - lerpf(keys[first].x, keys[last].x, alpha);
+                    const float dy = keys[i].y - lerpf(keys[first].y, keys[last].y, alpha);
+                    const float dz = keys[i].z - lerpf(keys[first].z, keys[last].z, alpha);
+                    const float error = std::sqrt(dx * dx + dy * dy + dz * dz);
+                    if (error > worst) { worst = error; worstIndex = i; }
+                }
+                if (worst > tolerance) {
+                    keep[worstIndex] = 1;
+                    split(first, worstIndex);
+                    split(worstIndex, last);
+                }
+            };
+            split(0, keys.size() - 1);
+            std::vector<Vec3Key> reduced;
+            reduced.reserve(keys.size());
+            for (size_t i = 0; i < keys.size(); ++i) if (keep[i]) reduced.push_back(keys[i]);
+            removed += static_cast<int>(keys.size() - reduced.size());
+            keys.swap(reduced);
+        };
+        auto reduceQuat = [&](std::vector<QuatKey>& keys) {
+            if (keys.size() <= 2) return;
+            std::vector<unsigned char> keep(keys.size(), 0);
+            keep.front() = keep.back() = 1;
+            std::function<void(size_t, size_t)> split = [&](size_t first, size_t last) {
+                if (last <= first + 1) return;
+                const float span = keys[last].t - keys[first].t;
+                float worst = -1.f;
+                size_t worstIndex = first;
+                for (size_t i = first + 1; i < last; ++i) {
+                    const float alpha = span > 1e-8f ? (keys[i].t - keys[first].t) / span : 0.f;
+                    float x, y, z, w;
+                    slerpQuat(keys[first].x, keys[first].y, keys[first].z, keys[first].w,
+                              keys[last].x, keys[last].y, keys[last].z, keys[last].w,
+                              alpha, x, y, z, w);
+                    const float dot = std::abs(x * keys[i].x + y * keys[i].y + z * keys[i].z + w * keys[i].w);
+                    const float error = 2.f * std::acos(clampf(dot, -1.f, 1.f));
+                    if (error > worst) { worst = error; worstIndex = i; }
+                }
+                if (worst > rotationError) {
+                    keep[worstIndex] = 1;
+                    split(first, worstIndex);
+                    split(worstIndex, last);
+                }
+            };
+            split(0, keys.size() - 1);
+            std::vector<QuatKey> reduced;
+            reduced.reserve(keys.size());
+            for (size_t i = 0; i < keys.size(); ++i) if (keep[i]) reduced.push_back(keys[i]);
+            removed += static_cast<int>(keys.size() - reduced.size());
+            keys.swap(reduced);
+        };
+        reduceVec3(track.positions, positionError);
+        reduceQuat(track.rotations);
+        reduceVec3(track.scales, scaleError);
+    }
+    return removed;
+}
+
+AnimClip* AnimClip::retarget(const AnimSkeleton* sourceSkeleton, const AnimSkeleton* targetSkeleton) const {
+    if (!sourceSkeleton || !targetSkeleton) throw Exception("AnimClip.retarget: skeleton is null");
+    auto* out = new AnimClip(name_ + "_retargeted");
+    out->duration_ = duration_;
+    out->loop_ = loop_;
+    out->sampleRate_ = sampleRate_;
+    out->events_ = events_;
+    out->tracks_.resize(static_cast<size_t>(targetSkeleton->getBoneCount()));
+    auto multiplyQuat = [](float ax, float ay, float az, float aw, float bx, float by, float bz, float bw,
+                           float& x, float& y, float& z, float& w) {
+        x = aw * bx + ax * bw + ay * bz - az * by;
+        y = aw * by - ax * bz + ay * bw + az * bx;
+        z = aw * bz + ax * by - ay * bx + az * bw;
+        w = aw * bw - ax * bx - ay * by - az * bz;
+    };
+    for (int targetBone = 0; targetBone < targetSkeleton->getBoneCount(); ++targetBone) {
+        const int sourceBone = sourceSkeleton->findBone(targetSkeleton->getBoneName(targetBone));
+        if (sourceBone < 0 || sourceBone >= static_cast<int>(tracks_.size())) continue;
+        const TransformTRS& sourceBind = sourceSkeleton->bindLocal(sourceBone);
+        const TransformTRS& targetBind = targetSkeleton->bindLocal(targetBone);
+        const float sourceLength = std::sqrt(sourceBind.px * sourceBind.px + sourceBind.py * sourceBind.py +
+                                             sourceBind.pz * sourceBind.pz);
+        const float targetLength = std::sqrt(targetBind.px * targetBind.px + targetBind.py * targetBind.py +
+                                             targetBind.pz * targetBind.pz);
+        const float translationScale = sourceLength > 1e-6f && targetLength > 1e-6f
+                                           ? targetLength / sourceLength : 1.f;
+        const BoneTrack& source = tracks_[static_cast<size_t>(sourceBone)];
+        BoneTrack& target = out->tracks_[static_cast<size_t>(targetBone)];
+        for (const Vec3Key& key : source.positions) {
+            target.positions.push_back({key.t,
+                targetBind.px + (key.x - sourceBind.px) * translationScale,
+                targetBind.py + (key.y - sourceBind.py) * translationScale,
+                targetBind.pz + (key.z - sourceBind.pz) * translationScale});
+        }
+        for (const QuatKey& key : source.rotations) {
+            float dx, dy, dz, dw;
+            multiplyQuat(-sourceBind.qx, -sourceBind.qy, -sourceBind.qz, sourceBind.qw,
+                         key.x, key.y, key.z, key.w, dx, dy, dz, dw);
+            QuatKey result{key.t};
+            multiplyQuat(targetBind.qx, targetBind.qy, targetBind.qz, targetBind.qw,
+                         dx, dy, dz, dw, result.x, result.y, result.z, result.w);
+            TransformTRS normalized;
+            normalized.qx = result.x; normalized.qy = result.y; normalized.qz = result.z; normalized.qw = result.w;
+            normalized.normalizeRotation();
+            result.x = normalized.qx; result.y = normalized.qy; result.z = normalized.qz; result.w = normalized.qw;
+            target.rotations.push_back(result);
+        }
+        for (const Vec3Key& key : source.scales) {
+            target.scales.push_back({key.t,
+                targetBind.sx * (std::abs(sourceBind.sx) > 1e-6f ? key.x / sourceBind.sx : key.x),
+                targetBind.sy * (std::abs(sourceBind.sy) > 1e-6f ? key.y / sourceBind.sy : key.y),
+                targetBind.sz * (std::abs(sourceBind.sz) > 1e-6f ? key.z / sourceBind.sz : key.z)});
+        }
+    }
+    return out;
 }
 
 void AnimClip::adopt(AnimClip& other) {

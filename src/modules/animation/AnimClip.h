@@ -72,6 +72,23 @@ public:
     void applyPlanarRootMotion(int boneIndex, float speedX, float speedZ);
 
     /**
+     * @brief Remove interpolation-redundant keys while keeping sampled error below the supplied tolerances.
+     * @param positionError Maximum local translation error in engine units.
+     * @param rotationErrorDegrees Maximum local angular error in degrees.
+     * @param scaleError Maximum local scale-vector error.
+     * @return Number of removed keys.
+     */
+    int compress(float positionError = 0.001f, float rotationErrorDegrees = 0.1f,
+                 float scaleError = 0.001f);
+
+    /**
+     * @brief Bake this clip onto a target skeleton by matching bone names and preserving bind-pose deltas.
+     * Translation motion is scaled by the corresponding target/source bind-bone length ratio.
+     * @return A new script-owned clip.
+     */
+    AnimClip* retarget(const AnimSkeleton* sourceSkeleton, const AnimSkeleton* targetSkeleton) const;
+
+    /**
      * @brief Sample local pose at time (seconds). If skeleton non-null, missing tracks
      * fall back to bind pose; otherwise identity.
      */

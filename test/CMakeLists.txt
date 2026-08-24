@@ -161,6 +161,7 @@ file(GLOB all_test_cpp
   editor.cpp
   ik.cpp
   animation.cpp
+  animation_retarget_compression.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
   animation_lattice.cpp
