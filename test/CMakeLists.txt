@@ -163,6 +163,7 @@ file(GLOB all_test_cpp
   animation.cpp
   animation_retarget_compression.cpp
   animation_batch_lod.cpp
+  animation_constraints_sync.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
   animation_lattice.cpp

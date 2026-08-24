@@ -414,6 +414,8 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - `local targetClip = sourceClip.retarget(sourceSkeleton, targetSkeleton)` 按骨名匹配目标骨架，以源/目标 Bind Pose 的局部 TRS 差量重建轨道，并按对应骨段长度缩放位移。返回的新 clip 可继续压缩、进入状态机或 Animation Graph。
 - 批量角色求值使用 `AnimBatch`：通过 `anim.newBatch()` 创建，逐角色 `add(clip, skeleton, pose, time, lodLevel)`，最后 `evaluate(workerCount)`；另提供 `clear()`、`getCount()` 和 `getLastWorkerCount()`。`workerCount=0` 自动采用硬件并发度，任务以无锁原子索引分发，且拒绝同一 Pose 的并发写入。Pose 混合的平移/缩放在 x86/x64 使用 SSE 路径。
 - 骨骼 LOD 以 0 为最高细节。`skeleton.setBoneLodLimit(bone, highestLod)` 指定骨骼保留到哪一级，`skeleton.getBoneLodLimit(bone)` 可查询；`clip.sampleLod(...)` 和 `AnimBatch` 会让被裁剪轨道回退到目标 Bind Pose。根骨、碰撞骨和 IK 末端应保留较高 limit，手指与装饰骨通常只保留 LOD 0。
+- 程序化后处理使用 `anim.newConstraintStack(skeleton)`。`AnimConstraintStack` 按插入顺序执行 `addAim()`、`addTwoBoneIK()` 和 `addFootIK()`，通过 `apply(pose)` 一次求解；`clear()` 与 `getCount()` 管理队列。Foot IK 将髋-膝-足链种植到地面高度并按地面法线调整足部局部 +Z，可传 sole offset 与权重。
+- 步态同步使用 `anim.newSyncGroup()`。`AnimSyncGroup.addPlayer(player, phaseOffset)` 加入播放器，`setLeader()` / `getLeader()` 选择主时钟，`update(dt)` 推进 leader 并将 follower 映射到各自 clip 的归一化相位；`getPhase()`、`getCount()`、`clear()` 用于调试与复用。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/animation/`](../../../src/modules/animation/)

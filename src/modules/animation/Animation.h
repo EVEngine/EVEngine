@@ -32,6 +32,8 @@ class AnimSkin;
 class AnimLattice;
 class AnimTrail;
 class AnimBatch;
+class AnimConstraintStack;
+class AnimSyncGroup;
 class SpriteSheet;
 class SpriteClip;
 class SpriteAnim;
@@ -108,6 +110,10 @@ public:
     AnimPose         *newPose(int boneCount = 0);
     /** @brief Create a parallel batch clip evaluator. */
     AnimBatch        *newBatch();
+    /** @brief Create an ordered procedural constraint stack. */
+    AnimConstraintStack *newConstraintStack(AnimSkeleton* skeleton);
+    /** @brief Create a normalized-time player synchronization group. */
+    AnimSyncGroup* newSyncGroup();
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
     /** @brief Create a composable pose graph for the skeleton. */
     AnimGraph        *newGraph(AnimSkeleton *skeleton);

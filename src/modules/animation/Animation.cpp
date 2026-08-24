@@ -2,6 +2,7 @@
 #include "animation/AnimClip.h"
 #include "animation/AnimClipRegistry.h"
 #include "animation/AnimBatch.h"
+#include "animation/AnimConstraintStack.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimGraph.h"
@@ -11,6 +12,7 @@
 #include "animation/AnimLattice.h"
 #include "animation/AnimStateMachine.h"
 #include "animation/AnimTrail.h"
+#include "animation/AnimSyncGroup.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
 #include "animation/MotionDatabase.h"
@@ -311,6 +313,10 @@ AnimClip *Animation::newClip(const std::string &name) { return new AnimClip(name
 
 AnimPose *Animation::newPose(int boneCount) { return new AnimPose(boneCount); }
 AnimBatch *Animation::newBatch() { return new AnimBatch(); }
+AnimConstraintStack *Animation::newConstraintStack(AnimSkeleton *skeleton) {
+    return new AnimConstraintStack(skeleton);
+}
+AnimSyncGroup *Animation::newSyncGroup() { return new AnimSyncGroup(); }
 
 AnimPlayer *Animation::newPlayer(AnimSkeleton *skeleton) { return new AnimPlayer(skeleton); }
 AnimGraph *Animation::newGraph(AnimSkeleton *skeleton) { return new AnimGraph(skeleton); }
@@ -603,6 +609,26 @@ void Animation::expose(ssq::Table &table) {
     batch.addFunc("getCount", &AnimBatch::getCount);
     batch.addFunc("evaluate", &AnimBatch::evaluate);
     batch.addFunc("getLastWorkerCount", &AnimBatch::getLastWorkerCount);
+
+    auto constraints = table.addClass<AnimConstraintStack>(
+        "AnimConstraintStack", std::function<AnimConstraintStack *()>([]() -> AnimConstraintStack * { return nullptr; }),
+        true);
+    constraints.addFunc("clear", &AnimConstraintStack::clear);
+    constraints.addFunc("getCount", &AnimConstraintStack::getCount);
+    constraints.addFunc("addAim", &AnimConstraintStack::addAim);
+    constraints.addFunc("addTwoBoneIK", &AnimConstraintStack::addTwoBoneIK);
+    constraints.addFunc("addFootIK", &AnimConstraintStack::addFootIK);
+    constraints.addFunc("apply", &AnimConstraintStack::apply);
+
+    auto sync = table.addClass<AnimSyncGroup>(
+        "AnimSyncGroup", std::function<AnimSyncGroup *()>([]() -> AnimSyncGroup * { return nullptr; }), true);
+    sync.addFunc("addPlayer", &AnimSyncGroup::addPlayer);
+    sync.addFunc("clear", &AnimSyncGroup::clear);
+    sync.addFunc("getCount", &AnimSyncGroup::getCount);
+    sync.addFunc("setLeader", &AnimSyncGroup::setLeader);
+    sync.addFunc("getLeader", &AnimSyncGroup::getLeader);
+    sync.addFunc("update", &AnimSyncGroup::update);
+    sync.addFunc("getPhase", &AnimSyncGroup::getPhase);
 
     auto skin = table.addClass<AnimSkin>(
         "AnimSkin", std::function<AnimSkin *()>([]() -> AnimSkin * { return nullptr; }), true);
@@ -1128,6 +1154,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newClip", &Animation::newClip);
     cls.addFunc("newPose", &Animation::newPose);
     cls.addFunc("newBatch", &Animation::newBatch);
+    cls.addFunc("newConstraintStack", &Animation::newConstraintStack);
+    cls.addFunc("newSyncGroup", &Animation::newSyncGroup);
     cls.addFunc("newPlayer", &Animation::newPlayer);
     cls.addFunc("newGraph", &Animation::newGraph);
     cls.addFunc("newStateMachine", &Animation::newStateMachine);
