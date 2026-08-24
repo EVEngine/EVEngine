@@ -1,15 +1,19 @@
 #include "animation/Animation.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimClipRegistry.h"
+#include "animation/AnimBatch.h"
+#include "animation/AnimConstraintStack.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimLattice.h"
 #include "animation/AnimLayerMixer.h"
 #include "animation/AnimPlayer.h"
+#include "animation/AnimGraph.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 #include "animation/AnimStateMachine.h"
 #include "animation/AnimTrail.h"
+#include "animation/AnimSyncGroup.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
 #include "animation/MotionDatabase.h"
@@ -309,8 +313,14 @@ AnimSkeleton *Animation::newSkeleton() { return new AnimSkeleton(); }
 AnimClip *Animation::newClip(const std::string &name) { return new AnimClip(name); }
 
 AnimPose *Animation::newPose(int boneCount) { return new AnimPose(boneCount); }
+AnimBatch *Animation::newBatch() { return new AnimBatch(); }
+AnimConstraintStack *Animation::newConstraintStack(AnimSkeleton *skeleton) {
+    return new AnimConstraintStack(skeleton);
+}
+AnimSyncGroup *Animation::newSyncGroup() { return new AnimSyncGroup(); }
 
 AnimPlayer *Animation::newPlayer(AnimSkeleton *skeleton) { return new AnimPlayer(skeleton); }
+AnimGraph *Animation::newGraph(AnimSkeleton *skeleton) { return new AnimGraph(skeleton); }
 
 AnimBoneMask* Animation::newBoneMask(AnimSkeleton* skeleton) { return new AnimBoneMask(skeleton); }
 
@@ -525,6 +535,8 @@ void Animation::expose(ssq::Table &table) {
     sk.addFunc("setBindPosition", &AnimSkeleton::setBindPosition);
     sk.addFunc("setBindRotation", &AnimSkeleton::setBindRotation);
     sk.addFunc("setBindScale", &AnimSkeleton::setBindScale);
+    sk.addFunc("setBoneLodLimit", &AnimSkeleton::setBoneLodLimit);
+    sk.addFunc("getBoneLodLimit", &AnimSkeleton::getBoneLodLimit);
     sk.addFunc("getBindPositionX", &AnimSkeleton::getBindPositionX);
     sk.addFunc("getBindPositionY", &AnimSkeleton::getBindPositionY);
     sk.addFunc("getBindPositionZ", &AnimSkeleton::getBindPositionZ);
@@ -559,7 +571,10 @@ void Animation::expose(ssq::Table &table) {
     clip.addFunc("getRotationKeyCount", &AnimClip::getRotationKeyCount);
     clip.addFunc("getScaleKeyCount", &AnimClip::getScaleKeyCount);
     clip.addFunc("applyPlanarRootMotion", &AnimClip::applyPlanarRootMotion);
+    clip.addFunc("compress", &AnimClip::compress);
+    clip.addFunc("retarget", &AnimClip::retarget);
     clip.addFunc("sample", &AnimClip::sample);
+    clip.addFunc("sampleLod", &AnimClip::sampleLod);
     clip.addFunc("wrapTime", &AnimClip::wrapTime);
 
     auto pose = table.addClass<AnimPose>(
@@ -582,6 +597,8 @@ void Animation::expose(ssq::Table &table) {
     pose.addFunc("getLocalScaleY", &AnimPose::getLocalScaleY);
     pose.addFunc("getLocalScaleZ", &AnimPose::getLocalScaleZ);
     pose.addFunc("computeWorld", &AnimPose::computeWorld);
+    pose.addFunc("aimBone", &AnimPose::aimBone);
+    pose.addFunc("solveTwoBoneIK", &AnimPose::solveTwoBoneIK);
     pose.addFunc("getWorldPositionX", &AnimPose::getWorldPositionX);
     pose.addFunc("getWorldPositionY", &AnimPose::getWorldPositionY);
     pose.addFunc("getWorldPositionZ", &AnimPose::getWorldPositionZ);
@@ -591,6 +608,34 @@ void Animation::expose(ssq::Table &table) {
     pose.addFunc("getWorldRotationW", &AnimPose::getWorldRotationW);
     pose.addFunc("getWorldMatrixElement", &AnimPose::getWorldMatrixElement);
 
+    auto batch = table.addClass<AnimBatch>(
+        "AnimBatch", std::function<AnimBatch *()>([]() -> AnimBatch * { return nullptr; }), true);
+    batch.addFunc("add", &AnimBatch::add);
+    batch.addFunc("clear", &AnimBatch::clear);
+    batch.addFunc("getCount", &AnimBatch::getCount);
+    batch.addFunc("evaluate", &AnimBatch::evaluate);
+    batch.addFunc("getLastWorkerCount", &AnimBatch::getLastWorkerCount);
+
+    auto constraints = table.addClass<AnimConstraintStack>(
+        "AnimConstraintStack", std::function<AnimConstraintStack *()>([]() -> AnimConstraintStack * { return nullptr; }),
+        true);
+    constraints.addFunc("clear", &AnimConstraintStack::clear);
+    constraints.addFunc("getCount", &AnimConstraintStack::getCount);
+    constraints.addFunc("addAim", &AnimConstraintStack::addAim);
+    constraints.addFunc("addTwoBoneIK", &AnimConstraintStack::addTwoBoneIK);
+    constraints.addFunc("addFootIK", &AnimConstraintStack::addFootIK);
+    constraints.addFunc("apply", &AnimConstraintStack::apply);
+
+    auto sync = table.addClass<AnimSyncGroup>(
+        "AnimSyncGroup", std::function<AnimSyncGroup *()>([]() -> AnimSyncGroup * { return nullptr; }), true);
+    sync.addFunc("addPlayer", &AnimSyncGroup::addPlayer);
+    sync.addFunc("clear", &AnimSyncGroup::clear);
+    sync.addFunc("getCount", &AnimSyncGroup::getCount);
+    sync.addFunc("setLeader", &AnimSyncGroup::setLeader);
+    sync.addFunc("getLeader", &AnimSyncGroup::getLeader);
+    sync.addFunc("update", &AnimSyncGroup::update);
+    sync.addFunc("getPhase", &AnimSyncGroup::getPhase);
+
     auto skin = table.addClass<AnimSkin>(
         "AnimSkin", std::function<AnimSkin *()>([]() -> AnimSkin * { return nullptr; }), true);
     skin.addFunc("getVertexCount", &AnimSkin::getVertexCount);
@@ -599,6 +644,10 @@ void Animation::expose(ssq::Table &table) {
     skin.addFunc("getSkeletonBone", &AnimSkin::getSkeletonBone);
     skin.addFunc("getSkinBoneName", &AnimSkin::getSkinBoneName);
     skin.addFunc("getInverseBindElement", &AnimSkin::getInverseBindElement);
+    skin.addFunc("updateMatrixPalette", &AnimSkin::updateMatrixPalette);
+    skin.addFunc("getMatrixPaletteElement", &AnimSkin::getMatrixPaletteElement);
+    skin.addFunc("bindGpuMesh", &AnimSkin::bindGpuMesh);
+    skin.addFunc("updateGpuMesh", &AnimSkin::updateGpuMesh);
     skin.addFunc("getBindPositionX", &AnimSkin::getBindPositionX);
     skin.addFunc("getBindPositionY", &AnimSkin::getBindPositionY);
     skin.addFunc("getBindPositionZ", &AnimSkin::getBindPositionZ);
@@ -689,11 +738,49 @@ void Animation::expose(ssq::Table &table) {
     player.addFunc("isPlaying", &AnimPlayer::isPlaying);
     player.addFunc("isPaused", &AnimPlayer::isPaused);
     player.addFunc("getPose", &AnimPlayer::getPose);
+    player.addFunc("setRootMotionBone", &AnimPlayer::setRootMotionBone);
+    player.addFunc("getRootMotionBone", &AnimPlayer::getRootMotionBone);
+    player.addFunc("getRootMotionX", &AnimPlayer::getRootMotionX);
+    player.addFunc("getRootMotionY", &AnimPlayer::getRootMotionY);
+    player.addFunc("getRootMotionZ", &AnimPlayer::getRootMotionZ);
+    player.addFunc("getRootMotionRotationX", &AnimPlayer::getRootMotionRotationX);
+    player.addFunc("getRootMotionRotationY", &AnimPlayer::getRootMotionRotationY);
+    player.addFunc("getRootMotionRotationZ", &AnimPlayer::getRootMotionRotationZ);
+    player.addFunc("getRootMotionRotationW", &AnimPlayer::getRootMotionRotationW);
+    player.addFunc("consumeEvent", &AnimPlayer::consumeEvent);
+    player.addFunc("setUpdateRate", &AnimPlayer::setUpdateRate);
+    player.addFunc("getUpdateRate", &AnimPlayer::getUpdateRate);
+    player.addFunc("update", &AnimPlayer::update);
+
+    auto graph = table.addClass<AnimGraph>(
+        "AnimGraph", std::function<AnimGraph *()>([]() -> AnimGraph * { return nullptr; }), true);
+    graph.addFunc("addClip", &AnimGraph::addClip);
+    graph.addFunc("addBlend", &AnimGraph::addBlend);
+    graph.addFunc("addAdditive", &AnimGraph::addAdditive);
+    graph.addFunc("addLayer", &AnimGraph::addLayer);
+    graph.addFunc("addOneShot", &AnimGraph::addOneShot);
+    graph.addFunc("addBlendSpace1D", &AnimGraph::addBlendSpace1D);
+    graph.addFunc("addBlendSpace2D", &AnimGraph::addBlendSpace2D);
+    graph.addFunc("addBlendSpace1DPoint", &AnimGraph::addBlendSpace1DPoint);
+    graph.addFunc("addBlendSpace2DPoint", &AnimGraph::addBlendSpace2DPoint);
+    graph.addFunc("setBoneMask", &AnimGraph::setBoneMask);
+    graph.addFunc("clearBoneMask", &AnimGraph::clearBoneMask);
+    graph.addFunc("setRoot", &AnimGraph::setRoot);
+    graph.addFunc("getRoot", &AnimGraph::getRoot);
+    graph.addFunc("getNodeCount", &AnimGraph::getNodeCount);
+    graph.addFunc("setWeight", &AnimGraph::setWeight);
+    graph.addFunc("setPosition1D", &AnimGraph::setPosition1D);
+    graph.addFunc("setPosition2D", &AnimGraph::setPosition2D);
+    graph.addFunc("setSpeed", &AnimGraph::setSpeed);
+    graph.addFunc("trigger", &AnimGraph::trigger);
+    graph.addFunc("isOneShotActive", &AnimGraph::isOneShotActive);
+    graph.addFunc("getPose", &AnimGraph::getPose);
+    graph.addFunc("update", &AnimGraph::update);
+
     player.addFunc("getEventCount", &AnimPlayer::getEventCount);
     player.addFunc("getEventName", &AnimPlayer::getEventName);
     player.addFunc("getEventPayload", &AnimPlayer::getEventPayload);
     player.addFunc("clearEvents", &AnimPlayer::clearEvents);
-    player.addFunc("update", &AnimPlayer::update);
 
     auto mask = table.addClass<AnimBoneMask>(
         "AnimBoneMask", std::function<AnimBoneMask*()>([]() -> AnimBoneMask* { return nullptr; }), true);
@@ -1104,7 +1191,11 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newSkeleton", &Animation::newSkeleton);
     cls.addFunc("newClip", &Animation::newClip);
     cls.addFunc("newPose", &Animation::newPose);
+    cls.addFunc("newBatch", &Animation::newBatch);
+    cls.addFunc("newConstraintStack", &Animation::newConstraintStack);
+    cls.addFunc("newSyncGroup", &Animation::newSyncGroup);
     cls.addFunc("newPlayer", &Animation::newPlayer);
+    cls.addFunc("newGraph", &Animation::newGraph);
     cls.addFunc("newBoneMask", &Animation::newBoneMask);
     cls.addFunc("newLayerMixer", &Animation::newLayerMixer);
     cls.addFunc("newStateMachine", &Animation::newStateMachine);

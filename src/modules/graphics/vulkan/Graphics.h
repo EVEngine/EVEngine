@@ -69,6 +69,8 @@ struct MeshVertex {
     glm::vec3 pos;
     glm::vec3 normal;
     glm::vec2 uv;
+    glm::u16vec4 joints{0};
+    glm::vec4 weights{0.f};
 
     static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
         vk::VertexInputBindingDescription b{};
@@ -82,6 +84,8 @@ struct MeshVertex {
             {0, binding, vk::Format::eR32G32B32Sfloat, offsetof(MeshVertex, pos)},
             {1, binding, vk::Format::eR32G32B32Sfloat, offsetof(MeshVertex, normal)},
             {2, binding, vk::Format::eR32G32Sfloat, offsetof(MeshVertex, uv)},
+            {3, binding, vk::Format::eR16G16B16A16Uint, offsetof(MeshVertex, joints)},
+            {4, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, weights)},
         };
     }
 };
@@ -108,7 +112,18 @@ struct Mesh3DUBO {
     // GPU-driven only: x = bindless env cubemap slot, y = envIntensity.
     // Appended after the legacy prefix so legacy shaders are unaffected.
     glm::vec4 bindlessEnv{0.f, 0.f, 0.f, 0.f};
+    glm::vec4 skinInfo{0.f};
+    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
 };
+
+struct SkinPassUBO {
+    glm::mat4 mvp{1.f};
+    glm::mat4 model{1.f};
+    glm::vec4 clip{0.f};
+    glm::vec4 skinInfo{0.f};
+    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
+};
+static_assert(sizeof(SkinPassUBO) == 8352, "SkinPassUBO must match std140 shaders");
 
 struct Mesh3DClusteredUBO {
     glm::mat4 mvp{1.f};
@@ -348,6 +363,8 @@ public:
     bool bakeMeshMorph(Mesh *mesh) override;
     bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
+    bool setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
+                             int vertexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     bool releaseMesh(Mesh *mesh) override;
@@ -507,6 +524,10 @@ private:
     void          uploadClusteredLighting(const ClusteredLightingUpload &upload);
     void          ensureMesh3dStrides();
     void          ensureMesh3dRing(Mesh3dFrameSlots &fslots);
+    vk::DescriptorSet skinPassSetFor(GpuTexture *albedo, Mesh3dFrameSlots &fslots);
+    bool prepareSkinPass(Mesh *mesh, Texture *albedo, const glm::mat4 &mvp,
+                         const glm::mat4 &model, const glm::vec4 &clip,
+                         vk::DescriptorSet &set, uint32_t &uboOffset);
     void          ensureMesh3dClusteredRing(Mesh3dClusteredFrameSlots &fslots);
     vkb::BoundSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
                                         GpuTexture *envTex, GpuTexture *heightTex,
@@ -713,6 +734,7 @@ private:
         size_t             drawIndex     = 0;
         size_t             lastDrawCount = 0;
         std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
+        std::unordered_map<GpuTexture *, vkb::BoundSet> skinSets;
     };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture                      *whiteTexture            = nullptr;
@@ -948,12 +970,19 @@ private:
     vk::Pipeline shadowPipeline{};
     vk::PipelineLayout shadowAlphaPipelineLayout{};
     vk::Pipeline shadowAlphaPipeline{};
+    vk::PipelineLayout skinPassPipelineLayout{};
+    vk::DescriptorSetLayout skinPassSetLayout{};
+    vk::UniqueDescriptorSetLayout skinPassSetLayoutUnique;
+    vk::Pipeline shadowSkinPipeline{};
+    vk::Pipeline shadowSkinAlphaPipeline{};
     int shadowPassCascade = -1;
     struct ShadowDraw {
         Mesh *mesh = nullptr;
         glm::mat4 mvp{1.f};
         Texture *albedo = nullptr;
         bool alphaTest = false;  // use the alpha-cutout shadow pipeline
+        vk::DescriptorSet skinSet{};
+        uint32_t skinUboOffset = 0;
     };
     std::vector<ShadowDraw> shadowPassDraws;
     std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
@@ -975,6 +1004,8 @@ private:
         Texture *albedo = nullptr;
         GBufferPush push{};
         bool alphaTest = false;  // use the alpha-cutout gbuffer pipeline
+        vk::DescriptorSet skinSet{};
+        uint32_t skinUboOffset = 0;
     };
     struct GBufferSlot {
         vkb::ColorTarget normal;
@@ -1006,6 +1037,8 @@ private:
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
     vk::Pipeline gbufferAlphaPipeline{};
+    vk::Pipeline gbufferSkinPipeline{};
+    vk::Pipeline gbufferSkinAlphaPipeline{};
     vk::Pipeline gbufferVisPipeline = nullptr;
     bool gbufferPassActive = false;
     bool gbufferPending = false;

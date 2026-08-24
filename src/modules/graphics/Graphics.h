@@ -473,6 +473,16 @@ public:
                                     const float *uvST, int vertexCount, const uint32_t *indices,
                                     int indexCount) = 0;
 
+    /** @brief Upload four joint indices and weights per vertex for built-in GPU skinning. */
+    virtual bool setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
+                                     int vertexCount) {
+        (void)mesh;
+        (void)joints4;
+        (void)weights4;
+        (void)vertexCount;
+        return false;
+    }
+
     /**
      * @brief If mesh morph weights are dirty, bake blended positions and upload to the GPU VBO.
      * Returns true when an upload happened. No-op when no morph data / not dirty / null.

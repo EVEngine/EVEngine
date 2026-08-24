@@ -19,10 +19,10 @@ public:
     explicit AnimClip(std::string name = "");
     ~AnimClip();
 
-    AnimClip(const AnimClip &)            = delete;
-    AnimClip &operator=(const AnimClip &) = delete;
+    AnimClip(const AnimClip&)            = delete;
+    AnimClip& operator=(const AnimClip&) = delete;
 
-    void        setName(const std::string &name) { name_ = name; }
+    void        setName(const std::string& name) { name_ = name; }
     std::string getName() const { return name_; }
 
     void  setDuration(float seconds);
@@ -38,7 +38,6 @@ public:
     void addPositionKey(int boneIndex, float time, float x, float y, float z);
     void addRotationKey(int boneIndex, float time, float x, float y, float z, float w);
     void addScaleKey(int boneIndex, float time, float x, float y, float z);
-
     /** @brief Add a named event marker at clip-local time. Events are kept time-sorted. */
     void addEvent(float time, const std::string& name, const std::string& payload = "");
     /** @brief Return the number of event markers. */
@@ -78,10 +77,29 @@ public:
     void applyPlanarRootMotion(int boneIndex, float speedX, float speedZ);
 
     /**
+     * @brief Remove interpolation-redundant keys while keeping sampled error below the supplied tolerances.
+     * @param positionError Maximum local translation error in engine units.
+     * @param rotationErrorDegrees Maximum local angular error in degrees.
+     * @param scaleError Maximum local scale-vector error.
+     * @return Number of removed keys.
+     */
+    int compress(float positionError = 0.001f, float rotationErrorDegrees = 0.1f,
+                 float scaleError = 0.001f);
+
+    /**
+     * @brief Bake this clip onto a target skeleton by matching bone names and preserving bind-pose deltas.
+     * Translation motion is scaled by the corresponding target/source bind-bone length ratio.
+     * @return A new script-owned clip.
+     */
+    AnimClip* retarget(const AnimSkeleton* sourceSkeleton, const AnimSkeleton* targetSkeleton) const;
+
+    /**
      * @brief Sample local pose at time (seconds). If skeleton non-null, missing tracks
      * fall back to bind pose; otherwise identity.
      */
-    void sample(float time, AnimPose *out, const AnimSkeleton *skeleton = nullptr) const;
+    void sample(float time, AnimPose* out, const AnimSkeleton* skeleton = nullptr) const;
+    /** @brief Sample only bones enabled for lodLevel; culled tracks use target bind pose. */
+    void sampleLod(float time, AnimPose* out, const AnimSkeleton* skeleton, int lodLevel) const;
 
     /** @brief Wrap or clamp time according to loop flag. */
     float wrapTime(float time) const;
@@ -93,8 +111,11 @@ public:
      *        drained and is destroyed by the caller.
      */
     void adopt(AnimClip& other);
+    /** @brief Collect notifies crossed by forward playback, including loop wrap. */
+    void collectEvents(float previousTime, float currentTime, bool loop, std::vector<std::string>& out) const;
 
 private:
+    friend class AnimPlayer;
     struct Vec3Key {
         float t = 0.f, x = 0.f, y = 0.f, z = 0.f;
     };
@@ -112,13 +133,13 @@ private:
         std::string payload;
     };
 
-    void       ensureBone(int boneIndex);
-    TransformTRS sampleBone(int boneIndex, float time, const TransformTRS &fallback) const;
+    void         ensureBone(int boneIndex);
+    TransformTRS sampleBone(int boneIndex, float time, const TransformTRS& fallback) const;
+    void         sampleClamped(float time, AnimPose* out, const AnimSkeleton* skeleton) const;
 
-    static void sampleVec3(const std::vector<Vec3Key> &keys, float time, float &x, float &y,
-                           float &z, bool &ok);
-    static void sampleQuat(const std::vector<QuatKey> &keys, float time, float &x, float &y,
-                           float &z, float &w, bool &ok);
+    static void sampleVec3(const std::vector<Vec3Key>& keys, float time, float& x, float& y, float& z, bool& ok);
+    static void sampleQuat(const std::vector<QuatKey>& keys, float time, float& x, float& y, float& z, float& w,
+                           bool& ok);
 
     std::string             name_;
     float                   duration_   = 0.f;
