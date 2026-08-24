@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <limits>
+#include <locale>
 #include <sstream>
 #include <string_view>
 #include <system_error>
@@ -57,11 +58,10 @@ void appendJson(const EditorValue& value, std::string& out) {
                 if (!std::isfinite(current)) {
                     out += "null";
                 } else {
-                    char buffer[64];
-                    const auto [end, error] =
-                        std::to_chars(buffer, buffer + sizeof(buffer), current, std::chars_format::general,
-                                      std::numeric_limits<double>::max_digits10);
-                    if (error == std::errc()) out.append(buffer, end);
+                    std::ostringstream stream;
+                    stream.imbue(std::locale::classic());
+                    stream << std::setprecision(std::numeric_limits<double>::max_digits10) << current;
+                    out += stream.str();
                 }
             } else if constexpr (std::is_same_v<T, std::string>) {
                 appendEscapedString(current, out);
@@ -296,9 +296,11 @@ private:
                 return true;
             }
         }
-        double value            = 0.0;
-        const auto [end, error] = std::from_chars(token.data(), token.data() + token.size(), value);
-        if (error != std::errc() || end != token.data() + token.size() || !std::isfinite(value))
+        std::istringstream stream{std::string(token)};
+        stream.imbue(std::locale::classic());
+        double value = 0.0;
+        stream >> std::noskipws >> value;
+        if (stream.fail() || !stream.eof() || !std::isfinite(value))
             return fail("JSON number is outside the supported range");
         out = EditorValue(value);
         return true;
