@@ -10,6 +10,7 @@ namespace eve::graphics {
 
 class FogVolume;
 class VolumeDensityGraph;
+class SparseVolumeTexture;
 
 /** @brief Participating-media coefficients stored in one froxel. */
 struct FogFroxel {
@@ -75,6 +76,9 @@ public:
     void injectDensityGraph(const VolumeDensityGraph &graph, const glm::vec3 &worldMin,
                             const glm::vec3 &worldMax, float extinctionScale,
                             const glm::vec3 &albedo, float time = 0.f);
+
+    /** @brief Resample a pre-baked sparse volume into this working volume. */
+    void injectSparseVolume(const SparseVolumeTexture &texture, float extinctionScale = 1.f);
 
     /**
      * @brief Integrate scattering and transmittance along every view ray.

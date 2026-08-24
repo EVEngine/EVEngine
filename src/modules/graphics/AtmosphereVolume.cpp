@@ -1,6 +1,7 @@
 #include "graphics/AtmosphereVolume.h"
 #include "graphics/FogVolume.h"
 #include "graphics/VolumeDensityGraph.h"
+#include "graphics/SparseVolumeTexture.h"
 
 #include <algorithm>
 #include <cmath>
@@ -117,6 +118,24 @@ void AtmosphereVolume::injectDensityGraph(const VolumeDensityGraph &graph,
                     f.scattering += omega * extinction;
                 else if (previous > 1e-6f)
                     f.scattering *= f.extinction / previous;
+            }
+        }
+    }
+}
+
+void AtmosphereVolume::injectSparseVolume(const SparseVolumeTexture &texture,
+                                          float extinctionScale) {
+    for (int z = 0; z < depth_; ++z) {
+        for (int y = 0; y < height_; ++y) {
+            for (int x = 0; x < width_; ++x) {
+                const FogFroxel source = texture.sample((float(x) + 0.5f) / float(width_),
+                    (float(y) + 0.5f) / float(height_), (float(z) + 0.5f) / float(depth_));
+                const float scale = std::max(extinctionScale, 0.f);
+                FogFroxel &target = at(x, y, z);
+                target.extinction += source.extinction * scale;
+                target.scattering += source.scattering * scale;
+                target.emissive += source.emissive * scale;
+                target.anisotropy = source.anisotropy;
             }
         }
     }

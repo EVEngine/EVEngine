@@ -2,6 +2,7 @@
 #include "graphics/AtmosphereClipmap.h"
 #include "graphics/FogVolume.h"
 #include "graphics/VolumeDensityGraph.h"
+#include "graphics/SparseVolumeTexture.h"
 
 #include "zeroerr/unittest.h"
 
@@ -12,6 +13,7 @@ using eve::graphics::AtmosphereClipmap;
 using eve::graphics::FogVolume;
 using eve::graphics::VolumetricLight;
 using eve::graphics::VolumeDensityGraph;
+using eve::graphics::SparseVolumeTexture;
 
 TEST_CASE("atmosphereVolume.logarithmicSlicesRoundTrip") {
     AtmosphereVolume volume;
@@ -137,4 +139,22 @@ TEST_CASE("volumeDensityGraph.composesShapeNoiseAndHeight") {
     volume.injectDensityGraph(graph, glm::vec3(-4.f), glm::vec3(4.f), 0.2f,
                               glm::vec3(0.8f), 1.f);
     CHECK(volume.at(4, 4, 4).extinction > 0.f);
+}
+
+TEST_CASE("sparseVolumeTexture.allocatesOnlyOccupiedBricksAndInjects") {
+    VolumeDensityGraph graph;
+    graph.addNode(VolumeDensityGraph::Op::sphere, -1, -1, glm::vec4(0.f, 0.f, 0.f, 2.f));
+    SparseVolumeTexture sparse;
+    sparse.resize(32, 32, 32, 8);
+    sparse.bake(graph, glm::vec3(-16.f), glm::vec3(16.f), 0.2f, glm::vec3(0.7f));
+    CHECK(sparse.getBrickCount() > 0);
+    CHECK(sparse.getBrickCount() < 64);
+    CHECK(sparse.sample(0.f, 0.f, 0.f).extinction == 0.f);
+    CHECK(sparse.sample(0.5f, 0.5f, 0.5f).extinction > 0.f);
+
+    AtmosphereVolume volume;
+    volume.resize(16, 16, 16);
+    volume.injectSparseVolume(sparse);
+    CHECK(volume.at(8, 8, 8).extinction > 0.f);
+    CHECK(volume.at(0, 0, 0).extinction == 0.f);
 }
