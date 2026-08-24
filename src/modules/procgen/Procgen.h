@@ -6,6 +6,7 @@
 #include "procgen/OutputSpec.h"
 #include "procgen/Palette.h"
 #include "procgen/Params.h"
+#include "procgen/PointSet.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/texture/CloudField.h"
@@ -43,6 +44,16 @@ public:
     Params     *newParams();
     OutputSpec *newOutput();
     Grid2D     *newGrid(int width, int height);
+
+    // --- Script-first point pipelines ---
+    PointSet* newPointSet();
+    PointSet* sampleGrid(int width, int depth, float spacing, uint32_t seed, float jitter);
+    PointSet* filterHeight(PointSet* input, float minHeight, float maxHeight);
+    PointSet* filterDensity(PointSet* input, float minDensity, float maxDensity);
+    PointSet* excludeRadius(PointSet* input, float x, float z, float radius);
+    PointSet* jitterPoints(PointSet* input, uint32_t seed, float amountX, float amountZ);
+    PointSet* selfPrune(PointSet* input, float radius);
+    uint32_t  deriveSeed(uint32_t parent, const std::string& scope) const;
 
     // --- Phase A: maps ---
     Grid2D *generate(const std::string &algorithmId, Params *params);
@@ -145,3 +156,4 @@ private:
 };
 
 }  // namespace eve::procgen
+

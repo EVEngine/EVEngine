@@ -61,6 +61,56 @@ Grid2D *Procgen::newGrid(int width, int height) {
     return g;
 }
 
+PointSet* Procgen::newPointSet() { return new PointSet(); }
+
+PointSet* Procgen::sampleGrid(int width, int depth, float spacing, uint32_t seed, float jitter) {
+    return new PointSet(sampleGridPoints(width, depth, spacing, seed, jitter));
+}
+
+PointSet* Procgen::filterHeight(PointSet* input, float minHeight, float maxHeight) {
+    if (!input) {
+        lastError_ = "filterHeight: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointHeight(*input, minHeight, maxHeight));
+}
+
+PointSet* Procgen::filterDensity(PointSet* input, float minDensity, float maxDensity) {
+    if (!input) {
+        lastError_ = "filterDensity: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointDensity(*input, minDensity, maxDensity));
+}
+
+PointSet* Procgen::excludeRadius(PointSet* input, float x, float z, float radius) {
+    if (!input) {
+        lastError_ = "excludeRadius: null input";
+        return nullptr;
+    }
+    return new PointSet(excludePointRadius(*input, x, z, radius));
+}
+
+PointSet* Procgen::jitterPoints(PointSet* input, uint32_t seed, float amountX, float amountZ) {
+    if (!input) {
+        lastError_ = "jitterPoints: null input";
+        return nullptr;
+    }
+    return new PointSet(jitterPointPositions(*input, seed, amountX, amountZ));
+}
+
+PointSet* Procgen::selfPrune(PointSet* input, float radius) {
+    if (!input) {
+        lastError_ = "selfPrune: null input";
+        return nullptr;
+    }
+    return new PointSet(selfPrunePoints(*input, radius));
+}
+
+uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
+    return eve::procgen::deriveSeed(parent, scope);
+}
+
 bool Procgen::runGenerate(const std::string &algorithmId, const Params &params, Grid2D &out) {
     lastError_.clear();
     GeneratorRegistry::instance().registerBuiltins();
@@ -443,6 +493,37 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getObjectHeight", &Grid2D::getObjectHeight);
     grid.addFunc("getObjectGid", &Grid2D::getObjectGid);
 
+    auto points = table.addClass<PointSet>("ProcgenPointSet",
+                                           std::function<PointSet*()>([]() -> PointSet* { return nullptr; }), true);
+    points.addFunc("getCount", &PointSet::getCount);
+    points.addFunc("empty", &PointSet::empty);
+    points.addFunc("clear", &PointSet::clear);
+    points.addFunc("add", &PointSet::add);
+    points.addFunc("setPosition", &PointSet::setPosition);
+    points.addFunc("getX", &PointSet::getX);
+    points.addFunc("getY", &PointSet::getY);
+    points.addFunc("getZ", &PointSet::getZ);
+    points.addFunc("setNormal", &PointSet::setNormal);
+    points.addFunc("getNormalX", &PointSet::getNormalX);
+    points.addFunc("getNormalY", &PointSet::getNormalY);
+    points.addFunc("getNormalZ", &PointSet::getNormalZ);
+    points.addFunc("setYaw", &PointSet::setYaw);
+    points.addFunc("getYaw", &PointSet::getYaw);
+    points.addFunc("setScale", &PointSet::setScale);
+    points.addFunc("getScaleX", &PointSet::getScaleX);
+    points.addFunc("getScaleY", &PointSet::getScaleY);
+    points.addFunc("getScaleZ", &PointSet::getScaleZ);
+    points.addFunc("setDensity", &PointSet::setDensity);
+    points.addFunc("getDensity", &PointSet::getDensity);
+    points.addFunc("setPointSeed", &PointSet::setPointSeed);
+    points.addFunc("getPointSeed", &PointSet::getPointSeed);
+    points.addFunc("setFloatAttribute", &PointSet::setFloatAttribute);
+    points.addFunc("getFloatAttribute", &PointSet::getFloatAttribute);
+    points.addFunc("hasFloatAttribute", &PointSet::hasFloatAttribute);
+    points.addFunc("setStringAttribute", &PointSet::setStringAttribute);
+    points.addFunc("getStringAttribute", &PointSet::getStringAttribute);
+    points.addFunc("hasStringAttribute", &PointSet::hasStringAttribute);
+
     auto mesh = table.addClass<MeshBuild>(
         "ProcgenMeshBuild", std::function<MeshBuild *()>([]() -> MeshBuild * { return nullptr; }),
         true);
@@ -559,6 +640,14 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("newParams", &Procgen::newParams);
     cls.addFunc("newOutput", &Procgen::newOutput);
     cls.addFunc("newGrid", &Procgen::newGrid);
+    cls.addFunc("newPointSet", &Procgen::newPointSet);
+    cls.addFunc("sampleGrid", &Procgen::sampleGrid);
+    cls.addFunc("filterHeight", &Procgen::filterHeight);
+    cls.addFunc("filterDensity", &Procgen::filterDensity);
+    cls.addFunc("excludeRadius", &Procgen::excludeRadius);
+    cls.addFunc("jitterPoints", &Procgen::jitterPoints);
+    cls.addFunc("selfPrune", &Procgen::selfPrune);
+    cls.addFunc("deriveSeed", &Procgen::deriveSeed);
     cls.addFunc("generate", &Procgen::generate);
     cls.addFunc("generateTo", &Procgen::generateTo);
     cls.addFunc("applyToLayer", &Procgen::applyToLayer);
@@ -599,3 +688,4 @@ void Procgen::expose(ssq::Class &cls) {
 }
 
 }  // namespace eve::procgen
+
