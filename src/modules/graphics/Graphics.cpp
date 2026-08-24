@@ -219,6 +219,7 @@ void Graphics::expose(ssq::Table& table) {
     canvasCls.addFunc("getHeight", &Canvas::getHeight);
     canvasCls.addFunc("getTexture", &Canvas::getTexture);
 
+#ifndef EVENGINE_WEBGPU
     auto fontCls =
         table.addClass<Font>("Font", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
     fontCls.addFunc("getHeight", &Font::getHeight);
@@ -226,6 +227,7 @@ void Graphics::expose(ssq::Table& table) {
     fontCls.addFunc("getBaseline", &Font::getBaseline);
     fontCls.addFunc("getWidth", &Font::getWidth);
     fontCls.addFunc("hasGlyph", &Font::hasGlyph);
+#endif
 
     auto maskCls = table.addClass<AlphaMask>(
         "AlphaMask", std::function<AlphaMask *()>([]() -> AlphaMask * { return nullptr; }), true);
