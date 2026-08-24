@@ -3,6 +3,10 @@
 
 #include "common/Exception.h"
 
+#if defined(__SSE2__) || defined(_M_X64) || defined(_M_IX86_FP)
+#include <immintrin.h>
+#endif
+
 namespace eve::animation {
 
 namespace {
@@ -124,8 +128,25 @@ void AnimPose::blendFrom(const AnimPose* a, const AnimPose* b, float t) {
     }
     resize(a->getBoneCount());
     for (int i = 0; i < getBoneCount(); ++i) {
-        locals_[static_cast<size_t>(i)] =
-            blendTRS(a->locals_[static_cast<size_t>(i)], b->locals_[static_cast<size_t>(i)], t);
+        const TransformTRS& av = a->locals_[static_cast<size_t>(i)];
+        const TransformTRS& bv = b->locals_[static_cast<size_t>(i)];
+        TransformTRS& out = locals_[static_cast<size_t>(i)];
+#if defined(__SSE2__) || defined(_M_X64) || defined(_M_IX86_FP)
+        const __m128 weight = _mm_set1_ps(clampf(t, 0.f, 1.f));
+        const __m128 oneMinus = _mm_sub_ps(_mm_set1_ps(1.f), weight);
+        alignas(16) float values[4];
+        _mm_store_ps(values, _mm_add_ps(_mm_mul_ps(_mm_setr_ps(av.px, av.py, av.pz, 0.f), oneMinus),
+                                        _mm_mul_ps(_mm_setr_ps(bv.px, bv.py, bv.pz, 0.f), weight)));
+        out.px = values[0]; out.py = values[1]; out.pz = values[2];
+        _mm_store_ps(values, _mm_add_ps(_mm_mul_ps(_mm_setr_ps(av.sx, av.sy, av.sz, 0.f), oneMinus),
+                                        _mm_mul_ps(_mm_setr_ps(bv.sx, bv.sy, bv.sz, 0.f), weight)));
+        out.sx = values[0]; out.sy = values[1]; out.sz = values[2];
+#else
+        out.px = lerpf(av.px, bv.px, t); out.py = lerpf(av.py, bv.py, t); out.pz = lerpf(av.pz, bv.pz, t);
+        out.sx = lerpf(av.sx, bv.sx, t); out.sy = lerpf(av.sy, bv.sy, t); out.sz = lerpf(av.sz, bv.sz, t);
+#endif
+        slerpQuat(av.qx, av.qy, av.qz, av.qw, bv.qx, bv.qy, bv.qz, bv.qw, clampf(t, 0.f, 1.f),
+                  out.qx, out.qy, out.qz, out.qw);
     }
 }
 

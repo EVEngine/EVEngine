@@ -31,6 +31,7 @@ class ControlPose;
 class AnimSkin;
 class AnimLattice;
 class AnimTrail;
+class AnimBatch;
 class SpriteSheet;
 class SpriteClip;
 class SpriteAnim;
@@ -105,6 +106,8 @@ public:
     AnimSkeleton     *newSkeleton();
     AnimClip         *newClip(const std::string &name = "");
     AnimPose         *newPose(int boneCount = 0);
+    /** @brief Create a parallel batch clip evaluator. */
+    AnimBatch        *newBatch();
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
     /** @brief Create a composable pose graph for the skeleton. */
     AnimGraph        *newGraph(AnimSkeleton *skeleton);

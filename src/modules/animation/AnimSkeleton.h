@@ -45,6 +45,14 @@ public:
     float getBindScaleY(int boneIndex) const;
     float getBindScaleZ(int boneIndex) const;
 
+    /**
+     * @brief Set the highest animation LOD at which this bone is sampled (0 = full-detail only).
+     * Descendants can use lower limits than gameplay-critical roots and effectors.
+     */
+    void setBoneLodLimit(int boneIndex, int highestLod);
+    /** @brief Highest LOD at which the bone is sampled; defaults to all LODs. */
+    int getBoneLodLimit(int boneIndex) const;
+
     const TransformTRS &bindLocal(int boneIndex) const;
 
     /** @brief Fill pose locals with bind pose. */
@@ -55,6 +63,7 @@ private:
         std::string  name;
         int          parent = -1;
         TransformTRS bind;
+        int          lodLimit = 0x7fffffff;
     };
 
     void               requireBone(int boneIndex) const;

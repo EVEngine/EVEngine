@@ -162,6 +162,7 @@ file(GLOB all_test_cpp
   ik.cpp
   animation.cpp
   animation_retarget_compression.cpp
+  animation_batch_lod.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
   animation_lattice.cpp

@@ -1,6 +1,7 @@
 #include "animation/Animation.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimClipRegistry.h"
+#include "animation/AnimBatch.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimGraph.h"
@@ -309,6 +310,7 @@ AnimSkeleton *Animation::newSkeleton() { return new AnimSkeleton(); }
 AnimClip *Animation::newClip(const std::string &name) { return new AnimClip(name); }
 
 AnimPose *Animation::newPose(int boneCount) { return new AnimPose(boneCount); }
+AnimBatch *Animation::newBatch() { return new AnimBatch(); }
 
 AnimPlayer *Animation::newPlayer(AnimSkeleton *skeleton) { return new AnimPlayer(skeleton); }
 AnimGraph *Animation::newGraph(AnimSkeleton *skeleton) { return new AnimGraph(skeleton); }
@@ -522,6 +524,8 @@ void Animation::expose(ssq::Table &table) {
     sk.addFunc("setBindPosition", &AnimSkeleton::setBindPosition);
     sk.addFunc("setBindRotation", &AnimSkeleton::setBindRotation);
     sk.addFunc("setBindScale", &AnimSkeleton::setBindScale);
+    sk.addFunc("setBoneLodLimit", &AnimSkeleton::setBoneLodLimit);
+    sk.addFunc("getBoneLodLimit", &AnimSkeleton::getBoneLodLimit);
     sk.addFunc("getBindPositionX", &AnimSkeleton::getBindPositionX);
     sk.addFunc("getBindPositionY", &AnimSkeleton::getBindPositionY);
     sk.addFunc("getBindPositionZ", &AnimSkeleton::getBindPositionZ);
@@ -558,6 +562,7 @@ void Animation::expose(ssq::Table &table) {
     clip.addFunc("compress", &AnimClip::compress);
     clip.addFunc("retarget", &AnimClip::retarget);
     clip.addFunc("sample", &AnimClip::sample);
+    clip.addFunc("sampleLod", &AnimClip::sampleLod);
     clip.addFunc("wrapTime", &AnimClip::wrapTime);
 
     auto pose = table.addClass<AnimPose>(
@@ -590,6 +595,14 @@ void Animation::expose(ssq::Table &table) {
     pose.addFunc("getWorldRotationZ", &AnimPose::getWorldRotationZ);
     pose.addFunc("getWorldRotationW", &AnimPose::getWorldRotationW);
     pose.addFunc("getWorldMatrixElement", &AnimPose::getWorldMatrixElement);
+
+    auto batch = table.addClass<AnimBatch>(
+        "AnimBatch", std::function<AnimBatch *()>([]() -> AnimBatch * { return nullptr; }), true);
+    batch.addFunc("add", &AnimBatch::add);
+    batch.addFunc("clear", &AnimBatch::clear);
+    batch.addFunc("getCount", &AnimBatch::getCount);
+    batch.addFunc("evaluate", &AnimBatch::evaluate);
+    batch.addFunc("getLastWorkerCount", &AnimBatch::getLastWorkerCount);
 
     auto skin = table.addClass<AnimSkin>(
         "AnimSkin", std::function<AnimSkin *()>([]() -> AnimSkin * { return nullptr; }), true);
@@ -1114,6 +1127,7 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newSkeleton", &Animation::newSkeleton);
     cls.addFunc("newClip", &Animation::newClip);
     cls.addFunc("newPose", &Animation::newPose);
+    cls.addFunc("newBatch", &Animation::newBatch);
     cls.addFunc("newPlayer", &Animation::newPlayer);
     cls.addFunc("newGraph", &Animation::newGraph);
     cls.addFunc("newStateMachine", &Animation::newStateMachine);

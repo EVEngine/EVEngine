@@ -412,6 +412,8 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - 内建 GPU 蒙皮路径只需在 Mesh 创建后调用一次 `skin.bindGpuMesh(gfx, mesh)`，之后每帧在 `pose.computeWorld(skeleton)` 后调用 `skin.updateGpuMesh(mesh, pose)`；顶点保持 Bind Pose，Vulkan/WebGPU 顶点着色器读取四关节权重和最多 128 个骨骼矩阵完成变形，前向、阴影与 GBuffer 路径共享同一调色板。
 - 离线导入后可调用 `clip.compress(positionError, rotationErrorDegrees, scaleError)`，以逐轨道曲线误差为上限删除冗余关键帧；首尾关键帧、clip 属性和 gameplay notify 均保留。
 - `local targetClip = sourceClip.retarget(sourceSkeleton, targetSkeleton)` 按骨名匹配目标骨架，以源/目标 Bind Pose 的局部 TRS 差量重建轨道，并按对应骨段长度缩放位移。返回的新 clip 可继续压缩、进入状态机或 Animation Graph。
+- 批量角色求值使用 `AnimBatch`：通过 `anim.newBatch()` 创建，逐角色 `add(clip, skeleton, pose, time, lodLevel)`，最后 `evaluate(workerCount)`；另提供 `clear()`、`getCount()` 和 `getLastWorkerCount()`。`workerCount=0` 自动采用硬件并发度，任务以无锁原子索引分发，且拒绝同一 Pose 的并发写入。Pose 混合的平移/缩放在 x86/x64 使用 SSE 路径。
+- 骨骼 LOD 以 0 为最高细节。`skeleton.setBoneLodLimit(bone, highestLod)` 指定骨骼保留到哪一级，`skeleton.getBoneLodLimit(bone)` 可查询；`clip.sampleLod(...)` 和 `AnimBatch` 会让被裁剪轨道回退到目标 Bind Pose。根骨、碰撞骨和 IK 末端应保留较高 limit，手指与装饰骨通常只保留 LOD 0。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/animation/`](../../../src/modules/animation/)

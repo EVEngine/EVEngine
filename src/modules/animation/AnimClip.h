@@ -93,6 +93,8 @@ public:
      * fall back to bind pose; otherwise identity.
      */
     void sample(float time, AnimPose* out, const AnimSkeleton* skeleton = nullptr) const;
+    /** @brief Sample only bones enabled for lodLevel; culled tracks use target bind pose. */
+    void sampleLod(float time, AnimPose* out, const AnimSkeleton* skeleton, int lodLevel) const;
 
     /** @brief Wrap or clamp time according to loop flag. */
     float wrapTime(float time) const;

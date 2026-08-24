@@ -297,6 +297,18 @@ void AnimClip::sample(float time, AnimPose* out, const AnimSkeleton* skeleton) c
     sampleClamped(wrapTime(time), out, skeleton);
 }
 
+void AnimClip::sampleLod(float time, AnimPose* out, const AnimSkeleton* skeleton, int lodLevel) const {
+    if (!out || !skeleton) throw Exception("AnimClip.sampleLod: pose or skeleton is null");
+    if (lodLevel < 0) throw Exception("AnimClip.sampleLod: lodLevel must be >= 0");
+    const int boneCount = skeleton->getBoneCount();
+    out->resize(boneCount);
+    time = clampf(wrapTime(time), 0.f, duration_);
+    for (int i = 0; i < boneCount; ++i) {
+        const TransformTRS& bind = skeleton->bindLocal(i);
+        out->local(i) = lodLevel <= skeleton->getBoneLodLimit(i) ? sampleBone(i, time, bind) : bind;
+    }
+}
+
 void AnimClip::sampleClamped(float time, AnimPose* out, const AnimSkeleton* skeleton) const {
     if (!out) throw Exception("AnimClip.sample: pose is null");
     const int boneCount = skeleton ? skeleton->getBoneCount() : static_cast<int>(tracks_.size());
