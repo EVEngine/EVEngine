@@ -332,8 +332,7 @@ public:
 
     void pump(event::Event* ev) {
         if (!ev) return;
-        event::Message* msg = nullptr;
-        while ((msg = ev->poll()) != nullptr) {
+        while (auto msg = ev->pollOwned()) {
             std::string eventName = msg->name;
             std::string data;
             for (const auto& a : msg->args) {
@@ -342,7 +341,6 @@ public:
                     break;
                 }
             }
-            delete msg;
             std::shared_ptr<SubjectV> subject;
             {
                 std::lock_guard<std::mutex> lock(mu_);

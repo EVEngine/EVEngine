@@ -29,12 +29,16 @@ void Event::expose(ssq::Class& cls) {
 Event::~Event() {}
 
 void Event::push(Message* msg) {
-    EV_PARAM_CHECK(msg != nullptr, "event message must not be null");
+    push(std::unique_ptr<Message>(msg));
+}
+
+void Event::push(std::unique_ptr<Message> msg) {
+    EV_PARAM_CHECK(msg.get() != nullptr, "event message must not be null");
     if (!msg)
         return;
     {
         std::lock_guard<std::mutex> lock(queueMu_);
-        queue.push(msg);
+        queue.push(std::move(msg));
     }
     wakeWaiters();
 }
@@ -43,20 +47,24 @@ void Event::pushData(std::string eventName, std::string data) {
     std::vector<Variant> args;
     if (!data.empty())
         args.push_back(Variant::makeString(std::move(data)));
-    push(new Message(std::move(eventName), args));
+    push(std::make_unique<Message>(std::move(eventName), args));
 }
 
 Message* Event::poll() {
+    return pollOwned().release();
+}
+
+std::unique_ptr<Message> Event::pollOwned() {
     std::lock_guard<std::mutex> lock(queueMu_);
     if (queue.empty())
         return nullptr;
-    auto msg = queue.front();
+    auto msg = std::move(queue.front());
     queue.pop();
     return msg;
 }
 
 std::string Event::pollName() {
-    Message* msg = poll();
+    auto msg = pollOwned();
     lastData_.clear();
     if (!msg)
         return {};
@@ -67,14 +75,13 @@ std::string Event::pollName() {
         }
     }
     std::string n = msg->name;
-    delete msg;
     return n;
 }
 
 std::string Event::getLastData() const { return lastData_; }
 
 std::string Event::pollData() {
-    Message* msg = poll();
+    auto msg = pollOwned();
     lastData_.clear();
     if (!msg)
         return {};
@@ -86,16 +93,12 @@ std::string Event::pollData() {
         }
     }
     lastData_ = data;
-    delete msg;
     return data;
 }
 
 void Event::clear() {
     std::lock_guard<std::mutex> lock(queueMu_);
-    while (!queue.empty()) {
-        delete queue.front();
-        queue.pop();
-    }
+    while (!queue.empty()) queue.pop();
 }
 
 }  // namespace eve::event

@@ -320,7 +320,7 @@ void Network::emitCompletion(const NetCompletion& c) {
     case NetEvType::Conn:
         args.push_back(Variant::makePtr(c.handle));
         args.push_back(Variant::makeString(c.reason.empty() ? "ok" : c.reason));
-        ev->push(new Message("netconn", args));
+        ev->push(std::make_unique<Message>("netconn", args));
         break;
     case NetEvType::Data: {
         Channel* ch = channelFor(static_cast<TcpSocket*>(c.handle));
@@ -332,9 +332,9 @@ void Network::emitCompletion(const NetCompletion& c) {
         if (c.bytes && !c.bytes->empty())
             bd = new eve::data::ByteData(c.bytes->data(), c.bytes->size());
         args.push_back(Variant::makePtr(c.handle));
-        args.push_back(Variant::makePtr(bd));
+        args.push_back(Variant::makeOwnedPtr(bd));
         args.push_back(Variant::makeString(c.peer));
-        ev->push(new Message("netdata", args));
+        ev->push(std::make_unique<Message>("netdata", args));
         break;
     }
     case NetEvType::Err: {
@@ -342,12 +342,12 @@ void Network::emitCompletion(const NetCompletion& c) {
         if (ch) {
             args.push_back(Variant::makePtr(ch));
             args.push_back(Variant::makeString(c.reason));
-            ev->push(new Message("chclose", args));
+            ev->push(std::make_unique<Message>("chclose", args));
         }
         args.clear();
         args.push_back(Variant::makePtr(c.handle));
         args.push_back(Variant::makeString(c.reason));
-        ev->push(new Message("neterr", args));
+        ev->push(std::make_unique<Message>("neterr", args));
         break;
     }
     case NetEvType::HttpResp: {
@@ -356,8 +356,8 @@ void Network::emitCompletion(const NetCompletion& c) {
             bd = new eve::data::ByteData(c.bytes->data(), c.bytes->size());
         args.push_back(Variant::makePtr(c.handle));
         args.push_back(Variant::makeInt(c.status));
-        args.push_back(Variant::makePtr(bd));
-        ev->push(new Message("httpresp", args));
+        args.push_back(Variant::makeOwnedPtr(bd));
+        ev->push(std::make_unique<Message>("httpresp", args));
         break;
     }
     case NetEvType::ChMsg: {
@@ -365,14 +365,14 @@ void Network::emitCompletion(const NetCompletion& c) {
         if (c.bytes && !c.bytes->empty())
             bd = new eve::data::ByteData(c.bytes->data(), c.bytes->size());
         args.push_back(Variant::makePtr(c.handle));
-        args.push_back(Variant::makePtr(bd));
-        ev->push(new Message("chmsg", args));
+        args.push_back(Variant::makeOwnedPtr(bd));
+        ev->push(std::make_unique<Message>("chmsg", args));
         break;
     }
     case NetEvType::ChClose:
         args.push_back(Variant::makePtr(c.handle));
         args.push_back(Variant::makeString(c.reason));
-        ev->push(new Message("chclose", args));
+        ev->push(std::make_unique<Message>("chclose", args));
         break;
     }
 }
