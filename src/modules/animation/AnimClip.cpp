@@ -74,6 +74,77 @@ void AnimClip::addScaleKey(int boneIndex, float time, float x, float y, float z)
     if (time > duration_) duration_ = time;
 }
 
+bool AnimClip::setPositionKey(int boneIndex, int keyIndex, float time, float x, float y, float z) {
+    if (time < 0.f) throw Exception("AnimClip.setPositionKey: time must be >= 0");
+    if (boneIndex < 0 || boneIndex >= getTrackCount()) return false;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].positions;
+    if (keyIndex < 0 || keyIndex >= static_cast<int>(keys.size())) return false;
+    keys[static_cast<size_t>(keyIndex)] = {time, x, y, z};
+    std::stable_sort(keys.begin(), keys.end(), [](const Vec3Key& a, const Vec3Key& b) { return a.t < b.t; });
+    if (time > duration_) duration_ = time;
+    return true;
+}
+
+bool AnimClip::setRotationKey(int boneIndex, int keyIndex, float time, float x, float y, float z,
+                              float w) {
+    if (time < 0.f) throw Exception("AnimClip.setRotationKey: time must be >= 0");
+    if (boneIndex < 0 || boneIndex >= getTrackCount()) return false;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].rotations;
+    if (keyIndex < 0 || keyIndex >= static_cast<int>(keys.size())) return false;
+    TransformTRS normalized;
+    normalized.qx = x;
+    normalized.qy = y;
+    normalized.qz = z;
+    normalized.qw = w;
+    normalized.normalizeRotation();
+    keys[static_cast<size_t>(keyIndex)] =
+        {time, normalized.qx, normalized.qy, normalized.qz, normalized.qw};
+    std::stable_sort(keys.begin(), keys.end(), [](const QuatKey& a, const QuatKey& b) { return a.t < b.t; });
+    if (time > duration_) duration_ = time;
+    return true;
+}
+
+bool AnimClip::setScaleKey(int boneIndex, int keyIndex, float time, float x, float y, float z) {
+    if (time < 0.f) throw Exception("AnimClip.setScaleKey: time must be >= 0");
+    if (boneIndex < 0 || boneIndex >= getTrackCount()) return false;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].scales;
+    if (keyIndex < 0 || keyIndex >= static_cast<int>(keys.size())) return false;
+    keys[static_cast<size_t>(keyIndex)] = {time, x, y, z};
+    std::stable_sort(keys.begin(), keys.end(), [](const Vec3Key& a, const Vec3Key& b) { return a.t < b.t; });
+    if (time > duration_) duration_ = time;
+    return true;
+}
+
+bool AnimClip::removePositionKey(int boneIndex, int keyIndex) {
+    if (boneIndex < 0 || boneIndex >= getTrackCount()) return false;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].positions;
+    if (keyIndex < 0 || keyIndex >= static_cast<int>(keys.size())) return false;
+    keys.erase(keys.begin() + keyIndex);
+    return true;
+}
+
+bool AnimClip::removeRotationKey(int boneIndex, int keyIndex) {
+    if (boneIndex < 0 || boneIndex >= getTrackCount()) return false;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].rotations;
+    if (keyIndex < 0 || keyIndex >= static_cast<int>(keys.size())) return false;
+    keys.erase(keys.begin() + keyIndex);
+    return true;
+}
+
+bool AnimClip::removeScaleKey(int boneIndex, int keyIndex) {
+    if (boneIndex < 0 || boneIndex >= getTrackCount()) return false;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].scales;
+    if (keyIndex < 0 || keyIndex >= static_cast<int>(keys.size())) return false;
+    keys.erase(keys.begin() + keyIndex);
+    return true;
+}
+
+bool AnimClip::clearTrack(int boneIndex) {
+    if (boneIndex < 0 || boneIndex >= getTrackCount()) return false;
+    tracks_[static_cast<size_t>(boneIndex)] = {};
+    return true;
+}
+
 void AnimClip::addEvent(float time, const std::string& name, const std::string& payload) {
     if (time < 0.f) throw Exception("AnimClip.addEvent: time must be >= 0");
     if (duration_ > 0.f && time > duration_) throw Exception("AnimClip.addEvent: time lies past clip duration");
@@ -81,6 +152,23 @@ void AnimClip::addEvent(float time, const std::string& name, const std::string& 
     events_.push_back({time, name, payload});
     std::stable_sort(events_.begin(), events_.end(),
                      [](const EventMarker& a, const EventMarker& b) { return a.t < b.t; });
+}
+
+bool AnimClip::setEvent(int index, float time, const std::string& name, const std::string& payload) {
+    if (index < 0 || index >= getEventCount()) return false;
+    if (time < 0.f) throw Exception("AnimClip.setEvent: time must be >= 0");
+    if (duration_ > 0.f && time > duration_) throw Exception("AnimClip.setEvent: time lies past clip duration");
+    if (name.empty()) throw Exception("AnimClip.setEvent: name is empty");
+    events_[static_cast<size_t>(index)] = {time, name, payload};
+    std::stable_sort(events_.begin(), events_.end(),
+                     [](const EventMarker& a, const EventMarker& b) { return a.t < b.t; });
+    return true;
+}
+
+bool AnimClip::removeEvent(int index) {
+    if (index < 0 || index >= getEventCount()) return false;
+    events_.erase(events_.begin() + index);
+    return true;
 }
 
 float AnimClip::getEventTime(int index) const {

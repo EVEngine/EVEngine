@@ -1,4 +1,5 @@
 #include "animation/Animation.h"
+#include "animation/AnimationBindings.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimClipRegistry.h"
 #include "animation/AnimBatch.h"
@@ -549,33 +550,7 @@ void Animation::expose(ssq::Table &table) {
     sk.addFunc("getBindScaleZ", &AnimSkeleton::getBindScaleZ);
     sk.addFunc("applyBindPose", &AnimSkeleton::applyBindPose);
 
-    auto clip = table.addClass<AnimClip>(
-        "AnimClip", std::function<AnimClip *()>([]() -> AnimClip * { return nullptr; }), true);
-    clip.addFunc("setName", &AnimClip::setName);
-    clip.addFunc("getName", &AnimClip::getName);
-    clip.addFunc("setDuration", &AnimClip::setDuration);
-    clip.addFunc("getDuration", &AnimClip::getDuration);
-    clip.addFunc("setLoop", &AnimClip::setLoop);
-    clip.addFunc("getLoop", &AnimClip::getLoop);
-    clip.addFunc("setSampleRate", &AnimClip::setSampleRate);
-    clip.addFunc("getSampleRate", &AnimClip::getSampleRate);
-    clip.addFunc("addPositionKey", &AnimClip::addPositionKey);
-    clip.addFunc("addRotationKey", &AnimClip::addRotationKey);
-    clip.addFunc("addScaleKey", &AnimClip::addScaleKey);
-    clip.addFunc("addEvent", &AnimClip::addEvent);
-    clip.addFunc("getEventCount", &AnimClip::getEventCount);
-    clip.addFunc("getEventTime", &AnimClip::getEventTime);
-    clip.addFunc("getEventName", &AnimClip::getEventName);
-    clip.addFunc("getEventPayload", &AnimClip::getEventPayload);
-    clip.addFunc("getPositionKeyCount", &AnimClip::getPositionKeyCount);
-    clip.addFunc("getRotationKeyCount", &AnimClip::getRotationKeyCount);
-    clip.addFunc("getScaleKeyCount", &AnimClip::getScaleKeyCount);
-    clip.addFunc("applyPlanarRootMotion", &AnimClip::applyPlanarRootMotion);
-    clip.addFunc("compress", &AnimClip::compress);
-    clip.addFunc("retarget", &AnimClip::retarget);
-    clip.addFunc("sample", &AnimClip::sample);
-    clip.addFunc("sampleLod", &AnimClip::sampleLod);
-    clip.addFunc("wrapTime", &AnimClip::wrapTime);
+    exposeAnimClipBindings(table);
 
     auto pose = table.addClass<AnimPose>(
         "AnimPose", std::function<AnimPose *()>([]() -> AnimPose * { return nullptr; }), true);

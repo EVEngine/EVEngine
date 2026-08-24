@@ -195,6 +195,7 @@ file(GLOB all_test_cpp
   editor_value_json_v2.cpp
   ik.cpp
   animation.cpp
+  animation_clip_editing.cpp
   animation_retarget_compression.cpp
   animation_batch_lod.cpp
   animation_constraints_sync.cpp
