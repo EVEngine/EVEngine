@@ -7,8 +7,8 @@
 #include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
 #include "editor/FieldTargets.h"
-#include "editor/ScriptEditorTool.h"
 #include "editor/GizmoManager.h"
+#include "editor/ScriptEditorTool.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
 
@@ -23,28 +23,209 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <type_traits>
 #include <vector>
 
 namespace eve::editor {
 
 Module_IMPL(Editor, new Editor());
 
+namespace {
+
+const char* statusName(EditorStatus status) {
+    switch (status) {
+        case EditorStatus::Applied: return "applied";
+        case EditorStatus::Pending: return "pending";
+        case EditorStatus::NoOp: return "no-op";
+        case EditorStatus::Rejected: return "rejected";
+        case EditorStatus::Conflict: return "conflict";
+        case EditorStatus::NotFound: return "not-found";
+        case EditorStatus::Unsupported: return "unsupported";
+        case EditorStatus::Cancelled: return "cancelled";
+        case EditorStatus::Failed: return "failed";
+    }
+    return "failed";
+}
+
+const char* transactionStateName(TransactionState state) {
+    switch (state) {
+        case TransactionState::Planning: return "planning";
+        case TransactionState::Previewing: return "previewing";
+        case TransactionState::PendingAuthority: return "pending-authority";
+        case TransactionState::Committed: return "committed";
+        case TransactionState::RolledBack: return "rolled-back";
+        case TransactionState::Rejected: return "rejected";
+        case TransactionState::Conflicted: return "conflicted";
+        case TransactionState::Failed: return "failed";
+    }
+    return "failed";
+}
+
+bool squirrelToEditorValue(HSQUIRRELVM vm, SQInteger index, EditorValue& out, size_t depth = 0) {
+    if (!vm || depth > 32) return false;
+    const SQInteger absolute = index > 0 ? index : sq_gettop(vm) + index + 1;
+    switch (sq_gettype(vm, absolute)) {
+        case OT_NULL: out = EditorValue{}; return true;
+        case OT_BOOL: {
+            SQBool value = SQFalse;
+            if (SQ_FAILED(sq_getbool(vm, absolute, &value))) return false;
+            out = EditorValue(value != SQFalse);
+            return true;
+        }
+        case OT_INTEGER: {
+            SQInteger value = 0;
+            if (SQ_FAILED(sq_getinteger(vm, absolute, &value))) return false;
+            out = EditorValue(static_cast<int64_t>(value));
+            return true;
+        }
+        case OT_FLOAT: {
+            SQFloat value = 0;
+            if (SQ_FAILED(sq_getfloat(vm, absolute, &value))) return false;
+            out = EditorValue(static_cast<double>(value));
+            return true;
+        }
+        case OT_STRING: {
+            const SQChar* value = nullptr;
+            if (SQ_FAILED(sq_getstring(vm, absolute, &value))) return false;
+            out = EditorValue(value ? value : "");
+            return true;
+        }
+        case OT_ARRAY: {
+            EditorValue::Array values;
+            const SQInteger    count = sq_getsize(vm, absolute);
+            values.reserve(static_cast<size_t>(count));
+            for (SQInteger i = 0; i < count; ++i) {
+                sq_pushinteger(vm, i);
+                if (SQ_FAILED(sq_get(vm, absolute))) return false;
+                EditorValue value;
+                const bool  ok = squirrelToEditorValue(vm, -1, value, depth + 1);
+                sq_pop(vm, 1);
+                if (!ok) return false;
+                values.push_back(std::move(value));
+            }
+            out = EditorValue(std::move(values));
+            return true;
+        }
+        case OT_TABLE: {
+            EditorValue::Object values;
+            sq_pushnull(vm);
+            while (SQ_SUCCEEDED(sq_next(vm, absolute))) {
+                const SQChar* key = nullptr;
+                const bool  keyOk = sq_gettype(vm, -2) == OT_STRING && SQ_SUCCEEDED(sq_getstring(vm, -2, &key)) && key;
+                const std::string stableKey = keyOk ? key : "";
+                EditorValue value;
+                const bool  valueOk = keyOk && squirrelToEditorValue(vm, -1, value, depth + 1);
+                sq_pop(vm, 2);
+                if (!valueOk) {
+                    sq_pop(vm, 1);
+                    return false;
+                }
+                values[stableKey] = std::move(value);
+            }
+            sq_pop(vm, 1);
+            out = EditorValue(std::move(values));
+            return true;
+        }
+        default: return false;
+    }
+}
+
+bool objectToEditorValue(const ssq::Object& object, EditorValue& out) {
+    HSQUIRRELVM vm = object.getHandle();
+    if (!vm) return false;
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, object.getRaw());
+    const bool ok = squirrelToEditorValue(vm, -1, out);
+    sq_settop(vm, top);
+    return ok;
+}
+
+void pushEditorValue(HSQUIRRELVM vm, const EditorValue& value) {
+    std::visit(
+        [&](const auto& current) {
+            using T = std::decay_t<decltype(current)>;
+            if constexpr (std::is_same_v<T, std::monostate>) {
+                sq_pushnull(vm);
+            } else if constexpr (std::is_same_v<T, bool>) {
+                sq_pushbool(vm, current ? SQTrue : SQFalse);
+            } else if constexpr (std::is_same_v<T, int64_t>) {
+                sq_pushinteger(vm, static_cast<SQInteger>(current));
+            } else if constexpr (std::is_same_v<T, double>) {
+                sq_pushfloat(vm, static_cast<SQFloat>(current));
+            } else if constexpr (std::is_same_v<T, std::string>) {
+                sq_pushstring(vm, current.c_str(), static_cast<SQInteger>(current.size()));
+            } else if constexpr (std::is_same_v<T, EditorValue::Array>) {
+                sq_newarray(vm, 0);
+                for (const EditorValue& entry : current) {
+                    pushEditorValue(vm, entry);
+                    sq_arrayappend(vm, -2);
+                }
+            } else if constexpr (std::is_same_v<T, EditorValue::Object>) {
+                sq_newtable(vm);
+                for (const auto& [key, entry] : current) {
+                    sq_pushstring(vm, key.c_str(), static_cast<SQInteger>(key.size()));
+                    pushEditorValue(vm, entry);
+                    sq_newslot(vm, -3, SQFalse);
+                }
+            }
+        },
+        value.storage());
+}
+
+void setValue(ssq::Table& table, const char* name, const EditorValue& value) {
+    HSQUIRRELVM vm = table.getHandle();
+    sq_pushobject(vm, table.getRaw());
+    sq_pushstring(vm, name, -1);
+    pushEditorValue(vm, value);
+    sq_newslot(vm, -3, SQFalse);
+    sq_pop(vm, 1);
+}
+
+ssq::Array diagnosticArray(HSQUIRRELVM vm, const std::vector<EditorDiagnostic>& diagnostics) {
+    ssq::Array out(vm);
+    for (const EditorDiagnostic& diagnostic : diagnostics) {
+        ssq::Table item(vm);
+        item.set("rule", diagnostic.rule.value());
+        item.set("message", diagnostic.message);
+        item.set("severity", static_cast<int>(diagnostic.severity));
+        out.push(item);
+    }
+    return out;
+}
+
+template <class T>
+ssq::Table resultTable(HSQUIRRELVM vm, const EditorResult<T>& result) {
+    ssq::Table out(vm);
+    out.set("status", std::string(statusName(result.status)));
+    out.set("accepted", result.accepted());
+    out.set("diagnostics", diagnosticArray(vm, result.diagnostics));
+    return out;
+}
+
+EditorResult<EditorValue> invalidScriptPayload() {
+    return EditorResult<EditorValue>::error(
+        EditorStatus::Rejected, RuleId("editor.script.invalid-payload"),
+        "Script payload must contain only null, bool, number, string, array, or table values");
+}
+
+}  // namespace
+
 #ifdef EVENGINE_HAS_PROCGEN
 namespace {
 
 #ifdef EVENGINE_HAS_PROCGEN
 struct HeightmapArrays {
-    std::vector<float> pos;
-    std::vector<float> nrm;
-    std::vector<float> uv;
+    std::vector<float>    pos;
+    std::vector<float>    nrm;
+    std::vector<float>    uv;
     std::vector<uint32_t> idx;
 };
 
 /** Terrain mesh: two triangles per cell, 6 vertices per quad. When
  *  smoothNormals is set, vertex normals come from the height-field gradient
  *  (continuous bowls); otherwise each triangle is flat-shaded. */
-void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float hScale,
-                          HeightmapArrays &out, bool smoothNormals) {
+void buildHeightmapArrays(const eve::procgen::Heightmap& hm, float cell, float hScale, HeightmapArrays& out,
+                          bool smoothNormals) {
     out.pos.clear();
     out.nrm.clear();
     out.uv.clear();
@@ -68,19 +249,19 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
             for (int x = 0; x < w; ++x) {
                 const float dhdx = (hs(x + 1, z) - hs(x - 1, z)) * 0.5f * hScale / cell;
                 const float dhdz = (hs(x, z + 1) - hs(x, z - 1)) * 0.5f * hScale / cell;
-                float nx = -dhdx;
-                float ny = 1.f;
-                float nz = -dhdz;
-                const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+                float       nx   = -dhdx;
+                float       ny   = 1.f;
+                float       nz   = -dhdz;
+                const float len  = std::sqrt(nx * nx + ny * ny + nz * nz);
                 if (len > 1e-8f) {
                     nx /= len;
                     ny /= len;
                     nz /= len;
                 }
-                float *n = &smoothNrm[(size_t(z) * w + x) * 3];
-                n[0] = nx;
-                n[1] = ny;
-                n[2] = nz;
+                float* n = &smoothNrm[(size_t(z) * w + x) * 3];
+                n[0]     = nx;
+                n[1]     = ny;
+                n[2]     = nz;
             }
         }
 
@@ -92,9 +273,8 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
         out.idx.reserve(size_t(w - 1) * size_t(h - 1) * 6u);
         for (int z = 0; z < h; ++z) {
             for (int x = 0; x < w; ++x) {
-                out.pos.insert(out.pos.end(),
-                               {float(x) * cell, hm.height(x, z) * hScale, float(z) * cell});
-                const float *n = &smoothNrm[(size_t(z) * size_t(w) + size_t(x)) * 3u];
+                out.pos.insert(out.pos.end(), {float(x) * cell, hm.height(x, z) * hScale, float(z) * cell});
+                const float* n = &smoothNrm[(size_t(z) * size_t(w) + size_t(x)) * 3u];
                 out.nrm.insert(out.nrm.end(), {n[0], n[1], n[2]});
                 out.uv.insert(out.uv.end(), {float(x) / uw, float(z) / uh});
             }
@@ -111,25 +291,23 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
         return;
     }
 
-    auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx,
-                      float cz, float cy) {
-        const float p0x = ax * cell, p0y = ay * hScale, p0z = az * cell;
-        const float p1x = bx * cell, p1y = by * hScale, p1z = bz * cell;
-        const float p2x = cx * cell, p2y = cy * hScale, p2z = cz * cell;
+    auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx, float cz, float cy) {
+        const float    p0x = ax * cell, p0y = ay * hScale, p0z = az * cell;
+        const float    p1x = bx * cell, p1y = by * hScale, p1z = bz * cell;
+        const float    p2x = cx * cell, p2y = cy * hScale, p2z = cz * cell;
         const uint32_t base = uint32_t(out.pos.size() / 3);
         out.pos.insert(out.pos.end(), {p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z});
         if (smoothNormals) {
-            const float *n0 = &smoothNrm[(size_t(int(az)) * w + int(ax)) * 3];
-            const float *n1 = &smoothNrm[(size_t(int(bz)) * w + int(bx)) * 3];
-            const float *n2 = &smoothNrm[(size_t(int(cz)) * w + int(cx)) * 3];
-            out.nrm.insert(out.nrm.end(),
-                           {n0[0], n0[1], n0[2], n1[0], n1[1], n1[2], n2[0], n2[1], n2[2]});
+            const float* n0 = &smoothNrm[(size_t(int(az)) * w + int(ax)) * 3];
+            const float* n1 = &smoothNrm[(size_t(int(bz)) * w + int(bx)) * 3];
+            const float* n2 = &smoothNrm[(size_t(int(cz)) * w + int(cx)) * 3];
+            out.nrm.insert(out.nrm.end(), {n0[0], n0[1], n0[2], n1[0], n1[1], n1[2], n2[0], n2[1], n2[2]});
         } else {
             const float e1x = p1x - p0x, e1y = p1y - p0y, e1z = p1z - p0z;
             const float e2x = p2x - p0x, e2y = p2y - p0y, e2z = p2z - p0z;
-            float nx = e1y * e2z - e1z * e2y;
-            float ny = e1z * e2x - e1x * e2z;
-            float nz = e1x * e2y - e1y * e2x;
+            float       nx  = e1y * e2z - e1z * e2y;
+            float       ny  = e1z * e2x - e1x * e2z;
+            float       nz  = e1x * e2y - e1y * e2x;
             const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
             if (len > 1e-8f) {
                 nx /= len;
@@ -138,8 +316,7 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
             }
             out.nrm.insert(out.nrm.end(), {nx, ny, nz, nx, ny, nz, nx, ny, nz});
         }
-        out.uv.insert(out.uv.end(),
-                      {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
+        out.uv.insert(out.uv.end(), {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
         out.idx.insert(out.idx.end(), {base, base + 1, base + 2});
     };
 
@@ -153,10 +330,8 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
             // Counter-clockwise when viewed from above (+Y).  Besides matching
             // the renderer's front face, this keeps the flat-shaded cross
             // product pointing upward instead of into the terrain.
-            addTri(float(x), float(y), h00, float(x), float(y + 1), h01, float(x + 1),
-                   float(y), h10);
-            addTri(float(x + 1), float(y), h10, float(x), float(y + 1), h01,
-                   float(x + 1), float(y + 1), h11);
+            addTri(float(x), float(y), h00, float(x), float(y + 1), h01, float(x + 1), float(y), h10);
+            addTri(float(x + 1), float(y), h10, float(x), float(y + 1), h01, float(x + 1), float(y + 1), h11);
         }
     }
 }
@@ -165,54 +340,56 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
 }  // namespace
 #endif
 
-TransformGizmo *Editor::newGizmo() { return new TransformGizmo(); }
+TransformGizmo* Editor::newGizmo() { return new TransformGizmo(); }
 
-GizmoManager *Editor::newGizmoManager() { return new GizmoManager(); }
+GizmoManager* Editor::newGizmoManager() { return new GizmoManager(); }
 
-TileBuffer *Editor::newTileBuffer(int width, int height) { return new TileBuffer(width, height); }
+TileBuffer* Editor::newTileBuffer(int width, int height) { return new TileBuffer(width, height); }
 
-Brush *Editor::newBrush() { return new Brush(); }
+Brush* Editor::newBrush() { return new Brush(); }
 
-EditorToolbar *Editor::newToolbar() { return new EditorToolbar(); }
+EditorToolbar* Editor::newToolbar() { return new EditorToolbar(); }
 
-EditorInspector *Editor::newInspector() { return new EditorInspector(); }
+EditorInspector* Editor::newInspector() { return new EditorInspector(); }
 
-EditorDock *Editor::newDock() { return new EditorDock(); }
+EditorDock* Editor::newDock() { return new EditorDock(); }
 
-EditorHistory *Editor::newHistory() { return new EditorHistory(); }
+EditorHistory* Editor::newHistory() { return new EditorHistory(); }
 
-EditorSession *Editor::newSession() { return new EditorSession(); }
+EditorSession* Editor::newSession() {
+    auto* session = new EditorSession();
+    session->setCommandService(&commandService_);
+    return session;
+}
 
-TileBufferTarget *Editor::newTileBufferTarget(const std::string &id, TileBuffer *buffer) {
+TileBufferTarget* Editor::newTileBufferTarget(const std::string& id, TileBuffer* buffer) {
     return new TileBufferTarget(id, buffer);
 }
 
-ScriptEditorTool *Editor::newScriptTool(const std::string &id, const std::string &label) {
+ScriptEditorTool* Editor::newScriptTool(const std::string& id, const std::string& label) {
     return new ScriptEditorTool(id, label);
 }
 
 #ifdef EVENGINE_HAS_PROCGEN
-HeightmapTarget *Editor::newHeightmapTarget(const std::string &id,
-                                            procgen::Heightmap *heightmap) {
+HeightmapTarget* Editor::newHeightmapTarget(const std::string& id, procgen::Heightmap* heightmap) {
     return new HeightmapTarget(id, heightmap);
 }
 
-int Editor::applyHeightmapBrush(procgen::Heightmap *hm, float centerX, float centerY,
-                                float radius, float strength) {
+int Editor::applyHeightmapBrush(procgen::Heightmap* hm, float centerX, float centerY, float radius, float strength) {
     if (!hm || radius < 0.f || strength == 0.f) return 0;
-    const int minX = std::max(0, int(std::floor(centerX - radius)));
-    const int maxX = std::min(hm->getWidth() - 1, int(std::ceil(centerX + radius)));
-    const int minY = std::max(0, int(std::floor(centerY - radius)));
-    const int maxY = std::min(hm->getHeight() - 1, int(std::ceil(centerY + radius)));
-    const float edge = radius + 0.5f;
-    int changed = 0;
+    const int   minX    = std::max(0, int(std::floor(centerX - radius)));
+    const int   maxX    = std::min(hm->getWidth() - 1, int(std::ceil(centerX + radius)));
+    const int   minY    = std::max(0, int(std::floor(centerY - radius)));
+    const int   maxY    = std::min(hm->getHeight() - 1, int(std::ceil(centerY + radius)));
+    const float edge    = radius + 0.5f;
+    int         changed = 0;
     for (int y = minY; y <= maxY; ++y) {
         for (int x = minX; x <= maxX; ++x) {
-            const float dx = float(x) - centerX;
-            const float dy = float(y) - centerY;
+            const float dx       = float(x) - centerX;
+            const float dy       = float(y) - centerY;
             const float distance = std::sqrt(dx * dx + dy * dy);
             if (distance > radius) continue;
-            const float falloff = 1.f - distance / edge;
+            const float falloff   = 1.f - distance / edge;
             const float oldHeight = hm->height(x, y);
             const float newHeight = std::clamp(oldHeight + strength * falloff, 0.f, 1.f);
             if (newHeight == oldHeight) continue;
@@ -223,57 +400,51 @@ int Editor::applyHeightmapBrush(procgen::Heightmap *hm, float centerX, float cen
     return changed;
 }
 
-graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,
-                                         float heightScale) {
-    auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
+graphics::Mesh* Editor::newHeightmapMesh(procgen::Heightmap* hm, float cellSize, float heightScale) {
+    auto* gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
     if (!gfx || !hm) return nullptr;
     HeightmapArrays a;
     buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
     if (a.idx.empty()) return nullptr;
-    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(),
-                                  int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), a.idx.data(),
+                                  int(a.idx.size()));
 }
 
-bool Editor::updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
-                                 procgen::Heightmap *hm, float cellSize, float heightScale) {
+bool Editor::updateHeightmapMesh(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm, float cellSize,
+                                 float heightScale) {
     if (!mesh || !gfx || !hm) return false;
     HeightmapArrays a;
     buildHeightmapArrays(*hm, cellSize, heightScale, a, false);
     if (a.idx.empty()) return false;
-    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
-                                   int(a.pos.size() / 3), nullptr, 0);
+    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), nullptr, 0);
 }
 
-graphics::Mesh *Editor::newHeightmapMeshSmooth(procgen::Heightmap *hm, float cellSize,
-                                               float heightScale) {
-    auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
+graphics::Mesh* Editor::newHeightmapMeshSmooth(procgen::Heightmap* hm, float cellSize, float heightScale) {
+    auto* gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
     if (!gfx || !hm) return nullptr;
     HeightmapArrays a;
     buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
     if (a.idx.empty()) return nullptr;
-    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(),
-                                  int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), a.idx.data(),
+                                  int(a.idx.size()));
 }
 
-bool Editor::updateHeightmapMeshSmooth(graphics::Mesh *mesh, graphics::Graphics *gfx,
-                                       procgen::Heightmap *hm, float cellSize,
-                                       float heightScale) {
+bool Editor::updateHeightmapMeshSmooth(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm,
+                                       float cellSize, float heightScale) {
     if (!mesh || !gfx || !hm) return false;
     HeightmapArrays a;
     buildHeightmapArrays(*hm, cellSize, heightScale, a, true);
     if (a.idx.empty()) return false;
-    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
-                                   int(a.pos.size() / 3), nullptr, 0);
+    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), nullptr, 0);
 }
 #endif
 
-void Editor::expose(ssq::Table &table) {
+void Editor::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Editor::create, false);
     expose(cls);
 
     auto gizmo = table.addClass<TransformGizmo>(
-        "TransformGizmo",
-        std::function<TransformGizmo *()>([]() -> TransformGizmo * { return nullptr; }), true);
+        "TransformGizmo", std::function<TransformGizmo*()>([]() -> TransformGizmo* { return nullptr; }), true);
     gizmo.addFunc("setMode", &TransformGizmo::setMode);
     gizmo.addFunc("getMode", &TransformGizmo::getMode);
     gizmo.addFunc("setSpace", &TransformGizmo::setSpace);
@@ -334,8 +505,7 @@ void Editor::expose(ssq::Table &table) {
     gizmo.addFunc("getPartRadius", &TransformGizmo::getPartRadius);
 
     auto mgr = table.addClass<GizmoManager>(
-        "GizmoManager",
-        std::function<GizmoManager *()>([]() -> GizmoManager * { return nullptr; }), true);
+        "GizmoManager", std::function<GizmoManager*()>([]() -> GizmoManager* { return nullptr; }), true);
     mgr.addFunc("getGizmo", &GizmoManager::getGizmo);
     mgr.addFunc("setPositionEnabled", &GizmoManager::setPositionEnabled);
     mgr.addFunc("setRotationEnabled", &GizmoManager::setRotationEnabled);
@@ -355,9 +525,8 @@ void Editor::expose(ssq::Table &table) {
     mgr.addFunc("isDragging", &GizmoManager::isDragging);
     mgr.addFunc("isHovered", &GizmoManager::isHovered);
 
-    auto buf = table.addClass<TileBuffer>(
-        "TileBuffer", std::function<TileBuffer *()>([]() -> TileBuffer * { return nullptr; }),
-        true);
+    auto buf = table.addClass<TileBuffer>("TileBuffer",
+                                          std::function<TileBuffer*()>([]() -> TileBuffer* { return nullptr; }), true);
     buf.addFunc("getWidth", &TileBuffer::getWidth);
     buf.addFunc("getHeight", &TileBuffer::getHeight);
     buf.addFunc("resize", &TileBuffer::resize);
@@ -367,8 +536,7 @@ void Editor::expose(ssq::Table &table) {
     buf.addFunc("getGid", &TileBuffer::getGid);
     buf.addFunc("inBounds", &TileBuffer::inBounds);
 
-    auto brush = table.addClass<Brush>(
-        "Brush", std::function<Brush *()>([]() -> Brush * { return nullptr; }), true);
+    auto brush = table.addClass<Brush>("Brush", std::function<Brush*()>([]() -> Brush* { return nullptr; }), true);
     brush.addFunc("setTool", &Brush::setTool);
     brush.addFunc("getTool", &Brush::getTool);
     brush.addFunc("setSize", &Brush::setSize);
@@ -404,8 +572,7 @@ void Editor::expose(ssq::Table &table) {
     brush.addFunc("getChangeNewGid", &Brush::getChangeNewGid);
 
     auto tb = table.addClass<EditorToolbar>(
-        "EditorToolbar",
-        std::function<EditorToolbar *()>([]() -> EditorToolbar * { return nullptr; }), true);
+        "EditorToolbar", std::function<EditorToolbar*()>([]() -> EditorToolbar* { return nullptr; }), true);
     tb.addFunc("clear", &EditorToolbar::clear);
     tb.addFunc("addTool", &EditorToolbar::addTool);
     tb.addFunc("setShortcut", &EditorToolbar::setShortcut);
@@ -418,8 +585,7 @@ void Editor::expose(ssq::Table &table) {
     tb.addFunc("getToolShortcut", &EditorToolbar::getToolShortcut);
 
     auto insp = table.addClass<EditorInspector>(
-        "EditorInspector",
-        std::function<EditorInspector *()>([]() -> EditorInspector * { return nullptr; }), true);
+        "EditorInspector", std::function<EditorInspector*()>([]() -> EditorInspector* { return nullptr; }), true);
     insp.addFunc("clear", &EditorInspector::clear);
     insp.addFunc("addFloat", &EditorInspector::addFloat);
     insp.addFunc("addFloat3", &EditorInspector::addFloat3);
@@ -451,9 +617,8 @@ void Editor::expose(ssq::Table &table) {
     insp.addFunc("clearAllDirty", &EditorInspector::clearAllDirty);
     insp.addFunc("pollChangedId", &EditorInspector::pollChangedId);
 
-    auto dock = table.addClass<EditorDock>(
-        "EditorDock", std::function<EditorDock *()>([]() -> EditorDock * { return nullptr; }),
-        true);
+    auto dock = table.addClass<EditorDock>("EditorDock",
+                                           std::function<EditorDock*()>([]() -> EditorDock* { return nullptr; }), true);
     dock.addFunc("setRegionSize", &EditorDock::setRegionSize);
     dock.addFunc("getRegionSize", &EditorDock::getRegionSize);
     dock.addFunc("layout", &EditorDock::layout);
@@ -463,8 +628,7 @@ void Editor::expose(ssq::Table &table) {
     dock.addFunc("getRegionH", &EditorDock::getRegionH);
 
     auto hist = table.addClass<EditorHistory>(
-        "EditorHistory",
-        std::function<EditorHistory *()>([]() -> EditorHistory * { return nullptr; }), true);
+        "EditorHistory", std::function<EditorHistory*()>([]() -> EditorHistory* { return nullptr; }), true);
     hist.addFunc("clear", &EditorHistory::clear);
     hist.addFunc("push", &EditorHistory::push);
     hist.addFunc("beginGroup", &EditorHistory::beginGroup);
@@ -488,11 +652,9 @@ void Editor::expose(ssq::Table &table) {
     hist.addFunc("getLastTileNewGid", &EditorHistory::getLastTileNewGid);
 
     auto session = table.addClass<EditorSession>(
-        "EditorSession",
-        std::function<EditorSession *()>([]() -> EditorSession * { return nullptr; }), true);
-    session.addFunc(
-        "addTool", std::function<bool(EditorSession *, ScriptEditorTool *)>(
-                       [](EditorSession *self, ScriptEditorTool *tool) { return self->addTool(tool); }));
+        "EditorSession", std::function<EditorSession*()>([]() -> EditorSession* { return nullptr; }), true);
+    session.addFunc("addTool", std::function<bool(EditorSession*, ScriptEditorTool*)>(
+                                   [](EditorSession* self, ScriptEditorTool* tool) { return self->addTool(tool); }));
     session.addFunc("removeTool", &EditorSession::removeTool);
     session.addFunc("clearTools", &EditorSession::clearTools);
     session.addFunc("activateTool", &EditorSession::activateTool);
@@ -501,31 +663,91 @@ void Editor::expose(ssq::Table &table) {
     session.addFunc("hasPointerCapture", &EditorSession::hasPointerCapture);
     session.addFunc("update", &EditorSession::update);
     session.addFunc("cancelActiveTool", &EditorSession::cancelActiveTool);
-    session.addFunc("undo", std::function<bool(EditorSession *)>(
-                                 [](EditorSession *self) { return self->transactions().undo(); }));
-    session.addFunc("redo", std::function<bool(EditorSession *)>(
-                                 [](EditorSession *self) { return self->transactions().redo(); }));
+    session.addFunc(
+        "undo", std::function<bool(EditorSession*)>([](EditorSession* self) { return self->transactions().undo(); }));
+    session.addFunc(
+        "redo", std::function<bool(EditorSession*)>([](EditorSession* self) { return self->transactions().redo(); }));
+    session.addFunc("getCommandCount",
+                    [](EditorSession* self) { return self ? static_cast<int>(self->availableCommands().size()) : 0; });
+    session.addFunc("getCommandId", [](EditorSession* self, int index) {
+        if (!self) return std::string{};
+        const auto commands = self->availableCommands();
+        return index >= 0 && index < static_cast<int>(commands.size()) ? commands[static_cast<size_t>(index)].id.value()
+                                                                       : std::string{};
+    });
+    session.addFunc("getCommandName", [](EditorSession* self, int index) {
+        if (!self) return std::string{};
+        const auto commands = self->availableCommands();
+        return index >= 0 && index < static_cast<int>(commands.size())
+                   ? commands[static_cast<size_t>(index)].displayName
+                   : std::string{};
+    });
+    session.addFunc("getCommandCategory", [](EditorSession* self, int index) {
+        if (!self) return std::string{};
+        const auto commands = self->availableCommands();
+        return index >= 0 && index < static_cast<int>(commands.size()) ? commands[static_cast<size_t>(index)].category
+                                                                       : std::string{};
+    });
+    session.addFunc("planCommand", [](EditorSession* self, const std::string& id, ssq::Object payload) -> ssq::Object {
+        HSQUIRRELVM vm = payload.getHandle();
+        EditorValue value;
+        if (!self || !objectToEditorValue(payload, value)) return resultTable(vm, invalidScriptPayload());
+        const EditorResult<PlanId> planned = self->retainPlan(CommandId(id), value, CommandSource::Script);
+        ssq::Table                 out     = resultTable(vm, planned);
+        if (planned.value) out.set("planId", planned.value->value());
+        return out;
+    });
+    session.addFunc(
+        "executePlan", [](EditorSession* self, const std::string& planId, ssq::Object scriptContext) -> ssq::Object {
+            HSQUIRRELVM vm = scriptContext.getHandle();
+            if (!self)
+                return resultTable(vm, EditorResult<TransactionReceipt>::error(EditorStatus::Failed,
+                                                                               RuleId("editor.script.missing-session"),
+                                                                               "Editor session is not available"));
+            const EditorResult<TransactionReceipt> executed =
+                self->executeRetainedPlan(PlanId(planId), CommandSource::Script);
+            ssq::Table out = resultTable(vm, executed);
+            if (executed.value) {
+                out.set("transactionId", executed.value->id.value());
+                out.set("transactionState", std::string(transactionStateName(executed.value->state)));
+                out.set("beforeRevision", static_cast<int64_t>(executed.value->beforeRevision));
+                out.set("afterRevision", static_cast<int64_t>(executed.value->afterRevision));
+                out.set("authorityReceipt", executed.value->authorityReceipt);
+            }
+            return out;
+        });
+    session.addFunc("executeCommand",
+                    [](EditorSession* self, const std::string& id, ssq::Object payload) -> ssq::Object {
+                        HSQUIRRELVM vm = payload.getHandle();
+                        EditorValue value;
+                        if (!self || !objectToEditorValue(payload, value))
+                            return resultTable(vm, invalidScriptPayload());
+                        const EditorResult<EditorValue> executed =
+                            self->executeCommand(CommandId(id), value, CommandSource::Script);
+                        ssq::Table out = resultTable(vm, executed);
+                        if (executed.value) setValue(out, "value", *executed.value);
+                        return out;
+                    });
     session.addFunc("dispatchPointer",
-                    std::function<int(EditorSession *, int, int, int, float, float, float, float, float)>(
-                        [](EditorSession *self, int phase, int pointerId, int button, float x, float y,
-                           float dx, float dy, float pressure) {
+                    std::function<int(EditorSession*, int, int, int, float, float, float, float, float)>(
+                        [](EditorSession* self, int phase, int pointerId, int button, float x, float y, float dx,
+                           float dy, float pressure) {
                             EditorPointerEvent event;
-                            event.phase = static_cast<EditorPointerEvent::Phase>(phase);
-                            event.pointerId = pointerId;
-                            event.button = button;
-                            event.x = x;
-                            event.y = y;
-                            event.deltaX = dx;
-                            event.deltaY = dy;
-                            event.pressure = pressure;
+                            event.phase                 = static_cast<EditorPointerEvent::Phase>(phase);
+                            event.pointerId             = pointerId;
+                            event.button                = button;
+                            event.x                     = x;
+                            event.y                     = y;
+                            event.deltaX                = dx;
+                            event.deltaY                = dy;
+                            event.pressure              = pressure;
                             const ToolResponse response = self->dispatchPointer(event);
                             return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
                                    (response.releasePointer ? 4 : 0);
                         }));
 
     auto scriptTool = table.addClass<ScriptEditorTool>(
-        "ScriptEditorTool",
-        std::function<ScriptEditorTool *()>([]() -> ScriptEditorTool * { return nullptr; }), true);
+        "ScriptEditorTool", std::function<ScriptEditorTool*()>([]() -> ScriptEditorTool* { return nullptr; }), true);
     scriptTool.addFunc("setShortcut", &ScriptEditorTool::setShortcut);
     scriptTool.addFunc("setActivateCallback", &ScriptEditorTool::setActivateCallback);
     scriptTool.addFunc("setDeactivateCallback", &ScriptEditorTool::setDeactivateCallback);
@@ -535,7 +757,7 @@ void Editor::expose(ssq::Table &table) {
     scriptTool.addFunc("setCancelCallback", &ScriptEditorTool::setCancelCallback);
 }
 
-void Editor::expose(ssq::Class &cls) {
+void Editor::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Editor::getName);
     cls.addFunc("newGizmo", &Editor::newGizmo);
     cls.addFunc("newGizmoManager", &Editor::newGizmoManager);
