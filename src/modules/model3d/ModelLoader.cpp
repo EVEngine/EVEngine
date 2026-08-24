@@ -12,6 +12,7 @@
 #include "common/Module.h"
 #include "common/Resource.h"
 #include "filesystem/Filesystem.h"
+#include "filesystem/FileData.h"
 #include "medialoader/Exception.h"
 #include "medialoader/model/ModelLoader.h"
 #include "model3d/EveFileSystem.h"
@@ -41,7 +42,7 @@ bool isModelPath(const std::string &path) {
            ext == ".b3d" || ext == ".csm" || ext == ".irr" || ext == ".irrmesh" || ext == ".md2" ||
            ext == ".md3" || ext == ".ms3d" || ext == ".smd" || ext == ".vta" || ext == ".bvh" ||
            ext == ".ac" || ext == ".off" || ext == ".raw" || ext == ".ter" || ext == ".nff" ||
-           ext == ".ndo";
+           ext == ".ndo" || ext == ".evmodel";
 }
 
 // Mirror of the option mapping in Model3D.cpp.
@@ -105,6 +106,15 @@ public:
             ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
         if (!fs) fs = filesystem::Filesystem::create();
         if (!fs) return nullptr;
+
+        if (extensionOf(path) == ".evmodel") {
+            filesystem::FileData *packedRaw = fs->read(path);
+            if (!packedRaw) return nullptr;
+            eve::ref<filesystem::FileData> packed(packedRaw);
+            Model3D *module = ModuleManager::getInstance<Model3D>("Model3D");
+            if (!module) module = Model3D::create();
+            return module->newModelData(packed.get(), ".evmodel", options);
+        }
 
         EveFileSystem eveFs(fs);
         medialoader::ModelLoader loader(&eveFs);

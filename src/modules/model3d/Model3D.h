@@ -73,6 +73,13 @@ public:
      */
     graphics::Renderable3D *createRenderable(graphics::Graphics *gfx, ModelData *model,
                                              int meshIndex);
+
+    /**
+     * @brief Pack a self-contained source model (normally GLB or embedded FBX) into
+     * EVEngine's deterministic .evmodel envelope for deployment.
+     * @return False when the source cannot be read or the destination cannot be written.
+     */
+    bool bakeModel(const std::string &sourcePath, const std::string &destinationPath);
 };
 
 }  // namespace model3d
