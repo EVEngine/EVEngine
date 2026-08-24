@@ -1,8 +1,11 @@
 #include "common/Capability.h"
+#include "common/CameraObstruction.h"
 #include "common/PhysicsQuery.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
+#include "physics/World3D.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -67,11 +70,60 @@ private:
     std::vector<World *> worlds_;
 };
 
+class CameraObstructionQueryImpl final : public eve::ICameraObstructionQuery {
+public:
+    void add(World3D* world) {
+        if (world && std::find(worlds_.begin(), worlds_.end(), world) == worlds_.end())
+            worlds_.push_back(world);
+    }
+    void remove(World3D* world) {
+        worlds_.erase(std::remove(worlds_.begin(), worlds_.end(), world), worlds_.end());
+    }
+
+    bool sphereCast(float fromX, float fromY, float fromZ, float toX, float toY, float toZ,
+                    float radius, uint64_t maskBits, int ignoredBodyId,
+                    eve::CameraObstructionHit* out) override {
+        if (out) *out = eve::CameraObstructionHit{};
+        if (!out) return false;
+        for (World3D* world : worlds_) {
+            if (!world || !world->isValid()) continue;
+            CameraSphereHit3D hit;
+            if (!world->sphereCast(fromX, fromY, fromZ, toX, toY, toZ, radius, maskBits,
+                                   ignoredBodyId, &hit))
+                continue;
+            if (!out->hit || hit.fraction < out->fraction) {
+                out->hit = true;
+                out->bodyId = hit.bodyId;
+                out->fraction = hit.fraction;
+                out->x = hit.x;
+                out->y = hit.y;
+                out->z = hit.z;
+                out->normalX = hit.nx;
+                out->normalY = hit.ny;
+                out->normalZ = hit.nz;
+            }
+        }
+        return out->hit;
+    }
+
+private:
+    std::vector<World3D*> worlds_;
+};
+
+CameraObstructionQueryImpl& cameraObstructionQuery() {
+    static CameraObstructionQueryImpl impl;
+    return impl;
+}
+
 }  // namespace
 
 void registerPhysicsCapabilities() {
     static PhysicsQueryImpl impl;
     eve::cap::provide<eve::IPhysicsQuery>(&impl);
+    eve::cap::provide<eve::ICameraObstructionQuery>(&cameraObstructionQuery());
 }
+
+void registerCameraObstructionWorld(World3D* world) { cameraObstructionQuery().add(world); }
+void unregisterCameraObstructionWorld(World3D* world) { cameraObstructionQuery().remove(world); }
 
 }  // namespace eve::physics
