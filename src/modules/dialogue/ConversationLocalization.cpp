@@ -1,6 +1,7 @@
 #include "dialogue/ConversationLocalization.h"
 
-#include <charconv>
+#include <cerrno>
+#include <cstdlib>
 
 namespace eve::dialogue {
 namespace {
@@ -106,9 +107,10 @@ int ConversationLocalizationCatalog::importCsv(const std::string& csv, const std
         if (!status.empty()) entry.status = status;
         const std::string duration = cell(rows[line], "duration");
         if (!duration.empty()) {
-            double     value  = 0.0;
-            const auto result = std::from_chars(duration.data(), duration.data() + duration.size(), value);
-            if (result.ec == std::errc{})
+            char* end          = nullptr;
+            errno              = 0;
+            const double value = std::strtod(duration.c_str(), &end);
+            if (end == duration.c_str() + duration.size() && errno != ERANGE)
                 entry.duration = value;
             else
                 diagnostics.push_back({ConversationDiagnostic::Severity::Warning, "<localization.csv>",

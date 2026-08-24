@@ -34,3 +34,15 @@ TEST_CASE("dialogueLocalization.roundtripMissingAndVoiceManifest") {
     CHECK(manifest.find("recorded") != std::string::npos);
     CHECK(manifest.find("voice/zh/001") != std::string::npos);
 }
+
+TEST_CASE("dialogueLocalization.rejectsPartialDuration") {
+    ConversationLocalizationCatalog     catalog;
+    std::vector<ConversationDiagnostic> diagnostics;
+    const std::string                   csv =
+        "i18n_key,locale,translation,duration\n"
+        "intro.invalid,en,Hello,1.25seconds\n";
+    CHECK(catalog.importCsv(csv, "", diagnostics) == 1);
+    CHECK(catalog.resolveDuration("intro.invalid", "en") == 0.0);
+    REQUIRE(diagnostics.size() == 1);
+    CHECK(diagnostics.front().message == "invalid duration was ignored");
+}
