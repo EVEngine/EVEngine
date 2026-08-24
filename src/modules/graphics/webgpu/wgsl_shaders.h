@@ -155,6 +155,7 @@ struct Frame {
     lights: array<Light3D, 8>,
     texBomb: vec4f,
     parallax: vec4f,
+    surface: vec4f,
     view: mat4x4f,
     clipInfo: vec4f,
     cloud: vec4f,
@@ -217,6 +218,7 @@ struct Frame {
     lights: array<Light3D, 8>,
     texBomb: vec4f,
     parallax: vec4f,
+    surface: vec4f,
     view: mat4x4f,
     clipInfo: vec4f,
     cloud: vec4f,
@@ -375,11 +377,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
     let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
-    if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w) {
+    if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
     let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
-    if (ubo.texBomb.w > 2.5 && base.a < alphaHash) { discard; }
+    if (ubo.surface.x > 2.5 && base.a < alphaHash) { discard; }
     let albedo = base.rgb;
     let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
@@ -438,16 +440,14 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     // overruns into [0,2] and clamps to the AO edge (misaligned occlusion).
     let aoUV = (in.fragCoord.xy * 0.5) / vec2f(textureDimensions(aoTex));
     let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
-    color *= mix(1.0, ao, clamp(ubo.texBomb.w, 0.0, 1.0));
+    color *= mix(1.0, ao, clamp(ubo.surface.z, 0.0, 1.0));
     // Match the Vulkan tonemap.glsl: keep values below `white` linear so dim
     // scenes stay readable, compress only the HDR remainder into (white, 1].
     let white = 0.85;
     let over = max(color - vec3f(white), vec3f(0.0));
     color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
-    // The scene texture's alpha would otherwise carry linear depth, which the
-    // swapchain compositor blends as transparency (making the mesh nearly
-    // invisible). Output opaque.
-    return vec4f(color, 1.0);
+    let outputAlpha = select(1.0, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
+    return vec4f(color, outputAlpha);
 }
 )wgsl";
 
@@ -471,6 +471,7 @@ struct Frame {
     clipInfo: vec4f,
     texBomb: vec4f,
     parallax: vec4f,
+    surface: vec4f,
 };
 struct VSOut {
     @builtin(position) pos: vec4f,
@@ -529,6 +530,7 @@ struct Frame {
     clipInfo: vec4f,
     texBomb: vec4f,
     parallax: vec4f,
+    surface: vec4f,
 };
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
@@ -663,11 +665,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
     let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
-    if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w) {
+    if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
     let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
-    if (ubo.texBomb.w > 2.5 && base.a < alphaHash) { discard; }
+    if (ubo.surface.x > 2.5 && base.a < alphaHash) { discard; }
     let albedo = base.rgb;
     let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
@@ -712,11 +714,12 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     }
     let aoUV = (in.fragCoord.xy * 0.5) / vec2f(textureDimensions(aoTex));
     let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
-    color *= mix(1.0, ao, clamp(ubo.texBomb.w, 0.0, 1.0));
+    color *= mix(1.0, ao, clamp(ubo.surface.z, 0.0, 1.0));
     let white = 0.85;
     let over = max(color - vec3f(white), vec3f(0.0));
     color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
-    return vec4f(color, 1.0);
+    let outputAlpha = select(1.0, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
+    return vec4f(color, outputAlpha);
 }
 )wgsl";
 

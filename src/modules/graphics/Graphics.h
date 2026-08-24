@@ -465,7 +465,7 @@ public:
      * Mirrors bakeMeshMorph: the update synchronizes with in-flight GPU work,
      * so prefer rebuilding only when content actually changes. The mesh's
      * buffer is reused while it fits (stable GPU handle) and reallocated when
-     * the new size grows. Returns false when unsupported (WebGPU backend).
+     * the new size grows. Returns false when unsupported by a backend.
      * posXYZ/nrmXYZ follow newMeshFromArrays layout (uvST may be null);
      * indices/indexCount may be null/0 to keep the mesh's existing indices.
      */

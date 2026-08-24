@@ -231,6 +231,7 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
 
 bool Graphics::updateTexture(Texture *tex, int width, int height, const uint8_t *rgba) {
     if (!tex || width <= 0 || height <= 0 || !rgba) return false;
+    if (width != tex->width || height != tex->height) return false;
     return replaceTexturePixelsRGBA(tex, width, height, rgba);
 }
 

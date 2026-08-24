@@ -10,6 +10,7 @@
 
 #include <webgpu/webgpu_cpp.h>
 
+#include <array>
 #include <atomic>
 #include <map>
 #include <memory>
@@ -40,12 +41,13 @@ struct Mesh3DUBO {
     Light3DGpu lights[Lighting3DPack::kMaxLights]{};
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f};       // x=cellScale, y=strength, z=rotAmount
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f};     // x=scale, y=minLayers, z=maxLayers
+    glm::vec4 surface{0.f, 0.5f, 0.f, 0.f};       // mode, alphaCutoff, ssao, reserved
     glm::mat4 view{1.f};
     glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f};   // x=near, y=far
     glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};        // x=strength(0=off), y=worldCell, z=time
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};  // xy=wind vel, z=coverage, w=detail
 };
-static_assert(sizeof(Mesh3DUBO) == 608, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 624, "Mesh3DUBO layout must match the WGSL Frame block");
 
 /**
  * @brief Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and
@@ -64,8 +66,9 @@ struct Mesh3DClusteredUBO {
     glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};   // near, far, screenW, screenH
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f};       // x=cellScale, y=strength, z=rotAmount, w=AO
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f};     // x=scale, y=minLayers, z=maxLayers
+    glm::vec4 surface{0.f, 0.5f, 0.f, 0.f};       // mode, alphaCutoff, ssao, reserved
 };
-static_assert(sizeof(Mesh3DClusteredUBO) == 336,
+static_assert(sizeof(Mesh3DClusteredUBO) == 352,
               "Mesh3DClusteredUBO layout must match the WGSL clustered Frame block");
 
 /**
@@ -93,6 +96,8 @@ struct GpuTexture {
 struct GpuMesh {
     wgpu::Buffer vertexBuffer;
     wgpu::Buffer indexBuffer;
+    uint64_t vertexCapacity = 0;
+    uint64_t indexCapacity = 0;
     uint32_t indexCount = 0;
     uint32_t vertexCount = 0;
     uint32_t vertexStride = 0;
@@ -132,6 +137,7 @@ public:
     std::string getBackendName() const override { return "webgpu"; }
     bool supportsGBufferPost() const override { return false; }
 
+    void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;
     void present() override;
     void pushValidationScope() override;
@@ -238,7 +244,7 @@ public:
                          float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DClusteredActive(bool active) override;
-    void setMesh3DSSAO(float intensity) override { (void)intensity; }
+    void setMesh3DSSAO(float intensity) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;
@@ -335,6 +341,8 @@ private:
         Shader *shader = nullptr;
         SurfaceMode surfaceMode = SurfaceMode::Opaque;
         BlendMode surfaceBlend = BlendMode::Alpha;
+        bool depthWrite = false;
+        bool doubleSided = false;
         float alphaCutoff = 0.5f;
         std::string alphaTechnique = "cutoff";
         uint32_t frameUboOffset = 0;
@@ -467,6 +475,7 @@ private:
     // ---- state ----
     bool initialized = false;
     bool deviceInitDone = false;
+    bool headless_ = false;
     void *sdlWindow = nullptr;
     int logicalW = 0, logicalH = 0;
     int pixelW = 0, pixelH = 0;
@@ -566,6 +575,9 @@ private:
     wgpu::RenderPipeline texturedOpaquePipeline;
     wgpu::RenderPipeline mesh3dPipeline;
     wgpu::RenderPipeline mesh3dTransparentPipeline;
+    static constexpr size_t kMeshPipelineVariants = 20;
+    std::array<wgpu::RenderPipeline, kMeshPipelineVariants> mesh3dPipelines;
+    std::array<wgpu::RenderPipeline, kMeshPipelineVariants> mesh3dCanvasPipelines;
     wgpu::RenderPipeline mesh3dShadowPipeline;
     wgpu::RenderPipeline mesh3dGbufferPipeline;
     wgpu::RenderPipeline voxelRectPipeline;
@@ -635,6 +647,7 @@ private:
     std::string mesh3dAlphaTechnique = "cutoff";
     float mesh3dTexBombScale = 4.f, mesh3dTexBombStrength = 0.f, mesh3dTexBombRot = 1.f;
     float mesh3dParallaxScale = 0.f, mesh3dParallaxMin = 8.f, mesh3dParallaxMax = 32.f;
+    float mesh3dSsaoIntensity = 1.f;
     glm::vec4 mesh3dCloud{0.f, 1.5f, 0.f, 0.f};
     glm::vec4 mesh3dCloudWind{4.f, 0.f, 0.55f, 0.5f};
     Lighting3DPack mesh3dLighting{};
