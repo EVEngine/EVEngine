@@ -32,9 +32,24 @@ ui.mountBuildAs("hud");
 ```squirrel
 ui.beginRow("toolbar", 8.0);
 ui.setFlexJustify("space-between");
-ui.button("Save", "save");
+ui.iconButton("save", "Save", "save");
 ui.spacer("sp");
 ui.button("Quit", "quit");
+ui.end();
+```
+
+### 使用内置编辑器图标
+
+`icon(name, id)` 显示语义图标，`iconButton(name, label, id)` 创建图标按钮。图标字体随
+引擎构建和 SDK 安装，不依赖游戏工作目录。名称不区分大小写，空格和下划线会转成
+连字符；常用名称包括 `search`、`settings`、`save`、`undo`、`redo`、`folder-open`、
+`pointer`、`move`、`paint-brush`、`database`、`layers`、`play` 和 `warning`。
+
+```squirrel
+ui.beginRow("tools", 4.0);
+ui.iconButton("pointer", "", "select");
+ui.iconButton("move", "", "move");
+ui.iconButton("paint-brush", "Paint", "paint");
 ui.end();
 ```
 
@@ -58,7 +73,7 @@ ui.end();
 
 - `beginBuild()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginRow()`、`beginScrollList()`、`beginWindow()`、`bindOwner()`
 - `animateHostPos()`、`button()`、`checkbox()`、`combo()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
-- `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
+- `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
 - `mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`select()`、`separator()`、`setChecked()`
 - `setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPercent()`、`setHostPos()`、`setHostSize()`、`setHostVisible()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemFlexGrow()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
 - `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`

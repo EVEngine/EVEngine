@@ -46,6 +46,12 @@ void pushPending(UIHost *host, const UINode &n, const char *kind, uint32_t handl
     g_pending.push_back(std::move(ev));
 }
 
+std::string nodeLabel(const UINode &node, const char *fallback) {
+    std::string label = node.text.empty() ? fallback : node.text;
+    if (!node.id.empty()) label += "###" + node.id;
+    return label;
+}
+
 void walkNode(UIHost *host, UIHost::Tree *tree, int index);
 
 void walkSiblings(UIHost *host, UIHost::Tree *tree, int index) {
@@ -287,12 +293,12 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         }
         break;
     case NodeType::Button: {
-        const char *label = n.text.empty() ? "Button" : n.text.c_str();
+        const std::string label = nodeLabel(n, "Button");
         const bool sized = n.sizeX > 0.f || n.sizeY > 0.f;
         const bool clicked =
-            sized ? ImGui::Button(label, ImVec2(n.sizeX > 0.f ? n.sizeX : 0.f,
-                                                n.sizeY > 0.f ? n.sizeY : 0.f))
-                  : ImGui::Button(label);
+            sized ? ImGui::Button(label.c_str(), ImVec2(n.sizeX > 0.f ? n.sizeX : 0.f,
+                                                        n.sizeY > 0.f ? n.sizeY : 0.f))
+                  : ImGui::Button(label.c_str());
         if (clicked) pushPending(host, n, "click", n.handlerClick);
         break;
     }

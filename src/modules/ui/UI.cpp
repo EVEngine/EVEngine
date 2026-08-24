@@ -432,6 +432,18 @@ void UI::addButton(const std::string &label, const std::string &id) {
     currentParent().children.push_back(button(label, id));
 }
 
+void UI::addIcon(const std::string &name, const std::string &id) {
+    Icon value = Icon::None;
+    iconFromName(name, &value);
+    currentParent().children.push_back(icon(value, id));
+}
+
+void UI::addIconButton(const std::string &name, const std::string &label, const std::string &id) {
+    Icon value = Icon::None;
+    iconFromName(name, &value);
+    currentParent().children.push_back(iconButton(value, label, id));
+}
+
 void UI::addSameLine(const std::string &id) { currentParent().children.push_back(sameLine(id)); }
 
 void UI::addSeparator(const std::string &id) {
@@ -1363,6 +1375,8 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("text", &UI::addText);
     cls.addFunc("textWrapped", &UI::addTextWrapped);
     cls.addFunc("button", &UI::addButton);
+    cls.addFunc("icon", &UI::addIcon);
+    cls.addFunc("iconButton", &UI::addIconButton);
     cls.addFunc("sameLine", &UI::addSameLine);
     cls.addFunc("separator", &UI::addSeparator);
     cls.addFunc("checkbox", &UI::addCheckbox);

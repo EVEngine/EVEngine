@@ -251,6 +251,13 @@ WidgetDesc button(std::string label, std::string id, std::function<void()> onCli
     return d;
 }
 
+WidgetDesc icon(Icon value, std::string id) { return text(iconGlyph(value), std::move(id)); }
+
+WidgetDesc iconButton(Icon value, std::string label, std::string id,
+                      std::function<void()> onClick) {
+    return button(iconText(value, label), std::move(id), std::move(onClick));
+}
+
 WidgetDesc group(std::vector<WidgetDesc> children, std::string id) {
     WidgetDesc d;
     d.type = NodeType::Group;

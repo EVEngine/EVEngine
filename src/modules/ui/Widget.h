@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ui/Icons.h"
 #include "ui/UIHost.h"
 
 #include <functional>
@@ -237,6 +238,11 @@ WidgetDesc window(std::string title, std::vector<WidgetDesc> children = {}, std:
 WidgetDesc text(std::string content, std::string id = "");
 /** @brief Clickable button; fires onClick. */
 WidgetDesc button(std::string label, std::string id = "", std::function<void()> onClick = {});
+/** @brief Semantic vector icon rendered from the bundled editor icon font. */
+WidgetDesc icon(Icon value, std::string id = "");
+/** @brief Button containing a semantic icon and optional visible label. */
+WidgetDesc iconButton(Icon value, std::string label = "", std::string id = "",
+                      std::function<void()> onClick = {});
 /** @brief Plain group container. */
 WidgetDesc group(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Holds the next widget on the same line as the previous one. */

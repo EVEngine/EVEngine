@@ -142,6 +142,24 @@ TEST_CASE("UI.b.themeAppliesCompleteModernStyle") {
     ImGui::DestroyContext();
 }
 
+TEST_CASE("UI.b.semanticIcons") {
+    Icon value = Icon::None;
+    CHECK(iconFromName("search", &value));
+    CHECK(static_cast<int>(value) == static_cast<int>(Icon::Search));
+    CHECK(std::string(iconGlyph(value)) == "\xEF\x80\x82");
+    CHECK(iconName(Icon::PaintBrush) == std::string("paint-brush"));
+    CHECK(iconText(Icon::Save, "Save").find("Save") != std::string::npos);
+    CHECK(iconFromName("folder_open", &value));
+    CHECK(static_cast<int>(value) == static_cast<int>(Icon::FolderOpen));
+    CHECK(!iconFromName("missing", &value));
+
+    UIHost *host = UIHost::createHost("icon_widgets");
+    applyTree(host, window("Icons", {icon(Icon::Search, "search"),
+                                     iconButton(Icon::Save, "Save", "save")}));
+    CHECK(host->findById("search")->text == std::string(iconGlyph(Icon::Search)));
+    CHECK(host->findById("save")->text == iconText(Icon::Save, "Save"));
+}
+
 TEST_CASE("UI.b.scriptListBuilder") {
     UI *ui = UI::create();
     ui->beginBuild();

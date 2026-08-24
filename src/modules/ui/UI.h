@@ -112,6 +112,11 @@ public:
     void addTextWrapped(const std::string &content, float width, const std::string &id = "");
     /** @brief Adds a button to the current container. */
     void addButton(const std::string &label, const std::string &id = "");
+    /** @brief Adds a semantic icon by name (for example "search" or "save"). */
+    void addIcon(const std::string &name, const std::string &id = "");
+    /** @brief Adds a semantic icon button with an optional visible label. */
+    void addIconButton(const std::string &name, const std::string &label = "",
+                       const std::string &id = "");
     /** @brief Adds an inline-break spacer. */
     void addSameLine(const std::string &id = "");
     /** @brief Adds a separator line. */

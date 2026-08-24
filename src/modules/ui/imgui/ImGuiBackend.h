@@ -44,8 +44,8 @@ private:
     void loadFonts();
     /** @brief Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
     void rebuildFonts();
-    /** @brief Warn when the built atlas still lacks CJK glyphs (post-Build only). */
-    void checkCjkCoverage() const;
+    /** @brief Warn when the built atlas lacks CJK or semantic icon glyphs. */
+    void checkFontCoverage() const;
 
     uint64_t registerTexture(graphics::Texture *tex) override;
     void unregisterTexture(uint64_t id) override;
