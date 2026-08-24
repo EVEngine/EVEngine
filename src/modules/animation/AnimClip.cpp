@@ -225,21 +225,15 @@ void AnimClip::sampleVec3(const std::vector<Vec3Key>& keys, float time, float& x
         z = keys.back().z;
         return;
     }
-    for (size_t i = 0; i + 1 < keys.size(); ++i) {
-        const auto& a = keys[i];
-        const auto& b = keys[i + 1];
-        if (time >= a.t && time <= b.t) {
-            const float den = b.t - a.t;
-            const float t   = den > 1e-8f ? (time - a.t) / den : 0.f;
-            x               = lerpf(a.x, b.x, t);
-            y               = lerpf(a.y, b.y, t);
-            z               = lerpf(a.z, b.z, t);
-            return;
-        }
-    }
-    x = keys.back().x;
-    y = keys.back().y;
-    z = keys.back().z;
+    const auto upper =
+        std::upper_bound(keys.begin(), keys.end(), time, [](float value, const Vec3Key& key) { return value < key.t; });
+    const auto& b   = *upper;
+    const auto& a   = *(upper - 1);
+    const float den = b.t - a.t;
+    const float t   = den > 1e-8f ? (time - a.t) / den : 0.f;
+    x               = lerpf(a.x, b.x, t);
+    y               = lerpf(a.y, b.y, t);
+    z               = lerpf(a.z, b.z, t);
 }
 
 void AnimClip::sampleQuat(const std::vector<QuatKey>& keys, float time, float& x, float& y, float& z, float& w,
@@ -261,20 +255,13 @@ void AnimClip::sampleQuat(const std::vector<QuatKey>& keys, float time, float& x
         w = keys.back().w;
         return;
     }
-    for (size_t i = 0; i + 1 < keys.size(); ++i) {
-        const auto& a = keys[i];
-        const auto& b = keys[i + 1];
-        if (time >= a.t && time <= b.t) {
-            const float den = b.t - a.t;
-            const float t   = den > 1e-8f ? (time - a.t) / den : 0.f;
-            slerpQuat(a.x, a.y, a.z, a.w, b.x, b.y, b.z, b.w, t, x, y, z, w);
-            return;
-        }
-    }
-    x = keys.back().x;
-    y = keys.back().y;
-    z = keys.back().z;
-    w = keys.back().w;
+    const auto upper =
+        std::upper_bound(keys.begin(), keys.end(), time, [](float value, const QuatKey& key) { return value < key.t; });
+    const auto& b   = *upper;
+    const auto& a   = *(upper - 1);
+    const float den = b.t - a.t;
+    const float t   = den > 1e-8f ? (time - a.t) / den : 0.f;
+    slerpQuat(a.x, a.y, a.z, a.w, b.x, b.y, b.z, b.w, t, x, y, z, w);
 }
 
 TransformTRS AnimClip::sampleBone(int boneIndex, float time, const TransformTRS& fallback) const {

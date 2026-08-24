@@ -322,6 +322,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 - `AnimPlayer` / `AnimGraph` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
 - `AnimTrail`：每帧 `addPoint` / `sampleBone` 后 `update(dt)`，在 `eve_render` 调用 `draw(gfx)`。
 - Motion Matching：先 `MotionDatabase.bake()`，再周期性搜索 + 交叉淡入。
+- Motion Database 在 bake 时按通道计算均值/标准差并标准化；搜索使用当前最优代价提前终止候选计算，避免量纲较大的通道意外支配结果。
 - `ControlAnim` / `ControlPose`：每帧更新目标后调用各自的 `update(dt)`；积分器字符串为 `secondOrder` | `spring` | `pd`。
 
 ## 目标导向指南
@@ -404,6 +405,7 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
+- 3D clip 轨道使用二分查找采样，长动画不会随单轨关键帧数线性退化；Motion Database 应离线/加载时 bake，不要逐帧重建。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/animation/`](../../../src/modules/animation/)
