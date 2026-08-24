@@ -5,7 +5,8 @@ namespace {
 
 const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
                                 "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa",
-                                "outline",   "gpuDriven", "visResolve", "frustumCull", "decal"};
+                                "outline",   "gpuDriven", "visResolve", "frustumCull", "decal",
+                                "atmosphere", "volumetricFog", "fogLocalVolumes", "fogTemporal"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -32,6 +33,10 @@ RenderControl::RenderControl() {
     features_["gpuDriven"] = false;  // stage 1 opt-in; off until runtime-verified
     features_["visResolve"] = false; // stage 3 opt-in; visibility-buffer resolve
     features_["frustumCull"] = false;  // opt-in: conservative sphere culling in frame prep
+    features_["atmosphere"] = true;
+    features_["volumetricFog"] = false;
+    features_["fogLocalVolumes"] = false;
+    features_["fogTemporal"] = false;
     dirty_ = true;
     compiled_ = false;
 }
@@ -55,6 +60,16 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     if (feature == "decal" && enabled) features_["gbuffer"] = true;
     // Stage 2 GPU cull needs the GBuffer depth as its HZB source.
     if (feature == "gpuDriven" && enabled) features_["gbuffer"] = true;
+    if ((feature == "volumetricFog" || feature == "fogLocalVolumes" ||
+         feature == "fogTemporal") && enabled) {
+        features_["atmosphere"] = true;
+        features_["volumetricFog"] = true;
+        features_["gbuffer"] = true;
+    }
+    if (feature == "volumetricFog" && !enabled) {
+        features_["fogLocalVolumes"] = false;
+        features_["fogTemporal"] = false;
+    }
     if (feature == "gi" && enabled) {
         features_["gbuffer"] = true;
         features_["gbufferAlbedo"] = true;
@@ -85,6 +100,14 @@ void RenderControl::compile() {
         passes_.push_back("gbuffer");
     if (isEnabled("decal")) passes_.push_back("decal");
     if (isEnabled("forward")) passes_.push_back("forward");
+    if (isEnabled("atmosphere")) passes_.push_back("atmosphere");
+    if (isEnabled("volumetricFog")) {
+        passes_.push_back("fogMedia");
+        passes_.push_back("fogLighting");
+        if (isEnabled("fogTemporal")) passes_.push_back("fogTemporal");
+        passes_.push_back("fogIntegrate");
+        passes_.push_back("fogComposite");
+    }
     if (isEnabled("hair")) passes_.push_back("hair");
     dirty_ = false;
     compiled_ = true;

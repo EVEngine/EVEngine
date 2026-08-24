@@ -20,6 +20,7 @@ layout(location = 2) out vec4 vTint;
 layout(location = 3) out vec3 vWorldPos;
 layout(location = 4) out vec3 vCameraPos;
 layout(location = 5) out vec3 vViewPos;
+layout(location = 6) out float vParticle;
 
 float hash12(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -31,24 +32,30 @@ void main() {
     // Push-constant slots: 0=time 1=windX 2=windZ 3=speed 4=length 5=width 6=intensity.
     float H = 20.0;
     float phase = hash12(inPos.xz * 0.5 + vec2(floor(inPos.y * 0.7), 13.0));
-    float t = u.data[0] * u.data[3] + phase * H;
-    float yOff = fract(t / H) * H;
+    float t = u.data[0] * u.data[3] * inNormal.z + phase * H;
 
+    // Recycle a camera-centred precipitation volume.  mod() avoids the old
+    // half-empty band caused by subtracting a wrapped offset.
     vec3 base = inPos;
-    base.y -= yOff;
-    // Wind tilt grows toward the ground.
-    float lift = clamp(base.y / H, 0.0, 1.0);
-    base.x += u.data[1] * lift * u.data[4] * 0.5;
-    base.z += u.data[2] * lift * u.data[4] * 0.5;
+    base.xz += ubo.cameraPos.xz;
+    base.y = mod(inPos.y - t, H);
+    float age = 1.0 - base.y / H;
+    base.x += u.data[1] * age * 0.075;
+    base.z += u.data[2] * age * 0.075;
     // Gentle gust sway for snow.
     float sway = sin(u.data[0] * 1.2 + phase * 6.2831) * 0.06 * u.data[4];
     base.x += sway * u.data[1];
     base.z += sway * u.data[2];
 
-    // Camera-facing billboard basis.
-    vec3 right = normalize(vec3(ubo.view[0][0], ubo.view[1][0], ubo.view[2][0]));
-    vec3 up = normalize(vec3(ubo.view[0][1], ubo.view[1][1], ubo.view[2][1]));
-    vec3 pos = base + right * inUV.x * u.data[5] + up * inUV.y * u.data[4];
+    // Align streaks to their physical velocity and face their thin dimension
+    // toward the camera (screen-space rain streak billboard).
+    vec3 velocity = normalize(vec3(u.data[1] * 0.11, -u.data[3], u.data[2] * 0.11));
+    vec3 toCamera = normalize(ubo.cameraPos.xyz - base);
+    vec3 right = normalize(cross(velocity, toCamera));
+    vec3 up = -velocity;
+    float particleLength = u.data[4] * inNormal.x;
+    float particleWidth = u.data[5] * inNormal.y;
+    vec3 pos = base + right * inUV.x * particleWidth + up * inUV.y * particleLength;
 
     vec4 world = ubo.model * vec4(pos, 1.0);
     gl_Position = ubo.mvp * vec4(pos, 1.0);
@@ -58,4 +65,5 @@ void main() {
     vTint = ubo.tint;
     vCameraPos = ubo.cameraPos.xyz;
     vNormal = inNormal;
+    vParticle = phase;
 }

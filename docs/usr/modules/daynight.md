@@ -57,6 +57,7 @@ gfx.render3D();
 | `setTurbidity(v)` / `getTurbidity()` | 大气浑浊度 `[1.5,10]`；越高，地平线雾霾与暖色霞光越强 |
 | `setMieStrength(v)` / `getMieStrength()` | 米氏气溶胶强度 `[0,4]`，控制太阳周围光晕与地平线泛白 |
 | `setSkyExposure(v)` / `getSkyExposure()` | 天空写入 RGBA8 cubemap 前的曝光 `[0.05,8]` |
+| `applyAtmosphere(volumetric)` | 将当前太阳方向、直射光、天空色和天气影响统一写入 `Volumetric` fog/cloud 对象，避免脚本分别维护不一致参数 |
 
 太阳高度角在正午达到约 `70°`，方位角在一天内转动 360°。
 
@@ -65,6 +66,8 @@ gfx.render3D();
 | API | 说明 |
 |-----|------|
 | `setSkyboxEnabled(b)` / `isSkyboxEnabled()` | 开关程序化天空盒（IBL 环境光） |
+| `setWeatherInfluence(cloudiness, flash)` | 注入天气影响：云量 `[0,1]` 压低天空、日光与星光，闪电亮度 `[0,1]` 短暂照亮环境 |
+| `getWeatherCloudiness()` / `getWeatherFlash()` | 读取当前云量和闪电环境光影响 |
 | `getSkyR/G/B()` | 地平线处天空基调色（用于清屏背景） |
 | `getAmbientR/G/B()` / `getAmbientBrightness()` | 建议的相机环境光 |
 

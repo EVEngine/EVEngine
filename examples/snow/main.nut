@@ -179,7 +179,7 @@ eve_update = function(dt) {
 
     // Mouse stamps.
     local g = groundFromMouse(mouse.getX(), mouse.getY());
-    if (g != null && mousePressed(0)) {
+    if (g != null && mousePressed(1)) {
         sf.stampFootprint(g[0] / CELL, g[1] / CELL,
                           cos(camAngle), sin(camAngle), 1.7, 0.75);
         rebuildTerrain();

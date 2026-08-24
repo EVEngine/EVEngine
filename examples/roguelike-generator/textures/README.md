@@ -10,9 +10,11 @@
 Downloaded from:
 `https://opengameart.org/sites/default/files/dungeon_tiles_0.png`
 
-The example loads it with `gfx.newTextureFromFile("textures/dungeon_tiles.png")`
-and shows it in the preview panel (toggle with **T**). The tiles are 16×16 with
-an irregular/offset layout, so the demo renders the procedurally generated
-dungeon with its own colored tiles and uses this texture as the loaded-art
-preview. To texture the map cells directly, replace it with a tightly packed
-tileset and drive `map`/`gfx` tile UVs from the generator's `detail` data.
+The original sheet is shown in the preview panel with **T**. It is not a flat
+one-GID-per-cell atlas: the author notes that many 16×16 pieces are intended to
+be split into 8×8 pieces and recombined.
+
+`dungeon_tiles_ground.png` is the CC0 3×3-autotile adaptation attached by
+OpenGameArt user XLIVE99 on the same page. Its top-left 4×4 region contains
+the complete 16-entry cardinal terrain rule table used by the example. The
+remaining rows provide compatible overlay/decor tiles.

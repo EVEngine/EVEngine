@@ -408,6 +408,9 @@ void AvatarInstance::syncImageLayers() {
         sp->shader = nullptr;
         sp->canvas = nullptr;
         sp->camera = nullptr;
+        // Layered portraits are UI-style artwork and should retain their authored
+        // colors even when the scene has no Camera2D ambient light configured.
+        sp->receiveLight = false;
     }
 }
 

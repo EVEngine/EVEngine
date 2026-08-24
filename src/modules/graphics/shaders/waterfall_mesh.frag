@@ -47,7 +47,7 @@ float noise(vec2 p) {
 // always flows toward the pool at the bottom.
 float flowNoise(vec2 uv, float t) {
     float speed = u.data[1];            // flowSpeed
-    vec2 q = vec2(uv.x * 3.0, uv.y * 4.0 - t * speed);
+    vec2 q = vec2(uv.x * 3.0, uv.y * 4.0 + t * speed);
     float n = 0.0;
     float amp = 0.5;
     float freq = 1.0;
@@ -68,7 +68,7 @@ float streaks(vec2 uv, float t) {
         if (i >= n) break;
         float x = fract(hash(float(i) * 3.1) + uv.x * 0.35) - 0.5;
         float phase = hash(float(i) * 9.7) * 10.0;
-        float y = (uv.y - 0.5 - t * u.data[1] * 0.6) * scale + phase;
+        float y = (uv.y - 0.5 + t * u.data[1] * 0.6) * scale + phase;
         float dx = exp(-abs(x) * 3.5);
         float dy = exp(-abs(y) * 1.5);
         s += dx * dy;
@@ -82,7 +82,7 @@ float cascade(vec2 uv, float t) {
     float n = flowNoise(uv, t);
     float st = streaks(uv, t);
     // Bands that slide downward, wider near the bottom like a churning fall.
-    float band = 0.5 + 0.5 * sin((uv.y * 22.0 - t * u.data[1] * 3.0) * PI);
+    float band = 0.5 + 0.5 * sin((uv.y * 22.0 + t * u.data[1] * 3.0) * PI);
     float v = n * 0.6 + st * (0.5 + turb * 0.5) + band * 0.2;
     return clamp(v * turb, 0.0, 1.0);
 }
@@ -130,8 +130,8 @@ void main() {
     float foam = cascade(p0, t) * u.data[7];
     float top = u.data[5];                              // topFoam
     float bottom = u.data[6];                           // bottomFoam
-    float topBand = clamp((top - p0.y) / max(top, 1e-4), 0.0, 1.0);
-    float bottomBand = clamp((p0.y - (1.0 - bottom)) / max(bottom, 1e-4), 0.0, 1.0);
+    float topBand = clamp((p0.y - (1.0 - top)) / max(top, 1e-4), 0.0, 1.0);
+    float bottomBand = clamp((bottom - p0.y) / max(bottom, 1e-4), 0.0, 1.0);
     float edge = clamp(topBand + bottomBand, 0.0, 1.0);
     float foamy = clamp(foam + edge * 0.9, 0.0, 1.0);
     vec3 foamCol = vec3(0.90, 0.95, 1.0);

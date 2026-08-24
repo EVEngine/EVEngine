@@ -607,3 +607,36 @@ TEST_CASE("volumetric.fogDenserAtDistance") {
     const float farA = farOut->getPixel(32, 24).a;
     CHECK(farA > nearA);
 }
+
+TEST_CASE("volumetric.froxelAtlasCompositesIntegratedMedia") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 128, 96);
+
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    vol->setMode("froxel");
+    vol->configureFroxelGrid(16, 12, 16, 0.1f, 40.f);
+    vol->injectFroxelHeightFog(0.08f, 0.75f, 0.82f, 0.95f, 0.f, 0.15f, -2.f, 8.f);
+    vol->integrateFroxel(1.f, 0.9f, 0.8f);
+    vol->uploadFroxel(gfx);
+    REQUIRE(vol->getFroxelAtlas() != nullptr);
+    CHECK(vol->getFroxelAtlas()->getWidth() == 64);
+    CHECK(vol->getFroxelAtlas()->getHeight() == 48);
+
+    BoxDepth bd;
+    bd.w = 64;
+    bd.h = 48;
+    bd.boxDepth = 0.8f;
+    bd.floorDepth = 0.8f;
+    Texture *depth = vol->newLinearDepthTexture(gfx, bd.w, bd.h, boxDepth01, &bd);
+    Canvas *out = gfx->newCanvas(bd.w, bd.h);
+    gfx->setCanvas(out);
+    gfx->clear(Color(0.f, 0.f, 0.f, 0.f), std::nullopt, std::nullopt);
+    vol->applyFroxel(gfx, depth);
+    gfx->setCanvas(nullptr);
+
+    const Color center = out->getPixel(32, 24);
+    CHECK(center.a > 0.02f);
+    CHECK(luma(center) > 0.01f);
+    win->close();
+}

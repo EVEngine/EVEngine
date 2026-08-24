@@ -76,6 +76,10 @@ void Map::render(graphics::Graphics *gfx) {
 
 int Map::pollConfigs() { return TileConfigSystem::poll(); }
 
+int Map::getLastVisibleTileCount() const { return TileRenderSystem::lastVisibleTileCount(); }
+int Map::getLastCustomVisualCount() const { return TileRenderSystem::lastCustomVisualCount(); }
+int Map::getLastAtlasCount() const { return TileRenderSystem::lastAtlasCount(); }
+
 int Map::getLayerCount() const {
     if (ecs::current()->getManager<TileLayer>() == nullptr) return 0;
     int n = 0;
@@ -178,6 +182,12 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("getTileWidth", &TileLayer::getTileWidth);
     layer.addFunc("getTileHeight", &TileLayer::getTileHeight);
     layer.addFunc("setTileSize", &TileLayer::setTileSize);
+    layer.addFunc("setCellGap", &TileLayer::setCellGap);
+    layer.addFunc("setRenderSpacing", &TileLayer::setRenderSpacing);
+    layer.addFunc("getCellGapX", &TileLayer::getCellGapX);
+    layer.addFunc("getCellGapY", &TileLayer::getCellGapY);
+    layer.addFunc("getRenderSpacingX", &TileLayer::getRenderSpacingX);
+    layer.addFunc("getRenderSpacingY", &TileLayer::getRenderSpacingY);
     layer.addFunc("resize", &TileLayer::resize);
     layer.addFunc("setTile", &TileLayer::setTile);
     layer.addFunc("getTile", &TileLayer::getTile);
@@ -185,6 +195,11 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("clear", &TileLayer::clear);
     layer.addFunc("setTileset", &TileLayer::setTileset);
     layer.addFunc("setTilesetTileSize", &TileLayer::setTilesetTileSize);
+    layer.addFunc("setTileVisual", &TileLayer::setTileVisual);
+    layer.addFunc("clearTileVisuals", &TileLayer::clearTileVisuals);
+    layer.addFunc("getTileVisualCount", &TileLayer::getTileVisualCount);
+    layer.addFunc("setTileMetadata", &TileLayer::setTileMetadata);
+    layer.addFunc("loadTilesetManifest", &TileLayer::loadTilesetManifest);
     layer.addFunc("getTilesetTexture", &TileLayer::getTilesetTexture);
     layer.addFunc("getTilesetFirstGid", &TileLayer::getTilesetFirstGid);
     layer.addFunc("getTilesetColumns", &TileLayer::getTilesetColumns);
@@ -332,6 +347,9 @@ void Map::expose(ssq::Class &cls) {
     cls.addFunc("update", &Map::update);
     cls.addFunc("render", &Map::render);
     cls.addFunc("pollConfigs", &Map::pollConfigs);
+    cls.addFunc("getLastVisibleTileCount", &Map::getLastVisibleTileCount);
+    cls.addFunc("getLastCustomVisualCount", &Map::getLastCustomVisualCount);
+    cls.addFunc("getLastAtlasCount", &Map::getLastAtlasCount);
     cls.addFunc("getLayerCount", &Map::getLayerCount);
     cls.addFunc("getLayer", &Map::getLayer);
     cls.addFunc("getObjectCount", &Map::getObjectCount);

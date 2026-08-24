@@ -115,7 +115,31 @@ struct TilesetInfo {
     int tileH = 32;
     int margin = 0;
     int spacing = 0;
+    std::vector<TileLayer::Tileset::Visual> visuals;
 };
+
+TileLayer::Tileset::Visual readTileVisual(Poco::JSON::Object::Ptr o, int fallbackGid) {
+    TileLayer::Tileset::Visual visual;
+    if (!o) return visual;
+    visual.gid = o->has("gid") ? asInt(o->get("gid"), fallbackGid) : fallbackGid;
+    float x = 0.f, y = 0.f, w = 0.f, h = 0.f;
+    if (readVec4(o, "region", x, y, w, h)) {
+        visual.x = int(x);
+        visual.y = int(y);
+        visual.width = int(w);
+        visual.height = int(h);
+    }
+    readVec2(o, "pivot", visual.pivotX, visual.pivotY);
+    visual.sortBias = o->has("sortBias") ? asFloat(o->get("sortBias"), 0.f) : 0.f;
+    float fw = 1.f, fh = 1.f;
+    if (readVec2(o, "footprint", fw, fh)) {
+        visual.footprintW = std::max(1, int(fw));
+        visual.footprintH = std::max(1, int(fh));
+    }
+    visual.walkable = o->has("walkable") ? asBool(o->get("walkable"), true) : true;
+    visual.cost = o->has("cost") ? std::max(0.001f, asFloat(o->get("cost"), 1.f)) : 1.f;
+    return visual;
+}
 
 TilesetInfo readTilesetObject(Poco::JSON::Object::Ptr o) {
     TilesetInfo info;
@@ -135,6 +159,20 @@ TilesetInfo readTilesetObject(Poco::JSON::Object::Ptr o) {
         const int iw = asInt(o->get("imagewidth"), 0);
         if (iw > 0) info.columns = std::max(1, (iw - info.margin) / (info.tileW + info.spacing));
     }
+    if (o->has("tiles")) {
+        try {
+            auto arr = o->getArray("tiles");
+            if (arr) {
+                for (size_t i = 0; i < arr->size(); ++i) {
+                    auto tile = arr->getObject(static_cast<unsigned int>(i));
+                    auto visual = readTileVisual(tile, info.firstGid + int(i));
+                    if (visual.gid > 0 && visual.width > 0 && visual.height > 0)
+                        info.visuals.push_back(visual);
+                }
+            }
+        } catch (...) {
+        }
+    }
     return info;
 }
 
@@ -144,6 +182,7 @@ void applyTileset(TileLayer *layer, const TilesetInfo &info) {
     graphics::Texture *tex = tryLoadTexture(info.image);
     layer->resource()->texturePath = info.image;
     layer->setTileset(tex, info.firstGid, info.columns, info.margin, info.spacing);
+    layer->tileset()->visuals = info.visuals;
 }
 
 bool decodeLayerData(Poco::JSON::Object::Ptr layerObj, size_t expectedCount,
@@ -315,6 +354,23 @@ bool applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root, std::string
 
     if (mapW != layer->getMapWidth() || mapH != layer->getMapHeight()) layer->resize(mapW, mapH);
     layer->setTileSize(tileW, tileH);
+
+    float gapX = layer->getCellGapX();
+    float gapY = layer->getCellGapY();
+    if (readVec2(root, "cellGap", gapX, gapY)) {
+        layer->setCellGap(gapX, gapY);
+    } else {
+        float spacingX = layer->getRenderSpacingX();
+        float spacingY = layer->getRenderSpacingY();
+        if (readVec2(root, "renderSpacing", spacingX, spacingY)) {
+            layer->setRenderSpacing(spacingX, spacingY);
+        } else {
+            if (root->has("cellGapX")) gapX = asFloat(root->get("cellGapX"), gapX);
+            if (root->has("cellGapY")) gapY = asFloat(root->get("cellGapY"), gapY);
+            if (root->has("cellGapX") || root->has("cellGapY"))
+                layer->setCellGap(gapX, gapY);
+        }
+    }
 
     if (!parseOrientation(root, &(*layer->config()), error)) return false;
 
@@ -688,6 +744,57 @@ bool reloadConfigFile(TileLayer *layer, std::string *error) {
         return false;
     }
     return loadConfigFile(layer, path, error);
+}
+
+bool loadTilesetManifestFile(TileLayer *layer, const std::string &path, std::string *error) {
+    if (!layer || path.empty()) {
+        if (error) *error = "empty path";
+        return false;
+    }
+    auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
+    if (!fs) fs = eve::filesystem::Filesystem::create();
+    std::unique_ptr<eve::filesystem::FileData> data;
+    try {
+        data.reset(fs->read(path));
+    } catch (...) {
+        if (error) *error = "read failed: " + path;
+        return false;
+    }
+    if (!data || data->getSize() == 0) {
+        if (error) *error = "empty file: " + path;
+        return false;
+    }
+    const std::string text(static_cast<const char *>(data->getData()), data->getSize());
+    auto *dm = eve::data::DataModule::create();
+    std::string decodeError;
+    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(text, &decodeError));
+    if (!doc || !doc->isObject()) {
+        if (error) *error = decodeError.empty() ? "invalid tileset manifest" : decodeError;
+        return false;
+    }
+    auto root = doc->object();
+    if (root->has("tileset")) {
+        try {
+            root = root->getObject("tileset");
+        } catch (...) {
+            if (error) *error = "tileset must be an object";
+            return false;
+        }
+    }
+    if (!root) {
+        if (error) *error = "tileset manifest root must be an object";
+        return false;
+    }
+    const TilesetInfo info = readTilesetObject(root);
+    if (info.image.empty()) {
+        if (error) *error = "tileset manifest has no image";
+        return false;
+    }
+    applyTileset(layer, info);
+    fs->watch(path);
+    if (auto *hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
+        hot->bind(path, "tilemap");
+    return true;
 }
 
 std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,

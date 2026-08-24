@@ -44,6 +44,7 @@ file(GLOB all_test_cpp
   RenderImageAudit.cpp
   RenderSceneEffects.cpp
   Volumetric.cpp
+  atmosphere_volume.cpp
   TextureSampler.cpp
   AmbientOcclusion.cpp
   Outline.cpp
@@ -81,6 +82,7 @@ file(GLOB all_test_cpp
   camera.cpp
   card.cpp
   card_reload.cpp
+  composable_gameplay.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
@@ -117,6 +119,8 @@ file(GLOB all_test_cpp
   spritestack.cpp
   daynight.cpp
   weather.cpp
+  weapon.cpp
+  vehicle.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
@@ -130,6 +134,22 @@ file(GLOB all_test_cpp
   image.cpp
   event.cpp
   economy.cpp
+  attributes.cpp
+  decision.cpp
+  authority.cpp
+  definitions.cpp
+  effects.cpp
+  eventstream.cpp
+  orders.cpp
+  policyregistry.cpp
+  production.cpp
+  sensing.cpp
+  schema.cpp
+  social.cpp
+  statepatch.cpp
+  steering.cpp
+  tags.cpp
+  transaction.cpp
   rx.cpp
   runtime.cpp
   timer.cpp
@@ -318,71 +338,10 @@ else()
   endif()
 endif()
 
-set(EVELIBS
-  EVCmdLine
-  EVScripts
-  EVWindow
-  EVFileSystem
-  EVMouse
-  EVKeyboard
-  EVJoystick
-  EVTouch
-  EVGraphics
-  EVImage
-  EVDayNight
-  EVWeather
-  EVCommon
-  EVEvent
-  EVRx
-  EVTimer
-  EVSystem
-  EVMath
-  EVGrid
-  EVSpatial
-  EVEditor
-  EVIK
-  EVAnimation
-  EVTensor
-  EVNetwork
-  EVDatabase
-  EVEconomy
-  EVData
-  EVI18n
-  EVSound
-  EVAudio
-  EVUI
-  eve_imgui
-  EVScene
-  EVSceneLoader
-  EVParticles
-  EVFluids
-  EVPhysics
-  EVMap
-  EVGpgpu
-  EVVirtualGeometry
-  EVModel3D
-  EVFont
-  EVThread
-  EVRPG
-  EVInventory
-  EVBuilding
-  EVBuildingFx
-  EVCard
-  EVCamera
-  EVAvatar
-  EVDialogue
-  EVProcgen
-  EVHouseGen
-  EVVoxel
-  EVSnow
-  EVStylize
-  EVDecal
-  EVSpriteStack
-  EVCrowd
-  EVEditor)
+set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
 
-if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")))
-  list(APPEND EVELIBS EVDevTools)
+if(TARGET eve_imgui)
+  list(APPEND EVELIBS eve_imgui)
 endif()
 
 if(EVENGINE_BUILD_DEMO)

@@ -95,6 +95,39 @@ eve_declare_module(NAME rpg LIB EVRPG LAYER 0 SCRIPT RPG)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
                    GROUP minimal 2d 3d web)
+eve_declare_module(NAME attributes LAYER 0 SCRIPT Attributes SLOT attributes
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME authority LAYER 0 SCRIPT Authority SLOT authority
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME decision LAYER 0 SCRIPT Decision SLOT decision
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME definitions LAYER 0 SCRIPT Definitions SLOT definitions
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME effects LAYER 0 SCRIPT Effects SLOT effects
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME eventstream LAYER 0 SCRIPT EventStream SLOT eventstream
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME orders LAYER 0 SCRIPT Orders SLOT orders
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME policyregistry LAYER 0 SCRIPT PolicyRegistryModule SLOT policies
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
+                   DEPS spatial
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME statepatch LAYER 0 SCRIPT StatePatch SLOT statepatch
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME steering LAYER 0 SCRIPT Steering SLOT steering
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME tags LAYER 0 SCRIPT Tags SLOT tags
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME transaction LAYER 0 SCRIPT Transaction SLOT transaction
+                   GROUP minimal 2d 3d web)
 # PlacementWorld.cpp includes data/JsonDocument.h and Poco JSON (save/load).
 # THIRDPARTY poco is required so MSVC compiles those TUs with
 # POCO_NO_AUTOMATIC_LIBS; otherwise the obj records a link of
@@ -198,8 +231,18 @@ eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
                    GROUP 2d 3d)
 eve_declare_module(NAME buildingfx LIB EVBuildingFx LAYER 4 SCRIPT BuildingFx SLOT buildingfx
                    DEPS building graphics)
+# Weapon definitions, entities, mounts and fire logic. Standalone so buildings /
+# vehicles / turrets all attach the same WeaponMount system.
+eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
+                   GROUP 2d 3d)
+# Vehicle entities, kinematic/tracked/wheeled mobility and RTS order queue.
+# Depends on weapon so definitions can declare weapon mounts.
+eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
+                   DEPS weapon
+                   OPTIONAL_DEPS physics
+                   GROUP 2d 3d)
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
-                   DEPS data filesystem graphics model3d
+                   DEPS data filesystem graphics image model3d
                    THIRDPARTY poco assimp
                    GROUP 2d 3d)
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight

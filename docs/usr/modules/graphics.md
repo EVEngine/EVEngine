@@ -20,7 +20,28 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 
 ### 绘制 2D 游戏帧
 
-在 `eve_render()` 开始调用 `clear()`，随后按背景、地图、角色、粒子、UI 的顺序提交。纯色占位使用 `drawSolidRect()`；已有 Texture 使用 `drawTexturedRect()`。正常主循环由引擎负责 present。
+在 `eve_render()` 开始调用 `clear()`，随后按背景、地图、角色、粒子、UI 的顺序提交。纯色占位使用 `drawSolidRect()`；已有 Texture 使用 `drawTexturedRect()`。需要围绕矩形中心旋转的精灵可调用 `drawTexturedRectRotated(texture, centerX, centerY, width, height, degrees, r, g, b, a)`；屏幕坐标 Y 轴向下，因此正角度表现为顺时针旋转。正常主循环由引擎负责 present。
+
+需要 UV 动画、旋转、独立混合模式或程序化变换时，使用脚本精灵对象：
+
+```squirrel
+local sprite = gfx.newSprite2D();
+sprite.setTexture(sheet.getTexture());
+sprite.setQuad(quad);
+sprite.setPosition(400, 270);
+sprite.setScale(2.0, 2.0);
+sprite.setRotation(30.0); // degree, rotate around rect center
+sprite.setAnchor(0.25, 0.75); // normalized rotation pivot
+sprite.setFlip(true, false);  // mirror UV without negative scale
+sprite.setBlend("alpha"); // alpha | additive
+
+// eve_render: clear/draw background first, then submit all live Sprite2D objects
+gfx.renderSprites();
+```
+
+`Sprite2D` 还提供 size、color、layer、visible、receiveLight、castOcclusion 等属性。
+裁边动画通常由 `SpriteAnim.bindSprite(sprite)` 自动调用 `setFrameLayout`，无需游戏代码逐帧修正偏移。
+不再使用时调用 `destroy()`；`renderSprites()` 是聚合提交接口，不要再把同一精灵加入另一条 2D 队列，以免重复绘制。
 
 ### 渲染带光照的 3D 对象
 
@@ -112,6 +133,10 @@ hair.setCastShadow(false)  // 发片通常不参与阴影投射
 - **screenspace**：`beginOcclusionMap` → `drawOccluders2D` → `scatter`；或 `applyFromScene`
 - **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`
 - **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
+- **froxel**：`configureFroxelGrid` → `clearFroxelGrid` →
+  `injectFroxelHeightFog` → `integrateFroxel` → `uploadFroxel`；在
+  `gfx.render3D()` 后将 GBuffer 线性深度传给 `applyFroxel` 或
+  `applyFroxelTo`。介质未变化时不必每帧重新上传。
 - **cloud**：`setMode("cloud")`，用 `setCloudLayer`、`setCloudCoverage`、
   `setCloudDensity`、`setCloudScale`、`setCloudWind` 和 `setCloudLightColor`
   调整云层；线性深度输入通过 `renderClouds` 或 `renderCloudsTo` 渲染，
@@ -173,6 +198,15 @@ rc.disable("msaa");             // 或通过 RenderControl 特性关
 
 `Camera3D.screenToRay(screenX, screenY, viewW, viewH)` 写入眼点与单位方向，用 `getScreenRayOrigin*` / `getScreenRayDir*` 读取，再对包围球/盒调用 Math 的 `raycastSphere` / `raycastBox`。
 
+### 曲面瀑布
+
+`Waterfall.createCurvedSheet(width, height, segX, segY, curveDepth, lipOverhang)` 创建带横向弧度和顶部探出段的细分瀑布网格，适合贴合崖壁并形成自然的离壁水帘；原有 `createSheet(width, height)` 仍用于平面瀑布。
+
+```squirrel
+local fall = gfx.newWaterfall();
+fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);
+```
+
 ## 常见问题
 
 - 忘记每帧 `clear()`，保留未定义的旧帧内容。
@@ -185,7 +219,7 @@ rc.disable("msaa");             // 或通过 RenderControl 特性关
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `bakeMeshMorph()`、`newMeshFromArrays()`、`updateMeshVertices()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`
-- `drawSolidRect()`、`drawTexturedRect()`、`drawOcclusionSolid()`、`drawOcclusionTexture()`、`getCastShadow()`、`getCastOcclusion()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getHeight()`、`getMorphCount()`
+- `drawSolidRect()`、`drawTexturedRect()`、`drawTexturedRectRotated()`、`drawOcclusionSolid()`、`drawOcclusionTexture()`、`getCastShadow()`、`getCastOcclusion()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getHeight()`、`getMorphCount()`
 - `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
 - `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
@@ -197,7 +231,11 @@ rc.disable("msaa");             // 或通过 RenderControl 特性关
 - `setReceiveLight()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowStrength()`
 - `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setParallax()`、`getParallaxScale()`、`getParallaxMinLayers()`、`getParallaxMaxLayers()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
+- `Sprite2D`：`setPosition()`、`getX()`、`getY()`、`setRotation()`、`getRotation()`、`setScale()`、`getScaleX()`、`getScaleY()`、`setSize()`、`getWidth()`、`getHeight()`、`setTexture()`、`getTexture()`、`setQuad()`、`getQuad()`、`setColor()`、`setLayer()`、`getLayer()`、`setVisible()`、`getVisible()`、`setReceiveLight()`、`getReceiveLight()`、`setBlend()`、`getBlend()`、`setAnchor()`、`getAnchorX()`、`getAnchorY()`、`setFlip()`、`getFlipX()`、`getFlipY()`、`setFrameLayout()`、`setCastOcclusion()`、`getCastOcclusion()`、`destroy()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
+- `Volumetric` froxel：`configureFroxelGrid`、`clearFroxelGrid`、
+  `injectFroxelHeightFog`、`integrateFroxel`、`uploadFroxel`、
+  `applyFroxel`、`applyFroxelTo`
 - `AmbientOcclusion`：`setQuality`、`setMode`、`setCamera`、`setRadius`、`setBias`、`setIntensity`、`setPower`、`compute`、`blur`、`applyOverlay`、`applyFromDepth`、`resolutionFor` 等
 - `GlobalIllumination`：`setQuality`、`setCamera`、`setRadius`、`setIntensity`、`setLightDirection`、`setLightColor`、`applyFromDepth`、`getSampleCount` 等
 - `AntiAliasing`：`setQuality`、`setMode`、`apply`、`applyTo`、`applyCanvas`、`applyCanvasTo`、`suggestScale`、`resolutionFor`、`setFloat`、`getFloat` 等

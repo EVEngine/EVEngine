@@ -6,6 +6,8 @@
 
 #include <box3d/id.h>
 
+#include <cstdint>
+
 namespace eve::physics {
 
 class Body3D;
@@ -60,6 +62,9 @@ public:
      * Returns hit body id, or -1. Read hit details via getRayHit*.
      */
     int rayCast(float x1, float y1, float z1, float x2, float y2, float z2);
+    /** @brief 带形状类别掩码的最短射线查询（掩码为接受的 shape categoryBits）。 */
+    int rayCastFiltered(float x1, float y1, float z1, float x2, float y2, float z2,
+                        uint64_t maskBits);
     bool  hasRayHit() const { return rayHitBodyId_ >= 0; }
     int   getRayHitBodyId() const { return rayHitBodyId_; }
     float getRayHitX() const { return rayHitX_; }

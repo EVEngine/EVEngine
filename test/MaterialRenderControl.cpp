@@ -94,6 +94,25 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(!rc.isEnabled("gbufferAlbedo"));
 }
 
+TEST_CASE("renderControl.atmospherePassDependencies") {
+    RenderControl rc;
+    CHECK(rc.supports("atmosphere"));
+    CHECK(rc.supports("volumetricFog"));
+    rc.enable("fogTemporal");
+    rc.compile();
+    CHECK(rc.isEnabled("gbuffer"));
+    CHECK(rc.isEnabled("atmosphere"));
+    CHECK(rc.isEnabled("volumetricFog"));
+    CHECK(rc.hasPass("atmosphere"));
+    CHECK(rc.hasPass("fogMedia"));
+    CHECK(rc.hasPass("fogLighting"));
+    CHECK(rc.hasPass("fogTemporal"));
+    CHECK(rc.hasPass("fogIntegrate"));
+    CHECK(rc.hasPass("fogComposite"));
+    rc.disable("volumetricFog");
+    CHECK(!rc.isEnabled("fogTemporal"));
+}
+
 TEST_CASE("renderable3d.materialAndParts") {
     auto *ent = Renderable3D::create();
     REQUIRE(ent != nullptr);

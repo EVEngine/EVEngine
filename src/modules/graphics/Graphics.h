@@ -35,6 +35,7 @@ class Mesh;
 class Outline;
 class Quad;
 class RenderControl;
+class Renderable2D;
 class ScreenSpaceReflection;
 class Shader;
 class Texture;
@@ -71,11 +72,19 @@ public:
     virtual void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
     virtual void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
                                       float a = 1.f);
+    /** @brief 绕矩形中心旋转 `degrees` 度（顺时针，屏幕 Y 向下）的贴图绘制。 */
+    virtual void drawTexturedRectRotatedRGBA(Texture *texture, float cx, float cy, float w, float h,
+                                             float degrees, float r, float g, float b,
+                                             float a = 1.f);
     /** @brief RGBA-float overload matching the script-facing drawSolidRect name. */
     virtual void drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
     /** @brief RGBA-float overload matching the script-facing drawTexturedRect name. */
     virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
                                   float a = 1.f);
+    /** @brief Draw all live Sprite2D entities into the current frame without presenting. */
+    void renderSprites();
+    /** @brief Create a script-facing Sprite2D ECS entity. Call destroy() when done. */
+    Renderable2D *newSprite2D();
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */

@@ -23,6 +23,13 @@ public:
 
     /** @brief Collect + draw tiles only (no present). Null gfx is a no-op. */
     static void render(graphics::Graphics *gfx);
+
+    /** @brief Number of non-empty visible tiles collected by the last pass. */
+    static int lastVisibleTileCount();
+    /** @brief Number of collected tiles using irregular per-GID metadata. */
+    static int lastCustomVisualCount();
+    /** @brief Number of distinct atlas textures referenced by the last pass. */
+    static int lastAtlasCount();
 };
 
 /**

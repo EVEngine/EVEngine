@@ -77,6 +77,15 @@ public:
     void setFogDensity(float v);
     float getFogDensity() const;
 
+    /**
+     * @brief Enable legacy weather-owned sky and directional lighting.
+     *
+     * Disable this when DayNight owns the environment; precipitation and
+     * lightning geometry continue to render and getFlash() remains available.
+     */
+    void setEnvironmentEnabled(bool enabled);
+    bool isEnvironmentEnabled() const;
+
     /** @brief Ambient multiplier that the example should feed into camera.setAmbient(). */
     float getAmbientBrightness() const;
 

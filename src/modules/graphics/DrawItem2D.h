@@ -23,6 +23,9 @@ struct DrawItem2D {
     float depthY = 0.f;
     /** @brief Degrees, clockwise, around the rectangle center (screen Y-down). */
     float rotation = 0.f;
+    /** @brief Normalized transform pivot; (0,0) top-left, (0.5,0.5) center. */
+    float anchorX = 0.5f, anchorY = 0.5f;
+    bool flipX = false, flipY = false;
     /** Explicit back-to-front order (e.g. Spine slot draw order). When set on
      *  both items it takes priority over depthY. */
     int  order = 0;

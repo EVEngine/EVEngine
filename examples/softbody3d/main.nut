@@ -38,7 +38,8 @@ function edgePressed(name) {
 }
 
 function mousePressed() {
-    local down = mouse.isDown(0);
+    // 1 = 左键（与 engine mouse::isDown 一致）。
+    local down = mouse.isDown(1);
     local was = prevMouse;
     prevMouse = down;
     return down && !was;
@@ -145,7 +146,7 @@ eve_update = function(dt) {
             grabbing = idx >= 0;
         }
     }
-    if (mouse.isDown(0) && grabbing) {
+    if (mouse.isDown(1) && grabbing) {
         local pt = grabPoint();
         if (pt) cloth.moveGrab(pt[0], pt[1], pt[2]);
     } else if (grabbing) {

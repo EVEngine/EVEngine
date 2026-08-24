@@ -121,8 +121,15 @@ void main() {
     if (density > 0.002) {
       float lightT = lightTransmittance(p, sunDir, shadowSteps, shadowStep);
       float powder = 1.0 - exp(-density * stepLen * 2.0);
-      vec3 ambient = vec3(0.19, 0.26, 0.38) * (0.25 + 0.5 * p.y / max(top, 0.1));
-      vec3 source = lightColor * (phase * lightT + powder * 0.16) + ambient;
+      float heightLight = clamp((p.y - bottom) / max(top - bottom, 0.01), 0.0, 1.0);
+      float edgeGlow = exp(-density * stepLen * 1.7) * lightT;
+      vec3 ambient = mix(vec3(0.10, 0.14, 0.23), lightColor * 0.32,
+                         0.25 + heightLight * 0.55);
+      // Artistic multiple-scattering approximation: boosted forward phase,
+      // powder brightening and a low-density silver lining.  It preserves the
+      // Beer-Lambert silhouette while avoiding charcoal clouds at golden hour.
+      vec3 source = lightColor * (phase * lightT * 9.0 + powder * 0.72 + edgeGlow * 0.16)
+                    + ambient;
       float extinction = density * stepLen;
       float alpha = 1.0 - exp(-extinction);
       radiance += transmittance * source * alpha;
@@ -131,5 +138,6 @@ void main() {
     }
     p += rayDir * stepLen;
   }
-  outColor = vec4(radiance * fragColor.rgb, clamp(1.0 - transmittance, 0.0, 1.0));
+  outColor = vec4(radiance * fragColor.rgb * 1.65,
+                  clamp(1.0 - transmittance, 0.0, 1.0));
 }
