@@ -1,12 +1,14 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 namespace eve::graphics {
 
 class Canvas;
+class AtmosphereVolume;
 class Drawable;
 class Graphics;
 class Mesh;
@@ -37,7 +39,7 @@ public:
     void setQuality(const std::string &quality);
     std::string getQuality() const { return quality_; }
 
-    /** @brief "screenspace" | "raymarch" | "fog" | "cloud". */
+    /** @brief "screenspace" | "raymarch" | "fog" | "froxel" | "cloud". */
     void setMode(const std::string &mode);
     std::string getMode() const { return mode_; }
 
@@ -148,6 +150,29 @@ public:
     void renderCloudsTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
+     * @brief Configure the CPU reference/fallback froxel grid used by the atlas renderer.
+     * Quality presets choose suitable defaults, but explicit dimensions are useful for tests.
+     */
+    void configureFroxelGrid(int width, int height, int depth, float nearDistance,
+                             float farDistance);
+    /** @brief Access the froxel media grid for native density/light injection. */
+    AtmosphereVolume *getAtmosphereVolume() const { return atmosphereVolume_.get(); }
+    /** @brief Clear all media in the configured froxel grid. */
+    void clearFroxelGrid();
+    /** @brief Inject an exponential global height layer into the froxel grid. */
+    void injectFroxelHeightFog(float extinction, float albedoR, float albedoG, float albedoB,
+                               float baseHeight, float heightFalloff, float minWorldY,
+                               float maxWorldY);
+    /** @brief Integrate the current froxel media using a uniform incident light. */
+    void integrateFroxel(float lightR, float lightG, float lightB, float phaseScale = 1.f);
+    /** @brief Upload integrated froxels into a slice atlas sampled by applyFroxel. */
+    void uploadFroxel(Graphics *gfx);
+    /** @brief Composite the uploaded froxel volume over the current target using scene depth. */
+    void applyFroxel(Graphics *gfx, Texture *linearDepth);
+    /** @brief Composite the uploaded froxel volume into an explicit destination. */
+    void applyFroxelTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
+
+    /**
      * @brief Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
      * depth01(x,y) should return values in [0,1]. Owned by Graphics.
      */
@@ -171,6 +196,8 @@ public:
     Shader *getRayMarchShader() const { return rayShader_; }
     Shader *getFogShader() const { return fogShader_; }
     Shader *getCloudShader() const { return cloudShader_; }
+    Shader *getFroxelShader() const { return froxelShader_; }
+    Texture *getFroxelAtlas() const { return froxelAtlas_; }
 
 private:
     void applyQualityDefaults();
@@ -185,6 +212,11 @@ private:
     Shader *rayShader_ = nullptr; // owned by Graphics (ray march)
     Shader *fogShader_ = nullptr; // owned by Graphics (volumetric fog)
     Shader *cloudShader_ = nullptr; // owned by Graphics (volumetric clouds)
+    Shader *froxelShader_ = nullptr; // owned by Graphics (froxel atlas composite)
+    std::unique_ptr<AtmosphereVolume> atmosphereVolume_;
+    Texture *froxelAtlas_ = nullptr; // owned by Graphics
+    int froxelAtlasCols_ = 1;
+    int froxelAtlasRows_ = 1;
     std::string quality_ = "medium";
     std::string mode_ = "screenspace";
     float downscale_ = 2.f;

@@ -1,5 +1,7 @@
 #include "graphics/Volumetric.h"
 
+#include "graphics/AtmosphereVolume.h"
+
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
@@ -11,6 +13,7 @@
 #include "graphics/shaders/volumetric_post_frag_spv.inc"
 #include "graphics/shaders/volumetric_raymarch_frag_spv.inc"
 #include "graphics/shaders/volumetric_fog_frag_spv.inc"
+#include "graphics/shaders/volumetric_froxel_frag_spv.inc"
 #include "graphics/shaders/volumetric_cloud_frag_spv.inc"
 
 #include <algorithm>
@@ -159,6 +162,25 @@ Shader *createFogShader(Graphics *gfx) {
     return sh;
 }
 
+Shader *createFroxelShader(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("Volumetric: null graphics");
+    std::vector<uint32_t> frag(volumetric_froxel_frag_spv,
+                               volumetric_froxel_frag_spv + volumetric_froxel_frag_spv_count);
+    std::vector<uint32_t> vert;
+    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    sh->declareFloat("atlasCols");
+    sh->declareFloat("atlasRows");
+    sh->declareFloat("sliceCount");
+    sh->declareFloat("nearDistance");
+    sh->declareFloat("farDistance");
+    sh->sendFloat("atlasCols", 1.f);
+    sh->sendFloat("atlasRows", 1.f);
+    sh->sendFloat("sliceCount", 1.f);
+    sh->sendFloat("nearDistance", 0.1f);
+    sh->sendFloat("farDistance", 100.f);
+    return sh;
+}
+
 Shader *createCloudShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("Volumetric: null graphics");
     std::vector<uint32_t> frag(volumetric_cloud_frag_spv,
@@ -209,6 +231,8 @@ Volumetric::Volumetric(Graphics *gfx) : gfx_(gfx) {
     rayShader_ = createRayMarchShader(gfx);
     fogShader_ = createFogShader(gfx);
     cloudShader_ = createCloudShader(gfx);
+    froxelShader_ = createFroxelShader(gfx);
+    atmosphereVolume_ = std::make_unique<AtmosphereVolume>();
     applyQualityDefaults();
 }
 
@@ -289,6 +313,8 @@ void Volumetric::setMode(const std::string &mode) {
         mode_ = "raymarch";
     else if (mode == "fog")
         mode_ = "fog";
+    else if (mode == "froxel")
+        mode_ = "froxel";
     else if (mode == "cloud")
         mode_ = "cloud";
     else
@@ -666,6 +692,83 @@ void Volumetric::renderCloudsTo(Graphics *gfx, Texture *linearDepth, Canvas *des
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     renderClouds(gfx, linearDepth);
+    gfx->setCanvas(prev == gfx ? nullptr : prev);
+}
+
+void Volumetric::configureFroxelGrid(int width, int height, int depth, float nearDistance,
+                                     float farDistance) {
+    atmosphereVolume_->resize(width, height, depth);
+    atmosphereVolume_->setDepthRange(nearDistance, farDistance);
+    froxelAtlasCols_ = std::max(1, int(std::ceil(std::sqrt(float(atmosphereVolume_->getDepth())))));
+    froxelAtlasRows_ = std::max(1, (atmosphereVolume_->getDepth() + froxelAtlasCols_ - 1) /
+        froxelAtlasCols_);
+}
+
+void Volumetric::clearFroxelGrid() { atmosphereVolume_->clear(); }
+
+void Volumetric::injectFroxelHeightFog(float extinction, float albedoR, float albedoG,
+                                       float albedoB, float baseHeight, float heightFalloff,
+                                       float minWorldY, float maxWorldY) {
+    atmosphereVolume_->injectHeightFog(extinction, glm::vec3(albedoR, albedoG, albedoB),
+                                       baseHeight, heightFalloff, minWorldY, maxWorldY);
+}
+
+void Volumetric::integrateFroxel(float lightR, float lightG, float lightB, float phaseScale) {
+    atmosphereVolume_->integrate(glm::vec3(lightR, lightG, lightB), phaseScale);
+}
+
+void Volumetric::uploadFroxel(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("Volumetric.uploadFroxel: null graphics");
+    const int w = atmosphereVolume_->getWidth();
+    const int h = atmosphereVolume_->getHeight();
+    const int d = atmosphereVolume_->getDepth();
+    if (w <= 0 || h <= 0 || d <= 0)
+        throw eve::Exception("Volumetric.uploadFroxel: grid is not configured");
+    const int atlasW = w * froxelAtlasCols_;
+    const int atlasH = h * froxelAtlasRows_;
+    std::vector<uint8_t> rgba(std::size_t(atlasW) * std::size_t(atlasH) * 4u, 0u);
+    for (int z = 0; z < d; ++z) {
+        const int ox = (z % froxelAtlasCols_) * w;
+        const int oy = (z / froxelAtlasCols_) * h;
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                const glm::vec4 value = atmosphereVolume_->integratedAt(x, y, z);
+                const std::size_t offset = (std::size_t(oy + y) * std::size_t(atlasW) +
+                                            std::size_t(ox + x)) * 4u;
+                const glm::vec3 mapped = glm::vec3(value) / (glm::vec3(1.f) + glm::vec3(value));
+                rgba[offset + 0] = uint8_t(std::lround(glm::clamp(mapped.r, 0.f, 1.f) * 255.f));
+                rgba[offset + 1] = uint8_t(std::lround(glm::clamp(mapped.g, 0.f, 1.f) * 255.f));
+                rgba[offset + 2] = uint8_t(std::lround(glm::clamp(mapped.b, 0.f, 1.f) * 255.f));
+                rgba[offset + 3] = uint8_t(std::lround(glm::clamp(value.a, 0.f, 1.f) * 255.f));
+            }
+        }
+    }
+    if (!froxelAtlas_ || froxelAtlas_->getWidth() != atlasW || froxelAtlas_->getHeight() != atlasH)
+        froxelAtlas_ = gfx->newTexture(atlasW, atlasH, rgba.data());
+    else
+        gfx->updateTexture(froxelAtlas_, atlasW, atlasH, rgba.data());
+    froxelShader_->sendFloat("atlasCols", float(froxelAtlasCols_));
+    froxelShader_->sendFloat("atlasRows", float(froxelAtlasRows_));
+    froxelShader_->sendFloat("sliceCount", float(d));
+    froxelShader_->sendFloat("nearDistance", atmosphereVolume_->getNearDistance());
+    froxelShader_->sendFloat("farDistance", atmosphereVolume_->getFarDistance());
+}
+
+void Volumetric::applyFroxel(Graphics *gfx, Texture *linearDepth) {
+    if (!gfx) throw eve::Exception("Volumetric.applyFroxel: null graphics");
+    if (!linearDepth) throw eve::Exception("Volumetric.applyFroxel: null depth");
+    if (!froxelAtlas_) throw eve::Exception("Volumetric.applyFroxel: uploadFroxel not called");
+    const float dw = gfx->getCanvas() ? float(gfx->getCanvas()->getWidth()) : float(gfx->getWidth());
+    const float dh = gfx->getCanvas() ? float(gfx->getCanvas()->getHeight()) : float(gfx->getHeight());
+    gfx->drawTexturedRectShaderDepth(linearDepth, froxelAtlas_, froxelShader_, 0.f, 0.f, dw, dh,
+                                     Color(1.f, 1.f, 1.f, 1.f));
+}
+
+void Volumetric::applyFroxelTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
+    if (!gfx || !dest) throw eve::Exception("Volumetric.applyFroxelTo: null argument");
+    Canvas *prev = gfx->getCanvas();
+    gfx->setCanvas(dest);
+    applyFroxel(gfx, linearDepth);
     gfx->setCanvas(prev == gfx ? nullptr : prev);
 }
 
