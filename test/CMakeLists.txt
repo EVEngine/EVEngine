@@ -87,6 +87,7 @@ file(GLOB all_test_cpp
   i18n_script.cpp
   avatar.cpp
   dialogue.cpp
+  dialogue_conversation.cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
   physics_cloth.cpp
