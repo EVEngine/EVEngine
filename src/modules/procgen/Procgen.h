@@ -6,12 +6,15 @@
 #include "procgen/OutputSpec.h"
 #include "procgen/Palette.h"
 #include "procgen/Params.h"
+#include "procgen/PointSet.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -43,6 +46,57 @@ public:
     Params     *newParams();
     OutputSpec *newOutput();
     Grid2D     *newGrid(int width, int height);
+
+    // --- Script-first point pipelines ---
+    PointSet* newPointSet();
+    PointSet* sampleGrid(int width, int depth, float spacing, uint32_t seed, float jitter);
+    PointSet* filterHeight(PointSet* input, float minHeight, float maxHeight);
+    PointSet* filterDensity(PointSet* input, float minDensity, float maxDensity);
+    PointSet* filterBox(PointSet* input, float minX, float minY, float minZ, float maxX,
+                        float maxY, float maxZ);
+    PointSet* excludeBox(PointSet* input, float minX, float minY, float minZ, float maxX,
+                         float maxY, float maxZ);
+    PointSet* filterSlope(PointSet* input, float minDegrees, float maxDegrees);
+    PointSet* filterPolygon(PointSet* input, PointSet* polygon);
+    PointSet* excludePolygon(PointSet* input, PointSet* polygon);
+    PointSet* filterSplineDistance(PointSet* input, PointSet* controlPoints,
+                                   float minDistance, float maxDistance);
+    PointSet* excludeRadius(PointSet* input, float x, float z, float radius);
+    PointSet* jitterPoints(PointSet* input, uint32_t seed, float amountX, float amountZ);
+    PointSet* selfPrune(PointSet* input, float radius);
+    PointSet* projectToHeightmap(PointSet* input, Heightmap* heightmap, float originX,
+                                 float originZ, float cellSize, float heightScale);
+    PointSet* sampleSpline(PointSet* controlPoints, float spacing, uint32_t seed,
+                           float lateralJitter);
+    uint32_t  deriveSeed(uint32_t parent, const std::string& scope) const;
+
+    // --- Atomic script rebuilds ---
+    ProcgenContext* beginSystem(const std::string& name, uint32_t seed);
+    ProcgenContext* beginCachedSystem(const std::string& name, uint32_t seed,
+                                      const std::string& buildKey);
+    bool            commitSystem(ProcgenContext* context);
+    void            abortSystem(ProcgenContext* context);
+    bool            removeSystem(const std::string& name);
+    bool            hasSystem(const std::string& name) const;
+    uint64_t        getSystemRevision(const std::string& name) const;
+    uint32_t        getSystemSeed(const std::string& name) const;
+    std::string     getSystemBuildKey(const std::string& name) const;
+    int             getSystemOutputCount(const std::string& name) const;
+    std::string     getSystemOutputName(const std::string& name, int index) const;
+    PointSet*       getSystemOutput(const std::string& name,
+                                    const std::string& outputName) const;
+    int             getSystemDebugStageCount(const std::string& name) const;
+    std::string     getSystemDebugStageName(const std::string& name, int index) const;
+    PointSet*       getSystemDebugStage(const std::string& name,
+                                        const std::string& stageName) const;
+    /** @brief Copy a named debug stage from the commit immediately before the current one. */
+    PointSet*       getPreviousSystemDebugStage(const std::string& name,
+                                                const std::string& stageName) const;
+    /** @brief Revision number of the snapshot retained for hot-reload comparison. */
+    uint64_t        getPreviousSystemRevision(const std::string& name) const;
+    std::string     getSystemDebugReport(const std::string& name) const;
+    /** @brief Human-readable point-count changes between the current and previous commits. */
+    std::string     getSystemDebugDiffReport(const std::string& name) const;
 
     // --- Phase A: maps ---
     Grid2D *generate(const std::string &algorithmId, Params *params);
@@ -142,6 +196,8 @@ private:
     mutable std::vector<std::string> textureRecipeIdsCache_;
     mutable std::vector<std::string> pbrRecipeIdsCache_;
     mutable std::vector<std::string> meshRecipeIdsCache_;
+    std::unordered_map<std::string, ProcgenSystemSnapshot> systems_;
+    std::unordered_map<std::string, ProcgenSystemSnapshot> previousSystems_;
 };
 
 }  // namespace eve::procgen
