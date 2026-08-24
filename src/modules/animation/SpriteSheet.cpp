@@ -12,6 +12,11 @@ void SpriteSheet::checkIndex(int index) const {
 }
 
 int SpriteSheet::addFrame(const std::string &name, int x, int y, int w, int h) {
+    return addFrameTrimmed(name, x, y, w, h, w, h, 0, 0);
+}
+
+int SpriteSheet::addFrameTrimmed(const std::string &name, int x, int y, int w, int h,
+                                 int sourceW, int sourceH, int offsetX, int offsetY) {
     if (w <= 0 || h <= 0) throw Exception("SpriteSheet.addFrame: width/height must be > 0");
     Frame f;
     f.name = name.empty() ? ("frame" + std::to_string(frames_.size())) : name;
@@ -21,11 +26,20 @@ int SpriteSheet::addFrame(const std::string &name, int x, int y, int w, int h) {
     f.y = y;
     f.w = w;
     f.h = h;
+    f.sourceW = sourceW;
+    f.sourceH = sourceH;
+    f.offsetX = offsetX;
+    f.offsetY = offsetY;
     int idx = static_cast<int>(frames_.size());
     byName_[f.name] = idx;
     frames_.push_back(std::move(f));
     return idx;
 }
+
+int SpriteSheet::getFrameSourceWidth(int i) const { checkIndex(i); return frames_[size_t(i)].sourceW; }
+int SpriteSheet::getFrameSourceHeight(int i) const { checkIndex(i); return frames_[size_t(i)].sourceH; }
+int SpriteSheet::getFrameOffsetX(int i) const { checkIndex(i); return frames_[size_t(i)].offsetX; }
+int SpriteSheet::getFrameOffsetY(int i) const { checkIndex(i); return frames_[size_t(i)].offsetY; }
 
 int SpriteSheet::setGrid(int columns, int rows, int frameW, int frameH, int margin, int spacing,
                          int originX, int originY) {
@@ -89,6 +103,14 @@ void SpriteSheet::applyToQuad(graphics::Quad *quad, int frameIndex) const {
     checkIndex(frameIndex);
     const Frame &f = frames_[static_cast<size_t>(frameIndex)];
     quad->setViewport(f.x, f.y, f.w, f.h);
+}
+
+SpriteSheet *SpriteSheet::clone() const {
+    auto *copy = new SpriteSheet();
+    copy->frames_ = frames_;
+    copy->byName_ = byName_;
+    copy->texture_ = texture_;
+    return copy;
 }
 
 }  // namespace eve::animation

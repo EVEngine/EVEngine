@@ -23,9 +23,20 @@
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
+#include "graphics/Texture.h"
 #include "graphics/Mesh.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
+#include "data/DataModule.h"
+#include "data/JsonDocument.h"
+#include "filesystem/Filesystem.h"
+#include "filesystem/FileData.h"
+#include <Poco/JSON/Array.h>
+#include <Poco/JSON/Object.h>
 
 #include <algorithm>
+#include <cmath>
+#include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::animation {
@@ -88,6 +99,147 @@ Tween *Animation::newTween(float duration) {
 }
 
 SpriteSheet *Animation::newSpriteSheet() { return new SpriteSheet(); }
+
+SpriteSheet *Animation::newSpriteSheetFromSequence(graphics::Graphics *gfx,
+                                                    const std::string &pattern, int first,
+                                                    int last, int columns) {
+    if (!gfx) throw Exception("Animation.newSpriteSheetFromSequence: gfx is null");
+    const size_t marker = pattern.find("{n}");
+    if (marker == std::string::npos)
+        throw Exception("Animation.newSpriteSheetFromSequence: pattern must contain '{n}'");
+    if (first < 0 || last < first)
+        throw Exception("Animation.newSpriteSheetFromSequence: expected 0 <= first <= last");
+
+    const int count = last - first + 1;
+    if (columns <= 0) columns = static_cast<int>(std::ceil(std::sqrt(float(count))));
+    if (columns <= 0)
+        throw Exception("Animation.newSpriteSheetFromSequence: columns must be > 0");
+    const std::string cacheKey = pattern + "#" + std::to_string(first) + ":" +
+                                 std::to_string(last) + ":" + std::to_string(columns);
+    auto cached = spriteSequenceCache_.find(cacheKey);
+    if (cached != spriteSequenceCache_.end()) return cached->second->clone();
+    const int rows = (count + columns - 1) / columns;
+
+    image::Image *images = image::Image::create();
+    std::vector<image::ImageData *> frames;
+    struct Bounds { int x = 0, y = 0, w = 1, h = 1; };
+    std::vector<Bounds> bounds;
+    frames.reserve(static_cast<size_t>(count));
+    int frameW = 0, frameH = 0;
+    int packedW = 1, packedH = 1;
+    for (int n = first; n <= last; ++n) {
+        std::string path = pattern;
+        path.replace(marker, 3, std::to_string(n));
+        image::ImageData *frame = images->newImageDataFromFile(path);
+        if (!frame) throw Exception("Animation.newSpriteSheetFromSequence: failed '%s'", path.c_str());
+        if (frame->getFormat() != "RGBA8")
+            throw Exception("Animation.newSpriteSheetFromSequence: '%s' must be RGBA8", path.c_str());
+        if (frames.empty()) {
+            frameW = frame->getWidth();
+            frameH = frame->getHeight();
+        } else if (frame->getWidth() != frameW || frame->getHeight() != frameH) {
+            throw Exception("Animation.newSpriteSheetFromSequence: frame size mismatch at '%s'",
+                            path.c_str());
+        }
+        frames.push_back(frame);
+        int minX = frameW, minY = frameH, maxX = -1, maxY = -1;
+        for (int py = 0; py < frameH; ++py) {
+            for (int px = 0; px < frameW; ++px) {
+                if (frame->getPixel(px, py).a <= 1.f / 255.f) continue;
+                minX = std::min(minX, px); minY = std::min(minY, py);
+                maxX = std::max(maxX, px); maxY = std::max(maxY, py);
+            }
+        }
+        Bounds b;
+        if (maxX >= minX && maxY >= minY)
+            b = {minX, minY, maxX - minX + 1, maxY - minY + 1};
+        bounds.push_back(b);
+        packedW = std::max(packedW, b.w);
+        packedH = std::max(packedH, b.h);
+    }
+
+    constexpr int padding = 1;
+    const int cellW = packedW + padding * 2;
+    const int cellH = packedH + padding * 2;
+    std::unique_ptr<image::ImageData> atlas(
+        images->newImageData(columns * cellW, rows * cellH, "RGBA8"));
+    auto *sheet = new SpriteSheet();
+    try {
+        for (int i = 0; i < count; ++i) {
+            const int cellX = (i % columns) * cellW;
+            const int cellY = (i / columns) * cellH;
+            const int x = cellX + padding;
+            const int y = cellY + padding;
+            image::ImageData *frame = frames[static_cast<size_t>(i)];
+            const Bounds &b = bounds[size_t(i)];
+            atlas->paste(frame, x, y, b.x, b.y, b.w, b.h);
+            atlas->paste(frame, x, cellY, b.x, b.y, b.w, 1);
+            atlas->paste(frame, x, y + b.h, b.x, b.y + b.h - 1, b.w, 1);
+            atlas->paste(frame, cellX, y, b.x, b.y, 1, b.h);
+            atlas->paste(frame, x + b.w, y, b.x + b.w - 1, b.y, 1, b.h);
+            atlas->paste(frame, cellX, cellY, b.x, b.y, 1, 1);
+            atlas->paste(frame, x + b.w, cellY, b.x + b.w - 1, b.y, 1, 1);
+            atlas->paste(frame, cellX, y + b.h, b.x, b.y + b.h - 1, 1, 1);
+            atlas->paste(frame, x + b.w, y + b.h, b.x + b.w - 1, b.y + b.h - 1, 1, 1);
+            sheet->addFrameTrimmed(std::to_string(first + i), x, y, b.w, b.h,
+                                   frameW, frameH, b.x, b.y);
+        }
+        sheet->setTexture(gfx->newTextureFromImageData(atlas.get()));
+        spriteSequenceCache_[cacheKey].reset(sheet->clone());
+    } catch (...) {
+        delete sheet;
+        throw;
+    }
+    return sheet;
+}
+
+int Animation::getSpriteSequenceCacheCount() const { return int(spriteSequenceCache_.size()); }
+int Animation::getSpriteSequenceCacheBytes() const {
+    int bytes = 0;
+    for (const auto &entry : spriteSequenceCache_) {
+        auto *texture = entry.second->getTexture();
+        if (texture) bytes += texture->getWidth() * texture->getHeight() * 4;
+    }
+    return bytes;
+}
+void Animation::clearSpriteSequenceCache() { spriteSequenceCache_.clear(); }
+
+SpriteSheet *Animation::newSpriteSheetFromAtlasJson(graphics::Graphics *gfx,
+                                                     const std::string &texturePath,
+                                                     const std::string &jsonPath) {
+    if (!gfx) throw Exception("Animation.newSpriteSheetFromAtlasJson: gfx is null");
+    auto *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
+    if (!fs) fs = filesystem::Filesystem::create();
+    std::unique_ptr<filesystem::FileData> file(fs->read(jsonPath));
+    std::string text(static_cast<const char *>(file->getData()), size_t(file->getSize()));
+    auto *dm = data::DataModule::create();
+    std::string error;
+    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(text, &error));
+    if (!doc || !doc->isObject()) throw Exception("Atlas JSON: %s", error.c_str());
+    auto root = doc->object();
+    if (!root->has("frames")) throw Exception("Atlas JSON: missing frames");
+    auto frames = root->getObject("frames");
+    if (!frames) throw Exception("Atlas JSON: frames must be an object");
+    auto *sheet = new SpriteSheet();
+    try {
+        for (const auto &name : frames->getNames()) {
+            auto item = frames->getObject(name);
+            if (item->optValue<bool>("rotated", false))
+                throw Exception("Atlas JSON: rotated frames are not supported");
+            auto rect = item->getObject("frame");
+            auto src = item->getObject("spriteSourceSize");
+            auto size = item->getObject("sourceSize");
+            const int w = rect->getValue<int>("w"), h = rect->getValue<int>("h");
+            sheet->addFrameTrimmed(name, rect->getValue<int>("x"), rect->getValue<int>("y"), w, h,
+                                   size ? size->getValue<int>("w") : w,
+                                   size ? size->getValue<int>("h") : h,
+                                   src ? src->getValue<int>("x") : 0,
+                                   src ? src->getValue<int>("y") : 0);
+        }
+        sheet->setTexture(gfx->newTextureFromFile(texturePath));
+    } catch (...) { delete sheet; throw; }
+    return sheet;
+}
 
 SpriteClip *Animation::newSpriteClip(const std::string &name) { return new SpriteClip(name); }
 
@@ -690,6 +842,8 @@ void Animation::expose(ssq::Table &table) {
     sheet.addFunc("addFrame", &SpriteSheet::addFrame);
     sheet.addFunc("setGrid", &SpriteSheet::setGrid);
     sheet.addFunc("clear", &SpriteSheet::clear);
+    sheet.addFunc("setTexture", &SpriteSheet::setTexture);
+    sheet.addFunc("getTexture", &SpriteSheet::getTexture);
     sheet.addFunc("getFrameCount", &SpriteSheet::getFrameCount);
     sheet.addFunc("findFrame", &SpriteSheet::findFrame);
     sheet.addFunc("getFrameName", &SpriteSheet::getFrameName);
@@ -697,6 +851,10 @@ void Animation::expose(ssq::Table &table) {
     sheet.addFunc("getFrameY", &SpriteSheet::getFrameY);
     sheet.addFunc("getFrameWidth", &SpriteSheet::getFrameWidth);
     sheet.addFunc("getFrameHeight", &SpriteSheet::getFrameHeight);
+    sheet.addFunc("getFrameSourceWidth", &SpriteSheet::getFrameSourceWidth);
+    sheet.addFunc("getFrameSourceHeight", &SpriteSheet::getFrameSourceHeight);
+    sheet.addFunc("getFrameOffsetX", &SpriteSheet::getFrameOffsetX);
+    sheet.addFunc("getFrameOffsetY", &SpriteSheet::getFrameOffsetY);
     sheet.addFunc("applyToQuad", &SpriteSheet::applyToQuad);
 
     auto sclip = table.addClass<SpriteClip>(
@@ -708,6 +866,11 @@ void Animation::expose(ssq::Table &table) {
     sclip.addFunc("getLoop", &SpriteClip::getLoop);
     sclip.addFunc("addFrame", &SpriteClip::addFrame);
     sclip.addFunc("addFrameByName", &SpriteClip::addFrameByName);
+    sclip.addFunc("addRange", &SpriteClip::addRange);
+    sclip.addFunc("setFPS", &SpriteClip::setFPS);
+    sclip.addFunc("getFPS", &SpriteClip::getFPS);
+    sclip.addFunc("addEvent", &SpriteClip::addEvent);
+    sclip.addFunc("getEvent", &SpriteClip::getEvent);
     sclip.addFunc("clear", &SpriteClip::clear);
     sclip.addFunc("getFrameCount", &SpriteClip::getFrameCount);
     sclip.addFunc("getSheetFrame", &SpriteClip::getSheetFrame);
@@ -722,11 +885,23 @@ void Animation::expose(ssq::Table &table) {
     sanim.addFunc("setSheet", &SpriteAnim::setSheet);
     sanim.addFunc("getSheet", &SpriteAnim::getSheet);
     sanim.addFunc("play", &SpriteAnim::play);
+    sanim.addFunc("playReverse", &SpriteAnim::playReverse);
     sanim.addFunc("stop", &SpriteAnim::stop);
     sanim.addFunc("pause", &SpriteAnim::pause);
     sanim.addFunc("resume", &SpriteAnim::resume);
     sanim.addFunc("setSpeed", &SpriteAnim::setSpeed);
     sanim.addFunc("getSpeed", &SpriteAnim::getSpeed);
+    sanim.addFunc("addSpeedCurveKey", &SpriteAnim::addSpeedCurveKey);
+    sanim.addFunc("clearSpeedCurve", &SpriteAnim::clearSpeedCurve);
+    sanim.addFunc("resetSpeedCurve", &SpriteAnim::resetSpeedCurve);
+    sanim.addFunc("setSpeedCurveLoop", &SpriteAnim::setSpeedCurveLoop);
+    sanim.addFunc("setSpeedCurveInterpolation", &SpriteAnim::setSpeedCurveInterpolation);
+    sanim.addFunc("getSpeedCurveValue", &SpriteAnim::getSpeedCurveValue);
+    sanim.addFunc("setFrame", &SpriteAnim::setFrame);
+    sanim.addFunc("step", &SpriteAnim::step);
+    sanim.addFunc("playOnce", &SpriteAnim::playOnce);
+    sanim.addFunc("queue", &SpriteAnim::queue);
+    sanim.addFunc("consumeEvent", &SpriteAnim::consumeEvent);
     sanim.addFunc("setTime", &SpriteAnim::setTime);
     sanim.addFunc("getTime", &SpriteAnim::getTime);
     sanim.addFunc("setLoop", &SpriteAnim::setLoop);
@@ -734,12 +909,16 @@ void Animation::expose(ssq::Table &table) {
     sanim.addFunc("isPlaying", &SpriteAnim::isPlaying);
     sanim.addFunc("isPaused", &SpriteAnim::isPaused);
     sanim.addFunc("isFinished", &SpriteAnim::isFinished);
+    sanim.addFunc("getLoopCount", &SpriteAnim::getLoopCount);
+    sanim.addFunc("consumeCompleted", &SpriteAnim::consumeCompleted);
+    sanim.addFunc("consumeLooped", &SpriteAnim::consumeLooped);
     sanim.addFunc("getClip", &SpriteAnim::getClip);
     sanim.addFunc("getClipFrame", &SpriteAnim::getClipFrame);
     sanim.addFunc("getSheetFrame", &SpriteAnim::getSheetFrame);
     sanim.addFunc("bindQuad", &SpriteAnim::bindQuad);
     sanim.addFunc("unbindQuad", &SpriteAnim::unbindQuad);
     sanim.addFunc("getBoundQuad", &SpriteAnim::getBoundQuad);
+    sanim.addFunc("bindSprite", &SpriteAnim::bindSprite);
     sanim.addFunc("applyToQuad", &SpriteAnim::applyToQuad);
     sanim.addFunc("update", &SpriteAnim::update);
 
@@ -866,6 +1045,11 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("getName", &Animation::getName);
     cls.addFunc("newTween", &Animation::newTween);
     cls.addFunc("newSpriteSheet", &Animation::newSpriteSheet);
+    cls.addFunc("newSpriteSheetFromSequence", &Animation::newSpriteSheetFromSequence);
+    cls.addFunc("newSpriteSheetFromAtlasJson", &Animation::newSpriteSheetFromAtlasJson);
+    cls.addFunc("getSpriteSequenceCacheCount", &Animation::getSpriteSequenceCacheCount);
+    cls.addFunc("getSpriteSequenceCacheBytes", &Animation::getSpriteSequenceCacheBytes);
+    cls.addFunc("clearSpriteSequenceCache", &Animation::clearSpriteSequenceCache);
     cls.addFunc("newSpriteClip", &Animation::newSpriteClip);
     cls.addFunc("newSpriteAnim", &Animation::newSpriteAnim);
     cls.addFunc("newSpineAtlas", &Animation::newSpineAtlas);

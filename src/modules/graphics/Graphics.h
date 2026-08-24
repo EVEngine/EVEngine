@@ -35,6 +35,7 @@ class Mesh;
 class Outline;
 class Quad;
 class RenderControl;
+class Renderable2D;
 class ScreenSpaceReflection;
 class Shader;
 class Texture;
@@ -76,6 +77,10 @@ public:
     /** @brief RGBA-float overload matching the script-facing drawTexturedRect name. */
     virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
                                   float a = 1.f);
+    /** @brief Draw all live Sprite2D entities into the current frame without presenting. */
+    void renderSprites();
+    /** @brief Create a script-facing Sprite2D ECS entity. Call destroy() when done. */
+    Renderable2D *newSprite2D();
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */

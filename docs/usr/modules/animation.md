@@ -49,6 +49,49 @@ anim.update(dt);
 // 把 quad 挂到 Renderable2D.sprite.quad 即可换帧
 ```
 
+独立 PNG 序列可在运行时自动合并为共享图集，不需要先用外部工具合图；
+每帧会自动扩展 1 像素边缘，避免线性过滤、缩放和旋转时采样到相邻帧：
+
+```squirrel
+local sheet = anim.newSpriteSheetFromSequence(
+    gfx, "assets/frame_{n}.png", 1, 64, 8);
+local burst = anim.newSpriteClip("burst");
+burst.addRange(0, 63, 24.0); // inclusive range, 24 FPS
+
+local quad = gfx.newQuad(0, 0, 128, 128);
+local player = anim.newSpriteAnim();
+player.setSheet(sheet);
+player.bindQuad(quad);
+player.play(burst);          // player.playReverse(burst) 可倒放
+player.setSpeed(0.5);        // 支持负数；0 冻结时间
+```
+
+`consumeLooped()` / `consumeCompleted()` 用于每帧消费一次性事件，
+`getLoopCount()` 返回本次播放以来累计跨过的循环边界数。
+
+播放速度还可以由关键点曲线控制。曲线值与 `setSpeed()` 的基础倍率相乘，
+曲线时间独立推进，因此首个关键点为 0 也不会把播放永久卡住：
+
+```squirrel
+player.setSpeed(1.0);
+player.addSpeedCurveKey(0.0, 0.2);
+player.addSpeedCurveKey(1.2, 2.4);
+player.addSpeedCurveKey(2.6, 0.35);
+player.addSpeedCurveKey(4.0, 0.2);
+player.setSpeedCurveLoop(true);
+// clearSpeedCurve / resetSpeedCurve / getSpeedCurveValue
+```
+
+关键点之间采用线性插值；如需平滑 S 曲线，可用更多采样关键点逼近。
+也可调用 `setSpeedCurveInterpolation("linear"|"smooth"|"cubic")` 选择插值。
+
+序列加载器会按 alpha 自动裁掉透明边缘，保留每帧原始尺寸和偏移；
+`player.bindSprite(sprite)` 会同步这些布局信息，避免裁边动画抖动。相同加载参数会复用缓存图集，
+可用 `getSpriteSequenceCacheCount/Bytes` 查看数量与估算显存。
+
+Aseprite 与 TexturePacker 的 JSON Hash 格式可通过
+`newSpriteSheetFromAtlasJson(gfx, texturePath, jsonPath)` 导入；当前明确拒绝 rotated frame。
+
 ## 基本用法（Spine region）
 
 内置解析器支持 Spine `.atlas` + skeleton JSON 的 **region 附件**子集（骨骼 TRS、slot 附件切换）。Mesh / IK / path / deform 需自行接入官方 `spine-cpp` 插件。
@@ -276,11 +319,11 @@ skin.applyToMesh(gfx, mesh, pose); // mesh 与 skin 需同源（同一 ModelData
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
-- 2D 帧动画：`newSpriteSheet()`、`newSpriteClip()`、`newSpriteAnim()`、`getSpriteAnimCount()`
+- 2D 帧动画：`newSpriteSheet()`、`newSpriteSheetFromSequence()`、`newSpriteClip()`、`newSpriteAnim()`、`getSpriteAnimCount()`
 - Spine：`newSpineAtlas()`、`newSpineAtlasFromFile()`、`newSpineAtlasFromText()`、`newSpineSkeletonData()`、`newSpineSkeletonDataFromFile()`、`newSpineSkeletonDataFromJson()`、`newSpineSkeleton()`、`newSpineAnim()`、`getSpineAnimCount()`
 - `SpriteSheet`：`addFrame()`、`setGrid()`、`clear()`、`getFrameCount()`、`findFrame()`、`getFrame*()`、`applyToQuad()`
-- `SpriteClip`：`setName()`、`getName()`、`setLoop()`、`addFrame()`、`addFrameByName()`、`getDuration()`、`frameAtTime()`
-- `SpriteAnim`：`setSheet()`、`play()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`bindQuad()`、`applyToQuad()`、`getSheetFrame()`、`update()`
+- `SpriteClip`：`setName()`、`getName()`、`setLoop()`、`addFrame()`、`addFrameByName()`、`addRange()`、`setFPS()`、`getFPS()`、`getDuration()`、`frameAtTime()`
+- `SpriteAnim`：`setSheet()`、`play()`、`playReverse()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`addSpeedCurveKey()`、`clearSpeedCurve()`、`resetSpeedCurve()`、`setSpeedCurveLoop()`、`getSpeedCurveValue()`、`setTime()`、`setLoop()`、`bindQuad()`、`applyToQuad()`、`getSheetFrame()`、`getLoopCount()`、`consumeLooped()`、`consumeCompleted()`、`update()`
 - `SpineAtlas`：`loadFromText()`、`loadFromFile()`、`getPage*()`、`findRegion()`、`getRegion*()`
 - `SpineSkeletonData`：`loadFromJson()`、`loadFromFile()`、`findBone()`、`findSlot()`、`findAnimation()`、`getAnimationDuration()`
 - `SpineSkeleton`：`setSkin()`、`setToSetupPose()`、`updateWorldTransform()`、`getBoneWorld*()`、`getSlotAttachmentName()`
