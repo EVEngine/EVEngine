@@ -16,6 +16,11 @@ namespace procgen {
 class Heightmap;
 }
 #endif
+#ifdef EVENGINE_HAS_MAP
+namespace map {
+class TileLayer;
+}
+#endif
 }  // namespace eve
 
 namespace eve::editor {
@@ -30,6 +35,9 @@ class EditorDock;
 class EditorHistory;
 class EditorSession;
 class TileBufferTarget;
+#ifdef EVENGINE_HAS_MAP
+class TileLayerTarget;
+#endif
 class HeightmapTarget;
 class ScriptEditorTool;
 class EditorAutomationProvider;
@@ -65,6 +73,10 @@ public:
     const EditorCommandService& commandService() const { return commandService_; }
     /** @brief Adapt existing fields to capability-based editor targets. */
     TileBufferTarget* newTileBufferTarget(const std::string& id, TileBuffer* buffer);
+#ifdef EVENGINE_HAS_MAP
+    /** @brief Adapt a live map layer to the editor command/undo/brush protocol. */
+    TileLayerTarget* newTileLayerTarget(const std::string& id, map::TileLayer* layer);
+#endif
     /** @brief Create a script-backed implementation of the IEditorTool protocol. */
     ScriptEditorTool* newScriptTool(const std::string& id, const std::string& label);
 #ifdef EVENGINE_HAS_PROCGEN

@@ -578,6 +578,12 @@ TileBufferTarget* Editor::newTileBufferTarget(const std::string& id, TileBuffer*
     return new TileBufferTarget(id, buffer);
 }
 
+#ifdef EVENGINE_HAS_MAP
+TileLayerTarget* Editor::newTileLayerTarget(const std::string& id, map::TileLayer* layer) {
+    return new TileLayerTarget(id, layer);
+}
+#endif
+
 ScriptEditorTool* Editor::newScriptTool(const std::string& id, const std::string& label) {
     return new ScriptEditorTool(id, label);
 }

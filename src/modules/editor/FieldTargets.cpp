@@ -1,6 +1,9 @@
 #include "editor/FieldTargets.h"
 
 #include "editor/TileBuffer.h"
+#ifdef EVENGINE_HAS_MAP
+#include "map/TileLayer.h"
+#endif
 #ifdef EVENGINE_HAS_PROCGEN
 #include "procgen/heightmap/Heightmap.h"
 #endif
@@ -22,6 +25,27 @@ bool TileBufferTarget::writeInt(int x, int y, int value) {
     dirty_.include(x, y);
     return true;
 }
+
+#ifdef EVENGINE_HAS_MAP
+TileLayerTarget::TileLayerTarget(std::string id, map::TileLayer *layer)
+    : id_(std::move(id)), layer_(layer) {}
+unsigned long long TileLayerTarget::revision() const {
+    return layer_ ? layer_->tiles()->revision : 0;
+}
+int TileLayerTarget::width() const { return layer_ ? layer_->getMapWidth() : 0; }
+int TileLayerTarget::height() const { return layer_ ? layer_->getMapHeight() : 0; }
+bool TileLayerTarget::inBounds(int x, int y) const {
+    return layer_ && x >= 0 && y >= 0 && x < width() && y < height();
+}
+int TileLayerTarget::readInt(int x, int y) const { return inBounds(x, y) ? layer_->getTile(x, y) : 0; }
+bool TileLayerTarget::writeInt(int x, int y, int value) {
+    if (!inBounds(x, y)) return false;
+    if (layer_->getTile(x, y) == value) return true;
+    layer_->setTile(x, y, value);
+    dirty_.include(x, y);
+    return true;
+}
+#endif
 
 #ifdef EVENGINE_HAS_PROCGEN
 HeightmapTarget::HeightmapTarget(std::string id, procgen::Heightmap *heightmap)

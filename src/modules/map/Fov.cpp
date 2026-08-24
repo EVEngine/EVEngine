@@ -220,6 +220,7 @@ struct Fov::Impl {
     int height = 0;
     int depth = 1;
     TileLayer *layer = nullptr;
+    uint64_t layerRevision = 0;
     Algorithm algorithm = Algorithm::Shadowcast;
     RadiusMetric metric = RadiusMetric::Euclidean;
     Mode mode = Mode::Grid2D;
@@ -316,6 +317,7 @@ struct Fov::Impl {
             if (opaqueGids.count(gid)) isOpaque = true;
             opaque[size_t(i)] = isOpaque ? 1u : 0u;
         }
+        layerRevision = tiles->revision;
         dirty = true;
     }
 
@@ -894,6 +896,7 @@ struct Fov::Impl {
     }
 
     void compute() {
+        if (layer && layerRevision != layer->tiles()->revision) syncFromLayer();
         if (!dirty) return;
         resetVisibleKeepExplored();
         for (const auto &r : revealers) computeRevealer(r);
