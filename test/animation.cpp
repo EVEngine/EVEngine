@@ -1,20 +1,21 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "animation/Animation.h"
-#include "animation/Tween.h"
-#include "animation/AnimSkeleton.h"
 #include "animation/AnimClip.h"
+#include "animation/AnimControlMath.h"
 #include "animation/AnimImporter.h"
-#include "animation/AnimPose.h"
+#include "animation/AnimLayerMixer.h"
 #include "animation/AnimPlayer.h"
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
 #include "animation/AnimStateMachine.h"
-#include "animation/MotionDatabase.h"
-#include "animation/MotionMatcher.h"
+#include "animation/AnimTrail.h"
+#include "animation/Animation.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
-#include "animation/AnimControlMath.h"
-#include "animation/AnimTrail.h"
+#include "animation/MotionDatabase.h"
+#include "animation/MotionMatcher.h"
+#include "animation/Tween.h"
 
 #include "common/Exception.h"
 
@@ -270,6 +271,62 @@ TEST_CASE("animation.player.playAndCrossFade") {
 
     player->update(0.2f);
     CHECK(player->getClip() == b.get());
+}
+
+TEST_CASE("animation.layers.overrideMaskAndAdditive") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip>     base(makeLocomotionClip("walk", 1.f, 1.f));
+
+    std::unique_ptr<AnimClip> upper(new AnimClip("upper"));
+    upper->setDuration(1.f);
+    upper->setLoop(true);
+    upper->addPositionKey(1, 0.f, 0.f, 1.f, 0.f);
+    upper->addPositionKey(1, 1.f, 2.f, 1.f, 0.f);
+
+    AnimPlayer basePlayer(sk.get());
+    AnimPlayer upperPlayer(sk.get());
+    basePlayer.play(base.get());
+    upperPlayer.play(upper.get());
+    AnimBoneMask upperMask(sk.get());
+    CHECK(upperMask.setBoneAndChildren("child", 1.f));
+    AnimLayerMixer mixer(sk.get());
+    CHECK(mixer.setBasePlayer(&basePlayer));
+    CHECK_EQ(mixer.addLayer("upper", &upperPlayer, &upperMask, "override"), 0);
+    CHECK(mixer.setLayerWeight("upper", 0.5f));
+    mixer.update(0.5f);
+    CHECK(std::fabs(mixer.getPose()->getLocalPositionZ(0) - 0.5f) < 1e-5f);
+    CHECK(std::fabs(mixer.getPose()->getLocalPositionX(1) - 0.5f) < 1e-5f);
+
+    std::unique_ptr<AnimClip> recoil(new AnimClip("recoil"));
+    recoil->setDuration(1.f);
+    recoil->setLoop(true);
+    recoil->addPositionKey(1, 0.f, 0.f, 1.f, 0.f);
+    recoil->addPositionKey(1, 1.f, 0.f, 3.f, 0.f);
+    AnimPlayer recoilPlayer(sk.get());
+    recoilPlayer.play(recoil.get());
+    CHECK_EQ(mixer.addLayer("recoil", &recoilPlayer, &upperMask, "additive"), 1);
+    CHECK(mixer.setLayerWeight("recoil", 0.5f));
+    mixer.update(0.5f);
+    CHECK(std::fabs(mixer.getPose()->getLocalPositionY(1) - 1.5f) < 1e-5f);
+}
+
+TEST_CASE("animation.player.eventsSurviveLoopBoundaries") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip>     clip(makeLocomotionClip("events", 0.f, 1.f));
+    clip->addEvent(0.25f, "footstep", "left");
+    clip->addEvent(0.75f, "footstep", "right");
+    AnimPlayer player(sk.get());
+    player.play(clip.get());
+
+    player.update(0.3f);
+    CHECK_EQ(player.getEventCount(), 1);
+    CHECK_EQ(player.getEventName(0), std::string("footstep"));
+    CHECK_EQ(player.getEventPayload(0), std::string("left"));
+    player.update(0.5f);
+    CHECK_EQ(player.getEventCount(), 1);
+    CHECK_EQ(player.getEventPayload(0), std::string("right"));
+    player.update(1.5f);
+    CHECK_EQ(player.getEventCount(), 3);
 }
 
 TEST_CASE("animation.stateMachine.floatTransition") {

@@ -4,6 +4,9 @@
 
 #include "common/Exception.h"
 
+#include <algorithm>
+#include <cmath>
+
 namespace eve::animation {
 
 AnimPlayer::AnimPlayer(AnimSkeleton *skeleton) : skeleton_(skeleton) {
@@ -42,6 +45,11 @@ void AnimPlayer::play(AnimClip *clip) {
     playing_      = true;
     paused_       = false;
     clip_->sample(0.f, &pose_, skeleton_);
+    events_.clear();
+    for (int i = 0; i < clip_->getEventCount(); ++i) {
+        if (std::fabs(clip_->getEventTime(i)) <= 1e-7f)
+            events_.push_back({clip_->getEventName(i), clip_->getEventPayload(i)});
+    }
 }
 
 void AnimPlayer::crossFade(AnimClip *clip, float blendSeconds) {
@@ -71,6 +79,7 @@ void AnimPlayer::stop() {
     prevClip_ = nullptr;
     time_     = 0.f;
     if (skeleton_) skeleton_->applyBindPose(&pose_);
+    events_.clear();
 }
 
 void AnimPlayer::pause() {
@@ -83,11 +92,47 @@ void AnimPlayer::resume() {
 
 AnimPose *AnimPlayer::getPose() { return &pose_; }
 
+std::string AnimPlayer::getEventName(int index) const {
+    if (index < 0 || index >= getEventCount()) return {};
+    return events_[static_cast<size_t>(index)].name;
+}
+
+std::string AnimPlayer::getEventPayload(int index) const {
+    if (index < 0 || index >= getEventCount()) return {};
+    return events_[static_cast<size_t>(index)].payload;
+}
+
+void AnimPlayer::dispatchEvents(float oldTime, float newTime) {
+    if (!clip_ || clip_->getEventCount() == 0 || newTime <= oldTime) return;
+    const float duration = clip_->getDuration();
+    if (effectiveLoop() && duration > 1e-8f) {
+        const int firstCycle = static_cast<int>(std::floor(oldTime / duration));
+        const int lastCycle  = static_cast<int>(std::floor(newTime / duration));
+        for (int cycle = firstCycle; cycle <= lastCycle; ++cycle) {
+            for (int i = 0; i < clip_->getEventCount(); ++i) {
+                const float absoluteTime = static_cast<float>(cycle) * duration + clip_->getEventTime(i);
+                if (absoluteTime > oldTime && absoluteTime <= newTime)
+                    events_.push_back({clip_->getEventName(i), clip_->getEventPayload(i)});
+            }
+        }
+        return;
+    }
+    const float endTime = duration > 0.f ? std::min(newTime, duration) : newTime;
+    for (int i = 0; i < clip_->getEventCount(); ++i) {
+        const float eventTime = clip_->getEventTime(i);
+        if (eventTime > oldTime && eventTime <= endTime)
+            events_.push_back({clip_->getEventName(i), clip_->getEventPayload(i)});
+    }
+}
+
 void AnimPlayer::update(float dt) {
     if (dt < 0.f) throw Exception("AnimPlayer.update: dt must be >= 0");
+    events_.clear();
     if (!playing_ || paused_ || !clip_) return;
 
+    const float oldTime = time_;
     time_ += dt * speed_;
+    dispatchEvents(oldTime, time_);
     if (!effectiveLoop() && clip_->getDuration() > 0.f && time_ >= clip_->getDuration()) {
         time_    = clip_->getDuration();
         playing_ = false;

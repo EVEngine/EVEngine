@@ -57,6 +57,9 @@ void Avatar::render(graphics::Graphics *gfx) {
     if (!gfx) return;
     std::vector<graphics::DrawItem2D> items;
     graphics::RenderSystem::collectSprites(items);
+    for (AvatarInstance* a : avatars_) {
+        if (a) a->collectLive2DDrawItems(items);
+    }
     graphics::RenderSystem::drawItems(*gfx, items, false);
 }
 
@@ -81,6 +84,14 @@ std::string Avatar::getLive2DBackendName() {
     return n;
 }
 
+bool Avatar::hasLive2DBackend() {
+    ILive2DBackend* tmp = createLive2DBackend();
+    if (!tmp) return false;
+    const bool available = tmp->isRuntimeAvailable();
+    delete tmp;
+    return available;
+}
+
 void Avatar::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Avatar::create, false);
     expose(cls);
@@ -88,6 +99,30 @@ void Avatar::expose(ssq::Table &table) {
     auto av = table.addClass<AvatarInstance>(
         "AvatarInstance",
         std::function<AvatarInstance *()>([]() -> AvatarInstance * { return nullptr; }), true);
+
+    auto sprite = table.addClass<graphics::Renderable2D>(
+        "Renderable2D", std::function<graphics::Renderable2D*()>([]() { return graphics::Renderable2D::create(); }),
+        false);
+    sprite.addFunc("setPosition", &graphics::Renderable2D::setPosition);
+    sprite.addFunc("getX", &graphics::Renderable2D::getX);
+    sprite.addFunc("getY", &graphics::Renderable2D::getY);
+    sprite.addFunc("setRotation", &graphics::Renderable2D::setRotation);
+    sprite.addFunc("getRotation", &graphics::Renderable2D::getRotation);
+    sprite.addFunc("setScale", &graphics::Renderable2D::setScale);
+    sprite.addFunc("setSize", &graphics::Renderable2D::setSize);
+    sprite.addFunc("setColor", &graphics::Renderable2D::setColor);
+    sprite.addFunc("setLayer", &graphics::Renderable2D::setLayer);
+    sprite.addFunc("getLayer", &graphics::Renderable2D::getLayer);
+    sprite.addFunc("setVisible", &graphics::Renderable2D::setVisible);
+    sprite.addFunc("isVisible", &graphics::Renderable2D::getVisible);
+    sprite.addFunc("setTexture", &graphics::Renderable2D::setTexture);
+    sprite.addFunc("setQuad", &graphics::Renderable2D::setQuad);
+    sprite.addFunc("setReceiveLight", &graphics::Renderable2D::setReceiveLight);
+    sprite.addFunc("getReceiveLight", &graphics::Renderable2D::getReceiveLight);
+    sprite.addFunc("setCastOcclusion", &graphics::Renderable2D::setCastOcclusion);
+    sprite.addFunc("getCastOcclusion", &graphics::Renderable2D::getCastOcclusion);
+    sprite.addFunc("setBlendMode", &graphics::Renderable2D::setBlend);
+    sprite.addFunc("getBlendMode", &graphics::Renderable2D::getBlend);
 
     av.addFunc("getKind", &AvatarInstance::getKind);
     av.addFunc("setPosition", &AvatarInstance::setPosition);
@@ -136,8 +171,10 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("getLayerCount", &AvatarInstance::getLayerCount);
     av.addFunc("getLayerName", &AvatarInstance::getLayerName);
     av.addFunc("hasLayer", &AvatarInstance::hasLayer);
+    av.addFunc("getLayerRenderable", &AvatarInstance::getLayerRenderable);
     av.addFunc("defineExpression", &AvatarInstance::defineExpression);
     av.addFunc("applyExpression", &AvatarInstance::applyExpression);
+    av.addFunc("transitionExpression", &AvatarInstance::transitionExpression);
 
     av.addFunc("loadLive2DModel", &AvatarInstance::loadLive2DModel);
     av.addFunc("getLive2DBackendName", &AvatarInstance::getLive2DBackendName);
@@ -155,6 +192,33 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("getBoundMesh", &AvatarInstance::getBoundMesh);
     av.addFunc("getVroidModelPath", &AvatarInstance::getVroidModelPath);
     av.addFunc("bakeMorphs", &AvatarInstance::bakeMorphs);
+    av.addFunc("bindAnimPlayer", &AvatarInstance::bindAnimPlayer);
+    av.addFunc("bindAnimStateMachine", &AvatarInstance::bindAnimStateMachine);
+    av.addFunc("bindAnimLayerMixer", &AvatarInstance::bindAnimLayerMixer);
+    av.addFunc("bindAnimSkin", &AvatarInstance::bindAnimSkin);
+    av.addFunc("registerMotion", &AvatarInstance::registerMotion);
+    av.addFunc("setMotionBlendTime", &AvatarInstance::setMotionBlendTime);
+    av.addFunc("setApplyRootMotion", &AvatarInstance::setApplyRootMotion);
+    av.addFunc("getApplyRootMotion", &AvatarInstance::getApplyRootMotion);
+    av.addFunc("getRootMotionDeltaX", &AvatarInstance::getRootMotionDeltaX);
+    av.addFunc("getRootMotionDeltaZ", &AvatarInstance::getRootMotionDeltaZ);
+    av.addFunc("getAnimationEventCount", &AvatarInstance::getAnimationEventCount);
+    av.addFunc("getAnimationEventLayer", &AvatarInstance::getAnimationEventLayer);
+    av.addFunc("getAnimationEventName", &AvatarInstance::getAnimationEventName);
+    av.addFunc("getAnimationEventPayload", &AvatarInstance::getAnimationEventPayload);
+    av.addFunc("mapHumanoidBone", &AvatarInstance::mapHumanoidBone);
+    av.addFunc("autoMapHumanoidBones", &AvatarInstance::autoMapHumanoidBones);
+    av.addFunc("getHumanoidBoneName", &AvatarInstance::getHumanoidBoneName);
+    av.addFunc("mapViseme", &AvatarInstance::mapViseme);
+    av.addFunc("setViseme", &AvatarInstance::setViseme);
+    av.addFunc("setLookAtTarget", &AvatarInstance::setLookAtTarget);
+    av.addFunc("setLookAtWeight", &AvatarInstance::setLookAtWeight);
+    av.addFunc("clearLookAtTarget", &AvatarInstance::clearLookAtTarget);
+    av.addFunc("attachToBone", &AvatarInstance::attachToBone);
+    av.addFunc("detachAttachment", &AvatarInstance::detachAttachment);
+    av.addFunc("getAttachmentCount", &AvatarInstance::getAttachmentCount);
+    av.addFunc("linkSceneNode", &AvatarInstance::linkSceneNode);
+    av.addFunc("isSceneLinked", &AvatarInstance::isSceneLinked);
     av.addFunc("bindTween", &AvatarInstance::bindTween);
     av.addFunc("unbindTween", &AvatarInstance::unbindTween);
     av.addFunc("getBoundTween", &AvatarInstance::getBoundTween);
@@ -173,6 +237,7 @@ void Avatar::expose(ssq::Class &cls) {
     // function pointers make Class::addFunc recurse until stack overflow).
     cls.addFunc("getLive2DBackendName",
                 [](Avatar *) -> std::string { return Avatar::getLive2DBackendName(); });
+    cls.addFunc("hasLive2DBackend", [](Avatar*) -> bool { return Avatar::hasLive2DBackend(); });
 }
 
 }  // namespace eve::avatar

@@ -39,6 +39,17 @@ public:
     void addRotationKey(int boneIndex, float time, float x, float y, float z, float w);
     void addScaleKey(int boneIndex, float time, float x, float y, float z);
 
+    /** @brief Add a named event marker at clip-local time. Events are kept time-sorted. */
+    void addEvent(float time, const std::string& name, const std::string& payload = "");
+    /** @brief Return the number of event markers. */
+    int getEventCount() const { return static_cast<int>(events_.size()); }
+    /** @brief Return an event marker's time, or 0 for an invalid index. */
+    float getEventTime(int index) const;
+    /** @brief Return an event marker's name, or empty for an invalid index. */
+    std::string getEventName(int index) const;
+    /** @brief Return an event marker's optional payload. */
+    std::string getEventPayload(int index) const;
+
     int getPositionKeyCount(int boneIndex) const;
     int getRotationKeyCount(int boneIndex) const;
     int getScaleKeyCount(int boneIndex) const;
@@ -95,6 +106,11 @@ private:
         std::vector<QuatKey> rotations;
         std::vector<Vec3Key> scales;
     };
+    struct EventMarker {
+        float       t = 0.f;
+        std::string name;
+        std::string payload;
+    };
 
     void       ensureBone(int boneIndex);
     TransformTRS sampleBone(int boneIndex, float time, const TransformTRS &fallback) const;
@@ -109,6 +125,7 @@ private:
     bool                    loop_       = true;
     float                   sampleRate_ = 30.f;
     std::vector<BoneTrack>  tracks_;
+    std::vector<EventMarker> events_;
 };
 
 }  // namespace eve::animation
