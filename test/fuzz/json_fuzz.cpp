@@ -7,12 +7,39 @@
 #include <cstddef>
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 using eve::json::Document;
 using eve::json::Value;
 using namespace zeroerr;
 
 namespace {
+
+class NonEmptyStringDomain final : public Domain<std::string, std::vector<char>> {
+public:
+    using CorpusType = std::vector<char>;
+
+    NonEmptyStringDomain() {
+        impl_.WithMinSize(1);
+        impl_.WithMaxSize(4096);
+    }
+
+    CorpusType GetRandomCorpus(Rng& rng) const override { return impl_.GetRandomCorpus(rng); }
+    CorpusType FromValue(const std::string& value) const override {
+        if (value.empty()) return {'\0'};
+        return impl_.FromValue(value);
+    }
+    std::string GetValue(const CorpusType& value) const override { return impl_.GetValue(value); }
+    void Mutate(Rng& rng, CorpusType& value, bool onlyShrink) const override {
+        // zeroerr's sequence domain indexes the corpus after choosing a mutation
+        // action, even when a libFuzzer-generated corpus deserializes as empty.
+        if (value.empty()) value.push_back('\0');
+        impl_.Mutate(rng, value, onlyShrink);
+    }
+
+private:
+    SequenceContainerOf<std::string, Arbitrary<char>> impl_{Arbitrary<char>()};
+};
 
 int envInt(const char* name, int fallback, int maximum) {
     const char* text = std::getenv(name);
@@ -70,7 +97,7 @@ FUZZ_TEST_CASE("fuzz.json.document") {
         REQUIRE(error.empty());
         REQUIRE(exerciseValue(document.root()));
     })
-        .WithDomains(Arbitrary<std::string>())
+        .WithDomains(NonEmptyStringDomain())
         .WithSeeds({{"null"},
                     {"{}"},
                     {"[]"},
