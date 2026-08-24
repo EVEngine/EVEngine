@@ -8,6 +8,9 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <string>
 
 using namespace eve::editor;
@@ -93,4 +96,47 @@ TEST_CASE("editor.v2.script_discovers_plans_and_executes_registered_command") {
     CHECK_EQ(executedAmount, 7);
 
     CHECK(commands.unregisterCommand(commandId, "test.script"));
+}
+
+TEST_CASE("editor.v2.script_game_injects_command_into_the_same_session_protocol") {
+    Editor* editor = Editor::create();
+    editor->commandService().unregisterCommand(CommandId("test.script.spawn-tree"));
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        editor <- eve.Editor();
+        placed <- 0;
+        registered <- editor.registerScriptCommand(
+            "test.script.spawn-tree", "Spawn Tree", "Build",
+            function(payload) {
+                if (!("count" in payload) || payload.count <= 0) return false;
+                placed += payload.count;
+                return true;
+            });
+        session <- editor.newSession();
+        planned <- session.planCommand("test.script.spawn-tree", { count = 3 });
+        executed <- session.executePlan(planned.planId, {});
+    )"));
+
+    CHECK(vm.find("registered").toBool());
+    CHECK_EQ(vm.find("placed").toInt(), 3);
+    ssq::Table executed(vm.find("executed"));
+    CHECK(executed.get<bool>("accepted"));
+    CHECK_EQ(executed.get<std::string>("authorityReceipt"), std::string("script:local"));
+
+    CHECK(editor->commandService().unregisterCommand(CommandId("test.script.spawn-tree"),
+                                                     "script:test.script.spawn-tree"));
+}
+
+TEST_CASE("editor.v2.runtime_builder_example_script_compiles") {
+    const std::filesystem::path sourceRoot = std::filesystem::path(__FILE__).parent_path().parent_path();
+    const std::filesystem::path scriptPath = sourceRoot / "examples" / "editor-api-v2" / "main.nut";
+    std::ifstream               input(scriptPath, std::ios::binary);
+    REQUIRE(input.is_open());
+    std::ostringstream source;
+    source << input.rdbuf();
+
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    CHECK(!vm.compileSource(source.str().c_str(), "examples/editor-api-v2/main.nut").isEmpty());
 }

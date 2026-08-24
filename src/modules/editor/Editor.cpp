@@ -111,10 +111,10 @@ bool squirrelToEditorValue(HSQUIRRELVM vm, SQInteger index, EditorValue& out, si
             sq_pushnull(vm);
             while (SQ_SUCCEEDED(sq_next(vm, absolute))) {
                 const SQChar* key = nullptr;
-                const bool  keyOk = sq_gettype(vm, -2) == OT_STRING && SQ_SUCCEEDED(sq_getstring(vm, -2, &key)) && key;
+                const bool keyOk  = sq_gettype(vm, -2) == OT_STRING && SQ_SUCCEEDED(sq_getstring(vm, -2, &key)) && key;
                 const std::string stableKey = keyOk ? key : "";
-                EditorValue value;
-                const bool  valueOk = keyOk && squirrelToEditorValue(vm, -1, value, depth + 1);
+                EditorValue       value;
+                const bool        valueOk = keyOk && squirrelToEditorValue(vm, -1, value, depth + 1);
                 sq_pop(vm, 2);
                 if (!valueOk) {
                     sq_pop(vm, 1);
@@ -206,6 +206,64 @@ EditorResult<EditorValue> invalidScriptPayload() {
     return EditorResult<EditorValue>::error(
         EditorStatus::Rejected, RuleId("editor.script.invalid-payload"),
         "Script payload must contain only null, bool, number, string, array, or table values");
+}
+
+bool invokeScriptCommand(const ssq::Object& callback, const EditorValue& payload) {
+    const SQObjectType type = callback.getRaw()._type;
+    if (type != OT_CLOSURE && type != OT_NATIVECLOSURE) return false;
+    HSQUIRRELVM vm  = callback.getHandle();
+    SQInteger   top = sq_gettop(vm);
+    sq_pushobject(vm, callback.getRaw());
+    sq_pushroottable(vm);
+    pushEditorValue(vm, payload);
+    bool accepted = false;
+    if (SQ_SUCCEEDED(sq_call(vm, 2, SQTrue, SQTrue))) {
+        SQBool result = SQFalse;
+        accepted      = SQ_SUCCEEDED(sq_getbool(vm, -1, &result)) && result != SQFalse;
+    }
+    sq_settop(vm, top);
+    return accepted;
+}
+
+bool registerScriptCommand(Editor* editor, const std::string& id, const std::string& displayName,
+                           const std::string& category, ssq::Object callback) {
+    if (!editor || id.empty()) return false;
+    const SQObjectType callbackType = callback.getRaw()._type;
+    if (callbackType != OT_CLOSURE && callbackType != OT_NATIVECLOSURE) return false;
+
+    CommandDescriptor descriptor;
+    descriptor.id                = CommandId(id);
+    descriptor.ownerModule       = "script:" + id;
+    descriptor.displayName       = displayName;
+    descriptor.category          = category;
+    descriptor.automationAllowed = false;
+    return editor->commandService()
+        .registerPlannedCommand(
+            descriptor,
+            [id](const CommandRequest& request) {
+                CommandPlan plan;
+                plan.summary = EditorValue::Object{{"command", EditorValue(id)}, {"payload", request.payload}};
+                DomainOperation operation;
+                operation.type    = id;
+                operation.payload = request.payload;
+                plan.operations.push_back(std::move(operation));
+                return EditorResult<CommandPlan>::applied(std::move(plan));
+            },
+            [callback = std::move(callback)](const CommandRequest& request, const CommandPlan& plan) {
+                if (!invokeScriptCommand(callback, request.payload))
+                    return EditorResult<TransactionReceipt>::error(
+                        EditorStatus::Rejected, RuleId("editor.script.command-rejected"),
+                        "Script command callback rejected the planned payload");
+                TransactionReceipt receipt;
+                receipt.id               = TransactionId(plan.id.value());
+                receipt.state            = TransactionState::Committed;
+                receipt.beforeRevision   = plan.baseRevision;
+                receipt.afterRevision    = plan.baseRevision + 1;
+                receipt.authorityReceipt = "script:local";
+                return EditorResult<TransactionReceipt>::applied(std::move(receipt));
+            },
+            true)
+        .accepted();
 }
 
 }  // namespace
@@ -769,6 +827,10 @@ void Editor::expose(ssq::Class& cls) {
     cls.addFunc("newHistory", &Editor::newHistory);
     cls.addFunc("newSession", &Editor::newSession);
     cls.addFunc("newScriptTool", &Editor::newScriptTool);
+    cls.addFunc("registerScriptCommand", registerScriptCommand);
+    cls.addFunc("unregisterScriptCommand", [](Editor* self, const std::string& id) {
+        return self && self->commandService().unregisterCommand(CommandId(id), "script:" + id);
+    });
 #ifdef EVENGINE_HAS_PROCGEN
     cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
     cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
