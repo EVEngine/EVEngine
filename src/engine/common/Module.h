@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace ssq {
 class VM;
@@ -61,6 +62,13 @@ public:
 
     /** @brief Registers a module factory (creator + script exposer) by name. */
     static void register_module(const char* name, creator_t c, exposer_t e);
+    /** @brief Begins an atomic native-plugin module registration transaction. */
+    static bool beginPluginRegistration();
+    /** @brief Commits or rolls back the active plugin registration transaction.
+     * @param commit Whether to keep newly registered modules.
+     * @return Empty on success, otherwise a description of the registration conflict.
+     */
+    static std::string finishPluginRegistration(bool commit);
     /** @brief Exposes every registered module into the given runtime's root table. */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.
@@ -107,6 +115,9 @@ protected:
     };
 
     std::unordered_map<std::string, ModuleInfo> registered_modules;
+    bool plugin_registration_active_ = false;
+    std::vector<std::string> plugin_registration_added_;
+    std::string plugin_registration_error_;
     Runtime* active_runtime_ = nullptr;
 };
 
