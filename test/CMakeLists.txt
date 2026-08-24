@@ -51,6 +51,7 @@ file(GLOB all_test_cpp
   Outline.cpp
   AntiAliasing.cpp
   GlobalIllumination.cpp
+  ScreenSpaceReflection.cpp
   UISystem.cpp
   UIBuilder.cpp
   UIMoveRepro.cpp
