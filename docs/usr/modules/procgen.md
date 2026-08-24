@@ -157,6 +157,21 @@ local firstName = procgen.getSystemDebugStageName("forest", 0);
 不直接依赖 graphics 模块，裁剪构建和无头测试仍可使用同一套生成脚本。
 可运行示例见 [`examples/procgen-script-pipeline`](../../../examples/procgen-script-pipeline/README.md)。
 
+### 自动记录阶段耗时
+
+用 `beginTrace(name, inputCount)` 和 `endTrace(outputCount)` 包住普通脚本调用，
+引擎会使用单调时钟记录耗时并写入系统调试报告，不需要脚本自行读取计时器：
+
+```nut
+if (!ctx.beginTrace("self prune", candidates.getCount())) throw ctx.getError();
+local trees = procgen.selfPrune(candidates, 32.0);
+if (!ctx.endTrace(trees.getCount())) throw ctx.getError();
+```
+
+计时器采用后进先出顺序，因此可以嵌套。`getOpenTraceCount()` 可用于脚本断言；
+存在未结束的计时器时，`commitSystem` 会拒绝提交并保留上一个快照。仍可使用
+`trace(name, inputCount, outputCount, milliseconds)` 导入外部测得的阶段数据。
+
 ## 目标导向指南
 
 ### 生成可玩的地牢层

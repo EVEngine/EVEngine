@@ -270,3 +270,40 @@ TEST_CASE("procgen.system.stageCacheIsTransactional") {
     delete rebuild;
     delete initial;
 }
+
+TEST_CASE("procgen.system.automaticTraceTimingIsBalanced") {
+    Procgen  proc;
+    PointSet points;
+    points.add(1.f, 0.f, 1.f);
+
+    ProcgenContext* measured = proc.beginSystem("timed", 5);
+    REQUIRE(bool(measured));
+    CHECK(measured->beginTrace("outer", 0));
+    CHECK(measured->beginTrace("inner", 1));
+    CHECK_EQ(measured->getOpenTraceCount(), 2);
+    CHECK(measured->endTrace(1));
+    CHECK(measured->endTrace(2));
+    CHECK_EQ(measured->getOpenTraceCount(), 0);
+    CHECK_EQ(measured->getTraceCount(), 2);
+    CHECK_EQ(measured->getTraceName(0), std::string("inner"));
+    CHECK(measured->getTraceMilliseconds(0) >= 0.f);
+    CHECK(measured->publish("points", &points));
+    CHECK(proc.commitSystem(measured));
+
+    ProcgenContext* unfinished = proc.beginSystem("timed", 5);
+    REQUIRE(bool(unfinished));
+    CHECK(unfinished->beginTrace("forgotten", 1));
+    CHECK(unfinished->publish("points", &points));
+    CHECK(!proc.commitSystem(unfinished));
+    CHECK(proc.lastError().find("unfinished trace 'forgotten'") != std::string::npos);
+    CHECK_EQ(proc.getSystemRevision("timed"), uint64_t(1));
+
+    ProcgenContext* unmatched = proc.beginSystem("unmatched", 5);
+    REQUIRE(bool(unmatched));
+    CHECK(!unmatched->endTrace(0));
+    CHECK_EQ(unmatched->getError(), std::string("endTrace: no stage timer is active"));
+
+    delete unmatched;
+    delete unfinished;
+    delete measured;
+}

@@ -23,9 +23,10 @@ function rebuildForest() {
     }
 
     try {
+        if (!ctx.beginTrace("sampleGrid", 0)) throw ctx.getError();
         local candidates = procgen.sampleGrid(28, 18, 28.0, ctx.seedFor("candidates"), 0.8);
+        if (!ctx.endTrace(candidates.getCount())) throw ctx.getError();
         ctx.captureDebug("candidates", candidates);
-        ctx.trace("sampleGrid", 0, candidates.getCount(), 0.0);
 
         local road = procgen.newPointSet();
         road.add(20.0, 0.0, 40.0);
@@ -38,14 +39,16 @@ function rebuildForest() {
             roadPoints = procgen.sampleSpline(road, 10.0, ctx.seedFor("road preview"), 0.0);
             if (!ctx.cacheStage("road preview", roadKey, roadPoints)) throw ctx.getError();
         }
+        if (!ctx.beginTrace("exclude road", candidates.getCount())) throw ctx.getError();
         local awayFromRoad = procgen.filterSplineDistance(candidates, road, 42.0, 100000.0);
+        if (!ctx.endTrace(awayFromRoad.getCount())) throw ctx.getError();
         ctx.captureDebug("outside road", awayFromRoad);
         ctx.captureDebug("road", roadPoints);
-        ctx.trace("exclude road", candidates.getCount(), awayFromRoad.getCount(), 0.0);
 
+        if (!ctx.beginTrace("self prune", awayFromRoad.getCount())) throw ctx.getError();
         local trees = procgen.selfPrune(awayFromRoad, 32.0);
+        if (!ctx.endTrace(trees.getCount())) throw ctx.getError();
         ctx.captureDebug("trees", trees);
-        ctx.trace("self prune", awayFromRoad.getCount(), trees.getCount(), 0.0);
         if (!ctx.publish("trees", trees)) throw ctx.getError();
 
         if (!procgen.commitSystem(ctx)) throw procgen.lastError();

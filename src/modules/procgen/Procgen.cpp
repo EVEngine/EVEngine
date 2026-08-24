@@ -237,6 +237,11 @@ bool Procgen::commitSystem(ProcgenContext* context) {
         context->close();
         return false;
     }
+    if (!context->openTraces_.empty()) {
+        lastError_ = "commitSystem: unfinished trace '" + context->openTraces_.back().name + "'";
+        context->close();
+        return false;
+    }
 
     auto& snapshot            = systems_[context->name_];
     snapshot.seed             = context->seed_;
@@ -780,6 +785,9 @@ void Procgen::expose(ssq::Table &table) {
     context.addFunc("getStageCacheHitCount", &ProcgenContext::getStageCacheHitCount);
     context.addFunc("getStageCacheMissCount", &ProcgenContext::getStageCacheMissCount);
     context.addFunc("trace", &ProcgenContext::trace);
+    context.addFunc("beginTrace", &ProcgenContext::beginTrace);
+    context.addFunc("endTrace", &ProcgenContext::endTrace);
+    context.addFunc("getOpenTraceCount", &ProcgenContext::getOpenTraceCount);
     context.addFunc("getTraceCount", &ProcgenContext::getTraceCount);
     context.addFunc("getTraceName", &ProcgenContext::getTraceName);
     context.addFunc("getTraceInputCount", &ProcgenContext::getTraceInputCount);

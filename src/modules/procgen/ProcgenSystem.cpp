@@ -1,9 +1,18 @@
 #include "procgen/ProcgenSystem.h"
 
 #include <algorithm>
+#include <chrono>
 #include <utility>
 
 namespace eve::procgen {
+
+namespace {
+uint64_t monotonicNanoseconds() {
+    return uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                        std::chrono::steady_clock::now().time_since_epoch())
+                        .count());
+}
+}  // namespace
 
 ProcgenContext::ProcgenContext(std::string systemName, uint32_t seed, std::string buildKey, bool cacheHit)
     : name_(std::move(systemName)),
@@ -118,6 +127,37 @@ void ProcgenContext::trace(const std::string& stageName, int inputCount, int out
     if (!active_ || stageName.empty()) return;
     traces_.push_back({stageName, std::max(0, inputCount), std::max(0, outputCount), std::max(0.f, milliseconds)});
 }
+
+bool ProcgenContext::beginTrace(const std::string& stageName, int inputCount) {
+    if (!active_) {
+        error_ = "beginTrace: transaction is closed";
+        return false;
+    }
+    if (stageName.empty()) {
+        error_ = "beginTrace: stage name is empty";
+        return false;
+    }
+    openTraces_.push_back({stageName, std::max(0, inputCount), monotonicNanoseconds()});
+    return true;
+}
+
+bool ProcgenContext::endTrace(int outputCount) {
+    if (!active_) {
+        error_ = "endTrace: transaction is closed";
+        return false;
+    }
+    if (openTraces_.empty()) {
+        error_ = "endTrace: no stage timer is active";
+        return false;
+    }
+    const auto open = std::move(openTraces_.back());
+    openTraces_.pop_back();
+    const float milliseconds = float(monotonicNanoseconds() - open.startedNanoseconds) / 1000000.f;
+    traces_.push_back({open.name, open.inputCount, std::max(0, outputCount), milliseconds});
+    return true;
+}
+
+int ProcgenContext::getOpenTraceCount() const { return int(openTraces_.size()); }
 
 int ProcgenContext::getTraceCount() const { return int(traces_.size()); }
 

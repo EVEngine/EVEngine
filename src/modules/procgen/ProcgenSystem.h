@@ -23,6 +23,13 @@ struct ProcgenCachedStage {
     PointSet    points;
 };
 
+/** @brief One currently running automatic stage timer. */
+struct ProcgenOpenTrace {
+    std::string name;
+    int         inputCount         = 0;
+    uint64_t    startedNanoseconds = 0;
+};
+
 /** @brief Staging area for one atomic rebuild of a named procedural system. */
 class ProcgenContext {
 public:
@@ -54,6 +61,12 @@ public:
     int       getStageCacheMissCount() const;
 
     void        trace(const std::string& stageName, int inputCount, int outputCount, float milliseconds);
+    /** @brief Start an automatically timed diagnostic stage. Timers may be nested. */
+    bool        beginTrace(const std::string& stageName, int inputCount);
+    /** @brief Finish the most recently started timer and append its measured trace. */
+    bool        endTrace(int outputCount);
+    /** @brief Number of automatic timers that have not yet been finished. */
+    int         getOpenTraceCount() const;
     int         getTraceCount() const;
     std::string getTraceName(int index) const;
     int         getTraceInputCount(int index) const;
@@ -81,6 +94,7 @@ private:
     int                                                 stageCacheHits_   = 0;
     int                                                 stageCacheMisses_ = 0;
     std::vector<ProcgenStageMetric>                     traces_;
+    std::vector<ProcgenOpenTrace>                       openTraces_;
 };
 
 /** @brief Immutable committed snapshot retained by Procgen across script reloads. */
