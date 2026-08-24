@@ -437,7 +437,7 @@ jobs:
     name: macOS
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -474,6 +474,29 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
+
+      - name: Configure native Dawn Metal lane
+        timeout-minutes: 20
+        run: |
+          cmake -S . -B build/webgpu-macos -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
+            -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/macosx-debug" \
+            -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+            -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+
+      - name: Build native Dawn Metal lane
+        timeout-minutes: 40
+        run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
+
+      - name: Test native Dawn Metal surface and rendering
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          ctest --test-dir build/webgpu-macos \
+            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))' \
+            --output-on-failure
 
   macos-release:
     name: macOS (Release)
