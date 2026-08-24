@@ -138,11 +138,13 @@ bool Procgen::commitSystem(ProcgenContext* context) {
     }
 
     auto& snapshot       = systems_[context->name_];
-    snapshot.seed        = context->seed_;
-    snapshot.revision    = snapshot.revision + 1u;
-    snapshot.outputs     = context->outputs_;
-    snapshot.outputOrder = context->outputOrder_;
-    snapshot.traces      = context->traces_;
+    snapshot.seed            = context->seed_;
+    snapshot.revision        = snapshot.revision + 1u;
+    snapshot.outputs         = context->outputs_;
+    snapshot.outputOrder     = context->outputOrder_;
+    snapshot.debugStages     = context->debugStages_;
+    snapshot.debugStageOrder = context->debugStageOrder_;
+    snapshot.traces          = context->traces_;
     context->close();
     return true;
 }
@@ -187,6 +189,26 @@ PointSet* Procgen::getSystemOutput(const std::string& name,
     return output == system->second.outputs.end() ? nullptr : new PointSet(output->second);
 }
 
+int Procgen::getSystemDebugStageCount(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? 0 : int(found->second.debugStageOrder.size());
+}
+
+std::string Procgen::getSystemDebugStageName(const std::string& name, int index) const {
+    const auto found = systems_.find(name);
+    if (found == systems_.end() || index < 0 || index >= int(found->second.debugStageOrder.size()))
+        return {};
+    return found->second.debugStageOrder[size_t(index)];
+}
+
+PointSet* Procgen::getSystemDebugStage(const std::string& name,
+                                       const std::string& stageName) const {
+    const auto system = systems_.find(name);
+    if (system == systems_.end()) return nullptr;
+    const auto stage = system->second.debugStages.find(stageName);
+    return stage == system->second.debugStages.end() ? nullptr : new PointSet(stage->second);
+}
+
 std::string Procgen::getSystemDebugReport(const std::string& name) const {
     const auto found = systems_.find(name);
     if (found == systems_.end()) return "system '" + name + "' is not committed";
@@ -200,6 +222,10 @@ std::string Procgen::getSystemDebugReport(const std::string& name) const {
     for (const auto& outputName : snapshot.outputOrder) {
         report << "\n  output " << outputName << " points="
                << snapshot.outputs.at(outputName).getCount();
+    }
+    for (const auto& stageName : snapshot.debugStageOrder) {
+        report << "\n  debug " << stageName << " points="
+               << snapshot.debugStages.at(stageName).getCount();
     }
     return report.str();
 }
@@ -631,6 +657,10 @@ void Procgen::expose(ssq::Table &table) {
     context.addFunc("getOutputCount", &ProcgenContext::getOutputCount);
     context.addFunc("getOutputName", &ProcgenContext::getOutputName);
     context.addFunc("getOutput", &ProcgenContext::getOutput);
+    context.addFunc("captureDebug", &ProcgenContext::captureDebug);
+    context.addFunc("getDebugStageCount", &ProcgenContext::getDebugStageCount);
+    context.addFunc("getDebugStageName", &ProcgenContext::getDebugStageName);
+    context.addFunc("getDebugStage", &ProcgenContext::getDebugStage);
     context.addFunc("trace", &ProcgenContext::trace);
     context.addFunc("getTraceCount", &ProcgenContext::getTraceCount);
     context.addFunc("getTraceName", &ProcgenContext::getTraceName);
@@ -774,6 +804,9 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getSystemOutputCount", &Procgen::getSystemOutputCount);
     cls.addFunc("getSystemOutputName", &Procgen::getSystemOutputName);
     cls.addFunc("getSystemOutput", &Procgen::getSystemOutput);
+    cls.addFunc("getSystemDebugStageCount", &Procgen::getSystemDebugStageCount);
+    cls.addFunc("getSystemDebugStageName", &Procgen::getSystemDebugStageName);
+    cls.addFunc("getSystemDebugStage", &Procgen::getSystemDebugStage);
     cls.addFunc("getSystemDebugReport", &Procgen::getSystemDebugReport);
     cls.addFunc("generate", &Procgen::generate);
     cls.addFunc("generateTo", &Procgen::generateTo);

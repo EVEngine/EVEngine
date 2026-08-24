@@ -69,6 +69,10 @@ public:
     std::string     getSystemOutputName(const std::string& name, int index) const;
     PointSet*       getSystemOutput(const std::string& name,
                                     const std::string& outputName) const;
+    int             getSystemDebugStageCount(const std::string& name) const;
+    std::string     getSystemDebugStageName(const std::string& name, int index) const;
+    PointSet*       getSystemDebugStage(const std::string& name,
+                                        const std::string& stageName) const;
     std::string     getSystemDebugReport(const std::string& name) const;
 
     // --- Phase A: maps ---

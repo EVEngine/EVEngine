@@ -48,6 +48,36 @@ PointSet* ProcgenContext::getOutput(const std::string& outputName) const {
     return found == outputs_.end() ? nullptr : new PointSet(found->second);
 }
 
+bool ProcgenContext::captureDebug(const std::string& stageName, PointSet* points) {
+    if (!active_) {
+        error_ = "captureDebug: transaction is closed";
+        return false;
+    }
+    if (stageName.empty()) {
+        error_ = "captureDebug: stage name is empty";
+        return false;
+    }
+    if (!points) {
+        error_ = "captureDebug: null PointSet";
+        return false;
+    }
+    if (debugStages_.find(stageName) == debugStages_.end()) debugStageOrder_.push_back(stageName);
+    debugStages_[stageName] = *points;
+    return true;
+}
+
+int ProcgenContext::getDebugStageCount() const { return int(debugStageOrder_.size()); }
+
+std::string ProcgenContext::getDebugStageName(int index) const {
+    return index >= 0 && index < int(debugStageOrder_.size()) ? debugStageOrder_[size_t(index)]
+                                                              : std::string();
+}
+
+PointSet* ProcgenContext::getDebugStage(const std::string& stageName) const {
+    const auto found = debugStages_.find(stageName);
+    return found == debugStages_.end() ? nullptr : new PointSet(found->second);
+}
+
 void ProcgenContext::trace(const std::string& stageName, int inputCount, int outputCount, float milliseconds) {
     if (!active_ || stageName.empty()) return;
     traces_.push_back({stageName, std::max(0, inputCount), std::max(0, outputCount), std::max(0.f, milliseconds)});

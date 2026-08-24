@@ -61,6 +61,28 @@ eve_reload <- function() { rebuildForest(42); };
 
 `getSystemOutput` 返回已提交输出的副本；`getSystemRevision` 可判断是否成功换代；
 `getSystemDebugReport` 输出 seed、revision、命名阶段点数/耗时和最终输出点数。
+
+### 场景内检查中间结果
+
+`ctx.captureDebug(name, points)` 会把命名 `PointSet` 复制进本次事务。它和正式
+输出一起原子提交，因此失败的重建不会让调试视图与场景结果错位。脚本可用
+`getSystemDebugStageCount/Name` 枚举阶段，或用 `getSystemDebugStage` 取得副本后
+通过 `gfx` 自行选择颜色、大小和投影视图：
+
+```nut
+ctx.captureDebug("candidates", candidates);
+ctx.captureDebug("after road exclusion", outsideRoad);
+local stagedCount = ctx.getDebugStageCount();
+local stagedName = ctx.getDebugStageName(0);
+local stagedPoints = ctx.getDebugStage(stagedName);
+// commitSystem(ctx) 成功后：
+local preview = procgen.getSystemDebugStage("forest", "candidates");
+local count = procgen.getSystemDebugStageCount("forest");
+local firstName = procgen.getSystemDebugStageName("forest", 0);
+```
+
+这种方式保留纯代码编排，同时让每个命名中间值都能在游戏场景中检查。调试数据
+不直接依赖 graphics 模块，裁剪构建和无头测试仍可使用同一套生成脚本。
 可运行示例见 [`examples/procgen-script-pipeline`](../../../examples/procgen-script-pipeline/README.md)。
 
 ## 目标导向指南

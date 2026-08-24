@@ -71,10 +71,20 @@ TEST_CASE("procgen.system.commitIsAtomicAndFailureKeepsPreviousSnapshot") {
     ProcgenContext* initial = proc.beginSystem("forest", 42);
     REQUIRE(bool(initial));
     CHECK(initial->publish("trees", &first));
+    CHECK(initial->captureDebug("candidates", &first));
+    CHECK_EQ(initial->getDebugStageCount(), 1);
+    CHECK_EQ(initial->getDebugStageName(0), std::string("candidates"));
     initial->trace("sample", 0, 1, 0.25f);
     CHECK(proc.commitSystem(initial));
     CHECK(proc.hasSystem("forest"));
     CHECK_EQ(proc.getSystemRevision("forest"), uint64_t(1));
+    CHECK_EQ(proc.getSystemDebugStageCount("forest"), 1);
+    CHECK_EQ(proc.getSystemDebugStageName("forest", 0), std::string("candidates"));
+
+    PointSet* debug = proc.getSystemDebugStage("forest", "candidates");
+    REQUIRE(bool(debug));
+    CHECK_EQ(debug->getCount(), 1);
+    delete debug;
 
     PointSet* committed = proc.getSystemOutput("forest", "trees");
     REQUIRE(bool(committed));
@@ -91,6 +101,7 @@ TEST_CASE("procgen.system.commitIsAtomicAndFailureKeepsPreviousSnapshot") {
     CHECK(!proc.commitSystem(failed));
     CHECK_EQ(proc.getSystemRevision("forest"), uint64_t(1));
     CHECK_EQ(proc.getSystemSeed("forest"), uint32_t(42));
+    CHECK_EQ(proc.getSystemDebugStageCount("forest"), 1);
 
     committed = proc.getSystemOutput("forest", "trees");
     REQUIRE(bool(committed));

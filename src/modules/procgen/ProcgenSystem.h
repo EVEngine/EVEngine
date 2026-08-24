@@ -35,6 +35,11 @@ public:
     std::string getOutputName(int index) const;
     PointSet*   getOutput(const std::string& outputName) const;
 
+    bool        captureDebug(const std::string& stageName, PointSet* points);
+    int         getDebugStageCount() const;
+    std::string getDebugStageName(int index) const;
+    PointSet*   getDebugStage(const std::string& stageName) const;
+
     void        trace(const std::string& stageName, int inputCount, int outputCount, float milliseconds);
     int         getTraceCount() const;
     std::string getTraceName(int index) const;
@@ -55,6 +60,8 @@ private:
     std::string                               error_;
     std::unordered_map<std::string, PointSet> outputs_;
     std::vector<std::string>                  outputOrder_;
+    std::unordered_map<std::string, PointSet> debugStages_;
+    std::vector<std::string>                  debugStageOrder_;
     std::vector<ProcgenStageMetric>           traces_;
 };
 
@@ -64,6 +71,8 @@ struct ProcgenSystemSnapshot {
     uint64_t                                  revision = 0;
     std::unordered_map<std::string, PointSet> outputs;
     std::vector<std::string>                  outputOrder;
+    std::unordered_map<std::string, PointSet> debugStages;
+    std::vector<std::string>                  debugStageOrder;
     std::vector<ProcgenStageMetric>           traces;
 };
 
