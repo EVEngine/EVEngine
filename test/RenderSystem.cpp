@@ -115,6 +115,33 @@ TEST_CASE("RenderSystem.sprite2dPropertyApiReachesDrawItem") {
     sprite->release();
 }
 
+TEST_CASE("DrawItem2D.equalVisualKeysPreserveSubmissionOrder") {
+    std::vector<DrawItem2D> items(3);
+    for (auto &item : items) {
+        item.layer = 4;
+        item.depthY = 20.f;
+    }
+    items[0].texture = reinterpret_cast<Texture *>(uintptr_t(0x300));
+    items[1].texture = reinterpret_cast<Texture *>(uintptr_t(0x100));
+    items[2].texture = reinterpret_cast<Texture *>(uintptr_t(0x200));
+    Texture *first = items[0].texture;
+    Texture *second = items[1].texture;
+    Texture *third = items[2].texture;
+    sortDrawItems2D(items);
+    CHECK(items[0].texture == first);
+    CHECK(items[1].texture == second);
+    CHECK(items[2].texture == third);
+}
+
+TEST_CASE("RenderSystem.spriteExtendedBlendModes") {
+    auto *sprite = Renderable2D::create();
+    sprite->setBlend("premultiplied");
+    CHECK(sprite->getBlend() == "premultiplied");
+    sprite->setBlend("multiply");
+    CHECK(sprite->getBlend() == "multiply");
+    sprite->release();
+}
+
 static std::vector<uint8_t> makeCheckerRGBA(int w, int h, int cell, uint8_t r0, uint8_t g0, uint8_t b0,
                                             uint8_t r1, uint8_t g1, uint8_t b1) {
     std::vector<uint8_t> px(size_t(w) * size_t(h) * 4);

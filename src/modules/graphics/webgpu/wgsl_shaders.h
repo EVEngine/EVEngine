@@ -391,7 +391,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
     let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
-    if (base.a < 0.5) { discard; }
+    if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w) {
+        discard;
+    }
+    let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
+    if (ubo.texBomb.w > 2.5 && base.a < alphaHash) { discard; }
     let albedo = base.rgb;
     let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
@@ -675,7 +679,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
     let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
-    if (base.a < 0.5) { discard; }
+    if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w) {
+        discard;
+    }
+    let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
+    if (ubo.texBomb.w > 2.5 && base.a < alphaHash) { discard; }
     let albedo = base.rgb;
     let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);

@@ -893,6 +893,17 @@ void Graphics::setMesh3DMaterial(float metallic, float roughness) {
     mesh3dFrameUbo.cameraPos.w = roughness;
 }
 
+void Graphics::setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                                bool doubleSided, float alphaCutoff,
+                                const std::string &alphaTechnique) {
+    mesh3dSurfaceMode = mode;
+    mesh3dSurfaceBlend = blend;
+    mesh3dSurfaceDepthWrite = depthWrite;
+    mesh3dSurfaceDoubleSided = doubleSided;
+    mesh3dAlphaCutoff = std::clamp(alphaCutoff, 0.f, 1.f);
+    mesh3dAlphaTechnique = alphaTechnique;
+}
+
 void Graphics::setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount) {
     mesh3dTexBombScale = cellScale > 1e-3f ? cellScale : 1e-3f;
     mesh3dTexBombStrength = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);

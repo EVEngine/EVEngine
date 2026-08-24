@@ -25,6 +25,8 @@ local mi = md.getMaterialIndex(0);               // mesh 0 使用的材质槽
 local r = md.getMaterialBaseColorR(mi);          // 基色（glTF BASE_COLOR，OBJ 回退 DIFFUSE）
 local metallic = md.getMaterialMetallicFactor(mi);
 local roughness = md.getMaterialRoughnessFactor(mi);
+local alphaMode = md.getMaterialAlphaMode(mi);     // OPAQUE | MASK | BLEND
+local alphaCutoff = md.getMaterialAlphaCutoff(mi); // MASK 阈值，默认 0.5
 local path = md.getMaterialTexturePath(mi, "base_color");  // 外部路径或 "*N"（内嵌）
 
 // 装配：节点变换烘焙进顶点，材质/贴图自动应用
@@ -59,7 +61,7 @@ local renderable = models.createRenderable(gfx, md, 0);
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `empty()`、`getFaceCount()`、`getMaterialCount()`、`getMeshCount()`、`getName()`、`getVertexCount()`、`hasNormals()`、`hasTexCoords()`
-- 材质：`getMaterialIndex()`、`getMaterialName()`、`getMaterialBaseColorR/G/B/A()`、`getMaterialMetallicFactor()`、`getMaterialRoughnessFactor()`、`getMaterialOpacity()`、`getMaterialTwoSided()`、`getMaterialTextureSlotCount()`、`getMaterialTexturePath()`、`getMaterialTextureEmbeddedIndex()`
+- 材质：`getMaterialIndex()`、`getMaterialName()`、`getMaterialBaseColorR/G/B/A()`、`getMaterialMetallicFactor()`、`getMaterialRoughnessFactor()`、`getMaterialOpacity()`、`getMaterialTwoSided()`、`getMaterialAlphaMode()`、`getMaterialAlphaCutoff()`、`getMaterialTextureSlotCount()`、`getMaterialTexturePath()`、`getMaterialTextureEmbeddedIndex()`
 - 内嵌贴图：`getEmbeddedTextureCount()`、`getEmbeddedTextureName()`、`getEmbeddedTextureWidth()`、`getEmbeddedTextureHeight()`、`getEmbeddedTextureImageData()`
 - 蒙皮：`hasBones()`、`getBoneCount()`、`getBoneName()`、`getInverseBindMatrixElement()`、`getBoneWeightCount()`、`getBoneWeightVertex()`、`getBoneWeightValue()`
 - 动画剪辑：`getAnimationCount()`、`getAnimationName()`

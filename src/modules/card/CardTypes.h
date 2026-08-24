@@ -89,7 +89,10 @@ public:
 
     /** @brief 稳定实例 id、显示名、种类。 */
     struct Identity {
+        /** @brief Stable runtime instance identifier, unique within the owning Card module. */
         std::string id;
+        /** @brief Registered definition identifier used to construct this instance. */
+        std::string definitionId;
         std::string name;
         std::string kind = "creature";
     };

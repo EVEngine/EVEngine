@@ -33,7 +33,7 @@ sprite.setScale(2.0, 2.0);
 sprite.setRotation(30.0); // degree, rotate around rect center
 sprite.setAnchor(0.25, 0.75); // normalized rotation pivot
 sprite.setFlip(true, false);  // mirror UV without negative scale
-sprite.setBlend("alpha"); // alpha | additive
+sprite.setBlend("alpha"); // alpha | premultiplied | additive | multiply
 
 // eve_render: clear/draw background first, then submit all live Sprite2D objects
 gfx.renderSprites();
@@ -72,6 +72,11 @@ local mat = gfx.newMaterial();
 mat.setShadingModel("pbr");
 mat.setAlbedoTexture(albedo);
 mat.setNormalTexture(nrm);
+mat.setSurfaceMode("transparent"); // opaque | masked | transparent
+mat.setBlendMode("alpha");         // alpha | premultiplied | additive | multiply
+mat.setDepthWrite(false);
+mat.setDoubleSided(true);
+mat.setSortPriority(0);             // 同优先级按相机深度从后向前排序
 mat.setMetallic(0.2);
 mat.setRoughness(0.5);
 
@@ -79,6 +84,13 @@ local r = Renderable3D.create();
 r.setMaterial(mat);                 // 整模
 // 或多部件：r.setPart(0, "body", bodyMesh, bodyMat);
 ```
+
+遮罩材质使用 `setSurfaceMode("masked")`、`setAlphaCutoff()` 和
+`setAlphaTechnique("cutoff" | "dither" | "coverage")`。对应查询接口为
+`getSurfaceMode()`、`getBlendMode()`、`getDepthWrite()`、`getDoubleSided()`、
+`getSortPriority()`、`getAlphaCutoff()` 和 `getAlphaTechnique()`。纹理 Alpha 数据可用
+`Texture.setAlphaConvention("straight" | "premultiplied")` 声明，并通过
+`Texture.getAlphaConvention()` 查询。
 
 ### 可编译渲染控制与 GBuffer
 
@@ -231,6 +243,8 @@ fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);
 - `setReceiveLight()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowStrength()`
 - `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setParallax()`、`getParallaxScale()`、`getParallaxMinLayers()`、`getParallaxMaxLayers()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
+- 字体：`newFont()`、`setFont()`、`getFont()`、`getAscent()`、`getBaseline()`、`hasGlyph()`
+- `AlphaMask`：`newAlphaMask()`、`setThreshold()`、`getThreshold()`、`setSoftness()`、`getSoftness()`、`setInverted()`、`getInverted()`
 - `Sprite2D`：`setPosition()`、`getX()`、`getY()`、`setRotation()`、`getRotation()`、`setScale()`、`getScaleX()`、`getScaleY()`、`setSize()`、`getWidth()`、`getHeight()`、`setTexture()`、`getTexture()`、`setQuad()`、`getQuad()`、`setColor()`、`setLayer()`、`getLayer()`、`setVisible()`、`getVisible()`、`setReceiveLight()`、`getReceiveLight()`、`setBlend()`、`getBlend()`、`setAnchor()`、`getAnchorX()`、`getAnchorY()`、`setFlip()`、`getFlipX()`、`getFlipY()`、`setFrameLayout()`、`setCastOcclusion()`、`getCastOcclusion()`、`destroy()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
 - `Volumetric` froxel：`configureFroxelGrid`、`clearFroxelGrid`、

@@ -48,6 +48,7 @@ void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("setSource", &Filesystem::setSource);
     cls.addFunc("getSource", &Filesystem::getSource);
     cls.addFunc("allowMountingForPath", &Filesystem::allowMountingForPath);
+    cls.addFunc("mountExternalReadOnly", &Filesystem::mountExternalReadOnly);
     cls.addFunc("mountPath", [](Filesystem *self, const std::string &archive,
                                 const std::string &mountpoint, bool appendToPath) {
         return self && self->mount(archive, mountpoint, appendToPath);
@@ -83,6 +84,13 @@ void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("pollWatch", &Filesystem::pollWatch);
     cls.addFunc("getLastWatchPath", &Filesystem::getLastWatchPath);
     cls.addFunc("getLastWatchRealPath", &Filesystem::getLastWatchRealPath);
+}
+
+bool Filesystem::mountExternalReadOnly(const std::string &path, const std::string &mountpoint) {
+    if (path.empty() || mountpoint.empty())
+        return false;
+    allowMountingForPath(path);
+    return mount(path, mountpoint, false);
 }
 
 FileData *Filesystem::newFileData(const void *data, std::string filename, size_t size) const {

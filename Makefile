@@ -101,7 +101,7 @@ GAME ?=
 
 .PHONY: all build/win32 build/linux build/macosx build/android build/ios \
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
-	build/linux-asan build/linux-coverage \
+	build/linux-asan build/linux-coverage build/linux-fuzz fuzz/linux \
 	build/android-debug-test \
 	build/ios-debug-test \
 	build/ios-sim-debug-test \
@@ -358,6 +358,19 @@ build/linux-coverage/Makefile:
 		-DCMAKE_EXE_LINKER_FLAGS="--coverage" \
 		-DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
 		$(CMAKE_EXTRA_ARGS) -B build/linux-coverage -S .
+
+# Coverage-guided parser fuzzing is intentionally a small standalone Clang
+# build. The engine's Linux build remains GCC, matching production CI.
+build/linux-fuzz: build/linux-fuzz/build.ninja
+	cmake --build build/linux-fuzz -j $(JOBS)
+
+build/linux-fuzz/build.ninja:
+	cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug \
+		-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+		-B build/linux-fuzz -S test/fuzz
+
+fuzz/linux: build/linux-fuzz
+	cd build/linux-fuzz && ./evengine_json_fuzz --fuzz --testcase='^fuzz.json.document$$'
 
 build/macosx-debug: build/macosx-debug/Makefile
 	$(call reconfigure-if-args-changed,build/macosx-debug,cmake $(MACOSX_DEBUG_CMAKE_ARGS))

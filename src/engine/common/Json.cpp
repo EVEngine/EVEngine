@@ -15,15 +15,16 @@ namespace eve::json {
 struct Node {
     enum class Kind { Null, Bool, Number, String, Object, Array };
 
-    Kind kind = Kind::Null;
-    bool boolVal = false;
+    Kind   kind      = Kind::Null;
+    bool   boolVal   = false;
     double numberVal = 0.0;
     /** Set when the literal had no fraction/exponent, so ints round-trip exactly. */
-    bool integral = false;
-    long long intVal = 0;
-    std::string stringVal;
-    std::vector<std::pair<std::string, Node>> members;  // object, document order
-    std::vector<Node> elements;                         // array
+    bool                     integral = false;
+    long long                intVal   = 0;
+    std::string              stringVal;
+    std::vector<std::string> memberNames;   // object keys, document order
+    std::vector<Node>        memberValues;  // object values, parallel to memberNames
+    std::vector<Node>        elements;      // array
 };
 
 namespace {
@@ -51,22 +52,23 @@ public:
     }
 
 private:
-    const std::string& s_;
-    size_t pos_ = 0;
+    static constexpr size_t kMaxDepth = 256;
+    const std::string&      s_;
+    size_t                  pos_ = 0;
 
     void skipWs() {
-        while (pos_ < s_.size() &&
-               (s_[pos_] == ' ' || s_[pos_] == '\t' || s_[pos_] == '\n' || s_[pos_] == '\r'))
+        while (pos_ < s_.size() && (s_[pos_] == ' ' || s_[pos_] == '\t' || s_[pos_] == '\n' || s_[pos_] == '\r'))
             ++pos_;
     }
 
     bool peek(char c) const { return pos_ < s_.size() && s_[pos_] == c; }
 
-    bool parseValue(Node& out) {
+    bool parseValue(Node& out, size_t depth = 0) {
+        if (depth > kMaxDepth) return false;
         if (pos_ >= s_.size()) return false;
         switch (s_[pos_]) {
-            case '{': return parseObject(out);
-            case '[': return parseArray(out);
+            case '{': return parseObject(out, depth);
+            case '[': return parseArray(out, depth);
             case '"':
                 if (!parseString(out.stringVal)) return false;
                 out.kind = Node::Kind::String;
@@ -82,7 +84,7 @@ private:
         const size_t n = std::char_traits<char>::length(lit);
         if (s_.compare(pos_, n, lit) != 0) return false;
         pos_ += n;
-        out.kind = Node::Kind::Bool;
+        out.kind    = Node::Kind::Bool;
         out.boolVal = value;
         return true;
     }
@@ -96,30 +98,40 @@ private:
 
     bool parseNumber(Node& out) {
         const size_t start = pos_;
-        if (pos_ < s_.size() && (s_[pos_] == '-' || s_[pos_] == '+')) ++pos_;
-        bool hasDigit = false;
-        while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') {
+        if (pos_ < s_.size() && s_[pos_] == '-') ++pos_;
+        if (pos_ >= s_.size()) return false;
+        if (s_[pos_] == '0') {
             ++pos_;
-            hasDigit = true;
+            // RFC 8259 forbids leading zeroes in the integer component.
+            if (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') return false;
+        } else if (s_[pos_] >= '1' && s_[pos_] <= '9') {
+            while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') ++pos_;
+        } else {
+            return false;
         }
         bool integral = true;
         if (pos_ < s_.size() && s_[pos_] == '.') {
             integral = false;
             ++pos_;
+            const size_t fractionStart = pos_;
             while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') ++pos_;
+            if (pos_ == fractionStart) return false;
         }
         if (pos_ < s_.size() && (s_[pos_] == 'e' || s_[pos_] == 'E')) {
             integral = false;
             ++pos_;
             if (pos_ < s_.size() && (s_[pos_] == '-' || s_[pos_] == '+')) ++pos_;
+            const size_t exponentStart = pos_;
             while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') ++pos_;
+            if (pos_ == exponentStart) return false;
         }
-        if (!hasDigit) return false;
         const std::string num = s_.substr(start, pos_ - start);
         try {
-            out.numberVal = std::stod(num);
+            size_t used   = 0;
+            out.numberVal = std::stod(num, &used);
+            if (used != num.size() || !std::isfinite(out.numberVal)) return false;
             if (integral) {
-                out.intVal = std::stoll(num);
+                out.intVal   = std::stoll(num);
                 out.integral = true;
             }
         } catch (...) {
@@ -128,7 +140,7 @@ private:
             if (!integral) return false;
             try {
                 out.numberVal = std::stod(num);
-                out.integral = false;
+                out.integral  = false;
             } catch (...) {
                 return false;
             }
@@ -145,6 +157,7 @@ private:
             const char c = s_[pos_++];
             if (c == '"') return true;
             if (c != '\\') {
+                if (static_cast<unsigned char>(c) < 0x20) return false;
                 out += c;
                 continue;
             }
@@ -163,21 +176,23 @@ private:
                     if (pos_ + 4 > s_.size()) return false;
                     const char hex[5] = {s_[pos_], s_[pos_ + 1], s_[pos_ + 2], s_[pos_ + 3], '\0'};
                     pos_ += 4;
-                    char* end = nullptr;
-                    const unsigned cp = static_cast<unsigned>(std::strtoul(hex, &end, 16));
+                    char*          end = nullptr;
+                    const unsigned cp  = static_cast<unsigned>(std::strtoul(hex, &end, 16));
                     if (!end || *end != '\0') return false;
                     // A high surrogate followed by "\uXXXX" forms one code point.
                     if (cp >= 0xD800 && cp <= 0xDBFF && pos_ + 6 <= s_.size() && s_[pos_] == '\\' &&
                         s_[pos_ + 1] == 'u') {
-                        const char lohex[5] = {s_[pos_ + 2], s_[pos_ + 3], s_[pos_ + 4],
-                                               s_[pos_ + 5], '\0'};
+                        const char lohex[5] = {s_[pos_ + 2], s_[pos_ + 3], s_[pos_ + 4], s_[pos_ + 5], '\0'};
                         pos_ += 6;
-                        char* loEnd = nullptr;
-                        const unsigned lo = static_cast<unsigned>(std::strtoul(lohex, &loEnd, 16));
-                        if (loEnd && *loEnd == '\0' && lo >= 0xDC00 && lo <= 0xDFFF)
+                        char*          loEnd = nullptr;
+                        const unsigned lo    = static_cast<unsigned>(std::strtoul(lohex, &loEnd, 16));
+                        if (loEnd && *loEnd == '\0' && lo >= 0xDC00 && lo <= 0xDFFF) {
                             appendUtf8(out, 0x10000 + ((cp - 0xD800) << 10) + (lo - 0xDC00));
-                        else
-                            appendUtf8(out, cp);
+                        } else {
+                            return false;
+                        }
+                    } else if (cp >= 0xD800 && cp <= 0xDFFF) {
+                        return false;
                     } else {
                         appendUtf8(out, cp);
                     }
@@ -207,7 +222,7 @@ private:
         }
     }
 
-    bool parseObject(Node& out) {
+    bool parseObject(Node& out, size_t depth) {
         ++pos_;  // '{'
         skipWs();
         if (peek('}')) {
@@ -224,8 +239,9 @@ private:
             ++pos_;
             skipWs();
             Node val;
-            if (!parseValue(val)) return false;
-            out.members.emplace_back(std::move(key), std::move(val));
+            if (!parseValue(val, depth + 1)) return false;
+            out.memberNames.emplace_back(std::move(key));
+            out.memberValues.emplace_back(std::move(val));
             skipWs();
             if (peek('}')) {
                 ++pos_;
@@ -237,7 +253,7 @@ private:
         }
     }
 
-    bool parseArray(Node& out) {
+    bool parseArray(Node& out, size_t depth) {
         ++pos_;  // '['
         skipWs();
         if (peek(']')) {
@@ -248,7 +264,7 @@ private:
         while (true) {
             skipWs();
             Node val;
-            if (!parseValue(val)) return false;
+            if (!parseValue(val, depth + 1)) return false;
             out.elements.push_back(std::move(val));
             skipWs();
             if (peek(']')) {
@@ -300,23 +316,23 @@ bool Value::has(const char* key) const { return static_cast<bool>(get(key)); }
 
 Value Value::get(const char* key) const {
     if (!node_ || node_->kind != Node::Kind::Object || !key) return Value();
-    for (const auto& m : node_->members)
-        if (m.first == key) return Value(&m.second);
+    for (size_t i = 0; i < node_->memberNames.size(); ++i)
+        if (node_->memberNames[i] == key) return Value(&node_->memberValues[i]);
     return Value();
 }
 
 std::vector<std::string> Value::keys() const {
     std::vector<std::string> out;
     if (!node_ || node_->kind != Node::Kind::Object) return out;
-    out.reserve(node_->members.size());
-    for (const auto& m : node_->members) out.push_back(m.first);
+    out.reserve(node_->memberNames.size());
+    for (const auto& name : node_->memberNames) out.push_back(name);
     return out;
 }
 
 size_t Value::size() const {
     if (!node_) return 0;
     if (node_->kind == Node::Kind::Array) return node_->elements.size();
-    if (node_->kind == Node::Kind::Object) return node_->members.size();
+    if (node_->kind == Node::Kind::Object) return node_->memberValues.size();
     return 0;
 }
 

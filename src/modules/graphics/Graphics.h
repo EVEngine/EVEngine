@@ -10,6 +10,7 @@
 #include "common/Module.h"
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
+#include "graphics/SurfaceMode.h"
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
@@ -36,6 +37,7 @@ class Outline;
 class Quad;
 class RenderControl;
 class Renderable2D;
+class AlphaMask;
 class ScreenSpaceReflection;
 class Shader;
 class Texture;
@@ -691,6 +693,10 @@ public:
 
     /** @brief Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
+    /** @brief Select pipeline state for subsequent mesh draws. */
+    virtual void setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                                  bool doubleSided, float alphaCutoff,
+                                  const std::string &alphaTechnique = "cutoff") = 0;
 
     /**
      * @brief Texture cell bombing for the next default mesh draw (breaks tiling).
@@ -955,6 +961,22 @@ public:
     virtual void print(const std::string &text, float x, float y, const Color &color = Color(1.f, 1.f, 1.f, 1.f),
                        float scale = 1.f);
 
+    /**
+     * @brief Script-friendly UTF-8 text drawing overload using RGBA components.
+     * @param text UTF-8 text to draw.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param r Red color component.
+     * @param g Green color component.
+     * @param b Blue color component.
+     * @param a Alpha color component.
+     * @param scale Uniform text scale.
+     */
+    void printRGBA(const std::string &text, float x, float y, float r, float g, float b, float a,
+                   float scale = 1.f) {
+        print(text, x, y, Color(r, g, b, a), scale);
+    }
+
     virtual void setShader(Shader *shader);
     virtual void setShader();
 
@@ -1090,6 +1112,8 @@ public:
      * Caller owns Outline*; its Shader is owned by Graphics.
      */
     Outline *newOutline();
+    /** @brief Create a script-owned reusable two-texture alpha-mask compositor. */
+    AlphaMask *newAlphaMask();
 
     /**
      * @brief Screen-space single-bounce GI. Caller owns GlobalIllumination*;

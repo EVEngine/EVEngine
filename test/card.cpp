@@ -5,6 +5,8 @@
 #include "card/Card.h"
 #include "common/ECS.h"
 
+#include <cmath>
+
 using namespace eve::card;
 
 namespace {
@@ -35,6 +37,45 @@ TEST_CASE("card.factory.newCardFromJson") {
     CHECK_EQ(c->stats()->cost, 2);
     CHECK_EQ(c->stats()->attack, 3);
     CHECK_EQ(mod.newCard("missing"), nullptr);
+}
+
+TEST_CASE("card.presentation.stableIdentityAndSnapshot") {
+    Card mod;
+    CHECK_EQ(mod.registerCardsFromJson(kDefs), 2);
+    CardData *first = mod.newCard("flame");
+    CardData *second = mod.newCard("flame");
+    REQUIRE(first != nullptr);
+    REQUIRE(second != nullptr);
+    CHECK_EQ(first->identity()->definitionId, "flame");
+    CHECK_EQ(second->identity()->definitionId, "flame");
+    CHECK_NE(first->identity()->id, second->identity()->id);
+
+    first->layout()->x = 42.f;
+    first->layout()->angle = 12.f;
+    CHECK_EQ(mod.capturePresentation(), 2);
+    auto *snapshot = mod.getPresentation(0);
+    REQUIRE(snapshot != nullptr);
+    CHECK_EQ(snapshot->instanceId, first->identity()->id);
+    CHECK_EQ(snapshot->definitionId, "flame");
+    CHECK_EQ(snapshot->x, 42.f);
+    CHECK_EQ(snapshot->angle, 12.f);
+    CHECK_EQ(mod.getPresentation(2), nullptr);
+}
+
+TEST_CASE("card.presentation.planeMapperRoundTrip") {
+    CardPlaneMapper mapper;
+    mapper.setLogicalRect(0.f, 0.f, 1280.f, 700.f);
+    mapper.setPlane(-6.4f, 0.6f, -7.f, 12.8f, 0.f, 0.f, 0.f, 0.f, 14.f);
+
+    CHECK(mapper.mapLayout(640.f, 350.f));
+    CHECK_LT(std::abs(mapper.getWorldX()), 0.0001f);
+    CHECK_LT(std::abs(mapper.getWorldY() - 0.6f), 0.0001f);
+    CHECK_LT(std::abs(mapper.getWorldZ()), 0.0001f);
+
+    CHECK(mapper.mapRay(0.f, 10.f, 0.f, 0.f, -1.f, 0.f));
+    CHECK_LT(std::abs(mapper.getLogicalX() - 640.f), 0.0001f);
+    CHECK_LT(std::abs(mapper.getLogicalY() - 350.f), 0.0001f);
+    CHECK(!mapper.mapRay(0.f, 10.f, 0.f, 1.f, 0.f, 0.f));
 }
 
 TEST_CASE("card.hand.membershipOrder") {

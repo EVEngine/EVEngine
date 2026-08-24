@@ -1155,6 +1155,10 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     switch (mode) {
                                         case BlendMode::Additive:
                                             return offscreenAdditiveTexPipeline;
+                                        case BlendMode::Premultiplied:
+                                            return offscreenPremultipliedTexPipeline;
+                                        case BlendMode::Multiply:
+                                            return offscreenMultiplyTexPipeline;
                                         case BlendMode::Opaque:
                                             return offscreenOpaqueTexPipeline;
                                         case BlendMode::Alpha:
@@ -1166,6 +1170,10 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     switch (mode) {
                                         case BlendMode::Additive:
                                             return offscreenAdditiveSolidPipeline;
+                                        case BlendMode::Premultiplied:
+                                            return offscreenPremultipliedSolidPipeline;
+                                        case BlendMode::Multiply:
+                                            return offscreenMultiplySolidPipeline;
                                         case BlendMode::Alpha:
                                             return offscreenSolidAlphaPipeline;
                                         case BlendMode::Opaque:
@@ -1395,6 +1403,10 @@ void Graphics::flushToSwapchain() {
         switch (mode) {
             case BlendMode::Additive:
                 return additiveTexPipeline;
+            case BlendMode::Premultiplied:
+                return premultipliedTexPipeline;
+            case BlendMode::Multiply:
+                return multiplyTexPipeline;
             case BlendMode::Opaque:
                 return opaqueTexPipeline;
             case BlendMode::Alpha:
@@ -1406,6 +1418,10 @@ void Graphics::flushToSwapchain() {
         switch (mode) {
             case BlendMode::Additive:
                 return additiveSolidPipeline;
+            case BlendMode::Premultiplied:
+                return premultipliedSolidPipeline;
+            case BlendMode::Multiply:
+                return multiplySolidPipeline;
             case BlendMode::Alpha:
                 return solidAlphaPipeline;
             case BlendMode::Opaque:

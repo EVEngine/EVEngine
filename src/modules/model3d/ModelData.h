@@ -51,6 +51,9 @@ public:
     float getMaterialRoughnessFactor(int matIndex) const;
     float getMaterialOpacity(int matIndex) const;
     bool getMaterialTwoSided(int matIndex) const;
+    /** @brief glTF alpha mode normalized to "OPAQUE", "MASK", or "BLEND". */
+    std::string getMaterialAlphaMode(int matIndex) const;
+    float getMaterialAlphaCutoff(int matIndex) const;
 
     /**
      * @brief Texture type names (Squirrel strings): "base_color", "diffuse",

@@ -85,7 +85,8 @@ namespace {
 vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
                                       vk::PipelineLayout layout,
                                       BlendMode mode = BlendMode::Opaque) {
-    if (mode == BlendMode::Additive) {
+    if (mode == BlendMode::Additive || mode == BlendMode::Premultiplied ||
+        mode == BlendMode::Multiply) {
         // cbs/attachments must outlive build(); the builder must stay a single
         // expression — copying the builder into a named local leaves its
         // shader-stage pName pointers dangling into the temporary's storage.
@@ -195,6 +196,10 @@ void Graphics::createSwapchainAndPipeline() {
                                                       BlendMode::Alpha);
         additiveSolidPipeline = createSolidColorPipeline(device, renderpass, pipelineLayout,
                                                          BlendMode::Additive);
+        premultipliedSolidPipeline = createSolidColorPipeline(
+            device, renderpass, pipelineLayout, BlendMode::Premultiplied);
+        multiplySolidPipeline = createSolidColorPipeline(device, renderpass, pipelineLayout,
+                                                         BlendMode::Multiply);
     }
 
     // Scene-pass pipelines are initially built for the swapchain render pass at
@@ -252,6 +257,10 @@ void Graphics::createTexturedPipeline() {
     texPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout);
     additiveTexPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout,
                                                       BlendMode::Additive);
+    premultipliedTexPipeline = createTexturedStylePipeline(
+        vert, frag, renderpass, texPipelineLayout, BlendMode::Premultiplied);
+    multiplyTexPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout,
+                                                      BlendMode::Multiply);
     opaqueTexPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout,
                                                     BlendMode::Opaque);
 
@@ -263,7 +272,8 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
                                                    const vkb::BuiltRenderPass &rp,
                                                    vk::PipelineLayout layout, BlendMode mode) {
     ShaderModulePair modules(device, vert, frag);
-    if (mode == BlendMode::Additive) {
+    if (mode == BlendMode::Additive || mode == BlendMode::Premultiplied ||
+        mode == BlendMode::Multiply) {
         // cbs/attachments must outlive build(); keep the builder as a single
         // expression (see createSolidColorPipeline).
         std::vector<vk::PipelineColorBlendAttachmentState> attachments(1,
@@ -389,6 +399,9 @@ void Graphics::createMesh3DPipeline() {
     mesh3dPipeline =
         createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass,
                                   vk::SampleCountFlagBits::e1);
+    mesh3dTransparentPipeline =
+        createMesh3DHairPipeline(vert, frag, mesh3dPipelineLayout, renderpass,
+                                 vk::SampleCountFlagBits::e1);
 }
 
 void Graphics::createMesh3DClusteredPipeline() {
@@ -1252,6 +1265,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     device->waitIdle();
 
     destroyPipeline(device, mesh3dPipeline);
+    destroyPipeline(device, mesh3dTransparentPipeline);
     destroyPipeline(device, mesh3dClusteredPipeline);
     destroyPipeline(device, mesh3dGpuDrivenPipeline);
     destroyPipeline(device, resolveVisPipeline);
@@ -1260,6 +1274,10 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
                                                embeddedSpirv(mesh3d_frag_spv),
                                                mesh3dPipelineLayout, target, samples);
+    mesh3dTransparentPipeline =
+        createMesh3DHairPipeline(embeddedSpirv(mesh3d_vert_spv),
+                                 embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
+                                 target, samples);
     if (mesh3dGpuDrivenPipelineLayout) {
         mesh3dGpuDrivenPipeline =
             createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
@@ -1709,6 +1727,10 @@ void Graphics::ensureOffscreenPipelines() {
         createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout, BlendMode::Alpha);
     offscreenAdditiveSolidPipeline =
         createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout, BlendMode::Additive);
+    offscreenPremultipliedSolidPipeline = createSolidColorPipeline(
+        device, offscreenRenderPass, pipelineLayout, BlendMode::Premultiplied);
+    offscreenMultiplySolidPipeline = createSolidColorPipeline(
+        device, offscreenRenderPass, pipelineLayout, BlendMode::Multiply);
 
     // Textured offscreen pipeline mirrors createTexturedPipeline but with offscreen RP.
     auto tvert = embeddedSpirv(textured_vert_spv);
@@ -1718,6 +1740,10 @@ void Graphics::ensureOffscreenPipelines() {
     offscreenAdditiveTexPipeline =
         createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout,
                                     BlendMode::Additive);
+    offscreenPremultipliedTexPipeline = createTexturedStylePipeline(
+        tvert, tfrag, offscreenRenderPass, texPipelineLayout, BlendMode::Premultiplied);
+    offscreenMultiplyTexPipeline = createTexturedStylePipeline(
+        tvert, tfrag, offscreenRenderPass, texPipelineLayout, BlendMode::Multiply);
     offscreenOpaqueTexPipeline =
         createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout,
                                     BlendMode::Opaque);

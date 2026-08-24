@@ -390,6 +390,9 @@ public:
     void setMesh3DHeightTexture(Texture *height) override;
     void              setMesh3DSceneDepth(Texture *depth) override;
     void              setMesh3DMaterial(float metallic, float roughness) override;
+    void              setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                                       bool doubleSided, float alphaCutoff,
+                                       const std::string &alphaTechnique = "cutoff") override;
     void              setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void              setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
     void              setMesh3DLighting(const Lighting3DPack &pack) override;
@@ -657,12 +660,16 @@ private:
     vk::PipelineLayout pipelineLayout;
     vk::Pipeline solidAlphaPipeline;       // alpha-blended solid (BlendMode::Alpha)
     vk::Pipeline additiveSolidPipeline;    // additive solid (BlendMode::Additive)
+    vk::Pipeline premultipliedSolidPipeline;
+    vk::Pipeline multiplySolidPipeline;
 
     vk::DescriptorSetLayout texSetLayout;
     vk::UniqueDescriptorSetLayout texSetLayoutUnique;
     vk::DescriptorPool descriptorPool;
     vk::Pipeline texPipeline;
     vk::Pipeline additiveTexPipeline;
+    vk::Pipeline premultipliedTexPipeline;
+    vk::Pipeline multiplyTexPipeline;
     vk::Pipeline opaqueTexPipeline;
     vk::PipelineLayout texPipelineLayout;
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
@@ -672,8 +679,12 @@ private:
     vk::Pipeline offscreenSolidPipeline;
     vk::Pipeline offscreenSolidAlphaPipeline;
     vk::Pipeline offscreenAdditiveSolidPipeline;
+    vk::Pipeline offscreenPremultipliedSolidPipeline;
+    vk::Pipeline offscreenMultiplySolidPipeline;
     vk::Pipeline offscreenTexPipeline;
     vk::Pipeline offscreenAdditiveTexPipeline;
+    vk::Pipeline offscreenPremultipliedTexPipeline;
+    vk::Pipeline offscreenMultiplyTexPipeline;
     vk::Pipeline offscreenOpaqueTexPipeline;
 
     vk::DescriptorSetLayout mesh3dSetLayout;
@@ -681,6 +692,7 @@ private:
     vk::PipelineLayout mesh3dPipelineLayout;
     vk::PipelineLayout mesh3dShaderPipelineLayout;  // + push constants for custom mesh shaders
     vk::Pipeline mesh3dPipeline;
+    vk::Pipeline mesh3dTransparentPipeline;
     // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
     // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
     // executable command buffer (which invalidates the CB).
@@ -738,6 +750,12 @@ private:
     float mesh3dEnvIntensity = 0.f;
     float mesh3dMetallic = 0.f;
     float mesh3dRoughness = 0.45f;
+    SurfaceMode mesh3dSurfaceMode = SurfaceMode::Opaque;
+    BlendMode mesh3dSurfaceBlend = BlendMode::Alpha;
+    bool mesh3dSurfaceDepthWrite = false;
+    bool mesh3dSurfaceDoubleSided = false;
+    float mesh3dAlphaCutoff = 0.5f;
+    std::string mesh3dAlphaTechnique = "cutoff";
     float mesh3dTexBombScale = 4.f;
     float mesh3dTexBombStrength = 0.f;
     float mesh3dTexBombRot = 1.f;

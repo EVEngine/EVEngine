@@ -13,6 +13,7 @@ SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 
 FRAGS = [
     "outline_post.frag",
+    "alpha_mask.frag",
 ]
 
 
