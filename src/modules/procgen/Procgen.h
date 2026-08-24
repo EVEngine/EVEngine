@@ -7,12 +7,14 @@
 #include "procgen/Palette.h"
 #include "procgen/Params.h"
 #include "procgen/PointSet.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -54,6 +56,20 @@ public:
     PointSet* jitterPoints(PointSet* input, uint32_t seed, float amountX, float amountZ);
     PointSet* selfPrune(PointSet* input, float radius);
     uint32_t  deriveSeed(uint32_t parent, const std::string& scope) const;
+
+    // --- Atomic script rebuilds ---
+    ProcgenContext* beginSystem(const std::string& name, uint32_t seed);
+    bool            commitSystem(ProcgenContext* context);
+    void            abortSystem(ProcgenContext* context);
+    bool            removeSystem(const std::string& name);
+    bool            hasSystem(const std::string& name) const;
+    uint64_t        getSystemRevision(const std::string& name) const;
+    uint32_t        getSystemSeed(const std::string& name) const;
+    int             getSystemOutputCount(const std::string& name) const;
+    std::string     getSystemOutputName(const std::string& name, int index) const;
+    PointSet*       getSystemOutput(const std::string& name,
+                                    const std::string& outputName) const;
+    std::string     getSystemDebugReport(const std::string& name) const;
 
     // --- Phase A: maps ---
     Grid2D *generate(const std::string &algorithmId, Params *params);
@@ -153,7 +169,7 @@ private:
     mutable std::vector<std::string> textureRecipeIdsCache_;
     mutable std::vector<std::string> pbrRecipeIdsCache_;
     mutable std::vector<std::string> meshRecipeIdsCache_;
+    std::unordered_map<std::string, ProcgenSystemSnapshot> systems_;
 };
 
 }  // namespace eve::procgen
-

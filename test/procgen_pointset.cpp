@@ -62,3 +62,42 @@ TEST_CASE("procgen.pointSet.invalidInputIsReported") {
     CHECK(!proc.filterHeight(nullptr, 0.f, 1.f));
     CHECK_EQ(proc.lastError(), std::string("filterHeight: null input"));
 }
+
+TEST_CASE("procgen.system.commitIsAtomicAndFailureKeepsPreviousSnapshot") {
+    Procgen  proc;
+    PointSet first;
+    first.add(1.f, 2.f, 3.f);
+
+    ProcgenContext* initial = proc.beginSystem("forest", 42);
+    REQUIRE(bool(initial));
+    CHECK(initial->publish("trees", &first));
+    initial->trace("sample", 0, 1, 0.25f);
+    CHECK(proc.commitSystem(initial));
+    CHECK(proc.hasSystem("forest"));
+    CHECK_EQ(proc.getSystemRevision("forest"), uint64_t(1));
+
+    PointSet* committed = proc.getSystemOutput("forest", "trees");
+    REQUIRE(bool(committed));
+    CHECK_EQ(committed->getCount(), 1);
+    delete committed;
+
+    PointSet replacement;
+    replacement.add(9.f, 9.f, 9.f);
+    replacement.add(8.f, 8.f, 8.f);
+    ProcgenContext* failed = proc.beginSystem("forest", 99);
+    REQUIRE(bool(failed));
+    CHECK(failed->publish("trees", &replacement));
+    failed->fail("script error");
+    CHECK(!proc.commitSystem(failed));
+    CHECK_EQ(proc.getSystemRevision("forest"), uint64_t(1));
+    CHECK_EQ(proc.getSystemSeed("forest"), uint32_t(42));
+
+    committed = proc.getSystemOutput("forest", "trees");
+    REQUIRE(bool(committed));
+    CHECK_EQ(committed->getCount(), 1);
+    CHECK(proc.getSystemDebugReport("forest").find("sample") != std::string::npos);
+
+    delete committed;
+    delete failed;
+    delete initial;
+}

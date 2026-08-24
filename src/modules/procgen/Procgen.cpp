@@ -19,6 +19,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <sstream>
 #include <vector>
 
 namespace eve::procgen {
@@ -109,6 +110,98 @@ PointSet* Procgen::selfPrune(PointSet* input, float radius) {
 
 uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
     return eve::procgen::deriveSeed(parent, scope);
+}
+
+ProcgenContext* Procgen::beginSystem(const std::string& name, uint32_t seed) {
+    lastError_.clear();
+    if (name.empty()) {
+        lastError_ = "beginSystem: name is empty";
+        return nullptr;
+    }
+    return new ProcgenContext(name, seed);
+}
+
+bool Procgen::commitSystem(ProcgenContext* context) {
+    lastError_.clear();
+    if (!context) {
+        lastError_ = "commitSystem: null context";
+        return false;
+    }
+    if (!context->isActive()) {
+        lastError_ = "commitSystem: transaction is closed";
+        return false;
+    }
+    if (context->hasFailed()) {
+        lastError_ = "commitSystem: " + context->getError();
+        context->close();
+        return false;
+    }
+
+    auto& snapshot       = systems_[context->name_];
+    snapshot.seed        = context->seed_;
+    snapshot.revision    = snapshot.revision + 1u;
+    snapshot.outputs     = context->outputs_;
+    snapshot.outputOrder = context->outputOrder_;
+    snapshot.traces      = context->traces_;
+    context->close();
+    return true;
+}
+
+void Procgen::abortSystem(ProcgenContext* context) {
+    if (context) context->abort();
+}
+
+bool Procgen::removeSystem(const std::string& name) { return systems_.erase(name) != 0; }
+
+bool Procgen::hasSystem(const std::string& name) const {
+    return systems_.find(name) != systems_.end();
+}
+
+uint64_t Procgen::getSystemRevision(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? 0u : found->second.revision;
+}
+
+uint32_t Procgen::getSystemSeed(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? 0u : found->second.seed;
+}
+
+int Procgen::getSystemOutputCount(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? 0 : int(found->second.outputOrder.size());
+}
+
+std::string Procgen::getSystemOutputName(const std::string& name, int index) const {
+    const auto found = systems_.find(name);
+    if (found == systems_.end() || index < 0 || index >= int(found->second.outputOrder.size()))
+        return {};
+    return found->second.outputOrder[size_t(index)];
+}
+
+PointSet* Procgen::getSystemOutput(const std::string& name,
+                                   const std::string& outputName) const {
+    const auto system = systems_.find(name);
+    if (system == systems_.end()) return nullptr;
+    const auto output = system->second.outputs.find(outputName);
+    return output == system->second.outputs.end() ? nullptr : new PointSet(output->second);
+}
+
+std::string Procgen::getSystemDebugReport(const std::string& name) const {
+    const auto found = systems_.find(name);
+    if (found == systems_.end()) return "system '" + name + "' is not committed";
+    const auto& snapshot = found->second;
+    std::ostringstream report;
+    report << name << " revision=" << snapshot.revision << " seed=" << snapshot.seed;
+    for (const auto& trace : snapshot.traces) {
+        report << "\n  " << trace.name << " input=" << trace.inputCount
+               << " output=" << trace.outputCount << " ms=" << trace.milliseconds;
+    }
+    for (const auto& outputName : snapshot.outputOrder) {
+        report << "\n  output " << outputName << " points="
+               << snapshot.outputs.at(outputName).getCount();
+    }
+    return report.str();
 }
 
 bool Procgen::runGenerate(const std::string &algorithmId, const Params &params, Grid2D &out) {
@@ -524,6 +617,29 @@ void Procgen::expose(ssq::Table &table) {
     points.addFunc("getStringAttribute", &PointSet::getStringAttribute);
     points.addFunc("hasStringAttribute", &PointSet::hasStringAttribute);
 
+    auto context = table.addClass<ProcgenContext>(
+        "ProcgenContext",
+        std::function<ProcgenContext*()>([]() -> ProcgenContext* { return nullptr; }), true);
+    context.addFunc("getName", &ProcgenContext::getName);
+    context.addFunc("getSeed", &ProcgenContext::getSeed);
+    context.addFunc("seedFor", &ProcgenContext::seedFor);
+    context.addFunc("isActive", &ProcgenContext::isActive);
+    context.addFunc("hasFailed", &ProcgenContext::hasFailed);
+    context.addFunc("getError", &ProcgenContext::getError);
+    context.addFunc("publish", &ProcgenContext::publish);
+    context.addFunc("hasOutput", &ProcgenContext::hasOutput);
+    context.addFunc("getOutputCount", &ProcgenContext::getOutputCount);
+    context.addFunc("getOutputName", &ProcgenContext::getOutputName);
+    context.addFunc("getOutput", &ProcgenContext::getOutput);
+    context.addFunc("trace", &ProcgenContext::trace);
+    context.addFunc("getTraceCount", &ProcgenContext::getTraceCount);
+    context.addFunc("getTraceName", &ProcgenContext::getTraceName);
+    context.addFunc("getTraceInputCount", &ProcgenContext::getTraceInputCount);
+    context.addFunc("getTraceOutputCount", &ProcgenContext::getTraceOutputCount);
+    context.addFunc("getTraceMilliseconds", &ProcgenContext::getTraceMilliseconds);
+    context.addFunc("fail", &ProcgenContext::fail);
+    context.addFunc("abort", &ProcgenContext::abort);
+
     auto mesh = table.addClass<MeshBuild>(
         "ProcgenMeshBuild", std::function<MeshBuild *()>([]() -> MeshBuild * { return nullptr; }),
         true);
@@ -648,6 +764,17 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("jitterPoints", &Procgen::jitterPoints);
     cls.addFunc("selfPrune", &Procgen::selfPrune);
     cls.addFunc("deriveSeed", &Procgen::deriveSeed);
+    cls.addFunc("beginSystem", &Procgen::beginSystem);
+    cls.addFunc("commitSystem", &Procgen::commitSystem);
+    cls.addFunc("abortSystem", &Procgen::abortSystem);
+    cls.addFunc("removeSystem", &Procgen::removeSystem);
+    cls.addFunc("hasSystem", &Procgen::hasSystem);
+    cls.addFunc("getSystemRevision", &Procgen::getSystemRevision);
+    cls.addFunc("getSystemSeed", &Procgen::getSystemSeed);
+    cls.addFunc("getSystemOutputCount", &Procgen::getSystemOutputCount);
+    cls.addFunc("getSystemOutputName", &Procgen::getSystemOutputName);
+    cls.addFunc("getSystemOutput", &Procgen::getSystemOutput);
+    cls.addFunc("getSystemDebugReport", &Procgen::getSystemDebugReport);
     cls.addFunc("generate", &Procgen::generate);
     cls.addFunc("generateTo", &Procgen::generateTo);
     cls.addFunc("applyToLayer", &Procgen::applyToLayer);
@@ -688,4 +815,3 @@ void Procgen::expose(ssq::Class &cls) {
 }
 
 }  // namespace eve::procgen
-
