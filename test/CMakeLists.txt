@@ -171,6 +171,22 @@ file(GLOB all_test_cpp
   spatial.cpp
   grid.cpp
   editor.cpp
+  editor_automation_v2.cpp
+  editor_core_v2.cpp
+  editor_disk_asset_catalog_v2.cpp
+  editor_disk_document_v2.cpp
+  editor_document_asset_v2.cpp
+  editor_extension_v2.cpp
+  editor_graph_material_v2.cpp
+  editor_persistence_v2.cpp
+  editor_property_v2.cpp
+  editor_runtime_manifest_v2.cpp
+  editor_scene_target_v2.cpp
+  editor_script_v2.cpp
+  editor_selection_v2.cpp
+  editor_task_diagnostic_v2.cpp
+  editor_transaction_v2.cpp
+  editor_value_json_v2.cpp
   ik.cpp
   animation.cpp
   animation_retarget_compression.cpp
@@ -193,6 +209,7 @@ file(GLOB all_test_cpp
   reload_script.cpp
   dap.cpp
   mcp.cpp
+  mcp_hot_reload.cpp
   console.cpp
   cmdline.cpp
   main.cpp

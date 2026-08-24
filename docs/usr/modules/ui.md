@@ -76,6 +76,19 @@ ui.end();
 MouseY/DragDX/DragDY/Wheel(id)` 每帧读取。完整示例见
 `examples/terrain-editor`（高度图地形 + orbit 相机 + 抬高/压低笔刷）。
 
+## MCP EditorHost 脚本接口
+
+`eve mcp` 会在根表建立 `eve.host`，供项目脚本创建和维护 AI 编辑器。它与
+`eve.UI()` 的游戏内 retained UI 相互独立，但都运行在同一个 Squirrel VM 中。
+
+- 窗口与状态：`status()`、`openWindow()`、`closeWindow()`、`windowState()`。
+- View 与交互：`applyEditor()`、`removeEditor()`、`setValue()`、`events()`、
+  `widgetRect()`、`capture()`、`save()`。
+- ViewModel：`registerVM()`、`unregisterVM()`、`runScript()`。
+- 热更新：`reloadResource(path)` 手动重载项目内的 `mcp.nut`、`mcp/*.nut`、
+  `editors/*.vm.nut` 或 `editors/*.editor.json`；`hotReloadStatus()` 返回 watcher、
+  成功/失败计数与最近诊断。正常保存会由 MCP 主机自动触发，无需重启。
+
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。

@@ -1,6 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Capability.h"
+#include "common/UIAutomation.h"
+#include "ui/UIAutomationCapabilities.h"
 #include "ui/UIHost.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
@@ -75,6 +78,36 @@ TEST_CASE("UIHost.setPropsAndClickHandler") {
     UISystem::pendingEvents().push_back(ev);
     UISystem::dispatchEvents();
     CHECK_EQ(clicks, 1);
+}
+
+TEST_CASE("UIAutomation.semanticTreeGetAndClick") {
+    int clicks = 0;
+    UIHost *host = UIHost::createHost("mcp-ui-test");
+    host->setTree(window("Automation", {text("Ready", "status"),
+                                        button("Add Tree", "asset-tree", [&]() { ++clicks; })}));
+
+    registerUIAutomationCapabilities();
+    auto *automation = eve::cap::query<eve::IUIAutomation>();
+    REQUIRE(automation != nullptr);
+
+    const std::string tree = automation->tree("mcp-ui-test");
+    CHECK(tree.find("\"name\":\"mcp-ui-test\"") != std::string::npos);
+    CHECK(tree.find("\"id\":\"asset-tree\"") != std::string::npos);
+    CHECK(tree.find("\"clickable\":true") != std::string::npos);
+
+    const std::string widget = automation->get("mcp-ui-test", "asset-tree");
+    CHECK(widget.find("\"type\":\"button\"") != std::string::npos);
+    CHECK(widget.find("\"host\":\"mcp-ui-test\"") != std::string::npos);
+
+    const std::string queued = automation->click("mcp-ui-test", "asset-tree");
+    CHECK(queued.find("\"queued\":true") != std::string::npos);
+    CHECK_EQ(clicks, 0);
+    UISystem::dispatchEvents();
+    CHECK_EQ(clicks, 1);
+    CHECK(UISystem::consumeClickFor("mcp-ui-test") == "asset-tree");
+
+    CHECK(automation->click("mcp-ui-test", "status").find("error: widget is not clickable") ==
+          0);
 }
 
 TEST_CASE("UISystem.render.headlessImGuiWalk") {
