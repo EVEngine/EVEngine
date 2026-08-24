@@ -8,7 +8,7 @@ if (!("structures" in getroottable())) structures <- [];
 if (!("active" in getroottable())) active <- 0;
 if (!("segments" in getroottable())) segments <- 6;
 if (!("segLength" in getroottable())) segLength <- 2.0;
-if (!("autoSpin" in getroottable())) autoSpin <- false;
+if (!("autoSpin" in getroottable())) autoSpin <- true;
 if (!("yaw" in getroottable())) yaw <- 0.0;
 if (!("camYaw" in getroottable())) camYaw <- 0.0;
 if (!("uiReady" in getroottable())) uiReady <- false;
@@ -141,7 +141,7 @@ eve_init = function() {
 
 eve_update = function(dt) {
     if (autoSpin) {
-        camYaw += dt * 6.0;
+        camYaw += dt * 0.5;
         local ex = math.polarX(16.0, camYaw);
         local ez = math.polarY(16.0, camYaw);
         camera.setEye(ex, 6.5, ez);

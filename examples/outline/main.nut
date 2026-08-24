@@ -78,7 +78,7 @@ applyOutlineConfig();
 gfx.setBackgroundColor(0.13, 0.14, 0.17, 1.0);
 
 function eve_update(dt) {
-    olYaw += dt * 40.0;
+    olYaw += dt * 1.0;
     olCube.setYaw(olYaw);
 
     if (olPressed("1")) {
