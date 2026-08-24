@@ -65,7 +65,7 @@ TEST_CASE("procgen.pointSet.invalidInputIsReported") {
 }
 
 TEST_CASE("procgen.pointSet.spatialFiltersAndHeightmapProjection") {
-    Procgen   proc;
+    Procgen  proc;
     PointSet source;
     source.add(0.f, 0.f, 0.f);
     source.add(1.f, 0.f, 1.f);
@@ -104,7 +104,7 @@ TEST_CASE("procgen.pointSet.spatialFiltersAndHeightmapProjection") {
 }
 
 TEST_CASE("procgen.pointSet.polygonAndSplineQueries") {
-    Procgen   proc;
+    Procgen  proc;
     PointSet polygon;
     polygon.add(0.f, 0.f, 0.f);
     polygon.add(10.f, 0.f, 0.f);
@@ -114,7 +114,7 @@ TEST_CASE("procgen.pointSet.polygonAndSplineQueries") {
     PointSet candidates;
     candidates.add(5.f, 0.f, 5.f);
     candidates.add(15.f, 0.f, 5.f);
-    PointSet* inside = proc.filterPolygon(&candidates, &polygon);
+    PointSet* inside  = proc.filterPolygon(&candidates, &polygon);
     PointSet* outside = proc.excludePolygon(&candidates, &polygon);
     REQUIRE(bool(inside));
     REQUIRE(bool(outside));
@@ -228,4 +228,45 @@ TEST_CASE("procgen.system.cachedBuildReusesCommittedSnapshot") {
     delete changed;
     delete hit;
     delete miss;
+}
+
+TEST_CASE("procgen.system.stageCacheIsTransactional") {
+    Procgen  proc;
+    PointSet first;
+    first.add(3.f, 0.f, 4.f);
+
+    ProcgenContext* initial = proc.beginSystem("village", 11);
+    REQUIRE(bool(initial));
+    CHECK(initial->cacheStage("lots", "lots-v1:size=16", &first));
+    CHECK(initial->publish("lots", &first));
+    CHECK(proc.commitSystem(initial));
+
+    ProcgenContext* rebuild = proc.beginSystem("village", 11);
+    REQUIRE(bool(rebuild));
+    PointSet* reused = rebuild->reuseStage("lots", "lots-v1:size=16");
+    REQUIRE(bool(reused));
+    CHECK_EQ(reused->getCount(), 1);
+    CHECK_EQ(rebuild->getStageCacheHitCount(), 1);
+    CHECK(!rebuild->reuseStage("lots", "lots-v1:size=32"));
+    CHECK_EQ(rebuild->getStageCacheMissCount(), 1);
+
+    PointSet replacement;
+    replacement.add(8.f, 0.f, 8.f);
+    replacement.add(9.f, 0.f, 9.f);
+    CHECK(rebuild->cacheStage("lots", "lots-v1:size=32", &replacement));
+    rebuild->fail("downstream failed");
+    CHECK(!proc.commitSystem(rebuild));
+
+    ProcgenContext* retry = proc.beginSystem("village", 11);
+    REQUIRE(bool(retry));
+    PointSet* preserved = retry->reuseStage("lots", "lots-v1:size=16");
+    REQUIRE(bool(preserved));
+    CHECK_EQ(preserved->getCount(), 1);
+    CHECK(!retry->reuseStage("lots", "lots-v1:size=32"));
+
+    delete preserved;
+    delete retry;
+    delete reused;
+    delete rebuild;
+    delete initial;
 }

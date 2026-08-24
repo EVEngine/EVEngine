@@ -32,7 +32,12 @@ function rebuildForest() {
         road.add(260.0, 0.0, 170.0);
         road.add(510.0, 0.0, 150.0);
         road.add(720.0, 0.0, 410.0);
-        roadPoints = procgen.sampleSpline(road, 10.0, ctx.seedFor("road preview"), 0.0);
+        local roadKey = "road-preview-v1:seed=" + forestSeed;
+        roadPoints = ctx.reuseStage("road preview", roadKey);
+        if (roadPoints == null) {
+            roadPoints = procgen.sampleSpline(road, 10.0, ctx.seedFor("road preview"), 0.0);
+            if (!ctx.cacheStage("road preview", roadKey, roadPoints)) throw ctx.getError();
+        }
         local awayFromRoad = procgen.filterSplineDistance(candidates, road, 42.0, 100000.0);
         ctx.captureDebug("outside road", awayFromRoad);
         ctx.captureDebug("road", roadPoints);

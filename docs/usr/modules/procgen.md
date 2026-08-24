@@ -114,6 +114,26 @@ local committedKey = procgen.getSystemBuildKey("forest");
 buildKey 应包含所有影响输出的参数和一段显式 recipe 版本；修改生成代码时同步提升
 该版本。缓存命中不会增加 revision。普通 `beginSystem` 始终强制重建。
 
+### 阶段级增量重建
+
+完整系统需要重建但部分昂贵阶段输入未变化时，用 `reuseStage` / `cacheStage` 做细粒度
+缓存。阶段缓存属于系统快照的一部分：只有 `commitSystem` 成功才更新，失败重建仍能
+在下次尝试中读取上次成功版本。
+
+```squirrel
+local lotsKey = "lots-v3:terrain=" + terrainRevision + ":density=" + density;
+local lots = ctx.reuseStage("lots", lotsKey);
+if (lots == null) {
+    lots = buildLots();
+    if (!ctx.cacheStage("lots", lotsKey, lots)) throw ctx.getError();
+}
+local hits = ctx.getStageCacheHitCount();
+local misses = ctx.getStageCacheMissCount();
+```
+
+每个 key 应覆盖该阶段的直接输入和实现版本。下游阶段把上游 key 纳入自己的 key，
+即可用普通脚本明确表达依赖传播，而不需要隐藏的节点图执行器。
+
 ### 场景内检查中间结果
 
 `ctx.captureDebug(name, points)` 会把命名 `PointSet` 复制进本次事务。它和正式

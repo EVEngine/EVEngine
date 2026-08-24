@@ -17,11 +17,16 @@ struct ProcgenStageMetric {
     float       milliseconds = 0.f;
 };
 
+/** @brief One committed PointSet cache entry for a named script pipeline stage. */
+struct ProcgenCachedStage {
+    std::string cacheKey;
+    PointSet    points;
+};
+
 /** @brief Staging area for one atomic rebuild of a named procedural system. */
 class ProcgenContext {
 public:
-    ProcgenContext(std::string systemName, uint32_t seed, std::string buildKey = {},
-                   bool cacheHit = false);
+    ProcgenContext(std::string systemName, uint32_t seed, std::string buildKey = {}, bool cacheHit = false);
 
     std::string getName() const;
     uint32_t    getSeed() const;
@@ -43,6 +48,11 @@ public:
     std::string getDebugStageName(int index) const;
     PointSet*   getDebugStage(const std::string& stageName) const;
 
+    PointSet* reuseStage(const std::string& stageName, const std::string& cacheKey);
+    bool      cacheStage(const std::string& stageName, const std::string& cacheKey, PointSet* points);
+    int       getStageCacheHitCount() const;
+    int       getStageCacheMissCount() const;
+
     void        trace(const std::string& stageName, int inputCount, int outputCount, float milliseconds);
     int         getTraceCount() const;
     std::string getTraceName(int index) const;
@@ -57,29 +67,35 @@ private:
     friend class Procgen;
     void close();
 
-    std::string                               name_;
-    uint32_t                                  seed_   = 1;
-    bool                                      active_ = true;
-    bool                                      cacheHit_ = false;
-    std::string                               error_;
-    std::string                               buildKey_;
-    std::unordered_map<std::string, PointSet> outputs_;
-    std::vector<std::string>                  outputOrder_;
-    std::unordered_map<std::string, PointSet> debugStages_;
-    std::vector<std::string>                  debugStageOrder_;
-    std::vector<ProcgenStageMetric>           traces_;
+    std::string                                         name_;
+    uint32_t                                            seed_     = 1;
+    bool                                                active_   = true;
+    bool                                                cacheHit_ = false;
+    std::string                                         error_;
+    std::string                                         buildKey_;
+    std::unordered_map<std::string, PointSet>           outputs_;
+    std::vector<std::string>                            outputOrder_;
+    std::unordered_map<std::string, PointSet>           debugStages_;
+    std::vector<std::string>                            debugStageOrder_;
+    std::unordered_map<std::string, ProcgenCachedStage> stageCache_;
+    int                                                 stageCacheHits_   = 0;
+    int                                                 stageCacheMisses_ = 0;
+    std::vector<ProcgenStageMetric>                     traces_;
 };
 
 /** @brief Immutable committed snapshot retained by Procgen across script reloads. */
 struct ProcgenSystemSnapshot {
-    uint32_t                                  seed     = 1;
-    uint64_t                                  revision = 0;
-    std::string                               buildKey;
-    std::unordered_map<std::string, PointSet> outputs;
-    std::vector<std::string>                  outputOrder;
-    std::unordered_map<std::string, PointSet> debugStages;
-    std::vector<std::string>                  debugStageOrder;
-    std::vector<ProcgenStageMetric>           traces;
+    uint32_t                                            seed     = 1;
+    uint64_t                                            revision = 0;
+    std::string                                         buildKey;
+    std::unordered_map<std::string, PointSet>           outputs;
+    std::vector<std::string>                            outputOrder;
+    std::unordered_map<std::string, PointSet>           debugStages;
+    std::vector<std::string>                            debugStageOrder;
+    std::unordered_map<std::string, ProcgenCachedStage> stageCache;
+    int                                                 stageCacheHits   = 0;
+    int                                                 stageCacheMisses = 0;
+    std::vector<ProcgenStageMetric>                     traces;
 };
 
 }  // namespace eve::procgen

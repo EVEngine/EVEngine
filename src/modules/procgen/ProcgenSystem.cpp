@@ -5,10 +5,12 @@
 
 namespace eve::procgen {
 
-ProcgenContext::ProcgenContext(std::string systemName, uint32_t seed, std::string buildKey,
-                               bool cacheHit)
-    : name_(std::move(systemName)), seed_(seed ? seed : 1u), active_(!cacheHit),
-      cacheHit_(cacheHit), buildKey_(std::move(buildKey)) {}
+ProcgenContext::ProcgenContext(std::string systemName, uint32_t seed, std::string buildKey, bool cacheHit)
+    : name_(std::move(systemName)),
+      seed_(seed ? seed : 1u),
+      active_(!cacheHit),
+      cacheHit_(cacheHit),
+      buildKey_(std::move(buildKey)) {}
 
 std::string ProcgenContext::getName() const { return name_; }
 uint32_t    ProcgenContext::getSeed() const { return seed_; }
@@ -73,14 +75,44 @@ bool ProcgenContext::captureDebug(const std::string& stageName, PointSet* points
 int ProcgenContext::getDebugStageCount() const { return int(debugStageOrder_.size()); }
 
 std::string ProcgenContext::getDebugStageName(int index) const {
-    return index >= 0 && index < int(debugStageOrder_.size()) ? debugStageOrder_[size_t(index)]
-                                                              : std::string();
+    return index >= 0 && index < int(debugStageOrder_.size()) ? debugStageOrder_[size_t(index)] : std::string();
 }
 
 PointSet* ProcgenContext::getDebugStage(const std::string& stageName) const {
     const auto found = debugStages_.find(stageName);
     return found == debugStages_.end() ? nullptr : new PointSet(found->second);
 }
+
+PointSet* ProcgenContext::reuseStage(const std::string& stageName, const std::string& cacheKey) {
+    if (!active_ || stageName.empty() || cacheKey.empty()) return nullptr;
+    const auto found = stageCache_.find(stageName);
+    if (found == stageCache_.end() || found->second.cacheKey != cacheKey) {
+        ++stageCacheMisses_;
+        return nullptr;
+    }
+    ++stageCacheHits_;
+    return new PointSet(found->second.points);
+}
+
+bool ProcgenContext::cacheStage(const std::string& stageName, const std::string& cacheKey, PointSet* points) {
+    if (!active_) {
+        error_ = "cacheStage: transaction is closed";
+        return false;
+    }
+    if (stageName.empty() || cacheKey.empty()) {
+        error_ = "cacheStage: stage name and cache key are required";
+        return false;
+    }
+    if (!points) {
+        error_ = "cacheStage: null PointSet";
+        return false;
+    }
+    stageCache_[stageName] = {cacheKey, *points};
+    return true;
+}
+
+int ProcgenContext::getStageCacheHitCount() const { return stageCacheHits_; }
+int ProcgenContext::getStageCacheMissCount() const { return stageCacheMisses_; }
 
 void ProcgenContext::trace(const std::string& stageName, int inputCount, int outputCount, float milliseconds) {
     if (!active_ || stageName.empty()) return;

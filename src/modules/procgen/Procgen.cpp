@@ -197,11 +197,13 @@ ProcgenContext* Procgen::beginSystem(const std::string& name, uint32_t seed) {
         lastError_ = "beginSystem: name is empty";
         return nullptr;
     }
-    return new ProcgenContext(name, seed);
+    auto*      context  = new ProcgenContext(name, seed);
+    const auto previous = systems_.find(name);
+    if (previous != systems_.end()) context->stageCache_ = previous->second.stageCache;
+    return context;
 }
 
-ProcgenContext* Procgen::beginCachedSystem(const std::string& name, uint32_t seed,
-                                           const std::string& buildKey) {
+ProcgenContext* Procgen::beginCachedSystem(const std::string& name, uint32_t seed, const std::string& buildKey) {
     lastError_.clear();
     if (name.empty()) {
         lastError_ = "beginCachedSystem: name is empty";
@@ -213,10 +215,11 @@ ProcgenContext* Procgen::beginCachedSystem(const std::string& name, uint32_t see
     }
     const uint32_t normalizedSeed = seed ? seed : 1u;
     const auto     found          = systems_.find(name);
-    const bool     cacheHit       = found != systems_.end() &&
-                              found->second.seed == normalizedSeed &&
-                              found->second.buildKey == buildKey;
-    return new ProcgenContext(name, normalizedSeed, buildKey, cacheHit);
+    const bool     cacheHit =
+        found != systems_.end() && found->second.seed == normalizedSeed && found->second.buildKey == buildKey;
+    auto* context = new ProcgenContext(name, normalizedSeed, buildKey, cacheHit);
+    if (found != systems_.end()) context->stageCache_ = found->second.stageCache;
+    return context;
 }
 
 bool Procgen::commitSystem(ProcgenContext* context) {
@@ -235,15 +238,18 @@ bool Procgen::commitSystem(ProcgenContext* context) {
         return false;
     }
 
-    auto& snapshot       = systems_[context->name_];
-    snapshot.seed            = context->seed_;
-    snapshot.revision        = snapshot.revision + 1u;
-    snapshot.buildKey        = context->buildKey_;
-    snapshot.outputs         = context->outputs_;
-    snapshot.outputOrder     = context->outputOrder_;
-    snapshot.debugStages     = context->debugStages_;
-    snapshot.debugStageOrder = context->debugStageOrder_;
-    snapshot.traces          = context->traces_;
+    auto& snapshot            = systems_[context->name_];
+    snapshot.seed             = context->seed_;
+    snapshot.revision         = snapshot.revision + 1u;
+    snapshot.buildKey         = context->buildKey_;
+    snapshot.outputs          = context->outputs_;
+    snapshot.outputOrder      = context->outputOrder_;
+    snapshot.debugStages      = context->debugStages_;
+    snapshot.debugStageOrder  = context->debugStageOrder_;
+    snapshot.stageCache       = context->stageCache_;
+    snapshot.stageCacheHits   = context->stageCacheHits_;
+    snapshot.stageCacheMisses = context->stageCacheMisses_;
+    snapshot.traces           = context->traces_;
     context->close();
     return true;
 }
@@ -316,13 +322,14 @@ PointSet* Procgen::getSystemDebugStage(const std::string& name,
 std::string Procgen::getSystemDebugReport(const std::string& name) const {
     const auto found = systems_.find(name);
     if (found == systems_.end()) return "system '" + name + "' is not committed";
-    const auto& snapshot = found->second;
+    const auto&        snapshot = found->second;
     std::ostringstream report;
     report << name << " revision=" << snapshot.revision << " seed=" << snapshot.seed;
     if (!snapshot.buildKey.empty()) report << " buildKey=" << snapshot.buildKey;
+    report << " stageCache=" << snapshot.stageCacheHits << " hit/" << snapshot.stageCacheMisses << " miss";
     for (const auto& trace : snapshot.traces) {
-        report << "\n  " << trace.name << " input=" << trace.inputCount
-               << " output=" << trace.outputCount << " ms=" << trace.milliseconds;
+        report << "\n  " << trace.name << " input=" << trace.inputCount << " output=" << trace.outputCount
+               << " ms=" << trace.milliseconds;
     }
     for (const auto& outputName : snapshot.outputOrder) {
         report << "\n  output " << outputName << " points="
@@ -768,6 +775,10 @@ void Procgen::expose(ssq::Table &table) {
     context.addFunc("getDebugStageCount", &ProcgenContext::getDebugStageCount);
     context.addFunc("getDebugStageName", &ProcgenContext::getDebugStageName);
     context.addFunc("getDebugStage", &ProcgenContext::getDebugStage);
+    context.addFunc("reuseStage", &ProcgenContext::reuseStage);
+    context.addFunc("cacheStage", &ProcgenContext::cacheStage);
+    context.addFunc("getStageCacheHitCount", &ProcgenContext::getStageCacheHitCount);
+    context.addFunc("getStageCacheMissCount", &ProcgenContext::getStageCacheMissCount);
     context.addFunc("trace", &ProcgenContext::trace);
     context.addFunc("getTraceCount", &ProcgenContext::getTraceCount);
     context.addFunc("getTraceName", &ProcgenContext::getTraceName);
