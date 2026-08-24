@@ -17,6 +17,7 @@
 
 #include <thread>
 #include <chrono>
+#include <atomic>
 #include <cstring>
 #include <string>
 
@@ -50,6 +51,66 @@ TEST_CASE("network.NetWorkerQueue") {
     worker.drain(out);
     REQUIRE(out.size() == 1);
     CHECK(out[0].reason == "timeout");
+}
+
+TEST_CASE("network.NetWorker.stopFromJobDoesNotDeadlock") {
+    eve::network::NetWorker worker(nullptr);
+    std::atomic<bool> stopped{false};
+    worker.start();
+    worker.submit([&] {
+        worker.stop();
+        stopped = true;
+    });
+    for (int i = 0; i < 200 && !stopped; ++i)
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    CHECK(stopped.load());
+    worker.stop();
+}
+
+TEST_CASE("network.Channel.fragmentedAndCoalescedFrames") {
+    auto* net = eve::network::Network::create();
+    auto* ev = eve::event::Event::create();
+    eve::network::TcpSocket socket(net);
+    eve::network::Channel channel(&socket);
+
+    channel.feed({0, 0});
+    channel.feed({0, 2, 'a'});
+    CHECK(!ev->pollOwned());
+    channel.feed({'b', 0, 0, 0, 1, 'c'});
+
+    auto first = ev->pollOwned();
+    auto second = ev->pollOwned();
+    REQUIRE(static_cast<bool>(first));
+    REQUIRE(static_cast<bool>(second));
+    CHECK(first->name == "chmsg");
+    CHECK(second->name == "chmsg");
+    REQUIRE(first->args.size() == 2);
+    REQUIRE(second->args.size() == 2);
+    auto* firstData = static_cast<eve::data::ByteData*>(first->args[1].p);
+    auto* secondData = static_cast<eve::data::ByteData*>(second->args[1].p);
+    REQUIRE(firstData != nullptr);
+    REQUIRE(secondData != nullptr);
+    CHECK(firstData->getSize() == 2);
+    CHECK(secondData->getSize() == 1);
+}
+
+TEST_CASE("network.Channel.rejectsOversizedFrameHeader") {
+    auto* net = eve::network::Network::create();
+    auto* ev = eve::event::Event::create();
+    while (ev->pollOwned()) {}
+    eve::network::TcpSocket socket(net);
+    eve::network::Channel channel(&socket);
+    channel.feed({0x01, 0x00, 0x00, 0x01});
+    net->pump();
+
+    bool sawClose = false;
+    bool sawError = false;
+    while (auto message = ev->pollOwned()) {
+        if (message->name == "chclose") sawClose = true;
+        if (message->name == "neterr") sawError = true;
+    }
+    CHECK(sawClose);
+    CHECK(sawError);
 }
 
 TEST_CASE("network.TcpEcho") {

@@ -18,13 +18,11 @@ void NetWorker::start() {
 }
 
 void NetWorker::stop() {
-    if (!running_) return;
-    {
-        std::lock_guard<std::mutex> lock(mu_);
-        running_ = false;
-    }
+    running_ = false;
     cv_.notify_all();
-    if (thread_.joinable()) thread_.join();
+    // A job may request shutdown from the worker itself. Joining the current
+    // thread would deadlock; leave it joinable for the owner/destructor.
+    if (thread_.joinable() && thread_.get_id() != std::this_thread::get_id()) thread_.join();
 }
 
 void NetWorker::post(NetCompletion c) {
