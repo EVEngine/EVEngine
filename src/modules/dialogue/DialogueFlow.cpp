@@ -252,6 +252,8 @@ void DialogueFlow::clear() {
     assets_.clear();
     sourceHashes_.clear();
     sourceAssets_.clear();
+    localization_.clear();
+    locale_.clear();
     diagnostics_.clear();
     lastError_.clear();
 }
@@ -266,6 +268,21 @@ std::string DialogueFlow::getConversationId(int index) const {
 bool DialogueFlow::hasConversation(const std::string& id) const { return find(id) != nullptr; }
 
 std::string DialogueFlow::exportLocalizationCsv() const { return exportConversationLocalizationCsv(assets_); }
+
+int DialogueFlow::importLocalizationCsv(const std::string& csv, const std::string& defaultLocale) {
+    diagnostics_.clear();
+    const int count = localization_.importCsv(csv, defaultLocale, diagnostics_);
+    lastError_      = count > 0 || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
+    return count;
+}
+
+std::string DialogueFlow::exportMissingLocalizationCsv(const std::string& locale) const {
+    return localization_.exportMissingCsv(assets_, locale);
+}
+
+std::string DialogueFlow::exportVoiceRecordingCsv(const std::string& locale) const {
+    return localization_.exportVoiceRecordingCsv(assets_, locale);
+}
 
 int DialogueFlow::getDiagnosticCount() const { return static_cast<int>(diagnostics_.size()); }
 
@@ -313,11 +330,29 @@ std::string DialogueFlow::getNodeKind() const {
         return node ? node->field : std::string{}; \
     }
 EVE_FLOW_NODE_STRING(getSpeaker, speaker)
-EVE_FLOW_NODE_STRING(getText, text)
 EVE_FLOW_NODE_STRING(getPool, pool)
 EVE_FLOW_NODE_STRING(getI18nKey, i18nKey)
-EVE_FLOW_NODE_STRING(getVoice, voice)
 #undef EVE_FLOW_NODE_STRING
+
+std::string DialogueFlow::getText() const {
+    const auto* node = runner_.currentNode();
+    return node ? localization_.resolveText(node->i18nKey, locale_, node->text) : std::string{};
+}
+
+std::string DialogueFlow::getVoice() const {
+    const auto* node = runner_.currentNode();
+    return node ? localization_.resolveVoice(node->i18nKey, locale_, node->voice) : std::string{};
+}
+
+std::string DialogueFlow::getVoiceStatus() const {
+    const auto* node = runner_.currentNode();
+    return node ? localization_.resolveStatus(node->i18nKey, locale_) : std::string{};
+}
+
+float DialogueFlow::getVoiceDuration() const {
+    const auto* node = runner_.currentNode();
+    return node ? static_cast<float>(localization_.resolveDuration(node->i18nKey, locale_)) : 0.0F;
+}
 
 int DialogueFlow::getRouteCount() const {
     const auto* node = runner_.currentNode();
@@ -396,6 +431,11 @@ void DialogueFlow::expose(ssq::Class& cls) {
                 static_cast<std::string (DialogueFlow::*)(int) const>(&DialogueFlow::getConversationId));
     cls.addFunc("hasConversation", &DialogueFlow::hasConversation);
     cls.addFunc("exportLocalizationCsv", &DialogueFlow::exportLocalizationCsv);
+    cls.addFunc("importLocalizationCsv", &DialogueFlow::importLocalizationCsv);
+    cls.addFunc("exportMissingLocalizationCsv", &DialogueFlow::exportMissingLocalizationCsv);
+    cls.addFunc("exportVoiceRecordingCsv", &DialogueFlow::exportVoiceRecordingCsv);
+    cls.addFunc("setLocale", &DialogueFlow::setLocale);
+    cls.addFunc("getLocale", &DialogueFlow::getLocale);
     cls.addFunc("getDiagnosticCount", &DialogueFlow::getDiagnosticCount);
     cls.addFunc("getDiagnosticSeverity", &DialogueFlow::getDiagnosticSeverity);
     cls.addFunc("getDiagnosticMessage", &DialogueFlow::getDiagnosticMessage);
@@ -414,6 +454,8 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getPool", &DialogueFlow::getPool);
     cls.addFunc("getI18nKey", &DialogueFlow::getI18nKey);
     cls.addFunc("getVoice", &DialogueFlow::getVoice);
+    cls.addFunc("getVoiceStatus", &DialogueFlow::getVoiceStatus);
+    cls.addFunc("getVoiceDuration", &DialogueFlow::getVoiceDuration);
     cls.addFunc("getRouteCount", &DialogueFlow::getRouteCount);
     cls.addFunc("getRouteId", &DialogueFlow::getRouteId);
     cls.addFunc("setExpressionEvaluator", &DialogueFlow::setExpressionEvaluator);

@@ -2,6 +2,7 @@
 
 #include "common/Module.h"
 #include "dialogue/ConversationCompiler.h"
+#include "dialogue/ConversationLocalization.h"
 
 #include <squirrel.h>
 #include <unordered_map>
@@ -33,6 +34,11 @@ public:
     std::string getConversationId(int index) const;
     bool        hasConversation(const std::string& id) const;
     std::string exportLocalizationCsv() const;
+    int         importLocalizationCsv(const std::string& csv, const std::string& defaultLocale);
+    std::string exportMissingLocalizationCsv(const std::string& locale) const;
+    std::string exportVoiceRecordingCsv(const std::string& locale) const;
+    void        setLocale(const std::string& locale) { locale_ = locale; }
+    std::string getLocale() const { return locale_; }
     int         getDiagnosticCount() const;
     std::string getDiagnosticSeverity(int index) const;
     std::string getDiagnosticMessage(int index) const;
@@ -51,6 +57,8 @@ public:
     std::string getPool() const;
     std::string getI18nKey() const;
     std::string getVoice() const;
+    std::string getVoiceStatus() const;
+    float       getVoiceDuration() const;
     int         getRouteCount() const;
     std::string getRouteId(int index) const;
 
@@ -76,6 +84,8 @@ private:
     std::unordered_map<std::string, size_t>                   sourceHashes_;
     std::unordered_map<std::string, std::vector<std::string>> sourceAssets_;
     bool                                                      lastLoadChanged_ = false;
+    ConversationLocalizationCatalog                           localization_;
+    std::string                                               locale_;
 };
 
 }  // namespace eve::dialogue

@@ -126,6 +126,13 @@ endconversation
   同时提升资产版本以显式拒绝不兼容的旧执行游标。
 - 本地化：`exportLocalizationCsv()` 返回带 conversation/node 稳定 ID、i18n key、
   speaker、源文和 voice key 的 RFC4180 CSV。
+- 回导与配音：`importLocalizationCsv(csv, defaultLocale)` 接受 `i18n_key/locale/translation`
+  以及可选的 `voice/status/duration` 列；`setLocale/getLocale` 控制当前语言，读取当前
+  `getText/getVoice` 时按精确 locale、语言代码、默认 locale 依次回退。
+  `exportMissingLocalizationCsv(locale)` 生成待翻译清单，
+  `exportVoiceRecordingCsv(locale)` 生成并可再次回导的录音清单，包含角色、源文、译文、
+  voice key、录制状态和时长；当前行可用 `getVoiceStatus/getVoiceDuration` 读取回导结果，
+  将时长直接交给 `dialogueVoice.registerVoice` 即可驱动语音结束自动推进。
 - 执行：`start(id, bindings)`、`advance`、`select(routeId)`、`isActive/isBlocked`、
   `getActiveConversationId/getNodeId/getNodeKind`。
 - 当前节点：`getSpeaker/getText/getPool/getI18nKey/getVoice`、
