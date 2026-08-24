@@ -59,6 +59,9 @@ public:
     float getRootMotionRotationW() const { return rootMotion_.qw; }
     /** @brief Pop the oldest notify crossed since the previous update. */
     std::string consumeEvent();
+    /** @brief Limit pose evaluation frequency for animation LOD; 0 updates every call. */
+    void  setUpdateRate(float hz);
+    float getUpdateRate() const { return updateRate_; }
 
     /** @brief Advance playback and sample into internal pose. */
     void update(float dt);
@@ -71,6 +74,10 @@ private:
     AnimClip*                prevClip_ = nullptr;
     AnimPose                 pose_;
     AnimPose                 prevPose_;
+    AnimPose                 sampledPose_;
+    AnimPose                 rootPreviousPose_;
+    AnimPose                 rootStartPose_;
+    AnimPose                 rootEndPose_;
     float                    time_            = 0.f;
     float                    prevTime_        = 0.f;
     float                    speed_           = 1.f;
@@ -84,6 +91,8 @@ private:
     int                      rootMotionBone_  = 0;
     TransformTRS             rootMotion_;
     std::vector<std::string> pendingEvents_;
+    float                    updateRate_        = 0.f;
+    float                    updateAccumulator_ = 0.f;
 };
 
 }  // namespace eve::animation

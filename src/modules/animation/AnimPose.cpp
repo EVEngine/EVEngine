@@ -7,7 +7,7 @@ namespace eve::animation {
 
 namespace {
 
-TransformTRS mulTRS(const TransformTRS &parent, const TransformTRS &local) {
+TransformTRS mulTRS(const TransformTRS& parent, const TransformTRS& local) {
     // world = parent * local (TRS, scale ignored in rotation path for FK positions)
     TransformTRS out;
     // Rotate local translation by parent rotation, then add parent translation * scales.
@@ -43,6 +43,7 @@ AnimPose::AnimPose(int boneCount) { resize(boneCount); }
 
 void AnimPose::resize(int boneCount) {
     if (boneCount < 0) throw Exception("AnimPose.resize: boneCount must be >= 0");
+    if (boneCount == getBoneCount()) return;
     locals_.assign(static_cast<size_t>(boneCount), TransformTRS::identity());
     worlds_.assign(static_cast<size_t>(boneCount), TransformTRS::identity());
 }
@@ -53,13 +54,13 @@ void AnimPose::requireBone(int boneIndex) const {
     }
 }
 
-void AnimPose::copyFrom(const AnimPose *other) {
+void AnimPose::copyFrom(const AnimPose* other) {
     if (!other) throw Exception("AnimPose.copyFrom: other is null");
     locals_ = other->locals_;
     worlds_ = other->worlds_;
 }
 
-void AnimPose::blendFrom(const AnimPose *a, const AnimPose *b, float t) {
+void AnimPose::blendFrom(const AnimPose* a, const AnimPose* b, float t) {
     if (!a || !b) throw Exception("AnimPose.blendFrom: pose is null");
     if (a->getBoneCount() != b->getBoneCount()) {
         throw Exception("AnimPose.blendFrom: bone count mismatch");
@@ -71,40 +72,40 @@ void AnimPose::blendFrom(const AnimPose *a, const AnimPose *b, float t) {
     }
 }
 
-TransformTRS &AnimPose::local(int boneIndex) {
+TransformTRS& AnimPose::local(int boneIndex) {
     requireBone(boneIndex);
     return locals_[static_cast<size_t>(boneIndex)];
 }
 
-const TransformTRS &AnimPose::local(int boneIndex) const {
+const TransformTRS& AnimPose::local(int boneIndex) const {
     requireBone(boneIndex);
     return locals_[static_cast<size_t>(boneIndex)];
 }
 
 void AnimPose::setLocalPosition(int boneIndex, float x, float y, float z) {
     requireBone(boneIndex);
-    auto &t = locals_[static_cast<size_t>(boneIndex)];
-    t.px = x;
-    t.py = y;
-    t.pz = z;
+    auto& t = locals_[static_cast<size_t>(boneIndex)];
+    t.px    = x;
+    t.py    = y;
+    t.pz    = z;
 }
 
 void AnimPose::setLocalRotation(int boneIndex, float x, float y, float z, float w) {
     requireBone(boneIndex);
-    auto &t = locals_[static_cast<size_t>(boneIndex)];
-    t.qx = x;
-    t.qy = y;
-    t.qz = z;
-    t.qw = w;
+    auto& t = locals_[static_cast<size_t>(boneIndex)];
+    t.qx    = x;
+    t.qy    = y;
+    t.qz    = z;
+    t.qw    = w;
     t.normalizeRotation();
 }
 
 void AnimPose::setLocalScale(int boneIndex, float x, float y, float z) {
     requireBone(boneIndex);
-    auto &t = locals_[static_cast<size_t>(boneIndex)];
-    t.sx = x;
-    t.sy = y;
-    t.sz = z;
+    auto& t = locals_[static_cast<size_t>(boneIndex)];
+    t.sx    = x;
+    t.sy    = y;
+    t.sz    = z;
 }
 
 float AnimPose::getLocalPositionX(int boneIndex) const {
@@ -148,7 +149,7 @@ float AnimPose::getLocalScaleZ(int boneIndex) const {
     return locals_[static_cast<size_t>(boneIndex)].sz;
 }
 
-void AnimPose::computeWorld(const AnimSkeleton *skeleton) {
+void AnimPose::computeWorld(const AnimSkeleton* skeleton) {
     if (!skeleton) throw Exception("AnimPose.computeWorld: skeleton is null");
     if (skeleton->getBoneCount() != getBoneCount()) {
         throw Exception("AnimPose.computeWorld: bone count mismatch");
@@ -194,7 +195,7 @@ float AnimPose::getWorldRotationW(int boneIndex) const {
     return worlds_[static_cast<size_t>(boneIndex)].qw;
 }
 
-const TransformTRS &AnimPose::world(int boneIndex) const {
+const TransformTRS& AnimPose::world(int boneIndex) const {
     requireBone(boneIndex);
     return worlds_[static_cast<size_t>(boneIndex)];
 }
@@ -208,7 +209,7 @@ float AnimPose::getWorldMatrixElement(int boneIndex, int elementIndex) const {
     return mat.m[elementIndex];
 }
 
-void AnimPose::getWorldMatrix(int boneIndex, float *out16) const {
+void AnimPose::getWorldMatrix(int boneIndex, float* out16) const {
     requireBone(boneIndex);
     if (!out16) throw Exception("AnimPose.getWorldMatrix: out16 is null");
     const Mat4 mat = Mat4::fromTRS(worlds_[static_cast<size_t>(boneIndex)]);

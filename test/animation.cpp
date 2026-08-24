@@ -293,6 +293,19 @@ TEST_CASE("animation.player.rootMotionAndNotifyAcrossLoop") {
     CHECK(player.consumeEvent() == "footstep.right");
 }
 
+TEST_CASE("animation.player.updateRateLodAccumulatesTime") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip> walk(makeLocomotionClip("walk", 1.f, 1.f));
+    AnimPlayer player(sk.get());
+    player.play(walk.get());
+    player.setUpdateRate(10.f);
+    player.update(0.04f);
+    CHECK(std::fabs(player.getTime()) < 1e-5f);
+    player.update(0.06f);
+    CHECK(std::fabs(player.getTime() - 0.1f) < 1e-5f);
+    CHECK(std::fabs(player.getRootMotionZ() - 0.1f) < 1e-5f);
+}
+
 TEST_CASE("animation.graph.blendSpaceLayerAndAdditive") {
     std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
     std::unique_ptr<AnimClip> idle(makeLocomotionClip("idle", 0.f, 1.f));

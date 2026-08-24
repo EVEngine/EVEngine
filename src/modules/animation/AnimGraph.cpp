@@ -13,7 +13,6 @@ namespace eve::animation {
 AnimGraph::AnimGraph(AnimSkeleton* skeleton) : skeleton_(skeleton) {
     if (!skeleton_) throw Exception("AnimGraph: skeleton is null");
     output_.resize(skeleton_->getBoneCount());
-    scratch_.resize(skeleton_->getBoneCount());
 }
 
 int AnimGraph::addNode(Kind kind) {
@@ -22,6 +21,7 @@ int AnimGraph::addNode(Kind kind) {
     node.kind  = kind;
     node.mask.assign(static_cast<size_t>(skeleton_->getBoneCount()), 1.f);
     node.cache.resize(skeleton_->getBoneCount());
+    node.scratch.resize(skeleton_->getBoneCount());
     return static_cast<int>(nodes_.size()) - 1;
 }
 
@@ -216,8 +216,8 @@ const AnimPose& AnimGraph::evaluateBlendSpace(Node& node, bool twoDimensional) {
     for (size_t i = 1; i < node.points.size(); ++i) {
         const float w        = weights[i] / sum;
         const float relative = w / (accumulated + w);
-        scratch_.copyFrom(&node.cache);
-        blendMasked(node.cache, scratch_, evaluate(node.points[i].child), relative, nullptr);
+        node.scratch.copyFrom(&node.cache);
+        blendMasked(node.cache, node.scratch, evaluate(node.points[i].child), relative, nullptr);
         accumulated += w;
     }
     return node.cache;

@@ -12,6 +12,10 @@ AnimPlayer::AnimPlayer(AnimSkeleton* skeleton) : skeleton_(skeleton) {
     if (!skeleton_) throw Exception("AnimPlayer: skeleton is null");
     pose_.resize(skeleton_->getBoneCount());
     prevPose_.resize(skeleton_->getBoneCount());
+    sampledPose_.resize(skeleton_->getBoneCount());
+    rootPreviousPose_.resize(skeleton_->getBoneCount());
+    rootStartPose_.resize(skeleton_->getBoneCount());
+    rootEndPose_.resize(skeleton_->getBoneCount());
     skeleton_->applyBindPose(&pose_);
 }
 
@@ -98,14 +102,29 @@ std::string AnimPlayer::consumeEvent() {
     return event;
 }
 
+void AnimPlayer::setUpdateRate(float hz) {
+    if (hz < 0.f) throw Exception("AnimPlayer.setUpdateRate: hz must be >= 0");
+    updateRate_        = hz;
+    updateAccumulator_ = 0.f;
+}
+
 void AnimPlayer::update(float dt) {
     if (dt < 0.f) throw Exception("AnimPlayer.update: dt must be >= 0");
     if (!playing_ || paused_ || !clip_) return;
+    if (updateRate_ > 0.f) {
+        updateAccumulator_ += dt;
+        const float interval = 1.f / updateRate_;
+        if (updateAccumulator_ + 1e-8f < interval) {
+            rootMotion_ = TransformTRS::identity();
+            return;
+        }
+        dt                 = updateAccumulator_;
+        updateAccumulator_ = 0.f;
+    }
 
     rootMotion_              = TransformTRS::identity();
     const float previousTime = time_;
-    AnimPose    previousPose(skeleton_->getBoneCount());
-    clip_->sample(previousTime, &previousPose, skeleton_);
+    clip_->sample(previousTime, &rootPreviousPose_, skeleton_);
     time_ += dt * speed_;
     clip_->collectEvents(previousTime, time_, effectiveLoop(), pendingEvents_);
     if (!effectiveLoop() && clip_->getDuration() > 0.f && time_ >= clip_->getDuration()) {
@@ -113,10 +132,9 @@ void AnimPlayer::update(float dt) {
         playing_ = false;
     }
 
-    AnimPose sampled;
-    clip_->sample(time_, &sampled, skeleton_);
-    const TransformTRS& fromRoot = previousPose.local(rootMotionBone_);
-    const TransformTRS& toRoot   = sampled.local(rootMotionBone_);
+    clip_->sample(time_, &sampledPose_, skeleton_);
+    const TransformTRS& fromRoot = rootPreviousPose_.local(rootMotionBone_);
+    const TransformTRS& toRoot   = sampledPose_.local(rootMotionBone_);
     rootMotion_.px               = toRoot.px - fromRoot.px;
     rootMotion_.py               = toRoot.py - fromRoot.py;
     rootMotion_.pz               = toRoot.pz - fromRoot.pz;
@@ -124,12 +142,10 @@ void AnimPlayer::update(float dt) {
         const float duration = clip_->getDuration();
         const int   cycles   = static_cast<int>(std::floor(time_ / duration) - std::floor(previousTime / duration));
         if (cycles != 0) {
-            AnimPose startPose(skeleton_->getBoneCount());
-            AnimPose endPose(skeleton_->getBoneCount());
-            clip_->sample(0.f, &startPose, skeleton_);
-            clip_->sampleClamped(duration, &endPose, skeleton_);
-            const TransformTRS& startRoot = startPose.local(rootMotionBone_);
-            const TransformTRS& endRoot   = endPose.local(rootMotionBone_);
+            clip_->sample(0.f, &rootStartPose_, skeleton_);
+            clip_->sampleClamped(duration, &rootEndPose_, skeleton_);
+            const TransformTRS& startRoot = rootStartPose_.local(rootMotionBone_);
+            const TransformTRS& endRoot   = rootEndPose_.local(rootMotionBone_);
             rootMotion_.px += static_cast<float>(cycles) * (endRoot.px - startRoot.px);
             rootMotion_.py += static_cast<float>(cycles) * (endRoot.py - startRoot.py);
             rootMotion_.pz += static_cast<float>(cycles) * (endRoot.pz - startRoot.pz);
@@ -151,15 +167,15 @@ void AnimPlayer::update(float dt) {
         if (t >= 1.f) {
             blending_ = false;
             prevClip_ = nullptr;
-            pose_.copyFrom(&sampled);
+            pose_.copyFrom(&sampledPose_);
         } else {
             // Advance previous clip time during fade for continuity.
             prevTime_ += dt * speed_;
             prevClip_->sample(prevTime_, &prevPose_, skeleton_);
-            pose_.blendFrom(&prevPose_, &sampled, t);
+            pose_.blendFrom(&prevPose_, &sampledPose_, t);
         }
     } else {
-        pose_.copyFrom(&sampled);
+        pose_.copyFrom(&sampledPose_);
     }
 }
 

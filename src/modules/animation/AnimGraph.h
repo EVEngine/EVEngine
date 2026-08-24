@@ -72,6 +72,7 @@ private:
         std::vector<Point> points;
         std::vector<float> mask;
         AnimPose           cache;
+        AnimPose           scratch;
         unsigned           cacheGeneration = 0;
     };
 
@@ -89,7 +90,6 @@ private:
     AnimSkeleton*     skeleton_ = nullptr;
     std::vector<Node> nodes_;
     AnimPose          output_;
-    AnimPose          scratch_;
     int               root_       = -1;
     unsigned          generation_ = 0;
 };

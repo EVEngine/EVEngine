@@ -695,6 +695,8 @@ void Animation::expose(ssq::Table &table) {
     player.addFunc("getRootMotionRotationZ", &AnimPlayer::getRootMotionRotationZ);
     player.addFunc("getRootMotionRotationW", &AnimPlayer::getRootMotionRotationW);
     player.addFunc("consumeEvent", &AnimPlayer::consumeEvent);
+    player.addFunc("setUpdateRate", &AnimPlayer::setUpdateRate);
+    player.addFunc("getUpdateRate", &AnimPlayer::getUpdateRate);
     player.addFunc("update", &AnimPlayer::update);
 
     auto graph = table.addClass<AnimGraph>(
