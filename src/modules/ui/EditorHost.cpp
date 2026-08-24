@@ -1168,12 +1168,9 @@ void EditorHost::frame() {
     I.inFrame = false;
 }
 
-std::string EditorHost::setEditorValue(const std::string& editorId, const std::string& widgetId,
-                                       const std::string& jsonValue) {
-    if (!impl_) return "error: host not started";
-    auto it = impl_->editors.find(editorId);
-    if (it == impl_->editors.end()) return "error: editor not found: " + editorId;
-    if (widgetId.empty()) return "error: missing widget";
+namespace {
+
+Var parseEditorValue(const std::string& jsonValue) {
     Var v;
     try {
         Poco::JSON::Parser p;
@@ -1181,26 +1178,58 @@ std::string EditorHost::setEditorValue(const std::string& editorId, const std::s
     } catch (...) {
         // Poco's parser wants a top-level JSON value; some clients pass bare
         // numbers/booleans without JSON quoting. Handle those explicitly.
-        if (jsonValue == "true") v = Var(true);
-        else if (jsonValue == "false") v = Var(false);
-        else if (jsonValue == "null") v = Var();
+        if (jsonValue == "true")
+            v = Var(true);
+        else if (jsonValue == "false")
+            v = Var(false);
+        else if (jsonValue == "null")
+            v = Var();
         else {
-            char* end = nullptr;
-            const double d = std::strtod(jsonValue.c_str(), &end);
+            char*        end = nullptr;
+            const double d   = std::strtod(jsonValue.c_str(), &end);
             if (end && end != jsonValue.c_str() && *end == '\0')
                 v = Var(d);
             else
                 v = Var(jsonValue);  // plain text
         }
     }
+    return v;
+}
+
+}  // namespace
+
+std::string EditorHost::setEditorValue(const std::string& editorId, const std::string& widgetId,
+                                       const std::string& jsonValue) {
+    if (!impl_) return "error: host not started";
+    auto it = impl_->editors.find(editorId);
+    if (it == impl_->editors.end()) return "error: editor not found: " + editorId;
+    if (widgetId.empty()) return "error: missing widget";
+    const Var v = parseEditorValue(jsonValue);
     setWidgetValue(*impl_, it->second, widgetId, v);
+    return "ok";
+}
+
+std::string EditorHost::restoreEditorValue(const std::string& editorId, const std::string& widgetId,
+                                           const std::string& jsonValue) {
+    if (!impl_ || !impl_->vm) return "error: host not started";
+    auto it = impl_->editors.find(editorId);
+    if (it == impl_->editors.end()) return "error: editor not found: " + editorId;
+    if (widgetId.empty()) return "error: missing widget";
+    const Var v                 = parseEditorValue(jsonValue);
+    it->second.values[widgetId] = v;
+    auto       vmIt             = impl_->vms.find(it->second.vmName);
+    const auto widget           = findWidget(it->second.view, widgetId);
+    if (vmIt != impl_->vms.end() && widget) {
+        const std::string bind = strOf(widget, "bind");
+        if (!bind.empty()) writeVMVar(*impl_->vm, vmIt->second, bind, v);
+    }
     return "ok";
 }
 
 std::string EditorHost::consumeEvents(const std::string& editorId) {
     if (!impl_) return "[]";
-    Array::Ptr arr = new Array();
-    auto drain = [&](Editor& ed) {
+    Array::Ptr arr   = new Array();
+    auto       drain = [&](Editor& ed) {
         for (const auto& e : ed.events) {
             Object::Ptr eo = new Object();
             eo->set("editor", ed.id);
@@ -1459,6 +1488,12 @@ void EditorHost::exposeScriptApi(ssq::VM& vm) {
         });
         host.addFunc("runScript", [](std::string source) {
             return EditorHost::instance().runScript(source);
+        });
+        host.addFunc("reloadResource", [](std::string path) {
+            return EditorHost::instance().reloadResource(path);
+        });
+        host.addFunc("hotReloadStatus", []() {
+            return EditorHost::instance().hotReloadStatus();
         });
     } catch (...) {
         // eve table missing — the host surface is optional.

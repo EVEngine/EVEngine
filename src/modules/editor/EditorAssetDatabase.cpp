@@ -24,17 +24,20 @@ EditorResult<AssetRecord> MemoryAssetDatabase::publish(AssetRecord record, std::
     if (record.guid.empty() || record.logicalUri.empty() || record.typeId.empty())
         return assetError<AssetRecord>(EditorStatus::Rejected, "editor.asset.invalid-record",
                                        "Asset GUID, logical URI and type are required");
-    for (const auto& [guid, existing] : records_) {
-        if (guid != record.guid && existing.logicalUri == record.logicalUri)
-            return assetError<AssetRecord>(EditorStatus::Conflict, "editor.asset.uri-conflict",
-                                           "Another asset already owns this logical URI");
-    }
+    const auto uriOwner = uriToGuid_.find(record.logicalUri);
+    if (uriOwner != uriToGuid_.end() && uriOwner->second != record.guid)
+        return assetError<AssetRecord>(EditorStatus::Conflict, "editor.asset.uri-conflict",
+                                       "Another asset already owns this logical URI");
     for (const AssetDependency& dependency : dependencies) {
         if (dependency.from != record.guid || dependency.to.empty())
             return assetError<AssetRecord>(EditorStatus::Rejected, "editor.asset.invalid-dependency",
                                            "Published dependencies must originate from the product asset");
     }
-    record.status = AssetStatus::Ready;
+    record.status       = AssetStatus::Ready;
+    const auto existing = records_.find(record.guid);
+    if (existing != records_.end() && existing->second.logicalUri != record.logicalUri)
+        uriToGuid_.erase(existing->second.logicalUri);
+    uriToGuid_.insert_or_assign(record.logicalUri, record.guid);
     records_.insert_or_assign(record.guid, record);
     std::erase_if(dependencies_, [&](const AssetDependency& dependency) { return dependency.from == record.guid; });
     dependencies_.insert(dependencies_.end(), dependencies.begin(), dependencies.end());
@@ -51,10 +54,8 @@ EditorResult<AssetRecord> MemoryAssetDatabase::find(const AssetGuid& guid) const
 }
 
 EditorResult<AssetRecord> MemoryAssetDatabase::findByUri(const std::string& logicalUri) const {
-    for (const auto& [guid, record] : records_) {
-        (void)guid;
-        if (record.logicalUri == logicalUri) return EditorResult<AssetRecord>::applied(record);
-    }
+    const auto guid = uriToGuid_.find(logicalUri);
+    if (guid != uriToGuid_.end()) return find(guid->second);
     return assetError<AssetRecord>(EditorStatus::NotFound, "editor.asset.not-found",
                                    "Asset URI is not indexed: " + logicalUri);
 }

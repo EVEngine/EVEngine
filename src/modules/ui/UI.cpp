@@ -2,6 +2,7 @@
 #include "ui/DatabasePanel.h"
 #include "ui/EditorShell.h"
 #include "ui/EditorHostCapabilities.h"
+#include "ui/UIAutomationCapabilities.h"
 
 #include "ui/Inspector.h"
 #include "ui/ScenePanel.h"
@@ -148,7 +149,10 @@ void injectUIComponentClass(ssq::Table &eveTable) {
 
 Module_IMPL(UI, new UI());
 
-UI::UI() : backend_(createImGuiBackend()) { registerEditorHostCapabilities(); }
+UI::UI() : backend_(createImGuiBackend()) {
+    registerEditorHostCapabilities();
+    registerUIAutomationCapabilities();
+}
 UI::~UI() { shutdownBackend(); }
 
 bool UI::isBackendReady() const { return backend_ && backend_->isInitialized(); }

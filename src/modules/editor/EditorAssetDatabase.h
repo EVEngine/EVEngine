@@ -77,6 +77,7 @@ public:
 
 private:
     std::unordered_map<AssetGuid, AssetRecord, StrongEditorIdHash<AssetGuid>> records_;
+    std::unordered_map<std::string, AssetGuid>                                uriToGuid_;
     std::vector<AssetDependency>                                              dependencies_;
     std::uint64_t                                                             generation_ = 0;
 };

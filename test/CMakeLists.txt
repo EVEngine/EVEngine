@@ -178,6 +178,7 @@ file(GLOB all_test_cpp
   reload_script.cpp
   dap.cpp
   mcp.cpp
+  mcp_hot_reload.cpp
   console.cpp
   cmdline.cpp
   main.cpp

@@ -5,6 +5,7 @@
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
+#include "editor/Editor.h"
 #include "ui/EditorHost.h"
 
 #include <Poco/Dynamic/Var.h>
@@ -47,7 +48,7 @@ public:
 
     void send(const std::string& json) {
         const std::string frame = json + "\n";
-        const int n = sock_.sendBytes(frame.data(), static_cast<int>(frame.size()));
+        const int         n     = sock_.sendBytes(frame.data(), static_cast<int>(frame.size()));
         REQUIRE(n == static_cast<int>(frame.size()));
     }
 
@@ -68,8 +69,7 @@ public:
     }
 
     Poco::JSON::Object::Ptr recv(int timeoutMs = 2000) {
-        const auto deadline =
-            std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
         while (std::chrono::steady_clock::now() < deadline) {
             McpServer::instance().poll();
             char buf[8192];
@@ -90,15 +90,14 @@ public:
             if (!line.empty() && line.back() == '\r') line.pop_back();
             if (line.empty()) continue;
             Poco::JSON::Parser parser;
-            auto var = parser.parse(line);
+            auto               var = parser.parse(line);
             return var.extract<Poco::JSON::Object::Ptr>();
         }
         return nullptr;
     }
 
     Poco::JSON::Object::Ptr expectResult(int id, int timeoutMs = 2000) {
-        const auto deadline =
-            std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
         while (std::chrono::steady_clock::now() < deadline) {
             auto msg = recv(50);
             if (!msg) continue;
@@ -113,9 +112,8 @@ public:
             if (msgId == id && msg->has("result")) return msg;
             if (msgId == id && msg->has("error")) {
                 // Fail with the server error message visible in the assertion.
-                auto err = msg->getObject("error");
-                const std::string em =
-                    err ? err->optValue<std::string>("message", "error") : "error";
+                auto              err = msg->getObject("error");
+                const std::string em  = err ? err->optValue<std::string>("message", "error") : "error";
                 REQUIRE(em.empty());  // expected no error; message shown if present
                 return nullptr;
             }
@@ -143,6 +141,19 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     dt.attach(vm, false);
     dt.exposeScriptApi(vm);
 
+    eve::editor::Editor            editor;
+    eve::editor::CommandDescriptor editorCommand;
+    editorCommand.id          = eve::editor::CommandId("mcp.test-command");
+    editorCommand.ownerModule = "mcp.test";
+    editorCommand.displayName = "MCP test command";
+    REQUIRE(editor.commandService()
+                .registerCommand(std::move(editorCommand),
+                                 [](const eve::editor::CommandContext&, const eve::editor::EditorValue&) {
+                                     return eve::editor::EditorResult<eve::editor::EditorValue>::applied(
+                                         eve::editor::EditorValue("executed"));
+                                 })
+                .accepted());
+
     const int port = mcp.listen(0);
     REQUIRE(port > 0);
     CHECK(ai.mcpPort() == port);
@@ -168,24 +179,31 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     REQUIRE(toolsMsg);
     auto tools = toolsMsg->getObject("result")->getArray("tools");
     REQUIRE(tools);
-    bool foundStatus = false;
-    bool foundEval   = false;
-    bool foundScene  = false;
-    bool foundProc   = false;
-    bool foundPhys   = false;
-    bool foundShot   = false;
-    bool foundParticles = false;
-    bool foundAudio  = false;
-    bool foundVision = false;
-    bool foundVcfg   = false;
-    bool foundSdMod  = false;
-    bool foundSdInfo = false;
-    bool foundCamGen = false;
-    bool foundReset  = false;
-    bool foundSdStat = false;
-    bool foundSdInst = false;
+    bool foundStatus          = false;
+    bool foundEval            = false;
+    bool foundScene           = false;
+    bool foundProc            = false;
+    bool foundPhys            = false;
+    bool foundShot            = false;
+    bool foundParticles       = false;
+    bool foundAudio           = false;
+    bool foundVision          = false;
+    bool foundVcfg            = false;
+    bool foundSdMod           = false;
+    bool foundSdInfo          = false;
+    bool foundCamGen          = false;
+    bool foundReset           = false;
+    bool foundSdStat          = false;
+    bool foundSdInst          = false;
+    bool foundUiTree          = false;
+    bool foundUiGet           = false;
+    bool foundUiClick         = false;
+    bool foundHostReload      = false;
+    bool foundHotReloadStatus = false;
+    bool foundEditorCommands  = false;
+    bool foundEditorPlan      = false;
     for (size_t i = 0; i < tools->size(); ++i) {
-        auto t = tools->getObject(static_cast<unsigned>(i));
+        auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
         if (name == "eve_status") foundStatus = true;
         if (name == "eve_eval") foundEval = true;
@@ -203,6 +221,13 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_scene_reset") foundReset = true;
         if (name == "eve_scene_director_status") foundSdStat = true;
         if (name == "eve_scene_director_install") foundSdInst = true;
+        if (name == "eve_ui_tree") foundUiTree = true;
+        if (name == "eve_ui_get") foundUiGet = true;
+        if (name == "eve_ui_click") foundUiClick = true;
+        if (name == "eve_host_resource_reload") foundHostReload = true;
+        if (name == "eve_host_hot_reload_status") foundHotReloadStatus = true;
+        if (name == "eve_editor_commands") foundEditorCommands = true;
+        if (name == "eve_editor_plan") foundEditorPlan = true;
     }
     CHECK(foundStatus);
     CHECK(foundEval);
@@ -220,9 +245,15 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundReset);
     CHECK(foundSdStat);
     CHECK(foundSdInst);
+    CHECK(foundUiTree);
+    CHECK(foundUiGet);
+    CHECK(foundUiClick);
+    CHECK(foundHostReload);
+    CHECK(foundHotReloadStatus);
+    CHECK(foundEditorCommands);
+    CHECK(foundEditorPlan);
 
-    client.sendRequest(3, "tools/call",
-                       "{\"name\":\"eve_status\",\"arguments\":{}}");
+    client.sendRequest(3, "tools/call", "{\"name\":\"eve_status\",\"arguments\":{}}");
     auto statusMsg = client.expectResult(3);
     REQUIRE(statusMsg);
     auto content = statusMsg->getObject("result")->getArray("content");
@@ -232,8 +263,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(text.find("\"attached\":true") != std::string::npos);
     CHECK(text.find("\"mcpPort\":") != std::string::npos);
 
-    client.sendRequest(4, "tools/call",
-                       "{\"name\":\"eve_ai_note\",\"arguments\":{\"text\":\"hello agent\"}}");
+    client.sendRequest(4, "tools/call", "{\"name\":\"eve_ai_note\",\"arguments\":{\"text\":\"hello agent\"}}");
     REQUIRE(client.expectResult(4));
     const std::string log = ai.formatLog(16);
     CHECK(log.find("hello agent") != std::string::npos);
@@ -244,8 +274,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     REQUIRE(resMsg);
     auto contents = resMsg->getObject("result")->getArray("contents");
     REQUIRE(contents);
-    CHECK(contents->getObject(0)->getValue<std::string>("text").find("hello agent") !=
-          std::string::npos);
+    CHECK(contents->getObject(0)->getValue<std::string>("text").find("hello agent") != std::string::npos);
 
     client.sendRequest(6, "prompts/list");
     auto promptsMsg = client.expectResult(6);
@@ -270,41 +299,39 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(sceneText.find("{") != std::string::npos);
     const std::string procText = textOf(8, "{\"name\":\"eve_procgen_recipes\",\"arguments\":{}}");
     CHECK(procText.find("{") != std::string::npos);
-    const std::string physText =
-        textOf(9, "{\"name\":\"eve_physics_list_worlds\",\"arguments\":{}}");
+    const std::string physText = textOf(9, "{\"name\":\"eve_physics_list_worlds\",\"arguments\":{}}");
     CHECK(physText.find("[") != std::string::npos);
     // Vision config tool returns JSON config (no network call, no crash).
-    const std::string vcfgText =
-        textOf(10, "{\"name\":\"eve_render_vision_config\",\"arguments\":{}}");
+    const std::string vcfgText = textOf(10, "{\"name\":\"eve_render_vision_config\",\"arguments\":{}}");
     CHECK(vcfgText.find("{") != std::string::npos);
     CHECK(vcfgText.find("apiKeySet") != std::string::npos);
 
     // Scene-director tools: auto-install the Squirrel kit into the plain test VM
     // and drive it over MCP (no Graphics / modules mounted -> geometry-only ops).
-    const std::string sdStat =
-        textOf(11, "{\"name\":\"eve_scene_director_status\",\"arguments\":{}}");
+    const std::string sdStat = textOf(11, "{\"name\":\"eve_scene_director_status\",\"arguments\":{}}");
     CHECK(sdStat.find("\"installed\":true") != std::string::npos);
 
     const std::string resetText = textOf(12, "{\"name\":\"eve_scene_reset\",\"arguments\":{}}");
     CHECK(resetText.find("ok") != std::string::npos);
 
-    const std::string infoText =
-        textOf(13, "{\"name\":\"eve_scene_info\",\"arguments\":{}}");
+    const std::string infoText = textOf(13, "{\"name\":\"eve_scene_info\",\"arguments\":{}}");
     CHECK(infoText.find("\"count\":0") != std::string::npos);
 
-    const std::string camText =
-        textOf(14, "{\"name\":\"eve_camera_generate\",\"arguments\":{\"count\":2}}");
+    const std::string camText = textOf(14, "{\"name\":\"eve_camera_generate\",\"arguments\":{\"count\":2}}");
     CHECK(camText.find("\"cam_0\"") != std::string::npos);
 
-    const std::string modInfo =
-        textOf(15, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"info\"}}");
+    const std::string modInfo = textOf(15, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"info\"}}");
     CHECK(modInfo.find("\"count\":0") != std::string::npos);
     // Unknown action must surface as a controlled error, not crash the server.
-    const std::string modBad =
-        textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
-    const bool modBadHasError = modBad.find("error") != std::string::npos ||
-                                modBad.find("unknown action") != std::string::npos;
+    const std::string modBad = textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
+    const bool        modBadHasError =
+        modBad.find("error") != std::string::npos || modBad.find("unknown action") != std::string::npos;
     CHECK(modBadHasError);
+    const std::string editorCommands = textOf(17, "{\"name\":\"eve_editor_commands\",\"arguments\":{}}");
+    CHECK(editorCommands.find("mcp.test-command") != std::string::npos);
+    const std::string editorExecuted =
+        textOf(18, "{\"name\":\"eve_editor_execute\",\"arguments\":{\"command\":\"mcp.test-command\",\"payload\":{}}}");
+    CHECK(editorExecuted.find("\"status\":\"applied\"") != std::string::npos);
 
     mcp.stop();
     dt.detach();
@@ -334,13 +361,11 @@ TEST_CASE("devtools.mcp.evalAndPause") {
     REQUIRE(client.expectResult(1));
     client.sendNotification("notifications/initialized");
 
-    client.sendRequest(2, "tools/call",
-                       "{\"name\":\"eve_eval\",\"arguments\":{\"expression\":\"score\"}}");
+    client.sendRequest(2, "tools/call", "{\"name\":\"eve_eval\",\"arguments\":{\"expression\":\"score\"}}");
     auto evalMsg = client.expectResult(2);
     REQUIRE(evalMsg);
     const std::string evalText =
-        evalMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>(
-            "text");
+        evalMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
     CHECK(evalText.find("42") != std::string::npos);
 
     client.sendRequest(3, "tools/call", "{\"name\":\"eve_pause\",\"arguments\":{}}");
@@ -403,16 +428,15 @@ TEST_CASE("devtools.mcp.stdioTransport") {
 }
 
 TEST_CASE("devtools.mcp.hostEditorBinding") {
-    auto& mcp = McpServer::instance();
-    auto& dt  = DevTool::instance();
+    auto& mcp  = McpServer::instance();
+    auto& dt   = DevTool::instance();
     auto& host = eve::ui::EditorHost::instance();
     mcp.stop();
     dt.detach();
     host.stop();
 
     const auto tmp = std::filesystem::temp_directory_path() /
-                     ("eve_host_test_" +
-                      std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+                     ("eve_host_test_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(tmp);
 
     ssq::VM vm(1024, ssq::Libs::ALL);
@@ -451,14 +475,17 @@ TEST_CASE("devtools.mcp.hostEditorBinding") {
         "};";
     std::string vmSourceEscaped;
     for (char c : vmSource) {
-        if (c == '\\') vmSourceEscaped += "\\\\";
-        else if (c == '"') vmSourceEscaped += "\\\"";
-        else vmSourceEscaped += c;
+        if (c == '\\')
+            vmSourceEscaped += "\\\\";
+        else if (c == '"')
+            vmSourceEscaped += "\\\"";
+        else
+            vmSourceEscaped += c;
     }
-    const std::string vmText = textOf(
-        2, "{\"name\":\"eve_host_vm_register\",\"arguments\":{\"name\":\"TerrainVM\","
-           "\"source\":\"" +
-               vmSourceEscaped + "\"}}");
+    const std::string vmText = textOf(2,
+                                      "{\"name\":\"eve_host_vm_register\",\"arguments\":{\"name\":\"TerrainVM\","
+                                      "\"source\":\"" +
+                                          vmSourceEscaped + "\"}}");
     CHECK(vmText == "ok");
 
     const std::string editorJson =
@@ -468,52 +495,46 @@ TEST_CASE("devtools.mcp.hostEditorBinding") {
         "\"value\":5,\"bind\":\"vm.brushSize\",\"onChange\":\"vm.onChange\"},"
         "{\"type\":\"button\",\"id\":\"apply\",\"label\":\"Apply\",\"command\":\"vm.apply\"}"
         "]}";
-    const std::string applyText = textOf(
-        3, "{\"name\":\"eve_host_editor_apply\",\"arguments\":{\"editor\":" + editorJson + "}}");
+    const std::string applyText =
+        textOf(3, "{\"name\":\"eve_host_editor_apply\",\"arguments\":{\"editor\":" + editorJson + "}}");
     CHECK(applyText.find("\"id\":\"terrain\"") != std::string::npos);
     CHECK(applyText.find("\"brushSize\"") != std::string::npos);
 
     // set_value must write the VM, fire onChange, and emit a change event.
-    const std::string setText = textOf(
-        4, "{\"name\":\"eve_host_editor_set_value\",\"arguments\":{"
-           "\"editor\":\"terrain\",\"widget\":\"brushSize\",\"value\":12}}");
+    const std::string setText = textOf(4,
+                                       "{\"name\":\"eve_host_editor_set_value\",\"arguments\":{"
+                                       "\"editor\":\"terrain\",\"widget\":\"brushSize\",\"value\":12}}");
     CHECK(setText == "ok");
 
-    const std::string stateText = textOf(
-        5, "{\"name\":\"eve_host_editor_state\",\"arguments\":{\"id\":\"terrain\"}}");
+    const std::string stateText = textOf(5, "{\"name\":\"eve_host_editor_state\",\"arguments\":{\"id\":\"terrain\"}}");
     CHECK(stateText.find("\"brushSize\":12") != std::string::npos);
 
-    const std::string evalText = textOf(
-        6, "{\"name\":\"eve_eval\",\"arguments\":{\"expression\":\"TerrainVM.brushSize\"}}");
+    const std::string evalText =
+        textOf(6, "{\"name\":\"eve_eval\",\"arguments\":{\"expression\":\"TerrainVM.brushSize\"}}");
     CHECK(evalText.find("12") != std::string::npos);
 
-    const std::string countText = textOf(
-        7, "{\"name\":\"eve_eval\",\"arguments\":{\"expression\":\"TerrainVM.changedCount\"}}");
+    const std::string countText =
+        textOf(7, "{\"name\":\"eve_eval\",\"arguments\":{\"expression\":\"TerrainVM.changedCount\"}}");
     CHECK(countText.find("1") != std::string::npos);
 
-    const std::string eventsText = textOf(
-        8, "{\"name\":\"eve_host_events\",\"arguments\":{\"editor\":\"terrain\"}}");
+    const std::string eventsText = textOf(8, "{\"name\":\"eve_host_events\",\"arguments\":{\"editor\":\"terrain\"}}");
     CHECK(eventsText.find("\"type\":\"change\"") != std::string::npos);
     CHECK(eventsText.find("\"brushSize\"") != std::string::npos);
 
     // Persistence: save -> unload -> reload from disk.
-    CHECK(textOf(9, "{\"name\":\"eve_host_editor_save\",\"arguments\":{\"id\":\"terrain\"}}") ==
-          "ok");
+    CHECK(textOf(9, "{\"name\":\"eve_host_editor_save\",\"arguments\":{\"id\":\"terrain\"}}") == "ok");
     CHECK(std::filesystem::is_regular_file(tmp / "editors" / "terrain.editor.json"));
     CHECK(std::filesystem::is_regular_file(tmp / "editors" / "terrain.vm.nut"));
 
-    CHECK(textOf(10, "{\"name\":\"eve_host_editor_unload\",\"arguments\":{\"id\":\"terrain\"}}") ==
-          "ok");
-    const std::string listText =
-        textOf(11, "{\"name\":\"eve_host_editor_list\",\"arguments\":{}}");
+    CHECK(textOf(10, "{\"name\":\"eve_host_editor_unload\",\"arguments\":{\"id\":\"terrain\"}}") == "ok");
+    const std::string listText = textOf(11, "{\"name\":\"eve_host_editor_list\",\"arguments\":{}}");
     CHECK(listText.find("terrain") == std::string::npos);
 
     host.loadEditorsFromDisk();
-    const std::string reloadList =
-        textOf(12, "{\"name\":\"eve_host_editor_list\",\"arguments\":{}}");
+    const std::string reloadList = textOf(12, "{\"name\":\"eve_host_editor_list\",\"arguments\":{}}");
     CHECK(reloadList.find("terrain") != std::string::npos);
-    const std::string reloadState = textOf(
-        13, "{\"name\":\"eve_host_editor_state\",\"arguments\":{\"id\":\"terrain\"}}");
+    const std::string reloadState =
+        textOf(13, "{\"name\":\"eve_host_editor_state\",\"arguments\":{\"id\":\"terrain\"}}");
     // Persistence stores the original View + VM source; runtime values reset.
     CHECK(reloadState.find("\"brushSize\":5") != std::string::npos);
 

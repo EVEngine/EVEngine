@@ -3,6 +3,7 @@
 #include "common/Module.h"
 #include "editor/EditorCommandService.h"
 
+#include <memory>
 #include <string>
 
 namespace eve {
@@ -31,6 +32,7 @@ class EditorSession;
 class TileBufferTarget;
 class HeightmapTarget;
 class ScriptEditorTool;
+class EditorAutomationProvider;
 
 /**
  * @brief Editor building blocks — not a shipped 3D/map editor app.
@@ -42,8 +44,8 @@ class ScriptEditorTool;
 class Editor : public Module {
 public:
     Module_REG(Editor);
-    Editor()           = default;
-    ~Editor() override = default;
+    Editor();
+    ~Editor() override;
 
     TransformGizmo* newGizmo();
     GizmoManager*   newGizmoManager();
@@ -103,7 +105,8 @@ public:
 #endif
 
 private:
-    EditorCommandService commandService_;
+    EditorCommandService                      commandService_;
+    std::unique_ptr<EditorAutomationProvider> automation_;
 };
 
 }  // namespace eve::editor

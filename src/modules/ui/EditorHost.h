@@ -62,6 +62,9 @@ public:
     void syncBindings();
     std::string setEditorValue(const std::string& editorId, const std::string& widgetId,
                                const std::string& jsonValue);
+    /** @brief Restore a widget and its binding without emitting events or onChange. */
+    std::string restoreEditorValue(const std::string& editorId, const std::string& widgetId,
+                                   const std::string& jsonValue);
     /** @brief Read and clear pending interaction events for one editor ("" = all). */
     std::string consumeEvents(const std::string& editorId);
     /** @brief Last-frame widget rect JSON (for script drawing inside viewports). */
@@ -83,6 +86,12 @@ public:
     // ---- misc --------------------------------------------------------------
     std::string runScript(const std::string& source);
     std::string capture(const std::string& path);
+    /** @brief Reload mcp.nut, mcp/*.nut, or editors/*.vm.nut|*.editor.json. */
+    std::string reloadResource(const std::string& path);
+    /** @brief Watch count, reload counters and latest diagnostic as compact JSON. */
+    std::string hotReloadStatus() const;
+    /** @brief Set active project watch count reported by hotReloadStatus(). */
+    void setHotReloadWatchCount(int count);
     std::string status() const;
     void        requestExit() { exitRequested_ = true; }
     bool        exitRequested() const { return exitRequested_; }

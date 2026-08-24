@@ -117,6 +117,15 @@ session.dispatchPointer(0, 0, 0, mapX, mapY, 0.0, 0.0, 1.0);
 
 `EditorSession` 和工具都是非拥有关系；脚本必须像上例一样持有 `road`，直到从会话移除。
 
+### 注册并执行项目命令
+
+项目可用 `registerScriptCommand(id, name, category, callback)` 把游戏专用操作注入统一命令
+服务，退出插件或编辑器时用 `unregisterScriptCommand(id)` 清理。会话通过
+`getCommandCount()` 与 `getCommandId/Name/Category(index)` 枚举命令；
+`planCommand(id, payload)` 只生成并保留计划，随后用 `executePlan(planId, context)` 执行；
+不需要预览时可直接 `executeCommand(id, payload)`。这些入口和 C++ 命令服务共享约束、
+事务及 HostProfile 策略，因此游戏内建造玩法和开发编辑器可以复用同一条命令路径。
+
 ## 地图笔刷
 
 旧的 `Brush` / `EditorHistory` API 为兼容已有脚本保留。新编辑器优先使用上面的协议式会话；旧 API 适合很小的纯 tile 工具。
@@ -183,8 +192,8 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newSession` / `newScriptTool` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
-- 会话：`addTool` / `removeTool` / `clearTools` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo`
+- 模块：`newSession` / `newScriptTool` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- 会话：`addTool` / `removeTool` / `clearTools` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - Gizmo：`setMode` / `setSpace` / `setPosition` / `setRotationEuler` / `setScale` / `setBounds` / `setSnap*` / `pick` / `beginDrag` / `updateDrag` / `endDrag` / `getPart*`
 - Manager：`set*Enabled` / `attach` / `detach` / `getGizmo` / `pick` / `beginDrag` / `updateDrag`

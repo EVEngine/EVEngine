@@ -142,6 +142,16 @@ EditorResult<TransactionReceipt> EditorSession::executeRetainedPlan(const PlanId
     return result;
 }
 
+EditorResult<void> EditorSession::cancelRetainedPlan(const PlanId& id) {
+    const auto found = std::find_if(retainedPlans_.begin(), retainedPlans_.end(),
+                                    [&](const RetainedPlan& retained) { return retained.plan.id == id; });
+    if (found == retainedPlans_.end())
+        return EditorResult<void>::error(EditorStatus::NotFound, RuleId("editor.command.plan-not-found"),
+                                         "Retained command plan was not found");
+    retainedPlans_.erase(found);
+    return EditorResult<void>::applied();
+}
+
 void EditorSession::clearRetainedPlans() { retainedPlans_.clear(); }
 
 EditorSession::~EditorSession() { deactivateCurrent(); }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "editor/EditorDocumentService.h"
+#include "editor/EditorTaskService.h"
 
 #include <map>
 #include <string>
@@ -107,14 +108,19 @@ public:
 /**
  * @brief Revision-aware material compile result and preview publication service.
  *
- * Compilation is synchronous in this slice but still returns TaskId so the API
- * can move to workers without changing callers.
+ * Both synchronous compatibility and real background compilation share the
+ * same result/publication contract.
  */
 class MaterialEditorService {
 public:
     /** @brief Compile and cache a task result. */
     EditorResult<TaskId> compile(const DocumentId& document, const GraphDocumentData& graph,
                                  const MaterialGraphDomain& domain);
+    /** @brief Queue a cancellable compile using an immutable graph snapshot. */
+    EditorResult<TaskId> compileAsync(const DocumentId& document, GraphDocumentData graph,
+                                      const MaterialGraphDomain& domain, EditorTaskService& tasks);
+    /** @brief Request cancellation of an asynchronous compile task. */
+    EditorResult<void> cancel(const TaskId& task);
     /** @brief Return one cached compile task result. */
     EditorResult<MaterialCompileResult> result(const TaskId& task) const;
     /** @brief Publish only a successful artifact compiled from the current revision. */
@@ -126,6 +132,7 @@ private:
     struct Task {
         DocumentId            document;
         MaterialCompileResult result;
+        EditorTaskService*    service = nullptr;
     };
 
     std::unordered_map<TaskId, Task, StrongEditorIdHash<TaskId>>                tasks_;

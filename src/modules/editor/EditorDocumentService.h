@@ -53,6 +53,7 @@ struct DocumentSnapshot {
     std::string                   resourceUri;
     DocumentState                 state = DocumentState::Loading;
     DocumentRevision              revision;
+    std::string                   diskContentHash;
     std::vector<StableId>         viewIds;
     std::vector<EditorDiagnostic> diagnostics;
 
@@ -84,6 +85,7 @@ public:
     virtual EditorResult<StoredDocument> read(const std::string& resourceUri) const = 0;
     /** @brief Replace a value only when the expected disk revision still matches. */
     virtual EditorResult<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
+                                                        const std::string& expectedContentHash,
                                                         const EditorValue& content) = 0;
 };
 
@@ -92,6 +94,7 @@ class MemoryAtomicDocumentStore final : public IAtomicDocumentStore {
 public:
     EditorResult<StoredDocument> read(const std::string& resourceUri) const override;
     EditorResult<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
+                                                const std::string& expectedContentHash,
                                                 const EditorValue& content) override;
 
 private:
@@ -138,7 +141,6 @@ private:
         EditorValue content;
     };
 
-    static std::string                    contentHash(const EditorValue& value);
     static EditorResult<DocumentSnapshot> error(EditorStatus status, const char* rule, std::string message);
 
     IAtomicDocumentStore*                                                        store_ = nullptr;

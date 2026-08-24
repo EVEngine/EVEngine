@@ -115,6 +115,8 @@ public:
                                     std::optional<Revision> expectedRevision = std::nullopt);
     /** @brief Execute a retained plan. Successful plans are consumed exactly once. */
     EditorResult<TransactionReceipt> executeRetainedPlan(const PlanId& id, CommandSource source = CommandSource::Api);
+    /** @brief Discard one retained plan without executing it. */
+    EditorResult<void> cancelRetainedPlan(const PlanId& id);
     /** @brief Discard all retained plans, for example after replacing a document or target. */
     void clearRetainedPlans();
 

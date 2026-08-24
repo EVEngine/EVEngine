@@ -100,8 +100,12 @@ TEST_CASE("editor.v2.document_save_detects_external_revision_conflict") {
     CHECK(documents.executeSave(*firstTicket.value).accepted());
 
     CHECK(documents.edit(id, EditorValue("local-v2")).accepted());
-    auto staleTicket = documents.requestSave(id);
-    CHECK(store.compareAndSwap("content://Materials/Test.evmaterial", 1, EditorValue("external-v2")).accepted());
+    auto       staleTicket = documents.requestSave(id);
+    const auto persisted   = store.read("content://Materials/Test.evmaterial");
+    CHECK(store
+              .compareAndSwap("content://Materials/Test.evmaterial", 1, persisted.value->contentHash,
+                              EditorValue("external-v2"))
+              .accepted());
     auto conflict = documents.executeSave(*staleTicket.value);
     CHECK_EQ(static_cast<int>(conflict.status), static_cast<int>(EditorStatus::Conflict));
     CHECK_EQ(static_cast<int>(conflict.value->state), static_cast<int>(DocumentState::Conflict));
@@ -151,4 +155,24 @@ TEST_CASE("editor.v2.import_place_save_and_reopen_headless_loop") {
     auto            reopenedDocument = reopened.open(key, "Park Scene", "content://World/Park.evscene");
     CHECK(reopenedDocument.accepted());
     CHECK(reopened.content(reopenedDocument.value->id).value == std::optional<EditorValue>(savedScene));
+}
+
+TEST_CASE("editor.v2.asset_database_indexes_and_pages_100k_records") {
+    MemoryAssetDatabase database;
+    constexpr int       count = 100000;
+    for (int index = 0; index < count; ++index) {
+        AssetRecord record;
+        record.guid       = AssetGuid("asset-" + std::to_string(index));
+        record.logicalUri = "content://Bulk/asset-" + std::to_string(index);
+        record.typeId     = index % 2 == 0 ? "bulk.even" : "bulk.odd";
+        REQUIRE(database.publish(std::move(record)).accepted());
+    }
+    CHECK_EQ(database.generation(), static_cast<std::uint64_t>(count));
+    AssetQuery query;
+    query.typeIds = {"bulk.odd"};
+    auto page     = database.query(query, 1000, 128, database.generation());
+    REQUIRE(page.accepted());
+    CHECK_EQ(page.value->values.size(), static_cast<std::size_t>(128));
+    CHECK(page.value->hasMore);
+    CHECK(database.findByUri("content://Bulk/asset-99999").accepted());
 }
