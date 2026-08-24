@@ -149,6 +149,15 @@ Renderable3D *makeRenderable(IResourceFactory *gfx, ModelData *model, int meshIn
     Renderable3D *ent = Renderable3D::create();
     ent->meshRenderer()->visible = true;
     ent->setMesh(mesh);
+    // Preserve the established Renderable3D inspection API. The Material below
+    // is authoritative for drawing, while these mirrored fields keep imported
+    // models compatible with callers that query meshRenderer()/getTexture().
+    if (look.albedo) ent->setTexture(look.albedo);
+    if (look.normal) ent->setNormalTexture(look.normal);
+    if (look.height) ent->setHeightTexture(look.height);
+    ent->setTint(look.tr, look.tg, look.tb, look.ta);
+    ent->setMetallic(look.metallic);
+    ent->setRoughness(look.roughness);
     // Keep imported surface semantics in one Material instead of losing glTF
     // alphaMode/alphaCutoff on the legacy renderer fields.
     Material *material = new Material();
