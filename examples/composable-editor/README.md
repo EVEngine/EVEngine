@@ -20,6 +20,9 @@ The example demonstrates:
 - ECS-backed runtime objects created through the same command service used by a
   developer editor or an in-game builder;
 - extension-shaped actions for RTS, card, voxel, dialogue, and avatar workflows.
+- a project-owned `DialogueEditorComponent` that reflects `ConversationDocument`
+  fields into ordinary UI controls, validates the graph, and applies it to the same
+  runtime registry used by the game; the engine contains no fixed dialogue panel.
 
 Run with:
 
@@ -43,6 +46,11 @@ the algorithm or the widget mapping produces a different tool without changing t
 The inspector uses that exact field builder with `pbr.rock`, filters the project-relevant
 knobs, and composes `ProcgenRecipeSchema`, `Params`, `ImageData`, GPU textures and
 `Material`; there is no C++ material-editor window.
+
+`dialogue_component.nut` is deliberately separate from the composition root. It
+selects a compact subset of reflected line fields for this project's bottom bar;
+another project can use the same document API for a node canvas, localization QA,
+cutscene preview, or an in-game quest authoring screen without modifying C++.
 
 Mesh generators use the same contract: call `getMeshRecipeSchema` and
 `applyMeshRecipeDefaults`, pass the returned schema to `renderRecipeFields`, and feed

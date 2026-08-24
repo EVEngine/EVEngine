@@ -118,7 +118,7 @@ endconversation
   角色前缀、参数占位符、双向 Twine 链接、Yarn shortcut options、`jump/stop/wait/call/set`
   命令以及 `#line:/#voice:` 标签都会保留，并进入统一的引用校验流程。Twee 的
   `StoryTitle/StoryData` 元数据 passages 会自动忽略。
-- 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticMessage`；编译检查
+- 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticPath/getDiagnosticLine/getDiagnosticMessage`；编译检查
   重复或缺失 ID、无效引用，并报告不可达节点。
 - 工具链：相同 path、相同内容的 `loadFromDnut` 会命中内存增量缓存，
   `getLastLoadChanged()` 可判断是否重编译；`removeSource(path)` 卸载该来源产生的资产；
@@ -160,6 +160,42 @@ endconversation
 
 Runner 在 line、choice、wait 和异步 command 边界暂停；C++ API 的
 `captureState/restoreState` 保存资产版本、node ID、bindings、locals 和子对话调用栈。
+
+### `ConversationDocument`（可组合编辑数据）
+
+引擎不内置固定的对话编辑器。`dialogueFlow.newDocument(id)` 创建 UI 无关的可变图文档，
+`getDocument(id)` 返回运行资产的可编辑副本；项目可用任意 MVVM/UI 组件组合节点列表、
+画布、Inspector、诊断面板与游戏内剧情工具。只有 `applyDocument(document)` 校验整个工作区
+成功后才事务式替换运行资产。
+
+```squirrel
+local doc = dialogueFlow.newDocument("quest.intro");
+doc.addNode("welcome", "line");
+doc.setEntry("welcome");
+doc.setField("welcome", "text", "Welcome, {player.name}.");
+doc.setField("welcome", "next", "end");
+
+// Inspector 不硬编码字段：按 node kind 的 schema 动态生成控件。
+for (local i = 0; i < doc.getFieldCount("welcome"); ++i) {
+    local key = doc.getFieldName("welcome", i);
+    local hint = doc.getFieldKind("welcome", i); // string|multiline|node|asset|json
+    // viewModel.addEditor(key, hint, doc.getField("welcome", key));
+}
+if (doc.validate()) dialogueFlow.applyDocument(doc);
+```
+
+- 文档：`getId/setId`、`getVersion/setVersion`、`getEntry/setEntry`、
+  `getParameterCount/getParameter/addParameter/removeParameter`。
+- 节点：`getNodeCount/getNodeId/hasNode/addNode/removeNode/renameNode`、
+  `getNodeKind/setNodeKind`。节点类型为 `line|branch|choice|call|command|wait|end`。
+- 反射式 Inspector：`getFieldCount/getFieldName/getFieldKind/getField/setField`；
+  `arguments` 字段以 JSON object 编辑，其余字段为字符串或资源/节点引用。
+- 连线：`getRouteCount/getRouteLabel/getRouteTarget/addRoute/setRoute/removeRoute`；
+  route 适用于 branch 与 choice，节点改名或删除会同步维护引用。
+- 结构化诊断：`validate`、`getDiagnosticCount/getDiagnosticSeverity/getDiagnosticPath`
+  `/getDiagnosticLine/getDiagnosticMessage`、`getLastError`。
+- Registry 桥接：`DialogueFlow.newDocument/getDocument/applyDocument`。文档只是数据类，
+  不依赖 editor 或 ui 模块，因此同一资产可被桌面编辑器、游戏内工具、自动化生成器和测试复用。
 
 ## 生命周期
 

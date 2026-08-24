@@ -4,6 +4,8 @@
 // models. This file is a project-specific presenter: replacing panelBuilders
 // creates a different editor without modifying the engine.
 
+dofile("dialogue_component.nut");
+
 const MAP_W = 48;
 const MAP_H = 48;
 const CELL = 0.55;
@@ -65,6 +67,7 @@ state <- persist("composableEditor", function() {
         materialSchema = null
         materialResource = null
         materialSet = null
+        dialogueComponent = null
         camera = null
         panelsMounted = false
         objects = []
@@ -218,6 +221,7 @@ function panelPalette() {
     ui.button("Dialogue Node", "spawn-dialogue");
     ui.button("Avatar Preview", "spawn-avatar");
     ui.end();
+    state.dialogueComponent.render("dialogue-");
     ui.separator("sep-procgen");
     ui.text(state.procgenSchema.getDisplayName() + " · reflected schema", "procgen-title");
     renderRecipeFields(state.procgenSchema, state.procgenParams, "procgen-", true, null);
@@ -354,6 +358,15 @@ function spawnArchetype(kind) {
     if (!result.accepted) state.vm.status = "Command rejected: " + kind;
 }
 
+function applyDialogueDocument() {
+    if (state.dialogueComponent.apply(dialogueFlow)) {
+        spawnArchetype("dialogue.document");
+        state.vm.status = "Applied project-composed Dialogue document";
+    } else {
+        state.vm.status = "Dialogue validation failed: " + state.dialogueComponent.document.getLastError();
+    }
+}
+
 function updateRecipeParam(schema, params, prefix, id) {
     local key = id.slice(prefix.len());
     for (local i = 0; i < schema.getParamCount(); ++i) {
@@ -430,7 +443,7 @@ function handlePanelEvents() {
             else if (id == "spawn-rts") spawnArchetype("rts.unit");
             else if (id == "spawn-card") spawnArchetype("card.table");
             else if (id == "spawn-voxel") spawnArchetype("voxel.volume");
-            else if (id == "spawn-dialogue") spawnArchetype("dialogue.node");
+            else if (id == "spawn-dialogue") applyDialogueDocument();
             else if (id == "spawn-avatar") spawnArchetype("avatar.preview");
             else if (id.find("select-") == 0) {
                 local selected = id.slice(7);
@@ -449,6 +462,10 @@ function handlePanelEvents() {
                 updateRecipeParam(state.procgenSchema, state.procgenParams, "procgen-", id);
             else if (id.find("pbr-") == 0)
                 updateRecipeParam(state.materialSchema, state.materialParams, "pbr-", id);
+            else if (id.find("dialogue-") == 0) {
+                if (state.dialogueComponent.consumeChange("dialogue-", id))
+                    state.vm.status = "Dialogue field changed: " + id.slice(9);
+            }
             change = ui.consumeChange();
         }
     }
@@ -522,6 +539,7 @@ eve_init = function() {
     state.materialParams.setSize(128, 128);
     procgen.applyPbrRecipeDefaults(state.materialRecipe, state.materialParams);
     state.materialSchema = procgen.getPbrRecipeSchema(state.materialRecipe);
+    state.dialogueComponent = DialogueEditorComponent(dialogueFlow, "quest.example");
     configureWorkspace();
     registerProjectCommands();
     generateTerrain();
