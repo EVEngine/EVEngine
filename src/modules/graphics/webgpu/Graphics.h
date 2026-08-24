@@ -265,19 +265,14 @@ public:
     void endGBufferPass() override;
     image::ImageData *readGBufferToImageData(const std::string &attachment) override;
 
-    bool supportsDecal() const override { return false; }
-    void beginDecalPass(int width, int height) override { (void)width; (void)height; }
-    void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override {
-        (void)viewProj; (void)nearZ; (void)farZ;
-    }
+    bool supportsDecal() const override { return true; }
+    void beginDecalPass(int width, int height) override;
+    void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override;
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
-                   float metalStrength, float emissiveStrength, int blendMode = 0) override {
-        (void)model; (void)albedo; (void)normal; (void)params; (void)uvRect;
-        (void)fade; (void)normalStrength; (void)roughnessStrength; (void)metalStrength;
-        (void)emissiveStrength; (void)blendMode;
-    }
-    void endDecalPass() override {}
+                   float metalStrength, float emissiveStrength, int blendMode = 0) override;
+    void endDecalPass() override;
+    image::ImageData *readDecalLayerToImageData(const std::string &attachment) override;
 
     Canvas *newCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
@@ -379,6 +374,15 @@ private:
         glm::vec4 tint{1.f};
         uint32_t pushUboOffset = 0;
     };
+    struct DecalDraw {
+        glm::mat4 model{1.f};
+        Texture *albedo = nullptr;
+        Texture *normal = nullptr;
+        Texture *params = nullptr;
+        glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
+        glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};
+        glm::vec4 extraParams{0.f};
+    };
 
     void createInstanceAndAdapter();
     void requestDevice();
@@ -392,6 +396,7 @@ private:
     void createMesh3DClusteredPipeline();
     void createShadowPipelines();
     void createGbufferPipelines();
+    void createDecalPipeline();
     void createVoxelPipelines();
     void createSceneColorResources(int width, int height);
     void destroySceneColorResources();
@@ -399,6 +404,8 @@ private:
     void destroyShadowResources();
     void createGbufferResources(int width, int height);
     void destroyGbufferResources();
+    void createDecalResources(int width, int height);
+    void destroyDecalResources();
 
     wgpu::RenderPipeline createPipelineForShader(GpuShader *gs, wgpu::TextureFormat format,
                                                  bool depth, bool mesh3d, bool hair,
@@ -409,12 +416,14 @@ private:
     wgpu::BindGroupLayout makeMesh3DClusteredBindGroupLayout();
     wgpu::BindGroupLayout makeShadowBindGroupLayout();
     wgpu::BindGroupLayout makeGbufferBindGroupLayout();
+    wgpu::BindGroupLayout makeDecalBindGroupLayout();
     wgpu::BindGroupLayout makeVoxelBindGroupLayout();
     wgpu::PipelineLayout make2DPipelineLayout();
     wgpu::PipelineLayout makeMesh3DPipelineLayout();
     wgpu::PipelineLayout makeMesh3DClusteredPipelineLayout();
     wgpu::PipelineLayout makeShadowPipelineLayout();
     wgpu::PipelineLayout makeGbufferPipelineLayout();
+    wgpu::PipelineLayout makeDecalPipelineLayout();
     wgpu::PipelineLayout makeVoxelPipelineLayout();
 
     GpuTexture *gpuForTexture(Texture *t) const;
@@ -444,6 +453,8 @@ private:
                      bool canvasTarget = false);
     void flushShadowPass(wgpu::RenderPassEncoder pass);
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
+    void flushDecalPass(wgpu::RenderPassEncoder pass);
+    void submitPendingDeferredPasses();
     void flushVoxelDraws(wgpu::RenderPassEncoder pass, WGPUTextureFormat format);
 
     // UBO arena: one growable uniform buffer per in-flight frame slot.
@@ -544,11 +555,13 @@ private:
     } clusteredStorage[kFramesInFlight];
     wgpu::PipelineLayout shadowPipelineLayout;
     wgpu::PipelineLayout gbufferPipelineLayout;
+    wgpu::PipelineLayout decalPipelineLayout;
     wgpu::PipelineLayout voxelPipelineLayout;
     wgpu::BindGroupLayout tex2DSetLayout;
     wgpu::BindGroupLayout mesh3dSetLayout;
     wgpu::BindGroupLayout shadowSetLayout;
     wgpu::BindGroupLayout gbufferSetLayout;
+    wgpu::BindGroupLayout decalSetLayout;
     wgpu::BindGroupLayout voxelSetLayout;
 
     // SSAO (screen-space ambient occlusion) resources. The AO pass runs after
@@ -586,6 +599,7 @@ private:
     wgpu::RenderPipeline mesh3dShadowAlphaPipeline;
     wgpu::RenderPipeline mesh3dGbufferPipeline;
     wgpu::RenderPipeline mesh3dGbufferAlphaPipeline;
+    wgpu::RenderPipeline decalPipeline;
     wgpu::RenderPipeline voxelRectPipeline;
     wgpu::RenderPipeline lit2dPipeline;
     // RGBA8Unorm (offscreen canvas / scene) variants of the 2D pipelines.
@@ -729,6 +743,26 @@ private:
     std::vector<GbufferSlot> gbufferSlots;
     uint32_t lastGbufferSlot = 0;
 
+    struct DecalSlot {
+        wgpu::Texture albedo;
+        wgpu::TextureView albedoView;
+        wgpu::Texture normal;
+        wgpu::TextureView normalView;
+        wgpu::Texture params;
+        wgpu::TextureView paramsView;
+    };
+    int decalWidth = 0, decalHeight = 0;
+    std::vector<DecalSlot> decalSlots;
+    std::vector<DecalDraw> decalPassDraws;
+    glm::mat4 decalViewProj{1.f};
+    bool decalPassActive = false;
+    bool decalPassPending = false;
+    bool decalReady = false;
+    uint32_t lastDecalSlot = 0;
+    Texture *decalFlatAlbedo = nullptr;
+    Texture *decalFlatNormal = nullptr;
+    Texture *decalFlatParams = nullptr;
+
     // Canvas state.
     Canvas *activeCanvas = nullptr;
     std::vector<std::unique_ptr<eve::graphics::Canvas>> ownedCanvases;
@@ -752,7 +786,8 @@ private:
     // serves every draw that uses the same texture set (per-draw creation was
     // a hot path: makeMeshBindGroup ran once per mesh draw per frame).
     using MeshBindGroupKey = std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t>;
+                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t,
+                                        uintptr_t, uintptr_t, uintptr_t>;
     std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
     static constexpr size_t kMaxMeshBindGroupCache = 128;
     void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }

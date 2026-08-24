@@ -22,6 +22,58 @@
 
 namespace eve::graphics::vulkan {
 
+namespace {
+
+template <class TextureImage>
+void uploadTextureForAllShaderStages(vkb::Device &device, vk::CommandPool commandPool,
+                                     vk::Queue graphicsQueue, TextureImage &image,
+                                     uint32_t width, uint32_t height, uint32_t mipLevels,
+                                     uint32_t layers, const std::vector<uint8_t> &bytes) {
+    vkb::GenericBuffer staging(
+        device, vk::BufferUsageFlagBits::eTransferSrc, vk::DeviceSize(bytes.size()),
+        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+    staging.updateLocal(vkb::FrameSlot::gpuIdle(), bytes.data(), vk::DeviceSize(bytes.size()));
+
+    vkb::executeImmediately(device.instance, commandPool, graphicsQueue,
+                            [&](vk::CommandBuffer cb) {
+                                vk::DeviceSize offset = 0;
+                                for (uint32_t mip = 0; mip < mipLevels; ++mip) {
+                                    const uint32_t mipWidth = std::max(width >> mip, 1u);
+                                    const uint32_t mipHeight = std::max(height >> mip, 1u);
+                                    for (uint32_t layer = 0; layer < layers; ++layer) {
+                                        image.copy(cb, staging.buffer, mip, layer, mipWidth,
+                                                   mipHeight, 1, uint32_t(offset));
+                                        offset += vk::DeviceSize(mipWidth) * mipHeight * 4u;
+                                    }
+                                }
+                                // VKBuilder's shader-read transition targets
+                                // vertex shaders only. Perform the final image
+                                // transition here so fragment and compute
+                                // texture consumers are in its destination
+                                // scope as well.
+                                vk::ImageMemoryBarrier barrier{};
+                                barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+                                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+                                barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+                                barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+                                barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                barrier.image = image.image();
+                                barrier.subresourceRange = {
+                                    vk::ImageAspectFlagBits::eColor, 0, mipLevels, 0, layers};
+                                cb.pipelineBarrier(
+                                    vk::PipelineStageFlagBits::eTransfer,
+                                    vk::PipelineStageFlagBits::eVertexShader |
+                                        vk::PipelineStageFlagBits::eFragmentShader |
+                                        vk::PipelineStageFlagBits::eComputeShader,
+                                    {}, 0, nullptr, 0, nullptr, 1, &barrier);
+                                image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+    staging.release();
+}
+
+}  // namespace
+
 void Graphics::writeCombinedImageDescriptor(GpuTexture *gpu) {
     if (!gpu || !gpu->descriptorSet || !gpu->sampler) return;
     vk::ImageView view = gpu->imageView();
@@ -67,7 +119,9 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
                         : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
-    gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
+    uploadTextureForAllShaderStages(device, uploadPool,
+                                    device.getQueue(vkb::QueueType::graphics), gpu->image,
+                                    uint32_t(w), uint32_t(h), mipLevels, 1, bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
@@ -125,7 +179,9 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChainCube(rgbaFaces, uint32_t(faceSize), mipLevels)
                         : std::vector<uint8_t>(rgbaFaces, rgbaFaces + faceBytes * 6u);
-    gpu->cubeImage.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
+    uploadTextureForAllShaderStages(device, uploadPool,
+                                    device.getQueue(vkb::QueueType::graphics), gpu->cubeImage,
+                                    uint32_t(faceSize), uint32_t(faceSize), mipLevels, 6, bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
     // Cubemap sampled via mesh3d descriptor sets — no 2D texSetLayout binding required here.
@@ -255,7 +311,9 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
                         : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
-    gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
+    uploadTextureForAllShaderStages(device, uploadPool,
+                                    device.getQueue(vkb::QueueType::graphics), gpu->image,
+                                    uint32_t(w), uint32_t(h), mipLevels, 1, bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
 

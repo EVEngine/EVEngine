@@ -251,6 +251,9 @@ struct FSIn {
 @group(0) @binding(8) var shadowSamp: sampler_comparison;
 @group(0) @binding(10) var aoTex: texture_2d<f32>;
 @group(0) @binding(11) var aoSamp: sampler;
+@group(0) @binding(12) var decalAlbedoLayer: texture_2d<f32>;
+@group(0) @binding(13) var decalNormalLayer: texture_2d<f32>;
+@group(0) @binding(14) var decalParamsLayer: texture_2d<f32>;
 
 const PI: f32 = 3.14159265359;
 
@@ -376,21 +379,41 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     var nGeom = normalize(in.vNormal);
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
-    let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
+    var base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
     if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
     let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
     if (ubo.surface.x > 2.5 && base.a < alphaHash) { discard; }
-    let albedo = base.rgb;
-    let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
-    let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
+    var albedo = base.rgb;
+    var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
+    var rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
     let count = i32(ubo.lightDir.w + 0.5);
     let nSmp = textureSample(normalSampler, mainSamp, in.vUV).xyz;
     var n = nGeom;
     if (length(nSmp - vec3f(0.5, 0.5, 1.0)) > 0.04) {
         let mapN = nSmp * 2.0 - 1.0;
         n = normalize(mapN);
+    }
+    var emissive = vec3f(0.0);
+    let decalPos = clamp(vec2<i32>(in.fragCoord.xy), vec2<i32>(0),
+                         vec2<i32>(textureDimensions(decalAlbedoLayer)) - vec2<i32>(1));
+    let decalA = textureLoad(decalAlbedoLayer, decalPos, 0);
+    let decalCoverage = clamp(decalA.a, 0.0, 1.0);
+    if (decalCoverage > 0.001) {
+        albedo = mix(albedo, decalA.rgb, decalCoverage);
+        let decalN = textureLoad(decalNormalLayer, decalPos, 0);
+        let normalWeight = clamp(decalN.a, 0.0, 1.0);
+        if (normalWeight > 0.001) {
+            n = normalize(mix(n, normalize(decalN.rgb * 2.0 - 1.0), normalWeight));
+        }
+        let decalP = textureLoad(decalParamsLayer, decalPos, 0);
+        let paramsWeight = clamp(decalP.a, 0.0, 1.0);
+        if (paramsWeight > 0.001) {
+            rough = mix(rough, decalP.r, paramsWeight);
+            metallic = mix(metallic, decalP.g, paramsWeight);
+            emissive += decalA.rgb * decalP.b;
+        }
     }
     var lo = vec3f(0.0);
     let viewDepth = max(-in.vViewPos.z, 0.0);
@@ -421,7 +444,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
     let gndIrr = ubo.ambient.rgb * vec3f(0.72, 0.62, 0.52);
     let irr = mix(gndIrr, skyIrr, hemi);
-    var color = albedo * irr * (1.0 - metallic) + lo;
+    var color = albedo * irr * (1.0 - metallic) + lo + emissive;
     let envIntensity = ubo.lightColor.w;
     if (envIntensity > 1e-4) {
         let r = reflect(-v, n);
@@ -446,8 +469,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let white = 0.85;
     let over = max(color - vec3f(white), vec3f(0.0));
     color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
-    let outputAlpha = select(1.0, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
-    return vec4f(color, outputAlpha);
+    let nearZ = max(ubo.clipInfo.x, 1e-4);
+    let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
+    let viewZ = max(-in.vViewPos.z, 0.0);
+    let linearDepth = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
+    return vec4f(color, linearDepth);
 }
 )wgsl";
 
@@ -563,6 +589,9 @@ struct FSIn {
 @group(0) @binding(12) var<storage, read> lightIndices: array<u32>;
 @group(0) @binding(13) var aoTex: texture_2d<f32>;
 @group(0) @binding(14) var aoSamp: sampler;
+@group(0) @binding(15) var decalAlbedoLayer: texture_2d<f32>;
+@group(0) @binding(16) var decalNormalLayer: texture_2d<f32>;
+@group(0) @binding(17) var decalParamsLayer: texture_2d<f32>;
 
 const PI: f32 = 3.14159265359;
 
@@ -664,19 +693,39 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     var nGeom = normalize(in.vNormal);
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
-    let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
+    var base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
     if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
     let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
     if (ubo.surface.x > 2.5 && base.a < alphaHash) { discard; }
-    let albedo = base.rgb;
-    let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
-    let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
+    var albedo = base.rgb;
+    var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
+    var rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
     let nSmp = textureSample(normalSampler, mainSamp, in.vUV).xyz;
     var n = nGeom;
     if (length(nSmp - vec3f(0.5, 0.5, 1.0)) > 0.04) {
         n = normalize(nSmp * 2.0 - 1.0);
+    }
+    var emissive = vec3f(0.0);
+    let decalPos = clamp(vec2<i32>(in.fragCoord.xy), vec2<i32>(0),
+                         vec2<i32>(textureDimensions(decalAlbedoLayer)) - vec2<i32>(1));
+    let decalA = textureLoad(decalAlbedoLayer, decalPos, 0);
+    let decalCoverage = clamp(decalA.a, 0.0, 1.0);
+    if (decalCoverage > 0.001) {
+        albedo = mix(albedo, decalA.rgb, decalCoverage);
+        let decalN = textureLoad(decalNormalLayer, decalPos, 0);
+        let normalWeight = clamp(decalN.a, 0.0, 1.0);
+        if (normalWeight > 0.001) {
+            n = normalize(mix(n, normalize(decalN.rgb * 2.0 - 1.0), normalWeight));
+        }
+        let decalP = textureLoad(decalParamsLayer, decalPos, 0);
+        let paramsWeight = clamp(decalP.a, 0.0, 1.0);
+        if (paramsWeight > 0.001) {
+            rough = mix(rough, decalP.r, paramsWeight);
+            metallic = mix(metallic, decalP.g, paramsWeight);
+            emissive += decalA.rgb * decalP.b;
+        }
     }
     var lo = vec3f(0.0);
     let viewDepth = max(-in.vViewPos.z, 0.0);
@@ -701,7 +750,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
     let gndIrr = ubo.ambient.rgb * vec3f(0.72, 0.62, 0.52);
     let irr = mix(gndIrr, skyIrr, hemi);
-    var color = albedo * irr * (1.0 - metallic) + lo;
+    var color = albedo * irr * (1.0 - metallic) + lo + emissive;
     let envIntensity = ubo.lightColor.w;
     if (envIntensity > 1e-4) {
         let r = reflect(-v, n);
@@ -718,8 +767,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let white = 0.85;
     let over = max(color - vec3f(white), vec3f(0.0));
     color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
-    let outputAlpha = select(1.0, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
-    return vec4f(color, outputAlpha);
+    let nearZ = max(ubo.clipInfo.x, 1e-4);
+    let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
+    let viewZ = max(-in.vViewPos.z, 0.0);
+    let linearDepth = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
+    return vec4f(color, linearDepth);
 }
 )wgsl";
 
@@ -794,15 +846,27 @@ struct VSOut {
     @location(2) vUV: vec2f,
 };
 @group(0) @binding(0) var<uniform> pc: Push;
+fn inverseGbufferModel(m: mat3x3f) -> mat3x3f {
+    let a = m[0].x; let b = m[1].x; let c = m[2].x;
+    let d = m[0].y; let e = m[1].y; let f = m[2].y;
+    let g = m[0].z; let h = m[1].z; let i = m[2].z;
+    let det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+    return mat3x3f(
+        vec3f((e * i - f * h) / det, (f * g - d * i) / det, (d * h - e * g) / det),
+        vec3f((c * h - b * i) / det, (a * i - c * g) / det, (b * g - a * h) / det),
+        vec3f((b * f - c * e) / det, (c * d - a * f) / det, (a * e - b * d) / det));
+}
 @vertex
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     out.pos = pc.mvp * vec4f(in.pos, 1.0);
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     out.pos.y = -out.pos.y;
-    let nrm = mat3x3f(pc.modelR0.xyz, pc.modelR1.xyz, pc.modelR2.xyz) * in.normal;
-    out.vNormal = normalize(nrm);
-    out.vNdcZ = out.pos.z;
+    let model3 = mat3x3f(vec3f(pc.modelR0.x, pc.modelR1.x, pc.modelR2.x),
+                         vec3f(pc.modelR0.y, pc.modelR1.y, pc.modelR2.y),
+                         vec3f(pc.modelR0.z, pc.modelR1.z, pc.modelR2.z));
+    out.vNormal = normalize(transpose(inverseGbufferModel(model3)) * in.normal);
+    out.vNdcZ = out.pos.z / max(out.pos.w, 1e-6);
     out.vUV = in.uv;
     return out;
 }
@@ -837,9 +901,13 @@ fn fs_main(in: FSIn) -> GBufOut {
     let farZ = max(pc.clip.y, nearZ + 1e-3);
     // NDC z -> linear [0,1] over the clip range (matches scene color A).
     let ndc = clamp(in.vNdcZ, 0.0, 1.0);
-    let linear = nearZ * farZ / max(farZ - ndc * (farZ - nearZ), 1e-6);
+    let eyeZ = nearZ * farZ / max(farZ - ndc * (farZ - nearZ), 1e-6);
+    let linear = clamp((eyeZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
     out.depthColor = vec4f(linear, linear, linear, 1.0);
-    out.albedo = textureSample(albedoSampler, mainSamp, in.vUV);
+    let packedTint = bitcast<u32>(pc.clip.z);
+    let tint = vec3f(f32(packedTint & 255u), f32((packedTint >> 8u) & 255u),
+                     f32((packedTint >> 16u) & 255u)) / 255.0;
+    out.albedo = vec4f(textureSample(albedoSampler, mainSamp, in.vUV).rgb * tint, linear);
     return out;
 }
 )wgsl";
@@ -874,9 +942,89 @@ fn fs_main(in: FSIn) -> GBufOut {
     let nearZ = max(pc.clip.x, 1e-4);
     let farZ = max(pc.clip.y, nearZ + 1e-3);
     let ndc = clamp(in.vNdcZ, 0.0, 1.0);
-    let linear = nearZ * farZ / max(farZ - ndc * (farZ - nearZ), 1e-6);
+    let eyeZ = nearZ * farZ / max(farZ - ndc * (farZ - nearZ), 1e-6);
+    let linear = clamp((eyeZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
     out.depthColor = vec4f(linear, linear, linear, 1.0);
-    out.albedo = sampled;
+    let packedTint = bitcast<u32>(pc.clip.z);
+    let tint = vec3f(f32(packedTint & 255u), f32((packedTint >> 8u) & 255u),
+                     f32((packedTint >> 16u) & 255u)) / 255.0;
+    out.albedo = vec4f(sampled.rgb * tint, linear);
+    return out;
+}
+)wgsl";
+
+// ---- Screen-space decal layer ---------------------------------------------
+inline const char *kDecalVertWgsl = R"wgsl(
+@vertex
+fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> @builtin(position) vec4f {
+    let positions = array<vec2f, 3>(
+        vec2f(-1.0, -1.0), vec2f(3.0, -1.0), vec2f(-1.0, 3.0));
+    return vec4f(positions[vertexIndex], 0.0, 1.0);
+}
+)wgsl";
+
+inline const char *kDecalFragWgsl = R"wgsl(
+struct DecalUniforms {
+    invViewProj: mat4x4f,
+    invModel: mat4x4f,
+    modelR0: vec4f,
+    modelR1: vec4f,
+    modelR2: vec4f,
+    uvRect: vec4f,
+    fadeParams: vec4f,
+    extraParams: vec4f,
+    texel: vec4f,
+};
+struct DecalOut {
+    @location(0) albedo: vec4f,
+    @location(1) normal: vec4f,
+    @location(2) params: vec4f,
+};
+@group(0) @binding(0) var<uniform> u: DecalUniforms;
+@group(0) @binding(1) var decalAlbedo: texture_2d<f32>;
+@group(0) @binding(2) var decalNormal: texture_2d<f32>;
+@group(0) @binding(3) var decalParams: texture_2d<f32>;
+@group(0) @binding(4) var hwDepth: texture_depth_2d;
+@group(0) @binding(5) var gbNormal: texture_2d<f32>;
+@group(0) @binding(6) var mainSamp: sampler;
+
+@fragment
+fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
+    let uv = pos.xy * u.texel.xy;
+    let texelPos = vec2<i32>(pos.xy);
+    let ndcZ = textureLoad(hwDepth, texelPos, 0);
+    if (ndcZ <= 0.0 || ndcZ >= 1.0) { discard; }
+
+    let clip = vec4f(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, ndcZ, 1.0);
+    let wp = u.invViewProj * clip;
+    let worldPos = wp.xyz / max(abs(wp.w), 1e-6);
+    let lp = u.invModel * vec4f(worldPos, 1.0);
+    let local = lp.xyz / max(abs(lp.w), 1e-6);
+    if (any(abs(local) > vec3f(0.5))) { discard; }
+
+    let surfaceN = textureLoad(gbNormal, texelPos, 0).xyz * 2.0 - 1.0;
+    let decalFwd = normalize(mat3x3f(u.modelR0.xyz, u.modelR1.xyz, u.modelR2.xyz) *
+                             vec3f(0.0, 0.0, 1.0));
+    if (dot(surfaceN, decalFwd) < 0.1) { discard; }
+
+    let decalUV = clamp(local.xy + 0.5, vec2f(0.0), vec2f(1.0));
+    let atlasUV = u.uvRect.xy + decalUV * u.uvRect.zw;
+    let alb = textureSample(decalAlbedo, mainSamp, atlasUV);
+    let nrm = textureSample(decalNormal, mainSamp, atlasUV);
+    let prm = textureSample(decalParams, mainSamp, atlasUV);
+    var coverage = alb.a * clamp(u.fadeParams.x, 0.0, 1.0);
+    let edge = smoothstep(vec2f(0.0), vec2f(0.06), decalUV) *
+               smoothstep(vec2f(1.0), vec2f(0.94), decalUV);
+    coverage *= edge.x * edge.y;
+    if (coverage <= 0.001) { discard; }
+
+    var out: DecalOut;
+    out.albedo = vec4f(alb.rgb, coverage);
+    out.normal = vec4f(nrm.rgb * step(0.001, u.fadeParams.y),
+                       coverage * clamp(u.fadeParams.y, 0.0, 1.0));
+    out.params = vec4f(prm.r * clamp(u.fadeParams.z, 0.0, 1.0),
+                       prm.g * clamp(u.fadeParams.w, 0.0, 1.0),
+                       prm.b * clamp(u.extraParams.x, 0.0, 1.0), coverage);
     return out;
 }
 )wgsl";

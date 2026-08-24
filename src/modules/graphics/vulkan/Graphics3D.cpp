@@ -231,7 +231,6 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     offscreen3DPassOpen = true;
     frameHad3D = true;
     hasPendingClear = false;
-    decalLayerFresh = false;
 }
 
 void Graphics::end3DFrameToCanvas() {
@@ -583,8 +582,10 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     auto u8 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
     };
-    const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16) | (255u << 24);
-    d.push.clip = glm::vec4(nearZ, farZ, glm::uintBitsToFloat(packedTint), 0.f);
+    // A float exactly represents every integer through 24 bits. Numeric packing avoids
+    // NaN canonicalization and subnormal flush-to-zero corrupting bit-cast payloads.
+    const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16);
+    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), 0.f);
     gbufferPassDraws.push_back(d);
 }
 
@@ -604,8 +605,8 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     auto u8 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
     };
-    const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16) | (255u << 24);
-    d.push.clip = glm::vec4(nearZ, farZ, glm::uintBitsToFloat(packedTint), 0.f);
+    const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16);
+    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), 0.f);
     gbufferPassDraws.push_back(d);
 }
 
@@ -646,6 +647,7 @@ void Graphics::beginDecalPass(int w, int h) {
     if (!texSetLayout || !descriptorPool)
         throw Exception("beginDecalPass: textured descriptor layout not ready");
     createDecalResources(w, h);
+    ensureDecalPlaceholders();
     decalPassActive = true;
     decalPassDraws.clear();
 }
@@ -699,9 +701,8 @@ void Graphics::recordDecalPass() {
         decalPassDraws.clear();
         return;
     }
-    ensureDecalUnitBox();
     auto *gslot = currentGBufferSlot();
-    if (!decalUnitBox || !decalUnitBox->gpuHandle || !gslot) {
+    if (!gslot) {
         decalPassDraws.clear();
         return;
     }
@@ -743,23 +744,6 @@ void Graphics::recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBuffe
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, decalPipeline);
     decalLayerFresh = true;
 
-    ensureDecalPlaceholders();
-    auto *gpuMesh = static_cast<GpuMesh *>(decalUnitBox->gpuHandle);
-    const uint32_t dynOffset = 0;
-
-    // Group draws by (atlas textures, blend mode) so each group is one
-    // instanced draw call; per-instance data lives in the slot SSBO.
-    struct DrawGroup {
-        GpuTexture *albedo = nullptr;
-        GpuTexture *normal = nullptr;
-        GpuTexture *params = nullptr;
-        int blendMode = 0;
-        uint32_t first = 0;
-        uint32_t count = 0;
-    };
-    std::vector<DrawGroup> groups;
-    std::vector<DecalInstanceData> instances;
-    instances.reserve(decalPassDraws.size());
     for (const auto &d : decalPassDraws) {
         GpuTexture *gpuAlb = d.albedo && d.albedo->gpuHandle
                                  ? static_cast<GpuTexture *>(d.albedo->gpuHandle)
@@ -770,42 +754,27 @@ void Graphics::recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBuffe
         GpuTexture *gpuPrm = d.params && d.params->gpuHandle
                                  ? static_cast<GpuTexture *>(d.params->gpuHandle)
                                  : static_cast<GpuTexture *>(decalFlatParams->gpuHandle);
-        auto groupIt = std::find_if(groups.begin(), groups.end(), [&](const DrawGroup &g) {
-            return g.albedo == gpuAlb && g.normal == gpuNrm && g.params == gpuPrm &&
-                   g.blendMode == d.blendMode;
-        });
-        if (groupIt == groups.end()) {
-            groups.push_back(
-                DrawGroup{gpuAlb, gpuNrm, gpuPrm, d.blendMode, uint32_t(instances.size()), 0});
-            groupIt = groups.end() - 1;
-        }
         DecalInstanceData inst{};
         inst.model = d.model;
         inst.uvRect = glm::vec4(d.uvRect[0], d.uvRect[1], d.uvRect[2], d.uvRect[3]);
         inst.fadeParams =
             glm::vec4(d.fade, d.normalStrength, d.roughnessStrength, d.metalStrength);
         inst.extraParams = glm::vec4(d.emissiveStrength, float(d.blendMode), 0.f, 0.f);
-        instances.push_back(inst);
-        ++groupIt->count;
-    }
-    if (!instances.empty()) {
-        updateRingLocal(slot.instanceBuf, 0, instances.data(),
-                        vk::DeviceSize(instances.size()) * sizeof(DecalInstanceData));
-    }
-    lastDecalPipeline = nullptr;
-    for (const auto &g : groups) {
-        vkb::BoundSet set =
-            decalSetFor(slot, g.albedo, g.normal, g.params, &gslot.depthGpu, &gslot.normalGpu);
-        if (decalPipeline != lastDecalPipeline) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, decalPipeline);
-            lastDecalPipeline = decalPipeline;
-        }
-        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0, 1,
-                              set.ptr(), 1, &dynOffset);
-        const vk::DeviceSize vboffset = 0;
-        cb.bindVertexBuffers(0, 1, meshDrawVertices(*gpuMesh), &vboffset);
-        cb.bindIndexBuffer(meshDrawIndices(*gpuMesh).buffer, 0, gpuMesh->indexType);
-        cb.drawIndexed(gpuMesh->indexCount, g.count, 0, 0, g.first);
+        const std::array<vk::DescriptorSet, 6> sets{
+            gpuAlb->descriptorSet.handle,
+            gpuNrm->descriptorSet.handle,
+            gpuPrm->descriptorSet.handle,
+            gslot.depthGpu.descriptorSet.handle,
+            gslot.normalGpu.descriptorSet.handle,
+            slot.cameraSet.handle,
+        };
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0,
+                              uint32_t(sets.size()), sets.data(), 0, nullptr);
+        cb.pushConstants(decalPipelineLayout,
+                         vk::ShaderStageFlagBits::eVertex |
+                             vk::ShaderStageFlagBits::eFragment,
+                         0, sizeof(inst), &inst);
+        cb.draw(3, 1, 0, 0);
     }
     decalPassDraws.clear();
     cb.endRenderPass();
@@ -1060,7 +1029,7 @@ void Graphics::buildDeferredFrameGraphs() {
             depthDesc.aspect = vk::ImageAspectFlagBits::eDepth;
             depthDesc.usage = vk::ImageUsageFlagBits::eSampled |
                               vk::ImageUsageFlagBits::eDepthStencilAttachment;
-            depthDesc.afterLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;
+            depthDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             auto depthH = graph->importTexture("gbHwDepth", slot.depth.image(),
                                                slot.depth.imageView(), depthDesc);
 

@@ -456,8 +456,6 @@ private:
     struct Mesh3dFrameSlots;
     struct Mesh3dClusteredFrameSlots;
     struct DecalSlot;
-    struct DecalSetKey;
-    struct DecalSetKeyHash;
     struct GBufferSlot;
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
@@ -480,8 +478,6 @@ private:
     void recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBufferSlot &gslot);
     void ensureDecalUnitBox();
     void ensureDecalPlaceholders();
-    vkb::BoundSet decalSetFor(DecalSlot &slot, GpuTexture *albedo, GpuTexture *normal,
-                              GpuTexture *params, GpuTexture *depth, GpuTexture *gbNormal);
     DecalSlot *currentDecalSlot();
     void createSceneColorResources(int width, int height);
     void destroySceneColorResources();
@@ -1042,26 +1038,6 @@ private:
         float emissiveStrength = 0.f;
         int blendMode = 0;  // 0 = premultiplied over, 1 = additive (emissive)
     };
-    struct DecalSetKey {
-        GpuTexture *albedo = nullptr;
-        GpuTexture *normal = nullptr;
-        GpuTexture *params = nullptr;
-        GpuTexture *depth = nullptr;
-        GpuTexture *gbNormal = nullptr;
-        bool operator==(const DecalSetKey &o) const {
-            return albedo == o.albedo && normal == o.normal && params == o.params &&
-                   depth == o.depth && gbNormal == o.gbNormal;
-        }
-    };
-    struct DecalSetKeyHash {
-        size_t operator()(const DecalSetKey &k) const {
-            return std::hash<GpuTexture *>()(k.albedo) ^
-                   (std::hash<GpuTexture *>()(k.normal) << 1) ^
-                   (std::hash<GpuTexture *>()(k.params) << 2) ^
-                   (std::hash<GpuTexture *>()(k.depth) << 3) ^
-                   (std::hash<GpuTexture *>()(k.gbNormal) << 4);
-        }
-    };
     struct DecalSlot {
         vkb::ColorTarget albedo;
         vkb::ColorTarget normal;
@@ -1074,8 +1050,7 @@ private:
         Texture normalTex{};
         Texture paramsTex{};
         vkb::GenericBuffer cameraUbo;  // capacity 1 per frame slot
-        vkb::GenericBuffer instanceBuf;  // kMaxDecalInstances * DecalInstanceData
-        std::unordered_map<DecalSetKey, vkb::BoundSet, DecalSetKeyHash> sets;
+        vkb::BoundSet cameraSet;
     };
     int decalWidth = 0;
     int decalHeight = 0;

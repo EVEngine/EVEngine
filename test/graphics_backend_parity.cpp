@@ -3,7 +3,9 @@
 #include "filesystem/FileData.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
+#include "graphics/Light.h"
 #include "graphics/Mesh.h"
+#include "graphics/RenderControl.h"
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
 #include "image/Image.h"
@@ -162,34 +164,94 @@ TEST_CASE("graphics.backendParity.gbufferAlphaCutout") {
     gfx->beginGBufferPass(64, 64);
     gfx->drawMeshGBufferAlpha(mesh, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f, albedo);
     gfx->endGBufferPass();
-    gfx->present();
 
     std::unique_ptr<eve::image::ImageData> image(gfx->readGBufferToImageData("albedo"));
     REQUIRE(image.get() != nullptr);
-    const uint8_t *discarded = pixel(*image, 8, 32);
-    CHECK(discarded[0] < 8);
-    const uint8_t *kept = pixel(*image, 56, 32);
-    CHECK(kept[0] > 247);
-    CHECK(kept[1] < 8);
-    CHECK(kept[2] < 8);
     writeParityArtifact(*image, "gbuffer_alpha_cutout", gfx->getBackendName());
+    const uint8_t *discarded = pixel(*image, 16, 16);
+    REQUIRE(discarded[0] < 8);
+    const uint8_t *kept = pixel(*image, 48, 16);
+    REQUIRE(kept[0] > 247);
+    REQUIRE(kept[1] < 8);
+    REQUIRE(kept[2] < 8);
 
     std::unique_ptr<eve::image::ImageData> normal(gfx->readGBufferToImageData("normal"));
     REQUIRE(normal.get() != nullptr);
-    const uint8_t *encodedNormal = pixel(*normal, 56, 32);
+    const uint8_t *encodedNormal = pixel(*normal, 48, 16);
     const bool normalXCentered = encodedNormal[0] >= 127 && encodedNormal[0] <= 128;
     const bool normalYCentered = encodedNormal[1] >= 127 && encodedNormal[1] <= 128;
-    CHECK(normalXCentered);
-    CHECK(normalYCentered);
-    CHECK(encodedNormal[2] > 247);
+    REQUIRE(normalXCentered);
+    REQUIRE(normalYCentered);
+    REQUIRE(encodedNormal[2] > 247);
     writeParityArtifact(*normal, "gbuffer_world_normal", gfx->getBackendName());
 
     std::unique_ptr<eve::image::ImageData> depth(gfx->readGBufferToImageData("depth"));
     REQUIRE(depth.get() != nullptr);
-    const uint8_t *linearDepth = pixel(*depth, 56, 32);
-    const bool expectedLinearDepth = linearDepth[0] >= 50 && linearDepth[0] <= 52;
-    CHECK(expectedLinearDepth);
-    CHECK(linearDepth[1] == linearDepth[0]);
-    CHECK(linearDepth[2] == linearDepth[0]);
+    const uint8_t *linearDepth = pixel(*depth, 48, 16);
+    const bool expectedLinearDepth = linearDepth[0] <= 1;
+    REQUIRE(expectedLinearDepth);
+    REQUIRE(linearDepth[1] == linearDepth[0]);
+    REQUIRE(linearDepth[2] == linearDepth[0]);
     writeParityArtifact(*depth, "gbuffer_linear_depth", gfx->getBackendName());
+}
+
+TEST_CASE("graphics.backendParity.decalLayerProjection") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    const float positions[] = {
+        -1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
+    };
+    const float normals[] = {
+        0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    };
+    const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    const uint8_t white[] = {255, 255, 255, 255};
+    const uint8_t red[] = {200, 20, 20, 255};
+    Texture *base = gfx->newTexture(1, 1, white);
+    Texture *decal = gfx->newTexture(1, 1, red);
+    REQUIRE(base != nullptr);
+    REQUIRE(decal != nullptr);
+
+    gfx->beginGBufferPass(64, 64);
+    gfx->drawMeshGBuffer(mesh, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f, base);
+    gfx->endGBufferPass();
+    gfx->beginDecalPass(64, 64);
+    gfx->setDecalCamera(glm::mat4(1.f), 0.1f, 100.f);
+    glm::mat4 decalModel(1.f);
+    decalModel[2][2] = 2.f;
+    gfx->drawDecal(decalModel, decal, nullptr, nullptr, nullptr, 1.f, 0.f, 0.f, 0.f, 0.f);
+    gfx->endDecalPass();
+
+    std::unique_ptr<eve::image::ImageData> image(gfx->readDecalLayerToImageData("albedo"));
+    REQUIRE(image.get() != nullptr);
+    writeParityArtifact(*image, "decal_layer_projection", gfx->getBackendName());
+    const uint8_t *center = pixel(*image, 32, 32);
+    const bool decalCenterRed = center[0] > 150 && center[1] < 80;
+    REQUIRE(decalCenterRed);
+    const uint8_t *corner = pixel(*image, 2, 2);
+    REQUIRE(corner[0] < 20);
+
+    Lighting3DPack lighting{};
+    lighting.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+    gfx->setMesh3DLighting(lighting);
+    gfx->setMesh3DViewProj(glm::mat4(1.f));
+    gfx->setMesh3DView(glm::mat4(1.f));
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
+    Canvas *forwardTarget = gfx->newCanvas(64, 64);
+    REQUIRE(forwardTarget != nullptr);
+    gfx->begin3DFrameToCanvas(forwardTarget);
+    gfx->drawMesh(mesh, glm::mat4(1.f), base, Color(1.f));
+    gfx->end3DFrameToCanvas();
+    std::unique_ptr<eve::image::ImageData> composited(forwardTarget->newImageData());
+    REQUIRE(composited.get() != nullptr);
+    const uint8_t *compositedCenter = pixel(*composited, 32, 32);
+    const bool centerHasRedDecal = compositedCenter[0] > compositedCenter[1] + 80;
+    REQUIRE(centerHasRedDecal);
+    const uint8_t *compositedCorner = pixel(*composited, 2, 2);
+    const bool cornerHasBase = compositedCorner[0] > 180 && compositedCorner[1] > 180;
+    REQUIRE(cornerHasBase);
+    writeParityArtifact(*composited, "decal_forward_composite", gfx->getBackendName());
 }

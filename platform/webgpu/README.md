@@ -151,6 +151,11 @@ run `ctest --test-dir build/webgpu-native -R graphics.backendParity`. Set
 compare them with Vulkan output using `scripts/compare_render_backends.py`.
 The Windows CI lane performs this comparison with software Vulkan.
 
+The native Dawn backend includes alpha-cutout shadow/GBuffer rendering and
+box-projected decals (albedo, normal and material layers plus forward
+composition). Their deterministic parity scenes run through the same public
+API as Vulkan and are compared as PNG artifacts in CI.
+
 Set `EVENGINE_WEBGPU_GAME_DIR` to point the platform helpers at a game folder
 when not running from the game directory itself.
 

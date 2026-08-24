@@ -36,9 +36,9 @@ and `test gap`.
 | Alpha-cutout shadow | supported | Dedicated albedo/UV alpha-discard depth pipeline | Add a shadow-depth coverage artifact when depth readback is available |
 | Alpha-cutout GBuffer | supported | Dedicated alpha-discard pipeline and backend-neutral pixel test | Keep the Vulkan/Dawn pixel artifact in CI |
 | Cascaded shadows | partial | Opaque CSM path exists; cascade selection/bias/output have no Vulkan comparison | Add cascade boundary and receiver tests |
-| GBuffer | partial | Normal/depth/albedo encoding and CPU readback match Vulkan; generic SPIR-V post remains disabled | Enable WGSL-native consumers incrementally |
+| GBuffer | supported for native consumers | Normal/depth/albedo encoding, clear values and CPU readback match Vulkan exactly in the parity scene; generic SPIR-V post remains unavailable | Enable additional WGSL-native consumers incrementally |
 | SSAO | partial | Intensity is stored independently and reaches forward/clustered WGSL; GBuffer post remains disabled | Compare disabled/enabled images and enable completed consumers |
-| Decals | missing | `supportsDecal=false`; all decal methods are no-ops | Implement WebGPU decal targets, box pipeline and composition |
+| Decals | supported, verified | Native WGSL and Vulkan pipelines share box projection, depth reconstruction, normal rejection, edge feathering and forward composition semantics | Extend coverage to normal/roughness/metal/emissive channels |
 | Outline | missing through public effect API | Built-in implementation creates SPIR-V shaders, which WebGPU rejects | Port built-in shader to WGSL and add depth/normal edge tests |
 | Anti-aliasing post effects | missing through public effect API | FXAA/NFAA/SMAA/SSAA constructors create SPIR-V shaders | Port built-ins to WGSL; compare edge metrics rather than exact pixels |
 | Global illumination / SSR | missing through public effect API | Built-ins create SPIR-V shaders and GBuffer post is disabled | Port after GBuffer conventions are locked by tests |
@@ -122,7 +122,7 @@ not an acceptable fix.
 - [x] Lock GBuffer normal/depth/albedo conventions with tests.
 - [ ] Make SSAO intensity functional and enable GBuffer post capability for
       completed consumers.
-- [ ] Implement decals.
+- [x] Implement decals, forward composition and cross-backend image coverage.
 
 ### P2: built-in effects and content workflows
 

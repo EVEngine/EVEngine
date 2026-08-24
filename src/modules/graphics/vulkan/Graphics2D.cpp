@@ -54,6 +54,40 @@
 
 namespace eve::graphics::vulkan {
 
+namespace {
+
+void transitionSampledColorForTransfer(vk::CommandBuffer cb, vkb::ColorTarget &image,
+                                       vk::ImageLayout newLayout) {
+    vk::ImageMemoryBarrier barrier{};
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.oldLayout = image.currentLayout();
+    barrier.newLayout = newLayout;
+    barrier.image = image.image();
+    barrier.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+    vk::PipelineStageFlags srcStages;
+    vk::PipelineStageFlags dstStages;
+    if (newLayout == vk::ImageLayout::eTransferSrcOptimal) {
+        barrier.srcAccessMask = vk::AccessFlagBits::eShaderRead;
+        barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+        srcStages = vk::PipelineStageFlagBits::eVertexShader |
+                    vk::PipelineStageFlagBits::eFragmentShader |
+                    vk::PipelineStageFlagBits::eComputeShader;
+        dstStages = vk::PipelineStageFlagBits::eTransfer;
+    } else {
+        barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+        barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        srcStages = vk::PipelineStageFlagBits::eTransfer;
+        dstStages = vk::PipelineStageFlagBits::eVertexShader |
+                    vk::PipelineStageFlagBits::eFragmentShader |
+                    vk::PipelineStageFlagBits::eComputeShader;
+    }
+    cb.pipelineBarrier(srcStages, dstStages, {}, 0, nullptr, 0, nullptr, 1, &barrier);
+    image.setCurrentLayout(newLayout);
+}
+
+}  // namespace
+
 // Shader helper functions. They used to live in GraphicsInternal.h (which is
 // an anonymous-namespace header copied into every backend TU); only this file
 // uses them, so they are defined here to avoid the per-TU duplication and the
@@ -456,18 +490,21 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     if (w == 0 || h == 0) return nullptr;
 
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    if (gbufferPending && !gbufferPassDraws.empty()) recordDeferredFrameGraph();
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
                                vk::MemoryPropertyFlagBits::eHostVisible |
                                    vk::MemoryPropertyFlagBits::eHostCoherent);
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                             [&](vk::CommandBuffer cb) {
-                                src->setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                transitionSampledColorForTransfer(
+                                    cb, *src, vk::ImageLayout::eTransferSrcOptimal);
                                 vk::BufferImageCopy region{};
                                 region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
                                 region.imageExtent = vk::Extent3D{w, h, 1};
                                 cb.copyImageToBuffer(src->image(), vk::ImageLayout::eTransferSrcOptimal,
                                                      staging.buffer, region);
-                                src->setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                                transitionSampledColorForTransfer(
+                                    cb, *src, vk::ImageLayout::eShaderReadOnlyOptimal);
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
@@ -498,8 +535,7 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
     const uint32_t w = uint32_t(decalWidth);
     const uint32_t h = uint32_t(decalHeight);
     if (w == 0 || h == 0) return nullptr;
-    ensureDecalUnitBox();
-    if (!decalUnitBox || !decalUnitBox->gpuHandle) return nullptr;
+    if (gbufferPending && !gbufferPassDraws.empty()) recordDeferredFrameGraph();
 
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
@@ -507,63 +543,11 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
                                    vk::MemoryPropertyFlagBits::eHostCoherent);
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                             [&](vk::CommandBuffer cb) {
-                                // Replay the pending G-buffer fill so hwDepth +
-                                // normal are fresh for the decal pass (same
-                                // pattern as renderEntityIdMask).
-                                if (gbufferPending && !gbufferPassDraws.empty()) {
-                                    std::array<vk::ClearValue, 4> clears{};
-                                    clears[0].color =
-                                        vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-                                    clears[1].color =
-                                        vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
-                                    clears[2].color =
-                                        vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-                                    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-                                    vk::RenderPassBeginInfo rpBegin{};
-                                    rpBegin.renderPass = gbufferRenderPass;
-                                    rpBegin.framebuffer = gslot->framebuffer;
-                                    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
-                                    rpBegin.clearValueCount = uint32_t(clears.size());
-                                    rpBegin.pClearValues = clears.data();
-                                    gslot->normal.beginColorAttachment();
-                                    gslot->depthColor.beginColorAttachment();
-                                    gslot->albedo.beginColorAttachment();
-                                    gslot->depth.beginDepthAttachment();
-                                    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-                                    setViewportAndScissor(cb, w, h);
-                                    cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                                    gbufferPipeline);
-                                    for (const auto &d : gbufferPassDraws) {
-                                        if (!d.mesh || !d.mesh->gpuHandle) continue;
-                                        auto *gpuMesh =
-                                            static_cast<GpuMesh *>(d.mesh->gpuHandle);
-                                        Texture *alb = d.albedo ? d.albedo : whiteTexture;
-                                        if (alb && alb->gpuHandle && texSetLayout) {
-                                            auto *gpuTex =
-                                                static_cast<GpuTexture *>(alb->gpuHandle);
-                                            cb.bindDescriptorSets(
-                                                vk::PipelineBindPoint::eGraphics,
-                                                gbufferPipelineLayout, 0, 1,
-                                                gpuTex->descriptorSet.ptr(), 0, nullptr);
-                                        }
-                                        cb.pushConstants(
-                                            gbufferPipelineLayout,
-                                            vk::ShaderStageFlagBits::eVertex |
-                                                vk::ShaderStageFlagBits::eFragment,
-                                            0, sizeof(GBufferPush), &d.push);
-                                        drawIndexedMesh(cb, *gpuMesh);
-                                    }
-                                    cb.endRenderPass();
-                                    gslot->normal.endSampledLayout();
-                                    gslot->depthColor.endSampledLayout();
-                                    gslot->albedo.endSampledLayout();
-                                    gslot->depth.endSampledLayout();
-                                }
-
-                                // Decal pass reads the pass above; record it and
-                                // then copy the requested attachment to CPU.
+                                // The G-buffer was submitted through the production FrameGraph
+                                // above. Queue order makes it visible to this immediate pass.
                                 recordDecalPassInto(cb, *slot, *gslot);
-                                src->setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                transitionSampledColorForTransfer(
+                                    cb, *src, vk::ImageLayout::eTransferSrcOptimal);
                                 vk::BufferImageCopy region{};
                                 region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0,
                                                            1};
@@ -571,7 +555,8 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
                                 cb.copyImageToBuffer(src->image(),
                                                      vk::ImageLayout::eTransferSrcOptimal,
                                                      staging.buffer, region);
-                                src->setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                                transitionSampledColorForTransfer(
+                                    cb, *src, vk::ImageLayout::eShaderReadOnlyOptimal);
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");

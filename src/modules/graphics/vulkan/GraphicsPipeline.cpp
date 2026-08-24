@@ -718,7 +718,15 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                             .addAttachmentRef(2, vk::ImageLayout::eColorAttachmentOptimal)
                             .setDepthStencilAttachment(
                                 3, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-            .addExternalShaderReadDependencies()
+            .addDependency(0, VK_SUBPASS_EXTERNAL,
+                           vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                               vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                               vk::PipelineStageFlagBits::eLateFragmentTests,
+                           vk::PipelineStageFlagBits::eVertexShader |
+                               vk::PipelineStageFlagBits::eFragmentShader,
+                           vk::AccessFlagBits::eColorAttachmentWrite |
+                               vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                           vk::AccessFlagBits::eShaderRead)
             .build();
     gbufferRenderPass = gbufferPass;
 
@@ -751,6 +759,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                           .setDynamicStatesViewportScissor()
                           .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                                          vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+                          .setColorAttachmentCount(3)
                           .build(gbufferPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
@@ -774,6 +783,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                                               vk::CullModeFlagBits::eNone,
                                               vk::FrontFace::eClockwise)
+                               .setColorAttachmentCount(3)
                                .build(gbufferPass);
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
@@ -877,9 +887,6 @@ void Graphics::createDecalResources(int decalW, int decalH) {
         slot.params = device.createColorTarget(w, h, colorFmt);
         slot.cameraUbo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer,
                                 sizeof(DecalCameraUBO), kHostVisibleCoherent);
-        slot.instanceBuf.allocate(
-            frameToken(), device, vk::BufferUsageFlagBits::eStorageBuffer,
-            vk::DeviceSize(kMaxDecalInstances) * sizeof(DecalInstanceData), kHostVisibleCoherent);
     }
 
     auto decalPass =
@@ -904,23 +911,37 @@ void Graphics::createDecalResources(int decalW, int decalH) {
     vkb::DescriptorSetLayoutBuilder layoutBuilder;
     decalSetLayoutUnique =
         layoutBuilder
-            .image(0, vk::DescriptorType::eCombinedImageSampler,
-                   vk::ShaderStageFlagBits::eFragment, 1)
-            .image(1, vk::DescriptorType::eCombinedImageSampler,
-                   vk::ShaderStageFlagBits::eFragment, 1)
-            .image(2, vk::DescriptorType::eCombinedImageSampler,
-                   vk::ShaderStageFlagBits::eFragment, 1)
-            .image(3, vk::DescriptorType::eCombinedImageSampler,
-                   vk::ShaderStageFlagBits::eFragment, 1)
-            .image(4, vk::DescriptorType::eCombinedImageSampler,
-                   vk::ShaderStageFlagBits::eFragment, 1)
-            .buffer(5, vk::DescriptorType::eUniformBufferDynamic,
-                    vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
-            .buffer(6, vk::DescriptorType::eStorageBuffer,
+            .buffer(0, vk::DescriptorType::eUniformBuffer,
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     decalSetLayout = *decalSetLayoutUnique;
-    decalPipelineLayout = createPipelineLayout(device, decalSetLayout);
+    const vk::PushConstantRange decalPushRange{
+        vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
+        uint32_t(sizeof(DecalInstanceData))};
+    decalPipelineLayout = device.createPipelineLayout()
+                              .set(texSetLayout)
+                              .set(texSetLayout)
+                              .set(texSetLayout)
+                              .set(texSetLayout)
+                              .set(texSetLayout)
+                              .set(decalSetLayout)
+                              .push(vk::ShaderStageFlagBits::eVertex |
+                                        vk::ShaderStageFlagBits::eFragment,
+                                    decalPushRange.size, decalPushRange.offset)
+                              .build();
+
+    for (auto &slot : decalSlots) {
+        auto sets = vkb::DescriptorSetBuilder()
+                        .layout(decalSetLayout)
+                        .build(device.instance, descriptorPool);
+        vkb::UnboundSet cameraSet{sets.front()};
+        vkb::DescriptorSetUpdater updater(1, 0, 0);
+        updater.beginDescriptorSet(cameraSet)
+            .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
+            .buffer(slot.cameraUbo.buffer, 0, slot.cameraUbo.size)
+            .update(device.instance);
+        slot.cameraSet = std::move(cameraSet).publish();
+    }
 
     std::vector<uint32_t> vert(decal_box_vert_spv, decal_box_vert_spv + decal_box_vert_spv_count);
     std::vector<uint32_t> frag(decal_box_frag_spv, decal_box_frag_spv + decal_box_frag_spv_count);
@@ -932,9 +953,6 @@ void Graphics::createDecalResources(int decalW, int decalH) {
     decalPipeline = device.createPipeline()
                         .useClassicPipeline(vertModule, fragModule)
                         .setPipelineLayout(decalPipelineLayout)
-                        .setVertexInputState(vkb::VertexInputStateBuilder()
-                                                 .addInputBinding<MeshVertex>()
-                                                 .addAttributeDescription<MeshVertex>())
                         .setDynamicStatesViewportScissor()
                         .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                                        vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
@@ -985,8 +1003,7 @@ void Graphics::destroyDecalResources() {
         destroySampler(device, slot.normalGpu.sampler);
         destroySampler(device, slot.paramsGpu.sampler);
         slot.cameraUbo.release();
-        slot.instanceBuf.release();
-        slot.sets.clear();
+        slot.cameraSet = {};
     }
     decalSlots.clear();
     destroyPipeline(device, decalPipeline);
@@ -998,46 +1015,6 @@ void Graphics::destroyDecalResources() {
     }
     decalWidth = 0;
     decalHeight = 0;
-}
-
-vkb::BoundSet Graphics::decalSetFor(DecalSlot &slot, GpuTexture *albedo, GpuTexture *normal,
-                                    GpuTexture *params, GpuTexture *depth, GpuTexture *gbNormal) {
-    ASSERT(albedo != nullptr);
-    ASSERT(normal != nullptr);
-    ASSERT(params != nullptr);
-    ASSERT(depth != nullptr);
-    ASSERT(gbNormal != nullptr);
-    DecalSetKey key{albedo, normal, params, depth, gbNormal};
-    auto it = slot.sets.find(key);
-    if (it != slot.sets.end()) return it->second;
-
-    vk::DescriptorSetAllocateInfo alloc{};
-    alloc.descriptorPool = descriptorPool;
-    alloc.descriptorSetCount = 1;
-    alloc.pSetLayouts = &decalSetLayout;
-    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
-
-    vkb::DescriptorSetUpdater updater(8, 8, 0);
-    updater.beginDescriptorSet(unbound)
-        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(vkb::SampledImage::forLaterSample(albedo->sampler, albedo->imageView()))
-        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(vkb::SampledImage::forLaterSample(normal->sampler, normal->imageView()))
-        .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(vkb::SampledImage::forLaterSample(params->sampler, params->imageView()))
-        .beginImages(3, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(vkb::SampledImage::forLaterSample(depth->sampler, depth->imageView()))
-        .beginImages(4, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(vkb::SampledImage::forLaterSample(gbNormal->sampler, gbNormal->imageView()))
-        .beginBuffers(5, 0, vk::DescriptorType::eUniformBufferDynamic)
-        .buffer(slot.cameraUbo.buffer, 0, slot.cameraUbo.size)
-        .beginBuffers(6, 0, vk::DescriptorType::eStorageBuffer)
-        .buffer(slot.instanceBuf.buffer, 0, slot.instanceBuf.size)
-        .update(device.instance);
-
-    vkb::BoundSet bound = std::move(unbound).publish();
-    slot.sets.emplace(key, bound);
-    return bound;
 }
 
 void Graphics::createSceneColorResources(int sceneW, int sceneH) {
