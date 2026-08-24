@@ -120,6 +120,10 @@ endconversation
   `StoryTitle/StoryData` 元数据 passages 会自动忽略。
 - 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticMessage`；编译检查
   重复或缺失 ID、无效引用，并报告不可达节点。
+- 工具链：相同 path、相同内容的 `loadFromDnut` 会命中内存增量缓存，
+  `getLastLoadChanged()` 可判断是否重编译；`removeSource(path)` 卸载该来源产生的资产；
+  `lintAll()` 批量检查全库并验证跨文件 call；`renameConversation/renameNode` 自动改写引用，
+  同时提升资产版本以显式拒绝不兼容的旧执行游标。
 - 本地化：`exportLocalizationCsv()` 返回带 conversation/node 稳定 ID、i18n key、
   speaker、源文和 voice key 的 RFC4180 CSV。
 - 执行：`start(id, bindings)`、`advance`、`select(routeId)`、`isActive/isBlocked`、

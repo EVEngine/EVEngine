@@ -1,6 +1,7 @@
 #include "dialogue/DialogueFlow.h"
 
 #include "dialogue/ConversationImporter.h"
+#include "dialogue/ConversationToolchain.h"
 #include "filesystem/Filesystem.h"
 
 #include <algorithm>
@@ -40,15 +41,14 @@ bool squirrelToState(HSQUIRRELVM vm, SQInteger index, StateValue& out) {
             return true;
         }
         case OT_TABLE: {
-            out = StateValue::object();
+            out                      = StateValue::object();
             const SQInteger absolute = index > 0 ? index : sq_gettop(vm) + index + 1;
             sq_pushnull(vm);
             while (SQ_SUCCEEDED(sq_next(vm, absolute))) {
                 const SQChar* key = nullptr;
-                StateValue value;
-                const bool ok = sq_gettype(vm, -2) == OT_STRING &&
-                                SQ_SUCCEEDED(sq_getstring(vm, -2, &key)) && key &&
-                                squirrelToState(vm, -1, value);
+                StateValue    value;
+                const bool    ok = sq_gettype(vm, -2) == OT_STRING && SQ_SUCCEEDED(sq_getstring(vm, -2, &key)) && key &&
+                                   squirrelToState(vm, -1, value);
                 sq_pop(vm, 2);
                 if (!ok) {
                     sq_pop(vm, 1);
@@ -69,9 +69,7 @@ void pushState(HSQUIRRELVM vm, const StateValue& value) {
         case StateValue::Kind::Int: sq_pushinteger(vm, value.asInt()); break;
         case StateValue::Kind::Float: sq_pushfloat(vm, static_cast<SQFloat>(value.asDouble())); break;
         case StateValue::Kind::Bool: sq_pushbool(vm, value.asBool() ? SQTrue : SQFalse); break;
-        case StateValue::Kind::String:
-            sq_pushstring(vm, value.asString().c_str(), value.asString().size());
-            break;
+        case StateValue::Kind::String: sq_pushstring(vm, value.asString().c_str(), value.asString().size()); break;
         case StateValue::Kind::Array:
             sq_newarray(vm, 0);
             for (size_t i = 0; i < value.arraySize(); ++i) {
@@ -107,10 +105,8 @@ std::string kindName(ConversationAsset::Node::Kind kind) {
 
 DialogueFlow::DialogueFlow() {
     runner_.setAssetResolver([this](const std::string& id) { return find(id); });
-    runner_.setExpressionEvaluator([this](const std::string& expression,
-                                          const StateValue& bindings, const StateValue& locals) {
-        return evaluate(expression, bindings, locals);
-    });
+    runner_.setExpressionEvaluator([this](const std::string& expression, const StateValue& bindings,
+                                          const StateValue& locals) { return evaluate(expression, bindings, locals); });
 }
 
 DialogueFlow::~DialogueFlow() { clearExpressionEvaluator(); }
@@ -122,22 +118,78 @@ const ConversationAsset* DialogueFlow::find(const std::string& id) const {
 }
 
 int DialogueFlow::loadFromDnut(const std::string& source, const std::string& path) {
+    const size_t hash = std::hash<std::string>{}(source);
+    if (const auto it = sourceHashes_.find(path); it != sourceHashes_.end() && it->second == hash) {
+        lastLoadChanged_ = false;
+        lastError_.clear();
+        return static_cast<int>(sourceAssets_[path].size());
+    }
     runner_.stop();
     std::vector<ConversationAsset> compiled;
     diagnostics_.clear();
     if (!compileDnutConversations(source, path, compiled, diagnostics_)) {
-        lastError_ = diagnostics_.empty() ? "conversation compilation failed"
-                                          : diagnostics_.front().message;
+        lastError_ = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
         return 0;
     }
-    for (auto& asset : compiled) {
-        auto it = std::find_if(assets_.begin(), assets_.end(),
-                               [&](const auto& old) { return old.id == asset.id; });
-        if (it == assets_.end()) assets_.push_back(std::move(asset));
-        else *it = std::move(asset);
+    if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end()) {
+        assets_.erase(std::remove_if(assets_.begin(), assets_.end(),
+                                     [&](const auto& asset) {
+                                         return std::find(old->second.begin(), old->second.end(), asset.id) !=
+                                                old->second.end();
+                                     }),
+                      assets_.end());
     }
+    std::vector<std::string> compiledIds;
+    for (auto& asset : compiled) {
+        compiledIds.push_back(asset.id);
+        auto it = std::find_if(assets_.begin(), assets_.end(), [&](const auto& old) { return old.id == asset.id; });
+        if (it == assets_.end())
+            assets_.push_back(std::move(asset));
+        else
+            *it = std::move(asset);
+    }
+    sourceHashes_[path] = hash;
+    sourceAssets_[path] = std::move(compiledIds);
+    lastLoadChanged_    = true;
     lastError_.clear();
     return static_cast<int>(compiled.size());
+}
+
+bool DialogueFlow::removeSource(const std::string& path) {
+    const auto source = sourceAssets_.find(path);
+    if (source == sourceAssets_.end()) return false;
+    runner_.stop();
+    assets_.erase(std::remove_if(assets_.begin(), assets_.end(),
+                                 [&](const auto& asset) {
+                                     return std::find(source->second.begin(), source->second.end(), asset.id) !=
+                                            source->second.end();
+                                 }),
+                  assets_.end());
+    sourceAssets_.erase(source);
+    sourceHashes_.erase(path);
+    lastLoadChanged_ = true;
+    return true;
+}
+
+bool DialogueFlow::lintAll() {
+    diagnostics_.clear();
+    const bool valid = lintConversationWorkspace(assets_, "<dialogue-workspace>", diagnostics_);
+    lastError_       = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
+    return valid;
+}
+
+bool DialogueFlow::renameConversation(const std::string& oldId, const std::string& newId) {
+    runner_.stop();
+    if (!renameConversationAsset(assets_, oldId, newId, &lastError_)) return false;
+    for (auto& [path, ids] : sourceAssets_)
+        for (auto& id : ids)
+            if (id == oldId) id = newId;
+    return true;
+}
+
+bool DialogueFlow::renameNode(const std::string& conversationId, const std::string& oldId, const std::string& newId) {
+    runner_.stop();
+    return renameConversationNode(assets_, conversationId, oldId, newId, &lastError_);
 }
 
 int DialogueFlow::loadFromDnutFile(const std::string& path) {
@@ -165,10 +217,11 @@ int DialogueFlow::mergeImported(std::vector<ConversationAsset> imported) {
     runner_.stop();
     const int count = static_cast<int>(imported.size());
     for (auto& asset : imported) {
-        auto it = std::find_if(assets_.begin(), assets_.end(),
-                               [&](const auto& old) { return old.id == asset.id; });
-        if (it == assets_.end()) assets_.push_back(std::move(asset));
-        else *it = std::move(asset);
+        auto it = std::find_if(assets_.begin(), assets_.end(), [&](const auto& old) { return old.id == asset.id; });
+        if (it == assets_.end())
+            assets_.push_back(std::move(asset));
+        else
+            *it = std::move(asset);
     }
     lastError_.clear();
     return count;
@@ -197,6 +250,8 @@ int DialogueFlow::importTwee(const std::string& source, const std::string& path)
 void DialogueFlow::clear() {
     runner_.stop();
     assets_.clear();
+    sourceHashes_.clear();
+    sourceAssets_.clear();
     diagnostics_.clear();
     lastError_.clear();
 }
@@ -204,25 +259,20 @@ void DialogueFlow::clear() {
 int DialogueFlow::getConversationCount() const { return static_cast<int>(assets_.size()); }
 
 std::string DialogueFlow::getConversationId(int index) const {
-    return index >= 0 && static_cast<size_t>(index) < assets_.size()
-               ? assets_[static_cast<size_t>(index)].id
-               : std::string{};
+    return index >= 0 && static_cast<size_t>(index) < assets_.size() ? assets_[static_cast<size_t>(index)].id
+                                                                     : std::string{};
 }
 
 bool DialogueFlow::hasConversation(const std::string& id) const { return find(id) != nullptr; }
 
-std::string DialogueFlow::exportLocalizationCsv() const {
-    return exportConversationLocalizationCsv(assets_);
-}
+std::string DialogueFlow::exportLocalizationCsv() const { return exportConversationLocalizationCsv(assets_); }
 
 int DialogueFlow::getDiagnosticCount() const { return static_cast<int>(diagnostics_.size()); }
 
 std::string DialogueFlow::getDiagnosticSeverity(int index) const {
     if (index < 0 || static_cast<size_t>(index) >= diagnostics_.size()) return {};
-    return diagnostics_[static_cast<size_t>(index)].severity ==
-                   ConversationDiagnostic::Severity::Error
-               ? "error"
-               : "warning";
+    return diagnostics_[static_cast<size_t>(index)].severity == ConversationDiagnostic::Severity::Error ? "error"
+                                                                                                        : "warning";
 }
 
 std::string DialogueFlow::getDiagnosticMessage(int index) const {
@@ -248,23 +298,19 @@ bool DialogueFlow::start(const std::string& id, ssq::Object bindings) {
 }
 
 bool DialogueFlow::advance() { return runner_.advance(&lastError_); }
-bool DialogueFlow::select(const std::string& routeId) {
-    return runner_.select(routeId, &lastError_);
-}
+bool DialogueFlow::select(const std::string& routeId) { return runner_.select(routeId, &lastError_); }
 
-std::string DialogueFlow::getConversationId() const {
-    return runner_.asset() ? runner_.asset()->id : std::string{};
-}
+std::string DialogueFlow::getConversationId() const { return runner_.asset() ? runner_.asset()->id : std::string{}; }
 
 std::string DialogueFlow::getNodeKind() const {
     const auto* node = runner_.currentNode();
     return node ? kindName(node->kind) : std::string{};
 }
 
-#define EVE_FLOW_NODE_STRING(method, field)                 \
-    std::string DialogueFlow::method() const {              \
-        const auto* node = runner_.currentNode();           \
-        return node ? node->field : std::string{};          \
+#define EVE_FLOW_NODE_STRING(method, field)        \
+    std::string DialogueFlow::method() const {     \
+        const auto* node = runner_.currentNode();  \
+        return node ? node->field : std::string{}; \
     }
 EVE_FLOW_NODE_STRING(getSpeaker, speaker)
 EVE_FLOW_NODE_STRING(getText, text)
@@ -296,12 +342,11 @@ bool DialogueFlow::setExpressionEvaluator(ssq::Object fn) {
 
 void DialogueFlow::clearExpressionEvaluator() {
     if (vm_ && hasEvaluator_) sq_release(vm_, &evaluator_);
-    evaluator_ = {};
+    evaluator_    = {};
     hasEvaluator_ = false;
 }
 
-StateValue DialogueFlow::evaluate(const std::string& expression, const StateValue& bindings,
-                                  const StateValue& locals) {
+StateValue DialogueFlow::evaluate(const std::string& expression, const StateValue& bindings, const StateValue& locals) {
     if (expression == "else") return StateValue::boolean(true);
     if (!vm_ || !hasEvaluator_) return StateValue::boolean(false);
     const SQInteger top = sq_gettop(vm_);
@@ -326,9 +371,7 @@ StateValue DialogueFlow::evaluate(const std::string& expression, const StateValu
     return result;
 }
 
-bool DialogueFlow::restoreState(const StateValue& in, std::string* error) {
-    return runner_.restoreState(in, error);
-}
+bool DialogueFlow::restoreState(const StateValue& in, std::string* error) { return runner_.restoreState(in, error); }
 
 void DialogueFlow::expose(ssq::Table& table) {
     if (DialogueFlow* self = DialogueFlow::create()) self->vm_ = table.getHandle();
@@ -342,10 +385,15 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("loadFromDnutFile", &DialogueFlow::loadFromDnutFile);
     cls.addFunc("importYarn", &DialogueFlow::importYarn);
     cls.addFunc("importTwee", &DialogueFlow::importTwee);
+    cls.addFunc("removeSource", &DialogueFlow::removeSource);
+    cls.addFunc("lintAll", &DialogueFlow::lintAll);
+    cls.addFunc("renameConversation", &DialogueFlow::renameConversation);
+    cls.addFunc("renameNode", &DialogueFlow::renameNode);
+    cls.addFunc("getLastLoadChanged", &DialogueFlow::getLastLoadChanged);
     cls.addFunc("clear", &DialogueFlow::clear);
     cls.addFunc("getConversationCount", &DialogueFlow::getConversationCount);
-    cls.addFunc("getConversationId", static_cast<std::string (DialogueFlow::*)(int) const>(
-                                             &DialogueFlow::getConversationId));
+    cls.addFunc("getConversationId",
+                static_cast<std::string (DialogueFlow::*)(int) const>(&DialogueFlow::getConversationId));
     cls.addFunc("hasConversation", &DialogueFlow::hasConversation);
     cls.addFunc("exportLocalizationCsv", &DialogueFlow::exportLocalizationCsv);
     cls.addFunc("getDiagnosticCount", &DialogueFlow::getDiagnosticCount);

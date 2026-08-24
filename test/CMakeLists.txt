@@ -90,6 +90,7 @@ file(GLOB all_test_cpp
   dialogue_conversation.cpp
     dialogue_compiler.cpp
     dialogue_importers.cpp
+    dialogue_toolchain.cpp
   dialogue_ux.cpp
   dialogue_voice.cpp
   dialogue_proc.cpp
