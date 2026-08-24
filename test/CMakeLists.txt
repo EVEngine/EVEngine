@@ -57,6 +57,7 @@ file(GLOB all_test_cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
+  ui_texture_bridge.cpp
   Inspector.cpp
   DatabasePanel.cpp
   EditorShell.cpp

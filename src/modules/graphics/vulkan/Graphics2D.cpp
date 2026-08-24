@@ -811,6 +811,54 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
     noteTexturedOverlay(color);
 }
 
+void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
+    if (!commandBuffer || draws.empty() || !uiTexturePipeline || uiColorWidth <= 0 ||
+        uiColorHeight <= 0)
+        return;
+
+    vk::CommandBuffer cb(static_cast<VkCommandBuffer>(commandBuffer));
+    auto &buffers = currentFrame2DBuffers().uiTexBufs;
+    std::size_t bufferIndex = 0;
+    setViewportAndScissor(cb, uint32_t(uiColorWidth), uint32_t(uiColorHeight));
+
+    for (const UiTextureDraw &draw : draws) {
+        if (!draw.texture || !draw.texture->gpuHandle || draw.w <= 0.f || draw.h <= 0.f)
+            continue;
+        auto *gpu = static_cast<GpuTexture *>(draw.texture->gpuHandle);
+        const vk::DescriptorSet set = gpu->descriptorSet;
+        if (!set) continue;
+
+        Batcher batch;
+        batch.addTexturedRect(draw.x, draw.y, draw.w, draw.h, draw.tint, draw.u0, draw.v0,
+                              draw.u1, draw.v1);
+        batch.toNDC(uiColorWidth, uiColorHeight);
+        std::vector<TexturedVertex> vertices;
+        vertices.reserve(batch.vertices().size());
+        for (const auto &vertex : batch.vertices())
+            vertices.push_back(TexturedVertex{vertex.pos, vertex.color, vertex.uv});
+
+        if (bufferIndex >= buffers.size()) buffers.emplace_back();
+        vkb::HostVertexBuffer &vertexBuffer = buffers[bufferIndex++];
+        vertexBuffer.allocate<TexturedVertex>(frameToken(), device, vertices);
+
+        const int clipX = std::clamp(int(std::floor(draw.clipX)), 0, uiColorWidth);
+        const int clipY = std::clamp(int(std::floor(draw.clipY)), 0, uiColorHeight);
+        const int clipRight = std::clamp(int(std::ceil(draw.clipX + draw.clipW)), 0, uiColorWidth);
+        const int clipBottom = std::clamp(int(std::ceil(draw.clipY + draw.clipH)), 0, uiColorHeight);
+        if (clipRight <= clipX || clipBottom <= clipY) continue;
+        const vk::Rect2D scissor{{clipX, clipY},
+                                 {uint32_t(clipRight - clipX), uint32_t(clipBottom - clipY)}};
+        cb.setScissor(0, 1, &scissor);
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                        draw.opaque ? uiTextureOpaquePipeline : uiTexturePipeline);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &set, 0,
+                              nullptr);
+        const vk::DeviceSize offset = 0;
+        cb.bindVertexBuffers(0, 1, vertexBuffer, &offset);
+        cb.draw(uint32_t(vertices.size()), 1, 0, 0);
+    }
+}
+
 void Graphics::setLighting2D(const Lighting2DUBO &ubo) { lighting2dFrame = ubo; }
 
 void Graphics::ensureFlatNormalTexture() {

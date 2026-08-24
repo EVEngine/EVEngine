@@ -122,7 +122,9 @@ function panelHierarchy() {
 }
 
 function panelScene() {
-    ui.text("Scene is the game runtime itself · LMB sculpt · RMB orbit", "scene-help");
+    ui.text("Live runtime viewport · LMB sculpt · RMB orbit · wheel zoom", "scene-help");
+    ui.viewport("scene-vp", state.workspace.getRegionW("center") - 20.0,
+                state.workspace.getRegionH("center") - 58.0);
     ui.text("", "scene-status");
 }
 
@@ -177,9 +179,7 @@ function mountWorkspacePanels() {
         local region = state.workspace.getPanelRegion(i);
         ui.setHostPos(state.workspace.getRegionX(region), state.workspace.getRegionY(region), 0.0, 0.0);
         ui.setHostSize(state.workspace.getRegionW(region), state.workspace.getRegionH(region));
-        // The example chooses a transparent scene HUD over the live game view.
-        // A different project can replace this builder with a docked viewport.
-        ui.setHostOverlay(id == "scene");
+        ui.setHostOverlay(false);
         print("composable-editor: mounted " + id + "\n");
     }
     state.panelsMounted = true;
@@ -249,8 +249,8 @@ function updateCamera() {
     state.camera.setTarget(cx, 0.8, cz);
 }
 
-function terrainHit(mx, my) {
-    state.camera.screenToRay(mx, my, config.width.tofloat(), config.height.tofloat());
+function terrainHit(mx, my, viewportW, viewportH) {
+    state.camera.screenToRay(mx, my, viewportW, viewportH);
     local oy = state.camera.getScreenRayOriginY();
     local dy = state.camera.getScreenRayDirY();
     if (dy >= -0.0001) return null;
@@ -305,14 +305,14 @@ function handlePanelEvents() {
 }
 
 function updateSceneInteraction(dt) {
-    local mx = mouse.getX();
-    local my = mouse.getY();
-    local cx = state.workspace.getRegionX("center");
-    local cy = state.workspace.getRegionY("center");
-    local hovered = mx >= cx && my >= cy &&
-                    mx < cx + state.workspace.getRegionW("center") &&
-                    my < cy + state.workspace.getRegionH("center") &&
-                    !ui.wantCaptureMouse();
+    ui.select("scene");
+    local hovered = ui.viewportHovered("scene-vp");
+    local mx = ui.viewportMouseX("scene-vp");
+    local my = ui.viewportMouseY("scene-vp");
+    local canvas = ui.viewportCanvas("scene-vp");
+    if (hovered) {
+        state.distance = clampf(state.distance - ui.viewportWheel("scene-vp") * 1.4, 7.0, 42.0);
+    }
     if (hovered && mouse.isDown(2)) {
         if (state.orbiting) {
             state.yaw -= (mx - state.lastX) * 0.008;
@@ -322,8 +322,8 @@ function updateSceneInteraction(dt) {
         state.lastY = my;
         state.orbiting = true;
     } else state.orbiting = false;
-    if (hovered && mouse.isDown(1)) {
-        local hit = terrainHit(mx, my);
+    if (hovered && canvas != null && mouse.isDown(1)) {
+        local hit = terrainHit(mx, my, canvas.getWidth().tofloat(), canvas.getHeight().tofloat());
         if (hit != null) {
             local direction = state.vm.tool == "lower" ? -1.0 : 1.0;
             local changed = editor.applyHeightmapBrush(state.heightmap, hit[0], hit[1], state.vm.brushRadius,
@@ -390,10 +390,11 @@ eve_update = function(dt) {
 
 eve_render = function() {
     gfx.clear();
-    // The editor and game use the same render path. This example leaves the
-    // workspace center transparent and presents the authoritative scene there;
-    // projects remain free to replace the scene presenter with another host.
-    gfx.render3D();
+    // Scene presentation is project code: another editor can replace this
+    // builder/canvas with a card table, tilemap, voxel slice, or custom preview.
+    ui.select("scene");
+    local canvas = ui.viewportCanvas("scene-vp");
+    if (canvas != null) gfx.renderScene3DToCanvas(canvas, state.camera);
     ui.beginFrameAndRender();
     state.frameCount += 1;
     if (!state.screenshotSaved && state.frameCount > 8 && gfx.saveFramePng("composable-editor.png")) {

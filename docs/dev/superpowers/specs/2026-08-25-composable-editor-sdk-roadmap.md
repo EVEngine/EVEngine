@@ -23,14 +23,14 @@ without changing engine C++.
   can add capabilities without depending on a particular window toolkit.
 - ECS and normal graphics/procgen/runtime modules: previews operate on real runtime data.
 
-### Known presentation gap
+### Backend-neutral texture presentation
 
-The current bundled Vulkan ImGui renderer predates per-draw texture selection: it always binds
-the font atlas even when a widget supplies another `TextureId`. `UI::Viewport` therefore owns a
-valid Canvas and input state, but cannot yet present that Canvas correctly on this backend. The
-next foundation increment must add a backend-neutral UI texture bridge (and a pixel-verified
-viewport test) before domain editors depend on embedded render targets. Until then the example
-uses the authoritative full game scene beneath composable editor overlays.
+Declarative image, image-button, and viewport widgets now queue backend-neutral textured
+rectangles when a renderer cannot honor per-command texture handles. The Vulkan backend
+composites those rectangles in the active UI render pass using engine texture descriptors;
+WebGPU retains its native ImGui texture path. A swapchain pixel regression proves a Canvas reaches
+the final frame rather than sampling the font atlas. The example uses this bridge for a replaceable
+embedded 3D runtime presenter.
 
 ## Domain API completeness audit
 
@@ -87,9 +87,9 @@ workspace descriptors.
 
 1. Stabilize the workspace composition API and example, including dynamic panels and shared
    selection/focus (this increment).
-2. Complete the backend-neutral UI texture/viewport bridge, then define generic editable-target,
-   tool, stroke transaction, preview-host, and property-provider interfaces; migrate terrain first
-   as the end-to-end proof.
+2. Define generic editable-target, tool, stroke transaction, preview-host, and property-provider
+   interfaces on the completed texture/viewport bridge; migrate terrain first as the end-to-end
+   proof.
 3. Add material/procgen/voxel/tilemap adapters and document persistence.
 4. Add graph/timeline foundations for dialogue and animation, then avatar validation/preview.
 5. Add card and RTS project extensions that only compose the shared foundations.

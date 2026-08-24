@@ -313,6 +313,8 @@ void ImGuiBackend::shutdown() {
         imguiTextureLayout_ = nullptr;
     }
 #endif
+    textures_.clear();
+    queuedTextureDraws_.clear();
     gfx_ = nullptr;
     window_ = nullptr;
     fontsUploaded_ = false;
@@ -326,6 +328,7 @@ void ImGuiBackend::processEvent(const SDL_Event *event) {
 
 void ImGuiBackend::newFrame() {
     if (!initialized_ || !window_) return;
+    queuedTextureDraws_.clear();
     if (frameOpen_) {
         ImGui::EndFrame();
         frameOpen_ = false;
@@ -507,6 +510,7 @@ void ImGuiBackend::rebuildFonts() {
 uint64_t ImGuiBackend::registerTexture(graphics::Texture *tex) {
     if (!initialized_ || !tex || !tex->gpuHandle) return 0;
     RegisteredTexture reg;
+    reg.texture = tex;
 #ifdef EVENGINE_WEBGPU
     auto *gt = static_cast<eve::graphics::webgpu::GpuTexture *>(tex->gpuHandle);
     reg.imId = (ImTextureID)(intptr_t)gt->view.Get();
@@ -600,6 +604,29 @@ void *ImGuiBackend::textureHandle(uint64_t id) const {
     return it == textures_.end() ? nullptr : static_cast<void *>(it->second.imId);
 }
 
+bool ImGuiBackend::usesQueuedTextureDraws() const {
+#ifdef EVENGINE_WEBGPU
+    return false;
+#else
+    // The pinned ImGui 1.83 Vulkan renderer always binds its font descriptor
+    // and ignores ImDrawCmd::TextureId. EVEngine composites registered textures
+    // immediately after ImGui while the same UI render pass is still open.
+    return true;
+#endif
+}
+
+void ImGuiBackend::queueTextureDraw(uint64_t id, float x, float y, float w, float h, float u0,
+                                    float v0, float u1, float v1, float r, float g, float b,
+                                    float a, bool opaque) {
+    if (!usesQueuedTextureDraws() || id == 0 || textures_.find(id) == textures_.end()) return;
+    const ImVec2 scale = ImGui::GetIO().DisplayFramebufferScale;
+    const ImVec4 clip = ImGui::GetWindowDrawList()->_ClipRectStack.back();
+    queuedTextureDraws_.push_back({id, x * scale.x, y * scale.y, w * scale.x, h * scale.y, u0,
+                                   v0, u1, v1, r, g, b, a, clip.x * scale.x, clip.y * scale.y,
+                                   (clip.z - clip.x) * scale.x, (clip.w - clip.y) * scale.y,
+                                   opaque});
+}
+
 bool ImGuiBackend::wantCaptureMouse() const {
     if (!initialized_) return false;
     return ImGui::GetIO().WantCaptureMouse;
@@ -620,6 +647,33 @@ void ImGuiBackend::renderDrawData(void *commandBuffer) {
 #else
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
                                     static_cast<VkCommandBuffer>(commandBuffer));
+    auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx_);
+    if (vkg && !queuedTextureDraws_.empty()) {
+        std::vector<eve::graphics::vulkan::UiTextureDraw> draws;
+        draws.reserve(queuedTextureDraws_.size());
+        for (const QueuedTextureDraw &queued : queuedTextureDraws_) {
+            const auto found = textures_.find(queued.id);
+            if (found == textures_.end() || !found->second.texture) continue;
+            eve::graphics::vulkan::UiTextureDraw draw;
+            draw.texture = found->second.texture;
+            draw.x = queued.x;
+            draw.y = queued.y;
+            draw.w = queued.w;
+            draw.h = queued.h;
+            draw.u0 = queued.u0;
+            draw.v0 = queued.v0;
+            draw.u1 = queued.u1;
+            draw.v1 = queued.v1;
+            draw.tint = eve::graphics::Color(queued.r, queued.g, queued.b, queued.a);
+            draw.clipX = queued.clipX;
+            draw.clipY = queued.clipY;
+            draw.clipW = queued.clipW;
+            draw.clipH = queued.clipH;
+            draw.opaque = queued.opaque;
+            draws.push_back(draw);
+        }
+        vkg->drawUiTextureRects(commandBuffer, draws);
+    }
 #endif
 }
 

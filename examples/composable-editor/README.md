@@ -9,7 +9,7 @@ The example demonstrates:
 
 - workspace metadata dynamically generating a project-specific UI;
 - an MVVM-style reflected `WorldEditorVM` with two-way controls;
-- a live 3D game scene using `procgen`, terrain mesh editing, and materials;
+- a live embedded 3D runtime viewport using `procgen`, terrain mesh editing, and materials;
 - channelled semantic selection shared by hierarchy, viewport, and inspector;
 - ECS-backed runtime objects created through the same command service used by a
   developer editor or an in-game builder;
@@ -24,3 +24,7 @@ make run/win32-debug GAME=examples/composable-editor
 The domain buttons are deliberately thin. Subsequent editor-module increments
 register real domain property providers, tools, previews, and documents while this
 example remains a small composition root.
+
+The scene presenter is ordinary project code: `panelScene` declares a composable
+`UI::Viewport`, while `eve_render` supplies its Canvas from the normal 3D runtime.
+Projects can replace either function without changing the C++ editor library.
