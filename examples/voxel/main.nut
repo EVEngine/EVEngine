@@ -119,10 +119,11 @@ function setupWorld() {
     if (atlas == null) atlas = buildAtlas();
 }
 
+// 鼠标按键编号：1 = 左键，2 = 右键（与 engine mouse::isDown 一致）。
 function mousePressed(button) {
     local down = mouse.isDown(button);
-    local was = (button == 0) ? prevMouse.left : prevMouse.right;
-    if (button == 0) prevMouse.left = down;
+    local was = (button == 1) ? prevMouse.left : prevMouse.right;
+    if (button == 1) prevMouse.left = down;
     else prevMouse.right = down;
     return down && !was;
 }
@@ -142,7 +143,7 @@ function handlePick() {
     local hx = world.getRaycastHitX();
     local hy = world.getRaycastHitY();
     local hz = world.getRaycastHitZ();
-    if (mousePressed(0)) {
+    if (mousePressed(1)) {
         // 放置：命中方块表面法线方向放木头
         world.setVoxelByName(hx + world.getRaycastFaceX(),
                              hy + world.getRaycastFaceY(),
