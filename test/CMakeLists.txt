@@ -88,6 +88,16 @@ file(GLOB all_test_cpp
   i18n_script.cpp
   avatar.cpp
   dialogue.cpp
+  dialogue_conversation.cpp
+  dialogue_persistence.cpp
+  dialogue_text.cpp
+  dialogue_hot_reload.cpp
+    dialogue_compiler.cpp
+    dialogue_importers.cpp
+    dialogue_localization.cpp
+    dialogue_toolchain.cpp
+  dialogue_ux.cpp
+  dialogue_voice.cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
   physics_cloth.cpp
