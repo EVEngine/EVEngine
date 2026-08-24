@@ -37,54 +37,82 @@ embedded 3D runtime presenter.
 
 ## Domain API completeness audit
 
+The audit uses six editor-facing contracts rather than counting UI panels:
+
+1. stable identity and deterministic enumeration;
+2. UI-neutral schema/metadata for project-built presenters;
+3. mutable runtime data shared by game and editor;
+4. a target/document adapter with validation and revisions;
+5. command/transaction compatibility where interactive edits require undo;
+6. a real runtime preview path.
+
+The composable-editor example is evidence for these contracts, not an official editor
+product. Domain-specific layout, filtering, workflow and game rules remain project code.
+
 ### Terrain and materials
 
-Available: heightmaps, procedural generation, smooth mesh creation/update, runtime materials,
-generic scalar-field targets and undoable brush transactions, and a working terrain composition
-example. Missing editor-library pieces are flatten, smooth, stamp and erosion operations;
-material-layer/splat assets; selection-aware property providers; and bake/publish documents.
-These should extend the common editable-target and command interfaces rather than add
-terrain-specific panels.
+Complete for the composable SDK baseline: heightmaps, live smooth mesh updates, runtime PBR
+materials, `HeightmapTarget`, replaceable kernels/falloffs/operations, and undoable field-tool
+transactions. Procgen recipe descriptors drive the project's material controls and the result is
+uploaded into an ordinary runtime `Material` shown in the embedded viewport.
+
+Future product extensions: flatten/smooth/stamp/erosion operations, material-layer/splat assets,
+selection-aware property providers, and bake/publish documents. They must extend common targets
+and commands rather than add a terrain-specific panel.
 
 ### Avatar and animation
 
-Available: avatar assembly and broad animation playback/blending/runtime bindings. Missing are
-avatar slot catalogs, dependency and compatibility validation, skeleton/bone properties,
-retarget preview, clip/timeline/curve documents, and animation-state graph presenters. Preview
-hosts must consume normal avatar and animation components so the authored result is identical
-to game playback.
+Complete for the composable SDK baseline: deterministic avatar slot/option enumeration,
+compatibility metadata and diagnostics, reflected avatar parameter metadata, mutable animation
+clip metadata, stable clip enumeration, and project-side preview actions. These APIs expose
+ordinary avatar and animation runtime objects, so a custom host previews the same components used
+by game playback.
+
+Future product extensions: skeleton/bone property providers, retarget preview, curve/keyframe
+documents and animation-state graph compilation. Timeline and graph presenters remain replaceable.
 
 ### Procedural generation and voxel
 
-Available: seeded height/texture generators, voxel worlds and meshing, live world revisions,
-an `IIntVolumeTarget` adapter, composable sphere/box kernels, and undoable 3D brush transactions.
-Grid generators now register schema-driven parameters (types, bounds, defaults, choices,
-advanced flags) for project-owned dynamic inspectors. Missing are revisioned previews, seed
-comparisons, bake/publish commands, voxel palette assets, texture/PBR/mesh recipe schemas, and
-selection-aware property providers. Procgen output should be a document revision that terrain,
-voxel, tilemap, or material tools can consume.
+Complete for the composable SDK baseline: seeded generators; schema-driven grid, texture, PBR and
+mesh recipes; shared defaults; height/texture/material/mesh output; voxel worlds and meshing;
+`VoxelWorldTarget`; composable sphere/box kernels; and undoable volume brush transactions. One
+project-owned field builder renders every recipe kind, proving schemas are presentation-neutral.
+
+Future product extensions: revisioned comparison views, bake/publish commands, voxel palette
+assets and selection-aware property providers. Procgen artifacts should eventually become saved
+document revisions without changing the recipe schema contract.
 
 ### Tilemap
 
-Available: tile buffers/maps, brushes, projection helpers, runtime examples, and a live
-`TileLayerTarget` script adapter using the same field tool and undo transactions as terrain.
-Missing are layer documents, tile palette assets, multi-cell selection/stamps,
-collision/navigation overlays, and selection-aware property providers. A tilemap tool remains
-another editable-target capability, not a special editor executable.
+Complete for the composable SDK baseline: tile buffers/maps, projection helpers and a live
+`TileLayerTarget` adapter using the same field tool and undo transactions as terrain. The adapter
+edits real runtime layer storage rather than copying it into an editor-only model.
+
+Future product extensions: saved layer documents, tile palette assets, multi-cell stamps,
+collision/navigation overlays and selection-aware property providers. A tilemap tool remains
+another target capability, not a special executable.
 
 ### Dialogue
 
-Available: dialogue compilation, localization, voice/toolchain support, and runtime playback.
-Missing are a dialogue graph domain, node/edge property providers, localization grid, diagnostics
-with quick fixes, preview session, and document persistence. The graph presenter should remain
-replaceable by any UI implementation.
+Complete for the composable SDK baseline: `ConversationDocument` provides stable node identity,
+reflected node-field metadata, node/route CRUD, structured diagnostics and transactional
+`DialogueFlow.applyDocument`. The example generates ordinary project UI from the field schema and
+applies the document to the same registry used by runtime playback.
+
+Future product extensions: disk persistence/migration, localization grids, quick-fix commands and
+a cancellable preview session. Node-canvas and form presenters remain project choices.
 
 ### Card and RTS modes
 
-Available: card presentation/targeting and RTS-oriented runtime examples and navigation systems.
-Card authoring still needs card/deck definition documents, rule validation, board-layout preview,
-and probability/test tools. RTS authoring needs archetype palettes, placement commands,
-navigation/flow-field overlays, faction/scenario documents, and simulation controls.
+Complete for the composable SDK baseline: Card definitions have mutable registration,
+deterministically sorted IDs and normal runtime instances/decks; Crowd agents have stable logical
+IDs over compact swap-pop storage. A project adapter validates Card/RTS definitions through the
+generic Schema/Definitions libraries, derives flow-field costs from the live terrain heightmap,
+creates ECS objects through the shared command service, and synchronizes Crowd state back to ECS.
+
+Future product extensions: saved card/deck/faction/scenario documents, rule and probability tools,
+board-layout preview, archetype palettes, placement constraints and navigation overlays. Those
+policies belong to reusable domain services or project extensions, never a mandatory shell.
 
 Both modes integrate through the same services: card placement, RTS unit placement, terrain
 sculpting, and dialogue node creation are semantic commands; selected objects expose property
@@ -98,9 +126,16 @@ workspace descriptors.
 2. Expose generic editable-target, tool, and stroke transaction components to projects; use the
    completed texture/viewport bridge as a replaceable preview host and migrate terrain as the
    end-to-end proof (complete except selection-aware property providers).
-3. Add material/procgen/voxel/tilemap adapters and document persistence.
-4. Add graph/timeline foundations for dialogue and animation, then avatar validation/preview.
-5. Add card and RTS project extensions that only compose the shared foundations.
+3. Add material/procgen/voxel/tilemap adapters and schema-driven recipes (complete for the live
+   runtime path; saved artifact documents remain future work).
+4. Add dialogue document authoring, animation clip metadata and avatar validation/preview
+   contracts (complete for the composable SDK baseline; generic timeline/curve tooling remains
+   future work).
+5. Add Card and RTS project extensions that only compose the shared foundations (complete).
+
+The next layer is product hardening, not a fixed editor: saved domain documents, generic
+selection-aware property adapters, bake/publish tasks, richer overlays and graph/timeline
+presenters. Each can be adopted independently by developer or runtime hosts.
 
 Each increment must include binding documentation, focused tests, a runnable example path, and
 visual verification. If a domain needs an application-specific assumption, keep it in the example
