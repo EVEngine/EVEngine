@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common/Module.h"
-#include "scene/NodeDesc.h"
 
 #include <functional>
 #include <memory>
@@ -261,9 +260,16 @@ private:
     };
 
     struct DecodedScene {
+        DecodedScene();
+        ~DecodedScene();
+        DecodedScene(DecodedScene &&) noexcept;
+        DecodedScene &operator=(DecodedScene &&) noexcept;
+        DecodedScene(const DecodedScene &) = delete;
+        DecodedScene &operator=(const DecodedScene &) = delete;
+
         std::string path;
         model3d::ModelData *md = nullptr;
-        scene::NodeDesc root;
+        std::unique_ptr<scene::NodeDesc> root;
         MeshSlotMap slots;
         LoadOptions options;
         CpuImageMap cpuImages;  // external textures pre-decoded off-thread

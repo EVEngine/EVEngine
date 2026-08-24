@@ -23,6 +23,8 @@ class AnimClip;
 class AnimPose;
 class AnimPlayer;
 class AnimGraph;
+class AnimBoneMask;
+class AnimLayerMixer;
 class AnimStateMachine;
 class MotionDatabase;
 class MotionMatcher;
@@ -117,6 +119,10 @@ public:
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
     /** @brief Create a composable pose graph for the skeleton. */
     AnimGraph        *newGraph(AnimSkeleton *skeleton);
+    /** @brief Create a zero-weight per-bone animation mask. */
+    AnimBoneMask* newBoneMask(AnimSkeleton* skeleton);
+    /** @brief Create an override/additive animation layer mixer. */
+    AnimLayerMixer*   newLayerMixer(AnimSkeleton* skeleton);
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);

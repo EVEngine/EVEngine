@@ -11,7 +11,6 @@
  */
 
 #include "common/ECS.h"
-#include "weapon/WeaponTypes.h"
 
 #include <cstdint>
 #include <string>
@@ -22,6 +21,10 @@ namespace eve::physics {
 class Body;
 class Body3D;
 }  // namespace eve::physics
+
+namespace eve::weapon {
+class WeaponMountEntity;
+}  // namespace eve::weapon
 
 namespace eve::vehicle {
 

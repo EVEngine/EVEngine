@@ -1,13 +1,22 @@
 #pragma once
 
-#include "map/MapObject.h"
-
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace eve::procgen {
+
+/** @brief Named rectangle emitted by a procedural generator, in tile coordinates. */
+struct GridObject {
+    std::string name;
+    std::string type;
+    float x = 0.f;
+    float y = 0.f;
+    float width = 0.f;
+    float height = 0.f;
+    uint32_t gid = 0;
+};
 
 /**
  * @brief Intermediate 2D generation result. `cells` store semantic ids (see Semantic.h),
@@ -53,7 +62,7 @@ public:
     std::vector<uint32_t>           &cells() { return cells_; }
     const std::vector<uint8_t>      &detail() const { return detail_; }
     std::vector<uint8_t>            &detail() { return detail_; }
-    const std::vector<map::MapObject> &objects() const { return objects_; }
+    const std::vector<GridObject> &objects() const { return objects_; }
 
 private:
     bool inBounds(int x, int y) const;
@@ -63,7 +72,7 @@ private:
     std::vector<uint32_t>                    cells_;
     std::vector<uint8_t>                     detail_;
     std::unordered_map<std::string, std::string> meta_;
-    std::vector<map::MapObject>              objects_;
+    std::vector<GridObject>                  objects_;
 };
 
 }  // namespace eve::procgen

@@ -4,6 +4,7 @@
 #include "building/Ghost.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
+#include "grid/GridConfig.h"
 #include "common/ECS.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"

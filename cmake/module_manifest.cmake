@@ -211,7 +211,7 @@ eve_declare_module(NAME graphics REQUIRED LAYER 3 SCRIPT Graphics SLOT gfx
 # ---------------------------------------------------------------------------
 
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
-                   DEPS graphics
+                   DEPS event graphics scene
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
@@ -295,7 +295,7 @@ eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS graphics image map
                    GROUP 3d)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
-                   DEPS animation graphics model3d)
+                   DEPS animation graphics model3d scene)
 eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    DEPS gpgpu
                    GROUP 3d web)

@@ -59,7 +59,7 @@ void Grid2D::addObjectAt(const std::string &name, const std::string &type, float
 
 void Grid2D::addObject(const std::string &name, const std::string &type, float x, float y,
                        float width, float height, int gid) {
-    map::MapObject o;
+    GridObject o;
     o.name   = name;
     o.type   = type;
     o.x      = x;

@@ -18,6 +18,9 @@ AnimClip::~AnimClip() { AnimClipRegistry::unregister(this); }
 
 void AnimClip::setDuration(float seconds) {
     if (seconds < 0.f) throw Exception("AnimClip.setDuration: duration must be >= 0");
+    for (const auto& event : events_)
+        if (event.t > seconds)
+            throw Exception("AnimClip.setDuration: event '%s' lies past duration", event.name.c_str());
     duration_ = seconds;
 }
 
@@ -71,32 +74,39 @@ void AnimClip::addScaleKey(int boneIndex, float time, float x, float y, float z)
     if (time > duration_) duration_ = time;
 }
 
-void AnimClip::addEvent(float time, const std::string& name) {
-    if (time < 0.f || time > duration_) throw Exception("AnimClip.addEvent: time out of range");
+void AnimClip::addEvent(float time, const std::string& name, const std::string& payload) {
+    if (time < 0.f) throw Exception("AnimClip.addEvent: time must be >= 0");
+    if (duration_ > 0.f && time > duration_) throw Exception("AnimClip.addEvent: time lies past clip duration");
     if (name.empty()) throw Exception("AnimClip.addEvent: name is empty");
-    events_.push_back({time, name});
-    std::stable_sort(events_.begin(), events_.end(), [](const EventKey& a, const EventKey& b) { return a.t < b.t; });
+    events_.push_back({time, name, payload});
+    std::stable_sort(events_.begin(), events_.end(),
+                     [](const EventMarker& a, const EventMarker& b) { return a.t < b.t; });
 }
 
-float AnimClip::getEventTime(int eventIndex) const {
-    if (eventIndex < 0 || eventIndex >= getEventCount())
-        throw Exception("AnimClip: invalid event index %d", eventIndex);
-    return events_[static_cast<size_t>(eventIndex)].t;
+float AnimClip::getEventTime(int index) const {
+    if (index < 0 || index >= getEventCount()) return 0.f;
+    return events_[static_cast<size_t>(index)].t;
 }
 
-std::string AnimClip::getEventName(int eventIndex) const {
-    if (eventIndex < 0 || eventIndex >= getEventCount())
-        throw Exception("AnimClip: invalid event index %d", eventIndex);
-    return events_[static_cast<size_t>(eventIndex)].name;
+std::string AnimClip::getEventName(int index) const {
+    if (index < 0 || index >= getEventCount()) return {};
+    return events_[static_cast<size_t>(index)].name;
 }
 
-void AnimClip::collectEvents(float previousTime, float currentTime, bool loop, std::vector<std::string>& out) const {
+std::string AnimClip::getEventPayload(int index) const {
+    if (index < 0 || index >= getEventCount()) return {};
+    return events_[static_cast<size_t>(index)].payload;
+}
+
+void AnimClip::collectEvents(float previousTime, float currentTime, bool loop,
+                             std::vector<std::string>& out) const {
     if (events_.empty() || duration_ <= 0.f || currentTime == previousTime) return;
     const float from        = wrapTime(previousTime);
     const float to          = wrapTime(currentTime);
     auto        appendRange = [&](float lo, float hi, bool includeLo) {
-        for (const EventKey& event : events_) {
-            if ((includeLo ? event.t >= lo : event.t > lo) && event.t <= hi) out.push_back(event.name);
+        for (const EventMarker& event : events_) {
+            if ((includeLo ? event.t >= lo : event.t > lo) && event.t <= hi)
+                out.push_back(event.name);
         }
     };
     if (loop && (currentTime - previousTime >= duration_ || to < from)) {

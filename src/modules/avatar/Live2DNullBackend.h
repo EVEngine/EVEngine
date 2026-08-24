@@ -16,6 +16,7 @@ namespace eve::avatar {
 class NullLive2DBackend : public ILive2DBackend {
 public:
     std::string getName() const override { return "null"; }
+    bool        isRuntimeAvailable() const override { return false; }
 
     bool loadModel(const std::string &path) override {
         path_ = path;

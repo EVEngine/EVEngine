@@ -4,12 +4,13 @@
 #include "animation/AnimBatch.h"
 #include "animation/AnimConstraintStack.h"
 #include "animation/AnimImporter.h"
+#include "animation/AnimLattice.h"
+#include "animation/AnimLayerMixer.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimGraph.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
-#include "animation/AnimLattice.h"
 #include "animation/AnimStateMachine.h"
 #include "animation/AnimTrail.h"
 #include "animation/AnimSyncGroup.h"
@@ -17,13 +18,13 @@
 #include "animation/ControlPose.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
-#include "animation/SpriteAnim.h"
-#include "animation/SpriteClip.h"
-#include "animation/SpriteSheet.h"
 #include "animation/SpineAnim.h"
 #include "animation/SpineAtlas.h"
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
+#include "animation/SpriteAnim.h"
+#include "animation/SpriteClip.h"
+#include "animation/SpriteSheet.h"
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
@@ -321,6 +322,10 @@ AnimSyncGroup *Animation::newSyncGroup() { return new AnimSyncGroup(); }
 AnimPlayer *Animation::newPlayer(AnimSkeleton *skeleton) { return new AnimPlayer(skeleton); }
 AnimGraph *Animation::newGraph(AnimSkeleton *skeleton) { return new AnimGraph(skeleton); }
 
+AnimBoneMask* Animation::newBoneMask(AnimSkeleton* skeleton) { return new AnimBoneMask(skeleton); }
+
+AnimLayerMixer* Animation::newLayerMixer(AnimSkeleton* skeleton) { return new AnimLayerMixer(skeleton); }
+
 AnimStateMachine *Animation::newStateMachine(AnimSkeleton *skeleton) {
     return new AnimStateMachine(skeleton);
 }
@@ -561,6 +566,7 @@ void Animation::expose(ssq::Table &table) {
     clip.addFunc("getEventCount", &AnimClip::getEventCount);
     clip.addFunc("getEventTime", &AnimClip::getEventTime);
     clip.addFunc("getEventName", &AnimClip::getEventName);
+    clip.addFunc("getEventPayload", &AnimClip::getEventPayload);
     clip.addFunc("getPositionKeyCount", &AnimClip::getPositionKeyCount);
     clip.addFunc("getRotationKeyCount", &AnimClip::getRotationKeyCount);
     clip.addFunc("getScaleKeyCount", &AnimClip::getScaleKeyCount);
@@ -770,6 +776,38 @@ void Animation::expose(ssq::Table &table) {
     graph.addFunc("isOneShotActive", &AnimGraph::isOneShotActive);
     graph.addFunc("getPose", &AnimGraph::getPose);
     graph.addFunc("update", &AnimGraph::update);
+
+    player.addFunc("getEventCount", &AnimPlayer::getEventCount);
+    player.addFunc("getEventName", &AnimPlayer::getEventName);
+    player.addFunc("getEventPayload", &AnimPlayer::getEventPayload);
+    player.addFunc("clearEvents", &AnimPlayer::clearEvents);
+
+    auto mask = table.addClass<AnimBoneMask>(
+        "AnimBoneMask", std::function<AnimBoneMask*()>([]() -> AnimBoneMask* { return nullptr; }), true);
+    mask.addFunc("setAll", &AnimBoneMask::setAll);
+    mask.addFunc("setBoneWeight", &AnimBoneMask::setBoneWeight);
+    mask.addFunc("setBoneWeightByName", &AnimBoneMask::setBoneWeightByName);
+    mask.addFunc("setBoneAndChildren", &AnimBoneMask::setBoneAndChildren);
+    mask.addFunc("getBoneWeight", &AnimBoneMask::getBoneWeight);
+    mask.addFunc("getBoneCount", &AnimBoneMask::getBoneCount);
+
+    auto mixer = table.addClass<AnimLayerMixer>(
+        "AnimLayerMixer", std::function<AnimLayerMixer*()>([]() -> AnimLayerMixer* { return nullptr; }), true);
+    mixer.addFunc("setBasePlayer", &AnimLayerMixer::setBasePlayer);
+    mixer.addFunc("getBasePlayer", &AnimLayerMixer::getBasePlayer);
+    mixer.addFunc("addLayer", &AnimLayerMixer::addLayer);
+    mixer.addFunc("removeLayer", &AnimLayerMixer::removeLayer);
+    mixer.addFunc("setLayerWeight", &AnimLayerMixer::setLayerWeight);
+    mixer.addFunc("setLayerEnabled", &AnimLayerMixer::setLayerEnabled);
+    mixer.addFunc("getLayerCount", &AnimLayerMixer::getLayerCount);
+    mixer.addFunc("getLayerName", &AnimLayerMixer::getLayerName);
+    mixer.addFunc("update", &AnimLayerMixer::update);
+    mixer.addFunc("getPose", &AnimLayerMixer::getPose);
+    mixer.addFunc("getEventCount", &AnimLayerMixer::getEventCount);
+    mixer.addFunc("getEventLayer", &AnimLayerMixer::getEventLayer);
+    mixer.addFunc("getEventName", &AnimLayerMixer::getEventName);
+    mixer.addFunc("getEventPayload", &AnimLayerMixer::getEventPayload);
+    mixer.addFunc("clearEvents", &AnimLayerMixer::clearEvents);
 
     auto sm = table.addClass<AnimStateMachine>(
         "AnimStateMachine",
@@ -1158,6 +1196,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newSyncGroup", &Animation::newSyncGroup);
     cls.addFunc("newPlayer", &Animation::newPlayer);
     cls.addFunc("newGraph", &Animation::newGraph);
+    cls.addFunc("newBoneMask", &Animation::newBoneMask);
+    cls.addFunc("newLayerMixer", &Animation::newLayerMixer);
     cls.addFunc("newStateMachine", &Animation::newStateMachine);
     cls.addFunc("newMotionDatabase", &Animation::newMotionDatabase);
     cls.addFunc("newMotionMatcher", &Animation::newMotionMatcher);

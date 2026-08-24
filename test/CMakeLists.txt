@@ -28,6 +28,7 @@ file(GLOB all_test_cpp
   joystick_cpp.cpp
   touch.cpp
   network.cpp
+  plugins.cpp
   database.cpp
   RenderSystem.cpp
   RenderSystem3D.cpp

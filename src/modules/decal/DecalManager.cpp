@@ -212,11 +212,11 @@ void DecalManager::update(float dt) {
     }
 }
 
-void DecalManager::drawAll(graphics::Graphics &gfx, const graphics::Camera3D::Data &cam,
+void DecalManager::drawAll(graphics::Graphics &gfx, float eyeX, float eyeY, float eyeZ,
                            const glm::mat4 &viewProj, float aspect) {
     (void)aspect;
     const Frustum frustum = extractFrustum(viewProj);
-    const glm::vec3 eye(cam.eyeX, cam.eyeY, cam.eyeZ);
+    const glm::vec3 eye(eyeX, eyeY, eyeZ);
     constexpr float kMaxDist = 80.f;
     constexpr float kMaxDistSq = kMaxDist * kMaxDist;
     for (const auto &d : decals_) {

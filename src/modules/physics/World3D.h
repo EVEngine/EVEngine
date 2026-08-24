@@ -12,6 +12,13 @@ namespace eve::physics {
 
 class Body3D;
 class Shape3D;
+struct CameraSphereHit3D {
+    bool  hit = false;
+    int   bodyId = -1;
+    float fraction = 1.f;
+    float x = 0.f, y = 0.f, z = 0.f;
+    float nx = 0.f, ny = 0.f, nz = 0.f;
+};
 
 /**
  * @brief Result of a 3D point probe: deepest non-sensor shape within radius.
@@ -65,6 +72,10 @@ public:
     /** @brief 带形状类别掩码的最短射线查询（掩码为接受的 shape categoryBits）。 */
     int rayCastFiltered(float x1, float y1, float z1, float x2, float y2, float z2,
                         uint64_t maskBits);
+    /** @brief Internal camera query: swept sphere against non-sensor shapes. */
+    bool sphereCast(float x1, float y1, float z1, float x2, float y2, float z2,
+                    float radius, uint64_t maskBits, int ignoredBodyId,
+                    CameraSphereHit3D* out) const;
     bool  hasRayHit() const { return rayHitBodyId_ >= 0; }
     int   getRayHitBodyId() const { return rayHitBodyId_; }
     float getRayHitX() const { return rayHitX_; }
