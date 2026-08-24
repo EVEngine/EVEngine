@@ -9,6 +9,7 @@
 #include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
 #include "editor/EditorValueJson.h"
+#include "editor/EditorWorkspace.h"
 #include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
 #include "editor/ScriptEditorTool.h"
@@ -574,6 +575,11 @@ EditorSession* Editor::newSession() {
     return session;
 }
 
+EditorWorkspace* Editor::newWorkspace(const std::string& id, const std::string& title) {
+    if (id.empty()) return nullptr;
+    return new EditorWorkspace(id, title.empty() ? id : title);
+}
+
 TileBufferTarget* Editor::newTileBufferTarget(const std::string& id, TileBuffer* buffer) {
     return new TileBufferTarget(id, buffer);
 }
@@ -964,6 +970,49 @@ void Editor::expose(ssq::Table& table) {
                                    (response.releasePointer ? 4 : 0);
                         }));
 
+    auto workspace = table.addClass<EditorWorkspace>(
+        "EditorWorkspace", std::function<EditorWorkspace*()>([]() -> EditorWorkspace* { return nullptr; }), true);
+    workspace.addFunc("getId", &EditorWorkspace::getId);
+    workspace.addFunc("getTitle", &EditorWorkspace::getTitle);
+    workspace.addFunc("setTitle", &EditorWorkspace::setTitle);
+    workspace.addFunc("registerPanel", &EditorWorkspace::registerPanel);
+    workspace.addFunc("removePanel", &EditorWorkspace::removePanel);
+    workspace.addFunc("clearPanels", &EditorWorkspace::clearPanels);
+    workspace.addFunc("movePanel", &EditorWorkspace::movePanel);
+    workspace.addFunc("setPanelCapability", &EditorWorkspace::setPanelCapability);
+    workspace.addFunc("setPanelContext", &EditorWorkspace::setPanelContext);
+    workspace.addFunc("setPanelVisible", &EditorWorkspace::setPanelVisible);
+    workspace.addFunc("setPanelSingleton", &EditorWorkspace::setPanelSingleton);
+    workspace.addFunc("activatePanel", &EditorWorkspace::activatePanel);
+    workspace.addFunc("getActivePanel", &EditorWorkspace::getActivePanel);
+    workspace.addFunc("getPanelCount", &EditorWorkspace::getPanelCount);
+    workspace.addFunc("getPanelId", &EditorWorkspace::getPanelId);
+    workspace.addFunc("getPanelTitle", &EditorWorkspace::getPanelTitle);
+    workspace.addFunc("getPanelRegion", &EditorWorkspace::getPanelRegion);
+    workspace.addFunc("getPanelCapability", &EditorWorkspace::getPanelCapability);
+    workspace.addFunc("getPanelContext", &EditorWorkspace::getPanelContext);
+    workspace.addFunc("getPanelOrder", &EditorWorkspace::getPanelOrder);
+    workspace.addFunc("getPanelVisible", &EditorWorkspace::getPanelVisible);
+    workspace.addFunc("getPanelSingleton", &EditorWorkspace::getPanelSingleton);
+    workspace.addFunc("setRegionSize", &EditorWorkspace::setRegionSize);
+    workspace.addFunc("layout", &EditorWorkspace::layout);
+    workspace.addFunc("getRegionX", &EditorWorkspace::getRegionX);
+    workspace.addFunc("getRegionY", &EditorWorkspace::getRegionY);
+    workspace.addFunc("getRegionW", &EditorWorkspace::getRegionW);
+    workspace.addFunc("getRegionH", &EditorWorkspace::getRegionH);
+    workspace.addFunc("setMode", &EditorWorkspace::setMode);
+    workspace.addFunc("getMode", &EditorWorkspace::getMode);
+    workspace.addFunc("select", &EditorWorkspace::select);
+    workspace.addFunc("clearSelection", &EditorWorkspace::clearSelection);
+    workspace.addFunc("getSelectionCount", &EditorWorkspace::getSelectionCount);
+    workspace.addFunc("getSelectionItem", &EditorWorkspace::getSelectionItem);
+    workspace.addFunc("getSelectionType", &EditorWorkspace::getSelectionType);
+    workspace.addFunc("getPrimarySelection", &EditorWorkspace::getPrimarySelection);
+    workspace.addFunc("getSelectionSequence", &EditorWorkspace::getSelectionSequence);
+    workspace.addFunc("focus", &EditorWorkspace::focus);
+    workspace.addFunc("getFocusedSurface", &EditorWorkspace::getFocusedSurface);
+    workspace.addFunc("getRevision", &EditorWorkspace::getRevision);
+
     auto scriptTool = table.addClass<ScriptEditorTool>(
         "ScriptEditorTool", std::function<ScriptEditorTool*()>([]() -> ScriptEditorTool* { return nullptr; }), true);
     scriptTool.addFunc("setShortcut", &ScriptEditorTool::setShortcut);
@@ -986,6 +1035,7 @@ void Editor::expose(ssq::Class& cls) {
     cls.addFunc("newDock", &Editor::newDock);
     cls.addFunc("newHistory", &Editor::newHistory);
     cls.addFunc("newSession", &Editor::newSession);
+    cls.addFunc("newWorkspace", &Editor::newWorkspace);
     cls.addFunc("newScriptTool", &Editor::newScriptTool);
     cls.addFunc("registerScriptCommand", registerScriptCommand);
     cls.addFunc("unregisterScriptCommand", [](Editor* self, const std::string& id) {

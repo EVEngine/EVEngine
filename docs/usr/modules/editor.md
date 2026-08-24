@@ -147,6 +147,31 @@ for (local y = 0; y < buf.getHeight(); y++)
 
 ## 编辑器壳
 
+### 可组合 Workspace（推荐）
+
+`EditorWorkspace` 是 UI 无关的组合模型，不提供固定编辑器窗口。项目注册任意面板描述，
+再由 `ui`、游戏 HUD、MCP host 或其他 presenter 动态生成界面。Workspace 同时提供带通道的
+Selection/Focus，因此开发编辑器和游戏内建造模式可以共享语义状态而使用不同布局。
+
+```squirrel
+local ws = editor.newWorkspace("level", "My Level Tools");
+ws.setRegionSize("left", 240);
+ws.registerPanel("outliner", "Outliner", "left", 10);
+ws.registerPanel("viewport", "Scene", "center", 20);
+ws.setPanelCapability("viewport", "scene.viewport.3d");
+ws.layout(config.width, config.height);
+
+// 枚举 descriptor 动态生成项目自己的 UI，而不是依赖固定 shell。
+for (local i = 0; i < ws.getPanelCount(); ++i) {
+    print(ws.getPanelId(i) + " -> " + ws.getPanelRegion(i) + "\n");
+}
+
+ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
+```
+
+完整组合示例见 [`examples/composable-editor`](../../../examples/composable-editor)：项目脚本用
+五个面板 builder 组合地形、材质、反射 MVVM、ECS 与游戏命令；C++ 不认识这些具体面板。
+
 ```squirrel
 local dock = editor.newDock();
 dock.setRegionSize("left", 200);
@@ -192,7 +217,8 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newSession` / `newScriptTool` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- 模块：`newWorkspace` / `newSession` / `newScriptTool` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
 - 会话：`addTool` / `removeTool` / `clearTools` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - Gizmo：`setMode` / `setSpace` / `setPosition` / `setRotationEuler` / `setScale` / `setBounds` / `setSnap*` / `pick` / `beginDrag` / `updateDrag` / `endDrag` / `getPart*`

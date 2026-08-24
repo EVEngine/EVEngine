@@ -34,6 +34,7 @@ class EditorInspector;
 class EditorDock;
 class EditorHistory;
 class EditorSession;
+class EditorWorkspace;
 class TileBufferTarget;
 #ifdef EVENGINE_HAS_MAP
 class TileLayerTarget;
@@ -67,6 +68,8 @@ public:
     EditorHistory*   newHistory();
     /** @brief Create a host for interchangeable IEditorTool implementations. */
     EditorSession* newSession();
+    /** @brief Create a UI-neutral composition model for a project-specific editor. */
+    EditorWorkspace* newWorkspace(const std::string& id, const std::string& title);
     /** @brief Return the UI- and script-neutral command registry owned by this editor module. */
     EditorCommandService& commandService() { return commandService_; }
     /** @brief Return the immutable command registry owned by this editor module. */

@@ -184,6 +184,7 @@ file(GLOB all_test_cpp
   editor_scene_target_v2.cpp
   editor_script_v2.cpp
   editor_selection_v2.cpp
+  editor_workspace.cpp
   editor_task_diagnostic_v2.cpp
   editor_transaction_v2.cpp
   editor_value_json_v2.cpp
