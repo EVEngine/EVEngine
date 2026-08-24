@@ -1,6 +1,7 @@
 #include "daynight/DayNight.h"
 
 #include "graphics/Graphics.h"
+#include "graphics/Volumetric.h"
 #include "graphics/Light.h"
 #include "graphics/Texture.h"
 
@@ -344,6 +345,17 @@ float DayNight::getAmbientB() const {
     return ab * (0.95f + 0.15f * impl_->sunEnergy);  // bluer in daylight
 }
 
+void DayNight::applyAtmosphere(graphics::Volumetric *fog) const {
+    if (!fog) return;
+    fog->setLightDirection(getSunDirX(), getSunDirY(), getSunDirZ());
+    fog->setFogColor(getSkyR(), getSkyG(), getSkyB());
+    fog->setCloudLightColor(getSunR() + impl_->weatherFlash * 0.5f,
+                            getSunG() + impl_->weatherFlash * 0.65f,
+                            getSunB() + impl_->weatherFlash * 0.9f);
+    fog->setIntensity(std::max(0.08f, impl_->sunEnergy + impl_->weatherFlash));
+    fog->setTime(impl_->timeOfDay * 18.f);
+}
+
 // ---------------------------------------------------------------------------
 // Skybox
 // ---------------------------------------------------------------------------
@@ -579,6 +591,7 @@ void DayNight::expose(ssq::Class &cls) {
     cls.addFunc("getAmbientG", &DayNight::getAmbientG);
     cls.addFunc("getAmbientB", &DayNight::getAmbientB);
     cls.addFunc("getAmbientBrightness", &DayNight::getAmbientBrightness);
+    cls.addFunc("applyAtmosphere", &DayNight::applyAtmosphere);
     cls.addFunc("setWeatherInfluence", &DayNight::setWeatherInfluence);
     cls.addFunc("getWeatherCloudiness", &DayNight::getWeatherCloudiness);
     cls.addFunc("getWeatherFlash", &DayNight::getWeatherFlash);

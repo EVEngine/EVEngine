@@ -8,6 +8,7 @@
 namespace eve::graphics {
 class Graphics;
 class Light3D;
+class Volumetric;
 }  // namespace eve::graphics
 
 namespace eve::daynight {
@@ -95,6 +96,17 @@ public:
     float getAmbientG() const;
     float getAmbientB() const;
     float getAmbientBrightness() const;
+
+    /**
+     * @brief Synchronize sun direction and atmosphere-derived fog lighting.
+     *
+     * This is the supported bridge between the day/night atmosphere and a
+     * graphics Volumetric instance. Density and height remain scene/weather
+     * controls; sky color, sun direction, exposure and animation time are
+     * supplied by this module.
+     * @param fog Target volumetric fog or cloud renderer; null is ignored.
+     */
+    void applyAtmosphere(graphics::Volumetric *fog) const;
 
     // ---- weather coupling ----
     /**

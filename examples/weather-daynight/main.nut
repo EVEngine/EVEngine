@@ -245,14 +245,8 @@ eve_update = function(dt) {
                         52.0, 1.7778, 0.1, 120.0);
     skyFog.setCamera(ex, 6.2, ez, 0.0, 1.8, -3.5, 0.0, 1.0, 0.0,
                      52.0, 1.7778, 0.1, 120.0);
-    skyClouds.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(),
-                                daynight.getSunDirZ());
-    skyClouds.setCloudLightColor(daynight.getSunR() + weather.getFlash() * 0.5,
-                                 daynight.getSunG() + weather.getFlash() * 0.65,
-                                 daynight.getSunB() + weather.getFlash() * 0.9);
-    skyClouds.setTime(daynight.getTimeOfDay() * 18.0);
-    skyFog.setTime(daynight.getTimeOfDay() * 18.0);
-    skyFog.setFogColor(daynight.getSkyR(), daynight.getSkyG(), daynight.getSkyB());
+    daynight.applyAtmosphere(skyClouds);
+    daynight.applyAtmosphere(skyFog);
     skyCamera.setAmbient(daynight.getAmbientR() * 1.35, daynight.getAmbientG() * 1.35,
                          daynight.getAmbientB() * 1.35);
 
