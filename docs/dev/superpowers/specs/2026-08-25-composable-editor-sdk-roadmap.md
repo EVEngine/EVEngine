@@ -56,10 +56,11 @@ to game playback.
 
 ### Procedural generation and voxel
 
-Available: seeded height/texture generators, voxel worlds and meshing. Missing are schema-driven
-generator parameters, revisioned previews, seed comparisons, bake/publish commands, chunk-aware
-voxel edit targets, voxel palettes, and undoable brush transactions. Procgen output should be a
-document revision that terrain, voxel, tilemap, or material tools can consume.
+Available: seeded height/texture generators, voxel worlds and meshing, live world revisions,
+an `IIntVolumeTarget` adapter, composable sphere/box kernels, and undoable 3D brush transactions.
+Missing are schema-driven generator parameters, revisioned previews, seed comparisons,
+bake/publish commands, voxel palette assets, and selection-aware property providers. Procgen
+output should be a document revision that terrain, voxel, tilemap, or material tools can consume.
 
 ### Tilemap
 

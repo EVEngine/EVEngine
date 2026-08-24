@@ -64,6 +64,7 @@ void Voxel::expose(ssq::Table &table) {
     world.addFunc("loadWorld", &VoxelWorld::loadWorld);
     world.addFunc("clear", &VoxelWorld::clear);
     world.addFunc("getChunkCount", &VoxelWorld::getChunkCount);
+    world.addFunc("getRevision", &VoxelWorld::getRevision);
     world.addFunc("remeshDirty",
                   std::function<int(VoxelWorld *)>([](VoxelWorld *w) -> int {
                       return w ? w->remeshDirty() : 0;

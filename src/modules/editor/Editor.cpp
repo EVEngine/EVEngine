@@ -9,6 +9,7 @@
 #include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
 #include "editor/EditorValueJson.h"
+#include "editor/EditorVolumeTarget.h"
 #include "editor/EditorWorkspace.h"
 #include "editor/FieldBrushTool.h"
 #include "editor/FieldTargets.h"
@@ -16,6 +17,7 @@
 #include "editor/ScriptEditorTool.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
+#include "editor/VolumeBrushTool.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
@@ -610,6 +612,23 @@ FieldBrushTool* Editor::newFieldBrushTool(const std::string& id, const std::stri
     return new FieldBrushTool(id, label, nullptr, nullptr);
 }
 
+SphereVolumeBrushKernel* Editor::newSphereVolumeBrushKernel() {
+    return new SphereVolumeBrushKernel();
+}
+BoxVolumeBrushKernel* Editor::newBoxVolumeBrushKernel() { return new BoxVolumeBrushKernel(); }
+PaintIntVolumeOperation* Editor::newPaintIntVolumeOperation(int value) {
+    return new PaintIntVolumeOperation(value);
+}
+VolumeBrushTool* Editor::newVolumeBrushTool(const std::string& id, const std::string& label) {
+    return new VolumeBrushTool(id, label);
+}
+
+#ifdef EVENGINE_HAS_VOXEL
+VoxelWorldTarget* Editor::newVoxelWorldTarget(const std::string& id, voxel::VoxelWorld* world) {
+    return new VoxelWorldTarget(id, world);
+}
+#endif
+
 #ifdef EVENGINE_HAS_PROCGEN
 HeightmapTarget* Editor::newHeightmapTarget(const std::string& id, procgen::Heightmap* heightmap) {
     return new HeightmapTarget(id, heightmap);
@@ -958,6 +977,53 @@ void Editor::expose(ssq::Table& table) {
         if (self) self->setOperation(operation);
     });
 
+    auto sphereVolumeKernel = table.addClass<SphereVolumeBrushKernel>(
+        "SphereVolumeBrushKernel",
+        std::function<SphereVolumeBrushKernel*()>([]() -> SphereVolumeBrushKernel* { return nullptr; }), true);
+    sphereVolumeKernel.addFunc("setConstantFalloff",
+                               [](SphereVolumeBrushKernel* self, ConstantBrushFalloff* falloff) {
+                                   if (self) self->setFalloff(falloff);
+                               });
+    sphereVolumeKernel.addFunc("setLinearFalloff", [](SphereVolumeBrushKernel* self, LinearBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    sphereVolumeKernel.addFunc("setSmoothFalloff", [](SphereVolumeBrushKernel* self, SmoothBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+
+    auto boxVolumeKernel = table.addClass<BoxVolumeBrushKernel>(
+        "BoxVolumeBrushKernel",
+        std::function<BoxVolumeBrushKernel*()>([]() -> BoxVolumeBrushKernel* { return nullptr; }), true);
+    boxVolumeKernel.addFunc("setConstantFalloff", [](BoxVolumeBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    boxVolumeKernel.addFunc("setLinearFalloff", [](BoxVolumeBrushKernel* self, LinearBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    boxVolumeKernel.addFunc("setSmoothFalloff", [](BoxVolumeBrushKernel* self, SmoothBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+
+    auto paintVolumeOperation = table.addClass<PaintIntVolumeOperation>(
+        "PaintIntVolumeOperation",
+        std::function<PaintIntVolumeOperation*()>([]() -> PaintIntVolumeOperation* { return nullptr; }), true);
+    paintVolumeOperation.addFunc("setValue", &PaintIntVolumeOperation::setValue);
+    paintVolumeOperation.addFunc("getValue", &PaintIntVolumeOperation::value);
+
+    auto volumeTool = table.addClass<VolumeBrushTool>(
+        "VolumeBrushTool", std::function<VolumeBrushTool*()>([]() -> VolumeBrushTool* { return nullptr; }), true);
+    volumeTool.addFunc("setRadius", &VolumeBrushTool::setRadius);
+    volumeTool.addFunc("getRadius", &VolumeBrushTool::radius);
+    volumeTool.addFunc("setSphereKernel", [](VolumeBrushTool* self, SphereVolumeBrushKernel* kernel) {
+        if (self) self->setKernel(kernel);
+    });
+    volumeTool.addFunc("setBoxKernel", [](VolumeBrushTool* self, BoxVolumeBrushKernel* kernel) {
+        if (self) self->setKernel(kernel);
+    });
+    volumeTool.addFunc("setPaintIntOperation", [](VolumeBrushTool* self, PaintIntVolumeOperation* operation) {
+        if (self) self->setOperation(operation);
+    });
+
     auto tileTarget = table.addClass<TileBufferTarget>(
         "TileBufferTarget", std::function<TileBufferTarget*()>([]() -> TileBufferTarget* { return nullptr; }), true);
     tileTarget.addFunc("getTargetId", [](TileBufferTarget* self) { return self ? self->targetId() : std::string{}; });
@@ -1001,6 +1067,25 @@ void Editor::expose(ssq::Table& table) {
     heightmapTarget.addFunc("clearDirtyRegion", &HeightmapTarget::clearDirtyRegion);
 #endif
 
+#ifdef EVENGINE_HAS_VOXEL
+    auto voxelTarget = table.addClass<VoxelWorldTarget>(
+        "VoxelWorldTarget", std::function<VoxelWorldTarget*()>([]() -> VoxelWorldTarget* { return nullptr; }), true);
+    voxelTarget.addFunc("getTargetId",
+                        [](VoxelWorldTarget* self) { return self ? self->targetId() : std::string{}; });
+    voxelTarget.addFunc("getRevision", [](VoxelWorldTarget* self) {
+        return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
+    });
+    voxelTarget.addFunc("readInt3", &VoxelWorldTarget::readInt3);
+    voxelTarget.addFunc("writeInt3", &VoxelWorldTarget::writeInt3);
+    voxelTarget.addFunc("clearDirtyVolume", &VoxelWorldTarget::clearDirtyVolume);
+    voxelTarget.addFunc("getDirtyMinX", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minX : 0; });
+    voxelTarget.addFunc("getDirtyMinY", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minY : 0; });
+    voxelTarget.addFunc("getDirtyMinZ", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().minZ : 0; });
+    voxelTarget.addFunc("getDirtyMaxX", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().maxX : -1; });
+    voxelTarget.addFunc("getDirtyMaxY", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().maxY : -1; });
+    voxelTarget.addFunc("getDirtyMaxZ", [](VoxelWorldTarget* self) { return self ? self->dirtyVolume().maxZ : -1; });
+#endif
+
     auto session = table.addClass<EditorSession>(
         "EditorSession", std::function<EditorSession*()>([]() -> EditorSession* { return nullptr; }), true);
     session.addFunc("addTool", std::function<bool(EditorSession*, ScriptEditorTool*)>(
@@ -1008,11 +1093,19 @@ void Editor::expose(ssq::Table& table) {
     session.addFunc("addFieldTool", [](EditorSession* self, FieldBrushTool* tool) {
         return self && self->addTool(tool);
     });
+    session.addFunc("addVolumeTool", [](EditorSession* self, VolumeBrushTool* tool) {
+        return self && self->addTool(tool);
+    });
     session.addFunc("bindTileBufferTarget", [](EditorSession* self, TileBufferTarget* target) {
         if (self) self->bindTarget(target);
     });
 #ifdef EVENGINE_HAS_MAP
     session.addFunc("bindTileLayerTarget", [](EditorSession* self, TileLayerTarget* target) {
+        if (self) self->bindTarget(target);
+    });
+#endif
+#ifdef EVENGINE_HAS_VOXEL
+    session.addFunc("bindVoxelWorldTarget", [](EditorSession* self, VoxelWorldTarget* target) {
         if (self) self->bindTarget(target);
     });
 #endif
@@ -1036,6 +1129,11 @@ void Editor::expose(ssq::Table& table) {
         "undo", std::function<bool(EditorSession*)>([](EditorSession* self) { return self->transactions().undo(); }));
     session.addFunc(
         "redo", std::function<bool(EditorSession*)>([](EditorSession* self) { return self->transactions().redo(); }));
+    session.addFunc("canUndo", [](EditorSession* self) { return self && self->transactions().canUndo(); });
+    session.addFunc("canRedo", [](EditorSession* self) { return self && self->transactions().canRedo(); });
+    session.addFunc("clearHistory", [](EditorSession* self) {
+        if (self) self->transactions().clear();
+    });
     session.addFunc("getCommandCount",
                     [](EditorSession* self) { return self ? static_cast<int>(self->availableCommands().size()) : 0; });
     session.addFunc("getCommandId", [](EditorSession* self, int index) {
@@ -1114,6 +1212,26 @@ void Editor::expose(ssq::Table& table) {
                             return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
                                    (response.releasePointer ? 4 : 0);
                         }));
+    session.addFunc(
+        "dispatchPointer3D",
+        std::function<int(EditorSession*, int, int, int, float, float, float, float, float, float, float)>(
+            [](EditorSession* self, int phase, int pointerId, int button, float x, float y, float z, float dx,
+               float dy, float dz, float pressure) {
+                EditorPointerEvent event;
+                event.phase = static_cast<EditorPointerEvent::Phase>(phase);
+                event.pointerId = pointerId;
+                event.button = button;
+                event.x = x;
+                event.y = y;
+                event.z = z;
+                event.deltaX = dx;
+                event.deltaY = dy;
+                event.deltaZ = dz;
+                event.pressure = pressure;
+                const ToolResponse response = self->dispatchPointer(event);
+                return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
+                       (response.releasePointer ? 4 : 0);
+            }));
 
     auto workspace = table.addClass<EditorWorkspace>(
         "EditorWorkspace", std::function<EditorWorkspace*()>([]() -> EditorWorkspace* { return nullptr; }), true);
@@ -1190,9 +1308,16 @@ void Editor::expose(ssq::Class& cls) {
     cls.addFunc("newPaintIntFieldOperation", &Editor::newPaintIntFieldOperation);
     cls.addFunc("newAddScalarFieldOperation", &Editor::newAddScalarFieldOperation);
     cls.addFunc("newFieldBrushTool", &Editor::newFieldBrushTool);
+    cls.addFunc("newSphereVolumeBrushKernel", &Editor::newSphereVolumeBrushKernel);
+    cls.addFunc("newBoxVolumeBrushKernel", &Editor::newBoxVolumeBrushKernel);
+    cls.addFunc("newPaintIntVolumeOperation", &Editor::newPaintIntVolumeOperation);
+    cls.addFunc("newVolumeBrushTool", &Editor::newVolumeBrushTool);
     cls.addFunc("newTileBufferTarget", &Editor::newTileBufferTarget);
 #ifdef EVENGINE_HAS_MAP
     cls.addFunc("newTileLayerTarget", &Editor::newTileLayerTarget);
+#endif
+#ifdef EVENGINE_HAS_VOXEL
+    cls.addFunc("newVoxelWorldTarget", &Editor::newVoxelWorldTarget);
 #endif
     cls.addFunc("registerScriptCommand", registerScriptCommand);
     cls.addFunc("unregisterScriptCommand", [](Editor* self, const std::string& id) {

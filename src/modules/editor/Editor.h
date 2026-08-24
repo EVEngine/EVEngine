@@ -21,6 +21,11 @@ namespace map {
 class TileLayer;
 }
 #endif
+#ifdef EVENGINE_HAS_VOXEL
+namespace voxel {
+class VoxelWorld;
+}
+#endif
 }  // namespace eve
 
 namespace eve::editor {
@@ -49,6 +54,13 @@ class BoxBrushKernel;
 class PaintIntFieldOperation;
 class AddScalarFieldOperation;
 class FieldBrushTool;
+class SphereVolumeBrushKernel;
+class BoxVolumeBrushKernel;
+class PaintIntVolumeOperation;
+class VolumeBrushTool;
+#ifdef EVENGINE_HAS_VOXEL
+class VoxelWorldTarget;
+#endif
 class EditorAutomationProvider;
 
 /**
@@ -111,6 +123,23 @@ public:
      * @return Unconfigured tool; set its kernel and operation before activation.
      */
     FieldBrushTool* newFieldBrushTool(const std::string& id, const std::string& label);
+    /** @brief Create a spherical kernel for sparse three-dimensional fields. */
+    SphereVolumeBrushKernel* newSphereVolumeBrushKernel();
+    /** @brief Create an axis-aligned box kernel for sparse three-dimensional fields. */
+    BoxVolumeBrushKernel* newBoxVolumeBrushKernel();
+    /** @brief Create a byte-range integer paint operation for volume targets. */
+    PaintIntVolumeOperation* newPaintIntVolumeOperation(int value);
+    /** @brief Create a 3D brush tool whose kernel and operation are supplied separately. */
+    VolumeBrushTool* newVolumeBrushTool(const std::string& id, const std::string& label);
+#ifdef EVENGINE_HAS_VOXEL
+    /**
+     * @brief Adapt a live voxel world to the generic sparse volume editing protocol.
+     * @param id Stable project-defined target id.
+     * @param world Non-owning live voxel world pointer.
+     * @return New adapter owned by the caller.
+     */
+    VoxelWorldTarget* newVoxelWorldTarget(const std::string& id, voxel::VoxelWorld* world);
+#endif
 #ifdef EVENGINE_HAS_PROCGEN
     /**
      * @brief Adapt a live heightmap to the generic scalar-field editing protocol.

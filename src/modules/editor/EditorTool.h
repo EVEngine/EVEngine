@@ -21,8 +21,10 @@ struct EditorPointerEvent {
     int button = 0;
     float x = 0.f;
     float y = 0.f;
+    float z = 0.f;
     float deltaX = 0.f;
     float deltaY = 0.f;
+    float deltaZ = 0.f;
     float pressure = 1.f;
     bool shift = false;
     bool control = false;

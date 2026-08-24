@@ -121,6 +121,36 @@ session.addFieldTool(tool);
 session.bindTileLayerTarget(target);
 ```
 
+### 三维稀疏体积
+
+Voxel 不会被伪装成二维 tile。`IIntVolumeTarget`、球/盒 Kernel、体积操作和
+`dispatchPointer3D` 构成独立的三维 capability，但仍复用 `IEditorTool` 生命周期、
+constraint 与 stroke transaction：
+
+```squirrel
+local world = eve.Voxel().newWorld();
+local target = editor.newVoxelWorldTarget("terrain.voxels", world);
+local hard = editor.newConstantBrushFalloff();
+local sphere = editor.newSphereVolumeBrushKernel();
+sphere.setConstantFalloff(hard);
+local paint = editor.newPaintIntVolumeOperation(7); // 0 为擦除
+local tool = editor.newVolumeBrushTool("voxel.paint", "Paint Voxels");
+tool.setSphereKernel(sphere);
+tool.setPaintIntOperation(paint);
+tool.setRadius(2.5);
+session.addVolumeTool(tool);
+session.bindVoxelWorldTarget(target);
+session.activateTool("voxel.paint");
+
+// 视口 raycast 决定三维目标坐标，再转发 Down / Move / Up。
+session.dispatchPointer3D(0, 0, 0, vx, vy, vz, 0, 0, 0, 1.0);
+session.dispatchPointer3D(2, 0, 0, vx, vy, vz, 0, 0, 0, 1.0);
+```
+
+`VoxelWorldTarget.getRevision()` 读取 live world 的单调 revision，因此游戏逻辑、流式加载或
+其他脚本产生的变化也能使预览与保存票据失效。`getDirtyMinX/Y/Z`、`getDirtyMaxX/Y/Z`
+提供局部 remesh/overlay 范围；`clearDirtyVolume` 在消费者完成刷新后清除它。
+
 ### 项目限制
 
 实现 `IEditConstraint::evaluate()` 并注册到 `session.constraints()`。约束可以允许、给出警告或拒绝任意 `IEditCommand`，例如锁定水岸坡度、限定可用 tile、吸附建筑朝向、阻止穿过地图边界。所有命令都经 `EditorContext::execute()` 进入约束和事务，拒绝的命令不会污染撤销栈。
@@ -255,14 +285,15 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newTileBufferTarget` / `newTileLayerTarget` / `newHeightmapTarget` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- 模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `newTileBufferTarget` / `newTileLayerTarget` / `newHeightmapTarget` / `newVoxelWorldTarget` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
 - Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
-- 会话：`addTool` / `addFieldTool` / `removeTool` / `clearTools` / `bindTileBufferTarget` / `bindTileLayerTarget` / `bindHeightmapTarget` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
+- 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `bindTileBufferTarget` / `bindTileLayerTarget` / `bindHeightmapTarget` / `bindVoxelWorldTarget` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`
 - Kernel：`setConstantFalloff` / `setLinearFalloff` / `setSmoothFalloff`
 - 整数字段操作：`setValue` / `getValue`
 - 字段 Target：`getTargetId` / `getRevision` / `getWidth` / `getHeight` / `readInt` / `writeInt` / `readScalar` / `writeScalar` / `sampleScalar` / `clearDirtyRegion`
+- 体积工具/Target：`setSphereKernel` / `setBoxKernel` / `setPaintIntOperation` / `readInt3` / `writeInt3` / `getDirtyMinX` / `getDirtyMinY` / `getDirtyMinZ` / `getDirtyMaxX` / `getDirtyMaxY` / `getDirtyMaxZ` / `clearDirtyVolume`
 - Gizmo：`setMode` / `setSpace` / `setPosition` / `setRotationEuler` / `setScale` / `setBounds` / `setSnap*` / `pick` / `beginDrag` / `updateDrag` / `endDrag` / `getPart*`
 - Manager：`set*Enabled` / `attach` / `detach` / `getGizmo` / `pick` / `beginDrag` / `updateDrag`
 - Brush：`setTool` / `setSize` / `setShape` / `setTile` / `paintAt` / `eraseAt` / `floodFill` / `paintLine` / `paintRect` / `preview*` / `getChange*`
