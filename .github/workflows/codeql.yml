@@ -26,7 +26,9 @@ jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The instrumented C++ build takes about 34 minutes and database analysis
+    # can take another 30+ minutes on GitHub-hosted runners.
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
