@@ -232,6 +232,12 @@ public:
     /** @brief Marks the host as a modal (blocks other hosts) / overlay. */
     void setHostModal(bool modal);
     void setHostOverlay(bool overlay);
+    /** @brief Sets frameless overlay opacity (0..1). */
+    void setHostOverlayAlpha(float alpha);
+    /** @brief Allows or prevents user movement after the initial position. */
+    void setHostMovable(bool movable);
+    /** @brief Allows or prevents user resizing after the initial size. */
+    void setHostResizable(bool resizable);
     /** @brief Positions the host window with a pivot (0..1 each axis). */
     void setHostPos(float x, float y, float pivotX = 0.f, float pivotY = 0.f);
     /** Host anchor in display (0..1); offsets come from setHostPos. */

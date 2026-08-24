@@ -262,14 +262,17 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             const float py = host->meta()->pivotY;
             const float x = host->meta()->anchorX * display.x + host->meta()->posX - px * winW;
             const float y = host->meta()->anchorY * display.y + host->meta()->posY - py * winH;
-            ImGui::SetNextWindowPos(ImVec2(x, y), ImGuiCond_Always,
+            ImGui::SetNextWindowPos(ImVec2(x, y),
+                                    host->meta()->lockPos ? ImGuiCond_Always
+                                                          : ImGuiCond_FirstUseEver,
                                     ImVec2(host->meta()->pivotX, host->meta()->pivotY));
-            flags |= ImGuiWindowFlags_NoMove;
+            if (host->meta()->lockPos) flags |= ImGuiWindowFlags_NoMove;
             if (winW <= 0.f && winH <= 0.f) flags |= ImGuiWindowFlags_AlwaysAutoResize;
         }
         if (winW > 0.f || winH > 0.f) {
             ImGui::SetNextWindowSize(
-                ImVec2(winW > 0.f ? winW : -1.f, winH > 0.f ? winH : -1.f), ImGuiCond_Always);
+                ImVec2(winW > 0.f ? winW : -1.f, winH > 0.f ? winH : -1.f),
+                host && host->meta()->lockSize ? ImGuiCond_Always : ImGuiCond_FirstUseEver);
         } else if (n.measuredW > 0.f || n.measuredH > 0.f) {
             // Real measured size → stable auto-resize instead of ImGui's guess.
             ImGui::SetNextWindowContentSize(ImVec2(n.measuredW, n.measuredH));
@@ -278,7 +281,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
                      ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse |
                      ImGuiWindowFlags_AlwaysAutoResize;
-            ImGui::SetNextWindowBgAlpha(0.4f);
+            ImGui::SetNextWindowBgAlpha(host->meta()->overlayBgAlpha);
         }
         if (modal) {
             ImGui::OpenPopup(title.c_str());

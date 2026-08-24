@@ -78,6 +78,12 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     CHECK(int(ui->current()->findById("enabled")->type) == int(NodeType::Switch));
     CHECK(ui->current()->findById("search")->tooltip == "Filter scene nodes");
     CHECK(int(ui->current()->findById("workspace")->type) == int(NodeType::SplitPane));
+    ui->setHostMovable(true);
+    ui->setHostResizable(true);
+    ui->setHostOverlayAlpha(0.85f);
+    CHECK(!ui->current()->meta()->lockPos);
+    CHECK(!ui->current()->meta()->lockSize);
+    CHECK(ui->current()->meta()->overlayBgAlpha == 0.85f);
 }
 
 TEST_CASE("UI.editorKit.desktopCompositionRenders") {

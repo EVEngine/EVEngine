@@ -153,11 +153,13 @@ public:
         bool modal = false;
         bool overlay = false;  // no title bar / chrome (HUD-style)
         bool hasPos = false;
+        bool lockPos = true;       // false: initial position only; user may move/persist it
         float posX = 0.f;
         float posY = 0.f;
         float pivotX = 0.f;
         float pivotY = 0.f;
         bool hasSize = false;      // explicit window size
+        bool lockSize = true;      // false: initial size only; user may resize/persist it
         float sizeX = 0.f;
         float sizeY = 0.f;
         float percentW = 0.f;      // 0..1 of display width; overrides sizeX
@@ -165,6 +167,7 @@ public:
         float anchorX = 0.f;       // anchor in display (0..1); with hasPos, posX is offset
         float anchorY = 0.f;
         std::string name;
+        float overlayBgAlpha = 0.4f;
         uint32_t ownerId = 0;
         UIHost *entity = nullptr;
     };

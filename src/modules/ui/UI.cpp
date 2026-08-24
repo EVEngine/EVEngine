@@ -790,6 +790,18 @@ void UI::setHostOverlay(bool overlay) {
     if (selected_) selected_->meta()->overlay = overlay;
 }
 
+void UI::setHostOverlayAlpha(float alpha) {
+    if (selected_) selected_->meta()->overlayBgAlpha = std::max(0.f, std::min(1.f, alpha));
+}
+
+void UI::setHostMovable(bool movable) {
+    if (selected_) selected_->meta()->lockPos = !movable;
+}
+
+void UI::setHostResizable(bool resizable) {
+    if (selected_) selected_->meta()->lockSize = !resizable;
+}
+
 void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
     if (!selected_) return;
     auto m = selected_->meta();
@@ -1356,7 +1368,6 @@ bool UI::editorOpen() {
     if (!editorShell_) editorShell_ = std::make_unique<EditorShell>();
     editorShell_->open(inspector_->host(), databasePanel_->host(),
                        scenePanel_->host());
-    editorShell_->selectPanel("inspector");
     return editorShell_->isOpen();
 }
 
@@ -1520,6 +1531,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostLayer", &UI::setHostLayer);
     cls.addFunc("setHostModal", &UI::setHostModal);
     cls.addFunc("setHostOverlay", &UI::setHostOverlay);
+    cls.addFunc("setHostOverlayAlpha", &UI::setHostOverlayAlpha);
+    cls.addFunc("setHostMovable", &UI::setHostMovable);
+    cls.addFunc("setHostResizable", &UI::setHostResizable);
     cls.addFunc("setHostPos", &UI::setHostPos);
     cls.addFunc("setHostAnchor", &UI::setHostAnchor);
     cls.addFunc("setHostSize", &UI::setHostSize);
