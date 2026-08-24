@@ -161,7 +161,8 @@ bool decodeLayerData(Poco::JSON::Object::Ptr layerObj, size_t expectedCount,
                 return false;
             }
             out.resize(arr->size());
-            for (size_t i = 0; i < arr->size(); ++i) out[i] = uint32_t(asInt(arr->get(i), 0));
+            for (size_t i = 0; i < arr->size(); ++i)
+                out[i] = uint32_t(asInt(arr->get(static_cast<unsigned int>(i)), 0));
             if (expectedCount > 0 && out.size() != expectedCount) {
                 if (error) *error = "gid count mismatch";
                 return false;
@@ -348,7 +349,7 @@ bool applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root, std::string
             if (arr) {
                 for (size_t i = 0; i < arr->size(); ++i) {
                     try {
-                        auto o = arr->getObject(i);
+                        auto o = arr->getObject(static_cast<unsigned int>(i));
                         if (o && o->has("source")) continue;
                         applyTileset(layer, readTilesetObject(o));
                         break;
@@ -414,7 +415,7 @@ void parseObjectGroup(Poco::JSON::Object::Ptr group, std::vector<MapObject> &out
     for (size_t i = 0; i < arr->size(); ++i) {
         Poco::JSON::Object::Ptr o;
         try {
-            o = arr->getObject(i);
+            o = arr->getObject(static_cast<unsigned int>(i));
         } catch (...) {
             continue;
         }
@@ -449,7 +450,7 @@ TilesetInfo readDefaultTileset(Poco::JSON::Object::Ptr root) {
             if (arr) {
                 for (size_t i = 0; i < arr->size(); ++i) {
                     try {
-                        auto o = arr->getObject(i);
+                        auto o = arr->getObject(static_cast<unsigned int>(i));
                         if (o && o->has("source")) continue;
                         return readTilesetObject(o);
                     } catch (...) {
@@ -519,7 +520,7 @@ std::vector<TileLayer *> loadMapObject(Poco::JSON::Object::Ptr root, const std::
                 for (size_t i = 0; i < arr->size(); ++i) {
                     Poco::JSON::Object::Ptr lo;
                     try {
-                        lo = arr->getObject(i);
+                        lo = arr->getObject(static_cast<unsigned int>(i));
                     } catch (...) {
                         continue;
                     }
@@ -589,7 +590,7 @@ bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc) {
                 for (size_t i = 0; i < arr->size(); ++i) {
                     Poco::JSON::Object::Ptr lo;
                     try {
-                        lo = arr->getObject(i);
+                        lo = arr->getObject(static_cast<unsigned int>(i));
                     } catch (...) {
                         continue;
                     }
@@ -631,7 +632,7 @@ bool applyConfigText(TileLayer *layer, const std::string &json, std::string *err
                 for (size_t i = 0; i < arr->size(); ++i) {
                     Poco::JSON::Object::Ptr lo;
                     try {
-                        lo = arr->getObject(i);
+                        lo = arr->getObject(static_cast<unsigned int>(i));
                     } catch (...) {
                         continue;
                     }

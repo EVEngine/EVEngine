@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <cmath>
@@ -40,17 +41,6 @@ using namespace eve::graphics;
 
 namespace {
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320, int h = 240) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 Texture *makeSolid(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) {
     const uint8_t px[4] = {r, g, b, a};
@@ -287,6 +277,31 @@ TEST_CASE("volumetric.modeAndRayMarchQuality") {
     vol->setMode("screenspace");
     vol->setQuality("medium");
     CHECK(vol->getSampleCount() == 48);
+}
+
+TEST_CASE("volumetric.cloudModeParametersAndQuality") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol.get() != nullptr);
+    REQUIRE(vol->getCloudShader() != nullptr);
+    vol->setMode("cloud");
+    vol->setCloudLayer(6.f, 14.f);
+    vol->setCloudCoverage(0.72f);
+    vol->setCloudDensity(1.3f);
+    vol->setCloudScale(22.f);
+    vol->setCloudWind(2.f, -0.5f);
+    vol->setCloudLightColor(1.f, 0.65f, 0.35f);
+    CHECK(std::fabs(vol->getFloat("cloudBottom") - 6.f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("cloudTop") - 14.f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("cloudCoverage") - 0.72f) < 1e-5f);
+    vol->setQuality("low");
+    CHECK(vol->getSampleCount() == 16);
+    vol->setQuality("high");
+    CHECK(vol->getSampleCount() == 64);
+    win->close();
 }
 
 namespace {

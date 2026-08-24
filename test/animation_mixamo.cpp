@@ -1,3 +1,4 @@
+#include "PathBesideSource.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -50,10 +51,7 @@ using namespace eve::animation;
 namespace {
 
 std::string assetPath(const char *filename) {
-    std::string here = __FILE__;
-    auto slash       = here.find_last_of("/\\");
-    std::string dir  = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return dir + "/assets/mixamo/" + filename;
+    return eve_test_path::pathBesideTestDir(__FILE__, std::string("assets/mixamo/") + filename);
 }
 
 bool fileExists(const std::string &path) {

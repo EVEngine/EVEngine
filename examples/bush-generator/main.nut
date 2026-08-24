@@ -12,13 +12,8 @@ if (!("bushObject" in getroottable())) bushObject <- null;
 if (!("bushTexture" in getroottable())) bushTexture <- null;
 if (!("bushCamera" in getroottable())) bushCamera <- null;
 if (!("bushYaw" in getroottable())) bushYaw <- 0.0;
-if (!("prevBushKeys" in getroottable())) prevBushKeys <- {};
-
 function pressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevBushKeys ? prevBushKeys[k] : false;
-    prevBushKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function loadBushTexture() {
@@ -36,14 +31,14 @@ function rebuildBush() {
     p.setFloat("height", 1.7);
     p.setFloat("width", 2.6);
     p.setInt("blobs", 12);
-    p.setInt("rings", 3);
-    p.setInt("radialSegments", 8);
+    p.setInt("rings", 5);
+    p.setInt("radialSegments", 12);
     p.setFloat("leafSize", 0.32);
     p.setInt("twigs", 6);
     bushMesh = procgen.generateMesh("mesh.bush", p, gfx);
     if (bushObject == null) {
         bushObject = eve.Renderable3D();
-        bushObject.setPosition(1.4, -3.0, 0.0);
+        bushObject.setPosition(0.0, 0.0, 0.0);
         bushObject.setTint(1.0, 1.0, 1.0, 1.0);
         bushObject.setRoughness(0.9);
         bushObject.setCastShadow(true);
@@ -67,7 +62,7 @@ if (bushMesh == null) rebuildBush();
 gfx.setBackgroundColor(0.055, 0.075, 0.07, 1.0);
 
 function eve_update(dt) {
-    bushYaw += dt * 7.0;
+    bushYaw += dt * 1.0;
     bushObject.setYaw(bushYaw);
     if (pressed("r") || pressed("R")) { bushSeed += 1; rebuildBush(); }
     if (pressed("1")) { bushStyle = "mound"; rebuildBush(); }
@@ -93,5 +88,4 @@ function eve_update(dt) {
 function eve_render() {
     gfx.clear();
     gfx.render3D();
-    gfx.drawSolidRect(28.0, 28.0, 320.0, 200.0, 0.92, 0.94, 0.86, 0.96);
 }

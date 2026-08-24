@@ -101,9 +101,9 @@ TEST_CASE("dialogue.charactersAndStage") {
     CHECK(dlg->hide("alice"));
     CHECK(!dlg->isShown("alice"));
 
+    dlg->reset();
     aliceAv->release();
     delete aliceAv;
-    dlg->reset();
 }
 
 TEST_CASE("dialogue.typewriterAndAdvance") {
@@ -340,10 +340,10 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
     bob->setVisible(false);
     alice->sync();
     bob->sync();
+    dlg->reset();
     alice->release();
     bob->release();
     delete alice;
     delete bob;
-    dlg->reset();
     win->close();
 }

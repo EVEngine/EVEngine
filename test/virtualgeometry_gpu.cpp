@@ -35,15 +35,12 @@ using namespace eve::virtualgeometry;
 
 namespace {
 
-bool tryInitGpuWindow() {
-    auto *win = eve::window::Window::create();
+/** GPU cluster building only needs a live Vulkan device; headless init is enough. */
+bool tryInitHeadlessGfx() {
     auto *gfx = eve::graphics::Graphics::create();
-    if (!win || !gfx) return false;
-    eve::window::WindowSettings s;
-    s.width = 320;
-    s.height = 240;
-    s.centered = true;
-    return win->setWindowSettings(s);
+    if (!gfx) return false;
+    gfx->initHeadless(320, 240);
+    return true;
 }
 
 }  // namespace
@@ -55,7 +52,7 @@ TEST_CASE("virtualgeometry.module.create") {
 }
 
 TEST_CASE("virtualgeometry.gpu.buildIcosphere") {
-    if (!tryInitGpuWindow()) return;  // headless: skip
+    if (!tryInitHeadlessGfx()) return;
 
     auto *mod = VirtualGeometry::create();
     if (!mod->isAvailable()) return;
@@ -74,7 +71,7 @@ TEST_CASE("virtualgeometry.gpu.buildIcosphere") {
 }
 
 TEST_CASE("virtualgeometry.gpu.cullRasterResolve") {
-    if (!tryInitGpuWindow()) return;  // headless: skip
+    if (!tryInitHeadlessGfx()) return;
 
     auto *mod = VirtualGeometry::create();
     if (!mod->isAvailable()) return;
@@ -117,7 +114,7 @@ TEST_CASE("virtualgeometry.gpu.cullRasterResolve") {
 // transitions are smooth: fine detail up close, coarse detail far away, with a
 // continuous, hole-free cover the whole time.
 TEST_CASE("virtualgeometry.gpu.lodTransitionSweep") {
-    if (!tryInitGpuWindow()) return;  // headless: skip
+    if (!tryInitHeadlessGfx()) return;
 
     auto *mod = VirtualGeometry::create();
     if (!mod->isAvailable()) return;

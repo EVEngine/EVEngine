@@ -195,7 +195,8 @@ std::vector<float> varFloats(const Var& v) {
     if (!arr) return out;
     for (size_t i = 0; i < arr->size(); ++i) {
         try {
-            out.push_back(static_cast<float>(arr->get(i).convert<double>()));
+            out.push_back(
+                static_cast<float>(arr->get(static_cast<unsigned int>(i)).convert<double>()));
         } catch (...) {
             out.push_back(0.f);
         }
@@ -218,7 +219,8 @@ std::vector<std::string> varStrings(const Var& v) {
     std::vector<std::string> out;
     Array::Ptr arr = varToArray(v);
     if (!arr) return out;
-    for (size_t i = 0; i < arr->size(); ++i) out.push_back(varString(arr->get(i)));
+    for (size_t i = 0; i < arr->size(); ++i)
+        out.push_back(varString(arr->get(static_cast<unsigned int>(i))));
     return out;
 }
 
@@ -298,7 +300,7 @@ void pushVar(HSQUIRRELVM vm, const Var& v) {
             sq_newarray(vm, 0);
             if (arr) {
                 for (size_t i = 0; i < arr->size(); ++i) {
-                    pushVar(vm, arr->get(i));
+                    pushVar(vm, arr->get(static_cast<unsigned int>(i)));
                     if (SQ_FAILED(sq_arrayappend(vm, -2))) break;
                 }
             }
@@ -1005,7 +1007,8 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
                     if (!cells) continue;
                     for (size_t c = 0; c < cells->size(); ++c) {
                         ImGui::TableSetColumnIndex(static_cast<int>(c));
-                        ImGui::TextUnformatted(varString(cells->get(c)).c_str());
+                        ImGui::TextUnformatted(
+                            varString(cells->get(static_cast<unsigned int>(c))).c_str());
                     }
                 }
             }

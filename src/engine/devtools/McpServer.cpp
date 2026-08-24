@@ -21,6 +21,7 @@
 #include "common/ProcgenQuery.h"
 #include "common/RenderCapture.h"
 #include "common/SceneQuery.h"
+#include "common/ScriptError.h"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
@@ -268,7 +269,7 @@ std::string sqLiteralValue(const Poco::Dynamic::Var& v) {
             auto arr = v.extract<Poco::JSON::Array::Ptr>();
             for (size_t i = 0; i < arr->size(); ++i) {
                 if (i) out += ",";
-                out += sqLiteralValue(arr->get(i));
+                out += sqLiteralValue(arr->get(static_cast<unsigned int>(i)));
             }
         } catch (...) {
         }
@@ -293,19 +294,26 @@ std::string sqLiteralValue(const Poco::Dynamic::Var& v) {
     return "null";
 }
 
+std::string snippetErrorText(HSQUIRRELVM vm, bool compile) {
+    eve::script::ScriptErrorContext ctx = compile ? eve::script::captureCompileError(vm)
+                                                  : eve::script::takeLastScriptError(vm);
+    if (!ctx.empty()) return eve::script::formatScriptError(ctx);
+    return compile ? "compile failed" : "runtime failed";
+}
+
 // Compile + run a snippet against the live VM (no return value captured).
 bool runVmSnippet(HSQUIRRELVM vm, const std::string& source, std::string* err) {
     const SQInteger top = sq_gettop(vm);
     if (SQ_FAILED(sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()),
                                    _SC("mcp_snippet.nut"), SQTrue))) {
         sq_settop(vm, top);
-        if (err) *err = "compile failed";
+        if (err) *err = snippetErrorText(vm, true);
         return false;
     }
     sq_pushroottable(vm);
     if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
         sq_settop(vm, top);
-        if (err) *err = "runtime failed";
+        if (err) *err = snippetErrorText(vm, false);
         return false;
     }
     sq_settop(vm, top);
@@ -383,13 +391,17 @@ std::string callSceneDirectorReturn(HSQUIRRELVM vm, const std::string& snippet,
     if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()),
                                    _SC("mcp_scene_director.nut"), SQTrue))) {
         sq_settop(vm, top);
-        if (err) *err = "compile failed";
+        if (err) *err = snippetErrorText(vm, true);
         return {};
     }
     sq_pushroottable(vm);
     if (SQ_FAILED(sq_call(vm, 1, SQTrue, SQTrue))) {
         sq_settop(vm, top);
-        if (err) *err = "runtime failed (is the scene_director kit installed?)";
+        std::string text = snippetErrorText(vm, false);
+        if (err)
+            *err = text == "runtime failed"
+                       ? "runtime failed (is the scene_director kit installed?)"
+                       : std::move(text);
         return {};
     }
     std::string json = sqValueToJson(vm, -1);
@@ -975,12 +987,12 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
                                        static_cast<SQInteger>(source.size()),
                                        _SC("mcp_snippet.nut"), SQTrue))) {
             sq_settop(vm, top);
-            return "error: compile failed";
+            return "error: " + snippetErrorText(vm, true);
         }
         sq_pushroottable(vm);
         if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
             sq_settop(vm, top);
-            return "error: runtime failed";
+            return "error: " + snippetErrorText(vm, false);
         }
         sq_settop(vm, top);
         return "ok";
@@ -1115,7 +1127,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
                 auto arr = args->getArray("buffers");
                 if (arr) {
                     for (size_t i = 0; i < arr->size(); ++i)
-                        buffers.push_back(arr->get(i).convert<std::string>());
+                        buffers.push_back(
+                            arr->get(static_cast<unsigned int>(i)).convert<std::string>());
                 }
             } catch (...) {
             }
@@ -1184,7 +1197,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson,
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.1.0\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.2.1\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. eve_host_* tools create JSON-defined editor windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
     return makeResult(idJson, resultJson);
 }

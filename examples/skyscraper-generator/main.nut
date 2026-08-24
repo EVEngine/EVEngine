@@ -17,10 +17,7 @@ if (!("yaw" in getroottable())) yaw <- 0.0;
 if (!("prevKeys" in getroottable())) prevKeys <- {};
 
 function pressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevKeys ? prevKeys[k] : false;
-    prevKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function rebuildTower() {

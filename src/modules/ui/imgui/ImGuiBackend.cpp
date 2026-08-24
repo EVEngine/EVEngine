@@ -40,6 +40,9 @@ void checkVk(VkResult err) {
 /** Base glyph size in logical px (before the DPI scale is applied). */
 constexpr float kBaseFontSizePx = 16.f;
 
+/** U+4E2D "中": probe used to verify a font actually rasterizes CJK glyphs. */
+constexpr ImWchar kCjkProbeCodepoint = 0x4E2D;
+
 std::vector<const char *> regularFontCandidates() {
 #if defined(_WIN32)
     static const std::string winDir = [] {
@@ -58,9 +61,9 @@ std::vector<const char *> regularFontCandidates() {
     };
 #elif defined(EVENGINE_ANDROID)
     static const std::vector<std::string> paths = {
+        "/system/fonts/Roboto-Regular.ttf",
         "/system/fonts/NotoSansCJK-Regular.ttc",
         "/system/fonts/DroidSansFallback.ttf",
-        "/system/fonts/Roboto-Regular.ttf",
     };
 #else
     static const std::vector<std::string> paths = {
@@ -68,6 +71,53 @@ std::vector<const char *> regularFontCandidates() {
         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+        "/usr/share/fonts/truetype/arphic/uming.ttc",
+    };
+#endif
+    std::vector<const char *> out;
+    out.reserve(paths.size());
+    for (const auto &p : paths) out.push_back(p.c_str());
+    return out;
+}
+
+// System fonts that actually contain CJK glyphs, tried in order when the
+// regular candidates above (Segoe UI / DejaVu Sans / Helvetica, ...) turn out
+// to be Latin-only. Each platform's first entry is the most common CJK font.
+std::vector<const char *> cjkFontCandidates() {
+#if defined(_WIN32)
+    static const std::string winDir = [] {
+        const char *dir = getenv("WINDIR");
+        return dir ? std::string(dir) : std::string("C:\\Windows");
+    }();
+    static const std::vector<std::string> paths = {
+        winDir + "\\Fonts\\msyh.ttc",   // Microsoft YaHei (simplified + traditional)
+        winDir + "\\Fonts\\simhei.ttf", // SimHei
+        winDir + "\\Fonts\\simsun.ttc", // SimSun
+        winDir + "\\Fonts\\Deng.ttf",   // DengXian
+        winDir + "\\Fonts\\msjh.ttc",   // Microsoft JhengHei (traditional)
+    };
+#elif defined(__APPLE__)
+    static const std::vector<std::string> paths = {
+        "/System/Library/Fonts/PingFang.ttc",
+        "/System/Library/Fonts/STHeiti Light.ttc",
+        "/System/Library/Fonts/Hiragino Sans GB.ttc",
+        "/System/Library/Fonts/Supplemental/Songti.ttc",
+        "/Library/Fonts/Arial Unicode.ttf",
+    };
+#elif defined(EVENGINE_ANDROID)
+    static const std::vector<std::string> paths = {
+        "/system/fonts/NotoSansCJK-Regular.ttc",
+        "/system/fonts/DroidSansFallback.ttf",
+        "/system/fonts/NotoSansSC-Regular.otf",
+    };
+#else
+    static const std::vector<std::string> paths = {
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
+        "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+        "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+        "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
         "/usr/share/fonts/truetype/arphic/uming.ttc",
     };
 #endif
@@ -130,6 +180,7 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     loadFonts();
     ImGui_ImplWGPU_CreateFontsTexture();
     fontsUploaded_ = true;
+    checkCjkCoverage();
 #else
     auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
     if (!vkg) return false;
@@ -192,6 +243,7 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
                                 });
         ImGui_ImplVulkan_DestroyFontUploadObjects();
         fontsUploaded_ = true;
+        checkCjkCoverage();
     }
 #endif
 
@@ -349,8 +401,8 @@ void ImGuiBackend::loadFonts() {
     ImFontConfig cfg{};
     cfg.OversampleH = 2;
     cfg.OversampleV = 2;
-    // Include CJK glyphs so Chinese/Japanese text works on any platform whose
-    // system font provides them (atlas grows by a few MB — acceptable).
+    // Request CJK ranges so the merged CJK font below rasterizes Chinese,
+    // Japanese and Korean text (the atlas grows by a few MB — acceptable).
     fontRanges_.clear();
     ImFontGlyphRangesBuilder rangeBuilder;
     rangeBuilder.AddRanges(atlas->GetGlyphRangesDefault());
@@ -359,14 +411,53 @@ void ImGuiBackend::loadFonts() {
     cfg.GlyphRanges = fontRanges_.Data;
 
     bool added = false;
+    std::string primaryPath;
     for (const char *path : regularFontCandidates()) {
         if (!fileExists(path)) continue;
         if (atlas->AddFontFromFileTTF(path, sizePx, &cfg)) {
+            primaryPath = path;
             added = true;
             break;
         }
     }
     if (!added) atlas->AddFontDefault(&cfg);
+
+    // The first available regular font is usually Latin-only (Segoe UI,
+    // DejaVu Sans, Helvetica), so requesting CJK ranges on it adds no Chinese
+    // glyphs to the atlas. Merge a CJK-capable system font into the same atlas
+    // (same MergeMode pattern as the icon font below) so Chinese/Japanese text
+    // renders instead of ImGui's '?' fallback glyph.
+    //
+    // Glyph coverage cannot be verified until the atlas is rasterized (both
+    // ImFont::Glyphs and the IndexLookup table are populated during Build), so
+    // pick by file identity: every cjkFontCandidates() entry is CJK-capable,
+    // and the first existing one is the best match for the platform. Whether
+    // the merge actually covered CJK is checked after upload in
+    // checkCjkCoverage().
+    cjkRanges_.clear();
+    ImFontGlyphRangesBuilder cjkRangeBuilder;
+    cjkRangeBuilder.AddRanges(atlas->GetGlyphRangesChineseFull());
+    cjkRangeBuilder.BuildRanges(&cjkRanges_);
+    bool primaryIsCjk = false;
+    for (const char *path : cjkFontCandidates()) {
+        if (primaryPath == path) {
+            primaryIsCjk = true;
+            break;
+        }
+    }
+    if (!primaryIsCjk) {
+        ImFontConfig cjkCfg{};
+        // CJK glyphs are dense (ChineseFull is ~20k+ codepoints); the physical
+        // size already scales with DPI, so oversampling 1 keeps the atlas sane.
+        cjkCfg.OversampleH = 1;
+        cjkCfg.OversampleV = 1;
+        cjkCfg.MergeMode = true;
+        cjkCfg.GlyphRanges = cjkRanges_.Data;
+        for (const char *path : cjkFontCandidates()) {
+            if (!fileExists(path)) continue;
+            if (atlas->AddFontFromFileTTF(path, sizePx, &cjkCfg, cjkRanges_.Data)) break;
+        }
+    }
 
     ImFontConfig iconCfg{};
     iconCfg.OversampleH = 2;
@@ -378,6 +469,16 @@ void ImGuiBackend::loadFonts() {
         if (!fileExists(path)) continue;
         if (atlas->AddFontFromFileTTF(path, sizePx, &iconCfg, iconRanges)) break;
     }
+}
+
+void ImGuiBackend::checkCjkCoverage() const {
+    // Only valid after the atlas has been built/uploaded (lookup tables exist).
+    ImFontAtlas *atlas = ImGui::GetIO().Fonts;
+    if (!atlas || atlas->Fonts.Size == 0) return;
+    const ImFont *font = atlas->Fonts[0];
+    if (font && font->FindGlyphNoFallback(kCjkProbeCodepoint) == nullptr)
+        fprintf(stderr,
+                "[ui] warning: no CJK-capable system font found; Chinese text will render as '?'\n");
 }
 
 void ImGuiBackend::rebuildFonts() {

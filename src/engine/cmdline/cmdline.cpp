@@ -1,5 +1,6 @@
 #include "cmdline/cmdline.h"
 #include "common/config.h"
+#include "common/Version.h"
 
 #include <CLI11.hpp>
 #include <iostream>
@@ -39,7 +40,7 @@ void Cmdline::expose(ssq::Table& table) {
 
 void Cmdline::expose(ssq::Class& cls) { cls.addFunc("getName", &Cmdline::getName); }
 
-int Cmdline::runArgs(unsigned argc, char** argv) {
+int Cmdline::runArgs(unsigned argcIn, char** argvIn) {
     CLI::App app{"EVEngine - A Modern Game Engine"};
     bool     version = false;
     app.add_flag("-v,--version", version, "Print version string");
@@ -53,9 +54,9 @@ int Cmdline::runArgs(unsigned argc, char** argv) {
     }
 
     try {
-        this->argc = argc;
-        this->argv = argv;
-        app.parse(argc, argv);
+        this->argc = argcIn;
+        this->argv = argvIn;
+        app.parse(argcIn, argvIn);
     } catch (const CLI::ParseError& e) {
         for (auto* h : handles) delete h;
         int res = app.exit(e);
@@ -69,7 +70,7 @@ int Cmdline::runArgs(unsigned argc, char** argv) {
             break;
         }
     }
-    if (version) cout << EVENGINE_VERSION << endl;
+    if (version) cout << eve::buildInfo() << endl;
 
     for (auto* h : handles) delete h;
     return res;

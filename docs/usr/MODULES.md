@@ -2,10 +2,12 @@
 
 本目录按模块说明 EVEngine 面向 Squirrel 游戏脚本公开的能力。每篇包含入口、最小示例、至少两个目标导向任务、当前绑定的 API 快查和生命周期注意事项。
 
-模块可以按需裁剪：见 [按需裁剪模块](TRIMMING.md)。脚本里用 `has_module("slot")` 判断某个模块在当前构建中是否存在。
+> 使用前提：从[官网发布页](https://github.com/EVEngine/EVEngine/releases)下载并解压对应平台的 SDK（无需编译引擎），然后用 `eve run <游戏目录>` 运行；本手册适用于 SDK 中的全部模块。
 
-首次查阅前请阅读 [API 使用约定](API-CONVENTIONS.md)，了解模块对象、辅助对象、生命周期与“C++ public 方法不一定是脚本 API”的边界。
-本轮逐章核对的实现、测试证据与结论记录在 [用户模块文档 Review](REVIEW.md)。
+模块可以按需裁剪：见 [按需裁剪模块](TRIMMING.md)。脚本里用 `has_module("slot")` 判断某个模块在当前构建中是否存在（下载的 SDK 默认包含全部模块）。
+
+首次查阅前请阅读 [API 使用约定](../dev/API-CONVENTIONS.md)，了解模块对象、辅助对象、生命周期与“C++ public 方法不一定是脚本 API”的边界。
+本轮逐章核对的实现、测试证据与结论记录在 [用户模块文档 Review](https://github.com/EVEngine/EVEngine/blob/main/docs/usr/REVIEW.md)。
 
 ## 运行环境与输入
 
@@ -30,6 +32,7 @@
 - [音频播放](modules/audio.md)：创建可播放 Source，控制音量、音高、循环、进度和 3D 声源位置。
 - [3D 模型](modules/model3d.md)：通过 medialoader/Assimp 载入模型数据，再交给图形模块渲染。
 - [网络](modules/network.md)：提供 HTTP 请求、TCP 客户端/服务端和基础网络状态。
+- [数据库](modules/database.md)：SQLite 连接、JSON 行接口与轻量 ORM，用于存档与配置表。
 
 ## 游戏玩法
 
@@ -42,6 +45,8 @@
 - [背包 / 物品栏](modules/inventory.md)：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。
 - [卡牌游戏工具](modules/cardgame.md)：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌与费用置灰（参考 UiCard）。
 - [建筑放置](modules/building.md)：策略 / 经营类建筑定义、格子占用、鬼影预览与可插拔校验/吸附。
+- [建筑可视化](modules/buildingfx.md)：把放置世界和鬼影同步为 2D/3D 视觉并绘制放置网格。
+- [程序化房屋](modules/housegen.md)：数据驱动的房屋生成（组件库 + 请求 → 布局 JSON）。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
 
 ## 表现与场景
@@ -51,6 +56,11 @@
 - [Sprite-Stacking](modules/spritestack.md)：把 3D 模型切成多层 RGBA 图，以叠片方式渲染成伪 3D 物体（经典 billboard 切片 / 水平俯视切片）。
 - [昼夜循环](modules/daynight.md)：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。
 - [天气系统](modules/weather.md)：实时降水 / 闪电 / 风场，含雨、雪、雷暴预置与风暴氛围。
+- [可交互积雪](modules/snow.md)：深度场积雪，真实位移深坑 + POM 微细节 + 降雪回填（脚印 / 弹坑 / 行走痕迹）。
+- [Avatar 分层渲染](modules/avatar.md)：Image 图层 / Live2D / VRoid 立绘，表达式、口型与动作。
+- [对话与剧情](modules/dialogue.md)：角色舞台、打字机、选项分支、口型与台词池（.dnut）。
+- [3D 相机控制器](modules/camera.md)：跟随 / 环绕 / 俯视 / 第一人称 / 过场视角序列。
+- [场景加载器](modules/sceneloader.md)：glTF / OBJ / FBX 解码成声明式场景树，支持热重载与异步加载。
 - [声明式 UI](modules/ui.md)：构建并挂载保留式控件树，通过稳定 ID 消费点击和更改事件。
 - [声明式场景树](modules/scene.md)：用节点描述构建 2D/3D 层级，维护 local/world 变换并连接渲染实体。
 
@@ -63,5 +73,8 @@
 - [GPU 计算](modules/gpgpu.md)：创建 storage buffer 和 compute shader，绑定后调度 Vulkan compute。
 - [张量](modules/tensor.md)：执行 eager 张量运算，或用 Func 构图、编译并重复运行。
 - [线程与异步](modules/thread.md)：使用线程池执行原生安全任务，通过 Channel/Event 把结果送回主线程。
+- [风格化渲染](modules/stylize.md)：卡通 / 水彩 / 水墨 / 像素后处理与网格着色。
+- [虚拟几何](modules/virtualgeometry.md)：GPU 簇裁剪 + LOD 的大场景几何管线。
+- [统一网格](modules/grid.md)：格子 ↔ 世界坐标换算与拓扑（纯 C++，被 map/building 消费）。
 - [原生插件](modules/plugins.md)：从动态库加载用 EVEngine SDK 编译的原生模块。
 - [内置演示](modules/demo.md)：查询或运行随宿主编译的演示能力，用于验证引擎安装。

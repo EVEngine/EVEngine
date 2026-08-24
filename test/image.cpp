@@ -377,3 +377,101 @@ TEST_CASE("image.rotate.rotspriteFortyFive") {
     // RotSprite must not invent blended colors.
     CHECK_EQ(foreign, 0);
 }
+
+TEST_CASE("image.formats.pixelRoundTrips") {
+    auto *module = img();
+    struct Fmt {
+        const char *name;
+        size_t pixelSize;
+        float eps;
+    };
+    const Fmt full[] = {
+        {"RGBA16", 8u, 0.01f},
+        {"RGBA16F", 8u, 0.01f},
+        {"RGBA32F", 16u, 1e-4f},
+        {"RGBA4", 2u, 0.1f},
+        {"RGB5A1", 2u, 0.05f},
+        {"RGB565", 2u, 0.05f},
+    };
+    const Colorf probe{0.30f, 0.60f, 0.90f, 1.0f};
+    for (const auto &f : full) {
+        CHECK(eve::image::ImageData::validPixelFormat(f.name));
+        std::unique_ptr<eve::image::ImageData> d(module->newImageData(2, 2, f.name));
+        REQUIRE(d.get() != nullptr);
+        CHECK_EQ(d->getFormat(), std::string(f.name));
+        CHECK_EQ(d->getPixelSize(), f.pixelSize);
+        const bool hasSetFn = eve::image::ImageData::getPixelSetFunction(f.name) != nullptr;
+        const bool hasGetFn = eve::image::ImageData::getPixelGetFunction(f.name) != nullptr;
+        CHECK(hasSetFn);
+        CHECK(hasGetFn);
+        d->setPixel(1, 0, probe);
+        const Colorf got = d->getPixel(1, 0);
+        CHECK(nearColor(got, probe, f.eps));
+    }
+
+    const Fmt reduced[] = {{"R8", 1u, 0.01f}, {"RG8", 2u, 0.01f}};
+    for (const auto &f : reduced) {
+        CHECK(eve::image::ImageData::validPixelFormat(f.name));
+        std::unique_ptr<eve::image::ImageData> d(module->newImageData(2, 2, f.name));
+        REQUIRE(d.get() != nullptr);
+        CHECK_EQ(d->getFormat(), std::string(f.name));
+        CHECK_EQ(d->getPixelSize(), f.pixelSize);
+        d->setPixel(1, 0, probe);
+        const Colorf out = d->getPixel(1, 0);
+        CHECK(std::fabs(out.r - probe.r) < f.eps);
+        if (std::string(f.name) == "RG8") CHECK(std::fabs(out.g - probe.g) < f.eps);
+        CHECK(std::fabs(out.b) < f.eps);
+        CHECK(std::fabs(out.a - 1.0f) < f.eps);
+    }
+}
+
+TEST_CASE("image.formats.canPasteMatrix") {
+    CHECK(eve::image::ImageData::canPaste("RGBA8", "RGBA16"));
+    CHECK(eve::image::ImageData::canPaste("RGBA16", "RGBA8"));
+    CHECK(eve::image::ImageData::canPaste("RGBA8", "RGBA16F"));
+    CHECK(eve::image::ImageData::canPaste("RGBA16F", "RGBA32F"));
+    CHECK(eve::image::ImageData::canPaste("RGBA32F", "RGBA8"));
+    CHECK(eve::image::ImageData::canPaste("RGBA16F", "RGBA16"));
+    CHECK(!eve::image::ImageData::canPaste("R8", "RGBA16"));
+    CHECK(!eve::image::ImageData::canPaste("RGBA16", "R8"));
+    CHECK(!eve::image::ImageData::canPaste("RGBA4", "RGBA8"));
+}
+
+TEST_CASE("image.paste.acrossFormats") {
+    auto *module = img();
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 1, "RGBA8"));
+    const Colorf px{0.2f, 0.4f, 0.8f, 1.0f};
+    src->setPixel(1, 0, px);
+
+    std::unique_ptr<eve::image::ImageData> dst32f(module->newImageData(2, 1, "RGBA32F"));
+    dst32f->paste(src.get(), 0, 0, 0, 0, 2, 1);
+    CHECK(nearColor(dst32f->getPixel(1, 0), px, 0.01f));
+
+    std::unique_ptr<eve::image::ImageData> back8(module->newImageData(2, 1, "RGBA8"));
+    back8->paste(dst32f.get(), 0, 0, 0, 0, 2, 1);
+    CHECK(nearColor(back8->getPixel(1, 0), px, 0.01f));
+
+    std::unique_ptr<eve::image::ImageData> dst(module->newImageData(3, 2));
+    dst->paste(src.get(), 1, 1, 1, 0, 1, 1);  // partial sub-region paste
+    const Colorf pasted = dst->getPixel(1, 1);
+    CHECK(nearColor(pasted, px));
+    CHECK(!nearColor(dst->getPixel(0, 0), px));
+}
+
+TEST_CASE("image.encode.tgaRoundTrip") {
+    auto *module = img();
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
+    const Colorf teal{0.1f, 0.7f, 0.6f, 1.0f};
+    src->setPixel(1, 1, teal);
+
+    std::unique_ptr<eve::filesystem::FileData> encoded(
+        src->encode(medialoader::FormatHandler::ENCODED_TGA, "ut_roundtrip.tga", false));
+    REQUIRE(encoded.get() != nullptr);
+    CHECK(encoded->getSize() > 0u);
+
+    std::unique_ptr<eve::image::ImageData> decoded(module->newImageData(encoded.get()));
+    REQUIRE(decoded.get() != nullptr);
+    CHECK_EQ(decoded->getWidth(), 2);
+    CHECK_EQ(decoded->getHeight(), 2);
+    CHECK(nearColor(decoded->getPixel(1, 1), teal));
+}

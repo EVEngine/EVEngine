@@ -49,7 +49,7 @@ function cloneAndRotate() {
     local data = img.newEmptyImageData(3, 2, "RGBA8");
     data.setPixel(1, 0, 1.0, 0.0, 0.0, 1.0);
 
-    local copy = data.clone();
+    local copy = data["clone"]();
     if (copy == null) return false;
     if (copy.getWidth() != 3 || copy.getHeight() != 2) return false;
     if (copy.getPixelR(1, 0) < 0.99) return false;

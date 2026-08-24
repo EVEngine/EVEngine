@@ -44,6 +44,8 @@ private:
     void loadFonts();
     /** @brief Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
     void rebuildFonts();
+    /** @brief Warn when the built atlas still lacks CJK glyphs (post-Build only). */
+    void checkCjkCoverage() const;
 
     uint64_t registerTexture(graphics::Texture *tex) override;
     void unregisterTexture(uint64_t id) override;
@@ -58,6 +60,7 @@ private:
     std::map<uint64_t, RegisteredTexture> textures_;
     uint64_t nextTextureKey_ = 1;
     ImVector<ImWchar> fontRanges_;  // kept alive for cfg.GlyphRanges across font builds
+    ImVector<ImWchar> cjkRanges_;   // kept alive for the merged CJK font config
 
     bool initialized_ = false;
     bool fontsUploaded_ = false;

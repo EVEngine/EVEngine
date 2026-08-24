@@ -16,6 +16,8 @@ int countCardView() {
     return n;
 }
 
+bool near(float a, float b, float eps = 1e-3f) { return std::fabs(a - b) < eps; }
+
 const char *kDefs = R"JSON(
 [{"id":"flame","name":"Flame","kind":"creature","cost":2,"attack":3,"health":2},
  {"id":"bolt","name":"Bolt","kind":"spell","cost":3}]
@@ -126,4 +128,241 @@ UnitSciptTest(CardViewScriptTest, kCardViewScript);
 
 TEST_CASE_FIXTURE(CardViewScriptTest, "card.script.viewSeesNewCard") {
     CHECK(vm.callFunc(vm.findFunc("testCardCppView"), vm).toBool());
+}
+
+TEST_CASE("card.cardStateName") {
+    CHECK_EQ(std::string(cardStateName(CardState::Deck)), std::string("deck"));
+    CHECK_EQ(std::string(cardStateName(CardState::Hand)), std::string("hand"));
+    CHECK_EQ(std::string(cardStateName(CardState::Hovered)), std::string("hovered"));
+    CHECK_EQ(std::string(cardStateName(CardState::Dragging)), std::string("dragging"));
+    CHECK_EQ(std::string(cardStateName(CardState::Returning)), std::string("returning"));
+    CHECK_EQ(std::string(cardStateName(CardState::Played)), std::string("played"));
+    CHECK_EQ(std::string(cardStateName(CardState::Discarded)), std::string("discarded"));
+    CHECK_EQ(std::string(cardStateName(CardState::Disabled)), std::string("disabled"));
+}
+
+TEST_CASE("card.cardData.hitAndDescribe") {
+    Card mod;
+    mod.registerCardsFromJson(kDefs);
+    CardData *c = mod.newCard("flame");
+    c->layout()->x = 100.f;
+    c->layout()->y = 100.f;
+    c->layout()->w = 50.f;
+    c->layout()->h = 70.f;
+    c->layout()->scale = 1.f;
+    CHECK(c->hit(100.f, 100.f));
+    CHECK(c->hit(125.f, 135.f));
+    CHECK(!c->hit(126.f, 100.f));
+    CHECK(!c->hit(100.f, 136.f));
+    c->layout()->scale = 2.f;  // enlarged hit box
+    CHECK(c->hit(140.f, 100.f));
+    c->layout()->w = 0.f;  // zero-size never hits
+    CHECK(!c->hit(100.f, 100.f));
+
+    const std::string creature = c->describe();
+    CHECK(creature.find("Flame") != std::string::npos);
+    CHECK(creature.find("3/2") != std::string::npos);
+    CardData *spell = mod.newCard("bolt");
+    CHECK(spell->describe().find("\xe6\xb3\x95\xe6\x9c\xaf") != std::string::npos);  // 法术
+}
+
+TEST_CASE("card.deck.drawPeekBoundsAndShuffle") {
+    Card mod;
+    mod.registerCardsFromJson(kDefs);
+    Deck *d = mod.newDeck();
+    CHECK(d->isEmpty());
+    CHECK_EQ(d->draw(), nullptr);
+    CHECK_EQ(d->peek(), nullptr);
+    CHECK_EQ(d->get(-1), nullptr);
+    CHECK_EQ(d->get(0), nullptr);
+
+    CardData *a = mod.newCard("flame");
+    CardData *b = mod.newCard("bolt");
+    d->push(a);
+    d->push(b);
+    CHECK_EQ(d->get(0), a);
+    CHECK_EQ(d->get(1), b);
+    CHECK_EQ(d->get(2), nullptr);
+
+    d->shuffle();  // membership preserved, order may change
+    CHECK_EQ(d->count(), 2);
+    const bool top0 = d->get(0) == a || d->get(0) == b;
+    const bool top1 = d->get(1) == a || d->get(1) == b;
+    CHECK(top0);
+    CHECK(top1);
+    CHECK(d->get(0) != d->get(1));
+
+    d->clear();
+    CHECK(d->isEmpty());
+}
+
+TEST_CASE("card.zone.containsAndAccepts") {
+    Card mod;
+    mod.registerCardsFromJson(kDefs);
+    Zone *z = mod.newZone("board", "Board", 10.f, 20.f, 100.f, 60.f);
+    CHECK(z->contains(10.f, 20.f));
+    CHECK(z->contains(109.f, 79.f));
+    CHECK(!z->contains(9.f, 20.f));
+    CHECK(!z->contains(111.f, 81.f));  // rect bounds are inclusive
+
+    CardData *flame = mod.newCard("flame");
+    CardData *bolt = mod.newCard("bolt");
+    CHECK(z->accepts(flame));
+    CHECK(z->accepts(bolt));
+    CHECK(!z->accepts(nullptr));
+
+    z->filter()->acceptKinds = {"spell"};
+    CHECK(!z->accepts(flame));
+    CHECK(z->accepts(bolt));
+
+    z->rect()->enabled = false;
+    CHECK(!z->accepts(bolt));
+}
+
+TEST_CASE("card.hand.addCardSetsLayoutAndPhase") {
+    Card mod;
+    mod.registerCardsFromJson(kDefs);
+    LayoutConfig *cfg = mod.newConfig();
+    Hand *h = mod.newHand(cfg);
+
+    CardData *flame = mod.newCard("flame");
+    h->addCard(flame);
+    CHECK(static_cast<int>(flame->state()->phase) == static_cast<int>(CardState::Hand));
+    CHECK_EQ(flame->layout()->w, cfg->cardW);
+    CHECK(std::fabs(flame->layout()->scale - 0.01f) < 1e-5f);
+
+    CardData *bolt = mod.newCard("bolt");
+    bolt->visual()->disabled = true;
+    h->addCard(bolt);
+    CHECK(static_cast<int>(bolt->state()->phase) == static_cast<int>(CardState::Disabled));
+    CHECK(std::fabs(bolt->layout()->alpha - cfg->disabledAlpha) < 1e-5f);
+
+    CardData *other = mod.newCard("flame");
+    CHECK(!h->removeCard(other));
+    CHECK(h->removeCard(flame));
+    CHECK_EQ(h->count(), 1);
+    CHECK_EQ(h->find(bolt->identity()->id), bolt);
+    CHECK_EQ(h->find("nope"), nullptr);
+    CHECK_EQ(h->get(5), nullptr);
+    h->clear();
+    CHECK_EQ(h->count(), 0);
+}
+
+TEST_CASE("card.hand.pickTopmostAndFanSlot") {
+    Card mod;
+    mod.registerCardsFromJson(kDefs);
+    LayoutConfig *cfg = mod.newConfig();
+    Hand *h = mod.newHand(cfg);
+    CardData *a = mod.newCard("flame");
+    CardData *b = mod.newCard("bolt");
+    h->addCard(a);
+    h->addCard(b);
+    a->layout()->x = 100.f;
+    a->layout()->y = 100.f;
+    a->layout()->w = 50.f;
+    a->layout()->h = 70.f;
+    a->layout()->scale = 1.f;
+    b->layout()->x = 100.f;
+    b->layout()->y = 100.f;
+    b->layout()->w = 50.f;
+    b->layout()->h = 70.f;
+    b->layout()->scale = 1.f;
+    CHECK_EQ(h->pick(100.f, 100.f), b);  // top-most = last added
+    CHECK_EQ(h->pick(300.f, 300.f), nullptr);
+
+    float ox = 0.f, oy = 0.f, ang = 0.f;
+    h->slotTransform(0, 1, ox, oy, ang);
+    CHECK(std::fabs(ox - cfg->handX) < 1e-3f);
+    CHECK(std::fabs(oy - cfg->handY) < 1e-3f);
+    CHECK(std::fabs(ang) < 1e-4f);
+    h->slotTransform(0, 3, ox, oy, ang);
+    CHECK(ang < 0.f);
+    h->slotTransform(1, 3, ox, oy, ang);
+    CHECK(std::fabs(ang) < 1e-4f);
+    h->slotTransform(2, 3, ox, oy, ang);
+    CHECK(ang > 0.f);
+}
+
+namespace {
+
+void settleHand(Hand *h, const std::vector<Zone *> &zones, std::vector<CardEvent> &out) {
+    for (int i = 0; i < 120; ++i) h->update(1.f / 60.f, 0.f, 0.f, false, zones, out);
+    out.clear();
+}
+
+}  // namespace
+
+TEST_CASE("card.hand.updateClickDragDrop") {
+    Card mod;
+    mod.registerCardsFromJson(kDefs);
+    LayoutConfig *cfg = mod.newConfig();
+    cfg->dragThreshold = 4.f;
+    cfg->cardW = 50.f;
+    cfg->cardH = 70.f;
+    cfg->handX = 100.f;
+    cfg->handY = 100.f;
+    cfg->spacing = 20.f;
+    cfg->arcHeight = 0.f;
+    cfg->rotationAngle = 0.f;
+    Hand *h = mod.newHand(cfg);
+    h->meta()->owner = "p1";
+    CardData *a = mod.newCard("flame");  // creature
+    CardData *b = mod.newCard("bolt");   // spell
+    h->addCard(a);
+    h->addCard(b);
+
+    Zone *board = mod.newZone("board", "Board", 100.f, 300.f, 200.f, 60.f);
+    board->filter()->acceptKinds = {"creature"};
+    Zone *spellOnly = mod.newZone("magic", "Magic", 100.f, 400.f, 200.f, 60.f);
+    spellOnly->filter()->acceptKinds = {"spell"};
+    std::vector<Zone *> zones = {board, spellOnly};
+    std::vector<CardEvent> out;
+    settleHand(h, zones, out);
+
+    // After settling with two cards: a at (65,100), b at (135,100).
+    CHECK(near(a->layout()->x, 65.f, 0.5f));
+    CHECK(near(b->layout()->x, 135.f, 0.5f));
+
+    // Click: press + release without moving beyond threshold.
+    h->update(1.f / 60.f, 135.f, 100.f, true, zones, out);
+    CHECK_EQ(out.size(), 0u);
+    h->update(1.f / 60.f, 136.f, 100.f, false, zones, out);
+    REQUIRE_EQ(out.size(), 1u);
+    CHECK_EQ(out[0].type, std::string("click"));
+    CHECK_EQ(out[0].hand, std::string("p1"));
+    CHECK(out[0].cardId.find("bolt") == 0);  // instance id is "bolt#<n>"
+    out.clear();
+
+    // Drag spell onto the creature-only board -> dropRejected.
+    h->update(1.f / 60.f, 135.f, 100.f, true, zones, out);
+    h->update(1.f / 60.f, 145.f, 100.f, true, zones, out);
+    CHECK_EQ(b->state()->dragging, true);
+    h->update(1.f / 60.f, 145.f, 330.f, true, zones, out);
+    h->update(1.f / 60.f, 145.f, 330.f, false, zones, out);
+    REQUIRE_EQ(out.size(), 1u);
+    CHECK_EQ(out[0].type, std::string("dropRejected"));
+    CHECK_EQ(out[0].zoneId, std::string("board"));
+    CHECK_EQ(out[0].reason, std::string("kind_not_allowed"));
+    CHECK(static_cast<int>(b->state()->phase) == static_cast<int>(CardState::Returning));
+    out.clear();
+
+    settleHand(h, zones, out);
+
+    // Drag spell onto the spell-only zone -> drop accepted.
+    h->update(1.f / 60.f, 135.f, 100.f, true, zones, out);
+    h->update(1.f / 60.f, 145.f, 100.f, true, zones, out);
+    h->update(1.f / 60.f, 145.f, 430.f, true, zones, out);
+    h->update(1.f / 60.f, 145.f, 430.f, false, zones, out);
+    REQUIRE_EQ(out.size(), 1u);
+    CHECK_EQ(out[0].type, std::string("drop"));
+    CHECK_EQ(out[0].zoneId, std::string("magic"));
+    out.clear();
+
+    settleHand(h, zones, out);
+
+    // Non-interactive hand: press produces no click/drag events.
+    h->meta()->interactive = false;
+    h->update(1.f / 60.f, 135.f, 100.f, true, zones, out);
+    h->update(1.f / 60.f, 136.f, 100.f, false, zones, out);
+    CHECK_EQ(out.size(), 0u);
 }

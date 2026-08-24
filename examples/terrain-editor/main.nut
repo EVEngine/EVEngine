@@ -16,14 +16,18 @@ if (!("pitch" in getroottable())) pitch <- 0.45;
 if (!("dist" in getroottable())) dist <- 26.0;
 if (!("tool" in getroottable())) tool <- "raise";
 if (!("brushR" in getroottable())) brushR <- 4.0;
-if (!("strength" in getroottable())) strength <- 0.02;
+if (!("strength" in getroottable())) strength <- 0.06;
+if (!("orbitDragging" in getroottable())) orbitDragging <- false;
+if (!("orbitMouseX" in getroottable())) orbitMouseX <- 0.0;
+if (!("orbitMouseY" in getroottable())) orbitMouseY <- 0.0;
+if (!("editStatus" in getroottable())) editStatus <- "ready";
+if (!("meshDirty" in getroottable())) meshDirty <- false;
+if (!("meshCooldown" in getroottable())) meshCooldown <- 0.0;
 
 const W = 64;
 const H = 64;
 const CELL = 0.5;      // world units per heightmap cell
 const HSCALE = 3.2;    // world units per unit of height
-
-function clampf(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
 
 function regenTerrain() {
     local p = procgen.newParams();
@@ -48,26 +52,59 @@ function regenTerrain() {
 function rebuildMesh() {
     if (hm == null) return;
     if (terrainMesh == null) {
-        terrainMesh = editor.newHeightmapMesh(hm, CELL, HSCALE);
+        terrainMesh = editor.newHeightmapMeshSmooth(hm, CELL, HSCALE);
         if (terrainMesh == null) return;
         terrainEnt = eve.Renderable3D();
         terrainEnt.setMesh(terrainMesh);
-        terrainEnt.setTint(0.45, 0.62, 0.38, 1.0);
+        terrainEnt.setTint(0.28, 0.40, 0.22, 1.0);
         terrainEnt.setMetallic(0.0);
         terrainEnt.setRoughness(0.9);
         terrainEnt.setPosition(0.0, 0.0, 0.0);
         terrainEnt.setVisible(true);
     } else {
-        editor.updateHeightmapMesh(terrainMesh, gfx, hm, CELL, HSCALE);
+        editor.updateHeightmapMeshSmooth(terrainMesh, gfx, hm, CELL, HSCALE);
     }
 }
 
 function setupCamera() {
     cam = eve.Camera3D();
     cam.setFov(50.0);
-    cam.setAmbient(0.42, 0.45, 0.5);
+    cam.setAmbient(0.12, 0.15, 0.18);
     cam.setActive(true);
-    gfx.setDirectionalLight(-0.45, 0.9, 0.35, 1.9, 1.6, 1.3);
+    gfx.setBackgroundColor(0.10, 0.14, 0.19, 1.0);
+    gfx.setDirectionalLight(-0.45, 0.9, 0.35, 0.95, 0.98, 1.0);
+}
+
+function surfaceHeight(wx, wz) {
+    local gx = clampf((wx / CELL).tofloat(), 0.0, (W - 1).tofloat()).tointeger();
+    local gz = clampf((wz / CELL).tofloat(), 0.0, (H - 1).tofloat()).tointeger();
+    return hm.height(gx, gz) * HSCALE;
+}
+
+function terrainFromScreen(mx, my) {
+    cam.screenToRay(mx, my, gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
+    local ox = cam.getScreenRayOriginX();
+    local oy = cam.getScreenRayOriginY();
+    local oz = cam.getScreenRayOriginZ();
+    local dx = cam.getScreenRayDirX();
+    local dy = cam.getScreenRayDirY();
+    local dz = cam.getScreenRayDirZ();
+    if (dy >= -0.0001) return null;
+
+    // Start at the middle of the height range, then converge onto the sampled
+    // height field. This keeps the brush under the cursor on hills and valleys.
+    local t = (HSCALE * 0.5 - oy) / dy;
+    if (t < 0.0) return null;
+    local wx = ox + dx * t;
+    local wz = oz + dz * t;
+    for (local i = 0; i < 3; i++) {
+        t = (surfaceHeight(wx, wz) - oy) / dy;
+        wx = ox + dx * t;
+        wz = oz + dz * t;
+    }
+    if (wx < 0.0 || wz < 0.0 || wx > (W - 1) * CELL || wz > (H - 1) * CELL)
+        return null;
+    return [wx / CELL, wz / CELL];
 }
 
 eve_init = function() {
@@ -88,27 +125,35 @@ eve_init = function() {
     ui.separator("sep");
     ui.text("Brush radius", "lbl_brush");
     ui.slider("Radius", brushR, 1.0, 12.0, "brush");
-    ui.text("Drag: orbit   Wheel: zoom", "help");
+    ui.text("Scene: LMB sculpt", "help");
+    ui.text("Scene: RMB orbit", "orbit_help");
     ui.text("", "status");
     ui.end();
-    ui.viewport("vp", 0.0, 440.0);
-    ui.setItemFlexGrow(1.0);
     ui.end();
     ui.end();
     ui.mountBuildAs("ed");
+    ui.setHostPos(12.0, 12.0, 0.0, 0.0);
+    ui.setHostSize(230.0, 300.0);
 };
 
 eve_update = function(dt) {
-    // Orbit camera from viewport drag / wheel.
-    if (ui.viewportActive("vp")) {
-        yaw -= ui.viewportDragDX("vp") * 0.008;
-        pitch += ui.viewportDragDY("vp") * 0.008;
-        pitch = clampf(pitch, 0.05, 1.45);
-    }
-    local wheel = ui.viewportWheel("vp");
-    if (wheel != 0.0) {
-        dist *= (1.0 - wheel * 0.12);
-        dist = clampf(dist, 4.0, 90.0);
+    // DevTools and other overlays may select their own host between frames.
+    ui.select("ed");
+    // Right drag orbits; left drag is reserved for sculpting.
+    local orbitDown = mouse.isDown(2);
+    if (orbitDown && !ui.wantCaptureMouse()) {
+        local mx = mouse.getX();
+        local my = mouse.getY();
+        if (orbitDragging) {
+            yaw -= (mx - orbitMouseX) * 0.008;
+            pitch += (my - orbitMouseY) * 0.008;
+            pitch = clampf(pitch, 0.05, 1.45);
+        }
+        orbitMouseX = mx;
+        orbitMouseY = my;
+        orbitDragging = true;
+    } else {
+        orbitDragging = false;
     }
     local cx = (W - 1) * CELL * 0.5;
     local cz = (H - 1) * CELL * 0.5;
@@ -117,42 +162,37 @@ eve_update = function(dt) {
                cz + dist * cos(pitch) * cos(yaw));
     cam.setTarget(cx, 0.8, cz);
 
-    // Brush painting (hold left button over the viewport).
-    if (ui.viewportActive("vp") && ui.viewportHovered("vp")) {
-        local mx = ui.viewportMouseX("vp");
-        local my = ui.viewportMouseY("vp");
-        local canvas = ui.viewportCanvas("vp");
-        if (canvas != null && cam != null && (tool == "raise" || tool == "lower")) {
-            cam.screenToRay(mx, my, canvas.getWidth(), canvas.getHeight());
-            local ox = cam.getScreenRayOriginX();
-            local oy = cam.getScreenRayOriginY();
-            local oz = cam.getScreenRayOriginZ();
-            local dx = cam.getScreenRayDirX();
-            local dy = cam.getScreenRayDirY();
-            local dz = cam.getScreenRayDirZ();
-            if (dy < -0.0001) {
-                local t = -oy / dy;
-                local wx = ox + dx * t;
-                local wz = oz + dz * t;
-                local cellX = wx / CELL;
-                local cellZ = wz / CELL;
+    // Brush painting (hold left button over the 3D scene, outside the toolbar).
+    if (mouse.isDown(1) && !ui.wantCaptureMouse()) {
+        local mx = mouse.getX();
+        local my = mouse.getY();
+        if (cam != null && (tool == "raise" || tool == "lower")) {
+            local hit = terrainFromScreen(mx, my);
+            if (hit != null) {
+                local cellX = hit[0];
+                local cellZ = hit[1];
                 local dir = tool == "raise" ? 1.0 : -1.0;
-                local r = brushR.tointeger();
-                for (local yy = -r; yy <= r; yy++) {
-                    for (local xx = -r; xx <= r; xx++) {
-                        local gx = cellX.tointeger() + xx;
-                        local gy = cellZ.tointeger() + yy;
-                        if (gx < 0 || gx >= W || gy < 0 || gy >= H) continue;
-                        local d = sqrt(xx * xx + yy * yy).tofloat();
-                        if (d > r) continue;
-                        local fall = 1.0 - d / (r + 0.5);
-                        local cur = hm.height(gx, gy);
-                        hm.setHeight(gx, gy, clampf(cur + dir * strength * fall, 0.0, 1.0));
-                    }
+                local centerX = cellX.tointeger();
+                local centerZ = cellZ.tointeger();
+                local before = hm.height(centerX, centerZ);
+                local changed = editor.applyHeightmapBrush(
+                    hm, cellX, cellZ, brushR, dir * strength * clampf(dt * 60.0, 0.0, 2.0));
+                if (changed > 0) {
+                    meshDirty = true;
+                    editStatus = tool + " (" + centerX + "," + centerZ + ") " + before +
+                                 " -> " + hm.height(centerX, centerZ) + "  cells=" + changed;
                 }
-                rebuildMesh();
             }
         }
+    }
+
+    // Height edits remain responsive while expensive mesh generation/upload is
+    // capped at 30 Hz. The latest accumulated heightmap is uploaded each flush.
+    meshCooldown -= dt;
+    if (meshDirty && meshCooldown <= 0.0) {
+        rebuildMesh();
+        meshDirty = false;
+        meshCooldown = 1.0 / 30.0;
     }
 
     // Toolbar interactions.
@@ -172,15 +212,12 @@ eve_update = function(dt) {
         if (ch == "ed/brush") brushR = ui.getValue("brush");
         ch = ui.consumeChange();
     }
-    ui.setText("status", "tool=" + tool + "  radius=" + brushR + "  yaw=" + yaw);
+    ui.setText("status", editStatus + "  radius=" + brushR);
 };
 
 eve_render = function() {
     gfx.clear();
-    // Render the 3D scene into the viewport widget's offscreen canvas.
-    vpCanvas = ui.viewportCanvas("vp");
-    if (vpCanvas != null && cam != null) {
-        gfx.renderScene3DToCanvas(vpCanvas, cam);
-    }
+    gfx.render3D();
+    ui.select("ed");
     ui.beginFrameAndRender();
 };

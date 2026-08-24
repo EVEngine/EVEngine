@@ -1,4 +1,5 @@
 #include "animation/AnimClip.h"
+#include "animation/AnimClipRegistry.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 
@@ -6,10 +7,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 namespace eve::animation {
 
 AnimClip::AnimClip(std::string name) : name_(std::move(name)) {}
+
+AnimClip::~AnimClip() { AnimClipRegistry::unregister(this); }
 
 void AnimClip::setDuration(float seconds) {
     if (seconds < 0.f) throw Exception("AnimClip.setDuration: duration must be >= 0");
@@ -280,6 +284,14 @@ void AnimClip::sample(float time, AnimPose *out, const AnimSkeleton *skeleton) c
             skeleton ? skeleton->bindLocal(i) : TransformTRS::identity();
         out->local(i) = sampleBone(i, time, fb);
     }
+}
+
+void AnimClip::adopt(AnimClip& other) {
+    std::swap(name_, other.name_);
+    std::swap(duration_, other.duration_);
+    std::swap(loop_, other.loop_);
+    std::swap(sampleRate_, other.sampleRate_);
+    std::swap(tracks_, other.tracks_);
 }
 
 }  // namespace eve::animation

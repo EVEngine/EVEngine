@@ -284,6 +284,96 @@ TEST_CASE("data.hash.md5KnownAndInvalid") {
     CHECK(threw);
 }
 
+namespace {
+
+std::string hashToHex(const eve::data::HashFunction::Value &v) {
+    static const char *kHex = "0123456789abcdef";
+    std::string out;
+    out.reserve(v.size * 2);
+    for (size_t i = 0; i < v.size; ++i) {
+        const unsigned char b = static_cast<unsigned char>(v.data[i]);
+        out.push_back(kHex[b >> 4]);
+        out.push_back(kHex[b & 0xF]);
+    }
+    return out;
+}
+
+}  // namespace
+
+TEST_CASE("data.hash.shaFamilyKnownVectors") {
+    struct Vec {
+        const char *fn;
+        const char *in;
+        size_t len;
+        const char *hex;
+    };
+    const Vec cases[] = {
+        {"sha1", "", 0u, "da39a3ee5e6b4b0d3255bfef95601890afd80709"},
+        {"sha1", "abc", 3u, "a9993e364706816aba3e25717850c26c9cd0d89d"},
+        {"sha224", "abc", 3u, "23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7"},
+        {"sha256", "", 0u,
+         "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+        {"sha256", "abc", 3u,
+         "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"},
+        {"sha384", "abc", 3u,
+         "cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed"
+         "8086072ba1e7cc2358baeca134c825a7"},
+        {"sha512", "", 0u,
+         "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce"
+         "47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"},
+        {"sha512", "abc", 3u,
+         "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
+         "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"},
+    };
+    for (const auto &c : cases) {
+        eve::data::HashFunction *hf = eve::data::HashFunction::getHashFunction(c.fn);
+        REQUIRE(hf != nullptr);
+        CHECK(hf->isSupported(c.fn));
+        eve::data::HashFunction::Value v{};
+        hf->hash(c.fn, c.in, c.len, v);
+        CHECK_EQ(v.size, std::strlen(c.hex) / 2);
+        CHECK_EQ(hashToHex(v), std::string(c.hex));
+    }
+}
+
+TEST_CASE("data.hash.wrongFunctionThrows") {
+    const char *msg = "abc";
+    eve::data::HashFunction *md5 = eve::data::HashFunction::getHashFunction("md5");
+    REQUIRE(md5 != nullptr);
+    eve::data::HashFunction::Value v{};
+    bool threw = false;
+    try {
+        md5->hash("sha256", msg, 3, v);
+    } catch (const eve::Exception &) {
+        threw = true;
+    }
+    CHECK(threw);
+
+    eve::data::HashFunction *sha256 = eve::data::HashFunction::getHashFunction("sha256");
+    REQUIRE(sha256 != nullptr);
+    CHECK(sha256->isSupported("sha224"));
+    CHECK(!sha256->isSupported("md5"));
+    threw = false;
+    try {
+        sha256->hash("sha512", msg, 3, v);
+    } catch (const eve::Exception &) {
+        threw = true;
+    }
+    CHECK(threw);
+
+    eve::data::HashFunction *sha512 = eve::data::HashFunction::getHashFunction("sha512");
+    REQUIRE(sha512 != nullptr);
+    CHECK(sha512->isSupported("sha384"));
+    CHECK(!sha512->isSupported("sha1"));
+    threw = false;
+    try {
+        sha512->hash("md5", msg, 3, v);
+    } catch (const eve::Exception &) {
+        threw = true;
+    }
+    CHECK(threw);
+}
+
 TEST_CASE("data.Json.decodeWithoutErrorPtr") {
     auto* dm = eve::data::DataModule::create();
     std::unique_ptr<eve::data::JsonDocument> ok(dm->decodeJson("{\"n\":1}"));

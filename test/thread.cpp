@@ -2,7 +2,9 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Exception.h"
+#include "event/Event.h"
 #include "thread/Channel.h"
+#include "thread/JobSystem.h"
 #include "thread/Task.h"
 #include "thread/Thread.h"
 #include "thread/ThreadPool.h"
@@ -91,6 +93,48 @@ TEST_CASE("thread.channel.crossThread") {
     std::string got = ch->supply(1000);
     producer.join();
     CHECK_EQ(got, std::string("from-worker"));
+}
+
+TEST_CASE("thread.channel.demandBlocksUntilValue") {
+    std::unique_ptr<eve::thread::Channel> ch(threadModule()->newChannel());
+    std::thread producer([&] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        ch->push("demanded");
+    });
+    std::string got = ch->demand();
+    producer.join();
+    CHECK_EQ(got, std::string("demanded"));
+    CHECK(!ch->hasData());
+}
+
+TEST_CASE("thread.postMain.pushesToEventQueue") {
+    auto *ev = eve::event::Event::create();
+    REQUIRE(ev != nullptr);
+    ev->clear();
+
+    threadModule()->postMain("thread.task.done", "result-1");
+    threadModule()->postMain("thread.task.done", "result-2");
+    CHECK_EQ(ev->pollName(), std::string("thread.task.done"));
+    CHECK_EQ(ev->pollData(), std::string("result-2"));
+}
+
+TEST_CASE("thread.postMain.emptyNameThrows") {
+    CHECK(expectException([&] { threadModule()->postMain(""); }));
+}
+
+TEST_CASE("thread.postMain.fromWorkerThread") {
+    auto *ev = eve::event::Event::create();
+    REQUIRE(ev != nullptr);
+    ev->clear();
+
+    std::unique_ptr<eve::thread::ThreadPool> pool(threadModule()->newThreadPool(1));
+    std::unique_ptr<eve::thread::Task> task(pool->submit([mod = threadModule()] {
+        mod->postMain("thread.worker.done", "w");
+    }));
+    task->wait();
+    CHECK_EQ(task->getStatus(), std::string("done"));
+    CHECK_EQ(ev->pollName(), std::string("thread.worker.done"));
+    CHECK_EQ(ev->pollData(), std::string("w"));
 }
 
 TEST_CASE("thread.pool.submitSleep") {
@@ -248,4 +292,389 @@ TEST_CASE("thread.pool.workerDestructorDoesNotJoinDependentWorker") {
     waiter->wait();
     CHECK_EQ(destroyer->getStatus(), std::string("done"));
     CHECK_EQ(waiter->getStatus(), std::string("done"));
+}
+
+// ---- JobSystem ----
+
+TEST_CASE("thread.jobsystem.create") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    REQUIRE(js.get() != nullptr);
+    CHECK_EQ(js->getWorkerCount(), 2);
+    CHECK(js->isRunning());
+    CHECK_EQ(js->getOutstandingCount(), 0);
+    js->waitAll();
+    js->stop();
+    CHECK(!js->isRunning());
+    js->stop();  // idempotent
+}
+
+TEST_CASE("thread.jobsystem.submitWait") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> counter{0};
+    std::vector<eve::thread::Job *> jobs;
+    for (int i = 0; i < 16; ++i) {
+        jobs.push_back(js->submit([&counter] {
+            counter.fetch_add(1, std::memory_order_relaxed);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }));
+    }
+    for (auto *j : jobs) {
+        REQUIRE(j != nullptr);
+        j->wait();
+        CHECK(j->isDone());
+        delete j;
+    }
+    CHECK_EQ(counter.load(), 16);
+    js->waitAll();
+}
+
+TEST_CASE("thread.jobsystem.parallelFor") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(4));
+    constexpr int n = 1000;
+    std::vector<int> data(n, -1);
+    eve::thread::Job *loop = js->parallelFor(
+        0, n, [&data](int first, int last) {
+            for (int i = first; i < last; ++i) data[i] = i;
+        },
+        37);
+    REQUIRE(loop != nullptr);
+    loop->wait();
+    CHECK(loop->isDone());
+    for (int i = 0; i < n; ++i) CHECK_EQ(data[i], i);
+    delete loop;
+    js->waitAll();
+}
+
+TEST_CASE("thread.jobsystem.parallelForEmpty") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> calls{0};
+    eve::thread::Job *loop = js->parallelFor(
+        5, 5, [&calls](int, int) { calls.fetch_add(1, std::memory_order_relaxed); }, 4);
+    REQUIRE(loop != nullptr);
+    loop->wait();
+    CHECK(loop->isDone());
+    CHECK_EQ(calls.load(), 0);
+    delete loop;
+}
+
+TEST_CASE("thread.jobsystem.parallelForAutoChunk") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<long long> sum{0};
+    eve::thread::Job *loop = js->parallelFor(
+        0, 10000,
+        [&sum](int first, int last) {
+            long long s = 0;
+            for (int i = first; i < last; ++i) s += i;
+            sum.fetch_add(s, std::memory_order_relaxed);
+        },
+        0);
+    loop->wait();
+    CHECK(sum.load() == 10000LL * 9999 / 2);
+    delete loop;
+}
+
+TEST_CASE("thread.jobsystem.parallelForCompletion") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> callbacks{0};
+    eve::thread::Job *loop = js->parallelFor(0, 100, [](int, int) {}, 10);
+    loop->setCompletionCallback([&callbacks] {
+        callbacks.fetch_add(1, std::memory_order_relaxed);
+    });
+    loop->wait();
+    CHECK_EQ(callbacks.load(), 1);
+    delete loop;
+}
+
+TEST_CASE("thread.jobsystem.taskGroup") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(3));
+    std::atomic<int> counter{0};
+    std::unique_ptr<eve::thread::TaskGroup> group(js->createTaskGroup());
+    REQUIRE(group.get() != nullptr);
+    for (int i = 0; i < 24; ++i) {
+        group->fork([&counter] {
+            counter.fetch_add(1, std::memory_order_relaxed);
+        });
+    }
+    group->wait();
+    CHECK_EQ(group->getPendingCount(), 0);
+    CHECK_EQ(counter.load(), 24);
+}
+
+TEST_CASE("thread.jobsystem.taskGroupReuse") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> counter{0};
+    std::unique_ptr<eve::thread::TaskGroup> group(js->createTaskGroup());
+    for (int round = 0; round < 3; ++round) {
+        for (int i = 0; i < 8; ++i)
+            group->fork([&counter] { counter.fetch_add(1, std::memory_order_relaxed); });
+        group->wait();
+        CHECK_EQ(group->getPendingCount(), 0);
+    }
+    CHECK_EQ(counter.load(), 24);
+}
+
+TEST_CASE("thread.jobsystem.taskGroupCompletionCallbacks") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> counter{0};
+    std::atomic<int> callbacks{0};
+    std::unique_ptr<eve::thread::TaskGroup> group(js->createTaskGroup());
+    for (int i = 0; i < 8; ++i) {
+        group->fork(
+            [&counter] { counter.fetch_add(1, std::memory_order_relaxed); },
+            [&callbacks] { callbacks.fetch_add(1, std::memory_order_relaxed); });
+    }
+    group->wait();
+    CHECK_EQ(counter.load(), 8);
+    CHECK_EQ(callbacks.load(), 8);
+}
+
+TEST_CASE("thread.jobsystem.dependencies") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> produced{0};
+    std::atomic<int> seen{0};
+    eve::thread::Job *a = js->createJob([&produced] { produced.store(42); });
+    eve::thread::Job *b = js->createJob([&produced, &seen] { seen.store(produced.load()); });
+    b->addDependency(a);
+    CHECK_EQ(b->getPendingDependencyCount(), 1);
+    js->schedule(b);  // waits for a
+    js->schedule(a);
+    b->wait();
+    a->wait();
+    CHECK_EQ(seen.load(), 42);
+    CHECK(a->isDone());
+    CHECK(b->isDone());
+    delete a;
+    delete b;
+}
+
+TEST_CASE("thread.jobsystem.heapDeleteWhileCompletingStress") {
+    // Regression for a heap-use-after-free in releaseDependents: with the
+    // completionDone flag and the dependents-release split across two lock
+    // acquisitions, a waiter could return from wait() and delete the heap job
+    // while the completing worker was still iterating job->dependents (ASan:
+    // voxel.world.cross_chunk_seam_culled). Deleting immediately after wait()
+    // from the waiting thread widens the race; 200 iterations raise the odds.
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(4));
+    std::atomic<int> ran{0};
+    for (int i = 0; i < 200; ++i) {
+        eve::thread::Job *child =
+            js->createJob([&ran] { ran.fetch_add(1, std::memory_order_relaxed); });
+        eve::thread::Job *dependent = js->createJob([] {});
+        dependent->addDependency(child);
+        js->schedule(child);
+        js->schedule(dependent);
+        child->wait();
+        delete child;  // frees the dependents vector while the worker may
+                       // still be in completeJob's tail (pre-fix UAF)
+        dependent->wait();
+        delete dependent;
+    }
+    CHECK_EQ(ran.load(), 200);
+}
+
+TEST_CASE("thread.jobsystem.dependencyOnCompletedJobIsNoOp") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> counter{0};
+    eve::thread::Job *a = js->submit([&counter] { counter.fetch_add(1); });
+    a->wait();
+    eve::thread::Job *b = js->createJob([&counter] { counter.fetch_add(1); });
+    b->addDependency(a);  // a already done -> ignored
+    CHECK_EQ(b->getPendingDependencyCount(), 0);
+    js->schedule(b);
+    b->wait();
+    CHECK_EQ(counter.load(), 2);
+    delete a;
+    delete b;
+}
+
+TEST_CASE("thread.jobsystem.failedPredecessorStillReleasesDependent") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> bRuns{0};
+    eve::thread::Job *a = js->createJob([] { throw eve::Exception("boom"); });
+    eve::thread::Job *b = js->createJob([&bRuns] { bRuns.store(1); });
+    b->addDependency(a);
+    js->schedule(a);
+    js->schedule(b);
+    b->wait();
+    a->wait();
+    CHECK(a->hasFailed());
+    CHECK(b->isDone());
+    CHECK_EQ(bRuns.load(), 1);
+    delete a;
+    delete b;
+}
+
+TEST_CASE("thread.jobsystem.joinNode") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> runs{0};
+    eve::thread::Job *leaf = js->createJob([&runs] { runs.fetch_add(1); });
+    eve::thread::Job *join = js->createJob(eve::thread::JobFunc{});  // pure dependency node
+    join->addDependency(leaf);
+    js->schedule(leaf);
+    js->schedule(join);
+    join->wait();
+    leaf->wait();
+    CHECK_EQ(runs.load(), 1);
+    delete leaf;
+    delete join;
+}
+
+TEST_CASE("thread.jobsystem.completionCallback") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    std::atomic<int> bodyRan{0};
+    std::atomic<int> callbackRan{0};
+    eve::thread::Job *job = js->submit([&bodyRan] { bodyRan.store(1); });
+    job->setCompletionCallback([&bodyRan, &callbackRan] {
+        callbackRan.store(bodyRan.load());
+    });
+    job->wait();
+    CHECK_EQ(callbackRan.load(), 1);
+    delete job;
+}
+
+TEST_CASE("thread.jobsystem.failure") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(1));
+    eve::thread::Job *job = js->submit([] { throw eve::Exception("kaboom"); });
+    job->wait();
+    CHECK(job->isDone());
+    CHECK(job->hasFailed());
+    CHECK_EQ(job->getError(), std::string("kaboom"));
+    delete job;
+}
+
+TEST_CASE("thread.jobsystem.workerForkJoin") {
+    // Fork/join from inside a pool worker must not deadlock even with a single
+    // worker: the waiting worker helps execute the ready children.
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(1));
+    std::atomic<int> counter{0};
+    eve::thread::Job *outer = js->submit([&] {
+        std::unique_ptr<eve::thread::TaskGroup> group(js->createTaskGroup());
+        for (int i = 0; i < 32; ++i) {
+            group->fork([&counter] {
+                counter.fetch_add(1, std::memory_order_relaxed);
+            });
+        }
+        group->wait();
+    });
+    outer->wait();
+    CHECK_EQ(counter.load(), 32);
+    delete outer;
+}
+
+TEST_CASE("thread.jobsystem.workerParallelFor") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(1));
+    std::atomic<long long> sum{0};
+    eve::thread::Job *outer = js->submit([&] {
+        eve::thread::Job *loop = js->parallelFor(
+            0, 500,
+            [&sum](int first, int last) {
+                long long s = 0;
+                for (int i = first; i < last; ++i) s += i;
+                sum.fetch_add(s, std::memory_order_relaxed);
+            },
+            10);
+        loop->wait();
+        delete loop;
+    });
+    outer->wait();
+    CHECK(sum.load() == 500LL * 499 / 2);
+    delete outer;
+}
+
+TEST_CASE("thread.jobsystem.frameArena") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    for (int frame = 0; frame < 3; ++frame) {
+        js->beginFrame();
+        std::atomic<int> counter{0};
+        std::vector<eve::thread::Job *> jobs;
+        for (int i = 0; i < 64; ++i) {
+            jobs.push_back(js->submitFrame([&counter] {
+                counter.fetch_add(1, std::memory_order_relaxed);
+            }));
+        }
+        for (auto *j : jobs) j->wait();
+        js->endFrame();  // joins (already done) and recycles the arena
+        CHECK_EQ(counter.load(), 64);
+    }
+    js->waitAll();
+}
+
+TEST_CASE("thread.jobsystem.frameParallelFor") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    js->beginFrame();
+    std::vector<int> data(200, -1);
+    eve::thread::Job *loop = js->parallelForFrame(
+        0, 200,
+        [&data](int first, int last) {
+            for (int i = first; i < last; ++i) data[i] = i;
+        },
+        16);
+    loop->wait();
+    js->endFrame();
+    for (int i = 0; i < 200; ++i) CHECK_EQ(data[i], i);
+}
+
+TEST_CASE("thread.jobsystem.frameTaskGroup") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(2));
+    js->beginFrame();
+    std::atomic<int> counter{0};
+    eve::thread::TaskGroup *group = js->createFrameTaskGroup();
+    for (int i = 0; i < 32; ++i) {
+        group->fork([&counter] { counter.fetch_add(1, std::memory_order_relaxed); });
+    }
+    group->wait();
+    CHECK_EQ(counter.load(), 32);
+    js->endFrame();  // destroys the group and its arena-allocated children
+}
+
+TEST_CASE("thread.jobsystem.dependencyAfterScheduleRejected") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(1));
+    eve::thread::Job *a = js->submit([] {});
+    eve::thread::Job *b = js->createJob([] {});
+    CHECK(expectException([&] { a->addDependency(b); }));
+    CHECK(expectException([&] { a->addDependency(a); }));
+    a->wait();
+    delete a;
+    js->schedule(b);
+    b->wait();
+    delete b;
+}
+
+TEST_CASE("thread.jobsystem.stopRejectsSchedule") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(1));
+    eve::thread::Job *job = js->createJob([] {});
+    js->stop();
+    CHECK(!js->isRunning());
+    CHECK(expectException([&] { js->schedule(job); }));
+    CHECK(expectException([&] { js->submit([] {}); }));
+    delete job;
+}
+
+TEST_CASE("thread.jobsystem.workerWaitAllRejected") {
+    std::unique_ptr<eve::thread::JobSystem> js(eve::thread::createJobSystem(1));
+    std::atomic<bool> rejected{false};
+    eve::thread::Job *job = js->submit([&] {
+        try {
+            js->waitAll();
+        } catch (const eve::Exception &) {
+            rejected.store(true, std::memory_order_relaxed);
+        }
+    });
+    job->wait();
+    CHECK(rejected.load(std::memory_order_relaxed));
+    delete job;
+}
+
+TEST_CASE("thread.jobsystem.defaultSystem") {
+    auto *jobs = threadModule()->getJobSystem();
+    REQUIRE(jobs != nullptr);
+    CHECK(jobs->getWorkerCount() >= 1);
+    CHECK_EQ(jobs, threadModule()->getJobSystem());
+    std::atomic<int> counter{0};
+    eve::thread::Job *job = jobs->submit([&counter] {
+        counter.fetch_add(1, std::memory_order_relaxed);
+    });
+    job->wait();
+    CHECK_EQ(counter.load(), 1);
+    delete job;
 }

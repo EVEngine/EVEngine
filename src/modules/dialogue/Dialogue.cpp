@@ -2,6 +2,8 @@
 #include "dialogue/DnutParser.h"
 
 #include "avatar/AvatarInstance.h"
+#include "common/Capability.h"
+#include "common/IStateProvider.h"
 #include "common/utf8.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
@@ -188,6 +190,71 @@ void pushVarTable(HSQUIRRELVM vm, const std::unordered_map<std::string, Dialogue
     }
 }
 
+std::vector<Dialogue*>& liveDialogues() {
+    static std::vector<Dialogue*> instances;
+    return instances;
+}
+
+StateValue varValueToState(const Dialogue::VarValue& v) {
+    switch (v.type) {
+        case Dialogue::VarValue::Type::Int: return StateValue::integer(v.i);
+        case Dialogue::VarValue::Type::Float: return StateValue::number(v.f);
+        case Dialogue::VarValue::Type::Bool: return StateValue::boolean(v.b);
+        case Dialogue::VarValue::Type::String: return StateValue::string(v.s);
+    }
+    return StateValue::null();
+}
+
+bool stateToVarValue(const StateValue& v, Dialogue::VarValue& out) {
+    switch (v.kind()) {
+        case StateValue::Kind::Int: out = Dialogue::VarValue::integer(v.asInt()); return true;
+        case StateValue::Kind::Float: out = Dialogue::VarValue::number(v.asDouble()); return true;
+        case StateValue::Kind::Bool: out = Dialogue::VarValue::boolean(v.asBool()); return true;
+        case StateValue::Kind::String: out = Dialogue::VarValue::string(v.asString()); return true;
+        default: return false;
+    }
+}
+
+/** @brief IStateProvider over every live Dialogue instance (module registry). */
+class DialogueStateProvider : public eve::caps::IStateProvider {
+public:
+    const char* stateKind() const override { return "dialogue"; }
+
+    bool captureState(StateValue& out) override {
+        StateValue arr = StateValue::array();
+        for (Dialogue* d : liveDialogues()) {
+            StateValue sv;
+            if (d->captureState(sv)) arr.pushBack(std::move(sv));
+        }
+        out = std::move(arr);
+        return true;
+    }
+
+    bool restoreState(const StateValue& in, std::string* err) override {
+        if (!in.isArray()) {
+            if (err) *err = "dialogue: expected array of instances";
+            return false;
+        }
+        const size_t n = std::min(in.arraySize(), liveDialogues().size());
+        for (size_t i = 0; i < n; ++i) {
+            if (!liveDialogues()[i]->restoreState(in.at(i), err)) return false;
+        }
+        return true;
+    }
+
+    bool resetToDefaults() override {
+        for (Dialogue* d : liveDialogues()) d->reset();
+        return true;
+    }
+};
+
+struct Register {
+    Register() {
+        static DialogueStateProvider provider;
+        eve::cap::addListener<eve::caps::IStateProvider>(&provider);
+    }
+} g_register;
+
 }  // namespace
 
 Dialogue::VarValue Dialogue::VarValue::integer(long long v) {
@@ -246,9 +313,10 @@ std::string Dialogue::VarValue::toString() const {
     return {};
 }
 
-Dialogue::Dialogue() = default;
+Dialogue::Dialogue() { liveDialogues().push_back(this); }
 
 Dialogue::~Dialogue() {
+    liveDialogues().erase(std::remove(liveDialogues().begin(), liveDialogues().end(), this), liveDialogues().end());
     if (vm_) {
         for (auto &kv : predicates_) sq_release(vm_, &kv.second);
         predicates_.clear();
@@ -1006,7 +1074,20 @@ std::string Dialogue::getDisplayName(const std::string &id) const {
 bool Dialogue::bindAvatar(const std::string &id, avatar::AvatarInstance *av) {
     Character *c = findCharacter(id);
     if (!c) return false;
+    // Drop the previous binding's destroy hook before replacing the pointer,
+    // otherwise the old avatar's hook would null the new binding on destroy.
+    if (c->avatar && c->avatarHook) {
+        c->avatar->removeDestroyHook(*c->avatarHook);
+        c->avatarHook.reset();
+    }
     c->avatar = av;
+    if (av) {
+        const std::string key = id;
+        c->avatarHook = av->addDestroyHook([this, key](avatar::AvatarInstance *) {
+            if (Character *ch = findCharacter(key))
+                ch->avatar = nullptr;
+        });
+    }
     return true;
 }
 
@@ -1278,6 +1359,157 @@ void Dialogue::reset() {
         c.shown = false;
         if (c.avatar) c.avatar->setVisible(false);
     }
+}
+
+bool Dialogue::captureState(StateValue& out) const {
+    out = StateValue::object();
+    out.set("phase", StateValue::string(getPhase()));
+    out.set("speakerId", StateValue::string(speakerId_));
+    out.set("fullText", StateValue::string(fullText_));
+    out.set("typed", StateValue::number(typed_));
+    out.set("typeSpeed", StateValue::number(typeSpeed_));
+    out.set("lipSyncEnabled", StateValue::boolean(lipSyncEnabled_));
+    out.set("lipSyncParameter", StateValue::string(lipSyncParameter_));
+    out.set("lipSyncAmplitude", StateValue::number(lipSyncAmplitude_));
+    out.set("rngState", StateValue::integer(static_cast<int64_t>(rngState_)));
+    out.set("currentLineId", StateValue::string(currentLineId_));
+    out.set("selectedChoiceId", StateValue::string(selectedChoiceId_));
+
+    StateValue global = StateValue::object();
+    for (const auto& kv : globalVars_) global.set(kv.first, varValueToState(kv.second));
+    out.set("globalVars", std::move(global));
+
+    StateValue scene = StateValue::object();
+    for (const auto& kv : sceneVars_) scene.set(kv.first, varValueToState(kv.second));
+    out.set("sceneVars", std::move(scene));
+
+    StateValue choices = StateValue::array();
+    for (const auto& c : choices_) {
+        StateValue item = StateValue::object();
+        item.set("id", StateValue::string(c.id));
+        item.set("label", StateValue::string(c.label));
+        choices.pushBack(std::move(item));
+    }
+    out.set("choices", std::move(choices));
+
+    StateValue chars = StateValue::array();
+    for (const auto& c : characters_) {
+        StateValue item = StateValue::object();
+        item.set("id", StateValue::string(c.id));
+        item.set("displayName", StateValue::string(c.displayName));
+        item.set("slot", StateValue::string(c.slot));
+        item.set("shown", StateValue::boolean(c.shown));
+        chars.pushBack(std::move(item));
+    }
+    out.set("characters", std::move(chars));
+
+    StateValue slotX = StateValue::object();
+    for (const auto& kv : slotX_) slotX.set(kv.first, StateValue::number(kv.second));
+    out.set("slotX", std::move(slotX));
+    return true;
+}
+
+bool Dialogue::restoreState(const StateValue& in, std::string* err) {
+    if (!in.isObject()) {
+        if (err) *err = "dialogue: state is not an object";
+        return false;
+    }
+    const StateValue* phase = in.find("phase");
+    if (!phase || !phase->isString()) {
+        if (err) *err = "dialogue: missing phase";
+        return false;
+    }
+    const std::string phaseName = phase->asString();
+    if (phaseName == "idle")
+        phase_ = Phase::Idle;
+    else if (phaseName == "typing")
+        phase_ = Phase::Typing;
+    else if (phaseName == "waiting_advance")
+        phase_ = Phase::WaitingAdvance;
+    else if (phaseName == "waiting_choice")
+        phase_ = Phase::WaitingChoice;
+    else {
+        if (err) *err = "dialogue: unknown phase '" + phaseName + "'";
+        return false;
+    }
+
+    if (const StateValue* v = in.find("speakerId"); v && v->isString()) speakerId_ = v->asString();
+    if (const StateValue* v = in.find("fullText"); v && v->isString()) fullText_ = v->asString();
+    if (const StateValue* v = in.find("typed"); v && (v->isInt() || v->isFloat()))
+        typed_ = static_cast<float>(v->isInt() ? double(v->asInt()) : v->asDouble());
+    if (const StateValue* v = in.find("typeSpeed"); v && (v->isInt() || v->isFloat()))
+        typeSpeed_ = static_cast<float>(v->isInt() ? double(v->asInt()) : v->asDouble());
+    if (const StateValue* v = in.find("lipSyncEnabled"); v && v->isBool()) lipSyncEnabled_ = v->asBool();
+    if (const StateValue* v = in.find("lipSyncParameter"); v && v->isString()) lipSyncParameter_ = v->asString();
+    if (const StateValue* v = in.find("lipSyncAmplitude"); v && (v->isInt() || v->isFloat()))
+        lipSyncAmplitude_ = static_cast<float>(v->isInt() ? double(v->asInt()) : v->asDouble());
+    if (const StateValue* v = in.find("rngState"); v && v->isInt()) rngState_ = static_cast<uint32_t>(v->asInt());
+    if (const StateValue* v = in.find("currentLineId"); v && v->isString()) currentLineId_ = v->asString();
+    if (const StateValue* v = in.find("selectedChoiceId"); v && v->isString()) selectedChoiceId_ = v->asString();
+
+    globalVars_.clear();
+    if (const StateValue* vars = in.find("globalVars"); vars && vars->isObject()) {
+        for (const auto& key : vars->keys()) {
+            Dialogue::VarValue val;
+            if (stateToVarValue(*vars->find(key), val)) globalVars_[key] = val;
+        }
+    }
+    sceneVars_.clear();
+    if (const StateValue* vars = in.find("sceneVars"); vars && vars->isObject()) {
+        for (const auto& key : vars->keys()) {
+            Dialogue::VarValue val;
+            if (stateToVarValue(*vars->find(key), val)) sceneVars_[key] = val;
+        }
+    }
+
+    choices_.clear();
+    if (const StateValue *choices = in.find("choices"); choices && choices->isArray()) {
+        for (size_t i = 0; i < choices->arraySize(); ++i) {
+            const StateValue &item = choices->at(i);
+            const StateValue *id = item.find("id");
+            const StateValue *label = item.find("label");
+            if (id && id->isString() && label && label->isString()) {
+                choices_.push_back(Choice{id->asString(), label->asString()});
+            }
+        }
+    }
+
+    if (const StateValue *chars = in.find("characters"); chars && chars->isArray()) {
+        for (size_t i = 0; i < chars->arraySize(); ++i) {
+            const StateValue &item = chars->at(i);
+            const StateValue *id = item.find("id");
+            if (!id || !id->isString()) continue;
+            Character *c = findCharacter(id->asString());
+            if (!c) {
+                characters_.push_back(Character{});
+                c = &characters_.back();
+                c->id = id->asString();
+                if (const StateValue *name = item.find("displayName"); name && name->isString())
+                    c->displayName = name->asString();
+            }
+            if (const StateValue *slot = item.find("slot"); slot && slot->isString())
+                c->slot = slot->asString();
+            if (const StateValue *shown = item.find("shown"); shown && shown->isBool()) {
+                c->shown = shown->asBool();
+                if (c->avatar) c->avatar->setVisible(c->shown);
+            }
+        }
+    }
+
+    slotX_.clear();
+    if (const StateValue *slots = in.find("slotX"); slots && slots->isObject()) {
+        for (const auto &key : slots->keys()) {
+            const StateValue *v = slots->find(key);
+            if (v && (v->isInt() || v->isFloat()))
+                slotX_[key] = static_cast<float>(v->isInt() ? double(v->asInt()) : v->asDouble());
+        }
+    }
+    return true;
+}
+
+bool Dialogue::resetToDefaults() {
+    reset();
+    return true;
 }
 
 void Dialogue::expose(ssq::Table &table) {

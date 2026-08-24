@@ -20,6 +20,10 @@ class Texture;
 
 namespace eve::ui {
 
+class DatabasePanel;
+class EditorShell;
+class Inspector;
+class ScenePanel;
 struct UIEvent;
 
 /**
@@ -260,6 +264,71 @@ public:
     void mountSimple(const std::string &title, const std::string &labelText,
                      const std::string &buttonText);
 
+    // ---- Reflection-driven property inspector (MVVM DevTools) ---------------
+    /** @brief Opens the auto-generated inspector (scans reflected classes). */
+    bool inspectOpen();
+    /** @brief Closes the inspector panel. */
+    void inspectClose();
+    /** @brief Re-scans script classes; true when any class is reflected. */
+    bool inspectRefresh();
+    /** @brief Selects a class in the inspector (creates its first instance). */
+    bool inspectSelectClass(const std::string &name);
+    /** @brief Inspects a caller-provided live script instance. */
+    bool inspectObject(ssq::Object object);
+    /**
+     * @brief Registers the script callback used by the inspector Pick button.
+     * The callback is stored on the script side (eve._inspectorPickHandler) and
+     * must return a live script instance (or null).
+     */
+    bool inspectSetPickHandler(ssq::Function fn);
+    /** @brief Calls the pick handler and inspects the returned object. */
+    bool inspectPickScene();
+    /** @brief Creates another instance of the selected inspector class. */
+    bool inspectAddInstance();
+
+    // ---- Reflection-driven database panel -------------------------------
+    /** @brief Opens the database panel (class menu + editable instance grid). */
+    bool dbOpen();
+    /** @brief Closes the database panel. */
+    void dbClose();
+    /** @brief Re-scans reflected classes; true when any class exists. */
+    bool dbRefresh();
+    /** @brief Selects the class shown in the grid. */
+    bool dbSelectClass(const std::string &name);
+    /**
+     * @brief Registers a live script object in the database grid.
+     * @param object Live script instance.
+     * @param label  Optional display label ("" = auto "Class #n").
+     * @return Entry id, or 0 on failure.
+     */
+    uint64_t dbRegister(ssq::Object object, const std::string &label);
+    /** @brief Creates + registers an instance of the selected class. */
+    uint64_t dbCreateInstance();
+    /** @brief Removes an entry from the database grid. */
+    bool dbUnregister(uint64_t id);
+
+    // ---- DevTools editor shell --------------------------------------------
+    /** @brief Opens the menu bar and docks the inspector + database panels. */
+    bool editorOpen();
+    /** @brief Closes the editor shell (and its docked panels). */
+    void editorClose();
+    /** @brief Shows one docked panel ("inspector"/"database"; "" hides all). */
+    bool editorSelectPanel(const std::string &name);
+
+    // ---- Scene hierarchy panel --------------------------------------------
+    /** @brief Opens the scene panel (tree + selected node properties). */
+    bool sceneOpen();
+    /** @brief Closes the scene panel. */
+    void sceneClose();
+    /** @brief Selects a scene node by id. */
+    bool sceneSelectNode(const std::string &id);
+    /**
+     * @brief Registers the script callback for the scene panel Pick button.
+     * The callback (stored as eve._scenePickHandler) receives the node id and
+     * typically maps it to a script instance, then calls ui.inspectObject().
+     */
+    bool sceneSetPickHandler(ssq::Function fn);
+
 private:
     WidgetDesc &currentParent();
     void pushOpen(WidgetDesc d);
@@ -296,6 +365,12 @@ private:
     };
     std::vector<HostTween> hostTweens_;
     void updateHostTweens();
+    ssq::Object callPickHandler();
+    void callScenePickHandler(const std::string &nodeId);
+    std::unique_ptr<Inspector> inspector_;
+    std::unique_ptr<DatabasePanel> databasePanel_;
+    std::unique_ptr<EditorShell> editorShell_;
+    std::unique_ptr<ScenePanel> scenePanel_;
 };
 
 }  // namespace eve::ui

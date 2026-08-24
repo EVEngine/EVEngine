@@ -44,6 +44,9 @@ public:
     float getLinearVelocityY() const;
     float getLinearVelocityZ() const;
 
+    /** @brief Body mass in kg. */
+    float getMass() const;
+
     /** @brief Angular velocity in rad/s. */
     void  setAngularVelocity(float wx, float wy, float wz);
     float getAngularVelocityX() const;

@@ -10,13 +10,8 @@ if (!("treeMesh" in getroottable())) treeMesh <- null;
 if (!("treeObject" in getroottable())) treeObject <- null;
 if (!("treeCamera" in getroottable())) treeCamera <- null;
 if (!("treeYaw" in getroottable())) treeYaw <- 0.0;
-if (!("prevTreeKeys" in getroottable())) prevTreeKeys <- {};
-
 function pressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevTreeKeys ? prevTreeKeys[k] : false;
-    prevTreeKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function rebuildTree() {

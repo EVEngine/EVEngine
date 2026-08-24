@@ -56,12 +56,12 @@ std::string to_utf8(LPCWSTR wstr)
 	size_t wide_len = wcslen(wstr)+1;
 
 	// Get size in UTF-8.
-	int utf8_size = WideCharToMultiByte(CP_UTF8, 0, wstr, wide_len, 0, 0, 0, 0);
+	int utf8_size = WideCharToMultiByte(CP_UTF8, 0, wstr, static_cast<int>(wide_len), 0, 0, 0, 0);
 
 	char *utf8_str = new char[utf8_size];
 
 	// Convert to UTF-8.
-	int ok = WideCharToMultiByte(CP_UTF8, 0, wstr, wide_len, utf8_str, utf8_size, 0, 0);
+	int ok = WideCharToMultiByte(CP_UTF8, 0, wstr, static_cast<int>(wide_len), utf8_str, utf8_size, 0, 0);
 
 	std::string ret;
 	if (ok)
@@ -84,7 +84,7 @@ std::wstring to_widestr(const std::string &str)
 	std::wstring widestr;
 	widestr.resize(wide_size);
 
-	int ok = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int) str.length(), &widestr[0], widestr.length());
+	int ok = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), (int) str.length(), &widestr[0], static_cast<int>(widestr.length()));
 
 	if (!ok)
 		return std::wstring();
@@ -94,7 +94,7 @@ std::wstring to_widestr(const std::string &str)
 
 void replace_char(std::string &str, char find, char replace)
 {
-	int length = str.length();
+	int length = static_cast<int>(str.length());
 
 	for (int i = 0; i<length; i++)
 	{

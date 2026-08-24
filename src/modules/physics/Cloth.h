@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace eve::graphics {
@@ -10,9 +12,15 @@ class Graphics;
 
 namespace eve::physics {
 
+class World;
+
 /**
  * @brief Interactive 2D cloth — Verlet particles + distance constraints.
  * Pixel space (same convention as Box2D World). Script-owned.
+ *
+ * Supports optional self-collision (spatial-hash proximity), a fold-angle
+ * limit that prevents sharp creases, and particle-vs-rigid-body collision
+ * when attached to a 2D World via setCollideWorld.
  */
 class Cloth {
 public:
@@ -47,6 +55,38 @@ public:
     void  setDamping(float damping);
     float getDamping() const { return damping_; }
 
+    /**
+     * @brief Particle radius used for self-collision, draw size and body collision
+     * (default 3). Two particles keep at least 2*size apart when self-collision is on.
+     */
+    void  setParticleSize(float size);
+    float getParticleSize() const { return particleSize_; }
+
+    /**
+     * @brief Implicit particle mass in kg (default 0.1). Used for mass-proportional
+     * momentum exchange when colliding with dynamic rigid bodies.
+     */
+    void  setParticleMass(float mass);
+    float getParticleMass() const { return particleMass_; }
+
+    /**
+     * @brief Enable proximity-based self-collision between non-adjacent particles
+     * (default true).
+     */
+    void  setSelfCollision(bool on);
+    bool  getSelfCollision() const { return selfCollision_; }
+
+    /** @brief Strength of the fold-angle clamp [0,1] (default 0.5). */
+    void  setFoldStiffness(float k);
+    float getFoldStiffness() const { return foldStiffness_; }
+
+    /**
+     * @brief Maximum bend deviation from a straight row/column segment in degrees
+     * (0..180, default 90). Prevents sharp creases and excessive folding.
+     */
+    void  setMaxFoldAngle(float degrees);
+    float getMaxFoldAngle() const { return maxFoldAngle_ * 180.f / 3.14159265f; }
+
     /** @brief Axis-aligned walls; particles bounce inside. Disabled if w/h <= 0. */
     void setBounds(float x, float y, float w, float h);
     void clearBounds();
@@ -68,6 +108,23 @@ public:
 
     /** Uniform wind / force impulse applied this frame (pixels/s² * mass). */
     void applyForce(float fx, float fy);
+
+    /**
+     * @brief Pointer-field interaction like Fluid::interactAt: positive strength
+     * attracts, negative repels. Applied as acceleration within radius (pixels)
+     * during the next update.
+     */
+    void interactAt(float x, float y, float radius, float strength);
+
+    /**
+     * @brief Attach a 2D World so free particles collide with its non-sensor
+     * fixtures (pixel space). Null detaches. Dynamic bodies receive a small push.
+     */
+    void  setCollideWorld(World *world);
+    World *getCollideWorld() const { return world_; }
+
+    /** @brief Restore the flat grid pose (top row pinned) and clear transient state. */
+    void reset();
 
     void  setColor(float r, float g, float b, float a = 1.f);
     float getColorR() const { return colorR_; }
@@ -104,8 +161,15 @@ private:
     void rebuildLinks();
     void integrate(float dt);
     void solveConstraints();
+    void solveFoldConstraint();
+    void solveSelfCollision();
+    void collideWorld(float dt);
     void collideBounds();
+    void rebuildHash();
+    void buildLinkKeys();
+    bool areLinked(int a, int b) const;
     bool validIndex(int index) const;
+    int64_t cellKey(int cx, int cy) const;
 
     int   cols_ = 0;
     int   rows_ = 0;
@@ -118,6 +182,11 @@ private:
     float stiffness_ = 0.85f;
     float damping_   = 0.01f;
     int   iterations_ = 4;
+    float particleSize_ = 3.f;
+    float particleMass_ = 0.1f;
+    bool  selfCollision_ = true;
+    float foldStiffness_ = 0.5f;
+    float maxFoldAngle_ = 90.f * 3.14159265f / 180.f;
 
     bool  hasBounds_ = false;
     float boundX_ = 0.f, boundY_ = 0.f, boundW_ = 0.f, boundH_ = 0.f;
@@ -125,6 +194,11 @@ private:
     int   grabIndex_ = -1;
     float grabX_ = 0.f, grabY_ = 0.f;
     float forceX_ = 0.f, forceY_ = 0.f;
+    float interactX_ = 0.f, interactY_ = 0.f;
+    float interactRadius_ = 0.f;
+    float interactStrength_ = 0.f;
+
+    World *world_ = nullptr;
 
     float colorR_ = 0.75f, colorG_ = 0.82f, colorB_ = 0.95f, colorA_ = 1.f;
 
@@ -132,6 +206,8 @@ private:
 
     std::vector<Particle> particles_;
     std::vector<Link>     links_;
+    std::unordered_set<int64_t> linkKeys_;
+    std::unordered_map<int64_t, std::vector<int>> hash_;
 };
 
 }  // namespace eve::physics

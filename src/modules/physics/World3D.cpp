@@ -213,4 +213,33 @@ int World3D::getQueryBodyId(int index) const {
     return queryBodyIds_[static_cast<size_t>(index)];
 }
 
+bool World3D::pointProbe(float x, float y, float z, float radius, ClothContact3D *out) const {
+    if (out) *out = ClothContact3D{};
+    if (!isValid() || radius <= 0.f) return false;
+
+    const b3Vec3 target{x, y, z};
+    for (Shape3D *s : shapes_) {
+        if (!s || !s->isValid() || s->isSensor()) continue;
+        const b3Vec3 closest = b3Shape_GetClosestPoint(s->raw(), target);
+        const b3Vec3 delta   = target - closest;
+        const float d = std::sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
+        const float depth = radius - d;
+        if (depth > 0.f && depth > out->depth) {
+            out->hit   = true;
+            out->depth = depth;
+            if (d > 1e-6f) {
+                out->nx = delta.x / d;
+                out->ny = delta.y / d;
+                out->nz = delta.z / d;
+            } else {
+                out->nx = 0.f;
+                out->ny = 1.f;
+                out->nz = 0.f;
+            }
+            out->body = s->getBody();
+        }
+    }
+    return out->hit;
+}
+
 }  // namespace eve::physics

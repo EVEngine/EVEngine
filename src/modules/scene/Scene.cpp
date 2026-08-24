@@ -152,13 +152,13 @@ NodeDesc nodeFromJson(const Poco::JSON::Object::Ptr &o) {
     if (o->has("tags")) {
         Poco::JSON::Array::Ptr arr = o->getArray("tags");
         for (size_t i = 0; i < arr->size(); ++i) {
-            d.tags.push_back(arr->getElement<std::string>(i));
+            d.tags.push_back(arr->getElement<std::string>(static_cast<unsigned int>(i)));
         }
     }
     if (o->has("children")) {
         Poco::JSON::Array::Ptr kids = o->getArray("children");
         for (size_t i = 0; i < kids->size(); ++i) {
-            d.children.push_back(nodeFromJson(kids->getObject(i)));
+            d.children.push_back(nodeFromJson(kids->getObject(static_cast<unsigned int>(i))));
         }
     }
     return d;

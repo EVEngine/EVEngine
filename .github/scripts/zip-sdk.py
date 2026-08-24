@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import os
 import pathlib
+import stat
 import zipfile
 
 
@@ -39,6 +40,10 @@ def main() -> None:
         for dirpath, dirnames, filenames in os.walk(root, onerror=lambda _e: None):
             dirnames[:] = [
                 d for d in dirnames
+                # Never ship build outputs: the android SDK template is compiled
+                # by test-sdk.sh before packaging, leaving app/build outputs
+                # (e.g. a CI test APK) that consumers must not inherit.
+                if d not in ("build", ".gradle")
                 if os.access(os.path.join(dirpath, d), os.R_OK)
             ]
             for name in filenames:
@@ -46,7 +51,17 @@ def main() -> None:
                     continue
                 path = pathlib.Path(dirpath) / name
                 try:
-                    zf.write(path, path.relative_to(args.dist_root).as_posix())
+                    arcname = path.relative_to(args.dist_root).as_posix()
+                    st = path.lstat()
+                    if stat.S_ISLNK(st.st_mode):
+                        # Follow the symlink and store the resolved content
+                        # under the link's name so the zip stays self-contained
+                        # (the macOS SDK's libvulkan.1.dylib is a symlink).
+                        target = path.parent / os.readlink(path)
+                        with open(target.resolve(), "rb") as fh:
+                            zf.writestr(arcname, fh.read())
+                    else:
+                        zf.write(path, arcname)
                 except OSError:
                     print(f"WARN: skipping unreadable entry {path}")
     print(f"wrote {out} ({out.stat().st_size} bytes)")

@@ -19,13 +19,80 @@ namespace {
 // Solar orbit constants.
 constexpr float kPi = 3.14159265f;
 constexpr float kMaxElevationDeg = 70.f;   // solar elevation at local noon
-constexpr float kSkyCubeSize = 64;         // per-face resolution of the procedural sky
+constexpr float kSkyCubeSize = 128;        // per-face resolution of the procedural sky
 constexpr int kMaxFireflies = 8;
 
 // Night light names (script-facing) — index maps to the Impl flags array.
-const char *kNames[] = {"moonlight", "starlight", "fire", "fireflies"};
 
 inline float deg2rad(float d) { return d * kPi / 180.f; }
+inline float smoothstep(float e0, float e1, float x) {
+    if (std::fabs(e1 - e0) < 1e-7f) return x < e0 ? 0.f : 1.f;
+    const float t = std::clamp((x - e0) / (e1 - e0), 0.f, 1.f);
+    return t * t * (3.f - 2.f * t);
+}
+
+struct Vec3 {
+    float x, y, z;
+};
+
+inline Vec3 add(Vec3 a, Vec3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+inline Vec3 mul(Vec3 a, Vec3 b) { return {a.x * b.x, a.y * b.y, a.z * b.z}; }
+inline Vec3 scale(Vec3 a, float s) { return {a.x * s, a.y * s, a.z * s}; }
+
+// Compact single-scattering atmosphere approximation.  The wavelength-dependent
+// coefficients preserve the important physical relationships (blue Rayleigh sky,
+// neutral Mie haze, warm attenuated low sun) while remaining cheap enough to build
+// the IBL cubemap on the CPU.  It is deliberately isolated so a future GPU LUT
+// implementation can consume the same public atmosphere parameters.
+Vec3 atmosphereRadiance(Vec3 view, Vec3 sun, float turbidity, float mieStrength) {
+    const float mu = std::clamp(view.x * sun.x + view.y * sun.y + view.z * sun.z, -1.f, 1.f);
+    const float horizonMass = 1.f / std::max(0.08f, view.y + 0.14f);
+    const float sunMass = 1.f / std::max(0.06f, sun.y + 0.12f);
+    const Vec3 betaR{0.055f, 0.130f, 0.285f};
+    const Vec3 betaM = scale(Vec3{0.18f, 0.17f, 0.15f}, mieStrength * (0.35f + turbidity * 0.09f));
+    const Vec3 extinction = add(betaR, betaM);
+    const Vec3 viewT{std::exp(-extinction.x * horizonMass),
+                     std::exp(-extinction.y * horizonMass),
+                     std::exp(-extinction.z * horizonMass)};
+    const Vec3 sunT{std::exp(-extinction.x * sunMass),
+                    std::exp(-extinction.y * sunMass),
+                    std::exp(-extinction.z * sunMass)};
+    const float rayleighPhase = 3.f / (16.f * kPi) * (1.f + mu * mu);
+    const float g = std::clamp(0.72f + turbidity * 0.008f, 0.72f, 0.82f);
+    const float gg = g * g;
+    const float miePhase = (1.f - gg) /
+        (4.f * kPi * std::pow(std::max(0.015f, 1.f + gg - 2.f * g * mu), 1.5f));
+    const Vec3 scatter = add(scale(betaR, rayleighPhase * 13.f),
+                             scale(betaM, miePhase * 2.2f));
+    Vec3 sky = mul(mul(scatter, sunT), Vec3{1.f - viewT.x, 1.f - viewT.y, 1.f - viewT.z});
+    // Multiple-scattering floor prevents a black antisolar horizon and approximates
+    // light returned by the ground/atmosphere without an expensive integral.
+    sky = add(sky, scale(mul(sunT, Vec3{0.18f, 0.22f, 0.30f}),
+                         0.12f + 0.18f * (1.f - std::max(view.y, 0.f))));
+    return sky;
+}
+
+Vec3 toneMapSky(Vec3 c, float exposure) {
+    c = scale(c, std::max(exposure, 0.01f));
+    // ACES fitted curve, followed by display gamma. Keeps a smooth solar halo in
+    // the current RGBA8 backend rather than clipping radiance before conversion.
+    auto channel = [](float x) {
+        x = std::clamp((x * (2.51f * x + 0.03f)) /
+                       (x * (2.43f * x + 0.59f) + 0.14f), 0.f, 1.f);
+        return std::pow(x, 1.f / 2.2f);
+    };
+    return {channel(c.x), channel(c.y), channel(c.z)};
+}
+
+Vec3 attenuatedSunColor(float sunElevation, float turbidity, float mieStrength) {
+    const float mass = 1.f / std::max(0.06f, sunElevation + 0.12f);
+    const Vec3 extinction = add(Vec3{0.055f, 0.130f, 0.285f},
+        scale(Vec3{0.18f, 0.17f, 0.15f}, mieStrength * (0.35f + turbidity * 0.09f)));
+    Vec3 c{std::exp(-extinction.x * mass), std::exp(-extinction.y * mass),
+           std::exp(-extinction.z * mass)};
+    const float maxChannel = std::max({c.x, c.y, c.z, 1e-5f});
+    return scale(c, 1.f / maxChannel);
+}
 
 // Convert an elevation/azimuth to a unit direction pointing at the sun.
 // azimuth measured clockwise from +Z, elevation above the horizon.
@@ -53,6 +120,7 @@ inline float hashUnit(uint32_t x) { return float(hash13(x) % 10000u) / 9999.f; }
 // dirAt(x,y) writes the world direction (unnormalized ok) for a pixel.
 void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
                  const float sunDir[3], float sunEnergy, float nightAmount,
+                 float turbidity, float mieStrength, float exposure,
                  void (*dirAt)(int face, int size, int x, int y, float out[3])) {
     const int n = size;
     for (int y = 0; y < n; ++y) {
@@ -63,40 +131,26 @@ void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
             if (len < 1e-6f) { d[0] = 0.f; d[1] = 1.f; d[2] = 0.f; }
             else { d[0] /= len; d[1] /= len; d[2] /= len; }
 
-            const float up = d[1];  // -1 horizon .. +1 zenith
-            // Sky gradient: blue zenith, pale horizon.
-            float r, g, b;
-            if (nightAmount > 0.5f) {
-                // Deep night navy, slightly lifted at horizon.
-                const float t = 0.5f + 0.5f * up;
-                r = 0.015f + 0.03f * t;
-                g = 0.025f + 0.045f * t;
-                b = 0.07f + 0.10f * t;
-            } else {
-                const float t = 0.5f + 0.5f * up;
-                r = 0.35f + 0.30f * t;
-                g = 0.55f + 0.25f * t;
-                b = 0.75f + 0.20f * t;
-            }
-            // Blend the two regimes by night amount.
-            if (nightAmount > 0.f && nightAmount < 1.f) {
-                float nr = 0.015f + 0.03f * (0.5f + 0.5f * up);
-                float ng = 0.025f + 0.045f * (0.5f + 0.5f * up);
-                float nb = 0.07f + 0.10f * (0.5f + 0.5f * up);
-                r = r * (1.f - nightAmount) + nr * nightAmount;
-                g = g * (1.f - nightAmount) + ng * nightAmount;
-                b = b * (1.f - nightAmount) + nb * nightAmount;
-            }
+            const float up = d[1];
+            const Vec3 view{d[0], std::max(d[1], 0.002f), d[2]};
+            const Vec3 sun{sunDir[0], sunDir[1], sunDir[2]};
+            Vec3 day = atmosphereRadiance(view, sun, turbidity, mieStrength);
+            Vec3 night{0.006f + 0.012f * std::max(up, 0.f),
+                       0.010f + 0.020f * std::max(up, 0.f),
+                       0.035f + 0.070f * std::max(up, 0.f)};
+            Vec3 color = add(scale(day, (1.f - nightAmount) * sunEnergy),
+                             scale(night, nightAmount));
 
             // Sun disc: a tight highlight around the sun direction.
             const float dot = d[0] * sunDir[0] + d[1] * sunDir[1] + d[2] * sunDir[2];
-            const float disc = std::pow(std::max(0.f, dot), 400.f) * sunEnergy;
-            r += disc * 1.0f;
-            g += disc * 0.95f;
-            b += disc * 0.85f;
-            // Broad glow near the sun.
-            const float glow = std::pow(std::max(0.f, dot), 8.f) * sunEnergy * 0.25f;
-            r += glow * 1.0f; g += glow * 0.9f; b += glow * 0.7f;
+            // Physical solar angular radius is about 0.27 degrees.  Slightly enlarge it
+            // to remain stable in a 128px cubemap; the Mie term supplies the broad halo.
+            const float disc = smoothstep(std::cos(deg2rad(0.65f)),
+                                          std::cos(deg2rad(0.35f)), dot) * sunEnergy;
+            const float sunMass = 1.f / std::max(0.06f, sun.y + 0.12f);
+            const Vec3 sunColor{std::exp(-0.16f * sunMass), std::exp(-0.28f * sunMass),
+                                std::exp(-0.58f * sunMass)};
+            color = add(color, scale(sunColor, disc * 12.f));
 
             // Stars (only at night, only in the sky hemisphere, avoid the sun).
             float star = 0.f;
@@ -107,12 +161,13 @@ void fillSkyFace(std::vector<uint8_t> &px, int size, int face,
                     star = nightAmount * tw;
                 }
             }
-            r += star * 0.9f; g += star * 0.95f; b += star * 1.0f;
+            color = add(color, scale(Vec3{0.9f, 0.95f, 1.f}, star));
+            color = toneMapSky(color, exposure);
 
             const int i = (y * n + x) * 4;
-            px[i + 0] = uint8_t(std::min(255.f, r * 255.f));
-            px[i + 1] = uint8_t(std::min(255.f, g * 255.f));
-            px[i + 2] = uint8_t(std::min(255.f, b * 255.f));
+            px[i + 0] = uint8_t(std::clamp(color.x * 255.f, 0.f, 255.f));
+            px[i + 1] = uint8_t(std::clamp(color.y * 255.f, 0.f, 255.f));
+            px[i + 2] = uint8_t(std::clamp(color.z * 255.f, 0.f, 255.f));
             px[i + 3] = 255;
         }
     }
@@ -148,6 +203,9 @@ struct DayNight::Impl {
     float azimDeg = 0.f;
     float sunDir[3] = {0.f, 1.f, 0.f};
     float sunEnergy = 1.f;
+    float turbidity = 2.5f;
+    float skyExposure = 1.f;
+    float mieStrength = 1.f;
 
     // sky cache (regenerate only when the sun bucket changes)
     bool skyboxEnabled = true;
@@ -198,11 +256,53 @@ float DayNight::getSunDirX() const { return impl_->sunDir[0]; }
 float DayNight::getSunDirY() const { return impl_->sunDir[1]; }
 float DayNight::getSunDirZ() const { return impl_->sunDir[2]; }
 float DayNight::getSunIntensity() const { return impl_->sunEnergy; }
+float DayNight::getSunR() const {
+    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).x *
+           impl_->sunEnergy;
+}
+float DayNight::getSunG() const {
+    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).y *
+           impl_->sunEnergy;
+}
+float DayNight::getSunB() const {
+    return attenuatedSunColor(impl_->sunDir[1], impl_->turbidity, impl_->mieStrength).z *
+           impl_->sunEnergy;
+}
+void DayNight::setTurbidity(float v) {
+    impl_->turbidity = std::clamp(v, 1.5f, 10.f);
+    impl_->lastSkyBucket = -1;
+}
+float DayNight::getTurbidity() const { return impl_->turbidity; }
+void DayNight::setSkyExposure(float v) {
+    impl_->skyExposure = std::clamp(v, 0.05f, 8.f);
+    impl_->lastSkyBucket = -1;
+}
+float DayNight::getSkyExposure() const { return impl_->skyExposure; }
+void DayNight::setMieStrength(float v) {
+    impl_->mieStrength = std::clamp(v, 0.f, 4.f);
+    impl_->lastSkyBucket = -1;
+}
+float DayNight::getMieStrength() const { return impl_->mieStrength; }
 
 // Sky / ambient colors are functions of the sun energy and night amount.
-float DayNight::getSkyR() const { return impl_->sunEnergy * 0.5f + 0.02f; }
-float DayNight::getSkyG() const { return impl_->sunEnergy * 0.6f + 0.03f; }
-float DayNight::getSkyB() const { return impl_->sunEnergy * 0.8f + 0.06f; }
+float DayNight::getSkyR() const {
+    const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
+        {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
+        impl_->mieStrength), impl_->skyExposure);
+    return c.x * impl_->sunEnergy + 0.012f * (1.f - impl_->sunEnergy);
+}
+float DayNight::getSkyG() const {
+    const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
+        {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
+        impl_->mieStrength), impl_->skyExposure);
+    return c.y * impl_->sunEnergy + 0.020f * (1.f - impl_->sunEnergy);
+}
+float DayNight::getSkyB() const {
+    const Vec3 c = toneMapSky(atmosphereRadiance({0.f, 0.04f, 1.f},
+        {impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]}, impl_->turbidity,
+        impl_->mieStrength), impl_->skyExposure);
+    return c.z * impl_->sunEnergy + 0.060f * (1.f - impl_->sunEnergy);
+}
 float DayNight::getAmbientBrightness() const {
     const float night = impl_->nightLight[1] ? 1.0f : 0.6f;  // starlight boost
     return 0.05f * night + impl_->sunEnergy * 0.5f;
@@ -340,9 +440,12 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
     // Push the directional sun (replaces the legacy directional when no other
     // dir Light3D is active; we keep moon as a Light3D instead so it can have
     // different color/intensity than the sun slot).
+    const Vec3 directSun = attenuatedSunColor(impl_->sunDir[1], impl_->turbidity,
+                                               impl_->mieStrength);
     gfx->setDirectionalLight(impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2],
-                             1.0f * impl_->sunEnergy, 0.9f * impl_->sunEnergy,
-                             0.8f * impl_->sunEnergy);
+                             directSun.x * impl_->sunEnergy,
+                             directSun.y * impl_->sunEnergy,
+                             directSun.z * impl_->sunEnergy);
 
     // Background matches the sky at the horizon for the clear color.
     const float skyR = getSkyR(), skyG = getSkyG(), skyB = getSkyB();
@@ -353,15 +456,19 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
         const int bucket = int(elevDeg) + int(azimDeg / 4.f) * 1000;
         if (bucket != impl_->lastSkyBucket) {
             impl_->lastSkyBucket = bucket;
-            std::vector<uint8_t> faces(size_t(kSkyCubeSize) * kSkyCubeSize * 4 * 6);
+            std::vector<uint8_t> faces(
+                size_t(kSkyCubeSize) * size_t(kSkyCubeSize) * 4 * 6);
             for (int f = 0; f < 6; ++f) {
-                std::vector<uint8_t> face(size_t(kSkyCubeSize) * kSkyCubeSize * 4);
+                std::vector<uint8_t> face(
+                    size_t(kSkyCubeSize) * size_t(kSkyCubeSize) * 4);
                 fillSkyFace(face, int(kSkyCubeSize), f, impl_->sunDir,
-                            impl_->sunEnergy, nightAmount, cubeDir);
+                            impl_->sunEnergy, nightAmount, impl_->turbidity,
+                            impl_->mieStrength, impl_->skyExposure, cubeDir);
                 std::memcpy(faces.data() + size_t(f) * face.size(), face.data(), face.size());
             }
             // Replace the previous env cube; Graphics owns old textures.
-            impl_->skyCube = gfx->newCubemap(int(kSkyCubeSize), faces.data());
+            impl_->skyCube = gfx->newCubemap(int(kSkyCubeSize), faces.data(),
+                graphics::TextureCreateInfo::withMipmaps(true));
             gfx->setMesh3DEnv(impl_->skyCube, 0.5f + 0.5f * impl_->sunEnergy);
         }
     }
@@ -427,6 +534,15 @@ void DayNight::expose(ssq::Class &cls) {
     cls.addFunc("getSunDirY", &DayNight::getSunDirY);
     cls.addFunc("getSunDirZ", &DayNight::getSunDirZ);
     cls.addFunc("getSunIntensity", &DayNight::getSunIntensity);
+    cls.addFunc("getSunR", &DayNight::getSunR);
+    cls.addFunc("getSunG", &DayNight::getSunG);
+    cls.addFunc("getSunB", &DayNight::getSunB);
+    cls.addFunc("setTurbidity", &DayNight::setTurbidity);
+    cls.addFunc("getTurbidity", &DayNight::getTurbidity);
+    cls.addFunc("setSkyExposure", &DayNight::setSkyExposure);
+    cls.addFunc("getSkyExposure", &DayNight::getSkyExposure);
+    cls.addFunc("setMieStrength", &DayNight::setMieStrength);
+    cls.addFunc("getMieStrength", &DayNight::getMieStrength);
     cls.addFunc("getSkyR", &DayNight::getSkyR);
     cls.addFunc("getSkyG", &DayNight::getSkyG);
     cls.addFunc("getSkyB", &DayNight::getSkyB);

@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace eve::building {
-class BuildingDefinition;
+struct BuildingDefinition;
 class Ghost;
 class PlacementWorld;
 struct PlacedBuilding;

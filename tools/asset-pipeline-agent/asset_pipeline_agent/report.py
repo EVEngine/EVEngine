@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 # 商用免费合规授权白名单（强制前置约束：仅允许这些授权）。
 # 永久留存版权信息，禁止付费资源 / 违规爬取。

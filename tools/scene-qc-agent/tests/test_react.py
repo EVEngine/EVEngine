@@ -2,7 +2,7 @@
 
 import unittest
 
-from scene_qc_agent.react import parse_react, SceneQCBrain, TOOL_APPLY, TOOL_FINALIZE
+from scene_qc_agent.react import parse_react, SceneQCBrain
 from scene_qc_agent.report import SceneReport
 from scene_qc_agent.config import load_config
 

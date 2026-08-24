@@ -59,7 +59,27 @@ char *decompress(CompressedData *data, size_t &decompressedsize);
  **/
 char *decompress(std::string format, const char *cbytes, size_t compressedsize, size_t &rawsize);
 
+/**
+ * @brief Encodes raw bytes (e.g. hex / base64) into a text buffer.
+ * @param format The encoding format ("hex" or "base64").
+ * @param src The raw bytes to encode.
+ * @param srclen Size in bytes of src.
+ * @param[out] dstlen Receives the encoded length in bytes.
+ * @param linelen Line width for the encoded output (0 = single line).
+ * @return The newly allocated encoded buffer (allocated with new[]; caller frees).
+ * @throws eve::Exception on an unsupported format.
+ **/
 char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen, size_t linelen = 0);
+
+/**
+ * @brief Decodes a text buffer (hex / base64) back into raw bytes.
+ * @param format The encoding format ("hex" or "base64").
+ * @param src The encoded text.
+ * @param srclen Size in bytes of src.
+ * @param[out] dstlen Receives the decoded length in bytes.
+ * @return The newly allocated decoded buffer (allocated with new[]; caller frees).
+ * @throws eve::Exception on an unsupported format or malformed input.
+ **/
 char *decode(std::string format, const char *src, size_t srclen, size_t &dstlen);
 
 /**

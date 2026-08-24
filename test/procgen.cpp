@@ -640,8 +640,8 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
     params.setFloat("height", 1.7f);
     params.setFloat("width", 2.6f);
     params.setInt("blobs", 12);
-    params.setInt("rings", 3);
-    params.setInt("radialSegments", 8);
+    params.setInt("rings", 5);
+    params.setInt("radialSegments", 12);
     params.setFloat("leafDensity", 0.8f);
     params.setFloat("leafSize", 0.32f);
     params.setInt("twigs", 6);
@@ -652,7 +652,7 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
 
     // A tiny two-tone foliage atlas (dark base / light highlight), like the tree test.
     const uint8_t atlasPixels[] = {
-        52, 86, 40, 255, 84, 132, 60, 255,
+        104, 67, 38, 255, 84, 132, 60, 255,
     };
     Texture *atlas = gfx->newTexture(2, 1, atlasPixels);
     REQUIRE(atlas != nullptr);
@@ -1823,7 +1823,6 @@ TEST_CASE("procgen.cloud.viaModule") {
     f->setWorldScale(64.f);
     f->setCoverage(0.5f);
     const float c0 = mod->cloudCoverageAt(f, 2.f, 3.f, 0.f);
-    const float c1 = mod->cloudCoverageAt(f, 2.f, 3.f, 4.f);
     CHECK(c0 >= 0.f);
     CHECK(c0 <= 1.f);
     CHECK(mod->cloudCoverageAt(nullptr, 0.f, 0.f, 0.f) == 0.f);

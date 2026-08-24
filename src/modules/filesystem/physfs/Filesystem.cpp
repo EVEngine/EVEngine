@@ -109,9 +109,9 @@ void Filesystem::init(const char* arg0) {
     setSymlinksEnabled(true);
 }
 
-void Filesystem::setFused(bool fused) {
+void Filesystem::setFused(bool value) {
     if (fusedSet) return;
-    this->fused = fused;
+    this->fused = value;
     fusedSet    = true;
 }
 
@@ -467,7 +467,17 @@ std::string Filesystem::getUserDirectory() {
 #elif defined(EVENGINE_WEBGPU)
     static std::string userDir = normalize(eve::webgpu_platform::getHomeDirectory());
 #else
+    // PhysFS deprecated PHYSFS_getUserDir() in 2.1 without a non-deprecated
+    // home-directory replacement (PHYSFS_getPrefDir() is app-specific), so the
+    // public API is kept for the home-directory semantics.
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
     const char* dir = PHYSFS_getUserDir();
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
     static std::string userDir;
     if (dir) userDir = normalize(dir);
 #endif
@@ -742,10 +752,10 @@ bool Filesystem::resolveWatchTarget(const std::string &path, std::string &realDi
 
     // Virtual path not in VFS yet (e.g. new file): watch under cwd, not save dir.
     {
-        std::string cwd = getWorkingDirectory();
-        if (!cwd.empty() && isRealDirectory(cwd)) {
+        std::string workingDir = getWorkingDirectory();
+        if (!workingDir.empty() && isRealDirectory(workingDir)) {
             if (parent.empty()) {
-                realDir = cwd;
+                realDir = workingDir;
                 filterName = baseName(path);
                 return true;
             }

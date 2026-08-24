@@ -19,7 +19,7 @@ class TerrainSampler;
 }
 
 namespace eve::graphics {
-class IGraphics3D;
+class Graphics;
 class Texture;
 }  // namespace eve::graphics
 
@@ -89,6 +89,18 @@ public:
      */
     void setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight, float amplitude,
                           float scale);
+
+    /**
+     * @brief 细粒度地形参数配置（脚本用）。key 支持：
+     *   seed/top/sub/stone/sand/base/amplitude/scale(=frequency)/
+     *   octaves/lacunarity/gain/ridge/warp/exponent/continent/island/coast/
+     *   worldWidth/worldHeight/sandLevel/enable
+     * 所有参数以 float 传入（整数在内部取整）。sandLevel ∈ (0,1] 时，
+     * 采样高度 ≤ sandLevel 的柱子顶层用 sand 纹理（沙滩带）；0 或负值关闭。
+     * enable=1 打开地形（默认流式生成开启），enable=0 关闭。
+     */
+    void setTerrainParam(const std::string &key, float value);
+
     void disableTerrain() { terrainEnabled_ = false; }
     bool terrainEnabled() const { return terrainEnabled_; }
 
@@ -120,7 +132,8 @@ public:
      * @param viewProj16 column-major 4x4 RH+ZO view-projection (16 floats)
      * @param eyeX/Y/Z  camera eye world position
      * @param viewRange max distance from eye to chunk center (world units; ≤0 disables)
-     * @param faceCull  when true, drop face buffers whose outward normal points away
+     * @param faceCull  when true, conservatively drop face-direction buffers that are
+     *                  back-facing from every possible face plane in the chunk
      */
     void selectVisible(const float *viewProj16, float eyeX, float eyeY, float eyeZ, float viewRange,
                        bool faceCull = true);
@@ -136,8 +149,10 @@ public:
     /**
      * @brief Issue Graphics::drawVoxelFaceInstances for every visible batch.
      * Requires begin3DFrame + setMesh3DViewProj already done.
+     * 参数用主类 Graphics*（而非 IGraphics3D*）：脚本绑定对接口指针
+     * 不做次基类偏移调整，经接口的虚调用会错位到别的 vtable 槽位。
      */
-    void drawVisible(graphics::IGraphics3D *gfx, graphics::Texture *atlas, int tilesPerRow = 16);
+    void drawVisible(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow = 16);
 
     /** @brief World-space voxel get/set. Air (0) never allocates a chunk; a border
      *  edit also invalidates the adjacent chunk's mesh. */
@@ -218,6 +233,8 @@ private:
     uint8_t terrainTop_ = 1;
     uint8_t terrainSub_ = 2;
     uint8_t terrainStone_ = 3;
+    uint8_t terrainSand_ = 0;  // 0 = 沙滩带关闭
+    float sandLevel_ = 0.f;    // 归一化采样高度阈值；≤0 关闭
     float terrainBase_ = 8.f;
     float terrainAmplitude_ = 14.f;
     bool terrainEnabled_ = false;

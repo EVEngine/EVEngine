@@ -15,7 +15,7 @@ namespace CLI
 namespace eve::cmd {
 
 class Cmdline;
-class Register;
+struct Register;
 
 /** @brief One `eve <subcommand>` handler: CLI setup + argument parsing. */
 struct Handler {
@@ -36,8 +36,9 @@ public:
     int Run(std::string path, std::string root, bool debug = false, int dapPort = 0,
             int mcpPort = 0, std::string devServer = "");
 
-    /** @brief 构建项目（需要下载工具与源码）。 */
-    int Build(std::string path, std::string output, std::string platform);
+    /** @brief 构建项目：委托仓库 Makefile 的 build/<platform>[-debug] 目标。 */
+    int Build(std::string path, std::string output, std::string platform,
+              std::string sdkRoot = "", bool debug = false);
 
     /** @brief 把游戏打包为单个可执行文件 / APK。 */
     int Package(std::string path, std::string output, std::string sdk);
@@ -61,13 +62,13 @@ public:
     int Clean(std::string path);
 
     /** @brief 显示模块/函数/类型的文档。 */
-    int Doc(std::string name);
+    int Doc(std::string name, bool noOpen = false);
 
     /** @brief 创建新项目。 */
     int Create(std::string path, std::string name);
 
     /** @brief 解析并执行传入的 argv。 */
-    int runArgs(unsigned argc, char** argv);
+    int runArgs(unsigned argcIn, char** argvIn);
 
     /** @brief 第 i 个原始 argv（physfs 文件系统用）。 */
     std::string getArgv(unsigned i) {

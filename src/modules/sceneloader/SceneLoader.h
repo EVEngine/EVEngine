@@ -31,7 +31,7 @@ namespace model3d {
 class ModelData;
 }  // namespace model3d
 namespace scene {
-class NodeDesc;
+struct NodeDesc;
 class SceneHost;
 }  // namespace scene
 namespace thread {

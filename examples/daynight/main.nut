@@ -15,6 +15,9 @@ if (!("uiReady" in getroottable())) uiReady <- false;
 if (!("camAngle" in getroottable())) camAngle <- 0.0;
 if (!("autoOrbit" in getroottable())) autoOrbit <- true;
 if (!("props" in getroottable())) props <- [];
+if (!("clouds" in getroottable())) clouds <- null;
+if (!("cloudPreviewTime" in getroottable())) cloudPreviewTime <- 0.0;
+if (!("cloudPreviewSaved" in getroottable())) cloudPreviewSaved <- false;
 
 // Firefly spawn ring around the campfire.
 fireflies <- [];
@@ -102,8 +105,8 @@ function buildPanel() {
 
 eve_init = function() {
     camera = eve.Camera3D();
-    camera.setEye(0.0, 7.0, 16.0);
-    camera.setTarget(0.0, 1.0, 0.0);
+    camera.setEye(0.0, 5.0, 18.0);
+    camera.setTarget(0.0, 7.0, 0.0);
     camera.setFov(55.0);
 
     buildScene();
@@ -111,8 +114,8 @@ eve_init = function() {
 
     // Configure the cycle.
     daynight.init(gfx);
-    daynight.setTimeOfDay(9.0);
-    daynight.setSpeed(0.5);              // 1 full day every ~48 s
+    daynight.setTimeOfDay(17.0);         // golden hour showcases warm cloud scattering
+    daynight.setSpeed(0.0);
     daynight.setFirePosition(0.0, 0.6, 0.0);
     foreach (f in fireflies) {
         daynight.addFirefly(f[0], f[1], f[2]);
@@ -122,25 +125,45 @@ eve_init = function() {
     daynight.setNightLight("fire", true);
     daynight.setNightLight("fireflies", true);
     daynight.setSkyboxEnabled(true);
+
+    // Render a bounded cloud deck from the same sun direction/color as DayNight.
+    local rc = gfx.getRenderControl();
+    rc.enable("gbuffer");
+    rc.compile();
+    clouds = gfx.newVolumetric();
+    clouds.setMode("cloud");
+    clouds.setQuality("high");
+    clouds.setCloudLayer(9.0, 18.0);
+    clouds.setCloudCoverage(0.42);
+    clouds.setCloudDensity(0.75);
+    clouds.setCloudScale(30.0);
+    clouds.setCloudWind(0.7, 0.22);
 };
 
 eve_update = function(dt) {
+    cloudPreviewTime += dt;
     if (autoOrbit) {
         camAngle += dt * 0.18;
         local r = 17.0;
-        camera.setEye(math.polarX(r, camAngle), 7.5, math.polarY(r, camAngle));
+        camera.setEye(math.polarX(r, camAngle), 5.0, math.polarY(r, camAngle));
     }
 
     // Hotkeys.
-    if (keyboard.wasPressed("space")) daynight.setPaused(!daynight.isPaused());
-    if (keyboard.wasPressed("l")) daynight.setNightLight("moonlight", !daynight.isNightLight("moonlight"));
-    if (keyboard.wasPressed("f")) daynight.setNightLight("fireflies", !daynight.isNightLight("fireflies"));
-    if (keyboard.wasPressed("m")) daynight.setNightLight("fire", !daynight.isNightLight("fire"));
+    if (key_just_pressed("space")) daynight.setPaused(!daynight.isPaused());
+    if (key_just_pressed("l")) daynight.setNightLight("moonlight", !daynight.isNightLight("moonlight"));
+    if (key_just_pressed("f")) daynight.setNightLight("fireflies", !daynight.isNightLight("fireflies"));
+    if (key_just_pressed("m")) daynight.setNightLight("fire", !daynight.isNightLight("fire"));
     if (keyboard.isDown("up")) daynight.setSpeed(daynight.getSpeed() + dt * 2.0);
     if (keyboard.isDown("down")) daynight.setSpeed(math.max(0.0, daynight.getSpeed() - dt * 2.0));
-    if (keyboard.wasPressed("left")) daynight.setTimeOfDay(12.0);
+    if (key_just_pressed("left")) daynight.setTimeOfDay(12.0);
 
     daynight.update(dt, gfx);
+
+    clouds.setCamera(math.polarX(17.0, camAngle), 5.0, math.polarY(17.0, camAngle),
+        0.0, 7.0, 0.0, 0.0, 1.0, 0.0, 55.0, 1.6, 0.1, 100.0);
+    clouds.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(), daynight.getSunDirZ());
+    clouds.setCloudLightColor(daynight.getSunR(), daynight.getSunG(), daynight.getSunB());
+    clouds.setTime(daynight.getTimeOfDay() * 12.0);
 
     // Feed the module's ambient / sky into the camera each frame.
     camera.setAmbient(daynight.getAmbientR(), daynight.getAmbientG(), daynight.getAmbientB());
@@ -160,7 +183,17 @@ eve_update = function(dt) {
 };
 
 eve_render = function() {
+    // saveFramePng reads the previously presented frame. Saving once makes the
+    // example useful for visual regression reviews without external capture tools.
+    if (!cloudPreviewSaved && cloudPreviewTime > 2.0) {
+        if (gfx.saveFramePng("/tmp/evengine_daynight_clouds.png")) {
+            print("daynight cloud frame saved: /tmp/evengine_daynight_clouds.png\n");
+            cloudPreviewSaved = true;
+        }
+    }
     gfx.clear();
     gfx.render3D();
+    local gbuffer = gfx.getRenderControl().getGBuffer();
+    if (gbuffer.isValid()) clouds.renderClouds(gfx, gbuffer.getDepthTexture());
     ui.beginFrameAndRender();
 };

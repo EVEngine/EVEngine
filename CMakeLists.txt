@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.21)
 project(EVEngine)
 
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "1")
-set(EVENGINE_PATCH_VERSION "0")
+set(EVENGINE_MINOR_VERSION "2")
+set(EVENGINE_PATCH_VERSION "1")
 set(EVENGINE_DEV_VERSION "-dev")
 
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
@@ -33,17 +33,34 @@ if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
             "Use a prebuilt third-party install tree" FORCE)
     endif()
 endif()
+set(EVENGINE_THIRD_PARTY_PIN "566e4073d2ec1c723b581daa50334a4b05956091" CACHE STRING
+    "Pinned commit for the EVEngine/third-party aggregate checkout. The checkout is
+     moved onto this commit at configure time (or verified against it), and every
+     prebuilt third-party tree must be built from it.")
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
+    OFF)
+option(EVENGINE_IOS_TEST_APP
+    "Build the unit_test suite as an iOS test app (eve executable replaced by the zeroerr runner)"
     OFF)
 option(EVENGINE_ENABLE_ASSERTS
     "Keep zeroerr ASSERT checks (parameter validation, invariants) in non-Debug builds.
      Debug builds always enable them; this option is for Release-style builds."
     OFF)
+option(EVENGINE_ENABLE_STRICT_WARNINGS
+    "Treat compiler warnings as errors on EVEngine's own targets.
+     GCC/Clang: -Wall -Wextra -Werror (unused-parameter and
+     missing-field-initializers are suppressed until the legacy callback API
+     and Vulkan aggregate-init debt are cleaned up).
+     MSVC: /W4 /WX.
+     Third-party targets are not affected."
+    OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
 message("Build Android test app: " ${EVENGINE_ANDROID_TEST_APP})
+message("Build iOS test app: " ${EVENGINE_IOS_TEST_APP})
 message("Enable asserts in non-Debug builds: " ${EVENGINE_ENABLE_ASSERTS})
+message("Enable strict warnings (warnings as errors): " ${EVENGINE_ENABLE_STRICT_WARNINGS})
 if (CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
 endif()
@@ -84,6 +101,83 @@ function(main)
         add_compile_options(/utf-8 /EHsc /FS /bigobj)
     endif()
 
+    # Strict-warnings gate. Applied through the shared INTERFACE target so every
+    # engine module, platform library and test runner inherits it while
+    # third-party (ExternalProject / add_subdirectory deps) stays untouched.
+    # Enabled by CI via -DEVENGINE_ENABLE_STRICT_WARNINGS=ON; local opt-in:
+    #   make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+    if(EVENGINE_ENABLE_STRICT_WARNINGS)
+        target_compile_options(eve_engine_includes INTERFACE
+            $<$<CXX_COMPILER_ID:MSVC>:/W4>
+            $<$<CXX_COMPILER_ID:MSVC>:/WX>
+            # C4251/C4275: STL members/base classes in __declspec(dllexport)
+            # classes are safe with MSVC's own STL; the warnings are noise for
+            # an engine DLL. C4100 mirrors the GCC side's -Wno-unused-parameter:
+            # callback APIs keep unused parameters for stability until the
+            # legacy interface is cleaned up. C4244 loss-of-data conversions
+            # stay enabled and are fixed at the call sites.
+            # /external:W0 silences warnings from third-party headers marked
+            # with eve_external_include() (defined below), so /W4 /WX applies
+            # only to EVEngine's own code.
+            # _CRT_SECURE_NO_WARNINGS: the engine deliberately uses standard C
+            # APIs (getenv, etc.) for portability; MSVC's secure-CRT
+            # deprecations are reviewed in code review instead of forcing
+            # _s variants at every call site.
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4251>
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4275>
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4100>
+            # C4702: unreachable code emitted by third-party header-only code
+            # (vkbuilder.hpp) at flow-analysis level; engine-side dead code is
+            # removed at the call sites instead.
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4702>
+            # C4456/4457/4458: "declaration hides class member" family. The
+            # legacy codebase pervasively names parameters after the member they
+            # set (setWidth(int width) etc.); renaming ~60+ call sites is a
+            # dedicated cleanup PR, not a gate blocker. C4244/C4267/C4099/
+            # C4389/C4189 stay enabled and are fixed at the call sites.
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4456>
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4457>
+            $<$<CXX_COMPILER_ID:MSVC>:/wd4458>
+            $<$<CXX_COMPILER_ID:MSVC>:/external:W0>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wextra>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Werror>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-unused-parameter>
+            # -Wno-unused-function: shared per-TU helper headers (GraphicsInternal.h,
+            # SceneInternal.h, ...) deliberately give every including TU its own
+            # internal copy, so a helper unused in one TU is structural, not a
+            # defect. Unused variables and unused-but-set stay enabled.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-unused-function>
+            # Third-party template headers (simplesquirrel) emit these during
+            # instantiation in engine TUs. The third-party install root stays a
+            # plain -I (marking it -isystem would demote it below the Vulkan SDK
+            # -I and flip which <vulkan/vulkan.hpp> wins, breaking VKBuilder),
+            # so the leaks cannot be silenced per-directory on GCC and are
+            # downgraded from errors to warnings here. Engine-side instances of
+            # these warnings are still reported.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-variable>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-but-set-parameter>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=sign-compare>
+            # Poco::Data Date/Time implicit-copy deprecations and
+            # -Wdelete-non-virtual-dtor (the ECS.hpp base Entity has virtuals
+            # but no virtual dtor) fire from third-party headers during template
+            # instantiation in engine TUs; same treatment as above.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=deprecated-copy>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=delete-non-virtual-dtor>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-missing-field-initializers>)
+        target_compile_definitions(eve_engine_includes INTERFACE
+            $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
+            # POSIX-name deprecations (fileno etc.) are the same category as
+            # the secure-CRT warnings above; the ISO C++ name is used where
+            # practical.
+            $<$<CXX_COMPILER_ID:MSVC>:_CRT_NONSTDC_NO_WARNINGS>)
+        # Vendored third-party source roots (third-party/Box2D, imgui, ...) are
+        # external for warning purposes. Safe on GCC: the third-party install
+        # tree stays a plain -I and is searched first, so the vendored
+        # vulkan.hpp still beats the SDK's.
+        eve_external_include(${CMAKE_SOURCE_DIR}/third-party)
+    endif()
+
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
     set(BUILD_TEST OFF CACHE BOOL "" FORCE)
     set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -98,8 +192,12 @@ function(main)
         endif()
     endif()
     if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
-        message(STATUS "iOS build: unit tests disabled")
+        if(EVENGINE_IOS_TEST_APP)
+            message(STATUS "iOS build: unit tests enabled (iOS test app)")
+        else()
+            set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+            message(STATUS "iOS build: unit tests disabled")
+        endif()
     endif()
     # WebGPU (browser WASM + native Dawn): unit tests are disabled by default —
     # most tests link Vulkan-only helpers. Native Dawn builds can opt back in
@@ -183,6 +281,37 @@ function(main)
     if(EVENGINE_PLATFORM_LIB AND TARGET ${EVENGINE_PLATFORM_LIB})
         target_link_libraries(${EVENGINE_PLATFORM_LIB} PUBLIC eve_engine_includes)
     endif()
+    # Build metadata: bake the engine git commit/dirty + build time + the
+    # third-party version into a generated header consumed by
+    # src/engine/common/Version.cpp, so `eve --version` (and any binary) can
+    # report the exact source state it was built from.
+    set(EVENGINE_GIT_COMMIT "unknown")
+    set(EVENGINE_GIT_DIRTY 0)
+    find_package(Git QUIET)
+    if(GIT_EXECUTABLE)
+        execute_process(
+            COMMAND "${GIT_EXECUTABLE}" rev-parse --short=12 HEAD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            RESULT_VARIABLE _eve_git_commit_result
+            OUTPUT_VARIABLE _eve_git_commit
+            OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+        if(_eve_git_commit_result EQUAL 0 AND _eve_git_commit)
+            set(EVENGINE_GIT_COMMIT "${_eve_git_commit}")
+        endif()
+        execute_process(
+            COMMAND "${GIT_EXECUTABLE}" status --porcelain
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            RESULT_VARIABLE _eve_git_dirty_result
+            OUTPUT_VARIABLE _eve_git_dirty
+            OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+        if(_eve_git_dirty_result EQUAL 0 AND _eve_git_dirty)
+            set(EVENGINE_GIT_DIRTY 1)
+        endif()
+    endif()
+    string(TIMESTAMP EVENGINE_BUILD_TIME "%Y-%m-%d %H:%M:%S %z")
+    if(NOT EVENGINE_TP_DESC)
+        set(EVENGINE_TP_DESC "unknown")
+    endif()
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
     add_subdirectory(src/scripts)
@@ -255,6 +384,30 @@ macro(create_module libname folder)
 endmacro()
 
 
+# Mark a third-party include root as "external" for strict builds, so the
+# warning-as-error flags stay scoped to EVEngine's own code:
+#   MSVC: /external:I + /external:W0 (does not change search order)
+#   GCC/Clang: -isystem (suppresses header warnings from template
+#              instantiations), except the third-party install tree: on GCC a
+#              directory listed in both -I and -isystem has its -I entry
+#              ignored and is searched after every -I, which would flip which
+#              <vulkan/vulkan.hpp> wins (the vendored 261 must beat the SDK's).
+function(eve_external_include dir)
+    if(EVENGINE_ENABLE_STRICT_WARNINGS)
+        if(MSVC)
+            target_compile_options(eve_engine_includes INTERFACE "/external:I${dir}")
+        else()
+            # The third-party install tree stays a plain -I on GCC (see the
+            # function comment); everything else (external/*, header-only
+            # vendored roots) can be marked system without reordering.
+            if(NOT dir MATCHES "third-party-binary")
+                target_compile_options(eve_engine_includes INTERFACE "-isystem${dir}")
+            endif()
+        endif()
+    endif()
+endfunction()
+
+
 # This function will set the include directories for the project
 function(set_include)
     target_include_directories(eve_engine_includes INTERFACE
@@ -271,14 +424,30 @@ function(set_include)
         # globally (like the old third-party flattened install) so any module that
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
         ${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include
-        # medialoader public headers (image/pixelformat.h etc.) — needed by
-        # ImageData.h; the vendored tree is present even when the library is
-        # not linked (Emscripten trim).
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
-        # Dungeon Template Library (header-only)
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include
     )
+    if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
+        # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
+        # mode (EVENGINE_THIRD_PARTY_BINARY_DIR) these headers come from the
+        # install tree (include/medialoader, include/assimp, flat DTL headers);
+        # mixing source headers with prebuilt libraries silently produces
+        # ABI/behavior drift when the two are not the same commit.
+        target_include_directories(eve_engine_includes INTERFACE
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
+            # Dungeon Template Library (header-only)
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+        # Third-party headers are external for warning purposes on strict
+        # builds (vendored header-only libraries).
+        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include)
+        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include)
+        eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+    endif()
+    # Third-party headers are external for warning purposes on MSVC strict
+    # builds (submodule / vendored header-only libraries).
+    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src)
+    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp)
+    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include)
+    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include)
 
     # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.
     # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
@@ -333,6 +502,14 @@ function(set_include)
         #   iOS/lib/.../ios-arm64/MoltenVK.framework  (dynamic; preferred, embeddable)
         #   macOS/lib/.../ios-arm64/libMoltenVK.a      (static; CI zip often only has this)
         # Prefer the framework; fall back to the static archive.
+        # Pick the xcframework slice matching the active SDK: simulator builds
+        # need the universal ios-arm64_x86_64-simulator framework, not the
+        # device-only ios-arm64 one.
+        if(CMAKE_OSX_SYSROOT MATCHES "simulator")
+            set(_eve_mvk_slice "ios-arm64_x86_64-simulator")
+        else()
+            set(_eve_mvk_slice "ios-arm64")
+        endif()
         set(_eve_mvk_candidates "")
         if(DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
             list(APPEND _eve_mvk_candidates
@@ -355,7 +532,7 @@ function(set_include)
             if(NOT EXISTS "${_abs}")
                 continue()
             endif()
-            set(_slice "${_abs}/ios-arm64")
+            set(_slice "${_abs}/${_eve_mvk_slice}")
             if(EXISTS "${_slice}/MoltenVK.framework")
                 set(_eve_moltenvk_xcframework "${_abs}")
                 set(_eve_moltenvk_link_mode "framework")
@@ -545,18 +722,43 @@ function(check_ipo)
 endfunction()
 
 
-# Ensure third-party sources exist at configure time.
-# ExternalProject only downloads during the build of target `third-party`, but
-# modules (e.g. eve_imgui) list files under third-party/ at configure time.
+# Ensure third-party sources exist at configure time and sit on the pinned
+# commit. ExternalProject only downloads during the build of target
+# `third-party`, but modules (e.g. eve_imgui) list files under third-party/
+# at configure time.
 function(ensure_third_party_checkout)
     set(_eve_tp_dir "${CMAKE_SOURCE_DIR}/third-party")
+    find_package(Git REQUIRED)
     if(EXISTS "${_eve_tp_dir}/CMakeLists.txt")
-        message(STATUS "third-party: using existing ${_eve_tp_dir}")
+        # An existing checkout is authoritative for the build, so verify it is
+        # actually the pinned commit instead of silently compiling whatever
+        # main happened to be at clone time (the ExternalProject GIT_TAG has
+        # no effect when the source dir already exists).
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
+            WORKING_DIRECTORY "${_eve_tp_dir}"
+            RESULT_VARIABLE _eve_tp_head_result
+            OUTPUT_VARIABLE _eve_tp_head
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET)
+        if(NOT _eve_tp_head_result EQUAL 0)
+            message(FATAL_ERROR
+                "third-party exists at ${_eve_tp_dir} but is not a readable git checkout")
+        endif()
+        if(NOT _eve_tp_head STREQUAL EVENGINE_THIRD_PARTY_PIN)
+            message(FATAL_ERROR
+                "third-party checkout is at ${_eve_tp_head}, expected pinned ${EVENGINE_THIRD_PARTY_PIN}.\n"
+                "Fix with:\n"
+                "  git -C third-party fetch --depth 1 origin ${EVENGINE_THIRD_PARTY_PIN}\n"
+                "  git -C third-party checkout --detach ${EVENGINE_THIRD_PARTY_PIN}\n"
+                "then force a deps rebuild (remove build/third-party/<plat>/third-party-prefix),\n"
+                "or override the pin with -DEVENGINE_THIRD_PARTY_PIN=<commit>.")
+        endif()
+        message(STATUS "third-party: pinned checkout ${_eve_tp_head} verified")
         return()
     endif()
 
-    message(STATUS "third-party: cloning https://github.com/EVEngine/third-party ...")
-    find_package(Git REQUIRED)
+    message(STATUS "third-party: cloning https://github.com/EVEngine/third-party at ${EVENGINE_THIRD_PARTY_PIN} ...")
     file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}")
     execute_process(
         COMMAND ${GIT_EXECUTABLE} clone --depth 1 --branch main --recurse-submodules
@@ -570,6 +772,32 @@ function(ensure_third_party_checkout)
             "Failed to clone third-party (exit ${_eve_tp_clone_result}).\n"
             "${_eve_tp_clone_out}${_eve_tp_clone_err}\n"
             "Manually run: git clone --recurse-submodules https://github.com/EVEngine/third-party ${_eve_tp_dir}")
+    endif()
+    # The shallow main clone is not guaranteed to be the pinned commit; move
+    # it onto the pin before submodules are synced.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} fetch --depth 1 origin ${EVENGINE_THIRD_PARTY_PIN}
+        WORKING_DIRECTORY "${_eve_tp_dir}"
+        RESULT_VARIABLE _eve_tp_fetch_result
+        OUTPUT_VARIABLE _eve_tp_fetch_out
+        ERROR_VARIABLE _eve_tp_fetch_err
+    )
+    if(NOT _eve_tp_fetch_result EQUAL 0)
+        message(FATAL_ERROR
+            "Failed to fetch pinned third-party commit ${EVENGINE_THIRD_PARTY_PIN}.\n"
+            "${_eve_tp_fetch_out}${_eve_tp_fetch_err}")
+    endif()
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} checkout --detach ${EVENGINE_THIRD_PARTY_PIN}
+        WORKING_DIRECTORY "${_eve_tp_dir}"
+        RESULT_VARIABLE _eve_tp_checkout_result
+        OUTPUT_VARIABLE _eve_tp_checkout_out
+        ERROR_VARIABLE _eve_tp_checkout_err
+    )
+    if(NOT _eve_tp_checkout_result EQUAL 0)
+        message(FATAL_ERROR
+            "Failed to check out pinned third-party commit ${EVENGINE_THIRD_PARTY_PIN}.\n"
+            "${_eve_tp_checkout_out}${_eve_tp_checkout_err}")
     endif()
     # Shallow + recurse can leave nested submodules empty on some runners; force-init.
     execute_process(
@@ -615,15 +843,18 @@ function(check_third_party_project name repo)
         endif()
         add_custom_target(${name})
         target_include_directories(eve_engine_includes INTERFACE "${_eve_tp_binary}/include")
+        eve_external_include("${_eve_tp_binary}/include")
         # SDL2 and FreeType install their public headers one level below include/.
         # Their sources use <SDL.h> and <ft2build.h>, so expose those roots too.
         if(IS_DIRECTORY "${_eve_tp_binary}/include/SDL2")
             target_include_directories(eve_engine_includes INTERFACE
                 "${_eve_tp_binary}/include/SDL2")
+            eve_external_include("${_eve_tp_binary}/include/SDL2")
         endif()
         if(IS_DIRECTORY "${_eve_tp_binary}/include/freetype2")
             target_include_directories(eve_engine_includes INTERFACE
                 "${_eve_tp_binary}/include/freetype2")
+            eve_external_include("${_eve_tp_binary}/include/freetype2")
         endif()
         target_link_directories(eve_engine_includes INTERFACE "${_eve_tp_binary}/lib")
         message(STATUS "third-party: using read-only prebuilt tree ${_eve_tp_binary}")
@@ -721,34 +952,55 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/third-party-squirrel-ssq-export.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Third patch: ssq class allocators must translate C++ exceptions from
+    # module constructors into Squirrel errors. Without this, a throwing ctor
+    # (e.g. Audio with no audio device) escapes the native call, corrupts the
+    # VM's exception state and hangs during sq_close (SQInstance::Release).
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+
+    # Stamp the git versions into the install tree after every install so
+    # prebuilt-mode consumers (and eve's build info) can report exactly which
+    # third-party commit the libraries were built from.
+    set(_eve_tp_version_cmd ${CMAKE_COMMAND}
+        -DPREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
+        -DTP_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+        -DPLATFORM=${BUILD_PLATFORM}
+        -DBUILD_TYPE=${_eve_tp_build_type}
+        -P ${CMAKE_SOURCE_DIR}/cmake/write_third_party_version.cmake)
 
     if(_eve_tp_use_ninja)
         ExternalProject_Add(${name}
             GIT_REPOSITORY ${GIT_HTTPS_LINK}
-            GIT_TAG 566e4073d2ec1c723b581daa50334a4b05956091
+            GIT_TAG ${EVENGINE_THIRD_PARTY_PIN}
             SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
             BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
             CMAKE_GENERATOR "Ninja"
             CMAKE_ARGS ${_eve_tp_cmake_args}
             PATCH_COMMAND ${_eve_tp_patch_cmd}
-            BUILD_COMMAND ${_eve_tp_build_cmd}
+            BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
             BUILD_ALWAYS 0
             EXCLUDE_FROM_ALL 1
         )
     else()
         ExternalProject_Add(${name}
             GIT_REPOSITORY ${GIT_HTTPS_LINK}
-            GIT_TAG 566e4073d2ec1c723b581daa50334a4b05956091
+            GIT_TAG ${EVENGINE_THIRD_PARTY_PIN}
             SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
             BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
             CMAKE_ARGS ${_eve_tp_cmake_args}
             PATCH_COMMAND ${_eve_tp_patch_cmd}
-            BUILD_COMMAND ${_eve_tp_build_cmd}
+            BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
             BUILD_ALWAYS 0
             EXCLUDE_FROM_ALL 1
         )
     endif()
     target_include_directories(eve_engine_includes INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
+    eve_external_include(
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     target_link_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
@@ -766,7 +1018,15 @@ function(load_third_party)
     endif()
     message("Build Type: ${CMAKE_BUILD_TYPE} (third-party tree suffix '${DEBUG_APPENDIX}')")
 
-    set(TP_BUILD_PATH ${BUILD_PLATFORM}${DEBUG_APPENDIX})
+    # Simulator builds cannot reuse the device third-party tree (the linker
+    # rejects iphoneos Mach-O slices for an iphonesimulator target), so give
+    # them their own install prefix instead of clobbering build/third-party-binary/ios-debug.
+    if(CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_SYSROOT MATCHES "simulator")
+        set(_eve_tp_platform "ios-simulator")
+    else()
+        set(_eve_tp_platform ${BUILD_PLATFORM})
+    endif()
+    set(TP_BUILD_PATH ${_eve_tp_platform}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)
@@ -779,9 +1039,62 @@ function(load_third_party)
         endif()
         message(STATUS "third-party: using read-only prebuilt install ${_eve_prebuilt_tp}")
         target_include_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/include")
+        eve_external_include("${_eve_prebuilt_tp}/include")
         target_link_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/lib")
         set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL
             "Use installed third-party prefix" FORCE)
+        # Read the install tree's version stamp (written by
+        # cmake/write_third_party_version.cmake at install time). A missing
+        # stamp is tolerated with a warning (older prebuilt trees); a stamp
+        # that disagrees with a present source checkout is a hard error,
+        # because the engine would otherwise compile against new source
+        # headers while linking stale prebuilt libraries.
+        find_package(Git QUIET)
+        set(EVENGINE_TP_DESC "unknown" CACHE INTERNAL "Third-party version for build info")
+        set(_eve_tp_version_file "${_eve_prebuilt_tp}/third-party-version.txt")
+        if(EXISTS "${_eve_tp_version_file}")
+            file(STRINGS "${_eve_tp_version_file}" _eve_tp_version_lines)
+            set(_eve_tp_aggregate "")
+            set(_eve_tp_built "")
+            foreach(_eve_tp_line IN LISTS _eve_tp_version_lines)
+                if(_eve_tp_line MATCHES "^aggregate=(.*)$")
+                    set(_eve_tp_aggregate "${CMAKE_MATCH_1}")
+                elseif(_eve_tp_line MATCHES "^built=(.*)$")
+                    set(_eve_tp_built "${CMAKE_MATCH_1}")
+                endif()
+            endforeach()
+            if(_eve_tp_aggregate)
+                string(SUBSTRING "${_eve_tp_aggregate}" 0 12 _eve_tp_agg_short)
+                set(EVENGINE_TP_DESC "prebuilt@${_eve_tp_agg_short}" CACHE INTERNAL
+                    "Third-party version for build info" FORCE)
+                message(STATUS "third-party prebuilt ${_eve_prebuilt_tp}: aggregate ${_eve_tp_aggregate} (built ${_eve_tp_built})")
+            else()
+                message(WARNING "third-party-version.txt has no aggregate= line: ${_eve_tp_version_file}")
+            endif()
+            if(EXISTS "${CMAKE_SOURCE_DIR}/third-party/.git" AND GIT_EXECUTABLE)
+                execute_process(
+                    COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
+                    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/third-party"
+                    RESULT_VARIABLE _eve_tp_src_result
+                    OUTPUT_VARIABLE _eve_tp_src_head
+                    OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+                if(_eve_tp_src_result EQUAL 0 AND _eve_tp_aggregate
+                   AND NOT _eve_tp_src_head STREQUAL _eve_tp_aggregate)
+                    message(FATAL_ERROR
+                        "third-party mismatch: prebuilt tree ${_eve_prebuilt_tp} was built from aggregate\n"
+                        "  ${_eve_tp_aggregate}\n"
+                        "but the source checkout third-party/ is at\n"
+                        "  ${_eve_tp_src_head}\n"
+                        "The engine would compile against new headers but link old prebuilt libraries.\n"
+                        "Sync the checkout to the pinned commit and reinstall, or point\n"
+                        "EVENGINE_THIRD_PARTY_BINARY_DIR at a prebuilt tree matching the source.")
+                endif()
+            endif()
+        else()
+            message(WARNING
+                "prebuilt third-party tree has no ${_eve_tp_version_file}.\n"
+                "Run 'make reinstall/third-party/<plat>' once to stamp the git version into the tree.")
+        endif()
         # Preserve the dependency target expected by create_module(), but give it no
         # configure/build/install commands so the prebuilt tree can remain read-only.
         add_custom_target(third-party)
@@ -804,6 +1117,11 @@ function(load_third_party)
     check_third_party_project(third-party "https://github.com/EVEngine/third-party")
 
     ADD_CUSTOM_TARGET(deps DEPENDS third-party)
+    # The source checkout was verified against the pin by
+    # ensure_third_party_checkout(); report it in the generated BuildInfo.h.
+    string(SUBSTRING "${EVENGINE_THIRD_PARTY_PIN}" 0 12 _eve_tp_pin_short)
+    set(EVENGINE_TP_DESC "source@${_eve_tp_pin_short}" CACHE INTERNAL
+        "Third-party version for build info" FORCE)
 endfunction()
 
 

@@ -1,10 +1,9 @@
 #pragma once
 
-#include "graphics/IResourceFactory.h"
-
 #include <vector>
 
 namespace eve::graphics {
+class IResourceFactory;
 class Renderable3D;
 }
 

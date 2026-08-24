@@ -22,6 +22,7 @@ namespace {
 
 std::vector<RenderSystem3D::GBufferExtraDrawer> g_gbufferDrawers;
 std::vector<RenderSystem3D::ShadowExtraDrawer> g_shadowDrawers;
+std::vector<RenderSystem3D::DecalExtraDrawer> g_decalDrawers;
 
 glm::vec3 gLightDir = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
 glm::vec3 gLightColor = glm::vec3(1.f);
@@ -249,6 +250,8 @@ void Renderable3D::setScale(float sx, float sy, float sz) {
 
 void Renderable3D::setMesh(Mesh *mesh) { meshRenderer()->mesh = mesh; }
 
+Mesh *Renderable3D::getMesh() { return meshRenderer()->mesh; }
+
 void Renderable3D::setTexture(Texture *texture) { meshRenderer()->texture = texture; }
 
 void Renderable3D::setNormalTexture(Texture *texture) { meshRenderer()->normalTexture = texture; }
@@ -412,6 +415,11 @@ void RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
     g_shadowDrawers.push_back(std::move(drawer));
 }
 
+void RenderSystem3D::addDecalExtraDrawer(DecalExtraDrawer drawer) {
+    if (!drawer) return;
+    g_decalDrawers.push_back(std::move(drawer));
+}
+
 namespace {
 
 Light3D::Data *findShadowCasterDir(const std::vector<PackedLight3D> &packed) {
@@ -549,6 +557,7 @@ void RenderSystem3D::render(Graphics &gfx) {
     rc->ensureCompiled();
     const bool doShadow = rc->hasPass("shadow");
     const bool doGBuffer = rc->hasPass("gbuffer");
+    const bool doDecal = rc->hasPass("decal");
     const bool doForward = rc->hasPass("forward");
     const bool doHair = rc->hasPass("hair");
     const bool allowClustered = rc->isEnabled("clustered");
@@ -750,7 +759,30 @@ void RenderSystem3D::render(Graphics &gfx) {
         rc->getGBuffer()->clear();
     }
 
+    // Screen-space decal layer: box-projected decals read the G-buffer
+    // depth/normal and write albedo/normal/params targets sampled by
+    // mesh3d.frag before lighting. Skipped when no decals are registered or
+    // the backend cannot run the pass (WebGPU).
+    if (doDecal && defaultCam && !g_decalDrawers.empty() && gfx.supportsDecal()) {
+        eve::debug::rtPassBegin("DecalPass");
+        const CameraView &cv = cams[0];
+        const int dw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
+        const int dh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
+        gfx.beginDecalPass(dw, dh);
+        gfx.setDecalCamera(cv.viewProj, cv.data->nearZ, cv.data->farZ);
+        for (const auto &drawer : g_decalDrawers) drawer(gfx, *cv.data, cv.viewProj, aspect);
+        gfx.endDecalPass();
+        eve::debug::rtPassEnd("DecalPass");
+    }
+
     if (!doForward && !doHair) return;
+
+    // GPU-driven intent must be set BEFORE begin3DFrame: when the stage-2 cull
+    // chain is live, begin3DFrame defers opening the scene color pass so the
+    // compute section can be recorded before the opaque draws.
+    const bool gpuDrivenWanted =
+        rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
+    gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
 
     gfx.begin3DFrame();
     if (!gfx.had3DThisFrame()) return;
@@ -872,9 +904,107 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
 
     if (doForward) {
-        for (const CulledItem *item : opaque) drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+        bool gpuDrivenUsed = false;
+        if (gpuDrivenWanted && !useClustered && defaultCam && !opaque.empty()) {
+            bool eligible = true;
+            for (const CulledItem *it : opaque) {
+                if (it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
+                    it->material->effectiveShader() != nullptr ||
+                    !gfx.gpuDrivenMaterialUsable(it->material)) {
+                    eligible = false;
+                    break;
+                }
+            }
+            if (eligible) {
+                const CameraView     &cv = cams[0];  // default camera is slot 0
+                const Camera3D::Data *cd = cv.data;
+                const glm::vec3       eye = cv.eye;
+                gfx.setMesh3DViewProj(cv.viewProj);
+                gfx.setMesh3DView(cv.view);
+                gfx.setMesh3DClip(cd->nearZ, cd->farZ);
+                gfx.setMesh3DCameraPos(cv.eye);
+                gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+                ClusteredLightingUpload off{};
+                off.active = false;
+                gfx.setMesh3DClusteredLighting(off);
+                gfx.setMesh3DLighting(cv.lighting);
+
+                std::vector<eve::graphics::GpuInstance> instances;
+                instances.reserve(opaque.size());
+                bool recordsOk = true;
+                bool vgAny     = false;
+                const bool resolveWanted = gfx.gpuDrivenResolveWanted();
+                for (const CulledItem *it : opaque) {
+                    // Stage 3 VG: meshes with a virtual-geometry asset are culled /
+                    // drawn through the cluster path, not the instance chain.
+                    const uint32_t vgAsset =
+                        resolveWanted ? gfx.gpuDrivenVgAssetId(it->mesh)
+                                      : eve::graphics::kInvalidGpuDrivenSlot;
+                    if (vgAsset != eve::graphics::kInvalidGpuDrivenSlot) {
+                        const uint32_t matId = gfx.gpuDrivenMaterialRecord(it->material);
+                        if (matId == eve::graphics::kInvalidGpuDrivenSlot) {
+                            recordsOk = false;
+                            break;
+                        }
+                        vgAny |= gfx.gpuDrivenVgSetInstance(vgAsset, it->model, matId);
+                        continue;
+                    }
+                    eve::graphics::GpuInstance inst{};
+                    inst.model      = it->model;
+                    inst.meshId     = gfx.gpuDrivenMeshRecord(it->mesh);
+                    inst.materialId = gfx.gpuDrivenMaterialRecord(it->material);
+                    if (inst.meshId == eve::graphics::kInvalidGpuDrivenSlot ||
+                        inst.materialId == eve::graphics::kInvalidGpuDrivenSlot) {
+                        recordsOk = false;
+                        break;
+                    }
+                    instances.push_back(inst);
+                }
+                if (recordsOk) {
+                    // Stage 2: GPU frustum/HZB cull + GPU-written indirect commands.
+                    if (gfx.gpuDrivenCullEnabled() && !instances.empty() &&
+                        gfx.gpuDrivenCullBegin(instances.data(), uint32_t(instances.size()))) {
+                        gfx.gpuDrivenCullEmit(cv.viewProj, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
+                        if (gfx.gpuDrivenResolveWanted()) {
+                            // Stage 3: opaque goes to the GBuffer vis pass, the
+                            // scene color pass runs the fullscreen resolve.
+                            gfx.gpuDrivenRecordVisPass();
+                            gfx.gpuDrivenOpenScenePass();
+                            gfx.gpuDrivenResolve();
+                        } else {
+                            gfx.gpuDrivenOpenScenePass();
+                            gfx.gpuDrivenDrawOpaque();
+                        }
+                        gpuDrivenUsed = true;
+                    } else if (gfx.gpuDrivenCullEnabled() && instances.empty() && vgAny) {
+                        // VG-only frame: no instance chain; the vis pass runs the
+                        // VG cluster cull + draws + resolve.
+                        gfx.gpuDrivenVgComputeSection(cv.viewProj, eye, cd->fovYDeg, cd->nearZ,
+                                                      cd->farZ);
+                        gfx.gpuDrivenRecordVisPass();
+                        gfx.gpuDrivenOpenScenePass();
+                        gfx.gpuDrivenResolve();
+                        gpuDrivenUsed = true;
+                    } else {
+                        // Deferred scene pass must be open before stage-1 recording.
+                        gfx.gpuDrivenOpenScenePass();
+                        if (gfx.gpuDrivenSubmitOpaque(instances.data(),
+                                                      uint32_t(instances.size())))
+                            gpuDrivenUsed = true;
+                    }
+                }
+            }
+        }
+        if (!gpuDrivenUsed) {
+            if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
+            for (const CulledItem *item : opaque)
+                drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+        }
     }
     if (doHair) {
+        // Hair-only frames never reach the GPU-driven forward block above;
+        // open the deferred scene pass (if any) before recording hair draws.
+        if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
         for (const CulledItem *item : hairItems) drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
     }
 

@@ -31,13 +31,8 @@ if (!("olCube" in getroottable())) olCube <- null;
 if (!("olCamera" in getroottable())) olCamera <- null;
 if (!("olYaw" in getroottable())) olYaw <- 0.0;
 if (!("olColorIdx" in getroottable())) olColorIdx <- 0;
-if (!("prevOlKeys" in getroottable())) prevOlKeys <- {};
-
 function olPressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevOlKeys ? prevOlKeys[k] : false;
-    prevOlKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function applyOutlineConfig() {
@@ -80,8 +75,9 @@ if (olCube == null) {
 }
 
 applyOutlineConfig();
+gfx.setBackgroundColor(0.13, 0.14, 0.17, 1.0);
 
-function update(dt) {
+function eve_update(dt) {
     olYaw += dt * 40.0;
     olCube.setYaw(olYaw);
 
@@ -100,9 +96,9 @@ function update(dt) {
     }
 }
 
-function draw() {
-    gfx.clear(0.13, 0.14, 0.17, 1.0);
+function eve_render() {
+    gfx.clear();
     gfx.render3D();
-    gfx.drawSolidRect(20, 20, 260, 64, 0.94, 0.95, 0.90, 0.94);
-    gfx.drawSolidRect(24, 24, 8, 8, outlineColor[0], outlineColor[1], outlineColor[2], 1.0);
+    gfx.drawSolidRect(20.0, 20.0, 260.0, 64.0, 0.94, 0.95, 0.90, 0.94);
+    gfx.drawSolidRect(24.0, 24.0, 8.0, 8.0, outlineColor[0], outlineColor[1], outlineColor[2], 1.0);
 }

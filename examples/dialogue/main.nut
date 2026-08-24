@@ -19,6 +19,7 @@ if (!("bobAv" in getroottable())) bobAv <- null;
 if (!("vnGen" in getroottable())) vnGen <- null;
 if (!("vnDone" in getroottable())) vnDone <- false;
 if (!("waitingResume" in getroottable())) waitingResume <- false;
+// mouse / touch 边沿检测仍用 prevKeys（edgePressed）。
 if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("uiReady" in getroottable())) uiReady <- false;
 if (!("curSceneName" in getroottable())) curSceneName <- "town";
@@ -35,7 +36,8 @@ function keyPressed(name) {
 }
 
 function mouseClicked() {
-    return edgePressed("m0", mouse.isDown(0));
+    // 1 = 左键（与 engine mouse::isDown 一致）。
+    return edgePressed("m0", mouse.isDown(1));
 }
 
 function touchTapped() {
@@ -278,17 +280,27 @@ function eve_update(dt) {
     if ("anim" in getroottable())
         anim.update(dt);
     i18n.update(dt);
-    // 语言热切换：1 = 英文，2 = 中文（重跑当前场景刷新文案）。
-    if (keyPressed("1") && i18n.setLanguage("en")) {
-        dlg.reset();
-        startScene();
-    }
-    if (keyPressed("2") && i18n.setLanguage("zh")) {
-        dlg.reset();
-        startScene();
+    // Sample each edge once: keyPressed() updates its edge-detection state.
+    local key1 = keyPressed("1");
+    local key2 = keyPressed("2");
+    local key3 = keyPressed("3");
+
+    // 1 / 2 select choices while a choice is active; otherwise they switch language.
+    if (dlg.isWaitingChoice()) {
+        if (key1) tryChoice(0);
+        if (key2) tryChoice(1);
+    } else {
+        if (key1 && i18n.setLanguage("en")) {
+            dlg.reset();
+            startScene();
+        }
+        if (key2 && i18n.setLanguage("zh")) {
+            dlg.reset();
+            startScene();
+        }
     }
     // 3 = 切换场景：Dialogue 感知 Scene host 变化并自动清空 scene 变量区。
-    if (keyPressed("3")) {
+    if (key3) {
         curSceneName = (curSceneName == "town") ? "tavern" : "town";
         scene.select(curSceneName);
         dlg.setVar("met", true, "scene");
@@ -301,10 +313,7 @@ function eve_update(dt) {
 
     local clicked = mouseClicked() || keyPressed("Space") || keyPressed("Return") || touchTapped();
 
-    if (dlg.isWaitingChoice()) {
-        if (keyPressed("1")) tryChoice(0);
-        if (keyPressed("2")) tryChoice(1);
-    } else if (clicked) {
+    if (!dlg.isWaitingChoice() && clicked) {
         tryAdvance();
     }
 
@@ -316,4 +325,5 @@ function eve_render() {
     // soft stage floor
     gfx.drawSolidRect(0.0, config.height - 80.0, config.width.tofloat(), 80.0, 0.16, 0.18, 0.22, 1.0);
     avatar.render(gfx);
+    ui.beginFrameAndRender();
 }

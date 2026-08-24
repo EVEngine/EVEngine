@@ -4,12 +4,20 @@ file(GLOB all_test_cpp
   ECS.cpp
   capability.cpp
   data.cpp
+  decal.cpp
+  decal_script.cpp
+  crowd.cpp
+  crowd_script.cpp
   resource.cpp
+  state_value.cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
+  fluids.cpp
+  fluids_surface.cpp
   graphic.cpp
   graphics_font.cpp
+  graphics_headless.cpp
   medialoader_model_link.cpp
   model.cpp
   mouse.cpp
@@ -23,6 +31,7 @@ file(GLOB all_test_cpp
   database.cpp
   RenderSystem.cpp
   RenderSystem3D.cpp
+  render_graph.cpp
   Quad.cpp
   TextureCellBomb.cpp
   ParallaxMap.cpp
@@ -46,8 +55,13 @@ file(GLOB all_test_cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
+  Inspector.cpp
+  DatabasePanel.cpp
+  EditorShell.cpp
+  ScenePanel.cpp
   scene.cpp
   sceneloader.cpp
+  service_mocks.cpp
   particles.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp
@@ -58,33 +72,44 @@ file(GLOB all_test_cpp
   map_fov.cpp
   rpg.cpp
   rpg_simulation.cpp
+  rpg_reload.cpp
   hex_level_simulation.cpp
   hex_level_data.cpp
   inventory.cpp
   building.cpp
   buildingfx.cpp
+  camera.cpp
   card.cpp
+  card_reload.cpp
+  composable_gameplay.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
   dialogue.cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
+  physics_cloth.cpp
   procgen.cpp
+  urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
   procgen_simulation.cpp
   roguelike_generator.cpp
   stylize.cpp
+  snow.cpp
   Xray.cpp
   voxel.cpp
   voxel_render.cpp
   virtualgeometry_builder.cpp
   virtualgeometry_gpu.cpp
   gpgpu.cpp
+  gpu_driven.cpp
+  indirect_builder.cpp
   box2d.cpp
   box3d.cpp
+  binding_selfcheck.cpp
   softbody.cpp
+  softbody_gpu.cpp
   hotreload.cpp
   remotesync.cpp
   shader.cpp
@@ -107,6 +132,23 @@ file(GLOB all_test_cpp
   window_cpp.cpp
   image.cpp
   event.cpp
+  economy.cpp
+  attributes.cpp
+  decision.cpp
+  authority.cpp
+  definitions.cpp
+  effects.cpp
+  eventstream.cpp
+  orders.cpp
+  policyregistry.cpp
+  production.cpp
+  sensing.cpp
+  schema.cpp
+  social.cpp
+  statepatch.cpp
+  steering.cpp
+  tags.cpp
+  transaction.cpp
   rx.cpp
   runtime.cpp
   timer.cpp
@@ -120,7 +162,9 @@ file(GLOB all_test_cpp
   animation.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
+  animation_lattice.cpp
   animation_sprite_spine.cpp
+  animation_reload.cpp
   tensor.cpp
   tensor_llm.cpp
   tensor_quant.cpp
@@ -129,24 +173,35 @@ file(GLOB all_test_cpp
   resource_lifetime.cpp
   debugger.cpp
   debugger_audit.cpp
+  ReflectScript.cpp
+  reload_script.cpp
   dap.cpp
   mcp.cpp
   console.cpp
+  cmdline.cpp
   main.cpp
 )
+
+# Auto-discover newly added test files (CONFIGURE_DEPENDS re-globs at build
+# time), so a new test/*.cpp is picked up without editing this list. demo.cpp
+# stays gated on EVENGINE_BUILD_DEMO below.
+file(GLOB _eve_extra_test_cpp CONFIGURE_DEPENDS *.cpp)
+list(REMOVE_ITEM _eve_extra_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
+list(APPEND all_test_cpp ${_eve_extra_test_cpp})
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND all_test_cpp demo.cpp)
 endif()
 
 # Desktop-only DevTools (DAP / MCP / debugger / callgraph / renderflow) are not
-# compiled into the Android runtime, so their test files cannot link there.
+# compiled into the Android/iOS runtimes, so their test files cannot link there.
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
-if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp console.cpp)
+if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
+  foreach(_eve_devtool_test IN ITEMS
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp mcp.cpp console.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
-  message(STATUS "Android test: removed devtools test files, remaining=${all_test_cpp}")
+  message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
 endif()
 
 file(GLOB all_test_scripts
@@ -160,8 +215,11 @@ file(GLOB all_test_scripts
   model2.nut
   mouse.nut
   simplesquirrel.nut
+  physics_cloth.nut
   window.nut
   timer.nut
+  decal.nut
+  crowd.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"
@@ -177,6 +235,25 @@ if(EVENGINE_ANDROID_TEST_APP)
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
   target_link_libraries(main eve_engine_includes)
+elseif(EVENGINE_IOS_TEST_APP)
+  # The zeroerr runner replaces main.cpp inside the eve .app target created by
+  # src/engine/CMakeLists.txt (which owns the bundle id/plist/signing, MoltenVK
+  # embedding and the whole-archive link list). Attach the suite sources here;
+  # test/main.cpp provides SDL_main for the UIKit entry point.
+  # nut_scripts.cpp is produced by a custom command declared in this directory;
+  # the Xcode generator only wires generated sources into the target that
+  # consumes them when they are declared in the same directory, so route the
+  # generation through an explicit custom target the eve target depends on.
+  add_custom_target(eve_nut_scripts ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp)
+  add_dependencies(eve eve_nut_scripts)
+  target_sources(eve PRIVATE
+    ${all_test_cpp}
+    ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
+    ios_test.mm
+  )
+  set_source_files_properties(ios_test.mm PROPERTIES LANGUAGE OBJCXX)
+  target_link_libraries(eve eve_engine_includes)
 else()
   add_executable(
     unit_test
@@ -191,7 +268,11 @@ endif()
 # deletes test setup calls written as REQUIRE(initSideEffect()), which made
 # every graphics test fail in Release with "graphics not initialized". Keep
 # test assertions live in the test binary so Release CI actually asserts.
-foreach(_eve_test_tgt IN ITEMS unit_test main)
+set(_eve_test_assert_targets unit_test main)
+if(EVENGINE_IOS_TEST_APP)
+  list(APPEND _eve_test_assert_targets eve)
+endif()
+foreach(_eve_test_tgt IN LISTS _eve_test_assert_targets)
   if(TARGET ${_eve_test_tgt})
     target_compile_options(${_eve_test_tgt} PRIVATE
       $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
@@ -256,67 +337,10 @@ else()
   endif()
 endif()
 
-set(EVELIBS
-  EVCmdLine
-  EVScripts
-  EVWindow
-  EVFileSystem
-  EVMouse
-  EVKeyboard
-  EVJoystick
-  EVTouch
-  EVGraphics
-  EVImage
-  EVDayNight
-  EVWeather
-  EVCommon
-  EVEvent
-  EVRx
-  EVTimer
-  EVSystem
-  EVMath
-  EVGrid
-  EVSpatial
-  EVEditor
-  EVIK
-  EVAnimation
-  EVTensor
-  EVNetwork
-  EVDatabase
-  EVData
-  EVI18n
-  EVSound
-  EVAudio
-  EVUI
-  eve_imgui
-  EVScene
-  EVSceneLoader
-  EVParticles
-  EVPhysics
-  EVMap
-  EVGpgpu
-  EVVirtualGeometry
-  EVModel3D
-  EVFont
-  EVThread
-  EVRPG
-  EVInventory
-  EVBuilding
-  EVBuildingFx
-  EVCard
-  EVWeapon
-  EVVehicle
-  EVAvatar
-  EVDialogue
-  EVProcgen
-  EVHouseGen
-  EVVoxel
-  EVStylize
-  EVSpriteStack
-  EVEditor)
+set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
 
-if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")))
-  list(APPEND EVELIBS EVDevTools)
+if(TARGET eve_imgui)
+  list(APPEND EVELIBS eve_imgui)
 endif()
 
 if(EVENGINE_BUILD_DEMO)
@@ -340,8 +364,21 @@ if(EVENGINE_ANDROID_TEST_APP)
   set_target_properties(main PROPERTIES
     CXX_VISIBILITY_PRESET default
     VISIBILITY_INLINES_HIDDEN OFF)
+elseif(EVENGINE_IOS_TEST_APP)
+  # eve is already linked to ${EVELIBS} + zeroerr + third-party by
+  # src/engine/CMakeLists.txt; only the on-device path roots differ. The runner
+  # chdirs to the staged tree, so "." means "repo root on device".
+  target_compile_definitions(eve PRIVATE
+    EVENGINE_TEST_BINARY_DIR="."
+    EVENGINE_SOURCE_DIR="."
+    EVENGINE_IOS_TEST_APP=1)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  if(WIN32)
+    # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
+    # symbolized stack trace on unhandled exceptions (see test/main.cpp).
+    target_link_libraries(unit_test EVBacktrace)
+  endif()
   target_compile_definitions(unit_test PRIVATE
     EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
     EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
@@ -350,8 +387,9 @@ endif()
 # Large classic scenes (Sponza / DamagedHelmet). Cornell Box is committed.
 # Enable with -DEVENGINE_DOWNLOAD_CLASSIC_SCENES=ON, or build target
 # `download_classic_scenes` before running ClassicScenes.* tests.
-# (Skipped on the Android test app: bash/python3 download steps do not run there.)
-if(NOT EVENGINE_ANDROID_TEST_APP)
+# (Skipped on the mobile test apps: the downloads target the host test tree,
+# not the assets packaged into the APK/.app.)
+if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
 option(EVENGINE_DOWNLOAD_CLASSIC_SCENES
   "Download large classic render test scenes (Sponza, DamagedHelmet)" OFF)
 set(_eve_classic_scenes_script "${CMAKE_SOURCE_DIR}/scripts/download_classic_scenes.sh")
@@ -416,9 +454,9 @@ if(EVENGINE_DOWNLOAD_SKINNED_CHARACTER)
     COMMENT "PRE_BUILD: download skinned character (CesiumMan)"
     VERBATIM)
 endif()
-endif()  # NOT EVENGINE_ANDROID_TEST_APP
+endif()  # NOT mobile test app
 
-if(NOT EVENGINE_ANDROID_TEST_APP)
+if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
 include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 zeroerr_discover_tests(unit_test)
 endif()

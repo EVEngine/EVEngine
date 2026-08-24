@@ -1,6 +1,10 @@
 #include "ui/UI.h"
+#include "ui/DatabasePanel.h"
+#include "ui/EditorShell.h"
 #include "ui/EditorHostCapabilities.h"
 
+#include "ui/Inspector.h"
+#include "ui/ScenePanel.h"
 #include "ui/Theme.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
@@ -177,6 +181,8 @@ void UI::beginFrameAndRender() {
         if (!initBackend()) return;
     }
     updateHostTweens();
+    if (inspector_ && inspector_->isOpen()) inspector_->sync();
+    if (databasePanel_ && databasePanel_->isOpen()) databasePanel_->sync();
     backend_->newFrame();
     UISystem::render();
 }
@@ -901,6 +907,8 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Image: return "image";
     case NodeType::ImageButton: return "imageButton";
     case NodeType::Combo: return "combo";
+    case NodeType::ScrollList: return "scrollList";
+    case NodeType::Viewport: return "viewport";
     }
     return "text";
 }
@@ -922,6 +930,8 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "image") return NodeType::Image;
     if (s == "imageButton") return NodeType::ImageButton;
     if (s == "combo") return NodeType::Combo;
+    if (s == "scrollList") return NodeType::ScrollList;
+    if (s == "viewport") return NodeType::Viewport;
     return NodeType::Text;
 }
 
@@ -1076,7 +1086,8 @@ WidgetDesc descFromJson(const Poco::JSON::Object &o) {
     if (o.has("children")) {
         const Poco::JSON::Array::Ptr children = o.getArray("children");
         for (size_t i = 0; i < children->size(); ++i) {
-            const Poco::JSON::Object::Ptr child = children->getObject(i);
+            const Poco::JSON::Object::Ptr child =
+                children->getObject(static_cast<unsigned int>(i));
             if (child) d.children.push_back(descFromJson(*child));
         }
     }
@@ -1089,6 +1100,229 @@ WidgetDesc descFromJson(const Poco::JSON::Object &o) {
 void UI::mountSimple(const std::string &title, const std::string &labelText,
                      const std::string &buttonText) {
     mountAs("default", window(title, {text(labelText, "label"), button(buttonText, "btn")}, "root"));
+}
+
+bool UI::inspectOpen() {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->setPickScene([this]() { return callPickHandler(); });
+    inspector_->open();
+    return inspector_->isOpen();
+}
+
+void UI::inspectClose() {
+    if (inspector_) inspector_->close();
+}
+
+bool UI::inspectRefresh() {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->refresh();
+    return inspector_->instanceCount() > 0;
+}
+
+bool UI::inspectSelectClass(const std::string &name) {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->setPickScene([this]() { return callPickHandler(); });
+    inspector_->open();  // scans classes and mounts the panel if not open yet
+    return inspector_->selectClass(name);
+}
+
+bool UI::inspectObject(ssq::Object object) {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->setPickScene([this]() { return callPickHandler(); });
+    inspector_->open();  // scans classes and mounts the panel if not open yet
+    return inspector_->inspectObject(object);
+}
+
+bool UI::inspectSetPickHandler(ssq::Function fn) {
+    Runtime *rt = ModuleManager::runtime();
+    if (!rt) return false;
+    HSQUIRRELVM squirrel = rt->handle();
+    const SQInteger top = sq_gettop(squirrel);
+    sq_pushroottable(squirrel);
+    sq_pushstring(squirrel, "eve", -1);
+    if (SQ_FAILED(sq_get(squirrel, -2)) ||
+        sq_gettype(squirrel, -1) != OT_TABLE) {
+        sq_settop(squirrel, top);
+        return false;
+    }
+    sq_pushstring(squirrel, "_inspectorPickHandler", -1);
+    sq_pushobject(squirrel, fn.getRaw());
+    sq_newslot(squirrel, -3, SQFalse);
+    sq_settop(squirrel, top);
+    return true;
+}
+
+ssq::Object UI::callPickHandler() {
+    Runtime *rt = ModuleManager::runtime();
+    if (!rt) return {};
+    HSQUIRRELVM squirrel = rt->handle();
+    const SQInteger top = sq_gettop(squirrel);
+    sq_pushroottable(squirrel);
+    sq_pushstring(squirrel, "eve", -1);
+    if (SQ_FAILED(sq_get(squirrel, -2)) ||
+        sq_gettype(squirrel, -1) != OT_TABLE) {
+        sq_settop(squirrel, top);
+        return {};
+    }
+    sq_pushstring(squirrel, "_inspectorPickHandler", -1);
+    if (SQ_FAILED(sq_get(squirrel, -2)) ||
+        (sq_gettype(squirrel, -1) != OT_CLOSURE &&
+         sq_gettype(squirrel, -1) != OT_NATIVECLOSURE)) {
+        sq_settop(squirrel, top);
+        return {};
+    }
+    sq_pushroottable(squirrel);  // environment
+    if (SQ_FAILED(sq_call(squirrel, 1, SQTrue, SQTrue))) {
+        sq_settop(squirrel, top);
+        return {};
+    }
+    if (sq_gettype(squirrel, -1) != OT_INSTANCE) {
+        sq_settop(squirrel, top);
+        return {};
+    }
+    ssq::Object out(squirrel);
+    sq_getstackobj(squirrel, -1, &out.getRaw());
+    sq_addref(squirrel, &out.getRaw());
+    sq_settop(squirrel, top);
+    return out;
+}
+
+bool UI::inspectPickScene() {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->setPickScene([this]() { return callPickHandler(); });
+    inspector_->open();
+    const ssq::Object picked = callPickHandler();
+    if (picked.getType() != ssq::Type::INSTANCE) return false;
+    return inspector_->inspectObject(picked);
+}
+
+bool UI::inspectAddInstance() {
+    return inspector_ && inspector_->addInstance();
+}
+
+bool UI::dbOpen() {
+    if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
+    databasePanel_->open();
+    return databasePanel_->isOpen();
+}
+
+void UI::dbClose() {
+    if (databasePanel_) databasePanel_->close();
+}
+
+bool UI::dbRefresh() {
+    if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
+    databasePanel_->refresh();
+    return databasePanel_->isOpen();
+}
+
+bool UI::dbSelectClass(const std::string &name) {
+    if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
+    databasePanel_->refresh();
+    return databasePanel_->selectClass(name);
+}
+
+uint64_t UI::dbRegister(ssq::Object object, const std::string &label) {
+    if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
+    databasePanel_->open();  // mount the panel so the entry becomes visible
+    return databasePanel_->registerObject(object, label);
+}
+
+uint64_t UI::dbCreateInstance() {
+    if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
+    databasePanel_->open();
+    return databasePanel_->createInstance();
+}
+
+bool UI::dbUnregister(uint64_t id) {
+    return databasePanel_ && databasePanel_->unregister(id);
+}
+
+bool UI::editorOpen() {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->setPickScene([this]() { return callPickHandler(); });
+    inspector_->open();
+    if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
+    databasePanel_->open();
+    if (!scenePanel_) scenePanel_ = std::make_unique<ScenePanel>();
+    scenePanel_->setPickHandler([this](const std::string &nodeId) {
+        callScenePickHandler(nodeId);
+    });
+    scenePanel_->open();
+    if (!editorShell_) editorShell_ = std::make_unique<EditorShell>();
+    editorShell_->open(inspector_->host(), databasePanel_->host(),
+                       scenePanel_->host());
+    editorShell_->selectPanel("inspector");
+    return editorShell_->isOpen();
+}
+
+void UI::editorClose() {
+    if (editorShell_) editorShell_->close();
+}
+
+bool UI::editorSelectPanel(const std::string &name) {
+    return editorShell_ && editorShell_->selectPanel(name);
+}
+
+bool UI::sceneOpen() {
+    if (!scenePanel_) scenePanel_ = std::make_unique<ScenePanel>();
+    scenePanel_->setPickHandler([this](const std::string &nodeId) {
+        callScenePickHandler(nodeId);
+    });
+    scenePanel_->open();
+    return scenePanel_->isOpen();
+}
+
+void UI::sceneClose() {
+    if (scenePanel_) scenePanel_->close();
+}
+
+bool UI::sceneSelectNode(const std::string &id) {
+    return scenePanel_ && scenePanel_->selectNode(id);
+}
+
+bool UI::sceneSetPickHandler(ssq::Function fn) {
+    Runtime *rt = ModuleManager::runtime();
+    if (!rt) return false;
+    HSQUIRRELVM squirrel = rt->handle();
+    const SQInteger top = sq_gettop(squirrel);
+    sq_pushroottable(squirrel);
+    sq_pushstring(squirrel, "eve", -1);
+    if (SQ_FAILED(sq_get(squirrel, -2)) ||
+        sq_gettype(squirrel, -1) != OT_TABLE) {
+        sq_settop(squirrel, top);
+        return false;
+    }
+    sq_pushstring(squirrel, "_scenePickHandler", -1);
+    sq_pushobject(squirrel, fn.getRaw());
+    sq_newslot(squirrel, -3, SQFalse);
+    sq_settop(squirrel, top);
+    return true;
+}
+
+void UI::callScenePickHandler(const std::string &nodeId) {
+    Runtime *rt = ModuleManager::runtime();
+    if (!rt) return;
+    HSQUIRRELVM squirrel = rt->handle();
+    const SQInteger top = sq_gettop(squirrel);
+    sq_pushroottable(squirrel);
+    sq_pushstring(squirrel, "eve", -1);
+    if (SQ_FAILED(sq_get(squirrel, -2)) ||
+        sq_gettype(squirrel, -1) != OT_TABLE) {
+        sq_settop(squirrel, top);
+        return;
+    }
+    sq_pushstring(squirrel, "_scenePickHandler", -1);
+    if (SQ_FAILED(sq_get(squirrel, -2)) ||
+        (sq_gettype(squirrel, -1) != OT_CLOSURE &&
+         sq_gettype(squirrel, -1) != OT_NATIVECLOSURE)) {
+        sq_settop(squirrel, top);
+        return;
+    }
+    sq_pushroottable(squirrel);                    // environment
+    sq_pushstring(squirrel, nodeId.c_str(), -1);   // node id argument
+    sq_call(squirrel, 2, SQFalse, SQTrue);
+    sq_settop(squirrel, top);
 }
 
 void UI::expose(ssq::Table &table) {
@@ -1197,6 +1431,32 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("viewportWheel", &UI::viewportWheel);
 
     cls.addFunc("mountSimple", &UI::mountSimple);
+
+    cls.addFunc("inspect", &UI::inspectOpen);
+    cls.addFunc("inspectClose", &UI::inspectClose);
+    cls.addFunc("inspectRefresh", &UI::inspectRefresh);
+    cls.addFunc("inspectSelectClass", &UI::inspectSelectClass);
+    cls.addFunc("inspectObject", &UI::inspectObject);
+    cls.addFunc("inspectSetPickHandler", &UI::inspectSetPickHandler);
+    cls.addFunc("inspectPickScene", &UI::inspectPickScene);
+    cls.addFunc("inspectAddInstance", &UI::inspectAddInstance);
+
+    cls.addFunc("dbOpen", &UI::dbOpen);
+    cls.addFunc("dbClose", &UI::dbClose);
+    cls.addFunc("dbRefresh", &UI::dbRefresh);
+    cls.addFunc("dbSelectClass", &UI::dbSelectClass);
+    cls.addFunc("dbRegister", &UI::dbRegister);
+    cls.addFunc("dbCreateInstance", &UI::dbCreateInstance);
+    cls.addFunc("dbUnregister", &UI::dbUnregister);
+
+    cls.addFunc("editorOpen", &UI::editorOpen);
+    cls.addFunc("editorClose", &UI::editorClose);
+    cls.addFunc("editorSelectPanel", &UI::editorSelectPanel);
+
+    cls.addFunc("sceneOpen", &UI::sceneOpen);
+    cls.addFunc("sceneClose", &UI::sceneClose);
+    cls.addFunc("sceneSelectNode", &UI::sceneSelectNode);
+    cls.addFunc("sceneSetPickHandler", &UI::sceneSetPickHandler);
 }
 
 }  // namespace eve::ui

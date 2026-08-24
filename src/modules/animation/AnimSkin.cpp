@@ -3,6 +3,8 @@
 #include "animation/AnimSkeleton.h"
 
 #include "common/Exception.h"
+#include "graphics/Graphics.h"
+#include "graphics/Mesh.h"
 #include "model3d/ModelData.h"
 
 #include <assimp/matrix4x4.h>
@@ -39,6 +41,27 @@ Mat4 fromAiMatrix(const aiMatrix4x4 &m) {
     out.m[14] = m.c4;
     out.m[15] = m.d4;
     return out;
+}
+
+/**
+ * Cofactor matrix (adjugate-transpose) of the upper 3x3 of a column-major Mat4.
+ * (M^{-1})^T = cof(M) / det(M), and the scalar 1/det cancels under
+ * normalization, so normals transform as n' = normalize(cof(M) * n).
+ */
+void normalMatrixCofactor(const Mat4 &m, float out[9]) {
+    // Row-major 3x3 linear part of the skin matrix.
+    const float r0x = m.m[0], r0y = m.m[4], r0z = m.m[8];
+    const float r1x = m.m[1], r1y = m.m[5], r1z = m.m[9];
+    const float r2x = m.m[2], r2y = m.m[6], r2z = m.m[10];
+    out[0] = r1y * r2z - r1z * r2y;
+    out[1] = r1z * r2x - r1x * r2z;
+    out[2] = r1x * r2y - r1y * r2x;
+    out[3] = r2y * r0z - r2z * r0y;
+    out[4] = r2z * r0x - r2x * r0z;
+    out[5] = r2x * r0y - r2y * r0x;
+    out[6] = r0y * r1z - r0z * r1y;
+    out[7] = r0z * r1x - r0x * r1z;
+    out[8] = r0x * r1y - r0y * r1x;
 }
 
 }  // namespace
@@ -79,6 +102,15 @@ AnimSkin *AnimSkin::fromModel(const model3d::ModelData *model, int meshIndex,
         skin->bindPos_[static_cast<size_t>(v) * 3u + 0] = p.x;
         skin->bindPos_[static_cast<size_t>(v) * 3u + 1] = p.y;
         skin->bindPos_[static_cast<size_t>(v) * 3u + 2] = p.z;
+    }
+    if (mesh->HasNormals() && mesh->mNormals) {
+        skin->bindNrm_.resize(static_cast<size_t>(skin->vertexCount_) * 3u);
+        for (int v = 0; v < skin->vertexCount_; ++v) {
+            const aiVector3D &n = mesh->mNormals[v];
+            skin->bindNrm_[static_cast<size_t>(v) * 3u + 0] = n.x;
+            skin->bindNrm_[static_cast<size_t>(v) * 3u + 1] = n.y;
+            skin->bindNrm_[static_cast<size_t>(v) * 3u + 2] = n.z;
+        }
     }
 
     // Gather skin joints that map onto the skeleton by name.
@@ -277,6 +309,89 @@ float AnimSkin::getSkinnedPositionZ(int vertexIndex) const {
     requireVertex(vertexIndex);
     if (!skinnedValid_) throw Exception("AnimSkin.getSkinnedPositionZ: call updateSkinnedPositions first");
     return skinnedPos_[static_cast<size_t>(vertexIndex) * 3u + 2];
+}
+
+std::vector<float> AnimSkin::getSkinnedPositions() const {
+    if (!skinnedValid_) return {};
+    return skinnedPos_;
+}
+
+bool AnimSkin::updateSkinnedNormals(const AnimPose *pose) {
+    skinnedNrmValid_ = false;
+    if (!pose || bindNrm_.empty() || vertexCount_ <= 0) return false;
+
+    // n' = sum_i w_i * (M_i^{-1})^T * n, M_i = boneWorld * inverseBind.
+    std::vector<float> nrmMats(inverseBind_.size() * 9u);
+    for (size_t j = 0; j < inverseBind_.size(); ++j) {
+        const int  skelBone = skeletonBone_[j];
+        const Mat4 world    = Mat4::fromTRS(pose->world(skelBone));
+        const Mat4 skinMat  = Mat4::mul(world, inverseBind_[j]);
+        normalMatrixCofactor(skinMat, nrmMats.data() + j * 9u);
+    }
+
+    skinnedNrm_.resize(static_cast<size_t>(vertexCount_) * 3u);
+    for (int v = 0; v < vertexCount_; ++v) {
+        const size_t base = static_cast<size_t>(v) * 3u;
+        const float  bx   = bindNrm_[base + 0];
+        const float  by   = bindNrm_[base + 1];
+        const float  bz   = bindNrm_[base + 2];
+        float nx = 0.f, ny = 0.f, nz = 0.f;
+        float wsum = 0.f;
+        for (int i = 0; i < kMaxInfluences; ++i) {
+            const Influence &inf =
+                influences_[static_cast<size_t>(v) * kMaxInfluences + i];
+            if (inf.bone < 0 || inf.weight <= 0.f) continue;
+            const float *c = nrmMats.data() + static_cast<size_t>(inf.bone) * 9u;
+            const float tx = c[0] * bx + c[1] * by + c[2] * bz;
+            const float ty = c[3] * bx + c[4] * by + c[5] * bz;
+            const float tz = c[6] * bx + c[7] * by + c[8] * bz;
+            nx += tx * inf.weight;
+            ny += ty * inf.weight;
+            nz += tz * inf.weight;
+            wsum += inf.weight;
+        }
+        if (wsum <= 1e-8f) {
+            nx = bx;
+            ny = by;
+            nz = bz;
+        } else {
+            const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+            if (len > 1e-8f) {
+                nx /= len;
+                ny /= len;
+                nz /= len;
+            } else {
+                nx = bx;
+                ny = by;
+                nz = bz;
+            }
+        }
+        skinnedNrm_[base + 0] = nx;
+        skinnedNrm_[base + 1] = ny;
+        skinnedNrm_[base + 2] = nz;
+    }
+    skinnedNrmValid_ = true;
+    return true;
+}
+
+std::vector<float> AnimSkin::getSkinnedNormals() const {
+    if (!skinnedNrmValid_) return {};
+    return skinnedNrm_;
+}
+
+bool AnimSkin::applyToMesh(graphics::Graphics *gfx, graphics::Mesh *mesh,
+                           const AnimPose *pose) {
+    if (!gfx || !mesh || !mesh->gpuHandle || !pose || vertexCount_ <= 0) return false;
+    if (mesh->getVertexCount() != vertexCount_) return false;
+
+    std::vector<float> pos;
+    if (!skinPositionsTo(pose, pos)) return false;
+
+    std::vector<float> nrm;
+    if (updateSkinnedNormals(pose)) nrm = skinnedNrm_;
+
+    return gfx->updateMeshVertices(mesh, pos.data(), nrm.empty() ? nullptr : nrm.data(),
+                                   nullptr, vertexCount_, nullptr, 0);
 }
 
 }  // namespace eve::animation

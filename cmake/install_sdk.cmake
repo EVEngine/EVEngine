@@ -46,10 +46,12 @@ else()
     )
 endif()
 
-# macOS: eve links several dynamic libraries (Vulkan loader from the SDK,
-# zlib/PNG/... from the third-party tree). Bundle every *.dylib into the SDK
-# and give eve an @loader_path rpath so the installed binary runs without the
-# build environment. SDL2 and MoltenVK are linked statically.
+# macOS: eve links several dynamic libraries (zlib/PNG/... from the
+# third-party tree) plus the Vulkan loader from the LunarG SDK. Bundle every
+# third-party *.dylib into the SDK and give eve an @loader_path rpath so the
+# installed binary runs without the build environment. The Vulkan loader +
+# MoltenVK are bundled by cmake/macosx_bundle_vulkan.cmake, so players do not
+# need to install the Vulkan SDK. SDL2 is linked statically.
 if(BUILD_PLATFORM STREQUAL "macosx")
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)
         set(_eve_mac_tp_lib "${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib")
@@ -58,16 +60,25 @@ if(BUILD_PLATFORM STREQUAL "macosx")
     endif()
     install(CODE "
         file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/lib\")
-        foreach(_eve_dylib_dir IN ITEMS \"\$ENV{VULKAN_SDK}/lib\" \"${_eve_mac_tp_lib}\")
-            file(GLOB _eve_dylibs \"\${_eve_dylib_dir}/*.dylib\")
-            foreach(_eve_dylib IN LISTS _eve_dylibs)
-                file(COPY \"\${_eve_dylib}\" DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
-            endforeach()
+        file(GLOB _eve_tp_dylibs \"${_eve_mac_tp_lib}/*.dylib\")
+        foreach(_eve_dylib IN LISTS _eve_tp_dylibs)
+            file(COPY \"\${_eve_dylib}\" DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
         endforeach()
     ")
+    install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/macosx_bundle_vulkan.cmake")
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
-        INSTALL_RPATH "@loader_path/../lib;@loader_path"
+        # SDK layout is bin/eve + lib/ (-> ../lib). `eve package` copies the
+        # lib/ tree next to eve as <out>/lib (-> @loader_path/lib). Keep both
+        # so the same binary runs from the SDK and from a packaged game.
+        INSTALL_RPATH "@loader_path/../lib;@loader_path/lib;@loader_path"
     )
+endif()
+
+# Windows: bundle the runtime DLLs (Vulkan loader + VC redist) next to eve.exe
+# so a packaged game is self-contained and can be produced from ANY host
+# (Linux/macOS cross-packaging included) without a Visual Studio install.
+if(BUILD_PLATFORM STREQUAL "win32")
+    install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/win32_bundle_runtime.cmake")
 endif()
 
 # ---- Public headers (engine common + module façades) ----

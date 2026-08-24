@@ -9,6 +9,11 @@ namespace eve::model3d {
 class ModelData;
 }
 
+namespace eve::graphics {
+class Graphics;
+class Mesh;
+}
+
 namespace eve::animation {
 
 class AnimSkeleton;
@@ -78,6 +83,36 @@ public:
     float getSkinnedPositionY(int vertexIndex) const;
     float getSkinnedPositionZ(int vertexIndex) const;
 
+    /**
+     * @brief Packed skinned positions (xyz, vertexCount*3) as a copy.
+     * Empty when updateSkinnedPositions() has not succeeded yet.
+     */
+    std::vector<float> getSkinnedPositions() const;
+
+    /**
+     * @brief Skin the bind-pose normals captured at fromModel with the pose.
+     * pose must already have computeWorld(skeleton) applied and match the
+     * skeleton used at fromModel time. Returns false when the model mesh has
+     * no normals or pose is null.
+     */
+    bool updateSkinnedNormals(const AnimPose *pose);
+
+    /** @brief True after a successful updateSkinnedNormals(). */
+    bool hasSkinnedNormals() const { return skinnedNrmValid_; }
+
+    /** @brief Packed skinned normals (xyz, vertexCount*3) as a copy. */
+    std::vector<float> getSkinnedNormals() const;
+
+    /**
+     * @brief Skin positions (and normals when available) and write the result
+     * back to a GPU mesh in one call. pose must already have computeWorld()
+     * applied. The mesh must be built from the same model/mesh this skin was
+     * created from, with matching vertex count. Returns false when the
+     * backend cannot update in place (e.g. WebGPU) or arguments are invalid.
+     */
+    bool applyToMesh(graphics::Graphics *gfx, graphics::Mesh *mesh,
+                     const AnimPose *pose);
+
     /** @brief Bind-pose (unskinned) position component for vertex v (0..vertexCount-1). */
     float getBindPositionX(int vertexIndex) const;
     float getBindPositionY(int vertexIndex) const;
@@ -102,8 +137,11 @@ private:
     std::vector<int>         skeletonBone_;  // skin joint → skeleton bone
     std::vector<std::string> skinBoneNames_;
     std::vector<Mat4>        inverseBind_;
+    std::vector<float>       bindNrm_;       // xyz packed, may be empty
     std::vector<float>       skinnedPos_;    // xyz packed cache
+    std::vector<float>       skinnedNrm_;    // xyz packed cache
     bool                     skinnedValid_ = false;
+    bool                     skinnedNrmValid_ = false;
 };
 
 }  // namespace eve::animation

@@ -17,6 +17,7 @@
 #include "graphics/IGraphics3D.h"
 #include "graphics/IPostFX.h"
 #include "graphics/IResourceFactory.h"
+#include "graphics/GpuDrivenTypes.h"
 
 struct aiMesh;
 
@@ -74,6 +75,11 @@ public:
     virtual void drawTexturedRectRotatedRGBA(Texture *texture, float cx, float cy, float w, float h,
                                              float degrees, float r, float g, float b,
                                              float a = 1.f);
+    /** @brief RGBA-float overload matching the script-facing drawSolidRect name. */
+    virtual void drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
+    /** @brief RGBA-float overload matching the script-facing drawTexturedRect name. */
+    virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
+                                  float a = 1.f);
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */
@@ -91,9 +97,20 @@ public:
                                    const std::string &filter, const std::string &mipmap,
                                    float lodBias = 0.f);
 
-    /** @brief Update sampler state without re-uploading pixels (filter / mip / aniso / LOD bias). */
-    virtual void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
-                                         float maxAnisotropy, float lodBias);
+    /**
+     * @brief Update sampler state without re-uploading pixels (filter / mip / aniso / LOD bias).
+     * Script-facing name is `setTextureSampler` (see Graphics::expose); this string
+     * overload keeps the C++ name identical to the script API.
+     * @param filter "nearest" or "linear" (case-insensitive).
+     * @param mipmap "none", "nearest" or "linear" (case-insensitive).
+     * @throws eve::Exception on an unknown filter/mipmap string.
+     */
+    virtual void setTextureSampler(Texture *texture, const std::string &filter, const std::string &mipmap,
+                                   float maxAnisotropy, float lodBias);
+
+    /** @deprecated Use setTextureSampler() with the same arguments. */
+    void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
+                                 float maxAnisotropy, float lodBias);
 
     virtual void present() = 0;
 
@@ -107,11 +124,160 @@ public:
      */
     virtual bool supportsGBufferPost() const { return true; }
 
+    // ---- GPU-driven rendering (stage 1): capability-gated seam ----
+    // Backends without the GPU-driven path (WebGPU, software) return false and
+    // RenderSystem3D falls back to the legacy per-draw path.
+
+    /** @brief True when the backend can run GPU-driven opaque draws. */
+    virtual bool supportsGpuDriven3D() const { return false; }
+
+    /** @brief Whether the GPU-driven opaque path is currently enabled. */
+    virtual bool gpuDrivenEnabled() const { return false; }
+
+    /** @brief Enable/disable the GPU-driven opaque path (no-op when unsupported). */
+    virtual void gpuDrivenSetEnabled(bool enabled) { (void)enabled; }
+
+    /** @brief GPU mesh-table slot for a mesh (kInvalidGpuDrivenSlot when not uploaded). */
+    virtual uint32_t gpuDrivenMeshRecord(Mesh *mesh) { (void)mesh; return kInvalidGpuDrivenSlot; }
+
+    /** @brief GPU material-table slot for a material (lazily created). */
+    virtual uint32_t gpuDrivenMaterialRecord(Material *material) {
+        (void)material;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /**
+     * @brief Whether a material can be shaded by the GPU-driven opaque path.
+     * Backends/drivers with descriptor-indexing limitations return false for
+     * materials that would hit the limitation; RenderSystem3D then falls back.
+     */
+    virtual bool gpuDrivenMaterialUsable(Material *material) {
+        (void)material;
+        return false;
+    }
+
+    /**
+     * @brief Upload + record GPU-driven opaque draws (call inside the open 3D frame).
+     * The backend sorts instances by (material, mesh), merges buckets and emits
+     * indirect draws itself; the caller only supplies the raw instance list.
+     * @return false when the backend cannot service the request (caller falls back).
+     */
+    virtual bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
+        (void)instances;
+        (void)instanceCount;
+        return false;
+    }
+
+    // ---- GPU-driven rendering (stage 2): GPU cull seam ----
+    // Backends without the compute cull chain return false / no-op; the
+    // renderer then falls back to gpuDrivenSubmitOpaque (stage 1) or legacy.
+
+    /** @brief True when the stage-2 GPU cull chain will run this frame. */
+    virtual bool gpuDrivenCullEnabled() const { return false; }
+
+    /** @brief Scene pass opening deferred until after the compute cull section. */
+    virtual bool gpuDrivenScenePassPending() const { return false; }
+
+    /** @brief Upload sorted instances + bucket metadata for the cull chain. */
+    virtual bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) {
+        (void)instances;
+        (void)instanceCount;
+        return false;
+    }
+
+    /** @brief Record the cull + emit compute dispatches for the current frame. */
+    virtual void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
+                                   float nearZ, float farZ) {
+        (void)viewProj;
+        (void)eye;
+        (void)fovYDeg;
+        (void)nearZ;
+        (void)farZ;
+    }
+
+    /** @brief Open the scene color pass that begin3DFrame deferred (cull path). */
+    virtual void gpuDrivenOpenScenePass() {}
+
+    /** @brief Draw the opaque geometry with GPU-written indirect commands. */
+    virtual void gpuDrivenDrawOpaque() {}
+
+    // ---- GPU-driven rendering (stage 3): visibility buffer + resolve seam ----
+    // Backends without the resolve path return false / no-op; the renderer
+    // keeps using gpuDrivenDrawOpaque (forward shading).
+
+    /** @brief True when the stage-3 vis+resolve path should run this frame. */
+    virtual bool gpuDrivenResolveWanted() const { return false; }
+
+    /** @brief Record the GBuffer vis pass (opaque indirect draws write visID/visBary). */
+    virtual void gpuDrivenRecordVisPass() {}
+
+    /** @brief Record the fullscreen vis resolve inside the open scene color pass. */
+    virtual void gpuDrivenResolve() {}
+
+    // ---- GPU-driven rendering (stage 3): virtual-geometry seam ----
+    // Backends without VG support return kInvalidGpuDrivenSlot / false; the
+    // renderer then draws the mesh through the normal GPU-driven path.
+
+    /** @brief Upload a virtual-geometry asset into the shared cluster pool. */
+    virtual std::uint32_t gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
+        (void)asset;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /** @brief VG asset id attached to a mesh (kInvalidGpuDrivenSlot when none). */
+    virtual std::uint32_t gpuDrivenVgAssetId(Mesh *mesh) const {
+        (void)mesh;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /** @brief Attach an uploaded VG asset to a mesh (routes it to the VG path). */
+    virtual bool gpuDrivenVgAttachToMesh(Mesh *mesh, std::uint32_t vgAssetId) {
+        (void)mesh;
+        (void)vgAssetId;
+        return false;
+    }
+
+    /**
+     * @brief Register one instance of a VG asset this frame (model + material).
+     * The first instance per asset wins; returns false for unknown assets.
+     */
+    virtual bool gpuDrivenVgSetInstance(std::uint32_t vgAssetId, const glm::mat4 &model,
+                                        std::uint32_t materialId) {
+        (void)vgAssetId;
+        (void)model;
+        (void)materialId;
+        return false;
+    }
+
+    /** @brief Record the HZB build + cull-params section (VG-only frames). */
+    virtual void gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                           float fovYDeg, float nearZ, float farZ) {
+        (void)viewProj;
+        (void)eye;
+        (void)fovYDeg;
+        (void)nearZ;
+        (void)farZ;
+    }
+
     /**
      * @brief Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.
      * Must be called after the window exists (SDL_WINDOW_VULKAN).
      **/
     virtual void initWithWindow(void *nativeWindow) = 0;
+
+    /**
+     * @brief Initialize the renderer without a window or swapchain (headless mode).
+     * Creates a GPU device and offscreen render targets; present() becomes a no-op.
+     * Rendering goes through Canvas + readback (newImageData / readPixels).
+     * @param width Logical viewport width in pixels (must be > 0).
+     * @param height Logical viewport height in pixels (must be > 0).
+     * @throws eve::Exception when the backend does not support headless init,
+     *         or when graphics is already initialized.
+     */
+    virtual void initHeadless(int width, int height);
+
+    /** @brief True when the renderer was initialized via initHeadless(). */
+    virtual bool isHeadless() const { return false; }
 
     /**
      * @brief Sets the current graphics display viewport dimensions.
@@ -164,6 +330,17 @@ public:
 
     /** @brief Create texture from ImageData with sampler / mipmap options. */
     virtual Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) = 0;
+
+    /**
+     * @brief Replace an existing texture's pixels in place (pointer stays stable).
+     *
+     * The new size must match the texture's current dimensions (mip chain and
+     * sampler are kept); callers that need a different size should create a new
+     * texture instead. Returns false when the texture is not owned by this
+     * backend or the backend does not support in-place updates.
+     */
+    virtual bool updateTexture(Texture *texture, int width, int height,
+                               const uint8_t *rgba) = 0;
 
     /**
      * @brief Recreate the sampler for an existing texture (keeps image / mip chain).
@@ -448,11 +625,11 @@ public:
         glm::vec4 idColor{0.f, 0.f, 0.f, 1.f};
     };
     virtual image::ImageData *renderEntityIdMask(const std::vector<EntityIdDraw> &draws,
-                                                 const glm::mat4 &viewProj, int width, int height) {
+                                                 const glm::mat4 &viewProj, int w, int h) {
         (void)draws;
         (void)viewProj;
-        (void)width;
-        (void)height;
+        (void)w;
+        (void)h;
         return nullptr;
     }
 
@@ -462,8 +639,18 @@ public:
      * Valid only after a G-buffer or entity-ID offscreen pass filled it.
      * Caller owns the returned ImageData*. Returns nullptr when unsupported.
      */
-    virtual image::ImageData *readGBufferToImageData(const std::string &name) {
-        (void)name;
+    virtual image::ImageData *readGBufferToImageData(const std::string &attachment) {
+        (void)attachment;
+        return nullptr;
+    }
+    /**
+     * @brief Read back a DecalLayer attachment ("albedo" | "normal" | "params")
+     * to CPU. Renders the pending G-buffer + decal passes in one immediate
+     * submit first, so it also works headless (no swapchain). Nullptr when
+     * unsupported or no resources.
+     */
+    virtual image::ImageData *readDecalLayerToImageData(const std::string &attachment) {
+        (void)attachment;
         return nullptr;
     }
 
@@ -528,6 +715,12 @@ public:
      */
     virtual void setMesh3DClusteredActive(bool active) = 0;
 
+    /**
+     * @brief Sets the screen-space ambient-occlusion strength applied in the
+     * forward mesh pass. 0 disables SSAO (default).
+     */
+    virtual void setMesh3DSSAO(float intensity) = 0;
+
     /** @brief Directional light for subsequent drawMesh calls (world-space direction toward surface). */
     virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
 
@@ -546,6 +739,40 @@ public:
                                         float originY, float originZ, const std::string &faceDir,
                                         Texture *atlas, int tilesPerRow = 16,
                                         const uint32_t *ao = nullptr) = 0;
+
+    /**
+     * @brief True when the backend can render the screen-space decal layer
+     * (box-projected decals writing albedo/normal/params targets that
+     * mesh3d.frag samples before lighting). False on WebGPU (SPIR-V only
+     * here), where RenderSystem3D skips the decal pass entirely.
+     */
+    virtual bool supportsDecal() const { return true; }
+
+    /**
+     * @brief Open the decal pass (reads G-buffer hwDepth + normal, writes the
+     * screen-space DecalLayer targets). Call after endGBufferPass and before
+     * begin3DFrame; draws are queued by drawDecal and recorded into the frame's
+     * command buffer together with the swapchain pass.
+     */
+    virtual void beginDecalPass(int width, int height) = 0;
+
+    /** @brief Per-frame camera constants for the decal pass (world-space
+     * reconstruction from the G-buffer depth). Call once per pass. */
+    virtual void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) = 0;
+
+    /**
+     * @brief Queue one box-projected decal draw. `model` maps the unit decal
+     * box ([-0.5, 0.5]^3, +Z = decal forward) into world space; `uvRect`
+     * selects the atlas region [x, y, w, h]; `fade` scales the coverage
+     * (lifetime fade in/out); `normalStrength` / `roughnessStrength` /
+     * `metalStrength` / `emissiveStrength` gate the per-channel blend in
+     * mesh3d.frag.
+     */
+    virtual void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
+                           Texture *params, const float uvRect[4], float fade,
+                           float normalStrength, float roughnessStrength, float metalStrength,
+                           float emissiveStrength, int blendMode = 0) = 0;
+    virtual void endDecalPass() = 0;
 
     /**
      * @brief Specular IBL environment for subsequent default mesh draws.
@@ -600,6 +827,18 @@ public:
      * if needed. Returns false if no presented frame is available or encoding fails.
      */
     bool saveFramePng(const std::string &path);
+
+    /**
+     * @brief Queue an asynchronous readback of the current frame to a PNG file.
+     * @return True when the readback was queued (WebGPU browser backend); poll
+     *         frameReadbackStatus() for completion. Default false elsewhere.
+     */
+    virtual bool beginFrameReadback(const std::string &path) {
+        (void)path;
+        return false;
+    }
+    /** @brief Async readback state: 0=idle, 1=pending, 2=done, 3=failed. */
+    virtual int frameReadbackStatus() const { return 0; }
 
     /**
      * @brief Prefer uncapped present (IMMEDIATE/MAILBOX) when false, vsync (MAILBOX/FIFO)
@@ -725,6 +964,16 @@ public:
      */
     virtual Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
     Shader *newShader(const std::string &fragGlsl) { return newShader(std::string(), fragGlsl); }
+
+    /**
+     * @brief Create a 2D custom shader from WGSL source (WebGPU backend).
+     * Empty vert → default textured vertex shader. The fragment WGSL declares
+     * the shared 2D bindings (color texture 0, depth texture 1, sampler 2,
+     * depth sampler 3, Externals UBO 4) and vs_main/fs_main entry points.
+     * Vulkan throws (uses SPIR-V via newShaderFromSpv).
+     */
+    virtual Shader *newShaderFromWgsl(const std::string &vertWgsl,
+                                      const std::string &fragWgsl) = 0;
 
     /**
      * @brief Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo).
