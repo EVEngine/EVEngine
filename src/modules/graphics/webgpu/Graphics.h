@@ -228,6 +228,9 @@ public:
     void setMesh3DHeightTexture(Texture *height) override;
     void     setMesh3DSceneDepth(Texture *depth) override;
     void     setMesh3DMaterial(float metallic, float roughness) override;
+    void     setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                              bool doubleSided, float alphaCutoff,
+                              const std::string &alphaTechnique = "cutoff") override;
     void     setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void     setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
     void     setMesh3DLighting(const Lighting3DPack &pack) override;
@@ -330,6 +333,10 @@ private:
         glm::mat4 model{1.f};
         Color tint{1.f};
         Shader *shader = nullptr;
+        SurfaceMode surfaceMode = SurfaceMode::Opaque;
+        BlendMode surfaceBlend = BlendMode::Alpha;
+        float alphaCutoff = 0.5f;
+        std::string alphaTechnique = "cutoff";
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
         uint32_t shadowUboOffset = 0;
@@ -551,9 +558,14 @@ private:
     wgpu::RenderPipeline texturedPipeline;   // 2D textured
     wgpu::RenderPipeline colorAdditivePipeline;
     wgpu::RenderPipeline texturedAdditivePipeline;
+    wgpu::RenderPipeline colorPremultipliedPipeline;
+    wgpu::RenderPipeline texturedPremultipliedPipeline;
+    wgpu::RenderPipeline colorMultiplyPipeline;
+    wgpu::RenderPipeline texturedMultiplyPipeline;
     wgpu::RenderPipeline colorOpaquePipeline;
     wgpu::RenderPipeline texturedOpaquePipeline;
     wgpu::RenderPipeline mesh3dPipeline;
+    wgpu::RenderPipeline mesh3dTransparentPipeline;
     wgpu::RenderPipeline mesh3dShadowPipeline;
     wgpu::RenderPipeline mesh3dGbufferPipeline;
     wgpu::RenderPipeline voxelRectPipeline;
@@ -563,6 +575,10 @@ private:
     wgpu::RenderPipeline offscreenTexturedPipeline;
     wgpu::RenderPipeline offscreenColorAdditivePipeline;
     wgpu::RenderPipeline offscreenTexturedAdditivePipeline;
+    wgpu::RenderPipeline offscreenColorPremultipliedPipeline;
+    wgpu::RenderPipeline offscreenTexturedPremultipliedPipeline;
+    wgpu::RenderPipeline offscreenColorMultiplyPipeline;
+    wgpu::RenderPipeline offscreenTexturedMultiplyPipeline;
     wgpu::RenderPipeline offscreenColorOpaquePipeline;
     wgpu::RenderPipeline offscreenTexturedOpaquePipeline;
     wgpu::RenderPipeline offscreenLitPipeline;
@@ -611,6 +627,12 @@ private:
     float mesh3dEnvIntensity = 0.f;
     float mesh3dMetallic = 0.f;
     float mesh3dRoughness = 0.45f;
+    SurfaceMode mesh3dSurfaceMode = SurfaceMode::Opaque;
+    BlendMode mesh3dSurfaceBlend = BlendMode::Alpha;
+    bool mesh3dSurfaceDepthWrite = false;
+    bool mesh3dSurfaceDoubleSided = false;
+    float mesh3dAlphaCutoff = 0.5f;
+    std::string mesh3dAlphaTechnique = "cutoff";
     float mesh3dTexBombScale = 4.f, mesh3dTexBombStrength = 0.f, mesh3dTexBombRot = 1.f;
     float mesh3dParallaxScale = 0.f, mesh3dParallaxMin = 8.f, mesh3dParallaxMax = 32.f;
     glm::vec4 mesh3dCloud{0.f, 1.5f, 0.f, 0.f};

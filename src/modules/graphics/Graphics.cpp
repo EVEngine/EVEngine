@@ -225,6 +225,8 @@ void Graphics::expose(ssq::Table& table) {
     texCls.addFunc("getWidth", &Texture::getWidth);
     texCls.addFunc("getHeight", &Texture::getHeight);
     texCls.addFunc("getMipmapCount", &Texture::getMipmapCount);
+    texCls.addFunc("setAlphaConvention", &Texture::setAlphaConvention);
+    texCls.addFunc("getAlphaConvention", &Texture::getAlphaConvention);
 
     // Texture / Mesh expose occlusion flags used by volumetric light shafts.
     // (create returns null — instances come from Graphics::newTexture / newMesh*)
@@ -459,6 +461,20 @@ void Graphics::expose(ssq::Table& table) {
     material.addFunc("getCastOcclusion", &Material::getCastOcclusion);
     material.addFunc("setHair", &Material::setHair);
     material.addFunc("getHair", &Material::getHair);
+    material.addFunc("setSurfaceMode", &Material::setSurfaceMode);
+    material.addFunc("getSurfaceMode", &Material::getSurfaceMode);
+    material.addFunc("setAlphaCutoff", &Material::setAlphaCutoff);
+    material.addFunc("getAlphaCutoff", &Material::getAlphaCutoff);
+    material.addFunc("setBlendMode", &Material::setBlendMode);
+    material.addFunc("getBlendMode", &Material::getBlendMode);
+    material.addFunc("setDepthWrite", &Material::setDepthWrite);
+    material.addFunc("getDepthWrite", &Material::getDepthWrite);
+    material.addFunc("setDoubleSided", &Material::setDoubleSided);
+    material.addFunc("getDoubleSided", &Material::getDoubleSided);
+    material.addFunc("setSortPriority", &Material::setSortPriority);
+    material.addFunc("getSortPriority", &Material::getSortPriority);
+    material.addFunc("setAlphaTechnique", &Material::setAlphaTechnique);
+    material.addFunc("getAlphaTechnique", &Material::getAlphaTechnique);
     material.addFunc("hasParam", &Material::hasParam);
     material.addFunc("setFloat", &Material::setFloat);
     material.addFunc("getFloat", &Material::getFloat);

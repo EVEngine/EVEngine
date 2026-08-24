@@ -59,12 +59,18 @@ void Renderable2D::setBlend(const std::string &blend) {
     if (blend == "alpha") sprite()->blend = BlendMode::Alpha;
     else if (blend == "additive" || blend == "add") sprite()->blend = BlendMode::Additive;
     else if (blend == "opaque") sprite()->blend = BlendMode::Opaque;
-    else throw Exception("Sprite2D.setBlend: expected alpha|additive|opaque");
+    else if (blend == "premultiplied" || blend == "premultiplied_alpha")
+        sprite()->blend = BlendMode::Premultiplied;
+    else if (blend == "multiply") sprite()->blend = BlendMode::Multiply;
+    else throw Exception(
+        "Sprite2D.setBlend: expected alpha|additive|opaque|premultiplied|multiply");
 }
 std::string Renderable2D::getBlend() {
     switch (sprite()->blend) {
         case BlendMode::Additive: return "additive";
         case BlendMode::Opaque: return "opaque";
+        case BlendMode::Premultiplied: return "premultiplied";
+        case BlendMode::Multiply: return "multiply";
         default: return "alpha";
     }
 }
