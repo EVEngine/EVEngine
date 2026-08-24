@@ -273,6 +273,26 @@ TEST_CASE("animation.player.playAndCrossFade") {
     CHECK(player->getClip() == b.get());
 }
 
+TEST_CASE("animation.player.rootMotionAndNotifyAcrossLoop") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip> walk(makeLocomotionClip("walk", 2.f, 1.f));
+    walk->addEvent(0.25f, "footstep.left");
+    walk->addEvent(0.75f, "footstep.right");
+    AnimPlayer player(sk.get());
+    player.play(walk.get());
+    player.update(0.3f);
+    CHECK(std::fabs(player.getRootMotionZ() - 0.6f) < 0.01f);
+    CHECK(player.consumeEvent() == "footstep.left");
+    CHECK(player.consumeEvent().empty());
+
+    player.setTime(0.9f);
+    player.update(0.2f);
+    CHECK(std::fabs(player.getRootMotionZ() - 0.4f) < 0.01f);
+    player.update(0.7f);
+    CHECK(player.consumeEvent() == "footstep.left");
+    CHECK(player.consumeEvent() == "footstep.right");
+}
+
 TEST_CASE("animation.graph.blendSpaceLayerAndAdditive") {
     std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
     std::unique_ptr<AnimClip> idle(makeLocomotionClip("idle", 0.f, 1.f));

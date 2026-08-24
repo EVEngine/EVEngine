@@ -284,6 +284,29 @@ skin.applyToMesh(gfx, mesh, pose); // mesh 与 skin 需同源（同一 ModelData
 // 也可交给粒子：emitter.setSkinSource(skin, pose) 从皮肤表面发射
 ```
 
+## 3D Root Motion 与 Notify
+
+`AnimClip.addEvent(time, name)` 在 3D clip 时间轴添加 gameplay notify；
+`AnimPlayer.consumeEvent()` 按跨过时间顺序逐个消费，循环边界不会丢事件。
+Player 还会从指定根骨骼提取本帧位移和旋转 delta，可交给角色控制器：
+
+```squirrel
+clip.addEvent(0.18, "footstep.left");
+player.setRootMotionBone(sk.findBone("Hips"));
+player.update(dt);
+controller.move(player.getRootMotionX(), player.getRootMotionY(),
+                player.getRootMotionZ());
+local eventName = player.consumeEvent();
+while (eventName != "") {
+    // dispatch gameplay/audio/VFX event
+    eventName = player.consumeEvent();
+}
+```
+
+Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位四元数
+`getRootMotionRotationX/Y/Z/W()`。调用 `setTime()` 是 seek，不会生成 motion delta
+或 notify，下一次 `update()` 从 seek 后时间继续计算。
+
 测试资源：`scripts/download_skinned_character.sh` 下载 Khronos **CesiumMan**（约 0.5 MB）到 `test/assets/skinned/`；CMake 选项 `EVENGINE_DOWNLOAD_SKINNED_CHARACTER`（默认 ON）会在构建 `unit_test` 时联网拉取。
 
 `model3d.createRenderable(gfx, model, meshIndex)` 建的网格可用
@@ -365,10 +388,10 @@ skin.applyToMesh(gfx, mesh, pose); // mesh 与 skin 需同源（同一 ModelData
 - `SpineAnim`：`setAtlas()`、`setPageTexture()`、`setPageTextureByName()`、`play()`、`setPosition()`、`setScale()`、`setFlipY()`、`apply()`、`update()`、`getDrawSlot*()`
 - 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newGraph()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
-- `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
+- `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`addEvent()`、`getEventCount()`、`getEventTime()`、`getEventName()`、`sample()`、`wrapTime()`
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`getWorld*()`、`getWorldMatrixElement()`
 - `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
-- `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`update()`
+- `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`getRootMotionX/Y/Z()`、`getRootMotionRotationX/Y/Z/W()`、`consumeEvent()`、`update()`
 - `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`getPose()`、`update()`
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`

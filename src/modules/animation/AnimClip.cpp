@@ -35,42 +35,75 @@ void AnimClip::ensureBone(int boneIndex) {
 void AnimClip::addPositionKey(int boneIndex, float time, float x, float y, float z) {
     if (time < 0.f) throw Exception("AnimClip.addPositionKey: time must be >= 0");
     ensureBone(boneIndex);
-    auto &keys = tracks_[static_cast<size_t>(boneIndex)].positions;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].positions;
     keys.push_back({time, x, y, z});
-    std::sort(keys.begin(), keys.end(),
-              [](const Vec3Key &a, const Vec3Key &b) { return a.t < b.t; });
+    std::sort(keys.begin(), keys.end(), [](const Vec3Key& a, const Vec3Key& b) { return a.t < b.t; });
     if (time > duration_) duration_ = time;
 }
 
 void AnimClip::addRotationKey(int boneIndex, float time, float x, float y, float z, float w) {
     if (time < 0.f) throw Exception("AnimClip.addRotationKey: time must be >= 0");
     ensureBone(boneIndex);
-    QuatKey k{time, x, y, z, w};
+    QuatKey      k{time, x, y, z, w};
     TransformTRS tmp;
     tmp.qx = x;
     tmp.qy = y;
     tmp.qz = z;
     tmp.qw = w;
     tmp.normalizeRotation();
-    k.x = tmp.qx;
-    k.y = tmp.qy;
-    k.z = tmp.qz;
-    k.w = tmp.qw;
-    auto &keys = tracks_[static_cast<size_t>(boneIndex)].rotations;
+    k.x        = tmp.qx;
+    k.y        = tmp.qy;
+    k.z        = tmp.qz;
+    k.w        = tmp.qw;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].rotations;
     keys.push_back(k);
-    std::sort(keys.begin(), keys.end(),
-              [](const QuatKey &a, const QuatKey &b) { return a.t < b.t; });
+    std::sort(keys.begin(), keys.end(), [](const QuatKey& a, const QuatKey& b) { return a.t < b.t; });
     if (time > duration_) duration_ = time;
 }
 
 void AnimClip::addScaleKey(int boneIndex, float time, float x, float y, float z) {
     if (time < 0.f) throw Exception("AnimClip.addScaleKey: time must be >= 0");
     ensureBone(boneIndex);
-    auto &keys = tracks_[static_cast<size_t>(boneIndex)].scales;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].scales;
     keys.push_back({time, x, y, z});
-    std::sort(keys.begin(), keys.end(),
-              [](const Vec3Key &a, const Vec3Key &b) { return a.t < b.t; });
+    std::sort(keys.begin(), keys.end(), [](const Vec3Key& a, const Vec3Key& b) { return a.t < b.t; });
     if (time > duration_) duration_ = time;
+}
+
+void AnimClip::addEvent(float time, const std::string& name) {
+    if (time < 0.f || time > duration_) throw Exception("AnimClip.addEvent: time out of range");
+    if (name.empty()) throw Exception("AnimClip.addEvent: name is empty");
+    events_.push_back({time, name});
+    std::stable_sort(events_.begin(), events_.end(), [](const EventKey& a, const EventKey& b) { return a.t < b.t; });
+}
+
+float AnimClip::getEventTime(int eventIndex) const {
+    if (eventIndex < 0 || eventIndex >= getEventCount())
+        throw Exception("AnimClip: invalid event index %d", eventIndex);
+    return events_[static_cast<size_t>(eventIndex)].t;
+}
+
+std::string AnimClip::getEventName(int eventIndex) const {
+    if (eventIndex < 0 || eventIndex >= getEventCount())
+        throw Exception("AnimClip: invalid event index %d", eventIndex);
+    return events_[static_cast<size_t>(eventIndex)].name;
+}
+
+void AnimClip::collectEvents(float previousTime, float currentTime, bool loop, std::vector<std::string>& out) const {
+    if (events_.empty() || duration_ <= 0.f || currentTime == previousTime) return;
+    const float from        = wrapTime(previousTime);
+    const float to          = wrapTime(currentTime);
+    auto        appendRange = [&](float lo, float hi, bool includeLo) {
+        for (const EventKey& event : events_) {
+            if ((includeLo ? event.t >= lo : event.t > lo) && event.t <= hi) out.push_back(event.name);
+        }
+    };
+    if (loop && (currentTime - previousTime >= duration_ || to < from)) {
+        appendRange(from, duration_, false);
+        appendRange(0.f, to, true);
+    } else {
+        appendRange(from, to, false);
+    }
 }
 
 int AnimClip::getPositionKeyCount(int boneIndex) const {
@@ -89,7 +122,7 @@ int AnimClip::getScaleKeyCount(int boneIndex) const {
 }
 
 namespace {
-void requireKey(int boneIndex, int keyIndex, int count, const char *what) {
+void requireKey(int boneIndex, int keyIndex, int count, const char* what) {
     if (boneIndex < 0 || keyIndex < 0 || keyIndex >= count) {
         throw Exception("AnimClip: invalid %s key bone=%d index=%d", what, boneIndex, keyIndex);
     }
@@ -153,14 +186,14 @@ float AnimClip::getScaleKeyZ(int boneIndex, int keyIndex) const {
 
 void AnimClip::applyPlanarRootMotion(int boneIndex, float speedX, float speedZ) {
     ensureBone(boneIndex);
-    auto &keys = tracks_[static_cast<size_t>(boneIndex)].positions;
+    auto& keys = tracks_[static_cast<size_t>(boneIndex)].positions;
     if (keys.empty()) {
         // Create start/end keys from zero so motion matching sees a trajectory.
         keys.push_back({0.f, 0.f, 0.f, 0.f});
         keys.push_back({duration_, speedX * duration_, 0.f, speedZ * duration_});
         return;
     }
-    for (auto &k : keys) {
+    for (auto& k : keys) {
         k.x += speedX * k.t;
         k.z += speedZ * k.t;
     }
@@ -176,8 +209,7 @@ float AnimClip::wrapTime(float time) const {
     return clampf(time, 0.f, duration_);
 }
 
-void AnimClip::sampleVec3(const std::vector<Vec3Key> &keys, float time, float &x, float &y,
-                          float &z, bool &ok) {
+void AnimClip::sampleVec3(const std::vector<Vec3Key>& keys, float time, float& x, float& y, float& z, bool& ok) {
     ok = false;
     if (keys.empty()) return;
     ok = true;
@@ -194,8 +226,8 @@ void AnimClip::sampleVec3(const std::vector<Vec3Key> &keys, float time, float &x
         return;
     }
     for (size_t i = 0; i + 1 < keys.size(); ++i) {
-        const auto &a = keys[i];
-        const auto &b = keys[i + 1];
+        const auto& a = keys[i];
+        const auto& b = keys[i + 1];
         if (time >= a.t && time <= b.t) {
             const float den = b.t - a.t;
             const float t   = den > 1e-8f ? (time - a.t) / den : 0.f;
@@ -210,8 +242,8 @@ void AnimClip::sampleVec3(const std::vector<Vec3Key> &keys, float time, float &x
     z = keys.back().z;
 }
 
-void AnimClip::sampleQuat(const std::vector<QuatKey> &keys, float time, float &x, float &y,
-                          float &z, float &w, bool &ok) {
+void AnimClip::sampleQuat(const std::vector<QuatKey>& keys, float time, float& x, float& y, float& z, float& w,
+                          bool& ok) {
     ok = false;
     if (keys.empty()) return;
     ok = true;
@@ -230,8 +262,8 @@ void AnimClip::sampleQuat(const std::vector<QuatKey> &keys, float time, float &x
         return;
     }
     for (size_t i = 0; i + 1 < keys.size(); ++i) {
-        const auto &a = keys[i];
-        const auto &b = keys[i + 1];
+        const auto& a = keys[i];
+        const auto& b = keys[i + 1];
         if (time >= a.t && time <= b.t) {
             const float den = b.t - a.t;
             const float t   = den > 1e-8f ? (time - a.t) / den : 0.f;
@@ -245,12 +277,12 @@ void AnimClip::sampleQuat(const std::vector<QuatKey> &keys, float time, float &x
     w = keys.back().w;
 }
 
-TransformTRS AnimClip::sampleBone(int boneIndex, float time, const TransformTRS &fallback) const {
+TransformTRS AnimClip::sampleBone(int boneIndex, float time, const TransformTRS& fallback) const {
     TransformTRS out = fallback;
     if (boneIndex < 0 || boneIndex >= static_cast<int>(tracks_.size())) return out;
-    const BoneTrack &tr = tracks_[static_cast<size_t>(boneIndex)];
-    bool ok             = false;
-    float x, y, z, w;
+    const BoneTrack& tr = tracks_[static_cast<size_t>(boneIndex)];
+    bool             ok = false;
+    float            x, y, z, w;
     sampleVec3(tr.positions, time, x, y, z, ok);
     if (ok) {
         out.px = x;
@@ -273,16 +305,18 @@ TransformTRS AnimClip::sampleBone(int boneIndex, float time, const TransformTRS 
     return out;
 }
 
-void AnimClip::sample(float time, AnimPose *out, const AnimSkeleton *skeleton) const {
+void AnimClip::sample(float time, AnimPose* out, const AnimSkeleton* skeleton) const {
+    sampleClamped(wrapTime(time), out, skeleton);
+}
+
+void AnimClip::sampleClamped(float time, AnimPose* out, const AnimSkeleton* skeleton) const {
     if (!out) throw Exception("AnimClip.sample: pose is null");
-    const int boneCount = skeleton ? skeleton->getBoneCount()
-                                   : static_cast<int>(tracks_.size());
+    const int boneCount = skeleton ? skeleton->getBoneCount() : static_cast<int>(tracks_.size());
     out->resize(boneCount);
-    time = wrapTime(time);
+    time = clampf(time, 0.f, duration_);
     for (int i = 0; i < boneCount; ++i) {
-        const TransformTRS &fb =
-            skeleton ? skeleton->bindLocal(i) : TransformTRS::identity();
-        out->local(i) = sampleBone(i, time, fb);
+        const TransformTRS& fb = skeleton ? skeleton->bindLocal(i) : TransformTRS::identity();
+        out->local(i)          = sampleBone(i, time, fb);
     }
 }
 
@@ -292,6 +326,7 @@ void AnimClip::adopt(AnimClip& other) {
     std::swap(loop_, other.loop_);
     std::swap(sampleRate_, other.sampleRate_);
     std::swap(tracks_, other.tracks_);
+    std::swap(events_, other.events_);
 }
 
 }  // namespace eve::animation

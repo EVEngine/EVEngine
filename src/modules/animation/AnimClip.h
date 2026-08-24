@@ -19,10 +19,10 @@ public:
     explicit AnimClip(std::string name = "");
     ~AnimClip();
 
-    AnimClip(const AnimClip &)            = delete;
-    AnimClip &operator=(const AnimClip &) = delete;
+    AnimClip(const AnimClip&)            = delete;
+    AnimClip& operator=(const AnimClip&) = delete;
 
-    void        setName(const std::string &name) { name_ = name; }
+    void        setName(const std::string& name) { name_ = name; }
     std::string getName() const { return name_; }
 
     void  setDuration(float seconds);
@@ -38,6 +38,11 @@ public:
     void addPositionKey(int boneIndex, float time, float x, float y, float z);
     void addRotationKey(int boneIndex, float time, float x, float y, float z, float w);
     void addScaleKey(int boneIndex, float time, float x, float y, float z);
+    /** @brief Add a named gameplay notify at clip-local time. */
+    void        addEvent(float time, const std::string& name);
+    int         getEventCount() const { return static_cast<int>(events_.size()); }
+    float       getEventTime(int eventIndex) const;
+    std::string getEventName(int eventIndex) const;
 
     int getPositionKeyCount(int boneIndex) const;
     int getRotationKeyCount(int boneIndex) const;
@@ -70,7 +75,7 @@ public:
      * @brief Sample local pose at time (seconds). If skeleton non-null, missing tracks
      * fall back to bind pose; otherwise identity.
      */
-    void sample(float time, AnimPose *out, const AnimSkeleton *skeleton = nullptr) const;
+    void sample(float time, AnimPose* out, const AnimSkeleton* skeleton = nullptr) const;
 
     /** @brief Wrap or clamp time according to loop flag. */
     float wrapTime(float time) const;
@@ -82,8 +87,11 @@ public:
      *        drained and is destroyed by the caller.
      */
     void adopt(AnimClip& other);
+    /** @brief Collect notifies crossed by forward playback, including loop wrap. */
+    void collectEvents(float previousTime, float currentTime, bool loop, std::vector<std::string>& out) const;
 
 private:
+    friend class AnimPlayer;
     struct Vec3Key {
         float t = 0.f, x = 0.f, y = 0.f, z = 0.f;
     };
@@ -95,20 +103,25 @@ private:
         std::vector<QuatKey> rotations;
         std::vector<Vec3Key> scales;
     };
+    struct EventKey {
+        float       t = 0.f;
+        std::string name;
+    };
 
-    void       ensureBone(int boneIndex);
-    TransformTRS sampleBone(int boneIndex, float time, const TransformTRS &fallback) const;
+    void         ensureBone(int boneIndex);
+    TransformTRS sampleBone(int boneIndex, float time, const TransformTRS& fallback) const;
+    void         sampleClamped(float time, AnimPose* out, const AnimSkeleton* skeleton) const;
 
-    static void sampleVec3(const std::vector<Vec3Key> &keys, float time, float &x, float &y,
-                           float &z, bool &ok);
-    static void sampleQuat(const std::vector<QuatKey> &keys, float time, float &x, float &y,
-                           float &z, float &w, bool &ok);
+    static void sampleVec3(const std::vector<Vec3Key>& keys, float time, float& x, float& y, float& z, bool& ok);
+    static void sampleQuat(const std::vector<QuatKey>& keys, float time, float& x, float& y, float& z, float& w,
+                           bool& ok);
 
-    std::string             name_;
-    float                   duration_   = 0.f;
-    bool                    loop_       = true;
-    float                   sampleRate_ = 30.f;
-    std::vector<BoneTrack>  tracks_;
+    std::string            name_;
+    float                  duration_   = 0.f;
+    bool                   loop_       = true;
+    float                  sampleRate_ = 30.f;
+    std::vector<BoneTrack> tracks_;
+    std::vector<EventKey>  events_;
 };
 
 }  // namespace eve::animation

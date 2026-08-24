@@ -547,6 +547,10 @@ void Animation::expose(ssq::Table &table) {
     clip.addFunc("addPositionKey", &AnimClip::addPositionKey);
     clip.addFunc("addRotationKey", &AnimClip::addRotationKey);
     clip.addFunc("addScaleKey", &AnimClip::addScaleKey);
+    clip.addFunc("addEvent", &AnimClip::addEvent);
+    clip.addFunc("getEventCount", &AnimClip::getEventCount);
+    clip.addFunc("getEventTime", &AnimClip::getEventTime);
+    clip.addFunc("getEventName", &AnimClip::getEventName);
     clip.addFunc("getPositionKeyCount", &AnimClip::getPositionKeyCount);
     clip.addFunc("getRotationKeyCount", &AnimClip::getRotationKeyCount);
     clip.addFunc("getScaleKeyCount", &AnimClip::getScaleKeyCount);
@@ -681,6 +685,16 @@ void Animation::expose(ssq::Table &table) {
     player.addFunc("isPlaying", &AnimPlayer::isPlaying);
     player.addFunc("isPaused", &AnimPlayer::isPaused);
     player.addFunc("getPose", &AnimPlayer::getPose);
+    player.addFunc("setRootMotionBone", &AnimPlayer::setRootMotionBone);
+    player.addFunc("getRootMotionBone", &AnimPlayer::getRootMotionBone);
+    player.addFunc("getRootMotionX", &AnimPlayer::getRootMotionX);
+    player.addFunc("getRootMotionY", &AnimPlayer::getRootMotionY);
+    player.addFunc("getRootMotionZ", &AnimPlayer::getRootMotionZ);
+    player.addFunc("getRootMotionRotationX", &AnimPlayer::getRootMotionRotationX);
+    player.addFunc("getRootMotionRotationY", &AnimPlayer::getRootMotionRotationY);
+    player.addFunc("getRootMotionRotationZ", &AnimPlayer::getRootMotionRotationZ);
+    player.addFunc("getRootMotionRotationW", &AnimPlayer::getRootMotionRotationW);
+    player.addFunc("consumeEvent", &AnimPlayer::consumeEvent);
     player.addFunc("update", &AnimPlayer::update);
 
     auto graph = table.addClass<AnimGraph>(
