@@ -393,6 +393,43 @@ void Graphics::expose(ssq::Table& table) {
     ent.addFunc("getMeshLodCount", &Renderable3D::getMeshLodCount);
     ent.addFunc("getMeshLodLevelAtDistance", &Renderable3D::getMeshLodLevelAtDistance);
 
+    auto sprite2d = table.addClass<Renderable2D>(
+        "Sprite2D", std::function<Renderable2D *()>([]() { return Renderable2D::create(); }), false);
+    sprite2d.addFunc("setPosition", &Renderable2D::setPosition);
+    sprite2d.addFunc("getX", &Renderable2D::getX);
+    sprite2d.addFunc("getY", &Renderable2D::getY);
+    sprite2d.addFunc("setRotation", &Renderable2D::setRotation);
+    sprite2d.addFunc("getRotation", &Renderable2D::getRotation);
+    sprite2d.addFunc("setScale", &Renderable2D::setScale);
+    sprite2d.addFunc("getScaleX", &Renderable2D::getScaleX);
+    sprite2d.addFunc("getScaleY", &Renderable2D::getScaleY);
+    sprite2d.addFunc("setSize", &Renderable2D::setSize);
+    sprite2d.addFunc("getWidth", &Renderable2D::getWidth);
+    sprite2d.addFunc("getHeight", &Renderable2D::getHeight);
+    sprite2d.addFunc("setTexture", &Renderable2D::setTexture);
+    sprite2d.addFunc("getTexture", &Renderable2D::getTexture);
+    sprite2d.addFunc("setQuad", &Renderable2D::setQuad);
+    sprite2d.addFunc("getQuad", &Renderable2D::getQuad);
+    sprite2d.addFunc("setColor", &Renderable2D::setColor);
+    sprite2d.addFunc("setLayer", &Renderable2D::setLayer);
+    sprite2d.addFunc("getLayer", &Renderable2D::getLayer);
+    sprite2d.addFunc("setVisible", &Renderable2D::setVisible);
+    sprite2d.addFunc("getVisible", &Renderable2D::getVisible);
+    sprite2d.addFunc("setReceiveLight", &Renderable2D::setReceiveLight);
+    sprite2d.addFunc("getReceiveLight", &Renderable2D::getReceiveLight);
+    sprite2d.addFunc("setBlend", &Renderable2D::setBlend);
+    sprite2d.addFunc("getBlend", &Renderable2D::getBlend);
+    sprite2d.addFunc("setAnchor", &Renderable2D::setAnchor);
+    sprite2d.addFunc("getAnchorX", &Renderable2D::getAnchorX);
+    sprite2d.addFunc("getAnchorY", &Renderable2D::getAnchorY);
+    sprite2d.addFunc("setFlip", &Renderable2D::setFlip);
+    sprite2d.addFunc("getFlipX", &Renderable2D::getFlipX);
+    sprite2d.addFunc("getFlipY", &Renderable2D::getFlipY);
+    sprite2d.addFunc("setFrameLayout", &Renderable2D::setFrameLayout);
+    sprite2d.addFunc("setCastOcclusion", &Renderable2D::setCastOcclusion);
+    sprite2d.addFunc("getCastOcclusion", &Renderable2D::getCastOcclusion);
+    sprite2d.addFunc("destroy", [](Renderable2D *self) { self->release(); });
+
     auto material =
         table.addClass<Material>("Material", std::function<Material*()>([]() -> Material* { return nullptr; }), true);
     material.addFunc("setShadingModel", &Material::setShadingModel);
@@ -720,6 +757,8 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setBackgroundColor", &Graphics::setBackgroundColorRGBA);
     cls.addFunc("drawSolidRect", &Graphics::drawSolidRectRGBA);
     cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
+    cls.addFunc("renderSprites", &Graphics::renderSprites);
+    cls.addFunc("newSprite2D", &Graphics::newSprite2D);
     cls.addFunc("drawTexturedRectRotated", &Graphics::drawTexturedRectRotatedRGBA);
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
@@ -791,6 +830,14 @@ void Graphics::expose(ssq::Class& cls) {
 void Graphics::reset() {
     currentShader = nullptr;
     currentFont   = nullptr;
+}
+
+Renderable2D *Graphics::newSprite2D() { return Renderable2D::create(); }
+
+void Graphics::renderSprites() {
+    std::vector<DrawItem2D> items;
+    RenderSystem::collectSprites(items);
+    RenderSystem::drawItems(*this, items, false);
 }
 
 void Graphics::initHeadless(int width, int height) {

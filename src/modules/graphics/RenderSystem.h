@@ -7,6 +7,7 @@
 #include "graphics/Texture.h"
 #include "zeroerr/assert.h"
 #include <cstdint>
+#include <string>
 #include <vector>
 
 namespace eve::graphics {
@@ -66,7 +67,7 @@ class Renderable2D : public ecs::Entity {
 public:
     ENTITY(Renderable2D, ecs::Entity)
 
-    void release() override {}
+    void release() override;
 
     struct Transform2D {
         float x = 0;
@@ -90,12 +91,80 @@ public:
         Camera2D *camera = nullptr;        // nullptr → default active camera for canvas
         bool receiveLight = true;          // false → force unlit (ignore lights)
         bool castOcclusion = true;         // volumetric occlusion map (shadow analogue)
+        BlendMode blend = BlendMode::Alpha;
+        float anchorX = 0.5f, anchorY = 0.5f;
+        bool flipX = false, flipY = false;
+        int trimW = 0, trimH = 0, offsetX = 0, offsetY = 0;
     };
 
     COMPONENT(Transform2D, transform)
     COMPONENT(Sprite, sprite)
 
+    /** @brief Set world-space position in pixels. */
+    void setPosition(float x, float y);
+    /** @brief Return world-space X position. */
+    float getX();
+    /** @brief Return world-space Y position. */
+    float getY();
+    /** @brief Set center rotation in degrees. */
+    void setRotation(float degrees);
+    /** @brief Return center rotation in degrees. */
+    float getRotation();
+    /** @brief Set independent X/Y scale. */
+    void setScale(float sx, float sy);
+    /** @brief Return X scale. */
+    float getScaleX();
+    /** @brief Return Y scale. */
+    float getScaleY();
+    /** @brief Set unscaled sprite dimensions in pixels. */
+    void setSize(float width, float height);
+    /** @brief Return unscaled width. */
+    float getWidth();
+    /** @brief Return unscaled height. */
+    float getHeight();
+    /** @brief Assign the borrowed sprite texture. */
+    void setTexture(Texture *texture);
+    /** @brief Return the assigned texture. */
+    Texture *getTexture();
+    /** @brief Assign the borrowed UV quad. */
+    void setQuad(Quad *quad);
+    /** @brief Return the assigned UV quad. */
+    Quad *getQuad();
+    /** @brief Set RGBA tint. */
+    void setColor(float r, float g, float b, float a = 1.f);
+    /** @brief Set integer painter-order layer. */
+    void setLayer(int layer);
+    /** @brief Return painter-order layer. */
+    int getLayer();
+    /** @brief Include or exclude the sprite from collection. */
+    void setVisible(bool visible);
+    /** @brief Return whether the sprite is visible. */
+    bool getVisible();
+    /** @brief Enable or disable 2D light reception. */
+    void setReceiveLight(bool receive);
+    /** @brief Return whether the sprite receives 2D lights. */
+    bool getReceiveLight();
+    /** @brief Set blend mode (`alpha` or `additive`). */
+    void setBlend(const std::string &blend);
+    /** @brief Return blend mode name. */
+    std::string getBlend();
+    /** @brief Set normalized transform pivot; (0,0) top-left, (0.5,0.5) center. */
+    void setAnchor(float x, float y);
+    /** @brief Return normalized horizontal pivot. */
+    float getAnchorX();
+    /** @brief Return normalized vertical pivot. */
+    float getAnchorY();
+    /** @brief Mirror atlas UVs without changing transform scale. */
+    void setFlip(bool horizontal, bool vertical);
+    /** @brief Return horizontal mirror state. */
+    bool getFlipX();
+    /** @brief Return vertical mirror state. */
+    bool getFlipY();
+    /** @brief Apply trimmed-frame layout while preserving the original canvas origin. */
+    void setFrameLayout(int sourceW, int sourceH, int trimW, int trimH, int offsetX, int offsetY);
+    /** @brief Enable or disable volumetric occlusion casting. */
     void setCastOcclusion(bool cast);
+    /** @brief Return whether the sprite casts volumetric occlusion. */
     bool getCastOcclusion();
 };
 
