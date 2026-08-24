@@ -23,35 +23,35 @@ public:
     explicit StyleInstance(std::string style);
     ~StyleInstance() = default;
 
-    StyleInstance(const StyleInstance &) = delete;
-    StyleInstance &operator=(const StyleInstance &) = delete;
+    StyleInstance(const StyleInstance&)            = delete;
+    StyleInstance& operator=(const StyleInstance&) = delete;
 
     std::string getStyle() const { return style_; }
     std::string getStage() const;
-    int getPriority() const;
-    bool requiresInput(const std::string &input) const;
-    int getParamCount() const;
+    int         getPriority() const;
+    bool        requiresInput(const std::string& input) const;
+    int         getParamCount() const;
     std::string getParamName(int index) const;
-    float getParamDefault(const std::string &name) const;
-    float getParamMin(const std::string &name) const;
-    float getParamMax(const std::string &name) const;
+    float       getParamDefault(const std::string& name) const;
+    float       getParamMin(const std::string& name) const;
+    float       getParamMax(const std::string& name) const;
 
-    bool hasParam(const std::string &name) const;
-    bool isOverridden(const std::string &name) const;
-    void setFloat(const std::string &name, float value);
-    float getFloat(const std::string &name) const;
-    void reset(const std::string &name);
-    void resetAll();
+    bool  hasParam(const std::string& name) const;
+    bool  isOverridden(const std::string& name) const;
+    void  setFloat(const std::string& name, float value);
+    float getFloat(const std::string& name) const;
+    void  reset(const std::string& name);
+    void  resetAll();
 
     /** @brief Create a post pass and apply this instance's parameter overrides. */
-    StylePass *newPass(graphics::Graphics *gfx) const;
+    StylePass* newPass(graphics::Graphics* gfx) const;
     /** @brief Create a mesh technique shader and apply compatible overrides. */
-    graphics::Shader *newMeshShader(graphics::Graphics *gfx) const;
+    graphics::Shader* newMeshShader(graphics::Graphics* gfx) const;
 
 private:
-    void applyOverrides(graphics::Shader *shader) const;
+    void applyOverrides(graphics::Shader* shader) const;
 
-    std::string style_;
+    std::string                            style_;
     std::unordered_map<std::string, float> overrides_;
 };
 

@@ -26,32 +26,32 @@ public:
     StyleRecipe() = default;
     ~StyleRecipe();
 
-    StyleRecipe(const StyleRecipe &) = delete;
-    StyleRecipe &operator=(const StyleRecipe &) = delete;
+    StyleRecipe(const StyleRecipe&)            = delete;
+    StyleRecipe& operator=(const StyleRecipe&) = delete;
 
-    void clear();
-    void add(StyleInstance *instance);
-    int getStyleCount() const { return int(instances_.size()); }
-    StyleInstance *getStyle(int index) const;
+    void           clear();
+    void           add(StyleInstance* instance);
+    int            getStyleCount() const { return int(instances_.size()); }
+    StyleInstance* getStyle(int index) const;
 
-    void compile(graphics::Graphics *gfx);
-    bool isCompiled() const { return compiled_; }
+    void        compile(graphics::Graphics* gfx);
+    bool        isCompiled() const { return compiled_; }
     std::string getStage() const { return stage_; }
 
-    void apply(graphics::Graphics *gfx, graphics::Texture *source, graphics::Canvas *dest);
-    void applyCanvas(graphics::Graphics *gfx, graphics::Canvas *source, graphics::Canvas *dest);
+    void apply(graphics::Graphics* gfx, graphics::Texture* source, graphics::Canvas* dest);
+    void applyCanvas(graphics::Graphics* gfx, graphics::Canvas* source, graphics::Canvas* dest);
 
 private:
-    void ensureScratch(graphics::Graphics *gfx, graphics::Canvas *dest);
+    void ensureScratch(graphics::Graphics* gfx, graphics::Canvas* dest);
 
-    std::vector<StyleInstance *> instances_;
+    std::vector<StyleInstance*>             instances_;
     std::vector<std::unique_ptr<StylePass>> passes_;
-    graphics::Graphics *graphics_ = nullptr;
-    graphics::Canvas *scratch_ = nullptr;
-    int scratchWidth_ = 0;
-    int scratchHeight_ = 0;
-    std::string stage_;
-    bool compiled_ = false;
+    graphics::Graphics*                     graphics_      = nullptr;
+    graphics::Canvas*                       scratch_       = nullptr;
+    int                                     scratchWidth_  = 0;
+    int                                     scratchHeight_ = 0;
+    std::string                             stage_;
+    bool                                    compiled_ = false;
 };
 
 }  // namespace eve::stylize
