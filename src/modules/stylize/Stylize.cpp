@@ -1,6 +1,7 @@
 #include "stylize/Stylize.h"
 
 #include "stylize/ImageStylize.h"
+#include "stylize/StyleInstance.h"
 #include "stylize/StyleShaders.h"
 
 #include "common/Exception.h"
@@ -63,6 +64,10 @@ image::ImageData *Stylize::processImage(image::ImageData *src, const std::string
     return processImageCpu(src, style);
 }
 
+StyleInstance *Stylize::newInstance(const std::string &style) {
+    return new StyleInstance(style);
+}
+
 void Stylize::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Stylize::create, false);
     expose(cls);
@@ -80,6 +85,24 @@ void Stylize::expose(ssq::Table &table) {
     pass.addFunc("applyTo", &StylePass::applyTo);
     pass.addFunc("applyCanvasTo", &StylePass::applyCanvasTo);
     pass.addFunc("getShader", &StylePass::getShader);
+
+    auto instance = table.addClass<StyleInstance>(
+        "StyleInstance", std::function<StyleInstance *()>([]() -> StyleInstance * { return nullptr; }),
+        true);
+    instance.addFunc("getStyle", &StyleInstance::getStyle);
+    instance.addFunc("getParamCount", &StyleInstance::getParamCount);
+    instance.addFunc("getParamName", &StyleInstance::getParamName);
+    instance.addFunc("getParamDefault", &StyleInstance::getParamDefault);
+    instance.addFunc("getParamMin", &StyleInstance::getParamMin);
+    instance.addFunc("getParamMax", &StyleInstance::getParamMax);
+    instance.addFunc("hasParam", &StyleInstance::hasParam);
+    instance.addFunc("isOverridden", &StyleInstance::isOverridden);
+    instance.addFunc("setFloat", &StyleInstance::setFloat);
+    instance.addFunc("getFloat", &StyleInstance::getFloat);
+    instance.addFunc("reset", &StyleInstance::reset);
+    instance.addFunc("resetAll", &StyleInstance::resetAll);
+    instance.addFunc("newPass", &StyleInstance::newPass);
+    instance.addFunc("newMeshShader", &StyleInstance::newMeshShader);
 
     auto chain = table.addClass<StyleChain>(
         "StyleChain", std::function<StyleChain *()>([]() -> StyleChain * { return nullptr; }), true);
@@ -100,6 +123,7 @@ void Stylize::expose(ssq::Class &cls) {
     cls.addFunc("supports", &Stylize::supports);
     cls.addFunc("getStyleParamCount", &Stylize::getStyleParamCount);
     cls.addFunc("getStyleParamName", &Stylize::getStyleParamName);
+    cls.addFunc("newInstance", &Stylize::newInstance);
     cls.addFunc("newPass", &Stylize::newPass);
     cls.addFunc("newPassFromShader", &Stylize::newPassFromShader);
     cls.addFunc("newChain", &Stylize::newChain);

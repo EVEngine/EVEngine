@@ -21,6 +21,14 @@ struct StyleDefinition {
     bool normal;
 };
 
+/** @brief Tooling metadata for one user-facing float parameter. */
+struct StyleParameterDesc {
+    const char *id;
+    float defaultValue;
+    float minValue;
+    float maxValue;
+};
+
 /** @brief Return a built-in definition, or nullptr when the id is unknown. */
 const StyleDefinition *findStyleDefinition(const std::string &style);
 
@@ -35,6 +43,8 @@ bool styleSupports(const std::string &style, const std::string &feature);
 /** Built-in post param name table (for tooling / UI introspection). */
 int styleParamCount(const std::string &style);
 std::string styleParamName(const std::string &style, int index);
+const StyleParameterDesc *findStyleParameter(const std::string &style, const std::string &name);
+const StyleParameterDesc *styleParameterAt(const std::string &style, int index);
 
 /** Declare + seed default push-constant uniforms for a post style shader. */
 void bindPostUniforms(graphics::Shader *shader, const std::string &style);

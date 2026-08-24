@@ -17,6 +17,8 @@ class ImageData;
 
 namespace eve::stylize {
 
+class StyleInstance;
+
 /**
  * @brief Stylized / NPR rendering module — stable public surface for future expansion.
  *
@@ -61,6 +63,9 @@ public:
     /** @brief Introspect built-in post param names (empty for unknown / custom-only ids). */
     int         getStyleParamCount(const std::string &style) const;
     std::string getStyleParamName(const std::string &style, int index) const;
+
+    /** @brief Create a mutable parameter instance of an immutable style definition. */
+    StyleInstance *newInstance(const std::string &style);
 
     /** @brief Post-process StylePass (shader owned by Graphics). */
     StylePass *newPass(graphics::Graphics *gfx, const std::string &style);

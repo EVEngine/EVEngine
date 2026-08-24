@@ -7,6 +7,10 @@ NPR / 风格化后处理与网格着色：卡通、手绘水彩、水墨、像�
 Canvas；3D 网格着色用 `newMeshShader`；另有纯 CPU 的 `processImage` 供离线
 工具与测试使用。
 
+风格定义由模块统一注册，运行时通过 `StyleInstance` 保存参数覆盖；shader
+仍由 Graphics 管理并可在多个实例之间复用。参数 schema 提供默认值和有效范围，
+`setFloat` 会自动限制到范围内。
+
 ## 基本用法
 
 ```squirrel
@@ -47,6 +51,7 @@ mat.setShadingModel("custom");
 - 风格注册表：`getStyleCount` / `getStyleId(i)` / `hasStyle(id)` /
   `hasMeshStyle(id)` / `supports(style, feature)` / `getStyleParamCount` /
   `getStyleParamName`。
+- 实例：`newInstance(styleId)` → `StyleInstance`。
 - 后处理：`newPass(styleId)`、`newPassFromShader(id, spvOrWgsl)`、`newChain()`、
   `newPostShader(styleId)`。
 - 网格：`newMeshShader(styleId)`。
@@ -57,6 +62,13 @@ mat.setShadingModel("custom");
 - `getStyle()`、`hasParam(name)`、`setFloat/getFloat`、`setTime/getTime`。
 - `apply(gfx)` / `applyCanvas(gfx)` / `applyTo(gfx, target)` / `applyCanvasTo(gfx, canvas)`。
 - `getShader()`。
+
+### `StyleInstance`
+
+- schema：`getStyle()`、`getParamCount()`、`getParamName(i)`、
+  `getParamDefault(name)`、`getParamMin(name)`、`getParamMax(name)`、`hasParam(name)`。
+- override：`setFloat/getFloat`、`isOverridden(name)`、`reset(name)`、`resetAll()`。
+- technique：`newPass(gfx)` 创建后处理 Pass；`newMeshShader(gfx)` 创建网格 shader。
 
 ### `StyleChain`
 

@@ -39,6 +39,7 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "stylize/Stylize.h"
+#include "stylize/StyleInstance.h"
 #include "window/Window.h"
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
@@ -55,6 +56,7 @@ using eve::graphics::Shader;
 using eve::graphics::Texture;
 using eve::image::ImageData;
 using eve::stylize::StyleChain;
+using eve::stylize::StyleInstance;
 using eve::stylize::StylePass;
 using eve::stylize::Stylize;
 using Colorf = ImageData::Colorf;
@@ -301,6 +303,23 @@ TEST_CASE("stylize.processImage.cpuAllStyles") {
         threw = true;
     }
     CHECK(threw);
+}
+
+TEST_CASE("stylize.instance.parameterSchema") {
+    auto *mod = Stylize::create();
+    std::unique_ptr<StyleInstance> pixel(mod->newInstance("pixel"));
+    REQUIRE(pixel.get() != nullptr);
+    CHECK_EQ(pixel->getStyle(), std::string("pixel"));
+    CHECK(pixel->hasParam("pixelSize"));
+    CHECK(!pixel->hasParam("texelW"));
+    CHECK_EQ(pixel->getFloat("pixelSize"), 5.f);
+
+    pixel->setFloat("pixelSize", 999.f);
+    CHECK_EQ(pixel->getFloat("pixelSize"), pixel->getParamMax("pixelSize"));
+    CHECK(pixel->isOverridden("pixelSize"));
+    pixel->reset("pixelSize");
+    CHECK(!pixel->isOverridden("pixelSize"));
+    CHECK_EQ(pixel->getFloat("pixelSize"), pixel->getParamDefault("pixelSize"));
 }
 
 TEST_CASE("stylize.processImage.inkIsDesaturated") {
