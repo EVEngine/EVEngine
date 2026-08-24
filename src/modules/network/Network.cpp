@@ -73,23 +73,24 @@ Network::~Network() {
     worker_.reset();
 }
 
-TcpSocket* Network::newTcp() {
-    return new TcpSocket(this);
-}
+std::unique_ptr<TcpSocket> Network::makeTcp() { return std::make_unique<TcpSocket>(this); }
+TcpSocket* Network::newTcp() { return makeTcp().release(); }
 
-UdpSocket* Network::newUdp() {
-    return new UdpSocket(this);
-}
+std::unique_ptr<UdpSocket> Network::makeUdp() { return std::make_unique<UdpSocket>(this); }
+UdpSocket* Network::newUdp() { return makeUdp().release(); }
 
+std::unique_ptr<HttpRequest> Network::makeHttp(std::string method, std::string url) {
+    return std::make_unique<HttpRequest>(this, std::move(method), std::move(url));
+}
 HttpRequest* Network::newHttp(std::string method, std::string url) {
-    return new HttpRequest(this, std::move(method), std::move(url));
+    return makeHttp(std::move(method), std::move(url)).release();
 }
 
 bool Network::httpRequest(const std::string& method, const std::string& url,
                           const std::string& body, int timeoutMs, int& status,
                           std::string& responseBody) {
-    HttpRequest* req = newHttp(method, url);
-    if (!req) return false;
+    auto ownedRequest = makeHttp(method, url);
+    HttpRequest* req = ownedRequest.get();
     if (!body.empty()) req->setBodyString(body);
     req->setTimeout(timeoutMs > 0 ? timeoutMs : 10000);
     if (!req->submit()) return false;
@@ -113,41 +114,42 @@ bool Network::httpRequest(const std::string& method, const std::string& url,
     return false;
 }
 
-Channel* Network::newChannel(TcpSocket* socket) {
+std::unique_ptr<Channel> Network::makeChannel(TcpSocket* socket) {
     if (!socket) return nullptr;
-    auto* ch = new Channel(socket);
-    bindChannel(socket, ch);
+    auto ch = std::make_unique<Channel>(socket);
+    bindChannel(socket, ch.get());
     return ch;
 }
+Channel* Network::newChannel(TcpSocket* socket) { return makeChannel(socket).release(); }
 
-Session* Network::newSession() {
-    return new Session();
-}
+std::unique_ptr<Session> Network::makeSession() { return std::make_unique<Session>(); }
+Session* Network::newSession() { return makeSession().release(); }
 
-NetWriter* Network::newWriter() {
-    return new NetWriter();
-}
+std::unique_ptr<NetWriter> Network::makeWriter() { return std::make_unique<NetWriter>(); }
+NetWriter* Network::newWriter() { return makeWriter().release(); }
 
-NetReader* Network::newReader(std::string bytes) {
-    auto* r = new NetReader();
-    r->setBytes(bytes);
+std::unique_ptr<NetReader> Network::makeReader(std::string bytes) {
+    auto r = std::make_unique<NetReader>();
+    r->setBytes(std::move(bytes));
     return r;
 }
+NetReader* Network::newReader(std::string bytes) { return makeReader(std::move(bytes)).release(); }
 
-UdpLink* Network::newUdpLink(UdpSocket* socket) {
+std::unique_ptr<UdpLink> Network::makeUdpLink(UdpSocket* socket) {
     if (!socket) return nullptr;
-    auto* link = new UdpLink(this, socket);
-    bindUdpLink(socket, link);
+    auto link = std::make_unique<UdpLink>(this, socket);
+    bindUdpLink(socket, link.get());
     return link;
 }
+UdpLink* Network::newUdpLink(UdpSocket* socket) { return makeUdpLink(socket).release(); }
 
-NetRpc* Network::newRpc(UdpLink* link) {
-    return link ? new NetRpc(link) : nullptr;
+std::unique_ptr<NetRpc> Network::makeRpc(UdpLink* link) {
+    return link ? std::make_unique<NetRpc>(link) : nullptr;
 }
+NetRpc* Network::newRpc(UdpLink* link) { return makeRpc(link).release(); }
 
-NetHost* Network::newHost() {
-    return new NetHost(this);
-}
+std::unique_ptr<NetHost> Network::makeHost() { return std::make_unique<NetHost>(this); }
+NetHost* Network::newHost() { return makeHost().release(); }
 
 void Network::bindUdpLink(UdpSocket* sock, UdpLink* link) {
     if (sock) udpLinks_[sock] = link;

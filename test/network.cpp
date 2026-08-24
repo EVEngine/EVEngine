@@ -305,6 +305,26 @@ TEST_CASE("network.Network.timeoutAndVerifySsl") {
     CHECK(net->getVerifySsl() == false);
 }
 
+TEST_CASE("network.Network.cppFactoriesReturnOwners") {
+    auto* net = eve::network::Network::create();
+    auto tcp = net->makeTcp();
+    auto udp = net->makeUdp();
+    auto request = net->makeHttp("GET", "http://127.0.0.1/");
+    auto session = net->makeSession();
+    auto writer = net->makeWriter();
+    auto reader = net->makeReader("bytes");
+    REQUIRE(static_cast<bool>(tcp));
+    REQUIRE(static_cast<bool>(udp));
+    REQUIRE(static_cast<bool>(request));
+    REQUIRE(static_cast<bool>(session));
+    REQUIRE(static_cast<bool>(writer));
+    REQUIRE(static_cast<bool>(reader));
+    CHECK(!net->makeChannel(nullptr));
+    CHECK(!net->makeUdpLink(nullptr));
+    CHECK(!net->makeRpc(nullptr));
+    REQUIRE(static_cast<bool>(net->makeHost()));
+}
+
 TEST_CASE("network.Tcp.connectedAndLocalPort") {
     auto* net = eve::network::Network::create();
     auto* ev  = eve::event::Event::create();

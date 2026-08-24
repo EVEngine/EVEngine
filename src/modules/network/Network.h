@@ -35,25 +35,46 @@ public:
     Network();
     ~Network() override;
 
-    /** @brief Creates a new TCP socket (client or server). */
+    /** @brief Creates an owning TCP socket handle for C++ callers. */
+    std::unique_ptr<TcpSocket> makeTcp();
+    /** @brief Creates an owning UDP socket handle for C++ callers. */
+    std::unique_ptr<UdpSocket> makeUdp();
+    /** @brief Creates an owning HTTP request handle for C++ callers. */
+    std::unique_ptr<HttpRequest> makeHttp(std::string method, std::string url);
+    /** @brief Creates an owning channel handle, or null for a null socket. */
+    std::unique_ptr<Channel> makeChannel(TcpSocket* socket);
+    /** @brief Creates an owning session handle. */
+    std::unique_ptr<Session> makeSession();
+    /** @brief Creates an owning streaming writer handle. */
+    std::unique_ptr<NetWriter> makeWriter();
+    /** @brief Creates an owning streaming reader handle. */
+    std::unique_ptr<NetReader> makeReader(std::string bytes);
+    /** @brief Creates an owning UDP link handle, or null for a null socket. */
+    std::unique_ptr<UdpLink> makeUdpLink(UdpSocket* socket);
+    /** @brief Creates an owning RPC handle, or null for a null link. */
+    std::unique_ptr<NetRpc> makeRpc(UdpLink* link);
+    /** @brief Creates an owning UDP host handle. */
+    std::unique_ptr<NetHost> makeHost();
+
+    /** @brief Script adapter: creates a caller-owned TCP socket. */
     TcpSocket*   newTcp();
-    /** @brief Creates a new UDP socket. */
+    /** @brief Script adapter: creates a caller-owned UDP socket. */
     UdpSocket*   newUdp();
-    /** @brief Creates a new HTTP request (method e.g. "GET"/"POST", full URL). */
+    /** @brief Script adapter: creates a caller-owned HTTP request. */
     HttpRequest* newHttp(std::string method, std::string url);
-    /** @brief Creates a length-prefixed Channel over a TCP socket. */
+    /** @brief Script adapter: creates a caller-owned channel. */
     Channel*     newChannel(TcpSocket* socket);
-    /** @brief Creates a named-channel session container. */
+    /** @brief Script adapter: creates a caller-owned session. */
     Session*     newSession();
-    /** @brief Creates a streaming byte writer. */
+    /** @brief Script adapter: creates a caller-owned writer. */
     NetWriter*   newWriter();
-    /** @brief Creates a streaming byte reader over a string buffer. */
+    /** @brief Script adapter: creates a caller-owned reader. */
     NetReader*   newReader(std::string bytes);
-    /** @brief Creates a framed UDP link over a socket. */
+    /** @brief Script adapter: creates a caller-owned UDP link. */
     UdpLink*     newUdpLink(UdpSocket* socket);
-    /** @brief Creates an RPC client over a UDP link. */
+    /** @brief Script adapter: creates a caller-owned RPC client. */
     NetRpc*      newRpc(UdpLink* link);
-    /** @brief Creates a UDP host (peer discovery / broadcast). */
+    /** @brief Script adapter: creates a caller-owned UDP host. */
     NetHost*     newHost();
 
     /** @brief Default socket/HTTP timeout in milliseconds. */
