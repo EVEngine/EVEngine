@@ -54,6 +54,10 @@ public:
     void update(float dt);
     void render(graphics::Graphics *gfx);
     int pollConfigs();
+    /** @brief Last tile collection counters for project-owned diagnostics UIs. */
+    int getLastVisibleTileCount() const;
+    int getLastCustomVisualCount() const;
+    int getLastAtlasCount() const;
 
     int getLayerCount() const;
     /** @brief Layer created by the most recent loadFromFile/newLayerFromFile call. */

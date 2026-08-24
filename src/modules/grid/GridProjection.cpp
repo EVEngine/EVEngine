@@ -82,8 +82,8 @@ void worldToCell(const GridConfig &cfg, float px, float py, int &cx, int &cy, in
         case GridLayout::IsometricZAsY: {
             const float lx = px - cfg.originX;
             const float ly = py - cfg.originY;
-            const float tw = cfg.cellW > 0.f ? cfg.cellW * 0.5f : 1.f;
-            const float th = cfg.cellH > 0.f ? cfg.cellH * 0.5f : 1.f;
+            const float tw = cfg.cellW > 0.f ? cellPitchX(cfg) * 0.5f : 1.f;
+            const float th = cfg.cellH > 0.f ? cellPitchY(cfg) * 0.5f : 1.f;
             const float a = lx / tw;
             const float b = ly / th;
             cx = int(std::floor((b + a) * 0.5f));

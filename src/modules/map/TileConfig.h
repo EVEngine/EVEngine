@@ -30,6 +30,14 @@ bool loadConfigFile(TileLayer *layer, const std::string &path, std::string *erro
 bool reloadConfigFile(TileLayer *layer, std::string *error = nullptr);
 
 /**
+ * @brief Load a composable TileSet manifest onto an existing layer.
+ *
+ * The manifest only changes atlas/visual metadata; map dimensions and GIDs stay intact.
+ */
+bool loadTilesetManifestFile(TileLayer *layer, const std::string &path,
+                             std::string *error = nullptr);
+
+/**
  * @brief Load a (possibly multi-layer) map JSON. Creates one TileLayer per tile layer.
  * Optionally fills `objects` from objectgroup layers.
  * Returns created layers (empty on failure). All share the same Resource.path for reload.
