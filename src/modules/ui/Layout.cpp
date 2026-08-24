@@ -221,7 +221,8 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredH = t.y;
         break;
     }
-    case NodeType::Combo: {
+    case NodeType::Combo:
+    case NodeType::SearchField: {
         n.measuredW = 140.f;
         n.measuredH = ImGui::GetFrameHeight();
         break;
@@ -238,6 +239,19 @@ void measureNode(UIHost::Tree &tree, int index) {
         const ImVec2 t = ImGui::CalcTextSize(label);
         n.measuredW = ImGui::GetFrameHeight() + style.ItemInnerSpacing.x + t.x;
         n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Switch: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        const float trackW = ImGui::GetFrameHeight() * 1.7f;
+        n.measuredW = trackW + (n.text.empty() ? 0.f : style.ItemInnerSpacing.x + t.x);
+        n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Badge: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        n.measuredW = t.x + style.FramePadding.x * 2.f;
+        n.measuredH = t.y + 6.f;
         break;
     }
     case NodeType::Slider:
@@ -287,7 +301,28 @@ void measureNode(UIHost::Tree &tree, int index) {
         }
         break;
     }
-    case NodeType::Group: {
+    case NodeType::SectionHeader: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        n.measuredW = t.x + 10.f;
+        n.measuredH = std::max(ImGui::GetFrameHeight(), t.y + style.ItemSpacing.y);
+        break;
+    }
+    case NodeType::MenuItem: {
+        const ImVec2 label = ImGui::CalcTextSize(n.text.c_str());
+        const ImVec2 shortcut = ImGui::CalcTextSize(n.valueText.c_str());
+        n.measuredW = label.x + shortcut.x + style.ItemSpacing.x * 4.f;
+        n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Menu: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        n.measuredW = t.x + style.FramePadding.x * 2.f;
+        n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Group:
+    case NodeType::Card:
+    case NodeType::MenuBar: {
         float w = 0.f, h = 0.f;
         measureFlowChildren(tree, n.firstChild, &w, &h);
         n.measuredW = w + n.paddingL + n.paddingR;

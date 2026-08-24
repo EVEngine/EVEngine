@@ -1,6 +1,7 @@
 #include "ui/UISystem.h"
 
 #include "ui/Layout.h"
+#include "ui/Icons.h"
 #include "ui/Theme.h"
 #include "ui/UIBackend.h"
 
@@ -60,6 +61,15 @@ void walkSiblings(UIHost *host, UIHost::Tree *tree, int index) {
         walkNode(host, tree, index);
         index = next;
     }
+}
+
+bool hasDirectChildType(const UIHost::Tree &tree, const UINode &parent, NodeType type) {
+    for (int child = parent.firstChild; child >= 0;
+         child = tree.nodes[size_t(child)].nextSibling) {
+        if (child >= int(tree.nodes.size())) break;
+        if (tree.nodes[size_t(child)].type == type) return true;
+    }
+    return false;
 }
 
 void emitSpacer(float main, float cross, bool row) {
@@ -235,6 +245,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             title += "###" + host->meta()->name + "/" + visibleTitle;
         const bool modal = host && host->meta()->modal;
         ImGuiWindowFlags flags = 0;
+        if (hasDirectChildType(*tree, n, NodeType::MenuBar)) flags |= ImGuiWindowFlags_MenuBar;
         float winW = 0.f;
         float winH = 0.f;
         if (host && host->meta()->percentW > 0.f)
@@ -419,6 +430,66 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         }
         break;
     }
+    case NodeType::SearchField: {
+        char buf[1024];
+        std::memset(buf, 0, sizeof(buf));
+        if (!n.valueText.empty()) std::strncpy(buf, n.valueText.c_str(), sizeof(buf) - 1);
+        const std::string label = "##search" + (n.id.empty() ? std::string() : "###" + n.id);
+        const std::string hint = iconText(Icon::Search, n.text.empty() ? "Search" : n.text);
+        if (ImGui::InputTextWithHint(label.c_str(), hint.c_str(), buf, sizeof(buf))) {
+            n.valueText = buf;
+            pushPending(host, n, "text", n.handlerText, false, 0.f, n.valueText);
+        }
+        break;
+    }
+    case NodeType::Switch: {
+        const float height = ImGui::GetFrameHeight();
+        const float trackH = std::max(16.f, height * 0.68f);
+        const float trackW = height * 1.7f;
+        const float radius = trackH * 0.5f;
+        const std::string id = "##switch" + (n.id.empty() ? std::string() : "###" + n.id);
+        ImGui::BeginGroup();
+        const ImVec2 pos = ImGui::GetCursorScreenPos();
+        if (ImGui::InvisibleButton(id.c_str(), ImVec2(trackW, height))) {
+            n.checked = !n.checked;
+            pushPending(host, n, "toggle", n.handlerToggle, n.checked);
+        }
+        const bool hovered = ImGui::IsItemHovered();
+        const ImU32 bg = ImGui::GetColorU32(
+            n.checked ? ImGuiCol_CheckMark
+                      : (hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg));
+        const float y = pos.y + (height - trackH) * 0.5f;
+        ImDrawList *draw = ImGui::GetWindowDrawList();
+        draw->AddRectFilled(ImVec2(pos.x, y), ImVec2(pos.x + trackW, y + trackH), bg, radius);
+        const float knobR = radius - 2.f;
+        const float knobX = n.checked ? pos.x + trackW - radius : pos.x + radius;
+        draw->AddCircleFilled(ImVec2(knobX, y + radius), knobR,
+                              ImGui::GetColorU32(ImGuiCol_Text));
+        if (!n.text.empty()) {
+            ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted(n.text.c_str());
+        }
+        ImGui::EndGroup();
+        break;
+    }
+    case NodeType::Badge: {
+        const ImVec2 textSize = ImGui::CalcTextSize(n.text.c_str());
+        const ImVec2 padding(ImGui::GetStyle().FramePadding.x, 3.f);
+        const ImVec2 pos = ImGui::GetCursorScreenPos();
+        const ImVec2 size(textSize.x + padding.x * 2.f, textSize.y + padding.y * 2.f);
+        ImDrawList *draw = ImGui::GetWindowDrawList();
+        const ImU32 bg = ImGui::ColorConvertFloat4ToU32(
+            ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
+        const ImU32 border = ImGui::ColorConvertFloat4ToU32(
+            ImVec4(n.tintR, n.tintG, n.tintB, std::min(1.f, n.tintA + 0.35f)));
+        draw->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), bg, size.y * 0.5f);
+        draw->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), border, size.y * 0.5f);
+        draw->AddText(ImVec2(pos.x + padding.x, pos.y + padding.y),
+                      ImGui::GetColorU32(ImGuiCol_Text), n.text.c_str());
+        ImGui::Dummy(size);
+        break;
+    }
     case NodeType::CollapsingHeader: {
         ImGuiTreeNodeFlags flags = n.open ? ImGuiTreeNodeFlags_DefaultOpen : 0;
         const char *label = n.text.empty() ? "Section" : n.text.c_str();
@@ -434,6 +505,54 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
         }
         ImGui::EndChild();
+        break;
+    }
+    case NodeType::Card: {
+        const float height = n.sizeY > 0.f
+                                 ? n.sizeY
+                                 : std::max(ImGui::GetFrameHeight(),
+                                            n.measuredH + ImGui::GetStyle().WindowPadding.y * 2.f);
+        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 0.f, height);
+        const std::string id = n.id.empty() ? "card" : n.id;
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
+        if (ImGui::BeginChild(id.c_str(), size, true, ImGuiWindowFlags_AlwaysUseWindowPadding)) {
+            if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
+        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
+        break;
+    }
+    case NodeType::SectionHeader: {
+        const ImVec2 pos = ImGui::GetCursorScreenPos();
+        const float height = ImGui::GetFrameHeight();
+        ImDrawList *draw = ImGui::GetWindowDrawList();
+        draw->AddRectFilled(ImVec2(pos.x, pos.y + 4.f), ImVec2(pos.x + 3.f, pos.y + height - 4.f),
+                            ImGui::GetColorU32(ImGuiCol_CheckMark), 1.f);
+        draw->AddText(ImVec2(pos.x + 10.f, pos.y + (height - ImGui::GetFontSize()) * 0.5f),
+                      ImGui::GetColorU32(ImGuiCol_Text), n.text.c_str());
+        ImGui::Dummy(ImVec2(n.sizeX > 0.f ? n.sizeX : ImGui::GetContentRegionAvail().x, height));
+        ImGui::Separator();
+        break;
+    }
+    case NodeType::MenuBar:
+        if (ImGui::BeginMenuBar()) {
+            if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
+            ImGui::EndMenuBar();
+        }
+        break;
+    case NodeType::Menu: {
+        const std::string label = nodeLabel(n, "Menu");
+        if (ImGui::BeginMenu(label.c_str())) {
+            if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
+            ImGui::EndMenu();
+        }
+        break;
+    }
+    case NodeType::MenuItem: {
+        const std::string label = nodeLabel(n, "Command");
+        const char *shortcut = n.valueText.empty() ? nullptr : n.valueText.c_str();
+        if (ImGui::MenuItem(label.c_str(), shortcut, n.checked, true))
+            pushPending(host, n, "click", n.handlerClick);
         break;
     }
     case NodeType::ScrollList: {
@@ -531,6 +650,9 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         emitSpacer(n.sizeX > 0.f ? n.sizeX : 0.f, n.sizeY > 0.f ? n.sizeY : 0.f, true);
         break;
     }
+
+    if (!n.tooltip.empty() && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
+        ImGui::SetTooltip("%s", n.tooltip.c_str());
 }
 
 void walk(UIHost *host, UIHost::Tree *tree, int index) { walkSiblings(host, tree, index); }

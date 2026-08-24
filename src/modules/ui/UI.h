@@ -90,6 +90,12 @@ public:
     void beginCollapsing(const std::string &label, const std::string &id = "", bool open = true);
     /** @brief Opens a sized child region. */
     void beginChild(const std::string &id, float width = 0.f, float height = 120.f);
+    /** @brief Opens a bordered card surface. */
+    void beginCard(const std::string &id = "");
+    /** @brief Opens a window menu bar. */
+    void beginMenuBar(const std::string &id = "");
+    /** @brief Opens a popup menu. */
+    void beginMenu(const std::string &label, const std::string &id = "");
     /** Virtualized scroll list; rows are the children added before end(). */
     void beginScrollList(const std::string &id = "", float height = 0.f, float itemHeight = 0.f);
     /**
@@ -139,6 +145,18 @@ public:
                   const std::string &id = "");
     /** @brief Adds an editable text field. */
     void addInputText(const std::string &label, const std::string &value, const std::string &id = "");
+    /** @brief Adds a compact search field. */
+    void addSearchField(const std::string &hint, const std::string &value = "",
+                        const std::string &id = "");
+    /** @brief Adds a modern boolean switch. */
+    void addSwitch(const std::string &label, bool checked, const std::string &id = "");
+    /** @brief Adds a compact status/category badge. */
+    void addBadge(const std::string &label, const std::string &id = "");
+    /** @brief Adds a non-collapsible section heading. */
+    void addSectionHeader(const std::string &label, const std::string &id = "");
+    /** @brief Adds a selectable menu command. */
+    void addMenuItem(const std::string &label, const std::string &shortcut = "",
+                     const std::string &id = "");
     /** @brief Flexible empty space inside Flex (default grow=1). */
     void addSpacer(const std::string &id = "", float grow = 1.f);
     /**
@@ -156,6 +174,8 @@ public:
     void setItemPercent(float w, float h);
     /** Place the most recently added child absolutely inside the current Flex. */
     void setItemAbsolute(float anchorX, float anchorY, float x = 0.f, float y = 0.f);
+    /** @brief Sets hover help on the most recently added item. */
+    void setItemTooltip(const std::string &text);
     /** Set Flex container align/justify on the current open Flex (no-op otherwise). */
     /** @brief Set Flex container align/justify on the current open Flex (no-op otherwise). */
     void setFlexAlign(const std::string &align);

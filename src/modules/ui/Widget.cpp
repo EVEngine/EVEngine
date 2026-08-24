@@ -11,6 +11,7 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     node.key = desc.key.empty() ? node.id : std::move(desc.key);
     node.text = std::move(desc.text);
     node.valueText = std::move(desc.valueText);
+    node.tooltip = std::move(desc.tooltip);
     node.visible = desc.visible;
     node.checked = desc.checked;
     node.open = desc.open;
@@ -130,6 +131,7 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     UINode &n = tree.nodes[size_t(nodeIndex)];
     n.text = std::move(desc.text);
     n.valueText = std::move(desc.valueText);
+    n.tooltip = std::move(desc.tooltip);
     n.visible = desc.visible;
     n.checked = desc.checked;
     n.open = desc.open;
@@ -376,6 +378,93 @@ WidgetDesc inputText(std::string label, std::string value, std::string id,
     d.text = std::move(label);
     d.valueText = std::move(value);
     d.onTextChange = std::move(onChange);
+    return d;
+}
+
+WidgetDesc searchField(std::string hint, std::string value, std::string id,
+                       std::function<void(const std::string &)> onChange) {
+    WidgetDesc d;
+    d.type = NodeType::SearchField;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(hint);
+    d.valueText = std::move(value);
+    d.onTextChange = std::move(onChange);
+    return d;
+}
+
+WidgetDesc toggleSwitch(std::string label, bool checked, std::string id,
+                        std::function<void(bool)> onToggle) {
+    WidgetDesc d;
+    d.type = NodeType::Switch;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.checked = checked;
+    d.onToggle = std::move(onToggle);
+    return d;
+}
+
+WidgetDesc badge(std::string label, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Badge;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.tintR = 0.96f;
+    d.tintG = 0.35f;
+    d.tintB = 0.40f;
+    d.tintA = 0.20f;
+    return d;
+}
+
+WidgetDesc card(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Card;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc sectionHeader(std::string label, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::SectionHeader;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    return d;
+}
+
+WidgetDesc menuBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::MenuBar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc menu(std::string label, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Menu;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc menuItem(std::string label, std::string shortcut, std::string id,
+                    std::function<void()> onClick, bool selected) {
+    WidgetDesc d;
+    d.type = NodeType::MenuItem;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.valueText = std::move(shortcut);
+    d.checked = selected;
+    d.onClick = std::move(onClick);
     return d;
 }
 

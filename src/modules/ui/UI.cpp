@@ -357,6 +357,14 @@ void UI::beginChild(const std::string &id, float width, float height) {
     pushOpen(child(id, {}, width, height));
 }
 
+void UI::beginCard(const std::string &id) { pushOpen(card({}, id)); }
+
+void UI::beginMenuBar(const std::string &id) { pushOpen(menuBar({}, id)); }
+
+void UI::beginMenu(const std::string &label, const std::string &id) {
+    pushOpen(menu(label, {}, id));
+}
+
 void UI::beginScrollList(const std::string &id, float height, float itemHeight) {
     pushOpen(scrollList(id, {}, height, itemHeight));
 }
@@ -493,6 +501,28 @@ void UI::addInputText(const std::string &label, const std::string &value, const 
     currentParent().children.push_back(inputText(label, value, id));
 }
 
+void UI::addSearchField(const std::string &hint, const std::string &value,
+                        const std::string &id) {
+    currentParent().children.push_back(searchField(hint, value, id));
+}
+
+void UI::addSwitch(const std::string &label, bool checked, const std::string &id) {
+    currentParent().children.push_back(toggleSwitch(label, checked, id));
+}
+
+void UI::addBadge(const std::string &label, const std::string &id) {
+    currentParent().children.push_back(badge(label, id));
+}
+
+void UI::addSectionHeader(const std::string &label, const std::string &id) {
+    currentParent().children.push_back(sectionHeader(label, id));
+}
+
+void UI::addMenuItem(const std::string &label, const std::string &shortcut,
+                     const std::string &id) {
+    currentParent().children.push_back(menuItem(label, shortcut, id));
+}
+
 void UI::addSpacer(const std::string &id, float grow) {
     currentParent().children.push_back(spacer(id, grow));
 }
@@ -557,6 +587,12 @@ void UI::setItemAbsolute(float anchorX, float anchorY, float x, float y) {
     parent.children.back().anchorY = anchorY;
     parent.children.back().posX = x;
     parent.children.back().posY = y;
+}
+
+void UI::setItemTooltip(const std::string &text) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().tooltip = text;
 }
 
 void UI::setFlexAlign(const std::string &align) {
@@ -925,6 +961,14 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Combo: return "combo";
     case NodeType::ScrollList: return "scrollList";
     case NodeType::Viewport: return "viewport";
+    case NodeType::SearchField: return "searchField";
+    case NodeType::Switch: return "switch";
+    case NodeType::Badge: return "badge";
+    case NodeType::Card: return "card";
+    case NodeType::SectionHeader: return "sectionHeader";
+    case NodeType::MenuBar: return "menuBar";
+    case NodeType::Menu: return "menu";
+    case NodeType::MenuItem: return "menuItem";
     }
     return "text";
 }
@@ -948,6 +992,14 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "combo") return NodeType::Combo;
     if (s == "scrollList") return NodeType::ScrollList;
     if (s == "viewport") return NodeType::Viewport;
+    if (s == "searchField") return NodeType::SearchField;
+    if (s == "switch") return NodeType::Switch;
+    if (s == "badge") return NodeType::Badge;
+    if (s == "card") return NodeType::Card;
+    if (s == "sectionHeader") return NodeType::SectionHeader;
+    if (s == "menuBar") return NodeType::MenuBar;
+    if (s == "menu") return NodeType::Menu;
+    if (s == "menuItem") return NodeType::MenuItem;
     return NodeType::Text;
 }
 
@@ -957,6 +1009,7 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (!n.key.empty()) o.set("key", n.key);
     if (!n.text.empty()) o.set("text", n.text);
     if (!n.valueText.empty()) o.set("valueText", n.valueText);
+    if (!n.tooltip.empty()) o.set("tooltip", n.tooltip);
     if (!n.visible) o.set("visible", false);
     if (n.checked) o.set("checked", true);
     if (!n.open) o.set("open", false);
@@ -1019,6 +1072,7 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
     if (o.has("key")) d.key = o.getValue<std::string>("key");
     if (o.has("text")) d.text = o.getValue<std::string>("text");
     if (o.has("valueText")) d.valueText = o.getValue<std::string>("valueText");
+    if (o.has("tooltip")) d.tooltip = o.getValue<std::string>("tooltip");
     if (o.has("visible")) d.visible = o.getValue<bool>("visible");
     if (o.has("checked")) d.checked = o.getValue<bool>("checked");
     if (o.has("open")) d.open = o.getValue<bool>("open");
@@ -1367,6 +1421,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginList", &UI::beginList);
     cls.addFunc("beginCollapsing", &UI::beginCollapsing);
     cls.addFunc("beginChild", &UI::beginChild);
+    cls.addFunc("beginCard", &UI::beginCard);
+    cls.addFunc("beginMenuBar", &UI::beginMenuBar);
+    cls.addFunc("beginMenu", &UI::beginMenu);
     cls.addFunc("beginScrollList", &UI::beginScrollList);
     cls.addFunc("beginFlex", &UI::beginFlex);
     cls.addFunc("beginRow", &UI::beginRow);
@@ -1387,6 +1444,11 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("viewport", &UI::addViewport);
     cls.addFunc("combo", &UI::addCombo);
     cls.addFunc("inputText", &UI::addInputText);
+    cls.addFunc("searchField", &UI::addSearchField);
+    cls.addFunc("switch", &UI::addSwitch);
+    cls.addFunc("badge", &UI::addBadge);
+    cls.addFunc("sectionHeader", &UI::addSectionHeader);
+    cls.addFunc("menuItem", &UI::addMenuItem);
     cls.addFunc("spacer", &UI::addSpacer);
     cls.addFunc("setItemFlexGrow", &UI::setItemFlexGrow);
     cls.addFunc("setItemSize", &UI::setItemSize);
@@ -1396,6 +1458,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setItemMaxSize", &UI::setItemMaxSize);
     cls.addFunc("setItemPercent", &UI::setItemPercent);
     cls.addFunc("setItemAbsolute", &UI::setItemAbsolute);
+    cls.addFunc("setItemTooltip", &UI::setItemTooltip);
     cls.addFunc("setFlexAlign", &UI::setFlexAlign);
     cls.addFunc("setFlexJustify", &UI::setFlexJustify);
     cls.addFunc("listItem", &UI::addListItem);

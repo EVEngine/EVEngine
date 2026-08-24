@@ -30,6 +30,14 @@ enum class NodeType : uint8_t {
     Combo = 16,   // dropdown; options newline-separated in valueText, index in value
     ScrollList = 17,  // virtualized scrollable list (uniform itemHeight)
     Viewport = 18,  // embedded render target: offscreen Canvas shown + input routed
+    SearchField = 19,   // compact input with a search hint/icon
+    Switch = 20,        // modern boolean toggle
+    Badge = 21,         // compact status/category pill
+    Card = 22,          // bordered surface container
+    SectionHeader = 23, // non-collapsible editor section heading
+    MenuBar = 24,       // native ImGui window menu bar
+    Menu = 25,          // popup menu container
+    MenuItem = 26,      // selectable menu command
 };
 
 /** @brief Main-axis direction for Flex containers. */
@@ -57,6 +65,7 @@ struct UINode {
     std::string key;
     std::string text;       // label / title
     std::string valueText;  // InputText content
+    std::string tooltip;    // hover help; empty disables the tooltip
     bool visible = true;
     bool checked = false;
     bool open = true;  // CollapsingHeader default-open hint

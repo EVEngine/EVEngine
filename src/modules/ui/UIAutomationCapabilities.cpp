@@ -51,12 +51,22 @@ const char* nodeTypeName(NodeType type) {
         case NodeType::Combo: return "combo";
         case NodeType::ScrollList: return "scrollList";
         case NodeType::Viewport: return "viewport";
+        case NodeType::SearchField: return "searchField";
+        case NodeType::Switch: return "switch";
+        case NodeType::Badge: return "badge";
+        case NodeType::Card: return "card";
+        case NodeType::SectionHeader: return "sectionHeader";
+        case NodeType::MenuBar: return "menuBar";
+        case NodeType::Menu: return "menu";
+        case NodeType::MenuItem: return "menuItem";
     }
     return "unknown";
 }
 
 bool isClickable(const UINode& node) {
-    return node.type == NodeType::Button || node.type == NodeType::ImageButton || node.handlerClick != 0;
+    return node.type == NodeType::Button || node.type == NodeType::ImageButton ||
+           node.type == NodeType::Switch || node.type == NodeType::MenuItem ||
+           node.handlerClick != 0;
 }
 
 std::string stringify(const Poco::Dynamic::Var& value) {
@@ -76,13 +86,18 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
     out->set("text", node.text);
     out->set("visible", node.visible);
     out->set("clickable", isClickable(node));
-    if (node.type == NodeType::Checkbox) out->set("checked", node.checked);
+    if (node.type == NodeType::Checkbox || node.type == NodeType::Switch ||
+        node.type == NodeType::MenuItem)
+        out->set("checked", node.checked);
     if (node.type == NodeType::Slider || node.type == NodeType::Progress || node.type == NodeType::Combo) {
         out->set("value", node.value);
         out->set("min", node.minValue);
         out->set("max", node.maxValue);
     }
-    if (node.type == NodeType::InputText || node.type == NodeType::Combo) out->set("valueText", node.valueText);
+    if (node.type == NodeType::InputText || node.type == NodeType::SearchField ||
+        node.type == NodeType::Combo || node.type == NodeType::MenuItem)
+        out->set("valueText", node.valueText);
+    if (!node.tooltip.empty()) out->set("tooltip", node.tooltip);
 
     Poco::JSON::Array::Ptr children(new Poco::JSON::Array());
     for (int child = node.firstChild; child >= 0; child = tree.nodes[static_cast<size_t>(child)].nextSibling) {

@@ -53,6 +53,27 @@ ui.iconButton("paint-brush", "Paint", "paint");
 ui.end();
 ```
 
+### 组合桌面编辑器控件
+
+Editor 常用控件已内置：`searchField`、`switch`、`badge`、`sectionHeader`、`beginCard`、
+`beginMenuBar` / `beginMenu` / `menuItem`。`setItemTooltip` 为刚添加的控件设置悬停说明。
+菜单栏应作为 Window 的直接子项；所有可交互控件都应使用稳定 ID。
+
+```squirrel
+ui.beginMenuBar("main-menu");
+ui.beginMenu("File", "file");
+ui.menuItem("Save", "Ctrl+S", "save");
+ui.end();
+ui.end();
+ui.searchField("Search assets", "", "asset-search");
+ui.setItemTooltip("Filter project assets");
+ui.sectionHeader("Properties", "properties");
+ui.beginCard("selection-card");
+ui.switch("Visible", true, "visible");
+ui.badge("Modified", "state");
+ui.end();
+```
+
 ### 更新而不重建整个 UI
 
 文本变化用 `setText(id, value)`，进度用 `setValue()`，显示隐藏用 `setVisible()`；结构变化才重新 build 并 `remountBuildAs()`。多宿主时先 `select(host)` 再按局部 ID 操作。
@@ -71,12 +92,12 @@ ui.end();
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `beginBuild()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginRow()`、`beginScrollList()`、`beginWindow()`、`bindOwner()`
-- `animateHostPos()`、`button()`、`checkbox()`、`combo()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
+- `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginRow()`、`beginScrollList()`、`beginWindow()`、`bindOwner()`
+- `animateHostPos()`、`badge()`、`button()`、`checkbox()`、`combo()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
 - `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
-- `mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`select()`、`separator()`、`setChecked()`
-- `setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPercent()`、`setHostPos()`、`setHostSize()`、`setHostVisible()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemFlexGrow()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
+- `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
+- `setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPercent()`、`setHostPos()`、`setHostSize()`、`setHostVisible()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemFlexGrow()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
+- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
 - `wantCaptureMouse()`
 - `image()`、`imageButton()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`
 - `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
