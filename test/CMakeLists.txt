@@ -44,6 +44,7 @@ file(GLOB all_test_cpp
   RenderImageAudit.cpp
   RenderSceneEffects.cpp
   Volumetric.cpp
+  atmosphere_volume.cpp
   TextureSampler.cpp
   AmbientOcclusion.cpp
   Outline.cpp

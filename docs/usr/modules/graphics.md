@@ -133,6 +133,10 @@ hair.setCastShadow(false)  // 发片通常不参与阴影投射
 - **screenspace**：`beginOcclusionMap` → `drawOccluders2D` → `scatter`；或 `applyFromScene`
 - **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`
 - **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
+- **froxel**：`configureFroxelGrid` → `clearFroxelGrid` →
+  `injectFroxelHeightFog` → `integrateFroxel` → `uploadFroxel`；在
+  `gfx.render3D()` 后将 GBuffer 线性深度传给 `applyFroxel` 或
+  `applyFroxelTo`。介质未变化时不必每帧重新上传。
 - **cloud**：`setMode("cloud")`，用 `setCloudLayer`、`setCloudCoverage`、
   `setCloudDensity`、`setCloudScale`、`setCloudWind` 和 `setCloudLightColor`
   调整云层；线性深度输入通过 `renderClouds` 或 `renderCloudsTo` 渲染，
@@ -229,6 +233,9 @@ fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
 - `Sprite2D`：`setPosition()`、`getX()`、`getY()`、`setRotation()`、`getRotation()`、`setScale()`、`getScaleX()`、`getScaleY()`、`setSize()`、`getWidth()`、`getHeight()`、`setTexture()`、`getTexture()`、`setQuad()`、`getQuad()`、`setColor()`、`setLayer()`、`getLayer()`、`setVisible()`、`getVisible()`、`setReceiveLight()`、`getReceiveLight()`、`setBlend()`、`getBlend()`、`setAnchor()`、`getAnchorX()`、`getAnchorY()`、`setFlip()`、`getFlipX()`、`getFlipY()`、`setFrameLayout()`、`setCastOcclusion()`、`getCastOcclusion()`、`destroy()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
+- `Volumetric` froxel：`configureFroxelGrid`、`clearFroxelGrid`、
+  `injectFroxelHeightFog`、`integrateFroxel`、`uploadFroxel`、
+  `applyFroxel`、`applyFroxelTo`
 - `AmbientOcclusion`：`setQuality`、`setMode`、`setCamera`、`setRadius`、`setBias`、`setIntensity`、`setPower`、`compute`、`blur`、`applyOverlay`、`applyFromDepth`、`resolutionFor` 等
 - `GlobalIllumination`：`setQuality`、`setCamera`、`setRadius`、`setIntensity`、`setLightDirection`、`setLightColor`、`applyFromDepth`、`getSampleCount` 等
 - `AntiAliasing`：`setQuality`、`setMode`、`apply`、`applyTo`、`applyCanvas`、`applyCanvasTo`、`suggestScale`、`resolutionFor`、`setFloat`、`getFloat` 等
