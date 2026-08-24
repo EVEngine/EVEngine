@@ -40,6 +40,7 @@
 #include "image/ImageData.h"
 #include "stylize/Stylize.h"
 #include "stylize/StyleInstance.h"
+#include "stylize/StyleRecipe.h"
 #include "window/Window.h"
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
@@ -58,6 +59,7 @@ using eve::image::ImageData;
 using eve::stylize::StyleChain;
 using eve::stylize::StyleInstance;
 using eve::stylize::StylePass;
+using eve::stylize::StyleRecipe;
 using eve::stylize::Stylize;
 using Colorf = ImageData::Colorf;
 
@@ -400,6 +402,19 @@ TEST_CASE("stylize.api.passFromShaderAndChain") {
     chain->apply(gfx, tex, dest, temp);
     ::Color p1 = dest->getPixel(32, 24);
     CHECK_GT(p1.a, 0.5f);
+
+    std::unique_ptr<StyleInstance> watercolor(mod->newInstance("watercolor"));
+    std::unique_ptr<StyleInstance> pixel(mod->newInstance("pixel"));
+    std::unique_ptr<StyleRecipe> recipe(mod->newRecipe());
+    recipe->add(pixel.get());
+    recipe->add(watercolor.get());
+    recipe->compile(gfx);
+    CHECK(recipe->isCompiled());
+    CHECK_EQ(recipe->getStage(), std::string("afterTonemap"));
+    CHECK_EQ(recipe->getStyle(0)->getStyle(), std::string("watercolor"));
+    recipe->apply(gfx, tex, dest);
+    ::Color p2 = dest->getPixel(32, 24);
+    CHECK_GT(p2.a, 0.5f);
 
     delete chain;
     delete custom;

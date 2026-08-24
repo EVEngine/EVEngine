@@ -52,6 +52,7 @@ mat.setShadingModel("custom");
   `hasMeshStyle(id)` / `supports(style, feature)` / `getStyleParamCount` /
   `getStyleParamName`。
 - 实例：`newInstance(styleId)` → `StyleInstance`。
+- 配方：`newRecipe()` → `StyleRecipe`，按 priority 编译并自动管理中间 Canvas。
 - 后处理：`newPass(styleId)`、`newPassFromShader(id, spvOrWgsl)`、`newChain()`、
   `newPostShader(styleId)`。
 - 网格：`newMeshShader(styleId)`。
@@ -77,6 +78,16 @@ mat.setShadingModel("custom");
 
 - `clear()`、`add(pass)`、`getPassCount()`、`getPass(i)`、
   `apply(gfx)` / `applyCanvas(gfx)`。
+
+`StyleChain` 是兼容层；新代码优先使用 `StyleRecipe`。
+
+### `StyleRecipe`
+
+- `add(instance)` / `clear()` / `getStyleCount()` / `getStyle(i)`。
+- `compile(gfx)` 会按 `getPriority()` 稳定排序，并拒绝混用不同 injection stage。
+- `isCompiled()` / `getStage()`。
+- `apply(gfx, source, dest)` / `applyCanvas(gfx, source, dest)`；多 Pass 所需的
+  ping-pong Canvas 由 recipe 按目标尺寸自动创建和复用。
 
 ## 生命周期
 

@@ -2,6 +2,7 @@
 
 #include "stylize/ImageStylize.h"
 #include "stylize/StyleInstance.h"
+#include "stylize/StyleRecipe.h"
 #include "stylize/StyleShaders.h"
 
 #include "common/Exception.h"
@@ -68,6 +69,8 @@ StyleInstance *Stylize::newInstance(const std::string &style) {
     return new StyleInstance(style);
 }
 
+StyleRecipe *Stylize::newRecipe() { return new StyleRecipe(); }
+
 void Stylize::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Stylize::create, false);
     expose(cls);
@@ -111,6 +114,19 @@ void Stylize::expose(ssq::Table &table) {
     instance.addFunc("newPass", &StyleInstance::newPass);
     instance.addFunc("newMeshShader", &StyleInstance::newMeshShader);
 
+    auto recipe = table.addClass<StyleRecipe>(
+        "StyleRecipe", std::function<StyleRecipe *()>([]() -> StyleRecipe * { return nullptr; }),
+        true);
+    recipe.addFunc("clear", &StyleRecipe::clear);
+    recipe.addFunc("add", &StyleRecipe::add);
+    recipe.addFunc("getStyleCount", &StyleRecipe::getStyleCount);
+    recipe.addFunc("getStyle", &StyleRecipe::getStyle);
+    recipe.addFunc("compile", &StyleRecipe::compile);
+    recipe.addFunc("isCompiled", &StyleRecipe::isCompiled);
+    recipe.addFunc("getStage", &StyleRecipe::getStage);
+    recipe.addFunc("apply", &StyleRecipe::apply);
+    recipe.addFunc("applyCanvas", &StyleRecipe::applyCanvas);
+
     auto chain = table.addClass<StyleChain>(
         "StyleChain", std::function<StyleChain *()>([]() -> StyleChain * { return nullptr; }), true);
     chain.addFunc("clear", &StyleChain::clear);
@@ -131,6 +147,7 @@ void Stylize::expose(ssq::Class &cls) {
     cls.addFunc("getStyleParamCount", &Stylize::getStyleParamCount);
     cls.addFunc("getStyleParamName", &Stylize::getStyleParamName);
     cls.addFunc("newInstance", &Stylize::newInstance);
+    cls.addFunc("newRecipe", &Stylize::newRecipe);
     cls.addFunc("newPass", &Stylize::newPass);
     cls.addFunc("newPassFromShader", &Stylize::newPassFromShader);
     cls.addFunc("newChain", &Stylize::newChain);
