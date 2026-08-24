@@ -68,12 +68,42 @@ function setupCameraController() {
     ctrl.setTarget(0.0, 1.0, 0.0);
     ctrl.setOffset(0.0, 2.6, 6.0);
     ctrl.setSmooth(6.0);
+    ctrl.setPositionSmooth(7.0);
+    ctrl.setTargetSmooth(10.0);
+    ctrl.setComposition(0.08, 0.04);
+    ctrl.setDeadZone(0.15);
+    ctrl.setFov(50.0);
+
+    // 静态遮挡探针：相机会在盒体前缩进，解除遮挡后平滑恢复。
+    ctrl.setCollisionEnabled(true);
+    ctrl.setCollisionRadius(0.3);
+    ctrl.setCollisionRecovery(4.0);
+    ctrl.addCollisionBox(-1.2, -1.6, 1.5, 1.2, 2.5, 2.0);
+
+    // Rig 是可复用的参数快照；Director 按 priority / enabled 选择。
+    ctrl.addRig("follow", "follow", 10);
+    ctrl.setMode("orbit"); ctrl.setRadius(10.0); ctrl.setElevation(30.0);
+    ctrl.addRig("orbit", "orbit", 10);
+    ctrl.setMode("topdown"); ctrl.setRadius(12.0);
+    ctrl.addRig("topdown", "topdown", 10);
+    ctrl.setMode("firstperson"); ctrl.setFov(65.0);
+    ctrl.addRig("firstperson", "firstperson", 10);
+    ctrl.setMode("cinematic"); ctrl.setFov(48.0);
+    ctrl.addRig("cinematic", "cinematic", 10);
 
     // cinematic 用的一组命名视角
     ctrl.addView("front",  0.0, 3.0, 12.0, 0.0, 1.0, 0.0);
     ctrl.addView("side",   14.0, 3.0, 0.0, 0.0, 1.0, 0.0);
     ctrl.addView("high",   8.0, 9.0, 8.0, 0.0, 1.0, 0.0);
     ctrl.addView("close",  0.0, 2.0, 4.0, 0.0, 1.0, 0.0);
+
+    // Timeline 切换 Rig 并产生可被全局 Event 或 controller 消费的 marker。
+    ctrl.setEventSink(event);
+    ctrl.addTimelineCut(0.0, "cinematic", 0.0);
+    ctrl.addTimelineEvent(1.0, "camera.beat", "front");
+    ctrl.addTimelineCut(3.0, "orbit", 0.8);
+    ctrl.addTimelineEvent(3.0, "camera.beat", "orbit");
+    ctrl.addTimelineCut(6.0, "cinematic", 0.8);
 
     ctrl.snap();
 }
@@ -102,10 +132,12 @@ function buildPanel() {
 
 function setMode(m) {
     mode = m;
-    ctrl.setMode(m);
+    ctrl.activateRig(m, 0.35);
     if (m == "cinematic") {
-        ctrl.playSequence(3.0);
+        ctrl.seekTimeline(0.0, false);
+        ctrl.playTimeline(true);
     } else {
+        ctrl.pauseTimeline();
         ctrl.stopSequence();
         ctrl.setTarget(0.0, 1.0, 0.0);
         if (m == "orbit") { ctrl.setRadius(10.0); ctrl.setElevation(30.0); ctrl.setOrbitSpeed(20.0); }
@@ -166,6 +198,12 @@ eve_update = function(dt) {
     }
 
     ctrl.update(dt);
+
+    local marker = ctrl.consumeTimelineEvent();
+    if (marker != "" && uiReady) {
+        ui.select("cam");
+        ui.setText("status", marker + ": " + ctrl.getTimelineEventData());
+    }
 
     // UI 交互
     local clicked = ui.consumeClick();
