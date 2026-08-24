@@ -22,6 +22,9 @@ class AnimSkeleton;
 class AnimClip;
 class AnimPose;
 class AnimPlayer;
+class AnimGraph;
+class AnimBoneMask;
+class AnimLayerMixer;
 class AnimStateMachine;
 class MotionDatabase;
 class MotionMatcher;
@@ -30,6 +33,9 @@ class ControlPose;
 class AnimSkin;
 class AnimLattice;
 class AnimTrail;
+class AnimBatch;
+class AnimConstraintStack;
+class AnimSyncGroup;
 class SpriteSheet;
 class SpriteClip;
 class SpriteAnim;
@@ -104,7 +110,19 @@ public:
     AnimSkeleton     *newSkeleton();
     AnimClip         *newClip(const std::string &name = "");
     AnimPose         *newPose(int boneCount = 0);
+    /** @brief Create a parallel batch clip evaluator. */
+    AnimBatch        *newBatch();
+    /** @brief Create an ordered procedural constraint stack. */
+    AnimConstraintStack *newConstraintStack(AnimSkeleton* skeleton);
+    /** @brief Create a normalized-time player synchronization group. */
+    AnimSyncGroup* newSyncGroup();
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
+    /** @brief Create a composable pose graph for the skeleton. */
+    AnimGraph        *newGraph(AnimSkeleton *skeleton);
+    /** @brief Create a zero-weight per-bone animation mask. */
+    AnimBoneMask* newBoneMask(AnimSkeleton* skeleton);
+    /** @brief Create an override/additive animation layer mixer. */
+    AnimLayerMixer*   newLayerMixer(AnimSkeleton* skeleton);
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);

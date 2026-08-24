@@ -7,14 +7,18 @@
  */
 
 #include "building/BuildingTypes.h"
-#include "grid/GridConfig.h"
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace eve::map {
 class TileLayer;
+}
+
+namespace eve::grid {
+struct GridConfig;
 }
 
 namespace eve::building {
@@ -26,7 +30,7 @@ class PlacementWorld {
 public:
     /** @brief 创建 width×height 的格子世界，cellSize 为像素/格。 */
     PlacementWorld(int width, int height, float cellSize = 32.f);
-    ~PlacementWorld() = default;
+    ~PlacementWorld();
 
     PlacementWorld(const PlacementWorld &) = delete;
     PlacementWorld &operator=(const PlacementWorld &) = delete;
@@ -41,11 +45,11 @@ public:
     /** @brief 尺寸 / 格子大小 / 原点。 */
     int getWidth() const { return width_; }
     int getHeight() const { return height_; }
-    float getCellSize() const { return grid_.cellW; }
+    float getCellSize() const;
     void setCellSize(float s);
 
-    float getOriginX() const { return grid_.originX; }
-    float getOriginY() const { return grid_.originY; }
+    float getOriginX() const;
+    float getOriginY() const;
     void setOrigin(float x, float y);
 
     /** @brief 放置策略：吸附模式 / 校验规则。 */
@@ -59,8 +63,8 @@ public:
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 
     // ---- Grid 配置（默认正交 2D，等价旧行为）----
-    const grid::GridConfig &getGrid() const { return grid_; }
-    grid::GridConfig &getGrid() { return grid_; }
+    const grid::GridConfig &getGrid() const;
+    grid::GridConfig &getGrid();
     void setGridLayout(const std::string &layout);
     std::string getGridLayoutName() const;
     void setGridPlane(const std::string &plane);
@@ -174,7 +178,7 @@ private:
     std::string id_;
     int width_ = 0;
     int height_ = 0;
-    grid::GridConfig grid_;
+    std::unique_ptr<grid::GridConfig> grid_;
     std::string snapMode_ = "grid";
     std::string validateRule_ = "default";
     std::vector<int> occupancy_;

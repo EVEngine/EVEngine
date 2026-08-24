@@ -17,10 +17,21 @@ namespace eve::graphics {
  */
 class Mesh : public Drawable {
 public:
+    static constexpr int kMaxSkinBones = 128;
     int   indexCount = 0;
     void *gpuHandle  = nullptr;  // vulkan::GpuMesh*
     /** @brief Vertex count of the GPU buffer (morph CPU base may be empty). */
     int gpuVertexCount = 0;
+    /** @brief True after joint and weight data has been uploaded for GPU skinning. */
+    bool hasGpuSkinning() const { return gpuSkinned_; }
+    /** @brief Number of matrices in the current skinning palette. */
+    int getSkinPaletteCount() const { return static_cast<int>(skinPalette_.size() / 16u); }
+    /** @brief Replace the per-draw column-major GPU skinning palette. */
+    bool setSkinPalette(const float *matrices, int matrixCount);
+    /** @brief Packed column-major matrix palette used by graphics backends. */
+    const std::vector<float> &skinPalette() const { return skinPalette_; }
+    /** @brief Mark whether the backend vertex stream contains skin attributes. */
+    void markGpuSkinned(bool value) { gpuSkinned_ = value; }
 
     /**
      * @brief Model-space bounding sphere used for view/cascade frustum culling.
@@ -85,6 +96,8 @@ private:
     std::vector<MorphTarget> morphs_;
     std::unordered_map<std::string, float> morphWeights_;
     bool morphDirty_ = false;
+    bool gpuSkinned_ = false;
+    std::vector<float> skinPalette_;
 };
 
 }  // namespace eve::graphics

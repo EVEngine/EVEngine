@@ -1144,9 +1144,8 @@ void EditorHost::frame() {
     }
 
     I.event->pump();
-    while (eve::event::Message* m = I.event->poll()) {
+    while (auto m = I.event->pollOwned()) {
         const std::string name = m->name;
-        delete m;
         if (name == "quit") {
             closeWindow();
             requestExit();

@@ -210,7 +210,8 @@ TEST_CASE("decal.gpuProjectBlendsIntoForward") {
         RenderSystem3D::addDecalExtraDrawer(
             [](eve::graphics::Graphics &g, const Camera3D::Data &camData,
                const glm::mat4 &viewProj, float aspect) {
-                DecalManager::inst().drawAll(g, camData, viewProj, aspect);
+                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ,
+                                             viewProj, aspect);
             });
     }
     gfx->getRenderControl()->enable("decal");
@@ -269,7 +270,8 @@ TEST_CASE("decal.gpuEmissiveAdditiveGlow") {
         RenderSystem3D::addDecalExtraDrawer(
             [](eve::graphics::Graphics &g, const Camera3D::Data &camData,
                const glm::mat4 &viewProj, float aspect) {
-                DecalManager::inst().drawAll(g, camData, viewProj, aspect);
+                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ,
+                                             viewProj, aspect);
             });
     }
     gfx->getRenderControl()->enable("decal");
@@ -498,7 +500,8 @@ TEST_CASE("decal.renderGalleryPng") {
         RenderSystem3D::addDecalExtraDrawer(
             [](eve::graphics::Graphics &g, const Camera3D::Data &camData,
                const glm::mat4 &viewProj, float aspect) {
-                DecalManager::inst().drawAll(g, camData, viewProj, aspect);
+                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ,
+                                             viewProj, aspect);
             });
     }
     gfx->getRenderControl()->enable("decal");

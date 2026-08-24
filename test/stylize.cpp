@@ -39,6 +39,8 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "stylize/Stylize.h"
+#include "stylize/StyleInstance.h"
+#include "stylize/StyleRecipe.h"
 #include "window/Window.h"
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
@@ -55,7 +57,9 @@ using eve::graphics::Shader;
 using eve::graphics::Texture;
 using eve::image::ImageData;
 using eve::stylize::StyleChain;
+using eve::stylize::StyleInstance;
 using eve::stylize::StylePass;
+using eve::stylize::StyleRecipe;
 using eve::stylize::Stylize;
 using Colorf = ImageData::Colorf;
 
@@ -235,22 +239,27 @@ TEST_CASE("stylize.styles.registry") {
     auto *mod = Stylize::create();
     REQUIRE(mod != nullptr);
     CHECK_EQ(mod->getName(), std::string("Stylize"));
-    CHECK_EQ(mod->getStyleCount(), 4);
+    CHECK_EQ(mod->getStyleCount(), 5);
     CHECK(mod->hasStyle("cartoon"));
     CHECK(mod->hasStyle("watercolor"));
     CHECK(mod->hasStyle("ink"));
     CHECK(mod->hasStyle("pixel"));
+    CHECK(mod->hasStyle("xray"));
     CHECK(!mod->hasStyle("oil"));
     CHECK(mod->hasMeshStyle("cartoon"));
     CHECK(mod->hasMeshStyle("ink"));
     CHECK(!mod->hasMeshStyle("watercolor"));
     CHECK(!mod->hasMeshStyle("pixel"));
+    CHECK(mod->hasMeshStyle("xray"));
 
     CHECK(mod->supports("cartoon", "post"));
     CHECK(mod->supports("cartoon", "mesh"));
     CHECK(mod->supports("watercolor", "cpu"));
     CHECK(!mod->supports("watercolor", "mesh"));
-    CHECK(mod->supports("ink", "gbuffer"));  // depth/normal via graphics.RenderControl
+    CHECK(!mod->supports("ink", "gbuffer"));  // current shader is color/Sobel only
+    CHECK(mod->supports("xray", "depth"));
+    CHECK(!mod->supports("xray", "post"));
+    CHECK(!mod->supports("xray", "cpu"));
     CHECK(!mod->supports("oil", "post"));
 
     CHECK_GT(mod->getStyleParamCount("pixel"), 0);
@@ -296,6 +305,26 @@ TEST_CASE("stylize.processImage.cpuAllStyles") {
         threw = true;
     }
     CHECK(threw);
+}
+
+TEST_CASE("stylize.instance.parameterSchema") {
+    auto *mod = Stylize::create();
+    std::unique_ptr<StyleInstance> pixel(mod->newInstance("pixel"));
+    REQUIRE(pixel.get() != nullptr);
+    CHECK_EQ(pixel->getStyle(), std::string("pixel"));
+    CHECK_EQ(pixel->getStage(), std::string("afterTonemap"));
+    CHECK(pixel->requiresInput("color"));
+    CHECK(!pixel->requiresInput("depth"));
+    CHECK(pixel->hasParam("pixelSize"));
+    CHECK(!pixel->hasParam("texelW"));
+    CHECK_EQ(pixel->getFloat("pixelSize"), 5.f);
+
+    pixel->setFloat("pixelSize", 999.f);
+    CHECK_EQ(pixel->getFloat("pixelSize"), pixel->getParamMax("pixelSize"));
+    CHECK(pixel->isOverridden("pixelSize"));
+    pixel->reset("pixelSize");
+    CHECK(!pixel->isOverridden("pixelSize"));
+    CHECK_EQ(pixel->getFloat("pixelSize"), pixel->getParamDefault("pixelSize"));
 }
 
 TEST_CASE("stylize.processImage.inkIsDesaturated") {
@@ -373,6 +402,19 @@ TEST_CASE("stylize.api.passFromShaderAndChain") {
     chain->apply(gfx, tex, dest, temp);
     ::Color p1 = dest->getPixel(32, 24);
     CHECK_GT(p1.a, 0.5f);
+
+    std::unique_ptr<StyleInstance> watercolor(mod->newInstance("watercolor"));
+    std::unique_ptr<StyleInstance> pixel(mod->newInstance("pixel"));
+    std::unique_ptr<StyleRecipe> recipe(mod->newRecipe());
+    recipe->add(pixel.get());
+    recipe->add(watercolor.get());
+    recipe->compile(gfx);
+    CHECK(recipe->isCompiled());
+    CHECK_EQ(recipe->getStage(), std::string("afterTonemap"));
+    CHECK_EQ(recipe->getStyle(0)->getStyle(), std::string("watercolor"));
+    recipe->apply(gfx, tex, dest);
+    ::Color p2 = dest->getPixel(32, 24);
+    CHECK_GT(p2.a, 0.5f);
 
     delete chain;
     delete custom;

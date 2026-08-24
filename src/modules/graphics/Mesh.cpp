@@ -7,6 +7,12 @@
 
 namespace eve::graphics {
 
+bool Mesh::setSkinPalette(const float *matrices, int matrixCount) {
+    if (!matrices || matrixCount <= 0 || matrixCount > kMaxSkinBones) return false;
+    skinPalette_.assign(matrices, matrices + static_cast<size_t>(matrixCount) * 16u);
+    return true;
+}
+
 void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
     boundsCx     = 0.f;
     boundsCy     = 0.f;

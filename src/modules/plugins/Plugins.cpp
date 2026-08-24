@@ -62,9 +62,10 @@ bool Plugins::load(const std::string& path) {
     auto init = reinterpret_cast<PluginInitFn>(dlsym(mod, "eve_plugin_init"));
     const char* err = dlerror();
     if (err != nullptr || !init) {
+        const std::string error = err ? err : "";
         dlclose(mod);
         throw Exception("plugins.load: missing eve_plugin_init in '%s'%s%s", path.c_str(),
-                        err ? ": " : "", err ? err : "");
+                        error.empty() ? "" : ": ", error.c_str());
     }
     int rc = init();
     if (rc != 0) {

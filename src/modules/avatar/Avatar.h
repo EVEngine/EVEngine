@@ -50,6 +50,8 @@ public:
     static ILive2DBackend *createLive2DBackend();
     /** @brief Backend name currently in effect ("null" when using the built-in stub). */
     static std::string getLive2DBackendName();
+    /** @brief True when the active backend is a real rendering runtime, not the null stub. */
+    static bool hasLive2DBackend();
 
 private:
     friend class AvatarInstance;
