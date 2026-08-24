@@ -221,8 +221,12 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
 
     switch (n.type) {
     case NodeType::Window: {
-        std::string title = n.text.empty() ? "Window" : n.text;
-        if (host && !host->meta()->name.empty()) title = host->meta()->name + "/" + title;
+        const std::string visibleTitle = n.text.empty() ? "Window" : n.text;
+        std::string title = visibleTitle;
+        // Keep the host name in ImGui's stable ID without exposing internal
+        // paths such as "inventory/Inspector" in the visible title bar.
+        if (host && !host->meta()->name.empty())
+            title += "###" + host->meta()->name + "/" + visibleTitle;
         const bool modal = host && host->meta()->modal;
         ImGuiWindowFlags flags = 0;
         float winW = 0.f;

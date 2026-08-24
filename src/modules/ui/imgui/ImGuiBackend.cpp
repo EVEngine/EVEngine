@@ -38,7 +38,7 @@ void checkVk(VkResult err) {
 #endif
 
 /** Base glyph size in logical px (before the DPI scale is applied). */
-constexpr float kBaseFontSizePx = 16.f;
+constexpr float kBaseFontSizePx = 17.f;
 
 /** U+4E2D "中": probe used to verify a font actually rasterizes CJK glyphs. */
 constexpr ImWchar kCjkProbeCodepoint = 0x4E2D;
@@ -362,6 +362,11 @@ float ImGuiBackend::computeInitialScale() const {
     if (SDL_GetDisplayDPI(0, &ddpi, nullptr, nullptr) != 0 || ddpi < 1.f) ddpi = 320.f;
     float s = ddpi / 160.f;
     return std::clamp(s, 1.75f, 3.25f);
+#elif defined(_WIN32)
+    // A DPI-aware SDL 2.0 window uses physical pixels for both its window and
+    // drawable size, so their ratio stays 1 even at 125%/150% Windows scale.
+    // Scale ImGui geometry explicitly to retain the OS-requested UI size.
+    return computeDpiScale();
 #else
     // Desktop: ImGui's backend already applies the display density via
     // io.DisplayFramebufferScale, so the logical (point-space) UI scale stays
@@ -373,6 +378,13 @@ float ImGuiBackend::computeInitialScale() const {
 }
 
 float ImGuiBackend::computeDpiScale() const {
+#if defined(_WIN32)
+    const int display = window_ ? SDL_GetWindowDisplayIndex(window_) : 0;
+    float ddpi = 96.f;
+    if (display >= 0 && SDL_GetDisplayDPI(display, &ddpi, nullptr, nullptr) == 0 && ddpi > 0.f)
+        return std::clamp(ddpi / 96.f, 1.f, 4.f);
+    return 1.f;
+#else
     int logicalW = 0, logicalH = 0, pixelW = 0, pixelH = 0;
     SDL_GetWindowSize(window_, &logicalW, &logicalH);
 #ifdef EVENGINE_WEBGPU
@@ -386,6 +398,7 @@ float ImGuiBackend::computeDpiScale() const {
         if (s > 0.f) return std::clamp(s, 1.f, 4.f);
     }
     return 1.f;
+#endif
 }
 
 void ImGuiBackend::loadFonts() {
@@ -399,8 +412,12 @@ void ImGuiBackend::loadFonts() {
     const float sizePx = kBaseFontSizePx * dpiScale_;
 
     ImFontConfig cfg{};
-    cfg.OversampleH = 2;
-    cfg.OversampleV = 2;
+    cfg.OversampleH = 3;
+    cfg.OversampleV = 1;
+    cfg.PixelSnapH = true;
+    // A small coverage boost gives Segoe UI's thin strokes enough contrast
+    // after the physical-DPI atlas is scaled back into logical coordinates.
+    cfg.RasterizerMultiply = 1.12f;
     // Request CJK ranges so the merged CJK font below rasterizes Chinese,
     // Japanese and Korean text (the atlas grows by a few MB — acceptable).
     fontRanges_.clear();

@@ -8,6 +8,8 @@
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
 
+#include <imgui.h>
+
 #include <string>
 #include <vector>
 
@@ -120,6 +122,24 @@ TEST_CASE("UI.b.themeTokensUnified") {
     CHECK(dark.windowBg[0] < 0.5f);
     CHECK(light.windowBg[0] > 0.5f);
     CHECK(dark.text[0] > light.text[0]);
+}
+
+TEST_CASE("UI.b.themeAppliesCompleteModernStyle") {
+    ImGui::CreateContext();
+    const Theme dark = Theme::dark();
+    applyThemeToImGui(dark, 1.f);
+
+    const ImGuiStyle &style = ImGui::GetStyle();
+    CHECK(style.WindowPadding.x == dark.windowPaddingX);
+    CHECK(style.FramePadding.y == dark.framePaddingY);
+    CHECK(style.CellPadding.y == dark.cellPaddingY);
+    CHECK(style.ScrollbarSize == dark.scrollbarSize);
+    CHECK(style.Colors[ImGuiCol_MenuBarBg].x == dark.menuBarBg[0]);
+    CHECK(style.Colors[ImGuiCol_TabActive].y == dark.tabActive[1]);
+    CHECK(style.Colors[ImGuiCol_TableHeaderBg].z == dark.tableHeaderBg[2]);
+    CHECK(style.Colors[ImGuiCol_ModalWindowDimBg].w == dark.modalDimBg[3]);
+
+    ImGui::DestroyContext();
 }
 
 TEST_CASE("UI.b.scriptListBuilder") {
