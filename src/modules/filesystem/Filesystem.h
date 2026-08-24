@@ -274,6 +274,17 @@ public:
     virtual void allowMountingForPath(const std::string &path) = 0;
 
     /**
+     * @brief Mount an external OS directory for read-only asset access.
+     *
+     * This convenience method authorizes the path and mounts it without changing
+     * the filesystem write directory. Files remain outside packaged game data.
+     * @param path Absolute OS directory to mount.
+     * @param mountpoint Virtual directory visible to game code.
+     * @return True when the mount succeeds.
+     */
+    bool mountExternalReadOnly(const std::string &path, const std::string &mountpoint);
+
+    /**
      * @brief Gets whether the given full (OS-dependent) path is a directory.
      **/
     virtual bool isRealDirectory(const std::string &path) const;

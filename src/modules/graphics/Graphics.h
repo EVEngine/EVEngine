@@ -37,6 +37,7 @@ class Outline;
 class Quad;
 class RenderControl;
 class Renderable2D;
+class AlphaMask;
 class ScreenSpaceReflection;
 class Shader;
 class Texture;
@@ -950,6 +951,22 @@ public:
     virtual void print(const std::string &text, float x, float y, const Color &color = Color(1.f, 1.f, 1.f, 1.f),
                        float scale = 1.f);
 
+    /**
+     * @brief Script-friendly UTF-8 text drawing overload using RGBA components.
+     * @param text UTF-8 text to draw.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param r Red color component.
+     * @param g Green color component.
+     * @param b Blue color component.
+     * @param a Alpha color component.
+     * @param scale Uniform text scale.
+     */
+    void printRGBA(const std::string &text, float x, float y, float r, float g, float b, float a,
+                   float scale = 1.f) {
+        print(text, x, y, Color(r, g, b, a), scale);
+    }
+
     virtual void setShader(Shader *shader);
     virtual void setShader();
 
@@ -1085,6 +1102,8 @@ public:
      * Caller owns Outline*; its Shader is owned by Graphics.
      */
     Outline *newOutline();
+    /** @brief Create a script-owned reusable two-texture alpha-mask compositor. */
+    AlphaMask *newAlphaMask();
 
     /**
      * @brief Screen-space single-bounce GI. Caller owns GlobalIllumination*;
