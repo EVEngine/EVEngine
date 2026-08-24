@@ -24,6 +24,8 @@ grid::GridConfig toGridConfig(const TileLayer::Config &cfg) {
     }
     g.cellW = cfg.tileW;
     g.cellH = cfg.tileH;
+    g.cellGapX = cfg.cellGapX;
+    g.cellGapY = cfg.cellGapY;
     g.originX = cfg.originX;
     g.originY = cfg.originY;
     g.staggerAxis = cfg.staggerAxis == StaggerAxis::Y ? grid::StaggerAxis::Y

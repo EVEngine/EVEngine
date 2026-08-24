@@ -8,10 +8,15 @@
 #include "filesystem/Filesystem.h"
 #include "common/Module.h"
 
+#include <unordered_set>
 #include <vector>
 
 namespace eve::map {
 namespace {
+
+int gLastVisibleTileCount = 0;
+int gLastCustomVisualCount = 0;
+int gLastAtlasCount = 0;
 
 struct ViewCam {
     float x = 0.f;
@@ -60,6 +65,25 @@ bool atlasUV(const TileLayer::Tileset &ts, uint32_t gid, float &u0, float &v0, f
     return true;
 }
 
+const TileLayer::Tileset::Visual *visualForGid(const TileLayer::Tileset &ts, uint32_t gid) {
+    for (const auto &visual : ts.visuals)
+        if (visual.gid == int(gid)) return &visual;
+    return nullptr;
+}
+
+bool visualUV(const TileLayer::Tileset &ts, const TileLayer::Tileset::Visual &visual,
+              float &u0, float &v0, float &u1, float &v1) {
+    if (!ts.texture || visual.width <= 0 || visual.height <= 0) return false;
+    const float iw = float(ts.texture->getWidth());
+    const float ih = float(ts.texture->getHeight());
+    if (iw <= 0.f || ih <= 0.f) return false;
+    u0 = float(visual.x) / iw;
+    v0 = float(visual.y) / ih;
+    u1 = float(visual.x + visual.width) / iw;
+    v1 = float(visual.y + visual.height) / ih;
+    return true;
+}
+
 int64_t fileModtime(const std::string &path) {
     auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
     if (!fs) fs = eve::filesystem::Filesystem::create();
@@ -71,7 +95,12 @@ int64_t fileModtime(const std::string &path) {
 }  // namespace
 
 void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out) {
+    gLastVisibleTileCount = 0;
+    gLastCustomVisualCount = 0;
+    gLastAtlasCount = 0;
     if (ecs::current()->getManager<TileLayer>() == nullptr) return;
+
+    std::unordered_set<graphics::Texture *> atlases;
 
     auto view = ecs::View<TileLayer, TileLayer::Config, TileLayer::Tiles, TileLayer::Tileset,
                           TileLayer::Draw>();
@@ -105,7 +134,22 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out) {
                 item.litPath = false;
 
                 float u0, v0, u1, v1;
-                if (atlasUV(*ts, gid, u0, v0, u1, v1)) {
+                const auto *visual = visualForGid(*ts, gid);
+                if (visual && visualUV(*ts, *visual, u0, v0, u1, v1)) {
+                    ++gLastCustomVisualCount;
+                    item.x -= visual->pivotX;
+                    item.y -= visual->pivotY;
+                    item.w = float(visual->width);
+                    item.h = float(visual->height);
+                    item.depthY += visual->sortBias;
+                    item.texture = ts->texture;
+                    item.hasUV = true;
+                    item.u0 = u0;
+                    item.v0 = v0;
+                    item.u1 = u1;
+                    item.v1 = v1;
+                    item.color = tint;
+                } else if (atlasUV(*ts, gid, u0, v0, u1, v1)) {
                     item.texture = ts->texture;
                     item.hasUV = true;
                     item.u0 = u0;
@@ -118,9 +162,12 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out) {
                     item.color = solidForGid(gid, tint);
                 }
                 out.push_back(item);
+                ++gLastVisibleTileCount;
+                if (item.texture) atlases.insert(item.texture);
             }
         }
     }
+    gLastAtlasCount = int(atlases.size());
 }
 
 void TileRenderSystem::render(graphics::Graphics *gfx) {
@@ -129,6 +176,10 @@ void TileRenderSystem::render(graphics::Graphics *gfx) {
     collect(items);
     graphics::RenderSystem::drawItems(*gfx, items, false);
 }
+
+int TileRenderSystem::lastVisibleTileCount() { return gLastVisibleTileCount; }
+int TileRenderSystem::lastCustomVisualCount() { return gLastCustomVisualCount; }
+int TileRenderSystem::lastAtlasCount() { return gLastAtlasCount; }
 
 int TileConfigSystem::poll() {
     if (ecs::current()->getManager<TileLayer>() == nullptr) return 0;

@@ -141,6 +141,53 @@ TEST_CASE("map.tileGid.masksFlipFlags") {
     CHECK_EQ(tileGid(0x80000005u), 5u);
 }
 
+TEST_CASE("map.tileset.irregularVisualMetadata") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(2, 1, 64.f, 32.f);
+    layer->setTileVisual(7, 10, 20, 96, 128, 48.f, 104.f, 3.f);
+    layer->setTileMetadata(7, 2, 1, false, 4.f);
+    REQUIRE(layer->getTileVisualCount() == 1);
+    const auto &visual = layer->tileset()->visuals[0];
+    CHECK_EQ(visual.gid, 7);
+    CHECK_EQ(visual.x, 10);
+    CHECK_EQ(visual.y, 20);
+    CHECK_EQ(visual.width, 96);
+    CHECK_EQ(visual.height, 128);
+    CHECK_EQ(visual.pivotX, 48.f);
+    CHECK_EQ(visual.pivotY, 104.f);
+    CHECK_EQ(visual.sortBias, 3.f);
+    CHECK_EQ(visual.footprintW, 2);
+    CHECK(!visual.walkable);
+    CHECK_EQ(visual.cost, 4.f);
+    layer->clearTileVisuals();
+    CHECK_EQ(layer->getTileVisualCount(), 0);
+    layer->setVisible(false);
+}
+
+TEST_CASE("map.tileset.manifestShapeInMapConfig") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(1, 1, 64.f, 32.f);
+    const char *json = R"({
+      "width":1,"height":1,"orientation":"isometric","data":[7],
+      "tileset":{
+        "image":"missing-atlas.png","firstGid":1,
+        "tiles":[{
+          "gid":7,"region":[10,20,96,128],"pivot":[48,104],
+          "footprint":[2,1],"walkable":false,"cost":4,"sortBias":3
+        }]
+      }
+    })";
+    CHECK(layer->applyConfig(json));
+    REQUIRE(layer->getTileVisualCount() == 1);
+    const auto &visual = layer->tileset()->visuals[0];
+    CHECK_EQ(visual.gid, 7);
+    CHECK_EQ(visual.width, 96);
+    CHECK_EQ(visual.pivotY, 104.f);
+    CHECK_EQ(visual.footprintW, 2);
+    CHECK(!visual.walkable);
+    layer->setVisible(false);
+}
+
 TEST_CASE("map.render.nullSafe") {
     auto *mod = Map::create();
     TileLayer *layer = mod->newLayer(2, 2, 8.f, 8.f);
@@ -183,6 +230,37 @@ TEST_CASE("map.projection.isometric") {
     CHECK_EQ(wx, -32.f);
     CHECK_EQ(wy, 16.f);
     CHECK_EQ(tileToDepthY(cfg, 1, 0), 16.f + 32.f);
+}
+
+TEST_CASE("map.projection.isometric.renderSpacingRoundTrip") {
+    TileLayer::Config cfg;
+    cfg.mapW = 8;
+    cfg.mapH = 8;
+    cfg.tileW = 64.f;
+    cfg.tileH = 32.f;
+    cfg.cellGapX = 16.f;
+    cfg.cellGapY = 8.f;
+    cfg.originX = 100.f;
+    cfg.originY = 20.f;
+    cfg.orientation = MapOrientation::Isometric;
+    float wx = 0.f, wy = 0.f;
+    tileToWorld(cfg, 3, 2, wx, wy);
+    CHECK_EQ(wx, 140.f);
+    CHECK_EQ(wy, 120.f);
+    int tx = -1, ty = -1;
+    worldToTile(cfg, wx, wy, tx, ty);
+    CHECK_EQ(tx, 3);
+    CHECK_EQ(ty, 2);
+}
+
+TEST_CASE("map.layer.renderSpacingApi") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(2, 2, 80.f, 40.f);
+    layer->setRenderSpacing(1.25f, 1.5f);
+    CHECK_EQ(layer->getCellGapX(), 20.f);
+    CHECK_EQ(layer->getCellGapY(), 20.f);
+    CHECK_EQ(layer->getRenderSpacingX(), 1.25f);
+    CHECK_EQ(layer->getRenderSpacingY(), 1.5f);
 }
 
 TEST_CASE("map.projection.staggeredYOdd") {

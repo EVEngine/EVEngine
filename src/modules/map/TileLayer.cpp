@@ -71,6 +71,7 @@ void TileLayer::clear() { fill(0); }
 void TileLayer::setTileset(graphics::Texture *texture, int firstGid, int columns, int margin,
                            int spacing) {
     auto ts = tileset();
+    ts->visuals.clear();
     ts->texture = texture;
     ts->firstGid = firstGid > 0 ? firstGid : 1;
     ts->columns = columns > 0 ? columns : 1;
@@ -87,6 +88,70 @@ void TileLayer::setTilesetTileSize(int tileW, int tileH) {
     auto ts = tileset();
     ts->tileW = tileW > 0 ? tileW : 1;
     ts->tileH = tileH > 0 ? tileH : 1;
+}
+
+void TileLayer::setCellGap(float gapX, float gapY) {
+    config()->cellGapX = std::max(gapX, -config()->tileW + 0.001f);
+    config()->cellGapY = std::max(gapY, -config()->tileH + 0.001f);
+}
+
+void TileLayer::setRenderSpacing(float spacingX, float spacingY) {
+    config()->cellGapX = config()->tileW * (std::max(spacingX, 0.001f) - 1.f);
+    config()->cellGapY = config()->tileH * (std::max(spacingY, 0.001f) - 1.f);
+}
+
+float TileLayer::getCellGapX() { return config()->cellGapX; }
+float TileLayer::getCellGapY() { return config()->cellGapY; }
+float TileLayer::getRenderSpacingX() {
+    return config()->tileW != 0.f ? 1.f + config()->cellGapX / config()->tileW : 1.f;
+}
+float TileLayer::getRenderSpacingY() {
+    return config()->tileH != 0.f ? 1.f + config()->cellGapY / config()->tileH : 1.f;
+}
+
+void TileLayer::setTileVisual(int gid, int x, int y, int width, int height, float pivotX,
+                              float pivotY, float sortBias) {
+    if (gid <= 0 || width <= 0 || height <= 0) return;
+    auto &visuals = tileset()->visuals;
+    auto it = std::find_if(visuals.begin(), visuals.end(),
+                           [gid](const Tileset::Visual &v) { return v.gid == gid; });
+    if (it == visuals.end()) {
+        visuals.push_back({});
+        it = visuals.end() - 1;
+        it->gid = gid;
+    }
+    it->x = x;
+    it->y = y;
+    it->width = width;
+    it->height = height;
+    it->pivotX = pivotX;
+    it->pivotY = pivotY;
+    it->sortBias = sortBias;
+}
+
+void TileLayer::clearTileVisuals() { tileset()->visuals.clear(); }
+
+int TileLayer::getTileVisualCount() { return int(tileset()->visuals.size()); }
+
+void TileLayer::setTileMetadata(int gid, int footprintW, int footprintH, bool walkable,
+                                float cost) {
+    if (gid <= 0) return;
+    auto &visuals = tileset()->visuals;
+    auto it = std::find_if(visuals.begin(), visuals.end(),
+                           [gid](const Tileset::Visual &v) { return v.gid == gid; });
+    if (it == visuals.end()) {
+        visuals.push_back({});
+        it = visuals.end() - 1;
+        it->gid = gid;
+    }
+    it->footprintW = std::max(1, footprintW);
+    it->footprintH = std::max(1, footprintH);
+    it->walkable = walkable;
+    it->cost = cost > 0.f ? cost : 1.f;
+}
+
+bool TileLayer::loadTilesetManifest(const std::string &path) {
+    return loadTilesetManifestFile(this, path, nullptr);
 }
 
 graphics::Texture *TileLayer::getTilesetTexture() { return tileset()->texture; }

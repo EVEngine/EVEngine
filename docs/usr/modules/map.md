@@ -28,6 +28,29 @@ map.render(gfx);
 
 先用地图坐标换算接口把世界位置转成格子，再 `setTile(x, y, gid)`；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。改瓦片后若已创建 Pathfinder，调用 `syncFromLayer()`。
 
+### 组合项目自己的 2.5D 资产工作流
+
+独立 PNG、特殊 pivot 或不规则 atlas 不要求采用引擎内置成品导入器。项目工作流只需生成 `eve.tileset/1` manifest，运行时载入：
+
+```squirrel
+local layer = map.newLayer(32, 32, 150, 75);
+layer.applyConfig(@"{""orientation"":""isometric""}");
+layer.loadTilesetManifest("assets/tiles.tileset.json");
+```
+
+每个 GID 可声明 `region`、`pivot`、`sortBias`、`footprint`、`walkable`、`cost` 与项目自定义字段。规则 atlas GID 仍走原路径。参考阶段管线位于 `tools/tile-pipeline/`，可用项目 Python 插件替换任一步；详见 `docs/dev/可组合2.5D-TileSet资产管线.md`。
+
+逻辑格尺寸和渲染间距相互独立：
+
+```squirrel
+layer.setRenderSpacing(1.12, 1.12); // 相对逻辑 tile 尺寸
+layer.setCellGap(8.0, 4.0);         // 或直接指定世界像素间隔
+```
+
+间距同时用于正反坐标换算、拾取和深度排序，但不改变 GID、寻路邻接关系或移动成本。JSON 配置可使用 `"renderSpacing":[1.12,1.12]` 或 `"cellGap":[8,4]`。
+
+需要互相产生 2.5D 遮挡的地面、角色和建筑应使用相同的 `layer`，使统一队列按脚点深度排序。`layer` 是 HUD、前景遮罩等用途的硬排序屏障；同格内的细微顺序使用 TileSet `sortBias`。
+
 ### 单体寻路（A*）
 
 ```squirrel
@@ -128,11 +151,12 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 
 - `applyConfig()`、`clear()`、`depthYAt()`、`fill()`、`getAutoReload()`、`getConfigPath()`、`getLayer()`、`getLayerCount()`
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
+- `getLastVisibleTileCount()`、`getLastCustomVisualCount()`、`getLastAtlasCount()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
 - `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`、`newFovVolume()`
 - `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
-- `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTint()`、`setVisible()`、`tileToWorldX()`
+- `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTileVisual()`、`setTileMetadata()`、`clearTileVisuals()`、`getTileVisualCount()`、`loadTilesetManifest()`、`setTint()`、`setVisible()`、`tileToWorldX()`
 - `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
 
 Pathfinder：`setTopology`、`getTopology`、`setDiagonal`、`blockGid`、`unblockGid`、`clearBlockedGids`、`setBlockEmpty`、`setBlocked`、`isWalkable`、`setCellCost`、`getCellCost`、`syncFromLayer`、`findPath`、`buildFlowField`、`followFlow`、`findGroupPath`、`invalidateCache`
