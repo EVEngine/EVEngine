@@ -14,16 +14,22 @@ Canvas；3D 网格着色用 `newMeshShader`；另有纯 CPU 的 `processImage` �
 ## 基本用法
 
 ```squirrel
-st <- eve.Stylize();
-
-// 全屏卡通后处理
-local pass = st.newPass("cartoon");
-pass.setFloat("edge", 0.5);
+local source = gfx.newCanvas(960, 540);
+local output = gfx.newCanvas(960, 540);
+local toon = stylize.newInstance("cartoon");
+toon.setFloat("outlineStrength", 1.4);
+local recipe = stylize.newRecipe();
+recipe.add(toon);
+recipe.compile(gfx);
 
 function eve_render() {
+    gfx.setCanvas(source);
     gfx.clear();
     // ...绘制场景...
-    pass.applyCanvas(gfx);   // 作用于当前 swapchain（引擎帧末自动合成）
+    gfx.setCanvas(null);
+
+    recipe.applyCanvas(gfx, source, output);
+    gfx.drawCanvas(output, 0, 0, 960, 540);
 }
 ```
 
@@ -31,13 +37,14 @@ function eve_render() {
 
 ### 像素风滤镜
 
-`st.newPass("pixel")` + `setFloat("size", ...)` 即可量化像素；多个风格叠加用
-`st.newChain()` → `chain.add(pass)` → `chain.applyCanvas(gfx)`。
+`stylize.newInstance("pixel")` + `setFloat("pixelSize", ...)` 即可量化像素；
+同一 stage 的多个效果用 `newRecipe()` 组合。
 
 ### 3D 网格卡通描边
 
 ```squirrel
-local shader = st.newMeshShader("cartoon");   // 或 "ink"
+local toon = stylize.newInstance("cartoon");
+local shader = toon.newMeshShader(gfx);   // ink / xray 同理
 local mat = gfx.newMaterial();
 mat.setShadingModel("custom");
 // 挂到 Renderable3D：r.setMaterial(mat) / r.setPart(...)
