@@ -39,13 +39,51 @@ void ModuleManager::register_module(const char* name, creator_t c, exposer_t e) 
     const bool hasCreator = c != nullptr;  // function pointers can't be printed by zeroerr
     EV_PARAM_CHECK(hasCreator, "module creator must not be null");
     auto p = inst().registered_modules.find(name);
+    if (inst().plugin_registration_active_ && p != inst().registered_modules.end()) {
+        if (inst().plugin_registration_error_.empty())
+            inst().plugin_registration_error_ =
+                std::string("module name already registered: ") + name;
+        return;
+    }
     if (p == inst().registered_modules.end()) {
         inst().registered_modules.insert(
-            std::make_pair(std::string(name), 
-            ModuleInfo{c, e, nullptr}));
+            std::make_pair(std::string(name), ModuleInfo{c, e, nullptr}));
+        if (inst().plugin_registration_active_)
+            inst().plugin_registration_added_.emplace_back(name);
     } else {
         p->second = {c, e, nullptr};
     }
+}
+
+bool ModuleManager::beginPluginRegistration() {
+    auto& manager = inst();
+    if (manager.plugin_registration_active_)
+        return false;
+    manager.plugin_registration_active_ = true;
+    manager.plugin_registration_added_.clear();
+    manager.plugin_registration_error_.clear();
+    return true;
+}
+
+std::string ModuleManager::finishPluginRegistration(bool commit) {
+    auto& manager = inst();
+    if (!manager.plugin_registration_active_)
+        return "no plugin registration transaction is active";
+
+    const std::string error = manager.plugin_registration_error_;
+    if (!commit || !error.empty()) {
+        for (const auto& name : manager.plugin_registration_added_) {
+            auto it = manager.registered_modules.find(name);
+            if (it == manager.registered_modules.end())
+                continue;
+            delete it->second.instance;
+            manager.registered_modules.erase(it);
+        }
+    }
+    manager.plugin_registration_active_ = false;
+    manager.plugin_registration_added_.clear();
+    manager.plugin_registration_error_.clear();
+    return error;
 }
 
 void ModuleManager::exposeVM(ssq::VM& vm) {

@@ -397,7 +397,26 @@ else()
   endif()
   target_compile_definitions(unit_test PRIVATE
     EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
-    EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    EVENGINE_TEST_SHARED_LIBRARY_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}")
+
+  # A real shared library exercises native loading and C++ module registration
+  # instead of testing only loader failures. It resolves engine symbols from
+  # the unit-test host exactly as a shipped plugin resolves them from eve.
+  add_library(native_test_plugin SHARED fixtures/native_test_plugin.cpp)
+  target_compile_features(native_test_plugin PRIVATE cxx_std_20)
+  target_compile_definitions(native_test_plugin PRIVATE EVENGINE_PLUGIN=1)
+  target_link_libraries(native_test_plugin PRIVATE eve_engine_includes)
+  set_target_properties(native_test_plugin PROPERTIES PREFIX "")
+  if(WIN32)
+    set_target_properties(unit_test PROPERTIES ENABLE_EXPORTS ON)
+    target_link_libraries(native_test_plugin PRIVATE "$<TARGET_LINKER_FILE:unit_test>")
+  elseif(APPLE)
+    target_link_options(native_test_plugin PRIVATE "LINKER:-undefined,dynamic_lookup")
+    target_link_options(unit_test PRIVATE "LINKER:-export_dynamic")
+  elseif(UNIX)
+    target_link_options(unit_test PRIVATE "LINKER:--export-dynamic")
+  endif()
 endif()
 
 # Large classic scenes (Sponza / DamagedHelmet). Cornell Box is committed.
