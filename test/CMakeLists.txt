@@ -18,6 +18,7 @@ file(GLOB all_test_cpp
   graphic.cpp
   graphics_font.cpp
   graphics_headless.cpp
+  graphics_backend_parity.cpp
   medialoader_model_link.cpp
   model.cpp
   mouse.cpp
@@ -107,6 +108,7 @@ file(GLOB all_test_cpp
   virtualgeometry_gpu.cpp
   gpgpu.cpp
   gpu_driven.cpp
+  gpu_driven_parity.cpp
   indirect_builder.cpp
   box2d.cpp
   box3d.cpp

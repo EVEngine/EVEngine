@@ -136,6 +136,13 @@ public:
 
     std::string getBackendName() const override { return "webgpu"; }
     bool supportsGBufferPost() const override { return true; }
+    bool supportsGpuDriven3D() const override { return true; }
+    bool gpuDrivenEnabled() const override { return gpuDrivenEnabled_; }
+    void gpuDrivenSetEnabled(bool enabled) override { gpuDrivenEnabled_ = enabled; }
+    uint32_t gpuDrivenMeshRecord(Mesh *mesh) override;
+    uint32_t gpuDrivenMaterialRecord(Material *material) override;
+    bool gpuDrivenMaterialUsable(Material *material) override;
+    bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
 
     void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;
@@ -775,6 +782,15 @@ private:
     std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
     std::vector<std::unique_ptr<Shader>> ownedShaders;
     std::vector<std::unique_ptr<GpuShader>> ownedGpuShaders;
+
+    // Stage-1 GPU-driven compatibility tables. WebGPU cannot use Vulkan's
+    // descriptor-indexed mega-buffer layout, so submission resolves neutral
+    // instance records into the backend's already batched mesh draw queue.
+    bool gpuDrivenEnabled_ = false;
+    std::vector<Mesh *> gpuDrivenMeshes_;
+    std::vector<Material *> gpuDrivenMaterials_;
+    std::unordered_map<Mesh *, uint32_t> gpuDrivenMeshIds_;
+    std::unordered_map<Material *, uint32_t> gpuDrivenMaterialIds_;
 
     // Browser async frame readback (avoids ASYNCIFY sleep inside deep
     // JS->Squirrel->Graphics call chains).
