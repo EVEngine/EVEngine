@@ -17,6 +17,52 @@ local grid = gen.generate("dungeon.bsp", p);
 
 `Params` 描述 seed、尺寸和算法参数；`Grid2D` 是结果；`OutputSpec` 决定写入 TileLayer、Image 或 Texture；`Procgen` 按注册算法名执行。
 
+## 纯脚本 PointSet 管线
+
+程序化世界编排使用普通 Squirrel 函数，不要求节点图。`PointSet` 是带位置、法线、
+旋转、缩放、密度、独立 seed 和自定义属性的 3D 采样集合。`sampleGrid`、
+`filterHeight`、`filterDensity`、`excludeRadius`、`jitterPoints` 和 `selfPrune`
+均返回新的集合，不修改输入，因此中间结果可以命名、检查、复用或分支：
+
+```squirrel
+local rootSeed = 42;
+local candidates = procgen.sampleGrid(32, 20, 2.0,
+                                      procgen.deriveSeed(rootSeed, "trees"), 0.75);
+local outsideRoad = procgen.excludeRadius(candidates, 20.0, 12.0, 4.0);
+local trees = procgen.selfPrune(outsideRoad, 1.8);
+```
+
+不要让不同内容共享一个可变随机流。用 `deriveSeed(root, "trees")`、
+`deriveSeed(root, "rocks")` 为分支派生稳定 seed；修改岩石管线不会扰动树木结果。
+
+### 事务式 hot reload
+
+命名 `ProcgenContext` 是一次完整重建的 staging 区。`publish` 会复制输出，
+`commitSystem` 成功后才原子替换该系统的上次快照；`fail`、`abortSystem`、脚本异常或
+未提交的 context 都不会破坏旧结果：
+
+```squirrel
+function rebuildForest(seed) {
+    local ctx = procgen.beginSystem("forest", seed);
+    try {
+        local points = procgen.sampleGrid(32, 20, 2.0, ctx.seedFor("trees"), 0.8);
+        local trees = procgen.selfPrune(points, 1.8);
+        ctx.trace("self prune", points.getCount(), trees.getCount(), 0.0);
+        if (!ctx.publish("trees", trees)) throw ctx.getError();
+        if (!procgen.commitSystem(ctx)) throw procgen.lastError();
+    } catch (error) {
+        ctx.fail(error.tostring());
+        procgen.commitSystem(ctx); // 失败并关闭 staging；旧快照仍然有效
+    }
+}
+
+eve_reload <- function() { rebuildForest(42); };
+```
+
+`getSystemOutput` 返回已提交输出的副本；`getSystemRevision` 可判断是否成功换代；
+`getSystemDebugReport` 输出 seed、revision、命名阶段点数/耗时和最终输出点数。
+可运行示例见 [`examples/procgen-script-pipeline`](../../../examples/procgen-script-pipeline/README.md)。
+
 ## 目标导向指南
 
 ### 生成可玩的地牢层
@@ -203,13 +249,13 @@ local mesh = gen.generateMesh("mesh.stonewall", p, gfx); // 或 mesh.fence / mes
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `addObject()`、`addObjectAt()`、`applyToLayer()`、`autotileGrid()`、`buildMesh()`、`clearObjects()`、`fill()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
+- `abort()`、`abortSystem()`、`add()`、`addObject()`、`addObjectAt()`、`applyToLayer()`、`autotileGrid()`、`beginSystem()`、`buildMesh()`、`clear()`、`clearObjects()`、`commitSystem()`、`deriveSeed()`、`empty()`、`excludeRadius()`、`fail()`、`fill()`、`filterDensity()`、`filterHeight()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
 - `generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
 - `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
 - `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`
-- `lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`randomSeed()`、`resize()`、`setCell()`、`setDetail()`、`setFloat()`、`setInt()`
-- `setLayer()`、`setMeta()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setSeed()`、`setSize()`、`setString()`
+- `getDensity()`、`getError()`、`getFloatAttribute()`、`getNormalX()`、`getNormalY()`、`getNormalZ()`、`getOutput()`、`getOutputCount()`、`getOutputName()`、`getPointSeed()`、`getScaleX()`、`getScaleY()`、`getScaleZ()`、`getStringAttribute()`、`getSystemDebugReport()`、`getSystemOutput()`、`getSystemOutputCount()`、`getSystemOutputName()`、`getSystemRevision()`、`getSystemSeed()`、`getTraceCount()`、`getTraceInputCount()`、`getTraceMilliseconds()`、`getTraceName()`、`getTraceOutputCount()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`hasFailed()`、`hasFloatAttribute()`、`hasOutput()`、`hasStringAttribute()`、`hasSystem()`、`isActive()`、`jitterPoints()`、`lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`newPointSet()`、`publish()`、`randomSeed()`、`removeSystem()`、`resize()`、`sampleGrid()`、`seedFor()`、`selfPrune()`、`setCell()`、`setDensity()`、`setDetail()`、`setFloat()`、`setFloatAttribute()`、`setInt()`
+- `setLayer()`、`setMeta()`、`setNormal()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setPointSeed()`、`setPosition()`、`setScale()`、`setSeed()`、`setSize()`、`setString()`、`setStringAttribute()`、`setYaw()`、`trace()`
 - `setTarget()`
 
 ## 使用要点
