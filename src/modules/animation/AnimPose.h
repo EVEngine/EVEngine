@@ -48,7 +48,42 @@ public:
      * @brief Compute world transforms from local pose + skeleton hierarchy.
      * World values readable via getWorld* after this call.
      */
-    void computeWorld(const AnimSkeleton *skeleton);
+    void computeWorld(const AnimSkeleton* skeleton);
+
+    /**
+     * @brief Rotate a bone so its local +Z axis aims at a world-space target.
+     * @param skeleton Skeleton
+     * defining the hierarchy.
+     * @param boneIndex Bone to rotate.
+     * @param targetX World-space target X.
+
+     * * @param targetY World-space target Y.
+     * @param targetZ World-space target Z.
+     * @param weight Blend
+     * weight in [0, 1].
+     * @return False when the target is coincident with the bone, otherwise true.
+     */
+    bool aimBone(const AnimSkeleton* skeleton, int boneIndex, float targetX, float targetY, float targetZ,
+                 float weight = 1.f);
+
+    /**
+     * @brief Solve a root-mid-tip chain toward a world-space target using CCD.
+     * @param skeleton Skeleton
+     * defining the hierarchy.
+     * @param rootBone Root joint index.
+     * @param midBone Middle joint index.
+     *
+     * @param tipBone End-effector index.
+     * @param targetX World-space target X.
+     * @param targetY World-space
+     * target Y.
+     * @param targetZ World-space target Z.
+     * @param weight Blend weight in [0, 1].
+     * @return
+     * False for an invalid chain or degenerate target, otherwise true.
+     */
+    bool solveTwoBoneIK(const AnimSkeleton* skeleton, int rootBone, int midBone, int tipBone, float targetX,
+                        float targetY, float targetZ, float weight = 1.f);
 
     float getWorldPositionX(int boneIndex) const;
     float getWorldPositionY(int boneIndex) const;

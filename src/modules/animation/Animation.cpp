@@ -578,6 +578,8 @@ void Animation::expose(ssq::Table &table) {
     pose.addFunc("getLocalScaleY", &AnimPose::getLocalScaleY);
     pose.addFunc("getLocalScaleZ", &AnimPose::getLocalScaleZ);
     pose.addFunc("computeWorld", &AnimPose::computeWorld);
+    pose.addFunc("aimBone", &AnimPose::aimBone);
+    pose.addFunc("solveTwoBoneIK", &AnimPose::solveTwoBoneIK);
     pose.addFunc("getWorldPositionX", &AnimPose::getWorldPositionX);
     pose.addFunc("getWorldPositionY", &AnimPose::getWorldPositionY);
     pose.addFunc("getWorldPositionZ", &AnimPose::getWorldPositionZ);

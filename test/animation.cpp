@@ -185,6 +185,36 @@ TEST_CASE("animation.tween.unknownEaseThrows") {
     CHECK(threw);
 }
 
+TEST_CASE("animation.pose.aimBoneTracksWorldTarget") {
+    auto sk = std::make_unique<AnimSkeleton>();
+    sk->addBone("root", -1);
+    auto pose = std::make_unique<AnimPose>();
+    sk->applyBindPose(pose.get());
+
+    REQUIRE(pose->aimBone(sk.get(), 0, 10.f, 0.f, 0.f, 1.f));
+    const float forwardX = pose->getWorldMatrixElement(0, 8);
+    const float forwardZ = pose->getWorldMatrixElement(0, 10);
+    CHECK(forwardX > 0.999f);
+    CHECK(std::fabs(forwardZ) < 1e-3f);
+}
+
+TEST_CASE("animation.pose.twoBoneIkMovesTipTowardTarget") {
+    auto sk   = std::make_unique<AnimSkeleton>();
+    int  root = sk->addBone("root", -1);
+    int  mid  = sk->addBone("mid", root);
+    int  tip  = sk->addBone("tip", mid);
+    sk->setBindPosition(mid, 0.f, 1.f, 0.f);
+    sk->setBindPosition(tip, 0.f, 1.f, 0.f);
+    auto pose = std::make_unique<AnimPose>();
+    sk->applyBindPose(pose.get());
+    pose->computeWorld(sk.get());
+    const float before = std::hypot(pose->getWorldPositionX(tip) - 1.f, pose->getWorldPositionY(tip) - 1.f);
+
+    REQUIRE(pose->solveTwoBoneIK(sk.get(), root, mid, tip, 1.f, 1.f, 0.f, 1.f));
+    const float after = std::hypot(pose->getWorldPositionX(tip) - 1.f, pose->getWorldPositionY(tip) - 1.f);
+    CHECK(after < before * 0.1f);
+}
+
 TEST_CASE("animation.tween.deltaWithoutFromUsesCurrent") {
     std::unique_ptr<Tween> tw(new Tween(1.f));
     tw->setDelta("x", 10.f);  // from defaults to current (0)
