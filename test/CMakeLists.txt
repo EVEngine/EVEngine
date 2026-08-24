@@ -90,6 +90,7 @@ file(GLOB all_test_cpp
   dialogue_conversation.cpp
   dialogue_persistence.cpp
   dialogue_text.cpp
+  dialogue_hot_reload.cpp
     dialogue_compiler.cpp
     dialogue_importers.cpp
     dialogue_localization.cpp

@@ -124,13 +124,13 @@ int DialogueFlow::loadFromDnut(const std::string& source, const std::string& pat
         lastError_.clear();
         return static_cast<int>(sourceAssets_[path].size());
     }
-    runner_.stop();
     std::vector<ConversationAsset> compiled;
     diagnostics_.clear();
     if (!compileDnutConversations(source, path, compiled, diagnostics_)) {
         lastError_ = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
         return 0;
     }
+    runner_.stop();
     if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end()) {
         assets_.erase(std::remove_if(assets_.begin(), assets_.end(),
                                      [&](const auto& asset) {
@@ -148,6 +148,75 @@ int DialogueFlow::loadFromDnut(const std::string& source, const std::string& pat
         else
             *it = std::move(asset);
     }
+    sourceHashes_[path] = hash;
+    sourceAssets_[path] = std::move(compiledIds);
+    lastLoadChanged_    = true;
+    lastError_.clear();
+    return static_cast<int>(compiled.size());
+}
+
+int DialogueFlow::reloadFromDnut(const std::string& source, const std::string& path) {
+    const size_t hash = std::hash<std::string>{}(source);
+    if (const auto cached = sourceHashes_.find(path); cached != sourceHashes_.end() && cached->second == hash) {
+        lastLoadChanged_ = false;
+        lastError_.clear();
+        return static_cast<int>(sourceAssets_[path].size());
+    }
+    std::vector<ConversationAsset>      compiled;
+    std::vector<ConversationDiagnostic> candidateDiagnostics;
+    if (!compileDnutConversations(source, path, compiled, candidateDiagnostics)) {
+        diagnostics_     = std::move(candidateDiagnostics);
+        lastError_       = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
+        lastLoadChanged_ = false;
+        return 0;
+    }
+
+    std::vector<ConversationAsset> candidate = assets_;
+    if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end()) {
+        candidate.erase(std::remove_if(candidate.begin(), candidate.end(),
+                                       [&](const auto& asset) {
+                                           return std::find(old->second.begin(), old->second.end(), asset.id) !=
+                                                  old->second.end();
+                                       }),
+                        candidate.end());
+    }
+    std::vector<std::string> compiledIds;
+    for (auto& asset : compiled) {
+        compiledIds.push_back(asset.id);
+        auto existing =
+            std::find_if(candidate.begin(), candidate.end(), [&](const auto& old) { return old.id == asset.id; });
+        if (existing == candidate.end())
+            candidate.push_back(std::move(asset));
+        else
+            *existing = std::move(asset);
+    }
+    if (!lintConversationWorkspace(candidate, path, candidateDiagnostics)) {
+        diagnostics_     = std::move(candidateDiagnostics);
+        lastError_       = diagnostics_.empty() ? "conversation workspace lint failed" : diagnostics_.front().message;
+        lastLoadChanged_ = false;
+        return 0;
+    }
+
+    StateValue activeState;
+    const bool hadActive = runner_.isActive();
+    if (hadActive) runner_.captureState(activeState);
+    std::vector<ConversationAsset> previous = assets_;
+    runner_.stop();
+    assets_ = std::move(candidate);
+    if (hadActive) {
+        StateValue  migrated = activeState;
+        std::string restoreError;
+        if (!migrations_.migrate(
+                migrated, [this](const std::string& id) { return find(id); }, &restoreError) ||
+            !runner_.restoreState(migrated, &restoreError)) {
+            assets_ = std::move(previous);
+            runner_.restoreState(activeState, nullptr);
+            lastError_       = "conversation hot reload rolled back: " + restoreError;
+            lastLoadChanged_ = false;
+            return 0;
+        }
+    }
+    diagnostics_        = std::move(candidateDiagnostics);
     sourceHashes_[path] = hash;
     sourceAssets_[path] = std::move(compiledIds);
     lastLoadChanged_    = true;
@@ -447,6 +516,7 @@ void DialogueFlow::expose(ssq::Table& table) {
 void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getName", &DialogueFlow::getName);
     cls.addFunc("loadFromDnut", &DialogueFlow::loadFromDnut);
+    cls.addFunc("reloadFromDnut", &DialogueFlow::reloadFromDnut);
     cls.addFunc("loadFromDnutFile", &DialogueFlow::loadFromDnutFile);
     cls.addFunc("importYarn", &DialogueFlow::importYarn);
     cls.addFunc("importTwee", &DialogueFlow::importTwee);

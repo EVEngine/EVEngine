@@ -23,6 +23,7 @@ public:
     ~DialogueFlow() override;
 
     int         loadFromDnut(const std::string& source, const std::string& path);
+    int         reloadFromDnut(const std::string& source, const std::string& path);
     int         loadFromDnutFile(const std::string& path);
     int         importYarn(const std::string& source, const std::string& path);
     int         importTwee(const std::string& source, const std::string& path);

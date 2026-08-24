@@ -29,3 +29,31 @@ TEST_CASE("dialogueToolchain.crossFileCallsAndStableRenames") {
     CHECK(!lintConversationWorkspace(assets, "workspace", diagnostics));
     CHECK(diagnostics.back().message.find("missing conversation") != std::string::npos);
 }
+
+TEST_CASE("dialogueToolchain.largeWorkspaceStress") {
+    constexpr int                  assetCount    = 160;
+    constexpr int                  nodesPerAsset = 100;
+    std::vector<ConversationAsset> assets;
+    assets.reserve(assetCount);
+    for (int assetIndex = 0; assetIndex < assetCount; ++assetIndex) {
+        ConversationAsset asset;
+        asset.id    = "stress." + std::to_string(assetIndex);
+        asset.entry = "node.0";
+        asset.nodes.reserve(nodesPerAsset);
+        for (int nodeIndex = 0; nodeIndex < nodesPerAsset - 1; ++nodeIndex) {
+            ConversationAsset::Node node;
+            node.id   = "node." + std::to_string(nodeIndex);
+            node.kind = ConversationAsset::Node::Kind::Line;
+            node.text = "Line {speaker.name} " + std::to_string(nodeIndex);
+            node.next = "node." + std::to_string(nodeIndex + 1);
+            asset.nodes.push_back(std::move(node));
+        }
+        asset.nodes.push_back({"node.99", ConversationAsset::Node::Kind::End});
+        assets.push_back(std::move(asset));
+    }
+    std::vector<ConversationDiagnostic> diagnostics;
+    CHECK(lintConversationWorkspace(assets, "stress-workspace", diagnostics));
+    CHECK(diagnostics.empty());
+    CHECK(assets.size() == assetCount);
+    CHECK(assets.back().nodes.size() == nodesPerAsset);
+}
