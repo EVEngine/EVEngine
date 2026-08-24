@@ -143,9 +143,16 @@ TEST_CASE("editor.v2.runtime_builder_quick_add_click_executes_command") {
         eve_render <- null;
         persist <- function(key, factory) { return factory(); };
         gfx <- {
+            rects = [],
+            canvasDraws = 0,
+            newCanvas = function(w, h) { return { width=w, height=h }; },
+            setCanvas = function(canvas) {},
+            drawCanvas = function(canvas, x, y, w, h) { canvasDraws += 1; },
             setBackgroundColor = function(r, g, b, a) {},
             clear = function() {},
-            drawSolidRect = function(x, y, w, h, r, g, b, a) {}
+            drawSolidRect = function(x, y, w, h, r, g, b, a) {
+                rects.append({ x=x, y=y, w=w, h=h, r=r, g=g, b=b, a=a });
+            }
         };
         mouse <- {
             isDown = function(button) { return false; },
@@ -184,9 +191,16 @@ TEST_CASE("editor.v2.runtime_builder_quick_add_click_executes_command") {
         eve_init();
         ui.clicks.append("editor-v2/asset-tree");
         eve_update(0.016);
+        eve_render();
         quickAddObjectCount <- editorV2.objects.len();
         quickAddCredits <- editorV2.credits;
         quickAddAsset <- editorV2.objects[0].asset;
+        quickAddCanvasDraws <- gfx.canvasDraws;
+        quickAddRenderedTree <- false;
+        foreach (rect in gfx.rects) {
+            if (rect.w >= 18.0 && rect.h >= 12.0 && rect.g > 0.6)
+                quickAddRenderedTree = true;
+        }
         cleanupResult <- editorV2.editor.unregisterScriptCommand("park.scene.place-asset");
     )";
     vm.run(vm.compileSource(executable.c_str(), "examples/editor-api-v2/main.nut"));
@@ -194,5 +208,7 @@ TEST_CASE("editor.v2.runtime_builder_quick_add_click_executes_command") {
     CHECK_EQ(vm.find("quickAddObjectCount").toInt(), 1);
     CHECK_EQ(vm.find("quickAddCredits").toInt(), 580);
     CHECK_EQ(vm.find("quickAddAsset").toString(), std::string("park.asset.tree"));
+    CHECK_EQ(vm.find("quickAddCanvasDraws").toInt(), 1);
+    CHECK(vm.find("quickAddRenderedTree").toBool());
     CHECK(vm.find("cleanupResult").toBool());
 }

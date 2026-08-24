@@ -14,6 +14,7 @@ editorV2 <- persist("editorV2", function() {
     return {
         editor = null
         session = null
+        sceneCanvas = null
         objects = []
         selectedAsset = 0
         selectedMaterial = 0
@@ -132,6 +133,7 @@ function rebuildUi() {
     ui.end();
 
     ui.text("", "selection");
+    ui.text("", "scene-summary");
     ui.text("Quick-add above, or click a grid cell for precise placement", "hint");
     ui.text("", "commands");
     ui.end();
@@ -147,6 +149,7 @@ eve_init = function() {
     editorV2.editor = eve.Editor();
     registerGameCommands();
     editorV2.session = editorV2.editor.newSession();
+    editorV2.sceneCanvas = gfx.newCanvas((COLS * CELL).tointeger(), (ROWS * CELL).tointeger());
     rebuildUi();
 
     local discovered = "Discovered commands: ";
@@ -161,6 +164,8 @@ eve_init = function() {
 eve_reload <- function() {
     registerGameCommands();
     editorV2.session = editorV2.editor.newSession();
+    if (editorV2.sceneCanvas == null)
+        editorV2.sceneCanvas = gfx.newCanvas((COLS * CELL).tointeger(), (ROWS * CELL).tointeger());
     rebuildUi();
 };
 
@@ -198,33 +203,59 @@ eve_update = function(dt) {
     ui.setText("credits", "Credits: " + editorV2.credits + " · Revision: " + editorV2.revision);
     ui.setText("selection", "Selected: " + asset.label + " / " + material.label +
                             " · Cost " + asset.cost);
+    ui.setText("scene-summary", "Visible scene objects: " + editorV2.objects.len());
     ui.setText("status", editorV2.status);
 };
 
 eve_render = function() {
     gfx.clear();
 
-    // Scene viewport and grid.
-    gfx.drawSolidRect(VIEW_X - 4.0, VIEW_Y - 4.0, COLS * CELL + 8.0, ROWS * CELL + 8.0,
-                      0.12, 0.14, 0.18, 1.0);
-    for (local y = 0; y < ROWS; ++y) {
-        for (local x = 0; x < COLS; ++x) {
-            local shade = ((x + y) % 2 == 0) ? 0.105 : 0.125;
-            gfx.drawSolidRect(VIEW_X + x * CELL + 1.0, VIEW_Y + y * CELL + 1.0,
-                              CELL - 2.0, CELL - 2.0, shade, shade + 0.025, shade + 0.035, 1.0);
-        }
-    }
+    // Render the viewport into its own target, then composite it as one texture.
+    // Besides isolating editor viewport rendering from the host UI, this is the
+    // same path a 3D scene/material preview component can use later.
+    gfx.setCanvas(editorV2.sceneCanvas);
+    gfx.clear();
+    gfx.drawSolidRect(0.0, 0.0, COLS * CELL, ROWS * CELL,
+                      0.075, 0.10, 0.085, 1.0);
+    for (local x = 0; x <= COLS; ++x)
+        gfx.drawSolidRect(x * CELL, 0.0, 1.5, ROWS * CELL,
+                          0.20, 0.27, 0.23, 1.0);
+    for (local y = 0; y <= ROWS; ++y)
+        gfx.drawSolidRect(0.0, y * CELL, COLS * CELL, 1.5,
+                          0.20, 0.27, 0.23, 1.0);
 
     foreach (object in editorV2.objects) {
         local material = materials[0];
         foreach (candidate in materials)
             if (candidate.id == object.material) material = candidate;
-        local inset = object.asset == "park.asset.ride" ? 5.0 :
-                      (object.asset == "park.asset.bench" ? 12.0 : 16.0);
-        gfx.drawSolidRect(VIEW_X + object.x * CELL + inset, VIEW_Y + object.y * CELL + inset,
-                          CELL - inset * 2.0, CELL - inset * 2.0,
-                          material.r, material.g, material.b, 1.0);
+        local px = object.x * CELL;
+        local py = object.y * CELL;
+        // A dark footprint plus distinct silhouettes makes committed objects
+        // unmistakable instead of showing them as subtle same-shaped squares.
+        gfx.drawSolidRect(px + 6.0, py + 42.0, 40.0, 5.0, 0.025, 0.035, 0.03, 0.65);
+        if (object.asset == "park.asset.tree") {
+            gfx.drawSolidRect(px + 23.0, py + 25.0, 7.0, 19.0, 0.42, 0.24, 0.10, 1.0);
+            gfx.drawSolidRect(px + 11.0, py + 8.0, 30.0, 25.0,
+                              material.r, material.g, material.b, 1.0);
+            gfx.drawSolidRect(px + 17.0, py + 3.0, 18.0, 12.0,
+                              material.r + 0.10, material.g + 0.12, material.b + 0.08, 1.0);
+        } else if (object.asset == "park.asset.bench") {
+            gfx.drawSolidRect(px + 8.0, py + 17.0, 36.0, 9.0,
+                              material.r, material.g, material.b, 1.0);
+            gfx.drawSolidRect(px + 10.0, py + 28.0, 32.0, 7.0,
+                              material.r + 0.10, material.g + 0.10, material.b + 0.10, 1.0);
+            gfx.drawSolidRect(px + 13.0, py + 34.0, 5.0, 10.0, 0.48, 0.30, 0.14, 1.0);
+            gfx.drawSolidRect(px + 34.0, py + 34.0, 5.0, 10.0, 0.48, 0.30, 0.14, 1.0);
+        } else {
+            gfx.drawSolidRect(px + 5.0, py + 8.0, 42.0, 36.0,
+                              material.r, material.g, material.b, 1.0);
+            gfx.drawSolidRect(px + 12.0, py + 15.0, 28.0, 22.0, 0.10, 0.12, 0.17, 1.0);
+            gfx.drawSolidRect(px + 21.0, py + 7.0, 10.0, 38.0,
+                              material.r + 0.12, material.g + 0.12, material.b + 0.12, 1.0);
+        }
     }
+    gfx.setCanvas(null);
+    gfx.drawCanvas(editorV2.sceneCanvas, VIEW_X, VIEW_Y, COLS * CELL, ROWS * CELL);
 
     ui.select("editor-v2");
     ui.beginFrameAndRender();
