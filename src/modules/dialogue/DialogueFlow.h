@@ -4,6 +4,7 @@
 #include "dialogue/ConversationCompiler.h"
 #include "dialogue/ConversationLocalization.h"
 #include "dialogue/ConversationPersistence.h"
+#include "dialogue/ConversationText.h"
 
 #include <squirrel.h>
 #include <unordered_map>
@@ -54,7 +55,7 @@ public:
     std::string getNodeId() const { return runner_.currentNodeId(); }
     std::string getNodeKind() const;
     std::string getSpeaker() const;
-    std::string getText() const;
+    std::string getText();
     std::string getPool() const;
     std::string getI18nKey() const;
     std::string getVoice() const;
@@ -74,6 +75,9 @@ public:
     bool        registerMigration(const std::string& assetId, int fromVersion, const std::string& currentAssetId,
                                   const std::string& nodeMap);
     void        clearMigrations() { migrations_.clear(); }
+    void        addToneRule(const std::string& expression, const std::string& prefix, const std::string& suffix,
+                            const std::string& find, const std::string& replacement);
+    void        clearToneRules() { textRenderer_.clearToneRules(); }
 
 private:
     int                      mergeImported(std::vector<ConversationAsset> imported);
@@ -93,6 +97,7 @@ private:
     ConversationLocalizationCatalog                           localization_;
     std::string                                               locale_;
     ConversationSaveMigrations                                migrations_;
+    ConversationTextRenderer                                  textRenderer_;
 };
 
 }  // namespace eve::dialogue

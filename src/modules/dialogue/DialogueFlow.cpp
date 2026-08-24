@@ -254,6 +254,7 @@ void DialogueFlow::clear() {
     sourceAssets_.clear();
     localization_.clear();
     migrations_.clear();
+    textRenderer_.clearToneRules();
     locale_.clear();
     diagnostics_.clear();
     lastError_.clear();
@@ -335,9 +336,14 @@ EVE_FLOW_NODE_STRING(getPool, pool)
 EVE_FLOW_NODE_STRING(getI18nKey, i18nKey)
 #undef EVE_FLOW_NODE_STRING
 
-std::string DialogueFlow::getText() const {
+std::string DialogueFlow::getText() {
     const auto* node = runner_.currentNode();
-    return node ? localization_.resolveText(node->i18nKey, locale_, node->text) : std::string{};
+    if (!node) return {};
+    const std::string localized = localization_.resolveText(node->i18nKey, locale_, node->text);
+    return textRenderer_.render(localized, runner_.bindings(), runner_.locals(), [this](const std::string& rule) {
+        const StateValue result = evaluate(rule, runner_.bindings(), runner_.locals());
+        return result.isBool() && result.asBool();
+    });
 }
 
 std::string DialogueFlow::getVoice() const {
@@ -427,6 +433,11 @@ bool DialogueFlow::registerMigration(const std::string& assetId, int fromVersion
     return migrations_.registerMigration(assetId, fromVersion, currentAssetId, nodeMap, &lastError_);
 }
 
+void DialogueFlow::addToneRule(const std::string& expression, const std::string& prefix, const std::string& suffix,
+                               const std::string& find, const std::string& replacement) {
+    textRenderer_.addToneRule(expression, prefix, suffix, find, replacement);
+}
+
 void DialogueFlow::expose(ssq::Table& table) {
     if (DialogueFlow* self = DialogueFlow::create()) self->vm_ = table.getHandle();
     auto cls = table.addClass(name, DialogueFlow::create, false);
@@ -483,6 +494,8 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("restoreStateJson", &DialogueFlow::restoreStateJson);
     cls.addFunc("registerMigration", &DialogueFlow::registerMigration);
     cls.addFunc("clearMigrations", &DialogueFlow::clearMigrations);
+    cls.addFunc("addToneRule", &DialogueFlow::addToneRule);
+    cls.addFunc("clearToneRules", &DialogueFlow::clearToneRules);
 }
 
 }  // namespace eve::dialogue
