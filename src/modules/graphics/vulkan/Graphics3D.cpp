@@ -551,9 +551,12 @@ bool Graphics::prepareSkinPass(Mesh *mesh, Texture *albedo, const glm::mat4 &mvp
     const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
     ubo.skinInfo.x = static_cast<float>(paletteCount);
     const auto &palette = mesh->skinPalette();
-    for (int i = 0; i < paletteCount; ++i)
-        std::memcpy(&ubo.skinBones[i], palette.data() + static_cast<size_t>(i) * 16u,
-                    sizeof(glm::mat4));
+    for (int i = 0; i < paletteCount; ++i) {
+        const float *matrix = palette.data() + static_cast<size_t>(i) * 16u;
+        for (int column = 0; column < 4; ++column)
+            for (int row = 0; row < 4; ++row)
+                ubo.skinBones[i][column][row] = matrix[column * 4 + row];
+    }
     const size_t slot = fslots.drawIndex++;
     ensureMesh3dStrides();
     uboOffset = uint32_t(slot) * mesh3dUboStride;

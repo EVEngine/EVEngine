@@ -715,7 +715,10 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.skinInfo.x         = static_cast<float>(paletteCount);
         const auto &palette    = mesh->skinPalette();
         for (int i = 0; i < paletteCount; ++i) {
-            std::memcpy(&ubo.skinBones[i], palette.data() + static_cast<size_t>(i) * 16u, sizeof(glm::mat4));
+            const float *matrix = palette.data() + static_cast<size_t>(i) * 16u;
+            for (int column = 0; column < 4; ++column)
+                for (int row = 0; row < 4; ++row)
+                    ubo.skinBones[i][column][row] = matrix[column * 4 + row];
         }
     }
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
