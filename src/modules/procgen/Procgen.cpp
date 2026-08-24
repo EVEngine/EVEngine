@@ -110,6 +110,32 @@ PointSet* Procgen::filterSlope(PointSet* input, float minDegrees, float maxDegre
     return new PointSet(filterPointSlope(*input, minDegrees, maxDegrees));
 }
 
+PointSet* Procgen::filterPolygon(PointSet* input, PointSet* polygon) {
+    if (!input || !polygon) {
+        lastError_ = "filterPolygon: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointsByPolygon(*input, *polygon, false));
+}
+
+PointSet* Procgen::excludePolygon(PointSet* input, PointSet* polygon) {
+    if (!input || !polygon) {
+        lastError_ = "excludePolygon: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointsByPolygon(*input, *polygon, true));
+}
+
+PointSet* Procgen::filterSplineDistance(PointSet* input, PointSet* controlPoints,
+                                        float minDistance, float maxDistance) {
+    if (!input || !controlPoints) {
+        lastError_ = "filterSplineDistance: null input";
+        return nullptr;
+    }
+    return new PointSet(
+        filterPointsBySplineDistance(*input, *controlPoints, minDistance, maxDistance));
+}
+
 PointSet* Procgen::excludeRadius(PointSet* input, float x, float z, float radius) {
     if (!input) {
         lastError_ = "excludeRadius: null input";
@@ -146,6 +172,19 @@ PointSet* Procgen::projectToHeightmap(PointSet* input, Heightmap* heightmap, flo
     }
     return new PointSet(
         projectPointsToHeightmap(*input, *heightmap, originX, originZ, cellSize, heightScale));
+}
+
+PointSet* Procgen::sampleSpline(PointSet* controlPoints, float spacing, uint32_t seed,
+                                float lateralJitter) {
+    if (!controlPoints) {
+        lastError_ = "sampleSpline: null control points";
+        return nullptr;
+    }
+    if (spacing <= 0.f) {
+        lastError_ = "sampleSpline: spacing must be positive";
+        return nullptr;
+    }
+    return new PointSet(samplePolylinePoints(*controlPoints, spacing, seed, lateralJitter));
 }
 
 uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
@@ -861,10 +900,14 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("filterBox", &Procgen::filterBox);
     cls.addFunc("excludeBox", &Procgen::excludeBox);
     cls.addFunc("filterSlope", &Procgen::filterSlope);
+    cls.addFunc("filterPolygon", &Procgen::filterPolygon);
+    cls.addFunc("excludePolygon", &Procgen::excludePolygon);
+    cls.addFunc("filterSplineDistance", &Procgen::filterSplineDistance);
     cls.addFunc("excludeRadius", &Procgen::excludeRadius);
     cls.addFunc("jitterPoints", &Procgen::jitterPoints);
     cls.addFunc("selfPrune", &Procgen::selfPrune);
     cls.addFunc("projectToHeightmap", &Procgen::projectToHeightmap);
+    cls.addFunc("sampleSpline", &Procgen::sampleSpline);
     cls.addFunc("deriveSeed", &Procgen::deriveSeed);
     cls.addFunc("beginSystem", &Procgen::beginSystem);
     cls.addFunc("beginCachedSystem", &Procgen::beginCachedSystem);

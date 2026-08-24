@@ -92,11 +92,16 @@ PointSet filterPointDensity(const PointSet& input, float minDensity, float maxDe
 PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX,
                         float maxY, float maxZ, bool invert);
 PointSet filterPointSlope(const PointSet& input, float minDegrees, float maxDegrees);
+PointSet filterPointsByPolygon(const PointSet& input, const PointSet& polygon, bool invert);
+PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& controlPoints,
+                                      float minDistance, float maxDistance);
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius);
 PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amountX, float amountZ);
 PointSet selfPrunePoints(const PointSet& input, float radius);
 PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& heightmap,
                                   float originX, float originZ, float cellSize,
                                   float heightScale);
+PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed,
+                              float lateralJitter);
 
 }  // namespace eve::procgen

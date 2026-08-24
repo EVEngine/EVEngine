@@ -103,6 +103,52 @@ TEST_CASE("procgen.pointSet.spatialFiltersAndHeightmapProjection") {
     delete inside;
 }
 
+TEST_CASE("procgen.pointSet.polygonAndSplineQueries") {
+    Procgen   proc;
+    PointSet polygon;
+    polygon.add(0.f, 0.f, 0.f);
+    polygon.add(10.f, 0.f, 0.f);
+    polygon.add(10.f, 0.f, 10.f);
+    polygon.add(0.f, 0.f, 10.f);
+
+    PointSet candidates;
+    candidates.add(5.f, 0.f, 5.f);
+    candidates.add(15.f, 0.f, 5.f);
+    PointSet* inside = proc.filterPolygon(&candidates, &polygon);
+    PointSet* outside = proc.excludePolygon(&candidates, &polygon);
+    REQUIRE(bool(inside));
+    REQUIRE(bool(outside));
+    CHECK_EQ(inside->getCount(), 1);
+    CHECK_EQ(outside->getCount(), 1);
+    CHECK_EQ(inside->getX(0), 5.f);
+    CHECK_EQ(outside->getX(0), 15.f);
+
+    PointSet control;
+    control.add(0.f, 0.f, 0.f);
+    control.add(10.f, 0.f, 0.f);
+    control.add(10.f, 0.f, 10.f);
+    PointSet* samples = proc.sampleSpline(&control, 5.f, 42, 0.f);
+    REQUIRE(bool(samples));
+    CHECK_EQ(samples->getCount(), 5);
+    CHECK_EQ(samples->getX(1), 5.f);
+    CHECK_EQ(samples->getZ(3), 5.f);
+    CHECK_EQ(samples->getYaw(0), 0.f);
+    CHECK_EQ(samples->getYaw(3), 90.f);
+
+    PointSet nearby;
+    nearby.add(5.f, 0.f, 2.f);
+    nearby.add(5.f, 0.f, 5.f);
+    nearby.add(12.f, 0.f, 5.f);
+    PointSet* corridor = proc.filterSplineDistance(&nearby, &control, 0.f, 2.1f);
+    REQUIRE(bool(corridor));
+    CHECK_EQ(corridor->getCount(), 2);
+
+    delete corridor;
+    delete samples;
+    delete outside;
+    delete inside;
+}
+
 TEST_CASE("procgen.system.commitIsAtomicAndFailureKeepsPreviousSnapshot") {
     Procgen  proc;
     PointSet first;

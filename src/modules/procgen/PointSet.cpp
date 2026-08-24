@@ -18,6 +18,31 @@ uint32_t mix32(uint32_t value) {
 
 float unitFloat(uint32_t seed) { return float(mix32(seed) >> 8u) * (1.f / 16777216.f); }
 
+float pointSegmentDistanceSquared(float px, float pz, const ProcgenPoint& a,
+                                  const ProcgenPoint& b) {
+    const float vx      = b.x - a.x;
+    const float vz      = b.z - a.z;
+    const float length2 = vx * vx + vz * vz;
+    const float t       = length2 > 0.f
+                              ? std::clamp(((px - a.x) * vx + (pz - a.z) * vz) / length2, 0.f, 1.f)
+                              : 0.f;
+    const float dx = px - (a.x + vx * t);
+    const float dz = pz - (a.z + vz * t);
+    return dx * dx + dz * dz;
+}
+
+bool pointInPolygon(float x, float z, const std::vector<ProcgenPoint>& polygon) {
+    bool inside = false;
+    for (size_t i = 0, previous = polygon.size() - 1; i < polygon.size(); previous = i++) {
+        const auto& a = polygon[i];
+        const auto& b = polygon[previous];
+        const bool crosses = ((a.z > z) != (b.z > z)) &&
+                             (x < (b.x - a.x) * (z - a.z) / (b.z - a.z) + a.x);
+        if (crosses) inside = !inside;
+    }
+    return inside;
+}
+
 }  // namespace
 
 int  PointSet::getCount() const { return int(points_.size()); }
@@ -235,6 +260,37 @@ PointSet filterPointSlope(const PointSet& input, float minDegrees, float maxDegr
     return output;
 }
 
+PointSet filterPointsByPolygon(const PointSet& input, const PointSet& polygon, bool invert) {
+    PointSet output;
+    if (polygon.points().size() < 3) return output;
+    for (const auto& point : input.points()) {
+        const bool inside = pointInPolygon(point.x, point.z, polygon.points());
+        if (inside != invert) output.points().push_back(point);
+    }
+    return output;
+}
+
+PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& controlPoints,
+                                      float minDistance, float maxDistance) {
+    PointSet output;
+    if (controlPoints.points().size() < 2) return output;
+    if (minDistance > maxDistance) std::swap(minDistance, maxDistance);
+    minDistance = std::max(0.f, minDistance);
+    maxDistance = std::max(0.f, maxDistance);
+    const float minSquared = minDistance * minDistance;
+    const float maxSquared = maxDistance * maxDistance;
+    for (const auto& point : input.points()) {
+        float nearest = std::numeric_limits<float>::max();
+        for (size_t i = 1; i < controlPoints.points().size(); ++i) {
+            nearest = std::min(nearest, pointSegmentDistanceSquared(
+                                            point.x, point.z, controlPoints.points()[i - 1],
+                                            controlPoints.points()[i]));
+        }
+        if (nearest >= minSquared && nearest <= maxSquared) output.points().push_back(point);
+    }
+    return output;
+}
+
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius) {
     PointSet    output;
     const float radiusSquared = std::max(0.f, radius) * std::max(0.f, radius);
@@ -304,6 +360,43 @@ PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& height
         point.normalX = nx;
         point.normalY = ny;
         point.normalZ = nz;
+    }
+    return output;
+}
+
+PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed,
+                              float lateralJitter) {
+    PointSet output;
+    if (controlPoints.points().size() < 2 || spacing <= 0.f) return output;
+    lateralJitter = std::max(0.f, lateralJitter);
+    float distanceToNext = 0.f;
+    uint32_t sampleIndex = 0;
+    for (size_t segment = 1; segment < controlPoints.points().size(); ++segment) {
+        const auto& a      = controlPoints.points()[segment - 1];
+        const auto& b      = controlPoints.points()[segment];
+        const float dx     = b.x - a.x;
+        const float dy     = b.y - a.y;
+        const float dz     = b.z - a.z;
+        const float length = std::sqrt(dx * dx + dy * dy + dz * dz);
+        if (length <= 0.f) continue;
+        const float nx  = -dz / length;
+        const float nz  = dx / length;
+        const float yaw = std::atan2(dz, dx) * 57.29577951308232f;
+        while (distanceToNext <= length) {
+            const float    t           = distanceToNext / length;
+            const uint32_t sampleSeed  = mix32(seed ^ sampleIndex);
+            const float    lateral     = (unitFloat(sampleSeed) * 2.f - 1.f) * lateralJitter;
+            ProcgenPoint   point;
+            point.x    = a.x + dx * t + nx * lateral;
+            point.y    = a.y + dy * t;
+            point.z    = a.z + dz * t + nz * lateral;
+            point.yaw  = yaw;
+            point.seed = sampleSeed ? sampleSeed : 1u;
+            output.points().push_back(std::move(point));
+            ++sampleIndex;
+            distanceToNext += spacing;
+        }
+        distanceToNext -= length;
     }
     return output;
 }

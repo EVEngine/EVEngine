@@ -6,6 +6,7 @@ if (!("forestPoints" in getroottable())) forestPoints <- null;
 if (!("pipelineStatus" in getroottable())) pipelineStatus <- "not generated";
 if (!("debugStage" in getroottable())) debugStage <- "trees";
 if (!("debugPoints" in getroottable())) debugPoints <- null;
+if (!("roadPoints" in getroottable())) roadPoints <- null;
 
 gfx.setBackgroundColor(0.055, 0.075, 0.07, 1.0);
 
@@ -26,14 +27,20 @@ function rebuildForest() {
         ctx.captureDebug("candidates", candidates);
         ctx.trace("sampleGrid", 0, candidates.getCount(), 0.0);
 
-        // This circular exclusion stands in for a future road/spline exclusion input.
-        local awayFromPlaza = procgen.excludeRadius(candidates, 380.0, 230.0, 105.0);
-        ctx.captureDebug("outside plaza", awayFromPlaza);
-        ctx.trace("exclude plaza", candidates.getCount(), awayFromPlaza.getCount(), 0.0);
+        local road = procgen.newPointSet();
+        road.add(20.0, 0.0, 40.0);
+        road.add(260.0, 0.0, 170.0);
+        road.add(510.0, 0.0, 150.0);
+        road.add(720.0, 0.0, 410.0);
+        roadPoints = procgen.sampleSpline(road, 10.0, ctx.seedFor("road preview"), 0.0);
+        local awayFromRoad = procgen.filterSplineDistance(candidates, road, 42.0, 100000.0);
+        ctx.captureDebug("outside road", awayFromRoad);
+        ctx.captureDebug("road", roadPoints);
+        ctx.trace("exclude road", candidates.getCount(), awayFromRoad.getCount(), 0.0);
 
-        local trees = procgen.selfPrune(awayFromPlaza, 32.0);
+        local trees = procgen.selfPrune(awayFromRoad, 32.0);
         ctx.captureDebug("trees", trees);
-        ctx.trace("self prune", awayFromPlaza.getCount(), trees.getCount(), 0.0);
+        ctx.trace("self prune", awayFromRoad.getCount(), trees.getCount(), 0.0);
         if (!ctx.publish("trees", trees)) throw ctx.getError();
 
         if (!procgen.commitSystem(ctx)) throw procgen.lastError();
@@ -64,13 +71,18 @@ eve_update <- function(dt) {
         rebuildForest();
     }
     if (key_just_pressed("1")) selectDebugStage("candidates");
-    if (key_just_pressed("2")) selectDebugStage("outside plaza");
+    if (key_just_pressed("2")) selectDebugStage("outside road");
     if (key_just_pressed("3")) selectDebugStage("trees");
 };
 
 eve_render <- function() {
     gfx.clear();
-    gfx.drawSolidRect(380.0 - 105.0, 230.0 - 105.0, 210.0, 210.0, 0.12, 0.15, 0.14, 1.0);
+    if (roadPoints != null) {
+        for (local i = 0; i < roadPoints.getCount(); i += 1) {
+            gfx.drawSolidRect(68.0 + roadPoints.getX(i), 68.0 + roadPoints.getZ(i), 5.0, 5.0,
+                              0.22, 0.24, 0.21, 1.0);
+        }
+    }
     if (debugPoints != null) {
         for (local i = 0; i < debugPoints.getCount(); i += 1) {
             local x = 70.0 + debugPoints.getX(i);

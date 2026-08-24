@@ -43,6 +43,26 @@ local buildable = procgen.filterSlope(ground, 0.0, 28.0);
 local outsideTown = procgen.excludeBox(buildable, 120, -100, 120, 240, 100, 240);
 ```
 
+任意多边形和折线样条同样用 `PointSet` 表示控制点，不需要额外节点类型。
+`filterPolygon` / `excludePolygon` 处理 XZ 平面的凹多边形；
+`filterSplineDistance` 以到最近线段的距离选择道路、河流或隔离带。
+`sampleSpline` 按跨线段连续间距采样，并写入切线 yaw、稳定 point seed，可直接放置
+路灯、护栏等资产：
+
+```squirrel
+local road = procgen.newPointSet();
+road.add(0, 0, 0); road.add(80, 0, 30); road.add(140, 0, 120);
+local reserved = procgen.filterSplineDistance(candidates, road, 0.0, 8.0);
+local outsideRoad = procgen.filterSplineDistance(candidates, road, 8.0, 100000.0);
+local lamps = procgen.sampleSpline(road, 12.0,
+                                   procgen.deriveSeed(rootSeed, "lamps"), 0.0);
+
+local town = procgen.newPointSet();
+town.add(20, 0, 20); town.add(160, 0, 35); town.add(130, 0, 150); town.add(35, 0, 120);
+local townCandidates = procgen.filterPolygon(candidates, town);
+local wilderness = procgen.excludePolygon(candidates, town);
+```
+
 不要让不同内容共享一个可变随机流。用 `deriveSeed(root, "trees")`、
 `deriveSeed(root, "rocks")` 为分支派生稳定 seed；修改岩石管线不会扰动树木结果。
 

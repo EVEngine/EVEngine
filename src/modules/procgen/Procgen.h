@@ -57,11 +57,17 @@ public:
     PointSet* excludeBox(PointSet* input, float minX, float minY, float minZ, float maxX,
                          float maxY, float maxZ);
     PointSet* filterSlope(PointSet* input, float minDegrees, float maxDegrees);
+    PointSet* filterPolygon(PointSet* input, PointSet* polygon);
+    PointSet* excludePolygon(PointSet* input, PointSet* polygon);
+    PointSet* filterSplineDistance(PointSet* input, PointSet* controlPoints,
+                                   float minDistance, float maxDistance);
     PointSet* excludeRadius(PointSet* input, float x, float z, float radius);
     PointSet* jitterPoints(PointSet* input, uint32_t seed, float amountX, float amountZ);
     PointSet* selfPrune(PointSet* input, float radius);
     PointSet* projectToHeightmap(PointSet* input, Heightmap* heightmap, float originX,
                                  float originZ, float cellSize, float heightScale);
+    PointSet* sampleSpline(PointSet* controlPoints, float spacing, uint32_t seed,
+                           float lateralJitter);
     uint32_t  deriveSeed(uint32_t parent, const std::string& scope) const;
 
     // --- Atomic script rebuilds ---
