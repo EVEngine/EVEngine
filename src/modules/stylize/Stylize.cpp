@@ -85,11 +85,18 @@ void Stylize::expose(ssq::Table &table) {
     pass.addFunc("applyTo", &StylePass::applyTo);
     pass.addFunc("applyCanvasTo", &StylePass::applyCanvasTo);
     pass.addFunc("getShader", &StylePass::getShader);
+    pass.addFunc("getStage", &StylePass::getStage);
+    pass.addFunc("getPriority", &StylePass::getPriority);
+    pass.addFunc("setPriority", &StylePass::setPriority);
+    pass.addFunc("requiresInput", &StylePass::requiresInput);
 
     auto instance = table.addClass<StyleInstance>(
         "StyleInstance", std::function<StyleInstance *()>([]() -> StyleInstance * { return nullptr; }),
         true);
     instance.addFunc("getStyle", &StyleInstance::getStyle);
+    instance.addFunc("getStage", &StyleInstance::getStage);
+    instance.addFunc("getPriority", &StyleInstance::getPriority);
+    instance.addFunc("requiresInput", &StyleInstance::requiresInput);
     instance.addFunc("getParamCount", &StyleInstance::getParamCount);
     instance.addFunc("getParamName", &StyleInstance::getParamName);
     instance.addFunc("getParamDefault", &StyleInstance::getParamDefault);

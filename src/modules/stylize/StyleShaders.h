@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graphics/PostEffect.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -19,6 +21,8 @@ struct StyleDefinition {
     bool cpu;
     bool depth;
     bool normal;
+    graphics::PostEffectStage stage;
+    int priority;
 };
 
 /** @brief Tooling metadata for one user-facing float parameter. */

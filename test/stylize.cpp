@@ -254,7 +254,7 @@ TEST_CASE("stylize.styles.registry") {
     CHECK(mod->supports("cartoon", "mesh"));
     CHECK(mod->supports("watercolor", "cpu"));
     CHECK(!mod->supports("watercolor", "mesh"));
-    CHECK(mod->supports("ink", "gbuffer"));  // depth/normal via graphics.RenderControl
+    CHECK(!mod->supports("ink", "gbuffer"));  // current shader is color/Sobel only
     CHECK(mod->supports("xray", "depth"));
     CHECK(!mod->supports("xray", "post"));
     CHECK(!mod->supports("xray", "cpu"));
@@ -310,6 +310,9 @@ TEST_CASE("stylize.instance.parameterSchema") {
     std::unique_ptr<StyleInstance> pixel(mod->newInstance("pixel"));
     REQUIRE(pixel.get() != nullptr);
     CHECK_EQ(pixel->getStyle(), std::string("pixel"));
+    CHECK_EQ(pixel->getStage(), std::string("afterTonemap"));
+    CHECK(pixel->requiresInput("color"));
+    CHECK(!pixel->requiresInput("depth"));
     CHECK(pixel->hasParam("pixelSize"));
     CHECK(!pixel->hasParam("texelW"));
     CHECK_EQ(pixel->getFloat("pixelSize"), 5.f);

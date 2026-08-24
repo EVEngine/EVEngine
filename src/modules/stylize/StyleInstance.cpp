@@ -28,6 +28,20 @@ StyleInstance::StyleInstance(std::string style) : style_(std::move(style)) {
 
 int StyleInstance::getParamCount() const { return styleParamCount(style_); }
 
+std::string StyleInstance::getStage() const {
+    return graphics::postEffectStageName(findStyleDefinition(style_)->stage);
+}
+
+int StyleInstance::getPriority() const { return findStyleDefinition(style_)->priority; }
+
+bool StyleInstance::requiresInput(const std::string &input) const {
+    const StyleDefinition *def = findStyleDefinition(style_);
+    if (input == "color") return def->post;
+    if (input == "depth") return def->depth;
+    if (input == "normal") return def->normal;
+    return false;
+}
+
 std::string StyleInstance::getParamName(int index) const { return styleParamName(style_, index); }
 
 float StyleInstance::getParamDefault(const std::string &name) const {

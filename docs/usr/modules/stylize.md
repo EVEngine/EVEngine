@@ -62,6 +62,8 @@ mat.setShadingModel("custom");
 - `getStyle()`、`hasParam(name)`、`setFloat/getFloat`、`setTime/getTime`。
 - `apply(gfx)` / `applyCanvas(gfx)` / `applyTo(gfx, target)` / `applyCanvasTo(gfx, canvas)`。
 - `getShader()`。
+- 调度契约：`getStage()`、`getPriority()`、`setPriority(value)`、
+  `requiresInput(name)`。
 
 ### `StyleInstance`
 
@@ -69,6 +71,7 @@ mat.setShadingModel("custom");
   `getParamDefault(name)`、`getParamMin(name)`、`getParamMax(name)`、`hasParam(name)`。
 - override：`setFloat/getFloat`、`isOverridden(name)`、`reset(name)`、`resetAll()`。
 - technique：`newPass(gfx)` 创建后处理 Pass；`newMeshShader(gfx)` 创建网格 shader。
+- 调度契约：`getStage()`、`getPriority()`、`requiresInput(name)`。
 
 ### `StyleChain`
 
@@ -78,6 +81,7 @@ mat.setShadingModel("custom");
 ## 生命周期
 
 - Pass/Chain 由脚本持有；`applyCanvas` 在绘制完场景后调用一次。
-- `supports(style, "gbuffer")` 可查询是否需要深度/法线输入（`RenderControl`
-  开启 `gbuffer` 后可用）。
-- 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel`。
+- `getStage()` 返回 `afterOpaque` / `beforeTransparent` / `beforeTonemap` /
+  `afterTonemap`；`requiresInput` 只报告 shader 实际读取的输入。
+- `supports(style, "gbuffer")` 可查询 definition 是否要求 depth 或 normal。
+- 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel` / `xray`。

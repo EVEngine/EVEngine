@@ -21,11 +21,11 @@ namespace eve::stylize {
 namespace {
 
 const std::array<StyleDefinition, 5> kStyles = {{
-    {"cartoon", true, true, true, true, true},
-    {"watercolor", true, false, true, false, false},
-    {"ink", true, true, true, true, true},
-    {"pixel", true, false, true, false, false},
-    {"xray", false, true, false, true, false},
+    {"cartoon", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 100},
+    {"watercolor", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 200},
+    {"ink", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 110},
+    {"pixel", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 300},
+    {"xray", false, true, false, true, false, graphics::PostEffectStage::AfterOpaque, 50},
 }};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {

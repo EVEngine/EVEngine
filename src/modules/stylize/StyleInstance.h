@@ -27,6 +27,9 @@ public:
     StyleInstance &operator=(const StyleInstance &) = delete;
 
     std::string getStyle() const { return style_; }
+    std::string getStage() const;
+    int getPriority() const;
+    bool requiresInput(const std::string &input) const;
     int getParamCount() const;
     std::string getParamName(int index) const;
     float getParamDefault(const std::string &name) const;
