@@ -33,6 +33,7 @@ void EditorShell::open(UIHost* inspector, UIHost* database, UIHost* scene) {
     meta->percentW       = 1.f;
     meta->visible        = true;
     meta->overlayBgAlpha = 1.f;
+    meta->overlayFlush   = true;
     host_->setTree(build());
     relayout();
     if (inspector_) inspector_->setVisible(true);
@@ -95,16 +96,16 @@ WidgetDesc EditorShell::build() {
     commands.push_back(text("EVEngine Editor", "lbl_title"));
     commands.push_back(badge("Workspace", "workspace_badge"));
     commands.push_back(spacer("menu_spacer"));
-    commands.push_back(iconButton(Icon::Sliders, "Inspector", "menu_inspector", [this]() {
+    commands.push_back(iconButton(Icon::Sliders, "", "menu_inspector", [this]() {
                            togglePanel("inspector");
                        }).withTooltip("Show or hide the Inspector"));
-    commands.push_back(iconButton(Icon::Database, "Database", "menu_database", [this]() {
+    commands.push_back(iconButton(Icon::Database, "", "menu_database", [this]() {
                            togglePanel("database");
                        }).withTooltip("Show or hide the object database"));
-    commands.push_back(iconButton(Icon::Layers, "Scene", "menu_scene", [this]() {
+    commands.push_back(iconButton(Icon::Layers, "", "menu_scene", [this]() {
                            togglePanel("scene");
                        }).withTooltip("Show or hide the scene hierarchy"));
-    commands.push_back(iconButton(Icon::EyeSlash, "Hide panels", "menu_close", [this]() {
+    commands.push_back(iconButton(Icon::EyeSlash, "", "menu_close", [this]() {
                            selectPanel("");
                        }).withTooltip("Hide all editor panels"));
     return window("Editor", {toolbar(std::move(commands), "editor_toolbar")}, "root");

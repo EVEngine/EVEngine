@@ -168,6 +168,7 @@ public:
         float anchorY = 0.f;
         std::string name;
         float overlayBgAlpha = 0.4f;
+        bool overlayFlush = false;  // remove outer WindowPadding for desktop chrome
         uint32_t ownerId = 0;
         UIHost *entity = nullptr;
     };

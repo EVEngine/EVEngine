@@ -59,7 +59,7 @@ private:
     UIHost* inspector_     = nullptr;
     UIHost* database_      = nullptr;
     UIHost* scene_         = nullptr;
-    float   toolbarHeight_ = 42.f;
+    float   toolbarHeight_ = 52.f;
 };
 
 }  // namespace eve::ui

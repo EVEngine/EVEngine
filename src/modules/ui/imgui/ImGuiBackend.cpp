@@ -137,6 +137,10 @@ std::vector<std::string> iconFontCandidates() {
     }
     if (char *basePath = SDL_GetBasePath()) {
         const std::filesystem::path base(basePath);
+        // Build-tree layout: <build>/src/engine/eve.exe -> <build>/share/eve/fonts.
+        paths.push_back(
+            (base / "../../share/eve/fonts/FontAwesome.ttf").lexically_normal().string());
+        // Installed SDK layouts used by the packaged executable.
         paths.push_back(
             (base / "../../../share/eve/fonts/FontAwesome.ttf").lexically_normal().string());
         paths.push_back(

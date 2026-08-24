@@ -279,10 +279,14 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         }
         if (host && host->meta()->overlay) {
             flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-                     ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse |
-                     ImGuiWindowFlags_AlwaysAutoResize;
+                     ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse;
+            if (!host->meta()->hasSize && host->meta()->percentW <= 0.f &&
+                host->meta()->percentH <= 0.f)
+                flags |= ImGuiWindowFlags_AlwaysAutoResize;
             ImGui::SetNextWindowBgAlpha(host->meta()->overlayBgAlpha);
         }
+        const bool flushOverlay = host && host->meta()->overlay && host->meta()->overlayFlush;
+        if (flushOverlay) ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
         if (modal) {
             ImGui::OpenPopup(title.c_str());
             if (ImGui::BeginPopupModal(title.c_str(), nullptr,
@@ -295,6 +299,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
             ImGui::End();
         }
+        if (flushOverlay) ImGui::PopStyleVar();
         break;
     }
     case NodeType::Text:
