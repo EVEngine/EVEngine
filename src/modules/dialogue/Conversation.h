@@ -22,6 +22,8 @@ struct ConversationAsset {
         std::string speaker;
         std::string text;
         std::string pool;
+        std::string i18nKey;
+        std::string voice;
         std::string expression;
         std::string target;
         std::string returnNode;

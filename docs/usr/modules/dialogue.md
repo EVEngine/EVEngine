@@ -96,6 +96,39 @@ generator 的 yield 值。完整可运行示例见
 locale 精确匹配失败时回退到空 locale 的默认语音。Source 的生命周期仍由游戏持有，
 切换台词或销毁 `DialogueVoice` 时会停止当前 Source。
 
+### `DialogueFlow`（参数化流程与内容工具）
+
+`dialogueFlow` 将 `.dnut` 中的 `conversation` 块编译为带稳定 node ID 的资产，并用
+可保存的显式 Runner 执行。台词池与 conversation 块可以共存于同一文件。
+
+```dnut
+conversation common.greeting version=1 entry=decide params=speaker,listener,location
+node decide branch
+when score(speaker, listener, location) >= threshold(speaker.personality) -> friendly
+else -> formal
+node friendly line speaker=speaker pool=greeting.friendly i18n=dialogue.greeting.friendly next=end
+node formal line speaker=speaker text="Good day, {listener.name}." next=end
+node end end
+endconversation
+```
+
+- 内容：`loadFromDnut/loadFromDnutFile`、`clear`、`getConversationCount`、
+  `getConversationId(index)`、`hasConversation`、`getLastError`。
+- 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticMessage`；编译检查
+  重复或缺失 ID、无效引用，并报告不可达节点。
+- 本地化：`exportLocalizationCsv()` 返回带 conversation/node 稳定 ID、i18n key、
+  speaker、源文和 voice key 的 RFC4180 CSV。
+- 执行：`start(id, bindings)`、`advance`、`select(routeId)`、`isActive/isBlocked`、
+  `getActiveConversationId/getNodeId/getNodeKind`。
+- 当前节点：`getSpeaker/getText/getPool/getI18nKey/getVoice`、
+  `getRouteCount/getRouteId`。
+- 复杂条件：`setExpressionEvaluator(fn)` 注册纯计算函数，fn 接收
+  `{ expression, bindings, locals }` 并返回 bool 或结构化值；
+  `clearExpressionEvaluator` 解除注册。表达式文本不会被编译器限制成简单比较式。
+
+Runner 在 line、choice、wait 和异步 command 边界暂停；C++ API 的
+`captureState/restoreState` 保存资产版本、node ID、bindings、locals 和子对话调用栈。
+
 ## 生命周期
 
 - 角色注册幂等（重复注册覆盖显示名）；`bindAvatar` 接受 `avatar.newImageAvatar()`
