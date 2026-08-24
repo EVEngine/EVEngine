@@ -573,6 +573,9 @@ TEST_CASE("model3d.newModelData.objFromMemory") {
     // `vn` lines, but never synthesizes UVs without `vt` lines.
     CHECK(md->hasNormals(0));
     CHECK(!md->hasTexCoords(0));
+    CHECK_EQ(md->getTexCoordChannelCount(0), 0);
+    CHECK_EQ(md->getVertexColorChannelCount(0), 0);
+    CHECK(!md->hasTangents(0));
     delete md;
 }
 
@@ -653,6 +656,21 @@ TEST_CASE("model3d.newModelDataFromFile.cached") {
 TEST_CASE("model3d.Model3D.getName") {
     auto *mod = eve::model3d::Model3D::create();
     CHECK(mod->getName() == "Model3D");
+}
+
+TEST_CASE("model3d.evmodel.roundTrip") {
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_evmodel", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->write("source.obj", kCubeObj, sizeof(kCubeObj) - 1);
+
+    auto *mod = eve::model3d::Model3D::create();
+    REQUIRE(mod->bakeModel("source.obj", "cube.evmodel"));
+    auto *md = mod->newModelDataFromFile("cube.evmodel");
+    REQUIRE(md != nullptr);
+    CHECK(md->getMeshCount() >= 1);
+    CHECK(md->getFaceCount(0) > 0);
+    delete md;
 }
 
 TEST_CASE("model3d.newModelData.rock1Fbx") {

@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
+struct aiMesh;
+
 namespace eve::graphics {
 
 /**
@@ -84,6 +86,16 @@ public:
 
     const std::vector<float> &baseUv() const { return baseUv_; }
 
+    /** @brief Retain imported UV/color/tangent streams for custom pipelines and baking. */
+    void captureImportedAttributes(const ::aiMesh &mesh);
+    int getUvChannelCount() const { return static_cast<int>(importedUvs_.size()); }
+    int getColorChannelCount() const { return static_cast<int>(importedColors_.size()); }
+    bool hasImportedTangents() const { return !importedTangents_.empty(); }
+    const std::vector<float> &importedUv(int channel) const;
+    const std::vector<float> &importedColor(int channel) const;
+    const std::vector<float> &importedTangents() const { return importedTangents_; }
+    const std::vector<float> &importedBitangents() const { return importedBitangents_; }
+
 private:
     struct MorphTarget {
         std::string name;
@@ -96,6 +108,10 @@ private:
     std::vector<MorphTarget> morphs_;
     std::unordered_map<std::string, float> morphWeights_;
     bool morphDirty_ = false;
+    std::vector<std::vector<float>> importedUvs_;     // xy packed per channel
+    std::vector<std::vector<float>> importedColors_;  // rgba packed per channel
+    std::vector<float> importedTangents_;             // xyz packed
+    std::vector<float> importedBitangents_;            // xyz packed
     bool gpuSkinned_ = false;
     std::vector<float> skinPalette_;
 };

@@ -2142,6 +2142,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     }
     Mesh *m = newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(mesh.mNumVertices), idx.data(),
                                 int(idx.size()));
+    if (m) m->captureImportedAttributes(mesh);
     if (m && mesh.mNumAnimMeshes > 0) {
         m->initMorphBase(int(mesh.mNumVertices), pos.data(), nrm.data(), uv.data());
         for (unsigned a = 0; a < mesh.mNumAnimMeshes; ++a) {

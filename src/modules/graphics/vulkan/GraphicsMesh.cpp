@@ -105,6 +105,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
         gpu = uploadGpuMesh(device, frameToken(), verts, indices);
     }
     auto handle = makeMeshHandle(*gpu);
+    handle->captureImportedAttributes(mesh);
     // Retain the CPU morph base pose only when the mesh actually has morphs;
     // otherwise the base pos/nrm/uv copies would linger at ~32B/vertex for no reason.
     if (mesh.mNumAnimMeshes > 0) {

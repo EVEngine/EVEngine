@@ -18,7 +18,10 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cctype>
+#include <cstdint>
+#include <cstring>
 #include <functional>
+#include <vector>
 
 namespace eve {
 namespace model3d {
@@ -64,6 +67,20 @@ medialoader::ModelScene loadOrThrow(medialoader::ModelLoader &loader, const void
     }
 }
 
+constexpr char kEvModelMagic[4] = {'E', 'V', 'M', '1'};
+
+bool unpackEvModel(const void *data, size_t size, const uint8_t **payload, size_t *payloadSize,
+                   std::string *hint) {
+    if (!data || size < 6 || std::memcmp(data, kEvModelMagic, 4) != 0) return false;
+    const auto *bytes = static_cast<const uint8_t *>(data);
+    const uint16_t n = uint16_t(bytes[4]) | (uint16_t(bytes[5]) << 8u);
+    if (n == 0 || size < size_t(6u + n)) return false;
+    hint->assign(reinterpret_cast<const char *>(bytes + 6), n);
+    *payload = bytes + 6 + n;
+    *payloadSize = size - 6 - n;
+    return *payloadSize > 0;
+}
+
 }  // namespace
 
 ModelData *Model3D::newModelData(Data *data, std::string hintExt) {
@@ -81,6 +98,17 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
             hint = ensureDotExt(fd->getExtension());
     }
 
+    const void *encoded = data->getData();
+    size_t encodedSize = data->getSize();
+    if (hint == ".evmodel") {
+        const uint8_t *payload = nullptr;
+        std::string packedHint;
+        if (!unpackEvModel(encoded, encodedSize, &payload, &encodedSize, &packedHint))
+            throw eve::Exception("Invalid or truncated .evmodel envelope");
+        encoded = payload;
+        hint = ensureDotExt(std::move(packedHint));
+    }
+
     // Prefer VFS for sidecar resolution when FileData carries a filename.
     filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
     if (!fs)
@@ -89,7 +117,7 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
     EveFileSystem eveFs(fs);
     medialoader::ModelLoader loader(&eveFs);
 
-    auto scene = loadOrThrow(loader, data->getData(), data->getSize(), hint.c_str(),
+    auto scene = loadOrThrow(loader, encoded, encodedSize, hint.c_str(),
                              toMedialoader(options));
     if (scene.empty())
         throw eve::Exception("Could not decode model data");
@@ -127,6 +155,33 @@ graphics::Renderable3D *Model3D::createRenderable(graphics::Graphics *gfx, Model
     return buildRenderable(*gfx, model, meshIndex);
 }
 
+bool Model3D::bakeModel(const std::string &sourcePath, const std::string &destinationPath) {
+    if (sourcePath.empty() || destinationPath.empty()) return false;
+    filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
+    if (!fs) fs = filesystem::Filesystem::create();
+    filesystem::FileData *sourceRaw = fs->read(sourcePath);
+    if (!sourceRaw) return false;
+    eve::ref<filesystem::FileData> source(sourceRaw);
+    if (!source->getData() || source->getSize() == 0) return false;
+    const std::string hint = ensureDotExt(source->getExtension());
+    if (hint.empty() || hint == ".evmodel" || hint.size() > 65535u) return false;
+    std::vector<uint8_t> packed;
+    packed.reserve(6u + hint.size() + source->getSize());
+    packed.insert(packed.end(), kEvModelMagic, kEvModelMagic + 4);
+    const uint16_t n = static_cast<uint16_t>(hint.size());
+    packed.push_back(static_cast<uint8_t>(n & 0xffu));
+    packed.push_back(static_cast<uint8_t>((n >> 8u) & 0xffu));
+    packed.insert(packed.end(), hint.begin(), hint.end());
+    const auto *bytes = static_cast<const uint8_t *>(source->getData());
+    packed.insert(packed.end(), bytes, bytes + source->getSize());
+    try {
+        fs->write(destinationPath, packed.data(), static_cast<int64_t>(packed.size()));
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
 void Model3D::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Model3D::create, false);
     expose(cls);
@@ -140,6 +195,15 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getFaceCount", &ModelData::getFaceCount);
     md.addFunc("hasNormals", &ModelData::hasNormals);
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);
+    md.addFunc("getTexCoordChannelCount", &ModelData::getTexCoordChannelCount);
+    md.addFunc("hasTexCoordChannel", &ModelData::hasTexCoordChannel);
+    md.addFunc("getTexCoord", &ModelData::getTexCoord);
+    md.addFunc("hasTangents", &ModelData::hasTangents);
+    md.addFunc("getTangent", &ModelData::getTangent);
+    md.addFunc("getBitangent", &ModelData::getBitangent);
+    md.addFunc("getVertexColorChannelCount", &ModelData::getVertexColorChannelCount);
+    md.addFunc("hasVertexColorChannel", &ModelData::hasVertexColorChannel);
+    md.addFunc("getVertexColor", &ModelData::getVertexColor);
     md.addFunc("getMaterialIndex", &ModelData::getMaterialIndex);
     md.addFunc("getMaterialName", &ModelData::getMaterialName);
     md.addFunc("getMaterialBaseColorR", &ModelData::getMaterialBaseColorR);
@@ -180,6 +244,7 @@ void Model3D::expose(ssq::Class &cls) {
     cls.addFunc("newModelDataFromFile",
                 static_cast<ModelData *(Model3D::*)(std::string)>(&Model3D::newModelDataFromFile));
     cls.addFunc("createRenderable", &Model3D::createRenderable);
+    cls.addFunc("bakeModel", &Model3D::bakeModel);
 }
 
 }  // namespace model3d
