@@ -599,7 +599,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!gpuEnv->isCube) throw Exception("drawMesh: env texture is not a cubemap");
     const float envIntensity = (mesh3dEnvTexture && mesh3dEnvIntensity > 0.f) ? mesh3dEnvIntensity : 0.f;
 
-    const bool useClustered = mesh3dClusteredActive && !shader && mesh3dClusteredPipeline;
+    const bool useClustered = mesh3dClusteredActive && !shader && mesh3dClusteredPipeline &&
+                              mesh3dSurfaceMode != SurfaceMode::Transparent;
     auto &cb = currentPresentCb();
 
     auto makeShadowUbo = [&]() {
@@ -624,9 +625,17 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.ambient = glm::vec4(glm::vec3(mesh3dClustered.ambient), mesh3dMetallic);
         ubo.gridInfo = mesh3dClustered.gridInfo;
         ubo.clipInfo = mesh3dClustered.clipInfo;
-        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+        float surfaceCode = float(int(mesh3dSurfaceMode));
+        if (mesh3dSurfaceMode == SurfaceMode::Masked && mesh3dAlphaTechnique == "dither")
+            surfaceCode = 3.f;
+        else if (mesh3dSurfaceMode == SurfaceMode::Masked &&
+                 mesh3dAlphaTechnique == "coverage")
+            surfaceCode = 4.f;
+        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot,
+                                surfaceCode);
         ubo.parallax =
-            glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
+            glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
+                      mesh3dAlphaCutoff);
 
         auto &cfslots = currentMesh3dClusteredFrameSlots();
         if (cfslots.drawIndex >= cfslots.capacity) {
@@ -666,9 +675,16 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.lightDir.w = float(lightCount);
     ubo.cameraPos.w = mesh3dRoughness;
     ubo.lightColor.w = envIntensity;
-    ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+    float surfaceCode = float(int(mesh3dSurfaceMode));
+    if (mesh3dSurfaceMode == SurfaceMode::Masked && mesh3dAlphaTechnique == "dither")
+        surfaceCode = 3.f;
+    else if (mesh3dSurfaceMode == SurfaceMode::Masked && mesh3dAlphaTechnique == "coverage")
+        surfaceCode = 4.f;
+    ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot,
+                            surfaceCode);
     ubo.parallax =
-        glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
+        glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
+                  mesh3dAlphaCutoff);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     int dirI = -1;
     for (int i = 0; i < lightCount; ++i) {
@@ -728,7 +744,12 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
-        const vk::Pipeline pipe = offscreen3DPassOpen ? offscreen3DMeshPipeline : mesh3dPipeline;
+        const vk::Pipeline pipe =
+            offscreen3DPassOpen
+                ? offscreen3DMeshPipeline
+                : (mesh3dSurfaceMode == SurfaceMode::Transparent
+                       ? mesh3dTransparentPipeline
+                       : mesh3dPipeline);
         if (pipe != lastMesh3dPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
             lastMesh3dPipeline = pipe;

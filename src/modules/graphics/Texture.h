@@ -4,6 +4,7 @@
 #include "graphics/Quad.h"
 #include "graphics/TextureSampler.h"
 #include <cstdint>
+#include <string>
 #include <vector>
 
 namespace eve::graphics {
@@ -29,6 +30,14 @@ public:
     int getPixelHeight() const { return pixelHeight; }
     int getMipmapCount() const { return mipmapCount; }
     const TextureSampler &getSampler() const { return sampler; }
+    /** @brief Declare whether RGB is straight or already multiplied by alpha. */
+    void setAlphaConvention(const std::string &value) {
+        premultipliedAlpha_ = value == "premultiplied";
+    }
+    std::string getAlphaConvention() const {
+        return premultipliedAlpha_ ? "premultiplied" : "straight";
+    }
+    bool hasPremultipliedAlpha() const { return premultipliedAlpha_; }
 
     /** Backend-private GPU object (vulkan::GpuTexture*). */
     void *gpuHandle = nullptr;
@@ -41,6 +50,8 @@ public:
     int pixelWidth = 0;
     int pixelHeight = 0;
     TextureSampler sampler{};
+private:
+    bool premultipliedAlpha_ = false;
 };
 
 }  // namespace eve::graphics

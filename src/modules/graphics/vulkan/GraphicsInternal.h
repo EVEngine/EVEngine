@@ -243,6 +243,20 @@ vk::PipelineColorBlendAttachmentState makeBlendAttachment(BlendMode mode) {
         att.srcAlphaBlendFactor = vk::BlendFactor::eOne;
         att.dstAlphaBlendFactor = vk::BlendFactor::eOne;
         att.alphaBlendOp = vk::BlendOp::eAdd;
+    } else if (mode == BlendMode::Premultiplied) {
+        att.srcColorBlendFactor = vk::BlendFactor::eOne;
+        att.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        att.colorBlendOp = vk::BlendOp::eAdd;
+        att.srcAlphaBlendFactor = vk::BlendFactor::eOne;
+        att.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        att.alphaBlendOp = vk::BlendOp::eAdd;
+    } else if (mode == BlendMode::Multiply) {
+        att.srcColorBlendFactor = vk::BlendFactor::eDstColor;
+        att.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        att.colorBlendOp = vk::BlendOp::eAdd;
+        att.srcAlphaBlendFactor = vk::BlendFactor::eOne;
+        att.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        att.alphaBlendOp = vk::BlendOp::eAdd;
     } else {
         att.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
         att.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;

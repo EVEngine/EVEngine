@@ -150,6 +150,8 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getMaterialRoughnessFactor", &ModelData::getMaterialRoughnessFactor);
     md.addFunc("getMaterialOpacity", &ModelData::getMaterialOpacity);
     md.addFunc("getMaterialTwoSided", &ModelData::getMaterialTwoSided);
+    md.addFunc("getMaterialAlphaMode", &ModelData::getMaterialAlphaMode);
+    md.addFunc("getMaterialAlphaCutoff", &ModelData::getMaterialAlphaCutoff);
     md.addFunc("getMaterialTextureSlotCount", &ModelData::getMaterialTextureSlotCount);
     md.addFunc("getMaterialTexturePath", &ModelData::getMaterialTexturePath);
     md.addFunc("getMaterialTextureEmbeddedIndex", &ModelData::getMaterialTextureEmbeddedIndex);

@@ -10,6 +10,7 @@
 #include "common/Module.h"
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
+#include "graphics/SurfaceMode.h"
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
@@ -681,6 +682,10 @@ public:
 
     /** @brief Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
+    /** @brief Select pipeline state for subsequent mesh draws. */
+    virtual void setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                                  bool doubleSided, float alphaCutoff,
+                                  const std::string &alphaTechnique = "cutoff") = 0;
 
     /**
      * @brief Texture cell bombing for the next default mesh draw (breaks tiling).
