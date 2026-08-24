@@ -719,6 +719,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setBackgroundColor", &Graphics::setBackgroundColorRGBA);
     cls.addFunc("drawSolidRect", &Graphics::drawSolidRectRGBA);
     cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
+    cls.addFunc("drawTexturedRectRotated", &Graphics::drawTexturedRectRotatedRGBA);
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
                 static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
@@ -928,6 +929,12 @@ void Graphics::drawSolidRectRGBA(float x, float y, float w, float h, float r, fl
 void Graphics::drawTexturedRectRGBA(Texture* texture, float x, float y, float w, float h, float r, float g, float b,
                                     float a) {
     drawTexturedRect(texture, x, y, w, h, Color(r, g, b, a));
+}
+
+void Graphics::drawTexturedRectRotatedRGBA(Texture* texture, float cx, float cy, float w, float h,
+                                           float degrees, float r, float g, float b, float a) {
+    drawTexturedRectShaderUVRotated(texture, nullptr, cx, cy, w, h, degrees, 0.f, 0.f, 1.f, 1.f,
+                                    Color(r, g, b, a), false, BlendMode::Alpha);
 }
 
 void Graphics::drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a) {

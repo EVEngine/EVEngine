@@ -144,6 +144,11 @@ void World3D::emitContactEvents() {
 }
 
 int World3D::rayCast(float x1, float y1, float z1, float x2, float y2, float z2) {
+    return rayCastFiltered(x1, y1, z1, x2, y2, z2, ~uint64_t{0});
+}
+
+int World3D::rayCastFiltered(float x1, float y1, float z1, float x2, float y2, float z2,
+                             uint64_t maskBits) {
     rayHitBodyId_   = -1;
     rayHitX_        = 0.f;
     rayHitY_        = 0.f;
@@ -157,6 +162,7 @@ int World3D::rayCast(float x1, float y1, float z1, float x2, float y2, float z2)
     b3Pos  origin{x1, y1, z1};
     b3Vec3 translation{x2 - x1, y2 - y1, z2 - z1};
     b3QueryFilter filter = b3DefaultQueryFilter();
+    filter.maskBits      = maskBits;
     b3RayResult   hit    = b3World_CastRayClosest(worldId_, origin, translation, filter);
     if (!hit.hit) return -1;
 

@@ -231,6 +231,16 @@ eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
                    GROUP 2d 3d)
 eve_declare_module(NAME buildingfx LIB EVBuildingFx LAYER 4 SCRIPT BuildingFx SLOT buildingfx
                    DEPS building graphics)
+# Weapon definitions, entities, mounts and fire logic. Standalone so buildings /
+# vehicles / turrets all attach the same WeaponMount system.
+eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
+                   GROUP 2d 3d)
+# Vehicle entities, kinematic/tracked/wheeled mobility and RTS order queue.
+# Depends on weapon so definitions can declare weapon mounts.
+eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
+                   DEPS weapon
+                   OPTIONAL_DEPS physics
+                   GROUP 2d 3d)
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
                    DEPS data filesystem graphics model3d
                    THIRDPARTY poco assimp

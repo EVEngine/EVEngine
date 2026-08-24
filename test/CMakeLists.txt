@@ -118,6 +118,8 @@ file(GLOB all_test_cpp
   spritestack.cpp
   daynight.cpp
   weather.cpp
+  weapon.cpp
+  vehicle.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
