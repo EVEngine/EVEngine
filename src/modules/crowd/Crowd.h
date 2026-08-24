@@ -95,6 +95,35 @@ public:
      * @return 单位 id，达到上限返回 -1
      */
     int addAgent(float x, float y, float heading, float radius);
+    /** @brief Add an agent with an editor/game-stable logical identifier.
+     * @param stableId Non-empty logical identifier unique within this Crowd.
+     * @param x Initial world X coordinate.
+     * @param y Initial world Y coordinate.
+     * @param heading Initial heading in radians.
+     * @param radius Agent collision radius.
+     * @return Current compact slot, or -1 when the identifier or capacity is invalid.
+     */
+    int addNamedAgent(const std::string &stableId, float x, float y, float heading, float radius);
+    /** @brief Return whether a stable logical agent exists.
+     * @param stableId Logical identifier to query.
+     * @return True when the identifier is currently mapped.
+     */
+    bool hasNamedAgent(const std::string &stableId) const;
+    /** @brief Resolve a stable logical identifier to the current compact slot.
+     * @param stableId Logical identifier to resolve.
+     * @return Current compact slot, or -1 when missing.
+     */
+    int getNamedAgentIndex(const std::string &stableId) const;
+    /** @brief Return the stable logical identifier for a compact slot.
+     * @param index Current compact slot.
+     * @return Stable identifier, or an empty string for invalid or anonymous slots.
+     */
+    std::string getAgentStableId(int index) const;
+    /** @brief Remove an agent by stable logical identifier.
+     * @param stableId Logical identifier to remove.
+     * @return True when an existing agent was removed.
+     */
+    bool removeNamedAgent(const std::string &stableId);
     /** @brief 删除单位（swap-pop O(1)）。 */
     bool removeAgent(int id);
     /** @brief 清空全部单位。 */

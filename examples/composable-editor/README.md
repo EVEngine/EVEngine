@@ -23,6 +23,9 @@ The example demonstrates:
 - a project-owned `DialogueEditorComponent` that reflects `ConversationDocument`
   fields into ordinary UI controls, validates the graph, and applies it to the same
   runtime registry used by the game; the engine contains no fixed dialogue panel.
+- project-owned Card/RTS adapters that validate definitions with generic `Schema`,
+  store versioned data in `Definitions`, create real Card/ECS/Crowd runtime objects,
+  and derive Crowd movement costs from the same editable terrain heightmap.
 
 Run with:
 
@@ -51,6 +54,13 @@ knobs, and composes `ProcgenRecipeSchema`, `Params`, `ImageData`, GPU textures a
 selects a compact subset of reflected line fields for this project's bottom bar;
 another project can use the same document API for a node canvas, localization QA,
 cutscene preview, or an in-game quest authoring screen without modifying C++.
+
+`gameplay_components.nut` demonstrates the shared game/editor architecture. Card
+definitions have deterministic IDs and mutable registration APIs for project tools;
+RTS agents use stable logical IDs even though Crowd keeps swap-pop compact storage.
+The component maps those agents back to ECS objects every frame and rebuilds movement
+costs from terrain data. A different card game or RTS can replace the schemas,
+definitions and presenters while retaining the same libraries.
 
 Mesh generators use the same contract: call `getMeshRecipeSchema` and
 `applyMeshRecipeDefaults`, pass the returned schema to `renderRecipeFields`, and feed

@@ -5,6 +5,7 @@
 // creates a different editor without modifying the engine.
 
 dofile("dialogue_component.nut");
+dofile("gameplay_components.nut");
 
 const MAP_W = 48;
 const MAP_H = 48;
@@ -68,6 +69,7 @@ state <- persist("composableEditor", function() {
         materialResource = null
         materialSet = null
         dialogueComponent = null
+        gameplayComponents = null
         camera = null
         panelsMounted = false
         objects = []
@@ -356,6 +358,25 @@ function spawnArchetype(kind) {
     local id = kind + "." + (state.objects.len() + 1);
     local result = state.session.executeCommand("world.spawn-archetype", { kind=kind, id=id });
     if (!result.accepted) state.vm.status = "Command rejected: " + kind;
+    return result.accepted ? state.objects.top() : null;
+}
+
+function spawnCardTable() {
+    local instance = state.gameplayComponents.createCardInstance();
+    if (instance == null) {
+        state.vm.status = "Card definition rejected";
+        return;
+    }
+    spawnArchetype("card.table");
+    state.vm.status = "Card runtime instance " + instance.getInstanceId() +
+                      " from schema-validated definition";
+}
+
+function spawnRtsUnit() {
+    local entity = spawnArchetype("rts.unit");
+    if (entity == null) return;
+    if (state.gameplayComponents.createRtsUnit(entity.identity.id, entity, 2.0, 2.0))
+        state.vm.status = "RTS unit " + entity.identity.id + " uses stable Crowd identity + terrain costs";
 }
 
 function applyDialogueDocument() {
@@ -440,8 +461,8 @@ function handlePanelEvents() {
             } else if (id == "material-grass") applyMaterial("grass");
             else if (id == "material-rock") applyMaterial("rock");
             else if (id == "material-sand") applyMaterial("sand");
-            else if (id == "spawn-rts") spawnArchetype("rts.unit");
-            else if (id == "spawn-card") spawnArchetype("card.table");
+            else if (id == "spawn-rts") spawnRtsUnit();
+            else if (id == "spawn-card") spawnCardTable();
             else if (id == "spawn-voxel") spawnArchetype("voxel.volume");
             else if (id == "spawn-dialogue") applyDialogueDocument();
             else if (id == "spawn-avatar") spawnArchetype("avatar.preview");
@@ -540,9 +561,11 @@ eve_init = function() {
     procgen.applyPbrRecipeDefaults(state.materialRecipe, state.materialParams);
     state.materialSchema = procgen.getPbrRecipeSchema(state.materialRecipe);
     state.dialogueComponent = DialogueEditorComponent(dialogueFlow, "quest.example");
+    state.gameplayComponents = GameplayEditorComponents();
     configureWorkspace();
     registerProjectCommands();
     generateTerrain();
+    state.gameplayComponents.bindTerrain(state.heightmap, CELL);
     generateAndApplyPbrMaterial();
     configureTerrainTool();
     state.camera = eve.Camera3D();
@@ -567,6 +590,7 @@ eve_update = function(dt) {
     handlePanelEvents();
     updateSceneInteraction(dt);
     updateCamera();
+    state.gameplayComponents.update(dt);
     state.meshCooldown -= dt;
     if (state.meshDirty && state.meshCooldown <= 0.0) {
         editor.updateHeightmapMeshSmooth(state.terrainMesh, gfx, state.heightmap, CELL, HEIGHT_SCALE);
