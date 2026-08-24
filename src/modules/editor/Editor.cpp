@@ -10,6 +10,7 @@
 #include "editor/EditorToolbar.h"
 #include "editor/EditorValueJson.h"
 #include "editor/EditorWorkspace.h"
+#include "editor/FieldBrushTool.h"
 #include "editor/FieldTargets.h"
 #include "editor/GizmoManager.h"
 #include "editor/ScriptEditorTool.h"
@@ -594,6 +595,21 @@ ScriptEditorTool* Editor::newScriptTool(const std::string& id, const std::string
     return new ScriptEditorTool(id, label);
 }
 
+ConstantBrushFalloff* Editor::newConstantBrushFalloff() { return new ConstantBrushFalloff(); }
+LinearBrushFalloff* Editor::newLinearBrushFalloff() { return new LinearBrushFalloff(); }
+SmoothBrushFalloff* Editor::newSmoothBrushFalloff() { return new SmoothBrushFalloff(); }
+CircleBrushKernel* Editor::newCircleBrushKernel() { return new CircleBrushKernel(); }
+BoxBrushKernel* Editor::newBoxBrushKernel() { return new BoxBrushKernel(); }
+PaintIntFieldOperation* Editor::newPaintIntFieldOperation(int value) {
+    return new PaintIntFieldOperation(value);
+}
+AddScalarFieldOperation* Editor::newAddScalarFieldOperation() {
+    return new AddScalarFieldOperation();
+}
+FieldBrushTool* Editor::newFieldBrushTool(const std::string& id, const std::string& label) {
+    return new FieldBrushTool(id, label, nullptr, nullptr);
+}
+
 #ifdef EVENGINE_HAS_PROCGEN
 HeightmapTarget* Editor::newHeightmapTarget(const std::string& id, procgen::Heightmap* heightmap) {
     return new HeightmapTarget(id, heightmap);
@@ -875,10 +891,119 @@ void Editor::expose(ssq::Table& table) {
     hist.addFunc("getLastTileOldGid", &EditorHistory::getLastTileOldGid);
     hist.addFunc("getLastTileNewGid", &EditorHistory::getLastTileNewGid);
 
+    auto constantFalloff = table.addClass<ConstantBrushFalloff>(
+        "ConstantBrushFalloff",
+        std::function<ConstantBrushFalloff*()>([]() -> ConstantBrushFalloff* { return nullptr; }), true);
+    auto linearFalloff = table.addClass<LinearBrushFalloff>(
+        "LinearBrushFalloff",
+        std::function<LinearBrushFalloff*()>([]() -> LinearBrushFalloff* { return nullptr; }), true);
+    auto smoothFalloff = table.addClass<SmoothBrushFalloff>(
+        "SmoothBrushFalloff",
+        std::function<SmoothBrushFalloff*()>([]() -> SmoothBrushFalloff* { return nullptr; }), true);
+    (void)constantFalloff;
+    (void)linearFalloff;
+    (void)smoothFalloff;
+
+    auto circleKernel = table.addClass<CircleBrushKernel>(
+        "CircleBrushKernel", std::function<CircleBrushKernel*()>([]() -> CircleBrushKernel* { return nullptr; }),
+        true);
+    circleKernel.addFunc("setConstantFalloff", [](CircleBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    circleKernel.addFunc("setLinearFalloff", [](CircleBrushKernel* self, LinearBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    circleKernel.addFunc("setSmoothFalloff", [](CircleBrushKernel* self, SmoothBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+
+    auto boxKernel = table.addClass<BoxBrushKernel>(
+        "BoxBrushKernel", std::function<BoxBrushKernel*()>([]() -> BoxBrushKernel* { return nullptr; }), true);
+    boxKernel.addFunc("setConstantFalloff", [](BoxBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    boxKernel.addFunc("setLinearFalloff", [](BoxBrushKernel* self, LinearBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    boxKernel.addFunc("setSmoothFalloff", [](BoxBrushKernel* self, SmoothBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+
+    auto paintOperation = table.addClass<PaintIntFieldOperation>(
+        "PaintIntFieldOperation",
+        std::function<PaintIntFieldOperation*()>([]() -> PaintIntFieldOperation* { return nullptr; }), true);
+    paintOperation.addFunc("setValue", &PaintIntFieldOperation::setValue);
+    paintOperation.addFunc("getValue", &PaintIntFieldOperation::value);
+    auto addScalarOperation = table.addClass<AddScalarFieldOperation>(
+        "AddScalarFieldOperation",
+        std::function<AddScalarFieldOperation*()>([]() -> AddScalarFieldOperation* { return nullptr; }), true);
+    (void)addScalarOperation;
+
+    auto fieldTool = table.addClass<FieldBrushTool>(
+        "FieldBrushTool", std::function<FieldBrushTool*()>([]() -> FieldBrushTool* { return nullptr; }), true);
+    fieldTool.addFunc("setRadius", &FieldBrushTool::setRadius);
+    fieldTool.addFunc("setStrength", &FieldBrushTool::setStrength);
+    fieldTool.addFunc("getRadius", &FieldBrushTool::radius);
+    fieldTool.addFunc("getStrength", &FieldBrushTool::strength);
+    fieldTool.addFunc("setCircleKernel", [](FieldBrushTool* self, CircleBrushKernel* kernel) {
+        if (self) self->setKernel(kernel);
+    });
+    fieldTool.addFunc("setBoxKernel", [](FieldBrushTool* self, BoxBrushKernel* kernel) {
+        if (self) self->setKernel(kernel);
+    });
+    fieldTool.addFunc("setPaintIntOperation", [](FieldBrushTool* self, PaintIntFieldOperation* operation) {
+        if (self) self->setOperation(operation);
+    });
+    fieldTool.addFunc("setAddScalarOperation", [](FieldBrushTool* self, AddScalarFieldOperation* operation) {
+        if (self) self->setOperation(operation);
+    });
+
+    auto tileTarget = table.addClass<TileBufferTarget>(
+        "TileBufferTarget", std::function<TileBufferTarget*()>([]() -> TileBufferTarget* { return nullptr; }), true);
+    tileTarget.addFunc("getTargetId", [](TileBufferTarget* self) { return self ? self->targetId() : std::string{}; });
+    tileTarget.addFunc("getRevision", [](TileBufferTarget* self) {
+        return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
+    });
+    tileTarget.addFunc("getWidth", &TileBufferTarget::width);
+    tileTarget.addFunc("getHeight", &TileBufferTarget::height);
+    tileTarget.addFunc("readInt", &TileBufferTarget::readInt);
+    tileTarget.addFunc("writeInt", &TileBufferTarget::writeInt);
+    tileTarget.addFunc("clearDirtyRegion", &TileBufferTarget::clearDirtyRegion);
+
+#ifdef EVENGINE_HAS_PROCGEN
+    auto heightmapTarget = table.addClass<HeightmapTarget>(
+        "HeightmapTarget", std::function<HeightmapTarget*()>([]() -> HeightmapTarget* { return nullptr; }), true);
+    heightmapTarget.addFunc("getTargetId",
+                            [](HeightmapTarget* self) { return self ? self->targetId() : std::string{}; });
+    heightmapTarget.addFunc("getRevision", [](HeightmapTarget* self) {
+        return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
+    });
+    heightmapTarget.addFunc("getWidth", &HeightmapTarget::width);
+    heightmapTarget.addFunc("getHeight", &HeightmapTarget::height);
+    heightmapTarget.addFunc("readScalar", &HeightmapTarget::readScalar);
+    heightmapTarget.addFunc("writeScalar", &HeightmapTarget::writeScalar);
+    heightmapTarget.addFunc("sampleScalar", &HeightmapTarget::sampleScalar);
+    heightmapTarget.addFunc("clearDirtyRegion", &HeightmapTarget::clearDirtyRegion);
+#endif
+
     auto session = table.addClass<EditorSession>(
         "EditorSession", std::function<EditorSession*()>([]() -> EditorSession* { return nullptr; }), true);
     session.addFunc("addTool", std::function<bool(EditorSession*, ScriptEditorTool*)>(
                                    [](EditorSession* self, ScriptEditorTool* tool) { return self->addTool(tool); }));
+    session.addFunc("addFieldTool", [](EditorSession* self, FieldBrushTool* tool) {
+        return self && self->addTool(tool);
+    });
+    session.addFunc("bindTileBufferTarget", [](EditorSession* self, TileBufferTarget* target) {
+        if (self) self->bindTarget(target);
+    });
+#ifdef EVENGINE_HAS_PROCGEN
+    session.addFunc("bindHeightmapTarget", [](EditorSession* self, HeightmapTarget* target) {
+        if (self) self->bindTarget(target);
+    });
+#endif
+    session.addFunc("clearTarget", [](EditorSession* self) {
+        if (self) self->bindTarget(nullptr);
+    });
     session.addFunc("removeTool", &EditorSession::removeTool);
     session.addFunc("clearTools", &EditorSession::clearTools);
     session.addFunc("activateTool", &EditorSession::activateTool);
@@ -1037,11 +1162,21 @@ void Editor::expose(ssq::Class& cls) {
     cls.addFunc("newSession", &Editor::newSession);
     cls.addFunc("newWorkspace", &Editor::newWorkspace);
     cls.addFunc("newScriptTool", &Editor::newScriptTool);
+    cls.addFunc("newConstantBrushFalloff", &Editor::newConstantBrushFalloff);
+    cls.addFunc("newLinearBrushFalloff", &Editor::newLinearBrushFalloff);
+    cls.addFunc("newSmoothBrushFalloff", &Editor::newSmoothBrushFalloff);
+    cls.addFunc("newCircleBrushKernel", &Editor::newCircleBrushKernel);
+    cls.addFunc("newBoxBrushKernel", &Editor::newBoxBrushKernel);
+    cls.addFunc("newPaintIntFieldOperation", &Editor::newPaintIntFieldOperation);
+    cls.addFunc("newAddScalarFieldOperation", &Editor::newAddScalarFieldOperation);
+    cls.addFunc("newFieldBrushTool", &Editor::newFieldBrushTool);
+    cls.addFunc("newTileBufferTarget", &Editor::newTileBufferTarget);
     cls.addFunc("registerScriptCommand", registerScriptCommand);
     cls.addFunc("unregisterScriptCommand", [](Editor* self, const std::string& id) {
         return self && self->commandService().unregisterCommand(CommandId(id), "script:" + id);
     });
 #ifdef EVENGINE_HAS_PROCGEN
+    cls.addFunc("newHeightmapTarget", &Editor::newHeightmapTarget);
     cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
     cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
     cls.addFunc("newHeightmapMeshSmooth", &Editor::newHeightmapMeshSmooth);

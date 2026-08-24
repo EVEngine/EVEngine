@@ -9,7 +9,8 @@ The example demonstrates:
 
 - workspace metadata dynamically generating a project-specific UI;
 - an MVVM-style reflected `WorldEditorVM` with two-way controls;
-- a live embedded 3D runtime viewport using `procgen`, terrain mesh editing, and materials;
+- a live embedded 3D runtime viewport using `procgen`, materials, and a field tool assembled
+  from reusable target, kernel, falloff, operation, and transaction components;
 - channelled semantic selection shared by hierarchy, viewport, and inspector;
 - ECS-backed runtime objects created through the same command service used by a
   developer editor or an in-game builder;
@@ -21,7 +22,10 @@ Run with:
 make run/win32-debug GAME=examples/composable-editor
 ```
 
-The domain buttons are deliberately thin. Subsequent editor-module increments
+The terrain tool is also ordinary project composition: it binds a `HeightmapTarget`
+to a generic `FieldBrushTool` and sends world-space pointer events through the shared
+`EditorSession`; undo and redo therefore use the same transaction stack as other
+editable domains. The domain buttons are deliberately thin. Subsequent editor-module increments
 register real domain property providers, tools, previews, and documents while this
 example remains a small composition root.
 

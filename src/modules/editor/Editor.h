@@ -41,6 +41,14 @@ class TileLayerTarget;
 #endif
 class HeightmapTarget;
 class ScriptEditorTool;
+class ConstantBrushFalloff;
+class LinearBrushFalloff;
+class SmoothBrushFalloff;
+class CircleBrushKernel;
+class BoxBrushKernel;
+class PaintIntFieldOperation;
+class AddScalarFieldOperation;
+class FieldBrushTool;
 class EditorAutomationProvider;
 
 /**
@@ -82,7 +90,34 @@ public:
 #endif
     /** @brief Create a script-backed implementation of the IEditorTool protocol. */
     ScriptEditorTool* newScriptTool(const std::string& id, const std::string& label);
+    /** @brief Create a constant brush falloff strategy. */
+    ConstantBrushFalloff* newConstantBrushFalloff();
+    /** @brief Create a linear brush falloff strategy. */
+    LinearBrushFalloff* newLinearBrushFalloff();
+    /** @brief Create a smoothstep brush falloff strategy. */
+    SmoothBrushFalloff* newSmoothBrushFalloff();
+    /** @brief Create a circular brush kernel with a replaceable falloff. */
+    CircleBrushKernel* newCircleBrushKernel();
+    /** @brief Create a rotatable box brush kernel with a replaceable falloff. */
+    BoxBrushKernel* newBoxBrushKernel();
+    /** @brief Create an integer-field paint operation. */
+    PaintIntFieldOperation* newPaintIntFieldOperation(int value);
+    /** @brief Create an additive scalar-field operation. */
+    AddScalarFieldOperation* newAddScalarFieldOperation();
+    /**
+     * @brief Create a field brush tool whose kernel and operation are supplied separately.
+     * @param id Stable project-defined tool id.
+     * @param label User-facing label used for transaction names.
+     * @return Unconfigured tool; set its kernel and operation before activation.
+     */
+    FieldBrushTool* newFieldBrushTool(const std::string& id, const std::string& label);
 #ifdef EVENGINE_HAS_PROCGEN
+    /**
+     * @brief Adapt a live heightmap to the generic scalar-field editing protocol.
+     * @param id Stable project-defined target id.
+     * @param heightmap Non-owning live heightmap pointer.
+     * @return New adapter owned by the caller.
+     */
     HeightmapTarget* newHeightmapTarget(const std::string& id, procgen::Heightmap* heightmap);
 
     /**

@@ -17,6 +17,9 @@ without changing engine C++.
 - `EditorWorkspace`: panel discovery, regions, layout, selection/focus, edit/play/simulate mode.
 - `EditorSession` and command registry: the same semantic actions can be called by game UI,
   editor UI, automation, or an AI tool.
+- `IEditableTarget`, field capabilities, replaceable brush kernels/falloffs/operations, and
+  `FieldBrushTool`: projects assemble tile or scalar-field tools without adding a domain editor
+  to C++. Script factories expose the same composition path and `EditorSession` transaction stack.
 - property schemas and reflection: generated inspectors and custom MVVM presenters can bind
   to the same object model.
 - document, asset database, graph, extension, selection, and focus services: domain editors
@@ -36,11 +39,12 @@ embedded 3D runtime presenter.
 
 ### Terrain and materials
 
-Available: heightmaps, procedural generation, smooth mesh creation/update, raise/lower brush,
-runtime materials, and a working terrain example. Missing editor-library pieces are flatten,
-smooth, stamp and erosion tools; material-layer/splat assets; brush stroke transactions;
-selection-aware property providers; and bake/publish documents. These should implement common
-editable-target and command interfaces rather than terrain-specific panels.
+Available: heightmaps, procedural generation, smooth mesh creation/update, runtime materials,
+generic scalar-field targets and undoable brush transactions, and a working terrain composition
+example. Missing editor-library pieces are flatten, smooth, stamp and erosion operations;
+material-layer/splat assets; selection-aware property providers; and bake/publish documents.
+These should extend the common editable-target and command interfaces rather than add
+terrain-specific panels.
 
 ### Avatar and animation
 
@@ -86,10 +90,10 @@ workspace descriptors.
 ## Delivery sequence
 
 1. Stabilize the workspace composition API and example, including dynamic panels and shared
-   selection/focus (this increment).
-2. Define generic editable-target, tool, stroke transaction, preview-host, and property-provider
-   interfaces on the completed texture/viewport bridge; migrate terrain first as the end-to-end
-   proof.
+   selection/focus (complete).
+2. Expose generic editable-target, tool, and stroke transaction components to projects; use the
+   completed texture/viewport bridge as a replaceable preview host and migrate terrain as the
+   end-to-end proof (complete except selection-aware property providers).
 3. Add material/procgen/voxel/tilemap adapters and document persistence.
 4. Add graph/timeline foundations for dialogue and animation, then avatar validation/preview.
 5. Add card and RTS project extensions that only compose the shared foundations.

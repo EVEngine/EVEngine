@@ -51,10 +51,18 @@ state <- persist("composableEditor", function() {
         heightmap = null
         terrainMesh = null
         terrainEntity = null
+        terrainTarget = null
+        brushFalloff = null
+        brushKernel = null
+        brushOperation = null
+        brushTool = null
         camera = null
         panelsMounted = false
         objects = []
         orbiting = false
+        sculpting = false
+        sculptX = 0.0
+        sculptY = 0.0
         lastX = 0.0
         lastY = 0.0
         yaw = 0.72
@@ -63,6 +71,7 @@ state <- persist("composableEditor", function() {
         meshDirty = false
         meshCooldown = 0.0
         lastSelectionSequence = 0
+        lastTargetRevision = 0
         frameCount = 0
         screenshotSaved = false
     };
@@ -102,6 +111,8 @@ function panelToolbar() {
     ui.separator("sep-mode");
     ui.button("Raise", "tool-raise");
     ui.button("Lower", "tool-lower");
+    ui.button("Undo", "edit-undo");
+    ui.button("Redo", "edit-redo");
     ui.button("Regenerate", "terrain-regenerate");
     ui.button("Reflected Inspector", "reflect-inspector");
     ui.text("", "mode-label");
@@ -204,7 +215,27 @@ function generateTerrain() {
         editor.updateHeightmapMeshSmooth(state.terrainMesh, gfx, state.heightmap, CELL, HEIGHT_SCALE);
     }
     applyMaterial(state.vm.material);
+    if (state.brushTool != null) bindTerrainTarget();
     state.vm.status = "Generated terrain seed " + state.vm.seed;
+}
+
+function bindTerrainTarget() {
+    state.terrainTarget = editor.newHeightmapTarget("world.terrain", state.heightmap);
+    state.session.bindHeightmapTarget(state.terrainTarget);
+    state.lastTargetRevision = state.terrainTarget.getRevision();
+}
+
+function configureTerrainTool() {
+    state.brushFalloff = editor.newSmoothBrushFalloff();
+    state.brushKernel = editor.newCircleBrushKernel();
+    state.brushKernel.setSmoothFalloff(state.brushFalloff);
+    state.brushOperation = editor.newAddScalarFieldOperation();
+    state.brushTool = editor.newFieldBrushTool("terrain.sculpt", "Sculpt Terrain");
+    state.brushTool.setCircleKernel(state.brushKernel);
+    state.brushTool.setAddScalarOperation(state.brushOperation);
+    state.session.addFieldTool(state.brushTool);
+    bindTerrainTarget();
+    state.session.activateTool("terrain.sculpt");
 }
 
 function applyMaterial(name) {
@@ -273,6 +304,10 @@ function handlePanelEvents() {
                 state.workspace.setMode(state.vm.mode);
             } else if (id == "tool-raise" || id == "tool-lower") {
                 state.vm.tool = id.slice(5);
+            } else if (id == "edit-undo") {
+                if (state.session.undo()) state.vm.status = "Undo terrain stroke";
+            } else if (id == "edit-redo") {
+                if (state.session.redo()) state.vm.status = "Redo terrain stroke";
             } else if (id == "terrain-regenerate") {
                 state.vm.seed += 1;
                 generateTerrain();
@@ -322,17 +357,28 @@ function updateSceneInteraction(dt) {
         state.lastY = my;
         state.orbiting = true;
     } else state.orbiting = false;
-    if (hovered && canvas != null && mouse.isDown(1)) {
+    state.brushTool.setRadius(state.vm.brushRadius);
+    local signedStrength = state.vm.tool == "lower" ? -state.vm.strength : state.vm.strength;
+    state.brushTool.setStrength(signedStrength * clampf(dt * 60.0, 0.0, 2.0));
+    if (state.vm.mode == "edit" && hovered && canvas != null && mouse.isDown(1)) {
         local hit = terrainHit(mx, my, canvas.getWidth().tofloat(), canvas.getHeight().tofloat());
         if (hit != null) {
-            local direction = state.vm.tool == "lower" ? -1.0 : 1.0;
-            local changed = editor.applyHeightmapBrush(state.heightmap, hit[0], hit[1], state.vm.brushRadius,
-                direction * state.vm.strength * clampf(dt * 60.0, 0.0, 2.0));
-            if (changed > 0) {
-                state.meshDirty = true;
-                state.vm.status = state.vm.tool + " terrain · " + changed + " samples";
-            }
+            local phase = state.sculpting ? 1 : 0;
+            state.session.dispatchPointer(phase, 1, 0, hit[0], hit[1],
+                                          hit[0] - state.sculptX, hit[1] - state.sculptY, 1.0);
+            state.sculpting = true;
+            state.sculptX = hit[0];
+            state.sculptY = hit[1];
         }
+    } else if (state.sculpting) {
+        state.session.dispatchPointer(2, 1, 0, state.sculptX, state.sculptY, 0.0, 0.0, 1.0);
+        state.sculpting = false;
+    }
+    local revision = state.terrainTarget.getRevision();
+    if (revision != state.lastTargetRevision) {
+        state.lastTargetRevision = revision;
+        state.meshDirty = true;
+        state.vm.status = state.vm.tool + " terrain · revision " + revision;
     }
 }
 
@@ -357,6 +403,7 @@ eve_init = function() {
     configureWorkspace();
     registerProjectCommands();
     generateTerrain();
+    configureTerrainTool();
     state.camera = eve.Camera3D();
     state.camera.setFov(50.0);
     state.camera.setAmbient(0.14, 0.16, 0.20);
