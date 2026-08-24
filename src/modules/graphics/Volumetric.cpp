@@ -1,6 +1,7 @@
 #include "graphics/Volumetric.h"
 
 #include "graphics/AtmosphereVolume.h"
+#include "graphics/FogVolume.h"
 
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
@@ -711,6 +712,11 @@ void Volumetric::injectFroxelHeightFog(float extinction, float albedoR, float al
                                        float minWorldY, float maxWorldY) {
     atmosphereVolume_->injectHeightFog(extinction, glm::vec3(albedoR, albedoG, albedoB),
                                        baseHeight, heightFalloff, minWorldY, maxWorldY);
+}
+
+void Volumetric::injectFroxelLocalVolume(FogVolume *volume) {
+    if (!volume) throw eve::Exception("Volumetric.injectFroxelLocalVolume: null volume");
+    atmosphereVolume_->injectLocalVolumeFrustum(*volume, invViewProj_);
 }
 
 void Volumetric::integrateFroxel(float lightR, float lightG, float lightB, float phaseScale) {
