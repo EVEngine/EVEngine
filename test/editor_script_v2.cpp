@@ -129,7 +129,7 @@ TEST_CASE("editor.v2.script_game_injects_command_into_the_same_session_protocol"
                                                      "script:test.script.spawn-tree"));
 }
 
-TEST_CASE("editor.v2.runtime_builder_example_script_compiles") {
+TEST_CASE("editor.v2.runtime_builder_quick_add_click_executes_command") {
     const std::filesystem::path sourceRoot = std::filesystem::path(__FILE__).parent_path().parent_path();
     const std::filesystem::path scriptPath = sourceRoot / "examples" / "editor-api-v2" / "main.nut";
     std::ifstream               input(scriptPath, std::ios::binary);
@@ -137,6 +137,62 @@ TEST_CASE("editor.v2.runtime_builder_example_script_compiles") {
     std::ostringstream source;
     source << input.rdbuf();
 
-    ssq::VM vm(2048, ssq::Libs::ALL);
-    CHECK(!vm.compileSource(source.str().c_str(), "examples/editor-api-v2/main.nut").isEmpty());
+    const std::string harness = R"(
+        eve_init <- null;
+        eve_update <- null;
+        eve_render <- null;
+        persist <- function(key, factory) { return factory(); };
+        gfx <- {
+            setBackgroundColor = function(r, g, b, a) {},
+            clear = function() {},
+            drawSolidRect = function(x, y, w, h, r, g, b, a) {}
+        };
+        mouse <- {
+            isDown = function(button) { return false; },
+            getX = function() { return 0.0; },
+            getY = function() { return 0.0; }
+        };
+        ui <- {
+            clicks = [],
+            setTheme = function(name) {},
+            beginBuild = function() {},
+            beginWindow = function(title, id) {},
+            text = function(value, id) {},
+            beginRow = function(id, gap) {},
+            button = function(label, id) {},
+            end = function() {},
+            mountBuildAs = function(name) {},
+            select = function(name) {},
+            setHostOverlay = function(enabled) {},
+            setHostPos = function(x, y, z, w) {},
+            setHostSize = function(w, h) {},
+            setText = function(id, value) {},
+            wantCaptureMouse = function() { return false; },
+            beginFrameAndRender = function() {},
+            consumeClick = function() {
+                if (clicks.len() == 0) return "";
+                local value = clicks[0];
+                clicks.remove(0);
+                return value;
+            }
+        };
+    )";
+
+    ssq::VM vm(4096, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    const std::string executable = harness + source.str() + R"(
+        eve_init();
+        ui.clicks.append("editor-v2/asset-tree");
+        eve_update(0.016);
+        quickAddObjectCount <- editorV2.objects.len();
+        quickAddCredits <- editorV2.credits;
+        quickAddAsset <- editorV2.objects[0].asset;
+        cleanupResult <- editorV2.editor.unregisterScriptCommand("park.scene.place-asset");
+    )";
+    vm.run(vm.compileSource(executable.c_str(), "examples/editor-api-v2/main.nut"));
+
+    CHECK_EQ(vm.find("quickAddObjectCount").toInt(), 1);
+    CHECK_EQ(vm.find("quickAddCredits").toInt(), 580);
+    CHECK_EQ(vm.find("quickAddAsset").toString(), std::string("park.asset.tree"));
+    CHECK(vm.find("cleanupResult").toBool());
 }

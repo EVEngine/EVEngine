@@ -1,6 +1,8 @@
 # Editor API V2：游戏内 Runtime Builder
 
-这个示例把编辑器直接作为玩法：玩家从资产和材质面板选择内容，点击场景网格完成建造。它重点演示的不是某个固定面板，而是游戏与开发编辑器共享的命令协议。
+这个示例把编辑器直接作为玩法：玩家可点击 `Add Tree / Add Bench / Add Ride`
+立即建造到下一个空网格，也可先选材质、再点击场景网格精确放置。两种交互都走同一套
+`planCommand / executePlan` 命令协议。
 
 运行：
 
@@ -12,7 +14,7 @@ make run/win32-debug GAME=examples/editor-api-v2
 
 1. 游戏用 `editor.registerScriptCommand(...)` 向共享 `EditorCommandService` 注入 `park.scene.place-asset`；
 2. `EditorSession.getCommand*()` 按 HostProfile 发现命令；
-3. UI 只组装包含资产、材质、位置和费用的 payload；
+3. UI 的快捷添加和精确放置只组装包含资产、材质、位置和费用的 payload；
 4. `planCommand()` 生成无副作用计划和稳定 `planId`；
 5. `executePlan()` 执行保留的计划，回传 transaction state、revision 和 authority receipt；
 6. 游戏逻辑回调校验预算、占用和边界，然后修改真实玩法状态。

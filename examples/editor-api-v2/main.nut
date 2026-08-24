@@ -87,9 +87,25 @@ function buildAt(gridX, gridY) {
     if (receipt.accepted) {
         editorV2.status = "Committed " + asset.label + " / " + material.label +
                           " · transaction=" + receipt.transactionId;
+        print("editor-api-v2: added " + asset.label + " at " + gridX + "," + gridY + "\n");
     } else {
         editorV2.status = "Commit rejected: occupied cell or insufficient credits";
     }
+}
+
+function addSelectedAsset() {
+    // Palette actions must have an immediate, visible result. Keep precise
+    // placement available through the viewport, while using the same command
+    // plan/execute path for quick-add.
+    for (local y = 0; y < ROWS; ++y) {
+        for (local x = 0; x < COLS; ++x) {
+            if (findObjectAt(x, y) == null) {
+                buildAt(x, y);
+                return;
+            }
+        }
+    }
+    editorV2.status = "Commit rejected: scene grid is full";
 }
 
 function rebuildUi() {
@@ -101,11 +117,11 @@ function rebuildUi() {
     ui.text("", "credits");
     ui.text("", "status");
 
-    ui.text("Asset palette", "asset-title");
+    ui.text("Quick add (click once to create)", "asset-title");
     ui.beginRow("assets", 6.0);
-    ui.button("Tree", "asset-tree");
-    ui.button("Bench", "asset-bench");
-    ui.button("Ride", "asset-ride");
+    ui.button("Add Tree", "asset-tree");
+    ui.button("Add Bench", "asset-bench");
+    ui.button("Add Ride", "asset-ride");
     ui.end();
 
     ui.text("Material palette", "material-title");
@@ -116,7 +132,7 @@ function rebuildUi() {
     ui.end();
 
     ui.text("", "selection");
-    ui.text("Click a grid cell to plan + commit", "hint");
+    ui.text("Quick-add above, or click a grid cell for precise placement", "hint");
     ui.text("", "commands");
     ui.end();
     ui.mountBuildAs("editor-v2");
@@ -152,10 +168,16 @@ eve_update = function(dt) {
     ui.select("editor-v2");
     local clicked = ui.consumeClick();
     while (clicked != "") {
-        if (clicked == "editor-v2/asset-tree") editorV2.selectedAsset = 0;
-        else if (clicked == "editor-v2/asset-bench") editorV2.selectedAsset = 1;
-        else if (clicked == "editor-v2/asset-ride") editorV2.selectedAsset = 2;
-        else if (clicked == "editor-v2/material-forest") editorV2.selectedMaterial = 0;
+        if (clicked == "editor-v2/asset-tree") {
+            editorV2.selectedAsset = 0;
+            addSelectedAsset();
+        } else if (clicked == "editor-v2/asset-bench") {
+            editorV2.selectedAsset = 1;
+            addSelectedAsset();
+        } else if (clicked == "editor-v2/asset-ride") {
+            editorV2.selectedAsset = 2;
+            addSelectedAsset();
+        } else if (clicked == "editor-v2/material-forest") editorV2.selectedMaterial = 0;
         else if (clicked == "editor-v2/material-ocean") editorV2.selectedMaterial = 1;
         else if (clicked == "editor-v2/material-sunset") editorV2.selectedMaterial = 2;
         clicked = ui.consumeClick();
