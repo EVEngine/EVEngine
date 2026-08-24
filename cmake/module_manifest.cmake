@@ -84,9 +84,9 @@ eve_declare_module(NAME crowd LAYER 0 SCRIPT Crowd SLOT crowd
                    GROUP 2d 3d web)
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
-eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   GROUP 3d web
-                   OPTIONAL_DEPS procgen)
+  eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
+                     GROUP 3d web
+                     OPTIONAL_DEPS procgen map)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)
 eve_declare_module(NAME database LAYER 0 SCRIPT Database
@@ -262,7 +262,7 @@ eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
                    GROUP 3d)
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
-                   GROUP 3d)
+                   GROUP 2d)
 eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
                    DEPS data graphics image model3d)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
@@ -309,5 +309,7 @@ eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
                    GROUP 3d)
-eve_declare_module(NAME dialogue LAYER 6 SCRIPT Dialogue SLOT dialogue
-                   DEPS avatar)
+eve_declare_module(NAME dialogue LAYER 6
+                   SCRIPT Dialogue DialogueUX DialogueVoice DialogueFlow
+                   SLOT dialogue dialogueUX dialogueVoice dialogueFlow
+                   DEPS avatar audio filesystem)

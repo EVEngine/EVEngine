@@ -1,5 +1,7 @@
 #pragma once
 
+#include "graphics/PostEffect.h"
+
 #include <string>
 
 namespace eve::graphics {
@@ -29,6 +31,10 @@ public:
 
     std::string getStyle() const { return style_; }
     graphics::Shader *getShader() const { return shader_; }
+    std::string getStage() const;
+    int getPriority() const { return desc_.priority; }
+    void setPriority(int priority) { desc_.priority = priority; }
+    bool requiresInput(const std::string &input) const;
 
     bool hasParam(const std::string &name) const;
     void setFloat(const std::string &name, float value);
@@ -57,6 +63,7 @@ private:
 
     std::string style_;
     graphics::Shader *shader_ = nullptr;  // owned by Graphics
+    graphics::PostEffectDesc desc_;
 };
 
 }  // namespace eve::stylize

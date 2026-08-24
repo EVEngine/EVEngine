@@ -48,10 +48,43 @@ public:
     };
 
     struct Tiles {
+        struct Chunk {
+            int nonEmpty = 0;
+        };
+
+        static constexpr int kChunkSize = 32;
         std::vector<uint32_t> gids;
+        std::vector<Chunk> chunks;
+        int chunkColumns = 0;
+        int chunkRows = 0;
+        uint64_t revision = 1;
+        std::vector<int> terrainIds;
     };
 
     struct Tileset {
+        struct AnimationFrame {
+            int gid = 0;
+            int durationMs = 100;
+        };
+
+        struct Animation {
+            int gid = 0;
+            std::vector<AnimationFrame> frames;
+        };
+
+        struct TerrainRule {
+            int gid = 0;
+            int terrain = 0;
+            int neighborMask = 0;
+        };
+
+        struct CustomData {
+            int gid = 0;
+            std::string name;
+            std::string type;
+            std::string value;
+        };
+
         /** @brief Per-GID visual metadata emitted by a project-defined asset pipeline. */
         struct Visual {
             int gid = 0;
@@ -76,6 +109,9 @@ public:
         int margin = 0;
         int spacing = 0;
         std::vector<Visual> visuals;
+        std::vector<Animation> animations;
+        std::vector<TerrainRule> terrainRules;
+        std::vector<CustomData> customData;
     };
 
     struct Draw {
@@ -130,10 +166,40 @@ public:
     /** @brief Tile GID access; 0 = empty. */
     void setTile(int tx, int ty, int gid);
     int getTile(int tx, int ty);
+    /** @brief Fill a clipped rectangular region and publish one tile revision. */
+    void fillRect(int x, int y, int width, int height, int gid);
     /** @brief Fills the whole layer with one GID. */
     void fill(int gid);
     /** @brief Clears the layer to empty. */
     void clear();
+
+    /** @brief Monotonic tile-data revision used by derived navigation/FOV caches. */
+    int getRevision();
+    /** @brief Runtime spatial-index diagnostics. */
+    int getChunkSize();
+    int getChunkCount();
+    int getNonEmptyChunkCount();
+
+    /** @brief Rebuild chunk occupancy after bulk loader writes directly to gids. */
+    void rebuildSpatialIndex();
+
+    /** @brief TileSet v2 animation authoring; frames are selected during map update/render. */
+    void clearTileAnimation(int gid);
+    void addTileAnimationFrame(int gid, int frameGid, int durationMs);
+    int getTileAnimationFrameCount(int gid);
+    /** @brief TileSet v2 typed custom data (stored losslessly as canonical text). */
+    void setTileDataString(int gid, const std::string &name, const std::string &value);
+    void setTileDataNumber(int gid, const std::string &name, float value);
+    void setTileDataBool(int gid, const std::string &name, bool value);
+    std::string getTileDataType(int gid, const std::string &name);
+    std::string getTileDataString(int gid, const std::string &name);
+    float getTileDataNumber(int gid, const std::string &name);
+    bool getTileDataBool(int gid, const std::string &name);
+    /** @brief Register an 8-neighbor terrain rule and paint with local re-resolution. */
+    void setTerrainRule(int gid, int terrain, int neighborMask);
+    void clearTerrainRules();
+    void paintTerrain(int x, int y, int terrain);
+    int getTerrain(int x, int y);
 
     /** @brief Binds the atlas texture and tile table. */
     void setTileset(graphics::Texture *texture, int firstGid, int columns, int margin = 0,

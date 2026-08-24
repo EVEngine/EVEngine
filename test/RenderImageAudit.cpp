@@ -1967,9 +1967,9 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     Texture *checker = makeChecker(gfx, 32, 32);
     studio.subject->setTexture(checker);
 
-    gfx->setTextureSamplerParams(checker, "nearest", "none", 1.f, 0.f);
+    gfx->setTextureSampler(checker, "nearest", "none", 1.f, 0.f);
     auditGpuFrame(gfx, "sampler", "nearest", bg);
-    gfx->setTextureSamplerParams(checker, "linear", "none", 1.f, 0.f);
+    gfx->setTextureSampler(checker, "linear", "none", 1.f, 0.f);
     auditGpuFrame(gfx, "sampler", "linear", bg);
 
     TextureCreateInfo mip = TextureCreateInfo::withMipmaps(true, 8.f);
@@ -1986,7 +1986,7 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     }
     Texture *mipTex = gfx->newTexture(32, 32, mipPx.data(), mip);
     studio.subject->setTexture(mipTex);
-    gfx->setTextureSamplerParams(mipTex, "linear", "linear", 8.f, 2.5f);
+    gfx->setTextureSampler(mipTex, "linear", "linear", 8.f, 2.5f);
     auditGpuFrame(gfx, "sampler", "mip_lod_bias", bg);
 
     Texture *rep = makeChecker(gfx, 16, 16, true);
@@ -2257,7 +2257,7 @@ TEST_CASE("graphics.imageAudit.renderControlToggles") {
         }
     }
     Texture *aniso = gfx->newTexture(32, 32, px.data(), mip);
-    gfx->setTextureSamplerParams(aniso, "linear", "linear", 16.f, 0.f);
+    gfx->setTextureSampler(aniso, "linear", "linear", 16.f, 0.f);
     studio.ground->setTexture(aniso);
     studio.subject->setTexture(aniso);
     auditGpuFrame(gfx, "rctrl", "aniso_mip", bg);

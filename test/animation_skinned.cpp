@@ -50,6 +50,7 @@ using eve::graphics::Color;
 
 #include <SDL2/SDL.h>
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
@@ -376,10 +377,21 @@ void renderSkinnedAnimation(eve::model3d::ModelData *model, const char *pngName,
     }
 
     AnimPose pose;
-    std::vector<float> pos;
     std::vector<float> firstLuma;
     float maxDelta = -1.f;
     bool first = true;
+
+    std::vector<float> bindPos(static_cast<size_t>(vertexCount) * 3u);
+    for (int v = 0; v < vertexCount; ++v) {
+        bindPos[static_cast<size_t>(v) * 3u] = ai->mVertices[v].x;
+        bindPos[static_cast<size_t>(v) * 3u + 1u] = ai->mVertices[v].y;
+        bindPos[static_cast<size_t>(v) * 3u + 2u] = ai->mVertices[v].z;
+    }
+    Mesh *mesh = gfx->newMeshFromArrays(bindPos.data(), nrm.empty() ? nullptr : nrm.data(),
+                                        uv.empty() ? nullptr : uv.data(), vertexCount, indices.data(), indexCount);
+    REQUIRE(mesh != nullptr);
+    REQUIRE(skin->bindGpuMesh(gfx, mesh));
+    ent->meshRenderer()->mesh = mesh;
 
     for (int i = 0; i < frameCount; ++i) {
         AnimPose *usedPose = nullptr;
@@ -406,13 +418,7 @@ void renderSkinnedAnimation(eve::model3d::ModelData *model, const char *pngName,
             break;
         }
 
-        REQUIRE(skin->skinPositionsTo(usedPose, pos));
-        REQUIRE(pos.size() == static_cast<size_t>(vertexCount) * 3u);
-        Mesh *mesh = gfx->newMeshFromArrays(pos.data(), nrm.empty() ? nullptr : nrm.data(),
-                                            uv.empty() ? nullptr : uv.data(), vertexCount,
-                                            indices.data(), indexCount);
-        REQUIRE(mesh != nullptr);
-        ent->meshRenderer()->mesh = mesh;
+        REQUIRE(skin->updateGpuMesh(mesh, usedPose));
 
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
@@ -455,6 +461,21 @@ TEST_CASE("animation.skinned.mat4FromTRSIdentity") {
     CHECK(std::fabs(ox - 1.f) < 1e-5f);
     CHECK(std::fabs(oy - 2.f) < 1e-5f);
     CHECK(std::fabs(oz - 3.f) < 1e-5f);
+}
+
+TEST_CASE("animation.skinned.gpuPaletteOwnsAndValidatesMatrices") {
+    Mesh mesh;
+    std::array<float, 32> matrices{};
+    matrices[0] = matrices[5] = matrices[10] = matrices[15] = 1.f;
+    matrices[16] = matrices[21] = matrices[26] = matrices[31] = 1.f;
+    matrices[28] = 3.5f;
+    CHECK(mesh.setSkinPalette(matrices.data(), 2));
+    CHECK(mesh.getSkinPaletteCount() == 2);
+    CHECK(std::fabs(mesh.skinPalette()[28] - 3.5f) < 1e-6f);
+    matrices[28] = 9.f;
+    CHECK(std::fabs(mesh.skinPalette()[28] - 3.5f) < 1e-6f);
+    CHECK(!mesh.setSkinPalette(nullptr, 1));
+    CHECK(!mesh.setSkinPalette(matrices.data(), Mesh::kMaxSkinBones + 1));
 }
 
 TEST_CASE("animation.skinned.worldMatrixMatchesTRS") {

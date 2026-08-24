@@ -88,10 +88,21 @@ file(GLOB all_test_cpp
   i18n_script.cpp
   avatar.cpp
   dialogue.cpp
+  dialogue_conversation.cpp
+  dialogue_persistence.cpp
+  dialogue_text.cpp
+  dialogue_hot_reload.cpp
+    dialogue_compiler.cpp
+    dialogue_importers.cpp
+    dialogue_localization.cpp
+    dialogue_toolchain.cpp
+  dialogue_ux.cpp
+  dialogue_voice.cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
   physics_cloth.cpp
   procgen.cpp
+  procgen_pointset.cpp
   urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
@@ -162,6 +173,9 @@ file(GLOB all_test_cpp
   editor.cpp
   ik.cpp
   animation.cpp
+  animation_retarget_compression.cpp
+  animation_batch_lod.cpp
+  animation_constraints_sync.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
   animation_lattice.cpp
@@ -418,10 +432,11 @@ endif()
 option(EVENGINE_DOWNLOAD_SPINE_MODELS
   "Download Spine demo models (spineboy, hero, dragon) for spine animation tests" ON)
 set(_eve_spine_script "${CMAKE_SOURCE_DIR}/scripts/download_spine_models.py")
+find_program(EVENGINE_PYTHON NAMES python3 python REQUIRED)
 add_custom_target(download_spine_models
   COMMAND ${CMAKE_COMMAND} -E env
           "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
-          python3 "${_eve_spine_script}"
+          "${EVENGINE_PYTHON}" "${_eve_spine_script}"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
   COMMENT "Downloading Spine demo models (spineboy, hero, dragon)"
   VERBATIM)
@@ -429,7 +444,7 @@ if(EVENGINE_DOWNLOAD_SPINE_MODELS)
   add_custom_command(TARGET unit_test PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
-            python3 "${_eve_spine_script}"
+            "${EVENGINE_PYTHON}" "${_eve_spine_script}"
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     COMMENT "PRE_BUILD: download Spine demo models"
     VERBATIM)
