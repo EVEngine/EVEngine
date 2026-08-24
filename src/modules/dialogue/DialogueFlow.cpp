@@ -1,5 +1,6 @@
 #include "dialogue/DialogueFlow.h"
 
+#include "dialogue/ConversationImporter.h"
 #include "filesystem/Filesystem.h"
 
 #include <algorithm>
@@ -160,6 +161,39 @@ int DialogueFlow::loadFromDnutFile(const std::string& path) {
     return loadFromDnut(text, path);
 }
 
+int DialogueFlow::mergeImported(std::vector<ConversationAsset> imported) {
+    runner_.stop();
+    const int count = static_cast<int>(imported.size());
+    for (auto& asset : imported) {
+        auto it = std::find_if(assets_.begin(), assets_.end(),
+                               [&](const auto& old) { return old.id == asset.id; });
+        if (it == assets_.end()) assets_.push_back(std::move(asset));
+        else *it = std::move(asset);
+    }
+    lastError_.clear();
+    return count;
+}
+
+int DialogueFlow::importYarn(const std::string& source, const std::string& path) {
+    std::vector<ConversationAsset> imported;
+    diagnostics_.clear();
+    if (!importYarnConversation(source, path, imported, diagnostics_)) {
+        lastError_ = diagnostics_.empty() ? "Yarn import failed" : diagnostics_.front().message;
+        return 0;
+    }
+    return mergeImported(std::move(imported));
+}
+
+int DialogueFlow::importTwee(const std::string& source, const std::string& path) {
+    std::vector<ConversationAsset> imported;
+    diagnostics_.clear();
+    if (!importTweeConversation(source, path, imported, diagnostics_)) {
+        lastError_ = diagnostics_.empty() ? "Twee import failed" : diagnostics_.front().message;
+        return 0;
+    }
+    return mergeImported(std::move(imported));
+}
+
 void DialogueFlow::clear() {
     runner_.stop();
     assets_.clear();
@@ -306,6 +340,8 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getName", &DialogueFlow::getName);
     cls.addFunc("loadFromDnut", &DialogueFlow::loadFromDnut);
     cls.addFunc("loadFromDnutFile", &DialogueFlow::loadFromDnutFile);
+    cls.addFunc("importYarn", &DialogueFlow::importYarn);
+    cls.addFunc("importTwee", &DialogueFlow::importTwee);
     cls.addFunc("clear", &DialogueFlow::clear);
     cls.addFunc("getConversationCount", &DialogueFlow::getConversationCount);
     cls.addFunc("getConversationId", static_cast<std::string (DialogueFlow::*)(int) const>(

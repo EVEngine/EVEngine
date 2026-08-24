@@ -20,6 +20,8 @@ public:
 
     int loadFromDnut(const std::string& source, const std::string& path);
     int loadFromDnutFile(const std::string& path);
+    int importYarn(const std::string& source, const std::string& path);
+    int importTwee(const std::string& source, const std::string& path);
     void clear();
     int getConversationCount() const;
     std::string getConversationId(int index) const;
@@ -54,6 +56,7 @@ public:
     bool restoreState(const StateValue& in, std::string* error = nullptr);
 
 private:
+    int mergeImported(std::vector<ConversationAsset> imported);
     const ConversationAsset* find(const std::string& id) const;
     StateValue evaluate(const std::string& expression, const StateValue& bindings,
                         const StateValue& locals);

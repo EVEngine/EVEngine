@@ -112,8 +112,10 @@ node end end
 endconversation
 ```
 
-- 内容：`loadFromDnut/loadFromDnutFile`、`clear`、`getConversationCount`、
-  `getConversationId(index)`、`hasConversation`、`getLastError`。
+- 内容：`loadFromDnut/loadFromDnutFile`、`importYarn/importTwee`、`clear`、
+  `getConversationCount()`、`getConversationId(index)`、`hasConversation`、`getLastError`。
+- 外部格式：Yarn Spinner 节点和 Twine Twee 3 passages 会转换为相同的稳定节点模型；
+  角色前缀、参数占位符、跳转和选项都会保留，并进入统一的引用校验流程。
 - 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticMessage`；编译检查
   重复或缺失 ID、无效引用，并报告不可达节点。
 - 本地化：`exportLocalizationCsv()` 返回带 conversation/node 稳定 ID、i18n key、

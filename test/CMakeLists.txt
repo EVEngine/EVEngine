@@ -88,7 +88,8 @@ file(GLOB all_test_cpp
   avatar.cpp
   dialogue.cpp
   dialogue_conversation.cpp
-  dialogue_compiler.cpp
+    dialogue_compiler.cpp
+    dialogue_importers.cpp
   dialogue_ux.cpp
   dialogue_voice.cpp
   dialogue_proc.cpp
