@@ -26,13 +26,13 @@ int envInt(const char* name, int fallback, int maximum) {
     }
 }
 
-void exerciseValue(Value value, size_t depth = 0) {
-    REQUIRE(depth <= 256);
+bool exerciseValue(Value value, size_t depth = 0) {
+    if (depth > 256) return false;
 
     const int kindCount = static_cast<int>(value.isNull()) + static_cast<int>(value.isBool()) +
                           static_cast<int>(value.isNumber()) + static_cast<int>(value.isString()) +
                           static_cast<int>(value.isObject()) + static_cast<int>(value.isArray());
-    REQUIRE_EQ(kindCount, 1);
+    if (kindCount != 1) return false;
 
     (void)value.asBool(true);
     (void)value.asInt(17);
@@ -43,21 +43,22 @@ void exerciseValue(Value value, size_t depth = 0) {
     (void)value.get(nullptr);
 
     if (value.isArray()) {
-        for (size_t i = 0; i < value.size(); ++i) exerciseValue(value.at(i), depth + 1);
+        for (size_t i = 0; i < value.size(); ++i)
+            if (!exerciseValue(value.at(i), depth + 1)) return false;
     } else if (value.isObject()) {
         const auto keys = value.keys();
-        REQUIRE_EQ(keys.size(), value.size());
+        if (keys.size() != value.size()) return false;
         for (const auto& key : keys) {
-            REQUIRE(value.has(key.c_str()));
-            exerciseValue(value.get(key.c_str()), depth + 1);
+            if (!value.has(key.c_str()) || !exerciseValue(value.get(key.c_str()), depth + 1)) return false;
         }
     }
+    return true;
 }
 
 }  // namespace
 
 FUZZ_TEST_CASE("fuzz.json.document") {
-    FUZZ_FUNC([](const std::string& input) {
+    FUZZ_FUNC([=](const std::string& input) {
         std::string error;
         Document    document = Document::parse(input, &error);
         if (!document.valid()) {
@@ -67,7 +68,7 @@ FUZZ_TEST_CASE("fuzz.json.document") {
         }
 
         REQUIRE(error.empty());
-        exerciseValue(document.root());
+        REQUIRE(exerciseValue(document.root()));
     })
         .WithDomains(Arbitrary<std::string>())
         .WithSeeds({{"null"},

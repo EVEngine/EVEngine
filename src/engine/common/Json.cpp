@@ -15,15 +15,16 @@ namespace eve::json {
 struct Node {
     enum class Kind { Null, Bool, Number, String, Object, Array };
 
-    Kind kind = Kind::Null;
-    bool boolVal = false;
+    Kind   kind      = Kind::Null;
+    bool   boolVal   = false;
     double numberVal = 0.0;
     /** Set when the literal had no fraction/exponent, so ints round-trip exactly. */
-    bool integral = false;
-    long long intVal = 0;
-    std::string stringVal;
-    std::vector<std::pair<std::string, Node>> members;  // object, document order
-    std::vector<Node> elements;                         // array
+    bool                     integral = false;
+    long long                intVal   = 0;
+    std::string              stringVal;
+    std::vector<std::string> memberNames;   // object keys, document order
+    std::vector<Node>        memberValues;  // object values, parallel to memberNames
+    std::vector<Node>        elements;      // array
 };
 
 namespace {
@@ -239,7 +240,8 @@ private:
             skipWs();
             Node val;
             if (!parseValue(val, depth + 1)) return false;
-            out.members.emplace_back(std::move(key), std::move(val));
+            out.memberNames.emplace_back(std::move(key));
+            out.memberValues.emplace_back(std::move(val));
             skipWs();
             if (peek('}')) {
                 ++pos_;
@@ -314,23 +316,23 @@ bool Value::has(const char* key) const { return static_cast<bool>(get(key)); }
 
 Value Value::get(const char* key) const {
     if (!node_ || node_->kind != Node::Kind::Object || !key) return Value();
-    for (const auto& m : node_->members)
-        if (m.first == key) return Value(&m.second);
+    for (size_t i = 0; i < node_->memberNames.size(); ++i)
+        if (node_->memberNames[i] == key) return Value(&node_->memberValues[i]);
     return Value();
 }
 
 std::vector<std::string> Value::keys() const {
     std::vector<std::string> out;
     if (!node_ || node_->kind != Node::Kind::Object) return out;
-    out.reserve(node_->members.size());
-    for (const auto& m : node_->members) out.push_back(m.first);
+    out.reserve(node_->memberNames.size());
+    for (const auto& name : node_->memberNames) out.push_back(name);
     return out;
 }
 
 size_t Value::size() const {
     if (!node_) return 0;
     if (node_->kind == Node::Kind::Array) return node_->elements.size();
-    if (node_->kind == Node::Kind::Object) return node_->members.size();
+    if (node_->kind == Node::Kind::Object) return node_->memberValues.size();
     return 0;
 }
 
