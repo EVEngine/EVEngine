@@ -457,6 +457,16 @@ int Procgen::getPaletteGid(const std::string &palette, const std::string &semant
     return palettes_.getGid(palette, semantic);
 }
 
+namespace {
+
+const ParamDescriptor *algorithmParam(const std::string &algorithmId, int index) {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    if (!descriptor || index < 0 || index >= int(descriptor->params.size())) return nullptr;
+    return &descriptor->params[size_t(index)];
+}
+
+}  // namespace
+
 int Procgen::getAlgorithmCount() const {
     algorithmIdsCache_ = GeneratorRegistry::instance().list();
     return int(algorithmIdsCache_.size());
@@ -470,6 +480,105 @@ std::string Procgen::getAlgorithmId(int index) const {
 
 bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
+}
+
+std::string Procgen::getAlgorithmDisplayName(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? descriptor->displayName : std::string{};
+}
+
+std::string Procgen::getAlgorithmCategory(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? descriptor->category : std::string{};
+}
+
+int Procgen::getAlgorithmParamCount(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? int(descriptor->params.size()) : 0;
+}
+
+std::string Procgen::getAlgorithmParamKey(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->key : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamLabel(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->displayName : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamDescription(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->description : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamCategory(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->category : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamKind(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    if (!param) return {};
+    switch (param->kind) {
+        case ParamKind::Integer: return "int";
+        case ParamKind::Float: return "float";
+        case ParamKind::Boolean: return "bool";
+        case ParamKind::String: return "string";
+        case ParamKind::Choice: return "choice";
+    }
+    return {};
+}
+
+std::string Procgen::getAlgorithmParamDefault(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->defaultValue : std::string{};
+}
+
+bool Procgen::algorithmParamHasMinimum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->hasMinimum;
+}
+
+bool Procgen::algorithmParamHasMaximum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->hasMaximum;
+}
+
+float Procgen::getAlgorithmParamMinimum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->minimum) : 0.f;
+}
+
+float Procgen::getAlgorithmParamMaximum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->maximum) : 0.f;
+}
+
+float Procgen::getAlgorithmParamStep(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->step) : 0.f;
+}
+
+bool Procgen::isAlgorithmParamAdvanced(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->advanced;
+}
+
+int Procgen::getAlgorithmParamChoiceCount(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? int(param->choices.size()) : 0;
+}
+
+std::string Procgen::getAlgorithmParamChoice(const std::string &algorithmId, int paramIndex,
+                                             int choiceIndex) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, paramIndex);
+    if (!param || choiceIndex < 0 || choiceIndex >= int(param->choices.size())) return {};
+    return param->choices[size_t(choiceIndex)];
+}
+
+bool Procgen::applyAlgorithmDefaults(const std::string &algorithmId, Params *params) const {
+    return params && GeneratorRegistry::instance().applyDefaults(algorithmId, *params);
 }
 
 bool Procgen::autotileGrid(Grid2D *grid) {
@@ -997,6 +1106,24 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getAlgorithmCount", &Procgen::getAlgorithmCount);
     cls.addFunc("getAlgorithmId", &Procgen::getAlgorithmId);
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
+    cls.addFunc("getAlgorithmDisplayName", &Procgen::getAlgorithmDisplayName);
+    cls.addFunc("getAlgorithmCategory", &Procgen::getAlgorithmCategory);
+    cls.addFunc("getAlgorithmParamCount", &Procgen::getAlgorithmParamCount);
+    cls.addFunc("getAlgorithmParamKey", &Procgen::getAlgorithmParamKey);
+    cls.addFunc("getAlgorithmParamLabel", &Procgen::getAlgorithmParamLabel);
+    cls.addFunc("getAlgorithmParamDescription", &Procgen::getAlgorithmParamDescription);
+    cls.addFunc("getAlgorithmParamCategory", &Procgen::getAlgorithmParamCategory);
+    cls.addFunc("getAlgorithmParamKind", &Procgen::getAlgorithmParamKind);
+    cls.addFunc("getAlgorithmParamDefault", &Procgen::getAlgorithmParamDefault);
+    cls.addFunc("algorithmParamHasMinimum", &Procgen::algorithmParamHasMinimum);
+    cls.addFunc("algorithmParamHasMaximum", &Procgen::algorithmParamHasMaximum);
+    cls.addFunc("getAlgorithmParamMinimum", &Procgen::getAlgorithmParamMinimum);
+    cls.addFunc("getAlgorithmParamMaximum", &Procgen::getAlgorithmParamMaximum);
+    cls.addFunc("getAlgorithmParamStep", &Procgen::getAlgorithmParamStep);
+    cls.addFunc("isAlgorithmParamAdvanced", &Procgen::isAlgorithmParamAdvanced);
+    cls.addFunc("getAlgorithmParamChoiceCount", &Procgen::getAlgorithmParamChoiceCount);
+    cls.addFunc("getAlgorithmParamChoice", &Procgen::getAlgorithmParamChoice);
+    cls.addFunc("applyAlgorithmDefaults", &Procgen::applyAlgorithmDefaults);
     cls.addFunc("autotileGrid", &Procgen::autotileGrid);
     cls.addFunc("randomSeed", &Procgen::randomSeed);
     cls.addFunc("lastError", &Procgen::lastError);

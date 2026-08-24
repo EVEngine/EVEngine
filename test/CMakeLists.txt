@@ -103,6 +103,7 @@ file(GLOB all_test_cpp
   dialogue_proc_script.cpp
   physics_cloth.cpp
   procgen.cpp
+  procgen_schema_script.cpp
   procgen_pointset.cpp
   urban_generator.cpp
   housegen.cpp

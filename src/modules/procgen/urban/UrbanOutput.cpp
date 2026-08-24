@@ -330,7 +330,52 @@ bool generateUrbanMesh(const Params& params, MeshBuild& out, std::string& error)
 }
 
 void registerUrbanGenerators(GeneratorRegistry& registry) {
-    registry.registerAlgorithm("urban.parcels", generateUrbanGrid);
+    GeneratorDescriptor descriptor{"urban.parcels", "Urban Parcels", "Urban", {}};
+    descriptor.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));
+    descriptor.params.push_back(ParamDescriptor::choice("land", "Land Shape", "rect",
+                                                        {"rect", "triangle", "ellipse", "l", "hexagon"}));
+    descriptor.params.push_back(ParamDescriptor::floating("landWidth", "Land Width", 100.f, 1.f, 10000.f, 1.f));
+    descriptor.params.push_back(ParamDescriptor::floating("landHeight", "Land Height", 60.f, 1.f, 10000.f, 1.f));
+    descriptor.params.push_back(ParamDescriptor::text("landPoints", "Custom Land Points", ""));
+    descriptor.params.push_back(ParamDescriptor::integer("targetParcels", "Target Parcels", 120, 0, 10000));
+    descriptor.params.push_back(ParamDescriptor::floating("minParcelArea", "Minimum Parcel Area", 4.f, 0.01f,
+                                                          10000.f, 0.1f));
+    descriptor.params.push_back(ParamDescriptor::integer("maxLevels", "Maximum Levels", 10, 1, 128));
+    descriptor.params.push_back(ParamDescriptor::choice("streetPattern", "Street Pattern", "default",
+                                                        {"default", "loop", "culdesac", "tree"}));
+    descriptor.params.push_back(ParamDescriptor::floating("streetWidth", "Street Width", 1.f, 0.1f, 100.f,
+                                                          0.1f));
+    descriptor.params.push_back(ParamDescriptor::choice("orientation", "Orientation", "none",
+                                                        {"none", "east-west", "north-south"}));
+    descriptor.params.push_back(ParamDescriptor::choice("boundaryStreet", "Boundary Streets", "all",
+                                                        {"all", "none", "random"}));
+    descriptor.params.push_back(ParamDescriptor::floating("cellSize", "Grid Cell Size", 1.f, 0.05f, 100.f,
+                                                          0.05f));
+    descriptor.params.push_back(ParamDescriptor::boolean("optimize", "Optimize", true));
+    auto addAdvanced = [&](ParamDescriptor param) {
+        param.advanced = true;
+        descriptor.params.push_back(std::move(param));
+    };
+    addAdvanced(ParamDescriptor::floating("lambdaSize", "Size Weight", 0.3f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("lambdaRegu", "Regularity Weight", 0.5f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("lambdaAcce", "Access Weight", 0.2f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("lambdaOrient", "Orientation Weight", 0.f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("gammaAngle", "Angle Weight", 0.75f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("gammaSide", "Side Weight", 0.25f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("accessThreshold", "Access Threshold", 0.5f, 0.01f, 10.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("shortEdgeFactor", "Short Edge Factor", 0.2f, 0.f, 1.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("dijkstraJunctionWeight", "Junction Weight", 1.5f, 0.f, 100.f,
+                                          0.1f));
+    addAdvanced(ParamDescriptor::floating("boundaryStreetFraction", "Boundary Street Fraction", 0.5f, 0.f,
+                                          1.f, 0.01f));
+    addAdvanced(ParamDescriptor::integer("culDeSacAfterLevel", "Cul-de-sac Level", 4, 1, 128));
+    addAdvanced(ParamDescriptor::integer("optimizeIterations", "Optimize Iterations", 160, 0, 2000));
+    addAdvanced(ParamDescriptor::floating("optRegu", "Optimize Regularity", 0.2f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("optSide", "Optimize Sides", 1.f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("optStre", "Optimize Streets", 1.f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("optJunc", "Optimize Junctions", 0.5f, 0.f, 100.f, 0.01f));
+    addAdvanced(ParamDescriptor::floating("optClose", "Optimize Closure", 0.3f, 0.f, 100.f, 0.01f));
+    registry.registerAlgorithm(std::move(descriptor), generateUrbanGrid);
 }
 
 void registerUrbanMeshRecipes(MeshRecipeRegistry& registry) {

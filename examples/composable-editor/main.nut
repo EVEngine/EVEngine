@@ -56,6 +56,9 @@ state <- persist("composableEditor", function() {
         brushKernel = null
         brushOperation = null
         brushTool = null
+        procgenAlgorithm = "cave.cellular"
+        procgenParams = null
+        procgenPreview = null
         camera = null
         panelsMounted = false
         objects = []
@@ -164,6 +167,48 @@ function panelPalette() {
     ui.button("Dialogue Node", "spawn-dialogue");
     ui.button("Avatar Preview", "spawn-avatar");
     ui.end();
+    ui.separator("sep-procgen");
+    ui.text(procgen.getAlgorithmDisplayName(state.procgenAlgorithm) + " · reflected schema", "procgen-title");
+    ui.beginRow("procgen-schema-row", 8.0);
+    for (local i = 0; i < procgen.getAlgorithmParamCount(state.procgenAlgorithm); ++i) {
+        if (procgen.isAlgorithmParamAdvanced(state.procgenAlgorithm, i)) continue;
+        local key = procgen.getAlgorithmParamKey(state.procgenAlgorithm, i);
+        local label = procgen.getAlgorithmParamLabel(state.procgenAlgorithm, i);
+        local kind = procgen.getAlgorithmParamKind(state.procgenAlgorithm, i);
+        local id = "procgen-" + key;
+        local hiddenLabel = "##" + key;
+        ui.beginColumn("procgen-field-" + key, 2.0);
+        ui.text(label, "procgen-label-" + key);
+        if (kind == "float") {
+            ui.slider(hiddenLabel, state.procgenParams.getFloat(key, 0.0),
+                      procgen.getAlgorithmParamMinimum(state.procgenAlgorithm, i),
+                      procgen.getAlgorithmParamMaximum(state.procgenAlgorithm, i), id);
+        } else if (kind == "int") {
+            ui.slider(hiddenLabel, state.procgenParams.getInt(key, 0).tofloat(),
+                      procgen.getAlgorithmParamMinimum(state.procgenAlgorithm, i),
+                      procgen.getAlgorithmParamMaximum(state.procgenAlgorithm, i), id);
+        } else if (kind == "bool") {
+            ui.checkbox(hiddenLabel, state.procgenParams.getInt(key, 0) != 0, id);
+        } else if (kind == "choice") {
+            local choices = "";
+            local selected = 0;
+            local current = state.procgenParams.getString(key, "");
+            for (local c = 0; c < procgen.getAlgorithmParamChoiceCount(state.procgenAlgorithm, i); ++c) {
+                local value = procgen.getAlgorithmParamChoice(state.procgenAlgorithm, i, c);
+                if (c > 0) choices += ",";
+                choices += value;
+                if (value == current) selected = c;
+            }
+            ui.combo(hiddenLabel, choices, selected, id);
+        } else {
+            ui.inputText(hiddenLabel, state.procgenParams.getString(key, ""), id);
+        }
+        ui.setItemSize(145.0, 0.0);
+        ui.end();
+        ui.setItemSize(165.0, 0.0);
+    }
+    ui.button("Generate", "procgen-generate");
+    ui.end();
     ui.text("", "palette-status");
 }
 
@@ -271,6 +316,30 @@ function spawnArchetype(kind) {
     if (!result.accepted) state.vm.status = "Command rejected: " + kind;
 }
 
+function updateProcgenParam(id) {
+    local key = id.slice(8);
+    for (local i = 0; i < procgen.getAlgorithmParamCount(state.procgenAlgorithm); ++i) {
+        if (procgen.getAlgorithmParamKey(state.procgenAlgorithm, i) != key) continue;
+        local kind = procgen.getAlgorithmParamKind(state.procgenAlgorithm, i);
+        if (kind == "float") state.procgenParams.setFloat(key, ui.getValue(id));
+        else if (kind == "int") state.procgenParams.setInt(key, ui.getValue(id).tointeger());
+        else if (kind == "bool") state.procgenParams.setInt(key, ui.getChecked(id) ? 1 : 0);
+        else state.procgenParams.setString(key, ui.getValueText(id));
+        state.vm.status = "Schema property changed: " + key;
+        return;
+    }
+}
+
+function generateProcgenPreview() {
+    state.procgenPreview = procgen.generate(state.procgenAlgorithm, state.procgenParams);
+    if (state.procgenPreview == null) {
+        state.vm.status = "Procgen failed: " + procgen.lastError();
+    } else {
+        state.vm.status = procgen.getAlgorithmDisplayName(state.procgenAlgorithm) + " preview " +
+                          state.procgenPreview.getWidth() + "x" + state.procgenPreview.getHeight();
+    }
+}
+
 function updateCamera() {
     local cx = (MAP_W - 1) * CELL * 0.5;
     local cz = (MAP_H - 1) * CELL * 0.5;
@@ -313,6 +382,8 @@ function handlePanelEvents() {
                 generateTerrain();
             } else if (id == "reflect-inspector") {
                 ui.inspectObject(state.vm);
+            } else if (id == "procgen-generate") {
+                generateProcgenPreview();
             } else if (id == "material-grass") applyMaterial("grass");
             else if (id == "material-rock") applyMaterial("rock");
             else if (id == "material-sand") applyMaterial("sand");
@@ -334,6 +405,7 @@ function handlePanelEvents() {
             if (id == "brush") state.vm.brushRadius = ui.getValue("brush");
             else if (id == "strength") state.vm.strength = ui.getValue("strength");
             else if (id == "tool") state.vm.tool = ui.getValueText("tool");
+            else if (id.find("procgen-") == 0) updateProcgenParam(id);
             change = ui.consumeChange();
         }
     }
@@ -400,6 +472,8 @@ function syncViews() {
 
 eve_init = function() {
     state.vm = WorldEditorVM();
+    state.procgenParams = procgen.newParams();
+    procgen.applyAlgorithmDefaults(state.procgenAlgorithm, state.procgenParams);
     configureWorkspace();
     registerProjectCommands();
     generateTerrain();

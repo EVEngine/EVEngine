@@ -13,6 +13,42 @@ p.setSeed(42); p.setSize(64, 40);
 local grid = gen.generate("dungeon.bsp", p);
 ```
 
+## 参数 schema 与动态编辑 UI
+
+每个内置 Grid 生成器在注册执行函数时同时注册 UI 无关的参数 schema。项目不需要在
+编辑器脚本里重复维护字段类型、默认值、范围或 choice 列表；开发者工具、游戏内建造器
+和自动化都枚举同一份元数据，再选择自己的呈现方式：
+
+```squirrel
+local algorithm = "cave.cellular";
+local params = gen.newParams();
+gen.applyAlgorithmDefaults(algorithm, params);
+
+for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
+    local key = gen.getAlgorithmParamKey(algorithm, i);
+    local label = gen.getAlgorithmParamLabel(algorithm, i);
+    local kind = gen.getAlgorithmParamKind(algorithm, i); // int|float|bool|string|choice
+    local defaultText = gen.getAlgorithmParamDefault(algorithm, i);
+    local advanced = gen.isAlgorithmParamAdvanced(algorithm, i);
+    if (gen.algorithmParamHasMinimum(algorithm, i)) {
+        local minValue = gen.getAlgorithmParamMinimum(algorithm, i);
+        local maxValue = gen.getAlgorithmParamMaximum(algorithm, i);
+        local step = gen.getAlgorithmParamStep(algorithm, i);
+        // 用项目自己的 MVVM/UI 组件生成 slider 或 number field。
+    }
+    for (local c = 0; c < gen.getAlgorithmParamChoiceCount(algorithm, i); ++c)
+        print(gen.getAlgorithmParamChoice(algorithm, i, c) + "\n");
+}
+```
+
+算法级信息由 `getAlgorithmDisplayName`、`getAlgorithmCategory`、
+`getAlgorithmCount`、`getAlgorithmId` 和 `hasAlgorithm` 提供；字段还可读取
+`getAlgorithmParamLabel`、`getAlgorithmParamDescription`、
+`getAlgorithmParamCategory`、`algorithmParamHasMaximum`。`Params.setInt` /
+`getInt` 也统一识别 `seed`、`width`、`height`，所以反射生成的控件不需要为这三个
+公共字段编写旁路逻辑。`examples/composable-editor` 在项目脚本中把 schema 映射为
+普通 `ui.slider` / `ui.checkbox` / `ui.combo`，C++ 没有固定 Procgen 面板。
+
 ## 对象关系与调用时机
 
 `Params` 描述 seed、尺寸和算法参数；`Grid2D` 是结果；`OutputSpec` 决定写入 TileLayer、Image 或 Texture；`Procgen` 按注册算法名执行。
@@ -253,7 +289,7 @@ p.setInt("roomCount", 12);
 p.setString("corridorStyle", "l");   // l | straight | diagonal
 p.setString("floorPattern", "brick");// brick | checker | plank | cobble | plain
 p.setFloat("decorDensity", 0.06);
-p.setString("decorSet", "mixed");    // none | pillars | treasure | nature | mixed
+p.setString("decorSet", "mixed");    // none | pillars | treasure | mixed
 local grid = procgen.generate("level.roguelike", p);
 ```
 

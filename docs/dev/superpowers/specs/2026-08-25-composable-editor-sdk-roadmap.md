@@ -58,9 +58,11 @@ to game playback.
 
 Available: seeded height/texture generators, voxel worlds and meshing, live world revisions,
 an `IIntVolumeTarget` adapter, composable sphere/box kernels, and undoable 3D brush transactions.
-Missing are schema-driven generator parameters, revisioned previews, seed comparisons,
-bake/publish commands, voxel palette assets, and selection-aware property providers. Procgen
-output should be a document revision that terrain, voxel, tilemap, or material tools can consume.
+Grid generators now register schema-driven parameters (types, bounds, defaults, choices,
+advanced flags) for project-owned dynamic inspectors. Missing are revisioned previews, seed
+comparisons, bake/publish commands, voxel palette assets, texture/PBR/mesh recipe schemas, and
+selection-aware property providers. Procgen output should be a document revision that terrain,
+voxel, tilemap, or material tools can consume.
 
 ### Tilemap
 

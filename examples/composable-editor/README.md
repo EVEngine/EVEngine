@@ -9,6 +9,8 @@ The example demonstrates:
 
 - workspace metadata dynamically generating a project-specific UI;
 - an MVVM-style reflected `WorldEditorVM` with two-way controls;
+- schema-driven procgen controls assembled by the project from reflected parameter
+  types, bounds, defaults, advanced flags, and choices (no built-in procgen panel);
 - a live embedded 3D runtime viewport using `procgen`, materials, and a field tool assembled
   from reusable target, kernel, falloff, operation, and transaction components;
 - channelled semantic selection shared by hierarchy, viewport, and inspector;
@@ -32,3 +34,6 @@ example remains a small composition root.
 The scene presenter is ordinary project code: `panelScene` declares a composable
 `UI::Viewport`, while `eve_render` supplies its Canvas from the normal 3D runtime.
 Projects can replace either function without changing the C++ editor library.
+The bottom panel deliberately chooses `cave.cellular` in project code, enumerates its
+registered schema, and maps each semantic field kind to ordinary UI widgets. Changing
+the algorithm or the widget mapping produces a different tool without changing the engine.
