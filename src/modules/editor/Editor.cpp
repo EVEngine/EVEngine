@@ -970,6 +970,21 @@ void Editor::expose(ssq::Table& table) {
     tileTarget.addFunc("writeInt", &TileBufferTarget::writeInt);
     tileTarget.addFunc("clearDirtyRegion", &TileBufferTarget::clearDirtyRegion);
 
+#ifdef EVENGINE_HAS_MAP
+    auto tileLayerTarget = table.addClass<TileLayerTarget>(
+        "TileLayerTarget", std::function<TileLayerTarget*()>([]() -> TileLayerTarget* { return nullptr; }), true);
+    tileLayerTarget.addFunc("getTargetId",
+                            [](TileLayerTarget* self) { return self ? self->targetId() : std::string{}; });
+    tileLayerTarget.addFunc("getRevision", [](TileLayerTarget* self) {
+        return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
+    });
+    tileLayerTarget.addFunc("getWidth", &TileLayerTarget::width);
+    tileLayerTarget.addFunc("getHeight", &TileLayerTarget::height);
+    tileLayerTarget.addFunc("readInt", &TileLayerTarget::readInt);
+    tileLayerTarget.addFunc("writeInt", &TileLayerTarget::writeInt);
+    tileLayerTarget.addFunc("clearDirtyRegion", &TileLayerTarget::clearDirtyRegion);
+#endif
+
 #ifdef EVENGINE_HAS_PROCGEN
     auto heightmapTarget = table.addClass<HeightmapTarget>(
         "HeightmapTarget", std::function<HeightmapTarget*()>([]() -> HeightmapTarget* { return nullptr; }), true);
@@ -996,6 +1011,11 @@ void Editor::expose(ssq::Table& table) {
     session.addFunc("bindTileBufferTarget", [](EditorSession* self, TileBufferTarget* target) {
         if (self) self->bindTarget(target);
     });
+#ifdef EVENGINE_HAS_MAP
+    session.addFunc("bindTileLayerTarget", [](EditorSession* self, TileLayerTarget* target) {
+        if (self) self->bindTarget(target);
+    });
+#endif
 #ifdef EVENGINE_HAS_PROCGEN
     session.addFunc("bindHeightmapTarget", [](EditorSession* self, HeightmapTarget* target) {
         if (self) self->bindTarget(target);
@@ -1171,6 +1191,9 @@ void Editor::expose(ssq::Class& cls) {
     cls.addFunc("newAddScalarFieldOperation", &Editor::newAddScalarFieldOperation);
     cls.addFunc("newFieldBrushTool", &Editor::newFieldBrushTool);
     cls.addFunc("newTileBufferTarget", &Editor::newTileBufferTarget);
+#ifdef EVENGINE_HAS_MAP
+    cls.addFunc("newTileLayerTarget", &Editor::newTileLayerTarget);
+#endif
     cls.addFunc("registerScriptCommand", registerScriptCommand);
     cls.addFunc("unregisterScriptCommand", [](Editor* self, const std::string& id) {
         return self && self->commandService().unregisterCommand(CommandId(id), "script:" + id);

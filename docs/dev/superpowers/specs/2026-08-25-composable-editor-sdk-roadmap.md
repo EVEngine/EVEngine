@@ -63,10 +63,11 @@ document revision that terrain, voxel, tilemap, or material tools can consume.
 
 ### Tilemap
 
-Available: tile buffers/maps, brushes, projection helpers, and runtime examples. Missing are
-layer documents, tile palette assets, multi-cell selection/stamps, collision/navigation overlays,
-and property/command adapters. A tilemap tool should be another editable-target capability, not
-a special editor executable.
+Available: tile buffers/maps, brushes, projection helpers, runtime examples, and a live
+`TileLayerTarget` script adapter using the same field tool and undo transactions as terrain.
+Missing are layer documents, tile palette assets, multi-cell selection/stamps,
+collision/navigation overlays, and selection-aware property providers. A tilemap tool remains
+another editable-target capability, not a special editor executable.
 
 ### Dialogue
 

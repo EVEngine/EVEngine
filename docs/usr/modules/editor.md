@@ -105,6 +105,22 @@ session.dispatchPointer(down);        // 自动开启一次可撤销 stroke
 
 将 `TileBufferTarget` 换成 `HeightmapTarget`、把操作换成 `AddScalarFieldOperation`，同一个 `FieldBrushTool` 就成为带衰减的地形升降笔刷。项目也可以实现新的 `IEditableTarget` capability（对象放置、道路、区域、体素等）以及对应操作；无需修改 `EditorSession`。
 
+脚本可把同一个整数字段工具直接绑定到运行中的 `map.TileLayer`，修改会立即进入正常地图渲染、寻路与 FOV revision 流程：
+
+```squirrel
+local layer = eve.Map().newLayer(64, 64, 32, 32);
+local target = editor.newTileLayerTarget("ground", layer);
+local paint = editor.newPaintIntFieldOperation(17);
+local hard = editor.newConstantBrushFalloff();
+local circle = editor.newCircleBrushKernel();
+circle.setConstantFalloff(hard);
+local tool = editor.newFieldBrushTool("paint-grass", "Paint Grass");
+tool.setCircleKernel(circle);
+tool.setPaintIntOperation(paint);
+session.addFieldTool(tool);
+session.bindTileLayerTarget(target);
+```
+
 ### 项目限制
 
 实现 `IEditConstraint::evaluate()` 并注册到 `session.constraints()`。约束可以允许、给出警告或拒绝任意 `IEditCommand`，例如锁定水岸坡度、限定可用 tile、吸附建筑朝向、阻止穿过地图边界。所有命令都经 `EditorContext::execute()` 进入约束和事务，拒绝的命令不会污染撤销栈。
@@ -239,9 +255,9 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newTileBufferTarget` / `newHeightmapTarget` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- 模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newTileBufferTarget` / `newTileLayerTarget` / `newHeightmapTarget` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
 - Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
-- 会话：`addTool` / `addFieldTool` / `removeTool` / `clearTools` / `bindTileBufferTarget` / `bindHeightmapTarget` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
+- 会话：`addTool` / `addFieldTool` / `removeTool` / `clearTools` / `bindTileBufferTarget` / `bindTileLayerTarget` / `bindHeightmapTarget` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`
 - Kernel：`setConstantFalloff` / `setLinearFalloff` / `setSmoothFalloff`
