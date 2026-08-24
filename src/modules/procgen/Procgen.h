@@ -66,12 +66,15 @@ public:
 
     // --- Atomic script rebuilds ---
     ProcgenContext* beginSystem(const std::string& name, uint32_t seed);
+    ProcgenContext* beginCachedSystem(const std::string& name, uint32_t seed,
+                                      const std::string& buildKey);
     bool            commitSystem(ProcgenContext* context);
     void            abortSystem(ProcgenContext* context);
     bool            removeSystem(const std::string& name);
     bool            hasSystem(const std::string& name) const;
     uint64_t        getSystemRevision(const std::string& name) const;
     uint32_t        getSystemSeed(const std::string& name) const;
+    std::string     getSystemBuildKey(const std::string& name) const;
     int             getSystemOutputCount(const std::string& name) const;
     std::string     getSystemOutputName(const std::string& name, int index) const;
     PointSet*       getSystemOutput(const std::string& name,

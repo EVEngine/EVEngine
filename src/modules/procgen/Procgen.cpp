@@ -161,6 +161,25 @@ ProcgenContext* Procgen::beginSystem(const std::string& name, uint32_t seed) {
     return new ProcgenContext(name, seed);
 }
 
+ProcgenContext* Procgen::beginCachedSystem(const std::string& name, uint32_t seed,
+                                           const std::string& buildKey) {
+    lastError_.clear();
+    if (name.empty()) {
+        lastError_ = "beginCachedSystem: name is empty";
+        return nullptr;
+    }
+    if (buildKey.empty()) {
+        lastError_ = "beginCachedSystem: build key is empty";
+        return nullptr;
+    }
+    const uint32_t normalizedSeed = seed ? seed : 1u;
+    const auto     found          = systems_.find(name);
+    const bool     cacheHit       = found != systems_.end() &&
+                              found->second.seed == normalizedSeed &&
+                              found->second.buildKey == buildKey;
+    return new ProcgenContext(name, normalizedSeed, buildKey, cacheHit);
+}
+
 bool Procgen::commitSystem(ProcgenContext* context) {
     lastError_.clear();
     if (!context) {
@@ -180,6 +199,7 @@ bool Procgen::commitSystem(ProcgenContext* context) {
     auto& snapshot       = systems_[context->name_];
     snapshot.seed            = context->seed_;
     snapshot.revision        = snapshot.revision + 1u;
+    snapshot.buildKey        = context->buildKey_;
     snapshot.outputs         = context->outputs_;
     snapshot.outputOrder     = context->outputOrder_;
     snapshot.debugStages     = context->debugStages_;
@@ -207,6 +227,11 @@ uint64_t Procgen::getSystemRevision(const std::string& name) const {
 uint32_t Procgen::getSystemSeed(const std::string& name) const {
     const auto found = systems_.find(name);
     return found == systems_.end() ? 0u : found->second.seed;
+}
+
+std::string Procgen::getSystemBuildKey(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? std::string() : found->second.buildKey;
 }
 
 int Procgen::getSystemOutputCount(const std::string& name) const {
@@ -255,6 +280,7 @@ std::string Procgen::getSystemDebugReport(const std::string& name) const {
     const auto& snapshot = found->second;
     std::ostringstream report;
     report << name << " revision=" << snapshot.revision << " seed=" << snapshot.seed;
+    if (!snapshot.buildKey.empty()) report << " buildKey=" << snapshot.buildKey;
     for (const auto& trace : snapshot.traces) {
         report << "\n  " << trace.name << " input=" << trace.inputCount
                << " output=" << trace.outputCount << " ms=" << trace.milliseconds;
@@ -691,7 +717,9 @@ void Procgen::expose(ssq::Table &table) {
     context.addFunc("seedFor", &ProcgenContext::seedFor);
     context.addFunc("isActive", &ProcgenContext::isActive);
     context.addFunc("hasFailed", &ProcgenContext::hasFailed);
+    context.addFunc("isCacheHit", &ProcgenContext::isCacheHit);
     context.addFunc("getError", &ProcgenContext::getError);
+    context.addFunc("getBuildKey", &ProcgenContext::getBuildKey);
     context.addFunc("publish", &ProcgenContext::publish);
     context.addFunc("hasOutput", &ProcgenContext::hasOutput);
     context.addFunc("getOutputCount", &ProcgenContext::getOutputCount);
@@ -839,12 +867,14 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("projectToHeightmap", &Procgen::projectToHeightmap);
     cls.addFunc("deriveSeed", &Procgen::deriveSeed);
     cls.addFunc("beginSystem", &Procgen::beginSystem);
+    cls.addFunc("beginCachedSystem", &Procgen::beginCachedSystem);
     cls.addFunc("commitSystem", &Procgen::commitSystem);
     cls.addFunc("abortSystem", &Procgen::abortSystem);
     cls.addFunc("removeSystem", &Procgen::removeSystem);
     cls.addFunc("hasSystem", &Procgen::hasSystem);
     cls.addFunc("getSystemRevision", &Procgen::getSystemRevision);
     cls.addFunc("getSystemSeed", &Procgen::getSystemSeed);
+    cls.addFunc("getSystemBuildKey", &Procgen::getSystemBuildKey);
     cls.addFunc("getSystemOutputCount", &Procgen::getSystemOutputCount);
     cls.addFunc("getSystemOutputName", &Procgen::getSystemOutputName);
     cls.addFunc("getSystemOutput", &Procgen::getSystemOutput);

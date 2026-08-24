@@ -152,3 +152,34 @@ TEST_CASE("procgen.system.commitIsAtomicAndFailureKeepsPreviousSnapshot") {
     delete failed;
     delete initial;
 }
+
+TEST_CASE("procgen.system.cachedBuildReusesCommittedSnapshot") {
+    Procgen  proc;
+    PointSet points;
+    points.add(1.f, 0.f, 2.f);
+
+    ProcgenContext* miss = proc.beginCachedSystem("rocks", 7, "layout-v1:size=32");
+    REQUIRE(bool(miss));
+    CHECK(!miss->isCacheHit());
+    CHECK(miss->isActive());
+    CHECK_EQ(miss->getBuildKey(), std::string("layout-v1:size=32"));
+    CHECK(miss->publish("rocks", &points));
+    CHECK(proc.commitSystem(miss));
+    CHECK_EQ(proc.getSystemRevision("rocks"), uint64_t(1));
+    CHECK_EQ(proc.getSystemBuildKey("rocks"), std::string("layout-v1:size=32"));
+
+    ProcgenContext* hit = proc.beginCachedSystem("rocks", 7, "layout-v1:size=32");
+    REQUIRE(bool(hit));
+    CHECK(hit->isCacheHit());
+    CHECK(!hit->isActive());
+    CHECK_EQ(proc.getSystemRevision("rocks"), uint64_t(1));
+
+    ProcgenContext* changed = proc.beginCachedSystem("rocks", 7, "layout-v1:size=64");
+    REQUIRE(bool(changed));
+    CHECK(!changed->isCacheHit());
+    CHECK(changed->isActive());
+
+    delete changed;
+    delete hit;
+    delete miss;
+}

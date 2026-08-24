@@ -73,6 +73,27 @@ eve_reload <- function() { rebuildForest(42); };
 `getSystemOutput` 返回已提交输出的副本；`getSystemRevision` 可判断是否成功换代；
 `getSystemDebugReport` 输出 seed、revision、命名阶段点数/耗时和最终输出点数。
 
+### 按输入复用已提交结果
+
+对昂贵管线可用 `beginCachedSystem(name, seed, buildKey)`。已有快照的 seed 和
+buildKey 都相同时，context 的 `isCacheHit()` 为 true 且无需执行或提交；key 变化
+时则是普通 active staging，成功提交后才更新缓存身份：
+
+```squirrel
+local key = "forest-layout-v2:size=" + worldSize;
+local ctx = procgen.beginCachedSystem("forest", seed, key);
+if (ctx == null) throw procgen.lastError();
+if (ctx.isCacheHit()) {
+    local cachedKey = ctx.getBuildKey();
+    return procgen.getSystemOutput("forest", "trees");
+}
+// 构建并 publish，然后 commitSystem(ctx)
+local committedKey = procgen.getSystemBuildKey("forest");
+```
+
+buildKey 应包含所有影响输出的参数和一段显式 recipe 版本；修改生成代码时同步提升
+该版本。缓存命中不会增加 revision。普通 `beginSystem` 始终强制重建。
+
 ### 场景内检查中间结果
 
 `ctx.captureDebug(name, points)` 会把命名 `PointSet` 复制进本次事务。它和正式

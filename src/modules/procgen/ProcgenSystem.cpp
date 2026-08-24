@@ -5,15 +5,19 @@
 
 namespace eve::procgen {
 
-ProcgenContext::ProcgenContext(std::string systemName, uint32_t seed)
-    : name_(std::move(systemName)), seed_(seed ? seed : 1u) {}
+ProcgenContext::ProcgenContext(std::string systemName, uint32_t seed, std::string buildKey,
+                               bool cacheHit)
+    : name_(std::move(systemName)), seed_(seed ? seed : 1u), active_(!cacheHit),
+      cacheHit_(cacheHit), buildKey_(std::move(buildKey)) {}
 
 std::string ProcgenContext::getName() const { return name_; }
 uint32_t    ProcgenContext::getSeed() const { return seed_; }
 uint32_t    ProcgenContext::seedFor(const std::string& scope) const { return deriveSeed(seed_, scope); }
 bool        ProcgenContext::isActive() const { return active_; }
 bool        ProcgenContext::hasFailed() const { return !error_.empty(); }
+bool        ProcgenContext::isCacheHit() const { return cacheHit_; }
 std::string ProcgenContext::getError() const { return error_; }
+std::string ProcgenContext::getBuildKey() const { return buildKey_; }
 
 bool ProcgenContext::publish(const std::string& outputName, PointSet* points) {
     if (!active_) {
