@@ -2,6 +2,8 @@
 
 #include <box3d/id.h>
 
+#include <cstdint>
+
 namespace eve::physics {
 
 class Body3D;
@@ -37,6 +39,11 @@ public:
 
     void  setDensity(float density);
     float getDensity() const;
+
+    /** @brief Collision filter bits used by world ray/query filters (Box3D b3Filter).
+     * categoryBits 声明本形状属于哪些类别；maskBits 声明本形状接受哪些类别碰撞。 */
+    void     setFilterBits(uint64_t categoryBits, uint64_t maskBits);
+    uint64_t getCategoryBits() const;
 
     /** @brief Owning body. */
     Body3D *getBody() { return body_; }

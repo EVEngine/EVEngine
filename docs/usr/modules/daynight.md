@@ -65,6 +65,8 @@ gfx.render3D();
 | API | 说明 |
 |-----|------|
 | `setSkyboxEnabled(b)` / `isSkyboxEnabled()` | 开关程序化天空盒（IBL 环境光） |
+| `setWeatherInfluence(cloudiness, flash)` | 注入天气影响：云量 `[0,1]` 压低天空、日光与星光，闪电亮度 `[0,1]` 短暂照亮环境 |
+| `getWeatherCloudiness()` / `getWeatherFlash()` | 读取当前云量和闪电环境光影响 |
 | `getSkyR/G/B()` | 地平线处天空基调色（用于清屏背景） |
 | `getAmbientR/G/B()` / `getAmbientBrightness()` | 建议的相机环境光 |
 
