@@ -211,7 +211,7 @@ eve_declare_module(NAME graphics REQUIRED LAYER 3 SCRIPT Graphics SLOT gfx
 # ---------------------------------------------------------------------------
 
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
-                   DEPS data event graphics scene
+                   DEPS event graphics scene
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics

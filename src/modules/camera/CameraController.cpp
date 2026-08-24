@@ -2,15 +2,12 @@
 
 #include "common/CameraObstruction.h"
 #include "common/Capability.h"
+#include "common/Json.h"
 #include "event/Event.h"
 #include "graphics/RenderSystem3D.h"
 #include "scene/SceneNodeRef.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <Poco/JSON/Stringifier.h>
 
 #include <algorithm>
 #include <cmath>
@@ -18,6 +15,39 @@
 #include <sstream>
 
 namespace eve::camera {
+
+namespace {
+
+std::string jsonString(const std::string& value) {
+    std::ostringstream out;
+    out << '"';
+    for (const unsigned char c : value) {
+        switch (c) {
+            case '"': out << "\\\""; break;
+            case '\\': out << "\\\\"; break;
+            case '\b': out << "\\b"; break;
+            case '\f': out << "\\f"; break;
+            case '\n': out << "\\n"; break;
+            case '\r': out << "\\r"; break;
+            case '\t': out << "\\t"; break;
+            default:
+                if (c < 0x20)
+                    out << "\\u00" << "0123456789abcdef"[c >> 4] << "0123456789abcdef"[c & 0xf];
+                else
+                    out << static_cast<char>(c);
+        }
+    }
+    out << '"';
+    return out.str();
+}
+
+glm::vec3 jsonVec3(eve::json::Value value, glm::vec3 fallback) {
+    if (!value.isArray() || value.size() != 3) return fallback;
+    return {value.at(0).asFloat(fallback.x), value.at(1).asFloat(fallback.y),
+            value.at(2).asFloat(fallback.z)};
+}
+
+}  // namespace
 
 Module_IMPL(Camera, new Camera());
 
@@ -345,94 +375,110 @@ float CameraController::getTimelineDuration() const { return timelineDuration_; 
 int CameraController::getRigCount() const { return static_cast<int>(rigs_.size()); }
 
 std::string CameraController::serializeAsset() const {
-    Poco::JSON::Object root;
-    root.set("version", 1);
-    Poco::JSON::Array rigs;
+    std::ostringstream out;
+    out << "{\"version\":1,\"rigs\":[";
+    bool first = true;
     for (const auto& rig : rigs_) {
-        Poco::JSON::Object::Ptr item = new Poco::JSON::Object;
-        item->set("name", rig.name); item->set("mode", rig.mode); item->set("priority", rig.priority);
-        item->set("enabled", rig.enabled); item->set("target", std::vector<float>{rig.target.x, rig.target.y, rig.target.z});
-        item->set("offset", std::vector<float>{rig.offset.x, rig.offset.y, rig.offset.z});
-        item->set("lookAhead", std::vector<float>{rig.lookAhead.x, rig.lookAhead.y, rig.lookAhead.z});
-        item->set("composition", std::vector<float>{rig.composition.x, rig.composition.y});
-        item->set("radius", rig.radius); item->set("azimuth", rig.azimuth); item->set("elevation", rig.elevation);
-        item->set("yaw", rig.yaw); item->set("pitch", rig.pitch); item->set("fov", rig.fov);
-        item->set("smooth", rig.smooth); item->set("maxSpeed", rig.maxSpeed);
-        rigs.add(item);
+        if (!first) out << ',';
+        first = false;
+        out << "{\"name\":" << jsonString(rig.name) << ",\"mode\":" << jsonString(rig.mode)
+            << ",\"priority\":" << rig.priority << ",\"enabled\":" << (rig.enabled ? "true" : "false")
+            << ",\"target\":[" << rig.target.x << ',' << rig.target.y << ',' << rig.target.z
+            << "],\"offset\":[" << rig.offset.x << ',' << rig.offset.y << ',' << rig.offset.z
+            << "],\"lookAhead\":[" << rig.lookAhead.x << ',' << rig.lookAhead.y << ',' << rig.lookAhead.z
+            << "],\"composition\":[" << rig.composition.x << ',' << rig.composition.y << "]"
+            << ",\"radius\":" << rig.radius << ",\"azimuth\":" << rig.azimuth
+            << ",\"elevation\":" << rig.elevation << ",\"yaw\":" << rig.yaw << ",\"pitch\":" << rig.pitch
+            << ",\"fov\":" << rig.fov << ",\"smooth\":" << rig.smooth << ",\"maxSpeed\":" << rig.maxSpeed << '}';
     }
-    root.set("rigs", rigs);
-    Poco::JSON::Array cuts;
+    out << "],\"cuts\":[";
+    first = true;
     for (const auto& cut : timelineCuts_) {
-        Poco::JSON::Object::Ptr item = new Poco::JSON::Object;
-        item->set("time", cut.time); item->set("rig", cut.rig); item->set("blend", cut.blend); cuts.add(item);
+        if (!first) out << ',';
+        first = false;
+        out << "{\"time\":" << cut.time << ",\"rig\":" << jsonString(cut.rig) << ",\"blend\":" << cut.blend << '}';
     }
-    root.set("cuts", cuts);
-    Poco::JSON::Array events;
+    out << "],\"events\":[";
+    first = true;
     for (const auto& marker : timelineEvents_) {
-        Poco::JSON::Object::Ptr item = new Poco::JSON::Object;
-        item->set("time", marker.time); item->set("name", marker.name); item->set("data", marker.data); events.add(item);
+        if (!first) out << ',';
+        first = false;
+        out << "{\"time\":" << marker.time << ",\"name\":" << jsonString(marker.name)
+            << ",\"data\":" << jsonString(marker.data) << '}';
     }
-    root.set("events", events);
-    Poco::JSON::Array floats;
+    out << "],\"floats\":[";
+    first = true;
     for (const auto& key : timelineFloats_) {
-        Poco::JSON::Object::Ptr item = new Poco::JSON::Object;
-        item->set("time", key.time); item->set("property", key.property); item->set("value", key.value); floats.add(item);
+        if (!first) out << ',';
+        first = false;
+        out << "{\"time\":" << key.time << ",\"property\":" << jsonString(key.property)
+            << ",\"value\":" << key.value << '}';
     }
-    root.set("floats", floats);
-    std::ostringstream output;
-    Poco::JSON::Stringifier::stringify(root, output, 2);
-    return output.str();
+    out << "]}";
+    return out.str();
 }
 
-bool CameraController::deserializeAsset(const std::string& json) {
-    try {
-        auto root = Poco::JSON::Parser().parse(json).extract<Poco::JSON::Object::Ptr>();
-        if (!root || root->optValue<int>("version", 0) != 1) return false;
-        std::vector<Rig> newRigs;
-        if (auto array = root->getArray("rigs")) {
-            for (size_t i = 0; i < array->size(); ++i) {
-                auto item = array->getObject(static_cast<unsigned int>(i));
-                if (!item) return false;
-                Rig rig;
-                rig.name = item->optValue<std::string>("name", ""); rig.mode = item->optValue<std::string>("mode", "");
-                if (rig.name.empty() || !validMode(rig.mode)) return false;
-                rig.priority = item->optValue<int>("priority", 0); rig.enabled = item->optValue<bool>("enabled", true);
-                auto vec3 = [&](const char* key, glm::vec3 fallback) {
-                    auto values = item->getArray(key); if (!values || values->size() != 3) return fallback;
-                    return glm::vec3(values->getElement<float>(0), values->getElement<float>(1), values->getElement<float>(2));
-                };
-                rig.target = vec3("target", rig.target); rig.offset = vec3("offset", rig.offset);
-                rig.lookAhead = vec3("lookAhead", rig.lookAhead);
-                if (auto values = item->getArray("composition"); values && values->size() == 2)
-                    rig.composition = {values->getElement<float>(0), values->getElement<float>(1)};
-                rig.radius = item->optValue<float>("radius", rig.radius); rig.azimuth = item->optValue<float>("azimuth", rig.azimuth);
-                rig.elevation = item->optValue<float>("elevation", rig.elevation); rig.yaw = item->optValue<float>("yaw", rig.yaw);
-                rig.pitch = item->optValue<float>("pitch", rig.pitch); rig.fov = item->optValue<float>("fov", rig.fov);
-                rig.smooth = item->optValue<float>("smooth", rig.smooth); rig.maxSpeed = item->optValue<float>("maxSpeed", rig.maxSpeed);
-                newRigs.push_back(std::move(rig));
-            }
-        }
-        clearTimeline();
-        rigs_ = std::move(newRigs); activeRig_.clear(); directorEnabled_ = !rigs_.empty();
-        if (auto array = root->getArray("cuts")) for (size_t i = 0; i < array->size(); ++i) {
-            auto item = array->getObject(static_cast<unsigned int>(i));
-            if (!item || !addTimelineCut(item->getValue<float>("time"), item->getValue<std::string>("rig"),
-                                         item->optValue<float>("blend", 0.f))) return false;
-        }
-        if (auto array = root->getArray("events")) for (size_t i = 0; i < array->size(); ++i) {
-            auto item = array->getObject(static_cast<unsigned int>(i));
-            if (!item || !addTimelineEvent(item->getValue<float>("time"), item->getValue<std::string>("name"),
-                                           item->optValue<std::string>("data", ""))) return false;
-        }
-        if (auto array = root->getArray("floats")) for (size_t i = 0; i < array->size(); ++i) {
-            auto item = array->getObject(static_cast<unsigned int>(i));
-            if (!item || !addTimelineFloat(item->getValue<float>("time"), item->getValue<std::string>("property"),
-                                           item->getValue<float>("value"))) return false;
-        }
-        return true;
-    } catch (...) {
-        return false;
+bool CameraController::deserializeAsset(const std::string& text) {
+    const auto document = eve::json::Document::parse(text);
+    const auto root     = document.root();
+    if (!root.isObject() || root.getInt("version", 0) != 1) return false;
+    std::vector<Rig> newRigs;
+    const auto rigs = root.get("rigs");
+    if (rigs && !rigs.isArray()) return false;
+    for (size_t i = 0; i < rigs.size(); ++i) {
+        const auto item = rigs.at(i);
+        if (!item.isObject()) return false;
+        Rig rig;
+        rig.name = item.getString("name");
+        rig.mode = item.getString("mode");
+        if (rig.name.empty() || !validMode(rig.mode)) return false;
+        rig.priority   = item.getInt("priority");
+        rig.enabled    = item.getBool("enabled", true);
+        rig.target     = jsonVec3(item.get("target"), rig.target);
+        rig.offset     = jsonVec3(item.get("offset"), rig.offset);
+        rig.lookAhead  = jsonVec3(item.get("lookAhead"), rig.lookAhead);
+        const auto composition = item.get("composition");
+        if (composition.isArray() && composition.size() == 2)
+            rig.composition = {composition.at(0).asFloat(), composition.at(1).asFloat()};
+        rig.radius    = item.getFloat("radius", rig.radius);
+        rig.azimuth   = item.getFloat("azimuth", rig.azimuth);
+        rig.elevation = item.getFloat("elevation", rig.elevation);
+        rig.yaw       = item.getFloat("yaw", rig.yaw);
+        rig.pitch     = item.getFloat("pitch", rig.pitch);
+        rig.fov       = item.getFloat("fov", rig.fov);
+        rig.smooth    = item.getFloat("smooth", rig.smooth);
+        rig.maxSpeed  = item.getFloat("maxSpeed", rig.maxSpeed);
+        newRigs.push_back(std::move(rig));
     }
+    clearTimeline();
+    rigs_ = std::move(newRigs);
+    activeRig_.clear();
+    directorEnabled_ = !rigs_.empty();
+    const auto cuts = root.get("cuts");
+    if (cuts && !cuts.isArray()) return false;
+    for (size_t i = 0; i < cuts.size(); ++i) {
+        const auto item = cuts.at(i);
+        if (!item.isObject() || !addTimelineCut(item.getFloat("time", -1.f), item.getString("rig"),
+                                                item.getFloat("blend", 0.f)))
+            return false;
+    }
+    const auto events = root.get("events");
+    if (events && !events.isArray()) return false;
+    for (size_t i = 0; i < events.size(); ++i) {
+        const auto item = events.at(i);
+        if (!item.isObject() || !addTimelineEvent(item.getFloat("time", -1.f), item.getString("name"),
+                                                  item.getString("data")))
+            return false;
+    }
+    const auto floats = root.get("floats");
+    if (floats && !floats.isArray()) return false;
+    for (size_t i = 0; i < floats.size(); ++i) {
+        const auto item = floats.at(i);
+        if (!item.isObject() || !addTimelineFloat(item.getFloat("time", -1.f), item.getString("property"),
+                                                  item.getFloat("value")))
+            return false;
+    }
+    return true;
 }
 
 void CameraController::emitTimelineEvent(const TimelineEvent& marker) {
