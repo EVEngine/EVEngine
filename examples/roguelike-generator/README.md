@@ -34,6 +34,16 @@ The 8-bit wall mask is exactly the "tile direction" detail that powers
 direction-aware autotiled walls; you can also run it on **any** existing grid
 via `procgen.autotileGrid(grid)`.
 
+In the default 2D view, each walkable cell computes a four-direction terrain
+mask (`E=1, S=2, W=4, N=8`). The mask selects one of all 16 combinations in
+`textures/dungeon_tiles_ground.png`; edges, corners, corridors, T-junctions,
+and fully connected floors therefore join correctly. A second `map.TileLayer`
+draws props and markers from the original `dungeon_tiles.png` over the composed
+ground. The default generation parameters produce a compact, centered dungeon
+with smaller rooms and one-tile corridors, closer to the source artwork's
+showcase. The 2.5D view keeps the procedural solid-color wall extrusion so its
+height remains adjustable.
+
 ## Generation rules (Params)
 
 - `seed` — deterministic replay.
