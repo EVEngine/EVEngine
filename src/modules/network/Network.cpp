@@ -98,7 +98,7 @@ bool Network::httpRequest(const std::string& method, const std::string& url,
                           std::chrono::milliseconds(timeoutMs > 0 ? timeoutMs : 1);
     while (std::chrono::steady_clock::now() < deadline) {
         std::vector<NetCompletion> out;
-        drainForTest(out);
+        drainCompletions(out);
         for (const auto& c : out) {
             if (c.handle != req) continue;
             if (c.type == NetEvType::HttpResp) {
@@ -185,7 +185,7 @@ void Network::post(NetCompletion c) {
     if (worker_) worker_->post(std::move(c));
 }
 
-void Network::drainForTest(std::vector<NetCompletion>& out) {
+void Network::drainCompletions(std::vector<NetCompletion>& out) {
     if (worker_) worker_->drain(out);
 }
 

@@ -66,39 +66,45 @@ public:
     /** @brief Drains worker completions and emits them as events; call per frame. */
     void pump();
 
-    /** @brief Posts a completion to the worker queue (thread-safe). */
-    void post(NetCompletion c);
-    /** @brief Test helper: drains pending completions into out. */
-    void drainForTest(std::vector<NetCompletion>& out);
-
-    /** @brief Background worker thread handle (advanced). */
-    NetWorker* worker() const { return worker_.get(); }
-
     /** @brief Synchronous HTTP request (blocks up to timeoutMs on the worker). */
     bool httpRequest(const std::string& method, const std::string& url,
                      const std::string& body, int timeoutMs, int& status,
                      std::string& responseBody) override;
 
-    /** @brief Internal: register/unregister sockets for pump polling. */
+private:
+    friend class Channel;
+    friend class HttpRequest;
+    friend class NetHost;
+    friend class NetWorker;
+    friend class TcpSocket;
+    friend class UdpSocket;
+
+    /** @brief Posts a completion to the worker queue (thread-safe). */
+    void post(NetCompletion c);
+    /** @brief Drains pending worker completions into out. */
+    void drainCompletions(std::vector<NetCompletion>& out);
+    /** @brief Returns the module-owned worker to internal network collaborators. */
+    NetWorker* worker() const { return worker_.get(); }
+
+    /** @brief Registers/unregisters sockets for worker polling. */
     void watchTcp(TcpSocket* sock);
     void unwatchTcp(TcpSocket* sock);
     void watchUdp(UdpSocket* sock);
     void unwatchUdp(UdpSocket* sock);
-    /** @brief Internal: polls watched sockets; called from the NetWorker thread. */
-    void pollSockets();  // called from NetWorker thread
+    /** @brief Polls watched sockets; called from the NetWorker thread. */
+    void pollSockets();
 
-    /** @brief Internal: bind a Channel to its socket (and reverse lookup). */
+    /** @brief Binds a Channel to its socket for reverse lookup. */
     void bindChannel(TcpSocket* sock, Channel* ch);
     void unbindChannel(TcpSocket* sock);
     Channel* channelFor(TcpSocket* sock) const;
 
-    // Main-thread only (script calls + pump). The worker never touches these.
+    /** @brief Main-thread-only UDP collaborator registration. */
     void bindUdpLink(UdpSocket* sock, UdpLink* link);
     void unbindUdpLink(UdpSocket* sock);
     void bindUdpHost(UdpSocket* sock, NetHost* host);
     void unbindUdpHost(UdpSocket* sock);
 
-private:
     void emitCompletion(const NetCompletion& c);
 
     int  timeoutMs_ = 10000;

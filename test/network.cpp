@@ -12,6 +12,7 @@
 #include "network/UdpLink.h"
 #include "network/NetRpc.h"
 #include "network/NetHost.h"
+#include "network/NetWorker.h"
 #include "data/ByteData.h"
 
 #include <thread>
@@ -40,13 +41,13 @@ TEST_CASE("event.VariantMessage") {
 }
 
 TEST_CASE("network.NetWorkerQueue") {
-    auto* net = eve::network::Network::create();
+    eve::network::NetWorker worker(nullptr);
     eve::network::NetCompletion c;
     c.type   = eve::network::NetEvType::Err;
     c.reason = "timeout";
-    net->post(std::move(c));
+    worker.post(std::move(c));
     std::vector<eve::network::NetCompletion> out;
-    net->drainForTest(out);
+    worker.drain(out);
     REQUIRE(out.size() == 1);
     CHECK(out[0].reason == "timeout");
 }
