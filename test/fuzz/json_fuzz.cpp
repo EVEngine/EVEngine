@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdlib>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -86,7 +87,7 @@ bool exerciseValue(Value value, size_t depth = 0) {
 }  // namespace
 
 FUZZ_TEST_CASE("fuzz.json.document") {
-    FUZZ_FUNC([=](const std::string& input) {
+    auto fuzzTest = FUZZ_FUNC([=](const std::string& input) {
         std::string error;
         Document    document = Document::parse(input, &error);
         if (!document.valid()) {
@@ -104,6 +105,18 @@ FUZZ_TEST_CASE("fuzz.json.document") {
                     {"[]"},
                     {R"({"name":"eve","values":[0,-1,2.5,true,null]})"},
                     {R"("\ud83d\ude00")"},
-                    {std::string(257, '[') + "0" + std::string(257, ']')}})
-        .Run(envInt("EVENGINE_FUZZ_RUNS", 2000, 1000000), envInt("EVENGINE_FUZZ_SEED", 1, 2147483647));
+                    {std::string(257, '[') + "0" + std::string(257, ']')}});
+
+    const int runs = envInt("EVENGINE_FUZZ_RUNS", 2000, 1000000);
+    const int seed = envInt("EVENGINE_FUZZ_SEED", 1, 2147483647);
+
+    // zeroerr stops on count == max_count by throwing out of the fuzz callback.
+    // Newer libFuzzer treats that otherwise-successful unwind as a target exit.
+    // Give zeroerr one extra internal count so LLVMFuzzerRunDriver returns normally.
+    fuzzTest.count     = 1;
+    fuzzTest.max_count = runs + 1;
+    auto rng           = std::make_unique<Rng>(seed);
+    fuzzTest.m_rng     = rng.get();
+    RunFuzzTest(fuzzTest, seed, runs, 500, 1200, 1);
+    fuzzTest.m_rng = nullptr;
 }
