@@ -63,3 +63,57 @@ TEST_CASE("dialogueConversation.validation") {
     CHECK(error.find("duplicate node id") != std::string::npos);
 }
 
+TEST_CASE("dialogueConversation.callStackStateRoundtrip") {
+    ConversationAsset child;
+    child.id = "common.child";
+    child.entry = "line";
+    ConversationAsset::Node childLine;
+    childLine.id = "line";
+    childLine.kind = ConversationAsset::Node::Kind::Line;
+    childLine.text = "hello";
+    childLine.next = "end";
+    ConversationAsset::Node childEnd;
+    childEnd.id = "end";
+    childEnd.kind = ConversationAsset::Node::Kind::End;
+    child.nodes = {childLine, childEnd};
+
+    ConversationAsset parent;
+    parent.id = "scene.parent";
+    parent.entry = "call";
+    ConversationAsset::Node call;
+    call.id = "call";
+    call.kind = ConversationAsset::Node::Kind::Call;
+    call.target = child.id;
+    call.next = "after";
+    ConversationAsset::Node after;
+    after.id = "after";
+    after.kind = ConversationAsset::Node::Kind::Line;
+    after.text = "returned";
+    after.next = "end";
+    ConversationAsset::Node end;
+    end.id = "end";
+    end.kind = ConversationAsset::Node::Kind::End;
+    parent.nodes = {call, after, end};
+
+    const auto resolve = [&](const std::string& id) -> const ConversationAsset* {
+        if (id == parent.id) return &parent;
+        if (id == child.id) return &child;
+        return nullptr;
+    };
+    ConversationRunner original;
+    original.setAssetResolver(resolve);
+    std::string error;
+    CHECK(original.start(&parent, StateValue::object(), &error));
+    CHECK(original.currentNodeId() == "line");
+    original.locals().set("calculatedPrice", StateValue::integer(42));
+    StateValue saved;
+    CHECK(original.captureState(saved));
+
+    ConversationRunner restored;
+    restored.setAssetResolver(resolve);
+    CHECK(restored.restoreState(saved, &error));
+    CHECK(restored.currentNodeId() == "line");
+    CHECK(restored.locals().find("calculatedPrice")->asInt() == 42);
+    CHECK(restored.advance(&error));
+    CHECK(restored.currentNodeId() == "after");
+}

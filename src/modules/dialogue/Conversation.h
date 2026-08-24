@@ -58,6 +58,10 @@ public:
     bool select(const std::string& routeId, std::string* error = nullptr);
     /** @brief Stop and clear the active instance. */
     void stop();
+    /** @brief Capture the complete cursor, locals, bindings, and call stack. */
+    bool captureState(StateValue& out) const;
+    /** @brief Restore a captured runner using the configured asset resolver. */
+    bool restoreState(const StateValue& in, std::string* error = nullptr);
 
     void setAssetResolver(AssetResolver resolver) { assetResolver_ = std::move(resolver); }
     void setExpressionEvaluator(ExpressionEvaluator evaluator) {
@@ -74,6 +78,13 @@ public:
     StateValue& locals() { return locals_; }
 
 private:
+    struct Frame {
+        const ConversationAsset* asset = nullptr;
+        std::string returnNode;
+        StateValue bindings = StateValue::object();
+        StateValue locals = StateValue::object();
+    };
+
     bool fail(std::string* error, const std::string& message) const;
     bool enter(const std::string& nodeId, std::string* error);
     std::string evaluateRoute(const ConversationAsset::Node& node, std::string* error) const;
@@ -83,6 +94,7 @@ private:
     StateValue bindings_ = StateValue::object();
     StateValue locals_ = StateValue::object();
     bool blocked_ = false;
+    std::vector<Frame> callStack_;
     AssetResolver assetResolver_;
     ExpressionEvaluator expressionEvaluator_;
 };
