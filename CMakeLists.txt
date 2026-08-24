@@ -664,6 +664,13 @@ macro(get_available_build)
     set_platform_var(ios EVENGINE_IOS)
     set_platform_var(webgpu EVENGINE_WEBGPU)
 
+    # BUILD_PLATFORM selects the renderer/runtime profile, while native Dawn
+    # still needs the host OS branches for filesystem, process and UTF-8 APIs.
+    # Emscripten does not report WIN32, so browser builds remain WebGPU-only.
+    if(BUILD_PLATFORM STREQUAL "webgpu" AND WIN32)
+        set(EVENGINE_WINDOWS 1 CACHE INTERNAL "EVEngine native host platform define")
+    endif()
+
     # Backend directories compiled out of the active build. Native backends
     # (graphics/vulkan, gpgpu/vulkan) are excluded from a webgpu build; the
     # webgpu backend is excluded from every other platform. ui/imgui stays in
@@ -1129,7 +1136,7 @@ endfunction()
 #   * Emscripten (browser): webgpu.h / webgpu_cpp.h ship with the emsdk and are
 #     already on emcc's include path; no link target is needed.
 #   * Native desktop: Google Dawn is fetched via FetchContent and linked through
-#     the imported target dawn::dawn (set into EVENGINE_WEBGPU_LIB).
+#     Dawn's monolithic WebGPU target (set into EVENGINE_WEBGPU_LIB).
 function(load_webgpu_backend)
     if(NOT BUILD_PLATFORM STREQUAL "webgpu")
         set(EVENGINE_WEBGPU_LIB "" CACHE INTERNAL "WebGPU link target (unused)")
@@ -1147,30 +1154,53 @@ function(load_webgpu_backend)
     set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_WGPU_TESTS OFF CACHE BOOL "" FORCE)
+    set(DAWN_FETCH_DEPENDENCIES ON CACHE BOOL "" FORCE)
+    set(TINT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(TINT_BUILD_CMD_TOOLS OFF CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_NULL OFF CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_D3D11 OFF CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_OPENGLES OFF CACHE BOOL "" FORCE)
     set(DAWN_USE_XCODE OFF CACHE BOOL "" FORCE)
+    if(WIN32)
+        # Dawn's generic loader combines LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR with
+        # bare system DLL names, which LoadLibraryEx rejects with ERROR 87.
+        # Select its dedicated System32 path for Vulkan and D3D compiler DLLs.
+        set(DAWN_FORCE_SYSTEM_COMPONENT_LOAD ON CACHE BOOL "" FORCE)
+    endif()
 
-    # Pinned Dawn commit (2026-08-19 main HEAD) so native WebGPU builds stay
+    # Pinned Dawn commit (2026-08-24 main HEAD) so native WebGPU builds stay
     # reproducible; override with -DEVENGINE_DAWN_TAG=<commit> if needed.
-    set(EVENGINE_DAWN_TAG "c3845d0d962656a2ea03063bddc85dc1ef1a0baa" CACHE STRING
+    set(EVENGINE_DAWN_TAG "521035d96861a33eadc06ebff7985add6ac7fdf6" CACHE STRING
         "Dawn commit/tag to fetch for the native WebGPU backend (pin for reproducible builds)")
+    # A shallow git clone cannot reliably checkout an arbitrary fixed SHA once
+    # main advances beyond it. GitHub's immutable commit archive preserves the
+    # reproducible pin without downloading Dawn's complete history.
     FetchContent_Declare(dawn
-        GIT_REPOSITORY https://github.com/google/dawn.git
-        GIT_TAG ${EVENGINE_DAWN_TAG}
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
+        URL "https://github.com/google/dawn/archive/${EVENGINE_DAWN_TAG}.tar.gz"
+        DOWNLOAD_EXTRACT_TIMESTAMP FALSE
     )
     FetchContent_MakeAvailable(dawn)
 
-    if(NOT TARGET dawn::dawn)
-        message(FATAL_ERROR "Dawn fetch did not produce the imported target dawn::dawn")
+    # Dawn renamed its native aggregate target from dawn::dawn to
+    # dawn::webgpu_dawn. Accept both so an explicitly overridden older pin
+    # remains usable.
+    if(TARGET dawn::webgpu_dawn)
+        set(_eve_webgpu_dawn_target dawn::webgpu_dawn)
+    elseif(TARGET dawn::dawn)
+        set(_eve_webgpu_dawn_target dawn::dawn)
+    else()
+        message(FATAL_ERROR
+            "Dawn fetch did not produce dawn::webgpu_dawn or dawn::dawn")
     endif()
-    # Dawn's webgpu.h / webgpu_cpp.h live under src/ in the checkout; expose
-    # them to every module target (engine, eve_imgui, gpgpu/webgpu, ...).
-    target_include_directories(eve_engine_includes INTERFACE "${dawn_SOURCE_DIR}/src")
-    set(EVENGINE_WEBGPU_LIB dawn::dawn CACHE INTERNAL "WebGPU link target")
+    # Current Dawn publishes webgpu.h / webgpu_cpp.h under include/, while
+    # older pins and a few native helper headers live under src/.
+    target_include_directories(eve_engine_includes INTERFACE
+        "${dawn_SOURCE_DIR}/include"
+        "${dawn_SOURCE_DIR}/src")
+    # Pull in Dawn's generated dawn/webgpu*.h headers before engine modules
+    # compile; a raw include path alone has no dependency on the generator.
+    target_link_libraries(eve_engine_includes INTERFACE webgpu_cpp)
+    set(EVENGINE_WEBGPU_LIB ${_eve_webgpu_dawn_target} CACHE INTERNAL "WebGPU link target")
     message(STATUS "WebGPU (native): Dawn ready, link target = ${EVENGINE_WEBGPU_LIB}")
 endfunction()
 

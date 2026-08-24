@@ -206,6 +206,15 @@ if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
 endif()
 
+# These tests intentionally exercise Vulkan implementation details rather than
+# the backend-neutral graphics API, so they cannot be linked into a WebGPU test
+# binary. Backend parity coverage lives in graphics_backend_parity.cpp.
+if(BUILD_PLATFORM STREQUAL "webgpu")
+  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp)
+    list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
+  endforeach()
+endif()
+
 file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
@@ -355,7 +364,7 @@ if(EVENGINE_PLATFORM_LIB)
 endif()
 
 if(EVENGINE_ANDROID_TEST_APP)
-  target_link_libraries(main ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  target_link_libraries(main ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
   # Source/binary roots are resolved at runtime: the Android test runner chdirs to
   # the unpacked asset root before running, so "." means "repo root on device".
   target_compile_definitions(main PRIVATE
@@ -375,7 +384,7 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_SOURCE_DIR="."
     EVENGINE_IOS_TEST_APP=1)
 else()
-  target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
   if(WIN32)
     # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
     # symbolized stack trace on unhandled exceptions (see test/main.cpp).
