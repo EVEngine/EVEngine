@@ -171,7 +171,7 @@ jobs:
     name: Windows
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     defaults:
       run:
         shell: bash
@@ -218,6 +218,53 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/win32-debug
+
+      - name: Capture Vulkan parity artifacts
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_RENDER_PARITY_DIR: ${{ github.workspace }}/artifacts/render-parity
+        run: ctest --test-dir build/win32-debug -R '^graphics\.backendParity\.' --output-on-failure
+
+      - name: Configure native Dawn parity lane
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
+            -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl `
+            -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
+            -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
+            -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF `
+            -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+
+      - name: Build native Dawn parity lane
+        timeout-minutes: 40
+        shell: pwsh
+        run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
+
+      - name: Capture native Dawn parity artifacts
+        timeout-minutes: 10
+        shell: pwsh
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_RENDER_PARITY_DIR: ${{ github.workspace }}/artifacts/render-parity
+        run: ctest --test-dir build/webgpu-native -R '^graphics\.backendParity\.' --output-on-failure
+
+      - name: Compare Vulkan and WebGPU parity images
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          python -m pip install --quiet pillow
+          python scripts/compare_render_backends.py `
+            artifacts/render-parity/vulkan artifacts/render-parity/webgpu
+
+      - name: Upload render parity artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: render-parity-windows
+          path: artifacts/render-parity
+          if-no-files-found: warn
 
   windows-release:
     name: Windows (Release)

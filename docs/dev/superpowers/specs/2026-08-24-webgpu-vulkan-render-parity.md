@@ -111,7 +111,7 @@ not an acceptable fix.
 - [x] Implement WebGPU dynamic mesh updates and aligned Uint16 uploads.
 - [x] Implement WebGPU headless device/canvas initialization.
 - [x] Add `graphics.backendParity` 2D/resource tests.
-- [ ] Add the PNG manifest/comparison script and native Dawn CI lane.
+- [x] Add the PNG manifest/comparison script and native Dawn CI lane.
 - [x] Split material surface mode from SSAO strength.
 - [x] Honor transparent blend, depth-write and double-sided settings per draw.
 

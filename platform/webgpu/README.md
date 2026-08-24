@@ -7,7 +7,7 @@ that targets the standard `webgpu.h` API, and can be produced two ways:
 - **Browser**: compiled with Emscripten to WASM, rendering with the browser's
   native WebGPU (Chromium/Edge/Firefox with `--enable-unsafe-webgpu`). Shaders
   must be WGSL.
-- **Native desktop**: links Google Dawn (`dawn::dawn`), which accepts WGSL (and
+- **Native desktop**: links Google Dawn (`dawn::webgpu_dawn`), which accepts WGSL (and
   SPIR-V) and runs on top of Vulkan/Metal/D3D12.
 
 ## Prerequisites
@@ -144,6 +144,12 @@ cmake -B build/webgpu-native -G Ninja -DCMAKE_BUILD_TYPE=Release \
 cmake --build build/webgpu-native
 ./build/webgpu-native/src/engine/eve run <game-dir>
 ```
+
+For backend-neutral render validation, configure with `-DBUILD_TESTING=ON` and
+run `ctest --test-dir build/webgpu-native -R graphics.backendParity`. Set
+`EVENGINE_RENDER_PARITY_DIR` to an absolute directory to emit PNG/JSON pairs;
+compare them with Vulkan output using `scripts/compare_render_backends.py`.
+The Windows CI lane performs this comparison with software Vulkan.
 
 Set `EVENGINE_WEBGPU_GAME_DIR` to point the platform helpers at a game folder
 when not running from the game directory itself.

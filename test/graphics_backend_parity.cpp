@@ -1,13 +1,18 @@
 #include "zeroerr/unittest.h"
 
+#include "filesystem/FileData.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
+#include "image/Image.h"
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <memory>
 
 using namespace eve::graphics;
@@ -24,6 +29,39 @@ Graphics *headlessGraphics() {
     if (!gfx->isHeadless()) gfx->initHeadless(64, 64);
     gfx->setViewportSize(64, 64, 64, 64);
     return gfx;
+}
+
+void writeParityArtifact(const eve::image::ImageData &image, const std::string &scene,
+                         const std::string &backend) {
+    const char *root = std::getenv("EVENGINE_RENDER_PARITY_DIR");
+    if (!root || root[0] == '\0') return;
+
+    eve::image::Image::create();
+    std::unique_ptr<eve::filesystem::FileData> png(
+        image.encode(medialoader::FormatHandler::ENCODED_PNG, (scene + ".png").c_str(), false));
+    REQUIRE(png.get() != nullptr);
+
+    const std::filesystem::path directory = std::filesystem::path(root) / backend;
+    std::error_code ec;
+    std::filesystem::create_directories(directory, ec);
+    REQUIRE(!ec);
+
+    std::ofstream imageOut(directory / (scene + ".png"), std::ios::binary);
+    REQUIRE(imageOut.good());
+    imageOut.write(static_cast<const char *>(png->getData()),
+                   static_cast<std::streamsize>(png->getSize()));
+    REQUIRE(imageOut.good());
+
+    std::ofstream manifest(directory / (scene + ".json"));
+    REQUIRE(manifest.good());
+    manifest << "{\n"
+             << "  \"scene\": \"" << scene << "\",\n"
+             << "  \"backend\": \"" << backend << "\",\n"
+             << "  \"width\": " << image.getWidth() << ",\n"
+             << "  \"height\": " << image.getHeight() << ",\n"
+             << "  \"profile\": \"flat2d\"\n"
+             << "}\n";
+    REQUIRE(manifest.good());
 }
 
 }  // namespace
@@ -71,6 +109,7 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     CHECK(blended[1] < 8);
     const bool blueBlended = blended[2] >= 126 && blended[2] <= 129;
     CHECK(blueBlended);
+    writeParityArtifact(*image, "texture_update_alpha_blend", backend);
 }
 
 TEST_CASE("graphics.backendParity.dynamicMeshUpdate") {
