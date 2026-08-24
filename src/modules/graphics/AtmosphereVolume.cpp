@@ -122,6 +122,47 @@ void AtmosphereVolume::integrate(const glm::vec3 &lightColor, float phaseScale) 
     }
 }
 
+void AtmosphereVolume::integrateLocalLights(const std::vector<VolumetricLight> &lights,
+                                            const glm::vec3 &worldMin,
+                                            const glm::vec3 &worldMax,
+                                            const glm::vec3 &ambientLight) {
+    for (int y = 0; y < height_; ++y) {
+        for (int x = 0; x < width_; ++x) {
+            glm::vec3 radiance(0.f);
+            float transmittance = 1.f;
+            float previousDistance = nearDistance_;
+            for (int z = 0; z < depth_; ++z) {
+                const glm::vec3 uvw((float(x) + 0.5f) / float(width_),
+                                    (float(y) + 0.5f) / float(height_),
+                                    (float(z) + 0.5f) / float(depth_));
+                const glm::vec3 world = worldMin + (worldMax - worldMin) * uvw;
+                glm::vec3 incident = glm::max(ambientLight, glm::vec3(0.f));
+                for (const VolumetricLight &light : lights) {
+                    if (!light.enabled || light.radius <= 0.f || light.intensity <= 0.f) continue;
+                    const float d = glm::length(world - light.position);
+                    if (d >= light.radius) continue;
+                    const float radial = 1.f - d / light.radius;
+                    incident += glm::max(light.color, glm::vec3(0.f)) * light.intensity *
+                        radial * radial;
+                }
+                const float distance = sliceDistance(z);
+                const float stepLength = std::max(distance - previousDistance, 0.f);
+                previousDistance = distance;
+                const FogFroxel &f = at(x, y, z);
+                const float opticalDepth = f.extinction * stepLength;
+                const float stepTransmittance = std::exp(-opticalDepth);
+                const float integral = f.extinction > 1e-6f
+                    ? (1.f - stepTransmittance) / f.extinction
+                    : stepLength;
+                radiance += transmittance *
+                    (f.scattering * incident * f.lightVisibility + f.emissive) * integral;
+                transmittance *= stepTransmittance;
+                integrated_[index(x, y, z)] = glm::vec4(radiance, transmittance);
+            }
+        }
+    }
+}
+
 void AtmosphereVolume::setLightVisibility(int x, int y, int z, float visibility) {
     at(x, y, z).lightVisibility = std::clamp(visibility, 0.f, 1.f);
 }
@@ -150,6 +191,13 @@ std::size_t AtmosphereVolume::blendHistory(const AtmosphereVolume &history, floa
 
 const glm::vec4 &AtmosphereVolume::integratedAt(int x, int y, int z) const {
     return integrated_[index(x, y, z)];
+}
+
+glm::vec4 AtmosphereVolume::sampleIntegrated(float u, float v, float distance) const {
+    if (integrated_.empty()) return glm::vec4(0.f, 0.f, 0.f, 1.f);
+    const int x = std::clamp(int(u * float(width_)), 0, width_ - 1);
+    const int y = std::clamp(int(v * float(height_)), 0, height_ - 1);
+    return integratedAt(x, y, sliceForDistance(distance));
 }
 
 }  // namespace eve::graphics

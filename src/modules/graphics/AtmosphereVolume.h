@@ -19,6 +19,15 @@ struct FogFroxel {
     float lightVisibility = 1.f;
 };
 
+/** @brief Local light injected into participating media. */
+struct VolumetricLight {
+    glm::vec3 position{0.f};
+    glm::vec3 color{1.f};
+    float radius = 5.f;
+    float intensity = 1.f;
+    bool enabled = true;
+};
+
 /** @brief Camera-frustum volume used by the volumetric fog passes and CPU references. */
 class AtmosphereVolume {
 public:
@@ -68,6 +77,17 @@ public:
      */
     void integrate(const glm::vec3 &lightColor, float phaseScale = 1.f);
 
+    /**
+     * @brief Inject local lights and integrate the volume in one reference pass.
+     * @param lights Point lights; callers should pass the clustered/cull-selected subset.
+     * @param worldMin World bounds represented by the volume.
+     * @param worldMax World bounds represented by the volume.
+     * @param ambientLight Sky/indirect radiance available in all froxels.
+     */
+    void integrateLocalLights(const std::vector<VolumetricLight> &lights,
+                              const glm::vec3 &worldMin, const glm::vec3 &worldMax,
+                              const glm::vec3 &ambientLight);
+
     /** @brief Set the main-light shadow visibility for one froxel. */
     void setLightVisibility(int x, int y, int z, float visibility);
 
@@ -83,6 +103,14 @@ public:
 
     /** @brief Cumulative RGB in-scattering and A transmittance at a froxel. */
     const glm::vec4 &integratedAt(int x, int y, int z) const;
+
+    /**
+     * @brief Query cumulative fog for a transparent fragment.
+     * @param u Horizontal screen coordinate in [0,1].
+     * @param v Vertical screen coordinate in [0,1].
+     * @param distance Linear camera distance in world units.
+     */
+    glm::vec4 sampleIntegrated(float u, float v, float distance) const;
 
 private:
     std::size_t index(int x, int y, int z) const;

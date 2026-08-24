@@ -7,6 +7,7 @@
 
 using eve::graphics::AtmosphereVolume;
 using eve::graphics::FogVolume;
+using eve::graphics::VolumetricLight;
 
 TEST_CASE("atmosphereVolume.logarithmicSlicesRoundTrip") {
     AtmosphereVolume volume;
@@ -85,4 +86,20 @@ TEST_CASE("atmosphereVolume.localVolumesAddAndCarveMedia") {
     volume.injectLocalVolume(carve, glm::vec3(-4.f), glm::vec3(4.f));
     CHECK(volume.at(4, 4, 4).extinction == 0.f);
     CHECK(volume.at(0, 0, 0).extinction > 0.f);
+}
+
+TEST_CASE("atmosphereVolume.localLightAndTransparentDepthQuery") {
+    AtmosphereVolume volume;
+    volume.resize(4, 4, 16);
+    volume.setDepthRange(0.5f, 30.f);
+    volume.injectHeightFog(0.04f, glm::vec3(0.8f), 0.f, 0.f, -4.f, 4.f);
+    VolumetricLight light;
+    light.position = glm::vec3(0.f);
+    light.radius = 6.f;
+    light.color = glm::vec3(1.f, 0.2f, 0.1f);
+    volume.integrateLocalLights({light}, glm::vec3(-8.f), glm::vec3(8.f), glm::vec3(0.02f));
+    const glm::vec4 nearFog = volume.sampleIntegrated(0.5f, 0.5f, 1.f);
+    const glm::vec4 farFog = volume.sampleIntegrated(0.5f, 0.5f, 20.f);
+    CHECK(farFog.a < nearFog.a);
+    CHECK(farFog.r > farFog.b);
 }
