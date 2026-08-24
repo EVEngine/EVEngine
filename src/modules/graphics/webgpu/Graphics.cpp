@@ -4912,27 +4912,32 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
     pd.vertex.bufferCount = 1;
     pd.vertex.buffers = &vb;
 
+    // Keep both modules alive until CreateRenderPipeline has consumed the
+    // descriptor. Storing only their raw handles in pd and destroying the
+    // wrappers at the end of these branches leaves dangling handles for Dawn.
+    wgpu::ShaderModule vertexModule;
+    wgpu::ShaderModule fragmentModule;
     if (!vert.empty()) {
         WGPUShaderModuleDescriptor md = mdDesc(vert);
-        wgpu::ShaderModule vm = dev.CreateShaderModule(
+        vertexModule = dev.CreateShaderModule(
             reinterpret_cast<const wgpu::ShaderModuleDescriptor*>(&md));
-        pd.vertex.module = vm.Get();
+        pd.vertex.module = vertexModule.Get();
         pd.vertex.entryPoint = sv("vs_main");
     } else {
         // Default textured vertex shader.
         WGPUShaderModuleDescriptor md = mdDesc(kTexturedVertWgsl);
-        wgpu::ShaderModule vm = dev.CreateShaderModule(
+        vertexModule = dev.CreateShaderModule(
             reinterpret_cast<const wgpu::ShaderModuleDescriptor*>(&md));
-        pd.vertex.module = vm.Get();
+        pd.vertex.module = vertexModule.Get();
         pd.vertex.entryPoint = sv("vs_main");
     }
 
     if (!frag.empty()) {
         WGPUFragmentState fs{};
         WGPUShaderModuleDescriptor md = mdDesc(frag);
-        wgpu::ShaderModule fm = dev.CreateShaderModule(
+        fragmentModule = dev.CreateShaderModule(
             reinterpret_cast<const wgpu::ShaderModuleDescriptor*>(&md));
-        fs.module = fm.Get();
+        fs.module = fragmentModule.Get();
         fs.entryPoint = sv("fs_main");
         fs.targetCount = 1;
         WGPUColorTargetState target{};

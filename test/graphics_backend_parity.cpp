@@ -6,6 +6,7 @@
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderControl.h"
+#include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
 #include "image/Image.h"
@@ -112,6 +113,50 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     const bool blueBlended = blended[2] >= 126 && blended[2] <= 129;
     CHECK(blueBlended);
     writeParityArtifact(*image, "texture_update_alpha_blend", backend);
+}
+
+TEST_CASE("graphics.backendParity.webgpuCustomShaderLifetime") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    if (gfx->getBackendName() != "webgpu") {
+        CHECK(true);
+        return;
+    }
+
+    const char *frag = R"wgsl(
+struct FSIn {
+    @location(0) color: vec4f,
+    @location(1) uv: vec2f,
+};
+@group(0) @binding(0) var mainTex: texture_2d<f32>;
+@group(0) @binding(2) var mainSamp: sampler;
+@fragment
+fn fs_main(in: FSIn) -> @location(0) vec4f {
+    let sampled = textureSample(mainTex, mainSamp, in.uv);
+    return vec4f(sampled.r * 0.25, sampled.g * 0.5, sampled.b, sampled.a) * in.color;
+}
+)wgsl";
+    Shader *shader = gfx->newShaderFromWgsl({}, frag);
+    REQUIRE(shader != nullptr);
+    REQUIRE(shader->gpuHandle != nullptr);
+
+    const uint8_t white[4] = {255, 255, 255, 255};
+    Texture *texture = gfx->newTexture(1, 1, white);
+    Canvas *canvas = gfx->newCanvas(64, 64);
+    REQUIRE(texture != nullptr);
+    REQUIRE(canvas != nullptr);
+    gfx->setCanvas(canvas);
+    gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
+    gfx->drawTexturedRectShader(texture, shader, 8.f, 8.f, 48.f, 48.f,
+                                Color(1.f, 1.f, 1.f, 1.f));
+    gfx->setCanvas(nullptr);
+
+    const Color center = canvas->getPixel(32, 32);
+    CHECK_GT(center.r, 0.20f);
+    CHECK_LT(center.r, 0.30f);
+    CHECK_GT(center.g, 0.45f);
+    CHECK_LT(center.g, 0.55f);
+    CHECK(center.b > 0.95f);
 }
 
 TEST_CASE("graphics.backendParity.dynamicMeshUpdate") {
