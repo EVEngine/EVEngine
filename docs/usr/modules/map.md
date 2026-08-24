@@ -26,7 +26,48 @@ map.render(gfx);
 
 ### 运行时修改瓦片
 
-先用地图坐标换算接口把世界位置转成格子，再 `setTile(x, y, gid)`；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。改瓦片后若已创建 Pathfinder，调用 `syncFromLayer()`。
+先用地图坐标换算接口把世界位置转成格子，再 `setTile(x, y, gid)`；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。
+
+`fillRect(x, y, width, height, gid)` 会裁剪到地图边界，并把整次区域修改发布为一个 revision。绑定到图层的 Pathfinder 与 Fov 会在下一次查询或 `compute()` 时根据 revision 自动同步；通常不再需要手动调用 `syncFromLayer()`。
+
+```squirrel
+layer.fillRect(8, 8, 16, 12, 4);
+print(layer.getRevision() + " chunks=" + layer.getNonEmptyChunkCount() +
+      "/" + layer.getChunkCount() + " size=" + layer.getChunkSize() + "\n");
+```
+
+地图内部以 32×32 chunk 建立空间索引。带 Camera2D 的正常 `map.render(gfx)` 会先按视口剔除 chunk；可通过 `map.getLastVisitedChunkCount()`、`map.getLastVisitedCellCount()` 和现有的可见瓦片统计检查本帧工作量。
+
+### TileSet v2 数据、动画与 terrain
+
+运行时可以逐帧建立动画，并为 GID 写入保留类型的自定义数据：
+
+```squirrel
+layer.clearTileAnimation(20);
+layer.addTileAnimationFrame(20, 21, 100);
+layer.addTileAnimationFrame(20, 22, 140);
+print(layer.getTileAnimationFrameCount(20) + "\n");
+
+layer.setTileDataString(20, "biome", "marsh");
+layer.setTileDataNumber(20, "damage", 2.5);
+layer.setTileDataBool(20, "wet", true);
+print(layer.getTileDataType(20, "damage") + " " +
+      layer.getTileDataString(20, "biome") + " " +
+      layer.getTileDataNumber(20, "damage") + " " +
+      layer.getTileDataBool(20, "wet") + "\n");
+```
+
+terrain rule 使用 8 位邻接掩码（从西北开始顺时针）。绘制一个 terrain 会重新解析目标及其一格邻域：
+
+```squirrel
+layer.clearTerrainRules();
+layer.setTerrainRule(30, 1, 0);       // 孤立草地
+layer.setTerrainRule(31, 1, 1 << 3);  // 东侧相连
+layer.paintTerrain(4, 4, 1);
+print(layer.getTerrain(4, 4) + "\n");
+```
+
+Tiled JSON 的 `animation`、typed `properties` 与无限地图 `chunks` 可直接导入。无限地图当前会按已存在 chunk 的包围盒规范化为运行时图层，并把负 chunk 坐标折算进图层 origin。
 
 ### 组合项目自己的 2.5D 资产工作流
 
@@ -141,6 +182,22 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 
 `resolveDualGridFilled(logic, display, filledGid)` 只把指定 GID 当作填充。逻辑层可继续用于碰撞 / 寻路；默认会 `setVisible(false)`。
 
+### 碰撞几何
+
+`publishCollision(layer)` 会把 `setTileMetadata(..., walkable=false)` 标记的正交瓦片贪心合并成世界坐标矩形，减少静态碰撞体数量；已注册的物理/项目适配器会通过 `ITileCollisionSink` 一次性收到替换后的几何。没有适配器时仍可读取矩形，自行创建物理夹具：
+
+```squirrel
+local count = map.publishCollision(layer);
+for (local i = 0; i < count; ++i) {
+    local x = map.getCollisionRectX(i);
+    local y = map.getCollisionRectY(i);
+    local w = map.getCollisionRectWidth(i);
+    local h = map.getCollisionRectHeight(i);
+}
+```
+
+当前自动合并只支持正交层；等距、交错和六角层返回 0，项目应使用多边形适配器，避免把菱形误近似成轴对齐矩形。
+
 ## 常见问题
 
 - GID 与图集编号混淆：0 为空，其余值遵循 tileset 映射；默认空瓦片不可走（`setBlockEmpty`）。
@@ -156,6 +213,7 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 - `applyConfig()`、`clear()`、`depthYAt()`、`fill()`、`getAutoReload()`、`getConfigPath()`、`getLayer()`、`getLayerCount()`
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getLastVisibleTileCount()`、`getLastCustomVisualCount()`、`getLastAtlasCount()`
+- `publishCollision()`、`getCollisionRectCount()`、`getCollisionRectX()`、`getCollisionRectY()`、`getCollisionRectWidth()`、`getCollisionRectHeight()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
 - `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`、`newFovVolume()`
