@@ -10,6 +10,7 @@
 #include "graphics/TextureSampler.h"
 #include "graphics/webgpu/Canvas.h"
 #include "graphics/webgpu/wgsl_shaders.h"
+#include "graphics/webgpu/HairWgsl.h"
 
 #include "common/Exception.h"
 #include "common/config.h"
@@ -496,7 +497,7 @@ wgpu::BindGroupLayout Graphics::make2DBindGroupLayout() {
 }
 
 wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
-    WGPUBindGroupLayoutEntry entries[15]{};
+    WGPUBindGroupLayoutEntry entries[16]{};
     // 0: Frame UBO (dynamic)
     entries[0].binding = 0;
     entries[0].visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
@@ -563,10 +564,15 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
         entries[i].texture.sampleType = WGPUTextureSampleType_Float;
         entries[i].texture.viewDimension = WGPUTextureViewDimension_2D;
     }
+    entries[15].binding = 15;
+    entries[15].visibility = WGPUShaderStage_Fragment;
+    entries[15].buffer.type = WGPUBufferBindingType_Uniform;
+    entries[15].buffer.hasDynamicOffset = true;
+    entries[15].buffer.minBindingSize = Shader::kPushConstantBytes;
 
     WGPUBindGroupLayoutDescriptor desc{};
     desc.label = sv("eve_mesh3d");
-    desc.entryCount = 15;
+    desc.entryCount = 16;
     desc.entries = entries;
     return device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&desc));
 }
@@ -2126,7 +2132,7 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     if (cached != meshBindGroupCache_.end()) return cached->second;
     if (meshBindGroupCache_.size() >= kMaxMeshBindGroupCache) meshBindGroupCache_.clear();
 
-    WGPUBindGroupEntry entries[15]{};
+    WGPUBindGroupEntry entries[16]{};
     entries[0].binding = 0;
     entries[0].buffer = currentUboArena().buffer.Get();
     entries[0].size = sizeof(Mesh3DUBO);
@@ -2159,6 +2165,9 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[13].textureView = decalNormalView.Get();
     entries[14].binding = 14;
     entries[14].textureView = decalParamsView.Get();
+    entries[15].binding = 15;
+    entries[15].buffer = currentUboArena().buffer.Get();
+    entries[15].size = Shader::kPushConstantBytes;
 
     (void)frameUboOffset;
     (void)shadowUboOffset;
@@ -2166,7 +2175,7 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_mesh_group");
     desc.layout = mesh3dSetLayout.Get();
-    desc.entryCount = 15;
+    desc.entryCount = 16;
     desc.entries = entries;
     wgpu::BindGroup bg =
         device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
@@ -3758,6 +3767,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             ubo.clipInfo.z = pc[6];                                 // rimPower
         }
         queue.WriteBuffer(uboArena.buffer, d.frameUboOffset, &ubo, sizeof(ubo));
+        if (d.shader && d.shader->pushConstantSize() > 0)
+            queue.WriteBuffer(uboArena.buffer, d.pushUboOffset, d.shader->pushConstantData(),
+                              Shader::kPushConstantBytes);
     }
 
     // Shared shadow UBO written once.
@@ -3803,7 +3815,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         GpuTexture *depth = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
                                                     : flatDepthTexture3D;
         wgpu::BindGroup bg;
-        uint32_t offsets[2];
+        uint32_t offsets[3];
         if (useClustered) {
             wgpu::TextureView aoView_ =
                 aoReady ? aoView[(aoWriteIndex + 1) % 2]
@@ -3812,13 +3824,15 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
                                               d.clusteredUboOffset, d.shadowUboOffset);
             offsets[0] = d.clusteredUboOffset;
             offsets[1] = d.shadowUboOffset;
+            pass.SetBindGroup(0, bg, 2, offsets);
         } else {
             bg = makeMeshBindGroup(albedo, normal, env, height, depth,
                                    d.frameUboOffset, d.shadowUboOffset, d.pushUboOffset);
             offsets[0] = d.frameUboOffset;
             offsets[1] = d.shadowUboOffset;
+            offsets[2] = d.pushUboOffset;
+            pass.SetBindGroup(0, bg, 3, offsets);
         }
-        pass.SetBindGroup(0, bg, 2, offsets);
 
         if (gpuMesh->indexBuffer) {
             pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
@@ -5120,8 +5134,22 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                        const std::vector<uint32_t> &fragSpv) {
     (void)vertSpv;
     (void)fragSpv;
-    throw Exception("newHairShaderFromSpv: SPIR-V custom hair shaders are not supported on the "
-                    "WebGPU backend. Use WGSL shaders instead.");
+    auto gpu = std::make_unique<GpuShader>();
+    gpu->isMesh3D = true;
+    gpu->isHair3D = true;
+    gpu->wgslVert = kMesh3DVertWgsl;
+    gpu->wgslFrag = kHairFragWgsl;
+    gpu->mesh3dPipeline = buildPipelineFromWgsl(
+        device, mesh3dPipelineLayout, sceneColorFormat, gpu->wgslVert, gpu->wgslFrag,
+        /*depth*/ true, /*blend*/ true, /*mesh3d*/ true, /*hair*/ true,
+        /*shadow*/ false, /*gbuffer*/ false, sceneColorSamples);
+    auto sh = std::make_unique<Shader>();
+    sh->setKind(Shader::Kind::eMesh3D);
+    sh->gpuHandle = gpu.get();
+    Shader *raw = sh.get();
+    ownedShaders.push_back(std::move(sh));
+    ownedGpuShaders.push_back(std::move(gpu));
+    return raw;
 }
 
 }  // namespace eve::graphics::webgpu
