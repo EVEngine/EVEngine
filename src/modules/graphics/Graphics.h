@@ -115,10 +115,6 @@ public:
     virtual void setTextureSampler(Texture *texture, const std::string &filter, const std::string &mipmap,
                                    float maxAnisotropy, float lodBias);
 
-    /** @deprecated Use setTextureSampler() with the same arguments. */
-    void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
-                                 float maxAnisotropy, float lodBias);
-
     virtual void present() = 0;
 
     /** @brief Renderer backend id used by sibling modules (e.g. Gpgpu). */
