@@ -899,6 +899,49 @@ jobs:
             build/linux-coverage/coverage.xml
             build/linux-coverage/coverage.html
 
+  linux-fuzz:
+    name: Linux (zeroerr fuzz)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      ASAN_OPTIONS: "detect_leaks=1:halt_on_error=1"
+      UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
+      EVENGINE_FUZZ_RUNS: ${{ github.event_name == 'schedule' && '50000' || '2000' }}
+      EVENGINE_FUZZ_SEED: "1"
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install fuzz toolchain
+        timeout-minutes: 5
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang ninja-build
+
+      - name: Build zeroerr JSON fuzz harness
+        timeout-minutes: 5
+        run: make build/linux-fuzz JOBS="$(nproc)"
+
+      - name: Fuzz shared JSON parser
+        timeout-minutes: 5
+        run: make fuzz/linux JOBS="$(nproc)"
+
+      - name: Upload reproducer
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: json-fuzz-reproducer
+          path: |
+            build/linux-fuzz/crash-*
+            build/linux-fuzz/leak-*
+            build/linux-fuzz/oom-*
+            build/linux-fuzz/timeout-*
+          if-no-files-found: ignore
+
   webgpu:
     name: WebGPU (WASM)
     runs-on: ubuntu-24.04
