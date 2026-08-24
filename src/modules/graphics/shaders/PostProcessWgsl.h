@@ -12,6 +12,7 @@ struct Externals { data: array<vec4f, 8> };
 fn p(i:u32)->f32{return u.data[i/4u][i%4u];}
 fn tex(uv:vec2f)->vec4f{return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0);}
 fn luma(c:vec3f)->f32{return dot(c,vec3f(.299,.587,.114));}
+fn aux_load(uv:vec2f)->vec4f{let d=textureDimensions(auxTex);let q=vec2i(clamp(uv,vec2f(0),vec2f(1))*vec2f(d));return textureLoad(auxTex,clamp(q,vec2i(0),vec2i(d)-1),0);}
 )wgsl";
 
 inline constexpr const char *kFxaa = R"wgsl(
@@ -46,7 +47,7 @@ inline constexpr const char *kSsaa = R"wgsl(
 )wgsl";
 
 inline constexpr const char *kOutline = R"wgsl(
-fn aux(uv:vec2f)->vec3f{let n=textureSampleLevel(auxTex,samp,clamp(uv,vec2f(0),vec2f(1)),0).xyz*2-1;return select(vec3f(0,0,1),normalize(n),length(n)>.001);}
+fn aux(uv:vec2f)->vec3f{let n=aux_load(uv).xyz*2-1;return select(vec3f(0,0,1),normalize(n),length(n)>.001);}
 fn viewz(z:f32)->f32{let n=max(p(10),.0001);let f=max(p(11),n+.001);return n*f/max(f-z*(f-n),.000001);}
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{let color=vec3f(p(5),p(6),p(7));let z=tex(i.uv).r;if z>=.9999{return vec4f(color,0);}let t=vec2f(max(p(8),.00001),max(p(9),.00001))*max(p(0),.5);let nc=aux(i.uv);let dc=viewz(z);var de=0.0;var ne=0.0;
  let offsets=array<vec2f,8>(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1),vec2f(.707,.707),vec2f(-.707,-.707),vec2f(-.707,.707),vec2f(.707,-.707));

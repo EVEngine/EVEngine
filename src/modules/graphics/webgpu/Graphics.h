@@ -135,7 +135,7 @@ public:
     ~Graphics() override;
 
     std::string getBackendName() const override { return "webgpu"; }
-    bool supportsGBufferPost() const override { return false; }
+    bool supportsGBufferPost() const override { return true; }
 
     void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;

@@ -126,8 +126,8 @@ public:
 
     /**
      * @brief Whether gbuffer-based post-process shaders (AO, GI) can be created on this
-     * backend. False on WebGPU, whose custom post shaders are WGSL-only (the
-     * built-in AO/GI use SPIR-V), so RenderSystem3D skips them there.
+     * backend. Backends may use different shader source languages while
+     * preserving the same render-control contract.
      */
     virtual bool supportsGBufferPost() const { return true; }
 

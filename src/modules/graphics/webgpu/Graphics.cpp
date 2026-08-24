@@ -34,6 +34,10 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
+#if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
+#include <objc/message.h>
+#include <objc/runtime.h>
+#endif
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -169,8 +173,33 @@ void Graphics::initWithWindow(void *nativeWindow) {
         throw Exception("WebGPU: unsupported SDL window subsystem on Linux");
     }
 #elif defined(__APPLE__)
-    throw Exception("WebGPU: native macOS surface (Metal layer) not yet supported; "
-                    "use the Emscripten browser build or the Vulkan backend on macOS");
+    // SDL exposes an NSWindow, while Dawn requires its content view's
+    // CAMetalLayer. Runtime messaging keeps this source portable C++.
+    using SendId = id (*)(id, SEL);
+    using SendVoidId = void (*)(id, SEL, id);
+    using SendVoidBool = void (*)(id, SEL, BOOL);
+    using SendIsKind = BOOL (*)(id, SEL, Class);
+    const auto sendId = reinterpret_cast<SendId>(objc_msgSend);
+    const auto sendVoidId = reinterpret_cast<SendVoidId>(objc_msgSend);
+    const auto sendVoidBool = reinterpret_cast<SendVoidBool>(objc_msgSend);
+    const auto sendIsKind = reinterpret_cast<SendIsKind>(objc_msgSend);
+    id window = static_cast<id>(wminfo.info.cocoa.window);
+    id view = sendId(window, sel_registerName("contentView"));
+    if (view == nil) throw Exception("WebGPU: SDL Cocoa window has no content view");
+    sendVoidBool(view, sel_registerName("setWantsLayer:"), YES);
+    id layer = sendId(view, sel_registerName("layer"));
+    Class metalLayerClass = objc_getClass("CAMetalLayer");
+    if (metalLayerClass == Nil) throw Exception("WebGPU: CAMetalLayer class unavailable");
+    if (layer == nil || !sendIsKind(layer, sel_registerName("isKindOfClass:"), metalLayerClass)) {
+        layer = sendId(reinterpret_cast<id>(metalLayerClass), sel_registerName("layer"));
+        sendVoidId(view, sel_registerName("setLayer:"), layer);
+    }
+    if (layer == nil) throw Exception("WebGPU: failed to create CAMetalLayer");
+    WGPUSurfaceSourceMetalLayer metalChain{};
+    metalChain.chain.sType = WGPUSType_SurfaceSourceMetalLayer;
+    metalChain.layer = layer;
+    surfDesc.nextInChain = &metalChain.chain;
+    surface = instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
 #else
     throw Exception("WebGPU: unsupported native platform for surface creation");
 #endif
@@ -5125,9 +5154,10 @@ wgpu::RenderPipeline Graphics::createPipelineForShader(GpuShader *gs, wgpu::Text
     // Custom 2D/mesh shaders blend only when the caller asks (x-ray / 2D UI);
     // opaque meshes and shadow/gbuffer variants keep write-through targets.
     const bool blend = !depth;
+    const uint32_t samples = mesh3d || hair || shadow || gbuffer ? sceneColorSamples : 1u;
     return buildPipelineFromWgsl(device, layout, WGPUTextureFormat(format), gs->wgslVert,
                                  gs->wgslFrag, depth, blend, mesh3d, hair, shadow, gbuffer,
-                                 sceneColorSamples);
+                                 samples);
 }
 
 Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,

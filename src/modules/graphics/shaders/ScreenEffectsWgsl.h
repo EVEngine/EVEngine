@@ -12,7 +12,7 @@ struct Externals { data: array<vec4f,8> };
 fn p(i:u32)->f32{return u.data[i/4u][i%4u];}
 fn invvp()->mat4x4f{return mat4x4f(u.data[0],u.data[1],u.data[2],u.data[3]);}
 fn color_at(uv:vec2f)->vec3f{return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0).rgb;}
-fn depth_at(uv:vec2f)->f32{return textureSampleLevel(depthTex,samp,clamp(uv,vec2f(0),vec2f(1)),0).r;}
+fn depth_at(uv:vec2f)->f32{let d=textureDimensions(depthTex);let q=vec2i(clamp(uv,vec2f(0),vec2f(1))*vec2f(d));return textureLoad(depthTex,clamp(q,vec2i(0),vec2i(d)-1),0).r;}
 fn world(m:mat4x4f,uv:vec2f,z:f32)->vec3f{let h=m*vec4f(uv*2-1,clamp(z,0,1),1);return h.xyz/max(h.w,.000001);}
 )wgsl";
 

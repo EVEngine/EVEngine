@@ -14,6 +14,7 @@ struct Externals { data: array<vec4f, 8> };
 fn p(i: u32) -> f32 { return u.data[i / 4u][i % 4u]; }
 fn inv_vp() -> mat4x4f { return mat4x4f(u.data[0], u.data[1], u.data[2], u.data[3]); }
 fn depth(uv: vec2f) -> f32 { return textureSampleLevel(mainTex, mainSamp, clamp(uv, vec2f(0), vec2f(1)), 0).r; }
+fn normal_load(uv:vec2f)->vec3f{let d=textureDimensions(normalTex);let q=vec2i(clamp(uv,vec2f(0),vec2f(1))*vec2f(d));return textureLoad(normalTex,clamp(q,vec2i(0),vec2i(d)-1),0).xyz;}
 fn world(m: mat4x4f, uv: vec2f, z: f32) -> vec3f {
   let h = m * vec4f(uv * 2 - 1, clamp(z, 0, 1), 1);
   return h.xyz / max(h.w, 0.000001);
@@ -111,7 +112,7 @@ inline constexpr const char *kFromDepth = R"wgsl(
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{
  let m=inv_vp();let nz=max(p(16),.001);let fz=max(p(17),nz+.001);let r=max(p(18),.0001);let bias=max(p(19),0);let count=i32(clamp(p(22),4,24));
  let tw=max(p(23),.00001);let th=max(p(24),.00001);let z=depth(i.uv);if z>=.9999{return vec4f(0);}let pos=world(m,i.uv,z);
- var n:vec3f;if p(25)>.5{let q=textureSampleLevel(normalTex,mainSamp,clamp(i.uv,vec2f(0),vec2f(1)),0).xyz*2-1;n=normalize(select(vec3f(0,1,0),q,length(q)>.001));}
+ var n:vec3f;if p(25)>.5{let q=normal_load(i.uv)*2-1;n=normalize(select(vec3f(0,1,0),q,length(q)>.001));}
  else{n=normalize(cross(world(m,i.uv+vec2f(tw,0),depth(i.uv+vec2f(tw,0)))-pos,world(m,i.uv+vec2f(0,th),depth(i.uv+vec2f(0,th)))-pos));}
  let eh=m*vec4f(0,0,0,1);if dot(n,eh.xyz/max(eh.w,.000001)-pos)<0{n=-n;}var occ=0.0;
  for(var s=1;s<=24;s++){if s>count{break;}let a=f32(s)*2.39996323;let q=f32(s)/f32(count);let uv=clamp(i.uv+vec2f(cos(a),sin(a))*q*r/max(mix(nz,fz,z),.001)*.25,vec2f(0),vec2f(1));
