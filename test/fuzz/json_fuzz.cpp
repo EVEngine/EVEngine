@@ -98,14 +98,13 @@ FUZZ_TEST_CASE("fuzz.json.document") {
 
         REQUIRE(error.empty());
         REQUIRE(exerciseValue(document.root()));
-    })
-        .WithDomains(NonEmptyStringDomain())
-        .WithSeeds({{"null"},
-                    {"{}"},
-                    {"[]"},
-                    {R"({"name":"eve","values":[0,-1,2.5,true,null]})"},
-                    {R"("\ud83d\ude00")"},
-                    {std::string(257, '[') + "0" + std::string(257, ']')}});
+    }).WithDomains(NonEmptyStringDomain());
+    fuzzTest.WithSeeds({{"null"},
+                        {"{}"},
+                        {"[]"},
+                        {R"({"name":"eve","values":[0,-1,2.5,true,null]})"},
+                        {R"("\ud83d\ude00")"},
+                        {std::string(257, '[') + "0" + std::string(257, ']')}});
 
     const int runs = envInt("EVENGINE_FUZZ_RUNS", 2000, 1000000);
     const int seed = envInt("EVENGINE_FUZZ_SEED", 1, 2147483647);
