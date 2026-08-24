@@ -31,6 +31,8 @@
 #include "map/TileProjection.h"
 #include "map/TileSystem.h"
 #include "window/Window.h"
+#include "common/Capability.h"
+#include "map/TileCollision.h"
 
 #include <SDL2/SDL.h>
 #include <algorithm>
@@ -39,6 +41,19 @@
 #include <vector>
 
 using namespace eve::map;
+
+namespace {
+class CollisionSinkMock final : public ITileCollisionSink {
+public:
+    void replaceTileCollision(const void *source, const TileCollisionRect *rects,
+                              size_t count) override {
+        layer = source;
+        values.assign(rects, rects + count);
+    }
+    const void *layer = nullptr;
+    std::vector<TileCollisionRect> values;
+};
+}  // namespace
 
 namespace {
 
@@ -89,6 +104,52 @@ TEST_CASE("map.layer.resizeClears") {
     CHECK_EQ(layer->getMapWidth(), 4);
     CHECK_EQ(layer->getMapHeight(), 1);
     CHECK_EQ(layer->getTile(0, 0), 0);
+}
+
+TEST_CASE("map.layer.chunkIndexAndRevision") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(96, 65, 8.f, 8.f);
+    CHECK_EQ(layer->getChunkSize(), 32);
+    CHECK_EQ(layer->getChunkCount(), 9);
+    CHECK_EQ(layer->getNonEmptyChunkCount(), 0);
+    const int revision = layer->getRevision();
+    layer->setTile(0, 0, 1);
+    layer->setTile(64, 64, 2);
+    CHECK_EQ(layer->getNonEmptyChunkCount(), 2);
+    CHECK_GT(layer->getRevision(), revision);
+    const int unchanged = layer->getRevision();
+    layer->setTile(64, 64, 2);
+    CHECK_EQ(layer->getRevision(), unchanged);
+    layer->setTile(0, 0, 0);
+    CHECK_EQ(layer->getNonEmptyChunkCount(), 1);
+}
+
+TEST_CASE("map.layer.fillRectClipsAndPublishesOnce") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(64, 64, 8.f, 8.f);
+    const int before = layer->getRevision();
+    layer->fillRect(-2, -2, 5, 5, 7);
+    CHECK_EQ(layer->getTile(0, 0), 7);
+    CHECK_EQ(layer->getTile(2, 2), 7);
+    CHECK_EQ(layer->getTile(3, 3), 0);
+    CHECK_EQ(layer->getNonEmptyChunkCount(), 1);
+    CHECK_EQ(layer->getRevision(), before + 1);
+    layer->fillRect(31, 31, 2, 2, 8);
+    CHECK_EQ(layer->getNonEmptyChunkCount(), 4);
+}
+
+TEST_CASE("map.render.sparseChunksBoundCollectionWork") {
+    hideAllTileLayers();
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(1024, 1024, 8.f, 8.f);
+    layer->setTile(1, 1, 1);
+    layer->setTile(900, 900, 2);
+    std::vector<eve::graphics::DrawItem2D> items;
+    TileRenderSystem::collect(items);
+    CHECK_EQ(int(items.size()), 2);
+    CHECK_EQ(TileRenderSystem::lastVisitedChunkCount(), 2);
+    CHECK_EQ(TileRenderSystem::lastVisitedCellCount(), 2 * 32 * 32);
+    layer->setVisible(false);
 }
 
 TEST_CASE("map.layer.applyConfigFlat") {
@@ -186,6 +247,87 @@ TEST_CASE("map.tileset.manifestShapeInMapConfig") {
     CHECK_EQ(visual.footprintW, 2);
     CHECK(!visual.walkable);
     layer->setVisible(false);
+}
+
+TEST_CASE("map.layer.applyTiledInfiniteChunks") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(1, 1, 16.f, 16.f);
+    const char *json = R"({
+      "infinite":true,"width":0,"height":0,"tilewidth":16,"tileheight":16,
+      "layers":[{"type":"tilelayer","chunks":[
+        {"x":-2,"y":-1,"width":2,"height":2,"data":[1,2,3,4]},
+        {"x":0,"y":-1,"width":2,"height":2,"data":[5,6,7,8]}
+      ]}]
+    })";
+    CHECK(layer->applyConfig(json));
+    CHECK_EQ(layer->getMapWidth(), 4);
+    CHECK_EQ(layer->getMapHeight(), 2);
+    CHECK_EQ(layer->getTile(0, 0), 1);
+    CHECK_EQ(layer->getTile(3, 1), 8);
+    CHECK_EQ(layer->getX(), -32.f);
+    CHECK_EQ(layer->getY(), -16.f);
+}
+
+TEST_CASE("map.tileset.v2AnimationCustomDataAndTerrain") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(3, 3, 16.f, 16.f);
+    layer->addTileAnimationFrame(10, 11, 100);
+    layer->addTileAnimationFrame(10, 12, 150);
+    CHECK_EQ(layer->getTileAnimationFrameCount(10), 2);
+    layer->setTileDataString(10, "biome", "forest");
+    layer->setTileDataNumber(10, "damage", 2.5f);
+    layer->setTileDataBool(10, "wet", true);
+    CHECK_EQ(layer->getTileDataType(10, "damage"), std::string("number"));
+    CHECK_EQ(layer->getTileDataString(10, "biome"), std::string("forest"));
+    CHECK_EQ(layer->getTileDataNumber(10, "damage"), 2.5f);
+    CHECK(layer->getTileDataBool(10, "wet"));
+    layer->setTerrainRule(20, 1, 0);
+    layer->setTerrainRule(21, 1, 1 << 3);
+    layer->paintTerrain(1, 1, 1);
+    CHECK_EQ(layer->getTerrain(1, 1), 1);
+    CHECK_EQ(layer->getTile(1, 1), 20);
+    layer->paintTerrain(2, 1, 1);
+    CHECK_EQ(layer->getTile(1, 1), 21);
+    layer->clearTileAnimation(10);
+    CHECK_EQ(layer->getTileAnimationFrameCount(10), 0);
+}
+
+TEST_CASE("map.collision.greedyMergeAndCapabilityPublish") {
+    Map map;
+    TileLayer *layer = map.newLayer(5, 4, 16.f, 8.f);
+    layer->setTileMetadata(9, 1, 1, false);
+    layer->fillRect(1, 1, 3, 2, 9);
+    CollisionSinkMock sink;
+    eve::cap::addListener<ITileCollisionSink>(&sink);
+
+    CHECK(map.publishCollision(layer) == 1);
+    CHECK(map.getCollisionRectCount() == 1);
+    CHECK(map.getCollisionRectX(0) == 16.f);
+    CHECK(map.getCollisionRectY(0) == 8.f);
+    CHECK(map.getCollisionRectWidth(0) == 48.f);
+    CHECK(map.getCollisionRectHeight(0) == 16.f);
+    CHECK(sink.layer == layer);
+    REQUIRE(sink.values.size() == 1);
+    CHECK(sink.values[0].width == 48.f);
+    eve::cap::removeListener<ITileCollisionSink>(&sink);
+}
+
+TEST_CASE("map.tileset.v2ManifestReadsTiledFields") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(1, 1, 16.f, 16.f);
+    const char *json = R"({
+      "width":1,"height":1,"data":[1],
+      "tileset":{"firstGid":1,"columns":4,"tileWidth":16,"tileHeight":16,
+        "tiles":[{"id":0,"animation":[{"tileid":1,"duration":80},{"tileid":2,"duration":120}],
+          "terrain":2,"neighborMask":0,
+          "properties":[{"name":"damage","type":"float","value":3.5}]}]}
+    })";
+    CHECK(layer->applyConfig(json));
+    CHECK_EQ(layer->getTileAnimationFrameCount(1), 2);
+    CHECK_EQ(layer->getTileDataType(1, "damage"), std::string("float"));
+    CHECK_EQ(layer->getTileDataString(1, "damage"), std::string("3.5"));
+    layer->paintTerrain(0, 0, 2);
+    CHECK_EQ(layer->getTile(0, 0), 1);
 }
 
 TEST_CASE("map.render.nullSafe") {

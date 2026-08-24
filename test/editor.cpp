@@ -16,6 +16,10 @@
 #include "editor/FieldBrushTool.h"
 #include "editor/GizmoManager.h"
 #include "editor/TileBuffer.h"
+#ifdef EVENGINE_HAS_MAP
+#include "map/Map.h"
+#include "map/TileLayer.h"
+#endif
 #include "editor/TransformGizmo.h"
 
 #include "common/Exception.h"
@@ -328,6 +332,27 @@ TEST_CASE("editor.transactions.undo_redo_and_rollback_any_field") {
     CHECK(transactions.rollback());
     CHECK_EQ(buffer.getGid(0, 0), 0);
 }
+
+#ifdef EVENGINE_HAS_MAP
+TEST_CASE("editor.map.tileLayerTargetUsesLiveRevision") {
+    auto *map = eve::map::Map::create();
+    auto *layer = map->newLayer(4, 3, 8.f, 8.f);
+    Editor editor;
+    std::unique_ptr<TileLayerTarget> target(editor.newTileLayerTarget("ground", layer));
+    const auto before = target->revision();
+    CHECK(target->writeInt(2, 1, 9));
+    CHECK_EQ(layer->getTile(2, 1), 9);
+    CHECK_GT(target->revision(), before);
+    CHECK_EQ(target->dirtyRegion().minX, 2);
+    CHECK_EQ(target->dirtyRegion().maxY, 1);
+    IntFieldEditCommand command("paint", target.get());
+    CHECK(command.record(2, 1, 4));
+    CHECK(command.apply());
+    CHECK_EQ(layer->getTile(2, 1), 4);
+    command.revert();
+    CHECK_EQ(layer->getTile(2, 1), 9);
+}
+#endif
 
 TEST_CASE("editor.constraints.accept_warn_and_reject_without_core_types") {
     TileBuffer buffer(4, 2);

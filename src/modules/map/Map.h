@@ -5,6 +5,7 @@
 #include "map/MapObject.h"
 #include "map/Pathfinder.h"
 #include "map/Fov.h"
+#include "map/TileCollision.h"
 
 #include <string>
 #include <vector>
@@ -58,6 +59,16 @@ public:
     int getLastVisibleTileCount() const;
     int getLastCustomVisualCount() const;
     int getLastAtlasCount() const;
+    int getLastVisitedChunkCount() const;
+    int getLastVisitedCellCount() const;
+
+    /** @brief Generate merged collision from non-walkable tile metadata and notify adapters. */
+    int publishCollision(TileLayer *layer);
+    int getCollisionRectCount() const;
+    float getCollisionRectX(int index) const;
+    float getCollisionRectY(int index) const;
+    float getCollisionRectWidth(int index) const;
+    float getCollisionRectHeight(int index) const;
 
     int getLayerCount() const;
     /** @brief Layer created by the most recent loadFromFile/newLayerFromFile call. */
@@ -95,6 +106,7 @@ private:
     std::vector<MapObject> objects_;
     std::vector<TileLayer *> loadedLayers_;
     std::string dualGridError_;
+    std::vector<TileCollisionRect> collisionRects_;
 };
 
 }  // namespace eve::map
