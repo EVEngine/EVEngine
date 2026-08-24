@@ -365,6 +365,18 @@ void UI::beginMenu(const std::string &label, const std::string &id) {
     pushOpen(menu(label, {}, id));
 }
 
+void UI::beginToolbar(const std::string &id) { pushOpen(toolbar({}, id)); }
+
+void UI::beginToolbox(const std::string &id, float cellSize, int columns) {
+    pushOpen(toolbox({}, id, cellSize, columns));
+}
+
+void UI::beginSidebar(const std::string &id, float width) {
+    pushOpen(sidebar({}, id, width));
+}
+
+void UI::beginStatusBar(const std::string &id) { pushOpen(statusBar({}, id)); }
+
 void UI::beginScrollList(const std::string &id, float height, float itemHeight) {
     pushOpen(scrollList(id, {}, height, itemHeight));
 }
@@ -413,6 +425,18 @@ void UI::beginFlex(const std::string &direction, const std::string &id, float ga
 void UI::beginRow(const std::string &id, float gap) { beginFlex("row", id, gap); }
 
 void UI::beginColumn(const std::string &id, float gap) { beginFlex("column", id, gap); }
+
+void UI::beginSplitPane(const std::string &direction, float ratio, const std::string &id) {
+    WidgetDesc d;
+    d.type = NodeType::SplitPane;
+    d.id = id;
+    d.key = id;
+    d.flexDirection = parseFlexDirection(direction);
+    d.value = std::max(0.1f, std::min(0.9f, ratio));
+    d.minValue = 0.1f;
+    d.maxValue = 0.9f;
+    pushOpen(std::move(d));
+}
 
 void UI::end() {
     if (openStack_.empty()) throw std::runtime_error("ui: end() without begin");
@@ -969,6 +993,11 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::MenuBar: return "menuBar";
     case NodeType::Menu: return "menu";
     case NodeType::MenuItem: return "menuItem";
+    case NodeType::Toolbar: return "toolbar";
+    case NodeType::Toolbox: return "toolbox";
+    case NodeType::Sidebar: return "sidebar";
+    case NodeType::StatusBar: return "statusBar";
+    case NodeType::SplitPane: return "splitPane";
     }
     return "text";
 }
@@ -1000,6 +1029,11 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "menuBar") return NodeType::MenuBar;
     if (s == "menu") return NodeType::Menu;
     if (s == "menuItem") return NodeType::MenuItem;
+    if (s == "toolbar") return NodeType::Toolbar;
+    if (s == "toolbox") return NodeType::Toolbox;
+    if (s == "sidebar") return NodeType::Sidebar;
+    if (s == "statusBar") return NodeType::StatusBar;
+    if (s == "splitPane") return NodeType::SplitPane;
     return NodeType::Text;
 }
 
@@ -1424,6 +1458,11 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginCard", &UI::beginCard);
     cls.addFunc("beginMenuBar", &UI::beginMenuBar);
     cls.addFunc("beginMenu", &UI::beginMenu);
+    cls.addFunc("beginToolbar", &UI::beginToolbar);
+    cls.addFunc("beginToolbox", &UI::beginToolbox);
+    cls.addFunc("beginSidebar", &UI::beginSidebar);
+    cls.addFunc("beginStatusBar", &UI::beginStatusBar);
+    cls.addFunc("beginSplitPane", &UI::beginSplitPane);
     cls.addFunc("beginScrollList", &UI::beginScrollList);
     cls.addFunc("beginFlex", &UI::beginFlex);
     cls.addFunc("beginRow", &UI::beginRow);

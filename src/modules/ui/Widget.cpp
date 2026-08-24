@@ -468,6 +468,66 @@ WidgetDesc menuItem(std::string label, std::string shortcut, std::string id,
     return d;
 }
 
+WidgetDesc toolbar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Toolbar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems = FlexAlign::Center;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc toolbox(std::vector<WidgetDesc> children, std::string id, float cellSize,
+                   int columns) {
+    WidgetDesc d;
+    d.type = NodeType::Toolbox;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.itemHeight = cellSize > 0.f ? cellSize : 40.f;
+    d.value = float(std::max(0, columns));
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc sidebar(std::vector<WidgetDesc> children, std::string id, float width) {
+    WidgetDesc d;
+    d.type = NodeType::Sidebar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.sizeX = width;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc statusBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::StatusBar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems = FlexAlign::Center;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc second, float ratio,
+                     std::string id, std::function<void(float)> onResize) {
+    WidgetDesc d;
+    d.type = NodeType::SplitPane;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = direction;
+    d.value = std::max(0.1f, std::min(0.9f, ratio));
+    d.minValue = 0.1f;
+    d.maxValue = 0.9f;
+    d.onValue = std::move(onResize);
+    d.children.push_back(std::move(first));
+    d.children.push_back(std::move(second));
+    return d;
+}
+
 WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children, std::string id,
                             bool defaultOpen) {
     WidgetDesc d;

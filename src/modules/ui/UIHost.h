@@ -38,6 +38,11 @@ enum class NodeType : uint8_t {
     MenuBar = 24,       // native ImGui window menu bar
     Menu = 25,          // popup menu container
     MenuItem = 26,      // selectable menu command
+    Toolbar = 27,       // horizontal editor command strip
+    Toolbox = 28,       // wrapping grid of editor tools
+    Sidebar = 29,       // vertical editor side panel
+    StatusBar = 30,     // compact horizontal status strip
+    SplitPane = 31,     // two resizable panes
 };
 
 /** @brief Main-axis direction for Flex containers. */

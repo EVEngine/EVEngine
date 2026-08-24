@@ -96,6 +96,17 @@ public:
     void beginMenuBar(const std::string &id = "");
     /** @brief Opens a popup menu. */
     void beginMenu(const std::string &label, const std::string &id = "");
+    /** @brief Opens a horizontal editor command strip. */
+    void beginToolbar(const std::string &id = "");
+    /** @brief Opens a wrapping editor tool grid. */
+    void beginToolbox(const std::string &id = "", float cellSize = 40.f, int columns = 0);
+    /** @brief Opens a vertical editor side panel. */
+    void beginSidebar(const std::string &id = "", float width = 240.f);
+    /** @brief Opens a compact horizontal status strip. */
+    void beginStatusBar(const std::string &id = "");
+    /** @brief Opens a two-child resizable split pane. */
+    void beginSplitPane(const std::string &direction = "row", float ratio = 0.25f,
+                        const std::string &id = "");
     /** Virtualized scroll list; rows are the children added before end(). */
     void beginScrollList(const std::string &id = "", float height = 0.f, float itemHeight = 0.f);
     /**

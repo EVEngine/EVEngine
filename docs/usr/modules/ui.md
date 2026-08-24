@@ -38,6 +38,32 @@ ui.button("Quit", "quit");
 ui.end();
 ```
 
+桌面框架可用 `beginToolbar`、`beginToolbox`、`beginSidebar`、`beginStatusBar` 和
+`beginSplitPane("row"|"column", ratio, id)` 直接组合。SplitPane 必须包含两个直接子项，
+拖拽分隔条会产生普通 value change；比例可通过 `getValue` / `setValue` 读取和恢复。
+
+```squirrel
+ui.beginToolbar("toolbar");
+ui.iconButton("save", "", "save");
+ui.spacer("toolbar-fill");
+ui.badge("Ready", "ready");
+ui.end();
+
+ui.beginSplitPane("row", 0.25, "workspace");
+ui.beginSidebar("left", 240.0);
+ui.searchField("Search tools", "", "tool-search");
+ui.beginToolbox("tools", 40.0, 3);
+ui.iconButton("pointer", "", "select");
+ui.iconButton("move", "", "move");
+ui.iconButton("paint-brush", "", "paint");
+ui.end();
+ui.end();
+ui.beginCard("content");
+ui.sectionHeader("Inspector", "inspector");
+ui.end();
+ui.end();
+```
+
 ### 使用内置编辑器图标
 
 `icon(name, id)` 显示语义图标，`iconButton(name, label, id)` 创建图标按钮。图标字体随
@@ -92,7 +118,7 @@ ui.end();
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginRow()`、`beginScrollList()`、`beginWindow()`、`bindOwner()`
+- `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginRow()`、`beginSidebar()`、`beginSplitPane()`、`beginStatusBar()`、`beginScrollList()`、`beginToolbar()`、`beginToolbox()`、`beginWindow()`、`bindOwner()`
 - `animateHostPos()`、`badge()`、`button()`、`checkbox()`、`combo()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
 - `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
 - `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`

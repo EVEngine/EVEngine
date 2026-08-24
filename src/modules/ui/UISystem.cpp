@@ -555,6 +555,118 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             pushPending(host, n, "click", n.handlerClick);
         break;
     }
+    case NodeType::Toolbar:
+    case NodeType::StatusBar: {
+        const bool status = n.type == NodeType::StatusBar;
+        const float height = n.sizeY > 0.f
+                                 ? n.sizeY
+                                 : ImGui::GetFrameHeight() + ImGui::GetStyle().WindowPadding.y * 2.f;
+        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 0.f, height);
+        const std::string id = n.id.empty() ? (status ? "statusbar" : "toolbar") : n.id;
+        ImGui::PushStyleColor(ImGuiCol_ChildBg,
+                              ImGui::GetStyleColorVec4(status ? ImGuiCol_WindowBg
+                                                             : ImGuiCol_MenuBarBg));
+        if (ImGui::BeginChild(id.c_str(), size, false,
+                              ImGuiWindowFlags_AlwaysUseWindowPadding |
+                                  ImGuiWindowFlags_NoScrollbar)) {
+            walkFlex(host, tree, n);
+        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
+        break;
+    }
+    case NodeType::Toolbox: {
+        const float cell = n.itemHeight > 0.f ? n.itemHeight : 40.f;
+        const float autoHeight = std::max(cell, n.measuredH + ImGui::GetStyle().WindowPadding.y * 2.f);
+        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 0.f, n.sizeY > 0.f ? n.sizeY : autoHeight);
+        const std::string id = n.id.empty() ? "toolbox" : n.id;
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_ChildBg));
+        if (ImGui::BeginChild(id.c_str(), size, false, ImGuiWindowFlags_AlwaysUseWindowPadding)) {
+            const float spacing = ImGui::GetStyle().ItemSpacing.x;
+            const float avail = ImGui::GetContentRegionAvail().x;
+            const int columns = int(n.value) > 0
+                                    ? int(n.value)
+                                    : std::max(1, int((avail + spacing) / (cell + spacing)));
+            int visibleIndex = 0;
+            for (int childIndex = n.firstChild; childIndex >= 0;
+                 childIndex = tree->nodes[size_t(childIndex)].nextSibling) {
+                UINode &child = tree->nodes[size_t(childIndex)];
+                if (!child.visible) continue;
+                const float oldX = child.sizeX;
+                const float oldY = child.sizeY;
+                child.sizeX = cell;
+                child.sizeY = cell;
+                walkNode(host, tree, childIndex);
+                child.sizeX = oldX;
+                child.sizeY = oldY;
+                ++visibleIndex;
+                if (visibleIndex % columns != 0) ImGui::SameLine();
+            }
+        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
+        break;
+    }
+    case NodeType::Sidebar: {
+        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 240.f, n.sizeY > 0.f ? n.sizeY : 0.f);
+        const std::string id = n.id.empty() ? "sidebar" : n.id;
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_ChildBg));
+        if (ImGui::BeginChild(id.c_str(), size, true, ImGuiWindowFlags_AlwaysUseWindowPadding)) {
+            if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
+        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
+        break;
+    }
+    case NodeType::SplitPane: {
+        const bool row = n.flexDirection == FlexDirection::Row;
+        const ImVec2 avail = ImGui::GetContentRegionAvail();
+        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : avail.x, n.sizeY > 0.f ? n.sizeY : avail.y);
+        const float splitter = 5.f;
+        const float mainSize = std::max(1.f, (row ? size.x : size.y) - splitter);
+        const float ratio = std::max(n.minValue, std::min(n.maxValue, n.value));
+        const float firstMain = std::floor(mainSize * ratio);
+        const float secondMain = std::max(1.f, mainSize - firstMain);
+        const int first = n.firstChild;
+        const int second = first >= 0 ? tree->nodes[size_t(first)].nextSibling : -1;
+        const std::string id = n.id.empty() ? "splitpane" : n.id;
+        ImGui::PushID(id.c_str());
+        ImGui::BeginGroup();
+        if (first >= 0) {
+            const ImVec2 paneSize(row ? firstMain : size.x, row ? size.y : firstMain);
+            if (ImGui::BeginChild("first", paneSize, false)) walkNode(host, tree, first);
+            ImGui::EndChild();
+        }
+        if (row) ImGui::SameLine(0.f, 0.f);
+        const ImVec2 handleSize(row ? splitter : size.x, row ? size.y : splitter);
+        ImGui::InvisibleButton("splitter", handleSize);
+        const bool hovered = ImGui::IsItemHovered();
+        const bool active = ImGui::IsItemActive();
+        if (hovered || active)
+            ImGui::SetMouseCursor(row ? ImGuiMouseCursor_ResizeEW : ImGuiMouseCursor_ResizeNS);
+        ImGui::GetWindowDrawList()->AddRectFilled(
+            ImGui::GetItemRectMin(), ImGui::GetItemRectMax(),
+            ImGui::GetColorU32(active ? ImGuiCol_CheckMark
+                                     : (hovered ? ImGuiCol_SeparatorHovered
+                                                : ImGuiCol_Separator)));
+        if (active) {
+            const float delta = row ? ImGui::GetIO().MouseDelta.x : ImGui::GetIO().MouseDelta.y;
+            const float next = std::max(n.minValue, std::min(n.maxValue, ratio + delta / mainSize));
+            if (next != n.value) {
+                n.value = next;
+                pushPending(host, n, "value", n.handlerValue, false, next);
+            }
+        }
+        if (row) ImGui::SameLine(0.f, 0.f);
+        if (second >= 0) {
+            const ImVec2 paneSize(row ? secondMain : size.x, row ? size.y : secondMain);
+            if (ImGui::BeginChild("second", paneSize, false)) walkNode(host, tree, second);
+            ImGui::EndChild();
+        }
+        ImGui::EndGroup();
+        ImGui::PopID();
+        break;
+    }
     case NodeType::ScrollList: {
         // Virtualized list: only the rows intersecting the viewport are drawn.
         std::vector<int> kids;

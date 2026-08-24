@@ -294,6 +294,24 @@ WidgetDesc menu(std::string label, std::vector<WidgetDesc> children = {}, std::s
 /** @brief Selectable menu command with an optional shortcut hint. */
 WidgetDesc menuItem(std::string label, std::string shortcut = {}, std::string id = "",
                     std::function<void()> onClick = {}, bool selected = false);
+/** @brief Horizontal editor command strip; Spacer children absorb free width. */
+WidgetDesc toolbar(std::vector<WidgetDesc> children = {}, std::string id = "");
+/** @brief Wrapping grid of editor tools with uniform square cells. */
+WidgetDesc toolbox(std::vector<WidgetDesc> children = {}, std::string id = "",
+                   float cellSize = 40.f, int columns = 0);
+/** @brief Vertical editor side panel. Width defaults to 240 logical pixels. */
+WidgetDesc sidebar(std::vector<WidgetDesc> children = {}, std::string id = "",
+                   float width = 240.f);
+/** @brief Compact horizontal status strip; Spacer children absorb free width. */
+WidgetDesc statusBar(std::vector<WidgetDesc> children = {}, std::string id = "");
+/**
+ * @brief Two resizable panes separated by a drag handle.
+ * @param direction Row creates left/right panes; Column creates top/bottom panes.
+ * @param ratio Fraction assigned to the first pane, clamped to [0.1, 0.9].
+ */
+WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc second,
+                     float ratio = 0.25f, std::string id = "",
+                     std::function<void(float)> onResize = {});
 /** @brief Collapsible header containing child widgets. */
 WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children = {},
                             std::string id = "", bool defaultOpen = true);
