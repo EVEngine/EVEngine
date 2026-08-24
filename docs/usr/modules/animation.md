@@ -7,7 +7,7 @@
 1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
 2. **2D 帧动画**：`SpriteSheet` + `SpriteClip` + `SpriteAnim`（sprite sheet / 图集格子）
 3. **Spine（region 子集）**：`.atlas` + skeleton JSON → `SpineAnim.collectDrawItems` 进 2D 队列
-4. **3D 骨骼动画播放**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
+4. **3D 骨骼动画播放与动画图**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、`AnimGraph`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
 5. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
 6. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
 7. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
@@ -137,6 +137,41 @@ sm.update(dt);
 local pose = sm.getPose();
 ```
 
+## 可组合 3D Animation Graph
+
+`AnimGraph` 用稳定整数句柄连接节点，支持共享子图单帧缓存、普通混合、
+additive、逐骨骼 mask 分层、one-shot，以及 1D/2D blend space。现有
+`AnimPlayer` 和 `AnimStateMachine` 保持兼容，适合简单控制器；复杂角色建议使用图。
+
+```squirrel
+local graph = anim.newGraph(sk);
+local idleNode = graph.addClip(idle);
+local walkNode = graph.addClip(walk);
+local runNode = graph.addClip(run);
+
+local locomotion = graph.addBlendSpace1D();
+graph.addBlendSpace1DPoint(locomotion, 0.0, idleNode);
+graph.addBlendSpace1DPoint(locomotion, 2.0, walkNode);
+graph.addBlendSpace1DPoint(locomotion, 6.0, runNode);
+graph.setPosition1D(locomotion, speed);
+
+local fireNode = graph.addClip(fire);
+local fireLayer = graph.addOneShot(locomotion, fireNode, 0.08, 0.12);
+graph.clearBoneMask(fireLayer);
+graph.setBoneMask(fireLayer, sk.findBone("Spine"), 1.0, true);
+graph.setRoot(fireLayer);
+graph.trigger(fireLayer);
+
+// eve_update:
+graph.update(dt);
+local pose = graph.getPose();
+```
+
+`addLayer(base, overlay, weight)` 默认 mask 全为 0，须显式设置参与骨骼；
+`addAdditive(base, delta, weight)` 默认作用于全身。Additive clip 应以 identity
+姿态为参考：位移为差值、旋转为差值四元数、缩放以 1 为基准。
+one-shot 的 shot 输入当前应是 clip 节点，用该 clip 的时长决定结束和淡出。
+
 ## 基本用法（Motion Matching）
 
 ```squirrel
@@ -261,7 +296,7 @@ skin.applyToMesh(gfx, mesh, pose); // mesh 与 skin 需同源（同一 ModelData
 - `SpriteSheet` 定义图集格子；`SpriteClip` 引用格子索引；`SpriteAnim` 推进时间并可 `bindQuad`。
 - `SpineAtlas` + `SpineSkeletonData` 为资源；`SpineSkeleton` 为运行时姿态；`SpineAnim` 采样动画并 `collectDrawItems`。
 - `AnimSkeleton` 定义骨骼层级与 bind pose；`AnimClip` 保存各骨 local TRS 关键帧。
-- `AnimPlayer` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
+- `AnimPlayer` / `AnimGraph` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
 - `AnimTrail`：每帧 `addPoint` / `sampleBone` 后 `update(dt)`，在 `eve_render` 调用 `draw(gfx)`。
 - Motion Matching：先 `MotionDatabase.bake()`，再周期性搜索 + 交叉淡入。
 - `ControlAnim` / `ControlPose`：每帧更新目标后调用各自的 `update(dt)`；积分器字符串为 `secondOrder` | `spring` | `pd`。
@@ -328,12 +363,13 @@ skin.applyToMesh(gfx, mesh, pose); // mesh 与 skin 需同源（同一 ModelData
 - `SpineSkeletonData`：`loadFromJson()`、`loadFromFile()`、`findBone()`、`findSlot()`、`findAnimation()`、`getAnimationDuration()`
 - `SpineSkeleton`：`setSkin()`、`setToSetupPose()`、`updateWorldTransform()`、`getBoneWorld*()`、`getSlotAttachmentName()`
 - `SpineAnim`：`setAtlas()`、`setPageTexture()`、`setPageTextureByName()`、`play()`、`setPosition()`、`setScale()`、`setFlipY()`、`apply()`、`update()`、`getDrawSlot*()`
-- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
+- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newGraph()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`getWorld*()`、`getWorldMatrixElement()`
 - `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
 - `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`update()`
+- `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`getPose()`、`update()`
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`

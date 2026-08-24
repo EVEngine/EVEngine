@@ -8,6 +8,7 @@
 #include "animation/AnimImporter.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimPlayer.h"
+#include "animation/AnimGraph.h"
 #include "animation/AnimStateMachine.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
@@ -270,6 +271,54 @@ TEST_CASE("animation.player.playAndCrossFade") {
 
     player->update(0.2f);
     CHECK(player->getClip() == b.get());
+}
+
+TEST_CASE("animation.graph.blendSpaceLayerAndAdditive") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip> idle(makeLocomotionClip("idle", 0.f, 1.f));
+    std::unique_ptr<AnimClip> run(makeLocomotionClip("run", 4.f, 1.f));
+    std::unique_ptr<AnimClip> overlay(new AnimClip("overlay"));
+    overlay->setDuration(1.f);
+    overlay->addPositionKey(1, 0.f, 2.f, 1.f, 0.f);
+
+    AnimGraph graph(sk.get());
+    const int idleNode = graph.addClip(idle.get());
+    const int runNode = graph.addClip(run.get());
+    const int overlayNode = graph.addClip(overlay.get());
+    const int locomotion = graph.addBlendSpace1D();
+    graph.addBlendSpace1DPoint(locomotion, 0.f, idleNode);
+    graph.addBlendSpace1DPoint(locomotion, 4.f, runNode);
+    graph.setPosition1D(locomotion, 2.f);
+    const int layer = graph.addLayer(locomotion, overlayNode, 0.5f);
+    graph.setBoneMask(layer, 1, 1.f, true);
+    graph.setRoot(layer);
+    graph.update(0.25f);
+
+    CHECK(std::fabs(graph.getPose()->getLocalPositionZ(0) - 0.5f) < 0.05f);
+    CHECK(std::fabs(graph.getPose()->getLocalPositionX(1) - 1.f) < 0.05f);
+
+    const int additive = graph.addAdditive(locomotion, overlayNode, 0.25f);
+    graph.setRoot(additive);
+    graph.update(0.f);
+    CHECK(std::fabs(graph.getPose()->getLocalPositionX(1) - 0.5f) < 0.05f);
+}
+
+TEST_CASE("animation.graph.oneShotFadesAndCompletes") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip> idle(makeLocomotionClip("idle", 0.f, 1.f));
+    std::unique_ptr<AnimClip> shot(makeLocomotionClip("shot", 2.f, 0.5f));
+    shot->setLoop(false);
+    AnimGraph graph(sk.get());
+    const int base = graph.addClip(idle.get());
+    const int action = graph.addClip(shot.get());
+    const int oneShot = graph.addOneShot(base, action, 0.1f, 0.1f);
+    graph.setRoot(oneShot);
+    graph.trigger(oneShot);
+    graph.update(0.25f);
+    CHECK(graph.isOneShotActive(oneShot));
+    CHECK(graph.getPose()->getLocalPositionZ(0) > 0.1f);
+    graph.update(0.3f);
+    CHECK(!graph.isOneShotActive(oneShot));
 }
 
 TEST_CASE("animation.stateMachine.floatTransition") {

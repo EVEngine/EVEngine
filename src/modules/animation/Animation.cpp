@@ -3,6 +3,7 @@
 #include "animation/AnimClipRegistry.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPlayer.h"
+#include "animation/AnimGraph.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
@@ -310,6 +311,7 @@ AnimClip *Animation::newClip(const std::string &name) { return new AnimClip(name
 AnimPose *Animation::newPose(int boneCount) { return new AnimPose(boneCount); }
 
 AnimPlayer *Animation::newPlayer(AnimSkeleton *skeleton) { return new AnimPlayer(skeleton); }
+AnimGraph *Animation::newGraph(AnimSkeleton *skeleton) { return new AnimGraph(skeleton); }
 
 AnimStateMachine *Animation::newStateMachine(AnimSkeleton *skeleton) {
     return new AnimStateMachine(skeleton);
@@ -680,6 +682,31 @@ void Animation::expose(ssq::Table &table) {
     player.addFunc("isPaused", &AnimPlayer::isPaused);
     player.addFunc("getPose", &AnimPlayer::getPose);
     player.addFunc("update", &AnimPlayer::update);
+
+    auto graph = table.addClass<AnimGraph>(
+        "AnimGraph", std::function<AnimGraph *()>([]() -> AnimGraph * { return nullptr; }), true);
+    graph.addFunc("addClip", &AnimGraph::addClip);
+    graph.addFunc("addBlend", &AnimGraph::addBlend);
+    graph.addFunc("addAdditive", &AnimGraph::addAdditive);
+    graph.addFunc("addLayer", &AnimGraph::addLayer);
+    graph.addFunc("addOneShot", &AnimGraph::addOneShot);
+    graph.addFunc("addBlendSpace1D", &AnimGraph::addBlendSpace1D);
+    graph.addFunc("addBlendSpace2D", &AnimGraph::addBlendSpace2D);
+    graph.addFunc("addBlendSpace1DPoint", &AnimGraph::addBlendSpace1DPoint);
+    graph.addFunc("addBlendSpace2DPoint", &AnimGraph::addBlendSpace2DPoint);
+    graph.addFunc("setBoneMask", &AnimGraph::setBoneMask);
+    graph.addFunc("clearBoneMask", &AnimGraph::clearBoneMask);
+    graph.addFunc("setRoot", &AnimGraph::setRoot);
+    graph.addFunc("getRoot", &AnimGraph::getRoot);
+    graph.addFunc("getNodeCount", &AnimGraph::getNodeCount);
+    graph.addFunc("setWeight", &AnimGraph::setWeight);
+    graph.addFunc("setPosition1D", &AnimGraph::setPosition1D);
+    graph.addFunc("setPosition2D", &AnimGraph::setPosition2D);
+    graph.addFunc("setSpeed", &AnimGraph::setSpeed);
+    graph.addFunc("trigger", &AnimGraph::trigger);
+    graph.addFunc("isOneShotActive", &AnimGraph::isOneShotActive);
+    graph.addFunc("getPose", &AnimGraph::getPose);
+    graph.addFunc("update", &AnimGraph::update);
 
     auto sm = table.addClass<AnimStateMachine>(
         "AnimStateMachine",
@@ -1064,6 +1091,7 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newClip", &Animation::newClip);
     cls.addFunc("newPose", &Animation::newPose);
     cls.addFunc("newPlayer", &Animation::newPlayer);
+    cls.addFunc("newGraph", &Animation::newGraph);
     cls.addFunc("newStateMachine", &Animation::newStateMachine);
     cls.addFunc("newMotionDatabase", &Animation::newMotionDatabase);
     cls.addFunc("newMotionMatcher", &Animation::newMotionMatcher);

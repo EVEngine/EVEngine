@@ -22,6 +22,7 @@ class AnimSkeleton;
 class AnimClip;
 class AnimPose;
 class AnimPlayer;
+class AnimGraph;
 class AnimStateMachine;
 class MotionDatabase;
 class MotionMatcher;
@@ -105,6 +106,8 @@ public:
     AnimClip         *newClip(const std::string &name = "");
     AnimPose         *newPose(int boneCount = 0);
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
+    /** @brief Create a composable pose graph for the skeleton. */
+    AnimGraph        *newGraph(AnimSkeleton *skeleton);
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);

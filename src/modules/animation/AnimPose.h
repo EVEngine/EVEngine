@@ -20,6 +20,8 @@ public:
 
     AnimPose(const AnimPose &)            = delete;
     AnimPose &operator=(const AnimPose &) = delete;
+    AnimPose(AnimPose &&) noexcept        = default;
+    AnimPose &operator=(AnimPose &&) noexcept = default;
 
     void resize(int boneCount);
     int  getBoneCount() const { return static_cast<int>(locals_.size()); }
