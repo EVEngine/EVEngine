@@ -64,6 +64,10 @@ public:
     bool updateMatrixPalette(const AnimPose* pose) const;
     /** @brief Cached palette element for one skin bone (elementIndex 0..15). */
     float getMatrixPaletteElement(int skinBoneIndex, int elementIndex) const;
+    /** @brief Upload this skin's joint/weight vertex stream to an existing GPU mesh. */
+    bool bindGpuMesh(graphics::Graphics* gfx, graphics::Mesh* mesh);
+    /** @brief Update a bound GPU mesh's matrix palette from a world-computed pose. */
+    bool updateGpuMesh(graphics::Mesh* mesh, const AnimPose* pose) const;
 
     /**
      * @brief Linear-blend skin bind-pose positions into outPosXYZ (vertexCount*3 floats).

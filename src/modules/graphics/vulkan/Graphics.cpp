@@ -105,6 +105,10 @@ Graphics::~Graphics() {
     mesh3dClusteredFrameSlots.clear();
     destroyShadowResources();
     destroyGBufferResources();
+    if (skinPassPipelineLayout) device->destroyPipelineLayout(skinPassPipelineLayout);
+    skinPassPipelineLayout = nullptr;
+    skinPassSetLayoutUnique.reset();
+    skinPassSetLayout = nullptr;
     destroyDecalResources();
     destroySceneColorResources();
     destroyUiColorResources();

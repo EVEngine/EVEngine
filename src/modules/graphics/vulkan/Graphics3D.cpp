@@ -514,6 +514,56 @@ void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = up
 
 void Graphics::setMesh3DShadowReceive(bool receive) { mesh3dShadowReceive = receive; }
 
+vk::DescriptorSet Graphics::skinPassSetFor(GpuTexture *albedo, Mesh3dFrameSlots &fslots) {
+    auto it = fslots.skinSets.find(albedo);
+    if (it != fslots.skinSets.end()) return it->second;
+    vk::DescriptorSetAllocateInfo alloc{};
+    alloc.descriptorPool = descriptorPool;
+    alloc.descriptorSetCount = 1;
+    alloc.pSetLayouts = &skinPassSetLayout;
+    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
+    vkb::DescriptorSetUpdater updater(1, 1, 0);
+    updater.beginDescriptorSet(unbound)
+        .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
+        .buffer(fslots.uboRing.buffer, 0, sizeof(SkinPassUBO))
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(albedo->sampler, albedo->imageView()))
+        .update(device.instance);
+    vkb::BoundSet bound = std::move(unbound).publish();
+    auto [inserted, ignored] = fslots.skinSets.emplace(albedo, bound);
+    return inserted->second;
+}
+
+bool Graphics::prepareSkinPass(Mesh *mesh, Texture *albedo, const glm::mat4 &mvp,
+                               const glm::mat4 &model, const glm::vec4 &clip,
+                               vk::DescriptorSet &set, uint32_t &uboOffset) {
+    if (!mesh || !mesh->hasGpuSkinning()) return false;
+    auto &fslots = currentMesh3dFrameSlots();
+    if (fslots.drawIndex >= fslots.capacity) {
+        std::fprintf(stderr, "[vulkan] skin pass UBO ring exhausted (%zu draws); draw skipped\n",
+                     fslots.capacity);
+        return false;
+    }
+    SkinPassUBO ubo;
+    ubo.mvp = mvp;
+    ubo.model = model;
+    ubo.clip = clip;
+    const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
+    ubo.skinInfo.x = static_cast<float>(paletteCount);
+    const auto &palette = mesh->skinPalette();
+    for (int i = 0; i < paletteCount; ++i)
+        std::memcpy(&ubo.skinBones[i], palette.data() + static_cast<size_t>(i) * 16u,
+                    sizeof(glm::mat4));
+    const size_t slot = fslots.drawIndex++;
+    ensureMesh3dStrides();
+    uboOffset = uint32_t(slot) * mesh3dUboStride;
+    updateRingLocal(fslots.uboRing, uboOffset, &ubo, sizeof(ubo));
+    Texture *texture = albedo ? albedo : whiteTexture;
+    if (!texture || !texture->gpuHandle) return false;
+    set = skinPassSetFor(static_cast<GpuTexture *>(texture->gpuHandle), fslots);
+    return bool(set);
+}
+
 void Graphics::beginShadowPass(int cascadeIndex) {
     ASSERT(initialized);
     if (!shadowPipeline) createShadowResources();
@@ -527,7 +577,12 @@ void Graphics::beginShadowPass(int cascadeIndex) {
 void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) {
     if (shadowPassCascade < 0) throw Exception("drawMeshShadow: call beginShadowPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshShadow: null mesh");
-    shadowPassDraws.push_back(ShadowDraw{mesh, lightMVP});
+    ShadowDraw d;
+    d.mesh = mesh;
+    d.mvp = lightMVP;
+    prepareSkinPass(mesh, nullptr, lightMVP, glm::mat4(1.f), glm::vec4(0.f), d.skinSet,
+                    d.skinUboOffset);
+    shadowPassDraws.push_back(d);
 }
 
 void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo) {
@@ -538,6 +593,8 @@ void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Textur
     d.mvp = lightMVP;
     d.albedo = albedo;
     d.alphaTest = true;
+    prepareSkinPass(mesh, albedo, lightMVP, glm::mat4(1.f), glm::vec4(0.f), d.skinSet,
+                    d.skinUboOffset);
     shadowPassDraws.push_back(d);
 }
 
@@ -585,6 +642,7 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     };
     const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16) | (255u << 24);
     d.push.clip = glm::vec4(nearZ, farZ, glm::uintBitsToFloat(packedTint), 0.f);
+    prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
     gbufferPassDraws.push_back(d);
 }
 
@@ -606,6 +664,7 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     };
     const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16) | (255u << 24);
     d.push.clip = glm::vec4(nearZ, farZ, glm::uintBitsToFloat(packedTint), 0.f);
+    prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
     gbufferPassDraws.push_back(d);
 }
 
@@ -1080,18 +1139,22 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
     const vk::Extent2D extent = ctx.extent();
     const uint32_t size = extent.width ? extent.width : uint32_t(ShadowConfig::kMapSize);
     setViewportAndScissor(cb, size, size);
-    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
-    bool alphaBound = false;
+    vk::Pipeline boundPipeline{};
     for (const auto &d : shadowCascadeDraws[cascade]) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
         const bool wantAlpha = d.alphaTest && shadowAlphaPipeline;
-        if (wantAlpha != alphaBound) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                            wantAlpha ? shadowAlphaPipeline : shadowPipeline);
-            alphaBound = wantAlpha;
+        const bool skinned = d.skinSet && d.mesh->hasGpuSkinning();
+        vk::Pipeline wanted = skinned ? (wantAlpha ? shadowSkinAlphaPipeline : shadowSkinPipeline)
+                                     : (wantAlpha ? shadowAlphaPipeline : shadowPipeline);
+        if (wanted != boundPipeline) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, wanted);
+            boundPipeline = wanted;
         }
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-        if (wantAlpha) {
+        if (skinned) {
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, skinPassPipelineLayout, 0, 1,
+                                  &d.skinSet, 1, &d.skinUboOffset);
+        } else if (wantAlpha) {
             Texture *alb = d.albedo ? d.albedo : whiteTexture;
             if (alb && alb->gpuHandle && texSetLayout) {
                 auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
@@ -1100,8 +1163,9 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
                                       gpuTex->descriptorSet.ptr(), 0, nullptr);
             }
         }
-        cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
-                         vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &d.mvp);
+        if (!skinned)
+            cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
+                             vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &d.mvp);
         drawIndexedMesh(cb, *gpuMesh);
     }
 }
@@ -1116,26 +1180,31 @@ void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
     const uint32_t w = extent.width ? extent.width : uint32_t(gbufferWidth);
     const uint32_t h = extent.height ? extent.height : uint32_t(gbufferHeight);
     setViewportAndScissor(cb, w, h);
-    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
-    bool alphaBound = false;
+    vk::Pipeline boundPipeline{};
     for (const auto &d : gbufferPassDraws) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
         const bool wantAlpha = d.alphaTest && gbufferAlphaPipeline;
-        if (wantAlpha != alphaBound) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                            wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
-            alphaBound = wantAlpha;
+        const bool skinned = d.skinSet && d.mesh->hasGpuSkinning();
+        vk::Pipeline wanted = skinned ? (wantAlpha ? gbufferSkinAlphaPipeline : gbufferSkinPipeline)
+                                     : (wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
+        if (wanted != boundPipeline) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, wanted);
+            boundPipeline = wanted;
         }
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         Texture *alb = d.albedo ? d.albedo : whiteTexture;
-        if (alb && alb->gpuHandle && texSetLayout) {
+        if (skinned) {
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, skinPassPipelineLayout, 0, 1,
+                                  &d.skinSet, 1, &d.skinUboOffset);
+        } else if (alb && alb->gpuHandle && texSetLayout) {
             auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout, 0, 1,
                                   gpuTex->descriptorSet.ptr(), 0, nullptr);
         }
-        cb.pushConstants(gbufferPipelineLayout,
-                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
-                         sizeof(GBufferPush), &d.push);
+        if (!skinned)
+            cb.pushConstants(gbufferPipelineLayout,
+                             vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                             0, sizeof(GBufferPush), &d.push);
         drawIndexedMesh(cb, *gpuMesh);
     }
 }

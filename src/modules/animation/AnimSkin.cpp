@@ -221,6 +221,29 @@ float AnimSkin::getMatrixPaletteElement(int skinBoneIndex, int elementIndex) con
     return skinMatrices_[static_cast<size_t>(skinBoneIndex)].m[elementIndex];
 }
 
+bool AnimSkin::bindGpuMesh(graphics::Graphics* gfx, graphics::Mesh* mesh) {
+    if (!gfx || !mesh || mesh->getVertexCount() != vertexCount_) return false;
+    if (getBoneCount() > graphics::Mesh::kMaxSkinBones) return false;
+    std::vector<uint16_t> joints(static_cast<size_t>(vertexCount_) * kMaxInfluences, 0);
+    std::vector<float>    weights(static_cast<size_t>(vertexCount_) * kMaxInfluences, 0.f);
+    for (int v = 0; v < vertexCount_; ++v) {
+        for (int i = 0; i < kMaxInfluences; ++i) {
+            const size_t idx = static_cast<size_t>(v) * kMaxInfluences + i;
+            const auto&  inf = influences_[idx];
+            if (inf.bone >= 0) {
+                joints[idx] = static_cast<uint16_t>(inf.bone);
+                weights[idx] = inf.weight;
+            }
+        }
+    }
+    return gfx->setMeshSkinningData(mesh, joints.data(), weights.data(), vertexCount_);
+}
+
+bool AnimSkin::updateGpuMesh(graphics::Mesh* mesh, const AnimPose* pose) const {
+    if (!mesh || !mesh->hasGpuSkinning() || !updateMatrixPalette(pose) || skinMatrices_.empty()) return false;
+    return mesh->setSkinPalette(skinMatrices_.front().m, static_cast<int>(skinMatrices_.size()));
+}
+
 float AnimSkin::getBindPositionX(int vertexIndex) const {
     requireVertex(vertexIndex);
     return bindPos_[static_cast<size_t>(vertexIndex) * 3u + 0];

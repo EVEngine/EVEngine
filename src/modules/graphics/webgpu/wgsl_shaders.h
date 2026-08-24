@@ -42,6 +42,8 @@ struct VSIn {
     @location(0) pos: vec2f,
     @location(1) color: vec4f,
     @location(2) uv: vec2f,
+    @location(3) joints: vec4u,
+    @location(4) weights: vec4f,
 };
 struct VSOut {
     @builtin(position) pos: vec4f,
@@ -139,6 +141,8 @@ struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
     @location(2) uv: vec2f,
+    @location(3) joints: vec4u,
+    @location(4) weights: vec4f,
 };
 struct Light3D {
     posRadius: vec4f,
@@ -159,6 +163,8 @@ struct Frame {
     clipInfo: vec4f,
     cloud: vec4f,
     cloudWind: vec4f,
+    skinInfo: vec4f,
+    skinBones: array<mat4x4f, 128>,
 };
 
 struct VSOut {
@@ -186,13 +192,23 @@ fn inverse3x3(m: mat3x3f) -> mat3x3f {
 @vertex
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
-    out.pos = ubo.mvp * vec4f(in.pos, 1.0);
+    var localPos = vec4f(in.pos, 1.0);
+    var localNormal = in.normal;
+    if (ubo.skinInfo.x > 0.5) {
+        let skin = in.weights.x * ubo.skinBones[in.joints.x]
+                 + in.weights.y * ubo.skinBones[in.joints.y]
+                 + in.weights.z * ubo.skinBones[in.joints.z]
+                 + in.weights.w * ubo.skinBones[in.joints.w];
+        localPos = skin * localPos;
+        localNormal = mat3x3f(skin[0].xyz, skin[1].xyz, skin[2].xyz) * localNormal;
+    }
+    out.pos = ubo.mvp * localPos;
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     out.pos.y = -out.pos.y;
-    let world = ubo.model * vec4f(in.pos, 1.0);
+    let world = ubo.model * localPos;
     out.vWorldPos = world.xyz;
     out.vViewPos = (ubo.view * world).xyz;
-    let nrm = transpose(inverse3x3(mat3x3f(ubo.model[0].xyz, ubo.model[1].xyz, ubo.model[2].xyz))) * in.normal;
+    let nrm = transpose(inverse3x3(mat3x3f(ubo.model[0].xyz, ubo.model[1].xyz, ubo.model[2].xyz))) * localNormal;
     out.vNormal = normalize(nrm);
     out.vUV = in.uv;
     out.vTint = ubo.tint;
@@ -718,14 +734,28 @@ struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
     @location(2) uv: vec2f,
+    @location(3) joints: vec4u,
+    @location(4) weights: vec4f,
 };
 struct Push {
     mvp: mat4x4f,
+    model: mat4x4f,
+    clip: vec4f,
+    skinInfo: vec4f,
+    skinBones: array<mat4x4f, 128>,
 };
 @group(0) @binding(0) var<uniform> pc: Push;
 @vertex
 fn vs_main(in: VSIn) -> @builtin(position) vec4f {
-    let clipPos = pc.mvp * vec4f(in.pos, 1.0);
+    var localPos = vec4f(in.pos, 1.0);
+    if (pc.skinInfo.x > 0.5) {
+        let skin = in.weights.x * pc.skinBones[in.joints.x]
+                 + in.weights.y * pc.skinBones[in.joints.y]
+                 + in.weights.z * pc.skinBones[in.joints.z]
+                 + in.weights.w * pc.skinBones[in.joints.w];
+        localPos = skin * localPos;
+    }
+    let clipPos = pc.mvp * localPos;
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     return vec4f(clipPos.x, -clipPos.y, clipPos.z, clipPos.w);
 }
@@ -737,13 +767,15 @@ struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
     @location(2) uv: vec2f,
+    @location(3) joints: vec4u,
+    @location(4) weights: vec4f,
 };
 struct Push {
     mvp: mat4x4f,
-    modelR0: vec4f,
-    modelR1: vec4f,
-    modelR2: vec4f,
+    model: mat4x4f,
     clip: vec4f,
+    skinInfo: vec4f,
+    skinBones: array<mat4x4f, 128>,
 };
 struct VSOut {
     @builtin(position) pos: vec4f,
@@ -755,10 +787,20 @@ struct VSOut {
 @vertex
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
-    out.pos = pc.mvp * vec4f(in.pos, 1.0);
+    var localPos = vec4f(in.pos, 1.0);
+    var localNormal = in.normal;
+    if (pc.skinInfo.x > 0.5) {
+        let skin = in.weights.x * pc.skinBones[in.joints.x]
+                 + in.weights.y * pc.skinBones[in.joints.y]
+                 + in.weights.z * pc.skinBones[in.joints.z]
+                 + in.weights.w * pc.skinBones[in.joints.w];
+        localPos = skin * localPos;
+        localNormal = mat3x3f(skin[0].xyz, skin[1].xyz, skin[2].xyz) * localNormal;
+    }
+    out.pos = pc.mvp * localPos;
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     out.pos.y = -out.pos.y;
-    let nrm = mat3x3f(pc.modelR0.xyz, pc.modelR1.xyz, pc.modelR2.xyz) * in.normal;
+    let nrm = mat3x3f(pc.model[0].xyz, pc.model[1].xyz, pc.model[2].xyz) * localNormal;
     out.vNormal = normalize(nrm);
     out.vNdcZ = out.pos.z;
     out.vUV = in.uv;
@@ -774,10 +816,10 @@ struct FSIn {
 };
 struct Push {
     mvp: mat4x4f,
-    modelR0: vec4f,
-    modelR1: vec4f,
-    modelR2: vec4f,
+    model: mat4x4f,
     clip: vec4f,
+    skinInfo: vec4f,
+    skinBones: array<mat4x4f, 128>,
 };
 struct GBufOut {
     @location(0) normal: vec4f,

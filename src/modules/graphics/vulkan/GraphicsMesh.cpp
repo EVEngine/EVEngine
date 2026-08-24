@@ -312,6 +312,31 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
     return true;
 }
 
+bool Graphics::setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
+                                   int vertexCount) {
+    if (!initialized || !mesh || !mesh->gpuHandle || !joints4 || !weights4) return false;
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    if (vertexCount <= 0 || uint32_t(vertexCount) != gpu->vertexCount) return false;
+
+    std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
+    auto &source = meshDrawVertices(*gpu);
+    void *mapped = source.map();
+    if (!mapped) return false;
+    std::memcpy(verts.data(), mapped, verts.size() * sizeof(MeshVertex));
+    source.unmap();
+    for (int i = 0; i < vertexCount; ++i) {
+        const size_t base = static_cast<size_t>(i) * 4u;
+        verts[static_cast<size_t>(i)].joints =
+            glm::u16vec4(joints4[base], joints4[base + 1], joints4[base + 2], joints4[base + 3]);
+        verts[static_cast<size_t>(i)].weights =
+            glm::vec4(weights4[base], weights4[base + 1], weights4[base + 2], weights4[base + 3]);
+    }
+    ensureDynamicRing(*gpu);
+    writeDynamicMesh(*gpu, verts, getDevice(), frameToken(), nullptr, 0);
+    mesh->markGpuSkinned(true);
+    return true;
+}
+
 bool Graphics::releaseMesh(Mesh *mesh) {
     if (!mesh || !mesh->gpuHandle) return false;
 
@@ -599,7 +624,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!gpuEnv->isCube) throw Exception("drawMesh: env texture is not a cubemap");
     const float envIntensity = (mesh3dEnvTexture && mesh3dEnvIntensity > 0.f) ? mesh3dEnvIntensity : 0.f;
 
-    const bool useClustered = mesh3dClusteredActive && !shader && mesh3dClusteredPipeline;
+    const bool useClustered = mesh3dClusteredActive && !shader && !mesh->hasGpuSkinning() && mesh3dClusteredPipeline;
     auto &cb = currentPresentCb();
 
     auto makeShadowUbo = [&]() {
@@ -669,6 +694,14 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
     ubo.parallax =
         glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
+    if (mesh->hasGpuSkinning()) {
+        const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
+        ubo.skinInfo.x         = static_cast<float>(paletteCount);
+        const auto &palette    = mesh->skinPalette();
+        for (int i = 0; i < paletteCount; ++i) {
+            std::memcpy(&ubo.skinBones[i], palette.data() + static_cast<size_t>(i) * 16u, sizeof(glm::mat4));
+        }
+    }
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     int dirI = -1;
     for (int i = 0; i < lightCount; ++i) {
