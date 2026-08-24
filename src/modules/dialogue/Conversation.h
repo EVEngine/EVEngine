@@ -47,6 +47,22 @@ public:
     using AssetResolver = std::function<const ConversationAsset*(const std::string&)>;
     using ExpressionEvaluator =
         std::function<StateValue(const std::string&, const StateValue&, const StateValue&)>;
+    struct CommandResult {
+        enum class Status { Completed, Blocked, Failed };
+        Status status = Status::Completed;
+        StateValue value = StateValue::null();
+        std::string error;
+    };
+    struct Event {
+        enum class Kind { Started, NodeEntered, Line, Choice, Command, Ended, Failed };
+        Kind kind = Kind::NodeEntered;
+        std::string assetId;
+        std::string nodeId;
+        std::string name;
+    };
+    using CommandHandler =
+        std::function<CommandResult(const StateValue&, const StateValue&, const StateValue&)>;
+    using EventSink = std::function<void(const Event&)>;
 
     /** @brief Start an asset with serializable parameter bindings. */
     bool start(const ConversationAsset* asset, StateValue bindings, std::string* error = nullptr);
@@ -56,6 +72,8 @@ public:
     bool advance(std::string* error = nullptr);
     /** @brief Select a route on the current choice node. */
     bool select(const std::string& routeId, std::string* error = nullptr);
+    /** @brief Resume an asynchronous command node with its serialized result. */
+    bool resumeCommand(StateValue result, std::string* error = nullptr);
     /** @brief Stop and clear the active instance. */
     void stop();
     /** @brief Capture the complete cursor, locals, bindings, and call stack. */
@@ -67,6 +85,10 @@ public:
     void setExpressionEvaluator(ExpressionEvaluator evaluator) {
         expressionEvaluator_ = std::move(evaluator);
     }
+    /** @brief Register a cross-module command without introducing module includes. */
+    void registerCommand(const std::string& name, CommandHandler handler);
+    void unregisterCommand(const std::string& name);
+    void setEventSink(EventSink sink) { eventSink_ = std::move(sink); }
 
     bool isActive() const { return asset_ != nullptr; }
     bool isBlocked() const { return blocked_; }
@@ -88,6 +110,8 @@ private:
     bool fail(std::string* error, const std::string& message) const;
     bool enter(const std::string& nodeId, std::string* error);
     std::string evaluateRoute(const ConversationAsset::Node& node, std::string* error) const;
+    void emit(Event::Kind kind, const ConversationAsset::Node* node = nullptr,
+              const std::string& name = {}) const;
 
     const ConversationAsset* asset_ = nullptr;
     std::string nodeId_;
@@ -97,6 +121,9 @@ private:
     std::vector<Frame> callStack_;
     AssetResolver assetResolver_;
     ExpressionEvaluator expressionEvaluator_;
+    std::unordered_map<std::string, CommandHandler> commandHandlers_;
+    EventSink eventSink_;
+    bool waitingCommand_ = false;
 };
 
 }  // namespace eve::dialogue

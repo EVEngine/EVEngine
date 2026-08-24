@@ -117,3 +117,67 @@ TEST_CASE("dialogueConversation.callStackStateRoundtrip") {
     CHECK(restored.advance(&error));
     CHECK(restored.currentNodeId() == "after");
 }
+
+TEST_CASE("dialogueConversation.commandsAndEvents") {
+    ConversationAsset asset;
+    asset.id = "scene.command";
+    asset.entry = "calculate";
+    ConversationAsset::Node command;
+    command.id = "calculate";
+    command.kind = ConversationAsset::Node::Kind::Command;
+    command.target = "economy.quote";
+    command.expression = "quote";
+    command.next = "line";
+    ConversationAsset::Node line;
+    line.id = "line";
+    line.kind = ConversationAsset::Node::Kind::Line;
+    line.next = "end";
+    ConversationAsset::Node end;
+    end.id = "end";
+    end.kind = ConversationAsset::Node::Kind::End;
+    asset.nodes = {command, line, end};
+
+    std::vector<ConversationRunner::Event::Kind> events;
+    ConversationRunner runner;
+    runner.setEventSink(
+        [&](const ConversationRunner::Event& event) { events.push_back(event.kind); });
+    runner.registerCommand(
+        "economy.quote", [](const StateValue&, const StateValue&, const StateValue&) {
+            ConversationRunner::CommandResult result;
+            result.value = StateValue::integer(125);
+            return result;
+        });
+    std::string error;
+    CHECK(runner.start(&asset, StateValue::object(), &error));
+    CHECK(runner.currentNodeId() == "line");
+    CHECK(runner.locals().find("quote")->asInt() == 125);
+    CHECK(events.size() >= 5);
+}
+
+TEST_CASE("dialogueConversation.asyncCommand") {
+    ConversationAsset asset;
+    asset.id = "scene.wait-command";
+    asset.entry = "animate";
+    ConversationAsset::Node command;
+    command.id = "animate";
+    command.kind = ConversationAsset::Node::Kind::Command;
+    command.target = "animation.play";
+    command.expression = "animationResult";
+    command.next = "end";
+    ConversationAsset::Node end;
+    end.id = "end";
+    end.kind = ConversationAsset::Node::Kind::End;
+    asset.nodes = {command, end};
+    ConversationRunner runner;
+    runner.registerCommand(
+        "animation.play", [](const StateValue&, const StateValue&, const StateValue&) {
+            ConversationRunner::CommandResult result;
+            result.status = ConversationRunner::CommandResult::Status::Blocked;
+            return result;
+        });
+    std::string error;
+    CHECK(runner.start(&asset, StateValue::object(), &error));
+    CHECK(runner.isBlocked());
+    CHECK(runner.resumeCommand(StateValue::string("finished"), &error));
+    CHECK(!runner.isActive());
+}

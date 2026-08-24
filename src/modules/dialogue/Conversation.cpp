@@ -50,6 +50,8 @@ bool ConversationRunner::start(const ConversationAsset* asset, StateValue bindin
     locals_ = StateValue::object();
     callStack_.clear();
     blocked_ = false;
+    waitingCommand_ = false;
+    emit(Event::Kind::Started);
     return enter(asset_->entry, error) && runUntilBlocked(error);
 }
 
@@ -60,6 +62,21 @@ void ConversationRunner::stop() {
     locals_ = StateValue::object();
     blocked_ = false;
     callStack_.clear();
+    waitingCommand_ = false;
+}
+
+void ConversationRunner::registerCommand(const std::string& name, CommandHandler handler) {
+    if (!name.empty() && handler) commandHandlers_[name] = std::move(handler);
+}
+
+void ConversationRunner::unregisterCommand(const std::string& name) {
+    commandHandlers_.erase(name);
+}
+
+void ConversationRunner::emit(Event::Kind kind, const ConversationAsset::Node* node,
+                              const std::string& name) const {
+    if (!eventSink_) return;
+    eventSink_({kind, asset_ ? asset_->id : std::string{}, node ? node->id : nodeId_, name});
 }
 
 const ConversationAsset::Node* ConversationRunner::currentNode() const {
@@ -76,6 +93,8 @@ bool ConversationRunner::enter(const std::string& nodeId, std::string* error) {
         return fail(error, "conversation '" + asset_->id + "': missing node '" + nodeId + "'");
     nodeId_ = nodeId;
     blocked_ = false;
+    waitingCommand_ = false;
+    emit(Event::Kind::NodeEntered, asset_->findNode(nodeId));
     return true;
 }
 
@@ -104,7 +123,13 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
         if (!node) return fail(error, "conversation: invalid execution cursor");
         switch (node->kind) {
             case ConversationAsset::Node::Kind::Line:
+                emit(Event::Kind::Line, node);
+                blocked_ = true;
+                return true;
             case ConversationAsset::Node::Kind::Choice:
+                emit(Event::Kind::Choice, node);
+                blocked_ = true;
+                return true;
             case ConversationAsset::Node::Kind::Wait:
                 blocked_ = true;
                 return true;
@@ -116,6 +141,7 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
             }
             case ConversationAsset::Node::Kind::End:
                 if (callStack_.empty()) {
+                    emit(Event::Kind::Ended, node);
                     stop();
                     return true;
                 } else {
@@ -149,8 +175,26 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
                 if (!enter(target->entry, error)) return false;
                 break;
             }
-            case ConversationAsset::Node::Kind::Command:
-                return fail(error, "conversation: command nodes require a command handler");
+            case ConversationAsset::Node::Kind::Command: {
+                const auto it = commandHandlers_.find(node->target);
+                if (it == commandHandlers_.end())
+                    return fail(error, "conversation: command '" + node->target +
+                                           "' is not registered");
+                emit(Event::Kind::Command, node, node->target);
+                CommandResult result = it->second(node->arguments, bindings_, locals_);
+                if (result.status == CommandResult::Status::Failed)
+                    return fail(error, result.error.empty() ? "conversation: command failed"
+                                                            : result.error);
+                if (result.status == CommandResult::Status::Blocked) {
+                    blocked_ = true;
+                    waitingCommand_ = true;
+                    return true;
+                }
+                if (!node->expression.empty())
+                    locals_.set(node->expression, std::move(result.value));
+                if (!enter(node->next, error)) return false;
+                break;
+            }
         }
     }
     return fail(error, "conversation: execution budget exceeded");
@@ -184,6 +228,7 @@ bool ConversationRunner::captureState(StateValue& out) const {
     if (!asset_) return true;
     out.set("current", captureFrame(asset_, nodeId_, bindings_, locals_));
     out.set("blocked", StateValue::boolean(blocked_));
+    out.set("waitingCommand", StateValue::boolean(waitingCommand_));
     StateValue stack = StateValue::array();
     for (const auto& frame : callStack_)
         stack.pushBack(captureFrame(frame.asset, frame.returnNode, frame.bindings, frame.locals));
@@ -241,13 +286,26 @@ bool ConversationRunner::restoreState(const StateValue& in, std::string* error) 
         return fail(error, "conversation: saved node '" + nodeId + "' is missing");
     const StateValue* blocked = in.find("blocked");
     if (!blocked || !blocked->isBool()) return fail(error, "conversation: state is missing blocked");
+    const StateValue* waitingCommand = in.find("waitingCommand");
+    if (waitingCommand && !waitingCommand->isBool())
+        return fail(error, "conversation: waitingCommand is malformed");
     asset_ = restoredAsset;
     nodeId_ = std::move(nodeId);
     bindings_ = *savedBindings;
     locals_ = *savedLocals;
     blocked_ = blocked->asBool();
+    waitingCommand_ = waitingCommand && waitingCommand->asBool();
     callStack_ = std::move(restoredStack);
     return true;
+}
+
+bool ConversationRunner::resumeCommand(StateValue result, std::string* error) {
+    const auto* node = currentNode();
+    if (!node || !blocked_ || !waitingCommand_ ||
+        node->kind != ConversationAsset::Node::Kind::Command)
+        return fail(error, "conversation: runner is not waiting for a command");
+    if (!node->expression.empty()) locals_.set(node->expression, std::move(result));
+    return enter(node->next, error) && runUntilBlocked(error);
 }
 
 bool ConversationRunner::advance(std::string* error) {
