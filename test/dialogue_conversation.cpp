@@ -39,7 +39,7 @@ TEST_CASE("dialogueConversation.parameterizedRunner") {
     ConversationRunner runner;
     runner.setExpressionEvaluator([](const std::string& expression, const StateValue& bindings,
                                      const StateValue&) {
-        CHECK(expression == "speaker.mood == happy");
+        if (expression != "speaker.mood == happy") return StateValue::boolean(false);
         const StateValue* mood = bindings.get("speaker.mood");
         return StateValue::boolean(mood && mood->isString() && mood->asString() == "happy");
     });

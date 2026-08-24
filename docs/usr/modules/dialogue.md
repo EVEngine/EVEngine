@@ -79,6 +79,23 @@ generator 的 yield 值。完整可运行示例见
 调用返回对象的 `mount()`、每帧 `update(dt)` 和 `render()` 即可。项目可以完全替换
 这个脚本视图，而继续复用 `DialogueUX` 的历史、已读和自动推进状态。
 
+### `DialogueVoice`（语音与音频口型）
+
+根表 `dialogueVoice` 管理按 `lineId + locale` 定位的语音。项目先用
+`sound.newSoundDataFromFile` 与 `audio.newSource` 创建 Source，再调用
+`bindSource(lineId, locale, source)`；无音频设备的测试也可用
+`registerClip(lineId, locale, duration, envelopeCsv)` 注册时长和振幅轨。
+
+- 资产：`registerClip`、`bindSource`、`hasClip`、`clear`。
+- 播放：`play(lineId, locale)`、`stop`、`update(dt)`、`isPlaying`、
+  `getTime/getDuration/getCurrentLineId`。
+- 自动推进：`shouldAutoAdvance()` 在语音达到结尾后返回 true。
+- 口型：`getAmplitude()` 读取预计算振幅包络，采样率由
+  `setEnvelopeRate/getEnvelopeRate` 控制。可把返回值传给 Avatar 参数。
+
+locale 精确匹配失败时回退到空 locale 的默认语音。Source 的生命周期仍由游戏持有，
+切换台词或销毁 `DialogueVoice` 时会停止当前 Source。
+
 ## 生命周期
 
 - 角色注册幂等（重复注册覆盖显示名）；`bindAvatar` 接受 `avatar.newImageAvatar()`
