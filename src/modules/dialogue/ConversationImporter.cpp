@@ -56,6 +56,14 @@ bool parseLink(const std::string& text, std::string& label, std::string& target)
         split = body.find('|');
         width = 1;
     }
+    if (split == std::string::npos) {
+        split = body.find("<-");
+        if (split != std::string::npos) {
+            target = trim(body.substr(0, split));
+            label  = trim(body.substr(split + 2));
+            return !label.empty() && !target.empty();
+        }
+    }
     if (split == std::string::npos)
         label = target = trim(body);
     else {
@@ -63,6 +71,26 @@ bool parseLink(const std::string& text, std::string& label, std::string& target)
         target = trim(body.substr(split + width));
     }
     return !label.empty() && !target.empty();
+}
+
+std::string commandArgument(const std::string& text, const std::string& command) {
+    const std::string prefix = "<<" + command;
+    if (text.rfind(prefix, 0) != 0 || text.size() < prefix.size() + 2 || text.substr(text.size() - 2) != ">>")
+        return {};
+    return trim(text.substr(prefix.size(), text.size() - prefix.size() - 2));
+}
+
+void consumeLineTags(std::string& text, ConversationAsset::Node& node) {
+    size_t tag = text.find(" #");
+    while (tag != std::string::npos) {
+        const size_t      end   = text.find(' ', tag + 2);
+        const std::string value = text.substr(tag + 2, end == std::string::npos ? std::string::npos : end - tag - 2);
+        if (value.rfind("line:", 0) == 0) node.i18nKey = value.substr(5);
+        if (value.rfind("voice:", 0) == 0) node.voice = value.substr(6);
+        text.erase(tag, end == std::string::npos ? std::string::npos : end - tag);
+        tag = text.find(" #", tag);
+    }
+    text = trim(text);
 }
 
 void addDiagnostic(std::vector<ConversationDiagnostic>& diagnostics, ConversationDiagnostic::Severity severity,
@@ -97,14 +125,27 @@ bool buildAsset(const std::vector<Passage>& passages, const std::string& path, s
             }
             std::string label;
             std::string target;
-            if (parseLink(text, label, target)) {
+            if (parseLink(text, label, target) || text.rfind("->", 0) == 0) {
                 ConversationAsset::Node node;
                 node.kind = ConversationAsset::Node::Kind::Choice;
                 node.id   = index == 0 ? passage.title : passage.title + "." + std::to_string(index);
                 ++index;
                 while (bodyIndex < passage.body.size()) {
                     const std::string candidate = trim(passage.body[bodyIndex].second);
-                    if (!parseLink(candidate, label, target)) break;
+                    if (!parseLink(candidate, label, target)) {
+                        if (candidate.rfind("->", 0) != 0) break;
+                        label = trim(candidate.substr(2));
+                        target.clear();
+                        if (bodyIndex + 1 < passage.body.size())
+                            target = commandArgument(trim(passage.body[bodyIndex + 1].second), "jump");
+                        if (target.empty()) {
+                            addDiagnostic(diagnostics, ConversationDiagnostic::Severity::Error, path,
+                                          passage.body[bodyIndex].first,
+                                          "Yarn shortcut option requires a following <<jump Target>>");
+                            break;
+                        }
+                        ++bodyIndex;
+                    }
                     node.routes.emplace_back(label, target);
                     ++bodyIndex;
                 }
@@ -114,18 +155,33 @@ bool buildAsset(const std::vector<Passage>& passages, const std::string& path, s
             ConversationAsset::Node node;
             node.id = index == 0 ? passage.title : passage.title + "." + std::to_string(index);
             ++index;
-            if (text.rfind("<<jump ", 0) == 0 && text.size() > 9 && text.substr(text.size() - 2) == ">>") {
+            const std::string jump = commandArgument(text, "jump");
+            const std::string wait = commandArgument(text, "wait");
+            const std::string call = commandArgument(text, "call");
+            const std::string set  = commandArgument(text, "set");
+            if (!jump.empty()) {
                 node.kind = ConversationAsset::Node::Kind::Branch;
-                node.routes.emplace_back("else", trim(text.substr(7, text.size() - 9)));
+                node.routes.emplace_back("else", jump);
+            } else if (text == "<<stop>>") {
+                node.kind = ConversationAsset::Node::Kind::End;
+            } else if (!wait.empty()) {
+                node.kind       = ConversationAsset::Node::Kind::Wait;
+                node.expression = wait;
+            } else if (!call.empty() || !set.empty()) {
+                node.kind       = ConversationAsset::Node::Kind::Command;
+                node.target     = !call.empty() ? "call" : "set";
+                node.expression = !call.empty() ? call : set;
             } else {
-                node.kind          = ConversationAsset::Node::Kind::Line;
-                const size_t colon = text.find(':');
-                if (colon != std::string::npos && colon > 0 && text.find("[[") == std::string::npos) {
-                    node.speaker = trim(text.substr(0, colon));
-                    node.text    = trim(text.substr(colon + 1));
+                node.kind            = ConversationAsset::Node::Kind::Line;
+                std::string lineText = text;
+                consumeLineTags(lineText, node);
+                const size_t colon = lineText.find(':');
+                if (colon != std::string::npos && colon > 0 && lineText.find("[[") == std::string::npos) {
+                    node.speaker = trim(lineText.substr(0, colon));
+                    node.text    = trim(lineText.substr(colon + 1));
                 } else {
-                    node.text = text;
-                    if (text.find("[[") != std::string::npos)
+                    node.text = lineText;
+                    if (lineText.find("[[") != std::string::npos)
                         addDiagnostic(diagnostics, ConversationDiagnostic::Severity::Warning, path, lineNumber,
                                       "inline passage links are imported as text");
                 }
@@ -139,9 +195,13 @@ bool buildAsset(const std::vector<Passage>& passages, const std::string& path, s
             end.kind = ConversationAsset::Node::Kind::End;
             nodes.push_back(std::move(end));
         }
+        const auto isSequential = [](ConversationAsset::Node::Kind kind) {
+            return kind == ConversationAsset::Node::Kind::Line || kind == ConversationAsset::Node::Kind::Command ||
+                   kind == ConversationAsset::Node::Kind::Wait;
+        };
         for (size_t i = 0; i + 1 < nodes.size(); ++i)
-            if (nodes[i].kind == ConversationAsset::Node::Kind::Line) nodes[i].next = nodes[i + 1].id;
-        if (nodes.back().kind == ConversationAsset::Node::Kind::Line) {
+            if (isSequential(nodes[i].kind)) nodes[i].next = nodes[i + 1].id;
+        if (isSequential(nodes.back().kind)) {
             ConversationAsset::Node end;
             end.id            = passage.title + ".end";
             end.kind          = ConversationAsset::Node::Kind::End;
@@ -204,6 +264,11 @@ bool importTweeConversation(const std::string& source, const std::string& path, 
             current.body.emplace_back(number, raw);
     }
     if (!current.title.empty()) passages.push_back(std::move(current));
+    passages.erase(std::remove_if(passages.begin(), passages.end(),
+                                  [](const Passage& passage) {
+                                      return passage.title == "StoryTitle" || passage.title == "StoryData";
+                                  }),
+                   passages.end());
     return buildAsset(passages, path, assets, diagnostics);
 }
 

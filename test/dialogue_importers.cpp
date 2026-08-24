@@ -24,10 +24,12 @@ Guide: Let us begin.
 }
 
 TEST_CASE("dialogueImporter.twineTwee3") {
-    const std::string                   source = R"(:: Start [intro]
+    const std::string                   source = R"(:: StoryData
+{"ifid":"test"}
+:: Start [intro]
 Narrator: Choose a destination.
 [[Market->Market]]
-[[Harbor->Harbor]]
+[[Harbor<-Harbor]]
 :: Market
 Merchant: Fresh fruit!
 :: Harbor
@@ -38,4 +40,28 @@ Sailor: Fair winds.)";
     CHECK(assets.size() == 1);
     CHECK(assets[0].findNode("Start.1")->routes.size() == 2);
     CHECK(assets[0].findNode("Market")->text == "Fresh fruit!");
+}
+
+TEST_CASE("dialogueImporter.yarnCommandsTagsAndShortcutOptions") {
+    const std::string                   source = R"(title: Start
+---
+Guide: Welcome. #line:intro.welcome #voice:intro_001
+<<set $met_guide = true>>
+<<wait 0.25>>
+-> Continue
+    <<jump Next>>
+===
+title: Next
+---
+<<stop>>
+===)";
+    std::vector<ConversationAsset>      assets;
+    std::vector<ConversationDiagnostic> diagnostics;
+    CHECK(importYarnConversation(source, "intro.yarn", assets, diagnostics));
+    CHECK(assets[0].findNode("Start")->i18nKey == "intro.welcome");
+    CHECK(assets[0].findNode("Start")->voice == "intro_001");
+    CHECK(assets[0].findNode("Start.1")->target == "set");
+    CHECK(assets[0].findNode("Start.2")->expression == "0.25");
+    CHECK(assets[0].findNode("Start.3")->routes[0].second == "Next");
+    CHECK(static_cast<int>(assets[0].findNode("Next")->kind) == static_cast<int>(ConversationAsset::Node::Kind::End));
 }
