@@ -253,6 +253,7 @@ void DialogueFlow::clear() {
     sourceHashes_.clear();
     sourceAssets_.clear();
     localization_.clear();
+    migrations_.clear();
     locale_.clear();
     diagnostics_.clear();
     lastError_.clear();
@@ -408,6 +409,24 @@ StateValue DialogueFlow::evaluate(const std::string& expression, const StateValu
 
 bool DialogueFlow::restoreState(const StateValue& in, std::string* error) { return runner_.restoreState(in, error); }
 
+std::string DialogueFlow::captureStateJson() const {
+    StateValue state;
+    if (!runner_.captureState(state)) return {};
+    return conversationStateToJson(state);
+}
+
+bool DialogueFlow::restoreStateJson(const std::string& json) {
+    StateValue state;
+    if (!conversationStateFromJson(json, state, &lastError_)) return false;
+    if (!migrations_.migrate(state, [this](const std::string& id) { return find(id); }, &lastError_)) return false;
+    return runner_.restoreState(state, &lastError_);
+}
+
+bool DialogueFlow::registerMigration(const std::string& assetId, int fromVersion, const std::string& currentAssetId,
+                                     const std::string& nodeMap) {
+    return migrations_.registerMigration(assetId, fromVersion, currentAssetId, nodeMap, &lastError_);
+}
+
 void DialogueFlow::expose(ssq::Table& table) {
     if (DialogueFlow* self = DialogueFlow::create()) self->vm_ = table.getHandle();
     auto cls = table.addClass(name, DialogueFlow::create, false);
@@ -460,6 +479,10 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getRouteId", &DialogueFlow::getRouteId);
     cls.addFunc("setExpressionEvaluator", &DialogueFlow::setExpressionEvaluator);
     cls.addFunc("clearExpressionEvaluator", &DialogueFlow::clearExpressionEvaluator);
+    cls.addFunc("captureStateJson", &DialogueFlow::captureStateJson);
+    cls.addFunc("restoreStateJson", &DialogueFlow::restoreStateJson);
+    cls.addFunc("registerMigration", &DialogueFlow::registerMigration);
+    cls.addFunc("clearMigrations", &DialogueFlow::clearMigrations);
 }
 
 }  // namespace eve::dialogue

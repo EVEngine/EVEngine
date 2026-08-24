@@ -3,6 +3,7 @@
 #include "common/Module.h"
 #include "dialogue/ConversationCompiler.h"
 #include "dialogue/ConversationLocalization.h"
+#include "dialogue/ConversationPersistence.h"
 
 #include <squirrel.h>
 #include <unordered_map>
@@ -66,8 +67,13 @@ public:
     bool setExpressionEvaluator(ssq::Object fn);
     void clearExpressionEvaluator();
 
-    bool captureState(StateValue& out) const { return runner_.captureState(out); }
-    bool restoreState(const StateValue& in, std::string* error = nullptr);
+    bool        captureState(StateValue& out) const { return runner_.captureState(out); }
+    bool        restoreState(const StateValue& in, std::string* error = nullptr);
+    std::string captureStateJson() const;
+    bool        restoreStateJson(const std::string& json);
+    bool        registerMigration(const std::string& assetId, int fromVersion, const std::string& currentAssetId,
+                                  const std::string& nodeMap);
+    void        clearMigrations() { migrations_.clear(); }
 
 private:
     int                      mergeImported(std::vector<ConversationAsset> imported);
@@ -86,6 +92,7 @@ private:
     bool                                                      lastLoadChanged_ = false;
     ConversationLocalizationCatalog                           localization_;
     std::string                                               locale_;
+    ConversationSaveMigrations                                migrations_;
 };
 
 }  // namespace eve::dialogue

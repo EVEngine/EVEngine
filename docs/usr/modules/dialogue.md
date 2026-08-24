@@ -140,6 +140,12 @@ endconversation
 - 复杂条件：`setExpressionEvaluator(fn)` 注册纯计算函数，fn 接收
   `{ expression, bindings, locals }` 并返回 bool 或结构化值；
   `clearExpressionEvaluator` 解除注册。表达式文本不会被编译器限制成简单比较式。
+- 脚本存档：`captureStateJson()` 返回可直接交给项目存档系统的 JSON；
+  `restoreStateJson(json)` 恢复当前节点、参数、局部值和完整的子对话调用栈。
+  资产升级后用 `registerMigration(oldAssetId, oldVersion, currentAssetId, nodeMap)`
+  显式登记迁移，其中 `nodeMap` 是逗号分隔的 `old:new` 对；未改名的稳定节点无需列出。
+  迁移会事务式覆盖当前帧和全部调用帧，任何缺失规则或目标节点都会拒绝恢复；
+  `clearMigrations()` 清除规则。
 
 Runner 在 line、choice、wait 和异步 command 边界暂停；C++ API 的
 `captureState/restoreState` 保存资产版本、node ID、bindings、locals 和子对话调用栈。
