@@ -1,5 +1,6 @@
 #include "graphics/AtmosphereVolume.h"
 #include "graphics/FogVolume.h"
+#include "graphics/VolumeDensityGraph.h"
 
 #include <algorithm>
 #include <cmath>
@@ -91,6 +92,31 @@ void AtmosphereVolume::injectLocalVolume(const FogVolume &volume, const glm::vec
                     f.scattering *= scale;
                     f.emissive *= scale;
                 }
+            }
+        }
+    }
+}
+
+void AtmosphereVolume::injectDensityGraph(const VolumeDensityGraph &graph,
+                                          const glm::vec3 &worldMin,
+                                          const glm::vec3 &worldMax, float extinctionScale,
+                                          const glm::vec3 &albedo, float time) {
+    const glm::vec3 omega = glm::clamp(albedo, glm::vec3(0.f), glm::vec3(1.f));
+    for (int z = 0; z < depth_; ++z) {
+        for (int y = 0; y < height_; ++y) {
+            for (int x = 0; x < width_; ++x) {
+                const glm::vec3 uvw((float(x) + 0.5f) / float(width_),
+                                    (float(y) + 0.5f) / float(height_),
+                                    (float(z) + 0.5f) / float(depth_));
+                const glm::vec3 world = worldMin + (worldMax - worldMin) * uvw;
+                const float extinction = graph.evaluate(world, time) * extinctionScale;
+                FogFroxel &f = at(x, y, z);
+                const float previous = f.extinction;
+                f.extinction = std::max(0.f, previous + extinction);
+                if (extinction >= 0.f)
+                    f.scattering += omega * extinction;
+                else if (previous > 1e-6f)
+                    f.scattering *= f.extinction / previous;
             }
         }
     }

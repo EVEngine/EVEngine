@@ -1,6 +1,7 @@
 #include "graphics/AtmosphereVolume.h"
 #include "graphics/AtmosphereClipmap.h"
 #include "graphics/FogVolume.h"
+#include "graphics/VolumeDensityGraph.h"
 
 #include "zeroerr/unittest.h"
 
@@ -10,6 +11,7 @@ using eve::graphics::AtmosphereVolume;
 using eve::graphics::AtmosphereClipmap;
 using eve::graphics::FogVolume;
 using eve::graphics::VolumetricLight;
+using eve::graphics::VolumeDensityGraph;
 
 TEST_CASE("atmosphereVolume.logarithmicSlicesRoundTrip") {
     AtmosphereVolume volume;
@@ -117,4 +119,22 @@ TEST_CASE("atmosphereClipmap.snapsCentersAndChoosesFinestLevel") {
     CHECK(clipmap.levelForPosition(glm::vec3(12.f, 0.f, 0.f)) == 1);
     CHECK(clipmap.levelForPosition(glm::vec3(28.f, 0.f, 0.f)) == 2);
     CHECK(clipmap.levelForPosition(glm::vec3(80.f, 0.f, 0.f)) == -1);
+}
+
+TEST_CASE("volumeDensityGraph.composesShapeNoiseAndHeight") {
+    VolumeDensityGraph graph;
+    const int sphere = graph.addNode(VolumeDensityGraph::Op::sphere, -1, -1,
+                                     glm::vec4(0.f, 0.f, 0.f, 4.f));
+    const int noise = graph.addNode(VolumeDensityGraph::Op::noise, -1, -1,
+                                    glm::vec4(2.f, 0.2f, 0.f, 7.f));
+    const int shaped = graph.addNode(VolumeDensityGraph::Op::multiply, sphere, noise);
+    graph.setOutput(shaped);
+    CHECK(graph.evaluate(glm::vec3(0.f), 1.f) > 0.f);
+    CHECK(graph.evaluate(glm::vec3(10.f), 1.f) == 0.f);
+
+    AtmosphereVolume volume;
+    volume.resize(8, 8, 8);
+    volume.injectDensityGraph(graph, glm::vec3(-4.f), glm::vec3(4.f), 0.2f,
+                              glm::vec3(0.8f), 1.f);
+    CHECK(volume.at(4, 4, 4).extinction > 0.f);
 }

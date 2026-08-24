@@ -9,6 +9,7 @@
 namespace eve::graphics {
 
 class FogVolume;
+class VolumeDensityGraph;
 
 /** @brief Participating-media coefficients stored in one froxel. */
 struct FogFroxel {
@@ -69,6 +70,11 @@ public:
     /** @brief Voxelize one analytic local volume over the supplied world bounds. */
     void injectLocalVolume(const FogVolume &volume, const glm::vec3 &worldMin,
                            const glm::vec3 &worldMax);
+
+    /** @brief Voxelize a procedural density graph into this volume. */
+    void injectDensityGraph(const VolumeDensityGraph &graph, const glm::vec3 &worldMin,
+                            const glm::vec3 &worldMax, float extinctionScale,
+                            const glm::vec3 &albedo, float time = 0.f);
 
     /**
      * @brief Integrate scattering and transmittance along every view ray.
