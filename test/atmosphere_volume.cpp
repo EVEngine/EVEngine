@@ -1,10 +1,12 @@
 #include "graphics/AtmosphereVolume.h"
+#include "graphics/FogVolume.h"
 
 #include "zeroerr/unittest.h"
 
 #include <cmath>
 
 using eve::graphics::AtmosphereVolume;
+using eve::graphics::FogVolume;
 
 TEST_CASE("atmosphereVolume.logarithmicSlicesRoundTrip") {
     AtmosphereVolume volume;
@@ -64,4 +66,23 @@ TEST_CASE("atmosphereVolume.temporalHistoryRejectsLightingDiscontinuity") {
     history.integrate(glm::vec3(0.f));
     CHECK(current.blendHistory(history, 0.9f, 0.2f) == 4);
     CHECK(current.integratedAt(0, 0, 1).r > 0.f);
+}
+
+TEST_CASE("atmosphereVolume.localVolumesAddAndCarveMedia") {
+    AtmosphereVolume volume;
+    volume.resize(8, 8, 8);
+    volume.injectHeightFog(0.1f, glm::vec3(1.f), 0.f, 0.f, -4.f, 4.f);
+    FogVolume add;
+    add.setShape("sphere");
+    add.setSize(4.f, 4.f, 4.f);
+    add.setExtinction(0.2f);
+    add.setEdgeFalloff(0.f);
+    volume.injectLocalVolume(add, glm::vec3(-4.f), glm::vec3(4.f));
+    CHECK(volume.at(4, 4, 4).extinction > volume.at(0, 0, 0).extinction);
+
+    FogVolume carve = add;
+    carve.setExtinction(-1.f);
+    volume.injectLocalVolume(carve, glm::vec3(-4.f), glm::vec3(4.f));
+    CHECK(volume.at(4, 4, 4).extinction == 0.f);
+    CHECK(volume.at(0, 0, 0).extinction > 0.f);
 }

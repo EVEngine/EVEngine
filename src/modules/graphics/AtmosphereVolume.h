@@ -8,6 +8,8 @@
 
 namespace eve::graphics {
 
+class FogVolume;
+
 /** @brief Participating-media coefficients stored in one froxel. */
 struct FogFroxel {
     glm::vec3 scattering{0.f};
@@ -54,6 +56,10 @@ public:
      */
     void injectHeightFog(float baseExtinction, const glm::vec3 &albedo, float baseHeight,
                          float heightFalloff, float minWorldY, float maxWorldY);
+
+    /** @brief Voxelize one analytic local volume over the supplied world bounds. */
+    void injectLocalVolume(const FogVolume &volume, const glm::vec3 &worldMin,
+                           const glm::vec3 &worldMax);
 
     /**
      * @brief Integrate scattering and transmittance along every view ray.

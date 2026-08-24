@@ -1,4 +1,5 @@
 #include "graphics/AtmosphereVolume.h"
+#include "graphics/FogVolume.h"
 
 #include <algorithm>
 #include <cmath>
@@ -62,6 +63,34 @@ void AtmosphereVolume::injectHeightFog(float baseExtinction, const glm::vec3 &al
                 FogFroxel &f = at(x, y, z);
                 f.extinction += extinction;
                 f.scattering += omega * extinction;
+            }
+        }
+    }
+}
+
+void AtmosphereVolume::injectLocalVolume(const FogVolume &volume, const glm::vec3 &worldMin,
+                                         const glm::vec3 &worldMax) {
+    for (int z = 0; z < depth_; ++z) {
+        for (int y = 0; y < height_; ++y) {
+            for (int x = 0; x < width_; ++x) {
+                const glm::vec3 uvw((float(x) + 0.5f) / float(width_),
+                                    (float(y) + 0.5f) / float(height_),
+                                    (float(z) + 0.5f) / float(depth_));
+                const glm::vec3 world = worldMin + (worldMax - worldMin) * uvw;
+                const float signedExtinction = volume.sampleExtinction(world);
+                if (std::fabs(signedExtinction) <= 1e-8f) continue;
+                FogFroxel &f = at(x, y, z);
+                const float previous = f.extinction;
+                f.extinction = std::max(0.f, previous + signedExtinction);
+                if (signedExtinction > 0.f) {
+                    f.scattering += volume.getAlbedo() * signedExtinction;
+                    f.emissive += volume.getEmissive() * signedExtinction;
+                    f.anisotropy = volume.getAnisotropy();
+                } else if (previous > 1e-6f) {
+                    const float scale = f.extinction / previous;
+                    f.scattering *= scale;
+                    f.emissive *= scale;
+                }
             }
         }
     }
