@@ -5,6 +5,7 @@
 #include "graphics/SparseVolumeTexture.h"
 
 #include "zeroerr/unittest.h"
+#include "zeroerr/assert.h"
 
 #include <cmath>
 

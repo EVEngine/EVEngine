@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <cmath>
 
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
+
 namespace eve::graphics {
 
 void AtmosphereVolume::resize(int width, int height, int depth) {
