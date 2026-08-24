@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <utility>
 #include <vector>
 
 namespace eve::procgen {
@@ -483,10 +484,27 @@ const std::vector<TextureRecipeDef> &builtinTextureDefs() {
 
 void TextureRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
-    registerRecipe("tex.cloud", genCloud);
-    registerRecipe("tex.cloud_shadow", genCloudShadow);
+    auto cloudDescriptor = [](std::string id, std::string name, bool shadow) {
+        RecipeDescriptor schema = RecipeDescriptor::grid(std::move(id), std::move(name), "Atmosphere", 1, 1);
+        schema.params.push_back(ParamDescriptor::floating("worldScale", "World Scale", 96.f, 1.f, 4096.f, 1.f));
+        schema.params.push_back(ParamDescriptor::floating("cloudCoverage", "Coverage", 0.55f, 0.f, 1.f, 0.01f));
+        schema.params.push_back(ParamDescriptor::floating("cloudSoftness", "Softness", 0.12f, 0.001f, 1.f, 0.01f));
+        schema.params.push_back(ParamDescriptor::floating("cloudDetail", "Detail", 0.5f, 0.f, 2.f, 0.01f));
+        schema.params.push_back(ParamDescriptor::floating("windSpeed", "Wind Speed", 4.f, 0.f, 256.f, 0.1f));
+        schema.params.push_back(ParamDescriptor::floating("windAngle", "Wind Angle", 0.f, -6.2832f, 6.2832f, 0.01f));
+        schema.params.push_back(ParamDescriptor::integer("octaves", "Octaves", 4, 1, 12));
+        schema.params.push_back(ParamDescriptor::floating("time", "Time", 0.f, 0.f, 86400.f, 0.1f));
+        schema.params.push_back(ParamDescriptor::floating("extent", "Extent", 96.f, 1.f, 4096.f, 1.f));
+        if (shadow) {
+            schema.params.push_back(ParamDescriptor::floating("cloudAltitude", "Cloud Altitude", 60.f, 0.f, 10000.f, 1.f));
+            schema.params.push_back(ParamDescriptor::floating("cloudShadowStrength", "Shadow Strength", 0.8f, 0.f, 1.f, 0.01f));
+        }
+        return schema;
+    };
+    registerRecipe(cloudDescriptor("tex.cloud", "Cloud", false), genCloud);
+    registerRecipe(cloudDescriptor("tex.cloud_shadow", "Cloud Shadow", true), genCloudShadow);
     for (const TextureRecipeDef &def : builtinTextureDefs()) {
-        registerRecipe(def.id, [def](const Params &params, std::string &error) {
+        registerRecipe(makeTextureRecipeDescriptor(def), [def](const Params &params, std::string &error) {
             return makeFromHeightFn(params, error, def);
         });
     }

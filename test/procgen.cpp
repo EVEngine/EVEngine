@@ -1901,6 +1901,37 @@ TEST_CASE("procgen.texture.builtinRecipes.expanded") {
     }
 }
 
+TEST_CASE("procgen.recipeSchemas.textureAndPbrDefaults") {
+    auto &textures = TextureRecipeRegistry::instance();
+    auto &materials = PbrRecipeRegistry::instance();
+    textures.registerBuiltins();
+    materials.registerPbrBuiltins();
+    for (const std::string &id : textures.list()) {
+        const RecipeDescriptor *schema = textures.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->id, id);
+        CHECK(!schema->displayName.empty());
+        CHECK(schema->find("seed") != nullptr);
+    }
+    for (const std::string &id : materials.list()) {
+        const RecipeDescriptor *schema = materials.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->category, std::string("Material"));
+        CHECK(schema->find("metallic") != nullptr);
+        CHECK(schema->find("normalStrength") != nullptr);
+    }
+    Params defaults;
+    REQUIRE(materials.applyDefaults("pbr.rock", defaults));
+    const RecipeDescriptor *rock = materials.descriptor("pbr.rock");
+    REQUIRE(rock != nullptr);
+    REQUIRE(rock->find("metallic") != nullptr);
+    CHECK_EQ(defaults.getFloat("metallic", -1.f), std::stof(rock->find("metallic")->defaultValue));
+    CHECK(!materials.applyDefaults("pbr.missing", defaults));
+    RecipeDescriptor copied = *rock;
+    copied.displayName = "Project Rock";
+    CHECK_NE(copied.displayName, rock->displayName);
+}
+
 TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     const char *ids[] = {"pbr.soil",   "pbr.rock",   "pbr.marble", "pbr.water", "pbr.wood",

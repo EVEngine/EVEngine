@@ -11,6 +11,9 @@ The example demonstrates:
 - an MVVM-style reflected `WorldEditorVM` with two-way controls;
 - schema-driven procgen controls assembled by the project from reflected parameter
   types, bounds, defaults, advanced flags, and choices (no built-in procgen panel);
+- one reusable recipe-field builder shared by grid algorithms and procedural PBR
+  materials; the project chooses its fields and layout, then uploads generated
+  albedo/normal/height maps into a normal engine `Material`;
 - a live embedded 3D runtime viewport using `procgen`, materials, and a field tool assembled
   from reusable target, kernel, falloff, operation, and transaction components;
 - channelled semantic selection shared by hierarchy, viewport, and inspector;
@@ -37,3 +40,6 @@ Projects can replace either function without changing the C++ editor library.
 The bottom panel deliberately chooses `cave.cellular` in project code, enumerates its
 registered schema, and maps each semantic field kind to ordinary UI widgets. Changing
 the algorithm or the widget mapping produces a different tool without changing the engine.
+The inspector uses that exact field builder with `pbr.rock`, filters the project-relevant
+knobs, and composes `ProcgenRecipeSchema`, `Params`, `ImageData`, GPU textures and
+`Material`; there is no C++ material-editor window.

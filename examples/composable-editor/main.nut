@@ -58,7 +58,13 @@ state <- persist("composableEditor", function() {
         brushTool = null
         procgenAlgorithm = "cave.cellular"
         procgenParams = null
+        procgenSchema = null
         procgenPreview = null
+        materialRecipe = "pbr.rock"
+        materialParams = null
+        materialSchema = null
+        materialResource = null
+        materialSet = null
         camera = null
         panelsMounted = false
         objects = []
@@ -142,6 +148,44 @@ function panelScene() {
     ui.text("", "scene-status");
 }
 
+// The project decides layout and filtering; RecipeDescriptor only supplies
+// portable metadata. This same builder handles algorithms, textures and PBR.
+function renderRecipeFields(schema, params, prefix, horizontal, wanted) {
+    if (horizontal) ui.beginRow(prefix + "schema-row", 8.0);
+    for (local i = 0; i < schema.getParamCount(); ++i) {
+        if (schema.isParamAdvanced(i)) continue;
+        local key = schema.getParamKey(i);
+        if (wanted != null && !(key in wanted)) continue;
+        local label = schema.getParamLabel(i);
+        local kind = schema.getParamKind(i);
+        local id = prefix + key;
+        local hiddenLabel = "##" + prefix + key;
+        ui.beginColumn(prefix + "field-" + key, 2.0);
+        ui.text(label, prefix + "label-" + key);
+        if (kind == "float")
+            ui.slider(hiddenLabel, params.getFloat(key, 0.0), schema.getParamMinimum(i), schema.getParamMaximum(i), id);
+        else if (kind == "int")
+            ui.slider(hiddenLabel, params.getInt(key, 0).tofloat(), schema.getParamMinimum(i), schema.getParamMaximum(i), id);
+        else if (kind == "bool") ui.checkbox(hiddenLabel, params.getInt(key, 0) != 0, id);
+        else if (kind == "choice") {
+            local choices = "";
+            local selected = 0;
+            local current = params.getString(key, "");
+            for (local c = 0; c < schema.getParamChoiceCount(i); ++c) {
+                local value = schema.getParamChoice(i, c);
+                if (c > 0) choices += ",";
+                choices += value;
+                if (value == current) selected = c;
+            }
+            ui.combo(hiddenLabel, choices, selected, id);
+        } else ui.inputText(hiddenLabel, params.getString(key, ""), id);
+        ui.setItemSize(horizontal ? 145.0 : 235.0, 0.0);
+        ui.end();
+        if (horizontal) ui.setItemSize(165.0, 0.0);
+    }
+    if (horizontal) ui.end();
+}
+
 function panelInspector() {
     ui.text("MVVM Terrain Tool", "inspector-title");
     ui.text("", "selection");
@@ -154,6 +198,13 @@ function panelInspector() {
     ui.button("Rock", "material-rock");
     ui.button("Sand", "material-sand");
     ui.text("", "material-current");
+    ui.separator("sep-pbr");
+    ui.text(state.materialSchema.getDisplayName() + " · recipe schema", "pbr-title");
+    renderRecipeFields(state.materialSchema, state.materialParams, "pbr-", false, {
+        scale=true, roughnessLow=true, roughnessHigh=true, metallic=true,
+        normalStrength=true, heightStrength=true
+    });
+    ui.button("Generate + Apply PBR", "material-generate-pbr");
     ui.textWrapped("All controls write the reflected ViewModel; the model then updates terrain/runtime data.",
                    235.0, "mvvm-help");
 }
@@ -168,47 +219,9 @@ function panelPalette() {
     ui.button("Avatar Preview", "spawn-avatar");
     ui.end();
     ui.separator("sep-procgen");
-    ui.text(procgen.getAlgorithmDisplayName(state.procgenAlgorithm) + " · reflected schema", "procgen-title");
-    ui.beginRow("procgen-schema-row", 8.0);
-    for (local i = 0; i < procgen.getAlgorithmParamCount(state.procgenAlgorithm); ++i) {
-        if (procgen.isAlgorithmParamAdvanced(state.procgenAlgorithm, i)) continue;
-        local key = procgen.getAlgorithmParamKey(state.procgenAlgorithm, i);
-        local label = procgen.getAlgorithmParamLabel(state.procgenAlgorithm, i);
-        local kind = procgen.getAlgorithmParamKind(state.procgenAlgorithm, i);
-        local id = "procgen-" + key;
-        local hiddenLabel = "##" + key;
-        ui.beginColumn("procgen-field-" + key, 2.0);
-        ui.text(label, "procgen-label-" + key);
-        if (kind == "float") {
-            ui.slider(hiddenLabel, state.procgenParams.getFloat(key, 0.0),
-                      procgen.getAlgorithmParamMinimum(state.procgenAlgorithm, i),
-                      procgen.getAlgorithmParamMaximum(state.procgenAlgorithm, i), id);
-        } else if (kind == "int") {
-            ui.slider(hiddenLabel, state.procgenParams.getInt(key, 0).tofloat(),
-                      procgen.getAlgorithmParamMinimum(state.procgenAlgorithm, i),
-                      procgen.getAlgorithmParamMaximum(state.procgenAlgorithm, i), id);
-        } else if (kind == "bool") {
-            ui.checkbox(hiddenLabel, state.procgenParams.getInt(key, 0) != 0, id);
-        } else if (kind == "choice") {
-            local choices = "";
-            local selected = 0;
-            local current = state.procgenParams.getString(key, "");
-            for (local c = 0; c < procgen.getAlgorithmParamChoiceCount(state.procgenAlgorithm, i); ++c) {
-                local value = procgen.getAlgorithmParamChoice(state.procgenAlgorithm, i, c);
-                if (c > 0) choices += ",";
-                choices += value;
-                if (value == current) selected = c;
-            }
-            ui.combo(hiddenLabel, choices, selected, id);
-        } else {
-            ui.inputText(hiddenLabel, state.procgenParams.getString(key, ""), id);
-        }
-        ui.setItemSize(145.0, 0.0);
-        ui.end();
-        ui.setItemSize(165.0, 0.0);
-    }
+    ui.text(state.procgenSchema.getDisplayName() + " · reflected schema", "procgen-title");
+    renderRecipeFields(state.procgenSchema, state.procgenParams, "procgen-", true, null);
     ui.button("Generate", "procgen-generate");
-    ui.end();
     ui.text("", "palette-status");
 }
 
@@ -292,6 +305,31 @@ function applyMaterial(name) {
     state.terrainEntity.setRoughness(m.roughness);
 }
 
+function generateAndApplyPbrMaterial() {
+    if (state.terrainEntity == null) return;
+    state.materialSet = procgen.generatePbrMaterial(state.materialRecipe, state.materialParams);
+    if (state.materialSet == null) {
+        state.vm.status = "Material generation failed: " + procgen.lastError();
+        return;
+    }
+    local albedo = gfx.newTexture(state.materialSet.getAlbedo(), true, true);
+    local normal = gfx.newTexture(state.materialSet.getNormal(), true, true);
+    local height = gfx.newTexture(state.materialSet.getHeight(), true, true);
+    state.materialResource = gfx.newMaterial();
+    state.materialResource.setAlbedoTexture(albedo);
+    state.materialResource.setNormalTexture(normal);
+    state.materialResource.setHeightTexture(height);
+    state.materialResource.setMetallic(state.materialParams.getFloat("metallic", 0.0));
+    local roughness = (state.materialParams.getFloat("roughnessLow", 0.5) +
+                       state.materialParams.getFloat("roughnessHigh", 0.8)) * 0.5;
+    state.materialResource.setRoughness(roughness);
+    state.materialResource.setParallax(state.materialParams.getFloat("heightStrength", 1.0) * 0.025, 8.0, 24.0);
+    state.terrainEntity.setMaterial(state.materialResource);
+    state.materialSet.destroy();
+    state.vm.material = state.materialRecipe;
+    state.vm.status = "Generated " + state.materialSchema.getDisplayName() + " from reflected recipe parameters";
+}
+
 function registerProjectCommands() {
     editor.registerScriptCommand("world.spawn-archetype", "Spawn Project Archetype", "World/Create",
         function(payload) {
@@ -316,15 +354,15 @@ function spawnArchetype(kind) {
     if (!result.accepted) state.vm.status = "Command rejected: " + kind;
 }
 
-function updateProcgenParam(id) {
-    local key = id.slice(8);
-    for (local i = 0; i < procgen.getAlgorithmParamCount(state.procgenAlgorithm); ++i) {
-        if (procgen.getAlgorithmParamKey(state.procgenAlgorithm, i) != key) continue;
-        local kind = procgen.getAlgorithmParamKind(state.procgenAlgorithm, i);
-        if (kind == "float") state.procgenParams.setFloat(key, ui.getValue(id));
-        else if (kind == "int") state.procgenParams.setInt(key, ui.getValue(id).tointeger());
-        else if (kind == "bool") state.procgenParams.setInt(key, ui.getChecked(id) ? 1 : 0);
-        else state.procgenParams.setString(key, ui.getValueText(id));
+function updateRecipeParam(schema, params, prefix, id) {
+    local key = id.slice(prefix.len());
+    for (local i = 0; i < schema.getParamCount(); ++i) {
+        if (schema.getParamKey(i) != key) continue;
+        local kind = schema.getParamKind(i);
+        if (kind == "float") params.setFloat(key, ui.getValue(id));
+        else if (kind == "int") params.setInt(key, ui.getValue(id).tointeger());
+        else if (kind == "bool") params.setInt(key, ui.getChecked(id) ? 1 : 0);
+        else params.setString(key, ui.getValueText(id));
         state.vm.status = "Schema property changed: " + key;
         return;
     }
@@ -384,6 +422,8 @@ function handlePanelEvents() {
                 ui.inspectObject(state.vm);
             } else if (id == "procgen-generate") {
                 generateProcgenPreview();
+            } else if (id == "material-generate-pbr") {
+                generateAndApplyPbrMaterial();
             } else if (id == "material-grass") applyMaterial("grass");
             else if (id == "material-rock") applyMaterial("rock");
             else if (id == "material-sand") applyMaterial("sand");
@@ -405,7 +445,10 @@ function handlePanelEvents() {
             if (id == "brush") state.vm.brushRadius = ui.getValue("brush");
             else if (id == "strength") state.vm.strength = ui.getValue("strength");
             else if (id == "tool") state.vm.tool = ui.getValueText("tool");
-            else if (id.find("procgen-") == 0) updateProcgenParam(id);
+            else if (id.find("procgen-") == 0)
+                updateRecipeParam(state.procgenSchema, state.procgenParams, "procgen-", id);
+            else if (id.find("pbr-") == 0)
+                updateRecipeParam(state.materialSchema, state.materialParams, "pbr-", id);
             change = ui.consumeChange();
         }
     }
@@ -474,9 +517,15 @@ eve_init = function() {
     state.vm = WorldEditorVM();
     state.procgenParams = procgen.newParams();
     procgen.applyAlgorithmDefaults(state.procgenAlgorithm, state.procgenParams);
+    state.procgenSchema = procgen.getAlgorithmSchema(state.procgenAlgorithm);
+    state.materialParams = procgen.newParams();
+    state.materialParams.setSize(128, 128);
+    procgen.applyPbrRecipeDefaults(state.materialRecipe, state.materialParams);
+    state.materialSchema = procgen.getPbrRecipeSchema(state.materialRecipe);
     configureWorkspace();
     registerProjectCommands();
     generateTerrain();
+    generateAndApplyPbrMaterial();
     configureTerrainTool();
     state.camera = eve.Camera3D();
     state.camera.setFov(50.0);

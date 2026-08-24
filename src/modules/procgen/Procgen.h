@@ -5,6 +5,7 @@
 #include "procgen/MeshBuild.h"
 #include "procgen/OutputSpec.h"
 #include "procgen/Palette.h"
+#include "procgen/ParamSchema.h"
 #include "procgen/Params.h"
 #include "procgen/PointSet.h"
 #include "procgen/ProcgenSystem.h"
@@ -109,6 +110,8 @@ public:
     int         getAlgorithmCount() const;
     std::string getAlgorithmId(int index) const;
     bool        hasAlgorithm(const std::string &algorithmId) const;
+    /** @brief Copy an algorithm schema. @param algorithmId Algorithm id. @return Caller-owned schema or nullptr. */
+    RecipeDescriptor *getAlgorithmSchema(const std::string &algorithmId) const;
     /** @brief Human-readable algorithm label from its schema.
      * @param algorithmId Algorithm id. @return Display name or empty text. */
     std::string getAlgorithmDisplayName(const std::string &algorithmId) const;
@@ -194,6 +197,10 @@ public:
     int         getTextureRecipeCount() const;
     std::string getTextureRecipeId(int index) const;
     bool        hasTextureRecipe(const std::string &recipeId) const;
+    /** @brief Copy a texture schema. @param recipeId Recipe id. @return Caller-owned schema or nullptr. */
+    RecipeDescriptor *getTextureRecipeSchema(const std::string &recipeId) const;
+    /** @brief Fill missing texture parameters. @param recipeId Recipe id. @param params Values to update. @return False for invalid input or an unknown recipe. */
+    bool applyTextureRecipeDefaults(const std::string &recipeId, Params *params) const;
 
     // --- Phase E: dynamic clouds + cloud shadows ---
     /** @brief New deterministic, tiling, time-animated cloud field (caller owns). */
@@ -220,6 +227,10 @@ public:
     int         getPbrRecipeCount() const;
     std::string getPbrRecipeId(int index) const;
     bool        hasPbrRecipe(const std::string &recipeId) const;
+    /** @brief Copy a PBR schema. @param recipeId Recipe id. @return Caller-owned schema or nullptr. */
+    RecipeDescriptor *getPbrRecipeSchema(const std::string &recipeId) const;
+    /** @brief Fill missing PBR parameters. @param recipeId Recipe id. @param params Values to update. @return False for invalid input or an unknown recipe. */
+    bool applyPbrRecipeDefaults(const std::string &recipeId, Params *params) const;
 
     // --- Mesh recipes (Marching Cubes, …) ---
     /** @brief CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet. */

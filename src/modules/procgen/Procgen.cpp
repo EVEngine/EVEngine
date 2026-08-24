@@ -482,6 +482,11 @@ bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
 }
 
+RecipeDescriptor *Procgen::getAlgorithmSchema(const std::string &algorithmId) const {
+    const RecipeDescriptor *schema = GeneratorRegistry::instance().descriptor(algorithmId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
 std::string Procgen::getAlgorithmDisplayName(const std::string &algorithmId) const {
     const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
     return descriptor ? descriptor->displayName : std::string{};
@@ -666,6 +671,18 @@ bool Procgen::hasTextureRecipe(const std::string &recipeId) const {
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
+RecipeDescriptor *Procgen::getTextureRecipeSchema(const std::string &recipeId) const {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    const RecipeDescriptor *schema = TextureRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyTextureRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    TextureRecipeRegistry::instance().registerBuiltins();
+    return TextureRecipeRegistry::instance().applyDefaults(recipeId, *params);
+}
+
 CloudField *Procgen::newCloudField() { return new CloudField(); }
 
 CloudShadow *Procgen::newCloudShadow() { return new CloudShadow(); }
@@ -738,6 +755,18 @@ std::string Procgen::getPbrRecipeId(int index) const {
 bool Procgen::hasPbrRecipe(const std::string &recipeId) const {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     return PbrRecipeRegistry::instance().has(recipeId);
+}
+
+RecipeDescriptor *Procgen::getPbrRecipeSchema(const std::string &recipeId) const {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    const RecipeDescriptor *schema = PbrRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyPbrRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    return PbrRecipeRegistry::instance().applyDefaults(recipeId, *params);
 }
 
 MeshBuild *Procgen::buildMesh(const std::string &recipeId, Params *params) {
@@ -828,6 +857,28 @@ bool Procgen::heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out)
 void Procgen::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
+
+    auto recipe = table.addClass<RecipeDescriptor>(
+        "ProcgenRecipeSchema",
+        std::function<RecipeDescriptor *()>([]() -> RecipeDescriptor * { return nullptr; }), true);
+    recipe.addFunc("getId", &RecipeDescriptor::getId);
+    recipe.addFunc("getDisplayName", &RecipeDescriptor::getDisplayName);
+    recipe.addFunc("getCategory", &RecipeDescriptor::getCategory);
+    recipe.addFunc("getParamCount", &RecipeDescriptor::getParamCount);
+    recipe.addFunc("getParamKey", &RecipeDescriptor::getParamKey);
+    recipe.addFunc("getParamLabel", &RecipeDescriptor::getParamLabel);
+    recipe.addFunc("getParamDescription", &RecipeDescriptor::getParamDescription);
+    recipe.addFunc("getParamCategory", &RecipeDescriptor::getParamCategory);
+    recipe.addFunc("getParamKind", &RecipeDescriptor::getParamKind);
+    recipe.addFunc("getParamDefault", &RecipeDescriptor::getParamDefault);
+    recipe.addFunc("paramHasMinimum", &RecipeDescriptor::paramHasMinimum);
+    recipe.addFunc("paramHasMaximum", &RecipeDescriptor::paramHasMaximum);
+    recipe.addFunc("getParamMinimum", &RecipeDescriptor::getParamMinimum);
+    recipe.addFunc("getParamMaximum", &RecipeDescriptor::getParamMaximum);
+    recipe.addFunc("getParamStep", &RecipeDescriptor::getParamStep);
+    recipe.addFunc("isParamAdvanced", &RecipeDescriptor::isParamAdvanced);
+    recipe.addFunc("getParamChoiceCount", &RecipeDescriptor::getParamChoiceCount);
+    recipe.addFunc("getParamChoice", &RecipeDescriptor::getParamChoice);
 
     auto params = table.addClass<Params>(
         "ProcgenParams", std::function<Params *()>([]() -> Params * { return nullptr; }), true);
@@ -1046,6 +1097,12 @@ void Procgen::expose(ssq::Table &table) {
         "ProcgenPbrMaterial",
         std::function<PbrTextureSet *()>([]() -> PbrTextureSet * { return nullptr; }), true);
     pbr.addFunc("destroy", &PbrTextureSet::destroy);
+    pbr.addFunc("getAlbedo", &PbrTextureSet::getAlbedo);
+    pbr.addFunc("getNormal", &PbrTextureSet::getNormal);
+    pbr.addFunc("getRoughness", &PbrTextureSet::getRoughness);
+    pbr.addFunc("getMetallic", &PbrTextureSet::getMetallic);
+    pbr.addFunc("getHeight", &PbrTextureSet::getHeight);
+    pbr.addFunc("getAo", &PbrTextureSet::getAo);
     pbr.addFunc("getAlbedoWidth", [](const PbrTextureSet *s) { return s->albedo->getWidth(); });
     pbr.addFunc("getAlbedoHeight", [](const PbrTextureSet *s) { return s->albedo->getHeight(); });
     pbr.addFunc("getNormalWidth", [](const PbrTextureSet *s) { return s->normal->getWidth(); });
@@ -1106,6 +1163,7 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getAlgorithmCount", &Procgen::getAlgorithmCount);
     cls.addFunc("getAlgorithmId", &Procgen::getAlgorithmId);
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
+    cls.addFunc("getAlgorithmSchema", &Procgen::getAlgorithmSchema);
     cls.addFunc("getAlgorithmDisplayName", &Procgen::getAlgorithmDisplayName);
     cls.addFunc("getAlgorithmCategory", &Procgen::getAlgorithmCategory);
     cls.addFunc("getAlgorithmParamCount", &Procgen::getAlgorithmParamCount);
@@ -1134,10 +1192,14 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getTextureRecipeCount", &Procgen::getTextureRecipeCount);
     cls.addFunc("getTextureRecipeId", &Procgen::getTextureRecipeId);
     cls.addFunc("hasTextureRecipe", &Procgen::hasTextureRecipe);
+    cls.addFunc("getTextureRecipeSchema", &Procgen::getTextureRecipeSchema);
+    cls.addFunc("applyTextureRecipeDefaults", &Procgen::applyTextureRecipeDefaults);
     cls.addFunc("generatePbrMaterial", &Procgen::generatePbrMaterial);
     cls.addFunc("getPbrRecipeCount", &Procgen::getPbrRecipeCount);
     cls.addFunc("getPbrRecipeId", &Procgen::getPbrRecipeId);
     cls.addFunc("hasPbrRecipe", &Procgen::hasPbrRecipe);
+    cls.addFunc("getPbrRecipeSchema", &Procgen::getPbrRecipeSchema);
+    cls.addFunc("applyPbrRecipeDefaults", &Procgen::applyPbrRecipeDefaults);
     cls.addFunc("buildMesh", &Procgen::buildMesh);
     cls.addFunc("generateMesh", &Procgen::generateMesh);
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);

@@ -49,6 +49,36 @@ for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
 公共字段编写旁路逻辑。`examples/composable-editor` 在项目脚本中把 schema 映射为
 普通 `ui.slider` / `ui.checkbox` / `ui.combo`，C++ 没有固定 Procgen 面板。
 
+`getAlgorithmSchema` 返回通用 `ProcgenRecipeSchema`。同一个对象模型也由
+`getTextureRecipeSchema` 和 `getPbrRecipeSchema` 返回，因此项目只需要一个字段组件：
+`getId`、`getDisplayName`、`getCategory`、`getParamCount`、`getParamKey`、
+`getParamLabel`、`getParamDescription`、`getParamCategory`、`getParamKind`、
+`getParamDefault`、`paramHasMinimum`、`paramHasMaximum`、`getParamMinimum`、
+`getParamMaximum`、`getParamStep`、`isParamAdvanced`、`getParamChoiceCount` 和
+`getParamChoice`。`applyTextureRecipeDefaults` / `applyPbrRecipeDefaults` 把缺失值写入
+`Params`，已有的项目覆盖值保持不变。
+
+```squirrel
+local recipe = "pbr.rock";
+local values = gen.newParams();
+values.setSize(128, 128);
+gen.applyPbrRecipeDefaults(recipe, values);
+local schema = gen.getPbrRecipeSchema(recipe);
+for (local i = 0; i < schema.getParamCount(); ++i)
+    buildProjectField(schema, values, i);
+local maps = gen.generatePbrMaterial(recipe, values);
+local albedo = maps.getAlbedo();
+local normal = maps.getNormal();
+local roughness = maps.getRoughness();
+local metallic = maps.getMetallic();
+local height = maps.getHeight();
+local ao = maps.getAo();
+maps.destroy();
+```
+
+当前 `Material` 可直接使用 albedo、normal、height 纹理以及 scalar roughness / metallic。
+roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材质还没有对应纹理槽。
+
 ## 对象关系与调用时机
 
 `Params` 描述 seed、尺寸和算法参数；`Grid2D` 是结果；`OutputSpec` 决定写入 TileLayer、Image 或 Texture；`Procgen` 按注册算法名执行。
