@@ -205,18 +205,48 @@ TEST_CASE("json.malformedInputReportsError") {
     struct Case {
         const char* text;
     } bad[] = {
-        {"{"},        {"{\"a\":}"},   {"[1,]"},      {"{\"a\" 1}"},
-        {"tru"},      {"{\"a\":1} x"}, {"\"unterminated"}, {""},
+        {"{"},
+        {"{\"a\":}"},
+        {"[1,]"},
+        {"{\"a\" 1}"},
+        {"tru"},
+        {"{\"a\":1} x"},
+        {"\"unterminated"},
+        {""},
+        {"+1"},
+        {"01"},
+        {"1."},
+        {"1e"},
+        {"1e+"},
+        {"1e9999"},
+        {"\"raw\nnewline\""},
+        {"\"\\ud800\""},
+        {"\"\\udc00\""},
+        {"\"\\ud800\\u0041\""},
     };
     for (const auto& c : bad) {
         std::string err;
-        Document doc = Document::parse(c.text, &err);
+        Document    doc = Document::parse(c.text, &err);
         CHECK(!doc.valid());
         CHECK(!err.empty());
         // An invalid document still answers safely.
         CHECK(!doc.root());
         CHECK_EQ(doc.root().getInt("anything", 4), 4);
     }
+}
+
+TEST_CASE("json.nestingDepthIsBounded") {
+    std::string atLimit(256, '[');
+    atLimit += '0';
+    atLimit.append(256, ']');
+    CHECK(Document::parse(atLimit).valid());
+
+    std::string overLimit(257, '[');
+    overLimit += '0';
+    overLimit.append(257, ']');
+    std::string error;
+    CHECK(!Document::parse(overLimit, &error).valid());
+    CHECK(!error.empty());
 }
 
 TEST_CASE("json.emptyContainers") {
