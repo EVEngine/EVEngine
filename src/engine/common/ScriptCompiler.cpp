@@ -112,12 +112,16 @@ std::vector<BindingContract> BindingContractRegistry::snapshot() const {
 ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_(&vm), modules_(&modules) {
     sq_setnamedargresolver(
         vm_->getHandle(),
-        [](HSQUIRRELVM, const SQChar* callee, SQInteger index, SQUserPointer user) -> const SQChar* {
+        [](HSQUIRRELVM, const SQChar* callee, SQInteger index, const SQChar** unit,
+           SQUserPointer user) -> const SQChar* {
             const auto&            self     = *static_cast<ScriptCompiler*>(user);
             const BindingContract* contract = self.bindings_.findMethod(callee);
             if (contract == nullptr || index < 0 || static_cast<size_t>(index) >= contract->parameters.size())
                 return nullptr;
-            return contract->parameters[static_cast<size_t>(index)].name.c_str();
+            const BindingParameterContract& parameter = contract->parameters[static_cast<size_t>(index)];
+            static const char* units[] = {nullptr, "seconds", "milliseconds", "radians", "degrees", "pixels", "meters"};
+            if (unit != nullptr) *unit = units[static_cast<size_t>(parameter.unit)];
+            return parameter.name.c_str();
         },
         this);
 }

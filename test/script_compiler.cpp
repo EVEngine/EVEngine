@@ -74,3 +74,30 @@ TEST_CASE("scriptCompiler.bindingContractEnablesNativeNamedArguments") {
     const auto result = runtime.vm().get<int64_t>("native_named_result");
     CHECK_EQ(result, int64_t(123));
 }
+
+TEST_CASE("scriptCompiler.bindingContractConvertsUnitLiterals") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.vm().addFunc("nativeAngle", [](float angle) { return angle; });
+    runtime.vm().addFunc("nativeDelay", [](float delay) { return delay; });
+
+    script::BindingContract angle;
+    angle.module     = "test";
+    angle.method     = "nativeAngle";
+    angle.parameters = {{"angle", "float", false, std::nullopt, script::ScriptUnit::Radians}};
+    runtime.scriptCompiler().bindings().registerContract(std::move(angle));
+    script::BindingContract delay;
+    delay.module     = "test";
+    delay.method     = "nativeDelay";
+    delay.parameters = {{"delay", "float", false, std::nullopt, script::ScriptUnit::Milliseconds}};
+    runtime.scriptCompiler().bindings().registerContract(std::move(delay));
+
+    runtime.runSource(
+        "native_angle_result <- nativeAngle(90deg)\n"
+        "native_delay_result <- nativeDelay(250ms)\n",
+        "native-units-test.nut");
+    const float angleResult = runtime.vm().get<float>("native_angle_result");
+    const float delayResult = runtime.vm().get<float>("native_delay_result");
+    const bool angleConverted = angleResult > 1.5707f && angleResult < 1.5709f;
+    CHECK(angleConverted);
+    CHECK_EQ(delayResult, 250.0f);
+}
