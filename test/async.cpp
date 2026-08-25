@@ -14,11 +14,9 @@
 
 namespace {
 
-void exposeCore(ssq::VM &vm) {
-    eve::ModuleManager::expose(vm);
-}
+void exposeCore(ssq::VM& vm) { eve::ModuleManager::expose(vm); }
 
-std::string runAsyncSnippet(const std::string &body) {
+std::string runAsyncSnippet(const std::string& body) {
     ssq::VM vm(1024, ssq::Libs::ALL);
     exposeCore(vm);
     {
@@ -134,8 +132,8 @@ TEST_CASE("async.asyncPost.sameNameCorrelatedByTask") {
 }
 
 TEST_CASE("async.postMain.event") {
-    auto *th = eve::thread::Thread::create();
-    auto *ev = eve::event::Event::create();
+    auto* th = eve::thread::Thread::create();
+    auto* ev = eve::event::Event::create();
     th->postMain("asynctest", "payload");
     CHECK_EQ(ev->pollName(), std::string("asynctest"));
     CHECK_EQ(ev->getLastData(), std::string("payload"));
@@ -169,4 +167,31 @@ TEST_CASE("async.asyncSeq") {
         async_pump();
     )");
     CHECK_EQ(out, std::string("30"));
+}
+
+TEST_CASE("async.eveScriptAwaitStateMachine") {
+    std::string out = runAsyncSnippet(R"(
+        result <- "pending";
+        class Counter {
+            offset = 4;
+            async function compute(limit: int) -> int {
+                local total = this.offset;
+                for (local i = 0; i < limit; ++i)
+                    total += await Promise.resolve(i);
+                try {
+                    await Promise.reject("expected");
+                } catch (e) {
+                    total += 10;
+                }
+                return total;
+            }
+        }
+        Counter().compute(4).then(
+            function(v) { result = "" + v; },
+            function(e) { result = "error:" + e; }
+        );
+        for (local i = 0; i < 32; ++i)
+            async_pump();
+    )");
+    CHECK_EQ(out, std::string("20"));
 }

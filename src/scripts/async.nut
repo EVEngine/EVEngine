@@ -409,6 +409,49 @@ function asyncReceive(ch) {
     });
 }
 
+// Runtime half of EveScript async lowering. The compiler places the original
+// body in a Squirrel thread and lowers each await expression to suspend().
+// Promise continuations wake the thread on the game-thread microtask queue.
+function __eve_async(body, environment) {
+    return Promise(function(resolve, reject) {
+        local coroutine = null;
+        try {
+            coroutine = newthread(body.bindenv(environment));
+        } catch (e) {
+            reject(e);
+            return;
+        }
+
+        local started = false;
+        local function advance(value, failed) {
+            local awaited = null;
+            try {
+                if (!started) {
+                    started = true;
+                    awaited = coroutine.call();
+                } else if (failed) {
+                    awaited = coroutine.wakeupthrow(value);
+                } else {
+                    awaited = coroutine.wakeup(value);
+                }
+            } catch (e) {
+                reject(e);
+                return;
+            }
+
+            if (coroutine.getstatus() == "idle") {
+                resolve(awaited);
+                return;
+            }
+            Promise.resolve(awaited).then(
+                function(v) { advance(v, false); },
+                function(e) { advance(e, true); }
+            );
+        }
+        advance(null, false);
+    });
+}
+
 // ---- Sequential async (closest to JS async/await) -------------------------
 //
 // Squirrel has no async/await keywords. Generators' `yield` is statement-only
