@@ -103,5 +103,19 @@ PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& height
                                   float heightScale);
 PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed,
                               float lateralJitter);
+/** @brief Concatenate two attributed point collections while preserving order. */
+PointSet mergePointSets(const PointSet& first, const PointSet& second);
+/** @brief Apply translation, yaw rotation and non-uniform scale to points and their transforms. */
+PointSet transformPointSet(const PointSet& input, float translateX, float translateY,
+                           float translateZ, float yawDegrees, float scaleX, float scaleY,
+                           float scaleZ);
+/** @brief Select points whose named float attribute lies in an inclusive range. */
+PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
+                                   float maxValue, bool invert);
+/** @brief Select points whose named string attribute equals a value. */
+PointSet filterPointStringAttribute(const PointSet& input, const std::string& name,
+                                    const std::string& value, bool invert);
+/** @brief Deterministically keep points according to density and a root seed. */
+PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplier);
 
 }  // namespace eve::procgen

@@ -1,4 +1,5 @@
 #include "common/Capability.h"
+#include "common/ProcgenSceneSink.h"
 #include "common/SceneQuery.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
@@ -142,11 +143,75 @@ public:
     void syncTransforms() override { TransformSystem::updateAll(); }
 };
 
+class ProcgenSceneSinkImpl final : public eve::IProcgenSceneSink {
+public:
+    bool applyBatch(const std::string& batchId,
+                    const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+        if (batchId.empty()) return false;
+        SceneHost* host = hostByName(hostName(batchId));
+        if (!host) host = SceneHost::createHost(hostName(batchId));
+        if (!host) return false;
+
+        NodeDesc root;
+        root.id   = "pcg-root";
+        root.key  = "pcg-root";
+        root.name = batchId;
+        root.tags = {"pcg", "pcg.batch"};
+        root.children.reserve(instances.size());
+        for (const auto& instance : instances) {
+            NodeDesc child;
+            child.id   = instance.id;
+            child.key  = instance.id;
+            child.name = instance.asset;
+            child.x    = instance.x;
+            child.y    = instance.y;
+            child.z    = instance.z;
+            child.yaw  = instance.yaw;
+            child.sx   = instance.scaleX;
+            child.sy   = instance.scaleY;
+            child.sz   = instance.scaleZ;
+            child.tags = {"pcg", "pcg.instance"};
+            if (!instance.asset.empty()) child.tags.push_back("pcg.asset:" + instance.asset);
+            root.children.push_back(std::move(child));
+        }
+        host->setVisible(true);
+        host->setTreeReconcile(std::move(root));
+        TransformSystem::updateHost(host);
+        counts_[batchId] = int(instances.size());
+        return true;
+    }
+
+    bool removeBatch(const std::string& batchId) override {
+        SceneHost* host = hostByName(hostName(batchId));
+        if (!host) return false;
+        NodeDesc root;
+        root.id   = "pcg-root";
+        root.key  = "pcg-root";
+        root.name = batchId;
+        root.tags = {"pcg", "pcg.batch"};
+        host->setTree(std::move(root));
+        host->setVisible(false);
+        counts_.erase(batchId);
+        return true;
+    }
+
+    int instanceCount(const std::string& batchId) const override {
+        const auto found = counts_.find(batchId);
+        return found == counts_.end() ? 0 : found->second;
+    }
+
+private:
+    static std::string hostName(const std::string& batchId) { return "__pcg/" + batchId; }
+    std::unordered_map<std::string, int> counts_;
+};
+
 }  // namespace
 
 void registerSceneCapabilities() {
     static SceneQueryImpl impl;
+    static ProcgenSceneSinkImpl procgenSink;
     eve::cap::provide<eve::ISceneQuery>(&impl);
+    eve::cap::provide<eve::IProcgenSceneSink>(&procgenSink);
 }
 
 }  // namespace eve::scene

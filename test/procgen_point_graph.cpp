@@ -1,0 +1,161 @@
+#include "procgen/PointGraph.h"
+
+#include <zeroerr.hpp>
+
+using namespace eve::procgen;
+
+TEST_CASE("procgen.pointGraph.executesDagAndCachesResults") {
+    PointGraph graph;
+    CHECK(graph.addNode("sample", "spatial.sample"));
+    CHECK(graph.addNode("exclude", "spatial.filter"));
+    CHECK(graph.addNode("prune", "self.prune"));
+    CHECK(graph.connect("sample", "exclude"));
+    CHECK(graph.connect("exclude", "prune"));
+
+    SpatialData domain = SpatialData::box(0.f, 0.f, 0.f, 4.f, 0.f, 4.f);
+    SpatialData hole   = SpatialData::sphere(2.f, 0.f, 2.f, 0.75f);
+    CHECK(graph.setNodeSpatial("sample", &domain));
+    CHECK(graph.setNodeFloat("sample", "spacing", 2.f));
+    CHECK(graph.setNodeInt("sample", "seed", 42));
+    CHECK(graph.setNodeSpatial("exclude", &hole));
+    CHECK(graph.setNodeInt("exclude", "invert", 1));
+    CHECK(graph.setNodeFloat("prune", "radius", 1.f));
+    CHECK(graph.validate());
+
+    PointSet* first = graph.execute("prune");
+    REQUIRE(bool(first));
+    CHECK_EQ(first->getCount(), 8);
+    CHECK(graph.getMetricCount() >= 3);
+    PointSet* debug = graph.getNodeOutput("sample");
+    REQUIRE(bool(debug));
+    CHECK_EQ(debug->getCount(), 9);
+
+    PointSet* second = graph.execute("prune");
+    REQUIRE(bool(second));
+    CHECK_EQ(second->getCount(), 8);
+    CHECK_EQ(graph.getCacheHitCount(), 1);
+    CHECK(graph.isMetricCacheHit(0));
+
+    delete second;
+    delete debug;
+    delete first;
+}
+
+TEST_CASE("procgen.pointGraph.rejectsCyclesAndBadInputs") {
+    PointGraph graph;
+    CHECK(graph.addNode("a", "self.prune"));
+    CHECK(graph.addNode("b", "jitter"));
+    CHECK(graph.connect("a", "b"));
+    CHECK(graph.connect("b", "a"));
+    CHECK(!graph.validate());
+    CHECK(graph.getError().find("cycle") != std::string::npos);
+    CHECK(!graph.execute("a"));
+    CHECK(graph.getError().find("cycle") != std::string::npos);
+    CHECK(!graph.addNode("unknown", "not-an-operation"));
+}
+
+TEST_CASE("procgen.pointGraph.supportsBranchesAndNestedGraphs") {
+    PointSet source;
+    source.add(1.f, 0.f, 0.f);
+
+    PointGraph nested;
+    CHECK(nested.addNode("in", "input"));
+    CHECK(nested.addNode("move", "transform"));
+    CHECK(nested.setNodePoints("in", &source));
+    CHECK(nested.connect("in", "move"));
+    CHECK(nested.setNodeFloat("move", "x", 5.f));
+
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("nested", "subgraph"));
+    CHECK(graph.addNode("fallback", "transform"));
+    CHECK(graph.addNode("choose", "branch"));
+    CHECK(graph.setNodePoints("source", &source));
+    CHECK(graph.connect("source", "nested"));
+    CHECK(graph.setNodeSubgraph("nested", &nested, "in", "move"));
+    CHECK(graph.connect("source", "fallback"));
+    CHECK(graph.setNodeFloat("fallback", "x", -5.f));
+    CHECK(graph.connect("nested", "choose", 0));
+    CHECK(graph.connect("fallback", "choose", 1));
+    CHECK(graph.setNodeInt("choose", "condition", 1));
+
+    PointSet* result = graph.execute("choose");
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getCount(), 1);
+    CHECK_EQ(result->getX(0), 6.f);
+    delete result;
+}
+
+TEST_CASE("procgen.pointGraph.reflectsOperationsForEditors") {
+    CHECK(PointGraph::getOperationCount() >= 15);
+    CHECK_EQ(PointGraph::getOperationInputCount("merge"), 2);
+    CHECK_EQ(PointGraph::getOperationInputCount("spatial.sample"), 0);
+    CHECK_EQ(PointGraph::getOperationParamCount("transform"), 7);
+    CHECK_EQ(PointGraph::getOperationParamKey("spatial.sample", 0), std::string("spacing"));
+    CHECK_EQ(PointGraph::getOperationParamKind("spatial.sample", 1), std::string("int"));
+    CHECK_EQ(PointGraph::getOperationParamDefault("branch", 0), std::string("false"));
+    CHECK_EQ(PointGraph::getOperationInputCount("missing"), -1);
+}
+
+TEST_CASE("procgen.pointGraph.enforcesDeclaredPinsAndValidatesExternalSubgraphInput") {
+    PointGraph nested;
+    CHECK(nested.addNode("in", "input"));
+    CHECK(nested.addNode("move", "transform"));
+    CHECK(nested.connect("in", "move"));
+
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("nested", "subgraph"));
+    CHECK(graph.connect("source", "nested"));
+    CHECK(!graph.connect("source", "nested", 1));
+    CHECK(!graph.connect("source", "source", 0));
+    CHECK(graph.setNodeSubgraph("nested", &nested, "in", "move"));
+
+    PointSet input;
+    input.add(1.f, 2.f, 3.f);
+    CHECK(graph.setNodePoints("source", &input));
+    CHECK(graph.validate());
+    PointSet* output = graph.execute("nested");
+    REQUIRE(bool(output));
+    CHECK_EQ(output->getCount(), 1);
+    delete output;
+}
+
+TEST_CASE("procgen.pointGraph.definitionRoundTripsNestedTopologyAndParams") {
+    PointSet source;
+    source.add(1.f, 0.f, 0.f);
+
+    PointGraph nested;
+    nested.addNode("in", "input");
+    nested.addNode("move", "transform");
+    nested.setNodePoints("in", &source);
+    nested.connect("in", "move");
+    nested.setNodeFloat("move", "x", 5.f);
+
+    PointGraph original;
+    original.addNode("source", "input");
+    original.addNode("nested", "subgraph");
+    original.addNode("tag", "attribute.set.string");
+    original.setNodePoints("source", &source);
+    original.connect("source", "nested");
+    original.setNodeSubgraph("nested", &nested, "in", "move");
+    original.connect("nested", "tag");
+    original.setNodeString("tag", "attribute", "asset");
+    original.setNodeString("tag", "value", "oak \"old\"");
+
+    const std::string definition = original.serializeDefinition();
+    CHECK(definition.find("EVPCG_POINT_GRAPH 1") == 0);
+    PointGraph loaded;
+    CHECK(loaded.deserializeDefinition(definition));
+    CHECK_EQ(loaded.getNodeCount(), 3);
+    CHECK_EQ(loaded.getInputNode("tag", 0), std::string("nested"));
+    CHECK(loaded.setNodePoints("source", &source));
+    PointSet* result = loaded.execute("tag");
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getX(0), 6.f);
+    CHECK_EQ(result->getStringAttribute(0, "asset", ""), std::string("oak \"old\""));
+    delete result;
+
+    CHECK(!loaded.deserializeDefinition("broken"));
+    CHECK(loaded.hasNode("source"));
+}

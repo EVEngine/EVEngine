@@ -40,7 +40,9 @@
 #include "window/Window.h"
 
 #include "common/ECS.h"
+#include "common/Capability.h"
 #include "common/Module.h"
+#include "common/ProcgenSceneSink.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -206,6 +208,43 @@ TEST_CASE("Scene.builder.mountBuildAs") {
     CHECK(h->findById("root") != nullptr);
     CHECK(h->findById("child") != nullptr);
     CHECK(approxEq(h->findById("root")->x, 1.f));
+}
+
+TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
+    Scene *mod = Scene::create();
+    auto *sink = eve::cap::query<eve::IProcgenSceneSink>();
+    REQUIRE(sink != nullptr);
+
+    std::vector<eve::ProcgenInstanceDesc> instances(2);
+    instances[0].id     = "tree-1";
+    instances[0].asset  = "oak";
+    instances[0].x      = 3.f;
+    instances[0].scaleY = 2.f;
+    instances[1].id     = "rock-2";
+    instances[1].asset  = "granite";
+    instances[1].z      = 8.f;
+    CHECK(sink->applyBatch("biome/0/0", instances));
+    CHECK_EQ(sink->instanceCount("biome/0/0"), 2);
+
+    SceneHost *host = mod->findHost("__pcg/biome/0/0");
+    REQUIRE(host != nullptr);
+    CHECK_EQ(host->getNodeCount(), 3);
+    REQUIRE(host->findById("tree-1") != nullptr);
+    CHECK(approxEq(host->findById("tree-1")->x, 3.f));
+    CHECK(approxEq(host->findById("tree-1")->sy, 2.f));
+    CHECK(host->hasTag(host->findById("tree-1"), "pcg.asset:oak"));
+
+    instances.resize(1);
+    instances[0].x = 7.f;
+    CHECK(sink->applyBatch("biome/0/0", instances));
+    CHECK_EQ(sink->instanceCount("biome/0/0"), 1);
+    CHECK_EQ(host->getNodeCount(), 2);
+    CHECK(approxEq(host->findById("tree-1")->x, 7.f));
+    CHECK(host->findById("rock-2") == nullptr);
+
+    CHECK(sink->removeBatch("biome/0/0"));
+    CHECK_EQ(sink->instanceCount("biome/0/0"), 0);
+    CHECK_EQ(host->getNodeCount(), 1);
 }
 
 TEST_CASE("Scene.link.syncRenderable3DWorld") {
