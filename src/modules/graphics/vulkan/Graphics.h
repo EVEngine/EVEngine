@@ -516,7 +516,11 @@ private:
                                               BlendMode mode = BlendMode::Alpha);
     vk::Pipeline  createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
                                             vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
-                                            vk::SampleCountFlagBits samples);
+                                            vk::SampleCountFlagBits samples,
+                                            BlendMode blend = BlendMode::Opaque,
+                                            bool depthWrite = true, bool doubleSided = true);
+    static constexpr size_t kMesh3DPipelineVariants = 20;
+    static size_t mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided);
     /** @brief X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
     vk::Pipeline createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
@@ -668,6 +672,7 @@ private:
     vk::PipelineLayout mesh3dShaderPipelineLayout;  // + push constants for custom mesh shaders
     vk::Pipeline mesh3dPipeline;
     vk::Pipeline mesh3dTransparentPipeline;
+    std::array<vk::Pipeline, kMesh3DPipelineVariants> mesh3dSurfacePipelines{};
     // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
     // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
     // executable command buffer (which invalidates the CB).
@@ -1121,6 +1126,7 @@ private:
     // submitted directly to the graphics queue (no swapchain / present).
     vkb::BuiltRenderPass offscreen3DRenderPass{};
     vk::Pipeline offscreen3DMeshPipeline = nullptr;
+    std::array<vk::Pipeline, kMesh3DPipelineVariants> offscreen3DSurfacePipelines{};
     vk::CommandPool offscreen3DPool = nullptr;
     vk::CommandBuffer offscreen3DCB = nullptr;
     vk::Fence offscreen3DFence = nullptr;

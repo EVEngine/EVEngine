@@ -609,7 +609,8 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
     let viewZ = max(-in.vViewPos.z, 0.0);
     let linearDepth = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    return vec4f(color, linearDepth);
+    let outputAlpha = select(linearDepth, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
+    return vec4f(color, outputAlpha);
 }
 )wgsl";
 

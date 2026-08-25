@@ -744,12 +744,14 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
-        const vk::Pipeline pipe =
-            offscreen3DPassOpen
-                ? offscreen3DMeshPipeline
-                : (mesh3dSurfaceMode == SurfaceMode::Transparent
-                       ? mesh3dTransparentPipeline
-                       : mesh3dPipeline);
+        const bool transparent = mesh3dSurfaceMode == SurfaceMode::Transparent;
+        const BlendMode blend = transparent ? mesh3dSurfaceBlend : BlendMode::Opaque;
+        const bool depthWrite = !transparent || mesh3dSurfaceDepthWrite;
+        const size_t pipelineIndex =
+            mesh3dPipelineIndex(blend, depthWrite, mesh3dSurfaceDoubleSided);
+        const vk::Pipeline pipe = offscreen3DPassOpen
+                                      ? offscreen3DSurfacePipelines[pipelineIndex]
+                                      : mesh3dSurfacePipelines[pipelineIndex];
         if (pipe != lastMesh3dPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
             lastMesh3dPipeline = pipe;

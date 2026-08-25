@@ -386,6 +386,17 @@ void Graphics::createMesh3DPipeline() {
     mesh3dTransparentPipeline =
         createMesh3DHairPipeline(vert, frag, mesh3dPipelineLayout, renderpass,
                                  vk::SampleCountFlagBits::e1);
+    for (int blendValue = 0; blendValue < 5; ++blendValue) {
+        const auto blend = BlendMode(blendValue);
+        for (int depthValue = 0; depthValue < 2; ++depthValue) {
+            for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
+                const size_t index = mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
+                mesh3dSurfacePipelines[index] = createMesh3DStylePipeline(
+                    vert, frag, mesh3dPipelineLayout, renderpass, vk::SampleCountFlagBits::e1,
+                    blend, depthValue != 0, doubleValue != 0);
+            }
+        }
+    }
 }
 
 void Graphics::createMesh3DClusteredPipeline() {
@@ -1197,6 +1208,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
 
     destroyPipeline(device, mesh3dPipeline);
     destroyPipeline(device, mesh3dTransparentPipeline);
+    for (auto &pipeline : mesh3dSurfacePipelines) destroyPipeline(device, pipeline);
     destroyPipeline(device, mesh3dClusteredPipeline);
     destroyPipeline(device, mesh3dGpuDrivenPipeline);
     destroyPipeline(device, resolveVisPipeline);
@@ -1209,6 +1221,18 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
         createMesh3DHairPipeline(embeddedSpirv(mesh3d_vert_spv),
                                  embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
                                  target, samples);
+    for (int blendValue = 0; blendValue < 5; ++blendValue) {
+        const auto blend = BlendMode(blendValue);
+        for (int depthValue = 0; depthValue < 2; ++depthValue) {
+            for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
+                const size_t index = mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
+                mesh3dSurfacePipelines[index] = createMesh3DStylePipeline(
+                    embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv),
+                    mesh3dPipelineLayout, target, samples, blend, depthValue != 0,
+                    doubleValue != 0);
+            }
+        }
+    }
     if (mesh3dGpuDrivenPipelineLayout) {
         mesh3dGpuDrivenPipeline =
             createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
@@ -1532,27 +1556,69 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     return bound;
 }
 
+size_t Graphics::mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided) {
+    return size_t(blend) * 4u + (depthWrite ? 2u : 0u) + (doubleSided ? 1u : 0u);
+}
+
 vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
                                                  const std::vector<uint32_t> &frag,
                                                  vk::PipelineLayout layout,
                                                  const vkb::BuiltRenderPass &rp,
-                                                 vk::SampleCountFlagBits samples) {
+                                                 vk::SampleCountFlagBits samples, BlendMode blend,
+                                                 bool depthWrite, bool doubleSided) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    vk::Pipeline pipe =
-        device.createPipeline()
+    const auto cull = doubleSided ? vk::CullModeFlagBits::eNone : vk::CullModeFlagBits::eBack;
+    vk::Pipeline pipe{};
+    if (blend == BlendMode::Additive || blend == BlendMode::Premultiplied ||
+        blend == BlendMode::Multiply) {
+        std::vector<vk::PipelineColorBlendAttachmentState> attachments(1,
+                                                                       makeBlendAttachment(blend));
+        vk::PipelineColorBlendStateCreateInfo cbs{};
+        cbs.attachmentCount = 1;
+        cbs.pAttachments = attachments.data();
+        pipe = device.createPipeline()
             .useClassicPipeline(vertModule, fragModule)
             .setPipelineLayout(layout)
             .setVertexInputState(vkb::VertexInputStateBuilder()
                                      .addInputBinding<MeshVertex>()
                                      .addAttributeDescription<MeshVertex>())
             .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
                            vk::FrontFace::eClockwise)
             .setMultisampler(false, samples)
-            .setDepthStencil(true, true, vk::CompareOp::eLess)
-            .setColorAttachmentCount(1)
+            .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
+            .setColorBlending(cbs)
             .build(rp);
+    } else if (blend == BlendMode::Alpha) {
+        pipe = device.createPipeline()
+                   .useClassicPipeline(vertModule, fragModule)
+                   .setPipelineLayout(layout)
+                   .setVertexInputState(vkb::VertexInputStateBuilder()
+                                            .addInputBinding<MeshVertex>()
+                                            .addAttributeDescription<MeshVertex>())
+                   .setDynamicStatesViewportScissor()
+                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
+                                  vk::FrontFace::eClockwise)
+                   .setMultisampler(false, samples)
+                   .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
+                   .setAlphaBlending(1)
+                   .build(rp);
+    } else {
+        pipe = device.createPipeline()
+                   .useClassicPipeline(vertModule, fragModule)
+                   .setPipelineLayout(layout)
+                   .setVertexInputState(vkb::VertexInputStateBuilder()
+                                            .addInputBinding<MeshVertex>()
+                                            .addAttributeDescription<MeshVertex>())
+                   .setDynamicStatesViewportScissor()
+                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
+                                  vk::FrontFace::eClockwise)
+                   .setMultisampler(false, samples)
+                   .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
+                   .setColorAttachmentCount(1)
+                   .build(rp);
+    }
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
     return pipe;

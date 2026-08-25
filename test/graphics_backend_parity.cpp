@@ -777,3 +777,112 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
         CHECK(visible < 2900);
     }
 }
+
+TEST_CASE("graphics.backendParity.surfaceBlendDepthWriteAndCulling") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    const float positions[] = {
+        -1.f, -1.f, 0.2f, 1.f, -1.f, 0.2f, 1.f, 1.f, 0.2f, -1.f, 1.f, 0.2f,
+    };
+    const float normals[] = {
+        0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    };
+    const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t frontIndices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t backIndices[] = {0, 2, 1, 2, 0, 3};
+    Mesh *front = gfx->newMeshFromArrays(positions, normals, uvs, 4, frontIndices, 6);
+    Mesh *back = gfx->newMeshFromArrays(positions, normals, uvs, 4, backIndices, 6);
+    const uint8_t halfRed[] = {255, 0, 0, 128};
+    const uint8_t green[] = {0, 255, 0, 255};
+    const uint8_t blue[] = {0, 0, 255, 255};
+    const uint8_t halfGray[] = {128, 128, 128, 128};
+    Texture *redTexture = gfx->newTexture(1, 1, halfRed);
+    Texture *greenTexture = gfx->newTexture(1, 1, green);
+    Texture *blueTexture = gfx->newTexture(1, 1, blue);
+    Texture *grayTexture = gfx->newTexture(1, 1, halfGray);
+    REQUIRE(front != nullptr);
+    REQUIRE(back != nullptr);
+    REQUIRE(redTexture != nullptr);
+    REQUIRE(greenTexture != nullptr);
+    REQUIRE(blueTexture != nullptr);
+    REQUIRE(grayTexture != nullptr);
+
+    Lighting3DPack lighting{};
+    lighting.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+    gfx->setMesh3DLighting(lighting);
+    gfx->setMesh3DViewProj(glm::mat4(1.f));
+    gfx->setMesh3DView(glm::mat4(1.f));
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
+
+    auto renderCulling = [&](bool doubleSided, const char *artifact) {
+        gfx->setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, doubleSided, 0.5f,
+                              "cutoff");
+        Canvas *target = gfx->newCanvas(64, 64);
+        gfx->begin3DFrameToCanvas(target);
+        gfx->drawMesh(back, glm::mat4(1.f), greenTexture, Color(1.f));
+        gfx->end3DFrameToCanvas();
+        std::unique_ptr<eve::image::ImageData> image(target->newImageData());
+        REQUIRE(image.get() != nullptr);
+        writeParityArtifact(*image, artifact, gfx->getBackendName());
+        return image;
+    };
+    auto culled = renderCulling(false, "surface_backface_culled");
+    auto twoSided = renderCulling(true, "surface_double_sided");
+    CHECK(pixel(*culled, 32, 32)[1] < 8);
+    CHECK(pixel(*twoSided, 32, 32)[1] > 180);
+
+    auto renderDepthWrite = [&](bool depthWrite, const char *artifact) {
+        Canvas *target = gfx->newCanvas(64, 64);
+        gfx->begin3DFrameToCanvas(target);
+        gfx->setMesh3DSurface(SurfaceMode::Transparent, BlendMode::Alpha, depthWrite, false, 0.5f,
+                              "cutoff");
+        gfx->drawMesh(front, glm::mat4(1.f), redTexture, Color(1.f));
+        glm::mat4 farther(1.f);
+        farther[3][2] = 0.6f;
+        gfx->setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, false, 0.5f, "cutoff");
+        gfx->drawMesh(front, farther, greenTexture, Color(1.f));
+        gfx->end3DFrameToCanvas();
+        std::unique_ptr<eve::image::ImageData> image(target->newImageData());
+        REQUIRE(image.get() != nullptr);
+        writeParityArtifact(*image, artifact, gfx->getBackendName());
+        return image;
+    };
+    auto writesDepth = renderDepthWrite(true, "surface_transparent_depth_write");
+    auto skipsDepth = renderDepthWrite(false, "surface_transparent_no_depth_write");
+    const uint8_t *blocked = pixel(*writesDepth, 32, 32);
+    const uint8_t *overwritten = pixel(*skipsDepth, 32, 32);
+    CHECK(blocked[0] > 80);
+    CHECK(blocked[0] > blocked[1] + 60);
+    CHECK(overwritten[1] > 180);
+    CHECK(overwritten[0] < 20);
+
+    auto renderBlend = [&](BlendMode blend, Texture *overlay, const char *artifact) {
+        Canvas *target = gfx->newCanvas(64, 64);
+        gfx->begin3DFrameToCanvas(target);
+        glm::mat4 farther(1.f);
+        farther[3][2] = 0.6f;
+        gfx->setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, false, 0.5f, "cutoff");
+        gfx->drawMesh(front, farther, blueTexture, Color(1.f));
+        gfx->setMesh3DSurface(SurfaceMode::Transparent, blend, false, false, 0.5f, "cutoff");
+        gfx->drawMesh(front, glm::mat4(1.f), overlay, Color(1.f));
+        gfx->end3DFrameToCanvas();
+        std::unique_ptr<eve::image::ImageData> image(target->newImageData());
+        REQUIRE(image.get() != nullptr);
+        writeParityArtifact(*image, artifact, gfx->getBackendName());
+        return image;
+    };
+    auto additive = renderBlend(BlendMode::Additive, redTexture, "surface_additive");
+    auto premultiplied =
+        renderBlend(BlendMode::Premultiplied, redTexture, "surface_premultiplied");
+    auto multiply = renderBlend(BlendMode::Multiply, grayTexture, "surface_multiply");
+    const uint8_t *added = pixel(*additive, 32, 32);
+    CHECK(added[0] > 80);
+    CHECK(added[2] > 180);
+    const uint8_t *premul = pixel(*premultiplied, 32, 32);
+    CHECK(premul[0] > 180);
+    CHECK(premul[2] > 80);
+    const uint8_t *multiplied = pixel(*multiply, 32, 32);
+    CHECK(multiplied[0] < 20);
+    CHECK(multiplied[2] > 60);
+    CHECK(multiplied[2] < 180);
+}

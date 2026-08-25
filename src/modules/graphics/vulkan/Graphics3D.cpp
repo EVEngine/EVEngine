@@ -140,6 +140,19 @@ void Graphics::ensureOffscreen3DResources() {
         offscreen3DMeshPipeline = createMesh3DStylePipeline(
             embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
             offscreen3DRenderPass, vk::SampleCountFlagBits::e1);
+        for (int blendValue = 0; blendValue < 5; ++blendValue) {
+            const auto blend = BlendMode(blendValue);
+            for (int depthValue = 0; depthValue < 2; ++depthValue) {
+                for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
+                    const size_t index =
+                        mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
+                    offscreen3DSurfacePipelines[index] = createMesh3DStylePipeline(
+                        embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv),
+                        mesh3dPipelineLayout, offscreen3DRenderPass, vk::SampleCountFlagBits::e1,
+                        blend, depthValue != 0, doubleValue != 0);
+                }
+            }
+        }
     }
     if (!offscreen3DPool) {
         vk::CommandPoolCreateInfo poolInfo{};
@@ -171,6 +184,10 @@ void Graphics::destroyOffscreen3DResources() {
     if (offscreen3DMeshPipeline) {
         device->destroyPipeline(offscreen3DMeshPipeline);
         offscreen3DMeshPipeline = nullptr;
+    }
+    for (auto &pipeline : offscreen3DSurfacePipelines) {
+        if (pipeline) device->destroyPipeline(pipeline);
+        pipeline = nullptr;
     }
     if (offscreen3DRenderPass) {
         device->destroyRenderPass(offscreen3DRenderPass);
