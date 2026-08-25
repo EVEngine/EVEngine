@@ -37,21 +37,22 @@ and `test gap`.
 | Alpha-cutout GBuffer | supported | Dedicated alpha-discard pipeline and backend-neutral pixel test | Keep the Vulkan/Dawn pixel artifact in CI |
 | Cascaded shadows | partial | Opaque CSM path exists; cascade selection/bias/output have no Vulkan comparison | Add cascade boundary and receiver tests |
 | GBuffer | supported for native consumers | Normal/depth/albedo encoding, clear values and CPU readback match Vulkan exactly in the parity scene; generic SPIR-V post remains unavailable | Enable additional WGSL-native consumers incrementally |
-| SSAO | partial | Intensity is stored independently and reaches forward/clustered WGSL; GBuffer post remains disabled | Compare disabled/enabled images and enable completed consumers |
+| SSAO | supported, verified | Native SSAO/HBAO/GTAO and blur/overlay pipelines consume filterable linear depth on WebGPU | Extend the artifact set to every AO mode |
 | Decals | supported, verified | Native WGSL and Vulkan pipelines share box projection, depth reconstruction, normal rejection, edge feathering and forward composition semantics | Extend coverage to normal/roughness/metal/emissive channels |
-| Outline | missing through public effect API | Built-in implementation creates SPIR-V shaders, which WebGPU rejects | Port built-in shader to WGSL and add depth/normal edge tests |
-| Anti-aliasing post effects | missing through public effect API | FXAA/NFAA/SMAA/SSAA constructors create SPIR-V shaders | Port built-ins to WGSL; compare edge metrics rather than exact pixels |
-| Global illumination / SSR | missing through public effect API | Built-ins create SPIR-V shaders and GBuffer post is disabled | Port after GBuffer conventions are locked by tests |
-| Volumetric effects | missing through public effect API | Built-ins create SPIR-V shaders | Port the five shader stages and add low-resolution smoke/parity scenes |
+| Outline | supported | Native WGSL depth/normal edge pipeline is selected by the public effect API | Add more geometry silhouettes to the image set |
+| Anti-aliasing post effects | supported | Native WGSL FXAA/NFAA/SMAA/SSAA pipelines are selected by built-in shader identity | Compare edge metrics rather than exact pixels |
+| Global illumination / SSR | supported | Native WGSL SSGI and SSR pipelines consume the parity-locked GBuffer | Extend reflective material/camera-angle artifacts |
+| Volumetric effects | supported | Native WGSL cloud/fog/froxel/raymarch/post stages are available | Extend low-resolution parameter coverage |
 | Alpha mask | supported, unverified | Has a dedicated WGSL implementation | Add mask threshold/softness/inversion tests |
 | Custom 2D/mesh WGSL | partial | WGSL is supported only on WebGPU; Vulkan accepts SPIR-V instead | Use backend-specific shader fixtures with identical semantics |
 | Runtime GLSL and SPIR-V on browser | intentional difference | Browser WebGPU accepts WGSL, not Vulkan SPIR-V or runtime GLSL | Keep explicit errors; document paired shader assets/toolchain |
-| Hair/custom hair shaders | missing | WebGPU rejects the SPIR-V-only hair shader factory | Add built-in WGSL hair shader and a portable custom-shader contract |
-| Font rendering | missing | WebGPU implementation throws; the browser profile also removes FreeType/font module | First support native Dawn using FontData, then decide browser atlas packaging |
-| GPU-driven/indirect/visibility buffer | missing, fallback available | WebGPU uses the legacy per-draw path | Implement after visual parity; treat as performance parity, not image correctness |
+| Hair/custom hair shaders | supported for built-in hair | Anisotropic built-in WGSL shading is available; arbitrary SPIR-V hair remains an intentional input-language difference | Define a portable custom WGSL/SPIR-V shader-pair contract |
+| Font rendering | supported | Native and browser WebGPU render supplied font atlases; browser builds do not synthesize atlases with FreeType | Add packaged-atlas browser examples |
+| GPU-driven/indirect/visibility buffer | partial | Opaque resource tables, submission semantics and frustum results match; WebGPU currently performs compatibility culling/submission on CPU | Replace compatibility path with compute compaction and indirect draws, then implement visibility resolve |
 | Virtual geometry GPU path | missing, fallback available | Vulkan-only compute/indirect implementation | Implement after GPU-driven base path |
-| Native macOS surface | missing | Native Dawn backend throws instead of creating a Metal-layer surface | Add CAMetalLayer surface creation and a native smoke test |
-| Browser render tests | test gap | WASM CI only compiles artifacts; it does not launch a WebGPU browser or inspect pixels | Add Chromium/SwiftShader smoke and parity artifact capture |
+| Native macOS surface | supported, CI verified | SDL Cocoa windows are backed by a retained CAMetalLayer and native Dawn Metal surface | Keep the targeted macOS render tests in CI |
+| Browser render tests | supported in CI | Chromium/SwiftShader launches the WASM example, captures a frame and rejects black/white/flat output | Add scene-by-scene browser semantic assertions |
+| Voxel vertex AO | supported, verified | Both backends consume the same packed 2-bit-per-corner AO and pass a shared pixel-darkening test | Add AO image artifact to the comparator set |
 
 ## Test architecture
 
@@ -120,24 +121,25 @@ not an acceptable fix.
 - [x] Implement alpha-cutout shadow rendering.
 - [x] Implement alpha-cutout GBuffer rendering.
 - [x] Lock GBuffer normal/depth/albedo conventions with tests.
-- [ ] Make SSAO intensity functional and enable GBuffer post capability for
+- [x] Make SSAO intensity functional and enable GBuffer post capability for
       completed consumers.
 - [x] Implement decals, forward composition and cross-backend image coverage.
 
 ### P2: built-in effects and content workflows
 
-- [ ] Port anti-aliasing and outline built-ins to WGSL.
-- [ ] Port GI and SSR after GBuffer parity passes.
-- [ ] Port volumetric built-ins.
-- [ ] Add native Dawn font rendering, then browser font-atlas support.
-- [ ] Add built-in WGSL hair shading.
+- [x] Port anti-aliasing and outline built-ins to WGSL.
+- [x] Port GI and SSR after GBuffer parity passes.
+- [x] Port volumetric built-ins.
+- [x] Add native Dawn font rendering and browser font-atlas support.
+- [x] Add built-in WGSL hair shading.
 
 ### P3: performance and platform completeness
 
-- [ ] GPU-driven opaque submission and compute culling.
+- [ ] GPU-driven opaque submission and compute culling (submission and CPU
+      compatibility culling complete; compute compaction/indirect remains).
 - [ ] Visibility-buffer resolve and virtual geometry.
-- [ ] Native macOS Dawn surface.
-- [ ] Browser WebGPU pixel lane on CI.
+- [x] Native macOS Dawn surface.
+- [x] Browser WebGPU pixel lane on CI.
 
 ## Definition of done for each item
 
