@@ -182,6 +182,9 @@ public:
     std::optional<ScriptHover> hover(std::string_view canonicalUri, std::string_view symbol) const;
     /** @brief Returns the latest diagnostics for one source unit. */
     std::vector<ScriptDiagnostic> diagnostics(std::string_view canonicalUri) const;
+    /** @brief Unified raw-VM entry used by REPL, debugger, MCP, and editor adapters. */
+    static SQRESULT compileBuffer(HSQUIRRELVM vm, const SQChar* source, SQInteger size, const SQChar* sourceName,
+                                  SQBool raiseError);
 
     /** @brief Performs source-only metadata extraction without executing code. */
     static ScriptMetadata analyze(std::string_view source, std::string_view canonicalUri);

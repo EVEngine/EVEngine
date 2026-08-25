@@ -2,6 +2,7 @@
 #include "scripts.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
+#include "common/ScriptCompiler.h"
 #include "common/config.h"
 #include "common/ECS.h"
 #include "filesystem/Filesystem.h"
@@ -128,12 +129,12 @@ const char* playgroundEval(const char* source) {
     const std::string wrapped = std::string("return (") + source + ");";
     const char* evalSource = wrapped.c_str();
     SQInteger evalLen = static_cast<SQInteger>(wrapped.size());
-    bool compileOk =
-        SQ_SUCCEEDED(sq_compilebuffer(vm, evalSource, evalLen, _SC("playground_eval"), SQTrue));
+    bool compileOk = SQ_SUCCEEDED(eve::script::ScriptCompiler::compileBuffer(
+        vm, evalSource, evalLen, _SC("playground_eval"), SQTrue));
     if (!compileOk) {
         sq_settop(vm, top);
-        compileOk = SQ_SUCCEEDED(sq_compilebuffer(vm, source, std::strlen(source),
-                                                  _SC("playground_eval"), SQTrue));
+        compileOk = SQ_SUCCEEDED(eve::script::ScriptCompiler::compileBuffer(
+            vm, source, static_cast<SQInteger>(std::strlen(source)), _SC("playground_eval"), SQTrue));
     }
     if (!compileOk) {
         const SQChar* msg = nullptr;

@@ -4,6 +4,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iterator>
@@ -200,4 +201,18 @@ TEST_CASE("scriptCompiler.servesLanguageToolingQueries") {
     CHECK(hover.has_value());
     CHECK(hover->markdown.find("physics.newWorld") != std::string::npos);
     CHECK(runtime.scriptCompiler().diagnostics("game:/tooling.nut").empty());
+}
+
+TEST_CASE("scriptCompiler.rawVmBridgeRecordsToolingMetadata") {
+    Runtime         runtime(512, ssq::Libs::ALL);
+    const char*     source = "local replValue: int = 7\n";
+    const SQInteger top    = sq_gettop(runtime.handle());
+    const SQRESULT  result = script::ScriptCompiler::compileBuffer(
+        runtime.handle(), source, static_cast<SQInteger>(std::strlen(source)), "console_repl.nut", SQTrue);
+    CHECK(SQ_SUCCEEDED(result));
+    sq_settop(runtime.handle(), top);
+    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("console_repl.nut");
+    CHECK(metadata != nullptr);
+    CHECK_EQ(metadata->symbols.size(), size_t(1));
+    CHECK_EQ(metadata->symbols[0].name, std::string("replValue"));
 }

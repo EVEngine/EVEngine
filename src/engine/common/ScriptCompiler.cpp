@@ -10,11 +10,15 @@
 #include <fstream>
 #include <iomanip>
 #include <iterator>
+#include <mutex>
 #include <regex>
 #include <sstream>
 
 namespace eve::script {
 namespace {
+
+std::mutex                                       compilerRegistryMutex;
+std::unordered_map<HSQUIRRELVM, ScriptCompiler*> compilerRegistry;
 
 std::string hashSource(std::string_view source) {
     uint64_t hash = 1469598103934665603ull;
@@ -184,6 +188,10 @@ std::vector<BindingContract> BindingContractRegistry::snapshot() const {
 }
 
 ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_(&vm), modules_(&modules) {
+    {
+        std::lock_guard lock(compilerRegistryMutex);
+        compilerRegistry[vm_->getHandle()] = this;
+    }
     sq_setnamedargresolver(
         vm_->getHandle(),
         [](HSQUIRRELVM, const SQChar* callee, SQInteger index, const SQChar** unit, const SQChar** choices,
@@ -217,6 +225,10 @@ ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_
 }
 
 ScriptCompiler::~ScriptCompiler() {
+    {
+        std::lock_guard lock(compilerRegistryMutex);
+        compilerRegistry.erase(vm_->getHandle());
+    }
     sq_setannotationresolver(vm_->getHandle(), nullptr, nullptr);
     sq_setnamedargresolver(vm_->getHandle(), nullptr, nullptr);
 }
@@ -349,6 +361,46 @@ std::optional<ScriptHover> ScriptCompiler::hover(std::string_view canonicalUri, 
 std::vector<ScriptDiagnostic> ScriptCompiler::diagnostics(std::string_view canonicalUri) const {
     const ScriptMetadata* unit = metadata(canonicalUri);
     return unit == nullptr ? std::vector<ScriptDiagnostic>{} : unit->diagnostics;
+}
+
+SQRESULT ScriptCompiler::compileBuffer(HSQUIRRELVM vm, const SQChar* source, SQInteger size, const SQChar* sourceName,
+                                       SQBool raiseError) {
+    ScriptCompiler* compiler = nullptr;
+    {
+        std::lock_guard lock(compilerRegistryMutex);
+        const auto      found = compilerRegistry.find(vm);
+        if (found != compilerRegistry.end()) compiler = found->second;
+    }
+    if (compiler == nullptr) return sq_compilebuffer(vm, source, size, sourceName, raiseError);
+
+    const std::string_view text(source, static_cast<size_t>(size));
+    const std::string      uri  = sourceName == nullptr ? "buffer" : sourceName;
+    ScriptMetadata         next = analyze(text, uri);
+    compiler->modules_->beginCompilation(uri);
+    const SQInteger top    = sq_gettop(vm);
+    const SQRESULT  result = sq_compilebuffer(vm, source, size, sourceName, raiseError);
+    if (SQ_FAILED(result)) {
+        const ScriptErrorContext context = captureCompileError(vm);
+        ScriptDiagnostic         diagnostic;
+        diagnostic.code            = diagnosticCode(context.message);
+        diagnostic.message         = context.message.empty() ? "script compilation failed" : context.message;
+        diagnostic.canonicalUri    = context.source.empty() ? uri : context.source;
+        diagnostic.position.line   = static_cast<uint32_t>(std::max(context.line, 1));
+        diagnostic.position.column = static_cast<uint32_t>(std::max(context.column, 1));
+        next.diagnostics.push_back(std::move(diagnostic));
+        compiler->metadata_[uri] = std::move(next);
+        return result;
+    }
+    try {
+        compiler->modules_->prepareDependencies(uri);
+    } catch (const std::exception& error) {
+        sq_settop(vm, top);
+        next.diagnostics.push_back(makeDiagnostic(error.what(), uri));
+        compiler->metadata_[uri] = std::move(next);
+        return sq_throwerror(vm, error.what());
+    }
+    compiler->metadata_[uri] = std::move(next);
+    return SQ_OK;
 }
 
 ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view canonicalUri) {
