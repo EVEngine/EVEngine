@@ -38,6 +38,16 @@ python examples/ai-editor/editor_demo.py 7531
 `eve_host_capture` 等工具现场生成并迭代编辑器（工具全表见
 [`docs/dev/AI与MCP支持.md`](../../docs/dev/AI与MCP支持.md)）。
 
+## 保存即生效
+
+主机运行期间可直接修改 `editors/terrain.editor.json` 或
+`editors/terrain.vm.nut`。`eve mcp` 会自动重载文件，不需要重新编译或重启测试；当前
+MCP 连接和编辑器控件值会保留。若新脚本编译失败，旧 ViewModel 继续工作，可通过
+`eve_host_hot_reload_status` 查看错误，修复并再次保存即可恢复。
+
+项目还可以添加 `mcp.nut` 或 `mcp/*.nut` 注入专用工具逻辑。Agent 需要确定性刷新时可调用
+`eve_host_resource_reload {"path":"editors/terrain.vm.nut"}`。
+
 ## 文件
 
 - `editors/terrain.editor.json`：编辑器 View（控件树 + 主题 + 布局）。

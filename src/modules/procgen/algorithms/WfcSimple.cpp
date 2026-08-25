@@ -287,7 +287,12 @@ bool genWfcSimple(const Params &params, Grid2D &out, std::string &error) {
 }  // namespace
 
 void registerWfcSimple(GeneratorRegistry &registry) {
-    registry.registerAlgorithm("wfc.simple", genWfcSimple);
+    auto descriptor = GeneratorDescriptor::grid("wfc.simple", "Simple WFC", "Wave Function Collapse", 4, 4,
+                                                256, 256);
+    descriptor.params.push_back(ParamDescriptor::choice("preset", "Preset", "dungeon",
+                                                        {"dungeon", "cave", "terrain"}));
+    descriptor.params.push_back(ParamDescriptor::integer("maxAttempts", "Maximum Attempts", 32, 1, 512));
+    registry.registerAlgorithm(std::move(descriptor), genWfcSimple);
 }
 
 }  // namespace eve::procgen

@@ -53,9 +53,6 @@ public:
                                            bool generateMipmaps, float maxAnisotropy,
                                            const std::string &filter, const std::string &mipmap,
                                            float lodBias = 0.f) = 0;
-    virtual void setTextureSamplerParams(Texture *texture, const std::string &filter,
-                                         const std::string &mipmap, float maxAnisotropy,
-                                         float lodBias) = 0;
     virtual void setTextureSampler(Texture *texture, const TextureSampler &sampler) = 0;
     virtual Texture *newTextureFromFile(const std::string &filename) = 0;
     virtual Texture *newTextureFromFileRepeated(const std::string &filename, bool repeatU,

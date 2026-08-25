@@ -8,7 +8,11 @@
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
 
+#if defined(__EMSCRIPTEN__) && __has_include(<webgpu/webgpu_cpp.h>)
 #include <webgpu/webgpu_cpp.h>
+#else
+#include <dawn/webgpu_cpp.h>
+#endif
 
 #include <atomic>
 #include <map>
@@ -44,8 +48,28 @@ struct Mesh3DUBO {
     glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f};   // x=near, y=far
     glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};        // x=strength(0=off), y=worldCell, z=time
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};  // xy=wind vel, z=coverage, w=detail
+    glm::vec4 skinInfo{0.f};
+    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
 };
-static_assert(sizeof(Mesh3DUBO) == 608, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 8816, "Mesh3DUBO layout must match the WGSL Frame block");
+
+struct MeshVertex {
+    glm::vec3 pos;
+    glm::vec3 normal;
+    glm::vec2 uv;
+    glm::u16vec4 joints{0};
+    glm::vec4 weights{0.f};
+};
+static_assert(sizeof(MeshVertex) == 56);
+
+struct SkinPassUBO {
+    glm::mat4 mvp{1.f};
+    glm::mat4 model{1.f};
+    glm::vec4 clip{0.f};
+    glm::vec4 skinInfo{0.f};
+    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
+};
+static_assert(sizeof(SkinPassUBO) == 8352);
 
 /**
  * @brief Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and
@@ -97,6 +121,7 @@ struct GpuMesh {
     uint32_t vertexCount = 0;
     uint32_t vertexStride = 0;
     wgpu::IndexFormat indexFormat = wgpu::IndexFormat::Uint32;
+    std::vector<MeshVertex> cpuVertices;
 };
 
 /**
@@ -161,6 +186,8 @@ public:
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
     bool releaseTexture(Texture *texture) override;
+    bool updateTexture(Texture *texture, int width, int height,
+                       const uint8_t *rgba) override;
 
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                           const Color &color) override;
@@ -205,6 +232,8 @@ public:
     bool bakeMeshMorph(Mesh *mesh) override;
     bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
+    bool setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
+                             int vertexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     bool releaseMesh(Mesh *mesh) override;
@@ -226,6 +255,9 @@ public:
     void setMesh3DHeightTexture(Texture *height) override;
     void     setMesh3DSceneDepth(Texture *depth) override;
     void     setMesh3DMaterial(float metallic, float roughness) override;
+    void     setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                              bool doubleSided, float alphaCutoff,
+                              const std::string &alphaTechnique = "cutoff") override;
     void     setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void     setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
     void     setMesh3DLighting(const Lighting3DPack &pack) override;
@@ -252,6 +284,20 @@ public:
                               float nearZ, float farZ, Texture *albedo = nullptr, float tintR = 1.f,
                               float tintG = 1.f, float tintB = 1.f) override;
     void endGBufferPass() override;
+
+    bool supportsDecal() const override { return false; }
+    void beginDecalPass(int width, int height) override { (void)width; (void)height; }
+    void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override {
+        (void)viewProj; (void)nearZ; (void)farZ;
+    }
+    void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
+                   const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
+                   float metalStrength, float emissiveStrength, int blendMode = 0) override {
+        (void)model; (void)albedo; (void)normal; (void)params; (void)uvRect;
+        (void)fade; (void)normalStrength; (void)roughnessStrength; (void)metalStrength;
+        (void)emissiveStrength; (void)blendMode;
+    }
+    void endDecalPass() override {}
 
     Canvas *newCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
@@ -314,6 +360,10 @@ private:
         glm::mat4 model{1.f};
         Color tint{1.f};
         Shader *shader = nullptr;
+        SurfaceMode surfaceMode = SurfaceMode::Opaque;
+        BlendMode surfaceBlend = BlendMode::Alpha;
+        float alphaCutoff = 0.5f;
+        std::string alphaTechnique = "cutoff";
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
         uint32_t shadowUboOffset = 0;
@@ -535,9 +585,14 @@ private:
     wgpu::RenderPipeline texturedPipeline;   // 2D textured
     wgpu::RenderPipeline colorAdditivePipeline;
     wgpu::RenderPipeline texturedAdditivePipeline;
+    wgpu::RenderPipeline colorPremultipliedPipeline;
+    wgpu::RenderPipeline texturedPremultipliedPipeline;
+    wgpu::RenderPipeline colorMultiplyPipeline;
+    wgpu::RenderPipeline texturedMultiplyPipeline;
     wgpu::RenderPipeline colorOpaquePipeline;
     wgpu::RenderPipeline texturedOpaquePipeline;
     wgpu::RenderPipeline mesh3dPipeline;
+    wgpu::RenderPipeline mesh3dTransparentPipeline;
     wgpu::RenderPipeline mesh3dShadowPipeline;
     wgpu::RenderPipeline mesh3dGbufferPipeline;
     wgpu::RenderPipeline voxelRectPipeline;
@@ -547,6 +602,10 @@ private:
     wgpu::RenderPipeline offscreenTexturedPipeline;
     wgpu::RenderPipeline offscreenColorAdditivePipeline;
     wgpu::RenderPipeline offscreenTexturedAdditivePipeline;
+    wgpu::RenderPipeline offscreenColorPremultipliedPipeline;
+    wgpu::RenderPipeline offscreenTexturedPremultipliedPipeline;
+    wgpu::RenderPipeline offscreenColorMultiplyPipeline;
+    wgpu::RenderPipeline offscreenTexturedMultiplyPipeline;
     wgpu::RenderPipeline offscreenColorOpaquePipeline;
     wgpu::RenderPipeline offscreenTexturedOpaquePipeline;
     wgpu::RenderPipeline offscreenLitPipeline;
@@ -595,6 +654,12 @@ private:
     float mesh3dEnvIntensity = 0.f;
     float mesh3dMetallic = 0.f;
     float mesh3dRoughness = 0.45f;
+    SurfaceMode mesh3dSurfaceMode = SurfaceMode::Opaque;
+    BlendMode mesh3dSurfaceBlend = BlendMode::Alpha;
+    bool mesh3dSurfaceDepthWrite = false;
+    bool mesh3dSurfaceDoubleSided = false;
+    float mesh3dAlphaCutoff = 0.5f;
+    std::string mesh3dAlphaTechnique = "cutoff";
     float mesh3dTexBombScale = 4.f, mesh3dTexBombStrength = 0.f, mesh3dTexBombRot = 1.f;
     float mesh3dParallaxScale = 0.f, mesh3dParallaxMin = 8.f, mesh3dParallaxMax = 32.f;
     glm::vec4 mesh3dCloud{0.f, 1.5f, 0.f, 0.f};

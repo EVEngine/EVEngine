@@ -144,6 +144,7 @@ void ensureDynamicRing(GpuMesh &gpu) {
 void writeDynamicMesh(GpuMesh &gpu, const std::vector<MeshVertex> &verts, vkb::Device &device,
                       vkb::FrameSlot frame, const uint32_t *indices, int indexCount) {
     const size_t slot = size_t(gpu.dynamicWriteCount % GpuMesh::kDynamicVertexCopies);
+    gpu.vertexCount = uint32_t(verts.size());
     gpu.dynVertices[slot].allocate<MeshVertex>(frame, device, verts);
     if (indices && indexCount > 0) {
         gpu.cpuIndices.assign(indices, indices + indexCount);
@@ -164,6 +165,7 @@ std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame
                                        const std::vector<MeshVertex> &vertices,
                                        const std::vector<uint32_t> &indices) {
     auto gpu = std::make_unique<GpuMesh>();
+    gpu->vertexCount = uint32_t(vertices.size());
     gpu->vertices.allocate<MeshVertex>(frame, device, vertices);
     gpu->indices.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer,
                           indices.size() * sizeof(uint32_t), kHostVisibleCoherent);
@@ -177,6 +179,7 @@ std::unique_ptr<GpuMesh> uploadGpuMesh16(vkb::Device &device, vkb::FrameSlot fra
                                          const std::vector<MeshVertex> &vertices,
                                          const std::vector<uint16_t> &indices) {
     auto gpu = std::make_unique<GpuMesh>();
+    gpu->vertexCount = uint32_t(vertices.size());
     gpu->vertices.allocate<MeshVertex>(frame, device, vertices);
     gpu->indices.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer,
                           indices.size() * sizeof(uint16_t), kHostVisibleCoherent);
@@ -189,6 +192,7 @@ std::unique_ptr<GpuMesh> uploadGpuMesh16(vkb::Device &device, vkb::FrameSlot fra
 std::unique_ptr<Mesh> makeMeshHandle(GpuMesh &gpu) {
     auto mesh = std::make_unique<Mesh>();
     mesh->indexCount = int(gpu.indexCount);
+    mesh->gpuVertexCount = int(gpu.vertexCount);
     mesh->gpuHandle = &gpu;
     return mesh;
 }
@@ -238,6 +242,20 @@ vk::PipelineColorBlendAttachmentState makeBlendAttachment(BlendMode mode) {
         att.colorBlendOp = vk::BlendOp::eAdd;
         att.srcAlphaBlendFactor = vk::BlendFactor::eOne;
         att.dstAlphaBlendFactor = vk::BlendFactor::eOne;
+        att.alphaBlendOp = vk::BlendOp::eAdd;
+    } else if (mode == BlendMode::Premultiplied) {
+        att.srcColorBlendFactor = vk::BlendFactor::eOne;
+        att.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        att.colorBlendOp = vk::BlendOp::eAdd;
+        att.srcAlphaBlendFactor = vk::BlendFactor::eOne;
+        att.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        att.alphaBlendOp = vk::BlendOp::eAdd;
+    } else if (mode == BlendMode::Multiply) {
+        att.srcColorBlendFactor = vk::BlendFactor::eDstColor;
+        att.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        att.colorBlendOp = vk::BlendOp::eAdd;
+        att.srcAlphaBlendFactor = vk::BlendFactor::eOne;
+        att.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
         att.alphaBlendOp = vk::BlendOp::eAdd;
     } else {
         att.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;

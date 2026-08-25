@@ -188,7 +188,7 @@ TEST_CASE("capability.listenersAndServiceAreIndependent") {
     CHECK_EQ(eve::cap::listenerCount<IGreeter>(), 0u);
 }
 
-TEST_CASE("capability.withdrawDuringDispatchIsSafe") {
+TEST_CASE("capability.withdrawDuringDispatchAffectsNextDispatch") {
     Reset reset;
     NamedStep a("a"), b("b");
     eve::cap::addListener<IStep>(&a);
@@ -200,8 +200,83 @@ TEST_CASE("capability.withdrawDuringDispatchIsSafe") {
         eve::cap::removeListener<IStep>(&b);
     });
 
-    // "a" runs, removes "b", and the index-based walk simply finds nothing at 1.
+    // The active dispatch owns a stable pointer snapshot. Removing b changes
+    // the registry for the next dispatch without changing this one.
+    REQUIRE(log.size() == 2u);
+    CHECK_EQ(log[0], "a");
+    CHECK_EQ(log[1], "b");
+    CHECK_EQ(eve::cap::listenerCount<IStep>(), 1u);
+
+    log.clear();
+    eve::cap::forEach<IStep>([&](IStep* s) { s->run(log); });
     REQUIRE(log.size() == 1u);
     CHECK_EQ(log[0], "a");
-    CHECK_EQ(eve::cap::listenerCount<IStep>(), 1u);
+}
+
+TEST_CASE("capability.withdrawCurrentListenerDoesNotSkipSuccessor") {
+    Reset reset;
+    NamedStep a("a"), b("b"), c("c");
+    eve::cap::addListener<IStep>(&a);
+    eve::cap::addListener<IStep>(&b);
+    eve::cap::addListener<IStep>(&c);
+
+    std::vector<std::string> log;
+    eve::cap::forEach<IStep>([&](IStep* s) {
+        s->run(log);
+        if (s == &a) eve::cap::removeListener<IStep>(&a);
+    });
+
+    REQUIRE(log.size() == 3u);
+    CHECK_EQ(log[0], "a");
+    CHECK_EQ(log[1], "b");
+    CHECK_EQ(log[2], "c");
+    CHECK_EQ(eve::cap::listenerCount<IStep>(), 2u);
+}
+
+TEST_CASE("capability.registrationDuringDispatchAffectsNextDispatch") {
+    Reset reset;
+    NamedStep a("a"), b("b"), early("early");
+    eve::cap::addListener<IStep>(&a, 10);
+    eve::cap::addListener<IStep>(&b, 20);
+
+    std::vector<std::string> log;
+    eve::cap::forEach<IStep>([&](IStep* s) {
+        s->run(log);
+        if (s == &a) eve::cap::addListener<IStep>(&early, 0);
+    });
+    REQUIRE(log.size() == 2u);
+    CHECK_EQ(log[0], "a");
+    CHECK_EQ(log[1], "b");
+
+    log.clear();
+    eve::cap::forEach<IStep>([&](IStep* s) { s->run(log); });
+    REQUIRE(log.size() == 3u);
+    CHECK_EQ(log[0], "early");
+    CHECK_EQ(log[1], "a");
+    CHECK_EQ(log[2], "b");
+}
+
+TEST_CASE("capability.nestedDispatchUsesCurrentRegistry") {
+    Reset reset;
+    NamedStep a("a"), b("b"), early("early");
+    eve::cap::addListener<IStep>(&a, 10);
+    eve::cap::addListener<IStep>(&b, 20);
+
+    std::vector<std::string> outer;
+    std::vector<std::string> nested;
+    eve::cap::forEach<IStep>([&](IStep* s) {
+        s->run(outer);
+        if (s == &a) {
+            eve::cap::addListener<IStep>(&early, 0);
+            eve::cap::forEach<IStep>([&](IStep* inner) { inner->run(nested); });
+        }
+    });
+
+    REQUIRE(outer.size() == 2u);
+    CHECK_EQ(outer[0], "a");
+    CHECK_EQ(outer[1], "b");
+    REQUIRE(nested.size() == 3u);
+    CHECK_EQ(nested[0], "early");
+    CHECK_EQ(nested[1], "a");
+    CHECK_EQ(nested[2], "b");
 }

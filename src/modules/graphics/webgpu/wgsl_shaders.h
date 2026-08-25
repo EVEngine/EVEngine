@@ -42,6 +42,8 @@ struct VSIn {
     @location(0) pos: vec2f,
     @location(1) color: vec4f,
     @location(2) uv: vec2f,
+    @location(3) joints: vec4u,
+    @location(4) weights: vec4f,
 };
 struct VSOut {
     @builtin(position) pos: vec4f,
@@ -139,6 +141,8 @@ struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
     @location(2) uv: vec2f,
+    @location(3) joints: vec4u,
+    @location(4) weights: vec4f,
 };
 struct Light3D {
     posRadius: vec4f,
@@ -159,6 +163,8 @@ struct Frame {
     clipInfo: vec4f,
     cloud: vec4f,
     cloudWind: vec4f,
+    skinInfo: vec4f,
+    skinBones: array<mat4x4f, 128>,
 };
 
 struct VSOut {
@@ -186,13 +192,23 @@ fn inverse3x3(m: mat3x3f) -> mat3x3f {
 @vertex
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
-    out.pos = ubo.mvp * vec4f(in.pos, 1.0);
+    var localPos = vec4f(in.pos, 1.0);
+    var localNormal = in.normal;
+    if (ubo.skinInfo.x > 0.5) {
+        let skin = in.weights.x * ubo.skinBones[in.joints.x]
+                 + in.weights.y * ubo.skinBones[in.joints.y]
+                 + in.weights.z * ubo.skinBones[in.joints.z]
+                 + in.weights.w * ubo.skinBones[in.joints.w];
+        localPos = skin * localPos;
+        localNormal = mat3x3f(skin[0].xyz, skin[1].xyz, skin[2].xyz) * localNormal;
+    }
+    out.pos = ubo.mvp * localPos;
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     out.pos.y = -out.pos.y;
-    let world = ubo.model * vec4f(in.pos, 1.0);
+    let world = ubo.model * localPos;
     out.vWorldPos = world.xyz;
     out.vViewPos = (ubo.view * world).xyz;
-    let nrm = transpose(inverse3x3(mat3x3f(ubo.model[0].xyz, ubo.model[1].xyz, ubo.model[2].xyz))) * in.normal;
+    let nrm = transpose(inverse3x3(mat3x3f(ubo.model[0].xyz, ubo.model[1].xyz, ubo.model[2].xyz))) * localNormal;
     out.vNormal = normalize(nrm);
     out.vUV = in.uv;
     out.vTint = ubo.tint;
@@ -375,7 +391,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
     let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
-    if (base.a < 0.5) { discard; }
+    if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w) {
+        discard;
+    }
+    let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
+    if (ubo.texBomb.w > 2.5 && base.a < alphaHash) { discard; }
     let albedo = base.rgb;
     let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
@@ -659,7 +679,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
     let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
-    if (base.a < 0.5) { discard; }
+    if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w) {
+        discard;
+    }
+    let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
+    if (ubo.texBomb.w > 2.5 && base.a < alphaHash) { discard; }
     let albedo = base.rgb;
     let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
@@ -718,14 +742,28 @@ struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
     @location(2) uv: vec2f,
+    @location(3) joints: vec4u,
+    @location(4) weights: vec4f,
 };
 struct Push {
     mvp: mat4x4f,
+    model: mat4x4f,
+    clip: vec4f,
+    skinInfo: vec4f,
+    skinBones: array<mat4x4f, 128>,
 };
 @group(0) @binding(0) var<uniform> pc: Push;
 @vertex
 fn vs_main(in: VSIn) -> @builtin(position) vec4f {
-    let clipPos = pc.mvp * vec4f(in.pos, 1.0);
+    var localPos = vec4f(in.pos, 1.0);
+    if (pc.skinInfo.x > 0.5) {
+        let skin = in.weights.x * pc.skinBones[in.joints.x]
+                 + in.weights.y * pc.skinBones[in.joints.y]
+                 + in.weights.z * pc.skinBones[in.joints.z]
+                 + in.weights.w * pc.skinBones[in.joints.w];
+        localPos = skin * localPos;
+    }
+    let clipPos = pc.mvp * localPos;
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     return vec4f(clipPos.x, -clipPos.y, clipPos.z, clipPos.w);
 }
@@ -737,13 +775,15 @@ struct VSIn {
     @location(0) pos: vec3f,
     @location(1) normal: vec3f,
     @location(2) uv: vec2f,
+    @location(3) joints: vec4u,
+    @location(4) weights: vec4f,
 };
 struct Push {
     mvp: mat4x4f,
-    modelR0: vec4f,
-    modelR1: vec4f,
-    modelR2: vec4f,
+    model: mat4x4f,
     clip: vec4f,
+    skinInfo: vec4f,
+    skinBones: array<mat4x4f, 128>,
 };
 struct VSOut {
     @builtin(position) pos: vec4f,
@@ -755,10 +795,20 @@ struct VSOut {
 @vertex
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
-    out.pos = pc.mvp * vec4f(in.pos, 1.0);
+    var localPos = vec4f(in.pos, 1.0);
+    var localNormal = in.normal;
+    if (pc.skinInfo.x > 0.5) {
+        let skin = in.weights.x * pc.skinBones[in.joints.x]
+                 + in.weights.y * pc.skinBones[in.joints.y]
+                 + in.weights.z * pc.skinBones[in.joints.z]
+                 + in.weights.w * pc.skinBones[in.joints.w];
+        localPos = skin * localPos;
+        localNormal = mat3x3f(skin[0].xyz, skin[1].xyz, skin[2].xyz) * localNormal;
+    }
+    out.pos = pc.mvp * localPos;
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     out.pos.y = -out.pos.y;
-    let nrm = mat3x3f(pc.modelR0.xyz, pc.modelR1.xyz, pc.modelR2.xyz) * in.normal;
+    let nrm = mat3x3f(pc.model[0].xyz, pc.model[1].xyz, pc.model[2].xyz) * localNormal;
     out.vNormal = normalize(nrm);
     out.vNdcZ = out.pos.z;
     out.vUV = in.uv;
@@ -774,10 +824,10 @@ struct FSIn {
 };
 struct Push {
     mvp: mat4x4f,
-    modelR0: vec4f,
-    modelR1: vec4f,
-    modelR2: vec4f,
+    model: mat4x4f,
     clip: vec4f,
+    skinInfo: vec4f,
+    skinBones: array<mat4x4f, 128>,
 };
 struct GBufOut {
     @location(0) normal: vec4f,
@@ -884,7 +934,9 @@ struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) uv: vec2f,
     @location(1) tint: vec4f,
-    @location(2) @interpolate(flat) vAO: f32,
+    @location(2) vAO: f32,
+    @location(3) @interpolate(flat) atlasBase: vec2f,
+    @location(4) @interpolate(flat) tileScale: f32,
 };
 @group(0) @binding(0) var<uniform> pc: PC;
 @vertex
@@ -894,8 +946,8 @@ fn vs_main(in: VSIn) -> VSOut {
     let px = f32(in.packed & 31u);
     let py = f32((in.packed >> 5u) & 31u);
     let pz = f32((in.packed >> 10u) & 31u);
-    let w = f32((in.packed >> 15u) & 31u);
-    let h = f32((in.packed >> 20u) & 31u);
+    let w = f32((in.packed >> 15u) & 31u) + 1.0;
+    let h = f32((in.packed >> 20u) & 31u) + 1.0;
     let tex = f32((in.packed >> 25u) & 127u);
     // Per-instance AO word: 2 bits per corner (0..3), Vulkan corner order.
     let ao0 = in.aoWord & 3u;
@@ -909,20 +961,22 @@ fn vs_main(in: VSIn) -> VSOut {
     let face = i32(pc.chunkOrigin.w + 0.5);
     var u: f32 = in.corner.x;
     var v: f32 = in.corner.y;
-    if (face == 0) { world += vec3f(0.0, v * h, u * w); }
-    else if (face == 1) { world += vec3f(0.0, v * h, w - u * w); }
-    else if (face == 2) { world += vec3f(u * w, 0.0, v * h); }
-    else if (face == 3) { world += vec3f(w - u * w, 0.0, v * h); }
-    else if (face == 4) { world += vec3f(u * w, v * h, 0.0); }
-    else { world += vec3f(w - u * w, v * h, 0.0); }
+    if (face == 0) { world += vec3f(1.0, v * h, u * w); }
+    else if (face == 1) { world += vec3f(0.0, v * h, (1.0 - u) * w); }
+    else if (face == 2) { world += vec3f(u * w, 1.0, v * h); }
+    else if (face == 3) { world += vec3f(u * w, 0.0, (1.0 - v) * h); }
+    else if (face == 4) { world += vec3f((1.0 - u) * w, v * h, 1.0); }
+    else { world += vec3f(u * w, v * h, 0.0); }
     out.pos = pc.viewProj * vec4f(world, 1.0);
     // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
     out.pos.y = -out.pos.y;
     let tiles = max(pc.atlasInfo.x, 1.0);
     let tw = 1.0 / tiles;
-    let col = floor(tex / tiles);
-    let row = tex - col * tiles;
-    out.uv = vec2f((u + row) * tw, (v + col) * tw);
+    let col = tex - floor(tex / tiles) * tiles;
+    let row = floor(tex / tiles);
+    out.uv = in.corner * vec2f(w, h);
+    out.atlasBase = vec2f(col, row);
+    out.tileScale = tw;
     out.tint = pc.tint;
     out.vAO = f32(ao) / 3.0;
     return out;
@@ -933,7 +987,9 @@ inline const char *kVoxelRectFragWgsl = R"wgsl(
 struct FSIn {
     @location(0) uv: vec2f,
     @location(1) tint: vec4f,
-    @location(2) @interpolate(flat) vAO: f32,
+    @location(2) vAO: f32,
+    @location(3) @interpolate(flat) atlasBase: vec2f,
+    @location(4) @interpolate(flat) tileScale: f32,
 };
 @group(0) @binding(1) var atlas: texture_2d<f32>;
 @group(0) @binding(2) var atlasSamp: sampler;
@@ -941,7 +997,10 @@ struct FSIn {
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     // Vertex ambient occlusion (0..1): darkens corners near other voxels.
     let aoShade = 0.35 + 0.65 * in.vAO;
-    return textureSample(atlas, atlasSamp, in.uv) * in.tint * aoShade;
+    let atlasUV = (in.atlasBase + fract(in.uv)) * in.tileScale;
+    let dx = dpdx(in.uv) * in.tileScale;
+    let dy = dpdy(in.uv) * in.tileScale;
+    return textureSampleGrad(atlas, atlasSamp, atlasUV, dx, dy) * in.tint * aoShade;
 }
 )wgsl";
 

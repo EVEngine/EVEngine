@@ -341,7 +341,24 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
 }  // namespace
 
 void registerRoguelikeGenerator(GeneratorRegistry &registry) {
-    registry.registerAlgorithm("level.roguelike", genRoguelike);
+    auto descriptor = GeneratorDescriptor::grid("level.roguelike", "Roguelike Level", "Dungeon", 9, 9);
+    descriptor.params.push_back(ParamDescriptor::integer("roomCount", "Room Count", 9, 1, 256));
+    descriptor.params.push_back(ParamDescriptor::integer("roomMin", "Minimum Room Size", 4, 2, 128));
+    descriptor.params.push_back(ParamDescriptor::integer("roomMax", "Maximum Room Size", 8, 2, 256));
+    descriptor.params.push_back(ParamDescriptor::integer("padding", "Room Padding", 1, 0, 4));
+    descriptor.params.push_back(ParamDescriptor::integer("spacing", "Room Spacing", 2, 0, 8));
+    descriptor.params.push_back(ParamDescriptor::integer("corridorWidth", "Corridor Width", 1, 1, 3));
+    descriptor.params.push_back(ParamDescriptor::choice("corridorStyle", "Corridor Style", "l",
+                                                        {"l", "straight", "diagonal"}));
+    descriptor.params.push_back(ParamDescriptor::choice("floorPattern", "Floor Pattern", "brick",
+                                                        {"brick", "checker", "plank", "plain", "cobble"}));
+    descriptor.params.push_back(ParamDescriptor::integer("floorVariants", "Floor Variants", 4, 1, 15));
+    descriptor.params.push_back(ParamDescriptor::floating("decorDensity", "Decoration Density", 0.05f, 0.f,
+                                                          1.f, 0.01f));
+    descriptor.params.push_back(ParamDescriptor::choice("decorSet", "Decoration Set", "mixed",
+                                                        {"mixed", "pillars", "treasure", "none"}));
+    descriptor.params.push_back(ParamDescriptor::boolean("autotile", "Autotile", true));
+    registry.registerAlgorithm(std::move(descriptor), genRoguelike);
 }
 
 bool autotileGridInPlace(Grid2D &grid) {

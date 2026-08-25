@@ -86,13 +86,18 @@ Graphics::~Graphics() {
     if (pipeline) device->destroyPipeline(pipeline);
     if (solidAlphaPipeline) device->destroyPipeline(solidAlphaPipeline);
     if (additiveSolidPipeline) device->destroyPipeline(additiveSolidPipeline);
+    if (premultipliedSolidPipeline) device->destroyPipeline(premultipliedSolidPipeline);
+    if (multiplySolidPipeline) device->destroyPipeline(multiplySolidPipeline);
     if (pipelineLayout) device->destroyPipelineLayout(pipelineLayout);
     if (texPipeline) device->destroyPipeline(texPipeline);
     if (additiveTexPipeline) device->destroyPipeline(additiveTexPipeline);
+    if (premultipliedTexPipeline) device->destroyPipeline(premultipliedTexPipeline);
+    if (multiplyTexPipeline) device->destroyPipeline(multiplyTexPipeline);
     if (opaqueTexPipeline) device->destroyPipeline(opaqueTexPipeline);
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
     if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
+    if (mesh3dTransparentPipeline) device->destroyPipeline(mesh3dTransparentPipeline);
     destroyOffscreen3DResources();
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
     if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);
@@ -105,6 +110,11 @@ Graphics::~Graphics() {
     mesh3dClusteredFrameSlots.clear();
     destroyShadowResources();
     destroyGBufferResources();
+    if (skinPassPipelineLayout) device->destroyPipelineLayout(skinPassPipelineLayout);
+    skinPassPipelineLayout = nullptr;
+    skinPassSetLayoutUnique.reset();
+    skinPassSetLayout = nullptr;
+    destroyDecalResources();
     destroySceneColorResources();
     destroyUiColorResources();
     auto destroyBuf = [&](vkb::GenericBuffer &b) { b.release(); };
@@ -125,8 +135,14 @@ Graphics::~Graphics() {
     if (offscreenSolidPipeline) device->destroyPipeline(offscreenSolidPipeline);
     if (offscreenSolidAlphaPipeline) device->destroyPipeline(offscreenSolidAlphaPipeline);
     if (offscreenAdditiveSolidPipeline) device->destroyPipeline(offscreenAdditiveSolidPipeline);
+    if (offscreenPremultipliedSolidPipeline)
+        device->destroyPipeline(offscreenPremultipliedSolidPipeline);
+    if (offscreenMultiplySolidPipeline) device->destroyPipeline(offscreenMultiplySolidPipeline);
     if (offscreenTexPipeline) device->destroyPipeline(offscreenTexPipeline);
     if (offscreenAdditiveTexPipeline) device->destroyPipeline(offscreenAdditiveTexPipeline);
+    if (offscreenPremultipliedTexPipeline)
+        device->destroyPipeline(offscreenPremultipliedTexPipeline);
+    if (offscreenMultiplyTexPipeline) device->destroyPipeline(offscreenMultiplyTexPipeline);
     if (offscreenOpaqueTexPipeline) device->destroyPipeline(offscreenOpaqueTexPipeline);
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
     texSetLayoutUnique.reset();
@@ -546,6 +562,11 @@ Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
     return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
 }
 
+Graphics::DecalSlot *Graphics::currentDecalSlot() {
+    if (decalSlots.empty()) return nullptr;
+    return &decalSlots[currentFrameSlot() % decalSlots.size()];
+}
+
 Graphics::SceneColorSlot *Graphics::currentSceneColorSlot() {
     if (sceneColorSlots.empty()) return nullptr;
     return &sceneColorSlots[currentFrameSlot() % sceneColorSlots.size()];
@@ -567,6 +588,8 @@ void Graphics::dropPendingOffscreenPasses() {
     for (auto &d : shadowCascadeDraws) d.clear();
     gbufferPending = false;
     gbufferPassDraws.clear();
+    decalPending = false;
+    decalPassDraws.clear();
 }
 
 bool Graphics::beginSwapchainRenderPass() {

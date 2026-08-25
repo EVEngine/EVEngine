@@ -23,6 +23,9 @@ struct DrawItem2D {
     float depthY = 0.f;
     /** @brief Degrees, clockwise, around the rectangle center (screen Y-down). */
     float rotation = 0.f;
+    /** @brief Normalized transform pivot; (0,0) top-left, (0.5,0.5) center. */
+    float anchorX = 0.5f, anchorY = 0.5f;
+    bool flipX = false, flipY = false;
     /** Explicit back-to-front order (e.g. Spine slot draw order). When set on
      *  both items it takes priority over depthY. */
     int  order = 0;
@@ -59,11 +62,10 @@ inline void sortDrawItems2D(std::vector<DrawItem2D> &items) {
         if (a.layer != b.layer) return a.layer < b.layer;
         if (a.hasOrder && b.hasOrder && a.order != b.order) return a.order < b.order;
         if (a.depthY != b.depthY) return a.depthY < b.depthY;
-        if (a.litPath != b.litPath) return !a.litPath && b.litPath;
-        if (a.shader != b.shader) return a.shader < b.shader;
-        if (a.blend != b.blend) return a.blend < b.blend;
-        if (a.texture != b.texture) return a.texture < b.texture;
-        return a.normal < b.normal;
+        // Do not use pipeline/texture state as a tie-breaker: alpha compositing is
+        // order-dependent. stable_sort preserves submission order for equal visual keys,
+        // while the backend still batches adjacent compatible items.
+        return false;
     });
 }
 

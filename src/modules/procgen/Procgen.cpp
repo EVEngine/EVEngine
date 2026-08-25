@@ -19,6 +19,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <sstream>
 #include <vector>
 
 namespace eve::procgen {
@@ -43,11 +44,13 @@ Procgen::Procgen() {
     setPaletteGid("default", "dirt", 7);
     setPaletteGid("default", "stone", 8);
     setPaletteGid("default", "snow", 9);
+    setPaletteGid("default", "road", 3);
     setPaletteGid("dungeon_default", "empty", 0);
     setPaletteGid("dungeon_default", "wall", 1);
     setPaletteGid("dungeon_default", "floor", 2);
     setPaletteGid("dungeon_default", "corridor", 2);
     setPaletteGid("dungeon_default", "door", 3);
+    setPaletteGid("dungeon_default", "road", 3);
 }
 
 Params *Procgen::newParams() { return new Params(); }
@@ -57,6 +60,333 @@ Grid2D *Procgen::newGrid(int width, int height) {
     auto *g = new Grid2D();
     g->resize(width, height);
     return g;
+}
+
+PointSet* Procgen::newPointSet() { return new PointSet(); }
+
+PointSet* Procgen::sampleGrid(int width, int depth, float spacing, uint32_t seed, float jitter) {
+    return new PointSet(sampleGridPoints(width, depth, spacing, seed, jitter));
+}
+
+PointSet* Procgen::filterHeight(PointSet* input, float minHeight, float maxHeight) {
+    if (!input) {
+        lastError_ = "filterHeight: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointHeight(*input, minHeight, maxHeight));
+}
+
+PointSet* Procgen::filterDensity(PointSet* input, float minDensity, float maxDensity) {
+    if (!input) {
+        lastError_ = "filterDensity: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointDensity(*input, minDensity, maxDensity));
+}
+
+PointSet* Procgen::filterBox(PointSet* input, float minX, float minY, float minZ, float maxX,
+                             float maxY, float maxZ) {
+    if (!input) {
+        lastError_ = "filterBox: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointBox(*input, minX, minY, minZ, maxX, maxY, maxZ, false));
+}
+
+PointSet* Procgen::excludeBox(PointSet* input, float minX, float minY, float minZ, float maxX,
+                              float maxY, float maxZ) {
+    if (!input) {
+        lastError_ = "excludeBox: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointBox(*input, minX, minY, minZ, maxX, maxY, maxZ, true));
+}
+
+PointSet* Procgen::filterSlope(PointSet* input, float minDegrees, float maxDegrees) {
+    if (!input) {
+        lastError_ = "filterSlope: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointSlope(*input, minDegrees, maxDegrees));
+}
+
+PointSet* Procgen::filterPolygon(PointSet* input, PointSet* polygon) {
+    if (!input || !polygon) {
+        lastError_ = "filterPolygon: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointsByPolygon(*input, *polygon, false));
+}
+
+PointSet* Procgen::excludePolygon(PointSet* input, PointSet* polygon) {
+    if (!input || !polygon) {
+        lastError_ = "excludePolygon: null input";
+        return nullptr;
+    }
+    return new PointSet(filterPointsByPolygon(*input, *polygon, true));
+}
+
+PointSet* Procgen::filterSplineDistance(PointSet* input, PointSet* controlPoints,
+                                        float minDistance, float maxDistance) {
+    if (!input || !controlPoints) {
+        lastError_ = "filterSplineDistance: null input";
+        return nullptr;
+    }
+    return new PointSet(
+        filterPointsBySplineDistance(*input, *controlPoints, minDistance, maxDistance));
+}
+
+PointSet* Procgen::excludeRadius(PointSet* input, float x, float z, float radius) {
+    if (!input) {
+        lastError_ = "excludeRadius: null input";
+        return nullptr;
+    }
+    return new PointSet(excludePointRadius(*input, x, z, radius));
+}
+
+PointSet* Procgen::jitterPoints(PointSet* input, uint32_t seed, float amountX, float amountZ) {
+    if (!input) {
+        lastError_ = "jitterPoints: null input";
+        return nullptr;
+    }
+    return new PointSet(jitterPointPositions(*input, seed, amountX, amountZ));
+}
+
+PointSet* Procgen::selfPrune(PointSet* input, float radius) {
+    if (!input) {
+        lastError_ = "selfPrune: null input";
+        return nullptr;
+    }
+    return new PointSet(selfPrunePoints(*input, radius));
+}
+
+PointSet* Procgen::projectToHeightmap(PointSet* input, Heightmap* heightmap, float originX,
+                                      float originZ, float cellSize, float heightScale) {
+    if (!input || !heightmap) {
+        lastError_ = "projectToHeightmap: null input";
+        return nullptr;
+    }
+    if (cellSize <= 0.f) {
+        lastError_ = "projectToHeightmap: cellSize must be positive";
+        return nullptr;
+    }
+    return new PointSet(
+        projectPointsToHeightmap(*input, *heightmap, originX, originZ, cellSize, heightScale));
+}
+
+PointSet* Procgen::sampleSpline(PointSet* controlPoints, float spacing, uint32_t seed,
+                                float lateralJitter) {
+    if (!controlPoints) {
+        lastError_ = "sampleSpline: null control points";
+        return nullptr;
+    }
+    if (spacing <= 0.f) {
+        lastError_ = "sampleSpline: spacing must be positive";
+        return nullptr;
+    }
+    return new PointSet(samplePolylinePoints(*controlPoints, spacing, seed, lateralJitter));
+}
+
+uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
+    return eve::procgen::deriveSeed(parent, scope);
+}
+
+ProcgenContext* Procgen::beginSystem(const std::string& name, uint32_t seed) {
+    lastError_.clear();
+    if (name.empty()) {
+        lastError_ = "beginSystem: name is empty";
+        return nullptr;
+    }
+    auto*      context  = new ProcgenContext(name, seed);
+    const auto previous = systems_.find(name);
+    if (previous != systems_.end()) context->stageCache_ = previous->second.stageCache;
+    return context;
+}
+
+ProcgenContext* Procgen::beginCachedSystem(const std::string& name, uint32_t seed, const std::string& buildKey) {
+    lastError_.clear();
+    if (name.empty()) {
+        lastError_ = "beginCachedSystem: name is empty";
+        return nullptr;
+    }
+    if (buildKey.empty()) {
+        lastError_ = "beginCachedSystem: build key is empty";
+        return nullptr;
+    }
+    const uint32_t normalizedSeed = seed ? seed : 1u;
+    const auto     found          = systems_.find(name);
+    const bool     cacheHit =
+        found != systems_.end() && found->second.seed == normalizedSeed && found->second.buildKey == buildKey;
+    auto* context = new ProcgenContext(name, normalizedSeed, buildKey, cacheHit);
+    if (found != systems_.end()) context->stageCache_ = found->second.stageCache;
+    return context;
+}
+
+bool Procgen::commitSystem(ProcgenContext* context) {
+    lastError_.clear();
+    if (!context) {
+        lastError_ = "commitSystem: null context";
+        return false;
+    }
+    if (!context->isActive()) {
+        lastError_ = "commitSystem: transaction is closed";
+        return false;
+    }
+    if (context->hasFailed()) {
+        lastError_ = "commitSystem: " + context->getError();
+        context->close();
+        return false;
+    }
+    if (!context->openTraces_.empty()) {
+        lastError_ = "commitSystem: unfinished trace '" + context->openTraces_.back().name + "'";
+        context->close();
+        return false;
+    }
+
+    const auto current = systems_.find(context->name_);
+    if (current != systems_.end()) previousSystems_[context->name_] = current->second;
+    auto& snapshot            = systems_[context->name_];
+    snapshot.seed             = context->seed_;
+    snapshot.revision         = snapshot.revision + 1u;
+    snapshot.buildKey         = context->buildKey_;
+    snapshot.outputs          = context->outputs_;
+    snapshot.outputOrder      = context->outputOrder_;
+    snapshot.debugStages      = context->debugStages_;
+    snapshot.debugStageOrder  = context->debugStageOrder_;
+    snapshot.stageCache       = context->stageCache_;
+    snapshot.stageCacheHits   = context->stageCacheHits_;
+    snapshot.stageCacheMisses = context->stageCacheMisses_;
+    snapshot.traces           = context->traces_;
+    context->close();
+    return true;
+}
+
+void Procgen::abortSystem(ProcgenContext* context) {
+    if (context) context->abort();
+}
+
+bool Procgen::removeSystem(const std::string& name) {
+    previousSystems_.erase(name);
+    return systems_.erase(name) != 0;
+}
+
+bool Procgen::hasSystem(const std::string& name) const {
+    return systems_.find(name) != systems_.end();
+}
+
+uint64_t Procgen::getSystemRevision(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? 0u : found->second.revision;
+}
+
+uint32_t Procgen::getSystemSeed(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? 0u : found->second.seed;
+}
+
+std::string Procgen::getSystemBuildKey(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? std::string() : found->second.buildKey;
+}
+
+int Procgen::getSystemOutputCount(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? 0 : int(found->second.outputOrder.size());
+}
+
+std::string Procgen::getSystemOutputName(const std::string& name, int index) const {
+    const auto found = systems_.find(name);
+    if (found == systems_.end() || index < 0 || index >= int(found->second.outputOrder.size()))
+        return {};
+    return found->second.outputOrder[size_t(index)];
+}
+
+PointSet* Procgen::getSystemOutput(const std::string& name,
+                                   const std::string& outputName) const {
+    const auto system = systems_.find(name);
+    if (system == systems_.end()) return nullptr;
+    const auto output = system->second.outputs.find(outputName);
+    return output == system->second.outputs.end() ? nullptr : new PointSet(output->second);
+}
+
+int Procgen::getSystemDebugStageCount(const std::string& name) const {
+    const auto found = systems_.find(name);
+    return found == systems_.end() ? 0 : int(found->second.debugStageOrder.size());
+}
+
+std::string Procgen::getSystemDebugStageName(const std::string& name, int index) const {
+    const auto found = systems_.find(name);
+    if (found == systems_.end() || index < 0 || index >= int(found->second.debugStageOrder.size()))
+        return {};
+    return found->second.debugStageOrder[size_t(index)];
+}
+
+PointSet* Procgen::getSystemDebugStage(const std::string& name,
+                                       const std::string& stageName) const {
+    const auto system = systems_.find(name);
+    if (system == systems_.end()) return nullptr;
+    const auto stage = system->second.debugStages.find(stageName);
+    return stage == system->second.debugStages.end() ? nullptr : new PointSet(stage->second);
+}
+
+PointSet* Procgen::getPreviousSystemDebugStage(const std::string& name,
+                                               const std::string& stageName) const {
+    const auto system = previousSystems_.find(name);
+    if (system == previousSystems_.end()) return nullptr;
+    const auto stage = system->second.debugStages.find(stageName);
+    return stage == system->second.debugStages.end() ? nullptr : new PointSet(stage->second);
+}
+
+uint64_t Procgen::getPreviousSystemRevision(const std::string& name) const {
+    const auto found = previousSystems_.find(name);
+    return found == previousSystems_.end() ? 0u : found->second.revision;
+}
+
+std::string Procgen::getSystemDebugReport(const std::string& name) const {
+    const auto found = systems_.find(name);
+    if (found == systems_.end()) return "system '" + name + "' is not committed";
+    const auto&        snapshot = found->second;
+    std::ostringstream report;
+    report << name << " revision=" << snapshot.revision << " seed=" << snapshot.seed;
+    if (!snapshot.buildKey.empty()) report << " buildKey=" << snapshot.buildKey;
+    report << " stageCache=" << snapshot.stageCacheHits << " hit/" << snapshot.stageCacheMisses << " miss";
+    for (const auto& trace : snapshot.traces) {
+        report << "\n  " << trace.name << " input=" << trace.inputCount << " output=" << trace.outputCount
+               << " ms=" << trace.milliseconds;
+    }
+    for (const auto& outputName : snapshot.outputOrder) {
+        report << "\n  output " << outputName << " points="
+               << snapshot.outputs.at(outputName).getCount();
+    }
+    for (const auto& stageName : snapshot.debugStageOrder) {
+        report << "\n  debug " << stageName << " points="
+               << snapshot.debugStages.at(stageName).getCount();
+    }
+    return report.str();
+}
+
+std::string Procgen::getSystemDebugDiffReport(const std::string& name) const {
+    const auto current = systems_.find(name);
+    if (current == systems_.end()) return "system '" + name + "' is not committed";
+    const auto previous = previousSystems_.find(name);
+    if (previous == previousSystems_.end()) return name + " has no previous revision";
+
+    std::ostringstream report;
+    report << name << " revision=" << previous->second.revision << " -> " << current->second.revision;
+    for (const auto& stageName : current->second.debugStageOrder) {
+        const int  currentCount = current->second.debugStages.at(stageName).getCount();
+        const auto oldStage     = previous->second.debugStages.find(stageName);
+        const int oldCount = oldStage == previous->second.debugStages.end() ? 0 : oldStage->second.getCount();
+        report << "\n  debug " << stageName << " points=" << currentCount << " delta=";
+        if (currentCount >= oldCount) report << "+";
+        report << currentCount - oldCount;
+    }
+    for (const auto& stageName : previous->second.debugStageOrder) {
+        if (current->second.debugStages.find(stageName) != current->second.debugStages.end()) continue;
+        report << "\n  debug " << stageName << " removed delta=-"
+               << previous->second.debugStages.at(stageName).getCount();
+    }
+    return report.str();
 }
 
 bool Procgen::runGenerate(const std::string &algorithmId, const Params &params, Grid2D &out) {
@@ -127,6 +457,16 @@ int Procgen::getPaletteGid(const std::string &palette, const std::string &semant
     return palettes_.getGid(palette, semantic);
 }
 
+namespace {
+
+const ParamDescriptor *algorithmParam(const std::string &algorithmId, int index) {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    if (!descriptor || index < 0 || index >= int(descriptor->params.size())) return nullptr;
+    return &descriptor->params[size_t(index)];
+}
+
+}  // namespace
+
 int Procgen::getAlgorithmCount() const {
     algorithmIdsCache_ = GeneratorRegistry::instance().list();
     return int(algorithmIdsCache_.size());
@@ -140,6 +480,110 @@ std::string Procgen::getAlgorithmId(int index) const {
 
 bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
+}
+
+RecipeDescriptor *Procgen::getAlgorithmSchema(const std::string &algorithmId) const {
+    const RecipeDescriptor *schema = GeneratorRegistry::instance().descriptor(algorithmId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+std::string Procgen::getAlgorithmDisplayName(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? descriptor->displayName : std::string{};
+}
+
+std::string Procgen::getAlgorithmCategory(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? descriptor->category : std::string{};
+}
+
+int Procgen::getAlgorithmParamCount(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? int(descriptor->params.size()) : 0;
+}
+
+std::string Procgen::getAlgorithmParamKey(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->key : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamLabel(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->displayName : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamDescription(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->description : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamCategory(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->category : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamKind(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    if (!param) return {};
+    switch (param->kind) {
+        case ParamKind::Integer: return "int";
+        case ParamKind::Float: return "float";
+        case ParamKind::Boolean: return "bool";
+        case ParamKind::String: return "string";
+        case ParamKind::Choice: return "choice";
+    }
+    return {};
+}
+
+std::string Procgen::getAlgorithmParamDefault(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->defaultValue : std::string{};
+}
+
+bool Procgen::algorithmParamHasMinimum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->hasMinimum;
+}
+
+bool Procgen::algorithmParamHasMaximum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->hasMaximum;
+}
+
+float Procgen::getAlgorithmParamMinimum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->minimum) : 0.f;
+}
+
+float Procgen::getAlgorithmParamMaximum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->maximum) : 0.f;
+}
+
+float Procgen::getAlgorithmParamStep(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->step) : 0.f;
+}
+
+bool Procgen::isAlgorithmParamAdvanced(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->advanced;
+}
+
+int Procgen::getAlgorithmParamChoiceCount(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? int(param->choices.size()) : 0;
+}
+
+std::string Procgen::getAlgorithmParamChoice(const std::string &algorithmId, int paramIndex,
+                                             int choiceIndex) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, paramIndex);
+    if (!param || choiceIndex < 0 || choiceIndex >= int(param->choices.size())) return {};
+    return param->choices[size_t(choiceIndex)];
+}
+
+bool Procgen::applyAlgorithmDefaults(const std::string &algorithmId, Params *params) const {
+    return params && GeneratorRegistry::instance().applyDefaults(algorithmId, *params);
 }
 
 bool Procgen::autotileGrid(Grid2D *grid) {
@@ -227,6 +671,18 @@ bool Procgen::hasTextureRecipe(const std::string &recipeId) const {
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
+RecipeDescriptor *Procgen::getTextureRecipeSchema(const std::string &recipeId) const {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    const RecipeDescriptor *schema = TextureRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyTextureRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    TextureRecipeRegistry::instance().registerBuiltins();
+    return TextureRecipeRegistry::instance().applyDefaults(recipeId, *params);
+}
+
 CloudField *Procgen::newCloudField() { return new CloudField(); }
 
 CloudShadow *Procgen::newCloudShadow() { return new CloudShadow(); }
@@ -301,6 +757,18 @@ bool Procgen::hasPbrRecipe(const std::string &recipeId) const {
     return PbrRecipeRegistry::instance().has(recipeId);
 }
 
+RecipeDescriptor *Procgen::getPbrRecipeSchema(const std::string &recipeId) const {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    const RecipeDescriptor *schema = PbrRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyPbrRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    return PbrRecipeRegistry::instance().applyDefaults(recipeId, *params);
+}
+
 MeshBuild *Procgen::buildMesh(const std::string &recipeId, Params *params) {
     lastError_.clear();
     if (!params) {
@@ -352,6 +820,18 @@ bool Procgen::hasMeshRecipe(const std::string &recipeId) const {
     return MeshRecipeRegistry::instance().has(recipeId);
 }
 
+RecipeDescriptor *Procgen::getMeshRecipeSchema(const std::string &recipeId) const {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    const RecipeDescriptor *schema = MeshRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyMeshRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    MeshRecipeRegistry::instance().registerBuiltins();
+    return MeshRecipeRegistry::instance().applyDefaults(recipeId, *params);
+}
+
 TerrainSampler *Procgen::newTerrainSampler() { return new TerrainSampler(); }
 
 Heightmap *Procgen::newHeightmap(int width, int height) {
@@ -389,6 +869,28 @@ bool Procgen::heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out)
 void Procgen::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
+
+    auto recipe = table.addClass<RecipeDescriptor>(
+        "ProcgenRecipeSchema",
+        std::function<RecipeDescriptor *()>([]() -> RecipeDescriptor * { return nullptr; }), true);
+    recipe.addFunc("getId", &RecipeDescriptor::getId);
+    recipe.addFunc("getDisplayName", &RecipeDescriptor::getDisplayName);
+    recipe.addFunc("getCategory", &RecipeDescriptor::getCategory);
+    recipe.addFunc("getParamCount", &RecipeDescriptor::getParamCount);
+    recipe.addFunc("getParamKey", &RecipeDescriptor::getParamKey);
+    recipe.addFunc("getParamLabel", &RecipeDescriptor::getParamLabel);
+    recipe.addFunc("getParamDescription", &RecipeDescriptor::getParamDescription);
+    recipe.addFunc("getParamCategory", &RecipeDescriptor::getParamCategory);
+    recipe.addFunc("getParamKind", &RecipeDescriptor::getParamKind);
+    recipe.addFunc("getParamDefault", &RecipeDescriptor::getParamDefault);
+    recipe.addFunc("paramHasMinimum", &RecipeDescriptor::paramHasMinimum);
+    recipe.addFunc("paramHasMaximum", &RecipeDescriptor::paramHasMaximum);
+    recipe.addFunc("getParamMinimum", &RecipeDescriptor::getParamMinimum);
+    recipe.addFunc("getParamMaximum", &RecipeDescriptor::getParamMaximum);
+    recipe.addFunc("getParamStep", &RecipeDescriptor::getParamStep);
+    recipe.addFunc("isParamAdvanced", &RecipeDescriptor::isParamAdvanced);
+    recipe.addFunc("getParamChoiceCount", &RecipeDescriptor::getParamChoiceCount);
+    recipe.addFunc("getParamChoice", &RecipeDescriptor::getParamChoice);
 
     auto params = table.addClass<Params>(
         "ProcgenParams", std::function<Params *()>([]() -> Params * { return nullptr; }), true);
@@ -440,6 +942,73 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getObjectWidth", &Grid2D::getObjectWidth);
     grid.addFunc("getObjectHeight", &Grid2D::getObjectHeight);
     grid.addFunc("getObjectGid", &Grid2D::getObjectGid);
+
+    auto points = table.addClass<PointSet>("ProcgenPointSet",
+                                           std::function<PointSet*()>([]() -> PointSet* { return nullptr; }), true);
+    points.addFunc("getCount", &PointSet::getCount);
+    points.addFunc("empty", &PointSet::empty);
+    points.addFunc("clear", &PointSet::clear);
+    points.addFunc("add", &PointSet::add);
+    points.addFunc("setPosition", &PointSet::setPosition);
+    points.addFunc("getX", &PointSet::getX);
+    points.addFunc("getY", &PointSet::getY);
+    points.addFunc("getZ", &PointSet::getZ);
+    points.addFunc("setNormal", &PointSet::setNormal);
+    points.addFunc("getNormalX", &PointSet::getNormalX);
+    points.addFunc("getNormalY", &PointSet::getNormalY);
+    points.addFunc("getNormalZ", &PointSet::getNormalZ);
+    points.addFunc("setYaw", &PointSet::setYaw);
+    points.addFunc("getYaw", &PointSet::getYaw);
+    points.addFunc("setScale", &PointSet::setScale);
+    points.addFunc("getScaleX", &PointSet::getScaleX);
+    points.addFunc("getScaleY", &PointSet::getScaleY);
+    points.addFunc("getScaleZ", &PointSet::getScaleZ);
+    points.addFunc("setDensity", &PointSet::setDensity);
+    points.addFunc("getDensity", &PointSet::getDensity);
+    points.addFunc("setPointSeed", &PointSet::setPointSeed);
+    points.addFunc("getPointSeed", &PointSet::getPointSeed);
+    points.addFunc("setFloatAttribute", &PointSet::setFloatAttribute);
+    points.addFunc("getFloatAttribute", &PointSet::getFloatAttribute);
+    points.addFunc("hasFloatAttribute", &PointSet::hasFloatAttribute);
+    points.addFunc("setStringAttribute", &PointSet::setStringAttribute);
+    points.addFunc("getStringAttribute", &PointSet::getStringAttribute);
+    points.addFunc("hasStringAttribute", &PointSet::hasStringAttribute);
+
+    auto context = table.addClass<ProcgenContext>(
+        "ProcgenContext",
+        std::function<ProcgenContext*()>([]() -> ProcgenContext* { return nullptr; }), true);
+    context.addFunc("getName", &ProcgenContext::getName);
+    context.addFunc("getSeed", &ProcgenContext::getSeed);
+    context.addFunc("seedFor", &ProcgenContext::seedFor);
+    context.addFunc("isActive", &ProcgenContext::isActive);
+    context.addFunc("hasFailed", &ProcgenContext::hasFailed);
+    context.addFunc("isCacheHit", &ProcgenContext::isCacheHit);
+    context.addFunc("getError", &ProcgenContext::getError);
+    context.addFunc("getBuildKey", &ProcgenContext::getBuildKey);
+    context.addFunc("publish", &ProcgenContext::publish);
+    context.addFunc("hasOutput", &ProcgenContext::hasOutput);
+    context.addFunc("getOutputCount", &ProcgenContext::getOutputCount);
+    context.addFunc("getOutputName", &ProcgenContext::getOutputName);
+    context.addFunc("getOutput", &ProcgenContext::getOutput);
+    context.addFunc("captureDebug", &ProcgenContext::captureDebug);
+    context.addFunc("getDebugStageCount", &ProcgenContext::getDebugStageCount);
+    context.addFunc("getDebugStageName", &ProcgenContext::getDebugStageName);
+    context.addFunc("getDebugStage", &ProcgenContext::getDebugStage);
+    context.addFunc("reuseStage", &ProcgenContext::reuseStage);
+    context.addFunc("cacheStage", &ProcgenContext::cacheStage);
+    context.addFunc("getStageCacheHitCount", &ProcgenContext::getStageCacheHitCount);
+    context.addFunc("getStageCacheMissCount", &ProcgenContext::getStageCacheMissCount);
+    context.addFunc("trace", &ProcgenContext::trace);
+    context.addFunc("beginTrace", &ProcgenContext::beginTrace);
+    context.addFunc("endTrace", &ProcgenContext::endTrace);
+    context.addFunc("getOpenTraceCount", &ProcgenContext::getOpenTraceCount);
+    context.addFunc("getTraceCount", &ProcgenContext::getTraceCount);
+    context.addFunc("getTraceName", &ProcgenContext::getTraceName);
+    context.addFunc("getTraceInputCount", &ProcgenContext::getTraceInputCount);
+    context.addFunc("getTraceOutputCount", &ProcgenContext::getTraceOutputCount);
+    context.addFunc("getTraceMilliseconds", &ProcgenContext::getTraceMilliseconds);
+    context.addFunc("fail", &ProcgenContext::fail);
+    context.addFunc("abort", &ProcgenContext::abort);
 
     auto mesh = table.addClass<MeshBuild>(
         "ProcgenMeshBuild", std::function<MeshBuild *()>([]() -> MeshBuild * { return nullptr; }),
@@ -540,6 +1109,12 @@ void Procgen::expose(ssq::Table &table) {
         "ProcgenPbrMaterial",
         std::function<PbrTextureSet *()>([]() -> PbrTextureSet * { return nullptr; }), true);
     pbr.addFunc("destroy", &PbrTextureSet::destroy);
+    pbr.addFunc("getAlbedo", &PbrTextureSet::getAlbedo);
+    pbr.addFunc("getNormal", &PbrTextureSet::getNormal);
+    pbr.addFunc("getRoughness", &PbrTextureSet::getRoughness);
+    pbr.addFunc("getMetallic", &PbrTextureSet::getMetallic);
+    pbr.addFunc("getHeight", &PbrTextureSet::getHeight);
+    pbr.addFunc("getAo", &PbrTextureSet::getAo);
     pbr.addFunc("getAlbedoWidth", [](const PbrTextureSet *s) { return s->albedo->getWidth(); });
     pbr.addFunc("getAlbedoHeight", [](const PbrTextureSet *s) { return s->albedo->getHeight(); });
     pbr.addFunc("getNormalWidth", [](const PbrTextureSet *s) { return s->normal->getWidth(); });
@@ -557,6 +1132,41 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("newParams", &Procgen::newParams);
     cls.addFunc("newOutput", &Procgen::newOutput);
     cls.addFunc("newGrid", &Procgen::newGrid);
+    cls.addFunc("newPointSet", &Procgen::newPointSet);
+    cls.addFunc("sampleGrid", &Procgen::sampleGrid);
+    cls.addFunc("filterHeight", &Procgen::filterHeight);
+    cls.addFunc("filterDensity", &Procgen::filterDensity);
+    cls.addFunc("filterBox", &Procgen::filterBox);
+    cls.addFunc("excludeBox", &Procgen::excludeBox);
+    cls.addFunc("filterSlope", &Procgen::filterSlope);
+    cls.addFunc("filterPolygon", &Procgen::filterPolygon);
+    cls.addFunc("excludePolygon", &Procgen::excludePolygon);
+    cls.addFunc("filterSplineDistance", &Procgen::filterSplineDistance);
+    cls.addFunc("excludeRadius", &Procgen::excludeRadius);
+    cls.addFunc("jitterPoints", &Procgen::jitterPoints);
+    cls.addFunc("selfPrune", &Procgen::selfPrune);
+    cls.addFunc("projectToHeightmap", &Procgen::projectToHeightmap);
+    cls.addFunc("sampleSpline", &Procgen::sampleSpline);
+    cls.addFunc("deriveSeed", &Procgen::deriveSeed);
+    cls.addFunc("beginSystem", &Procgen::beginSystem);
+    cls.addFunc("beginCachedSystem", &Procgen::beginCachedSystem);
+    cls.addFunc("commitSystem", &Procgen::commitSystem);
+    cls.addFunc("abortSystem", &Procgen::abortSystem);
+    cls.addFunc("removeSystem", &Procgen::removeSystem);
+    cls.addFunc("hasSystem", &Procgen::hasSystem);
+    cls.addFunc("getSystemRevision", &Procgen::getSystemRevision);
+    cls.addFunc("getSystemSeed", &Procgen::getSystemSeed);
+    cls.addFunc("getSystemBuildKey", &Procgen::getSystemBuildKey);
+    cls.addFunc("getSystemOutputCount", &Procgen::getSystemOutputCount);
+    cls.addFunc("getSystemOutputName", &Procgen::getSystemOutputName);
+    cls.addFunc("getSystemOutput", &Procgen::getSystemOutput);
+    cls.addFunc("getSystemDebugStageCount", &Procgen::getSystemDebugStageCount);
+    cls.addFunc("getSystemDebugStageName", &Procgen::getSystemDebugStageName);
+    cls.addFunc("getSystemDebugStage", &Procgen::getSystemDebugStage);
+    cls.addFunc("getPreviousSystemDebugStage", &Procgen::getPreviousSystemDebugStage);
+    cls.addFunc("getPreviousSystemRevision", &Procgen::getPreviousSystemRevision);
+    cls.addFunc("getSystemDebugReport", &Procgen::getSystemDebugReport);
+    cls.addFunc("getSystemDebugDiffReport", &Procgen::getSystemDebugDiffReport);
     cls.addFunc("generate", &Procgen::generate);
     cls.addFunc("generateTo", &Procgen::generateTo);
     cls.addFunc("applyToLayer", &Procgen::applyToLayer);
@@ -565,6 +1175,25 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getAlgorithmCount", &Procgen::getAlgorithmCount);
     cls.addFunc("getAlgorithmId", &Procgen::getAlgorithmId);
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
+    cls.addFunc("getAlgorithmSchema", &Procgen::getAlgorithmSchema);
+    cls.addFunc("getAlgorithmDisplayName", &Procgen::getAlgorithmDisplayName);
+    cls.addFunc("getAlgorithmCategory", &Procgen::getAlgorithmCategory);
+    cls.addFunc("getAlgorithmParamCount", &Procgen::getAlgorithmParamCount);
+    cls.addFunc("getAlgorithmParamKey", &Procgen::getAlgorithmParamKey);
+    cls.addFunc("getAlgorithmParamLabel", &Procgen::getAlgorithmParamLabel);
+    cls.addFunc("getAlgorithmParamDescription", &Procgen::getAlgorithmParamDescription);
+    cls.addFunc("getAlgorithmParamCategory", &Procgen::getAlgorithmParamCategory);
+    cls.addFunc("getAlgorithmParamKind", &Procgen::getAlgorithmParamKind);
+    cls.addFunc("getAlgorithmParamDefault", &Procgen::getAlgorithmParamDefault);
+    cls.addFunc("algorithmParamHasMinimum", &Procgen::algorithmParamHasMinimum);
+    cls.addFunc("algorithmParamHasMaximum", &Procgen::algorithmParamHasMaximum);
+    cls.addFunc("getAlgorithmParamMinimum", &Procgen::getAlgorithmParamMinimum);
+    cls.addFunc("getAlgorithmParamMaximum", &Procgen::getAlgorithmParamMaximum);
+    cls.addFunc("getAlgorithmParamStep", &Procgen::getAlgorithmParamStep);
+    cls.addFunc("isAlgorithmParamAdvanced", &Procgen::isAlgorithmParamAdvanced);
+    cls.addFunc("getAlgorithmParamChoiceCount", &Procgen::getAlgorithmParamChoiceCount);
+    cls.addFunc("getAlgorithmParamChoice", &Procgen::getAlgorithmParamChoice);
+    cls.addFunc("applyAlgorithmDefaults", &Procgen::applyAlgorithmDefaults);
     cls.addFunc("autotileGrid", &Procgen::autotileGrid);
     cls.addFunc("randomSeed", &Procgen::randomSeed);
     cls.addFunc("lastError", &Procgen::lastError);
@@ -575,15 +1204,21 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getTextureRecipeCount", &Procgen::getTextureRecipeCount);
     cls.addFunc("getTextureRecipeId", &Procgen::getTextureRecipeId);
     cls.addFunc("hasTextureRecipe", &Procgen::hasTextureRecipe);
+    cls.addFunc("getTextureRecipeSchema", &Procgen::getTextureRecipeSchema);
+    cls.addFunc("applyTextureRecipeDefaults", &Procgen::applyTextureRecipeDefaults);
     cls.addFunc("generatePbrMaterial", &Procgen::generatePbrMaterial);
     cls.addFunc("getPbrRecipeCount", &Procgen::getPbrRecipeCount);
     cls.addFunc("getPbrRecipeId", &Procgen::getPbrRecipeId);
     cls.addFunc("hasPbrRecipe", &Procgen::hasPbrRecipe);
+    cls.addFunc("getPbrRecipeSchema", &Procgen::getPbrRecipeSchema);
+    cls.addFunc("applyPbrRecipeDefaults", &Procgen::applyPbrRecipeDefaults);
     cls.addFunc("buildMesh", &Procgen::buildMesh);
     cls.addFunc("generateMesh", &Procgen::generateMesh);
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
     cls.addFunc("getMeshRecipeId", &Procgen::getMeshRecipeId);
     cls.addFunc("hasMeshRecipe", &Procgen::hasMeshRecipe);
+    cls.addFunc("getMeshRecipeSchema", &Procgen::getMeshRecipeSchema);
+    cls.addFunc("applyMeshRecipeDefaults", &Procgen::applyMeshRecipeDefaults);
     cls.addFunc("newTerrainSampler", &Procgen::newTerrainSampler);
     cls.addFunc("newHeightmap", &Procgen::newHeightmap);
     cls.addFunc("generateHeightmap", &Procgen::generateHeightmap);

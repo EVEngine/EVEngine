@@ -29,8 +29,9 @@ What happens:
 - Inherited members (`WeaponData`) are grouped under a "base" header, so
   parent-class properties are editable side-by-side.
 
-`ui.editorOpen()` mounts the DevTools shell: a menu bar plus three docked
-panels —
+`ui.editorOpen()` mounts the DevTools shell: a modern icon toolbar plus three
+initially docked panels. The panel windows can then be moved/resized, and ImGui
+restores their workspace layout on the next run —
 
 - **Inspector** (`ui.inspectObject(hero)`): the reflection property panel
   described above. Arrays / tables expand inline (append / remove / edit

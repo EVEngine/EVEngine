@@ -279,6 +279,31 @@ TEST_CASE("volumetric.modeAndRayMarchQuality") {
     CHECK(vol->getSampleCount() == 48);
 }
 
+TEST_CASE("volumetric.cloudModeParametersAndQuality") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol.get() != nullptr);
+    REQUIRE(vol->getCloudShader() != nullptr);
+    vol->setMode("cloud");
+    vol->setCloudLayer(6.f, 14.f);
+    vol->setCloudCoverage(0.72f);
+    vol->setCloudDensity(1.3f);
+    vol->setCloudScale(22.f);
+    vol->setCloudWind(2.f, -0.5f);
+    vol->setCloudLightColor(1.f, 0.65f, 0.35f);
+    CHECK(std::fabs(vol->getFloat("cloudBottom") - 6.f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("cloudTop") - 14.f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("cloudCoverage") - 0.72f) < 1e-5f);
+    vol->setQuality("low");
+    CHECK(vol->getSampleCount() == 16);
+    vol->setQuality("high");
+    CHECK(vol->getSampleCount() == 64);
+    win->close();
+}
+
 namespace {
 
 struct BoxDepth {
@@ -581,4 +606,37 @@ TEST_CASE("volumetric.fogDenserAtDistance") {
     const float nearA = nearOut->getPixel(32, 24).a;
     const float farA = farOut->getPixel(32, 24).a;
     CHECK(farA > nearA);
+}
+
+TEST_CASE("volumetric.froxelAtlasCompositesIntegratedMedia") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 128, 96);
+
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    vol->setMode("froxel");
+    vol->configureFroxelGrid(16, 12, 16, 0.1f, 40.f);
+    vol->injectFroxelHeightFog(0.08f, 0.75f, 0.82f, 0.95f, 0.f, 0.15f, -2.f, 8.f);
+    vol->integrateFroxel(1.f, 0.9f, 0.8f);
+    vol->uploadFroxel(gfx);
+    REQUIRE(vol->getFroxelAtlas() != nullptr);
+    CHECK(vol->getFroxelAtlas()->getWidth() == 64);
+    CHECK(vol->getFroxelAtlas()->getHeight() == 48);
+
+    BoxDepth bd;
+    bd.w = 64;
+    bd.h = 48;
+    bd.boxDepth = 0.8f;
+    bd.floorDepth = 0.8f;
+    Texture *depth = vol->newLinearDepthTexture(gfx, bd.w, bd.h, boxDepth01, &bd);
+    Canvas *out = gfx->newCanvas(bd.w, bd.h);
+    gfx->setCanvas(out);
+    gfx->clear(Color(0.f, 0.f, 0.f, 0.f), std::nullopt, std::nullopt);
+    vol->applyFroxel(gfx, depth);
+    gfx->setCanvas(nullptr);
+
+    const Color center = out->getPixel(32, 24);
+    CHECK(center.a > 0.02f);
+    CHECK(luma(center) > 0.01f);
+    win->close();
 }

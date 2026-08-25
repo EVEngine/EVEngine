@@ -20,7 +20,13 @@
 namespace eve::stylize {
 namespace {
 
-const std::array<const char *, 5> kStyles = {"cartoon", "watercolor", "ink", "pixel", "xray"};
+const std::array<StyleDefinition, 5> kStyles = {{
+    {"cartoon", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 100},
+    {"watercolor", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 200},
+    {"ink", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 110},
+    {"pixel", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 300},
+    {"xray", false, true, false, true, false, graphics::PostEffectStage::AfterOpaque, 50},
+}};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
@@ -152,40 +158,72 @@ fn fs_main(in: FSIn, @builtin(position) fragPos: vec4f) -> FSOut {
 
 }  // namespace
 
-bool isKnownStyle(const std::string &style) {
-    return std::find(kStyles.begin(), kStyles.end(), style) != kStyles.end();
+const StyleDefinition *findStyleDefinition(const std::string &style) {
+    const auto it = std::find_if(kStyles.begin(), kStyles.end(), [&](const StyleDefinition &def) {
+        return style == def.id;
+    });
+    return it == kStyles.end() ? nullptr : &*it;
 }
+
+bool isKnownStyle(const std::string &style) { return findStyleDefinition(style) != nullptr; }
 
 int styleCount() { return int(kStyles.size()); }
 
 std::string styleIdAt(int index) {
     if (index < 0 || index >= int(kStyles.size())) return {};
-    return kStyles[size_t(index)];
+    return kStyles[size_t(index)].id;
 }
 
 bool styleSupports(const std::string &style, const std::string &feature) {
-    if (!isKnownStyle(style)) return false;
-    if (feature == "post" || feature == "cpu") return true;
-    if (feature == "mesh") return style == "cartoon" || style == "ink" || style == "xray";
-    if (feature == "gbuffer") return true;  // depth/normal available via graphics.RenderControl
+    const StyleDefinition *def = findStyleDefinition(style);
+    if (!def) return false;
+    if (feature == "post") return def->post;
+    if (feature == "mesh") return def->mesh;
+    if (feature == "cpu") return def->cpu;
+    if (feature == "depth") return def->depth;
+    if (feature == "normal") return def->normal;
+    if (feature == "gbuffer") return def->depth || def->normal;
     return false;
 }
 
 namespace {
-const char *kCartoonParams[] = {"bands",    "outlineStrength", "outlineThreshold", "posterize",
-                                "texelW",   "texelH",          "time",             "softEdge",
-                                "outlineWidth", "shadowLift"};
-const char *kWatercolorParams[] = {"blurAmount", "edgeDarken", "paperStrength", "distortion",
-                                   "bleed",      "saturation", "texelW",        "texelH",
-                                   "time",       "granulation"};
-const char *kInkParams[] = {"inkContrast", "washLevels", "edgeThreshold", "diffusion",
-                            "paperR",      "paperG",     "paperB",        "inkDensity",
-                            "texelW",      "texelH",     "time",          "edgeStrength"};
-const char *kPixelParams[] = {"pixelSize", "paletteSteps", "ditherStrength", "toonBands",
-                              "sharpness", "texelW",       "texelH",         "time",
-                              "screenW",   "screenH",      "outline"};
-const char *kXrayParams[] = {"colorR", "colorG", "colorB", "bias",
-                             "screenW", "screenH", "rimPower", "rimStrength", "alpha"};
+const StyleParameterDesc kCartoonParams[] = {
+    {"bands", 3.f, 1.f, 16.f},              {"outlineStrength", 1.15f, 0.f, 4.f},
+    {"outlineThreshold", 0.12f, 0.f, 1.f},  {"posterize", 5.f, 1.f, 32.f},
+    {"softEdge", 0.08f, 0.f, 1.f},          {"outlineWidth", 1.5f, 0.5f, 8.f},
+    {"shadowLift", 0.12f, 0.f, 1.f},        {"rimPower", 2.8f, 0.1f, 16.f},
+    {"rimStrength", 0.55f, 0.f, 2.f},
+};
+const StyleParameterDesc kWatercolorParams[] = {
+    {"blurAmount", 2.4f, 0.f, 12.f},      {"edgeDarken", 2.f, 0.f, 5.f},
+    {"paperStrength", 0.65f, 0.f, 1.f},   {"distortion", 0.85f, 0.f, 3.f},
+    {"bleed", 0.62f, 0.f, 1.f},           {"saturation", 0.9f, 0.f, 2.f},
+    {"granulation", 0.65f, 0.f, 1.f},
+};
+const StyleParameterDesc kInkParams[] = {
+    {"inkContrast", 1.35f, 0.f, 4.f},    {"washLevels", 5.f, 1.f, 16.f},
+    {"edgeThreshold", 0.18f, 0.f, 1.f}, {"diffusion", 3.5f, 0.f, 12.f},
+    {"paperR", 0.96f, 0.f, 1.f},         {"paperG", 0.93f, 0.f, 1.f},
+    {"paperB", 0.86f, 0.f, 1.f},         {"inkDensity", 0.75f, 0.f, 2.f},
+    {"edgeStrength", 1.1f, 0.f, 4.f},    {"contrast", 1.25f, 0.f, 4.f},
+    {"rimBoost", 0.65f, 0.f, 2.f},
+};
+const StyleParameterDesc kPixelParams[] = {
+    {"pixelSize", 5.f, 1.f, 64.f},         {"paletteSteps", 6.f, 2.f, 32.f},
+    {"ditherStrength", 0.18f, 0.f, 1.f},  {"toonBands", 3.f, 1.f, 16.f},
+    {"sharpness", 1.f, 0.f, 2.f},          {"outline", 0.9f, 0.f, 4.f},
+};
+const StyleParameterDesc kXrayParams[] = {
+    {"colorR", 1.f, 0.f, 1.f},          {"colorG", 0.62f, 0.f, 1.f},
+    {"colorB", 0.12f, 0.f, 1.f},       {"bias", 0.0002f, 0.f, 0.02f},
+    {"rimPower", 2.2f, 0.1f, 16.f},    {"rimStrength", 0.7f, 0.f, 2.f},
+    {"alpha", 0.82f, 0.f, 1.f},
+};
+
+template <size_t N>
+const StyleParameterDesc *paramAt(const StyleParameterDesc (&params)[N], int index) {
+    return index < 0 || index >= int(N) ? nullptr : &params[size_t(index)];
+}
 }  // namespace
 
 int styleParamCount(const std::string &style) {
@@ -198,13 +236,26 @@ int styleParamCount(const std::string &style) {
 }
 
 std::string styleParamName(const std::string &style, int index) {
-    if (index < 0 || index >= styleParamCount(style)) return {};
-    if (style == "cartoon") return kCartoonParams[index];
-    if (style == "watercolor") return kWatercolorParams[index];
-    if (style == "ink") return kInkParams[index];
-    if (style == "pixel") return kPixelParams[index];
-    if (style == "xray") return kXrayParams[index];
-    return {};
+    const StyleParameterDesc *desc = styleParameterAt(style, index);
+    return desc ? desc->id : std::string{};
+}
+
+const StyleParameterDesc *styleParameterAt(const std::string &style, int index) {
+    if (style == "cartoon") return paramAt(kCartoonParams, index);
+    if (style == "watercolor") return paramAt(kWatercolorParams, index);
+    if (style == "ink") return paramAt(kInkParams, index);
+    if (style == "pixel") return paramAt(kPixelParams, index);
+    if (style == "xray") return paramAt(kXrayParams, index);
+    return nullptr;
+}
+
+const StyleParameterDesc *findStyleParameter(const std::string &style, const std::string &name) {
+    const int count = styleParamCount(style);
+    for (int i = 0; i < count; ++i) {
+        const StyleParameterDesc *desc = styleParameterAt(style, i);
+        if (desc && name == desc->id) return desc;
+    }
+    return nullptr;
 }
 
 void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
@@ -370,8 +421,10 @@ void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
 
 graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &style) {
     if (!gfx) throw eve::Exception("createPostShader: null graphics");
-    if (!isKnownStyle(style))
-        throw eve::Exception("createPostShader: unknown style '%s'", style.c_str());
+    const StyleDefinition *def = findStyleDefinition(style);
+    if (!def) throw eve::Exception("createPostShader: unknown style '%s'", style.c_str());
+    if (!def->post)
+        throw eve::Exception("createPostShader: style '%s' has no post technique", style.c_str());
 
     std::vector<uint32_t> frag;
     if (style == "cartoon")

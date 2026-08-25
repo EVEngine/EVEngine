@@ -2,22 +2,381 @@
 #include "zeroerr/unittest.h"
 
 #include "editor/Brush.h"
+#include "editor/BrushKernel.h"
 #include "editor/Editor.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
+#include "editor/EditorSession.h"
+#include "editor/EditorPresentation.h"
+#include "editor/EditorTransactions.h"
+#include "editor/EditConstraint.h"
 #include "editor/EditorToolbar.h"
+#include "editor/FieldTargets.h"
+#include "editor/FieldBrushTool.h"
 #include "editor/GizmoManager.h"
 #include "editor/TileBuffer.h"
+#ifdef EVENGINE_HAS_MAP
+#include "map/Map.h"
+#include "map/TileLayer.h"
+#endif
 #include "editor/TransformGizmo.h"
 
 #include "common/Exception.h"
+#include "procgen/heightmap/Heightmap.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cmath>
 #include <memory>
 #include <string>
 
 using namespace eve::editor;
+
+namespace {
+class TestEditorTool final : public IEditorTool {
+public:
+    explicit TestEditorTool(std::string id) { desc.id = std::move(id); }
+    const ToolDescriptor &descriptor() const override { return desc; }
+    void activate(EditorContext &) override { ++activations; }
+    void deactivate(EditorContext &) override { ++deactivations; }
+    void cancel(EditorContext &) override { ++cancellations; }
+    ToolResponse pointerEvent(EditorContext &, const EditorPointerEvent &event) override {
+        ++pointerEvents;
+        if (event.phase == EditorPointerEvent::Phase::Down) return ToolResponse::capture();
+        if (event.phase == EditorPointerEvent::Phase::Up) return ToolResponse::release();
+        return ToolResponse::consumed();
+    }
+    ToolResponse keyEvent(EditorContext &, const EditorKeyEvent &) override {
+        ++keyEvents;
+        return ToolResponse::consumed();
+    }
+    void update(EditorContext &, float) override { ++updates; }
+    void drawOverlay(EditorContext &, IEditorOverlay &overlay) override {
+        ++overlays;
+        overlay.circle({1.f, 2.f, 3.f}, 4.f, {});
+    }
+    void inspect(EditorContext &, IEditorInspector &inspector) override {
+        ++inspections;
+        inspector.scalar("radius", "Radius", radius, 0.f, 10.f);
+    }
+
+    ToolDescriptor desc;
+    int activations = 0;
+    int deactivations = 0;
+    int cancellations = 0;
+    int pointerEvents = 0;
+    int keyEvents = 0;
+    int updates = 0;
+    int overlays = 0;
+    int inspections = 0;
+    float radius = 2.f;
+};
+
+class TestPresentation final : public IEditorOverlay, public IEditorInspector {
+public:
+    void line(const OverlayPoint &, const OverlayPoint &, const OverlayStyle &) override { ++primitives; }
+    void circle(const OverlayPoint &, float, const OverlayStyle &) override { ++primitives; }
+    void rectangle(const OverlayPoint &, const OverlayPoint &, const OverlayStyle &) override { ++primitives; }
+    void text(const OverlayPoint &, const std::string &, const OverlayStyle &) override { ++primitives; }
+    void beginGroup(const std::string &, const std::string &) override {}
+    void endGroup() override {}
+    bool boolean(const std::string &, const std::string &, bool &) override { return false; }
+    bool integer(const std::string &, const std::string &, int &, int, int) override { return false; }
+    bool scalar(const std::string &, const std::string &, float &value, float, float) override {
+        value = 6.f;
+        return true;
+    }
+    bool string(const std::string &, const std::string &, std::string &) override { return false; }
+
+    int primitives = 0;
+};
+
+class RejectLargeEdit final : public IEditConstraint {
+public:
+    ConstraintResult evaluate(EditorContext &, IEditCommand &command) override {
+        const EditRegion region = command.dirtyRegion();
+        if (!region.empty() && region.maxX - region.minX > 1) return ConstraintResult::reject("edit too wide");
+        return ConstraintResult::warning("checked");
+    }
+};
+}  // namespace
+
+TEST_CASE("editor.session.routes_tool_lifecycle_and_capture") {
+    EditorSession session;
+    TestEditorTool first("first");
+    TestEditorTool second("second");
+    CHECK(session.addTool(&first));
+    CHECK(session.addTool(&second));
+    CHECK(!session.addTool(&first));
+    CHECK_EQ(session.getToolCount(), 2);
+    CHECK(session.activateTool("first"));
+    CHECK_EQ(first.activations, 1);
+
+    EditorPointerEvent down;
+    down.phase = EditorPointerEvent::Phase::Down;
+    down.pointerId = 7;
+    CHECK(session.dispatchPointer(down).handled);
+    CHECK(session.hasPointerCapture());
+    CHECK_EQ(session.capturedPointerId(), 7);
+
+    EditorPointerEvent other = down;
+    other.phase = EditorPointerEvent::Phase::Move;
+    other.pointerId = 8;
+    CHECK(!session.dispatchPointer(other).handled);
+    CHECK_EQ(first.pointerEvents, 1);
+
+    EditorPointerEvent up = down;
+    up.phase = EditorPointerEvent::Phase::Up;
+    CHECK(session.dispatchPointer(up).releasePointer);
+    CHECK(!session.hasPointerCapture());
+
+    EditorKeyEvent key;
+    key.key = "W";
+    key.pressed = true;
+    CHECK(session.dispatchKey(key).handled);
+    session.update(0.016f);
+    CHECK_EQ(first.keyEvents, 1);
+    CHECK_EQ(first.updates, 1);
+
+    CHECK(session.activateTool("second"));
+    CHECK_EQ(first.cancellations, 1);
+    CHECK_EQ(first.deactivations, 1);
+    CHECK_EQ(second.activations, 1);
+    CHECK(session.removeTool("second"));
+    CHECK_EQ(second.deactivations, 1);
+    CHECK_EQ(session.activeToolId(), std::string(""));
+}
+
+TEST_CASE("editor.presentation.is_host_and_renderer_independent") {
+    EditorSession session;
+    TestEditorTool tool("presentable");
+    TestPresentation presentation;
+    CHECK(session.addTool(&tool));
+    CHECK(session.activateTool("presentable"));
+    session.drawOverlay(presentation);
+    session.inspect(presentation);
+    CHECK_EQ(tool.overlays, 1);
+    CHECK_EQ(tool.inspections, 1);
+    CHECK_EQ(presentation.primitives, 1);
+    CHECK_EQ(tool.radius, 6.f);
+}
+
+TEST_CASE("editor.field_brush.composes_kernel_and_operation") {
+    ConstantBrushFalloff hard;
+    CircleBrushKernel kernel(&hard);
+    PaintIntFieldOperation paint(7);
+    FieldBrushTool tool("paint", "Paint", &kernel, &paint);
+    tool.setRadius(0.5f);
+
+    TileBuffer buffer(4, 4);
+    TileBufferTarget tiles("tiles", &buffer);
+    EditorSession session;
+    session.bindTarget(&tiles);
+    CHECK(session.addTool(&tool));
+    CHECK(session.activateTool("paint"));
+
+    EditorPointerEvent event;
+    event.phase = EditorPointerEvent::Phase::Down;
+    event.x = 1.f;
+    event.y = 2.f;
+    CHECK(session.dispatchPointer(event).capturePointer);
+    event.phase = EditorPointerEvent::Phase::Up;
+    CHECK(session.dispatchPointer(event).releasePointer);
+    CHECK_EQ(buffer.getGid(1, 2), 7);
+    CHECK(session.transactions().undo());
+    CHECK_EQ(buffer.getGid(1, 2), 0);
+
+    eve::procgen::Heightmap heightmap(4, 4);
+    HeightmapTarget terrain("terrain", &heightmap);
+    AddScalarFieldOperation raise;
+    tool.setOperation(&raise);
+    tool.setStrength(0.25f);
+    session.bindTarget(&terrain);
+    event.phase = EditorPointerEvent::Phase::Down;
+    CHECK(session.dispatchPointer(event).handled);
+    event.phase = EditorPointerEvent::Phase::Up;
+    session.dispatchPointer(event);
+    CHECK_EQ(terrain.readScalar(1, 2), 0.25f);
+}
+
+TEST_CASE("editor.heightmap_brush.applies_native_circular_falloff") {
+    Editor editor;
+    eve::procgen::Heightmap heightmap(9, 9);
+    CHECK_EQ(editor.applyHeightmapBrush(&heightmap, 4.f, 4.f, 2.f, 0.5f), 13);
+    CHECK_EQ(heightmap.height(4, 4), 0.5f);
+    CHECK(heightmap.height(5, 4) > heightmap.height(6, 4));
+    CHECK_EQ(heightmap.height(0, 0), 0.f);
+
+    CHECK(editor.applyHeightmapBrush(&heightmap, 4.f, 4.f, 2.f, -0.25f) > 0);
+    CHECK_EQ(heightmap.height(4, 4), 0.25f);
+    CHECK_EQ(editor.applyHeightmapBrush(nullptr, 4.f, 4.f, 2.f, 1.f), 0);
+    CHECK_EQ(editor.applyHeightmapBrush(&heightmap, 4.f, 4.f, -1.f, 1.f), 0);
+}
+
+TEST_CASE("editor.script_tool.implements_the_same_session_protocol") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        editor <- eve.Editor();
+        session <- editor.newSession();
+        tool <- editor.newScriptTool("custom", "Custom Tool");
+        activations <- 0;
+        pointerX <- -1.0;
+        tool.setActivateCallback(function() { activations += 1; });
+        tool.setPointerCallback(function(phase, pointerId, button, x, y, dx, dy, pressure,
+                                         shift, control, alt) {
+            pointerX = x;
+            return phase == 0 ? 3 : 5;
+        });
+        added <- session.addTool(tool);
+        selected <- session.activateTool("custom");
+        response <- session.dispatchPointer(0, 9, 0, 12.5, 4.0, 0.0, 0.0, 1.0);
+    )"));
+    CHECK(vm.find("added").toBool());
+    CHECK(vm.find("selected").toBool());
+    CHECK_EQ(vm.find("activations").toInt(), 1);
+    CHECK_EQ(vm.find("response").toInt(), 3);
+    CHECK_EQ(vm.find("pointerX").toFloat(), 12.5f);
+}
+
+TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
+    TileBuffer buffer(4, 3);
+    TileBufferTarget tiles("ground", &buffer);
+    IEditableTarget *base = &tiles;
+    auto *ints = base->query<IIntFieldTarget>();
+    CHECK(ints != nullptr);
+    CHECK(base->query<IScalarFieldTarget>() == nullptr);
+    CHECK(ints->writeInt(2, 1, 9));
+    CHECK(!ints->writeInt(2, 1, 9));
+    CHECK_EQ(ints->readInt(2, 1), 9);
+    CHECK_EQ(tiles.revision(), 1ULL);
+    CHECK_EQ(tiles.dirtyRegion().minX, 2);
+    tiles.clearDirtyRegion();
+    CHECK(tiles.dirtyRegion().empty());
+
+    eve::procgen::Heightmap heightmap(3, 3);
+    HeightmapTarget terrain("height", &heightmap);
+    auto *scalars = terrain.query<IScalarFieldTarget>();
+    CHECK(scalars != nullptr);
+    CHECK(scalars->writeScalar(1, 1, 0.75f));
+    CHECK_EQ(scalars->readScalar(1, 1), 0.75f);
+    CHECK(scalars->sampleScalar(1.f, 1.f) == 0.75f);
+
+    EditorSession session;
+    session.bindTarget(&terrain);
+    CHECK(session.context().targetCapability<IScalarFieldTarget>() == scalars);
+    CHECK(session.context().targetCapability<IIntFieldTarget>() == nullptr);
+}
+
+TEST_CASE("editor.brush_kernel.separates_shape_and_falloff") {
+    LinearBrushFalloff linear;
+    CircleBrushKernel circle(&linear);
+    BrushSample sample;
+    sample.centerX = 2.f;
+    sample.centerY = 2.f;
+    sample.radius = 2.f;
+    BrushSampleBuffer points;
+    circle.sample(sample, points);
+    CHECK(points.size() > 1);
+    bool foundCenter = false;
+    bool foundEdge = false;
+    for (int i = 0; i < points.size(); ++i) {
+        const auto &point = points.point(i);
+        if (point.x == 2 && point.y == 2) {
+            foundCenter = true;
+            CHECK_EQ(point.weight, 1.f);
+        }
+        if (point.x == 4 && point.y == 2) {
+            foundEdge = true;
+            CHECK_EQ(point.weight, 0.f);
+        }
+    }
+    CHECK(foundCenter);
+    CHECK(foundEdge);
+
+    ConstantBrushFalloff hard;
+    BoxBrushKernel box(&hard);
+    points.clear();
+    sample.radius = 1.f;
+    box.sample(sample, points);
+    CHECK_EQ(points.size(), 9);
+}
+
+TEST_CASE("editor.transactions.undo_redo_and_rollback_any_field") {
+    TileBuffer buffer(3, 3);
+    TileBufferTarget target("tiles", &buffer);
+    EditorTransactions transactions;
+    CHECK(transactions.begin("paint"));
+    auto first = std::make_unique<IntFieldEditCommand>("paint", &target);
+    CHECK(first->record(1, 1, 5));
+    CHECK(transactions.execute(std::move(first)));
+    auto second = std::make_unique<IntFieldEditCommand>("paint", &target);
+    CHECK(second->record(1, 1, 7));
+    CHECK(second->record(2, 1, 4));
+    CHECK(transactions.execute(std::move(second)));
+    CHECK_EQ(buffer.getGid(1, 1), 7);
+    CHECK(transactions.commit());
+    CHECK_EQ(transactions.undoCount(), 1);
+    CHECK(transactions.undo());
+    CHECK_EQ(buffer.getGid(1, 1), 0);
+    CHECK_EQ(buffer.getGid(2, 1), 0);
+    CHECK(transactions.redo());
+    CHECK_EQ(buffer.getGid(1, 1), 7);
+
+    CHECK(transactions.begin("cancel"));
+    auto cancelled = std::make_unique<IntFieldEditCommand>("paint", &target);
+    CHECK(cancelled->record(0, 0, 9));
+    CHECK(transactions.execute(std::move(cancelled)));
+    CHECK_EQ(buffer.getGid(0, 0), 9);
+    CHECK(transactions.rollback());
+    CHECK_EQ(buffer.getGid(0, 0), 0);
+}
+
+#ifdef EVENGINE_HAS_MAP
+TEST_CASE("editor.map.tileLayerTargetUsesLiveRevision") {
+    auto *map = eve::map::Map::create();
+    auto *layer = map->newLayer(4, 3, 8.f, 8.f);
+    Editor editor;
+    std::unique_ptr<TileLayerTarget> target(editor.newTileLayerTarget("ground", layer));
+    const auto before = target->revision();
+    CHECK(target->writeInt(2, 1, 9));
+    CHECK_EQ(layer->getTile(2, 1), 9);
+    CHECK_GT(target->revision(), before);
+    CHECK_EQ(target->dirtyRegion().minX, 2);
+    CHECK_EQ(target->dirtyRegion().maxY, 1);
+    IntFieldEditCommand command("paint", target.get());
+    CHECK(command.record(2, 1, 4));
+    CHECK(command.apply());
+    CHECK_EQ(layer->getTile(2, 1), 4);
+    command.revert();
+    CHECK_EQ(layer->getTile(2, 1), 9);
+}
+#endif
+
+TEST_CASE("editor.constraints.accept_warn_and_reject_without_core_types") {
+    TileBuffer buffer(4, 2);
+    TileBufferTarget target("tiles", &buffer);
+    EditorSession session;
+    session.bindTarget(&target);
+    RejectLargeEdit constraint;
+    CHECK(session.constraints().add(&constraint));
+    CHECK(session.transactions().begin("constrained"));
+
+    auto allowed = std::make_unique<IntFieldEditCommand>("small", &target);
+    CHECK(allowed->record(0, 0, 1));
+    CHECK(session.context().execute(std::move(allowed)));
+    CHECK_EQ(session.constraints().diagnosticCount(), 1);
+    CHECK_EQ(session.constraints().diagnostic(0), std::string("checked"));
+
+    auto rejected = std::make_unique<IntFieldEditCommand>("wide", &target);
+    CHECK(rejected->record(0, 1, 2));
+    CHECK(rejected->record(3, 1, 2));
+    CHECK(!session.context().execute(std::move(rejected)));
+    CHECK(session.constraints().rejected());
+    CHECK_EQ(buffer.getGid(0, 1), 0);
+    CHECK(session.transactions().commit());
+}
 
 TEST_CASE("editor.module.name") {
     auto *mod = Editor::create();

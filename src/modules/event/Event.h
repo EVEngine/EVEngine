@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
@@ -22,6 +23,7 @@ struct Variant {
     int64_t     i    = 0;
     std::string s;
     void*       p = nullptr;
+    std::shared_ptr<void> owner;
 
     /** @brief Constructs a nil variant. */
     static Variant makeNil() { return {}; }
@@ -46,6 +48,17 @@ struct Variant {
         x.p    = v;
         return x;
     }
+    /** @brief Constructs an owning pointer variant deleted with the message. */
+    template <class T>
+    static Variant makeOwnedPtr(T* v) {
+        Variant x;
+        x.type = Type::Ptr;
+        x.p    = v;
+        if (v) x.owner = std::shared_ptr<void>(v, [](void* p) { delete static_cast<T*>(p); });
+        return x;
+    }
+    /** @brief Whether this pointer payload owns the pointed-to object. */
+    bool ownsPointer() const { return static_cast<bool>(owner); }
 };
 
 /**
@@ -77,6 +90,8 @@ public:
      * @param msg Message to queue (must be non-null; ownership transfers to the queue).
      */
     void         push(Message* msg);
+    /** @brief Queues an owning message handle; ownership transfers to the queue. */
+    void         push(std::unique_ptr<Message> msg);
     /**
      * @brief Script helper: pushes an event with an optional string payload.
      * @param name Event name.
@@ -85,6 +100,8 @@ public:
     void         pushData(std::string name, std::string data = "");
     /** @brief Pops the oldest message, or nullptr if the queue is empty (caller must delete). */
     Message*     poll();
+    /** @brief Pops the oldest message into an RAII handle, or returns null. */
+    std::unique_ptr<Message> pollOwned();
     /** @brief Script helper: pops one message and returns its name, or "" if none. */
     std::string  pollName();
     /** @brief First string arg of the message most recently returned by pollName/pollData. */
@@ -101,13 +118,15 @@ public:
     virtual void     pump() = 0;
     /** @brief Platform hook: blocks until a message is available, then polls it. */
     virtual Message* wait() = 0;
+    /** @brief Blocking wait returning an RAII handle. */
+    std::unique_ptr<Message> waitOwned() { return std::unique_ptr<Message>(wait()); }
 
 protected:
     /** @brief Wake a platform-specific blocking wait after a message is queued. */
     virtual void wakeWaiters() {}
 
     std::mutex           queueMu_;
-    std::queue<Message*> queue;
+    std::queue<std::unique_ptr<Message>> queue;
     std::string          lastData_;
 };
 

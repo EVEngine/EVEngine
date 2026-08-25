@@ -1,23 +1,32 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "animation/AnimClip.h"
+#include "animation/AnimLayerMixer.h"
+#include "animation/AnimPlayer.h"
+#include "animation/AnimSkeleton.h"
 #include "animation/Animation.h"
 #include "animation/Tween.h"
 #include "avatar/Avatar.h"
 #include "avatar/AvatarInstance.h"
 #include "avatar/Live2DNullBackend.h"
 #include "common/ECS.h"
+#include "common/Module.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
 
 #include <cmath>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+#include <simplesquirrel/simplesquirrel.hpp>
+
 using namespace eve::avatar;
 using eve::graphics::Mesh;
 using eve::graphics::Renderable2D;
+using eve::graphics::Renderable3D;
 
 namespace {
 
@@ -67,6 +76,13 @@ TEST_CASE("avatar.image.layersAndExpression") {
     CHECK_EQ(av->getLayerCount(), 3);
     CHECK(av->hasLayer("face"));
 
+    Renderable2D* face = av->getLayerRenderable("face");
+    REQUIRE(face != nullptr);
+    face->setRotation(0.25f);
+    face->setReceiveLight(false);
+    face->setBlend("additive");
+    CHECK_EQ(face->getBlend(), std::string("additive"));
+
     CHECK(av->setLayerVisible("blush", false));
     CHECK(av->setLayerSize("body", 200.f, 400.f));
     CHECK(av->setLayerOffset("face", 10.f, -20.f));
@@ -81,6 +97,9 @@ TEST_CASE("avatar.image.layersAndExpression") {
     av->setVisible(true);
     av->setLayer(50);
     av->sync();
+    CHECK(std::fabs(face->getRotation() - 0.25f) < 1e-5f);
+    CHECK(!face->getReceiveLight());
+    CHECK_EQ(face->getBlend(), std::string("additive"));
 
     int visible = 0;
     if (ecs::current()->getManager<Renderable2D>() != nullptr) {
@@ -103,7 +122,8 @@ TEST_CASE("avatar.live2d.nullBackendDefault") {
     Avatar *mod = Avatar::create();
     AvatarInstance *av = mod->newLive2DAvatar();
     CHECK_EQ(av->getKind(), std::string("live2d"));
-    CHECK(av->hasLive2DBackend());
+    CHECK(!av->hasLive2DBackend());
+    CHECK(!Avatar::hasLive2DBackend());
     CHECK_EQ(Avatar::getLive2DBackendName(), std::string("null"));
     CHECK(av->loadLive2DModel("models/hiyori"));
     CHECK_EQ(av->getLive2DBackendName(), std::string("null"));
@@ -113,11 +133,66 @@ TEST_CASE("avatar.live2d.nullBackendDefault") {
     delete av;
 }
 
+TEST_CASE("avatar.authoringMetadataIsComposableAndStable") {
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newImageAvatar();
+    REQUIRE(av->defineParameter("mouth", 0.25f, -1.f, 1.f));
+    CHECK_EQ(av->getParameter("mouth"), 0.25f);
+    CHECK_EQ(av->getParameterDefault("mouth"), 0.25f);
+    CHECK_EQ(av->getParameterMinimum("mouth"), -1.f);
+    CHECK_EQ(av->getParameterMaximum("mouth"), 1.f);
+    CHECK(!av->defineParameter("invalid", 0.f, 2.f, 1.f));
+    REQUIRE(av->defineExpression("smile", "mouth=1"));
+    REQUIRE(av->defineExpression("neutral", "mouth=0"));
+    CHECK_EQ(av->getExpressionCount(), 2);
+    CHECK_EQ(av->getExpressionName(0), std::string("neutral"));
+    CHECK_EQ(av->getExpressionName(1), std::string("smile"));
+    REQUIRE(av->removeExpression("neutral"));
+    CHECK_EQ(av->getExpressionCount(), 1);
+    av->release();
+    delete av;
+}
+
+TEST_CASE("avatar.script.buildsInspectorAndMotionBrowserFromMetadata") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        avatarModule <- eve.Avatar();
+        animationModule <- eve.Animation();
+        avatar <- avatarModule.newVroidAvatar();
+        blinkDefined <- avatar.defineParameter("blink", 0.0, 0.0, 1.0);
+        blinkMin <- avatar.getParameterMinimum("blink");
+        blinkMax <- avatar.getParameterMaximum("blink");
+        blinkDefault <- avatar.getParameterDefault("blink");
+        clip <- animationModule.newClip("idle");
+        motionRegistered <- avatar.registerMotion("idle", clip);
+        motionCount <- avatar.getMotionCount();
+        motionName <- avatar.getMotionName(0);
+        sameClip <- avatar.getMotionClip("idle").getName();
+        expressionDefined <- avatar.defineExpression("happy", "blink=0");
+        expressionName <- avatar.getExpressionName(0);
+        motionRemoved <- avatar.unregisterMotion("idle");
+    )"));
+
+    CHECK(vm.find("blinkDefined").toBool());
+    CHECK_EQ(vm.find("blinkMin").toFloat(), 0.f);
+    CHECK_EQ(vm.find("blinkMax").toFloat(), 1.f);
+    CHECK_EQ(vm.find("blinkDefault").toFloat(), 0.f);
+    CHECK(vm.find("motionRegistered").toBool());
+    CHECK_EQ(vm.find("motionCount").toInt(), 1);
+    CHECK_EQ(vm.find("motionName").toString(), std::string("idle"));
+    CHECK_EQ(vm.find("sameClip").toString(), std::string("idle"));
+    CHECK(vm.find("expressionDefined").toBool());
+    CHECK_EQ(vm.find("expressionName").toString(), std::string("happy"));
+    CHECK(vm.find("motionRemoved").toBool());
+}
+
 TEST_CASE("avatar.live2d.backendPlugIn") {
     Avatar::registerLive2DBackend(&makeFakeLive2D);
     Avatar *mod = Avatar::create();
     AvatarInstance *av = mod->newLive2DAvatar();
     CHECK(av->hasLive2DBackend());
+    CHECK(Avatar::hasLive2DBackend());
     CHECK(av->loadLive2DModel("models/hiyori"));
     CHECK_EQ(av->getLive2DBackendName(), std::string("fake"));
     av->setExpression("smile");
@@ -176,6 +251,108 @@ TEST_CASE("avatar.vroid.meshMorphWeights") {
 
     av->setParameter("Joy", 0.5f);
     CHECK_EQ(mesh.getMorphWeight("Joy"), 0.5f);
+
+    av->release();
+    delete av;
+}
+
+TEST_CASE("avatar.vroid.motionPlayerAndRootMotion") {
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newVroidAvatar();
+
+    eve::animation::AnimSkeleton skeleton;
+    const int                    root = skeleton.addBone("hips", -1);
+    eve::animation::AnimClip     walk("walk");
+    walk.setDuration(1.f);
+    walk.setLoop(true);
+    walk.addPositionKey(root, 0.f, 0.f, 0.f, 0.f);
+    walk.addPositionKey(root, 1.f, 1.f, 0.f, 0.f);
+    walk.addEvent(0.5f, "footstep", "left");
+    eve::animation::AnimPlayer     player(&skeleton);
+    eve::animation::AnimLayerMixer mixer(&skeleton);
+
+    CHECK(mixer.setBasePlayer(&player));
+    CHECK(av->bindAnimLayerMixer(&mixer));
+    CHECK(av->registerMotion("walk", &walk));
+    av->setMotionBlendTime(0.f);
+    av->setApplyRootMotion(true);
+    av->setMotion("walk");
+    CHECK(player.isPlaying());
+
+    av->update(0.25f);
+    CHECK(std::fabs(av->getRootMotionDeltaX()) < 1e-5f);
+    av->update(0.25f);
+    CHECK(std::fabs(av->getRootMotionDeltaX() - 0.25f) < 1e-5f);
+    CHECK(std::fabs(av->getRootMotionDeltaZ()) < 1e-5f);
+    CHECK_EQ(av->getAnimationEventCount(), 1);
+    CHECK_EQ(av->getAnimationEventLayer(0), std::string("base"));
+    CHECK_EQ(av->getAnimationEventName(0), std::string("footstep"));
+    CHECK_EQ(av->getAnimationEventPayload(0), std::string("left"));
+    av->update(0.75f);
+    CHECK(std::fabs(av->getRootMotionDeltaX() - 0.75f) < 1e-5f);
+
+    av->release();
+    delete av;
+}
+
+TEST_CASE("avatar.vroid.humanoidAndVisemeSemantics") {
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newVroidAvatar();
+
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("Hips", -1);
+    skeleton.addBone("Spine", 0);
+    const int head = skeleton.addBone("Head", 1);
+    skeleton.setBindPosition(head, 0.f, 2.f, 0.f);
+    eve::animation::AnimPlayer player(&skeleton);
+    CHECK(av->bindAnimPlayer(&player));
+    CHECK_EQ(av->autoMapHumanoidBones(), 3);
+    CHECK_EQ(av->getHumanoidBoneName("hips"), std::string("Hips"));
+    CHECK_EQ(av->getHumanoidBoneName("head"), std::string("Head"));
+    CHECK(!av->mapHumanoidBone("leftHand", "missing"));
+
+    Renderable3D* hat = Renderable3D::create();
+    av->setPosition3D(3.f, 4.f, 5.f);
+    CHECK(av->attachToBone("hat", "head", hat, 0.f, 0.5f, 0.f));
+    CHECK_EQ(av->getAttachmentCount(), 1);
+    av->update(0.f);
+    CHECK(std::fabs(hat->transform()->x - 3.f) < 1e-5f);
+    CHECK(std::fabs(hat->transform()->y - 6.5f) < 1e-5f);
+    CHECK(std::fabs(hat->transform()->z - 5.f) < 1e-5f);
+    CHECK(av->detachAttachment("hat"));
+    CHECK_EQ(av->getAttachmentCount(), 0);
+    ecs::DestroyEntity(hat);
+
+    CHECK(av->setLookAtTarget(10.f, 6.f, 5.f));
+    av->setLookAtWeight(1.f);
+    av->update(0.f);
+    CHECK(std::fabs(player.getPose()->getLocalRotationY(head)) > 0.1f);
+    av->clearLookAtTarget();
+    av->update(0.f);
+    CHECK(std::fabs(player.getPose()->getLocalRotationY(head)) < 1e-5f);
+
+    Mesh        mesh;
+    const float base[]  = {0.f, 0.f, 0.f};
+    const float delta[] = {0.f, 1.f, 0.f};
+    mesh.initMorphBase(1, base, nullptr, nullptr);
+    CHECK(mesh.addMorphTarget("aa", delta));
+    CHECK(mesh.addMorphTarget("ih", delta));
+    av->setMesh(&mesh);
+    CHECK(av->mapViseme("aa", "aa"));
+    CHECK(av->mapViseme("ih", "ih"));
+    CHECK(av->setViseme("aa", 0.75f));
+    CHECK_EQ(mesh.getMorphWeight("aa"), 0.75f);
+    CHECK(av->setViseme("ih", 2.f));
+    CHECK_EQ(mesh.getMorphWeight("aa"), 0.f);
+    CHECK_EQ(mesh.getMorphWeight("ih"), 1.f);
+    CHECK(av->defineExpression("speak-aa", "aa=1;ih=0"));
+    CHECK(av->transitionExpression("speak-aa", 1.f));
+    av->update(0.5f);
+    CHECK(std::fabs(mesh.getMorphWeight("aa") - 0.5f) < 1e-5f);
+    CHECK(std::fabs(mesh.getMorphWeight("ih") - 0.5f) < 1e-5f);
+    av->update(0.5f);
+    CHECK_EQ(mesh.getMorphWeight("aa"), 1.f);
+    CHECK_EQ(mesh.getMorphWeight("ih"), 0.f);
 
     av->release();
     delete av;

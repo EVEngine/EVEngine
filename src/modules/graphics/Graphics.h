@@ -10,6 +10,7 @@
 #include "common/Module.h"
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
+#include "graphics/SurfaceMode.h"
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
@@ -35,6 +36,8 @@ class Mesh;
 class Outline;
 class Quad;
 class RenderControl;
+class Renderable2D;
+class AlphaMask;
 class ScreenSpaceReflection;
 class Shader;
 class Texture;
@@ -71,11 +74,19 @@ public:
     virtual void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
     virtual void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
                                       float a = 1.f);
+    /** @brief 绕矩形中心旋转 `degrees` 度（顺时针，屏幕 Y 向下）的贴图绘制。 */
+    virtual void drawTexturedRectRotatedRGBA(Texture *texture, float cx, float cy, float w, float h,
+                                             float degrees, float r, float g, float b,
+                                             float a = 1.f);
     /** @brief RGBA-float overload matching the script-facing drawSolidRect name. */
     virtual void drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
     /** @brief RGBA-float overload matching the script-facing drawTexturedRect name. */
     virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
                                   float a = 1.f);
+    /** @brief Draw all live Sprite2D entities into the current frame without presenting. */
+    void renderSprites();
+    /** @brief Create a script-facing Sprite2D ECS entity. Call destroy() when done. */
+    Renderable2D *newSprite2D();
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */
@@ -103,10 +114,6 @@ public:
      */
     virtual void setTextureSampler(Texture *texture, const std::string &filter, const std::string &mipmap,
                                    float maxAnisotropy, float lodBias);
-
-    /** @deprecated Use setTextureSampler() with the same arguments. */
-    void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
-                                 float maxAnisotropy, float lodBias);
 
     virtual void present() = 0;
 
@@ -328,6 +335,17 @@ public:
     virtual Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) = 0;
 
     /**
+     * @brief Replace an existing texture's pixels in place (pointer stays stable).
+     *
+     * The new size must match the texture's current dimensions (mip chain and
+     * sampler are kept); callers that need a different size should create a new
+     * texture instead. Returns false when the texture is not owned by this
+     * backend or the backend does not support in-place updates.
+     */
+    virtual bool updateTexture(Texture *texture, int width, int height,
+                               const uint8_t *rgba) = 0;
+
+    /**
      * @brief Recreate the sampler for an existing texture (keeps image / mip chain).
      * No-op when texture is null or not owned by this Graphics.
      */
@@ -450,6 +468,16 @@ public:
     virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
                                     const float *uvST, int vertexCount, const uint32_t *indices,
                                     int indexCount) = 0;
+
+    /** @brief Upload four joint indices and weights per vertex for built-in GPU skinning. */
+    virtual bool setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
+                                     int vertexCount) {
+        (void)mesh;
+        (void)joints4;
+        (void)weights4;
+        (void)vertexCount;
+        return false;
+    }
 
     /**
      * @brief If mesh morph weights are dirty, bake blended positions and upload to the GPU VBO.
@@ -628,6 +656,16 @@ public:
         (void)attachment;
         return nullptr;
     }
+    /**
+     * @brief Read back a DecalLayer attachment ("albedo" | "normal" | "params")
+     * to CPU. Renders the pending G-buffer + decal passes in one immediate
+     * submit first, so it also works headless (no swapchain). Nullptr when
+     * unsupported or no resources.
+     */
+    virtual image::ImageData *readDecalLayerToImageData(const std::string &attachment) {
+        (void)attachment;
+        return nullptr;
+    }
 
     /** @brief Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
     virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
@@ -651,6 +689,10 @@ public:
 
     /** @brief Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
+    /** @brief Select pipeline state for subsequent mesh draws. */
+    virtual void setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                                  bool doubleSided, float alphaCutoff,
+                                  const std::string &alphaTechnique = "cutoff") = 0;
 
     /**
      * @brief Texture cell bombing for the next default mesh draw (breaks tiling).
@@ -714,6 +756,40 @@ public:
                                         float originY, float originZ, const std::string &faceDir,
                                         Texture *atlas, int tilesPerRow = 16,
                                         const uint32_t *ao = nullptr) = 0;
+
+    /**
+     * @brief True when the backend can render the screen-space decal layer
+     * (box-projected decals writing albedo/normal/params targets that
+     * mesh3d.frag samples before lighting). False on WebGPU (SPIR-V only
+     * here), where RenderSystem3D skips the decal pass entirely.
+     */
+    virtual bool supportsDecal() const { return true; }
+
+    /**
+     * @brief Open the decal pass (reads G-buffer hwDepth + normal, writes the
+     * screen-space DecalLayer targets). Call after endGBufferPass and before
+     * begin3DFrame; draws are queued by drawDecal and recorded into the frame's
+     * command buffer together with the swapchain pass.
+     */
+    virtual void beginDecalPass(int width, int height) = 0;
+
+    /** @brief Per-frame camera constants for the decal pass (world-space
+     * reconstruction from the G-buffer depth). Call once per pass. */
+    virtual void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) = 0;
+
+    /**
+     * @brief Queue one box-projected decal draw. `model` maps the unit decal
+     * box ([-0.5, 0.5]^3, +Z = decal forward) into world space; `uvRect`
+     * selects the atlas region [x, y, w, h]; `fade` scales the coverage
+     * (lifetime fade in/out); `normalStrength` / `roughnessStrength` /
+     * `metalStrength` / `emissiveStrength` gate the per-channel blend in
+     * mesh3d.frag.
+     */
+    virtual void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
+                           Texture *params, const float uvRect[4], float fade,
+                           float normalStrength, float roughnessStrength, float metalStrength,
+                           float emissiveStrength, int blendMode = 0) = 0;
+    virtual void endDecalPass() = 0;
 
     /**
      * @brief Specular IBL environment for subsequent default mesh draws.
@@ -881,6 +957,22 @@ public:
     virtual void print(const std::string &text, float x, float y, const Color &color = Color(1.f, 1.f, 1.f, 1.f),
                        float scale = 1.f);
 
+    /**
+     * @brief Script-friendly UTF-8 text drawing overload using RGBA components.
+     * @param text UTF-8 text to draw.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param r Red color component.
+     * @param g Green color component.
+     * @param b Blue color component.
+     * @param a Alpha color component.
+     * @param scale Uniform text scale.
+     */
+    void printRGBA(const std::string &text, float x, float y, float r, float g, float b, float a,
+                   float scale = 1.f) {
+        print(text, x, y, Color(r, g, b, a), scale);
+    }
+
     virtual void setShader(Shader *shader);
     virtual void setShader();
 
@@ -1016,6 +1108,8 @@ public:
      * Caller owns Outline*; its Shader is owned by Graphics.
      */
     Outline *newOutline();
+    /** @brief Create a script-owned reusable two-texture alpha-mask compositor. */
+    AlphaMask *newAlphaMask();
 
     /**
      * @brief Screen-space single-bounce GI. Caller owns GlobalIllumination*;

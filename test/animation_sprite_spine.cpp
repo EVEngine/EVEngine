@@ -118,6 +118,60 @@ TEST_CASE("animation.sprite.clipAndPlayer") {
     CHECK_EQ(player->getSheetFrame(), 3);
 }
 
+TEST_CASE("animation.sprite.uniformFpsRangeReverseAndEvents") {
+    auto *anim = Animation::create();
+    std::unique_ptr<SpriteClip> clip(anim->newSpriteClip("fx"));
+    clip->addRange(2, 5, 20.f);
+    CHECK_EQ(clip->getFrameCount(), 4);
+    CHECK(std::fabs(clip->getFPS() - 20.f) < 1e-5f);
+    clip->setFPS(10.f);
+    CHECK(std::fabs(clip->getDuration() - 0.4f) < 1e-5f);
+
+    std::unique_ptr<SpriteAnim> player(anim->newSpriteAnim());
+    player->playReverse(clip.get());
+    CHECK(player->getSpeed() < 0.f);
+    CHECK_EQ(player->getSheetFrame(), 5);
+    player->update(0.11f);
+    CHECK_EQ(player->getSheetFrame(), 4);
+
+    player->update(0.35f);
+    CHECK(player->consumeLooped() >= 1);
+    CHECK(player->getLoopCount() >= 1);
+
+    player->setLoop(false);
+    player->playReverse(clip.get());
+    player->setLoop(false);
+    player->update(1.f);
+    CHECK(player->isFinished());
+    CHECK(player->consumeCompleted());
+    CHECK(!player->consumeCompleted());
+    CHECK_EQ(player->getSheetFrame(), 2);
+
+    player->setSpeed(1.f);
+    player->clearSpeedCurve();
+    player->addSpeedCurveKey(0.f, 0.5f);
+    player->addSpeedCurveKey(1.f, 2.f);
+    player->setSpeedCurveLoop(false);
+    player->play(clip.get());
+    CHECK(std::fabs(player->getSpeedCurveValue() - 0.5f) < 1e-5f);
+    player->update(0.5f);
+    CHECK(player->getSpeedCurveValue() > 1.2f);
+    CHECK(player->getTime() > 0.5f);
+    player->setSpeedCurveInterpolation("cubic");
+    clip->addEvent(2, "impact");
+    player->setFrame(2);
+    CHECK_EQ(player->consumeEvent(), std::string("impact"));
+    player->step(1);
+    CHECK_EQ(player->getClipFrame(), 3);
+
+    SpriteSheet trimmed;
+    const int tf = trimmed.addFrameTrimmed("trim", 2, 3, 10, 12, 32, 40, 7, 9);
+    CHECK_EQ(trimmed.getFrameSourceWidth(tf), 32);
+    CHECK_EQ(trimmed.getFrameSourceHeight(tf), 40);
+    CHECK_EQ(trimmed.getFrameOffsetX(tf), 7);
+    CHECK_EQ(trimmed.getFrameOffsetY(tf), 9);
+}
+
 TEST_CASE("animation.spine.atlasParse") {
     const char *atlasText =
         "hero.png\n"

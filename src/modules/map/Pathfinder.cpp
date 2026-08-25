@@ -144,6 +144,7 @@ struct Grid {
     int width = 0;
     int height = 0;
     TileLayer *layer = nullptr;
+    uint64_t layerRevision = 0;
     Topology topology = Topology::Ortho4;
     bool topologyManual = false;
     bool diagonal = false;
@@ -199,6 +200,7 @@ struct Grid {
             if (blockedGids.count(gid)) blocked = true;
             cost[size_t(i)] = blocked ? 0.f : 1.f;
         }
+        layerRevision = tiles->revision;
         dirty = true;
     }
 
@@ -385,7 +387,8 @@ void Pathfinder::invalidateCache() {
 namespace {
 
 bool ensureSynced(Grid &grid) {
-    if (grid.layer && grid.dirty) grid.syncFromLayer();
+    if (grid.layer && (grid.dirty || grid.layerRevision != grid.layer->tiles()->revision))
+        grid.syncFromLayer();
     return grid.width > 0 && grid.height > 0;
 }
 

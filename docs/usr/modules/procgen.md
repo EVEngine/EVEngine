@@ -13,9 +13,245 @@ p.setSeed(42); p.setSize(64, 40);
 local grid = gen.generate("dungeon.bsp", p);
 ```
 
+## 参数 schema 与动态编辑 UI
+
+每个内置 Grid 生成器在注册执行函数时同时注册 UI 无关的参数 schema。项目不需要在
+编辑器脚本里重复维护字段类型、默认值、范围或 choice 列表；开发者工具、游戏内建造器
+和自动化都枚举同一份元数据，再选择自己的呈现方式：
+
+```squirrel
+local algorithm = "cave.cellular";
+local params = gen.newParams();
+gen.applyAlgorithmDefaults(algorithm, params);
+
+for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
+    local key = gen.getAlgorithmParamKey(algorithm, i);
+    local label = gen.getAlgorithmParamLabel(algorithm, i);
+    local kind = gen.getAlgorithmParamKind(algorithm, i); // int|float|bool|string|choice
+    local defaultText = gen.getAlgorithmParamDefault(algorithm, i);
+    local advanced = gen.isAlgorithmParamAdvanced(algorithm, i);
+    if (gen.algorithmParamHasMinimum(algorithm, i)) {
+        local minValue = gen.getAlgorithmParamMinimum(algorithm, i);
+        local maxValue = gen.getAlgorithmParamMaximum(algorithm, i);
+        local step = gen.getAlgorithmParamStep(algorithm, i);
+        // 用项目自己的 MVVM/UI 组件生成 slider 或 number field。
+    }
+    for (local c = 0; c < gen.getAlgorithmParamChoiceCount(algorithm, i); ++c)
+        print(gen.getAlgorithmParamChoice(algorithm, i, c) + "\n");
+}
+```
+
+算法级信息由 `getAlgorithmDisplayName`、`getAlgorithmCategory`、
+`getAlgorithmCount`、`getAlgorithmId` 和 `hasAlgorithm` 提供；字段还可读取
+`getAlgorithmParamLabel`、`getAlgorithmParamDescription`、
+`getAlgorithmParamCategory`、`algorithmParamHasMaximum`。`Params.setInt` /
+`getInt` 也统一识别 `seed`、`width`、`height`，所以反射生成的控件不需要为这三个
+公共字段编写旁路逻辑。`examples/composable-editor` 在项目脚本中把 schema 映射为
+普通 `ui.slider` / `ui.checkbox` / `ui.combo`，C++ 没有固定 Procgen 面板。
+
+`getAlgorithmSchema` 返回通用 `ProcgenRecipeSchema`。同一个对象模型也由
+`getTextureRecipeSchema`、`getPbrRecipeSchema` 和 `getMeshRecipeSchema` 返回，因此项目只需要一个字段组件：
+`getId`、`getDisplayName`、`getCategory`、`getParamCount`、`getParamKey`、
+`getParamLabel`、`getParamDescription`、`getParamCategory`、`getParamKind`、
+`getParamDefault`、`paramHasMinimum`、`paramHasMaximum`、`getParamMinimum`、
+`getParamMaximum`、`getParamStep`、`isParamAdvanced`、`getParamChoiceCount` 和
+`getParamChoice`。`applyTextureRecipeDefaults` / `applyPbrRecipeDefaults` /
+`applyMeshRecipeDefaults` 把缺失值写入
+`Params`，已有的项目覆盖值保持不变。
+
+```squirrel
+local recipe = "pbr.rock";
+local values = gen.newParams();
+values.setSize(128, 128);
+gen.applyPbrRecipeDefaults(recipe, values);
+local schema = gen.getPbrRecipeSchema(recipe);
+for (local i = 0; i < schema.getParamCount(); ++i)
+    buildProjectField(schema, values, i);
+local maps = gen.generatePbrMaterial(recipe, values);
+local albedo = maps.getAlbedo();
+local normal = maps.getNormal();
+local roughness = maps.getRoughness();
+local metallic = maps.getMetallic();
+local height = maps.getHeight();
+local ao = maps.getAo();
+maps.destroy();
+```
+
+当前 `Material` 可直接使用 albedo、normal、height 纹理以及 scalar roughness / metallic。
+roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材质还没有对应纹理槽。
+
 ## 对象关系与调用时机
 
 `Params` 描述 seed、尺寸和算法参数；`Grid2D` 是结果；`OutputSpec` 决定写入 TileLayer、Image 或 Texture；`Procgen` 按注册算法名执行。
+
+## 纯脚本 PointSet 管线
+
+程序化世界编排使用普通 Squirrel 函数，不要求节点图。`PointSet` 是带位置、法线、
+旋转、缩放、密度、独立 seed 和自定义属性的 3D 采样集合。`sampleGrid`、
+`filterHeight`、`filterDensity`、`excludeRadius`、`jitterPoints` 和 `selfPrune`
+均返回新的集合，不修改输入，因此中间结果可以命名、检查、复用或分支：
+
+```squirrel
+local rootSeed = 42;
+local candidates = procgen.sampleGrid(32, 20, 2.0,
+                                      procgen.deriveSeed(rootSeed, "trees"), 0.75);
+local outsideRoad = procgen.excludeRadius(candidates, 20.0, 12.0, 4.0);
+local trees = procgen.selfPrune(outsideRoad, 1.8);
+```
+
+空间约束也可继续用纯函数串接。`filterBox` / `excludeBox` 接受世界空间 AABB，
+`projectToHeightmap` 按 origin、cellSize 和 heightScale 把点投射到已有高度图并写入
+地表法线，随后可用 `filterSlope` 按角度筛选：
+
+```squirrel
+local region = procgen.filterBox(candidates, 0, -100, 0, 512, 100, 512);
+local ground = procgen.projectToHeightmap(region, terrain, 0, 0, 2.0, 80.0);
+local buildable = procgen.filterSlope(ground, 0.0, 28.0);
+local outsideTown = procgen.excludeBox(buildable, 120, -100, 120, 240, 100, 240);
+```
+
+任意多边形和折线样条同样用 `PointSet` 表示控制点，不需要额外节点类型。
+`filterPolygon` / `excludePolygon` 处理 XZ 平面的凹多边形；
+`filterSplineDistance` 以到最近线段的距离选择道路、河流或隔离带。
+`sampleSpline` 按跨线段连续间距采样，并写入切线 yaw、稳定 point seed，可直接放置
+路灯、护栏等资产：
+
+```squirrel
+local road = procgen.newPointSet();
+road.add(0, 0, 0); road.add(80, 0, 30); road.add(140, 0, 120);
+local reserved = procgen.filterSplineDistance(candidates, road, 0.0, 8.0);
+local outsideRoad = procgen.filterSplineDistance(candidates, road, 8.0, 100000.0);
+local lamps = procgen.sampleSpline(road, 12.0,
+                                   procgen.deriveSeed(rootSeed, "lamps"), 0.0);
+
+local town = procgen.newPointSet();
+town.add(20, 0, 20); town.add(160, 0, 35); town.add(130, 0, 150); town.add(35, 0, 120);
+local townCandidates = procgen.filterPolygon(candidates, town);
+local wilderness = procgen.excludePolygon(candidates, town);
+```
+
+不要让不同内容共享一个可变随机流。用 `deriveSeed(root, "trees")`、
+`deriveSeed(root, "rocks")` 为分支派生稳定 seed；修改岩石管线不会扰动树木结果。
+
+### 事务式 hot reload
+
+命名 `ProcgenContext` 是一次完整重建的 staging 区。`publish` 会复制输出，
+`commitSystem` 成功后才原子替换该系统的上次快照；`fail`、`abortSystem`、脚本异常或
+未提交的 context 都不会破坏旧结果：
+
+```squirrel
+function rebuildForest(seed) {
+    local ctx = procgen.beginSystem("forest", seed);
+    try {
+        local points = procgen.sampleGrid(32, 20, 2.0, ctx.seedFor("trees"), 0.8);
+        local trees = procgen.selfPrune(points, 1.8);
+        ctx.trace("self prune", points.getCount(), trees.getCount(), 0.0);
+        if (!ctx.publish("trees", trees)) throw ctx.getError();
+        if (!procgen.commitSystem(ctx)) throw procgen.lastError();
+    } catch (error) {
+        ctx.fail(error.tostring());
+        procgen.commitSystem(ctx); // 失败并关闭 staging；旧快照仍然有效
+    }
+}
+
+eve_reload <- function() { rebuildForest(42); };
+```
+
+`getSystemOutput` 返回已提交输出的副本；`getSystemRevision` 可判断是否成功换代；
+`getSystemDebugReport` 输出 seed、revision、命名阶段点数/耗时和最终输出点数。
+
+### 按输入复用已提交结果
+
+对昂贵管线可用 `beginCachedSystem(name, seed, buildKey)`。已有快照的 seed 和
+buildKey 都相同时，context 的 `isCacheHit()` 为 true 且无需执行或提交；key 变化
+时则是普通 active staging，成功提交后才更新缓存身份：
+
+```squirrel
+local key = "forest-layout-v2:size=" + worldSize;
+local ctx = procgen.beginCachedSystem("forest", seed, key);
+if (ctx == null) throw procgen.lastError();
+if (ctx.isCacheHit()) {
+    local cachedKey = ctx.getBuildKey();
+    return procgen.getSystemOutput("forest", "trees");
+}
+// 构建并 publish，然后 commitSystem(ctx)
+local committedKey = procgen.getSystemBuildKey("forest");
+```
+
+buildKey 应包含所有影响输出的参数和一段显式 recipe 版本；修改生成代码时同步提升
+该版本。缓存命中不会增加 revision。普通 `beginSystem` 始终强制重建。
+
+### 阶段级增量重建
+
+完整系统需要重建但部分昂贵阶段输入未变化时，用 `reuseStage` / `cacheStage` 做细粒度
+缓存。阶段缓存属于系统快照的一部分：只有 `commitSystem` 成功才更新，失败重建仍能
+在下次尝试中读取上次成功版本。
+
+```squirrel
+local lotsKey = "lots-v3:terrain=" + terrainRevision + ":density=" + density;
+local lots = ctx.reuseStage("lots", lotsKey);
+if (lots == null) {
+    lots = buildLots();
+    if (!ctx.cacheStage("lots", lotsKey, lots)) throw ctx.getError();
+}
+local hits = ctx.getStageCacheHitCount();
+local misses = ctx.getStageCacheMissCount();
+```
+
+每个 key 应覆盖该阶段的直接输入和实现版本。下游阶段把上游 key 纳入自己的 key，
+即可用普通脚本明确表达依赖传播，而不需要隐藏的节点图执行器。
+
+### 场景内检查中间结果
+
+`ctx.captureDebug(name, points)` 会把命名 `PointSet` 复制进本次事务。它和正式
+输出一起原子提交，因此失败的重建不会让调试视图与场景结果错位。脚本可用
+`getSystemDebugStageCount/Name` 枚举阶段，或用 `getSystemDebugStage` 取得副本后
+通过 `gfx` 自行选择颜色、大小和投影视图：
+
+```nut
+ctx.captureDebug("candidates", candidates);
+ctx.captureDebug("after road exclusion", outsideRoad);
+local stagedCount = ctx.getDebugStageCount();
+local stagedName = ctx.getDebugStageName(0);
+local stagedPoints = ctx.getDebugStage(stagedName);
+// commitSystem(ctx) 成功后：
+local preview = procgen.getSystemDebugStage("forest", "candidates");
+local count = procgen.getSystemDebugStageCount("forest");
+local firstName = procgen.getSystemDebugStageName("forest", 0);
+```
+
+这种方式保留纯代码编排，同时让每个命名中间值都能在游戏场景中检查。调试数据
+不直接依赖 graphics 模块，裁剪构建和无头测试仍可使用同一套生成脚本。
+可运行示例见 [`examples/procgen-script-pipeline`](../../../examples/procgen-script-pipeline/README.md)。
+
+### 自动记录阶段耗时
+
+用 `beginTrace(name, inputCount)` 和 `endTrace(outputCount)` 包住普通脚本调用，
+引擎会使用单调时钟记录耗时并写入系统调试报告，不需要脚本自行读取计时器：
+
+```nut
+if (!ctx.beginTrace("self prune", candidates.getCount())) throw ctx.getError();
+local trees = procgen.selfPrune(candidates, 32.0);
+if (!ctx.endTrace(trees.getCount())) throw ctx.getError();
+```
+
+计时器采用后进先出顺序，因此可以嵌套。`getOpenTraceCount()` 可用于脚本断言；
+存在未结束的计时器时，`commitSystem` 会拒绝提交并保留上一个快照。仍可使用
+`trace(name, inputCount, outputCount, milliseconds)` 导入外部测得的阶段数据。
+
+### 对比热重载前后的结果
+
+每次成功提交会额外保留上一版已提交快照。用
+`getPreviousSystemDebugStage(system, stage)` 取得上一版点集，与
+`getSystemDebugStage` 的当前点集叠加绘制；`getPreviousSystemRevision(system)` 返回
+对应 revision。`getSystemDebugDiffReport(system)` 会列出每个调试阶段的当前点数和
+相对上一版的增减，新增和移除的阶段也会明确显示。失败事务不会覆盖这组对比基线。
+
+```nut
+local before = procgen.getPreviousSystemDebugStage("forest", "trees");
+local after = procgen.getSystemDebugStage("forest", "trees");
+print(procgen.getSystemDebugDiffReport("forest") + "\n");
+```
 
 ## 目标导向指南
 
@@ -84,7 +320,7 @@ p.setInt("roomCount", 12);
 p.setString("corridorStyle", "l");   // l | straight | diagonal
 p.setString("floorPattern", "brick");// brick | checker | plank | cobble | plain
 p.setFloat("decorDensity", 0.06);
-p.setString("decorSet", "mixed");    // none | pillars | treasure | nature | mixed
+p.setString("decorSet", "mixed");    // none | pillars | treasure | mixed
 local grid = procgen.generate("level.roguelike", p);
 ```
 
@@ -99,6 +335,47 @@ local grid = procgen.generate("level.roguelike", p);
 - `procgen.randomSeed()`：产生一个非 0 的随机种子，用于再掷一局。
 
 可运行脚本与快捷键见 [`examples/roguelike-generator`](../../../examples/roguelike-generator/README.md)。
+
+### 生成城区布局（`urban.parcels` / `mesh.urban`）
+
+`urban.parcels` 与 `mesh.urban` 是基于 Eurographics 2024 论文
+*Hierarchical Co-generation of Parcels and Streets in Urban Modeling*
+（Chen/Song/Ortner，CGF 43(2)）的引擎移植：从输入地块多边形层级化二分生成
+**地块（parcels）与街道（streets）** 协同的城区布局。核心流程：
+
+1. 每层对每个可分割地块计算 ~20 条流线候选（交叉场 + 超流线追踪，必要时回退
+   直线弦），用论文式 2 质量分 `Q = λ1·Qsize + λ2·Qregu + λ3·Qacce` 选最优分割线；
+2. 消除地块网格中的短边；
+3. 对不可达地块分组，生成 I 形/L 形街道入口，并用转角感知 Dijkstra 接入既有
+   街道网络，保证每个地块可达、网络连通；
+4. 全局几何优化（规则角、边/街平滑、交叉口直角、贴近初始），带“变差回滚”保护。
+
+```squirrel
+local p = gen.newParams();
+p.setSeed(20260823);
+p.setString("land", "rect");          // rect | triangle | ellipse | l | hexagon
+p.setFloat("landWidth", 100);
+p.setFloat("landHeight", 60);
+p.setFloat("minParcelArea", 4.0);
+p.setInt("targetParcels", 120);
+p.setString("streetPattern", "default"); // default | loop | culdesac | tree
+p.setInt("optimize", 1);
+
+// 1) 语义地图：路 = Semantic::Road(11)，地块 = Floor(2)，detail = 地块 id(1..N)
+local grid = gen.generate("urban.parcels", p);
+
+// 2) 城区网格：地块块 + 街道带（extrude>0 时挤压成体块）
+p.setFloat("extrude", 6.0);
+local mesh = gen.generateMesh("mesh.urban", p, gfx);
+```
+
+常用参数：`land` 也支持显式多边形（`"0,0;100,0;100,60;0,60"`）；
+`lambdaSize/lambdaRegu/lambdaAcce` 控制地块形状偏好（论文式 2 权重）；
+`orientation` 设为 `east-west` / `north-south` 可控制地块长边朝向；
+`boundaryStreet` 设为 `none` / `random` 可关闭或随机化地块边界街道；
+`cellSize`（栅格分辨率）、`extrude`（网格块高）。网格与地图的 metadata 记录
+`parcels` / `streets` / `junctions` / `streetLength` / `avgIrregularity`。
+交互示例与完整参数见 [`examples/urban-generator`](../../../examples/urban-generator/README.md)。
 
 ### 生成随机树木网格
 
@@ -162,13 +439,13 @@ local mesh = gen.generateMesh("mesh.stonewall", p, gfx); // 或 mesh.fence / mes
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `addObject()`、`addObjectAt()`、`applyToLayer()`、`autotileGrid()`、`buildMesh()`、`clearObjects()`、`fill()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
+- `abort()`、`abortSystem()`、`add()`、`addObject()`、`addObjectAt()`、`applyToLayer()`、`autotileGrid()`、`beginSystem()`、`buildMesh()`、`clear()`、`clearObjects()`、`commitSystem()`、`deriveSeed()`、`empty()`、`excludeRadius()`、`fail()`、`fill()`、`filterDensity()`、`filterHeight()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
 - `generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
-- `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
+- `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeshRecipeSchema()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
-- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`
-- `lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`randomSeed()`、`resize()`、`setCell()`、`setDetail()`、`setFloat()`、`setInt()`
-- `setLayer()`、`setMeta()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setSeed()`、`setSize()`、`setString()`
+- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`、`applyMeshRecipeDefaults()`
+- `getDensity()`、`getError()`、`getFloatAttribute()`、`getNormalX()`、`getNormalY()`、`getNormalZ()`、`getOutput()`、`getOutputCount()`、`getOutputName()`、`getPointSeed()`、`getScaleX()`、`getScaleY()`、`getScaleZ()`、`getStringAttribute()`、`getSystemDebugReport()`、`getSystemOutput()`、`getSystemOutputCount()`、`getSystemOutputName()`、`getSystemRevision()`、`getSystemSeed()`、`getTraceCount()`、`getTraceInputCount()`、`getTraceMilliseconds()`、`getTraceName()`、`getTraceOutputCount()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`hasFailed()`、`hasFloatAttribute()`、`hasOutput()`、`hasStringAttribute()`、`hasSystem()`、`isActive()`、`jitterPoints()`、`lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`newPointSet()`、`publish()`、`randomSeed()`、`removeSystem()`、`resize()`、`sampleGrid()`、`seedFor()`、`selfPrune()`、`setCell()`、`setDensity()`、`setDetail()`、`setFloat()`、`setFloatAttribute()`、`setInt()`
+- `setLayer()`、`setMeta()`、`setNormal()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setPointSeed()`、`setPosition()`、`setScale()`、`setSeed()`、`setSize()`、`setString()`、`setStringAttribute()`、`setYaw()`、`trace()`
 - `setTarget()`
 
 ## 使用要点

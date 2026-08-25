@@ -9,8 +9,11 @@
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "common/Module.h"
+#include "common/Capability.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
+
+#include <algorithm>
 
 namespace eve::map {
 
@@ -62,7 +65,7 @@ int Map::loadFromFile(const std::string &path) {
 }
 
 void Map::update(float dt) {
-    (void)dt;
+    TileRenderSystem::update(dt);
     TileConfigSystem::poll();
 }
 
@@ -70,11 +73,85 @@ void Map::render(graphics::Graphics *gfx) {
     if (!gfx) return;
     std::vector<graphics::DrawItem2D> items;
     graphics::RenderSystem::collectSprites(items);
-    TileRenderSystem::collect(items);
+    TileRenderSystem::collect(items, gfx->getWidth(), gfx->getHeight());
     graphics::RenderSystem::drawItems(*gfx, items, false);
 }
 
 int Map::pollConfigs() { return TileConfigSystem::poll(); }
+
+int Map::getLastVisibleTileCount() const { return TileRenderSystem::lastVisibleTileCount(); }
+int Map::getLastCustomVisualCount() const { return TileRenderSystem::lastCustomVisualCount(); }
+int Map::getLastAtlasCount() const { return TileRenderSystem::lastAtlasCount(); }
+int Map::getLastVisitedChunkCount() const { return TileRenderSystem::lastVisitedChunkCount(); }
+int Map::getLastVisitedCellCount() const { return TileRenderSystem::lastVisitedCellCount(); }
+
+int Map::publishCollision(TileLayer *layer) {
+    collisionRects_.clear();
+    if (!layer) return 0;
+    const auto config = layer->config();
+    const auto tiles = layer->tiles();
+    const auto tileset = layer->tileset();
+    if (config->orientation != MapOrientation::Orthogonal) return 0;
+
+    std::vector<uint8_t> solid(size_t(config->mapW * config->mapH), 0);
+    for (int y = 0; y < config->mapH; ++y) {
+        for (int x = 0; x < config->mapW; ++x) {
+            const int gid = int(tileGid(tiles->gids[size_t(y * config->mapW + x)]));
+            const auto it = std::find_if(tileset->visuals.begin(), tileset->visuals.end(),
+                                         [gid](const auto &v) { return v.gid == gid; });
+            solid[size_t(y * config->mapW + x)] =
+                gid != 0 && it != tileset->visuals.end() && !it->walkable;
+        }
+    }
+    for (int y = 0; y < config->mapH; ++y) {
+        for (int x = 0; x < config->mapW; ++x) {
+            if (!solid[size_t(y * config->mapW + x)]) continue;
+            int width = 1;
+            while (x + width < config->mapW && solid[size_t(y * config->mapW + x + width)])
+                ++width;
+            int height = 1;
+            bool canGrow = true;
+            while (y + height < config->mapH && canGrow) {
+                for (int dx = 0; dx < width; ++dx)
+                    if (!solid[size_t((y + height) * config->mapW + x + dx)]) canGrow = false;
+                if (canGrow) ++height;
+            }
+            for (int dy = 0; dy < height; ++dy)
+                for (int dx = 0; dx < width; ++dx)
+                    solid[size_t((y + dy) * config->mapW + x + dx)] = 0;
+            collisionRects_.push_back({config->originX + x * (config->tileW + config->cellGapX),
+                                       config->originY + y * (config->tileH + config->cellGapY),
+                                       width * (config->tileW + config->cellGapX),
+                                       height * (config->tileH + config->cellGapY)});
+        }
+    }
+    cap::forEach<ITileCollisionSink>([&](ITileCollisionSink *sink) {
+        sink->replaceTileCollision(layer, collisionRects_.data(), collisionRects_.size());
+    });
+    return int(collisionRects_.size());
+}
+
+int Map::getCollisionRectCount() const { return int(collisionRects_.size()); }
+float Map::getCollisionRectX(int index) const {
+    return index >= 0 && index < int(collisionRects_.size())
+               ? collisionRects_[size_t(index)].x
+               : 0.f;
+}
+float Map::getCollisionRectY(int index) const {
+    return index >= 0 && index < int(collisionRects_.size())
+               ? collisionRects_[size_t(index)].y
+               : 0.f;
+}
+float Map::getCollisionRectWidth(int index) const {
+    return index >= 0 && index < int(collisionRects_.size())
+               ? collisionRects_[size_t(index)].width
+               : 0.f;
+}
+float Map::getCollisionRectHeight(int index) const {
+    return index >= 0 && index < int(collisionRects_.size())
+               ? collisionRects_[size_t(index)].height
+               : 0.f;
+}
 
 int Map::getLayerCount() const {
     if (ecs::current()->getManager<TileLayer>() == nullptr) return 0;
@@ -178,13 +255,43 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("getTileWidth", &TileLayer::getTileWidth);
     layer.addFunc("getTileHeight", &TileLayer::getTileHeight);
     layer.addFunc("setTileSize", &TileLayer::setTileSize);
+    layer.addFunc("setCellGap", &TileLayer::setCellGap);
+    layer.addFunc("setRenderSpacing", &TileLayer::setRenderSpacing);
+    layer.addFunc("getCellGapX", &TileLayer::getCellGapX);
+    layer.addFunc("getCellGapY", &TileLayer::getCellGapY);
+    layer.addFunc("getRenderSpacingX", &TileLayer::getRenderSpacingX);
+    layer.addFunc("getRenderSpacingY", &TileLayer::getRenderSpacingY);
     layer.addFunc("resize", &TileLayer::resize);
     layer.addFunc("setTile", &TileLayer::setTile);
     layer.addFunc("getTile", &TileLayer::getTile);
+    layer.addFunc("fillRect", &TileLayer::fillRect);
     layer.addFunc("fill", &TileLayer::fill);
     layer.addFunc("clear", &TileLayer::clear);
+    layer.addFunc("getRevision", &TileLayer::getRevision);
+    layer.addFunc("getChunkSize", &TileLayer::getChunkSize);
+    layer.addFunc("getChunkCount", &TileLayer::getChunkCount);
+    layer.addFunc("getNonEmptyChunkCount", &TileLayer::getNonEmptyChunkCount);
+    layer.addFunc("clearTileAnimation", &TileLayer::clearTileAnimation);
+    layer.addFunc("addTileAnimationFrame", &TileLayer::addTileAnimationFrame);
+    layer.addFunc("getTileAnimationFrameCount", &TileLayer::getTileAnimationFrameCount);
+    layer.addFunc("setTileDataString", &TileLayer::setTileDataString);
+    layer.addFunc("setTileDataNumber", &TileLayer::setTileDataNumber);
+    layer.addFunc("setTileDataBool", &TileLayer::setTileDataBool);
+    layer.addFunc("getTileDataType", &TileLayer::getTileDataType);
+    layer.addFunc("getTileDataString", &TileLayer::getTileDataString);
+    layer.addFunc("getTileDataNumber", &TileLayer::getTileDataNumber);
+    layer.addFunc("getTileDataBool", &TileLayer::getTileDataBool);
+    layer.addFunc("setTerrainRule", &TileLayer::setTerrainRule);
+    layer.addFunc("clearTerrainRules", &TileLayer::clearTerrainRules);
+    layer.addFunc("paintTerrain", &TileLayer::paintTerrain);
+    layer.addFunc("getTerrain", &TileLayer::getTerrain);
     layer.addFunc("setTileset", &TileLayer::setTileset);
     layer.addFunc("setTilesetTileSize", &TileLayer::setTilesetTileSize);
+    layer.addFunc("setTileVisual", &TileLayer::setTileVisual);
+    layer.addFunc("clearTileVisuals", &TileLayer::clearTileVisuals);
+    layer.addFunc("getTileVisualCount", &TileLayer::getTileVisualCount);
+    layer.addFunc("setTileMetadata", &TileLayer::setTileMetadata);
+    layer.addFunc("loadTilesetManifest", &TileLayer::loadTilesetManifest);
     layer.addFunc("getTilesetTexture", &TileLayer::getTilesetTexture);
     layer.addFunc("getTilesetFirstGid", &TileLayer::getTilesetFirstGid);
     layer.addFunc("getTilesetColumns", &TileLayer::getTilesetColumns);
@@ -332,6 +439,17 @@ void Map::expose(ssq::Class &cls) {
     cls.addFunc("update", &Map::update);
     cls.addFunc("render", &Map::render);
     cls.addFunc("pollConfigs", &Map::pollConfigs);
+    cls.addFunc("getLastVisibleTileCount", &Map::getLastVisibleTileCount);
+    cls.addFunc("getLastCustomVisualCount", &Map::getLastCustomVisualCount);
+    cls.addFunc("getLastAtlasCount", &Map::getLastAtlasCount);
+    cls.addFunc("getLastVisitedChunkCount", &Map::getLastVisitedChunkCount);
+    cls.addFunc("getLastVisitedCellCount", &Map::getLastVisitedCellCount);
+    cls.addFunc("publishCollision", &Map::publishCollision);
+    cls.addFunc("getCollisionRectCount", &Map::getCollisionRectCount);
+    cls.addFunc("getCollisionRectX", &Map::getCollisionRectX);
+    cls.addFunc("getCollisionRectY", &Map::getCollisionRectY);
+    cls.addFunc("getCollisionRectWidth", &Map::getCollisionRectWidth);
+    cls.addFunc("getCollisionRectHeight", &Map::getCollisionRectHeight);
     cls.addFunc("getLayerCount", &Map::getLayerCount);
     cls.addFunc("getLayer", &Map::getLayer);
     cls.addFunc("getObjectCount", &Map::getObjectCount);

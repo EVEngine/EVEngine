@@ -1,6 +1,7 @@
 #include "physics/World3D.h"
 #include "physics/Body3D.h"
 #include "physics/Shape3D.h"
+#include "physics/PhysicsCapabilities.h"
 
 #include "common/Exception.h"
 #include "event/Event.h"
@@ -34,6 +35,7 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
     def.gravity    = b3Vec3{gravityX, gravityY, gravityZ};
     def.enableSleep = sleep;
     worldId_        = b3CreateWorld(&def);
+    registerCameraObstructionWorld(this);
 }
 
 World3D::~World3D() { destroy(); }
@@ -42,6 +44,7 @@ bool World3D::isValid() const { return !destroyed_ && b3World_IsValid(worldId_);
 
 void World3D::destroy() {
     if (destroyed_) return;
+    unregisterCameraObstructionWorld(this);
     destroyed_ = true;
 
     std::vector<Body3D *> bodies(bodies_.begin(), bodies_.end());
@@ -60,6 +63,45 @@ void World3D::destroy() {
         b3DestroyWorld(worldId_);
     }
     worldId_ = {};
+}
+
+bool World3D::sphereCast(float x1, float y1, float z1, float x2, float y2, float z2,
+                         float radius, uint64_t maskBits, int ignoredBodyId,
+                         CameraSphereHit3D* out) const {
+    if (out) *out = CameraSphereHit3D{};
+    if (!out || !isValid() || radius < 0.f) return false;
+
+    struct Collector {
+        CameraSphereHit3D* out = nullptr;
+        int ignoredBodyId = -1;
+        static float callback(b3ShapeId shapeId, b3Pos point, b3Vec3 normal, float fraction,
+                              uint64_t, int, int, void* context) {
+            auto* self = static_cast<Collector*>(context);
+            Body3D* body = bodyFromShape(shapeId);
+            if (!body || body->getId() == self->ignoredBodyId) return -1.f;
+            if (!self->out->hit || fraction < self->out->fraction) {
+                self->out->hit = true;
+                self->out->bodyId = body->getId();
+                self->out->fraction = fraction;
+                self->out->x = static_cast<float>(point.x);
+                self->out->y = static_cast<float>(point.y);
+                self->out->z = static_cast<float>(point.z);
+                self->out->nx = normal.x;
+                self->out->ny = normal.y;
+                self->out->nz = normal.z;
+            }
+            return fraction;
+        }
+    } collector{out, ignoredBodyId};
+
+    const b3Vec3 point{0.f, 0.f, 0.f};
+    const b3ShapeProxy proxy{&point, 1, radius};
+    b3QueryFilter filter = b3DefaultQueryFilter();
+    filter.maskBits = maskBits;
+    b3World_CastShape(worldId_, b3Pos{x1, y1, z1}, &proxy,
+                      b3Vec3{x2 - x1, y2 - y1, z2 - z1}, filter,
+                      &Collector::callback, &collector);
+    return out->hit;
 }
 
 void World3D::update(float dt) { updateFull(dt, 4); }
@@ -144,6 +186,11 @@ void World3D::emitContactEvents() {
 }
 
 int World3D::rayCast(float x1, float y1, float z1, float x2, float y2, float z2) {
+    return rayCastFiltered(x1, y1, z1, x2, y2, z2, ~uint64_t{0});
+}
+
+int World3D::rayCastFiltered(float x1, float y1, float z1, float x2, float y2, float z2,
+                             uint64_t maskBits) {
     rayHitBodyId_   = -1;
     rayHitX_        = 0.f;
     rayHitY_        = 0.f;
@@ -157,6 +204,7 @@ int World3D::rayCast(float x1, float y1, float z1, float x2, float y2, float z2)
     b3Pos  origin{x1, y1, z1};
     b3Vec3 translation{x2 - x1, y2 - y1, z2 - z1};
     b3QueryFilter filter = b3DefaultQueryFilter();
+    filter.maskBits      = maskBits;
     b3RayResult   hit    = b3World_CastRayClosest(worldId_, origin, translation, filter);
     if (!hit.hit) return -1;
 
@@ -205,6 +253,35 @@ int World3D::getQueryBodyId(int index) const {
     if (index < 0 || index >= static_cast<int>(queryBodyIds_.size()))
         throw eve::Exception("World3D.getQueryBodyId: index out of range");
     return queryBodyIds_[static_cast<size_t>(index)];
+}
+
+bool World3D::pointProbe(float x, float y, float z, float radius, ClothContact3D *out) const {
+    if (out) *out = ClothContact3D{};
+    if (!isValid() || radius <= 0.f) return false;
+
+    const b3Vec3 target{x, y, z};
+    for (Shape3D *s : shapes_) {
+        if (!s || !s->isValid() || s->isSensor()) continue;
+        const b3Vec3 closest = b3Shape_GetClosestPoint(s->raw(), target);
+        const b3Vec3 delta   = target - closest;
+        const float d = std::sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z);
+        const float depth = radius - d;
+        if (depth > 0.f && depth > out->depth) {
+            out->hit   = true;
+            out->depth = depth;
+            if (d > 1e-6f) {
+                out->nx = delta.x / d;
+                out->ny = delta.y / d;
+                out->nz = delta.z / d;
+            } else {
+                out->nx = 0.f;
+                out->ny = 1.f;
+                out->nz = 0.f;
+            }
+            out->body = s->getBody();
+        }
+    }
+    return out->hit;
 }
 
 }  // namespace eve::physics

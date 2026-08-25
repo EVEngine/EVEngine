@@ -478,6 +478,110 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     return img;
 }
 
+image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachment) {
+    if (!initialized) return nullptr;
+    auto *slot = currentDecalSlot();
+    auto *gslot = currentGBufferSlot();
+    if (!slot || !gslot || !slot->framebuffer || !decalPipeline || !decalRenderPass ||
+        !gbufferPipeline || !gbufferRenderPass || !gslot->framebuffer)
+        return nullptr;
+    vkb::ColorTarget *src = nullptr;
+    if (attachment == "normal")
+        src = &slot->normal;
+    else if (attachment == "params")
+        src = &slot->params;
+    else if (attachment == "albedo")
+        src = &slot->albedo;
+    else
+        return nullptr;
+
+    const uint32_t w = uint32_t(decalWidth);
+    const uint32_t h = uint32_t(decalHeight);
+    if (w == 0 || h == 0) return nullptr;
+    ensureDecalUnitBox();
+    if (!decalUnitBox || !decalUnitBox->gpuHandle) return nullptr;
+
+    const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                // Replay the pending G-buffer fill so hwDepth +
+                                // normal are fresh for the decal pass (same
+                                // pattern as renderEntityIdMask).
+                                if (gbufferPending && !gbufferPassDraws.empty()) {
+                                    std::array<vk::ClearValue, 4> clears{};
+                                    clears[0].color =
+                                        vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                    clears[1].color =
+                                        vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
+                                    clears[2].color =
+                                        vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+                                    vk::RenderPassBeginInfo rpBegin{};
+                                    rpBegin.renderPass = gbufferRenderPass;
+                                    rpBegin.framebuffer = gslot->framebuffer;
+                                    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+                                    rpBegin.clearValueCount = uint32_t(clears.size());
+                                    rpBegin.pClearValues = clears.data();
+                                    gslot->normal.beginColorAttachment();
+                                    gslot->depthColor.beginColorAttachment();
+                                    gslot->albedo.beginColorAttachment();
+                                    gslot->depth.beginDepthAttachment();
+                                    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+                                    setViewportAndScissor(cb, w, h);
+                                    cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                                    gbufferPipeline);
+                                    for (const auto &d : gbufferPassDraws) {
+                                        if (!d.mesh || !d.mesh->gpuHandle) continue;
+                                        auto *gpuMesh =
+                                            static_cast<GpuMesh *>(d.mesh->gpuHandle);
+                                        Texture *alb = d.albedo ? d.albedo : whiteTexture;
+                                        if (alb && alb->gpuHandle && texSetLayout) {
+                                            auto *gpuTex =
+                                                static_cast<GpuTexture *>(alb->gpuHandle);
+                                            cb.bindDescriptorSets(
+                                                vk::PipelineBindPoint::eGraphics,
+                                                gbufferPipelineLayout, 0, 1,
+                                                gpuTex->descriptorSet.ptr(), 0, nullptr);
+                                        }
+                                        cb.pushConstants(
+                                            gbufferPipelineLayout,
+                                            vk::ShaderStageFlagBits::eVertex |
+                                                vk::ShaderStageFlagBits::eFragment,
+                                            0, sizeof(GBufferPush), &d.push);
+                                        drawIndexedMesh(cb, *gpuMesh);
+                                    }
+                                    cb.endRenderPass();
+                                    gslot->normal.endSampledLayout();
+                                    gslot->depthColor.endSampledLayout();
+                                    gslot->albedo.endSampledLayout();
+                                    gslot->depth.endSampledLayout();
+                                }
+
+                                // Decal pass reads the pass above; record it and
+                                // then copy the requested attachment to CPU.
+                                recordDecalPassInto(cb, *slot, *gslot);
+                                src->setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                vk::BufferImageCopy region{};
+                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0,
+                                                           1};
+                                region.imageExtent = vk::Extent3D{w, h, 1};
+                                cb.copyImageToBuffer(src->image(),
+                                                     vk::ImageLayout::eTransferSrcOptimal,
+                                                     staging.buffer, region);
+                                src->setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+
+    auto *img = new image::ImageData(int(w), int(h), "RGBA8");
+    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    std::memcpy(img->getData(), mapped, size_t(byteSize));
+    device->unmapMemory(staging.memory);
+    staging.release();
+    return img;
+}
+
 Canvas *Graphics::newCanvas(int w, int h) {
     ASSERT(initialized);
     ASSERT_GT(w, 0);
@@ -705,6 +809,54 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
     noteTexturedOverlay(color);
+}
+
+void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
+    if (!commandBuffer || draws.empty() || !uiTexturePipeline || uiColorWidth <= 0 ||
+        uiColorHeight <= 0)
+        return;
+
+    vk::CommandBuffer cb(static_cast<VkCommandBuffer>(commandBuffer));
+    auto &buffers = currentFrame2DBuffers().uiTexBufs;
+    std::size_t bufferIndex = 0;
+    setViewportAndScissor(cb, uint32_t(uiColorWidth), uint32_t(uiColorHeight));
+
+    for (const UiTextureDraw &draw : draws) {
+        if (!draw.texture || !draw.texture->gpuHandle || draw.w <= 0.f || draw.h <= 0.f)
+            continue;
+        auto *gpu = static_cast<GpuTexture *>(draw.texture->gpuHandle);
+        const vk::DescriptorSet set = gpu->descriptorSet;
+        if (!set) continue;
+
+        Batcher batch;
+        batch.addTexturedRect(draw.x, draw.y, draw.w, draw.h, draw.tint, draw.u0, draw.v0,
+                              draw.u1, draw.v1);
+        batch.toNDC(uiColorWidth, uiColorHeight);
+        std::vector<TexturedVertex> vertices;
+        vertices.reserve(batch.vertices().size());
+        for (const auto &vertex : batch.vertices())
+            vertices.push_back(TexturedVertex{vertex.pos, vertex.color, vertex.uv});
+
+        if (bufferIndex >= buffers.size()) buffers.emplace_back();
+        vkb::HostVertexBuffer &vertexBuffer = buffers[bufferIndex++];
+        vertexBuffer.allocate<TexturedVertex>(frameToken(), device, vertices);
+
+        const int clipX = std::clamp(int(std::floor(draw.clipX)), 0, uiColorWidth);
+        const int clipY = std::clamp(int(std::floor(draw.clipY)), 0, uiColorHeight);
+        const int clipRight = std::clamp(int(std::ceil(draw.clipX + draw.clipW)), 0, uiColorWidth);
+        const int clipBottom = std::clamp(int(std::ceil(draw.clipY + draw.clipH)), 0, uiColorHeight);
+        if (clipRight <= clipX || clipBottom <= clipY) continue;
+        const vk::Rect2D scissor{{clipX, clipY},
+                                 {uint32_t(clipRight - clipX), uint32_t(clipBottom - clipY)}};
+        cb.setScissor(0, 1, &scissor);
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                        draw.opaque ? uiTextureOpaquePipeline : uiTexturePipeline);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &set, 0,
+                              nullptr);
+        const vk::DeviceSize offset = 0;
+        cb.bindVertexBuffers(0, 1, vertexBuffer, &offset);
+        cb.draw(uint32_t(vertices.size()), 1, 0, 0);
+    }
 }
 
 void Graphics::setLighting2D(const Lighting2DUBO &ubo) { lighting2dFrame = ubo; }
@@ -1051,6 +1203,10 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     switch (mode) {
                                         case BlendMode::Additive:
                                             return offscreenAdditiveTexPipeline;
+                                        case BlendMode::Premultiplied:
+                                            return offscreenPremultipliedTexPipeline;
+                                        case BlendMode::Multiply:
+                                            return offscreenMultiplyTexPipeline;
                                         case BlendMode::Opaque:
                                             return offscreenOpaqueTexPipeline;
                                         case BlendMode::Alpha:
@@ -1062,6 +1218,10 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     switch (mode) {
                                         case BlendMode::Additive:
                                             return offscreenAdditiveSolidPipeline;
+                                        case BlendMode::Premultiplied:
+                                            return offscreenPremultipliedSolidPipeline;
+                                        case BlendMode::Multiply:
+                                            return offscreenMultiplySolidPipeline;
                                         case BlendMode::Alpha:
                                             return offscreenSolidAlphaPipeline;
                                         case BlendMode::Opaque:
@@ -1291,6 +1451,10 @@ void Graphics::flushToSwapchain() {
         switch (mode) {
             case BlendMode::Additive:
                 return additiveTexPipeline;
+            case BlendMode::Premultiplied:
+                return premultipliedTexPipeline;
+            case BlendMode::Multiply:
+                return multiplyTexPipeline;
             case BlendMode::Opaque:
                 return opaqueTexPipeline;
             case BlendMode::Alpha:
@@ -1302,6 +1466,10 @@ void Graphics::flushToSwapchain() {
         switch (mode) {
             case BlendMode::Additive:
                 return additiveSolidPipeline;
+            case BlendMode::Premultiplied:
+                return premultipliedSolidPipeline;
+            case BlendMode::Multiply:
+                return multiplySolidPipeline;
             case BlendMode::Alpha:
                 return solidAlphaPipeline;
             case BlendMode::Opaque:

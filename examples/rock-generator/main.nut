@@ -134,7 +134,7 @@ eve_init = function() {
 
 eve_update = function(dt) {
     if (autoSpin && rock != null) {
-        yaw += dt * 16.0;
+        yaw += dt * 1.0;
         rock.setYaw(yaw);
     }
     if (randomizeKeyPressed()) randomize();

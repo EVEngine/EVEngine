@@ -167,6 +167,11 @@ float Body3D::getLinearVelocityZ() const {
     return b3Body_GetLinearVelocity(bodyId_).z;
 }
 
+float Body3D::getMass() const {
+    if (!isValid()) return 0.f;
+    return b3Body_GetMass(bodyId_);
+}
+
 void Body3D::setAngularVelocity(float wx, float wy, float wz) {
     if (!isValid()) return;
     b3Body_SetAngularVelocity(bodyId_, b3Vec3{wx, wy, wz});

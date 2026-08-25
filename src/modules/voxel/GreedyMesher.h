@@ -65,9 +65,7 @@ private:
                                int y, int z, int w, int h);
     static bool isSolid(uint8_t id) { return id != 0; }
     static void greedy2D(int mask[kChunkSize][kChunkSize], FaceDir dir, int slice,
-                         std::vector<PackedRect> &out, std::vector<uint32_t> *aoOut,
-                         const uint8_t *voxels, ChunkSampler sampler, void *userData,
-                         int chunkX, int chunkY, int chunkZ);
+                         std::vector<PackedRect> &out, std::vector<uint32_t> *aoOut);
 };
 
 }  // namespace eve::voxel

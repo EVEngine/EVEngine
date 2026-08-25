@@ -35,12 +35,13 @@ function keyPressed(name) {
     return key_just_pressed(name);
 }
 
+// 鼠标按键编号：1 = 左键，2 = 右键（与 engine mouse::isDown 一致）。
 function mousePressed(button) {
     local down = mouse.isDown(button);
     local was = false;
-    if (button == 0) was = prevMouse.left;
+    if (button == 1) was = prevMouse.left;
     else if (button == 2) was = prevMouse.right;
-    if (button == 0) prevMouse.left = down;
+    if (button == 1) prevMouse.left = down;
     else if (button == 2) prevMouse.right = down;
     return down && !was;
 }
@@ -170,7 +171,7 @@ eve_update = function(dt) {
     local my = mouse.getY();
     session.updateFromWorld(world, mx, my);
 
-    if (mousePressed(0)) {
+    if (mousePressed(1)) {
         session.setMode("place");
         local id = session.execute();
         if (id <= 0)

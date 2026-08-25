@@ -1,5 +1,7 @@
 #include "card/Card.h"
 
+#include <cmath>
+
 #include "common/Json.h"
 #include "graphics/Graphics.h"
 
@@ -12,6 +14,54 @@
 namespace eve::card {
 
 Module_IMPL(Card, new Card());
+
+void CardPlaneMapper::setLogicalRect(float x, float y, float width, float height) {
+    logicalX_ = x;
+    logicalY_ = y;
+    logicalWidth_ = width;
+    logicalHeight_ = height;
+}
+
+void CardPlaneMapper::setPlane(float ox, float oy, float oz, float ux, float uy, float uz,
+                               float vx, float vy, float vz) {
+    origin_ = glm::vec3(ox, oy, oz);
+    axisU_ = glm::vec3(ux, uy, uz);
+    axisV_ = glm::vec3(vx, vy, vz);
+}
+
+bool CardPlaneMapper::mapRay(float ox, float oy, float oz, float dx, float dy, float dz) {
+    const glm::vec3 normal = glm::cross(axisU_, axisV_);
+    const glm::vec3 direction(dx, dy, dz);
+    const float denominator = glm::dot(normal, direction);
+    if (std::abs(denominator) < 1e-6f) return false;
+    const float t = glm::dot(normal, origin_ - glm::vec3(ox, oy, oz)) / denominator;
+    if (t < 0.f) return false;
+    resultWorld_ = glm::vec3(ox, oy, oz) + direction * t;
+    const glm::vec3 relative = resultWorld_ - origin_;
+    const float uu = glm::dot(axisU_, axisU_);
+    const float uv = glm::dot(axisU_, axisV_);
+    const float vv = glm::dot(axisV_, axisV_);
+    const float determinant = uu * vv - uv * uv;
+    if (std::abs(determinant) < 1e-8f || logicalWidth_ == 0.f || logicalHeight_ == 0.f)
+        return false;
+    const float wu = glm::dot(relative, axisU_);
+    const float wv = glm::dot(relative, axisV_);
+    const float u = (wu * vv - wv * uv) / determinant;
+    const float v = (wv * uu - wu * uv) / determinant;
+    resultLogicalX_ = logicalX_ + u * logicalWidth_;
+    resultLogicalY_ = logicalY_ + v * logicalHeight_;
+    return true;
+}
+
+bool CardPlaneMapper::mapLayout(float x, float y) {
+    if (logicalWidth_ == 0.f || logicalHeight_ == 0.f) return false;
+    const float u = (x - logicalX_) / logicalWidth_;
+    const float v = (y - logicalY_) / logicalHeight_;
+    resultLogicalX_ = x;
+    resultLogicalY_ = y;
+    resultWorld_ = origin_ + axisU_ * u + axisV_ * v;
+    return true;
+}
 
 namespace {
 
@@ -105,14 +155,55 @@ int Card::registerCardsFromJson(const std::string &json) {
     } else if (root.isObject()) {
         if (parseDefinition(root, defs_)) ++n;
     }
+    if (n > 0) definitionViewDirty_ = true;
     return n;
 }
 
-void Card::clearCardDefinitions() { defs_.clear(); }
+void Card::clearCardDefinitions() {
+    defs_.clear();
+    definitionView_.clear();
+    definitionViewDirty_ = false;
+}
 
 int Card::getCardDefinitionCount() { return static_cast<int>(defs_.size()); }
 
+std::string Card::getCardDefinitionId(int index) const {
+    if (definitionViewDirty_) {
+        definitionView_.clear();
+        definitionView_.reserve(defs_.size());
+        for (const auto &[id, definition] : defs_) definitionView_.push_back(id);
+        std::sort(definitionView_.begin(), definitionView_.end());
+        definitionViewDirty_ = false;
+    }
+    return index >= 0 && index < static_cast<int>(definitionView_.size())
+               ? definitionView_[static_cast<size_t>(index)]
+               : std::string{};
+}
+
 bool Card::hasCardDefinition(const std::string &id) { return defs_.count(id) != 0; }
+
+bool Card::setCardDefinition(const std::string &id, const std::string &name, const std::string &kind,
+                             int cost, int attack, int health, float tintR, float tintG, float tintB) {
+    if (id.empty() || cost < 0 || attack < 0 || health < 0) return false;
+    CardDefinition definition;
+    definition.id = id;
+    definition.name = name.empty() ? id : name;
+    definition.kind = kind.empty() ? "creature" : kind;
+    definition.cost = cost;
+    definition.attack = attack;
+    definition.health = health;
+    definition.tint = glm::vec3(std::clamp(tintR, 0.f, 1.f), std::clamp(tintG, 0.f, 1.f),
+                                std::clamp(tintB, 0.f, 1.f));
+    defs_[id] = std::move(definition);
+    definitionViewDirty_ = true;
+    return true;
+}
+
+bool Card::removeCardDefinition(const std::string &id) {
+    if (defs_.erase(id) == 0) return false;
+    definitionViewDirty_ = true;
+    return true;
+}
 
 const CardDefinition *Card::findDef(const std::string &id) const {
     auto it = defs_.find(id);
@@ -176,6 +267,7 @@ CardData *Card::newCard(const std::string &defId) {
     if (!d) return nullptr;
     CardData *c = CardData::createCard();
     c->identity()->id = defId + "#" + std::to_string(nextInstance_++);
+    c->identity()->definitionId = defId;
     c->identity()->name = d->name;
     c->identity()->kind = d->kind;
     c->stats()->cost = d->cost;
@@ -211,6 +303,13 @@ Hand *Card::newHand(LayoutConfig *cfg) {
     h->meta()->config = cfg;
     hands_.push_back(ecs::handle_of(h));
     return h;
+}
+
+CardPlaneMapper *Card::newPlaneMapper() {
+    auto mapper = std::make_unique<CardPlaneMapper>();
+    CardPlaneMapper *raw = mapper.get();
+    planeMappers_.push_back(std::move(mapper));
+    return raw;
 }
 
 // ---------------------------------------------------------------------------
@@ -261,6 +360,41 @@ CardData *Card::drawCard(const std::string &handOwner) {
     return c;
 }
 
+int Card::capturePresentation() {
+    presentation_.clear();
+    presentation_.reserve(cards_.size());
+    for (const auto &handle : cards_) {
+        CardData *card = resolve<CardData>(handle);
+        if (!card) continue;
+        const auto *identity = card->identity().operator->();
+        const auto *layout = card->layout().operator->();
+        const auto *state = card->state().operator->();
+        const auto *visual = card->visual().operator->();
+        presentation_.push_back({identity->id,
+                                 identity->definitionId,
+                                 cardStateName(state->phase),
+                                 layout->x,
+                                 layout->y,
+                                 layout->w,
+                                 layout->h,
+                                 layout->angle,
+                                 layout->scale,
+                                 layout->alpha,
+                                 state->hovered,
+                                 state->dragging,
+                                 visual->disabled,
+                                 visual->faceUp});
+    }
+    return static_cast<int>(presentation_.size());
+}
+
+int Card::getPresentationCount() const { return static_cast<int>(presentation_.size()); }
+
+CardPresentationSnapshot *Card::getPresentation(int index) {
+    if (index < 0 || static_cast<size_t>(index) >= presentation_.size()) return nullptr;
+    return &presentation_[static_cast<size_t>(index)];
+}
+
 // ---------------------------------------------------------------------------
 // 每帧
 // ---------------------------------------------------------------------------
@@ -277,6 +411,8 @@ void Card::update(float dt, float mx, float my, bool down) {
 }
 
 void Card::render(graphics::Graphics *gfx) {
+    if (!builtInVisuals_)
+        return;
     if (activeConfig_ && activeConfig_->showZones) {
         for (auto &h : zones_) {
             if (Zone *z = resolve<Zone>(h)) z->render(gfx, true);
@@ -285,6 +421,53 @@ void Card::render(graphics::Graphics *gfx) {
     for (auto &h : hands_) {
         if (Hand *hand = resolve<Hand>(h)) hand->render(gfx);
     }
+}
+
+void Card::beginTargeting(const std::string &sourceId, float x, float y) {
+    targetingActive_ = true;
+    targetingValid_ = false;
+    targetingSource_ = sourceId;
+    targetingId_.clear();
+    targetingStartX_ = targetingX_ = x;
+    targetingStartY_ = targetingY_ = y;
+}
+
+void Card::updateTargeting(float x, float y, const std::string &targetId, bool valid) {
+    if (!targetingActive_)
+        return;
+    targetingX_ = x;
+    targetingY_ = y;
+    targetingId_ = targetId;
+    targetingValid_ = valid;
+}
+
+void Card::cancelTargeting() {
+    targetingActive_ = false;
+    targetingValid_ = false;
+    targetingSource_.clear();
+    targetingId_.clear();
+}
+
+void Card::renderTargeting(graphics::Graphics *gfx) {
+    if (!gfx || !targetingActive_)
+        return;
+    const float dx = targetingX_ - targetingStartX_;
+    const float dy = targetingY_ - targetingStartY_;
+    const float length = std::sqrt(dx * dx + dy * dy);
+    if (length < 2.f)
+        return;
+    constexpr float radiansToDegrees = 57.2957795131f;
+    const float angle = std::atan2(dy, dx) * radiansToDegrees;
+    const graphics::Color color = targetingValid_ ? graphics::Color(0.15f, 1.f, 0.25f, 0.9f)
+                                                  : graphics::Color(1.f, 0.12f, 0.06f, 0.9f);
+    gfx->drawSolidRectRotated(targetingStartX_ + dx * 0.5f, targetingStartY_ + dy * 0.5f,
+                              length, 12.f, angle, color);
+    gfx->drawSolidRectRotated(targetingX_ - std::cos((angle - 28.f) / radiansToDegrees) * 12.f,
+                              targetingY_ - std::sin((angle - 28.f) / radiansToDegrees) * 12.f,
+                              32.f, 10.f, angle - 28.f, color);
+    gfx->drawSolidRectRotated(targetingX_ - std::cos((angle + 28.f) / radiansToDegrees) * 12.f,
+                              targetingY_ - std::sin((angle + 28.f) / radiansToDegrees) * 12.f,
+                              32.f, 10.f, angle + 28.f, color);
 }
 
 void Card::renderDeck(graphics::Graphics *gfx) {
@@ -387,10 +570,30 @@ void Card::expose(ssq::Table &table) {
     cfgCls.addFunc("getDragThreshold", [](LayoutConfig *c) -> float { return c ? c->dragThreshold : 0.f; });
     cfgCls.addFunc("setDragThreshold", [](LayoutConfig *c, float v) { if (c) c->dragThreshold = v; });
 
+    auto mapperCls = table.addClass<CardPlaneMapper>(
+        "CardPlaneMapper", std::function<CardPlaneMapper *()>([]() -> CardPlaneMapper * {
+            return nullptr;
+        }), false);
+    mapperCls.addFunc("setLogicalRect", &CardPlaneMapper::setLogicalRect);
+    mapperCls.addFunc("setPlane", &CardPlaneMapper::setPlane);
+    mapperCls.addFunc("mapRay", &CardPlaneMapper::mapRay);
+    mapperCls.addFunc("mapLayout", &CardPlaneMapper::mapLayout);
+    mapperCls.addFunc("getLogicalX", &CardPlaneMapper::getLogicalX);
+    mapperCls.addFunc("getLogicalY", &CardPlaneMapper::getLogicalY);
+    mapperCls.addFunc("getWorldX", &CardPlaneMapper::getWorldX);
+    mapperCls.addFunc("getWorldY", &CardPlaneMapper::getWorldY);
+    mapperCls.addFunc("getWorldZ", &CardPlaneMapper::getWorldZ);
+
     // CardData
     auto cardCls = table.addClass<CardData>(
         "CardData", std::function<CardData *()>([]() -> CardData * { return nullptr; }), false);
     cardCls.addFunc("getId", [](CardData *c) -> std::string { return c ? c->identity()->id : std::string{}; });
+    cardCls.addFunc("getInstanceId", [](CardData *c) -> std::string {
+        return c ? c->identity()->id : std::string{};
+    });
+    cardCls.addFunc("getDefinitionId", [](CardData *c) -> std::string {
+        return c ? c->identity()->definitionId : std::string{};
+    });
     cardCls.addFunc("setId", [](CardData *c, const std::string &v) { if (c) c->identity()->id = v; });
     cardCls.addFunc("getName", [](CardData *c) -> std::string { return c ? c->identity()->name : std::string{}; });
     cardCls.addFunc("setName", [](CardData *c, const std::string &v) { if (c) c->identity()->name = v; });
@@ -433,6 +636,7 @@ void Card::expose(ssq::Table &table) {
     cardCls.addFunc("getY", [](CardData *c) -> float { return c ? c->layout()->y : 0.f; });
     cardCls.addFunc("getW", [](CardData *c) -> float { return c ? c->layout()->w : 0.f; });
     cardCls.addFunc("getH", [](CardData *c) -> float { return c ? c->layout()->h : 0.f; });
+    cardCls.addFunc("getAngle", [](CardData *c) -> float { return c ? c->layout()->angle : 0.f; });
     cardCls.addFunc("getScale", [](CardData *c) -> float { return c ? c->layout()->scale : 0.f; });
     cardCls.addFunc("getAlpha", [](CardData *c) -> float { return c ? c->layout()->alpha : 0.f; });
     cardCls.addFunc("isHovered", [](CardData *c) -> bool { return c ? c->state()->hovered : false; });
@@ -507,13 +711,36 @@ void Card::expose(ssq::Table &table) {
     handCls.addFunc("findCard", &Hand::find);
     handCls.addFunc("pickCard", &Hand::pick);
     handCls.addFunc("render", [](Hand *h, graphics::Graphics *gfx) { if (h) h->render(gfx); });
+
+    auto snapshotCls = table.addClass<CardPresentationSnapshot>(
+        "CardPresentationSnapshot",
+        std::function<CardPresentationSnapshot *()>([]() -> CardPresentationSnapshot * {
+            return nullptr;
+        }), false);
+    snapshotCls.addFunc("getInstanceId", [](CardPresentationSnapshot *s) { return s ? s->instanceId : std::string{}; });
+    snapshotCls.addFunc("getDefinitionId", [](CardPresentationSnapshot *s) { return s ? s->definitionId : std::string{}; });
+    snapshotCls.addFunc("getState", [](CardPresentationSnapshot *s) { return s ? s->state : std::string{}; });
+    snapshotCls.addFunc("getX", [](CardPresentationSnapshot *s) { return s ? s->x : 0.f; });
+    snapshotCls.addFunc("getY", [](CardPresentationSnapshot *s) { return s ? s->y : 0.f; });
+    snapshotCls.addFunc("getW", [](CardPresentationSnapshot *s) { return s ? s->width : 0.f; });
+    snapshotCls.addFunc("getH", [](CardPresentationSnapshot *s) { return s ? s->height : 0.f; });
+    snapshotCls.addFunc("getAngle", [](CardPresentationSnapshot *s) { return s ? s->angle : 0.f; });
+    snapshotCls.addFunc("getScale", [](CardPresentationSnapshot *s) { return s ? s->scale : 0.f; });
+    snapshotCls.addFunc("getAlpha", [](CardPresentationSnapshot *s) { return s ? s->alpha : 0.f; });
+    snapshotCls.addFunc("isHovered", [](CardPresentationSnapshot *s) { return s && s->hovered; });
+    snapshotCls.addFunc("isDragging", [](CardPresentationSnapshot *s) { return s && s->dragging; });
+    snapshotCls.addFunc("isDisabled", [](CardPresentationSnapshot *s) { return s && s->disabled; });
+    snapshotCls.addFunc("isFaceUp", [](CardPresentationSnapshot *s) { return s && s->faceUp; });
 }
 
 void Card::expose(ssq::Class &cls) {
     cls.addFunc("registerCardsFromJson", &Card::registerCardsFromJson);
     cls.addFunc("clearCardDefinitions", &Card::clearCardDefinitions);
     cls.addFunc("getCardDefinitionCount", &Card::getCardDefinitionCount);
+    cls.addFunc("getCardDefinitionId", &Card::getCardDefinitionId);
     cls.addFunc("hasCardDefinition", &Card::hasCardDefinition);
+    cls.addFunc("setCardDefinition", &Card::setCardDefinition);
+    cls.addFunc("removeCardDefinition", &Card::removeCardDefinition);
     cls.addFunc("getCardDefinitionName", &Card::getCardDefinitionName);
     cls.addFunc("getCardDefinitionKind", &Card::getCardDefinitionKind);
     cls.addFunc("getCardDefinitionCost", &Card::getCardDefinitionCost);
@@ -527,6 +754,7 @@ void Card::expose(ssq::Class &cls) {
     cls.addFunc("newDeck", &Card::newDeck);
     cls.addFunc("newZone", &Card::newZone);
     cls.addFunc("newHand", &Card::newHand);
+    cls.addFunc("newPlaneMapper", &Card::newPlaneMapper);
     cls.addFunc("setConfig", &Card::setConfig);
     cls.addFunc("getConfig", &Card::getConfig);
     cls.addFunc("handCount", &Card::handCount);
@@ -536,8 +764,21 @@ void Card::expose(ssq::Class &cls) {
     cls.addFunc("getZone", &Card::getZone);
     cls.addFunc("getDeck", &Card::getDeck);
     cls.addFunc("drawCard", &Card::drawCard);
+    cls.addFunc("capturePresentation", &Card::capturePresentation);
+    cls.addFunc("getPresentationCount", &Card::getPresentationCount);
+    cls.addFunc("getPresentation", &Card::getPresentation);
     cls.addFunc("update", &Card::update);
     cls.addFunc("render", &Card::render);
+    cls.addFunc("setBuiltInVisuals", &Card::setBuiltInVisuals);
+    cls.addFunc("getBuiltInVisuals", &Card::getBuiltInVisuals);
+    cls.addFunc("beginTargeting", &Card::beginTargeting);
+    cls.addFunc("updateTargeting", &Card::updateTargeting);
+    cls.addFunc("cancelTargeting", &Card::cancelTargeting);
+    cls.addFunc("renderTargeting", &Card::renderTargeting);
+    cls.addFunc("isTargeting", &Card::isTargeting);
+    cls.addFunc("isTargetValid", &Card::isTargetValid);
+    cls.addFunc("getTargetSource", &Card::getTargetSource);
+    cls.addFunc("getTargetId", &Card::getTargetId);
     cls.addFunc("renderDeck", &Card::renderDeck);
     cls.addFunc("clearEvents", &Card::clearEvents);
     cls.addFunc("getEventCount", &Card::getEventCount);

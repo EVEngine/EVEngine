@@ -78,17 +78,56 @@ eve_declare_module(NAME thread LAYER 0 SCRIPT Thread SLOT thread
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
                    GROUP 2d 3d web)
+# Crowd: 连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群（纯 CPU 仿真，
+# 与渲染解耦；examples/crowd 演示渲染由游戏脚本自行完成）。
+eve_declare_module(NAME crowd LAYER 0 SCRIPT Crowd SLOT crowd
+                   GROUP 2d 3d web)
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
-eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   GROUP 3d web
-                   OPTIONAL_DEPS procgen)
+  eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
+                     GROUP 3d web
+                     OPTIONAL_DEPS procgen map voxel)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)
 eve_declare_module(NAME database LAYER 0 SCRIPT Database
                    THIRDPARTY poco_data poco)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 0 SCRIPT RPG)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
+eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME attributes LAYER 0 SCRIPT Attributes SLOT attributes
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME authority LAYER 0 SCRIPT Authority SLOT authority
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME decision LAYER 0 SCRIPT Decision SLOT decision
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME definitions LAYER 0 SCRIPT Definitions SLOT definitions
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME effects LAYER 0 SCRIPT Effects SLOT effects
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME eventstream LAYER 0 SCRIPT EventStream SLOT eventstream
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME orders LAYER 0 SCRIPT Orders SLOT orders
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME policyregistry LAYER 0 SCRIPT PolicyRegistryModule SLOT policies
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
+                   DEPS spatial
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME statepatch LAYER 0 SCRIPT StatePatch SLOT statepatch
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME steering LAYER 0 SCRIPT Steering SLOT steering
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME tags LAYER 0 SCRIPT Tags SLOT tags
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME transaction LAYER 0 SCRIPT Transaction SLOT transaction
+                   GROUP minimal 2d 3d web)
 # PlacementWorld.cpp includes data/JsonDocument.h and Poco JSON (save/load).
 # THIRDPARTY poco is required so MSVC compiles those TUs with
 # POCO_NO_AUTOMATIC_LIBS; otherwise the obj records a link of
@@ -172,7 +211,7 @@ eve_declare_module(NAME graphics REQUIRED LAYER 3 SCRIPT Graphics SLOT gfx
 # ---------------------------------------------------------------------------
 
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
-                   DEPS graphics
+                   DEPS event graphics scene
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
@@ -182,7 +221,7 @@ eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
                    THIRDPARTY sdl2 poco
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
-                   DEPS event graphics
+                   DEPS event graphics gpgpu
                    OPTIONAL_DEPS scene
                    THIRDPARTY box2d box3d
                    GROUP 2d 3d web)
@@ -192,8 +231,18 @@ eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
                    GROUP 2d 3d)
 eve_declare_module(NAME buildingfx LIB EVBuildingFx LAYER 4 SCRIPT BuildingFx SLOT buildingfx
                    DEPS building graphics)
+# Weapon definitions, entities, mounts and fire logic. Standalone so buildings /
+# vehicles / turrets all attach the same WeaponMount system.
+eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
+                   GROUP 2d 3d)
+# Vehicle entities, kinematic/tracked/wheeled mobility and RTS order queue.
+# Depends on weapon so definitions can declare weapon mounts.
+eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
+                   DEPS weapon
+                   OPTIONAL_DEPS physics
+                   GROUP 2d 3d)
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
-                   DEPS data filesystem graphics model3d
+                   DEPS data filesystem graphics image model3d
                    THIRDPARTY poco assimp
                    GROUP 2d 3d)
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight
@@ -202,6 +251,9 @@ eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT day
 eve_declare_module(NAME weather LAYER 4 SCRIPT Weather SLOT weather
                    DEPS graphics
                    GROUP 3d web)
+eve_declare_module(NAME decal LAYER 4 SCRIPT Decal SLOT decal
+                   DEPS graphics
+                   GROUP 3d)
 eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
                    GROUP 3d)
@@ -210,7 +262,7 @@ eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
                    GROUP 3d)
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
-                   GROUP 3d)
+                   GROUP 2d)
 eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
                    DEPS data graphics image model3d)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
@@ -234,20 +286,30 @@ eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS animation data filesystem gpgpu graphics ik
                    THIRDPARTY poco
                    GROUP 2d 3d)
+# Surface fluid simulation: particles constrained to mesh SDFs (flow down
+# surfaces, droplet coalescence) with screen-space surface reconstruction.
+eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
+                   DEPS gpgpu graphics
+                   GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS graphics image map
                    GROUP 3d)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
-                   DEPS animation graphics model3d)
+                   DEPS animation graphics model3d scene)
 eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    DEPS gpgpu
                    GROUP 3d web)
 eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
                    DEPS data gpgpu graphics
                    GROUP 3d)
+eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
+                   DEPS graphics procgen
+                   GROUP 3d)
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
                    GROUP 3d)
-eve_declare_module(NAME dialogue LAYER 6 SCRIPT Dialogue SLOT dialogue
-                   DEPS avatar)
+eve_declare_module(NAME dialogue LAYER 6
+                   SCRIPT Dialogue DialogueUX DialogueVoice DialogueFlow
+                   SLOT dialogue dialogueUX dialogueVoice dialogueFlow
+                   DEPS avatar audio filesystem)

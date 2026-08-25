@@ -5,6 +5,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
+#include "stylize/StyleShaders.h"
 
 #include <glm/vec4.hpp>
 
@@ -13,6 +14,23 @@ namespace eve::stylize {
 StylePass::StylePass(const std::string &style, graphics::Shader *shader)
     : style_(style), shader_(shader) {
     if (!shader_) throw eve::Exception("StylePass: null shader for style '%s'", style.c_str());
+    if (const StyleDefinition *def = findStyleDefinition(style_)) {
+        desc_.stage = def->stage;
+        desc_.priority = def->priority;
+        if (def->depth) desc_.inputs |= graphics::PostInputDepth;
+        if (def->normal) desc_.inputs |= graphics::PostInputNormal;
+    }
+}
+
+std::string StylePass::getStage() const { return graphics::postEffectStageName(desc_.stage); }
+
+bool StylePass::requiresInput(const std::string &input) const {
+    if (input == "color") return (desc_.inputs & graphics::PostInputColor) != 0;
+    if (input == "depth") return (desc_.inputs & graphics::PostInputDepth) != 0;
+    if (input == "normal") return (desc_.inputs & graphics::PostInputNormal) != 0;
+    if (input == "motion") return (desc_.inputs & graphics::PostInputMotion) != 0;
+    if (input == "objectId") return (desc_.inputs & graphics::PostInputObjectId) != 0;
+    return false;
 }
 
 bool StylePass::hasParam(const std::string &name) const {

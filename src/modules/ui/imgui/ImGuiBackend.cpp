@@ -23,6 +23,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -38,7 +39,12 @@ void checkVk(VkResult err) {
 #endif
 
 /** Base glyph size in logical px (before the DPI scale is applied). */
-constexpr float kBaseFontSizePx = 16.f;
+constexpr float kBaseFontSizePx = 17.f;
+
+/** U+4E2D "中": probe used to verify a font actually rasterizes CJK glyphs. */
+constexpr ImWchar kCjkProbeCodepoint = 0x4E2D;
+/** U+F002 search: probe used to verify the editor icon font was merged. */
+constexpr ImWchar kIconProbeCodepoint = 0xF002;
 
 std::vector<const char *> regularFontCandidates() {
 #if defined(_WIN32)
@@ -58,9 +64,9 @@ std::vector<const char *> regularFontCandidates() {
     };
 #elif defined(EVENGINE_ANDROID)
     static const std::vector<std::string> paths = {
+        "/system/fonts/Roboto-Regular.ttf",
         "/system/fonts/NotoSansCJK-Regular.ttc",
         "/system/fonts/DroidSansFallback.ttf",
-        "/system/fonts/Roboto-Regular.ttf",
     };
 #else
     static const std::vector<std::string> paths = {
@@ -77,15 +83,74 @@ std::vector<const char *> regularFontCandidates() {
     return out;
 }
 
-std::vector<const char *> iconFontCandidates() {
+// System fonts that actually contain CJK glyphs, tried in order when the
+// regular candidates above (Segoe UI / DejaVu Sans / Helvetica, ...) turn out
+// to be Latin-only. Each platform's first entry is the most common CJK font.
+std::vector<const char *> cjkFontCandidates() {
+#if defined(_WIN32)
+    static const std::string winDir = [] {
+        const char *dir = getenv("WINDIR");
+        return dir ? std::string(dir) : std::string("C:\\Windows");
+    }();
     static const std::vector<std::string> paths = {
-        "fonts/FontAwesome.ttf",
-        "test/fonts/FontAwesome.ttf",
+        winDir + "\\Fonts\\msyh.ttc",   // Microsoft YaHei (simplified + traditional)
+        winDir + "\\Fonts\\simhei.ttf", // SimHei
+        winDir + "\\Fonts\\simsun.ttc", // SimSun
+        winDir + "\\Fonts\\Deng.ttf",   // DengXian
+        winDir + "\\Fonts\\msjh.ttc",   // Microsoft JhengHei (traditional)
     };
+#elif defined(__APPLE__)
+    static const std::vector<std::string> paths = {
+        "/System/Library/Fonts/PingFang.ttc",
+        "/System/Library/Fonts/STHeiti Light.ttc",
+        "/System/Library/Fonts/Hiragino Sans GB.ttc",
+        "/System/Library/Fonts/Supplemental/Songti.ttc",
+        "/Library/Fonts/Arial Unicode.ttf",
+    };
+#elif defined(EVENGINE_ANDROID)
+    static const std::vector<std::string> paths = {
+        "/system/fonts/NotoSansCJK-Regular.ttc",
+        "/system/fonts/DroidSansFallback.ttf",
+        "/system/fonts/NotoSansSC-Regular.otf",
+    };
+#else
+    static const std::vector<std::string> paths = {
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
+        "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+        "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+        "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
+        "/usr/share/fonts/truetype/arphic/uming.ttc",
+    };
+#endif
     std::vector<const char *> out;
     out.reserve(paths.size());
     for (const auto &p : paths) out.push_back(p.c_str());
     return out;
+}
+
+std::vector<std::string> iconFontCandidates() {
+    std::vector<std::string> paths;
+    if (const char *overridePath = getenv("EVENGINE_ICON_FONT")) {
+        if (*overridePath) paths.emplace_back(overridePath);
+    }
+    if (char *basePath = SDL_GetBasePath()) {
+        const std::filesystem::path base(basePath);
+        // Build-tree layout: <build>/src/engine/eve.exe -> <build>/share/eve/fonts.
+        paths.push_back(
+            (base / "../../share/eve/fonts/FontAwesome.ttf").lexically_normal().string());
+        // Installed SDK layouts used by the packaged executable.
+        paths.push_back(
+            (base / "../../../share/eve/fonts/FontAwesome.ttf").lexically_normal().string());
+        paths.push_back(
+            (base / "../share/eve/fonts/FontAwesome.ttf").lexically_normal().string());
+        SDL_free(basePath);
+    }
+    paths.emplace_back("share/eve/fonts/FontAwesome.ttf");
+    paths.emplace_back("fonts/FontAwesome.ttf");
+    paths.emplace_back("test/fonts/FontAwesome.ttf");
+    return paths;
 }
 
 bool fileExists(const char *path) {
@@ -130,6 +195,7 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     loadFonts();
     ImGui_ImplWGPU_CreateFontsTexture();
     fontsUploaded_ = true;
+    checkFontCoverage();
 #else
     auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
     if (!vkg) return false;
@@ -192,6 +258,7 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
                                 });
         ImGui_ImplVulkan_DestroyFontUploadObjects();
         fontsUploaded_ = true;
+        checkFontCoverage();
     }
 #endif
 
@@ -261,6 +328,8 @@ void ImGuiBackend::shutdown() {
         imguiTextureLayout_ = nullptr;
     }
 #endif
+    textures_.clear();
+    queuedTextureDraws_.clear();
     gfx_ = nullptr;
     window_ = nullptr;
     fontsUploaded_ = false;
@@ -274,6 +343,7 @@ void ImGuiBackend::processEvent(const SDL_Event *event) {
 
 void ImGuiBackend::newFrame() {
     if (!initialized_ || !window_) return;
+    queuedTextureDraws_.clear();
     if (frameOpen_) {
         ImGui::EndFrame();
         frameOpen_ = false;
@@ -310,6 +380,11 @@ float ImGuiBackend::computeInitialScale() const {
     if (SDL_GetDisplayDPI(0, &ddpi, nullptr, nullptr) != 0 || ddpi < 1.f) ddpi = 320.f;
     float s = ddpi / 160.f;
     return std::clamp(s, 1.75f, 3.25f);
+#elif defined(_WIN32)
+    // A DPI-aware SDL 2.0 window uses physical pixels for both its window and
+    // drawable size, so their ratio stays 1 even at 125%/150% Windows scale.
+    // Scale ImGui geometry explicitly to retain the OS-requested UI size.
+    return computeDpiScale();
 #else
     // Desktop: ImGui's backend already applies the display density via
     // io.DisplayFramebufferScale, so the logical (point-space) UI scale stays
@@ -321,6 +396,13 @@ float ImGuiBackend::computeInitialScale() const {
 }
 
 float ImGuiBackend::computeDpiScale() const {
+#if defined(_WIN32)
+    const int display = window_ ? SDL_GetWindowDisplayIndex(window_) : 0;
+    float ddpi = 96.f;
+    if (display >= 0 && SDL_GetDisplayDPI(display, &ddpi, nullptr, nullptr) == 0 && ddpi > 0.f)
+        return std::clamp(ddpi / 96.f, 1.f, 4.f);
+    return 1.f;
+#else
     int logicalW = 0, logicalH = 0, pixelW = 0, pixelH = 0;
     SDL_GetWindowSize(window_, &logicalW, &logicalH);
 #ifdef EVENGINE_WEBGPU
@@ -334,6 +416,7 @@ float ImGuiBackend::computeDpiScale() const {
         if (s > 0.f) return std::clamp(s, 1.f, 4.f);
     }
     return 1.f;
+#endif
 }
 
 void ImGuiBackend::loadFonts() {
@@ -347,10 +430,14 @@ void ImGuiBackend::loadFonts() {
     const float sizePx = kBaseFontSizePx * dpiScale_;
 
     ImFontConfig cfg{};
-    cfg.OversampleH = 2;
-    cfg.OversampleV = 2;
-    // Include CJK glyphs so Chinese/Japanese text works on any platform whose
-    // system font provides them (atlas grows by a few MB — acceptable).
+    cfg.OversampleH = 3;
+    cfg.OversampleV = 1;
+    cfg.PixelSnapH = true;
+    // A small coverage boost gives Segoe UI's thin strokes enough contrast
+    // after the physical-DPI atlas is scaled back into logical coordinates.
+    cfg.RasterizerMultiply = 1.12f;
+    // Request CJK ranges so the merged CJK font below rasterizes Chinese,
+    // Japanese and Korean text (the atlas grows by a few MB — acceptable).
     fontRanges_.clear();
     ImFontGlyphRangesBuilder rangeBuilder;
     rangeBuilder.AddRanges(atlas->GetGlyphRangesDefault());
@@ -359,14 +446,53 @@ void ImGuiBackend::loadFonts() {
     cfg.GlyphRanges = fontRanges_.Data;
 
     bool added = false;
+    std::string primaryPath;
     for (const char *path : regularFontCandidates()) {
         if (!fileExists(path)) continue;
         if (atlas->AddFontFromFileTTF(path, sizePx, &cfg)) {
+            primaryPath = path;
             added = true;
             break;
         }
     }
     if (!added) atlas->AddFontDefault(&cfg);
+
+    // The first available regular font is usually Latin-only (Segoe UI,
+    // DejaVu Sans, Helvetica), so requesting CJK ranges on it adds no Chinese
+    // glyphs to the atlas. Merge a CJK-capable system font into the same atlas
+    // (same MergeMode pattern as the icon font below) so Chinese/Japanese text
+    // renders instead of ImGui's '?' fallback glyph.
+    //
+    // Glyph coverage cannot be verified until the atlas is rasterized (both
+    // ImFont::Glyphs and the IndexLookup table are populated during Build), so
+    // pick by file identity: every cjkFontCandidates() entry is CJK-capable,
+    // and the first existing one is the best match for the platform. Whether
+    // the merge actually covered CJK is checked after upload in
+    // checkFontCoverage().
+    cjkRanges_.clear();
+    ImFontGlyphRangesBuilder cjkRangeBuilder;
+    cjkRangeBuilder.AddRanges(atlas->GetGlyphRangesChineseFull());
+    cjkRangeBuilder.BuildRanges(&cjkRanges_);
+    bool primaryIsCjk = false;
+    for (const char *path : cjkFontCandidates()) {
+        if (primaryPath == path) {
+            primaryIsCjk = true;
+            break;
+        }
+    }
+    if (!primaryIsCjk) {
+        ImFontConfig cjkCfg{};
+        // CJK glyphs are dense (ChineseFull is ~20k+ codepoints); the physical
+        // size already scales with DPI, so oversampling 1 keeps the atlas sane.
+        cjkCfg.OversampleH = 1;
+        cjkCfg.OversampleV = 1;
+        cjkCfg.MergeMode = true;
+        cjkCfg.GlyphRanges = cjkRanges_.Data;
+        for (const char *path : cjkFontCandidates()) {
+            if (!fileExists(path)) continue;
+            if (atlas->AddFontFromFileTTF(path, sizePx, &cjkCfg, cjkRanges_.Data)) break;
+        }
+    }
 
     ImFontConfig iconCfg{};
     iconCfg.OversampleH = 2;
@@ -374,10 +500,23 @@ void ImGuiBackend::loadFonts() {
     iconCfg.MergeMode = true;
     iconCfg.PixelSnapH = true;
     static const ImWchar iconRanges[] = {0xF000, 0xF8FF, 0};
-    for (const char *path : iconFontCandidates()) {
-        if (!fileExists(path)) continue;
-        if (atlas->AddFontFromFileTTF(path, sizePx, &iconCfg, iconRanges)) break;
+    for (const std::string &path : iconFontCandidates()) {
+        if (!fileExists(path.c_str())) continue;
+        if (atlas->AddFontFromFileTTF(path.c_str(), sizePx, &iconCfg, iconRanges)) break;
     }
+}
+
+void ImGuiBackend::checkFontCoverage() const {
+    // Only valid after the atlas has been built/uploaded (lookup tables exist).
+    ImFontAtlas *atlas = ImGui::GetIO().Fonts;
+    if (!atlas || atlas->Fonts.Size == 0) return;
+    const ImFont *font = atlas->Fonts[0];
+    if (font && font->FindGlyphNoFallback(kCjkProbeCodepoint) == nullptr)
+        fprintf(stderr,
+                "[ui] warning: no CJK-capable system font found; Chinese text will render as '?'\n");
+    if (font && font->FindGlyphNoFallback(kIconProbeCodepoint) == nullptr)
+        fprintf(stderr,
+                "[ui] warning: editor icon font not found; semantic icons will render as '?'\n");
 }
 
 void ImGuiBackend::rebuildFonts() {
@@ -406,6 +545,7 @@ void ImGuiBackend::rebuildFonts() {
 uint64_t ImGuiBackend::registerTexture(graphics::Texture *tex) {
     if (!initialized_ || !tex || !tex->gpuHandle) return 0;
     RegisteredTexture reg;
+    reg.texture = tex;
 #ifdef EVENGINE_WEBGPU
     auto *gt = static_cast<eve::graphics::webgpu::GpuTexture *>(tex->gpuHandle);
     reg.imId = (ImTextureID)(intptr_t)gt->view.Get();
@@ -499,6 +639,29 @@ void *ImGuiBackend::textureHandle(uint64_t id) const {
     return it == textures_.end() ? nullptr : static_cast<void *>(it->second.imId);
 }
 
+bool ImGuiBackend::usesQueuedTextureDraws() const {
+#ifdef EVENGINE_WEBGPU
+    return false;
+#else
+    // The pinned ImGui 1.83 Vulkan renderer always binds its font descriptor
+    // and ignores ImDrawCmd::TextureId. EVEngine composites registered textures
+    // immediately after ImGui while the same UI render pass is still open.
+    return true;
+#endif
+}
+
+void ImGuiBackend::queueTextureDraw(uint64_t id, float x, float y, float w, float h, float u0,
+                                    float v0, float u1, float v1, float r, float g, float b,
+                                    float a, bool opaque) {
+    if (!usesQueuedTextureDraws() || id == 0 || textures_.find(id) == textures_.end()) return;
+    const ImVec2 scale = ImGui::GetIO().DisplayFramebufferScale;
+    const ImVec4 clip = ImGui::GetWindowDrawList()->_ClipRectStack.back();
+    queuedTextureDraws_.push_back({id, x * scale.x, y * scale.y, w * scale.x, h * scale.y, u0,
+                                   v0, u1, v1, r, g, b, a, clip.x * scale.x, clip.y * scale.y,
+                                   (clip.z - clip.x) * scale.x, (clip.w - clip.y) * scale.y,
+                                   opaque});
+}
+
 bool ImGuiBackend::wantCaptureMouse() const {
     if (!initialized_) return false;
     return ImGui::GetIO().WantCaptureMouse;
@@ -519,6 +682,33 @@ void ImGuiBackend::renderDrawData(void *commandBuffer) {
 #else
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
                                     static_cast<VkCommandBuffer>(commandBuffer));
+    auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx_);
+    if (vkg && !queuedTextureDraws_.empty()) {
+        std::vector<eve::graphics::vulkan::UiTextureDraw> draws;
+        draws.reserve(queuedTextureDraws_.size());
+        for (const QueuedTextureDraw &queued : queuedTextureDraws_) {
+            const auto found = textures_.find(queued.id);
+            if (found == textures_.end() || !found->second.texture) continue;
+            eve::graphics::vulkan::UiTextureDraw draw;
+            draw.texture = found->second.texture;
+            draw.x = queued.x;
+            draw.y = queued.y;
+            draw.w = queued.w;
+            draw.h = queued.h;
+            draw.u0 = queued.u0;
+            draw.v0 = queued.v0;
+            draw.u1 = queued.u1;
+            draw.v1 = queued.v1;
+            draw.tint = eve::graphics::Color(queued.r, queued.g, queued.b, queued.a);
+            draw.clipX = queued.clipX;
+            draw.clipY = queued.clipY;
+            draw.clipW = queued.clipW;
+            draw.clipH = queued.clipH;
+            draw.opaque = queued.opaque;
+            draws.push_back(draw);
+        }
+        vkg->drawUiTextureRects(commandBuffer, draws);
+    }
 #endif
 }
 

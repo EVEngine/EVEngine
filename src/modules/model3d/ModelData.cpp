@@ -122,6 +122,79 @@ bool ModelData::hasTexCoords(int meshIndex) const {
     return m->HasTextureCoords(0);
 }
 
+int ModelData::getTexCoordChannelCount(int meshIndex) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m) throw eve::Exception("ModelData::getTexCoordChannelCount: invalid mesh index");
+    return static_cast<int>(m->GetNumUVChannels());
+}
+
+bool ModelData::hasTexCoordChannel(int meshIndex, int channel) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m) throw eve::Exception("ModelData::hasTexCoordChannel: invalid mesh index");
+    return channel >= 0 && channel < AI_MAX_NUMBER_OF_TEXTURECOORDS &&
+           m->HasTextureCoords(static_cast<unsigned>(channel));
+}
+
+float ModelData::getTexCoord(int meshIndex, int channel, int vertexIndex, int component) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m || channel < 0 || channel >= AI_MAX_NUMBER_OF_TEXTURECOORDS || vertexIndex < 0 ||
+        static_cast<unsigned>(vertexIndex) >= m->mNumVertices || component < 0 || component > 2 ||
+        !m->HasTextureCoords(static_cast<unsigned>(channel)))
+        throw eve::Exception("ModelData::getTexCoord: invalid mesh/channel/vertex/component");
+    const aiVector3D &v = m->mTextureCoords[channel][vertexIndex];
+    return component == 0 ? v.x : (component == 1 ? v.y : v.z);
+}
+
+bool ModelData::hasTangents(int meshIndex) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m) throw eve::Exception("ModelData::hasTangents: invalid mesh index");
+    return m->HasTangentsAndBitangents();
+}
+
+float ModelData::getTangent(int meshIndex, int vertexIndex, int component) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m || !m->HasTangentsAndBitangents() || vertexIndex < 0 ||
+        static_cast<unsigned>(vertexIndex) >= m->mNumVertices || component < 0 || component > 2)
+        throw eve::Exception("ModelData::getTangent: invalid mesh/vertex/component");
+    const aiVector3D &v = m->mTangents[vertexIndex];
+    return component == 0 ? v.x : (component == 1 ? v.y : v.z);
+}
+
+float ModelData::getBitangent(int meshIndex, int vertexIndex, int component) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m || !m->HasTangentsAndBitangents() || vertexIndex < 0 ||
+        static_cast<unsigned>(vertexIndex) >= m->mNumVertices || component < 0 || component > 2)
+        throw eve::Exception("ModelData::getBitangent: invalid mesh/vertex/component");
+    const aiVector3D &v = m->mBitangents[vertexIndex];
+    return component == 0 ? v.x : (component == 1 ? v.y : v.z);
+}
+
+int ModelData::getVertexColorChannelCount(int meshIndex) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m) throw eve::Exception("ModelData::getVertexColorChannelCount: invalid mesh index");
+    return static_cast<int>(m->GetNumColorChannels());
+}
+
+bool ModelData::hasVertexColorChannel(int meshIndex, int channel) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m) throw eve::Exception("ModelData::hasVertexColorChannel: invalid mesh index");
+    return channel >= 0 && channel < AI_MAX_NUMBER_OF_COLOR_SETS &&
+           m->HasVertexColors(static_cast<unsigned>(channel));
+}
+
+float ModelData::getVertexColor(int meshIndex, int channel, int vertexIndex, int component) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m || channel < 0 || channel >= AI_MAX_NUMBER_OF_COLOR_SETS || vertexIndex < 0 ||
+        static_cast<unsigned>(vertexIndex) >= m->mNumVertices || component < 0 || component > 3 ||
+        !m->HasVertexColors(static_cast<unsigned>(channel)))
+        throw eve::Exception("ModelData::getVertexColor: invalid mesh/channel/vertex/component");
+    const aiColor4D &v = m->mColors[channel][vertexIndex];
+    if (component == 0) return v.r;
+    if (component == 1) return v.g;
+    if (component == 2) return v.b;
+    return v.a;
+}
+
 int ModelData::getMaterialIndex(int meshIndex) const {
     const aiMesh *m = meshAt(meshIndex);
     return m ? static_cast<int>(m->mMaterialIndex) : -1;
@@ -186,6 +259,26 @@ bool ModelData::getMaterialTwoSided(int matIndex) const {
     if (mat->Get(AI_MATKEY_TWOSIDED, twoSided) != AI_SUCCESS)
         return false;
     return twoSided != 0;
+}
+
+std::string ModelData::getMaterialAlphaMode(int matIndex) const {
+    const aiMaterial *mat = materialAt(matIndex);
+    if (!mat) return "OPAQUE";
+    aiString mode;
+    if (mat->Get("$mat.gltf.alphaMode", 0, 0, mode) == AI_SUCCESS) {
+        const std::string value = mode.C_Str();
+        if (value == "MASK" || value == "BLEND") return value;
+    }
+    // Legacy formats generally expose opacity but no explicit alpha mode.
+    return getMaterialOpacity(matIndex) < 0.999f ? "BLEND" : "OPAQUE";
+}
+
+float ModelData::getMaterialAlphaCutoff(int matIndex) const {
+    const aiMaterial *mat = materialAt(matIndex);
+    if (!mat) return 0.5f;
+    float cutoff = 0.5f;
+    if (mat->Get("$mat.gltf.alphaCutoff", 0, 0, cutoff) != AI_SUCCESS) return 0.5f;
+    return cutoff < 0.f ? 0.f : (cutoff > 1.f ? 1.f : cutoff);
 }
 
 int ModelData::getMaterialTextureSlotCount(int matIndex, const std::string &type) const {

@@ -105,6 +105,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
         gpu = uploadGpuMesh(device, frameToken(), verts, indices);
     }
     auto handle = makeMeshHandle(*gpu);
+    handle->captureImportedAttributes(mesh);
     // Retain the CPU morph base pose only when the mesh actually has morphs;
     // otherwise the base pos/nrm/uv copies would linger at ~32B/vertex for no reason.
     if (mesh.mNumAnimMeshes > 0) {
@@ -307,7 +308,33 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
     // frames, just write the next copy.
     ensureDynamicRing(*gpu);
     writeDynamicMesh(*gpu, verts, getDevice(), frameToken(), indices, indexCount);
+    mesh->gpuVertexCount = int(gpu->vertexCount);
     mesh->indexCount = int(gpu->indexCount);
+    return true;
+}
+
+bool Graphics::setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
+                                   int vertexCount) {
+    if (!initialized || !mesh || !mesh->gpuHandle || !joints4 || !weights4) return false;
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    if (vertexCount <= 0 || uint32_t(vertexCount) != gpu->vertexCount) return false;
+
+    std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
+    auto &source = meshDrawVertices(*gpu);
+    void *mapped = source.map();
+    if (!mapped) return false;
+    std::memcpy(verts.data(), mapped, verts.size() * sizeof(MeshVertex));
+    source.unmap();
+    for (int i = 0; i < vertexCount; ++i) {
+        const size_t base = static_cast<size_t>(i) * 4u;
+        verts[static_cast<size_t>(i)].joints =
+            glm::u16vec4(joints4[base], joints4[base + 1], joints4[base + 2], joints4[base + 3]);
+        verts[static_cast<size_t>(i)].weights =
+            glm::vec4(weights4[base], weights4[base + 1], weights4[base + 2], weights4[base + 3]);
+    }
+    ensureDynamicRing(*gpu);
+    writeDynamicMesh(*gpu, verts, getDevice(), frameToken(), nullptr, 0);
+    mesh->markGpuSkinned(true);
     return true;
 }
 
@@ -571,6 +598,26 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!depthTex || !depthTex->gpuHandle) throw Exception("drawMesh: missing scene depth texture");
     auto *gpuDepth = static_cast<GpuTexture *>(depthTex->gpuHandle);
 
+    // Screen-space decal layer (bindings 8/9/10). Only sampled when the decal
+    // pass actually recorded this frame; otherwise the transparent/flat
+    // placeholders make the blend a no-op.
+    ensureDecalPlaceholders();
+    GpuTexture *gpuDecalAlb = nullptr;
+    GpuTexture *gpuDecalNrm = nullptr;
+    GpuTexture *gpuDecalPrm = nullptr;
+    if (decalLayerFresh) {
+        if (auto *dslot = currentDecalSlot()) {
+            gpuDecalAlb = &dslot->albedoGpu;
+            gpuDecalNrm = &dslot->normalGpu;
+            gpuDecalPrm = &dslot->paramsGpu;
+        }
+    }
+    if (!gpuDecalAlb) {
+        gpuDecalAlb = static_cast<GpuTexture *>(decalFlatAlbedo->gpuHandle);
+        gpuDecalNrm = static_cast<GpuTexture *>(decalFlatNormal->gpuHandle);
+        gpuDecalPrm = static_cast<GpuTexture *>(decalFlatParams->gpuHandle);
+    }
+
     ensureDefaultEnvCubemap();
     Texture *envTex = mesh3dEnvTexture ? mesh3dEnvTexture : defaultEnvCubemap;
     if (!envTex || !envTex->gpuHandle) throw Exception("drawMesh: missing env cubemap");
@@ -578,7 +625,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!gpuEnv->isCube) throw Exception("drawMesh: env texture is not a cubemap");
     const float envIntensity = (mesh3dEnvTexture && mesh3dEnvIntensity > 0.f) ? mesh3dEnvIntensity : 0.f;
 
-    const bool useClustered = mesh3dClusteredActive && !shader && mesh3dClusteredPipeline;
+    const bool useClustered = mesh3dClusteredActive && !shader && mesh3dClusteredPipeline &&
+                              mesh3dSurfaceMode != SurfaceMode::Transparent && !mesh->hasGpuSkinning();
     auto &cb = currentPresentCb();
 
     auto makeShadowUbo = [&]() {
@@ -603,9 +651,17 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.ambient = glm::vec4(glm::vec3(mesh3dClustered.ambient), mesh3dMetallic);
         ubo.gridInfo = mesh3dClustered.gridInfo;
         ubo.clipInfo = mesh3dClustered.clipInfo;
-        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+        float surfaceCode = float(int(mesh3dSurfaceMode));
+        if (mesh3dSurfaceMode == SurfaceMode::Masked && mesh3dAlphaTechnique == "dither")
+            surfaceCode = 3.f;
+        else if (mesh3dSurfaceMode == SurfaceMode::Masked &&
+                 mesh3dAlphaTechnique == "coverage")
+            surfaceCode = 4.f;
+        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot,
+                                surfaceCode);
         ubo.parallax =
-            glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
+            glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
+                      mesh3dAlphaCutoff);
 
         auto &cfslots = currentMesh3dClusteredFrameSlots();
         if (cfslots.drawIndex >= cfslots.capacity) {
@@ -622,7 +678,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         const ShadowUBO shadow = makeShadowUbo();
         updateRingLocal(cfslots.shadowRing, shadowOffset, &shadow, sizeof(shadow));
         vk::DescriptorSet set =
-            mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, cfslots);
+            mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDecalAlb, gpuDecalNrm,
+                                  gpuDecalPrm, cfslots);
         const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 
         if (mesh3dClusteredPipeline != lastMesh3dClusteredPipeline) {
@@ -644,9 +701,27 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.lightDir.w = float(lightCount);
     ubo.cameraPos.w = mesh3dRoughness;
     ubo.lightColor.w = envIntensity;
-    ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+    float surfaceCode = float(int(mesh3dSurfaceMode));
+    if (mesh3dSurfaceMode == SurfaceMode::Masked && mesh3dAlphaTechnique == "dither")
+        surfaceCode = 3.f;
+    else if (mesh3dSurfaceMode == SurfaceMode::Masked && mesh3dAlphaTechnique == "coverage")
+        surfaceCode = 4.f;
+    ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot,
+                            surfaceCode);
     ubo.parallax =
-        glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
+        glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
+                  mesh3dAlphaCutoff);
+    if (mesh->hasGpuSkinning()) {
+        const int paletteCount = std::min(mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
+        ubo.skinInfo.x         = static_cast<float>(paletteCount);
+        const auto &palette    = mesh->skinPalette();
+        for (int i = 0; i < paletteCount; ++i) {
+            const float *matrix = palette.data() + static_cast<size_t>(i) * 16u;
+            for (int column = 0; column < 4; ++column)
+                for (int row = 0; row < 4; ++row)
+                    ubo.skinBones[i][column][row] = matrix[column * 4 + row];
+        }
+    }
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     int dirI = -1;
     for (int i = 0; i < lightCount; ++i) {
@@ -679,7 +754,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     updateRingLocal(fslots.uboRing, uboOffset, &ubo, sizeof(ubo));
     const ShadowUBO shadow = makeShadowUbo();
     updateRingLocal(fslots.shadowRing, shadowOffset, &shadow, sizeof(shadow));
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, fslots);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth,
+                                         gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
     const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 
     if (shader) {
@@ -705,7 +781,12 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
-        const vk::Pipeline pipe = offscreen3DPassOpen ? offscreen3DMeshPipeline : mesh3dPipeline;
+        const vk::Pipeline pipe =
+            offscreen3DPassOpen
+                ? offscreen3DMeshPipeline
+                : (mesh3dSurfaceMode == SurfaceMode::Transparent
+                       ? mesh3dTransparentPipeline
+                       : mesh3dPipeline);
         if (pipe != lastMesh3dPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
             lastMesh3dPipeline = pipe;

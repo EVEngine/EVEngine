@@ -22,6 +22,7 @@ namespace {
 
 std::vector<RenderSystem3D::GBufferExtraDrawer> g_gbufferDrawers;
 std::vector<RenderSystem3D::ShadowExtraDrawer> g_shadowDrawers;
+std::vector<RenderSystem3D::DecalExtraDrawer> g_decalDrawers;
 
 glm::vec3 gLightDir = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
 glm::vec3 gLightColor = glm::vec3(1.f);
@@ -249,6 +250,8 @@ void Renderable3D::setScale(float sx, float sy, float sz) {
 
 void Renderable3D::setMesh(Mesh *mesh) { meshRenderer()->mesh = mesh; }
 
+Mesh *Renderable3D::getMesh() { return meshRenderer()->mesh; }
+
 void Renderable3D::setTexture(Texture *texture) { meshRenderer()->texture = texture; }
 
 void Renderable3D::setNormalTexture(Texture *texture) { meshRenderer()->normalTexture = texture; }
@@ -412,6 +415,11 @@ void RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
     g_shadowDrawers.push_back(std::move(drawer));
 }
 
+void RenderSystem3D::addDecalExtraDrawer(DecalExtraDrawer drawer) {
+    if (!drawer) return;
+    g_decalDrawers.push_back(std::move(drawer));
+}
+
 namespace {
 
 Light3D::Data *findShadowCasterDir(const std::vector<PackedLight3D> &packed) {
@@ -531,6 +539,9 @@ struct CulledItem {
     glm::vec3                   worldC{0.f};          // world-space bounding-sphere center
     float                       worldR        = 0.f;  // world-space bounding-sphere radius (0 = unknown → unculled)
     float                       distSq        = 0.f;
+    float                       projectedDepth = 0.f;
+    SurfaceMode                 surfaceMode = SurfaceMode::Opaque;
+    int                         sortPriority = 0;
     int                         camIdx        = 0;
     uint32_t                    cascadeMask   = 0;      // bit c set when the caster may contribute to cascade c
     bool                        inView        = false;  // inside the item camera's frustum
@@ -549,6 +560,7 @@ void RenderSystem3D::render(Graphics &gfx) {
     rc->ensureCompiled();
     const bool doShadow = rc->hasPass("shadow");
     const bool doGBuffer = rc->hasPass("gbuffer");
+    const bool doDecal = rc->hasPass("decal");
     const bool doForward = rc->hasPass("forward");
     const bool doHair = rc->hasPass("hair");
     const bool allowClustered = rc->isEnabled("clustered");
@@ -663,8 +675,14 @@ void RenderSystem3D::render(Graphics &gfx) {
                 item.shader   = mat ? mat->effectiveShader() : mr->shader;
                 item.model    = model;
                 item.distSq   = distSq;
+                const glm::vec4 viewCenter = cv.view * glm::vec4(xf->x, xf->y, xf->z, 1.f);
+                item.projectedDepth = -viewCenter.z;
                 item.camIdx   = camIdx;
                 item.hair     = asHair;
+                item.surfaceMode = mat ? mat->surfaceMode()
+                                       : (asHair ? SurfaceMode::Transparent
+                                                 : SurfaceMode::Opaque);
+                item.sortPriority = mat ? mat->getSortPriority() : 0;
                 item.xray     = mr->xrayHighlight;
                 if (drawMesh->hasBounds()) {
                     const glm::vec4 c4 =
@@ -712,7 +730,13 @@ void RenderSystem3D::render(Graphics &gfx) {
                 if ((item.cascadeMask & (1u << c)) == 0) continue;
                 eve::debug::rtBind("mesh", "shadowCaster");
                 eve::debug::rtDraw("drawMeshShadow", "cascade");
-                gfx.drawMeshShadow(item.mesh, shadowUpload.ubo.lightVP[c] * item.model);
+                Texture *shadowAlbedo =
+                    item.material ? item.material->getAlbedoTexture() : item.mr->texture;
+                if (item.surfaceMode == SurfaceMode::Masked)
+                    gfx.drawMeshShadowAlpha(item.mesh, shadowUpload.ubo.lightVP[c] * item.model,
+                                            shadowAlbedo);
+                else if (item.surfaceMode != SurfaceMode::Transparent)
+                    gfx.drawMeshShadow(item.mesh, shadowUpload.ubo.lightVP[c] * item.model);
             }
             // Extra shadow casters (billboard/card geometry not in the ECS).
             for (const auto &drawer : g_shadowDrawers) drawer(gfx, shadowUpload.ubo.lightVP[c], *cd);
@@ -732,15 +756,19 @@ void RenderSystem3D::render(Graphics &gfx) {
             // X-ray targets are skipped so their pixels record the occluder depth
             // behind them; the X-ray shader samples that to detect occlusion.
             if (item.xray) continue;
-            if (item.hair) continue;
+            if (item.surfaceMode == SurfaceMode::Transparent) continue;
             if (!item.inDefaultView) continue;
             Texture    *alb = item.material ? item.material->getAlbedoTexture() : item.mr->texture;
             const float tr  = item.material ? item.material->getTintR() : item.mr->r;
             const float tg  = item.material ? item.material->getTintG() : item.mr->g;
             const float tb  = item.material ? item.material->getTintB() : item.mr->b;
             eve::debug::rtDraw("drawMeshGBuffer", "gbuffer");
-            gfx.drawMeshGBuffer(item.mesh, cv.viewProj * item.model, item.model, cv.data->nearZ, cv.data->farZ, alb, tr,
-                                tg, tb);
+            if (item.surfaceMode == SurfaceMode::Masked)
+                gfx.drawMeshGBufferAlpha(item.mesh, cv.viewProj * item.model, item.model,
+                                         cv.data->nearZ, cv.data->farZ, alb, tr, tg, tb);
+            else
+                gfx.drawMeshGBuffer(item.mesh, cv.viewProj * item.model, item.model,
+                                    cv.data->nearZ, cv.data->farZ, alb, tr, tg, tb);
         }
         // Extra G-buffer contributors (billboard/card geometry not in the ECS).
         for (const auto &drawer : g_gbufferDrawers) drawer(gfx, *cv.data, cv.viewProj, aspect);
@@ -748,6 +776,22 @@ void RenderSystem3D::render(Graphics &gfx) {
         eve::debug::rtPassEnd("GBufferPass");
     } else if (!doGBuffer) {
         rc->getGBuffer()->clear();
+    }
+
+    // Screen-space decal layer: box-projected decals read the G-buffer
+    // depth/normal and write albedo/normal/params targets sampled by
+    // mesh3d.frag before lighting. Skipped when no decals are registered or
+    // the backend cannot run the pass (WebGPU).
+    if (doDecal && defaultCam && !g_decalDrawers.empty() && gfx.supportsDecal()) {
+        eve::debug::rtPassBegin("DecalPass");
+        const CameraView &cv = cams[0];
+        const int dw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
+        const int dh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
+        gfx.beginDecalPass(dw, dh);
+        gfx.setDecalCamera(cv.viewProj, cv.data->nearZ, cv.data->farZ);
+        for (const auto &drawer : g_decalDrawers) drawer(gfx, *cv.data, cv.viewProj, aspect);
+        gfx.endDecalPass();
+        eve::debug::rtPassEnd("DecalPass");
     }
 
     if (!doForward && !doHair) return;
@@ -766,12 +810,12 @@ void RenderSystem3D::render(Graphics &gfx) {
 
     // Replay the items collected above: opaque first, hair back-to-front.
     std::vector<const CulledItem *> opaque;
-    std::vector<const CulledItem *> hairItems;
+    std::vector<const CulledItem *> transparentItems;
     opaque.reserve(items.size());
-    hairItems.reserve(items.size() / 4);
+    transparentItems.reserve(items.size() / 4);
     for (const auto &item : items) {
         if (!item.inView) continue;
-        (item.hair ? hairItems : opaque).push_back(&item);
+        (item.surfaceMode == SurfaceMode::Transparent ? transparentItems : opaque).push_back(&item);
     }
     // Opaque: group by (camera, shader, material, mesh) so the backend sees
     // long runs of identical pipeline/descriptor state instead of thrashing
@@ -782,10 +826,17 @@ void RenderSystem3D::render(Graphics &gfx) {
         if (a->material != b->material) return a->material < b->material;
         return a->mesh < b->mesh;
     });
-    std::stable_sort(hairItems.begin(), hairItems.end(),
-                     [](const CulledItem *a, const CulledItem *b) { return a->distSq > b->distSq; });
+    std::stable_sort(transparentItems.begin(), transparentItems.end(),
+                     [](const CulledItem *a, const CulledItem *b) {
+                         if (a->camIdx != b->camIdx) return a->camIdx < b->camIdx;
+                         if (a->sortPriority != b->sortPriority)
+                             return a->sortPriority < b->sortPriority;
+                         return a->projectedDepth > b->projectedDepth;
+                     });
 
     auto bindLegacyMaterial = [&](Renderable3D::MeshRenderer *mr) {
+        gfx.setMesh3DSurface(mr->isHair ? SurfaceMode::Transparent : SurfaceMode::Opaque,
+                             BlendMode::Alpha, false, mr->isHair, 0.5f);
         gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
         gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
         gfx.setMesh3DNormalTexture(mr->normalTexture);
@@ -976,11 +1027,14 @@ void RenderSystem3D::render(Graphics &gfx) {
                 drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
         }
     }
-    if (doHair) {
-        // Hair-only frames never reach the GPU-driven forward block above;
-        // open the deferred scene pass (if any) before recording hair draws.
+    if (doForward || doHair) {
+        // Generic transparent surfaces belong to the forward pass; the legacy
+        // hair pass remains independently switchable for hair materials.
         if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
-        for (const CulledItem *item : hairItems) drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+        for (const CulledItem *item : transparentItems) {
+            if ((item->hair && doHair) || (!item->hair && doForward))
+                drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+        }
     }
 
     const bool doAO = rc->isEnabled("ao");

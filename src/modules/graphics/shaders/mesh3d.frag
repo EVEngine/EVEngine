@@ -26,8 +26,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 cameraPos;         // xyz = eye; w = roughness
     vec4 ambient;           // rgb = ambient; w = metallic
     Light3D lights[8];
-    vec4     texBomb;           // x = cellScale, y = strength (0=off), z = rotAmount, w unused
-    vec4 parallax;          // x = scale (0=off), y = minLayers, z = maxLayers, w unused
+    vec4 texBomb;           // xyz = cell bombing, w = SurfaceMode (0/1/2)
+    vec4 parallax;          // xyz = parallax, w = alphaCutoff
     mat4 view;
     vec4 clipInfo;          // x = near, y = far
     vec4 cloud;             // x = strength (0=off), y = world cell size, z = time, w unused
@@ -48,6 +48,9 @@ layout(set = 0, binding = 4, std140) uniform ShadowFrame {
 } shadow;
 
 layout(set = 0, binding = 5) uniform sampler2DArrayShadow shadowMap;
+layout(set = 0, binding = 8) uniform sampler2D decalAlbedoSampler;
+layout(set = 0, binding = 9) uniform sampler2D decalNormalSampler;
+layout(set = 0, binding = 10) uniform sampler2D decalParamsSampler;
 
 layout(location = 0) out vec4 outColor;
 
@@ -261,7 +264,12 @@ void main() {
                                ubo.parallax.y, ubo.parallax.z);
 
     vec4 base = textureCellBomb(albedoSampler, uv, bombScale, bombStrength, bombRot) * vTint;
-    if (base.a < 0.5)
+    if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w)
+        discard;
+    // Alpha hash is stable in screen space and avoids object-order artifacts.
+    // "coverage" uses the same fallback when MSAA alpha-to-coverage is unavailable.
+    float alphaHash = fract(dot(floor(gl_FragCoord.xy), vec2(0.06711056, 0.00583715)));
+    if (ubo.texBomb.w > 2.5 && base.a < alphaHash)
         discard;
     vec3 albedo = base.rgb;
     float metallic = clamp(ubo.ambient.w, 0.0, 1.0);
@@ -272,6 +280,35 @@ void main() {
     vec3 nSample = textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot).xyz;
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
+
+    vec3 emissive = vec3(0.0);
+    // Screen-space decal layer (bindings 8/9/10). When the decal feature is
+    // off these samplers are 1x1 placeholders, so every coverage is 0 and
+    // nothing changes. Albedo coverage is the master alpha; normal carries its
+    // own strength-scaled alpha; params damp the stored values by strength.
+    vec2 decalUV = gl_FragCoord.xy / vec2(textureSize(decalAlbedoSampler, 0));
+    vec4 decalA = texture(decalAlbedoSampler, decalUV);
+    float decalCov = clamp(decalA.a, 0.0, 1.0);
+    if (decalCov > 0.001) {
+        albedo = mix(albedo, decalA.rgb, decalCov);
+
+        vec4 decalN = texture(decalNormalSampler, decalUV);
+        float nWeight = clamp(decalN.a, 0.0, 1.0);
+        if (nWeight > 0.001) {
+            vec3 decalNormal = normalize(decalN.rgb * 2.0 - 1.0);
+            N = normalize(mix(N, decalNormal, nWeight));
+        }
+
+        vec4 decalP = texture(decalParamsSampler, decalUV);
+        float pWeight = clamp(decalP.a, 0.0, 1.0);
+        if (pWeight > 0.001) {
+            roughness = mix(roughness, decalP.r, pWeight);
+            metallic = mix(metallic, decalP.g, pWeight);
+            // Emissive: decal color scaled by the params intensity channel.
+            emissive += decalA.rgb * decalP.b;
+        }
+    }
+
     vec3 Lo = vec3(0.0);
     // Splits are camera-forward distances (view-space +Z), not euclidean length.
     float viewDepth = max(-vViewPos.z, 0.0);
@@ -330,6 +367,7 @@ void main() {
     }
 
     color = tonemapPeak(color);
+    color += emissive;
 
     float nearZ = max(ubo.clipInfo.x, 1e-4);
     float farZ = max(ubo.clipInfo.y, nearZ + 1e-3);

@@ -3,6 +3,7 @@
 #include "procgen/heightmap/TerrainSampler.h"
 
 #include "data/ByteData.h"
+#include "graphics/Graphics.h"
 #include "graphics/IGraphics3D.h"
 #include "thread/Thread.h"
 
@@ -14,6 +15,8 @@
 
 namespace eve::voxel {
 
+VoxelWorld::VoxelWorld() = default;
+VoxelWorld::VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
 VoxelWorld::~VoxelWorld() = default;
 
 void VoxelWorld::setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight,
@@ -32,11 +35,75 @@ void VoxelWorld::setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8
     terrainEnabled_   = true;
 }
 
+void VoxelWorld::setTerrainParam(const std::string &key, float value) {
+    if (!terrainSampler_) terrainSampler_ = std::make_unique<procgen::TerrainSampler>();
+    if (key == "seed") {
+        terrainSampler_->setSeed(uint32_t(value));
+    } else if (key == "top") {
+        terrainTop_ = uint8_t(value);
+    } else if (key == "sub") {
+        terrainSub_ = uint8_t(value);
+    } else if (key == "stone") {
+        terrainStone_ = uint8_t(value);
+    } else if (key == "sand") {
+        terrainSand_ = uint8_t(value);
+    } else if (key == "base") {
+        terrainBase_ = value;
+    } else if (key == "amplitude") {
+        terrainAmplitude_ = value < 0.f ? 0.f : value;
+    } else if (key == "scale" || key == "frequency") {
+        terrainSampler_->setFrequency(value > 0.f ? value : 1.f / 32.f);
+    } else if (key == "octaves") {
+        terrainSampler_->setOctaves(int(value));
+    } else if (key == "lacunarity") {
+        terrainSampler_->setLacunarity(value);
+    } else if (key == "gain") {
+        terrainSampler_->setGain(value);
+    } else if (key == "ridge") {
+        terrainSampler_->setRidge(value);
+    } else if (key == "warp") {
+        terrainSampler_->setWarp(value);
+    } else if (key == "exponent") {
+        terrainSampler_->setExponent(value);
+    } else if (key == "continent") {
+        terrainSampler_->setContinent(value);
+    } else if (key == "island") {
+        terrainSampler_->setIsland(value);
+    } else if (key == "coast") {
+        terrainSampler_->setCoastSoftness(value);
+    } else if (key == "worldWidth") {
+        terrainSampler_->setWorldSize(int(value), terrainSampler_->getWorldHeight());
+    } else if (key == "worldHeight") {
+        terrainSampler_->setWorldSize(terrainSampler_->getWorldWidth(), int(value));
+    } else if (key == "sandLevel") {
+        sandLevel_ = value;
+    } else if (key == "enable") {
+        terrainEnabled_ = value != 0.f;
+    }
+}
+
 int VoxelWorld::terrainHeightAt(int wx, int wz) const {
     if (!terrainSampler_) return int(terrainBase_);
     const float e = terrainSampler_->sample(float(wx), float(wz));
     return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
 }
+
+namespace {
+
+/** @brief Sample one terrain column: height plus top-layer texture (sand band). */
+void sampleTerrainColumn(const procgen::TerrainSampler *sampler, float base, float amp, uint8_t topTexDefault,
+                         uint8_t sandTex, float sandLevel, int wx, int wz, int &height, uint8_t &topTex) {
+    if (!sampler) {
+        height = int(base);
+        topTex = topTexDefault;
+        return;
+    }
+    const float e = sampler->sample(float(wx), float(wz));
+    height = int(std::floor(base + amp * e));
+    topTex = (sandLevel > 0.f && sandTex != 0 && e <= sandLevel) ? sandTex : topTexDefault;
+}
+
+}  // namespace
 
 namespace {
 // Cap remesh worker count: enough to parallelize chunk meshing without
@@ -68,12 +135,16 @@ bool VoxelWorld::hasChunk(int cx, int cy, int cz) const {
     return chunks_.find(key(cx, cy, cz)) != chunks_.end();
 }
 
-void VoxelWorld::removeChunk(int cx, int cy, int cz) { chunks_.erase(key(cx, cy, cz)); }
+void VoxelWorld::removeChunk(int cx, int cy, int cz) {
+    if (chunks_.erase(key(cx, cy, cz)) > 0) ++revision_;
+}
 
 void VoxelWorld::clear() {
+    const bool changed = !chunks_.empty();
     chunks_.clear();
     visible_.clear();
     visibleChunkKeys_.clear();
+    if (changed) ++revision_;
 }
 
 int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks) {
@@ -94,6 +165,7 @@ int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int r
         // Batch pointers may dangle after eviction; force re-selection.
         visible_.clear();
         visibleChunkKeys_.clear();
+        ++revision_;
     }
     return int(evict.size());
 }
@@ -125,8 +197,11 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                     const int wy0 = ny * kChunkSize;
                     for (int lz = 0; lz < kChunkSize; ++lz)
                         for (int lx = 0; lx < kChunkSize; ++lx) {
-                            const int h = terrainHeightAt(nx * kChunkSize + lx,
-                                                          nz * kChunkSize + lz);
+                            int h = 0;
+                            uint8_t topTex = terrainTop_;
+                            sampleTerrainColumn(terrainSampler_.get(), terrainBase_, terrainAmplitude_,
+                                                terrainTop_, terrainSand_, sandLevel_, nx * kChunkSize + lx,
+                                                nz * kChunkSize + lz, h, topTex);
                             for (int ly = 0; ly < kChunkSize; ++ly) {
                                 const int wy = wy0 + ly;
                                 if (wy <= h - 4)
@@ -134,14 +209,17 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                                 else if (wy <= h - 1)
                                     c->set(lx, ly, lz, terrainSub_);
                                 else if (wy == h)
-                                    c->set(lx, ly, lz, terrainTop_);
+                                    c->set(lx, ly, lz, topTex);
                             }
                         }
                 }
                 ++stats.created;
             }
 
-    if (stats.created > 0) remeshDirty();
+    if (stats.created > 0) {
+        ++revision_;
+        remeshDirty();
+    }
     return stats;
 }
 
@@ -216,6 +294,7 @@ bool VoxelWorld::deserializeWorld(const uint8_t *data, size_t size) {
         c->setVoxelData(p);
         p += voxelBytes;
     }
+    ++revision_;
     return true;
 }
 
@@ -311,18 +390,28 @@ void VoxelWorld::selectVisible(const float *viewProj16, float eyeX, float eyeY, 
 
         visibleChunkKeys_.push_back(kv.first);
 
-        const float toCamX = eyeX - cx;
-        const float toCamY = eyeY - cy;
-        const float toCamZ = eyeZ - cz;
         for (int i = 0; i < faceDirCount(); ++i) {
             const FaceDir dir = FaceDir(i);
             const int count = chunk->faceRectCount(dir);
             if (count <= 0) continue;
 
             if (faceCull) {
-                float nx, ny, nz;
-                faceNormal(dir, nx, ny, nz);
-                if (nx * toCamX + ny * toCamY + nz * toCamZ <= 0.f) continue;
+                // A perspective camera has a different view vector at every surface point.
+                // Reject a direction only when every possible face plane in the chunk faces
+                // away from the eye.  Testing against the chunk centre is not conservative:
+                // when the eye crosses that centre plane it can discard faces on the far half
+                // of the chunk that are still front-facing and visible (notably cave walls).
+                bool allBackFacing = false;
+                switch (dir) {
+                    case FaceDir::PosX: allBackFacing = eyeX <= minX; break;
+                    case FaceDir::NegX: allBackFacing = eyeX >= maxX; break;
+                    case FaceDir::PosY: allBackFacing = eyeY <= minY; break;
+                    case FaceDir::NegY: allBackFacing = eyeY >= maxY; break;
+                    case FaceDir::PosZ: allBackFacing = eyeZ <= minZ; break;
+                    case FaceDir::NegZ: allBackFacing = eyeZ >= maxZ; break;
+                    case FaceDir::Count: break;
+                }
+                if (allBackFacing) continue;
             }
 
             DrawBatch batch;
@@ -350,7 +439,7 @@ int VoxelWorld::getVisibleRectCount() const {
     return n;
 }
 
-void VoxelWorld::drawVisible(graphics::IGraphics3D *gfx, graphics::Texture *atlas, int tilesPerRow) {
+void VoxelWorld::drawVisible(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow) {
     if (!gfx) return;
     for (const auto &b : visible_) {
         if (!b.chunk || !b.packed || b.count <= 0) continue;
@@ -378,6 +467,7 @@ void VoxelWorld::setVoxel(int wx, int wy, int wz, uint8_t texId) {
     const int lz = wz - cz * kChunkSize;
 
     Chunk *c = getChunk(cx, cy, cz);
+    if (c && c->get(lx, ly, lz) == texId) return;
     if (texId == 0) {
         // Clearing an unallocated chunk is a no-op (air needs no storage).
         if (!c) return;
@@ -386,6 +476,7 @@ void VoxelWorld::setVoxel(int wx, int wy, int wz, uint8_t texId) {
         if (!c) c = getOrCreateChunk(cx, cy, cz);
         c->set(lx, ly, lz, texId);
     }
+    ++revision_;
     markNeighborChunksDirty(cx, cy, cz, lx, ly, lz);
 }
 

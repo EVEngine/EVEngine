@@ -18,11 +18,25 @@ namespace eve::map {
 /** @brief Draws all visible TileLayer entities via Graphics batch path (UV atlas quads). */
 class TileRenderSystem {
 public:
+    /** @brief Advance TileSet animation clocks once per map update. */
+    static void update(float dt);
     /** @brief Append non-empty visible tiles into a shared 2D draw queue. */
     static void collect(std::vector<graphics::DrawItem2D> &out);
+    /** @brief Viewport-aware collection that rejects off-screen chunks before scanning cells. */
+    static void collect(std::vector<graphics::DrawItem2D> &out, int viewWidth, int viewHeight);
 
     /** @brief Collect + draw tiles only (no present). Null gfx is a no-op. */
     static void render(graphics::Graphics *gfx);
+
+    /** @brief Number of non-empty visible tiles collected by the last pass. */
+    static int lastVisibleTileCount();
+    /** @brief Number of collected tiles using irregular per-GID metadata. */
+    static int lastCustomVisualCount();
+    /** @brief Number of distinct atlas textures referenced by the last pass. */
+    static int lastAtlasCount();
+    /** @brief Spatial-index work counters for deterministic performance regressions. */
+    static int lastVisitedChunkCount();
+    static int lastVisitedCellCount();
 };
 
 /**

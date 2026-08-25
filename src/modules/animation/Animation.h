@@ -4,10 +4,16 @@
 #include "animation/Tween.h"
 
 #include <string>
+#include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::model3d {
 class ModelData;
+}
+
+namespace eve::graphics {
+class Graphics;
 }
 
 namespace eve::animation {
@@ -16,6 +22,9 @@ class AnimSkeleton;
 class AnimClip;
 class AnimPose;
 class AnimPlayer;
+class AnimGraph;
+class AnimBoneMask;
+class AnimLayerMixer;
 class AnimStateMachine;
 class MotionDatabase;
 class MotionMatcher;
@@ -24,6 +33,9 @@ class ControlPose;
 class AnimSkin;
 class AnimLattice;
 class AnimTrail;
+class AnimBatch;
+class AnimConstraintStack;
+class AnimSyncGroup;
 class SpriteSheet;
 class SpriteClip;
 class SpriteAnim;
@@ -61,8 +73,26 @@ public:
 
     /** @brief 2D sprite-sheet animation factories (script GC owns returned objects). */
     SpriteSheet *newSpriteSheet();
+    /**
+     * @brief Load numbered PNG files into a runtime atlas and return its frame table.
+     * Pattern must contain `{n}`, e.g. `fx/frame ({n}).png`. All frames must share
+     * dimensions and RGBA8 format. `columns <= 0` chooses a near-square atlas.
+     */
+    SpriteSheet *newSpriteSheetFromSequence(eve::graphics::Graphics *gfx,
+                                             const std::string &pattern, int first,
+                                             int last, int columns = 0);
+    /** @brief Import Aseprite/TexturePacker JSON frame metadata and its atlas texture. */
+    SpriteSheet *newSpriteSheetFromAtlasJson(eve::graphics::Graphics *gfx,
+                                              const std::string &texturePath,
+                                              const std::string &jsonPath);
     SpriteClip  *newSpriteClip(const std::string &name = "");
     SpriteAnim  *newSpriteAnim();
+    /** @brief Number of decoded runtime sequence atlases retained for reuse. */
+    int getSpriteSequenceCacheCount() const;
+    /** @brief Approximate RGBA8 bytes retained by cached sequence atlases. */
+    int getSpriteSequenceCacheBytes() const;
+    /** @brief Drop cache metadata; existing returned sheets/textures remain valid. */
+    void clearSpriteSequenceCache();
 
     /** @brief Spine (region attachment subset) factories. */
     SpineAtlas        *newSpineAtlas();
@@ -80,7 +110,19 @@ public:
     AnimSkeleton     *newSkeleton();
     AnimClip         *newClip(const std::string &name = "");
     AnimPose         *newPose(int boneCount = 0);
+    /** @brief Create a parallel batch clip evaluator. */
+    AnimBatch        *newBatch();
+    /** @brief Create an ordered procedural constraint stack. */
+    AnimConstraintStack *newConstraintStack(AnimSkeleton* skeleton);
+    /** @brief Create a normalized-time player synchronization group. */
+    AnimSyncGroup* newSyncGroup();
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
+    /** @brief Create a composable pose graph for the skeleton. */
+    AnimGraph        *newGraph(AnimSkeleton *skeleton);
+    /** @brief Create a zero-weight per-bone animation mask. */
+    AnimBoneMask* newBoneMask(AnimSkeleton* skeleton);
+    /** @brief Create an override/additive animation layer mixer. */
+    AnimLayerMixer*   newLayerMixer(AnimSkeleton* skeleton);
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);
@@ -142,6 +184,7 @@ public:
     void clearAll();
 
 private:
+    std::unordered_map<std::string, std::unique_ptr<SpriteSheet>> spriteSequenceCache_;
     friend class Tween;
     friend class SpriteAnim;
     friend class SpineAnim;

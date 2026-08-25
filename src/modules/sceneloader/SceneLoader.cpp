@@ -52,6 +52,11 @@
 namespace eve {
 namespace sceneloader {
 
+SceneLoader::DecodedScene::DecodedScene() = default;
+SceneLoader::DecodedScene::~DecodedScene() = default;
+SceneLoader::DecodedScene::DecodedScene(DecodedScene &&) noexcept = default;
+SceneLoader::DecodedScene &SceneLoader::DecodedScene::operator=(DecodedScene &&) noexcept = default;
+
 Module_IMPL(SceneLoader, new SceneLoader());
 
 SceneLoader::~SceneLoader() {
@@ -118,6 +123,48 @@ std::string uniqueId(const std::string &base, std::unordered_map<std::string, in
     if (n > 0) id = b + "_" + std::to_string(n);
     ++n;
     return id;
+}
+
+bool startsWithInsensitive(const std::string &value, const char *prefix) {
+    const size_t n = std::char_traits<char>::length(prefix);
+    if (value.size() < n) return false;
+    for (size_t i = 0; i < n; ++i)
+        if (std::tolower(static_cast<unsigned char>(value[i])) !=
+            std::tolower(static_cast<unsigned char>(prefix[i])))
+            return false;
+    return true;
+}
+
+int lodFromName(const std::string &name) {
+    const size_t p = name.rfind("_LOD");
+    if (p == std::string::npos || p + 4 >= name.size()) return -1;
+    char *end = nullptr;
+    const long value = std::strtol(name.c_str() + p + 4, &end, 10);
+    return end == name.c_str() + p + 4 || value < 0 ? -1 : static_cast<int>(value);
+}
+
+LoadOptions presetOptions(const std::string &name) {
+    LoadOptions o;
+    if (name == "quality" || name == "balanced" || name.empty()) return o;
+    if (name == "mobile") {
+        o.importLights = false;
+        o.importCameras = false;
+        o.importAnimations = false;
+        return o;
+    }
+    if (name == "raw") {
+        o.generateNormalsIfMissing = false;
+        o.joinIdenticalVertices = false;
+        o.flipUVs = false;
+        o.improveCacheLocality = false;
+        o.sharedMeshes = false;
+        o.mipmaps = false;
+        o.importLights = false;
+        o.importCameras = false;
+        o.importAnimations = false;
+        return o;
+    }
+    throw eve::Exception("SceneLoader: unknown import preset '%s'", name.c_str());
 }
 
 // ---- texture helpers (embedded / VFS, cached by path) ----
@@ -461,6 +508,18 @@ void buildNodeRecursive(const aiScene *scene, const aiNode *node, scene::NodeDes
     out.name = rawName;
     out.space = "3d";
     out.visible = true;
+    if (startsWithInsensitive(rawName, "SOCKET_")) out.tags.push_back("model-socket");
+    if (startsWithInsensitive(rawName, "UCX_") || startsWithInsensitive(rawName, "UBX_") ||
+        startsWithInsensitive(rawName, "USP_") || startsWithInsensitive(rawName, "UCP_")) {
+        out.tags.push_back("collision");
+        out.visible = false;
+    }
+    const int lod = lodFromName(rawName);
+    if (lod >= 0) {
+        out.tags.push_back("lod");
+        out.tags.push_back("lod:" + std::to_string(lod));
+        out.visible = lod == 0;
+    }
     decomposeNode(node->mTransformation, out.x, out.y, out.z, out.yaw, out.pitch, out.roll,
                   out.sx, out.sy, out.sz);
 
@@ -476,7 +535,8 @@ void buildNodeRecursive(const aiScene *scene, const aiNode *node, scene::NodeDes
         child.key = cid;
         child.name = std::string("mesh") + std::to_string(i);
         child.space = "3d";
-        child.visible = true;
+        child.visible = out.visible;
+        child.tags = out.tags;
         out.children.push_back(std::move(child));
 
         if (slots) {
@@ -723,6 +783,7 @@ bool SceneLoader::applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &n
         TextureCache unused;
         for (auto &n : nodes) {
             if (!n.links.empty()) continue;
+            if (std::find(n.tags.begin(), n.tags.end(), "collision") != n.tags.end()) continue;
             auto sit = slots->find(n.id);
             if (sit == slots->end() || sit->second.empty()) continue;
             graphics::Renderable3D *r = nullptr;
@@ -767,6 +828,7 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
     for (const auto &kv : slots) {
         scene::SceneNode *n = host->findById(kv.first);
         if (!n || kv.second.empty()) continue;
+        if (std::find(n->tags.begin(), n->tags.end(), "collision") != n->tags.end()) continue;
         if (host->findLink(n, scene::findLinkKind("renderable3d"))) continue;
         const MeshSlot &slot = kv.second[0];
         graphics::Mesh *mesh = nullptr;
@@ -819,6 +881,7 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
 }
 
 bool SceneLoader::decode(const std::string &path, const LoadOptions &options, DecodedScene *out) {
+    const std::string key = normPath(path);
     // The unified resource cache may hold a decode from an earlier load; a
     // reload/diff must see the file as it is now, so refresh the cached entry
     // before asking for it (no-op when nothing is cached yet).
@@ -829,22 +892,45 @@ bool SceneLoader::decode(const std::string &path, const LoadOptions &options, De
     model3d::ModelData *md = nullptr;
     try {
         md = mod3d->newModelDataFromFile(path, toModelOptions(options));
+    } catch (const std::exception &e) {
+        std::lock_guard<std::mutex> lock(pendingMu_);
+        lastErrors_[key] = e.what();
+        return false;
     } catch (...) {
+        std::lock_guard<std::mutex> lock(pendingMu_);
+        lastErrors_[key] = "unknown model decode error";
         return false;
     }
-    if (!md) return false;
+    if (!md) {
+        std::lock_guard<std::mutex> lock(pendingMu_);
+        lastErrors_[key] = "model decoder returned no scene";
+        return false;
+    }
+
+    std::vector<std::string> importWarnings;
+    for (int i = 0; i < md->getMeshCount(); ++i) {
+        if (!md->hasNormals(i))
+            importWarnings.push_back("mesh " + std::to_string(i) + " has no normals");
+        if (!md->hasTexCoords(i))
+            importWarnings.push_back("mesh " + std::to_string(i) + " has no UV0");
+    }
+    {
+        std::lock_guard<std::mutex> lock(pendingMu_);
+        lastErrors_.erase(key);
+        warnings_[key] = std::move(importWarnings);
+    }
 
     out->path = normPath(path);
     out->md = md;
     out->options = options;
-    out->root = buildNodeDesc(md->getScene(), &out->slots);
+    out->root = std::make_unique<scene::NodeDesc>(buildNodeDesc(md->getScene(), &out->slots));
     collectCpuImages(md->getScene(), out->slots, options.mipmaps, out->cpuImages);
     return true;
 }
 
 scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
     scene::SceneHost *host = scene::SceneHost::createHost(d.path);
-    host->setTree(std::move(d.root));
+    host->setTree(std::move(*d.root));
 
     graphics::Graphics *gfx = currentGraphics();
     if (!d.slots.empty()) fillSceneBounds(host, d.slots);
@@ -883,7 +969,7 @@ scene::SceneHost *SceneLoader::load(const std::string &path, bool linkRenderable
     }
     if (!linkRenderables) {
         scene::SceneHost *host = scene::SceneHost::createHost(d.path);
-        host->setTree(std::move(d.root));
+        host->setTree(std::move(*d.root));
         scene::TransformSystem::updateHost(host);
         scenes_[d.path] = Loaded{d.path, host, nullptr, options, {}, {}, nullptr, {}};
         return host;
@@ -894,6 +980,10 @@ scene::SceneHost *SceneLoader::load(const std::string &path, bool linkRenderable
 
 scene::SceneHost *SceneLoader::load(const std::string &path, const LoadOptions &options) {
     return load(path, true, options);
+}
+
+scene::SceneHost *SceneLoader::loadPreset(const std::string &path, const std::string &preset) {
+    return load(path, presetOptions(preset));
 }
 
 bool SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOptions &options) {
@@ -909,10 +999,10 @@ bool SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOpti
     DecodedScene d;
     if (!decode(path, options, &d)) return false;
 
-    SceneDiff diff = diffTree(ld.host, d.root);
+    SceneDiff diff = diffTree(ld.host, *d.root);
     if (out) *out = diff;
     if (!diff.empty()) {
-        applyTreeDiff(ld.host, d.root, diff, nullptr, nullptr);
+        applyTreeDiff(ld.host, *d.root, diff, nullptr, nullptr);
         MeshCache shared;
         linkMeshNodes(ld.host, d.slots, ld.gfx, options, textures_, shared, &d.cpuImages);
         scene::TransformSystem::updateHost(ld.host);
@@ -990,8 +1080,8 @@ bool SceneLoader::loadAsync(const std::string &path, const LoadOptions &options,
     const std::string key = normPath(path);
     {
         std::lock_guard<std::mutex> lock(pendingMu_);
-        for (const auto &p : pending_)
-            if (p.path == key) return false;
+        if (inFlight_.count(key)) return false;
+        inFlight_.insert(key);
     }
     if (!pool_) pool_ = std::make_shared<thread::ThreadPool>(2);
 
@@ -1003,8 +1093,14 @@ bool SceneLoader::loadAsync(const std::string &path, const LoadOptions &options,
             d.done = done;
             self->pending_.push_back(std::move(d));
         }
+        std::lock_guard<std::mutex> lock(self->pendingMu_);
+        self->inFlight_.erase(key);
     });
     return true;
+}
+
+bool SceneLoader::loadAsyncPreset(const std::string &path, const std::string &preset) {
+    return loadAsync(path, presetOptions(preset));
 }
 
 int SceneLoader::pollAsync() {
@@ -1029,19 +1125,21 @@ bool SceneLoader::prewarmAsync(const std::string &path, const LoadOptions &optio
     const std::string key = normPath(path);
     {
         std::lock_guard<std::mutex> lock(pendingMu_);
-        if (prewarmed_.count(key)) return false;
-        for (const auto &p : pending_)
-            if (p.path == key) return false;
+        if (prewarmed_.count(key) || inFlight_.count(key)) return false;
+        inFlight_.insert(key);
     }
     if (!pool_) pool_ = std::make_shared<thread::ThreadPool>(2);
 
     auto self = this;
     pool_->submit([self, key, options]() {
         DecodedScene d;
-        if (!self->decode(key, options, &d)) return;
-        d.prewarmOnly = true;
+        if (self->decode(key, options, &d)) {
+            d.prewarmOnly = true;
+            std::lock_guard<std::mutex> lock(self->pendingMu_);
+            self->pending_.push_back(std::move(d));
+        }
         std::lock_guard<std::mutex> lock(self->pendingMu_);
-        self->pending_.push_back(std::move(d));
+        self->inFlight_.erase(key);
     });
     return true;
 }
@@ -1058,7 +1156,72 @@ void SceneLoader::clearPrewarm(const std::string &path) {
 
 int SceneLoader::pendingAsyncCount() const {
     std::lock_guard<std::mutex> lock(pendingMu_);
-    return static_cast<int>(pending_.size());
+    return static_cast<int>(pending_.size() + inFlight_.size());
+}
+
+std::string SceneLoader::lastError(const std::string &path) const {
+    std::lock_guard<std::mutex> lock(pendingMu_);
+    auto it = lastErrors_.find(normPath(path));
+    return it == lastErrors_.end() ? std::string{} : it->second;
+}
+
+int SceneLoader::warningCount(const std::string &path) const {
+    std::lock_guard<std::mutex> lock(pendingMu_);
+    auto it = warnings_.find(normPath(path));
+    return it == warnings_.end() ? 0 : static_cast<int>(it->second.size());
+}
+
+std::string SceneLoader::warning(const std::string &path, int index) const {
+    std::lock_guard<std::mutex> lock(pendingMu_);
+    auto it = warnings_.find(normPath(path));
+    if (it == warnings_.end() || index < 0 || static_cast<size_t>(index) >= it->second.size())
+        return {};
+    return it->second[static_cast<size_t>(index)];
+}
+
+bool SceneLoader::setLod(const std::string &path, int level) {
+    scene::SceneHost *h = host(path);
+    if (!h || level < 0) return false;
+    bool found = false;
+    auto tree = h->tree();
+    for (scene::SceneNode &node : tree->nodes) {
+        int nodeLod = -1;
+        for (const std::string &tag : node.tags)
+            if (tag.rfind("lod:", 0) == 0) nodeLod = std::atoi(tag.c_str() + 4);
+        if (nodeLod >= 0) {
+            node.visible = nodeLod == level;
+            found = found || node.visible;
+        }
+    }
+    return found;
+}
+
+int SceneLoader::socketCount(const std::string &path) const {
+    auto it = scenes_.find(normPath(path));
+    if (it == scenes_.end() || !it->second.host) return 0;
+    return static_cast<int>(it->second.host->findAllByTag("model-socket").size());
+}
+
+std::string SceneLoader::socketName(const std::string &path, int index) const {
+    auto it = scenes_.find(normPath(path));
+    if (it == scenes_.end() || !it->second.host || index < 0) return {};
+    auto sockets = it->second.host->findAllByTag("model-socket");
+    return static_cast<size_t>(index) < sockets.size() ? sockets[static_cast<size_t>(index)]->name
+                                                       : std::string{};
+}
+
+int SceneLoader::collisionCount(const std::string &path) const {
+    auto it = scenes_.find(normPath(path));
+    if (it == scenes_.end() || !it->second.host) return 0;
+    return static_cast<int>(it->second.host->findAllByTag("collision").size());
+}
+
+std::string SceneLoader::collisionName(const std::string &path, int index) const {
+    auto it = scenes_.find(normPath(path));
+    if (it == scenes_.end() || !it->second.host || index < 0) return {};
+    auto nodes = it->second.host->findAllByTag("collision");
+    return static_cast<size_t>(index) < nodes.size() ? nodes[static_cast<size_t>(index)]->name
+                                                     : std::string{};
 }
 
 // ---- imported scene extras ----
@@ -1119,18 +1282,34 @@ void SceneLoader::expose(ssq::Class &cls) {
                     [](SceneLoader *sl, const std::string &path) -> scene::SceneHost * {
                         return sl ? sl->load(path) : nullptr;
                     }));
+    cls.addFunc("loadPreset", &SceneLoader::loadPreset);
     cls.addFunc("host", &SceneLoader::host);
     cls.addFunc("reloadChecked", &SceneLoader::reloadChecked);
     cls.addFunc("nodeCount", &SceneLoader::nodeCount);
     cls.addFunc("loaded", &SceneLoader::loaded);
     cls.addFunc("unload", &SceneLoader::unload);
     cls.addFunc("pollAsync", &SceneLoader::pollAsync);
+    cls.addFunc("loadAsync", &SceneLoader::loadAsyncDefault);
+    cls.addFunc("loadAsyncPreset", &SceneLoader::loadAsyncPreset);
     cls.addFunc("pendingAsyncCount", &SceneLoader::pendingAsyncCount);
     cls.addFunc("prewarmed", &SceneLoader::prewarmed);
     cls.addFunc("clearPrewarm", &SceneLoader::clearPrewarm);
+    cls.addFunc("prewarm", &SceneLoader::prewarm);
+    cls.addFunc("lastError", &SceneLoader::lastError);
+    cls.addFunc("warningCount", &SceneLoader::warningCount);
+    cls.addFunc("warning", &SceneLoader::warning);
+    cls.addFunc("setLod", &SceneLoader::setLod);
+    cls.addFunc("socketCount", &SceneLoader::socketCount);
+    cls.addFunc("socketName", &SceneLoader::socketName);
+    cls.addFunc("collisionCount", &SceneLoader::collisionCount);
+    cls.addFunc("collisionName", &SceneLoader::collisionName);
     cls.addFunc("lightCount", &SceneLoader::lightCount);
     cls.addFunc("cameraCount", &SceneLoader::cameraCount);
     cls.addFunc("animationCount", &SceneLoader::animationCount);
+    cls.addFunc("light", &SceneLoader::light);
+    cls.addFunc("camera", &SceneLoader::camera);
+    cls.addFunc("skeleton", &SceneLoader::skeleton);
+    cls.addFunc("clip", &SceneLoader::clip);
 }
 
 }  // namespace sceneloader

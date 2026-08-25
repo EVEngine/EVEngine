@@ -49,6 +49,16 @@ card.renderDeck(gfx);        // 画牌库堆 + 剩余张数
 
 `update` 逐手牌推进布局与拖拽状态机，并把交互写入事件队列：`getEventType(i)` 为 `"click"`、`"drop"` 或 `"dropRejected"`，`getEventCardId(i)` / `getEventZone(i)` / `getEventHand(i)` / `getEventReason(i)` 给出对应字段；处理完用 `clearEvents()` 清空。拖拽命中落牌区后卡牌**仍留在手牌数组**，由脚本调用 `hand.removeCard(card)` 决定是否离手；不处理则自动归位。
 
+自定义 2D 或 3D 表现可调用 `setBuiltInVisuals(false)`，然后每帧在 `update` 后调用 `capturePresentation()`。`getPresentation(i)` 返回只读布局快照，含实例/定义 ID、位置、尺寸、角度、缩放、透明度与交互状态。快照对象只在下一次 `capturePresentation()` 前有效，不要跨帧保存；用 `getInstanceId()` 关联自己的 Sprite/Renderable。
+
+Card 不内置固定的卡牌编辑器。项目可用 `setCardDefinition` / `removeCardDefinition`
+增删定义，用按 ID 排序的 `getCardDefinitionId` 枚举定义，再根据自己的 schema 动态组合
+Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据；
+[`examples/composable-editor/gameplay_components.nut`](../../../examples/composable-editor/gameplay_components.nut)
+展示了用通用 `Schema`、`Definitions` 和 ECS 组合项目专属卡牌工具的做法。
+
+把逻辑手牌映射到 3D 桌面时，用 `newPlaneMapper()` 创建映射器，`setLogicalRect()` 设置 Card 画布，`setPlane()` 设置世界 origin、全宽 U 向量和全高 V 向量。把 `Camera3D.screenToRay()` 的射线交给 `mapRay()`，随后将 `getLogicalX/Y()` 传给 `card.update()`；用 `mapLayout(snapshot.getX(), snapshot.getY())` 取得对应世界坐标。
+
 ## 目标导向指南
 
 ### 做一个炉石式手牌与出牌流程
@@ -73,13 +83,17 @@ card.renderDeck(gfx);        // 画牌库堆 + 剩余张数
 
 ## API 快查
 
-- `eve.Card()`：`registerCardsFromJson`、`clearCardDefinitions`、`getCardDefinitionCount`、`hasCardDefinition`、`getCardDefinitionName/Kind/Cost/Attack/Health/TintR/TintG/TintB`
+- `eve.Card()`：`registerCardsFromJson`、`clearCardDefinitions`、`getCardDefinitionCount`、`getCardDefinitionId`、`hasCardDefinition`、`setCardDefinition`、`removeCardDefinition`、`getCardDefinitionName/Kind/Cost/Attack/Health/TintR/TintG/TintB`
 - `eve.Card()` 工厂：`newConfig()`、`newCard(defId)`、`newDeck()`、`newZone(id, label, x, y, w, h)`、`newHand(cfg)`
+- `eve.Card()` 空间适配：`newPlaneMapper()`；`CardPlaneMapper.setLogicalRect/setPlane/mapRay/mapLayout/getLogicalX/getLogicalY/getWorldX/getWorldY/getWorldZ`
 - `eve.Card()` 状态：`setConfig`/`getConfig`、`handCount`/`getHand`/`findHand`、`zoneCount`/`getZone`、`getDeck`、`drawCard(handOwner)`
-- `eve.Card()` 每帧：`update(dt, mx, my, down)`、`render(gfx)`、`renderDeck(gfx)`
+- `eve.Card()` 每帧：`update(dt, mx, my, down)`、`render(gfx)`、`renderDeck(gfx)`、`set/getBuiltInVisuals`
+- `eve.Card()` 表现快照：`capturePresentation`、`getPresentationCount`、`getPresentation(index)`
 - `eve.Card()` 事件：`clearEvents`、`getEventCount`、`getEventType`、`getEventHand`、`getEventZone`、`getEventCardId`、`getEventReason`
+- `eve.Card()` 目标选择：`beginTargeting`、`updateTargeting`、`cancelTargeting`、`renderTargeting`、`isTargeting`、`isTargetValid`、`getTargetSource`、`getTargetId`
 - `LayoutConfig`：`get/setCardW`、`get/setCardH`、`get/setSpacing`、`get/setHandX`、`get/setHandY`、`get/setArcHeight`、`get/setRotationAngle`、`get/setHoverRotation`、`get/setHoverScale`、`get/setHoverLift`、`get/setHoverSpeed`、`get/setMotionSpeed`、`get/setDisabledAlpha`、`get/setShowZones`、`get/setDeckX`、`get/setDeckY`、`get/setDragThreshold`
-- `CardData`：`getId/setId`、`getName/setName`、`getKind/setKind`、`getCost/setCost`、`getAttack/setAttack`、`getHealth/setHealth`、`isFaceUp/setFaceUp`、`isDisabled/setDisabled`、`getState/setState`、`getTintR/G/B`、`setTint(r, g, b)`、`setArt/getArt`、`getX/getY/getW/getH/getScale/getAlpha`、`isHovered/isDragging`、`hit(px, py)`、`describe()`
+- `CardData`：`getId/setId`（兼容接口）、`getInstanceId/getDefinitionId`、`getName/setName`、`getKind/setKind`、`getCost/setCost`、`getAttack/setAttack`、`getHealth/setHealth`、`isFaceUp/setFaceUp`、`isDisabled/setDisabled`、`getState/setState`、`getTintR/G/B`、`setTint(r, g, b)`、`setArt/getArt`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging`、`hit(px, py)`、`describe()`
+- `CardPresentationSnapshot`：`getInstanceId/getDefinitionId/getState`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging/isDisabled/isFaceUp`
 - `Deck`：`push`、`draw`、`peek`、`count`、`isEmpty`、`clear`、`shuffle`、`getCard`
 - `Zone`：`getId/setId`、`getLabel/setLabel`、`getX/getY/getW/getH`、`setRect`、`getColorR/G/B`、`setColor(r, g, b)`、`getAlpha/setAlpha`、`isEnabled/setEnabled`、`addAcceptKind`、`clearAcceptKinds`、`accepts`、`contains`、`render`
 - `Hand`：`getOwner/setOwner`、`getConfig/setConfig`、`isFaceDown/setFaceDown`、`isPeek/setPeek`、`isInteractive/setInteractive`、`addCard`、`removeCard`、`clear`、`count`、`getCard`、`findCard`、`pickCard`、`render`

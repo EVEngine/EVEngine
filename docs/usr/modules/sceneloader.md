@@ -29,10 +29,20 @@ if (host != null) {
 ### 大场景异步加载
 
 ```squirrel
-if (loader.pendingAsyncCount() == 0) loader.load("models/big.glb");  // 后台解码
+if (loader.pendingAsyncCount() == 0) loader.loadAsync("models/big.glb"); // 后台解码
 // 主线程每帧轮询：
 loader.pollAsync();          // 就绪后挂载（GPU 上传在主线程）
 ```
+
+失败后用 `lastError(path)` 取得解码错误；成功后可用 `warningCount(path)` / `warning(path, i)` 检查缺失 normals、UV 等非致命问题。
+
+### 导入 preset 与生产命名
+
+`loadPreset(path, "quality|balanced|mobile|raw")` 和 `loadAsyncPreset(...)` 提供可重复的导入设置。默认 `quality/balanced` 保留完整内容；`mobile` 跳过灯光、相机和动画；`raw` 关闭会改写顶点布局的后处理。
+
+- `Name_LOD0`、`Name_LOD1`：自动标为 LOD，初始只显示 LOD0；`setLod(path, level)` 切换。
+- `SOCKET_Weapon`：标为 `model-socket`，用 `socketCount/socketName` 枚举，也可通过 scene tag API 找到节点并挂接实体。
+- `UCX_`、`UBX_`、`USP_`、`UCP_`：标为隐藏的 `collision` 几何，不创建 Renderable；物理或编辑器流水线可按 tag 生成碰撞体。
 
 ## API 快查
 
@@ -44,9 +54,12 @@ loader.pollAsync();          // 就绪后挂载（GPU 上传在主线程）
 - `reloadChecked(path)` → bool：热重载并 diff 应用。
 - `unload(path)`：卸载并销毁链接的 Renderable3D。
 - `nodeCount(path)` / `loaded(path)`。
-- 异步：`pollAsync()`、`pendingAsyncCount()`、`prewarm(path)` / `clearPrewarm()` /
+- 异步：`loadAsync(path)`、`loadAsyncPreset(path, preset)`、`pollAsync()`、`pendingAsyncCount()`、`prewarm(path)` / `clearPrewarm()` /
   `prewarmed(path)`。
+- preset/LOD/socket/collision：`loadPreset()`、`setLod()`、`socketCount()`、`socketName()`、`collisionCount()`、`collisionName()`。
+- 诊断：`lastError()`、`warningCount()`、`warning()`。
 - 内容统计：`lightCount(path)`、`cameraCount(path)`、`animationCount(path)`。
+- 内容对象：`light(path, i)`、`camera(path, i)`、`skeleton(path)`、`clip(path, i)`。
 
 ## 生命周期
 

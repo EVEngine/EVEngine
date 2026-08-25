@@ -1,6 +1,7 @@
 #pragma once
 
 #include "procgen/MeshBuild.h"
+#include "procgen/ParamSchema.h"
 #include "procgen/Params.h"
 
 #include <functional>
@@ -38,19 +39,31 @@ using MeshRecipeFn = std::function<bool(const Params &params, MeshBuild &out, st
 
 class MeshRecipeRegistry {
 public:
+    /** @brief Access the process-wide mesh recipe registry. @return Registry instance. */
     static MeshRecipeRegistry &instance();
 
+    /** @brief Register a recipe without metadata. @param id Recipe id. @param fn Generator callback. */
     void registerRecipe(const std::string &id, MeshRecipeFn fn);
+    /** @brief Register a recipe with reusable metadata. @param descriptor Recipe schema. @param fn Generator callback. */
+    void registerRecipe(RecipeDescriptor descriptor, MeshRecipeFn fn);
     bool has(const std::string &id) const;
     bool generate(const std::string &id, const Params &params, MeshBuild &out,
                   std::string &error) const;
     std::vector<std::string> list() const;
+    /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
+    const RecipeDescriptor *descriptor(const std::string &id) const;
+    /** @brief Fill missing values from metadata. @param id Recipe id. @param params Values to update. @return False for an unknown recipe. */
+    bool applyDefaults(const std::string &id, Params &params) const;
 
     void registerBuiltins();
 
 private:
+    struct Entry {
+        MeshRecipeFn fn;
+        RecipeDescriptor descriptor;
+    };
     MeshRecipeRegistry() = default;
-    std::unordered_map<std::string, MeshRecipeFn> recipes_;
+    std::unordered_map<std::string, Entry> recipes_;
     bool builtinsRegistered_ = false;
 };
 

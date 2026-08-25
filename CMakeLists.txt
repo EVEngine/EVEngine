@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.21)
 project(EVEngine)
 
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "2")
-set(EVENGINE_PATCH_VERSION "1")
+set(EVENGINE_MINOR_VERSION "3")
+set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "")
 
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
@@ -416,6 +416,10 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts
         ${CMAKE_BINARY_DIR}/src/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/platform
+        # Override only zeroerr/unittest.h so fixture-generated types include
+        # their fixture name. This avoids cross-TU ODR collisions under LTO
+        # without mutating the pinned zeroerr submodule checkout.
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/overrides/zeroerr
         # sunxfancy/ECS.hpp + ik.hpp (git submodules) + zeroerr headers
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
@@ -961,6 +965,14 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Fourth patch: SimpleSquirrel's Object move constructor swaps an
+    # uninitialized `weak` flag. Optimized arm64 builds can observe that UB
+    # when script bindings pass Array/Object wrappers by value.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-object-move-init.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which
@@ -1129,7 +1141,7 @@ endfunction()
 #   * Emscripten (browser): webgpu.h / webgpu_cpp.h ship with the emsdk and are
 #     already on emcc's include path; no link target is needed.
 #   * Native desktop: Google Dawn is fetched via FetchContent and linked through
-#     the imported target dawn::dawn (set into EVENGINE_WEBGPU_LIB).
+#     Dawn's native WebGPU target (set into EVENGINE_WEBGPU_LIB).
 function(load_webgpu_backend)
     if(NOT BUILD_PLATFORM STREQUAL "webgpu")
         set(EVENGINE_WEBGPU_LIB "" CACHE INTERNAL "WebGPU link target (unused)")
@@ -1164,13 +1176,29 @@ function(load_webgpu_backend)
     )
     FetchContent_MakeAvailable(dawn)
 
-    if(NOT TARGET dawn::dawn)
-        message(FATAL_ERROR "Dawn fetch did not produce the imported target dawn::dawn")
+    if(TARGET dawn::webgpu_dawn)
+        set(_eve_dawn_target dawn::webgpu_dawn)
+    elseif(TARGET dawn::dawn)
+        set(_eve_dawn_target dawn::dawn)
+    else()
+        message(FATAL_ERROR "Dawn fetch did not produce a native WebGPU target")
     endif()
     # Dawn's webgpu.h / webgpu_cpp.h live under src/ in the checkout; expose
     # them to every module target (engine, eve_imgui, gpgpu/webgpu, ...).
-    target_include_directories(eve_engine_includes INTERFACE "${dawn_SOURCE_DIR}/src")
-    set(EVENGINE_WEBGPU_LIB dawn::dawn CACHE INTERNAL "WebGPU link target")
+    target_include_directories(eve_engine_includes INTERFACE
+        "${dawn_SOURCE_DIR}/include"
+        "${dawn_SOURCE_DIR}/src"
+        "${dawn_BINARY_DIR}/gen/include")
+    if(TARGET dawncpp_headers)
+        add_dependencies(eve_engine_includes dawncpp_headers)
+    endif()
+    if(TARGET dawn_headers)
+        add_dependencies(eve_engine_includes dawn_headers)
+    endif()
+    if(TARGET emdawnwebgpu_headers_gen)
+        add_dependencies(eve_engine_includes emdawnwebgpu_headers_gen)
+    endif()
+    set(EVENGINE_WEBGPU_LIB ${_eve_dawn_target} CACHE INTERNAL "WebGPU link target")
     message(STATUS "WebGPU (native): Dawn ready, link target = ${EVENGINE_WEBGPU_LIB}")
 endfunction()
 

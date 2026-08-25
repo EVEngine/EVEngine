@@ -130,6 +130,18 @@ void Shape3D::setDensity(float density) {
 
 float Shape3D::getDensity() const { return isValid() ? b3Shape_GetDensity(shapeId_) : 0.f; }
 
+void Shape3D::setFilterBits(uint64_t categoryBits, uint64_t maskBits) {
+    if (!isValid()) return;
+    b3Filter filter     = b3Shape_GetFilter(shapeId_);
+    filter.categoryBits = categoryBits;
+    filter.maskBits     = maskBits;
+    b3Shape_SetFilter(shapeId_, filter, false);
+}
+
+uint64_t Shape3D::getCategoryBits() const {
+    return isValid() ? b3Shape_GetFilter(shapeId_).categoryBits : 0;
+}
+
 bool Shape3D::testPoint(float x, float y, float z) const {
     if (!isValid() || !body_ || !body_->isValid()) return false;
 
