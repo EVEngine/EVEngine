@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <vector>
 
 using namespace eve::graphics;
@@ -129,6 +130,86 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     for (size_t i = 0; i < forward1x.size(); ++i)
         resolveDelta = std::max(resolveDelta, std::abs(forward1x[i] - resolved[i]));
     REQUIRE(resolveDelta < 0.06f);
+    control->disable("visResolve");
+    window->close();
+}
+
+/** @brief Backend-neutral VG compute-cull, indirect-vis and resolve coverage. */
+TEST_CASE("GpuDrivenParity.virtualGeometry") {
+    eve::window::Window *window = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(window, gfx, 320, 240);
+    REQUIRE(gfx->supportsGpuDriven3D());
+
+    const float positions[] = {-1.1f, -0.9f, 0.f, 1.1f, -0.9f, 0.f, 0.f, 1.1f, 0.f};
+    const float normals[] = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    const uint32_t indices[] = {0, 1, 2};
+    GpuVgCluster cluster{};
+    auto bits = [](float value) {
+        uint32_t out = 0;
+        std::memcpy(&out, &value, sizeof(out));
+        return out;
+    };
+    cluster.u0[0] = bits(0.f);
+    cluster.u0[1] = bits(0.f);
+    cluster.u0[2] = bits(0.f);
+    cluster.u0[3] = bits(1.6f);
+    cluster.u1[0] = 0;
+    cluster.u1[1] = 1;
+    GpuVgAssetUpload upload{};
+    upload.positions = positions;
+    upload.vertexCount = 3;
+    upload.normals = normals;
+    upload.triangles = indices;
+    upload.triangleCount = 3;
+    upload.clusters = &cluster;
+    upload.clusterCount = 1;
+    const uint32_t assetId = gfx->gpuDrivenVgUpload(upload);
+    REQUIRE(assetId != kInvalidGpuDrivenSlot);
+
+    Mesh *mesh = gfx->newMeshFromArrays(positions, normals, nullptr, 3, indices, 3);
+    REQUIRE(mesh != nullptr);
+    REQUIRE(gfx->gpuDrivenVgAttachToMesh(mesh, assetId));
+    REQUIRE(gfx->gpuDrivenVgAssetId(mesh) == assetId);
+    Material *material = gfx->newMaterial();
+    material->setTint(0.9f, 0.2f, 0.1f);
+    auto *object = Renderable3D::create();
+    object->setMesh(mesh);
+    object->setMaterial(material);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, 3.2f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setAmbient(0.35f, 0.35f, 0.35f);
+    auto *sun = Light3D::createLight("dir");
+    sun->setDirection(0.f, 0.f, -1.f);
+    sun->setColor(1.f, 1.f, 1.f, 1.5f);
+    sun->setCastShadow(false);
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderControl *control = gfx->getRenderControl();
+    control->disable("ao");
+    control->disable("gi");
+    control->disable("aa");
+    control->disable("atmosphere");
+    control->disable("msaa");
+    control->enable("gpuDriven");
+    // The visibility path owns its ID/bary/depth attachments; the legacy
+    // material GBuffer pass is unrelated to this focused VG scene.
+    control->disable("gbuffer");
+    control->enable("visResolve");
+    captureLuma(gfx);
+    REQUIRE(gfx->gpuDrivenResolveWanted());
+    const Color visible = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    REQUIRE(visible.r > visible.b + 0.05f);
+#ifdef EVENGINE_WEBGPU
+    auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
+    REQUIRE(webgpu != nullptr);
+    REQUIRE(webgpu->debugGpuDrivenVgDispatchCount() == 1);
+    REQUIRE(webgpu->debugGpuDrivenVgIndirectDrawCount() == 1);
+#endif
+
+    control->disable("gpuDriven");
     control->disable("visResolve");
     window->close();
 }

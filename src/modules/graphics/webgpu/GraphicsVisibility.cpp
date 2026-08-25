@@ -67,11 +67,8 @@ struct VSOut {
     @location(6) @interpolate(flat) triBase: u32,
 };
 struct VisOut {
-    @location(0) normal: vec4f,
-    @location(1) depth: vec4f,
-    @location(2) albedo: vec4f,
-    @location(3) id: vec2u,
-    @location(4) bary: vec2f,
+    @location(0) id: vec2u,
+    @location(1) bary: vec2f,
 };
 @group(0) @binding(0) var<uniform> frame: Frame;
 @group(0) @binding(1) var albedoTex: texture_2d<f32>;
@@ -139,9 +136,6 @@ fn fs_main(in: VSOut) -> VisOut {
     let farZ = max(frame.clipInfo.y, nearZ + 1e-3);
     let linearDepth = clamp((max(-in.viewPos.z, 0.0) - nearZ) / (farZ - nearZ), 0.0, 1.0);
     var out: VisOut;
-    out.normal = vec4f(normalize(in.worldNormal) * 0.5 + 0.5, 1.0);
-    out.depth = vec4f(linearDepth, linearDepth, linearDepth, 1.0);
-    out.albedo = vec4f(base.rgb, linearDepth);
     out.id = vec2u(in.instanceId, in.triBase);
     out.bary = in.bary.xy;
     return out;
@@ -289,7 +283,7 @@ void Graphics::ensureGpuDrivenVisibilityResources() {
         visEntries[i].binding = i;
         visEntries[i].visibility = WGPUShaderStage_Vertex;
         visEntries[i].buffer.type = WGPUBufferBindingType_ReadOnlyStorage;
-        visEntries[i].buffer.minBindingSize = 4;
+        visEntries[i].buffer.minBindingSize = i == 0 ? sizeof(glm::mat4) : 4u;
     }
     visEntries[3].binding = 3;
     visEntries[3].visibility = WGPUShaderStage_Vertex;
@@ -316,7 +310,7 @@ void Graphics::ensureGpuDrivenVisibilityResources() {
         resolveEntries[i].binding = i;
         resolveEntries[i].visibility = WGPUShaderStage_Fragment;
         resolveEntries[i].buffer.type = WGPUBufferBindingType_ReadOnlyStorage;
-        resolveEntries[i].buffer.minBindingSize = 4;
+        resolveEntries[i].buffer.minBindingSize = i == 2 ? sizeof(glm::mat4) : 4u;
     }
     resolveEntries[5].binding = 5;
     resolveEntries[5].visibility = WGPUShaderStage_Fragment;
@@ -347,17 +341,14 @@ void Graphics::ensureGpuDrivenVisibilityResources() {
         reinterpret_cast<const wgpu::PipelineLayoutDescriptor *>(&rpl));
 
     wgpu::ShaderModule vis = visShader(device, kVisibilityWgsl);
-    WGPUColorTargetState targets[5]{};
-    targets[0].format = WGPUTextureFormat_RGBA8Unorm;
-    targets[1].format = WGPUTextureFormat_RGBA8Unorm;
-    targets[2].format = WGPUTextureFormat_RGBA8Unorm;
-    targets[3].format = WGPUTextureFormat_RG32Uint;
-    targets[4].format = WGPUTextureFormat_RG16Float;
+    WGPUColorTargetState targets[2]{};
+    targets[0].format = WGPUTextureFormat_RG32Uint;
+    targets[1].format = WGPUTextureFormat_RG16Float;
     for (auto &target : targets) target.writeMask = WGPUColorWriteMask_All;
     WGPUFragmentState fs{};
     fs.module = vis.Get();
     fs.entryPoint = visLabel("fs_main");
-    fs.targetCount = 5;
+    fs.targetCount = 2;
     fs.targets = targets;
     WGPUDepthStencilState depth{};
     depth.format = WGPUTextureFormat_Depth32Float;
@@ -407,21 +398,22 @@ void Graphics::ensureGpuDrivenVisibilityResources() {
 }
 
 void Graphics::recordGpuDrivenVisibility(wgpu::CommandEncoder encoder) {
-    if (!gpuDrivenVisPending_ || gpuDrivenBuckets_.empty()) return;
+    if (!gpuDrivenVisPending_ || gpuDrivenBuckets_.empty()) {
+        recordGpuDrivenVgVisibility(encoder);
+        return;
+    }
     createGbufferResources(sceneColorWidth, sceneColorHeight);
     ensureGpuDrivenVisibilityResources();
     lastGbufferSlot = currentFrameSlot();
     GbufferSlot &slot = gbufferSlots[lastGbufferSlot];
-    WGPURenderPassColorAttachment colors[5]{};
-    const WGPUTextureView views[5] = {slot.normalView.Get(), slot.depthColorView.Get(),
-                                      slot.albedoView.Get(), slot.visIDView.Get(),
-                                      slot.visBaryView.Get()};
-    for (uint32_t i = 0; i < 5; ++i) {
+    WGPURenderPassColorAttachment colors[2]{};
+    const WGPUTextureView views[2] = {slot.visIDView.Get(), slot.visBaryView.Get()};
+    for (uint32_t i = 0; i < 2; ++i) {
         colors[i].view = views[i];
         colors[i].depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
         colors[i].loadOp = WGPULoadOp_Clear;
         colors[i].storeOp = WGPUStoreOp_Store;
-        colors[i].clearValue = i == 3 ? WGPUColor{4294967295.0, 0.0, 0.0, 0.0}
+        colors[i].clearValue = i == 0 ? WGPUColor{4294967295.0, 0.0, 0.0, 0.0}
                                       : WGPUColor{0.0, 0.0, 0.0, 0.0};
     }
     WGPURenderPassDepthStencilAttachment depth{};
@@ -432,7 +424,7 @@ void Graphics::recordGpuDrivenVisibility(wgpu::CommandEncoder encoder) {
     depth.stencilLoadOp = WGPULoadOp_Undefined;
     depth.stencilStoreOp = WGPUStoreOp_Undefined;
     WGPURenderPassDescriptor rp{};
-    rp.colorAttachmentCount = 5;
+    rp.colorAttachmentCount = 2;
     rp.colorAttachments = colors;
     rp.depthStencilAttachment = &depth;
     wgpu::RenderPassEncoder pass =
@@ -496,10 +488,14 @@ void Graphics::recordGpuDrivenVisibility(wgpu::CommandEncoder encoder) {
     }
     pass.End();
     gpuDrivenVisPending_ = false;
+    recordGpuDrivenVgVisibility(encoder);
 }
 
 void Graphics::flushGpuDrivenResolve(wgpu::RenderPassEncoder pass) {
-    if (!gpuDrivenResolvePending_ || gpuDrivenBuckets_.empty() || gbufferSlots.empty()) return;
+    if (!gpuDrivenResolvePending_ || gpuDrivenBuckets_.empty() || gbufferSlots.empty()) {
+        flushGpuDrivenVgResolve(pass);
+        return;
+    }
     GbufferSlot &slot = gbufferSlots[lastGbufferSlot];
     auto &arena = currentUboArena();
     ensureUboArena(arena, arena.used + gpuDrivenBuckets_.size() * 2048);
@@ -574,6 +570,7 @@ void Graphics::flushGpuDrivenResolve(wgpu::RenderPassEncoder pass) {
     }
     gpuDrivenResolvePending_ = false;
     gpuDrivenBuckets_.clear();
+    flushGpuDrivenVgResolve(pass);
 }
 
 }  // namespace eve::graphics::webgpu

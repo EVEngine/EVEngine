@@ -49,7 +49,7 @@ and `test gap`.
 | Hair/custom hair shaders | supported for built-in hair | Anisotropic built-in WGSL shading is available; arbitrary SPIR-V hair remains an intentional input-language difference | Define a portable custom WGSL/SPIR-V shader-pair contract |
 | Font rendering | supported | Native and browser WebGPU render supplied font atlases; browser builds do not synthesize atlases with FreeType | Add packaged-atlas browser examples |
 | GPU-driven/indirect/visibility buffer | supported, verified | WebGPU compute-compacts 256-byte-aligned per-bucket model ranges, emits portable indirect commands, writes ID/barycentric visibility attachments and reconstructs the shared PBR inputs in a fullscreen resolve | Extend the parity scene to browser artifacts and mixed opaque/transparent content |
-| Virtual geometry GPU path | missing, fallback available | Vulkan-only compute/indirect implementation | Implement after GPU-driven base path |
+| Virtual geometry GPU path | supported, verified | WebGPU uses compute-written per-cluster indirect commands (`instanceCount=0` for culled clusters) because portable WebGPU does not guarantee Vulkan's indirect-count draw; both feed the same ID/bary visibility semantics and flat-material resolve | Add DAG LOD/HZB cluster occlusion and large multi-asset artifacts |
 | Native macOS surface | supported, CI verified | SDL Cocoa windows are backed by a retained CAMetalLayer and native Dawn Metal surface | Keep the targeted macOS render tests in CI |
 | Browser render tests | supported in CI | Chromium/SwiftShader launches the WASM example, captures a frame and rejects black/white/flat output | Add scene-by-scene browser semantic assertions |
 | Voxel vertex AO | supported, verified | Both backends consume the same packed 2-bit-per-corner AO and pass a shared pixel-darkening test | Add AO image artifact to the comparator set |
@@ -137,7 +137,7 @@ not an acceptable fix.
 
 - [x] GPU-driven opaque submission, compute compaction and indexed-indirect draws.
 - [x] Visibility-buffer attachments, barycentric reconstruction and fullscreen PBR resolve.
-- [ ] Virtual geometry GPU path.
+- [x] Virtual geometry compute cull, indirect visibility raster and material resolve.
 - [x] Native macOS Dawn surface.
 - [x] Browser WebGPU pixel lane on CI.
 

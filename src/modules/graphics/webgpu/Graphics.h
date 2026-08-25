@@ -151,6 +151,13 @@ public:
     bool gpuDrivenResolveWanted() const override;
     void gpuDrivenRecordVisPass() override;
     void gpuDrivenResolve() override;
+    uint32_t gpuDrivenVgUpload(const GpuVgAssetUpload &asset) override;
+    uint32_t gpuDrivenVgAssetId(Mesh *mesh) const override;
+    bool gpuDrivenVgAttachToMesh(Mesh *mesh, uint32_t vgAssetId) override;
+    bool gpuDrivenVgSetInstance(uint32_t vgAssetId, const glm::mat4 &model,
+                                uint32_t materialId) override;
+    void gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                   float fovYDeg, float nearZ, float farZ) override;
     /** @brief Return the last CPU compatibility-cull result for backend parity tests. */
     uint32_t debugGpuDrivenVisibleCount() const {
         return static_cast<uint32_t>(gpuDrivenVisible_.size());
@@ -159,6 +166,12 @@ public:
     uint32_t debugGpuDrivenDispatchCount() const { return gpuDrivenDispatchCount_; }
     /** @brief Return indexed-indirect commands recorded by the last scene pass. */
     uint32_t debugGpuDrivenIndirectDrawCount() const { return gpuDrivenLastIndirectDrawCount_; }
+    /** @brief Return VG clusters dispatched by the last WebGPU compute section. */
+    uint32_t debugGpuDrivenVgDispatchCount() const { return gpuDrivenVgVisibleDiagnostic_; }
+    /** @brief Return per-cluster indirect commands recorded by the VG visibility pass. */
+    uint32_t debugGpuDrivenVgIndirectDrawCount() const {
+        return gpuDrivenVgLastIndirectDrawCount_;
+    }
 
     void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;
@@ -427,6 +440,10 @@ private:
     void ensureGpuDrivenVisibilityResources();
     void recordGpuDrivenVisibility(wgpu::CommandEncoder encoder);
     void flushGpuDrivenResolve(wgpu::RenderPassEncoder pass);
+    void ensureGpuDrivenVgResources();
+    void recordGpuDrivenVgCompute(wgpu::CommandEncoder encoder);
+    void recordGpuDrivenVgVisibility(wgpu::CommandEncoder encoder);
+    void flushGpuDrivenVgResolve(wgpu::RenderPassEncoder pass);
     void createSceneColorResources(int width, int height);
     void destroySceneColorResources();
     void createShadowResources();
@@ -857,6 +874,39 @@ private:
     wgpu::PipelineLayout gpuDrivenResolvePipelineLayout_;
     wgpu::RenderPipeline gpuDrivenVisPipeline_;
     wgpu::RenderPipeline gpuDrivenResolvePipeline_;
+
+    struct GpuDrivenVgAsset {
+        wgpu::Buffer positions;
+        wgpu::Buffer triangles;
+        wgpu::Buffer clusters;
+        wgpu::Buffer indirect;
+        wgpu::Buffer params;
+        uint32_t vertexCount = 0;
+        uint32_t triangleCount = 0;
+        uint32_t clusterCount = 0;
+        Mesh *mesh = nullptr;
+        glm::mat4 model{1.f};
+        uint32_t materialId = kInvalidGpuDrivenSlot;
+        bool active = false;
+    };
+    std::vector<GpuDrivenVgAsset> gpuDrivenVgAssets_;
+    std::unordered_map<Mesh *, uint32_t> gpuDrivenVgMeshIds_;
+    wgpu::BindGroupLayout gpuDrivenVgComputeSetLayout_;
+    wgpu::BindGroupLayout gpuDrivenVgVisSetLayout_;
+    wgpu::BindGroupLayout gpuDrivenVgResolveSetLayout_;
+    wgpu::PipelineLayout gpuDrivenVgComputePipelineLayout_;
+    wgpu::PipelineLayout gpuDrivenVgVisPipelineLayout_;
+    wgpu::PipelineLayout gpuDrivenVgResolvePipelineLayout_;
+    wgpu::ComputePipeline gpuDrivenVgCullPipeline_;
+    wgpu::RenderPipeline gpuDrivenVgVisPipeline_;
+    wgpu::RenderPipeline gpuDrivenVgResolvePipeline_;
+    glm::mat4 gpuDrivenVgViewProj_{1.f};
+    glm::vec4 gpuDrivenVgPlanes_[6]{};
+    uint32_t gpuDrivenVgVisibleDiagnostic_ = 0;
+    uint32_t gpuDrivenVgLastIndirectDrawCount_ = 0;
+    bool gpuDrivenVgComputePending_ = false;
+    bool gpuDrivenVgVisPending_ = false;
+    bool gpuDrivenVgResolvePending_ = false;
 
     // Browser async frame readback (avoids ASYNCIFY sleep inside deep
     // JS->Squirrel->Graphics call chains).

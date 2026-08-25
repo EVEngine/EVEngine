@@ -550,14 +550,15 @@ void Graphics::gpuDrivenDrawOpaque() {
 }
 
 void Graphics::recordGpuDrivenCompute(wgpu::CommandEncoder encoder) {
-    if (!gpuDrivenComputePending_ || !gpuDrivenCullPipeline_ || !gpuDrivenComputeBindGroup_)
-        return;
-    wgpu::ComputePassEncoder pass = encoder.BeginComputePass();
-    pass.SetPipeline(gpuDrivenCullPipeline_);
-    pass.SetBindGroup(0, gpuDrivenComputeBindGroup_, 0, nullptr);
-    pass.DispatchWorkgroups((gpuDrivenDispatchCount_ + 63u) / 64u, 1, 1);
-    pass.End();
-    gpuDrivenComputePending_ = false;
+    if (gpuDrivenComputePending_ && gpuDrivenCullPipeline_ && gpuDrivenComputeBindGroup_) {
+        wgpu::ComputePassEncoder pass = encoder.BeginComputePass();
+        pass.SetPipeline(gpuDrivenCullPipeline_);
+        pass.SetBindGroup(0, gpuDrivenComputeBindGroup_, 0, nullptr);
+        pass.DispatchWorkgroups((gpuDrivenDispatchCount_ + 63u) / 64u, 1, 1);
+        pass.End();
+        gpuDrivenComputePending_ = false;
+    }
+    recordGpuDrivenVgCompute(encoder);
 }
 
 void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget) {
