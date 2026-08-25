@@ -403,6 +403,8 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
     } else if (obj->has("stretch")) {
         emitter->setRenderMode("stretched", asFloat(obj->get("stretch"), 1.f));
     }
+    if (obj->has("renderAxis")) emitter->setRenderAxis(asFloat(obj->get("renderAxis"), 0.f));
+    if (obj->has("sortMode")) emitter->setSortMode(asString(obj->get("sortMode")));
     if (obj->has("overflowMode"))
         emitter->setOverflowMode(asString(obj->get("overflowMode")));
     if (obj->has("maxDeltaTime"))

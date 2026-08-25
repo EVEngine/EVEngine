@@ -88,6 +88,12 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
         emitter->setGravity(0.f, 105.f);
         emitter->setDamping(0.16f);
         emitter->setSpin(-4.f, 4.f);
+        if (i % 3 == 1) {
+            emitter->setRenderMode("axis");
+            emitter->setRenderAxis(i % 2 == 0 ? 35.f : -35.f);
+        } else if (i % 3 == 2) {
+            emitter->setRenderMode("velocity", 0.075f);
+        }
         emitter->setBlendMode("additive");
         emitter->setColorStart(colors[i][0], colors[i][1], colors[i][2], 0.95f);
         emitter->setColorEnd(colors[i][0] * 0.25f, colors[i][1] * 0.12f, colors[i][2] * 0.3f, 0.f);

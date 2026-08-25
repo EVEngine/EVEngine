@@ -57,8 +57,11 @@ and a six-emitter/150-frame rendered stress capture.
 
 ### P2 — production renderers and data interfaces
 
-- Camera-facing, velocity-aligned, axis-aligned, ribbon/trail, mesh, and light
-  renderers behind a shared renderer interface.
+- Camera-facing, velocity-aligned, and axis-aligned sprite modes now share one
+  renderer contract. Stable oldest/youngest/distance transparency policies are
+  available on CPU with explicit GPU fallback; GPU sorting remains pending.
+- Ribbon/trail, mesh, and light renderers remain to be placed behind the shared
+  renderer contract.
 - Depth sorting policies, soft particles, depth fade, distortion, normal maps,
   lit/unlit materials, and motion-vector policy.
 - Mesh/skeleton, scene depth, collision, signed-distance-field, and gameplay

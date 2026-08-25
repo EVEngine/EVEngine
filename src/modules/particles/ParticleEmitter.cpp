@@ -903,9 +903,17 @@ void ParticleEmitter::setWorldCollision(bool enabled) { config()->worldCollision
 
 void ParticleEmitter::setRenderMode(const std::string &mode, float stretchFactor) {
     auto c = config();
-    c->renderMode = mode == "stretched" ? "stretched" : "billboard";
+    c->renderMode = (mode == "stretched" || mode == "velocity") ? "stretched" : mode == "axis" ? "axis" : "billboard";
     c->stretchFactor = stretchFactor < 0.f ? 0.f : stretchFactor;
 }
+
+void ParticleEmitter::setRenderAxis(float degrees) { config()->renderAxisDegrees = degrees; }
+
+void ParticleEmitter::setSortMode(const std::string& mode) {
+    config()->sortMode = (mode == "oldest" || mode == "youngest" || mode == "distance") ? mode : "none";
+}
+
+std::string ParticleEmitter::getSortMode() { return config()->sortMode; }
 
 void ParticleEmitter::setOverflowMode(const std::string &mode) {
     config()->overflowMode =

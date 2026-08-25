@@ -91,6 +91,8 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
         const float len = std::max(w, speed * cfg.stretchFactor);
         item.w = len;
         item.rotation = std::atan2(p.vy, p.vx) * kRad2Deg;
+    } else if (cfg.renderMode == "axis") {
+        item.rotation = cfg.renderAxisDegrees;
     } else {
         item.rotation = p.rot * kRad2Deg;
         if (!cfg.rotationCurve.empty()) item.rotation += cfg.rotationCurve.sample(t, 0.f);
@@ -110,6 +112,38 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
         item.hasUV = true;
     }
     out.push_back(item);
+}
+
+void appendEmitterItems(const ParticleEmitter::Config& cfg, const ParticleEmitter::Sim& sim,
+                        const ParticleEmitter::Draw& draw, int& order, std::vector<graphics::DrawItem2D>& out) {
+    if (cfg.sortMode == "none") {
+        for (int i = 0; i < sim.alive; ++i) appendParticleItem(cfg, draw, sim.particles[std::size_t(i)], order++, out);
+        return;
+    }
+
+    std::vector<int> indices(std::size_t(sim.alive));
+    for (int i = 0; i < sim.alive; ++i) indices[std::size_t(i)] = i;
+    auto age = [&](int index) {
+        const Particle& p = sim.particles[std::size_t(index)];
+        return p.lifetime > 0.f ? 1.f - p.life / p.lifetime : 1.f;
+    };
+    if (cfg.sortMode == "oldest") {
+        std::stable_sort(indices.begin(), indices.end(), [&](int a, int b) { return age(a) > age(b); });
+    } else if (cfg.sortMode == "youngest") {
+        std::stable_sort(indices.begin(), indices.end(), [&](int a, int b) { return age(a) < age(b); });
+    } else if (cfg.sortMode == "distance" && draw.camera) {
+        const float cameraX         = draw.camera->data()->x;
+        const float cameraY         = draw.camera->data()->y;
+        auto        distanceSquared = [&](int index) {
+            const Particle& p  = sim.particles[std::size_t(index)];
+            const float     dx = p.x - cameraX;
+            const float     dy = p.y - cameraY;
+            return dx * dx + dy * dy;
+        };
+        std::stable_sort(indices.begin(), indices.end(),
+                         [&](int a, int b) { return distanceSquared(a) > distanceSquared(b); });
+    }
+    for (int index : indices) appendParticleItem(cfg, draw, sim.particles[std::size_t(index)], order++, out);
 }
 
 /** True when the emitter center is well outside the camera view (skip sim). */
@@ -158,7 +192,7 @@ bool supportsResidentGpu(const ParticleEmitter::Config& cfg, const ParticleEmitt
     return draw.canvas == nullptr && draw.shader == nullptr && cfg.collisionMode == "none" &&
            !cfg.collisionBoundsEnabled && !cfg.worldCollision && cfg.forceFields.empty() && cfg.subEmitters.empty() &&
            !cfg.lights.enabled && cfg.velocityCurve.empty() && cfg.sizeCurve.empty() && cfg.rotationCurve.empty() &&
-           cfg.colorGradient.empty();
+           cfg.colorGradient.empty() && cfg.sortMode == "none";
 }
 
 graphics::GpuParticleSpawn gpuSpawn(const Particle& particle) {
@@ -426,7 +460,10 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
             gpuDraw.sizeStart      = cfg->sizeStart;
             gpuDraw.sizeEnd        = cfg->sizeEnd;
             gpuDraw.stretchFactor  = cfg->stretchFactor;
-            gpuDraw.stretched      = cfg->renderMode == "stretched";
+            gpuDraw.facing         = cfg->renderMode == "stretched" ? graphics::GpuParticleFacingMode::Velocity
+                                     : cfg->renderMode == "axis"    ? graphics::GpuParticleFacingMode::Axis
+                                                                    : graphics::GpuParticleFacingMode::ParticleRotation;
+            gpuDraw.axisRotationRadians = cfg->renderAxisDegrees / kRad2Deg;
             gpuDraw.colorStart[0]  = cfg->colorStart.r;
             gpuDraw.colorStart[1]  = cfg->colorStart.g;
             gpuDraw.colorStart[2]  = cfg->colorStart.b;
@@ -444,9 +481,7 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
             continue;
         }
         if (draw->canvas) anyCanvas = true;
-        for (int i = 0; i < sim->alive; ++i) {
-            appendParticleItem(*cfg, *draw, sim->particles[size_t(i)], order++, items);
-        }
+        appendEmitterItems(*cfg, *sim, *draw, order, items);
         stats.renderedParticles += sim->alive;
     }
 

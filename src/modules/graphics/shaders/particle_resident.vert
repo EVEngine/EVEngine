@@ -37,10 +37,13 @@ void main() {
     vec2 extent = pc.cameraParticle.zw * scale;
 
     float rotation = particle.lifeSizeRotation.w;
-    if (pc.sizeMode.w > 0.5) {
+    uint facingMode = uint(pc.sizeMode.w + 0.5);
+    if (facingMode == 1u) {
         float speed = length(particle.positionVelocity.zw);
         extent.x = max(extent.x, speed * pc.sizeMode.z);
         rotation = atan(particle.positionVelocity.w, particle.positionVelocity.z);
+    } else if (facingMode == 2u) {
+        rotation = uintBitsToFloat(pc.flipbook.z);
     }
 
     float c = cos(rotation);

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cstring>
 
 namespace eve::graphics::vulkan {
@@ -534,11 +535,12 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
     push.sizeMode[0]       = request.draw.sizeStart;
     push.sizeMode[1]       = request.draw.sizeEnd;
     push.sizeMode[2]       = request.draw.stretchFactor;
-    push.sizeMode[3]       = request.draw.stretched ? 1.f : 0.f;
+    push.sizeMode[3]       = float(request.draw.facing);
     std::copy_n(request.draw.colorStart, 4, push.colorStart);
     std::copy_n(request.draw.colorEnd, 4, push.colorEnd);
     push.flipbook[0] = std::uint32_t(std::max(request.draw.hframes, 1));
     push.flipbook[1] = std::uint32_t(std::max(request.draw.vframes, 1));
+    push.flipbook[2] = std::bit_cast<std::uint32_t>(request.draw.axisRotationRadians);
 
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gpuParticleDrawLayout_, 0, slot.drawSet, nullptr);

@@ -270,7 +270,9 @@ sparks.addSubEmitter(smoke, "death", 0.3);  // 继承 30% 速度
 
 JSON：`collision: {mode, radius, restitution, lifetimeLoss}`、`collisionBounds: {enabled, minX, minY, maxX, maxY}`、`worldCollision: true`。子发射器目前通过脚本 `addSubEmitter(target, trigger, inherit)` 关联（trigger 为 `"birth"` / `"death"` / `"collision"`）。
 
-拖尾：`setRenderMode("stretched", factor)` 或 JSON `renderMode: "stretched"` + `stretch`，粒子沿速度方向拉伸成彗星/流光。
+精灵朝向统一由 `setRenderMode` 控制：`"billboard"` 使用粒子自身旋转，`"axis"` 配合 `setRenderAxis(degrees)` 固定到屏幕空间轴，`"stretched"`（也接受 `"velocity"`）按速度方向拉伸。JSON 对应 `renderMode`、`renderAxis` 和 `stretch`。
+
+透明粒子可用 `setSortMode("none" | "oldest" | "youngest" | "distance")` 选择稳定的逐发射器提交顺序，`getSortMode()` 返回规范化后的策略。`distance` 在有相机时按远到近排列。当前 GPU 常驻后端只支持 `none`；其他策略明确保留在 CPU 后端，避免宣称排序已在 GPU 上完成。
 
 健壮性：`overflowMode`（`"drop"` 默认 / `"pause"` 暂停发射直到有空位 / `"warn"` 日志提示）；`setMaxDeltaTime` 限制单帧步长；带相机的发射器在屏幕外且无存活粒子时会跳过模拟。
 

@@ -8,6 +8,13 @@ namespace eve::graphics {
 
 class Texture;
 
+/** @brief Sprite orientation supported by the resident GPU particle renderer. */
+enum class GpuParticleFacingMode : std::uint32_t {
+    ParticleRotation = 0,
+    Velocity         = 1,
+    Axis             = 2,
+};
+
 /** @brief Opaque backend-owned GPU particle emitter handle. */
 using GpuParticleHandle = std::uint64_t;
 
@@ -56,24 +63,25 @@ struct GpuParticleUpdate {
 
 /** @brief Parameters for rendering a resident GPU particle emitter. */
 struct GpuParticleDraw {
-    Texture*  texture        = nullptr;
-    BlendMode blend          = BlendMode::Alpha;
-    float     viewportWidth  = 1.f;
-    float     viewportHeight = 1.f;
-    float     cameraX        = 0.f;
-    float     cameraY        = 0.f;
-    float     cameraZoom     = 1.f;
-    bool      cameraEnabled  = false;
-    float     particleWidth  = 1.f;
-    float     particleHeight = 1.f;
-    float     sizeStart      = 1.f;
-    float     sizeEnd        = 1.f;
-    float     stretchFactor  = 1.f;
-    bool      stretched      = false;
-    float     colorStart[4]  = {1.f, 1.f, 1.f, 1.f};
-    float     colorEnd[4]    = {1.f, 1.f, 1.f, 0.f};
-    int       hframes        = 1;
-    int       vframes        = 1;
+    Texture*              texture             = nullptr;
+    BlendMode             blend               = BlendMode::Alpha;
+    float                 viewportWidth       = 1.f;
+    float                 viewportHeight      = 1.f;
+    float                 cameraX             = 0.f;
+    float                 cameraY             = 0.f;
+    float                 cameraZoom          = 1.f;
+    bool                  cameraEnabled       = false;
+    float                 particleWidth       = 1.f;
+    float                 particleHeight      = 1.f;
+    float                 sizeStart           = 1.f;
+    float                 sizeEnd             = 1.f;
+    float                 stretchFactor       = 1.f;
+    GpuParticleFacingMode facing              = GpuParticleFacingMode::ParticleRotation;
+    float                 axisRotationRadians = 0.f;
+    float                 colorStart[4]       = {1.f, 1.f, 1.f, 1.f};
+    float                 colorEnd[4]         = {1.f, 1.f, 1.f, 0.f};
+    int                   hframes             = 1;
+    int                   vframes             = 1;
 };
 
 /** @brief Delayed non-blocking counters from a resident GPU emitter. */
