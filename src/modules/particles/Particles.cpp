@@ -115,6 +115,8 @@ int Particles::getLastBudgetSkippedEmitters() const {
 int Particles::getLastParticleCount() const { return particleFrameStats().particlesAfter; }
 int Particles::getLastSpawnedParticles() const { return particleFrameStats().particlesSpawned; }
 int Particles::getLastDroppedSpawns() const { return particleFrameStats().droppedSpawns; }
+int   Particles::getLastGpuResidentEmitters() const { return particleFrameStats().gpuResidentEmitters; }
+int   Particles::getLastGpuResidentParticles() const { return particleFrameStats().gpuResidentParticles; }
 int Particles::getLastRenderedParticles() const { return particleFrameStats().renderedParticles; }
 float Particles::getLastSimulationMs() const {
     return static_cast<float>(particleFrameStats().simulationMs);
@@ -137,6 +139,8 @@ void Particles::expose(ssq::Table &table) {
     cls.addFunc("getLastParticleCount", &Particles::getLastParticleCount);
     cls.addFunc("getLastSpawnedParticles", &Particles::getLastSpawnedParticles);
     cls.addFunc("getLastDroppedSpawns", &Particles::getLastDroppedSpawns);
+    cls.addFunc("getLastGpuResidentEmitters", &Particles::getLastGpuResidentEmitters);
+    cls.addFunc("getLastGpuResidentParticles", &Particles::getLastGpuResidentParticles);
     cls.addFunc("getLastRenderedParticles", &Particles::getLastRenderedParticles);
     cls.addFunc("getLastSimulationMs", &Particles::getLastSimulationMs);
     cls.addFunc("getLastRenderMs", &Particles::getLastRenderMs);
@@ -206,6 +210,7 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setNoise", &ParticleEmitter::setNoise);
     em.addFunc("setGpuSimulation", &ParticleEmitter::setGpuSimulation);
     em.addFunc("getGpuSimulation", &ParticleEmitter::getGpuSimulation);
+    em.addFunc("isGpuSimulationActive", &ParticleEmitter::isGpuSimulationActive);
     em.addFunc("setPriority", &ParticleEmitter::setPriority);
     em.addFunc("getPriority", &ParticleEmitter::getPriority);
     em.addFunc("setMinimumQuality", &ParticleEmitter::setMinimumQuality);

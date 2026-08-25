@@ -238,10 +238,11 @@ void Graphics::createTexturedPipeline() {
         // pool size type; without this entry the first dynamic set allocation
         // fails with VK_ERROR_OUT_OF_POOL_MEMORY.
         {vk::DescriptorType::eUniformBufferDynamic, 4096},
-        {vk::DescriptorType::eStorageBuffer, 256},
+        {vk::DescriptorType::eStorageBuffer, 16384},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
-    poolInfo.maxSets = 4096;
+    poolInfo.flags         = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+    poolInfo.maxSets       = 8192;
     poolInfo.poolSizeCount = 4;
     poolInfo.pPoolSizes = poolSizes;
     descriptorPool = device->createDescriptorPool(poolInfo);
@@ -265,6 +266,7 @@ void Graphics::createTexturedPipeline() {
                                                     BlendMode::Opaque);
 
     createLit2DPipeline();
+    createGpuParticlePipelines();
 }
 
 vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &vert,

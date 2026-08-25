@@ -27,6 +27,8 @@ struct ParticleFrameStats {
     int      particlesSpawned       = 0;
     int      particlesKilled        = 0;
     int      droppedSpawns          = 0;
+    int      gpuResidentEmitters    = 0;
+    int      gpuResidentParticles   = 0;
     int      renderedParticles      = 0;
     int      renderCulledEmitters   = 0;
     double   simulationMs           = 0.0;

@@ -294,7 +294,7 @@ JSON：`forceFields: [{x, y, radius, strength, falloff}]`；`lights: {enabled, m
 
 ## GPU 加速模拟
 
-`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 目前保留为资产兼容标记。现有 upload → dispatch → 同步 readback 原型会让每个发射器每帧产生三次队列往返，实测路径比 CPU 积分更慢，因此运行时暂时统一选择 CPU 模拟。质量等级、预算、剔除与统计已经作为 CPU/GPU 共用契约落地；只有粒子状态常驻 SSBO、间接绘制与无同步回读完成后才会启用真正的 GPU 路径。
+`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 会请求常驻 GPU 后端。首次可提交帧把当前新生粒子上传到后端拥有的多帧 SSBO；之后更新、死亡剔除、存活压缩和 `VkDrawIndirectCommand` 都在同一帧命令缓冲内完成。渲染直接读取压缩后的 SSBO，不逐帧回读粒子状态，也不为每个发射器单独提交或等待队列。CPU 只维护确定性的发射调度、预算和寿命数量估计。
 
 ```squirrel
 local embers = particles.newEmitter(20000);  // 上万粒子场景
@@ -303,7 +303,11 @@ embers.setGravity(0, 30);
 embers.start();
 ```
 
-实现说明：实验内核仍以 16 个 float/粒子描述 SSBO 布局（`ParticleGpuKernel.h`），供后续 GPU-resident 实现复用；当前不会从主系统调度这条同步回读路径。
+调用 `isGpuSimulationActive()` 可区分“资产请求 GPU”与“本帧已经迁移到 GPU”。`particles.getLastGpuResidentEmitters()` 和 `particles.getLastGpuResidentParticles()` 可用于性能 HUD 和自动质量伸缩。后者是 CPU 侧精确寿命估计；后端的存活、生成、死亡、丢弃和间接实例计数采用帧槽延迟读数，不会阻塞当前帧。
+
+当前常驻 GPU 后端覆盖基础点/线/矩形/椭圆发射、重力、线性/径向/切向加速度、阻尼、限速、噪声、本地/世界空间、旋转、尺寸和起止颜色、flipbook、拉伸与常用混合模式。需要玩法回调或逐粒子 CPU 状态的功能会自动保留在确定性 CPU 后端，包括碰撞、力场、子发射器、粒子灯光、自定义 shader/canvas，以及自定义速度/尺寸/旋转曲线和多段颜色渐变。没有可用图形后端时也安全回退 CPU。
+
+着色器源位于 `graphics/shaders/particle_resident.*`；修改后运行 `python scripts/compile_particle_gpu_shaders.py` 更新随引擎编译的 SPIR-V 与 include 文件。
 
 ## 对象关系与调用时机
 

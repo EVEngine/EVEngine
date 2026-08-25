@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -145,6 +146,127 @@ int64_t fileModtime(const std::string &path) {
     return info.modtime;
 }
 
+int liveParticleCount(ParticleEmitter* emitter) {
+    auto gpu = emitter->gpuSim();
+    return gpu->residentActive ? gpu->estimatedAlive + emitter->sim()->alive : emitter->sim()->alive;
+}
+
+bool supportsResidentGpu(const ParticleEmitter::Config& cfg, const ParticleEmitter::Draw& draw) {
+    // The first resident backend intentionally accepts only behavior that can
+    // remain entirely on the GPU. Gameplay callbacks, custom curves and
+    // per-particle lights keep using the deterministic CPU path.
+    return draw.canvas == nullptr && draw.shader == nullptr && cfg.collisionMode == "none" &&
+           !cfg.collisionBoundsEnabled && !cfg.worldCollision && cfg.forceFields.empty() && cfg.subEmitters.empty() &&
+           !cfg.lights.enabled && cfg.velocityCurve.empty() && cfg.sizeCurve.empty() && cfg.rotationCurve.empty() &&
+           cfg.colorGradient.empty();
+}
+
+graphics::GpuParticleSpawn gpuSpawn(const Particle& particle) {
+    graphics::GpuParticleSpawn out;
+    out.x          = particle.x;
+    out.y          = particle.y;
+    out.vx         = particle.vx;
+    out.vy         = particle.vy;
+    out.life       = particle.life;
+    out.lifetime   = particle.lifetime;
+    out.size       = particle.size;
+    out.rotation   = particle.rot;
+    out.spin       = particle.spin;
+    out.frame      = particle.frame;
+    out.radial     = particle.radial;
+    out.tangential = particle.tangential;
+    out.ax         = particle.ax;
+    out.ay         = particle.ay;
+    out.noisePhase = particle.noisePhase;
+    return out;
+}
+
+void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu) {
+    if (gfx && gpu.residentHandle != graphics::kInvalidGpuParticleHandle)
+        gfx->releaseGpuParticleEmitter(gpu.residentHandle);
+    gpu.residentHandle = graphics::kInvalidGpuParticleHandle;
+    gpu.residentActive = false;
+    gpu.estimatedAlive = 0;
+    gpu.timeline       = 0.0;
+    gpu.deathTimes.clear();
+}
+
+bool advanceResidentGpu(graphics::Graphics* gfx, ParticleEmitter* emitter, float dt) {
+    auto cfg = emitter->config();
+    auto sim = emitter->sim();
+    auto gpu = emitter->gpuSim();
+    if (!gfx || !gfx->canSubmitGpuParticles()) return false;
+
+    if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) {
+        gpu->residentHandle = gfx->createGpuParticleEmitter(std::uint32_t(sim->particles.size()));
+        if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) return false;
+    }
+
+    const bool  hadLastPosition  = sim->hasLastPos;
+    const float previousX        = sim->lastX;
+    const float previousY        = sim->lastY;
+    const int   capacity         = int(sim->particles.size());
+    const int   conservativeRoom = std::max(0, capacity - gpu->estimatedAlive - sim->alive);
+    if (sim->spawnQuota < 0)
+        sim->spawnQuota = conservativeRoom;
+    else
+        sim->spawnQuota = std::min(sim->spawnQuota, conservativeRoom);
+
+    const float simulatedDt = advanceEmitterSim(*cfg, *sim, dt);
+    gpu->timeline += simulatedDt;
+    auto minHeap = std::greater<float>{};
+    while (!gpu->deathTimes.empty() && gpu->deathTimes.front() <= float(gpu->timeline) + 1e-6f) {
+        std::pop_heap(gpu->deathTimes.begin(), gpu->deathTimes.end(), minHeap);
+        gpu->deathTimes.pop_back();
+    }
+
+    const int room     = std::max(0, capacity - int(gpu->deathTimes.size()));
+    const int accepted = std::min(sim->alive, room);
+    if (sim->alive > accepted) sim->droppedSpawnsThisFrame += sim->alive - accepted;
+    std::vector<graphics::GpuParticleSpawn> spawns;
+    spawns.reserve(std::size_t(accepted));
+    for (int i = 0; i < accepted; ++i) {
+        const Particle& particle = sim->particles[std::size_t(i)];
+        if (particle.life <= 0.f) continue;
+        spawns.push_back(gpuSpawn(particle));
+        gpu->deathTimes.push_back(float(gpu->timeline) + particle.life);
+        std::push_heap(gpu->deathTimes.begin(), gpu->deathTimes.end(), minHeap);
+    }
+
+    graphics::GpuParticleUpdate update;
+    update.dt             = simulatedDt;
+    update.emitterX       = cfg->x;
+    update.emitterY       = cfg->y;
+    update.gravityX       = cfg->gravityX;
+    update.gravityY       = cfg->gravityY;
+    update.damping        = cfg->damping;
+    update.velocityLimit  = cfg->limitVelocity;
+    update.noiseStrength  = cfg->noiseStrength;
+    update.noiseFrequency = cfg->noiseFrequency;
+    update.noiseSpeed     = cfg->noiseSpeed;
+    update.time           = sim->emitterAge;
+    update.frameRate      = cfg->frameRate;
+    if (cfg->simSpace == "local" && hadLastPosition) {
+        update.localOffsetX = cfg->x - previousX;
+        update.localOffsetY = cfg->y - previousY;
+    }
+
+    if (!gfx->updateGpuParticleEmitter(gpu->residentHandle, update, spawns.data(), std::uint32_t(spawns.size()))) {
+        // Before activation the CPU state remains authoritative and already
+        // advanced. Once resident, a transient submit failure freezes state
+        // rather than losing it through an implicit CPU migration.
+        if (!gpu->residentActive) deactivateResidentGpu(gfx, *gpu);
+        gpu->failed = true;
+        return true;
+    }
+
+    for (int i = 0; i < sim->alive; ++i) sim->particles[std::size_t(i)].life = 0.f;
+    sim->alive          = 0;
+    gpu->residentActive = true;
+    gpu->estimatedAlive = int(gpu->deathTimes.size());
+    return true;
+}
+
 }  // namespace
 
 void ParticleSimSystem::update(float dt) {
@@ -165,7 +287,7 @@ void ParticleSimSystem::update(float dt) {
             if (!cfg->entity) continue;
             allEmitters.push_back(cfg->entity);
             auto sim = cfg->entity->sim();
-            if (sim->active || sim->alive > 0) emitters.push_back(cfg->entity);
+            if (sim->active || liveParticleCount(cfg->entity) > 0) emitters.push_back(cfg->entity);
         }
     }
     std::stable_sort(emitters.begin(), emitters.end(), [](ParticleEmitter *a, ParticleEmitter *b) {
@@ -176,47 +298,50 @@ void ParticleSimSystem::update(float dt) {
     stats.emittersTotal = int(emitters.size());
     for (auto *emitter : allEmitters) {
         auto sim = emitter->sim();
-        stats.particlesBefore += sim->alive;
+        stats.particlesBefore += liveParticleCount(emitter);
         sim->spawnedThisFrame = 0;
         sim->droppedSpawnsThisFrame = 0;
         sim->spawnQuota = budget.maxParticles > 0 ? 0 : -1;
     }
     int reservedAlive = 0;
-    for (auto *emitter : emitters) reservedAlive += emitter->sim()->alive;
+    for (auto* emitter : emitters) reservedAlive += liveParticleCount(emitter);
+
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
 
     int processedAlive = 0;
     for (auto *emitter : emitters) {
         auto cfg = emitter->config();
         auto sim = emitter->sim();
         auto draw = emitter->draw();
-        reservedAlive -= sim->alive;
+        const int aliveBefore = liveParticleCount(emitter);
+        reservedAlive -= aliveBefore;
 
         if (budget.qualityLevel < cfg->minimumQuality) {
             ++stats.emittersQualitySkipped;
-            processedAlive += sim->alive;
+            processedAlive += aliveBefore;
             continue;
         }
 
         const bool offscreen = emitterOffscreen(*cfg, *draw);
-        const bool culled = cfg->cullingMode == "pause" ? offscreen
-                            : cfg->cullingMode == "always" ? false
-                                                           : (sim->alive <= 0 && offscreen);
+        const bool culled    = cfg->cullingMode == "pause"    ? offscreen
+                               : cfg->cullingMode == "always" ? false
+                                                              : (aliveBefore <= 0 && offscreen);
         if (culled) {
             ++stats.emittersCulled;
-            processedAlive += sim->alive;
+            processedAlive += aliveBefore;
             continue;
         }
 
         if (budget.maxSimulatedEmitters > 0 &&
             stats.emittersSimulated >= budget.maxSimulatedEmitters) {
             ++stats.emittersBudgetSkipped;
-            processedAlive += sim->alive;
+            processedAlive += aliveBefore;
             continue;
         }
 
         int spawnQuota = cfg->maxSpawnPerFrame > 0 ? cfg->maxSpawnPerFrame : -1;
         if (budget.maxParticles > 0) {
-            const int existingTotal = processedAlive + sim->alive + reservedAlive;
+            const int existingTotal = processedAlive + aliveBefore + reservedAlive;
             const int globalRoom = std::max(0, budget.maxParticles - existingTotal);
             spawnQuota = spawnQuota < 0 ? globalRoom : std::min(spawnQuota, globalRoom);
         }
@@ -224,18 +349,15 @@ void ParticleSimSystem::update(float dt) {
 
         auto attach = emitter->attach();
         auto skinSrc = emitter->skinSource();
+        auto gpuSim  = emitter->gpuSim();
         syncEmitterSources(*cfg, *sim, *attach, *skinSrc);
-        // gpuSimulation is accepted for config compatibility, but the legacy
-        // upload → dispatch → synchronous-readback path (stepEmitterSimGpu)
-        // stalls the whole GPU queue per emitter per frame (three
-        // executeImmediately round trips) and still runs the CPU-side
-        // collision/death/compaction pass afterwards — a net loss against the
-        // CPU integrator. All emitters integrate on the CPU here; a real GPU
-        // path must keep particle state GPU-resident and render from the SSBO
-        // directly (no readback).
-        advanceEmitterSim(*cfg, *sim, dt);
+        const bool gpuEligible = supportsResidentGpu(*cfg, *draw);
+        if (gpuSim->residentActive && (!cfg->gpuSimulation || !gpuEligible)) deactivateResidentGpu(gfx, *gpuSim);
+        const bool wantsResident = cfg->gpuSimulation && gpuEligible;
+        const bool handled       = wantsResident && advanceResidentGpu(gfx, emitter, dt);
+        if (!handled) advanceEmitterSim(*cfg, *sim, dt);
         ++stats.emittersSimulated;
-        processedAlive += sim->alive;
+        processedAlive += liveParticleCount(emitter);
         if (budget.maxParticles > 0 || cfg->maxSpawnPerFrame > 0) sim->spawnQuota = 0;
     }
 
@@ -244,9 +366,14 @@ void ParticleSimSystem::update(float dt) {
     stats.droppedSpawns = 0;
     for (auto *emitter : allEmitters) {
         auto sim = emitter->sim();
-        stats.particlesAfter += sim->alive;
+        auto gpu = emitter->gpuSim();
+        stats.particlesAfter += liveParticleCount(emitter);
         stats.particlesSpawned += sim->spawnedThisFrame;
         stats.droppedSpawns += sim->droppedSpawnsThisFrame;
+        if (gpu->residentActive) {
+            ++stats.gpuResidentEmitters;
+            stats.gpuResidentParticles += gpu->estimatedAlive;
+        }
         sim->spawnQuota = -1;
     }
     stats.particlesKilled =
@@ -273,9 +400,47 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
     int order = 0;
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, sim, draw] = *it;
-        if (!draw->visible || sim->alive <= 0) continue;
+        auto* emitter         = cfg->entity;
+        if (!emitter) continue;
+        auto      gpu   = emitter->gpuSim();
+        const int alive = liveParticleCount(emitter);
+        if (!draw->visible || alive <= 0) continue;
         if (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(*cfg, *draw)) {
             ++stats.renderCulledEmitters;
+            continue;
+        }
+        if (gpu->residentActive) {
+            graphics::GpuParticleDraw gpuDraw;
+            gpuDraw.texture        = draw->texture;
+            gpuDraw.blend          = draw->blend;
+            gpuDraw.viewportWidth  = float(gfx->getWidth());
+            gpuDraw.viewportHeight = float(gfx->getHeight());
+            if (draw->camera) {
+                gpuDraw.cameraEnabled = true;
+                gpuDraw.cameraX       = draw->camera->data()->x;
+                gpuDraw.cameraY       = draw->camera->data()->y;
+                gpuDraw.cameraZoom    = draw->camera->data()->zoom;
+            }
+            gpuDraw.particleWidth  = cfg->particleW;
+            gpuDraw.particleHeight = cfg->particleH;
+            gpuDraw.sizeStart      = cfg->sizeStart;
+            gpuDraw.sizeEnd        = cfg->sizeEnd;
+            gpuDraw.stretchFactor  = cfg->stretchFactor;
+            gpuDraw.stretched      = cfg->renderMode == "stretched";
+            gpuDraw.colorStart[0]  = cfg->colorStart.r;
+            gpuDraw.colorStart[1]  = cfg->colorStart.g;
+            gpuDraw.colorStart[2]  = cfg->colorStart.b;
+            gpuDraw.colorStart[3]  = cfg->colorStart.a;
+            gpuDraw.colorEnd[0]    = cfg->colorEnd.r;
+            gpuDraw.colorEnd[1]    = cfg->colorEnd.g;
+            gpuDraw.colorEnd[2]    = cfg->colorEnd.b;
+            gpuDraw.colorEnd[3]    = cfg->colorEnd.a;
+            gpuDraw.hframes        = cfg->hframes;
+            gpuDraw.vframes        = cfg->vframes;
+            if (gfx->drawGpuParticleEmitter(gpu->residentHandle, gpuDraw))
+                stats.renderedParticles += gpu->estimatedAlive;
+            else
+                ++stats.renderCulledEmitters;
             continue;
         }
         if (draw->canvas) anyCanvas = true;

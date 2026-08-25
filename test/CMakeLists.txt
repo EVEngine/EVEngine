@@ -69,6 +69,7 @@ file(GLOB all_test_cpp
   particles.cpp
   particles_playback.cpp
   particles_scalability.cpp
+  particles_gpu_resident.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp
   particles_attach_more.cpp

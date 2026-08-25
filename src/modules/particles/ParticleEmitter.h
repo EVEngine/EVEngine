@@ -5,7 +5,6 @@
 #include "particles/ParticleCurve.h"
 
 #include <cstdint>
-#include <memory>
 #include <random>
 #include <string>
 #include <vector>
@@ -29,10 +28,6 @@ class SpineSkeleton;
 namespace eve::ik {
 class Skeleton2D;
 class Skeleton3D;
-}
-
-namespace eve::gpgpu {
-class GpuBuffer;
 }
 
 namespace eve::particles {
@@ -68,7 +63,7 @@ class ParticleEmitter : public ecs::Entity {
 public:
     ENTITY(ParticleEmitter, ecs::Entity)
 
-    void release() override {}
+    void release() override;
 
     struct Config {
         /** @brief Timed burst emission (fired once while the emitter is active). */
@@ -308,13 +303,20 @@ public:
         std::vector<graphics::Light2D *> pool;
     };
 
-    /** @brief GPU-accelerated simulation state (see ParticleGpuKernel.h for layout). */
+    /** @brief Backend-owned GPU-resident simulation state and delayed CPU counters. */
     struct GpuSim {
         bool enabled = false;
-        bool initialized = false;
         bool failed = false;
-        std::shared_ptr<eve::gpgpu::GpuBuffer> buffer;
-        std::vector<float> mirror;  // CPU staging for pack/upload and readback
+        /** @brief Backend-owned resident emitter; zero until the Vulkan path activates. */
+        std::uint64_t residentHandle = 0;
+        /** @brief True after state has moved to the resident GPU backend. */
+        bool residentActive = false;
+        /** @brief CPU-side exact lifetime count used for budgets; positions remain GPU-only. */
+        int estimatedAlive = 0;
+        /** @brief Monotonic simulated time used by the lifetime min-heap. */
+        double timeline = 0.0;
+        /** @brief Absolute death times; min-heap with std::greater<float>. */
+        std::vector<float> deathTimes;
     };
 
     COMPONENT(Config, config)
@@ -409,6 +411,8 @@ public:
     void setNoise(float strength, float frequency = 1.f, float speed = 1.f);
     void setGpuSimulation(bool enable);
     bool getGpuSimulation();
+    /** @brief Return true after this emitter has migrated to a resident GPU backend. */
+    bool isGpuSimulationActive();
 
     /** @brief Set budget order; higher values are processed first. */
     void setPriority(int priority);
@@ -542,10 +546,7 @@ bool spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
 bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
-void advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
-/** @brief GPU-accelerated integration step; false = unavailable, caller falls back to CPU. */
-bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
-                       ParticleEmitter::GpuSim &gpu, float dt);
+float advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt);
 /** @brief World collision query used by emitters with worldCollision enabled. */
 using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
 void setWorldCollisionResolver(WorldCollisionFn fn);

@@ -56,6 +56,10 @@ public:
     int getLastSpawnedParticles() const;
     /** @brief Return automatic spawns dropped by budget during the last update. */
     int getLastDroppedSpawns() const;
+    /** @brief Return emitters using the resident GPU backend after the last update. */
+    int getLastGpuResidentEmitters() const;
+    /** @brief Return the CPU lifetime estimate for resident GPU particles. */
+    int getLastGpuResidentParticles() const;
     /** @brief Return particles submitted during the last render. */
     int getLastRenderedParticles() const;
     /** @brief Return CPU simulation wall time in milliseconds. */

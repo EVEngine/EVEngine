@@ -10,15 +10,16 @@
 #include "common/Module.h"
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
-#include "graphics/SurfaceMode.h"
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
+#include "graphics/GpuDrivenTypes.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/IGraphics2D.h"
 #include "graphics/IGraphics3D.h"
 #include "graphics/IPostFX.h"
 #include "graphics/IResourceFactory.h"
-#include "graphics/GpuDrivenTypes.h"
+#include "graphics/SurfaceMode.h"
 
 struct aiMesh;
 
@@ -157,6 +158,49 @@ public:
     virtual bool gpuDrivenMaterialUsable(Material *material) {
         (void)material;
         return false;
+    }
+
+    // ---- GPU-resident 2D particles ---------------------------------------
+
+    /** @brief True when this backend supports resident compute + indirect particle draws. */
+    virtual bool supportsGpuParticles() const { return false; }
+
+    /** @brief True when the current frame topology can accept a GPU particle compute section. */
+    virtual bool canSubmitGpuParticles() const { return false; }
+
+    /** @brief Allocate backend-owned resident state for one particle emitter. */
+    virtual GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) {
+        (void)capacity;
+        return kInvalidGpuParticleHandle;
+    }
+
+    /** @brief Release a GPU particle emitter. Explicit release may wait for in-flight frames. */
+    virtual void releaseGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
+
+    /** @brief Clear resident state before the next submitted frame. */
+    virtual void resetGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
+
+    /** @brief Queue one simulation/compaction step; spawn data is copied before return. */
+    virtual bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
+                                          const GpuParticleSpawn* spawns, std::uint32_t spawnCount) {
+        (void)handle;
+        (void)update;
+        (void)spawns;
+        (void)spawnCount;
+        return false;
+    }
+
+    /** @brief Queue an indirect draw at the current 2D overlay position. */
+    virtual bool drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) {
+        (void)handle;
+        (void)draw;
+        return false;
+    }
+
+    /** @brief Return the latest fence-complete counters without waiting on the GPU. */
+    virtual GpuParticleStats getGpuParticleStats(GpuParticleHandle handle) const {
+        (void)handle;
+        return {};
     }
 
     /**

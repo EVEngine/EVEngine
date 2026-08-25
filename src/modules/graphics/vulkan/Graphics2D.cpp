@@ -629,6 +629,7 @@ void Graphics::clear2DBatches() {
     litBatches.clear();
     overlaySpans.clear();
     engine3DSpans.clear();
+    gpuParticleDraws_.clear();
     pendingSceneResolve.reset();
     pendingUiResolve.reset();
     sceneColorComposited = false;
@@ -1414,6 +1415,10 @@ void Graphics::flushToSwapchain() {
         recordDeferredFrameGraph();
     }
 
+    // Resident particles record compute + compaction before any swapchain
+    // render pass, then consume the GPU-written indirect command below.
+    if (!(continue3D && !hadScenePass)) recordGpuParticleCompute(presentRecording.commandBuffer());
+
     // Render the UI overlay (ImGui) into its own MSAA pass, resolved and
     // composited as the top-most fullscreen quad. Skipped only on the rare 3D
     // fallback path where the swapchain pass is already open from begin3DFrame.
@@ -1431,6 +1436,7 @@ void Graphics::flushToSwapchain() {
     auto lit = std::move(litBatches);
     auto spans = std::move(overlaySpans);
     auto engineSpans = std::move(engine3DSpans);
+    auto       gpuParticleDraws = std::move(gpuParticleDraws_);
     auto sceneResolve = std::move(pendingSceneResolve);
     auto uiResolve = std::move(pendingUiResolve);
     const bool autoScene = hadScenePass && !sceneColorComposited;
@@ -1555,6 +1561,8 @@ void Graphics::flushToSwapchain() {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
                 drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
+                drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
         }
     };
@@ -1595,6 +1603,8 @@ void Graphics::flushToSwapchain() {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
                 drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
+                drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
         }
     }

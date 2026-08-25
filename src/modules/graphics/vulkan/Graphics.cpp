@@ -64,6 +64,7 @@ Graphics::~Graphics() {
     pipelineAO_.reset();
     pipelineGI_.reset();
     renderControl_.reset();
+    destroyGpuParticleResources();
     ownedCanvases.clear();
     ownedMeshes.clear();
     ownedGpuMeshes.clear();

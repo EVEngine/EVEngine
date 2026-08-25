@@ -1,6 +1,7 @@
 #include "particles/ParticleEmitter.h"
 
-#include "gpgpu/GpuBuffer.h"
+#include "common/Module.h"
+#include "graphics/Graphics.h"
 
 #include <algorithm>
 #include <cmath>
@@ -8,15 +9,15 @@
 
 namespace eve::particles {
 
-void advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt) {
-    if (sim.paused || dt <= 0.f || cfg.playbackSpeed <= 0.f) return;
+float advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt) {
+    if (sim.paused || dt <= 0.f || cfg.playbackSpeed <= 0.f) return 0.f;
 
     float scaledDt = dt * cfg.playbackSpeed;
     if (cfg.maxDeltaTime > 0.f && scaledDt > cfg.maxDeltaTime) scaledDt = cfg.maxDeltaTime;
 
     if (cfg.fixedTimeStep <= 0.f) {
         stepEmitterSim(cfg, sim, scaledDt);
-        return;
+        return scaledDt;
     }
 
     sim.fixedTimeAccum += scaledDt;
@@ -32,6 +33,7 @@ void advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, 
     // Bound retained debt as well as work per frame. A suspended process must
     // not spend many later frames catching up and producing a VFX burst.
     if (steps == maxSteps && sim.fixedTimeAccum >= step) sim.fixedTimeAccum = std::fmod(sim.fixedTimeAccum, step);
+    return float(steps) * step;
 }
 
 void ParticleEmitter::setEmissionRateOverDistance(float rate) {
@@ -124,13 +126,14 @@ void ParticleEmitter::reset() {
     for (auto& b : config()->bursts) b.emitted = false;
     for (auto& p : s->particles) p.life = 0.f;
     auto g = gpuSim();
-    if (g->buffer) {
-        try {
-            g->buffer->fillFloat32(0.f);
-        } catch (...) {
-        }
+    if (g->residentHandle != 0) {
+        auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+        if (gfx) gfx->resetGpuParticleEmitter(g->residentHandle);
     }
-    if (!g->mirror.empty()) std::fill(g->mirror.begin(), g->mirror.end(), 0.f);
+    g->residentActive = false;
+    g->estimatedAlive = 0;
+    g->timeline       = 0.0;
+    g->deathTimes.clear();
 }
 
 void ParticleEmitter::emit(int count) {
@@ -150,7 +153,10 @@ bool ParticleEmitter::isActive() {
 bool ParticleEmitter::isPaused() { return sim()->paused; }
 bool ParticleEmitter::isStopped() { return !sim()->active; }
 
-int ParticleEmitter::getCount() { return sim()->alive; }
+int ParticleEmitter::getCount() {
+    auto g = gpuSim();
+    return g->residentActive ? g->estimatedAlive + sim()->alive : sim()->alive;
+}
 int ParticleEmitter::getBufferSize() { return int(sim()->particles.size()); }
 
 }  // namespace eve::particles

@@ -283,7 +283,7 @@ eve_declare_module(NAME scene LAYER 1 SCRIPT Scene SLOT scene
                    THIRDPARTY poco
                    GROUP 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
-                   DEPS animation data filesystem gpgpu graphics ik
+                   DEPS animation data filesystem graphics ik
                    THIRDPARTY poco
                    GROUP 2d 3d)
 # Surface fluid simulation: particles constrained to mesh SDFs (flow down

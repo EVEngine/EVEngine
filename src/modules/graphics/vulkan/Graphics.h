@@ -282,6 +282,16 @@ public:
     }
     bool gpuDrivenMaterialUsable(Material *material) override;
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+
+    bool              supportsGpuParticles() const override { return initialized && !headless_; }
+    bool              canSubmitGpuParticles() const override;
+    GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) override;
+    void              releaseGpuParticleEmitter(GpuParticleHandle handle) override;
+    void              resetGpuParticleEmitter(GpuParticleHandle handle) override;
+    bool              updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
+                                               const GpuParticleSpawn* spawns, std::uint32_t spawnCount) override;
+    bool              drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) override;
+    GpuParticleStats  getGpuParticleStats(GpuParticleHandle handle) const override;
     /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
     uint32_t debugBindlessIndex(Texture *tex) const;
     uint32_t debugMeshRecordIndex(Mesh *mesh) const;
@@ -495,6 +505,9 @@ public:
     };
 
 private:
+    struct GpuParticleDrawRequest;
+    struct GpuParticleResource;
+
     struct Mesh3dFrameSlots;
     struct Mesh3dClusteredFrameSlots;
     struct DecalSlot;
@@ -504,6 +517,10 @@ private:
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
     void createLit2DPipeline();
+    void          createGpuParticlePipelines();
+    void          destroyGpuParticleResources();
+    void          recordGpuParticleCompute(vk::CommandBuffer cb);
+    void          drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDrawRequest& request);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void createVoxelRectPipeline();
@@ -1252,7 +1269,7 @@ private:
 
     std::vector<LitBatch> litBatches;
 
-    enum class OverlayKind : uint8_t { Solid, Textured, Lit };
+    enum class OverlayKind : uint8_t { Solid, Textured, Lit, GpuParticles };
     struct OverlaySpan {
         OverlayKind kind = OverlayKind::Solid;
         uint32_t index = 0;
@@ -1264,6 +1281,24 @@ private:
     std::optional<TexturedBatch> pendingSceneResolve;
     std::optional<TexturedBatch> pendingUiResolve;
     bool sceneColorComposited = false;
+
+    struct GpuParticleDrawRequest {
+        GpuParticleHandle handle = kInvalidGpuParticleHandle;
+        GpuParticleDraw   draw;
+    };
+    std::unordered_map<GpuParticleHandle, GpuParticleResource*> gpuParticles_;
+    std::vector<GpuParticleDrawRequest>                         gpuParticleDraws_;
+    GpuParticleHandle                                           nextGpuParticleHandle_ = 1;
+    vk::DescriptorSetLayout                                     gpuParticleComputeSetLayout_{};
+    vk::DescriptorSetLayout                                     gpuParticleDrawSetLayout_{};
+    vk::PipelineLayout                                          gpuParticleComputeLayout_{};
+    vk::PipelineLayout                                          gpuParticleDrawLayout_{};
+    vk::Pipeline                                                gpuParticleComputePipeline_{};
+    vk::Pipeline                                                gpuParticleAlphaPipeline_{};
+    vk::Pipeline                                                gpuParticleAdditivePipeline_{};
+    vk::Pipeline                                                gpuParticlePremultipliedPipeline_{};
+    vk::Pipeline                                                gpuParticleMultiplyPipeline_{};
+    vk::Pipeline                                                gpuParticleOpaquePipeline_{};
 
     // Persistent host-visible vertex buffers for 2D batching, reused across
     // frames. GenericBuffer now owns the Vulkan handles.

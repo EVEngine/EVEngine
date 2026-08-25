@@ -10,9 +10,9 @@ output.
 EVEngine already has CPU sprite simulation, lifetime curves and gradients,
 flipbooks, bursts, prewarm, local/world space, force fields, collisions,
 sub-emitters, skinned-surface emission, bone attachment, hot reload, lights,
-and a script/JSON authoring surface. The experimental compute kernel is not a
-production GPU path because it synchronously reads particle state back every
-frame.
+and a script/JSON authoring surface. The original synchronous compute/readback
+prototype has been removed; Vulkan now owns resident per-emitter state and
+delayed counters.
 
 ## Delivery phases
 
@@ -26,24 +26,34 @@ frame.
 These controls are prerequisites for replays, capture, slow motion, networked
 effects, stable trails, and trustworthy visual regression tests.
 
-### P1 — GPU-resident simulation and renderer scalability
+### P1 — GPU-resident simulation and renderer scalability (core implemented)
 
 Scalability contract implemented: priority-ordered soft particle/emitter
 budgets, per-emitter spawn caps, quality tiers, distance/visibility simulation
 policies, typed frame counters, and a rendered budget stress scene. These
 controls are backend-independent and will also govern the GPU path.
 
-GPU-resident execution remains in progress:
+GPU-resident execution implemented:
 
-- Keep state, alive/dead lists, spawn commands, and compaction on the GPU.
-- Render directly from GPU buffers using indirect draws; no frame readback.
-- Extend the current aggregate profiling counters with GPU timestamps for
-  spawn, update, collision, sort, and draw passes.
-- Preserve a CPU deterministic backend for gameplay-coupled and replay-critical
-  effects.
+- Per-frame-slot state, spawn, metadata, and indirect buffers are backend-owned.
+- A compute pass updates, kills, atomically compacts, and writes the complete
+  indirect command; rendering consumes the compacted SSBO without state readback.
+- Each emitter records into the shared frame command buffer, so there is no
+  per-emitter submit or queue wait. Reused-slot metadata provides delayed,
+  non-blocking counters.
+- Unsupported or gameplay-coupled features remain on the deterministic CPU
+  backend, and scripts can query requested versus active GPU execution.
+- A 16,384-particle regression measures median CPU main-thread simulation plus
+  render-submission time. The Windows debug reference run measured 16.424 ms
+  on CPU versus 0.125 ms for resident GPU submission.
 
-Exit criteria: measured crossover against CPU simulation, no per-emitter queue
-stall, stable fallback behavior, and rendered stress-scene evidence.
+Remaining P1 profiling work: backend timestamp queries for fine-grained GPU
+spawn/update/compaction/draw timings. Collision and sorting timestamps arrive
+with their GPU implementations rather than reporting synthetic zeroes.
+
+Core exit evidence: measured crossover, no per-emitter queue stall, focused CPU
+fallback coverage, validation-layer comparison against the startup baseline,
+and a six-emitter/150-frame rendered stress capture.
 
 ### P2 — production renderers and data interfaces
 
