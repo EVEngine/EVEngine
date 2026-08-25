@@ -1,5 +1,6 @@
 #include "dialogue/DialogueFlow.h"
 
+#include "dialogue/ConversationAuthoring.h"
 #include "dialogue/ConversationImporter.h"
 #include "dialogue/ConversationToolchain.h"
 #include "filesystem/Filesystem.h"
@@ -363,6 +364,45 @@ std::string DialogueFlow::getDiagnosticSeverity(int index) const {
                                                                                                         : "warning";
 }
 
+std::string DialogueFlow::getDiagnosticPath(int index) const {
+    return index >= 0 && index < getDiagnosticCount() ? diagnostics_[static_cast<size_t>(index)].path : std::string{};
+}
+
+int DialogueFlow::getDiagnosticLine(int index) const {
+    return index >= 0 && index < getDiagnosticCount() ? diagnostics_[static_cast<size_t>(index)].line : 0;
+}
+
+ConversationDocument* DialogueFlow::newDocument(const std::string& id) const { return new ConversationDocument(id); }
+
+ConversationDocument* DialogueFlow::getDocument(const std::string& id) const {
+    const auto* asset = find(id);
+    return asset ? new ConversationDocument(*asset) : nullptr;
+}
+
+bool DialogueFlow::applyDocument(ConversationDocument* document) {
+    if (!document) {
+        lastError_ = "conversation document must not be null";
+        return false;
+    }
+    std::vector<ConversationAsset> candidate = assets_;
+    const auto existing = std::find_if(candidate.begin(), candidate.end(),
+                                       [&](const auto& asset) { return asset.id == document->getId(); });
+    if (existing == candidate.end())
+        candidate.push_back(document->asset());
+    else
+        *existing = document->asset();
+    std::vector<ConversationDiagnostic> candidateDiagnostics;
+    if (!lintConversationWorkspace(candidate, "authoring", candidateDiagnostics)) {
+        diagnostics_ = std::move(candidateDiagnostics);
+        lastError_   = diagnostics_.empty() ? "conversation document validation failed" : diagnostics_.front().message;
+        return false;
+    }
+    assets_ = std::move(candidate);
+    diagnostics_.clear();
+    lastError_.clear();
+    return true;
+}
+
 std::string DialogueFlow::getDiagnosticMessage(int index) const {
     return index >= 0 && static_cast<size_t>(index) < diagnostics_.size()
                ? diagnostics_[static_cast<size_t>(index)].message
@@ -509,6 +549,46 @@ void DialogueFlow::addToneRule(const std::string& expression, const std::string&
 
 void DialogueFlow::expose(ssq::Table& table) {
     if (DialogueFlow* self = DialogueFlow::create()) self->vm_ = table.getHandle();
+    auto document = table.addClass<ConversationDocument>(
+        "ConversationDocument",
+        std::function<ConversationDocument*()>([]() -> ConversationDocument* { return new ConversationDocument(); }),
+        true);
+    document.addFunc("getId", &ConversationDocument::getId);
+    document.addFunc("setId", &ConversationDocument::setId);
+    document.addFunc("getVersion", &ConversationDocument::getVersion);
+    document.addFunc("setVersion", &ConversationDocument::setVersion);
+    document.addFunc("getEntry", &ConversationDocument::getEntry);
+    document.addFunc("setEntry", &ConversationDocument::setEntry);
+    document.addFunc("getParameterCount", &ConversationDocument::getParameterCount);
+    document.addFunc("getParameter", &ConversationDocument::getParameter);
+    document.addFunc("addParameter", &ConversationDocument::addParameter);
+    document.addFunc("removeParameter", &ConversationDocument::removeParameter);
+    document.addFunc("getNodeCount", &ConversationDocument::getNodeCount);
+    document.addFunc("getNodeId", &ConversationDocument::getNodeId);
+    document.addFunc("hasNode", &ConversationDocument::hasNode);
+    document.addFunc("addNode", &ConversationDocument::addNode);
+    document.addFunc("removeNode", &ConversationDocument::removeNode);
+    document.addFunc("renameNode", &ConversationDocument::renameNode);
+    document.addFunc("getNodeKind", &ConversationDocument::getNodeKind);
+    document.addFunc("setNodeKind", &ConversationDocument::setNodeKind);
+    document.addFunc("getFieldCount", &ConversationDocument::getFieldCount);
+    document.addFunc("getFieldName", &ConversationDocument::getFieldName);
+    document.addFunc("getFieldKind", &ConversationDocument::getFieldKind);
+    document.addFunc("getField", &ConversationDocument::getField);
+    document.addFunc("setField", &ConversationDocument::setField);
+    document.addFunc("getRouteCount", &ConversationDocument::getRouteCount);
+    document.addFunc("getRouteLabel", &ConversationDocument::getRouteLabel);
+    document.addFunc("getRouteTarget", &ConversationDocument::getRouteTarget);
+    document.addFunc("addRoute", &ConversationDocument::addRoute);
+    document.addFunc("setRoute", &ConversationDocument::setRoute);
+    document.addFunc("removeRoute", &ConversationDocument::removeRoute);
+    document.addFunc("validate", &ConversationDocument::validate);
+    document.addFunc("getDiagnosticCount", &ConversationDocument::getDiagnosticCount);
+    document.addFunc("getDiagnosticSeverity", &ConversationDocument::getDiagnosticSeverity);
+    document.addFunc("getDiagnosticPath", &ConversationDocument::getDiagnosticPath);
+    document.addFunc("getDiagnosticLine", &ConversationDocument::getDiagnosticLine);
+    document.addFunc("getDiagnosticMessage", &ConversationDocument::getDiagnosticMessage);
+    document.addFunc("getLastError", &ConversationDocument::getLastError);
     auto cls = table.addClass(name, DialogueFlow::create, false);
     expose(cls);
 }
@@ -538,8 +618,13 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getLocale", &DialogueFlow::getLocale);
     cls.addFunc("getDiagnosticCount", &DialogueFlow::getDiagnosticCount);
     cls.addFunc("getDiagnosticSeverity", &DialogueFlow::getDiagnosticSeverity);
+    cls.addFunc("getDiagnosticPath", &DialogueFlow::getDiagnosticPath);
+    cls.addFunc("getDiagnosticLine", &DialogueFlow::getDiagnosticLine);
     cls.addFunc("getDiagnosticMessage", &DialogueFlow::getDiagnosticMessage);
     cls.addFunc("getLastError", &DialogueFlow::getLastError);
+    cls.addFunc("newDocument", &DialogueFlow::newDocument);
+    cls.addFunc("getDocument", &DialogueFlow::getDocument);
+    cls.addFunc("applyDocument", &DialogueFlow::applyDocument);
     cls.addFunc("start", &DialogueFlow::start);
     cls.addFunc("advance", &DialogueFlow::advance);
     cls.addFunc("select", &DialogueFlow::select);

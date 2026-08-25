@@ -256,6 +256,42 @@ TEST_CASE("procgen.registry.builtins") {
     CHECK(GeneratorRegistry::instance().has("wfc.simple"));
 }
 
+TEST_CASE("procgen.registry.schemas.describe_every_grid_generator") {
+    auto& registry = GeneratorRegistry::instance();
+    registry.registerBuiltins();
+    const auto ids = registry.list();
+    REQUIRE(!ids.empty());
+    for (const std::string& id : ids) {
+        const GeneratorDescriptor* schema = registry.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->id, id);
+        CHECK(!schema->displayName.empty());
+        CHECK(!schema->category.empty());
+        CHECK(!schema->params.empty());
+        for (const ParamDescriptor& param : schema->params) {
+            CHECK(!param.key.empty());
+            CHECK(!param.displayName.empty());
+            if (param.hasMinimum && param.hasMaximum) CHECK_LE(param.minimum, param.maximum);
+            if (param.kind == ParamKind::Choice) {
+                CHECK(!param.choices.empty());
+                CHECK(std::find(param.choices.begin(), param.choices.end(), param.defaultValue) !=
+                      param.choices.end());
+            }
+        }
+    }
+
+    Params params;
+    REQUIRE(registry.applyDefaults("cave.cellular", params));
+    CHECK(params.has("fill"));
+    CHECK_LT(std::abs(params.getFloat("fill", 0.f) - 0.45f), 0.0001f);
+    params.setInt("width", 96);
+    params.setInt("height", 48);
+    params.setInt("seed", 7);
+    CHECK_EQ(params.getWidth(), 96);
+    CHECK_EQ(params.getHeight(), 48);
+    CHECK_EQ(params.getSeed(), 7u);
+}
+
 TEST_CASE("procgen.mesh.rock.reproducibleAndControllable") {
     MeshRecipeRegistry::instance().registerBuiltins();
     Params p;
@@ -1863,6 +1899,60 @@ TEST_CASE("procgen.texture.builtinRecipes.expanded") {
         delete a;
         delete b;
     }
+}
+
+TEST_CASE("procgen.recipeSchemas.textureAndPbrDefaults") {
+    auto &textures = TextureRecipeRegistry::instance();
+    auto &materials = PbrRecipeRegistry::instance();
+    textures.registerBuiltins();
+    materials.registerPbrBuiltins();
+    for (const std::string &id : textures.list()) {
+        const RecipeDescriptor *schema = textures.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->id, id);
+        CHECK(!schema->displayName.empty());
+        CHECK(schema->find("seed") != nullptr);
+    }
+    for (const std::string &id : materials.list()) {
+        const RecipeDescriptor *schema = materials.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->category, std::string("Material"));
+        CHECK(schema->find("metallic") != nullptr);
+        CHECK(schema->find("normalStrength") != nullptr);
+    }
+    Params defaults;
+    REQUIRE(materials.applyDefaults("pbr.rock", defaults));
+    const RecipeDescriptor *rock = materials.descriptor("pbr.rock");
+    REQUIRE(rock != nullptr);
+    REQUIRE(rock->find("metallic") != nullptr);
+    CHECK_EQ(defaults.getFloat("metallic", -1.f), std::stof(rock->find("metallic")->defaultValue));
+    CHECK(!materials.applyDefaults("pbr.missing", defaults));
+    RecipeDescriptor copied = *rock;
+    copied.displayName = "Project Rock";
+    CHECK_NE(copied.displayName, rock->displayName);
+}
+
+TEST_CASE("procgen.recipeSchemas.meshDefaults") {
+    auto &meshes = MeshRecipeRegistry::instance();
+    meshes.registerBuiltins();
+    for (const std::string &id : meshes.list()) {
+        const RecipeDescriptor *schema = meshes.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->id, id);
+        CHECK(!schema->displayName.empty());
+        CHECK(!schema->category.empty());
+        CHECK(schema->find("seed") != nullptr);
+    }
+
+    Params defaults;
+    REQUIRE(meshes.applyDefaults("mesh.fence", defaults));
+    CHECK_EQ(defaults.getInt("segments", 0), 6);
+    CHECK_EQ(defaults.getFloat("height", 0.f), 1.1f);
+    MeshBuild mesh;
+    std::string error;
+    REQUIRE(meshes.generate("mesh.fence", defaults, mesh, error));
+    CHECK_GT(mesh.getVertexCount(), 0);
+    CHECK(!meshes.applyDefaults("mesh.missing", defaults));
 }
 
 TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {

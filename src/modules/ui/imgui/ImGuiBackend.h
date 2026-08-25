@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <map>
+#include <vector>
 
 namespace eve::ui {
 
@@ -51,13 +52,39 @@ private:
     void unregisterTexture(uint64_t id) override;
     bool textureSize(uint64_t id, int *w, int *h) const override;
     void *textureHandle(uint64_t id) const override;
+    bool usesQueuedTextureDraws() const override;
+    void queueTextureDraw(uint64_t id, float x, float y, float w, float h, float u0, float v0,
+                          float u1, float v1, float r, float g, float b, float a,
+                          bool opaque) override;
 
     struct RegisteredTexture {
         ImTextureID imId = nullptr;
+        graphics::Texture *texture = nullptr;
         int width = 0;
         int height = 0;
     };
+    struct QueuedTextureDraw {
+        uint64_t id = 0;
+        float x = 0.f;
+        float y = 0.f;
+        float w = 0.f;
+        float h = 0.f;
+        float u0 = 0.f;
+        float v0 = 0.f;
+        float u1 = 1.f;
+        float v1 = 1.f;
+        float r = 1.f;
+        float g = 1.f;
+        float b = 1.f;
+        float a = 1.f;
+        float clipX = 0.f;
+        float clipY = 0.f;
+        float clipW = 0.f;
+        float clipH = 0.f;
+        bool opaque = false;
+    };
     std::map<uint64_t, RegisteredTexture> textures_;
+    std::vector<QueuedTextureDraw> queuedTextureDraws_;
     uint64_t nextTextureKey_ = 1;
     ImVector<ImWchar> fontRanges_;  // kept alive for cfg.GlyphRanges across font builds
     ImVector<ImWchar> cjkRanges_;   // kept alive for the merged CJK font config

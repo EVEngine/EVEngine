@@ -80,6 +80,7 @@ make run/<platform>-debug GAME=examples/<name>
 
 | 示例 | 演示能力 |
 |---|---|
+| [composable-editor](composable-editor/README.md) | 可组合编辑器 SDK：C++ Workspace、动态面板、MVVM、ECS，以及游戏/编辑器共享运行时 |
 | [terrain-editor](terrain-editor/README.md) | 运行时生成的地形编辑器：Viewport 内嵌 3D、笔刷、轨道相机 |
 | [editor-api-v2](editor-api-v2/README.md) | Editor API V2 同构演示：游戏注入命令，玩家通过 discovery → plan → execute 建造场景 |
 | [ai-stage](ai-stage/README.md) | AI 空舞台：scene_director 搭台 kit + MCP，供 Agent 摆物 / 调光 / 截图 / 质检 |

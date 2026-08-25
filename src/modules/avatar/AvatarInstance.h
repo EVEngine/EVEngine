@@ -107,6 +107,14 @@ public:
     bool hasParameter(const std::string &name) const;
     int getParameterCount() const;
     std::string getParameterName(int index) const;
+    /** @brief Define reflected Avatar parameter metadata for project-built inspectors. @return False for an empty name or invalid range. */
+    bool defineParameter(const std::string& name, float defaultValue, float minimum, float maximum);
+    /** @brief Return a reflected parameter default, or zero for an unknown parameter. */
+    float getParameterDefault(const std::string& name) const;
+    /** @brief Return a reflected parameter minimum, or zero for an unknown parameter. */
+    float getParameterMinimum(const std::string& name) const;
+    /** @brief Return a reflected parameter maximum, or one for an unknown parameter. */
+    float getParameterMaximum(const std::string& name) const;
 
     void update(float dt);
     /** @brief Push image / live2d layers into ECS or draw queues. */
@@ -134,6 +142,12 @@ public:
     graphics::Renderable2D* getLayerRenderable(const std::string& name);
     /** @brief Spec: "eyes=1;mouth=smile;blush=0" (semicolon-separated name=value). */
     bool defineExpression(const std::string &name, const std::string &spec);
+    /** @brief Remove a project-defined expression. */
+    bool removeExpression(const std::string& name);
+    /** @brief Return the number of project-defined expressions. */
+    int getExpressionCount() const;
+    /** @brief Return a stable sorted expression name, or empty text. */
+    std::string getExpressionName(int index) const;
     bool applyExpression(const std::string &name);
     /** @brief Blend numeric/bool expression channels over duration seconds. */
     bool transitionExpression(const std::string& name, float duration);
@@ -172,6 +186,14 @@ public:
     bool bindAnimSkin(animation::AnimSkin* skin);
     /** @brief Register a motion name for setMotion(); the clip is not owned. */
     bool registerMotion(const std::string& name, animation::AnimClip* clip);
+    /** @brief Remove a registered motion without destroying its clip. */
+    bool unregisterMotion(const std::string& name);
+    /** @brief Return the number of registered skeletal motions. */
+    int getMotionCount() const;
+    /** @brief Return a stable sorted motion name, or empty text. */
+    std::string getMotionName(int index) const;
+    /** @brief Return a registered non-owned motion clip, or nullptr. */
+    animation::AnimClip* getMotionClip(const std::string& name) const;
     /** @brief Set the cross-fade duration used when switching registered motions. */
     void setMotionBlendTime(float seconds);
     /** @brief Apply root-bone X/Z deltas to the Avatar transform while animating. */
@@ -264,6 +286,12 @@ private:
     std::string motion_;
     std::unordered_map<std::string, float> parameters_;
     std::vector<std::string> parameterOrder_;
+    struct ParameterMetadata {
+        float defaultValue = 0.f;
+        float minimum      = 0.f;
+        float maximum      = 1.f;
+    };
+    std::unordered_map<std::string, ParameterMetadata> parameterMetadata_;
 
     // image
     std::vector<Layer> layers_;

@@ -13,6 +13,73 @@ p.setSeed(42); p.setSize(64, 40);
 local grid = gen.generate("dungeon.bsp", p);
 ```
 
+## 参数 schema 与动态编辑 UI
+
+每个内置 Grid 生成器在注册执行函数时同时注册 UI 无关的参数 schema。项目不需要在
+编辑器脚本里重复维护字段类型、默认值、范围或 choice 列表；开发者工具、游戏内建造器
+和自动化都枚举同一份元数据，再选择自己的呈现方式：
+
+```squirrel
+local algorithm = "cave.cellular";
+local params = gen.newParams();
+gen.applyAlgorithmDefaults(algorithm, params);
+
+for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
+    local key = gen.getAlgorithmParamKey(algorithm, i);
+    local label = gen.getAlgorithmParamLabel(algorithm, i);
+    local kind = gen.getAlgorithmParamKind(algorithm, i); // int|float|bool|string|choice
+    local defaultText = gen.getAlgorithmParamDefault(algorithm, i);
+    local advanced = gen.isAlgorithmParamAdvanced(algorithm, i);
+    if (gen.algorithmParamHasMinimum(algorithm, i)) {
+        local minValue = gen.getAlgorithmParamMinimum(algorithm, i);
+        local maxValue = gen.getAlgorithmParamMaximum(algorithm, i);
+        local step = gen.getAlgorithmParamStep(algorithm, i);
+        // 用项目自己的 MVVM/UI 组件生成 slider 或 number field。
+    }
+    for (local c = 0; c < gen.getAlgorithmParamChoiceCount(algorithm, i); ++c)
+        print(gen.getAlgorithmParamChoice(algorithm, i, c) + "\n");
+}
+```
+
+算法级信息由 `getAlgorithmDisplayName`、`getAlgorithmCategory`、
+`getAlgorithmCount`、`getAlgorithmId` 和 `hasAlgorithm` 提供；字段还可读取
+`getAlgorithmParamLabel`、`getAlgorithmParamDescription`、
+`getAlgorithmParamCategory`、`algorithmParamHasMaximum`。`Params.setInt` /
+`getInt` 也统一识别 `seed`、`width`、`height`，所以反射生成的控件不需要为这三个
+公共字段编写旁路逻辑。`examples/composable-editor` 在项目脚本中把 schema 映射为
+普通 `ui.slider` / `ui.checkbox` / `ui.combo`，C++ 没有固定 Procgen 面板。
+
+`getAlgorithmSchema` 返回通用 `ProcgenRecipeSchema`。同一个对象模型也由
+`getTextureRecipeSchema`、`getPbrRecipeSchema` 和 `getMeshRecipeSchema` 返回，因此项目只需要一个字段组件：
+`getId`、`getDisplayName`、`getCategory`、`getParamCount`、`getParamKey`、
+`getParamLabel`、`getParamDescription`、`getParamCategory`、`getParamKind`、
+`getParamDefault`、`paramHasMinimum`、`paramHasMaximum`、`getParamMinimum`、
+`getParamMaximum`、`getParamStep`、`isParamAdvanced`、`getParamChoiceCount` 和
+`getParamChoice`。`applyTextureRecipeDefaults` / `applyPbrRecipeDefaults` /
+`applyMeshRecipeDefaults` 把缺失值写入
+`Params`，已有的项目覆盖值保持不变。
+
+```squirrel
+local recipe = "pbr.rock";
+local values = gen.newParams();
+values.setSize(128, 128);
+gen.applyPbrRecipeDefaults(recipe, values);
+local schema = gen.getPbrRecipeSchema(recipe);
+for (local i = 0; i < schema.getParamCount(); ++i)
+    buildProjectField(schema, values, i);
+local maps = gen.generatePbrMaterial(recipe, values);
+local albedo = maps.getAlbedo();
+local normal = maps.getNormal();
+local roughness = maps.getRoughness();
+local metallic = maps.getMetallic();
+local height = maps.getHeight();
+local ao = maps.getAo();
+maps.destroy();
+```
+
+当前 `Material` 可直接使用 albedo、normal、height 纹理以及 scalar roughness / metallic。
+roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材质还没有对应纹理槽。
+
 ## 对象关系与调用时机
 
 `Params` 描述 seed、尺寸和算法参数；`Grid2D` 是结果；`OutputSpec` 决定写入 TileLayer、Image 或 Texture；`Procgen` 按注册算法名执行。
@@ -253,7 +320,7 @@ p.setInt("roomCount", 12);
 p.setString("corridorStyle", "l");   // l | straight | diagonal
 p.setString("floorPattern", "brick");// brick | checker | plank | cobble | plain
 p.setFloat("decorDensity", 0.06);
-p.setString("decorSet", "mixed");    // none | pillars | treasure | nature | mixed
+p.setString("decorSet", "mixed");    // none | pillars | treasure | mixed
 local grid = procgen.generate("level.roguelike", p);
 ```
 
@@ -374,9 +441,9 @@ local mesh = gen.generateMesh("mesh.stonewall", p, gfx); // 或 mesh.fence / mes
 
 - `abort()`、`abortSystem()`、`add()`、`addObject()`、`addObjectAt()`、`applyToLayer()`、`autotileGrid()`、`beginSystem()`、`buildMesh()`、`clear()`、`clearObjects()`、`commitSystem()`、`deriveSeed()`、`empty()`、`excludeRadius()`、`fail()`、`fill()`、`filterDensity()`、`filterHeight()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
 - `generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
-- `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
+- `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeshRecipeSchema()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
-- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`
+- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`、`applyMeshRecipeDefaults()`
 - `getDensity()`、`getError()`、`getFloatAttribute()`、`getNormalX()`、`getNormalY()`、`getNormalZ()`、`getOutput()`、`getOutputCount()`、`getOutputName()`、`getPointSeed()`、`getScaleX()`、`getScaleY()`、`getScaleZ()`、`getStringAttribute()`、`getSystemDebugReport()`、`getSystemOutput()`、`getSystemOutputCount()`、`getSystemOutputName()`、`getSystemRevision()`、`getSystemSeed()`、`getTraceCount()`、`getTraceInputCount()`、`getTraceMilliseconds()`、`getTraceName()`、`getTraceOutputCount()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`hasFailed()`、`hasFloatAttribute()`、`hasOutput()`、`hasStringAttribute()`、`hasSystem()`、`isActive()`、`jitterPoints()`、`lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`newPointSet()`、`publish()`、`randomSeed()`、`removeSystem()`、`resize()`、`sampleGrid()`、`seedFor()`、`selfPrune()`、`setCell()`、`setDensity()`、`setDetail()`、`setFloat()`、`setFloatAttribute()`、`setInt()`
 - `setLayer()`、`setMeta()`、`setNormal()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setPointSeed()`、`setPosition()`、`setScale()`、`setSeed()`、`setSize()`、`setString()`、`setStringAttribute()`、`setYaw()`、`trace()`
 - `setTarget()`

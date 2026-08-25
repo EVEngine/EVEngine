@@ -58,6 +58,7 @@ file(GLOB all_test_cpp
   UIPhaseAdv.cpp
   UIEditorKit.cpp
   UIOverlaySmoke.cpp
+  ui_texture_bridge.cpp
   Inspector.cpp
   DatabasePanel.cpp
   EditorShell.cpp
@@ -93,6 +94,7 @@ file(GLOB all_test_cpp
   dialogue_persistence.cpp
   dialogue_text.cpp
   dialogue_hot_reload.cpp
+  dialogue_authoring.cpp
     dialogue_compiler.cpp
     dialogue_importers.cpp
     dialogue_localization.cpp
@@ -103,6 +105,7 @@ file(GLOB all_test_cpp
   dialogue_proc_script.cpp
   physics_cloth.cpp
   procgen.cpp
+  procgen_schema_script.cpp
   procgen_pointset.cpp
   urban_generator.cpp
   housegen.cpp
@@ -184,12 +187,17 @@ file(GLOB all_test_cpp
   editor_runtime_manifest_v2.cpp
   editor_scene_target_v2.cpp
   editor_script_v2.cpp
+  editor_field_tool_script.cpp
+  editor_tilemap_target_script.cpp
+  editor_voxel_target_script.cpp
   editor_selection_v2.cpp
+  editor_workspace.cpp
   editor_task_diagnostic_v2.cpp
   editor_transaction_v2.cpp
   editor_value_json_v2.cpp
   ik.cpp
   animation.cpp
+  animation_clip_editing.cpp
   animation_retarget_compression.cpp
   animation_batch_lod.cpp
   animation_constraints_sync.cpp

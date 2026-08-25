@@ -15,6 +15,8 @@ class Object;
 
 namespace eve::dialogue {
 
+class ConversationDocument;
+
 /** @brief Script-facing registry and runner for compiled .dnut conversations. */
 class DialogueFlow : public Module {
 public:
@@ -44,8 +46,17 @@ public:
     std::string getLocale() const { return locale_; }
     int         getDiagnosticCount() const;
     std::string getDiagnosticSeverity(int index) const;
+    std::string getDiagnosticPath(int index) const;
+    int         getDiagnosticLine(int index) const;
     std::string getDiagnosticMessage(int index) const;
     std::string getLastError() const { return lastError_; }
+
+    /** @brief Create an empty UI-neutral conversation document. */
+    ConversationDocument* newDocument(const std::string& id) const;
+    /** @brief Create an editable copy of a registered conversation. */
+    ConversationDocument* getDocument(const std::string& id) const;
+    /** @brief Validate and transactionally insert or replace an authored document. */
+    bool applyDocument(ConversationDocument* document);
 
     bool        start(const std::string& id, ssq::Object bindings);
     bool        advance();

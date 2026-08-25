@@ -21,6 +21,11 @@ namespace map {
 class TileLayer;
 }
 #endif
+#ifdef EVENGINE_HAS_VOXEL
+namespace voxel {
+class VoxelWorld;
+}
+#endif
 }  // namespace eve
 
 namespace eve::editor {
@@ -34,12 +39,28 @@ class EditorInspector;
 class EditorDock;
 class EditorHistory;
 class EditorSession;
+class EditorWorkspace;
 class TileBufferTarget;
 #ifdef EVENGINE_HAS_MAP
 class TileLayerTarget;
 #endif
 class HeightmapTarget;
 class ScriptEditorTool;
+class ConstantBrushFalloff;
+class LinearBrushFalloff;
+class SmoothBrushFalloff;
+class CircleBrushKernel;
+class BoxBrushKernel;
+class PaintIntFieldOperation;
+class AddScalarFieldOperation;
+class FieldBrushTool;
+class SphereVolumeBrushKernel;
+class BoxVolumeBrushKernel;
+class PaintIntVolumeOperation;
+class VolumeBrushTool;
+#ifdef EVENGINE_HAS_VOXEL
+class VoxelWorldTarget;
+#endif
 class EditorAutomationProvider;
 
 /**
@@ -67,6 +88,8 @@ public:
     EditorHistory*   newHistory();
     /** @brief Create a host for interchangeable IEditorTool implementations. */
     EditorSession* newSession();
+    /** @brief Create a UI-neutral composition model for a project-specific editor. */
+    EditorWorkspace* newWorkspace(const std::string& id, const std::string& title);
     /** @brief Return the UI- and script-neutral command registry owned by this editor module. */
     EditorCommandService& commandService() { return commandService_; }
     /** @brief Return the immutable command registry owned by this editor module. */
@@ -79,7 +102,51 @@ public:
 #endif
     /** @brief Create a script-backed implementation of the IEditorTool protocol. */
     ScriptEditorTool* newScriptTool(const std::string& id, const std::string& label);
+    /** @brief Create a constant brush falloff strategy. */
+    ConstantBrushFalloff* newConstantBrushFalloff();
+    /** @brief Create a linear brush falloff strategy. */
+    LinearBrushFalloff* newLinearBrushFalloff();
+    /** @brief Create a smoothstep brush falloff strategy. */
+    SmoothBrushFalloff* newSmoothBrushFalloff();
+    /** @brief Create a circular brush kernel with a replaceable falloff. */
+    CircleBrushKernel* newCircleBrushKernel();
+    /** @brief Create a rotatable box brush kernel with a replaceable falloff. */
+    BoxBrushKernel* newBoxBrushKernel();
+    /** @brief Create an integer-field paint operation. */
+    PaintIntFieldOperation* newPaintIntFieldOperation(int value);
+    /** @brief Create an additive scalar-field operation. */
+    AddScalarFieldOperation* newAddScalarFieldOperation();
+    /**
+     * @brief Create a field brush tool whose kernel and operation are supplied separately.
+     * @param id Stable project-defined tool id.
+     * @param label User-facing label used for transaction names.
+     * @return Unconfigured tool; set its kernel and operation before activation.
+     */
+    FieldBrushTool* newFieldBrushTool(const std::string& id, const std::string& label);
+    /** @brief Create a spherical kernel for sparse three-dimensional fields. */
+    SphereVolumeBrushKernel* newSphereVolumeBrushKernel();
+    /** @brief Create an axis-aligned box kernel for sparse three-dimensional fields. */
+    BoxVolumeBrushKernel* newBoxVolumeBrushKernel();
+    /** @brief Create a byte-range integer paint operation for volume targets. */
+    PaintIntVolumeOperation* newPaintIntVolumeOperation(int value);
+    /** @brief Create a 3D brush tool whose kernel and operation are supplied separately. */
+    VolumeBrushTool* newVolumeBrushTool(const std::string& id, const std::string& label);
+#ifdef EVENGINE_HAS_VOXEL
+    /**
+     * @brief Adapt a live voxel world to the generic sparse volume editing protocol.
+     * @param id Stable project-defined target id.
+     * @param world Non-owning live voxel world pointer.
+     * @return New adapter owned by the caller.
+     */
+    VoxelWorldTarget* newVoxelWorldTarget(const std::string& id, voxel::VoxelWorld* world);
+#endif
 #ifdef EVENGINE_HAS_PROCGEN
+    /**
+     * @brief Adapt a live heightmap to the generic scalar-field editing protocol.
+     * @param id Stable project-defined target id.
+     * @param heightmap Non-owning live heightmap pointer.
+     * @return New adapter owned by the caller.
+     */
     HeightmapTarget* newHeightmapTarget(const std::string& id, procgen::Heightmap* heightmap);
 
     /**

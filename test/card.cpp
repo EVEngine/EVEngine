@@ -39,6 +39,22 @@ TEST_CASE("card.factory.newCardFromJson") {
     CHECK_EQ(mod.newCard("missing"), nullptr);
 }
 
+TEST_CASE("card.authoring.stableDefinitionEnumerationAndMutation") {
+    Card mod;
+    REQUIRE_EQ(mod.registerCardsFromJson(kDefs), 2);
+    CHECK_EQ(mod.getCardDefinitionId(0), std::string("bolt"));
+    CHECK_EQ(mod.getCardDefinitionId(1), std::string("flame"));
+    REQUIRE(mod.setCardDefinition("archer", "Archer", "creature", 4, 5, 3, 1.2f, -0.2f, 0.5f));
+    CHECK_EQ(mod.getCardDefinitionId(0), std::string("archer"));
+    CHECK_EQ(mod.getCardDefinitionAttack("archer"), 5);
+    CHECK_EQ(mod.getCardDefinitionTintR("archer"), 1.f);
+    CHECK_EQ(mod.getCardDefinitionTintG("archer"), 0.f);
+    CHECK(!mod.setCardDefinition("", "Invalid", "", 0, 0, 0, 0.f, 0.f, 0.f));
+    REQUIRE(mod.removeCardDefinition("bolt"));
+    CHECK(!mod.hasCardDefinition("bolt"));
+    CHECK(!mod.removeCardDefinition("bolt"));
+}
+
 TEST_CASE("card.presentation.stableIdentityAndSnapshot") {
     Card mod;
     CHECK_EQ(mod.registerCardsFromJson(kDefs), 2);

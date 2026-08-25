@@ -142,9 +142,17 @@ Theme 除颜色和 ImGui 基础几何外，还提供类似 CSS design tokens 的
 - `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
 - `setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemFlexGrow()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
 - `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
-- `wantCaptureMouse()`
+- `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`
 - `image()`、`imageButton()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`
 - `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
+
+## 引擎纹理控件
+
+`image()` 和 `imageButton()` 可以显示任意引擎 `Texture`。先用
+`textureId = ui.registerTexture(texture)` 获得后端中立句柄，再用
+`ui.setImageTextureId(id, textureId)` 绑定到当前 Host 的控件。纹理不再使用时，先把相关
+控件设为 `0`，再调用 `ui.unregisterTexture(textureId)`；这样 Vulkan 与 WebGPU 后端都能
+释放对应资源。UV、色调、九宫格与圆角仍通过 `setImageUv/Tint/NinePatch/CornerRadius` 组合。
 
 ## 内嵌渲染视口（Viewport）
 

@@ -221,8 +221,17 @@ public:
     void setImageCornerRadius(const std::string &id, float radius);
     /** Bind a texture id from registerTexture() to an Image/ImageButton node. */
     void setImageTextureId(const std::string &id, uint64_t textureId);
-    /** Register an engine texture for UI drawing; returns opaque id (0 = failure). */
+    /**
+     * @brief Register an engine texture for UI drawing.
+     * @param tex Live engine texture retained by the caller until unregisterTexture().
+     * @return Opaque backend-neutral id, or zero on failure.
+     */
     uint64_t registerTexture(graphics::Texture *tex);
+    /**
+     * @brief Release a texture id previously returned by registerTexture().
+     * @param textureId Opaque backend-neutral texture id; zero is ignored.
+     */
+    void unregisterTexture(uint64_t textureId);
     float getValue(const std::string &id) const;
     std::string getValueText(const std::string &id) const;
     bool getChecked(const std::string &id) const;

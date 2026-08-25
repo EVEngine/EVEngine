@@ -127,12 +127,6 @@ void AvatarInstance::setVisible(bool visible) { visible_ = visible; }
 
 void AvatarInstance::setLayer(int layer) { layer_ = layer; }
 
-void AvatarInstance::ensureParameter(const std::string &name, float value) {
-    if (name.empty()) return;
-    if (parameters_.find(name) == parameters_.end()) parameterOrder_.push_back(name);
-    parameters_[name] = value;
-}
-
 void AvatarInstance::setExpression(const std::string &name) {
     expression_ = name;
     if (kind_ == "image") {

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 namespace eve::procgen {
 
@@ -25,7 +26,15 @@ PbrRecipeRegistry &PbrRecipeRegistry::instance() {
 }
 
 void PbrRecipeRegistry::registerPbrRecipe(const std::string &id, PbrRecipeFn fn) {
-    recipes_[id] = std::move(fn);
+    RecipeDescriptor descriptor;
+    descriptor.id = id;
+    descriptor.displayName = id;
+    registerPbrRecipe(std::move(descriptor), std::move(fn));
+}
+
+void PbrRecipeRegistry::registerPbrRecipe(RecipeDescriptor descriptor, PbrRecipeFn fn) {
+    const std::string id = descriptor.id;
+    recipes_[id] = Entry{std::move(fn), std::move(descriptor)};
 }
 
 bool PbrRecipeRegistry::has(const std::string &id) const {
@@ -39,7 +48,19 @@ PbrTextureSet *PbrRecipeRegistry::generate(const std::string &id, const Params &
         error = "unknown pbr recipe: " + id;
         return nullptr;
     }
-    return it->second(params, error);
+    return it->second.fn(params, error);
+}
+
+const RecipeDescriptor *PbrRecipeRegistry::descriptor(const std::string &id) const {
+    const auto it = recipes_.find(id);
+    return it == recipes_.end() ? nullptr : &it->second.descriptor;
+}
+
+bool PbrRecipeRegistry::applyDefaults(const std::string &id, Params &params) const {
+    const RecipeDescriptor *schema = descriptor(id);
+    if (!schema) return false;
+    schema->applyDefaults(params);
+    return true;
 }
 
 std::vector<std::string> PbrRecipeRegistry::list() const {
@@ -54,7 +75,16 @@ void PbrRecipeRegistry::registerPbrBuiltins() {
     if (builtinsRegistered_) return;
     for (const TextureRecipeDef &def : builtinTextureDefs()) {
         const std::string id = "pbr." + def.id.substr(def.id.find('.') + 1);
-        registerPbrRecipe(id, [def](const Params &params, std::string &error) {
+        RecipeDescriptor descriptor = makeTextureRecipeDescriptor(def);
+        descriptor.id = id;
+        descriptor.category = "Material";
+        descriptor.params.push_back(ParamDescriptor::floating("roughnessLow", "Low Roughness", def.pbr.roughnessLow, 0.f, 1.f, 0.01f));
+        descriptor.params.push_back(ParamDescriptor::floating("roughnessHigh", "High Roughness", def.pbr.roughnessHigh, 0.f, 1.f, 0.01f));
+        descriptor.params.push_back(ParamDescriptor::floating("metallic", "Metallic", def.pbr.metallic, 0.f, 1.f, 0.01f));
+        descriptor.params.push_back(ParamDescriptor::floating("normalStrength", "Normal Strength", def.pbr.normalStrength, 0.01f, 32.f, 0.05f));
+        descriptor.params.push_back(ParamDescriptor::floating("aoStrength", "AO Strength", def.pbr.aoStrength, 0.f, 5.f, 0.05f));
+        descriptor.params.push_back(ParamDescriptor::floating("heightStrength", "Height Strength", def.pbr.heightStrength, 0.f, 16.f, 0.05f));
+        registerPbrRecipe(std::move(descriptor), [def](const Params &params, std::string &error) {
             return generatePbrSet(def, params, error);
         });
     }

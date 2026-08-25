@@ -202,11 +202,38 @@ void registerTerrainHeightmapAlgorithm(GeneratorRegistry &registry);
 
 void GeneratorRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
-    registerAlgorithm("dungeon.bsp", genDungeonBsp);
-    registerAlgorithm("cave.cellular", genCaveCellular);
-    registerAlgorithm("cave.drunkard", genCaveDrunkard);
-    registerAlgorithm("maze.backtrack", genMazeBacktrack);
-    registerAlgorithm("noise.terrain", genNoiseTerrain);
+    auto dungeon = GeneratorDescriptor::grid("dungeon.bsp", "BSP Dungeon", "Dungeon", 8, 8);
+    dungeon.params.push_back(ParamDescriptor::integer("divisionMin", "Minimum Divisions", 3, 1, 32));
+    dungeon.params.push_back(ParamDescriptor::integer("divisionRandMax", "Division Variation", 4, 0, 32));
+    dungeon.params.push_back(ParamDescriptor::integer("roomMinX", "Minimum Room Width", 5, 1, 128));
+    dungeon.params.push_back(ParamDescriptor::integer("roomRandMaxX", "Room Width Variation", 2, 0, 128));
+    dungeon.params.push_back(ParamDescriptor::integer("roomMinY", "Minimum Room Height", 5, 1, 128));
+    dungeon.params.push_back(ParamDescriptor::integer("roomRandMaxY", "Room Height Variation", 2, 0, 128));
+    registerAlgorithm(std::move(dungeon), genDungeonBsp);
+
+    auto cellular = GeneratorDescriptor::grid("cave.cellular", "Cellular Cave", "Cave", 4, 4);
+    cellular.params.push_back(ParamDescriptor::integer("loops", "Smoothing Passes", 5, 1, 64));
+    cellular.params.push_back(ParamDescriptor::floating("fill", "Initial Fill", 0.45f, 0.f, 1.f, 0.01f));
+    registerAlgorithm(std::move(cellular), genCaveCellular);
+
+    auto drunkard = GeneratorDescriptor::grid("cave.drunkard", "Drunkard Cave", "Cave", 4, 4);
+    drunkard.params.push_back(ParamDescriptor::floating("floorPct", "Floor Coverage", 0.45f, 0.05f, 0.95f,
+                                                        0.01f));
+    registerAlgorithm(std::move(drunkard), genCaveDrunkard);
+
+    auto maze = GeneratorDescriptor::grid("maze.backtrack", "Backtracking Maze", "Maze", 5, 5);
+    registerAlgorithm(std::move(maze), genMazeBacktrack);
+
+    auto noise = GeneratorDescriptor::grid("noise.terrain", "Noise Terrain", "Terrain", 2, 2);
+    noise.params.push_back(ParamDescriptor::floating("frequency", "Frequency", 6.f, 0.1f, 64.f, 0.1f));
+    noise.params.push_back(ParamDescriptor::integer("octaves", "Octaves", 4, 1, 16));
+    noise.params.push_back(ParamDescriptor::integer("maxHeight", "Height Bands", 9, 1, 255));
+    noise.params.push_back(ParamDescriptor::floating("waterMax", "Water Threshold", 0.25f, 0.f, 1.f, 0.01f));
+    noise.params.push_back(ParamDescriptor::floating("sandMax", "Sand Threshold", 0.35f, 0.f, 1.f, 0.01f));
+    noise.params.push_back(ParamDescriptor::floating("grassMax", "Grass Threshold", 0.65f, 0.f, 1.f, 0.01f));
+    noise.params.push_back(ParamDescriptor::floating("dirtMax", "Dirt Threshold", 0.80f, 0.f, 1.f, 0.01f));
+    noise.params.push_back(ParamDescriptor::floating("stoneMax", "Stone Threshold", 0.92f, 0.f, 1.f, 0.01f));
+    registerAlgorithm(std::move(noise), genNoiseTerrain);
     registerWfcSimple(*this);
     registerRoguelikeGenerator(*this);
     registerTerrainHeightmapAlgorithm(*this);

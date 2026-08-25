@@ -178,6 +178,43 @@ void drawNinePatch(void *handle, const ImVec2 &pos, const ImVec2 &size, const Im
     draw(bl, bt, size.x - br, size.y - bb, uL, vT, uR, vB);
 }
 
+/** Queue the same nine-patch geometry for backends without per-command texture handles. */
+void queueNinePatch(uint64_t textureId, const ImVec2 &pos, const ImVec2 &size,
+                    const ImVec2 &uv0, const ImVec2 &uv1, float bL, float bT, float bR,
+                    float bB, int texW, int texH, float r, float g, float b, float a,
+                    bool opaque = false) {
+    if (!g_backend) return;
+    const auto draw = [&](float x0, float y0, float x1, float y1, float u0, float v0,
+                          float u1, float v1) {
+        if (x1 <= x0 || y1 <= y0) return;
+        g_backend->queueTextureDraw(textureId, pos.x + x0, pos.y + y0, x1 - x0, y1 - y0,
+                                    u0, v0, u1, v1, r, g, b, a, opaque);
+    };
+    if ((bL <= 0.f && bT <= 0.f && bR <= 0.f && bB <= 0.f) || texW <= 0 || texH <= 0) {
+        draw(0.f, 0.f, size.x, size.y, uv0.x, uv0.y, uv1.x, uv1.y);
+        return;
+    }
+    const float bl = std::min(bL, size.x * 0.5f);
+    const float br = std::min(bR, size.x * 0.5f);
+    const float bt = std::min(bT, size.y * 0.5f);
+    const float bb = std::min(bB, size.y * 0.5f);
+    const float uPerPx = (uv1.x - uv0.x) / float(texW);
+    const float vPerPx = (uv1.y - uv0.y) / float(texH);
+    const float uL = uv0.x + bl * uPerPx;
+    const float uR = uv1.x - br * uPerPx;
+    const float vT = uv0.y + bt * vPerPx;
+    const float vB = uv1.y - bb * vPerPx;
+    draw(0.f, 0.f, bl, bt, uv0.x, uv0.y, uL, vT);
+    draw(size.x - br, 0.f, size.x, bt, uR, uv0.y, uv1.x, vT);
+    draw(0.f, size.y - bb, bl, size.y, uv0.x, vB, uL, uv1.y);
+    draw(size.x - br, size.y - bb, size.x, size.y, uR, vB, uv1.x, uv1.y);
+    draw(bl, 0.f, size.x - br, bt, uL, uv0.y, uR, vT);
+    draw(bl, size.y - bb, size.x - br, size.y, uL, vB, uR, uv1.y);
+    draw(0.f, bt, bl, size.y - bb, uv0.x, vT, uL, vB);
+    draw(size.x - br, bt, size.x, size.y - bb, uR, vT, uv1.x, vB);
+    draw(bl, bt, size.x - br, size.y - bb, uL, vT, uR, vB);
+}
+
 void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
     const bool row = flex.flexDirection == FlexDirection::Row;
     const ImGuiStyle &style = ImGui::GetStyle();
@@ -444,11 +481,23 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         const ImU32 tint =
             ImGui::ColorConvertFloat4ToU32(ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
         if (n.textureId != 0 && g_backend) {
-            void *handle = g_backend->textureHandle(n.textureId);
             int tw = 0, th = 0;
             g_backend->textureSize(n.textureId, &tw, &th);
-            drawNinePatch(handle, pos, size, ImVec2(n.uv0x, n.uv0y), ImVec2(n.uv1x, n.uv1y),
-                          n.borderL, n.borderT, n.borderR, n.borderB, tw, th, tint);
+            if (g_backend->usesQueuedTextureDraws()) {
+                queueNinePatch(n.textureId, pos, size, ImVec2(n.uv0x, n.uv0y),
+                               ImVec2(n.uv1x, n.uv1y), n.borderL, n.borderT, n.borderR,
+                               n.borderB, tw, th, n.tintR, n.tintG, n.tintB, n.tintA);
+            } else {
+                void *handle = g_backend->textureHandle(n.textureId);
+                if (handle) {
+                    drawNinePatch(handle, pos, size, ImVec2(n.uv0x, n.uv0y),
+                                  ImVec2(n.uv1x, n.uv1y), n.borderL, n.borderT,
+                                  n.borderR, n.borderB, tw, th, tint);
+                } else {
+                    ImGui::GetWindowDrawList()->AddRectFilled(
+                        pos, ImVec2(pos.x + w, pos.y + h), tint, n.cornerRadius);
+                }
+            }
         } else {
             ImGui::GetWindowDrawList()->AddRectFilled(pos, ImVec2(pos.x + w, pos.y + h), tint,
                                                       n.cornerRadius);
@@ -463,16 +512,30 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         const std::string sid = n.id.empty() ? "imgbtn" : n.id;
         ImGui::PushID(sid.c_str());
         bool clicked = false;
+        bool itemCreated = false;
         if (n.textureId != 0 && g_backend) {
-            void *handle = g_backend->textureHandle(n.textureId);
-            if (handle) {
-                clicked = ImGui::ImageButton(static_cast<ImTextureID>(handle), size,
-                                             ImVec2(n.uv0x, n.uv0y), ImVec2(n.uv1x, n.uv1y), -1,
-                                             ImVec4(0.f, 0.f, 0.f, 0.f),
-                                             ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
+            if (g_backend->usesQueuedTextureDraws()) {
+                clicked = ImGui::InvisibleButton(sid.c_str(), size);
+                itemCreated = true;
+                const ImVec2 pmin = ImGui::GetItemRectMin();
+                const float hover = ImGui::IsItemHovered() ? 1.12f : 1.f;
+                g_backend->queueTextureDraw(n.textureId, pmin.x, pmin.y, size.x, size.y,
+                                            n.uv0x, n.uv0y, n.uv1x, n.uv1y,
+                                            std::min(1.f, n.tintR * hover),
+                                            std::min(1.f, n.tintG * hover),
+                                            std::min(1.f, n.tintB * hover), n.tintA, false);
+            } else {
+                void *handle = g_backend->textureHandle(n.textureId);
+                if (handle) {
+                    clicked = ImGui::ImageButton(
+                        static_cast<ImTextureID>(handle), size, ImVec2(n.uv0x, n.uv0y),
+                        ImVec2(n.uv1x, n.uv1y), -1, ImVec4(0.f, 0.f, 0.f, 0.f),
+                        ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
+                    itemCreated = true;
+                }
             }
         }
-        if (!clicked && n.textureId == 0) {
+        if (!itemCreated) {
             clicked = ImGui::InvisibleButton(sid.c_str(), size);
             const ImVec2 pmin = ImGui::GetItemRectMin();
             const ImVec2 pmax = ImGui::GetItemRectMax();
@@ -904,7 +967,10 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             vs->wheel = hovered ? ImGui::GetIO().MouseWheel : 0.f;
         }
 
-        if (vs && vs->textureId && g_backend) {
+        if (vs && vs->textureId && g_backend && g_backend->usesQueuedTextureDraws()) {
+            g_backend->queueTextureDraw(vs->textureId, rectMin.x, rectMin.y, size.x, size.y,
+                                        0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, true);
+        } else if (vs && vs->textureId && g_backend) {
             void *handle = g_backend->textureHandle(vs->textureId);
             if (handle) {
                 ImGui::SetCursorScreenPos(rectMin);

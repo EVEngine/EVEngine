@@ -756,6 +756,10 @@ uint64_t UI::registerTexture(graphics::Texture *tex) {
     return backend_ ? backend_->registerTexture(tex) : 0;
 }
 
+void UI::unregisterTexture(uint64_t textureId) {
+    if (backend_ && textureId != 0) backend_->unregisterTexture(textureId);
+}
+
 float UI::getValue(const std::string &id) const {
     if (!selected_) return 0.f;
     if (auto *n = selected_->findById(id)) return n->value;
@@ -1524,6 +1528,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setImageUv", &UI::setImageUv);
     cls.addFunc("setImageNinePatch", &UI::setImageNinePatch);
     cls.addFunc("setImageCornerRadius", &UI::setImageCornerRadius);
+    cls.addFunc("setImageTextureId", &UI::setImageTextureId);
+    cls.addFunc("registerTexture", &UI::registerTexture);
+    cls.addFunc("unregisterTexture", &UI::unregisterTexture);
     cls.addFunc("getValue", &UI::getValue);
     cls.addFunc("getValueText", &UI::getValueText);
     cls.addFunc("getChecked", &UI::getChecked);

@@ -89,8 +89,32 @@ public:
     void clearCardDefinitions();
     /** @brief 已注册卡牌类型数量。 */
     int getCardDefinitionCount();
+    /** @brief Return a definition ID in deterministic sorted order.
+     * @param index Zero-based index in the sorted definition view.
+     * @return Definition ID, or an empty string when the index is invalid.
+     */
+    std::string getCardDefinitionId(int index) const;
     /** @brief 卡牌类型查询。 */
     bool hasCardDefinition(const std::string &id);
+    /** @brief Insert or replace one definition for project-owned authoring tools.
+     * @param id Stable definition identifier.
+     * @param name Display name; an empty value falls back to id.
+     * @param kind Project-defined card kind; an empty value falls back to creature.
+     * @param cost Non-negative resource cost.
+     * @param attack Non-negative attack value.
+     * @param health Non-negative health value.
+     * @param tintR Red tint channel, clamped to [0, 1].
+     * @param tintG Green tint channel, clamped to [0, 1].
+     * @param tintB Blue tint channel, clamped to [0, 1].
+     * @return True when the definition was accepted.
+     */
+    bool setCardDefinition(const std::string &id, const std::string &name, const std::string &kind,
+                           int cost, int attack, int health, float tintR, float tintG, float tintB);
+    /** @brief Remove one definition by stable identifier.
+     * @param id Stable definition identifier.
+     * @return True when an existing definition was removed.
+     */
+    bool removeCardDefinition(const std::string &id);
     std::string getCardDefinitionName(const std::string &id);
     std::string getCardDefinitionKind(const std::string &id);
     int getCardDefinitionCost(const std::string &id);
@@ -171,6 +195,8 @@ private:
     const CardDefinition *findDef(const std::string &id) const;
 
     std::unordered_map<std::string, CardDefinition> defs_;
+    mutable std::vector<std::string> definitionView_;
+    mutable bool definitionViewDirty_ = true;
     std::vector<std::unique_ptr<LayoutConfig>> configs_;
     std::vector<std::unique_ptr<CardPlaneMapper>> planeMappers_;
     std::vector<CardEvent> events_;
