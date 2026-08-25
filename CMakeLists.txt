@@ -264,6 +264,21 @@ function(main)
     endif()
     eve_resolve_modules()
 
+    # zeroerr's fixture macro used counter-only external class names. Because
+    # __COUNTER__ restarts in every translation unit, Release LTO could merge
+    # unrelated fixture methods and execute a test body against the wrong
+    # fixture layout. Apply the tracked dependency patch before any targets
+    # compile zeroerr's headers; the wrapper is idempotent on reconfigure.
+    execute_process(
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/zeroerr-fixture-odr-lto.patch
+            -DPATCH_DIR=${CMAKE_SOURCE_DIR}/external/zeroerr
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake
+        RESULT_VARIABLE _eve_zeroerr_patch_result)
+    if(NOT _eve_zeroerr_patch_result EQUAL 0)
+        message(FATAL_ERROR "Failed to apply the zeroerr fixture ODR patch")
+    endif()
+
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
