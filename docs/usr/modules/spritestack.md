@@ -162,7 +162,8 @@ python3 scripts/pack_sprite_stack_atlas.py layer_00.png layer_01.png ... \
   纹理，可释放原图。
 - 叠片使用 alpha 混合 + 深度测试（不写深度）的管线，同堆切片每帧按相机距离
   由远到近排序；跨叠片的重叠由绘制顺序决定。
-- 目前仅在 Vulkan 桌面端可用（WebGPU/WASM 精简构建不含该模块）。
+- Vulkan 与原生 WebGPU 均可用；WebGPU 使用专用 WGSL 卡片 shader。当前 Web/WASM
+  精简模块组仍不包含 SpriteStack。
 - 不要每帧重新切片或重新上传纹理；只在物体形状变化时重建。
 - `updateMeshVertices`（合批内部使用）与 GPU 同步，重建频率越高开销越大。
 

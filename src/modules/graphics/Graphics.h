@@ -754,8 +754,8 @@ public:
     /**
      * @brief True when the backend can render the screen-space decal layer
      * (box-projected decals writing albedo/normal/params targets that
-     * mesh3d.frag samples before lighting). False on WebGPU (SPIR-V only
-     * here), where RenderSystem3D skips the decal pass entirely.
+     * mesh3d.frag samples before lighting). Vulkan uses SPIR-V and WebGPU uses
+     * the native WGSL decal pipeline.
      */
     virtual bool supportsDecal() const { return true; }
 

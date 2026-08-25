@@ -3,7 +3,8 @@
 **脚本入口：** `eve.VirtualGeometry()`
 
 GPU 驱动的虚拟几何管线：把球面等网格切成簇（cluster），按视点做簇级裁剪与
-LOD 选择，只绘制可见簇——适合大场景/高密度几何。需要 Vulkan（`isAvailable()`）。
+LOD 选择，只绘制可见簇——适合大场景/高密度几何。Vulkan 与 WebGPU 均可用
+（先以 `isAvailable()` 检查当前设备初始化状态）。
 
 ## 基本用法
 
@@ -57,6 +58,6 @@ function eve_render() {
 
 ## 生命周期
 
-- 仅 Vulkan 后端可用（WebGPU 返回 `isAvailable()==false`）。
+- Vulkan 与 WebGPU 后端均可用；WebGPU 使用 WGSL compute 和 storage buffer。
 - `resolve()` 返回的 ByteData 归调用方；每次相机/模型变化后需重新 `update()`
   再 resolve。
