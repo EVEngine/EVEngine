@@ -310,7 +310,10 @@ jobs:
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
       - name: Capture native Dawn parity artifacts
-        timeout-minutes: 10
+        # Dawn initialization takes roughly two minutes per isolated test on
+        # the Windows software adapter. Keep per-case process isolation while
+        # allowing all 13 parity cases to complete.
+        timeout-minutes: 40
         shell: pwsh
         env:
           ALSOFT_DRIVERS: "null"
