@@ -55,11 +55,14 @@ av.applyExpression("shy");
 - 通用：`getKind()`、`setPosition/getX/getY`、`setScale/getScaleX/getScaleY`、
   `setVisible/isVisible`、`setLayer/getLayer`、`setExpression/getExpression`、
   `setMotion/getMotion`、`setParameter/getParameter/hasParameter`、
-  `getParameterCount/getParameterName`、`update/sync/release`。
+  `getParameterCount/getParameterName`、`defineParameter`、`getParameterDefault`、
+  `getParameterMinimum`、`getParameterMaximum`、`update/sync/release`。参数元数据只描述
+  inspector 建议范围，不会钳制运行时值，因此同一 Avatar 数据模型可用于开发工具和游戏内捏脸。
 - 图层：`addLayer(name, texture, z)`、`setLayerTexture`、`setLayerVisible`、
   `setLayerOffset`、`setLayerColor`、`setLayerZ`、`setLayerSize`、
   `getLayerCount/getLayerName/hasLayer`、`getLayerRenderable(name)`。
-- 表情：`defineExpression(name, spec)`、`applyExpression(name)`；
+- 表情：`defineExpression(name, spec)`、`applyExpression(name)`、`removeExpression(name)`；
+  `getExpressionCount/getExpressionName` 提供稳定排序的项目表情列表；
   `transitionExpression(name, duration)` 对数值/布尔图层及 morph 通道做平滑过渡。
 
 `getLayerRenderable(name)` 返回该层原生的 `Renderable2D`。兼容的图层 setter
@@ -78,7 +81,8 @@ alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐�
   `setRotation3D`、`setScale3D`、`getRenderable3D`、`getBoundMesh`、
   `getVroidModelPath`、`bakeMorphs`。
 - 3D 动画：`bindAnimPlayer`、`bindAnimStateMachine`、`bindAnimSkin`、
-  `registerMotion`、`setMotionBlendTime`；`setMotion(name)` 会播放已注册 Clip，
+  `registerMotion`、`unregisterMotion`、`getMotionCount`、`getMotionName`、`getMotionClip`、
+  `setMotionBlendTime`；`setMotion(name)` 会播放已注册 Clip，
   或向绑定的状态机发送同名 trigger。`setApplyRootMotion/getApplyRootMotion` 控制
   根骨 X/Z 位移是否累加到 Avatar，`getRootMotionDeltaX/getRootMotionDeltaZ`
   可供角色控制器自行消费。绑定 `AnimSkin` 后，`update(dt)` 会计算世界 Pose、

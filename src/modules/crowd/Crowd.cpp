@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #ifndef M_PI
@@ -72,6 +73,8 @@ struct Crowd::Impl {
     std::vector<uint8_t> hasTargets;
     std::vector<float> targetXs, targetYs;
     std::vector<float> wanderPhases;
+    std::vector<std::string> stableIds;
+    std::unordered_map<std::string, int> namedAgents;
 
     // 每帧重建的计数排序空间网格。
     std::vector<int32_t> cellCount, cellStart, cursor, sorted;
@@ -446,13 +449,43 @@ int Crowd::addAgent(float x, float y, float heading, float radius) {
     d.targetXs.push_back(0.f);
     d.targetYs.push_back(0.f);
     d.wanderPhases.push_back(float(id) * 2.399963f);
+    d.stableIds.emplace_back();
     return id;
+}
+
+int Crowd::addNamedAgent(const std::string &stableId, float x, float y, float heading, float radius) {
+    auto &d = *impl_;
+    if (stableId.empty() || d.namedAgents.count(stableId) != 0) return -1;
+    const int index = addAgent(x, y, heading, radius);
+    if (index < 0) return -1;
+    d.stableIds[static_cast<size_t>(index)] = stableId;
+    d.namedAgents[stableId] = index;
+    return index;
+}
+
+bool Crowd::hasNamedAgent(const std::string &stableId) const {
+    return impl_->namedAgents.count(stableId) != 0;
+}
+
+int Crowd::getNamedAgentIndex(const std::string &stableId) const {
+    const auto found = impl_->namedAgents.find(stableId);
+    return found == impl_->namedAgents.end() ? -1 : found->second;
+}
+
+std::string Crowd::getAgentStableId(int index) const {
+    return impl_->validId(index) ? impl_->stableIds[static_cast<size_t>(index)] : std::string{};
+}
+
+bool Crowd::removeNamedAgent(const std::string &stableId) {
+    const int index = getNamedAgentIndex(stableId);
+    return index >= 0 && removeAgent(index);
 }
 
 bool Crowd::removeAgent(int id) {
     auto &d = *impl_;
     if (!d.validId(id)) return false;
     const int last = int(d.xs.size()) - 1;
+    const std::string removedStableId = d.stableIds[static_cast<size_t>(id)];
     if (id != last) {
         d.xs[size_t(id)] = d.xs[size_t(last)];
         d.ys[size_t(id)] = d.ys[size_t(last)];
@@ -470,7 +503,10 @@ bool Crowd::removeAgent(int id) {
         d.targetXs[size_t(id)] = d.targetXs[size_t(last)];
         d.targetYs[size_t(id)] = d.targetYs[size_t(last)];
         d.wanderPhases[size_t(id)] = d.wanderPhases[size_t(last)];
+        d.stableIds[size_t(id)] = d.stableIds[size_t(last)];
+        if (!d.stableIds[size_t(id)].empty()) d.namedAgents[d.stableIds[size_t(id)]] = id;
     }
+    if (!removedStableId.empty()) d.namedAgents.erase(removedStableId);
     d.xs.pop_back();
     d.ys.pop_back();
     d.headings.pop_back();
@@ -487,6 +523,7 @@ bool Crowd::removeAgent(int id) {
     d.targetXs.pop_back();
     d.targetYs.pop_back();
     d.wanderPhases.pop_back();
+    d.stableIds.pop_back();
     return true;
 }
 
@@ -508,6 +545,8 @@ void Crowd::clearAgents() {
     d.targetXs.clear();
     d.targetYs.clear();
     d.wanderPhases.clear();
+    d.stableIds.clear();
+    d.namedAgents.clear();
     d.gridW = d.gridH = 0;
 }
 
@@ -678,6 +717,11 @@ void Crowd::expose(ssq::Class &cls) {
 
     // 单位
     cls.addFunc("addAgent", &Crowd::addAgent);
+    cls.addFunc("addNamedAgent", &Crowd::addNamedAgent);
+    cls.addFunc("hasNamedAgent", &Crowd::hasNamedAgent);
+    cls.addFunc("getNamedAgentIndex", &Crowd::getNamedAgentIndex);
+    cls.addFunc("getAgentStableId", &Crowd::getAgentStableId);
+    cls.addFunc("removeNamedAgent", &Crowd::removeNamedAgent);
     cls.addFunc("removeAgent", &Crowd::removeAgent);
     cls.addFunc("clearAgents", &Crowd::clearAgents);
     cls.addFunc("getAgentCount", &Crowd::getAgentCount);

@@ -20,9 +20,16 @@
 
 if (!("math" in getroottable())) math <- eve.Math();
 if (!("voxel" in getroottable())) voxel <- null;
+if (!("editor" in getroottable())) editor <- null;
 if (!("world" in getroottable())) world <- null;
 if (!("types" in getroottable())) types <- null;
 if (!("atlas" in getroottable())) atlas <- null;
+if (!("editSession" in getroottable())) editSession <- null;
+if (!("voxelTarget" in getroottable())) voxelTarget <- null;
+if (!("volumeFalloff" in getroottable())) volumeFalloff <- null;
+if (!("volumeKernel" in getroottable())) volumeKernel <- null;
+if (!("volumeOperation" in getroottable())) volumeOperation <- null;
+if (!("volumeTool" in getroottable())) volumeTool <- null;
 if (!("playerPos" in getroottable())) playerPos <- [0.0, 34.0, 64.0];
 if (!("yaw" in getroottable())) yaw <- PI;
 if (!("pitch" in getroottable())) pitch <- -0.55;
@@ -193,6 +200,25 @@ function setupWorld() {
         playerPos = [bestX.tofloat(), bestH + 12.0, (bestZ + 48).tofloat()];
     }
     if (atlas == null) atlas = buildAtlas();
+    configureVoxelTool();
+}
+
+function configureVoxelTool() {
+    if (editor == null) editor = eve.Editor();
+    if (editSession != null) return;
+    editSession = editor.newSession();
+    voxelTarget = editor.newVoxelWorldTarget("runtime.voxel-world", world);
+    volumeFalloff = editor.newConstantBrushFalloff();
+    volumeKernel = editor.newSphereVolumeBrushKernel();
+    volumeKernel.setConstantFalloff(volumeFalloff);
+    volumeOperation = editor.newPaintIntVolumeOperation(5);
+    volumeTool = editor.newVolumeBrushTool("voxel.paint", "Voxel Brush");
+    volumeTool.setSphereKernel(volumeKernel);
+    volumeTool.setPaintIntOperation(volumeOperation);
+    volumeTool.setRadius(0.5);
+    editSession.addVolumeTool(volumeTool);
+    editSession.bindVoxelWorldTarget(voxelTarget);
+    editSession.activateTool("voxel.paint");
 }
 
 function applyTerrainPreset(idx, seedOverride = null) {
@@ -220,6 +246,7 @@ function applyTerrainPreset(idx, seedOverride = null) {
     world.setTerrainParam("sandLevel", p.sandLevel);
     world.setTerrainParam("enable", 1.0);
     world.clear();
+    if (editSession != null) editSession.clearHistory();
     streamWorld();
     print("voxel-terrain: preset " + (idx + 1) + "/" + presets.len() + " [" + p.name +
           "] seed=" + seed + " chunks=" + world.getChunkCount() + "\n");
@@ -319,7 +346,9 @@ function placeAtCrosshair() {
     local x = world.getRaycastPrevX();
     local y = world.getRaycastPrevY();
     local z = world.getRaycastPrevZ();
-    world.setVoxelByName(x, y, z, "wood");
+    volumeOperation.setValue(5);
+    editSession.dispatchPointer3D(0, 1, 0, x, y, z, 0, 0, 0, 1.0);
+    editSession.dispatchPointer3D(2, 1, 0, x, y, z, 0, 0, 0, 1.0);
     world.remeshDirty();
     lastEdit = (world.getCubeTypeName(x, y, z) == "wood")
                ? format("已放置木块 (%d, %d, %d)", x, y, z)
@@ -334,7 +363,9 @@ function breakAtCrosshair() {
     local x = world.getRaycastHitX();
     local y = world.getRaycastHitY();
     local z = world.getRaycastHitZ();
-    world.setVoxel(x, y, z, 0);
+    volumeOperation.setValue(0);
+    editSession.dispatchPointer3D(0, 2, 0, x, y, z, 0, 0, 0, 1.0);
+    editSession.dispatchPointer3D(2, 2, 0, x, y, z, 0, 0, 0, 1.0);
     world.remeshDirty();
     lastEdit = (world.getVoxel(x, y, z) == 0)
                ? format("已破坏方块 (%d, %d, %d)", x, y, z)
@@ -372,7 +403,7 @@ function refreshHud() {
                world.getVisibleBatchCount(), world.getVisibleRectCount(), fpsAvg) +
         (lastEdit == "" ? "" : "\n" + lastEdit));
     ui.setText("help",
-        "WASD 飞行  Space/C 升降  Shift 加速  鼠标视角  Esc释放/捕获  左键放置  右键破坏\n" +
+        "WASD 飞行  Space/C 升降  Shift 加速  鼠标视角  Esc释放/捕获  左键放置  右键破坏  Z/Y撤销重做\n" +
         "1群岛 2大陆 3山脉 4沙海  R随机种子  =/-流式半径");
 }
 
@@ -402,6 +433,18 @@ eve_update = function(dt) {
 
     if (mouseLeftPressed()) placeAtCrosshair();
     if (mouseRightPressed()) breakAtCrosshair();
+    if (key_just_pressed("z") || key_just_pressed("Z")) {
+        if (editSession.undo()) {
+            world.remeshDirty();
+            lastEdit = "已撤销体素笔刷";
+        }
+    }
+    if (key_just_pressed("y") || key_just_pressed("Y")) {
+        if (editSession.redo()) {
+            world.remeshDirty();
+            lastEdit = "已重做体素笔刷";
+        }
+    }
 
     // 每帧保持玩家周围 chunk；跨 chunk 边界时自动补建/卸载
     streamWorld();

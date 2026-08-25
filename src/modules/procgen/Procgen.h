@@ -5,6 +5,7 @@
 #include "procgen/MeshBuild.h"
 #include "procgen/OutputSpec.h"
 #include "procgen/Palette.h"
+#include "procgen/ParamSchema.h"
 #include "procgen/Params.h"
 #include "procgen/PointSet.h"
 #include "procgen/ProcgenSystem.h"
@@ -109,6 +110,65 @@ public:
     int         getAlgorithmCount() const;
     std::string getAlgorithmId(int index) const;
     bool        hasAlgorithm(const std::string &algorithmId) const;
+    /** @brief Copy an algorithm schema. @param algorithmId Algorithm id. @return Caller-owned schema or nullptr. */
+    RecipeDescriptor *getAlgorithmSchema(const std::string &algorithmId) const;
+    /** @brief Human-readable algorithm label from its schema.
+     * @param algorithmId Algorithm id. @return Display name or empty text. */
+    std::string getAlgorithmDisplayName(const std::string &algorithmId) const;
+    /** @brief Algorithm category from its schema.
+     * @param algorithmId Algorithm id. @return Category or empty text. */
+    std::string getAlgorithmCategory(const std::string &algorithmId) const;
+    /** @brief Number of reflected parameters for one algorithm.
+     * @param algorithmId Algorithm id. @return Parameter count. */
+    int getAlgorithmParamCount(const std::string &algorithmId) const;
+    /** @brief Stable parameter key at an index.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Key or empty text. */
+    std::string getAlgorithmParamKey(const std::string &algorithmId, int index) const;
+    /** @brief Human-readable parameter label at an index.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Label or empty text. */
+    std::string getAlgorithmParamLabel(const std::string &algorithmId, int index) const;
+    /** @brief Parameter help text at an index.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Help text or empty text. */
+    std::string getAlgorithmParamDescription(const std::string &algorithmId, int index) const;
+    /** @brief Parameter group at an index.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Group or empty text. */
+    std::string getAlgorithmParamCategory(const std::string &algorithmId, int index) const;
+    /** @brief Parameter kind as int, float, bool, string or choice.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Kind or empty text. */
+    std::string getAlgorithmParamKind(const std::string &algorithmId, int index) const;
+    /** @brief Schema default encoded as text for lossless dynamic UI transport.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Encoded default. */
+    std::string getAlgorithmParamDefault(const std::string &algorithmId, int index) const;
+    /** @brief Return true when a numeric minimum is declared.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Whether it exists. */
+    bool algorithmParamHasMinimum(const std::string &algorithmId, int index) const;
+    /** @brief Return true when a numeric maximum is declared.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Whether it exists. */
+    bool algorithmParamHasMaximum(const std::string &algorithmId, int index) const;
+    /** @brief Numeric minimum.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Minimum or zero. */
+    float getAlgorithmParamMinimum(const std::string &algorithmId, int index) const;
+    /** @brief Numeric maximum.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Maximum or zero. */
+    float getAlgorithmParamMaximum(const std::string &algorithmId, int index) const;
+    /** @brief Suggested numeric editing step.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Step or zero. */
+    float getAlgorithmParamStep(const std::string &algorithmId, int index) const;
+    /** @brief Return true when a parameter should be hidden by compact inspectors.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Whether it is advanced. */
+    bool isAlgorithmParamAdvanced(const std::string &algorithmId, int index) const;
+    /** @brief Number of allowed values for a choice parameter.
+     * @param algorithmId Algorithm id. @param index Parameter index. @return Choice count. */
+    int getAlgorithmParamChoiceCount(const std::string &algorithmId, int index) const;
+    /** @brief Choice value at an index.
+     * @param algorithmId Algorithm id. @param paramIndex Parameter index.
+     * @param choiceIndex Choice index. @return Choice or empty text. */
+    std::string getAlgorithmParamChoice(const std::string &algorithmId, int paramIndex,
+                                        int choiceIndex) const;
+    /** @brief Fill missing algorithm-specific values from schema defaults.
+     * @param algorithmId Algorithm id. @param params Parameters to update.
+     * @return Whether the schema exists. */
+    bool applyAlgorithmDefaults(const std::string &algorithmId, Params *params) const;
 
     /**
      * @brief Post-process a generated grid: fill each wall cell's detail with an
@@ -137,6 +197,10 @@ public:
     int         getTextureRecipeCount() const;
     std::string getTextureRecipeId(int index) const;
     bool        hasTextureRecipe(const std::string &recipeId) const;
+    /** @brief Copy a texture schema. @param recipeId Recipe id. @return Caller-owned schema or nullptr. */
+    RecipeDescriptor *getTextureRecipeSchema(const std::string &recipeId) const;
+    /** @brief Fill missing texture parameters. @param recipeId Recipe id. @param params Values to update. @return False for invalid input or an unknown recipe. */
+    bool applyTextureRecipeDefaults(const std::string &recipeId, Params *params) const;
 
     // --- Phase E: dynamic clouds + cloud shadows ---
     /** @brief New deterministic, tiling, time-animated cloud field (caller owns). */
@@ -163,6 +227,10 @@ public:
     int         getPbrRecipeCount() const;
     std::string getPbrRecipeId(int index) const;
     bool        hasPbrRecipe(const std::string &recipeId) const;
+    /** @brief Copy a PBR schema. @param recipeId Recipe id. @return Caller-owned schema or nullptr. */
+    RecipeDescriptor *getPbrRecipeSchema(const std::string &recipeId) const;
+    /** @brief Fill missing PBR parameters. @param recipeId Recipe id. @param params Values to update. @return False for invalid input or an unknown recipe. */
+    bool applyPbrRecipeDefaults(const std::string &recipeId, Params *params) const;
 
     // --- Mesh recipes (Marching Cubes, …) ---
     /** @brief CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet. */
@@ -174,6 +242,10 @@ public:
     int         getMeshRecipeCount() const;
     std::string getMeshRecipeId(int index) const;
     bool        hasMeshRecipe(const std::string &recipeId) const;
+    /** @brief Copy a mesh recipe schema. @param recipeId Recipe id. @return Caller-owned schema or nullptr. */
+    RecipeDescriptor *getMeshRecipeSchema(const std::string &recipeId) const;
+    /** @brief Fill missing mesh recipe parameters. @param recipeId Recipe id. @param params Values to update. @return False for invalid input or an unknown recipe. */
+    bool applyMeshRecipeDefaults(const std::string &recipeId, Params *params) const;
 
     // --- Phase D: terrain height sampling ---
     /** @brief Sampling function over continuous map coordinates (caller owns). */

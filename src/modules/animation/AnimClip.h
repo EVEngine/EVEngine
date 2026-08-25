@@ -38,8 +38,28 @@ public:
     void addPositionKey(int boneIndex, float time, float x, float y, float z);
     void addRotationKey(int boneIndex, float time, float x, float y, float z, float w);
     void addScaleKey(int boneIndex, float time, float x, float y, float z);
+    /** @brief Replace and re-sort one position key. @return False when the bone or key index is invalid. */
+    bool setPositionKey(int boneIndex, int keyIndex, float time, float x, float y, float z);
+    /** @brief Replace and re-sort one rotation key. @return False when the bone or key index is invalid. */
+    bool setRotationKey(int boneIndex, int keyIndex, float time, float x, float y, float z, float w);
+    /** @brief Replace and re-sort one scale key. @return False when the bone or key index is invalid. */
+    bool setScaleKey(int boneIndex, int keyIndex, float time, float x, float y, float z);
+    /** @brief Delete one position key. @return False when the bone or key index is invalid. */
+    bool removePositionKey(int boneIndex, int keyIndex);
+    /** @brief Delete one rotation key. @return False when the bone or key index is invalid. */
+    bool removeRotationKey(int boneIndex, int keyIndex);
+    /** @brief Delete one scale key. @return False when the bone or key index is invalid. */
+    bool removeScaleKey(int boneIndex, int keyIndex);
+    /** @brief Clear every transform channel for one bone. @return False when the bone index is invalid. */
+    bool clearTrack(int boneIndex);
+    /** @brief Return the number of allocated bone tracks, including empty tracks. */
+    int getTrackCount() const { return static_cast<int>(tracks_.size()); }
     /** @brief Add a named event marker at clip-local time. Events are kept time-sorted. */
     void addEvent(float time, const std::string& name, const std::string& payload = "");
+    /** @brief Replace and re-sort one event marker. @return False when the event index is invalid. */
+    bool setEvent(int index, float time, const std::string& name, const std::string& payload = "");
+    /** @brief Delete one event marker. @return False when the event index is invalid. */
+    bool removeEvent(int index);
     /** @brief Return the number of event markers. */
     int getEventCount() const { return static_cast<int>(events_.size()); }
     /** @brief Return an event marker's time, or 0 for an invalid index. */

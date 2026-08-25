@@ -1,4 +1,5 @@
 #include "ui/Layout.h"
+#include "ui/Theme.h"
 
 #include <imgui.h>
 
@@ -221,8 +222,9 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredH = t.y;
         break;
     }
-    case NodeType::Combo: {
-        n.measuredW = 140.f;
+    case NodeType::Combo:
+    case NodeType::SearchField: {
+        n.measuredW = globalTheme().layout.searchMinWidth * themeUiScale();
         n.measuredH = ImGui::GetFrameHeight();
         break;
     }
@@ -238,6 +240,19 @@ void measureNode(UIHost::Tree &tree, int index) {
         const ImVec2 t = ImGui::CalcTextSize(label);
         n.measuredW = ImGui::GetFrameHeight() + style.ItemInnerSpacing.x + t.x;
         n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Switch: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        const float trackW = ImGui::GetFrameHeight() * 1.7f;
+        n.measuredW = trackW + (n.text.empty() ? 0.f : style.ItemInnerSpacing.x + t.x);
+        n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Badge: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        n.measuredW = t.x + style.FramePadding.x * 2.f;
+        n.measuredH = t.y + 6.f;
         break;
     }
     case NodeType::Slider:
@@ -287,7 +302,90 @@ void measureNode(UIHost::Tree &tree, int index) {
         }
         break;
     }
-    case NodeType::Group: {
+    case NodeType::SectionHeader: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        n.measuredW = t.x + 10.f;
+        n.measuredH = std::max(ImGui::GetFrameHeight(), t.y + style.ItemSpacing.y) +
+                      globalTheme().layout.sectionSpacingY * themeUiScale();
+        break;
+    }
+    case NodeType::MenuItem: {
+        const ImVec2 label = ImGui::CalcTextSize(n.text.c_str());
+        const ImVec2 shortcut = ImGui::CalcTextSize(n.valueText.c_str());
+        n.measuredW = label.x + shortcut.x + style.ItemSpacing.x * 4.f;
+        n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Menu: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        n.measuredW = t.x + style.FramePadding.x * 2.f;
+        n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Toolbar:
+    case NodeType::StatusBar: {
+        float w = 0.f, h = 0.f;
+        for (int c = n.firstChild; c >= 0; c = tree.nodes[size_t(c)].nextSibling) {
+            UINode &child = tree.nodes[size_t(c)];
+            if (!child.visible) continue;
+            measureNode(tree, c);
+            w += child.measuredW;
+            h = std::max(h, child.measuredH);
+        }
+        n.measuredW = w;
+        const float defaultHeight =
+            (n.type == NodeType::StatusBar ? globalTheme().layout.statusBarHeight
+                                           : globalTheme().layout.toolbarHeight) *
+            themeUiScale();
+        n.measuredH = n.sizeY > 0.f ? n.sizeY : defaultHeight;
+        break;
+    }
+    case NodeType::Toolbox: {
+        int count = 0;
+        for (int c = n.firstChild; c >= 0; c = tree.nodes[size_t(c)].nextSibling) {
+            measureNode(tree, c);
+            if (tree.nodes[size_t(c)].visible) ++count;
+        }
+        const float cell = n.itemHeight > 0.f
+                               ? n.itemHeight
+                               : globalTheme().layout.toolboxCellSize * themeUiScale();
+        const int cols = int(n.value) > 0 ? int(n.value) : std::max(1, std::min(4, count));
+        const int rows = cols > 0 ? (count + cols - 1) / cols : 0;
+        n.measuredW = float(cols) * cell + float(std::max(0, cols - 1)) * style.ItemSpacing.x;
+        n.measuredH = float(rows) * cell + float(std::max(0, rows - 1)) * style.ItemSpacing.y;
+        break;
+    }
+    case NodeType::Sidebar: {
+        float w = 0.f, h = 0.f;
+        measureFlowChildren(tree, n.firstChild, &w, &h);
+        const float defaultWidth = globalTheme().layout.sidebarWidth * themeUiScale();
+        n.measuredW = n.sizeX > 0.f ? n.sizeX : std::max(defaultWidth, w);
+        n.measuredH = n.sizeY > 0.f ? n.sizeY : h;
+        break;
+    }
+    case NodeType::SplitPane: {
+        int first = n.firstChild;
+        int second = first >= 0 ? tree.nodes[size_t(first)].nextSibling : -1;
+        if (first >= 0) measureNode(tree, first);
+        if (second >= 0) measureNode(tree, second);
+        if (n.flexDirection == FlexDirection::Row) {
+            n.measuredW = (first >= 0 ? tree.nodes[size_t(first)].measuredW : 0.f) +
+                          globalTheme().layout.splitterSize * themeUiScale() +
+                          (second >= 0 ? tree.nodes[size_t(second)].measuredW : 0.f);
+            n.measuredH = std::max(first >= 0 ? tree.nodes[size_t(first)].measuredH : 0.f,
+                                   second >= 0 ? tree.nodes[size_t(second)].measuredH : 0.f);
+        } else {
+            n.measuredW = std::max(first >= 0 ? tree.nodes[size_t(first)].measuredW : 0.f,
+                                   second >= 0 ? tree.nodes[size_t(second)].measuredW : 0.f);
+            n.measuredH = (first >= 0 ? tree.nodes[size_t(first)].measuredH : 0.f) +
+                          globalTheme().layout.splitterSize * themeUiScale() +
+                          (second >= 0 ? tree.nodes[size_t(second)].measuredH : 0.f);
+        }
+        break;
+    }
+    case NodeType::Group:
+    case NodeType::Card:
+    case NodeType::MenuBar: {
         float w = 0.f, h = 0.f;
         measureFlowChildren(tree, n.firstChild, &w, &h);
         n.measuredW = w + n.paddingL + n.paddingR;

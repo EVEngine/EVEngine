@@ -51,6 +51,12 @@ card.renderDeck(gfx);        // 画牌库堆 + 剩余张数
 
 自定义 2D 或 3D 表现可调用 `setBuiltInVisuals(false)`，然后每帧在 `update` 后调用 `capturePresentation()`。`getPresentation(i)` 返回只读布局快照，含实例/定义 ID、位置、尺寸、角度、缩放、透明度与交互状态。快照对象只在下一次 `capturePresentation()` 前有效，不要跨帧保存；用 `getInstanceId()` 关联自己的 Sprite/Renderable。
 
+Card 不内置固定的卡牌编辑器。项目可用 `setCardDefinition` / `removeCardDefinition`
+增删定义，用按 ID 排序的 `getCardDefinitionId` 枚举定义，再根据自己的 schema 动态组合
+Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据；
+[`examples/composable-editor/gameplay_components.nut`](../../../examples/composable-editor/gameplay_components.nut)
+展示了用通用 `Schema`、`Definitions` 和 ECS 组合项目专属卡牌工具的做法。
+
 把逻辑手牌映射到 3D 桌面时，用 `newPlaneMapper()` 创建映射器，`setLogicalRect()` 设置 Card 画布，`setPlane()` 设置世界 origin、全宽 U 向量和全高 V 向量。把 `Camera3D.screenToRay()` 的射线交给 `mapRay()`，随后将 `getLogicalX/Y()` 传给 `card.update()`；用 `mapLayout(snapshot.getX(), snapshot.getY())` 取得对应世界坐标。
 
 ## 目标导向指南
@@ -77,7 +83,7 @@ card.renderDeck(gfx);        // 画牌库堆 + 剩余张数
 
 ## API 快查
 
-- `eve.Card()`：`registerCardsFromJson`、`clearCardDefinitions`、`getCardDefinitionCount`、`hasCardDefinition`、`getCardDefinitionName/Kind/Cost/Attack/Health/TintR/TintG/TintB`
+- `eve.Card()`：`registerCardsFromJson`、`clearCardDefinitions`、`getCardDefinitionCount`、`getCardDefinitionId`、`hasCardDefinition`、`setCardDefinition`、`removeCardDefinition`、`getCardDefinitionName/Kind/Cost/Attack/Health/TintR/TintG/TintB`
 - `eve.Card()` 工厂：`newConfig()`、`newCard(defId)`、`newDeck()`、`newZone(id, label, x, y, w, h)`、`newHand(cfg)`
 - `eve.Card()` 空间适配：`newPlaneMapper()`；`CardPlaneMapper.setLogicalRect/setPlane/mapRay/mapLayout/getLogicalX/getLogicalY/getWorldX/getWorldY/getWorldZ`
 - `eve.Card()` 状态：`setConfig`/`getConfig`、`handCount`/`getHand`/`findHand`、`zoneCount`/`getZone`、`getDeck`、`drawCard(handOwner)`

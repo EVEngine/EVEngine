@@ -270,7 +270,8 @@ void Graphics::createTexturedPipeline() {
 vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &vert,
                                                    const std::vector<uint32_t> &frag,
                                                    const vkb::BuiltRenderPass &rp,
-                                                   vk::PipelineLayout layout, BlendMode mode) {
+                                                   vk::PipelineLayout layout, BlendMode mode,
+                                                   vk::SampleCountFlagBits samples) {
     ShaderModulePair modules(device, vert, frag);
     if (mode == BlendMode::Additive || mode == BlendMode::Premultiplied ||
         mode == BlendMode::Multiply) {
@@ -292,6 +293,7 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                            vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
             .setDepthStencil(false, false)
+            .setMultisampler(false, samples)
             .setColorBlending(cbs)
             .build(rp);
     }
@@ -306,6 +308,7 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                            vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
             .setDepthStencil(false, false)
+            .setMultisampler(false, samples)
             .setColorBlending()
             .build(rp);
     }
@@ -320,6 +323,7 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
         .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                        vk::FrontFace::eCounterClockwise)
         .setDepthStencil(false, false)
+        .setMultisampler(false, samples)
         .setAlphaBlending(1)
         .build(rp);
 }
@@ -580,6 +584,15 @@ void Graphics::createUiColorResources(int uiW, int uiH) {
     uiColorSamples = samples;
 
     if (!texSetLayout || !descriptorPool) return;
+    if (!uiTexturePipeline) {
+        const auto vert = embeddedSpirv(textured_vert_spv);
+        const auto frag = embeddedSpirv(textured_frag_spv);
+        uiTexturePipeline = createTexturedStylePipeline(vert, frag, uiRenderPass,
+                                                        texPipelineLayout, BlendMode::Alpha,
+                                                        uiColorSamples);
+        uiTextureOpaquePipeline = createTexturedStylePipeline(
+            vert, frag, uiRenderPass, texPipelineLayout, BlendMode::Opaque, uiColorSamples);
+    }
 
     if (!uiColorSlots.empty() && uiColorWidth == uiW && uiColorHeight == uiH &&
         uiColorFormat == colorFmt && uiColorSamples == samples)
@@ -654,6 +667,14 @@ void Graphics::destroyUiColorTargets() {
 
 void Graphics::destroyUiColorResources() {
     destroyUiColorTargets();
+    if (uiTexturePipeline) {
+        device->destroyPipeline(uiTexturePipeline);
+        uiTexturePipeline = nullptr;
+    }
+    if (uiTextureOpaquePipeline) {
+        device->destroyPipeline(uiTextureOpaquePipeline);
+        uiTextureOpaquePipeline = nullptr;
+    }
     if (uiRenderPass) {
         device->destroyRenderPass(uiRenderPass);
         uiRenderPass = {};

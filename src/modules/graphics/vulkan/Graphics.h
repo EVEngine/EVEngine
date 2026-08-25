@@ -65,6 +65,25 @@ struct TexturedVertex {
     }
 };
 
+/** @brief Backend-internal textured rectangle queued by a UI presenter. */
+struct UiTextureDraw {
+    Texture *texture = nullptr;
+    float x = 0.f;
+    float y = 0.f;
+    float w = 0.f;
+    float h = 0.f;
+    float u0 = 0.f;
+    float v0 = 0.f;
+    float u1 = 1.f;
+    float v1 = 1.f;
+    Color tint{1.f, 1.f, 1.f, 1.f};
+    float clipX = 0.f;
+    float clipY = 0.f;
+    float clipW = 0.f;
+    float clipH = 0.f;
+    bool opaque = false;
+};
+
 struct MeshVertex {
     glm::vec3 pos;
     glm::vec3 normal;
@@ -456,6 +475,12 @@ public:
     void ensureUiColorResources() {
         createUiColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
     }
+    /**
+     * @brief Composite queued engine textures into the currently open UI render pass.
+     * @param commandBuffer Native Vulkan command buffer owned by the active UI pass.
+     * @param draws Ordered textured rectangles in framebuffer coordinates.
+     */
+    void drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws);
     vkb::Instance &getInstance() { return inst; }
     vkb::Swapchain &getSwapchain() { return swapchain; }
     void *getSdlWindow() const { return sdlWindow; }
@@ -538,7 +563,8 @@ private:
     void          ensureShaderOffscreenPipeline(Shader *shader);
     vk::Pipeline  createTexturedStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
                                               const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout,
-                                              BlendMode mode = BlendMode::Alpha);
+                                              BlendMode mode = BlendMode::Alpha,
+                                              vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1);
     vk::Pipeline  createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
                                             vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
                                             vk::SampleCountFlagBits samples);
@@ -1200,6 +1226,8 @@ private:
     vk::SampleCountFlagBits uiColorSamples = vk::SampleCountFlagBits::e1;
     std::vector<UiColorSlot> uiColorSlots;
     vkb::BuiltRenderPass uiRenderPass{};
+    vk::Pipeline uiTexturePipeline{};
+    vk::Pipeline uiTextureOpaquePipeline{};
     UiColorSlot *currentUiColorSlot();
 
     vkb::Present presentModel;
@@ -1242,6 +1270,7 @@ private:
     struct Frame2DBuffers {
         std::vector<vkb::HostVertexBuffer> solidBufs;
         std::vector<vkb::HostVertexBuffer> texBufs;
+        std::vector<vkb::HostVertexBuffer> uiTexBufs;
     };
     std::vector<Frame2DBuffers> frame2dBuffers;  // per swapchain frame slot
     Frame2DBuffers offscreenBuffers;             // synchronous offscreen path

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "procgen/Params.h"
+#include "procgen/ParamSchema.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 
@@ -22,18 +23,34 @@ using TextureRecipeFn =
 
 class TextureRecipeRegistry {
 public:
+    /** @brief Access the process-wide texture recipe registry. @return Registry instance. */
     static TextureRecipeRegistry &instance();
 
+    /** @brief Register a recipe without metadata. @param id Stable recipe id. @param fn Generator callback. */
     void registerRecipe(const std::string &id, TextureRecipeFn fn);
+    /** @brief Register a texture recipe with reusable metadata. @param descriptor Recipe schema. @param fn Generator callback. */
+    void registerRecipe(RecipeDescriptor descriptor, TextureRecipeFn fn);
+    /** @brief Test whether a recipe exists. @param id Recipe id. @return True when registered. */
     bool has(const std::string &id) const;
+    /** @brief Generate an image. @param id Recipe id. @param params Values. @param error Failure text. @return Caller-owned image or nullptr. */
     image::ImageData *generate(const std::string &id, const Params &params, std::string &error) const;
+    /** @brief List registered recipe ids. @return Sorted ids. */
     std::vector<std::string> list() const;
+    /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
+    const RecipeDescriptor *descriptor(const std::string &id) const;
+    /** @brief Fill missing values from metadata. @param id Recipe id. @param params Values to update. @return False for an unknown recipe. */
+    bool applyDefaults(const std::string &id, Params &params) const;
 
+    /** @brief Register engine-provided recipes once. */
     void registerBuiltins();
 
 private:
+    struct Entry {
+        TextureRecipeFn fn;
+        RecipeDescriptor descriptor;
+    };
     TextureRecipeRegistry() = default;
-    std::unordered_map<std::string, TextureRecipeFn> recipes_;
+    std::unordered_map<std::string, Entry> recipes_;
     bool builtinsRegistered_ = false;
 };
 
@@ -91,5 +108,8 @@ struct TextureRecipeDef {
 
 /** @brief All built-in texture definitions (albedo + PBR). Populated lazily. */
 const std::vector<TextureRecipeDef> &builtinTextureDefs();
+
+/** @brief Build editable metadata for a texture definition. @param definition Definition to describe. @return Recipe metadata. */
+RecipeDescriptor makeTextureRecipeDescriptor(const TextureRecipeDef &definition);
 
 }  // namespace eve::procgen

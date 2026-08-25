@@ -457,6 +457,16 @@ int Procgen::getPaletteGid(const std::string &palette, const std::string &semant
     return palettes_.getGid(palette, semantic);
 }
 
+namespace {
+
+const ParamDescriptor *algorithmParam(const std::string &algorithmId, int index) {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    if (!descriptor || index < 0 || index >= int(descriptor->params.size())) return nullptr;
+    return &descriptor->params[size_t(index)];
+}
+
+}  // namespace
+
 int Procgen::getAlgorithmCount() const {
     algorithmIdsCache_ = GeneratorRegistry::instance().list();
     return int(algorithmIdsCache_.size());
@@ -470,6 +480,110 @@ std::string Procgen::getAlgorithmId(int index) const {
 
 bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
+}
+
+RecipeDescriptor *Procgen::getAlgorithmSchema(const std::string &algorithmId) const {
+    const RecipeDescriptor *schema = GeneratorRegistry::instance().descriptor(algorithmId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+std::string Procgen::getAlgorithmDisplayName(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? descriptor->displayName : std::string{};
+}
+
+std::string Procgen::getAlgorithmCategory(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? descriptor->category : std::string{};
+}
+
+int Procgen::getAlgorithmParamCount(const std::string &algorithmId) const {
+    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+    return descriptor ? int(descriptor->params.size()) : 0;
+}
+
+std::string Procgen::getAlgorithmParamKey(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->key : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamLabel(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->displayName : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamDescription(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->description : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamCategory(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->category : std::string{};
+}
+
+std::string Procgen::getAlgorithmParamKind(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    if (!param) return {};
+    switch (param->kind) {
+        case ParamKind::Integer: return "int";
+        case ParamKind::Float: return "float";
+        case ParamKind::Boolean: return "bool";
+        case ParamKind::String: return "string";
+        case ParamKind::Choice: return "choice";
+    }
+    return {};
+}
+
+std::string Procgen::getAlgorithmParamDefault(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? param->defaultValue : std::string{};
+}
+
+bool Procgen::algorithmParamHasMinimum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->hasMinimum;
+}
+
+bool Procgen::algorithmParamHasMaximum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->hasMaximum;
+}
+
+float Procgen::getAlgorithmParamMinimum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->minimum) : 0.f;
+}
+
+float Procgen::getAlgorithmParamMaximum(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->maximum) : 0.f;
+}
+
+float Procgen::getAlgorithmParamStep(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? float(param->step) : 0.f;
+}
+
+bool Procgen::isAlgorithmParamAdvanced(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param && param->advanced;
+}
+
+int Procgen::getAlgorithmParamChoiceCount(const std::string &algorithmId, int index) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+    return param ? int(param->choices.size()) : 0;
+}
+
+std::string Procgen::getAlgorithmParamChoice(const std::string &algorithmId, int paramIndex,
+                                             int choiceIndex) const {
+    const ParamDescriptor *param = algorithmParam(algorithmId, paramIndex);
+    if (!param || choiceIndex < 0 || choiceIndex >= int(param->choices.size())) return {};
+    return param->choices[size_t(choiceIndex)];
+}
+
+bool Procgen::applyAlgorithmDefaults(const std::string &algorithmId, Params *params) const {
+    return params && GeneratorRegistry::instance().applyDefaults(algorithmId, *params);
 }
 
 bool Procgen::autotileGrid(Grid2D *grid) {
@@ -557,6 +671,18 @@ bool Procgen::hasTextureRecipe(const std::string &recipeId) const {
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
+RecipeDescriptor *Procgen::getTextureRecipeSchema(const std::string &recipeId) const {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    const RecipeDescriptor *schema = TextureRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyTextureRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    TextureRecipeRegistry::instance().registerBuiltins();
+    return TextureRecipeRegistry::instance().applyDefaults(recipeId, *params);
+}
+
 CloudField *Procgen::newCloudField() { return new CloudField(); }
 
 CloudShadow *Procgen::newCloudShadow() { return new CloudShadow(); }
@@ -631,6 +757,18 @@ bool Procgen::hasPbrRecipe(const std::string &recipeId) const {
     return PbrRecipeRegistry::instance().has(recipeId);
 }
 
+RecipeDescriptor *Procgen::getPbrRecipeSchema(const std::string &recipeId) const {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    const RecipeDescriptor *schema = PbrRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyPbrRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    return PbrRecipeRegistry::instance().applyDefaults(recipeId, *params);
+}
+
 MeshBuild *Procgen::buildMesh(const std::string &recipeId, Params *params) {
     lastError_.clear();
     if (!params) {
@@ -682,6 +820,18 @@ bool Procgen::hasMeshRecipe(const std::string &recipeId) const {
     return MeshRecipeRegistry::instance().has(recipeId);
 }
 
+RecipeDescriptor *Procgen::getMeshRecipeSchema(const std::string &recipeId) const {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    const RecipeDescriptor *schema = MeshRecipeRegistry::instance().descriptor(recipeId);
+    return schema ? new RecipeDescriptor(*schema) : nullptr;
+}
+
+bool Procgen::applyMeshRecipeDefaults(const std::string &recipeId, Params *params) const {
+    if (!params) return false;
+    MeshRecipeRegistry::instance().registerBuiltins();
+    return MeshRecipeRegistry::instance().applyDefaults(recipeId, *params);
+}
+
 TerrainSampler *Procgen::newTerrainSampler() { return new TerrainSampler(); }
 
 Heightmap *Procgen::newHeightmap(int width, int height) {
@@ -719,6 +869,28 @@ bool Procgen::heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out)
 void Procgen::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
+
+    auto recipe = table.addClass<RecipeDescriptor>(
+        "ProcgenRecipeSchema",
+        std::function<RecipeDescriptor *()>([]() -> RecipeDescriptor * { return nullptr; }), true);
+    recipe.addFunc("getId", &RecipeDescriptor::getId);
+    recipe.addFunc("getDisplayName", &RecipeDescriptor::getDisplayName);
+    recipe.addFunc("getCategory", &RecipeDescriptor::getCategory);
+    recipe.addFunc("getParamCount", &RecipeDescriptor::getParamCount);
+    recipe.addFunc("getParamKey", &RecipeDescriptor::getParamKey);
+    recipe.addFunc("getParamLabel", &RecipeDescriptor::getParamLabel);
+    recipe.addFunc("getParamDescription", &RecipeDescriptor::getParamDescription);
+    recipe.addFunc("getParamCategory", &RecipeDescriptor::getParamCategory);
+    recipe.addFunc("getParamKind", &RecipeDescriptor::getParamKind);
+    recipe.addFunc("getParamDefault", &RecipeDescriptor::getParamDefault);
+    recipe.addFunc("paramHasMinimum", &RecipeDescriptor::paramHasMinimum);
+    recipe.addFunc("paramHasMaximum", &RecipeDescriptor::paramHasMaximum);
+    recipe.addFunc("getParamMinimum", &RecipeDescriptor::getParamMinimum);
+    recipe.addFunc("getParamMaximum", &RecipeDescriptor::getParamMaximum);
+    recipe.addFunc("getParamStep", &RecipeDescriptor::getParamStep);
+    recipe.addFunc("isParamAdvanced", &RecipeDescriptor::isParamAdvanced);
+    recipe.addFunc("getParamChoiceCount", &RecipeDescriptor::getParamChoiceCount);
+    recipe.addFunc("getParamChoice", &RecipeDescriptor::getParamChoice);
 
     auto params = table.addClass<Params>(
         "ProcgenParams", std::function<Params *()>([]() -> Params * { return nullptr; }), true);
@@ -937,6 +1109,12 @@ void Procgen::expose(ssq::Table &table) {
         "ProcgenPbrMaterial",
         std::function<PbrTextureSet *()>([]() -> PbrTextureSet * { return nullptr; }), true);
     pbr.addFunc("destroy", &PbrTextureSet::destroy);
+    pbr.addFunc("getAlbedo", &PbrTextureSet::getAlbedo);
+    pbr.addFunc("getNormal", &PbrTextureSet::getNormal);
+    pbr.addFunc("getRoughness", &PbrTextureSet::getRoughness);
+    pbr.addFunc("getMetallic", &PbrTextureSet::getMetallic);
+    pbr.addFunc("getHeight", &PbrTextureSet::getHeight);
+    pbr.addFunc("getAo", &PbrTextureSet::getAo);
     pbr.addFunc("getAlbedoWidth", [](const PbrTextureSet *s) { return s->albedo->getWidth(); });
     pbr.addFunc("getAlbedoHeight", [](const PbrTextureSet *s) { return s->albedo->getHeight(); });
     pbr.addFunc("getNormalWidth", [](const PbrTextureSet *s) { return s->normal->getWidth(); });
@@ -997,6 +1175,25 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getAlgorithmCount", &Procgen::getAlgorithmCount);
     cls.addFunc("getAlgorithmId", &Procgen::getAlgorithmId);
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
+    cls.addFunc("getAlgorithmSchema", &Procgen::getAlgorithmSchema);
+    cls.addFunc("getAlgorithmDisplayName", &Procgen::getAlgorithmDisplayName);
+    cls.addFunc("getAlgorithmCategory", &Procgen::getAlgorithmCategory);
+    cls.addFunc("getAlgorithmParamCount", &Procgen::getAlgorithmParamCount);
+    cls.addFunc("getAlgorithmParamKey", &Procgen::getAlgorithmParamKey);
+    cls.addFunc("getAlgorithmParamLabel", &Procgen::getAlgorithmParamLabel);
+    cls.addFunc("getAlgorithmParamDescription", &Procgen::getAlgorithmParamDescription);
+    cls.addFunc("getAlgorithmParamCategory", &Procgen::getAlgorithmParamCategory);
+    cls.addFunc("getAlgorithmParamKind", &Procgen::getAlgorithmParamKind);
+    cls.addFunc("getAlgorithmParamDefault", &Procgen::getAlgorithmParamDefault);
+    cls.addFunc("algorithmParamHasMinimum", &Procgen::algorithmParamHasMinimum);
+    cls.addFunc("algorithmParamHasMaximum", &Procgen::algorithmParamHasMaximum);
+    cls.addFunc("getAlgorithmParamMinimum", &Procgen::getAlgorithmParamMinimum);
+    cls.addFunc("getAlgorithmParamMaximum", &Procgen::getAlgorithmParamMaximum);
+    cls.addFunc("getAlgorithmParamStep", &Procgen::getAlgorithmParamStep);
+    cls.addFunc("isAlgorithmParamAdvanced", &Procgen::isAlgorithmParamAdvanced);
+    cls.addFunc("getAlgorithmParamChoiceCount", &Procgen::getAlgorithmParamChoiceCount);
+    cls.addFunc("getAlgorithmParamChoice", &Procgen::getAlgorithmParamChoice);
+    cls.addFunc("applyAlgorithmDefaults", &Procgen::applyAlgorithmDefaults);
     cls.addFunc("autotileGrid", &Procgen::autotileGrid);
     cls.addFunc("randomSeed", &Procgen::randomSeed);
     cls.addFunc("lastError", &Procgen::lastError);
@@ -1007,15 +1204,21 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getTextureRecipeCount", &Procgen::getTextureRecipeCount);
     cls.addFunc("getTextureRecipeId", &Procgen::getTextureRecipeId);
     cls.addFunc("hasTextureRecipe", &Procgen::hasTextureRecipe);
+    cls.addFunc("getTextureRecipeSchema", &Procgen::getTextureRecipeSchema);
+    cls.addFunc("applyTextureRecipeDefaults", &Procgen::applyTextureRecipeDefaults);
     cls.addFunc("generatePbrMaterial", &Procgen::generatePbrMaterial);
     cls.addFunc("getPbrRecipeCount", &Procgen::getPbrRecipeCount);
     cls.addFunc("getPbrRecipeId", &Procgen::getPbrRecipeId);
     cls.addFunc("hasPbrRecipe", &Procgen::hasPbrRecipe);
+    cls.addFunc("getPbrRecipeSchema", &Procgen::getPbrRecipeSchema);
+    cls.addFunc("applyPbrRecipeDefaults", &Procgen::applyPbrRecipeDefaults);
     cls.addFunc("buildMesh", &Procgen::buildMesh);
     cls.addFunc("generateMesh", &Procgen::generateMesh);
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
     cls.addFunc("getMeshRecipeId", &Procgen::getMeshRecipeId);
     cls.addFunc("hasMeshRecipe", &Procgen::hasMeshRecipe);
+    cls.addFunc("getMeshRecipeSchema", &Procgen::getMeshRecipeSchema);
+    cls.addFunc("applyMeshRecipeDefaults", &Procgen::applyMeshRecipeDefaults);
     cls.addFunc("newTerrainSampler", &Procgen::newTerrainSampler);
     cls.addFunc("newHeightmap", &Procgen::newHeightmap);
     cls.addFunc("generateHeightmap", &Procgen::generateHeightmap);

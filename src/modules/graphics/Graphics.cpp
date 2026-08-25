@@ -14,6 +14,7 @@
 #include "graphics/AlphaMask.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Font.h"
+#include "graphics/FogVolume.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
@@ -577,6 +578,7 @@ void Graphics::expose(ssq::Table& table) {
     vol.addFunc("configureFroxelGrid", &Volumetric::configureFroxelGrid);
     vol.addFunc("clearFroxelGrid", &Volumetric::clearFroxelGrid);
     vol.addFunc("injectFroxelHeightFog", &Volumetric::injectFroxelHeightFog);
+    vol.addFunc("injectFroxelLocalVolume", &Volumetric::injectFroxelLocalVolume);
     vol.addFunc("integrateFroxel", &Volumetric::integrateFroxel);
     vol.addFunc("uploadFroxel", &Volumetric::uploadFroxel);
     vol.addFunc("applyFroxel", &Volumetric::applyFroxel);
@@ -585,6 +587,20 @@ void Graphics::expose(ssq::Table& table) {
     vol.addFunc("getRayMarchShader", &Volumetric::getRayMarchShader);
     vol.addFunc("getFogShader", &Volumetric::getFogShader);
     vol.addFunc("getCloudShader", &Volumetric::getCloudShader);
+
+    auto fogVolume = table.addClass<FogVolume>("FogVolume");
+    fogVolume.addFunc("setShape", &FogVolume::setShape);
+    fogVolume.addFunc("getShape", &FogVolume::getShapeName);
+    fogVolume.addFunc("setPosition", &FogVolume::setPosition);
+    fogVolume.addFunc("setSize", &FogVolume::setSize);
+    fogVolume.addFunc("setExtinction", &FogVolume::setExtinction);
+    fogVolume.addFunc("getExtinction", &FogVolume::getExtinction);
+    fogVolume.addFunc("setAlbedo", &FogVolume::setAlbedo);
+    fogVolume.addFunc("setEmissive", &FogVolume::setEmissive);
+    fogVolume.addFunc("setAnisotropy", &FogVolume::setAnisotropy);
+    fogVolume.addFunc("getAnisotropy", &FogVolume::getAnisotropy);
+    fogVolume.addFunc("setEdgeFalloff", &FogVolume::setEdgeFalloff);
+    fogVolume.addFunc("getEdgeFalloff", &FogVolume::getEdgeFalloff);
 
     auto grassField = table.addClass<GrassField>(
         "GrassField", std::function<GrassField*()>([]() -> GrassField* { return nullptr; }), true);
@@ -849,6 +865,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setMesh3DCameraPos",
                 std::function<void(Graphics *, float, float, float)>(setMesh3DCameraPosScript));
     cls.addFunc("renderScene3DToCanvas", &Graphics::renderScene3DToCanvas);
+    cls.addFunc("drawScene3DRGBA", &Graphics::drawScene3DRGBA);
     cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);
     cls.addFunc("drawCanvas", &Graphics::drawCanvas);

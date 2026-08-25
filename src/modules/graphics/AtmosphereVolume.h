@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <vector>
 
+#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
@@ -71,6 +72,9 @@ public:
     /** @brief Voxelize one analytic local volume over the supplied world bounds. */
     void injectLocalVolume(const FogVolume &volume, const glm::vec3 &worldMin,
                            const glm::vec3 &worldMax);
+
+    /** @brief Voxelize one analytic local volume in the active camera frustum. */
+    void injectLocalVolumeFrustum(const FogVolume &volume, const glm::mat4 &invViewProj);
 
     /** @brief Voxelize a procedural density graph into this volume. */
     void injectDensityGraph(const VolumeDensityGraph &graph, const glm::vec3 &worldMin,

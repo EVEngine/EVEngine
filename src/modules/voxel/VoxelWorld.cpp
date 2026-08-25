@@ -15,6 +15,8 @@
 
 namespace eve::voxel {
 
+VoxelWorld::VoxelWorld() = default;
+VoxelWorld::VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
 VoxelWorld::~VoxelWorld() = default;
 
 void VoxelWorld::setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight,
@@ -133,12 +135,16 @@ bool VoxelWorld::hasChunk(int cx, int cy, int cz) const {
     return chunks_.find(key(cx, cy, cz)) != chunks_.end();
 }
 
-void VoxelWorld::removeChunk(int cx, int cy, int cz) { chunks_.erase(key(cx, cy, cz)); }
+void VoxelWorld::removeChunk(int cx, int cy, int cz) {
+    if (chunks_.erase(key(cx, cy, cz)) > 0) ++revision_;
+}
 
 void VoxelWorld::clear() {
+    const bool changed = !chunks_.empty();
     chunks_.clear();
     visible_.clear();
     visibleChunkKeys_.clear();
+    if (changed) ++revision_;
 }
 
 int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks) {
@@ -159,6 +165,7 @@ int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int r
         // Batch pointers may dangle after eviction; force re-selection.
         visible_.clear();
         visibleChunkKeys_.clear();
+        ++revision_;
     }
     return int(evict.size());
 }
@@ -209,7 +216,10 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                 ++stats.created;
             }
 
-    if (stats.created > 0) remeshDirty();
+    if (stats.created > 0) {
+        ++revision_;
+        remeshDirty();
+    }
     return stats;
 }
 
@@ -284,6 +294,7 @@ bool VoxelWorld::deserializeWorld(const uint8_t *data, size_t size) {
         c->setVoxelData(p);
         p += voxelBytes;
     }
+    ++revision_;
     return true;
 }
 
@@ -456,6 +467,7 @@ void VoxelWorld::setVoxel(int wx, int wy, int wz, uint8_t texId) {
     const int lz = wz - cz * kChunkSize;
 
     Chunk *c = getChunk(cx, cy, cz);
+    if (c && c->get(lx, ly, lz) == texId) return;
     if (texId == 0) {
         // Clearing an unallocated chunk is a no-op (air needs no storage).
         if (!c) return;
@@ -464,6 +476,7 @@ void VoxelWorld::setVoxel(int wx, int wy, int wz, uint8_t texId) {
         if (!c) c = getOrCreateChunk(cx, cy, cz);
         c->set(lx, ly, lz, texId);
     }
+    ++revision_;
     markNeighborChunksDirty(cx, cy, cz, lx, ly, lz);
 }
 

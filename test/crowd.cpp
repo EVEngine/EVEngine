@@ -386,3 +386,31 @@ TEST_CASE("crowd.sim.removeAgentSwapPop") {
 
     crowd->clearAgents();
 }
+
+TEST_CASE("crowd.authoring.namedAgentsSurviveCompactStorage") {
+    auto *crowd = Crowd::create();
+    REQUIRE(crowd != nullptr);
+    crowd->clearAgents();
+    crowd->resizeField(8, 8, 16.f, 0.f, 0.f);
+    crowd->buildFlowField(7, 7);
+
+    const int anonymous = crowd->addAgent(0.f, 0.f, 0.f, 4.f);
+    const int alpha = crowd->addNamedAgent("unit.alpha", 16.f, 0.f, 0.f, 4.f);
+    const int bravo = crowd->addNamedAgent("unit.bravo", 32.f, 0.f, 0.f, 4.f);
+    REQUIRE(anonymous >= 0);
+    REQUIRE(alpha >= 0);
+    REQUIRE(bravo >= 0);
+    CHECK(!crowd->hasNamedAgent(""));
+    CHECK_EQ(crowd->addNamedAgent("unit.alpha", 0.f, 0.f, 0.f, 4.f), -1);
+
+    REQUIRE(crowd->removeAgent(alpha));
+    CHECK(!crowd->hasNamedAgent("unit.alpha"));
+    CHECK(crowd->hasNamedAgent("unit.bravo"));
+    const int compactedBravo = crowd->getNamedAgentIndex("unit.bravo");
+    CHECK_EQ(compactedBravo, alpha);
+    CHECK_EQ(crowd->getAgentStableId(compactedBravo), std::string("unit.bravo"));
+    CHECK(crowd->getAgentStableId(anonymous).empty());
+    REQUIRE(crowd->removeNamedAgent("unit.bravo"));
+    CHECK_EQ(crowd->getNamedAgentIndex("unit.bravo"), -1);
+    crowd->clearAgents();
+}
