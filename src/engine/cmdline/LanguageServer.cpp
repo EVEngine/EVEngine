@@ -1,4 +1,11 @@
 #include "cmdline.h"
+
+#include <CLI11.hpp>
+
+#include <iostream>
+#include <string>
+
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "scripts.h"
 
 #include "common/Runtime.h"
@@ -10,19 +17,17 @@
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/JSON/Stringifier.h>
-#include <CLI11.hpp>
-
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <regex>
 #include <sstream>
-#include <string>
 #include <unordered_map>
+#endif
 
 namespace eve::cmd {
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 namespace {
 
 std::string stringify(const Poco::Dynamic::Var& value) {
@@ -356,6 +361,7 @@ private:
 };
 
 }  // namespace
+#endif
 
 struct LanguageServerArgs : Handler {
     std::string root;
