@@ -174,7 +174,7 @@ jobs:
     timeout-minutes: 60
     env:
       SCCACHE_GHA_ENABLED: "true"
-      SCCACHE_GHA_VERSION: evengine-cpp-v1-${{ runner.os }}-${{ runner.arch }}
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -653,7 +653,7 @@ jobs:
     timeout-minutes: 60
     env:
       SCCACHE_GHA_ENABLED: "true"
-      SCCACHE_GHA_VERSION: evengine-cpp-v1-${{ runner.os }}-${{ runner.arch }}
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
