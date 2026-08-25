@@ -2,6 +2,7 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/shaders/WaterfallWgsl.h"
 #include "graphics/shaders/waterfall_mesh_frag_spv.inc"
 
 #include <algorithm>
@@ -29,9 +30,14 @@ const int kUniformCount = int(sizeof(kUniformNames) / sizeof(kUniformNames[0]));
 }  // namespace
 
 Shader *newWaterfallShader(Graphics *gfx) {
-    std::vector<uint32_t> frag(waterfall_mesh_frag_spv,
-                               waterfall_mesh_frag_spv + waterfall_mesh_frag_spv_count);
-    Shader *sh = gfx->newMeshShaderFromSpv({}, frag);
+    Shader *sh = nullptr;
+    if (gfx->getBackendName() == "webgpu") {
+        sh = gfx->newMeshShaderFromWgsl({}, shaders::kWaterfallFragWgsl);
+    } else {
+        std::vector<uint32_t> frag(waterfall_mesh_frag_spv,
+                                   waterfall_mesh_frag_spv + waterfall_mesh_frag_spv_count);
+        sh = gfx->newMeshShaderFromSpv({}, frag);
+    }
     for (int i = 0; i < kUniformCount; ++i) {
         if (std::string(kUniformNames[i]) == "waterCol")
             sh->declareVec3(kUniformNames[i]);
