@@ -211,17 +211,6 @@ int liveParticleCount(ParticleEmitter* emitter) {
     return gpu->residentActive ? gpu->estimatedAlive + emitter->sim()->alive : emitter->sim()->alive;
 }
 
-bool supportsResidentGpu(const ParticleEmitter::Config& cfg, const ParticleEmitter::Draw& draw) {
-    // The first resident backend intentionally accepts only behavior that can
-    // remain entirely on the GPU. Gameplay callbacks, custom curves and
-    // per-particle lights keep using the deterministic CPU path.
-    return draw.canvas == nullptr && draw.shader == nullptr && cfg.collisionMode == "none" &&
-           !cfg.collisionBoundsEnabled && !cfg.worldCollision && cfg.forceFields.empty() && cfg.subEmitters.empty() &&
-           !cfg.lights.enabled && cfg.velocityCurve.empty() && cfg.sizeCurve.empty() && cfg.rotationCurve.empty() &&
-           cfg.colorGradient.empty() && cfg.sortMode == "none" && cfg.renderMode != "ribbon" &&
-           cfg.materialMode == "unlit";
-}
-
 graphics::GpuParticleSpawn gpuSpawn(const Particle& particle) {
     graphics::GpuParticleSpawn out;
     out.x          = particle.x;
@@ -412,7 +401,7 @@ void ParticleSimSystem::update(float dt) {
         auto skinSrc = emitter->skinSource();
         auto gpuSim  = emitter->gpuSim();
         syncEmitterSources(*cfg, *sim, *attach, *skinSrc);
-        const bool gpuEligible = supportsResidentGpu(*cfg, *draw);
+        const bool gpuEligible = emitter->isGpuFeatureSetSupported();
         if (gpuSim->residentActive && (!cfg->gpuSimulation || !gpuEligible)) deactivateResidentGpu(gfx, *gpuSim);
         const bool wantsResident = cfg->gpuSimulation && gpuEligible;
         const bool handled       = wantsResident && advanceResidentGpu(gfx, emitter, dt);

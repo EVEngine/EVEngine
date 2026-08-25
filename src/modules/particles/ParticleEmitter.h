@@ -429,6 +429,12 @@ public:
     bool getGpuSimulation();
     /** @brief Return true after this emitter has migrated to a resident GPU backend. */
     bool isGpuSimulationActive();
+    /** @brief Return whether the configured feature set can use resident GPU simulation. */
+    bool isGpuFeatureSetSupported();
+    /** @brief Return "gpu" for active resident simulation, otherwise "cpu". */
+    std::string getSimulationBackend();
+    /** @brief Explain CPU fallback; empty means GPU active, "pending_activation" means eligible. */
+    std::string getGpuFallbackReason();
 
     /** @brief Set budget order; higher values are processed first. */
     void setPriority(int priority);

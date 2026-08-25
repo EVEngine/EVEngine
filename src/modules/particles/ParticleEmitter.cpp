@@ -65,6 +65,22 @@ std::string normalizePlane(const std::string &plane) {
     return "xy";
 }
 
+const char* gpuFeatureFallbackReason(const ParticleEmitter::Config& cfg, const ParticleEmitter::Draw& draw) {
+    if (draw.canvas != nullptr) return "canvas";
+    if (draw.shader != nullptr) return "custom_shader";
+    if (cfg.collisionMode != "none" || cfg.collisionBoundsEnabled || cfg.worldCollision) return "collision";
+    if (!cfg.forceFields.empty()) return "force_fields";
+    if (!cfg.subEmitters.empty()) return "sub_emitters";
+    if (cfg.lights.enabled) return "particle_lights";
+    if (!cfg.velocityCurve.empty() || !cfg.sizeCurve.empty() || !cfg.rotationCurve.empty() ||
+        !cfg.colorGradient.empty())
+        return "curves";
+    if (cfg.sortMode != "none") return "sorting";
+    if (cfg.renderMode == "ribbon") return "ribbon";
+    if (cfg.materialMode != "unlit") return "lit_material";
+    return "";
+}
+
 void projectToPlane(float x, float y, float z, const std::string &plane, float scale, float &ox,
                     float &oy) {
     if (plane == "xz") {
@@ -877,6 +893,19 @@ void ParticleEmitter::setGpuSimulation(bool enable) {
 bool ParticleEmitter::getGpuSimulation() { return config()->gpuSimulation; }
 
 bool ParticleEmitter::isGpuSimulationActive() { return gpuSim()->residentActive; }
+
+bool ParticleEmitter::isGpuFeatureSetSupported() { return gpuFeatureFallbackReason(*config(), *draw())[0] == '\0'; }
+
+std::string ParticleEmitter::getSimulationBackend() { return gpuSim()->residentActive ? "gpu" : "cpu"; }
+
+std::string ParticleEmitter::getGpuFallbackReason() {
+    if (gpuSim()->residentActive) return {};
+    if (!config()->gpuSimulation) return "disabled";
+    if (const char* reason = gpuFeatureFallbackReason(*config(), *draw()); reason[0] != '\0') return reason;
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    if (!gfx || !gfx->supportsGpuParticles()) return "backend_unavailable";
+    return "pending_activation";
+}
 
 void ParticleEmitter::setCollision(const std::string &mode, float radius, float restitution,
                                    float lifetimeLoss) {

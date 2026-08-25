@@ -211,6 +211,9 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setGpuSimulation", &ParticleEmitter::setGpuSimulation);
     em.addFunc("getGpuSimulation", &ParticleEmitter::getGpuSimulation);
     em.addFunc("isGpuSimulationActive", &ParticleEmitter::isGpuSimulationActive);
+    em.addFunc("isGpuFeatureSetSupported", &ParticleEmitter::isGpuFeatureSetSupported);
+    em.addFunc("getSimulationBackend", &ParticleEmitter::getSimulationBackend);
+    em.addFunc("getGpuFallbackReason", &ParticleEmitter::getGpuFallbackReason);
     em.addFunc("setPriority", &ParticleEmitter::setPriority);
     em.addFunc("getPriority", &ParticleEmitter::getPriority);
     em.addFunc("setMinimumQuality", &ParticleEmitter::setMinimumQuality);

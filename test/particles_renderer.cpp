@@ -39,8 +39,14 @@ TEST_CASE("particles.renderer.facingAndSortContract") {
 
     emitter->setMaterialMode("lit");
     CHECK_EQ(emitter->getMaterialMode(), std::string("lit"));
+    emitter->setGpuSimulation(true);
+    CHECK(!emitter->isGpuFeatureSetSupported());
+    CHECK_EQ(emitter->getSimulationBackend(), std::string("cpu"));
+    CHECK_EQ(emitter->getGpuFallbackReason(), std::string("lit_material"));
     emitter->setMaterialMode("unsupported");
     CHECK_EQ(emitter->getMaterialMode(), std::string("unlit"));
+    CHECK(emitter->isGpuFeatureSetSupported());
+    CHECK_EQ(emitter->getGpuFallbackReason(), std::string("backend_unavailable"));
 }
 
 TEST_CASE("particles.renderer.jsonContract") {
