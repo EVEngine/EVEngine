@@ -80,6 +80,36 @@ accepts SPIR-V/GLSL assets and browser WebGPU accepts WGSL. Stale Vulkan-only
 documentation for decals, dynamic updates, SpriteStack and standalone virtual
 geometry has been corrected to match the implementations and tests.
 
+## Final re-audit findings (2026-08-25)
+
+A second source audit covered the WebGPU graphics, GPGPU and virtual-geometry
+implementations after HZB work landed. It found no remaining silent graphics
+fallbacks or public render settings ignored only by WebGPU. Explicit SPIR-V
+rejections remain intentional: Vulkan consumes SPIR-V while WebGPU consumes
+WGSL. Adapter name, vendor and memory reporting also remain intentionally
+unavailable on privacy-preserving browser WebGPU; the capability reports the
+backend and readiness without inventing hardware data.
+
+The audit did expose two reference-path defects while warning-only assertions
+were converted to fatal conformance checks. Vulkan failed to reject an
+out-of-range dynamic-mesh index, and VKBuilder discarded custom color-blend
+attachments while constructing Vulkan pipelines. Both are fixed. The latter
+made Vulkan additive, premultiplied and multiply pipelines use the requested
+blend equations instead of an accidental default.
+
+All assertions in `graphics_backend_parity.cpp` are now fatal. The complete
+suite passes 13/13 isolated cases on both native Vulkan and native Dawn. A fresh
+pairwise comparison of 31 named 64x64 artifacts produced byte-identical RGB for
+29 scenes. Texture cell bombing has mean linear-RGB error 0.000115 (p99 0), and
+parallax mapping has mean 0.001434 with p99 0.068842; both remain below the
+documented lit-3D limits. Artifact manifests now identify 3D scenes as `lit3d`
+instead of applying the stricter `flat2d` profile indiscriminately.
+
+Remaining work is feature growth shared by both backends rather than a current
+WebGPU/Vulkan parity defect: DAG/SSE selection for integrated virtual geometry,
+broader animated/effect artifact coverage, and browser execution of the full
+native parity matrix.
+
 ## Test architecture
 
 ### Backend-neutral conformance tests

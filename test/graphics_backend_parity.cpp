@@ -75,12 +75,15 @@ void writeParityArtifact(const eve::image::ImageData &image, const std::string &
 
     std::ofstream manifest(directory / (scene + ".json"));
     REQUIRE(manifest.good());
+    const bool lit3d = scene.starts_with("pbr_") || scene.starts_with("surface_") ||
+                       scene.starts_with("masked_") || scene.starts_with("gbuffer_") ||
+                       scene.starts_with("decal_") || scene == "dither" || scene == "coverage";
     manifest << "{\n"
              << "  \"scene\": \"" << scene << "\",\n"
              << "  \"backend\": \"" << backend << "\",\n"
              << "  \"width\": " << image.getWidth() << ",\n"
              << "  \"height\": " << image.getHeight() << ",\n"
-             << "  \"profile\": \"flat2d\"\n"
+             << "  \"profile\": \"" << (lit3d ? "lit3d" : "flat2d") << "\"\n"
              << "}\n";
     REQUIRE(manifest.good());
 }
