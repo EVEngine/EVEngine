@@ -453,7 +453,9 @@ fn cloudShadowFactor(worldPos: vec3f) -> f32 {
 }
 fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
-    let uv = ndc.xy * 0.5 + 0.5;
+    // Shadow-map vertices mirror clip Y for WebGPU. Undo that mirror when
+    // projecting the shared Vulkan-convention light matrix for sampling.
+    let uv = vec2f(ndc.x, -ndc.y) * 0.5 + 0.5;
     let depth = ndc.z;
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0) {
         return 1.0;
@@ -794,7 +796,9 @@ fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: v
 fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
-    let uv = ndc.xy * 0.5 + 0.5;
+    // Shadow-map vertices mirror clip Y for WebGPU. Undo that mirror when
+    // projecting the shared Vulkan-convention light matrix for sampling.
+    let uv = vec2f(ndc.x, -ndc.y) * 0.5 + 0.5;
     let depth = ndc.z;
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0) {
         return 1.0;

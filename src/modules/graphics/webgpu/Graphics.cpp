@@ -4339,12 +4339,12 @@ void Graphics::present() {
 
     // 1. Shadow passes (CSM cascade layers).
     if (shadowDepthArray) {
-        bool anyShadow = false;
-        for (int c = 0; c < ShadowConfig::kCascades; ++c)
-            if (!shadowCascadeDraws[c].empty()) anyShadow = true;
-        if (anyShadow) {
+        // Every cascade is sampled by receivers, including cascades with no
+        // caster draw this frame. Clear all layers while shadows are active so
+        // an empty cascade deterministically means fully lit (depth 1) instead
+        // of retaining undefined or previous-frame depth.
+        if (mesh3dShadows.active) {
             for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-                if (shadowCascadeDraws[c].empty()) continue;
                 WGPUTextureViewDescriptor lvd{};
                 lvd.format = WGPUTextureFormat_Depth32Float;
                 lvd.dimension = WGPUTextureViewDimension_2D;

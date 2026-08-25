@@ -91,10 +91,14 @@ fn cascadeBias(cascade: i32) -> f32 {
     if (cascade == 1) { value = shadow.cascadeBias.y; }
     return select(shadow.bias.x, value, value > 0.00000001);
 }
-fn sampleCascade(worldPos: vec3f, cascade: i32) -> f32 {
+fn slopeScaledBias(cascade: i32, nDotL: f32) -> f32 {
+    return cascadeBias(cascade) * mix(0.75, 1.0, clamp(nDotL, 0.0, 1.0));
+}
+fn sampleCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     let clip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = clip.xyz / max(clip.w, 0.000001);
-    let uv = ndc.xy * 0.5 + vec2f(0.5);
+    // The WebGPU shadow writer mirrors clip Y; sampling must mirror it too.
+    let uv = vec2f(ndc.x, -ndc.y) * 0.5 + vec2f(0.5);
     if (any(uv < vec2f(0.0)) || any(uv > vec2f(1.0)) || ndc.z < 0.0 || ndc.z > 1.0) {
         return 1.0;
     }
@@ -106,7 +110,7 @@ fn sampleCascade(worldPos: vec3f, cascade: i32) -> f32 {
         let sampleUv = uv + offsets[i] / dims;
         if (all(sampleUv >= vec2f(0.0)) && all(sampleUv <= vec2f(1.0))) {
             sum += textureSampleCompareLevel(shadowMap, shadowSampler, sampleUv, cascade,
-                                             ndc.z - cascadeBias(cascade));
+                                             ndc.z - bias);
         }
     }
     return sum / 9.0;
@@ -119,11 +123,27 @@ fn grassShadow(worldPos: vec3f, viewDepth: f32) -> f32 {
     var texel = shadow.cascadeTexel.z;
     if (cascade == 0) { texel = shadow.cascadeTexel.x; }
     else if (cascade == 1) { texel = shadow.cascadeTexel.y; }
-    // Grass samples at its root on the receiver plane. Lift that point by the
-    // same two-texel normal offset used by the regular WebGPU mesh shader to
-    // avoid turning the whole field into self-shadow through depth precision.
-    let samplePos = worldPos + vec3f(0.0, 2.0 * max(texel, 0.000001), 0.0);
-    return mix(1.0, sampleCascade(samplePos, cascade), clamp(shadow.splits.w, 0.0, 1.0));
+    let normal = vec3f(0.0, 1.0, 0.0);
+    let nDotL = max(dot(normal, normalize(frame.lightDir.xyz)), 0.0);
+    let samplePos = worldPos + normal * ((2.0 * max(texel, 0.000001)) / max(nDotL, 0.2));
+    var visibility = sampleCascade(samplePos, cascade, slopeScaledBias(cascade, nDotL));
+    var hi = shadow.splits.z;
+    var lo = shadow.splits.y;
+    if (cascade == 0) { hi = shadow.splits.x; lo = 0.0; }
+    else if (cascade == 1) { hi = shadow.splits.y; lo = shadow.splits.x; }
+    let band = max(0.5, (hi - lo) * 0.1);
+    let toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
+    let toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
+    if (toPrev > 0.0 && cascade > 0) {
+        visibility = mix(visibility, sampleCascade(samplePos, cascade - 1,
+                         slopeScaledBias(cascade - 1, nDotL)), toPrev);
+    }
+    if (toNext > 0.0 && cascade < 2) {
+        visibility = mix(visibility, sampleCascade(samplePos, cascade + 1,
+                         slopeScaledBias(cascade + 1, nDotL)), toNext);
+    }
+    visibility = mix(1.0, visibility, clamp(shadow.splits.w, 0.0, 1.0));
+    return mix(0.04, 1.0, visibility);
 }
 @fragment
 fn fs_main(in: FSIn) -> @location(0) vec4f {
