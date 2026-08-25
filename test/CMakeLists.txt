@@ -56,6 +56,7 @@ file(GLOB all_test_cpp
   UIMoveRepro.cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp
+  UIEditorKit.cpp
   UIOverlaySmoke.cpp
   Inspector.cpp
   DatabasePanel.cpp

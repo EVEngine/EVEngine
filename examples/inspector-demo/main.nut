@@ -35,7 +35,7 @@ class CharacterData extends WeaponData {
 eve_init = function() {
     if (hero == null) hero = CharacterData("Hero", 100.0);
     ui.setTheme("dark");
-    // Editor shell: menu bar + docked Inspector / Database / Scene panels.
+    // Editor shell: icon toolbar + adjustable Inspector / Database / Scene workspace.
     ui.editorOpen();
 
     // Database panel: register the live hero and one extra default instance.

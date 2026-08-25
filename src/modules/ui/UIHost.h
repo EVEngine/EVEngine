@@ -30,6 +30,19 @@ enum class NodeType : uint8_t {
     Combo = 16,   // dropdown; options newline-separated in valueText, index in value
     ScrollList = 17,  // virtualized scrollable list (uniform itemHeight)
     Viewport = 18,  // embedded render target: offscreen Canvas shown + input routed
+    SearchField = 19,   // compact input with a search hint/icon
+    Switch = 20,        // modern boolean toggle
+    Badge = 21,         // compact status/category pill
+    Card = 22,          // bordered surface container
+    SectionHeader = 23, // non-collapsible editor section heading
+    MenuBar = 24,       // native ImGui window menu bar
+    Menu = 25,          // popup menu container
+    MenuItem = 26,      // selectable menu command
+    Toolbar = 27,       // horizontal editor command strip
+    Toolbox = 28,       // wrapping grid of editor tools
+    Sidebar = 29,       // vertical editor side panel
+    StatusBar = 30,     // compact horizontal status strip
+    SplitPane = 31,     // two resizable panes
 };
 
 /** @brief Main-axis direction for Flex containers. */
@@ -57,6 +70,7 @@ struct UINode {
     std::string key;
     std::string text;       // label / title
     std::string valueText;  // InputText content
+    std::string tooltip;    // hover help; empty disables the tooltip
     bool visible = true;
     bool checked = false;
     bool open = true;  // CollapsingHeader default-open hint
@@ -139,11 +153,13 @@ public:
         bool modal = false;
         bool overlay = false;  // no title bar / chrome (HUD-style)
         bool hasPos = false;
+        bool lockPos = true;       // false: initial position only; user may move/persist it
         float posX = 0.f;
         float posY = 0.f;
         float pivotX = 0.f;
         float pivotY = 0.f;
         bool hasSize = false;      // explicit window size
+        bool lockSize = true;      // false: initial size only; user may resize/persist it
         float sizeX = 0.f;
         float sizeY = 0.f;
         float percentW = 0.f;      // 0..1 of display width; overrides sizeX
@@ -151,6 +167,8 @@ public:
         float anchorX = 0.f;       // anchor in display (0..1); with hasPos, posX is offset
         float anchorY = 0.f;
         std::string name;
+        float overlayBgAlpha = 0.4f;
+        bool overlayFlush = false;  // remove outer WindowPadding for desktop chrome
         uint32_t ownerId = 0;
         UIHost *entity = nullptr;
     };

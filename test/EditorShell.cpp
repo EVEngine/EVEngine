@@ -1,6 +1,6 @@
+#include "ui/EditorShell.h"
 #include "common/Runtime.h"
 #include "ui/DatabasePanel.h"
-#include "ui/EditorShell.h"
 #include "ui/Inspector.h"
 #include "ui/UIHost.h"
 
@@ -12,9 +12,7 @@ using namespace eve::ui;
 
 namespace {
 
-UINode* nodeById(UIHost* host, const std::string& id) {
-    return host ? host->findById(id) : nullptr;
-}
+UINode* nodeById(UIHost* host, const std::string& id) { return host ? host->findById(id) : nullptr; }
 
 }  // namespace
 
@@ -42,22 +40,34 @@ TEST_CASE("editorShell.menuDocksAndSwitchesPanels") {
     REQUIRE(nodeById(menu, "menu_close") != nullptr);
 
     UIHost* inspectorHost = inspector.host();
-    UIHost* databaseHost = database.host();
+    UIHost* databaseHost  = database.host();
     REQUIRE(inspectorHost != nullptr);
     REQUIRE(databaseHost != nullptr);
+    CHECK(inspectorHost->meta()->visible);
+    CHECK(databaseHost->meta()->visible);
+    CHECK(!inspectorHost->meta()->lockPos);
+    CHECK(!inspectorHost->meta()->lockSize);
+    CHECK(inspectorHost->meta()->percentW == 0.3f);
+    REQUIRE(nodeById(menu, "editor_toolbar") != nullptr);
+    CHECK(int(nodeById(menu, "editor_toolbar")->type) == int(NodeType::Toolbar));
 
-    auto tree = menu->tree();
+    auto    tree           = menu->tree();
     UINode* databaseButton = nodeById(menu, "menu_database");
     REQUIRE_GE(databaseButton->handlerClick, 1u);
     tree->clickHandlers[size_t(databaseButton->handlerClick - 1)]();
+    CHECK(!databaseHost->meta()->visible);
+    CHECK(inspectorHost->meta()->visible);
+    tree->clickHandlers[size_t(databaseButton->handlerClick - 1)]();
     CHECK(databaseHost->meta()->visible);
-    CHECK(!inspectorHost->meta()->visible);
+
+    CHECK(shell.selectPanel("inspector"));
+    CHECK(inspectorHost->meta()->visible);
+    CHECK(!databaseHost->meta()->visible);
 
     UINode* inspectorButton = nodeById(menu, "menu_inspector");
     REQUIRE_GE(inspectorButton->handlerClick, 1u);
     tree->clickHandlers[size_t(inspectorButton->handlerClick - 1)]();
-    CHECK(inspectorHost->meta()->visible);
-    CHECK(!databaseHost->meta()->visible);
+    CHECK(!inspectorHost->meta()->visible);
 
     UINode* closeButton = nodeById(menu, "menu_close");
     REQUIRE_GE(closeButton->handlerClick, 1u);
@@ -67,4 +77,6 @@ TEST_CASE("editorShell.menuDocksAndSwitchesPanels") {
 
     shell.close();
     CHECK(!shell.isOpen());
+    CHECK(!inspectorHost->meta()->visible);
+    CHECK(!databaseHost->meta()->visible);
 }
