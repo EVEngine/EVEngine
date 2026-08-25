@@ -284,6 +284,73 @@ void ScriptCompiler::registerAnnotation(std::string name) {
 
 bool ScriptCompiler::unregisterAnnotation(std::string_view name) { return annotations_.erase(std::string(name)) != 0; }
 
+std::vector<ScriptCompletion> ScriptCompiler::completions(std::string_view canonicalUri,
+                                                          std::string_view prefix) const {
+    std::vector<ScriptCompletion> result;
+    const auto                    matches = [prefix](std::string_view value) { return value.rfind(prefix, 0) == 0; };
+    if (const ScriptMetadata* unit = metadata(canonicalUri)) {
+        for (const ScriptSymbolMetadata& symbol : unit->symbols) {
+            if (matches(symbol.name)) result.push_back({symbol.name, symbol.kind, symbol.erasedType, symbol.name});
+        }
+        for (const std::string& name : unit->exports) {
+            if (matches(name)) result.push_back({name, "export", "module export", name});
+        }
+    }
+    for (const BindingContract& contract : bindings_.snapshot()) {
+        if (!matches(contract.method)) continue;
+        std::string signature = contract.method + "(";
+        std::string insertion = contract.method + "(";
+        for (size_t i = 0; i < contract.parameters.size(); ++i) {
+            if (i != 0) {
+                signature += ", ";
+                insertion += ", ";
+            }
+            signature += contract.parameters[i].name + ": " + contract.parameters[i].type;
+            insertion += contract.parameters[i].name + ": ";
+        }
+        signature += ") -> " + contract.returnType;
+        insertion += ')';
+        result.push_back({contract.method, "function", std::move(signature), std::move(insertion)});
+    }
+    std::sort(result.begin(), result.end(), [](const ScriptCompletion& a, const ScriptCompletion& b) {
+        if (a.label != b.label) return a.label < b.label;
+        return a.kind < b.kind;
+    });
+    result.erase(std::unique(result.begin(), result.end(),
+                             [](const ScriptCompletion& a, const ScriptCompletion& b) {
+                                 return a.label == b.label && a.kind == b.kind;
+                             }),
+                 result.end());
+    return result;
+}
+
+std::optional<ScriptHover> ScriptCompiler::hover(std::string_view canonicalUri, std::string_view symbol) const {
+    if (const ScriptMetadata* unit = metadata(canonicalUri)) {
+        for (const ScriptSymbolMetadata& candidate : unit->symbols) {
+            if (candidate.name == symbol)
+                return ScriptHover{candidate.name,
+                                   "`" + candidate.kind + " " + candidate.name + ": " + candidate.erasedType + "`",
+                                   candidate.position};
+        }
+    }
+    if (const BindingContract* contract = bindings_.findMethod(symbol)) {
+        std::string markdown = "`" + contract->method + "(";
+        for (size_t i = 0; i < contract->parameters.size(); ++i) {
+            if (i != 0) markdown += ", ";
+            markdown += contract->parameters[i].name + ": " + contract->parameters[i].type;
+        }
+        markdown += ") -> " + contract->returnType + "`";
+        if (!contract->documentationId.empty()) markdown += "\n\n" + contract->documentationId;
+        return ScriptHover{contract->method, std::move(markdown), {1, 1}};
+    }
+    return std::nullopt;
+}
+
+std::vector<ScriptDiagnostic> ScriptCompiler::diagnostics(std::string_view canonicalUri) const {
+    const ScriptMetadata* unit = metadata(canonicalUri);
+    return unit == nullptr ? std::vector<ScriptDiagnostic>{} : unit->diagnostics;
+}
+
 ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view canonicalUri) {
     ScriptMetadata result;
     result.sourceHash             = hashSource(source);

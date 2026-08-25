@@ -91,6 +91,21 @@ struct EVENGINE_API ScriptMetadata {
     std::vector<ScriptDiagnostic>       diagnostics;
 };
 
+/** @brief Tool-neutral completion item suitable for LSP, MCP, and editor adapters. */
+struct EVENGINE_API ScriptCompletion {
+    std::string label;
+    std::string kind;
+    std::string detail;
+    std::string insertText;
+};
+
+/** @brief Tool-neutral hover result for one script or binding symbol. */
+struct EVENGINE_API ScriptHover {
+    std::string          symbol;
+    std::string          markdown;
+    ScriptSourcePosition position;
+};
+
 /** @brief Unit attached to a binding parameter or return value. */
 enum class ScriptUnit { None, Seconds, Milliseconds, Radians, Degrees, Pixels, Meters };
 
@@ -161,6 +176,12 @@ public:
     void registerAnnotation(std::string name);
     /** @brief Removes one plugin annotation name. */
     bool unregisterAnnotation(std::string_view name);
+    /** @brief Returns completion candidates from script metadata and native contracts. */
+    std::vector<ScriptCompletion> completions(std::string_view canonicalUri, std::string_view prefix = {}) const;
+    /** @brief Returns hover information for a script or native symbol. */
+    std::optional<ScriptHover> hover(std::string_view canonicalUri, std::string_view symbol) const;
+    /** @brief Returns the latest diagnostics for one source unit. */
+    std::vector<ScriptDiagnostic> diagnostics(std::string_view canonicalUri) const;
 
     /** @brief Performs source-only metadata extraction without executing code. */
     static ScriptMetadata analyze(std::string_view source, std::string_view canonicalUri);

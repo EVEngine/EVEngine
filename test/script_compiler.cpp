@@ -177,3 +177,27 @@ TEST_CASE("scriptCompiler.requiresPluginAnnotationsToBeRegistered") {
     runtime.runSource("class Asset { @plugin_asset(\"texture\") path = \"\" }\n", "game:/asset.nut");
     CHECK(runtime.scriptCompiler().unregisterAnnotation("plugin_asset"));
 }
+
+TEST_CASE("scriptCompiler.servesLanguageToolingQueries") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.compileSource("local playerSpeed: float = 2.0\n", "game:/tooling.nut");
+    script::BindingContract contract;
+    contract.module          = "physics";
+    contract.method          = "newWorld";
+    contract.returnType      = "World";
+    contract.documentationId = "physics.newWorld";
+    contract.parameters      = {{"gravity", "float"}, {"sleep", "bool"}};
+    runtime.scriptCompiler().bindings().registerContract(std::move(contract));
+
+    const auto scriptItems = runtime.scriptCompiler().completions("game:/tooling.nut", "player");
+    CHECK_EQ(scriptItems.size(), size_t(1));
+    CHECK_EQ(scriptItems[0].label, std::string("playerSpeed"));
+    const auto nativeItems = runtime.scriptCompiler().completions("game:/tooling.nut", "new");
+    CHECK_EQ(nativeItems.size(), size_t(1));
+    CHECK(nativeItems[0].insertText.find("gravity:") != std::string::npos);
+
+    const auto hover = runtime.scriptCompiler().hover("game:/tooling.nut", "newWorld");
+    CHECK(hover.has_value());
+    CHECK(hover->markdown.find("physics.newWorld") != std::string::npos);
+    CHECK(runtime.scriptCompiler().diagnostics("game:/tooling.nut").empty());
+}
