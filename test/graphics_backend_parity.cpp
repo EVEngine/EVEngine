@@ -8,6 +8,7 @@
 #include "graphics/RenderControl.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
+#include "graphics/TextureSampler.h"
 #include "image/ImageData.h"
 #include "image/Image.h"
 
@@ -113,6 +114,99 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     const bool blueBlended = blended[2] >= 126 && blended[2] <= 129;
     CHECK(blueBlended);
     writeParityArtifact(*image, "texture_update_alpha_blend", backend);
+}
+
+TEST_CASE("graphics.backendParity.draw2dUvRotationAndBlendModes") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    const std::string backend = gfx->getBackendName();
+    const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
+    CHECK(supportedBackend);
+
+    const uint8_t stripes[] = {
+        255, 0, 0, 255,
+        0, 255, 0, 255,
+        0, 0, 255, 255,
+        255, 255, 255, 255,
+    };
+    Texture *texture = gfx->newTexture(4, 1, stripes);
+    REQUIRE(texture != nullptr);
+    gfx->setTextureSampler(texture, TextureSampler::nearest());
+
+    Canvas *canvas = gfx->newCanvas(64, 64);
+    REQUIRE(canvas != nullptr);
+    gfx->setCanvas(canvas);
+    gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
+
+    // Crop the second texel. Nearest sampling makes the expected green region exact.
+    gfx->drawTexturedRectShaderUV(texture, nullptr, 2.f, 2.f, 18.f, 12.f, 0.25f, 0.f, 0.5f,
+                                  1.f, Color(1.f), false, BlendMode::Opaque);
+
+    // A 90-degree turn changes the wide rectangle into a narrow vertical footprint.
+    gfx->drawSolidRectRotated(34.f, 10.f, 18.f, 6.f, 90.f, Color(1.f, 1.f, 0.f, 1.f),
+                              BlendMode::Opaque);
+    gfx->drawTexturedRectShaderUVRotated(texture, nullptr, 50.f, 10.f, 18.f, 6.f, 90.f, 0.f,
+                                         0.f, 0.25f, 1.f, Color(1.f), false,
+                                         BlendMode::Opaque);
+
+    gfx->drawSolidRect(2.f, 28.f, 12.f, 12.f, Color(0.f, 0.f, 0.5f, 1.f), BlendMode::Opaque);
+    gfx->drawSolidRect(2.f, 28.f, 12.f, 12.f, Color(0.5f, 0.f, 0.f, 1.f),
+                       BlendMode::Additive);
+
+    gfx->drawSolidRect(18.f, 28.f, 12.f, 12.f, Color(0.f, 0.f, 1.f, 1.f), BlendMode::Opaque);
+    gfx->drawSolidRect(18.f, 28.f, 12.f, 12.f, Color(0.25f, 0.f, 0.f, 0.25f),
+                       BlendMode::Premultiplied);
+
+    gfx->drawSolidRect(34.f, 28.f, 12.f, 12.f, Color(0.5f, 1.f, 0.25f, 1.f),
+                       BlendMode::Opaque);
+    gfx->drawSolidRect(34.f, 28.f, 12.f, 12.f, Color(0.5f, 0.25f, 1.f, 1.f),
+                       BlendMode::Multiply);
+    gfx->setCanvas();
+
+    std::unique_ptr<eve::image::ImageData> image(canvas->newImageData());
+    REQUIRE(image.get() != nullptr);
+
+    const uint8_t *crop = pixel(*image, 10, 8);
+    CHECK(crop[0] < 8);
+    CHECK(crop[1] > 247);
+    CHECK(crop[2] < 8);
+
+    const uint8_t *rotatedSolid = pixel(*image, 34, 3);
+    CHECK(rotatedSolid[0] > 247);
+    CHECK(rotatedSolid[1] > 247);
+    CHECK(rotatedSolid[2] < 8);
+    const uint8_t *outsideSolid = pixel(*image, 27, 10);
+    CHECK(outsideSolid[0] < 8);
+    CHECK(outsideSolid[1] < 8);
+    CHECK(outsideSolid[2] < 8);
+
+    const uint8_t *rotatedTexture = pixel(*image, 50, 3);
+    CHECK(rotatedTexture[0] > 247);
+    CHECK(rotatedTexture[1] < 8);
+    CHECK(rotatedTexture[2] < 8);
+
+    const uint8_t *additive = pixel(*image, 8, 34);
+    const bool additiveRed = additive[0] >= 126 && additive[0] <= 129;
+    CHECK(additiveRed);
+    CHECK(additive[1] < 8);
+    const bool additiveBlue = additive[2] >= 126 && additive[2] <= 129;
+    CHECK(additiveBlue);
+
+    const uint8_t *premultiplied = pixel(*image, 24, 34);
+    const bool premultipliedRed = premultiplied[0] >= 62 && premultiplied[0] <= 65;
+    CHECK(premultipliedRed);
+    CHECK(premultiplied[1] < 8);
+    const bool premultipliedBlue = premultiplied[2] >= 190 && premultiplied[2] <= 193;
+    CHECK(premultipliedBlue);
+
+    const uint8_t *multiply = pixel(*image, 40, 34);
+    const bool multiplyRed = multiply[0] >= 62 && multiply[0] <= 65;
+    const bool multiplyGreen = multiply[1] >= 62 && multiply[1] <= 65;
+    const bool multiplyBlue = multiply[2] >= 62 && multiply[2] <= 65;
+    CHECK(multiplyRed);
+    CHECK(multiplyGreen);
+    CHECK(multiplyBlue);
+    writeParityArtifact(*image, "draw2d_uv_rotation_blend_modes", backend);
 }
 
 TEST_CASE("graphics.backendParity.webgpuCustomShaderLifetime") {
