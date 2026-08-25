@@ -434,6 +434,14 @@ function poll_hot_reload() {
         if (kind != "modified" && kind != "added" && kind != "movedTo") continue;
         local p = normalize_path(fs.getLastWatchPath());
         if (p == "") continue;
+        if ((kind == "added" || kind == "movedTo") && has_module("hot")) {
+            try {
+                if (hot.watchNewDirectory(p)) continue;
+            } catch (e) {
+                if ("dev" in eve) eve.dev.reportError("" + e);
+                print("hot-reload directory watch failed: " + p + ": " + e + "\n");
+            }
+        }
         if (path_endswith(p, ".nut")) {
             track_script(p);
             needScripts = true;
