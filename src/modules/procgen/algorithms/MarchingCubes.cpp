@@ -1,4 +1,5 @@
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/HexTerrain.h"
 #include "procgen/algorithms/RockMesh.h"
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
@@ -546,6 +547,18 @@ void MeshRecipeRegistry::registerBuiltins() {
     planet.params.push_back(ParamDescriptor::integer("subdivisions", "Subdivisions", 2, 0, 7));
     planet.params.push_back(ParamDescriptor::floating("tileInset", "Tile Inset", 0.06f, 0.f, 0.49f, 0.01f));
     registerRecipe(std::move(planet), generateHexPlanetMesh);
+
+    RecipeDescriptor terrain = mesh("mesh.hexterrain", "Hex Terrain World");
+    terrain.params.push_back(ParamDescriptor::integer("width", "Width", 32, 2, 256));
+    terrain.params.push_back(ParamDescriptor::integer("height", "Height", 24, 2, 256));
+    terrain.params.push_back(ParamDescriptor::floating("radius", "Hex Radius", 1.f, 0.05f, 64.f, 0.05f));
+    terrain.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 1, 2147483647));
+    terrain.params.push_back(ParamDescriptor::floating("seaLevel", "Sea Level", 0.43f, 0.f, 1.f, 0.01f));
+    terrain.params.push_back(ParamDescriptor::floating("heightScale", "Height Scale", 4.f, 0.05f, 128.f, 0.05f));
+    terrain.params.push_back(ParamDescriptor::integer("riverCount", "River Count", 8, 0, 128));
+    terrain.params.push_back(ParamDescriptor::boolean("decorations", "Terrain Decorations", true));
+    terrain.params.push_back(ParamDescriptor::floating("vegetationDensity", "Vegetation Density", 1.f, 0.f, 2.f, 0.05f));
+    registerRecipe(std::move(terrain), generateHexTerrainMesh);
 
     RecipeDescriptor tree = mesh("mesh.tree", "Tree");
     tree.params.push_back(ParamDescriptor::choice("style", "Style", "lowpoly", {"lowpoly", "realistic"}));

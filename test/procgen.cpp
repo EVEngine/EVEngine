@@ -36,6 +36,7 @@
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/HexTerrain.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"
@@ -63,6 +64,68 @@ using eve::graphics::Color;
 
 using namespace eve::procgen;
 using namespace eve::graphics;
+
+TEST_CASE("procgen.hexTerrain.biomesRiversCliffsDeterministic") {
+    Params p;
+    p.setInt("width", 38);
+    p.setInt("height", 28);
+    p.setInt("seed", 20260825);
+    p.setInt("riverCount", 8);
+    p.setFloat("radius", 0.62f);
+    p.setFloat("heightScale", 3.8f);
+    MeshBuild a, b;
+    std::string error;
+    REQUIRE(generateHexTerrainMesh(p, a, error));
+    REQUIRE(generateHexTerrainMesh(p, b, error));
+    CHECK_EQ(a.positions(), b.positions());
+    CHECK_EQ(a.indices(), b.indices());
+    CHECK_EQ(a.getMeta("algorithm", ""), std::string("mesh.hexterrain"));
+    CHECK_EQ(a.getMeta("shoreGeometry", ""), std::string("edge-bands"));
+    CHECK_EQ(a.getMeta("hydrology", ""),
+             std::string("drainage-rivers+basin-lakes+confluences"));
+    CHECK_EQ(a.getMeta("riverGeometry", ""), std::string("seeded-quadratic-ribbons"));
+    CHECK_EQ(a.getMeta("cliffGeometry", ""),
+             std::string("seeded-segmented-rock-walls"));
+    CHECK_EQ(a.getMeta("mountainGeometry", ""),
+             std::string("seeded-offset-three-ring-peaks"));
+    CHECK(std::stoi(a.getMeta("cells.deepOcean", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.ocean", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.coast", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.grassland", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.hills", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.mountain", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.forest", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.swamp", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.rainforest", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.ice", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.river", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("edges.cliff", "0")) > 0);
+    CHECK(a.getVertexCount() >= 38 * 28 * 7);
+    CHECK(a.getIndexCount() >= 38 * 28 * 18);
+
+    bool hasOcean = false, hasLand = false, hasRiver = false, hasCliff = false;
+    for (int i = 0; i < a.getVertexCount(); ++i) {
+        const int primary = int(std::floor(a.getUvU(i)));
+        const int secondary = int(std::floor(a.getUvV(i)));
+        hasOcean = hasOcean || primary <= 1;
+        hasLand = hasLand || (primary >= 3 && primary <= 9);
+        hasRiver = hasRiver || secondary == 11;
+        hasCliff = hasCliff || primary == 10;
+    }
+    CHECK(hasOcean);
+    CHECK(hasLand);
+    CHECK(hasRiver);
+    CHECK(hasCliff);
+}
+
+TEST_CASE("procgen.params.booleanRoundTrip") {
+    Params p;
+    CHECK(p.getBool("decorations", true));
+    p.setBool("decorations", false);
+    CHECK(!p.getBool("decorations", true));
+    p.setString("textBool", "true");
+    CHECK(p.getBool("textBool", false));
+}
 
 namespace {
 
