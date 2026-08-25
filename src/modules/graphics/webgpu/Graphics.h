@@ -143,6 +143,15 @@ public:
     uint32_t gpuDrivenMaterialRecord(Material *material) override;
     bool gpuDrivenMaterialUsable(Material *material) override;
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    bool gpuDrivenCullEnabled() const override { return gpuDrivenEnabled_; }
+    bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) override;
+    void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
+                           float nearZ, float farZ) override;
+    void gpuDrivenDrawOpaque() override;
+    /** @brief Return the last CPU compatibility-cull result for backend parity tests. */
+    uint32_t debugGpuDrivenVisibleCount() const {
+        return static_cast<uint32_t>(gpuDrivenVisible_.size());
+    }
 
     void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;
@@ -791,6 +800,10 @@ private:
     std::vector<Material *> gpuDrivenMaterials_;
     std::unordered_map<Mesh *, uint32_t> gpuDrivenMeshIds_;
     std::unordered_map<Material *, uint32_t> gpuDrivenMaterialIds_;
+    // Stage-2 compatibility path. This preserves Vulkan's observable frustum-culling
+    // behavior while WebGPU compute compaction and indirect draws are implemented.
+    std::vector<GpuInstance> gpuDrivenPending_;
+    std::vector<GpuInstance> gpuDrivenVisible_;
 
     // Browser async frame readback (avoids ASYNCIFY sleep inside deep
     // JS->Squirrel->Graphics call chains).

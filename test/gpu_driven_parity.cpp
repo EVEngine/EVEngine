@@ -11,6 +11,10 @@
 #include "graphics/Texture.h"
 #include "window/Window.h"
 
+#ifdef EVENGINE_WEBGPU
+#include "graphics/webgpu/Graphics.h"
+#endif
+
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -54,18 +58,19 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     const uint8_t red[4] = {210, 65, 55, 255};
     const uint8_t green[4] = {55, 205, 85, 255};
     Mesh *mesh = gfx->newMeshSphere(24, 16);
-    auto addBall = [&](float x, const uint8_t *rgba) {
+    auto addBall = [&](float x, float z, const uint8_t *rgba) {
         Material *material = gfx->newMaterial();
         material->setAlbedoTexture(gfx->newTexture(1, 1, rgba));
         material->setRoughness(0.5f);
         auto *object = Renderable3D::create();
         object->setMesh(mesh);
         object->setMaterial(material);
-        object->setPosition(x, 0.35f, 0.f);
+        object->setPosition(x, 0.35f, z);
         object->setScale(0.55f, 0.55f, 0.55f);
     };
-    addBall(-0.9f, red);
-    addBall(0.9f, green);
+    addBall(-0.9f, 0.f, red);
+    addBall(0.9f, 0.f, green);
+    addBall(0.f, 20.f, red);  // Behind the camera; must be rejected by culling.
 
     auto *sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
@@ -79,6 +84,11 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     control->enable("gpuDriven");
     const std::vector<float> driven = captureLuma(gfx);
     REQUIRE(gfx->gpuDrivenEnabled());
+#ifdef EVENGINE_WEBGPU
+    auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
+    REQUIRE(webgpu != nullptr);
+    REQUIRE(webgpu->debugGpuDrivenVisibleCount() == 2);
+#endif
     REQUIRE(legacy.size() == driven.size());
     float maxDelta = 0.f;
     for (size_t i = 0; i < legacy.size(); ++i)
