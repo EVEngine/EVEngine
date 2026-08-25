@@ -62,6 +62,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | 名称 | 用途 |
 |------|------|
 | `eve_status` | 附着 / 暂停 / 端口 / callgraph 摘要 |
+| `eve_ui_tree` / `eve_ui_get` / `eve_ui_click` | 普通游戏 retained UI 的语义树查询、控件状态读取和按 ID 点击；与 `eve_host_*` 编辑器宿主互补 |
 | `eve_eval` | 求值表达式 |
 | `eve_pause` / `eve_continue` / `eve_step_*` | 运行控制 |
 | `eve_stack` / `eve_locals` | 栈与局部变量 |
@@ -87,6 +88,22 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 - `eve://error-report`
 - `eve://ai-session`
 - `eve://callgraph`
+
+### 普通游戏 UI 自动化
+
+`eve_ui_*` 面向游戏内通过 `UIHost` / `ui.mountBuildAs()` 创建的 retained UI；
+`eve_host_*` 则面向 `eve mcp` 的 JSON EditorHost。两套 UI 都通过 MCP 暴露，但不会互相绕过
+各自的事件和绑定模型。
+
+```text
+eve_ui_tree  { "host": "editor-v2" }
+eve_ui_get   { "host": "editor-v2", "widget": "asset-tree" }
+eve_ui_click { "host": "editor-v2", "widget": "asset-tree" }
+```
+
+`eve_ui_click` 把 click 排入普通 UI 的 pending event 队列。事件仍由
+`ui.dispatchEvents()` 分发，再由下一帧游戏逻辑通过 `ui.consumeClick()` 或注册回调消费；
+它不会直接调用业务函数。省略 `host` 时，widget id 必须在全部 host 中唯一，否则返回歧义错误。
 
 ### Prompts
 
@@ -246,16 +263,38 @@ AI 通过 `eve_host_vm_register` 把 Squirrel 源编译进主机 VM 并注册为
 `eve_host_editor_apply/remove/list/state/set_value/save/unload`、
 `eve_host_vm_register/unregister`、`eve_host_events`（读取并清空
 `{editor,widget,type:click|change,value}`）、`eve_host_widget_rect`、
-`eve_host_capture`、`eve_host_script`、`eve_host_shutdown`。
+`eve_host_capture`、`eve_host_script`、`eve_host_resource_reload`、
+`eve_host_hot_reload_status`、`eve_host_shutdown`。
 
 首次 `editor_apply` 自动开默认窗口（1280×800）；`editor_save` 把 View + VM 源持久化到
 项目 `editors/<id>.editor.json` 与 `editors/<id>.vm.nut`，`eve mcp` 启动时自动恢复。
+
+### MCP 模式资源与脚本热更新
+
+`eve mcp` 会监听项目目录，并在主循环内对文件事件做 100 ms 防抖。以下文件保存后无需
+重新编译或重启主机；当前 MCP 连接、窗口和编辑器会话保持不变：
+
+- `mcp.nut`：项目级 MCP 主机扩展脚本，启动时自动执行，后续保存自动重载。
+- `mcp/**/*.nut`：可拆分的主机脚本。
+- `editors/<id>.vm.nut`：对应编辑器的 Squirrel ViewModel。
+- `editors/<id>.editor.json`：对应编辑器的 JSON View；JSON 内 `id` 必须与文件名一致。
+- 其他资源交给已有 `IAssetReloader`（材质、着色器等）按扩展名认领。
+
+View 或 ViewModel 成功替换后，主机会恢复该编辑器现有的控件值，避免滑杆、输入框等
+交互状态因改代码而重置。脚本编译失败或 JSON 无效时，旧版本继续运行；失败详情只进入
+诊断状态，不会终止 MCP 进程。运行期错误仍应避免在脚本顶层产生不可逆副作用。
+
+Agent 可用 `eve_host_resource_reload {"path":"mcp.nut"}` 主动触发一次确定性重载，
+并用 `eve_host_hot_reload_status` 查询 `enabled / watchCount / reloadCount /
+failureCount / lastPath / lastResult`。Squirrel 内可调用同构接口
+`eve.host.reloadResource(path)` 与 `eve.host.hotReloadStatus()`。
 
 ### 脚本 API
 
 `eve.host`：`status / openWindow / closeWindow / windowState / applyEditor /
 removeEditor / setValue / events / registerVM / unregisterVM / widgetRect /
-capture / save / runScript`。脚本可定义 `eve_host_update(dt)` 与 `eve_host_render()`
+capture / save / runScript / reloadResource / hotReloadStatus`。脚本可定义
+`eve_host_update(dt)` 与 `eve_host_render()`
 钩子参与每帧更新与绘制（用 `eve.host.widgetRect` 在 viewport 内自绘预览）。
 
 ### 测试
@@ -266,7 +305,8 @@ capture / save / runScript`。脚本可定义 `eve_host_update(dt)` 与 `eve_hos
 
 新增用例：`devtools.mcp.stdioTransport`（stdio 握手 + tools/list）、
 `devtools.mcp.hostEditorBinding`（VM 注册、双向绑定、onChange、事件、
-save→unload→reload 持久化往返）。
+save→unload→reload 持久化往返）、`devtools.mcp.hostResourceHotReload`
+（View / ViewModel / mcp.nut 重载、状态保留、错误回退、路径隔离与诊断）。
 
 ## 测试
 

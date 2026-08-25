@@ -1167,7 +1167,7 @@ endfunction()
 #   * Emscripten (browser): webgpu.h / webgpu_cpp.h ship with the emsdk and are
 #     already on emcc's include path; no link target is needed.
 #   * Native desktop: Google Dawn is fetched via FetchContent and linked through
-#     Dawn's monolithic WebGPU target (set into EVENGINE_WEBGPU_LIB).
+#     Dawn's native WebGPU target (set into EVENGINE_WEBGPU_LIB).
 function(load_webgpu_backend)
     if(NOT BUILD_PLATFORM STREQUAL "webgpu")
         set(EVENGINE_WEBGPU_LIB "" CACHE INTERNAL "WebGPU link target (unused)")
@@ -1212,26 +1212,29 @@ function(load_webgpu_backend)
     )
     FetchContent_MakeAvailable(dawn)
 
-    # Dawn renamed its native aggregate target from dawn::dawn to
-    # dawn::webgpu_dawn. Accept both so an explicitly overridden older pin
-    # remains usable.
     if(TARGET dawn::webgpu_dawn)
-        set(_eve_webgpu_dawn_target dawn::webgpu_dawn)
+        set(_eve_dawn_target dawn::webgpu_dawn)
     elseif(TARGET dawn::dawn)
-        set(_eve_webgpu_dawn_target dawn::dawn)
+        set(_eve_dawn_target dawn::dawn)
     else()
-        message(FATAL_ERROR
-            "Dawn fetch did not produce dawn::webgpu_dawn or dawn::dawn")
+        message(FATAL_ERROR "Dawn fetch did not produce a native WebGPU target")
     endif()
-    # Current Dawn publishes webgpu.h / webgpu_cpp.h under include/, while
-    # older pins and a few native helper headers live under src/.
+    # Dawn's webgpu.h / webgpu_cpp.h live under src/ in the checkout; expose
+    # them to every module target (engine, eve_imgui, gpgpu/webgpu, ...).
     target_include_directories(eve_engine_includes INTERFACE
         "${dawn_SOURCE_DIR}/include"
-        "${dawn_SOURCE_DIR}/src")
-    # Pull in Dawn's generated dawn/webgpu*.h headers before engine modules
-    # compile; a raw include path alone has no dependency on the generator.
-    target_link_libraries(eve_engine_includes INTERFACE webgpu_cpp)
-    set(EVENGINE_WEBGPU_LIB ${_eve_webgpu_dawn_target} CACHE INTERNAL "WebGPU link target")
+        "${dawn_SOURCE_DIR}/src"
+        "${dawn_BINARY_DIR}/gen/include")
+    if(TARGET dawncpp_headers)
+        add_dependencies(eve_engine_includes dawncpp_headers)
+    endif()
+    if(TARGET dawn_headers)
+        add_dependencies(eve_engine_includes dawn_headers)
+    endif()
+    if(TARGET emdawnwebgpu_headers_gen)
+        add_dependencies(eve_engine_includes emdawnwebgpu_headers_gen)
+    endif()
+    set(EVENGINE_WEBGPU_LIB ${_eve_dawn_target} CACHE INTERNAL "WebGPU link target")
     message(STATUS "WebGPU (native): Dawn ready, link target = ${EVENGINE_WEBGPU_LIB}")
 endfunction()
 

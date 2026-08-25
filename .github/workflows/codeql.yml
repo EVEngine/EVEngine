@@ -26,7 +26,9 @@ jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The instrumented C++ build takes about 34 minutes and database analysis
+    # can take another 30+ minutes on GitHub-hosted runners.
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -53,7 +55,7 @@ jobs:
             libgl1-mesa-dev \
             libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
-            mesa-vulkan-drivers vulkan-tools
+            mesa-vulkan-drivers libvulkan-dev vulkan-tools glslang-tools
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3

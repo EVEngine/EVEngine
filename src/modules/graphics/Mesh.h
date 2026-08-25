@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
+struct aiMesh;
+
 namespace eve::graphics {
 
 /**
@@ -17,10 +19,21 @@ namespace eve::graphics {
  */
 class Mesh : public Drawable {
 public:
+    static constexpr int kMaxSkinBones = 128;
     int   indexCount = 0;
     void *gpuHandle  = nullptr;  // vulkan::GpuMesh*
     /** @brief Vertex count of the GPU buffer (morph CPU base may be empty). */
     int gpuVertexCount = 0;
+    /** @brief True after joint and weight data has been uploaded for GPU skinning. */
+    bool hasGpuSkinning() const { return gpuSkinned_; }
+    /** @brief Number of matrices in the current skinning palette. */
+    int getSkinPaletteCount() const { return static_cast<int>(skinPalette_.size() / 16u); }
+    /** @brief Replace the per-draw column-major GPU skinning palette. */
+    bool setSkinPalette(const float *matrices, int matrixCount);
+    /** @brief Packed column-major matrix palette used by graphics backends. */
+    const std::vector<float> &skinPalette() const { return skinPalette_; }
+    /** @brief Mark whether the backend vertex stream contains skin attributes. */
+    void markGpuSkinned(bool value) { gpuSkinned_ = value; }
 
     /**
      * @brief Model-space bounding sphere used for view/cascade frustum culling.
@@ -73,6 +86,16 @@ public:
 
     const std::vector<float> &baseUv() const { return baseUv_; }
 
+    /** @brief Retain imported UV/color/tangent streams for custom pipelines and baking. */
+    void captureImportedAttributes(const ::aiMesh &mesh);
+    int getUvChannelCount() const { return static_cast<int>(importedUvs_.size()); }
+    int getColorChannelCount() const { return static_cast<int>(importedColors_.size()); }
+    bool hasImportedTangents() const { return !importedTangents_.empty(); }
+    const std::vector<float> &importedUv(int channel) const;
+    const std::vector<float> &importedColor(int channel) const;
+    const std::vector<float> &importedTangents() const { return importedTangents_; }
+    const std::vector<float> &importedBitangents() const { return importedBitangents_; }
+
 private:
     struct MorphTarget {
         std::string name;
@@ -85,6 +108,12 @@ private:
     std::vector<MorphTarget> morphs_;
     std::unordered_map<std::string, float> morphWeights_;
     bool morphDirty_ = false;
+    std::vector<std::vector<float>> importedUvs_;     // xy packed per channel
+    std::vector<std::vector<float>> importedColors_;  // rgba packed per channel
+    std::vector<float> importedTangents_;             // xyz packed
+    std::vector<float> importedBitangents_;            // xyz packed
+    bool gpuSkinned_ = false;
+    std::vector<float> skinPalette_;
 };
 
 }  // namespace eve::graphics

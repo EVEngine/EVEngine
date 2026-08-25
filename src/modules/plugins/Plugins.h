@@ -16,7 +16,7 @@ public:
 
     /** @brief 加载插件；路径可为绝对路径或游戏相对路径。 */
     bool load(const std::string& path);
-    /** @brief 卸载插件。 */
+    /** @brief 插件为进程期驻留；该兼容方法始终返回 false。 */
     bool unload(const std::string& path);
     /** @brief 插件是否已加载。 */
     bool isLoaded(const std::string& path) const;

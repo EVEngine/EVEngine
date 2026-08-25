@@ -5,6 +5,9 @@
 #include <string>
 
 namespace eve::editor { class TileBuffer; }
+#ifdef EVENGINE_HAS_MAP
+namespace eve::map { class TileLayer; }
+#endif
 #ifdef EVENGINE_HAS_PROCGEN
 namespace eve::procgen { class Heightmap; }
 #endif
@@ -31,6 +34,28 @@ private:
     unsigned long long revision_ = 0;
     EditRegion dirty_;
 };
+
+#ifdef EVENGINE_HAS_MAP
+/** @brief Non-owning editable adapter for a live map::TileLayer. */
+class TileLayerTarget final : public IEditableTarget, public IIntFieldTarget {
+public:
+    TileLayerTarget(std::string id, map::TileLayer *layer);
+    const std::string &targetId() const override { return id_; }
+    unsigned long long revision() const override;
+    EditRegion dirtyRegion() const override { return dirty_; }
+    void clearDirtyRegion() override { dirty_.clear(); }
+    int width() const override;
+    int height() const override;
+    bool inBounds(int x, int y) const override;
+    int readInt(int x, int y) const override;
+    bool writeInt(int x, int y, int value) override;
+    map::TileLayer *layer() const { return layer_; }
+private:
+    std::string id_;
+    map::TileLayer *layer_ = nullptr;
+    EditRegion dirty_;
+};
+#endif
 
 #ifdef EVENGINE_HAS_PROCGEN
 /** @brief Non-owning IScalarFieldTarget adapter for procgen::Heightmap. */

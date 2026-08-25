@@ -39,6 +39,12 @@ public:
     virtual std::string unloadEditor(const std::string& id) = 0;
     virtual std::string capture(const std::string& path) = 0;
     virtual std::string runScript(const std::string& source) = 0;
+    /** @brief Reload one project-scoped MCP host script or editor resource. */
+    virtual std::string reloadResource(const std::string& path) = 0;
+    /** @brief Hot-reload watcher and latest reload diagnostic as compact JSON. */
+    virtual std::string hotReloadStatus() const = 0;
+    /** @brief Report the number of active project filesystem watches. */
+    virtual void setHotReloadWatchCount(int count) = 0;
     virtual void requestExit() = 0;
     /** @brief True after requestExit() (main loop exit condition). */
     virtual bool exitRequested() = 0;

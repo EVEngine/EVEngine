@@ -11,6 +11,7 @@
 #include "avatar/AvatarInstance.h"
 #include "avatar/Live2DNullBackend.h"
 #include "common/ECS.h"
+#include "common/Module.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
@@ -19,6 +20,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include <simplesquirrel/simplesquirrel.hpp>
 
 using namespace eve::avatar;
 using eve::graphics::Mesh;
@@ -128,6 +131,60 @@ TEST_CASE("avatar.live2d.nullBackendDefault") {
     CHECK_EQ(av->getParameter("ParamMouthOpenY"), 0.4f);
     av->release();
     delete av;
+}
+
+TEST_CASE("avatar.authoringMetadataIsComposableAndStable") {
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newImageAvatar();
+    REQUIRE(av->defineParameter("mouth", 0.25f, -1.f, 1.f));
+    CHECK_EQ(av->getParameter("mouth"), 0.25f);
+    CHECK_EQ(av->getParameterDefault("mouth"), 0.25f);
+    CHECK_EQ(av->getParameterMinimum("mouth"), -1.f);
+    CHECK_EQ(av->getParameterMaximum("mouth"), 1.f);
+    CHECK(!av->defineParameter("invalid", 0.f, 2.f, 1.f));
+    REQUIRE(av->defineExpression("smile", "mouth=1"));
+    REQUIRE(av->defineExpression("neutral", "mouth=0"));
+    CHECK_EQ(av->getExpressionCount(), 2);
+    CHECK_EQ(av->getExpressionName(0), std::string("neutral"));
+    CHECK_EQ(av->getExpressionName(1), std::string("smile"));
+    REQUIRE(av->removeExpression("neutral"));
+    CHECK_EQ(av->getExpressionCount(), 1);
+    av->release();
+    delete av;
+}
+
+TEST_CASE("avatar.script.buildsInspectorAndMotionBrowserFromMetadata") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        avatarModule <- eve.Avatar();
+        animationModule <- eve.Animation();
+        avatar <- avatarModule.newVroidAvatar();
+        blinkDefined <- avatar.defineParameter("blink", 0.0, 0.0, 1.0);
+        blinkMin <- avatar.getParameterMinimum("blink");
+        blinkMax <- avatar.getParameterMaximum("blink");
+        blinkDefault <- avatar.getParameterDefault("blink");
+        clip <- animationModule.newClip("idle");
+        motionRegistered <- avatar.registerMotion("idle", clip);
+        motionCount <- avatar.getMotionCount();
+        motionName <- avatar.getMotionName(0);
+        sameClip <- avatar.getMotionClip("idle").getName();
+        expressionDefined <- avatar.defineExpression("happy", "blink=0");
+        expressionName <- avatar.getExpressionName(0);
+        motionRemoved <- avatar.unregisterMotion("idle");
+    )"));
+
+    CHECK(vm.find("blinkDefined").toBool());
+    CHECK_EQ(vm.find("blinkMin").toFloat(), 0.f);
+    CHECK_EQ(vm.find("blinkMax").toFloat(), 1.f);
+    CHECK_EQ(vm.find("blinkDefault").toFloat(), 0.f);
+    CHECK(vm.find("motionRegistered").toBool());
+    CHECK_EQ(vm.find("motionCount").toInt(), 1);
+    CHECK_EQ(vm.find("motionName").toString(), std::string("idle"));
+    CHECK_EQ(vm.find("sameClip").toString(), std::string("idle"));
+    CHECK(vm.find("expressionDefined").toBool());
+    CHECK_EQ(vm.find("expressionName").toString(), std::string("happy"));
+    CHECK(vm.find("motionRemoved").toBool());
 }
 
 TEST_CASE("avatar.live2d.backendPlugIn") {

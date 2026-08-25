@@ -58,7 +58,9 @@ file(GLOB all_test_cpp
   UIMoveRepro.cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp
+  UIEditorKit.cpp
   UIOverlaySmoke.cpp
+  ui_texture_bridge.cpp
   Inspector.cpp
   DatabasePanel.cpp
   EditorShell.cpp
@@ -90,10 +92,23 @@ file(GLOB all_test_cpp
   i18n_script.cpp
   avatar.cpp
   dialogue.cpp
+  dialogue_conversation.cpp
+  dialogue_persistence.cpp
+  dialogue_text.cpp
+  dialogue_hot_reload.cpp
+  dialogue_authoring.cpp
+    dialogue_compiler.cpp
+    dialogue_importers.cpp
+    dialogue_localization.cpp
+    dialogue_toolchain.cpp
+  dialogue_ux.cpp
+  dialogue_voice.cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
   physics_cloth.cpp
   procgen.cpp
+  procgen_schema_script.cpp
+  procgen_pointset.cpp
   urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
@@ -163,8 +178,32 @@ file(GLOB all_test_cpp
   spatial.cpp
   grid.cpp
   editor.cpp
+  editor_automation_v2.cpp
+  editor_core_v2.cpp
+  editor_disk_asset_catalog_v2.cpp
+  editor_disk_document_v2.cpp
+  editor_document_asset_v2.cpp
+  editor_extension_v2.cpp
+  editor_graph_material_v2.cpp
+  editor_persistence_v2.cpp
+  editor_property_v2.cpp
+  editor_runtime_manifest_v2.cpp
+  editor_scene_target_v2.cpp
+  editor_script_v2.cpp
+  editor_field_tool_script.cpp
+  editor_tilemap_target_script.cpp
+  editor_voxel_target_script.cpp
+  editor_selection_v2.cpp
+  editor_workspace.cpp
+  editor_task_diagnostic_v2.cpp
+  editor_transaction_v2.cpp
+  editor_value_json_v2.cpp
   ik.cpp
   animation.cpp
+  animation_clip_editing.cpp
+  animation_retarget_compression.cpp
+  animation_batch_lod.cpp
+  animation_constraints_sync.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
   animation_lattice.cpp
@@ -182,6 +221,7 @@ file(GLOB all_test_cpp
   reload_script.cpp
   dap.cpp
   mcp.cpp
+  mcp_hot_reload.cpp
   console.cpp
   cmdline.cpp
   main.cpp
@@ -395,7 +435,26 @@ else()
   endif()
   target_compile_definitions(unit_test PRIVATE
     EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
-    EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    EVENGINE_TEST_SHARED_LIBRARY_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}")
+
+  # A real shared library exercises native loading and C++ module registration
+  # instead of testing only loader failures. It resolves engine symbols from
+  # the unit-test host exactly as a shipped plugin resolves them from eve.
+  add_library(native_test_plugin SHARED fixtures/native_test_plugin.cpp)
+  target_compile_features(native_test_plugin PRIVATE cxx_std_20)
+  target_compile_definitions(native_test_plugin PRIVATE EVENGINE_PLUGIN=1)
+  target_link_libraries(native_test_plugin PRIVATE eve_engine_includes)
+  set_target_properties(native_test_plugin PROPERTIES PREFIX "")
+  if(WIN32)
+    set_target_properties(unit_test PROPERTIES ENABLE_EXPORTS ON)
+    target_link_libraries(native_test_plugin PRIVATE "$<TARGET_LINKER_FILE:unit_test>")
+  elseif(APPLE)
+    target_link_options(native_test_plugin PRIVATE "LINKER:-undefined,dynamic_lookup")
+    target_link_options(unit_test PRIVATE "LINKER:-export_dynamic")
+  elseif(UNIX)
+    target_link_options(unit_test PRIVATE "LINKER:--export-dynamic")
+  endif()
 endif()
 
 # Large classic scenes (Sponza / DamagedHelmet). Cornell Box is committed.
@@ -430,10 +489,11 @@ endif()
 option(EVENGINE_DOWNLOAD_SPINE_MODELS
   "Download Spine demo models (spineboy, hero, dragon) for spine animation tests" ON)
 set(_eve_spine_script "${CMAKE_SOURCE_DIR}/scripts/download_spine_models.py")
+find_program(EVENGINE_PYTHON NAMES python3 python REQUIRED)
 add_custom_target(download_spine_models
   COMMAND ${CMAKE_COMMAND} -E env
           "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
-          python3 "${_eve_spine_script}"
+          "${EVENGINE_PYTHON}" "${_eve_spine_script}"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
   COMMENT "Downloading Spine demo models (spineboy, hero, dragon)"
   VERBATIM)
@@ -441,7 +501,7 @@ if(EVENGINE_DOWNLOAD_SPINE_MODELS)
   add_custom_command(TARGET unit_test PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
-            python3 "${_eve_spine_script}"
+            "${EVENGINE_PYTHON}" "${_eve_spine_script}"
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     COMMENT "PRE_BUILD: download Spine demo models"
     VERBATIM)

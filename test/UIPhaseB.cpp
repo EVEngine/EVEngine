@@ -8,6 +8,8 @@
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
 
+#include <imgui.h>
+
 #include <string>
 #include <vector>
 
@@ -116,10 +118,51 @@ TEST_CASE("UI.b.themeTokensUnified") {
     CHECK(dark.itemSpacingX == light.itemSpacingX);
     CHECK(dark.windowPaddingY == light.windowPaddingY);
     CHECK(dark.fontScale == light.fontScale);
+    CHECK(dark.layout.toolbarHeight == light.layout.toolbarHeight);
+    CHECK(dark.layout.sidebarWidth == light.layout.sidebarWidth);
+    CHECK(dark.layout.cardPaddingX == light.layout.cardPaddingX);
+    CHECK(dark.layout.splitterSize == light.layout.splitterSize);
+    CHECK(dark.layout.searchIconGap == light.layout.searchIconGap);
     // Palettes differ
     CHECK(dark.windowBg[0] < 0.5f);
     CHECK(light.windowBg[0] > 0.5f);
     CHECK(dark.text[0] > light.text[0]);
+}
+
+TEST_CASE("UI.b.themeAppliesCompleteModernStyle") {
+    ImGui::CreateContext();
+    const Theme dark = Theme::dark();
+    applyThemeToImGui(dark, 1.f);
+
+    const ImGuiStyle &style = ImGui::GetStyle();
+    CHECK(style.WindowPadding.x == dark.windowPaddingX);
+    CHECK(style.FramePadding.y == dark.framePaddingY);
+    CHECK(style.CellPadding.y == dark.cellPaddingY);
+    CHECK(style.ScrollbarSize == dark.scrollbarSize);
+    CHECK(style.Colors[ImGuiCol_MenuBarBg].x == dark.menuBarBg[0]);
+    CHECK(style.Colors[ImGuiCol_TabActive].y == dark.tabActive[1]);
+    CHECK(style.Colors[ImGuiCol_TableHeaderBg].z == dark.tableHeaderBg[2]);
+    CHECK(style.Colors[ImGuiCol_ModalWindowDimBg].w == dark.modalDimBg[3]);
+
+    ImGui::DestroyContext();
+}
+
+TEST_CASE("UI.b.semanticIcons") {
+    Icon value = Icon::None;
+    CHECK(iconFromName("search", &value));
+    CHECK(static_cast<int>(value) == static_cast<int>(Icon::Search));
+    CHECK(std::string(iconGlyph(value)) == "\xEF\x80\x82");
+    CHECK(iconName(Icon::PaintBrush) == std::string("paint-brush"));
+    CHECK(iconText(Icon::Save, "Save").find("Save") != std::string::npos);
+    CHECK(iconFromName("folder_open", &value));
+    CHECK(static_cast<int>(value) == static_cast<int>(Icon::FolderOpen));
+    CHECK(!iconFromName("missing", &value));
+
+    UIHost *host = UIHost::createHost("icon_widgets");
+    applyTree(host, window("Icons", {icon(Icon::Search, "search"),
+                                     iconButton(Icon::Save, "Save", "save")}));
+    CHECK(host->findById("search")->text == std::string(iconGlyph(Icon::Search)));
+    CHECK(host->findById("save")->text == iconText(Icon::Save, "Save"));
 }
 
 TEST_CASE("UI.b.scriptListBuilder") {

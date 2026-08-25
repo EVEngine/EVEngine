@@ -54,6 +54,15 @@ public:
     std::string runScript(const std::string &source) override {
         return EditorHost::instance().runScript(source);
     }
+    std::string reloadResource(const std::string &path) override {
+        return EditorHost::instance().reloadResource(path);
+    }
+    std::string hotReloadStatus() const override {
+        return EditorHost::instance().hotReloadStatus();
+    }
+    void setHotReloadWatchCount(int count) override {
+        EditorHost::instance().setHotReloadWatchCount(count);
+    }
     void requestExit() override { EditorHost::instance().requestExit(); }
     bool exitRequested() override { return EditorHost::instance().exitRequested(); }
     void frame() override { EditorHost::instance().frame(); }

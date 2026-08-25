@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ui/Icons.h"
 #include "ui/UIHost.h"
 
 #include <functional>
@@ -17,6 +18,7 @@ struct WidgetDesc {
     std::string key;
     std::string text;
     std::string valueText;
+    std::string tooltip;
     bool visible = true;
     bool checked = false;
     bool open = true;
@@ -87,6 +89,10 @@ struct WidgetDesc {
     }
     WidgetDesc &withValueText(std::string v) {
         valueText = std::move(v);
+        return *this;
+    }
+    WidgetDesc &withTooltip(std::string v) {
+        tooltip = std::move(v);
         return *this;
     }
     WidgetDesc &withVisible(bool v) {
@@ -237,6 +243,11 @@ WidgetDesc window(std::string title, std::vector<WidgetDesc> children = {}, std:
 WidgetDesc text(std::string content, std::string id = "");
 /** @brief Clickable button; fires onClick. */
 WidgetDesc button(std::string label, std::string id = "", std::function<void()> onClick = {});
+/** @brief Semantic vector icon rendered from the bundled editor icon font. */
+WidgetDesc icon(Icon value, std::string id = "");
+/** @brief Button containing a semantic icon and optional visible label. */
+WidgetDesc iconButton(Icon value, std::string label = "", std::string id = "",
+                      std::function<void()> onClick = {});
 /** @brief Plain group container. */
 WidgetDesc group(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Holds the next widget on the same line as the previous one. */
@@ -264,6 +275,43 @@ WidgetDesc viewport(std::string id = "", float width = 0.f, float height = 0.f);
 /** @brief Editable text field; fires onTextChange. */
 WidgetDesc inputText(std::string label, std::string value, std::string id = "",
                      std::function<void(const std::string &)> onChange = {});
+/** @brief Compact search field with placeholder text and a bundled search icon. */
+WidgetDesc searchField(std::string hint, std::string value = {}, std::string id = "",
+                       std::function<void(const std::string &)> onChange = {});
+/** @brief Modern boolean toggle; fires onToggle when changed. */
+WidgetDesc toggleSwitch(std::string label, bool checked = false, std::string id = "",
+                        std::function<void(bool)> onToggle = {});
+/** @brief Compact status/category pill. Tint controls its background color. */
+WidgetDesc badge(std::string label, std::string id = "");
+/** @brief Bordered surface container with editor-friendly padding. */
+WidgetDesc card(std::vector<WidgetDesc> children = {}, std::string id = "");
+/** @brief Non-collapsible editor section heading with an accent marker. */
+WidgetDesc sectionHeader(std::string label, std::string id = "");
+/** @brief Window menu bar container. Must be a direct child of a Window. */
+WidgetDesc menuBar(std::vector<WidgetDesc> children = {}, std::string id = "");
+/** @brief Popup menu container used inside a MenuBar or another Menu. */
+WidgetDesc menu(std::string label, std::vector<WidgetDesc> children = {}, std::string id = "");
+/** @brief Selectable menu command with an optional shortcut hint. */
+WidgetDesc menuItem(std::string label, std::string shortcut = {}, std::string id = "",
+                    std::function<void()> onClick = {}, bool selected = false);
+/** @brief Horizontal editor command strip; Spacer children absorb free width. */
+WidgetDesc toolbar(std::vector<WidgetDesc> children = {}, std::string id = "");
+/** @brief Wrapping grid of editor tools with uniform square cells. */
+WidgetDesc toolbox(std::vector<WidgetDesc> children = {}, std::string id = "",
+                   float cellSize = 0.f, int columns = 0);
+/** @brief Vertical editor side panel. Width defaults to 240 logical pixels. */
+WidgetDesc sidebar(std::vector<WidgetDesc> children = {}, std::string id = "",
+                   float width = 0.f);
+/** @brief Compact horizontal status strip; Spacer children absorb free width. */
+WidgetDesc statusBar(std::vector<WidgetDesc> children = {}, std::string id = "");
+/**
+ * @brief Two resizable panes separated by a drag handle.
+ * @param direction Row creates left/right panes; Column creates top/bottom panes.
+ * @param ratio Fraction assigned to the first pane, clamped to [0.1, 0.9].
+ */
+WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc second,
+                     float ratio = 0.25f, std::string id = "",
+                     std::function<void(float)> onResize = {});
 /** @brief Collapsible header containing child widgets. */
 WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children = {},
                             std::string id = "", bool defaultOpen = true);

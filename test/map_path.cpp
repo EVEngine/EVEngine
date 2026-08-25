@@ -436,3 +436,23 @@ TEST_CASE("map.path.accessorRoundTrips") {
 
     delete pf;
 }
+
+TEST_CASE("map.path.boundLayerAutoSyncsRevision") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(5, 1, 8.f, 8.f);
+    layer->fill(2);
+    Pathfinder *pf = mod->newPathfinder(layer);
+    pf->blockGid(1);
+    Path *initial = pf->findPath(0, 0, 4, 0);
+    CHECK_GT(initial->getLength(), 0);
+    delete initial;
+    layer->setTile(2, 0, 1);
+    Path *blocked = pf->findPath(0, 0, 4, 0);
+    CHECK_EQ(blocked->getLength(), 0);
+    delete blocked;
+    layer->setTile(2, 0, 2);
+    Path *open = pf->findPath(0, 0, 4, 0);
+    CHECK_GT(open->getLength(), 0);
+    delete open;
+    delete pf;
+}

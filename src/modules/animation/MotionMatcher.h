@@ -16,17 +16,17 @@ class MotionDatabase;
  */
 class MotionMatcher {
 public:
-    MotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);
+    MotionMatcher(AnimSkeleton* skeleton, MotionDatabase* database);
     ~MotionMatcher() = default;
 
-    MotionMatcher(const MotionMatcher &)            = delete;
-    MotionMatcher &operator=(const MotionMatcher &) = delete;
+    MotionMatcher(const MotionMatcher&)            = delete;
+    MotionMatcher& operator=(const MotionMatcher&) = delete;
 
-    AnimSkeleton    *getSkeleton() const { return skeleton_; }
-    MotionDatabase  *getDatabase() const { return database_; }
+    AnimSkeleton*   getSkeleton() const { return skeleton_; }
+    MotionDatabase* getDatabase() const { return database_; }
 
     /** @brief Desired planar velocity in character/world XZ (units/sec). */
-    void setDesiredVelocity(float x, float z);
+    void  setDesiredVelocity(float x, float z);
     float getDesiredVelocityX() const { return desiredVelX_; }
     float getDesiredVelocityZ() const { return desiredVelZ_; }
 
@@ -54,7 +54,7 @@ public:
     float getMatchedTime() const { return matchedTime_; }
     float getLastSearchCost() const { return lastCost_; }
 
-    AnimPose *getPose();
+    AnimPose* getPose();
 
     /** @brief Force an immediate search (also called periodically from update). */
     void search();
@@ -62,12 +62,12 @@ public:
     void update(float dt);
 
 private:
-    void buildQuery(std::vector<float> &query) const;
-    float cost(const std::vector<float> &query, const std::vector<float> &cand) const;
-    void sampleMatched(AnimPose *out) const;
+    void  buildQuery(std::vector<float>& query) const;
+    float cost(const std::vector<float>& query, const std::vector<float>& cand, float upperBound) const;
+    void  sampleMatched(AnimPose* out) const;
 
-    AnimSkeleton   *skeleton_ = nullptr;
-    MotionDatabase *database_ = nullptr;
+    AnimSkeleton*   skeleton_ = nullptr;
+    MotionDatabase* database_ = nullptr;
     AnimPose        pose_;
     AnimPose        fromPose_;
     AnimPose        matchedPose_;
@@ -82,9 +82,9 @@ private:
     float blendElapsed_   = 0.f;
     bool  blending_       = false;
 
-    float trajWeight_ = 1.f;
-    float poseWeight_ = 1.f;
-    float velWeight_  = 1.f;
+    float trajWeight_   = 1.f;
+    float poseWeight_   = 1.f;
+    float velWeight_    = 1.f;
     int   ignoreRadius_ = 2;
 
     int   matchedFrame_ = -1;

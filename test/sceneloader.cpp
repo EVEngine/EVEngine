@@ -40,6 +40,7 @@
 
 #include <SDL2/SDL.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
@@ -228,6 +229,32 @@ TEST_CASE("SceneLoader.apply.preservesUnchangedRenderableIdentity") {
     CHECK(h->findById("gone") == nullptr);
 
     ecs::DestroyEntity(r);
+}
+
+TEST_CASE("SceneLoader.importConventions.lodCollisionSocket") {
+    aiScene scene{};
+    scene.mRootNode = new aiNode("Root");
+    scene.mRootNode->mNumChildren = 4;
+    scene.mRootNode->mChildren = new aiNode *[4];
+    scene.mRootNode->mChildren[0] = new aiNode("Building_LOD0");
+    scene.mRootNode->mChildren[1] = new aiNode("Building_LOD1");
+    scene.mRootNode->mChildren[2] = new aiNode("UCX_Building");
+    scene.mRootNode->mChildren[3] = new aiNode("SOCKET_Door");
+    for (unsigned i = 0; i < 4; ++i) scene.mRootNode->mChildren[i]->mParent = scene.mRootNode;
+
+    NodeDesc root = SceneLoader::buildNodeDesc(&scene);
+    REQUIRE_EQ(root.children.size(), 4u);
+    CHECK(root.children[0].visible);
+    CHECK(!root.children[1].visible);
+    CHECK(!root.children[2].visible);
+    CHECK(std::find(root.children[0].tags.begin(), root.children[0].tags.end(), "lod:0") !=
+          root.children[0].tags.end());
+    CHECK(std::find(root.children[1].tags.begin(), root.children[1].tags.end(), "lod:1") !=
+          root.children[1].tags.end());
+    CHECK(std::find(root.children[2].tags.begin(), root.children[2].tags.end(), "collision") !=
+          root.children[2].tags.end());
+    CHECK(std::find(root.children[3].tags.begin(), root.children[3].tags.end(), "model-socket") !=
+          root.children[3].tags.end());
 }
 
 // ---- integration: decode a real 3D scene into ECS GameObjects + hot reload ----

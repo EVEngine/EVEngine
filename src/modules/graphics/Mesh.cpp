@@ -1,11 +1,72 @@
 #include "graphics/Mesh.h"
 
+#include <assimp/mesh.h>
+
 #include "graphics/Graphics.h"
 
 #include <algorithm>
 #include <cmath>
 
 namespace eve::graphics {
+
+namespace {
+const std::vector<float> kEmptyAttribute;
+}
+
+void Mesh::captureImportedAttributes(const ::aiMesh &mesh) {
+    importedUvs_.clear();
+    for (unsigned channel = 0; channel < mesh.GetNumUVChannels(); ++channel) {
+        if (!mesh.HasTextureCoords(channel)) continue;
+        std::vector<float> values;
+        values.reserve(size_t(mesh.mNumVertices) * 2u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            values.push_back(mesh.mTextureCoords[channel][i].x);
+            values.push_back(mesh.mTextureCoords[channel][i].y);
+        }
+        importedUvs_.push_back(std::move(values));
+    }
+    importedColors_.clear();
+    for (unsigned channel = 0; channel < mesh.GetNumColorChannels(); ++channel) {
+        if (!mesh.HasVertexColors(channel)) continue;
+        std::vector<float> values;
+        values.reserve(size_t(mesh.mNumVertices) * 4u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            const aiColor4D &c = mesh.mColors[channel][i];
+            values.insert(values.end(), {c.r, c.g, c.b, c.a});
+        }
+        importedColors_.push_back(std::move(values));
+    }
+    importedTangents_.clear();
+    importedBitangents_.clear();
+    if (mesh.HasTangentsAndBitangents()) {
+        importedTangents_.reserve(size_t(mesh.mNumVertices) * 3u);
+        importedBitangents_.reserve(size_t(mesh.mNumVertices) * 3u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            const aiVector3D &t = mesh.mTangents[i];
+            const aiVector3D &b = mesh.mBitangents[i];
+            importedTangents_.insert(importedTangents_.end(), {t.x, t.y, t.z});
+            importedBitangents_.insert(importedBitangents_.end(), {b.x, b.y, b.z});
+        }
+    }
+}
+
+const std::vector<float> &Mesh::importedUv(int channel) const {
+    return channel >= 0 && static_cast<size_t>(channel) < importedUvs_.size()
+               ? importedUvs_[static_cast<size_t>(channel)]
+               : kEmptyAttribute;
+}
+
+const std::vector<float> &Mesh::importedColor(int channel) const {
+    return channel >= 0 && static_cast<size_t>(channel) < importedColors_.size()
+               ? importedColors_[static_cast<size_t>(channel)]
+               : kEmptyAttribute;
+}
+
+bool Mesh::setSkinPalette(const float *matrices, int matrixCount) {
+    if (!matrices || matrixCount <= 0 || matrixCount > kMaxSkinBones) return false;
+    skinPalette_.assign(matrices, matrices + static_cast<size_t>(matrixCount) * 16u);
+    return true;
+}
 
 void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
     boundsCx     = 0.f;

@@ -29,6 +29,18 @@ struct PbrTextureSet {
     image::ImageData *height    = nullptr;  // RGBA8, grayscale displacement
     image::ImageData *ao        = nullptr;  // RGBA8, grayscale ambient occlusion
 
+    /** @brief Return the generated albedo image. @return Borrowed image. */
+    image::ImageData *getAlbedo() const { return albedo; }
+    /** @brief Return the generated normal image. @return Borrowed image. */
+    image::ImageData *getNormal() const { return normal; }
+    /** @brief Return the generated roughness image. @return Borrowed image. */
+    image::ImageData *getRoughness() const { return roughness; }
+    /** @brief Return the generated metallic image. @return Borrowed image. */
+    image::ImageData *getMetallic() const { return metallic; }
+    /** @brief Return the generated height image. @return Borrowed image. */
+    image::ImageData *getHeight() const { return height; }
+    /** @brief Return the generated ambient-occlusion image. @return Borrowed image. */
+    image::ImageData *getAo() const { return ao; }
     /** @brief Deletes all maps and nulls the pointers (defined in PbrMaterial.cpp). */
     void destroy();
 };
@@ -38,18 +50,34 @@ using PbrRecipeFn = std::function<PbrTextureSet *(const Params &params, std::str
 
 class PbrRecipeRegistry {
 public:
+    /** @brief Access the process-wide PBR registry. @return Registry instance. */
     static PbrRecipeRegistry &instance();
 
+    /** @brief Register a recipe without metadata. @param id Recipe id. @param fn Generator callback. */
     void registerPbrRecipe(const std::string &id, PbrRecipeFn fn);
+    /** @brief Register a recipe with metadata. @param descriptor Recipe schema. @param fn Generator callback. */
+    void registerPbrRecipe(RecipeDescriptor descriptor, PbrRecipeFn fn);
+    /** @brief Test whether a recipe exists. @param id Recipe id. @return True when registered. */
     bool has(const std::string &id) const;
+    /** @brief Generate a PBR set. @param id Recipe id. @param params Values. @param error Failure text. @return Caller-owned set or nullptr. */
     PbrTextureSet *generate(const std::string &id, const Params &params, std::string &error) const;
+    /** @brief List recipe ids. @return Sorted ids. */
     std::vector<std::string> list() const;
+    /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
+    const RecipeDescriptor *descriptor(const std::string &id) const;
+    /** @brief Fill missing values from metadata. @param id Recipe id. @param params Values to update. @return False for an unknown recipe. */
+    bool applyDefaults(const std::string &id, Params &params) const;
 
+    /** @brief Register engine-provided PBR recipes once. */
     void registerPbrBuiltins();
 
 private:
+    struct Entry {
+        PbrRecipeFn fn;
+        RecipeDescriptor descriptor;
+    };
     PbrRecipeRegistry() = default;
-    std::unordered_map<std::string, PbrRecipeFn> recipes_;
+    std::unordered_map<std::string, Entry> recipes_;
     bool builtinsRegistered_ = false;
 };
 

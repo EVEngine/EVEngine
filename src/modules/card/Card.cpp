@@ -155,14 +155,55 @@ int Card::registerCardsFromJson(const std::string &json) {
     } else if (root.isObject()) {
         if (parseDefinition(root, defs_)) ++n;
     }
+    if (n > 0) definitionViewDirty_ = true;
     return n;
 }
 
-void Card::clearCardDefinitions() { defs_.clear(); }
+void Card::clearCardDefinitions() {
+    defs_.clear();
+    definitionView_.clear();
+    definitionViewDirty_ = false;
+}
 
 int Card::getCardDefinitionCount() { return static_cast<int>(defs_.size()); }
 
+std::string Card::getCardDefinitionId(int index) const {
+    if (definitionViewDirty_) {
+        definitionView_.clear();
+        definitionView_.reserve(defs_.size());
+        for (const auto &[id, definition] : defs_) definitionView_.push_back(id);
+        std::sort(definitionView_.begin(), definitionView_.end());
+        definitionViewDirty_ = false;
+    }
+    return index >= 0 && index < static_cast<int>(definitionView_.size())
+               ? definitionView_[static_cast<size_t>(index)]
+               : std::string{};
+}
+
 bool Card::hasCardDefinition(const std::string &id) { return defs_.count(id) != 0; }
+
+bool Card::setCardDefinition(const std::string &id, const std::string &name, const std::string &kind,
+                             int cost, int attack, int health, float tintR, float tintG, float tintB) {
+    if (id.empty() || cost < 0 || attack < 0 || health < 0) return false;
+    CardDefinition definition;
+    definition.id = id;
+    definition.name = name.empty() ? id : name;
+    definition.kind = kind.empty() ? "creature" : kind;
+    definition.cost = cost;
+    definition.attack = attack;
+    definition.health = health;
+    definition.tint = glm::vec3(std::clamp(tintR, 0.f, 1.f), std::clamp(tintG, 0.f, 1.f),
+                                std::clamp(tintB, 0.f, 1.f));
+    defs_[id] = std::move(definition);
+    definitionViewDirty_ = true;
+    return true;
+}
+
+bool Card::removeCardDefinition(const std::string &id) {
+    if (defs_.erase(id) == 0) return false;
+    definitionViewDirty_ = true;
+    return true;
+}
 
 const CardDefinition *Card::findDef(const std::string &id) const {
     auto it = defs_.find(id);
@@ -696,7 +737,10 @@ void Card::expose(ssq::Class &cls) {
     cls.addFunc("registerCardsFromJson", &Card::registerCardsFromJson);
     cls.addFunc("clearCardDefinitions", &Card::clearCardDefinitions);
     cls.addFunc("getCardDefinitionCount", &Card::getCardDefinitionCount);
+    cls.addFunc("getCardDefinitionId", &Card::getCardDefinitionId);
     cls.addFunc("hasCardDefinition", &Card::hasCardDefinition);
+    cls.addFunc("setCardDefinition", &Card::setCardDefinition);
+    cls.addFunc("removeCardDefinition", &Card::removeCardDefinition);
     cls.addFunc("getCardDefinitionName", &Card::getCardDefinitionName);
     cls.addFunc("getCardDefinitionKind", &Card::getCardDefinitionKind);
     cls.addFunc("getCardDefinitionCost", &Card::getCardDefinitionCost);

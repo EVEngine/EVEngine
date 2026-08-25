@@ -51,9 +51,9 @@ struct DrawBatch {
  */
 class VoxelWorld {
 public:
-    VoxelWorld() = default;
+    VoxelWorld();
     ~VoxelWorld();
-    explicit VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
+    explicit VoxelWorld(const CubeTypeRegistry &types);
 
     Chunk *getOrCreateChunk(int cx, int cy, int cz);
     Chunk *getChunk(int cx, int cy, int cz);
@@ -63,6 +63,8 @@ public:
     void clear();
 
     int getChunkCount() const { return int(chunks_.size()); }
+    /** @brief Monotonic content revision incremented by voxel/chunk mutations. */
+    uint64_t getRevision() const { return revision_; }
 
     /**
      * @brief Streaming eviction: drop chunks whose center is farther than
@@ -226,6 +228,7 @@ private:
     void markNeighborChunksDirty(int cx, int cy, int cz, int lx, int ly, int lz);
 
     std::unordered_map<uint64_t, std::unique_ptr<Chunk>> chunks_;
+    uint64_t revision_ = 0;
     std::vector<DrawBatch> visible_;
     std::vector<uint64_t> visibleChunkKeys_;
     CubeTypeRegistry types_;

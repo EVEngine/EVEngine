@@ -49,16 +49,38 @@ for (local i = 0; i < gizmo.getPartCount(); i++) {
 ```
 
 ```squirrel
-// 高度图地形网格（配合 procgen.generateHeightmap / procgen.newHeightmap）。
-// Smooth 变体用高度场梯度生成平滑顶点法线，坑/坡连续着色（无平直三角片）。
+// 项目组合一个可撤销的高度场工具；C++ 不认识“地形编辑器”窗口。
+local target = editor.newHeightmapTarget("terrain", hm);
+local falloff = editor.newSmoothBrushFalloff();
+local kernel = editor.newCircleBrushKernel();
+kernel.setSmoothFalloff(falloff);
+
+local operation = editor.newAddScalarFieldOperation();
+local sculpt = editor.newFieldBrushTool("terrain-sculpt", "Sculpt");
+sculpt.setCircleKernel(kernel);
+sculpt.setAddScalarOperation(operation);
+sculpt.setRadius(3.0);
+sculpt.setStrength(0.15); // 负值降低地形
+
+local session = editor.newSession();
+session.addFieldTool(sculpt);
+session.bindHeightmapTarget(target);
+session.activateTool("terrain-sculpt");
+
+// 视口把鼠标射线换算为高度图坐标；一次 Down..Up 自动合并成一条事务。
+session.dispatchPointer(0, 0, 0, cellX, cellY, 0.0, 0.0, 1.0);
+session.dispatchPointer(2, 0, 0, cellX, cellY, 0.0, 0.0, 1.0);
+session.undo();
+session.redo();
+
+// HeightmapTarget 直接包装同一个 hm；revision 变化时原地刷新 GPU 网格。
 local mesh = editor.newHeightmapMeshSmooth(hm, 0.5, 3.2);
-terrainEnt.setMesh(mesh);
-// 原生圆形线性衰减笔刷；strength 为正时升高，为负时降低，返回实际修改的采样数。
-local changed = editor.applyHeightmapBrush(hm, cellX, cellY, radius, strength);
-// 高度图编辑后原地更新（复用 GPU 缓冲，指针不变）
-if (changed > 0)
+if (target.getRevision() != lastRevision)
     editor.updateHeightmapMeshSmooth(mesh, gfx, hm, 0.5, 3.2);
 ```
+
+Target、kernel、falloff、operation 与 tool 之间是非拥有关系，项目需把它们保存在持久状态中。
+`applyHeightmapBrush` 仍作为简单脚本的兼容入口，但定制编辑器应使用上面的组件和统一事务栈。
 
 ## 接口式工具会话（C++）
 
@@ -82,6 +104,52 @@ session.dispatchPointer(down);        // 自动开启一次可撤销 stroke
 ```
 
 将 `TileBufferTarget` 换成 `HeightmapTarget`、把操作换成 `AddScalarFieldOperation`，同一个 `FieldBrushTool` 就成为带衰减的地形升降笔刷。项目也可以实现新的 `IEditableTarget` capability（对象放置、道路、区域、体素等）以及对应操作；无需修改 `EditorSession`。
+
+脚本可把同一个整数字段工具直接绑定到运行中的 `map.TileLayer`，修改会立即进入正常地图渲染、寻路与 FOV revision 流程：
+
+```squirrel
+local layer = eve.Map().newLayer(64, 64, 32, 32);
+local target = editor.newTileLayerTarget("ground", layer);
+local paint = editor.newPaintIntFieldOperation(17);
+local hard = editor.newConstantBrushFalloff();
+local circle = editor.newCircleBrushKernel();
+circle.setConstantFalloff(hard);
+local tool = editor.newFieldBrushTool("paint-grass", "Paint Grass");
+tool.setCircleKernel(circle);
+tool.setPaintIntOperation(paint);
+session.addFieldTool(tool);
+session.bindTileLayerTarget(target);
+```
+
+### 三维稀疏体积
+
+Voxel 不会被伪装成二维 tile。`IIntVolumeTarget`、球/盒 Kernel、体积操作和
+`dispatchPointer3D` 构成独立的三维 capability，但仍复用 `IEditorTool` 生命周期、
+constraint 与 stroke transaction：
+
+```squirrel
+local world = eve.Voxel().newWorld();
+local target = editor.newVoxelWorldTarget("terrain.voxels", world);
+local hard = editor.newConstantBrushFalloff();
+local sphere = editor.newSphereVolumeBrushKernel();
+sphere.setConstantFalloff(hard);
+local paint = editor.newPaintIntVolumeOperation(7); // 0 为擦除
+local tool = editor.newVolumeBrushTool("voxel.paint", "Paint Voxels");
+tool.setSphereKernel(sphere);
+tool.setPaintIntOperation(paint);
+tool.setRadius(2.5);
+session.addVolumeTool(tool);
+session.bindVoxelWorldTarget(target);
+session.activateTool("voxel.paint");
+
+// 视口 raycast 决定三维目标坐标，再转发 Down / Move / Up。
+session.dispatchPointer3D(0, 0, 0, vx, vy, vz, 0, 0, 0, 1.0);
+session.dispatchPointer3D(2, 0, 0, vx, vy, vz, 0, 0, 0, 1.0);
+```
+
+`VoxelWorldTarget.getRevision()` 读取 live world 的单调 revision，因此游戏逻辑、流式加载或
+其他脚本产生的变化也能使预览与保存票据失效。`getDirtyMinX/Y/Z`、`getDirtyMaxX/Y/Z`
+提供局部 remesh/overlay 范围；`clearDirtyVolume` 在消费者完成刷新后清除它。
 
 ### 项目限制
 
@@ -117,6 +185,15 @@ session.dispatchPointer(0, 0, 0, mapX, mapY, 0.0, 0.0, 1.0);
 
 `EditorSession` 和工具都是非拥有关系；脚本必须像上例一样持有 `road`，直到从会话移除。
 
+### 注册并执行项目命令
+
+项目可用 `registerScriptCommand(id, name, category, callback)` 把游戏专用操作注入统一命令
+服务，退出插件或编辑器时用 `unregisterScriptCommand(id)` 清理。会话通过
+`getCommandCount()` 与 `getCommandId/Name/Category(index)` 枚举命令；
+`planCommand(id, payload)` 只生成并保留计划，随后用 `executePlan(planId, context)` 执行；
+不需要预览时可直接 `executeCommand(id, payload)`。这些入口和 C++ 命令服务共享约束、
+事务及 HostProfile 策略，因此游戏内建造玩法和开发编辑器可以复用同一条命令路径。
+
 ## 地图笔刷
 
 旧的 `Brush` / `EditorHistory` API 为兼容已有脚本保留。新编辑器优先使用上面的协议式会话；旧 API 适合很小的纯 tile 工具。
@@ -137,6 +214,31 @@ for (local y = 0; y < buf.getHeight(); y++)
 ```
 
 ## 编辑器壳
+
+### 可组合 Workspace（推荐）
+
+`EditorWorkspace` 是 UI 无关的组合模型，不提供固定编辑器窗口。项目注册任意面板描述，
+再由 `ui`、游戏 HUD、MCP host 或其他 presenter 动态生成界面。Workspace 同时提供带通道的
+Selection/Focus，因此开发编辑器和游戏内建造模式可以共享语义状态而使用不同布局。
+
+```squirrel
+local ws = editor.newWorkspace("level", "My Level Tools");
+ws.setRegionSize("left", 240);
+ws.registerPanel("outliner", "Outliner", "left", 10);
+ws.registerPanel("viewport", "Scene", "center", 20);
+ws.setPanelCapability("viewport", "scene.viewport.3d");
+ws.layout(config.width, config.height);
+
+// 枚举 descriptor 动态生成项目自己的 UI，而不是依赖固定 shell。
+for (local i = 0; i < ws.getPanelCount(); ++i) {
+    print(ws.getPanelId(i) + " -> " + ws.getPanelRegion(i) + "\n");
+}
+
+ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
+```
+
+完整组合示例见 [`examples/composable-editor`](../../../examples/composable-editor)：项目脚本用
+五个面板 builder 组合地形、材质、反射 MVVM、ECS 与游戏命令；C++ 不认识这些具体面板。
 
 ```squirrel
 local dock = editor.newDock();
@@ -183,9 +285,15 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newSession` / `newScriptTool` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
-- 会话：`addTool` / `removeTool` / `clearTools` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo`
+- 模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `newTileBufferTarget` / `newTileLayerTarget` / `newHeightmapTarget` / `newVoxelWorldTarget` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
+- 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `bindTileBufferTarget` / `bindTileLayerTarget` / `bindHeightmapTarget` / `bindVoxelWorldTarget` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
+- 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`
+- Kernel：`setConstantFalloff` / `setLinearFalloff` / `setSmoothFalloff`
+- 整数字段操作：`setValue` / `getValue`
+- 字段 Target：`getTargetId` / `getRevision` / `getWidth` / `getHeight` / `readInt` / `writeInt` / `readScalar` / `writeScalar` / `sampleScalar` / `clearDirtyRegion`
+- 体积工具/Target：`setSphereKernel` / `setBoxKernel` / `setPaintIntOperation` / `readInt3` / `writeInt3` / `getDirtyMinX` / `getDirtyMinY` / `getDirtyMinZ` / `getDirtyMaxX` / `getDirtyMaxY` / `getDirtyMaxZ` / `clearDirtyVolume`
 - Gizmo：`setMode` / `setSpace` / `setPosition` / `setRotationEuler` / `setScale` / `setBounds` / `setSnap*` / `pick` / `beginDrag` / `updateDrag` / `endDrag` / `getPart*`
 - Manager：`set*Enabled` / `attach` / `detach` / `getGizmo` / `pick` / `beginDrag` / `updateDrag`
 - Brush：`setTool` / `setSize` / `setShape` / `setTile` / `paintAt` / `eraseAt` / `floodFill` / `paintLine` / `paintRect` / `preview*` / `getChange*`

@@ -57,9 +57,11 @@ make run/<platform>-debug GAME=examples/<name>
 | 示例 | 演示能力 |
 |---|---|
 | [procgen](procgen/README.md) | 六种地图算法（BSP / Cellular / Drunkard / Maze / 地形 / WFC）+ 纹理配方 |
+| [procgen-script-pipeline](procgen-script-pipeline/README.md) | 纯脚本 PointSet 组合、确定性 seed、事务式 hot reload |
 | [roguelike-generator](roguelike-generator/README.md) | 种子驱动的房间走廊地牢：autotile、装饰、2D ↔ 2.5D |
 | [tree-generator](tree-generator/README.md) | 确定性树木：Weber-Penn / 空间殖民两种骨架算法 |
 | [bush-generator](bush-generator/README.md) | 低多边形灌木配方（mesh.bush）与参数实时调节 |
+| [bush-fog-volumes](bush-fog-volumes/README.md) | 程序化灌木穿过全局与局部体积雾的深度、透明度和多视角检查 |
 | [rock-generator](rock-generator/README.md) | 岩石配方：变形 + 程序化石材纹理 + 自动 LOD |
 | [skyscraper-generator](skyscraper-generator/README.md) | 退台塔楼配方：窗格、尖顶、程序化立面纹理 |
 | [housegen](housegen/README.md) | 房屋布局生成 + GLB kit 实例化 |
@@ -78,7 +80,9 @@ make run/<platform>-debug GAME=examples/<name>
 
 | 示例 | 演示能力 |
 |---|---|
+| [composable-editor](composable-editor/README.md) | 可组合编辑器 SDK：C++ Workspace、动态面板、MVVM、ECS，以及游戏/编辑器共享运行时 |
 | [terrain-editor](terrain-editor/README.md) | 运行时生成的地形编辑器：Viewport 内嵌 3D、笔刷、轨道相机 |
+| [editor-api-v2](editor-api-v2/README.md) | Editor API V2 同构演示：游戏注入命令，玩家通过 discovery → plan → execute 建造场景 |
 | [ai-stage](ai-stage/README.md) | AI 空舞台：scene_director 搭台 kit + MCP，供 Agent 摆物 / 调光 / 截图 / 质检 |
 | [model-converter](model-converter/README.md) | 驱动 Blender 把 OBJ 转换成 GLB 并回载（modelconverter 插件） |
 | [native-plugin](native-plugin/README.md) | 原生插件：用 SDK 编译动态库，脚本直接调用 |

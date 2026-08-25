@@ -8,7 +8,11 @@
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
 
+#if defined(__EMSCRIPTEN__) && __has_include(<webgpu/webgpu_cpp.h>)
 #include <webgpu/webgpu_cpp.h>
+#else
+#include <dawn/webgpu_cpp.h>
+#endif
 
 #include <array>
 #include <atomic>
@@ -46,8 +50,28 @@ struct Mesh3DUBO {
     glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f};   // x=near, y=far
     glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};        // x=strength(0=off), y=worldCell, z=time
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};  // xy=wind vel, z=coverage, w=detail
+    glm::vec4 skinInfo{0.f};
+    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
 };
-static_assert(sizeof(Mesh3DUBO) == 624, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 8832, "Mesh3DUBO layout must match the WGSL Frame block");
+
+struct MeshVertex {
+    glm::vec3 pos;
+    glm::vec3 normal;
+    glm::vec2 uv;
+    glm::u16vec4 joints{0};
+    glm::vec4 weights{0.f};
+};
+static_assert(sizeof(MeshVertex) == 56);
+
+struct SkinPassUBO {
+    glm::mat4 mvp{1.f};
+    glm::mat4 model{1.f};
+    glm::vec4 clip{0.f};
+    glm::vec4 skinInfo{0.f};
+    glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
+};
+static_assert(sizeof(SkinPassUBO) == 8352);
 
 /**
  * @brief Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and
@@ -102,6 +126,7 @@ struct GpuMesh {
     uint32_t vertexCount = 0;
     uint32_t vertexStride = 0;
     wgpu::IndexFormat indexFormat = wgpu::IndexFormat::Uint32;
+    std::vector<MeshVertex> cpuVertices;
 };
 
 /**
@@ -259,6 +284,8 @@ public:
     bool bakeMeshMorph(Mesh *mesh) override;
     bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
+    bool setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
+                             int vertexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     bool releaseMesh(Mesh *mesh) override;

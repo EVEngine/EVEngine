@@ -106,7 +106,8 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 ### `VoxelWorld`（世界）
 
 - 编辑：`getVoxel(x,y,z)`、`setVoxel(x,y,z,texId)`（0=空气，不创建空 chunk）、
-  `setVoxelByName(x,y,z,name,orientation)`、`getCubeTypeName` / `getCubeTypeTex`。
+  `setVoxelByName(x,y,z,name,orientation)`、`getCubeTypeName` / `getCubeTypeTex`、
+  `getRevision()`（内容真实变化时单调增长，供编辑器、存档和预览失效检测）。
 - 网格：`remeshDirty()`（自动并行）、`getChunkCount()`、`hasChunk`、`removeChunk`、`clear`。
 - 存档/流式：`saveWorld()`（返回 `data.newByteData` 可直接落盘）、`loadWorld(byteData)`、
   `unloadChunksOutside(cx,cy,cz,radiusChunks)`（卸载半径外的 chunk，返回卸载数）、

@@ -20,15 +20,8 @@ Module_IMPL(Plugins, new Plugins());
 Plugins::Plugins() = default;
 
 Plugins::~Plugins() {
-    for (auto& kv : loaded_) {
-#if defined(_WIN32)
-        if (kv.second.native)
-            FreeLibrary(static_cast<HMODULE>(kv.second.native));
-#else
-        if (kv.second.native)
-            dlclose(kv.second.native);
-#endif
-    }
+    // Module factories and Squirrel closures point into plugin code. Keep every
+    // successfully loaded library resident until process teardown.
     loaded_.clear();
 }
 
@@ -37,60 +30,87 @@ bool Plugins::load(const std::string& path) {
         throw Exception("plugins.load: empty path");
     if (loaded_.count(path))
         return true;
+    if (!ModuleManager::beginPluginRegistration())
+        throw Exception("plugins.load: nested plugin loading is not supported");
 
 #if defined(_WIN32)
     HMODULE mod = LoadLibraryA(path.c_str());
-    if (!mod)
+    if (!mod) {
+        const DWORD error = GetLastError();
+        ModuleManager::finishPluginRegistration(false);
         throw Exception("plugins.load: LoadLibrary failed for '%s' (err=%lu)", path.c_str(),
-                        GetLastError());
+                        error);
+    }
     auto init = reinterpret_cast<PluginInitFn>(GetProcAddress(mod, "eve_plugin_init"));
     if (!init) {
+        ModuleManager::finishPluginRegistration(false);
         FreeLibrary(mod);
         throw Exception("plugins.load: missing eve_plugin_init in '%s'", path.c_str());
     }
-    int rc = init();
+    int rc = -1;
+    try {
+        rc = init();
+    } catch (...) {
+        ModuleManager::finishPluginRegistration(false);
+        FreeLibrary(mod);
+        throw Exception("plugins.load: eve_plugin_init threw for '%s'", path.c_str());
+    }
     if (rc != 0) {
+        ModuleManager::finishPluginRegistration(false);
         FreeLibrary(mod);
         throw Exception("plugins.load: eve_plugin_init returned %d for '%s'", rc, path.c_str());
     }
-    loaded_[path] = Handle{mod, path};
 #else
     void* mod = dlopen(path.c_str(), RTLD_NOW | RTLD_GLOBAL);
-    if (!mod)
+    if (!mod) {
+        ModuleManager::finishPluginRegistration(false);
         throw Exception("plugins.load: dlopen failed for '%s': %s", path.c_str(), dlerror());
+    }
     dlerror();
     auto init = reinterpret_cast<PluginInitFn>(dlsym(mod, "eve_plugin_init"));
     const char* err = dlerror();
     if (err != nullptr || !init) {
         const std::string error = err ? err : "";
+        ModuleManager::finishPluginRegistration(false);
         dlclose(mod);
         throw Exception("plugins.load: missing eve_plugin_init in '%s'%s%s", path.c_str(),
                         error.empty() ? "" : ": ", error.c_str());
     }
-    int rc = init();
+    int rc = -1;
+    try {
+        rc = init();
+    } catch (...) {
+        ModuleManager::finishPluginRegistration(false);
+        dlclose(mod);
+        throw Exception("plugins.load: eve_plugin_init threw for '%s'", path.c_str());
+    }
     if (rc != 0) {
+        ModuleManager::finishPluginRegistration(false);
         dlclose(mod);
         throw Exception("plugins.load: eve_plugin_init returned %d for '%s'", rc, path.c_str());
     }
-    loaded_[path] = Handle{mod, path};
 #endif
 
+    const std::string registrationError = ModuleManager::finishPluginRegistration(true);
+    if (!registrationError.empty()) {
+#if defined(_WIN32)
+        FreeLibrary(mod);
+#else
+        dlclose(mod);
+#endif
+        throw Exception("plugins.load: %s in '%s'", registrationError.c_str(), path.c_str());
+    }
+    loaded_[path] = Handle{mod, path};
+
     if (ModuleManager::expose_pending() < 0)
-        throw Exception("plugins.load: expose_pending failed after loading '%s'", path.c_str());
+        throw Exception("plugins.load: expose_pending failed after loading '%s'; plugin retained",
+                        path.c_str());
     return true;
 }
 
 bool Plugins::unload(const std::string& path) {
-    auto it = loaded_.find(path);
-    if (it == loaded_.end())
-        return false;
-#if defined(_WIN32)
-    FreeLibrary(static_cast<HMODULE>(it->second.native));
-#else
-    dlclose(it->second.native);
-#endif
-    loaded_.erase(it);
-    return true;
+    (void) path;
+    return false;
 }
 
 bool Plugins::isLoaded(const std::string& path) const {

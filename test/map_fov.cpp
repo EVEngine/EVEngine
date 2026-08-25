@@ -219,6 +219,22 @@ TEST_CASE("map.fov.layerOpaqueGid") {
     delete fov;
 }
 
+TEST_CASE("map.fov.boundLayerAutoSyncsRevision") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(7, 1, 8.f, 8.f);
+    layer->fill(2);
+    Fov *fov = mod->newFov(layer);
+    fov->setBlockEmpty(false);
+    fov->blockOpaqueGid(1);
+    fov->addRevealer(0, 0, 7);
+    fov->compute();
+    CHECK(fov->isVisible(6, 0));
+    layer->setTile(3, 0, 1);
+    fov->compute();
+    CHECK(!fov->isVisible(6, 0));
+    delete fov;
+}
+
 TEST_CASE("map.fov.removeAndDisable") {
     auto *mod = Map::create();
     Fov *fov = mod->newFovSize(5, 5);

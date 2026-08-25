@@ -95,3 +95,39 @@ TEST_CASE("composableGameplay.scriptBuildsRebellionWithoutDomainCpp") {
     CHECK_EQ(vm.find("conflictTransaction").toString(), std::string("failed"));
     CHECK_EQ(vm.find("conflictEvents").toInt(), int64_t{0});
 }
+
+TEST_CASE("composableGameplay.cardAndRtsAdaptersShareDefinitionsTerrainAndIdentity") {
+    const std::string path = std::string(EVENGINE_SOURCE_DIR) + "/examples/composable-editor/gameplay_components.nut";
+    std::ifstream     input(path);
+    REQUIRE(input.good());
+    std::ostringstream source;
+    source << input.rdbuf();
+
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(source.str().c_str()));
+    vm.run(vm.compileSource(R"(
+        gameplay <- GameplayEditorComponents();
+        heightmap <- eve.Procgen().newHeightmap(8, 8);
+        for (local y = 0; y < 8; ++y)
+            for (local x = 0; x < 8; ++x) heightmap.setHeight(x, y, (x + y).tofloat() / 16.0);
+        gameplay.bindTerrain(heightmap, 1.0);
+        authoredCard <- gameplay.createCardInstance();
+        fakeEntity <- { position={ x=0.0, z=0.0 } };
+        authoredUnit <- gameplay.createRtsUnit("unit.editor", fakeEntity, 0.5, 0.5);
+        gameplay.update(0.1);
+        authoredCardDefinition <- authoredCard.getDefinitionId();
+        authoredCardCount <- gameplay.cards.getCardDefinitionCount();
+        authoredUnitStable <- gameplay.crowdSim.getAgentStableId(
+            gameplay.crowdSim.getNamedAgentIndex("unit.editor"));
+        authoredDefinitionCount <- gameplay.definitions.size();
+        authoredTerrainCost <- gameplay.crowdSim.getCellCost(7, 7);
+    )"));
+
+    CHECK(vm.find("authoredUnit").toBool());
+    CHECK_EQ(vm.find("authoredCardDefinition").toString(), std::string("card.scout"));
+    CHECK_EQ(vm.find("authoredCardCount").toInt(), 1);
+    CHECK_EQ(vm.find("authoredUnitStable").toString(), std::string("unit.editor"));
+    CHECK_EQ(vm.find("authoredDefinitionCount").toInt(), 2);
+    CHECK(vm.find("authoredTerrainCost").toFloat() > 1.f);
+}

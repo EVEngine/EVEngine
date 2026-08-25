@@ -65,6 +65,11 @@
 #include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
 #include "graphics/shaders/decal_box_vert_spv.inc"
 #include "graphics/shaders/decal_box_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
@@ -265,7 +270,8 @@ void Graphics::createTexturedPipeline() {
 vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &vert,
                                                    const std::vector<uint32_t> &frag,
                                                    const vkb::BuiltRenderPass &rp,
-                                                   vk::PipelineLayout layout, BlendMode mode) {
+                                                   vk::PipelineLayout layout, BlendMode mode,
+                                                   vk::SampleCountFlagBits samples) {
     ShaderModulePair modules(device, vert, frag);
     if (mode == BlendMode::Additive || mode == BlendMode::Premultiplied ||
         mode == BlendMode::Multiply) {
@@ -287,6 +293,7 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                            vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
             .setDepthStencil(false, false)
+            .setMultisampler(false, samples)
             .setColorBlending(cbs)
             .build(rp);
     }
@@ -301,6 +308,7 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                            vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
             .setDepthStencil(false, false)
+            .setMultisampler(false, samples)
             .setColorBlending()
             .build(rp);
     }
@@ -315,6 +323,7 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
         .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                        vk::FrontFace::eCounterClockwise)
         .setDepthStencil(false, false)
+        .setMultisampler(false, samples)
         .setAlphaBlending(1)
         .build(rp);
 }
@@ -367,6 +376,17 @@ void Graphics::createMesh3DPipeline() {
             .image(10, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
+
+    vkb::DescriptorSetLayoutBuilder skinLayoutBuilder;
+    skinPassSetLayoutUnique =
+        skinLayoutBuilder
+            .buffer(0, vk::DescriptorType::eUniformBufferDynamic,
+                    vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
+            .image(1, vk::DescriptorType::eCombinedImageSampler,
+                   vk::ShaderStageFlagBits::eFragment, 1)
+            .createUnique(device.instance);
+    skinPassSetLayout = *skinPassSetLayoutUnique;
+    skinPassPipelineLayout = createPipelineLayout(device, skinPassSetLayout);
 
     mesh3dPipelineLayout = createPipelineLayout(device, mesh3dSetLayout);
     const auto pcr =
@@ -437,6 +457,8 @@ void Graphics::destroyShadowResources() {
     destroyPipeline(device, shadowPipeline);
     destroyPipelineLayout(device, shadowPipelineLayout);
     destroyPipeline(device, shadowAlphaPipeline);
+    destroyPipeline(device, shadowSkinPipeline);
+    destroyPipeline(device, shadowSkinAlphaPipeline);
     destroyPipelineLayout(device, shadowAlphaPipelineLayout);
     for (auto &slot : shadowMaps) {
         for (int i = 0; i < ShadowConfig::kCascades; ++i) {
@@ -491,6 +513,8 @@ void Graphics::destroyGBufferResources() {
     post2Sets.clear();
     destroyPipeline(device, gbufferPipeline);
     destroyPipeline(device, gbufferAlphaPipeline);
+    destroyPipeline(device, gbufferSkinPipeline);
+    destroyPipeline(device, gbufferSkinAlphaPipeline);
     destroyPipeline(device, gbufferVisPipeline);
     destroyPipeline(device, gbufferVgVisPipeline);
     destroyPipelineLayout(device, gbufferPipelineLayout);
@@ -571,6 +595,15 @@ void Graphics::createUiColorResources(int uiW, int uiH) {
     uiColorSamples = samples;
 
     if (!texSetLayout || !descriptorPool) return;
+    if (!uiTexturePipeline) {
+        const auto vert = embeddedSpirv(textured_vert_spv);
+        const auto frag = embeddedSpirv(textured_frag_spv);
+        uiTexturePipeline = createTexturedStylePipeline(vert, frag, uiRenderPass,
+                                                        texPipelineLayout, BlendMode::Alpha,
+                                                        uiColorSamples);
+        uiTextureOpaquePipeline = createTexturedStylePipeline(
+            vert, frag, uiRenderPass, texPipelineLayout, BlendMode::Opaque, uiColorSamples);
+    }
 
     if (!uiColorSlots.empty() && uiColorWidth == uiW && uiColorHeight == uiH &&
         uiColorFormat == colorFmt && uiColorSamples == samples)
@@ -645,6 +678,14 @@ void Graphics::destroyUiColorTargets() {
 
 void Graphics::destroyUiColorResources() {
     destroyUiColorTargets();
+    if (uiTexturePipeline) {
+        device->destroyPipeline(uiTexturePipeline);
+        uiTexturePipeline = nullptr;
+    }
+    if (uiTextureOpaquePipeline) {
+        device->destroyPipeline(uiTextureOpaquePipeline);
+        uiTextureOpaquePipeline = nullptr;
+    }
     if (uiRenderPass) {
         device->destroyRenderPass(uiRenderPass);
         uiRenderPass = {};
@@ -798,6 +839,32 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                .build(gbufferPass);
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
+
+    auto skinVert = embeddedSpirv(mesh3d_gbuffer_skin_vert_spv);
+    auto skinFrag = embeddedSpirv(mesh3d_gbuffer_skin_frag_spv);
+    gbufferSkinPipeline = device.createPipeline()
+                              .useClassicPipeline(skinVert, skinFrag)
+                              .setPipelineLayout(skinPassPipelineLayout)
+                              .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                       .addInputBinding<MeshVertex>()
+                                                       .addAttributeDescription<MeshVertex>())
+                              .setDynamicStatesViewportScissor()
+                              .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                             vk::CullModeFlagBits::eNone,
+                                             vk::FrontFace::eClockwise)
+                              .build(gbufferPass);
+    auto skinAlphaFrag = embeddedSpirv(mesh3d_gbuffer_skin_alpha_frag_spv);
+    gbufferSkinAlphaPipeline = device.createPipeline()
+                                   .useClassicPipeline(skinVert, skinAlphaFrag)
+                                   .setPipelineLayout(skinPassPipelineLayout)
+                                   .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                            .addInputBinding<MeshVertex>()
+                                                            .addAttributeDescription<MeshVertex>())
+                                   .setDynamicStatesViewportScissor()
+                                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                  vk::CullModeFlagBits::eNone,
+                                                  vk::FrontFace::eClockwise)
+                                   .build(gbufferPass);
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
         vkb::SamplerBuilder sb;
@@ -1375,6 +1442,33 @@ void Graphics::createShadowResources() {
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
 
+    auto skinVert = embeddedSpirv(mesh3d_shadow_skin_vert_spv);
+    shadowSkinPipeline = device.createPipeline()
+                             .useClassicPipeline(skinVert, frag)
+                             .setPipelineLayout(skinPassPipelineLayout)
+                             .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                      .addInputBinding<MeshVertex>()
+                                                      .addAttributeDescription<MeshVertex>())
+                             .setDynamicStatesViewportScissor()
+                             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                            vk::CullModeFlagBits::eNone,
+                                            vk::FrontFace::eClockwise)
+                             .setDepthBias(0.0f, 0.5f)
+                             .build(shadowPass);
+    auto skinAlphaFrag = embeddedSpirv(mesh3d_shadow_skin_alpha_frag_spv);
+    shadowSkinAlphaPipeline = device.createPipeline()
+                                  .useClassicPipeline(skinVert, skinAlphaFrag)
+                                  .setPipelineLayout(skinPassPipelineLayout)
+                                  .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                           .addInputBinding<MeshVertex>()
+                                                           .addAttributeDescription<MeshVertex>())
+                                  .setDynamicStatesViewportScissor()
+                                  .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                 vk::CullModeFlagBits::eNone,
+                                                 vk::FrontFace::eClockwise)
+                                  .setDepthBias(0.0f, 0.5f)
+                                  .build(shadowPass);
+
     // Clear every ping-pong copy so sampling before the first real shadow pass
     // sees SHADER_READ_ONLY rather than UNDEFINED.
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
@@ -1476,6 +1570,7 @@ void Graphics::ensureMesh3dRing(Mesh3dFrameSlots &fslots) {
                                vk::DeviceSize(cap) * shadowUboStride, kHostVisibleCoherent);
     fslots.capacity = cap;
     fslots.sets.clear();  // cached sets reference the old rings
+    fslots.skinSets.clear();
 }
 
 void Graphics::ensureMesh3dClusteredRing(Mesh3dClusteredFrameSlots &fslots) {

@@ -9,6 +9,7 @@ namespace eve::graphics {
 
 class Canvas;
 class AtmosphereVolume;
+class FogVolume;
 class Drawable;
 class Graphics;
 class Mesh;
@@ -163,6 +164,8 @@ public:
     void injectFroxelHeightFog(float extinction, float albedoR, float albedoG, float albedoB,
                                float baseHeight, float heightFalloff, float minWorldY,
                                float maxWorldY);
+    /** @brief Inject an analytic local fog volume using the camera from setCamera(). */
+    void injectFroxelLocalVolume(FogVolume *volume);
     /** @brief Integrate the current froxel media using a uniform incident light. */
     void integrateFroxel(float lightR, float lightG, float lightB, float phaseScale = 1.f);
     /** @brief Upload integrated froxels into a slice atlas sampled by applyFroxel. */

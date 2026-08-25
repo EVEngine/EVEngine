@@ -83,6 +83,8 @@ int nextPOT(int v) {
 
 }  // namespace
 
+void fillMeshAttributes(WGPUVertexAttribute (&attrs)[5]);
+
 Graphics::Graphics() {
     for (uint32_t i = 0; i < kFramesInFlight; ++i) {
         uboArenas.emplace_back();
@@ -142,32 +144,31 @@ void Graphics::initWithWindow(void *nativeWindow) {
     surface = instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
     surfaceFormat = WGPUTextureFormat_BGRA8Unorm;
 #else
+    wgpu::SurfaceDescriptor nativeSurfDesc{};
+    nativeSurfDesc.label = "eve_surface";
     SDL_SysWMinfo wminfo;
     SDL_VERSION(&wminfo.version);
     if (!SDL_GetWindowWMInfo(static_cast<SDL_Window *>(sdlWindow), &wminfo))
         throw Exception("WebGPU: SDL_GetWindowWMInfo failed: %s", SDL_GetError());
 #if defined(_WIN32)
-    WGPUSurfaceSourceWindowsHWND winChain{};
-    winChain.chain.sType = WGPUSType_SurfaceSourceWindowsHWND;
+    wgpu::SurfaceSourceWindowsHWND winChain{};
     winChain.hwnd = wminfo.info.win.window;
     winChain.hinstance = GetModuleHandle(nullptr);
-    surfDesc.nextInChain = &winChain.chain;
-    surface = instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
+    nativeSurfDesc.nextInChain = &winChain;
+    surface = instance.CreateSurface(&nativeSurfDesc);
 #elif defined(__linux__)
     if (wminfo.subsystem == SDL_SYSWM_X11) {
-        WGPUSurfaceSourceXlibWindow x11Chain{};
-        x11Chain.chain.sType = WGPUSType_SurfaceSourceXlibWindow;
+        wgpu::SurfaceSourceXlibWindow x11Chain{};
         x11Chain.display = wminfo.info.x11.display;
         x11Chain.window = wminfo.info.x11.window;
-        surfDesc.nextInChain = &x11Chain.chain;
-        surface = instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
+        nativeSurfDesc.nextInChain = &x11Chain;
+        surface = instance.CreateSurface(&nativeSurfDesc);
     } else if (wminfo.subsystem == SDL_SYSWM_WAYLAND) {
-        WGPUSurfaceSourceWaylandSurface wlChain{};
-        wlChain.chain.sType = WGPUSType_SurfaceSourceWaylandSurface;
+        wgpu::SurfaceSourceWaylandSurface wlChain{};
         wlChain.display = wminfo.info.wl.display;
         wlChain.surface = wminfo.info.wl.surface;
-        surfDesc.nextInChain = &wlChain.chain;
-        surface = instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
+        nativeSurfDesc.nextInChain = &wlChain;
+        surface = instance.CreateSurface(&nativeSurfDesc);
     } else {
         throw Exception("WebGPU: unsupported SDL window subsystem on Linux");
     }
@@ -621,7 +622,7 @@ wgpu::BindGroupLayout Graphics::makeShadowBindGroupLayout() {
     entries[0].visibility = WGPUShaderStage_Vertex;
     entries[0].buffer.type = WGPUBufferBindingType_Uniform;
     entries[0].buffer.hasDynamicOffset = true;
-    entries[0].buffer.minBindingSize = 64;  // mat4 mvp
+    entries[0].buffer.minBindingSize = sizeof(SkinPassUBO);
     entries[1].binding = 1;
     entries[1].visibility = WGPUShaderStage_Fragment;
     entries[1].texture.sampleType = WGPUTextureSampleType_Float;
@@ -639,12 +640,12 @@ wgpu::BindGroupLayout Graphics::makeShadowBindGroupLayout() {
 
 wgpu::BindGroupLayout Graphics::makeGbufferBindGroupLayout() {
     WGPUBindGroupLayoutEntry entries[3]{};
-    // 0: Push UBO (dynamic; 128 bytes)
+    // 0: pass and skinning UBO (dynamic)
     entries[0].binding = 0;
     entries[0].visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
     entries[0].buffer.type = WGPUBufferBindingType_Uniform;
     entries[0].buffer.hasDynamicOffset = true;
-    entries[0].buffer.minBindingSize = 128;
+    entries[0].buffer.minBindingSize = sizeof(SkinPassUBO);
     // 1: albedo
     entries[1].binding = 1;
     entries[1].visibility = WGPUShaderStage_Fragment;
@@ -1212,18 +1213,10 @@ void Graphics::createMesh3DPipelines() {
     clearMeshBindGroupCache();
     mesh3dPipelineLayout = makeMesh3DPipelineLayout();
 
-    WGPUVertexAttribute attrs[3] = {};
-    attrs[0].format = WGPUVertexFormat_Float32x3;  // pos
-    attrs[0].offset = 0;
-    attrs[0].shaderLocation = 0;
-    attrs[1].format = WGPUVertexFormat_Float32x3;  // normal
-    attrs[1].offset = 12;
-    attrs[1].shaderLocation = 1;
-    attrs[2].format = WGPUVertexFormat_Float32x2;  // uv
-    attrs[2].offset = 24;
-    attrs[2].shaderLocation = 2;
+    WGPUVertexAttribute attrs[5] = {};
+    fillMeshAttributes(attrs);
     WGPUVertexBufferLayout vb{};
-    fillVertexLayout(vb, 32, attrs, 3);
+    fillVertexLayout(vb, sizeof(MeshVertex), attrs, 5);
 
     WGPUDepthStencilState ds{};
     ds.format = WGPUTextureFormat_Depth32Float;
@@ -1296,7 +1289,8 @@ void Graphics::createMesh3DClusteredPipeline() {
     mesh3dClusteredSetLayout = makeMesh3DClusteredBindGroupLayout();
     mesh3dClusteredPipelineLayout = makeMesh3DClusteredPipelineLayout();
 
-    WGPUVertexAttribute attrs[3] = {};
+    WGPUVertexAttribute attrs[5] = {};
+    fillMeshAttributes(attrs);
     attrs[0].format = WGPUVertexFormat_Float32x3;  // pos
     attrs[0].offset = 0;
     attrs[0].shaderLocation = 0;
@@ -1307,7 +1301,7 @@ void Graphics::createMesh3DClusteredPipeline() {
     attrs[2].offset = 24;
     attrs[2].shaderLocation = 2;
     WGPUVertexBufferLayout vb{};
-    fillVertexLayout(vb, 32, attrs, 3);
+    fillVertexLayout(vb, sizeof(MeshVertex), attrs, 5);
 
     WGPUDepthStencilState ds{};
     ds.format = WGPUTextureFormat_Depth32Float;
@@ -1351,7 +1345,8 @@ void Graphics::createShadowPipelines() {
     shadowSetLayout = makeShadowBindGroupLayout();
     shadowPipelineLayout = makeShadowPipelineLayout();
 
-    WGPUVertexAttribute attrs[3] = {};
+    WGPUVertexAttribute attrs[5] = {};
+    fillMeshAttributes(attrs);
     attrs[0].format = WGPUVertexFormat_Float32x3;
     attrs[0].offset = 0;
     attrs[0].shaderLocation = 0;
@@ -1362,7 +1357,7 @@ void Graphics::createShadowPipelines() {
     attrs[2].offset = 24;
     attrs[2].shaderLocation = 2;
     WGPUVertexBufferLayout vb{};
-    fillVertexLayout(vb, 32, attrs, 3);
+    fillVertexLayout(vb, sizeof(MeshVertex), attrs, 5);
 
     WGPUDepthStencilState ds{};
     ds.format = WGPUTextureFormat_Depth32Float;
@@ -1409,7 +1404,8 @@ void Graphics::createGbufferPipelines() {
     gbufferSetLayout = makeGbufferBindGroupLayout();
     gbufferPipelineLayout = makeGbufferPipelineLayout();
 
-    WGPUVertexAttribute attrs[3] = {};
+    WGPUVertexAttribute attrs[5] = {};
+    fillMeshAttributes(attrs);
     attrs[0].format = WGPUVertexFormat_Float32x3;
     attrs[0].offset = 0;
     attrs[0].shaderLocation = 0;
@@ -1420,7 +1416,7 @@ void Graphics::createGbufferPipelines() {
     attrs[2].offset = 24;
     attrs[2].shaderLocation = 2;
     WGPUVertexBufferLayout vb{};
-    fillVertexLayout(vb, 32, attrs, 3);
+    fillVertexLayout(vb, sizeof(MeshVertex), attrs, 5);
 
     WGPUDepthStencilState ds{};
     ds.format = WGPUTextureFormat_Depth32Float;
@@ -2363,38 +2359,31 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
             throw Exception("newMeshFromArrays: index out of range");
     }
 
-    std::vector<float> verts;
-    verts.reserve(vertexCount * 8);
+    std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
     for (int i = 0; i < vertexCount; ++i) {
-        verts.push_back(posXYZ[i * 3 + 0]);
-        verts.push_back(posXYZ[i * 3 + 1]);
-        verts.push_back(posXYZ[i * 3 + 2]);
+        auto &v = verts[static_cast<size_t>(i)];
+        v.pos = {posXYZ[i * 3 + 0], posXYZ[i * 3 + 1], posXYZ[i * 3 + 2]};
         if (nrmXYZ) {
-            verts.push_back(nrmXYZ[i * 3 + 0]);
-            verts.push_back(nrmXYZ[i * 3 + 1]);
-            verts.push_back(nrmXYZ[i * 3 + 2]);
+            v.normal = {nrmXYZ[i * 3 + 0], nrmXYZ[i * 3 + 1], nrmXYZ[i * 3 + 2]};
         } else {
-            verts.push_back(0.f);
-            verts.push_back(0.f);
-            verts.push_back(1.f);
+            v.normal = {0.f, 0.f, 1.f};
         }
         if (uvST) {
-            verts.push_back(uvST[i * 2 + 0]);
-            verts.push_back(uvST[i * 2 + 1]);
+            v.uv = {uvST[i * 2 + 0], uvST[i * 2 + 1]};
         } else {
-            verts.push_back(0.f);
-            verts.push_back(0.f);
+            v.uv = {0.f, 0.f};
         }
     }
 
     auto gpu = std::make_unique<GpuMesh>();
     gpu->vertexCount = uint32_t(vertexCount);
     gpu->indexCount = indexCount > 0 ? uint32_t(indexCount) : 0;
-    gpu->vertexStride = 32;
+    gpu->vertexStride = sizeof(MeshVertex);
+    gpu->cpuVertices = verts;
 
     WGPUBufferDescriptor vbd{};
     vbd.label = sv("eve_mesh_vb");
-    vbd.size = verts.size() * sizeof(float);
+    vbd.size = verts.size() * sizeof(MeshVertex);
     vbd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage;
     vbd.mappedAtCreation = false;
     gpu->vertexBuffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&vbd));
@@ -2485,6 +2474,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     }
     Mesh *m = newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(mesh.mNumVertices), idx.data(),
                                 int(idx.size()));
+    if (m) m->captureImportedAttributes(mesh);
     if (m && mesh.mNumAnimMeshes > 0) {
         m->initMorphBase(int(mesh.mNumVertices), pos.data(), nrm.data(), uv.data());
         for (unsigned a = 0; a < mesh.mNumAnimMeshes; ++a) {
@@ -2511,31 +2501,24 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     mesh->computeMorphedPositions(pos, nrm);
     if (pos.empty()) return false;
     mesh->computeBounds(pos.data(), mesh->getVertexCount());
-    std::vector<float> verts;
-    verts.reserve(mesh->getVertexCount() * 8);
+    auto &verts = gpu->cpuVertices;
+    if (verts.size() != static_cast<size_t>(mesh->getVertexCount())) return false;
     const auto &uvs = mesh->baseUv();
     for (int i = 0; i < mesh->getVertexCount(); ++i) {
-        verts.push_back(pos[i * 3 + 0]);
-        verts.push_back(pos[i * 3 + 1]);
-        verts.push_back(pos[i * 3 + 2]);
+        auto &v = verts[static_cast<size_t>(i)];
+        v.pos = {pos[i * 3 + 0], pos[i * 3 + 1], pos[i * 3 + 2]};
         if (nrm.size() >= size_t((i + 1) * 3)) {
-            verts.push_back(nrm[i * 3 + 0]);
-            verts.push_back(nrm[i * 3 + 1]);
-            verts.push_back(nrm[i * 3 + 2]);
+            v.normal = {nrm[i * 3 + 0], nrm[i * 3 + 1], nrm[i * 3 + 2]};
         } else {
-            verts.push_back(0.f);
-            verts.push_back(0.f);
-            verts.push_back(1.f);
+            v.normal = {0.f, 0.f, 1.f};
         }
         if (uvs.size() >= size_t((i + 1) * 2)) {
-            verts.push_back(uvs[i * 2 + 0]);
-            verts.push_back(uvs[i * 2 + 1]);
+            v.uv = {uvs[i * 2 + 0], uvs[i * 2 + 1]};
         } else {
-            verts.push_back(0.f);
-            verts.push_back(0.f);
+            v.uv = {0.f, 0.f};
         }
     }
-    queue.WriteBuffer(gpu->vertexBuffer, 0, verts.data(), verts.size() * sizeof(float));
+    queue.WriteBuffer(gpu->vertexBuffer, 0, verts.data(), verts.size() * sizeof(MeshVertex));
     mesh->markMorphClean();
     return true;
 }
@@ -2612,6 +2595,41 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
     mesh->computeBounds(posXYZ, vertexCount);
     mesh->gpuVertexCount = int(gpu->vertexCount);
     mesh->indexCount = int(gpu->indexCount);
+    return true;
+}
+
+void fillMeshAttributes(WGPUVertexAttribute (&attrs)[5]) {
+    attrs[0].format = WGPUVertexFormat_Float32x3;
+    attrs[0].offset = 0;
+    attrs[0].shaderLocation = 0;
+    attrs[1].format = WGPUVertexFormat_Float32x3;
+    attrs[1].offset = 12;
+    attrs[1].shaderLocation = 1;
+    attrs[2].format = WGPUVertexFormat_Float32x2;
+    attrs[2].offset = 24;
+    attrs[2].shaderLocation = 2;
+    attrs[3].format = WGPUVertexFormat_Uint16x4;
+    attrs[3].offset = 32;
+    attrs[3].shaderLocation = 3;
+    attrs[4].format = WGPUVertexFormat_Float32x4;
+    attrs[4].offset = 40;
+    attrs[4].shaderLocation = 4;
+}
+
+bool Graphics::setMeshSkinningData(Mesh *mesh, const uint16_t *joints4, const float *weights4,
+                                   int vertexCount) {
+    if (!mesh || !mesh->gpuHandle || !joints4 || !weights4) return false;
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    if (vertexCount <= 0 || gpu->cpuVertices.size() != static_cast<size_t>(vertexCount)) return false;
+    for (int i = 0; i < vertexCount; ++i) {
+        const size_t base = static_cast<size_t>(i) * 4u;
+        auto &v = gpu->cpuVertices[static_cast<size_t>(i)];
+        v.joints = glm::u16vec4(joints4[base], joints4[base + 1], joints4[base + 2], joints4[base + 3]);
+        v.weights = glm::vec4(weights4[base], weights4[base + 1], weights4[base + 2], weights4[base + 3]);
+    }
+    queue.WriteBuffer(gpu->vertexBuffer, 0, gpu->cpuVertices.data(),
+                      gpu->cpuVertices.size() * sizeof(MeshVertex));
+    mesh->markGpuSkinned(true);
     return true;
 }
 
@@ -3804,7 +3822,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
     if (mesh3dDraws.empty()) return;
 
     auto &uboArena = currentUboArena();
-    ensureUboArena(uboArena, uboArena.used + mesh3dDraws.size() * 2048);
+    ensureUboArena(uboArena, uboArena.used + mesh3dDraws.size() * 10240);
     auto &vtxArena = currentVertexArena();
 
     // Pre-allocate per-draw UBO slots.
@@ -3812,7 +3830,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         d.frameUboOffset = uboArena.alloc(sizeof(Mesh3DUBO), 256);
         d.shadowUboOffset = uboArena.alloc(sizeof(ShadowUBO), 256);
         d.clusteredUboOffset = 0;
-        if (mesh3dClusteredActive && !canvasTarget)
+        if (mesh3dClusteredActive && !canvasTarget && d.mesh && !d.mesh->hasGpuSkinning())
             d.clusteredUboOffset = uboArena.alloc(sizeof(Mesh3DClusteredUBO), 256);
         d.pushUboOffset = 0;
         if (d.shader && d.shader->pushConstantSize() > 0)
@@ -3875,6 +3893,15 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         ubo.cloud = mesh3dCloud;
         ubo.cloudWind = mesh3dCloudWind;
         ubo.lightColor.w = mesh3dEnvIntensity;
+        if (d.mesh && d.mesh->hasGpuSkinning()) {
+            const int count = std::min(d.mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
+            ubo.skinInfo.x = static_cast<float>(count);
+            const auto &palette = d.mesh->skinPalette();
+            for (int i = 0; i < count; ++i) {
+                std::memcpy(&ubo.skinBones[i], palette.data() + static_cast<size_t>(i) * 16u,
+                            sizeof(glm::mat4));
+            }
+        }
         // X-ray params travel through the Frame UBO (no extra binding). Packed
         // in bindMeshUniforms("xray") order: colorR..G..B, bias, screenW, screenH,
         // rimPower, rimStrength, alpha.
@@ -3954,13 +3981,15 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         }
 
         if (gpuMesh->indexBuffer) {
-            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0,
+                                 uint64_t(gpuMesh->vertexCount) * gpuMesh->vertexStride);
             const uint64_t indexBytes = gpuMesh->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
             pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
                                 uint64_t(gpuMesh->indexCount) * indexBytes);
             pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
         } else {
-            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0,
+                                 uint64_t(gpuMesh->vertexCount) * gpuMesh->vertexStride);
             pass.Draw(gpuMesh->vertexCount, 1, 0, 0);
         }
     }
@@ -3969,22 +3998,30 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 
 void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto &uboArena = currentUboArena();
-    ensureUboArena(uboArena, uboArena.used + 4096);
     if (cascade < 0 || cascade >= ShadowConfig::kCascades) return;
+    ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 8448);
     for (auto &d : shadowCascadeDraws[cascade]) {
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
 
         pass.SetPipeline(d.alphaTest ? mesh3dShadowAlphaPipeline : mesh3dShadowPipeline);
 
-        uint32_t offset = uboArena.alloc(256, 256);
-        queue.WriteBuffer(uboArena.buffer, offset, &d.mvp, sizeof(glm::mat4));
+        SkinPassUBO ubo;
+        ubo.mvp = d.mvp;
+        if (d.mesh->hasGpuSkinning()) {
+            const int count = std::min(d.mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
+            ubo.skinInfo.x = static_cast<float>(count);
+            const auto &palette = d.mesh->skinPalette();
+            std::memcpy(ubo.skinBones, palette.data(), static_cast<size_t>(count) * sizeof(glm::mat4));
+        }
+        uint32_t offset = uboArena.alloc(sizeof(SkinPassUBO), 256);
+        queue.WriteBuffer(uboArena.buffer, offset, &ubo, sizeof(ubo));
 
         GpuTexture *albedo = gpuForTextureOrWhite(d.albedo);
         WGPUBindGroupEntry entries[3]{};
         entries[0].binding = 0;
         entries[0].buffer = uboArena.buffer.Get();
-        entries[0].size = 64;
+        entries[0].size = sizeof(SkinPassUBO);
         entries[1].binding = 1;
         entries[1].textureView = albedo->view.Get();
         entries[2].binding = 2;
@@ -3999,14 +4036,16 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
         pass.SetBindGroup(0, bg, 1, offsets);
 
         if (gpuMesh->indexBuffer) {
-            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0,
+                                 uint64_t(gpuMesh->vertexCount) * gpuMesh->vertexStride);
             const uint64_t indexBytes =
                 gpuMesh->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
             pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
                                 uint64_t(gpuMesh->indexCount) * indexBytes);
             pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
         } else {
-            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0,
+                                 uint64_t(gpuMesh->vertexCount) * gpuMesh->vertexStride);
             pass.Draw(gpuMesh->vertexCount, 1, 0, 0);
         }
     }
@@ -4016,40 +4055,37 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
 void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
     if (gbufferPassDraws.empty() || gbufferSlots.empty()) return;
     auto &uboArena = currentUboArena();
-    ensureUboArena(uboArena, uboArena.used + gbufferPassDraws.size() * 512);
+    ensureUboArena(uboArena, uboArena.used + gbufferPassDraws.size() * 8448);
     for (auto &d : gbufferPassDraws) {
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
 
         pass.SetPipeline(d.alphaTest ? mesh3dGbufferAlphaPipeline : mesh3dGbufferPipeline);
 
-        struct GbufferPush {
-            glm::mat4 mvp;
-            glm::vec4 modelR0;
-            glm::vec4 modelR1;
-            glm::vec4 modelR2;
-            glm::vec4 clip;
-        } push;
-        static_assert(sizeof(GbufferPush) == 128);
-        push.mvp = d.mvp;
-        push.modelR0 = glm::vec4(d.model[0][0], d.model[1][0], d.model[2][0], d.model[3][0]);
-        push.modelR1 = glm::vec4(d.model[0][1], d.model[1][1], d.model[2][1], d.model[3][1]);
-        push.modelR2 = glm::vec4(d.model[0][2], d.model[1][2], d.model[2][2], d.model[3][2]);
+        SkinPassUBO ubo;
+        ubo.mvp = d.mvp;
+        ubo.model = d.model;
         auto u8 = [](float value) {
             return uint32_t(std::lround(std::clamp(value, 0.f, 1.f) * 255.f));
         };
         const uint32_t packedTint = u8(d.tint.r) | (u8(d.tint.g) << 8) | (u8(d.tint.b) << 16) |
                                     (255u << 24);
-        push.clip = glm::vec4(d.nearZ, d.farZ, glm::uintBitsToFloat(packedTint), 0.f);
+        ubo.clip = glm::vec4(d.nearZ, d.farZ, glm::uintBitsToFloat(packedTint), 0.f);
+        if (d.mesh->hasGpuSkinning()) {
+            const int count = std::min(d.mesh->getSkinPaletteCount(), Mesh::kMaxSkinBones);
+            ubo.skinInfo.x = static_cast<float>(count);
+            const auto &palette = d.mesh->skinPalette();
+            std::memcpy(ubo.skinBones, palette.data(), static_cast<size_t>(count) * sizeof(glm::mat4));
+        }
 
-        uint32_t offset = uboArena.alloc(256, 256);
-        queue.WriteBuffer(uboArena.buffer, offset, &push, sizeof(push));
+        uint32_t offset = uboArena.alloc(sizeof(SkinPassUBO), 256);
+        queue.WriteBuffer(uboArena.buffer, offset, &ubo, sizeof(ubo));
 
         GpuTexture *albedo = gpuForTextureOrWhite(d.albedo);
         WGPUBindGroupEntry entries[3]{};
         entries[0].binding = 0;
         entries[0].buffer = uboArena.buffer.Get();
-        entries[0].size = 128;
+        entries[0].size = sizeof(SkinPassUBO);
         entries[1].binding = 1;
         entries[1].textureView = albedo->view.Get();
         entries[2].binding = 2;
@@ -4063,13 +4099,15 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
         pass.SetBindGroup(0, bg, 1, offsets);
 
         if (gpuMesh->indexBuffer) {
-            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0,
+                                 uint64_t(gpuMesh->vertexCount) * gpuMesh->vertexStride);
             const uint64_t indexBytes = gpuMesh->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
             pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
                                 uint64_t(gpuMesh->indexCount) * indexBytes);
             pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
         } else {
-            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0,
+                                 uint64_t(gpuMesh->vertexCount) * gpuMesh->vertexStride);
             pass.Draw(gpuMesh->vertexCount, 1, 0, 0);
         }
     }
@@ -4288,7 +4326,7 @@ void Graphics::popValidationScope() {
                 EM_ASM({ console.log("[GPU_ERR] type=" + $0 + " msg=" + UTF8ToString($1)); },
                        (int)type, message.data);
 #else
-                std::fprintf(stderr, "[GPU_ERR] type=%d msg=%.*s\n", static_cast<int>(type),
+                std::fprintf(stderr, "[webgpu] validation error type=%d: %.*s\n", int(type),
                              static_cast<int>(message.length), message.data);
 #endif
             }
@@ -5043,9 +5081,10 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
     pd.label = sv("eve_custom_shader");
     pd.layout = layout.Get();
 
-    WGPUVertexAttribute attrs[3]{};
+    WGPUVertexAttribute attrs[5]{};
     WGPUVertexBufferLayout vb{};
     if (mesh3d || shadow || gbuffer) {
+        fillMeshAttributes(attrs);
         attrs[0].format = WGPUVertexFormat_Float32x3;
         attrs[0].offset = 0;
         attrs[0].shaderLocation = 0;
@@ -5055,9 +5094,9 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
         attrs[2].format = WGPUVertexFormat_Float32x2;
         attrs[2].offset = 24;
         attrs[2].shaderLocation = 2;
-        vb.arrayStride = 32;
+        vb.arrayStride = sizeof(MeshVertex);
         vb.stepMode = WGPUVertexStepMode_Vertex;
-        vb.attributeCount = 3;
+        vb.attributeCount = 5;
         vb.attributes = attrs;
     } else {
         attrs[0].format = WGPUVertexFormat_Float32x2;

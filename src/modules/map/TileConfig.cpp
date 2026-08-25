@@ -116,6 +116,9 @@ struct TilesetInfo {
     int margin = 0;
     int spacing = 0;
     std::vector<TileLayer::Tileset::Visual> visuals;
+    std::vector<TileLayer::Tileset::Animation> animations;
+    std::vector<TileLayer::Tileset::TerrainRule> terrainRules;
+    std::vector<TileLayer::Tileset::CustomData> customData;
 };
 
 TileLayer::Tileset::Visual readTileVisual(Poco::JSON::Object::Ptr o, int fallbackGid) {
@@ -165,9 +168,56 @@ TilesetInfo readTilesetObject(Poco::JSON::Object::Ptr o) {
             if (arr) {
                 for (size_t i = 0; i < arr->size(); ++i) {
                     auto tile = arr->getObject(static_cast<unsigned int>(i));
-                    auto visual = readTileVisual(tile, info.firstGid + int(i));
+                    const int localId = tile && tile->has("id") ? asInt(tile->get("id"), int(i))
+                                                                : int(i);
+                    const int gid = tile && tile->has("gid")
+                                        ? asInt(tile->get("gid"), info.firstGid + localId)
+                                        : info.firstGid + localId;
+                    auto visual = readTileVisual(tile, gid);
                     if (visual.gid > 0 && visual.width > 0 && visual.height > 0)
                         info.visuals.push_back(visual);
+                    if (!tile) continue;
+                    if (tile->has("animation")) {
+                        auto frames = tile->getArray("animation");
+                        TileLayer::Tileset::Animation animation;
+                        animation.gid = gid;
+                        if (frames) {
+                            for (size_t frameIndex = 0; frameIndex < frames->size(); ++frameIndex) {
+                                auto frame = frames->getObject(static_cast<unsigned int>(frameIndex));
+                                if (!frame) continue;
+                                const int frameLocal = asInt(frame->get("tileid"), localId);
+                                const int duration = frame->has("duration")
+                                                         ? asInt(frame->get("duration"), 100)
+                                                         : 100;
+                                animation.frames.push_back(
+                                    {info.firstGid + frameLocal, std::max(1, duration)});
+                            }
+                        }
+                        if (!animation.frames.empty()) info.animations.push_back(std::move(animation));
+                    }
+                    if (tile->has("terrain") && tile->has("neighborMask")) {
+                        info.terrainRules.push_back(
+                            {gid, asInt(tile->get("terrain"), 0),
+                             asInt(tile->get("neighborMask"), 0) & 0xff});
+                    }
+                    if (tile->has("properties")) {
+                        auto properties = tile->getArray("properties");
+                        if (properties) {
+                            for (size_t propertyIndex = 0; propertyIndex < properties->size();
+                                 ++propertyIndex) {
+                                auto property =
+                                    properties->getObject(static_cast<unsigned int>(propertyIndex));
+                                if (!property || !property->has("name") || !property->has("value"))
+                                    continue;
+                                const std::string type = property->has("type")
+                                                             ? asString(property->get("type"))
+                                                             : "string";
+                                info.customData.push_back(
+                                    {gid, asString(property->get("name")), type,
+                                     asString(property->get("value"))});
+                            }
+                        }
+                    }
                 }
             }
         } catch (...) {
@@ -183,6 +233,9 @@ void applyTileset(TileLayer *layer, const TilesetInfo &info) {
     layer->resource()->texturePath = info.image;
     layer->setTileset(tex, info.firstGid, info.columns, info.margin, info.spacing);
     layer->tileset()->visuals = info.visuals;
+    layer->tileset()->animations = info.animations;
+    layer->tileset()->terrainRules = info.terrainRules;
+    layer->tileset()->customData = info.customData;
 }
 
 bool decodeLayerData(Poco::JSON::Object::Ptr layerObj, size_t expectedCount,
@@ -299,7 +352,7 @@ bool isTileLayerObject(Poco::JSON::Object::Ptr o) {
         const std::string t = asString(o->get("type"));
         if (!t.empty() && t != "tilelayer") return false;
     }
-    return o->has("data");
+    return o->has("data") || o->has("chunks");
 }
 
 bool isObjectGroup(Poco::JSON::Object::Ptr o) {
@@ -435,12 +488,59 @@ bool applyFlatLayerData(TileLayer *layer, Poco::JSON::Object::Ptr root, std::str
     gids.assign(need, 0u);
     const size_t n = std::min(need, data.size());
     for (size_t i = 0; i < n; ++i) gids[i] = data[i];
+    layer->rebuildSpatialIndex();
     return true;
 }
 
 bool applyOneLayerObject(TileLayer *layer, Poco::JSON::Object::Ptr layerObj, int mapW, int mapH,
                          std::string *error) {
     if (!layer || !layerObj) return false;
+    if (layerObj->has("chunks")) {
+        try {
+            auto chunks = layerObj->getArray("chunks");
+            if (!chunks || chunks->size() == 0) return false;
+            int minX = 0, minY = 0, maxX = 0, maxY = 0;
+            bool first = true;
+            for (size_t i = 0; i < chunks->size(); ++i) {
+                auto chunk = chunks->getObject(static_cast<unsigned int>(i));
+                if (!chunk) continue;
+                const int x = asInt(chunk->get("x"), 0), y = asInt(chunk->get("y"), 0);
+                const int w = asInt(chunk->get("width"), 0), h = asInt(chunk->get("height"), 0);
+                if (w <= 0 || h <= 0) continue;
+                if (first) {
+                    minX = x; minY = y; maxX = x + w; maxY = y + h; first = false;
+                } else {
+                    minX = std::min(minX, x); minY = std::min(minY, y);
+                    maxX = std::max(maxX, x + w); maxY = std::max(maxY, y + h);
+                }
+            }
+            if (first) return false;
+            float shiftX = 0.f, shiftY = 0.f;
+            layer->tileToWorld(minX, minY, shiftX, shiftY);
+            layer->resize(maxX - minX, maxY - minY);
+            layer->setOrigin(shiftX, shiftY);
+            auto &gids = layer->tiles()->gids;
+            for (size_t i = 0; i < chunks->size(); ++i) {
+                auto chunk = chunks->getObject(static_cast<unsigned int>(i));
+                if (!chunk) continue;
+                const int x = asInt(chunk->get("x"), 0), y = asInt(chunk->get("y"), 0);
+                const int w = asInt(chunk->get("width"), 0), h = asInt(chunk->get("height"), 0);
+                if (w <= 0 || h <= 0) continue;
+                std::vector<uint32_t> data;
+                if (!decodeLayerData(chunk, size_t(w * h), data, error)) return false;
+                for (int cy = 0; cy < h; ++cy)
+                    for (int cx = 0; cx < w; ++cx)
+                        gids[size_t((y - minY + cy) * layer->getMapWidth() + x - minX + cx)] =
+                            data[size_t(cy * w + cx)];
+            }
+            layer->rebuildSpatialIndex();
+            applyLayerDraw(layer, layerObj);
+            return true;
+        } catch (...) {
+            if (error) *error = "invalid chunk layer";
+            return false;
+        }
+    }
     int w = mapW, h = mapH;
     if (layerObj->has("width")) w = asInt(layerObj->get("width"), w);
     if (layerObj->has("height")) h = asInt(layerObj->get("height"), h);
@@ -454,6 +554,7 @@ bool applyOneLayerObject(TileLayer *layer, Poco::JSON::Object::Ptr layerObj, int
     gids.assign(need, 0u);
     const size_t n = std::min(need, data.size());
     for (size_t i = 0; i < n; ++i) gids[i] = data[i];
+    layer->rebuildSpatialIndex();
 
     applyLayerDraw(layer, layerObj);
     return true;

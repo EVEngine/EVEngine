@@ -61,11 +61,15 @@ local renderable = models.createRenderable(gfx, md, 0);
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `empty()`、`getFaceCount()`、`getMaterialCount()`、`getMeshCount()`、`getName()`、`getVertexCount()`、`hasNormals()`、`hasTexCoords()`
+- 顶点流：`getTexCoordChannelCount()`、`hasTexCoordChannel()`、`getTexCoord()`、`hasTangents()`、`getTangent()`、`getBitangent()`、`getVertexColorChannelCount()`、`hasVertexColorChannel()`、`getVertexColor()`
 - 材质：`getMaterialIndex()`、`getMaterialName()`、`getMaterialBaseColorR/G/B/A()`、`getMaterialMetallicFactor()`、`getMaterialRoughnessFactor()`、`getMaterialOpacity()`、`getMaterialTwoSided()`、`getMaterialAlphaMode()`、`getMaterialAlphaCutoff()`、`getMaterialTextureSlotCount()`、`getMaterialTexturePath()`、`getMaterialTextureEmbeddedIndex()`
 - 内嵌贴图：`getEmbeddedTextureCount()`、`getEmbeddedTextureName()`、`getEmbeddedTextureWidth()`、`getEmbeddedTextureHeight()`、`getEmbeddedTextureImageData()`
 - 蒙皮：`hasBones()`、`getBoneCount()`、`getBoneName()`、`getInverseBindMatrixElement()`、`getBoneWeightCount()`、`getBoneWeightVertex()`、`getBoneWeightValue()`
 - 动画剪辑：`getAnimationCount()`、`getAnimationName()`
 - `newModelData()`、`newModelDataFromFile()`、`createRenderable()`
+- 离线封装：`bakeModel(sourcePath, destinationPath)` 将自包含 GLB/FBX 打包为 `.evmodel`；部署时仍用 `newModelDataFromFile()` 透明加载。
+
+`.evmodel` 是稳定的单文件传输封装，记录原始格式并避免部署时扩展名猜测；它不会自动收集 OBJ/MTL 的外部 sidecar，因此离线生产优先以 GLB 或内嵌贴图 FBX 为输入。GPU Mesh 会保留所有导入 UV、顶点色及 tangent/bitangent 流供自定义管线和后续烘焙使用；内置 PBR shader 当前仍以 UV0 采样。
 
 `createRenderable(gfx, modelData, meshIndex)` 内部等价于 C++ 的
 `model3d::buildRenderable`（节点世界变换烘焙进顶点，材质 tint / metallic / roughness 与

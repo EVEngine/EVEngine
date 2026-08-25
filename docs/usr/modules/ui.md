@@ -32,11 +32,91 @@ ui.mountBuildAs("hud");
 ```squirrel
 ui.beginRow("toolbar", 8.0);
 ui.setFlexJustify("space-between");
-ui.button("Save", "save");
+ui.iconButton("save", "Save", "save");
 ui.spacer("sp");
 ui.button("Quit", "quit");
 ui.end();
 ```
+
+桌面框架可用 `beginToolbar`、`beginToolbox`、`beginSidebar`、`beginStatusBar` 和
+`beginSplitPane("row"|"column", ratio, id)` 直接组合。SplitPane 必须包含两个直接子项，
+拖拽分隔条会产生普通 value change；比例可通过 `getValue` / `setValue` 读取和恢复。
+独立面板可用 `setHostMovable(true)` / `setHostResizable(true)` 允许用户调整；ImGui 会按
+稳定 Host ID 自动写入和恢复 ini 布局。无标题 Overlay 的不透明度由
+`setHostOverlayAlpha(0..1)` 控制。
+
+```squirrel
+ui.beginToolbar("toolbar");
+ui.iconButton("save", "", "save");
+ui.spacer("toolbar-fill");
+ui.badge("Ready", "ready");
+ui.end();
+
+ui.beginSplitPane("row", 0.25, "workspace");
+ui.beginSidebar("left", 240.0);
+ui.searchField("Search tools", "", "tool-search");
+ui.beginToolbox("tools", 40.0, 3);
+ui.iconButton("pointer", "", "select");
+ui.iconButton("move", "", "move");
+ui.iconButton("paint-brush", "", "paint");
+ui.end();
+ui.end();
+ui.beginCard("content");
+ui.sectionHeader("Inspector", "inspector");
+ui.end();
+ui.end();
+```
+
+### 使用内置编辑器图标
+
+`icon(name, id)` 显示语义图标，`iconButton(name, label, id)` 创建图标按钮。图标字体随
+引擎构建和 SDK 安装，不依赖游戏工作目录。名称不区分大小写，空格和下划线会转成
+连字符；常用名称包括 `search`、`settings`、`save`、`undo`、`redo`、`folder-open`、
+`pointer`、`move`、`paint-brush`、`database`、`layers`、`play` 和 `warning`。
+
+```squirrel
+ui.beginRow("tools", 4.0);
+ui.iconButton("pointer", "", "select");
+ui.iconButton("move", "", "move");
+ui.iconButton("paint-brush", "Paint", "paint");
+ui.end();
+```
+
+### 组合桌面编辑器控件
+
+Editor 常用控件已内置：`searchField`、`switch`、`badge`、`sectionHeader`、`beginCard`、
+`beginMenuBar` / `beginMenu` / `menuItem`。`setItemTooltip` 为刚添加的控件设置悬停说明。
+菜单栏应作为 Window 的直接子项；所有可交互控件都应使用稳定 ID。
+
+```squirrel
+ui.beginMenuBar("main-menu");
+ui.beginMenu("File", "file");
+ui.menuItem("Save", "Ctrl+S", "save");
+ui.end();
+ui.end();
+ui.searchField("Search assets", "", "asset-search");
+ui.setItemTooltip("Filter project assets");
+ui.sectionHeader("Properties", "properties");
+ui.beginCard("selection-card");
+local addSwitch = ui["switch"].bindenv(ui); // `switch` 是 Squirrel 关键字
+addSwitch("Visible", true, "visible");
+ui.badge("Modified", "state");
+ui.end();
+```
+
+### 用 Theme 统一布局
+
+Theme 除颜色和 ImGui 基础几何外，还提供类似 CSS design tokens 的语义布局默认值：
+`toolbarHeight`、`statusBarHeight`、`sidebarWidth`、`toolboxCellSize`、
+`splitterSize`、`minPaneSize`、`panelPadding`、`cardPadding`、`barPadding`、
+`sectionSpacingY`、`searchMinWidth` 和 `searchIconGap`。暗色与亮色主题共享这些布局
+参数，因此切换配色不会改变界面结构。
+
+`Toolbar`、`Sidebar`、`Toolbox`、`Card`、`StatusBar`、`SplitPane` 和
+`SearchField` 在没有显式尺寸时自动继承 Theme。局部差异继续通过
+`setItemSize`、`setItemPadding`、`setItemMargin`、`setItemMinSize` 等接口覆盖，
+其优先级高于 Theme 默认值。SplitPane 的直接子节点总是填满获分配的 pane，内部控件
+再依据可用宽度响应式重排；Toolbox 的列数是上限，空间不足时会自动减少列数。
 
 ### 更新而不重建整个 UI
 
@@ -56,15 +136,23 @@ ui.end();
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `beginBuild()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginRow()`、`beginScrollList()`、`beginWindow()`、`bindOwner()`
-- `animateHostPos()`、`button()`、`checkbox()`、`combo()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
-- `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
-- `mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`select()`、`separator()`、`setChecked()`
-- `setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPercent()`、`setHostPos()`、`setHostSize()`、`setHostVisible()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemFlexGrow()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
-- `wantCaptureMouse()`
+- `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginRow()`、`beginSidebar()`、`beginSplitPane()`、`beginStatusBar()`、`beginScrollList()`、`beginToolbar()`、`beginToolbox()`、`beginWindow()`、`bindOwner()`
+- `animateHostPos()`、`badge()`、`button()`、`checkbox()`、`combo()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
+- `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
+- `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
+- `setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemFlexGrow()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
+- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
+- `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`
 - `image()`、`imageButton()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`
 - `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
+
+## 引擎纹理控件
+
+`image()` 和 `imageButton()` 可以显示任意引擎 `Texture`。先用
+`textureId = ui.registerTexture(texture)` 获得后端中立句柄，再用
+`ui.setImageTextureId(id, textureId)` 绑定到当前 Host 的控件。纹理不再使用时，先把相关
+控件设为 `0`，再调用 `ui.unregisterTexture(textureId)`；这样 Vulkan 与 WebGPU 后端都能
+释放对应资源。UV、色调、九宫格与圆角仍通过 `setImageUv/Tint/NinePatch/CornerRadius` 组合。
 
 ## 内嵌渲染视口（Viewport）
 
@@ -75,6 +163,19 @@ ui.end();
 （悬停、按住、控件本地鼠标坐标、拖拽增量、滚轮）通过 `viewportHovered/Active/MouseX/
 MouseY/DragDX/DragDY/Wheel(id)` 每帧读取。完整示例见
 `examples/terrain-editor`（高度图地形 + orbit 相机 + 抬高/压低笔刷）。
+
+## MCP EditorHost 脚本接口
+
+`eve mcp` 会在根表建立 `eve.host`，供项目脚本创建和维护 AI 编辑器。它与
+`eve.UI()` 的游戏内 retained UI 相互独立，但都运行在同一个 Squirrel VM 中。
+
+- 窗口与状态：`status()`、`openWindow()`、`closeWindow()`、`windowState()`。
+- View 与交互：`applyEditor()`、`removeEditor()`、`setValue()`、`events()`、
+  `widgetRect()`、`capture()`、`save()`。
+- ViewModel：`registerVM()`、`unregisterVM()`、`runScript()`。
+- 热更新：`reloadResource(path)` 手动重载项目内的 `mcp.nut`、`mcp/*.nut`、
+  `editors/*.vm.nut` 或 `editors/*.editor.json`；`hotReloadStatus()` 返回 watcher、
+  成功/失败计数与最近诊断。正常保存会由 MCP 主机自动触发，无需重启。
 
 ## 使用要点
 
