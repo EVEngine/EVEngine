@@ -101,6 +101,41 @@ void AtmosphereVolume::injectLocalVolume(const FogVolume &volume, const glm::vec
     }
 }
 
+void AtmosphereVolume::injectLocalVolumeFrustum(const FogVolume &volume,
+                                                const glm::mat4 &invViewProj) {
+    auto unproject = [&](float ndcX, float ndcY, float ndcZ) {
+        glm::vec4 world = invViewProj * glm::vec4(ndcX, ndcY, ndcZ, 1.f);
+        return glm::vec3(world) / world.w;
+    };
+    for (int y = 0; y < height_; ++y) {
+        const float v = (float(y) + 0.5f) / float(height_);
+        for (int x = 0; x < width_; ++x) {
+            const float u = (float(x) + 0.5f) / float(width_);
+            const glm::vec3 nearPoint = unproject(u * 2.f - 1.f, v * 2.f - 1.f, 0.f);
+            const glm::vec3 farPoint = unproject(u * 2.f - 1.f, v * 2.f - 1.f, 1.f);
+            for (int z = 0; z < depth_; ++z) {
+                const float depth01 = (sliceDistance(z) - nearDistance_) /
+                                      (farDistance_ - nearDistance_);
+                const glm::vec3 world = glm::mix(nearPoint, farPoint, depth01);
+                const float signedExtinction = volume.sampleExtinction(world);
+                if (std::fabs(signedExtinction) <= 1e-8f) continue;
+                FogFroxel &f = at(x, y, z);
+                const float previous = f.extinction;
+                f.extinction = std::max(0.f, previous + signedExtinction);
+                if (signedExtinction > 0.f) {
+                    f.scattering += volume.getAlbedo() * signedExtinction;
+                    f.emissive += volume.getEmissive() * signedExtinction;
+                    f.anisotropy = volume.getAnisotropy();
+                } else if (previous > 1e-6f) {
+                    const float scale = f.extinction / previous;
+                    f.scattering *= scale;
+                    f.emissive *= scale;
+                }
+            }
+        }
+    }
+}
+
 void AtmosphereVolume::injectDensityGraph(const VolumeDensityGraph &graph,
                                           const glm::vec3 &worldMin,
                                           const glm::vec3 &worldMax, float extinctionScale,
