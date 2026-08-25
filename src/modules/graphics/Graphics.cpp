@@ -4,6 +4,7 @@
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
+#include "font/FontData.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
@@ -1126,7 +1127,6 @@ void Graphics::setTextureSampler(Texture* texture, const std::string& filter, co
 
 Quad* Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
 
-#ifndef EVENGINE_WEBGPU
 Font* Graphics::newFont(font::FontData* data, std::string charset) { return new Font(this, data, std::move(charset)); }
 
 void Graphics::print(const std::string& text, float x, float y, const Color& color, float scale) {
@@ -1166,6 +1166,4 @@ void Graphics::print(const std::string& text, float x, float y, const Color& col
         prevCodepoint = code;
     }
 }
-#endif  // !EVENGINE_WEBGPU
-
 }  // namespace eve::graphics

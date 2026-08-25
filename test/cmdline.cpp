@@ -306,7 +306,8 @@ TEST_CASE("cmdline.helpListsSubcommands") {
     const int      rc = runCli({"eve", "--help"});
     CHECK(rc == 0);
     CHECK(cap.out().find("Subcommands:") != std::string::npos);
-    for (const char* sub : {"run", "create", "zip", "package", "dev", "doc", "clean", "test", "build", "get", "mcp"})
+    for (const char* sub : {"run", "create", "zip", "package", "dev", "doc", "clean", "test", "build", "get", "mcp",
+                            "language-server"})
         CHECK(cap.out().find(sub) != std::string::npos);
 }
 
@@ -796,6 +797,45 @@ TEST_CASE("cmdline.packageUsesTargetSdkRuntimeAndBundledDlls") {
     std::filesystem::remove_all(winOut, ec);
     std::filesystem::remove_all(linSdk, ec);
     std::filesystem::remove_all(linOut, ec);
+}
+
+TEST_CASE("cmdline.packageRejectsInvalidScriptDependencyGraphs") {
+    const auto sdk = tempDir("eve_ut_cmdline_pkg_scan_sdk");
+    writeFile(sdk / "share" / "eve" / "TARGET_PLATFORM", "linux\n");
+    writeFile(sdk / "bin" / "eve", "linux runtime");
+
+    const auto missing = tempDir("eve_ut_cmdline_pkg_scan_missing");
+    writeFile(missing / "main.nut", "import { value } from \"./missing.nut\"\n");
+    const auto missingOut = tempDir("eve_ut_cmdline_pkg_scan_missing_out");
+    {
+        CaptureStreams cap;
+        const int      rc = runCli(
+            {"eve", "package", missing.string(), "--sdk", sdk.string(), "-o", missingOut.string()});
+        CHECK_EQ(rc, 5);
+        CHECK(cap.all().find("is missing from package") != std::string::npos);
+        std::error_code ec;
+        CHECK(!std::filesystem::exists(missingOut / "game.eve", ec));
+    }
+
+    const auto cyclic = tempDir("eve_ut_cmdline_pkg_scan_cycle");
+    writeFile(cyclic / "main.nut", "import { a } from \"./a.nut\"\n");
+    writeFile(cyclic / "a.nut", "import { b } from \"./b.nut\"\nexport const a = b\n");
+    writeFile(cyclic / "b.nut", "import { a } from \"./a.nut\"\nexport const b = a\n");
+    const auto cyclicOut = tempDir("eve_ut_cmdline_pkg_scan_cycle_out");
+    {
+        CaptureStreams cap;
+        const int      rc = runCli(
+            {"eve", "package", cyclic.string(), "--sdk", sdk.string(), "-o", cyclicOut.string()});
+        CHECK_EQ(rc, 5);
+        CHECK(cap.all().find("cyclic script import in package") != std::string::npos);
+    }
+
+    std::error_code ec;
+    std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(missing, ec);
+    std::filesystem::remove_all(missingOut, ec);
+    std::filesystem::remove_all(cyclic, ec);
+    std::filesystem::remove_all(cyclicOut, ec);
 }
 
 TEST_CASE("cmdline.getUnsupportedPlatformFails") {

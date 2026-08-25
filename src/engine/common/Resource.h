@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <map>
 #include <mutex>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -47,7 +46,10 @@ public:
      * existing holders (raw pointers, refs, script instances) keep a valid
      * object. Subclasses move the payload out of `replacement`, which is
      * drained and destroyed by the caller afterwards. `replacement` must be
-     * the same concrete type as `this`.
+     * the same concrete type as `this`. Implementations must use a reversible
+     * swap and either complete without throwing or leave both objects unchanged;
+     * ResourceManager uses the drained candidate to roll back a later failure
+     * in the same dependency transaction.
      */
     virtual void adopt(eve::Resource& replacement) = 0;
 
@@ -135,8 +137,7 @@ protected:
     ResourceManager() = default;
 
     void ensureRegistered();
-    bool refreshEntry(const std::string& key, std::set<std::string>& visited);
-    void refreshDependents(Resource* updated, std::set<std::string>& visited);
+    Resource* loadReplacement(const std::string& key);
 
     std::map<std::string, ref<Resource>> resources;
     mutable std::mutex mu_;

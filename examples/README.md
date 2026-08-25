@@ -74,7 +74,7 @@ make run/<platform>-debug GAME=examples/<name>
 |---|---|
 | [outline](outline/README.md) | 屏幕空间描边（G-buffer 深度 + 法线） |
 | [waterfall-demo](waterfall-demo/README.md) | 瀑布流动着色器（条纹 / 湍流 / 泡沫） |
-| [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（仅 Vulkan，计算演示） |
+| [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（Vulkan/WebGPU） |
 | [tensor](tensor/README.md) | 张量编译管线：策略网络 / conv / SDPA / 批量模拟（纯计算） |
 
 ## 工具与扩展

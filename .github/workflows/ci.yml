@@ -118,7 +118,7 @@ jobs:
 
       - name: Test release.py
         timeout-minutes: 5
-        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+        run: python3 -m unittest discover -s scripts/tests -p "test_release*.py" -v
 
       - name: Check release version consistency
         timeout-minutes: 5
@@ -142,6 +142,10 @@ jobs:
       - name: Ruff lint (scripts + tools)
         timeout-minutes: 5
         run: python3 -m ruff check scripts tools
+
+      - name: Test Python scripts
+        timeout-minutes: 5
+        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
       - name: Test asset-pipeline-agent
         timeout-minutes: 5
@@ -171,7 +175,7 @@ jobs:
     name: Windows
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
@@ -256,10 +260,7 @@ jobs:
           fi
           make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" \
             CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
-              -DCMAKE_POLICY_DEFAULT_CMP0141=NEW \
-              -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded \
-              -DCMAKE_C_COMPILER_LAUNCHER=sccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=sccache $tp_args"
+              -DEVENGINE_COMPILER_CACHE=SCCACHE $tp_args"
 
       - name: Report C/C++ compilation cache
         if: always()
@@ -279,11 +280,61 @@ jobs:
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        timeout-minutes: 30
+        timeout-minutes: 40
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/win32-debug
+
+      - name: Capture Vulkan parity artifacts
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_RENDER_PARITY_DIR: ${{ github.workspace }}/artifacts/render-parity
+        run: ctest --test-dir build/win32-debug -R '^graphics\.backendParity\.' --output-on-failure
+
+      - name: Configure native Dawn parity lane
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
+            -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl `
+            -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
+            -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
+            -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF `
+            -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+
+      - name: Build native Dawn parity lane
+        timeout-minutes: 40
+        shell: pwsh
+        run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
+
+      - name: Capture native Dawn parity artifacts
+        # Dawn initialization takes roughly two minutes per isolated test on
+        # the Windows software adapter. Keep per-case process isolation while
+        # allowing all 13 parity cases to complete.
+        timeout-minutes: 40
+        shell: pwsh
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_RENDER_PARITY_DIR: ${{ github.workspace }}/artifacts/render-parity
+        run: ctest --test-dir build/webgpu-native -R '^graphics\.backendParity\.' --output-on-failure
+
+      - name: Compare Vulkan and WebGPU parity images
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          python -m pip install --quiet pillow
+          python scripts/compare_render_backends.py `
+            artifacts/render-parity/vulkan artifacts/render-parity/webgpu
+
+      - name: Upload render parity artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: render-parity-windows
+          path: artifacts/render-parity
+          if-no-files-found: warn
 
   windows-release:
     name: Windows (Release)
@@ -456,7 +507,7 @@ jobs:
     name: macOS
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -493,6 +544,29 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
+
+      - name: Configure native Dawn Metal lane
+        timeout-minutes: 20
+        run: |
+          cmake -S . -B build/webgpu-macos -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
+            -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/macosx-debug" \
+            -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+            -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+
+      - name: Build native Dawn Metal lane
+        timeout-minutes: 40
+        run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
+
+      - name: Test native Dawn Metal surface and rendering
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          ctest --test-dir build/webgpu-macos \
+            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))' \
+            --output-on-failure
 
   macos-release:
     name: macOS (Release)
@@ -745,8 +819,7 @@ jobs:
           fi
           make build/linux-debug JOBS="$(nproc)" \
             CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
-              -DCMAKE_C_COMPILER_LAUNCHER=sccache \
-              -DCMAKE_CXX_COMPILER_LAUNCHER=sccache $tp_args"
+              -DEVENGINE_COMPILER_CACHE=SCCACHE $tp_args"
 
       - name: Report C/C++ compilation cache
         if: always()
@@ -1007,10 +1080,14 @@ jobs:
         timeout-minutes: 10
         run: |
           gcovr -r . --object-directory build/linux-coverage \
-            --exclude 'build/' --exclude 'external/' --exclude 'test/' \
+            --exclude 'build/' --exclude 'external/' --exclude 'third-party/' --exclude 'test/' \
+            --gcov-ignore-parse-errors \
+            --gcov-ignore-errors=no_working_dir_found \
             -x build/linux-coverage/coverage.xml
           gcovr -r . --object-directory build/linux-coverage \
-            --exclude 'build/' --exclude 'external/' --exclude 'test/' \
+            --exclude 'build/' --exclude 'external/' --exclude 'third-party/' --exclude 'test/' \
+            --gcov-ignore-parse-errors \
+            --gcov-ignore-errors=no_working_dir_found \
             --html --html-details -o build/linux-coverage/coverage.html
 
       - name: Upload coverage artifact
@@ -1135,3 +1212,28 @@ jobs:
           test -f build/webgpu-web/src/engine/eve.html
           test -f build/webgpu-web/src/engine/eve.wasm
           ls -lh build/webgpu-web/src/engine/eve.*
+
+      - name: Capture browser WebGPU frame
+        timeout-minutes: 10
+        run: |
+          python3 -m pip install --quiet pillow
+          cd build/webgpu-web/src/engine
+          python3 -m http.server 8090 >webgpu-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
+            --enable-unsafe-webgpu --enable-features=Vulkan \
+            --use-vulkan=swiftshader --window-size=800,600 \
+            --timeout=20000 --screenshot=webgpu-browser.png \
+            http://127.0.0.1:8090/eve.html
+          python3 "$GITHUB_WORKSPACE/scripts/validate_render_frame.py" webgpu-browser.png
+
+      - name: Upload browser WebGPU frame
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgpu-browser-frame
+          path: |
+            build/webgpu-web/src/engine/webgpu-browser.png
+            build/webgpu-web/src/engine/webgpu-http.log
+          if-no-files-found: warn

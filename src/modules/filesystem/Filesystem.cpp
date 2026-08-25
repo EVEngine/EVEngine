@@ -26,6 +26,12 @@
 #include <unistd.h>
 #endif
 
+#if defined(EVENGINE_WEBGPU) && defined(EVENGINE_WINDOWS)
+#include <windows.h>
+
+#include "common/utf8.h"
+#endif
+
 namespace eve {
 namespace filesystem {
 
