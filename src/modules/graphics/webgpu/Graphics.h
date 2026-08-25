@@ -148,6 +148,9 @@ public:
     void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
                            float nearZ, float farZ) override;
     void gpuDrivenDrawOpaque() override;
+    bool gpuDrivenResolveWanted() const override;
+    void gpuDrivenRecordVisPass() override;
+    void gpuDrivenResolve() override;
     /** @brief Return the last CPU compatibility-cull result for backend parity tests. */
     uint32_t debugGpuDrivenVisibleCount() const {
         return static_cast<uint32_t>(gpuDrivenVisible_.size());
@@ -421,6 +424,9 @@ private:
     void ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketCount);
     void recordGpuDrivenCompute(wgpu::CommandEncoder encoder);
     void flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget);
+    void ensureGpuDrivenVisibilityResources();
+    void recordGpuDrivenVisibility(wgpu::CommandEncoder encoder);
+    void flushGpuDrivenResolve(wgpu::RenderPassEncoder pass);
     void createSceneColorResources(int width, int height);
     void destroySceneColorResources();
     void createShadowResources();
@@ -753,6 +759,10 @@ private:
         wgpu::TextureView albedoView;
         wgpu::Texture depth;
         wgpu::TextureView depthView;
+        wgpu::Texture visID;
+        wgpu::TextureView visIDView;
+        wgpu::Texture visBary;
+        wgpu::TextureView visBaryView;
         GpuTexture normalGpu;
         GpuTexture depthColorGpu;
         GpuTexture albedoGpu;
@@ -828,15 +838,25 @@ private:
     wgpu::Buffer gpuDrivenInputBuffer_;
     wgpu::Buffer gpuDrivenVisibleBuffer_;
     wgpu::Buffer gpuDrivenIndirectBuffer_;
+    wgpu::Buffer gpuDrivenVisIndirectBuffer_;
     wgpu::BindGroup gpuDrivenComputeBindGroup_;
     wgpu::BindGroup gpuDrivenRenderBindGroup_;
     uint64_t gpuDrivenInputCapacity_ = 0;
     uint64_t gpuDrivenVisibleCapacity_ = 0;
     uint64_t gpuDrivenIndirectCapacity_ = 0;
+    uint64_t gpuDrivenVisIndirectCapacity_ = 0;
     uint32_t gpuDrivenDispatchCount_ = 0;
     uint32_t gpuDrivenLastIndirectDrawCount_ = 0;
     bool gpuDrivenComputePending_ = false;
     bool gpuDrivenDrawPending_ = false;
+    bool gpuDrivenVisPending_ = false;
+    bool gpuDrivenResolvePending_ = false;
+    wgpu::BindGroupLayout gpuDrivenVisSetLayout_;
+    wgpu::BindGroupLayout gpuDrivenResolveSetLayout_;
+    wgpu::PipelineLayout gpuDrivenVisPipelineLayout_;
+    wgpu::PipelineLayout gpuDrivenResolvePipelineLayout_;
+    wgpu::RenderPipeline gpuDrivenVisPipeline_;
+    wgpu::RenderPipeline gpuDrivenResolvePipeline_;
 
     // Browser async frame readback (avoids ASYNCIFY sleep inside deep
     // JS->Squirrel->Graphics call chains).

@@ -35,7 +35,8 @@ struct CullInput {
     glm::mat4 model{1.f};
     glm::vec4 bounds{0.f};
     uint32_t bucket = 0;
-    uint32_t pad[3]{};
+    uint32_t outputBase = 0;
+    uint32_t pad[2]{};
 };
 static_assert(sizeof(CullInput) == 96);
 
@@ -45,12 +46,20 @@ struct CullParams {
 };
 static_assert(sizeof(CullParams) == 112);
 
+struct VisIndirectCommand {
+    uint32_t vertexCount = 0;
+    uint32_t instanceCount = 0;
+    uint32_t firstVertex = 0;
+    uint32_t firstInstance = 0;
+};
+static_assert(sizeof(VisIndirectCommand) == 16);
+
 constexpr const char *kCullWgsl = R"wgsl(
 struct CullInput {
     model: mat4x4f,
     bounds: vec4f,
     bucket: u32,
-    pad0: u32,
+    outputBase: u32,
     pad1: u32,
     pad2: u32,
 };
@@ -65,10 +74,17 @@ struct IndirectCommand {
     baseVertex: u32,
     firstInstance: u32,
 };
+struct VisIndirectCommand {
+    vertexCount: u32,
+    instanceCount: atomic<u32>,
+    firstVertex: u32,
+    firstInstance: u32,
+};
 @group(0) @binding(0) var<uniform> params: CullParams;
 @group(0) @binding(1) var<storage, read> inputs: array<CullInput>;
 @group(0) @binding(2) var<storage, read_write> visibleModels: array<mat4x4f>;
 @group(0) @binding(3) var<storage, read_write> commands: array<IndirectCommand>;
+@group(0) @binding(4) var<storage, read_write> visCommands: array<VisIndirectCommand>;
 
 @compute @workgroup_size(64)
 fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
@@ -83,9 +99,9 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
         let plane = params.planes[p];
         if (dot(plane.xyz, center) + plane.w < -radius) { return; }
     }
-    let outputBase = commands[input.bucket].firstInstance;
     let local = atomicAdd(&commands[input.bucket].instanceCount, 1u);
-    visibleModels[outputBase + local] = input.model;
+    atomicAdd(&visCommands[input.bucket].instanceCount, 1u);
+    visibleModels[input.outputBase + local] = input.model;
 }
 )wgsl";
 
@@ -211,21 +227,24 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
 
 void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketCount) {
     if (!gpuDrivenCullPipeline_) {
-        WGPUBindGroupLayoutEntry computeEntries[4]{};
+        WGPUBindGroupLayoutEntry computeEntries[5]{};
         computeEntries[0].binding = 0;
         computeEntries[0].visibility = WGPUShaderStage_Compute;
         computeEntries[0].buffer.type = WGPUBufferBindingType_Uniform;
         computeEntries[0].buffer.minBindingSize = sizeof(CullParams);
-        for (uint32_t i = 1; i < 4; ++i) {
+        for (uint32_t i = 1; i < 5; ++i) {
             computeEntries[i].binding = i;
             computeEntries[i].visibility = WGPUShaderStage_Compute;
             computeEntries[i].buffer.type = i == 1 ? WGPUBufferBindingType_ReadOnlyStorage
                                                     : WGPUBufferBindingType_Storage;
-            computeEntries[i].buffer.minBindingSize = 4;
         }
+        computeEntries[1].buffer.minBindingSize = sizeof(CullInput);
+        computeEntries[2].buffer.minBindingSize = sizeof(glm::mat4);
+        computeEntries[3].buffer.minBindingSize = sizeof(uint32_t) * 5;
+        computeEntries[4].buffer.minBindingSize = sizeof(VisIndirectCommand);
         WGPUBindGroupLayoutDescriptor cbgl{};
         cbgl.label = label("eve_gpu_driven_compute_bgl");
-        cbgl.entryCount = 4;
+        cbgl.entryCount = 5;
         cbgl.entries = computeEntries;
         gpuDrivenComputeSetLayout_ = device.CreateBindGroupLayout(
             reinterpret_cast<const wgpu::BindGroupLayoutDescriptor *>(&cbgl));
@@ -307,7 +326,7 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         rpd.fragment = &fs;
         rpd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
         rpd.primitive.frontFace = WGPUFrontFace_CW;
-        rpd.primitive.cullMode = WGPUCullMode_Back;
+        rpd.primitive.cullMode = WGPUCullMode_None;
         rpd.depthStencil = &depth;
         rpd.multisample.count = sceneColorSamples;
         rpd.multisample.mask = 0xFFFFFFFFu;
@@ -360,8 +379,20 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
             device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
         recreateGroups = true;
     }
+    const uint64_t visIndirectBytes = uint64_t(bucketCount) * sizeof(VisIndirectCommand);
+    if (!gpuDrivenVisIndirectBuffer_ || gpuDrivenVisIndirectCapacity_ < visIndirectBytes) {
+        gpuDrivenVisIndirectCapacity_ =
+            grownCapacity(gpuDrivenVisIndirectCapacity_, visIndirectBytes);
+        WGPUBufferDescriptor bd{};
+        bd.label = label("eve_gpu_driven_vis_indirect");
+        bd.size = gpuDrivenVisIndirectCapacity_;
+        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Storage | WGPUBufferUsage_Indirect;
+        gpuDrivenVisIndirectBuffer_ =
+            device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
+        recreateGroups = true;
+    }
     if (recreateGroups || !gpuDrivenComputeBindGroup_) {
-        WGPUBindGroupEntry entries[4]{};
+        WGPUBindGroupEntry entries[5]{};
         entries[0].binding = 0;
         entries[0].buffer = gpuDrivenParamsBuffer_.Get();
         entries[0].size = sizeof(CullParams);
@@ -374,10 +405,13 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         entries[3].binding = 3;
         entries[3].buffer = gpuDrivenIndirectBuffer_.Get();
         entries[3].size = gpuDrivenIndirectCapacity_;
+        entries[4].binding = 4;
+        entries[4].buffer = gpuDrivenVisIndirectBuffer_.Get();
+        entries[4].size = gpuDrivenVisIndirectCapacity_;
         WGPUBindGroupDescriptor bgd{};
         bgd.label = label("eve_gpu_driven_compute_bg");
         bgd.layout = gpuDrivenComputeSetLayout_.Get();
-        bgd.entryCount = 4;
+        bgd.entryCount = 5;
         bgd.entries = entries;
         gpuDrivenComputeBindGroup_ = device.CreateBindGroup(
             reinterpret_cast<const wgpu::BindGroupDescriptor *>(&bgd));
@@ -413,6 +447,8 @@ bool Graphics::gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanc
 
 void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
                                  float nearZ, float farZ) {
+    if (sceneColorWidth > 0 && sceneColorHeight > 0)
+        createSceneColorResources(sceneColorWidth, sceneColorHeight);
     (void)eye;
     (void)fovYDeg;
     (void)nearZ;
@@ -436,8 +472,10 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
 
     std::vector<CullInput> inputs;
     std::vector<GpuIndirectCommand> commands;
+    std::vector<VisIndirectCommand> visCommands;
     inputs.reserve(gpuDrivenPending_.size());
     commands.reserve(grouped.size());
+    visCommands.reserve(grouped.size());
     uint32_t outputBase = 0;
     for (const auto &[key, bucketInstances] : grouped) {
         Mesh *mesh = gpuDrivenMeshes_[key.first];
@@ -448,8 +486,16 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
             {mesh, material, outputBase, static_cast<uint32_t>(bucketInstances.size())});
         GpuIndirectCommand command{};
         command.indexCount = gpu->indexCount;
-        command.firstInstance = outputBase;
+        // Keep firstInstance zero: it is optional in WebGPU and requires the
+        // IndirectFirstInstance feature on adapters that expose it. The
+        // bucket's compacted model range is selected through the storage
+        // binding offset when drawing.
+        command.firstInstance = 0;
         commands.push_back(command);
+        VisIndirectCommand visCommand{};
+        visCommand.vertexCount = gpu->indexCount;
+        visCommand.firstInstance = 0;
+        visCommands.push_back(visCommand);
         for (const GpuInstance *instance : bucketInstances) {
             CullInput input{};
             input.model = instance->model;
@@ -458,6 +504,7 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
                                            mesh->boundsRadius)
                                : glm::vec4(0.f, 0.f, 0.f, 1e20f);
             input.bucket = bucketIndex;
+            input.outputBase = outputBase;
             inputs.push_back(input);
 
             const glm::vec3 center = glm::vec3(
@@ -474,16 +521,22 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
             }
             if (visible) gpuDrivenVisible_.push_back(*instance);
         }
-        outputBase += static_cast<uint32_t>(bucketInstances.size());
+        // Storage-buffer binding offsets are aligned to WebGPU's common
+        // 256-byte limit (four mat4 values), so every bucket can bind its
+        // compacted range without relying on indirect firstInstance.
+        outputBase +=
+            (static_cast<uint32_t>(bucketInstances.size()) + 3u) & ~uint32_t(3u);
     }
 
-    ensureGpuDrivenResources(static_cast<uint32_t>(inputs.size()),
+    ensureGpuDrivenResources(outputBase,
                              static_cast<uint32_t>(commands.size()));
     params.counts.x = static_cast<uint32_t>(inputs.size());
     queue.WriteBuffer(gpuDrivenParamsBuffer_, 0, &params, sizeof(params));
     queue.WriteBuffer(gpuDrivenInputBuffer_, 0, inputs.data(), inputs.size() * sizeof(CullInput));
     queue.WriteBuffer(gpuDrivenIndirectBuffer_, 0, commands.data(),
                       commands.size() * sizeof(GpuIndirectCommand));
+    queue.WriteBuffer(gpuDrivenVisIndirectBuffer_, 0, visCommands.data(),
+                      visCommands.size() * sizeof(VisIndirectCommand));
     gpuDrivenDispatchCount_ = static_cast<uint32_t>(inputs.size());
     gpuDrivenComputePending_ = !inputs.empty() && !commands.empty();
 }
@@ -508,11 +561,10 @@ void Graphics::recordGpuDrivenCompute(wgpu::CommandEncoder encoder) {
 }
 
 void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget) {
-    if (!gpuDrivenDrawPending_ || !gpuDrivenRenderBindGroup_) return;
+    if (!gpuDrivenDrawPending_ || !gpuDrivenVisibleBuffer_) return;
     auto &arena = currentUboArena();
     ensureUboArena(arena, arena.used + gpuDrivenBuckets_.size() * 2048);
     pass.SetPipeline(canvasTarget ? gpuDrivenCanvasPipeline_ : gpuDrivenRenderPipeline_);
-    pass.SetBindGroup(1, gpuDrivenRenderBindGroup_, 0, nullptr);
     gpuDrivenLastIndirectDrawCount_ = 0;
 
     for (uint32_t i = 0; i < gpuDrivenBuckets_.size(); ++i) {
@@ -565,6 +617,18 @@ void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarg
                               shadowOffset, 0);
         const uint32_t offsets[3] = {frameOffset, shadowOffset, 0};
         pass.SetBindGroup(0, bindGroup, 3, offsets);
+        WGPUBindGroupEntry modelEntry{};
+        modelEntry.binding = 0;
+        modelEntry.buffer = gpuDrivenVisibleBuffer_.Get();
+        modelEntry.offset = uint64_t(bucket.outputBase) * sizeof(glm::mat4);
+        modelEntry.size = uint64_t(bucket.inputCount) * sizeof(glm::mat4);
+        WGPUBindGroupDescriptor modelDesc{};
+        modelDesc.layout = gpuDrivenRenderSetLayout_.Get();
+        modelDesc.entryCount = 1;
+        modelDesc.entries = &modelEntry;
+        wgpu::BindGroup modelGroup = device.CreateBindGroup(
+            reinterpret_cast<const wgpu::BindGroupDescriptor *>(&modelDesc));
+        pass.SetBindGroup(1, modelGroup, 0, nullptr);
         pass.SetVertexBuffer(0, gpu->vertexBuffer, 0, gpu->vertexCount * 32ull);
         const uint64_t indexBytes = gpu->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
         pass.SetIndexBuffer(gpu->indexBuffer, gpu->indexFormat, 0,

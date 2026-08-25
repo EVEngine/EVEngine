@@ -2332,7 +2332,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     WGPUBufferDescriptor vbd{};
     vbd.label = sv("eve_mesh_vb");
     vbd.size = verts.size() * sizeof(float);
-    vbd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+    vbd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage;
     vbd.mappedAtCreation = false;
     gpu->vertexBuffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&vbd));
     queue.WriteBuffer(gpu->vertexBuffer, 0, verts.data(), vbd.size);
@@ -2348,7 +2348,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
             ibd.label = sv("eve_mesh_ib");
             if (idx16.size() % 2 != 0) idx16.push_back(0);  // WriteBuffer size must align to 4.
             ibd.size = uint64_t(idx16.size()) * sizeof(uint16_t);
-            ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+            ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index | WGPUBufferUsage_Storage;
             ibd.mappedAtCreation = false;
             gpu->indexBuffer =
                 device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&ibd));
@@ -2359,7 +2359,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
             WGPUBufferDescriptor ibd{};
             ibd.label = sv("eve_mesh_ib");
             ibd.size = uint64_t(indexCount) * sizeof(uint32_t);
-            ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+            ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index | WGPUBufferUsage_Storage;
             ibd.mappedAtCreation = false;
             gpu->indexBuffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&ibd));
             queue.WriteBuffer(gpu->indexBuffer, 0, indices, ibd.size);
@@ -2511,7 +2511,7 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
         WGPUBufferDescriptor desc{};
         desc.label = sv("eve_mesh_dynamic_vb");
         desc.size = vertexBytes;
-        desc.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+        desc.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage;
         gpu->vertexBuffer =
             device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&desc));
         gpu->vertexCapacity = vertexBytes;
@@ -2536,7 +2536,7 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
             WGPUBufferDescriptor desc{};
             desc.label = sv("eve_mesh_dynamic_ib");
             desc.size = indexBytes;
-            desc.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+            desc.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index | WGPUBufferUsage_Storage;
             gpu->indexBuffer =
                 device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&desc));
             gpu->indexCapacity = indexBytes;
@@ -3463,13 +3463,16 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
 
 void Graphics::createSceneColorResources(int width, int height) {
     if (!device) return;
-    if (sceneColorWidth == width && sceneColorHeight == height && !sceneColorSlots.empty()) return;
+    const bool featureMsaa = !renderControl_ || renderControl_->isEnabled("msaa");
+    // WebGPU only supports 1x and 4x multisampling; clamp anything >= 2 to 4.
+    const uint32_t want = featureMsaa && msaaSamples >= 2 ? 4u : 1u;
+    if (sceneColorWidth == width && sceneColorHeight == height && sceneColorSamples == want &&
+        !sceneColorSlots.empty())
+        return;
 
     destroySceneColorResources();
     sceneColorWidth = width;
     sceneColorHeight = height;
-    // WebGPU only supports 1x and 4x multisampling; clamp anything >= 2 to 4.
-    const uint32_t want = msaaSamples >= 2 ? 4u : 1u;
     const uint32_t oldSamples = sceneColorSamples;
     const bool samplesChanged = oldSamples != want;
     sceneColorSamples = want;
@@ -3541,6 +3544,20 @@ void Graphics::createSceneColorResources(int width, int height) {
     if (samplesChanged && mesh3dPipeline) {
         createMesh3DPipelines();
         createVoxelPipelines();
+    }
+    if (samplesChanged && gpuDrivenCullPipeline_) {
+        // The forward indirect pipeline inherits the scene target sample
+        // count. Recreate the GPU-driven layouts/pipelines lazily on the next
+        // cull after an MSAA toggle.
+        gpuDrivenCullPipeline_ = {};
+        gpuDrivenRenderPipeline_ = {};
+        gpuDrivenCanvasPipeline_ = {};
+        gpuDrivenComputePipelineLayout_ = {};
+        gpuDrivenRenderPipelineLayout_ = {};
+        gpuDrivenComputeSetLayout_ = {};
+        gpuDrivenRenderSetLayout_ = {};
+        gpuDrivenComputeBindGroup_ = {};
+        gpuDrivenRenderBindGroup_ = {};
     }
 }
 
@@ -3630,6 +3647,13 @@ void Graphics::createGbufferResources(int width, int height) {
     // TextureBinding so X-ray (and AO) can sample the scene depth in a later pass.
     dd.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
 
+    WGPUTextureDescriptor visIdDesc = td;
+    visIdDesc.label = sv("eve_visibility_id");
+    visIdDesc.format = WGPUTextureFormat_RG32Uint;
+    WGPUTextureDescriptor visBaryDesc = td;
+    visBaryDesc.label = sv("eve_visibility_bary");
+    visBaryDesc.format = WGPUTextureFormat_RG16Float;
+
     gbufferSlots.reserve(kFramesInFlight);
     for (int s = 0; s < int(kFramesInFlight); ++s) {
         gbufferSlots.emplace_back();
@@ -3642,6 +3666,12 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.albedoView = slot.albedo.CreateView();
         slot.depth = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&dd));
         slot.depthView = slot.depth.CreateView();
+        slot.visID = device.CreateTexture(
+            reinterpret_cast<const wgpu::TextureDescriptor *>(&visIdDesc));
+        slot.visIDView = slot.visID.CreateView();
+        slot.visBary = device.CreateTexture(
+            reinterpret_cast<const wgpu::TextureDescriptor *>(&visBaryDesc));
+        slot.visBaryView = slot.visBary.CreateView();
 
         slot.normalGpu.texture = slot.normal;
         slot.normalGpu.view = slot.normalView;
@@ -4221,6 +4251,10 @@ void Graphics::present() {
     pumpReadback();
     rebuildSwapchainIfNeeded();
     if (!swapchainConfigured) return;
+    // RenderControl can toggle MSAA without resizing the window. Re-evaluate
+    // the offscreen sample count every frame, matching the Vulkan backend.
+    if (sceneColorWidth > 0 && sceneColorHeight > 0)
+        createSceneColorResources(sceneColorWidth, sceneColorHeight);
     const bool aoActive = renderControl_ && renderControl_->isEnabled("ao");
 
     wgpu::TextureView surfaceView;
@@ -4281,6 +4315,10 @@ void Graphics::present() {
             }
         }
     }
+
+    // Stage-3 visibility pass consumes the compute-compacted instance table
+    // before the scene pass resolves material shading.
+    recordGpuDrivenVisibility(encoder);
 
     // 2. Scene color pass (3D) into the offscreen target.
     wgpu::TextureView sceneView;
@@ -4349,6 +4387,7 @@ void Graphics::present() {
             wgpu::RenderPassEncoder pass =
                 encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
             flushVoxelDraws(pass, sceneColorFormat);
+            flushGpuDrivenResolve(pass);
             flushMesh3D(pass, sceneColorFormat);
             flushGpuDrivenDraws(pass, /*canvasTarget*/ false);
             pass.End();

@@ -79,6 +79,12 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *control = gfx->getRenderControl();
+    // Isolate opaque submission and reconstruction from temporal/post passes.
+    control->disable("ao");
+    control->disable("gi");
+    control->disable("aa");
+    control->disable("atmosphere");
+    control->disable("msaa");
     control->disable("gpuDriven");
     const std::vector<float> legacy = captureLuma(gfx);
     control->enable("gpuDriven");
@@ -93,8 +99,36 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
 #endif
     REQUIRE(legacy.size() == driven.size());
     float maxDelta = 0.f;
+    float legacySum = 0.f;
+    float drivenSum = 0.f;
+    size_t maxIndex = 0;
     for (size_t i = 0; i < legacy.size(); ++i)
-        maxDelta = std::max(maxDelta, std::abs(legacy[i] - driven[i]));
+    {
+        const float delta = std::abs(legacy[i] - driven[i]);
+        if (delta > maxDelta) {
+            maxDelta = delta;
+            maxIndex = i;
+        }
+        legacySum += legacy[i];
+        drivenSum += driven[i];
+    }
+    std::printf("GpuDrivenParity forward maxDelta=%f index=%zu legacy=%f driven=%f "
+                "legacySum=%f drivenSum=%f\n",
+                maxDelta, maxIndex, legacy[maxIndex], driven[maxIndex], legacySum, drivenSum);
     REQUIRE(maxDelta < 0.03f);
+
+    // Stage 3: disable MSAA (visibility attachments are single-sample), then
+    // compare the non-indexed vis pass + fullscreen reconstruction against
+    // the stage-2 forward indirect path.
+    control->disable("visResolve");
+    const std::vector<float> forward1x = captureLuma(gfx);
+    control->enable("visResolve");
+    const std::vector<float> resolved = captureLuma(gfx);
+    REQUIRE(gfx->gpuDrivenResolveWanted());
+    float resolveDelta = 0.f;
+    for (size_t i = 0; i < forward1x.size(); ++i)
+        resolveDelta = std::max(resolveDelta, std::abs(forward1x[i] - resolved[i]));
+    REQUIRE(resolveDelta < 0.06f);
+    control->disable("visResolve");
     window->close();
 }
