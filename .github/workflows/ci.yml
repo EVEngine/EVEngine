@@ -884,10 +884,12 @@ jobs:
         timeout-minutes: 10
         run: |
           gcovr -r . --object-directory build/linux-coverage \
-            --exclude 'build/' --exclude 'external/' --exclude 'test/' \
+            --exclude 'build/' --exclude 'external/' --exclude 'third-party/' --exclude 'test/' \
+            --gcov-ignore-parse-errors \
             -x build/linux-coverage/coverage.xml
           gcovr -r . --object-directory build/linux-coverage \
-            --exclude 'build/' --exclude 'external/' --exclude 'test/' \
+            --exclude 'build/' --exclude 'external/' --exclude 'third-party/' --exclude 'test/' \
+            --gcov-ignore-parse-errors \
             --html --html-details -o build/linux-coverage/coverage.html
 
       - name: Upload coverage artifact
