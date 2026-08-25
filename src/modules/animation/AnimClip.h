@@ -11,6 +11,64 @@ class AnimPose;
 class AnimSkeleton;
 
 /**
+ * @brief Settings and diagnostics for offline skeletal animation retargeting.
+ *
+ * Explicit bone mappings take precedence over automatic matching. Automatic
+ * matching first tries the exact name, then a normalized name with namespaces,
+ * punctuation and case removed (for example `mixamorig:Hips` matches `hips`).
+ * Script type: `AnimRetargetProfile`.
+ */
+class AnimRetargetProfile {
+public:
+    /** @brief Map one source bone to one target bone; replaces an existing mapping for that target. */
+    void addBoneMapping(const std::string& sourceBone, const std::string& targetBone);
+    /** @brief Remove all explicit bone mappings. */
+    void clearBoneMappings();
+    /** @brief Enable exact-then-normalized automatic bone-name matching. */
+    void setNormalizedNameMatching(bool enabled) { normalizedNameMatching_ = enabled; }
+    /** @brief Return whether normalized automatic bone-name matching is enabled. */
+    bool getNormalizedNameMatching() const { return normalizedNameMatching_; }
+
+    /** @brief Select the source and target pelvis/root used for proportional translation. */
+    void setRootBones(const std::string& sourceBone, const std::string& targetBone);
+    /** @brief Enable automatic root translation scaling from skeleton extents. */
+    void setAutoRootScale(bool enabled) { autoRootScale_ = enabled; }
+    /** @brief Return whether automatic root scaling is enabled. */
+    bool getAutoRootScale() const { return autoRootScale_; }
+    /** @brief Set additional horizontal and vertical multipliers for root translation. */
+    void setRootTranslationScale(float horizontal, float vertical);
+    /** @brief Return the additional horizontal root translation multiplier. */
+    float getRootHorizontalScale() const { return rootHorizontalScale_; }
+    /** @brief Return the additional vertical root translation multiplier. */
+    float getRootVerticalScale() const { return rootVerticalScale_; }
+    /** @brief Choose skeleton-space Bind correction instead of legacy local-space correction. */
+    void setUseSkeletonSpaceRotation(bool enabled) { skeletonSpaceRotation_ = enabled; }
+    /** @brief Return whether skeleton-space rotation correction is enabled. */
+    bool getUseSkeletonSpaceRotation() const { return skeletonSpaceRotation_; }
+
+    /** @brief Number of target bones mapped by the most recent retarget operation. */
+    int getMatchedBoneCount() const { return matchedBoneCount_; }
+    /** @brief Number of target bones left at bind pose by the most recent operation. */
+    int getUnmatchedBoneCount() const { return static_cast<int>(unmatchedTargetBones_.size()); }
+    /** @brief Name of an unmatched target bone, or empty for an invalid index. */
+    std::string getUnmatchedTargetBone(int index) const;
+
+private:
+    friend class AnimClip;
+    struct Mapping { std::string source, target; };
+    std::vector<Mapping> mappings_;
+    std::string sourceRoot_;
+    std::string targetRoot_;
+    bool normalizedNameMatching_ = true;
+    bool autoRootScale_ = true;
+    bool skeletonSpaceRotation_ = true;
+    float rootHorizontalScale_ = 1.f;
+    float rootVerticalScale_ = 1.f;
+    int matchedBoneCount_ = 0;
+    std::vector<std::string> unmatchedTargetBones_;
+};
+
+/**
  * @brief Keyframed skeletal animation clip (local TRS tracks per bone).
  * Script type: `AnimClip`.
  */
@@ -112,6 +170,15 @@ public:
      * @return A new script-owned clip.
      */
     AnimClip* retarget(const AnimSkeleton* sourceSkeleton, const AnimSkeleton* targetSkeleton) const;
+
+    /**
+     * @brief Retarget using an Avatar-like mapping/profile and update its diagnostics.
+     * Skeleton-space rotation preserves motion when source and target local bone axes differ.
+     * The output is baked at this clip's sample rate so parent-space corrections remain stable.
+     * @return A new script-owned clip.
+     */
+    AnimClip* retargetWithProfile(const AnimSkeleton* sourceSkeleton, const AnimSkeleton* targetSkeleton,
+                                  AnimRetargetProfile* profile) const;
 
     /**
      * @brief Sample local pose at time (seconds). If skeleton non-null, missing tracks
