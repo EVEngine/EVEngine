@@ -23,7 +23,7 @@ public:
         std::cerr << "A()" << std::endl;
     }
     ~A() {
-        delete data;
+        delete[] data;
         std::cerr << "~A()" << std::endl;
     }
     void setString(std::string name) {

@@ -64,8 +64,8 @@ endif()
 message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
 
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "2")
-set(EVENGINE_PATCH_VERSION "1")
+set(EVENGINE_MINOR_VERSION "3")
+set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "-dev")
 
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
@@ -475,6 +475,10 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts
         ${CMAKE_BINARY_DIR}/src/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/platform
+        # Override only zeroerr/unittest.h so fixture-generated types include
+        # their fixture name. This avoids cross-TU ODR collisions under LTO
+        # without mutating the pinned zeroerr submodule checkout.
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/overrides/zeroerr
         # sunxfancy/ECS.hpp + ik.hpp (git submodules) + zeroerr headers
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
@@ -1018,6 +1022,14 @@ function(check_third_party_project name repo)
     set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
         COMMAND ${CMAKE_COMMAND}
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Fourth patch: SimpleSquirrel's Object move constructor swaps an
+    # uninitialized `weak` flag. Optimized arm64 builds can observe that UB
+    # when script bindings pass Array/Object wrappers by value.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-object-move-init.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
