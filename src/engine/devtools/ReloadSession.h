@@ -4,6 +4,7 @@
 #include "common/StateValue.h"
 
 #include <string>
+#include <vector>
 
 struct SQVM;
 typedef struct SQVM* HSQUIRRELVM;
@@ -57,7 +58,9 @@ private:
     bool restore(HSQUIRRELVM vm, const StateValue& state, std::string* err);
 
     StateValue buffer_;
-    bool       active_ = false;
+    std::vector<std::string> persistentRoots_;
+    std::vector<std::string> transientRoots_;
+    bool                     active_ = false;
 };
 
 }  // namespace eve::dev

@@ -298,6 +298,19 @@ function report_reload_failure(message) {
     print(message + "\n");
 }
 
+// Transient roots deliberately start from the new script's defaults. Delete
+// their old bindings only after ReloadSession has captured the rollback point.
+function reset_transient_state() {
+    if (!("dev" in eve) || !("transientStateRoots" in eve.dev)) return;
+    local root = getroottable();
+    foreach (name in eve.dev.transientStateRoots()) {
+        if (name in root) delete root[name];
+    }
+    // Candidate scripts declare the complete next policy set. This makes
+    // deleting an obsolete declaration effective; abort restores the old set.
+    eve.dev.clearStateRoots();
+}
+
 function soft_reload_scripts() {
     // Stage ①: compile the complete candidate set before cancelling work or
     // invoking lifecycle hooks.  A broken edit leaves the running game alone.
@@ -331,6 +344,7 @@ function soft_reload_scripts() {
             return false;
         }
     }
+    reset_transient_state();
 
     // Stage ③: execute the already-compiled candidates.  Any runtime failure
     // restores the complete old binding surface and captured mutable state.

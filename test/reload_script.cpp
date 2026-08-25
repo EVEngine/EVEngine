@@ -145,6 +145,53 @@ function stateRootsReportsMarkedAndHeuristic() {
     }
     return found;
 }
+
+function transientRootsAreExcludedFromCapture() {
+    eve.dev.clearStateRoots();
+    getroottable().scratchState <- { frame = 10 };
+    eve.dev.markTransientStateRoot("scratchState");
+    foreach (r in eve.dev.stateRoots()) {
+        if (r == "scratchState") return false;
+    }
+    local transient = eve.dev.transientStateRoots();
+    return transient.len() == 1 && transient[0] == "scratchState";
+}
+
+function abortRestoresStateRootPolicies() {
+    eve.dev.clearStateRoots();
+    getroottable().savedState <- { value = 1 };
+    getroottable().scratchState <- { value = 2 };
+    eve.dev.markStateRoot("savedState");
+    eve.dev.markTransientStateRoot("scratchState");
+    local err = eve.dev.beginStateReload();
+    if (err != "") return false;
+
+    eve.dev.clearStateRoots();
+    eve.dev.markStateRoot("replacementState");
+    err = eve.dev.abortStateReload();
+    if (err != "") return false;
+
+    local roots = eve.dev.stateRoots();
+    local transient = eve.dev.transientStateRoots();
+    return roots.len() == 1 && roots[0] == "savedState" &&
+           transient.len() == 1 && transient[0] == "scratchState";
+}
+
+function commitKeepsNewStateRootPolicies() {
+    eve.dev.clearStateRoots();
+    getroottable().savedState <- { value = 1 };
+    eve.dev.markStateRoot("savedState");
+    local err = eve.dev.beginStateReload();
+    if (err != "") return false;
+
+    eve.dev.clearStateRoots();
+    eve.dev.markTransientStateRoot("replacementState");
+    err = eve.dev.commitStateReload();
+    if (err != "") return false;
+
+    local transient = eve.dev.transientStateRoots();
+    return transient.len() == 1 && transient[0] == "replacementState";
+}
 )";
 
 /** ScriptTest variant that also exposes `eve.dev` (DevTool script API). */
@@ -199,6 +246,18 @@ TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.stateRootsReportsMarked
     CHECK(vm.callFunc(vm.findFunc("stateRootsReportsMarkedAndHeuristic"), vm).toBool());
 }
 
+TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.transientRootsAreExcludedFromCapture") {
+    CHECK(vm.callFunc(vm.findFunc("transientRootsAreExcludedFromCapture"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRestoresStateRootPolicies") {
+    CHECK(vm.callFunc(vm.findFunc("abortRestoresStateRootPolicies"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.commitKeepsNewStateRootPolicies") {
+    CHECK(vm.callFunc(vm.findFunc("commitKeepsNewStateRootPolicies"), vm).toBool());
+}
+
 TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
     ssq::VM vm(2048, ssq::Libs::ALL);
     bool    compiled = false;
@@ -235,6 +294,34 @@ public:
     int restoreCount = 0;
 };
 
+class ResetOnReloadProvider : public eve::caps::IStateProvider {
+public:
+    const char* stateKind() const override { return "reload-reset-test"; }
+
+    eve::caps::StateReloadPolicy reloadPolicy() const override {
+        return eve::caps::StateReloadPolicy::Reset;
+    }
+
+    bool captureState(eve::StateValue&) override {
+        ++captureCount;
+        return true;
+    }
+
+    bool restoreState(const eve::StateValue&, std::string*) override {
+        ++restoreCount;
+        return true;
+    }
+
+    bool resetToDefaults() override {
+        ++resetCount;
+        return true;
+    }
+
+    int captureCount = 0;
+    int restoreCount = 0;
+    int resetCount   = 0;
+};
+
 }  // namespace
 
 TEST_CASE("reloadScript.failedCommitCanStillAbort") {
@@ -254,6 +341,24 @@ TEST_CASE("reloadScript.failedCommitCanStillAbort") {
     CHECK(session.abort(vm.getHandle(), &err));
     CHECK(err.empty());
     CHECK_EQ(provider.restoreCount, 2);
+
+    eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
+}
+
+TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    eve::dev::Snapshot::instance().clearRoots();
+
+    ResetOnReloadProvider provider;
+    eve::cap::addListener<eve::caps::IStateProvider>(&provider);
+
+    auto&       session = eve::dev::ReloadSession::instance();
+    std::string err;
+    REQUIRE(session.begin(vm.getHandle(), &err));
+    CHECK(session.commit(vm.getHandle(), &err));
+    CHECK_EQ(provider.captureCount, 0);
+    CHECK_EQ(provider.restoreCount, 0);
+    CHECK_EQ(provider.resetCount, 1);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }
