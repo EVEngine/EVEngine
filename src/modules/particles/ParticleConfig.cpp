@@ -417,6 +417,18 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
         }
     }
     if (obj->has("sortMode")) emitter->setSortMode(asString(obj->get("sortMode")));
+    if (obj->has("softParticles")) {
+        try {
+            auto soft = obj->getObject("softParticles");
+            if (soft) {
+                const bool  enabled = soft->has("enabled") ? asBool(soft->get("enabled"), true) : true;
+                const float depth   = soft->has("depth") ? asFloat(soft->get("depth"), 0.5f) : 0.5f;
+                const float fade    = soft->has("fadeDistance") ? asFloat(soft->get("fadeDistance"), 0.05f) : 0.05f;
+                emitter->setSoftParticles(enabled, depth, fade);
+            }
+        } catch (...) {
+        }
+    }
     if (obj->has("overflowMode"))
         emitter->setOverflowMode(asString(obj->get("overflowMode")));
     if (obj->has("maxDeltaTime"))

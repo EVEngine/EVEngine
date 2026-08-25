@@ -46,9 +46,10 @@ struct alignas(16) ParticleDrawPush {
     float         colorStart[4]{};
     float         colorEnd[4]{};
     std::uint32_t flipbook[4]{};
+    float         soft[4]{};
 };
 
-static_assert(sizeof(ParticleDrawPush) == 96, "particle draw push layout must match GLSL");
+static_assert(sizeof(ParticleDrawPush) == 112, "particle draw push layout must match GLSL");
 
 vk::Pipeline createParticleDrawPipeline(vkb::Device& device, const vkb::BuiltRenderPass& renderPass,
                                         vk::PipelineLayout layout, vk::ShaderModule vert, vk::ShaderModule frag,
@@ -121,6 +122,7 @@ struct Graphics::GpuParticleResource {
         vk::DescriptorSet  computeSet{};
         vk::DescriptorSet  drawSet{};
         GpuTexture*        drawTexture = nullptr;
+        GpuTexture*        drawDepthTexture = nullptr;
         std::uint64_t      serial      = 0;
         bool               initialized = false;
     };
@@ -221,6 +223,8 @@ void Graphics::createGpuParticlePipelines() {
         vk::DescriptorSetLayoutBinding(0, vk::DescriptorType::eCombinedImageSampler, 1,
                                        vk::ShaderStageFlagBits::eFragment),
         vk::DescriptorSetLayoutBinding(1, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex),
+        vk::DescriptorSetLayoutBinding(2, vk::DescriptorType::eCombinedImageSampler, 1,
+                                       vk::ShaderStageFlagBits::eFragment),
     };
     gpuParticleDrawSetLayout_ = device->createDescriptorSetLayout(vk::DescriptorSetLayoutCreateInfo({}, drawBindings));
 
@@ -482,7 +486,10 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
 
     Texture* texture = request.draw.texture ? request.draw.texture : whiteTexture;
     if (!texture || !texture->gpuHandle) return;
-    auto* gpuTexture = static_cast<GpuTexture*>(texture->gpuHandle);
+    Texture* depthTexture = request.draw.sceneDepth ? request.draw.sceneDepth : whiteTexture;
+    if (!depthTexture || !depthTexture->gpuHandle) return;
+    auto* gpuTexture      = static_cast<GpuTexture*>(texture->gpuHandle);
+    auto* gpuDepthTexture = static_cast<GpuTexture*>(depthTexture->gpuHandle);
     if (!slot.drawSet) {
         vk::DescriptorSetAllocateInfo allocate{};
         allocate.descriptorPool     = descriptorPool;
@@ -490,15 +497,19 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         allocate.pSetLayouts        = &gpuParticleDrawSetLayout_;
         slot.drawSet                = device->allocateDescriptorSets(allocate).front();
     }
-    if (slot.drawTexture != gpuTexture) {
+    if (slot.drawTexture != gpuTexture || slot.drawDepthTexture != gpuDepthTexture) {
         vk::DescriptorImageInfo image{};
         image.sampler     = gpuTexture->sampler;
         image.imageView   = gpuTexture->imageView();
         image.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+        vk::DescriptorImageInfo depthImage{};
+        depthImage.sampler     = gpuDepthTexture->sampler;
+        depthImage.imageView   = gpuDepthTexture->imageView();
+        depthImage.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
         vk::DescriptorBufferInfo state{};
         state.buffer = slot.state.buffer;
         state.range  = VK_WHOLE_SIZE;
-        std::array<vk::WriteDescriptorSet, 2> writes{};
+        std::array<vk::WriteDescriptorSet, 3> writes{};
         writes[0].dstSet          = slot.drawSet;
         writes[0].dstBinding      = 0;
         writes[0].descriptorCount = 1;
@@ -509,8 +520,14 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         writes[1].descriptorCount = 1;
         writes[1].descriptorType  = vk::DescriptorType::eStorageBuffer;
         writes[1].pBufferInfo     = &state;
+        writes[2].dstSet          = slot.drawSet;
+        writes[2].dstBinding      = 2;
+        writes[2].descriptorCount = 1;
+        writes[2].descriptorType  = vk::DescriptorType::eCombinedImageSampler;
+        writes[2].pImageInfo      = &depthImage;
         device->updateDescriptorSets(writes, nullptr);
-        slot.drawTexture = gpuTexture;
+        slot.drawTexture      = gpuTexture;
+        slot.drawDepthTexture = gpuDepthTexture;
     }
 
     vk::Pipeline pipeline = gpuParticleAlphaPipeline_;
@@ -541,6 +558,9 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
     push.flipbook[0] = std::uint32_t(std::max(request.draw.hframes, 1));
     push.flipbook[1] = std::uint32_t(std::max(request.draw.vframes, 1));
     push.flipbook[2] = std::bit_cast<std::uint32_t>(request.draw.axisRotationRadians);
+    push.soft[0]     = request.draw.softParticles && request.draw.sceneDepth ? 1.f : 0.f;
+    push.soft[1]     = request.draw.particleDepth;
+    push.soft[2]     = std::max(request.draw.softFadeDistance, 1e-5f);
 
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gpuParticleDrawLayout_, 0, slot.drawSet, nullptr);

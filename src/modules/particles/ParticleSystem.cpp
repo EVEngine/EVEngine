@@ -470,6 +470,7 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
         if (gpu->residentActive) {
             graphics::GpuParticleDraw gpuDraw;
             gpuDraw.texture        = draw->texture;
+            gpuDraw.sceneDepth     = gfx->getSceneLinearDepthTexture();
             gpuDraw.blend          = draw->blend;
             gpuDraw.viewportWidth  = float(gfx->getWidth());
             gpuDraw.viewportHeight = float(gfx->getHeight());
@@ -488,6 +489,9 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
                                      : cfg->renderMode == "axis"    ? graphics::GpuParticleFacingMode::Axis
                                                                     : graphics::GpuParticleFacingMode::ParticleRotation;
             gpuDraw.axisRotationRadians = cfg->renderAxisDegrees / kRad2Deg;
+            gpuDraw.softParticles       = cfg->softParticles;
+            gpuDraw.particleDepth       = cfg->softParticleDepth;
+            gpuDraw.softFadeDistance    = cfg->softFadeDistance;
             gpuDraw.colorStart[0]  = cfg->colorStart.r;
             gpuDraw.colorStart[1]  = cfg->colorStart.g;
             gpuDraw.colorStart[2]  = cfg->colorStart.b;

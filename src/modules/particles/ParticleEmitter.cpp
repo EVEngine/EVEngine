@@ -1109,6 +1109,19 @@ bool ParticleEmitter::applyConfig(const std::string &json) {
     return applyConfigText(this, json, nullptr);
 }
 
+void ParticleEmitter::setSoftParticles(bool enabled, float particleDepth, float fadeDistance) {
+    auto c               = config();
+    c->softParticles     = enabled;
+    c->softParticleDepth = std::clamp(particleDepth, 0.f, 1.f);
+    c->softFadeDistance  = std::max(fadeDistance, 1e-5f);
+}
+
+bool ParticleEmitter::isSoftParticlesActive() {
+    if (!config()->softParticles || !gpuSim()->residentActive) return false;
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    return gfx && gfx->getSceneLinearDepthTexture() != nullptr;
+}
+
 bool ParticleEmitter::loadConfig(const std::string &path) {
     return loadConfigFile(this, path, nullptr);
 }

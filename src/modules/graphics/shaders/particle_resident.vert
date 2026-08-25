@@ -18,10 +18,13 @@ layout(push_constant) uniform PushConstants {
     vec4 colorStart;
     vec4 colorEnd;
     uvec4 flipbook;
+    vec4 soft;
 } pc;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 fragUv;
+layout(location = 2) out vec2 fragSceneUv;
+layout(location = 3) flat out vec3 fragSoft;
 
 void main() {
     const vec2 corners[6] = vec2[6](vec2(-0.5, -0.5), vec2(0.5, -0.5),
@@ -60,6 +63,8 @@ void main() {
     vec2 ndc = vec2(screen.x / pc.viewportCamera.x * 2.0 - 1.0,
                     1.0 - screen.y / pc.viewportCamera.y * 2.0);
     gl_Position = vec4(ndc, 0.0, 1.0);
+    fragSceneUv = screen / pc.viewportCamera.xy;
+    fragSoft = pc.soft.xyz;
 
     uint columns = max(pc.flipbook.x, 1u);
     uint rows = max(pc.flipbook.y, 1u);

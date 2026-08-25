@@ -30,6 +30,12 @@ TEST_CASE("particles.renderer.facingAndSortContract") {
     CHECK_EQ(emitter->config()->renderMode, std::string("ribbon"));
     CHECK(std::abs(emitter->config()->ribbonWidth - 0.65f) < 1e-5f);
     CHECK(std::abs(emitter->config()->ribbonMinSegmentLength - 3.f) < 1e-5f);
+
+    emitter->setSoftParticles(true, 1.2f, 0.f);
+    CHECK(emitter->config()->softParticles);
+    CHECK(std::abs(emitter->config()->softParticleDepth - 1.f) < 1e-5f);
+    CHECK(emitter->config()->softFadeDistance >= 1e-5f);
+    CHECK(!emitter->isSoftParticlesActive());
 }
 
 TEST_CASE("particles.renderer.jsonContract") {
@@ -38,11 +44,14 @@ TEST_CASE("particles.renderer.jsonContract") {
         "renderMode": "axis",
         "renderAxis": -22.5,
         "sortMode": "youngest",
-        "ribbon": {"width": 0.75, "minSegmentLength": 2.5}
+        "ribbon": {"width": 0.75, "minSegmentLength": 2.5},
+        "softParticles": {"enabled": true, "depth": 0.42, "fadeDistance": 0.08}
     })"));
 
     CHECK_EQ(emitter->config()->renderMode, std::string("ribbon"));
     CHECK(std::abs(emitter->config()->renderAxisDegrees + 22.5f) < 1e-5f);
     CHECK_EQ(emitter->getSortMode(), std::string("youngest"));
     CHECK(std::abs(emitter->config()->ribbonWidth - 0.75f) < 1e-5f);
+    CHECK(emitter->config()->softParticles);
+    CHECK(std::abs(emitter->config()->softParticleDepth - 0.42f) < 1e-5f);
 }

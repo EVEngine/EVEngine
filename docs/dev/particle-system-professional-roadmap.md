@@ -63,8 +63,9 @@ and a six-emitter/150-frame rendered stress capture.
 - A CPU ribbon renderer connects stable birth-order control points, rejects
   undersized segments, and shares sprite material/color/size handling. GPU
   ribbon scan/index generation remains pending. Mesh and light renderers remain.
-- Depth sorting policies, soft particles, depth fade, distortion, normal maps,
-  lit/unlit materials, and motion-vector policy.
+- Depth sorting policies and a real G-buffer linear-depth soft-particle path are
+  implemented with explicit runtime availability. Distortion, normal maps,
+  lit/unlit materials, and motion-vector policy remain.
 - Mesh/skeleton, scene depth, collision, signed-distance-field, and gameplay
   parameter data interfaces with explicit CPU/GPU availability.
 

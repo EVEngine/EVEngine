@@ -147,6 +147,10 @@ public:
         /** @brief Ribbon width multiplier and minimum accepted segment length. */
         float ribbonWidth            = 1.f;
         float ribbonMinSegmentLength = 1.f;
+        /** @brief Soft-particle parameters in normalized linear scene depth. */
+        bool  softParticles     = false;
+        float softParticleDepth = 0.5f;
+        float softFadeDistance  = 0.05f;
         /** @brief Buffer-full strategy: "drop" (default) | "pause" | "warn". */
         std::string overflowMode = "drop";
         /** @brief Cap per-step delta time (0 = unlimited). */
@@ -450,6 +454,10 @@ public:
     void setRenderMode(const std::string &mode, float stretchFactor = 1.f);
     /** @brief Configure connected ribbon rendering and switch to ribbon mode. */
     void setRibbon(float width = 1.f, float minSegmentLength = 1.f);
+    /** @brief Fade resident particles where they intersect sampled scene depth. */
+    void setSoftParticles(bool enabled, float particleDepth = 0.5f, float fadeDistance = 0.05f);
+    /** @brief True when soft particles have both a resident renderer and scene depth. */
+    bool isSoftParticlesActive();
     /** @brief Set the fixed screen-space orientation used by render mode "axis". */
     void setRenderAxis(float degrees);
     /** @brief Select stable per-emitter transparent ordering. */

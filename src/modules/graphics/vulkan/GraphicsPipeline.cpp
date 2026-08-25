@@ -759,9 +759,18 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                             .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
                             .addAttachmentRef(1, vk::ImageLayout::eColorAttachmentOptimal)
                             .addAttachmentRef(2, vk::ImageLayout::eColorAttachmentOptimal)
-                            .setDepthStencilAttachment(
-                                3, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-            .addExternalShaderReadDependencies()
+                            .setDepthStencilAttachment(3, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+            // Match the FrameGraph render pass used to record this pipeline:
+            // imported G-buffer targets begin undefined and leave sampled, so
+            // only the subpass-to-reader dependency is materialized.
+            .addDependency(
+                0, VK_SUBPASS_EXTERNAL,
+                vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                    vk::PipelineStageFlagBits::eLateFragmentTests,
+                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader |
+                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
+                vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eDepthStencilAttachmentRead)
             .build();
     gbufferRenderPass = gbufferPass;
 

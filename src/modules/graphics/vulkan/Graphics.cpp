@@ -563,6 +563,11 @@ Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
     return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
 }
 
+Texture* Graphics::getSceneLinearDepthTexture() {
+    auto* slot = currentGBufferSlot();
+    return slot && gbufferPending ? &slot->depthColorTex : nullptr;
+}
+
 Graphics::DecalSlot *Graphics::currentDecalSlot() {
     if (decalSlots.empty()) return nullptr;
     return &decalSlots[currentFrameSlot() % decalSlots.size()];

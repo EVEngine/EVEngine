@@ -281,7 +281,8 @@ public:
         return materialTableGetOrCreate(material);
     }
     bool gpuDrivenMaterialUsable(Material *material) override;
-    bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    bool     gpuDrivenSubmitOpaque(const GpuInstance* instances, uint32_t instanceCount) override;
+    Texture* getSceneLinearDepthTexture() override;
 
     bool              supportsGpuParticles() const override { return initialized && !headless_; }
     bool              canSubmitGpuParticles() const override;

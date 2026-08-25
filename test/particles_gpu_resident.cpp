@@ -25,6 +25,18 @@ double median(std::vector<double> values) {
     return values[values.size() / 2];
 }
 
+eve::graphics::Mesh* makeLeftHalfDepthPlane(eve::graphics::Graphics* gfx) {
+    const std::array<float, 12> positions = {
+        -1.f, -1.f, 0.5f, 0.f, -1.f, 0.5f, 0.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
+    };
+    const std::array<float, 12> normals = {
+        0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    };
+    const std::array<float, 8>         uvs     = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const std::array<std::uint32_t, 6> indices = {0, 1, 2, 0, 2, 3};
+    return gfx->newMeshFromArrays(positions.data(), normals.data(), uvs.data(), 4, indices.data(), 6);
+}
+
 }  // namespace
 
 TEST_CASE("particles.gpu.unsupportedFeaturesFallBackToCpu") {
@@ -220,5 +232,93 @@ TEST_CASE("particles.gpu.mainThreadCrossoverAtSixteenThousandParticles") {
         emitter->setGpuSimulation(false);
         emitter->release();
     }
+    window->close();
+}
+
+TEST_CASE("particles.gpu.softDepthFadeUsesSceneLinearDepth") {
+    auto* window = eve::window::Window::create();
+    auto* gfx    = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 640;
+    settings.height   = 360;
+    settings.centered = true;
+    REQUIRE(window->setWindowSettings(settings));
+    REQUIRE(gfx->supportsGpuParticles());
+    gfx->setScreenReadbackEnabled(true);
+
+    const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
+    const std::uint8_t darkPixel[4]  = {5, 8, 14, 255};
+    auto*              particleTex   = gfx->newTexture(1, 1, whitePixel);
+    auto*              planeTex      = gfx->newTexture(1, 1, darkPixel);
+    auto*              depthPlane    = makeLeftHalfDepthPlane(gfx);
+    REQUIRE(particleTex != nullptr);
+    REQUIRE(planeTex != nullptr);
+    REQUIRE(depthPlane != nullptr);
+
+    auto makeEmitter = [&](float x) {
+        auto* emitter = Particles::create()->newEmitter(16);
+        emitter->setTexture(particleTex);
+        emitter->setRandomSeed(20260826);
+        emitter->setGpuSimulation(true);
+        emitter->setPosition(x, 180.f);
+        emitter->setEmissionRate(480.f);
+        emitter->setMaxSpawnPerFrame(8);
+        emitter->setParticleLifetime(10.f, 10.f);
+        emitter->setParticleSize(112.f, 112.f);
+        emitter->setSpeed(0.f, 0.f);
+        emitter->setSpread(0.f);
+        emitter->setBlendMode("alpha");
+        emitter->setColorStart(1.f, 0.05f, 0.75f, 1.f);
+        emitter->setColorEnd(1.f, 0.05f, 0.75f, 1.f);
+        emitter->setSoftParticles(false, 0.5f, 0.05f);
+        emitter->start();
+        return emitter;
+    };
+    auto* occluded = makeEmitter(160.f);
+
+    gfx->setBackgroundColorRGBA(0.004f, 0.006f, 0.014f, 1.f);
+    for (int frame = 0; frame < 8; ++frame) {
+        ParticleSimSystem::update(1.f / 60.f);
+        gfx->beginGBufferPass(640, 360);
+        gfx->drawMeshGBuffer(depthPlane, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f, planeTex);
+        gfx->endGBufferPass();
+        gfx->clearScreen();
+        ParticleRenderSystem::render(gfx);
+        gfx->present();
+    }
+
+    REQUIRE(occluded->isGpuSimulationActive());
+    const auto        controlPixel   = gfx->getPixel(160, 180);
+    const float       controlMagenta = controlPixel.r + controlPixel.b - controlPixel.g;
+    const std::string controlOutput  = std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_soft_depth_control.png";
+    CHECK(gfx->saveFramePng(controlOutput));
+    CHECK(std::filesystem::exists(controlOutput));
+
+    occluded->setSoftParticles(true, 0.5f, 0.05f);
+    bool observedSoftDepth = false;
+    for (int frame = 0; frame < 4; ++frame) {
+        ParticleSimSystem::update(1.f / 60.f);
+        gfx->beginGBufferPass(640, 360);
+        gfx->drawMeshGBuffer(depthPlane, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f, planeTex);
+        gfx->endGBufferPass();
+        gfx->clearScreen();
+        ParticleRenderSystem::render(gfx);
+        observedSoftDepth = observedSoftDepth || occluded->isSoftParticlesActive();
+        gfx->present();
+    }
+    REQUIRE(observedSoftDepth);
+    const auto  fadedPixel   = gfx->getPixel(160, 180);
+    const float fadedMagenta = fadedPixel.r + fadedPixel.b - fadedPixel.g;
+    CHECK_GT(controlMagenta, fadedMagenta + 0.7f);
+
+    const std::string output = std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_soft_depth.png";
+    CHECK(gfx->saveFramePng(output));
+    CHECK(std::filesystem::exists(output));
+    REQUIRE(std::filesystem::file_size(output) > std::uintmax_t(100));
+
+    occluded->setGpuSimulation(false);
+    occluded->release();
     window->close();
 }

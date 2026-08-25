@@ -64,6 +64,7 @@ struct GpuParticleUpdate {
 /** @brief Parameters for rendering a resident GPU particle emitter. */
 struct GpuParticleDraw {
     Texture*              texture             = nullptr;
+    Texture*              sceneDepth          = nullptr;
     BlendMode             blend               = BlendMode::Alpha;
     float                 viewportWidth       = 1.f;
     float                 viewportHeight      = 1.f;
@@ -78,6 +79,9 @@ struct GpuParticleDraw {
     float                 stretchFactor       = 1.f;
     GpuParticleFacingMode facing              = GpuParticleFacingMode::ParticleRotation;
     float                 axisRotationRadians = 0.f;
+    bool                  softParticles       = false;
+    float                 particleDepth       = 0.5f;
+    float                 softFadeDistance    = 0.05f;
     float                 colorStart[4]       = {1.f, 1.f, 1.f, 1.f};
     float                 colorEnd[4]         = {1.f, 1.f, 1.f, 0.f};
     int                   hframes             = 1;
