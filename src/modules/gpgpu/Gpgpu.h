@@ -26,7 +26,7 @@ public:
     /** @brief True when the active Graphics backend can run compute (device initialized). */
     bool isAvailable() const;
 
-    /** @brief Compile compute source for the active backend (Vulkan: GLSL via glslc). */
+    /** @brief Compile compute source for the active backend (Vulkan: GLSL; WebGPU: WGSL). */
     ComputeShader *newShader(const std::string &source);
 
     /** @brief Load precompiled compute bytecode from Filesystem path (Vulkan: SPIR-V). */
@@ -43,7 +43,8 @@ public:
 
     /**
      * @brief Create a Kompute-style command Sequence: record buffer transfers and
-     * compute dispatches into one command buffer, then submit() once.
+     * compute dispatches into one command buffer, then submit() once. Supported by
+     * both the Vulkan and WebGPU backends.
      */
     Sequence *newSequence();
 
