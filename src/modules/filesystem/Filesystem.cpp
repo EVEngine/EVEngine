@@ -31,6 +31,28 @@ namespace filesystem {
 
 Module_IMPL(Filesystem, new physfs::Filesystem());
 
+bool Filesystem::writeText(const std::string &filename, const std::string &text) const {
+    try {
+        write(filename, text.data(), static_cast<int64_t>(text.size()));
+        return true;
+    } catch (const eve::Exception &) {
+        return false;
+    }
+}
+
+std::string Filesystem::readText(const std::string &filename) const {
+    try {
+        FileData *data = read(filename);
+        if (!data) return {};
+        const auto *bytes = static_cast<const char *>(data->getData());
+        std::string text(bytes, static_cast<size_t>(data->getSize()));
+        delete data;
+        return text;
+    } catch (const eve::Exception &) {
+        return {};
+    }
+}
+
 void Filesystem::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Filesystem::create, false);
     expose(cls);
@@ -70,6 +92,8 @@ void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("read", &Filesystem::read);
     cls.addFunc("write", &Filesystem::write);
     cls.addFunc("append", &Filesystem::append);
+    cls.addFunc("writeText", &Filesystem::writeText);
+    cls.addFunc("readText", &Filesystem::readText);
     cls.addFunc("getDirectoryItems", &Filesystem::getDirectoryItems);
     cls.addFunc("setSymlinksEnabled", &Filesystem::setSymlinksEnabled);
     cls.addFunc("areSymlinksEnabled", &Filesystem::areSymlinksEnabled);

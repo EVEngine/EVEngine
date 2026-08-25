@@ -352,10 +352,11 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             winH = host->meta()->sizeY;
         if (host && host->meta()->hasPos) {
             const ImVec2 display = ImGui::GetIO().DisplaySize;
-            const float px = host->meta()->pivotX;
-            const float py = host->meta()->pivotY;
-            const float x = host->meta()->anchorX * display.x + host->meta()->posX - px * winW;
-            const float y = host->meta()->anchorY * display.y + host->meta()->posY - py * winH;
+            // SetNextWindowPos applies the pivot itself. Passing an already
+            // pivot-adjusted top-left position shifts the window by its pivot
+            // a second time (a centered window moves half its width left).
+            const float x = host->meta()->anchorX * display.x + host->meta()->posX;
+            const float y = host->meta()->anchorY * display.y + host->meta()->posY;
             ImGui::SetNextWindowPos(ImVec2(x, y),
                                     host->meta()->lockPos ? ImGuiCond_Always
                                                           : ImGuiCond_FirstUseEver,
