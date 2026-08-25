@@ -2204,7 +2204,8 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
         decalParamsView = decalSlots[lastDecalSlot].paramsView;
     }
 
-    MeshBindGroupKey key{reinterpret_cast<uintptr_t>(a->view.Get()),
+    MeshBindGroupKey key{reinterpret_cast<uintptr_t>(currentUboArena().buffer.Get()),
+                         reinterpret_cast<uintptr_t>(a->view.Get()),
                          reinterpret_cast<uintptr_t>(n->view.Get()),
                          reinterpret_cast<uintptr_t>(e->view.Get()),
                          reinterpret_cast<uintptr_t>(h->view.Get()),
@@ -3126,7 +3127,6 @@ void Graphics::begin3DFrame() {
     sceneColorPassOpen = false;
     mesh3dDraws.clear();
     shadowPassDraws.clear();
-    for (int c = 0; c < ShadowConfig::kCascades; ++c) shadowCascadeDraws[c].clear();
     voxelDraws.clear();
     if (surfaceNeedsRecreate.load()) {
         surfaceNeedsRecreate.store(false);

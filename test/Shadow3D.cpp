@@ -279,8 +279,8 @@ TEST_CASE("Shadow3D.shadowStrengthInterpolatesVisibility") {
     }
     REQUIRE(strongestDelta > 0.02f);
     const float halfDelta = off[strongest] - half[strongest];
-    CHECK(halfDelta > strongestDelta * 0.25f);
-    CHECK(halfDelta < strongestDelta * 0.75f);
+    REQUIRE(halfDelta > strongestDelta * 0.25f);
+    REQUIRE(halfDelta < strongestDelta * 0.75f);
 
     win->close();
 }
