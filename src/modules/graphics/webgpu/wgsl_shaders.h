@@ -90,10 +90,34 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 )wgsl";
 
 // ---- 2D lit ---------------------------------------------------------------
+inline const char *kLit2DVertWgsl = R"wgsl(
+struct VSIn {
+    @location(0) pos: vec2f,
+    @location(1) color: vec4f,
+    @location(2) uv: vec2f,
+};
+struct VSOut {
+    @builtin(position) pos: vec4f,
+    @location(0) color: vec4f,
+    @location(1) uv: vec2f,
+    @location(2) ndc: vec2f,
+};
+@vertex
+fn vs_main(in: VSIn) -> VSOut {
+    var out: VSOut;
+    out.pos = vec4f(in.pos, 0.0, 1.0);
+    out.color = in.color;
+    out.uv = in.uv;
+    out.ndc = in.pos;
+    return out;
+}
+)wgsl";
+
 inline const char *kLit2DFragWgsl = R"wgsl(
 struct FSIn {
     @location(0) color: vec4f,
     @location(1) uv: vec2f,
+    @location(2) ndc: vec2f,
 };
 struct Light2D {
     posRadius: vec4f,
@@ -111,25 +135,31 @@ struct Lighting2D {
 @fragment
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     let base = textureSample(albedoTex, mainSamp, in.uv) * in.color;
-    var lit = base.rgb * u.ambient.rgb;
+    let normalSample = textureSample(normalTex, mainSamp, in.uv).xyz * 2.0 - 1.0;
+    let normal = normalize(vec3f(normalSample.xy, max(normalSample.z, 0.05)));
+    // WebGPU upload flips clip-space Y; undo it for the engine's Y-down logical coordinates.
+    let logicalNdc = vec2f(in.ndc.x, -in.ndc.y);
+    let logical = (logicalNdc * 0.5 + 0.5) * u.lightInfo.yz;
+    var lit = u.ambient.rgb;
     let count = i32(u.lightInfo.x + 0.5);
-    let view = vec2f(u.lightInfo.y, u.lightInfo.z);
     for (var i = 0; i < 8; i = i + 1) {
         if (i >= count) { break; }
         let l = u.lights[i];
-        let px = in.uv * view;
+        var contribution = 0.0;
         if (l.posRadius.w <= 0.0) {
-            // Directional: light travels along posRadius.xy
-            let ndl = max(dot(vec3f(0.0, 0.0, 1.0), normalize(vec3f(l.posRadius.xy, 1.0))), 0.0);
-            lit += base.rgb * l.color.rgb * ndl;
+            let lightDirection = normalize(vec3f(l.posRadius.xy, 0.35));
+            contribution = max(dot(normal, lightDirection), 0.0);
         } else {
-            let toL = l.posRadius.xy - px;
-            let dist = length(toL);
-            let att = clamp(1.0 - dist / max(l.posRadius.w, 1e-3), 0.0, 1.0);
-            lit += base.rgb * l.color.rgb * att * att;
+            let toLight = l.posRadius.xy - logical;
+            let distance = length(toLight);
+            var attenuation = clamp(1.0 - distance / max(l.posRadius.w, 1.0), 0.0, 1.0);
+            attenuation *= attenuation;
+            let lightDirection = normalize(vec3f(toLight, l.posRadius.w * 0.35));
+            contribution = max(dot(normal, lightDirection), 0.0) * attenuation;
         }
+        lit += l.color.rgb * contribution;
     }
-    return vec4f(lit, base.a);
+    return vec4f(base.rgb * lit, base.a);
 }
 )wgsl";
 

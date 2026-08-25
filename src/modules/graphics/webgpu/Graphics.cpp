@@ -1121,7 +1121,7 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device &dev, wgpu::PipelineLayout l
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_lit2d");
     pd.layout = layout.Get();
-    wgpu::ShaderModule vertModule = makeWgslModule(dev, kTexturedVertWgsl);
+    wgpu::ShaderModule vertModule = makeWgslModule(dev, kLit2DVertWgsl);
     wgpu::ShaderModule fragModule = makeWgslModule(dev, kLit2DFragWgsl);
     pd.vertex.module = vertModule.Get();
     pd.vertex.entryPoint = sv("vs_main");

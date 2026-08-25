@@ -28,7 +28,7 @@ and `test gap`.
 | Dynamic texture update | supported, verified | Uploads the existing mip chain in place and rejects size changes consistently | Add pointer-stability and mip-level coverage |
 | Dynamic mesh update | supported, verified | Reuses/grows vertex and index buffers with aligned Uint16 uploads | Add resize, keep-index and Uint16/Uint32 transition coverage |
 | 2D solid/textured drawing | supported, verified | Shared Dawn/Vulkan pixel tests lock UV cropping, solid and textured rotation, and opaque/additive/premultiplied/multiply blend equations | Extend the artifact set with rotated-atlas UV orientation |
-| 2D lighting | partial | WGSL path exists but is not compared against Vulkan | Add normal-map and multi-light parity scenes |
+| 2D lighting | supported, verified | WGSL now matches Vulkan normal-map decoding, logical screen coordinates, directional response, point attenuation and eight-light accumulation | Extend artifacts with moving lights and atlas normals |
 | Texture sampling/mipmaps | partial | Sampler recreation, mip generation and anisotropy exist; limits and LOD output are unverified | Add nearest/linear/repeat/mipmap scenes and capability assertions |
 | Basic 3D/PBR | partial | WGSL forward path exists; lighting, normal, parallax, environment and cloud-shadow output are unverified | Add isolated material feature scenes |
 | Surface modes | supported, test gap | Blend mode, depth-write and double-sided state are captured per draw and select dedicated pipelines | Add ordering and culling image scenes |

@@ -209,6 +209,78 @@ TEST_CASE("graphics.backendParity.draw2dUvRotationAndBlendModes") {
     writeParityArtifact(*image, "draw2d_uv_rotation_blend_modes", backend);
 }
 
+TEST_CASE("graphics.backendParity.lighting2dNormalMapAndMultipleLights") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    const std::string backend = gfx->getBackendName();
+    const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
+    CHECK(supportedBackend);
+
+    const uint8_t white[] = {255, 255, 255, 255};
+    const uint8_t flatNormal[] = {128, 128, 255, 255};
+    const uint8_t rightNormal[] = {255, 128, 128, 255};
+    Texture *albedo = gfx->newTexture(1, 1, white);
+    Texture *flat = gfx->newTexture(1, 1, flatNormal);
+    Texture *right = gfx->newTexture(1, 1, rightNormal);
+    REQUIRE(albedo != nullptr);
+    REQUIRE(flat != nullptr);
+    REQUIRE(right != nullptr);
+
+    Lighting2DUBO directional{};
+    directional.ambient = Color(0.05f, 0.05f, 0.05f, 0.f);
+    directional.meta = Color(1.f, 64.f, 64.f, 0.f);
+    directional.lights[0].posRadius = Color(1.f, 0.f, 0.f, 0.f);
+    directional.lights[0].color = Color(0.5f, 0.5f, 0.5f, 0.f);
+
+    Canvas *normalCanvas = gfx->newCanvas(64, 64);
+    REQUIRE(normalCanvas != nullptr);
+    gfx->setCanvas(normalCanvas);
+    gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
+    gfx->setLighting2D(directional);
+    gfx->drawTexturedRectLitUV(albedo, flat, 4.f, 8.f, 24.f, 24.f, 0.f, 0.f, 1.f, 1.f,
+                               Color(1.f));
+    gfx->drawTexturedRectLitUV(albedo, right, 36.f, 8.f, 24.f, 24.f, 0.f, 0.f, 1.f, 1.f,
+                               Color(1.f));
+    gfx->setCanvas();
+
+    std::unique_ptr<eve::image::ImageData> normalImage(normalCanvas->newImageData());
+    REQUIRE(normalImage.get() != nullptr);
+    const uint8_t *flatLit = pixel(*normalImage, 16, 20);
+    const uint8_t *rightLit = pixel(*normalImage, 48, 20);
+    CHECK(flatLit[0] > 32);
+    CHECK(rightLit[0] > flatLit[0] + 50);
+    CHECK(rightLit[1] > flatLit[1] + 50);
+    CHECK(rightLit[2] > flatLit[2] + 50);
+    writeParityArtifact(*normalImage, "lighting2d_normal_map", backend);
+
+    Lighting2DUBO points{};
+    points.ambient = Color(0.02f, 0.02f, 0.02f, 0.f);
+    points.meta = Color(2.f, 64.f, 64.f, 0.f);
+    points.lights[0].posRadius = Color(10.f, 48.f, 0.f, 28.f);
+    points.lights[0].color = Color(0.9f, 0.f, 0.f, 0.f);
+    points.lights[1].posRadius = Color(54.f, 48.f, 0.f, 28.f);
+    points.lights[1].color = Color(0.f, 0.f, 0.9f, 0.f);
+
+    Canvas *pointCanvas = gfx->newCanvas(64, 64);
+    REQUIRE(pointCanvas != nullptr);
+    gfx->setCanvas(pointCanvas);
+    gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
+    gfx->setLighting2D(points);
+    gfx->drawTexturedRectLitUV(albedo, flat, 2.f, 36.f, 60.f, 24.f, 0.f, 0.f, 1.f, 1.f,
+                               Color(1.f));
+    gfx->setCanvas();
+
+    std::unique_ptr<eve::image::ImageData> pointImage(pointCanvas->newImageData());
+    REQUIRE(pointImage.get() != nullptr);
+    const uint8_t *leftLight = pixel(*pointImage, 10, 48);
+    const uint8_t *rightLight = pixel(*pointImage, 54, 48);
+    CHECK(leftLight[0] > leftLight[2] + 80);
+    CHECK(rightLight[2] > rightLight[0] + 80);
+    CHECK(leftLight[0] > 120);
+    CHECK(rightLight[2] > 120);
+    writeParityArtifact(*pointImage, "lighting2d_multiple_lights", backend);
+}
+
 TEST_CASE("graphics.backendParity.webgpuCustomShaderLifetime") {
     Graphics *gfx = headlessGraphics();
     REQUIRE(gfx != nullptr);
