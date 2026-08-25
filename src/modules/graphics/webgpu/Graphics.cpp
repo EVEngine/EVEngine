@@ -183,7 +183,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
     const auto sendVoidId = reinterpret_cast<SendVoidId>(objc_msgSend);
     const auto sendVoidBool = reinterpret_cast<SendVoidBool>(objc_msgSend);
     const auto sendIsKind = reinterpret_cast<SendIsKind>(objc_msgSend);
-    id window = static_cast<id>(wminfo.info.cocoa.window);
+    id window = reinterpret_cast<id>(wminfo.info.cocoa.window);
     id view = sendId(window, sel_registerName("contentView"));
     if (view == nil) throw Exception("WebGPU: SDL Cocoa window has no content view");
     sendVoidBool(view, sel_registerName("setWantsLayer:"), YES);
