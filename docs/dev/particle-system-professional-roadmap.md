@@ -68,8 +68,10 @@ and a six-emitter/150-frame rendered stress capture.
   and tangent-space normal maps now reuse the 2D lighting pipeline, with an
   explicit CPU-simulation fallback while GPU-resident lighting data remains
   pending. Distortion and motion-vector policy remain.
-- Mesh/skeleton, scene depth, collision, signed-distance-field, and gameplay
-  parameter data interfaces with explicit CPU/GPU availability.
+- Mesh/skeleton, scene depth, and collision interfaces now have explicit
+  CPU/GPU availability. Named gameplay float parameters can drive emission,
+  speed, size, and playback on both simulation paths without rebuilding an
+  emitter. Signed-distance-field interfaces remain.
 
 Exit criteria: composited reference effects (fire, smoke, impact, projectile
 trail, weather volume) at multiple camera angles with automated screenshots.

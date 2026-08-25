@@ -10,9 +10,10 @@
 namespace eve::particles {
 
 float advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt) {
-    if (sim.paused || dt <= 0.f || cfg.playbackSpeed <= 0.f) return 0.f;
+    const float playbackScale = cfg.resolvedParameterScale("playback");
+    if (sim.paused || dt <= 0.f || cfg.playbackSpeed <= 0.f || playbackScale <= 0.f) return 0.f;
 
-    float scaledDt = dt * cfg.playbackSpeed;
+    float scaledDt = dt * cfg.playbackSpeed * playbackScale;
     if (cfg.maxDeltaTime > 0.f && scaledDt > cfg.maxDeltaTime) scaledDt = cfg.maxDeltaTime;
 
     if (cfg.fixedTimeStep <= 0.f) {

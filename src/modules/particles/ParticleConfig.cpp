@@ -435,6 +435,33 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
         } catch (...) {
         }
     }
+    if (obj->has("parameters")) {
+        try {
+            auto parameters = obj->getObject("parameters");
+            if (parameters) {
+                for (const auto& entry : *parameters)
+                    emitter->setFloatParameter(entry.first, asFloat(entry.second, 0.f));
+            }
+        } catch (...) {
+        }
+    }
+    if (obj->has("parameterBindings")) {
+        try {
+            auto bindings = obj->getArray("parameterBindings");
+            if (bindings) {
+                emitter->clearFloatParameterBindings();
+                for (size_t i = 0; i < bindings->size(); ++i) {
+                    if (!bindings->isObject(int(i))) continue;
+                    auto binding = bindings->getObject(int(i));
+                    if (!binding) continue;
+                    emitter->bindFloatParameter(asString(binding->get("parameter")), asString(binding->get("target")),
+                                                binding->has("scale") ? asFloat(binding->get("scale"), 1.f) : 1.f,
+                                                binding->has("offset") ? asFloat(binding->get("offset"), 0.f) : 0.f);
+                }
+            }
+        } catch (...) {
+        }
+    }
     if (obj->has("softParticles")) {
         try {
             auto soft = obj->getObject("softParticles");

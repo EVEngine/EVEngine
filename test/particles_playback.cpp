@@ -140,6 +140,32 @@ TEST_CASE("particles.playback.configAppliesProfessionalControls") {
     CHECK(!emitter->getAutoRandomSeed());
 }
 
+TEST_CASE("particles.playback.exposedParametersDriveRuntimeScales") {
+    auto* emitter = Particles::create()->newEmitter(32);
+    emitter->setRandomSeed(91);
+    emitter->setEmissionRate(10.f);
+    emitter->setParticleLifetime(5.f, 5.f);
+    emitter->setSpeed(20.f, 20.f);
+    emitter->setSizeVariation(0.f);
+    emitter->setFloatParameter("intensity", 2.f);
+    emitter->bindFloatParameter("intensity", "emission");
+    emitter->bindFloatParameter("intensity", "speed", 0.5f, 0.f);
+    emitter->bindFloatParameter("intensity", "size", 0.75f, 0.f);
+    emitter->start();
+
+    advanceEmitterSim(*emitter->config(), *emitter->sim(), 0.1f);
+    REQUIRE_EQ(emitter->getCount(), 2);
+    CHECK(std::abs(emitter->sim()->particles[0].size - 1.5f) < 1e-5f);
+    const auto& particle = emitter->sim()->particles[0];
+    CHECK(std::abs(std::sqrt(particle.vx * particle.vx + particle.vy * particle.vy) - 20.f) < 1e-4f);
+
+    emitter->bindFloatParameter("freeze", "playback");
+    emitter->setFloatParameter("freeze", 0.f);
+    const float life = emitter->sim()->particles[0].life;
+    advanceEmitterSim(*emitter->config(), *emitter->sim(), 1.f);
+    CHECK(std::abs(emitter->sim()->particles[0].life - life) < 1e-5f);
+}
+
 TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
     auto* window = eve::window::Window::create();
     auto* gfx    = eve::graphics::Graphics::create();

@@ -191,11 +191,11 @@ void fillParticleMotion(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
         sizeMul = 1.f + randRange(sim.rng, -v, v);
         if (sizeMul < 0.01f) sizeMul = 0.01f;
     }
-    p.size = sizeMul;
+    p.size = sizeMul * cfg.resolvedParameterScale("size");
 
     const float half = cfg.spread * 0.5f;
     const float angle = cfg.direction + randRange(sim.rng, -half, half);
-    const float speed = randRange(sim.rng, cfg.speedMin, cfg.speedMax);
+    const float speed = randRange(sim.rng, cfg.speedMin, cfg.speedMax) * cfg.resolvedParameterScale("speed");
     p.vx = std::cos(angle) * speed;
     p.vy = std::sin(angle) * speed;
 }
@@ -605,8 +605,9 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
         }
     }
 
-    if (cfg.emissionRate > 0.f) {
-        sim.emitAccum += cfg.emissionRate * dt;
+    const float emissionScale = cfg.resolvedParameterScale("emission");
+    if (cfg.emissionRate > 0.f && emissionScale > 0.f) {
+        sim.emitAccum += cfg.emissionRate * emissionScale * dt;
         while (sim.emitAccum >= 1.f) {
             if (sim.alive >= int(sim.particles.size())) {
                 if (cfg.overflowMode == "pause") break;  // keep accum; retry next frame
@@ -631,16 +632,16 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
     // evenly spaced points along the emitter's travelled segment. This avoids
     // the frame-rate-dependent clumps produced by spawning every item at the
     // current endpoint (important for weapon trails and wheel dust).
-    if (cfg.emissionRateOverDistance > 0.f && sim.hasLastPos) {
+    const float distanceRate = cfg.emissionRateOverDistance * emissionScale;
+    if (distanceRate > 0.f && sim.hasLastPos) {
         const float moveX     = cfg.x - sim.lastX;
         const float moveY     = cfg.y - sim.lastY;
         const float distance  = std::sqrt(moveX * moveX + moveY * moveY);
         const float prior     = sim.distanceEmitAccum;
-        const float total     = prior + distance * cfg.emissionRateOverDistance;
+        const float total         = prior + distance * distanceRate;
         const int   wanted    = int(std::floor(total));
         sim.distanceEmitAccum = total - float(wanted);
-        const float firstDistance =
-            prior > 0.f ? (1.f - prior) / cfg.emissionRateOverDistance : 1.f / cfg.emissionRateOverDistance;
+        const float firstDistance = prior > 0.f ? (1.f - prior) / distanceRate : 1.f / distanceRate;
         for (int i = 0; i < wanted; ++i) {
             if (sim.alive >= int(sim.particles.size())) {
                 if (cfg.overflowMode == "pause")
@@ -655,7 +656,7 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
             float spawnX = cfg.x;
             float spawnY = cfg.y;
             if (distance > kEps && !localSpace) {
-                const float along = firstDistance + float(i) / cfg.emissionRateOverDistance;
+                const float along = firstDistance + float(i) / distanceRate;
                 const float alpha = std::min(1.f, along / distance);
                 spawnX            = sim.lastX + moveX * alpha;
                 spawnY            = sim.lastY + moveY * alpha;
@@ -905,6 +906,34 @@ std::string ParticleEmitter::getGpuFallbackReason() {
     auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx || !gfx->supportsGpuParticles()) return "backend_unavailable";
     return "pending_activation";
+}
+
+void ParticleEmitter::setFloatParameter(const std::string& name, float value) {
+    if (!name.empty()) config()->floatParameters[name] = value;
+}
+
+float ParticleEmitter::getFloatParameter(const std::string& name, float fallback) {
+    auto found = config()->floatParameters.find(name);
+    return found == config()->floatParameters.end() ? fallback : found->second;
+}
+
+bool ParticleEmitter::hasFloatParameter(const std::string& name) {
+    return config()->floatParameters.find(name) != config()->floatParameters.end();
+}
+
+void ParticleEmitter::clearFloatParameters() { config()->floatParameters.clear(); }
+
+void ParticleEmitter::bindFloatParameter(const std::string& name, const std::string& target, float scale,
+                                         float offset) {
+    if (name.empty()) return;
+    if (target != "emission" && target != "speed" && target != "size" && target != "playback") return;
+    config()->parameterBindings[target] = Config::ParameterBinding{name, scale, offset};
+}
+
+void ParticleEmitter::clearFloatParameterBindings() { config()->parameterBindings.clear(); }
+
+float ParticleEmitter::getResolvedParameterScale(const std::string& target) {
+    return config()->resolvedParameterScale(target);
 }
 
 void ParticleEmitter::setCollision(const std::string &mode, float radius, float restitution,

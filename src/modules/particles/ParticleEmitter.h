@@ -4,9 +4,11 @@
 #include "common/RenderTypes.h"
 #include "particles/ParticleCurve.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <random>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -93,6 +95,21 @@ public:
         int randomSeed = 0;
         /** @brief Generate a new seed on each start. */
         bool autoRandomSeed = true;
+        struct ParameterBinding {
+            std::string parameter;
+            float       scale  = 1.f;
+            float       offset = 0.f;
+        };
+        /** @brief Gameplay-owned exposed values and target bindings. */
+        std::unordered_map<std::string, float>            floatParameters;
+        std::unordered_map<std::string, ParameterBinding> parameterBindings;
+        float                                             resolvedParameterScale(const std::string& target) const {
+            auto binding = parameterBindings.find(target);
+            if (binding == parameterBindings.end()) return 1.f;
+            auto value = floatParameters.find(binding->second.parameter);
+            if (value == floatParameters.end()) return 1.f;
+            return std::max(0.f, value->second * binding->second.scale + binding->second.offset);
+        }
         float direction = 0.f;
         float spread = 0.f;
         float speedMin = 0.f;
@@ -435,6 +452,21 @@ public:
     std::string getSimulationBackend();
     /** @brief Explain CPU fallback; empty means GPU active, "pending_activation" means eligible. */
     std::string getGpuFallbackReason();
+
+    /** @brief Set a named gameplay/VFX float parameter without rebuilding the emitter. */
+    void setFloatParameter(const std::string& name, float value);
+    /** @brief Return a named float parameter, or fallback when absent. */
+    float getFloatParameter(const std::string& name, float fallback = 0.f);
+    /** @brief Return whether a named float parameter exists. */
+    bool hasFloatParameter(const std::string& name);
+    /** @brief Remove all exposed float values. */
+    void clearFloatParameters();
+    /** @brief Bind a parameter to emission, speed, size, or playback scaling. */
+    void bindFloatParameter(const std::string& name, const std::string& target, float scale = 1.f, float offset = 0.f);
+    /** @brief Remove all parameter-to-runtime bindings. */
+    void clearFloatParameterBindings();
+    /** @brief Return the resolved non-negative multiplier for a supported target. */
+    float getResolvedParameterScale(const std::string& target);
 
     /** @brief Set budget order; higher values are processed first. */
     void setPriority(int priority);
