@@ -256,6 +256,8 @@ jobs:
           fi
           make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" \
             CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DCMAKE_POLICY_DEFAULT_CMP0141=NEW \
+              -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded \
               -DCMAKE_C_COMPILER_LAUNCHER=sccache \
               -DCMAKE_CXX_COMPILER_LAUNCHER=sccache $tp_args"
 
