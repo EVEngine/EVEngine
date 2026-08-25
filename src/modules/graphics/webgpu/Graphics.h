@@ -152,6 +152,10 @@ public:
     uint32_t debugGpuDrivenVisibleCount() const {
         return static_cast<uint32_t>(gpuDrivenVisible_.size());
     }
+    /** @brief Return instances dispatched by the last WebGPU compute cull. */
+    uint32_t debugGpuDrivenDispatchCount() const { return gpuDrivenDispatchCount_; }
+    /** @brief Return indexed-indirect commands recorded by the last scene pass. */
+    uint32_t debugGpuDrivenIndirectDrawCount() const { return gpuDrivenLastIndirectDrawCount_; }
 
     void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;
@@ -414,6 +418,9 @@ private:
     void createGbufferPipelines();
     void createDecalPipeline();
     void createVoxelPipelines();
+    void ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketCount);
+    void recordGpuDrivenCompute(wgpu::CommandEncoder encoder);
+    void flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget);
     void createSceneColorResources(int width, int height);
     void destroySceneColorResources();
     void createShadowResources();
@@ -792,18 +799,44 @@ private:
     std::vector<std::unique_ptr<Shader>> ownedShaders;
     std::vector<std::unique_ptr<GpuShader>> ownedGpuShaders;
 
-    // Stage-1 GPU-driven compatibility tables. WebGPU cannot use Vulkan's
-    // descriptor-indexed mega-buffer layout, so submission resolves neutral
-    // instance records into the backend's already batched mesh draw queue.
+    // GPU-driven resource tables. WebGPU groups instances into conventional
+    // mesh/material buckets (portable replacement for Vulkan descriptor indexing),
+    // then compute-compacts visible transforms and emits indirect commands.
     bool gpuDrivenEnabled_ = false;
     std::vector<Mesh *> gpuDrivenMeshes_;
     std::vector<Material *> gpuDrivenMaterials_;
     std::unordered_map<Mesh *, uint32_t> gpuDrivenMeshIds_;
     std::unordered_map<Material *, uint32_t> gpuDrivenMaterialIds_;
-    // Stage-2 compatibility path. This preserves Vulkan's observable frustum-culling
-    // behavior while WebGPU compute compaction and indirect draws are implemented.
     std::vector<GpuInstance> gpuDrivenPending_;
+    // CPU mirror is diagnostic-only; rendering consumes the compute output.
     std::vector<GpuInstance> gpuDrivenVisible_;
+    struct GpuDrivenBucket {
+        Mesh *mesh = nullptr;
+        Material *material = nullptr;
+        uint32_t outputBase = 0;
+        uint32_t inputCount = 0;
+    };
+    std::vector<GpuDrivenBucket> gpuDrivenBuckets_;
+    wgpu::BindGroupLayout gpuDrivenComputeSetLayout_;
+    wgpu::BindGroupLayout gpuDrivenRenderSetLayout_;
+    wgpu::PipelineLayout gpuDrivenComputePipelineLayout_;
+    wgpu::PipelineLayout gpuDrivenRenderPipelineLayout_;
+    wgpu::ComputePipeline gpuDrivenCullPipeline_;
+    wgpu::RenderPipeline gpuDrivenRenderPipeline_;
+    wgpu::RenderPipeline gpuDrivenCanvasPipeline_;
+    wgpu::Buffer gpuDrivenParamsBuffer_;
+    wgpu::Buffer gpuDrivenInputBuffer_;
+    wgpu::Buffer gpuDrivenVisibleBuffer_;
+    wgpu::Buffer gpuDrivenIndirectBuffer_;
+    wgpu::BindGroup gpuDrivenComputeBindGroup_;
+    wgpu::BindGroup gpuDrivenRenderBindGroup_;
+    uint64_t gpuDrivenInputCapacity_ = 0;
+    uint64_t gpuDrivenVisibleCapacity_ = 0;
+    uint64_t gpuDrivenIndirectCapacity_ = 0;
+    uint32_t gpuDrivenDispatchCount_ = 0;
+    uint32_t gpuDrivenLastIndirectDrawCount_ = 0;
+    bool gpuDrivenComputePending_ = false;
+    bool gpuDrivenDrawPending_ = false;
 
     // Browser async frame readback (avoids ASYNCIFY sleep inside deep
     // JS->Squirrel->Graphics call chains).

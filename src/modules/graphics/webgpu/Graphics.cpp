@@ -4243,6 +4243,10 @@ void Graphics::present() {
     hasPendingClear = false;
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    // Compute compaction writes the visible-model table and indexed-indirect
+    // commands consumed by the scene render pass below. Ending the compute
+    // pass establishes the required WebGPU storage-to-indirect dependency.
+    recordGpuDrivenCompute(encoder);
 
     // 1. Shadow passes (CSM cascade layers).
     if (shadowDepthArray) {
@@ -4310,6 +4314,7 @@ void Graphics::present() {
             // trimmed from the web build), and its pipeline follows the scene
             // sample count which would mismatch the 1x canvas attachment.
             flushMesh3D(pass, WGPUTextureFormat_RGBA8Unorm, /*canvasTarget*/ true);
+            flushGpuDrivenDraws(pass, /*canvasTarget*/ true);
             pass.End();
             oc->clearRequested = false;
             // The script draws the canvas texture explicitly (2D path); it is
@@ -4345,6 +4350,7 @@ void Graphics::present() {
                 encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
             flushVoxelDraws(pass, sceneColorFormat);
             flushMesh3D(pass, sceneColorFormat);
+            flushGpuDrivenDraws(pass, /*canvasTarget*/ false);
             pass.End();
             lastPresentSlot = currentFrameSlot();
             lastReadbackTex = slot.color;

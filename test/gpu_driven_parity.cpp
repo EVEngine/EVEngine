@@ -43,7 +43,7 @@ std::vector<float> captureLuma(Graphics *gfx) {
 
 }  // namespace
 
-/** @brief Backend-neutral Stage-1 parity for the opaque instance submission seam. */
+/** @brief Backend-neutral parity for opaque GPU culling and indirect submission. */
 TEST_CASE("GpuDrivenParity.opaqueStage1") {
     eve::window::Window *window = nullptr;
     Graphics *gfx = nullptr;
@@ -88,6 +88,8 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
     REQUIRE(webgpu != nullptr);
     REQUIRE(webgpu->debugGpuDrivenVisibleCount() == 2);
+    REQUIRE(webgpu->debugGpuDrivenDispatchCount() == 3);
+    REQUIRE(webgpu->debugGpuDrivenIndirectDrawCount() == 2);
 #endif
     REQUIRE(legacy.size() == driven.size());
     float maxDelta = 0.f;

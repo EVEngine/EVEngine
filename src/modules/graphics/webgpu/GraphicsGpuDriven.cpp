@@ -1,13 +1,167 @@
 #include "graphics/webgpu/Graphics.h"
 
 #include "graphics/Material.h"
+#include "graphics/RenderControl.h"
+#include "graphics/webgpu/wgsl_shaders.h"
 
 #include <algorithm>
 #include <cmath>
+#include <map>
+#include <utility>
 
 #include <glm/gtc/matrix_access.hpp>
 
 namespace eve::graphics::webgpu {
+namespace {
+
+WGPUStringView label(const char *s) {
+    WGPUStringView out{};
+    out.data = s;
+    out.length = WGPU_STRLEN;
+    return out;
+}
+
+wgpu::ShaderModule shaderModule(wgpu::Device device, const char *source) {
+    WGPUShaderSourceWGSL wgsl{};
+    wgsl.chain.sType = WGPUSType_ShaderSourceWGSL;
+    wgsl.code = label(source);
+    WGPUShaderModuleDescriptor desc{};
+    desc.nextInChain = &wgsl.chain;
+    return device.CreateShaderModule(
+        reinterpret_cast<const wgpu::ShaderModuleDescriptor *>(&desc));
+}
+
+struct CullInput {
+    glm::mat4 model{1.f};
+    glm::vec4 bounds{0.f};
+    uint32_t bucket = 0;
+    uint32_t pad[3]{};
+};
+static_assert(sizeof(CullInput) == 96);
+
+struct CullParams {
+    glm::vec4 planes[6]{};
+    glm::uvec4 counts{};
+};
+static_assert(sizeof(CullParams) == 112);
+
+constexpr const char *kCullWgsl = R"wgsl(
+struct CullInput {
+    model: mat4x4f,
+    bounds: vec4f,
+    bucket: u32,
+    pad0: u32,
+    pad1: u32,
+    pad2: u32,
+};
+struct CullParams {
+    planes: array<vec4f, 6>,
+    counts: vec4u,
+};
+struct IndirectCommand {
+    indexCount: u32,
+    instanceCount: atomic<u32>,
+    firstIndex: u32,
+    baseVertex: u32,
+    firstInstance: u32,
+};
+@group(0) @binding(0) var<uniform> params: CullParams;
+@group(0) @binding(1) var<storage, read> inputs: array<CullInput>;
+@group(0) @binding(2) var<storage, read_write> visibleModels: array<mat4x4f>;
+@group(0) @binding(3) var<storage, read_write> commands: array<IndirectCommand>;
+
+@compute @workgroup_size(64)
+fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
+    let index = gid.x;
+    if (index >= params.counts.x) { return; }
+    let input = inputs[index];
+    let center = (input.model * vec4f(input.bounds.xyz, 1.0)).xyz;
+    let scale = max(length(input.model[0].xyz),
+                    max(length(input.model[1].xyz), length(input.model[2].xyz)));
+    let radius = input.bounds.w * scale;
+    for (var p = 0u; p < 6u; p = p + 1u) {
+        let plane = params.planes[p];
+        if (dot(plane.xyz, center) + plane.w < -radius) { return; }
+    }
+    let outputBase = commands[input.bucket].firstInstance;
+    let local = atomicAdd(&commands[input.bucket].instanceCount, 1u);
+    visibleModels[outputBase + local] = input.model;
+}
+)wgsl";
+
+constexpr const char *kGpuDrivenVertWgsl = R"wgsl(
+struct Light3D { posRadius: vec4f, color: vec4f };
+struct Frame {
+    mvp: mat4x4f,
+    model: mat4x4f,
+    lightDir: vec4f,
+    lightColor: vec4f,
+    tint: vec4f,
+    cameraPos: vec4f,
+    ambient: vec4f,
+    lights: array<Light3D, 8>,
+    texBomb: vec4f,
+    parallax: vec4f,
+    surface: vec4f,
+    view: mat4x4f,
+    clipInfo: vec4f,
+    cloud: vec4f,
+    cloudWind: vec4f,
+};
+struct VSIn {
+    @location(0) pos: vec3f,
+    @location(1) normal: vec3f,
+    @location(2) uv: vec2f,
+};
+struct VSOut {
+    @builtin(position) pos: vec4f,
+    @location(0) vNormal: vec3f,
+    @location(1) vUV: vec2f,
+    @location(2) vTint: vec4f,
+    @location(3) vWorldPos: vec3f,
+    @location(4) vCameraPos: vec3f,
+    @location(5) vViewPos: vec3f,
+};
+@group(0) @binding(0) var<uniform> ubo: Frame;
+@group(1) @binding(0) var<storage, read> visibleModels: array<mat4x4f>;
+
+fn inverse3x3(m: mat3x3f) -> mat3x3f {
+    let a = m[0].x; let b = m[1].x; let c = m[2].x;
+    let d = m[0].y; let e = m[1].y; let f = m[2].y;
+    let g = m[0].z; let h = m[1].z; let i = m[2].z;
+    let det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+    return mat3x3f(
+        vec3f((e * i - f * h) / det, (f * g - d * i) / det, (d * h - e * g) / det),
+        vec3f((c * h - b * i) / det, (a * i - c * g) / det, (b * g - a * h) / det),
+        vec3f((b * f - c * e) / det, (c * d - a * f) / det, (a * e - b * d) / det));
+}
+
+@vertex
+fn vs_main(in: VSIn, @builtin(instance_index) instanceIndex: u32) -> VSOut {
+    let model = visibleModels[instanceIndex];
+    let world = model * vec4f(in.pos, 1.0);
+    var out: VSOut;
+    out.pos = ubo.mvp * world;
+    out.pos.y = -out.pos.y;
+    out.vWorldPos = world.xyz;
+    out.vViewPos = (ubo.view * world).xyz;
+    let normalMatrix = transpose(inverse3x3(mat3x3f(model[0].xyz, model[1].xyz,
+                                                    model[2].xyz)));
+    out.vNormal = normalize(normalMatrix * in.normal);
+    out.vUV = in.uv;
+    out.vTint = ubo.tint;
+    out.vCameraPos = ubo.cameraPos.xyz;
+    return out;
+}
+)wgsl";
+
+uint64_t grownCapacity(uint64_t current, uint64_t required) {
+    uint64_t value = std::max<uint64_t>(current, 256);
+    while (value < required) value *= 2;
+    return value;
+}
+
+}  // namespace
 
 uint32_t Graphics::gpuDrivenMeshRecord(Mesh *mesh) {
     if (!mesh || !mesh->gpuHandle) return kInvalidGpuDrivenSlot;
@@ -33,8 +187,7 @@ bool Graphics::gpuDrivenMaterialUsable(Material *material) {
     if (!material || material->surfaceMode() != SurfaceMode::Opaque ||
         material->effectiveShader() != nullptr || material->isTransparentHair())
         return false;
-    const std::string model = material->getShadingModel();
-    return model == "pbr" && material->getReceiveLight();
+    return material->getShadingModel() == "pbr" && material->getReceiveLight();
 }
 
 bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
@@ -56,10 +209,205 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     return true;
 }
 
+void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketCount) {
+    if (!gpuDrivenCullPipeline_) {
+        WGPUBindGroupLayoutEntry computeEntries[4]{};
+        computeEntries[0].binding = 0;
+        computeEntries[0].visibility = WGPUShaderStage_Compute;
+        computeEntries[0].buffer.type = WGPUBufferBindingType_Uniform;
+        computeEntries[0].buffer.minBindingSize = sizeof(CullParams);
+        for (uint32_t i = 1; i < 4; ++i) {
+            computeEntries[i].binding = i;
+            computeEntries[i].visibility = WGPUShaderStage_Compute;
+            computeEntries[i].buffer.type = i == 1 ? WGPUBufferBindingType_ReadOnlyStorage
+                                                    : WGPUBufferBindingType_Storage;
+            computeEntries[i].buffer.minBindingSize = 4;
+        }
+        WGPUBindGroupLayoutDescriptor cbgl{};
+        cbgl.label = label("eve_gpu_driven_compute_bgl");
+        cbgl.entryCount = 4;
+        cbgl.entries = computeEntries;
+        gpuDrivenComputeSetLayout_ = device.CreateBindGroupLayout(
+            reinterpret_cast<const wgpu::BindGroupLayoutDescriptor *>(&cbgl));
+
+        WGPUBindGroupLayoutEntry renderEntry{};
+        renderEntry.binding = 0;
+        renderEntry.visibility = WGPUShaderStage_Vertex;
+        renderEntry.buffer.type = WGPUBufferBindingType_ReadOnlyStorage;
+        renderEntry.buffer.minBindingSize = sizeof(glm::mat4);
+        WGPUBindGroupLayoutDescriptor rbgl{};
+        rbgl.label = label("eve_gpu_driven_render_bgl");
+        rbgl.entryCount = 1;
+        rbgl.entries = &renderEntry;
+        gpuDrivenRenderSetLayout_ = device.CreateBindGroupLayout(
+            reinterpret_cast<const wgpu::BindGroupLayoutDescriptor *>(&rbgl));
+
+        WGPUBindGroupLayout computeLayout = gpuDrivenComputeSetLayout_.Get();
+        WGPUPipelineLayoutDescriptor cpl{};
+        cpl.label = label("eve_gpu_driven_compute_layout");
+        cpl.bindGroupLayoutCount = 1;
+        cpl.bindGroupLayouts = &computeLayout;
+        gpuDrivenComputePipelineLayout_ = device.CreatePipelineLayout(
+            reinterpret_cast<const wgpu::PipelineLayoutDescriptor *>(&cpl));
+
+        WGPUBindGroupLayout renderLayouts[2] = {mesh3dSetLayout.Get(),
+                                                gpuDrivenRenderSetLayout_.Get()};
+        WGPUPipelineLayoutDescriptor rpl{};
+        rpl.label = label("eve_gpu_driven_render_layout");
+        rpl.bindGroupLayoutCount = 2;
+        rpl.bindGroupLayouts = renderLayouts;
+        gpuDrivenRenderPipelineLayout_ = device.CreatePipelineLayout(
+            reinterpret_cast<const wgpu::PipelineLayoutDescriptor *>(&rpl));
+
+        wgpu::ShaderModule cullModule = shaderModule(device, kCullWgsl);
+        WGPUComputePipelineDescriptor cpd{};
+        cpd.label = label("eve_gpu_driven_cull");
+        cpd.layout = gpuDrivenComputePipelineLayout_.Get();
+        cpd.compute.module = cullModule.Get();
+        cpd.compute.entryPoint = label("cs_main");
+        gpuDrivenCullPipeline_ = device.CreateComputePipeline(
+            reinterpret_cast<const wgpu::ComputePipelineDescriptor *>(&cpd));
+
+        WGPUVertexAttribute attrs[3]{};
+        attrs[0].format = WGPUVertexFormat_Float32x3;
+        attrs[0].offset = 0;
+        attrs[0].shaderLocation = 0;
+        attrs[1].format = WGPUVertexFormat_Float32x3;
+        attrs[1].offset = 12;
+        attrs[1].shaderLocation = 1;
+        attrs[2].format = WGPUVertexFormat_Float32x2;
+        attrs[2].offset = 24;
+        attrs[2].shaderLocation = 2;
+        WGPUVertexBufferLayout vb{};
+        vb.arrayStride = 32;
+        vb.stepMode = WGPUVertexStepMode_Vertex;
+        vb.attributeCount = 3;
+        vb.attributes = attrs;
+        WGPUDepthStencilState depth{};
+        depth.format = WGPUTextureFormat_Depth32Float;
+        depth.depthWriteEnabled = WGPUOptionalBool_True;
+        depth.depthCompare = WGPUCompareFunction_Less;
+        WGPUColorTargetState target{};
+        target.format = sceneColorFormat;
+        target.writeMask = WGPUColorWriteMask_All;
+        wgpu::ShaderModule vertModule = shaderModule(device, kGpuDrivenVertWgsl);
+        wgpu::ShaderModule fragModule = shaderModule(device, kMesh3DFragWgsl);
+        WGPUFragmentState fs{};
+        fs.module = fragModule.Get();
+        fs.entryPoint = label("fs_main");
+        fs.targetCount = 1;
+        fs.targets = &target;
+        WGPURenderPipelineDescriptor rpd{};
+        rpd.label = label("eve_gpu_driven_render");
+        rpd.layout = gpuDrivenRenderPipelineLayout_.Get();
+        rpd.vertex.module = vertModule.Get();
+        rpd.vertex.entryPoint = label("vs_main");
+        rpd.vertex.bufferCount = 1;
+        rpd.vertex.buffers = &vb;
+        rpd.fragment = &fs;
+        rpd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
+        rpd.primitive.frontFace = WGPUFrontFace_CW;
+        rpd.primitive.cullMode = WGPUCullMode_Back;
+        rpd.depthStencil = &depth;
+        rpd.multisample.count = sceneColorSamples;
+        rpd.multisample.mask = 0xFFFFFFFFu;
+        gpuDrivenRenderPipeline_ = device.CreateRenderPipeline(
+            reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&rpd));
+        rpd.label = label("eve_gpu_driven_canvas");
+        rpd.multisample.count = 1;
+        gpuDrivenCanvasPipeline_ = device.CreateRenderPipeline(
+            reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&rpd));
+
+        WGPUBufferDescriptor pbd{};
+        pbd.label = label("eve_gpu_driven_params");
+        pbd.size = sizeof(CullParams);
+        pbd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform;
+        gpuDrivenParamsBuffer_ = device.CreateBuffer(
+            reinterpret_cast<const wgpu::BufferDescriptor *>(&pbd));
+    }
+
+    bool recreateGroups = false;
+    const uint64_t inputBytes = uint64_t(instanceCount) * sizeof(CullInput);
+    if (!gpuDrivenInputBuffer_ || gpuDrivenInputCapacity_ < inputBytes) {
+        gpuDrivenInputCapacity_ = grownCapacity(gpuDrivenInputCapacity_, inputBytes);
+        WGPUBufferDescriptor bd{};
+        bd.label = label("eve_gpu_driven_inputs");
+        bd.size = gpuDrivenInputCapacity_;
+        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Storage;
+        gpuDrivenInputBuffer_ =
+            device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
+        recreateGroups = true;
+    }
+    const uint64_t visibleBytes = uint64_t(instanceCount) * sizeof(glm::mat4);
+    if (!gpuDrivenVisibleBuffer_ || gpuDrivenVisibleCapacity_ < visibleBytes) {
+        gpuDrivenVisibleCapacity_ = grownCapacity(gpuDrivenVisibleCapacity_, visibleBytes);
+        WGPUBufferDescriptor bd{};
+        bd.label = label("eve_gpu_driven_visible");
+        bd.size = gpuDrivenVisibleCapacity_;
+        bd.usage = WGPUBufferUsage_Storage;
+        gpuDrivenVisibleBuffer_ =
+            device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
+        recreateGroups = true;
+    }
+    const uint64_t indirectBytes = uint64_t(bucketCount) * sizeof(GpuIndirectCommand);
+    if (!gpuDrivenIndirectBuffer_ || gpuDrivenIndirectCapacity_ < indirectBytes) {
+        gpuDrivenIndirectCapacity_ = grownCapacity(gpuDrivenIndirectCapacity_, indirectBytes);
+        WGPUBufferDescriptor bd{};
+        bd.label = label("eve_gpu_driven_indirect");
+        bd.size = gpuDrivenIndirectCapacity_;
+        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Storage | WGPUBufferUsage_Indirect;
+        gpuDrivenIndirectBuffer_ =
+            device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
+        recreateGroups = true;
+    }
+    if (recreateGroups || !gpuDrivenComputeBindGroup_) {
+        WGPUBindGroupEntry entries[4]{};
+        entries[0].binding = 0;
+        entries[0].buffer = gpuDrivenParamsBuffer_.Get();
+        entries[0].size = sizeof(CullParams);
+        entries[1].binding = 1;
+        entries[1].buffer = gpuDrivenInputBuffer_.Get();
+        entries[1].size = gpuDrivenInputCapacity_;
+        entries[2].binding = 2;
+        entries[2].buffer = gpuDrivenVisibleBuffer_.Get();
+        entries[2].size = gpuDrivenVisibleCapacity_;
+        entries[3].binding = 3;
+        entries[3].buffer = gpuDrivenIndirectBuffer_.Get();
+        entries[3].size = gpuDrivenIndirectCapacity_;
+        WGPUBindGroupDescriptor bgd{};
+        bgd.label = label("eve_gpu_driven_compute_bg");
+        bgd.layout = gpuDrivenComputeSetLayout_.Get();
+        bgd.entryCount = 4;
+        bgd.entries = entries;
+        gpuDrivenComputeBindGroup_ = device.CreateBindGroup(
+            reinterpret_cast<const wgpu::BindGroupDescriptor *>(&bgd));
+
+        WGPUBindGroupEntry renderEntry{};
+        renderEntry.binding = 0;
+        renderEntry.buffer = gpuDrivenVisibleBuffer_.Get();
+        renderEntry.size = gpuDrivenVisibleCapacity_;
+        WGPUBindGroupDescriptor rbgd{};
+        rbgd.label = label("eve_gpu_driven_render_bg");
+        rbgd.layout = gpuDrivenRenderSetLayout_.Get();
+        rbgd.entryCount = 1;
+        rbgd.entries = &renderEntry;
+        gpuDrivenRenderBindGroup_ = device.CreateBindGroup(
+            reinterpret_cast<const wgpu::BindGroupDescriptor *>(&rbgd));
+    }
+}
+
 bool Graphics::gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) {
     if (!gpuDrivenEnabled_ || !instances || instanceCount == 0) return false;
+    for (uint32_t i = 0; i < instanceCount; ++i) {
+        if (instances[i].meshId >= gpuDrivenMeshes_.size()) return false;
+        auto *gpu = static_cast<GpuMesh *>(gpuDrivenMeshes_[instances[i].meshId]->gpuHandle);
+        if (!gpu || !gpu->indexBuffer) return false;
+    }
     gpuDrivenPending_.assign(instances, instances + instanceCount);
     gpuDrivenVisible_.clear();
+    gpuDrivenBuckets_.clear();
+    gpuDrivenComputePending_ = false;
+    gpuDrivenDrawPending_ = false;
     return true;
 }
 
@@ -69,47 +417,164 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
     (void)fovYDeg;
     (void)nearZ;
     (void)farZ;
-    glm::vec4 planes[6] = {
-        glm::row(viewProj, 3) + glm::row(viewProj, 0),
-        glm::row(viewProj, 3) - glm::row(viewProj, 0),
-        glm::row(viewProj, 3) + glm::row(viewProj, 1),
-        glm::row(viewProj, 3) - glm::row(viewProj, 1),
-        glm::row(viewProj, 2),
-        glm::row(viewProj, 3) - glm::row(viewProj, 2),
-    };
-    for (glm::vec4 &plane : planes) {
+    CullParams params{};
+    params.planes[0] = glm::row(viewProj, 3) + glm::row(viewProj, 0);
+    params.planes[1] = glm::row(viewProj, 3) - glm::row(viewProj, 0);
+    params.planes[2] = glm::row(viewProj, 3) + glm::row(viewProj, 1);
+    params.planes[3] = glm::row(viewProj, 3) - glm::row(viewProj, 1);
+    params.planes[4] = glm::row(viewProj, 2);
+    params.planes[5] = glm::row(viewProj, 3) - glm::row(viewProj, 2);
+    for (glm::vec4 &plane : params.planes) {
         const float length = glm::length(glm::vec3(plane));
         if (length > 1e-6f) plane /= length;
     }
-    for (const GpuInstance &instance : gpuDrivenPending_) {
-        if (instance.meshId >= gpuDrivenMeshes_.size()) continue;
-        Mesh *mesh = gpuDrivenMeshes_[instance.meshId];
-        if (!mesh || !mesh->hasBounds()) {
-            gpuDrivenVisible_.push_back(instance);
-            continue;
-        }
-        const glm::vec3 center = glm::vec3(
-            instance.model * glm::vec4(mesh->boundsCx, mesh->boundsCy, mesh->boundsCz, 1.f));
-        const float sx = glm::length(glm::vec3(instance.model[0]));
-        const float sy = glm::length(glm::vec3(instance.model[1]));
-        const float sz = glm::length(glm::vec3(instance.model[2]));
-        const float radius = mesh->boundsRadius * std::max({sx, sy, sz});
-        bool visible = true;
-        for (const glm::vec4 &plane : planes) {
-            if (glm::dot(glm::vec3(plane), center) + plane.w < -radius) {
-                visible = false;
-                break;
+
+    using BucketKey = std::pair<uint32_t, uint32_t>;
+    std::map<BucketKey, std::vector<const GpuInstance *>> grouped;
+    for (const GpuInstance &instance : gpuDrivenPending_)
+        grouped[{instance.meshId, instance.materialId}].push_back(&instance);
+
+    std::vector<CullInput> inputs;
+    std::vector<GpuIndirectCommand> commands;
+    inputs.reserve(gpuDrivenPending_.size());
+    commands.reserve(grouped.size());
+    uint32_t outputBase = 0;
+    for (const auto &[key, bucketInstances] : grouped) {
+        Mesh *mesh = gpuDrivenMeshes_[key.first];
+        Material *material = gpuDrivenMaterials_[key.second];
+        auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+        const uint32_t bucketIndex = static_cast<uint32_t>(gpuDrivenBuckets_.size());
+        gpuDrivenBuckets_.push_back(
+            {mesh, material, outputBase, static_cast<uint32_t>(bucketInstances.size())});
+        GpuIndirectCommand command{};
+        command.indexCount = gpu->indexCount;
+        command.firstInstance = outputBase;
+        commands.push_back(command);
+        for (const GpuInstance *instance : bucketInstances) {
+            CullInput input{};
+            input.model = instance->model;
+            input.bounds = mesh->hasBounds()
+                               ? glm::vec4(mesh->boundsCx, mesh->boundsCy, mesh->boundsCz,
+                                           mesh->boundsRadius)
+                               : glm::vec4(0.f, 0.f, 0.f, 1e20f);
+            input.bucket = bucketIndex;
+            inputs.push_back(input);
+
+            const glm::vec3 center = glm::vec3(
+                input.model * glm::vec4(glm::vec3(input.bounds), 1.f));
+            const float scale = std::max({glm::length(glm::vec3(input.model[0])),
+                                          glm::length(glm::vec3(input.model[1])),
+                                          glm::length(glm::vec3(input.model[2]))});
+            bool visible = true;
+            for (const glm::vec4 &plane : params.planes) {
+                if (glm::dot(glm::vec3(plane), center) + plane.w < -input.bounds.w * scale) {
+                    visible = false;
+                    break;
+                }
             }
+            if (visible) gpuDrivenVisible_.push_back(*instance);
         }
-        if (visible) gpuDrivenVisible_.push_back(instance);
+        outputBase += static_cast<uint32_t>(bucketInstances.size());
     }
+
+    ensureGpuDrivenResources(static_cast<uint32_t>(inputs.size()),
+                             static_cast<uint32_t>(commands.size()));
+    params.counts.x = static_cast<uint32_t>(inputs.size());
+    queue.WriteBuffer(gpuDrivenParamsBuffer_, 0, &params, sizeof(params));
+    queue.WriteBuffer(gpuDrivenInputBuffer_, 0, inputs.data(), inputs.size() * sizeof(CullInput));
+    queue.WriteBuffer(gpuDrivenIndirectBuffer_, 0, commands.data(),
+                      commands.size() * sizeof(GpuIndirectCommand));
+    gpuDrivenDispatchCount_ = static_cast<uint32_t>(inputs.size());
+    gpuDrivenComputePending_ = !inputs.empty() && !commands.empty();
 }
 
 void Graphics::gpuDrivenDrawOpaque() {
-    if (!gpuDrivenVisible_.empty())
-        gpuDrivenSubmitOpaque(gpuDrivenVisible_.data(),
-                              static_cast<uint32_t>(gpuDrivenVisible_.size()));
+    if (!gpuDrivenComputePending_ || gpuDrivenBuckets_.empty()) return;
+    frameHad3DThisFrame = true;
+    frameHad3D = true;
+    gpuDrivenDrawPending_ = true;
     gpuDrivenPending_.clear();
+}
+
+void Graphics::recordGpuDrivenCompute(wgpu::CommandEncoder encoder) {
+    if (!gpuDrivenComputePending_ || !gpuDrivenCullPipeline_ || !gpuDrivenComputeBindGroup_)
+        return;
+    wgpu::ComputePassEncoder pass = encoder.BeginComputePass();
+    pass.SetPipeline(gpuDrivenCullPipeline_);
+    pass.SetBindGroup(0, gpuDrivenComputeBindGroup_, 0, nullptr);
+    pass.DispatchWorkgroups((gpuDrivenDispatchCount_ + 63u) / 64u, 1, 1);
+    pass.End();
+    gpuDrivenComputePending_ = false;
+}
+
+void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget) {
+    if (!gpuDrivenDrawPending_ || !gpuDrivenRenderBindGroup_) return;
+    auto &arena = currentUboArena();
+    ensureUboArena(arena, arena.used + gpuDrivenBuckets_.size() * 2048);
+    pass.SetPipeline(canvasTarget ? gpuDrivenCanvasPipeline_ : gpuDrivenRenderPipeline_);
+    pass.SetBindGroup(1, gpuDrivenRenderBindGroup_, 0, nullptr);
+    gpuDrivenLastIndirectDrawCount_ = 0;
+
+    for (uint32_t i = 0; i < gpuDrivenBuckets_.size(); ++i) {
+        const GpuDrivenBucket &bucket = gpuDrivenBuckets_[i];
+        auto *gpu = static_cast<GpuMesh *>(bucket.mesh->gpuHandle);
+        Material *material = bucket.material;
+        if (!gpu || !gpu->vertexBuffer || !gpu->indexBuffer || !material) continue;
+
+        Mesh3DUBO ubo{};
+        ubo.mvp = mesh3dViewProj;
+        ubo.model = glm::mat4(1.f);
+        ubo.lightDir = glm::vec4(glm::vec3(mesh3dLighting.lights[0].posRadius),
+                                 float(mesh3dLighting.count));
+        ubo.lightColor = mesh3dLighting.lights[0].color;
+        ubo.lightColor.w = mesh3dEnvIntensity;
+        ubo.tint = glm::vec4(material->getTintR(), material->getTintG(), material->getTintB(),
+                             material->getTintA());
+        ubo.cameraPos = glm::vec4(mesh3dCameraPos, material->getRoughness());
+        ubo.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), material->getMetallic());
+        for (int light = 0; light < Lighting3DPack::kMaxLights; ++light)
+            ubo.lights[light] = mesh3dLighting.lights[light];
+        ubo.texBomb = glm::vec4(material->getTexCellBombScale(),
+                                material->getTexCellBombStrength(),
+                                material->getTexCellBombRotation(), 0.f);
+        ubo.parallax = glm::vec4(material->getParallaxScale(), material->getParallaxMinLayers(),
+                                 material->getParallaxMaxLayers(), 0.f);
+        const float ao = renderControl_ && renderControl_->isEnabled("ao")
+                             ? mesh3dSsaoIntensity
+                             : 0.f;
+        ubo.surface = glm::vec4(0.f, material->getAlphaCutoff(), ao, 0.f);
+        ubo.view = mesh3dView;
+        ubo.clipInfo = glm::vec4(mesh3dNear, mesh3dFar, 0.f, 0.f);
+        ubo.cloud = mesh3dCloud;
+        ubo.cloudWind = mesh3dCloudWind;
+
+        const uint32_t frameOffset = arena.alloc(sizeof(Mesh3DUBO), 256);
+        const uint32_t shadowOffset = arena.alloc(sizeof(ShadowUBO), 256);
+        queue.WriteBuffer(arena.buffer, frameOffset, &ubo, sizeof(ubo));
+        ShadowUBO shadow = mesh3dShadows.ubo;
+        if (!mesh3dShadows.active || !material->getReceiveShadow()) shadow.bias.y = 0.f;
+        queue.WriteBuffer(arena.buffer, shadowOffset, &shadow, sizeof(shadow));
+
+        GpuTexture *depth = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
+                                                    : flatDepthTexture3D;
+        wgpu::BindGroup bindGroup =
+            makeMeshBindGroup(gpuForTexture(material->getAlbedoTexture()),
+                              gpuForTexture(material->getNormalTexture()),
+                              gpuForTexture(mesh3dEnvTexture),
+                              gpuForTexture(material->getHeightTexture()), depth, frameOffset,
+                              shadowOffset, 0);
+        const uint32_t offsets[3] = {frameOffset, shadowOffset, 0};
+        pass.SetBindGroup(0, bindGroup, 3, offsets);
+        pass.SetVertexBuffer(0, gpu->vertexBuffer, 0, gpu->vertexCount * 32ull);
+        const uint64_t indexBytes = gpu->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
+        pass.SetIndexBuffer(gpu->indexBuffer, gpu->indexFormat, 0,
+                            uint64_t(gpu->indexCount) * indexBytes);
+        pass.DrawIndexedIndirect(gpuDrivenIndirectBuffer_,
+                                 uint64_t(i) * sizeof(GpuIndirectCommand));
+        ++gpuDrivenLastIndirectDrawCount_;
+    }
+    gpuDrivenDrawPending_ = false;
+    gpuDrivenBuckets_.clear();
 }
 
 }  // namespace eve::graphics::webgpu

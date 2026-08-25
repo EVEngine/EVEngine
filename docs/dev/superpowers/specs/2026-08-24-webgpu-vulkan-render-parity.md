@@ -48,7 +48,7 @@ and `test gap`.
 | Runtime GLSL and SPIR-V on browser | intentional difference | Browser WebGPU accepts WGSL, not Vulkan SPIR-V or runtime GLSL | Keep explicit errors; document paired shader assets/toolchain |
 | Hair/custom hair shaders | supported for built-in hair | Anisotropic built-in WGSL shading is available; arbitrary SPIR-V hair remains an intentional input-language difference | Define a portable custom WGSL/SPIR-V shader-pair contract |
 | Font rendering | supported | Native and browser WebGPU render supplied font atlases; browser builds do not synthesize atlases with FreeType | Add packaged-atlas browser examples |
-| GPU-driven/indirect/visibility buffer | partial | Opaque resource tables, submission semantics and frustum results match; WebGPU currently performs compatibility culling/submission on CPU | Replace compatibility path with compute compaction and indirect draws, then implement visibility resolve |
+| GPU-driven/indirect/visibility buffer | partial | WebGPU compute-compacts visible transforms per mesh/material bucket and emits indexed-indirect commands; visibility-buffer resolve remains | Implement visibility attachments and fullscreen material resolve |
 | Virtual geometry GPU path | missing, fallback available | Vulkan-only compute/indirect implementation | Implement after GPU-driven base path |
 | Native macOS surface | supported, CI verified | SDL Cocoa windows are backed by a retained CAMetalLayer and native Dawn Metal surface | Keep the targeted macOS render tests in CI |
 | Browser render tests | supported in CI | Chromium/SwiftShader launches the WASM example, captures a frame and rejects black/white/flat output | Add scene-by-scene browser semantic assertions |
@@ -135,8 +135,7 @@ not an acceptable fix.
 
 ### P3: performance and platform completeness
 
-- [ ] GPU-driven opaque submission and compute culling (submission and CPU
-      compatibility culling complete; compute compaction/indirect remains).
+- [x] GPU-driven opaque submission, compute compaction and indexed-indirect draws.
 - [ ] Visibility-buffer resolve and virtual geometry.
 - [x] Native macOS Dawn surface.
 - [x] Browser WebGPU pixel lane on CI.
