@@ -33,10 +33,7 @@ if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
             "Use a prebuilt third-party install tree" FORCE)
     endif()
 endif()
-set(EVENGINE_THIRD_PARTY_PIN "566e4073d2ec1c723b581daa50334a4b05956091" CACHE STRING
-    "Pinned commit for the EVEngine/third-party aggregate checkout. The checkout is
-     moved onto this commit at configure time (or verified against it), and every
-     prebuilt third-party tree must be built from it.")
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/third_party_pin.cmake)
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
     OFF)
@@ -1067,6 +1064,11 @@ function(load_third_party)
     set(TP_BUILD_PATH ${_eve_tp_platform}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
+    # The engine still compiles a small set of vendored sources (notably ImGui)
+    # even when the compiled libraries come from a prebuilt install tree. Keep
+    # the pinned checkout available on fresh CI runners as well as local builds.
+    ensure_third_party_checkout()
+
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)
         cmake_path(ABSOLUTE_PATH EVENGINE_THIRD_PARTY_BINARY_DIR NORMALIZE
                    OUTPUT_VARIABLE _eve_prebuilt_tp)
@@ -1140,7 +1142,6 @@ function(load_third_party)
         return()
     endif()
 
-    ensure_third_party_checkout()
     # EVEngine's database module uses POCO Data + SQLite. The third-party
     # aggregate already defaults ENABLE_DATA / ENABLE_DATA_SQLITE to ON (pinned
     # by GIT_TAG below), so no configure-time edits are needed for it.

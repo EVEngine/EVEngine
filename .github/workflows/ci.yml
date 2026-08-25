@@ -172,6 +172,10 @@ jobs:
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: windows-latest
     timeout-minutes: 90
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
@@ -189,6 +193,41 @@ jobs:
         run: |
           choco install make ninja -y --no-progress
           echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsRoot = & $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath
+          $toolsetFile = Join-Path $vsRoot "VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt"
+          $toolset = (Get-Content $toolsetFile -Raw).Trim()
+          $sdkVersion = (& cmd.exe /d /s /c `
+            'cmake\with-msvc.cmd cmd.exe /d /c echo %WindowsSDKVersion%').Trim().TrimEnd('\')
+          $cmakeVersion = ((cmake --version | Select-Object -First 1) -split '\s+')[-1]
+          "id=msvc-$toolset-winsdk-$sdkVersion-cmake-$cmakeVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Restore win32 third-party cache
+        id: third-party-cache
+        timeout-minutes: 15
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: build/third-party-binary/win32-debug
+          key: third-party-v1-${{ runner.os }}-${{ runner.arch }}-win32-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake') }}
+
+      - name: Verify restored win32 third-party cache
+        if: steps.third-party-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/win32-debug win32 Debug
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
@@ -210,7 +249,34 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+        run: |
+          tp_args=""
+          if [ "${{ steps.third-party-cache.outputs.cache-hit }}" = "true" ]; then
+            tp_args="-DEVENGINE_THIRD_PARTY_BINARY_DIR=build/third-party-binary/win32-debug"
+          fi
+          make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DCMAKE_POLICY_DEFAULT_CMP0141=NEW \
+              -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded \
+              -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=sccache $tp_args"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Verify built win32 third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/win32-debug win32 Debug
+
+      - name: Save win32 third-party cache
+        if: steps.third-party-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: build/third-party-binary/win32-debug
+          key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
         timeout-minutes: 30
@@ -657,6 +723,10 @@ jobs:
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -694,6 +764,34 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: |
+          compiler_target="$(g++ -dumpmachine)"
+          compiler_version="$(g++ -dumpfullversion -dumpversion)"
+          cmake_version="$(cmake --version | head -n 1 | awk '{print $3}')"
+          echo "id=gcc-$compiler_target-$compiler_version-cmake-$cmake_version" >> "$GITHUB_OUTPUT"
+
+      - name: Restore linux third-party cache
+        id: third-party-cache
+        timeout-minutes: 15
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: build/third-party-binary/linux-debug
+          key: third-party-v1-ubuntu-24.04-${{ runner.arch }}-linux-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake') }}
+
+      - name: Verify restored linux third-party cache
+        if: steps.third-party-cache.outputs.cache-hit == 'true'
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/linux-debug linux Release
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
@@ -710,7 +808,32 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux-debug JOBS="$(nproc)" CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+        run: |
+          tp_args=""
+          if [ "${{ steps.third-party-cache.outputs.cache-hit }}" = "true" ]; then
+            tp_args="-DEVENGINE_THIRD_PARTY_BINARY_DIR=build/third-party-binary/linux-debug"
+          fi
+          make build/linux-debug JOBS="$(nproc)" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=sccache $tp_args"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Verify built linux third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/linux-debug linux Release
+
+      - name: Save linux third-party cache
+        if: steps.third-party-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 15
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: build/third-party-binary/linux-debug
+          key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run linux unit tests
         timeout-minutes: 30
