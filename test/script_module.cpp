@@ -89,7 +89,7 @@ TEST_CASE("scriptModule.rejectsCyclesBeforeExecution") {
         rejected = std::string(error.what()).find("cyclic script import") != std::string::npos ||
                    runtime.scriptModules().lastError().find("cyclic script import") != std::string::npos;
     }
-    CHECK(rejected);
+    REQUIRE(rejected);
 }
 
 TEST_CASE("scriptModule.reloadReplacesGenerationAtomically") {

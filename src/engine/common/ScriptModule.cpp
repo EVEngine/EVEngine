@@ -191,6 +191,7 @@ struct ScriptModuleResolver::Impl {
                                        SQTrue))) {
             sq_settop(vm, top);
             modules.erase(canonical);
+            if (!lastError.empty()) throw std::runtime_error(lastError);
             throw std::runtime_error("failed to compile script module: " + canonical);
         }
         sq_getstackobj(vm, -1, &module.closure);
