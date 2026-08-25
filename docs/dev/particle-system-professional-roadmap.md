@@ -64,8 +64,10 @@ and a six-emitter/150-frame rendered stress capture.
   undersized segments, and shares sprite material/color/size handling. GPU
   ribbon scan/index generation remains pending. Mesh and light renderers remain.
 - Depth sorting policies and a real G-buffer linear-depth soft-particle path are
-  implemented with explicit runtime availability. Distortion, normal maps,
-  lit/unlit materials, and motion-vector policy remain.
+  implemented with explicit runtime availability. Lit/unlit particle materials
+  and tangent-space normal maps now reuse the 2D lighting pipeline, with an
+  explicit CPU-simulation fallback while GPU-resident lighting data remains
+  pending. Distortion and motion-vector policy remain.
 - Mesh/skeleton, scene depth, collision, signed-distance-field, and gameplay
   parameter data interfaces with explicit CPU/GPU availability.
 

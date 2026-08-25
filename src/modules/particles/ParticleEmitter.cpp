@@ -925,6 +925,12 @@ void ParticleEmitter::setSortMode(const std::string& mode) {
 
 std::string ParticleEmitter::getSortMode() { return config()->sortMode; }
 
+void ParticleEmitter::setMaterialMode(const std::string& mode) {
+    config()->materialMode = mode == "lit" ? "lit" : "unlit";
+}
+
+std::string ParticleEmitter::getMaterialMode() { return config()->materialMode; }
+
 void ParticleEmitter::setOverflowMode(const std::string &mode) {
     config()->overflowMode =
         (mode == "pause" || mode == "warn") ? mode : "drop";
@@ -1040,6 +1046,9 @@ void ParticleEmitter::setColorEnd(float r, float g, float b, float a) {
 
 void ParticleEmitter::setTexture(graphics::Texture *texture) { draw()->texture = texture; }
 graphics::Texture *ParticleEmitter::getTexture() { return draw()->texture; }
+
+void               ParticleEmitter::setNormalTexture(graphics::Texture* texture) { draw()->normalTexture = texture; }
+graphics::Texture* ParticleEmitter::getNormalTexture() { return draw()->normalTexture; }
 
 void ParticleEmitter::setCanvas(graphics::Canvas *canvas) { draw()->canvas = canvas; }
 void ParticleEmitter::setCamera(graphics::Camera2D *camera) { draw()->camera = camera; }

@@ -278,6 +278,19 @@ JSON：`collision: {mode, radius, restitution, lifetimeLoss}`、`collisionBounds
 
 `setSoftParticles(true, depth, fadeDistance)` 让常驻粒子采样当前 G-buffer 的线性场景深度，在与几何相交或被遮挡时平滑衰减 alpha；JSON 为 `softParticles: {enabled, depth, fadeDistance}`，深度值均为 `[0,1]` 线性深度。`isSoftParticlesActive()` 只有在 GPU 常驻渲染器已激活且当前帧确实产生场景深度时才返回 true；纯 2D 帧不会伪造深度，而是保持普通粒子外观。
 
+粒子材质默认是 `unlit`，不受场景灯光影响。`setMaterialMode("lit")` 会让粒子接收现有 2D 环境光和点光/方向光；配合 `setNormalTexture(normalTex)` 时使用切线空间法线贴图，否则使用无贴图的逐粒子中心光照。JSON 可写为：
+
+```json
+{
+  "material": {
+    "mode": "lit",
+    "normalTexture": "particles/smoke-normal.png"
+  }
+}
+```
+
+Lit/法线贴图目前明确使用 CPU 粒子模拟加 GPU 2D lit 绘制；即使请求了 `gpuSimulation`，也会安全回退，不会静默忽略灯光。切回 `unlit` 后可重新满足 GPU 常驻条件。
+
 健壮性：`overflowMode`（`"drop"` 默认 / `"pause"` 暂停发射直到有空位 / `"warn"` 日志提示）；`setMaxDeltaTime` 限制单帧步长；带相机的发射器在屏幕外且无存活粒子时会跳过模拟。
 
 ## 力场、自定义 Shader 与粒子灯光
@@ -348,12 +361,12 @@ embers.start();
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`clearBursts()`、`clearColorGradient()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoRandomSeed()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getEmissionRateOverDistance()`、`getFixedTimeStep()`、`getGpuSimulation()`、`getLightsEnabled()`、`getLooping()`、`getPlaybackSpeed()`、`getPrewarmSeconds()`、`getRandomSeed()`、`getShader()`
-- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getLayer()`、`getName()`、`getPriority()`、`getMinimumQuality()`、`getCullingMode()`、`getCullDistance()`、`getMaxSpawnPerFrame()`
+- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getLayer()`、`getName()`、`getPriority()`、`getMinimumQuality()`、`getCullingMode()`、`getCullDistance()`、`getMaxSpawnPerFrame()`、`getMaterialMode()`、`getNormalTexture()`
 - `getMaxParticles()`、`getMaxSimulatedEmitters()`、`getQualityLevel()`、`getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()`、`getLastRenderMs()`
 - `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
 - `hasSkinSource()`、`isActive()`、`isAttached()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEmitter()`、`newEmitterFromFile()`
 - `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`
-- `setAutoRandomSeed()`、`setBlendMode()`、`setBudget()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setCullingMode()`、`setCullDistance()`、`setDamping()`、`setDirection()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaxDeltaTime()`、`setMaxSpawnPerFrame()`、`setMinimumQuality()`、`setNoise()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setPriority()`、`setQualityLevel()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
+- `setAutoRandomSeed()`、`setBlendMode()`、`setBudget()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setCullingMode()`、`setCullDistance()`、`setDamping()`、`setDirection()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaterialMode()`、`setMaxDeltaTime()`、`setMaxSpawnPerFrame()`、`setMinimumQuality()`、`setNoise()`、`setNormalTexture()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setPriority()`、`setQualityLevel()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
 - `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setSizeVariation()`
 - `setSizes()`、`setSkinBoneFilter()`、`setSkinBoneFilterByName()`、`setSkinPlane()`、`setSkinScale()`、`setSkinSource()`、`setSpeed()`、`setSpin()`、`setSpread()`、`setStartRotation()`、`setTangentialAcceleration()`、`setTexture()`、`setVisible()`、`start()`
 - `stop()`、`syncAttach()`、`update()`

@@ -103,10 +103,12 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
     item.layer = draw.layer;
     item.blend = draw.blend;
     item.texture = draw.texture;
+    item.normal       = cfg.materialMode == "lit" ? draw.normalTexture : nullptr;
     item.shader = draw.shader;
     item.canvas = draw.canvas;
     item.camera = draw.camera;
-    item.receiveLight = false;
+    item.receiveLight = cfg.materialMode == "lit";
+    item.litPath = item.receiveLight && item.texture != nullptr && item.normal != nullptr && item.shader == nullptr;
     if (draw.texture && (cfg.hframes > 1 || cfg.vframes > 1)) {
         flipbookUV(cfg, p.frame, item.u0, item.v0, item.u1, item.v1);
         item.hasUV = true;
@@ -216,7 +218,8 @@ bool supportsResidentGpu(const ParticleEmitter::Config& cfg, const ParticleEmitt
     return draw.canvas == nullptr && draw.shader == nullptr && cfg.collisionMode == "none" &&
            !cfg.collisionBoundsEnabled && !cfg.worldCollision && cfg.forceFields.empty() && cfg.subEmitters.empty() &&
            !cfg.lights.enabled && cfg.velocityCurve.empty() && cfg.sizeCurve.empty() && cfg.rotationCurve.empty() &&
-           cfg.colorGradient.empty() && cfg.sortMode == "none" && cfg.renderMode != "ribbon";
+           cfg.colorGradient.empty() && cfg.sortMode == "none" && cfg.renderMode != "ribbon" &&
+           cfg.materialMode == "unlit";
 }
 
 graphics::GpuParticleSpawn gpuSpawn(const Particle& particle) {

@@ -231,6 +231,8 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setRenderAxis", &ParticleEmitter::setRenderAxis);
     em.addFunc("setSortMode", &ParticleEmitter::setSortMode);
     em.addFunc("getSortMode", &ParticleEmitter::getSortMode);
+    em.addFunc("setMaterialMode", &ParticleEmitter::setMaterialMode);
+    em.addFunc("getMaterialMode", &ParticleEmitter::getMaterialMode);
     em.addFunc("setOverflowMode", &ParticleEmitter::setOverflowMode);
     em.addFunc("setMaxDeltaTime", &ParticleEmitter::setMaxDeltaTime);
     em.addFunc("addSubEmitter", &ParticleEmitter::addSubEmitter);
@@ -253,6 +255,8 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setColorStart", &ParticleEmitter::setColorStart);
     em.addFunc("setColorEnd", &ParticleEmitter::setColorEnd);
     em.addFunc("setTexture", &ParticleEmitter::setTexture);
+    em.addFunc("setNormalTexture", &ParticleEmitter::setNormalTexture);
+    em.addFunc("getNormalTexture", &ParticleEmitter::getNormalTexture);
     em.addFunc("setCanvas", &ParticleEmitter::setCanvas);
     em.addFunc("setCamera", &ParticleEmitter::setCamera);
     em.addFunc("setLayer", &ParticleEmitter::setLayer);

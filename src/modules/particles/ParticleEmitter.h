@@ -144,6 +144,8 @@ public:
         float renderAxisDegrees = 0.f;
         /** @brief "none" | "oldest" | "youngest" | "distance" transparent ordering. */
         std::string sortMode = "none";
+        /** @brief Particle shading policy: "unlit" or "lit". */
+        std::string materialMode = "unlit";
         /** @brief Ribbon width multiplier and minimum accepted segment length. */
         float ribbonWidth            = 1.f;
         float ribbonMinSegmentLength = 1.f;
@@ -243,6 +245,8 @@ public:
 
     struct Draw {
         graphics::Texture *texture = nullptr;
+        /** @brief Optional tangent-space normal map used by the lit 2D particle path. */
+        graphics::Texture*  normalTexture = nullptr;
         graphics::Canvas *canvas = nullptr;     // nullptr → screen
         graphics::Camera2D *camera = nullptr;   // nullptr → screen space (no camera)
         BlendMode blend = BlendMode::Alpha;
@@ -255,6 +259,7 @@ public:
     struct Resource {
         std::string path;
         std::string texturePath;
+        std::string normalTexturePath;
         int64_t modtime = -1;
         bool autoReload = true;
     };
@@ -464,6 +469,10 @@ public:
     void setSortMode(const std::string& mode);
     /** @brief Return the configured transparent ordering policy. */
     std::string getSortMode();
+    /** @brief Select particle shading: "unlit" or "lit". Lit mode uses scene 2D lights. */
+    void setMaterialMode(const std::string& mode);
+    /** @brief Return the normalized particle shading mode. */
+    std::string getMaterialMode();
     void setOverflowMode(const std::string &mode);
     void setMaxDeltaTime(float seconds);
 
@@ -499,6 +508,10 @@ public:
 
     void setTexture(graphics::Texture *texture);
     graphics::Texture *getTexture();
+    /** @brief Set an optional tangent-space normal map for lit particles. */
+    void setNormalTexture(graphics::Texture* texture);
+    /** @brief Return the configured particle normal map. */
+    graphics::Texture* getNormalTexture();
 
     void setCanvas(graphics::Canvas *canvas);
     void setCamera(graphics::Camera2D *camera);

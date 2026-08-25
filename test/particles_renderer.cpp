@@ -36,6 +36,11 @@ TEST_CASE("particles.renderer.facingAndSortContract") {
     CHECK(std::abs(emitter->config()->softParticleDepth - 1.f) < 1e-5f);
     CHECK(emitter->config()->softFadeDistance >= 1e-5f);
     CHECK(!emitter->isSoftParticlesActive());
+
+    emitter->setMaterialMode("lit");
+    CHECK_EQ(emitter->getMaterialMode(), std::string("lit"));
+    emitter->setMaterialMode("unsupported");
+    CHECK_EQ(emitter->getMaterialMode(), std::string("unlit"));
 }
 
 TEST_CASE("particles.renderer.jsonContract") {
@@ -45,7 +50,8 @@ TEST_CASE("particles.renderer.jsonContract") {
         "renderAxis": -22.5,
         "sortMode": "youngest",
         "ribbon": {"width": 0.75, "minSegmentLength": 2.5},
-        "softParticles": {"enabled": true, "depth": 0.42, "fadeDistance": 0.08}
+        "softParticles": {"enabled": true, "depth": 0.42, "fadeDistance": 0.08},
+        "material": {"mode": "lit", "normalTexture": "particles/test-normal.png"}
     })"));
 
     CHECK_EQ(emitter->config()->renderMode, std::string("ribbon"));
@@ -54,4 +60,6 @@ TEST_CASE("particles.renderer.jsonContract") {
     CHECK(std::abs(emitter->config()->ribbonWidth - 0.75f) < 1e-5f);
     CHECK(emitter->config()->softParticles);
     CHECK(std::abs(emitter->config()->softParticleDepth - 0.42f) < 1e-5f);
+    CHECK_EQ(emitter->getMaterialMode(), std::string("lit"));
+    CHECK_EQ(emitter->resource()->normalTexturePath, std::string("particles/test-normal.png"));
 }

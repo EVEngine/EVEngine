@@ -148,13 +148,16 @@ bool readGradientArray(Poco::JSON::Array::Ptr arr, ParticleGradient &gradient) {
     return any;
 }
 
-void tryLoadTexture(ParticleEmitter *emitter, const std::string &path) {
+void tryLoadTexture(ParticleEmitter* emitter, const std::string& path, bool normalMap = false) {
     if (path.empty()) return;
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) return;
     try {
         graphics::Texture *tex = gfx->newTextureFromFile(path);
-        emitter->setTexture(tex);
+        if (normalMap)
+            emitter->setNormalTexture(tex);
+        else
+            emitter->setTexture(tex);
         if (auto *hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
             hot->bind(path, "texture");
     } catch (...) {
@@ -417,6 +420,21 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
         }
     }
     if (obj->has("sortMode")) emitter->setSortMode(asString(obj->get("sortMode")));
+    if (obj->has("materialMode")) emitter->setMaterialMode(asString(obj->get("materialMode")));
+    if (obj->has("material")) {
+        try {
+            auto material = obj->getObject("material");
+            if (material) {
+                if (material->has("mode")) emitter->setMaterialMode(asString(material->get("mode")));
+                if (material->has("normalTexture")) {
+                    const std::string path                 = asString(material->get("normalTexture"));
+                    emitter->resource()->normalTexturePath = path;
+                    tryLoadTexture(emitter, path, true);
+                }
+            }
+        } catch (...) {
+        }
+    }
     if (obj->has("softParticles")) {
         try {
             auto soft = obj->getObject("softParticles");

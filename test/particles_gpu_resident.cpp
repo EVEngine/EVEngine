@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "graphics/Graphics.h"
+#include "graphics/Light.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleRuntime.h"
 #include "particles/ParticleSystem.h"
@@ -237,6 +238,76 @@ TEST_CASE("particles.gpu.multipleResidentEmittersKeepIndependentDrawState") {
         emitter->setGpuSimulation(false);
         emitter->release();
     }
+    window->close();
+}
+
+TEST_CASE("particles.renderer.normalMappedLitMaterialUsesSceneLights") {
+    auto* window = eve::window::Window::create();
+    auto* gfx    = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 480;
+    settings.height   = 280;
+    settings.centered = true;
+    REQUIRE(window->setWindowSettings(settings));
+    gfx->setScreenReadbackEnabled(true);
+
+    const std::uint8_t albedoPixel[4] = {80, 80, 80, 255};
+    const std::uint8_t normalPixel[4] = {128, 128, 255, 255};
+    auto*              albedo         = gfx->newTexture(1, 1, albedoPixel);
+    auto*              normal         = gfx->newTexture(1, 1, normalPixel);
+    REQUIRE(albedo != nullptr);
+    REQUIRE(normal != nullptr);
+
+    auto makeEmitter = [&](float x, bool lit) {
+        auto* emitter = Particles::create()->newEmitter(8);
+        emitter->setTexture(albedo);
+        emitter->setNormalTexture(normal);
+        emitter->setMaterialMode(lit ? "lit" : "unlit");
+        emitter->setGpuSimulation(lit);
+        emitter->setPosition(x, 140.f);
+        emitter->setEmissionRate(0.f);
+        emitter->setParticleLifetime(10.f, 10.f);
+        emitter->setParticleSize(104.f, 104.f);
+        emitter->setSpeed(0.f, 0.f);
+        emitter->setSpread(0.f);
+        emitter->setBlendMode("alpha");
+        emitter->setColorStart(1.f, 1.f, 1.f, 1.f);
+        emitter->setColorEnd(1.f, 1.f, 1.f, 1.f);
+        emitter->emit(1);
+        return emitter;
+    };
+    auto* lit   = makeEmitter(150.f, true);
+    auto* unlit = makeEmitter(330.f, false);
+
+    auto* light = eve::graphics::Light2D::createLight("point");
+    light->setPosition(150.f, 140.f);
+    light->setColor(1.f, 0.75f, 0.45f, 4.f);
+    light->setRadius(180.f);
+    light->setEnabled(true);
+
+    gfx->setBackgroundColorRGBA(0.005f, 0.007f, 0.012f, 1.f);
+    for (int frame = 0; frame < 4; ++frame) {
+        ParticleSimSystem::update(1.f / 60.f);
+        gfx->clearScreen();
+        ParticleRenderSystem::render(gfx);
+        gfx->present();
+    }
+
+    REQUIRE(!lit->isGpuSimulationActive());
+    const auto litPixel   = gfx->getPixel(150, 140);
+    const auto unlitPixel = gfx->getPixel(330, 140);
+    REQUIRE_GT(litPixel.r, unlitPixel.r + 0.2f);
+    REQUIRE_GT(litPixel.r, litPixel.b + 0.1f);
+
+    const std::string output = std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_lit_material.png";
+    CHECK(gfx->saveFramePng(output));
+    CHECK(std::filesystem::exists(output));
+
+    lit->release();
+    unlit->release();
+    light->setEnabled(false);
     window->close();
 }
 
