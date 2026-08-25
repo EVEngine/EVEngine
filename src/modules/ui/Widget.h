@@ -298,10 +298,10 @@ WidgetDesc menuItem(std::string label, std::string shortcut = {}, std::string id
 WidgetDesc toolbar(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Wrapping grid of editor tools with uniform square cells. */
 WidgetDesc toolbox(std::vector<WidgetDesc> children = {}, std::string id = "",
-                   float cellSize = 40.f, int columns = 0);
+                   float cellSize = 0.f, int columns = 0);
 /** @brief Vertical editor side panel. Width defaults to 240 logical pixels. */
 WidgetDesc sidebar(std::vector<WidgetDesc> children = {}, std::string id = "",
-                   float width = 240.f);
+                   float width = 0.f);
 /** @brief Compact horizontal status strip; Spacer children absorb free width. */
 WidgetDesc statusBar(std::vector<WidgetDesc> children = {}, std::string id = "");
 /**

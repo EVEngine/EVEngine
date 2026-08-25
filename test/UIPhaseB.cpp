@@ -118,6 +118,11 @@ TEST_CASE("UI.b.themeTokensUnified") {
     CHECK(dark.itemSpacingX == light.itemSpacingX);
     CHECK(dark.windowPaddingY == light.windowPaddingY);
     CHECK(dark.fontScale == light.fontScale);
+    CHECK(dark.layout.toolbarHeight == light.layout.toolbarHeight);
+    CHECK(dark.layout.sidebarWidth == light.layout.sidebarWidth);
+    CHECK(dark.layout.cardPaddingX == light.layout.cardPaddingX);
+    CHECK(dark.layout.splitterSize == light.layout.splitterSize);
+    CHECK(dark.layout.searchIconGap == light.layout.searchIconGap);
     // Palettes differ
     CHECK(dark.windowBg[0] < 0.5f);
     CHECK(light.windowBg[0] > 0.5f);

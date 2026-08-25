@@ -99,9 +99,9 @@ public:
     /** @brief Opens a horizontal editor command strip. */
     void beginToolbar(const std::string &id = "");
     /** @brief Opens a wrapping editor tool grid. */
-    void beginToolbox(const std::string &id = "", float cellSize = 40.f, int columns = 0);
+    void beginToolbox(const std::string &id = "", float cellSize = 0.f, int columns = 0);
     /** @brief Opens a vertical editor side panel. */
-    void beginSidebar(const std::string &id = "", float width = 240.f);
+    void beginSidebar(const std::string &id = "", float width = 0.f);
     /** @brief Opens a compact horizontal status strip. */
     void beginStatusBar(const std::string &id = "");
     /** @brief Opens a two-child resizable split pane. */

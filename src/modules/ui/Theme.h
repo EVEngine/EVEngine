@@ -5,11 +5,39 @@
 namespace eve::ui {
 
 /**
+ * @brief Semantic layout tokens shared by editor-oriented widgets.
+ *
+ * Values are logical design units at uiScale=1. Components use these values
+ * only when the corresponding WidgetDesc property is unset, so per-widget
+ * size, padding and margin remain the higher-specificity override.
+ */
+struct ThemeLayout {
+    float toolbarHeight = 48.f;
+    float statusBarHeight = 36.f;
+    float sidebarWidth = 240.f;
+    float toolboxCellSize = 44.f;
+    float splitterSize = 6.f;
+    float minPaneSize = 160.f;
+    float panelPaddingX = 12.f;
+    float panelPaddingY = 10.f;
+    float cardPaddingX = 14.f;
+    float cardPaddingY = 12.f;
+    float barPaddingX = 10.f;
+    float barPaddingY = 6.f;
+    float sectionSpacingY = 6.f;
+    float searchMinWidth = 120.f;
+    float searchIconGap = 7.f;
+};
+
+/**
  * @brief Unified UI design tokens (colors, geometry, typography).
  * Applied to ImGui each frame via applyThemeToImGui; metrics are design-time
  * units at uiScale=1 and are multiplied by the current UI scale.
  */
 struct Theme {
+    /** CSS-like component layout defaults; explicit widget metrics override them. */
+    ThemeLayout layout;
+
     // --- Colors (RGBA 0..1) ---
     float text[4] = {0.87f, 0.89f, 0.93f, 1.f};
     float textDisabled[4] = {0.55f, 0.58f, 0.65f, 1.f};
@@ -71,14 +99,14 @@ struct Theme {
     float popupBorderSize = 1.f;
     float frameBorderSize = 0.f;
 
-    float windowPaddingX = 12.f;
-    float windowPaddingY = 10.f;
-    float framePaddingX = 8.f;
-    float framePaddingY = 4.f;
-    float itemSpacingX = 8.f;
-    float itemSpacingY = 5.f;
-    float itemInnerSpacingX = 5.f;
-    float itemInnerSpacingY = 3.f;
+    float windowPaddingX = 14.f;
+    float windowPaddingY = 12.f;
+    float framePaddingX = 9.f;
+    float framePaddingY = 5.f;
+    float itemSpacingX = 9.f;
+    float itemSpacingY = 7.f;
+    float itemInnerSpacingX = 6.f;
+    float itemInnerSpacingY = 4.f;
     float cellPaddingX = 6.f;
     float cellPaddingY = 3.f;
     float indentSpacing = 16.f;

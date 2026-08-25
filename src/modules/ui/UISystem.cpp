@@ -58,9 +58,41 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index);
 void walkSiblings(UIHost *host, UIHost::Tree *tree, int index) {
     while (index >= 0 && index < int(tree->nodes.size())) {
         const int next = tree->nodes[size_t(index)].nextSibling;
-        walkNode(host, tree, index);
+        UINode &node = tree->nodes[size_t(index)];
+        // Desktop composition behaves like CSS grid rows: menu/toolbar and
+        // status bar keep their intrinsic height while the workspace consumes
+        // the remaining block size. An explicit split height still wins.
+        if (node.type == NodeType::SplitPane && node.sizeY <= 0.f && next >= 0 &&
+            next < int(tree->nodes.size()) &&
+            tree->nodes[size_t(next)].type == NodeType::StatusBar) {
+            const float oldY = node.sizeY;
+            const float reserve = tree->nodes[size_t(next)].measuredH +
+                                  ImGui::GetStyle().ItemSpacing.y;
+            node.sizeY = std::max(1.f, ImGui::GetContentRegionAvail().y - reserve);
+            walkNode(host, tree, index);
+            node.sizeY = oldY;
+        } else {
+            walkNode(host, tree, index);
+        }
         index = next;
     }
+}
+
+void walkPaneChild(UIHost *host, UIHost::Tree *tree, int index) {
+    if (index < 0 || index >= int(tree->nodes.size())) return;
+    UINode &child = tree->nodes[size_t(index)];
+    const ImVec2 avail = ImGui::GetContentRegionAvail();
+    const float oldX = child.sizeX;
+    const float oldY = child.sizeY;
+    // A direct SplitPane child fills its allocated pane. Descendants can still
+    // specialize their own dimensions through normal widget layout props.
+    child.sizeX = std::max(1.f, avail.x);
+    child.sizeY = std::max(1.f, avail.y);
+    child.measuredW = child.sizeX;
+    child.measuredH = child.sizeY;
+    walkNode(host, tree, index);
+    child.sizeX = oldX;
+    child.sizeY = oldY;
 }
 
 bool hasDirectChildType(const UIHost::Tree &tree, const UINode &parent, NodeType type) {
@@ -246,6 +278,11 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         const bool modal = host && host->meta()->modal;
         ImGuiWindowFlags flags = 0;
         if (hasDirectChildType(*tree, n, NodeType::MenuBar)) flags |= ImGuiWindowFlags_MenuBar;
+        const bool desktopChrome = hasDirectChildType(*tree, n, NodeType::SplitPane) &&
+                                   (hasDirectChildType(*tree, n, NodeType::Toolbar) ||
+                                    hasDirectChildType(*tree, n, NodeType::StatusBar));
+        if (desktopChrome)
+            flags |= ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
         float winW = 0.f;
         float winH = 0.f;
         if (host && host->meta()->percentW > 0.f)
@@ -443,11 +480,30 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         std::memset(buf, 0, sizeof(buf));
         if (!n.valueText.empty()) std::strncpy(buf, n.valueText.c_str(), sizeof(buf) - 1);
         const std::string label = "##search" + (n.id.empty() ? std::string() : "###" + n.id);
-        const std::string hint = iconText(Icon::Search, n.text.empty() ? "Search" : n.text);
+        const ImGuiStyle &style = ImGui::GetStyle();
+        const std::string hint = n.text.empty() ? "Search" : n.text;
+        const char *glyph = iconGlyph(Icon::Search);
+        const ImVec2 iconSize = ImGui::CalcTextSize(glyph);
+        const float gap = globalTheme().layout.searchIconGap * themeUiScale();
+        const float width = n.sizeX > 0.f ? n.sizeX : ImGui::GetContentRegionAvail().x;
+        n.measuredW = std::max(1.f, width);
+        ImGui::PushItemWidth(std::max(1.f, width));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
+                            ImVec2(style.FramePadding.x + iconSize.x + gap,
+                                   style.FramePadding.y));
         if (ImGui::InputTextWithHint(label.c_str(), hint.c_str(), buf, sizeof(buf))) {
             n.valueText = buf;
             pushPending(host, n, "text", n.handlerText, false, 0.f, n.valueText);
         }
+        ImGui::PopStyleVar();
+        ImGui::PopItemWidth();
+        const ImVec2 rectMin = ImGui::GetItemRectMin();
+        const ImVec2 rectMax = ImGui::GetItemRectMax();
+        ImGui::GetWindowDrawList()->AddText(
+            ImVec2(rectMin.x + style.FramePadding.x,
+                   rectMin.y + (rectMax.y - rectMin.y - iconSize.y) * 0.5f),
+            ImGui::GetColorU32(ImGuiCol_TextDisabled), glyph);
+        n.measuredH = rectMax.y - rectMin.y;
         break;
     }
     case NodeType::Switch: {
@@ -516,21 +572,28 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         break;
     }
     case NodeType::Card: {
+        const ThemeLayout &layout = globalTheme().layout;
+        const ImVec2 padding(layout.cardPaddingX * themeUiScale(),
+                             layout.cardPaddingY * themeUiScale());
         const float height = n.sizeY > 0.f
                                  ? n.sizeY
                                  : std::max(ImGui::GetFrameHeight(),
-                                            n.measuredH + ImGui::GetStyle().WindowPadding.y * 2.f);
+                                            n.measuredH + padding.y * 2.f);
         const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 0.f, height);
         const std::string id = n.id.empty() ? "card" : n.id;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, padding);
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
         if (ImGui::BeginChild(id.c_str(), size, true, ImGuiWindowFlags_AlwaysUseWindowPadding)) {
             if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
         }
         ImGui::EndChild();
         ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
         break;
     }
     case NodeType::SectionHeader: {
+        const float sectionGap = globalTheme().layout.sectionSpacingY * themeUiScale();
+        if (sectionGap > 0.f) ImGui::Dummy(ImVec2(0.f, sectionGap));
         const ImVec2 pos = ImGui::GetCursorScreenPos();
         const float height = ImGui::GetFrameHeight();
         ImDrawList *draw = ImGui::GetWindowDrawList();
@@ -566,11 +629,15 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     case NodeType::Toolbar:
     case NodeType::StatusBar: {
         const bool status = n.type == NodeType::StatusBar;
-        const float height = n.sizeY > 0.f
-                                 ? n.sizeY
-                                 : ImGui::GetFrameHeight() + ImGui::GetStyle().WindowPadding.y * 2.f;
+        const ThemeLayout &layout = globalTheme().layout;
+        const float scale = themeUiScale();
+        const float defaultHeight =
+            (status ? layout.statusBarHeight : layout.toolbarHeight) * scale;
+        const float height = n.sizeY > 0.f ? n.sizeY : defaultHeight;
         const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 0.f, height);
         const std::string id = n.id.empty() ? (status ? "statusbar" : "toolbar") : n.id;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
+                            ImVec2(layout.barPaddingX * scale, layout.barPaddingY * scale));
         ImGui::PushStyleColor(ImGuiCol_ChildBg,
                               ImGui::GetStyleColorVec4(status ? ImGuiCol_WindowBg
                                                              : ImGuiCol_MenuBarBg));
@@ -581,20 +648,34 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         }
         ImGui::EndChild();
         ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
         break;
     }
     case NodeType::Toolbox: {
-        const float cell = n.itemHeight > 0.f ? n.itemHeight : 40.f;
-        const float autoHeight = std::max(cell, n.measuredH + ImGui::GetStyle().WindowPadding.y * 2.f);
+        const ThemeLayout &layout = globalTheme().layout;
+        const float scale = themeUiScale();
+        const float cell = n.itemHeight > 0.f ? n.itemHeight : layout.toolboxCellSize * scale;
+        const ImVec2 padding(layout.panelPaddingX * scale, layout.panelPaddingY * scale);
+        const float outerWidth = n.sizeX > 0.f ? n.sizeX : ImGui::GetContentRegionAvail().x;
+        const float contentWidth = std::max(1.f, outerWidth - padding.x * 2.f);
+        const float spacing = ImGui::GetStyle().ItemSpacing.x;
+        const int capacity = std::max(1, int((contentWidth + spacing) / (cell + spacing)));
+        const int requested = int(n.value) > 0 ? int(n.value) : capacity;
+        const int columns = std::max(1, std::min(requested, capacity));
+        int count = 0;
+        for (int childIndex = n.firstChild; childIndex >= 0;
+             childIndex = tree->nodes[size_t(childIndex)].nextSibling) {
+            if (tree->nodes[size_t(childIndex)].visible) ++count;
+        }
+        const int rows = (count + columns - 1) / columns;
+        const float autoHeight = std::max(
+            cell, float(rows) * cell + float(std::max(0, rows - 1)) *
+                                           ImGui::GetStyle().ItemSpacing.y + padding.y * 2.f);
         const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 0.f, n.sizeY > 0.f ? n.sizeY : autoHeight);
         const std::string id = n.id.empty() ? "toolbox" : n.id;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, padding);
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_ChildBg));
         if (ImGui::BeginChild(id.c_str(), size, false, ImGuiWindowFlags_AlwaysUseWindowPadding)) {
-            const float spacing = ImGui::GetStyle().ItemSpacing.x;
-            const float avail = ImGui::GetContentRegionAvail().x;
-            const int columns = int(n.value) > 0
-                                    ? int(n.value)
-                                    : std::max(1, int((avail + spacing) / (cell + spacing)));
             int visibleIndex = 0;
             for (int childIndex = n.firstChild; childIndex >= 0;
                  childIndex = tree->nodes[size_t(childIndex)].nextSibling) {
@@ -613,36 +694,57 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         }
         ImGui::EndChild();
         ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
         break;
     }
     case NodeType::Sidebar: {
-        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 240.f, n.sizeY > 0.f ? n.sizeY : 0.f);
+        const ThemeLayout &layout = globalTheme().layout;
+        const float scale = themeUiScale();
+        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : layout.sidebarWidth * scale,
+                          n.sizeY > 0.f ? n.sizeY : 0.f);
         const std::string id = n.id.empty() ? "sidebar" : n.id;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
+                            ImVec2(layout.panelPaddingX * scale, layout.panelPaddingY * scale));
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_ChildBg));
         if (ImGui::BeginChild(id.c_str(), size, true, ImGuiWindowFlags_AlwaysUseWindowPadding)) {
             if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
         }
         ImGui::EndChild();
         ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
         break;
     }
     case NodeType::SplitPane: {
         const bool row = n.flexDirection == FlexDirection::Row;
         const ImVec2 avail = ImGui::GetContentRegionAvail();
         const ImVec2 size(n.sizeX > 0.f ? n.sizeX : avail.x, n.sizeY > 0.f ? n.sizeY : avail.y);
-        const float splitter = 5.f;
+        n.measuredW = size.x;
+        n.measuredH = size.y;
+        const ThemeLayout &layout = globalTheme().layout;
+        const float splitter = layout.splitterSize * themeUiScale();
         const float mainSize = std::max(1.f, (row ? size.x : size.y) - splitter);
-        const float ratio = std::max(n.minValue, std::min(n.maxValue, n.value));
+        const float minPane = std::min(layout.minPaneSize * themeUiScale(), mainSize * 0.5f);
+        const float ratioLo = std::max(n.minValue, minPane / mainSize);
+        const float ratioHi = std::min(n.maxValue, 1.f - minPane / mainSize);
+        const std::string id = n.id.empty() ? "splitpane" : n.id;
+        ImGui::PushID(id.c_str());
+        const ImGuiID ratioStateId = ImGui::GetID("ratio");
+        const float storedRatio = ImGui::GetStateStorage()->GetFloat(ratioStateId, n.value);
+        const float ratio = std::max(ratioLo, std::min(ratioHi, storedRatio));
+        ImGui::GetStateStorage()->SetFloat(ratioStateId, ratio);
+        n.value = ratio;
         const float firstMain = std::floor(mainSize * ratio);
         const float secondMain = std::max(1.f, mainSize - firstMain);
         const int first = n.firstChild;
         const int second = first >= 0 ? tree->nodes[size_t(first)].nextSibling : -1;
-        const std::string id = n.id.empty() ? "splitpane" : n.id;
-        ImGui::PushID(id.c_str());
         ImGui::BeginGroup();
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
         if (first >= 0) {
             const ImVec2 paneSize(row ? firstMain : size.x, row ? size.y : firstMain);
-            if (ImGui::BeginChild("first", paneSize, false)) walkNode(host, tree, first);
+            if (ImGui::BeginChild("first", paneSize, false,
+                                  ImGuiWindowFlags_NoScrollbar |
+                                      ImGuiWindowFlags_NoScrollWithMouse))
+                walkPaneChild(host, tree, first);
             ImGui::EndChild();
         }
         if (row) ImGui::SameLine(0.f, 0.f);
@@ -659,18 +761,23 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
                                                 : ImGuiCol_Separator)));
         if (active) {
             const float delta = row ? ImGui::GetIO().MouseDelta.x : ImGui::GetIO().MouseDelta.y;
-            const float next = std::max(n.minValue, std::min(n.maxValue, ratio + delta / mainSize));
-            if (next != n.value) {
+            const float next = std::max(ratioLo, std::min(ratioHi, ratio + delta / mainSize));
+            if (next != ratio) {
                 n.value = next;
+                ImGui::GetStateStorage()->SetFloat(ratioStateId, next);
                 pushPending(host, n, "value", n.handlerValue, false, next);
             }
         }
         if (row) ImGui::SameLine(0.f, 0.f);
         if (second >= 0) {
             const ImVec2 paneSize(row ? secondMain : size.x, row ? size.y : secondMain);
-            if (ImGui::BeginChild("second", paneSize, false)) walkNode(host, tree, second);
+            if (ImGui::BeginChild("second", paneSize, false,
+                                  ImGuiWindowFlags_NoScrollbar |
+                                      ImGuiWindowFlags_NoScrollWithMouse))
+                walkPaneChild(host, tree, second);
             ImGui::EndChild();
         }
+        ImGui::PopStyleVar();
         ImGui::EndGroup();
         ImGui::PopID();
         break;

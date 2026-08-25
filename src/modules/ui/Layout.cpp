@@ -1,4 +1,5 @@
 #include "ui/Layout.h"
+#include "ui/Theme.h"
 
 #include <imgui.h>
 
@@ -223,7 +224,7 @@ void measureNode(UIHost::Tree &tree, int index) {
     }
     case NodeType::Combo:
     case NodeType::SearchField: {
-        n.measuredW = 140.f;
+        n.measuredW = globalTheme().layout.searchMinWidth * themeUiScale();
         n.measuredH = ImGui::GetFrameHeight();
         break;
     }
@@ -304,7 +305,8 @@ void measureNode(UIHost::Tree &tree, int index) {
     case NodeType::SectionHeader: {
         const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
         n.measuredW = t.x + 10.f;
-        n.measuredH = std::max(ImGui::GetFrameHeight(), t.y + style.ItemSpacing.y);
+        n.measuredH = std::max(ImGui::GetFrameHeight(), t.y + style.ItemSpacing.y) +
+                      globalTheme().layout.sectionSpacingY * themeUiScale();
         break;
     }
     case NodeType::MenuItem: {
@@ -331,7 +333,11 @@ void measureNode(UIHost::Tree &tree, int index) {
             h = std::max(h, child.measuredH);
         }
         n.measuredW = w;
-        n.measuredH = std::max(ImGui::GetFrameHeight(), h) + style.WindowPadding.y * 2.f;
+        const float defaultHeight =
+            (n.type == NodeType::StatusBar ? globalTheme().layout.statusBarHeight
+                                           : globalTheme().layout.toolbarHeight) *
+            themeUiScale();
+        n.measuredH = n.sizeY > 0.f ? n.sizeY : defaultHeight;
         break;
     }
     case NodeType::Toolbox: {
@@ -340,7 +346,9 @@ void measureNode(UIHost::Tree &tree, int index) {
             measureNode(tree, c);
             if (tree.nodes[size_t(c)].visible) ++count;
         }
-        const float cell = n.itemHeight > 0.f ? n.itemHeight : 40.f;
+        const float cell = n.itemHeight > 0.f
+                               ? n.itemHeight
+                               : globalTheme().layout.toolboxCellSize * themeUiScale();
         const int cols = int(n.value) > 0 ? int(n.value) : std::max(1, std::min(4, count));
         const int rows = cols > 0 ? (count + cols - 1) / cols : 0;
         n.measuredW = float(cols) * cell + float(std::max(0, cols - 1)) * style.ItemSpacing.x;
@@ -350,7 +358,8 @@ void measureNode(UIHost::Tree &tree, int index) {
     case NodeType::Sidebar: {
         float w = 0.f, h = 0.f;
         measureFlowChildren(tree, n.firstChild, &w, &h);
-        n.measuredW = n.sizeX > 0.f ? n.sizeX : std::max(240.f, w);
+        const float defaultWidth = globalTheme().layout.sidebarWidth * themeUiScale();
+        n.measuredW = n.sizeX > 0.f ? n.sizeX : std::max(defaultWidth, w);
         n.measuredH = n.sizeY > 0.f ? n.sizeY : h;
         break;
     }
@@ -360,14 +369,16 @@ void measureNode(UIHost::Tree &tree, int index) {
         if (first >= 0) measureNode(tree, first);
         if (second >= 0) measureNode(tree, second);
         if (n.flexDirection == FlexDirection::Row) {
-            n.measuredW = (first >= 0 ? tree.nodes[size_t(first)].measuredW : 0.f) + 5.f +
+            n.measuredW = (first >= 0 ? tree.nodes[size_t(first)].measuredW : 0.f) +
+                          globalTheme().layout.splitterSize * themeUiScale() +
                           (second >= 0 ? tree.nodes[size_t(second)].measuredW : 0.f);
             n.measuredH = std::max(first >= 0 ? tree.nodes[size_t(first)].measuredH : 0.f,
                                    second >= 0 ? tree.nodes[size_t(second)].measuredH : 0.f);
         } else {
             n.measuredW = std::max(first >= 0 ? tree.nodes[size_t(first)].measuredW : 0.f,
                                    second >= 0 ? tree.nodes[size_t(second)].measuredW : 0.f);
-            n.measuredH = (first >= 0 ? tree.nodes[size_t(first)].measuredH : 0.f) + 5.f +
+            n.measuredH = (first >= 0 ? tree.nodes[size_t(first)].measuredH : 0.f) +
+                          globalTheme().layout.splitterSize * themeUiScale() +
                           (second >= 0 ? tree.nodes[size_t(second)].measuredH : 0.f);
         }
         break;

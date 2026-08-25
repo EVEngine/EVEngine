@@ -98,10 +98,25 @@ ui.searchField("Search assets", "", "asset-search");
 ui.setItemTooltip("Filter project assets");
 ui.sectionHeader("Properties", "properties");
 ui.beginCard("selection-card");
-ui.switch("Visible", true, "visible");
+local addSwitch = ui["switch"].bindenv(ui); // `switch` 是 Squirrel 关键字
+addSwitch("Visible", true, "visible");
 ui.badge("Modified", "state");
 ui.end();
 ```
+
+### 用 Theme 统一布局
+
+Theme 除颜色和 ImGui 基础几何外，还提供类似 CSS design tokens 的语义布局默认值：
+`toolbarHeight`、`statusBarHeight`、`sidebarWidth`、`toolboxCellSize`、
+`splitterSize`、`minPaneSize`、`panelPadding`、`cardPadding`、`barPadding`、
+`sectionSpacingY`、`searchMinWidth` 和 `searchIconGap`。暗色与亮色主题共享这些布局
+参数，因此切换配色不会改变界面结构。
+
+`Toolbar`、`Sidebar`、`Toolbox`、`Card`、`StatusBar`、`SplitPane` 和
+`SearchField` 在没有显式尺寸时自动继承 Theme。局部差异继续通过
+`setItemSize`、`setItemPadding`、`setItemMargin`、`setItemMinSize` 等接口覆盖，
+其优先级高于 Theme 默认值。SplitPane 的直接子节点总是填满获分配的 pane，内部控件
+再依据可用宽度响应式重排；Toolbox 的列数是上限，空间不足时会自动减少列数。
 
 ### 更新而不重建整个 UI
 

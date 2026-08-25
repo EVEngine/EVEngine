@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "ui/UI.h"
+#include "ui/Theme.h"
 #include "ui/UIHost.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
@@ -101,8 +102,8 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
                  sidebar({searchField("Search tools", "", "tool_search"),
                           toolbox({iconButton(Icon::Pointer, "", "select"), iconButton(Icon::Move, "", "move"),
                                    iconButton(Icon::PaintBrush, "", "paint")},
-                                  "tools", 40.f, 2)},
-                         "sidebar", 220.f),
+                                  "tools", 0.f, 2)},
+                         "sidebar", 0.f),
                  card({sectionHeader("Inspector", "inspector"), toggleSwitch("Visible", true, "visible")}, "content"),
                  0.3f, "workspace"),
              statusBar({text("Scene ready", "message"), spacer("status_space"), text("60 FPS", "fps")}, "status")},
@@ -135,4 +136,9 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
 
     CHECK(!host->tree()->dirty);
     CHECK(host->findById("workspace")->measuredW > 0.f);
+    CHECK(host->findById("workspace")->measuredH < host->meta()->sizeY);
+    CHECK(host->findById("status")->measuredH == Theme::dark().layout.statusBarHeight);
+    CHECK(host->findById("sidebar")->measuredW >= Theme::dark().layout.minPaneSize);
+    CHECK(host->findById("content")->measuredW > host->findById("sidebar")->measuredW);
+    CHECK(host->findById("tool_search")->measuredW > Theme::dark().layout.searchMinWidth);
 }
