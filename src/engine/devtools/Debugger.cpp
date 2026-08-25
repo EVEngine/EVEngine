@@ -3,6 +3,7 @@
 #include "devtools/RenderVision.hpp"
 
 #include "common/ScriptError.h"
+#include "common/ScriptCompiler.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
@@ -920,8 +921,8 @@ VariableInfo Debugger::evaluate(const std::string& expression, int frameLevel) c
     }
 
     const std::string src = "return (" + expression + ");";
-    if (SQ_FAILED(sq_compilebuffer(vm, src.c_str(), static_cast<SQInteger>(src.size()),
-                                   _SC("eval"), SQTrue))) {
+    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
+            vm, src.c_str(), static_cast<SQInteger>(src.size()), _SC("eval"), SQTrue))) {
         sq_settop(vm, top);
         eve::script::ScriptErrorContext ctx = eve::script::captureCompileError(vm);
         VariableInfo info;

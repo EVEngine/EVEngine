@@ -1,6 +1,7 @@
 #include "devtools/McpServer.hpp"
 
 #include "common/EditorAutomation.h"
+#include "common/ScriptCompiler.h"
 #include "devtools/Immortal.hpp"
 
 #include "devtools/AiPanel.hpp"
@@ -283,8 +284,8 @@ std::string snippetErrorText(HSQUIRRELVM vm, bool compile) {
 // Compile + run a snippet against the live VM (no return value captured).
 bool runVmSnippet(HSQUIRRELVM vm, const std::string& source, std::string* err) {
     const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()), _SC("mcp_snippet.nut"),
-                                   SQTrue))) {
+    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
+            vm, source.c_str(), static_cast<SQInteger>(source.size()), _SC("mcp_snippet.nut"), SQTrue))) {
         sq_settop(vm, top);
         if (err) *err = snippetErrorText(vm, true);
         return false;
@@ -364,8 +365,8 @@ std::string sqValueToJson(HSQUIRRELVM vm, SQInteger idx) {
 // return value (e.g. `return ::scene_director.info();`).
 std::string callSceneDirectorReturn(HSQUIRRELVM vm, const std::string& snippet, std::string* err) {
     const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()),
-                                   _SC("mcp_scene_director.nut"), SQTrue))) {
+    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
+            vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()), _SC("mcp_scene_director.nut"), SQTrue))) {
         sq_settop(vm, top);
         if (err) *err = snippetErrorText(vm, true);
         return {};
@@ -990,8 +991,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const std::string source = argString(args, "source");
         if (source.empty()) return "error: missing source";
         const SQInteger top = sq_gettop(vm);
-        if (SQ_FAILED(sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()),
-                                       _SC("mcp_snippet.nut"), SQTrue))) {
+        if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
+                vm, source.c_str(), static_cast<SQInteger>(source.size()), _SC("mcp_snippet.nut"), SQTrue))) {
             sq_settop(vm, top);
             return "error: " + snippetErrorText(vm, true);
         }
@@ -1198,7 +1199,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.2.1\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.3.0\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. eve_host_* tools create JSON-defined editor "
         "windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
     return makeResult(idJson, resultJson);
