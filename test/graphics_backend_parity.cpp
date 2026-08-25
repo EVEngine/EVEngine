@@ -931,18 +931,18 @@ TEST_CASE("graphics.backendParity.alphaMaskThresholdSoftnessAndInversion") {
     const uint8_t *normalLow = pixel(*normal, 10, 32);
     const uint8_t *normalMid = pixel(*normal, 32, 32);
     const uint8_t *normalHigh = pixel(*normal, 54, 32);
-    CHECK(normalLow[2] > 240);
-    CHECK(normalLow[0] < 15);
-    CHECK(normalMid[0] > 80);
-    CHECK(normalMid[2] > 80);
-    CHECK(normalHigh[0] > 240);
-    CHECK(normalHigh[2] < 15);
+    REQUIRE(normalLow[2] > 240);
+    REQUIRE(normalLow[0] < 15);
+    REQUIRE(normalMid[0] > 80);
+    REQUIRE(normalMid[2] > 80);
+    REQUIRE(normalHigh[0] > 240);
+    REQUIRE(normalHigh[2] < 15);
 
     auto inverted = render(true, "alpha_mask_inverted");
     const uint8_t *invertedLow = pixel(*inverted, 10, 32);
     const uint8_t *invertedHigh = pixel(*inverted, 54, 32);
-    CHECK(invertedLow[0] > 240);
-    CHECK(invertedLow[2] < 15);
-    CHECK(invertedHigh[2] > 240);
-    CHECK(invertedHigh[0] < 15);
+    REQUIRE(invertedLow[0] > 240);
+    REQUIRE(invertedLow[2] < 15);
+    REQUIRE(invertedHigh[2] > 240);
+    REQUIRE(invertedHigh[0] < 15);
 }
