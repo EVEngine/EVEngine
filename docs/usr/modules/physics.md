@@ -853,6 +853,34 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 - `setRestDensity()`、`setRestitution()`、`setRotation()`、`setSensor()`、`setSmoothingRadius()`、`setStiffness()`、`setType()`、`setViscosity()`、`testPoint()`
 - `setSelfCollision()`、`unpin()`、`update()`、`updateFull()`
 
++### 3D 高级接口补充索引
+
+以下方法补充了 3D 碰撞查询结果、接触事件、关节状态、距离场采样、材质参数和世界诊断的脚本索引。坐标分量方法按 `X/Y/Z` 成组使用；索引类 getter 的有效范围由对应的 `*Count()` 返回值决定。
+
+- `areHitEventsEnabled()`、`didMoverHitWall()`、`getAngularDamping()`、`getAngularSeparation()`、`getAwakeBodyCount()`、`getAwakeContactCount()`、`getBeginContactShapeAId()`、`getBeginContactShapeATag()`
+- `getBeginContactShapeBId()`、`getBeginContactShapeBTag()`、`getBeginTriggerSensorBodyId()`、`getBeginTriggerSensorShapeId()`、`getBeginTriggerSensorShapeTag()`、`getBeginTriggerVisitorBodyId()`、`getBeginTriggerVisitorShapeId()`、`getBeginTriggerVisitorShapeTag()`
+- `getBodyAId()`、`getBodyBId()`、`getBoundsMaxX()`、`getBoundsMaxY()`、`getBoundsMaxZ()`、`getBoundsMinX()`、`getBoundsMinY()`、`getBoundsMinZ()`
+- `getBoxDepth()`、`getBoxHeight()`、`getClosestBodyId()`、`getClosestNormalX()`、`getClosestNormalY()`、`getClosestNormalZ()`、`getClosestShapeTag()`、`getClosestY()`
+- `getClosestZ()`、`getCollideConnected()`、`getCollisionX()`、`getCollisionZ()`、`getConstraintForceX()`、`getConstraintForceY()`、`getConstraintForceZ()`、`getConstraintTorqueX()`
+- `getConstraintTorqueY()`、`getConstraintTorqueZ()`、`getContactDampingRatio()`、`getContactHertz()`、`getContactPointCount()`、`getContactPointNormalZ()`、`getContactPointShapeTag()`、`getContactPointY()`
+- `getContactPointZ()`、`getContactPushOutSpeed()`、`getContactRecycleDistance()`、`getDepth()`、`getDistanceLength()`、`getDynamicTreeHeight()`、`getEndContactShapeAId()`、`getEndContactShapeATag()`
+- `getEndContactShapeBId()`、`getEndContactShapeBTag()`、`getEndTriggerSensorBodyId()`、`getEndTriggerSensorShapeId()`、`getEndTriggerSensorShapeTag()`、`getEndTriggerVisitorBodyId()`、`getEndTriggerVisitorShapeId()`、`getEndTriggerVisitorShapeTag()`
+- `getExplosionResultCount()`、`getExplosionResultDeltaAngularVelocityX()`、`getExplosionResultDeltaAngularVelocityY()`、`getExplosionResultDeltaAngularVelocityZ()`、`getExplosionResultDeltaVelocityY()`、`getExplosionResultDeltaVelocityZ()`、`getForceThreshold()`、`getFrictionCombineMode()`
+- `getGravityScale()`、`getHeightFieldCellSizeZ()`、`getHeightFieldCountZ()`、`getHeightFieldGlobalMax()`、`getHitBodyAId()`、`getHitBodyBId()`、`getHitEventThreshold()`、`getHitNormalY()`
+- `getHitNormalZ()`、`getHitPointY()`、`getHitPointZ()`、`getHitShapeAId()`、`getHitShapeATag()`、`getHitShapeBId()`、`getHitShapeBTag()`、`getInertiaXY()`
+- `getInertiaXZ()`、`getInertiaYY()`、`getInertiaYZ()`、`getInertiaZZ()`、`getIslandCount()`、`getJointCount()`、`getJointStressBodyAId()`、`getJointStressBodyBId()`
+- `getJointStressKind()`、`getJointStressTorqueY()`、`getJointStressTorqueZ()`、`getLinearDamping()`、`getLinearSeparation()`、`getLocalCenterY()`、`getLocalCenterZ()`、`getLocalRotW()`
+- `getLocalRotX()`、`getLocalRotY()`、`getLocalRotZ()`、`getLocalX()`、`getLocalY()`、`getLocalZ()`、`getMaterialId()`、`getMaximumLinearSpeed()`
+- `getMoverGroundSnap()`、`getMoverNormalY()`、`getMoverNormalZ()`、`getMoverSkinWidth()`、`getMoverStepHeight()`、`getNormalY()`、`getNormalZ()`、`getOutsideDistance()`
+- `getPenetrationDepth()`、`getQueryCategoryBits()`、`getQueryIgnoredBodyId()`、`getQueryIgnoredShapeId()`、`getQueryMaskBits()`、`getRayHitShapeTag()`、`getRayResultNormalY()`、`getRayResultNormalZ()`
+- `getRayResultY()`、`getRayResultZ()`、`getRecycledContactCount()`、`getRestitutionCombineMode()`、`getRestitutionThreshold()`、`getRevoluteAngle()`、`getRevoluteMotorTorque()`、`getRollingResistance()`
+- `getShapeCastBodyId()`、`getShapeCastNormalY()`、`getShapeCastNormalZ()`、`getShapeCastResultNormalY()`、`getShapeCastResultNormalZ()`、`getShapeCastResultY()`、`getShapeCastResultZ()`、`getShapeCastY()`
+- `getShapeCastZ()`、`getShapeContactX()`、`getShapeContactZ()`、`getShapeCount()`、`getSleepThreshold()`、`getSphericalConeAngle()`、`getSphericalTwistAngle()`、`getStaticTreeHeight()`
+- `getSurfaceX()`、`getSurfaceZ()`、`getTangentVelocityX()`、`getTangentVelocityY()`、`getTangentVelocityZ()`、`getTorqueThreshold()`、`getTriangleMeshMaterialCount()`、`getTriangleMeshMaterialFriction()`
+- `getTriangleMeshMaterialId()`、`getTriangleMeshMaterialIndex()`、`getTriangleMeshMaterialRestitution()`、`getTriangleMeshMaterialRollingResistance()`、`getWorldCenterZ()`、`hasClosestPoint()`、`hasShapeCastHit()`、`isAngularXLocked()`
+- `isAngularYLocked()`、`isAngularZLocked()`、`isContinuousCollisionEnabled()`、`isLinearXLocked()`、`isLinearYLocked()`、`isLinearZLocked()`、`isSleepEnabled()`、`isWarmStartingEnabled()`
+- `sample()`、`sampleNormal()`、`setDistanceLength()`、`setSleepThreshold()`
+
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
