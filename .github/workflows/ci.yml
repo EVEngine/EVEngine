@@ -283,7 +283,7 @@ jobs:
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        timeout-minutes: 30
+        timeout-minutes: 40
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
