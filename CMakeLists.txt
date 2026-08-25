@@ -239,12 +239,15 @@ function(main)
         # (EVGraphics, EVUI, EVGpgpu, eve_imgui, ...) gets it at compile + link.
         add_compile_options(--use-port=emdawnwebgpu)
         add_link_options(--use-port=emdawnwebgpu)
-        # SDL2 and zlib come from Emscripten ports (vendored trees are skipped
+        # SDL2, zlib and FreeType come from Emscripten ports (vendored trees are
+        # skipped
         # by third-party/CMakeLists.txt on Emscripten). -sUSE_SDL=2 must also be
         # a compile flag so TUs that include <SDL.h> (imgui_impl_sdl, window,
-        # event, mouse, keyboard, ...) resolve the port headers.
-        add_compile_options(-sUSE_SDL=2 -sUSE_ZLIB)
-        add_link_options(-sUSE_SDL=2 -sUSE_ZLIB)
+        # event, mouse, keyboard, ...) resolve the port headers. FreeType must
+        # likewise be enabled while compiling so <ft2build.h> is installed in
+        # and exposed from the Emscripten sysroot.
+        add_compile_options(-sUSE_SDL=2 -sUSE_ZLIB -sUSE_FREETYPE=1)
+        add_link_options(-sUSE_SDL=2 -sUSE_ZLIB -sUSE_FREETYPE=1)
         # PROXY_TO_PTHREAD turns on shared memory; every TU must be compiled
         # with atomics/bulk-memory or wasm-ld rejects the final link.
         add_compile_options(-matomics -mbulk-memory)
