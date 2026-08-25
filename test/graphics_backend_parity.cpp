@@ -2,6 +2,7 @@
 
 #include "filesystem/FileData.h"
 #include "graphics/Canvas.h"
+#include "graphics/AlphaMask.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
@@ -885,4 +886,56 @@ TEST_CASE("graphics.backendParity.surfaceBlendDepthWriteAndCulling") {
     CHECK(multiplied[0] < 20);
     CHECK(multiplied[2] > 60);
     CHECK(multiplied[2] < 180);
+}
+
+TEST_CASE("graphics.backendParity.alphaMaskThresholdSoftnessAndInversion") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    const uint8_t red[] = {255, 0, 0, 255};
+    const uint8_t ramp[] = {
+        0, 0, 0, 255,
+        128, 128, 128, 255,
+        255, 255, 255, 255,
+    };
+    Texture *color = gfx->newTexture(1, 1, red);
+    Texture *mask = gfx->newTexture(3, 1, ramp);
+    REQUIRE(color != nullptr);
+    REQUIRE(mask != nullptr);
+    gfx->setTextureSampler(mask, TextureSampler::nearest());
+    std::unique_ptr<AlphaMask> alphaMask(gfx->newAlphaMask());
+    REQUIRE(alphaMask.get() != nullptr);
+    alphaMask->setThreshold(0.5f);
+    alphaMask->setSoftness(0.15f);
+
+    auto render = [&](bool inverted, const char *artifact) {
+        alphaMask->setInverted(inverted);
+        Canvas *canvas = gfx->newCanvas(64, 64);
+        gfx->setCanvas(canvas);
+        gfx->clear(Color(0.f, 0.f, 1.f, 1.f), std::nullopt, std::nullopt);
+        alphaMask->draw(color, mask, 2.f, 8.f, 60.f, 48.f);
+        gfx->setCanvas();
+        std::unique_ptr<eve::image::ImageData> image(canvas->newImageData());
+        REQUIRE(image.get() != nullptr);
+        writeParityArtifact(*image, artifact, gfx->getBackendName());
+        return image;
+    };
+
+    auto normal = render(false, "alpha_mask_normal");
+    const uint8_t *normalLow = pixel(*normal, 10, 32);
+    const uint8_t *normalMid = pixel(*normal, 32, 32);
+    const uint8_t *normalHigh = pixel(*normal, 54, 32);
+    CHECK(normalLow[2] > 240);
+    CHECK(normalLow[0] < 15);
+    CHECK(normalMid[0] > 80);
+    CHECK(normalMid[2] > 80);
+    CHECK(normalHigh[0] > 240);
+    CHECK(normalHigh[2] < 15);
+
+    auto inverted = render(true, "alpha_mask_inverted");
+    const uint8_t *invertedLow = pixel(*inverted, 10, 32);
+    const uint8_t *invertedHigh = pixel(*inverted, 54, 32);
+    CHECK(invertedLow[0] > 240);
+    CHECK(invertedLow[2] < 15);
+    CHECK(invertedHigh[2] > 240);
+    CHECK(invertedHigh[0] < 15);
 }

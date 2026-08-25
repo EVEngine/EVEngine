@@ -43,7 +43,7 @@ and `test gap`.
 | Anti-aliasing post effects | supported | Native WGSL FXAA/NFAA/SMAA/SSAA pipelines are selected by built-in shader identity | Compare edge metrics rather than exact pixels |
 | Global illumination / SSR | supported | Native WGSL SSGI and SSR pipelines consume the parity-locked GBuffer | Extend reflective material/camera-angle artifacts |
 | Volumetric effects | supported | Native WGSL cloud/fog/froxel/raymarch/post stages are available | Extend low-resolution parameter coverage |
-| Alpha mask | supported, unverified | Has a dedicated WGSL implementation | Add mask threshold/softness/inversion tests |
+| Alpha mask | supported, verified | Runtime backend selection now reliably chooses WGSL on WebGPU and SPIR-V on Vulkan; shared pixel tests cover threshold, softness and inversion | Extend coverage to atlas UVs and tinted translucent colors |
 | Custom 2D/mesh WGSL | partial | WGSL is supported only on WebGPU; Vulkan accepts SPIR-V instead | Use backend-specific shader fixtures with identical semantics |
 | Runtime GLSL and SPIR-V on browser | intentional difference | Browser WebGPU accepts WGSL, not Vulkan SPIR-V or runtime GLSL | Keep explicit errors; document paired shader assets/toolchain |
 | Hair/custom hair shaders | supported for built-in hair | Anisotropic built-in WGSL shading is available; arbitrary SPIR-V hair remains an intentional input-language difference | Define a portable custom WGSL/SPIR-V shader-pair contract |
