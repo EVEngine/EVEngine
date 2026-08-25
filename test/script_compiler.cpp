@@ -145,3 +145,20 @@ TEST_CASE("scriptCompiler.recordsInspectorPropertyMetadata") {
     CHECK_EQ(job.choices.size(), size_t(3));
     CHECK_EQ(job.attributes.at("options"), std::string("warrior,mage,rogue"));
 }
+
+TEST_CASE("scriptCompiler.retainsStructuredDiagnosticsAfterFailure") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    bool    rejected = false;
+    try {
+        runtime.compileSource("function invalid() { return await 1 }\n", "game:/invalid.nut");
+    } catch (const ScriptException&) {
+        rejected = true;
+    }
+    CHECK(rejected);
+    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("game:/invalid.nut");
+    CHECK(metadata != nullptr);
+    CHECK_EQ(metadata->diagnostics.size(), size_t(1));
+    CHECK_EQ(metadata->diagnostics[0].code, std::string("EVE2601"));
+    CHECK_EQ(metadata->diagnostics[0].position.line, uint32_t(1));
+    CHECK(!metadata->diagnostics[0].fix.empty());
+}

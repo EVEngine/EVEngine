@@ -1,5 +1,6 @@
 #include "common/ScriptCompiler.h"
 
+#include "common/ScriptError.h"
 #include "common/ScriptModule.h"
 
 #include <simplesquirrel/vm.hpp>
@@ -87,6 +88,40 @@ std::vector<std::string> typeChoices(std::string_view type) {
     static const std::regex  choicePattern(R"([\"']([^\"']+)[\"'])");
     forMatches(type, choicePattern, [&](const std::smatch& match, size_t) { appendUnique(result, match[1].str()); });
     return result;
+}
+
+std::string diagnosticCode(std::string_view message) {
+    if (message.find("outside the allowed choices") != std::string_view::npos) return "EVE2101";
+    if (message.find("named argument") != std::string_view::npos) return "EVE2201";
+    if (message.find("Binding Contract") != std::string_view::npos) return "EVE2202";
+    if (message.find("incompatible unit") != std::string_view::npos) return "EVE2301";
+    if (message.find("non-exhaustive match") != std::string_view::npos) return "EVE2401";
+    if (message.find("persist is only allowed") != std::string_view::npos) return "EVE2501";
+    if (message.find("await is only allowed") != std::string_view::npos) return "EVE2601";
+    if (message.find("cannot resolve") != std::string_view::npos) return "EVE1101";
+    if (message.find("escapes") != std::string_view::npos) return "EVE1102";
+    if (message.find("cyclic import") != std::string_view::npos) return "EVE1103";
+    if (message.find("export") != std::string_view::npos) return "EVE1104";
+    if (message.find("identity") != std::string_view::npos) return "EVE1105";
+    return "EVE0001";
+}
+
+ScriptDiagnostic makeDiagnostic(std::string_view error, std::string_view uri) {
+    std::string source;
+    std::string message(error);
+    int         line   = 1;
+    int         column = 1;
+    parseCompileError(std::string(error), &source, &line, &column, &message);
+    ScriptDiagnostic diagnostic;
+    diagnostic.code            = diagnosticCode(message);
+    diagnostic.message         = std::move(message);
+    diagnostic.canonicalUri    = source.empty() ? std::string(uri) : std::move(source);
+    diagnostic.position.line   = static_cast<uint32_t>(std::max(line, 1));
+    diagnostic.position.column = static_cast<uint32_t>(std::max(column, 1));
+    if (diagnostic.code == "EVE2201") diagnostic.fix = "check the parameter names and required arguments";
+    if (diagnostic.code == "EVE2401") diagnostic.fix = "add the missing cases or an else arm";
+    if (diagnostic.code == "EVE2601") diagnostic.fix = "mark the containing function async";
+    return diagnostic;
 }
 
 }  // namespace
@@ -179,20 +214,23 @@ ScriptCompiler::~ScriptCompiler() { sq_setnamedargresolver(vm_->getHandle(), nul
 ssq::Script ScriptCompiler::compileSource(std::string_view source, std::string_view sourceName) {
     const std::string uri(sourceName);
     modules_->beginCompilation(uri);
-    ScriptMetadata next     = analyze(source, uri);
-    ssq::Script    compiled = vm_->compileSource(std::string(source).c_str(), uri.c_str());
-    modules_->prepareDependencies(uri);
-    metadata_[uri] = std::move(next);
-    return compiled;
+    ScriptMetadata next = analyze(source, uri);
+    try {
+        ssq::Script compiled = vm_->compileSource(std::string(source).c_str(), uri.c_str());
+        modules_->prepareDependencies(uri);
+        metadata_[uri] = std::move(next);
+        return compiled;
+    } catch (const std::exception& error) {
+        next.diagnostics.push_back(makeDiagnostic(error.what(), uri));
+        metadata_[uri] = std::move(next);
+        throw;
+    }
 }
 
 ssq::Script ScriptCompiler::compileFile(std::string_view path) {
     const std::string uri(path);
-    modules_->beginCompilation(uri);
-    ssq::Script compiled = vm_->compileFile(uri.c_str());
-    modules_->prepareDependencies(uri);
-    ScriptMetadata next;
-    std::ifstream  input(uri, std::ios::binary);
+    ScriptMetadata    next;
+    std::ifstream     input(uri, std::ios::binary);
     if (input) {
         const std::string source(std::istreambuf_iterator<char>(input), {});
         next = analyze(source, uri);
@@ -200,8 +238,17 @@ ssq::Script ScriptCompiler::compileFile(std::string_view path) {
         next.canonicalUri           = uri;
         next.sourceMap.canonicalUri = uri;
     }
-    metadata_[uri] = std::move(next);
-    return compiled;
+    modules_->beginCompilation(uri);
+    try {
+        ssq::Script compiled = vm_->compileFile(uri.c_str());
+        modules_->prepareDependencies(uri);
+        metadata_[uri] = std::move(next);
+        return compiled;
+    } catch (const std::exception& error) {
+        next.diagnostics.push_back(makeDiagnostic(error.what(), uri));
+        metadata_[uri] = std::move(next);
+        throw;
+    }
 }
 
 const ScriptMetadata* ScriptCompiler::metadata(std::string_view canonicalUri) const noexcept {
