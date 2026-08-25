@@ -54,6 +54,14 @@ void exposeAnimClipBindings(ssq::Table& table) {
     clip.addFunc("getEventTime", &AnimClip::getEventTime);
     clip.addFunc("getEventName", &AnimClip::getEventName);
     clip.addFunc("getEventPayload", &AnimClip::getEventPayload);
+    clip.addFunc("addSyncMarker", &AnimClip::addSyncMarker);
+    clip.addFunc("setSyncMarker", &AnimClip::setSyncMarker);
+    clip.addFunc("removeSyncMarker", &AnimClip::removeSyncMarker);
+    clip.addFunc("getSyncMarkerCount", &AnimClip::getSyncMarkerCount);
+    clip.addFunc("getSyncMarkerTime", &AnimClip::getSyncMarkerTime);
+    clip.addFunc("getSyncMarkerName", &AnimClip::getSyncMarkerName);
+    clip.addFunc("hasCompatibleSyncMarkers", &AnimClip::hasCompatibleSyncMarkers);
+    clip.addFunc("mapSyncTimeTo", &AnimClip::mapSyncTimeTo);
     clip.addFunc("getPositionKeyCount", &AnimClip::getPositionKeyCount);
     clip.addFunc("getPositionKeyTime", &AnimClip::getPositionKeyTime);
     clip.addFunc("getPositionKeyX", &AnimClip::getPositionKeyX);

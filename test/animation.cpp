@@ -901,6 +901,8 @@ TEST_CASE("animation.eva.roundTrip") {
     sk->setBindRotation(1, 0.f, 0.f, 0.f, 1.f);
     std::unique_ptr<AnimClip> clip(makeLocomotionClip("walk", 1.5f, 0.8f));
     clip->setSampleRate(12.f);
+    clip->addSyncMarker(0.2f, "left_plant");
+    clip->addSyncMarker(0.6f, "right_plant");
 
     const std::string text = AnimImporter::exportEva(sk.get(), clip.get());
     CHECK(text.find("EVA 1") != std::string::npos);
@@ -916,6 +918,8 @@ TEST_CASE("animation.eva.roundTrip") {
     CHECK(std::fabs(clipOwned->getDuration() - 0.8f) < 1e-4f);
     CHECK(std::fabs(clipOwned->getSampleRate() - 12.f) < 1e-4f);
     CHECK(clipOwned->getPositionKeyCount(0) >= 2);
+    CHECK_EQ(clipOwned->getSyncMarkerCount(), 2);
+    CHECK(clipOwned->getSyncMarkerName(1) == "right_plant");
 
     std::unique_ptr<AnimPose> pose(new AnimPose());
     clipOwned->sample(0.4f, pose.get(), skOwned.get());

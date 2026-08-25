@@ -20,6 +20,7 @@ void AnimSyncGroup::setLeader(int index) {
 
 void AnimSyncGroup::update(float dt) {
     if (dt < 0.f) throw Exception("AnimSyncGroup.update: dt must be >= 0");
+    usedMarkerSync_ = false;
     if (entries_.empty()) return;
     Entry& leader = entries_[static_cast<size_t>(leader_)];
     leader.player->update(dt);
@@ -31,9 +32,15 @@ void AnimSyncGroup::update(float dt) {
         AnimPlayer* player = entries_[static_cast<size_t>(i)].player;
         AnimClip* clip = player->getClip();
         if (!clip || clip->getDuration() <= 1e-8f) continue;
-        float phase = phase_ + entries_[static_cast<size_t>(i)].phaseOffset;
-        phase -= std::floor(phase);
-        player->setTime(phase * clip->getDuration());
+        float mappedTime;
+        if (leaderClip->hasCompatibleSyncMarkers(clip)) {
+            mappedTime = leaderClip->mapSyncTimeTo(leader.player->getTime(), clip);
+            usedMarkerSync_ = true;
+        } else {
+            mappedTime = phase_ * clip->getDuration();
+        }
+        mappedTime += entries_[static_cast<size_t>(i)].phaseOffset * clip->getDuration();
+        player->setTime(clip->wrapTime(mappedTime));
     }
 }
 

@@ -49,4 +49,31 @@ TEST_CASE("animation.syncGroup.alignsNormalizedPhase") {
     group.update(0.25f);
     CHECK(std::fabs(group.getPhase() - 0.25f) < 1e-5f);
     CHECK(std::fabs(follower.getTime() - 0.5f) < 1e-5f);
+    CHECK(!group.getUsedMarkerSync());
+}
+
+TEST_CASE("animation.syncGroup.alignsCommonFootMarkers") {
+    AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    AnimClip walk("walk"), run("run");
+    walk.setDuration(2.f);
+    run.setDuration(1.f);
+    walk.addSyncMarker(0.2f, "left_plant");
+    walk.addSyncMarker(1.2f, "right_plant");
+    run.addSyncMarker(0.3f, "left_plant");
+    run.addSyncMarker(0.8f, "right_plant");
+    AnimPlayer leader(&skeleton), follower(&skeleton);
+    leader.play(&walk);
+    follower.play(&run);
+
+    AnimSyncGroup group;
+    group.addPlayer(&leader);
+    group.addPlayer(&follower);
+    group.update(0.7f);  // Halfway from left plant to right plant.
+    CHECK(group.getUsedMarkerSync());
+    CHECK(std::fabs(group.getPhase() - 0.35f) < 1e-5f);
+    CHECK(std::fabs(follower.getTime() - 0.55f) < 1e-5f);  // Normalized fallback would be 0.35.
+
+    group.update(1.f);  // Halfway through the wrapping right-to-left interval.
+    CHECK(std::fabs(follower.getTime() - 0.05f) < 1e-5f);
 }

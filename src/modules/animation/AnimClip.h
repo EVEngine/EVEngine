@@ -127,6 +127,23 @@ public:
     /** @brief Return an event marker's optional payload. */
     std::string getEventPayload(int index) const;
 
+    /** @brief Add a named locomotion sync marker at clip-local time. */
+    void addSyncMarker(float time, const std::string& name);
+    /** @brief Replace and re-sort one sync marker. @return False for an invalid index. */
+    bool setSyncMarker(int index, float time, const std::string& name);
+    /** @brief Delete one sync marker. @return False for an invalid index. */
+    bool removeSyncMarker(int index);
+    /** @brief Return the number of locomotion sync markers. */
+    int getSyncMarkerCount() const { return static_cast<int>(syncMarkers_.size()); }
+    /** @brief Return a sync marker's time, or 0 for an invalid index. */
+    float getSyncMarkerTime(int index) const;
+    /** @brief Return a sync marker's name, or empty for an invalid index. */
+    std::string getSyncMarkerName(int index) const;
+    /** @brief Whether this clip and target share a usable ordered marker interval. */
+    bool hasCompatibleSyncMarkers(const AnimClip* target) const;
+    /** @brief Map local time into target marker space, falling back to normalized duration. */
+    float mapSyncTimeTo(float time, const AnimClip* target) const;
+
     int getPositionKeyCount(int boneIndex) const;
     int getRotationKeyCount(int boneIndex) const;
     int getScaleKeyCount(int boneIndex) const;
@@ -219,6 +236,10 @@ private:
         std::string name;
         std::string payload;
     };
+    struct SyncMarker {
+        float       t = 0.f;
+        std::string name;
+    };
 
     void         ensureBone(int boneIndex);
     TransformTRS sampleBone(int boneIndex, float time, const TransformTRS& fallback) const;
@@ -234,6 +255,7 @@ private:
     float                   sampleRate_ = 30.f;
     std::vector<BoneTrack>  tracks_;
     std::vector<EventMarker> events_;
+    std::vector<SyncMarker>  syncMarkers_;
 };
 
 }  // namespace eve::animation

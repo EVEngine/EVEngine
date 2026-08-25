@@ -23,6 +23,9 @@ void AnimClip::setDuration(float seconds) {
     for (const auto& event : events_)
         if (event.t > seconds)
             throw Exception("AnimClip.setDuration: event '%s' lies past duration", event.name.c_str());
+    for (const auto& marker : syncMarkers_)
+        if (marker.t > seconds)
+            throw Exception("AnimClip.setDuration: sync marker '%s' lies past duration", marker.name.c_str());
     duration_ = seconds;
 }
 
@@ -186,6 +189,139 @@ std::string AnimClip::getEventName(int index) const {
 std::string AnimClip::getEventPayload(int index) const {
     if (index < 0 || index >= getEventCount()) return {};
     return events_[static_cast<size_t>(index)].payload;
+}
+
+void AnimClip::addSyncMarker(float time, const std::string& name) {
+    if (time < 0.f) throw Exception("AnimClip.addSyncMarker: time must be >= 0");
+    if (duration_ > 0.f && time > duration_)
+        throw Exception("AnimClip.addSyncMarker: time lies past clip duration");
+    if (name.empty()) throw Exception("AnimClip.addSyncMarker: name is empty");
+    syncMarkers_.push_back({time, name});
+    std::stable_sort(syncMarkers_.begin(), syncMarkers_.end(),
+                     [](const SyncMarker& a, const SyncMarker& b) { return a.t < b.t; });
+}
+
+bool AnimClip::setSyncMarker(int index, float time, const std::string& name) {
+    if (index < 0 || index >= getSyncMarkerCount()) return false;
+    if (time < 0.f) throw Exception("AnimClip.setSyncMarker: time must be >= 0");
+    if (duration_ > 0.f && time > duration_)
+        throw Exception("AnimClip.setSyncMarker: time lies past clip duration");
+    if (name.empty()) throw Exception("AnimClip.setSyncMarker: name is empty");
+    syncMarkers_[static_cast<size_t>(index)] = {time, name};
+    std::stable_sort(syncMarkers_.begin(), syncMarkers_.end(),
+                     [](const SyncMarker& a, const SyncMarker& b) { return a.t < b.t; });
+    return true;
+}
+
+bool AnimClip::removeSyncMarker(int index) {
+    if (index < 0 || index >= getSyncMarkerCount()) return false;
+    syncMarkers_.erase(syncMarkers_.begin() + index);
+    return true;
+}
+
+float AnimClip::getSyncMarkerTime(int index) const {
+    if (index < 0 || index >= getSyncMarkerCount()) return 0.f;
+    return syncMarkers_[static_cast<size_t>(index)].t;
+}
+
+std::string AnimClip::getSyncMarkerName(int index) const {
+    if (index < 0 || index >= getSyncMarkerCount()) return {};
+    return syncMarkers_[static_cast<size_t>(index)].name;
+}
+
+bool AnimClip::hasCompatibleSyncMarkers(const AnimClip* target) const {
+    if (!target || duration_ <= 1e-8f || target->duration_ <= 1e-8f) return false;
+    std::vector<const SyncMarker*> sourceCommon;
+    std::vector<const SyncMarker*> targetCommon;
+    for (const SyncMarker& marker : syncMarkers_) {
+        if (std::any_of(target->syncMarkers_.begin(), target->syncMarkers_.end(),
+                        [&](const SyncMarker& other) { return other.name == marker.name; }))
+            sourceCommon.push_back(&marker);
+    }
+    for (const SyncMarker& marker : target->syncMarkers_) {
+        if (std::any_of(syncMarkers_.begin(), syncMarkers_.end(),
+                        [&](const SyncMarker& other) { return other.name == marker.name; }))
+            targetCommon.push_back(&marker);
+    }
+    if (sourceCommon.size() < 2 || targetCommon.size() < 2) return false;
+    const size_t sourcePairCount = loop_ ? sourceCommon.size() : sourceCommon.size() - 1;
+    const size_t targetPairCount = target->loop_ ? targetCommon.size() : targetCommon.size() - 1;
+    for (size_t sourceIndex = 0; sourceIndex < sourcePairCount; ++sourceIndex) {
+        const std::string& previous = sourceCommon[sourceIndex]->name;
+        const std::string& next = sourceCommon[(sourceIndex + 1) % sourceCommon.size()]->name;
+        for (size_t targetIndex = 0; targetIndex < targetPairCount; ++targetIndex)
+            if (targetCommon[targetIndex]->name == previous &&
+                targetCommon[(targetIndex + 1) % targetCommon.size()]->name == next)
+                return true;
+    }
+    return false;
+}
+
+float AnimClip::mapSyncTimeTo(float time, const AnimClip* target) const {
+    if (!target || duration_ <= 1e-8f || target->duration_ <= 1e-8f)
+        return 0.f;
+    const float normalizedFallback = wrapTime(time) / duration_ * target->duration_;
+    if (!hasCompatibleSyncMarkers(target)) return normalizedFallback;
+
+    std::vector<const SyncMarker*> sourceCommon;
+    std::vector<const SyncMarker*> targetCommon;
+    for (const SyncMarker& marker : syncMarkers_) {
+        if (std::any_of(target->syncMarkers_.begin(), target->syncMarkers_.end(),
+                        [&](const SyncMarker& other) { return other.name == marker.name; }))
+            sourceCommon.push_back(&marker);
+    }
+    for (const SyncMarker& marker : target->syncMarkers_) {
+        if (std::any_of(syncMarkers_.begin(), syncMarkers_.end(),
+                        [&](const SyncMarker& other) { return other.name == marker.name; }))
+            targetCommon.push_back(&marker);
+    }
+
+    const float sourceTime = wrapTime(time);
+    if (!loop_ && (sourceTime < sourceCommon.front()->t || sourceTime > sourceCommon.back()->t))
+        return normalizedFallback;
+    size_t sourcePrevious = sourceCommon.size() - 1;
+    for (size_t i = 0; i < sourceCommon.size(); ++i) {
+        if (sourceCommon[i]->t <= sourceTime) sourcePrevious = i;
+        else break;
+    }
+    const size_t sourceNext = (sourcePrevious + 1) % sourceCommon.size();
+    const float sourceStart = sourceCommon[sourcePrevious]->t;
+    float sourceEnd = sourceCommon[sourceNext]->t;
+    float adjustedSourceTime = sourceTime;
+    if (sourceNext == 0) {
+        sourceEnd += duration_;
+        if (adjustedSourceTime < sourceStart) adjustedSourceTime += duration_;
+    }
+    const float span = sourceEnd - sourceStart;
+    if (span <= 1e-8f) return normalizedFallback;
+    const float alpha = clampf((adjustedSourceTime - sourceStart) / span, 0.f, 1.f);
+
+    const std::string& previousName = sourceCommon[sourcePrevious]->name;
+    const std::string& nextName = sourceCommon[sourceNext]->name;
+    int bestTarget = -1;
+    float bestDistance = target->duration_ + 1.f;
+    const float sourcePhase = sourceStart / duration_;
+    const size_t targetPairCount = target->loop_ ? targetCommon.size() : targetCommon.size() - 1;
+    for (size_t i = 0; i < targetPairCount; ++i) {
+        if (targetCommon[i]->name != previousName ||
+            targetCommon[(i + 1) % targetCommon.size()]->name != nextName) continue;
+        const float targetPhase = targetCommon[i]->t / target->duration_;
+        const float distance = std::abs(targetPhase - sourcePhase);
+        const float circularDistance = std::min(distance, 1.f - distance);
+        if (circularDistance < bestDistance) {
+            bestDistance = circularDistance;
+            bestTarget = static_cast<int>(i);
+        }
+    }
+    if (bestTarget < 0) return normalizedFallback;
+    const size_t targetPrevious = static_cast<size_t>(bestTarget);
+    const size_t targetNext = (targetPrevious + 1) % targetCommon.size();
+    const float targetStart = targetCommon[targetPrevious]->t;
+    float targetEnd = targetCommon[targetNext]->t;
+    if (targetNext == 0) targetEnd += target->duration_;
+    float mapped = targetStart + alpha * (targetEnd - targetStart);
+    if (target->getLoop()) mapped = std::fmod(mapped, target->duration_);
+    return target->wrapTime(mapped);
 }
 
 void AnimClip::collectEvents(float previousTime, float currentTime, bool loop,
@@ -612,6 +748,7 @@ AnimClip* AnimClip::retargetWithProfile(const AnimSkeleton* sourceSkeleton, cons
     out->loop_ = loop_;
     out->sampleRate_ = sampleRate_;
     out->events_ = events_;
+    out->syncMarkers_ = syncMarkers_;
     out->tracks_.resize(static_cast<size_t>(targetSkeleton->getBoneCount()));
 
     std::vector<int> sourceForTarget(static_cast<size_t>(targetSkeleton->getBoneCount()), -1);
@@ -759,6 +896,7 @@ void AnimClip::adopt(AnimClip& other) {
     std::swap(sampleRate_, other.sampleRate_);
     std::swap(tracks_, other.tracks_);
     std::swap(events_, other.events_);
+    std::swap(syncMarkers_, other.syncMarkers_);
 }
 
 }  // namespace eve::animation
