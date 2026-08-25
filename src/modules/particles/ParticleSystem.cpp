@@ -1,6 +1,7 @@
 #include "particles/ParticleSystem.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleConfig.h"
+#include "particles/ParticleRuntime.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
@@ -10,6 +11,7 @@
 #include "common/Module.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <string>
 #include <unordered_map>
@@ -113,6 +115,11 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
 bool emitterOffscreen(const ParticleEmitter::Config &cfg, const ParticleEmitter::Draw &draw) {
     auto *cam = draw.camera;
     if (!cam) return false;
+    if (cfg.cullDistance > 0.f) {
+        const float dx = cfg.x - cam->data()->x;
+        const float dy = cfg.y - cam->data()->y;
+        if (dx * dx + dy * dy > cfg.cullDistance * cfg.cullDistance) return true;
+    }
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) return false;
     const float viewW = draw.canvas ? float(draw.canvas->getWidth()) : float(gfx->getWidth());
@@ -141,15 +148,82 @@ int64_t fileModtime(const std::string &path) {
 }  // namespace
 
 void ParticleSimSystem::update(float dt) {
+    auto &stats = mutableParticleFrameStats();
+    const uint64_t nextFrame = stats.frameIndex + 1;
+    stats = ParticleFrameStats{};
+    stats.frameIndex = nextFrame;
+    const auto begin = std::chrono::steady_clock::now();
+
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
 
-    auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Sim,
-                          ParticleEmitter::Draw, ParticleEmitter::Attach,
-                          ParticleEmitter::SkinSource, ParticleEmitter::GpuSim>();
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [cfg, sim, draw, attach, skinSrc, gpuSim] = *it;
-        (void)gpuSim;
-        if (sim->alive <= 0 && emitterOffscreen(*cfg, *draw)) continue;
+    std::vector<ParticleEmitter *> allEmitters;
+    std::vector<ParticleEmitter *> emitters;
+    {
+        auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [cfg] = *it;
+            if (!cfg->entity) continue;
+            allEmitters.push_back(cfg->entity);
+            auto sim = cfg->entity->sim();
+            if (sim->active || sim->alive > 0) emitters.push_back(cfg->entity);
+        }
+    }
+    std::stable_sort(emitters.begin(), emitters.end(), [](ParticleEmitter *a, ParticleEmitter *b) {
+        return a->config()->priority > b->config()->priority;
+    });
+
+    const auto &budget = particleBudgetConfig();
+    stats.emittersTotal = int(emitters.size());
+    for (auto *emitter : allEmitters) {
+        auto sim = emitter->sim();
+        stats.particlesBefore += sim->alive;
+        sim->spawnedThisFrame = 0;
+        sim->droppedSpawnsThisFrame = 0;
+        sim->spawnQuota = budget.maxParticles > 0 ? 0 : -1;
+    }
+    int reservedAlive = 0;
+    for (auto *emitter : emitters) reservedAlive += emitter->sim()->alive;
+
+    int processedAlive = 0;
+    for (auto *emitter : emitters) {
+        auto cfg = emitter->config();
+        auto sim = emitter->sim();
+        auto draw = emitter->draw();
+        reservedAlive -= sim->alive;
+
+        if (budget.qualityLevel < cfg->minimumQuality) {
+            ++stats.emittersQualitySkipped;
+            processedAlive += sim->alive;
+            continue;
+        }
+
+        const bool offscreen = emitterOffscreen(*cfg, *draw);
+        const bool culled = cfg->cullingMode == "pause" ? offscreen
+                            : cfg->cullingMode == "always" ? false
+                                                           : (sim->alive <= 0 && offscreen);
+        if (culled) {
+            ++stats.emittersCulled;
+            processedAlive += sim->alive;
+            continue;
+        }
+
+        if (budget.maxSimulatedEmitters > 0 &&
+            stats.emittersSimulated >= budget.maxSimulatedEmitters) {
+            ++stats.emittersBudgetSkipped;
+            processedAlive += sim->alive;
+            continue;
+        }
+
+        int spawnQuota = cfg->maxSpawnPerFrame > 0 ? cfg->maxSpawnPerFrame : -1;
+        if (budget.maxParticles > 0) {
+            const int existingTotal = processedAlive + sim->alive + reservedAlive;
+            const int globalRoom = std::max(0, budget.maxParticles - existingTotal);
+            spawnQuota = spawnQuota < 0 ? globalRoom : std::min(spawnQuota, globalRoom);
+        }
+        sim->spawnQuota = spawnQuota;
+
+        auto attach = emitter->attach();
+        auto skinSrc = emitter->skinSource();
         syncEmitterSources(*cfg, *sim, *attach, *skinSrc);
         // gpuSimulation is accepted for config compatibility, but the legacy
         // upload → dispatch → synchronous-readback path (stepEmitterSimGpu)
@@ -160,13 +234,38 @@ void ParticleSimSystem::update(float dt) {
         // path must keep particle state GPU-resident and render from the SSBO
         // directly (no readback).
         advanceEmitterSim(*cfg, *sim, dt);
+        ++stats.emittersSimulated;
+        processedAlive += sim->alive;
+        if (budget.maxParticles > 0 || cfg->maxSpawnPerFrame > 0) sim->spawnQuota = 0;
     }
+
+    stats.particlesAfter = 0;
+    stats.particlesSpawned = 0;
+    stats.droppedSpawns = 0;
+    for (auto *emitter : allEmitters) {
+        auto sim = emitter->sim();
+        stats.particlesAfter += sim->alive;
+        stats.particlesSpawned += sim->spawnedThisFrame;
+        stats.droppedSpawns += sim->droppedSpawnsThisFrame;
+        sim->spawnQuota = -1;
+    }
+    stats.particlesKilled =
+        std::max(0, stats.particlesBefore + stats.particlesSpawned - stats.particlesAfter);
+    stats.simulationMs =
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin)
+            .count();
 }
 
 void ParticleRenderSystem::render(graphics::Graphics *gfx) {
+    auto &stats = mutableParticleFrameStats();
+    stats.renderedParticles = 0;
+    stats.renderCulledEmitters = 0;
+    stats.renderMs = 0.0;
+    const auto begin = std::chrono::steady_clock::now();
     if (!gfx) return;
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
 
+    const auto &budget = particleBudgetConfig();
     std::vector<graphics::DrawItem2D> items;
     auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Sim,
                           ParticleEmitter::Draw>();
@@ -175,17 +274,24 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, sim, draw] = *it;
         if (!draw->visible || sim->alive <= 0) continue;
+        if (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(*cfg, *draw)) {
+            ++stats.renderCulledEmitters;
+            continue;
+        }
         if (draw->canvas) anyCanvas = true;
         for (int i = 0; i < sim->alive; ++i) {
             appendParticleItem(*cfg, *draw, sim->particles[size_t(i)], order++, items);
         }
+        stats.renderedParticles += sim->alive;
     }
-    if (items.empty()) return;
 
     // Unified 2D sprite path: rotation / flipbook UV / blend / layer sorting
     // and camera handling all come from RenderSystem::drawItems.
-    graphics::RenderSystem::drawItems(*gfx, items, false);
+    if (!items.empty()) graphics::RenderSystem::drawItems(*gfx, items, false);
     if (anyCanvas) gfx->setCanvas();
+    stats.renderMs =
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin)
+            .count();
 }
 
 void ParticleLightSystem::update() {

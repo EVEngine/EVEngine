@@ -6,6 +6,7 @@
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "particles/ParticleConfig.h"
+#include "particles/ParticleRuntime.h"
 #include "particles/ParticleSystem.h"
 #include "particles/ParticlesCapabilities.h"
 
@@ -85,9 +86,60 @@ int Particles::getEmitterCount() const {
     return n;
 }
 
+void Particles::setBudget(int maxParticles, int maxSimulatedEmitters) {
+    auto &budget = particleBudgetConfig();
+    budget.maxParticles = maxParticles > 0 ? maxParticles : 0;
+    budget.maxSimulatedEmitters = maxSimulatedEmitters > 0 ? maxSimulatedEmitters : 0;
+}
+
+int Particles::getMaxParticles() const { return particleBudgetConfig().maxParticles; }
+
+int Particles::getMaxSimulatedEmitters() const {
+    return particleBudgetConfig().maxSimulatedEmitters;
+}
+
+void Particles::setQualityLevel(int quality) {
+    particleBudgetConfig().qualityLevel = quality < 0 ? 0 : (quality > 3 ? 3 : quality);
+}
+
+int Particles::getQualityLevel() const { return particleBudgetConfig().qualityLevel; }
+
+int Particles::getLastSimulatedEmitters() const {
+    return particleFrameStats().emittersSimulated;
+}
+int Particles::getLastCulledEmitters() const { return particleFrameStats().emittersCulled; }
+int Particles::getLastBudgetSkippedEmitters() const {
+    const auto &stats = particleFrameStats();
+    return stats.emittersBudgetSkipped + stats.emittersQualitySkipped;
+}
+int Particles::getLastParticleCount() const { return particleFrameStats().particlesAfter; }
+int Particles::getLastSpawnedParticles() const { return particleFrameStats().particlesSpawned; }
+int Particles::getLastDroppedSpawns() const { return particleFrameStats().droppedSpawns; }
+int Particles::getLastRenderedParticles() const { return particleFrameStats().renderedParticles; }
+float Particles::getLastSimulationMs() const {
+    return static_cast<float>(particleFrameStats().simulationMs);
+}
+float Particles::getLastRenderMs() const {
+    return static_cast<float>(particleFrameStats().renderMs);
+}
+
 void Particles::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Particles::create, false);
     expose(cls);
+    cls.addFunc("setBudget", &Particles::setBudget);
+    cls.addFunc("getMaxParticles", &Particles::getMaxParticles);
+    cls.addFunc("getMaxSimulatedEmitters", &Particles::getMaxSimulatedEmitters);
+    cls.addFunc("setQualityLevel", &Particles::setQualityLevel);
+    cls.addFunc("getQualityLevel", &Particles::getQualityLevel);
+    cls.addFunc("getLastSimulatedEmitters", &Particles::getLastSimulatedEmitters);
+    cls.addFunc("getLastCulledEmitters", &Particles::getLastCulledEmitters);
+    cls.addFunc("getLastBudgetSkippedEmitters", &Particles::getLastBudgetSkippedEmitters);
+    cls.addFunc("getLastParticleCount", &Particles::getLastParticleCount);
+    cls.addFunc("getLastSpawnedParticles", &Particles::getLastSpawnedParticles);
+    cls.addFunc("getLastDroppedSpawns", &Particles::getLastDroppedSpawns);
+    cls.addFunc("getLastRenderedParticles", &Particles::getLastRenderedParticles);
+    cls.addFunc("getLastSimulationMs", &Particles::getLastSimulationMs);
+    cls.addFunc("getLastRenderMs", &Particles::getLastRenderMs);
 
     auto em = table.addClass<ParticleEmitter>(
         "Emitter", std::function<ParticleEmitter *()>([]() -> ParticleEmitter * { return nullptr; }),
@@ -154,6 +206,16 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setNoise", &ParticleEmitter::setNoise);
     em.addFunc("setGpuSimulation", &ParticleEmitter::setGpuSimulation);
     em.addFunc("getGpuSimulation", &ParticleEmitter::getGpuSimulation);
+    em.addFunc("setPriority", &ParticleEmitter::setPriority);
+    em.addFunc("getPriority", &ParticleEmitter::getPriority);
+    em.addFunc("setMinimumQuality", &ParticleEmitter::setMinimumQuality);
+    em.addFunc("getMinimumQuality", &ParticleEmitter::getMinimumQuality);
+    em.addFunc("setCullingMode", &ParticleEmitter::setCullingMode);
+    em.addFunc("getCullingMode", &ParticleEmitter::getCullingMode);
+    em.addFunc("setCullDistance", &ParticleEmitter::setCullDistance);
+    em.addFunc("getCullDistance", &ParticleEmitter::getCullDistance);
+    em.addFunc("setMaxSpawnPerFrame", &ParticleEmitter::setMaxSpawnPerFrame);
+    em.addFunc("getMaxSpawnPerFrame", &ParticleEmitter::getMaxSpawnPerFrame);
     em.addFunc("setCollision", &ParticleEmitter::setCollision);
     em.addFunc("setCollisionBounds", &ParticleEmitter::setCollisionBounds);
     em.addFunc("setWorldCollision", &ParticleEmitter::setWorldCollision);

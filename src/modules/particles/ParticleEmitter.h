@@ -153,6 +153,16 @@ public:
         float prewarmSeconds = 0.f;
         /** @brief Opt-in GPU-accelerated simulation (falls back to CPU when unavailable). */
         bool gpuSimulation = false;
+        /** @brief Higher-priority emitters receive simulation and spawn budget first. */
+        int priority = 0;
+        /** @brief Lowest global quality tier [0,3] on which this emitter runs. */
+        int minimumQuality = 0;
+        /** @brief "automatic" | "pause" | "always" offscreen simulation policy. */
+        std::string cullingMode = "automatic";
+        /** @brief Optional camera distance cutoff in world units; zero disables it. */
+        float cullDistance = 0.f;
+        /** @brief Per-frame automatic spawn cap; zero is unlimited. */
+        int maxSpawnPerFrame = 0;
         std::vector<Burst> bursts;
         /** @brief Radial attract/repel force fields (strength > 0 attract, < 0 repel). */
         struct ForceField {
@@ -218,6 +228,10 @@ public:
         float lastY = 0.f;
         bool overflowWarned = false;
         int activeSeed = 0;
+        /** @brief Temporary automatic-spawn quota set by ParticleSimSystem (-1 = unlimited). */
+        int spawnQuota = -1;
+        int spawnedThisFrame = 0;
+        int droppedSpawnsThisFrame = 0;
         std::mt19937 rng;
     };
 
@@ -396,6 +410,27 @@ public:
     void setGpuSimulation(bool enable);
     bool getGpuSimulation();
 
+    /** @brief Set budget order; higher values are processed first. */
+    void setPriority(int priority);
+    /** @brief Return the emitter budget priority. */
+    int getPriority();
+    /** @brief Set the minimum runtime quality tier in [0,3]. */
+    void setMinimumQuality(int quality);
+    /** @brief Return the minimum runtime quality tier. */
+    int getMinimumQuality();
+    /** @brief Set offscreen simulation policy: automatic, pause, or always. */
+    void setCullingMode(const std::string &mode);
+    /** @brief Return the offscreen simulation policy. */
+    std::string getCullingMode();
+    /** @brief Set camera distance cutoff in world units; zero disables it. */
+    void setCullDistance(float distance);
+    /** @brief Return the camera distance cutoff. */
+    float getCullDistance();
+    /** @brief Cap automatic spawns per frame; zero is unlimited. */
+    void setMaxSpawnPerFrame(int count);
+    /** @brief Return the automatic per-frame spawn cap. */
+    int getMaxSpawnPerFrame();
+
     void setCollision(const std::string &mode, float radius = 0.f, float restitution = 0.6f,
                       float lifetimeLoss = 0.f);
     void setCollisionBounds(bool enabled, float minX, float minY, float maxX, float maxY);
@@ -503,8 +538,8 @@ public:
     void emitFromSkin(int count);
 };
 
-void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
-void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
+bool spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
+bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
 void advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);

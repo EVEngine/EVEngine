@@ -301,9 +301,9 @@ void fireSubEmitter(ParticleEmitter::Config &cfg, const std::string &trigger, fl
         auto ts = se.target->sim();
         if (ts->alive >= int(ts->particles.size())) continue;
         ++g_subDepth;
-        spawnParticleAt(*tc, *ts, x, y);
+        const bool spawned = spawnParticleAt(*tc, *ts, x, y);
         --g_subDepth;
-        if (se.inheritVelocity > 0.f) {
+        if (spawned && se.inheritVelocity > 0.f) {
             Particle &p = ts->particles[size_t(ts->alive - 1)];
             p.vx += vx * se.inheritVelocity;
             p.vy += vy * se.inheritVelocity;
@@ -321,31 +321,41 @@ void setWorldCollisionResolver(WorldCollisionFn fn) { g_worldCollision = fn; }
 
 WorldCollisionFn getWorldCollisionResolver() { return g_worldCollision; }
 
-void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y) {
-    if (sim.alive >= int(sim.particles.size())) return;
+bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y) {
+    if (sim.spawnQuota == 0) {
+        ++sim.droppedSpawnsThisFrame;
+        return false;
+    }
+    if (sim.alive >= int(sim.particles.size())) return false;
 
     Particle &p = sim.particles[size_t(sim.alive++)];
+    if (sim.spawnQuota > 0) --sim.spawnQuota;
+    ++sim.spawnedThisFrame;
     float ox = 0.f, oy = 0.f;
     sampleEmissionOffset(cfg, sim, ox, oy);
     p.x = x + ox;
     p.y = y + oy;
     fillParticleMotion(cfg, sim, p);
     fireSubEmitter(cfg, "birth", p.x, p.y, p.vx, p.vy);
+    return true;
 }
 
-void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim) {
+bool spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim) {
+    if (sim.spawnQuota == 0) {
+        ++sim.droppedSpawnsThisFrame;
+        return false;
+    }
     // Prefer skin surface when configured on the owning entity.
     if (cfg.entity) {
         auto skinComp = cfg.entity->skinSource();
         if (skinComp->enabled) {
             float sx = cfg.x, sy = cfg.y;
             if (sampleSkinSpawn(*skinComp, sim, sx, sy)) {
-                spawnParticleAt(cfg, sim, sx, sy);
-                return;
+                return spawnParticleAt(cfg, sim, sx, sy);
             }
         }
     }
-    spawnParticleAt(cfg, sim, cfg.x, cfg.y);
+    return spawnParticleAt(cfg, sim, cfg.x, cfg.y);
 }
 
 bool sampleSkinSpawn(ParticleEmitter::SkinSource &skinSrc, ParticleEmitter::Sim &sim, float &outX,
@@ -563,19 +573,20 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
 
     // Timed bursts fire once while the emitter is active.
     auto spawnWithInherit = [&]() {
-        spawnParticle(cfg, sim);
-        if (cfg.inheritVelocity > 0.f && sim.alive > 0) {
+        const bool spawned = spawnParticle(cfg, sim);
+        if (spawned && cfg.inheritVelocity > 0.f && sim.alive > 0) {
             Particle &np = sim.particles[size_t(sim.alive - 1)];
             np.vx += emitVx * cfg.inheritVelocity;
             np.vy += emitVy * cfg.inheritVelocity;
         }
+        return spawned;
     };
     for (auto &b : cfg.bursts) {
         if (!b.emitted && b.count > 0 && sim.emitterAge >= b.time) {
             b.emitted = true;
             for (int k = 0; k < b.count; ++k) {
                 if (sim.alive >= int(sim.particles.size())) break;
-                spawnWithInherit();
+                if (!spawnWithInherit()) break;
             }
         }
     }
@@ -594,7 +605,10 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
                 sim.emitAccum = 0.f;
                 break;
             }
-            spawnWithInherit();
+            if (!spawnWithInherit()) {
+                sim.emitAccum = 0.f;
+                break;
+            }
             sim.emitAccum -= 1.f;
         }
     }
@@ -632,7 +646,8 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
                 spawnX            = sim.lastX + moveX * alpha;
                 spawnY            = sim.lastY + moveY * alpha;
             }
-            spawnParticleAt(cfg, sim, spawnX, spawnY);
+            const bool spawned = spawnParticleAt(cfg, sim, spawnX, spawnY);
+            if (!spawned) break;
             if (cfg.inheritVelocity > 0.f && sim.alive > 0) {
                 Particle& np = sim.particles[size_t(sim.alive - 1)];
                 np.vx += emitVx * cfg.inheritVelocity;
@@ -901,19 +916,20 @@ bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
     sim.emitterAge += dt;
 
     auto spawnWithInherit = [&]() {
-        spawnParticle(cfg, sim);
-        if (cfg.inheritVelocity > 0.f && sim.alive > 0) {
+        const bool spawned = spawnParticle(cfg, sim);
+        if (spawned && cfg.inheritVelocity > 0.f && sim.alive > 0) {
             Particle &np = sim.particles[size_t(sim.alive - 1)];
             np.vx += emitVx * cfg.inheritVelocity;
             np.vy += emitVy * cfg.inheritVelocity;
         }
+        return spawned;
     };
     for (auto &b : cfg.bursts) {
         if (!b.emitted && b.count > 0 && sim.emitterAge >= b.time) {
             b.emitted = true;
             for (int k = 0; k < b.count; ++k) {
                 if (sim.alive >= int(sim.particles.size())) break;
-                spawnWithInherit();
+                if (!spawnWithInherit()) break;
             }
         }
     }
@@ -931,7 +947,10 @@ bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
                 sim.emitAccum = 0.f;
                 break;
             }
-            spawnWithInherit();
+            if (!spawnWithInherit()) {
+                sim.emitAccum = 0.f;
+                break;
+            }
             sim.emitAccum -= 1.f;
         }
     }

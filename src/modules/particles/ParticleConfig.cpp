@@ -409,6 +409,15 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
         emitter->setMaxDeltaTime(asFloat(obj->get("maxDeltaTime"), 0.f));
     if (obj->has("gpuSimulation"))
         emitter->setGpuSimulation(asBool(obj->get("gpuSimulation"), false));
+    if (obj->has("priority"))
+        emitter->setPriority(int(asFloat(obj->get("priority"), 0.f)));
+    if (obj->has("minimumQuality"))
+        emitter->setMinimumQuality(int(asFloat(obj->get("minimumQuality"), 0.f)));
+    if (obj->has("cullingMode")) emitter->setCullingMode(asString(obj->get("cullingMode")));
+    if (obj->has("cullDistance"))
+        emitter->setCullDistance(asFloat(obj->get("cullDistance"), 0.f));
+    if (obj->has("maxSpawnPerFrame"))
+        emitter->setMaxSpawnPerFrame(int(asFloat(obj->get("maxSpawnPerFrame"), 0.f)));
 
     if (obj->has("forceFields")) {
         try {

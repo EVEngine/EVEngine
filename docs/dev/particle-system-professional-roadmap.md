@@ -28,10 +28,17 @@ effects, stable trails, and trustworthy visual regression tests.
 
 ### P1 — GPU-resident simulation and renderer scalability
 
+Scalability contract implemented: priority-ordered soft particle/emitter
+budgets, per-emitter spawn caps, quality tiers, distance/visibility simulation
+policies, typed frame counters, and a rendered budget stress scene. These
+controls are backend-independent and will also govern the GPU path.
+
+GPU-resident execution remains in progress:
+
 - Keep state, alive/dead lists, spawn commands, and compaction on the GPU.
 - Render directly from GPU buffers using indirect draws; no frame readback.
-- Add per-system budgets, distance/visibility culling policies, quality tiers,
-  and profiling counters for spawn, update, collision, sort, and draw costs.
+- Extend the current aggregate profiling counters with GPU timestamps for
+  spawn, update, collision, sort, and draw passes.
 - Preserve a CPU deterministic backend for gameplay-coupled and replay-critical
   effects.
 

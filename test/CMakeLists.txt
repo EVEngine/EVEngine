@@ -68,6 +68,7 @@ file(GLOB all_test_cpp
   service_mocks.cpp
   particles.cpp
   particles_playback.cpp
+  particles_scalability.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp
   particles_attach_more.cpp

@@ -214,6 +214,45 @@ JSON 等价配置：
 - 固定步进由 `maxSubSteps` 限制追帧工作量，超过上限的时间债务会被丢弃，避免暂停恢复后形成长时间尖峰。
 - 按距离发射会沿上一位置到当前位置的线段均匀插值，世界空间拖尾不会因帧率变化形成粒子团。第一次更新只建立运动基线，不会补发创建前的路径。
 
+## 质量等级、预算、剔除与性能统计
+
+大规模战斗或天气效果应通过运行时预算稳定降级，而不是等粒子缓冲溢出：
+
+```squirrel
+particles.setQualityLevel(2);       // 0=最低，3=最高
+particles.setBudget(50000, 256);    // 全局存活粒子软上限、每帧模拟发射器上限；0=不限
+
+local heroFx = particles.newEmitter(2048);
+heroFx.setPriority(100);            // 高优先级先获得模拟/生成预算
+heroFx.setMinimumQuality(0);        // 所有质量等级都保留
+heroFx.setCullingMode("always");    // 即使离屏也继续模拟
+heroFx.setMaxSpawnPerFrame(256);
+
+local ambience = particles.newEmitter(8192);
+ambience.setPriority(-10);
+ambience.setMinimumQuality(2);
+ambience.setCullingMode("pause");  // 离屏或超出距离时冻结
+ambience.setCullDistance(1800);
+ambience.setMaxSpawnPerFrame(96);
+```
+
+JSON 发射器策略：
+
+```json
+{
+  "priority": -10,
+  "minimumQuality": 2,
+  "cullingMode": "pause",
+  "cullDistance": 1800,
+  "maxSpawnPerFrame": 96
+}
+```
+
+- 发射器按 `priority` 从高到低分配每帧模拟器数量和剩余粒子空间；总粒子数是软上限，调低预算不会立即删除已经存活的粒子，但会停止超额生成，让它们自然死亡。
+- `cullingMode`：`"automatic"`（默认，仅跳过离屏且为空的发射器）、`"pause"`（离屏时冻结全部模拟）、`"always"`（关键玩法效果始终模拟）。渲染阶段仍会跳过确定不可见的粒子。
+- `minimumQuality` 高于当前全局质量等级时，发射器冻结且不渲染；恢复质量后继续运行，不破坏已有粒子状态。
+- 每次 `update`/`render` 后可读取 `getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()` 与 `getLastRenderMs()`，用于 HUD、自动伸缩和性能回归。
+
 ## 碰撞与子发射器
 
 ```squirrel
@@ -255,7 +294,7 @@ JSON：`forceFields: [{x, y, radius, strength, falloff}]`；`lights: {enabled, m
 
 ## GPU 加速模拟
 
-`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 目前保留为资产兼容标记。现有 upload → dispatch → 同步 readback 原型会让每个发射器每帧产生三次队列往返，实测路径比 CPU 积分更慢，因此运行时暂时统一选择 CPU 模拟。下一阶段会在粒子状态常驻 SSBO、间接绘制与无同步回读完成后再启用真正的 GPU 路径。
+`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 目前保留为资产兼容标记。现有 upload → dispatch → 同步 readback 原型会让每个发射器每帧产生三次队列往返，实测路径比 CPU 积分更慢，因此运行时暂时统一选择 CPU 模拟。质量等级、预算、剔除与统计已经作为 CPU/GPU 共用契约落地；只有粒子状态常驻 SSBO、间接绘制与无同步回读完成后才会启用真正的 GPU 路径。
 
 ```squirrel
 local embers = particles.newEmitter(20000);  // 上万粒子场景
@@ -299,11 +338,12 @@ embers.start();
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`clearBursts()`、`clearColorGradient()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoRandomSeed()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getEmissionRateOverDistance()`、`getFixedTimeStep()`、`getGpuSimulation()`、`getLightsEnabled()`、`getLooping()`、`getPlaybackSpeed()`、`getPrewarmSeconds()`、`getRandomSeed()`、`getShader()`
-- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getLayer()`、`getName()`
+- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getLayer()`、`getName()`、`getPriority()`、`getMinimumQuality()`、`getCullingMode()`、`getCullDistance()`、`getMaxSpawnPerFrame()`
+- `getMaxParticles()`、`getMaxSimulatedEmitters()`、`getQualityLevel()`、`getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()`、`getLastRenderMs()`
 - `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
 - `hasSkinSource()`、`isActive()`、`isAttached()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEmitter()`、`newEmitterFromFile()`
 - `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`
-- `setAutoRandomSeed()`、`setBlendMode()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setDamping()`、`setDirection()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaxDeltaTime()`、`setNoise()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
+- `setAutoRandomSeed()`、`setBlendMode()`、`setBudget()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setCullingMode()`、`setCullDistance()`、`setDamping()`、`setDirection()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaxDeltaTime()`、`setMaxSpawnPerFrame()`、`setMinimumQuality()`、`setNoise()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setPriority()`、`setQualityLevel()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
 - `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setSizeVariation()`
 - `setSizes()`、`setSkinBoneFilter()`、`setSkinBoneFilterByName()`、`setSkinPlane()`、`setSkinScale()`、`setSkinSource()`、`setSpeed()`、`setSpin()`、`setSpread()`、`setStartRotation()`、`setTangentialAcceleration()`、`setTexture()`、`setVisible()`、`start()`
 - `stop()`、`syncAttach()`、`update()`
