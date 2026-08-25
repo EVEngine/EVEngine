@@ -90,6 +90,16 @@ const BindingContract* BindingContractRegistry::find(std::string_view key) const
     return found == contracts_.end() ? nullptr : &found->second;
 }
 
+const BindingContract* BindingContractRegistry::findMethod(std::string_view method) const noexcept {
+    const BindingContract* result = nullptr;
+    for (const auto& [_, contract] : contracts_) {
+        if (contract.method != method) continue;
+        if (result != nullptr) return nullptr;
+        result = &contract;
+    }
+    return result;
+}
+
 std::vector<BindingContract> BindingContractRegistry::snapshot() const {
     std::vector<BindingContract> result;
     result.reserve(contracts_.size());
@@ -99,7 +109,20 @@ std::vector<BindingContract> BindingContractRegistry::snapshot() const {
     return result;
 }
 
-ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_(&vm), modules_(&modules) {}
+ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_(&vm), modules_(&modules) {
+    sq_setnamedargresolver(
+        vm_->getHandle(),
+        [](HSQUIRRELVM, const SQChar* callee, SQInteger index, SQUserPointer user) -> const SQChar* {
+            const auto&            self     = *static_cast<ScriptCompiler*>(user);
+            const BindingContract* contract = self.bindings_.findMethod(callee);
+            if (contract == nullptr || index < 0 || static_cast<size_t>(index) >= contract->parameters.size())
+                return nullptr;
+            return contract->parameters[static_cast<size_t>(index)].name.c_str();
+        },
+        this);
+}
+
+ScriptCompiler::~ScriptCompiler() { sq_setnamedargresolver(vm_->getHandle(), nullptr, nullptr); }
 
 ssq::Script ScriptCompiler::compileSource(std::string_view source, std::string_view sourceName) {
     const std::string uri(sourceName);

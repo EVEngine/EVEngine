@@ -119,6 +119,8 @@ public:
     bool unregisterContract(std::string_view key);
     /** @brief Finds a binding contract, or nullptr when metadata is unavailable. */
     const BindingContract* find(std::string_view key) const noexcept;
+    /** @brief Finds a uniquely named method; returns nullptr when absent or ambiguous. */
+    const BindingContract* findMethod(std::string_view method) const noexcept;
     /** @brief Returns a stable snapshot sorted by contract key. */
     std::vector<BindingContract> snapshot() const;
 
@@ -130,6 +132,7 @@ private:
 class EVENGINE_API ScriptCompiler {
 public:
     ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules);
+    ~ScriptCompiler();
 
     /** @brief Compiles UTF-8 source and records metadata under sourceName. */
     ssq::Script compileSource(std::string_view source, std::string_view sourceName);

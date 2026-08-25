@@ -58,3 +58,19 @@ TEST_CASE("scriptCompiler.generatedModuleContractIsExecutable") {
     ssq::Array contract(runtime.root().find("eve_module_contract"));
     CHECK(contract.size() > 0);
 }
+
+TEST_CASE("scriptCompiler.bindingContractEnablesNativeNamedArguments") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.vm().addFunc("nativeCompose",
+                         [](int first, int second, int third) { return first * 100 + second * 10 + third; });
+    script::BindingContract contract;
+    contract.module     = "test";
+    contract.method     = "nativeCompose";
+    contract.parameters = {{"first", "int"}, {"second", "int"}, {"third", "int"}};
+    contract.returnType = "int";
+    runtime.scriptCompiler().bindings().registerContract(std::move(contract));
+
+    runtime.runSource("native_named_result <- nativeCompose(third: 3, first: 1, second: 2)\n", "native-named-test.nut");
+    const auto result = runtime.vm().get<int64_t>("native_named_result");
+    CHECK_EQ(result, int64_t(123));
+}
