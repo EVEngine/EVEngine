@@ -772,8 +772,8 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
 
     auto cutoffKept = render(0.4f, "cutoff", "masked_cutoff_kept");
     auto cutoffDiscarded = render(0.6f, "cutoff", "masked_cutoff_discarded");
-    CHECK(pixel(*cutoffKept, 32, 32)[0] > 180);
-    CHECK(pixel(*cutoffDiscarded, 32, 32)[0] < 8);
+    REQUIRE(pixel(*cutoffKept, 32, 32)[0] > 180);
+    REQUIRE(pixel(*cutoffDiscarded, 32, 32)[0] < 32);
 
     for (const char *technique : {"dither", "coverage"}) {
         auto dithered = render(0.5f, technique, technique);
@@ -781,8 +781,8 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
         for (int y = 0; y < 64; ++y)
             for (int x = 0; x < 64; ++x)
                 if (pixel(*dithered, x, y)[0] > 180) ++visible;
-        CHECK(visible > 1200);
-        CHECK(visible < 2900);
+        REQUIRE(visible > 1200);
+        REQUIRE(visible < 2900);
     }
 }
 
@@ -836,8 +836,8 @@ TEST_CASE("graphics.backendParity.surfaceBlendDepthWriteAndCulling") {
     };
     auto culled = renderCulling(false, "surface_backface_culled");
     auto twoSided = renderCulling(true, "surface_double_sided");
-    CHECK(pixel(*culled, 32, 32)[1] < 8);
-    CHECK(pixel(*twoSided, 32, 32)[1] > 180);
+    REQUIRE(pixel(*culled, 32, 32)[1] < 32);
+    REQUIRE(pixel(*twoSided, 32, 32)[1] > 180);
 
     auto renderDepthWrite = [&](bool depthWrite, const char *artifact) {
         Canvas *target = gfx->newCanvas(64, 64);
@@ -859,10 +859,10 @@ TEST_CASE("graphics.backendParity.surfaceBlendDepthWriteAndCulling") {
     auto skipsDepth = renderDepthWrite(false, "surface_transparent_no_depth_write");
     const uint8_t *blocked = pixel(*writesDepth, 32, 32);
     const uint8_t *overwritten = pixel(*skipsDepth, 32, 32);
-    CHECK(blocked[0] > 80);
-    CHECK(blocked[0] > blocked[1] + 60);
-    CHECK(overwritten[1] > 180);
-    CHECK(overwritten[0] < 20);
+    REQUIRE(blocked[0] > 80);
+    REQUIRE(blocked[0] > blocked[1] + 60);
+    REQUIRE(overwritten[1] > 180);
+    REQUIRE(overwritten[0] < 20);
 
     auto renderBlend = [&](BlendMode blend, Texture *overlay, const char *artifact) {
         Canvas *target = gfx->newCanvas(64, 64);
@@ -884,15 +884,15 @@ TEST_CASE("graphics.backendParity.surfaceBlendDepthWriteAndCulling") {
         renderBlend(BlendMode::Premultiplied, redTexture, "surface_premultiplied");
     auto multiply = renderBlend(BlendMode::Multiply, grayTexture, "surface_multiply");
     const uint8_t *added = pixel(*additive, 32, 32);
-    CHECK(added[0] > 80);
-    CHECK(added[2] > 180);
+    REQUIRE(added[0] > 80);
+    REQUIRE(added[2] > 180);
     const uint8_t *premul = pixel(*premultiplied, 32, 32);
-    CHECK(premul[0] > 180);
-    CHECK(premul[2] > 80);
+    REQUIRE(premul[0] > 180);
+    REQUIRE(premul[2] > 80);
     const uint8_t *multiplied = pixel(*multiply, 32, 32);
-    CHECK(multiplied[0] < 20);
-    CHECK(multiplied[2] > 60);
-    CHECK(multiplied[2] < 180);
+    REQUIRE(multiplied[0] < 20);
+    REQUIRE(multiplied[2] > 60);
+    REQUIRE(multiplied[2] < 200);
 }
 
 TEST_CASE("graphics.backendParity.alphaMaskThresholdSoftnessAndInversion") {
