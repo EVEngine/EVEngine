@@ -1,5 +1,6 @@
 #include "devtools/DebugAdapter.hpp"
 
+#include "common/ScriptCompiler.h"
 #include "devtools/Snapshot.hpp"
 
 #include <Poco/JSON/Array.h>
@@ -204,6 +205,8 @@ int DebugAdapter::allocVarRef(int kind, int frame, std::vector<std::string> path
 
 void DebugAdapter::handleBreakpointEvent(int id, const std::string& source, int line,
                                          bool verified) {
+    const auto original = script::ScriptCompiler::toOriginalPosition(
+        source, {static_cast<uint32_t>(std::max(line, 1)), 1});
     Poco::JSON::Object::Ptr bp = new Poco::JSON::Object();
     bp->set("id", id);
     bp->set("verified", verified);
@@ -213,7 +216,7 @@ void DebugAdapter::handleBreakpointEvent(int id, const std::string& source, int 
         src->set("name", Debugger::sourceBasename(resolved));
         src->set("path", resolved);
         bp->set("source", src);
-        bp->set("line", line);
+        bp->set("line", static_cast<int>(original.line));
     }
     Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
     body->set("reason", "changed");
@@ -362,10 +365,12 @@ void DebugAdapter::notifyStopped(PauseReason reason, const SourceLoc& loc,
         }
     }
     if (!loc.source.empty() && loc.line > 0) {
+        const auto original = script::ScriptCompiler::toOriginalPosition(
+            loc.source, {static_cast<uint32_t>(loc.line), 1});
         // Hint the IDE; stackTrace still provides the authoritative source.
         body->set("source", makeSourceObject(loc.source));
-        body->set("line", loc.line);
-        body->set("column", 1);
+        body->set("line", static_cast<int>(original.line));
+        body->set("column", static_cast<int>(original.column));
     }
     sendMessage(makeEvent("stopped", stringify(Poco::Dynamic::Var(body))));
 }
@@ -532,7 +537,9 @@ void DebugAdapter::handleRequest(const std::string& json) {
                         const int line = bp->optValue<int>("line", 0);
                         const std::string condition =
                             bp->optValue<std::string>("condition", "");
-                        const int id = dbg.setBreakpoint(sourcePath, line, true, condition);
+                        const auto generated = script::ScriptCompiler::toGeneratedPosition(
+                            sourcePath, {static_cast<uint32_t>(std::max(line, 1)), 1});
+                        const int id = dbg.setBreakpoint(sourcePath, static_cast<int>(generated.line), true, condition);
                         Poco::JSON::Object::Ptr ob = new Poco::JSON::Object();
                         ob->set("id", id);
                         // Verified lazily: the line hook marks the breakpoint real
@@ -579,11 +586,13 @@ void DebugAdapter::handleRequest(const std::string& json) {
             }
             Poco::JSON::Array::Ptr arr = new Poco::JSON::Array();
             for (const auto& f : frames) {
+                const auto original = script::ScriptCompiler::toOriginalPosition(
+                    f.loc.source, {static_cast<uint32_t>(std::max(f.loc.line, 1)), 1});
                 Poco::JSON::Object::Ptr fo = new Poco::JSON::Object();
                 fo->set("id", f.id);
                 fo->set("name", f.name);
-                fo->set("line", f.loc.line);
-                fo->set("column", 1);
+                fo->set("line", static_cast<int>(original.line));
+                fo->set("column", static_cast<int>(original.column));
                 fo->set("source", makeSourceObject(f.loc.source));
                 arr->add(fo);
             }
