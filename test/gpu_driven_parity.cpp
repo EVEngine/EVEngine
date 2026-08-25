@@ -71,6 +71,9 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     };
     addBall(-0.9f, 0.f, red);
     addBall(0.9f, 0.f, green);
+    // Fully behind the first red ball from this camera. The previous-frame
+    // depth test must remove it while preserving the legacy-equivalent image.
+    addBall(-0.9f, -1.5f, red);
     addBall(0.f, 20.f, red);  // Behind the camera; must be rejected by culling.
 
     auto *sun = Light3D::createLight("dir");
@@ -94,8 +97,9 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
 #ifdef EVENGINE_WEBGPU
     auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
     REQUIRE(webgpu != nullptr);
-    REQUIRE(webgpu->debugGpuDrivenVisibleCount() == 2);
-    REQUIRE(webgpu->debugGpuDrivenDispatchCount() == 3);
+    REQUIRE(webgpu->debugGpuDrivenVisibleCount() == 3);
+    REQUIRE(webgpu->debugGpuDrivenGpuVisibleCount() == 2);
+    REQUIRE(webgpu->debugGpuDrivenDispatchCount() == 4);
     REQUIRE(webgpu->debugGpuDrivenIndirectDrawCount() == 2);
 #endif
     REQUIRE(legacy.size() == driven.size());

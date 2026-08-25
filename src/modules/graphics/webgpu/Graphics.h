@@ -166,6 +166,8 @@ public:
     uint32_t debugGpuDrivenDispatchCount() const { return gpuDrivenDispatchCount_; }
     /** @brief Return indexed-indirect commands recorded by the last scene pass. */
     uint32_t debugGpuDrivenIndirectDrawCount() const { return gpuDrivenLastIndirectDrawCount_; }
+    /** @brief Read back the last GPU-written indirect instance total (native tests). */
+    uint32_t debugGpuDrivenGpuVisibleCount();
     /** @brief Return VG clusters dispatched by the last WebGPU compute section. */
     uint32_t debugGpuDrivenVgDispatchCount() const { return gpuDrivenVgVisibleDiagnostic_; }
     /** @brief Return per-cluster indirect commands recorded by the VG visibility pass. */
@@ -795,6 +797,7 @@ private:
     int gbufferWidth = 0, gbufferHeight = 0;
     std::vector<GbufferSlot> gbufferSlots;
     uint32_t lastGbufferSlot = 0;
+    bool gbufferDepthValid_ = false;
 
     struct DecalSlot {
         wgpu::Texture albedo;
@@ -867,6 +870,7 @@ private:
     uint64_t gpuDrivenVisIndirectCapacity_ = 0;
     uint32_t gpuDrivenDispatchCount_ = 0;
     uint32_t gpuDrivenLastIndirectDrawCount_ = 0;
+    uint32_t gpuDrivenLastBucketCount_ = 0;
     bool gpuDrivenComputePending_ = false;
     bool gpuDrivenDrawPending_ = false;
     bool gpuDrivenVisPending_ = false;

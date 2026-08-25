@@ -3756,7 +3756,10 @@ void Graphics::createGbufferResources(int width, int height) {
     }
 }
 
-void Graphics::destroyGbufferResources() { gbufferSlots.clear(); }
+void Graphics::destroyGbufferResources() {
+    gbufferSlots.clear();
+    gbufferDepthValid_ = false;
+}
 
 void Graphics::createDecalResources(int width, int height) {
     if (!device) return;
@@ -4178,6 +4181,7 @@ void Graphics::submitPendingDeferredPasses() {
             reinterpret_cast<const wgpu::RenderPassDescriptor *>(&descriptor));
         flushGbufferPass(pass);
         pass.End();
+        gbufferDepthValid_ = true;
     }
     if (decalPassPending && !decalSlots.empty() && !gbufferSlots.empty()) {
         lastDecalSlot = currentFrameSlot();

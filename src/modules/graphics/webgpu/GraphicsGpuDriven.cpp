@@ -41,10 +41,15 @@ struct CullInput {
 static_assert(sizeof(CullInput) == 96);
 
 struct CullParams {
+    glm::mat4 viewProj{1.f};
     glm::vec4 planes[6]{};
+    glm::vec4 cameraPos{};
+    glm::vec4 screen{};
+    glm::vec4 clipNearFar{};
+    glm::vec4 hzbInfo{};
     glm::uvec4 counts{};
 };
-static_assert(sizeof(CullParams) == 112);
+static_assert(sizeof(CullParams) == 240);
 
 struct VisIndirectCommand {
     uint32_t vertexCount = 0;
@@ -64,7 +69,12 @@ struct CullInput {
     pad2: u32,
 };
 struct CullParams {
+    viewProj: mat4x4f,
     planes: array<vec4f, 6>,
+    cameraPos: vec4f,
+    screen: vec4f,
+    clipNearFar: vec4f,
+    hzbInfo: vec4f,
     counts: vec4u,
 };
 struct IndirectCommand {
@@ -85,6 +95,39 @@ struct VisIndirectCommand {
 @group(0) @binding(2) var<storage, read_write> visibleModels: array<mat4x4f>;
 @group(0) @binding(3) var<storage, read_write> commands: array<IndirectCommand>;
 @group(0) @binding(4) var<storage, read_write> visCommands: array<VisIndirectCommand>;
+@group(0) @binding(5) var previousDepth: texture_depth_2d;
+
+fn remainsVisibleAgainstDepth(center: vec3f, radius: f32) -> bool {
+    if (params.clipNearFar.w < 0.5) { return true; }
+    let clip = params.viewProj * vec4f(center, 1.0);
+    if (clip.w <= params.clipNearFar.x) { return true; }
+    let ndc = clip.xyz / clip.w;
+    if (abs(ndc.x) > 1.0 || abs(ndc.y) > 1.0 || ndc.z > 1.0) { return true; }
+
+    let toEye = normalize(params.cameraPos.xyz - center);
+    let frontClip = params.viewProj * vec4f(center + toEye * radius, 1.0);
+    let frontZ = frontClip.z / max(frontClip.w, 1e-6);
+    let viewDepth = max(length(center - params.cameraPos.xyz), 1e-4);
+    let radiusPx = radius * params.clipNearFar.z / viewDepth;
+    let dims = vec2i(textureDimensions(previousDepth));
+    let centerPx = vec2f((ndc.x * 0.5 + 0.5) * f32(dims.x),
+                         (0.5 - ndc.y * 0.5) * f32(dims.y));
+    let delta = max(radiusPx, 1.0);
+    let limit = dims - vec2i(1);
+    let p0 = clamp(vec2i(centerPx), vec2i(0), limit);
+    let px0 = clamp(vec2i(centerPx + vec2f(delta, 0.0)), vec2i(0), limit);
+    let px1 = clamp(vec2i(centerPx - vec2f(delta, 0.0)), vec2i(0), limit);
+    let py0 = clamp(vec2i(centerPx + vec2f(0.0, delta)), vec2i(0), limit);
+    let py1 = clamp(vec2i(centerPx - vec2f(0.0, delta)), vec2i(0), limit);
+    let blocker = max(textureLoad(previousDepth, p0, 0),
+                  max(textureLoad(previousDepth, px0, 0),
+                  max(textureLoad(previousDepth, px1, 0),
+                  max(textureLoad(previousDepth, py0, 0),
+                      textureLoad(previousDepth, py1, 0)))));
+    // All conservative samples must contain geometry closer than the sphere.
+    // The epsilon prevents the object's own previous-frame depth from culling it.
+    return blocker >= 0.9999 || frontZ <= blocker + 0.002;
+}
 
 @compute @workgroup_size(64)
 fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
@@ -99,6 +142,7 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
         let plane = params.planes[p];
         if (dot(plane.xyz, center) + plane.w < -radius) { return; }
     }
+    if (!remainsVisibleAgainstDepth(center, radius)) { return; }
     let local = atomicAdd(&commands[input.bucket].instanceCount, 1u);
     atomicAdd(&visCommands[input.bucket].instanceCount, 1u);
     visibleModels[input.outputBase + local] = input.model;
@@ -227,7 +271,7 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
 
 void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketCount) {
     if (!gpuDrivenCullPipeline_) {
-        WGPUBindGroupLayoutEntry computeEntries[5]{};
+        WGPUBindGroupLayoutEntry computeEntries[6]{};
         computeEntries[0].binding = 0;
         computeEntries[0].visibility = WGPUShaderStage_Compute;
         computeEntries[0].buffer.type = WGPUBufferBindingType_Uniform;
@@ -244,7 +288,12 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         computeEntries[4].buffer.minBindingSize = sizeof(VisIndirectCommand);
         WGPUBindGroupLayoutDescriptor cbgl{};
         cbgl.label = label("eve_gpu_driven_compute_bgl");
-        cbgl.entryCount = 5;
+        computeEntries[5].binding = 5;
+        computeEntries[5].visibility = WGPUShaderStage_Compute;
+        computeEntries[5].texture.sampleType = WGPUTextureSampleType_Depth;
+        computeEntries[5].texture.viewDimension = WGPUTextureViewDimension_2D;
+        computeEntries[5].texture.multisampled = false;
+        cbgl.entryCount = 6;
         cbgl.entries = computeEntries;
         gpuDrivenComputeSetLayout_ = device.CreateBindGroupLayout(
             reinterpret_cast<const wgpu::BindGroupLayoutDescriptor *>(&cbgl));
@@ -374,7 +423,8 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         WGPUBufferDescriptor bd{};
         bd.label = label("eve_gpu_driven_indirect");
         bd.size = gpuDrivenIndirectCapacity_;
-        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Storage | WGPUBufferUsage_Indirect;
+        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_CopySrc | WGPUBufferUsage_Storage |
+                   WGPUBufferUsage_Indirect;
         gpuDrivenIndirectBuffer_ =
             device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
         recreateGroups = true;
@@ -391,8 +441,11 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
             device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
         recreateGroups = true;
     }
+    // The previous-frame depth view rotates with the frame slot, so refresh
+    // the compute group even when the storage-buffer capacities are unchanged.
+    recreateGroups = true;
     if (recreateGroups || !gpuDrivenComputeBindGroup_) {
-        WGPUBindGroupEntry entries[5]{};
+        WGPUBindGroupEntry entries[6]{};
         entries[0].binding = 0;
         entries[0].buffer = gpuDrivenParamsBuffer_.Get();
         entries[0].size = sizeof(CullParams);
@@ -408,10 +461,13 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         entries[4].binding = 4;
         entries[4].buffer = gpuDrivenVisIndirectBuffer_.Get();
         entries[4].size = gpuDrivenVisIndirectCapacity_;
+        entries[5].binding = 5;
+        const uint32_t depthSlot = gbufferDepthValid_ ? lastGbufferSlot : currentFrameSlot();
+        entries[5].textureView = gbufferSlots[depthSlot].depthView.Get();
         WGPUBindGroupDescriptor bgd{};
         bgd.label = label("eve_gpu_driven_compute_bg");
         bgd.layout = gpuDrivenComputeSetLayout_.Get();
-        bgd.entryCount = 5;
+        bgd.entryCount = 6;
         bgd.entries = entries;
         gpuDrivenComputeBindGroup_ = device.CreateBindGroup(
             reinterpret_cast<const wgpu::BindGroupDescriptor *>(&bgd));
@@ -449,11 +505,10 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
                                  float nearZ, float farZ) {
     if (sceneColorWidth > 0 && sceneColorHeight > 0)
         createSceneColorResources(sceneColorWidth, sceneColorHeight);
-    (void)eye;
-    (void)fovYDeg;
-    (void)nearZ;
-    (void)farZ;
+    if (gbufferSlots.empty() && sceneColorWidth > 0 && sceneColorHeight > 0)
+        createGbufferResources(sceneColorWidth, sceneColorHeight);
     CullParams params{};
+    params.viewProj = viewProj;
     params.planes[0] = glm::row(viewProj, 3) + glm::row(viewProj, 0);
     params.planes[1] = glm::row(viewProj, 3) - glm::row(viewProj, 0);
     params.planes[2] = glm::row(viewProj, 3) + glm::row(viewProj, 1);
@@ -464,6 +519,14 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
         const float length = glm::length(glm::vec3(plane));
         if (length > 1e-6f) plane /= length;
     }
+    params.cameraPos = glm::vec4(eye, 1.f);
+    params.screen = glm::vec4(float(gbufferWidth), float(gbufferHeight),
+                              gbufferWidth > 0 ? 1.f / float(gbufferWidth) : 0.f,
+                              gbufferHeight > 0 ? 1.f / float(gbufferHeight) : 0.f);
+    const float projScaleY = float(gbufferHeight) /
+                             (2.f * std::tan(glm::radians(fovYDeg) * 0.5f));
+    params.clipNearFar = glm::vec4(nearZ, farZ, projScaleY,
+                                   gbufferDepthValid_ ? 1.f : 0.f);
 
     using BucketKey = std::pair<uint32_t, uint32_t>;
     std::map<BucketKey, std::vector<const GpuInstance *>> grouped;
@@ -538,7 +601,51 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
     queue.WriteBuffer(gpuDrivenVisIndirectBuffer_, 0, visCommands.data(),
                       visCommands.size() * sizeof(VisIndirectCommand));
     gpuDrivenDispatchCount_ = static_cast<uint32_t>(inputs.size());
+    gpuDrivenLastBucketCount_ = static_cast<uint32_t>(commands.size());
     gpuDrivenComputePending_ = !inputs.empty() && !commands.empty();
+}
+
+uint32_t Graphics::debugGpuDrivenGpuVisibleCount() {
+#if defined(__EMSCRIPTEN__)
+    return static_cast<uint32_t>(gpuDrivenVisible_.size());
+#else
+    if (!gpuDrivenIndirectBuffer_ || gpuDrivenLastBucketCount_ == 0) return 0;
+    const uint64_t size = uint64_t(gpuDrivenLastBucketCount_) * sizeof(GpuIndirectCommand);
+    WGPUBufferDescriptor bd{};
+    bd.label = label("eve_gpu_driven_debug_readback");
+    bd.size = size;
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;
+    wgpu::Buffer dst =
+        device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    encoder.CopyBufferToBuffer(gpuDrivenIndirectBuffer_, 0, dst, 0, size);
+    wgpu::CommandBuffer command = encoder.Finish();
+    queue.Submit(1, &command);
+
+    struct MapState {
+        bool ok = false;
+    } state;
+    WGPUBufferMapCallbackInfo callback{};
+    callback.mode = WGPUCallbackMode_WaitAnyOnly;
+    callback.callback = [](WGPUMapAsyncStatus status, WGPUStringView, void *userdata1, void *) {
+        static_cast<MapState *>(userdata1)->ok = status == WGPUMapAsyncStatus_Success;
+    };
+    callback.userdata1 = &state;
+    WGPUFuture future = wgpuBufferMapAsync(dst.Get(), WGPUMapMode_Read, 0, size, callback);
+    WGPUFutureWaitInfo wait{};
+    wait.future = future;
+    (void)wgpuInstanceWaitAny(instance.Get(), 1, &wait, UINT64_MAX);
+    if (!state.ok) return 0;
+    const auto *commands =
+        static_cast<const GpuIndirectCommand *>(dst.GetConstMappedRange(0, size));
+    uint32_t visible = 0;
+    if (commands) {
+        for (uint32_t i = 0; i < gpuDrivenLastBucketCount_; ++i)
+            visible += commands[i].instanceCount;
+    }
+    dst.Unmap();
+    return visible;
+#endif
 }
 
 void Graphics::gpuDrivenDrawOpaque() {
