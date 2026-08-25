@@ -1,6 +1,8 @@
 #include "common/Runtime.h"
+#include "common/Capability.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
+#include "common/ServiceInterfaces.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -8,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 using namespace eve;
 
@@ -43,7 +46,37 @@ public:
     }
 };
 
+class VirtualFileSystem final : public service::IFileSystem {
+public:
+    std::unordered_map<std::string, std::string> files;
+
+    bool readFile(const std::string& path, std::vector<uint8_t>& output) override {
+        const auto found = files.find(path);
+        if (found == files.end()) return false;
+        output.assign(found->second.begin(), found->second.end());
+        return true;
+    }
+    bool writeFile(const std::string&, const void*, size_t) override { return false; }
+    bool fileExists(const std::string& path) override { return files.find(path) != files.end(); }
+};
+
 }  // namespace
+
+TEST_CASE("scriptModule.defaultProviderUsesPlatformVirtualFileSystem") {
+    cap::detail::clearAllRaw();
+    VirtualFileSystem filesystem;
+    filesystem.files["scripts/value.nut"] = "export const VALUE = 42\n";
+    cap::provide<service::IFileSystem>(&filesystem);
+    {
+        Runtime runtime(512, ssq::Libs::ALL);
+        runtime.runSource(
+            "import { VALUE } from \"game:/scripts/value.nut\"\n"
+            "vfs_module_result <- VALUE\n",
+            "game:/main.nut");
+        CHECK_EQ(runtime.vm().get<int64_t>("vfs_module_result"), int64_t(42));
+    }
+    cap::detail::clearAllRaw();
+}
 
 TEST_CASE("scriptModule.resolvesCachesAndInstantiatesDependencyGraph") {
     Runtime runtime(512, ssq::Libs::ALL);

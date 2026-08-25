@@ -1,4 +1,5 @@
 #include "cmdline.h"
+#include "scripts.h"
 
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
@@ -16,6 +17,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -131,6 +133,14 @@ std::string wordAt(std::string_view source, size_t line, size_t character) {
     return std::string(source.substr(begin, end - begin));
 }
 
+std::vector<std::string> moduleNames(std::string_view source, const std::regex& pattern) {
+    const std::string              owned(source);
+    std::vector<std::string>       result;
+    for (std::sregex_iterator it(owned.begin(), owned.end(), pattern), end; it != end; ++it)
+        result.push_back((*it)[1].str());
+    return result;
+}
+
 class LanguageServerSession {
 public:
     explicit LanguageServerSession(std::string root)
@@ -138,6 +148,13 @@ public:
           runtime_(2048, ssq::Libs::ALL) {
         runtime_.scriptModules().registerProvider(
             std::make_shared<ProjectDirectoryProvider>(std::filesystem::path(root_)), 100);
+        const std::string contract = module_list_content ? module_list_content : "";
+        const size_t      split = contract.find("eve_module_contract");
+        static const std::regex slotPattern(R"(\bslot\s*=\s*["']([^"']+)["'])");
+        static const std::regex namePattern(R"(\bname\s*=\s*["']([^"']+)["'])");
+        activeModules_ = moduleNames(contract.substr(0, split), slotPattern);
+        knownModules_ = moduleNames(split == std::string::npos ? std::string_view{} : std::string_view(contract).substr(split),
+                                    namePattern);
     }
 
     int run() {
@@ -237,7 +254,16 @@ private:
         Poco::JSON::Array::Ptr result = new Poco::JSON::Array();
         const auto canonical = canonical_.find(uri);
         const std::string& identity = canonical == canonical_.end() ? uri : canonical->second;
-        for (const script::ScriptDiagnostic& diagnostic : runtime_.scriptCompiler().diagnostics(identity)) {
+        auto diagnostics = runtime_.scriptCompiler().diagnostics(identity);
+        const auto document = documents_.find(uri);
+        const bool isProjectConfig = identity == "game:/config.nut" ||
+                                     (uri.size() >= 11 && uri.compare(uri.size() - 11, 11, "/config.nut") == 0);
+        if (document != documents_.end() && isProjectConfig) {
+            auto configDiagnostics = script::ScriptCompiler::validateProjectConfig(
+                document->second, identity, knownModules_, activeModules_);
+            diagnostics.insert(diagnostics.end(), configDiagnostics.begin(), configDiagnostics.end());
+        }
+        for (const script::ScriptDiagnostic& diagnostic : diagnostics) {
             Poco::JSON::Object::Ptr start = new Poco::JSON::Object();
             start->set("line", static_cast<int>(diagnostic.position.line - 1));
             start->set("character", static_cast<int>(diagnostic.position.column - 1));
@@ -324,6 +350,8 @@ private:
     Runtime                                      runtime_;
     std::unordered_map<std::string, std::string> documents_;
     std::unordered_map<std::string, std::string> canonical_;
+    std::vector<std::string>                     knownModules_;
+    std::vector<std::string>                     activeModules_;
     bool                                         shutdown_ = false;
 };
 

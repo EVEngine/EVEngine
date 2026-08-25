@@ -29,6 +29,21 @@ TEST_CASE("scriptCompiler.recordsErasedLanguageMetadata") {
     CHECK_EQ(metadata->sourceMap.originalPosition({2, 9}).line, uint32_t(2));
 }
 
+TEST_CASE("scriptCompiler.metadataIgnoresCommentedLanguageForms") {
+    const auto metadata = script::ScriptCompiler::analyze(
+        "// import { ghost } from \"game:/missing.nut\"\n"
+        "/* export function hidden() {}\n"
+        "persist ignored = 1 */\n"
+        "local text = \"// await remains text\"\n"
+        "import { answer } from \"game:/real.nut\"\n",
+        "game:/comments.nut");
+    CHECK_EQ(metadata.imports.size(), size_t(1));
+    CHECK_EQ(metadata.imports[0], std::string("game:/real.nut"));
+    CHECK(metadata.exports.empty());
+    CHECK(metadata.persistRoots.empty());
+    CHECK(metadata.awaitLocations.empty());
+}
+
 TEST_CASE("scriptCompiler.mapsDebuggerLocationsBidirectionally") {
     Runtime runtime(512, ssq::Libs::ALL);
     runtime.compileSource("local value = 1\n", "game:/scripts/mapped.nut");
@@ -265,4 +280,31 @@ TEST_CASE("scriptCompiler.validatesConfigModulesWithoutExecution") {
     CHECK_EQ(diagnostics[0].related, std::string("physics"));
     CHECK_EQ(diagnostics[1].code, std::string("EVE1001"));
     CHECK_EQ(diagnostics[1].related, std::string("typo"));
+}
+
+TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
+    const std::filesystem::path root(EVENGINE_SOURCE_DIR);
+    size_t                     compiled = 0;
+    for (std::filesystem::recursive_directory_iterator it(root), end; it != end; ++it) {
+        if (it->is_directory()) {
+            const std::string name = it->path().filename().string();
+            if (name == ".git" || name == "build" || name == "third-party") it.disable_recursion_pending();
+            continue;
+        }
+        if (it->path().extension() != ".nut") continue;
+        std::ifstream input(it->path(), std::ios::binary);
+        REQUIRE(input.good());
+        const std::string source(std::istreambuf_iterator<char>(input), {});
+        const std::string relative = std::filesystem::relative(it->path(), root).generic_string();
+        try {
+            Runtime runtime(1024, ssq::Libs::ALL);
+            runtime.compileSource(source, "baseline:/" + relative);
+        } catch (const std::exception& error) {
+            throw std::runtime_error(relative + ": " + error.what());
+        }
+        ++compiled;
+    }
+    CHECK(compiled >= size_t(150));
+#endif
 }
