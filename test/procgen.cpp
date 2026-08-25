@@ -2268,9 +2268,77 @@ TEST_CASE("graphics.waterfall.paramsRoundTrip") {
     win->close();
 }
 
+TEST_CASE("graphics.waterfall.render.flowAndFoam") {
+    auto* win = eve::window::Window::create();
+    auto* gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 256;
+    settings.height   = 256;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    auto* camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, 7.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(50.f);
+    camera->setAmbient(0.2f, 0.22f, 0.25f);
+
+    gfx->setBackgroundColor(Color(0.01f, 0.015f, 0.025f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.2f, 0.8f, 0.5f, 1.f, 0.95f, 0.85f);
+
+    auto* present             = Renderable2D::create();
+    present->sprite()->width  = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a      = 0.f;
+
+    Waterfall* wf = gfx->newWaterfall();
+    REQUIRE(wf != nullptr);
+    wf->createCurvedSheet(4.f, 6.f, 24, 32, 0.35f, 0.15f);
+    wf->setWaterColor(0.05f, 0.28f, 0.5f);
+    wf->setReflectionIntensity(0.65f);
+    wf->setSunIntensity(0.8f);
+    wf->setTurbulence(0.75f);
+    wf->setStreakCount(7);
+
+    auto* waterfallEnt = Renderable3D::create();
+    waterfallEnt->setMesh(wf->getMesh());
+    waterfallEnt->setShader(wf->getShader());
+    waterfallEnt->setReceiveShadow(false);
+    waterfallEnt->setCastShadow(false);
+    waterfallEnt->setCamera(camera);
+
+    auto capture = [&](float time, float foam) {
+        wf->setTime(time);
+        wf->setFoamAmount(foam);
+        wf->bindParams();
+        return waterCaptureLuma(gfx, 16);
+    };
+
+    const WaterLumaGrid t0       = capture(0.f, 0.8f);
+    const WaterLumaGrid t1       = capture(0.4f, 0.8f);
+    float               rendered = 0.f;
+    for (float cell : t0.cells) rendered += cell;
+    rendered /= float(t0.cells.size());
+    const float flowDiff = waterDiff(t0, t1);
+
+    const WaterLumaGrid noFoam   = capture(0.2f, 0.f);
+    const WaterLumaGrid foam     = capture(0.2f, 1.1f);
+    const float         foamDiff = waterDiff(noFoam, foam);
+    std::printf("waterfall render: rendered=%.2f flowDiff=%.2f foamDiff=%.2f\n", rendered, flowDiff, foamDiff);
+    REQUIRE(rendered > 1.f);
+    REQUIRE(flowDiff > 0.15f);
+    REQUIRE(foamDiff > 0.15f);
+
+    delete wf;
+    win->close();
+}
+
 TEST_CASE("graphics.water.paramsRoundTrip") {
-    auto *win = eve::window::Window::create();
-    auto *gfx = Graphics::create();
+    auto* win = eve::window::Window::create();
+    auto* gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
     eve::window::WindowSettings settings;
@@ -2383,15 +2451,15 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     };
 
     // Dynamic ripples: different times give different patterns (and it renders).
-    const WaterLumaGrid t0 = captureWater(0.f);
-    const WaterLumaGrid t1 = captureWater(0.35f);
-    const float dynamic = waterDiff(t0, t1);
-    float rendered = 0.f;
+    const WaterLumaGrid t0       = captureWater(0.f);
+    const WaterLumaGrid t1       = captureWater(0.35f);
+    const float         dynamic  = waterDiff(t0, t1);
+    float               rendered = 0.f;
     for (float c : t0.cells) rendered += c;
     rendered /= float(t0.cells.size());
     std::printf("water render: dynamic=%.2f rendered=%.2f\n", dynamic, rendered);
-    CHECK(rendered > 1.f);      // water surface is actually drawn
-    CHECK(dynamic > 0.3f);      // ripples move over time
+    REQUIRE(rendered > 1.f);  // water surface is actually drawn
+    REQUIRE(dynamic > 0.3f);  // ripples move over time
 
     // Edge waves + middle drop ripples: flat (no ripples) differs from rippled.
     const WaterLumaGrid flat = [&] {
@@ -2412,7 +2480,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     }();
     const float rippleDiff = waterDiff(flat, wavy);
     std::printf("water render: rippleDiff=%.2f\n", rippleDiff);
-    CHECK(rippleDiff > 0.2f);   // ripples (edge + middle) change the surface
+    REQUIRE(rippleDiff > 0.2f);  // ripples (edge + middle) change the surface
 
     delete w;
     win->close();

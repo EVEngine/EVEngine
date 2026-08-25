@@ -225,7 +225,15 @@ void Graphics::initWithWindow(void *nativeWindow) {
 }
 
 void Graphics::createInstanceAndAdapter() {
+#if defined(__EMSCRIPTEN__)
     instance = wgpu::CreateInstance();
+#else
+    const WGPUInstanceFeatureName requiredFeatures[] = {WGPUInstanceFeatureName_TimedWaitAny};
+    WGPUInstanceDescriptor        instanceDesc{};
+    instanceDesc.requiredFeatureCount = 1;
+    instanceDesc.requiredFeatures     = requiredFeatures;
+    instance = wgpu::CreateInstance(reinterpret_cast<const wgpu::InstanceDescriptor*>(&instanceDesc));
+#endif
     if (!instance) throw Exception("WebGPU: wgpuCreateInstance failed");
 
     WGPURequestAdapterOptions opts{};
@@ -3198,24 +3206,19 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     d.model = model;
     d.tint = tint;
     d.shader = shader;
-    d.surfaceMode = mesh3dSurfaceMode;
-    d.surfaceBlend = mesh3dSurfaceBlend;
-    d.depthWrite = mesh3dSurfaceDepthWrite;
-    d.doubleSided = mesh3dSurfaceDoubleSided;
-    d.shadowReceive = mesh3dShadowReceive;
-    d.alphaCutoff = mesh3dAlphaCutoff;
+    d.surfaceMode    = mesh3dSurfaceMode;
+    d.surfaceBlend   = mesh3dSurfaceBlend;
+    d.depthWrite     = mesh3dSurfaceDepthWrite;
+    d.doubleSided    = mesh3dSurfaceDoubleSided;
+    d.shadowReceive  = mesh3dShadowReceive;
+    d.alphaCutoff    = mesh3dAlphaCutoff;
     d.alphaTechnique = mesh3dAlphaTechnique;
     mesh3dDraws.push_back(d);
 }
 
-void Graphics::setMesh3DNormalTexture(Texture *normal) { mesh3dNormalTexture = normal; }
+void Graphics::setMesh3DNormalTexture(Texture* normal) { mesh3dNormalTexture = normal; }
 void Graphics::setMesh3DHeightTexture(Texture *height) { mesh3dHeightTexture = height; }
-void Graphics::setMesh3DSceneDepth(Texture *depth) {
-    // Custom SPIR-V mesh shaders (incl. xray) are unsupported on the WebGPU
-    // backend (newMeshShaderFromSpv throws); store the handle for API parity so
-    // callers work unchanged and a future WGSL xray path can sample it.
-    mesh3dSceneDepthTexture = depth;
-}
+void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
 void Graphics::setMesh3DMaterial(float metallic, float roughness) {
     mesh3dMetallic = metallic;
     mesh3dRoughness = roughness;
@@ -4763,7 +4766,7 @@ bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queu
     WGPUTexelCopyBufferInfo to{};
     to.buffer = dst.Get();
     to.layout.offset = 0;
-    to.layout.bytesPerRow = static_cast<uint32_t>(bytesPerRow);
+    to.layout.bytesPerRow  = static_cast<uint32_t>(bytesPerRow);
     to.layout.rowsPerImage = static_cast<uint32_t>(height);
     WGPUExtent3D extent{static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
     enc.CopyTextureToBuffer(reinterpret_cast<const wgpu::TexelCopyTextureInfo*>(&from),
@@ -4772,40 +4775,56 @@ bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queu
     wgpu::CommandBuffer cmd = enc.Finish();
     queue.Submit(1, &cmd);
 
-    bool mapped = false;
+    struct MapState {
+        bool               done    = false;
+        bool               success = false;
+        WGPUMapAsyncStatus status  = WGPUMapAsyncStatus_Force32;
+    } map;
     WGPUBufferMapCallbackInfo cbInfo{};
-    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
-    cbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView /*message*/, void *userdata1,
-                         void * /*userdata2*/) {
-        bool *ok = static_cast<bool *>(userdata1);
-        *ok = (status == WGPUMapAsyncStatus_Success);
-    };
-    cbInfo.userdata1 = &mapped;
-    wgpuBufferMapAsync(dst.Get(), WGPUMapMode_Read, 0, size, cbInfo);
-
-    int guard = 0;
-    while (!mapped && guard < 2000) {
 #if defined(__EMSCRIPTEN__)
-        emscripten_sleep(0);
+    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
+#else
+    cbInfo.mode = WGPUCallbackMode_WaitAnyOnly;
 #endif
+    cbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView /*message*/, void* userdata1, void* /*userdata2*/) {
+        auto* state    = static_cast<MapState*>(userdata1);
+        state->status  = status;
+        state->success = status == WGPUMapAsyncStatus_Success;
+        state->done    = true;
+    };
+    cbInfo.userdata1  = &map;
+    WGPUFuture future = wgpuBufferMapAsync(dst.Get(), WGPUMapMode_Read, 0, size, cbInfo);
+
+#if defined(__EMSCRIPTEN__)
+    int guard = 0;
+    while (!map.done && guard < 2000) {
+        emscripten_sleep(0);
         wgpuInstanceProcessEvents(instance.Get());
         ++guard;
     }
-    if (!mapped) return false;
+#else
+    WGPUFutureWaitInfo waitInfo{};
+    waitInfo.future = future;
+    (void)wgpuInstanceWaitAny(instance.Get(), 1, &waitInfo, UINT64_MAX);
+#endif
+    if (!map.success) {
+        std::fprintf(stderr, "[webgpu] texture readback map failed: status=%d done=%d\n", int(map.status),
+                     map.done ? 1 : 0);
+        return false;
+    }
 
-    const uint8_t *data = static_cast<const uint8_t *>(dst.GetConstMappedRange(0, size));
+    const uint8_t* data = static_cast<const uint8_t*>(dst.GetConstMappedRange(0, size));
     if (!data) return false;
     outRgba.resize(static_cast<size_t>(width) * height * 4);
     for (int y = 0; y < height; ++y)
-        std::memcpy(outRgba.data() + size_t(y) * width * 4, data + size_t(y) * bytesPerRow,
-                    size_t(width) * 4);
+        std::memcpy(outRgba.data() + size_t(y) * width * 4, data + size_t(y) * bytesPerRow, size_t(width) * 4);
     dst.Unmap();
     return true;
 }
 
 }  // namespace
 
-Color Graphics::getPixelImpl(OffscreenCanvas *canvas, int x, int y) {
+Color Graphics::getPixelImpl(OffscreenCanvas* canvas, int x, int y) {
     int w = canvas ? canvas->getWidth() : (sceneColorWidth > 0 ? sceneColorWidth : 1);
     int h = canvas ? canvas->getHeight() : (sceneColorHeight > 0 ? sceneColorHeight : 1);
     if (x < 0 || y < 0 || x >= w || y >= h) return Color(0.f, 0.f, 0.f, 0.f);

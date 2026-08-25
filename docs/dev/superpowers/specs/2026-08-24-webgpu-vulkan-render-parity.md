@@ -44,7 +44,7 @@ and `test gap`.
 | Global illumination / SSR | supported | Native WGSL SSGI and SSR pipelines consume the parity-locked GBuffer | Extend reflective material/camera-angle artifacts |
 | Volumetric effects | supported | Native WGSL cloud/fog/froxel/raymarch/post stages are available | Extend low-resolution parameter coverage |
 | Alpha mask | supported, verified | Runtime backend selection now reliably chooses WGSL on WebGPU and SPIR-V on Vulkan; shared pixel tests cover threshold, softness and inversion | Extend coverage to atlas UVs and tinted translucent colors |
-| Water / waterfall built-ins | supported, API verified | WebGPU uses WGSL ports with the same 32-float parameter layout and Vulkan retains the packaged SPIR-V shaders | Add backend-neutral animated surface pixel artifacts |
+| Water / waterfall built-ins | supported, verified | WebGPU uses WGSL ports with the same packed parameter layout and Vulkan retains the packaged SPIR-V shaders; shared pixel tests verify animated ripples/reflection plus waterfall flow/foam response | Extend artifacts to SSR and planar-reflection combinations |
 | Custom 2D/mesh WGSL | partial | WGSL is supported only on WebGPU; Vulkan accepts SPIR-V instead | Use backend-specific shader fixtures with identical semantics |
 | Runtime GLSL and SPIR-V on browser | intentional difference | Browser WebGPU accepts WGSL, not Vulkan SPIR-V or runtime GLSL | Keep explicit errors; document paired shader assets/toolchain |
 | Hair/custom hair shaders | supported, explicit language contract | Built-in hair selects the matching WGSL/SPIR-V implementation per backend; WebGPU accepts custom WGSL and explicitly rejects SPIR-V instead of silently substituting the built-in shader | Add paired custom-shader visual artifacts |
