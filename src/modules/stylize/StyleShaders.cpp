@@ -407,6 +407,14 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
     if (!gfx) throw eve::Exception("createMeshShader: null graphics");
 
     if (style == "cartoon") {
+        if (gfx->getBackendName() == "webgpu") {
+            graphics::Shader *sh = gfx->newMeshShaderFromWgsl(
+                {}, std::string(shaders::kMeshCommon) + shaders::kCartoonMesh);
+            if (!sh || !sh->gpuHandle)
+                throw eve::Exception("createMeshShader: failed to create cartoon WGSL");
+            bindMeshUniforms(sh, style);
+            return sh;
+        }
         auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
         auto frag = copySpv(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv_count);
         graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
@@ -416,6 +424,14 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
         return sh;
     }
     if (style == "ink") {
+        if (gfx->getBackendName() == "webgpu") {
+            graphics::Shader *sh = gfx->newMeshShaderFromWgsl(
+                {}, std::string(shaders::kMeshCommon) + shaders::kInkMesh);
+            if (!sh || !sh->gpuHandle)
+                throw eve::Exception("createMeshShader: failed to create ink WGSL");
+            bindMeshUniforms(sh, style);
+            return sh;
+        }
         auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
         auto frag = copySpv(ink_mesh_frag_spv, ink_mesh_frag_spv_count);
         graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
