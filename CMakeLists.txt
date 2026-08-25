@@ -1,5 +1,67 @@
 cmake_minimum_required(VERSION 3.21)
+
+set(EVENGINE_COMPILER_CACHE "AUTO" CACHE STRING
+    "Compiler cache mode: AUTO detects sccache, SCCACHE requires it, OFF disables auto-detection")
+set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE OFF)
+string(TOUPPER "${EVENGINE_COMPILER_CACHE}" _eve_compiler_cache_mode)
+if(NOT _eve_compiler_cache_mode MATCHES "^(AUTO|SCCACHE|OFF)$")
+    message(FATAL_ERROR
+        "EVENGINE_COMPILER_CACHE must be AUTO, SCCACHE, or OFF "
+        "(got: ${EVENGINE_COMPILER_CACHE})")
+endif()
+
+set(_eve_sccache_enabled OFF)
+if(_eve_compiler_cache_mode STREQUAL "AUTO" AND
+   (CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER))
+    set(_eve_compiler_cache_status "custom launcher supplied")
+elseif(NOT _eve_compiler_cache_mode STREQUAL "OFF")
+    if(EVENGINE_SCCACHE_EXECUTABLE AND NOT EXISTS "${EVENGINE_SCCACHE_EXECUTABLE}")
+        unset(EVENGINE_SCCACHE_EXECUTABLE CACHE)
+    endif()
+    find_program(EVENGINE_SCCACHE_EXECUTABLE NAMES sccache
+        DOC "Path to the sccache compiler cache")
+    if(EVENGINE_SCCACHE_EXECUTABLE)
+        # Disable sccache's direct mode for both local and CI builds. The
+        # conservative path hashes the complete preprocessed input before a
+        # hit, including the contents of every header that was actually used.
+        set(_eve_sccache_launcher
+            "${CMAKE_COMMAND}" -E env SCCACHE_DIRECT=false
+            "${EVENGINE_SCCACHE_EXECUTABLE}")
+        set(CMAKE_C_COMPILER_LAUNCHER ${_eve_sccache_launcher})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${_eve_sccache_launcher})
+        set(_eve_sccache_enabled ON)
+        set(_eve_compiler_cache_status "sccache (${EVENGINE_SCCACHE_EXECUTABLE})")
+        # CMP0141 must be NEW before project() for the first-class MSVC debug
+        # information setting below to replace /Zi instead of appending to it.
+        if(POLICY CMP0141)
+            cmake_policy(SET CMP0141 NEW)
+        endif()
+    elseif(_eve_compiler_cache_mode STREQUAL "SCCACHE")
+        message(FATAL_ERROR
+            "EVENGINE_COMPILER_CACHE=SCCACHE requires sccache on PATH or "
+            "-DEVENGINE_SCCACHE_EXECUTABLE=<path>")
+    else()
+        set(_eve_compiler_cache_status "disabled (sccache not found)")
+    endif()
+else()
+    set(_eve_compiler_cache_status "disabled")
+endif()
+
 project(EVEngine)
+
+if(_eve_sccache_enabled AND MSVC)
+    if(POLICY CMP0141)
+        # Embed debug information in each object. Cached objects are then
+        # self-contained and parallel cl.exe processes do not share a PDB.
+        set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT
+            "$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>")
+    else()
+        # CMake 3.21-3.24 have no MSVC debug-information abstraction. /Z7 is
+        # appended after CMake's default /Zi, and cl.exe honors the last flag.
+        add_compile_options(/Z7)
+    endif()
+endif()
+message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
 
 set(EVENGINE_MAJOR_VERSION "0")
 set(EVENGINE_MINOR_VERSION "2")
