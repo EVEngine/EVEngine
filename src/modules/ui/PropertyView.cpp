@@ -1,8 +1,10 @@
 #include "ui/PropertyView.h"
 
 #include <algorithm>
+#include <cerrno>
 #include <charconv>
 #include <cstdint>
+#include <cstdlib>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -109,11 +111,11 @@ WidgetDesc makePropertyField(presentation::IPropertyModel &model,
                                                    converted.ptr == next.data() + next.size())
                                                    model.write(path, Value(parsed));
                                            } else {
-                                               double parsed = 0.0;
-                                               const auto converted = std::from_chars(
-                                                   next.data(), next.data() + next.size(), parsed);
-                                               if (converted.ec == std::errc() &&
-                                                   converted.ptr == next.data() + next.size())
+                                               char *end = nullptr;
+                                               errno = 0;
+                                               const double parsed = std::strtod(next.c_str(), &end);
+                                               if (!next.empty() && errno != ERANGE &&
+                                                   end == next.c_str() + next.size())
                                                    model.write(path, Value(parsed));
                                            }
                                        });
