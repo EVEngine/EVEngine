@@ -81,9 +81,23 @@ public:
         float x = 0.f;
         float y = 0.f;
         float emissionRate = 0.f;
+        /** @brief Distance-based emission in particles per world unit (0 = disabled). */
+        float emissionRateOverDistance = 0.f;
         float lifeMin = 1.f;
         float lifeMax = 1.f;
         float emitterLife = -1.f;  // -1 = forever
+        /** @brief Restart the emitter timeline after emitterLife instead of stopping. */
+        bool looping = false;
+        /** @brief Simulation time multiplier. 0 freezes playback without changing pause state. */
+        float playbackSpeed = 1.f;
+        /** @brief Fixed simulation step in seconds (0 = variable step). */
+        float fixedTimeStep = 0.f;
+        /** @brief Spiral-of-death guard for fixed stepping. */
+        int maxSubSteps = 8;
+        /** @brief Stable seed used when autoRandomSeed is false. */
+        int randomSeed = 0;
+        /** @brief Generate a new seed on each start. */
+        bool autoRandomSeed = true;
         float direction = 0.f;
         float spread = 0.f;
         float speedMin = 0.f;
@@ -194,6 +208,8 @@ public:
         std::vector<Particle> particles;
         int alive = 0;
         float emitAccum = 0.f;
+        float distanceEmitAccum = 0.f;
+        float fixedTimeAccum = 0.f;
         float emitterAge = 0.f;
         bool active = false;
         bool paused = false;
@@ -201,6 +217,7 @@ public:
         float lastX = 0.f;
         float lastY = 0.f;
         bool overflowWarned = false;
+        int activeSeed = 0;
         std::mt19937 rng;
     };
 
@@ -304,6 +321,10 @@ public:
 
     void setEmissionRate(float rate);
     float getEmissionRate();
+    /** @brief Set particles emitted per world unit travelled; zero disables it. */
+    void setEmissionRateOverDistance(float rate);
+    /** @brief Return particles emitted per world unit travelled. */
+    float getEmissionRateOverDistance();
 
     void setParticleLifetime(float minLife, float maxLife);
     float getParticleLifetimeMin();
@@ -311,6 +332,26 @@ public:
 
     void setEmitterLifetime(float seconds);
     float getEmitterLifetime();
+    /** @brief Enable or disable repeating a finite emitter timeline. */
+    void setLooping(bool looping);
+    /** @brief Return whether the finite emitter timeline repeats. */
+    bool getLooping();
+    /** @brief Scale simulation time; zero freezes playback. */
+    void setPlaybackSpeed(float speed);
+    /** @brief Return the simulation time multiplier. */
+    float getPlaybackSpeed();
+    /** @brief Configure fixed stepping and the per-frame catch-up limit; zero seconds disables it. */
+    void setFixedTimeStep(float seconds, int maxSubSteps = 8);
+    /** @brief Return the fixed step in seconds, or zero for variable stepping. */
+    float getFixedTimeStep();
+    /** @brief Select a deterministic seed and disable automatic seeding. */
+    void setRandomSeed(int seed);
+    /** @brief Return the configured deterministic seed. */
+    int getRandomSeed();
+    /** @brief Generate a new random seed whenever start() is called. */
+    void setAutoRandomSeed(bool enabled);
+    /** @brief Return whether start() generates a new random seed. */
+    bool getAutoRandomSeed();
 
     void setDirection(float radians);
     float getDirection();
@@ -465,6 +506,8 @@ public:
 void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
 void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
+/** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
+void advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief GPU-accelerated integration step; false = unavailable, caller falls back to CPU. */
 bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
                        ParticleEmitter::GpuSim &gpu, float dt);

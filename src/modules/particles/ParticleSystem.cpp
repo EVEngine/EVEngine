@@ -159,7 +159,7 @@ void ParticleSimSystem::update(float dt) {
         // CPU integrator. All emitters integrate on the CPU here; a real GPU
         // path must keep particle state GPU-resident and render from the SSBO
         // directly (no readback).
-        stepEmitterSim(*cfg, *sim, dt);
+        advanceEmitterSim(*cfg, *sim, dt);
     }
 }
 

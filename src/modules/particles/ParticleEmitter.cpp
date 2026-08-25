@@ -599,11 +599,59 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
         }
     }
 
+    // Rate over distance is accumulated in particle units and spawned at
+    // evenly spaced points along the emitter's travelled segment. This avoids
+    // the frame-rate-dependent clumps produced by spawning every item at the
+    // current endpoint (important for weapon trails and wheel dust).
+    if (cfg.emissionRateOverDistance > 0.f && sim.hasLastPos) {
+        const float moveX     = cfg.x - sim.lastX;
+        const float moveY     = cfg.y - sim.lastY;
+        const float distance  = std::sqrt(moveX * moveX + moveY * moveY);
+        const float prior     = sim.distanceEmitAccum;
+        const float total     = prior + distance * cfg.emissionRateOverDistance;
+        const int   wanted    = int(std::floor(total));
+        sim.distanceEmitAccum = total - float(wanted);
+        const float firstDistance =
+            prior > 0.f ? (1.f - prior) / cfg.emissionRateOverDistance : 1.f / cfg.emissionRateOverDistance;
+        for (int i = 0; i < wanted; ++i) {
+            if (sim.alive >= int(sim.particles.size())) {
+                if (cfg.overflowMode == "pause")
+                    sim.distanceEmitAccum += float(wanted - i);
+                else if (cfg.overflowMode == "warn" && !sim.overflowWarned) {
+                    sim.overflowWarned = true;
+                    std::fprintf(stderr, "[particles] distance emission overflow (rate=%.2f, buffer=%d)\n",
+                                 cfg.emissionRateOverDistance, int(sim.particles.size()));
+                }
+                break;
+            }
+            float spawnX = cfg.x;
+            float spawnY = cfg.y;
+            if (distance > kEps && !localSpace) {
+                const float along = firstDistance + float(i) / cfg.emissionRateOverDistance;
+                const float alpha = std::min(1.f, along / distance);
+                spawnX            = sim.lastX + moveX * alpha;
+                spawnY            = sim.lastY + moveY * alpha;
+            }
+            spawnParticleAt(cfg, sim, spawnX, spawnY);
+            if (cfg.inheritVelocity > 0.f && sim.alive > 0) {
+                Particle& np = sim.particles[size_t(sim.alive - 1)];
+                np.vx += emitVx * cfg.inheritVelocity;
+                np.vy += emitVy * cfg.inheritVelocity;
+            }
+        }
+    }
+
     // Expire AFTER this frame's emission so a short-lived emitter still
     // releases the particles due during its final frame.
     if (cfg.emitterLife >= 0.f && sim.emitterAge >= cfg.emitterLife) {
-        sim.active = false;
-        sim.emitAccum = 0.f;
+        if (cfg.looping && cfg.emitterLife > 0.f) {
+            sim.emitterAge = std::fmod(sim.emitterAge, cfg.emitterLife);
+            for (auto& b : cfg.bursts) b.emitted = false;
+        } else {
+            sim.active = false;
+            sim.emitAccum = 0.f;
+            sim.distanceEmitAccum = 0.f;
+        }
     }
 
     sim.lastX = cfg.x;
@@ -890,8 +938,14 @@ bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
 
     // Expire AFTER this frame's emission (see stepEmitterSim).
     if (cfg.emitterLife >= 0.f && sim.emitterAge >= cfg.emitterLife) {
-        sim.active = false;
-        sim.emitAccum = 0.f;
+        if (cfg.looping && cfg.emitterLife > 0.f) {
+            sim.emitterAge = std::fmod(sim.emitterAge, cfg.emitterLife);
+            for (auto& b : cfg.bursts) b.emitted = false;
+        } else {
+            sim.active = false;
+            sim.emitAccum = 0.f;
+            sim.distanceEmitAccum = 0.f;
+        }
     }
 
     sim.lastX = cfg.x;
@@ -906,7 +960,9 @@ ParticleEmitter *ParticleEmitter::createEmitter(int bufferSize) {
     const int n = bufferSize > 0 ? bufferSize : 1;
     e->sim()->particles.resize(size_t(n));
     std::random_device rd;
-    e->sim()->rng.seed(rd());
+    const int          seed = static_cast<int>(rd());
+    e->sim()->activeSeed    = seed;
+    e->sim()->rng.seed(static_cast<std::mt19937::result_type>(seed));
     // Touch Draw / Attach / SkinSource so system views see fully initialized emitters.
     (void)e->draw();
     (void)e->attach();
@@ -1232,76 +1288,6 @@ int ParticleEmitter::getLayer() { return draw()->layer; }
 
 void ParticleEmitter::setVisible(bool visible) { draw()->visible = visible; }
 bool ParticleEmitter::isVisible() { return draw()->visible; }
-
-void ParticleEmitter::start() {
-    auto s = sim();
-    s->active = true;
-    s->paused = false;
-    s->emitterAge = 0.f;
-    for (auto &b : config()->bursts) b.emitted = false;
-    const float prewarm = config()->prewarmSeconds;
-    if (prewarm > 0.f) {
-        constexpr float kPrewarmDt = 1.f / 60.f;
-        const int steps = int(std::ceil(prewarm / kPrewarmDt));
-        for (int i = 0; i < steps; ++i) stepEmitterSim(*config(), *s, kPrewarmDt);
-    }
-}
-
-void ParticleEmitter::stop() {
-    auto s = sim();
-    s->active = false;
-    s->paused = false;
-    s->emitAccum = 0.f;
-    s->emitterAge = 0.f;
-    s->lastX = config()->x;
-    s->lastY = config()->y;
-    s->hasLastPos = true;
-}
-
-void ParticleEmitter::pause() {
-    auto s = sim();
-    if (s->active) s->paused = true;
-}
-
-void ParticleEmitter::reset() {
-    auto s = sim();
-    s->alive = 0;
-    s->emitAccum = 0.f;
-    s->emitterAge = 0.f;
-    s->hasLastPos = false;
-    s->overflowWarned = false;
-    for (auto &b : config()->bursts) b.emitted = false;
-    for (auto &p : s->particles) p.life = 0.f;
-    auto g = gpuSim();
-    if (g->buffer) {
-        try {
-            g->buffer->fillFloat32(0.f);
-        } catch (...) {
-        }
-    }
-    if (!g->mirror.empty()) std::fill(g->mirror.begin(), g->mirror.end(), 0.f);
-}
-
-void ParticleEmitter::emit(int count) {
-    if (count <= 0) return;
-    auto c = config();
-    auto s = sim();
-    // Spawn at the CURRENT attached position: refresh bone/skin sync so a
-    // script that moves the pose then emits gets the new origin (no one-frame
-    // lag). No-op for unattached emitters.
-    syncAttach();
-    for (int i = 0; i < count; ++i) spawnParticle(*c, *s);
-}
-
-bool ParticleEmitter::isActive() {
-    auto s = sim();
-    return s->active && !s->paused;
-}
-bool ParticleEmitter::isPaused() { return sim()->paused; }
-bool ParticleEmitter::isStopped() { return !sim()->active; }
-
-int ParticleEmitter::getCount() { return sim()->alive; }
-int ParticleEmitter::getBufferSize() { return int(sim()->particles.size()); }
 
 void ParticleEmitter::applyPreset(const std::string &name) {
     if (name == "spark") {

@@ -193,6 +193,9 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
 
     if (obj->has("emissionRate"))
         emitter->setEmissionRate(asFloat(obj->get("emissionRate"), emitter->getEmissionRate()));
+    if (obj->has("emissionRateOverDistance"))
+        emitter->setEmissionRateOverDistance(
+            asFloat(obj->get("emissionRateOverDistance"), emitter->getEmissionRateOverDistance()));
 
     float lifeMin = emitter->getParticleLifetimeMin();
     float lifeMax = emitter->getParticleLifetimeMax();
@@ -207,6 +210,21 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
 
     if (obj->has("emitterLife"))
         emitter->setEmitterLifetime(asFloat(obj->get("emitterLife"), emitter->getEmitterLifetime()));
+    if (obj->has("looping"))
+        emitter->setLooping(asBool(obj->get("looping"), emitter->getLooping()));
+    if (obj->has("playbackSpeed"))
+        emitter->setPlaybackSpeed(asFloat(obj->get("playbackSpeed"), emitter->getPlaybackSpeed()));
+    if (obj->has("fixedTimeStep")) {
+        const float step = asFloat(obj->get("fixedTimeStep"), emitter->getFixedTimeStep());
+        const int maxSteps = obj->has("maxSubSteps")
+                                 ? int(asFloat(obj->get("maxSubSteps"), 8.f))
+                                 : emitter->config()->maxSubSteps;
+        emitter->setFixedTimeStep(step, maxSteps);
+    }
+    if (obj->has("randomSeed"))
+        emitter->setRandomSeed(int(asFloat(obj->get("randomSeed"), 0.f)));
+    if (obj->has("autoRandomSeed"))
+        emitter->setAutoRandomSeed(asBool(obj->get("autoRandomSeed"), true));
 
     if (obj->has("direction"))
         emitter->setDirection(asFloat(obj->get("direction"), emitter->getDirection()));

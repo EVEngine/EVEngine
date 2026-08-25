@@ -98,6 +98,8 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("getY", &ParticleEmitter::getY);
     em.addFunc("setEmissionRate", &ParticleEmitter::setEmissionRate);
     em.addFunc("getEmissionRate", &ParticleEmitter::getEmissionRate);
+    em.addFunc("setEmissionRateOverDistance", &ParticleEmitter::setEmissionRateOverDistance);
+    em.addFunc("getEmissionRateOverDistance", &ParticleEmitter::getEmissionRateOverDistance);
     em.addFunc("setParticleLifetime", &ParticleEmitter::setParticleLifetime);
     // Alias — scripts often say "Life" for the same knob.
     em.addFunc("setParticleLife", &ParticleEmitter::setParticleLifetime);
@@ -108,6 +110,16 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setEmitterLife", &ParticleEmitter::setEmitterLifetime);
     em.addFunc("setEmitterTime", &ParticleEmitter::setEmitterLifetime);
     em.addFunc("getEmitterLifetime", &ParticleEmitter::getEmitterLifetime);
+    em.addFunc("setLooping", &ParticleEmitter::setLooping);
+    em.addFunc("getLooping", &ParticleEmitter::getLooping);
+    em.addFunc("setPlaybackSpeed", &ParticleEmitter::setPlaybackSpeed);
+    em.addFunc("getPlaybackSpeed", &ParticleEmitter::getPlaybackSpeed);
+    em.addFunc("setFixedTimeStep", &ParticleEmitter::setFixedTimeStep);
+    em.addFunc("getFixedTimeStep", &ParticleEmitter::getFixedTimeStep);
+    em.addFunc("setRandomSeed", &ParticleEmitter::setRandomSeed);
+    em.addFunc("getRandomSeed", &ParticleEmitter::getRandomSeed);
+    em.addFunc("setAutoRandomSeed", &ParticleEmitter::setAutoRandomSeed);
+    em.addFunc("getAutoRandomSeed", &ParticleEmitter::getAutoRandomSeed);
     em.addFunc("setDirection", &ParticleEmitter::setDirection);
     em.addFunc("getDirection", &ParticleEmitter::getDirection);
     em.addFunc("setSpread", &ParticleEmitter::setSpread);

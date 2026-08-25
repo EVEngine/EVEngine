@@ -179,6 +179,41 @@ JSON 等价配置：
 - `noise` 为 CPU 值噪声湍流（强度/频率/时间流速），适合烟雾、火焰的自然扰动。
 - `maxDeltaTime` 限制单帧模拟步长，防止卡顿后的粒子爆炸。
 
+## 可复现播放、固定步进与按距离发射
+
+需要录制回放、网络同步、慢动作或稳定拖尾时，可显式控制粒子时间线：
+
+```squirrel
+local trail = particles.newEmitter(512);
+trail.setRandomSeed(20260826);             // 每次 start() 重放相同随机序列
+trail.setAutoRandomSeed(false);
+trail.setEmitterLifetime(1.5);
+trail.setLooping(true);                    // 有限时间线循环，burst 也会重新触发
+trail.setPlaybackSpeed(0.5);               // 半速播放；0 = 冻结
+trail.setFixedTimeStep(1.0 / 120.0, 8);    // 固定步长 + 每帧最多追 8 步
+trail.setEmissionRateOverDistance(0.25);   // 每移动 4 个世界单位发射 1 个
+trail.start();
+```
+
+JSON 等价配置：
+
+```json
+{
+  "randomSeed": 20260826,
+  "autoRandomSeed": false,
+  "emitterLife": 1.5,
+  "looping": true,
+  "playbackSpeed": 0.5,
+  "fixedTimeStep": 0.008333333,
+  "maxSubSteps": 8,
+  "emissionRateOverDistance": 0.25
+}
+```
+
+- 固定种子会让寿命、速度、方向、大小、旋转、发射形状和序列帧起点等随机采样可复现；`autoRandomSeed: true`（默认）则每次 `start()` 生成新序列。
+- 固定步进由 `maxSubSteps` 限制追帧工作量，超过上限的时间债务会被丢弃，避免暂停恢复后形成长时间尖峰。
+- 按距离发射会沿上一位置到当前位置的线段均匀插值，世界空间拖尾不会因帧率变化形成粒子团。第一次更新只建立运动基线，不会补发创建前的路径。
+
 ## 碰撞与子发射器
 
 ```squirrel
@@ -220,7 +255,7 @@ JSON：`forceFields: [{x, y, radius, strength, falloff}]`；`lights: {enabled, m
 
 ## GPU 加速模拟
 
-`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 可为单个发射器开启 GPU 模拟：每粒子的运动积分（重力、阻尼、限速、径向/切向加速度、速度帧、噪声湍流、旋转、序列帧推进、寿命衰减）在计算着色器中执行，生成与回收、碰撞、子发射器仍由 CPU 处理。不可用（无 GPU 设备/计算管线失败）时自动回退到 CPU 模拟，行为保持一致。
+`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 目前保留为资产兼容标记。现有 upload → dispatch → 同步 readback 原型会让每个发射器每帧产生三次队列往返，实测路径比 CPU 积分更慢，因此运行时暂时统一选择 CPU 模拟。下一阶段会在粒子状态常驻 SSBO、间接绘制与无同步回读完成后再启用真正的 GPU 路径。
 
 ```squirrel
 local embers = particles.newEmitter(20000);  // 上万粒子场景
@@ -229,7 +264,7 @@ embers.setGravity(0, 30);
 embers.start();
 ```
 
-实现说明：粒子状态以 16 个 float/粒子存放在 SSBO（`ParticleGpuKernel.h`），每帧 upload → dispatch（64 线程/组）→ readback 后走原有渲染路径；渲染仍是 CPU 批量四边形，因此收益集中在把每粒子物理计算移到 GPU。该模式下暂不参与 GPU 的项：力场、噪声外的 CPU 专属逻辑仍在 CPU 侧生效（碰撞等）。GLSL 内核可通过 `glslc` 单独编译验证（`ParticleGpuKernel.h` 内注释含布局说明）。
+实现说明：实验内核仍以 16 个 float/粒子描述 SSBO 布局（`ParticleGpuKernel.h`），供后续 GPU-resident 实现复用；当前不会从主系统调度这条同步回读路径。
 
 ## 对象关系与调用时机
 
@@ -263,12 +298,12 @@ embers.start();
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`clearBursts()`、`clearColorGradient()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getGpuSimulation()`、`getLightsEnabled()`、`getPrewarmSeconds()`、`getShader()`
+- `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`clearBursts()`、`clearColorGradient()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoRandomSeed()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getEmissionRateOverDistance()`、`getFixedTimeStep()`、`getGpuSimulation()`、`getLightsEnabled()`、`getLooping()`、`getPlaybackSpeed()`、`getPrewarmSeconds()`、`getRandomSeed()`、`getShader()`
 - `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getLayer()`、`getName()`
 - `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
 - `hasSkinSource()`、`isActive()`、`isAttached()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEmitter()`、`newEmitterFromFile()`
 - `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`
-- `setBlendMode()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setDamping()`、`setDirection()`、`setEmissionArea()`、`setEmissionRate()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFlipbook()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setMaxDeltaTime()`、`setNoise()`、`setOverflowMode()`、`setPrewarm()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
+- `setAutoRandomSeed()`、`setBlendMode()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setDamping()`、`setDirection()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaxDeltaTime()`、`setNoise()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
 - `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setSizeVariation()`
 - `setSizes()`、`setSkinBoneFilter()`、`setSkinBoneFilterByName()`、`setSkinPlane()`、`setSkinScale()`、`setSkinSource()`、`setSpeed()`、`setSpin()`、`setSpread()`、`setStartRotation()`、`setTangentialAcceleration()`、`setTexture()`、`setVisible()`、`start()`
 - `stop()`、`syncAttach()`、`update()`

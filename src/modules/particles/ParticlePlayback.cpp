@@ -1,0 +1,156 @@
+#include "particles/ParticleEmitter.h"
+
+#include "gpgpu/GpuBuffer.h"
+
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+namespace eve::particles {
+
+void advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt) {
+    if (sim.paused || dt <= 0.f || cfg.playbackSpeed <= 0.f) return;
+
+    float scaledDt = dt * cfg.playbackSpeed;
+    if (cfg.maxDeltaTime > 0.f && scaledDt > cfg.maxDeltaTime) scaledDt = cfg.maxDeltaTime;
+
+    if (cfg.fixedTimeStep <= 0.f) {
+        stepEmitterSim(cfg, sim, scaledDt);
+        return;
+    }
+
+    sim.fixedTimeAccum += scaledDt;
+    const float step     = cfg.maxDeltaTime > 0.f ? std::min(cfg.fixedTimeStep, cfg.maxDeltaTime) : cfg.fixedTimeStep;
+    const int   maxSteps = cfg.maxSubSteps > 0 ? cfg.maxSubSteps : 1;
+    int         steps    = 0;
+    while (sim.fixedTimeAccum + 1e-7f >= step && steps < maxSteps) {
+        stepEmitterSim(cfg, sim, step);
+        sim.fixedTimeAccum -= step;
+        ++steps;
+    }
+
+    // Bound retained debt as well as work per frame. A suspended process must
+    // not spend many later frames catching up and producing a VFX burst.
+    if (steps == maxSteps && sim.fixedTimeAccum >= step) sim.fixedTimeAccum = std::fmod(sim.fixedTimeAccum, step);
+}
+
+void ParticleEmitter::setEmissionRateOverDistance(float rate) {
+    config()->emissionRateOverDistance = rate > 0.f ? rate : 0.f;
+}
+
+float ParticleEmitter::getEmissionRateOverDistance() { return config()->emissionRateOverDistance; }
+
+void ParticleEmitter::setLooping(bool looping) { config()->looping = looping; }
+bool ParticleEmitter::getLooping() { return config()->looping; }
+
+void ParticleEmitter::setPlaybackSpeed(float speed) { config()->playbackSpeed = speed > 0.f ? speed : 0.f; }
+
+float ParticleEmitter::getPlaybackSpeed() { return config()->playbackSpeed; }
+
+void ParticleEmitter::setFixedTimeStep(float seconds, int maxSubSteps) {
+    auto c                = config();
+    c->fixedTimeStep      = seconds > 0.f ? seconds : 0.f;
+    c->maxSubSteps        = maxSubSteps > 0 ? maxSubSteps : 1;
+    sim()->fixedTimeAccum = 0.f;
+}
+
+float ParticleEmitter::getFixedTimeStep() { return config()->fixedTimeStep; }
+
+void ParticleEmitter::setRandomSeed(int seed) {
+    auto c            = config();
+    auto s            = sim();
+    c->randomSeed     = seed;
+    c->autoRandomSeed = false;
+    s->activeSeed     = seed;
+    s->rng.seed(static_cast<std::mt19937::result_type>(seed));
+}
+
+int ParticleEmitter::getRandomSeed() { return config()->randomSeed; }
+
+void ParticleEmitter::setAutoRandomSeed(bool enabled) { config()->autoRandomSeed = enabled; }
+bool ParticleEmitter::getAutoRandomSeed() { return config()->autoRandomSeed; }
+
+void ParticleEmitter::start() {
+    auto c    = config();
+    auto s    = sim();
+    int  seed = c->randomSeed;
+    if (c->autoRandomSeed) {
+        std::random_device rd;
+        seed = static_cast<int>(rd());
+    }
+    s->activeSeed = seed;
+    s->rng.seed(static_cast<std::mt19937::result_type>(seed));
+    s->active            = true;
+    s->paused            = false;
+    s->emitterAge        = 0.f;
+    s->fixedTimeAccum    = 0.f;
+    s->distanceEmitAccum = 0.f;
+    for (auto& b : c->bursts) b.emitted = false;
+    const float prewarm = c->prewarmSeconds;
+    if (prewarm > 0.f) {
+        constexpr float kPrewarmDt = 1.f / 60.f;
+        const int       steps      = int(std::ceil(prewarm / kPrewarmDt));
+        for (int i = 0; i < steps; ++i) stepEmitterSim(*c, *s, kPrewarmDt);
+    }
+}
+
+void ParticleEmitter::stop() {
+    auto s               = sim();
+    s->active            = false;
+    s->paused            = false;
+    s->emitAccum         = 0.f;
+    s->distanceEmitAccum = 0.f;
+    s->fixedTimeAccum    = 0.f;
+    s->emitterAge        = 0.f;
+    s->lastX             = config()->x;
+    s->lastY             = config()->y;
+    s->hasLastPos        = true;
+}
+
+void ParticleEmitter::pause() {
+    auto s = sim();
+    if (s->active) s->paused = true;
+}
+
+void ParticleEmitter::reset() {
+    auto s               = sim();
+    s->alive             = 0;
+    s->emitAccum         = 0.f;
+    s->distanceEmitAccum = 0.f;
+    s->fixedTimeAccum    = 0.f;
+    s->emitterAge        = 0.f;
+    s->hasLastPos        = false;
+    s->overflowWarned    = false;
+    for (auto& b : config()->bursts) b.emitted = false;
+    for (auto& p : s->particles) p.life = 0.f;
+    auto g = gpuSim();
+    if (g->buffer) {
+        try {
+            g->buffer->fillFloat32(0.f);
+        } catch (...) {
+        }
+    }
+    if (!g->mirror.empty()) std::fill(g->mirror.begin(), g->mirror.end(), 0.f);
+}
+
+void ParticleEmitter::emit(int count) {
+    if (count <= 0) return;
+    auto c = config();
+    auto s = sim();
+    // Spawn at the CURRENT attached position so manual bursts do not lag a
+    // frame behind animation or IK updates.
+    syncAttach();
+    for (int i = 0; i < count; ++i) spawnParticle(*c, *s);
+}
+
+bool ParticleEmitter::isActive() {
+    auto s = sim();
+    return s->active && !s->paused;
+}
+bool ParticleEmitter::isPaused() { return sim()->paused; }
+bool ParticleEmitter::isStopped() { return !sim()->active; }
+
+int ParticleEmitter::getCount() { return sim()->alive; }
+int ParticleEmitter::getBufferSize() { return int(sim()->particles.size()); }
+
+}  // namespace eve::particles
