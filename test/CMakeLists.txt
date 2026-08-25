@@ -115,6 +115,7 @@ file(GLOB all_test_cpp
   procgen_simulation.cpp
   roguelike_generator.cpp
   stylize.cpp
+  stylize_effects.cpp
   snow.cpp
   Xray.cpp
   voxel.cpp
