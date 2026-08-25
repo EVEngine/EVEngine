@@ -619,10 +619,9 @@ void Graphics::clear2DBatches() {
     sceneColorComposited = false;
 }
 
-void Graphics::noteSolidOverlay() {
-    if (solidBatches.empty()) return;
-    const uint32_t idx = uint32_t(solidBatches.size() - 1);
-    const uint32_t n = uint32_t(solidBatches.back().batch.vertices().size());
+void Graphics::noteSolidOverlay(uint32_t idx) {
+    if (idx >= solidBatches.size()) return;
+    const uint32_t n = uint32_t(solidBatches[idx].batch.vertices().size());
     auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
     if (!spans.empty() && spans.back().kind == OverlayKind::Solid &&
         spans.back().index == idx) {
@@ -633,18 +632,16 @@ void Graphics::noteSolidOverlay() {
     spans.push_back({OverlayKind::Solid, idx, begin, n - begin});
 }
 
-void Graphics::noteTexturedOverlay(Texture *tex) {
+void Graphics::noteTexturedOverlay(Texture *tex, uint32_t idx) {
     if (tex && tex == getSceneColorTexture()) sceneColorComposited = true;
     auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
-    const uint32_t idx = texturedBatches.empty() ? 0u : uint32_t(texturedBatches.size() - 1);
     if (!spans.empty() && spans.back().kind == OverlayKind::Textured && spans.back().index == idx)
         return;
     spans.push_back({OverlayKind::Textured, idx, 0, 0});
 }
 
-void Graphics::noteLitOverlay() {
+void Graphics::noteLitOverlay(uint32_t idx) {
     auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
-    const uint32_t idx = litBatches.empty() ? 0u : uint32_t(litBatches.size() - 1);
     if (!spans.empty() && spans.back().kind == OverlayKind::Lit && spans.back().index == idx)
         return;
     spans.push_back({OverlayKind::Lit, idx, 0, 0});
@@ -670,7 +667,7 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
         it = solidBatches.end() - 1;
     }
     it->batch.addRect(x, y, w, h, color);
-    noteSolidOverlay();
+    noteSolidOverlay(uint32_t(it - solidBatches.begin()));
 }
 
 void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
@@ -682,7 +679,7 @@ void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float 
         it = solidBatches.end() - 1;
     }
     it->batch.addRectRotated(cx, cy, w, h, degrees, color);
-    noteSolidOverlay();
+    noteSolidOverlay(uint32_t(it - solidBatches.begin()));
 }
 
 
@@ -755,7 +752,7 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
         texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, blend, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
-    noteTexturedOverlay(texture);
+    noteTexturedOverlay(texture, uint32_t(texturedBatches.size() - 1));
 }
 
 void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
@@ -774,7 +771,7 @@ void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader,
     }
     texturedBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1,
                                                         rotatedUV);
-    noteTexturedOverlay(texture);
+    noteTexturedOverlay(texture, uint32_t(texturedBatches.size() - 1));
 }
 
 void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
@@ -793,7 +790,7 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
             TexturedBatch{color, depth, shader, BlendMode::Alpha, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
-    noteTexturedOverlay(color);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
 }
 
 void Graphics::setLighting2D(const Lighting2DUBO &ubo) { lighting2dFrame = ubo; }
@@ -818,7 +815,7 @@ void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, 
         litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
     }
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
-    noteLitOverlay();
+    noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 
 vkb::BoundSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen) {

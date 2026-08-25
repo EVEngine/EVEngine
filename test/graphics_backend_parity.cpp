@@ -184,45 +184,45 @@ TEST_CASE("graphics.backendParity.draw2dUvRotationAndBlendModes") {
     REQUIRE(image.get() != nullptr);
 
     const uint8_t *crop = pixel(*image, 10, 8);
-    CHECK(crop[0] < 8);
-    CHECK(crop[1] > 247);
-    CHECK(crop[2] < 8);
+    REQUIRE(crop[0] < 8);
+    REQUIRE(crop[1] > 247);
+    REQUIRE(crop[2] < 8);
 
     const uint8_t *rotatedSolid = pixel(*image, 34, 3);
-    CHECK(rotatedSolid[0] > 247);
-    CHECK(rotatedSolid[1] > 247);
-    CHECK(rotatedSolid[2] < 8);
+    REQUIRE(rotatedSolid[0] > 247);
+    REQUIRE(rotatedSolid[1] > 247);
+    REQUIRE(rotatedSolid[2] < 8);
     const uint8_t *outsideSolid = pixel(*image, 27, 10);
-    CHECK(outsideSolid[0] < 8);
-    CHECK(outsideSolid[1] < 8);
-    CHECK(outsideSolid[2] < 8);
+    REQUIRE(outsideSolid[0] < 8);
+    REQUIRE(outsideSolid[1] < 8);
+    REQUIRE(outsideSolid[2] < 8);
 
     const uint8_t *rotatedTexture = pixel(*image, 50, 3);
-    CHECK(rotatedTexture[0] > 247);
-    CHECK(rotatedTexture[1] < 8);
-    CHECK(rotatedTexture[2] < 8);
+    REQUIRE(rotatedTexture[0] > 247);
+    REQUIRE(rotatedTexture[1] < 8);
+    REQUIRE(rotatedTexture[2] < 8);
 
     const uint8_t *additive = pixel(*image, 8, 34);
     const bool additiveRed = additive[0] >= 126 && additive[0] <= 129;
-    CHECK(additiveRed);
-    CHECK(additive[1] < 8);
+    REQUIRE(additiveRed);
+    REQUIRE(additive[1] < 8);
     const bool additiveBlue = additive[2] >= 126 && additive[2] <= 129;
-    CHECK(additiveBlue);
+    REQUIRE(additiveBlue);
 
     const uint8_t *premultiplied = pixel(*image, 24, 34);
     const bool premultipliedRed = premultiplied[0] >= 62 && premultiplied[0] <= 65;
-    CHECK(premultipliedRed);
-    CHECK(premultiplied[1] < 8);
+    REQUIRE(premultipliedRed);
+    REQUIRE(premultiplied[1] < 8);
     const bool premultipliedBlue = premultiplied[2] >= 190 && premultiplied[2] <= 193;
-    CHECK(premultipliedBlue);
+    REQUIRE(premultipliedBlue);
 
     const uint8_t *multiply = pixel(*image, 40, 34);
     const bool multiplyRed = multiply[0] >= 62 && multiply[0] <= 65;
     const bool multiplyGreen = multiply[1] >= 62 && multiply[1] <= 65;
     const bool multiplyBlue = multiply[2] >= 62 && multiply[2] <= 65;
-    CHECK(multiplyRed);
-    CHECK(multiplyGreen);
-    CHECK(multiplyBlue);
+    REQUIRE(multiplyRed);
+    REQUIRE(multiplyGreen);
+    REQUIRE(multiplyBlue);
     writeParityArtifact(*image, "draw2d_uv_rotation_blend_modes", backend);
 }
 

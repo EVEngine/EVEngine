@@ -690,8 +690,9 @@ private:
     };
     std::vector<OverlaySpan> overlaySpans;
     bool sceneColorComposited = false;
-    void noteSolidOverlay();
-    void noteTexturedOverlay(Texture *tex);
+    void noteSolidOverlay(uint32_t batchIndex);
+    void noteTexturedOverlay(Texture *tex, uint32_t batchIndex);
+    void noteLitOverlay(uint32_t batchIndex);
     void clear2DBatches();
 
     // 3D frame state.

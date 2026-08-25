@@ -2762,10 +2762,9 @@ void Graphics::clear2DBatches() {
     sceneColorComposited = false;
 }
 
-void Graphics::noteSolidOverlay() {
-    if (solidBatches.empty()) return;
-    const uint32_t idx = uint32_t(solidBatches.size() - 1);
-    const uint32_t n = uint32_t(solidBatches.back().batch.vertices().size());
+void Graphics::noteSolidOverlay(uint32_t idx) {
+    if (idx >= solidBatches.size()) return;
+    const uint32_t n = uint32_t(solidBatches[idx].batch.vertices().size());
     if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Solid &&
         overlaySpans.back().index == idx) {
         overlaySpans.back().vertCount = n - overlaySpans.back().vertBegin;
@@ -2775,13 +2774,19 @@ void Graphics::noteSolidOverlay() {
     overlaySpans.push_back({OverlayKind::Solid, idx, begin, n - begin});
 }
 
-void Graphics::noteTexturedOverlay(Texture *tex) {
+void Graphics::noteTexturedOverlay(Texture *tex, uint32_t idx) {
     if (tex && tex == getSceneColorTexture()) sceneColorComposited = true;
-    const uint32_t idx = texturedBatches.empty() ? 0u : uint32_t(texturedBatches.size() - 1);
     if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Textured &&
         overlaySpans.back().index == idx)
         return;
     overlaySpans.push_back({OverlayKind::Textured, idx, 0, 0});
+}
+
+void Graphics::noteLitOverlay(uint32_t idx) {
+    if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Lit &&
+        overlaySpans.back().index == idx)
+        return;
+    overlaySpans.push_back({OverlayKind::Lit, idx, 0, 0});
 }
 
 void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &color,
@@ -2793,7 +2798,7 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
         it = solidBatches.end() - 1;
     }
     it->batch.addRect(x, y, w, h, color);
-    noteSolidOverlay();
+    noteSolidOverlay(uint32_t(it - solidBatches.begin()));
 }
 
 void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
@@ -2805,7 +2810,7 @@ void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float 
         it = solidBatches.end() - 1;
     }
     it->batch.addRectRotated(cx, cy, w, h, degrees, color);
-    noteSolidOverlay();
+    noteSolidOverlay(uint32_t(it - solidBatches.begin()));
 }
 
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h,
@@ -2836,7 +2841,7 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
         texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, blend, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
-    noteTexturedOverlay(texture);
+    noteTexturedOverlay(texture, uint32_t(texturedBatches.size() - 1));
 }
 
 void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
@@ -2847,17 +2852,14 @@ void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader,
         drawSolidRect(cx - w * 0.5f, cy - h * 0.5f, w, h, color, blend);
         return;
     }
-    auto it = std::find_if(texturedBatches.begin(), texturedBatches.end(),
-                           [&](const TexturedBatch &tb) {
-                               return tb.texture == texture && tb.shader == shader &&
-                                      tb.depth == nullptr && tb.blend == blend;
-                           });
-    if (it == texturedBatches.end()) {
+    if (texturedBatches.empty() || texturedBatches.back().texture != texture ||
+        texturedBatches.back().shader != shader || texturedBatches.back().depth != nullptr ||
+        texturedBatches.back().blend != blend) {
         texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, blend, Batcher{}});
-        it = texturedBatches.end() - 1;
     }
-    it->batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1, rotatedUV);
-    noteTexturedOverlay(texture);
+    texturedBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1,
+                                                        v1, rotatedUV);
+    noteTexturedOverlay(texture, uint32_t(texturedBatches.size() - 1));
 }
 
 void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
@@ -2866,17 +2868,13 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
         drawSolidRect(x, y, w, h, tint);
         return;
     }
-    auto it = std::find_if(texturedBatches.begin(), texturedBatches.end(),
-                           [&](const TexturedBatch &tb) {
-                               return tb.texture == color && tb.shader == shader &&
-                                      tb.depth == depth;
-                           });
-    if (it == texturedBatches.end()) {
+    if (texturedBatches.empty() || texturedBatches.back().texture != color ||
+        texturedBatches.back().shader != shader || texturedBatches.back().depth != depth ||
+        texturedBatches.back().blend != BlendMode::Alpha) {
         texturedBatches.push_back(TexturedBatch{color, depth, shader, BlendMode::Alpha, Batcher{}});
-        it = texturedBatches.end() - 1;
     }
-    it->batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f, false);
-    noteTexturedOverlay(color);
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f, false);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
 }
 
 void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
@@ -2886,15 +2884,12 @@ void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, 
         drawSolidRect(x, y, w, h, color);
         return;
     }
-    auto it = std::find_if(litBatches.begin(), litBatches.end(),
-                           [&](const LitBatch &lb) {
-                               return lb.albedo == albedo && lb.normal == normal;
-                           });
-    if (it == litBatches.end()) {
+    if (litBatches.empty() || litBatches.back().albedo != albedo ||
+        litBatches.back().normal != normal) {
         litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
-        it = litBatches.end() - 1;
     }
-    it->batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, false);
+    litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, false);
+    noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 
 void Graphics::setLighting2D(const Lighting2DUBO &ubo) {

@@ -552,9 +552,9 @@ private:
     void flushToSwapchain();
     void flushToOffscreen(OffscreenCanvas *canvas);
     void abortOpen3DFrame();
-    void noteSolidOverlay();
-    void noteTexturedOverlay(Texture *tex);
-    void noteLitOverlay();
+    void noteSolidOverlay(uint32_t batchIndex);
+    void noteTexturedOverlay(Texture *tex, uint32_t batchIndex);
+    void noteLitOverlay(uint32_t batchIndex);
     void clear2DBatches();
     void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
                                  std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
