@@ -55,7 +55,7 @@ and `test gap`.
 | Stylize post / mesh effects | supported, core verified | Cartoon, watercolor, ink and pixel post passes plus cartoon/ink mesh variants have native WGSL implementations with the same packed public parameters; shared creation and rendering tests run on both backends | Compare the full cylinder gallery and tune image tolerances |
 | Font rendering | supported | Native and browser WebGPU render supplied font atlases; browser builds do not synthesize atlases with FreeType | Add packaged-atlas browser examples |
 | GPU-driven/indirect/visibility buffer | supported, verified | WebGPU compute-compacts 256-byte-aligned per-bucket model ranges, emits portable indirect commands, builds a full previous-frame HZB mip chain and uses eye/FOV/clip inputs for conservative occlusion before the ID/barycentric visibility pass | Extend the parity scene to browser artifacts and mixed opaque/transparent content |
-| Virtual geometry GPU path | partial, core verified | WebGPU uses compute-written per-cluster indirect commands (`instanceCount=0` for frustum-culled clusters) and the shared ID/bary resolve, but integrated rendering does not yet apply the DAG screen-space-error LOD or HZB occlusion used by the mature Vulkan path | Add DAG traversal/SSE selection, HZB cluster occlusion and large multi-asset artifacts |
+| Virtual geometry GPU path | supported, verified | WebGPU uses compute-written per-cluster indirect commands (`instanceCount=0` for culled clusters), consumes the shared previous-frame HZB and feeds the same ID/bary resolve semantics as Vulkan; both integrated backends currently draw full-detail clusters | Add DAG traversal/SSE selection to both backends and large multi-asset artifacts |
 | Standalone `VirtualGeometryRenderer` | supported, verified | WGSL ports of the cluster-DAG cull and atomic software raster passes share the existing build, resolve and LOD-transition tests with Vulkan | Add browser execution and pixel-hash artifacts |
 | Native macOS surface | supported, CI verified | SDL Cocoa windows are backed by a retained CAMetalLayer and native Dawn Metal surface | Keep the targeted macOS render tests in CI |
 | Browser render tests | supported in CI | Chromium/SwiftShader launches the WASM example, captures a frame and rejects black/white/flat output | Add scene-by-scene browser semantic assertions |
@@ -63,15 +63,17 @@ and `test gap`.
 
 ## Re-audit findings (2026-08-25)
 
-Source-level re-audit after the core parity work found two remaining functional
-gaps rather than unsupported public entry points:
-
-1. The integrated WebGPU virtual-geometry path frustum-culls every cluster but
-   does not yet select the cluster DAG by screen-space error or consume HZB.
+Source-level re-audit after the core parity work originally found missing HZB
+consumption in both WebGPU GPU-driven paths. Those parity gaps are now closed.
 
 The ordinary GPU-driven path now consumes `eye`, `fovYDeg`, `nearZ` and `farZ`,
 builds all HZB mips from the previous G-buffer depth, and has a GPU indirect-count
 regression proving that a fully hidden in-frustum instance is removed.
+
+The integrated virtual-geometry path now shares the same HZB semantics and has
+the same GPU indirect-count regression. DAG screen-space-error selection is not
+a Vulkan/WebGPU gap: the current Vulkan shader also documents full-detail
+cluster rendering and leaves DAG LOD as follow-up work for both backends.
 
 Backend shader languages remain an intentional contract difference: Vulkan
 accepts SPIR-V/GLSL assets and browser WebGPU accepts WGSL. Stale Vulkan-only

@@ -182,6 +182,18 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
     object->setMesh(mesh);
     object->setMaterial(material);
 
+    // A second copy lies directly behind the first one. It stays inside the
+    // frustum but must disappear from the GPU-written indirect commands once
+    // the previous-frame HZB is available.
+    const uint32_t hiddenAssetId = gfx->gpuDrivenVgUpload(upload);
+    REQUIRE(hiddenAssetId != kInvalidGpuDrivenSlot);
+    Mesh *hiddenMesh = gfx->newMeshFromArrays(positions, normals, nullptr, 3, indices, 3);
+    REQUIRE(gfx->gpuDrivenVgAttachToMesh(hiddenMesh, hiddenAssetId));
+    auto *hiddenObject = Renderable3D::create();
+    hiddenObject->setMesh(hiddenMesh);
+    hiddenObject->setMaterial(material);
+    hiddenObject->setPosition(0.f, 0.f, -4.f);
+
     auto *camera = Camera3D::createCamera();
     camera->setEye(0.f, 0.f, 3.2f);
     camera->setTarget(0.f, 0.f, 0.f);
@@ -210,8 +222,9 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
 #ifdef EVENGINE_WEBGPU
     auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
     REQUIRE(webgpu != nullptr);
-    REQUIRE(webgpu->debugGpuDrivenVgDispatchCount() == 1);
-    REQUIRE(webgpu->debugGpuDrivenVgIndirectDrawCount() == 1);
+    REQUIRE(webgpu->debugGpuDrivenVgDispatchCount() == 2);
+    REQUIRE(webgpu->debugGpuDrivenVgGpuVisibleCount() == 1);
+    REQUIRE(webgpu->debugGpuDrivenVgIndirectDrawCount() == 2);
 #endif
 
     control->disable("gpuDriven");

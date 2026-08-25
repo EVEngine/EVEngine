@@ -799,21 +799,22 @@ void Graphics::gpuDrivenDrawOpaque() {
 }
 
 void Graphics::recordGpuDrivenCompute(wgpu::CommandEncoder encoder) {
-    if (gpuDrivenComputePending_ && gpuDrivenCullPipeline_ && gpuDrivenComputeBindGroup_) {
-        if (gbufferDepthValid_ && gpuDrivenHzbPipeline_ && gpuDrivenHzbBindGroup_) {
-            uint32_t width = gpuDrivenHzbWidth_;
-            uint32_t height = gpuDrivenHzbHeight_;
-            for (uint32_t mip = 0; mip < gpuDrivenHzbOffsets_.size(); ++mip) {
-                wgpu::ComputePassEncoder hzbPass = encoder.BeginComputePass();
-                hzbPass.SetPipeline(gpuDrivenHzbPipeline_);
-                const uint32_t dynamicOffset = mip * 256u;
-                hzbPass.SetBindGroup(0, gpuDrivenHzbBindGroup_, 1, &dynamicOffset);
-                hzbPass.DispatchWorkgroups((width + 7u) / 8u, (height + 7u) / 8u, 1);
-                hzbPass.End();
-                width = std::max(width >> 1u, 1u);
-                height = std::max(height >> 1u, 1u);
-            }
+    if ((gpuDrivenComputePending_ || gpuDrivenVgComputePending_) && gbufferDepthValid_ &&
+        gpuDrivenHzbPipeline_ && gpuDrivenHzbBindGroup_) {
+        uint32_t width = gpuDrivenHzbWidth_;
+        uint32_t height = gpuDrivenHzbHeight_;
+        for (uint32_t mip = 0; mip < gpuDrivenHzbOffsets_.size(); ++mip) {
+            wgpu::ComputePassEncoder hzbPass = encoder.BeginComputePass();
+            hzbPass.SetPipeline(gpuDrivenHzbPipeline_);
+            const uint32_t dynamicOffset = mip * 256u;
+            hzbPass.SetBindGroup(0, gpuDrivenHzbBindGroup_, 1, &dynamicOffset);
+            hzbPass.DispatchWorkgroups((width + 7u) / 8u, (height + 7u) / 8u, 1);
+            hzbPass.End();
+            width = std::max(width >> 1u, 1u);
+            height = std::max(height >> 1u, 1u);
         }
+    }
+    if (gpuDrivenComputePending_ && gpuDrivenCullPipeline_ && gpuDrivenComputeBindGroup_) {
         wgpu::ComputePassEncoder pass = encoder.BeginComputePass();
         pass.SetPipeline(gpuDrivenCullPipeline_);
         pass.SetBindGroup(0, gpuDrivenComputeBindGroup_, 0, nullptr);

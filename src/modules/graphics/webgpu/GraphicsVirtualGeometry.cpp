@@ -3,6 +3,7 @@
 #include "graphics/Material.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 
 #include <glm/gtc/matrix_access.hpp>
@@ -28,11 +29,15 @@ wgpu::ShaderModule vgShader(wgpu::Device device, const char *source) {
 }
 
 struct VgCullParams {
+    glm::mat4 viewProj{1.f};
     glm::vec4 planes[6]{};
     glm::mat4 model{1.f};
+    glm::vec4 cameraPos{};
+    glm::vec4 clipNearFar{};
+    glm::vec4 hzbInfo{};
     glm::uvec4 counts{};
 };
-static_assert(sizeof(VgCullParams) == 176);
+static_assert(sizeof(VgCullParams) == 288);
 
 struct VgDrawParams {
     glm::mat4 mvp{1.f};
@@ -48,7 +53,15 @@ static_assert(sizeof(VgDrawParams) == 224);
 
 constexpr const char *kVgCullWgsl = R"wgsl(
 struct Cluster { u0: vec4u, u1: vec4u, u2: vec4u, u3: vec4u };
-struct Params { planes: array<vec4f, 6>, model: mat4x4f, counts: vec4u };
+struct Params {
+    viewProj: mat4x4f,
+    planes: array<vec4f, 6>,
+    model: mat4x4f,
+    cameraPos: vec4f,
+    clipNearFar: vec4f,
+    hzbInfo: vec4f,
+    counts: vec4u,
+};
 struct Command {
     vertexCount: u32,
     instanceCount: u32,
@@ -58,6 +71,34 @@ struct Command {
 @group(0) @binding(0) var<uniform> params: Params;
 @group(0) @binding(1) var<storage, read> clusters: array<Cluster>;
 @group(0) @binding(2) var<storage, read_write> commands: array<Command>;
+@group(0) @binding(3) var<storage, read> hzb: array<u32>;
+
+fn remainsVisibleAgainstHzb(center: vec3f, radius: f32) -> bool {
+    if (params.clipNearFar.w < 0.5) { return true; }
+    let clip = params.viewProj * vec4f(center, 1.0);
+    if (clip.w <= params.clipNearFar.x) { return true; }
+    let ndc = clip.xyz / clip.w;
+    if (abs(ndc.x) > 1.0 || abs(ndc.y) > 1.0 || ndc.z > 1.0) { return true; }
+    let toEye = normalize(params.cameraPos.xyz - center);
+    let frontClip = params.viewProj * vec4f(center + toEye * radius, 1.0);
+    let frontZ = frontClip.z / max(frontClip.w, 1e-6);
+    let viewDepth = max(length(center - params.cameraPos.xyz), 1e-4);
+    let diameterPx = max(2.0 * radius * params.clipNearFar.z / viewDepth, 1.0);
+    let mip = min(u32(ceil(log2(diameterPx))), u32(params.hzbInfo.x));
+    let width = max(u32(params.hzbInfo.z) >> mip, 1u);
+    let height = max(u32(params.hzbInfo.w) >> mip, 1u);
+    let uv = vec2f(ndc.x * 0.5 + 0.5, 0.5 - ndc.y * 0.5);
+    let p0 = clamp(vec2i(uv * vec2f(f32(width), f32(height))) - vec2i(1),
+                   vec2i(0), vec2i(i32(width) - 1, i32(height) - 1));
+    let p1 = min(p0 + vec2i(1), vec2i(i32(width) - 1, i32(height) - 1));
+    let base = 16u + hzb[mip];
+    let a = bitcast<f32>(hzb[base + u32(p0.y) * width + u32(p0.x)]);
+    let b = bitcast<f32>(hzb[base + u32(p0.y) * width + u32(p1.x)]);
+    let c = bitcast<f32>(hzb[base + u32(p1.y) * width + u32(p0.x)]);
+    let d = bitcast<f32>(hzb[base + u32(p1.y) * width + u32(p1.x)]);
+    let blocker = min(min(a, b), min(c, d));
+    return blocker >= 0.9999 || frontZ <= blocker + 0.002;
+}
 
 @compute @workgroup_size(64)
 fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
@@ -75,6 +116,7 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
         let plane = params.planes[p];
         if (dot(plane.xyz, worldCenter) + plane.w < -radius) { visible = false; }
     }
+    if (visible) { visible = remainsVisibleAgainstHzb(worldCenter, radius); }
     commands[cid].vertexCount = cluster.u1.y * 3u;
     commands[cid].instanceCount = select(0u, 1u, visible);
     commands[cid].firstVertex = 0u;
@@ -226,7 +268,8 @@ uint32_t Graphics::gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
     WGPUBufferDescriptor indirect{};
     indirect.label = vgLabel("eve_vg_indirect");
     indirect.size = uint64_t(asset.clusterCount) * 16u;
-    indirect.usage = WGPUBufferUsage_Storage | WGPUBufferUsage_Indirect;
+    indirect.usage =
+        WGPUBufferUsage_CopySrc | WGPUBufferUsage_Storage | WGPUBufferUsage_Indirect;
     out.indirect =
         device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&indirect));
     WGPUBufferDescriptor params{};
@@ -264,11 +307,14 @@ bool Graphics::gpuDrivenVgSetInstance(uint32_t vgAssetId, const glm::mat4 &model
 
 void Graphics::gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
                                          float fovYDeg, float nearZ, float farZ) {
-    (void)eye;
-    (void)fovYDeg;
-    (void)nearZ;
-    (void)farZ;
+    if (gbufferSlots.empty() && sceneColorWidth > 0 && sceneColorHeight > 0)
+        createGbufferResources(sceneColorWidth, sceneColorHeight);
+    if (!gbufferSlots.empty()) ensureGpuDrivenResources(1, 1);
     gpuDrivenVgViewProj_ = viewProj;
+    gpuDrivenVgCameraPos_ = eye;
+    gpuDrivenVgFovYDeg_ = fovYDeg;
+    gpuDrivenVgNear_ = nearZ;
+    gpuDrivenVgFar_ = farZ;
     gpuDrivenVgPlanes_[0] = glm::row(viewProj, 3) + glm::row(viewProj, 0);
     gpuDrivenVgPlanes_[1] = glm::row(viewProj, 3) - glm::row(viewProj, 0);
     gpuDrivenVgPlanes_[2] = glm::row(viewProj, 3) + glm::row(viewProj, 1);
@@ -288,7 +334,7 @@ void Graphics::gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::v
 
 void Graphics::ensureGpuDrivenVgResources() {
     if (gpuDrivenVgCullPipeline_) return;
-    WGPUBindGroupLayoutEntry compute[3]{};
+    WGPUBindGroupLayoutEntry compute[4]{};
     compute[0].binding = 0;
     compute[0].visibility = WGPUShaderStage_Compute;
     compute[0].buffer.type = WGPUBufferBindingType_Uniform;
@@ -300,8 +346,11 @@ void Graphics::ensureGpuDrivenVgResources() {
                                          : WGPUBufferBindingType_Storage;
         compute[i].buffer.minBindingSize = i == 1 ? sizeof(GpuVgCluster) : 16u;
     }
+    compute[3].binding = 3;
+    compute[3].visibility = WGPUShaderStage_Compute;
+    compute[3].buffer.type = WGPUBufferBindingType_ReadOnlyStorage;
     WGPUBindGroupLayoutDescriptor cbgl{};
-    cbgl.entryCount = 3;
+    cbgl.entryCount = 4;
     cbgl.entries = compute;
     gpuDrivenVgComputeSetLayout_ = device.CreateBindGroupLayout(
         reinterpret_cast<const wgpu::BindGroupLayoutDescriptor *>(&cbgl));
@@ -424,11 +473,19 @@ void Graphics::recordGpuDrivenVgCompute(wgpu::CommandEncoder encoder) {
     for (auto &asset : gpuDrivenVgAssets_) {
         if (!asset.active) continue;
         VgCullParams params{};
+        params.viewProj = gpuDrivenVgViewProj_;
         std::copy(std::begin(gpuDrivenVgPlanes_), std::end(gpuDrivenVgPlanes_), params.planes);
         params.model = asset.model;
+        params.cameraPos = glm::vec4(gpuDrivenVgCameraPos_, 1.f);
+        const float projScaleY = float(gpuDrivenHzbHeight_) /
+                                 (2.f * std::tan(glm::radians(gpuDrivenVgFovYDeg_) * 0.5f));
+        params.clipNearFar = glm::vec4(gpuDrivenVgNear_, gpuDrivenVgFar_, projScaleY,
+                                       gbufferDepthValid_ ? 1.f : 0.f);
+        params.hzbInfo = glm::vec4(float(gpuDrivenHzbOffsets_.size() - 1u), 0.f,
+                                   float(gpuDrivenHzbWidth_), float(gpuDrivenHzbHeight_));
         params.counts.x = asset.clusterCount;
         queue.WriteBuffer(asset.params, 0, &params, sizeof(params));
-        WGPUBindGroupEntry entries[3]{};
+        WGPUBindGroupEntry entries[4]{};
         entries[0].binding = 0;
         entries[0].buffer = asset.params.Get();
         entries[0].size = sizeof(params);
@@ -438,9 +495,12 @@ void Graphics::recordGpuDrivenVgCompute(wgpu::CommandEncoder encoder) {
         entries[2].binding = 2;
         entries[2].buffer = asset.indirect.Get();
         entries[2].size = uint64_t(asset.clusterCount) * 16u;
+        entries[3].binding = 3;
+        entries[3].buffer = gpuDrivenHzbBuffer_.Get();
+        entries[3].size = gpuDrivenHzbCapacity_;
         WGPUBindGroupDescriptor bgd{};
         bgd.layout = gpuDrivenVgComputeSetLayout_.Get();
-        bgd.entryCount = 3;
+        bgd.entryCount = 4;
         bgd.entries = entries;
         wgpu::BindGroup group = device.CreateBindGroup(
             reinterpret_cast<const wgpu::BindGroupDescriptor *>(&bgd));
@@ -452,6 +512,55 @@ void Graphics::recordGpuDrivenVgCompute(wgpu::CommandEncoder encoder) {
         gpuDrivenVgVisibleDiagnostic_ += asset.clusterCount;
     }
     gpuDrivenVgComputePending_ = false;
+}
+
+uint32_t Graphics::debugGpuDrivenVgGpuVisibleCount() {
+#if defined(__EMSCRIPTEN__)
+    return gpuDrivenVgVisibleDiagnostic_;
+#else
+    uint64_t totalBytes = 0;
+    for (const auto &asset : gpuDrivenVgAssets_)
+        totalBytes += uint64_t(asset.clusterCount) * 16u;
+    if (totalBytes == 0) return 0;
+    WGPUBufferDescriptor bd{};
+    bd.label = vgLabel("eve_vg_debug_readback");
+    bd.size = totalBytes;
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;
+    wgpu::Buffer dst =
+        device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    uint64_t offset = 0;
+    for (const auto &asset : gpuDrivenVgAssets_) {
+        const uint64_t bytes = uint64_t(asset.clusterCount) * 16u;
+        encoder.CopyBufferToBuffer(asset.indirect, 0, dst, offset, bytes);
+        offset += bytes;
+    }
+    wgpu::CommandBuffer command = encoder.Finish();
+    queue.Submit(1, &command);
+    struct MapState {
+        bool ok = false;
+    } state;
+    WGPUBufferMapCallbackInfo callback{};
+    callback.mode = WGPUCallbackMode_WaitAnyOnly;
+    callback.callback = [](WGPUMapAsyncStatus status, WGPUStringView, void *userdata1, void *) {
+        static_cast<MapState *>(userdata1)->ok = status == WGPUMapAsyncStatus_Success;
+    };
+    callback.userdata1 = &state;
+    WGPUFuture future = wgpuBufferMapAsync(dst.Get(), WGPUMapMode_Read, 0, totalBytes, callback);
+    WGPUFutureWaitInfo wait{};
+    wait.future = future;
+    (void)wgpuInstanceWaitAny(instance.Get(), 1, &wait, UINT64_MAX);
+    if (!state.ok) return 0;
+    const auto *words = static_cast<const uint32_t *>(dst.GetConstMappedRange(0, totalBytes));
+    uint32_t visible = 0;
+    if (words) {
+        for (uint64_t commandOffset = 0; commandOffset < totalBytes / sizeof(uint32_t);
+             commandOffset += 4u)
+            visible += words[commandOffset + 1u];
+    }
+    dst.Unmap();
+    return visible;
+#endif
 }
 
 void Graphics::recordGpuDrivenVgVisibility(wgpu::CommandEncoder encoder) {

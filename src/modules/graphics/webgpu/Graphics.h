@@ -178,6 +178,8 @@ public:
     uint32_t debugGpuDrivenVgIndirectDrawCount() const {
         return gpuDrivenVgLastIndirectDrawCount_;
     }
+    /** @brief Read back the last VG indirect instance total (native tests). */
+    uint32_t debugGpuDrivenVgGpuVisibleCount();
 
     void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;
@@ -922,6 +924,10 @@ private:
     wgpu::RenderPipeline gpuDrivenVgVisPipeline_;
     wgpu::RenderPipeline gpuDrivenVgResolvePipeline_;
     glm::mat4 gpuDrivenVgViewProj_{1.f};
+    glm::vec3 gpuDrivenVgCameraPos_{0.f};
+    float gpuDrivenVgFovYDeg_ = 60.f;
+    float gpuDrivenVgNear_ = 0.1f;
+    float gpuDrivenVgFar_ = 100.f;
     glm::vec4 gpuDrivenVgPlanes_[6]{};
     uint32_t gpuDrivenVgVisibleDiagnostic_ = 0;
     uint32_t gpuDrivenVgLastIndirectDrawCount_ = 0;
