@@ -168,6 +168,10 @@ public:
     uint32_t debugGpuDrivenIndirectDrawCount() const { return gpuDrivenLastIndirectDrawCount_; }
     /** @brief Read back the last GPU-written indirect instance total (native tests). */
     uint32_t debugGpuDrivenGpuVisibleCount();
+    /** @brief Return the active hierarchical-depth mip count for conformance tests. */
+    uint32_t debugGpuDrivenHzbMipCount() const {
+        return static_cast<uint32_t>(gpuDrivenHzbOffsets_.size());
+    }
     /** @brief Return VG clusters dispatched by the last WebGPU compute section. */
     uint32_t debugGpuDrivenVgDispatchCount() const { return gpuDrivenVgVisibleDiagnostic_; }
     /** @brief Return per-cluster indirect commands recorded by the VG visibility pass. */
@@ -855,6 +859,16 @@ private:
     wgpu::PipelineLayout gpuDrivenComputePipelineLayout_;
     wgpu::PipelineLayout gpuDrivenRenderPipelineLayout_;
     wgpu::ComputePipeline gpuDrivenCullPipeline_;
+    wgpu::BindGroupLayout gpuDrivenHzbSetLayout_;
+    wgpu::PipelineLayout gpuDrivenHzbPipelineLayout_;
+    wgpu::ComputePipeline gpuDrivenHzbPipeline_;
+    wgpu::Buffer gpuDrivenHzbBuffer_;
+    wgpu::Buffer gpuDrivenHzbParamsBuffer_;
+    wgpu::BindGroup gpuDrivenHzbBindGroup_;
+    std::vector<uint32_t> gpuDrivenHzbOffsets_;
+    uint32_t gpuDrivenHzbWidth_ = 0;
+    uint32_t gpuDrivenHzbHeight_ = 0;
+    uint64_t gpuDrivenHzbCapacity_ = 0;
     wgpu::RenderPipeline gpuDrivenRenderPipeline_;
     wgpu::RenderPipeline gpuDrivenCanvasPipeline_;
     wgpu::Buffer gpuDrivenParamsBuffer_;

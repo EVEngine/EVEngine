@@ -98,6 +98,7 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
     REQUIRE(webgpu != nullptr);
     REQUIRE(webgpu->debugGpuDrivenVisibleCount() == 3);
+    REQUIRE(webgpu->debugGpuDrivenHzbMipCount() > 1);
     REQUIRE(webgpu->debugGpuDrivenGpuVisibleCount() == 2);
     REQUIRE(webgpu->debugGpuDrivenDispatchCount() == 4);
     REQUIRE(webgpu->debugGpuDrivenIndirectDrawCount() == 2);

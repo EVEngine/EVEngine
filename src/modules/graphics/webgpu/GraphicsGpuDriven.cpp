@@ -59,6 +59,50 @@ struct VisIndirectCommand {
 };
 static_assert(sizeof(VisIndirectCommand) == 16);
 
+struct HzbBuildParams {
+    glm::uvec4 info{};  // mip, width, height, previous-mip word offset
+    glm::uvec4 source{};  // previous width, previous height
+};
+static_assert(sizeof(HzbBuildParams) == 32);
+
+constexpr uint32_t kMaxHzbMips = 16;
+constexpr uint32_t kHzbHeaderWords = 16;
+
+constexpr const char *kHzbBuildWgsl = R"wgsl(
+struct BuildParams { info: vec4u, source: vec4u };
+@group(0) @binding(0) var<uniform> params: BuildParams;
+@group(0) @binding(1) var sourceDepth: texture_depth_2d;
+@group(0) @binding(2) var<storage, read_write> hzb: array<u32>;
+
+fn readHzb(base: u32, width: u32, height: u32, p: vec2i) -> f32 {
+    let q = clamp(p, vec2i(0), vec2i(i32(width) - 1, i32(height) - 1));
+    return bitcast<f32>(hzb[base + u32(q.y) * width + u32(q.x)]);
+}
+
+@compute @workgroup_size(8, 8)
+fn cs_main(@builtin(global_invocation_id) gid: vec3u) {
+    let mip = params.info.x;
+    let width = params.info.y;
+    let height = params.info.z;
+    if (gid.x >= width || gid.y >= height) { return; }
+    var depth: f32;
+    if (mip == 0u) {
+        depth = textureLoad(sourceDepth, vec2i(gid.xy), 0);
+    } else {
+        let previousWidth = params.source.x;
+        let previousHeight = params.source.y;
+        let previousBase = 16u + params.info.w;
+        let p = vec2i(gid.xy * 2u);
+        depth = max(readHzb(previousBase, previousWidth, previousHeight, p),
+                max(readHzb(previousBase, previousWidth, previousHeight, p + vec2i(1, 0)),
+                max(readHzb(previousBase, previousWidth, previousHeight, p + vec2i(0, 1)),
+                    readHzb(previousBase, previousWidth, previousHeight, p + vec2i(1, 1)))));
+    }
+    let outputBase = 16u + hzb[mip];
+    hzb[outputBase + gid.y * width + gid.x] = bitcast<u32>(depth);
+}
+)wgsl";
+
 constexpr const char *kCullWgsl = R"wgsl(
 struct CullInput {
     model: mat4x4f,
@@ -95,7 +139,7 @@ struct VisIndirectCommand {
 @group(0) @binding(2) var<storage, read_write> visibleModels: array<mat4x4f>;
 @group(0) @binding(3) var<storage, read_write> commands: array<IndirectCommand>;
 @group(0) @binding(4) var<storage, read_write> visCommands: array<VisIndirectCommand>;
-@group(0) @binding(5) var previousDepth: texture_depth_2d;
+@group(0) @binding(5) var<storage, read> hzb: array<u32>;
 
 fn remainsVisibleAgainstDepth(center: vec3f, radius: f32) -> bool {
     if (params.clipNearFar.w < 0.5) { return true; }
@@ -109,21 +153,20 @@ fn remainsVisibleAgainstDepth(center: vec3f, radius: f32) -> bool {
     let frontZ = frontClip.z / max(frontClip.w, 1e-6);
     let viewDepth = max(length(center - params.cameraPos.xyz), 1e-4);
     let radiusPx = radius * params.clipNearFar.z / viewDepth;
-    let dims = vec2i(textureDimensions(previousDepth));
-    let centerPx = vec2f((ndc.x * 0.5 + 0.5) * f32(dims.x),
-                         (0.5 - ndc.y * 0.5) * f32(dims.y));
-    let delta = max(radiusPx, 1.0);
-    let limit = dims - vec2i(1);
-    let p0 = clamp(vec2i(centerPx), vec2i(0), limit);
-    let px0 = clamp(vec2i(centerPx + vec2f(delta, 0.0)), vec2i(0), limit);
-    let px1 = clamp(vec2i(centerPx - vec2f(delta, 0.0)), vec2i(0), limit);
-    let py0 = clamp(vec2i(centerPx + vec2f(0.0, delta)), vec2i(0), limit);
-    let py1 = clamp(vec2i(centerPx - vec2f(0.0, delta)), vec2i(0), limit);
-    let blocker = max(textureLoad(previousDepth, p0, 0),
-                  max(textureLoad(previousDepth, px0, 0),
-                  max(textureLoad(previousDepth, px1, 0),
-                  max(textureLoad(previousDepth, py0, 0),
-                      textureLoad(previousDepth, py1, 0)))));
+    let diameterPx = max(radiusPx * 2.0, 1.0);
+    let mip = min(u32(ceil(log2(diameterPx))), u32(params.hzbInfo.x));
+    let width = max(u32(params.hzbInfo.z) >> mip, 1u);
+    let height = max(u32(params.hzbInfo.w) >> mip, 1u);
+    let uv = vec2f(ndc.x * 0.5 + 0.5, 0.5 - ndc.y * 0.5);
+    let p0 = clamp(vec2i(uv * vec2f(f32(width), f32(height))) - vec2i(1),
+                   vec2i(0), vec2i(i32(width) - 1, i32(height) - 1));
+    let p1 = min(p0 + vec2i(1), vec2i(i32(width) - 1, i32(height) - 1));
+    let base = 16u + hzb[mip];
+    let a = bitcast<f32>(hzb[base + u32(p0.y) * width + u32(p0.x)]);
+    let b = bitcast<f32>(hzb[base + u32(p0.y) * width + u32(p1.x)]);
+    let c = bitcast<f32>(hzb[base + u32(p1.y) * width + u32(p0.x)]);
+    let d = bitcast<f32>(hzb[base + u32(p1.y) * width + u32(p1.x)]);
+    let blocker = min(min(a, b), min(c, d));
     // All conservative samples must contain geometry closer than the sphere.
     // The epsilon prevents the object's own previous-frame depth from culling it.
     return blocker >= 0.9999 || frontZ <= blocker + 0.002;
@@ -290,9 +333,7 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         cbgl.label = label("eve_gpu_driven_compute_bgl");
         computeEntries[5].binding = 5;
         computeEntries[5].visibility = WGPUShaderStage_Compute;
-        computeEntries[5].texture.sampleType = WGPUTextureSampleType_Depth;
-        computeEntries[5].texture.viewDimension = WGPUTextureViewDimension_2D;
-        computeEntries[5].texture.multisampled = false;
+        computeEntries[5].buffer.type = WGPUBufferBindingType_ReadOnlyStorage;
         cbgl.entryCount = 6;
         cbgl.entries = computeEntries;
         gpuDrivenComputeSetLayout_ = device.CreateBindGroupLayout(
@@ -335,6 +376,40 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         cpd.compute.entryPoint = label("cs_main");
         gpuDrivenCullPipeline_ = device.CreateComputePipeline(
             reinterpret_cast<const wgpu::ComputePipelineDescriptor *>(&cpd));
+
+        WGPUBindGroupLayoutEntry hzbEntries[3]{};
+        hzbEntries[0].binding = 0;
+        hzbEntries[0].visibility = WGPUShaderStage_Compute;
+        hzbEntries[0].buffer.type = WGPUBufferBindingType_Uniform;
+        hzbEntries[0].buffer.hasDynamicOffset = true;
+        hzbEntries[0].buffer.minBindingSize = sizeof(HzbBuildParams);
+        hzbEntries[1].binding = 1;
+        hzbEntries[1].visibility = WGPUShaderStage_Compute;
+        hzbEntries[1].texture.sampleType = WGPUTextureSampleType_Depth;
+        hzbEntries[1].texture.viewDimension = WGPUTextureViewDimension_2D;
+        hzbEntries[2].binding = 2;
+        hzbEntries[2].visibility = WGPUShaderStage_Compute;
+        hzbEntries[2].buffer.type = WGPUBufferBindingType_Storage;
+        WGPUBindGroupLayoutDescriptor hzbBgl{};
+        hzbBgl.label = label("eve_gpu_driven_hzb_bgl");
+        hzbBgl.entryCount = 3;
+        hzbBgl.entries = hzbEntries;
+        gpuDrivenHzbSetLayout_ = device.CreateBindGroupLayout(
+            reinterpret_cast<const wgpu::BindGroupLayoutDescriptor *>(&hzbBgl));
+        WGPUBindGroupLayout hzbLayout = gpuDrivenHzbSetLayout_.Get();
+        WGPUPipelineLayoutDescriptor hzbPl{};
+        hzbPl.bindGroupLayoutCount = 1;
+        hzbPl.bindGroupLayouts = &hzbLayout;
+        gpuDrivenHzbPipelineLayout_ = device.CreatePipelineLayout(
+            reinterpret_cast<const wgpu::PipelineLayoutDescriptor *>(&hzbPl));
+        wgpu::ShaderModule hzbModule = shaderModule(device, kHzbBuildWgsl);
+        WGPUComputePipelineDescriptor hzbPd{};
+        hzbPd.label = label("eve_gpu_driven_hzb_build");
+        hzbPd.layout = gpuDrivenHzbPipelineLayout_.Get();
+        hzbPd.compute.module = hzbModule.Get();
+        hzbPd.compute.entryPoint = label("cs_main");
+        gpuDrivenHzbPipeline_ = device.CreateComputePipeline(
+            reinterpret_cast<const wgpu::ComputePipelineDescriptor *>(&hzbPd));
 
         WGPUVertexAttribute attrs[3]{};
         attrs[0].format = WGPUVertexFormat_Float32x3;
@@ -392,9 +467,40 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         pbd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform;
         gpuDrivenParamsBuffer_ = device.CreateBuffer(
             reinterpret_cast<const wgpu::BufferDescriptor *>(&pbd));
+        pbd.label = label("eve_gpu_driven_hzb_params");
+        pbd.size = kMaxHzbMips * 256u;
+        gpuDrivenHzbParamsBuffer_ = device.CreateBuffer(
+            reinterpret_cast<const wgpu::BufferDescriptor *>(&pbd));
     }
 
     bool recreateGroups = false;
+    const uint32_t hzbWidth = std::max(gbufferWidth, 1);
+    const uint32_t hzbHeight = std::max(gbufferHeight, 1);
+    if (!gpuDrivenHzbBuffer_ || gpuDrivenHzbWidth_ != hzbWidth ||
+        gpuDrivenHzbHeight_ != hzbHeight) {
+        gpuDrivenHzbWidth_ = hzbWidth;
+        gpuDrivenHzbHeight_ = hzbHeight;
+        gpuDrivenHzbOffsets_.clear();
+        uint32_t words = kHzbHeaderWords;
+        for (uint32_t w = hzbWidth, h = hzbHeight;
+             gpuDrivenHzbOffsets_.size() < kMaxHzbMips; w = std::max(w >> 1u, 1u),
+                      h = std::max(h >> 1u, 1u)) {
+            gpuDrivenHzbOffsets_.push_back(words - kHzbHeaderWords);
+            words += w * h;
+            if (w == 1 && h == 1) break;
+        }
+        WGPUBufferDescriptor hzbBd{};
+        hzbBd.label = label("eve_gpu_driven_hzb");
+        hzbBd.size = uint64_t(words) * sizeof(uint32_t);
+        gpuDrivenHzbCapacity_ = hzbBd.size;
+        hzbBd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Storage;
+        gpuDrivenHzbBuffer_ = device.CreateBuffer(
+            reinterpret_cast<const wgpu::BufferDescriptor *>(&hzbBd));
+        queue.WriteBuffer(gpuDrivenHzbBuffer_, 0, gpuDrivenHzbOffsets_.data(),
+                          gpuDrivenHzbOffsets_.size() * sizeof(uint32_t));
+        recreateGroups = true;
+    }
+
     const uint64_t inputBytes = uint64_t(instanceCount) * sizeof(CullInput);
     if (!gpuDrivenInputBuffer_ || gpuDrivenInputCapacity_ < inputBytes) {
         gpuDrivenInputCapacity_ = grownCapacity(gpuDrivenInputCapacity_, inputBytes);
@@ -463,7 +569,8 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         entries[4].size = gpuDrivenVisIndirectCapacity_;
         entries[5].binding = 5;
         const uint32_t depthSlot = gbufferDepthValid_ ? lastGbufferSlot : currentFrameSlot();
-        entries[5].textureView = gbufferSlots[depthSlot].depthView.Get();
+        entries[5].buffer = gpuDrivenHzbBuffer_.Get();
+        entries[5].size = gpuDrivenHzbCapacity_;
         WGPUBindGroupDescriptor bgd{};
         bgd.label = label("eve_gpu_driven_compute_bg");
         bgd.layout = gpuDrivenComputeSetLayout_.Get();
@@ -483,6 +590,23 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         rbgd.entries = &renderEntry;
         gpuDrivenRenderBindGroup_ = device.CreateBindGroup(
             reinterpret_cast<const wgpu::BindGroupDescriptor *>(&rbgd));
+
+        WGPUBindGroupEntry hzbEntries[3]{};
+        hzbEntries[0].binding = 0;
+        hzbEntries[0].buffer = gpuDrivenHzbParamsBuffer_.Get();
+        hzbEntries[0].size = sizeof(HzbBuildParams);
+        hzbEntries[1].binding = 1;
+        hzbEntries[1].textureView = gbufferSlots[depthSlot].depthView.Get();
+        hzbEntries[2].binding = 2;
+        hzbEntries[2].buffer = gpuDrivenHzbBuffer_.Get();
+        hzbEntries[2].size = gpuDrivenHzbCapacity_;
+        WGPUBindGroupDescriptor hzbBg{};
+        hzbBg.label = label("eve_gpu_driven_hzb_bg");
+        hzbBg.layout = gpuDrivenHzbSetLayout_.Get();
+        hzbBg.entryCount = 3;
+        hzbBg.entries = hzbEntries;
+        gpuDrivenHzbBindGroup_ = device.CreateBindGroup(
+            reinterpret_cast<const wgpu::BindGroupDescriptor *>(&hzbBg));
     }
 }
 
@@ -527,6 +651,24 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
                              (2.f * std::tan(glm::radians(fovYDeg) * 0.5f));
     params.clipNearFar = glm::vec4(nearZ, farZ, projScaleY,
                                    gbufferDepthValid_ ? 1.f : 0.f);
+    params.hzbInfo = glm::vec4(float(gpuDrivenHzbOffsets_.size() - 1u), 0.f,
+                               float(gpuDrivenHzbWidth_), float(gpuDrivenHzbHeight_));
+    uint32_t mipWidth = gpuDrivenHzbWidth_;
+    uint32_t mipHeight = gpuDrivenHzbHeight_;
+    uint32_t previousWidth = mipWidth;
+    uint32_t previousHeight = mipHeight;
+    for (uint32_t mip = 0; mip < gpuDrivenHzbOffsets_.size(); ++mip) {
+        HzbBuildParams build{};
+        build.info = glm::uvec4(mip, mipWidth, mipHeight,
+                                mip == 0 ? 0u : gpuDrivenHzbOffsets_[mip - 1]);
+        build.source = glm::uvec4(previousWidth, previousHeight, 0u, 0u);
+        queue.WriteBuffer(gpuDrivenHzbParamsBuffer_, uint64_t(mip) * 256u, &build,
+                          sizeof(build));
+        previousWidth = mipWidth;
+        previousHeight = mipHeight;
+        mipWidth = std::max(mipWidth >> 1u, 1u);
+        mipHeight = std::max(mipHeight >> 1u, 1u);
+    }
 
     using BucketKey = std::pair<uint32_t, uint32_t>;
     std::map<BucketKey, std::vector<const GpuInstance *>> grouped;
@@ -658,6 +800,20 @@ void Graphics::gpuDrivenDrawOpaque() {
 
 void Graphics::recordGpuDrivenCompute(wgpu::CommandEncoder encoder) {
     if (gpuDrivenComputePending_ && gpuDrivenCullPipeline_ && gpuDrivenComputeBindGroup_) {
+        if (gbufferDepthValid_ && gpuDrivenHzbPipeline_ && gpuDrivenHzbBindGroup_) {
+            uint32_t width = gpuDrivenHzbWidth_;
+            uint32_t height = gpuDrivenHzbHeight_;
+            for (uint32_t mip = 0; mip < gpuDrivenHzbOffsets_.size(); ++mip) {
+                wgpu::ComputePassEncoder hzbPass = encoder.BeginComputePass();
+                hzbPass.SetPipeline(gpuDrivenHzbPipeline_);
+                const uint32_t dynamicOffset = mip * 256u;
+                hzbPass.SetBindGroup(0, gpuDrivenHzbBindGroup_, 1, &dynamicOffset);
+                hzbPass.DispatchWorkgroups((width + 7u) / 8u, (height + 7u) / 8u, 1);
+                hzbPass.End();
+                width = std::max(width >> 1u, 1u);
+                height = std::max(height >> 1u, 1u);
+            }
+        }
         wgpu::ComputePassEncoder pass = encoder.BeginComputePass();
         pass.SetPipeline(gpuDrivenCullPipeline_);
         pass.SetBindGroup(0, gpuDrivenComputeBindGroup_, 0, nullptr);
