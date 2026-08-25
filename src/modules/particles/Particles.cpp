@@ -243,6 +243,8 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("getSortMode", &ParticleEmitter::getSortMode);
     em.addFunc("setMaterialMode", &ParticleEmitter::setMaterialMode);
     em.addFunc("getMaterialMode", &ParticleEmitter::getMaterialMode);
+    em.addFunc("setDistortionStrength", &ParticleEmitter::setDistortionStrength);
+    em.addFunc("getDistortionStrength", &ParticleEmitter::getDistortionStrength);
     em.addFunc("setOverflowMode", &ParticleEmitter::setOverflowMode);
     em.addFunc("setMaxDeltaTime", &ParticleEmitter::setMaxDeltaTime);
     em.addFunc("addSubEmitter", &ParticleEmitter::addSubEmitter);

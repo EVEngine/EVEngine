@@ -468,6 +468,20 @@ public:
                                              const Color &tint) = 0;
 
     /**
+     * @brief Refract the resolved 3D scene color through a displacement texture.
+     *
+     * The displacement
+     * texture stores a signed screen-space offset in red/green and coverage
+     * in alpha. Returns false when no
+     * resolved scene color is available for the current frame.
+     */
+    virtual bool drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
+                                                   float degrees, float u0, float v0, float u1, float v1,
+                                                   float strengthPixels, float opacity, bool rotatedUV = false) {
+        return false;
+    }
+
+    /**
      * @brief Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
      * normal may be null → treated as flat (0.5,0.5,1) only if a default normal tex exists.
      */

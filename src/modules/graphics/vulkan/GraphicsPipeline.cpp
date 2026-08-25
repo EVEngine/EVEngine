@@ -46,36 +46,37 @@
 #include <assimp/vector3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "graphics/shaders/color_vert_spv.inc"
 #include "graphics/shaders/color_frag_spv.inc"
-#include "graphics/shaders/textured_vert_spv.inc"
-#include "graphics/shaders/textured_frag_spv.inc"
-#include "graphics/shaders/mesh3d_vert_spv.inc"
-#include "graphics/shaders/mesh3d_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
-#include "graphics/shaders/resolve_vis_vert_spv.inc"
-#include "graphics/shaders/resolve_vis_frag_spv.inc"
-#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
-#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_skin_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
-#include "graphics/shaders/decal_box_vert_spv.inc"
+#include "graphics/shaders/color_vert_spv.inc"
 #include "graphics/shaders/decal_box_frag_spv.inc"
-#include "graphics/shaders/mesh3d_hair_vert_spv.inc"
-#include "graphics/shaders/mesh3d_hair_frag_spv.inc"
-#include "graphics/shaders/lit2d_vert_spv.inc"
+#include "graphics/shaders/decal_box_vert_spv.inc"
 #include "graphics/shaders/lit2d_frag_spv.inc"
+#include "graphics/shaders/lit2d_vert_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
+#include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
+#include "graphics/shaders/mesh3d_hair_frag_spv.inc"
+#include "graphics/shaders/mesh3d_hair_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
+#include "graphics/shaders/mesh3d_vert_spv.inc"
+#include "graphics/shaders/particle_distortion_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_vert_spv.inc"
+#include "graphics/shaders/textured_frag_spv.inc"
+#include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/vulkan/GraphicsInternal.h"
 
 namespace eve::graphics::vulkan {
@@ -264,6 +265,8 @@ void Graphics::createTexturedPipeline() {
                                                       BlendMode::Multiply);
     opaqueTexPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout,
                                                     BlendMode::Opaque);
+    particleDistortionPipeline = createTexturedStylePipeline(vert, embeddedSpirv(particle_distortion_frag_spv),
+                                                             renderpass, texPipelineLayout, BlendMode::Alpha);
 
     createLit2DPipeline();
     createGpuParticlePipelines();

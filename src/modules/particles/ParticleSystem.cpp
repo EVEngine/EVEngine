@@ -109,6 +109,8 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
     item.camera = draw.camera;
     item.receiveLight = cfg.materialMode == "lit";
     item.litPath = item.receiveLight && item.texture != nullptr && item.normal != nullptr && item.shader == nullptr;
+    item.sceneColorDistortion = cfg.materialMode == "distortion";
+    item.distortionStrength   = cfg.distortionStrength;
     if (draw.texture && (cfg.hframes > 1 || cfg.vframes > 1)) {
         flipbookUV(cfg, p.frame, item.u0, item.v0, item.u1, item.v1);
         item.hasUV = true;

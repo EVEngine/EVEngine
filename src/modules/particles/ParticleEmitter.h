@@ -161,8 +161,10 @@ public:
         float renderAxisDegrees = 0.f;
         /** @brief "none" | "oldest" | "youngest" | "distance" transparent ordering. */
         std::string sortMode = "none";
-        /** @brief Particle shading policy: "unlit" or "lit". */
+        /** @brief Particle shading policy: "unlit", "lit", or "distortion". */
         std::string materialMode = "unlit";
+        /** @brief Maximum scene-color refraction offset in screen pixels. */
+        float distortionStrength = 8.f;
         /** @brief Ribbon width multiplier and minimum accepted segment length. */
         float ribbonWidth            = 1.f;
         float ribbonMinSegmentLength = 1.f;
@@ -507,10 +509,14 @@ public:
     void setSortMode(const std::string& mode);
     /** @brief Return the configured transparent ordering policy. */
     std::string getSortMode();
-    /** @brief Select particle shading: "unlit" or "lit". Lit mode uses scene 2D lights. */
+    /** @brief Select particle shading: "unlit", "lit", or scene-color "distortion". */
     void setMaterialMode(const std::string& mode);
     /** @brief Return the normalized particle shading mode. */
     std::string getMaterialMode();
+    /** @brief Set the maximum scene-color refraction offset in screen pixels. */
+    void setDistortionStrength(float strengthPixels);
+    /** @brief Return the configured scene-color refraction offset in screen pixels. */
+    float getDistortionStrength();
     void setOverflowMode(const std::string &mode);
     void setMaxDeltaTime(float seconds);
 

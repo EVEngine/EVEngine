@@ -426,6 +426,8 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
             auto material = obj->getObject("material");
             if (material) {
                 if (material->has("mode")) emitter->setMaterialMode(asString(material->get("mode")));
+                if (material->has("distortionStrength"))
+                    emitter->setDistortionStrength(asFloat(material->get("distortionStrength"), 8.f));
                 if (material->has("normalTexture")) {
                     const std::string path                 = asString(material->get("normalTexture"));
                     emitter->resource()->normalTexturePath = path;

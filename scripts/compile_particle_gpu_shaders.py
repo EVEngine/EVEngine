@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile resident-particle compute/draw shaders and embed their SPIR-V."""
+"""Compile particle GPU shaders and embed their SPIR-V."""
 
 from __future__ import annotations
 
@@ -12,9 +12,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 SHADERS = [
-    ("particle_resident.comp", "comp"),
-    ("particle_resident.vert", "vert"),
-    ("particle_resident.frag", "frag"),
+    ("particle_resident.comp", "comp", "particle_resident_comp_spv"),
+    ("particle_resident.vert", "vert", "particle_resident_vert_spv"),
+    ("particle_resident.frag", "frag", "particle_resident_frag_spv"),
+    ("particle_distortion.frag", "frag", "particle_distortion_frag_spv"),
 ]
 
 
@@ -43,7 +44,7 @@ def main() -> int:
     glslc = shutil.which("glslc")
     if not glslc:
         raise SystemExit("need glslc on PATH (Vulkan SDK)")
-    for name, stage in SHADERS:
+    for name, stage, array_name in SHADERS:
         src = SHADER_DIR / name
         spv = Path(f"{src}.spv")
         result = subprocess.run(
@@ -57,8 +58,7 @@ def main() -> int:
                 f"compile failed for {src.name}:\n"
                 f"{result.stderr or result.stdout or '(no output)'}"
             )
-        array_name = f"particle_resident_{stage}_spv"
-        spv_to_inc(spv, array_name, SHADER_DIR / f"particle_resident_{stage}_spv.inc")
+        spv_to_inc(spv, array_name, SHADER_DIR / f"{array_name}.inc")
     return 0
 
 

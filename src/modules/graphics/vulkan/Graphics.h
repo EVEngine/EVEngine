@@ -369,6 +369,9 @@ public:
                                          BlendMode blend = BlendMode::Alpha) override;
     void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x, float y,
                                      float w, float h, const Color &tint) override;
+    bool drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h, float degrees,
+                                           float u0, float v0, float u1, float v1, float strengthPixels, float opacity,
+                                           bool rotatedUV = false) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
                                float u0, float v0, float u1, float v1, const Color &color) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
@@ -715,6 +718,7 @@ private:
     vk::Pipeline premultipliedTexPipeline;
     vk::Pipeline multiplyTexPipeline;
     vk::Pipeline opaqueTexPipeline;
+    vk::Pipeline                  particleDistortionPipeline;
     vk::PipelineLayout texPipelineLayout;
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;
@@ -1260,11 +1264,13 @@ private:
     };
     std::vector<SolidBatch> solidBatches;
     struct TexturedBatch {
+        enum class Effect { Default, SceneColorDistortion };
         Texture *texture = nullptr;
         Texture *depth = nullptr;
         Shader *shader = nullptr;
         BlendMode blend = BlendMode::Alpha;
         Batcher batch;
+        Effect    effect = Effect::Default;
     };
     std::vector<TexturedBatch> texturedBatches;
 

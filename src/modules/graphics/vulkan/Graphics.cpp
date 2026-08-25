@@ -95,6 +95,7 @@ Graphics::~Graphics() {
     if (premultipliedTexPipeline) device->destroyPipeline(premultipliedTexPipeline);
     if (multiplyTexPipeline) device->destroyPipeline(multiplyTexPipeline);
     if (opaqueTexPipeline) device->destroyPipeline(opaqueTexPipeline);
+    if (particleDistortionPipeline) device->destroyPipeline(particleDistortionPipeline);
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
     if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);

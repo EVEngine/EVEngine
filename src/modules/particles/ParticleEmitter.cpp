@@ -77,6 +77,7 @@ const char* gpuFeatureFallbackReason(const ParticleEmitter::Config& cfg, const P
         return "curves";
     if (cfg.sortMode != "none") return "sorting";
     if (cfg.renderMode == "ribbon") return "ribbon";
+    if (cfg.materialMode == "distortion") return "distortion_material";
     if (cfg.materialMode != "unlit") return "lit_material";
     return "";
 }
@@ -984,10 +985,16 @@ void ParticleEmitter::setSortMode(const std::string& mode) {
 std::string ParticleEmitter::getSortMode() { return config()->sortMode; }
 
 void ParticleEmitter::setMaterialMode(const std::string& mode) {
-    config()->materialMode = mode == "lit" ? "lit" : "unlit";
+    config()->materialMode = (mode == "lit" || mode == "distortion") ? mode : "unlit";
 }
 
 std::string ParticleEmitter::getMaterialMode() { return config()->materialMode; }
+
+void ParticleEmitter::setDistortionStrength(float strengthPixels) {
+    config()->distortionStrength = std::max(0.f, strengthPixels);
+}
+
+float ParticleEmitter::getDistortionStrength() { return config()->distortionStrength; }
 
 void ParticleEmitter::setOverflowMode(const std::string &mode) {
     config()->overflowMode =

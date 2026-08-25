@@ -812,6 +812,23 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
     noteTexturedOverlay(color);
 }
 
+bool Graphics::drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
+                                                 float degrees, float u0, float v0, float u1, float v1,
+                                                 float strengthPixels, float opacity, bool rotatedUV) {
+    Texture* scene = getSceneColorTexture();
+    if (!frameHad3D || activeCanvas || !particleDistortionPipeline || !scene || !scene->gpuHandle || !displacement ||
+        !displacement->gpuHandle || strengthPixels <= 0.f || opacity <= 0.f)
+        return false;
+
+    TexturedBatch batch{scene, displacement, nullptr, BlendMode::Alpha, Batcher{}};
+    batch.effect = TexturedBatch::Effect::SceneColorDistortion;
+    batch.batch.addTexturedRectRotated(cx, cy, w, h, degrees, Color(strengthPixels, 0.f, 0.f, opacity), u0, v0, u1, v1,
+                                       rotatedUV);
+    texturedBatches.push_back(std::move(batch));
+    noteTexturedOverlay(displacement);
+    return true;
+}
+
 void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
     if (!commandBuffer || draws.empty() || !uiTexturePipeline || uiColorWidth <= 0 ||
         uiColorHeight <= 0)
@@ -1503,7 +1520,11 @@ void Graphics::flushToSwapchain() {
         vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
         vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
-        if (tb.shader && tb.shader->gpuHandle) {
+        if (tb.effect == TexturedBatch::Effect::SceneColorDistortion) {
+            if (!particleDistortionPipeline) return;
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, particleDistortionPipeline);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0, nullptr);
+        } else if (tb.shader && tb.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->swapchainPipeline);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,

@@ -43,6 +43,13 @@ TEST_CASE("particles.renderer.facingAndSortContract") {
     CHECK(!emitter->isGpuFeatureSetSupported());
     CHECK_EQ(emitter->getSimulationBackend(), std::string("cpu"));
     CHECK_EQ(emitter->getGpuFallbackReason(), std::string("lit_material"));
+    emitter->setMaterialMode("distortion");
+    emitter->setDistortionStrength(14.5f);
+    CHECK_EQ(emitter->getMaterialMode(), std::string("distortion"));
+    CHECK(std::abs(emitter->getDistortionStrength() - 14.5f) < 1e-5f);
+    CHECK_EQ(emitter->getGpuFallbackReason(), std::string("distortion_material"));
+    emitter->setDistortionStrength(-4.f);
+    CHECK_EQ(emitter->getDistortionStrength(), 0.f);
     emitter->setMaterialMode("unsupported");
     CHECK_EQ(emitter->getMaterialMode(), std::string("unlit"));
     CHECK(emitter->isGpuFeatureSetSupported());
@@ -57,7 +64,7 @@ TEST_CASE("particles.renderer.jsonContract") {
         "sortMode": "youngest",
         "ribbon": {"width": 0.75, "minSegmentLength": 2.5},
         "softParticles": {"enabled": true, "depth": 0.42, "fadeDistance": 0.08},
-        "material": {"mode": "lit", "normalTexture": "particles/test-normal.png"},
+        "material": {"mode": "lit", "normalTexture": "particles/test-normal.png", "distortionStrength": 12.5},
         "parameters": {"intensity": 1.75},
         "parameterBindings": [
           {"parameter": "intensity", "target": "emission", "scale": 2.0, "offset": 0.5}
@@ -71,6 +78,7 @@ TEST_CASE("particles.renderer.jsonContract") {
     CHECK(emitter->config()->softParticles);
     CHECK(std::abs(emitter->config()->softParticleDepth - 0.42f) < 1e-5f);
     CHECK_EQ(emitter->getMaterialMode(), std::string("lit"));
+    CHECK(std::abs(emitter->getDistortionStrength() - 12.5f) < 1e-5f);
     CHECK_EQ(emitter->resource()->normalTexturePath, std::string("particles/test-normal.png"));
     CHECK(std::abs(emitter->getFloatParameter("intensity") - 1.75f) < 1e-5f);
     CHECK(std::abs(emitter->getResolvedParameterScale("emission") - 4.f) < 1e-5f);

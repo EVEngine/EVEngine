@@ -42,6 +42,10 @@ struct DrawItem2D {
     Camera2D *camera = nullptr;
     bool receiveLight = true;
     bool litPath = false;
+    /** @brief Sample and perturb the resolved 3D scene instead of drawing the texture color. */
+    bool sceneColorDistortion = false;
+    /** @brief Maximum displacement in screen pixels for sceneColorDistortion. */
+    float distortionStrength = 0.f;
     bool hasUV = false;
     /** @brief Atlas-packed rotated region: corner UVs are remapped (rotated 90°). */
     bool rotatedUV = false;

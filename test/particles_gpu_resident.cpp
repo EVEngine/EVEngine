@@ -38,6 +38,25 @@ eve::graphics::Mesh* makeLeftHalfDepthPlane(eve::graphics::Graphics* gfx) {
     return gfx->newMeshFromArrays(positions.data(), normals.data(), uvs.data(), 4, indices.data(), 6);
 }
 
+eve::graphics::Mesh* makeFullscreenPlane(eve::graphics::Graphics* gfx) {
+    const std::array<float, 12> positions = {
+        -1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
+    };
+    const std::array<float, 12> normals = {
+        0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    };
+    const std::array<float, 8>         uvs     = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const std::array<std::uint32_t, 6> indices = {0, 1, 2, 0, 2, 3};
+    return gfx->newMeshFromArrays(positions.data(), normals.data(), uvs.data(), 4, indices.data(), 6);
+}
+
+float colorDistance(const Color& a, const Color& b) {
+    const float dr = a.r - b.r;
+    const float dg = a.g - b.g;
+    const float db = a.b - b.b;
+    return std::sqrt(dr * dr + dg * dg + db * db);
+}
+
 }  // namespace
 
 TEST_CASE("particles.gpu.unsupportedFeaturesFallBackToCpu") {
@@ -308,6 +327,101 @@ TEST_CASE("particles.renderer.normalMappedLitMaterialUsesSceneLights") {
     lit->release();
     unlit->release();
     light->setEnabled(false);
+    window->close();
+}
+
+TEST_CASE("particles.renderer.distortionRefractsResolvedSceneColor") {
+    auto* window = eve::window::Window::create();
+    auto* gfx    = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 640;
+    settings.height   = 360;
+    settings.centered = true;
+    REQUIRE(window->setWindowSettings(settings));
+    gfx->setScreenReadbackEnabled(true);
+
+    constexpr int             width   = 640;
+    constexpr int             height  = 360;
+    constexpr int             effectX = 304;
+    std::vector<std::uint8_t> stripePixels(std::size_t(width) * 4u);
+    for (int x = 0; x < width; ++x) {
+        const bool cyan  = (x / 32) % 2 == 0;
+        auto*      pixel = &stripePixels[std::size_t(x) * 4u];
+        pixel[0]         = cyan ? 12 : 218;
+        pixel[1]         = cyan ? 188 : 18;
+        pixel[2]         = cyan ? 218 : 184;
+        pixel[3]         = 255;
+    }
+    auto* backgroundTexture = gfx->newTexture(width, 1, stripePixels.data());
+    auto* scenePlane        = makeFullscreenPlane(gfx);
+    REQUIRE(backgroundTexture != nullptr);
+    REQUIRE(scenePlane != nullptr);
+    eve::graphics::Lighting3DPack sceneLighting;
+    sceneLighting.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+    gfx->setMesh3DLighting(sceneLighting);
+    gfx->setMesh3DMaterial(0.f, 1.f);
+
+    constexpr int             fieldSize = 96;
+    std::vector<std::uint8_t> fieldPixels(std::size_t(fieldSize * fieldSize) * 4u);
+    for (int y = 0; y < fieldSize; ++y) {
+        for (int x = 0; x < fieldSize; ++x) {
+            const float nx      = (float(x) + 0.5f) / float(fieldSize) * 2.f - 1.f;
+            const float ny      = (float(y) + 0.5f) / float(fieldSize) * 2.f - 1.f;
+            const float feather = std::clamp((1.f - std::sqrt(nx * nx + ny * ny)) * 5.f, 0.f, 1.f);
+            auto*       pixel   = &fieldPixels[std::size_t(y * fieldSize + x) * 4u];
+            pixel[0]            = 255;
+            pixel[1]            = 128;
+            pixel[2]            = 128;
+            pixel[3]            = std::uint8_t(feather * 255.f);
+        }
+    }
+    auto* displacement = gfx->newTexture(fieldSize, fieldSize, fieldPixels.data());
+    REQUIRE(displacement != nullptr);
+
+    auto renderScene = [&] {
+        gfx->begin3DFrame();
+        gfx->drawMesh(scenePlane, glm::mat4(1.f), backgroundTexture, Color(1.f, 1.f, 1.f, 1.f));
+        gfx->clearScreen();
+    };
+
+    renderScene();
+    gfx->present();
+    CHECK(gfx->saveFramePng(std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_scene_distortion_control.png"));
+    const Color source = gfx->getPixel(effectX, height / 2);
+    const Color target = gfx->getPixel(effectX + 32, height / 2);
+    REQUIRE_GT(colorDistance(source, target), 0.08f);
+
+    auto* emitter = Particles::create()->newEmitter(4);
+    emitter->setTexture(displacement);
+    emitter->setMaterialMode("distortion");
+    emitter->setDistortionStrength(32.f);
+    emitter->setPosition(float(effectX), float(height / 2));
+    emitter->setEmissionRate(0.f);
+    emitter->setParticleLifetime(10.f, 10.f);
+    emitter->setParticleSize(180.f, 180.f);
+    emitter->setSpeed(0.f, 0.f);
+    emitter->setSpread(0.f);
+    emitter->setColorStart(1.f, 1.f, 1.f, 1.f);
+    emitter->setColorEnd(1.f, 1.f, 1.f, 1.f);
+    emitter->emit(1);
+
+    ParticleSimSystem::update(1.f / 60.f);
+    renderScene();
+    ParticleRenderSystem::render(gfx);
+    gfx->present();
+
+    const Color refracted = gfx->getPixel(effectX, height / 2);
+    CHECK_LT(colorDistance(refracted, target), colorDistance(refracted, source));
+    CHECK_LT(colorDistance(refracted, target), 0.35f);
+
+    const std::string output = std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_scene_distortion.png";
+    CHECK(gfx->saveFramePng(output));
+    CHECK(std::filesystem::exists(output));
+    REQUIRE(std::filesystem::file_size(output) > std::uintmax_t(4096));
+
+    emitter->release();
     window->close();
 }
 
