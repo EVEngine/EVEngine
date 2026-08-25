@@ -105,6 +105,15 @@ endif()
 # engine includes; keep the same no-auto-link contract as the modules.
 if(WIN32 AND TARGET ${EVENGINE_NATIVE_TARGET})
     target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    if(MSVC)
+        # SDL_WINDOW_ALLOW_HIGHDPI does not make an SDL 2.0 process DPI-aware
+        # by itself. Without this manifest Windows bitmap-scales the complete
+        # framebuffer (commonly by 150%), making ImGui text and hairlines soft.
+        target_sources(${EVENGINE_NATIVE_TARGET} PRIVATE eve.rc)
+        # eve.rc already contains resource #1, so disable MSVC's generated
+        # manifest resource instead of merging two resources with the same ID.
+        target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE "/MANIFEST:NO")
+    endif()
     # Plain form: the host target's other third-party libs are linked plainly.
     target_link_libraries(${EVENGINE_NATIVE_TARGET} EVBacktrace)
     # Plugins link against eve.lib and need the host's full symbol surface
