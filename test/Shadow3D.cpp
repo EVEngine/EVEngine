@@ -138,7 +138,8 @@ std::vector<float> captureLumaGrid(Graphics *gfx, int step = 4) {
     return out;
 }
 
-void setupShadowScene(Graphics *gfx, Renderable3D *&ground, Light3D *&sun, bool groundReceive) {
+void setupShadowScene(Graphics *gfx, Renderable3D *&ground, Light3D *&sun, bool groundReceive,
+                      Renderable3D **caster = nullptr) {
     auto *cam = Camera3D::createCamera();
     cam->setEye(0.f, 3.5f, 5.5f);
     cam->setTarget(0.f, 0.f, 0.f);
@@ -163,6 +164,7 @@ void setupShadowScene(Graphics *gfx, Renderable3D *&ground, Light3D *&sun, bool 
     box->setRoughness(0.6f);
     box->setCastShadow(true);
     box->setReceiveShadow(false);
+    if (caster) *caster = box;
 
     sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
@@ -280,6 +282,44 @@ TEST_CASE("Shadow3D.shadowStrengthInterpolatesVisibility") {
     CHECK(halfDelta > strongestDelta * 0.25f);
     CHECK(halfDelta < strongestDelta * 0.75f);
 
+    win->close();
+}
+
+TEST_CASE("Shadow3D.maskedCasterUsesAlbedoAlpha") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    Renderable3D *ground = nullptr;
+    Renderable3D *caster = nullptr;
+    Light3D *sun = nullptr;
+    setupShadowScene(gfx, ground, sun, true, &caster);
+    (void)ground;
+    (void)sun;
+    REQUIRE(caster != nullptr);
+
+    const uint8_t transparentPx[4] = {220, 220, 220, 0};
+    Texture *transparent = gfx->newTexture(1, 1, transparentPx);
+    Texture *opaque = makeSolid(gfx, 220, 220, 220);
+    REQUIRE(transparent != nullptr);
+    REQUIRE(opaque != nullptr);
+    Material masked;
+    masked.setSurfaceMode("masked");
+    masked.setAlphaCutoff(0.5f);
+    masked.setCastShadow(true);
+    masked.setReceiveShadow(false);
+    caster->setMaterial(&masked);
+
+    gfx->setScreenReadbackEnabled(true);
+    masked.setAlbedoTexture(transparent);
+    warmPresent(gfx);
+    const auto transparentCaster = captureLumaGrid(gfx);
+    masked.setAlbedoTexture(opaque);
+    warmPresent(gfx);
+    const auto opaqueCaster = captureLumaGrid(gfx);
+
+    REQUIRE(maxLumaDelta(gfx, transparentCaster, opaqueCaster) > 0.02f);
     win->close();
 }
 
