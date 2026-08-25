@@ -223,6 +223,8 @@ file(GLOB all_test_cpp
   mcp.cpp
   mcp_hot_reload.cpp
   console.cpp
+  runtime_error_sink.cpp
+  scenario_recorder.cpp
   cmdline.cpp
   main.cpp
 )
@@ -243,7 +245,7 @@ endif()
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   foreach(_eve_devtool_test IN ITEMS
-      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp mcp.cpp console.cpp)
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp mcp.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")

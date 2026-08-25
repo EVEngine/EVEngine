@@ -426,7 +426,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
-            dt.attach(runtime.vm(), /*sampleLocals=*/true);
+            dt.attach(runtime, /*sampleLocals=*/true);
             dt.exposeScriptApi(runtime.vm());
             if (dapPort > 0) {
                 const int bound = dt.startDap(static_cast<uint16_t>(dapPort));
@@ -516,12 +516,12 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
-            // The runtime error hook already reported uncaught script errors
-            // (including the break-on-error pause); do not slice/report twice.
-            const auto* scriptError = dynamic_cast<const eve::ScriptException*>(&e);
+            // The VM error hook and the Runtime error-handler sink (wired in
+            // DevTool::attach(Runtime&)) already slice script errors; only
+            // synthesize a report when none was produced (e.g. a native
+            // std::exception with no script involvement).
             std::string report = dt.lastReport();
-            if (!(scriptError && scriptError->reported()) || report.empty())
-                report = dt.notifyError(e.what());
+            if (report.empty()) report = dt.notifyError(e.what());
             cerr << report << endl;
             dt.detach();
         } else {
