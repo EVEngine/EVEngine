@@ -166,6 +166,80 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
     window->close();
 }
 
+TEST_CASE("particles.gpu.multipleResidentEmittersKeepIndependentDrawState") {
+    auto* window = eve::window::Window::create();
+    auto* gfx    = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 640;
+    settings.height   = 360;
+    settings.centered = true;
+    REQUIRE(window->setWindowSettings(settings));
+    REQUIRE(gfx->supportsGpuParticles());
+    gfx->setScreenReadbackEnabled(true);
+
+    const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
+    auto*              texture       = gfx->newTexture(1, 1, whitePixel);
+    REQUIRE(texture != nullptr);
+
+    const std::array<float, 3> positions{160.f, 320.f, 480.f};
+    const std::array<std::array<float, 3>, 3> colors{{
+        {1.f, 0.f, 0.f},
+        {0.f, 1.f, 0.f},
+        {0.f, 0.f, 1.f},
+    }};
+    std::array<ParticleEmitter*, 3> emitters{};
+    for (std::size_t i = 0; i < emitters.size(); ++i) {
+        auto* emitter = Particles::create()->newEmitter(8);
+        emitter->setTexture(texture);
+        emitter->setRandomSeed(7200 + int(i));
+        emitter->setGpuSimulation(true);
+        emitter->setPosition(positions[i], 180.f);
+        emitter->setEmissionRate(0.f);
+        emitter->setParticleLifetime(10.f, 10.f);
+        emitter->setParticleSize(64.f, 64.f);
+        emitter->setSpeed(0.f, 0.f);
+        emitter->setSpread(0.f);
+        emitter->setBlendMode("alpha");
+        emitter->setColorStart(colors[i][0], colors[i][1], colors[i][2], 1.f);
+        emitter->setColorEnd(colors[i][0], colors[i][1], colors[i][2], 1.f);
+        emitter->emit(1);
+        emitters[i] = emitter;
+    }
+
+    gfx->setBackgroundColorRGBA(0.f, 0.f, 0.f, 1.f);
+    for (int frame = 0; frame < 5; ++frame) {
+        ParticleSimSystem::update(1.f / 60.f);
+        gfx->clearScreen();
+        ParticleRenderSystem::render(gfx);
+        gfx->present();
+    }
+
+    for (std::size_t i = 0; i < emitters.size(); ++i) {
+        REQUIRE(emitters[i]->isGpuSimulationActive());
+        const auto stats = gfx->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
+        REQUIRE_EQ(stats.instances, std::uint32_t(1));
+    }
+    const auto red   = gfx->getPixel(160, 180);
+    const auto green = gfx->getPixel(320, 180);
+    const auto blue  = gfx->getPixel(480, 180);
+    REQUIRE_GT(red.r, 0.8f);
+    REQUIRE_LT(red.g + red.b, 0.2f);
+    REQUIRE_GT(green.g, 0.8f);
+    REQUIRE_LT(green.r + green.b, 0.2f);
+    REQUIRE_GT(blue.b, 0.8f);
+    REQUIRE_LT(blue.r + blue.g, 0.2f);
+
+    const std::string output = std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_gpu_multi_emitter.png";
+    CHECK(gfx->saveFramePng(output));
+    for (auto* emitter : emitters) {
+        emitter->setGpuSimulation(false);
+        emitter->release();
+    }
+    window->close();
+}
+
 TEST_CASE("particles.gpu.mainThreadCrossoverAtSixteenThousandParticles") {
     auto* window = eve::window::Window::create();
     auto* gfx    = eve::graphics::Graphics::create();
