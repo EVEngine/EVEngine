@@ -587,7 +587,7 @@ void Graphics::setCanvas(Canvas *canvas) {
     bool hasSolid = false;
     for (const auto &sb : solidBatches)
         if (!sb.batch.empty()) hasSolid = true;
-    if (hasSolid || !texturedBatches.empty()) flushBatch();
+    if (hasSolid || !texturedBatches.empty() || !litBatches.empty()) flushBatch();
     activeCanvas = next;
 }
 

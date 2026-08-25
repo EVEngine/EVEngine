@@ -264,10 +264,10 @@ TEST_CASE("graphics.backendParity.lighting2dNormalMapAndMultipleLights") {
     REQUIRE(normalImage.get() != nullptr);
     const uint8_t *flatLit = pixel(*normalImage, 16, 20);
     const uint8_t *rightLit = pixel(*normalImage, 48, 20);
-    CHECK(flatLit[0] > 32);
-    CHECK(rightLit[0] > flatLit[0] + 50);
-    CHECK(rightLit[1] > flatLit[1] + 50);
-    CHECK(rightLit[2] > flatLit[2] + 50);
+    REQUIRE(flatLit[0] > 32);
+    REQUIRE(rightLit[0] > flatLit[0] + 50);
+    REQUIRE(rightLit[1] > flatLit[1] + 50);
+    REQUIRE(rightLit[2] > flatLit[2] + 50);
     writeParityArtifact(*normalImage, "lighting2d_normal_map", backend);
 
     Lighting2DUBO points{};
@@ -291,10 +291,10 @@ TEST_CASE("graphics.backendParity.lighting2dNormalMapAndMultipleLights") {
     REQUIRE(pointImage.get() != nullptr);
     const uint8_t *leftLight = pixel(*pointImage, 10, 48);
     const uint8_t *rightLight = pixel(*pointImage, 54, 48);
-    CHECK(leftLight[0] > leftLight[2] + 80);
-    CHECK(rightLight[2] > rightLight[0] + 80);
-    CHECK(leftLight[0] > 120);
-    CHECK(rightLight[2] > 120);
+    REQUIRE(leftLight[0] > leftLight[2] + 80);
+    REQUIRE(rightLight[2] > rightLight[0] + 80);
+    REQUIRE(leftLight[0] > 120);
+    REQUIRE(rightLight[2] > 120);
     writeParityArtifact(*pointImage, "lighting2d_multiple_lights", backend);
 }
 
