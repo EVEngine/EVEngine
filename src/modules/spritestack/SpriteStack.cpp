@@ -1,4 +1,5 @@
 #include "spritestack/SpriteStack.h"
+#include "spritestack/shaders/SpriteStackWgsl.h"
 
 #include "common/Exception.h"
 #include "common/ECS.h"
@@ -604,7 +605,9 @@ void SpriteStack3D::ensureResources(graphics::Graphics *gfx) const {
     if (!shader_) {
         auto vert = copySpv(sprite_stack_vert_spv, sprite_stack_vert_spv_count);
         auto frag = copySpv(sprite_stack_frag_spv, sprite_stack_frag_spv_count);
-        shader_ = gfx->newHairShaderFromSpv(vert, frag);
+        shader_ = gfx->getBackendName() == "webgpu"
+                      ? gfx->newHairShaderFromWgsl(shaders::kVert, shaders::kFrag)
+                      : gfx->newHairShaderFromSpv(vert, frag);
         if (!shader_ || !shader_->gpuHandle)
             throw eve::Exception("SpriteStack3D.render: failed to create slice shader");
         shader_->declareVec4("uvRect");
@@ -901,7 +904,9 @@ void SpriteStackBatch::ensureShader(graphics::Graphics *gfx) {
     if (shader_) return;
     auto vert = copySpv(sprite_stack_vert_spv, sprite_stack_vert_spv_count);
     auto frag = copySpv(sprite_stack_frag_spv, sprite_stack_frag_spv_count);
-    shader_ = gfx->newHairShaderFromSpv(vert, frag);
+    shader_ = gfx->getBackendName() == "webgpu"
+                  ? gfx->newHairShaderFromWgsl(shaders::kVert, shaders::kFrag)
+                  : gfx->newHairShaderFromSpv(vert, frag);
     if (!shader_ || !shader_->gpuHandle)
         throw eve::Exception("SpriteStackBatch.render: failed to create slice shader");
     shader_->declareVec4("uvRect");

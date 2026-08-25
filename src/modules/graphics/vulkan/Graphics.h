@@ -340,6 +340,8 @@ public:
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
+                                  const std::string &fragWgsl) override;
     bool releaseShader(Shader *shader) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;

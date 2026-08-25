@@ -1031,6 +1031,10 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     return raw;
 }
 
+Shader *Graphics::newHairShaderFromWgsl(const std::string &, const std::string &) {
+    throw Exception("newHairShaderFromWgsl: WGSL is only supported on the WebGPU backend");
+}
+
 bool Graphics::releaseShader(Shader *shader) {
     if (!shader || !shader->gpuHandle) return false;
 

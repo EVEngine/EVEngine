@@ -1028,6 +1028,9 @@ public:
      */
     virtual Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                          const std::vector<uint32_t> &fragSpv) = 0;
+    /** @brief Create an alpha-blended hair/card shader from WGSL on WebGPU. */
+    virtual Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
+                                          const std::string &fragWgsl) = 0;
     /** @brief Built-in hair shader with default anisotropic parameters. */
     Shader *newHairShader();
 

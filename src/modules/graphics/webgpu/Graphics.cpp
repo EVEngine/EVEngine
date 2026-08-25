@@ -5280,4 +5280,25 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     return raw;
 }
 
+Shader *Graphics::newHairShaderFromWgsl(const std::string &vertWgsl,
+                                        const std::string &fragWgsl) {
+    if (!device) throw Exception("newHairShaderFromWgsl: device not initialized");
+    if (fragWgsl.empty()) throw Exception("newHairShaderFromWgsl: empty fragment WGSL");
+    auto gpu = std::make_unique<GpuShader>();
+    gpu->isMesh3D = true;
+    gpu->isHair3D = true;
+    gpu->wgslVert = vertWgsl.empty() ? kMesh3DVertWgsl : vertWgsl;
+    gpu->wgslFrag = fragWgsl;
+    gpu->mesh3dPipeline = buildPipelineFromWgsl(
+        device, mesh3dPipelineLayout, sceneColorFormat, gpu->wgslVert, gpu->wgslFrag,
+        true, true, true, true, false, false, sceneColorSamples);
+    auto shader = std::make_unique<Shader>();
+    shader->setKind(Shader::Kind::eMesh3D);
+    shader->gpuHandle = gpu.get();
+    Shader *raw = shader.get();
+    ownedShaders.push_back(std::move(shader));
+    ownedGpuShaders.push_back(std::move(gpu));
+    return raw;
+}
+
 }  // namespace eve::graphics::webgpu
