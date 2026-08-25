@@ -108,7 +108,7 @@ bool squirrelToDataValue(HSQUIRRELVM vm, SQInteger idx, DataValue &out) {
             return true;
         }
         case OT_TABLE: {
-            std::vector<std::pair<std::string, DataValue>> fields;
+            DataValue::Object fields;
             sq_pushnull(vm);  // iterator
             while (SQ_SUCCEEDED(sq_next(vm, -2))) {
                 std::string key;

@@ -21,7 +21,7 @@ namespace {
 
 using Vars = std::unordered_map<std::string, Dialogue::VarValue>;
 
-DataValue O(std::vector<std::pair<std::string, DataValue>> v) {
+DataValue O(DataValue::Object v) {
     return DataValue::object(std::move(v));
 }
 
