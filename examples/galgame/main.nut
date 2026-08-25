@@ -9,7 +9,8 @@ gal <- persist("gal", function() {
         linTex = null, zhouTex = null, lin = null, zhou = null, ux = null,
         scene = "station", previousScene = "station", chapter = "序章 · 归站",
         fx = "rain", time = 0.0, effectTime = 0.0, transition = 0.0,
-        entrance = 0.0, shake = 0.0, chapterLeft = 0.0
+        entrance = 0.0, shake = 0.0, chapterLeft = 0.0,
+        qaRoute = ""
     };
 });
 
@@ -236,6 +237,7 @@ function chooseRoute(route) {
     gal.route = route;
     gal.trust = route == "truth" ? 2 : 1;
     gal.step = 0;
+    gal.mode = "game";
     gal.uiMode = "";
     print("[galgame] branch=" + route + "\n");
     showCurrentLine();
@@ -354,7 +356,15 @@ function eve_init() {
     // With typing time plus this reading pause, a complete AUTO route runs
     // about ten minutes (69 displayed lines, excluding title/choice time).
     gal.ux = eve.DialogueUX(); gal.ux.setAutoDelay(7.8);
+    // A temporary marker beside main.nut lets maintainers exercise a complete
+    // route without changing normal player behaviour.
+    gal.qaRoute = file_exists(".galgame-qa-truth") ? "truth" :
+                  (file_exists(".galgame-qa-silence") ? "silence" : "");
     rebuildUI();
+    if (gal.qaRoute != "") {
+        print("[galgame] qa route=" + gal.qaRoute + "\n");
+        startGame();
+    }
 }
 
 function eve_reload() { gal.uiMode = ""; }
@@ -362,9 +372,18 @@ function eve_reload() { gal.uiMode = ""; }
 function eve_update(dt) {
     gal.time += dt;
     gal.effectTime += dt;
-    if (gal.transition > 0.0) gal.transition = max(0.0, gal.transition - dt * 0.85);
-    if (gal.entrance > 0.0) gal.entrance = max(0.0, gal.entrance - dt * 1.8);
-    if (gal.shake > 0.0) gal.shake = max(0.0, gal.shake - dt * 24.0);
+    if (gal.transition > 0.0) {
+        gal.transition -= dt * 0.85;
+        if (gal.transition < 0.0) gal.transition = 0.0;
+    }
+    if (gal.entrance > 0.0) {
+        gal.entrance -= dt * 1.8;
+        if (gal.entrance < 0.0) gal.entrance = 0.0;
+    }
+    if (gal.shake > 0.0) {
+        gal.shake -= dt * 24.0;
+        if (gal.shake < 0.0) gal.shake = 0.0;
+    }
     if (gal.chapterLeft > 0.0) gal.chapterLeft -= dt;
     if (gal.uiMode != gal.mode) rebuildUI();
     local clickedUI = false;
@@ -380,8 +399,11 @@ function eve_update(dt) {
     gal.mouseWas = mouseNow;
     gal.touchWas = touchNow;
     if (gal.mode == "choice") {
-        if (key_just_pressed("1")) chooseRoute("truth");
-        if (key_just_pressed("2")) chooseRoute("silence");
+        if (gal.qaRoute != "") chooseRoute(gal.qaRoute);
+        else {
+            if (key_just_pressed("1")) chooseRoute("truth");
+            if (key_just_pressed("2")) chooseRoute("silence");
+        }
     } else if (gal.mode == "game") {
         dialogue.update(dt); avatar.update(dt);
         local line = currentLine();
@@ -401,6 +423,10 @@ function eve_update(dt) {
             if (activeZhou) dialogue.setSlotX("right", 0.73 + enterOffset / config.width);
         }
         dialogue.syncStage(config.width.tofloat(), config.height.tofloat());
+        if (gal.qaRoute != "") {
+            dialogue.skipTyping();
+            if (dialogue.isWaitingAdvance()) advanceStory();
+        }
         if (dialogue.isWaitingAdvance() && (gal.ux.getSkipMode() == "all" || gal.ux.updateAuto(dt, false))) advanceStory();
         if (key_just_pressed("Space") || key_just_pressed("Return")) advanceStory();
         if (pointerAdvance && !clickedUI) advanceStory();
@@ -473,7 +499,8 @@ function eve_render() {
                           gal.mode == "game" ? 0.05 : 0.38);
     }
     if (gal.chapterLeft > 0.0 && gal.mode == "game") {
-        local a = gal.chapterLeft > 2.3 ? (3.0 - gal.chapterLeft) / 0.7 : min(1.0, gal.chapterLeft / 0.7);
+        local a = gal.chapterLeft > 2.3 ? (3.0 - gal.chapterLeft) / 0.7 : gal.chapterLeft / 0.7;
+        if (a > 1.0) a = 1.0;
         gfx.drawSolidRect(0.0, config.height * 0.42, config.width.tofloat(), 96.0, 0.02, 0.03, 0.08, a * 0.78);
     }
     ui.beginFrameAndRender();

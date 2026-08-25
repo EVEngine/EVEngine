@@ -57,10 +57,10 @@ fs.watch("config/game.json");
 - `append()`、`areSymlinksEnabled()`、`bind()`、`createDirectory()`、`getAppdataDirectory()`、`getCRequirePath()`、`getDirectoryItems()`、`getExecutablePath()`
 - `getIdentity()`、`getLastWatchPath()`、`getLastWatchRealPath()`、`getName()`、`getRealDirectory()`、`getRequirePath()`、`getSaveDirectory()`、`getSource()`
 - `getSourceBaseDirectory()`、`getUserDirectory()`、`getWatchCount()`、`getWorkingDirectory()`、`isAndroidSaveExternal()`、`isFused()`、`isRealDirectory()`、`newFile()`
-- `newFileData()`、`pollWatch()`、`read()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
+- `newFileData()`、`pollWatch()`、`read()`、`readText()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
 - `setSymlinksEnabled()`、`setupWriteDirectory()`、`tryReload()`、`unbind()`、`unwatch()`、`unwatchAll()`、`watch()`、`watchTree()`
 - `startRemoteSync()`、`stopRemoteSync()`、`isRemoteSyncing()`、`remoteSyncStatus()`、`pollRemoteChange()`、`setRemoteHotDir()`
-- `write()`、`mountExternalReadOnly()`
+- `write()`、`writeText()`、`mountExternalReadOnly()`
 
 ## 使用要点
 
