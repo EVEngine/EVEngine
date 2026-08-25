@@ -63,21 +63,31 @@ struct EVENGINE_API ScriptSymbolMetadata {
     ScriptSourcePosition position;
 };
 
+/** @brief Inspector-facing metadata for one annotated script property. */
+struct EVENGINE_API ScriptPropertyMetadata {
+    std::string                                  name;
+    std::string                                  erasedType;
+    ScriptSourcePosition                         position;
+    std::unordered_map<std::string, std::string> attributes;
+    std::vector<std::string>                     choices;
+};
+
 /** @brief Metadata retained for one compiled EveScript source unit. */
 struct EVENGINE_API ScriptMetadata {
-    uint32_t                          languageVersion = 1;
-    std::string                       sourceHash;
-    std::string                       canonicalUri;
-    std::string                       providerOrigin;
-    std::vector<std::string>          imports;
-    std::vector<std::string>          exports;
-    std::vector<ScriptSymbolMetadata> symbols;
-    std::vector<std::string>          persistRoots;
-    std::vector<std::string>          moduleReferences;
-    std::vector<std::string>          asyncFunctions;
-    std::vector<ScriptSourcePosition> awaitLocations;
-    ScriptSourceMap                   sourceMap;
-    std::vector<ScriptDiagnostic>     diagnostics;
+    uint32_t                            languageVersion = 1;
+    std::string                         sourceHash;
+    std::string                         canonicalUri;
+    std::string                         providerOrigin;
+    std::vector<std::string>            imports;
+    std::vector<std::string>            exports;
+    std::vector<ScriptSymbolMetadata>   symbols;
+    std::vector<ScriptPropertyMetadata> properties;
+    std::vector<std::string>            persistRoots;
+    std::vector<std::string>            moduleReferences;
+    std::vector<std::string>            asyncFunctions;
+    std::vector<ScriptSourcePosition>   awaitLocations;
+    ScriptSourceMap                     sourceMap;
+    std::vector<ScriptDiagnostic>       diagnostics;
 };
 
 /** @brief Unit attached to a binding parameter or return value. */

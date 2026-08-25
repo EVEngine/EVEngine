@@ -122,3 +122,26 @@ TEST_CASE("scriptCompiler.bindingContractChecksStringChoices") {
     }
     CHECK(rejected);
 }
+
+TEST_CASE("scriptCompiler.recordsInspectorPropertyMetadata") {
+    const script::ScriptMetadata metadata = script::ScriptCompiler::analyze(
+        "class CharacterData {\n"
+        "  @editor(\"slider\", min: 0, max: 100, step: 1)\n"
+        "  @unit(\"hp\")\n"
+        "  hp: float = 100.0\n"
+        "  @editor(\"combo\")\n"
+        "  job: \"warrior\" | \"mage\" | \"rogue\" = \"warrior\"\n"
+        "}\n",
+        "game:/character.nut");
+
+    CHECK_EQ(metadata.properties.size(), size_t(2));
+    const script::ScriptPropertyMetadata& hp = metadata.properties[0];
+    CHECK_EQ(hp.name, std::string("hp"));
+    CHECK_EQ(hp.attributes.at("editor"), std::string("slider"));
+    CHECK_EQ(hp.attributes.at("min"), std::string("0"));
+    CHECK_EQ(hp.attributes.at("unit"), std::string("hp"));
+
+    const script::ScriptPropertyMetadata& job = metadata.properties[1];
+    CHECK_EQ(job.choices.size(), size_t(3));
+    CHECK_EQ(job.attributes.at("options"), std::string("warrior,mage,rogue"));
+}

@@ -50,6 +50,45 @@ void appendUnique(std::vector<std::string>& values, std::string value) {
     if (std::find(values.begin(), values.end(), value) == values.end()) values.push_back(std::move(value));
 }
 
+std::string trim(std::string_view value) {
+    const size_t begin = value.find_first_not_of(" \t\r\n");
+    if (begin == std::string_view::npos) return {};
+    const size_t end = value.find_last_not_of(" \t\r\n");
+    return std::string(value.substr(begin, end - begin + 1));
+}
+
+std::string attributeValue(std::string_view value) {
+    std::string result = trim(value);
+    if (result.size() >= 2 &&
+        ((result.front() == '"' && result.back() == '"') || (result.front() == '\'' && result.back() == '\'')))
+        return result.substr(1, result.size() - 2);
+    return result;
+}
+
+std::vector<std::string> splitArguments(std::string_view arguments) {
+    std::vector<std::string> result;
+    size_t                   begin = 0;
+    char                     quote = 0;
+    for (size_t i = 0; i <= arguments.size(); ++i) {
+        const char c = i == arguments.size() ? ',' : arguments[i];
+        if ((c == '"' || c == '\'') && (i == 0 || arguments[i - 1] != '\\'))
+            quote = quote == 0 ? c : (quote == c ? 0 : quote);
+        if (c == ',' && quote == 0) {
+            result.push_back(trim(arguments.substr(begin, i - begin)));
+            begin = i + 1;
+        }
+    }
+    if (result.size() == 1 && result.front().empty()) result.clear();
+    return result;
+}
+
+std::vector<std::string> typeChoices(std::string_view type) {
+    std::vector<std::string> result;
+    static const std::regex  choicePattern(R"([\"']([^\"']+)[\"'])");
+    forMatches(type, choicePattern, [&](const std::smatch& match, size_t) { appendUnique(result, match[1].str()); });
+    return result;
+}
+
 }  // namespace
 
 ScriptSourcePosition ScriptSourceMap::originalPosition(ScriptSourcePosition generated) const noexcept {
@@ -197,6 +236,9 @@ ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view
     static const std::regex symbolPattern(R"(\b(local|function|class)\s+([A-Za-z_]\w*)\s*(?::\s*([^=,\)\{\n]+))?)");
     static const std::regex asyncPattern(R"(\basync\s+function\s+([A-Za-z_]\w*))");
     static const std::regex awaitPattern(R"(\bawait\b)");
+    static const std::regex propertyPattern(
+        R"(((?:[ \t]*@[A-Za-z_]\w*\([^\r\n]*\)[ \t]*\r?\n)+)[ \t]*([A-Za-z_]\w*)[ \t]*:[ \t]*([^=\r\n]+)[ \t]*=)");
+    static const std::regex annotationPattern(R"(@([A-Za-z_]\w*)\(([^)]*)\))");
 
     forMatches(source, importPattern, [&](const std::smatch& match, size_t) {
         appendUnique(result.imports, match[1].str());
@@ -216,6 +258,36 @@ ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view
                [&](const std::smatch& match, size_t) { appendUnique(result.asyncFunctions, match[1].str()); });
     forMatches(source, awaitPattern,
                [&](const std::smatch&, size_t offset) { result.awaitLocations.push_back(positionAt(source, offset)); });
+    forMatches(source, propertyPattern, [&](const std::smatch& match, size_t offset) {
+        ScriptPropertyMetadata property;
+        property.name                 = match[2].str();
+        property.erasedType           = trim(match[3].str());
+        property.position             = positionAt(source, offset + static_cast<size_t>(match.position(2)));
+        const std::string annotations = match[1].str();
+        forMatches(annotations, annotationPattern, [&](const std::smatch& annotation, size_t) {
+            const std::string              name = annotation[1].str();
+            const std::vector<std::string> args = splitArguments(annotation[2].str());
+            for (size_t i = 0; i < args.size(); ++i) {
+                const size_t colon = args[i].find(':');
+                if (i == 0 && colon == std::string::npos)
+                    property.attributes[name] = attributeValue(args[i]);
+                else if (colon != std::string::npos)
+                    property.attributes[trim(std::string_view(args[i]).substr(0, colon))] =
+                        attributeValue(std::string_view(args[i]).substr(colon + 1));
+            }
+        });
+        property.choices  = typeChoices(property.erasedType);
+        const auto editor = property.attributes.find("editor");
+        if (editor != property.attributes.end() && editor->second == "combo" && !property.choices.empty()) {
+            std::string options;
+            for (size_t i = 0; i < property.choices.size(); ++i) {
+                if (i != 0) options += ',';
+                options += property.choices[i];
+            }
+            property.attributes["options"] = std::move(options);
+        }
+        result.properties.push_back(std::move(property));
+    });
     return result;
 }
 
