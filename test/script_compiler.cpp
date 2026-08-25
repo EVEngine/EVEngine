@@ -29,6 +29,26 @@ TEST_CASE("scriptCompiler.recordsErasedLanguageMetadata") {
     CHECK_EQ(metadata->sourceMap.originalPosition({2, 9}).line, uint32_t(2));
 }
 
+TEST_CASE("scriptCompiler.mapsDebuggerLocationsBidirectionally") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.compileSource("local value = 1\n", "game:/scripts/mapped.nut");
+
+    script::ScriptSourceMap map;
+    map.entries.push_back({{1, 1}, {1, 1}});
+    map.entries.push_back({{10, 1}, {3, 1}});
+    REQUIRE(runtime.scriptCompiler().setSourceMap("game:/scripts/mapped.nut", std::move(map)));
+
+    const auto original = script::ScriptCompiler::toOriginalPosition(
+        "C:/games/demo/scripts/mapped.nut", {12, 7});
+    CHECK_EQ(original.line, uint32_t(5));
+    CHECK_EQ(original.column, uint32_t(7));
+
+    const auto generated = script::ScriptCompiler::toGeneratedPosition(
+        "game:/scripts/mapped.nut", {5, 7});
+    CHECK_EQ(generated.line, uint32_t(12));
+    CHECK_EQ(generated.column, uint32_t(7));
+}
+
 TEST_CASE("scriptCompiler.bindingContractsAreReplaceableAndSorted") {
     script::BindingContractRegistry registry;
     script::BindingContract         camera;

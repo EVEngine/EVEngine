@@ -145,6 +145,48 @@ ScriptSourcePosition ScriptSourceMap::originalPosition(ScriptSourcePosition gene
     return result;
 }
 
+ScriptSourcePosition ScriptSourceMap::generatedPosition(ScriptSourcePosition original) const noexcept {
+    ScriptSourcePosition result = original;
+    for (const ScriptSourceMapEntry& entry : entries) {
+        if (entry.original.line > original.line ||
+            (entry.original.line == original.line && entry.original.column > original.column))
+            break;
+        result.line   = entry.generated.line + (original.line - entry.original.line);
+        result.column = original.line == entry.original.line
+                            ? entry.generated.column + (original.column - entry.original.column)
+                            : original.column;
+    }
+    return result;
+}
+
+namespace {
+
+bool sourceIdentityMatches(std::string_view registered, std::string_view requested) {
+    std::string left(registered);
+    std::string right(requested);
+    std::replace(left.begin(), left.end(), '\\', '/');
+    std::replace(right.begin(), right.end(), '\\', '/');
+    if (left == right) return true;
+    const size_t scheme = left.find(":/");
+    if (scheme != std::string::npos) left.erase(0, scheme + 2);
+    while (!left.empty() && left.front() == '/') left.erase(left.begin());
+    return right.size() >= left.size() && right.compare(right.size() - left.size(), left.size(), left) == 0 &&
+           (right.size() == left.size() || right[right.size() - left.size() - 1] == '/');
+}
+
+template <typename Mapper>
+ScriptSourcePosition mapRegisteredPosition(std::string_view source, ScriptSourcePosition position, Mapper mapper) {
+    std::lock_guard lock(compilerRegistryMutex);
+    for (const auto& [_, compiler] : compilerRegistry) {
+        for (const ScriptMetadata& metadata : compiler->metadataSnapshot()) {
+            if (sourceIdentityMatches(metadata.canonicalUri, source)) return mapper(metadata.sourceMap, position);
+        }
+    }
+    return position;
+}
+
+}  // namespace
+
 std::string BindingContract::key() const {
     std::string result = module;
     result += '/';
@@ -380,6 +422,28 @@ std::optional<ScriptHover> ScriptCompiler::hover(std::string_view canonicalUri, 
 std::vector<ScriptDiagnostic> ScriptCompiler::diagnostics(std::string_view canonicalUri) const {
     const ScriptMetadata* unit = metadata(canonicalUri);
     return unit == nullptr ? std::vector<ScriptDiagnostic>{} : unit->diagnostics;
+}
+
+bool ScriptCompiler::setSourceMap(std::string_view canonicalUri, ScriptSourceMap sourceMap) {
+    const auto found = metadata_.find(std::string(canonicalUri));
+    if (found == metadata_.end()) return false;
+    sourceMap.canonicalUri = found->first;
+    found->second.sourceMap = std::move(sourceMap);
+    return true;
+}
+
+ScriptSourcePosition ScriptCompiler::toOriginalPosition(std::string_view source, ScriptSourcePosition generated) {
+    return mapRegisteredPosition(source, generated,
+                                 [](const ScriptSourceMap& map, ScriptSourcePosition position) {
+                                     return map.originalPosition(position);
+                                 });
+}
+
+ScriptSourcePosition ScriptCompiler::toGeneratedPosition(std::string_view source, ScriptSourcePosition original) {
+    return mapRegisteredPosition(source, original,
+                                 [](const ScriptSourceMap& map, ScriptSourcePosition position) {
+                                     return map.generatedPosition(position);
+                                 });
 }
 
 SQRESULT ScriptCompiler::compileBuffer(HSQUIRRELVM vm, const SQChar* source, SQInteger size, const SQChar* sourceName,
