@@ -1,8 +1,13 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Capability.h"
+#include "common/IStateProvider.h"
 #include "common/Module.h"
 #include "devtools/DevTool.hpp"
+#include "devtools/ReloadSession.h"
+#include "devtools/Snapshot.hpp"
+#include "scripts.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -192,6 +197,65 @@ TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.remapInstancesContainer
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.stateRootsReportsMarkedAndHeuristic") {
     CHECK(vm.callFunc(vm.findFunc("stateRootsReportsMarkedAndHeuristic"), vm).toBool());
+}
+
+TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    bool    compiled = false;
+    try {
+        vm.compileSource(eve::load_content);
+        compiled = true;
+    } catch (...) {
+    }
+    CHECK(compiled);
+}
+
+namespace {
+
+class FailFirstRestoreProvider : public eve::caps::IStateProvider {
+public:
+    const char* stateKind() const override { return "reload-failure-test"; }
+
+    bool captureState(eve::StateValue& out) override {
+        out = eve::StateValue::integer(42);
+        return true;
+    }
+
+    bool restoreState(const eve::StateValue&, std::string* err) override {
+        ++restoreCount;
+        if (restoreCount == 1) {
+            if (err) *err = "intentional commit failure";
+            return false;
+        }
+        return true;
+    }
+
+    bool resetToDefaults() override { return true; }
+
+    int restoreCount = 0;
+};
+
+}  // namespace
+
+TEST_CASE("reloadScript.failedCommitCanStillAbort") {
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    eve::dev::Snapshot::instance().clearRoots();
+
+    FailFirstRestoreProvider provider;
+    eve::cap::addListener<eve::caps::IStateProvider>(&provider);
+
+    auto&       session = eve::dev::ReloadSession::instance();
+    std::string err;
+    REQUIRE(session.begin(vm.getHandle(), &err));
+    CHECK(!session.commit(vm.getHandle(), &err));
+    CHECK_EQ(provider.restoreCount, 1);
+
+    err.clear();
+    CHECK(session.abort(vm.getHandle(), &err));
+    CHECK(err.empty());
+    CHECK_EQ(provider.restoreCount, 2);
+
+    eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }
 
 }  // namespace

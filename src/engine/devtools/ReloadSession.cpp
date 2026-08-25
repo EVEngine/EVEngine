@@ -51,8 +51,13 @@ bool ReloadSession::commit(HSQUIRRELVM vm, std::string* err) {
     }
 
     const bool ok = restore(vm, merged, err);
-    buffer_       = StateValue::null();
-    active_       = false;
+    // Keep the original buffer and the session open when restoration fails.
+    // The script orchestrator can then restore old root bindings and call
+    // abort(), instead of being stranded in a partially restored state.
+    if (ok) {
+        buffer_ = StateValue::null();
+        active_ = false;
+    }
     return ok;
 }
 
