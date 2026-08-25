@@ -28,12 +28,12 @@ TEST_CASE("editor.script.composes_live_tile_layer_target_with_field_tool") {
         beforeRevision <- target.getRevision();
         session.dispatchPointer(0, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);
         session.dispatchPointer(2, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);
-        painted <- layer.getTile(3, 4);
+        painted <- target.readInt(3, 4);
         targetRevision <- target.getRevision();
         undone <- session.undo();
-        restored <- layer.getTile(3, 4);
+        restored <- target.readInt(3, 4);
         redone <- session.redo();
-        replayed <- layer.getTile(3, 4);
+        replayed <- target.readInt(3, 4);
     )"));
 
     CHECK(vm.find("added").toBool());
