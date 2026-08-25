@@ -195,3 +195,21 @@ TEST_CASE("async.eveScriptAwaitStateMachine") {
     )");
     CHECK_EQ(out, std::string("20"));
 }
+
+TEST_CASE("async.hotReloadCancelsOldContinuations") {
+    std::string out = runAsyncSnippet(R"(
+        result <- "pending";
+        async function wait_forever() {
+            await Promise(function(resolve, reject) {});
+            return "unexpected";
+        }
+        wait_forever().then(
+            function(v) { result = v; },
+            function(e) { result = e; }
+        );
+        async_cancel_continuations("test reload");
+        async_pump();
+        async_pump();
+    )");
+    CHECK(out.find("async continuation cancelled: test reload") != std::string::npos);
+}

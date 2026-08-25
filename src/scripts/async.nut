@@ -16,10 +16,28 @@ if (!("_async" in getroottable())) {
         // Task-correlated completions: { task, value, resolve, reject }
         taskWaits = []
         eventWaits = []  // { name, resolve, reject }
+        generation = 1
+        continuations = []
     };
 }
 if (!("taskWaits" in _async))
     _async.taskWaits <- [];
+if (!("generation" in _async))
+    _async.generation <- 1;
+if (!("continuations" in _async))
+    _async.continuations <- [];
+
+function async_cancel_continuations(reason = "script hot reload") {
+    _async.generation += 1;
+    local active = _async.continuations;
+    _async.continuations = [];
+    foreach (entry in active) {
+        if (!entry.settled) {
+            entry.settled = true;
+            try { entry.reject("async continuation cancelled: " + reason); } catch (e) {}
+        }
+    }
+}
 
 function nextTick(fn) {
     if (typeof fn != "function")
@@ -414,16 +432,38 @@ function asyncReceive(ch) {
 // Promise continuations wake the thread on the game-thread microtask queue.
 function __eve_async(body, environment) {
     return Promise(function(resolve, reject) {
+        local entry = {
+            generation = _async.generation
+            settled = false
+            reject = reject
+        };
+        _async.continuations.append(entry);
+        local finish = function(value, failed) {
+            if (entry.settled) return;
+            entry.settled = true;
+            for (local i = _async.continuations.len() - 1; i >= 0; --i) {
+                if (_async.continuations[i] == entry) {
+                    _async.continuations.remove(i);
+                    break;
+                }
+            }
+            if (failed) reject(value); else resolve(value);
+        };
         local coroutine = null;
         try {
             coroutine = newthread(body.bindenv(environment));
         } catch (e) {
-            reject(e);
+            finish(e, true);
             return;
         }
 
         local started = false;
         local function advance(value, failed) {
+            if (entry.settled) return;
+            if (entry.generation != _async.generation) {
+                finish("async continuation cancelled: stale script generation", true);
+                return;
+            }
             local awaited = null;
             try {
                 if (!started) {
@@ -435,12 +475,12 @@ function __eve_async(body, environment) {
                     awaited = coroutine.wakeup(value);
                 }
             } catch (e) {
-                reject(e);
+                finish(e, true);
                 return;
             }
 
             if (coroutine.getstatus() == "idle") {
-                resolve(awaited);
+                finish(awaited, false);
                 return;
             }
             Promise.resolve(awaited).then(

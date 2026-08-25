@@ -256,6 +256,8 @@ function remap_instances(container, NewClass) {
 }
 
 function soft_reload_scripts() {
+    if ("async_cancel_continuations" in getroottable())
+        async_cancel_continuations("soft reload");
     // ① optional script hook: finalize transient state before capture.
     if ("eve_before_reload" in getroottable()) {
         try {
