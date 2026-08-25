@@ -118,7 +118,7 @@ jobs:
 
       - name: Test release.py
         timeout-minutes: 5
-        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+        run: python3 -m unittest discover -s scripts/tests -p "test_release*.py" -v
 
       - name: Check release version consistency
         timeout-minutes: 5
@@ -142,6 +142,10 @@ jobs:
       - name: Ruff lint (scripts + tools)
         timeout-minutes: 5
         run: python3 -m ruff check scripts tools
+
+      - name: Test Python scripts
+        timeout-minutes: 5
+        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
       - name: Test asset-pipeline-agent
         timeout-minutes: 5
