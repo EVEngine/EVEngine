@@ -37,7 +37,7 @@ private:
     static void presentOverlayThunk(void *userdata, void *commandBuffer);
     static void windowDestroyedThunk(void *userdata);
     void applyScale(float scale);
-    /** @brief Logical (point-space) UI scale; 1.0 on desktop where ImGui handles DPI. */
+    /** @brief Initial logical UI scale; follows Windows display DPI and mobile density. */
     float computeInitialScale() const;
     /** @brief Display/framebuffer DPI ratio used to bake the font atlas at native res. */
     float computeDpiScale() const;
@@ -45,8 +45,8 @@ private:
     void loadFonts();
     /** @brief Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
     void rebuildFonts();
-    /** @brief Warn when the built atlas still lacks CJK glyphs (post-Build only). */
-    void checkCjkCoverage() const;
+    /** @brief Warn when the built atlas lacks CJK or semantic icon glyphs. */
+    void checkFontCoverage() const;
 
     uint64_t registerTexture(graphics::Texture *tex) override;
     void unregisterTexture(uint64_t id) override;

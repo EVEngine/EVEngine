@@ -133,6 +133,13 @@ install(FILES
     "${CMAKE_SOURCE_DIR}/LICENSE-OPENSOURCE"
     DESTINATION share/eve/licenses
 )
+if(EXISTS "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/FontAwesome.ttf")
+    install(FILES "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/FontAwesome.ttf"
+        DESTINATION share/eve/fonts)
+    install(FILES "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/LICENSE.txt"
+        DESTINATION share/eve/licenses
+        RENAME FontAwesome-4.7.0-LICENSE.txt)
+endif()
 foreach(_eve_lic_src IN ITEMS
     "${CMAKE_SOURCE_DIR}/external"
     "${CMAKE_SOURCE_DIR}/third-party"
