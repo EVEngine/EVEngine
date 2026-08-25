@@ -403,6 +403,8 @@ Runtime::Scope::Scope(Scope&& other) noexcept
 
 Runtime::Runtime(size_t stackSize, ssq::Libs::Flag libraries)
     : vm_(createVm(stackSize, libraries)) {
+    script_modules_ = std::make_unique<script::ScriptModuleResolver>(handle());
+    script_modules_->registerDefaultProviders();
     installErrorHandler();
 }
 
@@ -444,6 +446,7 @@ void Runtime::shutdown() noexcept {
     class_owners_.clear();
     class_identities_.clear();
     initialized_ = false;
+    script_modules_.reset();
     vm_.reset();
     stopped_ = true;
     shutting_down_ = false;
@@ -453,6 +456,10 @@ bool Runtime::initialized() const noexcept { return initialized_; }
 ssq::VM& Runtime::vm() noexcept { return *vm_; }
 const ssq::VM& Runtime::vm() const noexcept { return *vm_; }
 HSQUIRRELVM Runtime::handle() const noexcept { return vm_ ? vm_->getHandle() : nullptr; }
+script::ScriptModuleResolver& Runtime::scriptModules() noexcept { return *script_modules_; }
+const script::ScriptModuleResolver& Runtime::scriptModules() const noexcept {
+    return *script_modules_;
+}
 ssq::Table Runtime::root() const { return ssq::Table(static_cast<const ssq::Object&>(*vm_)); }
 ssq::Table Runtime::table(const char* name) const {
     const bool validName = name != nullptr && name[0] != '\0';
@@ -476,8 +483,10 @@ Runtime::ScriptId Runtime::compileSource(std::string source, std::string sourceN
     record->info.source = sourceName;
     record->source_text = std::move(source);
     try {
+        script_modules_->beginCompilation(sourceName);
         record->compiled =
             std::make_unique<ssq::Script>(vm_->compileSource(record->source_text.c_str(), sourceName.c_str()));
+        script_modules_->prepareDependencies(sourceName);
         auto [it, inserted] = scripts_.emplace(id, std::move(record));
         (void)inserted;
         notifyLifecycle(it->second->info);
@@ -501,7 +510,9 @@ Runtime::ScriptId Runtime::compileFile(const std::string& path) {
     record->source_text = path;
     record->from_file = true;
     try {
+        script_modules_->beginCompilation(path);
         record->compiled = std::make_unique<ssq::Script>(vm_->compileFile(path.c_str()));
+        script_modules_->prepareDependencies(path);
         auto [it, inserted] = scripts_.emplace(id, std::move(record));
         (void)inserted;
         notifyLifecycle(it->second->info);
@@ -527,6 +538,7 @@ const ScriptInfo& Runtime::execute(ScriptId id) {
     record.info.error.clear();
     notifyLifecycle(record.info);
     try {
+        script_modules_->instantiateDependencies(record.info.source);
         // Drive the Squirrel call directly instead of ssq::VM::run(): when a
         // DevTool hook replaces the VM's error handler, ssq never populates its
         // stored RuntimeException and would dereference a null unique_ptr on

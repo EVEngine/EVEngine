@@ -164,6 +164,7 @@ file(GLOB all_test_cpp
   transaction.cpp
   rx.cpp
   runtime.cpp
+  script_module.cpp
   timer.cpp
   timer_cpp.cpp
   system.cpp

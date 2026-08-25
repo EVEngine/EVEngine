@@ -2,6 +2,7 @@
 
 #include "common/Export.h"
 #include "common/ScriptError.h"
+#include "common/ScriptModule.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -227,6 +228,10 @@ public:
     const ssq::VM& vm() const noexcept;
     /** @brief Raw Squirrel VM handle; nullptr after shutdown. */
     HSQUIRRELVM handle() const noexcept;
+    /** @brief Script module provider registry and dependency resolver for this VM. */
+    script::ScriptModuleResolver& scriptModules() noexcept;
+    /** @brief Const script module resolver for diagnostics and graph inspection. */
+    const script::ScriptModuleResolver& scriptModules() const noexcept;
     /** @brief Root script table of the VM. */
     ssq::Table root() const;
     /**
@@ -382,6 +387,7 @@ private:
     void installErrorHandler();
 
     std::unique_ptr<ssq::VM> vm_;
+    std::unique_ptr<script::ScriptModuleResolver> script_modules_;
     std::unordered_map<ScriptId, std::unique_ptr<ScriptRecord>> scripts_;
     std::unordered_map<std::string, ReflectedClass> classes_;
     std::unordered_map<std::string, ScriptId> class_owners_;
