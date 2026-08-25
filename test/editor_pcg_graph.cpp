@@ -16,7 +16,7 @@ TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
     CHECK_EQ(input.value->pins.size(), size_t(1));
     CHECK_EQ(prune.value->pins.size(), size_t(2));
     const auto* properties = prune.value->properties.getIf<EditorValue::Object>();
-    REQUIRE(properties != nullptr);
+    REQUIRE(bool(properties));
     CHECK_EQ(*properties->at("radius").getIf<double>(), 1.0);
 
     GraphDocument graph;
@@ -24,8 +24,8 @@ TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
     CHECK(graph.createNode(*prune.value).accepted());
     const GraphPinRecord* from = graph.findPin(GraphPinId("input.out"));
     const GraphPinRecord* to   = graph.findPin(GraphPinId("prune.in0"));
-    REQUIRE(from != nullptr);
-    REQUIRE(to != nullptr);
+    REQUIRE(bool(from));
+    REQUIRE(bool(to));
     CHECK(graph.connect({StableId("edge"), from->id, to->id}, domain.canConnect(*from, *to))
               .accepted());
 
@@ -58,10 +58,10 @@ TEST_CASE("editor.pcgGraph.rejectsCyclesAndWrongPinTypes") {
     const auto* aIn  = graph.findPin(GraphPinId("a.in0"));
     const auto* bOut = graph.findPin(GraphPinId("b.out"));
     const auto* bIn  = graph.findPin(GraphPinId("b.in0"));
-    REQUIRE(aOut != nullptr);
-    REQUIRE(aIn != nullptr);
-    REQUIRE(bOut != nullptr);
-    REQUIRE(bIn != nullptr);
+    REQUIRE(bool(aOut));
+    REQUIRE(bool(aIn));
+    REQUIRE(bool(bOut));
+    REQUIRE(bool(bIn));
     CHECK(graph.connect({StableId("ab"), aOut->id, bIn->id}, domain.canConnect(*aOut, *bIn))
               .accepted());
     CHECK(graph.connect({StableId("ba"), bOut->id, aIn->id}, domain.canConnect(*bOut, *aIn))
