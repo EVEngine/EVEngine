@@ -67,6 +67,38 @@ endif()
 
 include(CTest)
 
+set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/vkbuilder.hpp")
+set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")
+if(EXISTS "${_vkbuilder_header}")
+    file(READ "${_vkbuilder_header}" _vkbuilder_source)
+    set(_vkbuilder_original [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
+    use_default_color_blending = false;
+    this->color_blending = color_blending;
+    return *this;
+  }]=])
+    set(_vkbuilder_fixed [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
+    use_default_color_blending = false;
+    this->color_blending = color_blending;
+    if (color_blending.attachmentCount > 0 && color_blending.pAttachments) {
+      colorBlendAttachments.assign(color_blending.pAttachments,
+                                   color_blending.pAttachments + color_blending.attachmentCount);
+    } else {
+      colorBlendAttachments.clear();
+    }
+    return *this;
+  }]=])
+    string(FIND "${_vkbuilder_source}" "${_vkbuilder_original}" _vkbuilder_patch_offset)
+    if(_vkbuilder_patch_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned VKBuilder no longer matches the custom-blending compatibility fix")
+    endif()
+    string(REPLACE "${_vkbuilder_original}" "${_vkbuilder_fixed}" _vkbuilder_source
+        "${_vkbuilder_source}")
+    file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/"
+        DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
+    file(WRITE "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" "${_vkbuilder_source}")
+endif()
+
 
 # This is the main function of the build script
 function(main)
@@ -423,7 +455,7 @@ function(set_include)
         # sunxfancy/VKBuilder (git submodule) — header-only Vulkan wrapper. Exposed
         # globally (like the old third-party flattened install) so any module that
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include
+        ${EVENGINE_VKBUILDER_INCLUDE_DIR}
     )
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
         # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
@@ -447,7 +479,7 @@ function(set_include)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include)
-    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include)
+    eve_external_include(${EVENGINE_VKBUILDER_INCLUDE_DIR})
 
     # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.
     # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
