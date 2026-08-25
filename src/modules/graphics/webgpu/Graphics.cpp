@@ -2237,7 +2237,11 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[6].binding = 6;
     entries[6].textureView = h->view.Get();
     entries[7].binding = 7;
-    entries[7].sampler = mainSampler.Get();
+    // The mesh shader currently has one material sampler binding. Follow the
+    // albedo texture's public sampler state instead of silently substituting
+    // the backend-global linear sampler (Vulkan also samples albedo with the
+    // sampler owned by that texture).
+    entries[7].sampler = a->sampler.Get();
     entries[8].binding = 8;
     entries[8].sampler = shadow->sampler.Get();
     entries[9].binding = 9;
@@ -2309,7 +2313,7 @@ wgpu::BindGroup Graphics::makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTe
     entries[6].binding = 6;
     entries[6].textureView = h->view.Get();
     entries[7].binding = 7;
-    entries[7].sampler = mainSampler.Get();
+    entries[7].sampler = a->sampler.Get();
     entries[8].binding = 8;
     entries[8].sampler = shadow->sampler.Get();
     entries[9].binding = 9;

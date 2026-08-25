@@ -640,6 +640,13 @@ TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
     auto parallaxMapped = render(flat, height, 0.3f, 0.f, "pbr_material_parallax");
     auto cellBombed = render(flat, height, 0.f, 1.f, "pbr_material_cell_bomb");
 
+    // The albedo texture requests nearest filtering. The center boundary must
+    // stay a hard blue-to-red transition on both backends; using WebGPU's
+    // backend-global linear sampler here blends the two texels.
+    const uint8_t *nearestBlue = pixel(*baseline, 31, 32);
+    const uint8_t *nearestRed = pixel(*baseline, 32, 32);
+    CHECK(nearestBlue[2] > nearestBlue[0] + 50);
+    CHECK(nearestRed[0] > nearestRed[2] + 50);
     CHECK(imageRgbDifference(*baseline, *normalMapped) > 100000u);
     CHECK(imageRgbDifference(*baseline, *parallaxMapped) > 50000u);
     CHECK(imageRgbDifference(*baseline, *cellBombed) > 50000u);
