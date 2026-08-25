@@ -306,7 +306,8 @@ TEST_CASE("cmdline.helpListsSubcommands") {
     const int      rc = runCli({"eve", "--help"});
     CHECK(rc == 0);
     CHECK(cap.out().find("Subcommands:") != std::string::npos);
-    for (const char* sub : {"run", "create", "zip", "package", "dev", "doc", "clean", "test", "build", "get", "mcp"})
+    for (const char* sub : {"run", "create", "zip", "package", "dev", "doc", "clean", "test", "build", "get", "mcp",
+                            "language-server"})
         CHECK(cap.out().find(sub) != std::string::npos);
 }
 
