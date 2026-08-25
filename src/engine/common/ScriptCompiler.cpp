@@ -207,9 +207,19 @@ ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_
             return parameter.name.c_str();
         },
         this);
+    sq_setannotationresolver(
+        vm_->getHandle(),
+        [](HSQUIRRELVM, const SQChar* annotation, SQUserPointer user) -> SQBool {
+            const auto& names = static_cast<ScriptCompiler*>(user)->annotations_;
+            return names.find(annotation) == names.end() ? SQFalse : SQTrue;
+        },
+        this);
 }
 
-ScriptCompiler::~ScriptCompiler() { sq_setnamedargresolver(vm_->getHandle(), nullptr, nullptr); }
+ScriptCompiler::~ScriptCompiler() {
+    sq_setannotationresolver(vm_->getHandle(), nullptr, nullptr);
+    sq_setnamedargresolver(vm_->getHandle(), nullptr, nullptr);
+}
 
 ssq::Script ScriptCompiler::compileSource(std::string_view source, std::string_view sourceName) {
     const std::string uri(sourceName);
@@ -267,6 +277,12 @@ std::vector<ScriptMetadata> ScriptCompiler::metadataSnapshot() const {
 
 BindingContractRegistry&       ScriptCompiler::bindings() noexcept { return bindings_; }
 const BindingContractRegistry& ScriptCompiler::bindings() const noexcept { return bindings_; }
+
+void ScriptCompiler::registerAnnotation(std::string name) {
+    if (!name.empty()) annotations_.insert(std::move(name));
+}
+
+bool ScriptCompiler::unregisterAnnotation(std::string_view name) { return annotations_.erase(std::string(name)) != 0; }
 
 ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view canonicalUri) {
     ScriptMetadata result;

@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace ssq {
@@ -156,6 +157,10 @@ public:
     BindingContractRegistry& bindings() noexcept;
     /** @brief Const native binding contract registry. */
     const BindingContractRegistry& bindings() const noexcept;
+    /** @brief Registers one plugin annotation name accepted by the parser. */
+    void registerAnnotation(std::string name);
+    /** @brief Removes one plugin annotation name. */
+    bool unregisterAnnotation(std::string_view name);
 
     /** @brief Performs source-only metadata extraction without executing code. */
     static ScriptMetadata analyze(std::string_view source, std::string_view canonicalUri);
@@ -164,6 +169,7 @@ private:
     ssq::VM*                                        vm_;
     ScriptModuleResolver*                           modules_;
     BindingContractRegistry                         bindings_;
+    std::unordered_set<std::string>                 annotations_;
     std::unordered_map<std::string, ScriptMetadata> metadata_;
 };
 

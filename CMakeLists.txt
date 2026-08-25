@@ -33,7 +33,7 @@ if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
             "Use a prebuilt third-party install tree" FORCE)
     endif()
 endif()
-set(EVENGINE_THIRD_PARTY_PIN "70c878b183a7f705b9be61d671efdac08b90efd2" CACHE STRING
+set(EVENGINE_THIRD_PARTY_PIN "94d783948fcc00fb2d87186ba3216a537639659c" CACHE STRING
     "Pinned commit for the EVEngine/third-party aggregate checkout. The checkout is
      moved onto this commit at configure time (or verified against it), and every
      prebuilt third-party tree must be built from it.")

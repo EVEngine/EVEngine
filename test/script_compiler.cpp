@@ -162,3 +162,18 @@ TEST_CASE("scriptCompiler.retainsStructuredDiagnosticsAfterFailure") {
     CHECK_EQ(metadata->diagnostics[0].position.line, uint32_t(1));
     CHECK(!metadata->diagnostics[0].fix.empty());
 }
+
+TEST_CASE("scriptCompiler.requiresPluginAnnotationsToBeRegistered") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    bool    rejected = false;
+    try {
+        runtime.compileSource("class Asset { @plugin_asset(\"texture\") path = \"\" }\n", "game:/asset-error.nut");
+    } catch (const ScriptException&) {
+        rejected = true;
+    }
+    CHECK(rejected);
+
+    runtime.scriptCompiler().registerAnnotation("plugin_asset");
+    runtime.runSource("class Asset { @plugin_asset(\"texture\") path = \"\" }\n", "game:/asset.nut");
+    CHECK(runtime.scriptCompiler().unregisterAnnotation("plugin_asset"));
+}
