@@ -138,7 +138,7 @@ TEST_CASE("graphics.backendParity.draw2dUvRotationAndBlendModes") {
     REQUIRE(gfx != nullptr);
     const std::string backend = gfx->getBackendName();
     const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
-    CHECK(supportedBackend);
+    REQUIRE(supportedBackend);
 
     const uint8_t stripes[] = {
         255, 0, 0, 255,
@@ -231,7 +231,7 @@ TEST_CASE("graphics.backendParity.lighting2dNormalMapAndMultipleLights") {
     REQUIRE(gfx != nullptr);
     const std::string backend = gfx->getBackendName();
     const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
-    CHECK(supportedBackend);
+    REQUIRE(supportedBackend);
 
     const uint8_t white[] = {255, 255, 255, 255};
     const uint8_t flatNormal[] = {128, 128, 255, 255};
@@ -390,7 +390,6 @@ TEST_CASE("graphics.backendParity.webgpuCustomShaderLifetime") {
     Graphics *gfx = headlessGraphics();
     REQUIRE(gfx != nullptr);
     if (gfx->getBackendName() != "webgpu") {
-        CHECK(true);
         return;
     }
 
@@ -423,11 +422,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     gfx->setCanvas(nullptr);
 
     const Color center = canvas->getPixel(32, 32);
-    CHECK_GT(center.r, 0.20f);
-    CHECK_LT(center.r, 0.30f);
-    CHECK_GT(center.g, 0.45f);
-    CHECK_LT(center.g, 0.55f);
-    CHECK(center.b > 0.95f);
+    REQUIRE(center.r > 0.20f);
+    REQUIRE(center.r < 0.30f);
+    REQUIRE(center.g > 0.45f);
+    REQUIRE(center.g < 0.55f);
+    REQUIRE(center.b > 0.95f);
 }
 
 TEST_CASE("graphics.backendParity.dynamicMeshUpdate") {
@@ -450,12 +449,12 @@ TEST_CASE("graphics.backendParity.dynamicMeshUpdate") {
          0.f,  2.f, 0.f,
     };
     REQUIRE(gfx->updateMeshVertices(mesh, moved, nullptr, nullptr, 3, nullptr, 0));
-    CHECK(mesh->gpuHandle == stableGpuHandle);
-    CHECK(mesh->gpuVertexCount == 3);
-    CHECK(mesh->indexCount == 3);
+    REQUIRE(mesh->gpuHandle == stableGpuHandle);
+    REQUIRE(mesh->gpuVertexCount == 3);
+    REQUIRE(mesh->indexCount == 3);
 
     const uint32_t invalid[] = {0, 1, 3};
-    CHECK(!gfx->updateMeshVertices(mesh, moved, nullptr, nullptr, 3, invalid, 3));
+    REQUIRE(!gfx->updateMeshVertices(mesh, moved, nullptr, nullptr, 3, invalid, 3));
 }
 
 TEST_CASE("graphics.backendParity.gbufferAlphaCutout") {
@@ -577,7 +576,7 @@ TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
     REQUIRE(gfx != nullptr);
     const std::string backend = gfx->getBackendName();
     const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
-    CHECK(supportedBackend);
+    REQUIRE(supportedBackend);
 
     const float positions[] = {
         -1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
@@ -645,11 +644,11 @@ TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
     // backend-global linear sampler here blends the two texels.
     const uint8_t *nearestBlue = pixel(*baseline, 31, 32);
     const uint8_t *nearestRed = pixel(*baseline, 32, 32);
-    CHECK(nearestBlue[2] > nearestBlue[0] + 50);
-    CHECK(nearestRed[0] > nearestRed[2] + 50);
-    CHECK(imageRgbDifference(*baseline, *normalMapped) > 100000u);
-    CHECK(imageRgbDifference(*baseline, *parallaxMapped) > 50000u);
-    CHECK(imageRgbDifference(*baseline, *cellBombed) > 50000u);
+    REQUIRE(nearestBlue[2] > nearestBlue[0] + 50);
+    REQUIRE(nearestRed[0] > nearestRed[2] + 50);
+    REQUIRE(imageRgbDifference(*baseline, *normalMapped) > 100000u);
+    REQUIRE(imageRgbDifference(*baseline, *parallaxMapped) > 50000u);
+    REQUIRE(imageRgbDifference(*baseline, *cellBombed) > 50000u);
 }
 
 TEST_CASE("graphics.backendParity.pbrEnvironmentAndCloudShadow") {
@@ -657,7 +656,7 @@ TEST_CASE("graphics.backendParity.pbrEnvironmentAndCloudShadow") {
     REQUIRE(gfx != nullptr);
     const std::string backend = gfx->getBackendName();
     const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
-    CHECK(supportedBackend);
+    REQUIRE(supportedBackend);
 
     const float positions[] = {
         -1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
@@ -711,8 +710,8 @@ TEST_CASE("graphics.backendParity.pbrEnvironmentAndCloudShadow") {
     gfx->setMesh3DEnv(environment, 1.f);
     auto environmentOn = render("pbr_environment_on");
     const uint8_t *reflected = pixel(*environmentOn, 32, 32);
-    CHECK(reflected[1] > reflected[0] + 20);
-    CHECK(imageRgbDifference(*environmentOff, *environmentOn) > 20000u);
+    REQUIRE(reflected[1] > reflected[0] + 20);
+    REQUIRE(imageRgbDifference(*environmentOff, *environmentOn) > 20000u);
 
     Lighting3DPack sun{};
     sun.ambient = glm::vec4(0.01f, 0.01f, 0.01f, 0.f);
@@ -728,8 +727,8 @@ TEST_CASE("graphics.backendParity.pbrEnvironmentAndCloudShadow") {
     auto cloudOn = render("pbr_cloud_shadow_on");
     const uint8_t *lit = pixel(*cloudOff, 32, 32);
     const uint8_t *shadowed = pixel(*cloudOn, 32, 32);
-    CHECK(lit[0] > shadowed[0] + 80);
-    CHECK(imageRgbDifference(*cloudOff, *cloudOn) > 100000u);
+    REQUIRE(lit[0] > shadowed[0] + 80);
+    REQUIRE(imageRgbDifference(*cloudOff, *cloudOn) > 100000u);
 }
 
 TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {

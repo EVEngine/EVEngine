@@ -283,8 +283,11 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
                                   const float *uvST, int vertexCount, const uint32_t *indices,
                                   int indexCount) {
     if (!initialized || !mesh || !mesh->gpuHandle) return false;
-    if (!posXYZ || vertexCount <= 0) return false;
+    if (!posXYZ || vertexCount <= 0 || indexCount < 0) return false;
     if (indexCount > 0 && (indexCount % 3 != 0 || !indices)) return false;
+    for (int i = 0; i < indexCount; ++i) {
+        if (indices[i] >= uint32_t(vertexCount)) return false;
+    }
 
     std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
     for (int i = 0; i < vertexCount; ++i) {
