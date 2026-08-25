@@ -97,6 +97,14 @@ attachments while constructing Vulkan pipelines. Both are fixed. The latter
 made Vulkan additive, premultiplied and multiply pipelines use the requested
 blend equations instead of an accidental default.
 
+The subsequent full-suite pass exposed one WebGPU-only window-path defect that
+the headless artifact matrix did not exercise: `begin3DFrame()` cleared cascade
+draws that `RenderSystem3D` had just recorded, leaving every shadow layer empty.
+WebGPU mesh bind-group caching also omitted the in-flight UBO buffer identity,
+so a group could retain another frame slot's uniform arena. Both are fixed;
+all four `Shadow3D.*` cases now pass on native Dawn, including caster enable,
+per-receiver gating, strength interpolation and masked casters.
+
 All assertions in `graphics_backend_parity.cpp` are now fatal. The complete
 suite passes 13/13 isolated cases on both native Vulkan and native Dawn. A fresh
 pairwise comparison of 31 named 64x64 artifacts produced byte-identical RGB for
