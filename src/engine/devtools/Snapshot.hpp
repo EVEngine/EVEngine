@@ -16,9 +16,10 @@ namespace eve::dev {
  * @brief Script + native state snapshot for state hot reload.
  *
  * Captures serializable Squirrel values from the root table — either
- * explicitly marked roots (`markRoot`) or a heuristic that skips engine
- * module bindings — plus the state of every registered
- * eve::caps::IStateProvider. Closures / native userdata are skipped.
+ * explicitly persistent roots (`markRoot`) or a compatibility heuristic that
+ * skips engine module bindings. Roots marked transient are excluded. Native
+ * providers choose Preserve or Reset through IStateProvider::reloadPolicy().
+ * Closures / native userdata are skipped.
  *
  * Format (v2): JSON object
  * `{ "version":2, "roots": { name: value, ... },
@@ -32,10 +33,23 @@ public:
     Snapshot(const Snapshot&)            = delete;
     Snapshot& operator=(const Snapshot&) = delete;
 
-    void                     markRoot(std::string name);
-    void                     unmarkRoot(const std::string& name);
-    void                     clearRoots();
+    /** @brief Mark a root as persistent, replacing a transient declaration. */
+    void markRoot(std::string name);
+    /** @brief Remove an explicit persistent-root declaration. */
+    void unmarkRoot(const std::string& name);
+    /** @brief Mark a root for reconstruction from new script definitions. */
+    void markTransientRoot(std::string name);
+    /** @brief Remove an explicit transient-root declaration. */
+    void unmarkTransientRoot(const std::string& name);
+    /** @brief Clear every explicit persistent and transient declaration. */
+    void clearRoots();
+    /** @brief Return the explicit persistent roots. */
     std::vector<std::string> roots() const;
+    /** @brief Return the explicit transient roots. */
+    std::vector<std::string> transientRoots() const;
+
+    /** @brief Atomically replace explicit persistent/transient root policy. */
+    void setRootPolicies(std::vector<std::string> persistent, std::vector<std::string> transient);
 
     /** @brief Capture marked roots, or heuristic roots when none marked. */
     std::string capture(HSQUIRRELVM vm, std::string* error = nullptr) const;
@@ -48,7 +62,7 @@ public:
     std::vector<std::string> rootsFor(HSQUIRRELVM vm) const { return resolveRoots(vm); }
 
     /**
-     * @brief Capture script roots plus every registered IStateProvider.
+     * @brief Capture script roots plus every Preserve IStateProvider.
      * @param out Receives `{ "version":2, "roots": {...}, "native": {...} }`.
      * @return false when the VM is null; provider failures are skipped.
      */
@@ -70,6 +84,7 @@ private:
     std::vector<std::string> resolveRoots(HSQUIRRELVM vm) const;
 
     mutable std::vector<std::string> marked_;
+    mutable std::vector<std::string> transient_;
 };
 
 }  // namespace eve::dev

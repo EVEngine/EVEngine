@@ -192,6 +192,7 @@ file(GLOB all_test_cpp
   editor_property_v2.cpp
   editor_runtime_manifest_v2.cpp
   editor_scene_target_v2.cpp
+  editor_session_persistence.cpp
   editor_script_v2.cpp
   editor_field_tool_script.cpp
   editor_tilemap_target_script.cpp
