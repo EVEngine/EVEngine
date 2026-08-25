@@ -10,7 +10,6 @@
 #include "graphics/TextureSampler.h"
 #include "graphics/webgpu/Canvas.h"
 #include "graphics/webgpu/wgsl_shaders.h"
-#include "graphics/webgpu/HairWgsl.h"
 
 #include "common/Exception.h"
 #include "common/config.h"
@@ -5262,22 +5261,8 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                        const std::vector<uint32_t> &fragSpv) {
     (void)vertSpv;
     (void)fragSpv;
-    auto gpu = std::make_unique<GpuShader>();
-    gpu->isMesh3D = true;
-    gpu->isHair3D = true;
-    gpu->wgslVert = kMesh3DVertWgsl;
-    gpu->wgslFrag = kHairFragWgsl;
-    gpu->mesh3dPipeline = buildPipelineFromWgsl(
-        device, mesh3dPipelineLayout, sceneColorFormat, gpu->wgslVert, gpu->wgslFrag,
-        /*depth*/ true, /*blend*/ true, /*mesh3d*/ true, /*hair*/ true,
-        /*shadow*/ false, /*gbuffer*/ false, sceneColorSamples);
-    auto sh = std::make_unique<Shader>();
-    sh->setKind(Shader::Kind::eMesh3D);
-    sh->gpuHandle = gpu.get();
-    Shader *raw = sh.get();
-    ownedShaders.push_back(std::move(sh));
-    ownedGpuShaders.push_back(std::move(gpu));
-    return raw;
+    throw Exception("newHairShaderFromSpv: SPIR-V hair shaders are not supported on WebGPU; "
+                    "use newHairShaderFromWgsl");
 }
 
 Shader *Graphics::newHairShaderFromWgsl(const std::string &vertWgsl,
