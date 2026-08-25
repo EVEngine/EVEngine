@@ -3,11 +3,11 @@
 // Box-projected screen-space decal. The G-buffer hardware depth reconstructs
 // world position; fragments outside the unit decal box are rejected.
 layout(set = 0, binding = 0) uniform sampler2D decalAlbedo;
-layout(set = 1, binding = 0) uniform sampler2D decalNormal;
-layout(set = 2, binding = 0) uniform sampler2D decalParams;
-layout(set = 3, binding = 0) uniform sampler2D hwDepthTex;
-layout(set = 4, binding = 0) uniform sampler2D gbNormalTex;
-layout(set = 5, binding = 0, std140) uniform Camera {
+layout(set = 0, binding = 1) uniform sampler2D decalNormal;
+layout(set = 0, binding = 2) uniform sampler2D decalParams;
+layout(set = 0, binding = 3) uniform sampler2D hwDepthTex;
+layout(set = 0, binding = 4) uniform sampler2D gbNormalTex;
+layout(set = 0, binding = 5, std140) uniform Camera {
     mat4 viewProj;
     mat4 invViewProj;
     vec4 nearFarTexel;

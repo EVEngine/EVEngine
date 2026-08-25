@@ -247,6 +247,7 @@ if(_has_ui)
       target_include_directories(eve_imgui PRIVATE ${EMSCRIPTEN_SYSROOT}/include)
     else()
       target_include_directories(eve_imgui PRIVATE
+        ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/SDL2
         ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
         ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
       )

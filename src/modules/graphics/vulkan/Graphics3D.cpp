@@ -839,16 +839,10 @@ void Graphics::recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBuffe
         inst.fadeParams =
             glm::vec4(d.fade, d.normalStrength, d.roughnessStrength, d.metalStrength);
         inst.extraParams = glm::vec4(d.emissiveStrength, float(d.blendMode), 0.f, 0.f);
-        const std::array<vk::DescriptorSet, 6> sets{
-            gpuAlb->descriptorSet.handle,
-            gpuNrm->descriptorSet.handle,
-            gpuPrm->descriptorSet.handle,
-            gslot.depthGpu.descriptorSet.handle,
-            gslot.normalGpu.descriptorSet.handle,
-            slot.cameraSet.handle,
-        };
-        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0,
-                              uint32_t(sets.size()), sets.data(), 0, nullptr);
+        const vkb::BoundSet set = decalSetFor(slot, gpuAlb, gpuNrm, gpuPrm, &gslot.depthGpu,
+                                              &gslot.normalGpu);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0, 1,
+                              set.ptr(), 0, nullptr);
         cb.pushConstants(decalPipelineLayout,
                          vk::ShaderStageFlagBits::eVertex |
                              vk::ShaderStageFlagBits::eFragment,
