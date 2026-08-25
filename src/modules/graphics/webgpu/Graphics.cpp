@@ -594,7 +594,9 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
         entries[i].texture.viewDimension = WGPUTextureViewDimension_2D;
     }
     entries[15].binding = 15;
-    entries[15].visibility = WGPUShaderStage_Fragment;
+    // Custom mesh shaders may use their external parameters for vertex
+    // deformation as well as fragment shading (for example grass billboards).
+    entries[15].visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
     entries[15].buffer.type = WGPUBufferBindingType_Uniform;
     entries[15].buffer.hasDynamicOffset = true;
     entries[15].buffer.minBindingSize = Shader::kPushConstantBytes;
