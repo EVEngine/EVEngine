@@ -1306,7 +1306,6 @@ TEST_CASE("procgen.render.castlePng") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 900;
     settings.height = 700;
