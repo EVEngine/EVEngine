@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Export.h"
+#include "common/ScriptCompiler.h"
 #include "common/ScriptError.h"
 #include "common/ScriptModule.h"
 
@@ -232,6 +233,10 @@ public:
     script::ScriptModuleResolver& scriptModules() noexcept;
     /** @brief Const script module resolver for diagnostics and graph inspection. */
     const script::ScriptModuleResolver& scriptModules() const noexcept;
+    /** @brief Unified EveScript compiler, metadata store, and binding contracts. */
+    script::ScriptCompiler& scriptCompiler() noexcept;
+    /** @brief Const EveScript compiler and metadata store. */
+    const script::ScriptCompiler& scriptCompiler() const noexcept;
     /** @brief Root script table of the VM. */
     ssq::Table root() const;
     /**
@@ -388,6 +393,7 @@ private:
 
     std::unique_ptr<ssq::VM> vm_;
     std::unique_ptr<script::ScriptModuleResolver> script_modules_;
+    std::unique_ptr<script::ScriptCompiler> script_compiler_;
     std::unordered_map<ScriptId, std::unique_ptr<ScriptRecord>> scripts_;
     std::unordered_map<std::string, ReflectedClass> classes_;
     std::unordered_map<std::string, ScriptId> class_owners_;
