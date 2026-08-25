@@ -216,3 +216,22 @@ TEST_CASE("scriptCompiler.rawVmBridgeRecordsToolingMetadata") {
     CHECK_EQ(metadata->symbols.size(), size_t(1));
     CHECK_EQ(metadata->symbols[0].name, std::string("replValue"));
 }
+
+TEST_CASE("scriptCompiler.bindingContractChecksLiteralTypes") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.vm().addFunc("nativeCount", [](int count) { return count; });
+    script::BindingContract contract;
+    contract.module     = "test";
+    contract.method     = "nativeCount";
+    contract.returnType = "int";
+    contract.parameters = {{"count", "int", false}};
+    runtime.scriptCompiler().bindings().registerContract(std::move(contract));
+
+    bool rejected = false;
+    try {
+        runtime.compileSource("nativeCount(\"many\")\n", "game:/type-error.nut");
+    } catch (const ScriptException& error) {
+        rejected = std::string(error.what()).find("not assignable") != std::string::npos;
+    }
+    CHECK(rejected);
+}

@@ -95,6 +95,7 @@ std::vector<std::string> typeChoices(std::string_view type) {
 }
 
 std::string diagnosticCode(std::string_view message) {
+    if (message.find("not assignable") != std::string_view::npos) return "EVE2002";
     if (message.find("outside the allowed choices") != std::string_view::npos) return "EVE2101";
     if (message.find("named argument") != std::string_view::npos) return "EVE2201";
     if (message.find("Binding Contract") != std::string_view::npos) return "EVE2202";
@@ -194,13 +195,15 @@ ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_
     }
     sq_setnamedargresolver(
         vm_->getHandle(),
-        [](HSQUIRRELVM, const SQChar* callee, SQInteger index, const SQChar** unit, const SQChar** choices,
-           SQUserPointer user) -> const SQChar* {
+        [](HSQUIRRELVM, const SQChar* callee, SQInteger index, const SQChar** type, SQBool* nullable,
+           const SQChar** unit, const SQChar** choices, SQUserPointer user) -> const SQChar* {
             const auto&            self     = *static_cast<ScriptCompiler*>(user);
             const BindingContract* contract = self.bindings_.findMethod(callee);
             if (contract == nullptr || index < 0 || static_cast<size_t>(index) >= contract->parameters.size())
                 return nullptr;
             const BindingParameterContract& parameter = contract->parameters[static_cast<size_t>(index)];
+            if (type != nullptr) *type = parameter.type.c_str();
+            if (nullable != nullptr) *nullable = parameter.nullable ? SQTrue : SQFalse;
             static const char* units[] = {nullptr, "seconds", "milliseconds", "radians", "degrees", "pixels", "meters"};
             if (unit != nullptr) *unit = units[static_cast<size_t>(parameter.unit)];
             if (choices != nullptr) {
