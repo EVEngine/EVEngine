@@ -6,6 +6,7 @@
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "particles/ParticleConfig.h"
+#include "particles/ParticleEffect.h"
 #include "particles/ParticleRuntime.h"
 #include "particles/ParticleSystem.h"
 #include "particles/ParticlesCapabilities.h"
@@ -66,6 +67,16 @@ ParticleEmitter *Particles::newEmitterFromFile(const std::string &path) {
         return e;  // path may have failed; emitter still usable
     }
     return e;
+}
+
+ParticleEffect* Particles::newEffectFromText(const std::string& json) {
+    lastEffectError_.clear();
+    return ParticleEffect::fromText(json, {}, &lastEffectError_);
+}
+
+ParticleEffect* Particles::newEffectFromFile(const std::string& path) {
+    lastEffectError_.clear();
+    return ParticleEffect::fromFile(path, &lastEffectError_);
 }
 
 void Particles::update(float dt) {
@@ -144,10 +155,41 @@ void Particles::expose(ssq::Table &table) {
     cls.addFunc("getLastRenderedParticles", &Particles::getLastRenderedParticles);
     cls.addFunc("getLastSimulationMs", &Particles::getLastSimulationMs);
     cls.addFunc("getLastRenderMs", &Particles::getLastRenderMs);
+    cls.addFunc("newEffectFromText", &Particles::newEffectFromText);
+    cls.addFunc("newEffectFromFile", &Particles::newEffectFromFile);
+    cls.addFunc("getLastEffectError", &Particles::getLastEffectError);
 
     auto em = table.addClass<ParticleEmitter>(
         "Emitter", std::function<ParticleEmitter *()>([]() -> ParticleEmitter * { return nullptr; }),
         true);
+
+    auto effect = table.addClass<ParticleEffect>(
+        "ParticleEffect", std::function<ParticleEffect*()>([]() -> ParticleEffect* { return nullptr; }), true);
+    effect.addFunc("getVersion", &ParticleEffect::getVersion);
+    effect.addFunc("getSourcePath", &ParticleEffect::getSourcePath);
+    effect.addFunc("getEmitterCount", &ParticleEffect::getEmitterCount);
+    effect.addFunc("getEmitterName", &ParticleEffect::getEmitterName);
+    effect.addFunc("getEmitter", &ParticleEffect::getEmitter);
+    effect.addFunc("getEmitterByName", &ParticleEffect::getEmitterByName);
+    effect.addFunc("setPosition", &ParticleEffect::setPosition);
+    effect.addFunc("getX", &ParticleEffect::getX);
+    effect.addFunc("getY", &ParticleEffect::getY);
+    effect.addFunc("setRotation", &ParticleEffect::setRotation);
+    effect.addFunc("getRotation", &ParticleEffect::getRotation);
+    effect.addFunc("setScale", &ParticleEffect::setScale);
+    effect.addFunc("getScale", &ParticleEffect::getScale);
+    effect.addFunc("setLayer", &ParticleEffect::setLayer);
+    effect.addFunc("getLayer", &ParticleEffect::getLayer);
+    effect.addFunc("setVisible", &ParticleEffect::setVisible);
+    effect.addFunc("isVisible", &ParticleEffect::isVisible);
+    effect.addFunc("start", &ParticleEffect::start);
+    effect.addFunc("stop", &ParticleEffect::stop);
+    effect.addFunc("pause", &ParticleEffect::pause);
+    effect.addFunc("reset", &ParticleEffect::reset);
+    effect.addFunc("emit", &ParticleEffect::emit);
+    effect.addFunc("setFloatParameter", &ParticleEffect::setFloatParameter);
+    effect.addFunc("getFloatParameter", &ParticleEffect::getFloatParameter);
+    effect.addFunc("hasFloatParameter", &ParticleEffect::hasFloatParameter);
     em.addFunc("setPosition", &ParticleEmitter::setPosition);
     em.addFunc("moveTo", &ParticleEmitter::moveTo);
     em.addFunc("getX", &ParticleEmitter::getX);

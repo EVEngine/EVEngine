@@ -11,6 +11,8 @@ class Graphics;
 
 namespace eve::particles {
 
+class ParticleEffect;
+
 /**
  * @brief Particles module — factory + script binding.
  * Per-frame: ParticleConfigSystem (hot reload) → ParticleSimSystem →
@@ -25,6 +27,12 @@ public:
     ParticleEmitter *newEmitter(int bufferSize = 1000);
     /** @brief Create emitter from JSON config file (reads optional "buffer"). */
     ParticleEmitter *newEmitterFromFile(const std::string &path);
+    /** @brief Create a versioned multi-emitter effect from JSON text. */
+    ParticleEffect* newEffectFromText(const std::string& json);
+    /** @brief Create a versioned multi-emitter effect asset from a JSON file. */
+    ParticleEffect* newEffectFromFile(const std::string& path);
+    /** @brief Return the latest effect asset parse or load error. */
+    std::string getLastEffectError() const { return lastEffectError_; }
 
     void update(float dt);
     void render(graphics::Graphics *gfx);
@@ -66,6 +74,9 @@ public:
     float getLastSimulationMs() const;
     /** @brief Return particle render-build and submission wall time in milliseconds. */
     float getLastRenderMs() const;
+
+private:
+    std::string lastEffectError_;
 };
 
 }  // namespace eve::particles

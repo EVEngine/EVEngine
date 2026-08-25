@@ -28,28 +28,13 @@ eve_init = function() {
     }
 
     if (burstFx == null) {
-        burstFx = particles.newEmitter(600);
-        burstFx.setRandomSeed(424242);
-        burstFx.setAutoRandomSeed(false);
+        burstFx = particles.newEffectFromFile("impact.effect.json");
+        if (burstFx == null) {
+            print("particle effect load failed: " + particles.getLastEffectError() + "\n");
+            return;
+        }
         burstFx.setPosition(480.0, 320.0);
-        burstFx.setEmitterLifetime(1.8);
-        burstFx.setLooping(true);
-        burstFx.setEmissionRate(0.0);
-        burstFx.addBurst(0.0, 72);
-        burstFx.addBurst(0.9, 36);
-        burstFx.setParticleLifetime(0.7, 1.4);
-        burstFx.setParticleSize(18.0, 18.0);
-        burstFx.setSizes(1.2, 0.4);
-        burstFx.setSpeed(80.0, 230.0);
-        burstFx.setSpread(6.2831853);
-        burstFx.setGravity(0.0, 95.0);
-        burstFx.setDamping(0.18);
-        burstFx.setBlendMode("alpha");
-        burstFx.clearColorGradient();
-        burstFx.addColorStop(0.0, 1.0, 0.96, 0.65, 1.0);
-        burstFx.addColorStop(0.35, 1.0, 0.35, 0.08, 0.9);
-        burstFx.addColorStop(1.0, 0.3, 0.04, 0.01, 0.3);
-        burstFx.setFixedTimeStep(0.008333333, 8);
+        burstFx.setFloatParameter("intensity", 1.15);
         burstFx.start();
     }
 };

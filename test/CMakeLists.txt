@@ -69,6 +69,7 @@ file(GLOB all_test_cpp
   particles.cpp
   particles_playback.cpp
   particles_scalability.cpp
+  particles_effect_asset.cpp
   particles_gpu_resident.cpp
   particles_reference_effects.cpp
   particles_renderer.cpp

@@ -15,6 +15,47 @@ particles.update(dt);
 particles.render(gfx);
 ```
 
+## 版本化多发射器特效资产
+
+复杂特效应保存为 `eve.particle-effect` 资产，而不是让玩法脚本逐个拼装发射器。版本 1 支持命名层、嵌入式发射器配置或外部 `config` 引用、局部偏移/旋转、禁用层、资产参数默认值和逐层参数覆盖。
+
+```json
+{
+  "type": "eve.particle-effect",
+  "version": 1,
+  "parameters": { "intensity": 1.0 },
+  "emitters": [
+    {
+      "name": "core",
+      "offset": [0, -6],
+      "emitter": {
+        "buffer": 128,
+        "preset": "fire",
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.0 }
+        ]
+      }
+    },
+    { "name": "smoke", "config": "emitters/smoke.json" }
+  ]
+}
+```
+
+```squirrel
+local impact = particles.newEffectFromFile("effects/impact.effect.json");
+if (impact == null) {
+    print(particles.getLastEffectError() + "\n");
+} else {
+    impact.setPosition(480, 320);
+    impact.setRotation(0.5);
+    impact.setFloatParameter("intensity", 1.4);
+    impact.start();
+    local sparks = impact.getEmitterByName("sparks"); // 仍可精调单层
+}
+```
+
+`newEffectFromText()` 供编辑器预览未落盘的 JSON。组对象提供 `setPosition`、`setRotation`、`setScale`、`setLayer`、`setVisible`、`start`、`pause`、`stop`、`reset` 和命名层 `emit`；组销毁时会一起回收所拥有的发射器。未知版本、重名层和无效配置会拒绝实例化，并通过 `getLastEffectError()` 返回可展示的诊断。
+
 ## 绑定到动态骨骼
 
 粒子仍是 2D。支持多种运行时骨骼源；每帧 `particles.update` 会自动 `syncAttach`。
@@ -376,13 +417,13 @@ embers.start();
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`bindFloatParameter()`、`clearBursts()`、`clearColorGradient()`、`clearFloatParameterBindings()`、`clearFloatParameters()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoRandomSeed()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getEmissionRateOverDistance()`、`getFixedTimeStep()`、`getGpuSimulation()`、`getLightsEnabled()`、`getLooping()`、`getPlaybackSpeed()`、`getPrewarmSeconds()`、`getRandomSeed()`、`getShader()`
-- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getFloatParameter()`、`getGpuFallbackReason()`、`getLayer()`、`getName()`、`getPriority()`、`getMinimumQuality()`、`getCullingMode()`、`getCullDistance()`、`getMaxSpawnPerFrame()`、`getMaterialMode()`、`getDistortionStrength()`、`getNormalTexture()`、`getResolvedParameterScale()`、`getSimulationBackend()`
+- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getEmitterName()`、`getEmitter()`、`getEmitterByName()`、`getFloatParameter()`、`getGpuFallbackReason()`、`getLastEffectError()`、`getLayer()`、`getName()`、`getPriority()`、`getMinimumQuality()`、`getCullingMode()`、`getCullDistance()`、`getMaxSpawnPerFrame()`、`getMaterialMode()`、`getDistortionStrength()`、`getNormalTexture()`、`getResolvedParameterScale()`、`getRotation()`、`getScale()`、`getSimulationBackend()`、`getSourcePath()`、`getVersion()`
 - `getMaxParticles()`、`getMaxSimulatedEmitters()`、`getQualityLevel()`、`getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()`、`getLastRenderMs()`
 - `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
-- `hasFloatParameter()`、`hasSkinSource()`、`isActive()`、`isAttached()`、`isGpuFeatureSetSupported()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEmitter()`、`newEmitterFromFile()`
+- `hasFloatParameter()`、`hasSkinSource()`、`isActive()`、`isAttached()`、`isGpuFeatureSetSupported()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEffectFromFile()`、`newEffectFromText()`、`newEmitter()`、`newEmitterFromFile()`
 - `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`
 - `setAutoRandomSeed()`、`setBlendMode()`、`setBudget()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setCullingMode()`、`setCullDistance()`、`setDamping()`、`setDirection()`、`setDistortionStrength()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setFloatParameter()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaterialMode()`、`setMaxDeltaTime()`、`setMaxSpawnPerFrame()`、`setMinimumQuality()`、`setNoise()`、`setNormalTexture()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setPriority()`、`setQualityLevel()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
-- `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setSizeVariation()`
+- `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setRotation()`、`setScale()`、`setSizeVariation()`
 - `setSizes()`、`setSkinBoneFilter()`、`setSkinBoneFilterByName()`、`setSkinPlane()`、`setSkinScale()`、`setSkinSource()`、`setSpeed()`、`setSpin()`、`setSpread()`、`setStartRotation()`、`setTangentialAcceleration()`、`setTexture()`、`setVisible()`、`start()`
 - `stop()`、`syncAttach()`、`update()`
 
@@ -393,4 +434,4 @@ embers.start();
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/particles/`](../../../src/modules/particles/)
-**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
+**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_effect_asset.cpp`](../../../test/particles_effect_asset.cpp)、[`test/particles_reference_effects.cpp`](../../../test/particles_reference_effects.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
