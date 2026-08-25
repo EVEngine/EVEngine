@@ -137,13 +137,16 @@ public:
         float boundsMaxY = 0.f;
         /** @brief Query the engine-level world collision resolver each step. */
         bool worldCollision = false;
-        /** @brief "billboard" | "axis" | "stretched" (velocity-aligned). */
+        /** @brief "billboard" | "axis" | "stretched" | "ribbon". */
         std::string renderMode = "billboard";
         float stretchFactor = 1.f;
         /** @brief Fixed screen-space angle in degrees used by axis mode. */
         float renderAxisDegrees = 0.f;
         /** @brief "none" | "oldest" | "youngest" | "distance" transparent ordering. */
         std::string sortMode = "none";
+        /** @brief Ribbon width multiplier and minimum accepted segment length. */
+        float ribbonWidth            = 1.f;
+        float ribbonMinSegmentLength = 1.f;
         /** @brief Buffer-full strategy: "drop" (default) | "pause" | "warn". */
         std::string overflowMode = "drop";
         /** @brief Cap per-step delta time (0 = unlimited). */
@@ -445,6 +448,8 @@ public:
     void setWorldCollision(bool enabled);
 
     void setRenderMode(const std::string &mode, float stretchFactor = 1.f);
+    /** @brief Configure connected ribbon rendering and switch to ribbon mode. */
+    void setRibbon(float width = 1.f, float minSegmentLength = 1.f);
     /** @brief Set the fixed screen-space orientation used by render mode "axis". */
     void setRenderAxis(float degrees);
     /** @brief Select stable per-emitter transparent ordering. */

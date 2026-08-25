@@ -903,8 +903,18 @@ void ParticleEmitter::setWorldCollision(bool enabled) { config()->worldCollision
 
 void ParticleEmitter::setRenderMode(const std::string &mode, float stretchFactor) {
     auto c = config();
-    c->renderMode = (mode == "stretched" || mode == "velocity") ? "stretched" : mode == "axis" ? "axis" : "billboard";
+    c->renderMode    = (mode == "stretched" || mode == "velocity") ? "stretched"
+                       : mode == "axis"                            ? "axis"
+                       : mode == "ribbon"                          ? "ribbon"
+                                                                   : "billboard";
     c->stretchFactor = stretchFactor < 0.f ? 0.f : stretchFactor;
+}
+
+void ParticleEmitter::setRibbon(float width, float minSegmentLength) {
+    auto c                    = config();
+    c->renderMode             = "ribbon";
+    c->ribbonWidth            = width < 0.f ? 0.f : width;
+    c->ribbonMinSegmentLength = minSegmentLength < 0.f ? 0.f : minSegmentLength;
 }
 
 void ParticleEmitter::setRenderAxis(float degrees) { config()->renderAxisDegrees = degrees; }

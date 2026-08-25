@@ -163,13 +163,14 @@ TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
     trail->setParticleSize(22.f, 22.f);
     trail->setSizes(1.f, 0.45f);
     trail->setSizeVariation(0.35f);
-    trail->setSpeed(4.f, 18.f);
+    trail->setSpeed(0.f, 0.f);
     trail->setSpread(6.2831853f);
-    trail->setGravity(0.f, 16.f);
+    trail->setGravity(0.f, 0.f);
     trail->setDamping(0.25f);
     trail->setBlendMode("alpha");
     trail->setColorStart(0.35f, 0.9f, 1.f, 1.f);
     trail->setColorEnd(0.45f, 0.15f, 1.f, 0.35f);
+    trail->setRibbon(0.55f, 2.f);
     trail->setFixedTimeStep(1.f / 120.f, 8);
     trail->setPosition(320.f, 210.f);
     trail->start();

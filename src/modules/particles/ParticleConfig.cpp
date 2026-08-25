@@ -404,6 +404,18 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
         emitter->setRenderMode("stretched", asFloat(obj->get("stretch"), 1.f));
     }
     if (obj->has("renderAxis")) emitter->setRenderAxis(asFloat(obj->get("renderAxis"), 0.f));
+    if (obj->has("ribbon")) {
+        try {
+            auto ribbon = obj->getObject("ribbon");
+            if (ribbon) {
+                const float width = ribbon->has("width") ? asFloat(ribbon->get("width"), 1.f) : 1.f;
+                const float minSegment =
+                    ribbon->has("minSegmentLength") ? asFloat(ribbon->get("minSegmentLength"), 1.f) : 1.f;
+                emitter->setRibbon(width, minSegment);
+            }
+        } catch (...) {
+        }
+    }
     if (obj->has("sortMode")) emitter->setSortMode(asString(obj->get("sortMode")));
     if (obj->has("overflowMode"))
         emitter->setOverflowMode(asString(obj->get("overflowMode")));

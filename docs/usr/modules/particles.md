@@ -274,6 +274,8 @@ JSON：`collision: {mode, radius, restitution, lifetimeLoss}`、`collisionBounds
 
 透明粒子可用 `setSortMode("none" | "oldest" | "youngest" | "distance")` 选择稳定的逐发射器提交顺序，`getSortMode()` 返回规范化后的策略。`distance` 在有相机时按远到近排列。当前 GPU 常驻后端只支持 `none`；其他策略明确保留在 CPU 后端，避免宣称排序已在 GPU 上完成。
 
+连续拖尾使用 `setRibbon(width, minSegmentLength)`，它按稳定的粒子出生顺序连接相邻控制点，跳过过短段，并沿段方向生成带宽度的纹理四边形；JSON 为 `ribbon: {width, minSegmentLength}`。Ribbon 当前明确使用 CPU 渲染后端，适合配合 `setEmissionRateOverDistance` 制作弹道、刀光和移动轨迹。
+
 健壮性：`overflowMode`（`"drop"` 默认 / `"pause"` 暂停发射直到有空位 / `"warn"` 日志提示）；`setMaxDeltaTime` 限制单帧步长；带相机的发射器在屏幕外且无存活粒子时会跳过模拟。
 
 ## 力场、自定义 Shader 与粒子灯光

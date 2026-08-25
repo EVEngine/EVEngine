@@ -225,6 +225,7 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setCollisionBounds", &ParticleEmitter::setCollisionBounds);
     em.addFunc("setWorldCollision", &ParticleEmitter::setWorldCollision);
     em.addFunc("setRenderMode", &ParticleEmitter::setRenderMode);
+    em.addFunc("setRibbon", &ParticleEmitter::setRibbon);
     em.addFunc("setRenderAxis", &ParticleEmitter::setRenderAxis);
     em.addFunc("setSortMode", &ParticleEmitter::setSortMode);
     em.addFunc("getSortMode", &ParticleEmitter::getSortMode);

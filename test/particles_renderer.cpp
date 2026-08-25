@@ -25,6 +25,11 @@ TEST_CASE("particles.renderer.facingAndSortContract") {
 
     emitter->setSortMode("unsupported");
     CHECK_EQ(emitter->getSortMode(), std::string("none"));
+
+    emitter->setRibbon(0.65f, 3.f);
+    CHECK_EQ(emitter->config()->renderMode, std::string("ribbon"));
+    CHECK(std::abs(emitter->config()->ribbonWidth - 0.65f) < 1e-5f);
+    CHECK(std::abs(emitter->config()->ribbonMinSegmentLength - 3.f) < 1e-5f);
 }
 
 TEST_CASE("particles.renderer.jsonContract") {
@@ -32,10 +37,12 @@ TEST_CASE("particles.renderer.jsonContract") {
     REQUIRE(emitter->applyConfig(R"({
         "renderMode": "axis",
         "renderAxis": -22.5,
-        "sortMode": "youngest"
+        "sortMode": "youngest",
+        "ribbon": {"width": 0.75, "minSegmentLength": 2.5}
     })"));
 
-    CHECK_EQ(emitter->config()->renderMode, std::string("axis"));
+    CHECK_EQ(emitter->config()->renderMode, std::string("ribbon"));
     CHECK(std::abs(emitter->config()->renderAxisDegrees + 22.5f) < 1e-5f);
     CHECK_EQ(emitter->getSortMode(), std::string("youngest"));
+    CHECK(std::abs(emitter->config()->ribbonWidth - 0.75f) < 1e-5f);
 }

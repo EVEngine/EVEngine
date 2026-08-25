@@ -146,6 +146,30 @@ void appendEmitterItems(const ParticleEmitter::Config& cfg, const ParticleEmitte
     for (int index : indices) appendParticleItem(cfg, draw, sim.particles[std::size_t(index)], order++, out);
 }
 
+int appendRibbonItems(const ParticleEmitter::Config& cfg, const ParticleEmitter::Sim& sim,
+                      const ParticleEmitter::Draw& draw, int& order, std::vector<graphics::DrawItem2D>& out) {
+    int segments = 0;
+    for (int i = 1; i < sim.alive; ++i) {
+        const Particle& previous = sim.particles[std::size_t(i - 1)];
+        const Particle& current  = sim.particles[std::size_t(i)];
+        const float     dx       = current.x - previous.x;
+        const float     dy       = current.y - previous.y;
+        const float     length   = std::sqrt(dx * dx + dy * dy);
+        if (length < cfg.ribbonMinSegmentLength) continue;
+
+        appendParticleItem(cfg, draw, current, order++, out);
+        auto&       item = out.back();
+        const float h    = item.h * cfg.ribbonWidth;
+        item.x           = (previous.x + current.x - length) * 0.5f;
+        item.y           = (previous.y + current.y - h) * 0.5f;
+        item.w           = length;
+        item.h           = h;
+        item.rotation    = std::atan2(dy, dx) * kRad2Deg;
+        ++segments;
+    }
+    return segments;
+}
+
 /** True when the emitter center is well outside the camera view (skip sim). */
 bool emitterOffscreen(const ParticleEmitter::Config &cfg, const ParticleEmitter::Draw &draw) {
     auto *cam = draw.camera;
@@ -192,7 +216,7 @@ bool supportsResidentGpu(const ParticleEmitter::Config& cfg, const ParticleEmitt
     return draw.canvas == nullptr && draw.shader == nullptr && cfg.collisionMode == "none" &&
            !cfg.collisionBoundsEnabled && !cfg.worldCollision && cfg.forceFields.empty() && cfg.subEmitters.empty() &&
            !cfg.lights.enabled && cfg.velocityCurve.empty() && cfg.sizeCurve.empty() && cfg.rotationCurve.empty() &&
-           cfg.colorGradient.empty() && cfg.sortMode == "none";
+           cfg.colorGradient.empty() && cfg.sortMode == "none" && cfg.renderMode != "ribbon";
 }
 
 graphics::GpuParticleSpawn gpuSpawn(const Particle& particle) {
@@ -481,8 +505,12 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
             continue;
         }
         if (draw->canvas) anyCanvas = true;
-        appendEmitterItems(*cfg, *sim, *draw, order, items);
-        stats.renderedParticles += sim->alive;
+        if (cfg->renderMode == "ribbon")
+            stats.renderedParticles += appendRibbonItems(*cfg, *sim, *draw, order, items);
+        else {
+            appendEmitterItems(*cfg, *sim, *draw, order, items);
+            stats.renderedParticles += sim->alive;
+        }
     }
 
     // Unified 2D sprite path: rotation / flipbook UV / blend / layer sorting

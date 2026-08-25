@@ -60,8 +60,9 @@ and a six-emitter/150-frame rendered stress capture.
 - Camera-facing, velocity-aligned, and axis-aligned sprite modes now share one
   renderer contract. Stable oldest/youngest/distance transparency policies are
   available on CPU with explicit GPU fallback; GPU sorting remains pending.
-- Ribbon/trail, mesh, and light renderers remain to be placed behind the shared
-  renderer contract.
+- A CPU ribbon renderer connects stable birth-order control points, rejects
+  undersized segments, and shares sprite material/color/size handling. GPU
+  ribbon scan/index generation remains pending. Mesh and light renderers remain.
 - Depth sorting policies, soft particles, depth fade, distortion, normal maps,
   lit/unlit materials, and motion-vector policy.
 - Mesh/skeleton, scene depth, collision, signed-distance-field, and gameplay
