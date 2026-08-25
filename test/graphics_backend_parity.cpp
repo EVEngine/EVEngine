@@ -28,6 +28,22 @@ const uint8_t *pixel(const eve::image::ImageData &image, int x, int y) {
     return bytes + (size_t(y) * size_t(image.getWidth()) + size_t(x)) * 4u;
 }
 
+uint64_t imageRgbDifference(const eve::image::ImageData &a, const eve::image::ImageData &b) {
+    REQUIRE(a.getWidth() == b.getWidth());
+    REQUIRE(a.getHeight() == b.getHeight());
+    const auto *aBytes = static_cast<const uint8_t *>(a.getData());
+    const auto *bBytes = static_cast<const uint8_t *>(b.getData());
+    uint64_t difference = 0;
+    const size_t pixels = size_t(a.getWidth()) * size_t(a.getHeight());
+    for (size_t i = 0; i < pixels; ++i) {
+        for (size_t channel = 0; channel < 3; ++channel) {
+            const int delta = int(aBytes[i * 4u + channel]) - int(bBytes[i * 4u + channel]);
+            difference += uint64_t(delta < 0 ? -delta : delta);
+        }
+    }
+    return difference;
+}
+
 Graphics *headlessGraphics() {
     Graphics *gfx = Graphics::create();
     if (!gfx->isHeadless()) gfx->initHeadless(64, 64);
@@ -553,4 +569,77 @@ TEST_CASE("graphics.backendParity.decalLayerProjection") {
     const bool cornerHasBase = compositedCorner[0] > 180 && compositedCorner[1] > 180;
     REQUIRE(cornerHasBase);
     writeParityArtifact(*composited, "decal_forward_composite", gfx->getBackendName());
+}
+
+TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    const std::string backend = gfx->getBackendName();
+    const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
+    CHECK(supportedBackend);
+
+    const float positions[] = {
+        -1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
+    };
+    const float normals[] = {
+        0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    };
+    const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+
+    const uint8_t stripes[] = {
+        255, 32, 16, 255, 255, 32, 16, 255, 16, 32, 255, 255, 16, 32, 255, 255,
+        255, 32, 16, 255, 255, 32, 16, 255, 16, 32, 255, 255, 16, 32, 255, 255,
+    };
+    const uint8_t flatNormal[] = {128, 128, 255, 255};
+    const uint8_t tiltedNormal[] = {255, 128, 128, 255};
+    const uint8_t raisedHeight[] = {64, 64, 64, 255};
+    Texture *albedo = gfx->newTexture(8, 1, stripes);
+    Texture *flat = gfx->newTexture(1, 1, flatNormal);
+    Texture *tilted = gfx->newTexture(1, 1, tiltedNormal);
+    Texture *height = gfx->newTexture(1, 1, raisedHeight);
+    REQUIRE(albedo != nullptr);
+    REQUIRE(flat != nullptr);
+    REQUIRE(tilted != nullptr);
+    REQUIRE(height != nullptr);
+    gfx->setTextureSampler(albedo, TextureSampler::nearest());
+
+    Lighting3DPack lighting{};
+    lighting.ambient = glm::vec4(0.02f, 0.02f, 0.02f, 0.f);
+    lighting.count = 1;
+    lighting.lights[0].posRadius = glm::vec4(1.f, 0.f, 0.15f, 0.f);
+    lighting.lights[0].color = glm::vec4(0.85f, 0.85f, 0.85f, 1.f);
+    gfx->setMesh3DLighting(lighting);
+    gfx->setMesh3DViewProj(glm::mat4(1.f));
+    gfx->setMesh3DView(glm::mat4(1.f));
+    gfx->setMesh3DCameraPos(glm::vec3(1.2f, 0.f, 3.f));
+    gfx->setMesh3DMaterial(0.f, 0.8f);
+
+    auto render = [&](Texture *normal, Texture *heightMap, float parallax, float bombStrength,
+                      const char *artifact) {
+        gfx->setMesh3DNormalTexture(normal);
+        gfx->setMesh3DHeightTexture(heightMap);
+        gfx->setMesh3DParallax(parallax, 12.f, 12.f);
+        gfx->setMesh3DTexCellBomb(4.f, bombStrength, 1.f);
+        Canvas *target = gfx->newCanvas(64, 64);
+        REQUIRE(target != nullptr);
+        gfx->begin3DFrameToCanvas(target);
+        gfx->drawMesh(mesh, glm::mat4(1.f), albedo, Color(1.f));
+        gfx->end3DFrameToCanvas();
+        std::unique_ptr<eve::image::ImageData> image(target->newImageData());
+        REQUIRE(image.get() != nullptr);
+        writeParityArtifact(*image, artifact, backend);
+        return image;
+    };
+
+    auto baseline = render(flat, height, 0.f, 0.f, "pbr_material_baseline");
+    auto normalMapped = render(tilted, height, 0.f, 0.f, "pbr_material_normal_map");
+    auto parallaxMapped = render(flat, height, 0.3f, 0.f, "pbr_material_parallax");
+    auto cellBombed = render(flat, height, 0.f, 1.f, "pbr_material_cell_bomb");
+
+    CHECK(imageRgbDifference(*baseline, *normalMapped) > 100000u);
+    CHECK(imageRgbDifference(*baseline, *parallaxMapped) > 50000u);
+    CHECK(imageRgbDifference(*baseline, *cellBombed) > 50000u);
 }

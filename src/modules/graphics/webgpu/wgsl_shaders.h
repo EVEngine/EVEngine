@@ -305,6 +305,101 @@ fn geomSmith(n: vec3f, v: vec3f, l: vec3f, rough: f32) -> f32 {
 fn fresnelSchlick(cosT: f32, f0: vec3f) -> vec3f {
     return f0 + (1.0 - f0) * pow(clamp(1.0 - cosT, 0.0, 1.0), 5.0);
 }
+fn texBombHash22(p: vec2f) -> vec2f {
+    var p3 = fract(vec3f(p.x, p.y, p.x) * vec3f(0.1031, 0.1030, 0.0973));
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.xx + p3.yz) * p3.zy);
+}
+fn texBombRotate(v: vec2f, angle: f32) -> vec2f {
+    let s = sin(angle);
+    let c = cos(angle);
+    return vec2f(c * v.x - s * v.y, s * v.x + c * v.y);
+}
+fn textureCellBomb(tex: texture_2d<f32>, uv: vec2f, cellScale: f32, strength: f32,
+                   rotAmount: f32, dx: vec2f, dy: vec2f) -> vec4f {
+    if (strength < 1e-4) { return textureSample(tex, mainSamp, uv); }
+    let scale = max(cellScale, 1e-3);
+    let p = uv * scale;
+    let cell = floor(p);
+    let f = fract(p);
+    let w = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+    var accumulated = vec4f(0.0);
+    for (var j = 0; j <= 1; j = j + 1) {
+        for (var i = 0; i <= 1; i = i + 1) {
+            let ij = vec2f(f32(i), f32(j));
+            let cellIJ = cell + ij;
+            let random = texBombHash22(cellIJ);
+            let randomB = texBombHash22(cellIJ + vec2f(19.0, 47.0));
+            let offset = (random * 2.0 - 1.0) * (strength / scale);
+            let angle = (randomB.x * 2.0 - 1.0) * PI * clamp(rotAmount, 0.0, 1.0) * strength;
+            let center = (cellIJ + vec2f(0.5)) / scale;
+            let sampleUV = center + texBombRotate(uv - center, angle) + offset;
+            let weight = mix(1.0 - w.x, w.x, f32(i)) * mix(1.0 - w.y, w.y, f32(j));
+            accumulated += textureSampleGrad(tex, mainSamp, sampleUV, dx, dy) * weight;
+        }
+    }
+    return accumulated;
+}
+fn surfaceTBN(nInput: vec3f, dp1: vec3f, dp2: vec3f, duv1: vec2f,
+              duv2: vec2f) -> mat3x3f {
+    let n = normalize(nInput);
+    let det = duv1.x * duv2.y - duv2.x * duv1.y;
+    if (abs(det) < 1e-8) { return mat3x3f(vec3f(0.0), vec3f(0.0), n); }
+    let tangent = normalize(cross(dp2, n) * duv1.x + cross(n, dp1) * duv2.x);
+    let bitangent = normalize(cross(dp2, n) * duv1.y + cross(n, dp1) * duv2.y);
+    if (length(tangent) < 1e-4 || length(bitangent) < 1e-4) {
+        return mat3x3f(vec3f(0.0), vec3f(0.0), n);
+    }
+    return mat3x3f(tangent, bitangent, n);
+}
+fn applyNormalMap(nInput: vec3f, mapSample: vec3f, dp1: vec3f, dp2: vec3f,
+                  duv1: vec2f, duv2: vec2f) -> vec3f {
+    let mapN = mapSample * 2.0 - 1.0;
+    if (length(mapN.xy) < 0.04 && mapN.z > 0.85) { return normalize(nInput); }
+    let n = normalize(nInput);
+    let det = duv1.x * duv2.y - duv2.x * duv1.y;
+    if (abs(det) < 1e-6) { return n; }
+    let invDet = 1.0 / det;
+    var tangent = (dp1 * duv2.y - dp2 * duv1.y) * invDet;
+    var bitangent = (dp2 * duv1.x - dp1 * duv2.x) * invDet;
+    tangent -= n * dot(n, tangent);
+    let tangentLength = length(tangent);
+    let bitangentLength = length(bitangent);
+    if (tangentLength < 1e-4 || bitangentLength < 1e-4) { return n; }
+    tangent /= tangentLength;
+    bitangent = normalize(bitangent - n * dot(n, bitangent) - tangent * dot(tangent, bitangent));
+    if (abs(dot(tangent, bitangent)) > 0.35) { return n; }
+    return normalize(mat3x3f(tangent, bitangent, n) * mapN);
+}
+fn parallaxMappedUV(uv: vec2f, n: vec3f, v: vec3f, scale: f32,
+                    minLayers: f32, maxLayers: f32, worldDx: vec3f, worldDy: vec3f,
+                    uvDx: vec2f, uvDy: vec2f) -> vec2f {
+    if (scale < 1e-5) { return uv; }
+    let tbn = surfaceTBN(n, worldDx, worldDy, uvDx, uvDy);
+    if (length(tbn[0]) < 1e-4) { return uv; }
+    let viewTS = normalize(transpose(tbn) * v);
+    let layers = clamp(mix(max(maxLayers, 1.0), max(minLayers, 1.0),
+                           clamp(abs(viewTS.z), 0.0, 1.0)), 1.0, 64.0);
+    let layerDepth = 1.0 / layers;
+    let deltaUV = ((viewTS.xy / max(abs(viewTS.z), 0.08)) * scale) / layers;
+    var currentUV = uv;
+    var currentDepth = 0.0;
+    var mapDepth = 1.0 - textureSampleGrad(heightSampler, mainSamp, currentUV, uvDx, uvDy).r;
+    for (var i = 0; i < 64; i = i + 1) {
+        if (currentDepth >= mapDepth || f32(i) >= layers) { break; }
+        currentUV -= deltaUV;
+        mapDepth = 1.0 - textureSampleGrad(heightSampler, mainSamp, currentUV, uvDx, uvDy).r;
+        currentDepth += layerDepth;
+    }
+    let previousUV = currentUV + deltaUV;
+    let after = mapDepth - currentDepth;
+    let before = (1.0 - textureSampleGrad(heightSampler, mainSamp, previousUV, uvDx, uvDy).r) -
+                 (currentDepth - layerDepth);
+    let denominator = after - before;
+    var weight = 0.5;
+    if (abs(denominator) >= 1e-5) { weight = clamp(after / denominator, 0.0, 1.0); }
+    return mix(currentUV, previousUV, weight);
+}
 fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: vec3f, rad: vec3f) -> vec3f {
     let ndl = max(dot(n, l), 0.0);
     let diffuse = mix(ndl, ndl * 0.5 + 0.5, 0.25);
@@ -406,10 +501,18 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
 }
 @fragment
 fn fs_main(in: FSIn) -> @location(0) vec4f {
+    // Evaluate derivatives before any per-fragment branch; WGSL requires uniform control flow.
+    let uvDx = dpdx(in.vUV);
+    let uvDy = dpdy(in.vUV);
+    let worldDx = dpdx(in.vWorldPos);
+    let worldDy = dpdy(in.vWorldPos);
     var nGeom = normalize(in.vNormal);
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
-    var base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
+    let uv = parallaxMappedUV(in.vUV, nGeom, v, ubo.parallax.x,
+                              ubo.parallax.y, ubo.parallax.z, worldDx, worldDy, uvDx, uvDy);
+    var base = textureCellBomb(albedoSampler, uv, ubo.texBomb.x, ubo.texBomb.y,
+                               ubo.texBomb.z, uvDx, uvDy) * in.vTint;
     if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
@@ -419,11 +522,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     var rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
     let count = i32(ubo.lightDir.w + 0.5);
-    let nSmp = textureSample(normalSampler, mainSamp, in.vUV).xyz;
+    let nSmp = textureCellBomb(normalSampler, uv, ubo.texBomb.x, ubo.texBomb.y,
+                               ubo.texBomb.z, uvDx, uvDy).xyz;
     var n = nGeom;
     if (length(nSmp - vec3f(0.5, 0.5, 1.0)) > 0.04) {
-        let mapN = nSmp * 2.0 - 1.0;
-        n = normalize(mapN);
+        n = applyNormalMap(n, nSmp, worldDx, worldDy, uvDx, uvDy);
     }
     var emissive = vec3f(0.0);
     let decalPos = clamp(vec2<i32>(in.fragCoord.xy), vec2<i32>(0),
@@ -474,7 +577,9 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
     let gndIrr = ubo.ambient.rgb * vec3f(0.72, 0.62, 0.52);
     let irr = mix(gndIrr, skyIrr, hemi);
-    var color = albedo * irr * (1.0 - metallic) + lo + emissive;
+    var color = albedo * irr * (1.0 - metallic) + lo;
+    let wrap = max(dot(n, primaryL) * 0.5 + 0.5, 0.0);
+    color += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic);
     let envIntensity = ubo.lightColor.w;
     if (envIntensity > 1e-4) {
         let r = reflect(-v, n);
@@ -499,6 +604,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let white = 0.85;
     let over = max(color - vec3f(white), vec3f(0.0));
     color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
+    color += emissive;
     let nearZ = max(ubo.clipInfo.x, 1e-4);
     let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
     let viewZ = max(-in.vViewPos.z, 0.0);
