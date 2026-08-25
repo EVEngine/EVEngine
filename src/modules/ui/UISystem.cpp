@@ -53,6 +53,20 @@ std::string nodeLabel(const UINode &node, const char *fallback) {
     return label;
 }
 
+bool privateUseGlyph(const std::string &text, ImWchar *out) {
+    if (text.size() != 3) return false;
+    const auto b0 = static_cast<unsigned char>(text[0]);
+    const auto b1 = static_cast<unsigned char>(text[1]);
+    const auto b2 = static_cast<unsigned char>(text[2]);
+    if ((b0 & 0xf0u) != 0xe0u || (b1 & 0xc0u) != 0x80u || (b2 & 0xc0u) != 0x80u)
+        return false;
+    const unsigned int codepoint =
+        ((b0 & 0x0fu) << 12u) | ((b1 & 0x3fu) << 6u) | (b2 & 0x3fu);
+    if (codepoint < 0xe000u || codepoint > 0xf8ffu) return false;
+    if (out) *out = static_cast<ImWchar>(codepoint);
+    return true;
+}
+
 void walkNode(UIHost *host, UIHost::Tree *tree, int index);
 
 void walkSiblings(UIHost *host, UIHost::Tree *tree, int index) {
@@ -172,8 +186,11 @@ void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
     // Own content box: an explicit size (set by the parent's arrange) wins;
     // otherwise use the available region (root flex inside a window/child).
     const ImVec2 avail = ImGui::GetContentRegionAvail();
+    const bool fillsContainer =
+        flex.type == NodeType::Toolbar || flex.type == NodeType::StatusBar;
     const float flexW = flex.sizeX > 0.f ? flex.sizeX : avail.x;
-    const float flexH = flex.sizeY > 0.f ? flex.sizeY : avail.y;
+    const float flexH =
+        flex.sizeY > 0.f ? flex.sizeY : (fillsContainer ? avail.y : flex.measuredH);
     const float padMain = row ? flex.paddingL + flex.paddingR : flex.paddingT + flex.paddingB;
     const float padCross = row ? flex.paddingT + flex.paddingB : flex.paddingL + flex.paddingR;
     const float availMain = (row ? flexW : flexH) - padMain;
@@ -215,6 +232,8 @@ void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
         flexArrange(row, gap, std::max(0.f, availMain), std::max(0.f, availCross),
                     flex.alignItems, flex.justifyContent, specs);
     const ImVec2 cursor = ImGui::GetCursorScreenPos();
+    ImGui::Dummy(ImVec2(std::max(0.f, flexW), std::max(0.f, flexH)));
+    const ImVec2 flowEnd = ImGui::GetCursorScreenPos();
     const ImVec2 origin = ImVec2(cursor.x + flex.paddingL, cursor.y + flex.paddingT);
 
     for (size_t i = 0; i < kids.size(); ++i) {
@@ -260,6 +279,7 @@ void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
         child.sizeY = oldY;
         if (w > 0.f) ImGui::PopItemWidth();
     }
+    ImGui::SetCursorScreenPos(flowEnd);
 }
 
 void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
@@ -349,12 +369,37 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         }
         break;
     case NodeType::Button: {
-        const std::string label = nodeLabel(n, "Button");
+        ImWchar iconCodepoint = 0;
+        const bool iconOnly = privateUseGlyph(n.text, &iconCodepoint);
+        const std::string label =
+            iconOnly ? "##iconButton" + (n.id.empty() ? std::string("button") : n.id)
+                     : nodeLabel(n, "Button");
         const bool sized = n.sizeX > 0.f || n.sizeY > 0.f;
-        const bool clicked =
-            sized ? ImGui::Button(label.c_str(), ImVec2(n.sizeX > 0.f ? n.sizeX : 0.f,
-                                                        n.sizeY > 0.f ? n.sizeY : 0.f))
-                  : ImGui::Button(label.c_str());
+        const float defaultSide = ImGui::GetFrameHeight();
+        const ImVec2 buttonSize(iconOnly ? (n.sizeX > 0.f ? n.sizeX : defaultSide)
+                                          : (n.sizeX > 0.f ? n.sizeX : 0.f),
+                                iconOnly ? (n.sizeY > 0.f ? n.sizeY : defaultSide)
+                                          : (n.sizeY > 0.f ? n.sizeY : 0.f));
+        const bool clicked = (sized || iconOnly) ? ImGui::Button(label.c_str(), buttonSize)
+                                                 : ImGui::Button(label.c_str());
+        if (iconOnly) {
+            const ImVec2 rectMin = ImGui::GetItemRectMin();
+            const ImVec2 rectMax = ImGui::GetItemRectMax();
+            ImFont *font = ImGui::GetFont();
+            const ImFontGlyph *glyph = font ? font->FindGlyph(iconCodepoint) : nullptr;
+            if (glyph) {
+                const float fontSize = ImGui::GetFontSize();
+                const float fontScale = fontSize / font->FontSize;
+                const float glyphW = (glyph->X1 - glyph->X0) * fontScale;
+                const float glyphH = (glyph->Y1 - glyph->Y0) * fontScale;
+                const ImVec2 glyphOrigin(
+                    (rectMin.x + rectMax.x - glyphW) * 0.5f - glyph->X0 * fontScale,
+                    (rectMin.y + rectMax.y - glyphH) * 0.5f - glyph->Y0 * fontScale);
+                ImGui::GetWindowDrawList()->AddText(font, fontSize, glyphOrigin,
+                                                    ImGui::GetColorU32(ImGuiCol_Text),
+                                                    n.text.c_str());
+            }
+        }
         if (clicked) pushPending(host, n, "click", n.handlerClick);
         break;
     }
@@ -593,16 +638,22 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::SectionHeader: {
         const float sectionGap = globalTheme().layout.sectionSpacingY * themeUiScale();
-        if (sectionGap > 0.f) ImGui::Dummy(ImVec2(0.f, sectionGap));
         const ImVec2 pos = ImGui::GetCursorScreenPos();
         const float height = ImGui::GetFrameHeight();
+        const float totalHeight = sectionGap + height;
+        const float width = n.sizeX > 0.f ? n.sizeX : ImGui::GetContentRegionAvail().x;
+        const float headerY = pos.y + sectionGap;
         ImDrawList *draw = ImGui::GetWindowDrawList();
-        draw->AddRectFilled(ImVec2(pos.x, pos.y + 4.f), ImVec2(pos.x + 3.f, pos.y + height - 4.f),
+        draw->AddRectFilled(ImVec2(pos.x, headerY + 4.f),
+                            ImVec2(pos.x + 3.f, headerY + height - 4.f),
                             ImGui::GetColorU32(ImGuiCol_CheckMark), 1.f);
-        draw->AddText(ImVec2(pos.x + 10.f, pos.y + (height - ImGui::GetFontSize()) * 0.5f),
+        draw->AddText(ImVec2(pos.x + 10.f,
+                             headerY + (height - ImGui::GetFontSize()) * 0.5f),
                       ImGui::GetColorU32(ImGuiCol_Text), n.text.c_str());
-        ImGui::Dummy(ImVec2(n.sizeX > 0.f ? n.sizeX : ImGui::GetContentRegionAvail().x, height));
-        ImGui::Separator();
+        const float separatorY = pos.y + totalHeight - 1.f;
+        draw->AddLine(ImVec2(pos.x, separatorY), ImVec2(pos.x + width, separatorY),
+                      ImGui::GetColorU32(ImGuiCol_Separator));
+        ImGui::Dummy(ImVec2(width, totalHeight));
         break;
     }
     case NodeType::MenuBar:
