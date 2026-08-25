@@ -86,6 +86,10 @@ float cascadeNdcBias(int cascade) {
     return b > 1e-8 ? b : shadow.bias.x;
 }
 
+float slopeScaledBias(int cascade, float nDotL) {
+    return cascadeNdcBias(cascade) * mix(0.75, 1.0, clamp(nDotL, 0.0, 1.0));
+}
+
 float sampleGrassShadow(vec3 worldPos, float viewDepth) {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4)
         return 1.0;
@@ -94,9 +98,26 @@ float sampleGrassShadow(vec3 worldPos, float viewDepth) {
     if (viewDepth < shadow.splits.x) cascade = 0;
     else if (viewDepth < shadow.splits.y) cascade = 1;
 
-    float vis = sampleShadowCascade(worldPos, cascade, cascadeNdcBias(cascade));
+    float texel = cascade == 0 ? shadow.cascadeTexel.x
+                               : (cascade == 1 ? shadow.cascadeTexel.y : shadow.cascadeTexel.z);
+    vec3 normal = vec3(0.0, 1.0, 0.0);
+    float nDotL = max(dot(normal, normalize(ubo.lightDirIntensity.xyz)), 0.0);
+    vec3 samplePos = worldPos + normal * ((2.0 * max(texel, 1e-6)) / max(nDotL, 0.2));
+    float vis = sampleShadowCascade(samplePos, cascade, slopeScaledBias(cascade, nDotL));
+
+    float hi = cascade == 0 ? shadow.splits.x : (cascade == 1 ? shadow.splits.y : shadow.splits.z);
+    float lo = cascade == 0 ? 0.0 : (cascade == 1 ? shadow.splits.x : shadow.splits.y);
+    float band = max(0.5, (hi - lo) * 0.1);
+    float toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
+    float toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
+    if (toPrev > 0.0 && cascade > 0)
+        vis = mix(vis, sampleShadowCascade(samplePos, cascade - 1,
+                                           slopeScaledBias(cascade - 1, nDotL)), toPrev);
+    if (toNext > 0.0 && cascade < 2)
+        vis = mix(vis, sampleShadowCascade(samplePos, cascade + 1,
+                                           slopeScaledBias(cascade + 1, nDotL)), toNext);
     vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
-    return vis;
+    return mix(0.04, 1.0, vis);
 }
 
 void main() {
@@ -132,7 +153,10 @@ void main() {
         discard;
 
     float viewDepth = max(-vViewPos.z, 0.0);
-    float vis = sampleGrassShadow(vRootPos, viewDepth);
+    // Use the visible blade position plus the same two-texel receiver offset on
+    // both backends. Sampling the exact root/ground plane amplifies backend
+    // depth precision differences into blanket self-shadowing.
+    float vis = sampleGrassShadow(vWorldPos, viewDepth);
     if (u.data[5] > 0.5 || vAlwaysDark > 0.5)
         vis = 0.0;
 

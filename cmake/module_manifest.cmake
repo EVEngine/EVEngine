@@ -193,14 +193,13 @@ eve_declare_module(NAME audio LAYER 2 SCRIPT Audio SLOT audio
 eve_declare_module(NAME font LAYER 2 SCRIPT Font SLOT font
                    DEPS filesystem image
                    THIRDPARTY freetype
-                   GROUP 2d 3d)
+                   GROUP 2d 3d web)
 
 # ---------------------------------------------------------------------------
 # L3 -- the rendering hub
 # ---------------------------------------------------------------------------
 
-# graphics/Font.cpp is the only user of the font module and is excluded from the
-# browser build, so font is an optional integration rather than a hard dep.
+# graphics/Font.cpp is the bridge from graphics into the optional font module.
 eve_declare_module(NAME graphics REQUIRED LAYER 3 SCRIPT Graphics SLOT gfx
                    DEPS data filesystem image thread
                    OPTIONAL_DEPS font

@@ -53,7 +53,7 @@ eve_module_enabled(graphics _has_graphics)
 if(_has_graphics)
   # Header-only VKBuilder: prefer the source tree over a stale third-party install.
   target_include_directories(EVGraphics BEFORE PUBLIC
-    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
   # Graphics.h includes <assimp/matrix4x4.h> (header-only usage). On WASM the
   # vendored assimp library is skipped but the header tree is still present.
   target_include_directories(EVGraphics BEFORE PUBLIC
@@ -136,7 +136,7 @@ endif()
 eve_module_enabled(gpgpu _has_gpgpu)
 if(_has_gpgpu)
   target_include_directories(EVGpgpu BEFORE PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
   if(WIN32 AND DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
     # In-process GLSL -> SPIR-V via the Vulkan SDK's shaderc (glslang + SPIRV-Tools
     # static archive). The tensor module's runtime kernel codegen compiles generated
@@ -164,7 +164,7 @@ endif()
 eve_module_enabled(virtualgeometry _has_virtualgeometry)
 if(_has_virtualgeometry)
   target_include_directories(EVVirtualGeometry BEFORE PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
 endif()
 
 if(_has_font)
@@ -247,6 +247,7 @@ if(_has_ui)
       target_include_directories(eve_imgui PRIVATE ${EMSCRIPTEN_SYSROOT}/include)
     else()
       target_include_directories(eve_imgui PRIVATE
+        ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/SDL2
         ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
         ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
       )
@@ -261,5 +262,5 @@ if(_has_ui)
   target_link_libraries(EVUI PUBLIC eve_imgui)
   target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
   target_include_directories(EVUI BEFORE PUBLIC
-    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
 endif()

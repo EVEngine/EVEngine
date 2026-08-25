@@ -122,8 +122,8 @@ public:
 
     /**
      * @brief Whether gbuffer-based post-process shaders (AO, GI) can be created on this
-     * backend. False on WebGPU, whose custom post shaders are WGSL-only (the
-     * built-in AO/GI use SPIR-V), so RenderSystem3D skips them there.
+     * backend. Backends may use different shader source languages while
+     * preserving the same render-control contract.
      */
     virtual bool supportsGBufferPost() const { return true; }
 
@@ -461,7 +461,7 @@ public:
      * Mirrors bakeMeshMorph: the update synchronizes with in-flight GPU work,
      * so prefer rebuilding only when content actually changes. The mesh's
      * buffer is reused while it fits (stable GPU handle) and reallocated when
-     * the new size grows. Returns false when unsupported (WebGPU backend).
+     * the new size grows. Returns false when unsupported by a backend.
      * posXYZ/nrmXYZ follow newMeshFromArrays layout (uvST may be null);
      * indices/indexCount may be null/0 to keep the mesh's existing indices.
      */
@@ -760,8 +760,8 @@ public:
     /**
      * @brief True when the backend can render the screen-space decal layer
      * (box-projected decals writing albedo/normal/params targets that
-     * mesh3d.frag samples before lighting). False on WebGPU (SPIR-V only
-     * here), where RenderSystem3D skips the decal pass entirely.
+     * mesh3d.frag samples before lighting). Vulkan uses SPIR-V and WebGPU uses
+     * the native WGSL decal pipeline.
      */
     virtual bool supportsDecal() const { return true; }
 
@@ -1034,6 +1034,9 @@ public:
      */
     virtual Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                          const std::vector<uint32_t> &fragSpv) = 0;
+    /** @brief Create an alpha-blended hair/card shader from WGSL on WebGPU. */
+    virtual Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
+                                          const std::string &fragWgsl) = 0;
     /** @brief Built-in hair shader with default anisotropic parameters. */
     Shader *newHairShader();
 

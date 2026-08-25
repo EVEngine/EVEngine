@@ -466,6 +466,10 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
         mat->setNormalTexture(nullptr);
         mat->setRoughness(0.5f);
         mat->setMetallic(0.1f);
+        // The GPU-driven forward pipeline is currently double-sided. Keep the
+        // legacy comparison on the same documented material mode so this test
+        // isolates bindless texture selection instead of raster culling.
+        mat->setDoubleSided(true);
         auto *obj = Renderable3D::create();
         obj->setMesh(mesh);
         obj->setMaterial(mat);
@@ -538,6 +542,9 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
         mat->setNormalTexture(nullptr);
         mat->setRoughness(0.5f);
         mat->setMetallic(0.1f);
+        // Match the GPU-driven pipeline's current double-sided raster state;
+        // frustum rejection, not back-face culling, is under test here.
+        mat->setDoubleSided(true);
         auto *obj = Renderable3D::create();
         obj->setMesh(mesh);
         obj->setMaterial(mat);

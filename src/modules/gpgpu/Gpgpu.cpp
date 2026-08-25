@@ -103,8 +103,8 @@ GpuBuffer *Gpgpu::newBuffer(int byteSize, const std::string &usage) {
 
 Sequence *Gpgpu::newSequence() {
 #ifdef EVENGINE_WEBGPU
-    // The class exists on every backend; it reports isAvailable()==false and
-    // throws on use when the active backend is not Vulkan.
+    if (currentGraphicsBackend() != "webgpu")
+        throw Exception("Gpgpu.newSequence: requires webgpu Graphics backend");
     return new Sequence();
 #else
     if (currentGraphicsBackend() != "vulkan")
