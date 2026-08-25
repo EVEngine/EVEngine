@@ -281,6 +281,94 @@ TEST_CASE("graphics.backendParity.lighting2dNormalMapAndMultipleLights") {
     writeParityArtifact(*pointImage, "lighting2d_multiple_lights", backend);
 }
 
+TEST_CASE("graphics.backendParity.textureSamplingRepeatAndMipmaps") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    CHECK(gfx->getMaxAnisotropy() >= 1.f);
+    const std::string backend = gfx->getBackendName();
+    const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
+    CHECK(supportedBackend);
+
+    const uint8_t redBlue[] = {255, 0, 0, 255, 0, 0, 255, 255};
+    Texture *nearestTexture = gfx->newTexture(2, 1, redBlue);
+    Texture *repeatTexture = gfx->newTexture(2, 1, redBlue);
+    Texture *linearTexture = gfx->newTexture(2, 1, redBlue);
+    REQUIRE(nearestTexture != nullptr);
+    REQUIRE(repeatTexture != nullptr);
+    REQUIRE(linearTexture != nullptr);
+
+    uint8_t checker[4 * 4]{};
+    for (int x = 0; x < 4; ++x) {
+        uint8_t *p = checker + x * 4;
+        p[x % 2 == 0 ? 0 : 1] = 255;
+        p[3] = 255;
+    }
+    TextureCreateInfo mipInfo;
+    mipInfo.generateMipmaps = true;
+    Texture *mipped = gfx->newTexture(4, 1, checker, mipInfo);
+    REQUIRE(mipped != nullptr);
+    CHECK(mipped->getMipmapCount() == 3);
+    const bool mipSamplingEnabled = mipped->getSampler().mipmap == MipmapMode::Linear;
+    CHECK(mipSamplingEnabled);
+
+    Canvas *canvas = gfx->newCanvas(64, 64);
+    REQUIRE(canvas != nullptr);
+    gfx->setCanvas(canvas);
+    gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
+
+    gfx->setTextureSampler(nearestTexture, TextureSampler::nearest());
+    gfx->drawTexturedRectShaderUV(nearestTexture, nullptr, 2.f, 2.f, 28.f, 12.f, 0.f, 0.f, 1.f, 1.f,
+                                  Color(1.f), false, BlendMode::Opaque);
+
+    TextureSampler repeat = TextureSampler::nearest();
+    repeat.repeatU = true;
+    gfx->setTextureSampler(repeatTexture, repeat);
+    gfx->drawTexturedRectShaderUV(repeatTexture, nullptr, 34.f, 2.f, 28.f, 12.f, 0.f, 0.f, 2.f, 1.f,
+                                  Color(1.f), false, BlendMode::Opaque);
+
+    gfx->setTextureSampler(linearTexture, TextureSampler::linear());
+    gfx->drawTexturedRectShaderUV(linearTexture, nullptr, 2.f, 20.f, 28.f, 12.f, 0.f, 0.f, 1.f, 1.f,
+                                  Color(1.f), false, BlendMode::Opaque);
+
+    TextureSampler lastMip = TextureSampler::nearest();
+    lastMip.mipmap = MipmapMode::Nearest;
+    lastMip.minLod = 2.f;
+    lastMip.maxLod = 2.f;
+    gfx->setTextureSampler(mipped, lastMip);
+    gfx->drawTexturedRect(mipped, 34.f, 20.f, 28.f, 28.f, Color(1.f));
+    gfx->setCanvas();
+
+    std::unique_ptr<eve::image::ImageData> image(canvas->newImageData());
+    REQUIRE(image.get() != nullptr);
+    const uint8_t *nearestLeft = pixel(*image, 8, 8);
+    const uint8_t *nearestRight = pixel(*image, 24, 8);
+    CHECK(nearestLeft[0] > 247);
+    CHECK(nearestLeft[2] < 8);
+    CHECK(nearestRight[0] < 8);
+    CHECK(nearestRight[2] > 247);
+
+    const uint8_t *repeat0 = pixel(*image, 38, 8);
+    const uint8_t *repeat1 = pixel(*image, 45, 8);
+    const uint8_t *repeat2 = pixel(*image, 52, 8);
+    const uint8_t *repeat3 = pixel(*image, 59, 8);
+    CHECK(repeat0[0] > 247);
+    CHECK(repeat1[2] > 247);
+    CHECK(repeat2[0] > 247);
+    CHECK(repeat3[2] > 247);
+
+    const uint8_t *linearBoundary = pixel(*image, 16, 26);
+    CHECK(linearBoundary[0] > 96);
+    CHECK(linearBoundary[2] > 96);
+
+    const uint8_t *mip = pixel(*image, 48, 34);
+    const bool mipRed = mip[0] >= 126 && mip[0] <= 129;
+    const bool mipGreen = mip[1] >= 126 && mip[1] <= 129;
+    CHECK(mipRed);
+    CHECK(mipGreen);
+    CHECK(mip[2] < 8);
+    writeParityArtifact(*image, "texture_sampling_repeat_mipmaps", backend);
+}
+
 TEST_CASE("graphics.backendParity.webgpuCustomShaderLifetime") {
     Graphics *gfx = headlessGraphics();
     REQUIRE(gfx != nullptr);

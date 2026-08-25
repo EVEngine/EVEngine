@@ -29,7 +29,7 @@ and `test gap`.
 | Dynamic mesh update | supported, verified | Reuses/grows vertex and index buffers with aligned Uint16 uploads | Add resize, keep-index and Uint16/Uint32 transition coverage |
 | 2D solid/textured drawing | supported, verified | Shared Dawn/Vulkan pixel tests lock UV cropping, solid and textured rotation, and opaque/additive/premultiplied/multiply blend equations | Extend the artifact set with rotated-atlas UV orientation |
 | 2D lighting | supported, verified | WGSL now matches Vulkan normal-map decoding, logical screen coordinates, directional response, point attenuation and eight-light accumulation | Extend artifacts with moving lights and atlas normals |
-| Texture sampling/mipmaps | partial | Sampler recreation, mip generation and anisotropy exist; limits and LOD output are unverified | Add nearest/linear/repeat/mipmap scenes and capability assertions |
+| Texture sampling/mipmaps | supported, verified | Shared pixel tests cover nearest/linear filtering, repeat addressing and forced final-LOD sampling; WebGPU now builds stable box-filtered 2D/cubemap chains, including one-pixel NPOT edges, and exposes/clamps anisotropy limits like Vulkan | Extend artifacts with trilinear transitions and cubemap LOD selection |
 | Basic 3D/PBR | partial | WGSL forward path exists; lighting, normal, parallax, environment and cloud-shadow output are unverified | Add isolated material feature scenes |
 | Surface modes | supported, test gap | Blend mode, depth-write and double-sided state are captured per draw and select dedicated pipelines | Add ordering and culling image scenes |
 | Masked materials | partial | Surface mode, cutoff and SSAO strength now have independent UBO fields | Test cutoff, dither and coverage |

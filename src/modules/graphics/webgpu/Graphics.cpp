@@ -1799,7 +1799,8 @@ wgpu::Sampler Graphics::makeSampler(const TextureSampler &s, uint32_t mipLevels)
         d.mipmapFilter =
             s.mipmap == MipmapMode::Nearest ? WGPUMipmapFilterMode_Nearest : WGPUMipmapFilterMode_Linear;
         d.lodMinClamp = s.minLod;
-        d.lodMaxClamp = std::min(std::max(s.maxLod, 0.f), float(mipLevels));
+        d.lodMaxClamp = std::min(std::max(s.maxLod, 0.f), float(mipLevels - 1));
+        if (d.lodMaxClamp < d.lodMinClamp) d.lodMaxClamp = d.lodMinClamp;
     }
     float aniso = s.maxAnisotropy > 1.f ? s.maxAnisotropy : 1.f;
     d.maxAnisotropy = std::min(std::max(aniso, 1.f), std::max(maxSamplerAnisotropy, 1.f));
@@ -1834,8 +1835,13 @@ Texture *Graphics::newTexture(image::ImageData *data, const TextureCreateInfo &i
 }
 
 Texture *Graphics::newTexture(int width, int height, const uint8_t *rgba,
-                              const TextureCreateInfo &info) {
+                              const TextureCreateInfo &rawInfo) {
     if (width <= 0 || height <= 0) throw Exception("newTexture: invalid size %dx%d", width, height);
+
+    TextureCreateInfo info = rawInfo;
+    if (info.generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled)
+        info.sampler.mipmap = MipmapMode::Linear;
+    if (info.sampler.maxAnisotropy < 1.f) info.sampler.maxAnisotropy = 1.f;
 
     auto gpu = std::make_unique<GpuTexture>();
     gpu->width = width;
@@ -1888,6 +1894,7 @@ void Graphics::uploadTexturePixels(GpuTexture *gt, const uint8_t *rgba, int w, i
 
 void Graphics::uploadTexturePixelsMips(GpuTexture *gt, const uint8_t *rgba, int w, int h) {
     if (!rgba) return;
+    std::vector<uint8_t> current;
     WGPUTexelCopyBufferLayout layout{};
     layout.offset = 0;
     layout.bytesPerRow = static_cast<uint32_t>(w * 4);
@@ -1905,22 +1912,29 @@ void Graphics::uploadTexturePixelsMips(GpuTexture *gt, const uint8_t *rgba, int 
                            reinterpret_cast<const wgpu::Extent3D*>(&extent));
         if (m + 1 < gt->mipLevels) {
             // Box-filter downsample into the CPU buffer for the next level.
-            std::vector<uint8_t> next((w / 2) * (h / 2) * 4);
-            for (int y = 0; y < h / 2; ++y) {
-                for (int x = 0; x < w / 2; ++x) {
+            const int nextW = std::max(w / 2, 1);
+            const int nextH = std::max(h / 2, 1);
+            std::vector<uint8_t> next(size_t(nextW) * size_t(nextH) * 4u);
+            for (int y = 0; y < nextH; ++y) {
+                const int y0 = std::min(y * 2, h - 1);
+                const int y1 = std::min(y0 + 1, h - 1);
+                for (int x = 0; x < nextW; ++x) {
+                    const int x0 = std::min(x * 2, w - 1);
+                    const int x1 = std::min(x0 + 1, w - 1);
                     for (int c = 0; c < 4; ++c) {
                         uint32_t acc = 0;
-                        acc += rgba[((y * 2 + 0) * w + (x * 2 + 0)) * 4 + c];
-                        acc += rgba[((y * 2 + 0) * w + (x * 2 + 1)) * 4 + c];
-                        acc += rgba[((y * 2 + 1) * w + (x * 2 + 0)) * 4 + c];
-                        acc += rgba[((y * 2 + 1) * w + (x * 2 + 1)) * 4 + c];
-                        next[(y * (w / 2) + x) * 4 + c] = uint8_t(acc / 4);
+                        acc += rgba[(size_t(y0) * w + x0) * 4u + c];
+                        acc += rgba[(size_t(y0) * w + x1) * 4u + c];
+                        acc += rgba[(size_t(y1) * w + x0) * 4u + c];
+                        acc += rgba[(size_t(y1) * w + x1) * 4u + c];
+                        next[(size_t(y) * nextW + x) * 4u + c] = uint8_t((acc + 2u) / 4u);
                     }
                 }
             }
-            w /= 2;
-            h /= 2;
-            rgba = next.data();
+            current = std::move(next);
+            w = nextW;
+            h = nextH;
+            rgba = current.data();
             layout.bytesPerRow = static_cast<uint32_t>(w * 4);
             layout.rowsPerImage = static_cast<uint32_t>(h);
             extent = {static_cast<uint32_t>(w), static_cast<uint32_t>(h), 1};
@@ -1934,9 +1948,14 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces) {
 }
 
 Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
-                              const TextureCreateInfo &info) {
+                              const TextureCreateInfo &rawInfo) {
     if (faceSize <= 0 || !rgbaFaces)
         throw Exception("newCubemap: invalid size or null data");
+
+    TextureCreateInfo info = rawInfo;
+    if (info.generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled)
+        info.sampler.mipmap = MipmapMode::Linear;
+    if (info.sampler.maxAnisotropy < 1.f) info.sampler.maxAnisotropy = 1.f;
 
     auto gpu = std::make_unique<GpuTexture>();
     gpu->width = faceSize;
@@ -1957,22 +1976,52 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
     td.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopyDst;
     gpu->texture = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
 
-    WGPUTexelCopyBufferLayout layout{};
-    layout.offset = 0;
-    layout.bytesPerRow = static_cast<uint32_t>(faceSize * 4);
-    layout.rowsPerImage = static_cast<uint32_t>(faceSize);
-    WGPUExtent3D extent{static_cast<uint32_t>(faceSize), static_cast<uint32_t>(faceSize), 1};
     for (int f = 0; f < 6; ++f) {
-        WGPUTexelCopyTextureInfo dst{};
-        dst.texture = gpu->texture.Get();
-        dst.mipLevel = 0;
-        dst.aspect = WGPUTextureAspect_All;
-        dst.origin = {0, 0, static_cast<uint32_t>(f)};
-        queue.WriteTexture(reinterpret_cast<const wgpu::TexelCopyTextureInfo*>(&dst),
-                           rgbaFaces + f * faceSize * faceSize * 4,
-                           static_cast<uint64_t>(faceSize) * faceSize * 4,
-                           reinterpret_cast<const wgpu::TexelCopyBufferLayout*>(&layout),
-                           reinterpret_cast<const wgpu::Extent3D*>(&extent));
+        const uint8_t *pixels = rgbaFaces + size_t(f) * faceSize * faceSize * 4u;
+        int mipW = faceSize;
+        int mipH = faceSize;
+        std::vector<uint8_t> current;
+        for (uint32_t mip = 0; mip < gpu->mipLevels; ++mip) {
+            WGPUTexelCopyBufferLayout layout{};
+            layout.offset = 0;
+            layout.bytesPerRow = static_cast<uint32_t>(mipW * 4);
+            layout.rowsPerImage = static_cast<uint32_t>(mipH);
+            WGPUExtent3D extent{static_cast<uint32_t>(mipW), static_cast<uint32_t>(mipH), 1};
+            WGPUTexelCopyTextureInfo dst{};
+            dst.texture = gpu->texture.Get();
+            dst.mipLevel = mip;
+            dst.aspect = WGPUTextureAspect_All;
+            dst.origin = {0, 0, static_cast<uint32_t>(f)};
+            queue.WriteTexture(reinterpret_cast<const wgpu::TexelCopyTextureInfo*>(&dst), pixels,
+                               static_cast<uint64_t>(mipW) * mipH * 4,
+                               reinterpret_cast<const wgpu::TexelCopyBufferLayout*>(&layout),
+                               reinterpret_cast<const wgpu::Extent3D*>(&extent));
+
+            if (mip + 1 >= gpu->mipLevels) continue;
+            const int nextW = std::max(mipW / 2, 1);
+            const int nextH = std::max(mipH / 2, 1);
+            std::vector<uint8_t> next(size_t(nextW) * nextH * 4u);
+            for (int y = 0; y < nextH; ++y) {
+                const int y0 = std::min(y * 2, mipH - 1);
+                const int y1 = std::min(y0 + 1, mipH - 1);
+                for (int x = 0; x < nextW; ++x) {
+                    const int x0 = std::min(x * 2, mipW - 1);
+                    const int x1 = std::min(x0 + 1, mipW - 1);
+                    for (int c = 0; c < 4; ++c) {
+                        const uint32_t sum =
+                            pixels[(size_t(y0) * mipW + x0) * 4u + c] +
+                            pixels[(size_t(y0) * mipW + x1) * 4u + c] +
+                            pixels[(size_t(y1) * mipW + x0) * 4u + c] +
+                            pixels[(size_t(y1) * mipW + x1) * 4u + c];
+                        next[(size_t(y) * nextW + x) * 4u + c] = uint8_t((sum + 2u) / 4u);
+                    }
+                }
+            }
+            current = std::move(next);
+            pixels = current.data();
+            mipW = nextW;
+            mipH = nextH;
+        }
     }
 
     WGPUTextureViewDescriptor vd{};
