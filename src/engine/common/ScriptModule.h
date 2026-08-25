@@ -75,6 +75,10 @@ public:
     void reload(std::string_view canonicalUri);
     /** @brief Last resolver diagnostic produced by a Squirrel callback. */
     const std::string& lastError() const noexcept;
+    /** @brief Returns canonical direct dependencies for an importer. */
+    std::vector<std::string> dependencies(std::string_view importerUri) const;
+    /** @brief Returns canonical importers that directly depend on a module. */
+    std::vector<std::string> reverseDependencies(std::string_view canonicalUri) const;
 
     /** @brief Normalizes a logical module URI and rejects root traversal. */
     static bool canonicalize(const ScriptModuleRequest& request, std::string& output, std::string& error);

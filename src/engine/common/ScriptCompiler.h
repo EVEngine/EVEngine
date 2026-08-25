@@ -81,6 +81,8 @@ struct EVENGINE_API ScriptMetadata {
     std::string                         providerOrigin;
     std::vector<std::string>            imports;
     std::vector<std::string>            exports;
+    std::vector<std::string>            dependencies;
+    std::vector<std::string>            reverseDependencies;
     std::vector<ScriptSymbolMetadata>   symbols;
     std::vector<ScriptPropertyMetadata> properties;
     std::vector<std::string>            persistRoots;
@@ -185,11 +187,16 @@ public:
     /** @brief Unified raw-VM entry used by REPL, debugger, MCP, and editor adapters. */
     static SQRESULT compileBuffer(HSQUIRRELVM vm, const SQChar* source, SQInteger size, const SQChar* sourceName,
                                   SQBool raiseError);
+    /** @brief Statically checks literal config module lists without executing config.nut. */
+    static std::vector<ScriptDiagnostic> validateProjectConfig(std::string_view source, std::string_view canonicalUri,
+                                                               const std::vector<std::string>& knownModules,
+                                                               const std::vector<std::string>& activeModules);
 
     /** @brief Performs source-only metadata extraction without executing code. */
     static ScriptMetadata analyze(std::string_view source, std::string_view canonicalUri);
 
 private:
+    void                                            refreshDependencyMetadata();
     ssq::VM*                                        vm_;
     ScriptModuleResolver*                           modules_;
     BindingContractRegistry                         bindings_;

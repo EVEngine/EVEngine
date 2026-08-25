@@ -1,4 +1,5 @@
 #include "common/Runtime.h"
+#include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
 
 #include "zeroerr/assert.h"
@@ -63,6 +64,15 @@ TEST_CASE("scriptModule.resolvesCachesAndInstantiatesDependencyGraph") {
     CHECK_EQ(moduleResult, int64_t(84));
     CHECK_EQ(provider->loads["mem:/answer.nut"], 1);
     CHECK_EQ(provider->loads["mem:/values.nut"], 1);
+    const auto dependencies = runtime.scriptModules().dependencies("game:/main.nut");
+    CHECK_EQ(dependencies.size(), size_t(1));
+    CHECK_EQ(dependencies[0], std::string("mem:/answer.nut"));
+    const auto reverse = runtime.scriptModules().reverseDependencies("mem:/answer.nut");
+    CHECK_EQ(reverse.size(), size_t(1));
+    CHECK_EQ(reverse[0], std::string("game:/main.nut"));
+    const script::ScriptMetadata* metadata = runtime.scriptCompiler().metadata("game:/main.nut");
+    CHECK(metadata != nullptr);
+    CHECK_EQ(metadata->dependencies, dependencies);
 }
 
 TEST_CASE("scriptModule.rejectsCyclesBeforeExecution") {

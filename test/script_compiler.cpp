@@ -235,3 +235,14 @@ TEST_CASE("scriptCompiler.bindingContractChecksLiteralTypes") {
     }
     CHECK(rejected);
 }
+
+TEST_CASE("scriptCompiler.validatesConfigModulesWithoutExecution") {
+    const auto diagnostics = script::ScriptCompiler::validateProjectConfig(
+        "config <- { modules = [\"gfx\", \"physics\", \"typo\"], optionalModules = [\"audio\"] }\n", "game:/config.nut",
+        {"gfx", "physics", "audio"}, {"gfx", "audio"});
+    CHECK_EQ(diagnostics.size(), size_t(2));
+    CHECK_EQ(diagnostics[0].code, std::string("EVE1002"));
+    CHECK_EQ(diagnostics[0].related, std::string("physics"));
+    CHECK_EQ(diagnostics[1].code, std::string("EVE1001"));
+    CHECK_EQ(diagnostics[1].related, std::string("typo"));
+}

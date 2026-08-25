@@ -243,7 +243,9 @@ ssq::Script ScriptCompiler::compileSource(std::string_view source, std::string_v
     try {
         ssq::Script compiled = vm_->compileSource(std::string(source).c_str(), uri.c_str());
         modules_->prepareDependencies(uri);
-        metadata_[uri] = std::move(next);
+        next.dependencies = modules_->dependencies(uri);
+        metadata_[uri]    = std::move(next);
+        refreshDependencyMetadata();
         return compiled;
     } catch (const std::exception& error) {
         next.diagnostics.push_back(makeDiagnostic(error.what(), uri));
@@ -267,7 +269,9 @@ ssq::Script ScriptCompiler::compileFile(std::string_view path) {
     try {
         ssq::Script compiled = vm_->compileFile(uri.c_str());
         modules_->prepareDependencies(uri);
-        metadata_[uri] = std::move(next);
+        next.dependencies = modules_->dependencies(uri);
+        metadata_[uri]    = std::move(next);
+        refreshDependencyMetadata();
         return compiled;
     } catch (const std::exception& error) {
         next.diagnostics.push_back(makeDiagnostic(error.what(), uri));
@@ -288,6 +292,18 @@ std::vector<ScriptMetadata> ScriptCompiler::metadataSnapshot() const {
     std::sort(result.begin(), result.end(),
               [](const ScriptMetadata& a, const ScriptMetadata& b) { return a.canonicalUri < b.canonicalUri; });
     return result;
+}
+
+void ScriptCompiler::refreshDependencyMetadata() {
+    for (auto& [_, metadata] : metadata_) metadata.reverseDependencies.clear();
+    for (const auto& [importer, metadata] : metadata_) {
+        for (const std::string& dependency : metadata.dependencies) {
+            const auto found = metadata_.find(dependency);
+            if (found != metadata_.end()) appendUnique(found->second.reverseDependencies, importer);
+        }
+    }
+    for (auto& [_, metadata] : metadata_)
+        std::sort(metadata.reverseDependencies.begin(), metadata.reverseDependencies.end());
 }
 
 BindingContractRegistry&       ScriptCompiler::bindings() noexcept { return bindings_; }
@@ -402,8 +418,40 @@ SQRESULT ScriptCompiler::compileBuffer(HSQUIRRELVM vm, const SQChar* source, SQI
         compiler->metadata_[uri] = std::move(next);
         return sq_throwerror(vm, error.what());
     }
+    next.dependencies        = compiler->modules_->dependencies(uri);
     compiler->metadata_[uri] = std::move(next);
+    compiler->refreshDependencyMetadata();
     return SQ_OK;
+}
+
+std::vector<ScriptDiagnostic> ScriptCompiler::validateProjectConfig(std::string_view                source,
+                                                                    std::string_view                canonicalUri,
+                                                                    const std::vector<std::string>& knownModules,
+                                                                    const std::vector<std::string>& activeModules) {
+    std::vector<ScriptDiagnostic> result;
+    static const std::regex       listPattern(R"(\b(modules|optionalModules)\s*=\s*\[([^\]]*)\])");
+    static const std::regex       valuePattern(R"([\"']([^\"']+)[\"'])");
+    forMatches(source, listPattern, [&](const std::smatch& list, size_t listOffset) {
+        const bool        required = list[1].str() == "modules";
+        const std::string values   = list[2].str();
+        forMatches(values, valuePattern, [&](const std::smatch& value, size_t valueOffset) {
+            const std::string name  = value[1].str();
+            const bool        known = std::find(knownModules.begin(), knownModules.end(), name) != knownModules.end();
+            const bool active = std::find(activeModules.begin(), activeModules.end(), name) != activeModules.end();
+            if (known && (!required || active)) return;
+            ScriptDiagnostic diagnostic;
+            diagnostic.code         = known ? "EVE1002" : "EVE1001";
+            diagnostic.message      = known ? "required module is absent from the selected profile: " + name
+                                            : "config contains an unknown module root slot: " + name;
+            diagnostic.canonicalUri = std::string(canonicalUri);
+            diagnostic.position = positionAt(source, listOffset + static_cast<size_t>(list.position(2)) + valueOffset);
+            diagnostic.related  = name;
+            diagnostic.fix      = known ? "enable the module in the selected build profile"
+                                        : "use a root slot from the generated Module Contract";
+            result.push_back(std::move(diagnostic));
+        });
+    });
+    return result;
 }
 
 ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view canonicalUri) {

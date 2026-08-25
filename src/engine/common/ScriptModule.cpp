@@ -356,6 +356,21 @@ void ScriptModuleResolver::reload(std::string_view canonicalUri) { impl_->reload
 
 const std::string& ScriptModuleResolver::lastError() const noexcept { return impl_->lastError; }
 
+std::vector<std::string> ScriptModuleResolver::dependencies(std::string_view importerUri) const {
+    const auto found = impl_->dependencies.find(std::string(importerUri));
+    return found == impl_->dependencies.end() ? std::vector<std::string>{} : found->second;
+}
+
+std::vector<std::string> ScriptModuleResolver::reverseDependencies(std::string_view canonicalUri) const {
+    std::vector<std::string> result;
+    for (const auto& [importer, dependencies] : impl_->dependencies) {
+        if (std::find(dependencies.begin(), dependencies.end(), canonicalUri) != dependencies.end())
+            result.push_back(importer);
+    }
+    std::sort(result.begin(), result.end());
+    return result;
+}
+
 bool ScriptModuleResolver::canonicalize(const ScriptModuleRequest& request, std::string& output, std::string& error) {
     std::string  scheme = "game:";
     std::string  path;
