@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "ui/NinePatch.h"
 #include "ui/UIBackend.h"
 #include "ui/UIHost.h"
 #include "ui/Widget.h"
@@ -10,6 +11,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -92,6 +94,9 @@ public:
     void beginChild(const std::string &id, float width = 0.f, float height = 120.f);
     /** @brief Opens a bordered card surface. */
     void beginCard(const std::string &id = "");
+    /** @brief Opens a stretchable .9.png panel; false means the asset is invalid. */
+    bool beginNinePatch(const std::string &path, const std::string &id = "",
+                        float width = 0.f, float height = 0.f);
     /** @brief Opens a window menu bar. */
     void beginMenuBar(const std::string &id = "");
     /** @brief Opens a popup menu. */
@@ -147,6 +152,9 @@ public:
     void addProgress(float fraction, const std::string &id = "", const std::string &overlay = "");
     /** Colored / textured image; size 0 = default (32px or flex-assigned). */
     void addImage(const std::string &id = "", float width = 0.f, float height = 0.f);
+    /** @brief Adds a .9.png image after removing its one-pixel marker frame. */
+    bool addNinePatch(const std::string &path, const std::string &id = "",
+                      float width = 0.f, float height = 0.f);
     /** Clickable image button (click routes through consumeClick / callbacks). */
     void addImageButton(const std::string &id, float width, float height);
     /** Embedded viewport widget (see viewportCanvas / viewport* input getters). */
@@ -187,6 +195,26 @@ public:
     void setItemAbsolute(float anchorX, float anchorY, float x = 0.f, float y = 0.f);
     /** @brief Sets hover help on the most recently added item. */
     void setItemTooltip(const std::string &text);
+    /** @brief Enables or disables the most recently added item. */
+    void setItemEnabled(bool enabled);
+    /** @brief Sets the last item's focus mode: "none", "click", or "all". */
+    void setItemFocusMode(const std::string &mode);
+    /** @brief Sets the last item's pointer filter: "stop", "pass", or "ignore". */
+    void setItemMouseFilter(const std::string &filter);
+    /** @brief Overrides the last item's subtree theme: "inherit", "dark", or "light". */
+    void setItemTheme(const std::string &theme);
+    /** @brief Overrides the current open container's inherited subtree theme. */
+    void setThemeScope(const std::string &theme);
+    /** @brief Sets the last item's sequential focus order; negative excludes it. */
+    void setItemTabIndex(int index);
+    /** @brief Sets explicit previous and next focus neighbors on the last item. */
+    void setItemFocusOrder(const std::string &previous, const std::string &next);
+    /** @brief Sets explicit directional focus neighbors on the last item. */
+    void setItemFocusNeighbors(const std::string &left, const std::string &right,
+                               const std::string &up, const std::string &down);
+    /** @brief Sets the last item's accessibility role, name and description. */
+    void setItemAccessibility(const std::string &role, const std::string &name,
+                              const std::string &description = "");
     /** Set Flex container align/justify on the current open Flex (no-op otherwise). */
     /** @brief Set Flex container align/justify on the current open Flex (no-op otherwise). */
     void setFlexAlign(const std::string &align);
@@ -212,12 +240,16 @@ public:
     void setText(const std::string &id, const std::string &text);
     void setTextWrap(const std::string &id, float width);
     void setVisible(const std::string &id, bool visible);
+    /** @brief Enables or disables a mounted control. */
+    void setEnabled(const std::string &id, bool enabled);
     void setChecked(const std::string &id, bool checked);
     void setValue(const std::string &id, float value);
     void setValueText(const std::string &id, const std::string &value);
     void setImageTint(const std::string &id, float r, float g, float b, float a = 1.f);
     void setImageUv(const std::string &id, float u0, float v0, float u1, float v1);
     void setImageNinePatch(const std::string &id, float l, float t, float r, float b);
+    /** @brief Applies a .9.png texture and its parsed stretch metadata to an image. */
+    bool setImageNinePatchFile(const std::string &id, const std::string &path);
     void setImageCornerRadius(const std::string &id, float radius);
     /** Bind a texture id from registerTexture() to an Image/ImageButton node. */
     void setImageTextureId(const std::string &id, uint64_t textureId);
@@ -235,6 +267,12 @@ public:
     float getValue(const std::string &id) const;
     std::string getValueText(const std::string &id) const;
     bool getChecked(const std::string &id) const;
+    /** @brief Requests keyboard/gamepad focus for a mounted control. */
+    bool requestFocus(const std::string &id);
+    /** @brief Moves focus by "next", "previous", "left", "right", "up", or "down". */
+    bool moveFocus(const std::string &direction);
+    /** @brief Returns the focused control id, or an empty string. */
+    std::string getFocusedId() const;
     /** @brief Host-level state. */
     void setHostVisible(bool visible);
     void setHostLayer(int layer);
@@ -381,12 +419,21 @@ public:
     bool sceneSetPickHandler(ssq::Function fn);
 
 private:
+    struct NinePatchResource {
+        graphics::Texture *texture = nullptr;
+        uint64_t textureId = 0;
+        NinePatchInfo info;
+    };
+    NinePatchResource *loadNinePatch(const std::string &path);
+    void releaseNinePatches();
+
     WidgetDesc &currentParent();
     void pushOpen(WidgetDesc d);
     bool buildComplete() const;
     UIHost *ensureSelected(const std::string &preferredName = "");
 
     std::unique_ptr<UIBackend> backend_;
+    std::unordered_map<std::string, NinePatchResource> ninePatches_;
     UIHost *selected_ = nullptr;
 
     std::vector<WidgetDesc> openStack_;
