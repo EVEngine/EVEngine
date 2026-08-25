@@ -95,9 +95,30 @@ TEST_CASE("scriptCompiler.bindingContractConvertsUnitLiterals") {
         "native_angle_result <- nativeAngle(90deg)\n"
         "native_delay_result <- nativeDelay(250ms)\n",
         "native-units-test.nut");
-    const float angleResult = runtime.vm().get<float>("native_angle_result");
-    const float delayResult = runtime.vm().get<float>("native_delay_result");
-    const bool angleConverted = angleResult > 1.5707f && angleResult < 1.5709f;
+    const float angleResult    = runtime.vm().get<float>("native_angle_result");
+    const float delayResult    = runtime.vm().get<float>("native_delay_result");
+    const bool  angleConverted = angleResult > 1.5707f && angleResult < 1.5709f;
     CHECK(angleConverted);
     CHECK_EQ(delayResult, 250.0f);
+}
+
+TEST_CASE("scriptCompiler.bindingContractChecksStringChoices") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.vm().addFunc("nativeMode", [](std::string mode) { return mode; });
+    script::BindingContract mode;
+    mode.module     = "test";
+    mode.method     = "nativeMode";
+    mode.parameters = {{"mode", "string", false, std::nullopt, script::ScriptUnit::None, {"idle", "run"}}};
+    runtime.scriptCompiler().bindings().registerContract(std::move(mode));
+    runtime.runSource("native_mode_result <- nativeMode(\"run\")\n", "native-choice-test.nut");
+    const std::string modeResult = runtime.vm().get<std::string>("native_mode_result");
+    CHECK_EQ(modeResult, std::string("run"));
+
+    bool rejected = false;
+    try {
+        runtime.compileSource("nativeMode(\"broken\")\n", "native-choice-error.nut");
+    } catch (const ScriptException& error) {
+        rejected = std::string(error.what()).find("outside the allowed choices") != std::string::npos;
+    }
+    CHECK(rejected);
 }

@@ -112,7 +112,7 @@ std::vector<BindingContract> BindingContractRegistry::snapshot() const {
 ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_(&vm), modules_(&modules) {
     sq_setnamedargresolver(
         vm_->getHandle(),
-        [](HSQUIRRELVM, const SQChar* callee, SQInteger index, const SQChar** unit,
+        [](HSQUIRRELVM, const SQChar* callee, SQInteger index, const SQChar** unit, const SQChar** choices,
            SQUserPointer user) -> const SQChar* {
             const auto&            self     = *static_cast<ScriptCompiler*>(user);
             const BindingContract* contract = self.bindings_.findMethod(callee);
@@ -121,6 +121,15 @@ ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_
             const BindingParameterContract& parameter = contract->parameters[static_cast<size_t>(index)];
             static const char* units[] = {nullptr, "seconds", "milliseconds", "radians", "degrees", "pixels", "meters"};
             if (unit != nullptr) *unit = units[static_cast<size_t>(parameter.unit)];
+            if (choices != nullptr) {
+                static thread_local std::string choiceBuffer;
+                choiceBuffer.clear();
+                for (size_t i = 0; i < parameter.choices.size(); ++i) {
+                    if (i != 0) choiceBuffer += ',';
+                    choiceBuffer += parameter.choices[i];
+                }
+                *choices = choiceBuffer.empty() ? nullptr : choiceBuffer.c_str();
+            }
             return parameter.name.c_str();
         },
         this);
