@@ -478,6 +478,16 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let
     }
     return sum / 9.0;
 }
+fn cascadeNdcBias(cascade: i32) -> f32 {
+    var bias: f32;
+    if (cascade == 0) { bias = shadow.cascadeBias.x; }
+    else if (cascade == 1) { bias = shadow.cascadeBias.y; }
+    else { bias = shadow.cascadeBias.z; }
+    return select(bias, shadow.bias.x, bias < 1e-8);
+}
+fn slopeScaledBias(cascade: i32, ndl: f32) -> f32 {
+    return cascadeNdcBias(cascade) * mix(0.75, 1.0, clamp(ndl, 0.0, 1.0));
+}
 fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4) {
         return 1.0;
@@ -489,14 +499,33 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
     if (cascade == 0) { tw = shadow.cascadeTexel.x; }
     else if (cascade == 1) { tw = shadow.cascadeTexel.y; }
     else { tw = shadow.cascadeTexel.z; }
-    var cb: f32;
-    if (cascade == 0) { cb = shadow.cascadeBias.x; }
-    else if (cascade == 1) { cb = shadow.cascadeBias.y; }
-    else { cb = shadow.cascadeBias.z; }
-    if (cb < 1e-8) { cb = shadow.bias.x; }
-    let bias = cb * mix(0.75, 1.0, clamp(ndl, 0.0, 1.0));
     let p = worldPos + n * ((2.0 * max(tw, 1e-6)) / max(ndl, 0.2));
-    let vis = sampleShadowCascade(p, cascade, bias);
+    var vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl));
+
+    var hi: f32;
+    var lo: f32;
+    if (cascade == 0) {
+        hi = shadow.splits.x;
+        lo = 0.0;
+    } else if (cascade == 1) {
+        hi = shadow.splits.y;
+        lo = shadow.splits.x;
+    } else {
+        hi = shadow.splits.z;
+        lo = shadow.splits.y;
+    }
+    let band = max(0.5, (hi - lo) * 0.1);
+    let toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
+    let toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
+    if (toPrev > 0.0 && cascade > 0) {
+        let previous = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, ndl));
+        vis = mix(vis, previous, toPrev);
+    }
+    if (toNext > 0.0 && cascade < 2) {
+        let next = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, ndl));
+        vis = mix(vis, next, toNext);
+    }
+    vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
     return mix(0.04, 1.0, vis);
 }
 @fragment
@@ -790,6 +819,16 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     }
     return sum / 9.0;
 }
+fn cascadeNdcBias(cascade: i32) -> f32 {
+    var bias: f32;
+    if (cascade == 0) { bias = shadow.cascadeBias.x; }
+    else if (cascade == 1) { bias = shadow.cascadeBias.y; }
+    else { bias = shadow.cascadeBias.z; }
+    return select(bias, shadow.bias.x, bias < 1e-8);
+}
+fn slopeScaledBias(cascade: i32, ndl: f32) -> f32 {
+    return cascadeNdcBias(cascade) * mix(0.75, 1.0, clamp(ndl, 0.0, 1.0));
+}
 fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4) {
         return 1.0;
@@ -801,14 +840,33 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
     if (cascade == 0) { tw = shadow.cascadeTexel.x; }
     else if (cascade == 1) { tw = shadow.cascadeTexel.y; }
     else { tw = shadow.cascadeTexel.z; }
-    var cb: f32;
-    if (cascade == 0) { cb = shadow.cascadeBias.x; }
-    else if (cascade == 1) { cb = shadow.cascadeBias.y; }
-    else { cb = shadow.cascadeBias.z; }
-    if (cb < 1e-8) { cb = shadow.bias.x; }
-    let bias = cb * mix(0.75, 1.0, clamp(ndl, 0.0, 1.0));
     let p = worldPos + n * ((2.0 * max(tw, 1e-6)) / max(ndl, 0.2));
-    let vis = sampleShadowCascade(p, cascade, bias);
+    var vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl));
+
+    var hi: f32;
+    var lo: f32;
+    if (cascade == 0) {
+        hi = shadow.splits.x;
+        lo = 0.0;
+    } else if (cascade == 1) {
+        hi = shadow.splits.y;
+        lo = shadow.splits.x;
+    } else {
+        hi = shadow.splits.z;
+        lo = shadow.splits.y;
+    }
+    let band = max(0.5, (hi - lo) * 0.1);
+    let toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
+    let toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
+    if (toPrev > 0.0 && cascade > 0) {
+        let previous = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, ndl));
+        vis = mix(vis, previous, toPrev);
+    }
+    if (toNext > 0.0 && cascade < 2) {
+        let next = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, ndl));
+        vis = mix(vis, next, toNext);
+    }
+    vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
     return mix(0.04, 1.0, vis);
 }
 fn clusterIndex(frag: vec2f, viewDepth: f32) -> u32 {

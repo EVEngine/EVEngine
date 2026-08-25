@@ -375,6 +375,7 @@ private:
         BlendMode surfaceBlend = BlendMode::Alpha;
         bool depthWrite = false;
         bool doubleSided = false;
+        bool shadowReceive = true;
         float alphaCutoff = 0.5f;
         std::string alphaTechnique = "cutoff";
         uint32_t frameUboOffset = 0;
@@ -497,7 +498,7 @@ private:
                       WGPUTextureFormat format);
     void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
                      bool canvasTarget = false);
-    void flushShadowPass(wgpu::RenderPassEncoder pass);
+    void flushShadowPass(wgpu::RenderPassEncoder pass, int cascade);
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushDecalPass(wgpu::RenderPassEncoder pass);
     void submitPendingDeferredPasses();

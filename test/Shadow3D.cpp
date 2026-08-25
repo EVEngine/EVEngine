@@ -244,6 +244,45 @@ TEST_CASE("Shadow3D.receiveShadowFalseIgnoresMap") {
     win->close();
 }
 
+TEST_CASE("Shadow3D.shadowStrengthInterpolatesVisibility") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    Renderable3D *ground = nullptr;
+    Light3D *sun = nullptr;
+    setupShadowScene(gfx, ground, sun, true);
+    (void)ground;
+    gfx->setScreenReadbackEnabled(true);
+
+    sun->setShadowStrength(0.f);
+    warmPresent(gfx);
+    const auto off = captureLumaGrid(gfx);
+    sun->setShadowStrength(0.5f);
+    warmPresent(gfx);
+    const auto half = captureLumaGrid(gfx);
+    sun->setShadowStrength(1.f);
+    warmPresent(gfx);
+    const auto full = captureLumaGrid(gfx);
+
+    size_t strongest = 0;
+    float strongestDelta = 0.f;
+    for (size_t i = 0; i < off.size(); ++i) {
+        const float delta = off[i] - full[i];
+        if (delta > strongestDelta) {
+            strongestDelta = delta;
+            strongest = i;
+        }
+    }
+    REQUIRE(strongestDelta > 0.02f);
+    const float halfDelta = off[strongest] - half[strongest];
+    CHECK(halfDelta > strongestDelta * 0.25f);
+    CHECK(halfDelta < strongestDelta * 0.75f);
+
+    win->close();
+}
+
 TEST_CASE("Shadow.directionalCSM.clampsFarAndSplitsAreViewZ") {
     const glm::vec3 dir(0.3f, 1.f, 0.2f);
     const glm::vec3 eye(0.f, 2.f, 8.f);

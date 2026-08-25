@@ -3201,6 +3201,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     d.surfaceBlend = mesh3dSurfaceBlend;
     d.depthWrite = mesh3dSurfaceDepthWrite;
     d.doubleSided = mesh3dSurfaceDoubleSided;
+    d.shadowReceive = mesh3dShadowReceive;
     d.alphaCutoff = mesh3dAlphaCutoff;
     d.alphaTechnique = mesh3dAlphaTechnique;
     mesh3dDraws.push_back(d);
@@ -3880,11 +3881,12 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
                               Shader::kPushConstantBytes);
     }
 
-    // Shared shadow UBO written once.
-    ShadowUBO shadowUbo = mesh3dShadows.ubo;
-    if (!mesh3dShadows.active || !mesh3dShadowReceive) shadowUbo.bias.y = 0.f;
-    for (auto &d : mesh3dDraws)
+    // Capture receive-shadow per draw; RenderSystem3D changes it between queued meshes.
+    for (auto &d : mesh3dDraws) {
+        ShadowUBO shadowUbo = mesh3dShadows.ubo;
+        if (!mesh3dShadows.active || !d.shadowReceive) shadowUbo.bias.y = 0.f;
         queue.WriteBuffer(uboArena.buffer, d.shadowUboOffset, &shadowUbo, sizeof(shadowUbo));
+    }
 
     for (auto &d : mesh3dDraws) {
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
@@ -3956,50 +3958,50 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
     mesh3dDraws.clear();
 }
 
-void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass) {
+void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto &uboArena = currentUboArena();
     ensureUboArena(uboArena, uboArena.used + 4096);
-    for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-        if (shadowCascadeDraws[c].empty()) continue;
-        for (auto &d : shadowCascadeDraws[c]) {
-            auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-            if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
+    if (cascade < 0 || cascade >= ShadowConfig::kCascades) return;
+    for (auto &d : shadowCascadeDraws[cascade]) {
+        auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
+        if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
 
-            pass.SetPipeline(d.alphaTest ? mesh3dShadowAlphaPipeline : mesh3dShadowPipeline);
+        pass.SetPipeline(d.alphaTest ? mesh3dShadowAlphaPipeline : mesh3dShadowPipeline);
 
-            uint32_t offset = uboArena.alloc(256, 256);
-            queue.WriteBuffer(uboArena.buffer, offset, &d.mvp, sizeof(glm::mat4));
+        uint32_t offset = uboArena.alloc(256, 256);
+        queue.WriteBuffer(uboArena.buffer, offset, &d.mvp, sizeof(glm::mat4));
 
-            GpuTexture *albedo = gpuForTextureOrWhite(d.albedo);
-            WGPUBindGroupEntry entries[3]{};
-            entries[0].binding = 0;
-            entries[0].buffer = uboArena.buffer.Get();
-            entries[0].size = 64;
-            entries[1].binding = 1;
-            entries[1].textureView = albedo->view.Get();
-            entries[2].binding = 2;
-            entries[2].sampler = albedo->sampler.Get();
-            WGPUBindGroupDescriptor bgd{};
-            bgd.layout = shadowSetLayout.Get();
-            bgd.entryCount = 3;
-            bgd.entries = entries;
-            wgpu::BindGroup bg = device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&bgd));
-            uint32_t offsets[1] = {offset};
-            pass.SetBindGroup(0, bg, 1, offsets);
+        GpuTexture *albedo = gpuForTextureOrWhite(d.albedo);
+        WGPUBindGroupEntry entries[3]{};
+        entries[0].binding = 0;
+        entries[0].buffer = uboArena.buffer.Get();
+        entries[0].size = 64;
+        entries[1].binding = 1;
+        entries[1].textureView = albedo->view.Get();
+        entries[2].binding = 2;
+        entries[2].sampler = albedo->sampler.Get();
+        WGPUBindGroupDescriptor bgd{};
+        bgd.layout = shadowSetLayout.Get();
+        bgd.entryCount = 3;
+        bgd.entries = entries;
+        wgpu::BindGroup bg = device.CreateBindGroup(
+            reinterpret_cast<const wgpu::BindGroupDescriptor *>(&bgd));
+        uint32_t offsets[1] = {offset};
+        pass.SetBindGroup(0, bg, 1, offsets);
 
-            if (gpuMesh->indexBuffer) {
-                pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
-                const uint64_t indexBytes = gpuMesh->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
-                pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
-                                    uint64_t(gpuMesh->indexCount) * indexBytes);
-                pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
-            } else {
-                pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
-                pass.Draw(gpuMesh->vertexCount, 1, 0, 0);
-            }
+        if (gpuMesh->indexBuffer) {
+            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            const uint64_t indexBytes =
+                gpuMesh->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
+            pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
+                                uint64_t(gpuMesh->indexCount) * indexBytes);
+            pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
+        } else {
+            pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            pass.Draw(gpuMesh->vertexCount, 1, 0, 0);
         }
-        shadowCascadeDraws[c].clear();
     }
+    shadowCascadeDraws[cascade].clear();
 }
 
 void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
@@ -4359,7 +4361,7 @@ void Graphics::present() {
                 WGPURenderPassDescriptor rp{};
                 rp.depthStencilAttachment = &ds;
                 wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
-                flushShadowPass(pass);
+                flushShadowPass(pass, c);
                 pass.End();
             }
         }

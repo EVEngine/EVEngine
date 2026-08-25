@@ -35,7 +35,7 @@ and `test gap`.
 | Masked materials | supported, verified | Cutoff, screen-space alpha-hash dither and coverage fallback share Vulkan semantics and have backend-neutral visibility-count tests | Add an MSAA alpha-to-coverage path when portable WebGPU sample-count support is enabled |
 | Alpha-cutout shadow | supported | Dedicated albedo/UV alpha-discard depth pipeline | Add a shadow-depth coverage artifact when depth readback is available |
 | Alpha-cutout GBuffer | supported | Dedicated alpha-discard pipeline and backend-neutral pixel test | Keep the Vulkan/Dawn pixel artifact in CI |
-| Cascaded shadows | partial | Opaque CSM path exists; cascade selection/bias/output have no Vulkan comparison | Add cascade boundary and receiver tests |
+| Cascaded shadows | supported, core verified | WebGPU records each caster into the correct array layer, captures receive-shadow per draw, and matches Vulkan cascade selection, slope bias, split cross-fade and strength interpolation; shared scene tests verify receiver gating and 0/0.5/1 strength output | Add a camera-motion artifact crossing both cascade boundaries |
 | GBuffer | supported for native consumers | Normal/depth/albedo encoding, clear values and CPU readback match Vulkan exactly in the parity scene; generic SPIR-V post remains unavailable | Enable additional WGSL-native consumers incrementally |
 | SSAO | supported, verified | Native SSAO/HBAO/GTAO and blur/overlay pipelines consume filterable linear depth on WebGPU | Extend the artifact set to every AO mode |
 | Decals | supported, verified | Native WGSL and Vulkan pipelines share box projection, depth reconstruction, normal rejection, edge feathering and forward composition semantics | Extend coverage to normal/roughness/metal/emissive channels |
