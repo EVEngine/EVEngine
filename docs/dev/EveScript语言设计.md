@@ -1,6 +1,6 @@
 # EveScript 语言设计
 
-> 状态：Design Draft v1
+> 状态：Implemented v1
 > 日期：2026-08-25
 > 运行后端：EVEngine 当前 Squirrel VM
 
@@ -706,21 +706,15 @@ load_round().then(function(result) {
 
 ### 13.3 Lowering 后的等价原始表达
 
-上面的线性函数等价于当前 `asyncSeq`：
+上面的线性函数等价于编译器生成的 coroutine body 与现有 Promise 驱动器：
 
 ```squirrel
 function load_round() {
-    return asyncSeq([
-        function(_) {
-            return asyncSleep(50.0)
-        },
-        function(_) {
-            return asyncDelay(20.0, "ready")
-        },
-        function(result) {
-            return result
-        }
-    ])
+    return __eve_async(function() {
+        suspend(asyncSleep(50.0))
+        local result = suspend(asyncDelay(20.0, "ready"))
+        return result
+    }, this)
 }
 ```
 
@@ -1023,7 +1017,9 @@ EVE2601 await is only allowed inside async function
 3. DAP 对 lowering 代码的断点、单步和异常映射；
 4. 热重载时 async continuation 的诊断和清理策略。
 
-每个 Phase 都必须先把生成的 Squirrel 作为可查看调试产物输出，再启用对应语法。
+实现直接在 Squirrel parser/code generator 中 lowering，不生成第二份临时源码。可查看调试产物是原始
+`.nut`、identity SourceMap、ScriptMetadata 与保留原行号的字节码；本节列出的普通 Squirrel 表达
+用于说明语义等价关系。
 
 ## 19. 验收标准
 
@@ -1037,7 +1033,7 @@ EVE2601 await is only allowed inside async function
 
 ### 19.2 语义
 
-1. 每个语法测试同时保存 EveScript 输入和期望 Squirrel 输出；
+1. 每个语法测试同时验证 EveScript 输入、等价 Squirrel 语义和运行结果；
 2. 接收者、参数和初始化表达式不会因 lowering 被重复求值；
 3. 类型、choice 和单位在生成代码中不产生包装对象；
 4. async continuation 只由现有主线程 `async_pump()` 推进；
