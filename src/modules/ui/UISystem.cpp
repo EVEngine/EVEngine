@@ -6,6 +6,7 @@
 #include "ui/UIBackend.h"
 
 #include "common/Module.h"
+#include "common/Profile.h"
 #include "graphics/Graphics.h"
 
 #include <imgui.h>
@@ -1059,6 +1060,7 @@ UIHost *UISystem::findHostByOwner(uint32_t ownerId) {
 }
 
 void UISystem::render() {
+    EV_PROFILE_MODULE("ui", "UISystem::render");
     if (ecs::current()->getManager<UIHost>() == nullptr) return;
 
     applyThemeToImGui(globalTheme());

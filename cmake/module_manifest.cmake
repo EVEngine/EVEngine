@@ -74,6 +74,13 @@ eve_declare_module(NAME timer REQUIRED LAYER 0 SCRIPT Timer SLOT timer
 eve_declare_module(NAME system LAYER 0 SCRIPT System SLOT system
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
+# Profiler: built-in engine-wide profiler. Scoped zones (common/Profile.h) are
+# sprinkled across the core hot systems (physics, animation, particles, audio,
+# ui, scene, map, crowd, event, graphics passes) and aggregated per frame into a
+# per-module/per-zone call tree with self/total time; GPU frame time comes from
+# Vulkan timestamp queries. Zero overhead when disabled.
+eve_declare_module(NAME profiler LAYER 0 SCRIPT Profiler SLOT profiler
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME thread LAYER 0 SCRIPT Thread SLOT thread
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial

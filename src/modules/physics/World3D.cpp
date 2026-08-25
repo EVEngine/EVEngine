@@ -4,6 +4,7 @@
 #include "physics/PhysicsCapabilities.h"
 
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "event/Event.h"
 
 #include <box3d/box3d.h>
@@ -107,6 +108,7 @@ bool World3D::sphereCast(float x1, float y1, float z1, float x2, float y2, float
 void World3D::update(float dt) { updateFull(dt, 4); }
 
 void World3D::updateFull(float dt, int subStepCount) {
+    EV_PROFILE_MODULE("physics", "World3D::update");
     if (!isValid()) return;
     if (dt < 0.f) dt = 0.f;
     if (dt > 0.05f) dt = 0.05f;

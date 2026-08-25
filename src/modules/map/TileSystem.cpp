@@ -7,6 +7,7 @@
 #include "graphics/Canvas.h"
 #include "filesystem/Filesystem.h"
 #include "common/Module.h"
+#include "common/Profile.h"
 
 #include <unordered_set>
 #include <vector>
@@ -262,6 +263,7 @@ int TileRenderSystem::lastVisitedChunkCount() { return gLastVisitedChunkCount; }
 int TileRenderSystem::lastVisitedCellCount() { return gLastVisitedCellCount; }
 
 void TileRenderSystem::update(float dt) {
+    EV_PROFILE_MODULE("map", "TileRenderSystem::update");
     if (dt > 0.f && std::isfinite(dt)) gAnimationTimeMs += double(dt) * 1000.0;
 }
 

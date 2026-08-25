@@ -1,5 +1,6 @@
 #include "particles/Particles.h"
 #include "common/Module.h"
+#include "common/Profile.h"
 #include "data/DataModule.h"
 #include "data/JsonDocument.h"
 #include "filesystem/FileData.h"
@@ -68,6 +69,7 @@ ParticleEmitter *Particles::newEmitterFromFile(const std::string &path) {
 }
 
 void Particles::update(float dt) {
+    EV_PROFILE_MODULE("particles", "Particles::update");
     ParticleConfigSystem::poll();
     ParticleSimSystem::update(dt);
     ParticleLightSystem::update();

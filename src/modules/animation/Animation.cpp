@@ -28,6 +28,7 @@
 #include "animation/SpriteSheet.h"
 
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "graphics/Graphics.h"
 #include "graphics/Texture.h"
 #include "graphics/Mesh.h"
@@ -429,6 +430,7 @@ void Animation::unregisterSpineAnim(SpineAnim *a) {
 }
 
 void Animation::update(float dt) {
+    EV_PROFILE_MODULE("animation", "Animation::update");
     // Copy pointer lists: destructors during update must not invalidate iteration.
     std::vector<Tween *> tweenSnap = tweens_;
     for (Tween *t : tweenSnap) {

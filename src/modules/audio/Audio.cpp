@@ -3,6 +3,7 @@
 
 #include "AudioCapabilities.h"
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "common/StartupTiming.h"
 #include "sound/Decoder.h"
 #include "sound/Sound.h"
@@ -174,6 +175,7 @@ void Audio::setOrientation(float fx, float fy, float fz, float ux, float uy, flo
 }
 
 void Audio::pump() {
+    EV_PROFILE_MODULE("audio", "Audio::pump");
     // Same guarantee as workerMain: destruction removes the source under this
     // mutex, so the pointer stays valid for the whole iteration.
     std::lock_guard<std::mutex> lock(mutex);

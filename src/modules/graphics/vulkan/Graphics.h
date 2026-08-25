@@ -20,6 +20,8 @@
 #include "graphics/vulkan/GpuDriven.h"
 #include "graphics/vulkan/FrameArena.h"
 #include "graphics/vulkan/ComputePass.h"
+#include "common/Capability.h"
+#include "common/GpuTimer.h"
 
 namespace eve::graphics::vulkan {
 
@@ -216,13 +218,26 @@ struct GpuShader {
     Shader *owner = nullptr;
 };
 
-class Graphics final : public eve::graphics::Graphics {
+class Graphics final : public eve::graphics::Graphics, public eve::service::IGpuTimer {
 public:
     // Keep the base draw(Drawable*, mat4) overload visible alongside the
     // canvas composite overloads below.
     using eve::graphics::Graphics::draw;
 
     ~Graphics() override;
+
+    // ---- GPU frame timing (eve::service::IGpuTimer) ----------------------
+    /** @brief Creates the GPU timestamp query pool; call after device init. */
+    void initGpuTiming();
+    /** @brief Writes a begin timestamp into the current present command buffer. */
+    void writeGpuTimestampBegin();
+    /** @brief Writes an end timestamp into the current present command buffer. */
+    void writeGpuTimestampEnd();
+    /** @brief Reads the query results after the frame's submit has completed. */
+    void readGpuFrameTiming();
+
+    bool gpuTimingAvailable() const override;
+    float gpuFrameMs() const override;
 
     std::string getBackendName() const override;
 
@@ -1235,6 +1250,12 @@ private:
     vkb::InRenderPass swapchainPass;
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;
+
+    // GPU timestamp queries (one pool of 2: [0]=frame begin, [1]=frame end).
+    vk::QueryPool gpuQueryPool_{};
+    float         timestampPeriod_ = 1.f;
+    bool          gpuTimingReady_  = false;
+    float         gpuFrameMs_      = 0.f;
 
     struct SolidBatch {
         BlendMode blend = BlendMode::Alpha;

@@ -4,6 +4,7 @@
 #include "common/Capability.h"
 #include "common/Exception.h"
 #include "common/Module.h"
+#include "common/Profile.h"
 #include "common/config.h"
 #include "event/PlatformEventSink.h"
 
@@ -30,6 +31,7 @@ Event::~Event()
 
 void Event::pump()
 {
+	EV_PROFILE_MODULE("event", "Event::pump");
 	SDL_Event e;
 
 	while (SDL_PollEvent(&e))
