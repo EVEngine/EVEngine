@@ -127,6 +127,32 @@ foreach (m in eve.moduleList) {
 }
 _startup_ms("all modules instantiated");
 
+// Project-wide module requirements belong to config.nut.  Validate them only
+// after the build's module list has been instantiated, and before any game
+// entry point can observe a partially configured runtime.
+function validate_project_modules() {
+    if ("modules" in config) {
+        if (typeof config.modules != "array")
+            throw "config.modules must be an array of module slot strings";
+        foreach (slot in config.modules) {
+            if (typeof slot != "string")
+                throw "config.modules entries must be module slot strings";
+            if (!has_module(slot))
+                throw "required module is missing: " + slot;
+        }
+    }
+    if ("optionalModules" in config) {
+        if (typeof config.optionalModules != "array")
+            throw "config.optionalModules must be an array of module slot strings";
+        foreach (slot in config.optionalModules) {
+            if (typeof slot != "string")
+                throw "config.optionalModules entries must be module slot strings";
+        }
+    }
+}
+
+validate_project_modules();
+
 if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
     return;
@@ -230,6 +256,8 @@ function remap_instances(container, NewClass) {
 }
 
 function soft_reload_scripts() {
+    if ("async_cancel_continuations" in getroottable())
+        async_cancel_continuations("soft reload");
     // ① optional script hook: finalize transient state before capture.
     if ("eve_before_reload" in getroottable()) {
         try {

@@ -2,6 +2,7 @@
 #include "scripts.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
+#include "common/ScriptCompiler.h"
 #include "common/config.h"
 #include "common/ECS.h"
 #include "filesystem/Filesystem.h"
@@ -128,12 +129,12 @@ const char* playgroundEval(const char* source) {
     const std::string wrapped = std::string("return (") + source + ");";
     const char* evalSource = wrapped.c_str();
     SQInteger evalLen = static_cast<SQInteger>(wrapped.size());
-    bool compileOk =
-        SQ_SUCCEEDED(sq_compilebuffer(vm, evalSource, evalLen, _SC("playground_eval"), SQTrue));
+    bool compileOk = SQ_SUCCEEDED(eve::script::ScriptCompiler::compileBuffer(
+        vm, evalSource, evalLen, _SC("playground_eval"), SQTrue));
     if (!compileOk) {
         sq_settop(vm, top);
-        compileOk = SQ_SUCCEEDED(sq_compilebuffer(vm, source, std::strlen(source),
-                                                  _SC("playground_eval"), SQTrue));
+        compileOk = SQ_SUCCEEDED(eve::script::ScriptCompiler::compileBuffer(
+            vm, source, static_cast<SQInteger>(std::strlen(source)), _SC("playground_eval"), SQTrue));
     }
     if (!compileOk) {
         const SQChar* msg = nullptr;
@@ -485,6 +486,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         {
             ssq::Table eve = runtime.table("eve");
             eve.set("moduleList", runtime.root().find("eve_modules"));
+            eve.set("moduleContract", runtime.root().find("eve_module_contract"));
         }
         // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
         // Route file/dofile/loadfile through PhysFS so a packaged game (mounted in
