@@ -643,3 +643,83 @@ TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
     CHECK(imageRgbDifference(*baseline, *parallaxMapped) > 50000u);
     CHECK(imageRgbDifference(*baseline, *cellBombed) > 50000u);
 }
+
+TEST_CASE("graphics.backendParity.pbrEnvironmentAndCloudShadow") {
+    Graphics *gfx = headlessGraphics();
+    REQUIRE(gfx != nullptr);
+    const std::string backend = gfx->getBackendName();
+    const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
+    CHECK(supportedBackend);
+
+    const float positions[] = {
+        -1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
+    };
+    const float normals[] = {
+        0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    };
+    const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+
+    const uint8_t white[] = {255, 255, 255, 255};
+    const uint8_t flatNormal[] = {128, 128, 255, 255};
+    const uint8_t greenCube[] = {
+        16, 220, 32, 255, 16, 220, 32, 255, 16, 220, 32, 255,
+        16, 220, 32, 255, 16, 220, 32, 255, 16, 220, 32, 255,
+    };
+    Texture *albedo = gfx->newTexture(1, 1, white);
+    Texture *normal = gfx->newTexture(1, 1, flatNormal);
+    Texture *environment = gfx->newCubemap(1, greenCube);
+    REQUIRE(albedo != nullptr);
+    REQUIRE(normal != nullptr);
+    REQUIRE(environment != nullptr);
+    gfx->setMesh3DNormalTexture(normal);
+    gfx->setMesh3DHeightTexture(nullptr);
+    gfx->setMesh3DParallax(0.f);
+    gfx->setMesh3DTexCellBomb(1.f, 0.f);
+    gfx->setMesh3DViewProj(glm::mat4(1.f));
+    gfx->setMesh3DView(glm::mat4(1.f));
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
+
+    auto render = [&](const char *artifact) {
+        Canvas *target = gfx->newCanvas(64, 64);
+        REQUIRE(target != nullptr);
+        gfx->begin3DFrameToCanvas(target);
+        gfx->drawMesh(mesh, glm::mat4(1.f), albedo, Color(1.f));
+        gfx->end3DFrameToCanvas();
+        std::unique_ptr<eve::image::ImageData> image(target->newImageData());
+        REQUIRE(image.get() != nullptr);
+        writeParityArtifact(*image, artifact, backend);
+        return image;
+    };
+
+    Lighting3DPack noLights{};
+    noLights.ambient = glm::vec4(0.f);
+    gfx->setMesh3DLighting(noLights);
+    gfx->setMesh3DMaterial(1.f, 0.1f);
+    gfx->setMesh3DEnv(nullptr, 0.f);
+    auto environmentOff = render("pbr_environment_off");
+    gfx->setMesh3DEnv(environment, 1.f);
+    auto environmentOn = render("pbr_environment_on");
+    const uint8_t *reflected = pixel(*environmentOn, 32, 32);
+    CHECK(reflected[1] > reflected[0] + 20);
+    CHECK(imageRgbDifference(*environmentOff, *environmentOn) > 20000u);
+
+    Lighting3DPack sun{};
+    sun.ambient = glm::vec4(0.01f, 0.01f, 0.01f, 0.f);
+    sun.count = 1;
+    sun.lights[0].posRadius = glm::vec4(0.f, 0.f, 1.f, 0.f);
+    sun.lights[0].color = glm::vec4(0.9f, 0.9f, 0.9f, 1.f);
+    gfx->setMesh3DLighting(sun);
+    gfx->setMesh3DMaterial(0.f, 0.8f);
+    gfx->setMesh3DEnv(nullptr, 0.f);
+    gfx->setCloudShadows(0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+    auto cloudOff = render("pbr_cloud_shadow_off");
+    gfx->setCloudShadows(1.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+    auto cloudOn = render("pbr_cloud_shadow_on");
+    const uint8_t *lit = pixel(*cloudOff, 32, 32);
+    const uint8_t *shadowed = pixel(*cloudOn, 32, 32);
+    CHECK(lit[0] > shadowed[0] + 80);
+    CHECK(imageRgbDifference(*cloudOff, *cloudOn) > 100000u);
+}
