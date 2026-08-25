@@ -11,6 +11,7 @@
 #include "stylize/shaders/pixel_post_frag_spv.inc"
 #include "stylize/shaders/watercolor_post_frag_spv.inc"
 #include "stylize/shaders/xray_mesh_frag_spv.inc"
+#include "stylize/shaders/StylizeWgsl.h"
 
 #include <algorithm>
 #include <array>
@@ -372,6 +373,18 @@ graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &s
     if (!gfx) throw eve::Exception("createPostShader: null graphics");
     if (!isKnownStyle(style))
         throw eve::Exception("createPostShader: unknown style '%s'", style.c_str());
+
+    if (gfx->getBackendName() == "webgpu") {
+        const char *body = style == "cartoon"   ? shaders::kCartoon
+                           : style == "watercolor" ? shaders::kWatercolor
+                           : style == "ink"        ? shaders::kInk
+                                                     : shaders::kPixel;
+        graphics::Shader *sh = gfx->newShaderFromWgsl({}, std::string(shaders::kCommon) + body);
+        if (!sh || !sh->gpuHandle)
+            throw eve::Exception("createPostShader: failed to create '%s' WGSL", style.c_str());
+        bindPostUniforms(sh, style);
+        return sh;
+    }
 
     std::vector<uint32_t> frag;
     if (style == "cartoon")
