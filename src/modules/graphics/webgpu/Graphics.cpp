@@ -3449,19 +3449,22 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     frameHad3DThisFrame = true;
     frameHad3D = true;
 
-    int face = 5;
+    int face = -1;
     if (faceDir == "posX" || faceDir == "+x") face = 0;
     else if (faceDir == "negX" || faceDir == "-x") face = 1;
     else if (faceDir == "posY" || faceDir == "+y") face = 2;
     else if (faceDir == "negY" || faceDir == "-y") face = 3;
     else if (faceDir == "posZ" || faceDir == "+z") face = 4;
+    else if (faceDir == "negZ" || faceDir == "-z") face = 5;
+    else
+        throw Exception("drawVoxelFaceInstances: unknown faceDir '%s'", faceDir.c_str());
 
     VoxelDraw d;
     d.count = uint32_t(count);
     d.atlas = gpuForTextureOrWhite(atlas);
     d.viewProj = mesh3dViewProj;
     d.chunkOrigin = glm::vec4(originX, originY, originZ, float(face));
-    d.atlasInfo = glm::vec4(float(tilesPerRow), 0.f, 0.f, 0.f);
+    d.atlasInfo = glm::vec4(float(std::max(1, tilesPerRow)), 0.f, 0.f, 0.f);
     d.tint = glm::vec4(1.f);
     d.instanceBufferOffset = 0;
     d.pushUboOffset = 0;
