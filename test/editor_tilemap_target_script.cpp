@@ -25,7 +25,7 @@ TEST_CASE("editor.script.composes_live_tile_layer_target_with_field_tool") {
         added <- session.addFieldTool(tool);
         session.bindTileLayerTarget(target);
         activated <- session.activateTool("tile.paint");
-        beforeRevision <- layer.getRevision();
+        beforeRevision <- target.getRevision();
         session.dispatchPointer(0, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);
         session.dispatchPointer(2, 1, 0, 3.0, 4.0, 0.0, 0.0, 1.0);
         painted <- layer.getTile(3, 4);
