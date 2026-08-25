@@ -204,7 +204,10 @@ struct ScriptModuleResolver::Impl {
     void instantiate(const std::string& canonical) {
         auto found = modules.find(canonical);
         if (found == modules.end()) throw std::runtime_error("unknown script module: " + canonical);
-        Module& module = found->second;
+        instantiateModule(canonical, found->second);
+    }
+
+    void instantiateModule(const std::string& canonical, Module& module) {
         if (module.state == Module::State::Ready) return;
         if (module.state == Module::State::Instantiating)
             throw std::runtime_error("cyclic script module instantiation: " + canonical);
@@ -233,6 +236,51 @@ struct ScriptModuleResolver::Impl {
         }
         sq_settop(vm, top);
         module.state = Module::State::Ready;
+    }
+
+    void release(Module& module) {
+        if (!sq_isnull(module.closure)) sq_release(vm, &module.closure);
+        if (!sq_isnull(module.exports)) sq_release(vm, &module.exports);
+        sq_resetobject(&module.closure);
+        sq_resetobject(&module.exports);
+    }
+
+    void reload(const std::string& canonical) {
+        const auto found = modules.find(canonical);
+        if (found == modules.end()) throw std::runtime_error("cannot reload unknown script module: " + canonical);
+        Module&                        previous      = found->second;
+        const Module::State            previousState = previous.state;
+        const std::vector<std::string> previousEdges = dependencies[canonical];
+        Module                         candidate;
+        sq_resetobject(&candidate.closure);
+        sq_resetobject(&candidate.exports);
+        try {
+            candidate.source = load(canonical);
+            candidate.state  = Module::State::Compiling;
+            dependencies.erase(canonical);
+            previous.state      = Module::State::Compiling;
+            const SQInteger top = sq_gettop(vm);
+            if (SQ_FAILED(sq_compilebuffer(vm, candidate.source.utf8Source.c_str(),
+                                           static_cast<SQInteger>(candidate.source.utf8Source.size()),
+                                           canonical.c_str(), SQTrue))) {
+                sq_settop(vm, top);
+                throw std::runtime_error("failed to compile script module generation: " + canonical);
+            }
+            sq_getstackobj(vm, -1, &candidate.closure);
+            sq_addref(vm, &candidate.closure);
+            sq_settop(vm, top);
+            candidate.dependencies = dependencies[canonical];
+            candidate.state        = Module::State::Compiled;
+            previous.state         = previousState;
+            instantiateModule(canonical, candidate);
+        } catch (...) {
+            previous.state          = previousState;
+            dependencies[canonical] = previousEdges;
+            release(candidate);
+            throw;
+        }
+        release(previous);
+        previous = std::move(candidate);
     }
 
     SQVM*                                                     vm             = nullptr;
@@ -303,6 +351,8 @@ void ScriptModuleResolver::invalidate(std::string_view canonicalUri) {
         impl_->dependencies.erase(uri);
     }
 }
+
+void ScriptModuleResolver::reload(std::string_view canonicalUri) { impl_->reload(std::string(canonicalUri)); }
 
 const std::string& ScriptModuleResolver::lastError() const noexcept { return impl_->lastError; }
 

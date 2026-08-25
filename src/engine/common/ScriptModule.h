@@ -71,6 +71,8 @@ public:
     void instantiateDependencies(std::string_view importerUri);
     /** @brief Invalidates a module and all reverse dependencies. */
     void invalidate(std::string_view canonicalUri);
+    /** @brief Transactionally reloads one module, retaining the prior generation on failure. */
+    void reload(std::string_view canonicalUri);
     /** @brief Last resolver diagnostic produced by a Squirrel callback. */
     const std::string& lastError() const noexcept;
 

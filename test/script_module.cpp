@@ -81,3 +81,30 @@ TEST_CASE("scriptModule.rejectsCyclesBeforeExecution") {
     }
     CHECK(rejected);
 }
+
+TEST_CASE("scriptModule.reloadReplacesGenerationAtomically") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    auto    provider                    = std::make_shared<MemoryModuleProvider>();
+    provider->sources["mem:/value.nut"] = "export function value() { return 1 }\n";
+    runtime.scriptModules().registerProvider(provider, 100);
+    runtime.runSource("import { value } from \"mem:/value.nut\"\nfirst <- value()\n", "game:/first.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("first"), int64_t(1));
+
+    provider->sources["mem:/value.nut"] = "export function value( {\n";
+    bool failed                         = false;
+    try {
+        runtime.scriptModules().reload("mem:/value.nut");
+    } catch (const std::exception&) {
+        failed = true;
+    }
+    CHECK(failed);
+    runtime.runSource("import { value } from \"mem:/value.nut\"\nold_generation <- value()\n",
+                      "game:/old-generation.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("old_generation"), int64_t(1));
+
+    provider->sources["mem:/value.nut"] = "export function value() { return 2 }\n";
+    runtime.scriptModules().reload("mem:/value.nut");
+    runtime.runSource("import { value } from \"mem:/value.nut\"\nnew_generation <- value()\n",
+                      "game:/new-generation.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("new_generation"), int64_t(2));
+}
