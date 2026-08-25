@@ -92,7 +92,7 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     REQUIRE(gfx != nullptr);
     const std::string backend = gfx->getBackendName();
     const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
-    CHECK(supportedBackend);
+    REQUIRE(supportedBackend);
 
     const uint8_t red[4] = {255, 0, 0, 255};
     const uint8_t green[4] = {0, 255, 0, 255};
@@ -100,8 +100,8 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     REQUIRE(texture != nullptr);
     Texture *stable = texture;
     REQUIRE(gfx->updateTexture(texture, 1, 1, green));
-    CHECK(texture == stable);
-    CHECK(!gfx->updateTexture(texture, 2, 1, green));
+    REQUIRE(texture == stable);
+    REQUIRE(!gfx->updateTexture(texture, 2, 1, green));
 
     Canvas *canvas = gfx->newCanvas(64, 64);
     REQUIRE(canvas != nullptr);
@@ -115,21 +115,21 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     std::unique_ptr<eve::image::ImageData> image(canvas->newImageData());
     REQUIRE(image.get() != nullptr);
     const uint8_t *background = pixel(*image, 2, 2);
-    CHECK(background[0] < 8);
-    CHECK(background[1] < 8);
-    CHECK(background[2] > 247);
+    REQUIRE(background[0] < 8);
+    REQUIRE(background[1] < 8);
+    REQUIRE(background[2] > 247);
 
     const uint8_t *updated = pixel(*image, 16, 16);
-    CHECK(updated[0] < 8);
-    CHECK(updated[1] > 247);
-    CHECK(updated[2] < 8);
+    REQUIRE(updated[0] < 8);
+    REQUIRE(updated[1] > 247);
+    REQUIRE(updated[2] < 8);
 
     const uint8_t *blended = pixel(*image, 40, 16);
     const bool redBlended = blended[0] >= 126 && blended[0] <= 129;
-    CHECK(redBlended);
-    CHECK(blended[1] < 8);
+    REQUIRE(redBlended);
+    REQUIRE(blended[1] < 8);
     const bool blueBlended = blended[2] >= 126 && blended[2] <= 129;
-    CHECK(blueBlended);
+    REQUIRE(blueBlended);
     writeParityArtifact(*image, "texture_update_alpha_blend", backend);
 }
 
@@ -301,10 +301,10 @@ TEST_CASE("graphics.backendParity.lighting2dNormalMapAndMultipleLights") {
 TEST_CASE("graphics.backendParity.textureSamplingRepeatAndMipmaps") {
     Graphics *gfx = headlessGraphics();
     REQUIRE(gfx != nullptr);
-    CHECK(gfx->getMaxAnisotropy() >= 1.f);
+    REQUIRE(gfx->getMaxAnisotropy() >= 1.f);
     const std::string backend = gfx->getBackendName();
     const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
-    CHECK(supportedBackend);
+    REQUIRE(supportedBackend);
 
     const uint8_t redBlue[] = {255, 0, 0, 255, 0, 0, 255, 255};
     Texture *nearestTexture = gfx->newTexture(2, 1, redBlue);
@@ -324,9 +324,9 @@ TEST_CASE("graphics.backendParity.textureSamplingRepeatAndMipmaps") {
     mipInfo.generateMipmaps = true;
     Texture *mipped = gfx->newTexture(4, 1, checker, mipInfo);
     REQUIRE(mipped != nullptr);
-    CHECK(mipped->getMipmapCount() == 3);
+    REQUIRE(mipped->getMipmapCount() == 3);
     const bool mipSamplingEnabled = mipped->getSampler().mipmap == MipmapMode::Linear;
-    CHECK(mipSamplingEnabled);
+    REQUIRE(mipSamplingEnabled);
 
     Canvas *canvas = gfx->newCanvas(64, 64);
     REQUIRE(canvas != nullptr);
@@ -359,30 +359,30 @@ TEST_CASE("graphics.backendParity.textureSamplingRepeatAndMipmaps") {
     REQUIRE(image.get() != nullptr);
     const uint8_t *nearestLeft = pixel(*image, 8, 8);
     const uint8_t *nearestRight = pixel(*image, 24, 8);
-    CHECK(nearestLeft[0] > 247);
-    CHECK(nearestLeft[2] < 8);
-    CHECK(nearestRight[0] < 8);
-    CHECK(nearestRight[2] > 247);
+    REQUIRE(nearestLeft[0] > 247);
+    REQUIRE(nearestLeft[2] < 8);
+    REQUIRE(nearestRight[0] < 8);
+    REQUIRE(nearestRight[2] > 247);
 
     const uint8_t *repeat0 = pixel(*image, 38, 8);
     const uint8_t *repeat1 = pixel(*image, 45, 8);
     const uint8_t *repeat2 = pixel(*image, 52, 8);
     const uint8_t *repeat3 = pixel(*image, 59, 8);
-    CHECK(repeat0[0] > 247);
-    CHECK(repeat1[2] > 247);
-    CHECK(repeat2[0] > 247);
-    CHECK(repeat3[2] > 247);
+    REQUIRE(repeat0[0] > 247);
+    REQUIRE(repeat1[2] > 247);
+    REQUIRE(repeat2[0] > 247);
+    REQUIRE(repeat3[2] > 247);
 
     const uint8_t *linearBoundary = pixel(*image, 16, 26);
-    CHECK(linearBoundary[0] > 96);
-    CHECK(linearBoundary[2] > 96);
+    REQUIRE(linearBoundary[0] > 96);
+    REQUIRE(linearBoundary[2] > 96);
 
     const uint8_t *mip = pixel(*image, 48, 34);
     const bool mipRed = mip[0] >= 126 && mip[0] <= 129;
     const bool mipGreen = mip[1] >= 126 && mip[1] <= 129;
-    CHECK(mipRed);
-    CHECK(mipGreen);
-    CHECK(mip[2] < 8);
+    REQUIRE(mipRed);
+    REQUIRE(mipGreen);
+    REQUIRE(mip[2] < 8);
     writeParityArtifact(*image, "texture_sampling_repeat_mipmaps", backend);
 }
 
