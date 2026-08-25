@@ -1,4 +1,5 @@
 #include "cmdline.h"
+#include "common/config.h"
 
 #include <CLI11.hpp>
 
