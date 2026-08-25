@@ -298,8 +298,13 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
                     [](std::string name) { Snapshot::instance().markRoot(std::move(name)); });
         dev.addFunc("unmarkStateRoot",
                     [](std::string name) { Snapshot::instance().unmarkRoot(name); });
+        dev.addFunc("markTransientStateRoot",
+                    [](std::string name) { Snapshot::instance().markTransientRoot(std::move(name)); });
+        dev.addFunc("unmarkTransientStateRoot",
+                    [](std::string name) { Snapshot::instance().unmarkTransientRoot(name); });
         dev.addFunc("clearStateRoots", []() { Snapshot::instance().clearRoots(); });
         dev.addFunc("stateRoots", [this]() { return snapshot().rootsFor(vm_); });
+        dev.addFunc("transientStateRoots", []() { return Snapshot::instance().transientRoots(); });
         dev.addFunc("saveSnapshot", [this](std::string path) {
             std::string err;
             const bool  ok = snapshot().saveFile(vm_, path, &err);

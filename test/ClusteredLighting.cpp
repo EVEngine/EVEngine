@@ -103,6 +103,52 @@ TEST_CASE("ClusteredLighting.buildProducesNonEmptyTables") {
     CHECK_GT(total, 0u);
 }
 
+TEST_CASE("ClusteredLighting.reportsFrameAndClusterBudgetOverflow") {
+    std::vector<ClusteredLightGpu> points;
+    points.reserve(300);
+    for (int i = 0; i < 300; ++i) {
+        ClusteredLightGpu light{};
+        // Deliberately overlap every candidate so at least one cluster exceeds 32 lights.
+        light.posRadius = glm::vec4(0.f, 0.f, 0.f, 4.f);
+        light.color = glm::vec4(1.f + float(i) * 0.001f, 1.f, 1.f, 1.f);
+        points.push_back(light);
+    }
+    const glm::mat4 view =
+        glm::lookAtRH(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    const auto upload = buildClusteredLighting(points, {}, view, 0.1f, 100.f, 1920, 1080, 1.f,
+                                                glm::vec4(0.f));
+    REQUIRE(upload.active);
+    CHECK_EQ(upload.lights.size(), size_t(ClusteredLightConfig::kMaxLights));
+    CHECK_EQ(upload.truncatedLightCount, 44u);
+    CHECK_GT(upload.overflowClusterCount, 0u);
+    CHECK_GT(upload.droppedLightReferenceCount, 0u);
+    for (const auto &cluster : upload.clusterTable)
+        CHECK_LE(cluster.count, uint32_t(ClusteredLightConfig::kMaxLightsPerCluster));
+}
+
+TEST_CASE("ClusteredLighting.acceptsDistributed256LightBudget") {
+    std::vector<ClusteredLightGpu> points;
+    points.reserve(ClusteredLightConfig::kMaxLights);
+    for (int i = 0; i < ClusteredLightConfig::kMaxLights; ++i) {
+        ClusteredLightGpu light{};
+        const int column = i % 16;
+        const int row = (i / 16) % 4;
+        const int depth = i / 64;
+        light.posRadius = glm::vec4((float(column) - 7.5f) * 1.5f,
+                                    (float(row) - 1.5f) * 1.5f,
+                                    -4.f - float(depth) * 12.f, 0.45f);
+        light.color = glm::vec4(1.f);
+        points.push_back(light);
+    }
+    const auto upload = buildClusteredLighting(points, {}, glm::mat4(1.f), 0.1f, 100.f, 1920,
+                                                1080, 1.f, glm::vec4(0.f));
+    REQUIRE(upload.active);
+    CHECK_EQ(upload.lights.size(), size_t(ClusteredLightConfig::kMaxLights));
+    CHECK_EQ(upload.truncatedLightCount, 0u);
+    CHECK_EQ(upload.overflowClusterCount, 0u);
+    CHECK_EQ(upload.droppedLightReferenceCount, 0u);
+}
+
 TEST_CASE("ClusteredLighting.manyPointLightsBrightenCenter") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;

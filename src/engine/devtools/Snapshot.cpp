@@ -292,6 +292,7 @@ bool Snapshot::isEngineBinding(const std::string& name) { return isEngineName(na
 
 void Snapshot::markRoot(std::string name) {
     if (name.empty()) return;
+    unmarkTransientRoot(name);
     for (const auto& r : marked_) {
         if (r == name) return;
     }
@@ -302,16 +303,46 @@ void Snapshot::unmarkRoot(const std::string& name) {
     marked_.erase(std::remove(marked_.begin(), marked_.end(), name), marked_.end());
 }
 
-void Snapshot::clearRoots() { marked_.clear(); }
+void Snapshot::markTransientRoot(std::string name) {
+    if (name.empty()) return;
+    unmarkRoot(name);
+    for (const auto& r : transient_) {
+        if (r == name) return;
+    }
+    transient_.push_back(std::move(name));
+}
+
+void Snapshot::unmarkTransientRoot(const std::string& name) {
+    transient_.erase(std::remove(transient_.begin(), transient_.end(), name), transient_.end());
+}
+
+void Snapshot::clearRoots() {
+    marked_.clear();
+    transient_.clear();
+}
 
 std::vector<std::string> Snapshot::roots() const { return marked_; }
+
+std::vector<std::string> Snapshot::transientRoots() const { return transient_; }
+
+void Snapshot::setRootPolicies(std::vector<std::string> persistent, std::vector<std::string> transient) {
+    marked_.clear();
+    transient_.clear();
+    for (auto& name : persistent) markRoot(std::move(name));
+    for (auto& name : transient) markTransientRoot(std::move(name));
+}
 
 std::vector<std::string> Snapshot::resolveRoots(HSQUIRRELVM vm) const {
     if (!marked_.empty()) return marked_;
     std::vector<std::string> out;
     if (!vm) return out;
 
+    const auto isTransient = [this](const std::string& name) {
+        return std::find(transient_.begin(), transient_.end(), name) != transient_.end();
+    };
+
     for (const char* pref : {"eve_state", "gameState", "state"}) {
+        if (isTransient(pref)) continue;
         const SQInteger top = sq_gettop(vm);
         sq_pushroottable(vm);
         sq_pushstring(vm, pref, -1);
@@ -331,7 +362,7 @@ std::vector<std::string> Snapshot::resolveRoots(HSQUIRRELVM vm) const {
         if (sq_gettype(vm, -2) == OT_STRING) {
             const SQChar* key = nullptr;
             sq_getstring(vm, -2, &key);
-            if (key && !isEngineName(key)) {
+            if (key && !isEngineName(key) && !isTransient(key)) {
                 const SQObjectType vt = sq_gettype(vm, -1);
                 if (vt == OT_INTEGER || vt == OT_FLOAT || vt == OT_BOOL || vt == OT_STRING || vt == OT_TABLE ||
                     vt == OT_ARRAY) {
@@ -384,6 +415,7 @@ bool Snapshot::captureState(HSQUIRRELVM vm, StateValue& out, std::string* error)
 
         StateValue native = StateValue::object();
         eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
+            if (p->reloadPolicy() == eve::caps::StateReloadPolicy::Reset) return;
             StateValue captured;
             if (p->captureState(captured)) native.set(p->stateKind(), std::move(captured));
         });
@@ -441,10 +473,17 @@ bool Snapshot::restoreState(HSQUIRRELVM vm, const StateValue& state, std::string
         }
 
         const StateValue* native = state.find("native");
-        if (native && native->isObject()) {
-            bool        failed = false;
-            std::string nativeErr;
-            eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
+        bool              failed = false;
+        std::string       nativeErr;
+        eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
+            if (p->reloadPolicy() == eve::caps::StateReloadPolicy::Reset) {
+                if (!p->resetToDefaults()) {
+                    failed = true;
+                    nativeErr += std::string(p->stateKind()) + ": reset failed; ";
+                }
+                return;
+            }
+            if (native && native->isObject()) {
                 const StateValue* v = native->find(p->stateKind());
                 if (!v) return;  // provider not present in the snapshot
                 std::string perr;
@@ -453,11 +492,11 @@ bool Snapshot::restoreState(HSQUIRRELVM vm, const StateValue& state, std::string
                     nativeErr += std::string(p->stateKind()) + ": " + perr + "; ";
                     p->resetToDefaults();
                 }
-            });
-            if (failed) {
-                if (error) *error = nativeErr;
-                return false;
             }
+        });
+        if (failed) {
+            if (error) *error = nativeErr;
+            return false;
         }
         return true;
     } catch (const std::exception& e) {

@@ -152,6 +152,8 @@ std::string AnimImporter::exportEva(const AnimSkeleton *skeleton, const AnimClip
     out << "duration " << clip->getDuration() << "\n";
     out << "loop " << (clip->getLoop() ? 1 : 0) << "\n";
     out << "rate " << clip->getSampleRate() << "\n";
+    for (int i = 0; i < clip->getSyncMarkerCount(); ++i)
+        out << "sync " << clip->getSyncMarkerTime(i) << " " << clip->getSyncMarkerName(i) << "\n";
     for (int b = 0; b < skeleton->getBoneCount(); ++b) {
         const int np = clip->getPositionKeyCount(b);
         const int nr = clip->getRotationKeyCount(b);
@@ -239,6 +241,14 @@ void AnimImporter::importEva(const std::string &text, AnimSkeleton **skeletonOut
                 float r = 30.f;
                 ls >> r;
                 clip->setSampleRate(r);
+            } else if (tag == "sync") {
+                if (!clip) throw Exception("AnimImporter.importEva: sync marker before clip");
+                float t = 0.f;
+                std::string name;
+                ls >> t;
+                std::getline(ls, name);
+                name = trim(name);
+                clip->addSyncMarker(t, name);
             } else if (tag == "track") {
                 if (!clip) throw Exception("AnimImporter.importEva: track before clip");
                 int np = 0, nr = 0, ns = 0;

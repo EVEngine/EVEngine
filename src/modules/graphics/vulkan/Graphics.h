@@ -388,6 +388,8 @@ public:
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
+                                  const std::string &fragWgsl) override;
     bool releaseShader(Shader *shader) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
@@ -588,7 +590,11 @@ private:
                                               vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1);
     vk::Pipeline  createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
                                             vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
-                                            vk::SampleCountFlagBits samples);
+                                            vk::SampleCountFlagBits samples,
+                                            BlendMode blend = BlendMode::Opaque,
+                                            bool depthWrite = true, bool doubleSided = true);
+    static constexpr size_t kMesh3DPipelineVariants = 20;
+    static size_t mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided);
     /** @brief X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
     vk::Pipeline createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
@@ -618,9 +624,9 @@ private:
     void flushToSwapchain();
     void flushToOffscreen(OffscreenCanvas *canvas);
     void abortOpen3DFrame();
-    void noteSolidOverlay();
-    void noteTexturedOverlay(Texture *tex);
-    void noteLitOverlay();
+    void noteSolidOverlay(uint32_t batchIndex);
+    void noteTexturedOverlay(Texture *tex, uint32_t batchIndex);
+    void noteLitOverlay(uint32_t batchIndex);
     void clear2DBatches();
     void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
                                  std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
@@ -741,6 +747,7 @@ private:
     vk::PipelineLayout mesh3dShaderPipelineLayout;  // + push constants for custom mesh shaders
     vk::Pipeline mesh3dPipeline;
     vk::Pipeline mesh3dTransparentPipeline;
+    std::array<vk::Pipeline, kMesh3DPipelineVariants> mesh3dSurfacePipelines{};
     // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
     // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
     // executable command buffer (which invalidates the CB).
@@ -1155,7 +1162,6 @@ private:
         Texture normalTex{};
         Texture paramsTex{};
         vkb::GenericBuffer cameraUbo;  // capacity 1 per frame slot
-        vkb::GenericBuffer instanceBuf;  // kMaxDecalInstances * DecalInstanceData
         std::unordered_map<DecalSetKey, vkb::BoundSet, DecalSetKeyHash> sets;
     };
     int decalWidth = 0;
@@ -1227,6 +1233,7 @@ private:
     // submitted directly to the graphics queue (no swapchain / present).
     vkb::BuiltRenderPass offscreen3DRenderPass{};
     vk::Pipeline offscreen3DMeshPipeline = nullptr;
+    std::array<vk::Pipeline, kMesh3DPipelineVariants> offscreen3DSurfacePipelines{};
     vk::CommandPool offscreen3DPool = nullptr;
     vk::CommandBuffer offscreen3DCB = nullptr;
     vk::Fence offscreen3DFence = nullptr;

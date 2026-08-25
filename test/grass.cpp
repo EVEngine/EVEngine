@@ -543,6 +543,11 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
         RenderSystem::render(*gfx);
     }
 
+    eve::image::Image::create();
+    eve::image::ImageData *frame = gfx->newImageData();
+    REQUIRE(frame != nullptr);
+    std::unique_ptr<eve::image::ImageData> ownedFrame(frame);
+
     int greenish = 0;
     int darkGreen = 0;
     int litGreen = 0;
@@ -550,7 +555,7 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     const int h = gfx->getHeight();
     for (int y = 0; y < h; y += 2) {
         for (int x = 0; x < w; x += 2) {
-            const ::Color c = gfx->getPixel(x, y);
+            const auto c = frame->getPixel(x, y);
             if (c.g > c.r + 0.04f && c.g > c.b + 0.02f) {
                 ++greenish;
                 const float luma = (c.r + c.g + c.b) / 3.f;
@@ -559,14 +564,13 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
             }
         }
     }
-    CHECK(greenish > 400);
-    CHECK(darkGreen > 8);
-    CHECK(litGreen > 40);
+    // This fixed-size scene contains a broad field spanning multiple cascades.
+    // A WebGPU regression that left empty cascade layers uncleared turned the
+    // whole field dark while still satisfying the old handful-of-pixels check.
+    CHECK(greenish > 50000);
+    CHECK(darkGreen > 100);
+    CHECK(litGreen > 50000);
 
-    eve::image::Image::create();
-    eve::image::ImageData *frame = gfx->newImageData();
-    REQUIRE(frame != nullptr);
-    std::unique_ptr<eve::image::ImageData> ownedFrame(frame);
     const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
     savePng(frame, outDir + "/grass_field.png");
     savePng(frame, "/opt/cursor/artifacts/grass_field.png");

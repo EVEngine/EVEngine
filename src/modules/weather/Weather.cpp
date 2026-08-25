@@ -1,4 +1,5 @@
 #include "weather/Weather.h"
+#include "weather/shaders/WeatherWgsl.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
@@ -363,8 +364,17 @@ void Weather::init(graphics::Graphics *gfx) {
     std::vector<uint32_t> wf(weather_frag_spv, weather_frag_spv + weather_frag_spv_count);
     std::vector<uint32_t> bv(bolt_vert_spv, bolt_vert_spv + bolt_vert_spv_count);
     std::vector<uint32_t> bf(bolt_frag_spv, bolt_frag_spv + bolt_frag_spv_count);
-    graphics::Shader *weatherVert = gfx->newMeshShaderFromSpv(wv, wf);
-    graphics::Shader *boltShader = gfx->newMeshShaderFromSpv(bv, bf);
+    graphics::Shader *weatherVert = nullptr;
+    graphics::Shader *boltShader = nullptr;
+    if (gfx->getBackendName() == "webgpu") {
+        weatherVert = gfx->newMeshShaderFromWgsl(shaders::kWeatherVertWgsl,
+                                                shaders::kWeatherFragWgsl);
+        boltShader = gfx->newMeshShaderFromWgsl(shaders::kBoltVertWgsl,
+                                               shaders::kBoltFragWgsl);
+    } else {
+        weatherVert = gfx->newMeshShaderFromSpv(wv, wf);
+        boltShader = gfx->newMeshShaderFromSpv(bv, bf);
+    }
     declareWeatherParams(weatherVert);
     declareWeatherParams(boltShader);
 

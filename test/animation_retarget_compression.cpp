@@ -62,3 +62,64 @@ TEST_CASE("animation.retarget.preservesBindRelativeMotion") {
     CHECK(std::fabs(pose.getLocalPositionY(targetHand) - 2.f) < 1e-5f);
     CHECK(std::fabs(pose.getLocalRotationZ(targetHand) - 0.70710678f) < 1e-5f);
 }
+
+TEST_CASE("animation.retarget.profileMapsNamesAndReportsCoverage") {
+    AnimSkeleton source;
+    const int sourceRoot = source.addBone("mixamorig:Root");
+    const int sourceHips = source.addBone("mixamorig:Hips", sourceRoot);
+    source.setBindPosition(sourceHips, 0.f, 1.f, 0.f);
+
+    AnimSkeleton target;
+    const int targetRoot = target.addBone("root");
+    const int targetPelvis = target.addBone("pelvis", targetRoot);
+    const int targetAccessory = target.addBone("weapon_socket", targetPelvis);
+    target.setBindPosition(targetPelvis, 0.f, 2.f, 0.f);
+
+    AnimClip clip("walk");
+    clip.setDuration(1.f);
+    clip.setLoop(false);
+    clip.addPositionKey(sourceHips, 0.f, 0.f, 1.f, 0.f);
+    clip.addPositionKey(sourceHips, 1.f, 1.f, 1.f, 0.f);
+
+    AnimRetargetProfile profile;
+    profile.addBoneMapping("mixamorig:Hips", "pelvis");
+    profile.setRootBones("mixamorig:Hips", "pelvis");
+    std::unique_ptr<AnimClip> retargeted(clip.retargetWithProfile(&source, &target, &profile));
+
+    CHECK(profile.getMatchedBoneCount() == 2);  // Root is found by normalized matching; pelvis is explicit.
+    CHECK(profile.getUnmatchedBoneCount() == 1);
+    CHECK(profile.getUnmatchedTargetBone(0) == "weapon_socket");
+    AnimPose pose;
+    retargeted->sample(1.f, &pose, &target);
+    CHECK(std::fabs(pose.getLocalPositionX(targetPelvis) - 2.f) < 1e-5f);
+    CHECK(std::fabs(pose.getLocalPositionY(targetPelvis) - 2.f) < 1e-5f);
+    CHECK(targetAccessory == 2);
+}
+
+TEST_CASE("animation.retarget.profileCorrectsDifferentBindAxesInSkeletonSpace") {
+    constexpr float halfSqrt = 0.70710678f;
+    AnimSkeleton source;
+    const int sourceRoot = source.addBone("root");
+    const int sourceParent = source.addBone("shoulder", sourceRoot);
+    const int sourceHand = source.addBone("hand", sourceParent);
+    source.setBindRotation(sourceParent, 0.f, 0.f, halfSqrt, halfSqrt);
+
+    AnimSkeleton target;
+    const int targetRoot = target.addBone("root");
+    const int targetHand = target.addBone("hand", targetRoot);  // Deliberately different hierarchy and axes.
+
+    AnimClip clip("axis_test");
+    clip.setDuration(1.f);
+    clip.setLoop(false);
+    // Source hand world rotation is bind-parent Z90 followed by local X90.
+    clip.addRotationKey(sourceHand, 0.f, halfSqrt, 0.f, 0.f, halfSqrt);
+    clip.addRotationKey(sourceHand, 1.f, halfSqrt, 0.f, 0.f, halfSqrt);
+
+    AnimRetargetProfile profile;
+    std::unique_ptr<AnimClip> retargeted(clip.retargetWithProfile(&source, &target, &profile));
+    AnimPose pose;
+    retargeted->sample(0.5f, &pose, &target);
+    CHECK(std::fabs(pose.getLocalRotationX(targetHand) - halfSqrt) < 1e-4f);
+    CHECK(std::fabs(pose.getLocalRotationY(targetHand)) < 1e-4f);
+    CHECK(std::fabs(pose.getLocalRotationZ(targetHand)) < 1e-4f);
+}
