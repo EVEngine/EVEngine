@@ -485,6 +485,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         {
             ssq::Table eve = runtime.table("eve");
             eve.set("moduleList", runtime.root().find("eve_modules"));
+            eve.set("moduleContract", runtime.root().find("eve_module_contract"));
         }
         // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
         // Route file/dofile/loadfile through PhysFS so a packaged game (mounted in

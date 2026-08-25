@@ -4,6 +4,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <string>
 
 using namespace eve;
@@ -41,4 +44,17 @@ TEST_CASE("scriptCompiler.bindingContractsAreReplaceableAndSorted") {
     CHECK_EQ(static_cast<int>(found->parameters[0].unit), static_cast<int>(script::ScriptUnit::Radians));
     CHECK_EQ(registry.snapshot().size(), size_t(1));
     CHECK(registry.unregisterContract("camera/CameraController.setYaw"));
+}
+
+TEST_CASE("scriptCompiler.generatedModuleContractIsExecutable") {
+    const std::filesystem::path generated =
+        std::filesystem::path(EVENGINE_TEST_BINARY_DIR).parent_path() / "src" / "scripts" / "module_list.nut";
+    std::ifstream     input(generated, std::ios::binary);
+    const std::string source(std::istreambuf_iterator<char>(input), {});
+    CHECK(!source.empty());
+
+    Runtime runtime(1024, ssq::Libs::ALL);
+    runtime.runSource(source, "module_list.nut");
+    ssq::Array contract(runtime.root().find("eve_module_contract"));
+    CHECK(contract.size() > 0);
 }
