@@ -344,6 +344,9 @@ yaw、scale、density 与独立 seed；可继承 target metadata，冲突时 sou
 大型图可用 `setExecutionNodeBudget(maxNodes)` 限制一次调用新求值的节点数；超出预算会保留
 已经完成的上游缓存，下一次提高预算后可继续求值。`requestCancel()` / `resetCancellation()`
 为编辑器预览和任务队列提供显式取消边界，`wasCancelled()` 区分预算/取消退出与数据错误。
+`setMaxNodeOutputPoints(maxPoints)` 对每个节点实施统一硬上限；空间采样和 Biome 在分配前按
+bounds/spacing 计算保守上界，其余节点在结果进入缓存前拒绝并释放超限输出。降低预算会清除
+旧缓存，避免大结果通过 cache hit 绕过新限制；`getMaxNodeOutputPoints()` 返回当前上限。
 图资产可用 `exposeParameter(name, nodeId, key)` 将节点参数公开为强类型图参数；运行时实例通过
 `setParameterFloat/Int/String()` 覆写，`clearParameterOverride()` 恢复资产默认值。覆写不会写入
 序列化资产，并且只失效目标节点及下游缓存，适合关卡实例、Biome 和流式 Cell 共享图定义。

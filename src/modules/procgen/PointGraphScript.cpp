@@ -44,6 +44,8 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("execute", &PointGraph::execute);
     graph.addFunc("setExecutionNodeBudget", &PointGraph::setExecutionNodeBudget);
     graph.addFunc("getExecutionNodeBudget", &PointGraph::getExecutionNodeBudget);
+    graph.addFunc("setMaxNodeOutputPoints", &PointGraph::setMaxNodeOutputPoints);
+    graph.addFunc("getMaxNodeOutputPoints", &PointGraph::getMaxNodeOutputPoints);
     graph.addFunc("requestCancel", &PointGraph::requestCancel);
     graph.addFunc("resetCancellation", &PointGraph::resetCancellation);
     graph.addFunc("wasCancelled", &PointGraph::wasCancelled);

@@ -115,3 +115,36 @@ TEST_CASE("procgen.pointGraphStress.recoversAfterExternalRuleAndDataErrors") {
     CHECK_EQ(recovered->getCount(), 5);
     CHECK_EQ(recovered->getStringAttribute(0, "asset", ""), std::string("wall"));
 }
+
+TEST_CASE("procgen.pointGraphStress.rejectsOversizedOutputsBeforeSpatialAllocation") {
+    SpatialData domain = SpatialData::box(0.f, 0.f, 0.f, 100.f, 0.f, 100.f);
+    PointGraph graph;
+    CHECK(graph.addNode("sample", "spatial.sample"));
+    CHECK(graph.setNodeSpatial("sample", &domain));
+    CHECK(graph.setNodeFloat("sample", "spacing", 1.f));
+    graph.setMaxNodeOutputPoints(1000);
+    CHECK_EQ(graph.getMaxNodeOutputPoints(), 1000);
+    CHECK(!graph.execute("sample"));
+    CHECK(graph.getError().find("point budget") != std::string::npos);
+    CHECK(!graph.getNodeOutput("sample"));
+
+    graph.setMaxNodeOutputPoints(11000);
+    std::unique_ptr<PointSet> output(graph.execute("sample"));
+    REQUIRE(bool(output));
+    CHECK_EQ(output->getCount(), 10201);
+
+    graph.setMaxNodeOutputPoints(1000);
+    CHECK(!graph.execute("sample"));
+    CHECK(graph.getError().find("point budget") != std::string::npos);
+
+    Heightmap heightmap(11, 11);
+    heightmap.setHeight(10, 10, 100.f);
+    SpatialData terrain = SpatialData::heightfield(heightmap, 0.f, 0.f, 1.f, 1.f);
+    PointGraph terrainGraph;
+    CHECK(terrainGraph.addNode("sample", "spatial.sample"));
+    CHECK(terrainGraph.setNodeSpatial("sample", &terrain));
+    terrainGraph.setMaxNodeOutputPoints(121);
+    output.reset(terrainGraph.execute("sample"));
+    REQUIRE(bool(output));
+    CHECK_EQ(output->getCount(), 121);
+}

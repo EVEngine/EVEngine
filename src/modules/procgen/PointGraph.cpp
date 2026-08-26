@@ -5,6 +5,8 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
+#include <limits>
 #include <sstream>
 
 namespace eve::procgen {
@@ -110,6 +112,23 @@ PointGraphNodeMetric makeMetric(const std::string& id, const PointSet& points,
     }
     metric.averageDensity = float(densitySum / double(points.getCount()));
     return metric;
+}
+
+uint64_t spatialSampleUpperBound(const SpatialData& spatial, float spacing) {
+    if (!spatial.hasBounds() || spacing <= 0.f) return 0;
+    const auto axisCount = [spacing](float minimum, float maximum) {
+        if (maximum <= minimum) return uint64_t(1);
+        return uint64_t(std::floor(double(maximum - minimum) / double(spacing) + 0.001)) + 1;
+    };
+    const uint64_t x = axisCount(spatial.getMinX(), spatial.getMaxX());
+    const uint64_t y = spatial.getKind() == "surface.heightfield"
+                           ? uint64_t(1)
+                           : axisCount(spatial.getMinY(), spatial.getMaxY());
+    const uint64_t z = axisCount(spatial.getMinZ(), spatial.getMaxZ());
+    const uint64_t maximum = std::numeric_limits<uint64_t>::max();
+    if (x > maximum / y) return maximum;
+    const uint64_t xy = x * y;
+    return xy > maximum / z ? maximum : xy * z;
 }
 
 }  // namespace
@@ -366,6 +385,13 @@ PointSet* PointGraph::execute(const std::string& outputId) {
 
 void PointGraph::setExecutionNodeBudget(int nodes) { executionNodeBudget_ = std::max(0, nodes); }
 int  PointGraph::getExecutionNodeBudget() const { return executionNodeBudget_; }
+void PointGraph::setMaxNodeOutputPoints(int points) {
+    const int clamped = std::max(0, points);
+    if (maxNodeOutputPoints_ == clamped) return;
+    maxNodeOutputPoints_ = clamped;
+    clearCache();
+}
+int  PointGraph::getMaxNodeOutputPoints() const { return maxNodeOutputPoints_; }
 void PointGraph::requestCancel() { cancelRequested_ = true; }
 void PointGraph::resetCancellation() {
     cancelRequested_ = false;
@@ -523,10 +549,13 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         if (!node.hasPoints) error_ = "input node has no points: " + id;
         else node.cache = node.points;
     } else if (node.operation == "spatial.sample") {
+        const float spacing = floatValue(node, "spacing", 1.f);
         if (!node.spatial) error_ = "spatial.sample has no spatial data: " + id;
+        else if (maxNodeOutputPoints_ > 0 &&
+                 spatialSampleUpperBound(*node.spatial, spacing) > uint64_t(maxNodeOutputPoints_))
+            error_ = "spatial.sample exceeds node point budget at node: " + id;
         else
-            node.cache = node.spatial->sample(floatValue(node, "spacing", 1.f),
-                                              uint32_t(intValue(node, "seed", 1)),
+            node.cache = node.spatial->sample(spacing, uint32_t(intValue(node, "seed", 1)),
                                               floatValue(node, "jitter", 0.f));
     } else if (node.operation == "spatial.filter") {
         if (!first || !node.spatial) error_ = "spatial.filter requires input and spatial data: " + id;
@@ -535,12 +564,16 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         if (!first || !node.spatial) error_ = "spatial.project requires input and spatial data: " + id;
         else node.cache = node.spatial->project(*first);
     } else if (node.operation == "biome.generate") {
+        const float spacing = floatValue(node, "spacing", 1.f);
         if (!node.spatial || !node.biomeRules)
             error_ = "biome.generate requires spatial data and biome rules: " + id;
+        else if (maxNodeOutputPoints_ > 0 &&
+                 spatialSampleUpperBound(*node.spatial, spacing) > uint64_t(maxNodeOutputPoints_))
+            error_ = "biome.generate exceeds node point budget at node: " + id;
         else {
             std::unique_ptr<PointSet> result(node.biomeRules->generate(
-                node.spatial.get(), floatValue(node, "spacing", 1.f),
-                uint32_t(intValue(node, "seed", 1)), floatValue(node, "jitter", 0.f)));
+                node.spatial.get(), spacing, uint32_t(intValue(node, "seed", 1)),
+                floatValue(node, "jitter", 0.f)));
             if (!result)
                 error_ = "biome.generate failed at " + id + ": " + node.biomeRules->getError();
             else
@@ -673,6 +706,11 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         }
     }
 
+    if (error_.empty() && maxNodeOutputPoints_ > 0 &&
+        node.cache.getCount() > maxNodeOutputPoints_) {
+        node.cache.clear();
+        error_ = node.operation + " exceeds node point budget at node: " + id;
+    }
     if (!error_.empty()) return nullptr;
     node.cacheValid = true;
     states[id]      = 2;

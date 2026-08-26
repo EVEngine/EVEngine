@@ -103,6 +103,9 @@ public:
     /** @brief Limit uncached nodes evaluated by one execute call; zero disables the limit. */
     void setExecutionNodeBudget(int nodes);
     int  getExecutionNodeBudget() const;
+    /** @brief Limit points produced by any node; zero disables the limit. */
+    void setMaxNodeOutputPoints(int points);
+    int  getMaxNodeOutputPoints() const;
     /** @brief Cancel subsequent execution until resetCancellation is called. */
     void requestCancel();
     void resetCancellation();
@@ -207,6 +210,7 @@ private:
     int                                               cacheHitCount_       = 0;
     uint64_t                                          revision_            = 0;
     int                                               executionNodeBudget_ = 0;
+    int                                               maxNodeOutputPoints_ = 0;
     int                                               evaluatedNodes_      = 0;
     bool                                              cancelRequested_     = false;
     bool                                              lastCancelled_       = false;
