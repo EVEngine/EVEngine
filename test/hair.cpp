@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -26,6 +27,8 @@
 #include "graphics/Waterfall.h"
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
+#include "window/Window.h"
+
 
 using eve::graphics::Graphics;
 using eve::graphics::Renderable3D;
@@ -53,6 +56,20 @@ TEST_CASE("graphics.HairShader.spvMagic") {
     CHECK(mesh3d_hair_frag_spv_count > 0);
     CHECK_EQ(mesh3d_hair_vert_spv[0], 0x07230203u);
     CHECK_EQ(mesh3d_hair_frag_spv[0], 0x07230203u);
+}
+
+TEST_CASE("graphics.HairShader.createGpuPipeline") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 96, 64);
+    Shader *shader = gfx->newHairShader();
+    REQUIRE(shader != nullptr);
+    REQUIRE(shader->gpuHandle != nullptr);
+    CHECK(shader->hasUniform("specExp"));
+    CHECK(shader->hasUniform("strandDir"));
+    shader->sendFloat("specStrength", 0.7f);
+    shader->sendVec3("strandDir", 0.f, 1.f, 0.f);
+    win->close();
 }
 
 TEST_CASE("graphics.Renderable3D.hairFlag") {

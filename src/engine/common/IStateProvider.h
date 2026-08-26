@@ -7,6 +7,12 @@
 
 namespace eve::caps {
 
+/** @brief Native-state behavior during a live script reload. */
+enum class StateReloadPolicy {
+    Preserve, /**< Capture and restore the provider's live state. */
+    Reset,    /**< Do not capture; rebuild the provider from new definitions. */
+};
+
 /**
  * @brief Runtime-state serialization for state hot reload.
  *
@@ -39,6 +45,9 @@ public:
 
     /** @brief Reset this provider to its default state (restore fallback). */
     virtual bool resetToDefaults() = 0;
+
+    /** @brief Whether live state is preserved or reset across code reload. */
+    virtual StateReloadPolicy reloadPolicy() const { return StateReloadPolicy::Preserve; }
 };
 
 }  // namespace eve::caps

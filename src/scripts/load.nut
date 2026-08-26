@@ -122,6 +122,12 @@ function _startup_ms(label) {
     print("[startup] " + label + ": " + ms + " ms\n");
 }
 
+// Append a milestone to the crash/error log (eve.log) so a crash shows how far
+// the boot sequence got. Bound by the host (eve.log); no-op when unavailable.
+function _log(msg) {
+    if ("log" in eve) eve.log("info", msg);
+}
+
 // ---------------------------------------------------------------------------
 // Bind the modules this build actually contains.
 // ---------------------------------------------------------------------------
@@ -139,6 +145,7 @@ foreach (m in eve.moduleList) {
         print("[startup] module " + m.cls + " took " + _mdt + " ms\n");
 }
 _startup_ms("all modules instantiated");
+_log("boot: " + eve.moduleList.len() + " module(s) instantiated");
 
 // Project-wide module requirements belong to config.nut.  Validate them only
 // after the build's module list has been instantiated, and before any game
@@ -183,6 +190,7 @@ if (!win.setWindowSettings(s)) {
 config.width = win.getWidth();
 config.height = win.getHeight();
 _startup_ms("window created + vulkan initialized");
+_log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -268,49 +276,128 @@ function remap_instances(container, NewClass) {
     return container;
 }
 
+// Compile every candidate before touching the live root table.  loadfile()
+// returns a closure without executing it, so a syntax error cannot leave a
+// partially redefined game behind.
+function compile_reload_candidates() {
+    local candidates = [];
+    foreach (p in watched_scripts) {
+        if (!file_exists(p)) continue;
+        candidates.append({ path = p, closure = loadfile(p) });
+    }
+    return candidates;
+}
+
+// Keep a shallow snapshot of every root binding, including functions, classes
+// and native objects that StateValue deliberately cannot serialize.  State
+// roots are restored separately by ReloadSession; this snapshot restores the
+// definition/binding surface and removes slots introduced by a failed script.
+function capture_reload_bindings() {
+    local bindings = {};
+    foreach (k, v in getroottable())
+        bindings[k] <- v;
+    return bindings;
+}
+
+function restore_reload_bindings(bindings) {
+    local root = getroottable();
+    local current = [];
+    foreach (k, v in root) current.append(k);
+    foreach (k in current) {
+        if (!(k in bindings)) delete root[k];
+    }
+    foreach (k, v in bindings) {
+        if (k in root)
+            root[k] = v;
+        else
+            root[k] <- v;
+    }
+}
+
+function report_reload_failure(message) {
+    if ("dev" in eve) eve.dev.reportError(message);
+    print(message + "\n");
+}
+
+// Transient roots deliberately start from the new script's defaults. Delete
+// their old bindings only after ReloadSession has captured the rollback point.
+function reset_transient_state() {
+    if (!("dev" in eve) || !("transientStateRoots" in eve.dev)) return;
+    local root = getroottable();
+    foreach (name in eve.dev.transientStateRoots()) {
+        if (name in root) delete root[name];
+    }
+    // Candidate scripts declare the complete next policy set. This makes
+    // deleting an obsolete declaration effective; abort restores the old set.
+    eve.dev.clearStateRoots();
+}
+
 function soft_reload_scripts() {
+    // Stage ①: compile the complete candidate set before cancelling work or
+    // invoking lifecycle hooks.  A broken edit leaves the running game alone.
+    local candidates = null;
+    try {
+        candidates = compile_reload_candidates();
+    } catch (e) {
+        report_reload_failure("hot-reload compile failed: " + e);
+        return false;
+    }
+
+    local oldBindings = capture_reload_bindings();
     if ("async_cancel_continuations" in getroottable())
         async_cancel_continuations("soft reload");
-    // ① optional script hook: finalize transient state before capture.
+    // Stage ②: optional script hook, then capture serializable/native state.
     if ("eve_before_reload" in getroottable()) {
         try {
             eve_before_reload();
         } catch (e) {
-            if ("dev" in eve) eve.dev.reportError("" + e);
-            print("eve_before_reload failed: " + e + "\n");
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("eve_before_reload failed: " + e);
+            return false;
         }
     }
-    // ② capture: script state roots + native IStateProvider states.
     local hasSession = ("dev" in eve) && ("beginStateReload" in eve.dev);
     if (hasSession) {
         local e = eve.dev.beginStateReload();
         if (e != "") {
-            if ("dev" in eve) eve.dev.reportError("state reload: capture failed: " + e);
-            print("state reload: capture failed: " + e + "\n");
-            return;
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("state reload: capture failed: " + e);
+            return false;
         }
     }
-    // ③ reload: re-dofile tracked scripts (fresh definitions).
-    foreach (p in watched_scripts) {
-        if (!file_exists(p)) continue;
+    reset_transient_state();
+
+    // Stage ③: execute the already-compiled candidates.  Any runtime failure
+    // restores the complete old binding surface and captured mutable state.
+    foreach (candidate in candidates) {
         try {
-            dofile(p);
-            print("hot-reload script: " + p + "\n");
+            candidate.closure.call(getroottable());
+            print("hot-reload script: " + candidate.path + "\n");
         } catch (e) {
-            if ("dev" in eve) eve.dev.reportError("" + e);
-            print("hot-reload script failed: " + p + ": " + e + "\n");
+            restore_reload_bindings(oldBindings);
+            local rollbackError = "";
+            if (hasSession) rollbackError = eve.dev.abortStateReload();
+            local message = "hot-reload script failed: " + candidate.path + ": " + e;
+            if (rollbackError != "") message += "; rollback failed: " + rollbackError;
+            report_reload_failure(message);
+            return false;
         }
     }
-    // ④ restore: captured values win, newly added fields kept; native
+
+    // Stage ④: captured values win, newly added fields are kept; native
     //    providers are restored / reset by the session.
     if (hasSession) {
         local e = eve.dev.commitStateReload();
         if (e != "") {
-            if ("dev" in eve) eve.dev.reportError("state reload: restore failed: " + e);
-            print("state reload: restore failed: " + e + "\n");
+            restore_reload_bindings(oldBindings);
+            local rollbackError = eve.dev.abortStateReload();
+            local message = "state reload: restore failed: " + e;
+            if (rollbackError != "") message += "; rollback failed: " + rollbackError;
+            report_reload_failure(message);
+            return false;
         }
     }
-    // ⑤ optional script hook: rebuild class instances from restored state.
+    // Stage ⑤: post-commit hooks rebuild instances derived from restored data.
     if ("eve_after_reload" in getroottable()) {
         try {
             eve_after_reload();
@@ -327,6 +414,7 @@ function soft_reload_scripts() {
             print("eve_reload failed: " + e + "\n");
         }
     }
+    return true;
 }
 
 // Apply a single changed path: scripts are re-dofile'd, assets go through the
@@ -367,6 +455,14 @@ function poll_hot_reload() {
         if (kind != "modified" && kind != "added" && kind != "movedTo") continue;
         local p = normalize_path(fs.getLastWatchPath());
         if (p == "") continue;
+        if ((kind == "added" || kind == "movedTo") && has_module("hot")) {
+            try {
+                if (hot.watchNewDirectory(p)) continue;
+            } catch (e) {
+                if ("dev" in eve) eve.dev.reportError("" + e);
+                print("hot-reload directory watch failed: " + p + ": " + e + "\n");
+            }
+        }
         if (path_endswith(p, ".nut")) {
             track_script(p);
             needScripts = true;
@@ -421,6 +517,7 @@ if (file_exists("main.nut")) {
     }
 }
 _startup_ms("game script loaded");
+_log("boot: game script loaded");
 
 if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
@@ -468,6 +565,13 @@ function dev_should_update() {
 function dev_notify_frame_done() {
     if (has_dev())
         eve.dev.notifyFrameDone();
+}
+
+// Scenario recording: mark a new frame bucket before this frame's events are
+// polled, so the recorded input/event stream maps to the frame that consumed it.
+function dev_scenario_frame() {
+    if (has_dev())
+        eve.dev.scenarioFrame();
 }
 
 function handle_dev_key(key, scancode) {
@@ -554,10 +658,18 @@ eve_frame <- function() {
     if (!("_startup_first_frame" in getroottable())) {
         getroottable()._startup_first_frame <- true;
         _startup_ms("first frame begins");
+        _log("frame: first frame begins");
     }
+    // Coarse "how far did the loop get" marker: log every 300 frames so a crash
+    // log reveals the approximate frame the process reached.
+    if (!("_frame_count" in getroottable())) getroottable()._frame_count <- 0;
+    getroottable()._frame_count += 1;
+    if ((getroottable()._frame_count % 300) == 0)
+        _log("frame: reached frame " + getroottable()._frame_count);
     local running = true;
     if (has_module("profiler")) profiler.frameBegin();
     _prof("events");
+    dev_scenario_frame();
     event.pump();
     while (true) {
         local name = event.poll();
@@ -628,6 +740,7 @@ eve_frame <- function() {
     if (!("_startup_first_present" in getroottable())) {
         getroottable()._startup_first_present <- true;
         _startup_ms("first present - window shows content");
+        _log("frame: first present");
     }
     if ("bootBench" in eve && eve.bootBench) {
         if (has_module("profiler")) profiler.endFrame();

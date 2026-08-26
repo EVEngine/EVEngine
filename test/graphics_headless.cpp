@@ -37,7 +37,9 @@ TEST_CASE("graphics.headless.initCanvasDrawAndErrors") {
 
     gfx->initHeadless(320, 240);
     CHECK(gfx->isHeadless());
-    CHECK(gfx->getBackendName() == "vulkan");
+    const std::string backend = gfx->getBackendName();
+    const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
+    CHECK(supportedBackend);
     CHECK(gfx->getWidth() == 320);
     CHECK(gfx->getHeight() == 240);
     // Re-entrant initHeadless resizes the logical viewport.

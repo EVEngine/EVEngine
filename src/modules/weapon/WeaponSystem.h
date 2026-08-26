@@ -31,6 +31,9 @@ public:
     /** @brief 注册事件汇（替换旧的；传 nullptr 清空）。 */
     static void setEventSink(WeaponEventSink sink);
 
+    /** @brief 向事件汇推一条事件（模块/脚本便捷入口）。 */
+    static void emitEvent(const WeaponEvent& e);
+
     /** @brief 每帧推进：冷却 / 连发 / 装填 / 炮口旋转 / 逻辑自身。 */
     static void update(WeaponEntity& w, float dt);
 

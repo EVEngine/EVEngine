@@ -53,6 +53,12 @@ public:
     int watchTree(std::string root = ".");
 
     /**
+     * @brief If path is a directory, recursively add watches for it and its current descendants.
+     * @return True when path names a directory, including one that was already watched.
+     */
+    bool watchNewDirectory(std::string path);
+
+    /**
      * Start remote hot reload against a dev server. Background thread polls
      * <url>/manifest and downloads changed files via <url>/raw/<path> into a
      * writable overlay directory (mounted in front of the bundled game source),

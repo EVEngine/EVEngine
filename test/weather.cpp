@@ -3,9 +3,33 @@
 
 #include "weather/Weather.h"
 
+#include "graphics/Graphics.h"
+#include "window/Window.h"
+
 #include <cmath>
 
 using namespace eve::weather;
+
+TEST_CASE("weather.backendShaderInitialization") {
+    auto *window = eve::window::Window::create();
+    auto *graphics = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(graphics != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width = 128;
+    settings.height = 128;
+    settings.centered = true;
+    REQUIRE(window->setWindowSettings(settings));
+
+    Weather weather;
+    weather.init(graphics);
+    weather.setPreset("storm");
+    weather.strike();
+    weather.update(1.f / 60.f, graphics);
+    CHECK(weather.getIntensity() >= 0.f);
+    CHECK(weather.getFlash() >= 0.f);
+    window->close();
+}
 
 TEST_CASE("weather.presetRoundTrip") {
     Weather w;

@@ -7,6 +7,8 @@
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "particles/ParticleConfig.h"
+#include "particles/ParticleEffect.h"
+#include "particles/ParticleRuntime.h"
 #include "particles/ParticleSystem.h"
 #include "particles/ParticlesCapabilities.h"
 
@@ -68,6 +70,16 @@ ParticleEmitter *Particles::newEmitterFromFile(const std::string &path) {
     return e;
 }
 
+ParticleEffect* Particles::newEffectFromText(const std::string& json) {
+    lastEffectError_.clear();
+    return ParticleEffect::fromText(json, {}, &lastEffectError_);
+}
+
+ParticleEffect* Particles::newEffectFromFile(const std::string& path) {
+    lastEffectError_.clear();
+    return ParticleEffect::fromFile(path, &lastEffectError_);
+}
+
 void Particles::update(float dt) {
     EV_PROFILE_MODULE("particles", "Particles::update");
     ParticleConfigSystem::poll();
@@ -87,19 +99,107 @@ int Particles::getEmitterCount() const {
     return n;
 }
 
+void Particles::setBudget(int maxParticles, int maxSimulatedEmitters) {
+    auto &budget = particleBudgetConfig();
+    budget.maxParticles = maxParticles > 0 ? maxParticles : 0;
+    budget.maxSimulatedEmitters = maxSimulatedEmitters > 0 ? maxSimulatedEmitters : 0;
+}
+
+int Particles::getMaxParticles() const { return particleBudgetConfig().maxParticles; }
+
+int Particles::getMaxSimulatedEmitters() const {
+    return particleBudgetConfig().maxSimulatedEmitters;
+}
+
+void Particles::setQualityLevel(int quality) {
+    particleBudgetConfig().qualityLevel = quality < 0 ? 0 : (quality > 3 ? 3 : quality);
+}
+
+int Particles::getQualityLevel() const { return particleBudgetConfig().qualityLevel; }
+
+int Particles::getLastSimulatedEmitters() const {
+    return particleFrameStats().emittersSimulated;
+}
+int Particles::getLastCulledEmitters() const { return particleFrameStats().emittersCulled; }
+int Particles::getLastBudgetSkippedEmitters() const {
+    const auto &stats = particleFrameStats();
+    return stats.emittersBudgetSkipped + stats.emittersQualitySkipped;
+}
+int Particles::getLastParticleCount() const { return particleFrameStats().particlesAfter; }
+int Particles::getLastSpawnedParticles() const { return particleFrameStats().particlesSpawned; }
+int Particles::getLastDroppedSpawns() const { return particleFrameStats().droppedSpawns; }
+int   Particles::getLastGpuResidentEmitters() const { return particleFrameStats().gpuResidentEmitters; }
+int   Particles::getLastGpuResidentParticles() const { return particleFrameStats().gpuResidentParticles; }
+int Particles::getLastRenderedParticles() const { return particleFrameStats().renderedParticles; }
+float Particles::getLastSimulationMs() const {
+    return static_cast<float>(particleFrameStats().simulationMs);
+}
+float Particles::getLastRenderMs() const {
+    return static_cast<float>(particleFrameStats().renderMs);
+}
+
 void Particles::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Particles::create, false);
     expose(cls);
+    cls.addFunc("setBudget", &Particles::setBudget);
+    cls.addFunc("getMaxParticles", &Particles::getMaxParticles);
+    cls.addFunc("getMaxSimulatedEmitters", &Particles::getMaxSimulatedEmitters);
+    cls.addFunc("setQualityLevel", &Particles::setQualityLevel);
+    cls.addFunc("getQualityLevel", &Particles::getQualityLevel);
+    cls.addFunc("getLastSimulatedEmitters", &Particles::getLastSimulatedEmitters);
+    cls.addFunc("getLastCulledEmitters", &Particles::getLastCulledEmitters);
+    cls.addFunc("getLastBudgetSkippedEmitters", &Particles::getLastBudgetSkippedEmitters);
+    cls.addFunc("getLastParticleCount", &Particles::getLastParticleCount);
+    cls.addFunc("getLastSpawnedParticles", &Particles::getLastSpawnedParticles);
+    cls.addFunc("getLastDroppedSpawns", &Particles::getLastDroppedSpawns);
+    cls.addFunc("getLastGpuResidentEmitters", &Particles::getLastGpuResidentEmitters);
+    cls.addFunc("getLastGpuResidentParticles", &Particles::getLastGpuResidentParticles);
+    cls.addFunc("getLastRenderedParticles", &Particles::getLastRenderedParticles);
+    cls.addFunc("getLastSimulationMs", &Particles::getLastSimulationMs);
+    cls.addFunc("getLastRenderMs", &Particles::getLastRenderMs);
+    cls.addFunc("newEffectFromText", &Particles::newEffectFromText);
+    cls.addFunc("newEffectFromFile", &Particles::newEffectFromFile);
+    cls.addFunc("getLastEffectError", &Particles::getLastEffectError);
 
     auto em = table.addClass<ParticleEmitter>(
         "Emitter", std::function<ParticleEmitter *()>([]() -> ParticleEmitter * { return nullptr; }),
         true);
+
+    auto effect = table.addClass<ParticleEffect>(
+        "ParticleEffect", std::function<ParticleEffect*()>([]() -> ParticleEffect* { return nullptr; }), true);
+    effect.addFunc("getVersion", &ParticleEffect::getVersion);
+    effect.addFunc("getSourcePath", &ParticleEffect::getSourcePath);
+    effect.addFunc("getEmitterCount", &ParticleEffect::getEmitterCount);
+    effect.addFunc("getEmitterName", &ParticleEffect::getEmitterName);
+    effect.addFunc("getEmitter", &ParticleEffect::getEmitter);
+    effect.addFunc("getEmitterByName", &ParticleEffect::getEmitterByName);
+    effect.addFunc("setPosition", &ParticleEffect::setPosition);
+    effect.addFunc("getX", &ParticleEffect::getX);
+    effect.addFunc("getY", &ParticleEffect::getY);
+    effect.addFunc("setRotation", &ParticleEffect::setRotation);
+    effect.addFunc("getRotation", &ParticleEffect::getRotation);
+    effect.addFunc("setScale", &ParticleEffect::setScale);
+    effect.addFunc("getScale", &ParticleEffect::getScale);
+    effect.addFunc("setLayer", &ParticleEffect::setLayer);
+    effect.addFunc("getLayer", &ParticleEffect::getLayer);
+    effect.addFunc("setVisible", &ParticleEffect::setVisible);
+    effect.addFunc("isVisible", &ParticleEffect::isVisible);
+    effect.addFunc("start", &ParticleEffect::start);
+    effect.addFunc("stop", &ParticleEffect::stop);
+    effect.addFunc("pause", &ParticleEffect::pause);
+    effect.addFunc("reset", &ParticleEffect::reset);
+    effect.addFunc("emit", &ParticleEffect::emit);
+    effect.addFunc("setFloatParameter", &ParticleEffect::setFloatParameter);
+    effect.addFunc("getFloatParameter", &ParticleEffect::getFloatParameter);
+    effect.addFunc("hasFloatParameter", &ParticleEffect::hasFloatParameter);
     em.addFunc("setPosition", &ParticleEmitter::setPosition);
     em.addFunc("moveTo", &ParticleEmitter::moveTo);
     em.addFunc("getX", &ParticleEmitter::getX);
     em.addFunc("getY", &ParticleEmitter::getY);
     em.addFunc("setEmissionRate", &ParticleEmitter::setEmissionRate);
     em.addFunc("getEmissionRate", &ParticleEmitter::getEmissionRate);
+    em.addFunc("setEmissionRateOverDistance", &ParticleEmitter::setEmissionRateOverDistance);
+    em.addFunc("getEmissionRateOverDistance", &ParticleEmitter::getEmissionRateOverDistance);
     em.addFunc("setParticleLifetime", &ParticleEmitter::setParticleLifetime);
     // Alias — scripts often say "Life" for the same knob.
     em.addFunc("setParticleLife", &ParticleEmitter::setParticleLifetime);
@@ -110,6 +210,16 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setEmitterLife", &ParticleEmitter::setEmitterLifetime);
     em.addFunc("setEmitterTime", &ParticleEmitter::setEmitterLifetime);
     em.addFunc("getEmitterLifetime", &ParticleEmitter::getEmitterLifetime);
+    em.addFunc("setLooping", &ParticleEmitter::setLooping);
+    em.addFunc("getLooping", &ParticleEmitter::getLooping);
+    em.addFunc("setPlaybackSpeed", &ParticleEmitter::setPlaybackSpeed);
+    em.addFunc("getPlaybackSpeed", &ParticleEmitter::getPlaybackSpeed);
+    em.addFunc("setFixedTimeStep", &ParticleEmitter::setFixedTimeStep);
+    em.addFunc("getFixedTimeStep", &ParticleEmitter::getFixedTimeStep);
+    em.addFunc("setRandomSeed", &ParticleEmitter::setRandomSeed);
+    em.addFunc("getRandomSeed", &ParticleEmitter::getRandomSeed);
+    em.addFunc("setAutoRandomSeed", &ParticleEmitter::setAutoRandomSeed);
+    em.addFunc("getAutoRandomSeed", &ParticleEmitter::getAutoRandomSeed);
     em.addFunc("setDirection", &ParticleEmitter::setDirection);
     em.addFunc("getDirection", &ParticleEmitter::getDirection);
     em.addFunc("setSpread", &ParticleEmitter::setSpread);
@@ -144,10 +254,41 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setNoise", &ParticleEmitter::setNoise);
     em.addFunc("setGpuSimulation", &ParticleEmitter::setGpuSimulation);
     em.addFunc("getGpuSimulation", &ParticleEmitter::getGpuSimulation);
+    em.addFunc("isGpuSimulationActive", &ParticleEmitter::isGpuSimulationActive);
+    em.addFunc("isGpuFeatureSetSupported", &ParticleEmitter::isGpuFeatureSetSupported);
+    em.addFunc("getSimulationBackend", &ParticleEmitter::getSimulationBackend);
+    em.addFunc("getGpuFallbackReason", &ParticleEmitter::getGpuFallbackReason);
+    em.addFunc("setFloatParameter", &ParticleEmitter::setFloatParameter);
+    em.addFunc("getFloatParameter", &ParticleEmitter::getFloatParameter);
+    em.addFunc("hasFloatParameter", &ParticleEmitter::hasFloatParameter);
+    em.addFunc("clearFloatParameters", &ParticleEmitter::clearFloatParameters);
+    em.addFunc("bindFloatParameter", &ParticleEmitter::bindFloatParameter);
+    em.addFunc("clearFloatParameterBindings", &ParticleEmitter::clearFloatParameterBindings);
+    em.addFunc("getResolvedParameterScale", &ParticleEmitter::getResolvedParameterScale);
+    em.addFunc("setPriority", &ParticleEmitter::setPriority);
+    em.addFunc("getPriority", &ParticleEmitter::getPriority);
+    em.addFunc("setMinimumQuality", &ParticleEmitter::setMinimumQuality);
+    em.addFunc("getMinimumQuality", &ParticleEmitter::getMinimumQuality);
+    em.addFunc("setCullingMode", &ParticleEmitter::setCullingMode);
+    em.addFunc("getCullingMode", &ParticleEmitter::getCullingMode);
+    em.addFunc("setCullDistance", &ParticleEmitter::setCullDistance);
+    em.addFunc("getCullDistance", &ParticleEmitter::getCullDistance);
+    em.addFunc("setMaxSpawnPerFrame", &ParticleEmitter::setMaxSpawnPerFrame);
+    em.addFunc("getMaxSpawnPerFrame", &ParticleEmitter::getMaxSpawnPerFrame);
     em.addFunc("setCollision", &ParticleEmitter::setCollision);
     em.addFunc("setCollisionBounds", &ParticleEmitter::setCollisionBounds);
     em.addFunc("setWorldCollision", &ParticleEmitter::setWorldCollision);
     em.addFunc("setRenderMode", &ParticleEmitter::setRenderMode);
+    em.addFunc("setRibbon", &ParticleEmitter::setRibbon);
+    em.addFunc("setSoftParticles", &ParticleEmitter::setSoftParticles);
+    em.addFunc("isSoftParticlesActive", &ParticleEmitter::isSoftParticlesActive);
+    em.addFunc("setRenderAxis", &ParticleEmitter::setRenderAxis);
+    em.addFunc("setSortMode", &ParticleEmitter::setSortMode);
+    em.addFunc("getSortMode", &ParticleEmitter::getSortMode);
+    em.addFunc("setMaterialMode", &ParticleEmitter::setMaterialMode);
+    em.addFunc("getMaterialMode", &ParticleEmitter::getMaterialMode);
+    em.addFunc("setDistortionStrength", &ParticleEmitter::setDistortionStrength);
+    em.addFunc("getDistortionStrength", &ParticleEmitter::getDistortionStrength);
     em.addFunc("setOverflowMode", &ParticleEmitter::setOverflowMode);
     em.addFunc("setMaxDeltaTime", &ParticleEmitter::setMaxDeltaTime);
     em.addFunc("addSubEmitter", &ParticleEmitter::addSubEmitter);
@@ -170,6 +311,8 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setColorStart", &ParticleEmitter::setColorStart);
     em.addFunc("setColorEnd", &ParticleEmitter::setColorEnd);
     em.addFunc("setTexture", &ParticleEmitter::setTexture);
+    em.addFunc("setNormalTexture", &ParticleEmitter::setNormalTexture);
+    em.addFunc("getNormalTexture", &ParticleEmitter::getNormalTexture);
     em.addFunc("setCanvas", &ParticleEmitter::setCanvas);
     em.addFunc("setCamera", &ParticleEmitter::setCamera);
     em.addFunc("setLayer", &ParticleEmitter::setLayer);

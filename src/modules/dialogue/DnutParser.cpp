@@ -338,13 +338,13 @@ private:
         return left;
     }
 
-    void parseAttrs(const int lineNum, std::vector<std::pair<std::string, DataValue>> &out) {
+    void parseAttrs(const int lineNum, DataValue::Object &out) {
         while (cur().line == lineNum && !isPunct("}") && cur().kind != Tok::Eof) {
             if (!isIdent()) fail("期望属性名");
             const std::string name = adv().value;
             if (name == "meta" && isPunct("(")) {
                 adv();
-                std::vector<std::pair<std::string, DataValue>> metaFields;
+                DataValue::Object metaFields;
                 while (!isPunct(")")) {
                     if (!isIdent()) fail("meta 键应为标识符");
                     const std::string k = adv().value;
@@ -401,11 +401,11 @@ private:
         if (cur().kind != Tok::Str) fail("期望台词字符串");
         const std::string text = adv().value;
 
-        std::vector<std::pair<std::string, DataValue>> fields;
+        DataValue::Object fields;
         fields.emplace_back("speaker", DataValue::string(speaker));
         fields.emplace_back("text", DataValue::string(text));
         if (inheritWhen) fields.emplace_back("when", *inheritWhen);
-        std::vector<std::pair<std::string, DataValue>> attrs;
+        DataValue::Object attrs;
         parseAttrs(lineNum, attrs);
         bool hasId = false;
         for (auto &kv : attrs) {
@@ -416,7 +416,7 @@ private:
         return DataValue::object(std::move(fields));
     }
 
-    void parsePool(std::vector<std::pair<std::string, DataValue>> &pools) {
+    void parsePool(DataValue::Object &pools) {
         expectIdent("pool");
         const std::string poolId = expectIdent("pool 名称");
         long long noRepeat = -1;
@@ -451,14 +451,14 @@ private:
         }
         adv();  // }
 
-        std::vector<std::pair<std::string, DataValue>> poolFields;
+        DataValue::Object poolFields;
         poolFields.emplace_back("lines", DataValue::array(std::move(lines)));
         if (noRepeat >= 0) poolFields.emplace_back("noRepeat", DataValue::integer(noRepeat));
         pools.emplace_back(poolId, DataValue::object(std::move(poolFields)));
     }
 
     DataValue parsePools() {
-        std::vector<std::pair<std::string, DataValue>> pools;
+        DataValue::Object pools;
         while (cur().kind != Tok::Eof) parsePool(pools);
         return DataValue::object({{"pools", DataValue::object(std::move(pools))}});
     }

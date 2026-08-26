@@ -54,6 +54,40 @@
 
 namespace eve::graphics::vulkan {
 
+namespace {
+
+void transitionSampledColorForTransfer(vk::CommandBuffer cb, vkb::ColorTarget &image,
+                                       vk::ImageLayout newLayout) {
+    vk::ImageMemoryBarrier barrier{};
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.oldLayout = image.currentLayout();
+    barrier.newLayout = newLayout;
+    barrier.image = image.image();
+    barrier.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+    vk::PipelineStageFlags srcStages;
+    vk::PipelineStageFlags dstStages;
+    if (newLayout == vk::ImageLayout::eTransferSrcOptimal) {
+        barrier.srcAccessMask = vk::AccessFlagBits::eShaderRead;
+        barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+        srcStages = vk::PipelineStageFlagBits::eVertexShader |
+                    vk::PipelineStageFlagBits::eFragmentShader |
+                    vk::PipelineStageFlagBits::eComputeShader;
+        dstStages = vk::PipelineStageFlagBits::eTransfer;
+    } else {
+        barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+        barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        srcStages = vk::PipelineStageFlagBits::eTransfer;
+        dstStages = vk::PipelineStageFlagBits::eVertexShader |
+                    vk::PipelineStageFlagBits::eFragmentShader |
+                    vk::PipelineStageFlagBits::eComputeShader;
+    }
+    cb.pipelineBarrier(srcStages, dstStages, {}, 0, nullptr, 0, nullptr, 1, &barrier);
+    image.setCurrentLayout(newLayout);
+}
+
+}  // namespace
+
 // Shader helper functions. They used to live in GraphicsInternal.h (which is
 // an anonymous-namespace header copied into every backend TU); only this file
 // uses them, so they are defined here to avoid the per-TU duplication and the
@@ -456,18 +490,21 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     if (w == 0 || h == 0) return nullptr;
 
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    if (gbufferPending && !gbufferPassDraws.empty()) recordDeferredFrameGraph();
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
                                vk::MemoryPropertyFlagBits::eHostVisible |
                                    vk::MemoryPropertyFlagBits::eHostCoherent);
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                             [&](vk::CommandBuffer cb) {
-                                src->setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                transitionSampledColorForTransfer(
+                                    cb, *src, vk::ImageLayout::eTransferSrcOptimal);
                                 vk::BufferImageCopy region{};
                                 region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
                                 region.imageExtent = vk::Extent3D{w, h, 1};
                                 cb.copyImageToBuffer(src->image(), vk::ImageLayout::eTransferSrcOptimal,
                                                      staging.buffer, region);
-                                src->setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                                transitionSampledColorForTransfer(
+                                    cb, *src, vk::ImageLayout::eShaderReadOnlyOptimal);
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
@@ -498,8 +535,7 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
     const uint32_t w = uint32_t(decalWidth);
     const uint32_t h = uint32_t(decalHeight);
     if (w == 0 || h == 0) return nullptr;
-    ensureDecalUnitBox();
-    if (!decalUnitBox || !decalUnitBox->gpuHandle) return nullptr;
+    if (gbufferPending && !gbufferPassDraws.empty()) recordDeferredFrameGraph();
 
     const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
@@ -507,63 +543,11 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
                                    vk::MemoryPropertyFlagBits::eHostCoherent);
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                             [&](vk::CommandBuffer cb) {
-                                // Replay the pending G-buffer fill so hwDepth +
-                                // normal are fresh for the decal pass (same
-                                // pattern as renderEntityIdMask).
-                                if (gbufferPending && !gbufferPassDraws.empty()) {
-                                    std::array<vk::ClearValue, 4> clears{};
-                                    clears[0].color =
-                                        vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-                                    clears[1].color =
-                                        vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
-                                    clears[2].color =
-                                        vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-                                    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-                                    vk::RenderPassBeginInfo rpBegin{};
-                                    rpBegin.renderPass = gbufferRenderPass;
-                                    rpBegin.framebuffer = gslot->framebuffer;
-                                    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
-                                    rpBegin.clearValueCount = uint32_t(clears.size());
-                                    rpBegin.pClearValues = clears.data();
-                                    gslot->normal.beginColorAttachment();
-                                    gslot->depthColor.beginColorAttachment();
-                                    gslot->albedo.beginColorAttachment();
-                                    gslot->depth.beginDepthAttachment();
-                                    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-                                    setViewportAndScissor(cb, w, h);
-                                    cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                                    gbufferPipeline);
-                                    for (const auto &d : gbufferPassDraws) {
-                                        if (!d.mesh || !d.mesh->gpuHandle) continue;
-                                        auto *gpuMesh =
-                                            static_cast<GpuMesh *>(d.mesh->gpuHandle);
-                                        Texture *alb = d.albedo ? d.albedo : whiteTexture;
-                                        if (alb && alb->gpuHandle && texSetLayout) {
-                                            auto *gpuTex =
-                                                static_cast<GpuTexture *>(alb->gpuHandle);
-                                            cb.bindDescriptorSets(
-                                                vk::PipelineBindPoint::eGraphics,
-                                                gbufferPipelineLayout, 0, 1,
-                                                gpuTex->descriptorSet.ptr(), 0, nullptr);
-                                        }
-                                        cb.pushConstants(
-                                            gbufferPipelineLayout,
-                                            vk::ShaderStageFlagBits::eVertex |
-                                                vk::ShaderStageFlagBits::eFragment,
-                                            0, sizeof(GBufferPush), &d.push);
-                                        drawIndexedMesh(cb, *gpuMesh);
-                                    }
-                                    cb.endRenderPass();
-                                    gslot->normal.endSampledLayout();
-                                    gslot->depthColor.endSampledLayout();
-                                    gslot->albedo.endSampledLayout();
-                                    gslot->depth.endSampledLayout();
-                                }
-
-                                // Decal pass reads the pass above; record it and
-                                // then copy the requested attachment to CPU.
+                                // The G-buffer was submitted through the production FrameGraph
+                                // above. Queue order makes it visible to this immediate pass.
                                 recordDecalPassInto(cb, *slot, *gslot);
-                                src->setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                transitionSampledColorForTransfer(
+                                    cb, *src, vk::ImageLayout::eTransferSrcOptimal);
                                 vk::BufferImageCopy region{};
                                 region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0,
                                                            1};
@@ -571,7 +555,8 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
                                 cb.copyImageToBuffer(src->image(),
                                                      vk::ImageLayout::eTransferSrcOptimal,
                                                      staging.buffer, region);
-                                src->setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                                transitionSampledColorForTransfer(
+                                    cb, *src, vk::ImageLayout::eShaderReadOnlyOptimal);
                             });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
@@ -602,7 +587,7 @@ void Graphics::setCanvas(Canvas *canvas) {
     bool hasSolid = false;
     for (const auto &sb : solidBatches)
         if (!sb.batch.empty()) hasSolid = true;
-    if (hasSolid || !texturedBatches.empty()) flushBatch();
+    if (hasSolid || !texturedBatches.empty() || !litBatches.empty()) flushBatch();
     activeCanvas = next;
 }
 
@@ -629,15 +614,15 @@ void Graphics::clear2DBatches() {
     litBatches.clear();
     overlaySpans.clear();
     engine3DSpans.clear();
+    gpuParticleDraws_.clear();
     pendingSceneResolve.reset();
     pendingUiResolve.reset();
     sceneColorComposited = false;
 }
 
-void Graphics::noteSolidOverlay() {
-    if (solidBatches.empty()) return;
-    const uint32_t idx = uint32_t(solidBatches.size() - 1);
-    const uint32_t n = uint32_t(solidBatches.back().batch.vertices().size());
+void Graphics::noteSolidOverlay(uint32_t idx) {
+    if (idx >= solidBatches.size()) return;
+    const uint32_t n = uint32_t(solidBatches[idx].batch.vertices().size());
     auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
     if (!spans.empty() && spans.back().kind == OverlayKind::Solid &&
         spans.back().index == idx) {
@@ -648,18 +633,16 @@ void Graphics::noteSolidOverlay() {
     spans.push_back({OverlayKind::Solid, idx, begin, n - begin});
 }
 
-void Graphics::noteTexturedOverlay(Texture *tex) {
+void Graphics::noteTexturedOverlay(Texture *tex, uint32_t idx) {
     if (tex && tex == getSceneColorTexture()) sceneColorComposited = true;
     auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
-    const uint32_t idx = texturedBatches.empty() ? 0u : uint32_t(texturedBatches.size() - 1);
     if (!spans.empty() && spans.back().kind == OverlayKind::Textured && spans.back().index == idx)
         return;
     spans.push_back({OverlayKind::Textured, idx, 0, 0});
 }
 
-void Graphics::noteLitOverlay() {
+void Graphics::noteLitOverlay(uint32_t idx) {
     auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
-    const uint32_t idx = litBatches.empty() ? 0u : uint32_t(litBatches.size() - 1);
     if (!spans.empty() && spans.back().kind == OverlayKind::Lit && spans.back().index == idx)
         return;
     spans.push_back({OverlayKind::Lit, idx, 0, 0});
@@ -685,7 +668,7 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
         it = solidBatches.end() - 1;
     }
     it->batch.addRect(x, y, w, h, color);
-    noteSolidOverlay();
+    noteSolidOverlay(uint32_t(it - solidBatches.begin()));
 }
 
 void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
@@ -697,7 +680,7 @@ void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float 
         it = solidBatches.end() - 1;
     }
     it->batch.addRectRotated(cx, cy, w, h, degrees, color);
-    noteSolidOverlay();
+    noteSolidOverlay(uint32_t(it - solidBatches.begin()));
 }
 
 
@@ -770,7 +753,7 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
         texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, blend, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
-    noteTexturedOverlay(texture);
+    noteTexturedOverlay(texture, uint32_t(texturedBatches.size() - 1));
 }
 
 void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
@@ -789,7 +772,7 @@ void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader,
     }
     texturedBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1,
                                                         rotatedUV);
-    noteTexturedOverlay(texture);
+    noteTexturedOverlay(texture, uint32_t(texturedBatches.size() - 1));
 }
 
 void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
@@ -808,7 +791,24 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
             TexturedBatch{color, depth, shader, BlendMode::Alpha, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
-    noteTexturedOverlay(color);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
+bool Graphics::drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
+                                                 float degrees, float u0, float v0, float u1, float v1,
+                                                 float strengthPixels, float opacity, bool rotatedUV) {
+    Texture* scene = getSceneColorTexture();
+    if (!frameHad3D || activeCanvas || !particleDistortionPipeline || !scene || !scene->gpuHandle || !displacement ||
+        !displacement->gpuHandle || strengthPixels <= 0.f || opacity <= 0.f)
+        return false;
+
+    TexturedBatch batch{scene, displacement, nullptr, BlendMode::Alpha, Batcher{}};
+    batch.effect = TexturedBatch::Effect::SceneColorDistortion;
+    batch.batch.addTexturedRectRotated(cx, cy, w, h, degrees, Color(strengthPixels, 0.f, 0.f, opacity), u0, v0, u1, v1,
+                                       rotatedUV);
+    texturedBatches.push_back(std::move(batch));
+    noteTexturedOverlay(displacement, uint32_t(texturedBatches.size() - 1));
+    return true;
 }
 
 void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
@@ -881,7 +881,7 @@ void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, 
         litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
     }
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
-    noteLitOverlay();
+    noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 
 vkb::BoundSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen) {
@@ -1092,6 +1092,10 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     ownedShaders.push_back(std::move(sh));
     ownedGpuShaders.push_back(std::move(gpu));
     return raw;
+}
+
+Shader *Graphics::newHairShaderFromWgsl(const std::string &, const std::string &) {
+    throw Exception("newHairShaderFromWgsl: WGSL is only supported on the WebGPU backend");
 }
 
 bool Graphics::releaseShader(Shader *shader) {
@@ -1414,6 +1418,10 @@ void Graphics::flushToSwapchain() {
         recordDeferredFrameGraph();
     }
 
+    // Resident particles record compute + compaction before any swapchain
+    // render pass, then consume the GPU-written indirect command below.
+    if (!(continue3D && !hadScenePass)) recordGpuParticleCompute(presentRecording.commandBuffer());
+
     // Render the UI overlay (ImGui) into its own MSAA pass, resolved and
     // composited as the top-most fullscreen quad. Skipped only on the rare 3D
     // fallback path where the swapchain pass is already open from begin3DFrame.
@@ -1431,6 +1439,7 @@ void Graphics::flushToSwapchain() {
     auto lit = std::move(litBatches);
     auto spans = std::move(overlaySpans);
     auto engineSpans = std::move(engine3DSpans);
+    auto       gpuParticleDraws = std::move(gpuParticleDraws_);
     auto sceneResolve = std::move(pendingSceneResolve);
     auto uiResolve = std::move(pendingUiResolve);
     const bool autoScene = hadScenePass && !sceneColorComposited;
@@ -1497,7 +1506,11 @@ void Graphics::flushToSwapchain() {
         vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
         vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
-        if (tb.shader && tb.shader->gpuHandle) {
+        if (tb.effect == TexturedBatch::Effect::SceneColorDistortion) {
+            if (!particleDistortionPipeline) return;
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, particleDistortionPipeline);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0, nullptr);
+        } else if (tb.shader && tb.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->swapchainPipeline);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,
@@ -1555,6 +1568,8 @@ void Graphics::flushToSwapchain() {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
                 drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
+                drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
         }
     };
@@ -1595,6 +1610,8 @@ void Graphics::flushToSwapchain() {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
                 drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
+                drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
         }
     }

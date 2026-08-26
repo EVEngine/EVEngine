@@ -44,6 +44,21 @@ public:
     WeaponEntity* newWeapon(const std::string& defId);
     /** @brief 创建一个挂点（炮塔/机枪座等）。 */
     WeaponMountEntity* newMount(const std::string& id, const std::string& type = "turret");
+    /** @brief 创建一个手持位（ARPG/RPG 角色手持武器）。 */
+    WeaponRigEntity* newRig(const std::string& id, const std::string& wield = "right_hand");
+
+    /** @brief 手持位操作：挂武器 / 取武器 / 设置持有位姿。 */
+    bool          rigAttachWeapon(WeaponRigEntity* rig, WeaponEntity* w);
+    WeaponEntity* rigGetWeapon(WeaponRigEntity* rig);
+    void          rigSetPose(WeaponRigEntity* rig, float px, float py, float pz, float rx, float ry, float rz);
+
+    /** @brief 共享弹药池操作：创建 / 补弹 / 查询 / 绑定武器 / 解绑 / 取绑定池。 */
+    AmmoPoolEntity* newAmmoPool(const std::string& id, const std::string& ammoType, int max = -1);
+    void            ammoPoolAdd(AmmoPoolEntity* pool, int n);
+    int             ammoPoolGetCount(AmmoPoolEntity* pool);
+    bool            bindAmmoPool(WeaponEntity* w, AmmoPoolEntity* pool);
+    void            unbindAmmoPool(WeaponEntity* w);
+    AmmoPoolEntity* getAmmoPool(WeaponEntity* w);
 
     /** @brief 挂点操作：挂武器 / 取武器 / 限位 / 瞄准 / 击毁。 */
     bool          mountAttachWeapon(WeaponMountEntity* m, WeaponEntity* w);
@@ -59,10 +74,30 @@ public:
     bool fire(WeaponEntity* w, const FireRequest& req);
     /** @brief 向目标点开火（自动生成 FireRequest）。 */
     bool fireAt(WeaponEntity* w, float x, float y, float z, int shooterId = 0);
+    /** @brief 触发展开攻击（近战/法杖/导弹走阶段机；热武器等价 fire）。 */
+    bool attack(WeaponEntity* w, float yaw, float pitch, int shooterId = 0);
     bool canFire(WeaponEntity* w);
     void startReload(WeaponEntity* w);
     void cancelReload(WeaponEntity* w);
     void setAim(WeaponEntity* w, float yaw, float pitch);
+
+    /** @brief 运行时射击模式切换（safe/semi/auto）。 */
+    bool setFireMode(WeaponEntity* w, const std::string& mode);
+    /** @brief 当前射击模式名（"single"|"burst"|"auto"）。 */
+    std::string getFireMode(WeaponEntity* w);
+    /** @brief 可选射击模式数量 / 第 index 个模式名。 */
+    int  getSelectableModeCount(WeaponEntity* w);
+    std::string getSelectableMode(WeaponEntity* w, int index);
+
+    /** @brief 开镜（ADS）：切换 aiming 状态并推 aim_in/aim_out 事件。 */
+    bool setAiming(WeaponEntity* w, bool aiming);
+    bool isAiming(WeaponEntity* w);
+    /** @brief 开镜缩放 FOV（模板 zoomFov）。 */
+    float getZoomFov(WeaponEntity* w);
+    /** @brief 手感查询：当前散布 / 未回正后坐。 */
+    float getSpread(WeaponEntity* w);
+    float getRecoilPitch(WeaponEntity* w);
+    float getRecoilYaw(WeaponEntity* w);
 
     /** @brief 每帧推进全部武器与挂点。 */
     void update(float dt);
@@ -75,6 +110,21 @@ public:
     std::string getEventDefId(int index) const;
     std::string getEventMountId(int index) const;
     int         getEventAmmoLeft(int index) const;
+    /** @brief 近战命中弧（仅 fire 事件）。 */
+    float getEventArc(int index) const;
+    /** @brief 法术/导弹爆炸半径（仅 fire 事件）。 */
+    float getEventAoe(int index) const;
+    /** @brief P0 手感/伤害事件载荷（仅 fire 事件）。 */
+    float getEventSpread(int index) const;
+    int   getEventPellets(int index) const;
+    float getEventRecoilPitch(int index) const;
+    float getEventRecoilYaw(int index) const;
+    std::string getEventDamageType(int index) const;
+    std::string getEventElement(int index) const;
+    /** @brief 武器当前阶段（"idle"|"windup"|"active"|"recover"）。 */
+    std::string getStage(WeaponEntity* w) const;
+    /** @brief 武器当前资源值（弹药/法力/充能/体力）。 */
+    float getResourceValue(WeaponEntity* w) const;
 
 private:
     const WeaponDefinition* findDef(const std::string& id) const;
@@ -82,6 +132,8 @@ private:
     std::unordered_map<std::string, WeaponDefinition> defs_;
     std::vector<ecs::EntityHandle>                    weapons_;
     std::vector<ecs::EntityHandle>                    mounts_;
+    std::vector<ecs::EntityHandle>                    rigs_;
+    std::vector<ecs::EntityHandle>                    pools_;
     std::vector<WeaponEvent>                          events_;
     int                                               nextInstance_ = 1;
 };

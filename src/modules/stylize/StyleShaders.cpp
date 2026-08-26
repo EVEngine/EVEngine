@@ -1,5 +1,7 @@
 #include "stylize/StyleShaders.h"
 
+#include "stylize/EffectShaders.h"
+
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
 #include "graphics/Shader.h"
@@ -11,6 +13,7 @@
 #include "stylize/shaders/pixel_post_frag_spv.inc"
 #include "stylize/shaders/watercolor_post_frag_spv.inc"
 #include "stylize/shaders/xray_mesh_frag_spv.inc"
+#include "stylize/shaders/StylizeWgsl.h"
 
 #include <algorithm>
 #include <array>
@@ -162,16 +165,18 @@ const StyleDefinition *findStyleDefinition(const std::string &style) {
     const auto it = std::find_if(kStyles.begin(), kStyles.end(), [&](const StyleDefinition &def) {
         return style == def.id;
     });
-    return it == kStyles.end() ? nullptr : &*it;
+    if (it != kStyles.end()) return &*it;
+    return findEffectDefinition(style);
 }
 
 bool isKnownStyle(const std::string &style) { return findStyleDefinition(style) != nullptr; }
 
-int styleCount() { return int(kStyles.size()); }
+int styleCount() { return int(kStyles.size()) + effectStyleCount(); }
 
 std::string styleIdAt(int index) {
-    if (index < 0 || index >= int(kStyles.size())) return {};
-    return kStyles[size_t(index)].id;
+    if (index < 0) return {};
+    if (index < int(kStyles.size())) return kStyles[size_t(index)].id;
+    return effectStyleIdAt(index - int(kStyles.size()));
 }
 
 bool styleSupports(const std::string &style, const std::string &feature) {
@@ -232,7 +237,7 @@ int styleParamCount(const std::string &style) {
     if (style == "ink") return int(sizeof(kInkParams) / sizeof(kInkParams[0]));
     if (style == "pixel") return int(sizeof(kPixelParams) / sizeof(kPixelParams[0]));
     if (style == "xray") return int(sizeof(kXrayParams) / sizeof(kXrayParams[0]));
-    return 0;
+    return effectParamCount(style);
 }
 
 std::string styleParamName(const std::string &style, int index) {
@@ -246,7 +251,7 @@ const StyleParameterDesc *styleParameterAt(const std::string &style, int index) 
     if (style == "ink") return paramAt(kInkParams, index);
     if (style == "pixel") return paramAt(kPixelParams, index);
     if (style == "xray") return paramAt(kXrayParams, index);
-    return nullptr;
+    return effectParameterAt(style, index);
 }
 
 const StyleParameterDesc *findStyleParameter(const std::string &style, const std::string &name) {
@@ -260,6 +265,11 @@ const StyleParameterDesc *findStyleParameter(const std::string &style, const std
 
 void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
     if (!shader) throw eve::Exception("bindPostUniforms: null shader");
+
+    if (isEffectStyle(style)) {
+        bindEffectPostUniforms(shader, style);
+        return;
+    }
 
     if (style == "cartoon") {
         shader->declareFloat("bands");
@@ -365,6 +375,11 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
 void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
     if (!shader) throw eve::Exception("bindMeshUniforms: null shader");
 
+    if (isEffectStyle(style)) {
+        bindEffectMeshUniforms(shader, style);
+        return;
+    }
+
     if (style == "cartoon") {
         shader->declareFloat("bands");
         shader->declareFloat("rimPower");
@@ -421,10 +436,23 @@ void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
 
 graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &style) {
     if (!gfx) throw eve::Exception("createPostShader: null graphics");
+    if (isEffectStyle(style)) return createEffectPostShader(gfx, style);
     const StyleDefinition *def = findStyleDefinition(style);
     if (!def) throw eve::Exception("createPostShader: unknown style '%s'", style.c_str());
     if (!def->post)
         throw eve::Exception("createPostShader: style '%s' has no post technique", style.c_str());
+
+    if (gfx->getBackendName() == "webgpu") {
+        const char *body = style == "cartoon"   ? shaders::kCartoon
+                           : style == "watercolor" ? shaders::kWatercolor
+                           : style == "ink"        ? shaders::kInk
+                                                     : shaders::kPixel;
+        graphics::Shader *sh = gfx->newShaderFromWgsl({}, std::string(shaders::kCommon) + body);
+        if (!sh || !sh->gpuHandle)
+            throw eve::Exception("createPostShader: failed to create '%s' WGSL", style.c_str());
+        bindPostUniforms(sh, style);
+        return sh;
+    }
 
     std::vector<uint32_t> frag;
     if (style == "cartoon")
@@ -445,8 +473,17 @@ graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &s
 
 graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &style) {
     if (!gfx) throw eve::Exception("createMeshShader: null graphics");
+    if (isEffectStyle(style)) return createEffectMeshShader(gfx, style);
 
     if (style == "cartoon") {
+        if (gfx->getBackendName() == "webgpu") {
+            graphics::Shader *sh = gfx->newMeshShaderFromWgsl(
+                {}, std::string(shaders::kMeshCommon) + shaders::kCartoonMesh);
+            if (!sh || !sh->gpuHandle)
+                throw eve::Exception("createMeshShader: failed to create cartoon WGSL");
+            bindMeshUniforms(sh, style);
+            return sh;
+        }
         auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
         auto frag = copySpv(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv_count);
         graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
@@ -456,6 +493,14 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
         return sh;
     }
     if (style == "ink") {
+        if (gfx->getBackendName() == "webgpu") {
+            graphics::Shader *sh = gfx->newMeshShaderFromWgsl(
+                {}, std::string(shaders::kMeshCommon) + shaders::kInkMesh);
+            if (!sh || !sh->gpuHandle)
+                throw eve::Exception("createMeshShader: failed to create ink WGSL");
+            bindMeshUniforms(sh, style);
+            return sh;
+        }
         auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
         auto frag = copySpv(ink_mesh_frag_spv, ink_mesh_frag_spv_count);
         graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);

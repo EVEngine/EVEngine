@@ -1055,7 +1055,12 @@ void RenderSystem3D::render(Graphics &gfx) {
             ao->setPower(1.1f);
             ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
             bindCam(ao);
-            if (Texture *depth = gb->getHwDepthTexture())
+            // WebGPU cannot bind a depth-aspect texture to the generic 2D
+            // post-process layout. Its G-buffer already carries equivalent
+            // linear depth in a filterable RGBA target.
+            Texture *depth = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture()
+                                                               : gb->getHwDepthTexture();
+            if (depth)
                 ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
             // Fullscreen SSGI from lit scene color reprints nearby props
             // (curtains, planters) onto the floor as multiple swimming ghosts.
@@ -1070,7 +1075,9 @@ void RenderSystem3D::render(Graphics &gfx) {
             Outline *outline = gfx.pipelineOutline();
             auto cd = defaultCam->data();
             outline->setClip(cd->nearZ, cd->farZ);
-            if (Texture *depth = gb->getHwDepthTexture())
+            Texture *depth = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture()
+                                                               : gb->getHwDepthTexture();
+            if (depth)
                 outline->apply(&gfx, depth, gb->getNormalTexture());
         }
     }

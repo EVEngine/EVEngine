@@ -7,6 +7,7 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/shaders/ssr_frag_spv.inc"
+#include "graphics/shaders/ScreenEffectsWgsl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -16,7 +17,10 @@ namespace eve::graphics {
 namespace {
 Shader *createSsrShader(Graphics *gfx) {
     std::vector<uint32_t> frag(ssr_frag_spv, ssr_frag_spv + ssr_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = gfx->getBackendName() == "webgpu"
+                     ? gfx->newShaderFromWgsl({}, std::string(shaders::kScreenEffectCommon) +
+                                                     shaders::kSsr)
+                     : gfx->newShaderFromSpv({}, frag);
     sh->declareMatrix("invViewProj");
     sh->declareVec3("cameraPos");
     sh->declareFloat("nearZ");
