@@ -3,6 +3,8 @@
 
 #include <zeroerr.hpp>
 
+#include <algorithm>
+
 using namespace eve::editor;
 
 TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
@@ -52,6 +54,20 @@ TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
     REQUIRE(bool(result));
     CHECK_EQ(result->getCount(), 1);
     delete result;
+
+    const auto preview = domain.preview(graph.snapshot(domain.domain()), "input", &points,
+                                        "prune");
+    CHECK_EQ(static_cast<int>(preview.status), static_cast<int>(EditorStatus::Applied));
+    CHECK_EQ(preview.outputCount, 1);
+    CHECK_EQ(preview.metrics.size(), size_t(2));
+    const auto inputMetric = std::find_if(
+        preview.metrics.begin(), preview.metrics.end(),
+        [](const PcgGraphPreviewMetric& metric) { return metric.nodeId == "input"; });
+    REQUIRE(inputMetric != preview.metrics.end());
+    CHECK_EQ(inputMetric->outputCount, 2);
+    CHECK_EQ(inputMetric->minX, 0.f);
+    CHECK_EQ(inputMetric->maxX, 0.5f);
+    CHECK_EQ(inputMetric->averageDensity, 1.f);
 }
 
 TEST_CASE("editor.pcgGraph.rejectsInvalidBlackboardParameterBindings") {

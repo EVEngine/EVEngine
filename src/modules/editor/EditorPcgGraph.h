@@ -5,6 +5,10 @@
 #include <string>
 #include <vector>
 
+namespace eve::procgen {
+class PointSet;
+}
+
 namespace eve::editor {
 
 /** @brief Result of compiling a generic editor graph into a PointGraph asset definition. */
@@ -22,6 +26,30 @@ struct PcgGraphMigrationResult {
     std::uint32_t                 toVersion   = 1;
     GraphDocumentData             graph;
     std::vector<EditorDiagnostic> diagnostics;
+};
+
+/** @brief One node's isolated PointGraph preview telemetry for graph overlays. */
+struct PcgGraphPreviewMetric {
+    std::string nodeId;
+    int         outputCount    = 0;
+    float       milliseconds   = 0.f;
+    bool        cacheHit       = false;
+    float       minX           = 0.f;
+    float       minY           = 0.f;
+    float       minZ           = 0.f;
+    float       maxX           = 0.f;
+    float       maxY           = 0.f;
+    float       maxZ           = 0.f;
+    float       averageDensity = 0.f;
+};
+
+/** @brief Revision-tagged result of compiling and executing an isolated editor preview. */
+struct PcgGraphPreviewResult {
+    EditorStatus                       status           = EditorStatus::Failed;
+    Revision                           documentRevision = 0;
+    int                                outputCount      = 0;
+    std::vector<PcgGraphPreviewMetric> metrics;
+    std::vector<EditorDiagnostic>      diagnostics;
 };
 
 /**
@@ -43,6 +71,17 @@ public:
     PcgGraphMigrationResult migrate(const GraphDocumentData& graph) const;
     /** @brief Compile topology and scalar properties into a reusable PointGraph definition. */
     PcgGraphCompileResult compile(const GraphDocumentData& graph) const;
+    /**
+     * @brief Compile and execute an isolated point-input preview for editor visualization.
+     * @param graph Immutable graph document snapshot.
+     * @param inputNode PointGraph input node receiving previewInput.
+     * @param previewInput Non-owning point data used only for this execution.
+     * @param outputNode Node whose evaluated output determines outputCount.
+     * @param nodeBudget Maximum newly evaluated nodes, or zero for unlimited.
+     */
+    PcgGraphPreviewResult preview(const GraphDocumentData& graph, const std::string& inputNode,
+                                  procgen::PointSet* previewInput,
+                                  const std::string& outputNode, int nodeBudget = 0) const;
 };
 
 }  // namespace eve::editor

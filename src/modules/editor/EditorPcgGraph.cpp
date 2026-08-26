@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <memory>
 #include <unordered_map>
 
 namespace eve::editor {
@@ -331,6 +332,67 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
                                       structuralCheck.getError()});
         result.definition.clear();
         return result;
+    }
+    result.status = EditorStatus::Applied;
+    return result;
+}
+
+PcgGraphPreviewResult PcgPointGraphDomain::preview(const GraphDocumentData& graph,
+                                                    const std::string& inputNode,
+                                                    procgen::PointSet* previewInput,
+                                                    const std::string& outputNode,
+                                                    int nodeBudget) const {
+    PcgGraphPreviewResult result;
+    result.documentRevision = graph.revision;
+    const auto compiled = compile(graph);
+    result.diagnostics = compiled.diagnostics;
+    if (compiled.status != EditorStatus::Applied) {
+        result.status = compiled.status;
+        return result;
+    }
+    if (!previewInput || inputNode.empty() || outputNode.empty()) {
+        result.status = EditorStatus::Rejected;
+        result.diagnostics.push_back(
+            {RuleId("editor.pcg.preview-invalid-input"), DiagnosticSeverity::Error,
+             "PCG preview requires input/output node ids and point input"});
+        return result;
+    }
+    procgen::PointGraph runtime;
+    if (!runtime.deserializeDefinition(compiled.definition) ||
+        !runtime.setNodePoints(inputNode, previewInput)) {
+        result.status = EditorStatus::Failed;
+        result.diagnostics.push_back(
+            {RuleId("editor.pcg.preview-bind-failed"), DiagnosticSeverity::Error,
+             "PCG preview input node is invalid: " + inputNode});
+        return result;
+    }
+    runtime.setExecutionNodeBudget(nodeBudget);
+    std::unique_ptr<procgen::PointSet> output(runtime.execute(outputNode));
+    if (!output) {
+        result.status = runtime.wasCancelled() ? EditorStatus::Cancelled : EditorStatus::Failed;
+        result.diagnostics.push_back(
+            {RuleId(runtime.wasCancelled() ? "editor.pcg.preview-cancelled"
+                                           : "editor.pcg.preview-execution-failed"),
+             runtime.wasCancelled() ? DiagnosticSeverity::Info : DiagnosticSeverity::Error,
+             runtime.getError()});
+        return result;
+    }
+    result.outputCount = output->getCount();
+    result.metrics.reserve(size_t(runtime.getMetricCount()));
+    for (int index = 0; index < runtime.getMetricCount(); ++index) {
+        PcgGraphPreviewMetric metric;
+        metric.nodeId         = runtime.getMetricNodeId(index);
+        metric.outputCount    = runtime.getMetricOutputCount(index);
+        metric.milliseconds   = runtime.getMetricMilliseconds(index);
+        metric.cacheHit       = runtime.isMetricCacheHit(index);
+        metric.minX           = runtime.getMetricMinX(index);
+        metric.minY           = runtime.getMetricMinY(index);
+        metric.minZ           = runtime.getMetricMinZ(index);
+        metric.maxX           = runtime.getMetricMaxX(index);
+        metric.maxY           = runtime.getMetricMaxY(index);
+        metric.maxZ           = runtime.getMetricMaxZ(index);
+        metric.averageDensity = runtime.getMetricAverageDensity(index);
+        result.metrics.push_back(std::move(metric));
     }
     result.status = EditorStatus::Applied;
     return result;
