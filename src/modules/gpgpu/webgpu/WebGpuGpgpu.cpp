@@ -10,7 +10,9 @@
 #include <emscripten/emscripten.h>
 #endif
 
+#include <algorithm>
 #include <cstring>
+#include <variant>
 #include <vector>
 
 namespace eve::gpgpu {
@@ -97,14 +99,16 @@ WebGpuComputeShader *webgpuNewShaderFromWgsl(const std::string &wgsl) {
     bglDesc.label = sv("eve_compute");
     bglDesc.entryCount = ComputeShader::kMaxBindings + 1;
     bglDesc.entries = entries;
-    shader->setLayout = device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&bglDesc));
+    shader->setLayout =
+        device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&bglDesc));
 
     WGPUBindGroupLayout bgl = shader->setLayout.Get();
     WGPUPipelineLayoutDescriptor plDesc{};
     plDesc.label = sv("eve_compute_layout");
     plDesc.bindGroupLayoutCount = 1;
     plDesc.bindGroupLayouts = &bgl;
-    shader->pipelineLayout = device.CreatePipelineLayout(reinterpret_cast<const wgpu::PipelineLayoutDescriptor*>(&plDesc));
+    shader->pipelineLayout =
+        device.CreatePipelineLayout(reinterpret_cast<const wgpu::PipelineLayoutDescriptor*>(&plDesc));
 
     WGPUShaderSourceWGSL wd{};
     wd.chain.sType = WGPUSType_ShaderSourceWGSL;
@@ -142,7 +146,7 @@ WebGpuGpuBuffer *webgpuNewBuffer(int byteSize, const std::string &usage) {
     if (byteSize <= 0) throw Exception("Gpgpu.newBuffer: byteSize must be > 0");
     auto &device = gpuDevice();
     bool staging = usage == "staging";
-    WGPUBufferUsage bufUsage = staging ? (WGPUBufferUsage_CopySrc | WGPUBufferUsage_MapRead)
+    WGPUBufferUsage bufUsage = staging ? (WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead)
                                        : (WGPUBufferUsage_Storage | WGPUBufferUsage_CopyDst |
                                           WGPUBufferUsage_CopySrc | WGPUBufferUsage_Vertex);
     WGPUBufferDescriptor bd{};
@@ -158,6 +162,45 @@ WebGpuGpuBuffer *webgpuNewBuffer(int byteSize, const std::string &usage) {
 }
 
 namespace {
+
+bool mapBufferToCpu(wgpu::Buffer buffer, uint64_t bufferSize, uint64_t srcOffset, void *dst,
+                    uint64_t nbytes) {
+    if (!buffer || !dst || nbytes == 0 || srcOffset + nbytes > bufferSize) return false;
+    struct MapState {
+        bool done = false;
+        bool success = false;
+    } map;
+    WGPUBufferMapCallbackInfo cbInfo{};
+#if defined(__EMSCRIPTEN__)
+    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
+#else
+    cbInfo.mode = WGPUCallbackMode_WaitAnyOnly;
+#endif
+    cbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView, void *userdata1, void *) {
+        auto *state = static_cast<MapState *>(userdata1);
+        state->success = status == WGPUMapAsyncStatus_Success;
+        state->done = true;
+    };
+    cbInfo.userdata1 = &map;
+    WGPUFuture future = wgpuBufferMapAsync(buffer.Get(), WGPUMapMode_Read, 0, bufferSize, cbInfo);
+#if defined(__EMSCRIPTEN__)
+    int guard = 0;
+    while (!map.done && guard++ < 2000) {
+        emscripten_sleep(0);
+        wgpuInstanceProcessEvents(gpuInstance().Get());
+    }
+#else
+    WGPUFutureWaitInfo waitInfo{};
+    waitInfo.future = future;
+    (void)wgpuInstanceWaitAny(gpuInstance().Get(), 1, &waitInfo, UINT64_MAX);
+#endif
+    if (!map.success) return false;
+    const auto *data = static_cast<const uint8_t *>(buffer.GetConstMappedRange(0, bufferSize));
+    if (!data) return false;
+    std::memcpy(dst, data + srcOffset, size_t(nbytes));
+    buffer.Unmap();
+    return true;
+}
 
 bool readBufferToCpu(wgpu::Buffer src, uint64_t srcOffset, void *dst, uint64_t nbytes) {
     auto &device = gpuDevice();
@@ -175,32 +218,7 @@ bool readBufferToCpu(wgpu::Buffer src, uint64_t srcOffset, void *dst, uint64_t n
     enc.CopyBufferToBuffer(src, srcOffset, staging, 0, nbytes);
     wgpu::CommandBuffer cmd = enc.Finish();
     queue.Submit(1, &cmd);
-
-    bool mapped = false;
-    WGPUBufferMapCallbackInfo cbInfo{};
-    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
-    cbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView /*message*/, void *userdata1,
-                         void * /*userdata2*/) {
-        bool *ok = static_cast<bool *>(userdata1);
-        *ok = (status == WGPUMapAsyncStatus_Success);
-    };
-    cbInfo.userdata1 = &mapped;
-    wgpuBufferMapAsync(staging.Get(), WGPUMapMode_Read, 0, nbytes, cbInfo);
-
-    int guard = 0;
-    while (!mapped && guard < 2000) {
-#if defined(__EMSCRIPTEN__)
-        emscripten_sleep(0);
-#endif
-        wgpuInstanceProcessEvents(gpuInstance().Get());
-        ++guard;
-    }
-    if (!mapped) return false;
-    const uint8_t *data = static_cast<const uint8_t *>(staging.GetConstMappedRange(0, nbytes));
-    if (!data) return false;
-    std::memcpy(dst, data, size_t(nbytes));
-    staging.Unmap();
-    return true;
+    return mapBufferToCpu(staging, nbytes, 0, dst, nbytes);
 }
 
 }  // namespace
@@ -266,7 +284,10 @@ void WebGpuGpuBuffer::downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffs
     if (!buffer || !dst || nbytes == 0) return;
     if (srcOffset + nbytes > size_)
         throw Exception("GpuBuffer.read: out of range");
-    readBufferToCpu(buffer, srcOffset, dst, nbytes);
+    if (usage_ == "staging")
+        mapBufferToCpu(buffer, size_, srcOffset, dst, nbytes);
+    else
+        readBufferToCpu(buffer, srcOffset, dst, nbytes);
 }
 
 void WebGpuGpuBuffer::writeData(data::ByteData *data, int dstOffset) {
@@ -311,6 +332,159 @@ void WebGpuGpuBuffer::fillFloat32(float value) {
     const size_t count = size_t(size_ / sizeof(float));
     std::vector<float> tmp(count, value);
     uploadBytes(tmp.data(), count * sizeof(float), 0);
+}
+
+class WebGpuSequence {
+public:
+    struct Upload {
+        WebGpuGpuBuffer*     dst = nullptr;
+        std::vector<uint8_t> bytes;
+        uint64_t             offset = 0;
+    };
+    struct Download {
+        WebGpuGpuBuffer* src       = nullptr;
+        WebGpuGpuBuffer* dst       = nullptr;
+        uint64_t         bytes     = 0;
+        uint64_t         srcOffset = 0;
+    };
+    struct Dispatch {
+        WebGpuComputeShader*                                      shader = nullptr;
+        std::array<WebGpuGpuBuffer*, ComputeShader::kMaxBindings> bindings{};
+        std::array<float, ComputeShader::kMaxFloats>              push{};
+        uint32_t                                                  groupsX = 1;
+        uint32_t                                                  groupsY = 1;
+        uint32_t                                                  groupsZ = 1;
+    };
+    using Op = std::variant<Upload, Download, Dispatch>;
+    std::vector<Op> ops;
+};
+
+WebGpuSequence* webgpuSequenceCreate() { return new WebGpuSequence(); }
+void            webgpuSequenceDestroy(WebGpuSequence* sequence) { delete sequence; }
+bool            webgpuSequenceReady(WebGpuSequence* sequence) { return sequence && webgpuGpgpuReady(); }
+
+void webgpuSequenceBegin(WebGpuSequence* sequence) {
+    if (!webgpuSequenceReady(sequence)) throw Exception("Gpgpu.Sequence: WebGPU is not ready");
+    sequence->ops.clear();
+}
+
+void webgpuSequenceRecordUpload(WebGpuSequence* sequence, GpuBuffer* dst, const void* src, uint64_t nbytes,
+                                uint64_t dstOffset) {
+    auto* buffer = dynamic_cast<WebGpuGpuBuffer*>(dst);
+    if (!sequence || !buffer || !src || nbytes == 0 || dstOffset + nbytes > buffer->size_)
+        throw Exception("Gpgpu.Sequence.recordUpload: invalid WebGPU upload");
+    if ((nbytes & 3u) != 0 || (dstOffset & 3u) != 0)
+        throw Exception("Gpgpu.Sequence.recordUpload: byte count and offset must be 4-byte aligned");
+    WebGpuSequence::Upload op;
+    op.dst = buffer;
+    op.bytes.resize(size_t(nbytes));
+    std::memcpy(op.bytes.data(), src, size_t(nbytes));
+    op.offset = dstOffset;
+    sequence->ops.emplace_back(std::move(op));
+}
+
+void webgpuSequenceRecordDownload(WebGpuSequence* sequence, GpuBuffer* src, GpuBuffer* staging, uint64_t nbytes,
+                                  uint64_t srcOffset) {
+    auto* source = dynamic_cast<WebGpuGpuBuffer*>(src);
+    auto* target = dynamic_cast<WebGpuGpuBuffer*>(staging);
+    if (!sequence || !source || !target || target->usage_ != "staging" || nbytes == 0 ||
+        srcOffset + nbytes > source->size_ || nbytes > target->size_)
+        throw Exception("Gpgpu.Sequence.recordDownload: invalid WebGPU download");
+    if ((nbytes & 3u) != 0 || (srcOffset & 3u) != 0)
+        throw Exception("Gpgpu.Sequence.recordDownload: byte count and offset must be 4-byte aligned");
+    sequence->ops.emplace_back(WebGpuSequence::Download{source, target, nbytes, srcOffset});
+}
+
+void webgpuSequenceRecordDispatch(WebGpuSequence* sequence, ComputeShader* shader, int groupsX, int groupsY,
+                                  int groupsZ) {
+    auto* compute = dynamic_cast<WebGpuComputeShader*>(shader);
+    if (!sequence || !compute || !compute->ready)
+        throw Exception("Gpgpu.Sequence.recordDispatch: invalid WebGPU shader");
+    WebGpuSequence::Dispatch op;
+    op.shader  = compute;
+    op.groupsX = uint32_t(std::max(1, groupsX));
+    op.groupsY = uint32_t(std::max(1, groupsY));
+    op.groupsZ = uint32_t(std::max(1, groupsZ));
+    for (int i = 0; i < ComputeShader::kMaxBindings; ++i)
+        op.bindings[size_t(i)] = dynamic_cast<WebGpuGpuBuffer*>(compute->getBoundBuffer(i));
+    std::memcpy(op.push.data(), compute->pushConstantData(), ComputeShader::kPushConstantBytes);
+    sequence->ops.emplace_back(std::move(op));
+}
+
+void webgpuSequenceSubmit(WebGpuSequence* sequence) {
+    if (!webgpuSequenceReady(sequence)) throw Exception("Gpgpu.Sequence.submit: WebGPU is not ready");
+    auto&                        device  = gpuDevice();
+    auto&                        queue   = gpuQueue();
+    wgpu::CommandEncoder         encoder = device.CreateCommandEncoder();
+    std::vector<wgpu::Buffer>    retainedBuffers;
+    std::vector<wgpu::BindGroup> retainedBindGroups;
+
+    for (auto& op : sequence->ops) {
+        if (auto* upload = std::get_if<WebGpuSequence::Upload>(&op)) {
+            WGPUBufferDescriptor desc{};
+            desc.label            = sv("eve_sequence_upload");
+            desc.size             = upload->bytes.size();
+            desc.usage            = WGPUBufferUsage_CopySrc;
+            desc.mappedAtCreation = true;
+            wgpu::Buffer staging  = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&desc));
+            std::memcpy(staging.GetMappedRange(0, desc.size), upload->bytes.data(), desc.size);
+            staging.Unmap();
+            encoder.CopyBufferToBuffer(staging, 0, upload->dst->buffer, upload->offset, desc.size);
+            retainedBuffers.push_back(staging);
+            continue;
+        }
+        if (auto* download = std::get_if<WebGpuSequence::Download>(&op)) {
+            encoder.CopyBufferToBuffer(download->src->buffer, download->srcOffset, download->dst->buffer, 0,
+                                       download->bytes);
+            continue;
+        }
+        auto&                dispatch = std::get<WebGpuSequence::Dispatch>(op);
+        WGPUBufferDescriptor pushDesc{};
+        pushDesc.label            = sv("eve_sequence_push");
+        pushDesc.size             = ComputeShader::kPushConstantBytes;
+        pushDesc.usage            = WGPUBufferUsage_Uniform;
+        pushDesc.mappedAtCreation = true;
+        wgpu::Buffer push         = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&pushDesc));
+        std::memcpy(push.GetMappedRange(0, pushDesc.size), dispatch.push.data(), pushDesc.size);
+        push.Unmap();
+
+        WGPUBufferDescriptor dummyDesc{};
+        dummyDesc.label          = sv("eve_sequence_dummy");
+        dummyDesc.size           = 4;
+        dummyDesc.usage          = WGPUBufferUsage_Storage;
+        wgpu::Buffer       dummy = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&dummyDesc));
+        WGPUBindGroupEntry entries[ComputeShader::kMaxBindings + 1]{};
+        for (int i = 0; i < ComputeShader::kMaxBindings; ++i) {
+            WebGpuGpuBuffer* bound     = dispatch.bindings[size_t(i)];
+            entries[size_t(i)].binding = uint32_t(i);
+            entries[size_t(i)].buffer  = bound ? bound->buffer.Get() : dummy.Get();
+            entries[size_t(i)].size    = bound ? bound->size_ : 4;
+        }
+        entries[ComputeShader::kMaxBindings].binding = ComputeShader::kMaxBindings;
+        entries[ComputeShader::kMaxBindings].buffer  = push.Get();
+        entries[ComputeShader::kMaxBindings].size    = ComputeShader::kPushConstantBytes;
+        WGPUBindGroupDescriptor bindDesc{};
+        bindDesc.layout     = dispatch.shader->setLayout.Get();
+        bindDesc.entryCount = ComputeShader::kMaxBindings + 1;
+        bindDesc.entries    = entries;
+        wgpu::BindGroup bindGroup =
+            device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&bindDesc));
+
+        WGPUComputePassDescriptor passDesc{};
+        wgpu::ComputePassEncoder  pass =
+            encoder.BeginComputePass(reinterpret_cast<const wgpu::ComputePassDescriptor*>(&passDesc));
+        pass.SetPipeline(dispatch.shader->pipeline);
+        uint32_t offsets[1] = {0};
+        pass.SetBindGroup(0, bindGroup, 1, offsets);
+        pass.DispatchWorkgroups(dispatch.groupsX, dispatch.groupsY, dispatch.groupsZ);
+        pass.End();
+        retainedBuffers.push_back(push);
+        retainedBuffers.push_back(dummy);
+        retainedBindGroups.push_back(bindGroup);
+    }
+
+    wgpu::CommandBuffer command = encoder.Finish();
+    queue.Submit(1, &command);
 }
 
 }  // namespace eve::gpgpu

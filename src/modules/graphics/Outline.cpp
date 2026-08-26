@@ -6,6 +6,7 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/shaders/outline_post_frag_spv.inc"
+#include "graphics/shaders/PostProcessWgsl.h"
 
 #include <algorithm>
 
@@ -15,7 +16,10 @@ namespace {
 Shader *createOutlineShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("Outline: null graphics");
     std::vector<uint32_t> frag(outline_post_frag_spv, outline_post_frag_spv + outline_post_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = gfx->getBackendName() == "webgpu"
+                     ? gfx->newShaderFromWgsl({}, std::string(shaders::kPostCommon) +
+                                                     shaders::kOutline)
+                     : gfx->newShaderFromSpv({}, frag);
     if (!sh || !sh->gpuHandle)
         throw eve::Exception("Outline: failed to create outline shader");
     sh->declareFloat("width");

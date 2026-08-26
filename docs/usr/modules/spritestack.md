@@ -59,4 +59,29 @@ local model = model3d.newModelDataFromFile("assets/rock.obj");
 local layers = spritestack.sliceModel(model, 24, 128, 128, "y", 0.0);
 ```
 
-这里的模型只用于生成 RGBA 切片；运行时仍走 2D 管线。`slicePrimitive` 支持 `cylinder`、`sphere`、`cone`、`box`，切片轴支持 `x`、`y`、`z`。
+## 切片 API
+
+- `slicePrimitive(kind, layerCount, imageW, imageH, axis, thickness)`：
+  程序化几何体切片，`kind` ∈ `"box" | "cylinder" | "sphere" | "cone"`；
+  `axis` ∈ `"x" | "y" | "z"`；`thickness <= 0` 时按包围盒自动均分。
+- `sliceModel(modelData, layerCount, imageW, imageH, axis, thickness)`：
+  对 `model3d.newModelDataFromFile(...)` 的模型切片。
+- 两者都返回 `ImageData` 数组（RGBA8），可直接传给 `gfx.newTexture` 或
+  `stack.setLayerImage`。
+
+## 使用要点
+
+- 切片的 `ImageData` 归脚本持有：传入 `setLayerImage` 后叠片内部已转为 GPU
+  纹理，可释放原图。
+- 叠片使用 alpha 混合 + 深度测试（不写深度）的管线，同堆切片每帧按相机距离
+  由远到近排序；跨叠片的重叠由绘制顺序决定。
+- Vulkan 与原生 WebGPU 均可用；WebGPU 使用专用 WGSL 卡片 shader。当前 Web/WASM
+  精简模块组仍不包含 SpriteStack。
+- 不要每帧重新切片或重新上传纹理；只在物体形状变化时重建。
+- `updateMeshVertices`（合批内部使用）与 GPU 同步，重建频率越高开销越大。
+
+**源码：** [`src/modules/spritestack/`](../../../src/modules/spritestack/)
+**示例：** [`examples/sprite-stack/`](../../../examples/sprite-stack/)
+**相关测试：** [`test/spritestack.cpp`](../../../test/spritestack.cpp)
+
+这里的模型只用于生成 RGBA 切片；运行时仍走 2D 管线。

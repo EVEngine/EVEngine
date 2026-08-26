@@ -404,9 +404,11 @@ TEST_CASE("RenderSystem3D.textureCheckerPixels") {
     const int cx = gfx->getWidth() / 2;
     const int cy = gfx->getHeight() / 2;
     const int dx = std::max(16, gfx->getWidth() / 10);
-    // Sample left vs right of the projected front face (UV u≈0.25 vs u≈0.75).
-    Color a = gfx->getPixel(cx - dx, cy);
-    Color b = gfx->getPixel(cx + dx, cy);
+    // Sample inside a checker row rather than on its v=0.5 boundary, where
+    // backend-specific filtering can blend both cells to nearly the same gray.
+    const int sampleY = cy - dx / 2;
+    Color a = gfx->getPixel(cx - dx, sampleY);
+    Color b = gfx->getPixel(cx + dx, sampleY);
     // Lit PBR softens albedo contrast vs unlit; still require a clear left/right split.
     REQUIRE(std::abs(luma(a) - luma(b)) > 0.05f);
 

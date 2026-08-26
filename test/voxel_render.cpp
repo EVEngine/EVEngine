@@ -176,6 +176,40 @@ static void renderVoxelFrame(Graphics *gfx, VoxelWorld *world, Texture *atlas, i
     RenderSystem::render(*gfx);  // closes / presents via 2D path
 }
 
+static Color renderVoxelAoSample(Graphics *gfx, Texture *atlas, uint32_t ao) {
+    const uint32_t packed = PackedRect::pack(0, 0, 0, 4, 4, 1).bits;
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::vec3 eye(2.f, 8.f, 2.f);
+    const glm::mat4 view =
+        glm::lookAtRH(eye, glm::vec3(2.f, 0.f, 2.f), glm::vec3(0.f, 0.f, -1.f));
+    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(proj * view);
+        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 1, &ao);
+    }
+    RenderSystem::render(*gfx);
+    return gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+}
+
+/** @brief Vertex AO must shade identically on Vulkan and WebGPU voxel pipelines. */
+TEST_CASE("voxel.render.vertexAoDarkensPixels") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 300, 220);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+    Texture *atlas = makeSolid(gfx, 220, 220, 220);
+
+    const Color bright = renderVoxelAoSample(gfx, atlas, 0xFFu);
+    const Color dark = renderVoxelAoSample(gfx, atlas, 0x00u);
+    REQUIRE(luma(bright) > 0.25f);
+    REQUIRE(luma(dark) < luma(bright) * 0.6f);
+}
+
 // NOTE: Graphics is a process-wide singleton — reuse one window for these cases.
 
 TEST_CASE("voxel.render.smokeDrawVisibleProducesPixels") {

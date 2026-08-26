@@ -907,10 +907,12 @@ void Procgen::expose(ssq::Table &table) {
     params.addFunc("getHeight", &Params::getHeight);
     params.addFunc("setInt", &Params::setInt);
     params.addFunc("setFloat", &Params::setFloat);
+    params.addFunc("setBool", &Params::setBool);
     params.addFunc("setString", &Params::setString);
     params.addFunc("has", &Params::has);
     params.addFunc("getInt", &Params::getInt);
     params.addFunc("getFloat", &Params::getFloat);
+    params.addFunc("getBool", &Params::getBool);
     params.addFunc("getString", &Params::getString);
 
     auto output = table.addClass<OutputSpec>(

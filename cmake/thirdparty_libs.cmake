@@ -2,7 +2,8 @@
 # actual link names for the current platform and build type.
 #
 # The link names differ per platform: MSVC gets the md / mdd postfixes the
-# third-party ExternalProject was told to use, Emscripten takes SDL2 and zlib
+# third-party ExternalProject was told to use, Emscripten takes SDL2, zlib and
+# FreeType
 # from ports instead of the vendored trees, and only Windows distinguishes
 # debug from release archives.
 #
@@ -26,8 +27,10 @@ function(eve_thirdparty_libs out_var)
     endif()
 
     # The Emscripten aggregate only builds the simple vendored libraries; the
-    # heavy ones are skipped and the module code that would need them is
+    # heavy ones are skipped and most module code that would need them is
     # compiled out (see EVENGINE_EXCLUDED_MODULE_FILES and the module guards).
+    # FreeType is an exception: the browser build enables Emscripten's port,
+    # which supplies its headers and archive without a conventional link name.
     # Asking for these groups on WASM must resolve to nothing, not to a missing
     # archive.
     set(_skip_on_emscripten

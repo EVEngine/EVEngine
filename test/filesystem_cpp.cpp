@@ -6,10 +6,12 @@
 #include "filesystem/Filesystem.h"
 #include "filesystem/File.h"
 #include "filesystem/FileData.h"
+#include "filesystem/FileWatch.h"
 
 #include <chrono>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -431,6 +433,47 @@ TEST_CASE("filesystem.watch.fileModified") {
     CHECK(f->unwatch(name));
     CHECK_EQ(f->getWatchCount(), 0);
     f->remove(name);
+}
+
+TEST_CASE("filesystem.watch.coalescesOverlappingRegistrations") {
+    const char *name = "ut_watch_coalesce.txt";
+    const auto  dir = std::filesystem::temp_directory_path() / "ev_ut_fs_watch_coalesce";
+    std::filesystem::remove_all(dir);
+    REQUIRE(std::filesystem::create_directories(dir));
+    {
+        std::ofstream out(dir / name, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v1", 2);
+    }
+
+    eve::filesystem::FileWatch watch;
+    REQUIRE(watch.add(dir.string(), "", "."));
+    REQUIRE(watch.add(dir.string(), name, name));
+    CHECK_EQ(watch.count(), 2);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+    eve::filesystem::FileWatch::Event event;
+    while (watch.poll(event)) {
+    }
+
+    {
+        std::ofstream out(dir / name, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v2-changed", 10);
+        out.flush();
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+    int matchingEvents = 0;
+    while (watch.poll(event)) {
+        if (event.realPath.find(name) != std::string::npos) {
+            ++matchingEvents;
+            CHECK_EQ(event.path, std::string(name));
+        }
+    }
+    CHECK_EQ(matchingEvents, 1);
+    watch.clear();
+    std::filesystem::remove_all(dir);
 }
 
 TEST_CASE("filesystem.watch.unwatchAll") {

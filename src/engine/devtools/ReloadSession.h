@@ -4,6 +4,7 @@
 #include "common/StateValue.h"
 
 #include <string>
+#include <vector>
 
 struct SQVM;
 typedef struct SQVM* HSQUIRRELVM;
@@ -38,8 +39,10 @@ public:
     bool begin(HSQUIRRELVM vm, std::string* err = nullptr);
 
     /**
-     * @brief End the session, restoring captured state over the new
-     *        definitions (old values win; newly added fields kept).
+     * @brief Restore captured state over the new definitions.
+     *
+     * On success the session ends. On failure the original capture remains
+     * active so the caller can repair definition bindings and call abort().
      */
     bool commit(HSQUIRRELVM vm, std::string* err = nullptr);
 
@@ -55,7 +58,9 @@ private:
     bool restore(HSQUIRRELVM vm, const StateValue& state, std::string* err);
 
     StateValue buffer_;
-    bool       active_ = false;
+    std::vector<std::string> persistentRoots_;
+    std::vector<std::string> transientRoots_;
+    bool                     active_ = false;
 };
 
 }  // namespace eve::dev

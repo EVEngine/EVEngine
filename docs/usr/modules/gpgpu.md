@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Gpgpu()` / `eve.EcsShaderSystem` / `eve.ShaderSystem`
 
-创建 storage buffer 和 compute shader，绑定后调度 Vulkan compute。也可把 ECS System 写成 compute shader：打包组件 float 字段 → SSBO → dispatch → 写回。
+创建 storage buffer 和 compute shader，绑定后通过当前 Vulkan 或 WebGPU 后端调度 compute。Vulkan 使用 GLSL，WebGPU 使用 WGSL；也可把 ECS System 写成 compute shader：打包组件 float 字段 → storage buffer → dispatch → 写回。
 
 ## 基本用法
 
@@ -37,7 +37,7 @@ C++ 侧可用 `gpgpu::ShaderSystem` + `gpgpu/EcsGpu.h` 的 `packViewComponent` /
 
 ## Sequence：把多次调度合并为一次 GPU 提交
 
-`eve.GpuSequence`（C++：`gpgpu::Sequence`）对标 Kompute 的 Sequence：把多个 buffer 拷贝和 compute dispatch 录制进**同一个 command buffer**，`submit()` 时一次提交、一次等待。对 AI 推理这类几十个 kernel 串行的负载，这能把几十次 record/submit/wait 往返压成一次。
+`eve.GpuSequence`（C++：`gpgpu::Sequence`）对标 Kompute 的 Sequence：在 Vulkan 与 WebGPU 上都把多个 buffer 拷贝和 compute dispatch 录制进**同一个 command buffer**，`submit()` 时一次提交、一次等待。对 AI 推理这类几十个 kernel 串行的负载，这能把几十次 record/submit/wait 往返压成一次。
 
 ```squirrel
 local seq = gpu.newSequence();
@@ -62,7 +62,7 @@ local out = stagingBuffer.readFloat32s(count);
 
 ## 对象关系与调用时机
 
-`Gpgpu` 使用当前 Graphics 后端设备；`ComputeShader` / `GpuBuffer` 为后端无关抽象，Vulkan 实现保存 SPIR-V、pipeline 与 buffer。`newShaderFromSpvFile` 是 SPIR-V 兼容包装，等价于 `newShaderFromBytecode`。`EcsShaderSystem` / `eve.ShaderSystem` 负责 ECS 查询、打包与 dispatch。dispatch 前所有 binding 和 push constant 必须有效。
+`Gpgpu` 使用当前 Graphics 后端设备；`ComputeShader` / `GpuBuffer` 为后端无关抽象。Vulkan 编译 GLSL 并保存 SPIR-V，WebGPU 直接创建 WGSL pipeline；`newShaderFromSpvFile` 是 Vulkan SPIR-V 兼容包装，WebGPU 不接受 SPIR-V。`EcsShaderSystem` / `eve.ShaderSystem` 负责 ECS 查询、打包与 dispatch。dispatch 前所有 binding 和 push constant 必须有效。
 
 ## 目标导向指南
 

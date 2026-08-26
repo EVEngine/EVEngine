@@ -35,7 +35,7 @@ using namespace eve::virtualgeometry;
 
 namespace {
 
-/** GPU cluster building only needs a live Vulkan device; headless init is enough. */
+/** GPU cluster building only needs a live graphics device; headless init is enough. */
 bool tryInitHeadlessGfx() {
     auto *gfx = eve::graphics::Graphics::create();
     if (!gfx) return false;
