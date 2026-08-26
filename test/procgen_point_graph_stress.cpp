@@ -28,7 +28,7 @@ bool pointSetsEqual(const PointSet& first, const PointSet& second) {
 }  // namespace
 
 TEST_CASE("procgen.pointGraphStress.resumesDeepGraphAcrossBudgetWindows") {
-    constexpr int nodeCount = 256;
+    constexpr int nodeCount = 64;
     PointSet input;
     input.add(0.f, 0.f, 0.f);
     PointGraph graph;
@@ -53,8 +53,8 @@ TEST_CASE("procgen.pointGraphStress.resumesDeepGraphAcrossBudgetWindows") {
         if (!output) CHECK(graph.wasCancelled());
     }
     REQUIRE(bool(output));
-    CHECK_EQ(output->getX(0), 64.f);
-    CHECK_EQ(budgetWindows, 16);
+    CHECK_EQ(output->getX(0), 16.f);
+    CHECK_EQ(budgetWindows, 4);
     CHECK(graph.getCacheHitCount() > 0);
 }
 

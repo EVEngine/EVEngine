@@ -312,7 +312,8 @@ TEST_CASE("procgen.runtimeGeneration.trimsLowestPriorityCellsDeterministically")
         delete request;
     }
     CHECK_EQ(runtime.getResidentPointCount(), 3);
-    CHECK_EQ(runtime.trimToResidentPoints(2), 1);
+    const int trimmedCells = runtime.trimToResidentPoints(2);
+    CHECK_EQ(trimmedCells, 1);
     CHECK_EQ(runtime.getResidentPointCount(), 3);
     ProcgenCellRequest* cleanup = runtime.nextCleanup();
     REQUIRE(bool(cleanup));
@@ -343,7 +344,8 @@ TEST_CASE("procgen.runtimeGeneration.boundsRetriesAndExplicitlyRecoversFailures"
     CHECK_EQ(runtime.getFailedCellCount(), 1);
     CHECK(runtime.debugReport().find("failed=1") != std::string::npos);
 
-    CHECK_EQ(runtime.retryFailedCells(), 1);
+    const int retriedCells = runtime.retryFailedCells();
+    CHECK_EQ(retriedCells, 1);
     CHECK_EQ(runtime.getFailedCellCount(), 0);
     ProcgenCellRequest* recovered = runtime.nextGenerate();
     REQUIRE(bool(recovered));
