@@ -8,6 +8,8 @@ file(GLOB all_test_cpp
   decal_script.cpp
   crowd.cpp
   crowd_script.cpp
+  profiler.cpp
+  profiler_script.cpp
   crashlog.cpp
   resource.cpp
   state_value.cpp
