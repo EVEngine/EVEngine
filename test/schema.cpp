@@ -85,3 +85,47 @@ TEST_CASE("schema.module.scriptBinding") {
     vm.run(script);
     CHECK(vm.callFunc(vm.findFunc("schemaBindingTest"), vm).toBool());
 }
+
+TEST_CASE("schema.module.reflectFromClass") {
+    SchemaRegistry::clear();
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    auto script = vm.compileSource(R"(
+        class CardDefinition </ id="card.definition", version=1, title="Card Definition", additionalProperties=false /> {
+            </ required=true />
+            id = ""
+            </ required=true />
+            name = ""
+            </ values=["creature","spell"] />
+            kind = "creature"
+            </ min=0, max=20 />
+            cost = 0
+            </ min=0, max=99 />
+            attack = 0
+            </ min=0, max=99 />
+            health = 0
+        }
+
+        function schemaReflectTest() {
+            local s = eve.Schema();
+            s.clear();
+            if (!s.registerFromClass(CardDefinition)) return s.getLastError();
+            if (s.getSchemaVersion("card.definition") != 1) return "version";
+            if (s.getSchemaTitle("card.definition") != "Card Definition") return "title";
+            if (s.getSchemaAdditionalProperties("card.definition")) return "additionalProperties";
+            if (s.getFieldCount("card.definition") != 6) return "count";
+            if (s.getFieldType("card.definition", 3) != "integer") return "type";
+            if (!s.getFieldRequired("card.definition", 0)) return "required";
+            if (s.getFieldEnumCount("card.definition", 2) != 2) return "enum";
+            if (!s.getFieldHasMinimum("card.definition", 3)) return "min";
+            if (s.getFieldMaximum("card.definition", 3) != 20) return "max";
+            local ok = @"{""id"":""card.scout"",""name"":""Scout"",""kind"":""creature"",""cost"":2,""attack"":3,""health"":2}";
+            if (!s.validateJson("card.definition", ok)) return "valid";
+            local bad = @"{""id"":""x"",""name"":""y"",""kind"":""air"",""cost"":25}";
+            if (s.validateJson("card.definition", bad)) return "invalid";
+            return s.getValidationErrorCode(0) == "enum";
+        }
+    )");
+    vm.run(script);
+    CHECK(vm.callFunc(vm.findFunc("schemaReflectTest"), vm).toBool());
+}

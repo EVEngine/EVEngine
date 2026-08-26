@@ -1,5 +1,34 @@
 // Project-owned adapters combine generic Schema/Definitions with Card, Crowd,
 // terrain and ECS. None of these policies or UI choices live in C++.
+//
+// Annotation-style schema: class-level `</ ... />` carries the metadata,
+// member-level `</ ... />` carries the per-field constraints, and each member's
+// default value infers its type and JSON default. The schema classes live at
+// file scope: Squirrel only supports class-level `</ ... />` attributes on
+// top-level classes.
+class CardDefinition </ id="card.definition", version=1, title="Card Definition", additionalProperties=false /> {
+    </ required=true />
+    id = ""
+    </ required=true />
+    name = ""
+    </ values=["creature","spell"] />
+    kind = "creature"
+    </ min=0, max=20 />
+    cost = 0
+    </ min=0, max=99 />
+    attack = 0
+    </ min=0, max=99 />
+    health = 0
+}
+class RtsUnit </ id="rts.unit", version=1, title="RTS Unit", additionalProperties=false /> {
+    </ required=true />
+    id = ""
+    </ min=0, max=20 />
+    speed = 0.0
+    </ min=0.1, max=5 />
+    radius = 0.0
+}
+
 class GameplayEditorComponents {
     schemas = null
     definitions = null
@@ -15,23 +44,8 @@ class GameplayEditorComponents {
         crowdSim = eve.Crowd();
         units = [];
 
-        schemas.registerJson(@"{
-            ""id"":""card.definition"",""version"":1,""title"":""Card Definition"",
-            ""additionalProperties"":false,""fields"":[
-                {""name"":""id"",""type"":""string"",""required"":true},
-                {""name"":""name"",""type"":""string"",""required"":true},
-                {""name"":""kind"",""type"":""string"",""enum"":[""creature"",""spell""]},
-                {""name"":""cost"",""type"":""integer"",""minimum"":0,""maximum"":20},
-                {""name"":""attack"",""type"":""integer"",""minimum"":0,""maximum"":99},
-                {""name"":""health"",""type"":""integer"",""minimum"":0,""maximum"":99}
-            ]}");
-        schemas.registerJson(@"{
-            ""id"":""rts.unit"",""version"":1,""title"":""RTS Unit"",
-            ""additionalProperties"":false,""fields"":[
-                {""name"":""id"",""type"":""string"",""required"":true},
-                {""name"":""speed"",""type"":""number"",""minimum"":0,""maximum"":20},
-                {""name"":""radius"",""type"":""number"",""minimum"":0.1,""maximum"":5}
-            ]}");
+        if (!schemas.registerFromClass(CardDefinition) ||
+            !schemas.registerFromClass(RtsUnit)) return;
 
         local cardJson = @"{""id"":""card.scout"",""name"":""Terrain Scout"",""kind"":""creature"",""cost"":2,""attack"":3,""health"":2}";
         if (schemas.validateJson("card.definition", cardJson)) {

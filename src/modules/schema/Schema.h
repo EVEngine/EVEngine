@@ -3,6 +3,8 @@
 #include "common/Module.h"
 #include "schema/SchemaTypes.h"
 
+#include <simplesquirrel/simplesquirrel.hpp>
+
 #include <string>
 #include <vector>
 
@@ -15,6 +17,15 @@ public:
 
     /** @brief Registers a schema encoded as JSON. */
     bool registerJson(const std::string& json);
+    /** @brief Registers a schema reflected from a script class (or instance).
+     *
+     * Class-level `</ ... />` attributes supply `id`, `version`, `title`,
+     * `description` and `additionalProperties`. Each non-method member becomes
+     * a field: its default value infers the type and the JSON default, and
+     * member-level `</ ... />` attributes carry `required`, `type`,
+     * `elementType`, `title`, `description`, `reference`, `defaultJson`,
+     * `values`, `minimum`/`min`, `maximum`/`max`, `minLength`, `maxLength`. */
+    bool registerFromClass(const ssq::Object& classOrInstance);
     /** @brief Removes all registered schemas and cached validation errors. */
     void clear();
     /** @brief Returns whether a stable schema id is registered. */
