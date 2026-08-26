@@ -17,6 +17,13 @@ struct PointGraphNodeMetric {
     int         outputCount  = 0;
     float       milliseconds = 0.f;
     bool        cacheHit     = false;
+    float       minX           = 0.f;
+    float       minY           = 0.f;
+    float       minZ           = 0.f;
+    float       maxX           = 0.f;
+    float       maxY           = 0.f;
+    float       maxZ           = 0.f;
+    float       averageDensity = 0.f;
 };
 
 /**
@@ -107,6 +114,20 @@ public:
     int         getMetricOutputCount(int index) const;
     float       getMetricMilliseconds(int index) const;
     bool        isMetricCacheHit(int index) const;
+    /** @brief Return cached output bounds for editor/debug visualization. */
+    float getMetricMinX(int index) const;
+    /** @brief Return the cached minimum output Y coordinate. */
+    float getMetricMinY(int index) const;
+    /** @brief Return the cached minimum output Z coordinate. */
+    float getMetricMinZ(int index) const;
+    /** @brief Return the cached maximum output X coordinate. */
+    float getMetricMaxX(int index) const;
+    /** @brief Return the cached maximum output Y coordinate. */
+    float getMetricMaxY(int index) const;
+    /** @brief Return the cached maximum output Z coordinate. */
+    float getMetricMaxZ(int index) const;
+    /** @brief Return the mean point density of one node output. */
+    float getMetricAverageDensity(int index) const;
     /** @brief Copy the cached/debug output of a node after execution. */
     PointSet* getNodeOutput(const std::string& id) const;
     std::string debugReport() const;
@@ -143,6 +164,7 @@ private:
         std::string                                  subgraphInput;
         std::string                                  subgraphOutput;
         PointSet                                    cache;
+        PointGraphNodeMetric                        cacheMetric;
         bool                                        cacheValid = false;
     };
     struct ParameterBinding {

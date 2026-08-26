@@ -391,3 +391,32 @@ TEST_CASE("procgen.pointGraph.remapsDensityAndComputesFloatMetadata") {
     CHECK(!graph.execute("density"));
     CHECK(graph.getError().find("non-zero input range") != std::string::npos);
 }
+
+TEST_CASE("procgen.pointGraph.cachesSpatialMetricsForDebugVisualization") {
+    PointSet points;
+    const int first = points.add(-2.f, 3.f, 4.f);
+    const int second = points.add(6.f, -1.f, 8.f);
+    points.setDensity(first, 0.25f);
+    points.setDensity(second, 0.75f);
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.setNodePoints("source", &points));
+    PointSet* output = graph.execute("source");
+    REQUIRE(bool(output));
+    delete output;
+    CHECK_EQ(graph.getMetricCount(), 1);
+    CHECK_EQ(graph.getMetricMinX(0), -2.f);
+    CHECK_EQ(graph.getMetricMinY(0), -1.f);
+    CHECK_EQ(graph.getMetricMinZ(0), 4.f);
+    CHECK_EQ(graph.getMetricMaxX(0), 6.f);
+    CHECK_EQ(graph.getMetricMaxY(0), 3.f);
+    CHECK_EQ(graph.getMetricMaxZ(0), 8.f);
+    CHECK_EQ(graph.getMetricAverageDensity(0), 0.5f);
+
+    output = graph.execute("source");
+    REQUIRE(bool(output));
+    delete output;
+    CHECK(graph.isMetricCacheHit(0));
+    CHECK_EQ(graph.getMetricMinX(0), -2.f);
+    CHECK_EQ(graph.getMetricAverageDensity(0), 0.5f);
+}

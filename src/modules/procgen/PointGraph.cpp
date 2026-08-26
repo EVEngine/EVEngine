@@ -72,6 +72,32 @@ uint64_t nowNanoseconds() {
                         .count());
 }
 
+PointGraphNodeMetric makeMetric(const std::string& id, const PointSet& points,
+                                float milliseconds, bool cacheHit) {
+    PointGraphNodeMetric metric;
+    metric.id           = id;
+    metric.outputCount  = points.getCount();
+    metric.milliseconds = milliseconds;
+    metric.cacheHit     = cacheHit;
+    if (points.empty()) return metric;
+    const auto& first = points.points().front();
+    metric.minX = metric.maxX = first.x;
+    metric.minY = metric.maxY = first.y;
+    metric.minZ = metric.maxZ = first.z;
+    double densitySum = 0.0;
+    for (const auto& point : points.points()) {
+        metric.minX = std::min(metric.minX, point.x);
+        metric.minY = std::min(metric.minY, point.y);
+        metric.minZ = std::min(metric.minZ, point.z);
+        metric.maxX = std::max(metric.maxX, point.x);
+        metric.maxY = std::max(metric.maxY, point.y);
+        metric.maxZ = std::max(metric.maxZ, point.z);
+        densitySum += point.density;
+    }
+    metric.averageDensity = float(densitySum / double(points.getCount()));
+    return metric;
+}
+
 }  // namespace
 
 bool PointGraph::addNode(const std::string& id, const std::string& operation) {
@@ -339,6 +365,29 @@ float PointGraph::getMetricMilliseconds(int index) const {
 bool PointGraph::isMetricCacheHit(int index) const {
     return index >= 0 && index < int(metrics_.size()) && metrics_[size_t(index)].cacheHit;
 }
+float PointGraph::getMetricMinX(int index) const {
+    return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].minX : 0.f;
+}
+float PointGraph::getMetricMinY(int index) const {
+    return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].minY : 0.f;
+}
+float PointGraph::getMetricMinZ(int index) const {
+    return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].minZ : 0.f;
+}
+float PointGraph::getMetricMaxX(int index) const {
+    return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].maxX : 0.f;
+}
+float PointGraph::getMetricMaxY(int index) const {
+    return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].maxY : 0.f;
+}
+float PointGraph::getMetricMaxZ(int index) const {
+    return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].maxZ : 0.f;
+}
+float PointGraph::getMetricAverageDensity(int index) const {
+    return index >= 0 && index < int(metrics_.size())
+               ? metrics_[size_t(index)].averageDensity
+               : 0.f;
+}
 PointSet* PointGraph::getNodeOutput(const std::string& id) const {
     const auto found = nodes_.find(id);
     return found != nodes_.end() && found->second.cacheValid ? new PointSet(found->second.cache)
@@ -399,7 +448,10 @@ const PointSet* PointGraph::evaluate(const std::string& id,
     Node& node = found->second;
     if (node.cacheValid) {
         ++cacheHitCount_;
-        metrics_.push_back({id, node.cache.getCount(), 0.f, true});
+        PointGraphNodeMetric metric = node.cacheMetric;
+        metric.milliseconds = 0.f;
+        metric.cacheHit     = true;
+        metrics_.push_back(std::move(metric));
         return &node.cache;
     }
     if (states[id] == 1) {
@@ -562,7 +614,8 @@ const PointSet* PointGraph::evaluate(const std::string& id,
     node.cacheValid = true;
     states[id]      = 2;
     const float elapsed = float(nowNanoseconds() - started) * 0.000001f;
-    metrics_.push_back({id, node.cache.getCount(), elapsed, false});
+    node.cacheMetric = makeMetric(id, node.cache, elapsed, false);
+    metrics_.push_back(node.cacheMetric);
     return &node.cache;
 }
 

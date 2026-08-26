@@ -56,6 +56,13 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("getMetricOutputCount", &PointGraph::getMetricOutputCount);
     graph.addFunc("getMetricMilliseconds", &PointGraph::getMetricMilliseconds);
     graph.addFunc("isMetricCacheHit", &PointGraph::isMetricCacheHit);
+    graph.addFunc("getMetricMinX", &PointGraph::getMetricMinX);
+    graph.addFunc("getMetricMinY", &PointGraph::getMetricMinY);
+    graph.addFunc("getMetricMinZ", &PointGraph::getMetricMinZ);
+    graph.addFunc("getMetricMaxX", &PointGraph::getMetricMaxX);
+    graph.addFunc("getMetricMaxY", &PointGraph::getMetricMaxY);
+    graph.addFunc("getMetricMaxZ", &PointGraph::getMetricMaxZ);
+    graph.addFunc("getMetricAverageDensity", &PointGraph::getMetricAverageDensity);
     graph.addFunc("getNodeOutput", &PointGraph::getNodeOutput);
     graph.addFunc("debugReport", &PointGraph::debugReport);
     graph.addFunc("serializeDefinition", &PointGraph::serializeDefinition);
