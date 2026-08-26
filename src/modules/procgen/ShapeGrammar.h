@@ -21,7 +21,8 @@ struct ShapeModuleVariant {
  *
  * Grammar syntax follows UE PCG's useful subset: comma-separated symbols,
  * bracket groups, `*` (zero or more), `+` (one or more), and an integer repeat
- * suffix. Repetitions fill the available spline length without crossing its end.
+ * suffix. Module symbols do not contain decimal digits, which are reserved for
+ * exact repetition. Repetitions fill available spline length without crossing its end.
  */
 class ShapeGrammar {
 public:

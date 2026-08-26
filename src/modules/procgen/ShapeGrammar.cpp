@@ -219,7 +219,10 @@ std::vector<ShapeGrammar::Element> ShapeGrammar::Parser::sequence(char terminato
             const size_t start = position;
             while (position < text.size()) {
                 const unsigned char ch = static_cast<unsigned char>(text[position]);
-                if (!std::isalnum(ch) && ch != '_' && ch != '-' && ch != '.') break;
+                // Decimal digits are reserved for the exact-repeat suffix: A3 means
+                // three A modules. Keeping module tokens digit-free removes the
+                // otherwise unresolvable ambiguity between a symbol and its repeat.
+                if (!std::isalpha(ch) && ch != '_' && ch != '-' && ch != '.') break;
                 ++position;
             }
             if (start == position) {
