@@ -33,6 +33,7 @@
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
 #include "procgen/PointCompute.h"
+#include "procgen/PointGraph.h"
 #include "window/Window.h"
 
 #include <algorithm>
@@ -362,6 +363,43 @@ TEST_CASE("gpgpu.procgen.transformChainRejectsInvalidLength") {
     CHECK(!compute.transformChain(input, output, oversized));
     CHECK(output.empty());
     CHECK_EQ(compute.getDispatchCount(), uint64_t(0));
+}
+
+TEST_CASE("gpgpu.procgen.pointGraphCompilesLinearTransformSegment") {
+    if (!tryInitHeadlessGfx()) return;
+    constexpr int          count = 2048;
+    eve::procgen::PointSet input;
+    for (int index = 0; index < count; ++index) input.add(float(index), 2.f, -3.f);
+
+    eve::procgen::PointGraph graph;
+    REQUIRE(graph.addNode("source", "input"));
+    REQUIRE(graph.setNodePoints("source", &input));
+    std::string previous = "source";
+    for (int index = 0; index < 4; ++index) {
+        const std::string id = "move-" + std::to_string(index);
+        REQUIRE(graph.addNode(id, "transform"));
+        REQUIRE(graph.connect(previous, id));
+        REQUIRE(graph.setNodeFloat(id, "x", float(index + 1)));
+        previous = id;
+    }
+    REQUIRE(graph.setComputePolicy("gpu"));
+    std::unique_ptr<eve::procgen::PointSet> output(graph.execute(previous));
+    REQUIRE(bool(output));
+    CHECK_EQ(graph.getComputeUploadCount(), uint64_t(1));
+    CHECK_EQ(graph.getComputeDispatchCount(), uint64_t(1));
+    CHECK_EQ(graph.getComputeReadbackCount(), uint64_t(1));
+    CHECK_EQ(graph.getLastFusedTransformCount(), 4);
+    CHECK(std::fabs(output->getX(0) - 10.f) < 0.0001f);
+
+    std::unique_ptr<eve::procgen::PointSet> preview(graph.getNodeOutput("move-1"));
+    REQUIRE(bool(preview));
+    CHECK(std::fabs(preview->getX(0) - 3.f) < 0.0001f);
+    CHECK_EQ(graph.getComputeReadbackCount(), uint64_t(1));
+
+    std::unique_ptr<eve::procgen::PointSet> cached(graph.execute(previous));
+    REQUIRE(bool(cached));
+    CHECK_EQ(graph.getComputeDispatchCount(), uint64_t(1));
+    CHECK(graph.getCacheHitCount() > 0);
 }
 
 TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {

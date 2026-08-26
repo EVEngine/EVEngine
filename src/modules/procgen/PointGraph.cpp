@@ -433,7 +433,10 @@ bool PointGraph::validate() {
 
 std::string PointGraph::getError() const { return error_; }
 void PointGraph::clearCache() {
-    for (auto& [id, node] : nodes_) node.cacheValid = false;
+    for (auto& [id, node] : nodes_) {
+        node.cacheValid             = false;
+        node.deferredTransformValid = false;
+    }
     metrics_.clear();
 }
 int PointGraph::getExecutionCount() const { return executionCount_; }
@@ -485,10 +488,20 @@ float PointGraph::getMetricAverageDensity(int index) const {
                ? metrics_[size_t(index)].averageDensity
                : 0.f;
 }
-PointSet* PointGraph::getNodeOutput(const std::string& id) const {
+PointSet* PointGraph::getNodeOutput(const std::string& id) const { return materializeNodeOutput(id); }
+
+PointSet* PointGraph::materializeNodeOutput(const std::string& id) const {
     const auto found = nodes_.find(id);
-    return found != nodes_.end() && found->second.cacheValid ? new PointSet(found->second.cache)
-                                                             : nullptr;
+    if (found == nodes_.end()) return nullptr;
+    const Node& node = found->second;
+    if (node.cacheValid) return new PointSet(node.cache);
+    if (!node.deferredTransformValid || node.operation != "transform" || node.inputs[0].empty()) return nullptr;
+    std::unique_ptr<PointSet> input(materializeNodeOutput(node.inputs[0]));
+    if (!input) return nullptr;
+    return new PointSet(transformPointSet(*input, floatValue(node, "x", 0.f), floatValue(node, "y", 0.f),
+                                          floatValue(node, "z", 0.f), floatValue(node, "yaw", 0.f),
+                                          floatValue(node, "scaleX", 1.f), floatValue(node, "scaleY", 1.f),
+                                          floatValue(node, "scaleZ", 1.f)));
 }
 
 std::string PointGraph::debugReport() const {
@@ -560,6 +573,10 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         error_ = "execution cancelled at node: " + id;
         lastCancelled_ = true;
         return nullptr;
+    }
+    if (node.operation == "transform") {
+        const PointSet* segment = evaluateTransformSegment(id, states);
+        if (segment || !error_.empty()) return segment;
     }
     states[id] = 1;
     const uint64_t started = nowNanoseconds();
@@ -788,6 +805,71 @@ const PointSet* PointGraph::evaluate(const std::string& id,
     return &node.cache;
 }
 
+const PointSet* PointGraph::evaluateTransformSegment(const std::string&                    id,
+                                                     std::unordered_map<std::string, int>& states) {
+    std::vector<std::string> chain;
+    std::string              cursor = id;
+    while (chain.size() < 4) {
+        const auto found = nodes_.find(cursor);
+        if (found == nodes_.end() || found->second.operation != "transform" || found->second.cacheValid ||
+            found->second.inputs[0].empty())
+            break;
+        chain.push_back(cursor);
+        cursor = found->second.inputs[0];
+    }
+    if (chain.size() < 2) return nullptr;
+    std::reverse(chain.begin(), chain.end());
+
+    const PointSet* input = evaluate(cursor, states);
+    if (!input) return nullptr;
+    const bool gpuEligible =
+        !input->empty() &&
+        (computePolicy_ == "gpu" || (computePolicy_ == "auto" && input->getCount() >= computeMinimumPoints_));
+    if (!gpuEligible) return nullptr;
+    if (executionNodeBudget_ > 0 && evaluatedNodes_ + int(chain.size()) > executionNodeBudget_) {
+        error_         = "execution node budget exceeded at node: " + id;
+        lastCancelled_ = true;
+        return nullptr;
+    }
+
+    std::vector<PointCompute::Transform> transforms;
+    transforms.reserve(chain.size());
+    for (const std::string& nodeId : chain) {
+        const Node& transformNode = nodes_.at(nodeId);
+        transforms.push_back({floatValue(transformNode, "x", 0.f), floatValue(transformNode, "y", 0.f),
+                              floatValue(transformNode, "z", 0.f), floatValue(transformNode, "yaw", 0.f),
+                              floatValue(transformNode, "scaleX", 1.f), floatValue(transformNode, "scaleY", 1.f),
+                              floatValue(transformNode, "scaleZ", 1.f)});
+    }
+
+    PointSet       output;
+    const uint64_t started = nowNanoseconds();
+    if (!pointCompute_->transformChain(*input, output, transforms)) {
+        computeFallbackReason_ = pointCompute_->getError();
+        return nullptr;
+    }
+
+    evaluatedNodes_ += int(chain.size());
+    for (const std::string& nodeId : chain) {
+        Node& transformNode                  = nodes_.at(nodeId);
+        transformNode.deferredTransformValid = true;
+        states[nodeId]                       = 2;
+    }
+    Node& finalNode                  = nodes_.at(id);
+    finalNode.cache                  = std::move(output);
+    finalNode.cacheValid             = true;
+    finalNode.deferredTransformValid = false;
+#ifdef EVENGINE_WEBGPU
+    const std::string backend = "webgpu";
+#else
+    const std::string backend = "vulkan";
+#endif
+    const float elapsed   = float(nowNanoseconds() - started) * 0.000001f;
+    finalNode.cacheMetric = makeMetric(id, finalNode.cache, elapsed, false, backend);
+    metrics_.push_back(finalNode.cacheMetric);
+    return &finalNode.cache;
+}
+
 bool PointGraph::validateNode(const std::string& id, std::unordered_map<std::string, int>& states) {
     if (states[id] == 2) return true;
     if (states[id] == 1) {
@@ -843,7 +925,10 @@ void PointGraph::invalidateFrom(const std::string& id) {
         if (visited[current]) continue;
         visited[current] = true;
         const auto found = nodes_.find(current);
-        if (found != nodes_.end()) found->second.cacheValid = false;
+        if (found != nodes_.end()) {
+            found->second.cacheValid             = false;
+            found->second.deferredTransformValid = false;
+        }
         for (const auto& [candidateId, candidate] : nodes_) {
             if (candidate.inputs[0] == current || candidate.inputs[1] == current)
                 dirty.push_back(candidateId);

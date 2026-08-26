@@ -208,6 +208,7 @@ private:
         PointSet                                    cache;
         PointGraphNodeMetric                        cacheMetric;
         bool                                        cacheValid = false;
+        bool                                         deferredTransformValid = false;
     };
     struct ParameterBinding {
         std::string nodeId;
@@ -216,6 +217,8 @@ private:
     };
 
     const PointSet* evaluate(const std::string& id, std::unordered_map<std::string, int>& states);
+    const PointSet* evaluateTransformSegment(const std::string& id, std::unordered_map<std::string, int>& states);
+    PointSet*       materializeNodeOutput(const std::string& id) const;
     bool            validateNode(const std::string& id,
                                  std::unordered_map<std::string, int>& states);
     void            invalidate();
