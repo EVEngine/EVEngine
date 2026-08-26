@@ -6,9 +6,7 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 
-#ifndef EVENGINE_WEBGPU
 #include "graphics/shaders/alpha_mask_frag_spv.inc"
-#endif
 
 #include <algorithm>
 #include <vector>
@@ -17,8 +15,8 @@ namespace eve::graphics {
 
 AlphaMask::AlphaMask(Graphics *graphics) : graphics_(graphics) {
     if (!graphics_) throw eve::Exception("AlphaMask: null graphics");
-#ifdef EVENGINE_WEBGPU
-    static const std::string fragment = R"(
+    if (graphics_->getBackendName() == "webgpu") {
+        static const std::string fragment = R"(
 struct Externals { data: array<f32, 32>, };
 @group(0) @binding(0) var mainTex: texture_2d<f32>;
 @group(0) @binding(1) var maskTex: texture_2d<f32>;
@@ -35,12 +33,12 @@ struct In { @location(0) color: vec4<f32>, @location(1) uv: vec2<f32>, };
   let coverage = smoothstep(ext.data[0] - width, ext.data[0] + width, m);
   return vec4<f32>(color.rgb, color.a * coverage);
 })";
-    shader_ = graphics_->newShaderFromWgsl({}, fragment);
-#else
-    std::vector<uint32_t> fragment(alpha_mask_frag_spv,
-                                   alpha_mask_frag_spv + alpha_mask_frag_spv_count);
-    shader_ = graphics_->newShaderFromSpv({}, fragment);
-#endif
+        shader_ = graphics_->newShaderFromWgsl({}, fragment);
+    } else {
+        std::vector<uint32_t> fragment(alpha_mask_frag_spv,
+                                       alpha_mask_frag_spv + alpha_mask_frag_spv_count);
+        shader_ = graphics_->newShaderFromSpv({}, fragment);
+    }
     if (!shader_) throw eve::Exception("AlphaMask: shader creation failed");
     shader_->declareFloat("threshold");
     shader_->declareFloat("softness");

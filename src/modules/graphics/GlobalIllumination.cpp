@@ -7,6 +7,7 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/shaders/gi_ssgi_frag_spv.inc"
+#include "graphics/shaders/ScreenEffectsWgsl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,7 +23,10 @@ namespace {
 Shader *createSsgiShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("GlobalIllumination: null graphics");
     std::vector<uint32_t> frag(gi_ssgi_frag_spv, gi_ssgi_frag_spv + gi_ssgi_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = gfx->getBackendName() == "webgpu"
+                     ? gfx->newShaderFromWgsl({}, std::string(shaders::kScreenEffectCommon) +
+                                                     shaders::kSsgi)
+                     : gfx->newShaderFromSpv({}, frag);
     if (!sh || !sh->gpuHandle) throw eve::Exception("GlobalIllumination: failed to create SSGI shader");
     sh->declareMatrix("invViewProj");
     sh->declareFloat("nearZ");

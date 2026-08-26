@@ -12,6 +12,7 @@
 namespace eve::gpgpu {
 
 class WebGpuGpuBuffer;
+class WebGpuSequence;
 
 /**
  * @brief Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V
@@ -73,5 +74,16 @@ WebGpuComputeShader *webgpuNewShaderFromWgsl(const std::string &wgsl);
 WebGpuComputeShader *webgpuNewShaderFromSpirv(const std::vector<uint32_t> &spv);
 WebGpuGpuBuffer *webgpuNewBuffer(int byteSize, const std::string &usage);
 void webgpuDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ);
+WebGpuSequence *webgpuSequenceCreate();
+void webgpuSequenceDestroy(WebGpuSequence *sequence);
+bool webgpuSequenceReady(WebGpuSequence *sequence);
+void webgpuSequenceBegin(WebGpuSequence *sequence);
+void webgpuSequenceRecordUpload(WebGpuSequence *sequence, GpuBuffer *dst, const void *src,
+                                uint64_t nbytes, uint64_t dstOffset);
+void webgpuSequenceRecordDownload(WebGpuSequence *sequence, GpuBuffer *src, GpuBuffer *staging,
+                                  uint64_t nbytes, uint64_t srcOffset);
+void webgpuSequenceRecordDispatch(WebGpuSequence *sequence, ComputeShader *shader, int groupsX,
+                                  int groupsY, int groupsZ);
+void webgpuSequenceSubmit(WebGpuSequence *sequence);
 
 }  // namespace eve::gpgpu

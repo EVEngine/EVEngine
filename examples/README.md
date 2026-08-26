@@ -33,6 +33,7 @@ make run/<platform>-debug GAME=examples/<name>
 | [inventory](inventory/README.md) | 背包：物品定义、主背包 / 任务栏 / 仓库、装备穿脱、跨包转移 |
 | [cardgame](cardgame/README.md) | 卡牌：扇形手牌、拖拽出牌、费用置灰、实时配置面板 |
 | [dialogue](dialogue/README.md) | 对话 + Avatar：Squirrel generator 剧情、i18n 翻译表、分层立绘、程序化台词池（.dnut） |
+| [galgame](galgame/README.md) | 完整视觉小说《潮汐电台》：原创美术、分支结局、AUTO/SKIP/回想与存读档 |
 | [building](building/README.md) | 建筑放置：地形约束、道路邻接、鬼影预览、旋转拆除 |
 | [building-tilemap](building-tilemap/README.md) | 在等距 / 六角 tilemap 上放置建筑（2D 精灵穿插） |
 | [iso-grid-walk](iso-grid-walk/README.md) | 独立 2.5D PNG 经可插拔 pipeline 生成 TileSet，方格移动与 A* |
@@ -73,7 +74,7 @@ make run/<platform>-debug GAME=examples/<name>
 |---|---|
 | [outline](outline/README.md) | 屏幕空间描边（G-buffer 深度 + 法线） |
 | [waterfall-demo](waterfall-demo/README.md) | 瀑布流动着色器（条纹 / 湍流 / 泡沫） |
-| [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（仅 Vulkan，计算演示） |
+| [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（Vulkan/WebGPU） |
 | [tensor](tensor/README.md) | 张量编译管线：策略网络 / conv / SDPA / 批量模拟（纯计算） |
 
 ## 工具与扩展

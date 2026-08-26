@@ -20,8 +20,22 @@ struct WidgetDesc {
     std::string valueText;
     std::string tooltip;
     bool visible = true;
+    bool enabled = true;
     bool checked = false;
     bool open = true;
+    FocusMode focusMode = FocusMode::All;
+    MouseFilter mouseFilter = MouseFilter::Stop;
+    ThemePreset themePreset = ThemePreset::Inherit;
+    int tabIndex = 0;
+    std::string focusNext;
+    std::string focusPrevious;
+    std::string focusLeft;
+    std::string focusRight;
+    std::string focusUp;
+    std::string focusDown;
+    AccessibilityRole accessibilityRole = AccessibilityRole::Auto;
+    std::string accessibilityName;
+    std::string accessibilityDescription;
     float value = 0.f;
     float minValue = 0.f;
     float maxValue = 1.f;
@@ -97,6 +111,54 @@ struct WidgetDesc {
     }
     WidgetDesc &withVisible(bool v) {
         visible = v;
+        return *this;
+    }
+    /** @brief Sets whether the widget accepts interaction. */
+    WidgetDesc &withEnabled(bool v) {
+        enabled = v;
+        return *this;
+    }
+    /** @brief Selects how the widget participates in keyboard focus navigation. */
+    WidgetDesc &withFocusMode(FocusMode v) {
+        focusMode = v;
+        return *this;
+    }
+    /** @brief Selects whether pointer input stops, passes through, or ignores this widget. */
+    WidgetDesc &withMouseFilter(MouseFilter v) {
+        mouseFilter = v;
+        return *this;
+    }
+    /** @brief Overrides the built-in theme for this widget subtree. */
+    WidgetDesc &withTheme(ThemePreset v) {
+        themePreset = v;
+        return *this;
+    }
+    /** @brief Sets the stable ordering hint used by sequential focus traversal. */
+    WidgetDesc &withTabIndex(int v) {
+        tabIndex = v;
+        return *this;
+    }
+    /** @brief Assigns explicit previous and next focus-neighbor widget identifiers. */
+    WidgetDesc &withFocusOrder(std::string previous, std::string next) {
+        focusPrevious = std::move(previous);
+        focusNext = std::move(next);
+        return *this;
+    }
+    /** @brief Assigns explicit directional focus-neighbor widget identifiers. */
+    WidgetDesc &withFocusNeighbors(std::string left, std::string right, std::string up,
+                                   std::string down) {
+        focusLeft = std::move(left);
+        focusRight = std::move(right);
+        focusUp = std::move(up);
+        focusDown = std::move(down);
+        return *this;
+    }
+    /** @brief Supplies the semantic role and labels exposed to accessibility clients. */
+    WidgetDesc &withAccessibility(AccessibilityRole role, std::string name,
+                                  std::string description = {}) {
+        accessibilityRole = role;
+        accessibilityName = std::move(name);
+        accessibilityDescription = std::move(description);
         return *this;
     }
     WidgetDesc &withChecked(bool v) {
@@ -268,6 +330,9 @@ WidgetDesc combo(std::string label, std::vector<std::string> options, int select
 /** Colored / textured image. Size defaults to texture size via layout. */
 WidgetDesc image(std::string id = "", float width = 0.f, float height = 0.f,
                  std::function<void()> onClick = {});
+/** @brief Stretchable textured container with asset-defined content padding. */
+WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children = {}, std::string id = "",
+                          uint64_t textureId = 0);
 /** Clickable image (renders via ImGui ImageButton). */
 WidgetDesc imageButton(std::string id, float width, float height, std::function<void()> onClick = {});
 /** Embedded render target widget: shows an offscreen Canvas, routes input. */

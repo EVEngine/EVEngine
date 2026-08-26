@@ -610,6 +610,7 @@ void Animation::expose(ssq::Table &table) {
     sync.addFunc("getLeader", &AnimSyncGroup::getLeader);
     sync.addFunc("update", &AnimSyncGroup::update);
     sync.addFunc("getPhase", &AnimSyncGroup::getPhase);
+    sync.addFunc("getUsedMarkerSync", &AnimSyncGroup::getUsedMarkerSync);
 
     auto skin = table.addClass<AnimSkin>(
         "AnimSkin", std::function<AnimSkin *()>([]() -> AnimSkin * { return nullptr; }), true);

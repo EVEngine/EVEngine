@@ -10,6 +10,7 @@ class Cloth;
 class Cloth3D;
 class ClothGPU;
 class Fluid;
+class DistanceField3D;
 
 /**
  * @brief Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive
@@ -45,6 +46,11 @@ public:
      * @param sleep allow sleeping bodies
      */
     World3D *newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep = true);
+
+    /** @brief Create a regular 3D signed-distance grid for map collision queries. */
+    DistanceField3D *newDistanceField3D(int width, int height, int depth, float cellSize,
+                                        float originX = 0.f, float originY = 0.f,
+                                        float originZ = 0.f, float outsideDistance = 1e6f);
 
     /**
      * @brief Create a Verlet cloth grid (top row pinned).

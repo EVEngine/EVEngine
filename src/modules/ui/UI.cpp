@@ -13,6 +13,8 @@
 #include "common/config.h"
 #include "common/Module.h"
 #include "graphics/Graphics.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
@@ -72,29 +74,69 @@ eve.UIComponent <- class {
     hostName = ""
     dirty = true
     forceFull = false
+    props = null
+    state = null
     _ui = null
+    _parent = null
+    _mounted = false
 
-    constructor(uiInstance = null) {
+    constructor(uiInstance = null, initialProps = null) {
         _ui = uiInstance
         hostName = ""
         dirty = true
         forceFull = false
+        props = initialProps != null ? initialProps : {}
+        state = {}
+        _parent = null
+        _mounted = false
     }
 
-    function setUI(uiInstance) { _ui = uiInstance }
+    function setUI(uiInstance) { _ui = uiInstance; return this }
+
+    function setProps(nextProps, replace = false) {
+        if (nextProps == null) return this
+        if (replace) props = {}
+        foreach (key, value in nextProps) props.rawset(key, value)
+        markDirty()
+        return this
+    }
 
     function mountAs(name) {
         hostName = name
         dirty = true
         forceFull = true
         updateIfDirty()
+        return this
     }
 
-    function setState() { dirty = true }
-    function markDirty() { dirty = true }
+    function setState(patch = null) {
+        if (patch != null) {
+            foreach (key, value in patch) state.rawset(key, value)
+        }
+        markDirty()
+        return this
+    }
+    function markDirty() {
+        dirty = true
+        if (_parent != null && _parent != this) _parent.markDirty()
+        return this
+    }
+
+    // Compose a persistent child instance inside this component's active build pass.
+    function renderChild(component, nextProps = null) {
+        if (component == null) return null
+        component._parent = this
+        component.setUI(ui())
+        if (nextProps != null) component.props = nextProps
+        component.build()
+        component.dirty = false
+        return component
+    }
 
     // Override in subclass: call this.ui().beginWindow / text / button / end ...
     function build() {}
+    function onMount() {}
+    function onUpdated() {}
 
     function ui() {
         if (_ui != null) return _ui
@@ -107,6 +149,7 @@ eve.UIComponent <- class {
 
     function updateIfDirty() {
         if (!dirty) return false
+        local firstMount = !_mounted
         local u = ui()
         u.beginBuild()
         build()
@@ -119,6 +162,9 @@ eve.UIComponent <- class {
             u.remountBuildAs(name)
         }
         dirty = false
+        _mounted = true
+        if (firstMount) onMount()
+        else onUpdated()
         return true
     }
 
@@ -173,6 +219,7 @@ bool UI::initBackend() {
 }
 
 void UI::shutdownBackend() {
+    releaseNinePatches();
     if (backend_) backend_->shutdown();
 }
 
@@ -359,6 +406,27 @@ void UI::beginChild(const std::string &id, float width, float height) {
 
 void UI::beginCard(const std::string &id) { pushOpen(card({}, id)); }
 
+bool UI::beginNinePatch(const std::string &path, const std::string &id, float width,
+                        float height) {
+    auto *asset = loadNinePatch(path);
+    if (!asset) return false;
+    WidgetDesc d = ninePatchPanel({}, id, asset->textureId);
+    d.sizeX = width;
+    d.sizeY = height;
+    d.minSizeX = float(asset->info.width);
+    d.minSizeY = float(asset->info.height);
+    d.borderL = float(asset->info.borderLeft);
+    d.borderT = float(asset->info.borderTop);
+    d.borderR = float(asset->info.borderRight);
+    d.borderB = float(asset->info.borderBottom);
+    d.paddingL = float(asset->info.paddingLeft);
+    d.paddingT = float(asset->info.paddingTop);
+    d.paddingR = float(asset->info.paddingRight);
+    d.paddingB = float(asset->info.paddingBottom);
+    pushOpen(std::move(d));
+    return true;
+}
+
 void UI::beginMenuBar(const std::string &id) { pushOpen(menuBar({}, id)); }
 
 void UI::beginMenu(const std::string &label, const std::string &id) {
@@ -412,6 +480,58 @@ FlexJustify parseFlexJustify(const std::string &justify) {
         return FlexJustify::SpaceBetween;
     if (j == "spacearound" || j == "space-around" || j == "around") return FlexJustify::SpaceAround;
     return FlexJustify::Start;
+}
+
+FocusMode parseFocusMode(const std::string &mode) {
+    const std::string value = toLowerCopy(mode);
+    if (value == "none") return FocusMode::None;
+    if (value == "click") return FocusMode::Click;
+    return FocusMode::All;
+}
+
+MouseFilter parseMouseFilter(const std::string &filter) {
+    const std::string value = toLowerCopy(filter);
+    if (value == "pass") return MouseFilter::Pass;
+    if (value == "ignore") return MouseFilter::Ignore;
+    return MouseFilter::Stop;
+}
+
+ThemePreset parseThemePreset(const std::string &theme) {
+    const std::string value = toLowerCopy(theme);
+    if (value == "dark") return ThemePreset::Dark;
+    if (value == "light") return ThemePreset::Light;
+    return ThemePreset::Inherit;
+}
+
+AccessibilityRole parseAccessibilityRole(const std::string &role) {
+    const std::string value = toLowerCopy(role);
+    if (value == "button") return AccessibilityRole::Button;
+    if (value == "checkbox") return AccessibilityRole::Checkbox;
+    if (value == "slider") return AccessibilityRole::Slider;
+    if (value == "text") return AccessibilityRole::Text;
+    if (value == "textinput" || value == "text-input") return AccessibilityRole::TextInput;
+    if (value == "list") return AccessibilityRole::List;
+    if (value == "listitem" || value == "list-item") return AccessibilityRole::ListItem;
+    if (value == "menu") return AccessibilityRole::Menu;
+    if (value == "menuitem" || value == "menu-item") return AccessibilityRole::MenuItem;
+    if (value == "progress") return AccessibilityRole::Progress;
+    if (value == "region") return AccessibilityRole::Region;
+    if (value == "tab") return AccessibilityRole::Tab;
+    if (value == "window") return AccessibilityRole::Window;
+    return AccessibilityRole::Auto;
+}
+
+bool parseFocusDirection(const std::string &direction, FocusDirection *out) {
+    if (!out) return false;
+    const std::string value = toLowerCopy(direction);
+    if (value == "next") *out = FocusDirection::Next;
+    else if (value == "previous" || value == "prev") *out = FocusDirection::Previous;
+    else if (value == "left") *out = FocusDirection::Left;
+    else if (value == "right") *out = FocusDirection::Right;
+    else if (value == "up") *out = FocusDirection::Up;
+    else if (value == "down") *out = FocusDirection::Down;
+    else return false;
+    return true;
 }
 
 }  // namespace
@@ -497,6 +617,21 @@ void UI::addProgress(float fraction, const std::string &id, const std::string &o
 
 void UI::addImage(const std::string &id, float width, float height) {
     currentParent().children.push_back(image(id, width, height));
+}
+
+bool UI::addNinePatch(const std::string &path, const std::string &id, float width,
+                      float height) {
+    auto *asset = loadNinePatch(path);
+    if (!asset) return false;
+    WidgetDesc d = image(id, width > 0.f ? width : float(asset->info.width),
+                         height > 0.f ? height : float(asset->info.height));
+    d.textureId = asset->textureId;
+    d.borderL = float(asset->info.borderLeft);
+    d.borderT = float(asset->info.borderTop);
+    d.borderR = float(asset->info.borderRight);
+    d.borderB = float(asset->info.borderBottom);
+    currentParent().children.push_back(std::move(d));
+    return true;
 }
 
 void UI::addImageButton(const std::string &id, float width, float height) {
@@ -619,6 +754,61 @@ void UI::setItemTooltip(const std::string &text) {
     parent.children.back().tooltip = text;
 }
 
+void UI::setItemEnabled(bool enabled) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().enabled = enabled;
+}
+
+void UI::setItemFocusMode(const std::string &mode) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().focusMode = parseFocusMode(mode);
+}
+
+void UI::setItemMouseFilter(const std::string &filter) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().mouseFilter = parseMouseFilter(filter);
+}
+
+void UI::setItemTheme(const std::string &theme) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().themePreset = parseThemePreset(theme);
+}
+
+void UI::setThemeScope(const std::string &theme) {
+    currentParent().themePreset = parseThemePreset(theme);
+}
+
+void UI::setItemTabIndex(int index) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().tabIndex = index;
+}
+
+void UI::setItemFocusOrder(const std::string &previous, const std::string &next) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().focusPrevious = previous;
+    parent.children.back().focusNext = next;
+}
+
+void UI::setItemFocusNeighbors(const std::string &left, const std::string &right,
+                               const std::string &up, const std::string &down) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().focusLeft = left;
+    parent.children.back().focusRight = right;
+    parent.children.back().focusUp = up;
+    parent.children.back().focusDown = down;
+}
+
+void UI::setItemAccessibility(const std::string &role, const std::string &name,
+                              const std::string &description) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().accessibilityRole = parseAccessibilityRole(role);
+    parent.children.back().accessibilityName = name;
+    parent.children.back().accessibilityDescription = description;
+}
+
 void UI::setFlexAlign(const std::string &align) {
     WidgetDesc &parent = currentParent();
     if (parent.type != NodeType::Flex) return;
@@ -695,6 +885,10 @@ void UI::setTextWrap(const std::string &id, float width) {
 
 void UI::setVisible(const std::string &id, bool visible) {
     if (selected_) selected_->setVisibleById(id, visible);
+}
+
+void UI::setEnabled(const std::string &id, bool enabled) {
+    if (selected_) selected_->setEnabledById(id, enabled);
 }
 
 void UI::setChecked(const std::string &id, bool checked) {
@@ -776,6 +970,85 @@ bool UI::getChecked(const std::string &id) const {
     if (!selected_) return false;
     if (auto *n = selected_->findById(id)) return n->checked;
     return false;
+}
+
+bool UI::setImageNinePatchFile(const std::string &id, const std::string &path) {
+    if (!selected_) return false;
+    auto *n = selected_->findById(id);
+    if (!n || (n->type != NodeType::Image && n->type != NodeType::ImageButton &&
+               n->type != NodeType::NinePatchPanel))
+        return false;
+    auto *asset = loadNinePatch(path);
+    if (!asset) return false;
+    n->textureId = asset->textureId;
+    n->borderL = float(asset->info.borderLeft);
+    n->borderT = float(asset->info.borderTop);
+    n->borderR = float(asset->info.borderRight);
+    n->borderB = float(asset->info.borderBottom);
+    if (n->type == NodeType::NinePatchPanel) {
+        n->paddingL = float(asset->info.paddingLeft);
+        n->paddingT = float(asset->info.paddingTop);
+        n->paddingR = float(asset->info.paddingRight);
+        n->paddingB = float(asset->info.paddingBottom);
+    }
+    return true;
+}
+
+UI::NinePatchResource *UI::loadNinePatch(const std::string &path) {
+    if (auto found = ninePatches_.find(path); found != ninePatches_.end())
+        return &found->second;
+    auto *images = eve::ModuleManager::getInstance<eve::image::Image>("Image");
+    auto *graphics = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    if (!images || !graphics) return nullptr;
+    try {
+        eve::ref<eve::image::ImageData> source(images->newImageDataFromFile(path));
+        NinePatchResource resource;
+        std::string error;
+        if (!parseNinePatch(*source, resource.info, &error)) {
+            std::fprintf(stderr, "[ui] invalid .9.png '%s': %s\n", path.c_str(),
+                         error.c_str());
+            return nullptr;
+        }
+        auto cropped = stripNinePatchBorder(*source);
+        if (!cropped) return nullptr;
+        resource.texture = graphics->newTexture(cropped.get());
+        if (!resource.texture) return nullptr;
+        resource.textureId = registerTexture(resource.texture);
+        if (resource.textureId == 0) {
+            graphics->releaseTexture(resource.texture);
+            return nullptr;
+        }
+        auto inserted = ninePatches_.emplace(path, std::move(resource));
+        return &inserted.first->second;
+    } catch (const std::exception &e) {
+        std::fprintf(stderr, "[ui] failed to load .9.png '%s': %s\n", path.c_str(), e.what());
+        return nullptr;
+    }
+}
+
+void UI::releaseNinePatches() {
+    auto *graphics = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    for (auto &[path, resource] : ninePatches_) {
+        (void)path;
+        if (backend_ && resource.textureId != 0)
+            backend_->unregisterTexture(resource.textureId);
+        if (graphics && resource.texture) graphics->releaseTexture(resource.texture);
+    }
+    ninePatches_.clear();
+}
+
+bool UI::requestFocus(const std::string &id) {
+    return selected_ && selected_->requestFocusById(id);
+}
+
+bool UI::moveFocus(const std::string &direction) {
+    if (!selected_) return false;
+    FocusDirection parsed = FocusDirection::Next;
+    return parseFocusDirection(direction, &parsed) && selected_->moveFocus(parsed);
+}
+
+std::string UI::getFocusedId() const {
+    return selected_ ? selected_->focusedId() : std::string();
 }
 
 void UI::setHostVisible(bool visible) {
@@ -1005,6 +1278,7 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Switch: return "switch";
     case NodeType::Badge: return "badge";
     case NodeType::Card: return "card";
+    case NodeType::NinePatchPanel: return "ninePatchPanel";
     case NodeType::SectionHeader: return "sectionHeader";
     case NodeType::MenuBar: return "menuBar";
     case NodeType::Menu: return "menu";
@@ -1041,6 +1315,7 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "switch") return NodeType::Switch;
     if (s == "badge") return NodeType::Badge;
     if (s == "card") return NodeType::Card;
+    if (s == "ninePatchPanel") return NodeType::NinePatchPanel;
     if (s == "sectionHeader") return NodeType::SectionHeader;
     if (s == "menuBar") return NodeType::MenuBar;
     if (s == "menu") return NodeType::Menu;
@@ -1061,6 +1336,43 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (!n.valueText.empty()) o.set("valueText", n.valueText);
     if (!n.tooltip.empty()) o.set("tooltip", n.tooltip);
     if (!n.visible) o.set("visible", false);
+    if (!n.enabled) o.set("enabled", false);
+    if (n.focusMode != FocusMode::All)
+        o.set("focusMode", n.focusMode == FocusMode::None ? "none" : "click");
+    if (n.mouseFilter != MouseFilter::Stop)
+        o.set("mouseFilter", n.mouseFilter == MouseFilter::Pass ? "pass" : "ignore");
+    if (n.themePreset != ThemePreset::Inherit)
+        o.set("theme", n.themePreset == ThemePreset::Dark ? "dark" : "light");
+    if (n.tabIndex != 0) o.set("tabIndex", n.tabIndex);
+    if (!n.focusPrevious.empty()) o.set("focusPrevious", n.focusPrevious);
+    if (!n.focusNext.empty()) o.set("focusNext", n.focusNext);
+    if (!n.focusLeft.empty()) o.set("focusLeft", n.focusLeft);
+    if (!n.focusRight.empty()) o.set("focusRight", n.focusRight);
+    if (!n.focusUp.empty()) o.set("focusUp", n.focusUp);
+    if (!n.focusDown.empty()) o.set("focusDown", n.focusDown);
+    if (n.accessibilityRole != AccessibilityRole::Auto) {
+        const char *role = "auto";
+        switch (n.accessibilityRole) {
+            case AccessibilityRole::Button: role = "button"; break;
+            case AccessibilityRole::Checkbox: role = "checkbox"; break;
+            case AccessibilityRole::Slider: role = "slider"; break;
+            case AccessibilityRole::Text: role = "text"; break;
+            case AccessibilityRole::TextInput: role = "text-input"; break;
+            case AccessibilityRole::List: role = "list"; break;
+            case AccessibilityRole::ListItem: role = "list-item"; break;
+            case AccessibilityRole::Menu: role = "menu"; break;
+            case AccessibilityRole::MenuItem: role = "menu-item"; break;
+            case AccessibilityRole::Progress: role = "progress"; break;
+            case AccessibilityRole::Region: role = "region"; break;
+            case AccessibilityRole::Tab: role = "tab"; break;
+            case AccessibilityRole::Window: role = "window"; break;
+            case AccessibilityRole::Auto: break;
+        }
+        o.set("accessibilityRole", role);
+    }
+    if (!n.accessibilityName.empty()) o.set("accessibilityName", n.accessibilityName);
+    if (!n.accessibilityDescription.empty())
+        o.set("accessibilityDescription", n.accessibilityDescription);
     if (n.checked) o.set("checked", true);
     if (!n.open) o.set("open", false);
     if (n.value != 0.f) o.set("value", n.value);
@@ -1124,6 +1436,29 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
     if (o.has("valueText")) d.valueText = o.getValue<std::string>("valueText");
     if (o.has("tooltip")) d.tooltip = o.getValue<std::string>("tooltip");
     if (o.has("visible")) d.visible = o.getValue<bool>("visible");
+    if (o.has("enabled")) d.enabled = o.getValue<bool>("enabled");
+    if (o.has("focusMode"))
+        d.focusMode = parseFocusMode(o.getValue<std::string>("focusMode"));
+    if (o.has("mouseFilter"))
+        d.mouseFilter = parseMouseFilter(o.getValue<std::string>("mouseFilter"));
+    if (o.has("theme"))
+        d.themePreset = parseThemePreset(o.getValue<std::string>("theme"));
+    if (o.has("tabIndex")) d.tabIndex = int(fnum(o.get("tabIndex")));
+    if (o.has("focusPrevious"))
+        d.focusPrevious = o.getValue<std::string>("focusPrevious");
+    if (o.has("focusNext")) d.focusNext = o.getValue<std::string>("focusNext");
+    if (o.has("focusLeft")) d.focusLeft = o.getValue<std::string>("focusLeft");
+    if (o.has("focusRight")) d.focusRight = o.getValue<std::string>("focusRight");
+    if (o.has("focusUp")) d.focusUp = o.getValue<std::string>("focusUp");
+    if (o.has("focusDown")) d.focusDown = o.getValue<std::string>("focusDown");
+    if (o.has("accessibilityRole"))
+        d.accessibilityRole =
+            parseAccessibilityRole(o.getValue<std::string>("accessibilityRole"));
+    if (o.has("accessibilityName"))
+        d.accessibilityName = o.getValue<std::string>("accessibilityName");
+    if (o.has("accessibilityDescription"))
+        d.accessibilityDescription =
+            o.getValue<std::string>("accessibilityDescription");
     if (o.has("checked")) d.checked = o.getValue<bool>("checked");
     if (o.has("open")) d.open = o.getValue<bool>("open");
     if (o.has("value")) d.value = fnum(o.get("value"));
@@ -1471,6 +1806,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginCollapsing", &UI::beginCollapsing);
     cls.addFunc("beginChild", &UI::beginChild);
     cls.addFunc("beginCard", &UI::beginCard);
+    cls.addFunc("beginNinePatch", &UI::beginNinePatch);
     cls.addFunc("beginMenuBar", &UI::beginMenuBar);
     cls.addFunc("beginMenu", &UI::beginMenu);
     cls.addFunc("beginToolbar", &UI::beginToolbar);
@@ -1494,6 +1830,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("slider", &UI::addSlider);
     cls.addFunc("progress", &UI::addProgress);
     cls.addFunc("image", &UI::addImage);
+    cls.addFunc("ninePatch", &UI::addNinePatch);
     cls.addFunc("imageButton", &UI::addImageButton);
     cls.addFunc("viewport", &UI::addViewport);
     cls.addFunc("combo", &UI::addCombo);
@@ -1513,6 +1850,15 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setItemPercent", &UI::setItemPercent);
     cls.addFunc("setItemAbsolute", &UI::setItemAbsolute);
     cls.addFunc("setItemTooltip", &UI::setItemTooltip);
+    cls.addFunc("setItemEnabled", &UI::setItemEnabled);
+    cls.addFunc("setItemFocusMode", &UI::setItemFocusMode);
+    cls.addFunc("setItemMouseFilter", &UI::setItemMouseFilter);
+    cls.addFunc("setItemTheme", &UI::setItemTheme);
+    cls.addFunc("setThemeScope", &UI::setThemeScope);
+    cls.addFunc("setItemTabIndex", &UI::setItemTabIndex);
+    cls.addFunc("setItemFocusOrder", &UI::setItemFocusOrder);
+    cls.addFunc("setItemFocusNeighbors", &UI::setItemFocusNeighbors);
+    cls.addFunc("setItemAccessibility", &UI::setItemAccessibility);
     cls.addFunc("setFlexAlign", &UI::setFlexAlign);
     cls.addFunc("setFlexJustify", &UI::setFlexJustify);
     cls.addFunc("listItem", &UI::addListItem);
@@ -1521,12 +1867,14 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setText", &UI::setText);
     cls.addFunc("setTextWrap", &UI::setTextWrap);
     cls.addFunc("setVisible", &UI::setVisible);
+    cls.addFunc("setEnabled", &UI::setEnabled);
     cls.addFunc("setChecked", &UI::setChecked);
     cls.addFunc("setValue", &UI::setValue);
     cls.addFunc("setValueText", &UI::setValueText);
     cls.addFunc("setImageTint", &UI::setImageTint);
     cls.addFunc("setImageUv", &UI::setImageUv);
     cls.addFunc("setImageNinePatch", &UI::setImageNinePatch);
+    cls.addFunc("setImageNinePatchFile", &UI::setImageNinePatchFile);
     cls.addFunc("setImageCornerRadius", &UI::setImageCornerRadius);
     cls.addFunc("setImageTextureId", &UI::setImageTextureId);
     cls.addFunc("registerTexture", &UI::registerTexture);
@@ -1534,6 +1882,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("getValue", &UI::getValue);
     cls.addFunc("getValueText", &UI::getValueText);
     cls.addFunc("getChecked", &UI::getChecked);
+    cls.addFunc("requestFocus", &UI::requestFocus);
+    cls.addFunc("moveFocus", &UI::moveFocus);
+    cls.addFunc("getFocusedId", &UI::getFocusedId);
     cls.addFunc("setHostVisible", &UI::setHostVisible);
     cls.addFunc("setHostLayer", &UI::setHostLayer);
     cls.addFunc("setHostModal", &UI::setHostModal);

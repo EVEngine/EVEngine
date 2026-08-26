@@ -54,6 +54,8 @@ struct EVENGINE_API ScriptSourceMap {
 
     /** @brief Maps a generated location back to the nearest original location. */
     ScriptSourcePosition originalPosition(ScriptSourcePosition generated) const noexcept;
+    /** @brief Maps an original location to the nearest generated location. */
+    ScriptSourcePosition generatedPosition(ScriptSourcePosition original) const noexcept;
 };
 
 /** @brief Erased source-level symbol retained for tooling. */
@@ -184,6 +186,12 @@ public:
     std::optional<ScriptHover> hover(std::string_view canonicalUri, std::string_view symbol) const;
     /** @brief Returns the latest diagnostics for one source unit. */
     std::vector<ScriptDiagnostic> diagnostics(std::string_view canonicalUri) const;
+    /** @brief Replaces the source map retained for a compiled unit. */
+    bool setSourceMap(std::string_view canonicalUri, ScriptSourceMap sourceMap);
+    /** @brief Maps a VM/generated location through any active compiler metadata. */
+    static ScriptSourcePosition toOriginalPosition(std::string_view source, ScriptSourcePosition generated);
+    /** @brief Maps an IDE/original location to the VM location used for breakpoints. */
+    static ScriptSourcePosition toGeneratedPosition(std::string_view source, ScriptSourcePosition original);
     /** @brief Unified raw-VM entry used by REPL, debugger, MCP, and editor adapters. */
     static SQRESULT compileBuffer(HSQUIRRELVM vm, const SQChar* source, SQInteger size, const SQChar* sourceName,
                                   SQBool raiseError);

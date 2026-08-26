@@ -189,6 +189,18 @@ int HotReload::watchTree(std::string root) {
     return added;
 }
 
+bool HotReload::watchNewDirectory(std::string path) {
+    auto *fs = Filesystem::create();
+    if (!fs) return false;
+    path = normalizePath(std::move(path));
+    if (path.empty()) return false;
+
+    Filesystem::Info info{};
+    if (!fs->getInfo(path, info) || info.type != "directory") return false;
+    watchTree(path);
+    return true;
+}
+
 // --- Remote hot reload (dev-server sync) ---
 // Poco (HTTP) is not available in the Emscripten/WebGPU build; the API is
 // stubbed there so scripts still compile, and startRemoteSync just fails.
@@ -457,6 +469,7 @@ void HotReload::expose(ssq::Class &cls) {
     cls.addFunc("unbind", &HotReload::unbind);
     cls.addFunc("tryReload", &HotReload::tryReload);
     cls.addFunc("watchTree", &HotReload::watchTree);
+    cls.addFunc("watchNewDirectory", &HotReload::watchNewDirectory);
     cls.addFunc("startRemoteSync", &HotReload::startRemoteSync);
     cls.addFunc("stopRemoteSync", &HotReload::stopRemoteSync);
     cls.addFunc("isRemoteSyncing", &HotReload::isRemoteSyncing);

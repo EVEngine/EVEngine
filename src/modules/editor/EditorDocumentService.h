@@ -128,6 +128,14 @@ public:
     EditorResult<DocumentSnapshot> snapshot(const DocumentId& document) const;
     /** @brief Return all open documents in stable id order. */
     std::vector<DocumentSnapshot> documents() const;
+    /**
+     * @brief Reconcile one open document with the latest store value.
+     * Clean documents adopt external content; dirty documents enter Conflict
+     * without losing their working content.
+     * @param document Stable identity of the open document to inspect.
+     * @return Updated snapshot or a structured conflict/failure.
+     */
+    EditorResult<DocumentSnapshot> reconcileExternal(const DocumentId& document);
     /** @brief Close and discard in-memory state; persisted content is unchanged. */
     EditorResult<void> close(const DocumentId& document);
 

@@ -55,6 +55,7 @@ const char* nodeTypeName(NodeType type) {
         case NodeType::Switch: return "switch";
         case NodeType::Badge: return "badge";
         case NodeType::Card: return "card";
+        case NodeType::NinePatchPanel: return "ninePatchPanel";
         case NodeType::SectionHeader: return "sectionHeader";
         case NodeType::MenuBar: return "menuBar";
         case NodeType::Menu: return "menu";
@@ -69,9 +70,57 @@ const char* nodeTypeName(NodeType type) {
 }
 
 bool isClickable(const UINode& node) {
+    if (!node.enabled || node.mouseFilter == MouseFilter::Ignore) return false;
     return node.type == NodeType::Button || node.type == NodeType::ImageButton ||
            node.type == NodeType::Switch || node.type == NodeType::MenuItem ||
            node.handlerClick != 0;
+}
+
+const char* focusModeName(FocusMode mode) {
+    switch (mode) {
+        case FocusMode::None: return "none";
+        case FocusMode::Click: return "click";
+        case FocusMode::All: return "all";
+    }
+    return "none";
+}
+
+const char* mouseFilterName(MouseFilter filter) {
+    switch (filter) {
+        case MouseFilter::Stop: return "stop";
+        case MouseFilter::Pass: return "pass";
+        case MouseFilter::Ignore: return "ignore";
+    }
+    return "ignore";
+}
+
+const char* themePresetName(ThemePreset preset) {
+    switch (preset) {
+        case ThemePreset::Inherit: return "inherit";
+        case ThemePreset::Dark: return "dark";
+        case ThemePreset::Light: return "light";
+    }
+    return "inherit";
+}
+
+const char* accessibilityRoleName(AccessibilityRole role) {
+    switch (role) {
+        case AccessibilityRole::Auto: return "auto";
+        case AccessibilityRole::Button: return "button";
+        case AccessibilityRole::Checkbox: return "checkbox";
+        case AccessibilityRole::Slider: return "slider";
+        case AccessibilityRole::Text: return "text";
+        case AccessibilityRole::TextInput: return "textInput";
+        case AccessibilityRole::List: return "list";
+        case AccessibilityRole::ListItem: return "listItem";
+        case AccessibilityRole::Menu: return "menu";
+        case AccessibilityRole::MenuItem: return "menuItem";
+        case AccessibilityRole::Progress: return "progress";
+        case AccessibilityRole::Region: return "region";
+        case AccessibilityRole::Tab: return "tab";
+        case AccessibilityRole::Window: return "window";
+    }
+    return "auto";
 }
 
 std::string stringify(const Poco::Dynamic::Var& value) {
@@ -90,7 +139,26 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
     if (!node.key.empty()) out->set("key", node.key);
     out->set("text", node.text);
     out->set("visible", node.visible);
+    out->set("enabled", node.enabled);
     out->set("clickable", isClickable(node));
+    out->set("focusMode", focusModeName(node.focusMode));
+    out->set("focused", node.focused);
+    out->set("tabIndex", node.tabIndex);
+    out->set("mouseFilter", mouseFilterName(node.mouseFilter));
+    out->set("theme", themePresetName(node.themePreset));
+    if (!node.focusPrevious.empty()) out->set("focusPrevious", node.focusPrevious);
+    if (!node.focusNext.empty()) out->set("focusNext", node.focusNext);
+    if (!node.focusLeft.empty()) out->set("focusLeft", node.focusLeft);
+    if (!node.focusRight.empty()) out->set("focusRight", node.focusRight);
+    if (!node.focusUp.empty()) out->set("focusUp", node.focusUp);
+    if (!node.focusDown.empty()) out->set("focusDown", node.focusDown);
+    Poco::JSON::Object::Ptr accessibility(new Poco::JSON::Object());
+    accessibility->set("role", accessibilityRoleName(node.accessibilityRole));
+    accessibility->set("name", node.accessibilityName.empty() ? node.text
+                                                              : node.accessibilityName);
+    if (!node.accessibilityDescription.empty())
+        accessibility->set("description", node.accessibilityDescription);
+    out->set("accessibility", accessibility);
     if (node.type == NodeType::Checkbox || node.type == NodeType::Switch ||
         node.type == NodeType::MenuItem)
         out->set("checked", node.checked);
@@ -203,6 +271,7 @@ public:
         event.host         = host;
         event.hostName     = host->getName();
         event.nodeId       = node->id;
+        event.nodeIndex    = nodeIndex(*host->tree(), node);
         event.kind         = "click";
         event.handlerIndex = node->handlerClick;
         UISystem::pendingEvents().push_back(std::move(event));

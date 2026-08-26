@@ -320,8 +320,43 @@ void ScriptModuleResolver::beginCompilation(std::string_view importerUri) {
     impl_->dependencies.erase(std::string(importerUri));
 }
 
-void ScriptModuleResolver::prepareDependencies(std::string_view) {
+void ScriptModuleResolver::prepareDependencies(std::string_view importerUri) {
     if (!impl_->lastError.empty()) throw std::runtime_error(impl_->lastError);
+
+    enum class Visit { Visiting, Ready };
+    std::unordered_map<std::string, Visit> visits;
+    std::vector<std::string>               stack;
+    const auto verify = [&](const auto& self, const std::string& uri) -> void {
+        if (const auto seen = visits.find(uri); seen != visits.end()) {
+            if (seen->second == Visit::Ready) return;
+            std::string cycle;
+            const auto  begin = std::find(stack.begin(), stack.end(), uri);
+            for (auto it = begin; it != stack.end(); ++it) {
+                if (!cycle.empty()) cycle += " -> ";
+                cycle += *it;
+            }
+            if (!cycle.empty()) cycle += " -> ";
+            throw std::runtime_error("cyclic script import: " + cycle + uri);
+        }
+
+        visits.emplace(uri, Visit::Visiting);
+        stack.push_back(uri);
+        const auto edges = impl_->dependencies.find(uri);
+        if (edges != impl_->dependencies.end()) {
+            for (const std::string& dependency : edges->second) {
+                if (impl_->modules.find(dependency) == impl_->modules.end())
+                    throw std::runtime_error("script dependency was not compiled: " + dependency);
+                self(self, dependency);
+            }
+        }
+        stack.pop_back();
+        visits[uri] = Visit::Ready;
+    };
+
+    const std::string root(importerUri);
+    const auto        edges = impl_->dependencies.find(root);
+    if (edges == impl_->dependencies.end()) return;
+    for (const std::string& dependency : edges->second) verify(verify, dependency);
 }
 
 void ScriptModuleResolver::instantiateDependencies(std::string_view importerUri) {

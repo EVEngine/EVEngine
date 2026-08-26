@@ -19,6 +19,7 @@ struct UIEvent {
     UIHost *host = nullptr;
     std::string hostName;
     std::string nodeId;
+    int nodeIndex = -1;
     std::string kind;  // "click" | "toggle" | "value" | "text"
     uint32_t handlerIndex = 0;
     bool toggleValue = false;

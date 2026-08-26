@@ -1,12 +1,18 @@
 #include "cmdline.h"
 #include "zip_writer.h"
+#include "common/ScriptCompiler.h"
+#include "common/ScriptModule.h"
 #include "common/config.h"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <map>
+#include <set>
+#include <sstream>
 #include <CLI11.hpp>
 #include <rang.hpp>
 
-#ifdef EVENGINE_WINDOWS
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -49,6 +55,100 @@ bool copyFirst(const std::string& dll, const std::vector<path>& candidates, cons
     return false;
 }
 
+struct ScriptPackageManifest {
+    std::map<std::string, std::vector<std::string>> graph;
+    std::string                                     error;
+
+    std::string serialize() const {
+        std::ostringstream out;
+        out << "version=1\n";
+        for (const auto& [module, dependencies] : graph) {
+            out << module;
+            for (const std::string& dependency : dependencies) out << '\t' << dependency;
+            out << '\n';
+        }
+        return out.str();
+    }
+};
+
+bool canonicalGameModule(std::string_view importer, std::string_view specifier, std::string& result,
+                         std::string& error) {
+    script::ScriptModuleRequest request{std::string(importer), std::string(specifier)};
+    if (!script::ScriptModuleResolver::canonicalize(request, result, error)) return false;
+    if (result.rfind("game:/", 0) != 0) {
+        error = "package cannot statically resolve non-game script module: " + result;
+        return false;
+    }
+    return true;
+}
+
+ScriptPackageManifest scanScriptPackage(const path& gameDir) {
+    ScriptPackageManifest manifest;
+    std::error_code       ec;
+    for (recursive_directory_iterator it(gameDir, directory_options::skip_permission_denied, ec), end; it != end;
+         it.increment(ec)) {
+        if (ec) {
+            ec.clear();
+            continue;
+        }
+        if (!it->is_regular_file() || it->path().extension() != ".nut") continue;
+        std::ifstream input(it->path(), std::ios::binary);
+        if (!input) {
+            manifest.error = "cannot read script during package scan: " + it->path().string();
+            return manifest;
+        }
+        const std::string source(std::istreambuf_iterator<char>(input), {});
+        const std::string relative = std::filesystem::relative(it->path(), gameDir, ec).generic_string();
+        if (ec) {
+            manifest.error = "cannot canonicalize packaged script: " + it->path().string();
+            return manifest;
+        }
+        const std::string canonical = "game:/" + relative;
+        auto&             edges     = manifest.graph[canonical];
+        for (const std::string& specifier : script::ScriptCompiler::analyze(source, canonical).imports) {
+            std::string dependency;
+            if (!canonicalGameModule(canonical, specifier, dependency, manifest.error)) return manifest;
+            edges.push_back(std::move(dependency));
+        }
+        std::sort(edges.begin(), edges.end());
+        edges.erase(std::unique(edges.begin(), edges.end()), edges.end());
+    }
+
+    for (const auto& [module, dependencies] : manifest.graph) {
+        for (const std::string& dependency : dependencies) {
+            if (manifest.graph.find(dependency) == manifest.graph.end()) {
+                manifest.error = "script module imported by " + module + " is missing from package: " + dependency;
+                return manifest;
+            }
+        }
+    }
+
+    enum class Visit { Visiting, Ready };
+    std::map<std::string, Visit> visits;
+    std::vector<std::string>     stack;
+    const auto visit = [&](const auto& self, const std::string& module) -> bool {
+        if (const auto found = visits.find(module); found != visits.end()) {
+            if (found->second == Visit::Ready) return true;
+            manifest.error = "cyclic script import in package";
+            for (const std::string& entry : stack) manifest.error += " -> " + entry;
+            manifest.error += " -> " + module;
+            return false;
+        }
+        visits[module] = Visit::Visiting;
+        stack.push_back(module);
+        for (const std::string& dependency : manifest.graph[module]) {
+            if (!self(self, dependency)) return false;
+        }
+        stack.pop_back();
+        visits[module] = Visit::Ready;
+        return true;
+    };
+    for (const auto& [module, _] : manifest.graph) {
+        if (!visit(visit, module)) return manifest;
+    }
+    return manifest;
+}
+
 // Locate the target SDK root: --sdk, EVENGINE_SDK, or next to the running binary.
 std::string resolveSdkRoot(const std::string& sdkArg) {
     if (!sdkArg.empty() && is_directory(sdkArg)) return sdkArg;
@@ -58,7 +158,7 @@ std::string resolveSdkRoot(const std::string& sdkArg) {
 
     // Running from <sdk>/bin/<runtime> -> root is two directories up.
     path exe;
-#ifdef EVENGINE_WINDOWS
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     wchar_t buf[MAX_PATH + 1] = {0};
     if (GetModuleFileNameW(nullptr, buf, MAX_PATH) != 0) exe = path(buf);
 #else
@@ -113,6 +213,12 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         return 2;
     }
 
+    const ScriptPackageManifest scripts = scanScriptPackage(gamePath);
+    if (!scripts.error.empty()) {
+        cerr << rang::fg::red << "Script dependency scan failed: " << scripts.error << rang::fg::reset << endl;
+        return 5;
+    }
+
     // Game folder name, trailing separators stripped.
     std::string gameName = gamePath;
     while (!gameName.empty() && (gameName.back() == '/' || gameName.back() == '\\'))
@@ -146,7 +252,7 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         std::vector<path> crtCandidates;
         if (exists(sdkBin)) crtCandidates.push_back(sdkBin);
         if (exists(sdkLib)) crtCandidates.push_back(sdkLib);
-#ifdef EVENGINE_WINDOWS
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
         // VC redist (version-independent glob): both release CRT and debug CRT.
         for (const auto& msroot : {"C:/Program Files/Microsoft Visual Studio"}) {
             path base = path(msroot);
@@ -223,7 +329,8 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
 
     // 4. Compress the game directory into game.eve inside the package.
     path archive = outDir / "game.eve";
-    if (!cmdline::createGameArchive(gamePath, archive)) {
+    if (!cmdline::createGameArchive(gamePath, archive,
+                                    {{".eve/script-modules.manifest", scripts.serialize()}})) {
         cerr << rang::fg::red << "Failed to package game archive." << rang::fg::reset << endl;
         return 4;
     }

@@ -6,23 +6,26 @@ namespace eve::animation {
 
 class AnimPlayer;
 
-/** @brief Duration-normalized synchronization group for locomotion animation players. */
+/** @brief Marker-aware synchronization group for locomotion animation players. */
 class AnimSyncGroup {
 public:
     void addPlayer(AnimPlayer* player, float phaseOffset = 0.f);
-    void clear() { entries_.clear(); leader_ = 0; }
+    void clear() { entries_.clear(); leader_ = 0; phase_ = 0.f; usedMarkerSync_ = false; }
     int getCount() const { return static_cast<int>(entries_.size()); }
     void setLeader(int index);
     int getLeader() const { return leader_; }
-    /** @brief Advance the leader and align all followers to its normalized phase. */
+    /** @brief Advance the leader and align followers by common markers, or normalized phase as fallback. */
     void update(float dt);
     float getPhase() const { return phase_; }
+    /** @brief Whether the latest update used compatible sync markers for at least one follower. */
+    bool getUsedMarkerSync() const { return usedMarkerSync_; }
 
 private:
     struct Entry { AnimPlayer* player = nullptr; float phaseOffset = 0.f; };
     std::vector<Entry> entries_;
     int leader_ = 0;
     float phase_ = 0.f;
+    bool usedMarkerSync_ = false;
 };
 
 }  // namespace eve::animation

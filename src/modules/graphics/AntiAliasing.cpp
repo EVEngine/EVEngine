@@ -9,6 +9,7 @@
 #include "graphics/shaders/aa_nfaa_frag_spv.inc"
 #include "graphics/shaders/aa_smaa_frag_spv.inc"
 #include "graphics/shaders/aa_ssaa_frag_spv.inc"
+#include "graphics/shaders/PostProcessWgsl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -24,10 +25,16 @@ std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
 }
 
+Shader *newPostShader(Graphics *gfx, const std::vector<uint32_t> &frag, const char *wgsl) {
+    if (gfx->getBackendName() == "webgpu")
+        return gfx->newShaderFromWgsl({}, std::string(shaders::kPostCommon) + wgsl);
+    return gfx->newShaderFromSpv({}, frag);
+}
+
 Shader *createFxaaShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
     auto frag = copySpv(aa_fxaa_frag_spv, aa_fxaa_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newPostShader(gfx, frag, shaders::kFxaa);
     if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create FXAA shader");
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");
@@ -47,7 +54,7 @@ Shader *createFxaaShader(Graphics *gfx) {
 Shader *createSmaaShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
     auto frag = copySpv(aa_smaa_frag_spv, aa_smaa_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newPostShader(gfx, frag, shaders::kSmaa);
     if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create SMAA shader");
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");
@@ -67,7 +74,7 @@ Shader *createSmaaShader(Graphics *gfx) {
 Shader *createSsaaShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
     auto frag = copySpv(aa_ssaa_frag_spv, aa_ssaa_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newPostShader(gfx, frag, shaders::kSsaa);
     if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create SSAA shader");
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");
@@ -85,7 +92,7 @@ Shader *createSsaaShader(Graphics *gfx) {
 Shader *createNfaaShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("AntiAliasing: null graphics");
     auto frag = copySpv(aa_nfaa_frag_spv, aa_nfaa_frag_spv_count);
-    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    Shader *sh = newPostShader(gfx, frag, shaders::kNfaa);
     if (!sh || !sh->gpuHandle) throw eve::Exception("AntiAliasing: failed to create NFAA shader");
     sh->declareFloat("texelW");
     sh->declareFloat("texelH");

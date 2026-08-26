@@ -55,6 +55,47 @@ void appendUnique(std::vector<std::string>& values, std::string value) {
     if (std::find(values.begin(), values.end(), value) == values.end()) values.push_back(std::move(value));
 }
 
+std::string maskComments(std::string_view source) {
+    std::string result(source);
+    char        quote = 0;
+    bool        lineComment = false;
+    bool        blockComment = false;
+    for (size_t i = 0; i < result.size(); ++i) {
+        const char c = result[i];
+        const char next = i + 1 < result.size() ? result[i + 1] : 0;
+        if (lineComment) {
+            if (c == '\n')
+                lineComment = false;
+            else
+                result[i] = ' ';
+        } else if (blockComment) {
+            if (c == '*' && next == '/') {
+                result[i] = result[i + 1] = ' ';
+                ++i;
+                blockComment = false;
+            } else if (c != '\n') {
+                result[i] = ' ';
+            }
+        } else if (quote != 0) {
+            if (c == '\\')
+                ++i;
+            else if (c == quote)
+                quote = 0;
+        } else if (c == '"' || c == '\'') {
+            quote = c;
+        } else if (c == '/' && next == '/') {
+            result[i] = result[i + 1] = ' ';
+            ++i;
+            lineComment = true;
+        } else if (c == '/' && next == '*') {
+            result[i] = result[i + 1] = ' ';
+            ++i;
+            blockComment = true;
+        }
+    }
+    return result;
+}
+
 std::string trim(std::string_view value) {
     const size_t begin = value.find_first_not_of(" \t\r\n");
     if (begin == std::string_view::npos) return {};
@@ -144,6 +185,48 @@ ScriptSourcePosition ScriptSourceMap::originalPosition(ScriptSourcePosition gene
     }
     return result;
 }
+
+ScriptSourcePosition ScriptSourceMap::generatedPosition(ScriptSourcePosition original) const noexcept {
+    ScriptSourcePosition result = original;
+    for (const ScriptSourceMapEntry& entry : entries) {
+        if (entry.original.line > original.line ||
+            (entry.original.line == original.line && entry.original.column > original.column))
+            break;
+        result.line   = entry.generated.line + (original.line - entry.original.line);
+        result.column = original.line == entry.original.line
+                            ? entry.generated.column + (original.column - entry.original.column)
+                            : original.column;
+    }
+    return result;
+}
+
+namespace {
+
+bool sourceIdentityMatches(std::string_view registered, std::string_view requested) {
+    std::string left(registered);
+    std::string right(requested);
+    std::replace(left.begin(), left.end(), '\\', '/');
+    std::replace(right.begin(), right.end(), '\\', '/');
+    if (left == right) return true;
+    const size_t scheme = left.find(":/");
+    if (scheme != std::string::npos) left.erase(0, scheme + 2);
+    while (!left.empty() && left.front() == '/') left.erase(left.begin());
+    return right.size() >= left.size() && right.compare(right.size() - left.size(), left.size(), left) == 0 &&
+           (right.size() == left.size() || right[right.size() - left.size() - 1] == '/');
+}
+
+template <typename Mapper>
+ScriptSourcePosition mapRegisteredPosition(std::string_view source, ScriptSourcePosition position, Mapper mapper) {
+    std::lock_guard lock(compilerRegistryMutex);
+    for (const auto& [_, compiler] : compilerRegistry) {
+        for (const ScriptMetadata& metadata : compiler->metadataSnapshot()) {
+            if (sourceIdentityMatches(metadata.canonicalUri, source)) return mapper(metadata.sourceMap, position);
+        }
+    }
+    return position;
+}
+
+}  // namespace
 
 std::string BindingContract::key() const {
     std::string result = module;
@@ -382,6 +465,28 @@ std::vector<ScriptDiagnostic> ScriptCompiler::diagnostics(std::string_view canon
     return unit == nullptr ? std::vector<ScriptDiagnostic>{} : unit->diagnostics;
 }
 
+bool ScriptCompiler::setSourceMap(std::string_view canonicalUri, ScriptSourceMap sourceMap) {
+    const auto found = metadata_.find(std::string(canonicalUri));
+    if (found == metadata_.end()) return false;
+    sourceMap.canonicalUri = found->first;
+    found->second.sourceMap = std::move(sourceMap);
+    return true;
+}
+
+ScriptSourcePosition ScriptCompiler::toOriginalPosition(std::string_view source, ScriptSourcePosition generated) {
+    return mapRegisteredPosition(source, generated,
+                                 [](const ScriptSourceMap& map, ScriptSourcePosition position) {
+                                     return map.originalPosition(position);
+                                 });
+}
+
+ScriptSourcePosition ScriptCompiler::toGeneratedPosition(std::string_view source, ScriptSourcePosition original) {
+    return mapRegisteredPosition(source, original,
+                                 [](const ScriptSourceMap& map, ScriptSourcePosition position) {
+                                     return map.generatedPosition(position);
+                                 });
+}
+
 SQRESULT ScriptCompiler::compileBuffer(HSQUIRRELVM vm, const SQChar* source, SQInteger size, const SQChar* sourceName,
                                        SQBool raiseError) {
     ScriptCompiler* compiler = nullptr;
@@ -429,9 +534,10 @@ std::vector<ScriptDiagnostic> ScriptCompiler::validateProjectConfig(std::string_
                                                                     const std::vector<std::string>& knownModules,
                                                                     const std::vector<std::string>& activeModules) {
     std::vector<ScriptDiagnostic> result;
+    const std::string             scanned = maskComments(source);
     static const std::regex       listPattern(R"(\b(modules|optionalModules)\s*=\s*\[([^\]]*)\])");
     static const std::regex       valuePattern(R"([\"']([^\"']+)[\"'])");
-    forMatches(source, listPattern, [&](const std::smatch& list, size_t listOffset) {
+    forMatches(scanned, listPattern, [&](const std::smatch& list, size_t listOffset) {
         const bool        required = list[1].str() == "modules";
         const std::string values   = list[2].str();
         forMatches(values, valuePattern, [&](const std::smatch& value, size_t valueOffset) {
@@ -461,6 +567,7 @@ ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view
     result.providerOrigin         = std::string(canonicalUri);
     result.sourceMap.canonicalUri = result.canonicalUri;
     result.sourceMap.entries.push_back({{1, 1}, {1, 1}});
+    const std::string scanned = maskComments(source);
 
     static const std::regex importPattern(
         R"(\bimport\s+(?:\*\s+as\s+[A-Za-z_]\w*|\{[^}]*\})\s+from\s+[\"']([^\"']+)[\"'])");
@@ -473,25 +580,25 @@ ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view
         R"(((?:[ \t]*@[A-Za-z_]\w*\([^\r\n]*\)[ \t]*\r?\n)+)[ \t]*([A-Za-z_]\w*)[ \t]*:[ \t]*([^=\r\n]+)[ \t]*=)");
     static const std::regex annotationPattern(R"(@([A-Za-z_]\w*)\(([^)]*)\))");
 
-    forMatches(source, importPattern, [&](const std::smatch& match, size_t) {
+    forMatches(scanned, importPattern, [&](const std::smatch& match, size_t) {
         appendUnique(result.imports, match[1].str());
         appendUnique(result.moduleReferences, match[1].str());
     });
-    forMatches(source, exportPattern,
+    forMatches(scanned, exportPattern,
                [&](const std::smatch& match, size_t) { appendUnique(result.exports, match[1].str()); });
-    forMatches(source, persistPattern, [&](const std::smatch& match, size_t offset) {
+    forMatches(scanned, persistPattern, [&](const std::smatch& match, size_t offset) {
         appendUnique(result.persistRoots, match[1].str());
         result.symbols.push_back({match[1].str(), "persist", "dynamic", positionAt(source, offset)});
     });
-    forMatches(source, symbolPattern, [&](const std::smatch& match, size_t offset) {
+    forMatches(scanned, symbolPattern, [&](const std::smatch& match, size_t offset) {
         result.symbols.push_back({match[2].str(), match[1].str(), match[3].matched ? match[3].str() : "dynamic",
                                   positionAt(source, offset)});
     });
-    forMatches(source, asyncPattern,
+    forMatches(scanned, asyncPattern,
                [&](const std::smatch& match, size_t) { appendUnique(result.asyncFunctions, match[1].str()); });
-    forMatches(source, awaitPattern,
+    forMatches(scanned, awaitPattern,
                [&](const std::smatch&, size_t offset) { result.awaitLocations.push_back(positionAt(source, offset)); });
-    forMatches(source, propertyPattern, [&](const std::smatch& match, size_t offset) {
+    forMatches(scanned, propertyPattern, [&](const std::smatch& match, size_t offset) {
         ScriptPropertyMetadata property;
         property.name                 = match[2].str();
         property.erasedType           = trim(match[3].str());

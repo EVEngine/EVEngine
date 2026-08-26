@@ -2,6 +2,7 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/shaders/WaterWgsl.h"
 #include "graphics/shaders/water_frag_spv.inc"
 
 #include <cmath>
@@ -31,8 +32,13 @@ const int kUniformCount = int(sizeof(kUniformNames) / sizeof(kUniformNames[0]));
 Shader *newWaterShader(Graphics *gfx) {
     // Use precompiled SPIR-V (not runtime glslc) so the water shader also works
     // on platforms without a runtime compiler (e.g. Windows).
-    std::vector<uint32_t> frag(water_frag_spv, water_frag_spv + water_frag_spv_count);
-    Shader *sh = gfx->newMeshShaderFromSpv({}, frag);
+    Shader *sh = nullptr;
+    if (gfx->getBackendName() == "webgpu") {
+        sh = gfx->newMeshShaderFromWgsl({}, shaders::kWaterFragWgsl);
+    } else {
+        std::vector<uint32_t> frag(water_frag_spv, water_frag_spv + water_frag_spv_count);
+        sh = gfx->newMeshShaderFromSpv({}, frag);
+    }
     for (int i = 0; i < kUniformCount; ++i) {
         if (std::string(kUniformNames[i]) == "waterCol")
             sh->declareVec3(kUniformNames[i]);

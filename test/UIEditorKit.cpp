@@ -39,6 +39,7 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     UI* ui = UI::create();
     ui->beginBuild();
     ui->beginWindow("Editor", "root");
+    ui->setThemeScope("light");
     ui->beginMenuBar("menu_bar");
     ui->beginMenu("Edit", "edit");
     ui->addMenuItem("Undo", "Ctrl+Z", "undo");
@@ -46,10 +47,18 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     ui->end();
     ui->addSearchField("Search", "cube", "search");
     ui->setItemTooltip("Filter scene nodes");
+    ui->setItemFocusMode("all");
+    ui->setItemMouseFilter("pass");
+    ui->setItemTheme("dark");
+    ui->setItemTabIndex(4);
+    ui->setItemFocusOrder("undo", "toolbar_save");
+    ui->setItemFocusNeighbors("undo", "toolbar_save", "undo", "toolbar_save");
+    ui->setItemAccessibility("text-input", "Search scene", "Filters the scene tree");
     ui->addSectionHeader("Inspector", "inspector");
     ui->beginCard("card");
     ui->addSwitch("Enabled", true, "enabled");
     ui->addBadge("Active", "active");
+    ui->setItemEnabled(false);
     ui->end();
     ui->beginToolbar("toolbar");
     ui->addIconButton("save", "", "toolbar_save");
@@ -77,8 +86,27 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     CHECK(json.find("splitPane") != std::string::npos);
     CHECK(ui->loadTreeJson(json));
     CHECK(int(ui->current()->findById("enabled")->type) == int(NodeType::Switch));
+    CHECK(!ui->current()->findById("active")->enabled);
     CHECK(ui->current()->findById("search")->tooltip == "Filter scene nodes");
+    CHECK(ui->current()->findById("search")->tabIndex == 4);
+    CHECK(int(ui->current()->findById("search")->mouseFilter) ==
+          int(MouseFilter::Pass));
+    CHECK(int(ui->current()->findById("root")->themePreset) ==
+          int(ThemePreset::Light));
+    CHECK(int(ui->current()->findById("search")->themePreset) ==
+          int(ThemePreset::Dark));
+    CHECK(ui->current()->findById("search")->focusRight == "toolbar_save");
+    CHECK(ui->current()->findById("search")->accessibilityName == "Search scene");
+    CHECK(ui->current()->findById("search")->accessibilityDescription ==
+          "Filters the scene tree");
     CHECK(int(ui->current()->findById("workspace")->type) == int(NodeType::SplitPane));
+    CHECK(ui->requestFocus("search"));
+    CHECK(ui->moveFocus("right"));
+    CHECK(ui->current()->findById("toolbar_save")->focusRequested);
+    ui->current()->findById("toolbar_save")->focused = true;
+    CHECK(ui->getFocusedId() == "toolbar_save");
+    ui->setEnabled("toolbar_save", false);
+    CHECK(ui->getFocusedId().empty());
     ui->setHostMovable(true);
     ui->setHostResizable(true);
     ui->setHostOverlayAlpha(0.85f);
@@ -104,7 +132,8 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
                                    iconButton(Icon::PaintBrush, "", "paint")},
                                   "tools", 0.f, 2)},
                          "sidebar", 0.f),
-                 card({sectionHeader("Inspector", "inspector"), toggleSwitch("Visible", true, "visible")}, "content"),
+                 card({sectionHeader("Inspector", "inspector"), toggleSwitch("Visible", true, "visible")}, "content")
+                     .withTheme(ThemePreset::Light),
                  0.3f, "workspace"),
              statusBar({text("Scene ready", "message"), spacer("status_space"), text("60 FPS", "fps")}, "status")},
             "root"));
@@ -128,9 +157,16 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
     (void)pixels;
 
+    const ImVec4 buttonBefore = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+
     ImGui::NewFrame();
     UISystem::render();
     ImGui::EndFrame();
+    const ImVec4 buttonAfter = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+    CHECK(buttonAfter.x == buttonBefore.x);
+    CHECK(buttonAfter.y == buttonBefore.y);
+    CHECK(buttonAfter.z == buttonBefore.z);
+    CHECK(buttonAfter.w == buttonBefore.w);
     ImGui::DestroyContext(headlessContext);
     if (savedContext) ImGui::SetCurrentContext(savedContext);
 
