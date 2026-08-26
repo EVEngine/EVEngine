@@ -148,6 +148,7 @@ file(GLOB all_test_cpp
   shader.cpp
   hair.cpp
   grass.cpp
+  hd2d.cpp
   spritestack.cpp
   daynight.cpp
   weather.cpp
