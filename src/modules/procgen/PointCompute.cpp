@@ -92,6 +92,7 @@ void main() {
 }  // namespace
 
 struct PointCompute::Impl {
+    std::vector<float>                         packed;
     std::unique_ptr<eve::gpgpu::GpuBuffer>     storage;
     std::unique_ptr<eve::gpgpu::GpuBuffer>     staging;
     std::unique_ptr<eve::gpgpu::ComputeShader> shader;
@@ -130,7 +131,8 @@ bool PointCompute::transform(const PointSet& input, PointSet& output, float tran
             return false;
         }
 
-        std::vector<float> packed(size_t(input.getCount()) * kPointFloats);
+        impl_->packed.resize(size_t(input.getCount()) * kPointFloats);
+        std::vector<float>& packed = impl_->packed;
         for (int index = 0; index < input.getCount(); ++index) {
             const ProcgenPoint& point  = input.points()[size_t(index)];
             float*              values = packed.data() + size_t(index) * kPointFloats;

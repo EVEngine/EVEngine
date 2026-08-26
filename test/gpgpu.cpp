@@ -309,6 +309,14 @@ TEST_CASE("gpgpu.procgen.transformParity") {
         CHECK(actual.getPointSeed(index) == input.getPointSeed(index));
         CHECK(actual.getStringAttribute(index, "asset", "") == "oak");
     }
+
+    const eve::procgen::PointSet reusedExpected =
+        eve::procgen::transformPointSet(input, -4.f, 6.f, 2.f, -17.f, 0.5f, 2.f, 1.25f);
+    eve::procgen::PointSet reusedActual;
+    REQUIRE(compute.transform(input, reusedActual, -4.f, 6.f, 2.f, -17.f, 0.5f, 2.f, 1.25f));
+    REQUIRE(reusedActual.getCount() == reusedExpected.getCount());
+    CHECK(std::fabs(reusedActual.getX(0) - reusedExpected.getX(0)) < 0.0001f);
+    CHECK(std::fabs(reusedActual.getZ(count - 1) - reusedExpected.getZ(count - 1)) < 0.0001f);
 }
 
 TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {

@@ -833,7 +833,7 @@ void PointGraph::invalidateFrom(const std::string& id) {
     std::vector<std::string> dirty{id};
     std::unordered_map<std::string, bool> visited;
     for (size_t cursor = 0; cursor < dirty.size(); ++cursor) {
-        const std::string& current = dirty[cursor];
+        const std::string current = dirty[cursor];
         if (visited[current]) continue;
         visited[current] = true;
         const auto found = nodes_.find(current);
