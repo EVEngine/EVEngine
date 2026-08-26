@@ -554,6 +554,13 @@ function dev_notify_frame_done() {
         eve.dev.notifyFrameDone();
 }
 
+// Scenario recording: mark a new frame bucket before this frame's events are
+// polled, so the recorded input/event stream maps to the frame that consumed it.
+function dev_scenario_frame() {
+    if (has_dev())
+        eve.dev.scenarioFrame();
+}
+
 function handle_dev_key(key, scancode) {
     if (!has_dev()) return;
     // Pause key (keyboard Pause/Break) toggles frame-level pause.
@@ -647,6 +654,7 @@ eve_frame <- function() {
     if ((getroottable()._frame_count % 300) == 0)
         _log("frame: reached frame " + getroottable()._frame_count);
     local running = true;
+    dev_scenario_frame();
     event.pump();
     while (true) {
         local name = event.poll();

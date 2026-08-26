@@ -137,7 +137,7 @@ int Cmdline::McpHost(std::string path, int port) {
         // DevTools: attach the VM so eve_eval / eve_run_script / snapshot work;
         // expose eve.dev. No statement-level local sampling (host is a service).
         auto& dt = eve::dev::DevTool::instance();
-        dt.attach(runtime.vm(), /*sampleLocals=*/false);
+        dt.attach(runtime, /*sampleLocals=*/false);
         dt.exposeScriptApi(runtime.vm());
 
         // The headless host never runs load.nut, so registered modules are not

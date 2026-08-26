@@ -281,7 +281,18 @@ public:
         return materialTableGetOrCreate(material);
     }
     bool gpuDrivenMaterialUsable(Material *material) override;
-    bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    bool     gpuDrivenSubmitOpaque(const GpuInstance* instances, uint32_t instanceCount) override;
+    Texture* getSceneLinearDepthTexture() override;
+
+    bool              supportsGpuParticles() const override { return initialized && !headless_; }
+    bool              canSubmitGpuParticles() const override;
+    GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) override;
+    void              releaseGpuParticleEmitter(GpuParticleHandle handle) override;
+    void              resetGpuParticleEmitter(GpuParticleHandle handle) override;
+    bool              updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
+                                               const GpuParticleSpawn* spawns, std::uint32_t spawnCount) override;
+    bool              drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) override;
+    GpuParticleStats  getGpuParticleStats(GpuParticleHandle handle) const override;
     /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
     uint32_t debugBindlessIndex(Texture *tex) const;
     uint32_t debugMeshRecordIndex(Mesh *mesh) const;
@@ -358,6 +369,9 @@ public:
                                          BlendMode blend = BlendMode::Alpha) override;
     void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x, float y,
                                      float w, float h, const Color &tint) override;
+    bool drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h, float degrees,
+                                           float u0, float v0, float u1, float v1, float strengthPixels, float opacity,
+                                           bool rotatedUV = false) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
                                float u0, float v0, float u1, float v1, const Color &color) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
@@ -497,6 +511,9 @@ public:
     };
 
 private:
+    struct GpuParticleDrawRequest;
+    struct GpuParticleResource;
+
     struct Mesh3dFrameSlots;
     struct Mesh3dClusteredFrameSlots;
     struct DecalSlot;
@@ -506,6 +523,10 @@ private:
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
     void createLit2DPipeline();
+    void          createGpuParticlePipelines();
+    void          destroyGpuParticleResources();
+    void          recordGpuParticleCompute(vk::CommandBuffer cb);
+    void          drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDrawRequest& request);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void createVoxelRectPipeline();
@@ -703,6 +724,7 @@ private:
     vk::Pipeline premultipliedTexPipeline;
     vk::Pipeline multiplyTexPipeline;
     vk::Pipeline opaqueTexPipeline;
+    vk::Pipeline                  particleDistortionPipeline;
     vk::PipelineLayout texPipelineLayout;
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;
@@ -1249,17 +1271,19 @@ private:
     };
     std::vector<SolidBatch> solidBatches;
     struct TexturedBatch {
+        enum class Effect { Default, SceneColorDistortion };
         Texture *texture = nullptr;
         Texture *depth = nullptr;
         Shader *shader = nullptr;
         BlendMode blend = BlendMode::Alpha;
         Batcher batch;
+        Effect    effect = Effect::Default;
     };
     std::vector<TexturedBatch> texturedBatches;
 
     std::vector<LitBatch> litBatches;
 
-    enum class OverlayKind : uint8_t { Solid, Textured, Lit };
+    enum class OverlayKind : uint8_t { Solid, Textured, Lit, GpuParticles };
     struct OverlaySpan {
         OverlayKind kind = OverlayKind::Solid;
         uint32_t index = 0;
@@ -1271,6 +1295,24 @@ private:
     std::optional<TexturedBatch> pendingSceneResolve;
     std::optional<TexturedBatch> pendingUiResolve;
     bool sceneColorComposited = false;
+
+    struct GpuParticleDrawRequest {
+        GpuParticleHandle handle = kInvalidGpuParticleHandle;
+        GpuParticleDraw   draw;
+    };
+    std::unordered_map<GpuParticleHandle, GpuParticleResource*> gpuParticles_;
+    std::vector<GpuParticleDrawRequest>                         gpuParticleDraws_;
+    GpuParticleHandle                                           nextGpuParticleHandle_ = 1;
+    vk::DescriptorSetLayout                                     gpuParticleComputeSetLayout_{};
+    vk::DescriptorSetLayout                                     gpuParticleDrawSetLayout_{};
+    vk::PipelineLayout                                          gpuParticleComputeLayout_{};
+    vk::PipelineLayout                                          gpuParticleDrawLayout_{};
+    vk::Pipeline                                                gpuParticleComputePipeline_{};
+    vk::Pipeline                                                gpuParticleAlphaPipeline_{};
+    vk::Pipeline                                                gpuParticleAdditivePipeline_{};
+    vk::Pipeline                                                gpuParticlePremultipliedPipeline_{};
+    vk::Pipeline                                                gpuParticleMultiplyPipeline_{};
+    vk::Pipeline                                                gpuParticleOpaquePipeline_{};
 
     // Persistent host-visible vertex buffers for 2D batching, reused across
     // frames. GenericBuffer now owns the Vulkan handles.
