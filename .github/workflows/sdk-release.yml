@@ -41,7 +41,9 @@ env:
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
   VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
-  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '26.1.10909125' }}
+  # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
+  # images (27.3.13750724), so setup-android downloads nothing extra.
+  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
   ANDROID_API: ${{ vars.ANDROID_API || '34' }}
 
 jobs:

@@ -200,7 +200,7 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 | Host | macOS / Linux (Makefile paths default to macOS Homebrew) |
 | JDK | **OpenJDK 17** (`brew install openjdk@17`) |
 | Android SDK | command-line tools + `platform-tools` + `platforms;android-34` + `build-tools;34.0.0` |
-| NDK | **26.1.10909125** (`sdkmanager "ndk;26.1.10909125"`) |
+| NDK | **27.3.13750724** (`sdkmanager "ndk;27.3.13750724"`) |
 | CMake (SDK) | `cmake;3.22.1` (for Gradle; the engine itself cross-compiles with host CMake/Ninja) |
 | ABI / minSdk | **arm64-v8a** / **24** |
 | Device | Physical device with **Vulkan** (emulator is not a v1 acceptance target) |
@@ -210,7 +210,7 @@ Environment variables (add to `~/.zshrc` or export before building):
 ```sh
 export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-export ANDROID_NDK="$ANDROID_HOME/ndk/26.1.10909125"
+export ANDROID_NDK="$ANDROID_HOME/ndk/27.3.13750724"
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 ```
 

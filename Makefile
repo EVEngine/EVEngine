@@ -28,7 +28,7 @@ else ifeq ($(PLATFORM),win32)
 else
 	ANDROID_SDK ?= $(HOME)/Android/Sdk
 endif
-ANDROID_NDK ?= $(ANDROID_SDK)/ndk/26.1.10909125
+ANDROID_NDK ?= $(ANDROID_SDK)/ndk/27.3.13750724
 ifeq ($(wildcard $(ANDROID_NDK)/build/cmake/android.toolchain.cmake),)
 	ANDROID_NDK := $(shell ls -d "$(ANDROID_SDK)/ndk"/* 2>/dev/null | sort -V | tail -1)
 endif
