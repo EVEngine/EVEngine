@@ -140,6 +140,8 @@ public:
     std::string serializeDefinition() const;
     /** @brief Transactionally replace this graph from serializeDefinition output. */
     bool deserializeDefinition(const std::string& definition);
+    /** @brief Create an independent runtime instance without external inputs or overrides. */
+    PointGraph* instantiate() const;
 
     static int         getOperationCount();
     static std::string getOperationId(int index);

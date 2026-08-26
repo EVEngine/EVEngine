@@ -420,3 +420,31 @@ TEST_CASE("procgen.pointGraph.cachesSpatialMetricsForDebugVisualization") {
     CHECK_EQ(graph.getMetricMinX(0), -2.f);
     CHECK_EQ(graph.getMetricAverageDensity(0), 0.5f);
 }
+
+TEST_CASE("procgen.pointGraph.instantiatesIsolatedRuntimeState") {
+    PointSet points;
+    points.add(1.f, 0.f, 0.f);
+    PointGraph asset;
+    CHECK(asset.addNode("source", "input"));
+    CHECK(asset.addNode("move", "transform"));
+    CHECK(asset.connect("source", "move"));
+    CHECK(asset.setNodePoints("source", &points));
+    CHECK(asset.setNodeFloat("move", "x", 2.f));
+    CHECK(asset.exposeParameter("offset", "move", "x"));
+    CHECK(asset.setParameterFloat("offset", 9.f));
+
+    PointGraph* instance = asset.instantiate();
+    REQUIRE(bool(instance));
+    CHECK(!instance->hasParameterOverride("offset"));
+    CHECK_EQ(instance->getParameterFloat("offset", -1.f), 2.f);
+    CHECK(!instance->execute("move"));
+    CHECK(instance->getError().find("no points") != std::string::npos);
+    CHECK(instance->setNodePoints("source", &points));
+    CHECK(instance->setParameterFloat("offset", 4.f));
+    PointSet* output = instance->execute("move");
+    REQUIRE(bool(output));
+    CHECK_EQ(output->getX(0), 5.f);
+    delete output;
+    CHECK_EQ(asset.getParameterFloat("offset", -1.f), 9.f);
+    delete instance;
+}

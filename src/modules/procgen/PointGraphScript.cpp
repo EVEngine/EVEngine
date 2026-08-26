@@ -67,6 +67,7 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("debugReport", &PointGraph::debugReport);
     graph.addFunc("serializeDefinition", &PointGraph::serializeDefinition);
     graph.addFunc("deserializeDefinition", &PointGraph::deserializeDefinition);
+    graph.addFunc("instantiate", &PointGraph::instantiate);
     graph.addFunc("getOperationCount", [](PointGraph*) { return PointGraph::getOperationCount(); });
     graph.addFunc("getOperationId",
                   [](PointGraph*, int index) { return PointGraph::getOperationId(index); });

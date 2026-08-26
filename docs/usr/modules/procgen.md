@@ -324,6 +324,8 @@ yaw、scale、density 与独立 seed；可继承 target metadata，冲突时 sou
 图资产可用 `exposeParameter(name, nodeId, key)` 将节点参数公开为强类型图参数；运行时实例通过
 `setParameterFloat/Int/String()` 覆写，`clearParameterOverride()` 恢复资产默认值。覆写不会写入
 序列化资产，并且只失效目标节点及下游缓存，适合关卡实例、Biome 和流式 Cell 共享图定义。
+`instantiate()` 从资产定义创建独立运行实例，不复制 PointSet/SpatialData 外部输入、覆写、缓存、
+metric 或取消状态；并行 Cell/后台任务应各自实例化并重新绑定输入，不能共享同一个可变实例。
 `getNodeOutput` 可取得任意已执行节点的中间 PointSet；`getMetric*` 和
 `debugReport` 提供逐节点输出数量、耗时及 cache hit。任意 node/edge/parameter/input
 修改都会失效整图缓存，避免返回旧结果。

@@ -218,4 +218,11 @@ bool PointGraph::deserializeDefinition(const std::string& definition) {
     return true;
 }
 
+PointGraph* PointGraph::instantiate() const {
+    auto* instance = new PointGraph();
+    if (instance->deserializeDefinition(serializeDefinition())) return instance;
+    delete instance;
+    return nullptr;
+}
+
 }  // namespace eve::procgen
