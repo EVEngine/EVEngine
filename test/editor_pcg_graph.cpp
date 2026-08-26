@@ -22,6 +22,12 @@ TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
     GraphDocument graph;
     CHECK(graph.createNode(*input.value).accepted());
     CHECK(graph.createNode(*prune.value).accepted());
+    EditorValue::Object radiusBinding;
+    radiusBinding["node"] = EditorValue("prune");
+    radiusBinding["key"]  = EditorValue("radius");
+    EditorValue::Object parameters;
+    parameters["pruneRadius"] = EditorValue(std::move(radiusBinding));
+    CHECK(graph.setParameters(EditorValue(std::move(parameters))).accepted());
     const GraphPinRecord* from = graph.findPin(GraphPinId("input.out"));
     const GraphPinRecord* to   = graph.findPin(GraphPinId("prune.in0"));
     REQUIRE(bool(from));
@@ -35,6 +41,9 @@ TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
 
     eve::procgen::PointGraph runtime;
     CHECK(runtime.deserializeDefinition(compiled.definition));
+    CHECK_EQ(runtime.getParameterCount(), 1);
+    CHECK_EQ(runtime.getParameterName(0), std::string("pruneRadius"));
+    CHECK_EQ(runtime.getParameterKind("pruneRadius"), std::string("float"));
     eve::procgen::PointSet points;
     points.add(0.f, 0.f, 0.f);
     points.add(0.5f, 0.f, 0.f);
@@ -43,6 +52,29 @@ TEST_CASE("editor.pcgGraph.reflectsNodesAndCompilesPointGraphAsset") {
     REQUIRE(bool(result));
     CHECK_EQ(result->getCount(), 1);
     delete result;
+}
+
+TEST_CASE("editor.pcgGraph.rejectsInvalidBlackboardParameterBindings") {
+    PcgPointGraphDomain domain;
+    auto node = domain.makeNode(GraphNodeId("move"), "transform");
+    REQUIRE(node.value);
+    GraphDocument graph;
+    CHECK(graph.createNode(*node.value).accepted());
+    const Revision before = graph.revision();
+    CHECK(!graph.setParameters(EditorValue("not-an-object")).accepted());
+    CHECK_EQ(graph.revision(), before);
+
+    EditorValue::Object binding;
+    binding["node"] = EditorValue("move");
+    binding["key"]  = EditorValue("missing");
+    EditorValue::Object parameters;
+    parameters["bad"] = EditorValue(std::move(binding));
+    CHECK(graph.setParameters(EditorValue(std::move(parameters))).accepted());
+    const auto compiled = domain.compile(graph.snapshot(domain.domain()));
+    CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Failed));
+    REQUIRE(!compiled.diagnostics.empty());
+    CHECK_EQ(compiled.diagnostics[0].rule.value(),
+             std::string("editor.pcg.invalid-parameter-binding"));
 }
 
 TEST_CASE("editor.pcgGraph.rejectsCyclesAndWrongPinTypes") {

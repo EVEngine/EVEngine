@@ -142,6 +142,35 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
             }
         }
     }
+    if (graph.parameters.type() != EditorValue::Type::Null) {
+        const auto* parameters = graph.parameters.getIf<EditorValue::Object>();
+        if (!parameters) {
+            result.status = EditorStatus::Failed;
+            result.diagnostics.push_back(
+                {RuleId("editor.pcg.invalid-parameters"), DiagnosticSeverity::Error,
+                 "PCG graph parameters must be an object"});
+            return result;
+        }
+        for (const auto& [name, value] : *parameters) {
+            const auto* binding = value.getIf<EditorValue::Object>();
+            const auto node = binding ? binding->find("node") : EditorValue::Object::const_iterator{};
+            const auto key = binding ? binding->find("key") : EditorValue::Object::const_iterator{};
+            const auto* nodeId = binding && node != binding->end()
+                                     ? node->second.getIf<std::string>()
+                                     : nullptr;
+            const auto* parameterKey = binding && key != binding->end()
+                                           ? key->second.getIf<std::string>()
+                                           : nullptr;
+            if (!nodeId || !parameterKey ||
+                !compiled.exposeParameter(name, *nodeId, *parameterKey)) {
+                result.status = EditorStatus::Failed;
+                result.diagnostics.push_back(
+                    {RuleId("editor.pcg.invalid-parameter-binding"), DiagnosticSeverity::Error,
+                     "Invalid PCG graph parameter binding: " + name});
+                return result;
+            }
+        }
+    }
     std::unordered_map<std::string, StableId> connectedInputs;
     for (const auto& edge : graph.edges) {
         const GraphPinRecord* from = findPin(graph, edge.from);
