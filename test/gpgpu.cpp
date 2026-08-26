@@ -32,6 +32,7 @@
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
+#include "procgen/PointCompute.h"
 #include "window/Window.h"
 
 #include <algorithm>
@@ -277,6 +278,37 @@ TEST_CASE("gpgpu.sequence.dispatchScale") {
     delete in;
     delete out;
     delete staging;
+}
+
+TEST_CASE("gpgpu.procgen.transformParity") {
+    if (!tryInitHeadlessGfx()) return;
+    constexpr int          count = 2048;
+    eve::procgen::PointSet input;
+    for (int index = 0; index < count; ++index) {
+        const int point = input.add(float(index % 64), float(index % 7), float(index / 64));
+        input.setNormal(point, 0.25f, 1.f, -0.5f);
+        input.setYaw(point, float(index % 360));
+        input.setScale(point, 0.5f, 1.5f, 2.f);
+        input.setDensity(point, float(index % 10) * 0.1f);
+        input.setPointSeed(point, uint32_t(index + 17));
+        input.setStringAttribute(point, "asset", "oak");
+    }
+    const eve::procgen::PointSet expected =
+        eve::procgen::transformPointSet(input, 12.f, -3.f, 8.f, 31.f, 1.25f, 0.75f, 2.f);
+    eve::procgen::PointSet     actual;
+    eve::procgen::PointCompute compute;
+    REQUIRE(compute.transform(input, actual, 12.f, -3.f, 8.f, 31.f, 1.25f, 0.75f, 2.f));
+    REQUIRE(actual.getCount() == expected.getCount());
+    for (int index = 0; index < count; ++index) {
+        CHECK(std::fabs(actual.getX(index) - expected.getX(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getY(index) - expected.getY(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getZ(index) - expected.getZ(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getNormalX(index) - expected.getNormalX(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getNormalY(index) - expected.getNormalY(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getNormalZ(index) - expected.getNormalZ(index)) < 0.0001f);
+        CHECK(actual.getPointSeed(index) == input.getPointSeed(index));
+        CHECK(actual.getStringAttribute(index, "asset", "") == "oak");
+    }
 }
 
 TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {

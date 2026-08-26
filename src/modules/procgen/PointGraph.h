@@ -12,6 +12,7 @@
 namespace eve::procgen {
 
 class BiomeRules;
+class PointCompute;
 class ShapeGrammar;
 
 /** @brief Per-node execution information from the most recent graph run. */
@@ -20,6 +21,7 @@ struct PointGraphNodeMetric {
     int         outputCount  = 0;
     float       milliseconds = 0.f;
     bool        cacheHit     = false;
+    std::string backend        = "cpu";
     float       minX           = 0.f;
     float       minY           = 0.f;
     float       minZ           = 0.f;
@@ -39,6 +41,7 @@ struct PointGraphNodeMetric {
  */
 class PointGraph {
 public:
+    PointGraph();
     /** @brief Add a node using one of the operations returned by operationAt(). */
     bool addNode(const std::string& id, const std::string& operation);
     /** @brief Remove a node and every edge that references it. */
@@ -105,7 +108,16 @@ public:
     int  getExecutionNodeBudget() const;
     /** @brief Limit points produced by any node; zero disables the limit. */
     void setMaxNodeOutputPoints(int points);
+    /** @brief Return the per-node point output limit; zero means unlimited. */
     int  getMaxNodeOutputPoints() const;
+    /** @brief Select `auto`, `gpu`, or `cpu` point execution; GPU failures fall back to CPU. */
+    bool setComputePolicy(const std::string& policy);
+    /** @brief Return the configured point compute policy. */
+    std::string getComputePolicy() const;
+    /** @brief Set the minimum point count for `auto` GPU dispatch. */
+    void setComputeMinimumPoints(int points);
+    /** @brief Return the minimum point count for automatic GPU dispatch. */
+    int getComputeMinimumPoints() const;
     /** @brief Cancel subsequent execution until resetCancellation is called. */
     void requestCancel();
     void resetCancellation();
@@ -124,6 +136,10 @@ public:
     int         getMetricOutputCount(int index) const;
     float       getMetricMilliseconds(int index) const;
     bool        isMetricCacheHit(int index) const;
+    /** @brief Return `cpu`, `vulkan`, or `webgpu` for one evaluated node. */
+    std::string getMetricBackend(int index) const;
+    /** @brief Return why the latest eligible GPU node used the CPU fallback. */
+    std::string getComputeFallbackReason() const;
     /** @brief Return cached output bounds for editor/debug visualization. */
     float getMetricMinX(int index) const;
     /** @brief Return the cached minimum output Y coordinate. */
@@ -211,6 +227,10 @@ private:
     uint64_t                                          revision_            = 0;
     int                                               executionNodeBudget_ = 0;
     int                                               maxNodeOutputPoints_ = 0;
+    std::string                                       computePolicy_        = "auto";
+    int                                               computeMinimumPoints_ = 1024;
+    std::string                                       computeFallbackReason_;
+    std::shared_ptr<PointCompute>                     pointCompute_;
     int                                               evaluatedNodes_      = 0;
     bool                                              cancelRequested_     = false;
     bool                                              lastCancelled_       = false;

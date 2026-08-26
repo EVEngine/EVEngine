@@ -58,6 +58,29 @@ TEST_CASE("procgen.pointGraphStress.resumesDeepGraphAcrossBudgetWindows") {
     CHECK(graph.getCacheHitCount() > 0);
 }
 
+TEST_CASE("procgen.pointGraphStress.computePolicyPreservesDeterministicCpuPath") {
+    PointSet input;
+    input.add(2.f, 3.f, 4.f);
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("move", "transform"));
+    CHECK(graph.connect("source", "move"));
+    CHECK(graph.setNodePoints("source", &input));
+    CHECK(graph.setNodeFloat("move", "x", 5.f));
+    CHECK(!graph.setComputePolicy("invalid"));
+    CHECK(graph.setComputePolicy("cpu"));
+    graph.setComputeMinimumPoints(0);
+
+    std::unique_ptr<PointSet> output(graph.execute("move"));
+    REQUIRE(bool(output));
+    CHECK_EQ(output->getX(0), 7.f);
+    CHECK_EQ(graph.getComputePolicy(), "cpu");
+    CHECK_EQ(graph.getComputeMinimumPoints(), 0);
+    CHECK_EQ(graph.getMetricBackend(graph.getMetricCount() - 1), "cpu");
+    CHECK(graph.getComputeFallbackReason().empty());
+    CHECK(graph.debugReport().find("backend=cpu") != std::string::npos);
+}
+
 TEST_CASE("procgen.pointGraphStress.isBitStableAcrossIndependentBiomeInstances") {
     SpatialData domain = SpatialData::box(-32.f, 0.f, -32.f, 32.f, 0.f, 32.f);
     SpatialData center = SpatialData::sphere(0.f, 0.f, 0.f, 12.f);

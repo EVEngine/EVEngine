@@ -1,6 +1,7 @@
 #include "procgen/PointGraph.h"
 
 #include "procgen/Biome.h"
+#include "procgen/PointCompute.h"
 #include "procgen/ShapeGrammar.h"
 
 #include <algorithm>
@@ -88,13 +89,14 @@ uint64_t nowNanoseconds() {
                         .count());
 }
 
-PointGraphNodeMetric makeMetric(const std::string& id, const PointSet& points,
-                                float milliseconds, bool cacheHit) {
+PointGraphNodeMetric makeMetric(const std::string& id, const PointSet& points, float milliseconds, bool cacheHit,
+                                const std::string& backend = "cpu") {
     PointGraphNodeMetric metric;
     metric.id           = id;
     metric.outputCount  = points.getCount();
     metric.milliseconds = milliseconds;
     metric.cacheHit     = cacheHit;
+    metric.backend      = backend;
     if (points.empty()) return metric;
     const auto& first = points.points().front();
     metric.minX = metric.maxX = first.x;
@@ -132,6 +134,8 @@ uint64_t spatialSampleUpperBound(const SpatialData& spatial, float spacing) {
 }
 
 }  // namespace
+
+PointGraph::PointGraph() : pointCompute_(std::make_shared<PointCompute>()) {}
 
 bool PointGraph::addNode(const std::string& id, const std::string& operation) {
     if (id.empty() || !operationKnown(operation) || nodes_.find(id) != nodes_.end()) return false;
@@ -376,6 +380,7 @@ PointSet* PointGraph::execute(const std::string& outputId) {
     cacheHitCount_ = 0;
     evaluatedNodes_ = 0;
     lastCancelled_ = false;
+    computeFallbackReason_.clear();
     ++executionCount_;
     if (cancelRequested_) {
         error_ = "execution cancelled";
@@ -396,6 +401,21 @@ void PointGraph::setMaxNodeOutputPoints(int points) {
     clearCache();
 }
 int  PointGraph::getMaxNodeOutputPoints() const { return maxNodeOutputPoints_; }
+bool PointGraph::setComputePolicy(const std::string& policy) {
+    if (policy != "auto" && policy != "gpu" && policy != "cpu") return false;
+    if (computePolicy_ == policy) return true;
+    computePolicy_ = policy;
+    clearCache();
+    return true;
+}
+std::string PointGraph::getComputePolicy() const { return computePolicy_; }
+void        PointGraph::setComputeMinimumPoints(int points) {
+    const int clamped = std::max(0, points);
+    if (computeMinimumPoints_ == clamped) return;
+    computeMinimumPoints_ = clamped;
+    clearCache();
+}
+int  PointGraph::getComputeMinimumPoints() const { return computeMinimumPoints_; }
 void PointGraph::requestCancel() { cancelRequested_ = true; }
 void PointGraph::resetCancellation() {
     cancelRequested_ = false;
@@ -432,6 +452,10 @@ float PointGraph::getMetricMilliseconds(int index) const {
 bool PointGraph::isMetricCacheHit(int index) const {
     return index >= 0 && index < int(metrics_.size()) && metrics_[size_t(index)].cacheHit;
 }
+std::string PointGraph::getMetricBackend(int index) const {
+    return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].backend : std::string();
+}
+std::string PointGraph::getComputeFallbackReason() const { return computeFallbackReason_; }
 float PointGraph::getMetricMinX(int index) const {
     return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].minX : 0.f;
 }
@@ -466,8 +490,9 @@ std::string PointGraph::debugReport() const {
     out << "nodes=" << nodes_.size() << " executions=" << executionCount_
         << " cacheHits=" << cacheHitCount_;
     for (const auto& metric : metrics_)
-        out << "\n" << metric.id << " count=" << metric.outputCount << " ms="
-            << metric.milliseconds << (metric.cacheHit ? " cached" : "");
+        out << "\n"
+            << metric.id << " count=" << metric.outputCount << " ms=" << metric.milliseconds
+            << " backend=" << metric.backend << (metric.cacheHit ? " cached" : "");
     if (!error_.empty()) out << "\nerror=" << error_;
     return out.str();
 }
@@ -532,6 +557,7 @@ const PointSet* PointGraph::evaluate(const std::string& id,
     }
     states[id] = 1;
     const uint64_t started = nowNanoseconds();
+    std::string     nodeBackend = "cpu";
     const PointSet* first  = nullptr;
     const PointSet* second = nullptr;
     if (!node.inputs[0].empty()) {
@@ -649,12 +675,30 @@ const PointSet* PointGraph::evaluate(const std::string& id,
                 floatValue(node, "defaultValue", 0.f));
     } else if (node.operation == "transform") {
         if (!first) error_ = "transform requires input: " + id;
-        else
-            node.cache = transformPointSet(
-                *first, floatValue(node, "x", 0.f), floatValue(node, "y", 0.f),
-                floatValue(node, "z", 0.f), floatValue(node, "yaw", 0.f),
-                floatValue(node, "scaleX", 1.f), floatValue(node, "scaleY", 1.f),
-                floatValue(node, "scaleZ", 1.f));
+        else {
+            const bool gpuEligible =
+                !first->empty() &&
+                (computePolicy_ == "gpu" || (computePolicy_ == "auto" && first->getCount() >= computeMinimumPoints_));
+            const bool gpuComplete =
+                gpuEligible &&
+                pointCompute_->transform(*first, node.cache, floatValue(node, "x", 0.f), floatValue(node, "y", 0.f),
+                                         floatValue(node, "z", 0.f), floatValue(node, "yaw", 0.f),
+                                         floatValue(node, "scaleX", 1.f), floatValue(node, "scaleY", 1.f),
+                                         floatValue(node, "scaleZ", 1.f));
+            if (gpuComplete) {
+#ifdef EVENGINE_WEBGPU
+                nodeBackend = "webgpu";
+#else
+                nodeBackend = "vulkan";
+#endif
+            } else {
+                if (gpuEligible) computeFallbackReason_ = pointCompute_->getError();
+                node.cache = transformPointSet(*first, floatValue(node, "x", 0.f), floatValue(node, "y", 0.f),
+                                               floatValue(node, "z", 0.f), floatValue(node, "yaw", 0.f),
+                                               floatValue(node, "scaleX", 1.f), floatValue(node, "scaleY", 1.f),
+                                               floatValue(node, "scaleZ", 1.f));
+            }
+        }
     } else if (node.operation == "filter.float") {
         if (!first) error_ = "filter.float requires input: " + id;
         else
@@ -710,6 +754,8 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         if (!first || !node.subgraph) error_ = "subgraph requires input and graph: " + id;
         else {
             node.subgraph->setMaxNodeOutputPoints(maxNodeOutputPoints_);
+            node.subgraph->setComputePolicy(computePolicy_);
+            node.subgraph->setComputeMinimumPoints(computeMinimumPoints_);
             if (!node.subgraph->setNodePoints(node.subgraphInput, const_cast<PointSet*>(first)))
                 error_ = "subgraph input failed at " + id + ": " + node.subgraph->getError();
             else {
@@ -731,7 +777,7 @@ const PointSet* PointGraph::evaluate(const std::string& id,
     node.cacheValid = true;
     states[id]      = 2;
     const float elapsed = float(nowNanoseconds() - started) * 0.000001f;
-    node.cacheMetric = makeMetric(id, node.cache, elapsed, false);
+    node.cacheMetric    = makeMetric(id, node.cache, elapsed, false, nodeBackend);
     metrics_.push_back(node.cacheMetric);
     return &node.cache;
 }

@@ -46,6 +46,10 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("getExecutionNodeBudget", &PointGraph::getExecutionNodeBudget);
     graph.addFunc("setMaxNodeOutputPoints", &PointGraph::setMaxNodeOutputPoints);
     graph.addFunc("getMaxNodeOutputPoints", &PointGraph::getMaxNodeOutputPoints);
+    graph.addFunc("setComputePolicy", &PointGraph::setComputePolicy);
+    graph.addFunc("getComputePolicy", &PointGraph::getComputePolicy);
+    graph.addFunc("setComputeMinimumPoints", &PointGraph::setComputeMinimumPoints);
+    graph.addFunc("getComputeMinimumPoints", &PointGraph::getComputeMinimumPoints);
     graph.addFunc("requestCancel", &PointGraph::requestCancel);
     graph.addFunc("resetCancellation", &PointGraph::resetCancellation);
     graph.addFunc("wasCancelled", &PointGraph::wasCancelled);
@@ -60,6 +64,8 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("getMetricOutputCount", &PointGraph::getMetricOutputCount);
     graph.addFunc("getMetricMilliseconds", &PointGraph::getMetricMilliseconds);
     graph.addFunc("isMetricCacheHit", &PointGraph::isMetricCacheHit);
+    graph.addFunc("getMetricBackend", &PointGraph::getMetricBackend);
+    graph.addFunc("getComputeFallbackReason", &PointGraph::getComputeFallbackReason);
     graph.addFunc("getMetricMinX", &PointGraph::getMetricMinX);
     graph.addFunc("getMetricMinY", &PointGraph::getMetricMinY);
     graph.addFunc("getMetricMinZ", &PointGraph::getMetricMinZ);
