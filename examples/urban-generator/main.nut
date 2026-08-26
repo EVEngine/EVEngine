@@ -18,25 +18,24 @@
 //   E        toggle block extrusion (flat / 6 units)
 //   L        toggle parcel grid overlay (urban.parcels Grid2D preview)
 
-if (!("urbanSeed" in getroottable())) urbanSeed <- 20260823;
-if (!("landPreset" in getroottable())) landPreset <- "rect";
-if (!("streetPattern" in getroottable())) streetPattern <- "default";
-if (!("doOptimize" in getroottable())) doOptimize <- true;
-if (!("targetParcels" in getroottable())) targetParcels <- 120;
-if (!("minParcelArea" in getroottable())) minParcelArea <- 4.0;
-if (!("extrude" in getroottable())) extrude <- 6.0;
-if (!("cityMesh" in getroottable())) cityMesh <- null;
-if (!("cityObject" in getroottable())) cityObject <- null;
-if (!("cityCamera" in getroottable())) cityCamera <- null;
-if (!("cityYaw" in getroottable())) cityYaw <- 0.0;
-if (!("cityPitch" in getroottable())) cityPitch <- 0.62;
-if (!("cityDist" in getroottable())) cityDist <- 150.0;
-if (!("showGrid" in getroottable())) showGrid <- false;
-if (!("gridLayer" in getroottable())) gridLayer <- null;
-if (!("info" in getroottable())) info <- "";
-if (!("patterns" in getroottable()))
-    patterns <- ["default", "loop", "culdesac", "tree"];
-if (!("patternIndex" in getroottable())) patternIndex <- 0;
+persist urbanSeed = 20260823
+persist landPreset = "rect"
+persist streetPattern = "default"
+persist doOptimize = true
+persist targetParcels = 120
+persist minParcelArea = 4.0
+persist extrude = 6.0
+persist cityMesh = null
+persist cityObject = null
+persist cityCamera = null
+persist cityYaw = 0.0
+persist cityPitch = 0.62
+persist cityDist = 150.0
+persist showGrid = false
+persist gridLayer = null
+persist info = ""
+persist patterns = ["default", "loop", "culdesac", "tree"]
+persist patternIndex = 0
 
 function pressed(k) {
     return key_just_pressed(k);

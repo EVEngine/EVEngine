@@ -9,12 +9,12 @@
 // Run: make run/linux-debug GAME=examples/softbody
 // ============================================================================
 
-if (!("physics" in getroottable())) physics <- null;
-if (!("cloth" in getroottable())) cloth <- null;
-if (!("fluid" in getroottable())) fluid <- null;
-if (!("grabbing" in getroottable())) grabbing <- false;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("windT" in getroottable())) windT <- 0.0;
+persist physics = null
+persist cloth = null
+persist fluid = null
+persist grabbing = false
+persist prevKeys = {}
+persist windT = 0.0
 
 function edgePressed(key, down) {
     local was = (key in prevKeys) ? prevKeys[key] : false;

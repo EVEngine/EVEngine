@@ -15,16 +15,16 @@
 // Run: make run/linux-debug GAME=examples/softbody3d
 // ============================================================================
 
-if (!("physics" in getroottable())) physics <- null;
-if (!("world3" in getroottable())) world3 <- null;
-if (!("cloth" in getroottable())) cloth <- null;
-if (!("grabbing" in getroottable())) grabbing <- false;
-if (!("windOn" in getroottable())) windOn <- true;
-if (!("selfCollisionOn" in getroottable())) selfCollisionOn <- true;
-if (!("foldOn" in getroottable())) foldOn <- true;
-if (!("windT" in getroottable())) windT <- 0.0;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("prevMouse" in getroottable())) prevMouse <- false;
+persist physics = null
+persist world3 = null
+persist cloth = null
+persist grabbing = false
+persist windOn = true
+persist selfCollisionOn = true
+persist foldOn = true
+persist windT = 0.0
+persist prevKeys = {}
+persist prevMouse = false
 
 const CLOTH_TOP_Y = 3.2;   // pinned top row height (meters)
 const GRAB_HEIGHT  = 2.0;  // ray-plane height used for mouse grab

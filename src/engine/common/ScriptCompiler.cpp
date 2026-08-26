@@ -1,5 +1,6 @@
 #include "common/ScriptCompiler.h"
 
+#include "common/BindingContracts.h"
 #include "common/ScriptError.h"
 #include "common/ScriptModule.h"
 
@@ -57,11 +58,11 @@ void appendUnique(std::vector<std::string>& values, std::string value) {
 
 std::string maskComments(std::string_view source) {
     std::string result(source);
-    char        quote = 0;
-    bool        lineComment = false;
+    char        quote        = 0;
+    bool        lineComment  = false;
     bool        blockComment = false;
     for (size_t i = 0; i < result.size(); ++i) {
-        const char c = result[i];
+        const char c    = result[i];
         const char next = i + 1 < result.size() ? result[i + 1] : 0;
         if (lineComment) {
             if (c == '\n')
@@ -240,21 +241,23 @@ std::string BindingContract::key() const {
 }
 
 void BindingContractRegistry::registerContract(BindingContract contract) {
-    contracts_[contract.key()] = std::move(contract);
+    ensureUnique();
+    storage_->contracts[contract.key()] = std::move(contract);
 }
 
 bool BindingContractRegistry::unregisterContract(std::string_view key) {
-    return contracts_.erase(std::string(key)) != 0;
+    ensureUnique();
+    return storage_->contracts.erase(std::string(key)) != 0;
 }
 
 const BindingContract* BindingContractRegistry::find(std::string_view key) const noexcept {
-    const auto found = contracts_.find(std::string(key));
-    return found == contracts_.end() ? nullptr : &found->second;
+    const auto found = storage_->contracts.find(std::string(key));
+    return found == storage_->contracts.end() ? nullptr : &found->second;
 }
 
 const BindingContract* BindingContractRegistry::findMethod(std::string_view method) const noexcept {
     const BindingContract* result = nullptr;
-    for (const auto& [_, contract] : contracts_) {
+    for (const auto& [_, contract] : storage_->contracts) {
         if (contract.method != method) continue;
         if (result != nullptr) return nullptr;
         result = &contract;
@@ -264,14 +267,41 @@ const BindingContract* BindingContractRegistry::findMethod(std::string_view meth
 
 std::vector<BindingContract> BindingContractRegistry::snapshot() const {
     std::vector<BindingContract> result;
-    result.reserve(contracts_.size());
-    for (const auto& [_, contract] : contracts_) result.push_back(contract);
+    result.reserve(storage_->contracts.size());
+    for (const auto& [_, contract] : storage_->contracts) result.push_back(contract);
     std::sort(result.begin(), result.end(),
               [](const BindingContract& a, const BindingContract& b) { return a.key() < b.key(); });
     return result;
 }
 
+void BindingContractRegistry::ensureUnique() {
+    if (storage_.use_count() != 1) storage_ = std::make_shared<Storage>(*storage_);
+}
+
+namespace {
+const BindingContractRegistry& generatedBindingContracts() {
+    static const BindingContractRegistry contracts = [] {
+        BindingContractRegistry result;
+        registerEngineBindingContracts(result);
+        return result;
+    }();
+    return contracts;
+}
+}  // namespace
+
 ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_(&vm), modules_(&modules) {
+    bindings_           = generatedBindingContracts();
+    const SQInteger top = sq_gettop(vm_->getHandle());
+    sq_pushroottable(vm_->getHandle());
+    sq_pushnull(vm_->getHandle());
+    while (SQ_SUCCEEDED(sq_next(vm_->getHandle(), -2))) {
+        if (sq_gettype(vm_->getHandle(), -2) == OT_STRING) {
+            const SQChar* name = nullptr;
+            if (SQ_SUCCEEDED(sq_getstring(vm_->getHandle(), -2, &name)) && name != nullptr) nativeGlobals_.insert(name);
+        }
+        sq_pop(vm_->getHandle(), 2);
+    }
+    sq_settop(vm_->getHandle(), top);
     {
         std::lock_guard lock(compilerRegistryMutex);
         compilerRegistry[vm_->getHandle()] = this;
@@ -280,7 +310,8 @@ ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_
         vm_->getHandle(),
         [](HSQUIRRELVM, const SQChar* callee, SQInteger index, const SQChar** type, SQBool* nullable,
            const SQChar** unit, const SQChar** choices, SQUserPointer user) -> const SQChar* {
-            const auto&            self     = *static_cast<ScriptCompiler*>(user);
+            const auto& self = *static_cast<ScriptCompiler*>(user);
+            if (self.nativeGlobals_.find(callee) != self.nativeGlobals_.end()) return nullptr;
             const BindingContract* contract = self.bindings_.findMethod(callee);
             if (contract == nullptr || index < 0 || static_cast<size_t>(index) >= contract->parameters.size())
                 return nullptr;
@@ -468,23 +499,21 @@ std::vector<ScriptDiagnostic> ScriptCompiler::diagnostics(std::string_view canon
 bool ScriptCompiler::setSourceMap(std::string_view canonicalUri, ScriptSourceMap sourceMap) {
     const auto found = metadata_.find(std::string(canonicalUri));
     if (found == metadata_.end()) return false;
-    sourceMap.canonicalUri = found->first;
+    sourceMap.canonicalUri  = found->first;
     found->second.sourceMap = std::move(sourceMap);
     return true;
 }
 
 ScriptSourcePosition ScriptCompiler::toOriginalPosition(std::string_view source, ScriptSourcePosition generated) {
-    return mapRegisteredPosition(source, generated,
-                                 [](const ScriptSourceMap& map, ScriptSourcePosition position) {
-                                     return map.originalPosition(position);
-                                 });
+    return mapRegisteredPosition(source, generated, [](const ScriptSourceMap& map, ScriptSourcePosition position) {
+        return map.originalPosition(position);
+    });
 }
 
 ScriptSourcePosition ScriptCompiler::toGeneratedPosition(std::string_view source, ScriptSourcePosition original) {
-    return mapRegisteredPosition(source, original,
-                                 [](const ScriptSourceMap& map, ScriptSourcePosition position) {
-                                     return map.generatedPosition(position);
-                                 });
+    return mapRegisteredPosition(source, original, [](const ScriptSourceMap& map, ScriptSourcePosition position) {
+        return map.generatedPosition(position);
+    });
 }
 
 SQRESULT ScriptCompiler::compileBuffer(HSQUIRRELVM vm, const SQChar* source, SQInteger size, const SQChar* sourceName,

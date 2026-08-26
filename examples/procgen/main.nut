@@ -3,17 +3,17 @@
 // Textures: T cycle recipe, N toggle normal preview, -/= change tex seed
 // Run: make run/linux-debug GAME=examples/procgen
 
-if (!("layer" in getroottable())) layer <- null;
-if (!("seed" in getroottable())) seed <- 42;
-if (!("algo" in getroottable())) algo <- "dungeon.bsp";
-if (!("status" in getroottable())) status <- "";
-if (!("texRecipe" in getroottable())) texRecipe <- "tex.soil";
-if (!("texSeed" in getroottable())) texSeed <- 1;
-if (!("tex" in getroottable())) tex <- null;
-if (!("showNormal" in getroottable())) showNormal <- false;
-if (!("texRecipes" in getroottable())) texRecipes <- ["tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"];
-if (!("texIndex" in getroottable())) texIndex <- 0;
-if (!("wfcPreset" in getroottable())) wfcPreset <- "dungeon";
+persist layer = null
+persist seed = 42
+persist algo = "dungeon.bsp"
+persist status = ""
+persist texRecipe = "tex.soil"
+persist texSeed = 1
+persist tex = null
+persist showNormal = false
+persist texRecipes = ["tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"]
+persist texIndex = 0
+persist wfcPreset = "dungeon"
 
 TILE <- 12.0;
 

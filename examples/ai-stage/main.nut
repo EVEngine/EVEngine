@@ -24,8 +24,8 @@ if ("sceneDirectorScript" in eve && eve.sceneDirectorScript != "") {
     }
 }
 
-if (!("scene_director" in getroottable())) scene_director <- null;
-if (!("sd" in getroottable())) sd <- null;
+persist scene_director = null
+persist sd = null
 if (scene_director != null) sd = scene_director;
 
 // Minimal default stage so the window is never empty before an agent builds.

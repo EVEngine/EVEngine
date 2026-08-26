@@ -7,7 +7,7 @@
 //   - 点“重置状态”会清空 __pg 并重建场景。
 // 木纹贴图让旋转一目了然——试试改成 spinSpeed = 2.5 看转速变化。
 
-if (!("__pg" in getroottable())) __pg <- {};
+persist __pg = {}
 // 顶层初始化：每次 dofile（应用/重置）都会执行，保证 eve_update 在任何时刻
 // 都能安全访问状态，不依赖 eve_init 是否已运行。
 if (!("frames" in __pg)) __pg.frames <- 0;

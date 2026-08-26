@@ -8,14 +8,14 @@
 //   鈥?Sliders tune intensity + wind live
 //   鈥?Camera auto-orbits the diorama
 
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("preset" in getroottable())) preset <- "clear";
-if (!("camAngle" in getroottable())) camAngle <- 0.0;
-if (!("autoOrbit" in getroottable())) autoOrbit <- true;
-if (!("autoCycle" in getroottable())) autoCycle <- false;
-if (!("cycleTimer" in getroottable())) cycleTimer <- 0.0;
-if (!("props" in getroottable())) props <- [];
-if (!("strikeWasDown" in getroottable())) strikeWasDown <- false;
+persist uiReady = false
+persist preset = "clear"
+persist camAngle = 0.0
+persist autoOrbit = true
+persist autoCycle = false
+persist cycleTimer = 0.0
+persist props = []
+persist strikeWasDown = false
 
 
 presetOrder <- ["clear", "drizzle", "rain", "storm", "snow", "fog"];

@@ -3,7 +3,7 @@
 // 立方体贴 wood.jpg（CC0，Wikimedia Commons），金属球绕它公转。
 // 修改 cubeSpeed / sphereRadius 后按 Ctrl+Enter 立即生效。
 
-if (!("__pg" in getroottable())) __pg <- {};
+persist __pg = {}
 // 顶层初始化：每次 dofile（应用/重置）都会执行，保证 eve_update 在任何时刻
 // 都能安全访问状态，不依赖 eve_init 是否已运行。
 if (!("frames" in __pg)) __pg.frames <- 0;

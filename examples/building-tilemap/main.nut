@@ -11,18 +11,18 @@
 // 运行： make run/<platform>-debug GAME=examples/building-tilemap
 // ============================================================================
 
-if (!("bld" in getroottable())) bld <- null;
-if (!("mapMod" in getroottable())) mapMod <- null;
-if (!("layer" in getroottable())) layer <- null;
-if (!("world" in getroottable())) world <- null;
-if (!("session" in getroottable())) session <- null;
-if (!("fx" in getroottable())) fx <- null;
-if (!("palette" in getroottable())) palette <- [];
-if (!("paletteIndex" in getroottable())) paletteIndex <- 0;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("prevMouse" in getroottable())) prevMouse <- { left = false, right = false };
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
-if (!("layout" in getroottable())) layout <- "isometric";
+persist bld = null
+persist mapMod = null
+persist layer = null
+persist world = null
+persist session = null
+persist fx = null
+persist palette = []
+persist paletteIndex = 0
+persist prevKeys = {}
+persist prevMouse = { left = false, right = false }
+persist uiBuilt = false
+persist layout = "isometric"
 
 const MAP_W = 16;
 const MAP_H = 12;

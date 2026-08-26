@@ -1,11 +1,11 @@
 // Classic SpriteStack rendered entirely by the normal 2D pipeline.
 // A / D rotate, 1..4 switch primitive, Q / E change slice spacing.
-if (!("angle" in getroottable())) angle <- 0.0;
-if (!("kind" in getroottable())) kind <- "cylinder";
-if (!("spacing" in getroottable())) spacing <- 4.0;
-if (!("stack" in getroottable())) stack <- null;
-if (!("batch" in getroottable())) batch <- null;
-if (!("copies" in getroottable())) copies <- [];
+persist angle = 0.0
+persist kind = "cylinder"
+persist spacing = 4.0
+persist stack = null
+persist batch = null
+persist copies = []
 
 local tints = {
     cylinder = [0.32, 0.82, 0.68], sphere = [0.92, 0.52, 0.26],

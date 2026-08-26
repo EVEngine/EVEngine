@@ -15,9 +15,8 @@
 // 小球也会按新公式运动。修改 assets 或 JSON 资源则走 eve_asset_reload。
 // ============================================================================
 
-// 热重载持久化：persist() 保留已创建的 C++ 对象与累计状态。
-lab <- persist("lab", function() {
-    return {
+// 热重载持久化：EveScript persist 声明保留已创建的 C++ 对象与累计状态。
+persist lab = {
         count = 0
         reloads = 0
         x = 120.0
@@ -25,8 +24,7 @@ lab <- persist("lab", function() {
         vx = 96.0
         vy = 60.0
         lastLog = ""
-    };
-});
+    }
 
 // --- 热重载试验台：改这个函数，保存，看小球运动立刻变化 ---
 function bounceDir(v, maxV) {
