@@ -1337,14 +1337,9 @@ jobs:
     name: WebGPU (WASM)
     runs-on: ubuntu-24.04
     timeout-minutes: 60
-    env:
-      SCCACHE_GHA_ENABLED: "true"
-      SCCACHE_GHA_VERSION: evengine-cpp-v1-webgpu-wasm-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
-      SCCACHE_DIRECT: "false"
-      # Emscripten invokes the real Clang compiler through this supported hook;
-      # wrapping emcc itself with CMake's launcher is not cacheable by sccache.
-      EM_COMPILER_WRAPPER: sccache
+    # Do not add sccache via EM_COMPILER_WRAPPER here: emsdk's Clang commands
+    # carry -Xclang flags that sccache v0.16 treats as non-cacheable, adding
+    # wrapper overhead without storing any of the engine's object files.
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -1381,12 +1376,6 @@ jobs:
           python3 -m pip install --user cmake==3.29.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Setup C/C++ compilation cache
-        timeout-minutes: 10
-        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
-        with:
-          version: "v0.16.0"
-
       - name: Install Emscripten SDK
         timeout-minutes: 30
         run: |
@@ -1399,8 +1388,7 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
-          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DEVENGINE_COMPILER_CACHE=OFF
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build webgpu (Emscripten/WASM)
         timeout-minutes: 40
@@ -1408,11 +1396,6 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
           cmake --build build/webgpu-web --parallel "$(nproc)"
-
-      - name: Report C/C++ compilation cache
-        if: always()
-        timeout-minutes: 5
-        run: sccache --show-stats
 
       - name: Verify webgpu artifacts
         timeout-minutes: 5
