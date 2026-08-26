@@ -53,14 +53,21 @@ file(MAKE_DIRECTORY
     "${_doc_pages_dir}/docs/usr/modules"
     "${_doc_pages_dir}/docs/dev")
 
-# User guide root: EVEngine 用户指南 -> module handbook / trimming / conventions.
+# User guide root: EVEngine 用户指南 -> language tutorial / module handbook /
+# trimming / conventions.
 file(READ "${DOC_TOP_DIR}/usr/README.md" _doc_usr_readme ENCODING UTF-8)
 file(WRITE "${_doc_pages_dir}/docs/usr/README.md"
     "\\page usr_guide EVEngine 用户指南\n\n"
+    "\\subpage usr_evescript\n\n"
     "\\subpage usr_modules\n\n"
     "\\subpage usr_trimming\n\n"
     "\\subpage usr_conventions\n\n"
     "${_doc_usr_readme}")
+
+# EveScript language and migration tutorial.
+file(READ "${DOC_TOP_DIR}/usr/EVESCRIPT.md" _doc_evescript ENCODING UTF-8)
+file(WRITE "${_doc_pages_dir}/docs/usr/EVESCRIPT.md"
+    "\\page usr_evescript EveScript 完整教程\n\n${_doc_evescript}")
 
 # Module handbook: groups the five category pages (defined in docs/dox/).
 file(READ "${DOC_TOP_DIR}/usr/MODULES.md" _doc_modules ENCODING UTF-8)
