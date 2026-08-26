@@ -793,11 +793,17 @@ graphics::Mesh *Procgen::generateMesh(const std::string &recipeId, Params *param
     }
     MeshBuild *cpu = buildMesh(recipeId, params);
     if (!cpu) return nullptr;
-    graphics::Mesh *gpu =
-        gfx->newMeshFromArrays(cpu->positions().data(), cpu->normals().data(), cpu->uvs().data(),
-                               cpu->getVertexCount(), cpu->indices().data(), cpu->getIndexCount());
+    graphics::Mesh *gpu = uploadMesh(cpu, gfx);
     delete cpu;
     return gpu;
+}
+
+graphics::Mesh *Procgen::uploadMesh(MeshBuild *mesh, graphics::Graphics *gfx) {
+    lastError_.clear();
+    if (!mesh || mesh->empty()) { lastError_ = "uploadMesh: null or empty MeshBuild"; return nullptr; }
+    if (!gfx) { lastError_ = "uploadMesh: null Graphics"; return nullptr; }
+    return gfx->newMeshFromArrays(mesh->positions().data(), mesh->normals().data(), mesh->uvs().data(),
+                                  mesh->getVertexCount(), mesh->indices().data(), mesh->getIndexCount());
 }
 
 int Procgen::getMeshRecipeCount() const {
@@ -1016,6 +1022,12 @@ void Procgen::expose(ssq::Table &table) {
         "ProcgenMeshBuild", std::function<MeshBuild *()>([]() -> MeshBuild * { return nullptr; }),
         true);
     mesh.addFunc("clear", &MeshBuild::clear);
+    mesh.addFunc("appendTransformed", &MeshBuild::appendTransformed);
+    mesh.addFunc("setActiveGroup", &MeshBuild::setActiveGroup);
+    mesh.addFunc("getGroupCount", &MeshBuild::getGroupCount);
+    mesh.addFunc("getGroupName", &MeshBuild::getGroupName);
+    mesh.addFunc("getTriangleGroup", &MeshBuild::getTriangleGroup);
+    mesh.addFunc("copyGroup", &MeshBuild::copyGroup);
     mesh.addFunc("getVertexCount", &MeshBuild::getVertexCount);
     mesh.addFunc("getIndexCount", &MeshBuild::getIndexCount);
     mesh.addFunc("empty", &MeshBuild::empty);
@@ -1215,6 +1227,7 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getPbrRecipeSchema", &Procgen::getPbrRecipeSchema);
     cls.addFunc("applyPbrRecipeDefaults", &Procgen::applyPbrRecipeDefaults);
     cls.addFunc("buildMesh", &Procgen::buildMesh);
+    cls.addFunc("uploadMesh", &Procgen::uploadMesh);
     cls.addFunc("generateMesh", &Procgen::generateMesh);
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
     cls.addFunc("getMeshRecipeId", &Procgen::getMeshRecipeId);
