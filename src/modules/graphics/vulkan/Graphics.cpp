@@ -76,8 +76,14 @@ Graphics::~Graphics() {
     for (auto &g : ownedGpuShaders) {
         if (g->swapchainPipeline) device->destroyPipeline(g->swapchainPipeline);
         if (g->offscreenPipeline) device->destroyPipeline(g->offscreenPipeline);
+        if (g->swapchainOpaquePipeline) device->destroyPipeline(g->swapchainOpaquePipeline);
+        if (g->offscreenOpaquePipeline) device->destroyPipeline(g->offscreenOpaquePipeline);
         if (g->mesh3dPipeline) device->destroyPipeline(g->mesh3dPipeline);
         if (g->mesh3dXrayPipeline) device->destroyPipeline(g->mesh3dXrayPipeline);
+        if (g->mesh3dOffscreenPipeline)
+            device->destroyPipeline(g->mesh3dOffscreenPipeline);
+        if (g->mesh3dHdrOffscreenPipeline)
+            device->destroyPipeline(g->mesh3dHdrOffscreenPipeline);
         // pipelineLayout is shared; do not destroy per-shader
     }
     ownedGpuShaders.clear();
@@ -94,6 +100,7 @@ Graphics::~Graphics() {
     if (premultipliedTexPipeline) device->destroyPipeline(premultipliedTexPipeline);
     if (multiplyTexPipeline) device->destroyPipeline(multiplyTexPipeline);
     if (opaqueTexPipeline) device->destroyPipeline(opaqueTexPipeline);
+    if (sceneTonemapPipeline) device->destroyPipeline(sceneTonemapPipeline);
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
     if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
@@ -147,6 +154,10 @@ Graphics::~Graphics() {
     if (offscreenMultiplyTexPipeline) device->destroyPipeline(offscreenMultiplyTexPipeline);
     if (offscreenOpaqueTexPipeline) device->destroyPipeline(offscreenOpaqueTexPipeline);
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
+    if (hdrOffscreenTexPipeline) device->destroyPipeline(hdrOffscreenTexPipeline);
+    if (hdrOffscreenOpaqueTexPipeline)
+        device->destroyPipeline(hdrOffscreenOpaqueTexPipeline);
+    if (hdrOffscreenRenderPass) device->destroyRenderPass(hdrOffscreenRenderPass);
     texSetLayoutUnique.reset();
     if (descriptorPool) device->destroyDescriptorPool(descriptorPool);
     if (uploadPool) device->destroyCommandPool(uploadPool);

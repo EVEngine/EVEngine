@@ -173,13 +173,36 @@ hair.setCastShadow(false)  // 发片通常不参与阴影投射
 
 `gi <- gfx.newGlobalIllumination()`。`setQuality` 控制采样数与半径；`setLightDirection` / `setLightColor` 提供反弹用的太阳光。
 
-3D 默认路径：`RenderControl` 特性 `"gi"` 仍默认开（mesh 半球天空/地面 + wrap fill）。fullscreen `applyFromScene` 不会自动叠到 3D 回读：从 lit scene color 采样会把帘子/花盆印到地面上形成游走鬼影。需要时仍可手动 `applyFromScene` / `applyFromDepth`。Canvas 测试仍可用打包的 `applyFromDepth`（A=线性深度）。
+3D 默认路径：`RenderControl` 特性 `"gi"` 仍默认开（mesh 半球天空/地面 + wrap fill）。`"rtgi"` 是显式启用的 fullscreen SSGI 时域链；手动 Canvas 路径仍可用 `applyFromScene` / `applyFromDepth`。
 
 ```squirrel
 local rc = gfx.getRenderControl();
 rc.enable("gi");   // 默认已开
 rc.compile();
 ```
+
+### AAA 时域反射链（TAA + RTGI + SSR）
+
+`"reflectionChain"` 一次启用 TAA、fullscreen RTGI、PBR 感知 SSR 及其 GBuffer 依赖，并默认关闭重复的硬件 MSAA 成本。基础材质的环境 IBL 是 SSR 未命中、出屏和高粗糙度区域的后备反射；SSR 结果按时域置信度覆盖，避免屏幕边界硬切。
+
+```squirrel
+local rc = gfx.getRenderControl();
+rc.setPostProcessQuality("high"); // low | medium | high | ultra
+rc.enable("reflectionChain");
+rc.compile();
+```
+
+室内或盒状空间可在相机环境 cubemap 上启用 box-projected reflection probe，使墙面和物体反射对应有限房间而不是无限远天空：
+
+```squirrel
+camera.setEnvMap(roomCubemap);
+camera.setEnvIntensity(1.0);
+camera.setEnvProbe(0, 2, 0, 8, 2, 6); // center xyz, half-extent xyz
+```
+
+只有位于 probe AABB 内的 fragment 会修正镜面反射方向；盒外自动使用普通环境方向。`camera.clearEnvProbe()` 恢复无限远 IBL。任一 extent 为零时 probe 视为关闭。
+
+运行时切档会同步更新 TAA、RTGI 与 SSR，并废弃不兼容的历史帧；`ultra` 在 TAA 上映射到其最高 `high` 档，在 RTGI/SSR 上使用原生 `ultra`。关闭 `reflectionChain` 会同步关闭三个子链路；如果需要逐项调试，也可分别启用 `"taa"`、`"rtgi"`、`"ssr"`。
 
 ### 抗锯齿（硬件 MSAA + 经典后处理）
 

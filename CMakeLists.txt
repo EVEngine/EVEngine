@@ -1290,6 +1290,25 @@ function(load_webgpu_backend)
     )
     FetchContent_MakeAvailable(dawn)
 
+    # Some minimal Linux images ship Xlib/XCB runtime headers but omit the
+    # small libX11-xcb development header. Dawn includes it from dawn_common
+    # even in headless builds and dynamically loads the symbols at runtime.
+    include(CheckIncludeFileCXX)
+    check_include_file_cxx("X11/Xlib-xcb.h" EVENGINE_HAS_XLIB_XCB_H)
+    if(NOT EVENGINE_HAS_XLIB_XCB_H AND TARGET dawn_common)
+        target_include_directories(dawn_common PRIVATE
+            "${CMAKE_SOURCE_DIR}/cmake/compat")
+    endif()
+    check_include_file_cxx("gbm.h" EVENGINE_HAS_GBM_H)
+    if(NOT EVENGINE_HAS_GBM_H AND TARGET dawn_common)
+        target_include_directories(dawn_common PRIVATE
+            "${CMAKE_SOURCE_DIR}/cmake/compat")
+        find_library(EVENGINE_GBM_RUNTIME NAMES gbm libgbm.so.1)
+        if(EVENGINE_GBM_RUNTIME)
+            target_link_libraries(dawn_common PRIVATE "${EVENGINE_GBM_RUNTIME}")
+        endif()
+    endif()
+
     if(TARGET dawn::webgpu_dawn)
         set(_eve_dawn_target dawn::webgpu_dawn)
     elseif(TARGET dawn::dawn)

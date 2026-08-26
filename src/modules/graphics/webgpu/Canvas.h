@@ -15,17 +15,19 @@ namespace eve::graphics::webgpu {
  */
 class OffscreenCanvas final : public eve::graphics::Canvas {
 public:
-    OffscreenCanvas(Graphics *gfx, int width, int height);
+    OffscreenCanvas(Graphics *gfx, int width, int height, bool hdr = false);
     ~OffscreenCanvas() override;
 
     int getWidth() const override { return width; }
     int getHeight() const override { return height; }
     Texture *getTexture() override { return &colorTex; }
+    bool isHDR() const { return hdr; }
 
     void clear(std::optional<Color> color, std::optional<int> stencil,
                std::optional<double> depth) override;
     Color getPixel(int x, int y) override;
     image::ImageData *newImageData() override;
+    image::ImageData *newHDRImageData() override;
 
     void draw(Canvas *, const glm::mat4 &) const override {}
     void draw(eve::graphics::Graphics *, const glm::mat4 &) const override {}
@@ -45,6 +47,7 @@ private:
     wgpu::TextureView depthView;
     GpuTexture colorGpu;
     Texture colorTex;
+    bool hdr = false;
 };
 
 }  // namespace eve::graphics::webgpu

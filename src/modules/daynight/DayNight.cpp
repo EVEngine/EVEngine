@@ -3,6 +3,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Light.h"
+#include "graphics/ReflectionProbeCapture.h"
 #include "graphics/Texture.h"
 
 #include <cmath>
@@ -218,6 +219,8 @@ struct DayNight::Impl {
     // sky cache (regenerate only when the sun bucket changes)
     bool skyboxEnabled = true;
     graphics::Texture *skyCube = nullptr;
+    std::array<graphics::Texture *, 6> skyFaces{};
+    std::array<float, 6> skyFaceCenterLuminance{};
     int lastSkyBucket = -1;
 
     // night lights
@@ -354,6 +357,43 @@ void DayNight::applyAtmosphere(graphics::Volumetric *fog) const {
                             getSunB() + impl_->weatherFlash * 0.9f);
     fog->setIntensity(std::max(0.08f, impl_->sunEnergy + impl_->weatherFlash));
     fog->setTime(impl_->timeOfDay * 18.f);
+}
+
+void DayNight::applyReflectionProbeSky(graphics::ReflectionProbeCapture *probe) const {
+    if (!probe) return;
+    static constexpr Vec3 directions[6] = {
+        {1.f, 0.f, 0.f}, {-1.f, 0.f, 0.f}, {0.f, 1.f, 0.f},
+        {0.f, -1.f, 0.f}, {0.f, 0.f, 1.f}, {0.f, 0.f, -1.f},
+    };
+    const Vec3 sun{impl_->sunDir[0], impl_->sunDir[1], impl_->sunDir[2]};
+    const float nightAmount = std::clamp((-impl_->elevDeg) / 12.f, 0.f, 1.f);
+    for (int face = 0; face < 6; ++face) {
+        const Vec3 direction = directions[face];
+        const float up = direction.y;
+        const Vec3 view{direction.x, std::max(direction.y, 0.002f), direction.z};
+        const Vec3 day = atmosphereRadiance(view, sun, impl_->turbidity, impl_->mieStrength);
+        const Vec3 night{0.006f + 0.012f * std::max(up, 0.f),
+                         0.010f + 0.020f * std::max(up, 0.f),
+                         0.035f + 0.070f * std::max(up, 0.f)};
+        Vec3 color = add(scale(day, (1.f - nightAmount) * impl_->sunEnergy),
+                         scale(night, nightAmount));
+        const Vec3 overcast{0.075f + 0.035f * std::max(up, 0.f),
+                            0.090f + 0.045f * std::max(up, 0.f),
+                            0.125f + 0.060f * std::max(up, 0.f)};
+        color = add(scale(color, 1.f - impl_->weatherCloudiness * 0.82f),
+                    scale(overcast, impl_->weatherCloudiness));
+        color = add(color, scale(Vec3{0.75f, 0.90f, 1.20f}, impl_->weatherFlash));
+        color = scale(color, impl_->skyExposure);
+        probe->setSkyFaceColor(face, color.x, color.y, color.z);
+        probe->setSkyFaceTexture(face, impl_->skyFaces[static_cast<size_t>(face)]);
+        const float linearLuminance =
+            color.x * 0.2126f + color.y * 0.7152f + color.z * 0.0722f;
+        const float encodedLuminance =
+            impl_->skyFaceCenterLuminance[static_cast<size_t>(face)];
+        probe->setSkyFaceTextureScale(
+            face, encodedLuminance > 1e-4f ? linearLuminance / encodedLuminance : 1.f);
+    }
+    probe->setEnvironmentLighting(impl_->skyCube, 0.5f + 0.5f * impl_->sunEnergy);
 }
 
 // ---------------------------------------------------------------------------
@@ -505,6 +545,15 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
                             impl_->sunEnergy, nightAmount, impl_->turbidity,
                             impl_->mieStrength, impl_->skyExposure,
                             impl_->weatherCloudiness, cubeDir);
+                impl_->skyFaces[static_cast<size_t>(f)] =
+                    gfx->newTexture(int(kSkyCubeSize), int(kSkyCubeSize), face.data());
+                const size_t center =
+                    (size_t(kSkyCubeSize / 2) * size_t(kSkyCubeSize) + size_t(kSkyCubeSize / 2)) *
+                    4u;
+                impl_->skyFaceCenterLuminance[static_cast<size_t>(f)] =
+                    (float(face[center]) * 0.2126f + float(face[center + 1]) * 0.7152f +
+                     float(face[center + 2]) * 0.0722f) /
+                    255.f;
                 std::memcpy(faces.data() + size_t(f) * face.size(), face.data(), face.size());
             }
             // Replace the previous env cube; Graphics owns old textures.
@@ -592,6 +641,7 @@ void DayNight::expose(ssq::Class &cls) {
     cls.addFunc("getAmbientB", &DayNight::getAmbientB);
     cls.addFunc("getAmbientBrightness", &DayNight::getAmbientBrightness);
     cls.addFunc("applyAtmosphere", &DayNight::applyAtmosphere);
+    cls.addFunc("applyReflectionProbeSky", &DayNight::applyReflectionProbeSky);
     cls.addFunc("setWeatherInfluence", &DayNight::setWeatherInfluence);
     cls.addFunc("getWeatherCloudiness", &DayNight::getWeatherCloudiness);
     cls.addFunc("getWeatherFlash", &DayNight::getWeatherFlash);

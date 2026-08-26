@@ -37,6 +37,12 @@ public:
     /** Full RGBA8 copy; caller owns ImageData*. */
     virtual image::ImageData *newImageData() = 0;
 
+    /**
+     * @brief Copy an HDR Canvas as linear RGBA16F without tone mapping.
+     * @return Caller-owned ImageData, or nullptr when this Canvas is not HDR.
+     */
+    virtual image::ImageData *newHDRImageData() { return nullptr; }
+
     virtual void draw(Canvas *C, const glm::mat4 &matrix) const = 0;
 };
 

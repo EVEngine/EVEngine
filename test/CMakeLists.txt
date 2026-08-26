@@ -40,6 +40,7 @@ file(GLOB all_test_cpp
   Lighting2D.cpp
   ClusteredLighting.cpp
   IBL.cpp
+  reflection_probe_quality.cpp
   Shadow3D.cpp
   MaterialRenderControl.cpp
   ClassicScenes.cpp

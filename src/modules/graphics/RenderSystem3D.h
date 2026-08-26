@@ -8,6 +8,8 @@
 #include "zeroerr/assert.h"
 
 #include <functional>
+#include <array>
+#include <cstdint>
 #include <string>
 
 namespace eve::graphics {
@@ -22,6 +24,16 @@ public:
     void release() override {}
 
     struct Data {
+        static constexpr int kMaxReflectionProbes = 8;
+        struct ReflectionProbe {
+            Texture *cubemap = nullptr;
+            glm::vec3 center{0.f};
+            glm::vec3 extent{0.f};
+            float intensity = 0.f;
+            float blendDistance = 0.f;
+            int priority = 0;
+            bool enabled = false;
+        };
         float eyeX = 0.f, eyeY = 0.f, eyeZ = 3.f;
         float targetX = 0.f, targetY = 0.f, targetZ = 0.f;
         float upX = 0.f, upY = 1.f, upZ = 0.f;
@@ -29,6 +41,15 @@ public:
         float ambientR = 0.12f, ambientG = 0.12f, ambientB = 0.14f;
         Texture *envMap = nullptr;   // cubemap; nullptr → no IBL
         float envIntensity = 1.f;
+        glm::vec3 envProbeCenter{0.f};
+        glm::vec3 envProbeExtent{0.f};  // any zero axis disables box projection
+        std::array<ReflectionProbe, kMaxReflectionProbes> reflectionProbes{};
+        float exposureEV = 0.f;  // exposure compensation in stops; 0 preserves legacy brightness
+        bool autoExposure = false;
+        float autoExposureMinEV = -8.f;
+        float autoExposureMaxEV = 8.f;
+        float bloomIntensity = 0.f;
+        float bloomThreshold = 1.f;
         bool active = false;
         Camera3D *entity = nullptr;
         // Last screenToRay() result (origin = eye, dir normalized).
@@ -55,6 +76,48 @@ public:
     /** @brief Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL. */
     void setEnvMap(Texture *cube);
     void setEnvIntensity(float intensity);
+    /** @brief Set exposure compensation in photographic stops. Positive values brighten. */
+    void setExposure(float ev);
+    /** @brief Return exposure compensation in photographic stops. */
+    float getExposure();
+    /** @brief Enable log-average automatic exposure and set its EV clamp range. */
+    void setAutoExposure(bool enabled, float minEV = -8.f, float maxEV = 8.f);
+    /** @brief Return whether automatic exposure is enabled. */
+    bool isAutoExposure();
+    /** @brief Configure HDR bloom. Zero intensity disables it. */
+    void setBloom(float intensity, float threshold = 1.f);
+    /** @brief Return bloom intensity. */
+    float getBloomIntensity();
+    /** @brief Return bloom threshold in linear HDR units. */
+    float getBloomThreshold();
+    /** @brief Enable box-projected IBL for the camera environment cubemap. */
+    void setEnvProbe(float centerX, float centerY, float centerZ, float extentX, float extentY,
+                     float extentZ);
+    /** @brief Disable box projection and return to an infinite-distance environment. */
+    void clearEnvProbe();
+    /** @brief True when all three box-probe extents are positive. */
+    bool hasEnvProbe();
+    float getEnvProbeCenterX();
+    float getEnvProbeCenterY();
+    float getEnvProbeCenterZ();
+    float getEnvProbeExtentX();
+    float getEnvProbeExtentY();
+    float getEnvProbeExtentZ();
+    /**
+     * @brief Configure one local reflection probe slot.
+     * @param slot Slot in [0,7].
+     * @param cubemap Prefiltered cubemap; nullptr disables the slot.
+     * @param blendDistance Inward edge fade distance in world units.
+     * @param priority Higher values win when more than two probes are relevant.
+     */
+    void setReflectionProbe(int slot, Texture *cubemap, float centerX, float centerY,
+                            float centerZ, float extentX, float extentY, float extentZ,
+                            float intensity = 1.f, float blendDistance = 1.f,
+                            int priority = 0);
+    /** @brief Disable one local reflection probe slot. */
+    void clearReflectionProbe(int slot);
+    /** @brief Return the number of enabled local reflection probes. */
+    int getReflectionProbeCount();
 
     /**
      * @brief Build a world-space picking ray from a screen pixel.
@@ -112,6 +175,7 @@ public:
         float parallaxMinLayers = 8.f;
         float parallaxMaxLayers = 32.f;
         bool visible = true;
+        uint32_t reflectionCaptureMask = 1u;
         bool receiveLight = true;
         bool castShadow = true;
         bool receiveShadow = true;
@@ -226,6 +290,10 @@ public:
     float getParallaxMinLayers();
     float getParallaxMaxLayers();
     void setVisible(bool visible);
+    /** @brief Set the bit mask used to include this object in reflection-probe captures. */
+    void setReflectionCaptureMask(int mask);
+    /** @brief Return the reflection-probe capture bit mask. */
+    int getReflectionCaptureMask();
     void setReceiveLight(bool receive);
     void setCastShadow(bool cast);
     void setReceiveShadow(bool receive);
@@ -249,11 +317,53 @@ public:
     static void render(Graphics &gfx);
 
     /**
-     * Preview-quality 3D pass into an offscreen canvas (editor viewport):
-     * forward-only (no shadow / G-buffer / AO), legacy per-entity material
-     * path, using `camera`. The canvas texture then holds the rendered scene.
+     * @brief Forward 3D pass into an offscreen canvas using multipart materials, LOD,
+     * masked surfaces and sorted transparency. Shadow/G-buffer/AO remain disabled
+     * for incremental probe and editor-preview budgets.
+     * @param gfx Graphics backend receiving draw submissions.
+     * @param target Destination Canvas.
+     * @param camera Camera used for view, lighting and environment state.
+     * @param reflectionCaptureMask Object-layer inclusion mask.
+     * @param lodDistanceScale Multiplier applied before selecting mesh LOD.
+     * @param includeTransparent Whether transparent and hair surfaces are submitted.
+     * @param useClusteredLighting Whether lights beyond the legacy pack use clustered shading.
      */
-    static void renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *camera);
+    static void renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *camera,
+                               uint32_t reflectionCaptureMask = 0xffffffffu,
+                               float lodDistanceScale = 1.f,
+                               bool includeTransparent = true,
+                               bool useClusteredLighting = true,
+                               Texture *skyFaceTexture = nullptr,
+                               Mesh *skyQuad = nullptr,
+                               float skyFaceTextureScale = 1.f);
+
+    /**
+     * @brief Draw custom forward geometry into reflection-probe and preview captures.
+     * @param gfx Graphics backend receiving draw submissions.
+     * @param cam Capture camera and its independent environment-lighting snapshot.
+     * @param viewProj Capture view-projection matrix.
+     * @param aspect Destination aspect ratio.
+     * @param reflectionCaptureMask Active capture-layer mask.
+     */
+    using CaptureExtraDrawer =
+        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
+                           const glm::mat4 &viewProj, float aspect,
+                           uint32_t reflectionCaptureMask)>;
+
+    /**
+     * @brief Register custom forward geometry for offscreen captures.
+     * @param reflectionCaptureMask Layers in which the contributor is visible.
+     * @param drawer Callback invoked before the offscreen forward pass ends.
+     * @return Non-zero token accepted by removeCaptureExtraDrawer.
+     */
+    static uint64_t addCaptureExtraDrawer(uint32_t reflectionCaptureMask,
+                                          CaptureExtraDrawer drawer);
+
+    /**
+     * @brief Unregister an offscreen capture contributor.
+     * @param token Token returned by addCaptureExtraDrawer. Zero is ignored.
+     */
+    static void removeCaptureExtraDrawer(uint64_t token);
 
     /**
      * @brief Register a callback that fills the G-buffer (depth/normal/albedo) for

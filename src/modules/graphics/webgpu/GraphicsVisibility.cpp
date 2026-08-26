@@ -442,6 +442,17 @@ void Graphics::recordGpuDrivenVisibility(wgpu::CommandEncoder encoder) {
         frame.mvp = mesh3dViewProj;
         frame.view = mesh3dView;
         frame.cameraPos = glm::vec4(mesh3dCameraPos, material->getRoughness());
+        frame.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+        frame.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+        for (int probeIndex = 0; probeIndex < ReflectionProbeUpload::kMaxProbes; ++probeIndex) {
+            if (probeIndex >= mesh3dReflectionProbes.count) continue;
+            const auto &probe = mesh3dReflectionProbes.probes[probeIndex];
+            GpuTexture *gpuProbe = gpuForTexture(probe.cubemap);
+            if (!gpuProbe || !gpuProbe->isCube) continue;
+            frame.reflectionProbeCenter[probeIndex] = glm::vec4(probe.center, probe.intensity);
+            frame.reflectionProbeExtent[probeIndex] =
+                glm::vec4(probe.extent, probe.blendDistance);
+        }
         frame.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), material->getMetallic());
         frame.clipInfo = glm::vec4(mesh3dNear, mesh3dFar, 0.f, 0.f);
         const uint32_t frameOffset = arena.alloc(sizeof(Mesh3DUBO), 256);
@@ -512,6 +523,17 @@ void Graphics::flushGpuDrivenResolve(wgpu::RenderPassEncoder pass) {
         frame.lightColor = mesh3dLighting.lights[0].color;
         frame.lightColor.w = mesh3dEnvIntensity;
         frame.cameraPos = glm::vec4(mesh3dCameraPos, material->getRoughness());
+        frame.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+        frame.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+        for (int probeIndex = 0; probeIndex < ReflectionProbeUpload::kMaxProbes; ++probeIndex) {
+            if (probeIndex >= mesh3dReflectionProbes.count) continue;
+            const auto &probe = mesh3dReflectionProbes.probes[probeIndex];
+            GpuTexture *gpuProbe = gpuForTexture(probe.cubemap);
+            if (!gpuProbe || !gpuProbe->isCube) continue;
+            frame.reflectionProbeCenter[probeIndex] = glm::vec4(probe.center, probe.intensity);
+            frame.reflectionProbeExtent[probeIndex] =
+                glm::vec4(probe.extent, probe.blendDistance);
+        }
         frame.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), material->getMetallic());
         for (int light = 0; light < Lighting3DPack::kMaxLights; ++light)
             frame.lights[light] = mesh3dLighting.lights[light];

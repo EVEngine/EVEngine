@@ -2460,6 +2460,14 @@ TEST_CASE("graphics.water.paramsRoundTrip") {
     CHECK(approxEq(w->getReflectionIntensity(), 0.4f, 1e-5f));
     w->setSunIntensity(0.8f);
     CHECK(approxEq(w->getSunIntensity(), 0.8f, 1e-5f));
+    w->setScreenSpaceReflection(true, 0.9f);
+    CHECK(w->getScreenSpaceReflection());
+    CHECK(approxEq(w->getScreenSpaceReflectionStrength(), 0.9f, 1e-5f));
+    w->setScreenSpaceReflection(true, -1.f);
+    CHECK(approxEq(w->getScreenSpaceReflectionStrength(), 0.f, 1e-5f));
+    w->setViewport(320.f, 180.f);
+    CHECK(approxEq(w->getViewportWidth(), 320.f, 1e-5f));
+    CHECK(approxEq(w->getViewportHeight(), 180.f, 1e-5f));
     w->bindParams();  // must not throw
 
     w->createPlane(10.f, 8.f, 8, 6);

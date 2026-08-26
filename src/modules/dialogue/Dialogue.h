@@ -38,50 +38,67 @@ struct DataValue {
     std::vector<DataValue> arr;
     std::vector<std::pair<std::string, DataValue>> obj;
 
-    static DataValue null() { return {}; }
-    static DataValue integer(long long v) {
-        DataValue d;
-        d.kind = Kind::Int;
-        d.i = v;
-        return d;
-    }
-    static DataValue number(double v) {
-        DataValue d;
-        d.kind = Kind::Float;
-        d.f = v;
-        return d;
-    }
-    static DataValue boolean(bool v) {
-        DataValue d;
-        d.kind = Kind::Bool;
-        d.b = v;
-        return d;
-    }
-    static DataValue string(std::string v) {
-        DataValue d;
-        d.kind = Kind::String;
-        d.s = std::move(v);
-        return d;
-    }
-    static DataValue array(std::vector<DataValue> v) {
-        DataValue d;
-        d.kind = Kind::Array;
-        d.arr = std::move(v);
-        return d;
-    }
-    static DataValue object(std::vector<std::pair<std::string, DataValue>> v) {
-        DataValue d;
-        d.kind = Kind::Object;
-        d.obj = std::move(v);
-        return d;
-    }
+    DataValue();
+    ~DataValue();
+    DataValue(const DataValue &) = default;
+    DataValue(DataValue &&) noexcept = default;
+    DataValue &operator=(const DataValue &) = default;
+    DataValue &operator=(DataValue &&) noexcept = default;
 
-    const DataValue *find(const std::string &key) const {
-        for (const auto &kv : obj)
-            if (kv.first == key) return &kv.second;
-        return nullptr;
-    }
+    static DataValue null();
+    static DataValue integer(long long v);
+    static DataValue number(double v);
+    static DataValue boolean(bool v);
+    static DataValue string(std::string v);
+    static DataValue array(std::vector<DataValue> v);
+    static DataValue object(std::vector<std::pair<std::string, DataValue>> v);
+    const DataValue *find(const std::string &key) const;
 };
+
+inline DataValue::DataValue() = default;
+inline DataValue::~DataValue() = default;
+inline DataValue DataValue::null() { return {}; }
+inline DataValue DataValue::integer(long long v) {
+    DataValue d;
+    d.kind = Kind::Int;
+    d.i = v;
+    return d;
+}
+inline DataValue DataValue::number(double v) {
+    DataValue d;
+    d.kind = Kind::Float;
+    d.f = v;
+    return d;
+}
+inline DataValue DataValue::boolean(bool v) {
+    DataValue d;
+    d.kind = Kind::Bool;
+    d.b = v;
+    return d;
+}
+inline DataValue DataValue::string(std::string v) {
+    DataValue d;
+    d.kind = Kind::String;
+    d.s = std::move(v);
+    return d;
+}
+inline DataValue DataValue::array(std::vector<DataValue> v) {
+    DataValue d;
+    d.kind = Kind::Array;
+    d.arr = std::move(v);
+    return d;
+}
+inline DataValue DataValue::object(std::vector<std::pair<std::string, DataValue>> v) {
+    DataValue d;
+    d.kind = Kind::Object;
+    d.obj = std::move(v);
+    return d;
+}
+inline const DataValue *DataValue::find(const std::string &key) const {
+    for (const auto &kv : obj)
+        if (kv.first == key) return &kv.second;
+    return nullptr;
+}
 
 /**
  * @brief Visual-novel style dialogue stage.

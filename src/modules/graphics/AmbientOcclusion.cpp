@@ -388,7 +388,7 @@ void AmbientOcclusion::computeTo(Graphics *gfx, Texture *linearDepth, Canvas *de
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     compute(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void AmbientOcclusion::blur(Graphics *gfx, Texture *aoMap) {
@@ -404,7 +404,7 @@ void AmbientOcclusion::blurTo(Graphics *gfx, Texture *aoMap, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     blur(gfx, aoMap);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void AmbientOcclusion::applyOverlay(Graphics *gfx, Texture *aoMap) {
@@ -424,7 +424,7 @@ void AmbientOcclusion::applyOverlayTo(Graphics *gfx, Texture *aoMap, Canvas *des
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyOverlay(gfx, aoMap);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void AmbientOcclusion::applyFromDepth(Graphics *gfx, Texture *hwDepth) {
@@ -455,7 +455,7 @@ void AmbientOcclusion::applyFromDepthTo(Graphics *gfx, Texture *linearDepth, Can
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFromDepth(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 Texture *AmbientOcclusion::newLinearDepthTexture(Graphics *gfx, int width, int height,

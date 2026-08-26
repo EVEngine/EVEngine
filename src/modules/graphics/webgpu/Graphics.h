@@ -50,10 +50,14 @@ struct Mesh3DUBO {
     glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f};   // x=near, y=far
     glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};        // x=strength(0=off), y=worldCell, z=time
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};  // xy=wind vel, z=coverage, w=detail
+    glm::vec4 envProbeCenter{0.f};
+    glm::vec4 envProbeExtent{0.f};
     glm::vec4 skinInfo{0.f};
     glm::mat4 skinBones[Mesh::kMaxSkinBones]{glm::mat4(1.f)};
+    glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
+    glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
-static_assert(sizeof(Mesh3DUBO) == 8832, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 8928, "Mesh3DUBO layout must match the WGSL Frame block");
 
 struct MeshVertex {
     glm::vec3 pos;
@@ -91,8 +95,12 @@ struct Mesh3DClusteredUBO {
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f};       // x=cellScale, y=strength, z=rotAmount, w=AO
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f};     // x=scale, y=minLayers, z=maxLayers
     glm::vec4 surface{0.f, 0.5f, 0.f, 0.f};       // mode, alphaCutoff, ssao, reserved
+    glm::vec4 envProbeCenter{0.f};
+    glm::vec4 envProbeExtent{0.f};
+    glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
+    glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
-static_assert(sizeof(Mesh3DClusteredUBO) == 352,
+static_assert(sizeof(Mesh3DClusteredUBO) == 448,
               "Mesh3DClusteredUBO layout must match the WGSL clustered Frame block");
 
 /**
@@ -108,6 +116,7 @@ struct GpuTexture {
     // height at 6). Rebuilt when the mesh3d pipeline re-creates its layout.
     wgpu::BindGroup meshGroup;
     bool isCube = false;
+    bool isHDR = false;
     int width = 0;
     int height = 0;
     uint32_t mipLevels = 1;
@@ -136,6 +145,10 @@ struct GpuMesh {
 struct GpuShader {
     wgpu::RenderPipeline swapchainPipeline;   // 2D/offscreen color format
     wgpu::RenderPipeline offscreenPipeline;   // RGBA8Unorm canvas format
+    wgpu::RenderPipeline swapchainOpaquePipeline;
+    wgpu::RenderPipeline offscreenOpaquePipeline;
+    wgpu::RenderPipeline hdrOffscreenPipeline;
+    wgpu::RenderPipeline hdrOffscreenOpaquePipeline;
     wgpu::RenderPipeline mesh3dPipeline;      // scene color format
     wgpu::RenderPipeline mesh3dXrayPipeline;  // depth test/write off + alpha blend
     wgpu::RenderPipeline shadowPipeline;      // depth-only
@@ -229,6 +242,11 @@ public:
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                         const TextureCreateInfo &info) override;
+    Texture *newHDRCubemap(int faceSize) override;
+    bool copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int face) override;
+    bool copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
+                                  Texture *cubemap) override;
+    bool filterHDRReflectionCubemap(Texture *cubemap, int sampleCount = 64) override;
     Texture *newTexture(image::ImageData *data) override;
     Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) override;
     void setTextureSampler(Texture *texture, const TextureSampler &sampler) override;
@@ -256,6 +274,15 @@ public:
                                          BlendMode blend = BlendMode::Alpha) override;
     void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x, float y,
                                      float w, float h, const Color &tint) override;
+    void drawTexturedRectShaderDepthMotion(Texture *color, Texture *depth, Texture *motion,
+                                           Shader *shader, float x, float y, float w, float h,
+                                           const Color &tint) override;
+    void drawTexturedRectShader4(Texture *color, Texture *depth, Texture *motion, Texture *extra,
+                                 Shader *shader, float x, float y, float w, float h,
+                                 const Color &tint) override;
+    void drawTexturedRectShader5(Texture *color, Texture *depth, Texture *motion, Texture *extra,
+                                 Texture *specular, Shader *shader, float x, float y, float w,
+                                 float h, const Color &tint) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
                                float u0, float v0, float u1, float v1, const Color &color) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
@@ -293,6 +320,9 @@ public:
     void begin3DFrame() override;
     void begin3DFrameToCanvas(Canvas *canvas) override;
     void end3DFrameToCanvas() override;
+    float getLastOffscreen3DGpuDurationMs() const override {
+        return completedOffscreenTimestampMs.exchange(0.f);
+    }
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
     void setMesh3DView(const glm::mat4 &view) override;
     void setMesh3DClip(float nearZ, float farZ) override;
@@ -321,6 +351,24 @@ public:
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;
+    void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) override;
+    void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) override;
+    void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
+    float getSceneExposure() const override { return sceneExposure; }
+    void setSceneAutoExposure(bool enabled, float minEV, float maxEV) override {
+        sceneAutoExposure = enabled;
+        sceneAutoExposureMinEV = minEV;
+        sceneAutoExposureMaxEV = maxEV;
+    }
+    bool getSceneAutoExposure() const override { return sceneAutoExposure; }
+    float getSceneAutoExposureMinEV() const override { return sceneAutoExposureMinEV; }
+    float getSceneAutoExposureMaxEV() const override { return sceneAutoExposureMaxEV; }
+    void setSceneBloom(float intensity, float threshold) override {
+        sceneBloomIntensity = intensity;
+        sceneBloomThreshold = threshold;
+    }
+    float getSceneBloomIntensity() const override { return sceneBloomIntensity; }
+    float getSceneBloomThreshold() const override { return sceneBloomThreshold; }
     void setMesh3DShadows(const ShadowUpload &upload) override;
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
@@ -331,10 +379,13 @@ public:
     void beginGBufferPass(int width, int height) override;
     void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
                          float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
-                         float tintB = 1.f) override;
+                         float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
+                         float roughness = 0.45f, float metallic = 0.f) override;
     void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                               float nearZ, float farZ, Texture *albedo = nullptr, float tintR = 1.f,
-                              float tintG = 1.f, float tintB = 1.f) override;
+                              float tintG = 1.f, float tintB = 1.f, float motionX = 0.f,
+                              float motionY = 0.f, float roughness = 0.45f,
+                              float metallic = 0.f) override;
     void endGBufferPass() override;
     image::ImageData *readGBufferToImageData(const std::string &attachment) override;
 
@@ -348,6 +399,7 @@ public:
     image::ImageData *readDecalLayerToImageData(const std::string &attachment) override;
 
     Canvas *newCanvas(int width, int height) override;
+    Canvas *newHDRCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
     bool isCanvasActive() const override;
     Canvas *getCanvas() const override;
@@ -369,6 +421,8 @@ public:
     /** @brief Blocking CPU readback of an offscreen canvas or scene color target. */
     Color getPixelImpl(OffscreenCanvas *canvas, int x, int y);
     image::ImageData *newImageDataImpl(OffscreenCanvas *canvas);
+    /** @brief Blocking linear RGBA16F readback of an HDR offscreen canvas. */
+    image::ImageData *newHDRImageDataImpl(OffscreenCanvas *canvas);
 
     wgpu::Instance &getInstance() { return instance; }
     wgpu::Device &getDevice() { return device; }
@@ -394,6 +448,9 @@ public:
         Shader *shader = nullptr;
         BlendMode blend = BlendMode::Alpha;
         Batcher batch;
+        Texture *motion = nullptr;
+        Texture *extra = nullptr;
+        Texture *specular = nullptr;
     };
     struct LitBatch {
         Texture *albedo = nullptr;
@@ -434,6 +491,9 @@ private:
         float nearZ = 0.1f;
         float farZ = 100.f;
         glm::vec4 tint{1.f};
+        glm::vec2 motion{0.f};
+        float roughness = 0.45f;
+        float metallic = 0.f;
         bool alphaTest = false;
         uint32_t pushUboOffset = 0;
     };
@@ -512,7 +572,9 @@ private:
 
     GpuTexture *gpuForTexture(Texture *t) const;
     GpuTexture *gpuForTextureOrWhite(Texture *t) const;
-    wgpu::BindGroup makeTex2DBindGroup(GpuTexture *color, GpuTexture *depth);
+    wgpu::BindGroup makeTex2DBindGroup(GpuTexture *color, GpuTexture *depth,
+                                       GpuTexture *motion = nullptr, GpuTexture *extra = nullptr,
+                                       GpuTexture *specular = nullptr);
     wgpu::BindGroup makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env,
                                       GpuTexture *height, GpuTexture *depth,
                                       uint32_t frameUboOffset, uint32_t shadowUboOffset,
@@ -614,6 +676,9 @@ private:
     GpuTexture *flatHeightTexture3D = nullptr;
     GpuTexture *flatDepthTexture3D = nullptr;
     GpuTexture *defaultEnvCubemap = nullptr;
+    wgpu::BindGroupLayout reflectionProbeFilterSetLayout;
+    wgpu::PipelineLayout reflectionProbeFilterPipelineLayout;
+    wgpu::RenderPipeline reflectionProbeFilterPipeline;
     GpuTexture *shadowDepthArray = nullptr;
     // 1x1x3 depth-array + comparison sampler used for the mesh3d shadow
     // bindings (5/8) when no shadow map exists yet — the bind group layout
@@ -674,6 +739,13 @@ private:
     wgpu::RenderPipeline texturedMultiplyPipeline;
     wgpu::RenderPipeline colorOpaquePipeline;
     wgpu::RenderPipeline texturedOpaquePipeline;
+    wgpu::RenderPipeline sceneTonemapPipeline;
+    float sceneExposure = 1.f;
+    bool sceneAutoExposure = false;
+    float sceneAutoExposureMinEV = -8.f;
+    float sceneAutoExposureMaxEV = 8.f;
+    float sceneBloomIntensity = 0.f;
+    float sceneBloomThreshold = 1.f;
     wgpu::RenderPipeline mesh3dPipeline;
     wgpu::RenderPipeline mesh3dTransparentPipeline;
     static constexpr size_t kMeshPipelineVariants = 20;
@@ -697,9 +769,12 @@ private:
     wgpu::RenderPipeline offscreenTexturedMultiplyPipeline;
     wgpu::RenderPipeline offscreenColorOpaquePipeline;
     wgpu::RenderPipeline offscreenTexturedOpaquePipeline;
+    wgpu::RenderPipeline hdrOffscreenTexturedPipeline;
+    wgpu::RenderPipeline hdrOffscreenTexturedOpaquePipeline;
     wgpu::RenderPipeline offscreenLitPipeline;
     // Fullscreen quad used to composite the scene color into the swapchain.
     wgpu::Buffer fullscreenQuadVb;
+    wgpu::Buffer toneMapQuadVb;
     wgpu::Buffer fullscreenQuadIb;
     bool fullscreenQuadReady = false;
 
@@ -728,6 +803,17 @@ private:
     // Non-null between begin3DFrameToCanvas and the frame's present: the 3D
     // scene pass renders into this canvas instead of the scene color target.
     OffscreenCanvas *active3DCanvas = nullptr;
+    bool offscreenTimestampSupported = false;
+    wgpu::QuerySet offscreenTimestampQuerySet;
+    wgpu::Buffer offscreenTimestampResolveBuffer;
+    struct OffscreenTimestampReadback {
+        Graphics *owner = nullptr;
+        wgpu::Buffer buffer;
+        bool pending = false;
+    };
+    std::array<OffscreenTimestampReadback, 3> offscreenTimestampReadbacks{};
+    size_t offscreenTimestampReadbackCursor = 0;
+    mutable std::atomic<float> completedOffscreenTimestampMs{0.f};
     // Most recent 3D render target (scene color or canvas), used by the async
     // frame readback.
     wgpu::Texture lastReadbackTex;
@@ -742,6 +828,9 @@ private:
     Texture *mesh3dEnvTexture = nullptr;
     Texture *mesh3dSceneDepthTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
+    glm::vec3 mesh3dEnvProbeCenter{0.f};
+    glm::vec3 mesh3dEnvProbeExtent{0.f};
+    ReflectionProbeUpload mesh3dReflectionProbes{};
     float mesh3dMetallic = 0.f;
     float mesh3dRoughness = 0.45f;
     SurfaceMode mesh3dSurfaceMode = SurfaceMode::Opaque;
@@ -793,7 +882,9 @@ private:
         uint32_t sampleCount = 1;
     };
     int sceneColorWidth = 0, sceneColorHeight = 0;
-    WGPUTextureFormat sceneColorFormat = WGPUTextureFormat_RGBA8Unorm;
+    // Internal 3D lighting target. Script-created Canvas textures remain
+    // RGBA8Unorm and are composited after the scene resolve.
+    WGPUTextureFormat sceneColorFormat = WGPUTextureFormat_RGBA16Float;
     uint32_t sceneColorSamples = 1;
     std::vector<SceneColorSlot> sceneColorSlots;
 
@@ -974,7 +1065,8 @@ private:
     // in-flight slot's UBO arena.
     using MeshBindGroupKey = std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t,
                                         uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t>;
+                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t,
+                                        uintptr_t, uintptr_t>;
     std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
     static constexpr size_t kMaxMeshBindGroupCache = 128;
     void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }

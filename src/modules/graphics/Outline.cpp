@@ -166,7 +166,7 @@ bool Outline::applyTo(Graphics *gfx, Texture *hwDepth, Texture *worldNormal, Can
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     const bool ok = apply(gfx, hwDepth, worldNormal);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
     return ok;
 }
 

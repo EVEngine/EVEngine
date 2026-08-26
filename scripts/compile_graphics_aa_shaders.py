@@ -15,7 +15,14 @@ FRAGS = [
     "aa_fxaa.frag",
     "aa_smaa.frag",
     "aa_ssaa.frag",
+    "bloom_downsample.frag",
+    "bloom_upsample.frag",
+    "exposure_meter.frag",
+    "exposure_adapt.frag",
+    "exposure_apply.frag",
+    "depth_pyramid_downsample.frag",
     "aa_nfaa.frag",
+    "aa_taa.frag",
 ]
 
 

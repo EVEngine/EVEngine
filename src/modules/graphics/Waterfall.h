@@ -34,7 +34,7 @@ class Texture;
 class Waterfall {
 public:
     explicit Waterfall(Graphics *gfx);
-    ~Waterfall() = default;
+    ~Waterfall();
 
     Waterfall(const Waterfall &) = delete;
     Waterfall &operator=(const Waterfall &) = delete;
@@ -96,6 +96,15 @@ public:
     /** @brief Draw the waterfall sheet (uses default mesh3d camera / lighting state). */
     void draw();
 
+    /** @brief Enable or disable inclusion in reflection-probe captures. */
+    void setReflectionCaptureEnabled(bool enabled) { reflectionCaptureEnabled_ = enabled; }
+    /** @brief Return whether this waterfall is included in reflection-probe captures. */
+    bool getReflectionCaptureEnabled() const { return reflectionCaptureEnabled_; }
+    /** @brief Set the reflection-capture visibility layer mask. */
+    void setReflectionCaptureMask(uint32_t mask) { reflectionCaptureMask_ = mask; }
+    /** @brief Return the reflection-capture visibility layer mask. */
+    uint32_t getReflectionCaptureMask() const { return reflectionCaptureMask_; }
+
     Shader *getShader() const { return shader_; }
     Mesh *getMesh() const { return mesh_; }
 
@@ -119,6 +128,9 @@ private:
     float waterColor_[3] = {0.05f, 0.22f, 0.30f};
     float reflectionIntensity_ = 0.55f;
     float sunIntensity_ = 0.8f;
+    uint64_t captureDrawerToken_ = 0;
+    uint32_t reflectionCaptureMask_ = 0xffffffffu;
+    bool reflectionCaptureEnabled_ = true;
 };
 
 /** @brief Create the embedded waterfall fragment shader (owned by Graphics). */

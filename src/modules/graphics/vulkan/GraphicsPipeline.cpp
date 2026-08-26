@@ -9,6 +9,7 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/GBuffer.h"
 #include "graphics/Outline.h"
 #include "graphics/RenderControl.h"
 
@@ -50,6 +51,7 @@
 #include "graphics/shaders/color_frag_spv.inc"
 #include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/shaders/textured_frag_spv.inc"
+#include "graphics/shaders/scene_tonemap_frag_spv.inc"
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/mesh3d_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
@@ -228,6 +230,12 @@ void Graphics::createTexturedPipeline() {
                                     vk::ShaderStageFlagBits::eFragment, 1)
                              .image(1, vk::DescriptorType::eCombinedImageSampler,
                                     vk::ShaderStageFlagBits::eFragment, 1)
+                             .image(2, vk::DescriptorType::eCombinedImageSampler,
+                                    vk::ShaderStageFlagBits::eFragment, 1)
+                             .image(3, vk::DescriptorType::eCombinedImageSampler,
+                                    vk::ShaderStageFlagBits::eFragment, 1)
+                             .image(4, vk::DescriptorType::eCombinedImageSampler,
+                                    vk::ShaderStageFlagBits::eFragment, 1)
                              .createUnique(device.instance);
     texSetLayout = *texSetLayoutUnique;
 
@@ -263,6 +271,9 @@ void Graphics::createTexturedPipeline() {
                                                       BlendMode::Multiply);
     opaqueTexPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout,
                                                     BlendMode::Opaque);
+    sceneTonemapPipeline = createTexturedStylePipeline(
+        vert, embeddedSpirv(scene_tonemap_frag_spv), renderpass, texPipelineLayout,
+        BlendMode::Opaque);
 
     createLit2DPipeline();
 }
@@ -374,6 +385,9 @@ void Graphics::createMesh3DPipeline() {
             .image(8, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(9, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(10, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(16, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(17, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(20, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
 
@@ -439,6 +453,9 @@ void Graphics::createMesh3DClusteredPipeline() {
             .image(10, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(11, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(12, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(18, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(19, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(20, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dClusteredSetLayout = *mesh3dClusteredSetLayoutUnique;
 
@@ -471,7 +488,11 @@ void Graphics::destroyShadowResources() {
     shadowMaps.clear();
     if (shadowSampler) {
         device->destroySampler(shadowSampler);
-        shadowSampler = {};
+        shadowSampler = vkb::DepthSampler{};
+    }
+    if (shadowRawSampler) {
+        device->destroySampler(shadowRawSampler);
+        shadowRawSampler = nullptr;
     }
     if (shadowRenderPass) {
         device->destroyRenderPass(shadowRenderPass);
@@ -556,8 +577,10 @@ void Graphics::destroySceneColorResources() {
 
 void Graphics::createUiColorResources(int uiW, int uiH) {
     if (uiW <= 0 || uiH <= 0) return;
-    const vk::Format colorFmt = swapchain.image_format;
-    if (colorFmt == vk::Format::eUndefined) return;
+    // Keep scene lighting in linear HDR.  The swapchain remains display
+    // encoded and receives a separate final composite; regular script Canvas
+    // targets intentionally stay RGBA8.
+    const vk::Format colorFmt = vk::Format::eR16G16B16A16Sfloat;
 
     const vk::SampleCountFlags supported =
         device.physical_device.properties.limits.framebufferColorSampleCounts;
@@ -1127,8 +1150,8 @@ vkb::BoundSet Graphics::decalSetFor(DecalSlot &slot, GpuTexture *albedo, GpuText
 void Graphics::createSceneColorResources(int sceneW, int sceneH) {
     if (sceneW <= 0 || sceneH <= 0) return;
     if (!texSetLayout || !descriptorPool) return;
-    const vk::Format colorFmt = swapchain.image_format;
-    if (colorFmt == vk::Format::eUndefined) return;
+    // Lighting and post effects stay linear HDR until the final swapchain resolve.
+    const vk::Format colorFmt = vk::Format::eR16G16B16A16Sfloat;
 
     const bool featureMsaa = !renderControl_ || renderControl_->isEnabled("msaa");
     const int desired = featureMsaa ? msaaSamples : 0;
@@ -1367,15 +1390,70 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
 }
 
 void Graphics::queueSceneColorResolve() {
-    Texture *src = getSceneColorTexture();
-    if (!src || !src->gpuHandle) return;
-    Shader *sh = prepareSceneColorResolveShader(src);
-    if (!sh) return;
+    Texture *src = takeFinalSceneTexture();
+    if (!src) src = getSceneColorTexture();
+    if (!src || !src->gpuHandle || sceneColorComposited) return;
     if (sceneColorComposited) return;
-    TexturedBatch resolve{src, nullptr, sh, BlendMode::Alpha, Batcher{}};
-    resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height), Color(1.f, 1.f, 1.f, 1.f),
-                                  0.f, 0.f, 1.f, 1.f);
-    pendingSceneResolve = std::move(resolve);
+    const bool reflectionPasses = renderControl_ &&
+                                  (renderControl_->isEnabled("rtgi") ||
+                                   renderControl_->isEnabled("ssr") ||
+                                   renderControl_->isEnabled("reflectionChain"));
+    if (reflectionPasses) {
+        auto *slot = currentSceneColorSlot();
+        auto *snapshot = dynamic_cast<OffscreenCanvas *>(
+            pipelineReflectionComposite(src->getWidth(), src->getHeight()));
+        if (slot && snapshot) {
+            auto &cb = currentPresentCb();
+            slot->color.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+            snapshot->colorImage().setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+            vk::ImageCopy region{};
+            region.srcSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+            region.dstSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+            region.extent = vk::Extent3D{uint32_t(src->getWidth()),
+                                         uint32_t(src->getHeight()), 1};
+            cb.copyImage(slot->color.image(), vk::ImageLayout::eTransferSrcOptimal,
+                         snapshot->colorImage().image(), vk::ImageLayout::eTransferDstOptimal,
+                         region);
+            slot->color.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+            snapshot->colorImage().setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+            src = snapshot->getTexture();
+        }
+    }
+    pendingSceneResolveSource = src;
+}
+
+void Graphics::materializeSceneColorResolve() {
+    Texture *src = pendingSceneResolveSource;
+    pendingSceneResolveSource = nullptr;
+    if (!src || !src->gpuHandle) return;
+    auto savedSolid = std::move(solidBatches);
+    auto savedTextured = std::move(texturedBatches);
+    auto savedLit = std::move(litBatches);
+    auto savedSpans = std::move(overlaySpans);
+    auto savedEngineSpans = std::move(engine3DSpans);
+    auto savedUiResolve = std::move(pendingUiResolve);
+    solidBatches.clear();
+    texturedBatches.clear();
+    litBatches.clear();
+    overlaySpans.clear();
+    engine3DSpans.clear();
+    Texture *motion = nullptr;
+    if (renderControl_ && renderControl_->getGBuffer()->isValid())
+        motion = renderControl_->getGBuffer()->getVelocityTexture();
+    Texture *postProcessed = prepareFinalSceneTexture(src, motion);
+    Shader *resolveShader = prepareSceneColorResolveShader(postProcessed);
+    if (resolveShader) {
+        TexturedBatch resolve{postProcessed, nullptr, resolveShader, BlendMode::Alpha, Batcher{}};
+        resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height),
+                                      Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+        pendingSceneResolve = std::move(resolve);
+    }
+    solidBatches = std::move(savedSolid);
+    texturedBatches = std::move(savedTextured);
+    litBatches = std::move(savedLit);
+    overlaySpans = std::move(savedSpans);
+    engine3DSpans = std::move(savedEngineSpans);
+    pendingUiResolve = std::move(savedUiResolve);
 }
 
 void Graphics::createShadowResources() {
@@ -1393,6 +1471,12 @@ void Graphics::createShadowResources() {
     // The compare result of each filtered depth sample is blended by the driver,
     // giving a soft penumbra instead of the hard 1-texel boundary.
     shadowSampler = sb.linearClamp().compareEnable(VK_TRUE).compareOp(vk::CompareOp::eLess).buildDepthPcf(device);
+    vkb::SamplerBuilder rawBuilder;
+        shadowRawSampler = rawBuilder.magFilter(vk::Filter::eNearest)
+                               .minFilter(vk::Filter::eNearest)
+                               .addressModeU(vk::SamplerAddressMode::eClampToEdge)
+                               .addressModeV(vk::SamplerAddressMode::eClampToEdge)
+                               .build(device);
 
     auto shadowPass =
         device.createRenderPass()
@@ -1633,7 +1717,19 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     ASSERT(fslots.uboRing.buffer);
     ASSERT(fslots.shadowRing.buffer);
 
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, nullptr,
+    auto probeTexture = [&](int index) -> GpuTexture * {
+        if (index < mesh3dReflectionProbes.count) {
+            Texture *texture = mesh3dReflectionProbes.probes[index].cubemap;
+            if (texture && texture->gpuHandle) {
+                auto *gpu = static_cast<GpuTexture *>(texture->gpuHandle);
+                if (gpu->isCube) return gpu;
+            }
+        }
+        return static_cast<GpuTexture *>(defaultEnvCubemap->gpuHandle);
+    };
+    GpuTexture *probe0 = probeTexture(0);
+    GpuTexture *probe1 = probeTexture(1);
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, nullptr,
                      decalAlbedo, decalNormal, decalParams};
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
@@ -1645,7 +1741,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
     auto &st = currentClusteredStorage();
-    vkb::DescriptorSetUpdater updater(14, 14, 0);
+    vkb::DescriptorSetUpdater updater(17, 17, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
         .buffer(fslots.uboRing.buffer, 0, fslots.uboRing.size)
@@ -1673,6 +1769,12 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
         .image(vkb::SampledImage::forLaterSample(decalNormal->sampler, decalNormal->imageView()))
         .beginImages(12, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(decalParams->sampler, decalParams->imageView()))
+        .beginImages(18, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(probe0->sampler, probe0->imageView()))
+        .beginImages(19, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(probe1->sampler, probe1->imageView()))
+        .beginImages(20, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(shadowRawSampler, currentShadowArrayView()))
         .update(device.instance);
 
     vkb::BoundSet bound = std::move(unbound).publish();
@@ -1860,6 +1962,41 @@ void Graphics::ensureShaderOffscreenPipeline(Shader *shader) {
     if (gpu->isMesh3D || gpu->offscreenPipeline) return;
     gpu->offscreenPipeline = createTexturedStylePipeline(shader->vertexSpirv(), shader->fragmentSpirv(),
                                                          offscreenRenderPass, shaderPipelineLayout);
+    gpu->offscreenOpaquePipeline = createTexturedStylePipeline(
+        shader->vertexSpirv(), shader->fragmentSpirv(), offscreenRenderPass,
+        shaderPipelineLayout, BlendMode::Opaque);
+}
+
+void Graphics::ensureHdrOffscreenPipelines() {
+    if (hdrOffscreenRenderPass) return;
+    hdrOffscreenRenderPass =
+        device.createRenderPass()
+            .addSampledColorAttachment(vk::Format::eR16G16B16A16Sfloat)
+            .addSubpass(vkb::SubpassBuilder().addAttachmentRef(
+                0, vk::ImageLayout::eColorAttachmentOptimal))
+            .addExternalShaderReadDependencies()
+            .build();
+
+    auto vert = embeddedSpirv(textured_vert_spv);
+    auto frag = embeddedSpirv(textured_frag_spv);
+    hdrOffscreenTexPipeline = createTexturedStylePipeline(
+        vert, frag, hdrOffscreenRenderPass, texPipelineLayout);
+    hdrOffscreenOpaqueTexPipeline = createTexturedStylePipeline(
+        vert, frag, hdrOffscreenRenderPass, texPipelineLayout, BlendMode::Opaque);
+    for (auto &shader : ownedShaders) ensureShaderHdrOffscreenPipeline(shader.get());
+}
+
+void Graphics::ensureShaderHdrOffscreenPipeline(Shader *shader) {
+    if (!shader || !shader->gpuHandle || !hdrOffscreenRenderPass) return;
+    if (shader->getKind() == Shader::Kind::eMesh3D) return;
+    auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
+    if (gpu->isMesh3D || gpu->hdrOffscreenPipeline) return;
+    gpu->hdrOffscreenPipeline = createTexturedStylePipeline(
+        shader->vertexSpirv(), shader->fragmentSpirv(), hdrOffscreenRenderPass,
+        shaderPipelineLayout);
+    gpu->hdrOffscreenOpaquePipeline = createTexturedStylePipeline(
+        shader->vertexSpirv(), shader->fragmentSpirv(), hdrOffscreenRenderPass,
+        shaderPipelineLayout, BlendMode::Opaque);
 }
 
 Texture *Graphics::getTexture() { return nullptr; }

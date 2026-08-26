@@ -14,8 +14,8 @@ namespace {
 WGPUStringView sv(const char *s) { return WGPUStringView{s, s ? std::strlen(s) : 0}; }
 }  // namespace
 
-OffscreenCanvas::OffscreenCanvas(Graphics *gfx, int width, int height)
-    : gfx(gfx), width(width), height(height) {
+OffscreenCanvas::OffscreenCanvas(Graphics *gfx, int width, int height, bool hdr)
+    : gfx(gfx), width(width), height(height), hdr(hdr) {
     if (!gfx || !gfx->getDevice() || width <= 0 || height <= 0)
         throw Exception("OffscreenCanvas: invalid size or uninitialized device");
 
@@ -25,7 +25,7 @@ OffscreenCanvas::OffscreenCanvas(Graphics *gfx, int width, int height)
     cd.dimension = WGPUTextureDimension_2D;
     cd.size = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
     cd.sampleCount = 1;
-    cd.format = WGPUTextureFormat_RGBA8Unorm;
+    cd.format = hdr ? WGPUTextureFormat_RGBA16Float : WGPUTextureFormat_RGBA8Unorm;
     cd.mipLevelCount = 1;
     cd.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment |
                WGPUTextureUsage_CopySrc;
@@ -74,11 +74,18 @@ void OffscreenCanvas::clear(std::optional<Color> color, std::optional<int> /*ste
 }
 
 Color OffscreenCanvas::getPixel(int x, int y) {
+    if (hdr) throw Exception("HDR Canvas pixel readback requires an explicit tone-map pass");
     return gfx->getPixelImpl(this, x, y);
 }
 
 image::ImageData *OffscreenCanvas::newImageData() {
+    if (hdr) throw Exception("HDR Canvas pixel readback requires an explicit tone-map pass");
     return gfx->newImageDataImpl(this);
+}
+
+image::ImageData *OffscreenCanvas::newHDRImageData() {
+    if (!hdr) return nullptr;
+    return gfx->newHDRImageDataImpl(this);
 }
 
 }  // namespace eve::graphics::webgpu
