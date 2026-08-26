@@ -107,6 +107,8 @@ file(GLOB all_test_cpp
   procgen.cpp
   procgen_schema_script.cpp
   procgen_pointset.cpp
+  procgen_lsystem.cpp
+  procgen_poisson.cpp
   urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
