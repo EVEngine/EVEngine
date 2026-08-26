@@ -114,6 +114,16 @@ bool RuntimeGeneration::deserializeCell(const std::string& definition) {
     if (!alreadyResident && maxActiveCells_ > 0 &&
         getActiveCellCount() + getGeneratingCount() >= maxActiveCells_)
         return false;
+    const int restoredPoints = restored.getCount();
+    const int replacedPoints = existing != cells_.end() && existing->second.state == State::Active
+                                   ? existing->second.output.getCount()
+                                   : 0;
+    if ((maxPointsPerCell_ > 0 && restoredPoints > maxPointsPerCell_) ||
+        (maxResidentPoints_ > 0 &&
+         getResidentPointCount() - replacedPoints > maxResidentPoints_ - restoredPoints)) {
+        ++rejectedOutputCount_;
+        return false;
+    }
     generateQueue_.erase(std::remove(generateQueue_.begin(), generateQueue_.end(), key),
                          generateQueue_.end());
     cleanupQueue_.erase(std::remove(cleanupQueue_.begin(), cleanupQueue_.end(), key),

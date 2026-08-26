@@ -1267,6 +1267,14 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("getMaxGenerating", &RuntimeGeneration::getMaxGenerating);
     runtimeGeneration.addFunc("setMaxActiveCells", &RuntimeGeneration::setMaxActiveCells);
     runtimeGeneration.addFunc("getMaxActiveCells", &RuntimeGeneration::getMaxActiveCells);
+    runtimeGeneration.addFunc("setMaxPointsPerCell", &RuntimeGeneration::setMaxPointsPerCell);
+    runtimeGeneration.addFunc("getMaxPointsPerCell", &RuntimeGeneration::getMaxPointsPerCell);
+    runtimeGeneration.addFunc("setMaxResidentPoints", &RuntimeGeneration::setMaxResidentPoints);
+    runtimeGeneration.addFunc("getMaxResidentPoints", &RuntimeGeneration::getMaxResidentPoints);
+    runtimeGeneration.addFunc("getResidentPointCount",
+                              &RuntimeGeneration::getResidentPointCount);
+    runtimeGeneration.addFunc("getRejectedOutputCount",
+                              &RuntimeGeneration::getRejectedOutputCount);
     runtimeGeneration.addFunc("setMaxGenerationRetries",
                               &RuntimeGeneration::setMaxGenerationRetries);
     runtimeGeneration.addFunc("getMaxGenerationRetries",

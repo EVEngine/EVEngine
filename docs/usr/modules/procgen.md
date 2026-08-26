@@ -200,6 +200,8 @@ runtime.addLevel(256.0, 900.0, 1.25); // large shared work
 runtime.addLevel(64.0, 260.0, 1.5);   // nearby details
 runtime.setMaxGenerating(4);
 runtime.setMaxActiveCells(2048); // active + in-flight resident budget
+runtime.setMaxPointsPerCell(200000); // protect against pathological graph output
+runtime.setMaxResidentPoints(4000000); // hard PointSet cache budget
 runtime.setMaxGenerationRetries(3);
 runtime.setDirectionWeight(0.35);
 runtime.setFrameTimeBudget(3.0);
@@ -228,6 +230,10 @@ function updateRuntime(playerX, playerZ, forwardX, forwardZ) {
 队列按距离与视线朝向排序，同优先级使用 level/z/x 稳定打破平局，保证相同输入跨运行产生
 相同发放顺序。`setMaxGenerating` 限制同时发出的请求，`setMaxActiveCells` 为 active 与
 in-flight Cell 设置常驻硬上限（0 表示无限），
+`setMaxPointsPerCell` 和 `setMaxResidentPoints` 分别限制单 Cell 与全部 active Cell 的点数；
+超预算提交不会发布，调用方可缩减输出后重交同一 ticket，或调用 `failGeneration` 进入有界
+重试。`getMaxPointsPerCell` / `getMaxResidentPoints` 返回当前配置，`getResidentPointCount` 与
+`getRejectedOutputCount` 提供内存压力遥测，0 表示无限制。
 `setFrameTimeBudget` / `beginFrame` 限制一帧内继续发放工作的 CPU 时间。每格拥有由
 world seed、level、x、z 派生的独立 seed、revision 和 PointSet 输出缓存。每次异步生成或
 清理还携带唯一 `getTicket()`；Cell 离开、重新进入调度范围后，旧任务即使 seed 相同也会

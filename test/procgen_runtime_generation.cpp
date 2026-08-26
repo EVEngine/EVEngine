@@ -219,6 +219,46 @@ TEST_CASE("procgen.runtimeGeneration.enforcesResidentCellReservations") {
     delete unlimited;
 }
 
+TEST_CASE("procgen.runtimeGeneration.enforcesPointMemoryBudgets") {
+    RuntimeGeneration runtime(92);
+    runtime.addLevel(10.f, 25.f, 1.5f);
+    runtime.setMaxGenerating(100);
+    runtime.setMaxPointsPerCell(2);
+    runtime.setMaxResidentPoints(2);
+    CHECK_EQ(runtime.getMaxPointsPerCell(), 2);
+    CHECK_EQ(runtime.getMaxResidentPoints(), 2);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+
+    ProcgenCellRequest* first = runtime.nextGenerate();
+    REQUIRE(bool(first));
+    PointSet oversized;
+    oversized.add(0.f, 0.f, 0.f);
+    oversized.add(1.f, 0.f, 0.f);
+    oversized.add(2.f, 0.f, 0.f);
+    CHECK(!runtime.completeGeneration(first, &oversized));
+    CHECK_EQ(runtime.getRejectedOutputCount(), 1);
+    CHECK(runtime.failGeneration(first));
+    delete first;
+
+    ProcgenCellRequest* retry = runtime.nextGenerate();
+    REQUIRE(bool(retry));
+    PointSet accepted;
+    accepted.add(0.f, 0.f, 0.f);
+    accepted.add(1.f, 0.f, 0.f);
+    CHECK(runtime.completeGeneration(retry, &accepted));
+    delete retry;
+    CHECK_EQ(runtime.getResidentPointCount(), 2);
+
+    ProcgenCellRequest* second = runtime.nextGenerate();
+    REQUIRE(bool(second));
+    PointSet one;
+    one.add(0.f, 0.f, 0.f);
+    CHECK(!runtime.completeGeneration(second, &one));
+    CHECK_EQ(runtime.getRejectedOutputCount(), 2);
+    CHECK(runtime.debugReport().find("residentPoints=2") != std::string::npos);
+    delete second;
+}
+
 TEST_CASE("procgen.runtimeGeneration.breaksEqualPriorityTiesDeterministically") {
     RuntimeGeneration first(17);
     RuntimeGeneration second(17);
@@ -290,6 +330,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     points.setFloatAttribute(point, "roughness", 0.4f);
     points.setStringAttribute(point, "asset", "oak \"hero\"");
     points.setStringAttribute(point, "biome", "forest");
+    points.add(9.f, 8.f, 7.f);
     CHECK(source.completeGeneration(generated, &points));
     delete generated;
 
@@ -317,7 +358,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     CHECK_EQ(restored.getCellRevision(level, x, z), uint64_t(1));
     PointSet* loaded = restored.getCellOutput(level, x, z);
     REQUIRE(bool(loaded));
-    CHECK_EQ(loaded->getCount(), 1);
+    CHECK_EQ(loaded->getCount(), 2);
     CHECK_EQ(loaded->getX(0), 1.25f);
     CHECK_EQ(loaded->getNormalZ(0), 1.f);
     CHECK_EQ(loaded->getScaleY(0), 3.f);
@@ -330,4 +371,9 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     RuntimeGeneration wrongWorld(405);
     wrongWorld.addLevel(10.f, 6.f, 1.5f);
     CHECK(!wrongWorld.deserializeCell(persisted));
+    RuntimeGeneration constrained(404);
+    constrained.addLevel(10.f, 6.f, 1.5f);
+    constrained.setMaxPointsPerCell(1);
+    CHECK(!constrained.deserializeCell(persisted));
+    CHECK_EQ(constrained.getRejectedOutputCount(), 1);
 }

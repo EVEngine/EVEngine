@@ -70,6 +70,18 @@ public:
     void setMaxActiveCells(int count);
     /** @brief Return the resident-cell limit, or zero when unlimited. */
     int getMaxActiveCells() const;
+    /** @brief Set the maximum points allowed in one generated cell; zero disables the limit. */
+    void setMaxPointsPerCell(int count);
+    /** @brief Return the per-cell point limit, or zero when unlimited. */
+    int getMaxPointsPerCell() const;
+    /** @brief Set the total point limit across active cell outputs; zero disables the limit. */
+    void setMaxResidentPoints(int count);
+    /** @brief Return the total resident-point limit, or zero when unlimited. */
+    int getMaxResidentPoints() const;
+    /** @brief Return the number of points currently retained by active cells. */
+    int getResidentPointCount() const;
+    /** @brief Return generation or restore outputs rejected by point budgets. */
+    int getRejectedOutputCount() const;
     /** @brief Set retries after the initial generation attempt; zero fails immediately. */
     void setMaxGenerationRetries(int count);
     /** @brief Return retries allowed after the initial generation attempt. */
@@ -174,6 +186,9 @@ private:
     float    directionWeight_ = 0.25f;
     int      maxGenerating_   = 4;
     int      maxActiveCells_  = 0;
+    int      maxPointsPerCell_      = 0;
+    int      maxResidentPoints_     = 0;
+    int      rejectedOutputCount_   = 0;
     int      maxGenerationRetries_ = 3;
     float    frameTimeBudgetMs_ = 0.f;
     uint64_t frameStartedNs_    = 0;

@@ -41,6 +41,7 @@ void RuntimeGeneration::clear() {
     cleanupQueue_.clear();
     sources_.clear();
     sourceOrder_.clear();
+    rejectedOutputCount_ = 0;
 }
 
 int RuntimeGeneration::addLevel(float cellSize, float generationRadius, float cleanupMultiplier) {
@@ -70,6 +71,19 @@ void  RuntimeGeneration::setMaxGenerating(int count) { maxGenerating_ = std::max
 int   RuntimeGeneration::getMaxGenerating() const { return maxGenerating_; }
 void RuntimeGeneration::setMaxActiveCells(int count) { maxActiveCells_ = std::max(0, count); }
 int  RuntimeGeneration::getMaxActiveCells() const { return maxActiveCells_; }
+void RuntimeGeneration::setMaxPointsPerCell(int count) { maxPointsPerCell_ = std::max(0, count); }
+int  RuntimeGeneration::getMaxPointsPerCell() const { return maxPointsPerCell_; }
+void RuntimeGeneration::setMaxResidentPoints(int count) {
+    maxResidentPoints_ = std::max(0, count);
+}
+int RuntimeGeneration::getMaxResidentPoints() const { return maxResidentPoints_; }
+int RuntimeGeneration::getResidentPointCount() const {
+    uint64_t count = 0;
+    for (const auto& [key, cell] : cells_)
+        if (cell.state == State::Active) count += uint64_t(cell.output.getCount());
+    return int(std::min(count, uint64_t(std::numeric_limits<int>::max())));
+}
+int RuntimeGeneration::getRejectedOutputCount() const { return rejectedOutputCount_; }
 void RuntimeGeneration::setMaxGenerationRetries(int count) {
     maxGenerationRetries_ = std::max(0, count);
 }
@@ -318,6 +332,12 @@ bool RuntimeGeneration::completeGeneration(ProcgenCellRequest* request, PointSet
     if (found == cells_.end() || found->second.state != State::Generating ||
         request->seed_ != cellSeed(key) || request->ticket_ != found->second.ticket)
         return false;
+    const int outputPoints = output->getCount();
+    if ((maxPointsPerCell_ > 0 && outputPoints > maxPointsPerCell_) ||
+        (maxResidentPoints_ > 0 && getResidentPointCount() > maxResidentPoints_ - outputPoints)) {
+        ++rejectedOutputCount_;
+        return false;
+    }
     found->second.output = *output;
     found->second.failures = 0;
     ++found->second.revision;
@@ -377,7 +397,11 @@ std::string RuntimeGeneration::debugReport() const {
     out << "levels=" << levels_.size() << " cells=" << cells_.size()
         << " pending=" << generateQueue_.size() << " generating=" << getGeneratingCount()
         << " active=" << getActiveCellCount() << " cleanup=" << cleanupQueue_.size()
-        << " failed=" << getFailedCellCount() << " maxActive=" << maxActiveCells_;
+        << " failed=" << getFailedCellCount() << " maxActive=" << maxActiveCells_
+        << " residentPoints=" << getResidentPointCount()
+        << " maxResidentPoints=" << maxResidentPoints_
+        << " maxPointsPerCell=" << maxPointsPerCell_
+        << " rejectedOutputs=" << rejectedOutputCount_;
     return out.str();
 }
 
