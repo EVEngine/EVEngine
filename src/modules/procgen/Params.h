@@ -21,10 +21,23 @@ public:
 
     void        setInt(const std::string &key, int value);
     void        setFloat(const std::string &key, float value);
+    /**
+     * @brief Stores a boolean generation parameter.
+     * @param key Parameter name.
+     * @param value Boolean value to store.
+     */
+    void        setBool(const std::string &key, bool value);
     void        setString(const std::string &key, const std::string &value);
     bool        has(const std::string &key) const;
     int         getInt(const std::string &key, int defaultValue) const;
     float       getFloat(const std::string &key, float defaultValue) const;
+    /**
+     * @brief Reads a boolean parameter, accepting 1/0 and true/false strings.
+     * @param key Parameter name.
+     * @param defaultValue Value returned when the parameter is absent or invalid.
+     * @return The parsed boolean value or @p defaultValue.
+     */
+    bool        getBool(const std::string &key, bool defaultValue) const;
     std::string getString(const std::string &key, const std::string &defaultValue) const;
 
 private:

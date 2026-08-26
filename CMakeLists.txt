@@ -581,6 +581,18 @@ function(set_include)
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
+    # LunarG Linux SDK 1.4.357+ may package the loader in its own install
+    # prefix instead of directly under $VULKAN_SDK/lib. FindVulkan only probes
+    # the legacy location, so retry with the packaged loader while retaining
+    # the headers and shader tools discovered from the SDK root.
+    if(NOT Vulkan_FOUND AND UNIX AND NOT APPLE
+       AND DEFINED ENV{VULKAN_SDK}
+       AND EXISTS "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so")
+        set(Vulkan_LIBRARY
+            "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so"
+            CACHE FILEPATH "Vulkan loader library" FORCE)
+        find_package(Vulkan QUIET)
+    endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         find_library(ANDROID_VULKAN_LIB vulkan)
         if(NOT ANDROID_VULKAN_LIB)
@@ -1071,6 +1083,13 @@ function(check_third_party_project name repo)
     set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
         COMMAND ${CMAKE_COMMAND}
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-object-move-init.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Fifth patch: mpg123's K&R-style signal handler type is rejected by GCC
+    # 15; use the POSIX void(int) signature accepted by sigaction.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-signal-handler.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 

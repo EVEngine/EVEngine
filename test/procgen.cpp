@@ -5,6 +5,21 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
+#include "procgen/Procgen.h"
+#include "procgen/GeneratorRegistry.h"
+#include "procgen/Semantic.h"
+#include "procgen/JsonExport.h"
+#include "procgen/MeshBuild.h"
+#include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/LinearStructure.h"
+#include "procgen/algorithms/CastleMesh.h"
+#include "procgen/texture/TextureRecipe.h"
+#include "procgen/texture/PbrMaterial.h"
+#include "procgen/texture/NoiseField.h"
+#include "procgen/texture/ColorRamp.h"
+#include "map/TileLayer.h"
+#include "image/ImageData.h"
+#include "graphics/Graphics.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
@@ -36,6 +51,7 @@
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/HexTerrain.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"
@@ -63,6 +79,68 @@ using eve::graphics::Color;
 
 using namespace eve::procgen;
 using namespace eve::graphics;
+
+TEST_CASE("procgen.hexTerrain.biomesRiversCliffsDeterministic") {
+    Params p;
+    p.setInt("width", 38);
+    p.setInt("height", 28);
+    p.setInt("seed", 20260825);
+    p.setInt("riverCount", 8);
+    p.setFloat("radius", 0.62f);
+    p.setFloat("heightScale", 3.8f);
+    MeshBuild a, b;
+    std::string error;
+    REQUIRE(generateHexTerrainMesh(p, a, error));
+    REQUIRE(generateHexTerrainMesh(p, b, error));
+    CHECK_EQ(a.positions(), b.positions());
+    CHECK_EQ(a.indices(), b.indices());
+    CHECK_EQ(a.getMeta("algorithm", ""), std::string("mesh.hexterrain"));
+    CHECK_EQ(a.getMeta("shoreGeometry", ""), std::string("edge-bands"));
+    CHECK_EQ(a.getMeta("hydrology", ""),
+             std::string("drainage-rivers+basin-lakes+confluences"));
+    CHECK_EQ(a.getMeta("riverGeometry", ""), std::string("seeded-quadratic-ribbons"));
+    CHECK_EQ(a.getMeta("cliffGeometry", ""),
+             std::string("seeded-segmented-rock-walls"));
+    CHECK_EQ(a.getMeta("mountainGeometry", ""),
+             std::string("seeded-offset-three-ring-peaks"));
+    CHECK(std::stoi(a.getMeta("cells.deepOcean", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.ocean", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.coast", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.grassland", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.hills", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.mountain", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.forest", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.swamp", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.rainforest", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.ice", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.river", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("edges.cliff", "0")) > 0);
+    CHECK(a.getVertexCount() >= 38 * 28 * 7);
+    CHECK(a.getIndexCount() >= 38 * 28 * 18);
+
+    bool hasOcean = false, hasLand = false, hasRiver = false, hasCliff = false;
+    for (int i = 0; i < a.getVertexCount(); ++i) {
+        const int primary = int(std::floor(a.getUvU(i)));
+        const int secondary = int(std::floor(a.getUvV(i)));
+        hasOcean = hasOcean || primary <= 1;
+        hasLand = hasLand || (primary >= 3 && primary <= 9);
+        hasRiver = hasRiver || secondary == 11;
+        hasCliff = hasCliff || primary == 10;
+    }
+    CHECK(hasOcean);
+    CHECK(hasLand);
+    CHECK(hasRiver);
+    CHECK(hasCliff);
+}
+
+TEST_CASE("procgen.params.booleanRoundTrip") {
+    Params p;
+    CHECK(p.getBool("decorations", true));
+    p.setBool("decorations", false);
+    CHECK(!p.getBool("decorations", true));
+    p.setString("textBool", "true");
+    CHECK(p.getBool("textBool", false));
+}
 
 namespace {
 
@@ -1286,6 +1364,100 @@ TEST_CASE("procgen.render.skyscraperPng") {
     win->close();
 }
 
+TEST_CASE("procgen.render.castlePng") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width = 900;
+    settings.height = 700;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    Procgen *procgen = Procgen::create();
+    Params params;
+    params.setSeed(20260826);
+    params.setFloat("width", 48.f);
+    params.setFloat("depth", 40.f);
+    params.setInt("rings", 2);
+    params.setInt("keepFloors", 4);
+    params.setInt("detail", 2);
+    params.setFloat("towerSpacing", 15.f);
+    std::unique_ptr<MeshBuild> castleBuild(procgen->buildMesh("mesh.castle", &params));
+    REQUIRE(castleBuild.get() != nullptr);
+
+    const uint8_t stone[16] = {
+        126, 116, 98, 255,  150, 139, 116, 255,
+        105, 96, 82, 255,   169, 157, 132, 255,
+    };
+    Texture *stoneTexture = gfx->newTexture(2, 2, stone);
+    REQUIRE(stoneTexture != nullptr);
+    // Exercise the graph-style group filter + CPU-to-GPU upload path. Each
+    // semantic component can now have independent material/collision policy.
+    const float groupTint[][3] = {
+        {.74f,.69f,.58f}, {.82f,.76f,.64f}, {.66f,.61f,.52f}, {.58f,.53f,.46f},
+        {.48f,.43f,.36f}, {.71f,.65f,.54f}, {.60f,.55f,.45f},
+    };
+    std::vector<eve::graphics::Renderable3D *> castleParts;
+    for (int group = 0; group < castleBuild->getGroupCount(); ++group) {
+        std::unique_ptr<MeshBuild> part(castleBuild->copyGroup(group));
+        if (!part) continue;
+        Mesh *gpuPart = procgen->uploadMesh(part.get(), gfx);
+        REQUIRE(gpuPart != nullptr);
+        auto *renderable = eve::graphics::Renderable3D::create();
+        renderable->setMesh(gpuPart);
+        renderable->setTexture(stoneTexture);
+        const int tint = std::min(group, 6);
+        renderable->setTint(groupTint[tint][0], groupTint[tint][1], groupTint[tint][2], 1.f);
+        renderable->setMetallic(0.01f);
+        renderable->setRoughness(0.94f);
+        renderable->setCastShadow(true);
+        renderable->setReceiveShadow(true);
+        castleParts.push_back(renderable);
+    }
+    CHECK_EQ(castleParts.size(), size_t(7));
+
+    auto *camera = eve::graphics::Camera3D::createCamera();
+    // View from the south-east so the gate opening and both wall stair systems
+    // are part of the visual contract rather than hidden behind the north wall.
+    camera->setEye(42.f, 32.f, -64.f);
+    camera->setTarget(0.f, 5.5f, 0.f);
+    camera->setFov(43.f);
+    camera->setAmbient(0.19f, 0.20f, 0.23f);
+    auto *present = eve::graphics::Renderable2D::create();
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+    gfx->setBackgroundColor(Color(0.09f, 0.13f, 0.19f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.6f, 0.95f, 0.8f, 1.35f, 1.18f, 0.96f);
+    for (int frame = 0; frame < 8; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+
+    eve::image::Image::create();
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(static_cast<bool>(image));
+    RenderAuditConfig auditCfg;
+    auditCfg.scene = "procgen";
+    auditCfg.phase = "castle";
+    auditCfg.width = image->getWidth();
+    auditCfg.height = image->getHeight();
+    const RenderAuditResult audit = auditImage(*image, auditCfg, {0.09f, 0.13f, 0.19f}, 2);
+    CHECK(!audit.empty);
+    CHECK(audit.occupancy > 0.08f);
+    CHECK(audit.meanLuma > 12.f);
+    const std::filesystem::path outDir = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
+    std::filesystem::create_directories(outDir);
+    const std::filesystem::path outPath = outDir / "castle.png";
+    REQUIRE(saveImagePng(*image, outPath.string()));
+    std::printf("castle render saved: %s occupancy=%.3f luma=%.3f\n",
+                outPath.string().c_str(), audit.occupancy, audit.meanLuma);
+    win->close();
+}
+
 TEST_CASE("procgen.mesh.marchingcubes.allFields") {
     MeshRecipeRegistry::instance().registerBuiltins();
     const char *fields[] = {"sphere", "torus", "noise", "terrain"};
@@ -2267,6 +2439,123 @@ TEST_CASE("procgen.mesh.linearStructure.viaModule") {
 
     CHECK(mod->buildMesh("mesh.nonexistent", &p) == nullptr);
     CHECK(mod->lastError().find("unknown") != std::string::npos);
+}
+
+TEST_CASE("procgen.mesh.castle.multilevelDeterministicAndComplete") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(8675309);
+    p.setFloat("width", 48.f);
+    p.setFloat("depth", 40.f);
+    p.setInt("rings", 2);
+    p.setInt("keepFloors", 4);
+    p.setInt("detail", 2);
+    MeshBuild a, b;
+    std::string err;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.castle", p, a, err));
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.castle", p, b, err));
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK(a.getVertexCount() > 5000);
+    CHECK_EQ(a.getMeta("algorithm", ""), "mesh.castle");
+    CHECK_EQ(a.getMeta("rings", ""), "2");
+    CHECK_EQ(a.getMeta("keepFloors", ""), "4");
+    CHECK(std::stoi(a.getMeta("towerCount", "0")) >= 12);
+    // One stair per wall ring plus one between every pair of keep floors.
+    CHECK_EQ(a.getMeta("stairFlights", ""), "5");
+    std::set<std::string> groups;
+    for (int i = 0; i < a.getGroupCount(); ++i) groups.insert(a.getGroupName(i));
+    for (const char *required : {"walls", "battlements", "towers", "gatehouses", "stairs", "keep", "courtyard"})
+        CHECK(groups.count(required) == 1);
+    int stairGroup = -1;
+    for (int i = 0; i < a.getGroupCount(); ++i)
+        if (a.getGroupName(i) == "stairs") stairGroup = i;
+    REQUIRE(stairGroup >= 0);
+    std::unique_ptr<MeshBuild> stairs(a.copyGroup(stairGroup));
+    REQUIRE(stairs.get() != nullptr);
+    CHECK(stairs->getVertexCount() > 100);
+    CHECK_EQ(stairs->getMeta("group", ""), "stairs");
+    CHECK(meshIndicesInRange(*stairs));
+}
+
+TEST_CASE("procgen.mesh.castle.parametersControlTopologyAndBounds") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params simple;
+    simple.setInt("rings", 1);
+    simple.setInt("keepFloors", 1);
+    simple.setInt("detail", 0);
+    simple.setFloat("width", 30.f);
+    simple.setFloat("depth", 26.f);
+    Params elaborate = simple;
+    elaborate.setInt("rings", 3);
+    elaborate.setInt("keepFloors", 5);
+    elaborate.setInt("detail", 2);
+    elaborate.setFloat("width", 58.f);
+    elaborate.setFloat("depth", 50.f);
+    MeshBuild a, b;
+    std::string err;
+    REQUIRE(generateCastleMesh(simple, a, err));
+    REQUIRE(generateCastleMesh(elaborate, b, err));
+    CHECK(b.getVertexCount() > a.getVertexCount() * 2);
+    CHECK(std::stoi(b.getMeta("towerCount", "0")) > std::stoi(a.getMeta("towerCount", "0")));
+    CHECK_EQ(b.getMeta("stairFlights", ""), "7");
+
+    Params scaled = simple;
+    scaled.setFloat("scale", 2.f);
+    MeshBuild s;
+    REQUIRE(generateCastleMesh(scaled, s, err));
+    float maxA = 0.f, maxS = 0.f;
+    for (int i=0;i<a.getVertexCount();++i) maxA=std::max(maxA,std::fabs(a.getPositionX(i)));
+    for (int i=0;i<s.getVertexCount();++i) maxS=std::max(maxS,std::fabs(s.getPositionX(i)));
+    CHECK(std::fabs(maxS - maxA*2.f) < 1e-3f);
+}
+
+TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
+    Procgen *mod = Procgen::create();
+    CHECK(mod->hasMeshRecipe("mesh.castle"));
+    RecipeDescriptor *schema = mod->getMeshRecipeSchema("mesh.castle");
+    REQUIRE(schema != nullptr);
+    CHECK_EQ(schema->getParamCount(), 25);
+    const ParamDescriptor *rings = schema->find("rings");
+    REQUIRE(rings != nullptr);
+    CHECK_EQ(rings->defaultValue, "2");
+    CHECK(rings->hasMinimum);
+    CHECK(rings->hasMaximum);
+    CHECK_EQ(rings->minimum, 1.0);
+    CHECK_EQ(rings->maximum, 4.0);
+    CHECK(!rings->description.empty());
+    delete schema;
+    CHECK(mod->getMeshRecipeSchema("mesh.missing") == nullptr);
+    Params p;
+    p.setFloat("width", 16.f);
+    p.setFloat("depth", 16.f);
+    p.setFloat("towerRadius", 7.f);
+    p.setFloat("wallThickness", 3.f);
+    CHECK(mod->buildMesh("mesh.castle", &p) == nullptr);
+    CHECK(mod->lastError().find("too small") != std::string::npos);
+}
+
+TEST_CASE("procgen.meshBuild.appendTransformedComposesRecipeNodes") {
+    Params p;
+    p.setInt("segments", 1);
+    p.setFloat("segLength", 2.f);
+    MeshBuild source, combined;
+    std::string err;
+    REQUIRE(generateLinearStructure("mesh.stonewall", p, source, err));
+    REQUIRE(combined.appendTransformed(&source, 3.f, 2.f, -4.f, 90.f, 2.f, 1.f, .5f));
+    CHECK_EQ(combined.getVertexCount(), source.getVertexCount());
+    CHECK_EQ(combined.getIndexCount(), source.getIndexCount());
+    CHECK(meshIndicesInRange(combined));
+    CHECK(meshNormalsFiniteUnit(combined));
+    REQUIRE(combined.appendTransformed(&source, -3.f, 0.f, 4.f, 0.f, -1.f, 1.f, 1.f));
+    CHECK_EQ(combined.getVertexCount(), source.getVertexCount() * 2);
+    CHECK_EQ(combined.getIndexCount(), source.getIndexCount() * 2);
+    CHECK(!combined.appendTransformed(&combined, 0, 0, 0, 0, 1, 1, 1));
+    CHECK(!combined.appendTransformed(nullptr, 0, 0, 0, 0, 1, 1, 1));
+    CHECK(!combined.appendTransformed(&source, 0, 0, 0, 0, 0, 1, 1));
 }
 
 // --- Water (graphics): sky reflection + animated edge waves + middle drop ripples ---

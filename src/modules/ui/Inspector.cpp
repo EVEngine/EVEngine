@@ -1,6 +1,7 @@
 #include "ui/Inspector.h"
 
 #include "common/Module.h"
+#include "ui/PropertyView.h"
 #include "ui/UIHost.h"
 
 #include <algorithm>
@@ -10,51 +11,6 @@ namespace eve::ui {
 namespace {
 
 constexpr const char* kInspectorHostName = "eve_inspector";
-
-/** True when two reflected values hold the same data. */
-bool sameValue(const ReflectedValue& a, const ReflectedValue& b) {
-    if (a.kind != b.kind) return false;
-    switch (a.kind) {
-        case ReflectedValueKind::Bool: return a.boolean == b.boolean;
-        case ReflectedValueKind::Integer: return a.integer == b.integer;
-        case ReflectedValueKind::Float: return a.floating == b.floating;
-        case ReflectedValueKind::String: return a.text == b.text;
-        default: return true;
-    }
-}
-
-std::string memberLabel(const std::string& ownerClass, const std::string& memberName) {
-    // "##" keeps the ImGui ID unique per class while hiding the suffix.
-    return memberName + "##" + ownerClass + "/" + memberName;
-}
-
-/** Editor kind a reflected member maps to. */
-enum class EditorKind : uint8_t {
-    Checkbox,
-    Slider,
-    Combo,
-    Input,
-    ReadOnly,
-};
-
-EditorKind editorKind(const ReflectedMember& member, const ReflectedValue& value) {
-    const std::string editor = member.attrString("editor");
-    if (value.kind == ReflectedValueKind::Bool)
-        return editor == "checkbox" ? EditorKind::Checkbox : EditorKind::Checkbox;
-    if (editor == "combo" && !member.attrOptions("options").empty())
-        return EditorKind::Combo;
-    if (editor == "slider" &&
-        (value.kind == ReflectedValueKind::Integer ||
-         value.kind == ReflectedValueKind::Float))
-        return EditorKind::Slider;
-    if (value.kind == ReflectedValueKind::Array ||
-        value.kind == ReflectedValueKind::Table ||
-        value.kind == ReflectedValueKind::Instance ||
-        value.kind == ReflectedValueKind::None ||
-        value.kind == ReflectedValueKind::Other)
-        return EditorKind::ReadOnly;
-    return EditorKind::Input;
-}
 
 std::string valueText(const ReflectedValue& value) {
     switch (value.kind) {
@@ -113,7 +69,7 @@ void Inspector::refresh() {
     }
     if (selectedClass_.empty() && !classNames_.empty())
         selectClass(classNames_.front());
-    cachedMembers_.clear();
+    rebuildPropertyModel();
     rebuildHost();
 }
 
@@ -141,7 +97,6 @@ bool Inspector::selectClass(const std::string& name) {
     selectedClass_ = name;
     instances_.clear();
     selectedInstance_ = -1;
-    cachedMembers_.clear();
     try {
         ssq::Object instance = rt->createInstance(name);
         InstanceEntry entry;
@@ -152,6 +107,7 @@ bool Inspector::selectClass(const std::string& name) {
     } catch (...) {
         // Keep the class selected; the panel shows "no instances".
     }
+    rebuildPropertyModel();
     rebuildHost();
     return selectedInstance_ >= 0;
 }
@@ -172,7 +128,7 @@ bool Inspector::inspectObject(const ssq::Object& object) {
     entry.object = object;
     instances_.push_back(std::move(entry));
     selectedInstance_ = 0;
-    cachedMembers_.clear();
+    rebuildPropertyModel();
     rebuildHost();
     return true;
 }
@@ -187,7 +143,7 @@ bool Inspector::addInstance() {
         entry.object = instance;
         instances_.push_back(std::move(entry));
         selectedInstance_ = int(instances_.size()) - 1;
-        cachedMembers_.clear();
+        rebuildPropertyModel();
         rebuildHost();
         return true;
     } catch (...) {
@@ -202,7 +158,7 @@ void Inspector::setPickScene(std::function<ssq::Object()> pickScene) {
 bool Inspector::selectInstance(int index) {
     if (index < 0 || index >= int(instances_.size())) return false;
     selectedInstance_ = index;
-    cachedMembers_.clear();
+    rebuildPropertyModel();
     rebuildHost();
     return true;
 }
@@ -223,7 +179,7 @@ void Inspector::openNested(const std::string& className, const ssq::Object& obje
     current.object = object;
     instances_.push_back(std::move(current));
     selectedInstance_ = 0;
-    cachedMembers_.clear();
+    rebuildPropertyModel();
     rebuildHost();
 }
 
@@ -238,118 +194,51 @@ void Inspector::back() {
     current.object = previous.object;
     instances_.push_back(std::move(current));
     selectedInstance_ = 0;
-    cachedMembers_.clear();
+    rebuildPropertyModel();
     rebuildHost();
 }
 
-void Inspector::writeProperty(const std::string& name, ReflectedValue value) {
+void Inspector::rebuildPropertyModel() {
+    propertyModel_.reset();
     Runtime* rt = runtime();
-    if (!rt || selectedInstance_ < 0 ||
-        size_t(selectedInstance_) >= instances_.size())
-        return;
-    if (!rt->writeProperty(instances_[size_t(selectedInstance_)].object, name, value))
-        return;
-    // Cache the written value so sync() does not immediately push it back
-    // while the user is still editing the widget.
-    for (ReflectedMember& member : cachedMembers_) {
-        if (member.name == name) {
-            member.value = std::move(value);
-            break;
-        }
-    }
+    const ssq::Object* instance = currentInstance();
+    if (rt && instance)
+        propertyModel_ =
+            std::make_unique<scriptmodel::ReflectedPropertyModel>(*rt, *instance);
 }
 
 WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,
                                      const ReflectedMember& member,
                                      const ReflectedValue& value,
                                      const ssq::Object& instance) {
-    const std::string id = "prop_" + member.name;
-    const std::string label = memberLabel(ownerClass, member.name);
-    switch (editorKind(member, value)) {
-        case EditorKind::Checkbox:
-            return checkbox(label, value.asBool(), id,
-                            [this, name = member.name](bool v) {
-                                ReflectedValue out;
-                                out.kind = ReflectedValueKind::Bool;
-                                out.boolean = v;
-                                writeProperty(name, std::move(out));
-                            });
-        case EditorKind::Slider: {
-            const float minV = member.attrFloat("min", 0.f);
-            const float maxV = member.attrFloat("max", 1.f);
-            const float cur = value.kind == ReflectedValueKind::Integer
-                                  ? float(value.integer)
-                                  : float(value.floating);
-            return slider(label, cur, minV, maxV, id,
-                          [this, name = member.name](float v) {
-                              ReflectedValue out;
-                              out.kind = ReflectedValueKind::Float;
-                              out.floating = v;
-                              writeProperty(name, std::move(out));
-                          });
-        }
-        case EditorKind::Combo: {
-            const std::vector<std::string> options = member.attrOptions("options");
-            int index = 0;
-            const std::string current =
-                value.kind == ReflectedValueKind::String ? value.text
-                                                         : valueText(value);
-            const auto it = std::find(options.begin(), options.end(), current);
-            if (it != options.end()) index = int(it - options.begin());
-            return combo(label, options, index, id,
-                         [this, name = member.name, kind = value.kind, options](float i) {
-                             const int idx = static_cast<int>(i);
-                             ReflectedValue out;
-                             if (idx < 0 || idx >= int(options.size())) return;
-                             const std::string& option = options[size_t(idx)];
-                             if (kind == ReflectedValueKind::Integer) {
-                                 out.kind = ReflectedValueKind::Integer;
-                                 out.integer = std::strtoll(option.c_str(), nullptr, 10);
-                             } else if (kind == ReflectedValueKind::Float) {
-                                 out.kind = ReflectedValueKind::Float;
-                                 out.floating = std::strtod(option.c_str(), nullptr);
-                             } else {
-                                 out.kind = ReflectedValueKind::String;
-                                 out.text = option;
-                             }
-                             writeProperty(name, std::move(out));
-                         });
-        }
-        case EditorKind::Input:
-            return inputText(label, valueText(value), id,
-                             [this, name = member.name](const std::string& text) {
-                                 ReflectedValue out;
-                                 out.kind = ReflectedValueKind::String;
-                                 out.text = text;
-                                 writeProperty(name, std::move(out));
-                             });
-        case EditorKind::ReadOnly: {
-            if (value.kind == ReflectedValueKind::Array)
-                return arrayWidget(ownerClass, member, instance);
-            if (value.kind == ReflectedValueKind::Table)
-                return tableWidget(ownerClass, member, instance);
-            if (value.kind == ReflectedValueKind::Instance) {
-                const std::string openId = "open_" + ownerClass + "_" + member.name;
-                return button("open " + member.name + "##" + openId, openId,
-                              [this, memberName = member.name]() {
-                                  Runtime* rt = runtime();
-                                  if (!rt) return;
-                                  const ssq::Object* inst = currentInstance();
-                                  if (!inst) return;
-                                  const ssq::Object nested =
-                                      rt->readObjectProperty(*inst, memberName);
-                                  if (nested.getType() != ssq::Type::INSTANCE) return;
-                                  const std::string nestedClass =
-                                      rt->classNameOf(nested);
-                                  if (nestedClass.empty()) return;
-                                  openNested(nestedClass, nested);
-                              });
-            }
-            std::string shown = "null";
-            return text(member.name + " = " + shown, id);
-        }
+    if (value.kind == ReflectedValueKind::Array)
+        return arrayWidget(ownerClass, member, instance);
+    if (value.kind == ReflectedValueKind::Table)
+        return tableWidget(ownerClass, member, instance);
+    if (value.kind == ReflectedValueKind::Instance) {
+        const std::string openId = "open_" + ownerClass + "_" + member.name;
+        return button("open " + member.name + "##" + openId, openId,
+                      [this, memberName = member.name]() {
+                          Runtime* rt = runtime();
+                          if (!rt) return;
+                          const ssq::Object* inst = currentInstance();
+                          if (!inst) return;
+                          const ssq::Object nested = rt->readObjectProperty(*inst, memberName);
+                          if (nested.getType() != ssq::Type::INSTANCE) return;
+                          const std::string nestedClass = rt->classNameOf(nested);
+                          if (nestedClass.empty()) return;
+                          openNested(nestedClass, nested);
+                      });
     }
-    return text(member.name, id);
+    if (propertyModel_) {
+        PropertyViewOptions options;
+        options.idPrefix = "prop_";
+        options.showAdvanced = true;
+        options.showEditorOnly = true;
+        options.groupCategories = false;
+        return buildPropertyField(*propertyModel_, member.name, options);
+    }
+    return text(member.name + " = " + valueText(value), "prop_" + member.name);
 }
 
 WidgetDesc Inspector::arrayWidget(const std::string& ownerClass,
@@ -610,44 +499,15 @@ void Inspector::sync() {
     if (!rt || selectedInstance_ < 0 ||
         size_t(selectedInstance_) >= instances_.size())
         return;
-    const ssq::Object& instance = instances_[size_t(selectedInstance_)].object;
-    // Members may have changed shape after a script reload; refresh the cache.
-    if (cachedMembers_.empty())
-        cachedMembers_ = rt->reflectInstance(instance);
-    for (ReflectedMember& cached : cachedMembers_) {
-        const ReflectedValue live = rt->readProperty(instance, cached.name);
-        if (sameValue(live, cached.value)) continue;
-        cached.value = live;
-        const std::string id = "prop_" + cached.name;
-        switch (editorKind(cached, cached.value)) {
-            case EditorKind::Checkbox:
-                host_->setCheckedById(id, live.asBool());
-                break;
-            case EditorKind::Slider:
-                host_->setValueById(
-                    id, live.kind == ReflectedValueKind::Integer
-                            ? float(live.integer)
-                            : float(live.floating));
-                break;
-            case EditorKind::Combo: {
-                const std::vector<std::string> options =
-                    cached.attrOptions("options");
-                const std::string current =
-                    live.kind == ReflectedValueKind::String ? live.text
-                                                            : valueText(live);
-                const auto it = std::find(options.begin(), options.end(), current);
-                host_->setValueById(id,
-                                    it == options.end() ? 0.f
-                                                        : float(it - options.begin()));
-                break;
-            }
-            case EditorKind::Input:
-                host_->setValueTextById(id, valueText(live));
-                break;
-            case EditorKind::ReadOnly:
-                break;
-        }
-    }
+    if (!propertyModel_) rebuildPropertyModel();
+    if (!propertyModel_) return;
+    propertyModel_->refresh();
+    PropertyViewOptions options;
+    options.idPrefix = "prop_";
+    options.showAdvanced = true;
+    options.showEditorOnly = true;
+    options.groupCategories = false;
+    syncPropertyView(*host_, *propertyModel_, options);
 }
 
 }  // namespace eve::ui

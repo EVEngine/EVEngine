@@ -9,6 +9,7 @@
 #include "graphics/Graphics.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 
 #include <algorithm>
 #include <chrono>
@@ -35,10 +36,15 @@ std::string viewportKey(UIHost *host, const UINode &n) {
 
 void pushPending(UIHost *host, const UINode &n, const char *kind, uint32_t handlerIndex,
                  bool toggleValue = false, float floatValue = 0.f, std::string textValue = {}) {
+    if (!n.enabled || n.mouseFilter == MouseFilter::Ignore) return;
     UIEvent ev;
     ev.host = host;
     ev.hostName = host ? host->meta()->name : "";
     ev.nodeId = n.id;
+    if (host) {
+        auto tree = host->tree();
+        if (!tree->nodes.empty()) ev.nodeIndex = int(&n - tree->nodes.data());
+    }
     ev.kind = kind;
     ev.handlerIndex = handlerIndex;
     ev.toggleValue = toggleValue;
@@ -65,6 +71,47 @@ bool privateUseGlyph(const std::string &text, ImWchar *out) {
     if (codepoint < 0xe000u || codepoint > 0xf8ffu) return false;
     if (out) *out = static_cast<ImWchar>(codepoint);
     return true;
+}
+
+bool isInteractive(NodeType type) {
+    switch (type) {
+        case NodeType::Button:
+        case NodeType::Checkbox:
+        case NodeType::Slider:
+        case NodeType::InputText:
+        case NodeType::ImageButton:
+        case NodeType::Combo:
+        case NodeType::Viewport:
+        case NodeType::SearchField:
+        case NodeType::Switch:
+        case NodeType::MenuItem: return true;
+        default: return false;
+    }
+}
+
+bool keyPressed(ImGuiKey key) {
+    const int index = ImGui::GetKeyIndex(key);
+    return index >= 0 && ImGui::IsKeyPressed(index, false);
+}
+
+void routeExplicitFocusInput(UIHost *host, const UINode &node) {
+    if (!host || !node.focused || node.focusMode != FocusMode::All) return;
+    if (keyPressed(ImGuiKey_Tab)) {
+        const bool backwards = ImGui::GetIO().KeyShift;
+        const std::string &target = backwards ? node.focusPrevious : node.focusNext;
+        if (!target.empty())
+            host->moveFocus(backwards ? FocusDirection::Previous : FocusDirection::Next);
+        return;
+    }
+    if (ImGui::IsItemActive()) return;
+    if (!node.focusLeft.empty() && keyPressed(ImGuiKey_LeftArrow))
+        host->moveFocus(FocusDirection::Left);
+    else if (!node.focusRight.empty() && keyPressed(ImGuiKey_RightArrow))
+        host->moveFocus(FocusDirection::Right);
+    else if (!node.focusUp.empty() && keyPressed(ImGuiKey_UpArrow))
+        host->moveFocus(FocusDirection::Up);
+    else if (!node.focusDown.empty() && keyPressed(ImGuiKey_DownArrow))
+        host->moveFocus(FocusDirection::Down);
 }
 
 void walkNode(UIHost *host, UIHost::Tree *tree, int index);
@@ -324,6 +371,28 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     UINode &n = tree->nodes[size_t(index)];
     if (!n.visible) return;
 
+    const bool scopedTheme = n.themePreset != ThemePreset::Inherit;
+    ImGuiStyle previousStyle;
+    float previousFontScale = 1.f;
+    ImGuiConfigFlags previousConfigFlags = ImGuiConfigFlags_None;
+    if (scopedTheme) {
+        previousStyle = ImGui::GetStyle();
+        previousFontScale = ImGui::GetIO().FontGlobalScale;
+        previousConfigFlags = ImGui::GetIO().ConfigFlags;
+        applyThemeToImGui(n.themePreset == ThemePreset::Dark ? Theme::dark() : Theme::light());
+    }
+
+    const bool interactive = isInteractive(n.type);
+    const bool disableItem = interactive && !n.enabled;
+    const bool disableNavigation = interactive && n.focusMode != FocusMode::All;
+    if (disableItem) {
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.6f);
+    }
+    if (disableNavigation) ImGui::PushItemFlag(ImGuiItemFlags_NoNav, true);
+    if (interactive && n.focusRequested && n.enabled && n.focusMode != FocusMode::None)
+        ImGui::SetKeyboardFocusHere();
+
     switch (n.type) {
     case NodeType::Window: {
         const std::string visibleTitle = n.text.empty() ? "Window" : n.text;
@@ -352,10 +421,11 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             winH = host->meta()->sizeY;
         if (host && host->meta()->hasPos) {
             const ImVec2 display = ImGui::GetIO().DisplaySize;
-            const float px = host->meta()->pivotX;
-            const float py = host->meta()->pivotY;
-            const float x = host->meta()->anchorX * display.x + host->meta()->posX - px * winW;
-            const float y = host->meta()->anchorY * display.y + host->meta()->posY - py * winH;
+            // SetNextWindowPos applies the pivot itself. Passing an already
+            // pivot-adjusted top-left position shifts the window by its pivot
+            // a second time (a centered window moves half its width left).
+            const float x = host->meta()->anchorX * display.x + host->meta()->posX;
+            const float y = host->meta()->anchorY * display.y + host->meta()->posY;
             ImGui::SetNextWindowPos(ImVec2(x, y),
                                     host->meta()->lockPos ? ImGuiCond_Always
                                                           : ImGuiCond_FirstUseEver,
@@ -699,6 +769,49 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         ImGui::PopStyleVar();
         break;
     }
+    case NodeType::NinePatchPanel: {
+        const float width = n.sizeX > 0.f ? n.sizeX : ImGui::GetContentRegionAvail().x;
+        const float height = n.sizeY > 0.f
+                                 ? n.sizeY
+                                 : std::max(n.minSizeY,
+                                            n.measuredH > 0.f ? n.measuredH
+                                                              : ImGui::GetFrameHeight());
+        const ImVec2 pos = ImGui::GetCursorScreenPos();
+        const ImVec2 size(std::max(n.minSizeX, width), height);
+        if (n.textureId != 0 && g_backend) {
+            int tw = 0, th = 0;
+            g_backend->textureSize(n.textureId, &tw, &th);
+            if (g_backend->usesQueuedTextureDraws()) {
+                queueNinePatch(n.textureId, pos, size, ImVec2(n.uv0x, n.uv0y),
+                               ImVec2(n.uv1x, n.uv1y), n.borderL, n.borderT, n.borderR,
+                               n.borderB, tw, th, n.tintR, n.tintG, n.tintB, n.tintA);
+            } else if (void *handle = g_backend->textureHandle(n.textureId)) {
+                const ImU32 tint = ImGui::ColorConvertFloat4ToU32(
+                    ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
+                drawNinePatch(handle, pos, size, ImVec2(n.uv0x, n.uv0y),
+                              ImVec2(n.uv1x, n.uv1y), n.borderL, n.borderT, n.borderR,
+                              n.borderB, tw, th, tint);
+            }
+        }
+        const std::string id = n.id.empty() ? "ninePatchPanel" : n.id;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.f, 0.f, 0.f, 0.f));
+        if (ImGui::BeginChild(id.c_str(), size, false,
+                              ImGuiWindowFlags_AlwaysUseWindowPadding)) {
+            ImGui::SetCursorPos(ImVec2(n.paddingL, n.paddingT));
+            const ImVec2 contentSize(std::max(1.f, size.x - n.paddingL - n.paddingR),
+                                     std::max(1.f, size.y - n.paddingT - n.paddingB));
+            const std::string contentId = id + "##content";
+            if (ImGui::BeginChild(contentId.c_str(), contentSize, false)) {
+                if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
+            }
+            ImGui::EndChild();
+        }
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
+        break;
+    }
     case NodeType::SectionHeader: {
         const float sectionGap = globalTheme().layout.sectionSpacingY * themeUiScale();
         const ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -995,8 +1108,25 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         break;
     }
 
+    if (interactive) {
+        n.focused = ImGui::IsItemFocused();
+        routeExplicitFocusInput(host, n);
+        n.focusRequested = false;
+    }
+    if (disableNavigation) ImGui::PopItemFlag();
+    if (disableItem) {
+        ImGui::PopStyleVar();
+        ImGui::PopItemFlag();
+    }
+
     if (!n.tooltip.empty() && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
         ImGui::SetTooltip("%s", n.tooltip.c_str());
+
+    if (scopedTheme) {
+        ImGui::GetStyle() = previousStyle;
+        ImGui::GetIO().FontGlobalScale = previousFontScale;
+        ImGui::GetIO().ConfigFlags = previousConfigFlags;
+    }
 }
 
 void walk(UIHost *host, UIHost::Tree *tree, int index) { walkSiblings(host, tree, index); }
@@ -1122,6 +1252,33 @@ void UISystem::dispatchEvents() {
             g_changes.push_back(std::move(ch));
         }
 
+        if (ev.kind == "click") {
+            auto tree = ev.host->tree();
+            int index = ev.nodeIndex;
+            if (index < 0 || index >= int(tree->nodes.size()) ||
+                tree->nodes[size_t(index)].id != ev.nodeId) {
+                UINode *target = ev.host->findById(ev.nodeId);
+                index = target && !tree->nodes.empty() ? int(target - tree->nodes.data()) : -1;
+            }
+
+            bool first = true;
+            while (index >= 0 && index < int(tree->nodes.size())) {
+                const UINode &node = tree->nodes[size_t(index)];
+                if (!node.visible || !node.enabled) break;
+                const uint32_t handler = first ? ev.handlerIndex : node.handlerClick;
+                if (node.mouseFilter != MouseFilter::Ignore && handler != 0) {
+                    const size_t handlerSlot = size_t(handler - 1);
+                    if (handlerSlot < tree->clickHandlers.size() &&
+                        tree->clickHandlers[handlerSlot])
+                        tree->clickHandlers[handlerSlot]();
+                }
+                if (node.mouseFilter == MouseFilter::Stop) break;
+                index = node.parent;
+                first = false;
+            }
+            continue;
+        }
+
         if (ev.kind == "toggle" && ev.handlerIndex != 0) {
             auto t = ev.host->tree();
             size_t idx = size_t(ev.handlerIndex - 1);
@@ -1143,11 +1300,6 @@ void UISystem::dispatchEvents() {
                 t->textHandlers[idx](ev.textValue);
             continue;
         }
-        if (ev.handlerIndex == 0) continue;
-        auto t = ev.host->tree();
-        size_t idx = size_t(ev.handlerIndex - 1);
-        if (idx >= t->clickHandlers.size()) continue;
-        if (t->clickHandlers[idx]) t->clickHandlers[idx]();
     }
 }
 

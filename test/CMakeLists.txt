@@ -55,6 +55,11 @@ file(GLOB all_test_cpp
   ScreenSpaceReflection.cpp
   UISystem.cpp
   UIBuilder.cpp
+  editor_property_model.cpp
+  script_property_model.cpp
+  ui_control_semantics.cpp
+  ui_nine_patch.cpp
+  ui_presentation.cpp
   UIMoveRepro.cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp

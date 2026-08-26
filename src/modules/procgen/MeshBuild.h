@@ -19,6 +19,40 @@ public:
     void addVertex(float px, float py, float pz, float nx, float ny, float nz, float u, float v);
     void addTriangle(uint32_t i0, uint32_t i1, uint32_t i2);
 
+    /**
+     * @brief Append another procedural mesh after an affine transform.
+     *
+     * This is the composition primitive for graph-style generation: recipe
+     * outputs can be instanced, transformed and merged without a GPU round trip.
+     * Normals are transformed with inverse scale and renormalized.
+     *
+     * @param other Source mesh; null and self references are rejected.
+     * @param tx Translation on X.
+     * @param ty Translation on Y.
+     * @param tz Translation on Z.
+     * @param yawDegrees Rotation about world Y, in degrees.
+     * @param sx Scale on X; must be non-zero.
+     * @param sy Scale on Y; must be non-zero.
+     * @param sz Scale on Z; must be non-zero.
+     * @return True when the source mesh was appended.
+     */
+    bool appendTransformed(const MeshBuild *other, float tx, float ty, float tz,
+                           float yawDegrees, float sx, float sy, float sz);
+
+    /** @brief Select/create the named group assigned to subsequently added triangles. */
+    int setActiveGroup(const std::string &name);
+    /** @brief Number of named triangle groups. */
+    int getGroupCount() const;
+    /** @brief Group name, or an empty string for an invalid index. */
+    std::string getGroupName(int groupIndex) const;
+    /** @brief Group index for a triangle (not an index-buffer element), or -1. */
+    int getTriangleGroup(int triangleIndex) const;
+    /**
+     * @brief Copy one named group into a standalone compact mesh (caller owns).
+     * @return Null for an invalid or empty group.
+     */
+    MeshBuild *copyGroup(int groupIndex) const;
+
     int getVertexCount() const;
     int getIndexCount() const;
     bool empty() const;
@@ -51,6 +85,9 @@ private:
     std::vector<float>                           normals_;
     std::vector<float>                           uvs_;
     std::vector<uint32_t>                        indices_;
+    std::vector<int>                             triangleGroups_;
+    std::vector<std::string>                     groupNames_;
+    int                                          activeGroup_ = -1;
     std::unordered_map<std::string, std::string> meta_;
 };
 

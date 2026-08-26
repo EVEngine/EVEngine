@@ -297,8 +297,14 @@ public:
     bool applyPbrRecipeDefaults(const std::string &recipeId, Params *params) const;
 
     // --- Mesh recipes (Marching Cubes, …) ---
-    /** @brief CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet. */
+    /**
+     * @brief CPU mesh (caller owns).
+     * Recipes include mesh.marchingcubes, mesh.hexplanet, mesh.castle and the
+     * registered vegetation, building and linear-structure recipes.
+     */
     MeshBuild *buildMesh(const std::string &recipeId, Params *params);
+    /** @brief Upload an existing/composed CPU mesh to Graphics. */
+    graphics::Mesh *uploadMesh(MeshBuild *mesh, graphics::Graphics *gfx);
     /** @brief Build + upload to GPU Mesh (owned by Graphics). */
     graphics::Mesh *generateMesh(const std::string &recipeId, Params *params,
                                  graphics::Graphics *gfx);
