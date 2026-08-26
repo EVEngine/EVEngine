@@ -65,6 +65,8 @@ public:
     bool validate();
     std::string getError() const;
     void        clearCache();
+    /** @brief Monotonic topology/parameter revision used by asset and preview caches. */
+    uint64_t    getRevision() const;
     int         getExecutionCount() const;
     int         getCacheHitCount() const;
 
@@ -115,6 +117,7 @@ private:
     bool            validateNode(const std::string& id,
                                  std::unordered_map<std::string, int>& states);
     void            invalidate();
+    void            invalidateFrom(const std::string& id);
     float           floatValue(const Node& node, const std::string& key, float fallback) const;
     int             intValue(const Node& node, const std::string& key, int fallback) const;
     std::string     stringValue(const Node& node, const std::string& key,
@@ -126,6 +129,7 @@ private:
     std::string                           error_;
     int                                   executionCount_ = 0;
     int                                   cacheHitCount_   = 0;
+    uint64_t                              revision_        = 0;
 };
 
 }  // namespace eve::procgen

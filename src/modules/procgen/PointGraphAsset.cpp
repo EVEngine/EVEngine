@@ -1,5 +1,6 @@
 #include "procgen/PointGraph.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <functional>
 #include <sstream>
@@ -47,13 +48,27 @@ std::string PointGraph::serializeDefinition() const {
     for (const auto& id : nodeOrder_) {
         const auto& node = nodes_.at(id);
         out << "NODE " << std::quoted(id) << ' ' << std::quoted(node.operation) << '\n';
-        for (const auto& [key, value] : node.floats)
-            out << "FLOAT " << std::quoted(id) << ' ' << std::quoted(key) << ' ' << value << '\n';
-        for (const auto& [key, value] : node.ints)
-            out << "INT " << std::quoted(id) << ' ' << std::quoted(key) << ' ' << value << '\n';
-        for (const auto& [key, value] : node.strings)
+        std::vector<std::string> keys;
+        keys.reserve(node.floats.size());
+        for (const auto& [key, value] : node.floats) keys.push_back(key);
+        std::sort(keys.begin(), keys.end());
+        for (const auto& key : keys)
+            out << "FLOAT " << std::quoted(id) << ' ' << std::quoted(key) << ' '
+                << node.floats.at(key) << '\n';
+        keys.clear();
+        keys.reserve(node.ints.size());
+        for (const auto& [key, value] : node.ints) keys.push_back(key);
+        std::sort(keys.begin(), keys.end());
+        for (const auto& key : keys)
+            out << "INT " << std::quoted(id) << ' ' << std::quoted(key) << ' '
+                << node.ints.at(key) << '\n';
+        keys.clear();
+        keys.reserve(node.strings.size());
+        for (const auto& [key, value] : node.strings) keys.push_back(key);
+        std::sort(keys.begin(), keys.end());
+        for (const auto& key : keys)
             out << "STRING " << std::quoted(id) << ' ' << std::quoted(key) << ' '
-                << std::quoted(value) << '\n';
+                << std::quoted(node.strings.at(key)) << '\n';
         if (node.subgraph) {
             out << "SUBGRAPH " << std::quoted(id) << ' ' << std::quoted(node.subgraphInput) << ' '
                 << std::quoted(node.subgraphOutput) << ' '

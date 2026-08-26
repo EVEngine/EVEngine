@@ -159,3 +159,48 @@ TEST_CASE("procgen.pointGraph.definitionRoundTripsNestedTopologyAndParams") {
     CHECK(!loaded.deserializeDefinition("broken"));
     CHECK(loaded.hasNode("source"));
 }
+
+TEST_CASE("procgen.pointGraph.invalidatesOnlyChangedNodeDescendants") {
+    PointSet points;
+    points.add(1.f, 0.f, 0.f);
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("left", "transform"));
+    CHECK(graph.addNode("right", "transform"));
+    CHECK(graph.connect("source", "left"));
+    CHECK(graph.connect("source", "right"));
+    CHECK(graph.setNodePoints("source", &points));
+    PointSet* left = graph.execute("left");
+    PointSet* right = graph.execute("right");
+    REQUIRE(bool(left));
+    REQUIRE(bool(right));
+    delete right;
+    delete left;
+
+    const uint64_t revision = graph.getRevision();
+    CHECK(graph.setNodeFloat("left", "x", 5.f));
+    CHECK(graph.getRevision() > revision);
+    PointSet* sourceCache = graph.getNodeOutput("source");
+    PointSet* rightCache  = graph.getNodeOutput("right");
+    CHECK(bool(sourceCache));
+    CHECK(bool(rightCache));
+    CHECK(!graph.getNodeOutput("left"));
+    delete rightCache;
+    delete sourceCache;
+}
+
+TEST_CASE("procgen.pointGraph.definitionIsStableAcrossParameterInsertionOrder") {
+    PointGraph first;
+    PointGraph second;
+    CHECK(first.addNode("move", "transform"));
+    CHECK(second.addNode("move", "transform"));
+    CHECK(first.setNodeFloat("move", "z", 3.f));
+    CHECK(first.setNodeFloat("move", "x", 1.f));
+    CHECK(first.setNodeString("move", "beta", "b"));
+    CHECK(first.setNodeString("move", "alpha", "a"));
+    CHECK(second.setNodeString("move", "alpha", "a"));
+    CHECK(second.setNodeString("move", "beta", "b"));
+    CHECK(second.setNodeFloat("move", "x", 1.f));
+    CHECK(second.setNodeFloat("move", "z", 3.f));
+    CHECK_EQ(first.serializeDefinition(), second.serializeDefinition());
+}

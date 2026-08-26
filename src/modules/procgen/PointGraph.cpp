@@ -68,17 +68,18 @@ bool PointGraph::addNode(const std::string& id, const std::string& operation) {
     if (id.empty() || !operationKnown(operation) || nodes_.find(id) != nodes_.end()) return false;
     nodes_[id].operation = operation;
     nodeOrder_.push_back(id);
-    invalidate();
+    invalidateFrom(id);
     return true;
 }
 
 bool PointGraph::removeNode(const std::string& id) {
-    if (nodes_.erase(id) == 0) return false;
+    if (nodes_.find(id) == nodes_.end()) return false;
+    invalidateFrom(id);
+    nodes_.erase(id);
     nodeOrder_.erase(std::remove(nodeOrder_.begin(), nodeOrder_.end(), id), nodeOrder_.end());
     for (auto& [otherId, node] : nodes_)
         for (auto& input : node.inputs)
             if (input == id) input.clear();
-    invalidate();
     return true;
 }
 
@@ -100,7 +101,7 @@ bool PointGraph::connect(const std::string& fromId, const std::string& toId, int
         inputIndex >= spec->inputs || fromId == toId)
         return false;
     to->second.inputs[inputIndex] = fromId;
-    invalidate();
+    invalidateFrom(toId);
     return true;
 }
 
@@ -110,7 +111,7 @@ bool PointGraph::disconnect(const std::string& toId, int inputIndex) {
         to->second.inputs[inputIndex].empty())
         return false;
     to->second.inputs[inputIndex].clear();
-    invalidate();
+    invalidateFrom(toId);
     return true;
 }
 
@@ -126,7 +127,7 @@ bool PointGraph::setNodePoints(const std::string& id, PointSet* points) {
     if (found == nodes_.end() || !points) return false;
     found->second.points    = *points;
     found->second.hasPoints = true;
-    invalidate();
+    invalidateFrom(id);
     return true;
 }
 
@@ -134,7 +135,7 @@ bool PointGraph::setNodeSpatial(const std::string& id, SpatialData* spatial) {
     const auto found = nodes_.find(id);
     if (found == nodes_.end() || !spatial) return false;
     found->second.spatial = std::make_shared<SpatialData>(*spatial);
-    invalidate();
+    invalidateFrom(id);
     return true;
 }
 
@@ -142,7 +143,7 @@ bool PointGraph::setNodeFloat(const std::string& id, const std::string& key, flo
     const auto found = nodes_.find(id);
     if (found == nodes_.end() || key.empty()) return false;
     found->second.floats[key] = value;
-    invalidate();
+    invalidateFrom(id);
     return true;
 }
 
@@ -150,7 +151,7 @@ bool PointGraph::setNodeInt(const std::string& id, const std::string& key, int v
     const auto found = nodes_.find(id);
     if (found == nodes_.end() || key.empty()) return false;
     found->second.ints[key] = value;
-    invalidate();
+    invalidateFrom(id);
     return true;
 }
 
@@ -159,7 +160,7 @@ bool PointGraph::setNodeString(const std::string& id, const std::string& key,
     const auto found = nodes_.find(id);
     if (found == nodes_.end() || key.empty()) return false;
     found->second.strings[key] = value;
-    invalidate();
+    invalidateFrom(id);
     return true;
 }
 
@@ -172,7 +173,7 @@ bool PointGraph::setNodeSubgraph(const std::string& id, PointGraph* graph,
     found->second.subgraph       = std::make_shared<PointGraph>(*graph);
     found->second.subgraphInput  = inputNode;
     found->second.subgraphOutput = outputNode;
-    invalidate();
+    invalidateFrom(id);
     return true;
 }
 
@@ -201,6 +202,7 @@ void PointGraph::clearCache() {
 }
 int PointGraph::getExecutionCount() const { return executionCount_; }
 int PointGraph::getCacheHitCount() const { return cacheHitCount_; }
+uint64_t PointGraph::getRevision() const { return revision_; }
 int PointGraph::getMetricCount() const { return int(metrics_.size()); }
 std::string PointGraph::getMetricNodeId(int index) const {
     return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].id : std::string();
@@ -432,6 +434,23 @@ bool PointGraph::validateNode(const std::string& id, std::unordered_map<std::str
 }
 
 void PointGraph::invalidate() { clearCache(); }
+void PointGraph::invalidateFrom(const std::string& id) {
+    ++revision_;
+    std::vector<std::string> dirty{id};
+    std::unordered_map<std::string, bool> visited;
+    for (size_t cursor = 0; cursor < dirty.size(); ++cursor) {
+        const std::string& current = dirty[cursor];
+        if (visited[current]) continue;
+        visited[current] = true;
+        const auto found = nodes_.find(current);
+        if (found != nodes_.end()) found->second.cacheValid = false;
+        for (const auto& [candidateId, candidate] : nodes_) {
+            if (candidate.inputs[0] == current || candidate.inputs[1] == current)
+                dirty.push_back(candidateId);
+        }
+    }
+    metrics_.clear();
+}
 float PointGraph::floatValue(const Node& node, const std::string& key, float fallback) const {
     const auto found = node.floats.find(key);
     return found == node.floats.end() ? fallback : found->second;

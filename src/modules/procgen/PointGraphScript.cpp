@@ -31,6 +31,7 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("validate", &PointGraph::validate);
     graph.addFunc("getError", &PointGraph::getError);
     graph.addFunc("clearCache", &PointGraph::clearCache);
+    graph.addFunc("getRevision", &PointGraph::getRevision);
     graph.addFunc("getExecutionCount", &PointGraph::getExecutionCount);
     graph.addFunc("getCacheHitCount", &PointGraph::getCacheHitCount);
     graph.addFunc("getMetricCount", &PointGraph::getMetricCount);
