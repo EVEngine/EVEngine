@@ -1,12 +1,12 @@
 // Atmospheric froxel fog: a complete scene-depth -> volume-atlas -> composite example.
 // 1/2/3 select thin, medium and dense fog. Space toggles the effect.
 
-if (!("fogDemoCamera" in getroottable())) fogDemoCamera <- null;
-if (!("fogDemoVolume" in getroottable())) fogDemoVolume <- null;
-if (!("fogDemoObjects" in getroottable())) fogDemoObjects <- [];
-if (!("fogDemoEnabled" in getroottable())) fogDemoEnabled <- true;
-if (!("fogDemoPreset" in getroottable())) fogDemoPreset <- 2;
-if (!("fogDemoSpaceDown" in getroottable())) fogDemoSpaceDown <- false;
+persist fogDemoCamera = null
+persist fogDemoVolume = null
+persist fogDemoObjects = []
+persist fogDemoEnabled = true
+persist fogDemoPreset = 2
+persist fogDemoSpaceDown = false
 
 function fogDemoObject(mesh, x, y, z, sx, sy, sz, r, g, b) {
     local object = eve.Renderable3D();

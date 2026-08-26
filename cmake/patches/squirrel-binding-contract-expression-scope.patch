@@ -1,0 +1,158 @@
+diff --git a/squirrel/squirrel/sqcompiler.cpp b/squirrel/squirrel/sqcompiler.cpp
+index 04680d5..4ca1be2 100644
+--- a/squirrel/squirrel/sqcompiler.cpp
++++ b/squirrel/squirrel/sqcompiler.cpp
+@@ -110,6 +110,7 @@ public:
+         _expectedunit = UNIT_NONE;
+         _expectedtype.clear();
+         _expectednullable = true;
++        _expectedconstraintpending = false;
+         _scope.outers = 0;
+         _scope.stacksize = 0;
+         _compilererror[0] = _SC('\0');
+@@ -502,15 +503,18 @@ public:
+             std::vector<std::basic_string<SQChar> > previousChoices = _expectedchoices;
+             std::basic_string<SQChar> previousType = _expectedtype;
+             bool previousNullable = _expectednullable;
++            bool previousConstraintPending = _expectedconstraintpending;
+             if(assignmentUnit != UNIT_NONE) _expectedunit = assignmentUnit;
+             if(!assignmentChoices.empty()) _expectedchoices = assignmentChoices;
+             _expectedtype = assignmentType;
+             _expectednullable = assignmentNullable;
++            _expectedconstraintpending = true;
+             Expression();
+             _expectedunit = previousUnit;
+             _expectedchoices = previousChoices;
+             _expectedtype = previousType;
+             _expectednullable = previousNullable;
++            _expectedconstraintpending = previousConstraintPending;
+
+             switch(op){
+             case TK_NEWSLOT:
+@@ -915,7 +919,7 @@ public:
+             }
+         }
+     }
+-    void NumericLiteral(bool negative)
++    void NumericLiteral(bool negative, bool applyExpectedConstraint)
+     {
+         const bool wasInteger = _token == TK_INTEGER;
+         const SQInteger integerValue = negative ? -_lex._nvalue : _lex._nvalue;
+@@ -935,7 +939,7 @@ public:
+             else EmitLoadConstFloat(value, -1);
+             return;
+         }
+-        if(sourceUnit != UNIT_NONE && _expectedunit != UNIT_NONE) {
++        if(applyExpectedConstraint && sourceUnit != UNIT_NONE && _expectedunit != UNIT_NONE) {
+             if(sourceUnit == UNIT_MILLISECONDS && _expectedunit == UNIT_SECONDS)
+                 value *= static_cast<SQFloat>(0.001);
+             else if(sourceUnit == UNIT_DEGREES && _expectedunit == UNIT_RADIANS)
+@@ -950,7 +954,9 @@ public:
+     }
+     SQInteger Factor()
+     {
+-        if(!_expectedtype.empty()) {
++        const bool applyExpectedConstraint = _expectedconstraintpending;
++        _expectedconstraintpending = false;
++        if(applyExpectedConstraint && !_expectedtype.empty()) {
+             const bool wantsString = _expectedtype == _SC("string");
+             const bool wantsBool = _expectedtype == _SC("bool");
+             const bool wantsInt = _expectedtype == _SC("int");
+@@ -967,7 +973,7 @@ public:
+         switch(_token)
+         {
+         case TK_STRING_LITERAL:
+-            if(!_expectedchoices.empty()) {
++            if(applyExpectedConstraint && !_expectedchoices.empty()) {
+                 bool allowed = false;
+                 for(SQUnsignedInteger i = 0; i < _expectedchoices.size(); ++i) {
+                     if(scstrcmp(_expectedchoices[i].c_str(), _lex._svalue) == 0) {
+@@ -1097,7 +1103,7 @@ public:
+             Lex();
+             break;
+         case TK_INTEGER:
+-        case TK_FLOAT: NumericLiteral(false); break;
++        case TK_FLOAT: NumericLiteral(false, applyExpectedConstraint); break;
+         case TK_TRUE: case TK_FALSE:
+             _fs->AddInstruction(_OP_LOADBOOL, _fs->PushTarget(),_token == TK_TRUE?1:0);
+             Lex();
+@@ -1129,7 +1135,7 @@ public:
+             Lex();
+             switch(_token) {
+             case TK_INTEGER:
+-            case TK_FLOAT: NumericLiteral(true); break;
++            case TK_FLOAT: NumericLiteral(true, applyExpectedConstraint); break;
+             default: UnaryOP(_OP_NEG);
+             }
+             break;
+@@ -1232,19 +1238,21 @@ public:
+              std::vector<std::basic_string<SQChar> > previousChoices = _expectedchoices;
+              std::basic_string<SQChar> previousType = _expectedtype;
+              bool previousNullable = _expectednullable;
++             bool previousConstraintPending = _expectedconstraintpending;
+              if(callSignature != NULL && parameterIndex >= 0 &&
+-                static_cast<SQUnsignedInteger>(parameterIndex) < callSignature->parameters.size()) {
++                 static_cast<SQUnsignedInteger>(parameterIndex) < callSignature->parameters.size()) {
+                  _expectedunit = callSignature->parameters[parameterIndex].unit;
+                  _expectedtype = callSignature->parameters[parameterIndex].type;
+                  _expectednullable = callSignature->parameters[parameterIndex].nullable;
+-                 if(!callSignature->parameters[parameterIndex].choices.empty())
+-                     _expectedchoices = callSignature->parameters[parameterIndex].choices;
++                 _expectedchoices = callSignature->parameters[parameterIndex].choices;
++                 _expectedconstraintpending = true;
+              }
+              Expression();
+              _expectedunit = previousUnit;
+              _expectedchoices = previousChoices;
+              _expectedtype = previousType;
+              _expectednullable = previousNullable;
++             _expectedconstraintpending = previousConstraintPending;
+              MoveIfCurrentTargetIsLocal();
+              argumentNames.push_back(argumentName);
+              argumentTargets.push_back(_fs->TopTarget());
+@@ -1530,15 +1538,18 @@ public:
+                 std::vector<std::basic_string<SQChar> > previousChoices = _expectedchoices;
+                 std::basic_string<SQChar> previousType = _expectedtype;
+                 bool previousNullable = _expectednullable;
++                bool previousConstraintPending = _expectedconstraintpending;
+                 if(declaredUnit != UNIT_NONE) _expectedunit = declaredUnit;
+                 if(!declaredChoices.empty()) _expectedchoices = declaredChoices;
+                 _expectedtype = declaredType;
+                 _expectednullable = declaredNullable;
++                _expectedconstraintpending = true;
+                 Expression();
+                 _expectedunit = previousUnit;
+                 _expectedchoices = previousChoices;
+                 _expectedtype = previousType;
+                 _expectednullable = previousNullable;
++                _expectedconstraintpending = previousConstraintPending;
+                 }
+             }
+             if(_token == separator) Lex();//optional comma/semicolon
+@@ -1593,15 +1604,18 @@ public:
+                 std::vector<std::basic_string<SQChar> > previousChoices = _expectedchoices;
+                 std::basic_string<SQChar> previousType = _expectedtype;
+                 bool previousNullable = _expectednullable;
++                bool previousConstraintPending = _expectedconstraintpending;
+                 if(declaredUnit != UNIT_NONE) _expectedunit = declaredUnit;
+                 if(!declaredChoices.empty()) _expectedchoices = declaredChoices;
+                 _expectedtype = declaredType;
+                 _expectednullable = declaredNullable;
++                _expectedconstraintpending = true;
+                 Expression();
+                 _expectedunit = previousUnit;
+                 _expectedchoices = previousChoices;
+                 _expectedtype = previousType;
+                 _expectednullable = previousNullable;
++                _expectedconstraintpending = previousConstraintPending;
+                 SQInteger src = _fs->PopTarget();
+                 SQInteger dest = _fs->PushTarget();
+                 if(dest != src) _fs->AddInstruction(_OP_MOVE, dest, src);
+@@ -2463,6 +2477,7 @@ private:
+     SQScriptUnit _expectedunit;
+     std::basic_string<SQChar> _expectedtype;
+     bool _expectednullable;
++    bool _expectedconstraintpending;
+     std::vector<std::basic_string<SQChar> > _expectedchoices;
+     std::map<std::basic_string<SQChar>, std::vector<std::basic_string<SQChar> > > _choiceSymbols;
+     SQInteger _debugline;

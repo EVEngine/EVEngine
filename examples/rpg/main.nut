@@ -22,14 +22,14 @@
 
 // ---- 软热重载状态保护：脚本被 dofile 重跑时不清空已创建的实体/UI ----
 // （约定见 example/main.nut）
-if (!("rpg" in getroottable())) rpg <- null;
-if (!("player" in getroottable())) player <- null;
-if (!("enemy" in getroottable())) enemy <- null;
-if (!("wave" in getroottable())) wave <- 1;
-if (!("score" in getroottable())) score <- 0;
-if (!("gameOver" in getroottable())) gameOver <- false;
-if (!("battleLog" in getroottable())) battleLog <- [];
-if (!("hitFlash" in getroottable())) hitFlash <- { player = 0.0, enemy = 0.0 };
+persist rpg = null
+persist player = null
+persist enemy = null
+persist wave = 1
+persist score = 0
+persist gameOver = false
+persist battleLog = []
+persist hitFlash = { player = 0.0, enemy = 0.0 }
 
 const PLAYER_MAX_HP = 100.0;
 const PLAYER_MAX_MP = 50.0;

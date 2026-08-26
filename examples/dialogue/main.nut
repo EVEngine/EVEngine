@@ -12,18 +12,18 @@
 // 运行：make run/linux-debug GAME=examples/dialogue
 // ============================================================================
 
-if (!("dlg" in getroottable())) dlg <- null;
-if (!("i18n" in getroottable())) i18n <- eve.I18n();
-if (!("aliceAv" in getroottable())) aliceAv <- null;
-if (!("bobAv" in getroottable())) bobAv <- null;
-if (!("vnGen" in getroottable())) vnGen <- null;
-if (!("vnDone" in getroottable())) vnDone <- false;
-if (!("waitingResume" in getroottable())) waitingResume <- false;
+persist dlg = null
+persist i18n = eve.I18n()
+persist aliceAv = null
+persist bobAv = null
+persist vnGen = null
+persist vnDone = false
+persist waitingResume = false
 // mouse / touch 边沿检测仍用 prevKeys（edgePressed）。
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("curSceneName" in getroottable())) curSceneName <- "town";
-if (!("sceneReady" in getroottable())) sceneReady <- false;
+persist prevKeys = {}
+persist uiReady = false
+persist curSceneName = "town"
+persist sceneReady = false
 
 function edgePressed(key, down) {
     local was = (key in prevKeys) ? prevKeys[key] : false;

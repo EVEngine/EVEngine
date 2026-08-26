@@ -1,13 +1,13 @@
 // Code-first procedural pipeline. Edit this file while the example is running:
 // eve_reload rebuilds a complete staging snapshot and atomically commits it.
 
-if (!("forestSeed" in getroottable())) forestSeed <- 42;
-if (!("forestPoints" in getroottable())) forestPoints <- null;
-if (!("pipelineStatus" in getroottable())) pipelineStatus <- "not generated";
-if (!("debugStage" in getroottable())) debugStage <- "trees";
-if (!("debugPoints" in getroottable())) debugPoints <- null;
-if (!("previousDebugPoints" in getroottable())) previousDebugPoints <- null;
-if (!("roadPoints" in getroottable())) roadPoints <- null;
+persist forestSeed = 42
+persist forestPoints = null
+persist pipelineStatus = "not generated"
+persist debugStage = "trees"
+persist debugPoints = null
+persist previousDebugPoints = null
+persist roadPoints = null
 
 gfx.setBackgroundColor(0.055, 0.075, 0.07, 1.0);
 

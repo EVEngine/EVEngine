@@ -1,6 +1,6 @@
-if (!("trailFx" in getroottable())) trailFx <- null;
-if (!("burstFx" in getroottable())) burstFx <- null;
-if (!("playbackTime" in getroottable())) playbackTime <- 0.0;
+persist trailFx = null
+persist burstFx = null
+persist playbackTime = 0.0
 
 eve_init = function() {
     gfx.setBackgroundColor(0.025, 0.035, 0.065, 1.0);

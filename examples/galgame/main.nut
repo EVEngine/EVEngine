@@ -1,7 +1,6 @@
 // 潮汐电台：一段可分支、可存读档、可回看的原创 Galgame 短篇。
 
-gal <- persist("gal", function() {
-    return {
+persist gal = {
         mode = "title", step = 0, route = "", trust = 0, ending = "",
         uiMode = "", lineRecorded = false, toast = "", toastLeft = 0.0,
         mouseWas = false, touchWas = false,
@@ -11,8 +10,7 @@ gal <- persist("gal", function() {
         fx = "rain", time = 0.0, effectTime = 0.0, transition = 0.0,
         entrance = 0.0, shake = 0.0, chapterLeft = 0.0,
         qaRoute = ""
-    };
-});
+    }
 
 local story = [
     { who = "", text = "雨停在末班车到站前。七年没有回来的海鸣站，仍在播放那段无人认领的电台杂音。", scene = "station", fx = "rain", chapter = "序章 · 归站" },

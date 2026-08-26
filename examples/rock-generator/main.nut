@@ -1,20 +1,20 @@
 // LITHIC — deterministic, real-time 3D rock authoring example.
 // Every seed recreates the same mesh and procedural stone textures.
 
-if (!("rock" in getroottable())) rock <- null;
-if (!("camera" in getroottable())) camera <- null;
-if (!("seed" in getroottable())) seed <- 1847;
-if (!("shapeIndex" in getroottable())) shapeIndex <- 0;
-if (!("shapeNames" in getroottable())) shapeNames <- ["mixed", "boulder", "slab", "block", "shard"];
-if (!("flattening" in getroottable())) flattening <- 0.22;
-if (!("angularity" in getroottable())) angularity <- 0.38;
-if (!("erosion" in getroottable())) erosion <- 0.16;
-if (!("noiseScale" in getroottable())) noiseScale <- 2.4;
-if (!("roughness" in getroottable())) roughness <- 0.86;
-if (!("autoSpin" in getroottable())) autoSpin <- true;
-if (!("yaw" in getroottable())) yaw <- 0.0;
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("rWasDown" in getroottable())) rWasDown <- false;
+persist rock = null
+persist camera = null
+persist seed = 1847
+persist shapeIndex = 0
+persist shapeNames = ["mixed", "boulder", "slab", "block", "shard"]
+persist flattening = 0.22
+persist angularity = 0.38
+persist erosion = 0.16
+persist noiseScale = 2.4
+persist roughness = 0.86
+persist autoSpin = true
+persist yaw = 0.0
+persist uiReady = false
+persist rWasDown = false
 
 function coreId() {
     local s = seed.tostring();

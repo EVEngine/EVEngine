@@ -81,6 +81,16 @@ eve run my-game
 
 保存脚本后，`persist playerX` 会在热重载时保留当前位置；函数和常量则由新代码替换。
 
+从旧项目批量迁移 root 持久状态时，可先预览再写入：
+
+```sh
+python scripts/migrate_evescript.py --check
+python scripts/migrate_evescript.py --write
+```
+
+迁移器只改写可证明等价的 root-table 判断和 `persist(name, initializer)` 样板；普通 Squirrel、
+动态 root-table 操作和兼容性 `dofile()` 不会被猜测式重写。
+
 ## 2. 仍然需要掌握的 Squirrel 基础
 
 EveScript 是 Squirrel 的兼容扩展，不是另一套对象模型。以下写法仍是日常代码的主体。
@@ -395,6 +405,14 @@ compose(third: log_and_return(3), first: log_and_return(1), second: log_and_retu
 
 无法取得可靠 Binding Contract 的动态原生函数不能使用命名参数，改用位置参数。
 
+SDK 构建会从当前 profile 中实际参与编译的 SimpleSquirrel `addFunc` 声明生成契约。无法解析真实
+参数名的绑定会直接使生成步骤失败，不会退化成 `arg0`、`arg1`。生成结果在 `ScriptCompiler`
+创建时注册到 SimpleSquirrel 的 named-argument resolver，因此编译检查、补全、Hover 与运行时
+使用的是同一份契约。C++ 默认实参不会自动成为脚本默认值；不同类上同名且签名有歧义的方法应
+继续使用位置参数。契约类型、字符串选项和单位检查只约束参数表达式边界上的直接字面量；合法的
+复合表达式（例如 `ui.setText("status", "count " + (count + 1))`）会按正常表达式语义编译，
+不会把内部数值字面量误判成字符串参数。
+
 ## 8. Inspector 属性注解
 
 注解是 Squirrel attribute 的短写，放在类字段之前：
@@ -577,6 +595,10 @@ class Counter {
 Promise 不等于后台线程。CPU 密集任务应使用 thread 模块提供的受支持 worker 操作，再通过事件、
 Channel 或 Promise 回到主线程；worker 不得访问 Squirrel VM、窗口、GPU 或脚本对象。
 
+当文件监听器发现已导入模块变化时，Runtime 会重编译该模块及反向依赖它的全部缓存 generation，
+并在整组实例化成功后一次性提交。任一依赖编译或实例化失败都会恢复旧模块和旧依赖图；未进入
+模块图的兼容性 root 脚本仍沿用软重载路径。
+
 ## 13. 与响应式事件配合
 
 `async` / `await` 适合有明确开始、等待和结束的流程；事件或 Rx 适合持续数据流。不要把所有异步
@@ -754,6 +776,9 @@ eve language-server --root /path/to/my-game
 - `config.modules` / `optionalModules` 检查；
 - 已知脚本符号与 Binding Contract 补全；
 - 原生方法签名和文档 Hover；
+- 跨文件 `import` / `export` 定义跳转；
+- 项目级引用查找；
+- 导出符号和 import alias 的安全重命名；
 - 文档打开、增量更新和关闭同步。
 
 运行时调试：

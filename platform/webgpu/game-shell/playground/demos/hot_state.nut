@@ -5,7 +5,7 @@
 //   2. 观察控制台：每次应用都会打印累计 frames，状态没有重置；
 //   3. 点“重置状态”清空 __pg，立方体从 0 帧重新开始。
 
-if (!("__pg" in getroottable())) __pg <- {};
+persist __pg = {}
 // 顶层初始化：每次 dofile（应用/重置）都会执行，保证 eve_update 在任何时刻
 // 都能安全访问状态，不依赖 eve_init 是否已运行。
 if (!("frames" in __pg)) __pg.frames <- 0;

@@ -18,35 +18,35 @@
 // 运行：make run/win32-debug GAME=examples/voxel-terrain
 // ============================================================================
 
-if (!("math" in getroottable())) math <- eve.Math();
-if (!("voxel" in getroottable())) voxel <- null;
-if (!("editor" in getroottable())) editor <- null;
-if (!("world" in getroottable())) world <- null;
-if (!("types" in getroottable())) types <- null;
-if (!("atlas" in getroottable())) atlas <- null;
-if (!("editSession" in getroottable())) editSession <- null;
-if (!("voxelTarget" in getroottable())) voxelTarget <- null;
-if (!("volumeFalloff" in getroottable())) volumeFalloff <- null;
-if (!("volumeKernel" in getroottable())) volumeKernel <- null;
-if (!("volumeOperation" in getroottable())) volumeOperation <- null;
-if (!("volumeTool" in getroottable())) volumeTool <- null;
-if (!("playerPos" in getroottable())) playerPos <- [0.0, 34.0, 64.0];
-if (!("yaw" in getroottable())) yaw <- PI;
-if (!("pitch" in getroottable())) pitch <- -0.55;
-if (!("elapsed" in getroottable())) elapsed <- 0.0;
-if (!("presetIdx" in getroottable())) presetIdx <- 0;
-if (!("seed" in getroottable())) seed <- 20260823;
-if (!("streamRadius" in getroottable())) streamRadius <- 3;
-if (!("mouseCaptured" in getroottable())) mouseCaptured <- false;
-if (!("prevLeft" in getroottable())) prevLeft <- false;
-if (!("prevRight" in getroottable())) prevRight <- false;
-if (!("lastEdit" in getroottable())) lastEdit <- "";
-if (!("fpsAvg" in getroottable())) fpsAvg <- 60.0;
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("shownHelp" in getroottable())) shownHelp <- false;
-if (!("statsPrinted" in getroottable())) statsPrinted <- false;
-if (!("shotPending" in getroottable())) shotPending <- true;   // 首帧自动截一张便于冒烟验证
-if (!("shotPath" in getroottable())) shotPath <- "screenshot.png";
+persist math = eve.Math()
+persist voxel = null
+persist editor = null
+persist world = null
+persist types = null
+persist atlas = null
+persist editSession = null
+persist voxelTarget = null
+persist volumeFalloff = null
+persist volumeKernel = null
+persist volumeOperation = null
+persist volumeTool = null
+persist playerPos = [0.0, 34.0, 64.0]
+persist yaw = PI
+persist pitch = -0.55
+persist elapsed = 0.0
+persist presetIdx = 0
+persist seed = 20260823
+persist streamRadius = 3
+persist mouseCaptured = false
+persist prevLeft = false
+persist prevRight = false
+persist lastEdit = ""
+persist fpsAvg = 60.0
+persist uiReady = false
+persist shownHelp = false
+persist statsPrinted = false
+persist shotPending = true   // 首帧自动截一张便于冒烟验证
+persist shotPath = "screenshot.png"
 
 const TILE = 32;            // atlas tile size in pixels
 const TILES_PER_ROW = 4;

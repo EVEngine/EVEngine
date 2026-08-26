@@ -20,25 +20,25 @@
 // ============================================================================
 
 // `snow` is the module slot bound by load.nut; `sf` is our SnowField instance.
-if (!("sf" in getroottable())) sf <- null;
-if (!("terrainHm" in getroottable())) terrainHm <- null;
-if (!("combinedHm" in getroottable())) combinedHm <- null;
-if (!("terrainMesh" in getroottable())) terrainMesh <- null;
-if (!("terrainEnt" in getroottable())) terrainEnt <- null;
-if (!("terrainTexA" in getroottable())) terrainTexA <- null;
-if (!("terrainTexN" in getroottable())) terrainTexN <- null;
-if (!("terrainTexH" in getroottable())) terrainTexH <- null;
-if (!("walker" in getroottable())) walker <- null;
-if (!("sun" in getroottable())) sun <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("camAngle" in getroottable())) camAngle <- 0.0;
-if (!("walkDemo" in getroottable())) walkDemo <- false;
-if (!("snowfallOn" in getroottable())) snowfallOn <- false;
-if (!("parallaxOn" in getroottable())) parallaxOn <- true;
-if (!("walkAngle" in getroottable())) walkAngle <- 0.0;
-if (!("stepTimer" in getroottable())) stepTimer <- 0.0;
-if (!("rebuildTimer" in getroottable())) rebuildTimer <- 0.0;
-if (!("helpPrinted" in getroottable())) helpPrinted <- false;
+persist sf = null
+persist terrainHm = null
+persist combinedHm = null
+persist terrainMesh = null
+persist terrainEnt = null
+persist terrainTexA = null
+persist terrainTexN = null
+persist terrainTexH = null
+persist walker = null
+persist sun = null
+persist cam = null
+persist camAngle = 0.0
+persist walkDemo = false
+persist snowfallOn = false
+persist parallaxOn = true
+persist walkAngle = 0.0
+persist stepTimer = 0.0
+persist rebuildTimer = 0.0
+persist helpPrinted = false
 
 const W = 96;            // heightmap cells
 const H = 96;
