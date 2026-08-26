@@ -95,3 +95,22 @@ Completion requires all of the following in the same PR SHA:
 - a checked-in benchmark fixture and machine-readable baseline;
 - green full platform CI, including ASan/UBSan and native Dawn parity;
 - documentation and script bindings for all public metrics and policy controls.
+
+## Acceptance commands
+
+The regular `gpgpu.procgen` cases enforce graph-segment transfer counts, lazy intermediate
+preview, cache reuse and atomic CPU recovery from forced `compile`, `allocation`, `submit` and
+`readback` failures. The failure selector is the process-local
+`EVENGINE_POINT_COMPUTE_FAIL` environment variable and is intended only for validation.
+
+Run the dedicated reference-machine benchmark with:
+
+```sh
+EVENGINE_PCG_MILLION_BENCHMARK=1 make test/linux-debug \
+  FILTER=gpgpu.procgen.millionPointAcceptanceBenchmark
+```
+
+It performs five GPU warmups and twenty measured CPU, fused-GPU and four-round-trip GPU samples,
+then prints one `PCG_BENCHMARK_JSON=...` record. Required structure and speedups are versioned in
+`docs/dev/baselines/pcg-million-point.json`; shared CI records correctness and transfer counts but
+does not enforce wall-clock ratios.

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <exception>
 #include <limits>
 #include <memory>
@@ -19,6 +20,11 @@ namespace {
 constexpr int kPointFloats   = 11;
 constexpr int kWorkgroupSize = 64;
 constexpr int kMaxTransforms = 4;
+
+bool forcedFailure(const char* stage) {
+    const char* requested = std::getenv("EVENGINE_POINT_COMPUTE_FAIL");
+    return requested && std::string(requested) == stage;
+}
 
 const char* transformKernel() {
 #ifdef EVENGINE_WEBGPU
@@ -157,6 +163,10 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
         return false;
     }
     try {
+        if (forcedFailure("compile")) {
+            error_ = "forced shader compilation failure";
+            return false;
+        }
         auto* gpu = eve::ModuleManager::getInstance<eve::gpgpu::Gpgpu>("Gpgpu");
         if (!gpu) gpu = eve::gpgpu::Gpgpu::create();
         if (!gpu || !gpu->isAvailable()) {
@@ -186,6 +196,10 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
         if (!impl_->sequence) impl_->sequence.reset(gpu->newSequence());
         const bool reusedBuffers = byteSize <= impl_->capacityBytes;
         if (byteSize > impl_->capacityBytes) {
+            if (forcedFailure("allocation")) {
+                error_ = "forced GPU allocation failure";
+                return false;
+            }
             int capacity = std::max(byteSize, impl_->capacityBytes + impl_->capacityBytes / 2);
             impl_->storage.reset(gpu->newBuffer(capacity, "storage"));
             impl_->staging.reset(gpu->newBuffer(capacity, "staging"));
@@ -215,7 +229,17 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
         impl_->sequence->recordUpload(impl_->storage.get(), packed.data(), uint64_t(byteSize));
         impl_->sequence->recordDispatch(impl_->shader.get(), (input.getCount() + kWorkgroupSize - 1) / kWorkgroupSize);
         impl_->sequence->recordDownload(impl_->storage.get(), impl_->staging.get(), uint64_t(byteSize));
+        if (forcedFailure("submit")) {
+            error_ = "forced GPU submission failure";
+            impl_->reset();
+            return false;
+        }
         impl_->sequence->submit();
+        if (forcedFailure("readback")) {
+            error_ = "forced GPU readback failure";
+            impl_->reset();
+            return false;
+        }
         impl_->staging->downloadBytes(packed.data(), uint64_t(byteSize));
         ++impl_->uploadCount;
         ++impl_->dispatchCount;
