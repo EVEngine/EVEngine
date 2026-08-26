@@ -6,8 +6,10 @@ using namespace eve::procgen;
 
 TEST_CASE("procgen.runtimeGeneration.partitionsAndPublishesCells") {
     RuntimeGeneration runtime(42);
-    CHECK_EQ(runtime.addLevel(10.f, 8.f, 1.5f), 0);
-    CHECK_EQ(runtime.addLevel(40.f, 30.f, 2.f), 1);
+    const int nearLevel = runtime.addLevel(10.f, 8.f, 1.5f);
+    const int farLevel  = runtime.addLevel(40.f, 30.f, 2.f);
+    CHECK_EQ(nearLevel, 0);
+    CHECK_EQ(farLevel, 1);
     CHECK_EQ(runtime.getLevelCount(), 2);
     CHECK_EQ(runtime.getLevelCleanupRadius(0), 12.f);
     runtime.setMaxGenerating(1);
