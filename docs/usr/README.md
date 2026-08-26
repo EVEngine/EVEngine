@@ -7,7 +7,7 @@ EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速�
 
 > 当前版本为早期开发版本，API 仍在演进。最可靠的学习方式是运行并修改示例：下载的 SDK 自带 `share/eve/examples/basic/`，仓库中还有更多 `examples/` 可参考。
 
-本指南从“下载引擎”讲到“打包发布”；覆盖全部脚本模块的[模块使用手册](MODULES.md)按功能逐章说明 API 与示例。先跑通一个示例，再按需查阅对应模块即可。
+本指南从“下载引擎”讲到“打包发布”；[EveScript 完整教程](EVESCRIPT.md)讲解脚本语法、规范和与标准 Squirrel 的区别，覆盖全部脚本模块的[模块使用手册](MODULES.md)则按功能逐章说明 API 与示例。先跑通一个示例，再按需查阅对应文档即可。
 
 ## 1. 获取引擎：从官网下载，无需编译
 
@@ -103,7 +103,7 @@ eve_render <- function() {
 my-game/
 ├── config.nut
 ├── main.nut
-├── scripts/       # 拆分后的脚本，通过 dofile(...) 加载
+├── scripts/       # 拆分后的 EveScript 模块，通过 import 加载
 ├── maps/          # Tiled JSON 或地图数据
 ├── particles/     # 粒子 JSON
 ├── textures/
@@ -127,10 +127,10 @@ my-game/
 | `eve_asset_reload(path)` | 非脚本资源变化后（可选） | 响应纹理、地图等资源变化 |
 | `eve_quit()` | 退出时（可选） | 保存数据或执行清理 |
 
-启用 `config.hotReload` 后，引擎会监视脚本和资源。热重载会再次执行脚本，因此应避免无条件重置全局状态。推荐模式：
+启用 `config.hotReload` 后，引擎会监视脚本和资源。需要跨热重载保存的 root 状态使用 EveScript 的 `persist` 声明：
 
 ```squirrel
-if (!("player" in getroottable())) player <- null;
+persist player = null
 
 function eve_init() {
     if (player == null) {
@@ -140,7 +140,7 @@ function eve_init() {
 }
 ```
 
-把一次性初始化放进 `eve_init`，把可重复执行的声明保留在顶层，并参考 `share/eve/examples/basic/main.nut` 中的完整写法。
+初始化表达式只在持久名称第一次出现时执行。把一次性初始化放进 `eve_init`，把可重复执行的声明保留在顶层；完整语义与迁移方法见 [EveScript 完整教程](EVESCRIPT.md)。
 
 ## 4. 你能用引擎做哪些事
 
@@ -292,7 +292,7 @@ config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
 1. <b>无需编译，但需要 Vulkan 驱动</b>：运行时基于 Vulkan。Windows 显卡驱动通常自带 Vulkan 运行时；macOS 由 SDK 内置 MoltenVK；Linux 需要安装 Vulkan 驱动（`mesa-vulkan-drivers` 或厂商驱动）。如果游戏启动后窗口黑屏或报 Vulkan 初始化失败，优先检查驱动。
 2. <b>SDK 按平台独立、版本必须匹配</b>：每个 SDK 只面向一个目标平台；`eve package`、原生插件必须与 SDK 的平台、版本一致，不同平台的 SDK 不能混用。
 3. <b>脚本 API 以“模块手册 + 示例”为准</b>：C++ 头文件中的 public 方法不一定是脚本 API；调用约定见[API 使用约定](../dev/API-CONVENTIONS.md)。
-4. <b>热重载会重新执行脚本</b>：用 `if (!("x" in getroottable()))` 保护需要跨重载保留的全局引用（见第 3 节）。
+4. <b>热重载会重新执行脚本</b>：用 EveScript 的 `persist` 声明需要跨重载保留的 root 状态（见第 3 节和 [EveScript 完整教程](EVESCRIPT.md)）。
 5. <b>模块可以裁剪，但默认全开</b>：脚本里用 `has_module("slot")` 判断模块是否存在；构建时裁剪只对“从源码构建”的用户有效，下载的 SDK 默认包含全部模块（见[按需裁剪模块](TRIMMING.md)）。
 6. <b>许可</b>：EVEngine 采用双许可，商用营收超过免费门槛后需商业授权，详见根目录 [许可证](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#许可证)。
 7. <b>版本与分支</b>：Release 与 `main` 分支对应正式版；早期开发版 API 可能变化，升级 SDK 后请先运行内置示例回归。
@@ -307,8 +307,9 @@ config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
 
 1. 运行 `share/eve/examples/basic/`，修改背景色、重力和粒子配置；
 2. 用 `eve create` 建新游戏，熟悉 `eve_init` / `eve_update` / `eve_render` 与热重载；
-3. 按需求查阅[模块使用手册](MODULES.md)（UI、ECS、RPG、程序化生成等）；
-4. 需要原生能力时，再使用 SDK 的 CMake 包编写插件（见仓库 `examples/native-plugin`）；
-5. 发布前阅读第 6 节打包步骤与许可条款。
+3. 阅读 [EveScript 完整教程](EVESCRIPT.md)，再把脚本拆成显式 `import` / `export` 模块；
+4. 按需求查阅[模块使用手册](MODULES.md)（UI、ECS、RPG、程序化生成等）；
+5. 需要原生能力时，再使用 SDK 的 CMake 包编写插件（见仓库 `examples/native-plugin`）；
+6. 发布前阅读第 6 节打包步骤与许可条款。
 
 本指南讲解稳定的使用流程，内部架构、设计取舍和实现进度统一维护在 [`docs/dev/`](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)，避免把尚未实现的设计稿误当作用户 API。

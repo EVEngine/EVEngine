@@ -484,4 +484,164 @@ PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint
     return output;
 }
 
+PointSet mergePointSets(const PointSet& first, const PointSet& second) {
+    PointSet output;
+    output.points().reserve(first.points().size() + second.points().size());
+    output.points().insert(output.points().end(), first.points().begin(), first.points().end());
+    output.points().insert(output.points().end(), second.points().begin(), second.points().end());
+    return output;
+}
+
+PointSet transformPointSet(const PointSet& input, float translateX, float translateY,
+                           float translateZ, float yawDegrees, float scaleX, float scaleY,
+                           float scaleZ) {
+    PointSet output = input;
+    constexpr float degreesToRadians = 0.017453292519943295f;
+    const float     radians          = yawDegrees * degreesToRadians;
+    const float     cosine           = std::cos(radians);
+    const float     sine             = std::sin(radians);
+    for (auto& point : output.points()) {
+        const float x = point.x * scaleX;
+        const float z = point.z * scaleZ;
+        point.x       = x * cosine - z * sine + translateX;
+        point.y       = point.y * scaleY + translateY;
+        point.z       = x * sine + z * cosine + translateZ;
+        point.yaw += yawDegrees;
+        point.scaleX *= scaleX;
+        point.scaleY *= scaleY;
+        point.scaleZ *= scaleZ;
+
+        const float nx = point.normalX / (std::abs(scaleX) > 0.000001f ? scaleX : 1.f);
+        const float ny = point.normalY / (std::abs(scaleY) > 0.000001f ? scaleY : 1.f);
+        const float nz = point.normalZ / (std::abs(scaleZ) > 0.000001f ? scaleZ : 1.f);
+        point.normalX  = nx * cosine - nz * sine;
+        point.normalY  = ny;
+        point.normalZ  = nx * sine + nz * cosine;
+        const float normalLength = std::sqrt(point.normalX * point.normalX +
+                                             point.normalY * point.normalY +
+                                             point.normalZ * point.normalZ);
+        if (normalLength > 0.f) {
+            point.normalX /= normalLength;
+            point.normalY /= normalLength;
+            point.normalZ /= normalLength;
+        }
+    }
+    return output;
+}
+
+PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets,
+                             bool inheritTargetAttributes) {
+    constexpr float degreesToRadians = 0.017453292519943295f;
+    PointSet result;
+    if (!targets.points().empty() &&
+        source.points().size() >
+            std::numeric_limits<size_t>::max() / targets.points().size())
+        return result;
+    result.points().reserve(source.points().size() * targets.points().size());
+    for (const auto& target : targets.points()) {
+        const float radians = target.yaw * degreesToRadians;
+        const float cosine  = std::cos(radians);
+        const float sine    = std::sin(radians);
+        for (const auto& sourcePoint : source.points()) {
+            ProcgenPoint copy = sourcePoint;
+            const float localX = sourcePoint.x * target.scaleX;
+            const float localY = sourcePoint.y * target.scaleY;
+            const float localZ = sourcePoint.z * target.scaleZ;
+            copy.x = target.x + localX * cosine - localZ * sine;
+            copy.y = target.y + localY;
+            copy.z = target.z + localX * sine + localZ * cosine;
+            const float normalX = sourcePoint.normalX * cosine - sourcePoint.normalZ * sine;
+            const float normalZ = sourcePoint.normalX * sine + sourcePoint.normalZ * cosine;
+            copy.normalX = normalX;
+            copy.normalZ = normalZ;
+            copy.yaw += target.yaw;
+            copy.scaleX *= target.scaleX;
+            copy.scaleY *= target.scaleY;
+            copy.scaleZ *= target.scaleZ;
+            copy.density *= target.density;
+            copy.seed = deriveSeed(target.seed, "copy:" + std::to_string(sourcePoint.seed));
+            if (inheritTargetAttributes) {
+                auto sourceFloats = std::move(copy.floatAttributes);
+                auto sourceStrings = std::move(copy.stringAttributes);
+                copy.floatAttributes = target.floatAttributes;
+                copy.stringAttributes = target.stringAttributes;
+                for (auto& [name, value] : sourceFloats)
+                    copy.floatAttributes[name] = value;
+                for (auto& [name, value] : sourceStrings)
+                    copy.stringAttributes[name] = std::move(value);
+            }
+            result.points().push_back(std::move(copy));
+        }
+    }
+    return result;
+}
+
+PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax,
+                           float outputMin, float outputMax, bool clampOutput) {
+    PointSet result = input;
+    const float inputRange = inputMax - inputMin;
+    for (auto& point : result.points()) {
+        float normalized = (point.density - inputMin) / inputRange;
+        if (clampOutput) normalized = std::clamp(normalized, 0.f, 1.f);
+        point.density = outputMin + normalized * (outputMax - outputMin);
+    }
+    return result;
+}
+
+PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
+                                 const std::string& outputAttribute,
+                                 const std::string& operation, float operand,
+                                 float defaultValue) {
+    PointSet result = input;
+    for (auto& point : result.points()) {
+        const auto found = point.floatAttributes.find(attribute);
+        const float value = found == point.floatAttributes.end() ? defaultValue : found->second;
+        float output = value;
+        if (operation == "add") output += operand;
+        else if (operation == "subtract") output -= operand;
+        else if (operation == "multiply") output *= operand;
+        else if (operation == "divide") output /= operand;
+        else if (operation == "min") output = std::min(output, operand);
+        else if (operation == "max") output = std::max(output, operand);
+        point.floatAttributes[outputAttribute] = output;
+    }
+    return result;
+}
+
+PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
+                                   float maxValue, bool invert) {
+    if (minValue > maxValue) std::swap(minValue, maxValue);
+    PointSet output;
+    for (const auto& point : input.points()) {
+        const auto found   = point.floatAttributes.find(name);
+        const bool matches = found != point.floatAttributes.end() && found->second >= minValue &&
+                             found->second <= maxValue;
+        if (matches != invert) output.points().push_back(point);
+    }
+    return output;
+}
+
+PointSet filterPointStringAttribute(const PointSet& input, const std::string& name,
+                                    const std::string& value, bool invert) {
+    PointSet output;
+    for (const auto& point : input.points()) {
+        const auto found   = point.stringAttributes.find(name);
+        const bool matches = found != point.stringAttributes.end() && found->second == value;
+        if (matches != invert) output.points().push_back(point);
+    }
+    return output;
+}
+
+PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplier) {
+    PointSet output;
+    multiplier = std::max(0.f, multiplier);
+    for (size_t i = 0; i < input.points().size(); ++i) {
+        const auto&    point      = input.points()[i];
+        const uint32_t branchSeed = mix32(seed ^ point.seed ^ uint32_t(i));
+        const float    chance     = std::clamp(point.density * multiplier, 0.f, 1.f);
+        if (unitFloat(branchSeed) < chance) output.points().push_back(point);
+    }
+    return output;
+}
+
 }  // namespace eve::procgen

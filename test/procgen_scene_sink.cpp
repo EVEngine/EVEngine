@@ -1,0 +1,127 @@
+#include "common/Capability.h"
+#include "common/ProcgenSceneSink.h"
+#include "procgen/Procgen.h"
+
+#include <zeroerr.hpp>
+
+#include <unordered_map>
+
+using namespace eve::procgen;
+
+namespace {
+
+class MockProcgenSceneSink final : public eve::IProcgenSceneSink {
+public:
+    bool applyBatch(const std::string& batchId,
+                    const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+        const auto previous = batches.find(batchId);
+        std::unordered_map<std::string, bool> oldIds;
+        if (previous != batches.end())
+            for (const auto& instance : previous->second) oldIds[instance.id] = true;
+        Stats stats;
+        for (const auto& instance : instances) {
+            if (oldIds.erase(instance.id) != 0) ++stats.reused;
+            else ++stats.created;
+        }
+        stats.removed = int(oldIds.size());
+        batches[batchId] = instances;
+        latest[batchId]  = stats;
+        return true;
+    }
+    bool removeBatch(const std::string& batchId) override {
+        const auto found = batches.find(batchId);
+        if (found == batches.end()) return false;
+        latest[batchId] = {0, 0, int(found->second.size())};
+        batches.erase(found);
+        return true;
+    }
+    int instanceCount(const std::string& batchId) const override {
+        const auto found = batches.find(batchId);
+        return found == batches.end() ? 0 : int(found->second.size());
+    }
+    int lastCreatedCount(const std::string& batchId) const override {
+        const auto found = latest.find(batchId);
+        return found == latest.end() ? 0 : found->second.created;
+    }
+    int lastReusedCount(const std::string& batchId) const override {
+        const auto found = latest.find(batchId);
+        return found == latest.end() ? 0 : found->second.reused;
+    }
+    int lastRemovedCount(const std::string& batchId) const override {
+        const auto found = latest.find(batchId);
+        return found == latest.end() ? 0 : found->second.removed;
+    }
+
+    struct Stats {
+        int created = 0;
+        int reused  = 0;
+        int removed = 0;
+    };
+    std::unordered_map<std::string, std::vector<eve::ProcgenInstanceDesc>> batches;
+    std::unordered_map<std::string, Stats> latest;
+};
+
+}  // namespace
+
+TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
+    eve::cap::detail::clearAllRaw();
+    MockProcgenSceneSink sink;
+    eve::cap::provide<eve::IProcgenSceneSink>(&sink);
+
+    Procgen  proc;
+    PointSet points;
+    const int tree = points.add(1.f, 2.f, 3.f);
+    points.setPointSeed(tree, 77);
+    points.setYaw(tree, 30.f);
+    points.setScale(tree, 2.f, 3.f, 4.f);
+    points.setStringAttribute(tree, "asset", "oak");
+    const int rock = points.add(8.f, 0.f, 9.f);
+    points.setPointSeed(rock, 88);
+
+    CHECK(proc.publishInstances("forest/main", &points, "asset", "granite"));
+    CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 2);
+    CHECK_EQ(proc.getPublishedCreatedCount("forest/main"), 2);
+    CHECK_EQ(proc.getPublishedReusedCount("forest/main"), 0);
+    CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 0);
+    const auto& published = sink.batches.at("forest/main");
+    CHECK_EQ(published[0].id, std::string("pcg-77-0"));
+    CHECK_EQ(published[0].asset, std::string("oak"));
+    CHECK_EQ(published[0].x, 1.f);
+    CHECK_EQ(published[0].yaw, 30.f);
+    CHECK_EQ(published[0].scaleZ, 4.f);
+    CHECK_EQ(published[1].asset, std::string("granite"));
+    CHECK_EQ(published[1].id, std::string("pcg-88-0"));
+
+    PointSet reordered;
+    reordered.add(-1.f, 0.f, 0.f);
+    reordered.setPointSeed(0, 99);
+    reordered.points().push_back(points.points()[0]);
+    reordered.points().push_back(points.points()[1]);
+    CHECK(proc.publishInstances("forest/main", &reordered, "asset", "granite"));
+    CHECK_EQ(proc.getPublishedCreatedCount("forest/main"), 1);
+    CHECK_EQ(proc.getPublishedReusedCount("forest/main"), 2);
+    CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 0);
+    const auto& reconciled = sink.batches.at("forest/main");
+    CHECK_EQ(reconciled[1].id, std::string("pcg-77-0"));
+    CHECK_EQ(reconciled[2].id, std::string("pcg-88-0"));
+
+    reordered.setStringAttribute(0, "instanceId", "hero-tree");
+    reordered.setStringAttribute(1, "instanceId", "hero-tree");
+    CHECK(!proc.publishInstances("forest/main", &reordered, "asset", "granite"));
+    CHECK(proc.lastError().find("duplicate instance id") != std::string::npos);
+    CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 3);
+
+    CHECK(proc.removeInstances("forest/main"));
+    CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 0);
+    CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 3);
+    eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
+}
+
+TEST_CASE("procgen.sceneSink.reportsMissingProvider") {
+    eve::cap::detail::clearAllRaw();
+    Procgen  proc;
+    PointSet points;
+    points.add(0.f, 0.f, 0.f);
+    CHECK(!proc.publishInstances("missing", &points, "asset", "tree"));
+    CHECK(proc.lastError().find("unavailable") != std::string::npos);
+}
