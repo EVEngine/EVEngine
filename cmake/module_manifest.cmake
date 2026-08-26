@@ -300,7 +300,7 @@ eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
                    DEPS gpgpu graphics
                    GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
-                   DEPS graphics image map
+                   DEPS gpgpu graphics image map
                    GROUP 3d)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
                    DEPS animation graphics model3d scene)

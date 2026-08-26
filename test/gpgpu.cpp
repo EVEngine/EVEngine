@@ -32,11 +32,16 @@
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
+#include "procgen/PointCompute.h"
+#include "procgen/PointGraph.h"
 #include "window/Window.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <functional>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -50,6 +55,23 @@ bool tryInitHeadlessGfx() {
     if (!gfx) return false;
     gfx->initHeadless(320, 240);
     return true;
+}
+
+void setPointComputeFailure(const char *stage) {
+#ifdef _WIN32
+    _putenv_s("EVENGINE_POINT_COMPUTE_FAIL", stage ? stage : "");
+#else
+    if (stage)
+        setenv("EVENGINE_POINT_COMPUTE_FAIL", stage, 1);
+    else
+        unsetenv("EVENGINE_POINT_COMPUTE_FAIL");
+#endif
+}
+
+double medianMilliseconds(std::vector<double> samples) {
+    std::sort(samples.begin(), samples.end());
+    const size_t middle = samples.size() / 2;
+    return samples.size() % 2 ? samples[middle] : (samples[middle - 1] + samples[middle]) * 0.5;
 }
 
 const char *kScaleKernel = R"(#version 450
@@ -277,6 +299,247 @@ TEST_CASE("gpgpu.sequence.dispatchScale") {
     delete in;
     delete out;
     delete staging;
+}
+
+TEST_CASE("gpgpu.procgen.transformParity") {
+    if (!tryInitHeadlessGfx()) return;
+    constexpr int          count = 2048;
+    eve::procgen::PointSet input;
+    for (int index = 0; index < count; ++index) {
+        const int point = input.add(float(index % 64), float(index % 7), float(index / 64));
+        input.setNormal(point, 0.25f, 1.f, -0.5f);
+        input.setYaw(point, float(index % 360));
+        input.setScale(point, 0.5f, 1.5f, 2.f);
+        input.setDensity(point, float(index % 10) * 0.1f);
+        input.setPointSeed(point, uint32_t(index + 17));
+        input.setStringAttribute(point, "asset", "oak");
+    }
+    const eve::procgen::PointSet expected =
+        eve::procgen::transformPointSet(input, 12.f, -3.f, 8.f, 31.f, 1.25f, 0.75f, 2.f);
+    eve::procgen::PointSet     actual;
+    eve::procgen::PointCompute compute;
+    REQUIRE(compute.transform(input, actual, 12.f, -3.f, 8.f, 31.f, 1.25f, 0.75f, 2.f));
+    REQUIRE(actual.getCount() == expected.getCount());
+    for (int index = 0; index < count; ++index) {
+        CHECK(std::fabs(actual.getX(index) - expected.getX(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getY(index) - expected.getY(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getZ(index) - expected.getZ(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getNormalX(index) - expected.getNormalX(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getNormalY(index) - expected.getNormalY(index)) < 0.0001f);
+        CHECK(std::fabs(actual.getNormalZ(index) - expected.getNormalZ(index)) < 0.0001f);
+        CHECK(actual.getPointSeed(index) == input.getPointSeed(index));
+        CHECK(actual.getStringAttribute(index, "asset", "") == "oak");
+    }
+
+    const eve::procgen::PointSet reusedExpected =
+        eve::procgen::transformPointSet(input, -4.f, 6.f, 2.f, -17.f, 0.5f, 2.f, 1.25f);
+    eve::procgen::PointSet reusedActual;
+    REQUIRE(compute.transform(input, reusedActual, -4.f, 6.f, 2.f, -17.f, 0.5f, 2.f, 1.25f));
+    REQUIRE(reusedActual.getCount() == reusedExpected.getCount());
+    CHECK(std::fabs(reusedActual.getX(0) - reusedExpected.getX(0)) < 0.0001f);
+    CHECK(std::fabs(reusedActual.getZ(count - 1) - reusedExpected.getZ(count - 1)) < 0.0001f);
+
+    const std::vector<eve::procgen::PointCompute::Transform> chain{
+        {2.f, 3.f, -1.f, 15.f, 1.2f, 0.8f, 1.1f},
+        {-7.f, 0.5f, 4.f, -33.f, 0.75f, 2.f, 0.6f},
+        {1.f, -2.f, 8.f, 91.f, 1.5f, 1.25f, 0.9f},
+        {0.f, 6.f, -3.f, 5.f, 0.5f, 0.5f, 2.f},
+    };
+    eve::procgen::PointSet fusedExpected = input;
+    for (const auto &operation : chain)
+        fusedExpected =
+            eve::procgen::transformPointSet(fusedExpected, operation.x, operation.y, operation.z, operation.yaw,
+                                            operation.scaleX, operation.scaleY, operation.scaleZ);
+    eve::procgen::PointSet fusedActual;
+    REQUIRE(compute.transformChain(input, fusedActual, chain));
+    REQUIRE(fusedActual.getCount() == fusedExpected.getCount());
+    CHECK_EQ(compute.getUploadCount(), uint64_t(3));
+    CHECK_EQ(compute.getDispatchCount(), uint64_t(3));
+    CHECK_EQ(compute.getReadbackCount(), uint64_t(3));
+    CHECK_EQ(compute.getBufferReuseCount(), uint64_t(2));
+    CHECK(compute.getPeakBufferBytes() >= uint64_t(count * 11 * int(sizeof(float))));
+    CHECK_EQ(compute.getLastFusedTransformCount(), 4);
+    for (int index : {0, count / 2, count - 1}) {
+        CHECK(std::fabs(fusedActual.getX(index) - fusedExpected.getX(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getY(index) - fusedExpected.getY(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getZ(index) - fusedExpected.getZ(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getNormalX(index) - fusedExpected.getNormalX(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getNormalY(index) - fusedExpected.getNormalY(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getNormalZ(index) - fusedExpected.getNormalZ(index)) < 0.0002f);
+    }
+}
+
+TEST_CASE("gpgpu.procgen.transformChainRejectsInvalidLength") {
+    eve::procgen::PointSet input;
+    input.add(1.f, 2.f, 3.f);
+    eve::procgen::PointSet                                   output;
+    eve::procgen::PointCompute                               compute;
+    const std::vector<eve::procgen::PointCompute::Transform> empty;
+    CHECK(!compute.transformChain(input, output, empty));
+    CHECK(output.empty());
+    CHECK_EQ(compute.getDispatchCount(), uint64_t(0));
+
+    const std::vector<eve::procgen::PointCompute::Transform> oversized(5);
+    CHECK(!compute.transformChain(input, output, oversized));
+    CHECK(output.empty());
+    CHECK_EQ(compute.getDispatchCount(), uint64_t(0));
+}
+
+TEST_CASE("gpgpu.procgen.pointGraphCompilesLinearTransformSegment") {
+    if (!tryInitHeadlessGfx()) return;
+    constexpr int          count = 2048;
+    eve::procgen::PointSet input;
+    for (int index = 0; index < count; ++index) input.add(float(index), 2.f, -3.f);
+
+    eve::procgen::PointGraph graph;
+    REQUIRE(graph.addNode("source", "input"));
+    REQUIRE(graph.setNodePoints("source", &input));
+    std::string previous = "source";
+    for (int index = 0; index < 4; ++index) {
+        const std::string id        = "move-" + std::to_string(index);
+        REQUIRE(graph.addNode(id, "transform"));
+        REQUIRE(graph.connect(previous, id));
+        REQUIRE(graph.setNodeFloat(id, "x", float(index + 1)));
+        previous = id;
+    }
+    REQUIRE(graph.setComputePolicy("gpu"));
+    std::unique_ptr<eve::procgen::PointSet> output(graph.execute(previous));
+    REQUIRE(bool(output));
+    CHECK_EQ(graph.getComputeUploadCount(), uint64_t(1));
+    CHECK_EQ(graph.getComputeDispatchCount(), uint64_t(1));
+    CHECK_EQ(graph.getComputeReadbackCount(), uint64_t(1));
+    CHECK_EQ(graph.getLastFusedTransformCount(), 4);
+    CHECK(std::fabs(output->getX(0) - 10.f) < 0.0001f);
+
+    std::unique_ptr<eve::procgen::PointSet> preview(graph.getNodeOutput("move-1"));
+    REQUIRE(bool(preview));
+    CHECK(std::fabs(preview->getX(0) - 3.f) < 0.0001f);
+    CHECK_EQ(graph.getComputeReadbackCount(), uint64_t(1));
+
+    std::unique_ptr<eve::procgen::PointSet> cached(graph.execute(previous));
+    REQUIRE(bool(cached));
+    CHECK_EQ(graph.getComputeDispatchCount(), uint64_t(1));
+    CHECK(graph.getCacheHitCount() > 0);
+}
+
+TEST_CASE("gpgpu.procgen.pointGraphFallsBackAtomicallyAfterForcedGpuFailures") {
+    if (!tryInitHeadlessGfx()) return;
+    for (const char *stage : {"compile", "allocation", "submit", "readback"}) {
+        eve::procgen::PointSet input;
+        for (int index = 0; index < 2048; ++index) input.add(float(index), 0.f, 0.f);
+        eve::procgen::PointGraph graph;
+        REQUIRE(graph.addNode("source", "input"));
+        REQUIRE(graph.addNode("first", "transform"));
+        REQUIRE(graph.addNode("second", "transform"));
+        REQUIRE(graph.connect("source", "first"));
+        REQUIRE(graph.connect("first", "second"));
+        REQUIRE(graph.setNodePoints("source", &input));
+        REQUIRE(graph.setNodeFloat("first", "x", 2.f));
+        REQUIRE(graph.setNodeFloat("second", "x", 3.f));
+        REQUIRE(graph.setComputePolicy("gpu"));
+
+        setPointComputeFailure(stage);
+        std::unique_ptr<eve::procgen::PointSet> output(graph.execute("second"));
+        setPointComputeFailure(nullptr);
+        REQUIRE(bool(output));
+        CHECK_EQ(output->getX(0), 5.f);
+        CHECK(graph.getComputeFallbackReason().find("forced") != std::string::npos);
+        CHECK_EQ(graph.getComputeUploadCount(), uint64_t(0));
+        CHECK_EQ(graph.getComputeDispatchCount(), uint64_t(0));
+        CHECK_EQ(graph.getComputeReadbackCount(), uint64_t(0));
+        std::unique_ptr<eve::procgen::PointSet> intermediate(graph.getNodeOutput("first"));
+        REQUIRE(bool(intermediate));
+        CHECK_EQ(intermediate->getX(0), 2.f);
+    }
+}
+
+TEST_CASE("gpgpu.procgen.millionPointAcceptanceBenchmark") {
+    if (!std::getenv("EVENGINE_PCG_MILLION_BENCHMARK") || !tryInitHeadlessGfx()) return;
+    constexpr int                                            count = 1000000;
+    const std::vector<eve::procgen::PointCompute::Transform> chain{
+        {2.f, 3.f, -1.f, 15.f, 1.2f, 0.8f, 1.1f},
+        {-7.f, 0.5f, 4.f, -33.f, 0.75f, 2.f, 0.6f},
+        {1.f, -2.f, 8.f, 91.f, 1.5f, 1.25f, 0.9f},
+        {0.f, 6.f, -3.f, 5.f, 0.5f, 0.5f, 2.f},
+    };
+    eve::procgen::PointSet input;
+    for (int index = 0; index < count; ++index) input.add(float(index % 1000), float(index % 31), float(index / 1000));
+
+    const auto measure = [](auto &&operation) {
+        const auto started = std::chrono::steady_clock::now();
+        operation();
+        return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - started).count();
+    };
+    auto cpuRun = [&] {
+        eve::procgen::PointSet output = input;
+        for (const auto &transform : chain)
+            output = eve::procgen::transformPointSet(output, transform.x, transform.y, transform.z, transform.yaw,
+                                                     transform.scaleX, transform.scaleY, transform.scaleZ);
+        REQUIRE(output.getCount() == count);
+    };
+    eve::procgen::PointGraph fusedGraph;
+    REQUIRE(fusedGraph.addNode("source", "input"));
+    REQUIRE(fusedGraph.setNodePoints("source", &input));
+    std::string previous = "source";
+    for (int index = 0; index < 4; ++index) {
+        const std::string id = "move-" + std::to_string(index);
+        const auto       &transform = chain[size_t(index)];
+        REQUIRE(fusedGraph.addNode(id, "transform"));
+        REQUIRE(fusedGraph.connect(previous, id));
+        REQUIRE(fusedGraph.setNodeFloat(id, "x", transform.x));
+        REQUIRE(fusedGraph.setNodeFloat(id, "y", transform.y));
+        REQUIRE(fusedGraph.setNodeFloat(id, "z", transform.z));
+        REQUIRE(fusedGraph.setNodeFloat(id, "yaw", transform.yaw));
+        REQUIRE(fusedGraph.setNodeFloat(id, "scaleX", transform.scaleX));
+        REQUIRE(fusedGraph.setNodeFloat(id, "scaleY", transform.scaleY));
+        REQUIRE(fusedGraph.setNodeFloat(id, "scaleZ", transform.scaleZ));
+        previous = id;
+    }
+    REQUIRE(fusedGraph.setComputePolicy("gpu"));
+    auto fusedRun = [&] {
+        fusedGraph.clearCache();
+        std::unique_ptr<eve::procgen::PointSet> output(fusedGraph.execute(previous));
+        REQUIRE(bool(output));
+        REQUIRE(output->getCount() == count);
+    };
+    eve::procgen::PointCompute isolatedCompute;
+    auto                       isolatedRun = [&] {
+        eve::procgen::PointSet current = input;
+        for (const auto &transform : chain) {
+            eve::procgen::PointSet output;
+            REQUIRE(isolatedCompute.transform(current, output, transform.x, transform.y, transform.z, transform.yaw,
+                                                                    transform.scaleX, transform.scaleY, transform.scaleZ));
+            current = std::move(output);
+        }
+    };
+
+    for (int warmup = 0; warmup < 5; ++warmup) {
+        fusedRun();
+        isolatedRun();
+    }
+    cpuRun();
+    std::vector<double> cpu, fused, isolated;
+    for (int iteration = 0; iteration < 20; ++iteration) {
+        cpu.push_back(measure(cpuRun));
+        fused.push_back(measure(fusedRun));
+        isolated.push_back(measure(isolatedRun));
+    }
+    const double cpuMedian      = medianMilliseconds(cpu);
+    const double fusedMedian    = medianMilliseconds(fused);
+    const double isolatedMedian = medianMilliseconds(isolated);
+    CHECK(cpuMedian / fusedMedian >= 2.0);
+    CHECK(isolatedMedian / fusedMedian >= 1.5);
+    CHECK_EQ(fusedGraph.getComputeUploadCount(), uint64_t(25));
+    CHECK_EQ(fusedGraph.getComputeDispatchCount(), uint64_t(25));
+    CHECK_EQ(fusedGraph.getComputeReadbackCount(), uint64_t(25));
+    CHECK_EQ(isolatedCompute.getUploadCount(), uint64_t(100));
+    CHECK_EQ(isolatedCompute.getDispatchCount(), uint64_t(100));
+    CHECK_EQ(isolatedCompute.getReadbackCount(), uint64_t(100));
+    std::cout << "PCG_BENCHMARK_JSON={\"points\":" << count << ",\"operations\":4,\"samples\":20,"
+              << "\"cpuMedianMs\":" << cpuMedian << ",\"fusedGpuMedianMs\":" << fusedMedian
+              << ",\"isolatedGpuMedianMs\":" << isolatedMedian << ",\"cpuSpeedup\":" << cpuMedian / fusedMedian
+              << ",\"roundTripSpeedup\":" << isolatedMedian / fusedMedian << "}\n";
+    CHECK_EQ(fusedGraph.getLastFusedTransformCount(), 4);
 }
 
 TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {

@@ -121,6 +121,13 @@ file(GLOB all_test_cpp
   procgen.cpp
   procgen_schema_script.cpp
   procgen_pointset.cpp
+  procgen_spatial_data.cpp
+  procgen_runtime_generation.cpp
+  procgen_scene_sink.cpp
+  procgen_point_graph.cpp
+  procgen_point_graph_stress.cpp
+  procgen_biome.cpp
+  procgen_shape_grammar.cpp
   urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
@@ -202,6 +209,7 @@ file(GLOB all_test_cpp
   editor_document_asset_v2.cpp
   editor_extension_v2.cpp
   editor_graph_material_v2.cpp
+  editor_pcg_graph.cpp
   editor_persistence_v2.cpp
   editor_property_v2.cpp
   editor_runtime_manifest_v2.cpp

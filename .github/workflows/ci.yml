@@ -179,6 +179,9 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
+      # Pull-request cache entries are scoped to refs/pull/*/merge and cannot
+      # warm other PRs. Let PRs consume the dev cache without duplicating it.
+      SCCACHE_GHA_RW_MODE: ${{ github.ref == 'refs/heads/dev' && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -243,6 +246,7 @@ jobs:
           # VK_KHR_surface so SDL_WINDOW_VULKAN / unit tests can run.
           install_swiftshader: true
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
@@ -272,7 +276,9 @@ jobs:
         run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/win32-debug win32 Debug
 
       - name: Save win32 third-party cache
-        if: steps.third-party-cache.outputs.cache-hit != 'true'
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
         timeout-minutes: 15
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
@@ -300,6 +306,7 @@ jobs:
           cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
             -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl `
             -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
+            -DEVENGINE_COMPILER_CACHE=SCCACHE `
             -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
             -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF `
             -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
@@ -309,16 +316,19 @@ jobs:
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
-      - name: Capture native Dawn parity artifacts
+      - name: Run native Dawn parity and PCG compute
         # Dawn initialization takes roughly two minutes per isolated test on
         # the Windows software adapter. Keep per-case process isolation while
-        # allowing all 13 parity cases to complete.
+        # allowing all parity cases plus the PCG compute parity case to complete.
         timeout-minutes: 40
         shell: pwsh
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_RENDER_PARITY_DIR: ${{ github.workspace }}/artifacts/render-parity
-        run: ctest --test-dir build/webgpu-native -R '^graphics\.backendParity\.' --output-on-failure
+        run: >-
+          ctest --test-dir build/webgpu-native
+          -R '^(graphics\.backendParity\..*|gpgpu\.procgen\.transformParity)$'
+          --output-on-failure
 
       - name: Compare Vulkan and WebGPU parity images
         timeout-minutes: 5
@@ -367,6 +377,7 @@ jobs:
           install_runtime: true
           install_swiftshader: true
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
@@ -526,6 +537,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -591,6 +603,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -633,6 +646,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -689,6 +703,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -730,6 +745,9 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
+      # Populate the shared cache only from dev; PR-scoped writes are dead
+      # stores after that PR closes and quickly evict reusable entries.
+      SCCACHE_GHA_RW_MODE: ${{ github.ref == 'refs/heads/dev' && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -802,6 +820,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -831,7 +850,9 @@ jobs:
         run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/linux-debug linux Release
 
       - name: Save linux third-party cache
-        if: steps.third-party-cache.outputs.cache-hit != 'true'
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
         timeout-minutes: 15
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
@@ -923,6 +944,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -992,6 +1014,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
@@ -1057,6 +1080,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)

@@ -2,13 +2,18 @@
 
 #include "common/Module.h"
 #include "procgen/Grid2D.h"
+#include "procgen/Biome.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/OutputSpec.h"
 #include "procgen/Palette.h"
 #include "procgen/ParamSchema.h"
 #include "procgen/Params.h"
 #include "procgen/PointSet.h"
+#include "procgen/PointGraph.h"
 #include "procgen/ProcgenSystem.h"
+#include "procgen/RuntimeGeneration.h"
+#include "procgen/ShapeGrammar.h"
+#include "procgen/SpatialData.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/texture/CloudField.h"
@@ -69,7 +74,72 @@ public:
                                  float originZ, float cellSize, float heightScale);
     PointSet* sampleSpline(PointSet* controlPoints, float spacing, uint32_t seed,
                            float lateralJitter);
+    /** @brief Concatenate two point collections. */
+    PointSet* mergePoints(PointSet* first, PointSet* second);
+    /** @brief Transform point positions, normals and instance transforms. */
+    PointSet* transformPoints(PointSet* input, float translateX, float translateY,
+                              float translateZ, float yawDegrees, float scaleX, float scaleY,
+                              float scaleZ);
+    /** @brief Filter by an inclusive float-attribute range. */
+    PointSet* filterFloatAttribute(PointSet* input, const std::string& name, float minValue,
+                                   float maxValue, bool invert);
+    /** @brief Filter by string-attribute equality. */
+    PointSet* filterStringAttribute(PointSet* input, const std::string& name,
+                                    const std::string& value, bool invert);
+    /** @brief Deterministically cull points according to their density. */
+    PointSet* densityCull(PointSet* input, uint32_t seed, float multiplier);
+    /** @brief Wrap attributed points as queryable spatial data. */
+    SpatialData* pointData(PointSet* points);
+    /** @brief Create axis-aligned volume data. */
+    SpatialData* boxVolume(float minX, float minY, float minZ, float maxX, float maxY,
+                           float maxZ);
+    /** @brief Create spherical volume data. */
+    SpatialData* sphereVolume(float x, float y, float z, float radius);
+    /** @brief Create spline spatial data with a 3D influence radius. */
+    SpatialData* splineData(PointSet* controlPoints, float radius);
+    /** @brief Wrap a heightmap as queryable world-space surface data. */
+    SpatialData* heightfieldData(Heightmap* heightmap, float originX, float originZ,
+                                 float cellSize, float heightScale);
+    /** @brief Combine two spatial domains with set union. */
+    SpatialData* unionSpatial(SpatialData* a, SpatialData* b);
+    /** @brief Combine two spatial domains with set intersection. */
+    SpatialData* intersectSpatial(SpatialData* a, SpatialData* b);
+    /** @brief Subtract the second spatial domain from the first. */
+    SpatialData* differenceSpatial(SpatialData* a, SpatialData* b);
+    /** @brief Sample a deterministic 3D lattice inside spatial data. */
+    PointSet* sampleSpatial(SpatialData* spatial, float spacing, uint32_t seed, float jitter);
+    /** @brief Filter points inside or outside a spatial domain. */
+    PointSet* filterSpatial(PointSet* input, SpatialData* spatial, bool invert);
+    /** @brief Project points onto a spatial surface. */
+    PointSet* projectToSpatial(PointSet* input, SpatialData* spatial);
     uint32_t  deriveSeed(uint32_t parent, const std::string& scope) const;
+    /** @brief Create a view-driven partition/hierarchical generation scheduler. */
+    RuntimeGeneration* newRuntimeGeneration(uint32_t worldSeed);
+    /** @brief Create an inspectable cached DAG for PointSet operations. */
+    PointGraph* newPointGraph();
+    /** @brief Create data-driven spatial biome distribution rules. */
+    BiomeRules* newBiomeRules();
+    /** @brief Create module-based spline assembly grammar rules. */
+    ShapeGrammar* newShapeGrammar();
+    /** @brief Publish points as a reconciled scene instance batch through the optional scene sink. */
+    bool publishInstances(const std::string& batchId, PointSet* points,
+                          const std::string& assetAttribute, const std::string& defaultAsset);
+    /** @brief Remove a previously published procedural scene batch. */
+    bool removeInstances(const std::string& batchId);
+    /** @brief Number of instances retained by the optional scene sink. */
+    int getPublishedInstanceCount(const std::string& batchId) const;
+    /** @brief Instances newly created by the latest successful batch apply. */
+    int getPublishedCreatedCount(const std::string& batchId) const;
+    /** @brief Stable-id instances reused by the latest successful batch apply. */
+    int getPublishedReusedCount(const std::string& batchId) const;
+    /** @brief Instances removed by the latest successful batch apply or removal. */
+    int getPublishedRemovedCount(const std::string& batchId) const;
+    /** @brief Publish one runtime cell using a stable prefix/level/x/z batch id. */
+    bool publishCellInstances(const std::string& prefix, ProcgenCellRequest* request,
+                              PointSet* points, const std::string& assetAttribute,
+                              const std::string& defaultAsset);
+    /** @brief Remove one runtime cell's scene batch. */
+    bool removeCellInstances(const std::string& prefix, ProcgenCellRequest* request);
 
     // --- Atomic script rebuilds ---
     ProcgenContext* beginSystem(const std::string& name, uint32_t seed);
