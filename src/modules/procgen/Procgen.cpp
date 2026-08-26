@@ -1246,6 +1246,10 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("getMaxGenerating", &RuntimeGeneration::getMaxGenerating);
     runtimeGeneration.addFunc("setMaxActiveCells", &RuntimeGeneration::setMaxActiveCells);
     runtimeGeneration.addFunc("getMaxActiveCells", &RuntimeGeneration::getMaxActiveCells);
+    runtimeGeneration.addFunc("setMaxGenerationRetries",
+                              &RuntimeGeneration::setMaxGenerationRetries);
+    runtimeGeneration.addFunc("getMaxGenerationRetries",
+                              &RuntimeGeneration::getMaxGenerationRetries);
     runtimeGeneration.addFunc("setFrameTimeBudget", &RuntimeGeneration::setFrameTimeBudget);
     runtimeGeneration.addFunc("getFrameTimeBudget", &RuntimeGeneration::getFrameTimeBudget);
     runtimeGeneration.addFunc("beginFrame", &RuntimeGeneration::beginFrame);
@@ -1274,6 +1278,8 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("getActiveCellCount", &RuntimeGeneration::getActiveCellCount);
     runtimeGeneration.addFunc("getPendingCleanupCount",
                               &RuntimeGeneration::getPendingCleanupCount);
+    runtimeGeneration.addFunc("getFailedCellCount", &RuntimeGeneration::getFailedCellCount);
+    runtimeGeneration.addFunc("retryFailedCells", &RuntimeGeneration::retryFailedCells);
     runtimeGeneration.addFunc("nextGenerate", &RuntimeGeneration::nextGenerate);
     runtimeGeneration.addFunc("nextCleanup", &RuntimeGeneration::nextCleanup);
     runtimeGeneration.addFunc("completeGeneration", &RuntimeGeneration::completeGeneration);

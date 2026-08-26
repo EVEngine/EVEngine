@@ -70,6 +70,10 @@ public:
     void setMaxActiveCells(int count);
     /** @brief Return the resident-cell limit, or zero when unlimited. */
     int getMaxActiveCells() const;
+    /** @brief Set retries after the initial generation attempt; zero fails immediately. */
+    void setMaxGenerationRetries(int count);
+    /** @brief Return retries allowed after the initial generation attempt. */
+    int getMaxGenerationRetries() const;
     /** @brief CPU issue budget in milliseconds for one frame; zero disables the limit. */
     void  setFrameTimeBudget(float milliseconds);
     float getFrameTimeBudget() const;
@@ -106,6 +110,10 @@ public:
     int                 getGeneratingCount() const;
     int                 getActiveCellCount() const;
     int                 getPendingCleanupCount() const;
+    /** @brief Return cells stopped after exhausting the generation retry policy. */
+    int                 getFailedCellCount() const;
+    /** @brief Reset and requeue all terminally failed cells still tracked by the scheduler. */
+    int                 retryFailedCells();
     ProcgenCellRequest* nextGenerate();
     ProcgenCellRequest* nextCleanup();
     /** @brief Publish generated points for an issued request. */
@@ -126,7 +134,7 @@ private:
         float generationRadius = 1.f;
         float cleanupRadius    = 1.f;
     };
-    enum class State { Pending, Generating, Active, Cleanup };
+    enum class State { Pending, Generating, Active, Cleanup, Failed };
     struct CellKey {
         int level = 0;
         int x     = 0;
@@ -143,6 +151,7 @@ private:
         float    priority = 0.f;
         uint64_t revision = 0;
         uint64_t ticket   = 0;
+        int      failures = 0;
         PointSet output;
     };
     struct Source {
@@ -161,6 +170,7 @@ private:
     float    directionWeight_ = 0.25f;
     int      maxGenerating_   = 4;
     int      maxActiveCells_  = 0;
+    int      maxGenerationRetries_ = 3;
     float    frameTimeBudgetMs_ = 0.f;
     uint64_t frameStartedNs_    = 0;
     bool     frustumCulling_    = false;

@@ -239,3 +239,33 @@ TEST_CASE("procgen.runtimeGeneration.breaksEqualPriorityTiesDeterministically") 
         delete a;
     }
 }
+
+TEST_CASE("procgen.runtimeGeneration.boundsRetriesAndExplicitlyRecoversFailures") {
+    RuntimeGeneration runtime(29);
+    runtime.addLevel(10.f, 6.f, 1.5f);
+    runtime.setMaxGenerationRetries(1);
+    CHECK_EQ(runtime.getMaxGenerationRetries(), 1);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+
+    ProcgenCellRequest* initial = runtime.nextGenerate();
+    REQUIRE(bool(initial));
+    CHECK(runtime.failGeneration(initial));
+    delete initial;
+    CHECK_EQ(runtime.getFailedCellCount(), 0);
+
+    ProcgenCellRequest* retry = runtime.nextGenerate();
+    REQUIRE(bool(retry));
+    CHECK(runtime.failGeneration(retry));
+    delete retry;
+    CHECK_EQ(runtime.getFailedCellCount(), 1);
+    CHECK(runtime.debugReport().find("failed=1") != std::string::npos);
+
+    CHECK_EQ(runtime.retryFailedCells(), 1);
+    CHECK_EQ(runtime.getFailedCellCount(), 0);
+    ProcgenCellRequest* recovered = runtime.nextGenerate();
+    REQUIRE(bool(recovered));
+    PointSet empty;
+    CHECK(runtime.completeGeneration(recovered, &empty));
+    CHECK_EQ(runtime.getActiveCellCount(), 1);
+    delete recovered;
+}

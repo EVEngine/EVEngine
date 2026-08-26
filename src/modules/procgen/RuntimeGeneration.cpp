@@ -70,6 +70,10 @@ void  RuntimeGeneration::setMaxGenerating(int count) { maxGenerating_ = std::max
 int   RuntimeGeneration::getMaxGenerating() const { return maxGenerating_; }
 void RuntimeGeneration::setMaxActiveCells(int count) { maxActiveCells_ = std::max(0, count); }
 int  RuntimeGeneration::getMaxActiveCells() const { return maxActiveCells_; }
+void RuntimeGeneration::setMaxGenerationRetries(int count) {
+    maxGenerationRetries_ = std::max(0, count);
+}
+int RuntimeGeneration::getMaxGenerationRetries() const { return maxGenerationRetries_; }
 void RuntimeGeneration::setFrameTimeBudget(float milliseconds) {
     frameTimeBudgetMs_ = std::max(0.f, milliseconds);
 }
@@ -258,6 +262,25 @@ int RuntimeGeneration::getActiveCellCount() const {
     }));
 }
 int RuntimeGeneration::getPendingCleanupCount() const { return int(cleanupQueue_.size()); }
+int RuntimeGeneration::getFailedCellCount() const {
+    return int(std::count_if(cells_.begin(), cells_.end(), [](const auto& entry) {
+        return entry.second.state == State::Failed;
+    }));
+}
+
+int RuntimeGeneration::retryFailedCells() {
+    int count = 0;
+    for (auto& [key, cell] : cells_) {
+        if (cell.state != State::Failed) continue;
+        cell.state = State::Pending;
+        cell.failures = 0;
+        cell.ticket = ++nextTicket_;
+        generateQueue_.push_back(key);
+        ++count;
+    }
+    sortQueues();
+    return count;
+}
 
 ProcgenCellRequest* RuntimeGeneration::nextGenerate() {
     if (generateQueue_.empty() || getGeneratingCount() >= maxGenerating_) return nullptr;
@@ -296,6 +319,7 @@ bool RuntimeGeneration::completeGeneration(ProcgenCellRequest* request, PointSet
         request->seed_ != cellSeed(key) || request->ticket_ != found->second.ticket)
         return false;
     found->second.output = *output;
+    found->second.failures = 0;
     ++found->second.revision;
     found->second.state = State::Active;
     return true;
@@ -308,10 +332,15 @@ bool RuntimeGeneration::failGeneration(ProcgenCellRequest* request) {
     if (found == cells_.end() || found->second.state != State::Generating ||
         request->ticket_ != found->second.ticket)
         return false;
-    found->second.state = State::Pending;
+    ++found->second.failures;
     found->second.ticket = ++nextTicket_;
-    generateQueue_.push_back(key);
-    sortQueues();
+    if (found->second.failures <= maxGenerationRetries_) {
+        found->second.state = State::Pending;
+        generateQueue_.push_back(key);
+        sortQueues();
+    } else {
+        found->second.state = State::Failed;
+    }
     return true;
 }
 
@@ -348,7 +377,7 @@ std::string RuntimeGeneration::debugReport() const {
     out << "levels=" << levels_.size() << " cells=" << cells_.size()
         << " pending=" << generateQueue_.size() << " generating=" << getGeneratingCount()
         << " active=" << getActiveCellCount() << " cleanup=" << cleanupQueue_.size()
-        << " maxActive=" << maxActiveCells_;
+        << " failed=" << getFailedCellCount() << " maxActive=" << maxActiveCells_;
     return out.str();
 }
 
