@@ -1288,6 +1288,8 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("hasCell", &RuntimeGeneration::hasCell);
     runtimeGeneration.addFunc("getCellOutput", &RuntimeGeneration::getCellOutput);
     runtimeGeneration.addFunc("getCellRevision", &RuntimeGeneration::getCellRevision);
+    runtimeGeneration.addFunc("serializeCell", &RuntimeGeneration::serializeCell);
+    runtimeGeneration.addFunc("deserializeCell", &RuntimeGeneration::deserializeCell);
     runtimeGeneration.addFunc("debugReport", &RuntimeGeneration::debugReport);
 
     auto context = table.addClass<ProcgenContext>(

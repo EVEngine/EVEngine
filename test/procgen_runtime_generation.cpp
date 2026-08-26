@@ -269,3 +269,65 @@ TEST_CASE("procgen.runtimeGeneration.boundsRetriesAndExplicitlyRecoversFailures"
     CHECK_EQ(runtime.getActiveCellCount(), 1);
     delete recovered;
 }
+
+TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
+    RuntimeGeneration source(404);
+    source.addLevel(10.f, 6.f, 1.5f);
+    source.updateSource(5.f, 5.f, 1.f, 0.f);
+    ProcgenCellRequest* generated = source.nextGenerate();
+    REQUIRE(bool(generated));
+    const int level = generated->getLevel();
+    const int x = generated->getX();
+    const int z = generated->getZ();
+    PointSet points;
+    const int point = points.add(1.25f, 2.5f, 3.75f);
+    points.setNormal(point, 0.f, 0.f, 1.f);
+    points.setYaw(point, 45.f);
+    points.setScale(point, 2.f, 3.f, 4.f);
+    points.setDensity(point, 0.75f);
+    points.setPointSeed(point, 1234);
+    points.setFloatAttribute(point, "slope", 12.5f);
+    points.setFloatAttribute(point, "roughness", 0.4f);
+    points.setStringAttribute(point, "asset", "oak \"hero\"");
+    points.setStringAttribute(point, "biome", "forest");
+    CHECK(source.completeGeneration(generated, &points));
+    delete generated;
+
+    const std::string persisted = source.serializeCell(level, x, z);
+    CHECK(persisted.find("EVPCG_CELL 1 404") == 0);
+    RuntimeGeneration equivalent(404);
+    equivalent.addLevel(10.f, 6.f, 1.5f);
+    equivalent.updateSource(5.f, 5.f, 1.f, 0.f);
+    ProcgenCellRequest* equivalentRequest = equivalent.nextGenerate();
+    REQUIRE(bool(equivalentRequest));
+    PointSet equivalentPoints = points;
+    equivalentPoints.points()[0].floatAttributes.clear();
+    equivalentPoints.points()[0].stringAttributes.clear();
+    equivalentPoints.setFloatAttribute(0, "roughness", 0.4f);
+    equivalentPoints.setFloatAttribute(0, "slope", 12.5f);
+    equivalentPoints.setStringAttribute(0, "biome", "forest");
+    equivalentPoints.setStringAttribute(0, "asset", "oak \"hero\"");
+    CHECK(equivalent.completeGeneration(equivalentRequest, &equivalentPoints));
+    delete equivalentRequest;
+    CHECK_EQ(equivalent.serializeCell(level, x, z), persisted);
+    RuntimeGeneration restored(404);
+    restored.addLevel(10.f, 6.f, 1.5f);
+    CHECK(restored.deserializeCell(persisted));
+    CHECK(restored.hasCell(level, x, z));
+    CHECK_EQ(restored.getCellRevision(level, x, z), uint64_t(1));
+    PointSet* loaded = restored.getCellOutput(level, x, z);
+    REQUIRE(bool(loaded));
+    CHECK_EQ(loaded->getCount(), 1);
+    CHECK_EQ(loaded->getX(0), 1.25f);
+    CHECK_EQ(loaded->getNormalZ(0), 1.f);
+    CHECK_EQ(loaded->getScaleY(0), 3.f);
+    CHECK_EQ(loaded->getFloatAttribute(0, "slope", -1.f), 12.5f);
+    CHECK_EQ(loaded->getStringAttribute(0, "asset", ""), std::string("oak \"hero\""));
+    delete loaded;
+
+    CHECK(!restored.deserializeCell(persisted + "TRAILING"));
+    CHECK(restored.hasCell(level, x, z));
+    RuntimeGeneration wrongWorld(405);
+    wrongWorld.addLevel(10.f, 6.f, 1.5f);
+    CHECK(!wrongWorld.deserializeCell(persisted));
+}

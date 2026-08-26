@@ -235,6 +235,10 @@ world seed、level、x、z 派生的独立 seed、revision 和 PointSet 输出�
 生成失败只按 `setMaxGenerationRetries` 有界重试，耗尽后进入 Failed 状态并从工作队列移除；
 修复资产或外部依赖后用 `retryFailedCells()` 显式恢复，避免确定性错误形成 retry storm。
 `getCellOutput` 返回缓存副本，`debugReport` 汇总 pending/generating/active/cleanup/failed。
+需要跨会话或跨 World Partition 回访复用时，`serializeCell(level,x,z)` 输出版本化、属性键
+稳定排序的完整 Cell 缓存；`deserializeCell(definition)` 校验 world seed、level、数据上限和
+完整输入后原子恢复，同时使同 Cell 的旧异步 ticket 失效。实例覆写或图版本应由调用方纳入
+缓存文件名/外部 build key，避免把旧内容恢复到新图定义。
 
 调度器也支持多个命名 generation source。Cell 只生成一次，但只要仍在任意 source 的
 cleanup radius 内就不会清理；`radiusScale` 可让任务目标使用比玩家更小的影响范围：

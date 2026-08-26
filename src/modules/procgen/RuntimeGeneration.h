@@ -126,6 +126,10 @@ public:
     bool      hasCell(int level, int x, int z) const;
     PointSet* getCellOutput(int level, int x, int z) const;
     uint64_t  getCellRevision(int level, int x, int z) const;
+    /** @brief Serialize one active cell cache entry in a deterministic versioned format. */
+    std::string serializeCell(int level, int x, int z) const;
+    /** @brief Atomically restore one cell produced by serializeCell for this world seed. */
+    bool deserializeCell(const std::string& definition);
     std::string debugReport() const;
 
 private:
