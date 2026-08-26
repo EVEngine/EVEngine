@@ -12,22 +12,22 @@
 //        或 make building
 // ============================================================================
 
-if (!("bld" in getroottable())) bld <- null;
-if (!("world" in getroottable())) world <- null;
-if (!("ghost" in getroottable())) ghost <- null;
-if (!("palette" in getroottable())) palette <- [];
-if (!("paletteIndex" in getroottable())) paletteIndex <- 0;
-if (!("gold" in getroottable())) gold <- 0;
-if (!("wood" in getroottable())) wood <- 0;
-if (!("logLines" in getroottable())) logLines <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("prevMouse" in getroottable())) prevMouse <- { left = false, right = false };
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
-if (!("mapOriginX" in getroottable())) mapOriginX <- 24.0;
-if (!("mapOriginY" in getroottable())) mapOriginY <- 88.0;
-if (!("cellPx" in getroottable())) cellPx <- 28.0;
-if (!("gridW" in getroottable())) gridW <- 24;
-if (!("gridH" in getroottable())) gridH <- 18;
+persist bld = null
+persist world = null
+persist ghost = null
+persist palette = []
+persist paletteIndex = 0
+persist gold = 0
+persist wood = 0
+persist logLines = []
+persist prevKeys = {}
+persist prevMouse = { left = false, right = false }
+persist uiBuilt = false
+persist mapOriginX = 24.0
+persist mapOriginY = 88.0
+persist cellPx = 28.0
+persist gridW = 24
+persist gridH = 18
 
 // 地形语义：1=陆地 2=水域
 TERRAIN_LAND <- 1;

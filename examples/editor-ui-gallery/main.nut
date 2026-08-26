@@ -1,6 +1,6 @@
 // Complete desktop-editor composition built from the reusable UI primitives.
 
-if (!("darkTheme" in getroottable())) darkTheme <- false;
+persist darkTheme = false
 
 function buildGallery() {
     // `switch` is a Squirrel keyword, so bind the native method explicitly.

@@ -11,15 +11,15 @@
 // 运行： make run/<platform>-debug GAME=examples/inventory
 // ============================================================================
 
-if (!("inv" in getroottable())) inv <- null;
-if (!("bag" in getroottable())) bag <- null;
-if (!("questBag" in getroottable())) questBag <- null;
-if (!("stash" in getroottable())) stash <- null;
-if (!("eq" in getroottable())) eq <- null;
-if (!("logLines" in getroottable())) logLines <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("lootLeft" in getroottable())) lootLeft <- 0;
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
+persist inv = null
+persist bag = null
+persist questBag = null
+persist stash = null
+persist eq = null
+persist logLines = []
+persist prevKeys = {}
+persist lootLeft = 0
+persist uiBuilt = false
 
 function pushLog(text) {
     logLines.push(text);

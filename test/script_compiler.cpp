@@ -53,13 +53,11 @@ TEST_CASE("scriptCompiler.mapsDebuggerLocationsBidirectionally") {
     map.entries.push_back({{10, 1}, {3, 1}});
     REQUIRE(runtime.scriptCompiler().setSourceMap("game:/scripts/mapped.nut", std::move(map)));
 
-    const auto original = script::ScriptCompiler::toOriginalPosition(
-        "C:/games/demo/scripts/mapped.nut", {12, 7});
+    const auto original = script::ScriptCompiler::toOriginalPosition("C:/games/demo/scripts/mapped.nut", {12, 7});
     CHECK_EQ(original.line, uint32_t(5));
     CHECK_EQ(original.column, uint32_t(7));
 
-    const auto generated = script::ScriptCompiler::toGeneratedPosition(
-        "game:/scripts/mapped.nut", {5, 7});
+    const auto generated = script::ScriptCompiler::toGeneratedPosition("game:/scripts/mapped.nut", {5, 7});
     CHECK_EQ(generated.line, uint32_t(12));
     CHECK_EQ(generated.column, uint32_t(7));
 }
@@ -109,6 +107,24 @@ TEST_CASE("scriptCompiler.bindingContractEnablesNativeNamedArguments") {
     runtime.runSource("native_named_result <- nativeCompose(third: 3, first: 1, second: 2)\n", "native-named-test.nut");
     const auto result = runtime.vm().get<int64_t>("native_named_result");
     CHECK_EQ(result, int64_t(123));
+}
+
+TEST_CASE("scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments") {
+    Runtime    runtime(512, ssq::Libs::ALL);
+    const auto contracts = runtime.scriptCompiler().bindings().snapshot();
+    CHECK(contracts.size() > size_t(100));
+
+    const script::BindingContract* generated =
+        runtime.scriptCompiler().bindings().find("animation/AnimRetargetProfile.setNormalizedNameMatching");
+    REQUIRE(generated != nullptr);
+    REQUIRE_EQ(generated->parameters.size(), size_t(1));
+    CHECK_EQ(generated->parameters[0].name, std::string("enabled"));
+    CHECK_EQ(generated->parameters[0].type, std::string("bool"));
+
+    runtime.vm().addFunc("setNormalizedNameMatching", [](bool enabled) { return enabled; });
+    runtime.runSource("generated_contract_result <- setNormalizedNameMatching(enabled: true)\n",
+                      "generated-contract-test.nut");
+    CHECK(runtime.vm().get<bool>("generated_contract_result"));
 }
 
 TEST_CASE("scriptCompiler.bindingContractConvertsUnitLiterals") {
@@ -219,22 +235,22 @@ TEST_CASE("scriptCompiler.servesLanguageToolingQueries") {
     runtime.compileSource("local playerSpeed: float = 2.0\n", "game:/tooling.nut");
     script::BindingContract contract;
     contract.module          = "physics";
-    contract.method          = "newWorld";
+    contract.method          = "toolingNewWorld";
     contract.returnType      = "World";
-    contract.documentationId = "physics.newWorld";
+    contract.documentationId = "physics.toolingNewWorld";
     contract.parameters      = {{"gravity", "float"}, {"sleep", "bool"}};
     runtime.scriptCompiler().bindings().registerContract(std::move(contract));
 
     const auto scriptItems = runtime.scriptCompiler().completions("game:/tooling.nut", "player");
     CHECK_EQ(scriptItems.size(), size_t(1));
     CHECK_EQ(scriptItems[0].label, std::string("playerSpeed"));
-    const auto nativeItems = runtime.scriptCompiler().completions("game:/tooling.nut", "new");
+    const auto nativeItems = runtime.scriptCompiler().completions("game:/tooling.nut", "toolingNew");
     CHECK_EQ(nativeItems.size(), size_t(1));
     CHECK(nativeItems[0].insertText.find("gravity:") != std::string::npos);
 
-    const auto hover = runtime.scriptCompiler().hover("game:/tooling.nut", "newWorld");
-    CHECK(hover.has_value());
-    CHECK(hover->markdown.find("physics.newWorld") != std::string::npos);
+    const auto hover = runtime.scriptCompiler().hover("game:/tooling.nut", "toolingNewWorld");
+    REQUIRE(hover.has_value());
+    CHECK(hover->markdown.find("physics.toolingNewWorld") != std::string::npos);
     CHECK(runtime.scriptCompiler().diagnostics("game:/tooling.nut").empty());
 }
 
@@ -271,6 +287,20 @@ TEST_CASE("scriptCompiler.bindingContractChecksLiteralTypes") {
     CHECK(rejected);
 }
 
+TEST_CASE("scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.vm().addFunc("nativeText", [](std::string text) { return text; });
+    script::BindingContract contract;
+    contract.module     = "test";
+    contract.method     = "nativeText";
+    contract.returnType = "string";
+    contract.parameters = {{"text", "string", false}};
+    runtime.scriptCompiler().bindings().registerContract(std::move(contract));
+
+    runtime.runSource("compound_contract_result <- nativeText(\"count \" + (1 + 2))\n", "game:/compound-contract.nut");
+    CHECK_EQ(runtime.vm().get<std::string>("compound_contract_result"), std::string("count 3"));
+}
+
 TEST_CASE("scriptCompiler.validatesConfigModulesWithoutExecution") {
     const auto diagnostics = script::ScriptCompiler::validateProjectConfig(
         "config <- { modules = [\"gfx\", \"physics\", \"typo\"], optionalModules = [\"audio\"] }\n", "game:/config.nut",
@@ -285,7 +315,7 @@ TEST_CASE("scriptCompiler.validatesConfigModulesWithoutExecution") {
 TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
     const std::filesystem::path root(EVENGINE_SOURCE_DIR);
-    size_t                     compiled = 0;
+    size_t                      compiled = 0;
     for (std::filesystem::recursive_directory_iterator it(root), end; it != end; ++it) {
         if (it->is_directory()) {
             const std::string name = it->path().filename().string();

@@ -1,14 +1,14 @@
 // UE-PCG-style runtime biome: spatial composition -> point processing ->
 // hierarchical cell scheduling -> reconciled scene instance batches.
 
-if (!("biomeRuntime" in getroottable())) biomeRuntime <- null;
-if (!("biomeCells" in getroottable())) biomeCells <- {};
-if (!("sourceX" in getroottable())) sourceX <- 320.0;
-if (!("sourceZ" in getroottable())) sourceZ <- 220.0;
-if (!("biomeStatus" in getroottable())) biomeStatus <- "not started";
-if (!("roadSpatial" in getroottable())) roadSpatial <- null;
-if (!("coarseBiome" in getroottable())) coarseBiome <- null;
-if (!("detailBiome" in getroottable())) detailBiome <- null;
+persist biomeRuntime = null
+persist biomeCells = {}
+persist sourceX = 320.0
+persist sourceZ = 220.0
+persist biomeStatus = "not started"
+persist roadSpatial = null
+persist coarseBiome = null
+persist detailBiome = null
 
 gfx.setBackgroundColor(0.035, 0.055, 0.045, 1.0);
 

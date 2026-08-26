@@ -17,30 +17,30 @@
 // ============================================================================
 
 // ---- 软热重载保护 ----
-if (!("vehicle" in getroottable())) vehicle <- null;
-if (!("weapon" in getroottable())) weapon <- null;
-if (!("physics" in getroottable())) physics <- null;
-if (!("world" in getroottable())) world <- null;
-if (!("rtsTank" in getroottable())) rtsTank <- null;
-if (!("fpsCar" in getroottable())) fpsCar <- null;
-if (!("enemyCar" in getroottable())) enemyCar <- null;
-if (!("waypoint" in getroottable())) waypoint <- 0;
-if (!("patrol" in getroottable())) patrol <- false;
-if (!("enemySteer" in getroottable())) enemySteer <- 0.0;
-if (!("enemySteerTimer" in getroottable())) enemySteerTimer <- 0.0;
-if (!("carRespawn" in getroottable())) carRespawn <- -1.0;
-if (!("enemyRespawn" in getroottable())) enemyRespawn <- -1.0;
-if (!("eventLog" in getroottable())) eventLog <- [];
-if (!("tracers" in getroottable())) tracers <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("prevMouse" in getroottable())) prevMouse <- { left = false, right = false };
-if (!("texTankBody" in getroottable())) texTankBody <- null;
-if (!("texTankTurret" in getroottable())) texTankTurret <- null;
-if (!("texCarBlue" in getroottable())) texCarBlue <- null;
-if (!("texCarBlueTurret" in getroottable())) texCarBlueTurret <- null;
-if (!("texCarRed" in getroottable())) texCarRed <- null;
-if (!("texCarRedTurret" in getroottable())) texCarRedTurret <- null;
-if (!("hudBuilt" in getroottable())) hudBuilt <- false;
+persist vehicle = null
+persist weapon = null
+persist physics = null
+persist world = null
+persist rtsTank = null
+persist fpsCar = null
+persist enemyCar = null
+persist waypoint = 0
+persist patrol = false
+persist enemySteer = 0.0
+persist enemySteerTimer = 0.0
+persist carRespawn = -1.0
+persist enemyRespawn = -1.0
+persist eventLog = []
+persist tracers = []
+persist prevKeys = {}
+persist prevMouse = { left = false, right = false }
+persist texTankBody = null
+persist texTankTurret = null
+persist texCarBlue = null
+persist texCarBlueTurret = null
+persist texCarRed = null
+persist texCarRedTurret = null
+persist hudBuilt = false
 
 const PLAYER_DRIVER = 1;
 const PLAYER_GUNNER = 2;

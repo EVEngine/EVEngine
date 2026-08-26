@@ -10,17 +10,17 @@
 // 运行：make run/<platform>-debug GAME=examples/lattice-deform
 // ============================================================================
 
-if (!("anim" in getroottable())) anim <- null;
-if (!("lattice" in getroottable())) lattice <- null;
-if (!("sphereMesh" in getroottable())) sphereMesh <- null;
-if (!("sphereObj" in getroottable())) sphereObj <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("ground" in getroottable())) ground <- null;
-if (!("geo" in getroottable())) geo <- null;
-if (!("mode" in getroottable())) mode <- 1;
-if (!("animT" in getroottable())) animT <- 0.0;
-if (!("paused" in getroottable())) paused <- false;
-if (!("squashTween" in getroottable())) squashTween <- null;
+persist anim = null
+persist lattice = null
+persist sphereMesh = null
+persist sphereObj = null
+persist cam = null
+persist ground = null
+persist geo = null
+persist mode = 1
+persist animT = 0.0
+persist paused = false
+persist squashTween = null
 
 const PI = 3.14159265358979;
 

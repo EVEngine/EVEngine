@@ -1,11 +1,11 @@
 // Commandery RTS: a playable RTS + general/administration composition demo.
 // Domain meaning lives in this script. Engine modules only store/query generic facts.
 
-if (!("game" in getroottable())) game <- null;
-if (!("previousMouse" in getroottable())) previousMouse <- { left=false, right=false };
-if (!("previousKeys" in getroottable())) previousKeys <- {};
-if (!("panelReady" in getroottable())) panelReady <- false;
-if (!("selectionDrag" in getroottable())) selectionDrag <- { active=false sx=0.0 sy=0.0 x=0.0 y=0.0 };
+persist game = null
+persist previousMouse = { left=false, right=false }
+persist previousKeys = {}
+persist panelReady = false
+persist selectionDrag = { active=false sx=0.0 sy=0.0 x=0.0 y=0.0 }
 
 attributes <- eve.Attributes();
 social <- eve.Social();

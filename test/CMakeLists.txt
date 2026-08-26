@@ -196,6 +196,7 @@ file(GLOB all_test_cpp
   transaction.cpp
   rx.cpp
   runtime.cpp
+  language_index.cpp
   script_compiler.cpp
   script_config.cpp
   script_module.cpp

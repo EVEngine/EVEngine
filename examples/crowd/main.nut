@@ -2,18 +2,12 @@
 // 1 = flow, 2 = seek, 3 = boids, left mouse = new target, space = pause.
 // Soft hot-reload guards: keep C++-side crowd state across script reloads.
 
-if (!("crowd" in getroottable()))
-    crowd <- null;
-if (!("mode" in getroottable()))
-    mode <- "flow";
-if (!("goalX" in getroottable()))
-    goalX <- 0.0;
-if (!("goalY" in getroottable()))
-    goalY <- 0.0;
-if (!("paused" in getroottable()))
-    paused <- false;
-if (!("mouseWasDown" in getroottable()))
-    mouseWasDown <- false;
+persist crowd = null
+persist mode = "flow"
+persist goalX = 0.0
+persist goalY = 0.0
+persist paused = false
+persist mouseWasDown = false
 
 const AGENT_COUNT = 2000;
 const GRID_W = 80;      // 80 * 12 = 960 px

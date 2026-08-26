@@ -3,12 +3,19 @@
 
 #include <CLI11.hpp>
 
+#include <cstdio>
 #include <iostream>
 #include <string>
+
+#if defined(_WIN32)
+#include <fcntl.h>
+#include <io.h>
+#endif
 
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "scripts.h"
 
+#include "cmdline/LanguageIndex.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
@@ -128,20 +135,18 @@ std::string wordAt(std::string_view source, size_t line, size_t character) {
         const size_t newline = source.find('\n', offset);
         offset               = newline == std::string_view::npos ? source.size() : newline + 1;
     }
-    offset = std::min(offset + character, source.size());
+    offset       = std::min(offset + character, source.size());
     size_t begin = offset;
     size_t end   = offset;
     while (begin > 0 && (std::isalnum(static_cast<unsigned char>(source[begin - 1])) || source[begin - 1] == '_'))
         --begin;
-    while (end < source.size() &&
-           (std::isalnum(static_cast<unsigned char>(source[end])) || source[end] == '_'))
-        ++end;
+    while (end < source.size() && (std::isalnum(static_cast<unsigned char>(source[end])) || source[end] == '_')) ++end;
     return std::string(source.substr(begin, end - begin));
 }
 
 std::vector<std::string> moduleNames(std::string_view source, const std::regex& pattern) {
-    const std::string              owned(source);
-    std::vector<std::string>       result;
+    const std::string        owned(source);
+    std::vector<std::string> result;
     for (std::sregex_iterator it(owned.begin(), owned.end(), pattern), end; it != end; ++it)
         result.push_back((*it)[1].str());
     return result;
@@ -154,19 +159,20 @@ public:
           runtime_(2048, ssq::Libs::ALL) {
         runtime_.scriptModules().registerProvider(
             std::make_shared<ProjectDirectoryProvider>(std::filesystem::path(root_)), 100);
-        const std::string contract = module_list_content ? module_list_content : "";
-        const size_t      split = contract.find("eve_module_contract");
+        const std::string       contract = module_list_content ? module_list_content : "";
+        const size_t            split    = contract.find("eve_module_contract");
         static const std::regex slotPattern(R"(\bslot\s*=\s*["']([^"']+)["'])");
         static const std::regex namePattern(R"(\bname\s*=\s*["']([^"']+)["'])");
         activeModules_ = moduleNames(contract.substr(0, split), slotPattern);
-        knownModules_ = moduleNames(split == std::string::npos ? std::string_view{} : std::string_view(contract).substr(split),
-                                    namePattern);
+        knownModules_  = moduleNames(
+            split == std::string::npos ? std::string_view{} : std::string_view(contract).substr(split), namePattern);
+        indexProject();
     }
 
     int run() {
         std::string body;
         while (readFrame(body)) {
-            Poco::JSON::Parser parser;
+            Poco::JSON::Parser      parser;
             Poco::JSON::Object::Ptr request;
             try {
                 request = parser.parse(body).extract<Poco::JSON::Object::Ptr>();
@@ -194,6 +200,9 @@ public:
                 capabilities->set("textDocumentSync", sync);
                 capabilities->set("completionProvider", completion);
                 capabilities->set("hoverProvider", true);
+                capabilities->set("definitionProvider", true);
+                capabilities->set("referencesProvider", true);
+                capabilities->set("renameProvider", true);
                 Poco::JSON::Object::Ptr diagnosticProvider = new Poco::JSON::Object();
                 diagnosticProvider->set("interFileDependencies", true);
                 diagnosticProvider->set("workspaceDiagnostics", false);
@@ -208,23 +217,27 @@ public:
                 return shutdown_ ? 0 : 1;
             } else if (method == "textDocument/didOpen") {
                 auto document = params ? params->getObject("textDocument") : nullptr;
-                if (document) update(document->optValue<std::string>("uri", ""),
-                                     document->optValue<std::string>("text", ""));
+                if (document)
+                    update(document->optValue<std::string>("uri", ""), document->optValue<std::string>("text", ""));
             } else if (method == "textDocument/didChange") {
-                const std::string uri = documentUri(params);
-                auto changes = params ? params->getArray("contentChanges") : nullptr;
+                const std::string uri     = documentUri(params);
+                auto              changes = params ? params->getArray("contentChanges") : nullptr;
                 if (changes && changes->size() != 0) {
                     auto change = changes->getObject(static_cast<unsigned int>(changes->size() - 1));
                     if (change) update(uri, change->optValue<std::string>("text", ""));
                 }
             } else if (method == "textDocument/didClose") {
-                const std::string uri = documentUri(params);
-                documents_.erase(uri);
-                canonical_.erase(uri);
+                close(documentUri(params));
             } else if (method == "textDocument/completion") {
                 writeFrame(response(id, Poco::Dynamic::Var(completion(params))));
             } else if (method == "textDocument/hover") {
                 writeFrame(response(id, hover(params)));
+            } else if (method == "textDocument/definition") {
+                writeFrame(response(id, definition(params)));
+            } else if (method == "textDocument/references") {
+                writeFrame(response(id, Poco::Dynamic::Var(references(params))));
+            } else if (method == "textDocument/rename") {
+                writeFrame(response(id, rename(params)));
             } else if (method == "textDocument/diagnostic") {
                 Poco::JSON::Object::Ptr result = new Poco::JSON::Object();
                 result->set("kind", "full");
@@ -242,6 +255,7 @@ private:
         if (uri.empty()) return;
         documents_[uri] = std::move(source);
         canonical_[uri] = canonicalUri(uri);
+        index_.update(canonical_[uri], uri, documents_[uri]);
         try {
             runtime_.compileSource(documents_[uri], canonical_[uri]);
         } catch (const std::exception&) {
@@ -256,17 +270,33 @@ private:
         writeFrame(notification);
     }
 
-    Poco::JSON::Array::Ptr diagnostics(const std::string& uri) const {
-        Poco::JSON::Array::Ptr result = new Poco::JSON::Array();
+    void close(const std::string& uri) {
         const auto canonical = canonical_.find(uri);
-        const std::string& identity = canonical == canonical_.end() ? uri : canonical->second;
-        auto diagnostics = runtime_.scriptCompiler().diagnostics(identity);
-        const auto document = documents_.find(uri);
-        const bool isProjectConfig = identity == "game:/config.nut" ||
-                                     (uri.size() >= 11 && uri.compare(uri.size() - 11, 11, "/config.nut") == 0);
+        if (canonical != canonical_.end()) {
+            const std::filesystem::path path = pathForCanonical(canonical->second);
+            std::ifstream               input(path, std::ios::binary);
+            if (input) {
+                std::string source{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+                index_.update(canonical->second, clientUri(path), std::move(source));
+            } else {
+                index_.remove(canonical->second);
+            }
+        }
+        documents_.erase(uri);
+        canonical_.erase(uri);
+    }
+
+    Poco::JSON::Array::Ptr diagnostics(const std::string& uri) const {
+        Poco::JSON::Array::Ptr result      = new Poco::JSON::Array();
+        const auto             canonical   = canonical_.find(uri);
+        const std::string&     identity    = canonical == canonical_.end() ? uri : canonical->second;
+        auto                   diagnostics = runtime_.scriptCompiler().diagnostics(identity);
+        const auto             document    = documents_.find(uri);
+        const bool isProjectConfig         = identity == "game:/config.nut" ||
+                                             (uri.size() >= 11 && uri.compare(uri.size() - 11, 11, "/config.nut") == 0);
         if (document != documents_.end() && isProjectConfig) {
-            auto configDiagnostics = script::ScriptCompiler::validateProjectConfig(
-                document->second, identity, knownModules_, activeModules_);
+            auto configDiagnostics = script::ScriptCompiler::validateProjectConfig(document->second, identity,
+                                                                                   knownModules_, activeModules_);
             diagnostics.insert(diagnostics.end(), configDiagnostics.begin(), configDiagnostics.end());
         }
         for (const script::ScriptDiagnostic& diagnostic : diagnostics) {
@@ -292,17 +322,17 @@ private:
 
     Poco::JSON::Array::Ptr completion(const Poco::JSON::Object::Ptr& params) const {
         Poco::JSON::Array::Ptr result = new Poco::JSON::Array();
-        const std::string uri = documentUri(params);
-        const auto        found = documents_.find(uri);
-        std::string       prefix;
+        const std::string      uri    = documentUri(params);
+        const auto             found  = documents_.find(uri);
+        std::string            prefix;
         if (found != documents_.end() && params) {
             auto position = params->getObject("position");
             if (position)
                 prefix = wordAt(found->second, static_cast<size_t>(position->optValue<int>("line", 0)),
                                 static_cast<size_t>(position->optValue<int>("character", 0)));
         }
-        const auto canonical = canonical_.find(uri);
-        const std::string& identity = canonical == canonical_.end() ? uri : canonical->second;
+        const auto         canonical = canonical_.find(uri);
+        const std::string& identity  = canonical == canonical_.end() ? uri : canonical->second;
         for (const script::ScriptCompletion& completion : runtime_.scriptCompiler().completions(identity, prefix)) {
             Poco::JSON::Object::Ptr item = new Poco::JSON::Object();
             item->set("label", completion.label);
@@ -315,16 +345,16 @@ private:
     }
 
     Poco::Dynamic::Var hover(const Poco::JSON::Object::Ptr& params) const {
-        const std::string uri = documentUri(params);
+        const std::string uri   = documentUri(params);
         const auto        found = documents_.find(uri);
         if (found == documents_.end() || !params) return {};
         auto position = params->getObject("position");
         if (!position) return {};
-        const std::string symbol = wordAt(found->second, static_cast<size_t>(position->optValue<int>("line", 0)),
-                                          static_cast<size_t>(position->optValue<int>("character", 0)));
-        const auto canonical = canonical_.find(uri);
-        const std::string& identity = canonical == canonical_.end() ? uri : canonical->second;
-        const auto value = runtime_.scriptCompiler().hover(identity, symbol);
+        const std::string  symbol    = wordAt(found->second, static_cast<size_t>(position->optValue<int>("line", 0)),
+                                              static_cast<size_t>(position->optValue<int>("character", 0)));
+        const auto         canonical = canonical_.find(uri);
+        const std::string& identity  = canonical == canonical_.end() ? uri : canonical->second;
+        const auto         value     = runtime_.scriptCompiler().hover(identity, symbol);
         if (!value) return {};
         Poco::JSON::Object::Ptr contents = new Poco::JSON::Object();
         contents->set("kind", "markdown");
@@ -334,10 +364,142 @@ private:
         return Poco::Dynamic::Var(result);
     }
 
+    static Poco::JSON::Object::Ptr rangeObject(const lsp::Range& value) {
+        Poco::JSON::Object::Ptr start = new Poco::JSON::Object();
+        start->set("line", static_cast<int>(value.start.line));
+        start->set("character", static_cast<int>(value.start.character));
+        Poco::JSON::Object::Ptr end = new Poco::JSON::Object();
+        end->set("line", static_cast<int>(value.end.line));
+        end->set("character", static_cast<int>(value.end.character));
+        Poco::JSON::Object::Ptr result = new Poco::JSON::Object();
+        result->set("start", start);
+        result->set("end", end);
+        return result;
+    }
+
+    static Poco::JSON::Object::Ptr locationObject(const lsp::Location& value) {
+        Poco::JSON::Object::Ptr result = new Poco::JSON::Object();
+        result->set("uri", value.uri);
+        result->set("range", rangeObject(value.range));
+        return result;
+    }
+
+    lsp::Position requestPosition(const Poco::JSON::Object::Ptr& params) const {
+        auto position = params ? params->getObject("position") : nullptr;
+        return position ? lsp::Position{static_cast<size_t>(std::max(position->optValue<int>("line", 0), 0)),
+                                        static_cast<size_t>(std::max(position->optValue<int>("character", 0), 0))}
+                        : lsp::Position{};
+    }
+
+    std::string identity(const std::string& uri) const {
+        const auto found = canonical_.find(uri);
+        return found == canonical_.end() ? canonicalUri(uri) : found->second;
+    }
+
+    Poco::Dynamic::Var definition(const Poco::JSON::Object::Ptr& params) const {
+        const auto value = index_.definition(identity(documentUri(params)), requestPosition(params));
+        return value ? Poco::Dynamic::Var(locationObject(*value)) : Poco::Dynamic::Var();
+    }
+
+    Poco::JSON::Array::Ptr references(const Poco::JSON::Object::Ptr& params) const {
+        bool includeDeclaration = false;
+        if (auto context = params ? params->getObject("context") : nullptr)
+            includeDeclaration = context->optValue<bool>("includeDeclaration", false);
+        Poco::JSON::Array::Ptr result = new Poco::JSON::Array();
+        for (const lsp::Location& location :
+             index_.references(identity(documentUri(params)), requestPosition(params), includeDeclaration))
+            result->add(locationObject(location));
+        return result;
+    }
+
+    Poco::Dynamic::Var rename(const Poco::JSON::Object::Ptr& params) const {
+        const std::string newName = params ? params->optValue<std::string>("newName", "") : std::string{};
+        const auto        edits   = index_.rename(identity(documentUri(params)), requestPosition(params), newName);
+        if (!edits) return {};
+        Poco::JSON::Object::Ptr                                 changes = new Poco::JSON::Object();
+        std::unordered_map<std::string, Poco::JSON::Array::Ptr> byUri;
+        for (const lsp::TextEdit& edit : *edits) {
+            auto& list = byUri[edit.location.uri];
+            if (!list) list = new Poco::JSON::Array();
+            Poco::JSON::Object::Ptr item = new Poco::JSON::Object();
+            item->set("range", rangeObject(edit.location.range));
+            item->set("newText", edit.newText);
+            list->add(item);
+        }
+        for (const auto& [uri, list] : byUri) changes->set(uri, list);
+        Poco::JSON::Object::Ptr result = new Poco::JSON::Object();
+        result->set("changes", changes);
+        return Poco::Dynamic::Var(result);
+    }
+
+    std::filesystem::path pathForCanonical(std::string_view canonical) const {
+        constexpr std::string_view prefix = "game:/";
+        return canonical.rfind(prefix, 0) == 0
+                   ? std::filesystem::path(root_) / std::string(canonical.substr(prefix.size()))
+                   : std::filesystem::path{};
+    }
+
+    static std::string clientUri(const std::filesystem::path& path) {
+        std::string generic = std::filesystem::absolute(path).lexically_normal().generic_string();
+        std::string encoded;
+        encoded.reserve(generic.size());
+        for (const char value : generic) {
+            if (value == ' ')
+                encoded += "%20";
+            else if (value == '#')
+                encoded += "%23";
+            else if (value == '%')
+                encoded += "%25";
+            else
+                encoded += value;
+        }
+        return "file:///" + encoded;
+    }
+
+    void indexProject() {
+        std::error_code error;
+        for (std::filesystem::recursive_directory_iterator it(root_, error), end; it != end && !error;
+             it.increment(error)) {
+            if (it->is_directory(error)) {
+                const std::string name = it->path().filename().string();
+                if (name == ".git" || name == "build" || name == "third-party") it.disable_recursion_pending();
+                continue;
+            }
+            if (!it->is_regular_file(error) || it->path().extension() != ".nut") continue;
+            std::ifstream input(it->path(), std::ios::binary);
+            if (!input) continue;
+            std::string       source{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+            const std::string uri      = clientUri(it->path());
+            const auto        relative = std::filesystem::relative(it->path(), std::filesystem::path(root_), error);
+            if (error || relative.empty() || relative.generic_string().rfind("..", 0) == 0) continue;
+            index_.update("game:/" + relative.generic_string(), uri, std::move(source));
+        }
+    }
+
     std::string canonicalUri(const std::string& uri) const {
         constexpr std::string_view filePrefix = "file:///";
         if (uri.rfind(filePrefix, 0) != 0) return uri;
         std::string path = uri.substr(filePrefix.size());
+        for (size_t cursor = 0; cursor + 2 < path.size();) {
+            if (path[cursor] != '%') {
+                ++cursor;
+                continue;
+            }
+            const auto hex = [](char value) -> int {
+                if (value >= '0' && value <= '9') return value - '0';
+                if (value >= 'a' && value <= 'f') return value - 'a' + 10;
+                if (value >= 'A' && value <= 'F') return value - 'A' + 10;
+                return -1;
+            };
+            const int high = hex(path[cursor + 1]);
+            const int low  = hex(path[cursor + 2]);
+            if (high < 0 || low < 0) {
+                ++cursor;
+                continue;
+            }
+            path.replace(cursor, 3, 1, static_cast<char>((high << 4) | low));
+            ++cursor;
+        }
 #if defined(_WIN32)
         if (path.size() >= 2 && path[1] == ':') {
         } else {
@@ -346,14 +508,15 @@ private:
 #else
         path.insert(path.begin(), '/');
 #endif
-        std::error_code error;
-        const auto relative = std::filesystem::relative(std::filesystem::path(path), std::filesystem::path(root_), error);
-        if (error || relative.empty() || relative.generic_string().rfind("..", 0) == 0) return uri;
+        const auto relative = std::filesystem::path(path).lexically_normal().lexically_relative(
+            std::filesystem::path(root_).lexically_normal());
+        if (relative.empty() || *relative.begin() == "..") return uri;
         return "game:/" + relative.generic_string();
     }
 
     std::string                                  root_;
     Runtime                                      runtime_;
+    lsp::WorkspaceIndex                          index_;
     std::unordered_map<std::string, std::string> documents_;
     std::unordered_map<std::string, std::string> canonical_;
     std::vector<std::string>                     knownModules_;
@@ -387,6 +550,12 @@ int Cmdline::LanguageServer(std::string path) {
     std::cerr << "eve language-server: desktop-only" << std::endl;
     return 4;
 #else
+#if defined(_WIN32)
+    if (_setmode(_fileno(stdin), _O_BINARY) == -1 || _setmode(_fileno(stdout), _O_BINARY) == -1) {
+        std::cerr << "eve language-server: failed to configure binary stdio" << std::endl;
+        return 4;
+    }
+#endif
     std::error_code error;
     if (path.empty()) path = std::filesystem::current_path(error).string();
     LanguageServerSession session(std::move(path));
