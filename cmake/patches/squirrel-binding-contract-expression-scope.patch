@@ -26,7 +26,8 @@ index 04680d5..4ca1be2 100644
              _expectedtype = previousType;
              _expectednullable = previousNullable;
 +            _expectedconstraintpending = previousConstraintPending;
-
+-
++
              switch(op){
              case TK_NEWSLOT:
 @@ -915,7 +919,7 @@ public:
