@@ -367,6 +367,7 @@ build/linux-fuzz: build/linux-fuzz/build.ninja
 build/linux-fuzz/build.ninja:
 	cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug \
 		-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+		$(CMAKE_EXTRA_ARGS) \
 		-B build/linux-fuzz -S test/fuzz
 
 fuzz/linux: build/linux-fuzz

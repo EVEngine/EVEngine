@@ -181,7 +181,7 @@ jobs:
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
       # Pull-request cache entries are scoped to refs/pull/*/merge and cannot
       # warm other PRs. Let PRs consume the dev cache without duplicating it.
-      SCCACHE_GHA_RW_MODE: ${{ github.ref == 'refs/heads/dev' && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -316,6 +316,11 @@ jobs:
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
+      - name: Report native Dawn compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
       - name: Run native Dawn parity and PCG compute
         # Dawn initialization takes roughly two minutes per isolated test on
         # the Windows software adapter. Keep per-case process isolation while
@@ -351,6 +356,11 @@ jobs:
     if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
     runs-on: windows-latest
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
@@ -368,6 +378,12 @@ jobs:
         run: |
           choco install make ninja -y --no-progress
           echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
@@ -388,7 +404,14 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
+        run: >-
+          make build/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run win32 release unit tests
         timeout-minutes: 30
@@ -401,6 +424,11 @@ jobs:
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: windows-latest
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
@@ -416,6 +444,12 @@ jobs:
         timeout-minutes: 15
         shell: pwsh
         run: choco install make ninja -y --no-progress
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -454,13 +488,24 @@ jobs:
             ANDROID_SDK="$ANDROID_SDK" \
             ANDROID_NDK="$ANDROID_NDK" \
             JAVA_HOME="$JAVA_HOME" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
   android-release:
     name: Android (Release)
     if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
     runs-on: windows-latest
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
@@ -476,6 +521,12 @@ jobs:
         timeout-minutes: 15
         shell: pwsh
         run: choco install make ninja -y --no-progress
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -512,13 +563,24 @@ jobs:
             ANDROID_SDK="$ANDROID_SDK" \
             ANDROID_NDK="$ANDROID_NDK" \
             JAVA_HOME="$JAVA_HOME" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
   macos:
     name: macOS
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: macos-latest
     timeout-minutes: 120
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -530,6 +592,12 @@ jobs:
       - name: Install tools
         timeout-minutes: 10
         run: brew install ninja || true
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
@@ -549,7 +617,9 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
+        run: >-
+          make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
         timeout-minutes: 30
@@ -563,6 +633,7 @@ jobs:
           cmake -S . -B build/webgpu-macos -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
             -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
+            -DEVENGINE_COMPILER_CACHE=SCCACHE \
             -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/macosx-debug" \
             -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
             -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
@@ -570,6 +641,11 @@ jobs:
       - name: Build native Dawn Metal lane
         timeout-minutes: 40
         run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Test native Dawn Metal surface and rendering
         timeout-minutes: 20
@@ -585,6 +661,11 @@ jobs:
     if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
     runs-on: macos-latest
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-release
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -596,6 +677,12 @@ jobs:
       - name: Install tools
         timeout-minutes: 10
         run: brew install ninja || true
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
@@ -615,7 +702,14 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/macosx JOBS="$(sysctl -n hw.ncpu)"
+        run: >-
+          make build/macosx JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run macosx release unit tests
         timeout-minutes: 30
@@ -745,9 +839,9 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
-      # Populate the shared cache only from dev; PR-scoped writes are dead
-      # stores after that PR closes and quickly evict reusable entries.
-      SCCACHE_GHA_RW_MODE: ${{ github.ref == 'refs/heads/dev' && 'READ_WRITE' || 'READ_ONLY' }}
+      # Populate shared caches only from long-lived branches; PR-scoped writes
+      # are dead stores after that PR closes and quickly evict reusable entries.
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -901,6 +995,11 @@ jobs:
     if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-release
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -938,6 +1037,12 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
@@ -955,7 +1060,14 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux JOBS="$(nproc)"
+        run: >-
+          make build/linux JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run linux release unit tests
         timeout-minutes: 30
@@ -974,6 +1086,10 @@ jobs:
       # the sanitizer job's value is UAF/OOB/UB, not leaks.
       ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1"
       UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-asan
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -1008,6 +1124,12 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
@@ -1025,7 +1147,14 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux-asan JOBS="$(nproc)"
+        run: >-
+          make build/linux-asan JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run linux unit tests (ASan+UBSan)
         timeout-minutes: 30
@@ -1041,6 +1170,11 @@ jobs:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -1074,6 +1208,12 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb gcovr
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
@@ -1091,7 +1231,14 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux-coverage JOBS="$(nproc)"
+        run: >-
+          make build/linux-coverage JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run linux unit tests (coverage)
         timeout-minutes: 30
@@ -1135,6 +1282,10 @@ jobs:
       UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
       EVENGINE_FUZZ_RUNS: ${{ github.event_name == 'schedule' && '50000' || '2000' }}
       EVENGINE_FUZZ_SEED: "1"
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-fuzz
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -1149,9 +1300,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends clang ninja-build
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Build zeroerr JSON fuzz harness
         timeout-minutes: 5
-        run: make build/linux-fuzz JOBS="$(nproc)"
+        run: >-
+          make build/linux-fuzz JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Fuzz shared JSON parser
         timeout-minutes: 5
@@ -1173,6 +1337,14 @@ jobs:
     name: WebGPU (WASM)
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-webgpu-wasm-release
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
+      # Emscripten invokes the real Clang compiler through this supported hook;
+      # wrapping emcc itself with CMake's launcher is not cacheable by sccache.
+      EM_COMPILER_WRAPPER: sccache
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -1209,6 +1381,12 @@ jobs:
           python3 -m pip install --user cmake==3.29.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Emscripten SDK
         timeout-minutes: 30
         run: |
@@ -1221,7 +1399,8 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
-          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DEVENGINE_COMPILER_CACHE=OFF
 
       - name: Build webgpu (Emscripten/WASM)
         timeout-minutes: 40
@@ -1229,6 +1408,11 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
           cmake --build build/webgpu-web --parallel "$(nproc)"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Verify webgpu artifacts
         timeout-minutes: 5
