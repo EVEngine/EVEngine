@@ -1,5 +1,11 @@
 #include "procgen/Procgen.h"
 
+#include "common/Capability.h"
+#include "common/ProcgenSceneSink.h"
+#include "procgen/BiomeScript.h"
+#include "procgen/PointGraphScript.h"
+#include "procgen/ShapeGrammarScript.h"
+
 #include "procgen/ProcgenCapabilities.h"
 
 #include "image/ImageData.h"
@@ -20,6 +26,8 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <sstream>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace eve::procgen {
@@ -187,8 +195,254 @@ PointSet* Procgen::sampleSpline(PointSet* controlPoints, float spacing, uint32_t
     return new PointSet(samplePolylinePoints(*controlPoints, spacing, seed, lateralJitter));
 }
 
+PointSet* Procgen::mergePoints(PointSet* first, PointSet* second) {
+    if (!first || !second) {
+        lastError_ = "mergePoints: null input";
+        return nullptr;
+    }
+    return new PointSet(mergePointSets(*first, *second));
+}
+
+PointSet* Procgen::transformPoints(PointSet* input, float translateX, float translateY,
+                                   float translateZ, float yawDegrees, float scaleX, float scaleY,
+                                   float scaleZ) {
+    if (!input) {
+        lastError_ = "transformPoints: null input";
+        return nullptr;
+    }
+    return new PointSet(transformPointSet(*input, translateX, translateY, translateZ, yawDegrees,
+                                         scaleX, scaleY, scaleZ));
+}
+
+PointSet* Procgen::filterFloatAttribute(PointSet* input, const std::string& name, float minValue,
+                                        float maxValue, bool invert) {
+    if (!input || name.empty()) {
+        lastError_ = "filterFloatAttribute: requires input and attribute name";
+        return nullptr;
+    }
+    return new PointSet(filterPointFloatAttribute(*input, name, minValue, maxValue, invert));
+}
+
+PointSet* Procgen::filterStringAttribute(PointSet* input, const std::string& name,
+                                         const std::string& value, bool invert) {
+    if (!input || name.empty()) {
+        lastError_ = "filterStringAttribute: requires input and attribute name";
+        return nullptr;
+    }
+    return new PointSet(filterPointStringAttribute(*input, name, value, invert));
+}
+
+PointSet* Procgen::densityCull(PointSet* input, uint32_t seed, float multiplier) {
+    if (!input) {
+        lastError_ = "densityCull: null input";
+        return nullptr;
+    }
+    return new PointSet(densityCullPoints(*input, seed, multiplier));
+}
+
+SpatialData* Procgen::pointData(PointSet* points) {
+    if (!points) {
+        lastError_ = "pointData: null points";
+        return nullptr;
+    }
+    return new SpatialData(SpatialData::fromPoints(*points));
+}
+
+SpatialData* Procgen::boxVolume(float minX, float minY, float minZ, float maxX, float maxY,
+                                float maxZ) {
+    return new SpatialData(SpatialData::box(minX, minY, minZ, maxX, maxY, maxZ));
+}
+
+SpatialData* Procgen::sphereVolume(float x, float y, float z, float radius) {
+    if (radius <= 0.f) {
+        lastError_ = "sphereVolume: radius must be positive";
+        return nullptr;
+    }
+    return new SpatialData(SpatialData::sphere(x, y, z, radius));
+}
+
+SpatialData* Procgen::splineData(PointSet* controlPoints, float radius) {
+    if (!controlPoints || controlPoints->getCount() < 2 || radius < 0.f) {
+        lastError_ = "splineData: requires at least two points and non-negative radius";
+        return nullptr;
+    }
+    return new SpatialData(SpatialData::spline(*controlPoints, radius));
+}
+
+SpatialData* Procgen::heightfieldData(Heightmap* heightmap, float originX, float originZ,
+                                      float cellSize, float heightScale) {
+    if (!heightmap || heightmap->getWidth() <= 0 || heightmap->getHeight() <= 0 ||
+        cellSize <= 0.f) {
+        lastError_ = "heightfieldData: requires a non-empty heightmap and positive cell size";
+        return nullptr;
+    }
+    return new SpatialData(
+        SpatialData::heightfield(*heightmap, originX, originZ, cellSize, heightScale));
+}
+
+SpatialData* Procgen::unionSpatial(SpatialData* a, SpatialData* b) {
+    if (!a || !b) {
+        lastError_ = "unionSpatial: null input";
+        return nullptr;
+    }
+    return new SpatialData(SpatialData::unite(*a, *b));
+}
+
+SpatialData* Procgen::intersectSpatial(SpatialData* a, SpatialData* b) {
+    if (!a || !b) {
+        lastError_ = "intersectSpatial: null input";
+        return nullptr;
+    }
+    return new SpatialData(SpatialData::intersect(*a, *b));
+}
+
+SpatialData* Procgen::differenceSpatial(SpatialData* a, SpatialData* b) {
+    if (!a || !b) {
+        lastError_ = "differenceSpatial: null input";
+        return nullptr;
+    }
+    return new SpatialData(SpatialData::subtract(*a, *b));
+}
+
+PointSet* Procgen::sampleSpatial(SpatialData* spatial, float spacing, uint32_t seed,
+                                 float jitter) {
+    if (!spatial || spacing <= 0.f) {
+        lastError_ = "sampleSpatial: requires spatial data and positive spacing";
+        return nullptr;
+    }
+    return new PointSet(spatial->sample(spacing, seed, jitter));
+}
+
+PointSet* Procgen::filterSpatial(PointSet* input, SpatialData* spatial, bool invert) {
+    if (!input || !spatial) {
+        lastError_ = "filterSpatial: null input";
+        return nullptr;
+    }
+    return new PointSet(spatial->filter(*input, invert));
+}
+
+PointSet* Procgen::projectToSpatial(PointSet* input, SpatialData* spatial) {
+    if (!input || !spatial) {
+        lastError_ = "projectToSpatial: null input";
+        return nullptr;
+    }
+    return new PointSet(spatial->project(*input));
+}
+
 uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
     return eve::procgen::deriveSeed(parent, scope);
+}
+
+RuntimeGeneration* Procgen::newRuntimeGeneration(uint32_t worldSeed) {
+    return new RuntimeGeneration(worldSeed);
+}
+
+namespace {
+
+std::string runtimeCellBatchId(const std::string& prefix, const ProcgenCellRequest& request) {
+    return prefix + "/L" + std::to_string(request.getLevel()) + "/" +
+           std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
+}
+
+}  // namespace
+
+bool Procgen::publishInstances(const std::string& batchId, PointSet* points,
+                               const std::string& assetAttribute,
+                               const std::string& defaultAsset) {
+    if (batchId.empty() || !points) {
+        lastError_ = "publishInstances: requires batch id and points";
+        return false;
+    }
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink) {
+        lastError_ = "publishInstances: scene sink is unavailable";
+        return false;
+    }
+    std::vector<eve::ProcgenInstanceDesc> instances;
+    instances.reserve(points->points().size());
+    std::unordered_map<uint32_t, size_t> seedOccurrences;
+    std::unordered_set<std::string>      instanceIds;
+    for (size_t i = 0; i < points->points().size(); ++i) {
+        const auto& point = points->points()[i];
+        eve::ProcgenInstanceDesc instance;
+        const auto explicitId = point.stringAttributes.find("instanceId");
+        if (explicitId != point.stringAttributes.end() && !explicitId->second.empty())
+            instance.id = explicitId->second;
+        else
+            instance.id = "pcg-" + std::to_string(point.seed) + "-" +
+                          std::to_string(seedOccurrences[point.seed]++);
+        if (!instanceIds.insert(instance.id).second) {
+            lastError_ = "publishInstances: duplicate instance id: " + instance.id;
+            return false;
+        }
+        instance.asset = defaultAsset;
+        if (!assetAttribute.empty()) {
+            const auto found = point.stringAttributes.find(assetAttribute);
+            if (found != point.stringAttributes.end()) instance.asset = found->second;
+        }
+        instance.x      = point.x;
+        instance.y      = point.y;
+        instance.z      = point.z;
+        instance.yaw    = point.yaw;
+        instance.scaleX = point.scaleX;
+        instance.scaleY = point.scaleY;
+        instance.scaleZ = point.scaleZ;
+        instance.seed   = point.seed;
+        instances.push_back(std::move(instance));
+    }
+    if (!sink->applyBatch(batchId, instances)) {
+        lastError_ = "publishInstances: scene sink rejected batch";
+        return false;
+    }
+    return true;
+}
+
+bool Procgen::removeInstances(const std::string& batchId) {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (batchId.empty() || !sink || !sink->removeBatch(batchId)) {
+        lastError_ = "removeInstances: batch or scene sink unavailable";
+        return false;
+    }
+    return true;
+}
+
+int Procgen::getPublishedInstanceCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->instanceCount(batchId) : 0;
+}
+
+int Procgen::getPublishedCreatedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastCreatedCount(batchId) : 0;
+}
+
+int Procgen::getPublishedReusedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastReusedCount(batchId) : 0;
+}
+
+int Procgen::getPublishedRemovedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastRemovedCount(batchId) : 0;
+}
+
+bool Procgen::publishCellInstances(const std::string& prefix, ProcgenCellRequest* request,
+                                   PointSet* points, const std::string& assetAttribute,
+                                   const std::string& defaultAsset) {
+    if (prefix.empty() || !request) {
+        lastError_ = "publishCellInstances: requires prefix and cell request";
+        return false;
+    }
+    return publishInstances(runtimeCellBatchId(prefix, *request), points, assetAttribute,
+                            defaultAsset);
+}
+
+bool Procgen::removeCellInstances(const std::string& prefix, ProcgenCellRequest* request) {
+    if (prefix.empty() || !request) {
+        lastError_ = "removeCellInstances: requires prefix and cell request";
+        return false;
+    }
+    return removeInstances(runtimeCellBatchId(prefix, *request));
 }
 
 ProcgenContext* Procgen::beginSystem(const std::string& name, uint32_t seed) {
@@ -875,6 +1129,9 @@ bool Procgen::heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out)
 void Procgen::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
+    exposeBiomeRules(table);
+    exposePointGraph(table);
+    exposeShapeGrammar(table);
 
     auto recipe = table.addClass<RecipeDescriptor>(
         "ProcgenRecipeSchema",
@@ -981,6 +1238,104 @@ void Procgen::expose(ssq::Table &table) {
     points.addFunc("setStringAttribute", &PointSet::setStringAttribute);
     points.addFunc("getStringAttribute", &PointSet::getStringAttribute);
     points.addFunc("hasStringAttribute", &PointSet::hasStringAttribute);
+
+    auto spatial = table.addClass<SpatialData>(
+        "ProcgenSpatialData",
+        std::function<SpatialData*()>([]() -> SpatialData* { return nullptr; }), true);
+    spatial.addFunc("getKind", &SpatialData::getKind);
+    spatial.addFunc("contains", &SpatialData::contains);
+    spatial.addFunc("hasBounds", &SpatialData::hasBounds);
+    spatial.addFunc("getMinX", &SpatialData::getMinX);
+    spatial.addFunc("getMinY", &SpatialData::getMinY);
+    spatial.addFunc("getMinZ", &SpatialData::getMinZ);
+    spatial.addFunc("getMaxX", &SpatialData::getMaxX);
+    spatial.addFunc("getMaxY", &SpatialData::getMaxY);
+    spatial.addFunc("getMaxZ", &SpatialData::getMaxZ);
+
+    auto cellRequest = table.addClass<ProcgenCellRequest>(
+        "ProcgenCellRequest",
+        std::function<ProcgenCellRequest*()>([]() -> ProcgenCellRequest* { return nullptr; }),
+        true);
+    cellRequest.addFunc("getLevel", &ProcgenCellRequest::getLevel);
+    cellRequest.addFunc("getX", &ProcgenCellRequest::getX);
+    cellRequest.addFunc("getZ", &ProcgenCellRequest::getZ);
+    cellRequest.addFunc("getSeed", &ProcgenCellRequest::getSeed);
+    cellRequest.addFunc("getTicket", &ProcgenCellRequest::getTicket);
+    cellRequest.addFunc("getMinX", &ProcgenCellRequest::getMinX);
+    cellRequest.addFunc("getMinZ", &ProcgenCellRequest::getMinZ);
+    cellRequest.addFunc("getMaxX", &ProcgenCellRequest::getMaxX);
+    cellRequest.addFunc("getMaxZ", &ProcgenCellRequest::getMaxZ);
+
+    auto runtimeGeneration = table.addClass<RuntimeGeneration>(
+        "ProcgenRuntimeGeneration",
+        std::function<RuntimeGeneration*()>([]() -> RuntimeGeneration* { return nullptr; }), true);
+    runtimeGeneration.addFunc("clear", &RuntimeGeneration::clear);
+    runtimeGeneration.addFunc("addLevel", &RuntimeGeneration::addLevel);
+    runtimeGeneration.addFunc("getLevelCount", &RuntimeGeneration::getLevelCount);
+    runtimeGeneration.addFunc("getLevelCellSize", &RuntimeGeneration::getLevelCellSize);
+    runtimeGeneration.addFunc("getLevelGenerationRadius",
+                              &RuntimeGeneration::getLevelGenerationRadius);
+    runtimeGeneration.addFunc("getLevelCleanupRadius", &RuntimeGeneration::getLevelCleanupRadius);
+    runtimeGeneration.addFunc("setDirectionWeight", &RuntimeGeneration::setDirectionWeight);
+    runtimeGeneration.addFunc("getDirectionWeight", &RuntimeGeneration::getDirectionWeight);
+    runtimeGeneration.addFunc("setMaxGenerating", &RuntimeGeneration::setMaxGenerating);
+    runtimeGeneration.addFunc("getMaxGenerating", &RuntimeGeneration::getMaxGenerating);
+    runtimeGeneration.addFunc("setMaxActiveCells", &RuntimeGeneration::setMaxActiveCells);
+    runtimeGeneration.addFunc("getMaxActiveCells", &RuntimeGeneration::getMaxActiveCells);
+    runtimeGeneration.addFunc("setMaxPointsPerCell", &RuntimeGeneration::setMaxPointsPerCell);
+    runtimeGeneration.addFunc("getMaxPointsPerCell", &RuntimeGeneration::getMaxPointsPerCell);
+    runtimeGeneration.addFunc("setMaxResidentPoints", &RuntimeGeneration::setMaxResidentPoints);
+    runtimeGeneration.addFunc("getMaxResidentPoints", &RuntimeGeneration::getMaxResidentPoints);
+    runtimeGeneration.addFunc("getResidentPointCount",
+                              &RuntimeGeneration::getResidentPointCount);
+    runtimeGeneration.addFunc("getRejectedOutputCount",
+                              &RuntimeGeneration::getRejectedOutputCount);
+    runtimeGeneration.addFunc("trimToResidentPoints", &RuntimeGeneration::trimToResidentPoints);
+    runtimeGeneration.addFunc("setMaxGenerationRetries",
+                              &RuntimeGeneration::setMaxGenerationRetries);
+    runtimeGeneration.addFunc("getMaxGenerationRetries",
+                              &RuntimeGeneration::getMaxGenerationRetries);
+    runtimeGeneration.addFunc("setFrameTimeBudget", &RuntimeGeneration::setFrameTimeBudget);
+    runtimeGeneration.addFunc("getFrameTimeBudget", &RuntimeGeneration::getFrameTimeBudget);
+    runtimeGeneration.addFunc("beginFrame", &RuntimeGeneration::beginFrame);
+    runtimeGeneration.addFunc("updateSource", &RuntimeGeneration::updateSource);
+    runtimeGeneration.addFunc("setGenerationSource", &RuntimeGeneration::setGenerationSource);
+    runtimeGeneration.addFunc("removeGenerationSource",
+                              &RuntimeGeneration::removeGenerationSource);
+    runtimeGeneration.addFunc("clearGenerationSources",
+                              &RuntimeGeneration::clearGenerationSources);
+    runtimeGeneration.addFunc("getGenerationSourceCount",
+                              &RuntimeGeneration::getGenerationSourceCount);
+    runtimeGeneration.addFunc("getGenerationSourceId",
+                              &RuntimeGeneration::getGenerationSourceId);
+    runtimeGeneration.addFunc("refreshGenerationSources",
+                              &RuntimeGeneration::refreshGenerationSources);
+    runtimeGeneration.addFunc("setFrustumCulling", &RuntimeGeneration::setFrustumCulling);
+    runtimeGeneration.addFunc("isFrustumCullingEnabled",
+                              &RuntimeGeneration::isFrustumCullingEnabled);
+    runtimeGeneration.addFunc("getFrustumHalfAngle",
+                              &RuntimeGeneration::getFrustumHalfAngle);
+    runtimeGeneration.addFunc("getFrustumBehindRadius",
+                              &RuntimeGeneration::getFrustumBehindRadius);
+    runtimeGeneration.addFunc("getPendingGenerateCount",
+                              &RuntimeGeneration::getPendingGenerateCount);
+    runtimeGeneration.addFunc("getGeneratingCount", &RuntimeGeneration::getGeneratingCount);
+    runtimeGeneration.addFunc("getActiveCellCount", &RuntimeGeneration::getActiveCellCount);
+    runtimeGeneration.addFunc("getPendingCleanupCount",
+                              &RuntimeGeneration::getPendingCleanupCount);
+    runtimeGeneration.addFunc("getFailedCellCount", &RuntimeGeneration::getFailedCellCount);
+    runtimeGeneration.addFunc("retryFailedCells", &RuntimeGeneration::retryFailedCells);
+    runtimeGeneration.addFunc("nextGenerate", &RuntimeGeneration::nextGenerate);
+    runtimeGeneration.addFunc("nextCleanup", &RuntimeGeneration::nextCleanup);
+    runtimeGeneration.addFunc("completeGeneration", &RuntimeGeneration::completeGeneration);
+    runtimeGeneration.addFunc("failGeneration", &RuntimeGeneration::failGeneration);
+    runtimeGeneration.addFunc("completeCleanup", &RuntimeGeneration::completeCleanup);
+    runtimeGeneration.addFunc("hasCell", &RuntimeGeneration::hasCell);
+    runtimeGeneration.addFunc("getCellOutput", &RuntimeGeneration::getCellOutput);
+    runtimeGeneration.addFunc("getCellRevision", &RuntimeGeneration::getCellRevision);
+    runtimeGeneration.addFunc("serializeCell", &RuntimeGeneration::serializeCell);
+    runtimeGeneration.addFunc("deserializeCell", &RuntimeGeneration::deserializeCell);
+    runtimeGeneration.addFunc("debugReport", &RuntimeGeneration::debugReport);
 
     auto context = table.addClass<ProcgenContext>(
         "ProcgenContext",
@@ -1161,7 +1516,35 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("selfPrune", &Procgen::selfPrune);
     cls.addFunc("projectToHeightmap", &Procgen::projectToHeightmap);
     cls.addFunc("sampleSpline", &Procgen::sampleSpline);
+    cls.addFunc("mergePoints", &Procgen::mergePoints);
+    cls.addFunc("transformPoints", &Procgen::transformPoints);
+    cls.addFunc("filterFloatAttribute", &Procgen::filterFloatAttribute);
+    cls.addFunc("filterStringAttribute", &Procgen::filterStringAttribute);
+    cls.addFunc("densityCull", &Procgen::densityCull);
+    cls.addFunc("pointData", &Procgen::pointData);
+    cls.addFunc("boxVolume", &Procgen::boxVolume);
+    cls.addFunc("sphereVolume", &Procgen::sphereVolume);
+    cls.addFunc("splineData", &Procgen::splineData);
+    cls.addFunc("heightfieldData", &Procgen::heightfieldData);
+    cls.addFunc("unionSpatial", &Procgen::unionSpatial);
+    cls.addFunc("intersectSpatial", &Procgen::intersectSpatial);
+    cls.addFunc("differenceSpatial", &Procgen::differenceSpatial);
+    cls.addFunc("sampleSpatial", &Procgen::sampleSpatial);
+    cls.addFunc("filterSpatial", &Procgen::filterSpatial);
+    cls.addFunc("projectToSpatial", &Procgen::projectToSpatial);
     cls.addFunc("deriveSeed", &Procgen::deriveSeed);
+    cls.addFunc("newRuntimeGeneration", &Procgen::newRuntimeGeneration);
+    cls.addFunc("newPointGraph", &Procgen::newPointGraph);
+    cls.addFunc("newBiomeRules", &Procgen::newBiomeRules);
+    cls.addFunc("newShapeGrammar", &Procgen::newShapeGrammar);
+    cls.addFunc("publishInstances", &Procgen::publishInstances);
+    cls.addFunc("removeInstances", &Procgen::removeInstances);
+    cls.addFunc("getPublishedInstanceCount", &Procgen::getPublishedInstanceCount);
+    cls.addFunc("getPublishedCreatedCount", &Procgen::getPublishedCreatedCount);
+    cls.addFunc("getPublishedReusedCount", &Procgen::getPublishedReusedCount);
+    cls.addFunc("getPublishedRemovedCount", &Procgen::getPublishedRemovedCount);
+    cls.addFunc("publishCellInstances", &Procgen::publishCellInstances);
+    cls.addFunc("removeCellInstances", &Procgen::removeCellInstances);
     cls.addFunc("beginSystem", &Procgen::beginSystem);
     cls.addFunc("beginCachedSystem", &Procgen::beginCachedSystem);
     cls.addFunc("commitSystem", &Procgen::commitSystem);
