@@ -5,6 +5,7 @@
 #include "physics/Joint3D.h"
 
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "event/Event.h"
 
 #include <box3d/box3d.h>
@@ -554,6 +555,7 @@ void World3D::forgetJoint(Joint3D *joint) { joints_.erase(joint); }
 void World3D::update(float dt) { updateFull(dt, 4); }
 
 void World3D::updateFull(float dt, int subStepCount) {
+    EV_PROFILE_MODULE("physics", "World3D::update");
     clearContactEvents();
     if (!isValid()) return;
     if (dt < 0.f) dt = 0.f;

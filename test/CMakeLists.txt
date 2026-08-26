@@ -8,6 +8,8 @@ file(GLOB all_test_cpp
   decal_script.cpp
   crowd.cpp
   crowd_script.cpp
+  profiler.cpp
+  profiler_script.cpp
   crashlog.cpp
   resource.cpp
   state_value.cpp
@@ -304,6 +306,7 @@ file(GLOB all_test_scripts
   timer.nut
   decal.nut
   crowd.nut
+  profiler.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"
