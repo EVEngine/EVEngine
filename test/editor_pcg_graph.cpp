@@ -117,7 +117,7 @@ TEST_CASE("editor.pcgGraph.strictlyValidatesSchemaAndNodeProperties") {
     unsupported.domain = domain.domain();
     unsupported.schemaVersion = 99;
     auto result = domain.compile(unsupported);
-    CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Unsupported));
     REQUIRE(!result.diagnostics.empty());
     CHECK_EQ(result.diagnostics[0].rule.value(), std::string("editor.pcg.unsupported-schema"));
 
@@ -139,4 +139,53 @@ TEST_CASE("editor.pcgGraph.strictlyValidatesSchemaAndNodeProperties") {
     CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Failed));
     REQUIRE(!result.diagnostics.empty());
     CHECK_EQ(result.diagnostics[0].rule.value(), std::string("editor.pcg.unknown-property"));
+}
+
+TEST_CASE("editor.pcgGraph.transactionallyMigratesLegacyPinsAndDefaults") {
+    PcgPointGraphDomain domain;
+    auto input = domain.makeNode(GraphNodeId("source"), "input");
+    auto prune = domain.makeNode(GraphNodeId("prune"), "self.prune");
+    REQUIRE(input.value);
+    REQUIRE(prune.value);
+    input.value->pins[0].id = GraphPinId("legacy-source-output");
+    prune.value->pins[0].id = GraphPinId("legacy-prune-input");
+    prune.value->pins[1].id = GraphPinId("legacy-prune-output");
+    prune.value->properties = EditorValue(EditorValue::Object{});
+
+    GraphDocumentData legacy;
+    legacy.domain        = domain.domain();
+    legacy.schemaVersion = 0;
+    legacy.revision      = 17;
+    legacy.nodes         = {*input.value, *prune.value};
+    legacy.edges.push_back({StableId("stable-edge"), GraphPinId("legacy-source-output"),
+                            GraphPinId("legacy-prune-input")});
+
+    const auto migrated = domain.migrate(legacy);
+    CHECK_EQ(static_cast<int>(migrated.status), static_cast<int>(EditorStatus::Applied));
+    CHECK_EQ(migrated.fromVersion, uint32_t(0));
+    CHECK_EQ(migrated.graph.schemaVersion, uint32_t(1));
+    CHECK_EQ(migrated.graph.revision, Revision(17));
+    REQUIRE_EQ(migrated.graph.nodes.size(), size_t(2));
+    const auto* properties = migrated.graph.nodes[1].properties.getIf<EditorValue::Object>();
+    REQUIRE(bool(properties));
+    CHECK_EQ(*properties->at("radius").getIf<double>(), 1.0);
+    REQUIRE_EQ(migrated.graph.edges.size(), size_t(1));
+    CHECK_EQ(migrated.graph.edges[0].id.value(), std::string("stable-edge"));
+    CHECK_EQ(migrated.graph.edges[0].from.value(), std::string("source.out"));
+    CHECK_EQ(migrated.graph.edges[0].to.value(), std::string("prune.in0"));
+
+    const auto compiled = domain.compile(legacy);
+    CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Applied));
+    CHECK(compiled.definition.find("EVPCG_POINT_GRAPH 1") == 0);
+    REQUIRE(!compiled.diagnostics.empty());
+    CHECK_EQ(compiled.diagnostics[0].rule.value(), std::string("editor.pcg.migrated-v0-v1"));
+
+    GraphDocumentData invalid = legacy;
+    invalid.nodes[1].pins[0].id = GraphPinId("legacy-source-output");
+    const auto rejected = domain.migrate(invalid);
+    CHECK_EQ(static_cast<int>(rejected.status), static_cast<int>(EditorStatus::Rejected));
+    REQUIRE(!rejected.diagnostics.empty());
+    CHECK_EQ(rejected.diagnostics[0].rule.value(),
+             std::string("editor.pcg.migration-duplicate-pin"));
+    CHECK_EQ(legacy.schemaVersion, uint32_t(0));
 }

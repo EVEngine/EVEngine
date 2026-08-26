@@ -425,6 +425,11 @@ PointGraph 定义。非法 pin 类型、重复节点、坏 edge 和 cycle 会产
 procgen 被裁剪时 `EditorPcgGraph.cpp` 自动从 editor 模块源列表排除。
 编译器拒绝不支持的 `schemaVersion`、未知 property、类型不匹配、非有限浮点和超出运行时
 整数/浮点范围的值，避免拼写或反序列化错误静默进入运行时资产。
+`PcgPointGraphDomain::migrate()` 提供事务式 schema 升级；当前迁移链把 v0 资产升级到 v1，
+按运行时反射补齐新增默认 property、规范化 node pin id，并同步重写 edge 端点，同时保留
+document revision 与稳定 node/edge id。`compile()` 会自动执行迁移并返回
+`editor.pcg.migrated-v0-v1` 信息诊断；未知 operation、重复 legacy pin 或非法 properties
+会以稳定 rule id 拒绝，输入资产保持不变，便于批量升级、撤销和版本控制审查。
 `GraphDocument::setParameters()` 接受 `{ publicName: { node: nodeId, key: parameterKey } }`
 黑板对象；编译器校验节点、反射参数类型和重复目标，并把绑定写入 PointGraph 资产，运行时
 实例随后可通过 `setParameterFloat/Int/String()` 覆写。

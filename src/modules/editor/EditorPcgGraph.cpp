@@ -93,25 +93,104 @@ EditorResult<GraphNodeRecord> PcgPointGraphDomain::makeNode(const GraphNodeId& i
     return EditorResult<GraphNodeRecord>::applied(std::move(node));
 }
 
-PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& graph) const {
-    PcgGraphCompileResult result;
-    result.documentRevision = graph.revision;
+PcgGraphMigrationResult PcgPointGraphDomain::migrate(const GraphDocumentData& graph) const {
+    PcgGraphMigrationResult result;
+    result.fromVersion = graph.schemaVersion;
+    result.graph       = graph;
     if (graph.domain != domain()) {
         result.status = EditorStatus::Rejected;
-        result.diagnostics.push_back({RuleId("editor.pcg.wrong-domain"), DiagnosticSeverity::Error,
+        result.diagnostics.push_back({RuleId("editor.pcg.wrong-domain"),
+                                      DiagnosticSeverity::Error,
                                       "Graph is not a procgen.point document"});
         return result;
     }
-    if (graph.schemaVersion != 1) {
-        result.status = EditorStatus::Rejected;
+    if (graph.schemaVersion == 1) {
+        result.status = EditorStatus::NoOp;
+        return result;
+    }
+    if (graph.schemaVersion != 0) {
+        result.status = EditorStatus::Unsupported;
         result.diagnostics.push_back(
             {RuleId("editor.pcg.unsupported-schema"), DiagnosticSeverity::Error,
              "Unsupported procgen.point graph schemaVersion: " +
                  std::to_string(graph.schemaVersion)});
         return result;
     }
+
+    std::unordered_map<std::string, GraphPinId> pinRemap;
+    std::vector<GraphNodeRecord> migratedNodes;
+    migratedNodes.reserve(graph.nodes.size());
+    for (const auto& legacy : graph.nodes) {
+        auto canonical = makeNode(legacy.id, legacy.type);
+        if (!canonical.value) {
+            result.status = EditorStatus::Rejected;
+            result.diagnostics.push_back(
+                {RuleId("editor.pcg.migration-unknown-operation"), DiagnosticSeverity::Error,
+                 "Cannot migrate unknown PCG operation: " + legacy.type});
+            return result;
+        }
+        auto* defaults = canonical.value->properties.getIf<EditorValue::Object>();
+        const auto* properties = legacy.properties.getIf<EditorValue::Object>();
+        if (legacy.properties.type() != EditorValue::Type::Null && !properties) {
+            result.status = EditorStatus::Rejected;
+            result.diagnostics.push_back(
+                {RuleId("editor.pcg.migration-invalid-properties"), DiagnosticSeverity::Error,
+                 "Legacy PCG node properties must be an object: " + legacy.id.value()});
+            return result;
+        }
+        if (properties)
+            for (const auto& [key, value] : *properties) (*defaults)[key] = value;
+
+        int input = 0;
+        int output = 0;
+        for (const auto& pin : legacy.pins) {
+            const int ordinal = pin.direction == GraphPinDirection::Input ? input++ : output++;
+            int canonicalOrdinal = 0;
+            const auto replacement = std::find_if(
+                canonical.value->pins.begin(), canonical.value->pins.end(),
+                [&](const GraphPinRecord& candidate) {
+                    if (candidate.direction != pin.direction) return false;
+                    return canonicalOrdinal++ == ordinal;
+                });
+            if (replacement == canonical.value->pins.end()) continue;
+            if (!pinRemap.emplace(pin.id.value(), replacement->id).second) {
+                result.status = EditorStatus::Rejected;
+                result.diagnostics.push_back(
+                    {RuleId("editor.pcg.migration-duplicate-pin"), DiagnosticSeverity::Error,
+                     "Legacy PCG graph contains duplicate pin id: " + pin.id.value()});
+                return result;
+            }
+        }
+        migratedNodes.push_back(std::move(*canonical.value));
+    }
+    result.graph.nodes = std::move(migratedNodes);
+    for (auto& edge : result.graph.edges) {
+        const auto from = pinRemap.find(edge.from.value());
+        const auto to   = pinRemap.find(edge.to.value());
+        if (from != pinRemap.end()) edge.from = from->second;
+        if (to != pinRemap.end()) edge.to = to->second;
+    }
+    result.graph.schemaVersion = 1;
+    result.status              = EditorStatus::Applied;
+    result.diagnostics.push_back(
+        {RuleId("editor.pcg.migrated-v0-v1"), DiagnosticSeverity::Info,
+         "Migrated procgen.point graph schemaVersion 0 to 1"});
+    return result;
+}
+
+PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& graph) const {
+    PcgGraphCompileResult result;
+    result.documentRevision = graph.revision;
+    const auto migration = migrate(graph);
+    if (migration.status != EditorStatus::Applied && migration.status != EditorStatus::NoOp) {
+        result.status      = migration.status;
+        result.diagnostics = migration.diagnostics;
+        return result;
+    }
+    result.diagnostics = migration.diagnostics;
+    const auto& source = migration.graph;
     procgen::PointGraph compiled;
-    for (const auto& node : graph.nodes) {
+    for (const auto& node : source.nodes) {
         if (!compiled.addNode(node.id.value(), node.type)) {
             result.status = EditorStatus::Failed;
             result.diagnostics.push_back({RuleId("editor.pcg.invalid-node"), DiagnosticSeverity::Error,
@@ -119,7 +198,13 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
             return result;
         }
         const auto* properties = node.properties.getIf<EditorValue::Object>();
-        if (!properties) continue;
+        if (!properties) {
+            result.status = EditorStatus::Failed;
+            result.diagnostics.push_back(
+                {RuleId("editor.pcg.invalid-properties"), DiagnosticSeverity::Error,
+                 "PCG node properties must be an object: " + node.id.value()});
+            return result;
+        }
         for (const auto& [key, value] : *properties) {
             const bool subgraphProperty =
                 node.type == "subgraph" &&
@@ -186,8 +271,8 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
             }
         }
     }
-    if (graph.parameters.type() != EditorValue::Type::Null) {
-        const auto* parameters = graph.parameters.getIf<EditorValue::Object>();
+    if (source.parameters.type() != EditorValue::Type::Null) {
+        const auto* parameters = source.parameters.getIf<EditorValue::Object>();
         if (!parameters) {
             result.status = EditorStatus::Failed;
             result.diagnostics.push_back(
@@ -216,10 +301,10 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
         }
     }
     std::unordered_map<std::string, StableId> connectedInputs;
-    for (const auto& edge : graph.edges) {
-        const GraphPinRecord* from = findPin(graph, edge.from);
-        const GraphPinRecord* to   = findPin(graph, edge.to);
-        const GraphNodeRecord* toNode = to ? findNode(graph, to->node) : nullptr;
+    for (const auto& edge : source.edges) {
+        const GraphPinRecord* from = findPin(source, edge.from);
+        const GraphPinRecord* to   = findPin(source, edge.to);
+        const GraphNodeRecord* toNode = to ? findNode(source, to->node) : nullptr;
         const int slot = toNode && to ? inputIndex(*toNode, to->id) : -1;
         const std::string inputKey = to ? to->id.value() : std::string();
         if (!inputKey.empty() && connectedInputs.find(inputKey) != connectedInputs.end()) {

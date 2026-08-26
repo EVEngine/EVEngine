@@ -15,6 +15,15 @@ struct PcgGraphCompileResult {
     std::vector<EditorDiagnostic> diagnostics;
 };
 
+/** @brief Transactional result of upgrading an editor PCG graph to the current schema. */
+struct PcgGraphMigrationResult {
+    EditorStatus                  status      = EditorStatus::Failed;
+    std::uint32_t                 fromVersion = 0;
+    std::uint32_t                 toVersion   = 1;
+    GraphDocumentData             graph;
+    std::vector<EditorDiagnostic> diagnostics;
+};
+
 /**
  * @brief `procgen.point` editor graph domain backed by procgen::PointGraph schema.
  *
@@ -30,6 +39,8 @@ public:
     /** @brief Construct a generic editor node from one reflected PointGraph operation. */
     EditorResult<GraphNodeRecord> makeNode(const GraphNodeId& id,
                                            const std::string& operation) const;
+    /** @brief Upgrade a legacy graph without mutating the source document. */
+    PcgGraphMigrationResult migrate(const GraphDocumentData& graph) const;
     /** @brief Compile topology and scalar properties into a reusable PointGraph definition. */
     PcgGraphCompileResult compile(const GraphDocumentData& graph) const;
 };
