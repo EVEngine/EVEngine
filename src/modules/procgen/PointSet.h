@@ -109,6 +109,9 @@ PointSet mergePointSets(const PointSet& first, const PointSet& second);
 PointSet transformPointSet(const PointSet& input, float translateX, float translateY,
                            float translateZ, float yawDegrees, float scaleX, float scaleY,
                            float scaleZ);
+/** @brief Instantiate every source point relative to every target point in stable target-major order. */
+PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets,
+                             bool inheritTargetAttributes);
 /** @brief Select points whose named float attribute lies in an inclusive range. */
 PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
                                    float maxValue, bool invert);

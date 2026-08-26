@@ -25,6 +25,8 @@ const std::vector<OperationSpec>& operationSpecs() {
         {"spatial.filter", 1, {{"invert", "bool", "false"}}},
         {"spatial.project", 1, {}},
         {"merge", 2, {}},
+        {"copy.points", 2, {{"maxPoints", "int", "100000"},
+                             {"inheritTargetAttributes", "bool", "true"}}},
         {"transform", 1, {{"x", "float", "0"}, {"y", "float", "0"}, {"z", "float", "0"},
                           {"yaw", "float", "0"}, {"scaleX", "float", "1"},
                           {"scaleY", "float", "1"}, {"scaleZ", "float", "1"}}},
@@ -438,6 +440,17 @@ const PointSet* PointGraph::evaluate(const std::string& id,
     } else if (node.operation == "merge") {
         if (!first || !second) error_ = "merge requires two inputs: " + id;
         else node.cache = mergePointSets(*first, *second);
+    } else if (node.operation == "copy.points") {
+        const int maxPoints = intValue(node, "maxPoints", 100000);
+        const uint64_t outputCount = first && second
+                                         ? uint64_t(first->getCount()) * uint64_t(second->getCount())
+                                         : 0;
+        if (!first || !second) error_ = "copy.points requires source and target inputs: " + id;
+        else if (maxPoints < 0 || outputCount > uint64_t(maxPoints))
+            error_ = "copy.points output exceeds maxPoints at node: " + id;
+        else
+            node.cache = copyPointsToTargets(
+                *first, *second, intValue(node, "inheritTargetAttributes", 1) != 0);
     } else if (node.operation == "transform") {
         if (!first) error_ = "transform requires input: " + id;
         else

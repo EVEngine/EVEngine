@@ -446,6 +446,53 @@ PointSet transformPointSet(const PointSet& input, float translateX, float transl
     return output;
 }
 
+PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets,
+                             bool inheritTargetAttributes) {
+    constexpr float degreesToRadians = 0.017453292519943295f;
+    PointSet result;
+    if (!targets.points().empty() &&
+        source.points().size() >
+            std::numeric_limits<size_t>::max() / targets.points().size())
+        return result;
+    result.points().reserve(source.points().size() * targets.points().size());
+    for (const auto& target : targets.points()) {
+        const float radians = target.yaw * degreesToRadians;
+        const float cosine  = std::cos(radians);
+        const float sine    = std::sin(radians);
+        for (const auto& sourcePoint : source.points()) {
+            ProcgenPoint copy = sourcePoint;
+            const float localX = sourcePoint.x * target.scaleX;
+            const float localY = sourcePoint.y * target.scaleY;
+            const float localZ = sourcePoint.z * target.scaleZ;
+            copy.x = target.x + localX * cosine - localZ * sine;
+            copy.y = target.y + localY;
+            copy.z = target.z + localX * sine + localZ * cosine;
+            const float normalX = sourcePoint.normalX * cosine - sourcePoint.normalZ * sine;
+            const float normalZ = sourcePoint.normalX * sine + sourcePoint.normalZ * cosine;
+            copy.normalX = normalX;
+            copy.normalZ = normalZ;
+            copy.yaw += target.yaw;
+            copy.scaleX *= target.scaleX;
+            copy.scaleY *= target.scaleY;
+            copy.scaleZ *= target.scaleZ;
+            copy.density *= target.density;
+            copy.seed = deriveSeed(target.seed, "copy:" + std::to_string(sourcePoint.seed));
+            if (inheritTargetAttributes) {
+                auto sourceFloats = std::move(copy.floatAttributes);
+                auto sourceStrings = std::move(copy.stringAttributes);
+                copy.floatAttributes = target.floatAttributes;
+                copy.stringAttributes = target.stringAttributes;
+                for (auto& [name, value] : sourceFloats)
+                    copy.floatAttributes[name] = value;
+                for (auto& [name, value] : sourceStrings)
+                    copy.stringAttributes[name] = std::move(value);
+            }
+            result.points().push_back(std::move(copy));
+        }
+    }
+    return result;
+}
+
 PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
                                    float maxValue, bool invert) {
     if (minValue > maxValue) std::swap(minValue, maxValue);

@@ -1,5 +1,6 @@
 #include "procgen/PointGraph.h"
 
+#include <cmath>
 #include <zeroerr.hpp>
 
 using namespace eve::procgen;
@@ -304,4 +305,48 @@ TEST_CASE("procgen.pointGraph.cooperativelyBudgetsAndCancelsExecution") {
     completed = graph.execute("second");
     REQUIRE(bool(completed));
     delete completed;
+}
+
+TEST_CASE("procgen.pointGraph.copiesSourcePointsAcrossTargetsWithBoundedOutput") {
+    PointSet source;
+    const int sourcePoint = source.add(1.f, 2.f, 0.f);
+    source.setPointSeed(sourcePoint, 11);
+    source.setFloatAttribute(sourcePoint, "source", 2.f);
+    source.setStringAttribute(sourcePoint, "shared", "source");
+    PointSet targets;
+    const int firstTarget = targets.add(10.f, 20.f, 30.f);
+    targets.setYaw(firstTarget, 90.f);
+    targets.setScale(firstTarget, 2.f, 3.f, 4.f);
+    targets.setDensity(firstTarget, 0.5f);
+    targets.setPointSeed(firstTarget, 101);
+    targets.setFloatAttribute(firstTarget, "target", 3.f);
+    targets.setStringAttribute(firstTarget, "shared", "target");
+    targets.add(-10.f, 0.f, 0.f);
+
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("targets", "input"));
+    CHECK(graph.addNode("copies", "copy.points"));
+    CHECK(graph.setNodePoints("source", &source));
+    CHECK(graph.setNodePoints("targets", &targets));
+    CHECK(graph.connect("source", "copies", 0));
+    CHECK(graph.connect("targets", "copies", 1));
+    CHECK(graph.setNodeInt("copies", "maxPoints", 2));
+    PointSet* result = graph.execute("copies");
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getCount(), 2);
+    CHECK(std::abs(result->getX(0) - 10.f) < 0.0001f);
+    CHECK_EQ(result->getY(0), 26.f);
+    CHECK(std::abs(result->getZ(0) - 32.f) < 0.0001f);
+    CHECK_EQ(result->getYaw(0), 90.f);
+    CHECK_EQ(result->getScaleX(0), 2.f);
+    CHECK_EQ(result->getDensity(0), 0.5f);
+    CHECK_EQ(result->getFloatAttribute(0, "target", -1.f), 3.f);
+    CHECK_EQ(result->getFloatAttribute(0, "source", -1.f), 2.f);
+    CHECK_EQ(result->getStringAttribute(0, "shared", ""), std::string("source"));
+    delete result;
+
+    CHECK(graph.setNodeInt("copies", "maxPoints", 1));
+    CHECK(!graph.execute("copies"));
+    CHECK(graph.getError().find("maxPoints") != std::string::npos);
 }
