@@ -14,6 +14,8 @@
 #include <dawn/webgpu_cpp.h>
 #endif
 
+#include "graphics/webgpu/Capabilities.h"
+
 #include <array>
 #include <atomic>
 #include <map>
@@ -458,11 +460,7 @@ private:
         glm::vec4 extraParams{0.f};
     };
 
-    void createInstanceAndAdapter();
-    void requestDevice();
     void configureSurface(int width, int height);
-    void waitForAdapter();
-    void waitForDevice();
     void createDefaultTextures();
     void createPipelineResources();
     void create2DPipelines();
@@ -590,13 +588,10 @@ private:
     wgpu::Device device;
     wgpu::Queue queue;
     wgpu::Surface surface;
+    Capabilities caps;
     WGPUTextureFormat surfaceFormat = WGPUTextureFormat_BGRA8Unorm;
     std::atomic<bool> surfaceNeedsRecreate{false};
     bool swapchainConfigured = false;
-    std::atomic<bool> adapterReceived{false};
-    std::atomic<bool> deviceReceived{false};
-    std::string adapterError;
-    std::string deviceError;
 
     // Per-frame command state (single command buffer per frame).
     uint32_t frameIndex = 0;
