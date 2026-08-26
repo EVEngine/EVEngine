@@ -74,6 +74,12 @@ file(GLOB all_test_cpp
   sceneloader.cpp
   service_mocks.cpp
   particles.cpp
+  particles_playback.cpp
+  particles_scalability.cpp
+  particles_effect_asset.cpp
+  particles_gpu_resident.cpp
+  particles_reference_effects.cpp
+  particles_renderer.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp
   particles_attach_more.cpp

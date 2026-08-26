@@ -11,7 +11,7 @@ class JsonDocument;
 namespace eve::particles {
 
 /**
- * @brief Apply particle JSON config onto an emitter (Config + Draw + Resource.texturePath).
+ * @brief Apply particle JSON config onto an emitter, including material texture resources.
  * Does not change buffer size or clear live particles.
  * Returns false on invalid / missing object root.
  */

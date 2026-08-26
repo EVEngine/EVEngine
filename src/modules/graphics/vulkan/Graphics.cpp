@@ -64,6 +64,7 @@ Graphics::~Graphics() {
     pipelineAO_.reset();
     pipelineGI_.reset();
     renderControl_.reset();
+    destroyGpuParticleResources();
     ownedCanvases.clear();
     ownedMeshes.clear();
     ownedGpuMeshes.clear();
@@ -94,6 +95,7 @@ Graphics::~Graphics() {
     if (premultipliedTexPipeline) device->destroyPipeline(premultipliedTexPipeline);
     if (multiplyTexPipeline) device->destroyPipeline(multiplyTexPipeline);
     if (opaqueTexPipeline) device->destroyPipeline(opaqueTexPipeline);
+    if (particleDistortionPipeline) device->destroyPipeline(particleDistortionPipeline);
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
     if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
@@ -562,6 +564,11 @@ vk::ImageView Graphics::currentShadowArrayView() {
 Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
     if (gbufferSlots.empty()) return nullptr;
     return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
+}
+
+Texture* Graphics::getSceneLinearDepthTexture() {
+    auto* slot = currentGBufferSlot();
+    return slot && gbufferPending ? &slot->depthColorTex : nullptr;
 }
 
 Graphics::DecalSlot *Graphics::currentDecalSlot() {

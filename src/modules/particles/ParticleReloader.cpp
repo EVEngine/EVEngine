@@ -77,10 +77,14 @@ private:
         auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Resource>();
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [cfg, res] = *it;
-            if (!cfg->entity || res->texturePath.empty()) continue;
-            if (normalize(res->texturePath) != normPath) continue;
+            if (!cfg->entity) continue;
+            const bool albedo = !res->texturePath.empty() && normalize(res->texturePath) == normPath;
+            const bool normal = !res->normalTexturePath.empty() && normalize(res->normalTexturePath) == normPath;
+            if (!albedo && !normal) continue;
             try {
-                cfg->entity->setTexture(gfx->newTextureFromFile(normPath));
+                auto* texture = gfx->newTextureFromFile(normPath);
+                if (albedo) cfg->entity->setTexture(texture);
+                if (normal) cfg->entity->setNormalTexture(texture);
                 any = true;
             } catch (...) {
             }

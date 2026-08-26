@@ -614,6 +614,7 @@ void Graphics::clear2DBatches() {
     litBatches.clear();
     overlaySpans.clear();
     engine3DSpans.clear();
+    gpuParticleDraws_.clear();
     pendingSceneResolve.reset();
     pendingUiResolve.reset();
     sceneColorComposited = false;
@@ -791,6 +792,23 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
     noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
+bool Graphics::drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
+                                                 float degrees, float u0, float v0, float u1, float v1,
+                                                 float strengthPixels, float opacity, bool rotatedUV) {
+    Texture* scene = getSceneColorTexture();
+    if (!frameHad3D || activeCanvas || !particleDistortionPipeline || !scene || !scene->gpuHandle || !displacement ||
+        !displacement->gpuHandle || strengthPixels <= 0.f || opacity <= 0.f)
+        return false;
+
+    TexturedBatch batch{scene, displacement, nullptr, BlendMode::Alpha, Batcher{}};
+    batch.effect = TexturedBatch::Effect::SceneColorDistortion;
+    batch.batch.addTexturedRectRotated(cx, cy, w, h, degrees, Color(strengthPixels, 0.f, 0.f, opacity), u0, v0, u1, v1,
+                                       rotatedUV);
+    texturedBatches.push_back(std::move(batch));
+    noteTexturedOverlay(displacement, uint32_t(texturedBatches.size() - 1));
+    return true;
 }
 
 void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
@@ -1400,6 +1418,10 @@ void Graphics::flushToSwapchain() {
         recordDeferredFrameGraph();
     }
 
+    // Resident particles record compute + compaction before any swapchain
+    // render pass, then consume the GPU-written indirect command below.
+    if (!(continue3D && !hadScenePass)) recordGpuParticleCompute(presentRecording.commandBuffer());
+
     // Render the UI overlay (ImGui) into its own MSAA pass, resolved and
     // composited as the top-most fullscreen quad. Skipped only on the rare 3D
     // fallback path where the swapchain pass is already open from begin3DFrame.
@@ -1417,6 +1439,7 @@ void Graphics::flushToSwapchain() {
     auto lit = std::move(litBatches);
     auto spans = std::move(overlaySpans);
     auto engineSpans = std::move(engine3DSpans);
+    auto       gpuParticleDraws = std::move(gpuParticleDraws_);
     auto sceneResolve = std::move(pendingSceneResolve);
     auto uiResolve = std::move(pendingUiResolve);
     const bool autoScene = hadScenePass && !sceneColorComposited;
@@ -1483,7 +1506,11 @@ void Graphics::flushToSwapchain() {
         vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
         vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
-        if (tb.shader && tb.shader->gpuHandle) {
+        if (tb.effect == TexturedBatch::Effect::SceneColorDistortion) {
+            if (!particleDistortionPipeline) return;
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, particleDistortionPipeline);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0, nullptr);
+        } else if (tb.shader && tb.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->swapchainPipeline);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,
@@ -1541,6 +1568,8 @@ void Graphics::flushToSwapchain() {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
                 drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
+                drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
         }
     };
@@ -1581,6 +1610,8 @@ void Graphics::flushToSwapchain() {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
                 drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
+                drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
         }
     }
