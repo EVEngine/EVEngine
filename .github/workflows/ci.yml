@@ -309,16 +309,19 @@ jobs:
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
-      - name: Capture native Dawn parity artifacts
+      - name: Run native Dawn parity and PCG compute
         # Dawn initialization takes roughly two minutes per isolated test on
         # the Windows software adapter. Keep per-case process isolation while
-        # allowing all 13 parity cases to complete.
+        # allowing all parity cases plus the PCG compute parity case to complete.
         timeout-minutes: 40
         shell: pwsh
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_RENDER_PARITY_DIR: ${{ github.workspace }}/artifacts/render-parity
-        run: ctest --test-dir build/webgpu-native -R '^graphics\.backendParity\.' --output-on-failure
+        run: >-
+          ctest --test-dir build/webgpu-native
+          -R '^(graphics\.backendParity\..*|gpgpu\.procgen\.transformParity)$'
+          --output-on-failure
 
       - name: Compare Vulkan and WebGPU parity images
         timeout-minutes: 5
