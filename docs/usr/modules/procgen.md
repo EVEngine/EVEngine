@@ -394,6 +394,8 @@ editor 与 procgen 同时启用时提供 `PcgPointGraphDomain`（domain id `proc
 properties，经现有 `GraphDocument` 编辑、revision 和 persistence 流程后编译成上述
 PointGraph 定义。非法 pin 类型、重复节点、坏 edge 和 cycle 会产生 editor diagnostic；
 procgen 被裁剪时 `EditorPcgGraph.cpp` 自动从 editor 模块源列表排除。
+编译器拒绝不支持的 `schemaVersion`、未知 property、类型不匹配、非有限浮点和超出运行时
+整数/浮点范围的值，避免拼写或反序列化错误静默进入运行时资产。
 `GraphDocument::setParameters()` 接受 `{ publicName: { node: nodeId, key: parameterKey } }`
 黑板对象；编译器校验节点、反射参数类型和重复目标，并把绑定写入 PointGraph 资产，运行时
 实例随后可通过 `setParameterFloat/Int/String()` 覆写。

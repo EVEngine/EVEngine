@@ -107,3 +107,36 @@ TEST_CASE("editor.pcgGraph.rejectsCyclesAndWrongPinTypes") {
     CHECK(!domain.canConnect(wrong, *aIn).allowed);
     CHECK(!domain.makeNode(GraphNodeId("bad"), "missing").accepted());
 }
+
+TEST_CASE("editor.pcgGraph.strictlyValidatesSchemaAndNodeProperties") {
+    PcgPointGraphDomain domain;
+    auto node = domain.makeNode(GraphNodeId("move"), "transform");
+    REQUIRE(node.value);
+
+    GraphDocumentData unsupported;
+    unsupported.domain = domain.domain();
+    unsupported.schemaVersion = 99;
+    auto result = domain.compile(unsupported);
+    CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Rejected));
+    REQUIRE(!result.diagnostics.empty());
+    CHECK_EQ(result.diagnostics[0].rule.value(), std::string("editor.pcg.unsupported-schema"));
+
+    GraphDocument graph;
+    CHECK(graph.createNode(*node.value).accepted());
+    EditorValue::Object properties = *node.value->properties.getIf<EditorValue::Object>();
+    properties["x"] = EditorValue("wrong-type");
+    CHECK(graph.setNodeProperties(node.value->id, EditorValue(properties)).accepted());
+    result = domain.compile(graph.snapshot(domain.domain()));
+    CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Failed));
+    REQUIRE(!result.diagnostics.empty());
+    CHECK_EQ(result.diagnostics[0].rule.value(),
+             std::string("editor.pcg.property-type-mismatch"));
+
+    properties["x"] = EditorValue(0.0);
+    properties["typo"] = EditorValue(1.0);
+    CHECK(graph.setNodeProperties(node.value->id, EditorValue(properties)).accepted());
+    result = domain.compile(graph.snapshot(domain.domain()));
+    CHECK_EQ(static_cast<int>(result.status), static_cast<int>(EditorStatus::Failed));
+    REQUIRE(!result.diagnostics.empty());
+    CHECK_EQ(result.diagnostics[0].rule.value(), std::string("editor.pcg.unknown-property"));
+}

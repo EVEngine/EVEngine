@@ -3,7 +3,9 @@
 #include "procgen/PointGraph.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
+#include <limits>
 #include <unordered_map>
 
 namespace eve::editor {
@@ -100,6 +102,14 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
                                       "Graph is not a procgen.point document"});
         return result;
     }
+    if (graph.schemaVersion != 1) {
+        result.status = EditorStatus::Rejected;
+        result.diagnostics.push_back(
+            {RuleId("editor.pcg.unsupported-schema"), DiagnosticSeverity::Error,
+             "Unsupported procgen.point graph schemaVersion: " +
+                 std::to_string(graph.schemaVersion)});
+        return result;
+    }
     procgen::PointGraph compiled;
     for (const auto& node : graph.nodes) {
         if (!compiled.addNode(node.id.value(), node.type)) {
@@ -111,14 +121,48 @@ PcgGraphCompileResult PcgPointGraphDomain::compile(const GraphDocumentData& grap
         const auto* properties = node.properties.getIf<EditorValue::Object>();
         if (!properties) continue;
         for (const auto& [key, value] : *properties) {
-            if (const auto* boolean = value.getIf<bool>())
-                compiled.setNodeInt(node.id.value(), key, *boolean ? 1 : 0);
-            else if (const auto* integer = value.getIf<int64_t>())
-                compiled.setNodeInt(node.id.value(), key, int(*integer));
-            else if (const auto* number = value.getIf<double>())
-                compiled.setNodeFloat(node.id.value(), key, float(*number));
-            else if (const auto* text = value.getIf<std::string>())
-                compiled.setNodeString(node.id.value(), key, *text);
+            const bool subgraphProperty =
+                node.type == "subgraph" &&
+                (key == "definition" || key == "inputNode" || key == "outputNode");
+            if (subgraphProperty) continue;
+            int parameterIndex = -1;
+            const int parameterCount = procgen::PointGraph::getOperationParamCount(node.type);
+            for (int index = 0; index < parameterCount; ++index)
+                if (procgen::PointGraph::getOperationParamKey(node.type, index) == key) {
+                    parameterIndex = index;
+                    break;
+                }
+            const std::string kind = parameterIndex >= 0
+                                         ? procgen::PointGraph::getOperationParamKind(
+                                               node.type, parameterIndex)
+                                         : std::string();
+            bool applied = false;
+            if (kind == "bool") {
+                if (const auto* boolean = value.getIf<bool>())
+                    applied = compiled.setNodeInt(node.id.value(), key, *boolean ? 1 : 0);
+            } else if (kind == "int") {
+                if (const auto* integer = value.getIf<int64_t>();
+                    integer && *integer >= std::numeric_limits<int>::min() &&
+                    *integer <= std::numeric_limits<int>::max())
+                    applied = compiled.setNodeInt(node.id.value(), key, int(*integer));
+            } else if (kind == "float") {
+                if (const auto* number = value.getIf<double>();
+                    number && std::isfinite(*number) &&
+                    std::abs(*number) <= std::numeric_limits<float>::max())
+                    applied = compiled.setNodeFloat(node.id.value(), key, float(*number));
+            } else if (kind == "string") {
+                if (const auto* text = value.getIf<std::string>())
+                    applied = compiled.setNodeString(node.id.value(), key, *text);
+            }
+            if (!applied) {
+                result.status = EditorStatus::Failed;
+                result.diagnostics.push_back(
+                    {RuleId(parameterIndex < 0 ? "editor.pcg.unknown-property"
+                                               : "editor.pcg.property-type-mismatch"),
+                     DiagnosticSeverity::Error,
+                     "Invalid PCG property " + node.id.value() + "." + key});
+                return result;
+            }
         }
         if (node.type == "subgraph") {
             const auto definition = properties->find("definition");
