@@ -55,11 +55,16 @@ Message* Event::poll() {
 }
 
 std::unique_ptr<Message> Event::pollOwned() {
-    std::lock_guard<std::mutex> lock(queueMu_);
-    if (queue.empty())
-        return nullptr;
-    auto msg = std::move(queue.front());
-    queue.pop();
+    std::unique_ptr<Message> msg;
+    {
+        std::lock_guard<std::mutex> lock(queueMu_);
+        if (queue.empty())
+            return nullptr;
+        msg = std::move(queue.front());
+        queue.pop();
+    }
+    // Report consumption outside the lock so the observer may re-enter push/poll.
+    if (msg && pollObserver_) pollObserver_(*msg);
     return msg;
 }
 
