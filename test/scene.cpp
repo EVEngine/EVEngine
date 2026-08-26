@@ -225,6 +225,8 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     instances[1].z      = 8.f;
     CHECK(sink->applyBatch("biome/0/0", instances));
     CHECK_EQ(sink->instanceCount("biome/0/0"), 2);
+    CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 2);
+    CHECK_EQ(sink->lastReusedCount("biome/0/0"), 0);
 
     SceneHost *host = mod->findHost("__pcg/biome/0/0");
     REQUIRE(host != nullptr);
@@ -233,6 +235,8 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     CHECK(approxEq(host->findById("tree-1")->x, 3.f));
     CHECK(approxEq(host->findById("tree-1")->sy, 2.f));
     CHECK(host->hasTag(host->findById("tree-1"), "pcg.asset:oak"));
+    auto *pooledRenderable = eve::graphics::Renderable3D::create();
+    REQUIRE(host->linkRenderable3D("tree-1", pooledRenderable));
 
     instances.resize(1);
     instances[0].x = 7.f;
@@ -241,8 +245,14 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     CHECK_EQ(host->getNodeCount(), 2);
     CHECK(approxEq(host->findById("tree-1")->x, 7.f));
     CHECK(host->findById("rock-2") == nullptr);
+    CHECK_EQ(host->linkCount("tree-1"), 1);
+    CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 0);
+    CHECK_EQ(sink->lastReusedCount("biome/0/0"), 1);
+    CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
 
     CHECK(sink->removeBatch("biome/0/0"));
+    CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
+    ecs::DestroyEntity(pooledRenderable);
     CHECK_EQ(sink->instanceCount("biome/0/0"), 0);
     CHECK_EQ(host->getNodeCount(), 1);
 }

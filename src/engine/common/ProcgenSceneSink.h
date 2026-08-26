@@ -41,6 +41,12 @@ public:
     virtual bool removeBatch(const std::string& batchId) = 0;
     /** @brief Number of currently published instances in a batch. */
     virtual int instanceCount(const std::string& batchId) const = 0;
+    /** @brief Instances newly created by the batch's latest successful apply. */
+    virtual int lastCreatedCount(const std::string& batchId) const = 0;
+    /** @brief Stable-id instances reused by the batch's latest successful apply. */
+    virtual int lastReusedCount(const std::string& batchId) const = 0;
+    /** @brief Instances removed by the batch's latest successful apply or removal. */
+    virtual int lastRemovedCount(const std::string& batchId) const = 0;
 };
 
 }  // namespace eve

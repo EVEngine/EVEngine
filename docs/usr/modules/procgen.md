@@ -272,6 +272,7 @@ runtime.removeGenerationSource("quest-target");
 ```nut
 procgen.publishInstances("forest/manual", trees, "asset", "oak");
 local count = procgen.getPublishedInstanceCount("forest/manual");
+local reused = procgen.getPublishedReusedCount("forest/manual");
 procgen.removeInstances("forest/manual");
 ```
 
@@ -279,7 +280,11 @@ Scene 为每个批次建立 `__pcg/<batchId>` Host，节点带 `pcg`、`pcg.inst
 `pcg.asset:<name>` tag。同一批次再次发布会按稳定节点 id reconcile，生成失败不会先
 破坏其它批次。默认实例 id 使用 point seed 的局部重复序号，因此插入其它 seed 的点不会
 让整批对象失去池化身份；string metadata `instanceId` 可提供项目级稳定 id。发布前会拒绝
-重复 id，失败时 Scene Sink 中的旧批次保持不变。运行时 Cell 使用
+重复 id，失败时 Scene Sink 中的旧批次保持不变。
+`getPublishedCreatedCount`、`getPublishedReusedCount` 和 `getPublishedRemovedCount`
+返回最近一次成功 apply/remove 的实例池变化，可用于流送 profiler 和复用率告警。成员增删
+导致 SceneNode arena 重排时，Scene 仍按稳定实例 id 恢复已挂接的渲染、物理和脚本对象，
+避免把结构变化误当成整批资源重建。运行时 Cell 使用
 `publishCellInstances(prefix, request, points, ...)`
 和 `removeCellInstances(prefix, request)`，其批次 id 自动包含 level/x/z。
 

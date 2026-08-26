@@ -128,6 +128,12 @@ public:
     bool removeInstances(const std::string& batchId);
     /** @brief Number of instances retained by the optional scene sink. */
     int getPublishedInstanceCount(const std::string& batchId) const;
+    /** @brief Instances newly created by the latest successful batch apply. */
+    int getPublishedCreatedCount(const std::string& batchId) const;
+    /** @brief Stable-id instances reused by the latest successful batch apply. */
+    int getPublishedReusedCount(const std::string& batchId) const;
+    /** @brief Instances removed by the latest successful batch apply or removal. */
+    int getPublishedRemovedCount(const std::string& batchId) const;
     /** @brief Publish one runtime cell using a stable prefix/level/x/z batch id. */
     bool publishCellInstances(const std::string& prefix, ProcgenCellRequest* request,
                               PointSet* points, const std::string& assetAttribute,

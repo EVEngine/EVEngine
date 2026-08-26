@@ -7,6 +7,8 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace eve::scene {
@@ -174,10 +176,26 @@ public:
             if (!instance.asset.empty()) child.tags.push_back("pcg.asset:" + instance.asset);
             root.children.push_back(std::move(child));
         }
+        std::unordered_set<std::string> nextIds;
+        nextIds.reserve(instances.size());
+        for (const auto& instance : instances) nextIds.insert(instance.id);
+        const auto previous = ids_.find(batchId);
+        const auto& previousIds = previous == ids_.end() ? emptyIds_ : previous->second;
+        Stats stats;
+        for (const auto& id : nextIds) {
+            if (previousIds.find(id) == previousIds.end()) ++stats.created;
+            else ++stats.reused;
+        }
+        for (const auto& id : previousIds) {
+            if (nextIds.find(id) == nextIds.end()) ++stats.removed;
+        }
+
         host->setVisible(true);
         host->setTreeReconcile(std::move(root));
         TransformSystem::updateHost(host);
         counts_[batchId] = int(instances.size());
+        ids_[batchId]    = std::move(nextIds);
+        stats_[batchId]  = stats;
         return true;
     }
 
@@ -191,7 +209,12 @@ public:
         root.tags = {"pcg", "pcg.batch"};
         host->setTree(std::move(root));
         host->setVisible(false);
+        Stats stats;
+        const auto ids = ids_.find(batchId);
+        if (ids != ids_.end()) stats.removed = int(ids->second.size());
+        stats_[batchId] = stats;
         counts_.erase(batchId);
+        ids_.erase(batchId);
         return true;
     }
 
@@ -199,10 +222,30 @@ public:
         const auto found = counts_.find(batchId);
         return found == counts_.end() ? 0 : found->second;
     }
+    int lastCreatedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.created;
+    }
+    int lastReusedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.reused;
+    }
+    int lastRemovedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.removed;
+    }
 
 private:
+    struct Stats {
+        int created = 0;
+        int reused  = 0;
+        int removed = 0;
+    };
     static std::string hostName(const std::string& batchId) { return "__pcg/" + batchId; }
+    const std::unordered_set<std::string> emptyIds_;
     std::unordered_map<std::string, int> counts_;
+    std::unordered_map<std::string, std::unordered_set<std::string>> ids_;
+    std::unordered_map<std::string, Stats> stats_;
 };
 
 }  // namespace

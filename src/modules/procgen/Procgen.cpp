@@ -411,6 +411,21 @@ int Procgen::getPublishedInstanceCount(const std::string& batchId) const {
     return sink && !batchId.empty() ? sink->instanceCount(batchId) : 0;
 }
 
+int Procgen::getPublishedCreatedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastCreatedCount(batchId) : 0;
+}
+
+int Procgen::getPublishedReusedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastReusedCount(batchId) : 0;
+}
+
+int Procgen::getPublishedRemovedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastRemovedCount(batchId) : 0;
+}
+
 bool Procgen::publishCellInstances(const std::string& prefix, ProcgenCellRequest* request,
                                    PointSet* points, const std::string& assetAttribute,
                                    const std::string& defaultAsset) {
@@ -1525,6 +1540,9 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("publishInstances", &Procgen::publishInstances);
     cls.addFunc("removeInstances", &Procgen::removeInstances);
     cls.addFunc("getPublishedInstanceCount", &Procgen::getPublishedInstanceCount);
+    cls.addFunc("getPublishedCreatedCount", &Procgen::getPublishedCreatedCount);
+    cls.addFunc("getPublishedReusedCount", &Procgen::getPublishedReusedCount);
+    cls.addFunc("getPublishedRemovedCount", &Procgen::getPublishedRemovedCount);
     cls.addFunc("publishCellInstances", &Procgen::publishCellInstances);
     cls.addFunc("removeCellInstances", &Procgen::removeCellInstances);
     cls.addFunc("beginSystem", &Procgen::beginSystem);
