@@ -467,6 +467,11 @@ private:
     void createPipelineResources();
     void create2DPipelines();
     void createMesh3DPipelines();
+    wgpu::RenderPipeline get2DColorPipeline(BlendMode blend, bool offscreen);
+    wgpu::RenderPipeline get2DTexturedPipeline(BlendMode blend, bool offscreen);
+    wgpu::RenderPipeline get2DLitPipeline(bool offscreen);
+    wgpu::RenderPipeline getMesh3DPipeline(BlendMode blend, bool depthWrite,
+                                           bool doubleSided, bool canvasTarget);
     void createMesh3DClusteredPipeline();
     void createShadowPipelines();
     void createGbufferPipelines();
