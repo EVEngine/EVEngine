@@ -60,6 +60,8 @@ fail() {
 
 wait_for "MCP listening on 127.0.0.1:$MCP_PORT" 30 \
   || fail "DevTools/MCP did not start (did the build include DevTools?)"
+wait_for "hot-reload: watching" 30 \
+  || fail "hot-reload watcher did not start"
 
 # Hot-edit the bounce coefficient in the copied game: 0.85 -> 0.5.
 sed -i 's/return (v < 0.0 || v > maxV) ? -0.85 : 1.0;/return (v < 0.0 || v > maxV) ? -0.5 : 1.0;/' \

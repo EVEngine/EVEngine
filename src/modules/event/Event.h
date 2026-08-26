@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -114,6 +115,21 @@ public:
     /** @brief Drops all queued messages and frees them. */
     virtual void clear();
 
+    /**
+     * @brief Sets an observer invoked for every message consumed via poll*().
+     *
+     * Used by DevTools to record the per-frame input/event stream for a
+     * state-driven bug scenario (see eve::dev::ScenarioRecorder). Only one
+     * observer is active at a time; set an empty function to clear it.
+     * @param observer Callback receiving each polled message (may be empty).
+     */
+    void setPollObserver(std::function<void(const Message&)> observer) {
+        pollObserver_ = std::move(observer);
+    }
+
+    /** @brief Current poll observer, or empty if none. */
+    const std::function<void(const Message&)>& pollObserver() const { return pollObserver_; }
+
     /** @brief Platform hook: pumps the native event queue into this module. */
     virtual void     pump() = 0;
     /** @brief Platform hook: blocks until a message is available, then polls it. */
@@ -128,6 +144,7 @@ protected:
     std::mutex           queueMu_;
     std::queue<std::unique_ptr<Message>> queue;
     std::string          lastData_;
+    std::function<void(const Message&)> pollObserver_;
 };
 
 }  // namespace event

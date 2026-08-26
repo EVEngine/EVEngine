@@ -178,8 +178,9 @@ private:
 };
 
     // Walk a game directory and write every regular file into a single .eve archive.
-    inline bool createGameArchive(const std::filesystem::path& gameDir,
-                                  const std::filesystem::path& outArchive) {
+    inline bool createGameArchive(
+        const std::filesystem::path& gameDir, const std::filesystem::path& outArchive,
+        const std::vector<std::pair<std::string, std::string>>& generatedEntries = {}) {
         std::error_code ec;
         if (!std::filesystem::is_directory(gameDir, ec)) return false;
 
@@ -228,6 +229,11 @@ private:
             if (!in && size > 0) continue;
 
             if (!writer.addFile(rel, buf.data(), buf.size())) return false;
+        }
+
+        for (const auto& [name, contents] : generatedEntries) {
+            if (name.empty() || name.front() == '/' || name.find("..") != std::string::npos) return false;
+            if (!writer.addFile(name, contents.data(), contents.size())) return false;
         }
 
         return writer.finish();

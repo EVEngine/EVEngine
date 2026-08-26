@@ -103,3 +103,25 @@ TEST_CASE("hotreload.bindAndUnbind") {
     // Unbound unknown image: tryReload returns false (no cached texture / emitters).
     CHECK(!hot->tryReload("foo/bar.png"));
 }
+
+TEST_CASE("hotreload.watchNewDirectoryRecurses") {
+    useIdentity("ev_ut_hot_watch_directory");
+    auto *f = fs();
+    f->unwatchAll();
+    REQUIRE(f->createDirectory("live_root"));
+    REQUIRE(f->createDirectory("live_root/nested"));
+
+    auto *hot = eve::filesystem::HotReload::create();
+    CHECK(!hot->watchNewDirectory("not_a_directory"));
+    REQUIRE(hot->watchNewDirectory("live_root"));
+    CHECK_GE(f->getWatchCount(), 2);
+
+    REQUIRE(f->createDirectory("live_root/nested/deeper"));
+    REQUIRE(hot->watchNewDirectory("live_root/nested/deeper"));
+    CHECK_GE(f->getWatchCount(), 3);
+
+    f->unwatchAll();
+    f->remove("live_root/nested/deeper");
+    f->remove("live_root/nested");
+    f->remove("live_root");
+}

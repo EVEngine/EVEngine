@@ -284,8 +284,11 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
                                   const float *uvST, int vertexCount, const uint32_t *indices,
                                   int indexCount) {
     if (!initialized || !mesh || !mesh->gpuHandle) return false;
-    if (!posXYZ || vertexCount <= 0) return false;
+    if (!posXYZ || vertexCount <= 0 || indexCount < 0) return false;
     if (indexCount > 0 && (indexCount % 3 != 0 || !indices)) return false;
+    for (int i = 0; i < indexCount; ++i) {
+        if (indices[i] >= uint32_t(vertexCount)) return false;
+    }
 
     std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
     for (int i = 0; i < vertexCount; ++i) {
@@ -781,12 +784,14 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
-        const vk::Pipeline pipe =
-            offscreen3DPassOpen
-                ? offscreen3DMeshPipeline
-                : (mesh3dSurfaceMode == SurfaceMode::Transparent
-                       ? mesh3dTransparentPipeline
-                       : mesh3dPipeline);
+        const bool transparent = mesh3dSurfaceMode == SurfaceMode::Transparent;
+        const BlendMode blend = transparent ? mesh3dSurfaceBlend : BlendMode::Opaque;
+        const bool depthWrite = !transparent || mesh3dSurfaceDepthWrite;
+        const size_t pipelineIndex =
+            mesh3dPipelineIndex(blend, depthWrite, mesh3dSurfaceDoubleSided);
+        const vk::Pipeline pipe = offscreen3DPassOpen
+                                      ? offscreen3DSurfacePipelines[pipelineIndex]
+                                      : mesh3dSurfacePipelines[pipelineIndex];
         if (pipe != lastMesh3dPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
             lastMesh3dPipeline = pipe;

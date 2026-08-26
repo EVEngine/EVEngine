@@ -56,6 +56,7 @@ OffscreenCanvas::OffscreenCanvas(Graphics *gfx, int width, int height)
     sd.magFilter = WGPUFilterMode_Linear;
     sd.minFilter = WGPUFilterMode_Linear;
     sd.mipmapFilter = WGPUMipmapFilterMode_Nearest;
+    sd.maxAnisotropy = 1;
     colorGpu.sampler = device.CreateSampler(reinterpret_cast<const wgpu::SamplerDescriptor*>(&sd));
 
     colorTex.gpuHandle = &colorGpu;

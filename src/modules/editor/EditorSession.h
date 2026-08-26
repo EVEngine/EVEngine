@@ -2,6 +2,7 @@
 
 #include "editor/EditConstraint.h"
 #include "editor/EditorCommandService.h"
+#include "editor/EditorDocumentService.h"
 #include "editor/EditorTool.h"
 #include "editor/EditorTransactions.h"
 
@@ -12,6 +13,8 @@
 #include <vector>
 
 namespace eve::editor {
+
+class AutosaveService;
 
 /**
  * @brief Hosts interchangeable editor tools and routes their lifecycle/input.
@@ -120,6 +123,43 @@ public:
     /** @brief Discard all retained plans, for example after replacing a document or target. */
     void clearRetainedPlans();
 
+    /**
+     * @brief Bind non-owning persistence services used by the active document.
+     * @param documents Formal document coordinator; must outlive the session.
+     * @param autosave Optional draft service; must outlive the session.
+     */
+    void setDocumentServices(DocumentService* documents, AutosaveService* autosave = nullptr);
+    /**
+     * @brief Select an already-open document for save, autosave and conflict polling.
+     * @param document Stable identity already opened by DocumentService.
+     * @return Bound document snapshot or a structured lookup failure.
+     */
+    EditorResult<DocumentSnapshot> bindDocument(const DocumentId& document);
+    /** @brief Stop coordinating the active document without closing it. */
+    void unbindDocument();
+    /** @brief Return the active document identity, or an empty id. */
+    const DocumentId& activeDocument() const { return activeDocument_; }
+    /**
+     * @brief Replace active working content using optional optimistic edit revision.
+     * @param content New serializable working content.
+     * @param expectedRevision Optional edit revision used to reject stale writers.
+     * @return Updated document snapshot or a structured conflict.
+     */
+    EditorResult<DocumentSnapshot> editDocument(EditorValue content,
+                                                std::optional<Revision> expectedRevision = std::nullopt);
+    /** @brief Persist the current active revision through the document CAS store. */
+    EditorResult<DocumentSnapshot> saveDocument();
+    /** @brief Write the active dirty revision to its separate autosave draft. */
+    EditorResult<StoredDocument> autosaveDocument();
+    /** @brief Detect external disk changes, adopting only when the document is clean. */
+    EditorResult<DocumentSnapshot> pollDocumentChanges();
+    /** @brief Configure draft cadence. @param seconds Interval in seconds; zero disables automatic drafts. */
+    void setAutosaveInterval(float seconds);
+    /** @brief Configure external-store polling cadence. @param seconds Interval in seconds; zero disables polling. */
+    void setExternalPollInterval(float seconds);
+    /** @brief Last edit revision successfully written to the draft store. */
+    Revision lastAutosavedRevision() const { return lastAutosavedRevision_; }
+
 private:
     void deactivateCurrent();
 
@@ -138,6 +178,14 @@ private:
         EditorValue payload;
     };
     std::vector<RetainedPlan> retainedPlans_;
+    DocumentService*          documentService_ = nullptr;
+    AutosaveService*          autosaveService_ = nullptr;
+    DocumentId                activeDocument_;
+    float                     autosaveInterval_ = 30.f;
+    float                     autosaveElapsed_ = 0.f;
+    float                     externalPollInterval_ = 1.f;
+    float                     externalPollElapsed_ = 0.f;
+    Revision                  lastAutosavedRevision_ = 0;
 };
 
 }  // namespace eve::editor

@@ -4,6 +4,7 @@
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
+#include "font/FontData.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
@@ -847,6 +848,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShader));
     cls.addFunc("newShaderFromWgsl", &Graphics::newShaderFromWgsl);
     cls.addFunc("newMeshShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newMeshShader));
+    cls.addFunc("newMeshShaderVF", &Graphics::newMeshShaderVF);
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
@@ -875,6 +877,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getWidth", &Graphics::getWidth);
     cls.addFunc("getHeight", &Graphics::getHeight);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
+    cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
     cls.addFunc("setMsaaSamples", &Graphics::setMsaaSamples);
@@ -1126,7 +1129,6 @@ void Graphics::setTextureSampler(Texture* texture, const std::string& filter, co
 
 Quad* Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
 
-#ifndef EVENGINE_WEBGPU
 Font* Graphics::newFont(font::FontData* data, std::string charset) { return new Font(this, data, std::move(charset)); }
 
 void Graphics::print(const std::string& text, float x, float y, const Color& color, float scale) {
@@ -1166,6 +1168,4 @@ void Graphics::print(const std::string& text, float x, float y, const Color& col
         prevCodepoint = code;
     }
 }
-#endif  // !EVENGINE_WEBGPU
-
 }  // namespace eve::graphics
