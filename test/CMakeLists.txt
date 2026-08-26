@@ -118,6 +118,7 @@ file(GLOB all_test_cpp
   procgen_runtime_generation.cpp
   procgen_scene_sink.cpp
   procgen_point_graph.cpp
+  procgen_point_graph_stress.cpp
   procgen_biome.cpp
   procgen_shape_grammar.cpp
   urban_generator.cpp

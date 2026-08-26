@@ -244,9 +244,15 @@ PointSet SpatialData::sample(float spacing, uint32_t seed, float jitter) const {
         for (float y = bounds_.minY; y <= bounds_.maxY + spacing * 0.001f; y += spacing) {
             for (float x = bounds_.minX; x <= bounds_.maxX + spacing * 0.001f; x += spacing) {
                 const uint32_t pointSeed = mixSpatialSeed(seed ^ index++);
-                const float sx = x + (unitFloat(pointSeed) * 2.f - 1.f) * extent;
-                const float sy = y + (unitFloat(pointSeed ^ 0x68bc21ebu) * 2.f - 1.f) * extent;
-                const float sz = z + (unitFloat(pointSeed ^ 0x02e5be93u) * 2.f - 1.f) * extent;
+                const float sx = bounds_.maxX > bounds_.minX
+                                     ? x + (unitFloat(pointSeed) * 2.f - 1.f) * extent
+                                     : x;
+                const float sy = bounds_.maxY > bounds_.minY
+                                     ? y + (unitFloat(pointSeed ^ 0x68bc21ebu) * 2.f - 1.f) * extent
+                                     : y;
+                const float sz = bounds_.maxZ > bounds_.minZ
+                                     ? z + (unitFloat(pointSeed ^ 0x02e5be93u) * 2.f - 1.f) * extent
+                                     : z;
                 if (!contains(sx, sy, sz)) continue;
                 const int added = output.add(sx, sy, sz);
                 output.setPointSeed(added, pointSeed);

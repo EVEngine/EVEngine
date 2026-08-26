@@ -1,5 +1,5 @@
-#include "procgen/PointGraph.h"
 #include "procgen/Biome.h"
+#include "procgen/PointGraph.h"
 #include "procgen/ShapeGrammar.h"
 
 #include <cmath>
