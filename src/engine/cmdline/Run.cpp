@@ -530,10 +530,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             // synthesize a report when none was produced (e.g. a native
             // std::exception with no script involvement).
             std::string report = dt.lastReport();
-            if (report.empty() ||
-                dynamic_cast<const eve::ScriptException*>(&e) == nullptr ||
-                !dynamic_cast<const eve::ScriptException*>(&e)->reported())
-                report = dt.notifyError(what);
+            if (report.empty()) report = dt.notifyError(what);
             cerr << report << endl;
             dt.detach();
         } else {

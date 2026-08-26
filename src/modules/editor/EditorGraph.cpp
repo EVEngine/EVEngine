@@ -80,10 +80,23 @@ EditorResult<void> GraphDocument::setNodeProperties(const GraphNodeId& node, Edi
     return EditorResult<void>::applied();
 }
 
+EditorResult<void> GraphDocument::setParameters(EditorValue parameters) {
+    if (parameters.type() != EditorValue::Type::Object)
+        return graphError<void>(EditorStatus::Rejected, "editor.graph.invalid-parameters",
+                                "Graph parameters must be an object");
+    if (!parameters.withinLimits(4, 4096, 256 * 1024))
+        return graphError<void>(EditorStatus::Rejected, "editor.graph.parameters-too-large",
+                                "Graph parameters exceed editor document limits");
+    parameters_ = std::move(parameters);
+    ++revision_;
+    return EditorResult<void>::applied();
+}
+
 GraphDocumentData GraphDocument::snapshot(std::string domain) const {
     GraphDocumentData result;
     result.domain   = std::move(domain);
     result.revision = revision_;
+    result.parameters = parameters_;
     for (const auto& [id, node] : nodes_) {
         (void)id;
         result.nodes.push_back(node);

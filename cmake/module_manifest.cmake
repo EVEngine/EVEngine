@@ -307,7 +307,7 @@ eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
                    DEPS gpgpu graphics
                    GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
-                   DEPS graphics image map
+                   DEPS gpgpu graphics image map
                    GROUP 3d)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
                    DEPS animation graphics model3d scene)
@@ -316,6 +316,12 @@ eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    GROUP 3d web)
 eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
                    DEPS data gpgpu graphics
+                   GROUP 3d)
+# HD-2D: extrudes a 2D map::TileLayer into a 3D terrain mesh (TileMap3D) and
+# renders 2D sprite sheets / characters as camera-facing 3D billboards
+# (Sprite3D) via the ECS Renderable3D forward path.
+eve_declare_module(NAME hd2d LIB EVHd2D LAYER 5 SCRIPT Hd2D SLOT hd2d
+                   DEPS graphics map
                    GROUP 3d)
 eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
                    DEPS graphics procgen

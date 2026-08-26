@@ -65,6 +65,8 @@ public:
     EditorResult<void> disconnect(const StableId& edge);
     /** @brief Replace one node's structured property object. */
     EditorResult<void> setNodeProperties(const GraphNodeId& node, EditorValue properties);
+    /** @brief Replace domain-specific graph parameters stored with the document. */
+    EditorResult<void> setParameters(EditorValue parameters);
     /** @brief Capture deterministic graph values for compilation/persistence. */
     GraphDocumentData snapshot(std::string domain) const;
     /** @brief Return the current graph edit revision. */
@@ -75,6 +77,7 @@ public:
 private:
     std::map<GraphNodeId, GraphNodeRecord> nodes_;
     std::map<StableId, GraphEdgeRecord>    edges_;
+    EditorValue                            parameters_;
     Revision                               revision_ = 0;
 };
 
