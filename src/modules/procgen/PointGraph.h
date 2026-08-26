@@ -51,6 +51,31 @@ public:
     bool setNodeFloat(const std::string& id, const std::string& key, float value);
     bool setNodeInt(const std::string& id, const std::string& key, int value);
     bool setNodeString(const std::string& id, const std::string& key, const std::string& value);
+    /** @brief Expose one reflected node parameter for per-instance overrides. */
+    bool exposeParameter(const std::string& name, const std::string& nodeId,
+                         const std::string& key);
+    /** @brief Return the number of exposed graph parameters. */
+    int         getParameterCount() const;
+    /** @brief Return an exposed parameter name by stable insertion index. */
+    std::string getParameterName(int index) const;
+    /** @brief Return the reflected kind of an exposed parameter. */
+    std::string getParameterKind(const std::string& name) const;
+    /** @brief Report whether an instance override is active. */
+    bool        hasParameterOverride(const std::string& name) const;
+    /** @brief Override an exposed floating-point parameter for this graph instance. */
+    bool        setParameterFloat(const std::string& name, float value);
+    /** @brief Override an exposed integer or Boolean parameter for this graph instance. */
+    bool        setParameterInt(const std::string& name, int value);
+    /** @brief Override an exposed string parameter for this graph instance. */
+    bool        setParameterString(const std::string& name, const std::string& value);
+    /** @brief Return the effective floating-point parameter value. */
+    float       getParameterFloat(const std::string& name, float fallback) const;
+    /** @brief Return the effective integer or Boolean parameter value. */
+    int         getParameterInt(const std::string& name, int fallback) const;
+    /** @brief Return the effective string parameter value. */
+    std::string getParameterString(const std::string& name, const std::string& fallback) const;
+    /** @brief Remove an instance override and restore the asset default. */
+    bool        clearParameterOverride(const std::string& name);
     /**
      * @brief Assign an immutable nested graph.
      * @param inputNode Nested `input` node receiving this node's first input.
@@ -105,6 +130,7 @@ public:
 
 private:
     struct Node {
+        std::string id;
         std::string operation;
         std::string inputs[2];
         std::unordered_map<std::string, float>       floats;
@@ -119,6 +145,11 @@ private:
         PointSet                                    cache;
         bool                                        cacheValid = false;
     };
+    struct ParameterBinding {
+        std::string nodeId;
+        std::string key;
+        std::string kind;
+    };
 
     const PointSet* evaluate(const std::string& id, std::unordered_map<std::string, int>& states);
     bool            validateNode(const std::string& id,
@@ -130,17 +161,22 @@ private:
     std::string     stringValue(const Node& node, const std::string& key,
                                 const std::string& fallback = {}) const;
 
-    std::unordered_map<std::string, Node> nodes_;
-    std::vector<std::string>              nodeOrder_;
-    std::vector<PointGraphNodeMetric>     metrics_;
-    std::string                           error_;
-    int                                   executionCount_ = 0;
-    int                                   cacheHitCount_   = 0;
-    uint64_t                              revision_        = 0;
-    int                                   executionNodeBudget_ = 0;
-    int                                   evaluatedNodes_      = 0;
-    bool                                  cancelRequested_     = false;
-    bool                                  lastCancelled_       = false;
+    std::unordered_map<std::string, Node>             nodes_;
+    std::vector<std::string>                          nodeOrder_;
+    std::unordered_map<std::string, ParameterBinding> parameters_;
+    std::vector<std::string>                          parameterOrder_;
+    std::unordered_map<std::string, float>            floatOverrides_;
+    std::unordered_map<std::string, int>              intOverrides_;
+    std::unordered_map<std::string, std::string>      stringOverrides_;
+    std::vector<PointGraphNodeMetric>                 metrics_;
+    std::string                                       error_;
+    int                                               executionCount_      = 0;
+    int                                               cacheHitCount_       = 0;
+    uint64_t                                          revision_            = 0;
+    int                                               executionNodeBudget_ = 0;
+    int                                               evaluatedNodes_      = 0;
+    bool                                              cancelRequested_     = false;
+    bool                                              lastCancelled_       = false;
 };
 
 }  // namespace eve::procgen

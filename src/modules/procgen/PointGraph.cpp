@@ -66,6 +66,7 @@ uint64_t nowNanoseconds() {
 
 bool PointGraph::addNode(const std::string& id, const std::string& operation) {
     if (id.empty() || !operationKnown(operation) || nodes_.find(id) != nodes_.end()) return false;
+    nodes_[id].id        = id;
     nodes_[id].operation = operation;
     nodeOrder_.push_back(id);
     invalidateFrom(id);
@@ -77,6 +78,18 @@ bool PointGraph::removeNode(const std::string& id) {
     invalidateFrom(id);
     nodes_.erase(id);
     nodeOrder_.erase(std::remove(nodeOrder_.begin(), nodeOrder_.end(), id), nodeOrder_.end());
+    for (auto it = parameterOrder_.begin(); it != parameterOrder_.end();) {
+        const auto binding = parameters_.find(*it);
+        if (binding != parameters_.end() && binding->second.nodeId == id) {
+            floatOverrides_.erase(*it);
+            intOverrides_.erase(*it);
+            stringOverrides_.erase(*it);
+            parameters_.erase(binding);
+            it = parameterOrder_.erase(it);
+        } else {
+            ++it;
+        }
+    }
     for (auto& [otherId, node] : nodes_)
         for (auto& input : node.inputs)
             if (input == id) input.clear();
@@ -161,6 +174,90 @@ bool PointGraph::setNodeString(const std::string& id, const std::string& key,
     if (found == nodes_.end() || key.empty()) return false;
     found->second.strings[key] = value;
     invalidateFrom(id);
+    return true;
+}
+
+bool PointGraph::exposeParameter(const std::string& name, const std::string& nodeId,
+                                 const std::string& key) {
+    const auto node = nodes_.find(nodeId);
+    if (name.empty() || key.empty() || node == nodes_.end() || parameters_.count(name) != 0)
+        return false;
+    const OperationSpec* spec = operationSpec(node->second.operation);
+    if (!spec) return false;
+    const auto parameter = std::find_if(spec->params.begin(), spec->params.end(),
+                                        [&](const OperationParam& value) {
+                                            return key == value.key;
+                                        });
+    if (parameter == spec->params.end()) return false;
+    for (const auto& [existingName, binding] : parameters_)
+        if (binding.nodeId == nodeId && binding.key == key) return false;
+    parameters_.emplace(name, ParameterBinding{nodeId, key, parameter->kind});
+    parameterOrder_.push_back(name);
+    ++revision_;
+    return true;
+}
+
+int PointGraph::getParameterCount() const { return int(parameterOrder_.size()); }
+std::string PointGraph::getParameterName(int index) const {
+    return index >= 0 && index < int(parameterOrder_.size()) ? parameterOrder_[size_t(index)]
+                                                              : std::string();
+}
+std::string PointGraph::getParameterKind(const std::string& name) const {
+    const auto found = parameters_.find(name);
+    return found == parameters_.end() ? std::string() : found->second.kind;
+}
+bool PointGraph::hasParameterOverride(const std::string& name) const {
+    return floatOverrides_.count(name) != 0 || intOverrides_.count(name) != 0 ||
+           stringOverrides_.count(name) != 0;
+}
+bool PointGraph::setParameterFloat(const std::string& name, float value) {
+    const auto found = parameters_.find(name);
+    if (found == parameters_.end() || found->second.kind != "float") return false;
+    floatOverrides_[name] = value;
+    invalidateFrom(found->second.nodeId);
+    return true;
+}
+bool PointGraph::setParameterInt(const std::string& name, int value) {
+    const auto found = parameters_.find(name);
+    if (found == parameters_.end() || (found->second.kind != "int" &&
+                                       found->second.kind != "bool"))
+        return false;
+    intOverrides_[name] = value;
+    invalidateFrom(found->second.nodeId);
+    return true;
+}
+bool PointGraph::setParameterString(const std::string& name, const std::string& value) {
+    const auto found = parameters_.find(name);
+    if (found == parameters_.end() || found->second.kind != "string") return false;
+    stringOverrides_[name] = value;
+    invalidateFrom(found->second.nodeId);
+    return true;
+}
+float PointGraph::getParameterFloat(const std::string& name, float fallback) const {
+    const auto found = parameters_.find(name);
+    if (found == parameters_.end() || found->second.kind != "float") return fallback;
+    return floatValue(nodes_.at(found->second.nodeId), found->second.key, fallback);
+}
+int PointGraph::getParameterInt(const std::string& name, int fallback) const {
+    const auto found = parameters_.find(name);
+    if (found == parameters_.end() || (found->second.kind != "int" &&
+                                       found->second.kind != "bool"))
+        return fallback;
+    return intValue(nodes_.at(found->second.nodeId), found->second.key, fallback);
+}
+std::string PointGraph::getParameterString(const std::string& name,
+                                            const std::string& fallback) const {
+    const auto found = parameters_.find(name);
+    if (found == parameters_.end() || found->second.kind != "string") return fallback;
+    return stringValue(nodes_.at(found->second.nodeId), found->second.key, fallback);
+}
+bool PointGraph::clearParameterOverride(const std::string& name) {
+    const auto found = parameters_.find(name);
+    if (found == parameters_.end() || !hasParameterOverride(name)) return false;
+    floatOverrides_.erase(name);
+    intOverrides_.erase(name);
+    stringOverrides_.erase(name);
+    invalidateFrom(found->second.nodeId);
     return true;
 }
 
@@ -479,15 +576,36 @@ void PointGraph::invalidateFrom(const std::string& id) {
     metrics_.clear();
 }
 float PointGraph::floatValue(const Node& node, const std::string& key, float fallback) const {
+    for (const auto& name : parameterOrder_) {
+        const auto& binding = parameters_.at(name);
+        if (binding.nodeId == node.id && binding.key == key) {
+            const auto overridden = floatOverrides_.find(name);
+            if (overridden != floatOverrides_.end()) return overridden->second;
+        }
+    }
     const auto found = node.floats.find(key);
     return found == node.floats.end() ? fallback : found->second;
 }
 int PointGraph::intValue(const Node& node, const std::string& key, int fallback) const {
+    for (const auto& name : parameterOrder_) {
+        const auto& binding = parameters_.at(name);
+        if (binding.nodeId == node.id && binding.key == key) {
+            const auto overridden = intOverrides_.find(name);
+            if (overridden != intOverrides_.end()) return overridden->second;
+        }
+    }
     const auto found = node.ints.find(key);
     return found == node.ints.end() ? fallback : found->second;
 }
 std::string PointGraph::stringValue(const Node& node, const std::string& key,
                                     const std::string& fallback) const {
+    for (const auto& name : parameterOrder_) {
+        const auto& binding = parameters_.at(name);
+        if (binding.nodeId == node.id && binding.key == key) {
+            const auto overridden = stringOverrides_.find(name);
+            if (overridden != stringOverrides_.end()) return overridden->second;
+        }
+    }
     const auto found = node.strings.find(key);
     return found == node.strings.end() ? fallback : found->second;
 }

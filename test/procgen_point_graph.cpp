@@ -205,6 +205,70 @@ TEST_CASE("procgen.pointGraph.definitionIsStableAcrossParameterInsertionOrder") 
     CHECK_EQ(first.serializeDefinition(), second.serializeDefinition());
 }
 
+TEST_CASE("procgen.pointGraph.exposesTypedInstanceParameters") {
+    PointSet points;
+    points.add(1.f, 0.f, 0.f);
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("move", "transform"));
+    CHECK(graph.connect("source", "move"));
+    CHECK(graph.setNodePoints("source", &points));
+    CHECK(graph.setNodeFloat("move", "x", 2.f));
+    CHECK(graph.exposeParameter("offset", "move", "x"));
+    CHECK_EQ(graph.getParameterCount(), 1);
+    CHECK_EQ(graph.getParameterName(0), std::string("offset"));
+    CHECK_EQ(graph.getParameterKind("offset"), std::string("float"));
+    CHECK_EQ(graph.getParameterFloat("offset", -1.f), 2.f);
+    CHECK(!graph.exposeParameter("alias", "move", "x"));
+    CHECK(!graph.exposeParameter("bad", "move", "missing"));
+    CHECK(!graph.setParameterInt("offset", 7));
+
+    PointSet* result = graph.execute("move");
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getX(0), 3.f);
+    delete result;
+
+    CHECK(graph.setParameterFloat("offset", 5.f));
+    CHECK(graph.hasParameterOverride("offset"));
+    CHECK_EQ(graph.getParameterFloat("offset", -1.f), 5.f);
+    result = graph.execute("move");
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getX(0), 6.f);
+    delete result;
+
+    const std::string definition = graph.serializeDefinition();
+    PointGraph loaded;
+    CHECK(loaded.deserializeDefinition(definition));
+    CHECK_EQ(loaded.getParameterKind("offset"), std::string("float"));
+    CHECK(!loaded.hasParameterOverride("offset"));
+    CHECK_EQ(loaded.getParameterFloat("offset", -1.f), 2.f);
+    CHECK(loaded.setNodePoints("source", &points));
+    result = loaded.execute("move");
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getX(0), 3.f);
+    delete result;
+
+    CHECK(graph.clearParameterOverride("offset"));
+    CHECK(!graph.hasParameterOverride("offset"));
+    CHECK_EQ(graph.getParameterFloat("offset", -1.f), 2.f);
+    CHECK(graph.removeNode("move"));
+    CHECK_EQ(graph.getParameterCount(), 0);
+}
+
+TEST_CASE("procgen.pointGraph.serializesExposedParametersDeterministically") {
+    PointGraph first;
+    PointGraph second;
+    for (PointGraph* graph : {&first, &second}) {
+        CHECK(graph->addNode("move", "transform"));
+        CHECK(graph->addNode("tag", "attribute.set.string"));
+    }
+    CHECK(first.exposeParameter("zOffset", "move", "z"));
+    CHECK(first.exposeParameter("asset", "tag", "value"));
+    CHECK(second.exposeParameter("asset", "tag", "value"));
+    CHECK(second.exposeParameter("zOffset", "move", "z"));
+    CHECK_EQ(first.serializeDefinition(), second.serializeDefinition());
+}
+
 TEST_CASE("procgen.pointGraph.cooperativelyBudgetsAndCancelsExecution") {
     PointSet points;
     points.add(0.f, 0.f, 0.f);

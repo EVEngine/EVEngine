@@ -26,6 +26,18 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("setNodeFloat", &PointGraph::setNodeFloat);
     graph.addFunc("setNodeInt", &PointGraph::setNodeInt);
     graph.addFunc("setNodeString", &PointGraph::setNodeString);
+    graph.addFunc("exposeParameter", &PointGraph::exposeParameter);
+    graph.addFunc("getParameterCount", &PointGraph::getParameterCount);
+    graph.addFunc("getParameterName", &PointGraph::getParameterName);
+    graph.addFunc("getParameterKind", &PointGraph::getParameterKind);
+    graph.addFunc("hasParameterOverride", &PointGraph::hasParameterOverride);
+    graph.addFunc("setParameterFloat", &PointGraph::setParameterFloat);
+    graph.addFunc("setParameterInt", &PointGraph::setParameterInt);
+    graph.addFunc("setParameterString", &PointGraph::setParameterString);
+    graph.addFunc("getParameterFloat", &PointGraph::getParameterFloat);
+    graph.addFunc("getParameterInt", &PointGraph::getParameterInt);
+    graph.addFunc("getParameterString", &PointGraph::getParameterString);
+    graph.addFunc("clearParameterOverride", &PointGraph::clearParameterOverride);
     graph.addFunc("setNodeSubgraph", &PointGraph::setNodeSubgraph);
     graph.addFunc("execute", &PointGraph::execute);
     graph.addFunc("setExecutionNodeBudget", &PointGraph::setExecutionNodeBudget);

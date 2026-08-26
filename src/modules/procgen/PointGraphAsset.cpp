@@ -75,6 +75,13 @@ std::string PointGraph::serializeDefinition() const {
                 << std::quoted(hexEncode(node.subgraph->serializeDefinition())) << '\n';
         }
     }
+    std::vector<std::string> parameterNames = parameterOrder_;
+    std::sort(parameterNames.begin(), parameterNames.end());
+    for (const auto& name : parameterNames) {
+        const auto& parameter = parameters_.at(name);
+        out << "PARAM " << std::quoted(name) << ' ' << std::quoted(parameter.nodeId) << ' '
+            << std::quoted(parameter.key) << '\n';
+    }
     for (const auto& id : nodeOrder_) {
         const auto& node = nodes_.at(id);
         for (int input = 0; input < 2; ++input)
@@ -162,6 +169,14 @@ bool PointGraph::deserializeDefinition(const std::string& definition) {
             if (!nested.deserializeDefinition(nestedDefinition) ||
                 !replacement.setNodeSubgraph(id, &nested, nestedInput, nestedOutput)) {
                 error_ = "invalid nested graph at " + id + ": " + nested.getError();
+                return false;
+            }
+        } else if (kind == "PARAM") {
+            std::string nodeId;
+            std::string key;
+            if (!(record >> std::quoted(id) >> std::quoted(nodeId) >> std::quoted(key)) ||
+                !replacement.exposeParameter(id, nodeId, key)) {
+                error_ = "invalid PARAM record";
                 return false;
             }
         } else {
