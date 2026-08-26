@@ -14,6 +14,7 @@
 #include "procgen/RuntimeGeneration.h"
 #include "procgen/ShapeGrammar.h"
 #include "procgen/SpatialData.h"
+#include "procgen/algorithms/LSystem.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/texture/CloudField.h"
@@ -56,6 +57,8 @@ public:
     // --- Script-first point pipelines ---
     PointSet* newPointSet();
     PointSet* sampleGrid(int width, int depth, float spacing, uint32_t seed, float jitter);
+    /** @brief Blue-noise (Poisson disk) samples in a width x depth area (caller owns). */
+    PointSet* poissonDisk(int width, int depth, float radius, uint32_t seed, int maxPoints);
     PointSet* filterHeight(PointSet* input, float minHeight, float maxHeight);
     PointSet* filterDensity(PointSet* input, float minDensity, float maxDensity);
     PointSet* filterBox(PointSet* input, float minX, float minY, float minZ, float maxX,
@@ -140,6 +143,9 @@ public:
                               const std::string& defaultAsset);
     /** @brief Remove one runtime cell's scene batch. */
     bool removeCellInstances(const std::string& prefix, ProcgenCellRequest* request);
+
+    /** @brief New general stochastic bracketed L-system engine (caller owns). */
+    LSystem* newLSystem();
 
     // --- Atomic script rebuilds ---
     ProcgenContext* beginSystem(const std::string& name, uint32_t seed);

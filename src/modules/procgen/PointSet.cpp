@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <random>
 
 namespace eve::procgen {
 namespace {
@@ -210,6 +211,88 @@ PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, fl
             point.seed = pointSeed ? pointSeed : 1u;
             output.points().push_back(std::move(point));
         }
+    }
+    return output;
+}
+
+PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, int maxPoints) {
+    PointSet output;
+    if (width <= 0 || depth <= 0 || radius <= 0.f) return output;
+    maxPoints = std::max(0, maxPoints);
+
+    // Bridson's algorithm: candidate annulus [r, 2r], grid cell side r / sqrt(2).
+    const float cell = radius * 0.70710678118f;
+    const int   gridW = std::max(1, int(std::ceil(float(width) / cell)));
+    const int   gridH = std::max(1, int(std::ceil(float(depth) / cell)));
+    std::vector<int> grid(size_t(gridW) * size_t(gridH), -1);
+
+    std::vector<float> xs, ys;
+    std::mt19937       rng(seed);
+    std::uniform_real_distribution<float> unit(0.f, 1.f);
+
+    const auto cellIndex = [&](float x, float y) -> int {
+        int gx = int(x / cell);
+        int gy = int(y / cell);
+        gx = std::max(0, std::min(gx, gridW - 1));
+        gy = std::max(0, std::min(gy, gridH - 1));
+        return gy * gridW + gx;
+    };
+    const auto inBounds = [&](float x, float y) { return x >= 0.f && x <= float(width) && y >= 0.f && y <= float(depth); };
+    const auto tooClose = [&](float x, float y, float r2) {
+        const int gx = std::max(0, std::min(int(x / cell), gridW - 1));
+        const int gy = std::max(0, std::min(int(y / cell), gridH - 1));
+        for (int oy = -2; oy <= 2; ++oy) {
+            for (int ox = -2; ox <= 2; ++ox) {
+                const int nx = gx + ox, ny = gy + oy;
+                if (nx < 0 || nx >= gridW || ny < 0 || ny >= gridH) continue;
+                const int idx = grid[ny * gridW + nx];
+                if (idx < 0) continue;
+                const float dx = x - xs[size_t(idx)], dy = y - ys[size_t(idx)];
+                if (dx * dx + dy * dy < r2) return true;
+            }
+        }
+        return false;
+    };
+
+    // Seed with one random interior point.
+    float fx = unit(rng) * float(width);
+    float fy = unit(rng) * float(depth);
+    xs.push_back(fx);
+    ys.push_back(fy);
+    grid[cellIndex(fx, fy)] = 0;
+    std::vector<int> active{0};
+
+    const float r2 = radius * radius;
+    constexpr int kTries = 30;
+    while (!active.empty() && int(xs.size()) < maxPoints) {
+        const int    pick = int(unit(rng) * float(active.size()));
+        const int    base = active[size_t(std::min(pick, int(active.size()) - 1))];
+        bool         found = false;
+        for (int k = 0; k < kTries; ++k) {
+            const float theta = unit(rng) * 6.28318530718f;
+            const float dist  = radius * (1.f + unit(rng));
+            const float nx    = xs[size_t(base)] + std::cos(theta) * dist;
+            const float ny    = ys[size_t(base)] + std::sin(theta) * dist;
+            if (!inBounds(nx, ny) || tooClose(nx, ny, r2)) continue;
+            xs.push_back(nx);
+            ys.push_back(ny);
+            grid[cellIndex(nx, ny)] = int(xs.size()) - 1;
+            active.push_back(int(xs.size()) - 1);
+            found = true;
+            break;
+        }
+        if (!found) active.erase(active.begin() + pick);
+    }
+
+    output.points().reserve(xs.size());
+    for (size_t i = 0; i < xs.size(); ++i) {
+        ProcgenPoint point;
+        point.x    = xs[i];
+        point.y    = 0.f;
+        point.z    = ys[i];
+        point.seed = mix32(seed ^ uint32_t(i));
+        if (point.seed == 0) point.seed = 1;
+        output.points().push_back(std::move(point));
     }
     return output;
 }
