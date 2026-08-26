@@ -87,6 +87,8 @@ private:
 uint32_t deriveSeed(uint32_t parent, const std::string& scope);
 
 PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, float jitter);
+/** @brief Bridson blue-noise (Poisson disk) samples in a width x depth area (XZ, y=0). */
+PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, int maxPoints);
 PointSet filterPointHeight(const PointSet& input, float minHeight, float maxHeight);
 PointSet filterPointDensity(const PointSet& input, float minDensity, float maxDensity);
 PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX,

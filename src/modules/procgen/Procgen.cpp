@@ -20,6 +20,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 namespace eve::procgen {
@@ -66,6 +67,10 @@ PointSet* Procgen::newPointSet() { return new PointSet(); }
 
 PointSet* Procgen::sampleGrid(int width, int depth, float spacing, uint32_t seed, float jitter) {
     return new PointSet(sampleGridPoints(width, depth, spacing, seed, jitter));
+}
+
+PointSet* Procgen::poissonDisk(int width, int depth, float radius, uint32_t seed, int maxPoints) {
+    return new PointSet(poissonDiskPoints(width, depth, radius, seed, maxPoints));
 }
 
 PointSet* Procgen::filterHeight(PointSet* input, float minHeight, float maxHeight) {
@@ -190,6 +195,8 @@ PointSet* Procgen::sampleSpline(PointSet* controlPoints, float spacing, uint32_t
 uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
     return eve::procgen::deriveSeed(parent, scope);
 }
+
+LSystem* Procgen::newLSystem() { return new LSystem(); }
 
 ProcgenContext* Procgen::beginSystem(const std::string& name, uint32_t seed) {
     lastError_.clear();
@@ -974,6 +981,34 @@ void Procgen::expose(ssq::Table &table) {
     points.addFunc("getStringAttribute", &PointSet::getStringAttribute);
     points.addFunc("hasStringAttribute", &PointSet::hasStringAttribute);
 
+    auto lsystem = table.addClass<LSystem>(
+        "ProcgenLSystem", std::function<LSystem*()>([]() -> LSystem* { return nullptr; }), true);
+    lsystem.addFunc("setAxiom", &LSystem::setAxiom);
+    lsystem.addFunc("addRule", &LSystem::addRule);
+    lsystem.addFunc("addRules",
+                    [](LSystem* ls, char symbol, ssq::Array productions, ssq::Array weights) {
+                        ls->addRules(symbol, productions.convert<std::string>(),
+                                     weights.convert<float>());
+                    });
+    lsystem.addFunc("clearRules", &LSystem::clearRules);
+    lsystem.addFunc("setAngle", &LSystem::setAngle);
+    lsystem.addFunc("setStep", &LSystem::setStep);
+    lsystem.addFunc("setIterations", &LSystem::setIterations);
+    lsystem.addFunc("setSeed", &LSystem::setSeed);
+    lsystem.addFunc("getSeed", &LSystem::getSeed);
+    lsystem.addFunc("getIterations", &LSystem::getIterations);
+    lsystem.addFunc("setInitialHeading", &LSystem::setInitialHeading);
+    lsystem.addFunc("setBranchRadius", &LSystem::setBranchRadius);
+    lsystem.addFunc("setBranchRadiusFalloff", &LSystem::setBranchRadiusFalloff);
+    lsystem.addFunc("setLeafSize", &LSystem::setLeafSize);
+    lsystem.addFunc("setLeafSymbols", &LSystem::setLeafSymbols);
+    lsystem.addFunc("setTropism", &LSystem::setTropism);
+    lsystem.addFunc("derive", &LSystem::derive);
+    lsystem.addFunc("trace", [](LSystem* ls, PointSet* out) {
+        if (!out) throw std::invalid_argument("trace: null PointSet");
+        ls->toPointSet(*out);
+    });
+
     auto context = table.addClass<ProcgenContext>(
         "ProcgenContext",
         std::function<ProcgenContext*()>([]() -> ProcgenContext* { return nullptr; }), true);
@@ -1134,6 +1169,8 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("newGrid", &Procgen::newGrid);
     cls.addFunc("newPointSet", &Procgen::newPointSet);
     cls.addFunc("sampleGrid", &Procgen::sampleGrid);
+    cls.addFunc("poissonDisk", &Procgen::poissonDisk);
+    cls.addFunc("newLSystem", &Procgen::newLSystem);
     cls.addFunc("filterHeight", &Procgen::filterHeight);
     cls.addFunc("filterDensity", &Procgen::filterDensity);
     cls.addFunc("filterBox", &Procgen::filterBox);

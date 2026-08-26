@@ -4,6 +4,7 @@
 #include "procgen/algorithms/TreeMesh.h"
 #include "procgen/algorithms/BushMesh.h"
 #include "procgen/algorithms/LinearStructure.h"
+#include "procgen/algorithms/LSystemMesh.h"
 #include "procgen/urban/UrbanOutput.h"
 
 #include <algorithm>
@@ -637,6 +638,7 @@ void MeshRecipeRegistry::registerBuiltins() {
                                                   1000.f, 0.1f));
     registerRecipe(std::move(tower), generateSkyscraperMesh);
     registerLinearStructureRecipes(*this);
+    registerLSystemRecipes(*this);
     urban::registerUrbanMeshRecipes(*this);
     builtinsRegistered_ = true;
 }
