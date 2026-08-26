@@ -1024,6 +1024,15 @@ public:
     virtual Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
                                           const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
+    /**
+     * @brief Creates a Mesh3D shader from separate vertex and fragment GLSL sources.
+     * @param vertGlsl Vertex shader source.
+     * @param fragGlsl Fragment shader source.
+     * @return A graphics-owned shader, or nullptr when compilation fails.
+     */
+    Shader *newMeshShaderVF(const std::string &vertGlsl, const std::string &fragGlsl) {
+        return newMeshShader(vertGlsl, fragGlsl);
+    }
     Shader *newMeshShader(const std::string &fragGlsl) {
         return newMeshShader(std::string(), fragGlsl);
     }

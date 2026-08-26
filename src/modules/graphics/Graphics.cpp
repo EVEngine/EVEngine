@@ -848,6 +848,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShader));
     cls.addFunc("newShaderFromWgsl", &Graphics::newShaderFromWgsl);
     cls.addFunc("newMeshShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newMeshShader));
+    cls.addFunc("newMeshShaderVF", &Graphics::newMeshShaderVF);
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
@@ -876,6 +877,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getWidth", &Graphics::getWidth);
     cls.addFunc("getHeight", &Graphics::getHeight);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
+    cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
     cls.addFunc("setMsaaSamples", &Graphics::setMsaaSamples);

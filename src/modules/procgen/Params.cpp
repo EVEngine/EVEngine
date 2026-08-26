@@ -31,6 +31,7 @@ void Params::setInt(const std::string &key, int value) {
     values_[key] = std::to_string(value);
 }
 void Params::setFloat(const std::string &key, float value) { values_[key] = std::to_string(value); }
+void Params::setBool(const std::string &key, bool value) { values_[key] = value ? "1" : "0"; }
 void Params::setString(const std::string &key, const std::string &value) { values_[key] = value; }
 
 bool Params::has(const std::string &key) const {
@@ -57,6 +58,14 @@ float Params::getFloat(const std::string &key, float defaultValue) const {
     float v   = std::strtof(it->second.c_str(), &end);
     if (end == it->second.c_str()) return defaultValue;
     return v;
+}
+
+bool Params::getBool(const std::string &key, bool defaultValue) const {
+    auto it = values_.find(key);
+    if (it == values_.end()) return defaultValue;
+    if (it->second == "1" || it->second == "true" || it->second == "TRUE") return true;
+    if (it->second == "0" || it->second == "false" || it->second == "FALSE") return false;
+    return defaultValue;
 }
 
 std::string Params::getString(const std::string &key, const std::string &defaultValue) const {
