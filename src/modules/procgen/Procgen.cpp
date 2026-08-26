@@ -1275,6 +1275,7 @@ void Procgen::expose(ssq::Table &table) {
                               &RuntimeGeneration::getResidentPointCount);
     runtimeGeneration.addFunc("getRejectedOutputCount",
                               &RuntimeGeneration::getRejectedOutputCount);
+    runtimeGeneration.addFunc("trimToResidentPoints", &RuntimeGeneration::trimToResidentPoints);
     runtimeGeneration.addFunc("setMaxGenerationRetries",
                               &RuntimeGeneration::setMaxGenerationRetries);
     runtimeGeneration.addFunc("getMaxGenerationRetries",

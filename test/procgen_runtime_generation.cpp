@@ -255,7 +255,19 @@ TEST_CASE("procgen.runtimeGeneration.enforcesPointMemoryBudgets") {
     one.add(0.f, 0.f, 0.f);
     CHECK(!runtime.completeGeneration(second, &one));
     CHECK_EQ(runtime.getRejectedOutputCount(), 2);
-    CHECK(runtime.debugReport().find("residentPoints=2") != std::string::npos);
+    CHECK_EQ(runtime.getPendingCleanupCount(), 1);
+    runtime.refreshGenerationSources();
+    CHECK(!runtime.completeGeneration(second, &one));
+    CHECK_EQ(runtime.getRejectedOutputCount(), 3);
+    CHECK_EQ(runtime.getPendingCleanupCount(), 1);
+    ProcgenCellRequest* cleanup = runtime.nextCleanup();
+    REQUIRE(bool(cleanup));
+    CHECK(runtime.completeCleanup(cleanup));
+    delete cleanup;
+    CHECK_EQ(runtime.getResidentPointCount(), 0);
+    CHECK(runtime.completeGeneration(second, &one));
+    CHECK_EQ(runtime.getResidentPointCount(), 1);
+    CHECK(runtime.debugReport().find("residentPoints=1") != std::string::npos);
     delete second;
 }
 
@@ -278,6 +290,35 @@ TEST_CASE("procgen.runtimeGeneration.breaksEqualPriorityTiesDeterministically") 
         delete b;
         delete a;
     }
+}
+
+TEST_CASE("procgen.runtimeGeneration.trimsLowestPriorityCellsDeterministically") {
+    RuntimeGeneration runtime(18);
+    runtime.addLevel(10.f, 25.f, 1.5f);
+    runtime.setMaxGenerating(100);
+    runtime.updateSource(5.f, 5.f, 0.f, 0.f);
+    int farX = 0;
+    int farZ = 0;
+    PointSet one;
+    one.add(0.f, 0.f, 0.f);
+    for (int index = 0; index < 3; ++index) {
+        ProcgenCellRequest* request = runtime.nextGenerate();
+        REQUIRE(bool(request));
+        farX = request->getX();
+        farZ = request->getZ();
+        CHECK(runtime.completeGeneration(request, &one));
+        delete request;
+    }
+    CHECK_EQ(runtime.getResidentPointCount(), 3);
+    CHECK_EQ(runtime.trimToResidentPoints(2), 1);
+    CHECK_EQ(runtime.getResidentPointCount(), 3);
+    ProcgenCellRequest* cleanup = runtime.nextCleanup();
+    REQUIRE(bool(cleanup));
+    CHECK_EQ(cleanup->getX(), farX);
+    CHECK_EQ(cleanup->getZ(), farZ);
+    CHECK(runtime.completeCleanup(cleanup));
+    delete cleanup;
+    CHECK_EQ(runtime.getResidentPointCount(), 2);
 }
 
 TEST_CASE("procgen.runtimeGeneration.boundsRetriesAndExplicitlyRecoversFailures") {

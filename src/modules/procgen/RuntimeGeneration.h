@@ -78,10 +78,15 @@ public:
     void setMaxResidentPoints(int count);
     /** @brief Return the total resident-point limit, or zero when unlimited. */
     int getMaxResidentPoints() const;
-    /** @brief Return the number of points currently retained by active cells. */
+    /** @brief Return points retained by active or not-yet-acknowledged cleanup cells. */
     int getResidentPointCount() const;
     /** @brief Return generation or restore outputs rejected by point budgets. */
     int getRejectedOutputCount() const;
+    /**
+     * @brief Schedule lowest-priority active cells for cleanup until at most target points remain.
+     * @return Number of cells newly scheduled for cleanup.
+     */
+    int trimToResidentPoints(int target);
     /** @brief Set retries after the initial generation attempt; zero fails immediately. */
     void setMaxGenerationRetries(int count);
     /** @brief Return retries allowed after the initial generation attempt. */
@@ -168,6 +173,7 @@ private:
         uint64_t revision = 0;
         uint64_t ticket   = 0;
         int      failures = 0;
+        bool     trimmed  = false;
         PointSet output;
     };
     struct Source {

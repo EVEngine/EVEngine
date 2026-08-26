@@ -115,9 +115,8 @@ bool RuntimeGeneration::deserializeCell(const std::string& definition) {
         getActiveCellCount() + getGeneratingCount() >= maxActiveCells_)
         return false;
     const int restoredPoints = restored.getCount();
-    const int replacedPoints = existing != cells_.end() && existing->second.state == State::Active
-                                   ? existing->second.output.getCount()
-                                   : 0;
+    const int replacedPoints =
+        existing != cells_.end() ? existing->second.output.getCount() : 0;
     if ((maxPointsPerCell_ > 0 && restoredPoints > maxPointsPerCell_) ||
         (maxResidentPoints_ > 0 &&
          getResidentPointCount() - replacedPoints > maxResidentPoints_ - restoredPoints)) {
@@ -133,6 +132,7 @@ bool RuntimeGeneration::deserializeCell(const std::string& definition) {
     cell.revision = revision;
     cell.ticket = ++nextTicket_;
     cell.failures = 0;
+    cell.trimmed = false;
     cell.output = std::move(restored);
     return true;
 }

@@ -233,7 +233,11 @@ in-flight Cell 设置常驻硬上限（0 表示无限），
 `setMaxPointsPerCell` 和 `setMaxResidentPoints` 分别限制单 Cell 与全部 active Cell 的点数；
 超预算提交不会发布，调用方可缩减输出后重交同一 ticket，或调用 `failGeneration` 进入有界
 重试。`getMaxPointsPerCell` / `getMaxResidentPoints` 返回当前配置，`getResidentPointCount` 与
-`getRejectedOutputCount` 提供内存压力遥测，0 表示无限制。
+`getRejectedOutputCount` 提供内存压力遥测，0 表示无限制。全局预算拒绝提交时，调度器会按
+当前 source 距离/朝向优先级确定性地将最远 active Cell 放入 cleanup 队列；也可调用
+`trimToResidentPoints(target)` 主动收缩缓存。被 trim 的 Cell 在清理完成前不会因 source
+刷新而复活；其 PointSet 在 `completeCleanup` 确认前仍计入常驻预算，实际释放后原异步提交
+才可安全重交。
 `setFrameTimeBudget` / `beginFrame` 限制一帧内继续发放工作的 CPU 时间。每格拥有由
 world seed、level、x、z 派生的独立 seed、revision 和 PointSet 输出缓存。每次异步生成或
 清理还携带唯一 `getTicket()`；Cell 离开、重新进入调度范围后，旧任务即使 seed 相同也会
