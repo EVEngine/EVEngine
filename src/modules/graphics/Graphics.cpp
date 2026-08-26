@@ -122,6 +122,14 @@ void setCanvasScript(Graphics *gfx, ssq::Object obj) {
     gfx->setCanvas(obj.toPtrUnsafe<Canvas *>());
 }
 
+void setShaderScript(Graphics *gfx, ssq::Object obj) {
+    if (obj.isNull()) {
+        gfx->setShader();
+        return;
+    }
+    gfx->setShader(obj.toPtrUnsafe<Shader *>());
+}
+
 }  // namespace
 
 Graphics::Graphics() {
@@ -856,7 +864,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newWater", &Graphics::newWater);
     cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShaderFromSpvFile));
-    cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader*)>(&Graphics::setShader));
+    cls.addFunc("setShader", std::function<void(Graphics *, ssq::Object)>(setShaderScript));
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
     cls.addFunc("begin3DFrame", &Graphics::begin3DFrame);
