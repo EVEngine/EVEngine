@@ -321,7 +321,13 @@ local trees = graph.execute("prune");
 `input`、`spatial.sample/filter/project`、`merge`、`copy.points`、`transform`、
 `density.remap`、`attribute.math.float`、
 `filter.float/string`、`attribute.set.float/string`、`density.cull`、
-`self.prune`、`jitter`、`branch` 和 `subgraph`。
+`self.prune`、`jitter`、`biome.generate`、`grammar.generate`、`branch` 和 `subgraph`。
+
+`biome.generate` 通过 `setNodeSpatial` 与 `setNodeBiomeRules` 绑定生成域和 Biome 规则，
+反射 `spacing/seed/jitter`；`grammar.generate` 通过 `setNodeShapeGrammar` 绑定 Shape Grammar，
+接收控制点输入并反射 `grammar/seed/acceptIncomplete`。setter 会复制规则资产，调用方销毁或
+热重载原对象不会悬空；这些外部槽和 PointSet/SpatialData 一样不写入图定义，加载或
+`instantiate()` 后必须重新绑定。
 
 `copy.points` 对每个 target 实例化全部 source 点（稳定的 target-major 顺序），组合位置、
 yaw、scale、density 与独立 seed；可继承 target metadata，冲突时 source metadata 胜出。
@@ -341,7 +347,8 @@ yaw、scale、density 与独立 seed；可继承 target metadata，冲突时 sou
 图资产可用 `exposeParameter(name, nodeId, key)` 将节点参数公开为强类型图参数；运行时实例通过
 `setParameterFloat/Int/String()` 覆写，`clearParameterOverride()` 恢复资产默认值。覆写不会写入
 序列化资产，并且只失效目标节点及下游缓存，适合关卡实例、Biome 和流式 Cell 共享图定义。
-`instantiate()` 从资产定义创建独立运行实例，不复制 PointSet/SpatialData 外部输入、覆写、缓存、
+`instantiate()` 从资产定义创建独立运行实例，不复制 PointSet/SpatialData/BiomeRules/
+ShapeGrammar 外部输入、覆写、缓存、
 metric 或取消状态；并行 Cell/后台任务应各自实例化并重新绑定输入，不能共享同一个可变实例。
 `getNodeOutput` 可取得任意已执行节点的中间 PointSet；`getMetric*` 和
 `debugReport` 提供逐节点输出数量、耗时及 cache hit。任意 node/edge/parameter/input

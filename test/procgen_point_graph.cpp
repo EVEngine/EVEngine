@@ -1,4 +1,6 @@
 #include "procgen/PointGraph.h"
+#include "procgen/Biome.h"
+#include "procgen/ShapeGrammar.h"
 
 #include <cmath>
 #include <zeroerr.hpp>
@@ -465,5 +467,61 @@ TEST_CASE("procgen.pointGraph.instantiatesIsolatedRuntimeState") {
     CHECK_EQ(output->getX(0), 5.f);
     delete output;
     CHECK_EQ(asset.getParameterFloat("offset", -1.f), 9.f);
+    delete instance;
+}
+
+TEST_CASE("procgen.pointGraph.generatesBiomeThroughReflectedNode") {
+    SpatialData domain = SpatialData::box(0.f, 0.f, 0.f, 4.f, 0.f, 4.f);
+    BiomeRules rules;
+    CHECK(rules.addLayer("forest", &domain, 1, 1.f));
+    CHECK(rules.addAsset("forest", "oak", 1.f, 1.f, 1.f, false));
+
+    PointGraph graph;
+    CHECK(graph.addNode("biome", "biome.generate"));
+    CHECK(graph.setNodeSpatial("biome", &domain));
+    CHECK(graph.setNodeBiomeRules("biome", &rules));
+    CHECK(graph.setNodeFloat("biome", "spacing", 2.f));
+    CHECK(graph.setNodeInt("biome", "seed", 42));
+    CHECK(graph.validate());
+    PointSet* output = graph.execute("biome");
+    REQUIRE(bool(output));
+    CHECK_EQ(output->getCount(), 9);
+    CHECK_EQ(output->getStringAttribute(0, "biome", ""), std::string("forest"));
+    CHECK_EQ(output->getStringAttribute(0, "asset", ""), std::string("oak"));
+    delete output;
+}
+
+TEST_CASE("procgen.pointGraph.expandsShapeGrammarAndRebindsExternalAssets") {
+    PointSet controlPoints;
+    controlPoints.add(0.f, 0.f, 0.f);
+    controlPoints.add(6.f, 0.f, 0.f);
+    ShapeGrammar grammar;
+    CHECK(grammar.addModule("A", "wall", 2.f, 1.f));
+
+    PointGraph asset;
+    CHECK(asset.addNode("path", "input"));
+    CHECK(asset.addNode("facade", "grammar.generate"));
+    CHECK(asset.connect("path", "facade"));
+    CHECK(asset.setNodePoints("path", &controlPoints));
+    CHECK(asset.setNodeShapeGrammar("facade", &grammar));
+    CHECK(asset.setNodeString("facade", "grammar", "A+"));
+    CHECK(asset.validate());
+    PointSet* output = asset.execute("facade");
+    REQUIRE(bool(output));
+    CHECK_EQ(output->getCount(), 3);
+    CHECK_EQ(output->getStringAttribute(0, "asset", ""), std::string("wall"));
+    delete output;
+
+    PointGraph* instance = asset.instantiate();
+    REQUIRE(bool(instance));
+    CHECK(instance->setNodePoints("path", &controlPoints));
+    CHECK(!instance->validate());
+    CHECK(instance->getError().find("shape grammar") != std::string::npos);
+    CHECK(instance->setNodeShapeGrammar("facade", &grammar));
+    CHECK(instance->validate());
+    output = instance->execute("facade");
+    REQUIRE(bool(output));
+    CHECK_EQ(output->getCount(), 3);
+    delete output;
     delete instance;
 }

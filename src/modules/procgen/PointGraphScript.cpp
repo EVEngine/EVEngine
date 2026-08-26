@@ -23,6 +23,8 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("getInputNode", &PointGraph::getInputNode);
     graph.addFunc("setNodePoints", &PointGraph::setNodePoints);
     graph.addFunc("setNodeSpatial", &PointGraph::setNodeSpatial);
+    graph.addFunc("setNodeBiomeRules", &PointGraph::setNodeBiomeRules);
+    graph.addFunc("setNodeShapeGrammar", &PointGraph::setNodeShapeGrammar);
     graph.addFunc("setNodeFloat", &PointGraph::setNodeFloat);
     graph.addFunc("setNodeInt", &PointGraph::setNodeInt);
     graph.addFunc("setNodeString", &PointGraph::setNodeString);

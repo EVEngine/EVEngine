@@ -11,6 +11,9 @@
 
 namespace eve::procgen {
 
+class BiomeRules;
+class ShapeGrammar;
+
 /** @brief Per-node execution information from the most recent graph run. */
 struct PointGraphNodeMetric {
     std::string id;
@@ -55,6 +58,10 @@ public:
     bool setNodePoints(const std::string& id, PointSet* points);
     /** @brief Assign copied spatial data to spatial.sample or spatial.filter. */
     bool setNodeSpatial(const std::string& id, SpatialData* spatial);
+    /** @brief Assign copied biome rules to a `biome.generate` node. */
+    bool setNodeBiomeRules(const std::string& id, BiomeRules* rules);
+    /** @brief Assign a copied shape grammar to a `grammar.generate` node. */
+    bool setNodeShapeGrammar(const std::string& id, ShapeGrammar* grammar);
     bool setNodeFloat(const std::string& id, const std::string& key, float value);
     bool setNodeInt(const std::string& id, const std::string& key, int value);
     bool setNodeString(const std::string& id, const std::string& key, const std::string& value);
@@ -134,8 +141,8 @@ public:
     /**
      * @brief Serialize graph topology, parameters and nested graphs.
      *
-     * Runtime PointSet and SpatialData values are external slots and are not
-     * embedded; callers rebind them after loading.
+     * Runtime PointSet, SpatialData, BiomeRules and ShapeGrammar values are
+     * external slots and are not embedded; callers rebind them after loading.
      */
     std::string serializeDefinition() const;
     /** @brief Transactionally replace this graph from serializeDefinition output. */
@@ -162,6 +169,8 @@ private:
         PointSet                                    points;
         bool                                        hasPoints = false;
         std::shared_ptr<SpatialData>                 spatial;
+        std::shared_ptr<BiomeRules>                  biomeRules;
+        std::shared_ptr<ShapeGrammar>                shapeGrammar;
         std::shared_ptr<PointGraph>                  subgraph;
         std::string                                  subgraphInput;
         std::string                                  subgraphOutput;

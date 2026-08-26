@@ -1,5 +1,8 @@
 #include "procgen/PointGraph.h"
 
+#include "procgen/Biome.h"
+#include "procgen/ShapeGrammar.h"
+
 #include <algorithm>
 #include <chrono>
 #include <sstream>
@@ -24,6 +27,10 @@ const std::vector<OperationSpec>& operationSpecs() {
         {"spatial.sample", 0, {{"spacing", "float", "1"}, {"seed", "int", "1"}, {"jitter", "float", "0"}}},
         {"spatial.filter", 1, {{"invert", "bool", "false"}}},
         {"spatial.project", 1, {}},
+        {"biome.generate", 0, {{"spacing", "float", "1"}, {"seed", "int", "1"},
+                                {"jitter", "float", "0"}}},
+        {"grammar.generate", 1, {{"grammar", "string", ""}, {"seed", "int", "1"},
+                                  {"acceptIncomplete", "bool", "true"}}},
         {"merge", 2, {}},
         {"copy.points", 2, {{"maxPoints", "int", "100000"},
                              {"inheritTargetAttributes", "bool", "true"}}},
@@ -191,6 +198,24 @@ bool PointGraph::setNodeSpatial(const std::string& id, SpatialData* spatial) {
     const auto found = nodes_.find(id);
     if (found == nodes_.end() || !spatial) return false;
     found->second.spatial = std::make_shared<SpatialData>(*spatial);
+    invalidateFrom(id);
+    return true;
+}
+
+bool PointGraph::setNodeBiomeRules(const std::string& id, BiomeRules* rules) {
+    const auto found = nodes_.find(id);
+    if (found == nodes_.end() || found->second.operation != "biome.generate" || !rules)
+        return false;
+    found->second.biomeRules = std::make_shared<BiomeRules>(*rules);
+    invalidateFrom(id);
+    return true;
+}
+
+bool PointGraph::setNodeShapeGrammar(const std::string& id, ShapeGrammar* grammar) {
+    const auto found = nodes_.find(id);
+    if (found == nodes_.end() || found->second.operation != "grammar.generate" || !grammar)
+        return false;
+    found->second.shapeGrammar = std::make_shared<ShapeGrammar>(*grammar);
     invalidateFrom(id);
     return true;
 }
@@ -509,6 +534,32 @@ const PointSet* PointGraph::evaluate(const std::string& id,
     } else if (node.operation == "spatial.project") {
         if (!first || !node.spatial) error_ = "spatial.project requires input and spatial data: " + id;
         else node.cache = node.spatial->project(*first);
+    } else if (node.operation == "biome.generate") {
+        if (!node.spatial || !node.biomeRules)
+            error_ = "biome.generate requires spatial data and biome rules: " + id;
+        else {
+            std::unique_ptr<PointSet> result(node.biomeRules->generate(
+                node.spatial.get(), floatValue(node, "spacing", 1.f),
+                uint32_t(intValue(node, "seed", 1)), floatValue(node, "jitter", 0.f)));
+            if (!result)
+                error_ = "biome.generate failed at " + id + ": " + node.biomeRules->getError();
+            else
+                node.cache = *result;
+        }
+    } else if (node.operation == "grammar.generate") {
+        if (!first || !node.shapeGrammar)
+            error_ = "grammar.generate requires input and shape grammar: " + id;
+        else {
+            std::unique_ptr<PointSet> result(node.shapeGrammar->generate(
+                stringValue(node, "grammar"), const_cast<PointSet*>(first),
+                uint32_t(intValue(node, "seed", 1)),
+                intValue(node, "acceptIncomplete", 1) != 0));
+            if (!result)
+                error_ = "grammar.generate failed at " + id + ": " +
+                         node.shapeGrammar->getError();
+            else
+                node.cache = *result;
+        }
     } else if (node.operation == "merge") {
         if (!first || !second) error_ = "merge requires two inputs: " + id;
         else node.cache = mergePointSets(*first, *second);
@@ -649,9 +700,13 @@ bool PointGraph::validateNode(const std::string& id, std::unordered_map<std::str
     const auto& node = found->second;
     if (node.operation == "input" && !node.hasPoints) error_ = "input node has no points: " + id;
     else if ((node.operation == "spatial.sample" || node.operation == "spatial.filter" ||
-              node.operation == "spatial.project") &&
+              node.operation == "spatial.project" || node.operation == "biome.generate") &&
              !node.spatial)
         error_ = "node has no spatial data: " + id;
+    else if (node.operation == "biome.generate" && !node.biomeRules)
+        error_ = "node has no biome rules: " + id;
+    else if (node.operation == "grammar.generate" && !node.shapeGrammar)
+        error_ = "node has no shape grammar: " + id;
     else if (node.operation == "subgraph" && (!node.subgraph || node.inputs[0].empty()))
         error_ = "subgraph is not configured: " + id;
     else if (node.operation == "subgraph") {
