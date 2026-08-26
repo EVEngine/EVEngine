@@ -159,6 +159,9 @@ TEST_CASE("procgen.pointGraph.definitionRoundTripsNestedTopologyAndParams") {
 
     CHECK(!loaded.deserializeDefinition("broken"));
     CHECK(loaded.hasNode("source"));
+    CHECK(!loaded.deserializeDefinition(
+        "EVPCG_POINT_GRAPH 1\nNODE \"move\" \"transform\"\nS \"move\" \"x\" \"bad\"\nEND\n"));
+    CHECK(loaded.hasNode("source"));
 }
 
 TEST_CASE("procgen.pointGraph.invalidatesOnlyChangedNodeDescendants") {
@@ -195,15 +198,20 @@ TEST_CASE("procgen.pointGraph.definitionIsStableAcrossParameterInsertionOrder") 
     PointGraph second;
     CHECK(first.addNode("move", "transform"));
     CHECK(second.addNode("move", "transform"));
+    CHECK(first.addNode("tag", "attribute.set.string"));
+    CHECK(second.addNode("tag", "attribute.set.string"));
     CHECK(first.setNodeFloat("move", "z", 3.f));
     CHECK(first.setNodeFloat("move", "x", 1.f));
-    CHECK(first.setNodeString("move", "beta", "b"));
-    CHECK(first.setNodeString("move", "alpha", "a"));
-    CHECK(second.setNodeString("move", "alpha", "a"));
-    CHECK(second.setNodeString("move", "beta", "b"));
+    CHECK(first.setNodeString("tag", "value", "oak"));
+    CHECK(first.setNodeString("tag", "attribute", "asset"));
+    CHECK(second.setNodeString("tag", "attribute", "asset"));
+    CHECK(second.setNodeString("tag", "value", "oak"));
     CHECK(second.setNodeFloat("move", "x", 1.f));
     CHECK(second.setNodeFloat("move", "z", 3.f));
     CHECK_EQ(first.serializeDefinition(), second.serializeDefinition());
+    CHECK(!first.setNodeString("move", "typo", "rejected"));
+    CHECK(!first.setNodeInt("move", "x", 1));
+    CHECK(!first.setNodeFloat("tag", "value", 1.f));
 }
 
 TEST_CASE("procgen.pointGraph.exposesTypedInstanceParameters") {
@@ -349,6 +357,17 @@ TEST_CASE("procgen.pointGraph.copiesSourcePointsAcrossTargetsWithBoundedOutput")
     CHECK(graph.setNodeInt("copies", "maxPoints", 1));
     CHECK(!graph.execute("copies"));
     CHECK(graph.getError().find("maxPoints") != std::string::npos);
+}
+
+TEST_CASE("procgen.pointGraph.validatesEveryRequiredInput") {
+    PointSet   points;
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("copies", "copy.points"));
+    CHECK(graph.setNodePoints("source", &points));
+    CHECK(graph.connect("source", "copies", 0));
+    CHECK(!graph.validate());
+    CHECK(graph.getError().find("input 1") != std::string::npos);
 }
 
 TEST_CASE("procgen.pointGraph.remapsDensityAndComputesFloatMetadata") {

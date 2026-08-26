@@ -66,6 +66,13 @@ const OperationSpec* operationSpec(const std::string& operation) {
     return found == values.end() ? nullptr : &*found;
 }
 
+const OperationParam* operationParam(const OperationSpec* spec, const std::string& key) {
+    if (!spec) return nullptr;
+    const auto found = std::find_if(spec->params.begin(), spec->params.end(),
+                                    [&](const OperationParam& value) { return key == value.key; });
+    return found == spec->params.end() ? nullptr : &*found;
+}
+
 uint64_t nowNanoseconds() {
     return uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(
                         std::chrono::steady_clock::now().time_since_epoch())
@@ -190,7 +197,9 @@ bool PointGraph::setNodeSpatial(const std::string& id, SpatialData* spatial) {
 
 bool PointGraph::setNodeFloat(const std::string& id, const std::string& key, float value) {
     const auto found = nodes_.find(id);
-    if (found == nodes_.end() || key.empty()) return false;
+    const auto* spec = found == nodes_.end() ? nullptr : operationSpec(found->second.operation);
+    const auto* parameter = operationParam(spec, key);
+    if (!parameter || std::string(parameter->kind) != "float") return false;
     found->second.floats[key] = value;
     invalidateFrom(id);
     return true;
@@ -198,7 +207,11 @@ bool PointGraph::setNodeFloat(const std::string& id, const std::string& key, flo
 
 bool PointGraph::setNodeInt(const std::string& id, const std::string& key, int value) {
     const auto found = nodes_.find(id);
-    if (found == nodes_.end() || key.empty()) return false;
+    const auto* spec = found == nodes_.end() ? nullptr : operationSpec(found->second.operation);
+    const auto* parameter = operationParam(spec, key);
+    if (!parameter ||
+        (std::string(parameter->kind) != "int" && std::string(parameter->kind) != "bool"))
+        return false;
     found->second.ints[key] = value;
     invalidateFrom(id);
     return true;
@@ -207,7 +220,9 @@ bool PointGraph::setNodeInt(const std::string& id, const std::string& key, int v
 bool PointGraph::setNodeString(const std::string& id, const std::string& key,
                                const std::string& value) {
     const auto found = nodes_.find(id);
-    if (found == nodes_.end() || key.empty()) return false;
+    const auto* spec = found == nodes_.end() ? nullptr : operationSpec(found->second.operation);
+    const auto* parameter = operationParam(spec, key);
+    if (!parameter || std::string(parameter->kind) != "string") return false;
     found->second.strings[key] = value;
     invalidateFrom(id);
     return true;
@@ -220,11 +235,8 @@ bool PointGraph::exposeParameter(const std::string& name, const std::string& nod
         return false;
     const OperationSpec* spec = operationSpec(node->second.operation);
     if (!spec) return false;
-    const auto parameter = std::find_if(spec->params.begin(), spec->params.end(),
-                                        [&](const OperationParam& value) {
-                                            return key == value.key;
-                                        });
-    if (parameter == spec->params.end()) return false;
+    const auto* parameter = operationParam(spec, key);
+    if (!parameter) return false;
     for (const auto& [existingName, binding] : parameters_)
         if (binding.nodeId == nodeId && binding.key == key) return false;
     parameters_.emplace(name, ParameterBinding{nodeId, key, parameter->kind});
@@ -640,10 +652,6 @@ bool PointGraph::validateNode(const std::string& id, std::unordered_map<std::str
               node.operation == "spatial.project") &&
              !node.spatial)
         error_ = "node has no spatial data: " + id;
-    else if (node.operation == "merge" && (node.inputs[0].empty() || node.inputs[1].empty()))
-        error_ = "merge requires two inputs: " + id;
-    else if (node.operation == "branch" && (node.inputs[0].empty() || node.inputs[1].empty()))
-        error_ = "branch requires two inputs: " + id;
     else if (node.operation == "subgraph" && (!node.subgraph || node.inputs[0].empty()))
         error_ = "subgraph is not configured: " + id;
     else if (node.operation == "subgraph") {
@@ -651,10 +659,14 @@ bool PointGraph::validateNode(const std::string& id, std::unordered_map<std::str
         PointSet   externalInput;
         if (!nested.setNodePoints(node.subgraphInput, &externalInput) || !nested.validate())
             error_ = "invalid subgraph at " + id + ": " + nested.getError();
+    } else {
+        const auto* spec = operationSpec(node.operation);
+        for (int index = 0; spec && index < spec->inputs; ++index)
+            if (node.inputs[index].empty()) {
+                error_ = node.operation + " requires input " + std::to_string(index) + ": " + id;
+                break;
+            }
     }
-    else if (node.operation != "input" && node.operation != "spatial.sample" &&
-             node.operation != "merge" && node.inputs[0].empty())
-        error_ = "node requires input: " + id;
     if (!error_.empty()) return false;
     states[id] = 2;
     return true;

@@ -318,6 +318,8 @@ yaw、scale、density 与独立 seed；可继承 target metadata，冲突时 sou
 `execute(outputId)` 只求值该输出的祖先节点；没有配置变化时复用缓存。节点参数、输入或
 空间数据变化时只失效该节点及其下游，未受影响的分支继续复用结果；`getRevision()` 提供
 单调递增的资产/预览缓存版本。序列化会稳定排序参数键，等价图在不同平台产生相同定义字节。
+`setNodeFloat`、`setNodeInt` 和 `setNodeString` 按 operation 反射 schema 校验参数名与类型；
+未知参数或类型不匹配会被拒绝，资产反序列化也遵循同一规则并保持事务式失败。
 大型图可用 `setExecutionNodeBudget(maxNodes)` 限制一次调用新求值的节点数；超出预算会保留
 已经完成的上游缓存，下一次提高预算后可继续求值。`requestCancel()` / `resetCancellation()`
 为编辑器预览和任务队列提供显式取消边界，`wasCancelled()` 区分预算/取消退出与数据错误。
