@@ -529,6 +529,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             // DevTool::attach(Runtime&)) already slice script errors; only
             // synthesize a report when none was produced (e.g. a native
             // std::exception with no script involvement).
+            const auto* scriptError = dynamic_cast<const eve::ScriptException*>(&e);
             std::string report = dt.lastReport();
             if (!(scriptError && scriptError->reported()) || report.empty())
                 report = dt.notifyError(what);
