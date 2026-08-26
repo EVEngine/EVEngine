@@ -16,6 +16,8 @@ public:
     int      getX() const;
     int      getZ() const;
     uint32_t getSeed() const;
+    /** @brief Unique scheduler ticket used to reject stale asynchronous completions. */
+    uint64_t getTicket() const;
     float    getMinX() const;
     float    getMinZ() const;
     float    getMaxX() const;
@@ -27,6 +29,7 @@ private:
     int      x_        = 0;
     int      z_        = 0;
     uint32_t seed_     = 1;
+    uint64_t ticket_   = 0;
     float    cellSize_ = 1.f;
 };
 
@@ -135,6 +138,7 @@ private:
         State    state    = State::Pending;
         float    priority = 0.f;
         uint64_t revision = 0;
+        uint64_t ticket   = 0;
         PointSet output;
     };
     struct Source {
@@ -162,6 +166,7 @@ private:
     std::unordered_map<CellKey, Cell, CellKeyHash> cells_;
     std::vector<CellKey> generateQueue_;
     std::vector<CellKey> cleanupQueue_;
+    uint64_t             nextTicket_ = 0;
 };
 
 }  // namespace eve::procgen

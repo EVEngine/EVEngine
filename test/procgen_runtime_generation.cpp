@@ -143,3 +143,47 @@ TEST_CASE("procgen.runtimeGeneration.frustumCullsFarBehindButKeepsNearCells") {
     CHECK(foundNearBehind);
     CHECK(foundForward);
 }
+
+TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncGenerationTickets") {
+    RuntimeGeneration runtime(77);
+    runtime.addLevel(10.f, 6.f, 1.5f);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    ProcgenCellRequest* stale = runtime.nextGenerate();
+    REQUIRE(bool(stale));
+    const uint64_t staleTicket = stale->getTicket();
+
+    runtime.updateSource(100.f, 100.f, 1.f, 0.f);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    ProcgenCellRequest* current = runtime.nextGenerate();
+    REQUIRE(bool(current));
+    CHECK_NE(current->getTicket(), staleTicket);
+    PointSet output;
+    CHECK(!runtime.completeGeneration(stale, &output));
+    CHECK(runtime.completeGeneration(current, &output));
+    delete current;
+    delete stale;
+}
+
+TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncCleanupTickets") {
+    RuntimeGeneration runtime(78);
+    runtime.addLevel(10.f, 6.f, 1.5f);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    ProcgenCellRequest* generated = runtime.nextGenerate();
+    REQUIRE(bool(generated));
+    PointSet output;
+    CHECK(runtime.completeGeneration(generated, &output));
+    delete generated;
+
+    runtime.updateSource(100.f, 100.f, 1.f, 0.f);
+    ProcgenCellRequest* stale = runtime.nextCleanup();
+    REQUIRE(bool(stale));
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    runtime.updateSource(100.f, 100.f, 1.f, 0.f);
+    CHECK(!runtime.completeCleanup(stale));
+    ProcgenCellRequest* current = runtime.nextCleanup();
+    REQUIRE(bool(current));
+    CHECK_NE(current->getTicket(), stale->getTicket());
+    CHECK(runtime.completeCleanup(current));
+    delete current;
+    delete stale;
+}

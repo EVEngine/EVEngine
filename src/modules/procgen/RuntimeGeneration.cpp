@@ -26,6 +26,7 @@ int      ProcgenCellRequest::getLevel() const { return level_; }
 int      ProcgenCellRequest::getX() const { return x_; }
 int      ProcgenCellRequest::getZ() const { return z_; }
 uint32_t ProcgenCellRequest::getSeed() const { return seed_; }
+uint64_t ProcgenCellRequest::getTicket() const { return ticket_; }
 float    ProcgenCellRequest::getMinX() const { return float(x_) * cellSize_; }
 float    ProcgenCellRequest::getMinZ() const { return float(z_) * cellSize_; }
 float    ProcgenCellRequest::getMaxX() const { return float(x_ + 1) * cellSize_; }
@@ -167,6 +168,7 @@ void RuntimeGeneration::refreshGenerationSources() {
                     const auto existing = cells_.find(key);
                     if (existing != cells_.end()) {
                         if (existing->second.state == State::Cleanup) {
+                            existing->second.ticket = ++nextTicket_;
                             existing->second.state = existing->second.revision > 0 ? State::Active
                                                                                   : State::Pending;
                             cleanupQueue_.erase(
@@ -197,6 +199,7 @@ void RuntimeGeneration::refreshGenerationSources() {
         if ((cell.state == State::Pending || cell.state == State::Generating) &&
             desired.find(key) == desired.end()) {
             cell.state = State::Cleanup;
+            cell.ticket = ++nextTicket_;
             cleanupQueue_.push_back(key);
             continue;
         }
@@ -212,6 +215,7 @@ void RuntimeGeneration::refreshGenerationSources() {
         }
         if (retained) continue;
         cell.state = State::Cleanup;
+        cell.ticket = ++nextTicket_;
         cleanupQueue_.push_back(key);
     }
     generateQueue_.erase(
@@ -251,6 +255,7 @@ ProcgenCellRequest* RuntimeGeneration::nextGenerate() {
     const auto found = cells_.find(key);
     if (found == cells_.end() || found->second.state != State::Pending) return nextGenerate();
     found->second.state = State::Generating;
+    found->second.ticket = ++nextTicket_;
     return makeRequest(key);
 }
 
@@ -258,6 +263,9 @@ ProcgenCellRequest* RuntimeGeneration::nextCleanup() {
     if (cleanupQueue_.empty()) return nullptr;
     const CellKey key = cleanupQueue_.front();
     cleanupQueue_.erase(cleanupQueue_.begin());
+    const auto found = cells_.find(key);
+    if (found == cells_.end() || found->second.state != State::Cleanup) return nextCleanup();
+    found->second.ticket = ++nextTicket_;
     return makeRequest(key);
 }
 
@@ -266,7 +274,7 @@ bool RuntimeGeneration::completeGeneration(ProcgenCellRequest* request, PointSet
     const CellKey key{request->level_, request->x_, request->z_};
     const auto    found = cells_.find(key);
     if (found == cells_.end() || found->second.state != State::Generating ||
-        request->seed_ != cellSeed(key))
+        request->seed_ != cellSeed(key) || request->ticket_ != found->second.ticket)
         return false;
     found->second.output = *output;
     ++found->second.revision;
@@ -278,8 +286,11 @@ bool RuntimeGeneration::failGeneration(ProcgenCellRequest* request) {
     if (!request) return false;
     const CellKey key{request->level_, request->x_, request->z_};
     const auto    found = cells_.find(key);
-    if (found == cells_.end() || found->second.state != State::Generating) return false;
+    if (found == cells_.end() || found->second.state != State::Generating ||
+        request->ticket_ != found->second.ticket)
+        return false;
     found->second.state = State::Pending;
+    found->second.ticket = ++nextTicket_;
     generateQueue_.push_back(key);
     return true;
 }
@@ -288,7 +299,9 @@ bool RuntimeGeneration::completeCleanup(ProcgenCellRequest* request) {
     if (!request) return false;
     const CellKey key{request->level_, request->x_, request->z_};
     const auto    found = cells_.find(key);
-    if (found == cells_.end() || found->second.state != State::Cleanup) return false;
+    if (found == cells_.end() || found->second.state != State::Cleanup ||
+        request->ticket_ != found->second.ticket)
+        return false;
     cells_.erase(found);
     return true;
 }
@@ -331,6 +344,8 @@ ProcgenCellRequest* RuntimeGeneration::makeRequest(const CellKey& key) const {
     request->x_       = key.x;
     request->z_       = key.z;
     request->seed_    = cellSeed(key);
+    const auto found  = cells_.find(key);
+    request->ticket_  = found == cells_.end() ? 0 : found->second.ticket;
     request->cellSize_ = levels_[size_t(key.level)].cellSize;
     return request;
 }

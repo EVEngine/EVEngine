@@ -1224,6 +1224,7 @@ void Procgen::expose(ssq::Table &table) {
     cellRequest.addFunc("getX", &ProcgenCellRequest::getX);
     cellRequest.addFunc("getZ", &ProcgenCellRequest::getZ);
     cellRequest.addFunc("getSeed", &ProcgenCellRequest::getSeed);
+    cellRequest.addFunc("getTicket", &ProcgenCellRequest::getTicket);
     cellRequest.addFunc("getMinX", &ProcgenCellRequest::getMinX);
     cellRequest.addFunc("getMinZ", &ProcgenCellRequest::getMinZ);
     cellRequest.addFunc("getMaxX", &ProcgenCellRequest::getMaxX);
