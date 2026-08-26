@@ -350,3 +350,44 @@ TEST_CASE("procgen.pointGraph.copiesSourcePointsAcrossTargetsWithBoundedOutput")
     CHECK(!graph.execute("copies"));
     CHECK(graph.getError().find("maxPoints") != std::string::npos);
 }
+
+TEST_CASE("procgen.pointGraph.remapsDensityAndComputesFloatMetadata") {
+    PointSet points;
+    const int first = points.add(0.f, 0.f, 0.f);
+    const int second = points.add(1.f, 0.f, 0.f);
+    points.setDensity(first, -1.f);
+    points.setDensity(second, 0.5f);
+    points.setFloatAttribute(first, "age", 3.f);
+
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("density", "density.remap"));
+    CHECK(graph.addNode("math", "attribute.math.float"));
+    CHECK(graph.setNodePoints("source", &points));
+    CHECK(graph.connect("source", "density"));
+    CHECK(graph.connect("density", "math"));
+    CHECK(graph.setNodeFloat("density", "inputMin", 0.f));
+    CHECK(graph.setNodeFloat("density", "inputMax", 1.f));
+    CHECK(graph.setNodeFloat("density", "outputMin", 10.f));
+    CHECK(graph.setNodeFloat("density", "outputMax", 20.f));
+    CHECK(graph.setNodeString("math", "attribute", "age"));
+    CHECK(graph.setNodeString("math", "outputAttribute", "score"));
+    CHECK(graph.setNodeString("math", "operation", "multiply"));
+    CHECK(graph.setNodeFloat("math", "operand", 2.f));
+    CHECK(graph.setNodeFloat("math", "defaultValue", 4.f));
+    PointSet* result = graph.execute("math");
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getDensity(0), 10.f);
+    CHECK_EQ(result->getDensity(1), 15.f);
+    CHECK_EQ(result->getFloatAttribute(0, "score", -1.f), 6.f);
+    CHECK_EQ(result->getFloatAttribute(1, "score", -1.f), 8.f);
+    delete result;
+
+    CHECK(graph.setNodeString("math", "operation", "divide"));
+    CHECK(graph.setNodeFloat("math", "operand", 0.f));
+    CHECK(!graph.execute("math"));
+    CHECK(graph.getError().find("divide by zero") != std::string::npos);
+    CHECK(graph.setNodeFloat("density", "inputMax", 0.f));
+    CHECK(!graph.execute("density"));
+    CHECK(graph.getError().find("non-zero input range") != std::string::npos);
+}

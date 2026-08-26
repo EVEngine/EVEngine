@@ -301,12 +301,16 @@ local trees = graph.execute("prune");
 
 支持的 operation 可用 `getOperationCount/getOperationId` 枚举，包括：
 `input`、`spatial.sample/filter/project`、`merge`、`copy.points`、`transform`、
+`density.remap`、`attribute.math.float`、
 `filter.float/string`、`attribute.set.float/string`、`density.cull`、
 `self.prune`、`jitter`、`branch` 和 `subgraph`。
 
 `copy.points` 对每个 target 实例化全部 source 点（稳定的 target-major 顺序），组合位置、
 yaw、scale、density 与独立 seed；可继承 target metadata，冲突时 source metadata 胜出。
 `maxPoints` 在笛卡尔积分配前实施硬上限，防止错误图造成编辑器或流式任务内存爆炸。
+`density.remap` 线性映射 density 范围并可钳制输出；`attribute.math.float` 对 float metadata
+执行 add/subtract/multiply/divide/min/max，可写入新属性并为缺失输入提供确定性默认值。
+零输入范围、非法 operation 和除零会作为节点执行错误报告。
 
 `execute(outputId)` 只求值该输出的祖先节点；没有配置变化时复用缓存。节点参数、输入或
 空间数据变化时只失效该节点及其下游，未受影响的分支继续复用结果；`getRevision()` 提供

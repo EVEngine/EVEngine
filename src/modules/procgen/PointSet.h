@@ -109,9 +109,17 @@ PointSet mergePointSets(const PointSet& first, const PointSet& second);
 PointSet transformPointSet(const PointSet& input, float translateX, float translateY,
                            float translateZ, float yawDegrees, float scaleX, float scaleY,
                            float scaleZ);
-/** @brief Instantiate every source point relative to every target point in stable target-major order. */
+/** @brief Instantiate source points relative to targets in stable target-major order. */
 PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets,
                              bool inheritTargetAttributes);
+/** @brief Linearly remap point density between ranges with optional output clamping. */
+PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax,
+                           float outputMin, float outputMax, bool clampOutput);
+/** @brief Apply one scalar operation to a float metadata attribute. */
+PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
+                                 const std::string& outputAttribute,
+                                 const std::string& operation, float operand,
+                                 float defaultValue);
 /** @brief Select points whose named float attribute lies in an inclusive range. */
 PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
                                    float maxValue, bool invert);

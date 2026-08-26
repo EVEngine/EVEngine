@@ -493,6 +493,38 @@ PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets,
     return result;
 }
 
+PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax,
+                           float outputMin, float outputMax, bool clampOutput) {
+    PointSet result = input;
+    const float inputRange = inputMax - inputMin;
+    for (auto& point : result.points()) {
+        float normalized = (point.density - inputMin) / inputRange;
+        if (clampOutput) normalized = std::clamp(normalized, 0.f, 1.f);
+        point.density = outputMin + normalized * (outputMax - outputMin);
+    }
+    return result;
+}
+
+PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
+                                 const std::string& outputAttribute,
+                                 const std::string& operation, float operand,
+                                 float defaultValue) {
+    PointSet result = input;
+    for (auto& point : result.points()) {
+        const auto found = point.floatAttributes.find(attribute);
+        const float value = found == point.floatAttributes.end() ? defaultValue : found->second;
+        float output = value;
+        if (operation == "add") output += operand;
+        else if (operation == "subtract") output -= operand;
+        else if (operation == "multiply") output *= operand;
+        else if (operation == "divide") output /= operand;
+        else if (operation == "min") output = std::min(output, operand);
+        else if (operation == "max") output = std::max(output, operand);
+        point.floatAttributes[outputAttribute] = output;
+    }
+    return result;
+}
+
 PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
                                    float maxValue, bool invert) {
     if (minValue > maxValue) std::swap(minValue, maxValue);

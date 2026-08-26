@@ -27,6 +27,14 @@ const std::vector<OperationSpec>& operationSpecs() {
         {"merge", 2, {}},
         {"copy.points", 2, {{"maxPoints", "int", "100000"},
                              {"inheritTargetAttributes", "bool", "true"}}},
+        {"density.remap", 1, {{"inputMin", "float", "0"}, {"inputMax", "float", "1"},
+                               {"outputMin", "float", "0"}, {"outputMax", "float", "1"},
+                               {"clamp", "bool", "true"}}},
+        {"attribute.math.float", 1, {{"attribute", "string", ""},
+                                      {"outputAttribute", "string", ""},
+                                      {"operation", "string", "multiply"},
+                                      {"operand", "float", "1"},
+                                      {"defaultValue", "float", "0"}}},
         {"transform", 1, {{"x", "float", "0"}, {"y", "float", "0"}, {"z", "float", "0"},
                           {"yaw", "float", "0"}, {"scaleX", "float", "1"},
                           {"scaleY", "float", "1"}, {"scaleZ", "float", "1"}}},
@@ -451,6 +459,35 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         else
             node.cache = copyPointsToTargets(
                 *first, *second, intValue(node, "inheritTargetAttributes", 1) != 0);
+    } else if (node.operation == "density.remap") {
+        const float inputMin = floatValue(node, "inputMin", 0.f);
+        const float inputMax = floatValue(node, "inputMax", 1.f);
+        if (!first) error_ = "density.remap requires input: " + id;
+        else if (inputMin == inputMax)
+            error_ = "density.remap requires a non-zero input range: " + id;
+        else
+            node.cache = remapPointDensity(
+                *first, inputMin, inputMax, floatValue(node, "outputMin", 0.f),
+                floatValue(node, "outputMax", 1.f), intValue(node, "clamp", 1) != 0);
+    } else if (node.operation == "attribute.math.float") {
+        const std::string attribute = stringValue(node, "attribute");
+        std::string outputAttribute = stringValue(node, "outputAttribute");
+        if (outputAttribute.empty()) outputAttribute = attribute;
+        const std::string operation = stringValue(node, "operation", "multiply");
+        const float operand = floatValue(node, "operand", 1.f);
+        const bool operationKnown = operation == "add" || operation == "subtract" ||
+                                    operation == "multiply" || operation == "divide" ||
+                                    operation == "min" || operation == "max";
+        if (!first) error_ = "attribute.math.float requires input: " + id;
+        else if (attribute.empty()) error_ = "attribute.math.float requires an attribute: " + id;
+        else if (!operationKnown)
+            error_ = "attribute.math.float has invalid operation at node: " + id;
+        else if (operation == "divide" && operand == 0.f)
+            error_ = "attribute.math.float cannot divide by zero at node: " + id;
+        else
+            node.cache = mathPointFloatAttribute(
+                *first, attribute, outputAttribute, operation, operand,
+                floatValue(node, "defaultValue", 0.f));
     } else if (node.operation == "transform") {
         if (!first) error_ = "transform requires input: " + id;
         else
