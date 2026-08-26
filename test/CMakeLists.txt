@@ -8,6 +8,7 @@ file(GLOB all_test_cpp
   decal_script.cpp
   crowd.cpp
   crowd_script.cpp
+  crashlog.cpp
   resource.cpp
   state_value.cpp
   json.cpp
@@ -74,6 +75,12 @@ file(GLOB all_test_cpp
   sceneloader.cpp
   service_mocks.cpp
   particles.cpp
+  particles_playback.cpp
+  particles_scalability.cpp
+  particles_effect_asset.cpp
+  particles_gpu_resident.cpp
+  particles_reference_effects.cpp
+  particles_renderer.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp
   particles_attach_more.cpp
@@ -127,6 +134,7 @@ file(GLOB all_test_cpp
   procgen_simulation.cpp
   roguelike_generator.cpp
   stylize.cpp
+  stylize_effects.cpp
   snow.cpp
   Xray.cpp
   voxel.cpp
@@ -240,6 +248,8 @@ file(GLOB all_test_cpp
   mcp.cpp
   mcp_hot_reload.cpp
   console.cpp
+  runtime_error_sink.cpp
+  scenario_recorder.cpp
   cmdline.cpp
   main.cpp
 )
@@ -260,7 +270,7 @@ endif()
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   foreach(_eve_devtool_test IN ITEMS
-      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp mcp.cpp console.cpp)
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp mcp.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")

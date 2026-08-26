@@ -22,9 +22,7 @@
 
 ### 暂停 / 断点 / Watch / Snapshot
 
-引擎视为**无状态**：可恢复的游戏状态都在脚本变量里。`Debugger` + `Snapshot` + DAP 服务在 `--debug` 下启用。
-
-| 能力 | 说明 |
+引擎视为**无状态**：可恢复的游戏状态都在脚本变量里。`Debugger` + `Snapshot` + DAP 服务在 `--debug` 下启用。| 能力 | 说明 |
 |------|------|
 | Pause 键 | 帧级暂停：跳过 `eve_update`，仍渲染 / 泵事件（`load.nut`） |
 | F5 | 暂停时继续执行到下一断点（`continueRun`） |
@@ -42,6 +40,17 @@
 | Profiler | line hook 计时：`eve.dev.profileReport()` / `profileClear()`（按函数统计调用次数、行数、耗时） |
 | MCP / AI | `--mcp-port` 嵌入 MCP；`AiPanel` 会话日志；F9 切换 ImGui「AI / MCP」面板 |
 | 运行时控制台 | `ConsolePanel`: print 捕获 + 级别化日志 + Squirrel REPL; F4 切换 ImGui「Console」面板 |
+
+### 状态驱动 bug 复现（基线快照 + 步骤回放）
+
+引擎视为无状态：恢复游戏状态 = 恢复脚本变量 + 原生 `IStateProvider`。因此一个 bug 场景可被描述为 **基线快照 + 一串逐帧输入/事件**，从基线重放这串事件即可确定性复现（前提是游戏逻辑与 RNG seed 确定）。
+
+- **录制**：`eve.dev.beginScenario()` 抓基线快照并挂上事件队列观察钩子（`event::Event::setPollObserver`），`eve.dev.scenarioFrame()` 每帧标记帧边界，把该帧从事件队列消费到的键鼠/异步消息按帧记下；出错时 `notifyError` 会把错误报告与出错位置写进场景。`eve.dev.endScenario("scenario_boss.json")` 落盘。
+- **回放**：`eve.dev.beginReplay("scenario_boss.json")` 恢复基线快照；随后每驱动一帧游戏逻辑前调 `eve.dev.replayFrame()` 把该帧记录的事件重新注入事件队列，直到 `eve.dev.replayRemaining()==0`。若同一错误再次抛出即复现成功，`eve.dev.replayErrorReport()` 可读出原错误报告。
+- 脚本 API：`beginScenario / scenarioFrame / scenarioRecording / endScenario / cancelScenario / beginReplay / replayFrame / replayRemaining / replayErrorReport`。
+- C++：`eve::dev::ScenarioRecorder`（`record / end / beginReplay / stageFrame`）。
+
+> 局限：只序列化事件队列里字符串/整型载荷（指针载荷丢弃），因此**输入/异步事件驱动**的 bug 可复现；依赖非 `IStateProvider` 原生状态或外部时序（网络、墙钟）的 bug 仍需配合稳定触发条件近似复现。
 
 ### C++ API
 
