@@ -7,13 +7,13 @@
 //
 // See docs/dev/VIRTUAL_GEOMETRY.md for the architecture.
 //
-// NOTE: the module is Vulkan-only. The RGBA produced by resolve() can be drawn
+// NOTE: Vulkan and WebGPU are supported. The RGBA produced by resolve() can be drawn
 // with the host's image path, e.g. wrap it in an eve::image::ImageData and pass
 // it to Graphics::newTextureFromImageData, then draw that texture as a quad.
 
 local vg = eve.VirtualGeometry();
 if (!vg.isAvailable()) {
-    print("VirtualGeometry: requires the Vulkan backend\n");
+    print("VirtualGeometry: requires an initialized Vulkan or WebGPU backend\n");
     return;
 }
 

@@ -30,6 +30,7 @@ ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightG
     }
 
     const int maxPts = std::min(int(points.size()), ClusteredLightConfig::kMaxLights);
+    out.truncatedLightCount = uint32_t(points.size() - size_t(maxPts));
     out.lights.assign(points.begin(), points.begin() + maxPts);
     out.gridInfo.w = float(out.lights.size());
 
@@ -101,6 +102,9 @@ ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightG
     for (int ci = 0; ci < C; ++ci) {
         auto &list = perCluster[size_t(ci)];
         if (list.size() > size_t(ClusteredLightConfig::kMaxLightsPerCluster)) {
+            ++out.overflowClusterCount;
+            out.droppedLightReferenceCount +=
+                uint32_t(list.size() - size_t(ClusteredLightConfig::kMaxLightsPerCluster));
             std::stable_sort(list.begin(), list.end(), [&](uint32_t a, uint32_t b) {
                 const float ia = glm::length(glm::vec3(out.lights[a].color));
                 const float ib = glm::length(glm::vec3(out.lights[b].color));

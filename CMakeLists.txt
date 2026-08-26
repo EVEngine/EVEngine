@@ -1,9 +1,71 @@
 cmake_minimum_required(VERSION 3.21)
+
+set(EVENGINE_COMPILER_CACHE "AUTO" CACHE STRING
+    "Compiler cache mode: AUTO detects sccache, SCCACHE requires it, OFF disables auto-detection")
+set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE OFF)
+string(TOUPPER "${EVENGINE_COMPILER_CACHE}" _eve_compiler_cache_mode)
+if(NOT _eve_compiler_cache_mode MATCHES "^(AUTO|SCCACHE|OFF)$")
+    message(FATAL_ERROR
+        "EVENGINE_COMPILER_CACHE must be AUTO, SCCACHE, or OFF "
+        "(got: ${EVENGINE_COMPILER_CACHE})")
+endif()
+
+set(_eve_sccache_enabled OFF)
+if(_eve_compiler_cache_mode STREQUAL "AUTO" AND
+   (CMAKE_C_COMPILER_LAUNCHER OR CMAKE_CXX_COMPILER_LAUNCHER))
+    set(_eve_compiler_cache_status "custom launcher supplied")
+elseif(NOT _eve_compiler_cache_mode STREQUAL "OFF")
+    if(EVENGINE_SCCACHE_EXECUTABLE AND NOT EXISTS "${EVENGINE_SCCACHE_EXECUTABLE}")
+        unset(EVENGINE_SCCACHE_EXECUTABLE CACHE)
+    endif()
+    find_program(EVENGINE_SCCACHE_EXECUTABLE NAMES sccache
+        DOC "Path to the sccache compiler cache")
+    if(EVENGINE_SCCACHE_EXECUTABLE)
+        # Disable sccache's direct mode for both local and CI builds. The
+        # conservative path hashes the complete preprocessed input before a
+        # hit, including the contents of every header that was actually used.
+        set(_eve_sccache_launcher
+            "${CMAKE_COMMAND}" -E env SCCACHE_DIRECT=false
+            "${EVENGINE_SCCACHE_EXECUTABLE}")
+        set(CMAKE_C_COMPILER_LAUNCHER ${_eve_sccache_launcher})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${_eve_sccache_launcher})
+        set(_eve_sccache_enabled ON)
+        set(_eve_compiler_cache_status "sccache (${EVENGINE_SCCACHE_EXECUTABLE})")
+        # CMP0141 must be NEW before project() for the first-class MSVC debug
+        # information setting below to replace /Zi instead of appending to it.
+        if(POLICY CMP0141)
+            cmake_policy(SET CMP0141 NEW)
+        endif()
+    elseif(_eve_compiler_cache_mode STREQUAL "SCCACHE")
+        message(FATAL_ERROR
+            "EVENGINE_COMPILER_CACHE=SCCACHE requires sccache on PATH or "
+            "-DEVENGINE_SCCACHE_EXECUTABLE=<path>")
+    else()
+        set(_eve_compiler_cache_status "disabled (sccache not found)")
+    endif()
+else()
+    set(_eve_compiler_cache_status "disabled")
+endif()
+
 project(EVEngine)
 
+if(_eve_sccache_enabled AND MSVC)
+    if(POLICY CMP0141)
+        # Embed debug information in each object. Cached objects are then
+        # self-contained and parallel cl.exe processes do not share a PDB.
+        set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT
+            "$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>")
+    else()
+        # CMake 3.21-3.24 have no MSVC debug-information abstraction. /Z7 is
+        # appended after CMake's default /Zi, and cl.exe honors the last flag.
+        add_compile_options(/Z7)
+    endif()
+endif()
+message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
+
 set(EVENGINE_MAJOR_VERSION "0")
-set(EVENGINE_MINOR_VERSION "2")
-set(EVENGINE_PATCH_VERSION "1")
+set(EVENGINE_MINOR_VERSION "3")
+set(EVENGINE_PATCH_VERSION "0")
 set(EVENGINE_DEV_VERSION "-dev")
 
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
@@ -63,6 +125,38 @@ if (CMAKE_BUILD_TYPE STREQUAL "")
 endif()
 
 include(CTest)
+
+set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/vkbuilder.hpp")
+set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")
+if(EXISTS "${_vkbuilder_header}")
+    file(READ "${_vkbuilder_header}" _vkbuilder_source)
+    set(_vkbuilder_original [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
+    use_default_color_blending = false;
+    this->color_blending = color_blending;
+    return *this;
+  }]=])
+    set(_vkbuilder_fixed [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
+    use_default_color_blending = false;
+    this->color_blending = color_blending;
+    if (color_blending.attachmentCount > 0 && color_blending.pAttachments) {
+      colorBlendAttachments.assign(color_blending.pAttachments,
+                                   color_blending.pAttachments + color_blending.attachmentCount);
+    } else {
+      colorBlendAttachments.clear();
+    }
+    return *this;
+  }]=])
+    string(FIND "${_vkbuilder_source}" "${_vkbuilder_original}" _vkbuilder_patch_offset)
+    if(_vkbuilder_patch_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned VKBuilder no longer matches the custom-blending compatibility fix")
+    endif()
+    string(REPLACE "${_vkbuilder_original}" "${_vkbuilder_fixed}" _vkbuilder_source
+        "${_vkbuilder_source}")
+    file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/"
+        DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
+    file(WRITE "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" "${_vkbuilder_source}")
+endif()
 
 
 # This is the main function of the build script
@@ -207,12 +301,15 @@ function(main)
         # (EVGraphics, EVUI, EVGpgpu, eve_imgui, ...) gets it at compile + link.
         add_compile_options(--use-port=emdawnwebgpu)
         add_link_options(--use-port=emdawnwebgpu)
-        # SDL2 and zlib come from Emscripten ports (vendored trees are skipped
+        # SDL2, zlib and FreeType come from Emscripten ports (vendored trees are
+        # skipped
         # by third-party/CMakeLists.txt on Emscripten). -sUSE_SDL=2 must also be
         # a compile flag so TUs that include <SDL.h> (imgui_impl_sdl, window,
-        # event, mouse, keyboard, ...) resolve the port headers.
-        add_compile_options(-sUSE_SDL=2 -sUSE_ZLIB)
-        add_link_options(-sUSE_SDL=2 -sUSE_ZLIB)
+        # event, mouse, keyboard, ...) resolve the port headers. FreeType must
+        # likewise be enabled while compiling so <ft2build.h> is installed in
+        # and exposed from the Emscripten sysroot.
+        add_compile_options(-sUSE_SDL=2 -sUSE_ZLIB -sUSE_FREETYPE=1)
+        add_link_options(-sUSE_SDL=2 -sUSE_ZLIB -sUSE_FREETYPE=1)
         # PROXY_TO_PTHREAD turns on shared memory; every TU must be compiled
         # with atomics/bulk-memory or wasm-ld rejects the final link.
         add_compile_options(-matomics -mbulk-memory)
@@ -413,6 +510,10 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts
         ${CMAKE_BINARY_DIR}/src/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/platform
+        # Override only zeroerr/unittest.h so fixture-generated types include
+        # their fixture name. This avoids cross-TU ODR collisions under LTO
+        # without mutating the pinned zeroerr submodule checkout.
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/overrides/zeroerr
         # sunxfancy/ECS.hpp + ik.hpp (git submodules) + zeroerr headers
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
@@ -420,7 +521,7 @@ function(set_include)
         # sunxfancy/VKBuilder (git submodule) — header-only Vulkan wrapper. Exposed
         # globally (like the old third-party flattened install) so any module that
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include
+        ${EVENGINE_VKBUILDER_INCLUDE_DIR}
     )
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
         # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
@@ -444,7 +545,7 @@ function(set_include)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp)
     eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include)
-    eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include)
+    eve_external_include(${EVENGINE_VKBUILDER_INCLUDE_DIR})
 
     # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.
     # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
@@ -480,6 +581,18 @@ function(set_include)
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
+    # LunarG Linux SDK 1.4.357+ may package the loader in its own install
+    # prefix instead of directly under $VULKAN_SDK/lib. FindVulkan only probes
+    # the legacy location, so retry with the packaged loader while retaining
+    # the headers and shader tools discovered from the SDK root.
+    if(NOT Vulkan_FOUND AND UNIX AND NOT APPLE
+       AND DEFINED ENV{VULKAN_SDK}
+       AND EXISTS "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so")
+        set(Vulkan_LIBRARY
+            "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so"
+            CACHE FILEPATH "Vulkan loader library" FORCE)
+        find_package(Vulkan QUIET)
+    endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         find_library(ANDROID_VULKAN_LIB vulkan)
         if(NOT ANDROID_VULKAN_LIB)
@@ -661,6 +774,13 @@ macro(get_available_build)
     set_platform_var(ios EVENGINE_IOS)
     set_platform_var(webgpu EVENGINE_WEBGPU)
 
+    # BUILD_PLATFORM selects the renderer/runtime profile, while native Dawn
+    # still needs the host OS branches for filesystem, process and UTF-8 APIs.
+    # Emscripten does not report WIN32, so browser builds remain WebGPU-only.
+    if(BUILD_PLATFORM STREQUAL "webgpu" AND WIN32)
+        set(EVENGINE_WINDOWS 1 CACHE INTERNAL "EVEngine native host platform define")
+    endif()
+
     # Backend directories compiled out of the active build. Native backends
     # (graphics/vulkan, gpgpu/vulkan) are excluded from a webgpu build; the
     # webgpu backend is excluded from every other platform. ui/imgui stays in
@@ -674,11 +794,10 @@ macro(get_available_build)
 
     # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
     # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
-    # DataModule files that require Poco. graphics/Font.cpp needs the EVFont
-    # module (FreeType/Poco, skipped on WASM), so it is trimmed as well.
+    # DataModule files that require Poco. Font/FreeType is supported on WASM.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(EVENGINE_EXCLUDED_MODULE_FILES
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;Font.cpp;ImGuiHostPanels.cpp"
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp"
             CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten")
     else()
         set(EVENGINE_EXCLUDED_MODULE_FILES
@@ -958,6 +1077,21 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Fourth patch: SimpleSquirrel's Object move constructor swaps an
+    # uninitialized `weak` flag. Optimized arm64 builds can observe that UB
+    # when script bindings pass Array/Object wrappers by value.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-object-move-init.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Fifth patch: mpg123's K&R-style signal handler type is rejected by GCC
+    # 15; use the POSIX void(int) signature accepted by sigaction.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-signal-handler.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which
@@ -1148,20 +1282,30 @@ function(load_webgpu_backend)
     set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_WGPU_TESTS OFF CACHE BOOL "" FORCE)
+    set(DAWN_FETCH_DEPENDENCIES ON CACHE BOOL "" FORCE)
+    set(TINT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(TINT_BUILD_CMD_TOOLS OFF CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_NULL OFF CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_D3D11 OFF CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_OPENGLES OFF CACHE BOOL "" FORCE)
     set(DAWN_USE_XCODE OFF CACHE BOOL "" FORCE)
+    if(WIN32)
+        # Dawn's generic loader combines LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR with
+        # bare system DLL names, which LoadLibraryEx rejects with ERROR 87.
+        # Select its dedicated System32 path for Vulkan and D3D compiler DLLs.
+        set(DAWN_FORCE_SYSTEM_COMPONENT_LOAD ON CACHE BOOL "" FORCE)
+    endif()
 
-    # Pinned Dawn commit (2026-08-19 main HEAD) so native WebGPU builds stay
+    # Pinned Dawn commit (2026-08-24 main HEAD) so native WebGPU builds stay
     # reproducible; override with -DEVENGINE_DAWN_TAG=<commit> if needed.
-    set(EVENGINE_DAWN_TAG "c3845d0d962656a2ea03063bddc85dc1ef1a0baa" CACHE STRING
+    set(EVENGINE_DAWN_TAG "521035d96861a33eadc06ebff7985add6ac7fdf6" CACHE STRING
         "Dawn commit/tag to fetch for the native WebGPU backend (pin for reproducible builds)")
+    # A shallow git clone cannot reliably checkout an arbitrary fixed SHA once
+    # main advances beyond it. GitHub's immutable commit archive preserves the
+    # reproducible pin without downloading Dawn's complete history.
     FetchContent_Declare(dawn
-        GIT_REPOSITORY https://github.com/google/dawn.git
-        GIT_TAG ${EVENGINE_DAWN_TAG}
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
+        URL "https://github.com/google/dawn/archive/${EVENGINE_DAWN_TAG}.tar.gz"
+        DOWNLOAD_EXTRACT_TIMESTAMP FALSE
     )
     FetchContent_MakeAvailable(dawn)
 

@@ -1,9 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "ScriptTest.h"
 #include "common/ECS.h"
 #include "common/Exception.h"
-#include "ScriptTest.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/EcsGpu.h"
 #include "gpgpu/EcsScriptPack.h"
@@ -34,8 +34,8 @@
 #include "graphics/Waterfall.h"
 #include "window/Window.h"
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 #include <functional>
 #include <string>
 #include <vector>
@@ -66,6 +66,17 @@ void main() {
 }
 )";
 
+const char *kScaleKernelWgsl = R"(
+struct Data { values: array<f32> };
+struct Push { data: array<vec4f, 8> };
+@group(0) @binding(0) var<storage, read_write> values: Data;
+@group(0) @binding(8) var<uniform> push: Push;
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3u) {
+    values.values[gid.x] *= push.data[0].x;
+}
+)";
+
 const char *kMoveKernel = R"(#version 450
 layout(local_size_x = 64) in;
 layout(set = 0, binding = 0) buffer Pos {
@@ -88,6 +99,21 @@ void main() {
 }
 )";
 
+const char *kMoveKernelWgsl = R"(
+struct Data { values: array<f32> };
+struct Push { data: array<vec4f, 8> };
+@group(0) @binding(0) var<storage, read_write> pos: Data;
+@group(0) @binding(1) var<storage, read_write> vel: Data;
+@group(0) @binding(8) var<uniform> push: Push;
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3u) {
+    if (gid.x >= u32(push.data[0].y)) { return; }
+    let base = gid.x * 2u;
+    pos.values[base] += vel.values[base] * push.data[0].x;
+    pos.values[base + 1u] += vel.values[base + 1u] * push.data[0].x;
+}
+)";
+
 const char *kDoubleKernel = R"(#version 450
 layout(local_size_x = 64) in;
 layout(set = 0, binding = 0) buffer In {
@@ -101,6 +127,21 @@ void main() {
     outBuf.b[i] = inBuf.a[i] * 2.0;
 }
 )";
+
+const char* kDoubleKernelWgsl = R"(
+struct Data { values: array<f32> };
+@group(0) @binding(0) var<storage, read_write> input: Data;
+@group(0) @binding(1) var<storage, read_write> output: Data;
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3u) {
+    output.values[gid.x] = input.values[gid.x] * 2.0;
+}
+)";
+
+const char* backendKernel(const char* glsl, const char* wgsl) {
+    auto* gfx = eve::graphics::Graphics::create();
+    return gfx && gfx->getBackendName() == "webgpu" ? wgsl : glsl;
+}
 
 class GpuNode : public ecs::Entity {
 public:
@@ -132,7 +173,9 @@ TEST_CASE("gpgpu.graphics.backendName") {
     if (!tryInitHeadlessGfx()) return;
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(gfx != nullptr);
-    CHECK_EQ(gfx->getBackendName(), std::string("vulkan"));
+    const std::string backend = gfx->getBackendName();
+    const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
+    CHECK(supportedBackend);
 }
 
 TEST_CASE("gpgpu.newShaderFromSpvFile.delegatesWhenMissing") {
@@ -163,7 +206,7 @@ TEST_CASE("gpgpu.dispatch.scaleFloats") {
 
     ComputeShader *shader = nullptr;
     try {
-        shader = mod->newShader(kScaleKernel);
+        shader = mod->newShader(backendKernel(kScaleKernel, kScaleKernelWgsl));
     } catch (...) {
         // glslc may be missing in some CI images — skip GPU path.
         return;
@@ -198,7 +241,7 @@ TEST_CASE("gpgpu.sequence.dispatchScale") {
 
     ComputeShader *shader = nullptr;
     try {
-        shader = mod->newShader(kDoubleKernel);
+        shader = mod->newShader(backendKernel(kDoubleKernel, kDoubleKernelWgsl));
     } catch (...) {
         delete in;
         delete out;
@@ -249,7 +292,7 @@ TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {
 
     ComputeShader *shader = nullptr;
     try {
-        shader = mod->newShader(kDoubleKernel);
+        shader = mod->newShader(backendKernel(kDoubleKernel, kDoubleKernelWgsl));
     } catch (...) {
         delete a;
         delete b;
@@ -279,8 +322,7 @@ TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {
 
     std::vector<float> dst(size_t(count), 0.f);
     staging->downloadBytes(dst.data(), uint64_t(count) * sizeof(float));
-    for (int i = 0; i < count; ++i)
-        CHECK(std::fabs(dst[size_t(i)] - float(i % 7) * 4.f) < 1e-3f);
+    for (int i = 0; i < count; ++i) CHECK(std::fabs(dst[size_t(i)] - float(i % 7) * 4.f) < 1e-3f);
 
     // Reuse the same sequence for a second cycle.
     seq->begin();
@@ -326,7 +368,7 @@ TEST_CASE("gpgpu.shaderSystem.ecsMove") {
     ShaderSystem sys;
     sys.setGpgpu(mod);
     try {
-        sys.setShaderSource(kMoveKernel);
+        sys.setShaderSource(backendKernel(kMoveKernel, kMoveKernelWgsl));
     } catch (...) {
         return;
     }

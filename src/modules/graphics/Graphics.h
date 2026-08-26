@@ -10,15 +10,16 @@
 #include "common/Module.h"
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
-#include "graphics/SurfaceMode.h"
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
+#include "graphics/GpuDrivenTypes.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/IGraphics2D.h"
 #include "graphics/IGraphics3D.h"
 #include "graphics/IPostFX.h"
 #include "graphics/IResourceFactory.h"
-#include "graphics/GpuDrivenTypes.h"
+#include "graphics/SurfaceMode.h"
 
 struct aiMesh;
 
@@ -122,8 +123,8 @@ public:
 
     /**
      * @brief Whether gbuffer-based post-process shaders (AO, GI) can be created on this
-     * backend. False on WebGPU, whose custom post shaders are WGSL-only (the
-     * built-in AO/GI use SPIR-V), so RenderSystem3D skips them there.
+     * backend. Backends may use different shader source languages while
+     * preserving the same render-control contract.
      */
     virtual bool supportsGBufferPost() const { return true; }
 
@@ -157,6 +158,49 @@ public:
     virtual bool gpuDrivenMaterialUsable(Material *material) {
         (void)material;
         return false;
+    }
+
+    // ---- GPU-resident 2D particles ---------------------------------------
+
+    /** @brief True when this backend supports resident compute + indirect particle draws. */
+    virtual bool supportsGpuParticles() const { return false; }
+
+    /** @brief True when the current frame topology can accept a GPU particle compute section. */
+    virtual bool canSubmitGpuParticles() const { return false; }
+
+    /** @brief Allocate backend-owned resident state for one particle emitter. */
+    virtual GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) {
+        (void)capacity;
+        return kInvalidGpuParticleHandle;
+    }
+
+    /** @brief Release a GPU particle emitter. Explicit release may wait for in-flight frames. */
+    virtual void releaseGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
+
+    /** @brief Clear resident state before the next submitted frame. */
+    virtual void resetGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
+
+    /** @brief Queue one simulation/compaction step; spawn data is copied before return. */
+    virtual bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
+                                          const GpuParticleSpawn* spawns, std::uint32_t spawnCount) {
+        (void)handle;
+        (void)update;
+        (void)spawns;
+        (void)spawnCount;
+        return false;
+    }
+
+    /** @brief Queue an indirect draw at the current 2D overlay position. */
+    virtual bool drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) {
+        (void)handle;
+        (void)draw;
+        return false;
+    }
+
+    /** @brief Return the latest fence-complete counters without waiting on the GPU. */
+    virtual GpuParticleStats getGpuParticleStats(GpuParticleHandle handle) const {
+        (void)handle;
+        return {};
     }
 
     /**
@@ -424,6 +468,20 @@ public:
                                              const Color &tint) = 0;
 
     /**
+     * @brief Refract the resolved 3D scene color through a displacement texture.
+     *
+     * The displacement
+     * texture stores a signed screen-space offset in red/green and coverage
+     * in alpha. Returns false when no
+     * resolved scene color is available for the current frame.
+     */
+    virtual bool drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
+                                                   float degrees, float u0, float v0, float u1, float v1,
+                                                   float strengthPixels, float opacity, bool rotatedUV = false) {
+        return false;
+    }
+
+    /**
      * @brief Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
      * normal may be null → treated as flat (0.5,0.5,1) only if a default normal tex exists.
      */
@@ -461,7 +519,7 @@ public:
      * Mirrors bakeMeshMorph: the update synchronizes with in-flight GPU work,
      * so prefer rebuilding only when content actually changes. The mesh's
      * buffer is reused while it fits (stable GPU handle) and reallocated when
-     * the new size grows. Returns false when unsupported (WebGPU backend).
+     * the new size grows. Returns false when unsupported by a backend.
      * posXYZ/nrmXYZ follow newMeshFromArrays layout (uvST may be null);
      * indices/indexCount may be null/0 to keep the mesh's existing indices.
      */
@@ -624,6 +682,8 @@ public:
      * Valid after begin3DFrame until present; nullptr when 3D did not run offscreen.
      */
     virtual Texture *getSceneColorTexture() { return nullptr; }
+    /** @brief Sampleable scene linear depth in [0,1], or nullptr when unavailable. */
+    virtual Texture* getSceneLinearDepthTexture() { return nullptr; }
 
     /**
      * @brief Per-pixel mesh entity-ID pass. Renders each EntityIdDraw's mesh with the
@@ -760,8 +820,8 @@ public:
     /**
      * @brief True when the backend can render the screen-space decal layer
      * (box-projected decals writing albedo/normal/params targets that
-     * mesh3d.frag samples before lighting). False on WebGPU (SPIR-V only
-     * here), where RenderSystem3D skips the decal pass entirely.
+     * mesh3d.frag samples before lighting). Vulkan uses SPIR-V and WebGPU uses
+     * the native WGSL decal pipeline.
      */
     virtual bool supportsDecal() const { return true; }
 
@@ -1024,6 +1084,15 @@ public:
     virtual Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
                                           const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
+    /**
+     * @brief Creates a Mesh3D shader from separate vertex and fragment GLSL sources.
+     * @param vertGlsl Vertex shader source.
+     * @param fragGlsl Fragment shader source.
+     * @return A graphics-owned shader, or nullptr when compilation fails.
+     */
+    Shader *newMeshShaderVF(const std::string &vertGlsl, const std::string &fragGlsl) {
+        return newMeshShader(vertGlsl, fragGlsl);
+    }
     Shader *newMeshShader(const std::string &fragGlsl) {
         return newMeshShader(std::string(), fragGlsl);
     }
@@ -1034,6 +1103,9 @@ public:
      */
     virtual Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                          const std::vector<uint32_t> &fragSpv) = 0;
+    /** @brief Create an alpha-blended hair/card shader from WGSL on WebGPU. */
+    virtual Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
+                                          const std::string &fragWgsl) = 0;
     /** @brief Built-in hair shader with default anisotropic parameters. */
     Shader *newHairShader();
 

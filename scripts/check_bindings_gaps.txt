@@ -635,6 +635,7 @@ procgen:getAlbedoWidth
 procgen:getAmplitude
 procgen:getAoWidth
 procgen:getBase
+procgen:getBool
 procgen:getClampMax
 procgen:getClampMin
 procgen:getCoastSoftness
@@ -684,6 +685,7 @@ procgen:sampleCloudShadow
 procgen:sampleTile
 procgen:setAmplitude
 procgen:setBase
+procgen:setBool
 procgen:setClamp
 procgen:setCloudAltitude
 procgen:setCoastSoftness

@@ -2,11 +2,13 @@
 
 #include "common/Export.h"
 #include "common/Runtime.h"
+#include "scriptmodel/ReflectedPropertyModel.h"
 #include "ui/Widget.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -106,7 +108,7 @@ private:
     Runtime* runtime() const;
     const ssq::Object* currentInstance() const;
     int currentClassIndex() const;
-    void writeProperty(const std::string& name, ReflectedValue value);
+    void rebuildPropertyModel();
     void rebuildHost();
     WidgetDesc propertyWidget(const std::string& ownerClass,
                               const ReflectedMember& member,
@@ -120,11 +122,11 @@ private:
     std::vector<std::string> classNames_;
     std::string selectedClass_;
     std::vector<InstanceEntry> instances_;
-    std::vector<ReflectedMember> cachedMembers_;
     std::vector<NestedEntry> navStack_;
     std::function<ssq::Object()> pickScene_;
     int selectedInstance_ = -1;
     UIHost* host_ = nullptr;
+    std::unique_ptr<scriptmodel::ReflectedPropertyModel> propertyModel_;
 };
 
 }  // namespace eve::ui

@@ -1,5 +1,6 @@
 #include "editor/EditorSession.h"
 
+#include "editor/EditorDiskDocumentStore.h"
 #include "editor/EditorPresentation.h"
 
 #include <algorithm>
@@ -154,6 +155,96 @@ EditorResult<void> EditorSession::cancelRetainedPlan(const PlanId& id) {
 
 void EditorSession::clearRetainedPlans() { retainedPlans_.clear(); }
 
+void EditorSession::setDocumentServices(DocumentService* documents, AutosaveService* autosave) {
+    documentService_ = documents;
+    autosaveService_ = autosave;
+    unbindDocument();
+}
+
+EditorResult<DocumentSnapshot> EditorSession::bindDocument(const DocumentId& document) {
+    if (!documentService_)
+        return EditorResult<DocumentSnapshot>::error(EditorStatus::Failed,
+                                                      RuleId("editor.session.missing-document-service"),
+                                                      "Editor session has no document service");
+    EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(document);
+    if (!snapshot.accepted() || !snapshot.value) return snapshot;
+    activeDocument_          = document;
+    autosaveElapsed_         = 0.f;
+    externalPollElapsed_     = 0.f;
+    lastAutosavedRevision_   = snapshot.value->revision.saved;
+    return snapshot;
+}
+
+void EditorSession::unbindDocument() {
+    activeDocument_        = DocumentId();
+    autosaveElapsed_       = 0.f;
+    externalPollElapsed_   = 0.f;
+    lastAutosavedRevision_ = 0;
+}
+
+EditorResult<DocumentSnapshot> EditorSession::editDocument(EditorValue content,
+                                                           std::optional<Revision> expectedRevision) {
+    if (!documentService_ || activeDocument_.empty())
+        return EditorResult<DocumentSnapshot>::error(EditorStatus::Failed,
+                                                      RuleId("editor.session.no-active-document"),
+                                                      "Editor session has no active document");
+    return documentService_->edit(activeDocument_, std::move(content), expectedRevision);
+}
+
+EditorResult<DocumentSnapshot> EditorSession::saveDocument() {
+    if (!documentService_ || activeDocument_.empty())
+        return EditorResult<DocumentSnapshot>::error(EditorStatus::Failed,
+                                                      RuleId("editor.session.no-active-document"),
+                                                      "Editor session has no active document");
+    EditorResult<SaveTicket> ticket = documentService_->requestSave(activeDocument_);
+    if (!ticket.accepted() || !ticket.value) {
+        EditorResult<DocumentSnapshot> result;
+        result.status      = ticket.status;
+        result.diagnostics = std::move(ticket.diagnostics);
+        return result;
+    }
+    EditorResult<DocumentSnapshot> result = documentService_->executeSave(*ticket.value);
+    if (result.accepted() && result.value) {
+        autosaveElapsed_ = 0.f;
+        if (!result.value->dirty()) lastAutosavedRevision_ = result.value->revision.edit;
+    }
+    return result;
+}
+
+EditorResult<StoredDocument> EditorSession::autosaveDocument() {
+    if (!documentService_ || !autosaveService_ || activeDocument_.empty())
+        return EditorResult<StoredDocument>::error(EditorStatus::Failed,
+                                                   RuleId("editor.session.missing-autosave-service"),
+                                                   "Editor session has no active autosave service");
+    EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(activeDocument_);
+    EditorResult<EditorValue>      content  = documentService_->content(activeDocument_);
+    if (!snapshot.accepted() || !snapshot.value || !content.accepted() || !content.value)
+        return EditorResult<StoredDocument>::error(EditorStatus::Failed,
+                                                   RuleId("editor.session.autosave-snapshot-failed"),
+                                                   "Active document could not be captured for autosave");
+    EditorResult<StoredDocument> result = autosaveService_->writeDraft(*snapshot.value, *content.value);
+    if (result.accepted()) {
+        lastAutosavedRevision_ = snapshot.value->revision.edit;
+        autosaveElapsed_       = 0.f;
+    }
+    return result;
+}
+
+EditorResult<DocumentSnapshot> EditorSession::pollDocumentChanges() {
+    if (!documentService_ || activeDocument_.empty())
+        return EditorResult<DocumentSnapshot>::error(EditorStatus::Failed,
+                                                      RuleId("editor.session.no-active-document"),
+                                                      "Editor session has no active document");
+    externalPollElapsed_ = 0.f;
+    return documentService_->reconcileExternal(activeDocument_);
+}
+
+void EditorSession::setAutosaveInterval(float seconds) { autosaveInterval_ = std::max(0.f, seconds); }
+
+void EditorSession::setExternalPollInterval(float seconds) {
+    externalPollInterval_ = std::max(0.f, seconds);
+}
+
 EditorSession::~EditorSession() { deactivateCurrent(); }
 
 bool EditorSession::addTool(IEditorTool* tool) {
@@ -229,6 +320,23 @@ ToolResponse EditorSession::dispatchKey(const EditorKeyEvent& event) {
 
 void EditorSession::update(float dt) {
     if (activeTool_) activeTool_->update(context_, dt);
+    if (!documentService_ || activeDocument_.empty() || dt <= 0.f) return;
+
+    if (externalPollInterval_ > 0.f) {
+        externalPollElapsed_ += dt;
+        if (externalPollElapsed_ >= externalPollInterval_) (void)pollDocumentChanges();
+    }
+
+    EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(activeDocument_);
+    if (!snapshot.accepted() || !snapshot.value || !snapshot.value->dirty()) {
+        autosaveElapsed_ = 0.f;
+        return;
+    }
+    if (!autosaveService_ || autosaveInterval_ <= 0.f ||
+        snapshot.value->revision.edit == lastAutosavedRevision_)
+        return;
+    autosaveElapsed_ += dt;
+    if (autosaveElapsed_ >= autosaveInterval_) (void)autosaveDocument();
 }
 
 void EditorSession::drawOverlay(IEditorOverlay& overlay) {

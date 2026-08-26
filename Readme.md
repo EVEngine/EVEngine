@@ -342,6 +342,29 @@ make run/android-debug
 make log/android
 ```
 
+#### 加速本地重复构建
+
+如果 `PATH` 中已经安装 `sccache`，CMake 默认会自动发现并按 C/C++ 翻译单元缓存；
+未安装时构建行为不变。可用 `sccache --show-stats` 查看本地命中情况，也可以显式配置：
+
+```sh
+# 强制要求 sccache；找不到时配置直接失败，不静默回退
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=SCCACHE
+
+# 禁用编译缓存自动检测
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=OFF
+```
+
+编译缓存仍会正常判断依赖并重新链接，不会恢复 CMake/Ninja/Make 构建目录。如果游戏只需要
+部分系统，可同时使用已有模块档位，让未使用模块根本不参与编译：
+
+```sh
+make build/win32-debug \
+  CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_PROFILE=2d"
+```
+
+`minimal`、`2d`、`3d`、`full` 以及逐模块开关见[按需裁剪模块](docs/usr/TRIMMING.md)。
+
 产物目录约定：
 
 | 目标 | 构建目录 | 说明 |
@@ -395,6 +418,8 @@ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B bu
 | `CMAKE_BUILD_TYPE` | `Debug`（未指定时） | `Debug` 或 `Release`；影响第三方库安装路径后缀（如 `win32-debug`） |
 | `BUILD_PLATFORM` | 按宿主自动选择 | `win32` / `linux` / `macosx` 等 |
 | `BUILD_TESTING` | `ON` | 是否编译单元测试 |
+| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` 自动使用找到的 `sccache`；`SCCACHE` 强制要求；`OFF` 禁用自动检测 |
+| `EVENGINE_SCCACHE_EXECUTABLE` | 从 `PATH` 自动查找 | 可显式指定 `sccache` 可执行文件路径 |
 
 #### 2. 编译第三方依赖（deps）
 

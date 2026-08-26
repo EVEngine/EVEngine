@@ -10,6 +10,10 @@
 > `Graphics::renderScene3DToCanvas`（RenderSystem3D::renderToCanvas 前向离屏 3D 通道）、
 > `editor.newHeightmapMesh / updateHeightmapMesh`（高度图 → 地形网格），
 > 示例 `examples/terrain-editor`。
+> 2026-08-26 完成框架整合：新增纯数据 `presentation` 层、Squirrel 反射与 Editor
+> PropertyModel 适配器、共享 `PropertyView`、Inspector 标量字段迁移，以及 Control 级
+> enabled/focus/mouse/accessibility 语义、主题子树作用域和确定性事件冒泡；
+> `examples/editor-ui-gallery` 同帧展示游戏 HUD 与编辑器 UI。
 > 对外模型：**声明式** retained 组件树 + ECS `UIHost`（非每帧脚本命令式 ImGui）。
 > 后端：Dear ImGui（SDL 输入 + Vulkan 绘制），由 C++ `UISystem` 每帧 walk。
 > ECS 基础库：[sunxfancy/ECS.hpp](https://github.com/sunxfancy/ECS.hpp)（`external/ECS.hpp`）。
@@ -110,6 +114,38 @@ flowchart TB
 - `Meta.ownerId` 把 UI 挂到游戏实体 id（`bindOwner` / `findHostByOwner`）
 - 点击全局队列：`consumeClick()` → `"hostName/nodeId"`
 - 控件仍在 `Tree` 内（不做每 Button 一 Entity）
+
+### 2.4 整合后的分层与依赖方向
+
+依赖只允许自上而下，View 不直接认识 Squirrel VM，Editor 命令也不进入通用模型层：
+
+1. `presentation`：`Value`、`PropertySchema`、`IPropertyModel`、订阅与校验结果；纯 C++、
+   无 UI/VM/Editor 依赖。
+2. `scriptmodel` / `editor::EditorPropertyModel`：分别把 Squirrel 反射对象和编辑器属性源
+   适配为同一个 `IPropertyModel`；Editor 写入只产生 command intent。
+3. `ui::PropertyView`：只消费 schema/value，选择控件、生成稳定 ID、双向写回并按 revision
+   增量同步；既可嵌入游戏 UI，也可嵌入编辑器面板。
+4. `Inspector`、游戏 HUD、Editor shell：组合 View、命令、权限与目标选择；不复制属性控件。
+5. `WidgetDesc → UINode → UIHost/UISystem → UIBackend`：保留树、布局、焦点/输入、主题与
+   后端呈现。ImGui 只是默认 renderer，不定义公开 UI 语义。
+
+这使“反射生成 UI”成为普通 MVVM adapter，而不是 Inspector 私有代码；游戏内调试器、
+运行时编辑菜单和桌面 Editor 可以共享 schema/view，却保留不同命令权限和外壳。
+
+### 2.5 Godot GUI 基线对应
+
+| Godot GUI 概念 | EVEngine 对应 | 本轮状态 |
+|---|---|---|
+| `Control` 的可见/启用、focus mode、focus neighbor、mouse filter | `UINode` / `WidgetDesc` 的平台中立 Control 语义 | 已实现并序列化 |
+| `Container` 自动布局与 size flags | Flex、Row/Column、Toolbar、Sidebar、Toolbox、SplitPane、box model | 已实现核心组合与响应式布局 |
+| Theme 继承与局部 override | 全局 preset + `ThemePreset` 子树作用域 + `setThemeScope` | 已实现 dark/light 作用域与嵌套恢复 |
+| Inspector 按属性元数据生成 editor | `IPropertyModel` + `PropertyView` + 反射/Editor adapter | 已实现标量生成、校验、双向同步与结构值只读展示 |
+| `_gui_input` / mouse filter 传播 | UIEvent target + retained-tree `pass/ignore/stop` 冒泡 | 已实现 click 路由与自动化同路径 |
+| 键盘/手柄焦点导航 | 显式邻居 + 稳定 tabIndex fallback + `moveFocus` | 已实现后端中立 API 与 ImGui 键盘桥 |
+
+当前对标的是可协作的基础框架，而不是宣称已有 Godot 的全部控件目录。Tree/TabContainer、
+富文本编辑、拖放/IME、平台无障碍桥和完整样式资源导入仍应作为后续独立能力建设，不能
+重新塞回 Inspector 或 ImGui backend。
 
 
 

@@ -373,5 +373,6 @@ void main() {
     float farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
     float viewZ = max(-vViewPos.z, 0.0);
     float linear01 = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    outColor = vec4(color, linear01);
+    float outputAlpha = (ubo.texBomb.w > 1.5 && ubo.texBomb.w < 2.5) ? base.a : linear01;
+    outColor = vec4(color, outputAlpha);
 }

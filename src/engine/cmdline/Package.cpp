@@ -12,7 +12,7 @@
 #include <CLI11.hpp>
 #include <rang.hpp>
 
-#ifdef EVENGINE_WINDOWS
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -158,7 +158,7 @@ std::string resolveSdkRoot(const std::string& sdkArg) {
 
     // Running from <sdk>/bin/<runtime> -> root is two directories up.
     path exe;
-#ifdef EVENGINE_WINDOWS
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     wchar_t buf[MAX_PATH + 1] = {0};
     if (GetModuleFileNameW(nullptr, buf, MAX_PATH) != 0) exe = path(buf);
 #else
@@ -252,7 +252,7 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         std::vector<path> crtCandidates;
         if (exists(sdkBin)) crtCandidates.push_back(sdkBin);
         if (exists(sdkLib)) crtCandidates.push_back(sdkLib);
-#ifdef EVENGINE_WINDOWS
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
         // VC redist (version-independent glob): both release CRT and debug CRT.
         for (const auto& msroot : {"C:/Program Files/Microsoft Visual Studio"}) {
             path base = path(msroot);

@@ -29,7 +29,7 @@ void main() {
     float linear01 = clamp((zEye - nearZ) / (farZ - nearZ), 0.0, 1.0);
     outDepth = vec4(linear01, linear01, linear01, 1.0);
     vec3 albedo = texture(MainTex, vUV).rgb;
-    uint packedTint = floatBitsToUint(pc.clip.z);
+    uint packedTint = uint(pc.clip.z);
     vec3 tint = vec3(float(packedTint & 255u), float((packedTint >> 8) & 255u),
                      float((packedTint >> 16) & 255u)) / 255.0;
     // A = linear depth so SSGI can sample albedo+depth with one sampler.

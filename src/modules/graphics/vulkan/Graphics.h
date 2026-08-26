@@ -281,7 +281,18 @@ public:
         return materialTableGetOrCreate(material);
     }
     bool gpuDrivenMaterialUsable(Material *material) override;
-    bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    bool     gpuDrivenSubmitOpaque(const GpuInstance* instances, uint32_t instanceCount) override;
+    Texture* getSceneLinearDepthTexture() override;
+
+    bool              supportsGpuParticles() const override { return initialized && !headless_; }
+    bool              canSubmitGpuParticles() const override;
+    GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) override;
+    void              releaseGpuParticleEmitter(GpuParticleHandle handle) override;
+    void              resetGpuParticleEmitter(GpuParticleHandle handle) override;
+    bool              updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
+                                               const GpuParticleSpawn* spawns, std::uint32_t spawnCount) override;
+    bool              drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) override;
+    GpuParticleStats  getGpuParticleStats(GpuParticleHandle handle) const override;
     /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
     uint32_t debugBindlessIndex(Texture *tex) const;
     uint32_t debugMeshRecordIndex(Mesh *mesh) const;
@@ -358,6 +369,9 @@ public:
                                          BlendMode blend = BlendMode::Alpha) override;
     void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x, float y,
                                      float w, float h, const Color &tint) override;
+    bool drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h, float degrees,
+                                           float u0, float v0, float u1, float v1, float strengthPixels, float opacity,
+                                           bool rotatedUV = false) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
                                float u0, float v0, float u1, float v1, const Color &color) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
@@ -374,6 +388,8 @@ public:
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    Shader *newHairShaderFromWgsl(const std::string &vertWgsl,
+                                  const std::string &fragWgsl) override;
     bool releaseShader(Shader *shader) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
@@ -495,6 +511,9 @@ public:
     };
 
 private:
+    struct GpuParticleDrawRequest;
+    struct GpuParticleResource;
+
     struct Mesh3dFrameSlots;
     struct Mesh3dClusteredFrameSlots;
     struct DecalSlot;
@@ -504,6 +523,10 @@ private:
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
     void createLit2DPipeline();
+    void          createGpuParticlePipelines();
+    void          destroyGpuParticleResources();
+    void          recordGpuParticleCompute(vk::CommandBuffer cb);
+    void          drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDrawRequest& request);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void createVoxelRectPipeline();
@@ -567,7 +590,11 @@ private:
                                               vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1);
     vk::Pipeline  createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
                                             vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
-                                            vk::SampleCountFlagBits samples);
+                                            vk::SampleCountFlagBits samples,
+                                            BlendMode blend = BlendMode::Opaque,
+                                            bool depthWrite = true, bool doubleSided = true);
+    static constexpr size_t kMesh3DPipelineVariants = 20;
+    static size_t mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided);
     /** @brief X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
     vk::Pipeline createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
@@ -597,9 +624,9 @@ private:
     void flushToSwapchain();
     void flushToOffscreen(OffscreenCanvas *canvas);
     void abortOpen3DFrame();
-    void noteSolidOverlay();
-    void noteTexturedOverlay(Texture *tex);
-    void noteLitOverlay();
+    void noteSolidOverlay(uint32_t batchIndex);
+    void noteTexturedOverlay(Texture *tex, uint32_t batchIndex);
+    void noteLitOverlay(uint32_t batchIndex);
     void clear2DBatches();
     void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
                                  std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
@@ -697,6 +724,7 @@ private:
     vk::Pipeline premultipliedTexPipeline;
     vk::Pipeline multiplyTexPipeline;
     vk::Pipeline opaqueTexPipeline;
+    vk::Pipeline                  particleDistortionPipeline;
     vk::PipelineLayout texPipelineLayout;
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;
@@ -719,6 +747,7 @@ private:
     vk::PipelineLayout mesh3dShaderPipelineLayout;  // + push constants for custom mesh shaders
     vk::Pipeline mesh3dPipeline;
     vk::Pipeline mesh3dTransparentPipeline;
+    std::array<vk::Pipeline, kMesh3DPipelineVariants> mesh3dSurfacePipelines{};
     // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
     // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
     // executable command buffer (which invalidates the CB).
@@ -1133,7 +1162,6 @@ private:
         Texture normalTex{};
         Texture paramsTex{};
         vkb::GenericBuffer cameraUbo;  // capacity 1 per frame slot
-        vkb::GenericBuffer instanceBuf;  // kMaxDecalInstances * DecalInstanceData
         std::unordered_map<DecalSetKey, vkb::BoundSet, DecalSetKeyHash> sets;
     };
     int decalWidth = 0;
@@ -1205,6 +1233,7 @@ private:
     // submitted directly to the graphics queue (no swapchain / present).
     vkb::BuiltRenderPass offscreen3DRenderPass{};
     vk::Pipeline offscreen3DMeshPipeline = nullptr;
+    std::array<vk::Pipeline, kMesh3DPipelineVariants> offscreen3DSurfacePipelines{};
     vk::CommandPool offscreen3DPool = nullptr;
     vk::CommandBuffer offscreen3DCB = nullptr;
     vk::Fence offscreen3DFence = nullptr;
@@ -1242,17 +1271,19 @@ private:
     };
     std::vector<SolidBatch> solidBatches;
     struct TexturedBatch {
+        enum class Effect { Default, SceneColorDistortion };
         Texture *texture = nullptr;
         Texture *depth = nullptr;
         Shader *shader = nullptr;
         BlendMode blend = BlendMode::Alpha;
         Batcher batch;
+        Effect    effect = Effect::Default;
     };
     std::vector<TexturedBatch> texturedBatches;
 
     std::vector<LitBatch> litBatches;
 
-    enum class OverlayKind : uint8_t { Solid, Textured, Lit };
+    enum class OverlayKind : uint8_t { Solid, Textured, Lit, GpuParticles };
     struct OverlaySpan {
         OverlayKind kind = OverlayKind::Solid;
         uint32_t index = 0;
@@ -1264,6 +1295,24 @@ private:
     std::optional<TexturedBatch> pendingSceneResolve;
     std::optional<TexturedBatch> pendingUiResolve;
     bool sceneColorComposited = false;
+
+    struct GpuParticleDrawRequest {
+        GpuParticleHandle handle = kInvalidGpuParticleHandle;
+        GpuParticleDraw   draw;
+    };
+    std::unordered_map<GpuParticleHandle, GpuParticleResource*> gpuParticles_;
+    std::vector<GpuParticleDrawRequest>                         gpuParticleDraws_;
+    GpuParticleHandle                                           nextGpuParticleHandle_ = 1;
+    vk::DescriptorSetLayout                                     gpuParticleComputeSetLayout_{};
+    vk::DescriptorSetLayout                                     gpuParticleDrawSetLayout_{};
+    vk::PipelineLayout                                          gpuParticleComputeLayout_{};
+    vk::PipelineLayout                                          gpuParticleDrawLayout_{};
+    vk::Pipeline                                                gpuParticleComputePipeline_{};
+    vk::Pipeline                                                gpuParticleAlphaPipeline_{};
+    vk::Pipeline                                                gpuParticleAdditivePipeline_{};
+    vk::Pipeline                                                gpuParticlePremultipliedPipeline_{};
+    vk::Pipeline                                                gpuParticleMultiplyPipeline_{};
+    vk::Pipeline                                                gpuParticleOpaquePipeline_{};
 
     // Persistent host-visible vertex buffers for 2D batching, reused across
     // frames. GenericBuffer now owns the Vulkan handles.

@@ -342,6 +342,33 @@ make run/android-debug
 make log/android
 ```
 
+#### Faster local rebuilds
+
+If `sccache` is installed and available on `PATH`, CMake detects it by default
+and caches each C/C++ translation unit. Nothing changes when it is unavailable.
+Use `sccache --show-stats` to inspect local hits, or configure explicitly with:
+
+```sh
+# Require sccache (configuration fails instead of silently falling back)
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=SCCACHE
+
+# Disable compiler-cache auto-detection
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=OFF
+```
+
+Compiler caching still performs normal dependency evaluation and linking; it
+does not restore a CMake/Ninja/Make build tree. For a game that needs fewer
+systems, combine it with the existing module profiles so unused modules are not
+compiled at all:
+
+```sh
+make build/win32-debug \
+  CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_PROFILE=2d"
+```
+
+See [module trimming](docs/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
+`full`, and per-module options.
+
 Output layout:
 
 | Target | Build dir | Notes |
@@ -395,6 +422,8 @@ Optional CMake variables:
 | `CMAKE_BUILD_TYPE` | `Debug` (if unset) | `Debug` or `Release`; affects third-party install path suffixes (e.g. `win32-debug`) |
 | `BUILD_PLATFORM` | Auto from host | `win32` / `linux` / `macosx`, etc. |
 | `BUILD_TESTING` | `ON` | Build unit tests |
+| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `OFF` disables auto-detection |
+| `EVENGINE_SCCACHE_EXECUTABLE` | Auto from `PATH` | Optional explicit path to `sccache` |
 
 #### 2. Build third-party (deps)
 

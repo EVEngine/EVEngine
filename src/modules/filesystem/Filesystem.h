@@ -248,6 +248,21 @@ public:
     virtual void append(std::string filename, const void *data, int64_t size) const = 0;
 
     /**
+     * @brief Write a UTF-8 string to a file in the configured save directory.
+     * @param filename Relative save path.
+     * @param text UTF-8 text to write.
+     * @return True when the write succeeds.
+     */
+    bool writeText(const std::string &filename, const std::string &text) const;
+
+    /**
+     * @brief Read a UTF-8 string from the virtual filesystem.
+     * @param filename Relative virtual path.
+     * @return File contents, or an empty string when the file cannot be read.
+     */
+    std::string readText(const std::string &filename) const;
+
+    /**
      * @brief This "native" method returns a table of all
      * files in a given directory.
      **/

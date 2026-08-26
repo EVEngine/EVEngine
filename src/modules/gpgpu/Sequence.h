@@ -37,7 +37,7 @@ public:
     Sequence(const Sequence &) = delete;
     Sequence &operator=(const Sequence &) = delete;
 
-    /** True when the active backend (Vulkan) supports command recording. */
+    /** True when the active Vulkan or WebGPU backend supports command recording. */
     bool isAvailable() const;
 
     /** Start recording. Safe to call again after submit() to reuse. */

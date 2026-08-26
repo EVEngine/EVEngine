@@ -121,6 +121,7 @@ TEST_CASE("graphics.font.newFontDefaultCharsetDoesNotCrash") {
     REQUIRE(gfont->getTexture() != nullptr);
 }
 
+// Shared coverage for Vulkan and WebGPU font rendering.
 TEST_CASE("graphics.print.throwsWithoutFont") {
     GfxFixture fx(320, 240, /*useHeadless=*/true);
     fx.gfx->setFont(nullptr);
