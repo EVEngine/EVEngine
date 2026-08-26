@@ -103,7 +103,7 @@ bin\eve.exe run mygame
 
 ### 拿到引擎后，你可以做这些事
 
-- **制作 2D / 第三人称 3D / 2D+3D 混合游戏**：Tilemap、摄像机、Box2D/Box3D 物理、粒子、动画、RPG、背包、UI、程序化生成等 40+ 模块，全部通过 Squirrel 脚本调用，逐个模块的手册见[模块使用手册](docs/usr/MODULES.md)。
+- **制作 2D / 第三人称 3D / 2D+3D 混合游戏**：Tilemap、摄像机、Box2D/Box3D 物理、粒子、动画、RPG、背包、UI、程序化生成等 40+ 模块，全部通过 EveScript（兼容 Squirrel）调用；先阅读[EveScript 完整教程](docs/usr/EVESCRIPT.md)，逐个模块的接口见[模块使用手册](docs/usr/MODULES.md)。
 - **脚本与资源热重载**：桌面端改完脚本/贴图立即生效；移动端用 `eve dev` 开发服务器把改动推送到真机，无需重装应用。
 - **调试**：暂停游戏循环、断点、监视、快照，支持 VS Code 调试适配器与 AI（MCP）辅助开发。
 - **打包发布**：`eve zip` 把游戏压缩为 `.eve` 归档；`eve package --sdk <SDK目录>` 生成包含运行时与游戏的可分发目录；Android / iOS 用 SDK 自带模板组装 APK / .app。
