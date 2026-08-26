@@ -1092,6 +1092,15 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-signal-handler.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Sixth patch: SDL2's Android sensor loop uses ALooper_pollAll, which the
+    # NDK 27+ headers mark unavailable (obsoleted in Android 1). Use the
+    # equivalent ALooper_pollOnce (same non-blocking semantics at timeout 0);
+    # this is what upstream SDL3 switched to. SDL2 2.0.x never adopted it.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-android-alooper-pollonce.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which

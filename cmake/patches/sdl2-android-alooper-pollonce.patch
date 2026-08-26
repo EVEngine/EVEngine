@@ -1,0 +1,6 @@
+diff --git a/SDL2/src/sensor/android/SDL_androidsensor.c b/SDL2/src/sensor/android/SDL_androidsensor.c
+--- a/SDL2/src/sensor/android/SDL_androidsensor.c
++++ b/SDL2/src/sensor/android/SDL_androidsensor.c
+@@ -174 +174 @@
+-    if (ALooper_pollAll(0, NULL, &events, (void**)&source) == LOOPER_ID_USER) {
++    if (ALooper_pollOnce(0, NULL, &events, (void**)&source) == LOOPER_ID_USER) {
