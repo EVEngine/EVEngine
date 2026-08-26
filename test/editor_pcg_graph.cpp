@@ -205,3 +205,24 @@ TEST_CASE("editor.pcgGraph.transactionallyMigratesLegacyPinsAndDefaults") {
              std::string("editor.pcg.migration-duplicate-pin"));
     CHECK_EQ(legacy.schemaVersion, uint32_t(0));
 }
+
+TEST_CASE("editor.pcgGraph.boundsIsolatedPreviewPointOutputs") {
+    PcgPointGraphDomain domain;
+    auto input = domain.makeNode(GraphNodeId("input"), "input");
+    REQUIRE(input.value);
+    GraphDocument graph;
+    CHECK(graph.createNode(*input.value).accepted());
+    eve::procgen::PointSet points;
+    for (int index = 0; index < 1001; ++index) points.add(float(index), 0.f, 0.f);
+
+    const auto rejected = domain.preview(graph.snapshot(domain.domain()), "input", &points,
+                                         "input", 0, 1000);
+    CHECK_EQ(static_cast<int>(rejected.status), static_cast<int>(EditorStatus::Failed));
+    REQUIRE(!rejected.diagnostics.empty());
+    CHECK(rejected.diagnostics.back().message.find("point budget") != std::string::npos);
+
+    const auto accepted = domain.preview(graph.snapshot(domain.domain()), "input", &points,
+                                         "input", 0, 1001);
+    CHECK_EQ(static_cast<int>(accepted.status), static_cast<int>(EditorStatus::Applied));
+    CHECK_EQ(accepted.outputCount, 1001);
+}

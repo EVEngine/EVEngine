@@ -148,3 +148,34 @@ TEST_CASE("procgen.pointGraphStress.rejectsOversizedOutputsBeforeSpatialAllocati
     REQUIRE(bool(output));
     CHECK_EQ(output->getCount(), 121);
 }
+
+TEST_CASE("procgen.pointGraphStress.preflightsInputMergeAndCopyAllocations") {
+    PointSet first;
+    PointSet second;
+    for (int index = 0; index < 60; ++index) {
+        first.add(float(index), 0.f, 0.f);
+        second.add(0.f, 0.f, float(index));
+    }
+    PointGraph graph;
+    CHECK(graph.addNode("first", "input"));
+    CHECK(graph.addNode("second", "input"));
+    CHECK(graph.addNode("merge", "merge"));
+    CHECK(graph.addNode("copy", "copy.points"));
+    graph.setMaxNodeOutputPoints(100);
+    CHECK(graph.setNodePoints("first", &first));
+    CHECK(graph.setNodePoints("second", &second));
+    CHECK(graph.connect("first", "merge", 0));
+    CHECK(graph.connect("second", "merge", 1));
+    CHECK(graph.connect("first", "copy", 0));
+    CHECK(graph.connect("second", "copy", 1));
+    CHECK(graph.setNodeInt("copy", "maxPoints", 10000));
+    CHECK(!graph.execute("merge"));
+    CHECK(graph.getError().find("point budget") != std::string::npos);
+    CHECK(!graph.execute("copy"));
+    CHECK(graph.getError().find("point budget") != std::string::npos);
+
+    PointSet oversized;
+    for (int index = 0; index < 101; ++index) oversized.add(float(index), 0.f, 0.f);
+    CHECK(!graph.setNodePoints("first", &oversized));
+    CHECK(graph.getError().find("input exceeds") != std::string::npos);
+}

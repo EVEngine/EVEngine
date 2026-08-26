@@ -341,7 +341,7 @@ PcgGraphPreviewResult PcgPointGraphDomain::preview(const GraphDocumentData& grap
                                                     const std::string& inputNode,
                                                     procgen::PointSet* previewInput,
                                                     const std::string& outputNode,
-                                                    int nodeBudget) const {
+                                                    int nodeBudget, int pointBudget) const {
     PcgGraphPreviewResult result;
     result.documentRevision = graph.revision;
     const auto compiled = compile(graph);
@@ -358,15 +358,23 @@ PcgGraphPreviewResult PcgPointGraphDomain::preview(const GraphDocumentData& grap
         return result;
     }
     procgen::PointGraph runtime;
-    if (!runtime.deserializeDefinition(compiled.definition) ||
-        !runtime.setNodePoints(inputNode, previewInput)) {
+    if (!runtime.deserializeDefinition(compiled.definition)) {
         result.status = EditorStatus::Failed;
         result.diagnostics.push_back(
             {RuleId("editor.pcg.preview-bind-failed"), DiagnosticSeverity::Error,
-             "PCG preview input node is invalid: " + inputNode});
+             "PCG preview definition could not be loaded"});
         return result;
     }
     runtime.setExecutionNodeBudget(nodeBudget);
+    runtime.setMaxNodeOutputPoints(pointBudget);
+    if (!runtime.setNodePoints(inputNode, previewInput)) {
+        result.status = EditorStatus::Failed;
+        result.diagnostics.push_back(
+            {RuleId("editor.pcg.preview-bind-failed"), DiagnosticSeverity::Error,
+             runtime.getError().empty() ? "PCG preview input node is invalid: " + inputNode
+                                        : runtime.getError()});
+        return result;
+    }
     std::unique_ptr<procgen::PointSet> output(runtime.execute(outputNode));
     if (!output) {
         result.status = runtime.wasCancelled() ? EditorStatus::Cancelled : EditorStatus::Failed;

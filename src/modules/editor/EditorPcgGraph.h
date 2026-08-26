@@ -78,10 +78,12 @@ public:
      * @param previewInput Non-owning point data used only for this execution.
      * @param outputNode Node whose evaluated output determines outputCount.
      * @param nodeBudget Maximum newly evaluated nodes, or zero for unlimited.
+     * @param pointBudget Maximum points cached by one node, or zero for unlimited.
      */
     PcgGraphPreviewResult preview(const GraphDocumentData& graph, const std::string& inputNode,
                                   procgen::PointSet* previewInput,
-                                  const std::string& outputNode, int nodeBudget = 0) const;
+                                  const std::string& outputNode, int nodeBudget = 0,
+                                  int pointBudget = 100000) const;
 };
 
 }  // namespace eve::editor

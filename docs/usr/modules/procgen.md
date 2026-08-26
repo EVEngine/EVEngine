@@ -449,6 +449,8 @@ document revision 与稳定 node/edge id。`compile()` 会自动执行迁移并�
 祖先节点，不会污染资产缓存或参数覆写。结果携带 document revision、最终点数，以及每个已
 执行节点的耗时、输出点数、cache hit、XYZ 包围盒和平均 density，可直接驱动 graph badge、
 viewport bounds 与性能热区覆盖；无效输入、绑定失败、执行失败和取消使用稳定 diagnostic。
+预览默认对单节点输出实施 100,000 点硬上限；调用方可通过 `pointBudget` 调低或显式传 0
+关闭限制。超限结果在进入预览 metric/cache 前释放并返回稳定 execution-failed diagnostic。
 `GraphDocument::setParameters()` 接受 `{ publicName: { node: nodeId, key: parameterKey } }`
 黑板对象；编译器校验节点、反射参数类型和重复目标，并把绑定写入 PointGraph 资产，运行时
 实例随后可通过 `setParameterFloat/Int/String()` 覆写。

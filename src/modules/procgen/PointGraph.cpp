@@ -207,6 +207,10 @@ std::string PointGraph::getInputNode(const std::string& nodeId, int inputIndex) 
 bool PointGraph::setNodePoints(const std::string& id, PointSet* points) {
     const auto found = nodes_.find(id);
     if (found == nodes_.end() || !points) return false;
+    if (maxNodeOutputPoints_ > 0 && points->getCount() > maxNodeOutputPoints_) {
+        error_ = "input exceeds node point budget at node: " + id;
+        return false;
+    }
     found->second.points    = *points;
     found->second.hasPoints = true;
     invalidateFrom(id);
@@ -594,7 +598,12 @@ const PointSet* PointGraph::evaluate(const std::string& id,
                 node.cache = *result;
         }
     } else if (node.operation == "merge") {
+        const uint64_t outputCount = first && second
+                                         ? uint64_t(first->getCount()) + uint64_t(second->getCount())
+                                         : 0;
         if (!first || !second) error_ = "merge requires two inputs: " + id;
+        else if (maxNodeOutputPoints_ > 0 && outputCount > uint64_t(maxNodeOutputPoints_))
+            error_ = "merge exceeds node point budget at node: " + id;
         else node.cache = mergePointSets(*first, *second);
     } else if (node.operation == "copy.points") {
         const int maxPoints = intValue(node, "maxPoints", 100000);
@@ -604,6 +613,8 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         if (!first || !second) error_ = "copy.points requires source and target inputs: " + id;
         else if (maxPoints < 0 || outputCount > uint64_t(maxPoints))
             error_ = "copy.points output exceeds maxPoints at node: " + id;
+        else if (maxNodeOutputPoints_ > 0 && outputCount > uint64_t(maxNodeOutputPoints_))
+            error_ = "copy.points exceeds node point budget at node: " + id;
         else
             node.cache = copyPointsToTargets(
                 *first, *second, intValue(node, "inheritTargetAttributes", 1) != 0);
@@ -697,12 +708,17 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         else node.cache = condition ? *first : *second;
     } else if (node.operation == "subgraph") {
         if (!first || !node.subgraph) error_ = "subgraph requires input and graph: " + id;
-        else if (!node.subgraph->setNodePoints(node.subgraphInput, const_cast<PointSet*>(first)))
-            error_ = "subgraph input node is invalid: " + id;
         else {
-            std::unique_ptr<PointSet> result(node.subgraph->execute(node.subgraphOutput));
-            if (!result) error_ = "subgraph failed at " + id + ": " + node.subgraph->getError();
-            else node.cache = *result;
+            node.subgraph->setMaxNodeOutputPoints(maxNodeOutputPoints_);
+            if (!node.subgraph->setNodePoints(node.subgraphInput, const_cast<PointSet*>(first)))
+                error_ = "subgraph input failed at " + id + ": " + node.subgraph->getError();
+            else {
+                std::unique_ptr<PointSet> result(node.subgraph->execute(node.subgraphOutput));
+                if (!result)
+                    error_ = "subgraph failed at " + id + ": " + node.subgraph->getError();
+                else
+                    node.cache = *result;
+            }
         }
     }
 
