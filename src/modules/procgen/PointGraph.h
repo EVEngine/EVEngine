@@ -61,6 +61,13 @@ public:
 
     /** @brief Evaluate one node and return a caller-owned result, or nullptr on failure. */
     PointSet* execute(const std::string& outputId);
+    /** @brief Limit uncached nodes evaluated by one execute call; zero disables the limit. */
+    void setExecutionNodeBudget(int nodes);
+    int  getExecutionNodeBudget() const;
+    /** @brief Cancel subsequent execution until resetCancellation is called. */
+    void requestCancel();
+    void resetCancellation();
+    bool wasCancelled() const;
     /** @brief Validate ids, operations, required inputs and graph acyclicity. */
     bool validate();
     std::string getError() const;
@@ -130,6 +137,10 @@ private:
     int                                   executionCount_ = 0;
     int                                   cacheHitCount_   = 0;
     uint64_t                              revision_        = 0;
+    int                                   executionNodeBudget_ = 0;
+    int                                   evaluatedNodes_      = 0;
+    bool                                  cancelRequested_     = false;
+    bool                                  lastCancelled_       = false;
 };
 
 }  // namespace eve::procgen

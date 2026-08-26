@@ -204,3 +204,40 @@ TEST_CASE("procgen.pointGraph.definitionIsStableAcrossParameterInsertionOrder") 
     CHECK(second.setNodeFloat("move", "z", 3.f));
     CHECK_EQ(first.serializeDefinition(), second.serializeDefinition());
 }
+
+TEST_CASE("procgen.pointGraph.cooperativelyBudgetsAndCancelsExecution") {
+    PointSet points;
+    points.add(0.f, 0.f, 0.f);
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("first", "transform"));
+    CHECK(graph.addNode("second", "transform"));
+    CHECK(graph.connect("source", "first"));
+    CHECK(graph.connect("first", "second"));
+    CHECK(graph.setNodePoints("source", &points));
+    graph.setExecutionNodeBudget(2);
+    CHECK_EQ(graph.getExecutionNodeBudget(), 2);
+    CHECK(!graph.execute("second"));
+    CHECK(graph.wasCancelled());
+    CHECK(graph.getError().find("budget exceeded") != std::string::npos);
+    PointSet* partial = graph.getNodeOutput("first");
+    REQUIRE(bool(partial));
+    delete partial;
+
+    graph.setExecutionNodeBudget(3);
+    PointSet* completed = graph.execute("second");
+    REQUIRE(bool(completed));
+    CHECK(!graph.wasCancelled());
+    CHECK(graph.getCacheHitCount() > 0);
+    delete completed;
+
+    graph.requestCancel();
+    CHECK(!graph.execute("second"));
+    CHECK(graph.wasCancelled());
+    CHECK(graph.getError().find("cancelled") != std::string::npos);
+    graph.resetCancellation();
+    CHECK(!graph.wasCancelled());
+    completed = graph.execute("second");
+    REQUIRE(bool(completed));
+    delete completed;
+}

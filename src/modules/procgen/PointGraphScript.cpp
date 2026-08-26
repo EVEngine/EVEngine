@@ -28,6 +28,11 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("setNodeString", &PointGraph::setNodeString);
     graph.addFunc("setNodeSubgraph", &PointGraph::setNodeSubgraph);
     graph.addFunc("execute", &PointGraph::execute);
+    graph.addFunc("setExecutionNodeBudget", &PointGraph::setExecutionNodeBudget);
+    graph.addFunc("getExecutionNodeBudget", &PointGraph::getExecutionNodeBudget);
+    graph.addFunc("requestCancel", &PointGraph::requestCancel);
+    graph.addFunc("resetCancellation", &PointGraph::resetCancellation);
+    graph.addFunc("wasCancelled", &PointGraph::wasCancelled);
     graph.addFunc("validate", &PointGraph::validate);
     graph.addFunc("getError", &PointGraph::getError);
     graph.addFunc("clearCache", &PointGraph::clearCache);

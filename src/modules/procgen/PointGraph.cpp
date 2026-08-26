@@ -181,11 +181,27 @@ PointSet* PointGraph::execute(const std::string& outputId) {
     error_.clear();
     metrics_.clear();
     cacheHitCount_ = 0;
+    evaluatedNodes_ = 0;
+    lastCancelled_ = false;
     ++executionCount_;
+    if (cancelRequested_) {
+        error_ = "execution cancelled";
+        lastCancelled_ = true;
+        return nullptr;
+    }
     std::unordered_map<std::string, int> states;
     const PointSet* result = evaluate(outputId, states);
     return result ? new PointSet(*result) : nullptr;
 }
+
+void PointGraph::setExecutionNodeBudget(int nodes) { executionNodeBudget_ = std::max(0, nodes); }
+int  PointGraph::getExecutionNodeBudget() const { return executionNodeBudget_; }
+void PointGraph::requestCancel() { cancelRequested_ = true; }
+void PointGraph::resetCancellation() {
+    cancelRequested_ = false;
+    lastCancelled_   = false;
+}
+bool PointGraph::wasCancelled() const { return lastCancelled_; }
 
 bool PointGraph::validate() {
     error_.clear();
@@ -283,6 +299,11 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         error_ = "cycle at node: " + id;
         return nullptr;
     }
+    if (cancelRequested_) {
+        error_ = "execution cancelled at node: " + id;
+        lastCancelled_ = true;
+        return nullptr;
+    }
     states[id] = 1;
     const uint64_t started = nowNanoseconds();
     const PointSet* first  = nullptr;
@@ -295,6 +316,12 @@ const PointSet* PointGraph::evaluate(const std::string& id,
         second = evaluate(node.inputs[1], states);
         if (!second) return nullptr;
     }
+    if (executionNodeBudget_ > 0 && evaluatedNodes_ >= executionNodeBudget_) {
+        error_ = "execution node budget exceeded at node: " + id;
+        lastCancelled_ = true;
+        return nullptr;
+    }
+    ++evaluatedNodes_;
 
     if (node.operation == "input") {
         if (!node.hasPoints) error_ = "input node has no points: " + id;
