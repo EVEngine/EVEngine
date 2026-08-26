@@ -59,6 +59,10 @@ void Profiler::end() {
     eve::prof::Profiler::zoneEnd();
 }
 
+void Profiler::frameBegin() { beginFrame(); }
+
+void Profiler::frameEnd() { endFrame(); }
+
 void Profiler::passBegin(const char* name) {
     if (!enabled()) return;
     eve::prof::Profiler::zoneBegin(name ? name : "pass", "graphics");

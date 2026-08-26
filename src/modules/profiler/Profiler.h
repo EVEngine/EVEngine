@@ -33,8 +33,10 @@ namespace eve::profiler {
  * profiler.setEnabled(false);
  * @endcode
  *
- * The frame driver (src/scripts/load.nut) calls frameBegin()/endFrame() each
- * frame; render passes are converted from the existing IRenderTracer hooks.
+ * The module installs itself as the IRenderTracer, so each render pass becomes a
+ * "graphics" zone and the render frame boundary drives automatic per-frame
+ * aggregation (no game script changes required). beginFrame()/endFrame() are also
+ * exposed for manual frame delimitation around arbitrary code.
  */
 class Profiler : public Module, public eve::debug::IRenderTracer {
 public:
@@ -77,9 +79,10 @@ public:
      */
     ssq::Object capture();
 
-    // IRenderTracer: route render passes into the core as "graphics" zones.
-    void frameBegin() override {}
-    void frameEnd() override {}
+    // IRenderTracer: route render passes into the core as "graphics" zones and
+    // drive automatic per-frame aggregation from the render frame boundary.
+    void frameBegin() override;
+    void frameEnd() override;
     void passBegin(const char* name) override;
     void passEnd(const char* name) override;
     void draw(const char* api, const char* detail) override {}

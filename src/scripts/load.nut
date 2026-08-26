@@ -39,19 +39,6 @@ function has_module(slot) {
 }
 
 // ---------------------------------------------------------------------------
-// Profiler markers (built-in profiler module). These are no-ops when the
-// profiler is absent or disabled, so they cost nothing in normal builds.
-// ---------------------------------------------------------------------------
-function _prof(name) {
-    if (!has_module("profiler")) return;
-    profiler.begin(name);
-}
-function _prof_end() {
-    if (!has_module("profiler")) return;
-    profiler.end();
-}
-
-// ---------------------------------------------------------------------------
 // 通用游戏开发辅助（在 main.nut 之前定义；示例脚本可直接使用，
 // 游戏脚本里可以按需用同名定义覆盖）。
 // ---------------------------------------------------------------------------
@@ -667,8 +654,6 @@ eve_frame <- function() {
     if ((getroottable()._frame_count % 300) == 0)
         _log("frame: reached frame " + getroottable()._frame_count);
     local running = true;
-    if (has_module("profiler")) profiler.frameBegin();
-    _prof("events");
     dev_scenario_frame();
     event.pump();
     while (true) {
@@ -686,7 +671,6 @@ eve_frame <- function() {
                 running = false;
         }
     }
-    _prof_end();
     if (startup_frames > 0)
         startup_frames -= 1;
 
@@ -707,18 +691,14 @@ eve_frame <- function() {
             // Playground pause: the page sets the eve_playground_paused root
             // flag to freeze game logic while the render keeps presenting.
             if (!("eve_playground_paused" in getroottable()) || !eve_playground_paused) {
-                _prof("update");
                 eve_update(dt);
-                _prof_end();
                 // Flush reactions scheduled during eve_update.
                 if ("async_pump" in getroottable())
                     async_pump();
             }
             dev_notify_frame_done();
         }
-        _prof("render");
         eve_render();
-        _prof_end();
         // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
         dev_draw_ai();
         dev_draw_console();
@@ -730,9 +710,7 @@ eve_frame <- function() {
     // before throwing. Skipping present leaves swapchainPassOpen and every
     // later frame fails with "begin3DFrame: swapchain pass already open".
     try {
-        _prof("present");
         gfx.present();
-        _prof_end();
         if (has_module("ui")) ui.dispatchEvents();
     } catch (e) {
         print("present error: " + e + "\n");
@@ -742,11 +720,8 @@ eve_frame <- function() {
         _startup_ms("first present - window shows content");
         _log("frame: first present");
     }
-    if ("bootBench" in eve && eve.bootBench) {
-        if (has_module("profiler")) profiler.endFrame();
+    if ("bootBench" in eve && eve.bootBench)
         return false;
-    }
-    if (has_module("profiler")) profiler.endFrame();
     return running;
 };
 
