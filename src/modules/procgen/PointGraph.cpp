@@ -456,6 +456,12 @@ std::string PointGraph::getMetricBackend(int index) const {
     return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].backend : std::string();
 }
 std::string PointGraph::getComputeFallbackReason() const { return computeFallbackReason_; }
+uint64_t    PointGraph::getComputeUploadCount() const { return pointCompute_->getUploadCount(); }
+uint64_t    PointGraph::getComputeDispatchCount() const { return pointCompute_->getDispatchCount(); }
+uint64_t    PointGraph::getComputeReadbackCount() const { return pointCompute_->getReadbackCount(); }
+uint64_t    PointGraph::getComputeBufferReuseCount() const { return pointCompute_->getBufferReuseCount(); }
+uint64_t    PointGraph::getComputePeakBufferBytes() const { return pointCompute_->getPeakBufferBytes(); }
+int         PointGraph::getLastFusedTransformCount() const { return pointCompute_->getLastFusedTransformCount(); }
 float PointGraph::getMetricMinX(int index) const {
     return index >= 0 && index < int(metrics_.size()) ? metrics_[size_t(index)].minX : 0.f;
 }

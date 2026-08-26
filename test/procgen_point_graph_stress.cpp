@@ -78,6 +78,12 @@ TEST_CASE("procgen.pointGraphStress.computePolicyPreservesDeterministicCpuPath")
     CHECK_EQ(graph.getComputeMinimumPoints(), 0);
     CHECK_EQ(graph.getMetricBackend(graph.getMetricCount() - 1), "cpu");
     CHECK(graph.getComputeFallbackReason().empty());
+    CHECK_EQ(graph.getComputeUploadCount(), uint64_t(0));
+    CHECK_EQ(graph.getComputeDispatchCount(), uint64_t(0));
+    CHECK_EQ(graph.getComputeReadbackCount(), uint64_t(0));
+    CHECK_EQ(graph.getComputeBufferReuseCount(), uint64_t(0));
+    CHECK_EQ(graph.getComputePeakBufferBytes(), uint64_t(0));
+    CHECK_EQ(graph.getLastFusedTransformCount(), 0);
     CHECK(graph.debugReport().find("backend=cpu") != std::string::npos);
 }
 

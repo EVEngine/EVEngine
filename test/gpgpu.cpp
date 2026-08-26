@@ -317,6 +317,51 @@ TEST_CASE("gpgpu.procgen.transformParity") {
     REQUIRE(reusedActual.getCount() == reusedExpected.getCount());
     CHECK(std::fabs(reusedActual.getX(0) - reusedExpected.getX(0)) < 0.0001f);
     CHECK(std::fabs(reusedActual.getZ(count - 1) - reusedExpected.getZ(count - 1)) < 0.0001f);
+
+    const std::vector<eve::procgen::PointCompute::Transform> chain{
+        {2.f, 3.f, -1.f, 15.f, 1.2f, 0.8f, 1.1f},
+        {-7.f, 0.5f, 4.f, -33.f, 0.75f, 2.f, 0.6f},
+        {1.f, -2.f, 8.f, 91.f, 1.5f, 1.25f, 0.9f},
+        {0.f, 6.f, -3.f, 5.f, 0.5f, 0.5f, 2.f},
+    };
+    eve::procgen::PointSet fusedExpected = input;
+    for (const auto &operation : chain)
+        fusedExpected =
+            eve::procgen::transformPointSet(fusedExpected, operation.x, operation.y, operation.z, operation.yaw,
+                                            operation.scaleX, operation.scaleY, operation.scaleZ);
+    eve::procgen::PointSet fusedActual;
+    REQUIRE(compute.transformChain(input, fusedActual, chain));
+    REQUIRE(fusedActual.getCount() == fusedExpected.getCount());
+    CHECK_EQ(compute.getUploadCount(), uint64_t(3));
+    CHECK_EQ(compute.getDispatchCount(), uint64_t(3));
+    CHECK_EQ(compute.getReadbackCount(), uint64_t(3));
+    CHECK_EQ(compute.getBufferReuseCount(), uint64_t(2));
+    CHECK(compute.getPeakBufferBytes() >= uint64_t(count * 11 * int(sizeof(float))));
+    CHECK_EQ(compute.getLastFusedTransformCount(), 4);
+    for (int index : {0, count / 2, count - 1}) {
+        CHECK(std::fabs(fusedActual.getX(index) - fusedExpected.getX(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getY(index) - fusedExpected.getY(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getZ(index) - fusedExpected.getZ(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getNormalX(index) - fusedExpected.getNormalX(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getNormalY(index) - fusedExpected.getNormalY(index)) < 0.0002f);
+        CHECK(std::fabs(fusedActual.getNormalZ(index) - fusedExpected.getNormalZ(index)) < 0.0002f);
+    }
+}
+
+TEST_CASE("gpgpu.procgen.transformChainRejectsInvalidLength") {
+    eve::procgen::PointSet input;
+    input.add(1.f, 2.f, 3.f);
+    eve::procgen::PointSet                                   output;
+    eve::procgen::PointCompute                               compute;
+    const std::vector<eve::procgen::PointCompute::Transform> empty;
+    CHECK(!compute.transformChain(input, output, empty));
+    CHECK(output.empty());
+    CHECK_EQ(compute.getDispatchCount(), uint64_t(0));
+
+    const std::vector<eve::procgen::PointCompute::Transform> oversized(5);
+    CHECK(!compute.transformChain(input, output, oversized));
+    CHECK(output.empty());
+    CHECK_EQ(compute.getDispatchCount(), uint64_t(0));
 }
 
 TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {

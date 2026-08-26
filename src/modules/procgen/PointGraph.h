@@ -140,6 +140,18 @@ public:
     std::string getMetricBackend(int index) const;
     /** @brief Return why the latest eligible GPU node used the CPU fallback. */
     std::string getComputeFallbackReason() const;
+    /** @brief Return successful point-compute uploads for this graph executor. */
+    uint64_t getComputeUploadCount() const;
+    /** @brief Return successful point-compute dispatches for this graph executor. */
+    uint64_t getComputeDispatchCount() const;
+    /** @brief Return successful point-compute readbacks for this graph executor. */
+    uint64_t getComputeReadbackCount() const;
+    /** @brief Return executions that reused allocated point-compute buffers. */
+    uint64_t getComputeBufferReuseCount() const;
+    /** @brief Return peak bytes reserved in each reusable point-compute buffer. */
+    uint64_t getComputePeakBufferBytes() const;
+    /** @brief Return logical transforms in the latest successful fused dispatch. */
+    int getLastFusedTransformCount() const;
     /** @brief Return cached output bounds for editor/debug visualization. */
     float getMetricMinX(int index) const;
     /** @brief Return the cached minimum output Y coordinate. */

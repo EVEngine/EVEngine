@@ -66,6 +66,12 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("isMetricCacheHit", &PointGraph::isMetricCacheHit);
     graph.addFunc("getMetricBackend", &PointGraph::getMetricBackend);
     graph.addFunc("getComputeFallbackReason", &PointGraph::getComputeFallbackReason);
+    graph.addFunc("getComputeUploadCount", &PointGraph::getComputeUploadCount);
+    graph.addFunc("getComputeDispatchCount", &PointGraph::getComputeDispatchCount);
+    graph.addFunc("getComputeReadbackCount", &PointGraph::getComputeReadbackCount);
+    graph.addFunc("getComputeBufferReuseCount", &PointGraph::getComputeBufferReuseCount);
+    graph.addFunc("getComputePeakBufferBytes", &PointGraph::getComputePeakBufferBytes);
+    graph.addFunc("getLastFusedTransformCount", &PointGraph::getLastFusedTransformCount);
     graph.addFunc("getMetricMinX", &PointGraph::getMetricMinX);
     graph.addFunc("getMetricMinY", &PointGraph::getMetricMinY);
     graph.addFunc("getMetricMinZ", &PointGraph::getMetricMinZ);
