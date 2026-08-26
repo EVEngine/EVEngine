@@ -1,5 +1,6 @@
 #include "common/config.h"
 #include "common/CrashHandler.h"
+#include "common/CrashLog.h"
 #include "cmdline/cmdline.h"
 #include <CLI11.hpp>
 #include <rang.hpp>
@@ -49,6 +50,10 @@ int main(int argc, char **argv)
     // in the buffer and be lost when the process is killed after a smoke run.
     std::setvbuf(stdout, nullptr, _IONBF, 0);
     std::cout.setf(std::ios::unitbuf);
+
+    // Open the crash/error log before anything that could fail, so hard crashes
+    // and uncaught exceptions are persisted (see common/CrashLog.h).
+    eve::initSystemLogging();
 
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     eve::installCrashHandler();

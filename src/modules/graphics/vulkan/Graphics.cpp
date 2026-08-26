@@ -31,6 +31,7 @@
 #endif
 
 #include "common/Exception.h"
+#include "common/CrashLog.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
@@ -232,6 +233,33 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
 #endif
         auto phys = selector.select();
         {
+            // Record the GPU identity into the crash/error log before any Vulkan
+            // work, so a device/driver crash can be tied to the exact GPU+driver.
+            const auto &pp = phys.properties;
+            const char *vendor = "unknown";
+            switch (pp.vendorID) {
+                case 0x10DE: vendor = "NVIDIA"; break;
+                case 0x1002: vendor = "AMD"; break;
+                case 0x8086: vendor = "Intel"; break;
+                case 0x13B5: vendor = "ARM"; break;
+                case 0x5143: vendor = "Qualcomm"; break;
+                default: break;
+            }
+            char vendorHex[16], deviceHex[16], driverHex[16];
+            std::snprintf(vendorHex, sizeof(vendorHex), "%04X", pp.vendorID);
+            std::snprintf(deviceHex, sizeof(deviceHex), "%04X", pp.deviceID);
+            std::snprintf(driverHex, sizeof(driverHex), "%08X", pp.driverVersion);
+            const uint32_t maj = VK_API_VERSION_MAJOR(pp.apiVersion);
+            const uint32_t min = VK_API_VERSION_MINOR(pp.apiVersion);
+            const uint32_t pat = VK_API_VERSION_PATCH(pp.apiVersion);
+            eve::recordLogEvent(
+                "info",
+                std::string("gpu: ") + vendor + " '" + std::string(pp.deviceName.data()) +
+                    "' vendorId=0x" + vendorHex + " deviceId=0x" + deviceHex + " api=" +
+                    std::to_string(maj) + "." + std::to_string(min) + "." + std::to_string(pat) +
+                    " driver=0x" + driverHex + (nativeWindow ? "" : " [headless]"));
+        }
+        {
             const vk::PhysicalDeviceFeatures supported = phys->getFeatures();
             if (supported.samplerAnisotropy) {
                 phys.features.samplerAnisotropy = VK_TRUE;
@@ -274,6 +302,10 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
         deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
+        eve::recordLogEvent("info",
+            "gpu: logical device created (gpuDriven=" +
+            std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+            ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
     }
 }
 
@@ -348,6 +380,7 @@ void Graphics::initHeadless(int width, int height) {
         StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
         initGpuDrivenResources();
     }
+    eve::recordLogEvent("info", "gfx: graphics initialized (headless)");
 }
 
 void Graphics::initWithWindow(void *nativeWindow) {
@@ -394,6 +427,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
     {
         StartupStage stage("  vulkan: swapchain + solid pipelines");
         createSwapchainAndPipeline();
+        eve::recordLogEvent("info", "gfx: swapchain + solid pipelines created");
     }
     {
         StartupStage stage("  vulkan: textured/lit2d pipelines");
@@ -430,6 +464,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
         initGpuDrivenResources();
     }
+    eve::recordLogEvent("info", "gfx: graphics initialized (window)");
 }
 
 void Graphics::onNativeWindowDestroyed() {

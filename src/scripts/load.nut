@@ -109,6 +109,12 @@ function _startup_ms(label) {
     print("[startup] " + label + ": " + ms + " ms\n");
 }
 
+// Append a milestone to the crash/error log (eve.log) so a crash shows how far
+// the boot sequence got. Bound by the host (eve.log); no-op when unavailable.
+function _log(msg) {
+    if ("log" in eve) eve.log("info", msg);
+}
+
 // ---------------------------------------------------------------------------
 // Bind the modules this build actually contains.
 // ---------------------------------------------------------------------------
@@ -126,6 +132,7 @@ foreach (m in eve.moduleList) {
         print("[startup] module " + m.cls + " took " + _mdt + " ms\n");
 }
 _startup_ms("all modules instantiated");
+_log("boot: " + eve.moduleList.len() + " module(s) instantiated");
 
 // Project-wide module requirements belong to config.nut.  Validate them only
 // after the build's module list has been instantiated, and before any game
@@ -170,6 +177,7 @@ if (!win.setWindowSettings(s)) {
 config.width = win.getWidth();
 config.height = win.getHeight();
 _startup_ms("window created + vulkan initialized");
+_log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -496,6 +504,7 @@ if (file_exists("main.nut")) {
     }
 }
 _startup_ms("game script loaded");
+_log("boot: game script loaded");
 
 if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
@@ -636,7 +645,14 @@ eve_frame <- function() {
     if (!("_startup_first_frame" in getroottable())) {
         getroottable()._startup_first_frame <- true;
         _startup_ms("first frame begins");
+        _log("frame: first frame begins");
     }
+    // Coarse "how far did the loop get" marker: log every 300 frames so a crash
+    // log reveals the approximate frame the process reached.
+    if (!("_frame_count" in getroottable())) getroottable()._frame_count <- 0;
+    getroottable()._frame_count += 1;
+    if ((getroottable()._frame_count % 300) == 0)
+        _log("frame: reached frame " + getroottable()._frame_count);
     local running = true;
     dev_scenario_frame();
     event.pump();
@@ -702,6 +718,7 @@ eve_frame <- function() {
     if (!("_startup_first_present" in getroottable())) {
         getroottable()._startup_first_present <- true;
         _startup_ms("first present - window shows content");
+        _log("frame: first present");
     }
     if ("bootBench" in eve && eve.bootBench)
         return false;
