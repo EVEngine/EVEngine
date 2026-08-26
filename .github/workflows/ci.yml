@@ -52,7 +52,9 @@ env:
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
   VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
-  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '26.1.10909125' }}
+  # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
+  # images (27.3.13750724), so setup-android downloads nothing extra.
+  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
   ANDROID_API: ${{ vars.ANDROID_API || '34' }}
 
 jobs:
@@ -1185,10 +1187,22 @@ jobs:
           python3 -m pip install --user cmake==3.29.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Restore Emscripten SDK cache
+        id: emsdk-cache
+        timeout-minutes: 5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: $HOME/emsdk
+          key: emsdk-${{ runner.os }}-${{ runner.arch }}-latest
+
       - name: Install Emscripten SDK
         timeout-minutes: 30
         run: |
-          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
+          if [ "${{ steps.emsdk-cache.outputs.cache-hit }}" = "true" ]; then
+            echo "Using cached Emscripten SDK"
+          else
+            git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
+          fi
           "$HOME/emsdk/emsdk" install latest
           "$HOME/emsdk/emsdk" activate latest
 
@@ -1237,3 +1251,13 @@ jobs:
             build/webgpu-web/src/engine/webgpu-browser.png
             build/webgpu-web/src/engine/webgpu-http.log
           if-no-files-found: warn
+
+      - name: Save Emscripten SDK cache
+        # Only refresh on the default branch so per-PR runs restore (free) but
+        # never rewrite the cache, keeping churn/eviction of hot caches low.
+        if: ${{ steps.emsdk-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/dev' }}
+        timeout-minutes: 15
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: $HOME/emsdk
+          key: ${{ steps.emsdk-cache.outputs.cache-primary-key }}
