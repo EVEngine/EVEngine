@@ -1,5 +1,34 @@
 // Project-owned adapters combine generic Schema/Definitions with Card, Crowd,
 // terrain and ECS. None of these policies or UI choices live in C++.
+//
+// Annotation-style schema: class-level `</ ... />` carries the metadata,
+// member-level `</ ... />` carries the per-field constraints, and each member's
+// default value infers its type and JSON default. The schema classes live at
+// file scope: Squirrel only supports class-level `</ ... />` attributes on
+// top-level classes.
+class CardDefinition </ id="card.definition", version=1, title="Card Definition", additionalProperties=false /> {
+    </ required=true />
+    id = ""
+    </ required=true />
+    name = ""
+    </ values=["creature","spell"] />
+    kind = "creature"
+    </ min=0, max=20 />
+    cost = 0
+    </ min=0, max=99 />
+    attack = 0
+    </ min=0, max=99 />
+    health = 0
+}
+class RtsUnit </ id="rts.unit", version=1, title="RTS Unit", additionalProperties=false /> {
+    </ required=true />
+    id = ""
+    </ min=0, max=20 />
+    speed = 0.0
+    </ min=0.1, max=5 />
+    radius = 0.0
+}
+
 class GameplayEditorComponents {
     schemas = null
     definitions = null
@@ -15,31 +44,6 @@ class GameplayEditorComponents {
         crowdSim = eve.Crowd();
         units = [];
 
-        // Annotation-style schema: class-level `</ ... />` carries the metadata,
-        // member-level `</ ... />` carries the per-field constraints, and each
-        // member's default value infers its type and JSON default.
-        class CardDefinition </ id="card.definition", version=1, title="Card Definition", additionalProperties=false /> {
-            </ required=true />
-            id = ""
-            </ required=true />
-            name = ""
-            </ values=["creature","spell"] />
-            kind = "creature"
-            </ min=0, max=20 />
-            cost = 0
-            </ min=0, max=99 />
-            attack = 0
-            </ min=0, max=99 />
-            health = 0
-        }
-        class RtsUnit </ id="rts.unit", version=1, title="RTS Unit", additionalProperties=false /> {
-            </ required=true />
-            id = ""
-            </ min=0, max=20 />
-            speed = 0.0
-            </ min=0.1, max=5 />
-            radius = 0.0
-        }
         if (!schemas.registerFromClass(CardDefinition) ||
             !schemas.registerFromClass(RtsUnit)) return;
 
