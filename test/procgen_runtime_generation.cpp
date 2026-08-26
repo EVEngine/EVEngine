@@ -187,3 +187,55 @@ TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncCleanupTickets") {
     delete current;
     delete stale;
 }
+
+TEST_CASE("procgen.runtimeGeneration.enforcesResidentCellReservations") {
+    RuntimeGeneration runtime(91);
+    runtime.addLevel(10.f, 30.f, 1.5f);
+    runtime.setMaxGenerating(100);
+    runtime.setMaxActiveCells(2);
+    CHECK_EQ(runtime.getMaxActiveCells(), 2);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+
+    ProcgenCellRequest* first = runtime.nextGenerate();
+    ProcgenCellRequest* second = runtime.nextGenerate();
+    REQUIRE(bool(first));
+    REQUIRE(bool(second));
+    CHECK(!runtime.nextGenerate());
+    CHECK_EQ(runtime.getGeneratingCount(), 2);
+
+    PointSet empty;
+    CHECK(runtime.completeGeneration(first, &empty));
+    CHECK(runtime.completeGeneration(second, &empty));
+    CHECK_EQ(runtime.getActiveCellCount(), 2);
+    CHECK(!runtime.nextGenerate());
+    CHECK(runtime.debugReport().find("maxActive=2") != std::string::npos);
+    delete second;
+    delete first;
+
+    runtime.setMaxActiveCells(0);
+    CHECK_EQ(runtime.getMaxActiveCells(), 0);
+    ProcgenCellRequest* unlimited = runtime.nextGenerate();
+    REQUIRE(bool(unlimited));
+    delete unlimited;
+}
+
+TEST_CASE("procgen.runtimeGeneration.breaksEqualPriorityTiesDeterministically") {
+    RuntimeGeneration first(17);
+    RuntimeGeneration second(17);
+    for (RuntimeGeneration* runtime : {&first, &second}) {
+        runtime->addLevel(10.f, 25.f, 1.5f);
+        runtime->setMaxGenerating(100);
+        runtime->updateSource(5.f, 5.f, 0.f, 0.f);
+    }
+    for (int index = 0; index < 12; ++index) {
+        ProcgenCellRequest* a = first.nextGenerate();
+        ProcgenCellRequest* b = second.nextGenerate();
+        REQUIRE(bool(a));
+        REQUIRE(bool(b));
+        CHECK_EQ(a->getLevel(), b->getLevel());
+        CHECK_EQ(a->getX(), b->getX());
+        CHECK_EQ(a->getZ(), b->getZ());
+        delete b;
+        delete a;
+    }
+}

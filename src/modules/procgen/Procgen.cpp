@@ -1244,6 +1244,8 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("getDirectionWeight", &RuntimeGeneration::getDirectionWeight);
     runtimeGeneration.addFunc("setMaxGenerating", &RuntimeGeneration::setMaxGenerating);
     runtimeGeneration.addFunc("getMaxGenerating", &RuntimeGeneration::getMaxGenerating);
+    runtimeGeneration.addFunc("setMaxActiveCells", &RuntimeGeneration::setMaxActiveCells);
+    runtimeGeneration.addFunc("getMaxActiveCells", &RuntimeGeneration::getMaxActiveCells);
     runtimeGeneration.addFunc("setFrameTimeBudget", &RuntimeGeneration::setFrameTimeBudget);
     runtimeGeneration.addFunc("getFrameTimeBudget", &RuntimeGeneration::getFrameTimeBudget);
     runtimeGeneration.addFunc("beginFrame", &RuntimeGeneration::beginFrame);

@@ -66,6 +66,10 @@ public:
     /** @brief Maximum simultaneously issued generation requests. */
     void setMaxGenerating(int count);
     int  getMaxGenerating() const;
+    /** @brief Maximum active plus in-flight cells; zero disables the resident-cell limit. */
+    void setMaxActiveCells(int count);
+    /** @brief Return the resident-cell limit, or zero when unlimited. */
+    int getMaxActiveCells() const;
     /** @brief CPU issue budget in milliseconds for one frame; zero disables the limit. */
     void  setFrameTimeBudget(float milliseconds);
     float getFrameTimeBudget() const;
@@ -151,10 +155,12 @@ private:
 
     ProcgenCellRequest* makeRequest(const CellKey& key) const;
     uint32_t            cellSeed(const CellKey& key) const;
+    void                sortQueues();
 
     uint32_t worldSeed_       = 1;
     float    directionWeight_ = 0.25f;
     int      maxGenerating_   = 4;
+    int      maxActiveCells_  = 0;
     float    frameTimeBudgetMs_ = 0.f;
     uint64_t frameStartedNs_    = 0;
     bool     frustumCulling_    = false;

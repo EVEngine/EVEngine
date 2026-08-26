@@ -68,6 +68,8 @@ void RuntimeGeneration::setDirectionWeight(float weight) {
 float RuntimeGeneration::getDirectionWeight() const { return directionWeight_; }
 void  RuntimeGeneration::setMaxGenerating(int count) { maxGenerating_ = std::max(1, count); }
 int   RuntimeGeneration::getMaxGenerating() const { return maxGenerating_; }
+void RuntimeGeneration::setMaxActiveCells(int count) { maxActiveCells_ = std::max(0, count); }
+int  RuntimeGeneration::getMaxActiveCells() const { return maxActiveCells_; }
 void RuntimeGeneration::setFrameTimeBudget(float milliseconds) {
     frameTimeBudgetMs_ = std::max(0.f, milliseconds);
 }
@@ -224,8 +226,23 @@ void RuntimeGeneration::refreshGenerationSources() {
             return found == cells_.end() || found->second.state != State::Pending;
         }),
         generateQueue_.end());
-    std::sort(generateQueue_.begin(), generateQueue_.end(), [this](const CellKey& a, const CellKey& b) {
-        return cells_.at(a).priority < cells_.at(b).priority;
+    sortQueues();
+}
+
+void RuntimeGeneration::sortQueues() {
+    const auto priorityLess = [this](const CellKey& a, const CellKey& b) {
+        const float aPriority = cells_.at(a).priority;
+        const float bPriority = cells_.at(b).priority;
+        if (aPriority != bPriority) return aPriority < bPriority;
+        if (a.level != b.level) return a.level < b.level;
+        if (a.z != b.z) return a.z < b.z;
+        return a.x < b.x;
+    };
+    std::sort(generateQueue_.begin(), generateQueue_.end(), priorityLess);
+    std::sort(cleanupQueue_.begin(), cleanupQueue_.end(), [](const CellKey& a, const CellKey& b) {
+        if (a.level != b.level) return a.level < b.level;
+        if (a.z != b.z) return a.z < b.z;
+        return a.x < b.x;
     });
 }
 
@@ -244,6 +261,8 @@ int RuntimeGeneration::getPendingCleanupCount() const { return int(cleanupQueue_
 
 ProcgenCellRequest* RuntimeGeneration::nextGenerate() {
     if (generateQueue_.empty() || getGeneratingCount() >= maxGenerating_) return nullptr;
+    if (maxActiveCells_ > 0 && getActiveCellCount() + getGeneratingCount() >= maxActiveCells_)
+        return nullptr;
     if (frameTimeBudgetMs_ > 0.f && frameStartedNs_ != 0) {
         const uint64_t now = uint64_t(std::chrono::duration_cast<std::chrono::nanoseconds>(
                                          std::chrono::steady_clock::now().time_since_epoch())
@@ -292,6 +311,7 @@ bool RuntimeGeneration::failGeneration(ProcgenCellRequest* request) {
     found->second.state = State::Pending;
     found->second.ticket = ++nextTicket_;
     generateQueue_.push_back(key);
+    sortQueues();
     return true;
 }
 
@@ -327,7 +347,8 @@ std::string RuntimeGeneration::debugReport() const {
     std::ostringstream out;
     out << "levels=" << levels_.size() << " cells=" << cells_.size()
         << " pending=" << generateQueue_.size() << " generating=" << getGeneratingCount()
-        << " active=" << getActiveCellCount() << " cleanup=" << cleanupQueue_.size();
+        << " active=" << getActiveCellCount() << " cleanup=" << cleanupQueue_.size()
+        << " maxActive=" << maxActiveCells_;
     return out.str();
 }
 
