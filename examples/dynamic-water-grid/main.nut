@@ -1,28 +1,28 @@
 dofile("water_field.nut");
 
-if (!("waterDemo" in getroottable())) waterDemo <- null;
-if (!("waterField" in getroottable())) waterField <- null;
-if (!("waterMap" in getroottable())) waterMap <- null;
-if (!("logicLayer" in getroottable())) logicLayer <- null;
-if (!("terrainLayer" in getroottable())) terrainLayer <- null;
-if (!("shoreLayer" in getroottable())) shoreLayer <- null;
-if (!("heroLayer" in getroottable())) heroLayer <- null;
-if (!("companionLayer" in getroottable())) companionLayer <- null;
-if (!("fieldCanvas" in getroottable())) fieldCanvas <- null;
-if (!("waterShader" in getroottable())) waterShader <- null;
-if (!("shoreTexture" in getroottable())) shoreTexture <- null;
-if (!("terrainTexture" in getroottable())) terrainTexture <- null;
-if (!("heroTexture" in getroottable())) heroTexture <- null;
-if (!("companionTexture" in getroottable())) companionTexture <- null;
-if (!("previousKeys" in getroottable())) previousKeys <- {};
-if (!("paused" in getroottable())) paused <- false;
-if (!("sourceEnabled" in getroottable())) sourceEnabled <- true;
-if (!("showNodes" in getroottable())) showNodes <- false;
-if (!("elapsed" in getroottable())) elapsed <- 0.0;
-if (!("fixedClock" in getroottable())) fixedClock <- 0.0;
-if (!("heroClock" in getroottable())) heroClock <- 0.0;
-if (!("heroDirection" in getroottable())) heroDirection <- 0;
-if (!("hudBuilt" in getroottable())) hudBuilt <- false;
+persist waterDemo = null
+persist waterField = null
+persist waterMap = null
+persist logicLayer = null
+persist terrainLayer = null
+persist shoreLayer = null
+persist heroLayer = null
+persist companionLayer = null
+persist fieldCanvas = null
+persist waterShader = null
+persist shoreTexture = null
+persist terrainTexture = null
+persist heroTexture = null
+persist companionTexture = null
+persist previousKeys = {}
+persist paused = false
+persist sourceEnabled = true
+persist showNodes = false
+persist elapsed = 0.0
+persist fixedClock = 0.0
+persist heroClock = 0.0
+persist heroDirection = 0
+persist hudBuilt = false
 
 const FIELD_W = 16;
 const FIELD_H = 12;
