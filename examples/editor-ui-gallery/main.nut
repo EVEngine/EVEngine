@@ -1,6 +1,6 @@
 // Complete desktop-editor composition built from the reusable UI primitives.
 
-if (!("darkTheme" in getroottable())) darkTheme <- true;
+if (!("darkTheme" in getroottable())) darkTheme <- false;
 
 function buildGallery() {
     // `switch` is a Squirrel keyword, so bind the native method explicitly.
@@ -116,33 +116,78 @@ function buildGallery() {
     ui.end();
 
     ui.end();
-    ui.mountBuildAs("gallery");
+    ui.mountBuildAs("framework-editor");
     ui.setHostMovable(true);
     ui.setHostResizable(true);
-    ui.setHostSize(1160.0, 690.0);
-    ui.setHostPos(50.0, 28.0, 0.0, 0.0);
+    ui.setHostSize(820.0, 690.0);
+    ui.setHostPos(30.0, 28.0, 0.0, 0.0);
+}
+
+// The game HUD uses the same retained toolkit as the editor shell, but owns a
+// separate host, input order and theme scope. It deliberately stays dark when
+// the editor switches to the light preset.
+function buildGameHud() {
+    ui.beginBuild();
+    ui.beginWindow("Game HUD", "hud-root");
+    ui.setThemeScope("dark");
+    ui.beginGroup("hud-surface");
+    ui.beginRow("hud-heading", 8.0);
+    ui.badge("LIVE GAME", "runtime-mode");
+    ui.spacer("hud-fill", 1.0);
+    ui.text("Rooftop District", "location");
+    ui.end();
+
+    ui.text("Player", "player-title");
+    ui.progress(0.78, "health", "Health 78 / 100");
+    ui.progress(0.46, "stamina", "Stamina 46 / 100");
+    ui.beginRow("hud-actions", 8.0);
+    ui.iconButton("eye", "Inspect", "inspect-target");
+    ui.setItemTabIndex(0);
+    ui.setItemFocusOrder("", "interact");
+    ui.setItemAccessibility("button", "Inspect target", "Show target details");
+    ui.button("Interact", "interact");
+    ui.setItemTabIndex(1);
+    ui.setItemFocusOrder("inspect-target", "");
+    ui.setItemAccessibility("button", "Interact", "Use the selected object");
+    ui.end();
+    ui.text("Tab / arrows share the retained focus graph", "hud-help");
+    ui.end();
+    ui.end();
+    ui.mountBuildAs("game-hud");
+    ui.setHostOverlay(true);
+    ui.setHostOverlayAlpha(0.94);
+    ui.setHostSize(350.0, 290.0);
+    ui.setHostPos(890.0, 48.0, 0.0, 0.0);
+    ui.requestFocus("inspect-target");
 }
 
 eve_init = function() {
     ui.setTheme(darkTheme ? "dark" : "light");
     ui.setNavKeyboard(true);
     buildGallery();
+    buildGameHud();
 };
 
 eve_update = function(dt) {
     local click = ui.consumeClick();
     while (click != "") {
-        if (click == "gallery/theme") {
+        if (click == "framework-editor/theme") {
             darkTheme = !darkTheme;
             ui.setTheme(darkTheme ? "dark" : "light");
-            ui.select("gallery");
+            ui.select("framework-editor");
             ui.setText("status-text", darkTheme ? "Dark theme active" : "Light theme active");
-        } else if (click == "gallery/play") {
-            ui.select("gallery");
+        } else if (click == "framework-editor/play") {
+            ui.select("framework-editor");
             ui.setText("status-text", "Preview started");
-        } else if (click == "gallery/save" || click == "gallery/save-selection") {
-            ui.select("gallery");
+        } else if (click == "framework-editor/save" || click == "framework-editor/save-selection") {
+            ui.select("framework-editor");
             ui.setText("status-text", "Scene saved");
+        } else if (click == "game-hud/inspect-target") {
+            ui.select("framework-editor");
+            ui.setText("status-text", "Runtime target selected in shared inspector");
+        } else if (click == "game-hud/interact") {
+            ui.select("game-hud");
+            ui.setText("hud-help", "Interaction dispatched through the shared UI router");
         }
         click = ui.consumeClick();
     }

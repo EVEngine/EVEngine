@@ -777,14 +777,24 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
     REQUIRE(pixel(*cutoffKept, 32, 32)[0] > 180);
     REQUIRE(pixel(*cutoffDiscarded, 32, 32)[0] < 32);
 
-    for (const char *technique : {"dither", "coverage"}) {
-        auto dithered = render(0.5f, technique, technique);
+    auto visiblePixels = [](const eve::image::ImageData &image) {
         int visible = 0;
         for (int y = 0; y < 64; ++y)
             for (int x = 0; x < 64; ++x)
-                if (pixel(*dithered, x, y)[0] > 180) ++visible;
-        REQUIRE(visible > 1200);
-        REQUIRE(visible < 2900);
+                if (pixel(image, x, y)[0] > 180) ++visible;
+        return visible;
+    };
+    const int fullyCovered = visiblePixels(*cutoffKept);
+    REQUIRE(fullyCovered > 3500);
+
+    for (const char *technique : {"dither", "coverage"}) {
+        auto dithered = render(0.5f, technique, technique);
+        const int visible = visiblePixels(*dithered);
+        // Alpha hashing is backend-specific at fragment-coordinate precision. Validate the
+        // material contract (partial coverage) relative to the rendered quad instead of a
+        // Vulkan-tuned absolute pixel count.
+        REQUIRE(visible * 5 > fullyCovered);
+        REQUIRE(visible * 20 < fullyCovered * 17);
     }
 }
 

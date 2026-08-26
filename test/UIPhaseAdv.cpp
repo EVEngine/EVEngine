@@ -93,27 +93,44 @@ TEST_CASE("UI.adv.wantCaptureAPI") {
 static const char *kScriptComponentContent = R"SQ(
 function testScriptComponent() {
     local u = eve.UI()
+    class PriceLabel extends eve.UIComponent {
+        function build() {
+            ui().text(props.prefix + state.amount, "gold")
+        }
+    }
     class ShopPanel extends eve.UIComponent {
         gold = 10
+        child = null
+        mounted = false
+        updated = false
         constructor(uiRef) {
             base.constructor(uiRef)
             gold = 10
+            child = PriceLabel(uiRef, { prefix = "Gold " })
         }
+        function onMount() { mounted = true }
+        function onUpdated() { updated = true }
         function build() {
             local uu = ui()
             uu.beginWindow("Shop", "root")
-            uu.text("Gold " + gold, "gold")
+            renderChild(child, { prefix = props.prefix })
             uu.button("Buy", "buy")
-            if (gold > 5) uu.text("Rich", "rich")
+            if (state.gold > 5) uu.text("Rich", "rich")
             uu.end()
         }
     }
     local panel = ShopPanel(u)
+    panel.setProps({ prefix = "Coins " })
+    panel.setState({ gold = 10 })
+    panel.child.setState({ amount = 10 })
     panel.mountAs("shop_panel")
+    if (!panel.mounted) return false
     if (!u.select("shop_panel")) return false
-    panel.gold = 3
-    panel.setState()
+    panel.setState({ gold = 3 })
+    panel.child.setState({ amount = 3 })
+    if (!panel.dirty) return false
     if (!panel.updateIfDirty()) return false
+    if (!panel.updated) return false
     if (eve.UIComponent == null) return false
     return true
 }

@@ -61,6 +61,14 @@ eve_declare_module(NAME math LAYER 0 SCRIPT Math SLOT math
 # Unified grid: layout/topology + projection. Pure math, no Module class.
 eve_declare_module(NAME grid LAYER 0
                    GROUP 2d 3d web)
+# UI-independent presentation contracts shared by game UI, editor UI and
+# automation hosts. This module deliberately has no renderer or script runtime.
+eve_declare_module(NAME presentation LAYER 0
+                   GROUP minimal 2d 3d web)
+# Squirrel reflection adapter for renderer-independent presentation models.
+eve_declare_module(NAME scriptmodel LAYER 1
+                   DEPS presentation
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME data LAYER 0 SCRIPT DataModule
                    THIRDPARTY poco xxhash
                    GROUP minimal 2d 3d web)
@@ -85,6 +93,7 @@ eve_declare_module(NAME crowd LAYER 0 SCRIPT Crowd SLOT crowd
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
   eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
+                     DEPS presentation
                      GROUP 3d web
                      OPTIONAL_DEPS procgen map voxel)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
@@ -216,7 +225,7 @@ eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
                    GROUP 2d 3d web)
 eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
-                   DEPS event filesystem graphics image timer window
+                   DEPS event filesystem graphics image presentation scriptmodel timer window
                    THIRDPARTY sdl2 poco
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
