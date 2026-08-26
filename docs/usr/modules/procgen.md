@@ -267,7 +267,10 @@ procgen.removeInstances("forest/manual");
 
 Scene 为每个批次建立 `__pcg/<batchId>` Host，节点带 `pcg`、`pcg.instance` 和
 `pcg.asset:<name>` tag。同一批次再次发布会按稳定节点 id reconcile，生成失败不会先
-破坏其它批次。运行时 Cell 使用 `publishCellInstances(prefix, request, points, ...)`
+破坏其它批次。默认实例 id 使用 point seed 的局部重复序号，因此插入其它 seed 的点不会
+让整批对象失去池化身份；string metadata `instanceId` 可提供项目级稳定 id。发布前会拒绝
+重复 id，失败时 Scene Sink 中的旧批次保持不变。运行时 Cell 使用
+`publishCellInstances(prefix, request, points, ...)`
 和 `removeCellInstances(prefix, request)`，其批次 id 自动包含 level/x/z。
 
 完整组合见 `examples/pcg-biome`：大 Cell 放置乔木，小 Cell 放置草和岩石，Spline

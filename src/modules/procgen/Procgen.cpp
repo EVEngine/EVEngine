@@ -26,6 +26,8 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <sstream>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace eve::procgen {
@@ -358,10 +360,21 @@ bool Procgen::publishInstances(const std::string& batchId, PointSet* points,
     }
     std::vector<eve::ProcgenInstanceDesc> instances;
     instances.reserve(points->points().size());
+    std::unordered_map<uint32_t, size_t> seedOccurrences;
+    std::unordered_set<std::string>      instanceIds;
     for (size_t i = 0; i < points->points().size(); ++i) {
         const auto& point = points->points()[i];
         eve::ProcgenInstanceDesc instance;
-        instance.id = "pcg-" + std::to_string(point.seed) + "-" + std::to_string(i);
+        const auto explicitId = point.stringAttributes.find("instanceId");
+        if (explicitId != point.stringAttributes.end() && !explicitId->second.empty())
+            instance.id = explicitId->second;
+        else
+            instance.id = "pcg-" + std::to_string(point.seed) + "-" +
+                          std::to_string(seedOccurrences[point.seed]++);
+        if (!instanceIds.insert(instance.id).second) {
+            lastError_ = "publishInstances: duplicate instance id: " + instance.id;
+            return false;
+        }
         instance.asset = defaultAsset;
         if (!assetAttribute.empty()) {
             const auto found = point.stringAttributes.find(assetAttribute);

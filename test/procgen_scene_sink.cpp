@@ -52,6 +52,23 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     CHECK_EQ(published[0].yaw, 30.f);
     CHECK_EQ(published[0].scaleZ, 4.f);
     CHECK_EQ(published[1].asset, std::string("granite"));
+    CHECK_EQ(published[1].id, std::string("pcg-88-0"));
+
+    PointSet reordered;
+    reordered.add(-1.f, 0.f, 0.f);
+    reordered.setPointSeed(0, 99);
+    reordered.points().push_back(points.points()[0]);
+    reordered.points().push_back(points.points()[1]);
+    CHECK(proc.publishInstances("forest/main", &reordered, "asset", "granite"));
+    const auto& reconciled = sink.batches.at("forest/main");
+    CHECK_EQ(reconciled[1].id, std::string("pcg-77-0"));
+    CHECK_EQ(reconciled[2].id, std::string("pcg-88-0"));
+
+    reordered.setStringAttribute(0, "instanceId", "hero-tree");
+    reordered.setStringAttribute(1, "instanceId", "hero-tree");
+    CHECK(!proc.publishInstances("forest/main", &reordered, "asset", "granite"));
+    CHECK(proc.lastError().find("duplicate instance id") != std::string::npos);
+    CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 3);
 
     CHECK(proc.removeInstances("forest/main"));
     CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 0);
