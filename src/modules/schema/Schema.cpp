@@ -68,7 +68,7 @@ std::string scalarToJson(HSQUIRRELVM vm, SQInteger index) {
     return {};
 }
 
-bool getAttrString(HSQUIRRELVM vm, int tableIdx, const char* key, std::string& out) {
+bool getAttrString(HSQUIRRELVM vm, SQInteger tableIdx, const char* key, std::string& out) {
     const SQInteger top = sq_gettop(vm);
     sq_push(vm, tableIdx);
     sq_pushstring(vm, key, static_cast<SQInteger>(std::strlen(key)));
@@ -84,7 +84,7 @@ bool getAttrString(HSQUIRRELVM vm, int tableIdx, const char* key, std::string& o
     return found;
 }
 
-bool getAttrBool(HSQUIRRELVM vm, int tableIdx, const char* key, bool& out) {
+bool getAttrBool(HSQUIRRELVM vm, SQInteger tableIdx, const char* key, bool& out) {
     const SQInteger top = sq_gettop(vm);
     sq_push(vm, tableIdx);
     sq_pushstring(vm, key, static_cast<SQInteger>(std::strlen(key)));
@@ -100,7 +100,7 @@ bool getAttrBool(HSQUIRRELVM vm, int tableIdx, const char* key, bool& out) {
     return found;
 }
 
-bool getAttrInt(HSQUIRRELVM vm, int tableIdx, const char* key, int& out) {
+bool getAttrInt(HSQUIRRELVM vm, SQInteger tableIdx, const char* key, int& out) {
     const SQInteger top = sq_gettop(vm);
     sq_push(vm, tableIdx);
     sq_pushstring(vm, key, static_cast<SQInteger>(std::strlen(key)));
@@ -116,7 +116,7 @@ bool getAttrInt(HSQUIRRELVM vm, int tableIdx, const char* key, int& out) {
     return found;
 }
 
-bool getAttrNumber(HSQUIRRELVM vm, int tableIdx, const char* key, double& out) {
+bool getAttrNumber(HSQUIRRELVM vm, SQInteger tableIdx, const char* key, double& out) {
     const SQInteger top = sq_gettop(vm);
     sq_push(vm, tableIdx);
     sq_pushstring(vm, key, static_cast<SQInteger>(std::strlen(key)));
@@ -138,7 +138,7 @@ bool getAttrNumber(HSQUIRRELVM vm, int tableIdx, const char* key, double& out) {
     return found;
 }
 
-void getAttrStringArray(HSQUIRRELVM vm, int tableIdx, const char* key, std::vector<std::string>& out) {
+void getAttrStringArray(HSQUIRRELVM vm, SQInteger tableIdx, const char* key, std::vector<std::string>& out) {
     const SQInteger top = sq_gettop(vm);
     sq_push(vm, tableIdx);
     sq_pushstring(vm, key, static_cast<SQInteger>(std::strlen(key)));
@@ -157,7 +157,7 @@ void getAttrStringArray(HSQUIRRELVM vm, int tableIdx, const char* key, std::vect
     sq_settop(vm, top);
 }
 
-void applyFieldAttributes(HSQUIRRELVM vm, int attrsIdx, FieldDefinition& field) {
+void applyFieldAttributes(HSQUIRRELVM vm, SQInteger attrsIdx, FieldDefinition& field) {
     std::string text;
     if (getAttrString(vm, attrsIdx, "type", text))
         if (auto type = valueTypeFromString(text)) field.type = *type;
