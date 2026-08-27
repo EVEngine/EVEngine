@@ -172,7 +172,7 @@ jobs:
         profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, headless, server]
     env:
       PROFILE: ${{ matrix.profile }}
-      PROFILE_BUILD_ROOT: ${{ runner.temp }}/evengine-profile-matrix
+      PROFILE_BUILD_ROOT: /tmp/evengine-profile-matrix
       PROFILE_JOBS: 2
     steps:
       - name: Checkout
