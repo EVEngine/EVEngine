@@ -375,7 +375,7 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(
             "card play requires a card and definition", "request");
     auto& card = *request.card;
     const auto& definition = *request.definition;
-    if (request.composition.source == nullptr !=
+    if ((request.composition.source == nullptr) !=
         (request.composition.destination == nullptr))
         return cardFailure<eve::transaction::TransactionReceipt>(
             eve::DiagnosticCode::InvalidArgument,
