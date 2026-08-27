@@ -446,8 +446,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::sampleGridHandle(
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::InvalidArgument,
             "sampleGrid requires positive dimensions and spacing", "pointSet");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
+    return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(sampleGridPoints(width, depth, spacing, seed, jitter)));
 }
 
@@ -457,8 +456,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterHeightHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "filterHeight input point-set handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
+    return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointHeight(*view, minHeight, maxHeight)));
 }
 
@@ -468,8 +466,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterDensityHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "filterDensity input point-set handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
+    return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointDensity(*view, minDensity, maxDensity)));
 }
 
@@ -480,10 +477,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterBoxHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "filterBox input point-set handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
-                            std::make_unique<PointSet>(filterPointBox(
-                                *view, minX, minY, minZ, maxX, maxY, maxZ, invert)));
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(
+                                                    filterPointBox(*view, minX, minY, minZ, maxX, maxY, maxZ, invert)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::filterSlopeHandle(
@@ -492,8 +487,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterSlopeHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "filterSlope input point-set handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
+    return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointSlope(*view, minDegrees, maxDegrees)));
 }
 
@@ -504,8 +498,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterPolygonHandle(
     if (!source.isBound() || !shape.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "filterPolygon input handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
+    return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointsByPolygon(*source, *shape, invert)));
 }
 
@@ -517,9 +510,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterSplineDistanceHandle(
     if (!source.isBound() || !control.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "filterSplineDistance input handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points, std::make_unique<PointSet>(
-        filterPointsBySplineDistance(*source, *control, minDistance, maxDistance)));
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(filterPointsBySplineDistance(
+                                                    *source, *control, minDistance, maxDistance)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::excludeRadiusHandle(
@@ -528,9 +520,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::excludeRadiusHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "excludeRadius input point-set handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
-                            std::make_unique<PointSet>(excludePointRadius(*view, x, z, radius)));
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(excludePointRadius(*view, x, z, radius)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::jitterPointsHandle(
@@ -539,8 +529,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::jitterPointsHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "jitterPoints input point-set handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
+    return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(jitterPointPositions(*view, seed, amountX, amountZ)));
 }
 
@@ -550,9 +539,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::selfPruneHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "selfPrune input point-set handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
-                            std::make_unique<PointSet>(selfPrunePoints(*view, radius)));
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(selfPrunePoints(*view, radius)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::projectToHeightmapHandle(
@@ -566,9 +553,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToHeightmapHandle(
     if (cellSize <= 0.f)
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::InvalidArgument, "projectToHeightmap cellSize must be positive", "cellSize");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points, std::make_unique<PointSet>(
-        projectPointsToHeightmap(*points, *map, originX, originZ, cellSize, heightScale)));
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(projectPointsToHeightmap(
+                                                    *points, *map, originX, originZ, cellSize, heightScale)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::sampleSplineHandle(
@@ -580,9 +566,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::sampleSplineHandle(
     if (spacing <= 0.f)
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::InvalidArgument, "sampleSpline spacing must be positive", "spacing");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points, std::make_unique<PointSet>(
-        samplePolylinePoints(*control, spacing, seed, lateralJitter)));
+    return ownProcgenObject(ownership_->points,
+                            std::make_unique<PointSet>(samplePolylinePoints(*control, spacing, seed, lateralJitter)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::mergePointsHandle(
@@ -592,9 +577,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::mergePointsHandle(
     if (!a.isBound() || !b.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "mergePoints input handle is stale", "points");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
-                            std::make_unique<PointSet>(mergePointSets(*a, *b)));
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(mergePointSets(*a, *b)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::transformPointsHandle(
@@ -604,11 +587,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::transformPointsHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "transformPoints input handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
-                            std::make_unique<PointSet>(transformPointSet(
-                                *view, translateX, translateY, translateZ, yawDegrees,
-                                scaleX, scaleY, scaleZ)));
+    return ownProcgenObject(ownership_->points,
+                            std::make_unique<PointSet>(transformPointSet(*view, translateX, translateY, translateZ,
+                                                                         yawDegrees, scaleX, scaleY, scaleZ)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::filterFloatAttributeHandle(
@@ -619,10 +600,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterFloatAttributeHandle(
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             name.empty() ? eve::DiagnosticCode::InvalidArgument : eve::DiagnosticCode::StaleHandle,
             "filterFloatAttribute requires a live input and attribute name", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
-                            std::make_unique<PointSet>(filterPointFloatAttribute(
-                                *view, name, minValue, maxValue, invert)));
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(filterPointFloatAttribute(
+                                                    *view, name, minValue, maxValue, invert)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::filterStringAttributeHandle(
@@ -633,10 +612,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterStringAttributeHandle(
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             name.empty() ? eve::DiagnosticCode::InvalidArgument : eve::DiagnosticCode::StaleHandle,
             "filterStringAttribute requires a live input and attribute name", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
-                            std::make_unique<PointSet>(filterPointStringAttribute(
-                                *view, name, value, invert)));
+    return ownProcgenObject(ownership_->points,
+                            std::make_unique<PointSet>(filterPointStringAttribute(*view, name, value, invert)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::densityCullHandle(
@@ -645,9 +622,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::densityCullHandle(
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::StaleHandle, "densityCull input handle is stale", "input");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points,
-                            std::make_unique<PointSet>(densityCullPoints(*view, seed, multiplier)));
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(densityCullPoints(*view, seed, multiplier)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::poissonDiskHandle(
@@ -656,10 +631,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::poissonDiskHandle(
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
             eve::DiagnosticCode::InvalidArgument,
             "poissonDisk requires non-negative dimensions/count and a positive radius");
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(
-        module->ownership_->points,
-        std::make_unique<PointSet>(poissonDiskPoints(width, depth, radius, seed, maxPoints)));
+    return ownProcgenObject(ownership_->points,
+                            std::make_unique<PointSet>(poissonDiskPoints(width, depth, radius, seed, maxPoints)));
 }
 
 eve::Result<void> Procgen::publishInstances(

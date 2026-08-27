@@ -923,9 +923,9 @@ eve::Result<ArtifactPart> partFromMesh(std::string role, ArtifactId parent,
     if (!childKey) return rejectedPart(eve::DiagnosticCode::InvalidArgument,
                                        "cannot derive child build key for " + role);
     const ArtifactId childId = parent.child(role);
-    return makeArtifactPart(std::move(role), childId, ArtifactType::MeshData,
-                            eve::SchemaVersion(1), std::move(*childKey), boundsForMesh(mesh), {},
-                            std::move(metadata), std::move(mesh));
+    const Bounds     bounds  = boundsForMesh(mesh);
+    return makeArtifactPart(std::move(role), childId, ArtifactType::MeshData, eve::SchemaVersion(1),
+                            std::move(*childKey), bounds, {}, std::move(metadata), std::move(mesh));
 }
 
 eve::Result<ArtifactPart> partFromCollider(std::string role, ArtifactId parent,
@@ -935,10 +935,10 @@ eve::Result<ArtifactPart> partFromCollider(std::string role, ArtifactId parent,
     if (!childKey) return rejectedPart(eve::DiagnosticCode::InvalidArgument,
                                        "cannot derive child build key for " + role);
     const ArtifactId childId = parent.child(role);
-    return makeArtifactPart(std::move(role), childId, ArtifactType::Collider,
-                            eve::SchemaVersion(1), std::move(*childKey), collider.bounds,
-                            {parent.child("mesh")},
-                            std::move(metadata), std::move(collider));
+    const Bounds     bounds  = collider.bounds;
+    return makeArtifactPart(std::move(role), childId, ArtifactType::Collider, eve::SchemaVersion(1),
+                            std::move(*childKey), bounds, {parent.child("mesh")}, std::move(metadata),
+                            std::move(collider));
 }
 
 eve::Result<ArtifactPart> partFromGrid(std::string role, ArtifactId parent,
@@ -948,9 +948,9 @@ eve::Result<ArtifactPart> partFromGrid(std::string role, ArtifactId parent,
     if (!childKey) return rejectedPart(eve::DiagnosticCode::InvalidArgument,
                                        "cannot derive child build key for " + role);
     const ArtifactId childId = parent.child(role);
-    return makeArtifactPart(std::move(role), childId, ArtifactType::Grid,
-                            eve::SchemaVersion(1), std::move(*childKey), boundsForGrid(grid), {},
-                            std::move(metadata), std::move(grid));
+    const Bounds     bounds  = boundsForGrid(grid);
+    return makeArtifactPart(std::move(role), childId, ArtifactType::Grid, eve::SchemaVersion(1), std::move(*childKey),
+                            bounds, {}, std::move(metadata), std::move(grid));
 }
 
 eve::Result<ArtifactPart> partFromPoints(std::string role, ArtifactId parent,
@@ -960,9 +960,9 @@ eve::Result<ArtifactPart> partFromPoints(std::string role, ArtifactId parent,
     if (!childKey) return rejectedPart(eve::DiagnosticCode::InvalidArgument,
                                        "cannot derive child build key for " + role);
     const ArtifactId childId = parent.child(role);
-    return makeArtifactPart(std::move(role), childId, ArtifactType::PointSet,
-                            eve::SchemaVersion(1), std::move(*childKey), boundsForPoints(points), {},
-                            std::move(metadata), std::move(points));
+    const Bounds     bounds  = boundsForPoints(points);
+    return makeArtifactPart(std::move(role), childId, ArtifactType::PointSet, eve::SchemaVersion(1),
+                            std::move(*childKey), bounds, {}, std::move(metadata), std::move(points));
 }
 
 template <class T>
@@ -1033,8 +1033,8 @@ eve::Result<GeneratedArtifact> generateComposite(const Params& params, ArtifactI
     metadata.emplace("childCount", eve::Value(std::int64_t(composite.children.size())));
     metadata.emplace("determinism", eve::Value("seeded_cpu"));
     metadata.emplace("payloadPolicy", eve::Value("dense data stays typed"));
-    return makeArtifact(id, ArtifactType::Composite, eve::SchemaVersion(1), *key,
-                        composite.children.front().bounds, {}, std::move(metadata),
+    const Bounds bounds = composite.children.front().bounds;
+    return makeArtifact(id, ArtifactType::Composite, eve::SchemaVersion(1), *key, bounds, {}, std::move(metadata),
                         GeneratedArtifact::Payload(std::move(composite)));
 }
 
@@ -1174,7 +1174,7 @@ eve::Result<ArtifactPart> makeArtifactPart(
     result.payload = std::move(payload);
     if (!validPart(result))
         return rejectedPart(eve::DiagnosticCode::InvalidArgument,
-                            "artifact part structure or typed payload is invalid");
+                            "artifact part '" + result.role + "' structure or typed payload is invalid");
     return eve::Result<ArtifactPart>::success(std::move(result));
 }
 
@@ -1505,8 +1505,9 @@ eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId,
     eve::Value::Object metadata;
     metadata.emplace("algorithm", eve::Value(std::string(recipeId)));
     metadata.emplace("determinism", eve::Value("seeded_cpu"));
-    return makeArtifact(id, ArtifactType::MeshData, eve::SchemaVersion(1), *key,
-                        boundsForMesh(mesh), {}, std::move(metadata), std::move(mesh));
+    const Bounds bounds = boundsForMesh(mesh);
+    return makeArtifact(id, ArtifactType::MeshData, eve::SchemaVersion(1), *key, bounds, {}, std::move(metadata),
+                        std::move(mesh));
 }
 
 }  // namespace eve::procgen
