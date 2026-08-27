@@ -8,6 +8,7 @@
 
 - `getName()`：返回模块名 `Schema`。
 - `registerJson(json)`：注册或替换一个 schema；兼容旧的 `version` 字段。
+- `registerFromClass(className, schemaId, version)`：从已暴露的脚本类注册对应 schema。
 - `clear()`：清空 registry 和校验诊断。
 - `has(id)`、`hasVersion(id, version)`：查询 schema 是否存在。
 - `getSchemaCount()`、`getSchemaVersionCount(id)`、`getSchemaVersionAt(id, index)`、
