@@ -1158,7 +1158,9 @@ jobs:
     name: Linux (ASan+UBSan)
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The build and test steps have independent 40/30 minute guards. Leave
+    # enough job-level budget for both plus toolchain setup and cache reporting.
+    timeout-minutes: 90
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
