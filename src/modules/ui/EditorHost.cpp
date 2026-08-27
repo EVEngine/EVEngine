@@ -69,10 +69,10 @@ void EditorHost::exposeScriptApi(ssq::VM&) {}
 #else  // full implementation
 
 #include "common/Module.h"
-#include "platform_event/PlatformEvent.h"
 #include "filesystem/FileData.h"
 #include "graphics/Graphics.h"
 #include "image/ImageData.h"
+#include "platform_event/PlatformEvent.h"
 #include "timer/Timer.h"
 #include "ui/UI.h"
 #include "window/Window.h"
@@ -525,7 +525,7 @@ struct EditorHost::Impl {
     eve::window::Window*      win         = nullptr;
     eve::graphics::Graphics*  gfx         = nullptr;
     eve::ui::UI*              ui          = nullptr;
-    eve::platform_event::PlatformEvent*        event       = nullptr;
+    eve::platform_event::PlatformEvent* event       = nullptr;
     eve::timer::Timer*        timer       = nullptr;
     bool                      windowOpen  = false;
     bool                      inFrame     = false;

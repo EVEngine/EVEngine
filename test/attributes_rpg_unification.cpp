@@ -16,16 +16,14 @@ TEST_CASE("attributes.canonicalOperationOrderAndMetadata") {
     AttributeSet set("actor:one");
     set.setBase("power", 100.0);
 
-    auto add = set.addModifier(
-        AttributeModifier{"", "power", "gear", AttributeOperation::Add, 10.0, 0});
-    auto additive = set.addModifier(
-        AttributeModifier{"", "power", "talent", AttributeOperation::AdditivePercent, 0.2, 0});
-    auto multiplicative = set.addModifier(AttributeModifier{
-        "", "power", "aura", AttributeOperation::MultiplicativePercent, 0.1, 0});
-    auto overrideValue = set.addModifier(
-        AttributeModifier{"", "power", "scenario", AttributeOperation::Override, 50.0, 100});
-    auto clamp = set.addModifier(
-        AttributeModifier{"", "power", "rules", AttributeOperation::ClampMin, 60.0, 200});
+    auto add = set.addModifier(AttributeModifier{"", "power", "gear", AttributeOperation::Add, 10.0, 0});
+    auto additive =
+        set.addModifier(AttributeModifier{"", "power", "talent", AttributeOperation::AdditivePercent, 0.2, 0});
+    auto multiplicative =
+        set.addModifier(AttributeModifier{"", "power", "aura", AttributeOperation::MultiplicativePercent, 0.1, 0});
+    auto overrideValue =
+        set.addModifier(AttributeModifier{"", "power", "scenario", AttributeOperation::Override, 50.0, 100});
+    auto clamp = set.addModifier(AttributeModifier{"", "power", "rules", AttributeOperation::ClampMin, 60.0, 200});
 
     REQUIRE(add.ok());
     REQUIRE(additive.ok());
@@ -46,10 +44,8 @@ TEST_CASE("attributes.generatedIdsAreSetLocalAndCopyDeterministic") {
     AttributeSet first("actor:first");
     AttributeSet second("actor:second");
 
-    auto firstId = first.addModifier(
-        AttributeModifier{"", "power", "source", AttributeOperation::Add, 1.0});
-    auto secondId = second.addModifier(
-        AttributeModifier{"", "power", "source", AttributeOperation::Add, 1.0});
+    auto firstId  = first.addModifier(AttributeModifier{"", "power", "source", AttributeOperation::Add, 1.0});
+    auto secondId = second.addModifier(AttributeModifier{"", "power", "source", AttributeOperation::Add, 1.0});
     REQUIRE(firstId.ok());
     REQUIRE(secondId.ok());
     CHECK_EQ(firstId.value(), "attribute:modifier:actor:first:1");
@@ -58,10 +54,8 @@ TEST_CASE("attributes.generatedIdsAreSetLocalAndCopyDeterministic") {
     CHECK_EQ(second.modifierAt(0)->sequence, 1u);
 
     AttributeSet restored = first;
-    auto restoredNext = restored.addModifier(
-        AttributeModifier{"", "power", "restore", AttributeOperation::Add, 2.0});
-    auto firstNext = first.addModifier(
-        AttributeModifier{"", "power", "next", AttributeOperation::Add, 2.0});
+    auto restoredNext = restored.addModifier(AttributeModifier{"", "power", "restore", AttributeOperation::Add, 2.0});
+    auto firstNext    = first.addModifier(AttributeModifier{"", "power", "next", AttributeOperation::Add, 2.0});
     REQUIRE(restoredNext.ok());
     REQUIRE(firstNext.ok());
     CHECK_EQ(restoredNext.value(), "attribute:modifier:actor:first:2");
@@ -75,8 +69,8 @@ TEST_CASE("attributes.rpgFacadeUsesTheSameAttributeSetTruth") {
 
     AttributeSet direct("actor:parity");
     direct.setBase("damage", 100.0);
-    auto directModifier = direct.addModifier(
-        AttributeModifier{"direct", "damage", "shared", AttributeOperation::AdditivePercent, 0.2});
+    auto directModifier =
+        direct.addModifier(AttributeModifier{"direct", "damage", "shared", AttributeOperation::AdditivePercent, 0.2});
     REQUIRE(directModifier.ok());
 
     RPGActor* actor = RPGActor::createActor();
@@ -86,8 +80,7 @@ TEST_CASE("attributes.rpgFacadeUsesTheSameAttributeSetTruth") {
     REQUIRE(actorModifier.ok());
     CHECK_EQ(direct.getFinal("damage"), actor->getFinalAttribute("damage"));
 
-    auto bad = actor->addAttributeModifier(AttributeModifier{
-        "bad", "", "source", AttributeOperation::Add, 1.0});
+    auto bad = actor->addAttributeModifier(AttributeModifier{"bad", "", "source", AttributeOperation::Add, 1.0});
     CHECK(!bad.ok());
     CHECK_EQ(bad.code(), eve::StatusCode::Rejected);
 
@@ -102,14 +95,14 @@ TEST_CASE("attributes.customPolicyParityUsesCanonicalOperationRegistry") {
 
     AttributeSet direct("actor:custom");
     direct.setBase("power", 1.0);
-    auto directModifier = direct.addModifier(AttributeModifier{
-        "square", "power", "policy", AttributeOperation::Custom, 4.0, 0, 0, "square"});
+    auto directModifier = direct.addModifier(
+        AttributeModifier{"square", "power", "policy", AttributeOperation::Custom, 4.0, 0, 0, "square"});
     REQUIRE(directModifier.ok());
 
     RPGActor* actor = RPGActor::createActor();
     actor->attributes()->values.setBase("power", 1.0);
-    auto actorModifier = actor->addAttributeModifier(AttributeModifier{
-        "square", "power", "policy", AttributeOperation::Custom, 4.0, 0, 0, "square"});
+    auto actorModifier = actor->addAttributeModifier(
+        AttributeModifier{"square", "power", "policy", AttributeOperation::Custom, 4.0, 0, 0, "square"});
     REQUIRE(actorModifier.ok());
     CHECK_EQ(direct.getFinal("power", 0.0, &policies), actor->getFinalAttribute("power"));
 

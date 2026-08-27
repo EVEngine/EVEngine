@@ -20,10 +20,9 @@ const eve::Value* member(const eve::Value::Object& object, const char* name) noe
     return found == object.end() ? nullptr : &found->second;
 }
 
-bool readString(const eve::Value::Object& object, const char* name, std::string& output,
-                bool allowEmpty = false) {
+bool readString(const eve::Value::Object& object, const char* name, std::string& output, bool allowEmpty = false) {
     const auto* value = member(object, name);
-    const auto* text = value ? value->getIf<std::string>() : nullptr;
+    const auto* text  = value ? value->getIf<std::string>() : nullptr;
     if (!text || (!allowEmpty && text->empty())) return false;
     output = *text;
     return true;
@@ -37,7 +36,7 @@ bool readU64(const eve::Value::Object& object, const char* name, std::uint64_t& 
 }
 
 bool readBool(const eve::Value::Object& object, const char* name, bool& output) {
-    const auto* value = member(object, name);
+    const auto* value   = member(object, name);
     const auto* boolean = value ? value->getIf<bool>() : nullptr;
     if (!boolean) return false;
     output = *boolean;
@@ -92,8 +91,7 @@ bool readNumericArray(const eve::Value* encoded, std::vector<T>& output) {
             }
         } else {
             const auto* integer = value.getIf<std::int64_t>();
-            if (!integer || *integer < 0 ||
-                static_cast<std::uint64_t>(*integer) > std::numeric_limits<T>::max())
+            if (!integer || *integer < 0 || static_cast<std::uint64_t>(*integer) > std::numeric_limits<T>::max())
                 return false;
             output.push_back(static_cast<T>(*integer));
         }
@@ -101,10 +99,10 @@ bool readNumericArray(const eve::Value* encoded, std::vector<T>& output) {
     return true;
 }
 
-std::uint64_t hashStreams(std::span<const float> positions, std::span<const float> normals,
-                          std::span<const float> uvs, std::span<const std::uint32_t> indices) noexcept {
+std::uint64_t hashStreams(std::span<const float> positions, std::span<const float> normals, std::span<const float> uvs,
+                          std::span<const std::uint32_t> indices) noexcept {
     std::uint64_t hash = 14695981039346656037ull;
-    const auto mix = [&hash](const auto* data, std::size_t count) {
+    const auto    mix  = [&hash](const auto* data, std::size_t count) {
         const auto* bytes = reinterpret_cast<const std::uint8_t*>(data);
         for (std::size_t i = 0; i < count * sizeof(*data); ++i) {
             hash ^= bytes[i];
@@ -125,16 +123,14 @@ std::uint64_t hashDescriptor(const GraphicsArtifactResource& resource) noexcept 
 const eve::artifact::PartView* selectedMesh(const eve::artifact::PublicationView& publication) noexcept {
     const eve::artifact::PartView* mesh = nullptr;
     for (const auto& part : publication.parts) {
-        if (part.kind == eve::artifact::PartKind::MeshData &&
-            (part.role == "mesh" || mesh == nullptr))
-            mesh = &part;
+        if (part.kind == eve::artifact::PartKind::MeshData && (part.role == "mesh" || mesh == nullptr)) mesh = &part;
     }
     return mesh;
 }
 
 bool validMeshView(const eve::artifact::PartView& mesh) noexcept {
-    if (mesh.positions.empty() || mesh.positions.size() % 3u != 0u ||
-        mesh.indices.empty() || mesh.indices.size() % 3u != 0u)
+    if (mesh.positions.empty() || mesh.positions.size() % 3u != 0u || mesh.indices.empty() ||
+        mesh.indices.size() % 3u != 0u)
         return false;
     const std::size_t vertices = mesh.positions.size() / 3u;
     if ((!mesh.normals.empty() && mesh.normals.size() != mesh.positions.size()) ||
@@ -154,7 +150,7 @@ bool validMeshView(const eve::artifact::PartView& mesh) noexcept {
 }  // namespace
 
 void GraphicsArtifactProvider::uploadIfAvailable(Graphics* graphics, RuntimeResource& runtime) noexcept {
-    auto& descriptor = runtime.descriptor;
+    auto& descriptor     = runtime.descriptor;
     runtime.uploadedMesh = nullptr;
     if (!graphics) {
         descriptor.backendName = "cpu";
@@ -166,7 +162,7 @@ void GraphicsArtifactProvider::uploadIfAvailable(Graphics* graphics, RuntimeReso
     descriptor.uploadState = "cpu-fallback";
     try {
         descriptor.backendName = graphics->getBackendName();
-        runtime.uploadedMesh = graphics->newMeshFromArrays(
+        runtime.uploadedMesh   = graphics->newMeshFromArrays(
             descriptor.positions.data(), descriptor.normals.empty() ? nullptr : descriptor.normals.data(),
             descriptor.uvs.empty() ? nullptr : descriptor.uvs.data(),
             static_cast<int>(descriptor.positions.size() / 3u), descriptor.indices.data(),
@@ -177,15 +173,15 @@ void GraphicsArtifactProvider::uploadIfAvailable(Graphics* graphics, RuntimeReso
                 backend->indexCount != descriptor.indices.size() || backend->vertexStride == 0u ||
                 (backend->indexElementSize != 2u && backend->indexElementSize != 4u)) {
                 (void)graphics->releaseMesh(runtime.uploadedMesh);
-                runtime.uploadedMesh = nullptr;
+                runtime.uploadedMesh   = nullptr;
                 descriptor.uploadState = "cpu-fallback";
                 descriptor.gpuResident = false;
                 return;
             }
-            descriptor.backendVertexStride = backend->vertexStride;
+            descriptor.backendVertexStride     = backend->vertexStride;
             descriptor.backendIndexElementSize = backend->indexElementSize;
-            descriptor.uploadState = "uploaded";
-            descriptor.gpuResident = true;
+            descriptor.uploadState             = "uploaded";
+            descriptor.gpuResident             = true;
         }
     } catch (...) {
         if (runtime.uploadedMesh) {
@@ -194,15 +190,14 @@ void GraphicsArtifactProvider::uploadIfAvailable(Graphics* graphics, RuntimeReso
             } catch (...) {
             }
         }
-        runtime.uploadedMesh = nullptr;
+        runtime.uploadedMesh   = nullptr;
         descriptor.uploadState = "cpu-fallback";
     }
 }
 
 class GraphicsArtifactStage final : public eve::artifact::PreparedPublication {
 public:
-    GraphicsArtifactStage(GraphicsArtifactProvider& owner, GraphicsArtifactResource resource,
-                          Mesh* uploadedMesh)
+    GraphicsArtifactStage(GraphicsArtifactProvider& owner, GraphicsArtifactResource resource, Mesh* uploadedMesh)
         : owner_(&owner), resource_{std::move(resource), uploadedMesh} {}
     ~GraphicsArtifactStage() override { rollback(); }
     void commit() noexcept override {
@@ -212,12 +207,12 @@ public:
     }
     void rollback() noexcept override {
         if (owner_) owner_->release(resource_);
-        owner_ = nullptr;
+        owner_    = nullptr;
         resource_ = {};
     }
 
 private:
-    GraphicsArtifactProvider* owner_ = nullptr;
+    GraphicsArtifactProvider*                 owner_ = nullptr;
     GraphicsArtifactProvider::RuntimeResource resource_;
 };
 
@@ -226,12 +221,12 @@ std::optional<GraphicsArtifactDescriptor> WebGpuArtifactDescriptorAdapter::descr
     const auto* mesh = selectedMesh(publication);
     if (!mesh || !validMeshView(*mesh)) return std::nullopt;
     GraphicsArtifactDescriptor result;
-    result.id = mesh->id;
-    result.buildKey = std::string(mesh->buildKey);
-    result.role = std::string(mesh->role);
+    result.id          = mesh->id;
+    result.buildKey    = std::string(mesh->buildKey);
+    result.role        = std::string(mesh->role);
     result.vertexCount = mesh->positions.size() / 3u;
-    result.indexCount = mesh->indices.size();
-    result.checksum = hashStreams(mesh->positions, mesh->normals, mesh->uvs, mesh->indices);
+    result.indexCount  = mesh->indices.size();
+    result.checksum    = hashStreams(mesh->positions, mesh->normals, mesh->uvs, mesh->indices);
     return result;
 }
 
@@ -239,36 +234,30 @@ eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> GraphicsArtifac
     const eve::artifact::PublicationView& publication) {
     if (failPrepare_)
         return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                   "graphics artifact prepare failure was injected"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "graphics artifact prepare failure was injected"));
     if (publication.id.isNil() || publication.buildKey.empty())
-        return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                   "graphics publication requires identity and build key"));
+        return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "graphics publication requires identity and build key"));
     if (find(publication.id) != nullptr)
         return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
-                                   "graphics artifact identity is already published"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "graphics artifact identity is already published"));
     const auto* mesh = selectedMesh(publication);
     if (!mesh || !validMeshView(*mesh))
-        return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                   "graphics publication requires a complete mesh leaf"));
+        return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "graphics publication requires a complete mesh leaf"));
     if (mesh->positions.size() / 3u > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
         mesh->indices.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
-        return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                   "graphics mesh exceeds backend integer limits"));
+        return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "graphics mesh exceeds backend integer limits"));
     if (nextIndex_ == GraphicsArtifactHandle::invalidIndex)
         return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                   "graphics artifact handle index exhausted"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "graphics artifact handle index exhausted"));
 
     GraphicsArtifactResource resource;
-    resource.id = publication.id;
+    resource.id       = publication.id;
     resource.buildKey = std::string(publication.buildKey);
-    resource.handle = GraphicsArtifactHandle(nextIndex_, 1);
-    resource.role = std::string(mesh->role);
+    resource.handle   = GraphicsArtifactHandle(nextIndex_, 1);
+    resource.role     = std::string(mesh->role);
     RuntimeResource runtime;
     runtime.descriptor = std::move(resource);
     try {
@@ -279,8 +268,7 @@ eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> GraphicsArtifac
         uploadIfAvailable(graphics_, runtime);
         resources_.reserve(resources_.size() + 1);
         return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::success(
-            std::make_unique<GraphicsArtifactStage>(*this, std::move(runtime.descriptor),
-                                                     runtime.uploadedMesh));
+            std::make_unique<GraphicsArtifactStage>(*this, std::move(runtime.descriptor), runtime.uploadedMesh));
     } catch (...) {
         if (runtime.uploadedMesh && graphics_) {
             try {
@@ -289,8 +277,7 @@ eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> GraphicsArtifac
             }
         }
         return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                   "graphics artifact prepare allocation failed"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "graphics artifact prepare allocation failed"));
     }
 }
 
@@ -307,11 +294,11 @@ void GraphicsArtifactProvider::release(RuntimeResource& resource) noexcept {
         }
     }
     if (resource.uploadedMesh) {
-        resource.descriptor.gpuResident = false;
-        resource.descriptor.uploadState = "detached";
-        resource.descriptor.backendVertexStride = 0;
+        resource.descriptor.gpuResident             = false;
+        resource.descriptor.uploadState             = "detached";
+        resource.descriptor.backendVertexStride     = 0;
         resource.descriptor.backendIndexElementSize = 0;
-        resource.uploadedMesh = nullptr;
+        resource.uploadedMesh                       = nullptr;
     }
 }
 
@@ -326,14 +313,17 @@ std::uint64_t GraphicsArtifactProvider::checksum(eve::PersistentId id) const noe
     return resource ? hashDescriptor(*resource) : 0;
 }
 
-std::optional<GraphicsArtifactDescriptor> GraphicsArtifactProvider::descriptor(
-    eve::PersistentId id) const {
+std::optional<GraphicsArtifactDescriptor> GraphicsArtifactProvider::descriptor(eve::PersistentId id) const {
     const auto* resource = find(id);
     if (!resource) return std::nullopt;
-    return GraphicsArtifactDescriptor{id, resource->buildKey, resource->role,
-                                     resource->positions.size() / 3u, resource->indices.size(),
-                                     hashDescriptor(*resource), resource->backendVertexStride,
-                                     resource->backendIndexElementSize};
+    return GraphicsArtifactDescriptor{id,
+                                      resource->buildKey,
+                                      resource->role,
+                                      resource->positions.size() / 3u,
+                                      resource->indices.size(),
+                                      hashDescriptor(*resource),
+                                      resource->backendVertexStride,
+                                      resource->backendIndexElementSize};
 }
 
 bool GraphicsArtifactProvider::isGpuResident(eve::PersistentId id) const noexcept {
@@ -344,7 +334,7 @@ bool GraphicsArtifactProvider::isGpuResident(eve::PersistentId id) const noexcep
 void GraphicsArtifactProvider::clear() noexcept {
     for (auto& resource : resources_) release(resource);
     resources_.clear();
-    nextIndex_ = 0;
+    nextIndex_   = 0;
     failPrepare_ = false;
 }
 
@@ -367,7 +357,7 @@ eve::Result<eve::Value> GraphicsArtifactProvider::snapshotState() const {
         eve::Value::Array resources;
         resources.reserve(resources_.size());
         for (const auto& runtime : resources_) {
-            const auto& resource = runtime.descriptor;
+            const auto&        resource = runtime.descriptor;
             eve::Value::Object item;
             item.emplace("artifactId", eve::Value(resource.id.format()));
             item.emplace("buildKey", eve::Value(resource.buildKey));
@@ -389,8 +379,8 @@ eve::Result<eve::Value> GraphicsArtifactProvider::snapshotState() const {
         state.emplace("resources", eve::Value(std::move(resources)));
         return eve::Result<eve::Value>::success(eve::Value(std::move(state)));
     } catch (...) {
-        return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, "graphics artifact snapshot allocation failed"));
+        return eve::Result<eve::Value>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "graphics artifact snapshot allocation failed"));
     }
 }
 
@@ -398,22 +388,22 @@ eve::Result<void> GraphicsArtifactProvider::restoreState(const eve::Value& state
     if (!resources_.empty())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "graphics artifact restore requires an empty registry"));
-    const auto* object = state.getIf<eve::Value::Object>();
-    const auto* provider = object ? member(*object, "provider") : nullptr;
-    const auto* providerName = provider ? provider->getIf<std::string>() : nullptr;
-    const auto* versionValue = object ? member(*object, "version") : nullptr;
-    const auto* version = versionValue ? versionValue->getIf<std::int64_t>() : nullptr;
+    const auto* object           = state.getIf<eve::Value::Object>();
+    const auto* provider         = object ? member(*object, "provider") : nullptr;
+    const auto* providerName     = provider ? provider->getIf<std::string>() : nullptr;
+    const auto* versionValue     = object ? member(*object, "version") : nullptr;
+    const auto* version          = versionValue ? versionValue->getIf<std::int64_t>() : nullptr;
     const auto* encodedResources = object ? member(*object, "resources") : nullptr;
-    const auto* resources = encodedResources ? encodedResources->getIf<eve::Value::Array>() : nullptr;
-    if (!object || !providerName || *providerName != "graphics.resource-provider" ||
-        !hasSupportedVersion(*object) || !version || !resources)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::UnknownVersion, "invalid graphics artifact provider state"));
+    const auto* resources        = encodedResources ? encodedResources->getIf<eve::Value::Array>() : nullptr;
+    if (!object || !providerName || *providerName != "graphics.resource-provider" || !hasSupportedVersion(*object) ||
+        !version || !resources)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "invalid graphics artifact provider state"));
 
-    std::vector<RuntimeResource> candidate;
+    std::vector<RuntimeResource>          candidate;
     std::unordered_set<eve::PersistentId> identities;
-    std::uint32_t next = 0;
-    const auto cleanup = [&]() noexcept {
+    std::uint32_t                         next    = 0;
+    const auto                            cleanup = [&]() noexcept {
         for (auto& resource : candidate) release(resource);
         candidate.clear();
     };
@@ -424,49 +414,47 @@ eve::Result<void> GraphicsArtifactProvider::restoreState(const eve::Value& state
     try {
         candidate.reserve(resources->size());
         for (const eve::Value& encoded : *resources) {
-            const auto* item = encoded.getIf<eve::Value::Object>();
-            std::string idText;
-            std::string buildKey;
-            std::string role;
-            std::string backend;
-            std::string uploadState;
-            std::uint64_t packed = 0;
-            bool gpuResident = false;
+            const auto*     item = encoded.getIf<eve::Value::Object>();
+            std::string     idText;
+            std::string     buildKey;
+            std::string     role;
+            std::string     backend;
+            std::string     uploadState;
+            std::uint64_t   packed      = 0;
+            bool            gpuResident = false;
             RuntimeResource runtime;
-            auto& resource = runtime.descriptor;
-            if (!item || !readString(*item, "artifactId", idText) ||
-                !readString(*item, "buildKey", buildKey) || !readString(*item, "role", role) ||
-                !readU64(*item, "handle", packed) ||
+            auto&           resource = runtime.descriptor;
+            if (!item || !readString(*item, "artifactId", idText) || !readString(*item, "buildKey", buildKey) ||
+                !readString(*item, "role", role) || !readU64(*item, "handle", packed) ||
                 !readNumericArray(member(*item, "positions"), resource.positions) ||
                 !readNumericArray(member(*item, "normals"), resource.normals) ||
                 !readNumericArray(member(*item, "uvs"), resource.uvs) ||
                 !readNumericArray(member(*item, "indices"), resource.indices))
-                return fail(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                                   "invalid graphics artifact resource"));
+                return fail(
+                    eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid graphics artifact resource"));
             const auto parsedId = eve::PersistentId::parse(idText);
-            resource.handle = GraphicsArtifactHandle::fromPacked(packed);
+            resource.handle     = GraphicsArtifactHandle::fromPacked(packed);
             if (!parsedId || parsedId->isNil() || resource.handle.isInvalid() || role.empty() ||
                 !identities.emplace(*parsedId).second || resource.positions.empty() ||
                 resource.positions.size() % 3u != 0u || resource.indices.empty() ||
                 resource.indices.size() % 3u != 0u ||
                 (!resource.normals.empty() && resource.normals.size() != resource.positions.size()) ||
                 (!resource.uvs.empty() && resource.uvs.size() != resource.positions.size() / 3u * 2u))
-                return fail(eve::Diagnostic::error(
-                    eve::DiagnosticCode::ParseError, "invalid graphics artifact streams or identity"));
+                return fail(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                   "invalid graphics artifact streams or identity"));
             for (const auto index : resource.indices)
                 if (index >= resource.positions.size() / 3u)
-                    return fail(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                                       "invalid graphics artifact index"));
+                    return fail(
+                        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid graphics artifact index"));
             if (*version >= 2) {
-                if (!readString(*item, "backend", backend) ||
-                    !readString(*item, "uploadState", uploadState) ||
+                if (!readString(*item, "backend", backend) || !readString(*item, "uploadState", uploadState) ||
                     !readBool(*item, "gpuResident", gpuResident))
-                    return fail(eve::Diagnostic::error(
-                        eve::DiagnosticCode::ParseError, "invalid graphics upload state"));
+                    return fail(
+                        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid graphics upload state"));
             }
-            resource.id = *parsedId;
+            resource.id       = *parsedId;
             resource.buildKey = std::move(buildKey);
-            resource.role = std::move(role);
+            resource.role     = std::move(role);
             if (*version >= 2) {
                 resource.backendName = std::move(backend);
                 resource.uploadState = std::move(uploadState);
@@ -478,8 +466,8 @@ eve::Result<void> GraphicsArtifactProvider::restoreState(const eve::Value& state
         }
     } catch (...) {
         cleanup();
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, "graphics artifact restore allocation failed"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "graphics artifact restore allocation failed"));
     }
     resources_.swap(candidate);
     nextIndex_ = next;

@@ -106,9 +106,13 @@ EffectContainer::EffectContainer(eve::UuidEntropySource entropy, eve::UuidClock 
 }
 
 EffectContainer::EffectContainer(const EffectContainer& other)
-    : nextId_(other.nextId_), nextSequence_(other.nextSequence_),
-      effectIdGenerator_(other.effectIdGenerator_), generation_(other.generation_),
-      lastTick_(other.lastTick_), hasLastTick_(other.hasLastTick_), events_(other.events_) {
+    : nextId_(other.nextId_),
+      nextSequence_(other.nextSequence_),
+      effectIdGenerator_(other.effectIdGenerator_),
+      generation_(other.generation_),
+      lastTick_(other.lastTick_),
+      hasLastTick_(other.hasLastTick_),
+      events_(other.events_) {
     for (const auto& effect : other.effects_)
         effects_.push_back(effect ? std::make_unique<EffectInstance>(*effect) : nullptr);
 }
@@ -136,18 +140,18 @@ EffectContainer EffectContainer::snapshot() const { return clone(); }
 eve::Result<void> EffectContainer::restore(const EffectContainer& snapshotValue) {
     if (this == &snapshotValue) {
         if (generation_ == std::numeric_limits<std::uint64_t>::max())
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvariantViolation, "effect container generation overflow"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                     "effect container generation overflow"));
         ++generation_;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     if (generation_ == std::numeric_limits<std::uint64_t>::max())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvariantViolation, "effect container generation overflow"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "effect container generation overflow"));
 
     EffectContainer candidate(snapshotValue);
     candidate.generation_ = generation_ + 1;
-    *this = std::move(candidate);
+    *this                 = std::move(candidate);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -178,15 +182,13 @@ EffectContainer::Store::const_iterator EffectContainer::findIterator(const std::
 }
 
 EffectContainer::Store::iterator EffectContainer::findIterator(eve::EffectId id) {
-    return std::find_if(effects_.begin(), effects_.end(), [id](const auto& effect) {
-        return !id.isNil() && effect->identity == id;
-    });
+    return std::find_if(effects_.begin(), effects_.end(),
+                        [id](const auto& effect) { return !id.isNil() && effect->identity == id; });
 }
 
 EffectContainer::Store::const_iterator EffectContainer::findIterator(eve::EffectId id) const {
-    return std::find_if(effects_.begin(), effects_.end(), [id](const auto& effect) {
-        return !id.isNil() && effect->identity == id;
-    });
+    return std::find_if(effects_.begin(), effects_.end(),
+                        [id](const auto& effect) { return !id.isNil() && effect->identity == id; });
 }
 
 eve::Result<std::string> EffectContainer::apply(const EffectDefinition& definition, const std::string& subject,
@@ -224,13 +226,13 @@ eve::Result<std::string> EffectContainer::apply(const EffectDefinition& definiti
         } else {
             auto stacks = mergeStackCount(current, definition);
             if (!stacks) return eve::Result<std::string>::failure(stacks.status());
-            current.priority   = definition.priority;
-            current.duration   = definition.duration;
-            current.period     = definition.period;
+            current.priority      = definition.priority;
+            current.duration      = definition.duration;
+            current.period        = definition.period;
             current.periodElapsed = 0.0;
-            current.remaining  = std::move(duration).takeValue();
-            current.magnitude  = std::move(magnitude).takeValue();
-            current.stackCount = std::move(stacks).takeValue();
+            current.remaining     = std::move(duration).takeValue();
+            current.magnitude     = std::move(magnitude).takeValue();
+            current.stackCount    = std::move(stacks).takeValue();
             emit(EffectEventKind::Refreshed, current);
             return eve::Result<std::string>::success(current.id, eve::Status::success(eve::StatusCode::Applied));
         }
@@ -253,13 +255,13 @@ eve::Result<std::string> EffectContainer::apply(const EffectDefinition& definiti
                     return conflict("effect stack count exceeds its maximum");
                 return eve::Result<std::string>::failure(stacks.status());
             }
-            current.priority   = definition.priority;
-            current.duration   = definition.duration;
-            current.period     = definition.period;
+            current.priority      = definition.priority;
+            current.duration      = definition.duration;
+            current.period        = definition.period;
             current.periodElapsed = 0.0;
-            current.remaining  = std::move(duration).takeValue();
-            current.magnitude  = std::move(magnitude).takeValue();
-            current.stackCount = std::move(stacks).takeValue();
+            current.remaining     = std::move(duration).takeValue();
+            current.magnitude     = std::move(magnitude).takeValue();
+            current.stackCount    = std::move(stacks).takeValue();
             emit(EffectEventKind::Stacked, current);
             return eve::Result<std::string>::success(current.id, eve::Status::success(eve::StatusCode::Applied));
         }
@@ -280,31 +282,31 @@ eve::Result<std::string> EffectContainer::apply(const EffectDefinition& definiti
     if (effectIdGenerator_) {
         const auto generated = effectIdGenerator_->generate();
         if (!generated)
-            return eve::Result<std::string>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed, "canonical effect identity generation failed"));
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "canonical effect identity generation failed"));
         effect->identity = eve::EffectId::fromUuid(*generated);
         if (find(effect->identity) != nullptr)
-            return eve::Result<std::string>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict, "canonical effect identity already exists"));
-        effect->id       = effect->identity.format();
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "canonical effect identity already exists"));
+        effect->id = effect->identity.format();
     } else {
         std::ostringstream id;
         id << "effect-" << std::setw(16) << std::setfill('0') << nextId_++;
         effect->id = id.str();
     }
-    effect->subject    = subject;
-    effect->type       = definition.id;
-    effect->source     = source;
-    effect->stackKey   = key;
-    effect->priority   = definition.priority;
-    effect->duration   = std::max(0.0, definition.duration);
-    effect->remaining  = normalisedRemaining(definition.duration);
-    effect->period     = definition.period;
+    effect->subject       = subject;
+    effect->type          = definition.id;
+    effect->source        = source;
+    effect->stackKey      = key;
+    effect->priority      = definition.priority;
+    effect->duration      = std::max(0.0, definition.duration);
+    effect->remaining     = normalisedRemaining(definition.duration);
+    effect->period        = definition.period;
     effect->periodElapsed = 0.0;
-    effect->magnitude  = definition.magnitude;
-    effect->stackCount = initialStacks;
-    effect->payload    = definition.payload;
-    effect->tags       = definition.tags;
+    effect->magnitude     = definition.magnitude;
+    effect->stackCount    = initialStacks;
+    effect->payload       = definition.payload;
+    effect->tags          = definition.tags;
     std::sort(effect->tags.begin(), effect->tags.end());
     effect->tags.erase(std::unique(effect->tags.begin(), effect->tags.end()), effect->tags.end());
 
@@ -315,12 +317,10 @@ eve::Result<std::string> EffectContainer::apply(const EffectDefinition& definiti
 }
 
 eve::Result<eve::EffectId> EffectContainer::applyCanonical(const EffectDefinition& definition,
-                                                           const std::string& subject,
-                                                           const std::string& source) {
+                                                           const std::string& subject, const std::string& source) {
     if (!effectIdGenerator_)
         return eve::Result<eve::EffectId>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Unsupported,
-            "canonical effect identity requires an injected UUID entropy source"));
+            eve::DiagnosticCode::Unsupported, "canonical effect identity requires an injected UUID entropy source"));
     auto result = apply(definition, subject, source);
     if (!result) return eve::Result<eve::EffectId>::failure(result.status());
     const auto id = eve::EffectId::parse(std::move(result).takeValue());
@@ -332,19 +332,19 @@ eve::Result<eve::EffectId> EffectContainer::applyCanonical(const EffectDefinitio
 
 eve::Result<EffectHandle> EffectContainer::handleFor(const std::string& id) const {
     if (id.empty())
-        return eve::Result<EffectHandle>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "effect handle id must not be empty", "id"));
+        return eve::Result<EffectHandle>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect handle id must not be empty", "id"));
     if (find(id) == nullptr)
-        return eve::Result<EffectHandle>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "effect instance is not active", "id"));
-    return eve::Result<EffectHandle>::success(
-        EffectHandle{id, generation_}, eve::Status::success(eve::StatusCode::Applied));
+        return eve::Result<EffectHandle>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "effect instance is not active", "id"));
+    return eve::Result<EffectHandle>::success(EffectHandle{id, generation_},
+                                              eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<const EffectInstance*> EffectContainer::resolve(EffectHandle handle) const {
     if (!handle.isValid())
-        return eve::Result<const EffectInstance*>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "effect handle is invalid", "handle"));
+        return eve::Result<const EffectInstance*>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect handle is invalid", "handle"));
     if (handle.containerGeneration != generation_)
         return eve::Result<const EffectInstance*>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "effect handle belongs to an older container generation", "handle"));
@@ -352,8 +352,7 @@ eve::Result<const EffectInstance*> EffectContainer::resolve(EffectHandle handle)
     if (instance == nullptr)
         return eve::Result<const EffectInstance*>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::NotFound, "effect instance is not active", "handle.instanceId"));
-    return eve::Result<const EffectInstance*>::success(instance,
-                                                       eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<const EffectInstance*>::success(instance, eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<std::string> EffectContainer::apply(const std::string& subject, const std::string& type,
@@ -397,8 +396,8 @@ eve::Result<EffectUpdateSummary> EffectContainer::advanceInstances(double dtSeco
         return eve::Result<EffectUpdateSummary>::success(summary, eve::Status::success(eve::StatusCode::NoOp));
 
     for (auto it = effects_.begin(); it != effects_.end();) {
-        EffectInstance& effect = **it;
-        const double activeDelta = effect.remaining < 0.0 ? dtSeconds : std::min(dtSeconds, effect.remaining);
+        EffectInstance& effect      = **it;
+        const double    activeDelta = effect.remaining < 0.0 ? dtSeconds : std::min(dtSeconds, effect.remaining);
         if (effect.period > 0.0 && activeDelta > 0.0) {
             if (!std::isfinite(effect.periodElapsed) ||
                 effect.periodElapsed > std::numeric_limits<double>::max() - activeDelta)
@@ -415,7 +414,7 @@ eve::Result<EffectUpdateSummary> EffectContainer::advanceInstances(double dtSeco
                 periodic.stackCount     = effect.stackCount;
                 periodic.tags           = effect.tags;
                 periodic.effectIdentity = effect.identity;
-                periodic.tick            = tick;
+                periodic.tick           = tick;
                 summary.periodicTicks.push_back(std::move(periodic));
                 emit(EffectEventKind::Periodic, effect, "periodic");
             }
@@ -440,11 +439,10 @@ eve::Result<EffectUpdateSummary> EffectContainer::update(double dtSeconds) {
     auto duration = eve::Duration::fromSeconds(dtSeconds);
     if (!duration) return eve::Result<EffectUpdateSummary>::failure(duration.status());
 
-    auto nextTick = hasLastTick_ ? lastTick_.incremented()
-                                 : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
+    auto nextTick = hasLastTick_ ? lastTick_.incremented() : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
     if (!nextTick)
-        return eve::Result<EffectUpdateSummary>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvariantViolation, "effect simulation tick overflow"));
+        return eve::Result<EffectUpdateSummary>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "effect simulation tick overflow"));
 
     return advance({*nextTick, std::move(duration).takeValue()});
 }
@@ -454,21 +452,21 @@ eve::Result<EffectUpdateSummary> EffectContainer::advance(const eve::SimulationS
         return eve::Result<EffectUpdateSummary>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "effect simulation delta must be non-negative"));
     if (hasLastTick_ && step.tick <= lastTick_)
-        return eve::Result<EffectUpdateSummary>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "effect simulation tick must advance monotonically"));
+        return eve::Result<EffectUpdateSummary>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "effect simulation tick must advance monotonically"));
 
     // Stage the lifecycle mutation so a failure does not publish partial state.
-    auto candidate = clone();
-    candidate.lastTick_ = step.tick;
+    auto candidate         = clone();
+    candidate.lastTick_    = step.tick;
     candidate.hasLastTick_ = true;
-    auto result = candidate.advanceInstances(step.delta.seconds(), step.tick);
+    auto result            = candidate.advanceInstances(step.delta.seconds(), step.tick);
     if (!result) return eve::Result<EffectUpdateSummary>::failure(result.status());
-    auto status = result.status();
+    auto                status  = result.status();
     EffectUpdateSummary summary = std::move(result).takeValue();
-    summary.tick = step.tick;
-    candidate.lastTick_ = step.tick;
-    candidate.hasLastTick_ = true;
-    *this = std::move(candidate);
+    summary.tick                = step.tick;
+    candidate.lastTick_         = step.tick;
+    candidate.hasLastTick_      = true;
+    *this                       = std::move(candidate);
     return eve::Result<EffectUpdateSummary>::success(std::move(summary), std::move(status));
 }
 
@@ -476,8 +474,8 @@ void EffectContainer::clear() {
     effects_.clear();
     events_.clear();
     nextId_ = nextSequence_ = 1;
-    lastTick_ = eve::SimulationTick::zero();
-    hasLastTick_ = false;
+    lastTick_               = eve::SimulationTick::zero();
+    hasLastTick_            = false;
     if (generation_ != std::numeric_limits<std::uint64_t>::max()) ++generation_;
 }
 
@@ -572,8 +570,8 @@ eve::Result<EffectUpdateSummary> EffectExecutor::advance(EffectContainer& contai
     return container.update(dtSeconds);
 }
 
-eve::Result<EffectUpdateSummary> EffectExecutor::advance(EffectContainer& container,
-                                                          const eve::SimulationStep& step) const {
+eve::Result<EffectUpdateSummary> EffectExecutor::advance(EffectContainer&           container,
+                                                         const eve::SimulationStep& step) const {
     return container.advance(step);
 }
 

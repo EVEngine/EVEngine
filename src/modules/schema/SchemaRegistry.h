@@ -21,10 +21,10 @@ using MigrationFunction = std::function<eve::Result<eve::Value>(const eve::Value
  * nearest-version or downgrade behavior is represented by this type.
  */
 struct EVENGINE_API SchemaCompatibility {
-    std::string       schemaId;
-    int               fromVersion = 0;
-    int               toVersion = 0;
-    std::vector<int>  versions;
+    std::string      schemaId;
+    int              fromVersion = 0;
+    int              toVersion   = 0;
+    std::vector<int> versions;
 
     /** @brief Whether source and target are the same exact schema version. */
     [[nodiscard]] bool exact() const noexcept { return versions.size() == 1; }
@@ -37,8 +37,7 @@ public:
      * @param definition Schema to copy into the registry.
      * @return Registered or Replaced, or a structured validation failure.
      */
-    [[nodiscard]] static eve::Result<SchemaRegistrationStatus> registerSchema(
-        const SchemaDefinition& definition);
+    [[nodiscard]] static eve::Result<SchemaRegistrationStatus> registerSchema(const SchemaDefinition& definition);
 
     /** @brief Parses and registers or replaces one schema definition from JSON.
      * @param json JSON schema definition.
@@ -50,8 +49,7 @@ public:
      * @param definition Schema to copy into the registry.
      * @return Registered, or a structured conflict/validation failure.
      */
-    [[nodiscard]] static eve::Result<SchemaRegistrationStatus> registerVersioned(
-        const SchemaDefinition& definition);
+    [[nodiscard]] static eve::Result<SchemaRegistrationStatus> registerVersioned(const SchemaDefinition& definition);
 
     /** @brief Parses and registers a new exact `(id, schemaVersion)` entry.
      * @param json JSON schema definition. `schemaVersion` is canonical;
@@ -131,7 +129,7 @@ public:
 
     /** @brief Validates JSON against one exact schema version. */
     [[nodiscard]] static std::vector<ValidationError> validate(const std::string& schemaId, int schemaVersion,
-                                                                 const std::string& json);
+                                                               const std::string& json);
 
     /**
      * @brief Registers one explicit forward migration edge.
@@ -145,7 +143,7 @@ public:
      *          migration chain unambiguous and lets missing links be reported.
      */
     [[nodiscard]] static eve::Result<void> registerMigration(const std::string& schemaId, int fromVersion,
-                                                               int toVersion, MigrationFunction migration);
+                                                             int toVersion, MigrationFunction migration);
 
     /**
      * @brief Resolves an exact compatibility path without executing migrations.
@@ -157,7 +155,7 @@ public:
      *          failures; the registry is never mutated by this query.
      */
     [[nodiscard]] static eve::Result<SchemaCompatibility> queryCompatibility(const std::string& schemaId,
-                                                                               int fromVersion, int toVersion);
+                                                                             int fromVersion, int toVersion);
 
     /**
      * @brief Applies an explicit migration chain to an owning payload.
@@ -170,8 +168,8 @@ public:
      *          value. Callback or validation failure leaves both input and
      *          the registry unchanged.
      */
-    [[nodiscard]] static eve::Result<eve::Value> migrate(const std::string& schemaId, int fromVersion,
-                                                         int toVersion, const eve::Value& input);
+    [[nodiscard]] static eve::Result<eve::Value> migrate(const std::string& schemaId, int fromVersion, int toVersion,
+                                                         const eve::Value& input);
 
     /**
      * @brief Parses, migrates and serializes a JSON payload through the chain.
@@ -182,7 +180,7 @@ public:
      * @return Canonical migrated JSON, or a structured failure.
      */
     [[nodiscard]] static eve::Result<std::string> migrateJson(const std::string& schemaId, int fromVersion,
-                                                               int toVersion, const std::string& json);
+                                                              int toVersion, const std::string& json);
 
     /**
      * @brief Produce stable Markdown for one exact registered schema.
@@ -190,8 +188,7 @@ public:
      * @param schemaVersion Exact schema version.
      * @return Minimal generated schema documentation.
      */
-    [[nodiscard]] static eve::Result<std::string> generateDocumentation(const std::string& schemaId,
-                                                                         int schemaVersion);
+    [[nodiscard]] static eve::Result<std::string> generateDocumentation(const std::string& schemaId, int schemaVersion);
 
     /**
      * @brief Produce a stable JSON binding contract for one exact schema.
@@ -200,7 +197,7 @@ public:
      * @return Canonical contract consumed by tooling/binding generators.
      */
     [[nodiscard]] static eve::Result<std::string> generateBindingContract(const std::string& schemaId,
-                                                                            int schemaVersion);
+                                                                          int                schemaVersion);
 };
 
 }  // namespace eve::schema

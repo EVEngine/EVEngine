@@ -573,7 +573,7 @@ eve::Result<int> StatusSystem::apply(RPGActor *actor, const std::string &effectI
 eve::Result<void> StatusSystem::remove(RPGActor *actor, int instanceId) {
     if (!actor) return rejected<void>(eve::DiagnosticCode::InvalidArgument, "status removal requires an actor");
     auto statuses = actor->statuses();
-    auto  mapping  = statuses->effectByLegacyId.find(instanceId);
+    auto mapping  = statuses->effectByLegacyId.find(instanceId);
     if (mapping == statuses->effectByLegacyId.end())
         return rejected<void>(eve::DiagnosticCode::NotFound, "status legacy instance id was not found",
                               eve::StatusCode::NotFound);
@@ -627,8 +627,8 @@ int removeMatching(RPGActor *actor, const std::vector<std::string> &canonicalIds
     int removed = 0;
     for (const auto &canonicalId : canonicalIds) {
         if (!actor) continue;
-        auto statuses = actor->statuses();
-        const auto mapping = statuses->legacyIdByEffect.find(canonicalId);
+        auto       statuses = actor->statuses();
+        const auto mapping  = statuses->legacyIdByEffect.find(canonicalId);
         if (mapping == statuses->legacyIdByEffect.end()) continue;
         auto didRemove = StatusSystem::remove(actor, mapping->second);
         if (didRemove.ok()) ++removed;

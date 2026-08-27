@@ -1,8 +1,8 @@
 #include "animation/AnimLayerMixer.h"
 
-#include "animation/AnimationTime.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimationTime.h"
 #include "common/Exception.h"
 
 #include <algorithm>
@@ -195,8 +195,7 @@ eve::Result<void> AnimLayerMixer::advance(const eve::SimulationStep& step) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "animation mixer base player already consumed this tick"));
     for (const Layer& layer : layers_) {
-        if (layer.enabled && layer.player && layer.player->hasCurrentTick() &&
-            step.tick <= layer.player->currentTick())
+        if (layer.enabled && layer.player && layer.player->hasCurrentTick() && step.tick <= layer.player->currentTick())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Conflict, "animation mixer layer player already consumed this tick"));
     }
@@ -210,7 +209,7 @@ eve::Result<void> AnimLayerMixer::advance(const eve::SimulationStep& step) {
         if (!result) return eve::Result<void>::failure(result.status());
     }
     compose();
-    lastTick_ = step.tick;
+    lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }

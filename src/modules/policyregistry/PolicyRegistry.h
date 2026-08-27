@@ -19,8 +19,8 @@ enum class ImplementationKind { Builtin, Script, Batch };
 
 /** @brief Generation-qualified policy handle used to detect replacement or removal. */
 struct PolicyHandle {
-    std::string    domain;
-    std::string    name;
+    std::string     domain;
+    std::string     name;
     eve::Generation generation;
 };
 
@@ -35,18 +35,18 @@ struct PolicyDescriptor {
     std::string        schemaId;
     std::string        metadataJson = "{}";
     // Compatibility projection; the VersionedRegistry slot owns generation.
-    eve::Generation    generation;
+    eve::Generation generation;
 };
 
 /** @brief Deterministically sequenced policy registry mutation event. */
 struct PolicyEvent {
     eve::EventSequence sequence;
-    std::string         name;
-    std::string         domain;
-    std::string         policyName;
-    eve::SchemaVersion  version;
-    eve::Generation     generation;
-    bool                enabled = false;
+    std::string        name;
+    std::string        domain;
+    std::string        policyName;
+    eve::SchemaVersion version;
+    eve::Generation    generation;
+    bool               enabled = false;
 };
 
 /** @brief Deterministic registry for discoverable, non-executable policy descriptions. */
@@ -59,31 +59,26 @@ public:
     explicit PolicyRegistry(eve::PersistentId instanceId = {});
 
     /** @brief Inserts a descriptor through the common checked registry. */
-    [[nodiscard]] eve::Result<PolicyHandle> insert(
-        const std::string& domain, const std::string& name, int version, int priority, bool enabled,
-        const std::string& kind, const std::string& schemaId, const std::string& metadataJson);
+    [[nodiscard]] eve::Result<PolicyHandle> insert(const std::string& domain, const std::string& name, int version,
+                                                   int priority, bool enabled, const std::string& kind,
+                                                   const std::string& schemaId, const std::string& metadataJson);
     /** @brief Replaces a descriptor and invalidates the prior generation handle. */
-    [[nodiscard]] eve::Result<PolicyHandle> replace(
-        const std::string& domain, const std::string& name, int version, int priority, bool enabled,
-        const std::string& kind, const std::string& schemaId, const std::string& metadataJson);
+    [[nodiscard]] eve::Result<PolicyHandle> replace(const std::string& domain, const std::string& name, int version,
+                                                    int priority, bool enabled, const std::string& kind,
+                                                    const std::string& schemaId, const std::string& metadataJson);
     /** @brief Removes a descriptor and returns its retained tombstone handle. */
-    [[nodiscard]] eve::Result<PolicyHandle> remove(
-        const std::string& domain, const std::string& name);
+    [[nodiscard]] eve::Result<PolicyHandle> remove(const std::string& domain, const std::string& name);
     /** @brief Changes enabled state through the same replacement generation path. */
-    [[nodiscard]] eve::Result<PolicyHandle> enable(
-        const std::string& domain, const std::string& name, bool enabled);
+    [[nodiscard]] eve::Result<PolicyHandle> enable(const std::string& domain, const std::string& name, bool enabled);
     /** @brief Resolves a descriptor through the common checked-registry API. */
-    [[nodiscard]] eve::ResultRef<const PolicyDescriptor> resolve(
-        const std::string& domain, const std::string& name) const;
+    [[nodiscard]] eve::ResultRef<const PolicyDescriptor> resolve(const std::string& domain,
+                                                                 const std::string& name) const;
     /** @brief Resolves a generation-qualified policy handle through Result. */
-    [[nodiscard]] eve::ResultRef<const PolicyDescriptor> resolveHandle(
-        const PolicyHandle& handle) const;
+    [[nodiscard]] eve::ResultRef<const PolicyDescriptor> resolveHandle(const PolicyHandle& handle) const;
     /** @brief Returns the current generation-qualified handle through Result. */
-    [[nodiscard]] eve::Result<PolicyHandle> handle(
-        const std::string& domain, const std::string& name) const;
+    [[nodiscard]] eve::Result<PolicyHandle> handle(const std::string& domain, const std::string& name) const;
     /** @brief Returns the latest generation, including a retained tombstone. */
-    [[nodiscard]] eve::Result<eve::Generation> generationOf(
-        const std::string& domain, const std::string& name) const;
+    [[nodiscard]] eve::Result<eve::Generation> generationOf(const std::string& domain, const std::string& name) const;
     /** @brief Returns whether a key is retained as a removal tombstone. */
     [[nodiscard]] bool isTombstone(const std::string& domain, const std::string& name) const noexcept;
     /** @brief Returns whether a generation-qualified policy handle is stale. */
@@ -111,17 +106,15 @@ public:
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
     /** @brief Captures this registry in the common snapshot envelope. */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Restores a verified snapshot transactionally without per-item events. */
-    [[nodiscard]] eve::Result<void> restoreSnapshot(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
+                                                    const eve::SnapshotHashProvider& hashProvider);
     /** @brief Serializes the common snapshot envelope as canonical JSON. */
-    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Parses and transactionally restores a common snapshot envelope. */
-    [[nodiscard]] eve::Result<void> restoreSnapshotJson(
-        std::string_view json, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
+                                                        const eve::SnapshotHashProvider& hashProvider);
 
     /**
      * @brief Subscribes to successful registry mutations.
@@ -138,10 +131,10 @@ private:
     };
     using Storage = eve::VersionedRegistry<Key, PolicyDescriptor, EventData>;
 
-    static PolicyEvent projectEvent(const Storage::Event& event);
-    static PolicyHandle projectHandle(const Storage::Handle& handle);
+    static PolicyEvent     projectEvent(const Storage::Event& event);
+    static PolicyHandle    projectHandle(const Storage::Handle& handle);
     static Storage::Handle storageHandle(const PolicyHandle& handle);
-    void clearEventProjection() const;
+    void                   clearEventProjection() const;
 
     Storage                          storage_;
     eve::PersistentId                instanceId_;

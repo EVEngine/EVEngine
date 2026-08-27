@@ -25,11 +25,11 @@ struct SkillDefinition;
  */
 struct SkillConditionQueries {
     using Authority = std::function<std::optional<bool>(std::string_view scope)>;
-    using Policy = std::function<std::optional<decision::ConditionResult>(std::string_view name,
-                                                                            const eve::Value& arguments)>;
+    using Policy =
+        std::function<std::optional<decision::ConditionResult>(std::string_view name, const eve::Value& arguments)>;
 
     Authority authority;
-    Policy policy;
+    Policy    policy;
 };
 
 /**
@@ -49,8 +49,7 @@ public:
      * @param definition Borrowed skill definition; it must outlive the call.
      * @param queries Optional read-only authority and policy providers.
      */
-    SkillConditionContext(const RPGActor* actor, const SkillDefinition& definition,
-                          SkillConditionQueries queries = {});
+    SkillConditionContext(const RPGActor* actor, const SkillDefinition& definition, SkillConditionQueries queries = {});
 
     /** @copydoc decision::EvaluationContext::value */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
@@ -65,13 +64,13 @@ public:
     /** @copydoc decision::EvaluationContext::authority */
     [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
     /** @copydoc decision::EvaluationContext::policy */
-    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view name,
-                                                                    const eve::Value& arguments) const override;
+    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
+                                                                  const eve::Value& arguments) const override;
 
 private:
-    const RPGActor* actor_ = nullptr;
+    const RPGActor*        actor_      = nullptr;
     const SkillDefinition* definition_ = nullptr;
-    SkillConditionQueries queries_;
+    SkillConditionQueries  queries_;
 };
 
 /** @brief Evaluates a condition using RPG Skill state without mutating it. */
@@ -85,10 +84,9 @@ public:
      * @param queries Optional read-only authority and policy providers.
      * @return A stable, UI-ready condition explanation.
      */
-    [[nodiscard]] static decision::ConditionResult evaluate(const RPGActor* actor,
-                                                              const SkillDefinition& definition,
-                                                              const decision::Condition& condition,
-                                                              SkillConditionQueries queries = {});
+    [[nodiscard]] static decision::ConditionResult evaluate(const RPGActor* actor, const SkillDefinition& definition,
+                                                            const decision::Condition& condition,
+                                                            SkillConditionQueries      queries = {});
 };
 
 }  // namespace eve::rpg

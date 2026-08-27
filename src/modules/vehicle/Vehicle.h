@@ -5,8 +5,8 @@
  * 设计文档：docs/dev/通用载具系统设计.md
  */
 
-#include "common/ECS.h"
 #include "common/BorrowedRef.h"
+#include "common/ECS.h"
 #include "common/Module.h"
 #include "common/Result.h"
 #include "definitions/Definitions.h"
@@ -50,9 +50,7 @@ public:
      * @remarks The returned registry is borrowed, owner-thread affine, and is
      * the binding point for VehicleDefinitionRuntime adapters.
      */
-    [[nodiscard]] eve::definitions::DefinitionRegistry& definitionRegistry() noexcept {
-        return definitionRegistry_;
-    }
+    [[nodiscard]] eve::definitions::DefinitionRegistry& definitionRegistry() noexcept { return definitionRegistry_; }
 
     /** @brief 注册移动模型（C++ 插件/游戏侧扩展点；同名替换）。 */
     static void registerMobility(IVehicleMobility* mobility);
@@ -65,7 +63,8 @@ public:
      * @ownership The ECS world owns the entity; callers must not delete it.
      * @lifetime Valid until ECS destroys the entity or world; retain its generation handle across frames.
      * @thread Call on the Vehicle module's owning ECS thread.
-     * @reentrancy Creation does not invoke user callbacks; do not mutate the ECS world re-entrantly while using the result.
+     * @reentrancy Creation does not invoke user callbacks; do not mutate the ECS world re-entrantly while using the
+     * result.
      */
     VehicleEntity* newVehicle(const std::string& defId, float x, float y, float heading = 0.f,
                               const std::string& faction = "");
@@ -176,7 +175,7 @@ private:
      */
     [[nodiscard]] eve::Result<VehicleDefinition> findDef(const std::string& id) const;
 
-    eve::definitions::DefinitionRegistry              definitionRegistry_;
+    eve::definitions::DefinitionRegistry               definitionRegistry_;
     std::vector<ecs::EntityHandle>                     vehicles_;
     std::vector<VehicleEvent>                          events_;
     int                                                nextInstance_ = 1;

@@ -7,11 +7,11 @@
  * 数据模型与渲染/交互逻辑见 CardTypes.h。
  */
 
+#include "card/CardPlay.h"
+#include "card/CardTypes.h"
 #include "common/ECS.h"
 #include "common/Module.h"
 #include "common/Result.h"
-#include "card/CardTypes.h"
-#include "card/CardPlay.h"
 
 #include <cstddef>
 #include <memory>
@@ -125,8 +125,7 @@ public:
      * @param condition Owning condition tree; it is copied into the definition.
      * @return Success, or NotFound/Rejected when the definition or tree is invalid.
      */
-    [[nodiscard]] eve::Result<void> setCardPlayCondition(const std::string &id,
-                                                          decision::Condition condition);
+    [[nodiscard]] eve::Result<void> setCardPlayCondition(const std::string &id, decision::Condition condition);
     std::string getCardDefinitionName(const std::string &id);
     std::string getCardDefinitionKind(const std::string &id);
     int getCardDefinitionCost(const std::string &id);
@@ -165,8 +164,8 @@ public:
      * @param queries Optional read-only resource, authority and policy providers.
      * @return Stable passed/rejected result with evidence and UI details.
      */
-    [[nodiscard]] decision::ConditionResult evaluatePlay(
-        const CardData* card, CardPlayConditionQueries queries = {}) const;
+    [[nodiscard]] decision::ConditionResult evaluatePlay(const CardData          *card,
+                                                         CardPlayConditionQueries queries = {}) const;
 
     /**
      * @brief Read one canonical combat attribute through the Card facade.
@@ -174,8 +173,7 @@ public:
      * @param attribute Selected attribute name such as `attack` or `health`.
      * @return The canonical final value, or a structured rejection.
      */
-    [[nodiscard]] eve::Result<double> getCardAttribute(
-        CardData& card, std::string_view attribute) const;
+    [[nodiscard]] eve::Result<double> getCardAttribute(CardData &card, std::string_view attribute) const;
 
     /**
      * @brief Set one canonical combat attribute through the Card facade.
@@ -184,8 +182,7 @@ public:
      * @param value New canonical base value.
      * @return Applied, or a structured rejection without a legacy side channel.
      */
-    [[nodiscard]] eve::Result<void> setCardAttribute(
-        CardData& card, std::string_view attribute, double value) const;
+    [[nodiscard]] eve::Result<void> setCardAttribute(CardData &card, std::string_view attribute, double value) const;
 
     /**
      * @brief Apply a domain card effect to the card-owned lifecycle component.
@@ -194,15 +191,15 @@ public:
      * @param subject Stable subject identity used by the common effect store.
      * @return Generation-qualified effect handle owned by the caller.
      */
-    [[nodiscard]] eve::Result<effects::EffectHandle> applyEffect(
-        CardData& card, const CardEffectDefinition& definition, eve::SubjectRef subject) const;
+    [[nodiscard]] eve::Result<effects::EffectHandle> applyEffect(CardData &card, const CardEffectDefinition &definition,
+                                                                 eve::SubjectRef subject) const;
 
     /**
      * @brief Advance all card-owned effects and project current health.
      * @param step Injected deterministic simulation tick and duration.
      * @return Number of settled periodic triggers, or a structured failure.
      */
-    [[nodiscard]] eve::Result<std::size_t> step(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<std::size_t> step(const eve::SimulationStep &step);
 
     /**
      * @brief Play a card through the facade's condition, container and payment transaction.
@@ -212,9 +209,10 @@ public:
      * @param transactionId Optional non-empty transaction correlation id.
      * @return Committed transaction receipt, or a failure with no partial play.
      */
-    [[nodiscard]] eve::Result<eve::transaction::TransactionReceipt> play(
-        CardData& card, eve::resource::IResourceAccount& playerAccount,
-        CardPlayComposition composition = {}, std::string transactionId = {});
+    [[nodiscard]] eve::Result<eve::transaction::TransactionReceipt> play(CardData                        &card,
+                                                                         eve::resource::IResourceAccount &playerAccount,
+                                                                         CardPlayComposition composition   = {},
+                                                                         std::string         transactionId = {});
 
     /** @brief Capture all live cards into a contiguous presentation snapshot buffer. */
     int capturePresentation();

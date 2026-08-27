@@ -4,8 +4,8 @@
 #include "physics/SimulationBackend.h"
 
 #include "common/Exception.h"
-#include "platform_event/PlatformEvent.h"
 #include "common/Profile.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <Box2D/Box2D.h>
 
@@ -176,23 +176,20 @@ World::ContactEvent contactEventFrom(b2Contact *contact) {
 
 eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick currentTick) {
     if (!std::isfinite(dt) || dt < 0.f) {
-        return eve::Result<eve::SimulationStep>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "World update dt must be finite and non-negative",
-            "physics.world.update.dt"));
+        return eve::Result<eve::SimulationStep>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "World update dt must be finite and non-negative", "physics.world.update.dt"));
     }
     const float normalized = std::min(dt, 0.05f);
-    const auto nextTick = currentTick.incremented();
+    const auto  nextTick   = currentTick.incremented();
     if (!nextTick) {
-        return eve::Result<eve::SimulationStep>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvariantViolation,
-            "World simulation tick cannot be incremented",
-            "physics.world.simulationTick"));
+        return eve::Result<eve::SimulationStep>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                   "World simulation tick cannot be incremented", "physics.world.simulationTick"));
     }
     auto duration = eve::Duration::fromSeconds(static_cast<double>(normalized));
     if (!duration) return eve::Result<eve::SimulationStep>::failure(duration.status());
-    return eve::Result<eve::SimulationStep>::success(
-        {*nextTick, std::move(duration).takeValue()});
+    return eve::Result<eve::SimulationStep>::success({*nextTick, std::move(duration).takeValue()});
 }
 
 }  // namespace
@@ -221,18 +218,16 @@ World::World(float gravityX, float gravityY, bool sleep, float meter) : meter_(m
     world_->SetAllowSleeping(sleep);
     relay_ = new ContactRelay(this);
     world_->SetContactListener(relay_);
-    auto selection = detail::selectSimulationBackend(
-        SimulationBackendDomain::World2D,
-        detail::makeBox2DSimulationBackend(world_), world_, true);
+    auto selection = detail::selectSimulationBackend(SimulationBackendDomain::World2D,
+                                                     detail::makeBox2DSimulationBackend(world_), world_, true);
     if (!selection) {
         const eve::Status status = selection.status();
-        throw eve::Exception("World: cannot select a simulation backend: %s",
-                             status.describe().c_str());
+        throw eve::Exception("World: cannot select a simulation backend: %s", status.describe().c_str());
     }
     backendSelectionStatus_ = selection.status();
-    auto selected = std::move(selection).takeValue();
-    backendFallback_ = selected.usedFallback;
-    simulation_ = std::move(selected.backend);
+    auto selected           = std::move(selection).takeValue();
+    backendFallback_        = selected.usedFallback;
+    simulation_             = std::move(selected.backend);
 }
 
 World::~World() { destroy(); }
@@ -327,21 +322,18 @@ void World::updateFull(float dt, int velocityIterations, int positionIterations)
         legacyStep.ignore("legacy World::updateFull cannot return a structured error");
         return;
     }
-    auto result = step(std::move(legacyStep).takeValue(),
-                       SimulationSettings{velocityIterations, positionIterations, 4});
+    auto result =
+        step(std::move(legacyStep).takeValue(), SimulationSettings{velocityIterations, positionIterations, 4});
     result.ignore("legacy World::updateFull cannot return a structured result");
 }
 
-eve::Result<void> World::step(const eve::SimulationStep& stepValue,
-                              const SimulationSettings& settings) {
+eve::Result<void> World::step(const eve::SimulationStep &stepValue, const SimulationSettings &settings) {
     if (!isValid() || !simulation_) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation,
-            "Cannot step a destroyed or uninitialized physics world",
-            "physics.world.step"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "Cannot step a destroyed or uninitialized physics world", "physics.world.step"));
     }
-    auto valid = detail::validateSimulationStep(
-        stepValue, settings, simulation_->observation());
+    auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
     if (!valid) return valid;
     auto result = simulation_->step(stepValue, settings);
     if (!result) return result;
@@ -404,7 +396,7 @@ Body *World::newBody(const std::string &bodyType, float x, float y) {
 
     const PhysicsBodyHandle runtimeHandle = nextBodyRuntimeHandle();
     b2Body *raw = world_->CreateBody(&def);
-    Body   *body = new Body(this, raw, nextBodyId(), runtimeHandle);
+    Body                   *body          = new Body(this, raw, nextBodyId(), runtimeHandle);
     raw->SetUserData(body);
     bodies_.insert(body);
     return body;
@@ -470,7 +462,7 @@ void World::onBeginContact(b2Contact *contact) {
     auto *ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
     std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(a->getId()),
-                                             eve::platform_event::Variant::makeInt(b->getId())};
+                                                      eve::platform_event::Variant::makeInt(b->getId())};
     ev->push(new eve::platform_event::Message("begincontact", args));
 }
 
@@ -487,7 +479,7 @@ void World::onEndContact(b2Contact *contact) {
     auto *ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
     std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(a->getId()),
-                                             eve::platform_event::Variant::makeInt(b->getId())};
+                                                      eve::platform_event::Variant::makeInt(b->getId())};
     ev->push(new eve::platform_event::Message("endcontact", args));
 }
 

@@ -14,10 +14,10 @@
 #include "common/Export.h"
 #include "common/Identity.h"
 #include "common/Result.h"
-#include "common/Value.h"
 #include "common/Revision.h"
 #include "common/SchemaVersion.h"
 #include "common/Time.h"
+#include "common/Value.h"
 
 #include <functional>
 #include <map>
@@ -44,14 +44,14 @@ using SnapshotHashProvider = std::function<Result<ContentId>(std::string_view ca
  * envelope fields are rejected by the strict parser.
  */
 struct EVENGINE_API SnapshotEnvelope {
-    std::string   type;
-    LogicalId     schema;
-    SchemaVersion schemaVersion;
-    PersistentId  instanceId;
-    Revision      revision;
+    std::string    type;
+    LogicalId      schema;
+    SchemaVersion  schemaVersion;
+    PersistentId   instanceId;
+    Revision       revision;
     SimulationTick tick;
-    ContentId     contentHash;
-    Value         payload;
+    ContentId      contentHash;
+    Value          payload;
 };
 
 /**
@@ -66,9 +66,11 @@ struct EVENGINE_API SnapshotEnvelope {
  * @param hashProvider Injected digest provider; must not be empty.
  * @return A sealed envelope, or a structured validation/hash failure.
  */
-[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> makeSnapshotEnvelope(
-    std::string type, LogicalId schema, SchemaVersion schemaVersion, PersistentId instanceId,
-    Revision revision, SimulationTick tick, Value payload, const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> makeSnapshotEnvelope(std::string type, LogicalId schema,
+                                                                         SchemaVersion schemaVersion,
+                                                                         PersistentId instanceId, Revision revision,
+                                                                         SimulationTick tick, Value payload,
+                                                                         const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief Produce the canonical JSON input used for a snapshot content hash.
@@ -84,8 +86,8 @@ struct EVENGINE_API SnapshotEnvelope {
  * @param hashProvider Injected digest provider used when the envelope was sealed.
  * @return Success when the computed digest equals contentHash.
  */
-[[nodiscard]] EVENGINE_API Result<void> verifySnapshotEnvelope(
-    const SnapshotEnvelope& snapshot, const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API Result<void> verifySnapshotEnvelope(const SnapshotEnvelope&     snapshot,
+                                                               const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief Validate optional payload copies of envelope revision and tick.
@@ -98,8 +100,8 @@ struct EVENGINE_API SnapshotEnvelope {
  *          helper gives legacy payloads one uniform compatibility rule before
  *          any consumer state is mutated.
  */
-[[nodiscard]] EVENGINE_API Result<void> validateSnapshotPayloadMetadata(
-    const Value& payload, Revision revision, SimulationTick tick);
+[[nodiscard]] EVENGINE_API Result<void> validateSnapshotPayloadMetadata(const Value& payload, Revision revision,
+                                                                        SimulationTick tick);
 
 /**
  * @brief Convert an envelope to its strict canonical value representation.
@@ -132,8 +134,8 @@ struct EVENGINE_API SnapshotEnvelope {
  * @param hashProvider Provider used to verify contentHash.
  * @return A verified envelope, or a parse/version/hash failure.
  */
-[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> parseSnapshotEnvelope(
-    std::string_view json, const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> parseSnapshotEnvelope(std::string_view            json,
+                                                                          const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief One directed payload migration step.
@@ -153,8 +155,7 @@ public:
      * @param migration Pure function that returns a new owning payload.
      * @return Success, or Conflict/InvalidArgument when the edge is invalid or duplicated.
      */
-    [[nodiscard]] Result<void> add(LogicalId schema, SchemaVersion from, SchemaVersion to,
-                                   Migration migration);
+    [[nodiscard]] Result<void> add(LogicalId schema, SchemaVersion from, SchemaVersion to, Migration migration);
 
     /**
      * @brief Migrate and reseal an envelope to an exact target version.
@@ -164,18 +165,16 @@ public:
      * @return Migrated envelope, or UnknownVersion/Unsupported/failure.
      * @remarks If source is newer than target, it is rejected as an unknown new version.
      */
-    [[nodiscard]] Result<SnapshotEnvelope> migrate(
-        SnapshotEnvelope snapshot, SchemaVersion targetVersion,
-        const SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] Result<SnapshotEnvelope> migrate(SnapshotEnvelope snapshot, SchemaVersion targetVersion,
+                                                   const SnapshotHashProvider& hashProvider) const;
 
 private:
     struct Key {
-        std::string schema;
+        std::string   schema;
         std::uint64_t from = 0;
 
         friend bool operator<(const Key& left, const Key& right) noexcept {
-            return left.schema < right.schema ||
-                   (left.schema == right.schema && left.from < right.from);
+            return left.schema < right.schema || (left.schema == right.schema && left.from < right.from);
         }
     };
 

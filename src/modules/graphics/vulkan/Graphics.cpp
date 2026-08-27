@@ -30,8 +30,8 @@
 #include <unistd.h>
 #endif
 
-#include "common/Exception.h"
 #include "common/CrashLog.h"
+#include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"

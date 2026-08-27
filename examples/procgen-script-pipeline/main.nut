@@ -13,8 +13,10 @@ gfx.setBackgroundColor(0.055, 0.075, 0.07, 1.0);
 
 function selectDebugStage(name) {
     debugStage = name;
-    debugPoints = procgen.getSystemDebugStage("forest", debugStage);
-    previousDebugPoints = procgen.getPreviousSystemDebugStage("forest", debugStage);
+    local current = procgen.getSystemDebugStage("forest", debugStage);
+    local previous = procgen.getPreviousSystemDebugStage("forest", debugStage);
+    debugPoints = current.ok ? current.value : null;
+    previousDebugPoints = previous.ok ? previous.value : null;
 }
 
 function rebuildForest() {
@@ -66,7 +68,8 @@ function rebuildForest() {
 
         local commitResult = procgen.commitSystem(ctx);
         if (!commitResult.ok) throw commitResult.status.summary;
-        forestPoints = procgen.getSystemOutput("forest", "trees");
+        local outputResult = procgen.getSystemOutput("forest", "trees");
+        forestPoints = outputResult.ok ? outputResult.value : null;
         selectDebugStage(debugStage);
         pipelineStatus = procgen.getSystemDebugReport("forest");
         local diff = procgen.getSystemDebugDiffReport("forest");
@@ -76,7 +79,8 @@ function rebuildForest() {
         ctx.fail(error.tostring());
         // A failed commit closes staging but leaves the last committed forest intact.
         local rollbackResult = procgen.commitSystem(ctx);
-        forestPoints = procgen.getSystemOutput("forest", "trees");
+        local outputResult = procgen.getSystemOutput("forest", "trees");
+        forestPoints = outputResult.ok ? outputResult.value : null;
         pipelineStatus = "rebuild failed, previous snapshot kept: " + error.tostring();
         if (!rollbackResult.ok) pipelineStatus += " (rollback: " + rollbackResult.status.summary + ")";
     }

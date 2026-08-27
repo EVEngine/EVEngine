@@ -99,31 +99,31 @@ public:
     /** @brief The path part of a cache key (everything before the first '?'). */
     static std::string pathOfKey(const std::string& key);
 
-	/**
-	 * @brief Get the cached resource for `key`; on a miss, load it through the
-	 * registered IAssetReloader providers and cache the result.
-	 * @param key A normalized VFS path, optionally with `?params`.
-	 * @return The shared resource, or nullptr when no provider claims the key.
-	 *         Loader errors propagate to the caller. The returned pointer is
-	 *         owned by the cache (kept alive while the entry exists); callers
-	 *         must not delete it, and it stays valid until unload() or process
-	 *         exit.
-	 * @ownership Borrowed from the cache; ResourceManager is the owning authority.
-	 * @nullable Yes when no registered provider claims `key`.
-	 * @lifetime Valid while the cache entry remains loaded and until manager teardown;
-	 *           callers must not retain it across unload or reload replacement.
-	 * @thread Lookup may be called by concurrent readers; cache mutation and reload
-	 *         commit are serialized by ResourceManager.
-	 * @reentrancy The returned resource must not be used to re-enter cache mutation
-	 *             while a ResourceManager operation is holding its internal lock.
-	 */
-	[[nodiscard("resource lookup ownership must be retained or explicitly handled")]] Resource *get(std::string key);
+    /**
+     * @brief Get the cached resource for `key`; on a miss, load it through the
+     * registered IAssetReloader providers and cache the result.
+     * @param key A normalized VFS path, optionally with `?params`.
+     * @return The shared resource, or nullptr when no provider claims the key.
+     *         Loader errors propagate to the caller. The returned pointer is
+     *         owned by the cache (kept alive while the entry exists); callers
+     *         must not delete it, and it stays valid until unload() or process
+     *         exit.
+     * @ownership Borrowed from the cache; ResourceManager is the owning authority.
+     * @nullable Yes when no registered provider claims `key`.
+     * @lifetime Valid while the cache entry remains loaded and until manager teardown;
+     *           callers must not retain it across unload or reload replacement.
+     * @thread Lookup may be called by concurrent readers; cache mutation and reload
+     *         commit are serialized by ResourceManager.
+     * @reentrancy The returned resource must not be used to re-enter cache mutation
+     *             while a ResourceManager operation is holding its internal lock.
+     */
+    [[nodiscard("resource lookup ownership must be retained or explicitly handled")]] Resource* get(std::string key);
 
-	/**
-	 * @brief Drop the exact cache entry `key` (parameters included).
-	 * The resource stays alive while other holders still reference it.
-	 */
-	void unload(std::string key);
+    /**
+     * @brief Drop the exact cache entry `key` (parameters included).
+     * The resource stays alive while other holders still reference it.
+     */
+    void unload(std::string key);
 
     /** @brief Drop every cache entry whose path matches, whatever its parameters. */
     void unloadPath(const std::string& path);

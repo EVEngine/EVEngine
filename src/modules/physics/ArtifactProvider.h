@@ -27,26 +27,26 @@ using PhysicsArtifactHandle = eve::RuntimeHandle<PhysicsArtifactHandleTag>;
 
 /** @brief Backend-neutral ray-query result used for parity tests. */
 struct PhysicsArtifactRayHit {
-    bool hit = false;
+    bool  hit      = false;
     float fraction = 0.f;
-    float x = 0.f;
-    float y = 0.f;
-    float z = 0.f;
-    float normalX = 0.f;
-    float normalY = 0.f;
-    float normalZ = 0.f;
+    float x        = 0.f;
+    float y        = 0.f;
+    float z        = 0.f;
+    float normalX  = 0.f;
+    float normalY  = 0.f;
+    float normalZ  = 0.f;
 };
 
 /** @brief Queryable CPU collider resource owned by the physics module. */
 struct PhysicsArtifactCollider {
-    eve::PersistentId id;
-    std::string buildKey;
+    eve::PersistentId     id;
+    std::string           buildKey;
     PhysicsArtifactHandle handle;
-    std::string shape;
+    std::string           shape;
     /** @brief Backend family that owns the live shape, normally `box3d`. */
-    std::string backend = "box3d";
-    eve::artifact::Bounds bounds;
-    std::vector<float> vertices;
+    std::string                backend = "box3d";
+    eve::artifact::Bounds      bounds;
+    std::vector<float>         vertices;
     std::vector<std::uint32_t> indices;
 };
 
@@ -80,7 +80,8 @@ public:
      * @brief Find a committed collider by persistent identity.
      * @return Borrowed nullable collider owned by this provider.
      * @ownership PhysicsArtifactProvider owns committed collider records; callers must not delete or mutate the result.
-     * @lifetime Valid until clear(), restoreState(), or provider destruction; retain PhysicsArtifactHandle across frames.
+     * @lifetime Valid until clear(), restoreState(), or provider destruction; retain PhysicsArtifactHandle across
+     * frames.
      * @thread Call on the physics provider's owning thread.
      * @reentrancy The lookup invokes no callbacks and is invalid across provider mutation.
      */
@@ -97,8 +98,8 @@ public:
     /** @brief Return whether a generation-qualified artifact handle is live. */
     [[nodiscard]] bool isHandleLive(PhysicsArtifactHandle handle) const noexcept;
     /** @brief Ray query one collider through its live Box3D world. */
-    [[nodiscard]] PhysicsArtifactRayHit rayCast(eve::PersistentId id, float ox, float oy, float oz,
-                                                 float dx, float dy, float dz) const noexcept;
+    [[nodiscard]] PhysicsArtifactRayHit rayCast(eve::PersistentId id, float ox, float oy, float oz, float dx, float dy,
+                                                float dz) const noexcept;
     /** @brief Return the number of committed physics colliders. */
     [[nodiscard]] std::size_t size() const noexcept;
     /** @brief Return the backend family for a committed collider, or empty. */
@@ -113,13 +114,13 @@ public:
 private:
     struct State;
     friend class PhysicsArtifactStage;
-    void commit(PhysicsArtifactCollider collider, std::unique_ptr<World3D> world,
-                std::unique_ptr<Body3D> body, std::unique_ptr<Shape3D> shape) noexcept;
-    void release(PhysicsArtifactCollider& collider, std::unique_ptr<World3D>& world,
-                 std::unique_ptr<Body3D>& body, std::unique_ptr<Shape3D>& shape) noexcept;
+    void commit(PhysicsArtifactCollider collider, std::unique_ptr<World3D> world, std::unique_ptr<Body3D> body,
+                std::unique_ptr<Shape3D> shape) noexcept;
+    void release(PhysicsArtifactCollider& collider, std::unique_ptr<World3D>& world, std::unique_ptr<Body3D>& body,
+                 std::unique_ptr<Shape3D>& shape) noexcept;
     std::unique_ptr<State> state_;
-    std::uint32_t nextIndex_ = 0;
-    bool failPrepare_ = false;
+    std::uint32_t          nextIndex_   = 0;
+    bool                   failPrepare_ = false;
 };
 
 /** @brief Return the process-owned physics artifact provider singleton. */

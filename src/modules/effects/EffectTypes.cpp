@@ -8,8 +8,7 @@ namespace eve::effects {
 namespace {
 
 eve::Result<void> invalid(std::string message) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message)));
+    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message)));
 }
 
 }  // namespace
@@ -44,8 +43,7 @@ bool EffectPayload::has(const std::string& key) const { return values_.contains(
 eve::Result<void> EffectPayload::erase(const std::string& key) {
     if (key.empty()) return invalid("effect payload key must not be empty");
     const bool removed = values_.erase(key) != 0;
-    return eve::Result<void>::success(
-        eve::Status::success(removed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
+    return eve::Result<void>::success(eve::Status::success(removed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
 
 std::string EffectPayload::getJson(const std::string& key) const {
@@ -83,23 +81,19 @@ eve::Result<void> EffectDefinition::validate() const {
 eve::Result<void> EffectInstance::addTag(const std::string& tag) {
     if (tag.empty()) return invalid("effect tag must not be empty");
     const auto it = std::lower_bound(tags.begin(), tags.end(), tag);
-    if (it != tags.end() && *it == tag)
-        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    if (it != tags.end() && *it == tag) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     tags.insert(it, tag);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> EffectInstance::removeTag(const std::string& tag) {
     const auto it = std::lower_bound(tags.begin(), tags.end(), tag);
-    if (it == tags.end() || *it != tag)
-        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    if (it == tags.end() || *it != tag) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     tags.erase(it);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-bool EffectInstance::hasTag(const std::string& tag) const {
-    return std::binary_search(tags.begin(), tags.end(), tag);
-}
+bool EffectInstance::hasTag(const std::string& tag) const { return std::binary_search(tags.begin(), tags.end(), tag); }
 
 int EffectInstance::tagCount() const { return static_cast<int>(tags.size()); }
 
@@ -110,9 +104,9 @@ std::string EffectInstance::tagAt(int index) const {
 
 std::string policyName(StackPolicy policy) {
     switch (policy) {
-    case StackPolicy::Replace: return "replace";
-    case StackPolicy::Stack: return "stack";
-    case StackPolicy::Refresh: return "refresh";
+        case StackPolicy::Replace: return "replace";
+        case StackPolicy::Stack: return "stack";
+        case StackPolicy::Refresh: return "refresh";
     }
     return "unknown";
 }
@@ -131,12 +125,12 @@ bool parsePolicy(const std::string& name, StackPolicy& policy) {
 
 std::string eventKindName(EffectEventKind kind) {
     switch (kind) {
-    case EffectEventKind::Applied: return "applied";
-    case EffectEventKind::Refreshed: return "refreshed";
-    case EffectEventKind::Stacked: return "stacked";
-    case EffectEventKind::Periodic: return "periodic";
-    case EffectEventKind::Expired: return "expired";
-    case EffectEventKind::Removed: return "removed";
+        case EffectEventKind::Applied: return "applied";
+        case EffectEventKind::Refreshed: return "refreshed";
+        case EffectEventKind::Stacked: return "stacked";
+        case EffectEventKind::Periodic: return "periodic";
+        case EffectEventKind::Expired: return "expired";
+        case EffectEventKind::Removed: return "removed";
     }
     return "unknown";
 }

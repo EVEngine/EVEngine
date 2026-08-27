@@ -96,8 +96,8 @@ private:
     AnimPose          output_;
     int               root_       = -1;
     unsigned          generation_ = 0;
-    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
-    bool hasLastTick_ = false;
+    eve::SimulationTick lastTick_    = eve::SimulationTick::zero();
+    bool                hasLastTick_ = false;
 
     void updateUnchecked(float dt);
 };

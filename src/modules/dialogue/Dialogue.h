@@ -45,7 +45,7 @@ class Dialogue : public Module {
 public:
     // Keep the historical nested names as zero-cost aliases for C++ callers.
     using DataValue = eve::Value;
-    using VarValue = eve::Value;
+    using VarValue  = eve::Value;
 
     Module_REG(Dialogue);
     Dialogue();

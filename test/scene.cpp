@@ -141,7 +141,7 @@ TEST_CASE("Scene.TransformSystem.parentChildWorld") {
     h->setTree(node("root", {node("child").withPosition(1.f, 0.f, 0.f)}).withPosition(10.f, 0.f, 0.f));
     TransformSystem::updateHost(h);
 
-    SceneNode *root = sceneValue(h->findById("root"));
+    SceneNode *root  = sceneValue(h->findById("root"));
     SceneNode *child = sceneValue(h->findById("child"));
     REQUIRE(root != nullptr);
     REQUIRE(child != nullptr);
@@ -219,8 +219,8 @@ TEST_CASE("Scene.builder.mountBuildAs") {
 }
 
 TEST_CASE("Scene.identity.mountFindAndOwnershipContracts") {
-    Scene *mod = Scene::create();
-    auto mounted = mod->mountAs("checked", node("root", {node("child")}));
+    Scene *mod     = Scene::create();
+    auto   mounted = mod->mountAs("checked", node("root", {node("child")}));
     REQUIRE(mounted.ok());
     SceneHost *host = mounted.value();
     REQUIRE(host != nullptr);
@@ -489,8 +489,8 @@ TEST_CASE("Scene.render.parentChildOrbitPreview") {
     float prevHX = hand->transform()->x;
     for (int frame = 0; frame < 90; ++frame) {
         const float t = float(frame) * 0.06f;
-        SceneNode *arm = sceneValue(h->findById("arm"));
-        SceneNode *moonN = sceneValue(h->findById("moon"));
+        SceneNode  *arm   = sceneValue(h->findById("arm"));
+        SceneNode  *moonN = sceneValue(h->findById("moon"));
         REQUIRE(arm != nullptr);
         REQUIRE(moonN != nullptr);
         arm->roll = t;
@@ -531,7 +531,7 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     // Full rebuild keeps the binding marker on same-id nodes, not on new ones.
     h->setTree(node("root", {node("p"), node("q")}));
     SceneNode *p2 = sceneValue(h->findById("p"));
-    SceneNode *q = sceneValue(h->findById("q"));
+    SceneNode *q  = sceneValue(h->findById("q"));
     REQUIRE(p2 != nullptr);
     REQUIRE(q != nullptr);
     CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id));
@@ -635,9 +635,8 @@ TEST_CASE("Scene.link.physics2D") {
 
 TEST_CASE("Scene.api.transformGettersAndSpaceConversion") {
     Scene *mod = Scene::create();
-    mod->mountAs("api1",
-                 node("root", {node("child").withPosition(1.f, 0.f, 0.f)})
-                     .withPosition(10.f, 0.f, 0.f)).ignore("test setup");
+    mod->mountAs("api1", node("root", {node("child").withPosition(1.f, 0.f, 0.f)}).withPosition(10.f, 0.f, 0.f))
+        .ignore("test setup");
     mod->updateTransformsAll();
 
     auto p = mod->getNodePositionAt("api1", "child");
@@ -797,9 +796,9 @@ TEST_CASE("Scene.transform.incrementalDirtySubtree") {
     // API edit on "a" → incremental path; a1 follows, sibling b untouched.
     CHECK(mod->setNodePosition("a", 5.f, 0.f, 0.f));
     mod->updateTransformsAll();
-    SceneHost *h = sceneValue(mod->findHost("inc"));
+    SceneHost *h  = sceneValue(mod->findHost("inc"));
     SceneNode *a1 = sceneValue(h->findById("a1"));
-    SceneNode *b = sceneValue(h->findById("b"));
+    SceneNode *b  = sceneValue(h->findById("b"));
     REQUIRE(a1 != nullptr);
     REQUIRE(b != nullptr);
     CHECK(approxEq(a1->world[3][0], 5.f));
@@ -858,15 +857,15 @@ TEST_CASE("Scene.reconcile.movePreservesIdentity") {
 
 TEST_CASE("Scene.serialize.roundTrip") {
     Scene *mod = Scene::create();
-    mod->mountAs("s1",
-                 node("root", {node("a")
-                                   .withPosition(1.f, 2.f, 3.f)
-                                   .withRotation(0.5f, 0.25f, 0.1f)
-                                   .withTag("enemy")
-                                   .withLayer(2)
-                                   .withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
-                               node("b", {node("b1")})})
-                     .withPosition(10.f, 0.f, 0.f)).ignore("test setup");
+    mod->mountAs("s1", node("root", {node("a")
+                                         .withPosition(1.f, 2.f, 3.f)
+                                         .withRotation(0.5f, 0.25f, 0.1f)
+                                         .withTag("enemy")
+                                         .withLayer(2)
+                                         .withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
+                                     node("b", {node("b1")})})
+                           .withPosition(10.f, 0.f, 0.f))
+        .ignore("test setup");
 
     const std::string json = mod->serializeHostAt("s1");
     CHECK(json.find("\"root\"") != std::string::npos);
@@ -893,8 +892,8 @@ TEST_CASE("Scene.pick.rayAndScreen") {
     Scene *mod = Scene::create();
     mod->mountAs("pk",
                  node("root", {node("target").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
-                               node("back").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f)
-                                   .withPosition(0.f, 0.f, -10.f)})).ignore("test setup");
+                               node("back").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f).withPosition(0.f, 0.f, -10.f)}))
+        .ignore("test setup");
     mod->updateTransformsAll();
     CHECK(mod->pickRayAt("pk", 0.f, 0.f, 5.f, 0.f, 0.f, -1.f) == "target");
     CHECK(mod->pickRayAt("pk", 10.f, 0.f, 5.f, 0.f, 0.f, -1.f).empty());
@@ -911,8 +910,8 @@ TEST_CASE("Scene.cull.frustum") {
     Scene *mod = Scene::create();
     mod->mountAs("cu",
                  node("root", {node("front").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
-                               node("side").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f)
-                                   .withPosition(10.f, 0.f, 0.f)})).ignore("test setup");
+                               node("side").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f).withPosition(10.f, 0.f, 0.f)}))
+        .ignore("test setup");
     auto *cam = eve::graphics::Camera3D::createCamera();
     cam->setEye(0.f, 0.f, 5.f);
     cam->setTarget(0.f, 0.f, 0.f);
@@ -931,8 +930,8 @@ TEST_CASE("Scene.cull.frustum") {
 TEST_CASE("Scene.spatial.syncOctree") {
     Scene *mod = Scene::create();
     mod->mountAs("sp",
-                 node("root", {node("a").withBounds(-2.f, -2.f, -2.f, 2.f, 2.f, 2.f)
-                                   .withPosition(5.f, 0.f, 0.f)})).ignore("test setup");
+                 node("root", {node("a").withBounds(-2.f, -2.f, -2.f, 2.f, 2.f, 2.f).withPosition(5.f, 0.f, 0.f)}))
+        .ignore("test setup");
     mod->updateTransformsAll();
     eve::spatial::Octree ot(-100.f, -100.f, -100.f, 100.f, 100.f, 100.f);
     REQUIRE(mod->syncSpatialIndexAt("sp", &ot));

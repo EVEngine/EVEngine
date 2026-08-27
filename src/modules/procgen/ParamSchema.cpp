@@ -93,9 +93,7 @@ void RecipeDescriptor::applyDefaults(Params& values) const {
         if (values.has(param.key)) continue;
         switch (param.kind) {
             case ParamKind::Integer: values.setInt(param.key, std::stoi(param.defaultValue)); break;
-            case ParamKind::Boolean:
-                values.setBool(param.key, std::stoi(param.defaultValue) != 0);
-                break;
+            case ParamKind::Boolean: values.setBool(param.key, std::stoi(param.defaultValue) != 0); break;
             case ParamKind::Float: values.setFloat(param.key, std::stof(param.defaultValue)); break;
             case ParamKind::String:
             case ParamKind::Choice: values.setString(param.key, param.defaultValue); break;

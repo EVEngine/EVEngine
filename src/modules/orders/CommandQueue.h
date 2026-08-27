@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/Module.h"
 #include "common/BorrowedRef.h"
+#include "common/Module.h"
 #include "common/Result.h"
 #include "common/Scheduling.h"
 #include "common/SquirrelOwnership.h"
@@ -87,21 +87,20 @@ struct OrderEvent : eve::scheduling::EventMetadata {
 class CommandQueue {
 public:
     /** @brief Appends a command and returns its stable identity or validation failure. */
-    [[nodiscard]] eve::Result<std::string> append(
-        const std::string& kind, int priority = 0, double timeoutSeconds = 0.0);
+    [[nodiscard]] eve::Result<std::string> append(const std::string& kind, int priority = 0,
+                                                  double timeoutSeconds = 0.0);
     /** @brief Cancels unfinished commands and starts a replacement. */
-    [[nodiscard]] eve::Result<std::string> replace(
-        const std::string& kind, int priority = 0, double timeoutSeconds = 0.0);
+    [[nodiscard]] eve::Result<std::string> replace(const std::string& kind, int priority = 0,
+                                                   double timeoutSeconds = 0.0);
     /** @brief Preempts the active command when priority permits. */
-    [[nodiscard]] eve::Result<std::string> interrupt(
-        const std::string& kind, int priority = 0, double timeoutSeconds = 0.0);
+    [[nodiscard]] eve::Result<std::string> interrupt(const std::string& kind, int priority = 0,
+                                                     double timeoutSeconds = 0.0);
     /** @brief Completes the active command. */
     [[nodiscard]] eve::Result<void> complete(const std::string& id);
     /** @brief Fails the active command. */
     [[nodiscard]] eve::Result<void> fail(const std::string& id, const std::string& reason);
     /** @brief Cancels an active or queued command. */
-    [[nodiscard]] eve::Result<void> cancel(
-        const std::string& id, const std::string& reason = "cancelled");
+    [[nodiscard]] eve::Result<void> cancel(const std::string& id, const std::string& reason = "cancelled");
     /**
      * @brief Checked simulation update.
      * @param dtSeconds Non-negative simulation delta; zero is a successful no-op.
@@ -203,10 +202,10 @@ private:
     std::string appendUnchecked(const std::string& kind, int priority, double timeoutSeconds);
     std::string replaceUnchecked(const std::string& kind, int priority, double timeoutSeconds);
     std::string interruptUnchecked(const std::string& kind, int priority, double timeoutSeconds);
-    bool completeUnchecked(const std::string& id);
-    bool failUnchecked(const std::string& id, const std::string& reason);
-    bool cancelUnchecked(const std::string& id, const std::string& reason);
-    void updateUnchecked(double dtSeconds);
+    bool        completeUnchecked(const std::string& id);
+    bool        failUnchecked(const std::string& id, const std::string& reason);
+    bool        cancelUnchecked(const std::string& id, const std::string& reason);
+    void        updateUnchecked(double dtSeconds);
     std::string create(const std::string& kind, int priority, double timeoutSeconds, bool activateNow);
     void        activateNext();
     bool        transition(Order& order, OrderState state, const std::string& reason);
@@ -239,8 +238,7 @@ public:
     [[nodiscard]] static eve::Result<CommandQueueHandleRef> newQueueHandle();
 
     /** @brief Resolves a live queue as a non-owning observation. */
-    [[nodiscard]] static eve::script::Borrowed<CommandQueue> resolve(
-        CommandQueueHandleRef reference) noexcept;
+    [[nodiscard]] static eve::script::Borrowed<CommandQueue> resolve(CommandQueueHandleRef reference) noexcept;
 
     /** @brief Releases a queue owned by the Orders module. */
     [[nodiscard]] static eve::Result<void> release(CommandQueueHandleRef reference);

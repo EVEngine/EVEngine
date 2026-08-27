@@ -12,8 +12,8 @@
 //    任何自定义资源；RPG 不再维护一份私有 Cost 类型。
 
 #include "common/ResourceAccount.h"
-#include "definitions/Definitions.h"
 #include "decision/Condition.h"
+#include "definitions/Definitions.h"
 
 #include <optional>
 #include <string>
@@ -32,7 +32,7 @@ struct SkillDefinition {
     std::vector<std::string> grantedEffects;  ///< 命中/释放后施加给目标的效果 id 列表
     std::vector<std::string> tags;
     /** @brief Side-effect-free condition tree required before this skill can cast. */
-    eve::decision::Condition castCondition;
+    eve::decision::Condition                     castCondition;
     std::unordered_map<std::string, std::string> extra;  ///< 游戏自定义附加数据
 
     bool hasTag(const std::string &tag) const;
@@ -46,7 +46,7 @@ public:
      * legacy static SkillRegistry contract. Typed runtime adapters bind to it
      * through a generation-qualified DefinitionRef.
      */
-    [[nodiscard]] static eve::definitions::DefinitionRegistry& definitionRegistry();
+    [[nodiscard]] static eve::definitions::DefinitionRegistry &definitionRegistry();
 
     static void registerSkill(const SkillDefinition &def);
     /**

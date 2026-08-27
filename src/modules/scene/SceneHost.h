@@ -114,7 +114,7 @@ public:
      * @remarks The ECS table owns the host. The pointer becomes stale after
      *          entity destruction; retain a runtime handle across deferred work.
      */
-    [[nodiscard]] static eve::Result<SceneHost*> createHost(const std::string &name = "");
+    [[nodiscard]] static eve::Result<SceneHost *> createHost(const std::string &name = "");
 
     void setName(const std::string &name);
     const std::string &getName();
@@ -130,22 +130,22 @@ public:
      * @brief Finds a node by stable id with an explicit status.
      * @return Borrowed node, invalidated by the next tree replacement/reconcile, or a failure.
      */
-    [[nodiscard]] eve::Result<SceneNode*> findById(const std::string &id);
+    [[nodiscard]] eve::Result<SceneNode *> findById(const std::string &id);
     /**
      * @brief Finds a node by reconcile key with an explicit status.
      * @return Borrowed node, invalidated by the next tree replacement/reconcile, or a failure.
      */
-    [[nodiscard]] eve::Result<SceneNode*> findByKey(const std::string &key);
+    [[nodiscard]] eve::Result<SceneNode *> findByKey(const std::string &key);
     /**
      * @brief Finds the first node name match with an explicit status.
      * @return Borrowed node, invalidated by the next tree replacement/reconcile, or a failure.
      */
-    [[nodiscard]] eve::Result<SceneNode*> findByName(const std::string &name);
+    [[nodiscard]] eve::Result<SceneNode *> findByName(const std::string &name);
     /**
      * @brief Finds a node path with an explicit status.
      * @return Borrowed node, invalidated by the next tree replacement/reconcile, or a failure.
      */
-    [[nodiscard]] eve::Result<SceneNode*> findByPath(const std::string &path);
+    [[nodiscard]] eve::Result<SceneNode *> findByPath(const std::string &path);
     int findIndexById(const std::string &id);
     int findIndexByKey(const std::string &key);
     int findIndexByName(const std::string &name);

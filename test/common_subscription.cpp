@@ -13,7 +13,7 @@ TEST_CASE("common.subscriptionIsMoveOnlyAndCancellationIsIdempotent") {
     static_assert(std::is_move_constructible_v<eve::Subscription>);
     static_assert(std::is_move_assignable_v<eve::Subscription>);
 
-    int cancellations = 0;
+    int               cancellations = 0;
     eve::Subscription original([&cancellations]() noexcept { ++cancellations; });
     eve::Subscription moved(std::move(original));
     CHECK(original.disposed());
@@ -32,7 +32,7 @@ TEST_CASE("common.observerAllowsReentrantSubscribeAndDispose") {
     eve::Subscription  second;
     eve::Subscription  added;
 
-    first = observer.subscribe([&](const int &value) {
+    first  = observer.subscribe([&](const int &value) {
         calls.push_back(value * 10 + 1);
         second.dispose();
         first.dispose();

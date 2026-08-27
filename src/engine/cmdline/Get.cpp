@@ -49,8 +49,7 @@ int Cmdline::Get(std::string name) {
     }
     auto result = installAndroidSdk();
     if (result.ok()) return 0;
-    cerr << rang::fg::red << "eve get: " << result.status().describe()
-         << rang::fg::reset << endl;
+    cerr << rang::fg::red << "eve get: " << result.status().describe() << rang::fg::reset << endl;
     return 3;
 }
 

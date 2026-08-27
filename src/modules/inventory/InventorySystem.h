@@ -94,7 +94,7 @@ private:
     static std::vector<InventoryChangeEvent> &eventQueue();
     static int &instanceCounter();
     static bool &builtinsReady();
-    static bool &changeHooksSuppressed();
+    static bool                                        &changeHooksSuppressed();
 };
 
 }  // namespace eve::inventory

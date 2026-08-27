@@ -20,15 +20,15 @@ namespace eve::effects {
  * dynamic field representation.
  */
 struct EffectRuntimeState {
-    std::string stackKey;
-    int priority = 0;
-    double duration = 0.0;
-    double remaining = -1.0;
-    double magnitude = 0.0;
-    std::uint32_t stackCount = 1;
-    std::uint32_t maxStacks = 1;
-    EffectPolicy policy;
-    EffectPayload payload;
+    std::string              stackKey;
+    int                      priority   = 0;
+    double                   duration   = 0.0;
+    double                   remaining  = -1.0;
+    double                   magnitude  = 0.0;
+    std::uint32_t            stackCount = 1;
+    std::uint32_t            maxStacks  = 1;
+    EffectPolicy             policy;
+    EffectPayload            payload;
     std::vector<std::string> tags;
 };
 
@@ -53,8 +53,8 @@ public:
      * @return A typed runtime or a structured parse/resolution failure.
      */
     [[nodiscard]] static eve::Result<EffectDefinitionRuntime> create(
-        eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition,
-        std::string subject, std::string source, eve::PersistentId instanceId,
+        eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition, std::string subject,
+        std::string source, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::KeepInstanceValues);
 
     /** @brief Move an effect runtime while retaining its borrowed registry binding. */
@@ -94,22 +94,23 @@ public:
      * @brief Resolve the registry's current generation and execute a policy.
      * @return Reload outcome, or a failure leaving typed state and identity unchanged.
      */
-    [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(
-        eve::definition::ReloadPolicy policy);
+    [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(eve::definition::ReloadPolicy policy);
 
 private:
-    EffectDefinitionRuntime(eve::definitions::DefinitionRegistry& registry,
-                            eve::definition::RuntimeInstance<EffectRuntimeState> runtime,
-                            std::string subject, std::string source,
-                            eve::definition::ReloadPolicy policy)
-        : registry_(&registry), runtime_(std::move(runtime)), subject_(std::move(subject)),
-          source_(std::move(source)), policy_(policy) {}
+    EffectDefinitionRuntime(eve::definitions::DefinitionRegistry&                registry,
+                            eve::definition::RuntimeInstance<EffectRuntimeState> runtime, std::string subject,
+                            std::string source, eve::definition::ReloadPolicy policy)
+        : registry_(&registry),
+          runtime_(std::move(runtime)),
+          subject_(std::move(subject)),
+          source_(std::move(source)),
+          policy_(policy) {}
 
-    eve::definitions::DefinitionRegistry* registry_ = nullptr;  // borrowed
+    eve::definitions::DefinitionRegistry*                registry_ = nullptr;  // borrowed
     eve::definition::RuntimeInstance<EffectRuntimeState> runtime_;
-    std::string subject_;
-    std::string source_;
-    eve::definition::ReloadPolicy policy_;
+    std::string                                          subject_;
+    std::string                                          source_;
+    eve::definition::ReloadPolicy                        policy_;
 };
 
 }  // namespace eve::effects

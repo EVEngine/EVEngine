@@ -122,8 +122,7 @@ public:
      * @param hashProvider Explicit content-digest provider; it is never defaulted silently.
      * @return A sealed snapshot, or a structured serialization/hash failure.
      */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
 
     /**
      * @brief Restores a verified or migratable snapshot transactionally.
@@ -131,16 +130,15 @@ public:
      * @param hashProvider Explicit provider used to verify and reseal the payload.
      * @return Success, or a failure leaving all store state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreSnapshot(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
+                                                    const eve::SnapshotHashProvider& hashProvider);
 
     /**
      * @brief Serializes the common snapshot envelope as canonical JSON.
      * @param hashProvider Explicit content-digest provider.
      * @return Canonical envelope JSON or a structured failure.
      */
-    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
 
     /**
      * @brief Parses and transactionally restores a common snapshot envelope.
@@ -148,8 +146,8 @@ public:
      * @param hashProvider Explicit provider used to verify contentHash.
      * @return Success, or a failure leaving all store state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreSnapshotJson(
-        std::string_view json, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
+                                                        const eve::SnapshotHashProvider& hashProvider);
 
 private:
     std::string add(RuleEffect effect, const std::string& actor, const std::string& scope,
@@ -160,8 +158,8 @@ private:
     uint64_t                 nextOrder_    = 1;
     uint64_t                 nextSequence_ = 1;
     eve::PersistentId        instanceId_;
-    eve::Revision             revision_;
-    eve::SimulationTick       tick_;
+    eve::Revision            revision_;
+    eve::SimulationTick      tick_;
     std::deque<Rule>         rules_;
     std::deque<Event>        events_;
     std::vector<const Rule*> query_;
@@ -186,8 +184,7 @@ public:
      */
     [[nodiscard]] static eve::Result<AuthorityStoreHandleRef> newStore();
     /** @brief Resolves a live store as a non-owning observation. */
-    [[nodiscard]] static eve::script::Borrowed<Store> resolve(
-        AuthorityStoreHandleRef reference) noexcept;
+    [[nodiscard]] static eve::script::Borrowed<Store> resolve(AuthorityStoreHandleRef reference) noexcept;
     /** @brief Releases a module-owned store. */
     [[nodiscard]] static eve::Result<void> release(AuthorityStoreHandleRef reference);
     /** @brief Reports whether a store reference is stale for the current module. */

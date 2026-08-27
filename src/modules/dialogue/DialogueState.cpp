@@ -11,8 +11,7 @@ namespace eve::dialogue {
 namespace {
 
 template <class T, class Query>
-std::optional<T> queryProviders(const std::string& subject, eve::IStateQuery* explicitProvider,
-                                Query&& query) {
+std::optional<T> queryProviders(const std::string& subject, eve::IStateQuery* explicitProvider, Query&& query) {
     if (explicitProvider) {
         if (auto result = query(explicitProvider, subject); result.has_value()) return result;
     }
@@ -79,8 +78,7 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
             if (!child) return eve::Result<eve::decision::Condition>::failure(child.status());
             children.push_back(std::move(child).takeValue());
         }
-        return eve::Result<eve::decision::Condition>::success(
-            eve::decision::Condition::all(std::move(children)));
+        return eve::Result<eve::decision::Condition>::success(eve::decision::Condition::all(std::move(children)));
     }
     if (!specification.isObject()) return conditionError("dialogue condition must be an object or array");
 
@@ -93,8 +91,7 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
             if (!child) return eve::Result<eve::decision::Condition>::failure(child.status());
             children.push_back(std::move(child).takeValue());
         }
-        return eve::Result<eve::decision::Condition>::success(
-            eve::decision::Condition::all(std::move(children)));
+        return eve::Result<eve::decision::Condition>::success(eve::decision::Condition::all(std::move(children)));
     }
     if (const eve::Value* any = specification.find("any")) {
         if (!any->isArray()) return conditionError("condition 'any' must be an array", "any");
@@ -105,8 +102,7 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
             if (!child) return eve::Result<eve::decision::Condition>::failure(child.status());
             children.push_back(std::move(child).takeValue());
         }
-        return eve::Result<eve::decision::Condition>::success(
-            eve::decision::Condition::any(std::move(children)));
+        return eve::Result<eve::decision::Condition>::success(eve::decision::Condition::any(std::move(children)));
     }
     if (const eve::Value* negated = specification.find("not")) {
         auto child = compileCondition(*negated);
@@ -119,14 +115,12 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
     if (!tag) tag = specification.find("hasTag");
     if (tag) {
         if (!tag->isString()) return conditionError("tag condition requires a string tag", "tag");
-        return eve::Result<eve::decision::Condition>::success(
-            eve::decision::Condition::hasTag(tag->asString()));
+        return eve::Result<eve::decision::Condition>::success(eve::decision::Condition::hasTag(tag->asString()));
     }
 
     const eve::Value* authority = specification.find("authority");
     if (authority) {
-        if (!authority->isString())
-            return conditionError("authority condition requires a string scope", "authority");
+        if (!authority->isString()) return conditionError("authority condition requires a string scope", "authority");
         return eve::Result<eve::decision::Condition>::success(
             eve::decision::Condition::authorityCheck(authority->asString()));
     }
@@ -162,10 +156,9 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
         if (!nameValue->isString() || !operation->isString())
             return conditionError("comparison condition requires string key and op");
         const std::string key = nameValue->asString();
-        const std::string op = operation->asString();
+        const std::string op  = operation->asString();
         if (op == "has")
-            return eve::Result<eve::decision::Condition>::success(
-                eve::decision::Condition::hasAttribute(key));
+            return eve::Result<eve::decision::Condition>::success(eve::decision::Condition::hasAttribute(key));
         if (op == "missing")
             return eve::Result<eve::decision::Condition>::success(
                 eve::decision::Condition::not_(eve::decision::Condition::hasAttribute(key)));
@@ -201,8 +194,7 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
 
 eve::Result<eve::MutationReceipt> mutationUnavailable() {
     return eve::Result<eve::MutationReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Unsupported,
-        "dialogue world mutation requires an IStateMutation capability",
+        eve::DiagnosticCode::Unsupported, "dialogue world mutation requires an IStateMutation capability",
         "dialogue.state.mutation"));
 }
 
@@ -210,43 +202,43 @@ eve::Result<eve::MutationReceipt> mutationUnavailable() {
 
 eve::Value toCanonicalValue(const eve::StateValue& value) {
     switch (value.kind()) {
-    case eve::StateValue::Kind::Null: return eve::Value::null();
-    case eve::StateValue::Kind::Int: return eve::Value::integer(value.asInt());
-    case eve::StateValue::Kind::Float: return eve::Value::number(value.asDouble());
-    case eve::StateValue::Kind::Bool: return eve::Value::boolean(value.asBool());
-    case eve::StateValue::Kind::String: return eve::Value::string(value.asString());
-    case eve::StateValue::Kind::Array: {
-        eve::Value::Array result;
-        result.reserve(value.arraySize());
-        for (std::size_t i = 0; i < value.arraySize(); ++i) result.push_back(toCanonicalValue(value.at(i)));
-        return eve::Value::array(std::move(result));
-    }
-    case eve::StateValue::Kind::Object: {
-        eve::Value::Object result;
-        for (const auto& key : value.keys()) result.emplace(key, toCanonicalValue(*value.find(key)));
-        return eve::Value::object(std::move(result));
-    }
+        case eve::StateValue::Kind::Null: return eve::Value::null();
+        case eve::StateValue::Kind::Int: return eve::Value::integer(value.asInt());
+        case eve::StateValue::Kind::Float: return eve::Value::number(value.asDouble());
+        case eve::StateValue::Kind::Bool: return eve::Value::boolean(value.asBool());
+        case eve::StateValue::Kind::String: return eve::Value::string(value.asString());
+        case eve::StateValue::Kind::Array: {
+            eve::Value::Array result;
+            result.reserve(value.arraySize());
+            for (std::size_t i = 0; i < value.arraySize(); ++i) result.push_back(toCanonicalValue(value.at(i)));
+            return eve::Value::array(std::move(result));
+        }
+        case eve::StateValue::Kind::Object: {
+            eve::Value::Object result;
+            for (const auto& key : value.keys()) result.emplace(key, toCanonicalValue(*value.find(key)));
+            return eve::Value::object(std::move(result));
+        }
     }
     return eve::Value::null();
 }
 
 eve::StateValue toDialogueStateValue(const eve::Value& value) {
     switch (value.type()) {
-    case eve::Value::Type::Null: return eve::StateValue::null();
-    case eve::Value::Type::Int64: return eve::StateValue::integer(value.asInt());
-    case eve::Value::Type::Double: return eve::StateValue::number(value.asDouble());
-    case eve::Value::Type::Bool: return eve::StateValue::boolean(value.asBool());
-    case eve::Value::Type::String: return eve::StateValue::string(value.asString());
-    case eve::Value::Type::Array: {
-        eve::StateValue result = eve::StateValue::array();
-        for (std::size_t i = 0; i < value.arraySize(); ++i) result.pushBack(toDialogueStateValue(value.at(i)));
-        return result;
-    }
-    case eve::Value::Type::Object: {
-        eve::StateValue result = eve::StateValue::object();
-        for (const auto& key : value.keys()) result.set(key, toDialogueStateValue(*value.find(key)));
-        return result;
-    }
+        case eve::Value::Type::Null: return eve::StateValue::null();
+        case eve::Value::Type::Int64: return eve::StateValue::integer(value.asInt());
+        case eve::Value::Type::Double: return eve::StateValue::number(value.asDouble());
+        case eve::Value::Type::Bool: return eve::StateValue::boolean(value.asBool());
+        case eve::Value::Type::String: return eve::StateValue::string(value.asString());
+        case eve::Value::Type::Array: {
+            eve::StateValue result = eve::StateValue::array();
+            for (std::size_t i = 0; i < value.arraySize(); ++i) result.pushBack(toDialogueStateValue(value.at(i)));
+            return result;
+        }
+        case eve::Value::Type::Object: {
+            eve::StateValue result = eve::StateValue::object();
+            for (const auto& key : value.keys()) result.set(key, toDialogueStateValue(*value.find(key)));
+            return result;
+        }
     }
     return eve::StateValue::null();
 }
@@ -270,9 +262,8 @@ std::optional<bool> StateEvaluationContext::hasTag(std::string_view tag) const {
 
 std::optional<eve::Value> StateEvaluationContext::attribute(std::string_view key) const {
     auto result = queryProviders<eve::Value>(
-        subject_, provider_, [&](eve::IStateQuery* provider, const std::string& subject) {
-            return provider->attribute(subject, key);
-        });
+        subject_, provider_,
+        [&](eve::IStateQuery* provider, const std::string& subject) { return provider->attribute(subject, key); });
     if (result.has_value()) return result;
     return value(key);
 }
@@ -285,9 +276,8 @@ std::optional<eve::Value> StateEvaluationContext::resource(std::string_view key)
 
 std::optional<eve::Value> StateEvaluationContext::state(std::string_view key) const {
     auto result = queryProviders<eve::Value>(
-        subject_, provider_, [&](eve::IStateQuery* provider, const std::string& subject) {
-            return provider->state(subject, key);
-        });
+        subject_, provider_,
+        [&](eve::IStateQuery* provider, const std::string& subject) { return provider->state(subject, key); });
     if (result.has_value()) return result;
     return value(key);
 }
@@ -298,8 +288,8 @@ std::optional<bool> StateEvaluationContext::authority(std::string_view scope) co
     });
 }
 
-std::optional<eve::decision::ConditionResult> StateEvaluationContext::policy(
-    std::string_view name, const eve::Value& arguments) const {
+std::optional<eve::decision::ConditionResult> StateEvaluationContext::policy(std::string_view  name,
+                                                                             const eve::Value& arguments) const {
     if (!policyEvaluator_) return std::nullopt;
     return policyEvaluator_(name, arguments);
 }
@@ -339,13 +329,11 @@ std::optional<eve::Value> DialogueStateContext::state(std::string_view key) cons
     return context.state(key);
 }
 
-eve::Result<eve::decision::Condition> DialogueStateContext::compileCondition(
-    const eve::Value& specification) const {
+eve::Result<eve::decision::Condition> DialogueStateContext::compileCondition(const eve::Value& specification) const {
     return ::eve::dialogue::compileCondition(specification);
 }
 
-eve::decision::ConditionResult DialogueStateContext::evaluate(
-    const eve::decision::Condition& condition) const {
+eve::decision::ConditionResult DialogueStateContext::evaluate(const eve::decision::Condition& condition) const {
     auto context = evaluationContext();
     return condition.evaluate(context);
 }
@@ -354,17 +342,16 @@ eve::decision::ConditionResult DialogueStateContext::evaluate(const eve::Value& 
     auto compiled = compileCondition(specification);
     if (!compiled) {
         const eve::Diagnostic* diagnostic = compiled.error();
-        const std::string message = diagnostic ? diagnostic->message() : "invalid dialogue condition";
-        return eve::decision::ConditionResult::failed(
-            eve::decision::ConditionReasonCode::InvalidCondition, eve::Value(),
-            eve::Value::Object{{"error", eve::Value(message)}});
+        const std::string      message    = diagnostic ? diagnostic->message() : "invalid dialogue condition";
+        return eve::decision::ConditionResult::failed(eve::decision::ConditionReasonCode::InvalidCondition,
+                                                      eve::Value(), eve::Value::Object{{"error", eve::Value(message)}});
     }
     eve::decision::Condition condition = std::move(compiled).takeValue();
     return evaluate(condition);
 }
 
-eve::Result<eve::MutationReceipt> DialogueStateContext::apply(
-    std::span<const eve::StateMutation> mutations, const eve::MutationContext& context) const {
+eve::Result<eve::MutationReceipt> DialogueStateContext::apply(std::span<const eve::StateMutation> mutations,
+                                                              const eve::MutationContext&         context) const {
     eve::IStateMutation* provider = mutationProvider_;
     if (!provider) provider = eve::cap::query<eve::IStateMutation>();
     if (!provider) return mutationUnavailable();

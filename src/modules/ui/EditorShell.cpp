@@ -23,14 +23,14 @@ void EditorShell::open(UIHostHandle inspector, UIHostHandle database, UIHostHand
     inspector_ = inspector;
     database_  = database;
     scene_     = scene;
-    auto host = UIHost::resolve(host_);
+    auto host  = UIHost::resolve(host_);
     if (!host) {
         host_ = UIHost::createHost(kShellHostName);
-        host = UIHost::resolve(host_);
+        host  = UIHost::resolve(host_);
     }
     if (!host) return;
     UIHost& shell        = host->get();
-    auto meta            = shell.meta();
+    auto    meta         = shell.meta();
     meta->overlay        = true;  // no title bar
     meta->hasPos         = true;
     meta->lockPos        = true;

@@ -32,9 +32,9 @@ TEST_CASE("timer.step.deltaPositiveAfterSleep") {
 }
 
 TEST_CASE("timer.simulationClockUsesInjectedFixedSteps") {
-    auto* t = eve::timer::Timer::create();
+    auto*      t      = eve::timer::Timer::create();
     const auto before = t->getFrameIndex();
-    auto steps = t->stepSimulation();
+    auto       steps  = t->stepSimulation();
     REQUIRE(steps.ok());
     CHECK(t->getFrameIndex() > before);
     CHECK(t->getDeltaDuration().nanoseconds() >= 0);

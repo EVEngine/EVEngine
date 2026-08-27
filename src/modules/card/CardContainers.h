@@ -56,24 +56,21 @@ public:
      * @param capacity Optional maximum number of cards.
      * @param acceptedKinds Optional card-kind allowlist.
      */
-    CardContainerAdapter(eve::container::ContainerId id, CardContainerKind kind,
-                         Deck* deck = nullptr, Hand* hand = nullptr,
-                         std::vector<CardData*>* discard = nullptr,
-                         eve::container::Capacity capacity = eve::container::Capacity::unlimited(),
+    CardContainerAdapter(eve::container::ContainerId id, CardContainerKind kind, Deck* deck = nullptr,
+                         Hand* hand = nullptr, std::vector<CardData*>* discard = nullptr,
+                         eve::container::Capacity capacity      = eve::container::Capacity::unlimited(),
                          std::vector<std::string> acceptedKinds = {});
 
     [[nodiscard]] const eve::container::ContainerDescriptor& descriptor() const noexcept override {
         return descriptor_;
     }
     [[nodiscard]] eve::Result<eve::container::ContainerSnapshot> snapshot() const override;
-    [[nodiscard]] eve::Result<void> validateInsert(
-        const eve::container::ContainerObject& object,
-        std::optional<eve::container::SlotIndex> destination,
-        std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
+    [[nodiscard]] eve::Result<void>                              validateInsert(
+                                     const eve::container::ContainerObject& object, std::optional<eve::container::SlotIndex> destination,
+                                     std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
     /** @copydoc eve::container::IContainer::prepare */
     [[nodiscard]] eve::Result<std::unique_ptr<eve::container::IContainer::PreparedState>> prepare(
-        const eve::container::ContainerSnapshot& expected,
-        const eve::container::ContainerSnapshot& candidate) override;
+        const eve::container::ContainerSnapshot& expected, const eve::container::ContainerSnapshot& candidate) override;
 
     /** @brief Return the current adapter revision for optimistic requests. */
     [[nodiscard]] eve::Revision revision() const noexcept { return revision_; }
@@ -93,17 +90,17 @@ private:
      */
     [[nodiscard]] std::vector<CardData*>* cards() noexcept;
     /** @copydoc CardContainerAdapter::cards() */
-    [[nodiscard]] const std::vector<CardData*>* cards() const noexcept;
-    [[nodiscard]] static eve::container::MembershipId objectId(const CardData& card);
+    [[nodiscard]] const std::vector<CardData*>*          cards() const noexcept;
+    [[nodiscard]] static eve::container::MembershipId    objectId(const CardData& card);
     [[nodiscard]] static eve::container::ContainerObject describe(CardData* card);
-    void updateState(CardData* card) const noexcept;
+    void                                                 updateState(CardData* card) const noexcept;
 
     eve::container::ContainerDescriptor descriptor_;
-    CardContainerKind kind_;
-    Deck* deck_ = nullptr;
-    Hand* hand_ = nullptr;
-    std::vector<CardData*>* discard_ = nullptr;
-    eve::Revision revision_ = eve::Revision(0);
+    CardContainerKind                   kind_;
+    Deck*                               deck_     = nullptr;
+    Hand*                               hand_     = nullptr;
+    std::vector<CardData*>*             discard_  = nullptr;
+    eve::Revision                       revision_ = eve::Revision(0);
 };
 
 }  // namespace eve::card

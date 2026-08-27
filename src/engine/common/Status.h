@@ -44,34 +44,22 @@ enum class StatusCode : uint8_t {
  */
 [[nodiscard]] constexpr std::string_view statusCodeName(StatusCode code) noexcept {
     switch (code) {
-    case StatusCode::Ok:
-        return "ok";
-    case StatusCode::Applied:
-        return "applied";
-    case StatusCode::NoOp:
-        return "no_op";
-    case StatusCode::Pending:
-        return "pending";
-    case StatusCode::Rejected:
-        return "rejected";
-    case StatusCode::Conflict:
-        return "conflict";
-    case StatusCode::NotFound:
-        return "not_found";
-    case StatusCode::Unsupported:
-        return "unsupported";
-    case StatusCode::Cancelled:
-        return "cancelled";
-    case StatusCode::Failed:
-        return "failed";
+        case StatusCode::Ok: return "ok";
+        case StatusCode::Applied: return "applied";
+        case StatusCode::NoOp: return "no_op";
+        case StatusCode::Pending: return "pending";
+        case StatusCode::Rejected: return "rejected";
+        case StatusCode::Conflict: return "conflict";
+        case StatusCode::NotFound: return "not_found";
+        case StatusCode::Unsupported: return "unsupported";
+        case StatusCode::Cancelled: return "cancelled";
+        case StatusCode::Failed: return "failed";
     }
     return "unknown";
 }
 
 /** @brief Write the stable StatusCode spelling to a stream. */
-inline std::ostream& operator<<(std::ostream& stream, StatusCode code) {
-    return stream << statusCodeName(code);
-}
+inline std::ostream& operator<<(std::ostream& stream, StatusCode code) { return stream << statusCodeName(code); }
 
 /**
  * @brief Structured status and zero or more diagnostics for an operation.
@@ -87,13 +75,10 @@ public:
      * @param code Stable operation outcome.
      * @param diagnostics Structured explanations and context.
      */
-    Status(StatusCode code, std::vector<Diagnostic> diagnostics)
-        : code_(code), diagnostics_(std::move(diagnostics)) {}
+    Status(StatusCode code, std::vector<Diagnostic> diagnostics) : code_(code), diagnostics_(std::move(diagnostics)) {}
 
     /** @brief Construct a successful status with an explicit non-error outcome. */
-    static Status success(StatusCode code = StatusCode::Ok) {
-        return Status(code, {});
-    }
+    static Status success(StatusCode code = StatusCode::Ok) { return Status(code, {}); }
 
     /** @brief Construct a failed status with one diagnostic. */
     static Status failure(StatusCode code, Diagnostic diagnostic) {
@@ -113,18 +98,16 @@ public:
     /** @brief Whether the operation completed without a failure outcome. */
     bool isSuccess() const noexcept {
         switch (code_) {
-        case StatusCode::Ok:
-        case StatusCode::Applied:
-        case StatusCode::NoOp:
-        case StatusCode::Pending:
-            return true;
-        case StatusCode::Rejected:
-        case StatusCode::Conflict:
-        case StatusCode::NotFound:
-        case StatusCode::Unsupported:
-        case StatusCode::Cancelled:
-        case StatusCode::Failed:
-            return false;
+            case StatusCode::Ok:
+            case StatusCode::Applied:
+            case StatusCode::NoOp:
+            case StatusCode::Pending: return true;
+            case StatusCode::Rejected:
+            case StatusCode::Conflict:
+            case StatusCode::NotFound:
+            case StatusCode::Unsupported:
+            case StatusCode::Cancelled:
+            case StatusCode::Failed: return false;
         }
         return false;
     }
@@ -172,35 +155,27 @@ public:
 private:
     static StatusCode statusCodeFor(DiagnosticCode code) noexcept {
         switch (code) {
-        case DiagnosticCode::InvalidArgument:
-        case DiagnosticCode::PreconditionViolation:
-            return StatusCode::Rejected;
-        case DiagnosticCode::NotFound:
-            return StatusCode::NotFound;
-        case DiagnosticCode::AlreadyExists:
-        case DiagnosticCode::Conflict:
-            return StatusCode::Conflict;
-        case DiagnosticCode::Unsupported:
-            return StatusCode::Unsupported;
-        case DiagnosticCode::Cancelled:
-            return StatusCode::Cancelled;
-        case DiagnosticCode::StaleHandle:
-            return StatusCode::Rejected;
-        case DiagnosticCode::ParseError:
-        case DiagnosticCode::SerializationError:
-        case DiagnosticCode::InvariantViolation:
-        case DiagnosticCode::Failed:
-        case DiagnosticCode::HashMismatch:
-        case DiagnosticCode::UnknownVersion:
-        case DiagnosticCode::CallbackFailure:
-        case DiagnosticCode::DialogueNotWaitingForChoice:
-        case DiagnosticCode::DialogueNotWaitingForCommand:
-        case DiagnosticCode::DialogueConditionRejected:
-        case DiagnosticCode::ProcgenGroupDataInvalid:
-        case DiagnosticCode::None:
-            return StatusCode::Failed;
-        case DiagnosticCode::DialogueRouteNotFound:
-            return StatusCode::NotFound;
+            case DiagnosticCode::InvalidArgument:
+            case DiagnosticCode::PreconditionViolation: return StatusCode::Rejected;
+            case DiagnosticCode::NotFound: return StatusCode::NotFound;
+            case DiagnosticCode::AlreadyExists:
+            case DiagnosticCode::Conflict: return StatusCode::Conflict;
+            case DiagnosticCode::Unsupported: return StatusCode::Unsupported;
+            case DiagnosticCode::Cancelled: return StatusCode::Cancelled;
+            case DiagnosticCode::StaleHandle: return StatusCode::Rejected;
+            case DiagnosticCode::ParseError:
+            case DiagnosticCode::SerializationError:
+            case DiagnosticCode::InvariantViolation:
+            case DiagnosticCode::Failed:
+            case DiagnosticCode::HashMismatch:
+            case DiagnosticCode::UnknownVersion:
+            case DiagnosticCode::CallbackFailure:
+            case DiagnosticCode::DialogueNotWaitingForChoice:
+            case DiagnosticCode::DialogueNotWaitingForCommand:
+            case DiagnosticCode::DialogueConditionRejected:
+            case DiagnosticCode::ProcgenGroupDataInvalid:
+            case DiagnosticCode::None: return StatusCode::Failed;
+            case DiagnosticCode::DialogueRouteNotFound: return StatusCode::NotFound;
         }
         return StatusCode::Failed;
     }

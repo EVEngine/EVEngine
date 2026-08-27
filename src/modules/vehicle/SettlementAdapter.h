@@ -30,7 +30,7 @@ public:
     /** @brief Bind an existing vehicle health component to a stable subject id. */
     VehicleSettlementAdapter(VehicleEntity& vehicle, SubjectRef targetRef);
 
-    VehicleSettlementAdapter(const VehicleSettlementAdapter&) = delete;
+    VehicleSettlementAdapter(const VehicleSettlementAdapter&)            = delete;
     VehicleSettlementAdapter& operator=(const VehicleSettlementAdapter&) = delete;
 
     /** @brief Stable identity checked for the target side of the request. */
@@ -59,16 +59,16 @@ private:
      * @thread Call on the settlement pipeline's owning simulation thread.
      * @reentrancy Does not invoke callbacks and must not be used across a re-entrant context mutation.
      */
-    [[nodiscard]] static const eve::Value* contextValue(
-        const settlement::SettlementContext& context, std::string_view key) noexcept;
-    [[nodiscard]] static std::optional<double> numberValue(const eve::Value* value) noexcept;
-    [[nodiscard]] static std::optional<bool> boolValue(const eve::Value* value) noexcept;
+    [[nodiscard]] static const eve::Value*          contextValue(const settlement::SettlementContext& context,
+                                                                 std::string_view                     key) noexcept;
+    [[nodiscard]] static std::optional<double>      numberValue(const eve::Value* value) noexcept;
+    [[nodiscard]] static std::optional<bool>        boolValue(const eve::Value* value) noexcept;
     [[nodiscard]] static std::optional<std::string> stringValue(const eve::Value* value);
     [[nodiscard]] bool isDamage(const settlement::SettlementContext& context) const noexcept;
     [[nodiscard]] bool isHealing(const settlement::SettlementContext& context) const noexcept;
 
     VehicleEntity& vehicle_;
-    SubjectRef targetRef_;
+    SubjectRef     targetRef_;
 };
 
 }  // namespace eve::vehicle

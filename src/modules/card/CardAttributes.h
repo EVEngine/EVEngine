@@ -30,30 +30,27 @@ public:
     [[nodiscard]] static eve::Result<void> ensure(CardData& card);
 
     /** @brief Read a selected final card attribute and refresh compatibility fields. */
-    [[nodiscard]] static eve::Result<double> read(CardData& card,
-                                                  std::string_view attribute);
+    [[nodiscard]] static eve::Result<double> read(CardData& card, std::string_view attribute);
 
     /** @brief Set a selected canonical base and refresh the legacy projection. */
-    [[nodiscard]] static eve::Result<void> setBase(CardData& card,
-                                                   std::string_view attribute, double value);
+    [[nodiscard]] static eve::Result<void> setBase(CardData& card, std::string_view attribute, double value);
 
     /** @brief Add a modifier using the shared attribute operation ordering. */
     [[nodiscard]] static eve::Result<eve::attributes::ModifierId> addModifier(
-        CardData& card, std::string id, std::string_view attribute,
-        std::string source, eve::attributes::AttributeOperation operation, double value,
+        CardData& card, std::string id, std::string_view attribute, std::string source,
+        eve::attributes::AttributeOperation operation, double value,
         eve::attributes::ModifierPriority priority = eve::attributes::priority::runtime);
 
     /** @brief Project canonical values into the legacy integer Stats fields. */
     [[nodiscard]] static eve::Result<void> project(CardData& card);
 
     /** @brief Capture attack/health with the owning ECS generation and revision. */
-    [[nodiscard]] static eve::Result<eve::attributes::AttributeProjectionSnapshot> snapshot(
-        CardData& card);
+    [[nodiscard]] static eve::Result<eve::attributes::AttributeProjectionSnapshot> snapshot(CardData& card);
 
     /** @brief Restore a card snapshot only when owner and revision still match. */
-    [[nodiscard]] static eve::Result<void> restore(
-        CardData& card, const eve::attributes::AttributeProjectionSnapshot& snapshot,
-        eve::Revision expectedRevision);
+    [[nodiscard]] static eve::Result<void> restore(CardData&                                           card,
+                                                   const eve::attributes::AttributeProjectionSnapshot& snapshot,
+                                                   eve::Revision expectedRevision);
 };
 
 }  // namespace eve::card

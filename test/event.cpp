@@ -7,8 +7,8 @@
 #include <memory>
 #include <thread>
 
-using eve::platform_event::PlatformEvent;
 using eve::platform_event::Message;
+using eve::platform_event::PlatformEvent;
 using eve::platform_event::Variant;
 
 namespace {
@@ -106,7 +106,7 @@ TEST_CASE("event.pushPollRoundTrip") {
 }
 
 TEST_CASE("event.ownedPushPollDestroysPayloadWithMessage") {
-    auto* ev = PlatformEvent::create();
+    auto*                ev           = PlatformEvent::create();
     int destructions = 0;
     std::vector<Variant> args;
     args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
@@ -123,7 +123,7 @@ TEST_CASE("event.ownedPushPollDestroysPayloadWithMessage") {
 }
 
 TEST_CASE("event.clearDestroysOwnedPayloadExactlyOnce") {
-    auto* ev = PlatformEvent::create();
+    auto*                ev           = PlatformEvent::create();
     int destructions = 0;
     std::vector<Variant> args;
     args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
@@ -172,7 +172,7 @@ TEST_CASE("event.pumpSmoke") {
 }
 
 TEST_CASE("event.workerPushWakesWait") {
-    auto *ev = PlatformEvent::create();
+    auto* ev = PlatformEvent::create();
     ev->clear();
     std::thread producer([ev] {
         std::this_thread::sleep_for(std::chrono::milliseconds(20));

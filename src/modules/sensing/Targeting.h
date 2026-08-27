@@ -144,10 +144,10 @@ private:
         : space_(space), x_(x), y_(y), z_(z), valid_(true) {}
 
     CoordinateSpace space_ = CoordinateSpace::World2D;
-    float x_ = 0.f;
-    float y_ = 0.f;
-    float z_ = 0.f;
-    bool valid_ = false;
+    float           x_     = 0.f;
+    float           y_     = 0.f;
+    float           z_     = 0.f;
+    bool            valid_ = false;
 };
 
 /**
@@ -184,10 +184,10 @@ private:
         : space_(space), x_(x), y_(y), z_(z), valid_(true) {}
 
     CoordinateSpace space_ = CoordinateSpace::Grid2D;
-    std::int32_t x_ = 0;
-    std::int32_t y_ = 0;
-    std::int32_t z_ = 0;
-    bool valid_ = false;
+    std::int32_t    x_     = 0;
+    std::int32_t    y_     = 0;
+    std::int32_t    z_     = 0;
+    bool            valid_ = false;
 };
 
 /** @brief Either a world point or a grid point, with the tag retained. */
@@ -226,15 +226,14 @@ public:
 
 private:
     WorldArea(Shape shape, WorldPoint first, WorldPoint second, float radius) noexcept
-        : shape_(shape), space_(first.space()), first_(first), second_(second), radius_(radius),
-          valid_(true) {}
+        : shape_(shape), space_(first.space()), first_(first), second_(second), radius_(radius), valid_(true) {}
 
-    Shape shape_ = Shape::Circle2D;
+    Shape           shape_ = Shape::Circle2D;
     CoordinateSpace space_ = CoordinateSpace::World2D;
-    WorldPoint first_;
-    WorldPoint second_;
-    float radius_ = 0.f;
-    bool valid_ = false;
+    WorldPoint      first_;
+    WorldPoint      second_;
+    float           radius_ = 0.f;
+    bool            valid_  = false;
 };
 
 /**
@@ -267,11 +266,11 @@ private:
     GridArea(Shape shape, GridPoint minimum, GridPoint maximum) noexcept
         : shape_(shape), space_(minimum.space()), minimum_(minimum), maximum_(maximum), valid_(true) {}
 
-    Shape shape_ = Shape::Box2D;
+    Shape           shape_ = Shape::Box2D;
     CoordinateSpace space_ = CoordinateSpace::Grid2D;
-    GridPoint minimum_;
-    GridPoint maximum_;
-    bool valid_ = false;
+    GridPoint       minimum_;
+    GridPoint       maximum_;
+    bool            valid_ = false;
 };
 
 /** @brief A checked target-count and spatial constraint description. */
@@ -368,11 +367,11 @@ public:
     [[nodiscard]] const std::optional<GridArea>& gridArea() const noexcept { return gridArea_; }
 
 private:
-    std::vector<SubjectRef> subjects_;
-    std::optional<SubjectRef> primary_;
+    std::vector<SubjectRef>       subjects_;
+    std::optional<SubjectRef>     primary_;
     std::optional<TargetLocation> point_;
-    std::optional<WorldArea> worldArea_;
-    std::optional<GridArea> gridArea_;
+    std::optional<WorldArea>      worldArea_;
+    std::optional<GridArea>       gridArea_;
 };
 
 /** @brief Result of one injected line-of-sight query. */
@@ -393,7 +392,7 @@ struct LineOfSightResult {
 class ILineOfSightQuery {
 public:
     static constexpr const char* capabilityName = "eve.sensing.ILineOfSightQuery";
-    virtual ~ILineOfSightQuery() = default;
+    virtual ~ILineOfSightQuery()                = default;
 
     /**
      * @brief Tests the segment between two same-space locations.
@@ -403,7 +402,7 @@ public:
      * @remarks Synchronous; callers must invoke on the provider's documented simulation thread.
      */
     [[nodiscard]] virtual Result<LineOfSightResult> query(const TargetLocation& from,
-                                                           const TargetLocation& to) const = 0;
+                                                          const TargetLocation& to) const = 0;
 };
 
 /**
@@ -415,7 +414,7 @@ public:
 class ISensingCandidateProvider {
 public:
     static constexpr const char* capabilityName = "eve.sensing.ISensingCandidateProvider";
-    virtual ~ISensingCandidateProvider() = default;
+    virtual ~ISensingCandidateProvider()        = default;
 
     /**
      * @brief Returns broad-phase candidates satisfying the coordinate and spatial constraints.
@@ -436,7 +435,7 @@ public:
 class SensingCandidateProvider final : public ISensingCandidateProvider {
 public:
     /** @brief Creates an empty provider; registration with capability is explicit. */
-    SensingCandidateProvider() = default;
+    SensingCandidateProvider()           = default;
     ~SensingCandidateProvider() override = default;
 
     /** @brief Adds or replaces one candidate using its SubjectRef as the key. */

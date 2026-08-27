@@ -77,8 +77,7 @@ public:
      *         object, unavailable Runtime, or allocation failure.
      */
     [[nodiscard("retain ObjectHandle or explicitly inspect the failure")]]
-    eve::Result<ObjectHandle> registerObject(const std::string& className,
-                                             const ssq::Object& object,
+    eve::Result<ObjectHandle> registerObject(const std::string& className, const ssq::Object& object,
                                              const std::string& label = {});
     /**
      * @brief Removes a live entry and advances its slot generation.
@@ -117,8 +116,8 @@ public:
 
 private:
     struct Slot {
-        std::uint32_t generation = 1;
-        bool retired = false;
+        std::uint32_t              generation = 1;
+        bool                       retired    = false;
         std::optional<ObjectEntry> entry;
     };
 
@@ -142,8 +141,8 @@ private:
     [[nodiscard]] const Slot* slot(ObjectHandle handle) const noexcept;
 
     ObjectRegistry() = default;
-    std::vector<Slot> slots_;
-    std::vector<std::uint32_t> freeSlots_;
+    std::vector<Slot>                                slots_;
+    std::vector<std::uint32_t>                       freeSlots_;
     std::map<std::string, std::vector<ObjectHandle>> byClass_;
 };
 

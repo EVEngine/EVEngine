@@ -15,12 +15,12 @@ namespace {
 
 struct ConversionContext {
     const SquirrelValueOptions& options;
-    std::size_t elements = 0;
-    std::vector<const void*> activeContainers;
+    std::size_t                 elements = 0;
+    std::vector<const void*>    activeContainers;
 };
 
-Diagnostic conversionError(const ConversionContext& context, DiagnosticCode code,
-                           std::string message, std::string path) {
+Diagnostic conversionError(const ConversionContext& context, DiagnosticCode code, std::string message,
+                           std::string path) {
     return Diagnostic::error(code, std::move(message), std::move(path), {}, context.options.source);
 }
 
@@ -29,29 +29,26 @@ std::string childPath(std::string_view parent, std::size_t index) {
 }
 
 std::string memberPath(std::string_view parent, std::string_view key) {
-    if (!key.empty() && (std::isalpha(static_cast<unsigned char>(key.front())) != 0 ||
-                         key.front() == '_') &&
-        std::all_of(key.begin() + 1, key.end(), [](unsigned char value) {
-            return std::isalnum(value) != 0 || value == '_';
-        })) {
+    if (!key.empty() && (std::isalpha(static_cast<unsigned char>(key.front())) != 0 || key.front() == '_') &&
+        std::all_of(key.begin() + 1, key.end(),
+                    [](unsigned char value) { return std::isalnum(value) != 0 || value == '_'; })) {
         return std::string(parent) + "." + std::string(key);
     }
     return std::string(parent) + "[\"" + std::string(key) + "\"]";
 }
 
-bool takeObject(HSQUIRRELVM vm, SQInteger index, HSQOBJECT& object,
-                Diagnostic& diagnostic, const ConversionContext& context,
-                const std::string& path) {
+bool takeObject(HSQUIRRELVM vm, SQInteger index, HSQOBJECT& object, Diagnostic& diagnostic,
+                const ConversionContext& context, const std::string& path) {
     if (!vm || SQ_FAILED(sq_getstackobj(vm, index, &object))) {
-        diagnostic = conversionError(context, DiagnosticCode::InvalidArgument,
-                                     "Squirrel stack value is unavailable", path);
+        diagnostic =
+            conversionError(context, DiagnosticCode::InvalidArgument, "Squirrel stack value is unavailable", path);
         return false;
     }
     return true;
 }
 
-bool enterContainer(const HSQOBJECT& object, ConversionContext& context,
-                    Diagnostic& diagnostic, const std::string& path) {
+bool enterContainer(const HSQOBJECT& object, ConversionContext& context, Diagnostic& diagnostic,
+                    const std::string& path) {
     if (context.activeContainers.size() >= context.options.maxDepth) {
         diagnostic = conversionError(context, DiagnosticCode::InvalidArgument,
                                      "Squirrel value exceeds maximum conversion depth", path);
@@ -62,9 +59,8 @@ bool enterContainer(const HSQOBJECT& object, ConversionContext& context,
         identity = static_cast<const void*>(object._unVal.pArray);
     else if (object._type == OT_TABLE)
         identity = static_cast<const void*>(object._unVal.pTable);
-    if (identity && std::find(context.activeContainers.begin(),
-                              context.activeContainers.end(), identity) !=
-                       context.activeContainers.end()) {
+    if (identity && std::find(context.activeContainers.begin(), context.activeContainers.end(), identity) !=
+                        context.activeContainers.end()) {
         diagnostic = conversionError(context, DiagnosticCode::InvalidArgument,
                                      "cyclic Squirrel container cannot become an owning Value", path);
         return false;
@@ -74,14 +70,11 @@ bool enterContainer(const HSQOBJECT& object, ConversionContext& context,
 }
 
 void leaveContainer(const HSQOBJECT& object, ConversionContext& context) {
-    if ((object._type != OT_ARRAY && object._type != OT_TABLE) ||
-        context.activeContainers.empty())
-        return;
+    if ((object._type != OT_ARRAY && object._type != OT_TABLE) || context.activeContainers.empty()) return;
     context.activeContainers.pop_back();
 }
 
-bool countElement(ConversionContext& context, Diagnostic& diagnostic,
-                  const std::string& path) {
+bool countElement(ConversionContext& context, Diagnostic& diagnostic, const std::string& path) {
     if (context.elements >= context.options.maxElements) {
         diagnostic = conversionError(context, DiagnosticCode::InvalidArgument,
                                      "Squirrel value exceeds maximum element count", path);
@@ -91,69 +84,66 @@ bool countElement(ConversionContext& context, Diagnostic& diagnostic,
     return true;
 }
 
-bool convertAt(HSQUIRRELVM vm, SQInteger index, ConversionContext& context,
-               const std::string& path, Value& output, Diagnostic& diagnostic) {
+bool convertAt(HSQUIRRELVM vm, SQInteger index, ConversionContext& context, const std::string& path, Value& output,
+               Diagnostic& diagnostic) {
     if (!countElement(context, diagnostic, path)) return false;
 
     const SQObjectType type = sq_gettype(vm, index);
     switch (type) {
-    case OT_NULL:
-        output = Value();
-        return true;
-    case OT_BOOL: {
-        SQBool value = SQFalse;
-        if (SQ_FAILED(sq_getbool(vm, index, &value))) {
-            diagnostic = conversionError(context, DiagnosticCode::ParseError,
-                                         "failed to read Squirrel boolean", path);
-            return false;
+        case OT_NULL: output = Value(); return true;
+        case OT_BOOL: {
+            SQBool value = SQFalse;
+            if (SQ_FAILED(sq_getbool(vm, index, &value))) {
+                diagnostic =
+                    conversionError(context, DiagnosticCode::ParseError, "failed to read Squirrel boolean", path);
+                return false;
+            }
+            output = Value(value != SQFalse);
+            return true;
         }
-        output = Value(value != SQFalse);
-        return true;
-    }
-    case OT_INTEGER: {
-        SQInteger value = 0;
-        if (SQ_FAILED(sq_getinteger(vm, index, &value))) {
-            diagnostic = conversionError(context, DiagnosticCode::ParseError,
-                                         "failed to read Squirrel integer", path);
-            return false;
+        case OT_INTEGER: {
+            SQInteger value = 0;
+            if (SQ_FAILED(sq_getinteger(vm, index, &value))) {
+                diagnostic =
+                    conversionError(context, DiagnosticCode::ParseError, "failed to read Squirrel integer", path);
+                return false;
+            }
+            output = Value(static_cast<std::int64_t>(value));
+            return true;
         }
-        output = Value(static_cast<std::int64_t>(value));
-        return true;
-    }
-    case OT_FLOAT: {
-        SQFloat value = 0;
-        if (SQ_FAILED(sq_getfloat(vm, index, &value))) {
-            diagnostic = conversionError(context, DiagnosticCode::ParseError,
-                                         "failed to read Squirrel number", path);
-            return false;
+        case OT_FLOAT: {
+            SQFloat value = 0;
+            if (SQ_FAILED(sq_getfloat(vm, index, &value))) {
+                diagnostic =
+                    conversionError(context, DiagnosticCode::ParseError, "failed to read Squirrel number", path);
+                return false;
+            }
+            const double converted = static_cast<double>(value);
+            if (!std::isfinite(converted)) {
+                diagnostic = conversionError(context, DiagnosticCode::InvalidArgument,
+                                             "non-finite Squirrel number is not representable", path);
+                return false;
+            }
+            output = Value(converted);
+            return true;
         }
-        const double converted = static_cast<double>(value);
-        if (!std::isfinite(converted)) {
-            diagnostic = conversionError(context, DiagnosticCode::InvalidArgument,
-                                         "non-finite Squirrel number is not representable", path);
-            return false;
+        case OT_STRING: {
+            const SQChar* value = nullptr;
+            SQInteger     size  = 0;
+            if (SQ_FAILED(sq_getstringandsize(vm, index, &value, &size)) || !value || size < 0) {
+                diagnostic =
+                    conversionError(context, DiagnosticCode::ParseError, "failed to read Squirrel string", path);
+                return false;
+            }
+            output = Value(std::string(value, static_cast<std::size_t>(size)));
+            return true;
         }
-        output = Value(converted);
-        return true;
-    }
-    case OT_STRING: {
-        const SQChar* value = nullptr;
-        SQInteger size = 0;
-        if (SQ_FAILED(sq_getstringandsize(vm, index, &value, &size)) || !value || size < 0) {
-            diagnostic = conversionError(context, DiagnosticCode::ParseError,
-                                         "failed to read Squirrel string", path);
+        case OT_ARRAY:
+        case OT_TABLE: break;
+        default:
+            diagnostic = conversionError(context, DiagnosticCode::Unsupported,
+                                         "Squirrel value kind is not part of eve::Value", path);
             return false;
-        }
-        output = Value(std::string(value, static_cast<std::size_t>(size)));
-        return true;
-    }
-    case OT_ARRAY:
-    case OT_TABLE:
-        break;
-    default:
-        diagnostic = conversionError(context, DiagnosticCode::Unsupported,
-                                     "Squirrel value kind is not part of eve::Value", path);
-        return false;
     }
 
     HSQOBJECT object{};
@@ -164,8 +154,8 @@ bool convertAt(HSQUIRRELVM vm, SQInteger index, ConversionContext& context,
     if (type == OT_ARRAY) {
         const SQInteger size = sq_getsize(vm, index);
         if (size < 0) {
-            diagnostic = conversionError(context, DiagnosticCode::ParseError,
-                                         "failed to read Squirrel array size", path);
+            diagnostic =
+                conversionError(context, DiagnosticCode::ParseError, "failed to read Squirrel array size", path);
             converted = false;
         } else {
             Value::Array values;
@@ -174,46 +164,44 @@ bool convertAt(HSQUIRRELVM vm, SQInteger index, ConversionContext& context,
             for (SQInteger i = 0; converted && i < size; ++i) {
                 sq_pushinteger(vm, i);
                 if (SQ_FAILED(sq_get(vm, absolute))) {
-                    diagnostic = conversionError(context, DiagnosticCode::ParseError,
-                                                 "failed to read Squirrel array element",
-                                                 childPath(path, static_cast<std::size_t>(i)));
+                    diagnostic =
+                        conversionError(context, DiagnosticCode::ParseError, "failed to read Squirrel array element",
+                                        childPath(path, static_cast<std::size_t>(i)));
                     converted = false;
                     break;
                 }
                 Value element;
-                converted = convertAt(vm, -1, context,
-                                      childPath(path, static_cast<std::size_t>(i)), element,
-                                      diagnostic);
+                converted =
+                    convertAt(vm, -1, context, childPath(path, static_cast<std::size_t>(i)), element, diagnostic);
                 sq_pop(vm, 1);
                 if (converted) values.push_back(std::move(element));
             }
             if (converted) output = Value(std::move(values));
         }
     } else {
-        Value::Object fields;
+        Value::Object   fields;
         const SQInteger absolute = index > 0 ? index : sq_gettop(vm) + index + 1;
         sq_pushnull(vm);
         while (converted && SQ_SUCCEEDED(sq_next(vm, absolute))) {
             if (sq_gettype(vm, -2) != OT_STRING) {
                 diagnostic = conversionError(context, DiagnosticCode::Unsupported,
-                                             "Squirrel table keys must be strings",
-                                             path + "[<non-string-key>]");
-                converted = false;
+                                             "Squirrel table keys must be strings", path + "[<non-string-key>]");
+                converted  = false;
                 sq_pop(vm, 2);
                 break;
             }
-            const SQChar* key = nullptr;
-            SQInteger keySize = 0;
+            const SQChar* key     = nullptr;
+            SQInteger     keySize = 0;
             if (SQ_FAILED(sq_getstringandsize(vm, -2, &key, &keySize)) || !key || keySize < 0) {
-                diagnostic = conversionError(context, DiagnosticCode::ParseError,
-                                             "failed to read Squirrel table key", path);
+                diagnostic =
+                    conversionError(context, DiagnosticCode::ParseError, "failed to read Squirrel table key", path);
                 converted = false;
                 sq_pop(vm, 2);
                 break;
             }
             const std::string keyText(key, static_cast<std::size_t>(keySize));
             const std::string field = memberPath(path, keyText);
-            Value value;
+            Value             value;
             converted = convertAt(vm, -1, context, field, value, diagnostic);
             sq_pop(vm, 2);
             if (converted) fields.emplace(keyText, std::move(value));
@@ -225,33 +213,28 @@ bool convertAt(HSQUIRRELVM vm, SQInteger index, ConversionContext& context,
     return converted;
 }
 
-bool validateValue(const Value& value, const SquirrelValueOptions& options,
-                   std::size_t depth, std::size_t& elements, const std::string& path,
-                   Diagnostic& diagnostic) {
+bool validateValue(const Value& value, const SquirrelValueOptions& options, std::size_t depth, std::size_t& elements,
+                   const std::string& path, Diagnostic& diagnostic) {
     if (elements >= options.maxElements) {
-        diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                       "Value exceeds maximum Squirrel element count", path,
-                                       {}, options.source);
+        diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument, "Value exceeds maximum Squirrel element count",
+                                       path, {}, options.source);
         return false;
     }
     ++elements;
     if (value.isDouble() && !std::isfinite(value.asDouble())) {
-        diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                       "non-finite Value cannot be pushed to Squirrel", path,
-                                       {}, options.source);
+        diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument, "non-finite Value cannot be pushed to Squirrel",
+                                       path, {}, options.source);
         return false;
     }
     if (!value.isArray() && !value.isObject()) return true;
     if (depth >= options.maxDepth) {
         diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                       "Value exceeds maximum Squirrel conversion depth", path,
-                                       {}, options.source);
+                                       "Value exceeds maximum Squirrel conversion depth", path, {}, options.source);
         return false;
     }
     if (value.isArray()) {
         for (std::size_t index = 0; index < value.arraySize(); ++index) {
-            if (!validateValue(value.at(index), options, depth + 1, elements,
-                               childPath(path, index), diagnostic))
+            if (!validateValue(value.at(index), options, depth + 1, elements, childPath(path, index), diagnostic))
                 return false;
         }
         return true;
@@ -259,15 +242,13 @@ bool validateValue(const Value& value, const SquirrelValueOptions& options,
     for (const std::string& key : value.keys()) {
         const Value* member = value.find(key);
         if (!member) continue;
-        if (!validateValue(*member, options, depth + 1, elements,
-                           memberPath(path, key), diagnostic))
-            return false;
+        if (!validateValue(*member, options, depth + 1, elements, memberPath(path, key), diagnostic)) return false;
     }
     return true;
 }
 
-bool pushImpl(HSQUIRRELVM vm, const Value& value, const SquirrelValueOptions& options,
-              std::size_t depth, const std::string& path, Diagnostic& diagnostic) {
+bool pushImpl(HSQUIRRELVM vm, const Value& value, const SquirrelValueOptions& options, std::size_t depth,
+              const std::string& path, Diagnostic& diagnostic) {
     if (value.isNull()) {
         sq_pushnull(vm);
         return true;
@@ -280,9 +261,8 @@ bool pushImpl(HSQUIRRELVM vm, const Value& value, const SquirrelValueOptions& op
         const auto integer = value.asInt();
         if (integer < static_cast<std::int64_t>(std::numeric_limits<SQInteger>::min()) ||
             integer > static_cast<std::int64_t>(std::numeric_limits<SQInteger>::max())) {
-            diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                           "Int64 value does not fit Squirrel integer", path,
-                                           {}, options.source);
+            diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument, "Int64 value does not fit Squirrel integer",
+                                           path, {}, options.source);
             return false;
         }
         sq_pushinteger(vm, static_cast<SQInteger>(integer));
@@ -299,20 +279,17 @@ bool pushImpl(HSQUIRRELVM vm, const Value& value, const SquirrelValueOptions& op
     }
     if (depth >= options.maxDepth) {
         diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                       "Value exceeds maximum Squirrel conversion depth", path,
-                                       {}, options.source);
+                                       "Value exceeds maximum Squirrel conversion depth", path, {}, options.source);
         return false;
     }
     if (value.isArray()) {
         sq_newarray(vm, 0);
         for (std::size_t index = 0; index < value.arraySize(); ++index) {
-            if (!pushImpl(vm, value.at(index), options, depth + 1,
-                          childPath(path, index), diagnostic))
-                return false;
+            if (!pushImpl(vm, value.at(index), options, depth + 1, childPath(path, index), diagnostic)) return false;
             if (SQ_FAILED(sq_arrayappend(vm, -2))) {
-                diagnostic = Diagnostic::error(DiagnosticCode::Failed,
-                                               "failed to append Value array element to Squirrel",
-                                               childPath(path, index), {}, options.source);
+                diagnostic =
+                    Diagnostic::error(DiagnosticCode::Failed, "failed to append Value array element to Squirrel",
+                                      childPath(path, index), {}, options.source);
                 return false;
             }
         }
@@ -323,12 +300,9 @@ bool pushImpl(HSQUIRRELVM vm, const Value& value, const SquirrelValueOptions& op
         const Value* member = value.find(key);
         if (!member) continue;
         sq_pushstring(vm, key.c_str(), static_cast<SQInteger>(key.size()));
-        if (!pushImpl(vm, *member, options, depth + 1,
-                      memberPath(path, key), diagnostic))
-            return false;
+        if (!pushImpl(vm, *member, options, depth + 1, memberPath(path, key), diagnostic)) return false;
         if (SQ_FAILED(sq_newslot(vm, -3, SQFalse))) {
-            diagnostic = Diagnostic::error(DiagnosticCode::Failed,
-                                           "failed to add Value object member to Squirrel",
+            diagnostic = Diagnostic::error(DiagnosticCode::Failed, "failed to add Value object member to Squirrel",
                                            memberPath(path, key), {}, options.source);
             return false;
         }
@@ -347,8 +321,8 @@ ssq::Object objectFromTop(HSQUIRRELVM vm, SQInteger top) {
 
 ssq::Object projectValueObject(HSQUIRRELVM vm, const Value& value) {
     if (!vm) return ssq::Object();
-    const SQInteger top = sq_gettop(vm);
-    auto pushed = pushValue(vm, value);
+    const SQInteger top    = sq_gettop(vm);
+    auto            pushed = pushValue(vm, value);
     if (!pushed.ok()) {
         pushed.ignore("Result projection could not push its value payload");
         sq_settop(vm, top);
@@ -365,27 +339,25 @@ bool readBoolField(const ssq::Object& object, const char* name) {
 
 }  // namespace
 
-Result<Value> valueFromSquirrel(HSQUIRRELVM vm, SQInteger index,
-                                 const SquirrelValueOptions& options) {
+Result<Value> valueFromSquirrel(HSQUIRRELVM vm, SQInteger index, const SquirrelValueOptions& options) {
     if (!vm)
-        return Result<Value>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "Squirrel VM must not be null", "$", {}, options.source));
-    const SQInteger top = sq_gettop(vm);
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Squirrel VM must not be null",
+                                                        "$", {}, options.source));
+    const SQInteger   top = sq_gettop(vm);
     ConversionContext context{options, 0, {}};
-    Value output;
-    Diagnostic diagnostic;
-    const bool converted = convertAt(vm, index, context, "$", output, diagnostic);
+    Value             output;
+    Diagnostic        diagnostic;
+    const bool        converted = convertAt(vm, index, context, "$", output, diagnostic);
     sq_settop(vm, top);
     if (!converted) return Result<Value>::failure(std::move(diagnostic));
     return Result<Value>::success(std::move(output));
 }
 
-Result<Value> valueFromSquirrel(const ssq::Object& object,
-                                 const SquirrelValueOptions& options) {
+Result<Value> valueFromSquirrel(const ssq::Object& object, const SquirrelValueOptions& options) {
     const HSQUIRRELVM vm = object.getHandle();
     if (!vm || object.isEmpty())
-        return Result<Value>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "Squirrel object is empty", "$", {}, options.source));
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Squirrel object is empty", "$", {}, options.source));
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, object.getRaw());
     auto result = valueFromSquirrel(vm, -1, options);
@@ -394,13 +366,12 @@ Result<Value> valueFromSquirrel(const ssq::Object& object,
     return result;
 }
 
-Result<void> pushValue(HSQUIRRELVM vm, const Value& value,
-                       const SquirrelValueOptions& options) {
+Result<void> pushValue(HSQUIRRELVM vm, const Value& value, const SquirrelValueOptions& options) {
     if (!vm)
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "Squirrel VM must not be null", "$", {}, options.source));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Squirrel VM must not be null",
+                                                       "$", {}, options.source));
     std::size_t elements = 0;
-    Diagnostic diagnostic;
+    Diagnostic  diagnostic;
     if (!validateValue(value, options, 0, elements, "$", diagnostic))
         return Result<void>::failure(std::move(diagnostic));
 
@@ -417,10 +388,10 @@ ssq::Table projectDiagnostic(HSQUIRRELVM vm, const Diagnostic& diagnostic) {
     result.set("code", std::string(diagnosticCodeName(diagnostic.code())));
     result.set("severity", [&diagnostic] {
         switch (diagnostic.severity()) {
-        case Severity::Info: return std::string("info");
-        case Severity::Warning: return std::string("warning");
-        case Severity::Error: return std::string("error");
-        case Severity::Fatal: return std::string("fatal");
+            case Severity::Info: return std::string("info");
+            case Severity::Warning: return std::string("warning");
+            case Severity::Error: return std::string("error");
+            case Severity::Fatal: return std::string("fatal");
         }
         return std::string("unknown");
     }());
@@ -439,15 +410,13 @@ ssq::Table projectStatus(HSQUIRRELVM vm, const Status& status) {
     result.set("code", std::string(statusCodeName(status.code())));
     result.set("summary", status.describe());
     ssq::Array diagnostics(vm);
-    for (const Diagnostic& diagnostic : status.diagnostics())
-        diagnostics.push(projectDiagnostic(vm, diagnostic));
+    for (const Diagnostic& diagnostic : status.diagnostics()) diagnostics.push(projectDiagnostic(vm, diagnostic));
     result.set("diagnostics", diagnostics);
     result.set("diagnosticCount", static_cast<std::int64_t>(status.diagnostics().size()));
     return result;
 }
 
-ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status,
-                               bool ok, bool hasValue, const Value& value) {
+ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, bool ok, bool hasValue, const Value& value) {
     ssq::Table result(vm);
     result.set("ok", ok);
     result.set("code", std::string(statusCodeName(status.code())));
@@ -457,16 +426,17 @@ ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status,
     result.set("ignoreReason", std::string{});
     result.set("status", projectStatus(vm, status));
     ssq::Array diagnostics(vm);
-    for (const Diagnostic& diagnostic : status.diagnostics())
-        diagnostics.push(projectDiagnostic(vm, diagnostic));
+    for (const Diagnostic& diagnostic : status.diagnostics()) diagnostics.push(projectDiagnostic(vm, diagnostic));
     result.set("diagnostics", diagnostics);
-    if (hasValue) result.set("value", projectValueObject(vm, value));
-    else result.set("value", ssq::Object(vm));
+    if (hasValue)
+        result.set("value", projectValueObject(vm, value));
+    else
+        result.set("value", ssq::Object(vm));
     return result;
 }
 
 ssq::Table projectResult(HSQUIRRELVM vm, Result<void>&& result) {
-    const bool ok = result.ok();
+    const bool   ok     = result.ok();
     const Status status = result.status();
     return projectStatusResult(vm, status, ok, false);
 }
@@ -503,15 +473,9 @@ bool ignoreResult(const ssq::Object& result, const std::string& reason) {
 
 void exposeResultBindings(ssq::Table& eveTable) {
     ssq::Table result = eveTable.addTable("result");
-    result.addFunc("ignore", [](ssq::Object value, const std::string& reason) {
-        return ignoreResult(value, reason);
-    });
-    result.addFunc("isChecked", [](ssq::Object value) {
-        return readBoolField(value, "checked");
-    });
-    result.addFunc("isIgnored", [](ssq::Object value) {
-        return readBoolField(value, "ignored");
-    });
+    result.addFunc("ignore", [](ssq::Object value, const std::string& reason) { return ignoreResult(value, reason); });
+    result.addFunc("isChecked", [](ssq::Object value) { return readBoolField(value, "checked"); });
+    result.addFunc("isIgnored", [](ssq::Object value) { return readBoolField(value, "ignored"); });
 }
 
 }  // namespace eve::script

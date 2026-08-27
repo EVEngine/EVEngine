@@ -32,14 +32,11 @@ eve::Subscription PlatformEvent::subscribePoll(std::function<void(const Message&
     return pollObservers_.subscribe(std::move(callback));
 }
 
-void PlatformEvent::push(Message* msg) {
-    push(std::unique_ptr<Message>(msg));
-}
+void PlatformEvent::push(Message* msg) { push(std::unique_ptr<Message>(msg)); }
 
 void PlatformEvent::push(std::unique_ptr<Message> msg) {
     EV_PARAM_CHECK(msg.get() != nullptr, "event message must not be null");
-    if (!msg)
-        return;
+    if (!msg) return;
     {
         std::lock_guard<std::mutex> lock(queueMu_);
         queue.push(std::move(msg));
@@ -49,21 +46,17 @@ void PlatformEvent::push(std::unique_ptr<Message> msg) {
 
 void PlatformEvent::pushData(std::string eventName, std::string data) {
     std::vector<Variant> args;
-    if (!data.empty())
-        args.push_back(Variant::makeString(std::move(data)));
+    if (!data.empty()) args.push_back(Variant::makeString(std::move(data)));
     push(std::make_unique<Message>(std::move(eventName), args));
 }
 
-Message* PlatformEvent::poll() {
-    return pollOwned().release();
-}
+Message* PlatformEvent::poll() { return pollOwned().release(); }
 
 std::unique_ptr<Message> PlatformEvent::pollOwned() {
     std::unique_ptr<Message> msg;
     {
         std::lock_guard<std::mutex> lock(queueMu_);
-        if (queue.empty())
-            return nullptr;
+        if (queue.empty()) return nullptr;
         msg = std::move(queue.front());
         queue.pop();
     }
@@ -71,8 +64,7 @@ std::unique_ptr<Message> PlatformEvent::pollOwned() {
     // The queue mutation is already committed; callback exceptions are
     // contained and counted instead of making a successful poll look failed.
     if (msg) {
-        static_cast<void>(pollObservers_.notifyChecked(
-            [this]() noexcept { ++pollObserverFailures_; }, *msg));
+        static_cast<void>(pollObservers_.notifyChecked([this]() noexcept { ++pollObserverFailures_; }, *msg));
     }
     return msg;
 }
@@ -80,8 +72,7 @@ std::unique_ptr<Message> PlatformEvent::pollOwned() {
 std::string PlatformEvent::pollName() {
     auto msg = pollOwned();
     lastData_.clear();
-    if (!msg)
-        return {};
+    if (!msg) return {};
     for (const auto& a : msg->args) {
         if (a.type == Variant::Type::String) {
             lastData_ = a.s;
@@ -97,8 +88,7 @@ std::string PlatformEvent::getLastData() const { return lastData_; }
 std::string PlatformEvent::pollData() {
     auto msg = pollOwned();
     lastData_.clear();
-    if (!msg)
-        return {};
+    if (!msg) return {};
     std::string data;
     for (const auto& a : msg->args) {
         if (a.type == Variant::Type::String) {

@@ -27,14 +27,10 @@ std::string floatToString(double v) {
 
 std::string scalarToString(const DataValue &v) {
     switch (v.kind()) {
-        case DataValue::Kind::String:
-            return v.asString();
-        case DataValue::Kind::Int:
-            return std::to_string(v.asInt());
-        case DataValue::Kind::Float:
-            return floatToString(v.asDouble());
-        case DataValue::Kind::Bool:
-            return v.asBool() ? "true" : "false";
+        case DataValue::Kind::String: return v.asString();
+        case DataValue::Kind::Int: return std::to_string(v.asInt());
+        case DataValue::Kind::Float: return floatToString(v.asDouble());
+        case DataValue::Kind::Bool: return v.asBool() ? "true" : "false";
         default:
             return {};
     }

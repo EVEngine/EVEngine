@@ -159,11 +159,11 @@ void ControlAnim::updateUnchecked(float dt) {
     }
 }
 
-eve::Result<void> ControlAnim::advance(const eve::SimulationStep& step) {
+eve::Result<void> ControlAnim::advance(const eve::SimulationStep &step) {
     auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "ControlAnim");
     if (!seconds) return eve::Result<void>::failure(seconds.status());
     updateUnchecked(std::move(seconds).takeValue());
-    lastTick_ = step.tick;
+    lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }

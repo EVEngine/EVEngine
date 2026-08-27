@@ -1,7 +1,7 @@
 #include "animation/AnimTrail.h"
 
-#include "animation/AnimationTime.h"
 #include "animation/AnimPose.h"
+#include "animation/AnimationTime.h"
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
@@ -155,11 +155,11 @@ void AnimTrail::updateUnchecked(float dt) {
     }
 }
 
-eve::Result<void> AnimTrail::advance(const eve::SimulationStep& step) {
+eve::Result<void> AnimTrail::advance(const eve::SimulationStep &step) {
     auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "AnimTrail");
     if (!seconds) return eve::Result<void>::failure(seconds.status());
     updateUnchecked(std::move(seconds).takeValue());
-    lastTick_ = step.tick;
+    lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }

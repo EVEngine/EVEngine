@@ -34,47 +34,43 @@ std::string doubleToken(double value) {
 
 std::string canonicalValue(const eve::Value& value) {
     switch (value.type()) {
-    case eve::Value::Type::Null:
-        return "null";
-    case eve::Value::Type::Bool:
-        return std::string("bool:") + (value.asBool() ? "1" : "0");
-    case eve::Value::Type::Int64:
-        return "int:" + std::to_string(value.asInt());
-    case eve::Value::Type::Double:
-        return "double:" + doubleToken(value.asDouble());
-    case eve::Value::Type::String: {
-        const std::string& text = value.asString();
-        std::string result      = "string:";
-        appendLength(result, text);
-        return result;
-    }
-    case eve::Value::Type::Array: {
-        std::string result = "array:";
-        const auto* array  = value.getIf<eve::Value::Array>();
-        result += std::to_string(array ? array->size() : 0);
-        result.push_back(':');
-        if (array) {
-            for (const eve::Value& element : *array) {
-                const std::string encoded = canonicalValue(element);
-                appendLength(result, encoded);
-            }
+        case eve::Value::Type::Null: return "null";
+        case eve::Value::Type::Bool: return std::string("bool:") + (value.asBool() ? "1" : "0");
+        case eve::Value::Type::Int64: return "int:" + std::to_string(value.asInt());
+        case eve::Value::Type::Double: return "double:" + doubleToken(value.asDouble());
+        case eve::Value::Type::String: {
+            const std::string& text   = value.asString();
+            std::string        result = "string:";
+            appendLength(result, text);
+            return result;
         }
-        return result;
-    }
-    case eve::Value::Type::Object: {
-        std::string result = "object:";
-        const auto* object = value.getIf<eve::Value::Object>();
-        result += std::to_string(object ? object->size() : 0);
-        result.push_back(':');
-        if (object) {
-            for (const auto& [key, member] : *object) {
-                appendLength(result, key);
-                const std::string encoded = canonicalValue(member);
-                appendLength(result, encoded);
+        case eve::Value::Type::Array: {
+            std::string result = "array:";
+            const auto* array  = value.getIf<eve::Value::Array>();
+            result += std::to_string(array ? array->size() : 0);
+            result.push_back(':');
+            if (array) {
+                for (const eve::Value& element : *array) {
+                    const std::string encoded = canonicalValue(element);
+                    appendLength(result, encoded);
+                }
             }
+            return result;
         }
-        return result;
-    }
+        case eve::Value::Type::Object: {
+            std::string result = "object:";
+            const auto* object = value.getIf<eve::Value::Object>();
+            result += std::to_string(object ? object->size() : 0);
+            result.push_back(':');
+            if (object) {
+                for (const auto& [key, member] : *object) {
+                    appendLength(result, key);
+                    const std::string encoded = canonicalValue(member);
+                    appendLength(result, encoded);
+                }
+            }
+            return result;
+        }
     }
     return "null";
 }
@@ -86,8 +82,7 @@ const eve::Value* findValue(const eve::Value::Object& values, const std::string&
 
 std::optional<int> asInt(const eve::Value& value) {
     if (const auto* integer = value.getIf<std::int64_t>()) {
-        if (*integer < std::numeric_limits<int>::lowest() ||
-            *integer > std::numeric_limits<int>::max())
+        if (*integer < std::numeric_limits<int>::lowest() || *integer > std::numeric_limits<int>::max())
             return std::nullopt;
         return static_cast<int>(*integer);
     }
@@ -131,8 +126,7 @@ std::optional<bool> asBool(const eve::Value& value) {
     return std::nullopt;
 }
 
-void appendField(std::string& output, std::string_view domain, std::string_view key,
-                 const eve::Value& value) {
+void appendField(std::string& output, std::string_view domain, std::string_view key, const eve::Value& value) {
     appendLength(output, domain);
     appendLength(output, key);
     const std::string encoded = canonicalValue(value);
@@ -168,15 +162,11 @@ void Params::setInt(const std::string& key, int value) {
     values_[key] = eve::Value(static_cast<std::int64_t>(value));
 }
 
-void Params::setFloat(const std::string& key, float value) {
-    values_[key] = eve::Value(static_cast<double>(value));
-}
+void Params::setFloat(const std::string& key, float value) { values_[key] = eve::Value(static_cast<double>(value)); }
 
 void Params::setBool(const std::string& key, bool value) { values_[key] = eve::Value(value); }
 
-void Params::setString(const std::string& key, const std::string& value) {
-    values_[key] = eve::Value(value);
-}
+void Params::setString(const std::string& key, const std::string& value) { values_[key] = eve::Value(value); }
 
 bool Params::has(const std::string& key) const {
     if (key == kSeedKey || key == kWidthKey || key == kHeightKey) return true;
@@ -185,9 +175,7 @@ bool Params::has(const std::string& key) const {
 
 int Params::getInt(const std::string& key, int defaultValue) const {
     if (key == kSeedKey) {
-        return seed_ <= static_cast<uint32_t>(std::numeric_limits<int>::max())
-                   ? static_cast<int>(seed_)
-                   : defaultValue;
+        return seed_ <= static_cast<uint32_t>(std::numeric_limits<int>::max()) ? static_cast<int>(seed_) : defaultValue;
     }
     if (key == kWidthKey) return width_;
     if (key == kHeightKey) return height_;

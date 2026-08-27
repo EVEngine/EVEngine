@@ -9,16 +9,14 @@
 using namespace eve::production;
 
 TEST_CASE("production.enqueue.stableIdsAndCanonicalContext") {
-    WorkQueue queue;
+    WorkQueue          queue;
     eve::Value::Object context;
     context.emplace("z", eve::Value(2));
     context.emplace("a", eve::Value(1));
-    auto firstResult = queue.enqueue("factory:1", "vehicle", "tank.medium",
-                                     eve::Value(std::move(context)), 10.0, 2);
+    auto firstResult = queue.enqueue("factory:1", "vehicle", "tank.medium", eve::Value(std::move(context)), 10.0, 2);
     REQUIRE(firstResult.ok());
-    const auto first = std::move(firstResult).takeValue();
-    auto secondResult = queue.enqueue("factory:1", "vehicle", "truck",
-                                      eve::Value(eve::Value::Object{}), 5.0, 1);
+    const auto first        = std::move(firstResult).takeValue();
+    auto       secondResult = queue.enqueue("factory:1", "vehicle", "truck", eve::Value(eve::Value::Object{}), 5.0, 1);
     REQUIRE(secondResult.ok());
     const auto second = std::move(secondResult).takeValue();
     CHECK_EQ(first, std::string("task-0000000000000001"));
@@ -41,29 +39,25 @@ TEST_CASE("production.enqueue.stableIdsAndCanonicalContext") {
 
 TEST_CASE("production.scheduling.prioritySlotsAndOwnersAreDeterministic") {
     WorkQueue queue;
-    auto slotsDisabled = queue.setSlotCount("base:a", 0);
+    auto      slotsDisabled = queue.setSlotCount("base:a", 0);
     REQUIRE(slotsDisabled.ok());
-    auto lowResult = queue.enqueue("base:a", "build", "low",
-                                   eve::Value(eve::Value::Object{}), 2.0, 1);
-    auto high1Result = queue.enqueue("base:a", "build", "high1",
-                                     eve::Value(eve::Value::Object{}), 2.0, 9);
-    auto high2Result = queue.enqueue("base:a", "build", "high2",
-                                     eve::Value(eve::Value::Object{}), 2.0, 9);
-    auto otherResult = queue.enqueue("base:b", "train", "unit",
-                                    eve::Value(eve::Value::Object{}), 2.0, 0);
+    auto lowResult   = queue.enqueue("base:a", "build", "low", eve::Value(eve::Value::Object{}), 2.0, 1);
+    auto high1Result = queue.enqueue("base:a", "build", "high1", eve::Value(eve::Value::Object{}), 2.0, 9);
+    auto high2Result = queue.enqueue("base:a", "build", "high2", eve::Value(eve::Value::Object{}), 2.0, 9);
+    auto otherResult = queue.enqueue("base:b", "train", "unit", eve::Value(eve::Value::Object{}), 2.0, 0);
     REQUIRE(lowResult.ok());
     REQUIRE(high1Result.ok());
     REQUIRE(high2Result.ok());
     REQUIRE(otherResult.ok());
-    const auto low = std::move(lowResult).takeValue();
-    const auto high1 = std::move(high1Result).takeValue();
-    const auto high2 = std::move(high2Result).takeValue();
-    const auto other = std::move(otherResult).takeValue();
-    auto slotsEnabled = queue.setSlotCount("base:a", 2);
+    const auto low          = std::move(lowResult).takeValue();
+    const auto high1        = std::move(high1Result).takeValue();
+    const auto high2        = std::move(high2Result).takeValue();
+    const auto other        = std::move(otherResult).takeValue();
+    auto       slotsEnabled = queue.setSlotCount("base:a", 2);
     REQUIRE(slotsEnabled.ok());
     auto high1Task = queue.find(high1);
     auto high2Task = queue.find(high2);
-    auto lowTask = queue.find(low);
+    auto lowTask   = queue.find(low);
     auto otherTask = queue.find(other);
     REQUIRE(high1Task);
     REQUIRE(high2Task);
@@ -77,41 +71,35 @@ TEST_CASE("production.scheduling.prioritySlotsAndOwnersAreDeterministic") {
 
 TEST_CASE("production.advance.fixedDeltaCompletion") {
     WorkQueue queue;
-    auto firstResult = queue.enqueue("yard", "assemble", "a",
-                                     eve::Value(eve::Value::Object{}), 4.0);
-    auto secondResult = queue.enqueue("yard", "assemble", "b",
-                                      eve::Value(eve::Value::Object{}), 1.0);
+    auto      firstResult  = queue.enqueue("yard", "assemble", "a", eve::Value(eve::Value::Object{}), 4.0);
+    auto      secondResult = queue.enqueue("yard", "assemble", "b", eve::Value(eve::Value::Object{}), 1.0);
     REQUIRE(firstResult.ok());
     REQUIRE(secondResult.ok());
-    const auto first = std::move(firstResult).takeValue();
-    const auto second = std::move(secondResult).takeValue();
-    auto firstStep = queue.advance(
-        {eve::SimulationTick(1), eve::Duration::fromNanoseconds(1000000000)});
+    const auto first     = std::move(firstResult).takeValue();
+    const auto second    = std::move(secondResult).takeValue();
+    auto       firstStep = queue.advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(1000000000)});
     REQUIRE(firstStep.ok());
     auto firstTask = queue.find(first);
     REQUIRE(firstTask);
     CHECK_EQ(firstTask->get().progress.seconds(), 1.0);
-    auto secondStep = queue.advance(
-        {eve::SimulationTick(2), eve::Duration::fromNanoseconds(1000000000)});
+    auto secondStep = queue.advance({eve::SimulationTick(2), eve::Duration::fromNanoseconds(1000000000)});
     REQUIRE(secondStep.ok());
-    firstTask = queue.find(first);
+    firstTask       = queue.find(first);
     auto secondTask = queue.find(second);
     REQUIRE(firstTask);
     REQUIRE(secondTask);
     CHECK_EQ(firstTask->get().progress.seconds(), 2.0);
     CHECK_EQ(firstTask->get().state == TaskState::Running, true);
     CHECK_EQ(secondTask->get().state == TaskState::Queued, true);
-    auto thirdStep = queue.advance(
-        {eve::SimulationTick(3), eve::Duration::fromNanoseconds(2000000000)});
+    auto thirdStep = queue.advance({eve::SimulationTick(3), eve::Duration::fromNanoseconds(2000000000)});
     REQUIRE(thirdStep.ok());
-    firstTask = queue.find(first);
+    firstTask  = queue.find(first);
     secondTask = queue.find(second);
     REQUIRE(firstTask);
     REQUIRE(secondTask);
     CHECK_EQ(firstTask->get().state == TaskState::Completed, true);
     CHECK_EQ(secondTask->get().state == TaskState::Running, true);
-    auto fourthStep = queue.advance(
-        {eve::SimulationTick(4), eve::Duration::fromNanoseconds(1000000000)});
+    auto fourthStep = queue.advance({eve::SimulationTick(4), eve::Duration::fromNanoseconds(1000000000)});
     REQUIRE(fourthStep.ok());
     secondTask = queue.find(second);
     REQUIRE(secondTask);
@@ -123,13 +111,13 @@ TEST_CASE("production.advance.fixedDeltaCompletion") {
 
 TEST_CASE("production.lifecycle.pauseResumeCancelFail") {
     WorkQueue queue;
-    auto aResult = queue.enqueue("owner", "kind", "a", eve::Value(eve::Value::Object{}), 2.0);
-    auto bResult = queue.enqueue("owner", "kind", "b", eve::Value(eve::Value::Object{}), 2.0);
+    auto      aResult = queue.enqueue("owner", "kind", "a", eve::Value(eve::Value::Object{}), 2.0);
+    auto      bResult = queue.enqueue("owner", "kind", "b", eve::Value(eve::Value::Object{}), 2.0);
     REQUIRE(aResult.ok());
     REQUIRE(bResult.ok());
-    const auto a = std::move(aResult).takeValue();
-    const auto b = std::move(bResult).takeValue();
-    auto paused = queue.pause(a);
+    const auto a      = std::move(aResult).takeValue();
+    const auto b      = std::move(bResult).takeValue();
+    auto       paused = queue.pause(a);
     REQUIRE(paused.ok());
     auto aTask = queue.find(a);
     auto bTask = queue.find(b);
@@ -158,21 +146,19 @@ TEST_CASE("production.lifecycle.pauseResumeCancelFail") {
 
 TEST_CASE("production.snapshot.restoreIsDeterministicAndTransactional") {
     WorkQueue source;
-    auto slots = source.setSlotCount("yard", 2);
+    auto      slots = source.setSlotCount("yard", 2);
     REQUIRE(slots.ok());
-    auto idResult = source.enqueue("yard", "vehicle", "tank",
-                                   eve::Value(eve::Value::Object{{"variant", eve::Value("a")}}),
-                                   5.0, 7);
+    auto idResult =
+        source.enqueue("yard", "vehicle", "tank", eve::Value(eve::Value::Object{{"variant", eve::Value("a")}}), 5.0, 7);
     REQUIRE(idResult.ok());
-    const auto id = std::move(idResult).takeValue();
-    auto sourceStep = source.advance(
-        {eve::SimulationTick(1), eve::Duration::fromNanoseconds(1250000000)});
+    const auto id         = std::move(idResult).takeValue();
+    auto       sourceStep = source.advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(1250000000)});
     REQUIRE(sourceStep.ok());
     auto snapshotResult = source.snapshot();
     REQUIRE(snapshotResult.ok());
     const auto snapshot = std::move(snapshotResult).takeValue();
-    WorkQueue restored;
-    auto restoredResult = restored.restore(snapshot);
+    WorkQueue  restored;
+    auto       restoredResult = restored.restore(snapshot);
     REQUIRE(restoredResult.ok());
     auto restoredSnapshot = restored.snapshot();
     REQUIRE(restoredSnapshot.ok());
@@ -182,8 +168,8 @@ TEST_CASE("production.snapshot.restoreIsDeterministicAndTransactional") {
     CHECK_EQ(restoredTask->get().progress.seconds(), 1.25);
     auto beforeResult = restored.snapshot();
     REQUIRE(beforeResult.ok());
-    const auto before = std::move(beforeResult).takeValue();
-    auto malformed = restored.restore("{\"broken\":true}");
+    const auto before    = std::move(beforeResult).takeValue();
+    auto       malformed = restored.restore("{\"broken\":true}");
     CHECK(!malformed.ok());
     auto afterMalformed = restored.snapshot();
     REQUIRE(afterMalformed.ok());

@@ -70,23 +70,23 @@ struct ScriptConditionDeclaration {
 
 /** @brief Stable machine-readable explanation code for a condition outcome. */
 enum class ConditionReasonCode : std::uint32_t {
-    Passed = 0,
-    ChildFailed = 1,
-    NoChildPassed = 2,
-    Negated = 3,
-    MissingValue = 4,
-    ValueMismatch = 5,
-    TagMissing = 6,
-    TagUnavailable = 7,
-    AttributeMissing = 8,
-    ResourceMissing = 9,
-    StateMissing = 10,
-    StateMismatch = 11,
-    AuthorityDenied = 12,
+    Passed               = 0,
+    ChildFailed          = 1,
+    NoChildPassed        = 2,
+    Negated              = 3,
+    MissingValue         = 4,
+    ValueMismatch        = 5,
+    TagMissing           = 6,
+    TagUnavailable       = 7,
+    AttributeMissing     = 8,
+    ResourceMissing      = 9,
+    StateMissing         = 10,
+    StateMismatch        = 11,
+    AuthorityDenied      = 12,
     AuthorityUnavailable = 13,
-    PolicyRejected = 14,
-    PolicyUnavailable = 15,
-    InvalidCondition = 16,
+    PolicyRejected       = 14,
+    PolicyUnavailable    = 15,
+    InvalidCondition     = 16,
 };
 
 /**
@@ -128,8 +128,7 @@ public:
     /** @brief Construct a passed result with optional evidence and details. */
     static ConditionResult success(Value evidence = {}, Value details = Value::Object{});
     /** @brief Construct a rejected result with a stable reason and explanation. */
-    static ConditionResult failed(ConditionReasonCode reason, Value evidence = {},
-                                  Value details = Value::Object{});
+    static ConditionResult failed(ConditionReasonCode reason, Value evidence = {}, Value details = Value::Object{});
 
     /** @brief Whether the condition passed. */
     bool passed() const noexcept { return passed_; }
@@ -144,10 +143,10 @@ private:
     ConditionResult(bool passed, ConditionReasonCode reason, Value evidence, Value details)
         : passed_(passed), reason_(reason), evidence_(std::move(evidence)), details_(std::move(details)) {}
 
-    bool                 passed_ = false;
-    ConditionReasonCode  reason_ = ConditionReasonCode::InvalidCondition;
-    Value                evidence_;
-    Value                details_;
+    bool                passed_ = false;
+    ConditionReasonCode reason_ = ConditionReasonCode::InvalidCondition;
+    Value               evidence_;
+    Value               details_;
 };
 
 /**
@@ -177,7 +176,7 @@ public:
     [[nodiscard]] virtual std::optional<bool> authority(std::string_view scope) const = 0;
     /** @brief Evaluate a named read-only policy with owned arguments. */
     [[nodiscard]] virtual std::optional<ConditionResult> policy(std::string_view name,
-                                                                  const Value& arguments) const = 0;
+                                                                const Value&     arguments) const = 0;
 };
 
 /**
@@ -233,9 +232,7 @@ public:
     /** @brief Return owned PolicyCall arguments. */
     const Value& arguments() const noexcept { return arguments_; }
     /** @brief Return an optional script dependency/determinism declaration. */
-    const std::optional<ScriptConditionDeclaration>& scriptDeclaration() const noexcept {
-        return scriptDeclaration_;
-    }
+    const std::optional<ScriptConditionDeclaration>& scriptDeclaration() const noexcept { return scriptDeclaration_; }
     /** @brief Return whether the factory invariants for this node hold. */
     [[nodiscard]] bool isValid() const noexcept;
     /** @brief Evaluate this tree against a read-only context. */
@@ -244,13 +241,13 @@ public:
 private:
     explicit Condition(ConditionKind kind) : kind_(kind) {}
 
-    ConditionKind                              kind_ = ConditionKind::All;
-    std::vector<Condition>                     children_;
-    std::string                                key_;
-    CompareOperator                            compare_ = CompareOperator::Equal;
-    Value                                       expected_;
-    Value                                       arguments_ = Value::Object{};
-    std::optional<ScriptConditionDeclaration>  scriptDeclaration_;
+    ConditionKind                             kind_ = ConditionKind::All;
+    std::vector<Condition>                    children_;
+    std::string                               key_;
+    CompareOperator                           compare_ = CompareOperator::Equal;
+    Value                                     expected_;
+    Value                                     arguments_ = Value::Object{};
+    std::optional<ScriptConditionDeclaration> scriptDeclaration_;
 };
 
 }  // namespace eve::decision

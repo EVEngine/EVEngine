@@ -1,7 +1,7 @@
 #pragma once
 
-#include "editor/EditorAuthority.h"
 #include "editor/EditCommand.h"
+#include "editor/EditorAuthority.h"
 #include "transaction/Transaction.h"
 
 #include <cstddef>
@@ -21,11 +21,11 @@ namespace eve::editor {
  * replay an authority-backed transaction; it is not a second commit state.
  */
 struct EditorTransactionRecord {
-    transaction::TransactionReceipt coordinator;
-    TransactionSpec                  specification;
+    transaction::TransactionReceipt                coordinator;
+    TransactionSpec                                specification;
     std::optional<eve::editor::TransactionReceipt> authorityReceipt;
-    std::size_t                     commandCount   = 0;
-    std::size_t                     operationCount = 0;
+    std::size_t                                    commandCount   = 0;
+    std::size_t                                    operationCount = 0;
 };
 
 /**
@@ -36,10 +36,10 @@ struct EditorTransactionRecord {
  * preflight. Neither path publishes target state.
  */
 struct EditorDryRunReport {
-    TransactionSpec                 specification;
-    std::size_t                     commandCount   = 0;
-    std::size_t                     operationCount = 0;
-    std::optional<AuthorityPlan>    authorityPlan;
+    TransactionSpec              specification;
+    std::size_t                  commandCount   = 0;
+    std::size_t                  operationCount = 0;
+    std::optional<AuthorityPlan> authorityPlan;
 };
 
 /** @brief Lifecycle state of the editor consumer's active commit attempt. */

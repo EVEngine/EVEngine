@@ -29,7 +29,7 @@ UINode *findNode(UIHost *host, const std::string &id) {
 
 TEST_CASE("WidgetDesc.composeNestedTree") {
     int clicks = 0;
-    UIHost *h = resolveHost(UIHost::createHost("nest"));
+    UIHost *h      = resolveHost(UIHost::createHost("nest"));
     REQUIRE(h != nullptr);
     h->setTree(window(
         "Inventory",
@@ -53,7 +53,7 @@ TEST_CASE("WidgetDesc.composeNestedTree") {
     REQUIRE_NE(b->handlerClick, 0u);
 
     UIEvent ev;
-    ev.host = h->handle();
+    ev.host         = h->handle();
     ev.hostName = "nest";
     ev.nodeId = "b";
     ev.kind = "click";
@@ -88,7 +88,7 @@ TEST_CASE("UIHost.setPropsAndClickHandler") {
     CHECK(h->setClickHandler("btn", [&]() { ++clicks; }));
 
     UIEvent ev;
-    ev.host = h->handle();
+    ev.host         = h->handle();
     ev.hostName = "props";
     ev.nodeId = "btn";
     ev.kind = "click";
@@ -100,7 +100,7 @@ TEST_CASE("UIHost.setPropsAndClickHandler") {
 
 TEST_CASE("UIAutomation.semanticTreeGetAndClick") {
     int clicks = 0;
-    UIHost *host = resolveHost(UIHost::createHost("mcp-ui-test"));
+    UIHost *host   = resolveHost(UIHost::createHost("mcp-ui-test"));
     REQUIRE(host != nullptr);
     host->setTree(window("Automation", {text("Ready", "status"),
                                         button("Add Tree", "asset-tree", [&]() { ++clicks; })}));

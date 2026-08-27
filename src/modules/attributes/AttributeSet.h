@@ -12,9 +12,9 @@
 
 namespace eve::attributes {
 
-using AttributeId = std::string;
-using ModifierId = std::string;
-using SourceId = std::string;
+using AttributeId      = std::string;
+using ModifierId       = std::string;
+using SourceId         = std::string;
 using ModifierPriority = std::int32_t;
 using ModifierSequence = std::uint64_t;
 
@@ -50,15 +50,14 @@ enum class AttributeOperation : std::uint8_t {
  */
 struct ParsedAttributeOperation {
     AttributeOperation operation = AttributeOperation::Add;
-    double value = 0.0;
+    double             value     = 0.0;
 };
 
 /**
  * @brief Parse a built-in operation spelling used by existing data and APIs.
  * @return A normalized operation, or a rejected Result for an unknown spelling.
  */
-[[nodiscard]] eve::Result<ParsedAttributeOperation> parseAttributeOperation(std::string_view operation,
-                                                                              double value);
+[[nodiscard]] eve::Result<ParsedAttributeOperation> parseAttributeOperation(std::string_view operation, double value);
 
 /** @brief Registry for explicitly named custom attribute policies. */
 class AttributeOperationRegistry {
@@ -91,42 +90,45 @@ private:
  * `policyId` names a registered AttributeOperationRegistry policy.
  */
 struct AttributeModifier {
-    ModifierId id;
-    AttributeId attribute;
-    SourceId source;
+    ModifierId         id;
+    AttributeId        attribute;
+    SourceId           source;
     AttributeOperation operation = AttributeOperation::Add;
-    double value = 0.0;
-    ModifierPriority priority = 0;
-    ModifierSequence sequence = 0;
-    std::string policyId;
+    double             value     = 0.0;
+    ModifierPriority   priority  = 0;
+    ModifierSequence   sequence  = 0;
+    std::string        policyId;
 
     AttributeModifier() = default;
 
     /** @brief Construct a canonical modifier with an explicit operation. */
     AttributeModifier(ModifierId modifierId, AttributeId attributeId, SourceId sourceId,
-                      AttributeOperation operationValue, double modifierValue,
-                      ModifierPriority priorityValue = 0,
-                      ModifierSequence sequenceValue = 0,
-                      std::string policy = {})
-        : id(std::move(modifierId)), attribute(std::move(attributeId)), source(std::move(sourceId)),
-          operation(operationValue), value(modifierValue), priority(priorityValue),
-          sequence(sequenceValue), policyId(std::move(policy)) {}
+                      AttributeOperation operationValue, double modifierValue, ModifierPriority priorityValue = 0,
+                      ModifierSequence sequenceValue = 0, std::string policy = {})
+        : id(std::move(modifierId)),
+          attribute(std::move(attributeId)),
+          source(std::move(sourceId)),
+          operation(operationValue),
+          value(modifierValue),
+          priority(priorityValue),
+          sequence(sequenceValue),
+          policyId(std::move(policy)) {}
 
     /**
      * @brief Construct the former per-attribute RPG test shape.
      * @remarks The attribute is intentionally empty and must be supplied before
      *          inserting into an AttributeSet.
      */
-    AttributeModifier(ModifierId modifierId, SourceId sourceId, std::string_view operationName,
-                      double modifierValue, ModifierPriority priorityValue = 0);
+    AttributeModifier(ModifierId modifierId, SourceId sourceId, std::string_view operationName, double modifierValue,
+                      ModifierPriority priorityValue = 0);
 };
 
 /** @brief Runtime value and modifiers for exactly one attribute. */
 struct AttributeValue {
-    double base = 0.0;
+    double                         base = 0.0;
     std::vector<AttributeModifier> modifiers;
-    mutable double cached = 0.0;
-    mutable bool dirty = true;
+    mutable double                 cached = 0.0;
+    mutable bool                   dirty  = true;
 };
 
 /**
@@ -136,8 +138,8 @@ struct AttributeValue {
  * MultiplicativePercent factors, then priority/sequence ordered Override and
  * Clamp operations. Custom policies participate in the final ordered phase.
  */
-[[nodiscard]] double computeAttributeValue(const AttributeValue& attribute,
-                                            const AttributeOperationRegistry* customOperations = nullptr);
+[[nodiscard]] double computeAttributeValue(const AttributeValue&             attribute,
+                                           const AttributeOperationRegistry* customOperations = nullptr);
 
 /** @brief Generic owning collection of canonical attributes and modifiers. */
 class AttributeSet {
@@ -170,7 +172,7 @@ public:
      *        registry changes.
      */
     double getFinal(const AttributeId& attribute, double fallback = 0.0,
-                   const AttributeOperationRegistry* customOperations = nullptr) const;
+                    const AttributeOperationRegistry* customOperations = nullptr) const;
 
     /**
      * @brief Add or replace a canonical modifier and return its stable id.
@@ -190,11 +192,9 @@ public:
     /** @brief Remove one modifier with a structured result. */
     [[nodiscard]] eve::Result<void> removeModifier(const ModifierId& id);
     /** @brief Remove one modifier from a named attribute with a structured result. */
-    [[nodiscard]] eve::Result<void> removeModifier(const AttributeId& attribute,
-                                                   const ModifierId& id);
+    [[nodiscard]] eve::Result<void> removeModifier(const AttributeId& attribute, const ModifierId& id);
     /** @brief Remove source modifiers with a structured result containing the count. */
-    [[nodiscard]] eve::Result<int> removeBySource(const SourceId& source,
-                                                  const AttributeId& attribute = {});
+    [[nodiscard]] eve::Result<int> removeBySource(const SourceId& source, const AttributeId& attribute = {});
     /** @brief Mark one attribute dirty after an external policy or restore change. */
     void invalidate(const AttributeId& attribute);
     /** @brief Remove all modifiers. */
@@ -208,12 +208,12 @@ private:
     void rebuildOrder() const;
     static bool isValidOperation(const AttributeModifier& modifier) noexcept;
 
-    std::string subject_;
+    std::string                                     subject_;
     std::unordered_map<AttributeId, AttributeValue> values_;
-    mutable std::vector<const AttributeModifier*> order_;
-    mutable bool orderDirty_ = true;
-    ModifierSequence nextSequence_ = 1;
-    ModifierSequence nextModifierId_ = 1;
+    mutable std::vector<const AttributeModifier*>   order_;
+    mutable bool                                    orderDirty_     = true;
+    ModifierSequence                                nextSequence_   = 1;
+    ModifierSequence                                nextModifierId_ = 1;
 };
 
 }  // namespace eve::attributes

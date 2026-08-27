@@ -40,8 +40,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "RenderImageAudit.h"
 #include "ProcgenGridTestSupport.h"
+#include "RenderImageAudit.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"

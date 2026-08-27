@@ -25,9 +25,7 @@ class CharacterData {
 }
 )SQ";
 
-eve::OptionalRef<UINode> nodeById(UIHost& host, const std::string& id) {
-    return host.findById(id);
-}
+eve::OptionalRef<UINode> nodeById(UIHost& host, const std::string& id) { return host.findById(id); }
 
 }  // namespace
 
@@ -48,7 +46,7 @@ TEST_CASE("database.registryCreatesRegistersAndLists") {
     CHECK_EQ(registry.count("CharacterData"), size_t(1));
 
     ssq::Object hero = runtime.createInstance("CharacterData");
-    auto secondResult = registry.registerObject("CharacterData", hero);
+    auto        secondResult = registry.registerObject("CharacterData", hero);
     REQUIRE(secondResult.ok());
     const ObjectHandle second = secondResult.value();
     CHECK_EQ(registry.count("CharacterData"), size_t(2));
@@ -152,8 +150,6 @@ TEST_CASE("database.registryHandlesRejectStaleAndReuseSlots") {
     CHECK_EQ(second.index(), first.index());
     CHECK_EQ(second.generation(), first.generation() + 1u);
     CHECK(registry.entry(first) == nullptr);
-    CHECK_EQ(static_cast<int>(registry.unregister(first).code()),
-             static_cast<int>(eve::StatusCode::Rejected));
-    CHECK_EQ(static_cast<int>(registry.unregister(second).code()),
-             static_cast<int>(eve::StatusCode::Applied));
+    CHECK_EQ(static_cast<int>(registry.unregister(first).code()), static_cast<int>(eve::StatusCode::Rejected));
+    CHECK_EQ(static_cast<int>(registry.unregister(second).code()), static_cast<int>(eve::StatusCode::Applied));
 }

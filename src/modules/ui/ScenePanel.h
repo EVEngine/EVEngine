@@ -60,7 +60,7 @@ private:
                         const std::vector<eve::SceneNodeInfo>& all);
     void rebuildHost();
 
-    UIHostHandle host_{};
+    UIHostHandle                            host_{};
     std::string selectedId_;
     std::function<void(const std::string&)> pickHandler_;
 };

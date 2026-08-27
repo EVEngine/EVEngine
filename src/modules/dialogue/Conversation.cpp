@@ -7,10 +7,9 @@ namespace eve::dialogue {
 
 namespace {
 
-eve::Result<void> runnerFailure(eve::DiagnosticCode code, std::string message,
-                                std::string path = {}) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {}, "dialogue.conversation"));
+eve::Result<void> runnerFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
+    return eve::Result<void>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "dialogue.conversation"));
 }
 
 }  // namespace
@@ -107,14 +106,11 @@ void ConversationRunner::unregisterCommand(const std::string& name) {
     commandHandlers_.erase(name);
 }
 
-void ConversationRunner::registerCommandRequest(const std::string& name,
-                                                CommandRequestHandler handler) {
+void ConversationRunner::registerCommandRequest(const std::string& name, CommandRequestHandler handler) {
     if (!name.empty() && handler) commandRequestHandlers_[name] = std::move(handler);
 }
 
-void ConversationRunner::unregisterCommandRequest(const std::string& name) {
-    commandRequestHandlers_.erase(name);
-}
+void ConversationRunner::unregisterCommandRequest(const std::string& name) { commandRequestHandlers_.erase(name); }
 
 void ConversationRunner::emit(Event::Kind kind, const ConversationAsset::Node* node,
                               const std::string& name) const {
@@ -141,8 +137,7 @@ bool ConversationRunner::enter(const std::string& nodeId, std::string* error) {
     return true;
 }
 
-std::string ConversationRunner::evaluateRoute(const ConversationAsset::Node& node,
-    std::string* error) {
+std::string ConversationRunner::evaluateRoute(const ConversationAsset::Node& node, std::string* error) {
     for (const auto& route : node.routes) {
         if (!route.condition.isNull()) {
             if (!conditionEvaluator_) {
@@ -150,7 +145,7 @@ std::string ConversationRunner::evaluateRoute(const ConversationAsset::Node& nod
                 return {};
             }
             eve::decision::ConditionResult result = conditionEvaluator_(route.condition);
-            lastConditionResult_ = result;
+            lastConditionResult_                  = result;
             if (result.passed()) return route.second;
             continue;
         }
@@ -230,7 +225,7 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
             }
             case ConversationAsset::Node::Kind::Command: {
                 const auto requestIt = commandRequestHandlers_.find(node->target);
-                const auto legacyIt = commandHandlers_.find(node->target);
+                const auto legacyIt  = commandHandlers_.find(node->target);
                 if (requestIt == commandRequestHandlers_.end() && legacyIt == commandHandlers_.end() &&
                     !commandRequestDispatcher_)
                     return fail(error, "conversation: command '" + node->target +
@@ -238,40 +233,35 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
                 emit(Event::Kind::Command, node, node->target);
                 if (requestIt != commandRequestHandlers_.end() || commandRequestDispatcher_) {
                     CommandRequest request;
-                    request.name = node->target;
-                    request.kind = node->commandKind;
-                    request.arguments = toCanonicalValue(node->arguments);
-                    request.bindings = toCanonicalValue(bindings_);
-                    request.locals = toCanonicalValue(locals_);
-                    request.payment = node->payment;
+                    request.name           = node->target;
+                    request.kind           = node->commandKind;
+                    request.arguments      = toCanonicalValue(node->arguments);
+                    request.bindings       = toCanonicalValue(bindings_);
+                    request.locals         = toCanonicalValue(locals_);
+                    request.payment        = node->payment;
                     request.stateMutations = node->stateMutations;
-                    lastCommandRequest_ = request;
-                    const CommandRequestHandler& handler = requestIt != commandRequestHandlers_.end()
-                                                               ? requestIt->second
-                                                               : commandRequestDispatcher_;
+                    lastCommandRequest_    = request;
+                    const CommandRequestHandler& handler =
+                        requestIt != commandRequestHandlers_.end() ? requestIt->second : commandRequestDispatcher_;
                     CommandResponse response = handler(request);
                     if (response.status == CommandResponse::Status::Failed)
-                        return fail(error, response.error.empty() ? "conversation: command failed"
-                                                                   : response.error);
+                        return fail(error, response.error.empty() ? "conversation: command failed" : response.error);
                     if (response.status == CommandResponse::Status::Blocked) {
-                        blocked_ = true;
+                        blocked_        = true;
                         waitingCommand_ = true;
                         return true;
                     }
-                    if (!node->expression.empty())
-                        locals_.set(node->expression, toDialogueStateValue(response.value));
+                    if (!node->expression.empty()) locals_.set(node->expression, toDialogueStateValue(response.value));
                 } else {
                     CommandResult result = legacyIt->second(node->arguments, bindings_, locals_);
                     if (result.status == CommandResult::Status::Failed)
-                        return fail(error, result.error.empty() ? "conversation: command failed"
-                                                                : result.error);
+                        return fail(error, result.error.empty() ? "conversation: command failed" : result.error);
                     if (result.status == CommandResult::Status::Blocked) {
-                        blocked_ = true;
+                        blocked_        = true;
                         waitingCommand_ = true;
                         return true;
                     }
-                    if (!node->expression.empty())
-                        locals_.set(node->expression, std::move(result.value));
+                    if (!node->expression.empty()) locals_.set(node->expression, std::move(result.value));
                 }
                 if (!enter(node->next, error)) return false;
                 break;
@@ -389,8 +379,7 @@ eve::Result<void> ConversationRunner::resumeCommand(StateValue result) {
 
     StateValue before;
     if (!captureState(before))
-        return runnerFailure(eve::DiagnosticCode::Failed,
-                             "conversation: could not capture command state", "command");
+        return runnerFailure(eve::DiagnosticCode::Failed, "conversation: could not capture command state", "command");
     if (!node->expression.empty()) locals_.set(node->expression, std::move(result));
     std::string error;
     if (enter(node->next, &error) && runUntilBlocked(&error))
@@ -399,8 +388,7 @@ eve::Result<void> ConversationRunner::resumeCommand(StateValue result) {
     std::string restoreError;
     if (!restoreState(before, &restoreError) && error.empty()) error = restoreError;
     return runnerFailure(eve::DiagnosticCode::Failed,
-                         error.empty() ? "conversation: command resume failed" : std::move(error),
-                         "command");
+                         error.empty() ? "conversation: command resume failed" : std::move(error), "command");
 }
 
 eve::Result<void> ConversationRunner::resumeCommand(eve::Value result) {
@@ -446,19 +434,17 @@ eve::Result<void> ConversationRunner::selectRouteForTransaction(const std::strin
                                      "conversation: structured choice requires a condition evaluator",
                                      "route.condition");
             eve::decision::ConditionResult result = conditionEvaluator_(route.condition);
-            lastConditionResult_ = result;
+            lastConditionResult_                  = result;
             if (!result.passed())
-                return runnerFailure(
-                    eve::DiagnosticCode::DialogueConditionRejected,
-                    "conversation: choice condition rejected (" +
-                        std::string(eve::decision::conditionReasonCodeName(result.reasonCode())) + ")",
-                    "route.condition");
+                return runnerFailure(eve::DiagnosticCode::DialogueConditionRejected,
+                                     "conversation: choice condition rejected (" +
+                                         std::string(eve::decision::conditionReasonCodeName(result.reasonCode())) + ")",
+                                     "route.condition");
         }
 
         StateValue before;
         if (!captureState(before))
-            return runnerFailure(eve::DiagnosticCode::Failed,
-                                 "conversation: could not capture choice state", "route");
+            return runnerFailure(eve::DiagnosticCode::Failed, "conversation: could not capture choice state", "route");
         std::string error;
         if (enter(route.second, &error) && runUntilBlocked(&error))
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -466,11 +452,10 @@ eve::Result<void> ConversationRunner::selectRouteForTransaction(const std::strin
         std::string restoreError;
         if (!restoreState(before, &restoreError) && error.empty()) error = restoreError;
         return runnerFailure(eve::DiagnosticCode::Failed,
-                             error.empty() ? "conversation: choice selection failed" : std::move(error),
-                             "route");
+                             error.empty() ? "conversation: choice selection failed" : std::move(error), "route");
     }
-    return runnerFailure(eve::DiagnosticCode::DialogueRouteNotFound,
-                         "conversation: unknown choice '" + routeId + "'", "route");
+    return runnerFailure(eve::DiagnosticCode::DialogueRouteNotFound, "conversation: unknown choice '" + routeId + "'",
+                         "route");
 }
 
 }  // namespace eve::dialogue

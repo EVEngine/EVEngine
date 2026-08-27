@@ -7,7 +7,7 @@
 namespace eve {
 namespace detail {
 struct SchemaVersionTag {};
-}
+}  // namespace detail
 /** @brief Persistent data-format version; not a runtime replacement generation. */
 using SchemaVersion = detail::StrongUint64<detail::SchemaVersionTag>;
 }  // namespace eve

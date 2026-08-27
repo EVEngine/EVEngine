@@ -13,9 +13,9 @@
 
 #include <array>
 #include <chrono>
+#include <compare>
 #include <cstddef>
 #include <cstdint>
-#include <compare>
 #include <functional>
 #include <optional>
 #include <span>
@@ -78,12 +78,11 @@ public:
      *          does not accept braces or non-canonical separators.
      */
     [[nodiscard]] static std::optional<Id128> parse(std::string_view text) noexcept {
-        if (text.size() != 36 || text[8] != '-' || text[13] != '-' || text[18] != '-' ||
-            text[23] != '-') {
+        if (text.size() != 36 || text[8] != '-' || text[13] != '-' || text[18] != '-' || text[23] != '-') {
             return std::nullopt;
         }
 
-        Bytes bytes{};
+        Bytes       bytes{};
         std::size_t byteIndex = 0;
         for (std::size_t i = 0; i < text.size();) {
             if (text[i] == '-') {
@@ -93,7 +92,7 @@ public:
 
             if (i + 1 >= text.size()) return std::nullopt;
             const auto high = hexValue(text[i]);
-            const auto low = hexValue(text[i + 1]);
+            const auto low  = hexValue(text[i + 1]);
             if (!high || !low || byteIndex >= bytes.size()) {
                 return std::nullopt;
             }
@@ -122,7 +121,7 @@ public:
      */
     [[nodiscard]] std::string format() const {
         static constexpr char digits[] = "0123456789abcdef";
-        std::string result;
+        std::string           result;
         result.reserve(36);
         for (std::size_t i = 0; i < bytes_.size(); ++i) {
             if (i == 4 || i == 6 || i == 8 || i == 10) result.push_back('-');
@@ -152,8 +151,8 @@ public:
     [[nodiscard]] Id128 child(std::string_view role) const noexcept {
         if (isNil() || role.empty()) return Id128::nil();
 
-        Bytes result = bytes_;
-        std::uint64_t hash = 14695981039346656037ull;
+        Bytes         result = bytes_;
+        std::uint64_t hash   = 14695981039346656037ull;
         for (const unsigned char byte : role) {
             hash ^= byte;
             hash *= 1099511628211ull;
@@ -190,9 +189,7 @@ public:
     friend constexpr bool operator==(const Id128&, const Id128&) noexcept = default;
 
     /** @brief Orders UUID bytes in network order for ordered containers. */
-    friend constexpr auto operator<=>(const Id128& lhs, const Id128& rhs) noexcept {
-        return lhs.bytes_ <=> rhs.bytes_;
-    }
+    friend constexpr auto operator<=>(const Id128& lhs, const Id128& rhs) noexcept { return lhs.bytes_ <=> rhs.bytes_; }
 
 private:
     [[nodiscard]] static constexpr std::optional<std::uint8_t> hexValue(char value) noexcept {
@@ -432,8 +429,7 @@ public:
      * @param name The name within that namespace.
      * @return The logical ID, or empty when either component is invalid.
      */
-    [[nodiscard]] static std::optional<LogicalId> fromParts(std::string_view namespaceName,
-                                                              std::string_view name);
+    [[nodiscard]] static std::optional<LogicalId> fromParts(std::string_view namespaceName, std::string_view name);
 
     /** @brief Returns whether this value contains a valid namespace and name. */
     [[nodiscard]] bool isValid() const noexcept { return !value_.empty(); }
@@ -501,12 +497,11 @@ public:
      * @param timestamp Unix time used for the UUIDv7 millisecond field.
      * @return A generated PersistentId, or empty when entropy/time is unavailable or out of range.
      */
-    [[nodiscard]] std::optional<PersistentId> generate(
-        std::chrono::system_clock::time_point timestamp) const;
+    [[nodiscard]] std::optional<PersistentId> generate(std::chrono::system_clock::time_point timestamp) const;
 
 private:
     UuidEntropySource entropy_;
-    UuidClock        clock_;
+    UuidClock         clock_;
 };
 
 /**
@@ -515,8 +510,8 @@ private:
  * @param entropy Source for the UUID random portion.
  * @return A generated PersistentId, or empty when entropy/time is unavailable or out of range.
  */
-[[nodiscard]] EVENGINE_API std::optional<PersistentId> generateUuidV7(
-    std::chrono::system_clock::time_point timestamp, const UuidEntropySource& entropy);
+[[nodiscard]] EVENGINE_API std::optional<PersistentId> generateUuidV7(std::chrono::system_clock::time_point timestamp,
+                                                                      const UuidEntropySource&              entropy);
 
 }  // namespace eve
 

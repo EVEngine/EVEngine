@@ -278,7 +278,7 @@ private:
     std::vector<TimelineCut>   timelineCuts_;
     std::vector<TimelineEvent> timelineEvents_;
     std::vector<TimelineFloat> timelineFloats_;
-    platform_event::PlatformEvent*              eventSink_        = nullptr;
+    platform_event::PlatformEvent*                  eventSink_        = nullptr;
     float                      timelineTime_     = 0.f;
     float                      timelineDuration_ = 0.f;
     bool                       timelinePlaying_  = false;

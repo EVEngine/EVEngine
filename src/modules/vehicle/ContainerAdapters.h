@@ -20,7 +20,7 @@ namespace eve::vehicle {
 
 /** @brief Owning snapshot payload for a vehicle occupant membership. */
 struct VehicleSeatContainerObject final : eve::container::ContainerObjectPayload {
-    int occupantId = 0;
+    int         occupantId = 0;
     std::string driver;
 };
 
@@ -53,14 +53,12 @@ public:
         return descriptor_;
     }
     [[nodiscard]] eve::Result<eve::container::ContainerSnapshot> snapshot() const override;
-    [[nodiscard]] eve::Result<void> validateInsert(
-        const eve::container::ContainerObject& object,
-        std::optional<eve::container::SlotIndex> destination,
-        std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
+    [[nodiscard]] eve::Result<void>                              validateInsert(
+                                     const eve::container::ContainerObject& object, std::optional<eve::container::SlotIndex> destination,
+                                     std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
     /** @copydoc eve::container::IContainer::prepare */
     [[nodiscard]] eve::Result<std::unique_ptr<eve::container::IContainer::PreparedState>> prepare(
-        const eve::container::ContainerSnapshot& expected,
-        const eve::container::ContainerSnapshot& candidate) override;
+        const eve::container::ContainerSnapshot& expected, const eve::container::ContainerSnapshot& candidate) override;
 
     /** @brief Return the live seat-component revision, or zero when stale. */
     [[nodiscard]] eve::Revision revision() const noexcept;
@@ -74,8 +72,7 @@ public:
      * @return Occupant membership identity, or a rejection with no mutation.
      */
     [[nodiscard]] eve::Result<eve::container::MembershipId> enter(
-        eve::container::SlotIndex seatIndex, int occupantId,
-        eve::container::GameEventSink sink = {},
+        eve::container::SlotIndex seatIndex, int occupantId, eve::container::GameEventSink sink = {},
         eve::SimulationTick tick = eve::SimulationTick::zero());
 
     /**
@@ -92,15 +89,14 @@ public:
 private:
     class PreparedState;
 
-    [[nodiscard]] VehicleEntity* vehicle() const noexcept;
-    [[nodiscard]] std::uint64_t nextEventSerial() noexcept;
-    [[nodiscard]] static eve::container::MembershipId occupantId(int occupantId);
-    [[nodiscard]] static eve::container::ContainerObject describe(
-        int occupantId, std::string driver = {});
+    [[nodiscard]] VehicleEntity*                         vehicle() const noexcept;
+    [[nodiscard]] std::uint64_t                          nextEventSerial() noexcept;
+    [[nodiscard]] static eve::container::MembershipId    occupantId(int occupantId);
+    [[nodiscard]] static eve::container::ContainerObject describe(int occupantId, std::string driver = {});
 
     eve::container::ContainerDescriptor descriptor_;
-    ecs::EntityHandle vehicle_;
-    std::uint64_t eventSerial_ = 0;
+    ecs::EntityHandle                   vehicle_;
+    std::uint64_t                       eventSerial_ = 0;
 };
 
 }  // namespace eve::vehicle

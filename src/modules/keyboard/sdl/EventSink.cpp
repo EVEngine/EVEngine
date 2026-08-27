@@ -5,9 +5,9 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
+#include "keyboard/Keyboard.h"
 #include "platform_event/PlatformEvent.h"
 #include "platform_event/PlatformEventSink.h"
-#include "keyboard/Keyboard.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keyboard.h>
@@ -58,8 +58,8 @@ public:
 struct Register {
     Register() {
         static KeyboardEventSink sink;
-        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(
-            &sink, eve::platform_event::IPlatformEventSink::kInput);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(&sink,
+                                                                       eve::platform_event::IPlatformEventSink::kInput);
     }
 } g_register;
 

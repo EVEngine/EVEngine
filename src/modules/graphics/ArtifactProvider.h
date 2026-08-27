@@ -27,29 +27,28 @@ using GraphicsArtifactHandle = eve::RuntimeHandle<GraphicsArtifactHandleTag>;
 /** @brief Backend-neutral mesh descriptor shared by Vulkan and WebGPU adapters. */
 struct GraphicsArtifactDescriptor {
     eve::PersistentId id;
-    std::string buildKey;
-    std::string role;
-    std::size_t vertexCount = 0;
-    std::size_t indexCount = 0;
-    std::uint64_t checksum = 0;
+    std::string       buildKey;
+    std::string       role;
+    std::size_t       vertexCount = 0;
+    std::size_t       indexCount  = 0;
+    std::uint64_t     checksum    = 0;
     /** @brief Actual backend vertex stride when a live upload exists. */
     std::uint32_t backendVertexStride = 0;
     /** @brief Actual backend index element size when a live upload exists. */
     std::uint32_t backendIndexElementSize = 0;
 
-    friend bool operator==(const GraphicsArtifactDescriptor&,
-                           const GraphicsArtifactDescriptor&) = default;
+    friend bool operator==(const GraphicsArtifactDescriptor&, const GraphicsArtifactDescriptor&) = default;
 };
 
 /** @brief Queryable backend-neutral mesh resource owned by the graphics module. */
 struct GraphicsArtifactResource {
-    eve::PersistentId id;
-    std::string buildKey;
-    GraphicsArtifactHandle handle;
-    std::string role;
-    std::vector<float> positions;
-    std::vector<float> normals;
-    std::vector<float> uvs;
+    eve::PersistentId          id;
+    std::string                buildKey;
+    GraphicsArtifactHandle     handle;
+    std::string                role;
+    std::vector<float>         positions;
+    std::vector<float>         normals;
+    std::vector<float>         uvs;
     std::vector<std::uint32_t> indices;
     /** @brief Backend name observed when upload was attempted, or `cpu`. */
     std::string backendName = "cpu";
@@ -113,8 +112,7 @@ public:
     /** @brief Return a deterministic checksum of one resource's CPU descriptor. */
     [[nodiscard]] std::uint64_t checksum(eve::PersistentId id) const noexcept;
     /** @brief Return the backend-neutral descriptor for one resource. */
-    [[nodiscard]] std::optional<GraphicsArtifactDescriptor> descriptor(
-        eve::PersistentId id) const;
+    [[nodiscard]] std::optional<GraphicsArtifactDescriptor> descriptor(eve::PersistentId id) const;
     /** @brief Return whether a resource was backed by the live Graphics upload boundary. */
     [[nodiscard]] bool isGpuResident(eve::PersistentId id) const noexcept;
     /** @brief Remove all resources and reset the local handle allocator. */
@@ -131,15 +129,15 @@ private:
     friend class GraphicsArtifactStage;
     struct RuntimeResource {
         GraphicsArtifactResource descriptor;
-        Mesh* uploadedMesh = nullptr;
+        Mesh*                    uploadedMesh = nullptr;
     };
-    static void uploadIfAvailable(Graphics* graphics, RuntimeResource& resource) noexcept;
-    void commit(RuntimeResource resource) noexcept;
-    void release(RuntimeResource& resource) noexcept;
+    static void                  uploadIfAvailable(Graphics* graphics, RuntimeResource& resource) noexcept;
+    void                         commit(RuntimeResource resource) noexcept;
+    void                         release(RuntimeResource& resource) noexcept;
     std::vector<RuntimeResource> resources_;
-    Graphics* graphics_ = nullptr;
-    std::uint32_t nextIndex_ = 0;
-    bool failPrepare_ = false;
+    Graphics*                    graphics_    = nullptr;
+    std::uint32_t                nextIndex_   = 0;
+    bool                         failPrepare_ = false;
 };
 
 /** @brief Return the process-owned graphics artifact provider singleton. */

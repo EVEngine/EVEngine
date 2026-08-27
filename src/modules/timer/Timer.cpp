@@ -20,9 +20,8 @@ Timer::Timer() {
     eve::cap::provide<eve::service::ITimer>(this);
     eve::cap::provide<eve::ITimeSource>(this);
     freq_  = SDL_GetPerformanceFrequency();
-    start_ = monotonicNow();
-    simulationClock_ = std::make_unique<eve::SimulationClock>(
-        *this, eve::Duration::fromNanoseconds(16666667));
+    start_           = monotonicNow();
+    simulationClock_ = std::make_unique<eve::SimulationClock>(*this, eve::Duration::fromNanoseconds(16666667));
 }
 
 Timer::~Timer() {
@@ -36,9 +35,7 @@ float Timer::getTime() const {
     return static_cast<float>(elapsed.value().seconds());
 }
 
-float Timer::getDelta() const {
-    return static_cast<float>(getDeltaDuration().seconds());
-}
+float Timer::getDelta() const { return static_cast<float>(getDeltaDuration().seconds()); }
 
 float Timer::step() {
     auto result = stepSimulation();
@@ -53,21 +50,19 @@ float Timer::step() {
 eve::MonotonicTimestamp Timer::monotonicNow() const {
     if (freq_ == 0) return eve::MonotonicTimestamp::zero();
     const long double counter = static_cast<long double>(SDL_GetPerformanceCounter());
-    const long double nanos = counter * 1000000000.0L / static_cast<long double>(freq_);
+    const long double nanos   = counter * 1000000000.0L / static_cast<long double>(freq_);
     if (nanos >= static_cast<long double>(std::numeric_limits<std::int64_t>::max()))
         return eve::MonotonicTimestamp(std::numeric_limits<std::int64_t>::max());
     return eve::MonotonicTimestamp(static_cast<std::int64_t>(nanos));
 }
 
 eve::WallClockTimestamp Timer::wallClockNow() const {
-    const auto now = std::chrono::system_clock::now().time_since_epoch();
+    const auto now   = std::chrono::system_clock::now().time_since_epoch();
     const auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
     return eve::WallClockTimestamp(nanos);
 }
 
-eve::Result<std::vector<eve::SimulationStep>> Timer::stepSimulation() {
-    return simulationClock_->sample();
-}
+eve::Result<std::vector<eve::SimulationStep>> Timer::stepSimulation() { return simulationClock_->sample(); }
 
 eve::SimulationClock& Timer::simulationClock() { return *simulationClock_; }
 

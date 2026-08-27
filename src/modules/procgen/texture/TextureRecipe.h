@@ -19,8 +19,7 @@ class ImageData;
 namespace eve::procgen {
 
 /** @brief Recipe returns a newly owned RGBA8 image, or null on failure. */
-using TextureRecipeFn =
-    std::function<std::unique_ptr<image::ImageData>(const Params &params, std::string &error)>;
+using TextureRecipeFn = std::function<std::unique_ptr<image::ImageData>(const Params &params, std::string &error)>;
 
 class TextureRecipeRegistry {
 public:
@@ -41,8 +40,8 @@ public:
      * @return The newly owned image, or null when the recipe is unknown or generation fails.
      * @ownership The returned image is owned by the caller.
      */
-    [[nodiscard]] std::unique_ptr<image::ImageData> generate(
-        const std::string &id, const Params &params, std::string &error) const;
+    [[nodiscard]] std::unique_ptr<image::ImageData> generate(const std::string &id, const Params &params,
+                                                             std::string &error) const;
     /** @brief List registered recipe ids. @return Sorted ids. */
     std::vector<std::string> list() const;
     /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
@@ -89,8 +88,8 @@ void fillHeightField(const TextureGenContext &ctx,
  * @brief Builds a normal-map image and transfers its unique ownership to the caller.
  * @return The newly owned image, or null only when allocation fails.
  */
-[[nodiscard]] std::unique_ptr<image::ImageData> heightToNormalImage(
-    const std::vector<float> &height, int w, int h, float strength, bool seamless);
+[[nodiscard]] std::unique_ptr<image::ImageData> heightToNormalImage(const std::vector<float> &height, int w, int h,
+                                                                    float strength, bool seamless);
 
 /**
  * @brief PBR surface defaults for a generated material. Every map in a PBR set is

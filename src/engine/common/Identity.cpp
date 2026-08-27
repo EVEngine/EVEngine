@@ -9,16 +9,14 @@ namespace {
 [[nodiscard]] bool isLogicalName(std::string_view value) noexcept {
     if (value.empty()) return false;
     for (const char character : value) {
-        const bool alpha = (character >= 'a' && character <= 'z') ||
-                           (character >= 'A' && character <= 'Z');
+        const bool alpha = (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
         const bool digit = character >= '0' && character <= '9';
         if (!(alpha || digit || character == '_' || character == '-' || character == '.')) {
             return false;
         }
     }
     const char first = value.front();
-    return (first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z') ||
-           (first >= '0' && first <= '9');
+    return (first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z') || (first >= '0' && first <= '9');
 }
 
 [[nodiscard]] bool isLogicalNamespace(std::string_view value) noexcept {
@@ -84,13 +82,12 @@ std::optional<PersistentId> UuidV7Generator::generate() const {
     return generate(timestamp);
 }
 
-std::optional<PersistentId> UuidV7Generator::generate(
-    std::chrono::system_clock::time_point timestamp) const {
+std::optional<PersistentId> UuidV7Generator::generate(std::chrono::system_clock::time_point timestamp) const {
     return generateUuidV7(timestamp, entropy_);
 }
 
-std::optional<PersistentId> generateUuidV7(
-    std::chrono::system_clock::time_point timestamp, const UuidEntropySource& entropy) {
+std::optional<PersistentId> generateUuidV7(std::chrono::system_clock::time_point timestamp,
+                                           const UuidEntropySource&              entropy) {
     if (!entropy) return std::nullopt;
 
     if (timestamp.time_since_epoch() < std::chrono::system_clock::duration::zero()) return std::nullopt;

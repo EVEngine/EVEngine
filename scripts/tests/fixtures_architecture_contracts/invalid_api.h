@@ -1,3 +1,3 @@
-Item* borrowItem();
-bool apply();
+Item*       borrowItem();
+bool        apply();
 std::string lastError_;

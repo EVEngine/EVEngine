@@ -20,9 +20,7 @@ UIHost* resolveHost(UIHostHandle handle) {
     return host ? &host->get() : nullptr;
 }
 
-UIHost* createHost(const std::string& name) {
-    return resolveHost(UIHost::createHost(name));
-}
+UIHost* createHost(const std::string& name) { return resolveHost(UIHost::createHost(name)); }
 
 UINode* findNode(UIHost* host, const std::string& id) {
     if (host == nullptr) return nullptr;
@@ -30,9 +28,7 @@ UINode* findNode(UIHost* host, const std::string& id) {
     return node ? &node->get() : nullptr;
 }
 
-UINode* findNode(UI& ui, const std::string& id) {
-    return findNode(resolveHost(ui.current()), id);
-}
+UINode* findNode(UI& ui, const std::string& id) { return findNode(resolveHost(ui.current()), id); }
 
 }  // namespace
 
@@ -113,16 +109,12 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     CHECK(!findNode(*ui, "active")->enabled);
     CHECK(findNode(*ui, "search")->tooltip == "Filter scene nodes");
     CHECK(findNode(*ui, "search")->tabIndex == 4);
-    CHECK(int(findNode(*ui, "search")->mouseFilter) ==
-          int(MouseFilter::Pass));
-    CHECK(int(findNode(*ui, "root")->themePreset) ==
-          int(ThemePreset::Light));
-    CHECK(int(findNode(*ui, "search")->themePreset) ==
-          int(ThemePreset::Dark));
+    CHECK(int(findNode(*ui, "search")->mouseFilter) == int(MouseFilter::Pass));
+    CHECK(int(findNode(*ui, "root")->themePreset) == int(ThemePreset::Light));
+    CHECK(int(findNode(*ui, "search")->themePreset) == int(ThemePreset::Dark));
     CHECK(findNode(*ui, "search")->focusRight == "toolbar_save");
     CHECK(findNode(*ui, "search")->accessibilityName == "Search scene");
-    CHECK(findNode(*ui, "search")->accessibilityDescription ==
-          "Filters the scene tree");
+    CHECK(findNode(*ui, "search")->accessibilityDescription == "Filters the scene tree");
     CHECK(int(findNode(*ui, "workspace")->type) == int(NodeType::SplitPane));
     CHECK(ui->requestFocus("search"));
     CHECK(ui->moveFocus("right"));
@@ -142,7 +134,7 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
 }
 
 TEST_CASE("UI.editorKit.desktopCompositionRenders") {
-    UIHost* host          = createHost("desktop_components");
+    UIHost* host = createHost("desktop_components");
     REQUIRE(host != nullptr);
     host->meta()->hasSize = true;
     host->meta()->sizeX   = 800.f;

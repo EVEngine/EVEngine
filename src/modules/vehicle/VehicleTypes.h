@@ -10,14 +10,14 @@
  * 命令队列 / 驾驶输入 / 座位（Phase 4）这些可选面上。
  */
 
+#include "attributes/AttributeProjection.h"
 #include "common/ECS.h"
 #include "common/Revision.h"
 #include "common/definitions/DefinitionRuntime.h"
-#include "attributes/AttributeProjection.h"
 
 #include <cstdint>
-#include <ostream>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -199,9 +199,8 @@ public:
      */
     struct DefinitionBinding {
         eve::definition::InstanceIdentity identity;
-        eve::definition::ReloadPolicy reloadPolicy =
-            eve::definition::ReloadPolicy::RebuildInstance;
-        bool active = true;
+        eve::definition::ReloadPolicy     reloadPolicy = eve::definition::ReloadPolicy::RebuildInstance;
+        bool                              active       = true;
     };
 
     /** @brief 每帧输入（命令系统 / 驾驶者写入，移动模型消费）。 */

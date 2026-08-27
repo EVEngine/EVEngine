@@ -69,24 +69,21 @@ int MeshBuild::getTriangleGroup(int triangleIndex) const {
     return triangleGroups_[size_t(triangleIndex)];
 }
 
-eve::Result<void> MeshBuild::restoreGroupData(std::vector<std::string> names,
-                                              std::vector<int> assignments,
+eve::Result<void> MeshBuild::restoreGroupData(std::vector<std::string> names, std::vector<int> assignments,
                                               int activeGroup) {
     const auto invalid = [&](std::string message, std::string path) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ProcgenGroupDataInvalid, std::move(message), std::move(path),
-            {}, "procgen.mesh"));
+            eve::DiagnosticCode::ProcgenGroupDataInvalid, std::move(message), std::move(path), {}, "procgen.mesh"));
     };
     if (assignments.size() != indices_.size() / 3u || activeGroup < -1 ||
         activeGroup >= static_cast<int>(names.size()) ||
         std::any_of(names.begin(), names.end(), [](const std::string &name) { return name.empty(); }) ||
-        std::any_of(assignments.begin(), assignments.end(), [&](int group) {
-            return group < -1 || group >= static_cast<int>(names.size());
-        }))
+        std::any_of(assignments.begin(), assignments.end(),
+                    [&](int group) { return group < -1 || group >= static_cast<int>(names.size()); }))
         return invalid("mesh group sidecar is inconsistent with dense mesh streams", "groups");
-    groupNames_ = std::move(names);
+    groupNames_     = std::move(names);
     triangleGroups_ = std::move(assignments);
-    activeGroup_ = activeGroup;
+    activeGroup_    = activeGroup;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 

@@ -85,7 +85,7 @@ public:
      */
     [[nodiscard]] Result<Duration> scaled(double rate) const;
 
-    friend constexpr bool operator==(Duration, Duration) noexcept = default;
+    friend constexpr bool operator==(Duration, Duration) noexcept  = default;
     friend constexpr auto operator<=>(Duration, Duration) noexcept = default;
 
 private:
@@ -119,7 +119,7 @@ public:
      */
     [[nodiscard]] Result<Duration> since(MonotonicTimestamp earlier) const;
 
-    friend constexpr bool operator==(MonotonicTimestamp, MonotonicTimestamp) noexcept = default;
+    friend constexpr bool operator==(MonotonicTimestamp, MonotonicTimestamp) noexcept  = default;
     friend constexpr auto operator<=>(MonotonicTimestamp, MonotonicTimestamp) noexcept = default;
 
 private:
@@ -138,13 +138,12 @@ public:
     constexpr WallClockTimestamp() noexcept = default;
 
     /** @brief Construct a timestamp from Unix-epoch nanoseconds. */
-    explicit constexpr WallClockTimestamp(std::int64_t unixNanoseconds) noexcept
-        : unixNanoseconds_(unixNanoseconds) {}
+    explicit constexpr WallClockTimestamp(std::int64_t unixNanoseconds) noexcept : unixNanoseconds_(unixNanoseconds) {}
 
     /** @brief Return Unix-epoch nanoseconds for metadata serialization. */
     [[nodiscard]] constexpr std::int64_t unixNanoseconds() const noexcept { return unixNanoseconds_; }
 
-    friend constexpr bool operator==(WallClockTimestamp, WallClockTimestamp) noexcept = default;
+    friend constexpr bool operator==(WallClockTimestamp, WallClockTimestamp) noexcept  = default;
     friend constexpr auto operator<=>(WallClockTimestamp, WallClockTimestamp) noexcept = default;
 
 private:
@@ -169,8 +168,8 @@ struct EVENGINE_API SimulationStep {
  */
 class EVENGINE_API ITimeSource {
 public:
-    static constexpr const char *capabilityName = "ITimeSource";
-    virtual ~ITimeSource() = default;
+    static constexpr const char* capabilityName = "ITimeSource";
+    virtual ~ITimeSource()                      = default;
 
     /**
      * @brief Read the non-decreasing source-relative timestamp.
@@ -201,8 +200,7 @@ public:
      * @param source Borrowed source; it must outlive this clock.
      * @param fixedStep Positive fixed simulation duration.
      */
-    explicit SimulationClock(ITimeSource& source,
-                             Duration fixedStep = Duration::fromNanoseconds(16666667));
+    explicit SimulationClock(ITimeSource& source, Duration fixedStep = Duration::fromNanoseconds(16666667));
 
     /** @brief Read the source and emit deterministic steps for one frame. */
     [[nodiscard]] Result<std::vector<SimulationStep>> sample();
@@ -238,14 +236,14 @@ public:
     [[nodiscard]] Duration lastFrameDelta() const noexcept { return lastFrameDelta_; }
 
 private:
-    ITimeSource& source_;
-    Duration fixedStep_;
-    Duration accumulator_;
-    Duration lastFrameDelta_;
-    double rate_ = 1.0;
-    SimulationTick tick_ = SimulationTick::zero();
-    FrameIndex frame_ = FrameIndex::zero();
-    bool paused_ = false;
+    ITimeSource&                      source_;
+    Duration                          fixedStep_;
+    Duration                          accumulator_;
+    Duration                          lastFrameDelta_;
+    double                            rate_   = 1.0;
+    SimulationTick                    tick_   = SimulationTick::zero();
+    FrameIndex                        frame_  = FrameIndex::zero();
+    bool                              paused_ = false;
     std::optional<MonotonicTimestamp> previousSourceTime_;
 };
 

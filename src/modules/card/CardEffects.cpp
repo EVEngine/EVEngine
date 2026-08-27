@@ -9,32 +9,30 @@ namespace eve::card {
 namespace {
 
 eve::Result<void> invalid(const char* message, const char* path = "effect") {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path));
+    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path));
 }
 
 bool hasKind(const effects::EffectInstance& effect, CardEffectKind kind) {
     const char* name = kind == CardEffectKind::Damage ? "card:damage"
-                     : kind == CardEffectKind::Heal ? "card:heal"
-                                                     : "card:shield";
+                       : kind == CardEffectKind::Heal ? "card:heal"
+                                                      : "card:shield";
     return effect.hasTag(name);
 }
 
 }  // namespace
 
 eve::Result<void> CardEffectAdapter::initializeTarget(CardEffectTarget target) {
-    if (target.maxHealth <= 0 || target.health < 0 || target.health > target.maxHealth ||
-        target.barrier < 0)
+    if (target.maxHealth <= 0 || target.health < 0 || target.health > target.maxHealth || target.barrier < 0)
         return invalid("card effect target state is invalid", "target");
     if (container_.effectCount() != 0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict,
-            "card effect target cannot be reinitialized while effects are active", "target"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "card effect target cannot be reinitialized while effects are active", "target"));
     target_ = target;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> CardEffectExecutor::applyImmediate(CardEffectTarget& target,
+eve::Result<void> CardEffectExecutor::applyImmediate(CardEffectTarget&              target,
                                                      const effects::EffectInstance& effect) const {
     if (target.health < 0 || target.maxHealth <= 0 || target.health > target.maxHealth || target.barrier < 0)
         return invalid("card effect target state is invalid", "target");
@@ -48,11 +46,11 @@ eve::Result<void> CardEffectExecutor::applyImmediate(CardEffectTarget& target,
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<CardEffectUpdate> CardEffectExecutor::settle(CardEffectTarget& target,
-                                                          effects::EffectUpdateSummary lifecycle) const {
+eve::Result<CardEffectUpdate> CardEffectExecutor::settle(CardEffectTarget&            target,
+                                                         effects::EffectUpdateSummary lifecycle) const {
     if (target.health < 0 || target.maxHealth <= 0 || target.health > target.maxHealth || target.barrier < 0)
-        return eve::Result<CardEffectUpdate>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card effect target state is invalid", "target"));
+        return eve::Result<CardEffectUpdate>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card effect target state is invalid", "target"));
     CardEffectUpdate result;
     result.lifecycle = std::move(lifecycle);
     for (const auto& tick : result.lifecycle.periodicTicks) {
@@ -64,21 +62,23 @@ eve::Result<CardEffectUpdate> CardEffectExecutor::settle(CardEffectTarget& targe
             return eve::Result<CardEffectUpdate>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "card periodic settlement overflows", "periodic"));
         if (tick.effectId.empty())
-            return eve::Result<CardEffectUpdate>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvariantViolation, "card periodic trigger has no effect identity", "periodic.effectId"));
+            return eve::Result<CardEffectUpdate>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                       "card periodic trigger has no effect identity", "periodic.effectId"));
         const auto tagged = [&tick](const char* value) {
             return std::find(tick.tags.begin(), tick.tags.end(), value) != tick.tags.end();
         };
         if (tagged("card:shield")) {
             const auto shield = static_cast<int>(amount);
             if (shield > std::numeric_limits<int>::max() - target.barrier)
-                return eve::Result<CardEffectUpdate>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "card periodic barrier addition overflows", "target.barrier"));
+                return eve::Result<CardEffectUpdate>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                           "card periodic barrier addition overflows", "target.barrier"));
             target.barrier += shield;
         } else if (tagged("card:heal")) {
             target.health = std::min(target.maxHealth, target.health + static_cast<int>(amount));
         } else {
-            const auto damage = static_cast<int>(amount);
+            const auto damage   = static_cast<int>(amount);
             const auto absorbed = std::min(target.barrier, damage);
             target.barrier -= absorbed;
             target.health = std::max(0, target.health - (damage - absorbed));
@@ -90,12 +90,11 @@ eve::Result<CardEffectUpdate> CardEffectExecutor::settle(CardEffectTarget& targe
         }
         ++result.settled;
     }
-    return eve::Result<CardEffectUpdate>::success(std::move(result),
-                                                  eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<CardEffectUpdate>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<effects::EffectHandle> CardEffectAdapter::apply(const CardEffectDefinition& definition,
-                                                            eve::SubjectRef subject) {
+                                                            eve::SubjectRef             subject) {
     if (definition.id.empty())
         return eve::Result<effects::EffectHandle>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "card effect id must not be empty", "id"));
@@ -103,32 +102,34 @@ eve::Result<effects::EffectHandle> CardEffectAdapter::apply(const CardEffectDefi
         return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "card effect subject must be valid", "subject"));
     effects::EffectDefinition common;
-    common.id = definition.id;
-    common.stackKey = definition.id;
-    common.duration = definition.duration;
-    common.period = definition.period;
+    common.id        = definition.id;
+    common.stackKey  = definition.id;
+    common.duration  = definition.duration;
+    common.period    = definition.period;
     common.magnitude = definition.magnitude;
-    common.policy = definition.policy;
-    common.tags = definition.tags;
+    common.policy    = definition.policy;
+    common.tags      = definition.tags;
     common.tags.push_back(definition.kind == CardEffectKind::Damage ? "card:damage"
-                      : definition.kind == CardEffectKind::Heal ? "card:heal" : "card:shield");
+                          : definition.kind == CardEffectKind::Heal ? "card:heal"
+                                                                    : "card:shield");
     if (definition.deathTrigger) common.tags.push_back("card:death-trigger");
     auto valid = common.validate();
     if (!valid) return eve::Result<effects::EffectHandle>::failure(valid.status());
 
     auto candidate = container_.clone();
-    auto applied = candidate.apply(common, subject.format(), definition.source);
+    auto applied   = candidate.apply(common, subject.format(), definition.source);
     if (!applied) return eve::Result<effects::EffectHandle>::failure(applied.status());
-    const std::string id = std::move(applied).takeValue();
-    auto instance = candidate.find(id);
-    if (!instance) return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvariantViolation, "card effect candidate disappeared", "effect"));
+    const std::string id       = std::move(applied).takeValue();
+    auto              instance = candidate.find(id);
+    if (!instance)
+        return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "card effect candidate disappeared", "effect"));
     CardEffectTarget targetCandidate = target_;
-    auto immediate = executor_.applyImmediate(targetCandidate, *instance);
+    auto             immediate       = executor_.applyImmediate(targetCandidate, *instance);
     if (!immediate) return eve::Result<effects::EffectHandle>::failure(immediate.status());
     auto handle = candidate.handleFor(id);
     if (!handle) return eve::Result<effects::EffectHandle>::failure(handle.status());
-    target_ = std::move(targetCandidate);
+    target_    = std::move(targetCandidate);
     container_ = std::move(candidate);
     return eve::Result<effects::EffectHandle>::success(std::move(handle).takeValue(),
                                                        eve::Status::success(eve::StatusCode::Applied));
@@ -145,18 +146,15 @@ eve::Result<CardEffectUpdate> CardEffectAdapter::advance(const eve::SimulationSt
     auto lifecycle = effects::EffectExecutor{}.advance(candidate, step);
     if (!lifecycle) return eve::Result<CardEffectUpdate>::failure(lifecycle.status());
     auto targetCandidate = target_;
-    auto settled = executor_.settle(targetCandidate, std::move(lifecycle).takeValue());
+    auto settled         = executor_.settle(targetCandidate, std::move(lifecycle).takeValue());
     if (!settled) return settled;
     auto result = std::move(settled).takeValue();
-    target_ = std::move(targetCandidate);
-    container_ = std::move(candidate);
-    return eve::Result<CardEffectUpdate>::success(std::move(result),
-                                                  eve::Status::success(eve::StatusCode::Applied));
+    target_     = std::move(targetCandidate);
+    container_  = std::move(candidate);
+    return eve::Result<CardEffectUpdate>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
 }
 
-std::size_t CardEffectAdapter::count() const noexcept {
-    return static_cast<std::size_t>(container_.effectCount());
-}
+std::size_t CardEffectAdapter::count() const noexcept { return static_cast<std::size_t>(container_.effectCount()); }
 
 CardEffectSnapshot CardEffectAdapter::snapshot() const { return {container_.snapshot(), target_}; }
 

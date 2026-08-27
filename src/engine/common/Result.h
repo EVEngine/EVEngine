@@ -45,8 +45,7 @@ public:
 #if !defined(ZEROERR_NO_ASSERT)
     ~ResultObservation() noexcept(false) {
         const bool observationSatisfied = !mustObserve_ || observed_;
-        EV_ASSERT(observationSatisfied,
-                  "Result destroyed without checking; inspect it or call ignore() explicitly");
+        EV_ASSERT(observationSatisfied, "Result destroyed without checking; inspect it or call ignore() explicitly");
     }
 #else
     ~ResultObservation() noexcept = default;
@@ -62,15 +61,14 @@ protected:
     void assertCanBeOverwritten() const {
 #if !defined(ZEROERR_NO_ASSERT)
         const bool observationSatisfied = !mustObserve_ || observed_;
-        EV_ASSERT(observationSatisfied,
-                  "move assignment would overwrite an unchecked Result");
+        EV_ASSERT(observationSatisfied, "move assignment would overwrite an unchecked Result");
 #endif
     }
 
     void adoptObservationFrom(ResultObservation& other) noexcept {
 #if !defined(ZEROERR_NO_ASSERT)
-        observed_    = other.observed_;
-        mustObserve_ = other.mustObserve_;
+        observed_          = other.observed_;
+        mustObserve_       = other.mustObserve_;
         other.mustObserve_ = false;
 #else
         (void)other;
@@ -101,16 +99,13 @@ using ResultReturn = std::invoke_result_t<T>;
  * @tparam T Owning value type. References and void use a different form.
  */
 template <class T>
-class [[nodiscard("Result must be checked or explicitly ignored")]] Result
-    : private detail::ResultObservation {
+class [[nodiscard("Result must be checked or explicitly ignored")]] Result : private detail::ResultObservation {
     static_assert(!std::is_reference_v<T>, "Result<T> cannot hold a reference; use a handle or value");
     static_assert(!std::is_void_v<T>, "Result<void> has a dedicated specialization");
 
 public:
     /** @brief Construct a successful result owning `value`. */
-    static Result success(T value) {
-        return Result(Status::success(), std::optional<T>(std::move(value)));
-    }
+    static Result success(T value) { return Result(Status::success(), std::optional<T>(std::move(value))); }
 
     /** @brief Construct a successful result with an explicit non-error status. */
     static Result success(T value, Status status) {
@@ -125,17 +120,16 @@ public:
     }
 
     /** @brief Construct a failed result from one structured diagnostic. */
-    static Result failure(Diagnostic diagnostic) {
-        return failure(Status::failure(std::move(diagnostic)));
-    }
+    static Result failure(Diagnostic diagnostic) { return failure(Status::failure(std::move(diagnostic))); }
 
-    Result(const Result&)             = delete;
-    Result& operator=(const Result&)  = delete;
+    Result(const Result&)            = delete;
+    Result& operator=(const Result&) = delete;
 
     /** @brief Move a result and transfer its debug observation responsibility. */
     Result(Result&& other)
         : detail::ResultObservation(detail::ResultObservation::InactiveTag{}),
-          status_(std::move(other.status_)), value_(std::move(other.value_)) {
+          status_(std::move(other.status_)),
+          value_(std::move(other.value_)) {
         adoptObservationFrom(other);
     }
 
@@ -145,8 +139,7 @@ public:
      *          either result's observation responsibility is changed.
      */
     Result& operator=(Result&& other) {
-        if (this == &other)
-            return *this;
+        if (this == &other) return *this;
         assertCanBeOverwritten();
         status_ = std::move(other.status_);
         value_  = std::move(other.value_);
@@ -202,11 +195,10 @@ public:
     explicit operator bool() const noexcept { return ok(); }
 
     /** @brief Borrow the value from a const lvalue after checking success. */
-    const T& value() const & {
+    const T& value() const& {
         observe();
         const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
-        EV_ASSERT(hasSuccessfulValue,
-                  "Result::value requires a successful Result with a value");
+        EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return value_.value();
     }
 
@@ -214,8 +206,7 @@ public:
     T& value() & {
         observe();
         const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
-        EV_ASSERT(hasSuccessfulValue,
-                  "Result::value requires a successful Result with a value");
+        EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return value_.value();
     }
 
@@ -223,8 +214,7 @@ public:
     T&& value() && {
         observe();
         const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
-        EV_ASSERT(hasSuccessfulValue,
-                  "Result::value requires a successful Result with a value");
+        EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return std::move(value_.value());
     }
 
@@ -232,8 +222,7 @@ public:
     T takeValue() && {
         observe();
         const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
-        EV_ASSERT(hasSuccessfulValue,
-                  "Result::takeValue requires a successful Result with a value");
+        EV_ASSERT(hasSuccessfulValue, "Result::takeValue requires a successful Result with a value");
         T result = std::move(value_.value());
         value_.reset();
         return result;
@@ -242,8 +231,7 @@ public:
     /** @brief Return the value or an explicit alternate value, consuming this Result. */
     T valueOr(T fallback) && {
         observe();
-        if (status_.isSuccess() && value_.has_value())
-            return std::move(value_.value());
+        if (status_.isSuccess() && value_.has_value()) return std::move(value_.value());
         return fallback;
     }
 
@@ -256,8 +244,7 @@ public:
     auto andThen(Function&& function) && -> std::invoke_result_t<Function, T&&> {
         observe();
         using Return = std::invoke_result_t<Function, T&&>;
-        if (!status_.isSuccess() || !value_.has_value())
-            return Return::failure(status_);
+        if (!status_.isSuccess() || !value_.has_value()) return Return::failure(status_);
         return std::invoke(std::forward<Function>(function), std::move(value_.value()));
     }
 
@@ -269,8 +256,7 @@ public:
     template <class Function>
     Result orElse(Function&& function) && {
         observe();
-        if (status_.isSuccess() && value_.has_value())
-            return std::move(*this);
+        if (status_.isSuccess() && value_.has_value()) return std::move(*this);
         return std::invoke(std::forward<Function>(function), status_);
     }
 
@@ -301,10 +287,9 @@ public:
     }
 
 private:
-    Result(Status status, std::optional<T> value)
-        : status_(std::move(status)), value_(std::move(value)) {}
+    Result(Status status, std::optional<T> value) : status_(std::move(status)), value_(std::move(value)) {}
 
-    Status        status_;
+    Status           status_;
     std::optional<T> value_;
 };
 
@@ -312,8 +297,7 @@ private:
  * @brief Move-only operation result for actions with no value payload.
  */
 template <>
-class [[nodiscard("Result must be checked or explicitly ignored")]] Result<void>
-    : private detail::ResultObservation {
+class [[nodiscard("Result must be checked or explicitly ignored")]] Result<void> : private detail::ResultObservation {
 public:
     /** @brief Construct a successful void result. */
     static Result success() { return Result(Status::success()); }
@@ -331,24 +315,20 @@ public:
     }
 
     /** @brief Construct a failed void result from one structured diagnostic. */
-    static Result failure(Diagnostic diagnostic) {
-        return failure(Status::failure(std::move(diagnostic)));
-    }
+    static Result failure(Diagnostic diagnostic) { return failure(Status::failure(std::move(diagnostic))); }
 
     Result(const Result&)            = delete;
     Result& operator=(const Result&) = delete;
 
     /** @brief Move a result and transfer its debug observation responsibility. */
     Result(Result&& other)
-        : detail::ResultObservation(detail::ResultObservation::InactiveTag{}),
-          status_(std::move(other.status_)) {
+        : detail::ResultObservation(detail::ResultObservation::InactiveTag{}), status_(std::move(other.status_)) {
         adoptObservationFrom(other);
     }
 
     /** @brief Move-assign after checking the destination's old result. */
     Result& operator=(Result&& other) {
-        if (this == &other)
-            return *this;
+        if (this == &other) return *this;
         assertCanBeOverwritten();
         status_ = std::move(other.status_);
         adoptObservationFrom(other);

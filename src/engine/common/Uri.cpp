@@ -9,12 +9,10 @@ namespace eve {
 namespace {
 
 [[nodiscard]] Result<Uri> uriFailure(std::string message, std::string_view path = {}) {
-    return Result<Uri>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, std::move(message), std::string(path)));
+    return Result<Uri>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(message), std::string(path)));
 }
 
-[[nodiscard]] Result<ResourceUri> resourceUriFailure(std::string message,
-                                                     std::string_view path = {}) {
+[[nodiscard]] Result<ResourceUri> resourceUriFailure(std::string message, std::string_view path = {}) {
     return Result<ResourceUri>::failure(
         Diagnostic::error(DiagnosticCode::ParseError, std::move(message), std::string(path)));
 }
@@ -29,16 +27,14 @@ namespace {
     const auto byte = static_cast<unsigned char>(value);
     if (byte < 0x21 || byte > 0x7e) return false;
     switch (value) {
-    case '/':
-    case '_':
-    case '-':
-    case '.':
-    case '~':
-    case '+':
-    case '@':
-        return true;
-    default:
-        return std::isalnum(byte) != 0;
+        case '/':
+        case '_':
+        case '-':
+        case '.':
+        case '~':
+        case '+':
+        case '@': return true;
+        default: return std::isalnum(byte) != 0;
     }
 }
 
@@ -59,19 +55,18 @@ namespace {
 
 [[nodiscard]] bool isKnownScheme(UriScheme scheme) noexcept {
     switch (scheme) {
-    case UriScheme::Asset:
-    case UriScheme::Project:
-    case UriScheme::Builtin:
-    case UriScheme::Generated:
-    case UriScheme::Memory:
-        return true;
+        case UriScheme::Asset:
+        case UriScheme::Project:
+        case UriScheme::Builtin:
+        case UriScheme::Generated:
+        case UriScheme::Memory: return true;
     }
     return false;
 }
 
 [[nodiscard]] bool validPath(std::string_view path) noexcept {
     if (path.empty() || path.front() == '/' || path.back() == '/') return false;
-    char previous = '\0';
+    char        previous     = '\0';
     std::size_t segmentStart = 0;
     for (std::size_t i = 0; i < path.size(); ++i) {
         const char value = path[i];
@@ -104,25 +99,24 @@ namespace {
     }
 
     std::string scheme(text.substr(0, delimiter));
-    std::transform(scheme.begin(), scheme.end(), scheme.begin(), [](unsigned char value) {
-        return static_cast<char>(std::tolower(value));
-    });
+    std::transform(scheme.begin(), scheme.end(), scheme.begin(),
+                   [](unsigned char value) { return static_cast<char>(std::tolower(value)); });
     const auto schemeKind = schemeFromText(scheme);
     if (!schemeKind) return uriFailure("unsupported resource URI scheme", text);
 
-    std::string_view remainder = text.substr(delimiter + 3);
-    const auto fragmentDelimiter = remainder.find('#');
+    std::string_view remainder         = text.substr(delimiter + 3);
+    const auto       fragmentDelimiter = remainder.find('#');
     std::string_view fragment;
     if (fragmentDelimiter != std::string_view::npos) {
-        fragment = remainder.substr(fragmentDelimiter + 1);
+        fragment  = remainder.substr(fragmentDelimiter + 1);
         remainder = remainder.substr(0, fragmentDelimiter);
         if (!validQueryOrFragment(fragment)) return uriFailure("URI fragment is empty or invalid", text);
     }
 
-    const auto queryDelimiter = remainder.find('?');
+    const auto       queryDelimiter = remainder.find('?');
     std::string_view query;
     if (queryDelimiter != std::string_view::npos) {
-        query = remainder.substr(queryDelimiter + 1);
+        query     = remainder.substr(queryDelimiter + 1);
         remainder = remainder.substr(0, queryDelimiter);
         if (!validQueryOrFragment(query)) return uriFailure("URI query is empty or invalid", text);
     }
@@ -135,23 +129,17 @@ namespace {
 
 const char* uriSchemeName(UriScheme scheme) noexcept {
     switch (scheme) {
-    case UriScheme::Asset:
-        return "asset";
-    case UriScheme::Project:
-        return "project";
-    case UriScheme::Builtin:
-        return "builtin";
-    case UriScheme::Generated:
-        return "generated";
-    case UriScheme::Memory:
-        return "memory";
+        case UriScheme::Asset: return "asset";
+        case UriScheme::Project: return "project";
+        case UriScheme::Builtin: return "builtin";
+        case UriScheme::Generated: return "generated";
+        case UriScheme::Memory: return "memory";
     }
     return "unknown";
 }
 
 Uri::Uri(UriScheme scheme, std::string path, std::string query, std::string fragment)
-    : scheme_(scheme), path_(std::move(path)), query_(std::move(query)),
-      fragment_(std::move(fragment)) {
+    : scheme_(scheme), path_(std::move(path)), query_(std::move(query)), fragment_(std::move(fragment)) {
     formatted_.reserve(3 + path_.size() + query_.size() + fragment_.size() + 16);
     formatted_ += uriSchemeName(scheme_);
     formatted_ += "://";
@@ -168,16 +156,13 @@ Uri::Uri(UriScheme scheme, std::string path, std::string query, std::string frag
 
 Result<Uri> Uri::parse(std::string_view text) { return parseUri(text); }
 
-Result<Uri> Uri::fromParts(UriScheme scheme, std::string_view path, std::string_view query,
-                           std::string_view fragment) {
+Result<Uri> Uri::fromParts(UriScheme scheme, std::string_view path, std::string_view query, std::string_view fragment) {
     if (!isKnownScheme(scheme)) return uriFailure("unknown resource URI scheme", path);
     if (!validPath(path)) return uriFailure("URI path is empty, absolute, or invalid", path);
-    if ((!query.empty() && !validQueryOrFragment(query)) ||
-        (!fragment.empty() && !validQueryOrFragment(fragment))) {
+    if ((!query.empty() && !validQueryOrFragment(query)) || (!fragment.empty() && !validQueryOrFragment(fragment))) {
         return uriFailure("URI query or fragment is invalid", path);
     }
-    return Result<Uri>::success(Uri(scheme, std::string(path), std::string(query),
-                                   std::string(fragment)));
+    return Result<Uri>::success(Uri(scheme, std::string(path), std::string(query), std::string(fragment)));
 }
 
 Result<ResourceUri> ResourceUri::parse(std::string_view text) {
@@ -189,8 +174,8 @@ Result<ResourceUri> ResourceUri::parse(std::string_view text) {
     return Result<ResourceUri>::success(ResourceUri(std::move(parsed).takeValue()));
 }
 
-Result<ResourceUri> ResourceUri::fromParts(UriScheme scheme, std::string_view path,
-                                           std::string_view query, std::string_view fragment) {
+Result<ResourceUri> ResourceUri::fromParts(UriScheme scheme, std::string_view path, std::string_view query,
+                                           std::string_view fragment) {
     auto parsed = Uri::fromParts(scheme, path, query, fragment);
     if (!parsed.ok()) {
         const auto* diagnostic = parsed.error();

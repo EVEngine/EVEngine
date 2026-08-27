@@ -54,8 +54,8 @@ public:
          * @remarks The returned participant is owned for the synchronous transaction only;
          *          it must implement compensation when later state effects can fail.
          */
-        using CommandParticipantFactory = std::function<
-            eve::Result<std::unique_ptr<eve::transaction::ITransactionParticipant>>(
+        using CommandParticipantFactory =
+            std::function<eve::Result<std::unique_ptr<eve::transaction::ITransactionParticipant>>(
                 const CommandRequest&)>;
         /** @brief Optional factory used to stage an atomic operation or Action. */
         CommandParticipantFactory commandParticipantFactory;
@@ -86,8 +86,8 @@ public:
     /** @brief Return the facade-owned state boundary; providers remain borrowed. */
     const DialogueStateContext& stateContext() const noexcept { return stateContext_; }
     /** @brief Apply mutations through the configured authoritative provider. */
-    [[nodiscard]] eve::Result<eve::MutationReceipt> applyStateMutations(
-        std::span<const eve::StateMutation> mutations, const eve::MutationContext& context) const;
+    [[nodiscard]] eve::Result<eve::MutationReceipt> applyStateMutations(std::span<const eve::StateMutation> mutations,
+                                                                        const eve::MutationContext& context) const;
 
     int         loadFromDnut(const std::string& source, const std::string& path);
     int         reloadFromDnut(const std::string& source, const std::string& path);
@@ -164,20 +164,20 @@ private:
     int                      mergeImported(std::vector<ConversationAsset> imported);
     const ConversationAsset* find(const std::string& id) const;
     StateValue evaluate(const std::string& expression, const StateValue& bindings, const StateValue& locals);
-    CommandResponse           dispatchCommand(const CommandRequest& request);
-    std::string               nextTransactionId(const char* purpose);
+    CommandResponse          dispatchCommand(const CommandRequest& request);
+    std::string              nextTransactionId(const char* purpose);
 
     std::vector<ConversationAsset>                            assets_;
     std::vector<ConversationDiagnostic>                       diagnostics_;
     ConversationRunner                                        runner_;
-    DialogueStateContext                                       stateContext_;
+    DialogueStateContext                                      stateContext_;
     ConversationRunner::ConditionEvaluator                    configuredConditionEvaluator_;
-    CommandRequestHandler                                      operationRequestHandler_;
-    CommandRequestHandler                                      gameplayActionHandler_;
+    CommandRequestHandler                                     operationRequestHandler_;
+    CommandRequestHandler                                     gameplayActionHandler_;
     IntegrationConfig::CommandParticipantFactory              commandParticipantFactory_;
-    eve::IStateMutation*                                       stateMutationProvider_ = nullptr;
-    DialoguePaymentAdapter                                     paymentAdapter_;
-    std::uint64_t                                              transactionSequence_ = 1;
+    eve::IStateMutation*                                      stateMutationProvider_ = nullptr;
+    DialoguePaymentAdapter                                    paymentAdapter_;
+    std::uint64_t                                             transactionSequence_ = 1;
     std::string                                               failureMessage_;
     HSQUIRRELVM                                               vm_ = nullptr;
     HSQOBJECT                                                 evaluator_{};

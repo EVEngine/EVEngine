@@ -26,48 +26,48 @@ enum class CardEffectKind : std::uint8_t { Damage, Heal, Shield };
 
 /** @brief Mutable card combat state changed by the card effect executor. */
 struct CardEffectTarget {
-    int health = 100;
-    int maxHealth = 100;
-    int barrier = 0;
+    int           health        = 100;
+    int           maxHealth     = 100;
+    int           barrier       = 0;
     std::uint32_t deathTriggers = 0;
 };
 
 /** @brief Strong card definition projected into the common effect definition. */
 struct CardEffectDefinition {
-    std::string id;
-    std::string source;
-    double duration = 0.0;
-    double period = 0.0;
-    double magnitude = 0.0;
-    effects::EffectPolicy policy;
-    CardEffectKind kind = CardEffectKind::Damage;
-    bool deathTrigger = true;
+    std::string              id;
+    std::string              source;
+    double                   duration  = 0.0;
+    double                   period    = 0.0;
+    double                   magnitude = 0.0;
+    effects::EffectPolicy    policy;
+    CardEffectKind           kind         = CardEffectKind::Damage;
+    bool                     deathTrigger = true;
     std::vector<std::string> tags;
 };
 
 /** @brief Result of one card effect lifecycle step and its domain settlement. */
 struct CardEffectUpdate {
     effects::EffectUpdateSummary lifecycle;
-    std::uint32_t settled = 0;
-    std::uint32_t absorbed = 0;
-    bool deathTriggered = false;
+    std::uint32_t                settled        = 0;
+    std::uint32_t                absorbed       = 0;
+    bool                         deathTriggered = false;
 };
 
 /** @brief Serializable in-memory card effect snapshot. */
 struct CardEffectSnapshot {
     effects::EffectContainer effects;
-    CardEffectTarget target;
+    CardEffectTarget         target;
 };
 
 /** @brief Card executor: interprets card policy without owning effect instances. */
 class CardEffectExecutor {
 public:
     /** @brief Apply immediate shield semantics to a staged target. */
-    [[nodiscard]] eve::Result<void> applyImmediate(CardEffectTarget& target,
+    [[nodiscard]] eve::Result<void> applyImmediate(CardEffectTarget&              target,
                                                    const effects::EffectInstance& effect) const;
 
     /** @brief Settle all common periodic triggers using card shield/death rules. */
-    [[nodiscard]] eve::Result<CardEffectUpdate> settle(CardEffectTarget& target,
+    [[nodiscard]] eve::Result<CardEffectUpdate> settle(CardEffectTarget&            target,
                                                        effects::EffectUpdateSummary lifecycle) const;
 };
 
@@ -82,7 +82,7 @@ public:
     [[nodiscard]] eve::Result<void> initializeTarget(CardEffectTarget target);
     /** @brief Apply one typed card effect and return its generation-qualified handle. */
     [[nodiscard]] eve::Result<effects::EffectHandle> apply(const CardEffectDefinition& definition,
-                                                            eve::SubjectRef subject);
+                                                           eve::SubjectRef             subject);
     /** @brief Remove one effect handle; stale handles are rejected. */
     [[nodiscard]] eve::Result<void> remove(effects::EffectHandle handle);
     /** @brief Advance and settle card effects atomically for one simulation step. */
@@ -102,8 +102,8 @@ public:
 
 private:
     effects::EffectContainer container_;
-    CardEffectExecutor executor_;
-    CardEffectTarget target_;
+    CardEffectExecutor       executor_;
+    CardEffectTarget         target_;
 };
 
 }  // namespace eve::card

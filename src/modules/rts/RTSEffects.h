@@ -22,35 +22,35 @@ enum class RTSEffectKind : std::uint8_t { Morale, Suppression, ProductionLock };
 
 /** @brief Mutable RTS state affected by the domain executor. */
 struct RTSEffectTarget {
-    double morale = 100.0;
-    std::uint32_t suppression = 0;
-    bool productionLocked = false;
+    double        morale            = 100.0;
+    std::uint32_t suppression       = 0;
+    bool          productionLocked  = false;
     std::uint32_t commandInterrupts = 0;
 };
 
 /** @brief Typed RTS definition projected to the common lifecycle schema. */
 struct RTSEffectDefinition {
-    std::string id;
-    std::string source;
-    double duration = 0.0;
-    double period = 0.0;
-    double magnitude = 0.0;
-    effects::EffectPolicy policy;
-    RTSEffectKind kind = RTSEffectKind::Morale;
+    std::string              id;
+    std::string              source;
+    double                   duration  = 0.0;
+    double                   period    = 0.0;
+    double                   magnitude = 0.0;
+    effects::EffectPolicy    policy;
+    RTSEffectKind            kind = RTSEffectKind::Morale;
     std::vector<std::string> tags;
 };
 
 /** @brief Result of one RTS lifecycle step and domain settlement. */
 struct RTSEffectUpdate {
     effects::EffectUpdateSummary lifecycle;
-    std::uint32_t settled = 0;
-    std::uint32_t commandInterrupts = 0;
+    std::uint32_t                settled           = 0;
+    std::uint32_t                commandInterrupts = 0;
 };
 
 /** @brief Serializable in-memory RTS effect snapshot. */
 struct RTSEffectSnapshot {
     effects::EffectContainer effects;
-    RTSEffectTarget target;
+    RTSEffectTarget          target;
 };
 
 /** @brief RTS executor for morale, suppression and production-lock semantics. */
@@ -59,10 +59,10 @@ public:
     /** @brief Validate the target state before a staged application. */
     [[nodiscard]] eve::Result<void> validate(const RTSEffectTarget& target) const;
     /** @brief Apply immediate production-lock semantics to a staged target. */
-    [[nodiscard]] eve::Result<void> applyImmediate(RTSEffectTarget& target,
+    [[nodiscard]] eve::Result<void> applyImmediate(RTSEffectTarget&               target,
                                                    const effects::EffectInstance& effect) const;
     /** @brief Settle common periodic triggers using RTS-specific policies. */
-    [[nodiscard]] eve::Result<RTSEffectUpdate> settle(RTSEffectTarget& target,
+    [[nodiscard]] eve::Result<RTSEffectUpdate> settle(RTSEffectTarget&             target,
                                                       effects::EffectUpdateSummary lifecycle) const;
 };
 
@@ -71,7 +71,7 @@ class RTSEffectAdapter {
 public:
     /** @brief Apply one typed effect to a stable subject. */
     [[nodiscard]] eve::Result<effects::EffectHandle> apply(const RTSEffectDefinition& definition,
-                                                            eve::SubjectRef subject);
+                                                           eve::SubjectRef            subject);
     /** @brief Remove one generation-qualified effect handle. */
     [[nodiscard]] eve::Result<void> remove(effects::EffectHandle handle);
     /** @brief Advance and settle RTS effects atomically. */
@@ -91,8 +91,8 @@ public:
 
 private:
     effects::EffectContainer container_;
-    RTSEffectExecutor executor_;
-    RTSEffectTarget target_;
+    RTSEffectExecutor        executor_;
+    RTSEffectTarget          target_;
 };
 
 /**
@@ -107,8 +107,7 @@ public:
     /** @brief Bind the owning entity subject before applying effects. */
     [[nodiscard]] eve::Result<void> bindSubject(eve::SubjectRef subject);
     /** @brief Apply a typed RTS effect to this entity's canonical lifecycle. */
-    [[nodiscard]] eve::Result<effects::EffectHandle> apply(
-        const RTSEffectDefinition& definition);
+    [[nodiscard]] eve::Result<effects::EffectHandle> apply(const RTSEffectDefinition& definition);
     /** @brief Remove one generation-qualified effect handle. */
     [[nodiscard]] eve::Result<void> remove(effects::EffectHandle handle);
     /** @brief Advance this entity's effect lifecycle and settle domain state. */
@@ -122,7 +121,7 @@ public:
 
 private:
     RTSEffectAdapter adapter_;
-    eve::SubjectRef subject_;
+    eve::SubjectRef  subject_;
 };
 
 }  // namespace eve::rts

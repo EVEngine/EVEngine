@@ -36,9 +36,8 @@ public:
      *          card state plus a ruleset effect). The payment helper does not
      *          own the participants.
      */
-    [[nodiscard]] static eve::Result<TransactionReceipt> execute(
-        const TransactionContext& context,
-        std::span<ITransactionParticipant*> participants);
+    [[nodiscard]] static eve::Result<TransactionReceipt> execute(const TransactionContext&           context,
+                                                                 std::span<ITransactionParticipant*> participants);
 
     /**
      * @brief Execute a resource debit and several domain participants atomically.
@@ -52,10 +51,10 @@ public:
      *          participants so a failed debit compensates already-visible
      *          domain effects in reverse order.
      */
-    [[nodiscard]] static eve::Result<TransactionReceipt> execute(
-        const TransactionContext& context, eve::resource::IResourceAccount& account,
-        const eve::resource::CostSpec& cost,
-        std::span<ITransactionParticipant*> participants);
+    [[nodiscard]] static eve::Result<TransactionReceipt> execute(const TransactionContext&           context,
+                                                                 eve::resource::IResourceAccount&    account,
+                                                                 const eve::resource::CostSpec&      cost,
+                                                                 std::span<ITransactionParticipant*> participants);
 
     /**
      * @brief Execute an effect without a resource cost.
@@ -63,8 +62,8 @@ public:
      * @param effect Borrowed domain participant; it owns its staged state.
      * @return A committed receipt or structured lifecycle diagnostics.
      */
-    [[nodiscard]] static eve::Result<TransactionReceipt> execute(
-        const TransactionContext& context, ITransactionParticipant& effect);
+    [[nodiscard]] static eve::Result<TransactionReceipt> execute(const TransactionContext& context,
+                                                                 ITransactionParticipant&  effect);
 
     /**
      * @brief Execute one canonical cost and one domain effect atomically.
@@ -76,9 +75,10 @@ public:
      * @remarks The account is addressed by the reservation's AccountNonce;
      *          no current/default account lookup is performed.
      */
-    [[nodiscard]] static eve::Result<TransactionReceipt> execute(
-        const TransactionContext& context, eve::resource::IResourceAccount& account,
-        const eve::resource::CostSpec& cost, ITransactionParticipant& effect);
+    [[nodiscard]] static eve::Result<TransactionReceipt> execute(const TransactionContext&        context,
+                                                                 eve::resource::IResourceAccount& account,
+                                                                 const eve::resource::CostSpec&   cost,
+                                                                 ITransactionParticipant&         effect);
 
     /**
      * @brief Convenience overload using a stable string transaction id.
@@ -88,9 +88,10 @@ public:
      * @param effect Borrowed domain participant.
      * @return A committed receipt or structured lifecycle diagnostics.
      */
-    [[nodiscard]] static eve::Result<TransactionReceipt> execute(
-        std::string transactionId, eve::resource::IResourceAccount& account,
-        const eve::resource::CostSpec& cost, ITransactionParticipant& effect);
+    [[nodiscard]] static eve::Result<TransactionReceipt> execute(std::string                      transactionId,
+                                                                 eve::resource::IResourceAccount& account,
+                                                                 const eve::resource::CostSpec&   cost,
+                                                                 ITransactionParticipant&         effect);
 };
 
 }  // namespace eve::transaction

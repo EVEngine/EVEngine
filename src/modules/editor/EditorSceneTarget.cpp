@@ -109,8 +109,7 @@ std::unique_ptr<IDomainOperationTarget> SceneTargetBase::cloneDomainState() cons
     return std::make_unique<SceneTargetBase>(*this);
 }
 
-EditorResult<void> SceneTargetBase::commitDomainState(
-    std::unique_ptr<IDomainOperationTarget> candidate) {
+EditorResult<void> SceneTargetBase::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* staged = dynamic_cast<SceneTargetBase*>(candidate.get());
     if (!staged || staged->id_ != id_ || staged->type_ != type_)
         return sceneError<void>(EditorStatus::Conflict, "editor.scene.candidate-mismatch",

@@ -22,27 +22,26 @@ eve::PersistentId id(const char* text) {
 }
 
 struct ColliderPublication {
-    std::array<float, 12> vertices{-1.f, 0.f, -1.f, 1.f, 0.f, -1.f,
-                                    1.f, 0.f, 1.f,  -1.f, 0.f, 1.f};
-    std::array<std::uint32_t, 6> indices{0, 2, 1, 0, 3, 2};
-    eve::artifact::PartView part;
+    std::array<float, 12>          vertices{-1.f, 0.f, -1.f, 1.f, 0.f, -1.f, 1.f, 0.f, 1.f, -1.f, 0.f, 1.f};
+    std::array<std::uint32_t, 6>   indices{0, 2, 1, 0, 3, 2};
+    eve::artifact::PartView        part;
     eve::artifact::PublicationView publication;
 
     explicit ColliderPublication(eve::PersistentId artifactId) {
-        part.id = artifactId;
-        part.role = "collider";
-        part.kind = eve::artifact::PartKind::Collider;
+        part.id            = artifactId;
+        part.role          = "collider";
+        part.kind          = eve::artifact::PartKind::Collider;
         part.schemaVersion = 1;
-        part.buildKey = "test.box3d.collider.v1";
-        part.bounds = {-1.f, 0.f, -1.f, 1.f, 0.f, 1.f, true};
-        part.positions = std::span<const float>(vertices);
-        part.indices = std::span<const std::uint32_t>(indices);
+        part.buildKey      = "test.box3d.collider.v1";
+        part.bounds        = {-1.f, 0.f, -1.f, 1.f, 0.f, 1.f, true};
+        part.positions     = std::span<const float>(vertices);
+        part.indices       = std::span<const std::uint32_t>(indices);
 
-        publication.id = artifactId;
+        publication.id            = artifactId;
         publication.schemaVersion = 1;
-        publication.buildKey = part.buildKey;
-        publication.bounds = part.bounds;
-        publication.parts = std::span<const eve::artifact::PartView>(&part, 1);
+        publication.buildKey      = part.buildKey;
+        publication.bounds        = part.bounds;
+        publication.parts         = std::span<const eve::artifact::PartView>(&part, 1);
     }
 };
 
@@ -50,8 +49,8 @@ struct ColliderPublication {
 
 TEST_CASE("physics.artifact.stageUsesRealBox3DAndRayQuery") {
     eve::physics::PhysicsArtifactProvider provider;
-    const auto artifactId = id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0201");
-    ColliderPublication input(artifactId);
+    const auto                            artifactId = id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0201");
+    ColliderPublication                   input(artifactId);
 
     auto prepared = provider.prepare(input.publication);
     REQUIRE(prepared.ok());
@@ -77,8 +76,8 @@ TEST_CASE("physics.artifact.stageUsesRealBox3DAndRayQuery") {
 
 TEST_CASE("physics.artifact.rollbackAndValidationLeaveNoCollider") {
     eve::physics::PhysicsArtifactProvider provider;
-    const auto artifactId = id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0202");
-    ColliderPublication input(artifactId);
+    const auto                            artifactId = id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0202");
+    ColliderPublication                   input(artifactId);
 
     auto prepared = provider.prepare(input.publication);
     REQUIRE(prepared.ok());
@@ -101,8 +100,8 @@ TEST_CASE("physics.artifact.rollbackAndValidationLeaveNoCollider") {
 
 TEST_CASE("physics.artifact.restoreRebuildsBox3DAndInvalidatesOldHandle") {
     eve::physics::PhysicsArtifactProvider provider;
-    const auto artifactId = id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0203");
-    ColliderPublication input(artifactId);
+    const auto                            artifactId = id("018f0b7e-6e50-7a10-8c22-2c8f8e3e0203");
+    ColliderPublication                   input(artifactId);
 
     auto prepared = provider.prepare(input.publication);
     REQUIRE(prepared.ok());
@@ -110,12 +109,12 @@ TEST_CASE("physics.artifact.restoreRebuildsBox3DAndInvalidatesOldHandle") {
     stage->commit();
     stage.reset();
     const auto oldHandle = provider.find(artifactId)->handle;
-    auto snapshot = provider.snapshotState();
+    auto       snapshot  = provider.snapshotState();
     REQUIRE(snapshot.ok());
     auto encoded = std::move(snapshot).takeValue();
 
     // A failed candidate build must leave the live Box3D world untouched.
-    auto malformed = encoded;
+    auto  malformed       = encoded;
     auto* malformedObject = malformed.getIf<eve::Value::Object>();
     REQUIRE(malformedObject != nullptr);
     auto* encodedColliders = malformedObject->at("colliders").getIf<eve::Value::Array>();
@@ -125,7 +124,7 @@ TEST_CASE("physics.artifact.restoreRebuildsBox3DAndInvalidatesOldHandle") {
     auto* malformedIndices = malformedCollider->at("indices").getIf<eve::Value::Array>();
     REQUIRE(malformedIndices != nullptr);
     malformedIndices->front() = eve::Value(std::int64_t(99));
-    auto rejected = provider.restoreState(malformed);
+    auto rejected             = provider.restoreState(malformed);
     CHECK(!rejected.ok());
     CHECK_EQ(provider.size(), std::size_t(1));
     CHECK(provider.isHandleLive(oldHandle));
@@ -156,17 +155,16 @@ TEST_CASE("physics.artifact.compositeColliderUsesPublicProcgenPublication") {
     params.setInt("width", 8);
     params.setInt("height", 7);
     params.setFloat("radius", 1.f);
-    const auto artifactId = eve::procgen::ArtifactId::parse(
-        "018f0b7e-6e50-7a10-8c22-2c8f8e3e0204");
+    const auto artifactId = eve::procgen::ArtifactId::parse("018f0b7e-6e50-7a10-8c22-2c8f8e3e0204");
     REQUIRE(artifactId.has_value());
 
     auto generated = eve::procgen::generateHexTerrainArtifact(params, *artifactId);
     REQUIRE(generated.ok());
-    eve::procgen::ArtifactStore store;
-    eve::procgen::ArtifactPublisher publisher(store);
+    eve::procgen::ArtifactStore          store;
+    eve::procgen::ArtifactPublisher      publisher(store);
     eve::procgen::ArtifactPublishOptions options;
     options.physics = true;
-    auto published = publisher.publish(std::move(generated).takeValue(), options);
+    auto published  = publisher.publish(std::move(generated).takeValue(), options);
     REQUIRE(published.ok());
 
     const auto persistentId = eve::PersistentId::fromUuid(*artifactId);

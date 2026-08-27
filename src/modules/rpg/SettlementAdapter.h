@@ -29,14 +29,14 @@ class RPGSettlementAdapter final : public settlement::ISettlementPolicy {
 public:
     /** @brief Attribute names used by the RPG policy. */
     struct Config {
-        std::string healthAttribute = "health";
-        std::string maxHealthAttribute = "max_health";
-        std::string shieldAttribute = "shield";
-        std::string armorAttribute = "armor";
-        std::string resistancePrefix = "resistance.";
-        std::string criticalChanceAttribute = "critical_chance";
+        std::string healthAttribute             = "health";
+        std::string maxHealthAttribute          = "max_health";
+        std::string shieldAttribute             = "shield";
+        std::string armorAttribute              = "armor";
+        std::string resistancePrefix            = "resistance.";
+        std::string criticalChanceAttribute     = "critical_chance";
         std::string criticalMultiplierAttribute = "critical_multiplier";
-        std::string sourceMultiplierAttribute = "damage_multiplier";
+        std::string sourceMultiplierAttribute   = "damage_multiplier";
     };
 
     /** @brief Bind a target actor with default RPG attribute names. */
@@ -44,12 +44,10 @@ public:
     RPGSettlementAdapter(RPGActor& target, SubjectRef targetRef, Config config);
 
     /** @brief Bind target and optional source actors with explicit identities. */
-    RPGSettlementAdapter(RPGActor& target, SubjectRef targetRef, RPGActor* source,
-                         SubjectRef sourceRef);
-    RPGSettlementAdapter(RPGActor& target, SubjectRef targetRef, RPGActor* source,
-                         SubjectRef sourceRef, Config config);
+    RPGSettlementAdapter(RPGActor& target, SubjectRef targetRef, RPGActor* source, SubjectRef sourceRef);
+    RPGSettlementAdapter(RPGActor& target, SubjectRef targetRef, RPGActor* source, SubjectRef sourceRef, Config config);
 
-    RPGSettlementAdapter(const RPGSettlementAdapter&) = delete;
+    RPGSettlementAdapter(const RPGSettlementAdapter&)            = delete;
     RPGSettlementAdapter& operator=(const RPGSettlementAdapter&) = delete;
 
     /** @brief Stable identity checked for the target side of the request. */
@@ -80,21 +78,20 @@ private:
      * @thread Call on the settlement pipeline's owning simulation thread.
      * @reentrancy Does not invoke callbacks and is invalid across re-entrant context mutation.
      */
-    [[nodiscard]] static const eve::Value* contextValue(
-        const settlement::SettlementContext& context, std::string_view key) noexcept;
-    [[nodiscard]] static std::optional<double> numberValue(const eve::Value* value) noexcept;
-    [[nodiscard]] static std::optional<bool> boolValue(const eve::Value* value) noexcept;
+    [[nodiscard]] static const eve::Value*          contextValue(const settlement::SettlementContext& context,
+                                                                 std::string_view                     key) noexcept;
+    [[nodiscard]] static std::optional<double>      numberValue(const eve::Value* value) noexcept;
+    [[nodiscard]] static std::optional<bool>        boolValue(const eve::Value* value) noexcept;
     [[nodiscard]] static std::optional<std::string> stringValue(const eve::Value* value);
-    [[nodiscard]] eve::Result<double> readBase(std::string_view name) const;
-    [[nodiscard]] eve::Result<double> readFinal(std::string_view name, double fallback = 0.0) const;
-    [[nodiscard]] eve::Result<double> readSourceFinal(std::string_view name,
-                                                      double fallback = 0.0) const;
+    [[nodiscard]] eve::Result<double>               readBase(std::string_view name) const;
+    [[nodiscard]] eve::Result<double>               readFinal(std::string_view name, double fallback = 0.0) const;
+    [[nodiscard]] eve::Result<double>               readSourceFinal(std::string_view name, double fallback = 0.0) const;
 
-    RPGActor& target_;
+    RPGActor&  target_;
     SubjectRef targetRef_;
-    RPGActor* source_ = nullptr;
+    RPGActor*  source_ = nullptr;
     SubjectRef sourceRef_;
-    Config config_;
+    Config     config_;
 };
 
 }  // namespace eve::rpg

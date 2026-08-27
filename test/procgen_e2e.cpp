@@ -30,9 +30,7 @@ eve::procgen::ArtifactId artifactId(const char* text) {
     return *parsed;
 }
 
-eve::PersistentId persistentId(eve::procgen::ArtifactId id) {
-    return eve::PersistentId::fromUuid(id);
-}
+eve::PersistentId persistentId(eve::procgen::ArtifactId id) { return eve::PersistentId::fromUuid(id); }
 
 eve::procgen::Params hexParams() {
     eve::procgen::Params params;
@@ -52,14 +50,13 @@ eve::SnapshotHashProvider testHash() {
         }
         std::array<std::uint8_t, 16> bytes{};
         for (std::size_t i = 0; i < 8; ++i) {
-            bytes[i] = static_cast<std::uint8_t>((hash >> (i * 8u)) & 0xffu);
-            bytes[8 + i] = static_cast<std::uint8_t>(((hash ^ 0x9e3779b97f4a7c15ull) >> (i * 8u)) &
-                                                      0xffu);
+            bytes[i]     = static_cast<std::uint8_t>((hash >> (i * 8u)) & 0xffu);
+            bytes[8 + i] = static_cast<std::uint8_t>(((hash ^ 0x9e3779b97f4a7c15ull) >> (i * 8u)) & 0xffu);
         }
         const auto id = eve::ContentId::fromBytes(std::span<const std::uint8_t>(bytes));
         if (!id)
-            return eve::Result<eve::ContentId>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed, "test digest construction failed"));
+            return eve::Result<eve::ContentId>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "test digest construction failed"));
         return eve::Result<eve::ContentId>::success(*id);
     };
 }
@@ -78,10 +75,10 @@ void resetProviders() {
 
 eve::procgen::ArtifactPublishOptions allProviders() {
     eve::procgen::ArtifactPublishOptions options;
-    options.scene = true;
+    options.scene    = true;
     options.graphics = true;
-    options.physics = true;
-    options.map = true;
+    options.physics  = true;
+    options.map      = true;
     return options;
 }
 
@@ -89,10 +86,10 @@ eve::procgen::ArtifactPublishOptions allProviders() {
 
 TEST_CASE("procgen.e2e.hexProvidersCommitQueryableObjects") {
     resetProviders();
-    const auto id = artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0101");
-    eve::procgen::ArtifactStore store;
+    const auto                      id = artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0101");
+    eve::procgen::ArtifactStore     store;
     eve::procgen::ArtifactPublisher publisher(store);
-    auto generated = eve::procgen::generateHexTerrainArtifact(hexParams(), id);
+    auto                            generated = eve::procgen::generateHexTerrainArtifact(hexParams(), id);
     REQUIRE(generated.ok());
     REQUIRE(generated.value().metadata.contains("algorithm"));
     REQUIRE(generated.value().metadata.contains("determinism"));
@@ -100,10 +97,10 @@ TEST_CASE("procgen.e2e.hexProvidersCommitQueryableObjects") {
     REQUIRE(published.ok());
     std::move(published).takeValue();
 
-    auto& scene = eve::scene::sceneArtifactProvider();
-    auto& map = eve::map::mapArtifactProvider();
+    auto& scene    = eve::scene::sceneArtifactProvider();
+    auto& map      = eve::map::mapArtifactProvider();
     auto& graphics = eve::graphics::graphicsArtifactProvider();
-    auto& physics = eve::physics::physicsArtifactProvider();
+    auto& physics  = eve::physics::physicsArtifactProvider();
     CHECK_EQ(store.size(), std::size_t(1));
     CHECK_EQ(store.partCount(), std::size_t(4));
     CHECK_EQ(scene.size(), std::size_t(1));
@@ -134,19 +131,19 @@ TEST_CASE("procgen.e2e.hexProvidersCommitQueryableObjects") {
 TEST_CASE("procgen.e2e.providerFailureLeavesNoHalfState") {
     for (int failure = 0; failure < 4; ++failure) {
         resetProviders();
-        auto& scene = eve::scene::sceneArtifactProvider();
-        auto& map = eve::map::mapArtifactProvider();
+        auto& scene    = eve::scene::sceneArtifactProvider();
+        auto& map      = eve::map::mapArtifactProvider();
         auto& graphics = eve::graphics::graphicsArtifactProvider();
-        auto& physics = eve::physics::physicsArtifactProvider();
+        auto& physics  = eve::physics::physicsArtifactProvider();
         if (failure == 0) scene.setPrepareFailure(true);
         if (failure == 1) map.setPrepareFailure(true);
         if (failure == 2) graphics.setPrepareFailure(true);
         if (failure == 3) physics.setPrepareFailure(true);
 
-        eve::procgen::ArtifactStore store;
+        eve::procgen::ArtifactStore     store;
         eve::procgen::ArtifactPublisher publisher(store);
-        auto generated = eve::procgen::generateHexTerrainArtifact(
-            hexParams(), artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0102"));
+        auto                            generated =
+            eve::procgen::generateHexTerrainArtifact(hexParams(), artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0102"));
         REQUIRE(generated.ok());
         auto result = publisher.publish(std::move(generated).takeValue(), allProviders());
         CHECK(!result.ok());
@@ -161,12 +158,11 @@ TEST_CASE("procgen.e2e.providerFailureLeavesNoHalfState") {
 
 TEST_CASE("procgen.e2e.absentCapabilityIsExplicit") {
     resetProviders();
-    eve::cap::revoke<eve::artifact::IPhysicsArtifactAdapter>(
-        &eve::physics::physicsArtifactProvider());
-    eve::procgen::ArtifactStore store;
+    eve::cap::revoke<eve::artifact::IPhysicsArtifactAdapter>(&eve::physics::physicsArtifactProvider());
+    eve::procgen::ArtifactStore     store;
     eve::procgen::ArtifactPublisher publisher(store);
-    auto generated = eve::procgen::generateHexTerrainArtifact(
-        hexParams(), artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0103"));
+    auto                            generated =
+        eve::procgen::generateHexTerrainArtifact(hexParams(), artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0103"));
     REQUIRE(generated.ok());
     auto result = publisher.publish(std::move(generated).takeValue(), allProviders());
     CHECK(!result.ok());
@@ -177,33 +173,33 @@ TEST_CASE("procgen.e2e.absentCapabilityIsExplicit") {
 
 TEST_CASE("procgen.e2e.snapshotRoundTripPreservesIdentityBuildKeyAndQueries") {
     resetProviders();
-    const auto id = artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0104");
-    eve::procgen::ArtifactStore store;
+    const auto                      id = artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0104");
+    eve::procgen::ArtifactStore     store;
     eve::procgen::ArtifactPublisher publisher(store);
-    auto generated = eve::procgen::generateHexTerrainArtifact(hexParams(), id);
+    auto                            generated = eve::procgen::generateHexTerrainArtifact(hexParams(), id);
     REQUIRE(generated.ok());
     const auto expectedKey = generated.value().buildKey;
-    auto published = publisher.publish(std::move(generated).takeValue(), allProviders());
+    auto       published   = publisher.publish(std::move(generated).takeValue(), allProviders());
     REQUIRE(published.ok());
     std::move(published).takeValue();
     const auto* beforeCollider = eve::physics::physicsArtifactProvider().find(persistentId(id));
     REQUIRE(beforeCollider != nullptr);
-    const auto bounds = beforeCollider->bounds;
-    const float rayX = (bounds.minX + bounds.maxX) * .5f;
-    const float rayZ = (bounds.minZ + bounds.maxZ) * .5f;
-    const float rayOriginY = bounds.maxY + 10.f;
+    const auto  bounds        = beforeCollider->bounds;
+    const float rayX          = (bounds.minX + bounds.maxX) * .5f;
+    const float rayZ          = (bounds.minZ + bounds.maxZ) * .5f;
+    const float rayOriginY    = bounds.maxY + 10.f;
     const float rayDirectionY = -((bounds.maxY - bounds.minY) + 20.f);
-    const auto beforeHit = eve::physics::physicsArtifactProvider().rayCast(
-        persistentId(id), rayX, rayOriginY, rayZ, 0.f, rayDirectionY, 0.f);
-    const auto beforeChecksum = eve::graphics::graphicsArtifactProvider().checksum(persistentId(id));
-    const auto beforeCell = eve::map::mapArtifactProvider().cell(persistentId(id), 2, 3);
+    const auto  beforeHit = eve::physics::physicsArtifactProvider().rayCast(persistentId(id), rayX, rayOriginY, rayZ,
+                                                                            0.f, rayDirectionY, 0.f);
+    const auto  beforeChecksum = eve::graphics::graphicsArtifactProvider().checksum(persistentId(id));
+    const auto  beforeCell     = eve::map::mapArtifactProvider().cell(persistentId(id), 2, 3);
 
     eve::procgen::ArtifactSnapshotContext context;
-    context.instanceId = persistentId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0105");
-    context.revision = eve::Revision(9);
-    context.tick = eve::SimulationTick(17);
+    context.instanceId   = persistentId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0105");
+    context.revision     = eve::Revision(9);
+    context.tick         = eve::SimulationTick(17);
     context.hashProvider = testHash();
-    auto snapshot = publisher.snapshot(context);
+    auto snapshot        = publisher.snapshot(context);
     REQUIRE(snapshot.ok());
     auto serialized = eve::serializeSnapshotEnvelope(snapshot.value());
     REQUIRE(serialized.ok());
@@ -227,17 +223,17 @@ TEST_CASE("procgen.e2e.snapshotRoundTripPreservesIdentityBuildKeyAndQueries") {
     CHECK_EQ(eve::scene::sceneArtifactProvider().size(), std::size_t(1));
     CHECK_EQ(eve::map::mapArtifactProvider().cell(persistentId(id), 2, 3), beforeCell);
     CHECK_EQ(eve::graphics::graphicsArtifactProvider().checksum(persistentId(id)), beforeChecksum);
-    const auto afterHit = eve::physics::physicsArtifactProvider().rayCast(
-        persistentId(id), rayX, rayOriginY, rayZ, 0.f, rayDirectionY, 0.f);
+    const auto afterHit = eve::physics::physicsArtifactProvider().rayCast(persistentId(id), rayX, rayOriginY, rayZ, 0.f,
+                                                                          rayDirectionY, 0.f);
     CHECK_EQ(afterHit.hit, beforeHit.hit);
     CHECK_EQ(afterHit.fraction, beforeHit.fraction);
 }
 
 TEST_CASE("procgen.e2e.fixedSeedBuildKeyAndPayloadAreStable") {
-    const auto first = eve::procgen::generateHexTerrainArtifact(
-        hexParams(), artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0106"));
-    const auto second = eve::procgen::generateHexTerrainArtifact(
-        hexParams(), artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0107"));
+    const auto first =
+        eve::procgen::generateHexTerrainArtifact(hexParams(), artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0106"));
+    const auto second =
+        eve::procgen::generateHexTerrainArtifact(hexParams(), artifactId("018f0b7e-6e50-7a10-8c22-2c8f8e3e0107"));
     REQUIRE(first.ok());
     REQUIRE(second.ok());
     CHECK_EQ(first.value().buildKey, second.value().buildKey);
@@ -245,7 +241,7 @@ TEST_CASE("procgen.e2e.fixedSeedBuildKeyAndPayloadAreStable") {
     const auto* determinism = first.value().metadata.at("determinism").getIf<std::string>();
     REQUIRE(determinism != nullptr);
     CHECK_EQ(*determinism, std::string("seeded_cpu"));
-    const auto& firstComposite = std::get<eve::procgen::CompositeArtifact>(first.value().payload);
+    const auto& firstComposite  = std::get<eve::procgen::CompositeArtifact>(first.value().payload);
     const auto& secondComposite = std::get<eve::procgen::CompositeArtifact>(second.value().payload);
     REQUIRE(firstComposite.find("mesh") != nullptr);
     REQUIRE(secondComposite.find("mesh") != nullptr);

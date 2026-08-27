@@ -21,7 +21,7 @@ public:
     int getComponentCount() const;
     /** @brief 工厂：生成请求 / 布局。 */
     [[nodiscard]] HouseRequest newRequest() const;
-    [[nodiscard]] HouseLayout newLayout() const;
+    [[nodiscard]] HouseLayout  newLayout() const;
     /** @brief 按请求生成布局；失败返回结构化诊断。 */
     [[nodiscard]] eve::Result<void> generate(const HouseRequest &request, HouseLayout &layout);
     /** @brief 组件库（可直接访问）。 */

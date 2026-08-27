@@ -19,7 +19,7 @@
 namespace eve::schema {
 namespace {
 
-using JsonValue = eve::json::Value;
+using JsonValue      = eve::json::Value;
 using SchemaVersions = std::map<int, SchemaDefinition>;
 
 std::unordered_map<std::string, SchemaVersions>& schemas() {
@@ -41,8 +41,7 @@ std::map<MigrationKey, MigrationStep>& migrationSteps() {
 
 template <class T>
 eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path)));
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 void addError(std::vector<ValidationError>& out, std::string path, std::string code, std::string message) {
@@ -67,9 +66,12 @@ std::string pointerSegment(std::string_view value) {
     std::string result;
     result.reserve(value.size());
     for (const char character : value) {
-        if (character == '~') result += "~0";
-        else if (character == '/') result += "~1";
-        else result += character;
+        if (character == '~')
+            result += "~0";
+        else if (character == '/')
+            result += "~1";
+        else
+            result += character;
     }
     return result;
 }
@@ -106,7 +108,7 @@ bool parseField(JsonValue value, FieldDefinition& output, std::string& error, co
         return false;
     }
 
-    output = FieldDefinition{};
+    output               = FieldDefinition{};
     const JsonValue name = value.get("name");
     if (!readStrictString(name, output.name) || output.name.empty()) {
         error = path + "/name must be a non-empty string";
@@ -170,13 +172,29 @@ bool parseNode(JsonValue value, SchemaNode& output, std::string& error, const st
         return false;
     }
 
-    static const std::set<std::string> nodeKeys = {
-        "additionalProperties", "discriminator", "discriminatorMapping", "elementType", "enum",
-        "fields", "itemSchema", "items", "maxItems", "maxLength", "maximum", "minItems",
-        "minLength", "minimum", "oneOf", "ref", "refVersion", "referenceVersion", "schemaRef",
-        "type", "union"};
-    static const std::set<std::string> fieldMetadataKeys = {
-        "defaultJson", "description", "name", "reference", "required", "title"};
+    static const std::set<std::string> nodeKeys          = {"additionalProperties",
+                                                            "discriminator",
+                                                            "discriminatorMapping",
+                                                            "elementType",
+                                                            "enum",
+                                                            "fields",
+                                                            "itemSchema",
+                                                            "items",
+                                                            "maxItems",
+                                                            "maxLength",
+                                                            "maximum",
+                                                            "minItems",
+                                                            "minLength",
+                                                            "minimum",
+                                                            "oneOf",
+                                                            "ref",
+                                                            "refVersion",
+                                                            "referenceVersion",
+                                                            "schemaRef",
+                                                            "type",
+                                                            "union"};
+    static const std::set<std::string> fieldMetadataKeys = {"defaultJson", "description", "name",
+                                                            "reference",   "required",    "title"};
     for (const auto& key : value.keys()) {
         if (!nodeKeys.contains(key) && (!allowFieldMetadata || !fieldMetadataKeys.contains(key))) {
             error = path + "/" + pointerSegment(key) + " is not supported by Eve Schema v1";
@@ -279,10 +297,8 @@ bool parseNode(JsonValue value, SchemaNode& output, std::string& error, const st
         target = parsed;
         return true;
     };
-    if (!readLengthConstraint("minLength", output.minLength) ||
-        !readLengthConstraint("maxLength", output.maxLength) ||
-        !readLengthConstraint("minItems", output.minItems) ||
-        !readLengthConstraint("maxItems", output.maxItems))
+    if (!readLengthConstraint("minLength", output.minLength) || !readLengthConstraint("maxLength", output.maxLength) ||
+        !readLengthConstraint("minItems", output.minItems) || !readLengthConstraint("maxItems", output.maxItems))
         return false;
     if (output.minLength && output.maxLength && *output.minLength > *output.maxLength) {
         error = path + "/minLength must not exceed maxLength";
@@ -309,7 +325,7 @@ bool parseNode(JsonValue value, SchemaNode& output, std::string& error, const st
         }
     }
 
-    const bool hasItems = value.has("items");
+    const bool hasItems      = value.has("items");
     const bool hasItemSchema = value.has("itemSchema");
     if (hasItems && hasItemSchema) {
         error = path + " cannot define both items and itemSchema";
@@ -340,16 +356,14 @@ bool parseNode(JsonValue value, SchemaNode& output, std::string& error, const st
         output.variants.reserve(alternatives.size());
         for (size_t index = 0; index < alternatives.size(); ++index) {
             SchemaNode alternative;
-            if (!parseNode(alternatives.at(index), alternative, error,
-                           path + "/union/" + std::to_string(index)))
+            if (!parseNode(alternatives.at(index), alternative, error, path + "/union/" + std::to_string(index)))
                 return false;
             output.variants.push_back(std::move(alternative));
         }
     }
 
     if (value.has("discriminator")) {
-        if (!readStrictString(value.get("discriminator"), output.discriminator) ||
-            output.discriminator.empty()) {
+        if (!readStrictString(value.get("discriminator"), output.discriminator) || output.discriminator.empty()) {
             error = path + "/discriminator must be a non-empty string";
             return false;
         }
@@ -362,7 +376,7 @@ bool parseNode(JsonValue value, SchemaNode& output, std::string& error, const st
         }
         for (const std::string& key : mapping.keys()) {
             const JsonValue mapped = mapping.get(key.c_str());
-            std::string      target;
+            std::string     target;
             if (!readStrictString(mapped, target)) {
                 int mappingIndex = 0;
                 if (!readInteger(mapped, mappingIndex) || mappingIndex < 0) {
@@ -384,7 +398,7 @@ bool parseNode(JsonValue value, SchemaNode& output, std::string& error, const st
             error = path + "/fields or additionalProperties requires type object";
             return false;
         }
-        auto nested = std::make_shared<SchemaDefinition>();
+        auto nested     = std::make_shared<SchemaDefinition>();
         nested->version = 1;
         if (value.has("additionalProperties")) {
             if (!readStrictBool(value.get("additionalProperties"), nested->additionalProperties)) {
@@ -392,8 +406,7 @@ bool parseNode(JsonValue value, SchemaNode& output, std::string& error, const st
                 return false;
             }
         }
-        if (value.has("fields") &&
-            !parseFieldArray(value.get("fields"), nested->fields, error, path + "/fields"))
+        if (value.has("fields") && !parseFieldArray(value.get("fields"), nested->fields, error, path + "/fields"))
             return false;
         output.objectSchema = std::move(nested);
     }
@@ -401,16 +414,16 @@ bool parseNode(JsonValue value, SchemaNode& output, std::string& error, const st
 }
 
 bool parseDefinition(const std::string& json, SchemaDefinition& definition, std::string* error) {
-    std::string parseError;
-    const auto  document = eve::json::Document::parse(json, &parseError);
-    const JsonValue root = document.root();
+    std::string     parseError;
+    const auto      document = eve::json::Document::parse(json, &parseError);
+    const JsonValue root     = document.root();
     if (!document.valid() || !root.isObject()) {
         if (error) *error = parseError.empty() ? "schema must be a JSON object" : parseError;
         return false;
     }
 
-    static const std::set<std::string> definitionKeys = {
-        "additionalProperties", "description", "fields", "id", "schemaVersion", "title", "version"};
+    static const std::set<std::string> definitionKeys = {"additionalProperties", "description", "fields", "id",
+                                                         "schemaVersion",        "title",       "version"};
     for (const auto& key : root.keys()) {
         if (!definitionKeys.contains(key)) {
             if (error) *error = "/" + pointerSegment(key) + " is not supported by Eve Schema v1";
@@ -418,10 +431,10 @@ bool parseDefinition(const std::string& json, SchemaDefinition& definition, std:
         }
     }
 
-    definition = SchemaDefinition{};
+    definition                  = SchemaDefinition{};
     const bool hasSchemaVersion = root.has("schemaVersion");
     const bool hasLegacyVersion = root.has("version");
-    int        schemaVersion = 1;
+    int        schemaVersion    = 1;
     if (hasSchemaVersion && !readInteger(root.get("schemaVersion"), schemaVersion)) {
         if (error) *error = "schemaVersion must be an integer";
         return false;
@@ -482,8 +495,7 @@ bool validateDefinition(const SchemaDefinition& definition, const std::string& p
             activeDefinitions.erase(&definition);
             return false;
         }
-        if (!validateNodeDefinition(field, path + "/fields/" + pointerSegment(field.name), error,
-                                    activeDefinitions)) {
+        if (!validateNodeDefinition(field, path + "/fields/" + pointerSegment(field.name), error, activeDefinitions)) {
             activeDefinitions.erase(&definition);
             return false;
         }
@@ -502,11 +514,10 @@ bool validateNodeDefinition(const SchemaNode& node, const std::string& path, std
         error = path + "/refVersion requires ref";
         return false;
     }
-    if (!node.ref.empty() &&
-        (node.type != ValueType::Any || node.elementType != ValueType::Any || node.objectSchema ||
-         node.itemSchema || !node.variants.empty() || !node.discriminator.empty() ||
-         !node.discriminatorMapping.empty() || !node.enumValues.empty() || node.minimum || node.maximum ||
-         node.minLength || node.maxLength || node.minItems || node.maxItems)) {
+    if (!node.ref.empty() && (node.type != ValueType::Any || node.elementType != ValueType::Any || node.objectSchema ||
+                              node.itemSchema || !node.variants.empty() || !node.discriminator.empty() ||
+                              !node.discriminatorMapping.empty() || !node.enumValues.empty() || node.minimum ||
+                              node.maximum || node.minLength || node.maxLength || node.minItems || node.maxItems)) {
         error = path + " cannot combine ref with type, constraints, fields, items, or union";
         return false;
     }
@@ -519,8 +530,7 @@ bool validateNodeDefinition(const SchemaNode& node, const std::string& path, std
         error = path + " string constraints require type string";
         return false;
     }
-    if (node.type != ValueType::Number && node.type != ValueType::Integer &&
-        (node.minimum || node.maximum)) {
+    if (node.type != ValueType::Number && node.type != ValueType::Integer && (node.minimum || node.maximum)) {
         error = path + " numeric constraints require type number or integer";
         return false;
     }
@@ -544,9 +554,8 @@ bool validateNodeDefinition(const SchemaNode& node, const std::string& path, std
                 error = path + "/discriminatorMapping keys and values must not be empty";
                 return false;
             }
-            size_t mappingIndex = 0;
-            const auto [end, parseError] =
-                std::from_chars(target.data(), target.data() + target.size(), mappingIndex);
+            size_t mappingIndex          = 0;
+            const auto [end, parseError] = std::from_chars(target.data(), target.data() + target.size(), mappingIndex);
             if (parseError == std::errc{}) {
                 if (end != target.data() + target.size() || mappingIndex >= node.variants.size()) {
                     error = path + "/discriminatorMapping points outside the union";
@@ -569,11 +578,9 @@ bool validateNodeDefinition(const SchemaNode& node, const std::string& path, std
         error = path + "/discriminator requires a union";
         return false;
     }
-    if (node.objectSchema &&
-        !validateDefinition(*node.objectSchema, path + "/fields", error, activeDefinitions))
+    if (node.objectSchema && !validateDefinition(*node.objectSchema, path + "/fields", error, activeDefinitions))
         return false;
-    if (node.itemSchema &&
-        !validateNodeDefinition(*node.itemSchema, path + "/items", error, activeDefinitions))
+    if (node.itemSchema && !validateNodeDefinition(*node.itemSchema, path + "/items", error, activeDefinitions))
         return false;
     for (size_t index = 0; index < node.variants.size(); ++index) {
         if (!validateNodeDefinition(node.variants[index], path + "/union/" + std::to_string(index), error,
@@ -584,7 +591,7 @@ bool validateNodeDefinition(const SchemaNode& node, const std::string& path, std
 }
 
 SchemaRegistrationStatus registerDefinition(const SchemaDefinition& definition, bool replaceExisting,
-                                             std::string* error) {
+                                            std::string* error) {
     if (definition.id.empty()) {
         if (error) *error = "schema id must not be empty";
         return SchemaRegistrationStatus::Invalid;
@@ -593,15 +600,15 @@ SchemaRegistrationStatus registerDefinition(const SchemaDefinition& definition, 
         if (error) *error = "schema version must be positive";
         return SchemaRegistrationStatus::Invalid;
     }
-    std::string validationError;
+    std::string                                 validationError;
     std::unordered_set<const SchemaDefinition*> activeDefinitions;
     if (!validateDefinition(definition, "schema", validationError, activeDefinitions)) {
         if (error) *error = validationError;
         return SchemaRegistrationStatus::Invalid;
     }
 
-    auto& versions = schemas()[definition.id];
-    const auto  it = versions.find(definition.version);
+    auto&      versions = schemas()[definition.id];
+    const auto it       = versions.find(definition.version);
     if (it != versions.end()) {
         if (!replaceExisting) {
             if (error) {
@@ -635,8 +642,8 @@ void validateObject(const SchemaDefinition& schema, JsonValue value, const std::
     std::unordered_set<std::string> known;
     for (const auto& field : schema.fields) {
         known.insert(field.name);
-        const JsonValue fieldValue = value.get(field.name.c_str());
-        const std::string fieldPath = path + "/" + pointerSegment(field.name);
+        const JsonValue   fieldValue = value.get(field.name.c_str());
+        const std::string fieldPath  = path + "/" + pointerSegment(field.name);
         if (!fieldValue) {
             if (field.required) addError(errors, fieldPath, "required", "required field is missing");
             continue;
@@ -681,7 +688,7 @@ void validateUnionValue(const SchemaNode& node, JsonValue value, const std::stri
             return;
         }
         const std::string valueText = discriminatorValue.asString();
-        const auto mapping = node.discriminatorMapping.find(valueText);
+        const auto        mapping   = node.discriminatorMapping.find(valueText);
         if (mapping != node.discriminatorMapping.end()) {
             size_t index = 0;
             const auto [end, parseError] =
@@ -779,7 +786,7 @@ void validateNode(const SchemaNode& node, JsonValue value, const std::string& pa
 
 bool migrationReaches(const std::string& schemaId, int start, int target) {
     std::set<int> visited;
-    int          current = start;
+    int           current = start;
     while (visited.insert(current).second) {
         if (current == target) return true;
         const auto it = migrationSteps().find(MigrationKey{schemaId, current});
@@ -828,7 +835,7 @@ const char* schemaRegistrationStatusName(SchemaRegistrationStatus status) {
 }
 
 static eve::Result<SchemaRegistrationStatus> registrationResult(SchemaRegistrationStatus status, std::string error,
-                                                                 std::string path = {}) {
+                                                                std::string path = {}) {
     if (status == SchemaRegistrationStatus::Conflict)
         return eve::Result<SchemaRegistrationStatus>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, error.empty() ? "schema version is already registered" : std::move(error),
@@ -837,8 +844,7 @@ static eve::Result<SchemaRegistrationStatus> registrationResult(SchemaRegistrati
         return eve::Result<SchemaRegistrationStatus>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, error.empty() ? "invalid schema definition" : std::move(error),
             std::move(path), {}, "schema"));
-    return eve::Result<SchemaRegistrationStatus>::success(
-        status, eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<SchemaRegistrationStatus>::success(status, eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<SchemaRegistrationStatus> SchemaRegistry::registerSchema(const SchemaDefinition& definition) {
@@ -848,7 +854,7 @@ eve::Result<SchemaRegistrationStatus> SchemaRegistry::registerSchema(const Schem
 
 eve::Result<SchemaRegistrationStatus> SchemaRegistry::registerFromJson(const std::string& json) {
     SchemaDefinition definition;
-    std::string error;
+    std::string      error;
     if (!parseDefinition(json, definition, &error))
         return eve::Result<SchemaRegistrationStatus>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, error.empty() ? "invalid schema JSON" : error, {}, {}, "schema"));
@@ -867,10 +873,11 @@ eve::Result<SchemaRegistrationStatus> SchemaRegistry::registerVersioned(const Sc
 
 eve::Result<SchemaRegistrationStatus> SchemaRegistry::registerFromJsonVersioned(const std::string& json) {
     SchemaDefinition definition;
-    std::string error;
+    std::string      error;
     if (!parseDefinition(json, definition, &error))
-        return eve::Result<SchemaRegistrationStatus>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, error.empty() ? "invalid schema JSON" : std::move(error), {}, {}, "schema"));
+        return eve::Result<SchemaRegistrationStatus>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                   error.empty() ? "invalid schema JSON" : std::move(error), {}, {}, "schema"));
     return registerVersioned(definition);
 }
 
@@ -883,7 +890,7 @@ const SchemaDefinition* SchemaRegistry::resolve(const std::string& schemaId, int
 
 std::vector<int> SchemaRegistry::versions(const std::string& schemaId) {
     std::vector<int> result;
-    const auto        it = schemas().find(schemaId);
+    const auto       it = schemas().find(schemaId);
     if (it == schemas().end()) return result;
     result.reserve(it->second.size());
     for (const auto& [version, definition] : it->second) {
@@ -896,31 +903,33 @@ std::vector<int> SchemaRegistry::versions(const std::string& schemaId) {
 eve::Result<void> SchemaRegistry::remove(const std::string& id) {
     const bool removed = schemas().erase(id) != 0;
     for (auto it = migrationSteps().begin(); it != migrationSteps().end();) {
-        if (it->first.first == id) it = migrationSteps().erase(it);
-        else ++it;
+        if (it->first.first == id)
+            it = migrationSteps().erase(it);
+        else
+            ++it;
     }
     if (!removed)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "schema id is not registered", id, {}, "schema"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "schema id is not registered", id, {}, "schema"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> SchemaRegistry::remove(const std::string& id, int schemaVersion) {
     const auto schemaIt = schemas().find(id);
     if (schemaIt == schemas().end())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "schema id is not registered", id, {}, "schema"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "schema id is not registered", id, {}, "schema"));
     const bool removed = schemaIt->second.erase(schemaVersion) != 0;
     if (schemaIt->second.empty()) schemas().erase(schemaIt);
     for (auto it = migrationSteps().begin(); it != migrationSteps().end();) {
-        if (it->first.first == id &&
-            (it->first.second == schemaVersion || it->second.toVersion == schemaVersion))
+        if (it->first.first == id && (it->first.second == schemaVersion || it->second.toVersion == schemaVersion))
             it = migrationSteps().erase(it);
-        else ++it;
+        else
+            ++it;
     }
     if (!removed)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "schema version is not registered", id, {}, "schema"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "schema version is not registered", id, {}, "schema"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -949,7 +958,7 @@ std::vector<std::string> SchemaRegistry::ids() {
 }
 
 std::vector<ValidationError> SchemaRegistry::validate(const std::string& schemaId, const std::string& json) {
-    const auto* schema = find(schemaId);
+    const auto*                  schema = find(schemaId);
     std::vector<ValidationError> errors;
     if (!schema) {
         addError(errors, "", "schema_not_found", "schema '" + schemaId + "' is not registered");
@@ -959,7 +968,7 @@ std::vector<ValidationError> SchemaRegistry::validate(const std::string& schemaI
 }
 
 std::vector<ValidationError> SchemaRegistry::validate(const std::string& schemaId, int schemaVersion,
-                                                       const std::string& json) {
+                                                      const std::string& json) {
     std::vector<ValidationError> errors;
     const auto*                  schema = resolve(schemaId, schemaVersion);
     if (!schema) {
@@ -968,8 +977,8 @@ std::vector<ValidationError> SchemaRegistry::validate(const std::string& schemaI
         return errors;
     }
     std::string parseError;
-    const auto  document = eve::json::Document::parse(json, &parseError);
-    const JsonValue root = document.root();
+    const auto      document = eve::json::Document::parse(json, &parseError);
+    const JsonValue root     = document.root();
     if (!document.valid()) {
         addError(errors, "", "invalid_json", parseError);
         return errors;
@@ -981,14 +990,14 @@ std::vector<ValidationError> SchemaRegistry::validate(const std::string& schemaI
 }
 
 eve::Result<void> SchemaRegistry::registerMigration(const std::string& schemaId, int fromVersion, int toVersion,
-                                                     MigrationFunction migration) {
+                                                    MigrationFunction migration) {
     if (schemaId.empty() || fromVersion <= 0 || toVersion <= 0 || !migration)
         return failure<void>(eve::DiagnosticCode::InvalidArgument, "migration id, versions, and function are required");
     if (fromVersion == toVersion)
         return failure<void>(eve::DiagnosticCode::Conflict, "a self migration edge is a cycle", "schemaVersion");
     if (fromVersion > toVersion)
-        return failure<void>(eve::DiagnosticCode::Unsupported,
-                             "schema downgrade migrations are not supported", "schemaVersion");
+        return failure<void>(eve::DiagnosticCode::Unsupported, "schema downgrade migrations are not supported",
+                             "schemaVersion");
 
     const MigrationKey key{schemaId, fromVersion};
     if (migrationSteps().contains(key))
@@ -1010,21 +1019,21 @@ eve::Result<void> SchemaRegistry::registerMigration(const std::string& schemaId,
 }
 
 eve::Result<SchemaCompatibility> SchemaRegistry::queryCompatibility(const std::string& schemaId, int fromVersion,
-                                                                       int toVersion) {
+                                                                    int toVersion) {
     if (schemaId.empty() || fromVersion <= 0 || toVersion <= 0)
         return failure<SchemaCompatibility>(eve::DiagnosticCode::InvalidArgument,
-                                             "schema id and versions must be positive", "schemaVersion");
+                                            "schema id and versions must be positive", "schemaVersion");
     if (!resolve(schemaId, fromVersion) || !resolve(schemaId, toVersion))
         return failure<SchemaCompatibility>(eve::DiagnosticCode::UnknownVersion,
-                                             "source or target schema version is not registered", "schemaVersion");
+                                            "source or target schema version is not registered", "schemaVersion");
     if (fromVersion > toVersion)
         return failure<SchemaCompatibility>(eve::DiagnosticCode::Unsupported,
-                                             "schema downgrade compatibility is not supported", "schemaVersion");
+                                            "schema downgrade compatibility is not supported", "schemaVersion");
 
     SchemaCompatibility result;
-    result.schemaId = schemaId;
+    result.schemaId    = schemaId;
     result.fromVersion = fromVersion;
-    result.toVersion = toVersion;
+    result.toVersion   = toVersion;
     result.versions.push_back(fromVersion);
     if (fromVersion == toVersion) return eve::Result<SchemaCompatibility>::success(std::move(result));
 
@@ -1033,25 +1042,25 @@ eve::Result<SchemaCompatibility> SchemaRegistry::queryCompatibility(const std::s
     while (current != toVersion) {
         if (current > toVersion)
             return failure<SchemaCompatibility>(eve::DiagnosticCode::Unsupported,
-                                                 "migration chain would downgrade the payload", "schemaVersion");
+                                                "migration chain would downgrade the payload", "schemaVersion");
         if (!visited.insert(current).second)
-            return failure<SchemaCompatibility>(eve::DiagnosticCode::Conflict,
-                                                 "migration chain contains a cycle", "schemaVersion");
+            return failure<SchemaCompatibility>(eve::DiagnosticCode::Conflict, "migration chain contains a cycle",
+                                                "schemaVersion");
         const auto it = migrationSteps().find(MigrationKey{schemaId, current});
         if (it == migrationSteps().end())
             return failure<SchemaCompatibility>(eve::DiagnosticCode::Unsupported,
-                                                 "migration chain is missing an explicit edge", "schemaVersion");
+                                                "migration chain is missing an explicit edge", "schemaVersion");
         if (it->second.toVersion <= current)
             return failure<SchemaCompatibility>(eve::DiagnosticCode::Conflict,
-                                                 "migration chain contains a non-forward edge", "schemaVersion");
+                                                "migration chain contains a non-forward edge", "schemaVersion");
         if (it->second.toVersion > toVersion)
             return failure<SchemaCompatibility>(eve::DiagnosticCode::Unsupported,
-                                                 "migration edge overshoots the requested target", "schemaVersion");
+                                                "migration edge overshoots the requested target", "schemaVersion");
         current = it->second.toVersion;
         if (!resolve(schemaId, current))
             return failure<SchemaCompatibility>(eve::DiagnosticCode::UnknownVersion,
-                                                 "migration chain reaches an unregistered schema version",
-                                                 "schemaVersion");
+                                                "migration chain reaches an unregistered schema version",
+                                                "schemaVersion");
         result.versions.push_back(current);
     }
     return eve::Result<SchemaCompatibility>::success(std::move(result));
@@ -1071,8 +1080,8 @@ eve::Result<eve::Value> SchemaRegistry::migrate(const std::string& schemaId, int
 
     eve::Value current;
     try {
-        current = input;
-        const auto& path = compatibility.value().versions;
+        current                             = input;
+        const auto&                    path = compatibility.value().versions;
         std::vector<MigrationFunction> chain;
         chain.reserve(path.size() > 0 ? path.size() - 1 : 0);
         for (size_t index = 1; index < path.size(); ++index) {
@@ -1085,8 +1094,8 @@ eve::Result<eve::Value> SchemaRegistry::migrate(const std::string& schemaId, int
         for (size_t index = 1; index < path.size(); ++index) {
             auto next = chain[index - 1](current);
             if (!next.ok()) return eve::Result<eve::Value>::failure(next.status());
-            eve::Value candidate = std::move(next).takeValue();
-            auto        candidateJson = candidate.toJson();
+            eve::Value candidate     = std::move(next).takeValue();
+            auto       candidateJson = candidate.toJson();
             if (!candidateJson.ok()) return eve::Result<eve::Value>::failure(candidateJson.status());
             const auto errors = validate(schemaId, path[index], candidateJson.value());
             if (!errors.empty())
@@ -1104,7 +1113,7 @@ eve::Result<eve::Value> SchemaRegistry::migrate(const std::string& schemaId, int
 }
 
 eve::Result<std::string> SchemaRegistry::migrateJson(const std::string& schemaId, int fromVersion, int toVersion,
-                                                      const std::string& json) {
+                                                     const std::string& json) {
     auto input = eve::Value::fromJson(json);
     if (!input.ok()) return eve::Result<std::string>::failure(input.status());
     auto migrated = migrate(schemaId, fromVersion, toVersion, input.value());

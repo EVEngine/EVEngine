@@ -30,18 +30,17 @@ class Vehicle;
  * @remarks The returned value is not an additional definition store. Callers that need to
  *          retain the projection must own a copy for their runtime instance.
  */
-[[nodiscard]] eve::Result<VehicleDefinition> parseVehicleDefinition(
-    const eve::definitions::Definition& source);
+[[nodiscard]] eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::Definition& source);
 
 /** @brief Mutable state owned by one typed vehicle runtime instance. */
 struct VehicleRuntimeState {
-    float x = 0.f;
-    float y = 0.f;
-    float heading = 0.f;
-    float speed = 0.f;
-    float health = 0.f;
+    float       x       = 0.f;
+    float       y       = 0.f;
+    float       heading = 0.f;
+    float       speed   = 0.f;
+    float       health  = 0.f;
     std::string faction;
-    bool destroyed = false;
+    bool        destroyed = false;
 };
 
 /**
@@ -59,14 +58,12 @@ public:
      * @return A typed adapter or a structured parse/resolution failure.
      */
     [[nodiscard]] static eve::Result<VehicleDefinitionRuntime> create(
-        eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition,
-        eve::PersistentId instanceId,
+        eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
     /** @brief Create from a Vehicle module's canonical definition registry. */
     [[nodiscard]] static eve::Result<VehicleDefinitionRuntime> create(
-        eve::definitions::DefinitionRegistry& registry, std::string_view definitionId,
-        eve::PersistentId instanceId,
+        eve::definitions::DefinitionRegistry& registry, std::string_view definitionId, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
     /** @brief Create through the existing Vehicle module facade. */
@@ -74,11 +71,11 @@ public:
         Vehicle& module, std::string_view definitionId, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
-    VehicleDefinitionRuntime(VehicleDefinitionRuntime&&) noexcept = default;
+    VehicleDefinitionRuntime(VehicleDefinitionRuntime&&) noexcept            = default;
     VehicleDefinitionRuntime& operator=(VehicleDefinitionRuntime&&) noexcept = default;
-    VehicleDefinitionRuntime(const VehicleDefinitionRuntime&) = delete;
-    VehicleDefinitionRuntime& operator=(const VehicleDefinitionRuntime&) = delete;
-    ~VehicleDefinitionRuntime() = default;
+    VehicleDefinitionRuntime(const VehicleDefinitionRuntime&)                = delete;
+    VehicleDefinitionRuntime& operator=(const VehicleDefinitionRuntime&)     = delete;
+    ~VehicleDefinitionRuntime()                                              = default;
 
     /** @brief Borrow common instance identity and exact definition generation. */
     [[nodiscard]] const eve::definition::InstanceIdentity& identity() const noexcept;
@@ -105,33 +102,30 @@ public:
     [[nodiscard]] eve::Result<void> applyTo(VehicleEntity* entity) const;
 
     /** @brief Reload the registry's current generation using a typed policy. */
-    [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(
-        eve::definition::ReloadPolicy policy);
+    [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(eve::definition::ReloadPolicy policy);
 
     /** @brief Capture mutable entity state in a common SnapshotEnvelope. */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        eve::Revision revision, eve::SimulationTick tick,
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(eve::Revision revision, eve::SimulationTick tick,
+                                                              const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Serialize snapshot() as canonical deterministic JSON. */
-    [[nodiscard]] eve::Result<std::string> snapshotJson(
-        eve::Revision revision, eve::SimulationTick tick,
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotJson(eve::Revision revision, eve::SimulationTick tick,
+                                                        const eve::SnapshotHashProvider& hashProvider) const;
     /**
      * @brief Verify and restore a same-generation vehicle snapshot atomically.
      * @return Failure leaves all mutable runtime state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restore(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restore(const eve::SnapshotEnvelope&     snapshot,
+                                            const eve::SnapshotHashProvider& hashProvider);
 
 private:
-    VehicleDefinitionRuntime(eve::definitions::DefinitionRegistry& registry,
+    VehicleDefinitionRuntime(eve::definitions::DefinitionRegistry&                 registry,
                              eve::definition::RuntimeInstance<VehicleRuntimeState> runtime,
-                             eve::definition::ReloadPolicy policy)
+                             eve::definition::ReloadPolicy                         policy)
         : registry_(&registry), runtime_(std::move(runtime)), policy_(policy) {}
 
-    eve::definitions::DefinitionRegistry* registry_ = nullptr;  // borrowed
+    eve::definitions::DefinitionRegistry*                 registry_ = nullptr;  // borrowed
     eve::definition::RuntimeInstance<VehicleRuntimeState> runtime_;
-    eve::definition::ReloadPolicy policy_ = eve::definition::ReloadPolicy::RebuildInstance;
+    eve::definition::ReloadPolicy                         policy_ = eve::definition::ReloadPolicy::RebuildInstance;
 };
 
 }  // namespace eve::vehicle

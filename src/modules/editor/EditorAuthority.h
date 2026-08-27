@@ -45,8 +45,7 @@ public:
      * @return Applied when the candidate is installed, otherwise a failure
      *         with the original target still unchanged.
      */
-    [[nodiscard]] virtual EditorResult<void> commitDomainState(
-        std::unique_ptr<IDomainOperationTarget> candidate) = 0;
+    [[nodiscard]] virtual EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) = 0;
 };
 
 /** @brief Final validation and commit boundary for editor mutations. */

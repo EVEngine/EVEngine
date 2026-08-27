@@ -87,7 +87,7 @@ void Particles::update(float dt) {
     ParticleLightSystem::update();
 }
 
-eve::Result<void> Particles::advance(const eve::SimulationStep& step) {
+eve::Result<void> Particles::advance(const eve::SimulationStep &step) {
     // Config polling is an asset-side concern. Simulation itself is driven
     // exclusively by the injected scheduler step below.
     ParticleConfigSystem::poll();

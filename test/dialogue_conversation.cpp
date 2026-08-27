@@ -186,24 +186,23 @@ TEST_CASE("dialogueConversation.asyncCommand") {
 
 TEST_CASE("dialogueConversation.mutationsExposeStableDiagnostics") {
     ConversationAsset asset;
-    asset.id = "scene.mutations";
+    asset.id    = "scene.mutations";
     asset.entry = "choice";
     ConversationAsset::Node choice;
-    choice.id = "choice";
+    choice.id   = "choice";
     choice.kind = ConversationAsset::Node::Kind::Choice;
     choice.routes.emplace_back("yes", "end");
     ConversationAsset::Node end;
-    end.id = "end";
-    end.kind = ConversationAsset::Node::Kind::End;
+    end.id      = "end";
+    end.kind    = ConversationAsset::Node::Kind::End;
     asset.nodes = {choice, end};
 
     ConversationRunner runner;
-    std::string error;
+    std::string        error;
     REQUIRE(runner.start(&asset, StateValue::object(), &error));
     auto missing = runner.selectRouteForTransaction("missing");
     REQUIRE(!missing.ok());
-    CHECK_EQ(static_cast<int>(missing.error()->code()),
-             static_cast<int>(eve::DiagnosticCode::DialogueRouteNotFound));
+    CHECK_EQ(static_cast<int>(missing.error()->code()), static_cast<int>(eve::DiagnosticCode::DialogueRouteNotFound));
     CHECK(runner.currentNodeId() == "choice");
 
     auto selected = runner.selectRouteForTransaction("yes");

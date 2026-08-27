@@ -275,7 +275,7 @@ TEST_CASE("housegen.renderPreview") {
     ]})";
 
     HouseComponentLibrary library;
-    auto kitResult = library.loadFromJson(kit);
+    auto                  kitResult = library.loadFromJson(kit);
     REQUIRE(kitResult.ok());
     HouseRequest request;
     request.seed = static_cast<unsigned>(envInt("EVHOUSE_PREVIEW_SEED", 20260815));
@@ -288,7 +288,7 @@ TEST_CASE("housegen.renderPreview") {
     request.floorHeight = 2.4f;
     HouseLayout layout;
     HouseGenerator generator(library);
-    auto generated = generator.generate(request, layout);
+    auto           generated = generator.generate(request, layout);
     REQUIRE(generated.ok());
 
     auto *window = eve::window::Window::create();
@@ -343,8 +343,7 @@ TEST_CASE("housegen.renderPreview") {
     int roofLevel = 0;
     for (const auto &instance : layout.instances) {
         const auto component = library.find(instance.componentId);
-        if (component && component->get().category == "roof")
-            roofLevel = std::max(roofLevel, instance.z);
+        if (component && component->get().category == "roof") roofLevel = std::max(roofLevel, instance.z);
     }
     int roofMinX = request.width, roofMaxX = 0, roofMinZ = request.depth, roofMaxZ = 0;
     for (const auto &instance : layout.instances) {
@@ -489,7 +488,7 @@ TEST_CASE("housegen.materialPreview") {
     const std::filesystem::path assetDir =
         eve_test_path::pathBesideTestDir(__FILE__, "assets/housegen/kenney-modular-buildings");
     HouseComponentLibrary library;
-    auto loaded = library.loadFromFile((assetDir / "components.json").string());
+    auto                  loaded = library.loadFromFile((assetDir / "components.json").string());
     REQUIRE(loaded.ok());
     REQUIRE_EQ(library.count(), 4);
     for (const auto &id : library.ids()) {

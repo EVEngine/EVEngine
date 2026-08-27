@@ -30,14 +30,14 @@ void checkSharedModifierContract(const AttributeModifier* modifier) {
 }  // namespace
 
 TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
-    ecs::Table world;
+    ecs::Table       world;
     ecs::ScopedTable guard(world);
 
     auto* card = eve::card::CardData::createCard();
     REQUIRE(card != nullptr);
     card->stats()->attack = 3;
     card->stats()->health = 5;
-    auto cardEnsure = eve::card::CardAttributeAdapter::ensure(*card);
+    auto cardEnsure       = eve::card::CardAttributeAdapter::ensure(*card);
     REQUIRE(cardEnsure.ok());
     auto cardModifier = eve::card::CardAttributeAdapter::addModifier(
         *card, "card.equipment.attack", eve::card::CardAttributeAdapter::attackAttribute,
@@ -53,26 +53,24 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
     auto cardSnapshot = eve::card::CardAttributeAdapter::snapshot(*card);
     REQUIRE(cardSnapshot.ok());
     auto snapshot = std::move(cardSnapshot).takeValue();
-    auto cardSet = eve::card::CardAttributeAdapter::setBase(
-        *card, eve::card::CardAttributeAdapter::attackAttribute, 9.0);
+    auto cardSet =
+        eve::card::CardAttributeAdapter::setBase(*card, eve::card::CardAttributeAdapter::attackAttribute, 9.0);
     REQUIRE(cardSet.ok());
     CHECK_EQ(card->stats()->attack, 9);
-    auto cardRestore = eve::card::CardAttributeAdapter::restore(
-        *card, snapshot, card->attributes()->values.revision());
+    auto cardRestore = eve::card::CardAttributeAdapter::restore(*card, snapshot, card->attributes()->values.revision());
     REQUIRE(cardRestore.ok());
     CHECK_EQ(card->stats()->attack, 5);
     snapshot.owner.generation += 1;
-    auto cardStale = eve::card::CardAttributeAdapter::restore(
-        *card, snapshot, card->attributes()->values.revision());
+    auto cardStale = eve::card::CardAttributeAdapter::restore(*card, snapshot, card->attributes()->values.revision());
     CHECK(!cardStale.ok());
     cardStale.ignore("stale-owner assertion");
     card->release();
 
     auto* vehicle = eve::vehicle::VehicleEntity::createVehicle();
     REQUIRE(vehicle != nullptr);
-    vehicle->health()->hp = 80.0f;
+    vehicle->health()->hp    = 80.0f;
     vehicle->health()->maxHp = 100.0f;
-    auto vehicleEnsure = eve::vehicle::VehicleAttributeAdapter::ensure(*vehicle);
+    auto vehicleEnsure       = eve::vehicle::VehicleAttributeAdapter::ensure(*vehicle);
     REQUIRE(vehicleEnsure.ok());
     auto vehicleModifier = eve::vehicle::VehicleAttributeAdapter::addModifier(
         *vehicle, "vehicle.equipment.armor", eve::vehicle::VehicleAttributeAdapter::armorAttribute,
@@ -83,19 +81,19 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
     auto vehicleProject = eve::vehicle::VehicleAttributeAdapter::project(*vehicle);
     REQUIRE(vehicleProject.ok());
     CHECK_EQ(vehicle->health()->hp, 80.0f);
-    auto vehicleArmor = eve::vehicle::VehicleAttributeAdapter::read(
-        *vehicle, eve::vehicle::VehicleAttributeAdapter::armorAttribute);
+    auto vehicleArmor =
+        eve::vehicle::VehicleAttributeAdapter::read(*vehicle, eve::vehicle::VehicleAttributeAdapter::armorAttribute);
     REQUIRE(vehicleArmor.ok());
     CHECK_EQ(vehicleArmor.value(), 25.0);
     vehicle->release();
 
     auto* weapon = eve::weapon::WeaponEntity::createWeapon();
     REQUIRE(weapon != nullptr);
-    weapon->state()->resource.kind = eve::weapon::ResourceKind::Mana;
+    weapon->state()->resource.kind  = eve::weapon::ResourceKind::Mana;
     weapon->state()->resource.value = 10.0f;
-    weapon->state()->resource.max = 20.0f;
-    weapon->state()->resource.cost = 3.0f;
-    auto weaponEnsure = eve::weapon::WeaponAttributeAdapter::ensure(*weapon);
+    weapon->state()->resource.max   = 20.0f;
+    weapon->state()->resource.cost  = 3.0f;
+    auto weaponEnsure               = eve::weapon::WeaponAttributeAdapter::ensure(*weapon);
     REQUIRE(weaponEnsure.ok());
     auto weaponModifier = eve::weapon::WeaponAttributeAdapter::addModifier(
         *weapon, "weapon.equipment.mana", eve::weapon::WeaponAttributeAdapter::manaAttribute,
@@ -114,7 +112,7 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
     auto* unit = eve::rts::Unit::createUnit();
     REQUIRE(unit != nullptr);
     unit->motion()->speed = 7.0f;
-    auto unitEnsure = eve::rts::RTSUnitAttributeAdapter::ensure(*unit);
+    auto unitEnsure       = eve::rts::RTSUnitAttributeAdapter::ensure(*unit);
     REQUIRE(unitEnsure.ok());
     auto unitModifier = eve::rts::RTSUnitAttributeAdapter::addModifier(
         *unit, "rts.equipment.attack", eve::rts::RTSUnitAttributeAdapter::attackAttribute,
@@ -122,8 +120,8 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
         eve::attributes::priority::equipment);
     REQUIRE(unitModifier.ok());
     checkSharedModifierContract(unit->attributes()->values.modifierAt(0));
-    auto unitAttack = eve::rts::RTSUnitAttributeAdapter::read(
-        *unit, eve::rts::RTSUnitAttributeAdapter::attackAttribute);
+    auto unitAttack =
+        eve::rts::RTSUnitAttributeAdapter::read(*unit, eve::rts::RTSUnitAttributeAdapter::attackAttribute);
     REQUIRE(unitAttack.ok());
     CHECK_EQ(unitAttack.value(), 4.0);
     auto unsupported = eve::rts::RTSUnitAttributeAdapter::read(*unit, "speed");

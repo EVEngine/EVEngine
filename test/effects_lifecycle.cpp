@@ -32,24 +32,24 @@ TEST_CASE("effects.definitionPayload.usesCanonicalValueObject") {
 
 TEST_CASE("effects.layers.definitionInstanceAndContainer.copyDefinitionData") {
     EffectDefinition definition;
-    definition.id = "damage.over.time";
-    definition.stackKey = "damage";
-    definition.duration = 5.0;
-    definition.magnitude = 2.0;
-    definition.policy.stackMode = StackMode::Accumulate;
+    definition.id                = "damage.over.time";
+    definition.stackKey          = "damage";
+    definition.duration          = 5.0;
+    definition.magnitude         = 2.0;
+    definition.policy.stackMode  = StackMode::Accumulate;
     definition.policy.stackCount = StackCountPolicy::Increment;
-    definition.policy.duration = DurationPolicy::Extend;
-    definition.policy.magnitude = MagnitudePolicy::Add;
-    definition.policy.maxStacks = 3;
+    definition.policy.duration   = DurationPolicy::Extend;
+    definition.policy.magnitude  = MagnitudePolicy::Add;
+    definition.policy.maxStacks  = 3;
     definition.payload.setString("kind", "periodic");
     definition.tags = {"debuff", "damage"};
 
     EffectContainer container;
-    auto firstResult = container.apply(definition, "unit:1", "source:1");
+    auto            firstResult = container.apply(definition, "unit:1", "source:1");
     REQUIRE(firstResult.ok());
     const std::string first = std::move(firstResult).takeValue();
-    definition.duration = 99.0;
-    definition.magnitude = 99.0;
+    definition.duration     = 99.0;
+    definition.magnitude    = 99.0;
     definition.payload.setString("kind", "mutated-after-apply");
 
     auto secondResult = container.apply(definition, "unit:1", "source:2");
@@ -68,25 +68,25 @@ TEST_CASE("effects.layers.definitionInstanceAndContainer.copyDefinitionData") {
 
 TEST_CASE("effects.policies.stackDurationMagnitudeAndOverflow.areIndependent") {
     EffectDefinition definition;
-    definition.id = "policy.test";
-    definition.duration = 4.0;
-    definition.magnitude = 3.0;
-    definition.policy.stackMode = StackMode::Accumulate;
+    definition.id                = "policy.test";
+    definition.duration          = 4.0;
+    definition.magnitude         = 3.0;
+    definition.policy.stackMode  = StackMode::Accumulate;
     definition.policy.stackCount = StackCountPolicy::Increment;
-    definition.policy.duration = DurationPolicy::Keep;
-    definition.policy.magnitude = MagnitudePolicy::Max;
-    definition.policy.maxStacks = 2;
-    definition.policy.overflow = OverflowPolicy::Reject;
+    definition.policy.duration   = DurationPolicy::Keep;
+    definition.policy.magnitude  = MagnitudePolicy::Max;
+    definition.policy.maxStacks  = 2;
+    definition.policy.overflow   = OverflowPolicy::Reject;
 
     EffectContainer container;
-    auto firstResult = container.apply(definition, "unit:2", "source");
+    auto            firstResult = container.apply(definition, "unit:2", "source");
     REQUIRE(firstResult.ok());
     const std::string id = std::move(firstResult).takeValue();
     container.update(1.0).ignore("test elapsed time");
 
-    definition.duration = 100.0;
+    definition.duration  = 100.0;
     definition.magnitude = 5.0;
-    auto secondResult = container.apply(definition, "unit:2", "source");
+    auto secondResult    = container.apply(definition, "unit:2", "source");
     REQUIRE(secondResult.ok());
     std::move(secondResult).takeValue();
     CHECK_EQ(container.find(id)->stackCount, std::uint32_t{2});
@@ -102,16 +102,16 @@ TEST_CASE("effects.policies.stackDurationMagnitudeAndOverflow.areIndependent") {
 
 TEST_CASE("effects.executor.advancesOnlyLifecycleAndReportsExpiry") {
     EffectDefinition definition;
-    definition.id = "temporary";
+    definition.id       = "temporary";
     definition.duration = 1.0;
 
     EffectContainer container;
-    auto idResult = container.apply(definition, "unit:3", "source");
+    auto            idResult = container.apply(definition, "unit:3", "source");
     REQUIRE(idResult.ok());
     const std::string id = std::move(idResult).takeValue();
 
     EffectExecutor executor;
-    auto invalidResult = executor.advance(container, -1.0);
+    auto           invalidResult = executor.advance(container, -1.0);
     CHECK(!invalidResult.ok());
     CHECK_EQ(invalidResult.code(), eve::StatusCode::Rejected);
 

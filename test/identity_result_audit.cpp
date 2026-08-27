@@ -8,8 +8,8 @@
 
 #include <chrono>
 #include <cstdint>
-#include <memory>
 #include <limits>
+#include <memory>
 #include <span>
 #include <string>
 #include <type_traits>
@@ -38,8 +38,8 @@ static_assert(!std::is_convertible_v<eve::TransactionId, eve::OperationId>);
 static_assert(!std::is_convertible_v<eve::SceneObjectId, eve::PersistentId>);
 
 TEST_CASE("identity.audit.domainIdsShareOneUuidImplementation") {
-    constexpr const char* text = "01020304-0506-0708-090a-0b0c0d0e0f10";
-    const auto asset = parsedId<eve::AssetGuid>(text);
+    constexpr const char* text  = "01020304-0506-0708-090a-0b0c0d0e0f10";
+    const auto            asset = parsedId<eve::AssetGuid>(text);
     REQUIRE(!asset.isNil());
     CHECK_EQ(asset.format(), text);
     CHECK_EQ(eve::DocumentId::fromUuid(asset).format(), text);
@@ -64,13 +64,11 @@ TEST_CASE("identity.audit.logicalNamespaceIsCanonicalAndNamesRemainCaseSensitive
 
 TEST_CASE("identity.audit.canonicalTransactionRestoresWithoutStringAllocators") {
     using namespace std::chrono_literals;
-    const auto clock = [] {
-        return std::chrono::system_clock::time_point{std::chrono::milliseconds{0x010203040506}};
-    };
+    const auto clock = [] { return std::chrono::system_clock::time_point{std::chrono::milliseconds{0x010203040506}}; };
     const auto entropy = deterministicEntropy();
 
     eve::transaction::Ledger source(eve::PersistentId::nil(), entropy, clock);
-    auto created = source.create("combat", "command");
+    auto                     created = source.create("combat", "command");
     REQUIRE(created.ok());
     auto* plan = std::move(created).takeValue();
     REQUIRE(plan != nullptr);
@@ -94,15 +92,15 @@ TEST_CASE("identity.audit.canonicalTransactionRestoresWithoutStringAllocators") 
     CHECK(snapshot.find("operation-0000000000000001") == std::string::npos);
 
     eve::transaction::Ledger restored(eve::PersistentId::nil(), deterministicEntropy(), clock);
-    auto restoredResult = restored.restore(snapshot);
+    auto                     restoredResult = restored.restore(snapshot);
     REQUIRE(restoredResult.ok());
     auto* restoredPlan = restored.find(transactionId);
     REQUIRE(restoredPlan != nullptr);
     CHECK_EQ(restoredPlan->identity(), transactionId);
     CHECK(restoredPlan->findOperation(operationId) != nullptr);
 
-    const auto before = restored.snapshotJson();
-    auto failedCanonical = restored.restore("{\"version\":1,\"nextTransaction\":\"2\",\"plans\":[");
+    const auto before          = restored.snapshotJson();
+    auto       failedCanonical = restored.restore("{\"version\":1,\"nextTransaction\":\"2\",\"plans\":[");
     CHECK(!failedCanonical.ok());
     CHECK_EQ(restored.snapshotJson(), before);
     CHECK_EQ(restored.snapshotJson(), before);
@@ -113,7 +111,7 @@ TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
     using Handle = eve::RuntimeHandle<RegistryTag>;
 
     constexpr Handle oldHandle(4u, 1u);
-    const auto next = oldHandle.nextGeneration();
+    const auto       next = oldHandle.nextGeneration();
     REQUIRE(next.has_value());
     CHECK(next.value() != oldHandle);
     CHECK_EQ(next->index(), oldHandle.index());
@@ -124,15 +122,13 @@ TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
 
 TEST_CASE("identity.audit.canonicalEffectUsesUuidAndLegacyFacadeProjectsLocally") {
     using namespace std::chrono_literals;
-    const auto clock = [] {
-        return std::chrono::system_clock::time_point{std::chrono::milliseconds{0x010203040506}};
-    };
+    const auto clock = [] { return std::chrono::system_clock::time_point{std::chrono::milliseconds{0x010203040506}}; };
     eve::effects::EffectDefinition definition;
-    definition.id = "combat:burn";
+    definition.id               = "combat:burn";
     definition.policy.stackMode = eve::effects::StackMode::NewInstance;
 
     eve::effects::EffectContainer canonical(deterministicEntropy(), clock);
-    auto applied = canonical.applyCanonical(definition, "actor:1", "spell:1");
+    auto                          applied = canonical.applyCanonical(definition, "actor:1", "spell:1");
     REQUIRE(applied.ok());
     const auto effectId = std::move(applied).takeValue();
     CHECK(!effectId.isNil());
@@ -144,7 +140,7 @@ TEST_CASE("identity.audit.canonicalEffectUsesUuidAndLegacyFacadeProjectsLocally"
     CHECK(canonical.remove(effectId).ok());
 
     eve::effects::EffectContainer legacy;
-    auto legacyResult = legacy.apply(definition, "actor:2", "spell:1");
+    auto                          legacyResult = legacy.apply(definition, "actor:2", "spell:1");
     REQUIRE(legacyResult.ok());
     CHECK(legacyResult.value().starts_with("effect-"));
     REQUIRE(legacy.find(legacyResult.value()) != nullptr);

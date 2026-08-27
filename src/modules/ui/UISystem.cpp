@@ -40,7 +40,7 @@ void pushPending(UIHost *host, const UINode &n, const char *kind, uint32_t handl
     if (!n.enabled || n.mouseFilter == MouseFilter::Ignore) return;
     UIEvent ev;
     if (!host) return;
-    ev.host = host->handle();
+    ev.host     = host->handle();
     ev.hostName = host ? host->meta()->name : "";
     ev.nodeId = n.id;
     if (host) {
@@ -1059,7 +1059,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         const float h = n.sizeY > 0.f ? n.sizeY : ImGui::GetContentRegionAvail().y;
         const ImVec2 size(std::max(1.f, w), std::max(1.f, h));
         const std::string key = viewportKey(host, n);
-        auto viewport = UISystem::ensureViewport(key, int(size.x), int(size.y));
+        auto              viewport = UISystem::ensureViewport(key, int(size.x), int(size.y));
 
         const ImVec2 rectMin = ImGui::GetCursorScreenPos();
         const std::string label = "##vp" + (n.id.empty() ? std::string("viewport") : n.id);
@@ -1069,10 +1069,10 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         const ImVec2 mouse = ImGui::GetMousePos();
         if (viewport.ok()) {
             ViewportState &vs = viewport.value().get();
-            vs.hovered = hovered;
-            vs.active = active;
-            vs.mouseX = mouse.x - rectMin.x;
-            vs.mouseY = mouse.y - rectMin.y;
+            vs.hovered        = hovered;
+            vs.active         = active;
+            vs.mouseX         = mouse.x - rectMin.x;
+            vs.mouseY         = mouse.y - rectMin.y;
             if (active) {
                 vs.dragDX = ImGui::GetIO().MouseDelta.x;
                 vs.dragDY = ImGui::GetIO().MouseDelta.y;
@@ -1083,17 +1083,16 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             vs.wheel = hovered ? ImGui::GetIO().MouseWheel : 0.f;
 
             if (vs.textureId && g_backend && g_backend->usesQueuedTextureDraws()) {
-                g_backend->queueTextureDraw(vs.textureId, rectMin.x, rectMin.y, size.x, size.y,
-                                        0.f, 0.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, true);
+                g_backend->queueTextureDraw(vs.textureId, rectMin.x, rectMin.y, size.x, size.y, 0.f, 0.f, 1.f, 1.f, 1.f,
+                                            1.f, 1.f, 1.f, true);
             } else if (vs.textureId && g_backend) {
                 void *handle = g_backend->textureHandle(vs.textureId);
                 if (handle) {
                     ImGui::SetCursorScreenPos(rectMin);
                     ImGui::Image(static_cast<ImTextureID>(handle), size);
                 } else {
-                    ImGui::GetWindowDrawList()->AddRectFilled(
-                        rectMin, ImVec2(rectMin.x + size.x, rectMin.y + size.y),
-                        IM_COL32(10, 12, 16, 255));
+                    ImGui::GetWindowDrawList()->AddRectFilled(rectMin, ImVec2(rectMin.x + size.x, rectMin.y + size.y),
+                                                              IM_COL32(10, 12, 16, 255));
                 }
             } else {
                 ImGui::GetWindowDrawList()->AddRectFilled(
@@ -1144,43 +1143,39 @@ std::vector<UIEvent> &UISystem::pendingEvents() { return g_pending; }
 std::vector<UIClick> &UISystem::clickQueue() { return g_clicks; }
 std::vector<UIChange> &UISystem::changeQueue() { return g_changes; }
 
-void UISystem::setBackend(UIBackend& backend) { g_backend = &backend; }
-void UISystem::clearBackend() noexcept { g_backend = nullptr; }
+void                                             UISystem::setBackend(UIBackend &backend) { g_backend = &backend; }
+void                                             UISystem::clearBackend() noexcept { g_backend = nullptr; }
 std::optional<std::reference_wrapper<UIBackend>> UISystem::backend() {
     if (!g_backend) return std::nullopt;
     return std::ref(*g_backend);
 }
 const UIStats &UISystem::stats() { return g_stats; }
 
-eve::Result<std::reference_wrapper<ViewportState>> UISystem::ensureViewport(
-    const std::string &key, int w, int h) {
+eve::Result<std::reference_wrapper<ViewportState>> UISystem::ensureViewport(const std::string &key, int w, int h) {
     using Return = eve::Result<std::reference_wrapper<ViewportState>>;
     if (key.empty() || w <= 0 || h <= 0) {
         return Return::failure(eve::Status::failure(
             eve::StatusCode::Rejected,
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                   "viewport key and dimensions must be valid")));
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "viewport key and dimensions must be valid")));
     }
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) {
         return Return::failure(eve::Status::failure(
             eve::StatusCode::Unsupported,
-            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
-                                   "viewport requires the Graphics module")));
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "viewport requires the Graphics module")));
     }
     ViewportState &vs = g_viewports[key];
-    vs.key = key;
+    vs.key            = key;
     if (!vs.canvas || vs.width != w || vs.height != h) {
         graphics::Canvas *canvas = gfx->newCanvas(w, h);
         if (!canvas) {
             return Return::failure(eve::Status::failure(
                 eve::StatusCode::Failed,
-                eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                       "Graphics could not create the viewport canvas")));
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "Graphics could not create the viewport canvas")));
         }
         if (vs.textureId && g_backend) g_backend->unregisterTexture(vs.textureId);
         vs.textureId = 0;
-        vs.canvas = canvas;
+        vs.canvas    = canvas;
         vs.width = w;
         vs.height = h;
         if (vs.canvas && g_backend)
@@ -1189,8 +1184,8 @@ eve::Result<std::reference_wrapper<ViewportState>> UISystem::ensureViewport(
     return Return::success(std::ref(vs));
 }
 
-std::optional<std::reference_wrapper<ViewportState>> UISystem::viewportState(
-    const std::string &hostName, const std::string &nodeId) {
+std::optional<std::reference_wrapper<ViewportState>> UISystem::viewportState(const std::string &hostName,
+                                                                             const std::string &nodeId) {
     auto it = g_viewports.find(hostName + "/" + nodeId);
     if (it == g_viewports.end()) return std::nullopt;
     return std::ref(it->second);
@@ -1288,14 +1283,12 @@ void UISystem::dispatchEvents() {
         }
 
         if (ev.kind == "click") {
-            auto tree = host->tree();
+            auto tree  = host->tree();
             int index = ev.nodeIndex;
             if (index < 0 || index >= int(tree->nodes.size()) ||
                 tree->nodes[size_t(index)].id != ev.nodeId) {
                 auto target = host->findById(ev.nodeId);
-                index = target && !tree->nodes.empty()
-                            ? int(&target->get() - tree->nodes.data())
-                            : -1;
+                index       = target && !tree->nodes.empty() ? int(&target->get() - tree->nodes.data()) : -1;
             }
 
             bool first = true;
@@ -1317,21 +1310,21 @@ void UISystem::dispatchEvents() {
         }
 
         if (ev.kind == "toggle" && ev.handlerIndex != 0) {
-            auto t = host->tree();
+            auto   t   = host->tree();
             size_t idx = size_t(ev.handlerIndex - 1);
             if (idx < t->toggleHandlers.size() && t->toggleHandlers[idx])
                 t->toggleHandlers[idx](ev.toggleValue);
             continue;
         }
         if (ev.kind == "value" && ev.handlerIndex != 0) {
-            auto t = host->tree();
+            auto   t   = host->tree();
             size_t idx = size_t(ev.handlerIndex - 1);
             if (idx < t->valueHandlers.size() && t->valueHandlers[idx])
                 t->valueHandlers[idx](ev.floatValue);
             continue;
         }
         if (ev.kind == "text" && ev.handlerIndex != 0) {
-            auto t = host->tree();
+            auto   t   = host->tree();
             size_t idx = size_t(ev.handlerIndex - 1);
             if (idx < t->textHandlers.size() && t->textHandlers[idx])
                 t->textHandlers[idx](ev.textValue);

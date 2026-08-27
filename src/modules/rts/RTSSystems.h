@@ -22,9 +22,9 @@ enum class FormationKind : std::uint8_t {
 
 /** @brief Input to the pure formation planner. */
 struct FormationSpec {
-    FormationKind kind = FormationKind::Line;
-    float spacing = 32.0f;
-    int columns = 0;
+    FormationKind kind    = FormationKind::Line;
+    float         spacing = 32.0f;
+    int           columns = 0;
 
     /** @brief Validate spacing and grid column constraints. */
     [[nodiscard]] Result<void> validate() const;
@@ -32,13 +32,13 @@ struct FormationSpec {
 
 /** @brief Static metadata for one ECS system's access and phase contract. */
 struct SystemContract {
-    const char* name = "";
-    const char* view = "";
-    const char* readSet = "";
-    const char* writeSet = "";
+    const char* name              = "";
+    const char* view              = "";
+    const char* readSet           = "";
+    const char* writeSet          = "";
     const char* structuralChanges = "";
-    const char* events = "";
-    const char* phase = "";
+    const char* events            = "";
+    const char* phase             = "";
 };
 
 /** @brief Return the phase-one RTS ECS contracts for tooling and review. */
@@ -59,14 +59,14 @@ public:
      * @param spec Layout strategy and spacing.
      * @return Exactly `count` positions or a structured validation failure.
      */
-    [[nodiscard]] static Result<std::vector<WorldPosition>> plan(
-        std::size_t count, WorldPosition anchor, const FormationSpec& spec);
+    [[nodiscard]] static Result<std::vector<WorldPosition>> plan(std::size_t count, WorldPosition anchor,
+                                                                 const FormationSpec& spec);
 };
 
 /** @brief Receipt containing all order ids accepted by command fan-out. */
 struct FanOutReceipt {
-    std::size_t requested = 0;
-    std::size_t accepted = 0;
+    std::size_t              requested = 0;
+    std::size_t              accepted  = 0;
     std::vector<std::string> orderIds;
 };
 
@@ -87,9 +87,8 @@ public:
      * @return Accepted order ids in selection order, or a failure with no
      *         partially accepted command exposed to the caller.
      */
-    [[nodiscard]] static Result<FanOutReceipt> fanOut(
-        std::span<const ecs::EntityHandle> unitHandles, const CommandSpec& command,
-        const FormationSpec& formation);
+    [[nodiscard]] static Result<FanOutReceipt> fanOut(std::span<const ecs::EntityHandle> unitHandles,
+                                                      const CommandSpec& command, const FormationSpec& formation);
 };
 
 /** @brief Moves units toward their active generic order targets. */
@@ -112,8 +111,7 @@ public:
      * @param executor Borrowed action adapter; it must outlive this call.
      * @return Number of action-bearing units inspected, or a structured failure.
      */
-    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
-                                                   IRTSActionExecutor& executor);
+    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, IRTSActionExecutor& executor);
 };
 
 /** @brief Advances Building production queues without duplicating task state. */

@@ -52,8 +52,8 @@ TEST_CASE("schema.registry.supportsMultipleVersionsAndExactResolution") {
     legacyField.required = true;
     v1.fields.push_back(legacyField);
     SchemaDefinition v2 = v1;
-    v2.version           = 2;
-    v2.title             = "Unit v2";
+    v2.version          = 2;
+    v2.title            = "Unit v2";
 
     CHECK(registrationSucceeded(SchemaRegistry::registerVersioned(v1)));
     CHECK(registrationSucceeded(SchemaRegistry::registerVersioned(v2)));
@@ -78,7 +78,7 @@ TEST_CASE("schema.registry.rejectsExactVersionConflictWithoutOverwriting") {
     CHECK(registrationSucceeded(SchemaRegistry::registerVersioned(definition)));
 
     definition.title = "replacement";
-    auto conflict = SchemaRegistry::registerVersioned(definition);
+    auto conflict    = SchemaRegistry::registerVersioned(definition);
     CHECK(!conflict.ok());
     CHECK_EQ(conflict.code(), eve::StatusCode::Conflict);
     REQUIRE(SchemaRegistry::resolve("unit", 3) != nullptr);
@@ -106,13 +106,11 @@ TEST_CASE("schema.registry.distinguishesMissingVersion") {
 
 TEST_CASE("schema.registry.acceptsCanonicalSchemaVersionAndRejectsConflictingAliases") {
     SchemaRegistry::clear();
-    CHECK(registrationSucceeded(SchemaRegistry::registerFromJsonVersioned(
-        R"({"id":"unit","schemaVersion":4})")));
+    CHECK(registrationSucceeded(SchemaRegistry::registerFromJsonVersioned(R"({"id":"unit","schemaVersion":4})")));
     REQUIRE(SchemaRegistry::resolve("unit", 4) != nullptr);
     CHECK_EQ(SchemaRegistry::resolve("unit", 4)->version, 4);
 
-    auto conflict = SchemaRegistry::registerFromJsonVersioned(
-        R"({"id":"conflicting","version":1,"schemaVersion":2})");
+    auto conflict = SchemaRegistry::registerFromJsonVersioned(R"({"id":"conflicting","version":1,"schemaVersion":2})");
     CHECK(!conflict.ok());
     CHECK_EQ(conflict.code(), eve::StatusCode::Failed);
 }
@@ -120,10 +118,10 @@ TEST_CASE("schema.registry.acceptsCanonicalSchemaVersionAndRejectsConflictingAli
 TEST_CASE("schema.registry.legacyFacadeKeepsVersionsAndRemovesExactly") {
     SchemaRegistry::clear();
     SchemaDefinition v1;
-    v1.id      = "unit";
-    v1.version = 1;
+    v1.id               = "unit";
+    v1.version          = 1;
     SchemaDefinition v2 = v1;
-    v2.version           = 2;
+    v2.version          = 2;
     REQUIRE(SchemaRegistry::registerSchema(v1).ok());
     REQUIRE(SchemaRegistry::registerSchema(v2).ok());
     CHECK(SchemaRegistry::remove("unit", 1).ok());
@@ -139,11 +137,9 @@ TEST_CASE("schema.registry.rejectsMalformedDefinitions") {
     SchemaRegistry::clear();
     auto emptyId = SchemaRegistry::registerFromJson(R"({"id":"","version":1})");
     CHECK(!emptyId.ok());
-    auto badType = SchemaRegistry::registerFromJson(
-        R"({"id":"bad","fields":[{"name":"x","type":"mystery"}]})");
+    auto badType = SchemaRegistry::registerFromJson(R"({"id":"bad","fields":[{"name":"x","type":"mystery"}]})");
     CHECK(!badType.ok());
-    auto duplicate = SchemaRegistry::registerFromJson(
-        R"({"id":"duplicate","fields":[{"name":"x"},{"name":"x"}]})");
+    auto duplicate = SchemaRegistry::registerFromJson(R"({"id":"duplicate","fields":[{"name":"x"},{"name":"x"}]})");
     CHECK(!duplicate.ok());
     CHECK_EQ(SchemaRegistry::count(), 0);
 }

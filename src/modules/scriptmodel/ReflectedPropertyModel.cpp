@@ -7,10 +7,10 @@
 namespace eve::scriptmodel {
 namespace {
 
+using eve::Value;
 using property_access::PropertyDescriptor;
 using property_access::PropertyFlag;
 using property_access::PropertyKind;
-using eve::Value;
 
 PropertyKind propertyKind(const ReflectedMember &member) {
     if (member.attrString("editor") == "combo" && !member.attrOptions("options").empty())
@@ -81,18 +81,12 @@ ReflectedValue toReflectedValue(const Value &value) {
 }
 
 const char *scriptValidationCode(const std::string &presentationCode) {
-    if (presentationCode == "property_access.property.read-only")
-        return "scriptmodel.property.read-only";
-    if (presentationCode == "property_access.property.type")
-        return "scriptmodel.property.type";
-    if (presentationCode == "property_access.property.choice")
-        return "scriptmodel.property.choice";
-    if (presentationCode == "property_access.property.finite")
-        return "scriptmodel.property.finite";
-    if (presentationCode == "property_access.property.minimum")
-        return "scriptmodel.property.minimum";
-    if (presentationCode == "property_access.property.maximum")
-        return "scriptmodel.property.maximum";
+    if (presentationCode == "property_access.property.read-only") return "scriptmodel.property.read-only";
+    if (presentationCode == "property_access.property.type") return "scriptmodel.property.type";
+    if (presentationCode == "property_access.property.choice") return "scriptmodel.property.choice";
+    if (presentationCode == "property_access.property.finite") return "scriptmodel.property.finite";
+    if (presentationCode == "property_access.property.minimum") return "scriptmodel.property.minimum";
+    if (presentationCode == "property_access.property.maximum") return "scriptmodel.property.maximum";
     return "scriptmodel.property.validation";
 }
 
@@ -211,23 +205,19 @@ std::optional<Value> ReflectedPropertyModel::read(const std::string &path) const
     return convertValue(path, runtime_->readProperty(instance_, path));
 }
 
-property_access::WriteResult ReflectedPropertyModel::write(const std::string &path,
-                                                        const Value &value) {
+property_access::WriteResult ReflectedPropertyModel::write(const std::string &path, const Value &value) {
     auto descriptor = schema_.find(path);
     if (!descriptor)
-        return property_access::WriteResult::reject("scriptmodel.property.missing",
-                                                  "Property is not reflected");
-    const property_access::WriteResult validation =
-        property_access::validatePropertyValue(descriptor->get(), value);
+        return property_access::WriteResult::reject("scriptmodel.property.missing", "Property is not reflected");
+    const property_access::WriteResult validation = property_access::validatePropertyValue(descriptor->get(), value);
     if (!validation.accepted) return validationFailure(validation);
 
     ReflectedValue reflected = toReflectedValue(value);
     if (reflected.empty())
-        return property_access::WriteResult::reject("scriptmodel.property.type",
-                                                  "Unsupported property value type");
+        return property_access::WriteResult::reject("scriptmodel.property.type", "Unsupported property value type");
     if (!runtime_->writeProperty(instance_, path, reflected))
         return property_access::WriteResult::reject("scriptmodel.property.write",
-                                                  "Runtime rejected the property write");
+                                                    "Runtime rejected the property write");
     const Value applied = convertValue(path, runtime_->readProperty(instance_, path));
     const auto found = cachedValues_.find(path);
     if (found == cachedValues_.end() || found->second != applied) emit(path, applied);

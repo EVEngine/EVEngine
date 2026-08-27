@@ -1,12 +1,12 @@
-#include "procgen/Palette.h"
 #include "map/TileLayer.h"
+#include "procgen/Palette.h"
 
 #include "procgen/Semantic.h"
 
 namespace eve::procgen {
 
-bool PaletteTable::applyToLayer(const Grid2D& grid, const std::string& palette,
-                                map::TileLayer* layer, std::string* error) const {
+bool PaletteTable::applyToLayer(const Grid2D& grid, const std::string& palette, map::TileLayer* layer,
+                                std::string* error) const {
     if (!layer) {
         if (error) *error = "applyToLayer: null TileLayer";
         return false;

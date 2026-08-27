@@ -340,7 +340,7 @@ TEST_CASE("inspector.pickSceneInspectsPickedObject") {
     inspector.refresh();
     inspector.setPickScene([picked]() { return picked; });
     inspector.open();
-    UIHost *host = resolveHost(inspector.host());
+    UIHost* host = resolveHost(inspector.host());
     REQUIRE(host != nullptr);
 
     UINode *pick = nodeById(host, "inspector_pick");

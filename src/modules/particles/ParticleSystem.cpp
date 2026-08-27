@@ -243,8 +243,8 @@ void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu
     gpu.deathTimes.clear();
 }
 
-eve::Result<bool> advanceResidentGpu(graphics::Graphics* gfx, ParticleEmitter* emitter,
-                                     const eve::SimulationStep& step, bool legacyControls) {
+eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *emitter, const eve::SimulationStep &step,
+                                     bool legacyControls) {
     auto cfg = emitter->config();
     auto sim = emitter->sim();
     auto gpu = emitter->gpuSim();
@@ -252,8 +252,7 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics* gfx, ParticleEmitter* e
 
     if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) {
         gpu->residentHandle = gfx->createGpuParticleEmitter(std::uint32_t(sim->particles.size()));
-        if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle)
-            return eve::Result<bool>::success(false);
+        if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) return eve::Result<bool>::success(false);
     }
 
     const bool  hadLastPosition  = sim->hasLastPos;
@@ -330,24 +329,24 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics* gfx, ParticleEmitter* e
 
 }  // namespace
 
-eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool legacyControls) {
+eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool legacyControls) {
     if (step.delta.nanoseconds() < 0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "particle simulation delta must be non-negative"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "particle simulation delta must be non-negative"));
     const float dt = static_cast<float>(step.delta.seconds());
     if (!std::isfinite(dt))
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "particle simulation delta is outside float range"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "particle simulation delta is outside float range"));
 
     // Build the complete frame record off to the side. Checked failures must
     // not publish counters that describe only the prefix of a frame; the
     // previous published record remains the observable snapshot until the
     // simulation reaches its commit point below.
     ParticleFrameStats nextStats;
-    const uint64_t nextFrame = particleFrameStats().frameIndex + 1;
-    nextStats.frameIndex = nextFrame;
-    nextStats.simulationTick = step.tick;
-    auto &stats = nextStats;
+    const uint64_t     nextFrame = particleFrameStats().frameIndex + 1;
+    nextStats.frameIndex         = nextFrame;
+    nextStats.simulationTick     = step.tick;
+    auto      &stats             = nextStats;
     const auto begin = std::chrono::steady_clock::now();
 
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) {
@@ -365,9 +364,9 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool le
             allEmitters.push_back(cfg->entity);
             auto sim = cfg->entity->sim();
             if (!legacyControls && sim->hasSimulationTick && step.tick <= sim->simulationTick)
-                return eve::Result<void>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::Conflict,
-                    "particle simulation tick must advance monotonically for every emitter"));
+                return eve::Result<void>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                           "particle simulation tick must advance monotonically for every emitter"));
             if (sim->active || liveParticleCount(cfg->entity) > 0) emitters.push_back(cfg->entity);
         }
     }
@@ -435,7 +434,7 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool le
         const bool gpuEligible = emitter->isGpuFeatureSetSupported();
         if (gpuSim->residentActive && (!cfg->gpuSimulation || !gpuEligible)) deactivateResidentGpu(gfx, *gpuSim);
         const bool wantsResident = cfg->gpuSimulation && gpuEligible;
-        bool handled = false;
+        bool       handled       = false;
         if (wantsResident) {
             auto gpuAdvance = advanceResidentGpu(gfx, emitter, step, legacyControls);
             if (!gpuAdvance) return eve::Result<void>::failure(gpuAdvance.status());
@@ -477,8 +476,8 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool le
 
     if (!legacyControls) {
         for (auto *emitter : allEmitters) {
-            auto sim = emitter->sim();
-            sim->simulationTick = step.tick;
+            auto sim               = emitter->sim();
+            sim->simulationTick    = step.tick;
             sim->hasSimulationTick = true;
         }
     }
@@ -486,7 +485,7 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool le
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep& step) {
+eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep &step) {
     return runParticleSimulation(step, false);
 }
 

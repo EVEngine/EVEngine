@@ -39,7 +39,9 @@ public:
      * alive while registered.
      */
     [[nodiscard("retain the UI texture registration id or explicitly handle failure")]]
-    virtual uint64_t registerTexture(graphics::Texture * /*tex*/) { return 0; }
+    virtual uint64_t registerTexture(graphics::Texture * /*tex*/) {
+        return 0;
+    }
     virtual void unregisterTexture(uint64_t /*id*/) {}
     /** Texture pixel size for a registered id (used by nine-patch UV math). */
     virtual bool textureSize(uint64_t /*id*/, int * /*w*/, int * /*h*/) const { return false; }

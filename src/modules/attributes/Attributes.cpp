@@ -32,11 +32,9 @@ void Attributes::expose(ssq::Table& table) {
                                   const std::string& source, const std::string& operation, float value, int priority) {
         return s && s->addModifier(id, attribute, source, operation, value, priority);
     });
-    set.addFunc("removeModifier", [](AttributeSet *s, const std::string &id) {
-        return s && s->removeModifier(id).ok();
-    });
-    set.addFunc("removeBySource", [](AttributeSet *s, const std::string &source,
-                                      const std::string &attribute) {
+    set.addFunc("removeModifier",
+                [](AttributeSet* s, const std::string& id) { return s && s->removeModifier(id).ok(); });
+    set.addFunc("removeBySource", [](AttributeSet* s, const std::string& source, const std::string& attribute) {
         if (!s) return 0;
         auto result = s->removeBySource(source, attribute);
         return result.ok() ? result.value() : 0;

@@ -61,22 +61,18 @@ public:
      * @param formation Deterministic formation layout.
      * @return Accepted order ids in selection order.
      */
-    [[nodiscard]] Result<FanOutReceipt> fanOut(const Player::Selection& selection,
-                                               const CommandSpec& command,
+    [[nodiscard]] Result<FanOutReceipt> fanOut(const Player::Selection& selection, const CommandSpec& command,
                                                const FormationSpec& formation) const;
 
     /** @brief Read a canonical selected combat attribute through the RTS facade. */
-    [[nodiscard]] Result<double> readUnitAttribute(Unit& unit,
-                                                    std::string_view attribute) const;
+    [[nodiscard]] Result<double> readUnitAttribute(Unit& unit, std::string_view attribute) const;
     /** @brief Set a canonical selected combat attribute through the RTS facade. */
-    [[nodiscard]] Result<void> setUnitAttribute(Unit& unit, std::string_view attribute,
-                                                double value) const;
+    [[nodiscard]] Result<void> setUnitAttribute(Unit& unit, std::string_view attribute, double value) const;
     /** @brief Apply a typed effect to a module-owned Unit component. */
-    [[nodiscard]] Result<effects::EffectHandle> applyEffect(
-        Unit& unit, const RTSEffectDefinition& definition) const;
+    [[nodiscard]] Result<effects::EffectHandle> applyEffect(Unit& unit, const RTSEffectDefinition& definition) const;
     /** @brief Apply a typed effect to a module-owned Building component. */
-    [[nodiscard]] Result<effects::EffectHandle> applyEffect(
-        Building& building, const RTSEffectDefinition& definition) const;
+    [[nodiscard]] Result<effects::EffectHandle> applyEffect(Building&                  building,
+                                                            const RTSEffectDefinition& definition) const;
 
     /**
      * @brief Submit a building production action through the canonical transaction facade.
@@ -91,11 +87,11 @@ public:
      * @param transactionId Optional transaction correlation id.
      * @return Committed build receipt or a checked failure with no partial state.
      */
-    [[nodiscard]] Result<RTSBuildReceipt> build(
-        Building& building, action::ActionRuntime& action,
-        resource::IResourceAccount& account, resource::CostSpec cost,
-        std::string product, Duration duration, std::string productionKind = "unit",
-        int priority = 0, std::string transactionId = {});
+    [[nodiscard]] Result<RTSBuildReceipt> build(Building& building, action::ActionRuntime& action,
+                                                resource::IResourceAccount& account, resource::CostSpec cost,
+                                                std::string product, Duration duration,
+                                                std::string productionKind = "unit", int priority = 0,
+                                                std::string transactionId = {});
 
     /**
      * @brief Run phase-one simulation systems in deterministic order.
@@ -103,8 +99,7 @@ public:
      * @param executor Borrowed adapter over the shared ActionRuntime.
      * @return Number of processed records across the systems.
      */
-    [[nodiscard]] Result<std::size_t> step(const SimulationStep& step,
-                                            IRTSActionExecutor& executor);
+    [[nodiscard]] Result<std::size_t> step(const SimulationStep& step, IRTSActionExecutor& executor);
 
     /** @brief Return the number of live Unit roots owned by this module. */
     [[nodiscard]] std::size_t unitCount() const noexcept;

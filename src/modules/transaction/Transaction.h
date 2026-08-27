@@ -34,7 +34,8 @@ public:
      * @param causationId Identifier of the command/event that caused it, if any.
      */
     TransactionContext(std::string transactionId, std::string correlationId = {}, std::string causationId = {})
-        : transactionId_(std::move(transactionId)), correlationId_(std::move(correlationId)),
+        : transactionId_(std::move(transactionId)),
+          correlationId_(std::move(correlationId)),
           causationId_(std::move(causationId)) {}
 
     /**
@@ -48,7 +49,8 @@ public:
                                 std::string causationId = {})
         : identity_(transactionId),
           transactionId_(transactionId.isNil() ? std::string{} : transactionId.format()),
-          correlationId_(std::move(correlationId)), causationId_(std::move(causationId)) {}
+          correlationId_(std::move(correlationId)),
+          causationId_(std::move(causationId)) {}
 
     /** @brief Canonical UUID-backed identity; nil only for the legacy string facade. */
     [[nodiscard]] const eve::TransactionId& identity() const noexcept { return identity_; }
@@ -61,9 +63,9 @@ public:
 
 private:
     eve::TransactionId identity_;
-    std::string transactionId_;
-    std::string correlationId_;
-    std::string causationId_;
+    std::string        transactionId_;
+    std::string        correlationId_;
+    std::string        causationId_;
 };
 
 /** @brief Terminal or in-flight outcome of coordinator-managed participants. */
@@ -86,15 +88,15 @@ enum class CoordinatorState {
 struct TransactionReceipt {
     /** @brief Canonical transaction identity; nil for legacy string contexts. */
     eve::TransactionId identity;
-    std::string      transactionId;
-    std::string      correlationId;
-    std::string      causationId;
-    CoordinatorState state             = CoordinatorState::Committed;
-    std::size_t      participantCount  = 0;
-    std::size_t      preparedCount     = 0;
-    std::size_t      committedCount    = 0;
-    std::size_t      rolledBackCount   = 0;
-    std::size_t      compensatedCount  = 0;
+    std::string        transactionId;
+    std::string        correlationId;
+    std::string        causationId;
+    CoordinatorState   state            = CoordinatorState::Committed;
+    std::size_t        participantCount = 0;
+    std::size_t        preparedCount    = 0;
+    std::size_t        committedCount   = 0;
+    std::size_t        rolledBackCount  = 0;
+    std::size_t        compensatedCount = 0;
 };
 
 /**
@@ -175,7 +177,7 @@ public:
      * @thread Synchronous; caller and participants must obey their documented
      *         thread affinity and must not re-enter this coordinator call.
      */
-    [[nodiscard]] Result<TransactionReceipt> execute(const TransactionContext& context,
+    [[nodiscard]] Result<TransactionReceipt> execute(const TransactionContext&           context,
                                                      std::span<ITransactionParticipant*> participants) const;
 
     /**
@@ -187,7 +189,7 @@ public:
      * @remarks Compensation is intentionally separate from rollback: rollback
      *          is only for a prepared participant that was never committed.
      */
-    [[nodiscard]] Result<TransactionReceipt> compensate(const TransactionContext& context,
+    [[nodiscard]] Result<TransactionReceipt> compensate(const TransactionContext&           context,
                                                         std::span<ITransactionParticipant*> participants) const;
 };
 
@@ -246,9 +248,9 @@ public:
      * @param operationId Explicit non-nil identity, or nil to use this ledger's injected UUID source.
      * @return The canonical operation identity, or a structured failure. No incrementing string ID is generated.
      */
-    [[nodiscard]] eve::Result<eve::OperationId> stage(
-        const std::string& kind, const std::string& target, const std::string& payloadJson = "null",
-        eve::OperationId operationId = {});
+    [[nodiscard]] eve::Result<eve::OperationId> stage(const std::string& kind, const std::string& target,
+                                                      const std::string& payloadJson = "null",
+                                                      eve::OperationId   operationId = {});
     /** @brief Records a successful validation result for an operation. */
     [[nodiscard]] eve::Result<void> markValid(const std::string& operationId);
     /** @brief Records a successful validation result for a canonical operation. */
@@ -312,13 +314,12 @@ public:
 
 private:
     friend class Ledger;
-    Plan(std::string id, std::string correlation, std::string causation,
-         eve::TransactionId identity = {}, eve::UuidEntropySource operationEntropy = {},
-         eve::UuidClock operationClock = {});
+    Plan(std::string id, std::string correlation, std::string causation, eve::TransactionId identity = {},
+         eve::UuidEntropySource operationEntropy = {}, eve::UuidClock operationClock = {});
     void emit(const std::string& type, const std::string& operationId = {}, const std::string& detail = {});
 
     std::string           id_;
-    eve::TransactionId    identity_;
+    eve::TransactionId                  identity_;
     State                 state_ = State::Open;
     std::string           correlation_;
     std::string           causation_;
@@ -343,9 +344,8 @@ public:
      * @param identity Explicit non-nil identity, or nil to use the injected UUID source.
      * @return A borrowed plan owned by this ledger, or a structured failure.
      */
-    [[nodiscard]] eve::Result<Plan*> create(
-        const std::string& correlation = {}, const std::string& causation = {},
-        eve::TransactionId identity = {});
+    [[nodiscard]] eve::Result<Plan*> create(const std::string& correlation = {}, const std::string& causation = {},
+                                            eve::TransactionId identity = {});
     /** @brief Returns a retained plan by legacy projection, or nullptr. */
     [[nodiscard]] Plan* find(const std::string& transactionId);
     /** @brief Returns a retained plan by canonical identity, or nullptr. */
@@ -369,22 +369,20 @@ public:
      * @param hashProvider Explicit content-digest provider.
      * @return A sealed transaction-ledger snapshot.
      */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /**
      * @brief Restores a verified or migrated transaction-ledger snapshot atomically.
      * @param snapshot Source envelope with schema `transaction:ledger`.
      * @param hashProvider Explicit content-digest provider.
      * @return Success, or a failure leaving all ledger state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreSnapshot(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
+                                                    const eve::SnapshotHashProvider& hashProvider);
     /** @brief Serializes the common transaction snapshot envelope. */
-    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Parses and transactionally restores a common transaction snapshot envelope. */
-    [[nodiscard]] eve::Result<void> restoreSnapshotJson(
-        std::string_view json, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
+                                                        const eve::SnapshotHashProvider& hashProvider);
 
 private:
     uint64_t                           nextTransaction_ = 1;
@@ -411,7 +409,8 @@ public:
      * @brief Allocates a module-owned transaction ledger.
      * @return Borrowed nullable pointer to the module-owned ledger; null means allocation failed.
      * @ownership The Transaction module owns the ledger and releases it during module teardown.
-     * @lifetime Valid until explicit ledger release or Transaction module unload; use the ledger handle in asynchronous code.
+     * @lifetime Valid until explicit ledger release or Transaction module unload; use the ledger handle in asynchronous
+     * code.
      * @thread Call on the module's owning thread.
      * @reentrancy The factory does not invoke external callbacks; do not use the result across module teardown.
      */

@@ -695,8 +695,8 @@ TEST_CASE("cmdline.getAndroidEmptyReleaseResponseReturnsStructuredError") {
     // A successful HTTP/file transfer may still contain zero bytes (for
     // example, a truncated mirror response).  The installer must reject that
     // response before ZIP parsing and expose a diagnostic through the C++ API.
-    const std::string tag = eve::cmd::sdk::sdkVersionTag();
-    const auto        rel = tempDir("eve_ut_cmdline_release_empty");
+    const std::string tag     = eve::cmd::sdk::sdkVersionTag();
+    const auto        rel     = tempDir("eve_ut_cmdline_release_empty");
     const auto        zipPath = rel / ("eve-sdk-android-" + tag + ".zip");
     writeFile(zipPath, std::string{});
     writeFile(rel / "SHA256SUMS", "");
@@ -708,7 +708,7 @@ TEST_CASE("cmdline.getAndroidEmptyReleaseResponseReturnsStructuredError") {
 
     {
         CaptureStreams cap;
-        auto result = eve::cmd::sdk::installEveSdk(eve::cmd::sdk::Platform::Android);
+        auto           result = eve::cmd::sdk::installEveSdk(eve::cmd::sdk::Platform::Android);
         REQUIRE(!result.ok());
         CHECK(result.code() == eve::StatusCode::Failed);
         const auto* diagnostic = result.error();

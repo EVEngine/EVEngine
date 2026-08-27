@@ -83,13 +83,12 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
     solid->sprite()->b = 0.35f;
     solid->sprite()->visible = true;
 
-    const UIHostHandle smokeHost = ui->mountAs("smoke",
-                                               window("Overlay",
-                                                      {
-                                                          text("UI+RenderSystem", "label"),
-                                                          button("Ping", "ping"),
-                                                      },
-                                                      "root"));
+    const UIHostHandle smokeHost = ui->mountAs("smoke", window("Overlay",
+                                                               {
+                                                                   text("UI+RenderSystem", "label"),
+                                                                   button("Ping", "ping"),
+                                                               },
+                                                               "root"));
     REQUIRE(UIHost::resolve(smokeHost).has_value());
 
     int framesOk = 0;
@@ -174,18 +173,18 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
     bool muted = false;
     int clicks = 0;
 
-    const UIHostHandle galleryHost = ui->mountAs(
-        "gallery", window("EVEngine Preview",
-                          {
-                              text("UI overlay + world sprites", "title"),
-                              separator("sep0"),
-                              checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
-                              slider("Volume", volume, 0.f, 1.f, "vol", [&](float v) { volume = v; }),
-                              progress(volume, "prog", "level"),
-                              button("Ping", "ping", [&]() { ++clicks; }),
-                              text("clicks: 0", "clicks"),
-                          },
-                          "root"));
+    const UIHostHandle galleryHost =
+        ui->mountAs("gallery", window("EVEngine Preview",
+                                      {
+                                          text("UI overlay + world sprites", "title"),
+                                          separator("sep0"),
+                                          checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
+                                          slider("Volume", volume, 0.f, 1.f, "vol", [&](float v) { volume = v; }),
+                                          progress(volume, "prog", "level"),
+                                          button("Ping", "ping", [&]() { ++clicks; }),
+                                          text("clicks: 0", "clicks"),
+                                      },
+                                      "root"));
     REQUIRE(UIHost::resolve(galleryHost).has_value());
 
     for (int frame = 0; frame < 90; ++frame) {
@@ -194,20 +193,19 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
         volume = 0.35f + 0.3f * (0.5f + 0.5f * std::sin(float(frame) * 0.06f));
 
         const UIHostHandle remounted = ui->remountAs(
-            "gallery", window("EVEngine Preview",
-                              {
-                                  text("UI overlay + world sprites", "title"),
-                                  separator("sep0"),
-                                  checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
-                                  slider("Volume", volume, 0.f, 1.f, "vol",
-                                         [&](float v) { volume = v; }),
-                                  progress(volume, "prog", muted ? "muted" : "level"),
-                                  button("Ping", "ping", [&]() { ++clicks; }),
-                                  text("clicks: " + std::to_string(clicks) +
-                                           "  vol: " + std::to_string(int(volume * 100.f)),
-                                       "clicks"),
-                              },
-                              "root"));
+            "gallery",
+            window("EVEngine Preview",
+                   {
+                       text("UI overlay + world sprites", "title"),
+                       separator("sep0"),
+                       checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
+                       slider("Volume", volume, 0.f, 1.f, "vol", [&](float v) { volume = v; }),
+                       progress(volume, "prog", muted ? "muted" : "level"),
+                       button("Ping", "ping", [&]() { ++clicks; }),
+                       text("clicks: " + std::to_string(clicks) + "  vol: " + std::to_string(int(volume * 100.f)),
+                            "clicks"),
+                   },
+                   "root"));
         REQUIRE(UIHost::resolve(remounted).has_value());
 
         ui->beginFrameAndRender();

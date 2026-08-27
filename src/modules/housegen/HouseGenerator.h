@@ -17,8 +17,7 @@ public:
     /** @brief 当前组件库。 */
     [[nodiscard]] const HouseComponentLibrary &library() const noexcept { return library_; }
     /** @brief 生成布局；失败时不修改输出布局并返回结构化诊断。 */
-    [[nodiscard]] eve::Result<void> generate(const HouseRequest &request,
-                                               HouseLayout &out) const;
+    [[nodiscard]] eve::Result<void> generate(const HouseRequest &request, HouseLayout &out) const;
 
 private:
     const HouseComponentLibrary &library_;

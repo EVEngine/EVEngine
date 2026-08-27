@@ -396,7 +396,8 @@ public:
      * @brief Returns the offscreen render target of a selected-host Viewport widget.
      * @return Borrowed nullable Canvas owned by Graphics; null precedes layout or when the id is absent.
      * @ownership Graphics owns the canvas; UI only registers and presents it.
-     * @lifetime Valid until viewport recreation, graphics reset, or the next mutation that replaces the target; copy no pointer across frames.
+     * @lifetime Valid until viewport recreation, graphics reset, or the next mutation that replaces the target; copy no
+     * pointer across frames.
      * @thread Call on the render/UI thread.
      * @reentrancy The query invokes no callbacks; do not destroy or replace the target re-entrantly.
      */
@@ -532,7 +533,7 @@ private:
 
     std::unique_ptr<UIBackend> backend_;
     std::unordered_map<std::string, NinePatchResource> ninePatches_;
-    UIHostHandle selected_{};
+    UIHostHandle                                       selected_{};
 
     std::vector<WidgetDesc> openStack_;
     WidgetDesc builtRoot_;

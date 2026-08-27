@@ -51,24 +51,18 @@ public:
 
     /** @brief Advances the production GPU cloth with the shared ticked contract. */
     [[nodiscard("check the GPU cloth step outcome")]]
-    eve::Result<void> step(const eve::SimulationStep& step,
-                           const SimulationSettings& settings) override;
+    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings) override;
     /** @brief Returns completed tick/time observables. */
-    [[nodiscard]] SimulationObservation observation() const noexcept override {
-        return observation_;
-    }
+    [[nodiscard]] SimulationObservation observation() const noexcept override { return observation_; }
     /** @brief Identifies this real accelerator backend. */
-    [[nodiscard]] SimulationBackendKind kind() const noexcept override {
-        return SimulationBackendKind::Gpu;
-    }
+    [[nodiscard]] SimulationBackendKind kind() const noexcept override { return SimulationBackendKind::Gpu; }
     /** @brief GPU/CPU parity is numerically bounded, not bit exact. */
     [[nodiscard]] SimulationDeterminism determinism() const noexcept override {
         return SimulationDeterminism::ToleranceBounded;
     }
     /** @brief Restores tick/progress metadata after an owner-level restore. */
     [[nodiscard("check GPU cloth observation restore")]]
-    eve::Result<void> restoreObservation(
-        const SimulationObservation& observation) override;
+    eve::Result<void> restoreObservation(const SimulationObservation &observation) override;
 
     void  setGravity(float gx, float gy);
     float getGravityX() const { return gravityX_; }

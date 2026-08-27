@@ -68,8 +68,7 @@ private:
     EditRegion         dirty_;
 };
 
-DomainOperation setInteger(const IntegerOperationTarget& target, int before, int after,
-                           std::string inverseType = {}) {
+DomainOperation setInteger(const IntegerOperationTarget& target, int before, int after, std::string inverseType = {}) {
     DomainOperation operation;
     operation.type       = "test.integer.set.v1";
     operation.inverseType = std::move(inverseType);
@@ -107,10 +106,10 @@ TEST_CASE("editor.v2.authority_preflight_commit_and_compensate") {
     CHECK_EQ(committed.value->beforeRevision, static_cast<Revision>(0));
     CHECK_EQ(committed.value->afterRevision, static_cast<Revision>(1));
 
-    target.failCandidateCommit = true;
+    target.failCandidateCommit                  = true;
     const auto valueBeforeFailedCompensation    = target.value();
     const auto revisionBeforeFailedCompensation = target.revision();
-    auto failedCompensation = authority.compensate(*committed.value);
+    auto       failedCompensation               = authority.compensate(*committed.value);
     CHECK(!failedCompensation.accepted());
     CHECK_EQ(target.value(), valueBeforeFailedCompensation);
     CHECK_EQ(target.revision(), revisionBeforeFailedCompensation);
@@ -128,7 +127,7 @@ TEST_CASE("editor.v2.authority_preflight_commit_and_compensate") {
 TEST_CASE("editor.v2.authority_compensation_validates_full_inverse_on_candidate") {
     IntegerOperationTarget target("integer", 0);
     LocalWorldAuthority    authority(&target);
-    const DomainOperation operations[] = {
+    const DomainOperation  operations[] = {
         setInteger(target, 0, 9, "test.fail.v1"),
         setInteger(target, 9, 5),
     };

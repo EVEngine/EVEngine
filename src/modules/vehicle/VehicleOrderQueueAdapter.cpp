@@ -18,16 +18,16 @@ eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::strin
 }  // namespace
 
 struct VehicleOrderQueueAdapter::Impl {
-    orders::CommandQueue queue;
+    orders::CommandQueue                          queue;
     std::unordered_map<std::string, VehicleOrder> payloads;
 };
 
 void VehicleOrderQueueAdapter::pruneTerminalPayloads() {
     for (auto it = impl_->payloads.begin(); it != impl_->payloads.end();) {
-        auto recordRef = impl_->queue.find(it->first);
-        const orders::Order* record = recordRef ? &recordRef->get() : nullptr;
-        if (record == nullptr || (record->state != orders::OrderState::Queued &&
-                                  record->state != orders::OrderState::Active)) {
+        auto                 recordRef = impl_->queue.find(it->first);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record == nullptr ||
+            (record->state != orders::OrderState::Queued && record->state != orders::OrderState::Active)) {
             it = impl_->payloads.erase(it);
         } else {
             ++it;
@@ -57,8 +57,7 @@ eve::Result<std::string> VehicleOrderQueueAdapter::append(const VehicleOrder& or
     if (!id) return id;
     const std::string key = std::move(id).takeValue();
     impl_->payloads.emplace(key, order);
-    return eve::Result<std::string>::success(std::move(key),
-                                             eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<std::string> VehicleOrderQueueAdapter::replace(const VehicleOrder& order, int priority,
@@ -68,8 +67,7 @@ eve::Result<std::string> VehicleOrderQueueAdapter::replace(const VehicleOrder& o
     const std::string key = std::move(id).takeValue();
     pruneTerminalPayloads();
     impl_->payloads.emplace(key, order);
-    return eve::Result<std::string>::success(std::move(key),
-                                             eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<std::string> VehicleOrderQueueAdapter::interrupt(const VehicleOrder& order, int priority,
@@ -79,27 +77,24 @@ eve::Result<std::string> VehicleOrderQueueAdapter::interrupt(const VehicleOrder&
     const std::string key = std::move(id).takeValue();
     pruneTerminalPayloads();
     impl_->payloads.emplace(key, order);
-    return eve::Result<std::string>::success(std::move(key),
-                                             eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> VehicleOrderQueueAdapter::completeCurrent() {
-    auto currentRef = impl_->queue.current();
-    orders::Order* current = currentRef ? &currentRef->get() : nullptr;
+    auto           currentRef = impl_->queue.current();
+    orders::Order* current    = currentRef ? &currentRef->get() : nullptr;
     if (current == nullptr)
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "vehicle order queue has no active order", "order");
+        return failure<void>(eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order");
     auto completed = impl_->queue.complete(current->id);
     if (completed) pruneTerminalPayloads();
     return completed;
 }
 
 eve::Result<void> VehicleOrderQueueAdapter::failCurrent(const std::string& reason) {
-    auto currentRef = impl_->queue.current();
-    orders::Order* current = currentRef ? &currentRef->get() : nullptr;
+    auto           currentRef = impl_->queue.current();
+    orders::Order* current    = currentRef ? &currentRef->get() : nullptr;
     if (current == nullptr)
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "vehicle order queue has no active order", "order");
+        return failure<void>(eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order");
     auto failed = impl_->queue.fail(current->id, reason);
     if (failed) pruneTerminalPayloads();
     return failed;
@@ -123,8 +118,8 @@ void VehicleOrderQueueAdapter::clear() {
 }
 
 const VehicleOrder* VehicleOrderQueueAdapter::current() const {
-    auto recordRef = impl_->queue.current();
-    const orders::Order* record = recordRef ? &recordRef->get() : nullptr;
+    auto                 recordRef = impl_->queue.current();
+    const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
     if (record == nullptr) return nullptr;
     const auto it = impl_->payloads.find(record->id);
     return it == impl_->payloads.end() ? nullptr : &it->second;
@@ -133,10 +128,10 @@ const VehicleOrder* VehicleOrderQueueAdapter::current() const {
 int VehicleOrderQueueAdapter::activeOrQueuedCount() const {
     int count = 0;
     for (int i = 0; i < impl_->queue.orderCount(); ++i) {
-        auto recordRef = impl_->queue.orderAt(i);
-        const orders::Order* record = recordRef ? &recordRef->get() : nullptr;
-        if (record != nullptr && (record->state == orders::OrderState::Queued ||
-                                  record->state == orders::OrderState::Active)) {
+        auto                 recordRef = impl_->queue.orderAt(i);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record != nullptr &&
+            (record->state == orders::OrderState::Queued || record->state == orders::OrderState::Active)) {
             ++count;
         }
     }
@@ -147,10 +142,10 @@ void VehicleOrderQueueAdapter::syncCompatibility(VehicleEntity::Orders& legacy) 
     legacy.queue.clear();
     legacy.current = -1;
     for (int i = 0; i < impl_->queue.orderCount(); ++i) {
-        auto recordRef = impl_->queue.orderAt(i);
-        const orders::Order* record = recordRef ? &recordRef->get() : nullptr;
-        if (record == nullptr || (record->state != orders::OrderState::Queued &&
-                                  record->state != orders::OrderState::Active)) {
+        auto                 recordRef = impl_->queue.orderAt(i);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record == nullptr ||
+            (record->state != orders::OrderState::Queued && record->state != orders::OrderState::Active)) {
             continue;
         }
         const auto it = impl_->payloads.find(record->id);

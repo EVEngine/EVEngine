@@ -20,15 +20,14 @@ eve::OperationId operationId(const char* text) {
     return parsed ? *parsed : eve::OperationId::nil();
 }
 
-Plan* createPlan(Ledger& ledger, const char* transaction, const char* correlation = "",
-                 const char* causation = "") {
+Plan* createPlan(Ledger& ledger, const char* transaction, const char* correlation = "", const char* causation = "") {
     auto result = ledger.create(correlation, causation, transactionId(transaction));
     REQUIRE(result.ok());
     return result.value();
 }
 
-eve::OperationId stageOperation(Plan& plan, const char* operation, const char* kind,
-                                const char* target, const char* payload) {
+eve::OperationId stageOperation(Plan& plan, const char* operation, const char* kind, const char* target,
+                                const char* payload) {
     auto result = plan.stage(kind, target, payload, operationId(operation));
     REQUIRE(result.ok());
     return result.value();
@@ -38,10 +37,10 @@ eve::OperationId stageOperation(Plan& plan, const char* operation, const char* k
 
 TEST_CASE("transaction.stage.stableIdsAndCanonicalPayload") {
     Ledger ledger;
-    Plan* plan = createPlan(ledger, "00000000-0000-4000-8000-000000000001", "rebellion-7", "order-3");
+    Plan*  plan = createPlan(ledger, "00000000-0000-4000-8000-000000000001", "rebellion-7", "order-3");
     CHECK_EQ(plan->id(), std::string("00000000-0000-4000-8000-000000000001"));
-    const auto id = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "set_owner", "base-2",
-                                   "{\"z\":2,\"a\":1}");
+    const auto id =
+        stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "set_owner", "base-2", "{\"z\":2,\"a\":1}");
     CHECK_EQ(id.format(), std::string("00000000-0000-4000-8000-000000000002"));
     CHECK_EQ(plan->operationAt(0)->payload, std::string("{\"a\":1,\"z\":2}"));
     CHECK_EQ(plan->correlation(), std::string("rebellion-7"));
@@ -50,9 +49,9 @@ TEST_CASE("transaction.stage.stableIdsAndCanonicalPayload") {
 
 TEST_CASE("transaction.validation.requiresEveryOperation") {
     Ledger ledger;
-    Plan* plan = createPlan(ledger, "00000000-0000-4000-8000-000000000001");
-    auto first = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "debit", "treasury", "10");
-    auto second = stageOperation(*plan, "00000000-0000-4000-8000-000000000003", "credit", "army", "10");
+    Plan*  plan   = createPlan(ledger, "00000000-0000-4000-8000-000000000001");
+    auto   first  = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "debit", "treasury", "10");
+    auto   second = stageOperation(*plan, "00000000-0000-4000-8000-000000000003", "credit", "army", "10");
     CHECK(plan->markValid(first).ok());
     CHECK(!plan->validate().ok());
     CHECK(plan->markInvalid(second, "capacity exceeded").ok());
@@ -65,8 +64,8 @@ TEST_CASE("transaction.validation.requiresEveryOperation") {
 
 TEST_CASE("transaction.commit.freezesPlan") {
     Ledger ledger;
-    Plan* plan = createPlan(ledger, "00000000-0000-4000-8000-000000000001");
-    auto id = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "transfer", "asset-1", "null");
+    Plan*  plan = createPlan(ledger, "00000000-0000-4000-8000-000000000001");
+    auto   id   = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "transfer", "asset-1", "null");
     CHECK(plan->markValid(id).ok());
     CHECK(plan->validate().ok());
     CHECK(plan->commit().ok());
@@ -79,7 +78,7 @@ TEST_CASE("transaction.commit.freezesPlan") {
 
 TEST_CASE("transaction.rollbackAndFail.areTerminal") {
     Ledger ledger;
-    Plan* rolledBack = createPlan(ledger, "00000000-0000-4000-8000-000000000001");
+    Plan*  rolledBack = createPlan(ledger, "00000000-0000-4000-8000-000000000001");
     CHECK(rolledBack->rollback("cancelled by script").ok());
     CHECK_EQ(stateName(rolledBack->state()), std::string("rolled_back"));
     CHECK_EQ(rolledBack->error(), std::string("cancelled by script"));
@@ -91,8 +90,8 @@ TEST_CASE("transaction.rollbackAndFail.areTerminal") {
 
 TEST_CASE("transaction.events.areDeterministic") {
     Ledger ledger;
-    Plan* plan = createPlan(ledger, "00000000-0000-4000-8000-000000000001");
-    auto id = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "change", "subject", "{}");
+    Plan*  plan = createPlan(ledger, "00000000-0000-4000-8000-000000000001");
+    auto   id   = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "change", "subject", "{}");
     REQUIRE(plan->markValid(id).ok());
     REQUIRE(plan->validate().ok());
     REQUIRE(plan->commit().ok());
@@ -105,9 +104,9 @@ TEST_CASE("transaction.events.areDeterministic") {
 
 TEST_CASE("transaction.snapshot.roundTripsTransactionally") {
     Ledger source;
-    Plan* plan = createPlan(source, "00000000-0000-4000-8000-000000000001", "campaign", "command");
-    auto id = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "assign", "base",
-                             "{\"role\":\"governor\"}");
+    Plan*  plan = createPlan(source, "00000000-0000-4000-8000-000000000001", "campaign", "command");
+    auto   id =
+        stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "assign", "base", "{\"role\":\"governor\"}");
     REQUIRE(plan->markValid(id).ok());
     REQUIRE(plan->validate().ok());
     const std::string snapshot = source.snapshotJson();

@@ -1,9 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "common/Identity.h"
 #include "common/EventSequence.h"
 #include "common/Generation.h"
+#include "common/Identity.h"
 #include "common/Revision.h"
 #include "common/SchemaVersion.h"
 #include "common/Time.h"
@@ -59,9 +59,7 @@ TEST_CASE("common.identity.uuidV7UsesInjectedEntropyAndClock") {
     CHECK_EQ(bytes[6] & 0xf0u, 0x70u);
     CHECK_EQ(bytes[8] & 0xc0u, 0x80u);
 
-    eve::UuidV7Generator unavailable([](std::span<std::uint8_t>) { return false; }, [timestamp] {
-        return timestamp;
-    });
+    eve::UuidV7Generator unavailable([](std::span<std::uint8_t>) { return false; }, [timestamp] { return timestamp; });
     CHECK(!unavailable.generate().has_value());
 
     const auto negative = generator.generate(std::chrono::system_clock::time_point{} - 1ms);
@@ -83,7 +81,7 @@ TEST_CASE("common.identity.logicalAndContentIdsHaveSeparateBoundaries") {
     CHECK(!eve::LogicalId::parse("rpg/skill:fire").has_value());
 
     const std::array<std::uint8_t, 16> digest{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-    const auto content = eve::ContentId::fromBytes(digest);
+    const auto                         content = eve::ContentId::fromBytes(digest);
     REQUIRE(content.has_value());
     CHECK(!content->isNil());
     CHECK_EQ(content->format(), "00010203-0405-0607-0809-0a0b0c0d0e0f");
@@ -97,7 +95,7 @@ TEST_CASE("common.identity.logicalAndContentIdsHaveSeparateBoundaries") {
 
 TEST_CASE("common.versionTypesDoNotWrapOrMixDomains") {
     const eve::SchemaVersion schemaVersion(7);
-    const eve::Generation generation(7);
+    const eve::Generation    generation(7);
     CHECK_EQ(schemaVersion.value(), 7u);
     CHECK_EQ(generation.value(), 7u);
     CHECK(schemaVersion != eve::SchemaVersion(8));
@@ -111,7 +109,7 @@ TEST_CASE("common.versionTypesDoNotWrapOrMixDomains") {
     CHECK(!maximum.incremented().has_value());
 
     const eve::EventSequence sequence(3);
-    const eve::FrameIndex frame(4);
+    const eve::FrameIndex    frame(4);
     CHECK_EQ(sequence.value(), 3u);
     CHECK_EQ(frame.value(), 4u);
 

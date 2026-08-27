@@ -1,9 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "StatePatchTestSupport.h"
 #include "common/Module.h"
 #include "statepatch/StatePatch.h"
-#include "StatePatchTestSupport.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -11,13 +11,11 @@
 
 using namespace eve::statepatch;
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 TEST_CASE("statepatch.batch.commitsCanonicalValuesAtomically") {
     Store store;
-    auto batch = eve::test_support::openStatePatchBatch(store);
+    auto  batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
     CHECK(batch.view->set("entity-b", "health", "{ \"max\": 10, \"now\": 8 }"));
     CHECK(batch.view->set("entity-a", "active", "true"));
@@ -30,7 +28,7 @@ TEST_CASE("statepatch.batch.commitsCanonicalValuesAtomically") {
 
 TEST_CASE("statepatch.batch.conflictProducesNoPartialWrites") {
     Store store;
-    auto seed = eve::test_support::openStatePatchBatch(store);
+    auto  seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("one", "value", "1");
     REQUIRE(store.commit(seed.view.get()));
@@ -48,7 +46,7 @@ TEST_CASE("statepatch.batch.conflictProducesNoPartialWrites") {
 
 TEST_CASE("statepatch.batch.validatesEverythingBeforeCommit") {
     Store store;
-    auto batch = eve::test_support::openStatePatchBatch(store);
+    auto  batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
     CHECK(!batch.view->set("ok", "bad-json", "{"));
     batch.view->set("", "missing-subject", "1");
@@ -60,7 +58,7 @@ TEST_CASE("statepatch.batch.validatesEverythingBeforeCommit") {
 
 TEST_CASE("statepatch.batch.sequentialCasAndNoopRevision") {
     Store store;
-    auto batch = eve::test_support::openStatePatchBatch(store);
+    auto  batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
     batch.view->set("subject", "key", "1");
     batch.view->setExpected("subject", "key", "2", "1");
@@ -78,7 +76,7 @@ TEST_CASE("statepatch.batch.sequentialCasAndNoopRevision") {
 
 TEST_CASE("statepatch.query.dirtyAndEventsAreDeterministic") {
     Store store;
-    auto batch = eve::test_support::openStatePatchBatch(store);
+    auto  batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
     batch.view->set("z", "b", "2");
     batch.view->set("a", "c", "3");
@@ -100,7 +98,7 @@ TEST_CASE("statepatch.query.dirtyAndEventsAreDeterministic") {
 
 TEST_CASE("statepatch.remove.recordsOldValue") {
     Store store;
-    auto seed = eve::test_support::openStatePatchBatch(store);
+    auto  seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("s", "k", "{\"x\":1}");
     REQUIRE(store.commit(seed.view.get()));
@@ -118,7 +116,7 @@ TEST_CASE("statepatch.remove.recordsOldValue") {
 
 TEST_CASE("statepatch.snapshot.roundTripsAndRestoreIsTransactional") {
     Store store;
-    auto batch = eve::test_support::openStatePatchBatch(store);
+    auto  batch = eve::test_support::openStatePatchBatch(store);
     REQUIRE(batch.view.isBound());
     batch.view->set("b", "x", "[3,2,1]");
     batch.view->set("a", "x", "{\"z\":0,\"a\":true}");

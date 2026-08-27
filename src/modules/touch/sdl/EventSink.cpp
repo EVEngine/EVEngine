@@ -64,8 +64,8 @@ public:
 struct Register {
     Register() {
         static TouchEventSink sink;
-        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(
-            &sink, eve::platform_event::IPlatformEventSink::kInput);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(&sink,
+                                                                       eve::platform_event::IPlatformEventSink::kInput);
     }
 } g_register;
 

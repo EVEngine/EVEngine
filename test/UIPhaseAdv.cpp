@@ -29,9 +29,7 @@ ui::UINode *findNode(ui::UIHost *host, const std::string &id) {
     return node ? &node->get() : nullptr;
 }
 
-ui::UINode *findNode(ui::UIHostHandle handle, const std::string &id) {
-    return findNode(resolveHost(handle), id);
-}
+ui::UINode *findNode(ui::UIHostHandle handle, const std::string &id) { return findNode(resolveHost(handle), id); }
 
 }  // namespace
 
@@ -62,11 +60,11 @@ TEST_CASE("UI.adv.sliderProgressInputCollapseChild") {
     CHECK(findNode(h, "r1") != nullptr);
 
     ui::UIEvent ev;
-    ev.host = h->handle();
+    ev.host                   = h->handle();
     ev.hostName = "adv";
     ev.nodeId = "vol";
     ev.kind = "value";
-    ev.handlerIndex = findNode(h, "vol")->handlerValue;
+    ev.handlerIndex           = findNode(h, "vol")->handlerValue;
     ev.floatValue = 0.75f;
     findNode(h, "vol")->value = 0.75f;
     ui::UISystem::pendingEvents().push_back(ev);
@@ -378,7 +376,7 @@ TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
     ui::measureTree(*host->tree());
     ui::UINode *outer = findNode(host, "outer");
     ui::UINode *inner = findNode(host, "inner");
-    ui::UINode *root = findNode(host, "root");
+    ui::UINode *root  = findNode(host, "root");
     REQUIRE(outer != nullptr);
     REQUIRE(inner != nullptr);
     // Nested containers previously measured 0; now they carry real sizes.
@@ -400,7 +398,7 @@ TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
 
 TEST_CASE("UI.p0.imageAndImageButton") {
     int clicks = 0;
-    ui::UIHost *h = resolveHost(ui::UIHost::createHost("img"));
+    ui::UIHost *h      = resolveHost(ui::UIHost::createHost("img"));
     REQUIRE(h != nullptr);
     h->setTree(ui::window(
         "W",
@@ -414,8 +412,8 @@ TEST_CASE("UI.p0.imageAndImageButton") {
         "root"));
 
     ui::UINode *avatar = findNode(h, "avatar");
-    ui::UINode *btn = findNode(h, "btn");
-    ui::UINode *frame = findNode(h, "frame");
+    ui::UINode *btn    = findNode(h, "btn");
+    ui::UINode *frame  = findNode(h, "frame");
     REQUIRE(avatar != nullptr);
     REQUIRE(btn != nullptr);
     REQUIRE(frame != nullptr);
@@ -430,7 +428,7 @@ TEST_CASE("UI.p0.imageAndImageButton") {
 
     // Click routing for ImageButton via the pending-event pipeline.
     ui::UIEvent ev;
-    ev.host = h->handle();
+    ev.host         = h->handle();
     ev.hostName = "img";
     ev.nodeId = "btn";
     ev.kind = "click";
@@ -492,7 +490,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     REQUIRE(sl != nullptr);
 
     ui::UIEvent click;
-    click.host = host->handle();
+    click.host         = host->handle();
     click.hostName = "cb";
     click.nodeId = "go";
     click.kind = "click";
@@ -500,7 +498,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     ui::UISystem::pendingEvents().push_back(click);
 
     ui::UIEvent change;
-    change.host = host->handle();
+    change.host         = host->handle();
     change.hostName = "cb";
     change.nodeId = "s";
     change.kind = "value";
@@ -516,7 +514,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
 
 TEST_CASE("UI.p1.comboAndTextWrap") {
     int picked = -1;
-    ui::UIHost *h = resolveHost(ui::UIHost::createHost("p1"));
+    ui::UIHost *h      = resolveHost(ui::UIHost::createHost("p1"));
     REQUIRE(h != nullptr);
     h->setTree(ui::window(
         "W",
@@ -528,7 +526,7 @@ TEST_CASE("UI.p1.comboAndTextWrap") {
         "root"));
 
     ui::UINode *combo = findNode(h, "fruit");
-    ui::UINode *tip = findNode(h, "tip");
+    ui::UINode *tip   = findNode(h, "tip");
     REQUIRE(combo != nullptr);
     REQUIRE(tip != nullptr);
     CHECK_EQ(int(combo->type), int(ui::NodeType::Combo));
@@ -538,7 +536,7 @@ TEST_CASE("UI.p1.comboAndTextWrap") {
 
     // Value change routing: pending event → C++ callback + change queue.
     ui::UIEvent ev;
-    ev.host = h->handle();
+    ev.host         = h->handle();
     ev.hostName = "p1";
     ev.nodeId = "fruit";
     ev.kind = "value";
@@ -594,19 +592,17 @@ TEST_CASE("UI.p1.statsAfterHeadlessRender") {
 TEST_CASE("UI.p1.jsonRoundTripAndGamepadNav") {
     ui::UI *uimod = ui::UI::create();
     REQUIRE(ui::UIHost::resolve(
-                uimod->mountAs("jsonhost", ui::window(
-                                               "W",
-                                               {
-                                                   ui::text("HP 100", "hp").withWrap(120.f),
-                                                   ui::row({ui::button("A", "a"), ui::spacer("sp"),
-                                                            ui::button("B", "b")}, "r")
-                                                       .withGap(8.f),
-                                                   ui::image("avatar", 64.f, 64.f)
-                                                       .withTint(0.2f, 0.3f, 0.4f, 0.5f)
-                                                       .withCornerRadius(4.f),
-                                                   ui::combo("C", {"x", "y"}, 1, "combo"),
-                                               },
-                                               "root")))
+                uimod->mountAs(
+                    "jsonhost",
+                    ui::window(
+                        "W",
+                        {
+                            ui::text("HP 100", "hp").withWrap(120.f),
+                            ui::row({ui::button("A", "a"), ui::spacer("sp"), ui::button("B", "b")}, "r").withGap(8.f),
+                            ui::image("avatar", 64.f, 64.f).withTint(0.2f, 0.3f, 0.4f, 0.5f).withCornerRadius(4.f),
+                            ui::combo("C", {"x", "y"}, 1, "combo"),
+                        },
+                        "root")))
                 .has_value());
     const std::string json = uimod->saveTreeJson();
     CHECK(json.find("\"hp\"") != std::string::npos);
@@ -632,9 +628,7 @@ TEST_CASE("UI.p1.jsonRoundTripAndGamepadNav") {
 
 TEST_CASE("UI.p1.hostPosTween") {
     ui::UI *uimod = ui::UI::create();
-    REQUIRE(ui::UIHost::resolve(
-                uimod->mountAs("tween", ui::window("T", {ui::text("x", "x")}, "root")))
-                .has_value());
+    REQUIRE(ui::UIHost::resolve(uimod->mountAs("tween", ui::window("T", {ui::text("x", "x")}, "root"))).has_value());
     ui::UIHost *current = resolveHost(uimod->current());
     REQUIRE(current != nullptr);
     // Zero duration → jump immediately.

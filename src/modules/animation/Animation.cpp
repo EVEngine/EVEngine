@@ -429,18 +429,18 @@ void Animation::unregisterSpineAnim(SpineAnim *a) {
     if (a->owner() == this) a->setOwner(nullptr);
 }
 
-eve::Result<void> Animation::advance(const eve::SimulationStep& step) {
+eve::Result<void> Animation::advance(const eve::SimulationStep &step) {
     if (step.delta.nanoseconds() < 0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "animation simulation delta must be non-negative"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation simulation delta must be non-negative"));
     if (hasLastTick_ && step.tick <= lastTick_)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "animation simulation tick must advance monotonically"));
 
     const float dt = static_cast<float>(step.delta.seconds());
     if (!std::isfinite(dt))
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "animation simulation delta is outside float range"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation simulation delta is outside float range"));
 
     // Preflight every live child before mutating any of them. A child may also
     // be driven directly by a caller, so the host must preserve all-or-none
@@ -485,7 +485,7 @@ eve::Result<void> Animation::advance(const eve::SimulationStep& step) {
         }
     }
 
-    lastTick_ = step.tick;
+    lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -497,17 +497,14 @@ void Animation::update(float dt) {
         duration.ignore("legacy animation update received an invalid duration");
         return;
     }
-    auto nextTick = hasLastTick_ ? lastTick_.incremented()
-                                 : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
+    auto nextTick = hasLastTick_ ? lastTick_.incremented() : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
     if (!nextTick) {
-        eve::Result<void>::failure(eve::Diagnostic::error(
-                                       eve::DiagnosticCode::InvariantViolation,
-                                       "animation simulation tick overflow"))
+        eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "animation simulation tick overflow"))
             .ignore("legacy animation update tick overflow");
         return;
     }
-    advance({*nextTick, std::move(duration).takeValue()})
-        .ignore("legacy animation update facade");
+    advance({*nextTick, std::move(duration).takeValue()}).ignore("legacy animation update facade");
 }
 
 int Animation::getActiveCount() const {

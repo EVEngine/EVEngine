@@ -42,8 +42,7 @@ bool Plugins::load(const std::string& path) {
     if (loaded_.count(path))
         return true;
     auto registration = ModuleManager::beginPluginRegistration();
-    if (!registration.ok())
-        throw Exception("plugins.load: nested plugin loading is not supported");
+    if (!registration.ok()) throw Exception("plugins.load: nested plugin loading is not supported");
 
 #if defined(_WIN32)
     HMODULE mod = LoadLibraryA(path.c_str());

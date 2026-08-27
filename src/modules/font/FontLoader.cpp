@@ -67,9 +67,7 @@ public:
      * @return `false`; ResourceManager is the sole CPU cache owner and performs
      *         the reload before any consumer is notified.
      */
-    eve::Result<bool> reload(const std::string &) override {
-        return eve::Result<bool>::success(false);
-    }
+    eve::Result<bool> reload(const std::string &) override { return eve::Result<bool>::success(false); }
 
     eve::Resource *load(const std::string &key) override {
         const std::string path = eve::ResourceManager::pathOfKey(key);

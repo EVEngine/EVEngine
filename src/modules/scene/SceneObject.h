@@ -50,13 +50,13 @@ public:
      * @ownership The scene ECS table owns the object; callers must not delete it.
      * @lifetime Valid until deferred ECS destruction or table teardown; use the entity handle across frames.
      * @thread Call on the scene ECS thread.
-     * @reentrancy Creation does not invoke user callbacks; do not re-enter structural ECS mutation while using the result.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter structural ECS mutation while using the
+     * result.
      * @remarks The scene/ECS table owns the object; the pointer becomes stale
      *          after destruction or a deferred table commit.
      */
-    [[nodiscard]] static eve::Result<SceneObject*> createObject(
-        const std::string &hostName, const std::string &nodeId,
-        eve::SceneObjectId persistentId = {});
+    [[nodiscard]] static eve::Result<SceneObject *> createObject(const std::string &hostName, const std::string &nodeId,
+                                                                 eve::SceneObjectId persistentId = {});
 };
 
 }  // namespace eve::scene

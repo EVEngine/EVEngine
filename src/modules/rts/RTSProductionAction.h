@@ -30,22 +30,22 @@ class Building;
  * call and must remain valid until the returned Result is consumed.
  */
 struct RTSBuildRequest {
-    production::WorkQueue* production = nullptr;
-    orders::CommandQueue* orders = nullptr;
-    action::ActionRuntime* action = nullptr;
-    resource::IResourceAccount* account = nullptr;
+    production::WorkQueue*      production = nullptr;
+    orders::CommandQueue*       orders     = nullptr;
+    action::ActionRuntime*      action     = nullptr;
+    resource::IResourceAccount* account    = nullptr;
 
     resource::CostSpec cost;
-    std::string owner;
-    std::string productionKind = "build";
-    std::string product;
-    eve::Value context = eve::Value(eve::Value::Object{});
-    Duration duration = Duration::zero();
-    int priority = 0;
+    std::string        owner;
+    std::string        productionKind = "build";
+    std::string        product;
+    eve::Value         context  = eve::Value(eve::Value::Object{});
+    Duration           duration = Duration::zero();
+    int                priority = 0;
 
-    std::string orderKind = "build";
-    int orderPriority = 0;
-    double orderTimeoutSeconds = 0.0;
+    std::string orderKind           = "build";
+    int         orderPriority       = 0;
+    double      orderTimeoutSeconds = 0.0;
 
     /** @brief Optional custom action definition; an invalid id gets a build id. */
     action::ActionDefinition actionDefinition;
@@ -64,9 +64,9 @@ struct RTSBuildRequest {
 /** @brief Result of an accepted atomic RTS build/production command. */
 struct RTSBuildReceipt {
     transaction::TransactionReceipt transaction;
-    std::string orderId;
-    std::string productionTaskId;
-    action::ActionExecutionId actionExecution;
+    std::string                     orderId;
+    std::string                     productionTaskId;
+    action::ActionExecutionId       actionExecution;
 };
 
 /**
@@ -94,11 +94,11 @@ public:
      * @param transactionId Optional transaction correlation id.
      * @return Complete build receipt, or a failure without partial queue/payment state.
      */
-    [[nodiscard]] static eve::Result<RTSBuildReceipt> build(
-        Building& building, action::ActionRuntime& action,
-        resource::IResourceAccount& account, resource::CostSpec cost,
-        std::string product, Duration duration, std::string productionKind = "unit",
-        int priority = 0, std::string transactionId = {});
+    [[nodiscard]] static eve::Result<RTSBuildReceipt> build(Building& building, action::ActionRuntime& action,
+                                                            resource::IResourceAccount& account,
+                                                            resource::CostSpec cost, std::string product,
+                                                            Duration duration, std::string productionKind = "unit",
+                                                            int priority = 0, std::string transactionId = {});
 
     /**
      * @brief Atomically enqueue an RTS build/production action and charge cost.

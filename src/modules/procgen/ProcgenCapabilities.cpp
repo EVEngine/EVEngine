@@ -58,8 +58,8 @@ public:
             if (err) *err = "parameter allocation failed";
             return {};
         }
-        const auto parRef = std::move(parResult).takeValue();
-        auto parView = Procgen::resolve(parRef);
+        const auto parRef  = std::move(parResult).takeValue();
+        auto       parView = Procgen::resolve(parRef);
         if (!parView.isBound()) {
             Procgen::release(parRef).ignore("release failed after stale parameter lookup");
             if (err) *err = "parameter handle became stale";
@@ -103,8 +103,8 @@ public:
             if (err) *err = "parameter allocation failed";
             return {};
         }
-        const auto parRef = std::move(parResult).takeValue();
-        auto parView = Procgen::resolve(parRef);
+        const auto parRef  = std::move(parResult).takeValue();
+        auto       parView = Procgen::resolve(parRef);
         if (!parView.isBound()) {
             Procgen::release(parRef).ignore("release failed after stale parameter lookup");
             if (err) *err = "parameter handle became stale";
@@ -122,7 +122,7 @@ public:
             return {};
         }
         const auto meshRef = std::move(meshResult).takeValue();
-        auto mesh = p->resolveMeshBuild(meshRef);
+        auto       mesh    = p->resolveMeshBuild(meshRef);
         if (!mesh.isBound()) {
             p->releaseMeshBuild(meshRef).ignore("release failed after stale mesh lookup");
             Procgen::release(parRef).ignore("release failed after stale mesh lookup");

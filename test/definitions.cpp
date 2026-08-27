@@ -36,25 +36,22 @@ TEST_CASE("definitions.handlesInvalidateButReferencesReload") {
 
     REQUIRE(registry.replace("unit", "scout", 2, "{\"speed\":7}").ok());
     CHECK(!registry.resolveHandle(oldHandle).ok());
-    auto current = registry.resolve(std::string(reference.id().namespaceName()),
-                                    std::string(reference.id().name()));
+    auto current = registry.resolve(std::string(reference.id().namespaceName()), std::string(reference.id().name()));
     REQUIRE(current.ok());
     CHECK_EQ(current.value().get().version.value(), uint64_t{2});
     CHECK_EQ(current.value().get().generation.value(), uint64_t{2});
 
     REQUIRE(registry.remove("unit", "scout").ok());
-    CHECK(!registry.resolve(std::string(reference.id().namespaceName()),
-                            std::string(reference.id().name())).ok());
+    CHECK(!registry.resolve(std::string(reference.id().namespaceName()), std::string(reference.id().name())).ok());
     REQUIRE(registry.insert("unit", "scout", 3, "{}").ok());
-    auto revived = registry.resolve(std::string(reference.id().namespaceName()),
-                                    std::string(reference.id().name()));
+    auto revived = registry.resolve(std::string(reference.id().namespaceName()), std::string(reference.id().name()));
     REQUIRE(revived.ok());
     CHECK_EQ(revived.value().get().generation.value(), uint64_t{4});
 }
 
 TEST_CASE("definitions.canonicalRegistryApiKeepsTombstones") {
     DefinitionRegistry registry;
-    auto inserted = registry.insert("unit", "scout", 1, "{}");
+    auto               inserted = registry.insert("unit", "scout", 1, "{}");
     REQUIRE(inserted.ok());
     const auto first = std::move(inserted).takeValue();
     CHECK_EQ(first.generation.value(), uint64_t{1});
@@ -112,17 +109,16 @@ TEST_CASE("definitions.eventsDescribeReloadAndRemoval") {
 }
 
 TEST_CASE("definitions.subscriptionSupportsReentrantReloadObservers") {
-    DefinitionRegistry registry;
+    DefinitionRegistry       registry;
     std::vector<std::string> notifications;
-    eve::Subscription first;
-    eve::Subscription replacement;
+    eve::Subscription        first;
+    eve::Subscription        replacement;
 
     first = registry.subscribe([&](const DefinitionEvent &event) {
         notifications.push_back(event.name + ":" + event.id);
         first.dispose();
-        replacement = registry.subscribe([&](const DefinitionEvent &next) {
-            notifications.push_back("replacement:" + next.name + ":" + next.id);
-        });
+        replacement = registry.subscribe(
+            [&](const DefinitionEvent &next) { notifications.push_back("replacement:" + next.name + ":" + next.id); });
     });
 
     REQUIRE(registry.insert("unit", "scout", 1, "{}").ok());
@@ -130,15 +126,14 @@ TEST_CASE("definitions.subscriptionSupportsReentrantReloadObservers") {
     CHECK_EQ(registry.eventCount(), 1);
 
     REQUIRE(registry.replace("unit", "scout", 2, "{}").ok());
-    CHECK_EQ(notifications, std::vector<std::string>({"definition_reloaded:scout",
-                                                       "replacement:definition_reloaded:scout"}));
+    CHECK_EQ(notifications,
+             std::vector<std::string>({"definition_reloaded:scout", "replacement:definition_reloaded:scout"}));
 }
 
 TEST_CASE("definitions.mutationResultPreservesObserverWarning") {
     DefinitionRegistry registry;
-    auto subscription = registry.subscribe([](const DefinitionEvent&) {
-        throw std::runtime_error("injected definition observer failure");
-    });
+    auto               subscription = registry.subscribe(
+        [](const DefinitionEvent &) { throw std::runtime_error("injected definition observer failure"); });
 
     auto result = registry.insert("unit", "scout", 1, "{}");
     REQUIRE(result.ok());
@@ -168,6 +163,11 @@ TEST_CASE("definitions.snapshotRoundTripsAndRestoreIsTransactional") {
 
     const std::string before = restored.snapshotJson();
     CHECK(!restored.restoreJson("{\"version\":1}").ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+
+    const std::string unknownField   = snapshot.substr(0, snapshot.size() - 1) + ",\"unexpected\":true}";
+    auto              schemaRejected = restored.restoreJson(unknownField);
+    CHECK(!schemaRejected.ok());
     CHECK_EQ(restored.snapshotJson(), before);
 }
 

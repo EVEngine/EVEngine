@@ -35,34 +35,37 @@ bool isGridSpace(CoordinateSpace space) noexcept {
 }
 
 bool sameSpace(const TargetLocation& a, const TargetLocation& b) noexcept {
-    return std::visit([](const auto& left, const auto& right) {
-        return left.isValid() && right.isValid() && left.space() == right.space();
-    }, a, b);
+    return std::visit(
+        [](const auto& left, const auto& right) {
+            return left.isValid() && right.isValid() && left.space() == right.space();
+        },
+        a, b);
 }
 
 bool sameSpace(const TargetLocation& location, CoordinateSpace space) noexcept {
-    return std::visit([space](const auto& value) { return value.isValid() && value.space() == space; },
-                      location);
+    return std::visit([space](const auto& value) { return value.isValid() && value.space() == space; }, location);
 }
 
 double distanceSquared(const TargetLocation& a, const TargetLocation& b) noexcept {
-    return std::visit([](const auto& left, const auto& right) -> double {
-        if constexpr (std::is_same_v<std::decay_t<decltype(left)>, WorldPoint> &&
-                      std::is_same_v<std::decay_t<decltype(right)>, WorldPoint>) {
-            const double dx = static_cast<double>(left.x()) - right.x();
-            const double dy = static_cast<double>(left.y()) - right.y();
-            const double dz = static_cast<double>(left.z()) - right.z();
-            return dx * dx + dy * dy + dz * dz;
-        } else if constexpr (std::is_same_v<std::decay_t<decltype(left)>, GridPoint> &&
-                             std::is_same_v<std::decay_t<decltype(right)>, GridPoint>) {
-            const double dx = static_cast<double>(left.x()) - right.x();
-            const double dy = static_cast<double>(left.y()) - right.y();
-            const double dz = static_cast<double>(left.z()) - right.z();
-            return dx * dx + dy * dy + dz * dz;
-        } else {
-            return std::numeric_limits<double>::infinity();
-        }
-    }, a, b);
+    return std::visit(
+        [](const auto& left, const auto& right) -> double {
+            if constexpr (std::is_same_v<std::decay_t<decltype(left)>, WorldPoint> &&
+                          std::is_same_v<std::decay_t<decltype(right)>, WorldPoint>) {
+                const double dx = static_cast<double>(left.x()) - right.x();
+                const double dy = static_cast<double>(left.y()) - right.y();
+                const double dz = static_cast<double>(left.z()) - right.z();
+                return dx * dx + dy * dy + dz * dz;
+            } else if constexpr (std::is_same_v<std::decay_t<decltype(left)>, GridPoint> &&
+                                 std::is_same_v<std::decay_t<decltype(right)>, GridPoint>) {
+                const double dx = static_cast<double>(left.x()) - right.x();
+                const double dy = static_cast<double>(left.y()) - right.y();
+                const double dz = static_cast<double>(left.z()) - right.z();
+                return dx * dx + dy * dy + dz * dz;
+            } else {
+                return std::numeric_limits<double>::infinity();
+            }
+        },
+        a, b);
 }
 
 bool contains(const TargetingSpec& spec, const TargetLocation& location) noexcept {
@@ -99,14 +102,12 @@ bool matches(const TargetingQuery& query, const TargetCandidate& candidate) {
     if (!inZone(candidate, query.spec.zone) || !contains(query.spec, candidate.location)) return false;
 
     const double distance = std::sqrt(distanceSquared(query.originLocation, candidate.location));
-    return distance >= static_cast<double>(query.spec.minRange) &&
-           distance <= static_cast<double>(query.spec.maxRange);
+    return distance >= static_cast<double>(query.spec.minRange) && distance <= static_cast<double>(query.spec.maxRange);
 }
 
 Result<void> validateWorldPair(WorldPoint minimum, WorldPoint maximum, CoordinateSpace expected,
                                const char* operation) {
-    if (!minimum.isValid() || !maximum.isValid() || minimum.space() != expected ||
-        maximum.space() != expected)
+    if (!minimum.isValid() || !maximum.isValid() || minimum.space() != expected || maximum.space() != expected)
         return failure<void>(DiagnosticCode::InvalidArgument,
                              std::string(operation) + " requires two points in the same coordinate space");
     if (minimum.x() > maximum.x() || minimum.y() > maximum.y() ||
@@ -116,10 +117,8 @@ Result<void> validateWorldPair(WorldPoint minimum, WorldPoint maximum, Coordinat
     return Result<void>::success();
 }
 
-Result<void> validateGridPair(GridPoint minimum, GridPoint maximum, CoordinateSpace expected,
-                              const char* operation) {
-    if (!minimum.isValid() || !maximum.isValid() || minimum.space() != expected ||
-        maximum.space() != expected)
+Result<void> validateGridPair(GridPoint minimum, GridPoint maximum, CoordinateSpace expected, const char* operation) {
+    if (!minimum.isValid() || !maximum.isValid() || minimum.space() != expected || maximum.space() != expected)
         return failure<void>(DiagnosticCode::InvalidArgument,
                              std::string(operation) + " requires two points in the same grid space");
     if (minimum.x() > maximum.x() || minimum.y() > maximum.y() ||
@@ -185,14 +184,13 @@ Result<WorldArea> WorldArea::box3D(WorldPoint minimum, WorldPoint maximum) {
 bool WorldArea::contains(WorldPoint point) const noexcept {
     if (!valid_ || !point.isValid() || point.space() != space_) return false;
     if (shape_ == Shape::Circle2D || shape_ == Shape::Sphere3D) {
-        const double dx = static_cast<double>(point.x()) - first_.x();
-        const double dy = static_cast<double>(point.y()) - first_.y();
-        const double dz = static_cast<double>(point.z()) - first_.z();
+        const double dx       = static_cast<double>(point.x()) - first_.x();
+        const double dy       = static_cast<double>(point.y()) - first_.y();
+        const double dz       = static_cast<double>(point.z()) - first_.z();
         const double distance = dx * dx + dy * dy + dz * dz;
         return distance <= static_cast<double>(radius_) * radius_;
     }
-    return point.x() >= first_.x() && point.x() <= second_.x() && point.y() >= first_.y() &&
-           point.y() <= second_.y() &&
+    return point.x() >= first_.x() && point.x() <= second_.x() && point.y() >= first_.y() && point.y() <= second_.y() &&
            (shape_ == Shape::Box2D || (point.z() >= first_.z() && point.z() <= second_.z()));
 }
 
@@ -229,19 +227,17 @@ Result<void> TargetingSpec::validate() const {
     if (minCount > maxCount)
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec minCount exceeds maxCount");
     if (!std::isfinite(minRange) ||
-        (!(std::isfinite(maxRange) || maxRange == std::numeric_limits<float>::infinity())) ||
-        minRange < 0.f || maxRange < minRange)
+        (!(std::isfinite(maxRange) || maxRange == std::numeric_limits<float>::infinity())) || minRange < 0.f ||
+        maxRange < minRange)
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec range must be finite and ordered");
     if (zone && !zone->isValid())
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec zone must be valid");
     for (const auto& tag : requiredTags)
         if (tag.empty())
-            return failure<void>(DiagnosticCode::InvalidArgument,
-                                "requiredTags cannot contain empty keys");
+            return failure<void>(DiagnosticCode::InvalidArgument, "requiredTags cannot contain empty keys");
     for (const auto& tag : excludedTags)
         if (tag.empty())
-            return failure<void>(DiagnosticCode::InvalidArgument,
-                                "excludedTags cannot contain empty keys");
+            return failure<void>(DiagnosticCode::InvalidArgument, "excludedTags cannot contain empty keys");
     return Result<void>::success();
 }
 
@@ -249,8 +245,7 @@ Result<void> TargetingQuery::validate() const {
     auto specResult = spec.validate();
     if (!specResult) return failure<void>(specResult.status());
     if (!origin.isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "TargetingQuery origin must be non-nil");
+        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingQuery origin must be non-nil");
     if (!sameSpace(originLocation, spec.space))
         return failure<void>(DiagnosticCode::InvalidArgument,
                              "TargetingQuery origin and spec use different coordinate spaces");
@@ -278,11 +273,9 @@ Result<void> TargetSet::setPoint(TargetLocation point) {
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point must be valid");
     if (point_ && !sameSpace(*point_, point))
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet points cannot mix coordinate spaces");
-    if (worldArea_ && (!std::get_if<WorldPoint>(&point) ||
-                       std::get<WorldPoint>(point).space() != worldArea_->space()))
+    if (worldArea_ && (!std::get_if<WorldPoint>(&point) || std::get<WorldPoint>(point).space() != worldArea_->space()))
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point and world area use different spaces");
-    if (gridArea_ && (!std::get_if<GridPoint>(&point) ||
-                      std::get<GridPoint>(point).space() != gridArea_->space()))
+    if (gridArea_ && (!std::get_if<GridPoint>(&point) || std::get<GridPoint>(point).space() != gridArea_->space()))
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point and grid area use different spaces");
     point_ = std::move(point);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -291,8 +284,7 @@ Result<void> TargetSet::setPoint(TargetLocation point) {
 Result<void> TargetSet::setArea(WorldArea area) {
     if (!area.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet world area must be valid");
     if (gridArea_) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet cannot mix world and grid areas");
-    if (point_ && (!std::get_if<WorldPoint>(&*point_) ||
-                   std::get<WorldPoint>(*point_).space() != area.space()))
+    if (point_ && (!std::get_if<WorldPoint>(&*point_) || std::get<WorldPoint>(*point_).space() != area.space()))
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point and world area use different spaces");
     worldArea_ = std::move(area);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -301,8 +293,7 @@ Result<void> TargetSet::setArea(WorldArea area) {
 Result<void> TargetSet::setArea(GridArea area) {
     if (!area.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet grid area must be valid");
     if (worldArea_) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet cannot mix world and grid areas");
-    if (point_ && (!std::get_if<GridPoint>(&*point_) ||
-                   std::get<GridPoint>(*point_).space() != area.space()))
+    if (point_ && (!std::get_if<GridPoint>(&*point_) || std::get<GridPoint>(*point_).space() != area.space()))
         return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point and grid area use different spaces");
     gridArea_ = std::move(area);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -315,8 +306,7 @@ Result<void> SensingCandidateProvider::upsert(TargetCandidate candidate) {
         return failure<void>(DiagnosticCode::InvalidArgument, "candidate location must be valid");
     for (const auto& tag : candidate.tags)
         if (tag.empty())
-            return failure<void>(DiagnosticCode::InvalidArgument,
-                                "candidate tags cannot contain empty keys");
+            return failure<void>(DiagnosticCode::InvalidArgument, "candidate tags cannot contain empty keys");
     for (const auto& zone : candidate.zones)
         if (!zone.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "candidate zones must be valid");
     candidates_[candidate.subject.format()] = std::move(candidate);
@@ -385,10 +375,10 @@ Result<TargetSet> TargetingResolver::resolve(const TargetingQuery& query) const 
 
 std::string_view coordinateSpaceName(CoordinateSpace space) noexcept {
     switch (space) {
-    case CoordinateSpace::World2D: return "world2d";
-    case CoordinateSpace::World3D: return "world3d";
-    case CoordinateSpace::Grid2D: return "grid2d";
-    case CoordinateSpace::Grid3D: return "grid3d";
+        case CoordinateSpace::World2D: return "world2d";
+        case CoordinateSpace::World3D: return "world3d";
+        case CoordinateSpace::Grid2D: return "grid2d";
+        case CoordinateSpace::Grid3D: return "grid3d";
     }
     return "unknown";
 }

@@ -14,11 +14,11 @@
 #include "fluids/FluidMath.h"
 #include "fluids/FluidSdf.h"
 #include "fluids/FluidSimulation.h"
-#include "fluids/FluidSurfaceRenderer.h"
 #include "fluids/FluidSurfaceBinding.h"
+#include "fluids/FluidSurfaceRenderer.h"
 #include "fluids/SurfaceDropletSimulation.h"
-#include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceFluidContracts.h"
+#include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceFluidSceneRenderer.h"
 #include "fluids/SurfaceWetnessField.h"
 #include "physics/SimulationBackend.h"
@@ -71,16 +71,12 @@ public:
 
     /** @brief Advances the production CPU/GPGPU solver with the shared contract. */
     [[nodiscard("check the fluid step outcome")]]
-    eve::Result<void> step(const eve::SimulationStep& step,
-                           const eve::physics::SimulationSettings& settings) override;
+    eve::Result<void> step(const eve::SimulationStep& step, const eve::physics::SimulationSettings& settings) override;
     /** @brief Returns completed tick/time observables. */
-    [[nodiscard]] eve::physics::SimulationObservation observation() const noexcept override {
-        return observation_;
-    }
+    [[nodiscard]] eve::physics::SimulationObservation observation() const noexcept override { return observation_; }
     /** @brief Reports the actual CPU or production GPU path selected. */
     [[nodiscard]] eve::physics::SimulationBackendKind kind() const noexcept override {
-        return gpuOk_ ? eve::physics::SimulationBackendKind::Gpu
-                      : eve::physics::SimulationBackendKind::Cpu;
+        return gpuOk_ ? eve::physics::SimulationBackendKind::Gpu : eve::physics::SimulationBackendKind::Cpu;
     }
     /** @brief CPU/GPGPU particle results are equivalent within a numeric tolerance. */
     [[nodiscard]] eve::physics::SimulationDeterminism determinism() const noexcept override {
@@ -88,14 +84,15 @@ public:
     }
     /** @brief Restores tick/progress metadata after an owner-level restore. */
     [[nodiscard("check fluid observation restore")]]
-    eve::Result<void> restoreObservation(
-        const eve::physics::SimulationObservation& observation) override;
+    eve::Result<void> restoreObservation(const eve::physics::SimulationObservation& observation) override;
 
     /** @brief Whether optional accelerator selection fell back to CPU. */
     [[nodiscard]] bool usedBackendFallback() const noexcept { return backendFallback_; }
     /** @brief Selection status, including observable provider/degraded-path diagnostics. */
     [[nodiscard("inspect fluid backend selection diagnostics")]]
-    eve::Status backendSelectionStatus() const { return backendSelectionStatus_; }
+    eve::Status backendSelectionStatus() const {
+        return backendSelectionStatus_;
+    }
 
     /** @return live particle count. */
     int getParticleCount() const { return sim_.particleCount(); }
@@ -163,10 +160,10 @@ private:
     FluidSimulation sim_;
     bool            preferGpu_ = false;
     bool            gpuOk_     = false;
-    bool            backendFallback_ = false;
+    bool                                backendFallback_ = false;
     bool            sdfDirty_  = true;
     eve::physics::SimulationObservation observation_;
-    eve::Status backendSelectionStatus_ = eve::Status::success();
+    eve::Status                         backendSelectionStatus_ = eve::Status::success();
 
     eve::gpgpu::Gpgpu*         gpgpu_           = nullptr;
     eve::gpgpu::ComputeShader* shClear_         = nullptr;

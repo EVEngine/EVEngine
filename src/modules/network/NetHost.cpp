@@ -1,7 +1,7 @@
 #include "network/NetHost.h"
+#include "data/ByteData.h"
 #include "network/Network.h"
 #include "network/UdpSocket.h"
-#include "data/ByteData.h"
 #include "platform_event/PlatformEvent.h"
 
 namespace eve::network {

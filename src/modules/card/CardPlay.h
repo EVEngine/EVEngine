@@ -25,14 +25,14 @@ namespace eve::card {
  * a lock. An empty provider means that capability is unavailable.
  */
 struct CardPlayConditionQueries {
-    using Resource = std::function<std::optional<eve::Value>(std::string_view key)>;
+    using Resource  = std::function<std::optional<eve::Value>(std::string_view key)>;
     using Authority = std::function<std::optional<bool>(std::string_view scope)>;
-    using Policy = std::function<std::optional<decision::ConditionResult>(std::string_view name,
-                                                                            const eve::Value& arguments)>;
+    using Policy =
+        std::function<std::optional<decision::ConditionResult>(std::string_view name, const eve::Value& arguments)>;
 
-    Resource resource;
+    Resource  resource;
     Authority authority;
-    Policy policy;
+    Policy    policy;
 };
 
 /**
@@ -66,12 +66,12 @@ public:
     /** @copydoc decision::EvaluationContext::authority */
     [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
     /** @copydoc decision::EvaluationContext::policy */
-    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view name,
-                                                                    const eve::Value& arguments) const override;
+    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
+                                                                  const eve::Value& arguments) const override;
 
 private:
-    const CardData* card_ = nullptr;
-    const CardDefinition* definition_ = nullptr;
+    const CardData*          card_       = nullptr;
+    const CardDefinition*    definition_ = nullptr;
     CardPlayConditionQueries queries_;
 };
 
@@ -86,10 +86,9 @@ public:
      * @param queries Optional read-only resource, authority and policy providers.
      * @return A stable explanation suitable for UI rejection text.
      */
-    [[nodiscard]] static decision::ConditionResult evaluate(const CardData* card,
-                                                              const CardDefinition& definition,
-                                                              const decision::Condition& condition,
-                                                              CardPlayConditionQueries queries = {});
+    [[nodiscard]] static decision::ConditionResult evaluate(const CardData* card, const CardDefinition& definition,
+                                                            const decision::Condition& condition,
+                                                            CardPlayConditionQueries   queries = {});
 };
 
 /**
@@ -108,23 +107,19 @@ public:
     /** @brief Stable transaction diagnostic name. */
     [[nodiscard]] std::string_view name() const noexcept override { return "card-play-effect"; }
     /** @copydoc eve::transaction::ITransactionParticipant::prepare */
-    [[nodiscard]] eve::Result<void> prepare(
-        const eve::transaction::TransactionContext& context) override;
+    [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::commit */
-    [[nodiscard]] eve::Result<void> commit(
-        const eve::transaction::TransactionContext& context) override;
+    [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::rollback */
-    [[nodiscard]] eve::Result<void> rollback(
-        const eve::transaction::TransactionContext& context) override;
+    [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::compensate */
-    [[nodiscard]] eve::Result<void> compensate(
-        const eve::transaction::TransactionContext& context) override;
+    [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext& context) override;
 
 private:
     CardData& card_;
     CardState previousState_ = CardState::Hand;
-    bool      prepared_ = false;
-    bool      committed_ = false;
+    bool      prepared_      = false;
+    bool      committed_     = false;
 };
 
 /**
@@ -137,11 +132,11 @@ private:
  * card state transition.
  */
 struct CardPlayComposition {
-    CardPlayConditionQueries conditionQueries;
-    eve::container::IContainer* source = nullptr;
-    eve::container::IContainer* destination = nullptr;
-    std::optional<eve::container::SlotIndex> sourceSlot;
-    std::optional<eve::container::SlotIndex> destinationSlot;
+    CardPlayConditionQueries                   conditionQueries;
+    eve::container::IContainer*                source      = nullptr;
+    eve::container::IContainer*                destination = nullptr;
+    std::optional<eve::container::SlotIndex>   sourceSlot;
+    std::optional<eve::container::SlotIndex>   destinationSlot;
     eve::transaction::ITransactionParticipant* effect = nullptr;
 };
 
@@ -153,11 +148,11 @@ struct CardPlayComposition {
  * this type does not perform implicit player lookup.
  */
 struct CardPlayRequest {
-    CardData* card = nullptr;
-    const CardDefinition* definition = nullptr;
+    CardData*                        card          = nullptr;
+    const CardDefinition*            definition    = nullptr;
     eve::resource::IResourceAccount* playerAccount = nullptr;
-    CardPlayComposition composition;
-    std::string transactionId;
+    CardPlayComposition              composition;
+    std::string                      transactionId;
 };
 
 /**
@@ -179,16 +174,14 @@ public:
      *          pure preflight; it cannot debit or move a card. No caller-side
      *          participant assembly is required.
      */
-    [[nodiscard]] static eve::Result<eve::transaction::TransactionReceipt> play(
-        CardPlayRequest request);
+    [[nodiscard]] static eve::Result<eve::transaction::TransactionReceipt> play(CardPlayRequest request);
 
     /**
      * @brief Convert a non-negative card mana value into a canonical cost.
      * @param definition Borrowed card definition.
      * @return A mana CostSpec, or an empty optional for a free card.
      */
-    [[nodiscard]] static eve::Result<std::optional<eve::resource::CostSpec>> manaCost(
-        const CardDefinition& definition);
+    [[nodiscard]] static eve::Result<std::optional<eve::resource::CostSpec>> manaCost(const CardDefinition& definition);
 
     /**
      * @brief Play one card and charge its player's mana atomically.
@@ -200,8 +193,8 @@ public:
      *         condition/effect/payment leaves both card and account unchanged.
      */
     [[nodiscard]] static eve::Result<eve::transaction::TransactionReceipt> play(
-        CardData& card, const CardDefinition& definition,
-        eve::resource::IResourceAccount& playerAccount, std::string transactionId = {});
+        CardData& card, const CardDefinition& definition, eve::resource::IResourceAccount& playerAccount,
+        std::string transactionId = {});
 };
 
 }  // namespace eve::card

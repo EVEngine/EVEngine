@@ -54,24 +54,21 @@ enum class SimulationDeterminism {
 };
 
 /** @brief Returns the stable backend-kind spelling. */
-[[nodiscard]] constexpr std::string_view simulationBackendKindName(
-    SimulationBackendKind kind) noexcept {
+[[nodiscard]] constexpr std::string_view simulationBackendKindName(SimulationBackendKind kind) noexcept {
     switch (kind) {
-    case SimulationBackendKind::Cpu: return "cpu";
-    case SimulationBackendKind::Gpu: return "gpu";
-    case SimulationBackendKind::MockAccelerator: return "mock_accelerator";
+        case SimulationBackendKind::Cpu: return "cpu";
+        case SimulationBackendKind::Gpu: return "gpu";
+        case SimulationBackendKind::MockAccelerator: return "mock_accelerator";
     }
     return "unknown";
 }
 
 /** @brief Returns the stable determinism-contract spelling. */
-[[nodiscard]] constexpr std::string_view simulationDeterminismName(
-    SimulationDeterminism determinism) noexcept {
+[[nodiscard]] constexpr std::string_view simulationDeterminismName(SimulationDeterminism determinism) noexcept {
     switch (determinism) {
-    case SimulationDeterminism::BitExact: return "bit_exact";
-    case SimulationDeterminism::ToleranceBounded: return "tolerance_bounded";
-    case SimulationDeterminism::ExplicitlyNondeterministic:
-        return "explicitly_nondeterministic";
+        case SimulationDeterminism::BitExact: return "bit_exact";
+        case SimulationDeterminism::ToleranceBounded: return "tolerance_bounded";
+        case SimulationDeterminism::ExplicitlyNondeterministic: return "explicitly_nondeterministic";
     }
     return "unknown";
 }
@@ -151,8 +148,7 @@ public:
      * @return Applied with updated state, or a structured rejection/failure.
      */
     [[nodiscard("check the step outcome or explicitly ignore it")]]
-    virtual eve::Result<void> step(const eve::SimulationStep& step,
-                                   const SimulationSettings& settings) = 0;
+    virtual eve::Result<void> step(const eve::SimulationStep& step, const SimulationSettings& settings) = 0;
 
     /**
      * @brief Returns completed-step observables by value.
@@ -182,11 +178,9 @@ public:
      *          callers must restore the domain state atomically as one unit.
      */
     [[nodiscard("check backend observation restore")]]
-    virtual eve::Result<void> restoreObservation(
-        const SimulationObservation& /*observation*/) {
+    virtual eve::Result<void> restoreObservation(const SimulationObservation& /*observation*/) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Unsupported,
-            "This simulation backend does not support observation restore",
+            eve::DiagnosticCode::Unsupported, "This simulation backend does not support observation restore",
             "physics.simulationBackend.restoreObservation"));
     }
 };
@@ -220,8 +214,7 @@ public:
      * @return A backend or a structured Unsupported/Failed status.
      */
     [[nodiscard("inspect provider creation or explicitly fall back")]]
-    virtual eve::Result<std::unique_ptr<ISimulationBackend>> create(
-        SimulationBackendDomain domain, void* state) = 0;
+    virtual eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain domain, void* state) = 0;
 };
 
 /**
@@ -242,8 +235,7 @@ struct SimulationBackendSelection {
 };
 
 /** @brief Callback used by a domain-owned CPU or test backend adapter. */
-using SimulationStepCallback = void (*)(void* context,
-                                        const eve::SimulationStep& step,
+using SimulationStepCallback = void (*)(void* context, const eve::SimulationStep& step,
                                         const SimulationSettings& settings) noexcept;
 
 namespace detail {
@@ -256,8 +248,7 @@ namespace detail {
  * @return Applied when all shared backend invariants hold.
  */
 [[nodiscard("check simulation-step validation")]]
-eve::Result<void> validateSimulationStep(const eve::SimulationStep& step,
-                                         const SimulationSettings& settings,
+eve::Result<void> validateSimulationStep(const eve::SimulationStep& step, const SimulationSettings& settings,
                                          const SimulationObservation& observation);
 
 /**
@@ -267,8 +258,8 @@ eve::Result<void> validateSimulationStep(const eve::SimulationStep& step,
  * @return The next observation, or an overflow/invalid-input failure.
  */
 [[nodiscard("check observation advancement")]]
-eve::Result<SimulationObservation> advanceSimulationObservation(
-    const SimulationObservation& current, const eve::SimulationStep& step);
+eve::Result<SimulationObservation> advanceSimulationObservation(const SimulationObservation& current,
+                                                                const eve::SimulationStep&   step);
 
 /**
  * @brief Validates restored backend progress metadata.
@@ -277,8 +268,7 @@ eve::Result<SimulationObservation> advanceSimulationObservation(
  * @return Applied when all fields are finite, non-negative and coherent.
  */
 [[nodiscard("check observation validation")]]
-eve::Result<void> validateSimulationObservation(const SimulationObservation& observation,
-                                                const char* path);
+eve::Result<void> validateSimulationObservation(const SimulationObservation& observation, const char* path);
 
 /**
  * @brief Creates the built-in Box2D CPU backend adapter.
@@ -300,9 +290,9 @@ std::unique_ptr<ISimulationBackend> makeBox2DSimulationBackend(b2World* world);
  * @return An owning backend adapter.
  */
 [[nodiscard("retain the backend while its callback state is live")]]
-std::unique_ptr<ISimulationBackend> makeCallbackSimulationBackend(
-    void* context, SimulationStepCallback callback, SimulationBackendKind kind,
-    SimulationDeterminism determinism);
+std::unique_ptr<ISimulationBackend> makeCallbackSimulationBackend(void* context, SimulationStepCallback callback,
+                                                                  SimulationBackendKind kind,
+                                                                  SimulationDeterminism determinism);
 
 /**
  * @brief Creates a no-op mock accelerator used for headless contract tests.
@@ -321,9 +311,9 @@ std::unique_ptr<ISimulationBackend> makeMockAcceleratorBackend();
  *         Warning diagnostic and `usedFallback=true`.
  */
 [[nodiscard("inspect the selected backend and fallback diagnostics")]]
-eve::Result<SimulationBackendSelection> selectSimulationBackend(
-    SimulationBackendDomain domain, std::unique_ptr<ISimulationBackend> cpuBackend,
-    void* state, bool preferAccelerator = true);
+eve::Result<SimulationBackendSelection> selectSimulationBackend(SimulationBackendDomain             domain,
+                                                                std::unique_ptr<ISimulationBackend> cpuBackend,
+                                                                void* state, bool preferAccelerator = true);
 
 }  // namespace detail
 }  // namespace eve::physics

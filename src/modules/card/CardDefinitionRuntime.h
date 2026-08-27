@@ -24,13 +24,13 @@ namespace eve::card {
  * definition projection used to initialize or rebuild a CardData entity.
  */
 struct CardRuntimeState {
-    std::string name;
-    std::string kind = "creature";
-    int cost = 0;
-    int attack = 0;
-    int maxHealth = 0;
-    int currentHealth = 0;
-    glm::vec3 tint{0.62f, 0.50f, 0.40f};
+    std::string              name;
+    std::string              kind          = "creature";
+    int                      cost          = 0;
+    int                      attack        = 0;
+    int                      maxHealth     = 0;
+    int                      currentHealth = 0;
+    glm::vec3                tint{0.62f, 0.50f, 0.40f};
     std::vector<std::string> tags;
 };
 
@@ -53,8 +53,7 @@ public:
      * @return A typed runtime or a structured resolution/parse failure.
      */
     [[nodiscard]] static eve::Result<CardDefinitionRuntime> create(
-        eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition,
-        eve::PersistentId instanceId,
+        eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::KeepInstanceValues);
 
     /** @brief Move a card runtime while retaining its borrowed registry binding. */
@@ -96,30 +95,27 @@ public:
      * @return A typed reload outcome, or a stale/parse/policy failure. On
      *         failure the adapter state and generation remain unchanged.
      */
-    [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(
-        eve::definition::ReloadPolicy policy);
+    [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(eve::definition::ReloadPolicy policy);
 
     /** @brief Capture card instance state in the common SnapshotEnvelope. */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        eve::Revision revision, eve::SimulationTick tick,
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(eve::Revision revision, eve::SimulationTick tick,
+                                                              const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Serialize snapshot() as canonical JSON. */
-    [[nodiscard]] eve::Result<std::string> snapshotJson(
-        eve::Revision revision, eve::SimulationTick tick,
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotJson(eve::Revision revision, eve::SimulationTick tick,
+                                                        const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Verify and atomically restore a same-generation card snapshot. */
-    [[nodiscard]] eve::Result<void> restore(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restore(const eve::SnapshotEnvelope&     snapshot,
+                                            const eve::SnapshotHashProvider& hashProvider);
 
 private:
-    CardDefinitionRuntime(eve::definitions::DefinitionRegistry& registry,
+    CardDefinitionRuntime(eve::definitions::DefinitionRegistry&              registry,
                           eve::definition::RuntimeInstance<CardRuntimeState> runtime,
-                          eve::definition::ReloadPolicy policy)
+                          eve::definition::ReloadPolicy                      policy)
         : registry_(&registry), runtime_(std::move(runtime)), policy_(policy) {}
 
-    eve::definitions::DefinitionRegistry* registry_ = nullptr;  // borrowed
+    eve::definitions::DefinitionRegistry*              registry_ = nullptr;  // borrowed
     eve::definition::RuntimeInstance<CardRuntimeState> runtime_;
-    eve::definition::ReloadPolicy policy_;
+    eve::definition::ReloadPolicy                      policy_;
 };
 
 }  // namespace eve::card

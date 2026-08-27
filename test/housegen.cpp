@@ -20,7 +20,7 @@ static const char *kKit = R"({"components":[
 
 TEST_CASE("housegen.library.validatesManifest") {
     HouseComponentLibrary lib;
-    auto loaded = lib.loadFromJson(kKit);
+    auto                  loaded = lib.loadFromJson(kKit);
     REQUIRE(loaded.ok());
     CHECK_EQ(lib.count(), 6);
     auto failed = lib.loadFromJson(R"([{"id":"broken","category":"wall"}])");
@@ -30,7 +30,7 @@ TEST_CASE("housegen.library.validatesManifest") {
 
 TEST_CASE("housegen.library.validatesMaterialOverrides") {
     HouseComponentLibrary lib;
-    auto loaded = lib.loadFromJson(R"([{
+    auto                  loaded = lib.loadFromJson(R"([{
       "id":"wall.material","model":"wall.glb","category":"wall",
       "material":{"baseColor":[0.82,0.71,0.55,1.0],"baseColorTexture":"wall.png",
                   "normalTexture":"wall-normal.png","heightTexture":"wall-height.png",
@@ -58,20 +58,23 @@ TEST_CASE("housegen.library.validatesMaterialOverrides") {
 
 TEST_CASE("housegen.reproducibleAndSerializable") {
     HouseComponentLibrary lib;
-    auto loaded = lib.loadFromJson(kKit);
+    auto                  loaded = lib.loadFromJson(kKit);
     REQUIRE(loaded.ok());
     HouseGenerator generator(lib);
-    HouseRequest r;
-    r.seed = 42; r.width = 5; r.depth = 4; r.floors = 2;
+    HouseRequest   r;
+    r.seed   = 42;
+    r.width  = 5;
+    r.depth  = 4;
+    r.floors = 2;
     HouseLayout a, b;
-    auto first = generator.generate(r, a);
-    auto second = generator.generate(r, b);
+    auto        first  = generator.generate(r, a);
+    auto        second = generator.generate(r, b);
     REQUIRE(first.ok());
     REQUIRE(second.ok());
     CHECK_EQ(a.toJson(), b.toJson());
     CHECK(a.instances.size() > 20);
     HouseLayout restored;
-    auto restoredResult = restored.fromJson(a.toJson());
+    auto        restoredResult = restored.fromJson(a.toJson());
     REQUIRE(restoredResult.ok());
     CHECK_EQ(restored.toJson(), a.toJson());
     auto validation = restored.validate(lib);
@@ -80,25 +83,24 @@ TEST_CASE("housegen.reproducibleAndSerializable") {
 
 TEST_CASE("housegen.requiresStructuralCategories") {
     HouseComponentLibrary lib;
-    auto loaded = lib.loadFromJson(
-        R"([{"id":"wall","model":"wall.glb","category":"wall"}])");
+    auto                  loaded = lib.loadFromJson(R"([{"id":"wall","model":"wall.glb","category":"wall"}])");
     REQUIRE(loaded.ok());
     HouseGenerator generator(lib);
-    HouseLayout out;
-    auto failed = generator.generate(HouseRequest{}, out);
+    HouseLayout    out;
+    auto           failed = generator.generate(HouseRequest{}, out);
     REQUIRE(!failed.ok());
     CHECK(failed.status().describe().find("foundation") != std::string::npos);
 }
 
 TEST_CASE("housegen.upperFloorsNeverExpandBeyondSupport") {
     HouseComponentLibrary lib;
-    auto loaded = lib.loadFromJson(kKit);
+    auto                  loaded = lib.loadFromJson(kKit);
     REQUIRE(loaded.ok());
     HouseGenerator generator(lib);
-    HouseRequest r;
+    HouseRequest   r;
     r.seed = 8675309; r.width = 6; r.depth = 5; r.floors = 3;
     HouseLayout layout;
-    auto generated = generator.generate(r, layout);
+    auto        generated = generator.generate(r, layout);
     REQUIRE(generated.ok());
     for (int z = 1; z < r.floors; ++z) {
         int lowerMinX = r.width, lowerMaxX = -1, lowerMinY = r.depth, lowerMaxY = -1;
@@ -121,7 +123,7 @@ TEST_CASE("housegen.upperFloorsNeverExpandBeyondSupport") {
 
 TEST_CASE("housegen.shapeRoofAndEntranceVariants") {
     HouseComponentLibrary lib;
-    auto loaded = lib.loadFromJson(kKit);
+    auto                  loaded = lib.loadFromJson(kKit);
     REQUIRE(loaded.ok());
     HouseGenerator generator(lib);
     const char *shapes[] = {"rectangle", "l_shape", "t_shape"};
@@ -131,10 +133,13 @@ TEST_CASE("housegen.shapeRoofAndEntranceVariants") {
     int floorCounts[3] = {};
     for (int variant = 0; variant < 3; ++variant) {
         HouseRequest r;
-        r.seed = 100 + variant; r.width = 7; r.depth = 6; r.floors = 2;
+        r.seed      = 100 + variant;
+        r.width     = 7;
+        r.depth     = 6;
+        r.floors    = 2;
         r.footprint = shapes[variant]; r.roof = roofs[variant]; r.entrance = entrances[variant];
         HouseLayout layout;
-        auto generated = generator.generate(r, layout);
+        auto        generated = generator.generate(r, layout);
         REQUIRE(generated.ok());
         CHECK_EQ(layout.footprintStyle, std::string(shapes[variant]));
         CHECK_EQ(layout.roofStyle, std::string(roofs[variant]));
@@ -157,14 +162,14 @@ TEST_CASE("housegen.shapeRoofAndEntranceVariants") {
 
 TEST_CASE("housegen.everyFloorCellRequiresCoverage") {
     HouseComponentLibrary lib;
-    auto loaded = lib.loadFromJson(kKit);
+    auto                  loaded = lib.loadFromJson(kKit);
     REQUIRE(loaded.ok());
     HouseGenerator generator(lib);
-    HouseRequest r;
+    HouseRequest   r;
     r.seed = 8675309; r.width = 7; r.depth = 6; r.floors = 3;
     r.footprint = "l_shape";
     HouseLayout layout;
-    auto generated = generator.generate(r, layout);
+    auto        generated = generator.generate(r, layout);
     REQUIRE(generated.ok());
     auto valid = layout.validate(lib);
     REQUIRE(valid.ok());
@@ -190,14 +195,17 @@ TEST_CASE("housegen.facadeKeepsCornersSolidAndWindowsAligned") {
       {"id":"roof","model":"roof.glb","category":"roof"}
     ]})";
     HouseComponentLibrary lib;
-    auto loaded = lib.loadFromJson(facadeKit);
+    auto                  loaded = lib.loadFromJson(facadeKit);
     REQUIRE(loaded.ok());
     HouseRequest r;
-    r.seed = 44; r.width = 4; r.depth = 4; r.floors = 2;
+    r.seed      = 44;
+    r.width     = 4;
+    r.depth     = 4;
+    r.floors    = 2;
     r.footprint = "rectangle"; r.roof = "flat"; r.entrance = "north";
-    HouseLayout layout;
+    HouseLayout    layout;
     HouseGenerator generator(lib);
-    auto generated = generator.generate(r, layout);
+    auto           generated = generator.generate(r, layout);
     REQUIRE(generated.ok());
     std::vector<std::tuple<int, int, int>> groundWindows, upperWindows;
     for (const auto &instance : layout.instances) {

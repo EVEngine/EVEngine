@@ -1,15 +1,15 @@
 #include "network/Network.h"
-#include "network/NetWorker.h"
-#include "network/TcpSocket.h"
-#include "network/UdpSocket.h"
-#include "network/HttpRequest.h"
+#include "data/ByteData.h"
 #include "network/Channel.h"
-#include "network/Session.h"
-#include "network/NetStream.h"
-#include "network/UdpLink.h"
+#include "network/HttpRequest.h"
 #include "network/NetHost.h"
 #include "network/NetRpc.h"
-#include "data/ByteData.h"
+#include "network/NetStream.h"
+#include "network/NetWorker.h"
+#include "network/Session.h"
+#include "network/TcpSocket.h"
+#include "network/UdpLink.h"
+#include "network/UdpSocket.h"
 #include "platform_event/PlatformEvent.h"
 
 #include <Poco/Net/StreamSocket.h>
@@ -314,8 +314,8 @@ void Network::emitCompletion(const NetCompletion& c) {
     auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
 
-    using eve::platform_event::Variant;
     using eve::platform_event::Message;
+    using eve::platform_event::Variant;
 
     std::vector<Variant> args;
     switch (c.type) {

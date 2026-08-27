@@ -12,9 +12,7 @@ using namespace eve::ui;
 
 namespace {
 
-eve::OptionalRef<UINode> nodeById(UIHost& host, const std::string& id) {
-    return host.findById(id);
-}
+eve::OptionalRef<UINode> nodeById(UIHost& host, const std::string& id) { return host.findById(id); }
 
 }  // namespace
 
@@ -43,11 +41,11 @@ TEST_CASE("editorShell.menuDocksAndSwitchesPanels") {
     REQUIRE(nodeById(menu, "menu_close").has_value());
 
     auto resolvedInspector = UIHost::resolve(inspector.host());
-    auto resolvedDatabase = UIHost::resolve(database.host());
+    auto resolvedDatabase  = UIHost::resolve(database.host());
     REQUIRE(resolvedInspector.has_value());
     REQUIRE(resolvedDatabase.has_value());
     UIHost& inspectorHost = resolvedInspector->get();
-    UIHost& databaseHost = resolvedDatabase->get();
+    UIHost& databaseHost  = resolvedDatabase->get();
     CHECK(inspectorHost.meta()->visible);
     CHECK(databaseHost.meta()->visible);
     CHECK(!inspectorHost.meta()->lockPos);
@@ -57,7 +55,7 @@ TEST_CASE("editorShell.menuDocksAndSwitchesPanels") {
     REQUIRE(toolbar.has_value());
     CHECK(int(toolbar->get().type) == int(NodeType::Toolbar));
 
-    auto tree = menu.tree();
+    auto tree           = menu.tree();
     auto databaseButton = nodeById(menu, "menu_database");
     REQUIRE(databaseButton.has_value());
     REQUIRE_GE(databaseButton->get().handlerClick, 1u);

@@ -26,8 +26,6 @@ bool EditorTransactions::redo() {
     auto result = consumer_.redo();
     return result.ok();
 }
-void EditorTransactions::clear() {
-    consumer_.clear();
-}
+void EditorTransactions::clear() { consumer_.clear(); }
 
 }  // namespace eve::editor

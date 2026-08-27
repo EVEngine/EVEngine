@@ -257,8 +257,8 @@ public:
         bool overflowWarned = false;
         int activeSeed = 0;
         /** @brief Last scheduler tick observed by the checked simulation API. */
-        eve::SimulationTick simulationTick = eve::SimulationTick::zero();
-        bool hasSimulationTick = false;
+        eve::SimulationTick simulationTick    = eve::SimulationTick::zero();
+        bool                hasSimulationTick = false;
         /** @brief Temporary automatic-spawn quota set by ParticleSimSystem (-1 = unlimited). */
         int spawnQuota = -1;
         int spawnedThisFrame = 0;
@@ -596,7 +596,7 @@ public:
      *          residency and global budgets are enabled. This method is the
      *          CPU emitter-domain adapter.
      */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
 
     /** @brief Last scheduler tick consumed by the checked emitter API. */
     [[nodiscard]] eve::SimulationTick currentSimulationTick() const noexcept {
@@ -668,9 +668,8 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
 /** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
 float advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt);
 /** @brief Advance with scheduler-provided Duration/Tick; no local playback scaling. */
-    [[nodiscard]] eve::Result<void> advanceEmitterSim(ParticleEmitter::Config& cfg,
-                                                      ParticleEmitter::Sim& sim,
-                                                      const eve::SimulationStep& step);
+[[nodiscard]] eve::Result<void> advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
+                                                  const eve::SimulationStep &step);
 /** @brief World collision query used by emitters with worldCollision enabled. */
 using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
 void setWorldCollisionResolver(WorldCollisionFn fn);

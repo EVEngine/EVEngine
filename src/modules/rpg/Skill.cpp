@@ -67,9 +67,7 @@ std::unordered_map<std::string, SkillDefinition> &table() {
     return t;
 }
 
-eve::definitions::DefinitionRegistry& SkillRegistry::definitionRegistry() {
-    return canonicalSkillRegistry();
-}
+eve::definitions::DefinitionRegistry& SkillRegistry::definitionRegistry() { return canonicalSkillRegistry(); }
 
 void SkillRegistry::registerSkill(const SkillDefinition &def) {
     if (def.id.empty()) return;
@@ -78,13 +76,13 @@ void SkillRegistry::registerSkill(const SkillDefinition &def) {
         json.ignore("legacy skill registration cannot serialize invalid definition");
         return;
     }
-    auto& registry = canonicalSkillRegistry();
-    auto existing = registry.resolve("rpg.skill", def.id);
-    eve::Result<eve::definition::DefinitionHandle> result = existing.ok()
-        ? registry.replace("rpg.skill", def.id, 1, std::move(json).takeValue())
+    auto&                                          registry = canonicalSkillRegistry();
+    auto                                           existing = registry.resolve("rpg.skill", def.id);
+    eve::Result<eve::definition::DefinitionHandle> result =
+        existing.ok() ? registry.replace("rpg.skill", def.id, 1, std::move(json).takeValue())
         : existing.status().code() == eve::StatusCode::NotFound
-              ? registry.insert("rpg.skill", def.id, 1, std::move(json).takeValue())
-              : eve::Result<eve::definition::DefinitionHandle>::failure(existing.status());
+            ? registry.insert("rpg.skill", def.id, 1, std::move(json).takeValue())
+            : eve::Result<eve::definition::DefinitionHandle>::failure(existing.status());
     if (!result) return;
     table()[def.id] = def;
 }
@@ -95,15 +93,15 @@ const SkillDefinition *SkillRegistry::find(const std::string &id) {
     return it == t.end() ? nullptr : &it->second;
 }
 
-bool SkillRegistry::remove(const std::string &id) {
+bool SkillRegistry::remove(const std::string& id) {
     auto& registry = canonicalSkillRegistry();
-    auto  result = registry.remove("rpg.skill", id);
+    auto  result   = registry.remove("rpg.skill", id);
     if (!result) return false;
     return table().erase(id) > 0;
 }
 
 void SkillRegistry::clear() {
-    auto& skills = table();
+    auto& skills   = table();
     auto& registry = canonicalSkillRegistry();
     for (const auto& [id, unused] : skills) {
         (void)unused;
@@ -117,7 +115,7 @@ int SkillRegistry::count() { return int(table().size()); }
 
 namespace {
 
-SkillDefinition parseSkillObject(Value o, std::string *error) {
+SkillDefinition parseSkillObject(Value o, std::string* error) {
     SkillDefinition def;
     if (!o.isObject()) return def;
     def.id = o.getString("id");
@@ -132,17 +130,15 @@ SkillDefinition parseSkillObject(Value o, std::string *error) {
     for (size_t i = 0; i < costs.size(); ++i) {
         const Value co = costs.at(i);
         const std::string resource = co.getString("attribute");
-        const double amount = co.getDouble("amount", 0.0);
+        const double      amount   = co.getDouble("amount", 0.0);
         // Keep the legacy JSON shape, but do not silently truncate a value
         // into the canonical integral resource Amount type.
         if (resource.empty()) continue;
-        if (!std::isfinite(amount) || amount <= 0.0 || std::floor(amount) != amount ||
-            amount >= std::ldexp(1.0, 63)) {
+        if (!std::isfinite(amount) || amount <= 0.0 || std::floor(amount) != amount || amount >= std::ldexp(1.0, 63)) {
             if (error) *error = "skill cost must be a finite positive integer: " + resource;
             return {};
         }
-        auto item = eve::resource::ResourceCost::create(
-            resource, static_cast<std::int64_t>(amount));
+        auto item = eve::resource::ResourceCost::create(resource, static_cast<std::int64_t>(amount));
         if (!item) {
             if (error) *error = item.status().describe();
             return {};

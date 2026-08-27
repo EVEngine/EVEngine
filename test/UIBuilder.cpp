@@ -12,13 +12,13 @@ using namespace eve::ui;
 
 namespace {
 
-UIHost* resolveHost(UIHostHandle handle) {
+UIHost *resolveHost(UIHostHandle handle) {
     auto host = UIHost::resolve(handle);
     return host ? &host->get() : nullptr;
 }
 
-UINode* findNode(UIHostHandle handle, const std::string& id) {
-    UIHost* host = resolveHost(handle);
+UINode *findNode(UIHostHandle handle, const std::string &id) {
+    UIHost *host = resolveHost(handle);
     if (host == nullptr) return nullptr;
     auto node = host->findById(id);
     return node ? &node->get() : nullptr;

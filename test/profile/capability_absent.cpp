@@ -3,7 +3,7 @@
 namespace {
 struct MissingCapability {
     static constexpr const char* capabilityName = "profile.optional.absent";
-    virtual ~MissingCapability() = default;
+    virtual ~MissingCapability()                = default;
 };
 }  // namespace
 

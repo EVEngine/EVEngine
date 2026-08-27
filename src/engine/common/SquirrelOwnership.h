@@ -10,8 +10,8 @@
 #include "common/RuntimeHandle.h"
 #include "common/Value.h"
 
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
+#include <simplesquirrel/simplesquirrel.hpp>
 
 #include <atomic>
 #include <cstdint>
@@ -20,8 +20,8 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <typeinfo>
 #include <type_traits>
+#include <typeinfo>
 #include <utility>
 #include <vector>
 
@@ -101,7 +101,7 @@ public:
     constexpr T& operator*() const noexcept { return *value_; }
 
 private:
-    T* value_ = nullptr;
+    T*            value_      = nullptr;
     std::uint64_t ownerEpoch_ = 0;
 };
 
@@ -117,8 +117,7 @@ using ScriptValue = eve::Value;
 class EVENGINE_API BorrowedSquirrelObject {
 public:
     constexpr BorrowedSquirrelObject() noexcept = default;
-    explicit constexpr BorrowedSquirrelObject(const ssq::Object* object) noexcept
-        : object_(object) {}
+    explicit constexpr BorrowedSquirrelObject(const ssq::Object* object) noexcept : object_(object) {}
 
     /**
      * @brief Returns the borrowed object, or `nullptr` when unbound.
@@ -133,17 +132,14 @@ public:
      */
     [[nodiscard]] constexpr const ssq::Object* get() const noexcept { return object_; }
     /** @brief Returns whether the view is bound to a non-empty object. */
-    [[nodiscard]] bool isBound() const noexcept {
-        return object_ != nullptr && !object_->isEmpty();
-    }
+    [[nodiscard]] bool isBound() const noexcept { return object_ != nullptr && !object_->isEmpty(); }
 
 private:
     const ssq::Object* object_ = nullptr;
 };
 
 /** @brief Creates a one-call Borrowed view without retaining a VM reference. */
-[[nodiscard]] inline BorrowedSquirrelObject borrowSquirrelObject(
-    const ssq::Object& object) noexcept {
+[[nodiscard]] inline BorrowedSquirrelObject borrowSquirrelObject(const ssq::Object& object) noexcept {
     return BorrowedSquirrelObject(&object);
 }
 
@@ -157,14 +153,13 @@ private:
 class EVENGINE_API OwnedSquirrelObject {
 public:
     OwnedSquirrelObject() = default;
-    explicit OwnedSquirrelObject(ssq::Object object) noexcept
-        : object_(std::move(object)) {}
+    explicit OwnedSquirrelObject(ssq::Object object) noexcept : object_(std::move(object)) {}
 
-    OwnedSquirrelObject(const OwnedSquirrelObject&) = delete;
-    OwnedSquirrelObject& operator=(const OwnedSquirrelObject&) = delete;
-    OwnedSquirrelObject(OwnedSquirrelObject&&) noexcept = default;
+    OwnedSquirrelObject(const OwnedSquirrelObject&)                = delete;
+    OwnedSquirrelObject& operator=(const OwnedSquirrelObject&)     = delete;
+    OwnedSquirrelObject(OwnedSquirrelObject&&) noexcept            = default;
     OwnedSquirrelObject& operator=(OwnedSquirrelObject&&) noexcept = default;
-    ~OwnedSquirrelObject() = default;
+    ~OwnedSquirrelObject()                                         = default;
 
     /** @brief Returns the rooted object without transferring ownership. */
     [[nodiscard]] const ssq::Object& get() const noexcept { return object_; }
@@ -182,16 +177,13 @@ private:
  * @param borrowed Object valid for the duration of this call.
  * @return A move-only owner, or a structured invalid-argument failure.
  */
-[[nodiscard]] inline eve::Result<OwnedSquirrelObject> ownSquirrelObject(
-    BorrowedSquirrelObject borrowed) {
+[[nodiscard]] inline eve::Result<OwnedSquirrelObject> ownSquirrelObject(BorrowedSquirrelObject borrowed) {
     if (!borrowed.isBound()) {
-        return eve::Result<OwnedSquirrelObject>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "cannot own an empty or unbound Squirrel object", {}, {},
-            "squirrel.ownership"));
+        return eve::Result<OwnedSquirrelObject>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "cannot own an empty or unbound Squirrel object", {}, {}, "squirrel.ownership"));
     }
-    return eve::Result<OwnedSquirrelObject>::success(
-        OwnedSquirrelObject(*borrowed.get()));
+    return eve::Result<OwnedSquirrelObject>::success(OwnedSquirrelObject(*borrowed.get()));
 }
 
 /**
@@ -204,17 +196,13 @@ private:
  */
 template <class Tag>
 struct RuntimeHandleRef {
-    RuntimeHandle<Tag> handle = RuntimeHandle<Tag>::invalid();
-    std::uint64_t ownerEpoch = 0;
+    RuntimeHandle<Tag> handle     = RuntimeHandle<Tag>::invalid();
+    std::uint64_t      ownerEpoch = 0;
 
     /** @brief Returns whether both the handle and its registry epoch are set. */
-    [[nodiscard]] constexpr bool isValid() const noexcept {
-        return handle.isValid() && ownerEpoch != 0;
-    }
+    [[nodiscard]] constexpr bool isValid() const noexcept { return handle.isValid() && ownerEpoch != 0; }
     /** @brief Returns the packed slot/generation projection. */
-    [[nodiscard]] constexpr std::uint64_t packed() const noexcept {
-        return handle.packed();
-    }
+    [[nodiscard]] constexpr std::uint64_t packed() const noexcept { return handle.packed(); }
     friend constexpr bool operator==(const RuntimeHandleRef&, const RuntimeHandleRef&) noexcept = default;
 };
 
@@ -231,13 +219,13 @@ template <class T, class Tag>
 class RuntimeObjectRegistry {
 public:
     using Handle = RuntimeHandle<Tag>;
-    using Ref = RuntimeHandleRef<Tag>;
+    using Ref    = RuntimeHandleRef<Tag>;
 
     /** @brief Creates an empty registry with a unique owner-lifetime epoch. */
     RuntimeObjectRegistry() : ownerEpoch_(nextEpoch()) {}
-    RuntimeObjectRegistry(const RuntimeObjectRegistry&) = delete;
-    RuntimeObjectRegistry& operator=(const RuntimeObjectRegistry&) = delete;
-    RuntimeObjectRegistry(RuntimeObjectRegistry&&) noexcept = default;
+    RuntimeObjectRegistry(const RuntimeObjectRegistry&)                = delete;
+    RuntimeObjectRegistry& operator=(const RuntimeObjectRegistry&)     = delete;
+    RuntimeObjectRegistry(RuntimeObjectRegistry&&) noexcept            = default;
     RuntimeObjectRegistry& operator=(RuntimeObjectRegistry&&) noexcept = default;
 
     /**
@@ -247,21 +235,19 @@ public:
      */
     [[nodiscard]] eve::Result<Ref> emplace(Owned<T> object) {
         if (!object) {
-            return eve::Result<Ref>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument,
-                "runtime registry cannot own a null object", {}, {},
-                "runtime.registry"));
+            return eve::Result<Ref>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "runtime registry cannot own a null object", {}, {},
+                                                                    "runtime.registry"));
         }
 
         try {
-            std::uint32_t index = Handle::invalidIndex;
-            bool appended = false;
+            std::uint32_t index    = Handle::invalidIndex;
+            bool          appended = false;
             if (!freeSlots_.empty()) {
                 index = freeSlots_.back();
             } else {
                 if (slots_.size() >= Handle::invalidIndex) {
-                    return failure<Ref>(eve::DiagnosticCode::Failed,
-                                       "runtime registry exhausted its slot index space");
+                    return failure<Ref>(eve::DiagnosticCode::Failed, "runtime registry exhausted its slot index space");
                 }
                 index = static_cast<std::uint32_t>(slots_.size());
                 slots_.emplace_back();
@@ -272,19 +258,17 @@ public:
             if (slot.retired || slot.object) {
                 if (appended) slots_.pop_back();
                 return failure<Ref>(eve::DiagnosticCode::InvariantViolation,
-                                   "runtime registry selected an occupied slot");
+                                    "runtime registry selected an occupied slot");
             }
             const Handle handle(index, slot.generation);
             slot.object = std::move(object);
-            if (!freeSlots_.empty() && freeSlots_.back() == index)
-                freeSlots_.pop_back();
+            if (!freeSlots_.empty() && freeSlots_.back() == index) freeSlots_.pop_back();
             return eve::Result<Ref>::success(Ref{handle, ownerEpoch_});
         } catch (const std::exception& error) {
             return failure<Ref>(eve::DiagnosticCode::Failed,
-                               std::string("runtime registry allocation failed: ") + error.what());
+                                std::string("runtime registry allocation failed: ") + error.what());
         } catch (...) {
-            return failure<Ref>(eve::DiagnosticCode::Failed,
-                               "runtime registry allocation failed");
+            return failure<Ref>(eve::DiagnosticCode::Failed, "runtime registry allocation failed");
         }
     }
 
@@ -304,9 +288,8 @@ public:
         const auto slotIndex = findSlotIndex(ref);
         if (!slotIndex) return Borrowed<T>();
         Slot& slot = slots_[*slotIndex];
-        return slot.object && slot.generation == ref.handle.generation()
-                   ? Borrowed<T>(slot.object.get(), ownerEpoch_)
-                   : Borrowed<T>();
+        return slot.object && slot.generation == ref.handle.generation() ? Borrowed<T>(slot.object.get(), ownerEpoch_)
+                                                                         : Borrowed<T>();
     }
     /**
      * @brief Resolves a live object as a const non-owning observation.
@@ -334,37 +317,36 @@ public:
      */
     [[nodiscard]] eve::Result<void> erase(Ref ref) {
         if (!ref.handle.isValid()) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument,
-                "cannot erase an invalid runtime handle", {}, {},
-                "runtime.registry"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "cannot erase an invalid runtime handle", {}, {},
+                                                                     "runtime.registry"));
         }
         if (ref.ownerEpoch != ownerEpoch_) return staleFailure<void>();
         const auto slotIndex = findSlotIndex(ref);
         if (!slotIndex) return staleFailure<void>();
         Slot& slot = slots_[*slotIndex];
-        if (!slot.object || slot.generation != ref.handle.generation())
-            return staleFailure<void>();
+        if (!slot.object || slot.generation != ref.handle.generation()) return staleFailure<void>();
 
         const auto next = Handle::nextGeneration(slot.generation);
         if (next) {
             try {
                 freeSlots_.push_back(ref.handle.index());
             } catch (const std::exception& error) {
-                return eve::Result<void>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::Failed,
-                    std::string("runtime registry release bookkeeping failed: ") + error.what(),
-                    {}, {}, "runtime.registry"));
+                return eve::Result<void>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                           std::string("runtime registry release bookkeeping failed: ") + error.what(),
+                                           {}, {}, "runtime.registry"));
             } catch (...) {
-                return eve::Result<void>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::Failed,
-                    "runtime registry release bookkeeping failed", {}, {},
-                    "runtime.registry"));
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                         "runtime registry release bookkeeping failed",
+                                                                         {}, {}, "runtime.registry"));
             }
         }
         slot.object.reset();
-        if (next) slot.generation = *next;
-        else slot.retired = true;
+        if (next)
+            slot.generation = *next;
+        else
+            slot.retired = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
@@ -377,37 +359,36 @@ public:
      */
     [[nodiscard]] eve::Result<Owned<T>> take(Ref ref) {
         if (!ref.handle.isValid()) {
-            return eve::Result<Owned<T>>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument,
-                "cannot transfer an invalid runtime handle", {}, {},
-                "runtime.registry"));
+            return eve::Result<Owned<T>>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "cannot transfer an invalid runtime handle",
+                                                                         {}, {}, "runtime.registry"));
         }
         if (ref.ownerEpoch != ownerEpoch_) return staleFailure<Owned<T>>();
         const auto slotIndex = findSlotIndex(ref);
         if (!slotIndex) return staleFailure<Owned<T>>();
         Slot& slot = slots_[*slotIndex];
-        if (!slot.object || slot.generation != ref.handle.generation())
-            return staleFailure<Owned<T>>();
+        if (!slot.object || slot.generation != ref.handle.generation()) return staleFailure<Owned<T>>();
 
         const auto next = Handle::nextGeneration(slot.generation);
         if (next) {
             try {
                 freeSlots_.push_back(ref.handle.index());
             } catch (const std::exception& error) {
-                return eve::Result<Owned<T>>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::Failed,
-                    std::string("runtime registry release bookkeeping failed: ") + error.what(),
-                    {}, {}, "runtime.registry"));
+                return eve::Result<Owned<T>>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                           std::string("runtime registry release bookkeeping failed: ") + error.what(),
+                                           {}, {}, "runtime.registry"));
             } catch (...) {
-                return eve::Result<Owned<T>>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::Failed,
-                    "runtime registry release bookkeeping failed", {}, {},
-                    "runtime.registry"));
+                return eve::Result<Owned<T>>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Failed, "runtime registry release bookkeeping failed",
+                                           {}, {}, "runtime.registry"));
             }
         }
         Owned<T> object = std::move(slot.object);
-        if (next) slot.generation = *next;
-        else slot.retired = true;
+        if (next)
+            slot.generation = *next;
+        else
+            slot.retired = true;
         return eve::Result<Owned<T>>::success(std::move(object));
     }
 
@@ -441,21 +422,18 @@ public:
     }
 
     /** @brief Returns the non-reusable lifetime epoch of this registry. */
-    [[nodiscard]] constexpr std::uint64_t ownerEpoch() const noexcept {
-        return ownerEpoch_;
-    }
+    [[nodiscard]] constexpr std::uint64_t ownerEpoch() const noexcept { return ownerEpoch_; }
 
 private:
     struct Slot {
         std::uint32_t generation = 1;
-        bool retired = false;
-        Owned<T> object;
+        bool          retired    = false;
+        Owned<T>      object;
     };
 
     template <class R>
     static eve::Result<R> failure(eve::DiagnosticCode code, std::string message) {
-        return eve::Result<R>::failure(eve::Diagnostic::error(
-            code, std::move(message), {}, {}, "runtime.registry"));
+        return eve::Result<R>::failure(eve::Diagnostic::error(code, std::move(message), {}, {}, "runtime.registry"));
     }
 
     template <class R>
@@ -465,13 +443,13 @@ private:
     }
 
     [[nodiscard]] std::optional<std::uint32_t> findSlotIndex(Ref ref) noexcept {
-        if (ref.ownerEpoch != ownerEpoch_ || !ref.handle.isValid() ||
-            ref.handle.index() >= slots_.size()) return std::nullopt;
+        if (ref.ownerEpoch != ownerEpoch_ || !ref.handle.isValid() || ref.handle.index() >= slots_.size())
+            return std::nullopt;
         return ref.handle.index();
     }
     [[nodiscard]] std::optional<std::uint32_t> findSlotIndex(Ref ref) const noexcept {
-        if (ref.ownerEpoch != ownerEpoch_ || !ref.handle.isValid() ||
-            ref.handle.index() >= slots_.size()) return std::nullopt;
+        if (ref.ownerEpoch != ownerEpoch_ || !ref.handle.isValid() || ref.handle.index() >= slots_.size())
+            return std::nullopt;
         return ref.handle.index();
     }
 
@@ -482,9 +460,9 @@ private:
     }
 
     inline static std::atomic<std::uint64_t> nextEpoch_{1};
-    std::uint64_t ownerEpoch_;
-    std::vector<Slot> slots_;
-    std::vector<std::uint32_t> freeSlots_;
+    std::uint64_t                            ownerEpoch_;
+    std::vector<Slot>                        slots_;
+    std::vector<std::uint32_t>               freeSlots_;
 };
 
 namespace detail {
@@ -505,29 +483,24 @@ SQInteger ownedInstanceReleaseHook(SQUserPointer pointer, SQInteger) noexcept {
  * owner and can safely cross the current native call into script storage.
  */
 template <class T>
-[[nodiscard]] eve::Result<ssq::Object> makeOwnedSquirrelInstance(
-    HSQUIRRELVM vm, Owned<T> object) {
+[[nodiscard]] eve::Result<ssq::Object> makeOwnedSquirrelInstance(HSQUIRRELVM vm, Owned<T> object) {
     if (!vm || !object) {
         return eve::Result<ssq::Object>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "owned Squirrel instance requires a VM and non-null object", {}, {},
+            eve::DiagnosticCode::InvalidArgument, "owned Squirrel instance requires a VM and non-null object", {}, {},
             "squirrel.ownership"));
     }
 
-    const SQInteger top = sq_gettop(vm);
-    bool transferred = false;
+    const SQInteger top         = sq_gettop(vm);
+    bool            transferred = false;
     try {
-        const HSQOBJECT& classObject =
-            ssq::detail::getClassObj(vm, typeid(T*).hash_code());
+        const HSQOBJECT& classObject = ssq::detail::getClassObj(vm, typeid(T*).hash_code());
         sq_pushobject(vm, classObject);
         if (SQ_FAILED(sq_createinstance(vm, -1)))
             throw ssq::RuntimeException("failed to create owned Squirrel instance");
         sq_remove(vm, -2);
-        if (SQ_FAILED(sq_setinstanceup(vm, -1,
-                                       static_cast<SQUserPointer>(object.get()))))
+        if (SQ_FAILED(sq_setinstanceup(vm, -1, static_cast<SQUserPointer>(object.get()))))
             throw ssq::RuntimeException("failed to attach owned Squirrel instance");
-        sq_settypetag(vm, -1,
-                      reinterpret_cast<SQUserPointer>(typeid(T*).hash_code()));
+        sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(typeid(T*).hash_code()));
         sq_setreleasehook(vm, -1, &detail::ownedInstanceReleaseHook<T>);
         object.release();
         transferred = true;
@@ -542,20 +515,16 @@ template <class T>
         sq_settop(vm, top);
         if (!transferred) {
             return eve::Result<ssq::Object>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed,
-                std::string("owned Squirrel instance creation failed: ") + error.what(),
+                eve::DiagnosticCode::Failed, std::string("owned Squirrel instance creation failed: ") + error.what(),
                 {}, {}, "squirrel.ownership"));
         }
         return eve::Result<ssq::Object>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed,
-            std::string("owned Squirrel instance rooting failed: ") + error.what(),
-            {}, {}, "squirrel.ownership"));
+            eve::DiagnosticCode::Failed, std::string("owned Squirrel instance rooting failed: ") + error.what(), {}, {},
+            "squirrel.ownership"));
     } catch (...) {
         sq_settop(vm, top);
         return eve::Result<ssq::Object>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed,
-            "owned Squirrel instance creation failed", {}, {},
-            "squirrel.ownership"));
+            eve::DiagnosticCode::Failed, "owned Squirrel instance creation failed", {}, {}, "squirrel.ownership"));
     }
 }
 

@@ -185,11 +185,11 @@ int Weapon::registerWeaponsFromJson(const std::string& json) {
         return 0;
     }
 
-    int n = 0;
+    int        n       = 0;
     const auto publish = [this, &n](const eve::Value& value) {
         const auto* object = value.getIf<eve::Value::Object>();
         if (object == nullptr) return;
-        const auto id = object->find("id");
+        const auto  id   = object->find("id");
         const auto* name = id == object->end() ? nullptr : id->second.getIf<std::string>();
         if (name == nullptr || name->empty()) return;
 
@@ -199,18 +199,18 @@ int Weapon::registerWeaponsFromJson(const std::string& json) {
             return;
         }
         eve::definitions::Definition source;
-        source.type = "weapon";
-        source.id = *name;
+        source.type    = "weapon";
+        source.id      = *name;
         source.version = eve::SchemaVersion(1);
-        source.json = encoded.value();
-        auto typed = parseWeaponDefinition(source);
+        source.json    = encoded.value();
+        auto typed     = parseWeaponDefinition(source);
         if (!typed) {
             typed.ignore("weapon definition failed typed projection validation");
             return;
         }
 
-        auto current = definitionRegistry_.resolve("weapon", *name);
-        const bool exists = current.ok();
+        auto       current = definitionRegistry_.resolve("weapon", *name);
+        const bool exists  = current.ok();
         if (!exists && current.status().code() != eve::StatusCode::NotFound) return;
         auto stored = exists ? definitionRegistry_.replace("weapon", *name, 1, source.json)
                              : definitionRegistry_.insert("weapon", *name, 1, source.json);
@@ -240,9 +240,7 @@ void Weapon::clearWeaponDefinitions() {
 
 int Weapon::getWeaponDefinitionCount() { return definitionRegistry_.countType("weapon"); }
 
-bool Weapon::hasWeaponDefinition(const std::string& id) {
-    return definitionRegistry_.resolve("weapon", id).ok();
-}
+bool Weapon::hasWeaponDefinition(const std::string& id) { return definitionRegistry_.resolve("weapon", id).ok(); }
 
 std::string Weapon::getWeaponDefinitionLogic(const std::string& id) {
     auto definition = findDef(id);
@@ -296,12 +294,12 @@ WeaponEntity* Weapon::newWeapon(const std::string& defId) {
     WeaponEntity* w         = WeaponEntity::createWeapon();
     w->identity()->id       = defId + "#" + std::to_string(nextInstance_++);
     w->identity()->defId    = defId;
-    w->definition()->owned  = std::make_shared<const WeaponDefinition>(std::move(d));
-    w->definition()->def    = w->definition()->owned.get();
-    w->state()->stages      = &w->definition()->def->stages;
+    w->definition()->owned                   = std::make_shared<const WeaponDefinition>(std::move(d));
+    w->definition()->def                     = w->definition()->owned.get();
+    w->state()->stages                       = &w->definition()->def->stages;
     const WeaponDefinition& storedDefinition = *w->definition()->def;
-    w->state()->selector    = storedDefinition.fireMode;
-    w->state()->currentSpread = storedDefinition.spreadMin;
+    w->state()->selector                     = storedDefinition.fireMode;
+    w->state()->currentSpread                = storedDefinition.spreadMin;
 
     // 运行时资源：热武器 ammo 映射到弹匣/备用；其余形态从模板 resource 拷贝。
     Resource& r = w->state()->resource;

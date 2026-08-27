@@ -33,16 +33,15 @@ void destroyHandles(std::vector<ecs::EntityHandle>& handles) {
 
 template <typename T>
 std::size_t countLive(const std::vector<ecs::EntityHandle>& handles) {
-    return static_cast<std::size_t>(std::count_if(
-        handles.begin(), handles.end(), [](const ecs::EntityHandle& handle) {
-            return dynamic_cast<T*>(ecs::try_get(handle)) != nullptr;
-        }));
+    return static_cast<std::size_t>(std::count_if(handles.begin(), handles.end(), [](const ecs::EntityHandle& handle) {
+        return dynamic_cast<T*>(ecs::try_get(handle)) != nullptr;
+    }));
 }
 
 template <typename T>
-bool owns(const std::vector<ecs::EntityHandle> &handles, const T &entity) {
-    const auto live = ecs::handle_of(const_cast<T *>(&entity));
-    return std::any_of(handles.begin(), handles.end(), [&live](const auto &handle) {
+bool owns(const std::vector<ecs::EntityHandle>& handles, const T& entity) {
+    const auto live = ecs::handle_of(const_cast<T*>(&entity));
+    return std::any_of(handles.begin(), handles.end(), [&live](const auto& handle) {
         return handle.table == live.table && handle.type == live.type && handle.id == live.id &&
                handle.generation == live.generation;
     });
@@ -61,11 +60,9 @@ RTS::~RTS() {
 
 Result<Unit*> RTS::newUnit(SubjectRef subject, LogicalId definition) {
     if (!validSubject(subject))
-        return failure<Unit*>(DiagnosticCode::InvalidArgument,
-                              "RTS Unit requires a valid SubjectRef", "subject");
+        return failure<Unit*>(DiagnosticCode::InvalidArgument, "RTS Unit requires a valid SubjectRef", "subject");
     Unit* unit = Unit::createUnit(subject, std::move(definition));
-    if (unit == nullptr)
-        return failure<Unit*>(DiagnosticCode::Failed, "ECS failed to create an RTS Unit", "unit");
+    if (unit == nullptr) return failure<Unit*>(DiagnosticCode::Failed, "ECS failed to create an RTS Unit", "unit");
     auto attributes = RTSUnitAttributeAdapter::ensure(*unit);
     if (!attributes) {
         const auto status = attributes.status();
@@ -84,8 +81,8 @@ Result<Unit*> RTS::newUnit(SubjectRef subject, LogicalId definition) {
 
 Result<Building*> RTS::newBuilding(SubjectRef subject, LogicalId definition) {
     if (!validSubject(subject))
-        return failure<Building*>(DiagnosticCode::InvalidArgument,
-                                  "RTS Building requires a valid SubjectRef", "subject");
+        return failure<Building*>(DiagnosticCode::InvalidArgument, "RTS Building requires a valid SubjectRef",
+                                  "subject");
     Building* building = Building::createBuilding(subject, std::move(definition));
     if (building == nullptr)
         return failure<Building*>(DiagnosticCode::Failed, "ECS failed to create an RTS Building", "building");
@@ -101,8 +98,7 @@ Result<Building*> RTS::newBuilding(SubjectRef subject, LogicalId definition) {
 
 Result<Player*> RTS::newPlayer(SubjectRef subject) {
     if (!validSubject(subject))
-        return failure<Player*>(DiagnosticCode::InvalidArgument,
-                                "RTS Player requires a valid SubjectRef", "subject");
+        return failure<Player*>(DiagnosticCode::InvalidArgument, "RTS Player requires a valid SubjectRef", "subject");
     Player* player = Player::createPlayer(subject);
     if (player == nullptr)
         return failure<Player*>(DiagnosticCode::Failed, "ECS failed to create an RTS Player", "player");
@@ -112,8 +108,7 @@ Result<Player*> RTS::newPlayer(SubjectRef subject) {
 
 Result<Faction*> RTS::newFaction(SubjectRef subject) {
     if (!validSubject(subject))
-        return failure<Faction*>(DiagnosticCode::InvalidArgument,
-                                 "RTS Faction requires a valid SubjectRef", "subject");
+        return failure<Faction*>(DiagnosticCode::InvalidArgument, "RTS Faction requires a valid SubjectRef", "subject");
     Faction* faction = Faction::createFaction(subject);
     if (faction == nullptr)
         return failure<Faction*>(DiagnosticCode::Failed, "ECS failed to create an RTS Faction", "faction");
@@ -121,58 +116,52 @@ Result<Faction*> RTS::newFaction(SubjectRef subject) {
     return Result<Faction*>::success(faction, Status::success(StatusCode::Applied));
 }
 
-Result<FanOutReceipt> RTS::fanOut(const Player::Selection& selection,
-                                  const CommandSpec& command,
+Result<FanOutReceipt> RTS::fanOut(const Player::Selection& selection, const CommandSpec& command,
                                   const FormationSpec& formation) const {
     return CommandFanOutSystem::fanOut(selection.units, command, formation);
 }
 
-Result<double> RTS::readUnitAttribute(Unit &unit, std::string_view attribute) const {
+Result<double> RTS::readUnitAttribute(Unit& unit, std::string_view attribute) const {
     if (!owns(units_, unit))
-        return Result<double>::failure(Diagnostic::error(
-            DiagnosticCode::StaleHandle, "RTS Unit does not belong to this facade", "unit"));
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS Unit does not belong to this facade", "unit"));
     return RTSUnitAttributeAdapter::read(unit, attribute);
 }
 
-Result<void> RTS::setUnitAttribute(Unit &unit, std::string_view attribute, double value) const {
+Result<void> RTS::setUnitAttribute(Unit& unit, std::string_view attribute, double value) const {
     if (!owns(units_, unit))
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::StaleHandle, "RTS Unit does not belong to this facade", "unit"));
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS Unit does not belong to this facade", "unit"));
     return RTSUnitAttributeAdapter::setBase(unit, attribute, value);
 }
 
-Result<effects::EffectHandle> RTS::applyEffect(
-    Unit &unit, const RTSEffectDefinition &definition) const {
+Result<effects::EffectHandle> RTS::applyEffect(Unit& unit, const RTSEffectDefinition& definition) const {
     if (!owns(units_, unit))
-        return Result<effects::EffectHandle>::failure(Diagnostic::error(
-            DiagnosticCode::StaleHandle, "RTS Unit does not belong to this facade", "unit"));
+        return Result<effects::EffectHandle>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS Unit does not belong to this facade", "unit"));
     return unit.effects()->values.apply(definition);
 }
 
-Result<effects::EffectHandle> RTS::applyEffect(
-    Building &building, const RTSEffectDefinition &definition) const {
+Result<effects::EffectHandle> RTS::applyEffect(Building& building, const RTSEffectDefinition& definition) const {
     if (!owns(buildings_, building))
-        return Result<effects::EffectHandle>::failure(Diagnostic::error(
-            DiagnosticCode::StaleHandle, "RTS Building does not belong to this facade", "building"));
+        return Result<effects::EffectHandle>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS Building does not belong to this facade", "building"));
     return building.effects()->values.apply(definition);
 }
 
-Result<RTSBuildReceipt> RTS::build(
-    Building &building, action::ActionRuntime &action,
-    resource::IResourceAccount &account, resource::CostSpec cost,
-    std::string product, Duration duration, std::string productionKind,
-    int priority, std::string transactionId) {
+Result<RTSBuildReceipt> RTS::build(Building& building, action::ActionRuntime& action,
+                                   resource::IResourceAccount& account, resource::CostSpec cost, std::string product,
+                                   Duration duration, std::string productionKind, int priority,
+                                   std::string transactionId) {
     if (!owns(buildings_, building))
-        return Result<RTSBuildReceipt>::failure(Diagnostic::error(
-            DiagnosticCode::StaleHandle, "RTS Building does not belong to this facade", "building"));
-    return RTSProductionActionAdapter::build(
-        building, action, account, std::move(cost), std::move(product),
-        std::move(duration), std::move(productionKind), priority,
-        std::move(transactionId));
+        return Result<RTSBuildReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS Building does not belong to this facade", "building"));
+    return RTSProductionActionAdapter::build(building, action, account, std::move(cost), std::move(product),
+                                             std::move(duration), std::move(productionKind), priority,
+                                             std::move(transactionId));
 }
 
-Result<std::size_t> RTS::step(const SimulationStep& simulationStep,
-                              IRTSActionExecutor& executor) {
+Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionExecutor& executor) {
     auto motion = MotionSystem::step(simulationStep);
     if (!motion) return failureFrom<std::size_t>(motion.status());
     std::size_t processed = std::move(motion).takeValue();

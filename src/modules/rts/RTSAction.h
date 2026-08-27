@@ -44,8 +44,8 @@ public:
      * @param step Deterministic simulation step supplied by the caller.
      * @return Pending or Completed, or a structured provider failure.
      */
-    [[nodiscard]] virtual Result<ActionExecutionResult> execute(
-        Unit& unit, const OrderRecord& order, const SimulationStep& step) = 0;
+    [[nodiscard]] virtual Result<ActionExecutionResult> execute(Unit& unit, const OrderRecord& order,
+                                                                const SimulationStep& step) = 0;
 };
 
 /**
@@ -61,12 +61,12 @@ public:
     explicit ActionAdapter(action::ActionRuntime& runtime);
     ~ActionAdapter() override;
 
-    ActionAdapter(const ActionAdapter&) = delete;
+    ActionAdapter(const ActionAdapter&)            = delete;
     ActionAdapter& operator=(const ActionAdapter&) = delete;
 
     /** @copydoc IRTSActionExecutor::execute */
-    [[nodiscard]] Result<ActionExecutionResult> execute(
-        Unit& unit, const OrderRecord& order, const SimulationStep& step) override;
+    [[nodiscard]] Result<ActionExecutionResult> execute(Unit& unit, const OrderRecord& order,
+                                                        const SimulationStep& step) override;
 
 private:
     struct Impl;

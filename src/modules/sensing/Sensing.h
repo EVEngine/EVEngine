@@ -60,8 +60,8 @@ public:
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
 private:
-    bool accepts(const Subject&, const std::set<std::string>&, const std::set<std::string>&,
-                 const std::set<std::string>&, const std::set<std::string>&, std::string_view) const;
+    bool                           accepts(const Subject&, const std::set<std::string>&, const std::set<std::string>&,
+                                           const std::set<std::string>&, const std::set<std::string>&, std::string_view) const;
     int  finish(float x, float y, int limit);
     std::map<std::string, Subject> subjects_;
     std::vector<Candidate>         results_;

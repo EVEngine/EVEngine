@@ -40,8 +40,7 @@ namespace {
 
 template <class T>
 eve::Result<T> sceneFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), "scene"));
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), "scene"));
 }
 
 template <class T>
@@ -626,11 +625,11 @@ SceneHost *Scene::ensureSelected(const std::string &preferredName) {
     return selected_;
 }
 
-eve::Result<SceneHost*> Scene::mountAs(const std::string &name, NodeDesc root) {
+eve::Result<SceneHost *> Scene::mountAs(const std::string &name, NodeDesc root) {
     SceneHost *h = findHostByName(name);
     if (!h) {
         auto created = SceneHost::createHost(name);
-        if (!created.ok()) return eve::Result<SceneHost*>::failure(created.status());
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
         h = std::move(created).takeValue();
     }
     try {
@@ -638,22 +637,20 @@ eve::Result<SceneHost*> Scene::mountAs(const std::string &name, NodeDesc root) {
         TransformSystem::updateHost(h);
         pruneOrphanObjects();
     } catch (const std::exception &error) {
-        return sceneFailure<SceneHost*>(eve::DiagnosticCode::PreconditionViolation,
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
                                          std::string("scene mount rejected: ") + error.what());
     }
     selected_ = h;
-    return eve::Result<SceneHost*>::success(h, eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<SceneHost*> Scene::mount(NodeDesc root) {
-    return mountAs("default", std::move(root));
-}
+eve::Result<SceneHost *> Scene::mount(NodeDesc root) { return mountAs("default", std::move(root)); }
 
-eve::Result<SceneHost*> Scene::remount(NodeDesc root) {
+eve::Result<SceneHost *> Scene::remount(NodeDesc root) {
     SceneHost *h = selected_ ? selected_ : findHostByName("default");
     if (!h) {
         auto created = SceneHost::createHost("default");
-        if (!created.ok()) return eve::Result<SceneHost*>::failure(created.status());
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
         h = std::move(created).takeValue();
     }
     try {
@@ -661,18 +658,18 @@ eve::Result<SceneHost*> Scene::remount(NodeDesc root) {
         TransformSystem::updateHost(h);
         pruneOrphanObjects();
     } catch (const std::exception &error) {
-        return sceneFailure<SceneHost*>(eve::DiagnosticCode::PreconditionViolation,
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
                                          std::string("scene remount rejected: ") + error.what());
     }
     selected_ = h;
-    return eve::Result<SceneHost*>::success(h, eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<SceneHost*> Scene::remountReconcile(NodeDesc root) {
+eve::Result<SceneHost *> Scene::remountReconcile(NodeDesc root) {
     SceneHost *h = selected_ ? selected_ : findHostByName("default");
     if (!h) {
         auto created = SceneHost::createHost("default");
-        if (!created.ok()) return eve::Result<SceneHost*>::failure(created.status());
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
         h = std::move(created).takeValue();
     }
     try {
@@ -680,15 +677,15 @@ eve::Result<SceneHost*> Scene::remountReconcile(NodeDesc root) {
         TransformSystem::updateHost(h);
         pruneOrphanObjects();
         selected_ = h;
-        return eve::Result<SceneHost*>::success(
+        return eve::Result<SceneHost *>::success(
             h, eve::Status::success(rebuilt ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
     } catch (const std::exception &error) {
-        return sceneFailure<SceneHost*>(eve::DiagnosticCode::PreconditionViolation,
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
                                          std::string("scene reconcile rejected: ") + error.what());
     }
 }
 
-eve::Result<SceneHost*> Scene::remountAs(const std::string &name, NodeDesc root) {
+eve::Result<SceneHost *> Scene::remountAs(const std::string &name, NodeDesc root) {
     return mountAs(name, std::move(root));
 }
 
@@ -699,24 +696,20 @@ bool Scene::select(const std::string &name) {
     return true;
 }
 
-eve::Result<SceneHost*> Scene::findHost(const std::string &name) const {
+eve::Result<SceneHost *> Scene::findHost(const std::string &name) const {
     if (name.empty())
-        return sceneFailure<SceneHost*>(eve::DiagnosticCode::InvalidArgument,
-                                        "scene host name must not be empty");
-    if (SceneHost *host = findHostByName(name))
-        return eve::Result<SceneHost*>::success(host, eve::Status::success());
-    return sceneFailure<SceneHost*>(eve::DiagnosticCode::NotFound,
-                                    "scene host was not found: " + name);
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::InvalidArgument, "scene host name must not be empty");
+    if (SceneHost *host = findHostByName(name)) return eve::Result<SceneHost *>::success(host, eve::Status::success());
+    return sceneFailure<SceneHost *>(eve::DiagnosticCode::NotFound, "scene host was not found: " + name);
 }
 
-eve::Result<SceneHost*> Scene::findHostByOwner(uint32_t ownerId) const {
+eve::Result<SceneHost *> Scene::findHostByOwner(uint32_t ownerId) const {
     if (ownerId == 0)
-        return sceneFailure<SceneHost*>(eve::DiagnosticCode::InvalidArgument,
-                                        "scene host owner id must not be zero");
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::InvalidArgument, "scene host owner id must not be zero");
     if (SceneHost *host = findHostByOwnerId(ownerId))
-        return eve::Result<SceneHost*>::success(host, eve::Status::success());
-    return sceneFailure<SceneHost*>(eve::DiagnosticCode::NotFound,
-                                    "scene host owner id was not found: " + std::to_string(ownerId));
+        return eve::Result<SceneHost *>::success(host, eve::Status::success());
+    return sceneFailure<SceneHost *>(eve::DiagnosticCode::NotFound,
+                                     "scene host owner id was not found: " + std::to_string(ownerId));
 }
 
 void Scene::bindOwner(uint32_t ownerId) {
@@ -761,7 +754,7 @@ bool Scene::deserializeHostAt(const std::string &hostName, const std::string &js
         Poco::JSON::Object::Ptr tree = root->getObject("root");
         if (!tree) return false;
         NodeDesc desc = nodeFromJson(tree);
-        auto mounted = mountAs(hostName.empty() ? "default" : hostName, std::move(desc));
+        auto     mounted = mountAs(hostName.empty() ? "default" : hostName, std::move(desc));
         return mounted.ok();
     } catch (...) {
         return false;
@@ -922,9 +915,9 @@ SceneObject *Scene::ensureSceneObject(SceneHost *host, SceneNode *node,
     }
     if (!node->persistentId.isNil()) {
         if (SceneObject *o = findSceneObjectByPersistentId(node->persistentId)) {
-            node->objectId = uint32_t(o->id);
+            node->objectId      = uint32_t(o->id);
             o->meta()->hostName = hostName;
-            o->meta()->nodeId = node->id;
+            o->meta()->nodeId   = node->id;
             return o;
         }
     }
@@ -1166,9 +1159,8 @@ void Scene::expose(ssq::Table &table) {
         std::function<SceneNodeRef *()>([]() -> SceneNodeRef * { return nullptr; }), true);
     refCls.addFunc("getNodeId", &SceneNodeRef::getNodeId);
     refCls.addFunc("getHostName", &SceneNodeRef::getHostName);
-    refCls.addFunc("getPersistentId", [](SceneNodeRef *ref) {
-        return ref ? ref->persistentId().format() : std::string{};
-    });
+    refCls.addFunc("getPersistentId",
+                   [](SceneNodeRef *ref) { return ref ? ref->persistentId().format() : std::string{}; });
     refCls.addFunc("isValid", &SceneNodeRef::isValid);
     refCls.addFunc("getScene", &SceneNodeRef::getScene);
     refCls.addFunc("setPosition", &SceneNodeRef::setPosition);

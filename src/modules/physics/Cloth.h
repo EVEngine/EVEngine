@@ -43,24 +43,18 @@ public:
 
     /** @brief Advances cloth with the shared ticked backend contract. */
     [[nodiscard("check the cloth step outcome")]]
-    eve::Result<void> step(const eve::SimulationStep& step,
-                           const SimulationSettings& settings) override;
+    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings) override;
     /** @brief Returns completed tick/time observables. */
-    [[nodiscard]] SimulationObservation observation() const noexcept override {
-        return observation_;
-    }
+    [[nodiscard]] SimulationObservation observation() const noexcept override { return observation_; }
     /** @brief Identifies this production CPU cloth backend. */
-    [[nodiscard]] SimulationBackendKind kind() const noexcept override {
-        return SimulationBackendKind::Cpu;
-    }
+    [[nodiscard]] SimulationBackendKind kind() const noexcept override { return SimulationBackendKind::Cpu; }
     /** @brief CPU cloth uses bounded floating-point determinism. */
     [[nodiscard]] SimulationDeterminism determinism() const noexcept override {
         return SimulationDeterminism::ToleranceBounded;
     }
     /** @brief Restores tick/progress metadata after an owner-level restore. */
     [[nodiscard("check cloth observation restore")]]
-    eve::Result<void> restoreObservation(
-        const SimulationObservation& observation) override;
+    eve::Result<void> restoreObservation(const SimulationObservation &observation) override;
 
     void  setGravity(float gx, float gy);
     float getGravityX() const { return gravityX_; }
@@ -200,7 +194,7 @@ private:
     };
 
     void rebuildLinks();
-    void updateSubsteps(float dt, int substeps);
+    void    updateSubsteps(float dt, int substeps);
     void integrate(float dt);
     void solveConstraints();
     void solveFoldConstraint();

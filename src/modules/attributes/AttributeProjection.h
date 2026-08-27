@@ -25,7 +25,7 @@ namespace eve::attributes {
 /** @brief One base value captured by an attribute projection snapshot. */
 struct AttributeSnapshotBase {
     AttributeId attribute;
-    double base = 0.0;
+    double      base = 0.0;
 };
 
 /**
@@ -36,10 +36,10 @@ struct AttributeSnapshotBase {
  * with the ECS generation.
  */
 struct AttributeProjectionSnapshot {
-    ecs::EntityHandle owner{};
-    Revision capturedRevision = Revision::zero();
+    ecs::EntityHandle                  owner{};
+    Revision                           capturedRevision = Revision::zero();
     std::vector<AttributeSnapshotBase> bases;
-    std::vector<AttributeModifier> modifiers;
+    std::vector<AttributeModifier>     modifiers;
 };
 
 /**
@@ -83,8 +83,7 @@ public:
     [[nodiscard]] Result<void> modifyBase(std::string_view attribute, double delta);
 
     /** @brief Read a deterministic final value, or the supplied default when absent. */
-    [[nodiscard]] Result<double> getFinal(std::string_view attribute,
-                                          double fallback = 0.0) const;
+    [[nodiscard]] Result<double> getFinal(std::string_view attribute, double fallback = 0.0) const;
 
     /** @brief Return whether the canonical set contains a base or modifier for the name. */
     [[nodiscard]] bool has(std::string_view attribute) const;
@@ -107,16 +106,13 @@ public:
      * @thread Owner-thread-affine; no synchronization is provided.
      * @reentrancy Side-effect free and does not invoke callbacks.
      */
-    [[nodiscard]] const AttributeModifier* modifierAt(int index) const {
-        return values_.modifierAt(index);
-    }
+    [[nodiscard]] const AttributeModifier* modifierAt(int index) const { return values_.modifierAt(index); }
 
     /**
      * @brief Capture only named attributes and their modifiers.
      * @param attributes Stable allow-list owned by the caller for this synchronous call.
      */
-    [[nodiscard]] Result<AttributeProjectionSnapshot> snapshot(
-        std::span<const std::string_view> attributes) const;
+    [[nodiscard]] Result<AttributeProjectionSnapshot> snapshot(std::span<const std::string_view> attributes) const;
 
     /**
      * @brief Restore a snapshot after owner and optimistic revision validation.
@@ -124,33 +120,32 @@ public:
      * @param expectedRevision Current revision the caller intends to replace.
      * @return Conflict/stale failure leaves every observable value unchanged.
      */
-    [[nodiscard]] Result<void> restore(const AttributeProjectionSnapshot& snapshot,
-                                       Revision expectedRevision);
+    [[nodiscard]] Result<void> restore(const AttributeProjectionSnapshot& snapshot, Revision expectedRevision);
 
 private:
     [[nodiscard]] Result<void> advanceRevision();
-    [[nodiscard]] bool ownsSameLiveEntity(ecs::EntityHandle owner) const noexcept;
+    [[nodiscard]] bool         ownsSameLiveEntity(ecs::EntityHandle owner) const noexcept;
 
-    AttributeSet values_;
+    AttributeSet      values_;
     ecs::EntityHandle owner_{};
-    Revision revision_ = Revision::zero();
-    bool initialized_ = false;
+    Revision          revision_    = Revision::zero();
+    bool              initialized_ = false;
 };
 
 /** @brief Stable source labels used by all domain attribute adapters. */
 namespace source {
 inline constexpr std::string_view definition = "definition";
-inline constexpr std::string_view runtime = "runtime";
-inline constexpr std::string_view effect = "effect";
-inline constexpr std::string_view equipment = "equipment";
+inline constexpr std::string_view runtime    = "runtime";
+inline constexpr std::string_view effect     = "effect";
+inline constexpr std::string_view equipment  = "equipment";
 }  // namespace source
 
 /** @brief Shared default priorities for domain adapters. */
 namespace priority {
 inline constexpr ModifierPriority definition = 0;
-inline constexpr ModifierPriority runtime = 100;
-inline constexpr ModifierPriority effect = 200;
-inline constexpr ModifierPriority equipment = 300;
+inline constexpr ModifierPriority runtime    = 100;
+inline constexpr ModifierPriority effect     = 200;
+inline constexpr ModifierPriority equipment  = 300;
 }  // namespace priority
 
 }  // namespace eve::attributes

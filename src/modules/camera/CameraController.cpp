@@ -3,8 +3,8 @@
 #include "common/CameraObstruction.h"
 #include "common/Capability.h"
 #include "common/Json.h"
-#include "platform_event/PlatformEvent.h"
 #include "graphics/RenderSystem3D.h"
+#include "platform_event/PlatformEvent.h"
 #include "scene/SceneNodeRef.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>

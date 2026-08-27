@@ -1,8 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "property_access/PropertyAccess.h"
 #include "TestPropertyAccess.h"
+#include "property_access/PropertyAccess.h"
 #include "ui/PropertyView.h"
 #include "ui/UIHost.h"
 
@@ -74,7 +74,7 @@ UIHost *createHost(const std::string &name) {
 }  // namespace
 
 TEST_CASE("ui.presentation.dynamic_model_validates_and_notifies") {
-    TestPropertyAccess model(playerSchema());
+    TestPropertyAccess          model(playerSchema());
     std::vector<PropertyChange> changes;
     auto subscription = model.subscribe(
         [&changes](const PropertyChange &change) { changes.push_back(change); });
@@ -97,7 +97,7 @@ TEST_CASE("ui.presentation.dynamic_model_validates_and_notifies") {
 }
 
 TEST_CASE("ui.presentation.generated_view_binds_two_way") {
-    TestPropertyAccess model(playerSchema());
+    TestPropertyAccess  model(playerSchema());
     PropertyViewOptions options;
     options.idPrefix = "player/";
     options.title = "Player";

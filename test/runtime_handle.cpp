@@ -42,7 +42,7 @@ TEST_CASE("common.runtimeHandle.invalidAndPackedBoundary") {
 
 TEST_CASE("common.runtimeHandle.bumpRejectsOverflow") {
     constexpr UiHandle first(4u, 1u);
-    const auto bumped = first.nextGeneration();
+    const auto         bumped = first.nextGeneration();
     REQUIRE(bumped.has_value());
     CHECK_EQ(bumped->index(), first.index());
     CHECK_EQ(bumped->generation(), 2u);

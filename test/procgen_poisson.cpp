@@ -15,22 +15,20 @@ namespace {
 class PointSetLease {
 public:
     PointSetLease() = default;
-    PointSetLease(Procgen& owner, ProcgenPointSetHandleRef handle)
-        : owner_(&owner), handle_(handle) {}
+    PointSetLease(Procgen& owner, ProcgenPointSetHandleRef handle) : owner_(&owner), handle_(handle) {}
 
     PointSetLease(const PointSetLease&)            = delete;
     PointSetLease& operator=(const PointSetLease&) = delete;
-    PointSetLease(PointSetLease&& other) noexcept
-        : owner_(other.owner_), handle_(other.handle_) {
+    PointSetLease(PointSetLease&& other) noexcept : owner_(other.owner_), handle_(other.handle_) {
         other.owner_  = nullptr;
         other.handle_ = {};
     }
     PointSetLease& operator=(PointSetLease&& other) noexcept {
         if (this == &other) return *this;
         reset();
-        owner_       = other.owner_;
-        handle_      = other.handle_;
-        other.owner_ = nullptr;
+        owner_        = other.owner_;
+        handle_       = other.handle_;
+        other.owner_  = nullptr;
         other.handle_ = {};
         return *this;
     }
@@ -47,18 +45,16 @@ public:
 
     /** @brief Resolves the handle for the duration of the current test operation. */
     [[nodiscard]] eve::script::Borrowed<PointSet> view() const noexcept {
-        return owner_ ? owner_->resolvePointSet(handle_)
-                      : eve::script::Borrowed<PointSet>();
+        return owner_ ? owner_->resolvePointSet(handle_) : eve::script::Borrowed<PointSet>();
     }
 
 private:
-    Procgen*                  owner_  = nullptr;
-    ProcgenPointSetHandleRef  handle_{};
+    Procgen*                 owner_ = nullptr;
+    ProcgenPointSetHandleRef handle_{};
 };
 
 /** @brief Converts a checked point-set allocation Result into a test lease. */
-PointSetLease requirePointSet(Procgen& proc,
-                              eve::Result<ProcgenPointSetHandleRef>&& result) {
+PointSetLease requirePointSet(Procgen& proc, eve::Result<ProcgenPointSetHandleRef>&& result) {
     const bool ok = result.ok();
     if (!ok) {
         const eve::Diagnostic* diagnostic = result.error();
@@ -73,9 +69,9 @@ PointSetLease requirePointSet(Procgen& proc,
 TEST_CASE("procgen.poisson.deterministicAndSeeded") {
     Procgen proc;
 
-    auto a = requirePointSet(proc, proc.poissonDiskHandle(40, 30, 2.5f, 99, 300));
-    auto b = requirePointSet(proc, proc.poissonDiskHandle(40, 30, 2.5f, 99, 300));
-    auto c = requirePointSet(proc, proc.poissonDiskHandle(40, 30, 2.5f, 100, 300));
+    auto a     = requirePointSet(proc, proc.poissonDiskHandle(40, 30, 2.5f, 99, 300));
+    auto b     = requirePointSet(proc, proc.poissonDiskHandle(40, 30, 2.5f, 99, 300));
+    auto c     = requirePointSet(proc, proc.poissonDiskHandle(40, 30, 2.5f, 100, 300));
     auto aView = a.view();
     auto bView = b.view();
     auto cView = c.view();
@@ -110,12 +106,12 @@ TEST_CASE("procgen.poisson.respectsMinSpacing") {
 
 TEST_CASE("procgen.poisson.maxPointsCapsOutput") {
     Procgen proc;
-    auto    capped = requirePointSet(proc, proc.poissonDiskHandle(100, 100, 0.5f, 3, 50));
+    auto    capped     = requirePointSet(proc, proc.poissonDiskHandle(100, 100, 0.5f, 3, 50));
     auto    cappedView = capped.view();
     REQUIRE(cappedView.isBound());
     CHECK(cappedView->getCount() <= 50);
 
-    auto tiny = requirePointSet(proc, proc.poissonDiskHandle(0, 0, 1.f, 3, 100));
+    auto tiny     = requirePointSet(proc, proc.poissonDiskHandle(0, 0, 1.f, 3, 100));
     auto tinyView = tiny.view();
     REQUIRE(tinyView.isBound());
     CHECK_EQ(tinyView->getCount(), 0);

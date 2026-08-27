@@ -52,7 +52,7 @@ public:
     AnimPose *getTargetPose();
 
     /** @brief Advance pose dynamics by one scheduler-owned deterministic step. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
     /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
 
@@ -94,8 +94,8 @@ private:
 
     std::vector<BoneState> bones_;
     bool hasTarget_ = false;
-    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
-    bool hasLastTick_ = false;
+    eve::SimulationTick    lastTick_    = eve::SimulationTick::zero();
+    bool                   hasLastTick_ = false;
 
     void updateUnchecked(float dt);
 };

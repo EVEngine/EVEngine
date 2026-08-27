@@ -11,9 +11,9 @@
  * definition parser.
  */
 
+#include "common/Generation.h"
 #include "common/ResourceRef.h"
 #include "common/Result.h"
-#include "common/Generation.h"
 
 #include <cstdint>
 #include <exception>
@@ -49,10 +49,10 @@ enum class ReloadPolicy : std::uint8_t {
  */
 inline const char* reloadPolicyName(ReloadPolicy policy) noexcept {
     switch (policy) {
-    case ReloadPolicy::KeepInstanceValues: return "keep_instance_values";
-    case ReloadPolicy::ReapplyDefaults: return "reapply_defaults";
-    case ReloadPolicy::RebuildInstance: return "rebuild_instance";
-    case ReloadPolicy::RejectWhileActive: return "reject_while_active";
+        case ReloadPolicy::KeepInstanceValues: return "keep_instance_values";
+        case ReloadPolicy::ReapplyDefaults: return "reapply_defaults";
+        case ReloadPolicy::RebuildInstance: return "rebuild_instance";
+        case ReloadPolicy::RejectWhileActive: return "reject_while_active";
     }
     return "unknown";
 }
@@ -67,12 +67,10 @@ inline const char* reloadPolicyName(ReloadPolicy policy) noexcept {
  */
 struct DefinitionHandle {
     eve::DefinitionRef reference;
-    eve::Generation generation;
+    eve::Generation    generation;
 
     /** @brief Whether both the logical reference and generation are valid. */
-    [[nodiscard]] bool isValid() const noexcept {
-        return reference.id().isValid() && !generation.isZero();
-    }
+    [[nodiscard]] bool isValid() const noexcept { return reference.id().isValid() && !generation.isZero(); }
 
     friend bool operator==(const DefinitionHandle&, const DefinitionHandle&) noexcept = default;
 };
@@ -86,27 +84,26 @@ struct DefinitionHandle {
  * when any of these fields is missing.
  */
 struct InstanceIdentity {
-    eve::PersistentId instanceId;
+    eve::PersistentId  instanceId;
     eve::DefinitionRef definition;
-    eve::Generation definitionGeneration;
+    eve::Generation    definitionGeneration;
 
     /** @brief Construct and validate one complete instance identity. */
-    [[nodiscard]] static eve::Result<InstanceIdentity> create(
-        eve::PersistentId instanceId, eve::DefinitionRef definition,
-        eve::Generation definitionGeneration) {
+    [[nodiscard]] static eve::Result<InstanceIdentity> create(eve::PersistentId  instanceId,
+                                                              eve::DefinitionRef definition,
+                                                              eve::Generation    definitionGeneration) {
         if (instanceId.isNil())
             return eve::Result<InstanceIdentity>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "runtime instance identity must not be nil",
-                "instanceId", {}, "common.definitions"));
+                eve::DiagnosticCode::InvalidArgument, "runtime instance identity must not be nil", "instanceId", {},
+                "common.definitions"));
         if (!definition.id().isValid())
-            return eve::Result<InstanceIdentity>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "runtime definition reference is invalid",
-                "definition", {}, "common.definitions"));
+            return eve::Result<InstanceIdentity>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "runtime definition reference is invalid",
+                                       "definition", {}, "common.definitions"));
         if (definitionGeneration.isZero())
             return eve::Result<InstanceIdentity>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument,
-                "runtime definition generation must be positive", "definitionGeneration", {},
-                "common.definitions"));
+                eve::DiagnosticCode::InvalidArgument, "runtime definition generation must be positive",
+                "definitionGeneration", {}, "common.definitions"));
         return eve::Result<InstanceIdentity>::success(
             InstanceIdentity{instanceId, std::move(definition), definitionGeneration});
     }
@@ -134,12 +131,12 @@ enum class ReloadDisposition : std::uint8_t {
 
 /** @brief Identity transition emitted by a typed runtime reload operation. */
 struct ReloadOutcome {
-    eve::PersistentId instanceId;
+    eve::PersistentId  instanceId;
     eve::DefinitionRef definition;
-    eve::Generation oldGeneration;
-    eve::Generation newGeneration;
-    ReloadPolicy policy = ReloadPolicy::KeepInstanceValues;
-    ReloadDisposition disposition = ReloadDisposition::Unchanged;
+    eve::Generation    oldGeneration;
+    eve::Generation    newGeneration;
+    ReloadPolicy       policy      = ReloadPolicy::KeepInstanceValues;
+    ReloadDisposition  disposition = ReloadDisposition::Unchanged;
 
     /** @brief Whether the reload changed the definition generation. */
     [[nodiscard]] bool changed() const noexcept { return oldGeneration != newGeneration; }
@@ -164,24 +161,21 @@ struct ReloadOutcome {
  */
 template <class State>
 class RuntimeInstance {
-    static_assert(std::is_copy_constructible_v<State>,
-                  "RuntimeInstance state must be copy constructible");
+    static_assert(std::is_copy_constructible_v<State>, "RuntimeInstance state must be copy constructible");
 
 public:
-    using RebuildFunction = std::function<eve::Result<State>(
-        const State&, const InstanceIdentity&, const DefinitionHandle&)>;
+    using RebuildFunction =
+        std::function<eve::Result<State>(const State&, const InstanceIdentity&, const DefinitionHandle&)>;
 
 private:
     /** @brief Construct a runtime instance from a validated identity and typed state. */
     RuntimeInstance(InstanceIdentity identity, State state, bool active = true)
-        : identity_(std::move(identity)), state_(std::make_unique<State>(std::move(state))),
-          active_(active) {}
+        : identity_(std::move(identity)), state_(std::make_unique<State>(std::move(state))), active_(active) {}
 
 public:
     /** @brief Copy a typed runtime instance. */
     RuntimeInstance(const RuntimeInstance& other)
-        : identity_(other.identity_), state_(std::make_unique<State>(*other.state_)),
-          active_(other.active_) {}
+        : identity_(other.identity_), state_(std::make_unique<State>(*other.state_)), active_(other.active_) {}
     /** @brief Copy-assign a typed runtime instance. */
     RuntimeInstance& operator=(const RuntimeInstance& other) {
         if (this == &other) return *this;
@@ -202,11 +196,11 @@ public:
      * @brief Construct a runtime instance after validating its identity.
      * @return An owning typed instance or a structured invalid-identity error.
      */
-    [[nodiscard]] static eve::Result<RuntimeInstance> create(
-        eve::PersistentId instanceId, eve::DefinitionRef definition,
-        eve::Generation definitionGeneration, State state, bool active = true) {
-        auto identity = InstanceIdentity::create(instanceId, std::move(definition),
-                                                  definitionGeneration);
+    [[nodiscard]] static eve::Result<RuntimeInstance> create(eve::PersistentId  instanceId,
+                                                             eve::DefinitionRef definition,
+                                                             eve::Generation definitionGeneration, State state,
+                                                             bool active = true) {
+        auto identity = InstanceIdentity::create(instanceId, std::move(definition), definitionGeneration);
         if (!identity) return eve::Result<RuntimeInstance>::failure(identity.status());
         return eve::Result<RuntimeInstance>::success(
             RuntimeInstance(std::move(identity).takeValue(), std::move(state), active));
@@ -229,14 +223,13 @@ public:
      */
     [[nodiscard]] eve::Result<void> checkDefinition(const DefinitionHandle& handle) const {
         if (!handle.isValid())
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "definition handle is invalid", "handle",
-                {}, "common.definitions"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "definition handle is invalid", "handle", {},
+                                                                     "common.definitions"));
         if (handle != identity_.definitionHandle())
             return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::StaleHandle,
-                "runtime instance refers to a different definition generation", "handle", {},
-                "common.definitions"));
+                eve::DiagnosticCode::StaleHandle, "runtime instance refers to a different definition generation",
+                "handle", {}, "common.definitions"));
         return eve::Result<void>::success();
     }
 
@@ -252,52 +245,46 @@ public:
      * @remarks `RejectWhileActive` rejects active instances. When inactive it
      *          intentionally keeps values and only advances the generation.
      */
-    [[nodiscard]] eve::Result<ReloadOutcome> reload(
-        const DefinitionHandle& next, ReloadPolicy policy, const State& defaults,
-        RebuildFunction rebuild = {}) {
+    [[nodiscard]] eve::Result<ReloadOutcome> reload(const DefinitionHandle& next, ReloadPolicy policy,
+                                                    const State& defaults, RebuildFunction rebuild = {}) {
         if (!next.isValid())
-            return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "next definition handle is invalid", "next",
-                {}, "common.definitions"));
+            return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "next definition handle is invalid",
+                                                                              "next", {}, "common.definitions"));
         if (next.reference != identity_.definition)
             return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict,
-                "definition reload targets a different logical definition", "next.reference", {},
-                "common.definitions"));
+                eve::DiagnosticCode::Conflict, "definition reload targets a different logical definition",
+                "next.reference", {}, "common.definitions"));
         if (next.generation < identity_.definitionGeneration)
             return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::StaleHandle,
-                "definition reload handle is older than the instance generation", "next.generation",
-                {}, "common.definitions"));
+                eve::DiagnosticCode::StaleHandle, "definition reload handle is older than the instance generation",
+                "next.generation", {}, "common.definitions"));
 
-        ReloadOutcome outcome{identity_.instanceId, identity_.definition,
-                              identity_.definitionGeneration, next.generation, policy,
-                              ReloadDisposition::Unchanged};
+        ReloadOutcome outcome{
+            identity_.instanceId,        identity_.definition, identity_.definitionGeneration, next.generation, policy,
+            ReloadDisposition::Unchanged};
         if (next.generation == identity_.definitionGeneration)
-            return eve::Result<ReloadOutcome>::success(
-                std::move(outcome), eve::Status::success(eve::StatusCode::NoOp));
+            return eve::Result<ReloadOutcome>::success(std::move(outcome), eve::Status::success(eve::StatusCode::NoOp));
 
         if (policy == ReloadPolicy::RejectWhileActive && active_)
             return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict,
-                "active runtime instance rejects definition reload", "policy", {},
+                eve::DiagnosticCode::Conflict, "active runtime instance rejects definition reload", "policy", {},
                 "common.definitions"));
 
         try {
-            State candidate(*state_);
+            State             candidate(*state_);
             ReloadDisposition disposition = ReloadDisposition::Kept;
             if (policy == ReloadPolicy::ReapplyDefaults) {
-                candidate = defaults;
+                candidate   = defaults;
                 disposition = ReloadDisposition::DefaultsReapplied;
             } else if (policy == ReloadPolicy::RebuildInstance) {
                 if (!rebuild)
                     return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument,
-                        "rebuild policy requires a rebuild callback", "rebuild", {},
-                        "common.definitions"));
+                        eve::DiagnosticCode::InvalidArgument, "rebuild policy requires a rebuild callback", "rebuild",
+                        {}, "common.definitions"));
                 auto rebuilt = rebuild(*state_, identity_, next);
                 if (!rebuilt) return eve::Result<ReloadOutcome>::failure(rebuilt.status());
-                candidate = std::move(rebuilt).takeValue();
+                candidate   = std::move(rebuilt).takeValue();
                 disposition = ReloadDisposition::Rebuilt;
             } else if (policy == ReloadPolicy::RejectWhileActive) {
                 // The active guard was handled above. Inactive instances have
@@ -308,17 +295,17 @@ public:
             auto committed = std::make_unique<State>(std::move(candidate));
             state_.swap(committed);
             identity_.definitionGeneration = next.generation;
-            outcome.disposition = disposition;
-            return eve::Result<ReloadOutcome>::success(
-                std::move(outcome), eve::Status::success(eve::StatusCode::Applied));
+            outcome.disposition            = disposition;
+            return eve::Result<ReloadOutcome>::success(std::move(outcome),
+                                                       eve::Status::success(eve::StatusCode::Applied));
         } catch (const std::exception&) {
-            return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed, "definition reload candidate preparation failed", {}, {},
-                "common.definitions"));
+            return eve::Result<ReloadOutcome>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "definition reload candidate preparation failed",
+                                       {}, {}, "common.definitions"));
         } catch (...) {
-            return eve::Result<ReloadOutcome>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed, "definition reload candidate preparation failed", {}, {},
-                "common.definitions"));
+            return eve::Result<ReloadOutcome>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "definition reload candidate preparation failed",
+                                       {}, {}, "common.definitions"));
         }
     }
 
@@ -335,22 +322,19 @@ public:
      *          that wants to apply a newer definition must first perform the
      *          normal reload protocol and then capture a new snapshot.
      */
-    [[nodiscard]] eve::Result<void> restoreExact(const InstanceIdentity& identity, State state,
-                                                   bool active) {
+    [[nodiscard]] eve::Result<void> restoreExact(const InstanceIdentity& identity, State state, bool active) {
         if (!identity.isValid())
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "runtime snapshot identity is invalid",
-                "identity", {}, "common.definitions"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "runtime snapshot identity is invalid", "identity",
+                                                                     {}, "common.definitions"));
         if (identity.instanceId != identity_.instanceId || identity.definition != identity_.definition)
             return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict,
-                "runtime snapshot belongs to a different instance or definition", "identity", {},
-                "common.definitions"));
+                eve::DiagnosticCode::Conflict, "runtime snapshot belongs to a different instance or definition",
+                "identity", {}, "common.definitions"));
         if (identity.definitionGeneration != identity_.definitionGeneration)
             return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::StaleHandle,
-                "runtime snapshot definition generation is not current", "identity.definitionGeneration",
-                {}, "common.definitions"));
+                eve::DiagnosticCode::StaleHandle, "runtime snapshot definition generation is not current",
+                "identity.definitionGeneration", {}, "common.definitions"));
 
         auto committed = std::make_unique<State>(std::move(state));
         state_.swap(committed);
@@ -359,9 +343,9 @@ public:
     }
 
 private:
-    InstanceIdentity identity_;
+    InstanceIdentity       identity_;
     std::unique_ptr<State> state_;
-    bool            active_ = true;
+    bool                   active_ = true;
 };
 
 }  // namespace eve::definition

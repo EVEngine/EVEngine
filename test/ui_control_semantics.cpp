@@ -50,8 +50,7 @@ TEST_CASE("ui.control.policies_survive_flatten_and_reconcile") {
     CHECK_EQ(applyNode->focusRight, std::string("right"));
     CHECK_EQ(applyNode->focusUp, std::string("up"));
     CHECK_EQ(applyNode->focusDown, std::string("down"));
-    CHECK_EQ(static_cast<int>(applyNode->accessibilityRole),
-             static_cast<int>(AccessibilityRole::Button));
+    CHECK_EQ(static_cast<int>(applyNode->accessibilityRole), static_cast<int>(AccessibilityRole::Button));
     CHECK_EQ(applyNode->accessibilityName, std::string("Apply changes"));
 
     WidgetDesc updated = button("Apply now", "apply")
@@ -119,21 +118,21 @@ TEST_CASE("ui.control.focus_navigation_uses_neighbors_then_stable_tab_order") {
     CHECK(node(*host, "first")->focusRequested);
 
     node(*host, "second")->focused = false;
-    node(*host, "first")->focused = true;
+    node(*host, "first")->focused  = true;
     CHECK(host->moveFocus(FocusDirection::Next));
     CHECK(node(*host, "special")->focusRequested);
 
-    node(*host, "first")->focused = false;
+    node(*host, "first")->focused   = false;
     node(*host, "special")->focused = true;
     CHECK(host->moveFocus(FocusDirection::Previous));
     CHECK(node(*host, "second")->focusRequested);
 
     node(*host, "special")->focused = false;
-    node(*host, "first")->focused = true;
+    node(*host, "first")->focused   = true;
     CHECK(host->moveFocus(FocusDirection::Left));
     CHECK(node(*host, "second")->focusRequested);
 
-    node(*host, "first")->focused = false;
+    node(*host, "first")->focused   = false;
     node(*host, "special")->focused = true;
     CHECK(!host->moveFocus(FocusDirection::Next, false));
 }
@@ -142,7 +141,7 @@ TEST_CASE("ui.control.mouse_pass_bubbles_click_and_stop_contains_it") {
     int childClicks = 0;
     int ignoredClicks = 0;
     int rootClicks = 0;
-    UIHost *host = createHost("pointer-routing");
+    UIHost *host          = createHost("pointer-routing");
     REQUIRE(host != nullptr);
 
     WidgetDesc child = button("Action", "action", [&]() { ++childClicks; })
@@ -164,7 +163,7 @@ TEST_CASE("ui.control.mouse_pass_bubbles_click_and_stop_contains_it") {
     UISystem::pendingEvents().clear();
     UISystem::clickQueue().clear();
     UIEvent event;
-    event.host = host->handle();
+    event.host         = host->handle();
     event.hostName = host->getName();
     event.nodeId = action->id;
     event.nodeIndex = int(action - tree->nodes.data());

@@ -28,8 +28,7 @@ public:
      * @param skill Borrowed definition observed during this call only.
      * @return An action definition or a structured mapping failure.
      */
-    [[nodiscard]] static eve::Result<action::ActionDefinition> makeDefinition(
-        const SkillDefinition& skill);
+    [[nodiscard]] static eve::Result<action::ActionDefinition> makeDefinition(const SkillDefinition& skill);
 
     /**
      * @brief Build a request for one skill invocation.
@@ -41,8 +40,8 @@ public:
      */
     [[nodiscard]] static eve::Result<action::ActionRequest> makeRequest(
         const SkillDefinition& skill, std::optional<ecs::EntityHandle> source = std::nullopt,
-        std::optional<ecs::EntityHandle> target = std::nullopt,
-        eve::SimulationTick requestedTick = eve::SimulationTick::zero());
+        std::optional<ecs::EntityHandle> target        = std::nullopt,
+        eve::SimulationTick              requestedTick = eve::SimulationTick::zero());
 
     /**
      * @brief Translate and submit one skill to an existing lifecycle owner.
@@ -51,8 +50,7 @@ public:
      */
     [[nodiscard]] static eve::Result<action::ActionExecutionId> submit(
         action::ActionRuntime& runtime, const SkillDefinition& skill,
-        std::optional<ecs::EntityHandle> source = std::nullopt,
-        std::optional<ecs::EntityHandle> target = std::nullopt,
+        std::optional<ecs::EntityHandle> source = std::nullopt, std::optional<ecs::EntityHandle> target = std::nullopt,
         eve::SimulationTick requestedTick = eve::SimulationTick::zero());
 };
 

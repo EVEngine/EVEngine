@@ -1,9 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "StatePatchTestSupport.h"
 #include "statepatch/StatePatch.h"
 #include "transaction/Transaction.h"
-#include "StatePatchTestSupport.h"
 
 #include <array>
 #include <initializer_list>
@@ -22,14 +22,15 @@ using eve::transaction::ITransactionParticipant;
 using eve::transaction::TransactionContext;
 
 Result<void> participantFailure(std::string_view name, std::string_view phase) {
-    return Result<void>::failure(Diagnostic::error(
-        DiagnosticCode::Failed, std::string(name) + " failed during " + std::string(phase),
-        "test." + std::string(phase)));
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                   std::string(name) + " failed during " + std::string(phase),
+                                                   "test." + std::string(phase)));
 }
 
 class RecordingParticipant final : public ITransactionParticipant {
 public:
-    RecordingParticipant(std::string name, std::vector<std::string>& events) : name_(std::move(name)), events_(events) {}
+    RecordingParticipant(std::string name, std::vector<std::string>& events)
+        : name_(std::move(name)), events_(events) {}
 
     std::string_view name() const noexcept override { return name_; }
 
@@ -65,12 +66,12 @@ public:
         return Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
-    bool failPrepare    = false;
-    bool failCommit     = false;
-    bool failRollback   = false;
-    bool failCompensate = false;
-    bool prepared       = false;
-    bool committed      = false;
+    bool        failPrepare    = false;
+    bool        failCommit     = false;
+    bool        failRollback   = false;
+    bool        failCompensate = false;
+    bool        prepared       = false;
+    bool        committed      = false;
     std::string seenTransaction;
     std::string seenCorrelation;
     std::string seenCausation;
@@ -83,7 +84,7 @@ private:
         seenCausation   = context.causationId();
     }
 
-    std::string              name_;
+    std::string               name_;
     std::vector<std::string>& events_;
 };
 
@@ -105,14 +106,14 @@ auto participantSpan(std::array<ITransactionParticipant*, N>& participants) {
 }  // namespace
 
 TEST_CASE("transaction.participants.prepareAndCommitPreserveOrderAndContext") {
-    std::vector<std::string> events;
-    RecordingParticipant     first("first", events);
-    RecordingParticipant     second("second", events);
+    std::vector<std::string>                events;
+    RecordingParticipant                    first("first", events);
+    RecordingParticipant                    second("second", events);
     std::array<ITransactionParticipant*, 2> participants{&first, &second};
-    const TransactionContext context("tx-1", "chain-7", "command-3");
+    const TransactionContext                context("tx-1", "chain-7", "command-3");
 
     eve::transaction::Coordinator coordinator;
-    auto result = coordinator.execute(context, participantSpan(participants));
+    auto                          result = coordinator.execute(context, participantSpan(participants));
     REQUIRE(result.ok());
     const auto& receipt = result.value();
     CHECK_EQ(receipt.transactionId, std::string("tx-1"));
@@ -166,8 +167,8 @@ TEST_CASE("transaction.participants.commitFailureRollsBackAndCompensatesSeparate
 }
 
 TEST_CASE("transaction.participants.rejectNullAndDuplicateWithoutCallingParticipants") {
-    std::vector<std::string> events;
-    RecordingParticipant     participant("only", events);
+    std::vector<std::string>      events;
+    RecordingParticipant          participant("only", events);
     eve::transaction::Coordinator coordinator;
 
     std::array<ITransactionParticipant*, 1> nullParticipant{nullptr};
@@ -195,15 +196,15 @@ TEST_CASE("transaction.participants.compensationFailureIsNotSilentlyRolledBack")
     auto result = coordinator.execute(TransactionContext("tx-compensation-fail"), participantSpan(participants));
     CHECK(!result);
     CHECK_EQ(static_cast<int>(result.code()), static_cast<int>(StatusCode::Failed));
-    checkEvents(events, {"external.prepare", "failing.prepare", "external.commit", "failing.commit",
-                         "failing.rollback", "external.compensate"});
+    checkEvents(events, {"external.prepare", "failing.prepare", "external.commit", "failing.commit", "failing.rollback",
+                         "external.compensate"});
     CHECK(participant.committed);
     CHECK(result.error() != nullptr);
 }
 
 TEST_CASE("transaction.statepatchParticipantCommitsCandidateAtomically") {
     eve::statepatch::Store store;
-    auto seed = eve::test_support::openStatePatchBatch(store);
+    auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     CHECK(seed.view->set("actor", "value", "1"));
     REQUIRE(store.commit(seed.view.get()));
@@ -212,11 +213,11 @@ TEST_CASE("transaction.statepatchParticipantCommitsCandidateAtomically") {
     REQUIRE(batch.view.isBound());
     CHECK(batch.view->setExpected("actor", "value", "2", "1"));
     eve::statepatch::StoreTransactionParticipant participant(store, *batch.view);
-    std::array<ITransactionParticipant*, 1> participants{&participant};
+    std::array<ITransactionParticipant*, 1>      participants{&participant};
 
     eve::transaction::Coordinator coordinator;
-    auto result = coordinator.execute(TransactionContext("tx-statepatch", "chain", "cause"),
-                                      participantSpan(participants));
+    auto                          result =
+        coordinator.execute(TransactionContext("tx-statepatch", "chain", "cause"), participantSpan(participants));
     REQUIRE(result.ok());
     CHECK_EQ(store.get("actor", "value"), std::string("2"));
     CHECK_EQ(store.revision(), uint64_t{2});
@@ -226,7 +227,7 @@ TEST_CASE("transaction.statepatchParticipantCommitsCandidateAtomically") {
 
 TEST_CASE("transaction.statepatchParticipantPrepareFailureKeepsOriginalState") {
     eve::statepatch::Store store;
-    auto seed = eve::test_support::openStatePatchBatch(store);
+    auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("actor", "value", "1");
     REQUIRE(store.commit(seed.view.get()));
@@ -236,8 +237,8 @@ TEST_CASE("transaction.statepatchParticipantPrepareFailureKeepsOriginalState") {
     REQUIRE(batch.view.isBound());
     CHECK(!batch.view->set("actor", "value", "{"));
     eve::statepatch::StoreTransactionParticipant participant(store, *batch.view);
-    std::array<ITransactionParticipant*, 1> participants{&participant};
-    eve::transaction::Coordinator coordinator;
+    std::array<ITransactionParticipant*, 1>      participants{&participant};
+    eve::transaction::Coordinator                coordinator;
     auto result = coordinator.execute(TransactionContext("tx-statepatch-invalid"), participantSpan(participants));
 
     CHECK(!result);
@@ -248,7 +249,7 @@ TEST_CASE("transaction.statepatchParticipantPrepareFailureKeepsOriginalState") {
 
 TEST_CASE("transaction.statepatchParticipantRejectsExternalRevisionChangeAfterPrepare") {
     eve::statepatch::Store store;
-    auto seed = eve::test_support::openStatePatchBatch(store);
+    auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("actor", "value", "1");
     REQUIRE(store.commit(seed.view.get()));
@@ -256,8 +257,8 @@ TEST_CASE("transaction.statepatchParticipantRejectsExternalRevisionChangeAfterPr
     REQUIRE(batch.view.isBound());
     batch.view->setExpected("actor", "value", "2", "1");
     eve::statepatch::StoreTransactionParticipant participant(store, *batch.view);
-    const TransactionContext context("tx-statepatch-stale");
-    auto prepared = participant.prepare(context);
+    const TransactionContext                     context("tx-statepatch-stale");
+    auto                                         prepared = participant.prepare(context);
     REQUIRE(prepared.ok());
 
     auto external = eve::test_support::openStatePatchBatch(store);
@@ -276,7 +277,7 @@ TEST_CASE("transaction.statepatchParticipantRejectsExternalRevisionChangeAfterPr
 
 TEST_CASE("transaction.statepatchParticipantCompensateRestoresBeforeState") {
     eve::statepatch::Store store;
-    auto seed = eve::test_support::openStatePatchBatch(store);
+    auto                   seed = eve::test_support::openStatePatchBatch(store);
     REQUIRE(seed.view.isBound());
     seed.view->set("actor", "value", "1");
     REQUIRE(store.commit(seed.view.get()));
@@ -286,8 +287,8 @@ TEST_CASE("transaction.statepatchParticipantCompensateRestoresBeforeState") {
     REQUIRE(batch.view.isBound());
     batch.view->setExpected("actor", "value", "2", "1");
     eve::statepatch::StoreTransactionParticipant participant(store, *batch.view);
-    const TransactionContext context("tx-statepatch-compensate");
-    auto prepared = participant.prepare(context);
+    const TransactionContext                     context("tx-statepatch-compensate");
+    auto                                         prepared = participant.prepare(context);
     REQUIRE(prepared.ok());
     auto committed = participant.commit(context);
     REQUIRE(committed.ok());

@@ -2,8 +2,8 @@
 
 #include "scene/NodeDesc.h"
 
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace eve::scene {
 namespace {
@@ -12,8 +12,7 @@ uint32_t g_anonHostSeq = 0;
 
 template <class T>
 eve::Result<T> hostFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), "scene.host"));
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), "scene.host"));
 }
 
 template <class T>
@@ -132,17 +131,16 @@ std::vector<std::string> splitPath(const std::string &path) {
 
 }  // namespace
 
-eve::Result<SceneHost*> SceneHost::createHost(const std::string &name) {
+eve::Result<SceneHost *> SceneHost::createHost(const std::string &name) {
     SceneHost *h = SceneHost::create();
-    if (!h) return hostFailure<SceneHost*>(eve::DiagnosticCode::Failed,
-                                           "scene host creation returned null");
+    if (!h) return hostFailure<SceneHost *>(eve::DiagnosticCode::Failed, "scene host creation returned null");
     h->meta()->entity = h;
     if (name.empty()) {
         h->meta()->name = "host" + std::to_string(++g_anonHostSeq);
     } else {
         h->meta()->name = name;
     }
-    return eve::Result<SceneHost*>::success(h, eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
 }
 
 void SceneHost::setName(const std::string &name) { meta()->name = name; }
@@ -153,52 +151,42 @@ void SceneHost::setTree(NodeDesc root) { applyTree(this, std::move(root)); }
 
 bool SceneHost::setTreeReconcile(NodeDesc root) { return applyTreeReconcile(this, std::move(root)); }
 
-eve::Result<SceneNode*> SceneHost::findById(const std::string &id) {
+eve::Result<SceneNode *> SceneHost::findById(const std::string &id) {
     if (id.empty())
-        return hostFailure<SceneNode*>(eve::DiagnosticCode::InvalidArgument,
-                                       "scene node id must not be empty");
+        return hostFailure<SceneNode *>(eve::DiagnosticCode::InvalidArgument, "scene node id must not be empty");
     auto t = tree();
     for (auto &n : t->nodes) {
-        if (n.id == id)
-            return eve::Result<SceneNode*>::success(&n, eve::Status::success());
+        if (n.id == id) return eve::Result<SceneNode *>::success(&n, eve::Status::success());
     }
-    return hostFailure<SceneNode*>(eve::DiagnosticCode::NotFound,
-                                   "scene node id was not found: " + id);
+    return hostFailure<SceneNode *>(eve::DiagnosticCode::NotFound, "scene node id was not found: " + id);
 }
 
-eve::Result<SceneNode*> SceneHost::findByKey(const std::string &key) {
+eve::Result<SceneNode *> SceneHost::findByKey(const std::string &key) {
     if (key.empty())
-        return hostFailure<SceneNode*>(eve::DiagnosticCode::InvalidArgument,
-                                       "scene node key must not be empty");
+        return hostFailure<SceneNode *>(eve::DiagnosticCode::InvalidArgument, "scene node key must not be empty");
     auto t = tree();
     for (auto &n : t->nodes) {
-        if (n.key == key)
-            return eve::Result<SceneNode*>::success(&n, eve::Status::success());
+        if (n.key == key) return eve::Result<SceneNode *>::success(&n, eve::Status::success());
     }
-    return hostFailure<SceneNode*>(eve::DiagnosticCode::NotFound,
-                                   "scene node key was not found: " + key);
+    return hostFailure<SceneNode *>(eve::DiagnosticCode::NotFound, "scene node key was not found: " + key);
 }
 
-eve::Result<SceneNode*> SceneHost::findByName(const std::string &name) {
+eve::Result<SceneNode *> SceneHost::findByName(const std::string &name) {
     if (name.empty())
-        return hostFailure<SceneNode*>(eve::DiagnosticCode::InvalidArgument,
-                                       "scene node name must not be empty");
+        return hostFailure<SceneNode *>(eve::DiagnosticCode::InvalidArgument, "scene node name must not be empty");
     const int idx = findIndexByName(name);
     if (idx < 0)
-        return hostFailure<SceneNode*>(eve::DiagnosticCode::NotFound,
-                                       "scene node name was not found: " + name);
-    return eve::Result<SceneNode*>::success(&tree()->nodes[size_t(idx)], eve::Status::success());
+        return hostFailure<SceneNode *>(eve::DiagnosticCode::NotFound, "scene node name was not found: " + name);
+    return eve::Result<SceneNode *>::success(&tree()->nodes[size_t(idx)], eve::Status::success());
 }
 
-eve::Result<SceneNode*> SceneHost::findByPath(const std::string &path) {
+eve::Result<SceneNode *> SceneHost::findByPath(const std::string &path) {
     if (path.empty())
-        return hostFailure<SceneNode*>(eve::DiagnosticCode::InvalidArgument,
-                                       "scene node path must not be empty");
+        return hostFailure<SceneNode *>(eve::DiagnosticCode::InvalidArgument, "scene node path must not be empty");
     const int idx = findIndexByPath(path);
     if (idx < 0)
-        return hostFailure<SceneNode*>(eve::DiagnosticCode::NotFound,
-                                       "scene node path was not found: " + path);
-    return eve::Result<SceneNode*>::success(&tree()->nodes[size_t(idx)], eve::Status::success());
+        return hostFailure<SceneNode *>(eve::DiagnosticCode::NotFound, "scene node path was not found: " + path);
+    return eve::Result<SceneNode *>::success(&tree()->nodes[size_t(idx)], eve::Status::success());
 }
 
 int SceneHost::findIndexById(const std::string &id) {

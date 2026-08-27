@@ -12,11 +12,11 @@ using namespace eve::effects;
 
 TEST_CASE("effects.apply.stableFactsAndDeterministicQueries") {
     EffectContainer effects;
-    auto firstResult = effects.apply("unit:7", "weather.wet", "zone:2", 3, 10.0, "surface", StackPolicy::Stack);
+    auto firstResult  = effects.apply("unit:7", "weather.wet", "zone:2", 3, 10.0, "surface", StackPolicy::Stack);
     auto secondResult = effects.apply("unit:7", "policy.tax", "state:1", 9, 0.0, "policy", StackPolicy::Stack);
     REQUIRE(firstResult.ok());
     REQUIRE(secondResult.ok());
-    const auto first = std::move(firstResult).takeValue();
+    const auto first  = std::move(firstResult).takeValue();
     const auto second = std::move(secondResult).takeValue();
 
     CHECK_EQ(first, std::string("effect-0000000000000001"));
@@ -31,11 +31,11 @@ TEST_CASE("effects.apply.stableFactsAndDeterministicQueries") {
 
 TEST_CASE("effects.stackPolicy.replaceStackRefresh") {
     EffectContainer effects;
-    auto oldResult = effects.apply("base:1", "policy.a", "leader:1", 1, 5.0, "administration", StackPolicy::Stack);
+    auto oldResult     = effects.apply("base:1", "policy.a", "leader:1", 1, 5.0, "administration", StackPolicy::Stack);
     auto stackedResult = effects.apply("base:1", "policy.b", "leader:2", 2, 7.0, "administration", StackPolicy::Stack);
     REQUIRE(oldResult.ok());
     REQUIRE(stackedResult.ok());
-    const auto old = std::move(oldResult).takeValue();
+    const auto old     = std::move(oldResult).takeValue();
     const auto stacked = std::move(stackedResult).takeValue();
     CHECK_EQ(effects.effectCount(), 2);
 
@@ -66,15 +66,15 @@ TEST_CASE("effects.stackPolicy.replaceStackRefresh") {
 
 TEST_CASE("effects.update.expiresFiniteFactsInCreationOrder") {
     EffectContainer effects;
-    auto firstResult = effects.apply("army:1", "one", "", 0, 0.5, "", StackPolicy::Stack);
-    auto permanentResult = effects.apply("army:1", "permanent", "", 0, 0.0, "", StackPolicy::Stack);
-    auto secondResult = effects.apply("army:1", "two", "", 0, 0.5, "", StackPolicy::Stack);
+    auto            firstResult     = effects.apply("army:1", "one", "", 0, 0.5, "", StackPolicy::Stack);
+    auto            permanentResult = effects.apply("army:1", "permanent", "", 0, 0.0, "", StackPolicy::Stack);
+    auto            secondResult    = effects.apply("army:1", "two", "", 0, 0.5, "", StackPolicy::Stack);
     REQUIRE(firstResult.ok());
     REQUIRE(permanentResult.ok());
     REQUIRE(secondResult.ok());
-    const auto first = std::move(firstResult).takeValue();
+    const auto first     = std::move(firstResult).takeValue();
     const auto permanent = std::move(permanentResult).takeValue();
-    const auto second = std::move(secondResult).takeValue();
+    const auto second    = std::move(secondResult).takeValue();
     effects.clearEvents();
 
     REQUIRE(effects.update(0.25).ok());
@@ -92,9 +92,9 @@ TEST_CASE("effects.update.expiresFiniteFactsInCreationOrder") {
 
 TEST_CASE("effects.tagsAndPayload.areDeterministic") {
     EffectContainer effects;
-    auto idResult = effects.apply("unit:2", "condition", "system", 0, 0.0, "", StackPolicy::Stack);
+    auto            idResult = effects.apply("unit:2", "condition", "system", 0, 0.0, "", StackPolicy::Stack);
     REQUIRE(idResult.ok());
-    const auto id = std::move(idResult).takeValue();
+    const auto      id     = std::move(idResult).takeValue();
     auto*           effect = effects.find(id);
     REQUIRE(effect != nullptr);
     CHECK(effect->addTag("visible").ok());
@@ -113,7 +113,7 @@ TEST_CASE("effects.tagsAndPayload.areDeterministic") {
 
 TEST_CASE("effects.remove.emitsStableEvent") {
     EffectContainer effects;
-    auto idResult = effects.apply("subject", "type", "source", 0, 0.0, "", StackPolicy::Stack);
+    auto            idResult = effects.apply("subject", "type", "source", 0, 0.0, "", StackPolicy::Stack);
     REQUIRE(idResult.ok());
     const auto id = std::move(idResult).takeValue();
     CHECK(effects.remove(id, "subject_deleted").ok());

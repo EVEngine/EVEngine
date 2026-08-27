@@ -57,8 +57,7 @@ public:
      * @brief Registers a live script object (auto-derives class when empty).
      * @return A generation-qualified UI object handle, or a structured failure.
      */
-    [[nodiscard]] eve::Result<ObjectHandle> registerObject(
-        const ssq::Object& object, const std::string& label = {});
+    [[nodiscard]] eve::Result<ObjectHandle> registerObject(const ssq::Object& object, const std::string& label = {});
     /**
      * @brief Removes an entry from the registry and refreshes the grid.
      * @param handle The generation-qualified handle to remove.
@@ -77,7 +76,7 @@ private:
     WidgetDesc cellWidget(const ObjectEntry& entry, const ReflectedMember& member,
                           const ReflectedValue& value);
 
-    UIHostHandle host_{};
+    UIHostHandle                 host_{};
     std::vector<std::string> classNames_;
     std::string selectedClass_;
     std::vector<ObjectEntry> entries_;

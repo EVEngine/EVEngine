@@ -32,8 +32,7 @@ TEST_CASE("common.result.successAndObservationAccessors") {
 }
 
 TEST_CASE("common.result.failureCarriesStructuredDiagnostic") {
-    auto diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument, "width must be positive",
-                                        "window.width");
+    auto diagnostic = Diagnostic::error(DiagnosticCode::InvalidArgument, "width must be positive", "window.width");
     diagnostic.addDetail("received", "0");
     auto result = Result<int>::failure(std::move(diagnostic));
 
@@ -57,18 +56,19 @@ TEST_CASE("common.result.ignoreAndExpectAreExplicitConsumption") {
     const int value = Result<int>::success(7).expect("initialization must succeed");
     CHECK(value == 7);
 
-    CHECK_THROWS((Result<void>::failure(
-                      Diagnostic::error(DiagnosticCode::Unsupported, "not available"))
+    CHECK_THROWS((Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "not available"))
                       .expect("feature must be available"),
                   0));
 }
 
 TEST_CASE("common.result.unobservedDestructionIsCaughtInDebug") {
 #if !defined(ZEROERR_NO_ASSERT)
-    CHECK_THROWS(([] {
-        auto result = Result<int>::success(1);
-        (void)result;
-    }(), 0));
+    CHECK_THROWS((
+        [] {
+            auto result = Result<int>::success(1);
+            (void)result;
+        }(),
+        0));
 #else
     CHECK(true);
 #endif
@@ -76,7 +76,7 @@ TEST_CASE("common.result.unobservedDestructionIsCaughtInDebug") {
 
 TEST_CASE("common.result.moveTransfersObservationResponsibility") {
     auto source = Result<std::unique_ptr<int>>::success(std::make_unique<int>(9));
-    auto moved = std::move(source);
+    auto moved  = std::move(source);
     REQUIRE(moved.ok());
     REQUIRE(moved.value().get() != nullptr);
     CHECK(*moved.value() == 9);
@@ -101,14 +101,12 @@ TEST_CASE("common.result.moveAssignmentDoesNotOverwriteUncheckedTarget") {
 }
 
 TEST_CASE("common.result.compositionPreservesFailureStatus") {
-    auto success = Result<int>::success(3).andThen([](int value) {
-        return Result<std::string>::success(std::to_string(value + 1));
-    });
+    auto success = Result<int>::success(3).andThen(
+        [](int value) { return Result<std::string>::success(std::to_string(value + 1)); });
     REQUIRE(success.ok());
     CHECK(success.value() == "4");
 
-    auto failure = Result<int>::failure(
-        Diagnostic::error(DiagnosticCode::NotFound, "entity not found"));
+    auto failure   = Result<int>::failure(Diagnostic::error(DiagnosticCode::NotFound, "entity not found"));
     auto recovered = std::move(failure).orElse([&](const Status& status) {
         CHECK(status.code() == StatusCode::NotFound);
         return Result<int>::success(99);
@@ -122,9 +120,8 @@ TEST_CASE("common.result.voidStatusAndBoolCheck") {
     CHECK(result.code() == StatusCode::Applied);
     result.value();
 
-    auto failed = Result<void>::failure(Status::failure(
-        StatusCode::Conflict,
-        Diagnostic::error(DiagnosticCode::Conflict, "revision changed")));
+    auto failed = Result<void>::failure(
+        Status::failure(StatusCode::Conflict, Diagnostic::error(DiagnosticCode::Conflict, "revision changed")));
     CHECK(!failed);
     REQUIRE(failed.error() != nullptr);
     CHECK(failed.error()->code() == DiagnosticCode::Conflict);

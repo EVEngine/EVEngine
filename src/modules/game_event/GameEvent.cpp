@@ -3,6 +3,7 @@
 #include "common/SquirrelBinding.h"
 
 #include "common/Json.h"
+#include "schema/SchemaRegistry.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -15,6 +16,69 @@
 
 namespace eve::game_event {
 namespace {
+
+eve::schema::FieldDefinition schemaField(std::string name, eve::schema::ValueType type, bool required = true) {
+    eve::schema::FieldDefinition result;
+    result.name     = std::move(name);
+    result.type     = type;
+    result.required = required;
+    return result;
+}
+
+eve::schema::SchemaDefinition eventStreamSchemaDefinition() {
+    eve::schema::SchemaDefinition event;
+    event.additionalProperties = false;
+    event.fields               = {
+        schemaField("eventId", eve::schema::ValueType::String),
+        schemaField("sequence", eve::schema::ValueType::String),
+        schemaField("type", eve::schema::ValueType::String),
+        schemaField("source", eve::schema::ValueType::String),
+        schemaField("subject", eve::schema::ValueType::String),
+        schemaField("causationKind", eve::schema::ValueType::String),
+        schemaField("causation", eve::schema::ValueType::String),
+        schemaField("correlationKind", eve::schema::ValueType::String),
+        schemaField("correlation", eve::schema::ValueType::String),
+        schemaField("schemaId", eve::schema::ValueType::String),
+        schemaField("schemaVersion", eve::schema::ValueType::String),
+        schemaField("tick", eve::schema::ValueType::String),
+        schemaField("flags", eve::schema::ValueType::Integer),
+        schemaField("payload", eve::schema::ValueType::Any),
+    };
+    eve::schema::SchemaNode eventNode;
+    eventNode.type         = eve::schema::ValueType::Object;
+    eventNode.objectSchema = std::make_shared<const eve::schema::SchemaDefinition>(std::move(event));
+    auto events            = schemaField("events", eve::schema::ValueType::Array);
+    events.itemSchema      = std::make_shared<const eve::schema::SchemaNode>(std::move(eventNode));
+
+    eve::schema::SchemaDefinition schema;
+    schema.id                   = "game_event:stream";
+    schema.version              = 1;
+    schema.title                = "Game Event Stream Snapshot";
+    schema.description          = "Current persistent payload owned by GameEventLog.";
+    schema.additionalProperties = false;
+    schema.fields               = {
+        schemaField("version", eve::schema::ValueType::Integer),
+        schemaField("revision", eve::schema::ValueType::String),
+        schemaField("nextSequence", eve::schema::ValueType::String),
+        std::move(events),
+    };
+    return schema;
+}
+
+eve::Result<void> validateCurrentEventStream(std::string_view json) {
+    constexpr auto id = "game_event:stream";
+    if (!eve::schema::SchemaRegistry::resolve(id, 1)) {
+        auto registration = eve::schema::SchemaRegistry::registerVersioned(eventStreamSchemaDefinition());
+        if (!registration.ok()) return eve::Result<void>::failure(registration.status());
+    }
+    const auto errors = eve::schema::SchemaRegistry::validate(id, 1, std::string(json));
+    if (errors.empty()) return eve::Result<void>::success();
+    const auto& error = errors.front();
+    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::ParseError, error.message, error.path,
+        eve::DiagnosticDetails{{"schemaId", id}, {"schemaVersion", "1"}, {"validationCode", error.code}},
+        "game_event.snapshot.schema"));
+}
 
 std::string quote(const std::string& value) {
     std::ostringstream out;
@@ -89,19 +153,19 @@ std::string canonicalJson(const eve::json::Value& value) {
 
 const char* correlationKindName(CorrelationId::Kind kind) {
     switch (kind) {
-    case CorrelationId::Kind::None: return "none";
-    case CorrelationId::Kind::Id: return "id";
-    case CorrelationId::Kind::Legacy: return "legacy";
+        case CorrelationId::Kind::None: return "none";
+        case CorrelationId::Kind::Id: return "id";
+        case CorrelationId::Kind::Legacy: return "legacy";
     }
     return "none";
 }
 
 const char* causationKindName(CausationRef::Kind kind) {
     switch (kind) {
-    case CausationRef::Kind::None: return "none";
-    case CausationRef::Kind::Event: return "event";
-    case CausationRef::Kind::Command: return "command";
-    case CausationRef::Kind::Legacy: return "legacy";
+        case CausationRef::Kind::None: return "none";
+        case CausationRef::Kind::Event: return "event";
+        case CausationRef::Kind::Command: return "command";
+        case CausationRef::Kind::Legacy: return "legacy";
     }
     return "none";
 }
@@ -137,15 +201,15 @@ eve::LogicalId eventStreamSchema() {
 const eve::SnapshotMigrationChain& eventStreamMigrations() {
     static const eve::SnapshotMigrationChain chain = [] {
         eve::SnapshotMigrationChain result;
-        const auto registration = result.add(
-            eventStreamSchema(), eve::SchemaVersion(0), eve::SchemaVersion(1),
-            [](const eve::Value& payload) -> eve::Result<eve::Value> {
-                const auto* object = payload.getIf<eve::Value::Object>();
-                if (!object)
-                    return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::ParseError, "event stream payload must be an object"));
-                return eve::Result<eve::Value>::success(payload);
-            });
+        const auto                  registration =
+            result.add(eventStreamSchema(), eve::SchemaVersion(0), eve::SchemaVersion(1),
+                       [](const eve::Value& payload) -> eve::Result<eve::Value> {
+                           const auto* object = payload.getIf<eve::Value::Object>();
+                           if (!object)
+                               return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::ParseError, "event stream payload must be an object"));
+                           return eve::Result<eve::Value>::success(payload);
+                       });
         if (!registration.ok()) std::terminate();
         return result;
     }();
@@ -165,8 +229,7 @@ EventConsumer::EventConsumer(GameEventLog* stream, EventSequence sequence)
 int EventConsumer::read(int maxCount) {
     batch_.clear();
     if (!stream_ || maxCount <= 0) return 0;
-    if (nextSequence_.value() < stream_->oldestSequence().value())
-        nextSequence_ = stream_->oldestSequence();
+    if (nextSequence_.value() < stream_->oldestSequence().value()) nextSequence_ = stream_->oldestSequence();
     for (const auto& event : stream_->events_) {
         if (event.sequence.value() < nextSequence_.value()) continue;
         if (static_cast<int>(batch_.size()) >= maxCount) break;
@@ -230,16 +293,15 @@ eve::Result<EventSequence> GameEventLog::append(GameEvent envelope) {
     envelope.payload  = canonicalJson(payloadDocument.root());
     events_.push_back(std::move(envelope));
     nextSequence_ = *next;
-    revision_ = *revision_.incremented();
+    revision_     = *revision_.incremented();
     if (events_.back().tick > snapshotTick_) snapshotTick_ = events_.back().tick;
     return eve::Result<EventSequence>::success(events_.back().sequence);
 }
 
 const GameEvent* GameEventLog::find(EventSequence sequence) const {
-    const auto it = std::lower_bound(events_.begin(), events_.end(), sequence.value(),
-                                     [](const GameEvent& event, uint64_t value) {
-                                         return event.sequence.value() < value;
-                                     });
+    const auto it =
+        std::lower_bound(events_.begin(), events_.end(), sequence.value(),
+                         [](const GameEvent& event, uint64_t value) { return event.sequence.value() < value; });
     return it != events_.end() && it->sequence.value() == sequence.value() ? &*it : nullptr;
 }
 
@@ -309,7 +371,7 @@ void GameEventLog::clear() {
 void GameEventLog::reset() {
     clear();
     nextSequence_ = EventSequence(1);
-    revision_ = eve::Revision::zero();
+    revision_     = eve::Revision::zero();
     snapshotTick_ = eve::SimulationTick::zero();
     for (auto& consumer : consumers_) consumer->seek(1);
 }
@@ -341,13 +403,16 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
     std::string error;
     auto        document = eve::json::Document::parse(std::string(json), &error);
     const auto  root     = document.root();
-    const auto invalid = [&](eve::DiagnosticCode code, std::string message) {
+    const auto  invalid  = [&](eve::DiagnosticCode code, std::string message) {
         return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message)));
     };
     const int snapshotVersion = root.getInt("version");
     if (!document.valid() || !root.isObject() || (snapshotVersion != 1 && snapshotVersion != 2)) {
-        return invalid(eve::DiagnosticCode::ParseError,
-                       error.empty() ? "invalid event stream snapshot" : error);
+        return invalid(eve::DiagnosticCode::ParseError, error.empty() ? "invalid event stream snapshot" : error);
+    }
+    if (snapshotVersion == 2) {
+        auto schemaValidation = validateCurrentEventStream(json);
+        if (!schemaValidation.ok()) return schemaValidation;
     }
     uint64_t restoredNext = 0;
     if (!parseU64(root.get("nextSequence"), restoredNext) || restoredNext == 0) {
@@ -360,14 +425,14 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
     if (!values.isArray()) {
         return invalid(eve::DiagnosticCode::ParseError, "events must be an array");
     }
-    std::deque<GameEvent> restored;
-    uint64_t                  previous = 0;
-    std::vector<std::string>  restoredEventIds;
+    std::deque<GameEvent>    restored;
+    uint64_t                 previous = 0;
+    std::vector<std::string> restoredEventIds;
     for (size_t i = 0; i < values.size(); ++i) {
-        const auto    value = values.at(i);
-        GameEvent event;
-        int64_t       restoredTick = 0;
-        uint64_t restoredSequence = 0;
+        const auto value = values.at(i);
+        GameEvent  event;
+        int64_t    restoredTick     = 0;
+        uint64_t   restoredSequence = 0;
         if (!value.isObject() || !parseU64(value.get("sequence"), restoredSequence) || restoredSequence <= previous ||
             !parseI64(value.get("tick"), restoredTick) || !value.get("flags").isNumber() || !value.get("payload")) {
             return invalid(eve::DiagnosticCode::ParseError, "invalid event at index " + std::to_string(i));
@@ -386,7 +451,8 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
             event.eventId = EventId::nil();
         } else {
             const auto parsedId = EventId::parse(eventIdText);
-            if (!parsedId) return invalid(eve::DiagnosticCode::ParseError, "invalid eventId at index " + std::to_string(i));
+            if (!parsedId)
+                return invalid(eve::DiagnosticCode::ParseError, "invalid eventId at index " + std::to_string(i));
             event.eventId = *parsedId;
             if (!event.eventId.isNil()) {
                 const auto formattedId = event.eventId.format();
@@ -396,27 +462,28 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
                 restoredEventIds.push_back(formattedId);
             }
         }
-        event.source       = value.getString("source");
-        event.subject      = value.getString("subject");
-        const std::string causationText = value.getString("causation");
+        event.source                      = value.getString("source");
+        event.subject                     = value.getString("subject");
+        const std::string causationText   = value.getString("causation");
         const std::string correlationText = value.getString("correlation");
-        const std::string causationKind = snapshotVersion == 1 ?
-            (causationText.empty() ? "none" : "legacy") : value.getString("causationKind");
-        const std::string correlationKind = snapshotVersion == 1 ?
-            (correlationText.empty() ? "none" : "legacy") : value.getString("correlationKind");
+        const std::string causationKind =
+            snapshotVersion == 1 ? (causationText.empty() ? "none" : "legacy") : value.getString("causationKind");
+        const std::string correlationKind =
+            snapshotVersion == 1 ? (correlationText.empty() ? "none" : "legacy") : value.getString("correlationKind");
         if (causationKind != "none" && causationKind != "event" && causationKind != "command" &&
             causationKind != "legacy")
             return invalid(eve::DiagnosticCode::ParseError, "invalid causation kind at index " + std::to_string(i));
         if (correlationKind != "none" && correlationKind != "id" && correlationKind != "legacy")
             return invalid(eve::DiagnosticCode::ParseError, "invalid correlation kind at index " + std::to_string(i));
-        if ((causationKind == "none" && !causationText.empty()) ||
-            (causationKind != "none" && causationText.empty()) ||
+        if ((causationKind == "none" && !causationText.empty()) || (causationKind != "none" && causationText.empty()) ||
             (correlationKind == "none" && !correlationText.empty()) ||
             (correlationKind != "none" && correlationText.empty()))
-            return invalid(eve::DiagnosticCode::ParseError, "causal reference value/kind mismatch at index " + std::to_string(i));
+            return invalid(eve::DiagnosticCode::ParseError,
+                           "causal reference value/kind mismatch at index " + std::to_string(i));
         event.causation   = causationFromSnapshot(causationKind, causationText);
         event.correlation = correlationFromSnapshot(correlationKind, correlationText);
-        if ((causationKind == "event" || causationKind == "command") && event.causation.kind() == CausationRef::Kind::None)
+        if ((causationKind == "event" || causationKind == "command") &&
+            event.causation.kind() == CausationRef::Kind::None)
             return invalid(eve::DiagnosticCode::ParseError, "invalid causation ID at index " + std::to_string(i));
         if (correlationKind == "id" && event.correlation.kind() == CorrelationId::Kind::None)
             return invalid(eve::DiagnosticCode::ParseError, "invalid correlation ID at index " + std::to_string(i));
@@ -425,7 +492,8 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
             event.schemaId = eve::LogicalId::fromParts("game_event", event.type).value_or(eve::LogicalId());
         } else {
             const auto parsedSchema = eve::LogicalId::parse(schemaIdText);
-            if (!parsedSchema) return invalid(eve::DiagnosticCode::ParseError, "invalid schemaId at index " + std::to_string(i));
+            if (!parsedSchema)
+                return invalid(eve::DiagnosticCode::ParseError, "invalid schemaId at index " + std::to_string(i));
             event.schemaId = *parsedSchema;
         }
         uint64_t restoredSchemaVersion = snapshotVersion == 1 ? 1 : 0;
@@ -434,7 +502,7 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
             return invalid(eve::DiagnosticCode::ParseError, "invalid schemaVersion at index " + std::to_string(i));
         }
         event.schemaVersion = SchemaVersion(restoredSchemaVersion);
-        const double flags = value.getDouble("flags", -1.0);
+        const double flags  = value.getDouble("flags", -1.0);
         if (flags < 0 || flags > std::numeric_limits<uint32_t>::max() || std::floor(flags) != flags) {
             return invalid(eve::DiagnosticCode::ParseError, "invalid flags at index " + std::to_string(i));
         }
@@ -457,16 +525,15 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
     return eve::Result<void>::success();
 }
 
-eve::Result<eve::SnapshotEnvelope> GameEventLog::snapshot(
-    const eve::SnapshotHashProvider& hashProvider) const {
+eve::Result<eve::SnapshotEnvelope> GameEventLog::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     auto payload = eve::Value::fromJson(snapshotJson());
     if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
     return eve::makeSnapshotEnvelope("game_event.stream", eventStreamSchema(), eve::SchemaVersion(1), instanceId_,
                                      revision_, snapshotTick_, std::move(payload).takeValue(), hashProvider);
 }
 
-eve::Result<void> GameEventLog::restoreSnapshot(
-    const eve::SnapshotEnvelope& source, const eve::SnapshotHashProvider& hashProvider) {
+eve::Result<void> GameEventLog::restoreSnapshot(const eve::SnapshotEnvelope&     source,
+                                                const eve::SnapshotHashProvider& hashProvider) {
     if (source.type != "game_event.stream" || source.schema != eventStreamSchema())
         return snapshotFailure<void>(eve::DiagnosticCode::InvalidArgument,
                                      "snapshot does not belong to game_event::GameEventLog");
@@ -475,8 +542,7 @@ eve::Result<void> GameEventLog::restoreSnapshot(
                                      "snapshot instanceId does not match game_event::GameEventLog");
     auto migrated = eventStreamMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
-    auto metadata = eve::validateSnapshotPayloadMetadata(migrated.value().payload,
-                                                         migrated.value().revision,
+    auto metadata = eve::validateSnapshotPayloadMetadata(migrated.value().payload, migrated.value().revision,
                                                          migrated.value().tick);
     if (!metadata.ok()) return eve::Result<void>::failure(metadata.status());
     auto payload = migrated.value().payload.toJson();
@@ -484,7 +550,7 @@ eve::Result<void> GameEventLog::restoreSnapshot(
 
     GameEventLog candidate(instanceId_);
     candidate.eventIdGenerator_ = eventIdGenerator_;
-    auto restored = candidate.restore(std::move(payload).takeValue());
+    auto restored               = candidate.restore(std::move(payload).takeValue());
     if (!restored.ok()) return eve::Result<void>::failure(restored.status());
     if (candidate.snapshotTick_ != migrated.value().tick)
         return snapshotFailure<void>(eve::DiagnosticCode::Conflict,
@@ -505,22 +571,23 @@ eve::Result<void> GameEventLog::restoreSnapshot(
     return eve::Result<void>::success();
 }
 
-eve::Result<std::string> GameEventLog::snapshotEnvelopeJson(
-    const eve::SnapshotHashProvider& hashProvider) const {
+eve::Result<std::string> GameEventLog::snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const {
     auto value = snapshot(hashProvider);
     if (!value.ok()) return eve::Result<std::string>::failure(value.status());
     return std::move(value).andThen(
         [](eve::SnapshotEnvelope&& envelope) { return eve::serializeSnapshotEnvelope(envelope); });
 }
 
-eve::Result<void> GameEventLog::restoreSnapshotJson(
-    std::string_view json, const eve::SnapshotHashProvider& hashProvider) {
+eve::Result<void> GameEventLog::restoreSnapshotJson(std::string_view                 json,
+                                                    const eve::SnapshotHashProvider& hashProvider) {
     auto source = eve::parseSnapshotEnvelope(json, hashProvider);
     if (!source.ok()) return eve::Result<void>::failure(source.status());
     return restoreSnapshot(std::move(source).takeValue(), hashProvider);
 }
 
-EventSequence GameEventLog::oldestSequence() const { return events_.empty() ? nextSequence_ : events_.front().sequence; }
+EventSequence GameEventLog::oldestSequence() const {
+    return events_.empty() ? nextSequence_ : events_.front().sequence;
+}
 
 GameEventLog* GameEventModule::newLog() {
     auto* module = GameEventModule::create();
@@ -528,8 +595,8 @@ GameEventLog* GameEventModule::newLog() {
     return module->streams_.back().get();
 }
 
-ModuleRegister GameEventModule_register(
-    "GameEvent", (ModuleManager::creator_t)(GameEventModule::create), GameEventModule::expose);
+ModuleRegister   GameEventModule_register("GameEvent", (ModuleManager::creator_t)(GameEventModule::create),
+                                          GameEventModule::expose);
 GameEventModule* GameEventModule::create() {
     auto* existing = ModuleManager::find(name);
     if (existing) return static_cast<GameEventModule*>(existing);
@@ -544,33 +611,22 @@ void GameEventModule::expose(ssq::Table& table) {
         "GameEventRecord", std::function<GameEvent*()>([]() -> GameEvent* { return nullptr; }), false);
     envelope.addFunc("getEventId", [](GameEvent* e) { return e ? e->eventId.format() : std::string{}; });
     envelope.addFunc("getSequence",
-                     [](GameEvent* e) {
-                         return e ? static_cast<int64_t>(e->sequence.value()) : int64_t{0};
-                     });
+                     [](GameEvent* e) { return e ? static_cast<int64_t>(e->sequence.value()) : int64_t{0}; });
     envelope.addFunc("getType", [](GameEvent* e) { return e ? e->type : std::string{}; });
     envelope.addFunc("getSource", [](GameEvent* e) { return e ? e->source : std::string{}; });
     envelope.addFunc("getSubject", [](GameEvent* e) { return e ? e->subject : std::string{}; });
-    envelope.addFunc("getCausation", [](GameEvent* e) {
-        return e ? e->causation.format() : std::string{};
-    });
+    envelope.addFunc("getCausation", [](GameEvent* e) { return e ? e->causation.format() : std::string{}; });
     envelope.addFunc("getCausationKind", [](GameEvent* e) {
         return e ? std::string(causationKindName(e->causation.kind())) : std::string{};
     });
-    envelope.addFunc("getCorrelation", [](GameEvent* e) {
-        return e ? e->correlation.format() : std::string{};
-    });
+    envelope.addFunc("getCorrelation", [](GameEvent* e) { return e ? e->correlation.format() : std::string{}; });
     envelope.addFunc("getCorrelationKind", [](GameEvent* e) {
         return e ? std::string(correlationKindName(e->correlation.kind())) : std::string{};
     });
-    envelope.addFunc("getSchemaId", [](GameEvent* e) {
-        return e ? e->schemaId.format() : std::string{};
-    });
-    envelope.addFunc("getSchemaVersion", [](GameEvent* e) {
-        return e ? static_cast<int64_t>(e->schemaVersion.value()) : int64_t{0};
-    });
-    envelope.addFunc("getTick", [](GameEvent* e) {
-        return e ? static_cast<int64_t>(e->tick.value()) : int64_t{0};
-    });
+    envelope.addFunc("getSchemaId", [](GameEvent* e) { return e ? e->schemaId.format() : std::string{}; });
+    envelope.addFunc("getSchemaVersion",
+                     [](GameEvent* e) { return e ? static_cast<int64_t>(e->schemaVersion.value()) : int64_t{0}; });
+    envelope.addFunc("getTick", [](GameEvent* e) { return e ? static_cast<int64_t>(e->tick.value()) : int64_t{0}; });
     envelope.addFunc("getFlags", [](GameEvent* e) { return e ? static_cast<int64_t>(e->flags) : int64_t{0}; });
     envelope.addFunc("getPayload", [](GameEvent* e) { return e ? e->payload : std::string{}; });
 
@@ -581,67 +637,67 @@ void GameEventModule::expose(ssq::Table& table) {
     consumer.addFunc("batchAt", [](EventConsumer* c, int index) -> GameEvent* {
         return c ? const_cast<GameEvent*>(c->batchAt(index)) : nullptr;
     });
-    consumer.addFunc("position", [](EventConsumer* c) {
-        return c ? static_cast<int64_t>(c->position().value()) : int64_t{0};
-    });
+    consumer.addFunc("position",
+                     [](EventConsumer* c) { return c ? static_cast<int64_t>(c->position().value()) : int64_t{0}; });
     consumer.addFunc("seek", [](EventConsumer* c, int64_t sequence) {
         if (c) c->seek(sequence > 0 ? uint64_t(sequence) : 1);
     });
 
-    auto stream =
-        table.addClass<GameEventLog>("GameEventLog", std::function<GameEventLog*()>([]() -> GameEventLog* { return nullptr; }), false);
+    auto stream = table.addClass<GameEventLog>(
+        "GameEventLog", std::function<GameEventLog*()>([]() -> GameEventLog* { return nullptr; }), false);
     const HSQUIRRELVM vm = table.getHandle();
-    stream.addFunc("append", [vm](GameEventLog* s, const std::string& eventId,
-                                   const std::string& type, const std::string& source,
-                                   const std::string& subject, const std::string& causation,
-                                   const std::string& correlation, int64_t tick, int64_t flags,
-                                   const std::string& payload) {
+    stream.addFunc("append", [vm](GameEventLog* s, const std::string& eventId, const std::string& type,
+                                  const std::string& source, const std::string& subject, const std::string& causation,
+                                  const std::string& correlation, int64_t tick, int64_t flags,
+                                  const std::string& payload) {
         if (!s) {
-            return eve::script::projectResult(vm, eve::Result<EventSequence>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                       "event stream must not be null", "stream")),
+            return eve::script::projectResult(
+                vm,
+                eve::Result<EventSequence>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                           "event stream must not be null", "stream")),
                 [](EventSequence) { return eve::Value::null(); });
         }
         if (tick < 0 || flags < 0 || static_cast<std::uint64_t>(flags) > std::numeric_limits<std::uint32_t>::max()) {
-            return eve::script::projectResult(vm, eve::Result<EventSequence>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                       "event tick and flags must be non-negative and in range", "envelope")),
+            return eve::script::projectResult(
+                vm,
+                eve::Result<EventSequence>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                           "event tick and flags must be non-negative and in range", "envelope")),
                 [](EventSequence) { return eve::Value::null(); });
         }
         GameEvent envelope;
         if (!eventId.empty()) {
             const auto parsed = EventId::parse(eventId);
             if (!parsed) {
-                return eve::script::projectResult(vm, eve::Result<EventSequence>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                           "eventId must be a UUID", "eventId")),
+                return eve::script::projectResult(
+                    vm,
+                    eve::Result<EventSequence>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                               "eventId must be a UUID", "eventId")),
                     [](EventSequence) { return eve::Value::null(); });
             }
             envelope.eventId = *parsed;
         }
-        envelope.type = type;
-        envelope.source = source;
+        envelope.type    = type;
+        envelope.source  = source;
         envelope.subject = subject;
         if (!causation.empty()) {
-            const auto parsed = EventId::parse(causation);
-            envelope.causation = parsed ? CausationRef::fromEventId(*parsed)
-                                        : CausationRef::fromLegacy(causation);
+            const auto parsed  = EventId::parse(causation);
+            envelope.causation = parsed ? CausationRef::fromEventId(*parsed) : CausationRef::fromLegacy(causation);
         }
         if (!correlation.empty()) {
             const auto parsed = EventId::parse(correlation);
-            envelope.correlation = parsed ? CorrelationId::fromEventId(*parsed)
-                                          : CorrelationId::fromLegacy(correlation);
+            envelope.correlation =
+                parsed ? CorrelationId::fromEventId(*parsed) : CorrelationId::fromLegacy(correlation);
         }
         const auto schema = eve::LogicalId::fromParts("game_event", type);
         if (schema) envelope.schemaId = *schema;
         envelope.schemaVersion = SchemaVersion(1);
-        envelope.tick = SimulationTick(static_cast<std::uint64_t>(tick));
-        envelope.flags = static_cast<std::uint32_t>(flags);
-        envelope.payload = payload;
-        return eve::script::projectResult(vm, s->append(std::move(envelope)),
-                                          [](EventSequence sequence) {
-                                              return eve::Value::integer(static_cast<std::int64_t>(sequence.value()));
-                                          });
+        envelope.tick          = SimulationTick(static_cast<std::uint64_t>(tick));
+        envelope.flags         = static_cast<std::uint32_t>(flags);
+        envelope.payload       = payload;
+        return eve::script::projectResult(vm, s->append(std::move(envelope)), [](EventSequence sequence) {
+            return eve::Value::integer(static_cast<std::int64_t>(sequence.value()));
+        });
     });
     stream.addFunc("find", [](GameEventLog* s, int64_t sequence) -> GameEvent* {
         return s && sequence > 0 ? const_cast<GameEvent*>(s->find(uint64_t(sequence))) : nullptr;
@@ -668,12 +724,11 @@ void GameEventModule::expose(ssq::Table& table) {
     stream.addFunc("clear", &GameEventLog::clear);
     stream.addFunc("reset", &GameEventLog::reset);
     stream.addFunc("snapshotJson", &GameEventLog::snapshotJson);
-    stream.addFunc("restore", [vm = table.getHandle()](GameEventLog* stream,
-                                                        const std::string& json) {
+    stream.addFunc("restore", [vm = table.getHandle()](GameEventLog* stream, const std::string& json) {
         if (!stream)
             return eve::script::projectResult(
-                vm, eve::Result<void>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument, "game event log must not be null")));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "game event log must not be null")));
         return eve::script::projectResult(vm, stream->restore(json));
     });
 

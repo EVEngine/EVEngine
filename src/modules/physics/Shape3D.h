@@ -25,17 +25,13 @@ public:
     enum class Kind { Box, Sphere, Capsule, ConvexHull, TriangleMesh, HeightField };
 
     /** @brief Internal: wraps a Box3D shape (use Body3D::new*Shape). */
-    Shape3D(World3D *world, Body3D *body, b3ShapeId shapeId,
-            PhysicsShapeHandle runtimeHandle, Kind kind, float a, float b, float c,
-            std::vector<float> hullVertices = {}, int hullMaxVertices = 64,
-            std::vector<float> meshVertices = {}, std::vector<int32_t> meshIndices = {},
-            b3MeshData *meshData = nullptr, bool meshWeldVertices = true,
-            float meshWeldTolerance = 0.001f, bool meshIdentifyEdges = true,
-            bool meshUseMedianSplit = false, std::vector<float> heightValues = {},
-            int heightCountX = 0, int heightCountZ = 0, float heightCellSizeX = 1.f,
-            float heightCellSizeZ = 1.f, float heightGlobalMin = 0.f,
-            float heightGlobalMax = 0.f, bool heightClockwise = false,
-            b3HeightFieldData *heightData = nullptr);
+    Shape3D(World3D *world, Body3D *body, b3ShapeId shapeId, PhysicsShapeHandle runtimeHandle, Kind kind, float a,
+            float b, float c, std::vector<float> hullVertices = {}, int hullMaxVertices = 64,
+            std::vector<float> meshVertices = {}, std::vector<int32_t> meshIndices = {}, b3MeshData *meshData = nullptr,
+            bool meshWeldVertices = true, float meshWeldTolerance = 0.001f, bool meshIdentifyEdges = true,
+            bool meshUseMedianSplit = false, std::vector<float> heightValues = {}, int heightCountX = 0,
+            int heightCountZ = 0, float heightCellSizeX = 1.f, float heightCellSizeZ = 1.f, float heightGlobalMin = 0.f,
+            float heightGlobalMax = 0.f, bool heightClockwise = false, b3HeightFieldData *heightData = nullptr);
     ~Shape3D();
 
     Shape3D(const Shape3D &)            = delete;
@@ -319,7 +315,7 @@ private:
     World3D  *world_ = nullptr;
     Body3D   *body_  = nullptr;
     b3ShapeId shapeId_{};
-    PhysicsShapeHandle runtimeHandle_ = PhysicsShapeHandle::invalid();
+    PhysicsShapeHandle             runtimeHandle_ = PhysicsShapeHandle::invalid();
     Kind      kind_ = Kind::Box;
     float     a_ = 0.f;  // box hx | sphere r | capsule half-height
     float     b_ = 0.f;  // box hy | unused   | capsule radius

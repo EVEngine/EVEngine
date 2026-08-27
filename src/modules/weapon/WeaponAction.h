@@ -63,10 +63,8 @@ public:
      *          call submit and then assemble a separate payment transaction.
      */
     [[nodiscard]] static eve::Result<eve::transaction::TransactionReceipt> fire(
-        const WeaponDefinition& weapon, const AttackRequest& attack,
-        eve::resource::IResourceAccount& account,
-        eve::transaction::ITransactionParticipant& effect,
-        eve::SimulationTick tick = eve::SimulationTick(1));
+        const WeaponDefinition& weapon, const AttackRequest& attack, eve::resource::IResourceAccount& account,
+        eve::transaction::ITransactionParticipant& effect, eve::SimulationTick tick = eve::SimulationTick(1));
 
     /**
      * @brief Build an action definition for one attack request.
@@ -74,8 +72,8 @@ public:
      * @param request Borrowed attack request; target selection affects the mode.
      * @return Common definition or a structured mapping failure.
      */
-    [[nodiscard]] static eve::Result<action::ActionDefinition> makeDefinition(
-        const WeaponDefinition& weapon, const AttackRequest& request);
+    [[nodiscard]] static eve::Result<action::ActionDefinition> makeDefinition(const WeaponDefinition& weapon,
+                                                                              const AttackRequest&    request);
 
     /**
      * @brief Build a request carrying the original weapon attack parameters.
@@ -87,9 +85,8 @@ public:
      */
     [[nodiscard]] static eve::Result<action::ActionRequest> makeRequest(
         const WeaponDefinition& weapon, const AttackRequest& attack,
-        std::optional<ecs::EntityHandle> source = std::nullopt,
-        eve::SimulationTick requestedTick = eve::SimulationTick::zero());
-
+        std::optional<ecs::EntityHandle> source        = std::nullopt,
+        eve::SimulationTick              requestedTick = eve::SimulationTick::zero());
 };
 
 }  // namespace eve::weapon

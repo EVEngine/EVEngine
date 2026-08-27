@@ -95,7 +95,7 @@ public:
     void clear();
 
     /** @brief Age samples by one scheduler-owned deterministic step. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
     /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
 
@@ -143,8 +143,8 @@ private:
     float drawOffsetY_ = 0.f;
 
     std::vector<Point> points_;
-    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
-    bool hasLastTick_ = false;
+    eve::SimulationTick lastTick_    = eve::SimulationTick::zero();
+    bool                hasLastTick_ = false;
 
     void updateUnchecked(float dt);
 };

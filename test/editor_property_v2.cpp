@@ -31,14 +31,13 @@ public:
         return std::make_unique<TransformPropertyTarget>(*this);
     }
 
-    [[nodiscard]] EditorResult<void> commitDomainState(
-        std::unique_ptr<IDomainOperationTarget> candidate) override {
-        auto *typed = dynamic_cast<TransformPropertyTarget *>(candidate.get());
+    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override {
+        auto* typed = dynamic_cast<TransformPropertyTarget*>(candidate.get());
         if (!typed)
             return EditorResult<void>::error(EditorStatus::Rejected, RuleId("scene.property.candidate"),
                                              "Compensation candidate has an incompatible type");
-        position_  = typed->position_;
-        revision_  = typed->revision_;
+        position_ = typed->position_;
+        revision_ = typed->revision_;
         return EditorResult<void>::applied();
     }
 
@@ -71,7 +70,7 @@ class TransformPropertyProvider final : public IPropertyProvider {
 public:
     explicit TransformPropertyProvider(TransformPropertyTarget* target) : target_(target) {}
 
-    [[nodiscard]] eve::Result<eve::Revision> currentRevision(const SelectionSnapshot &) const override {
+    [[nodiscard]] eve::Result<eve::Revision> currentRevision(const SelectionSnapshot&) const override {
         return eve::Result<eve::Revision>::success(eve::Revision(target_->revision()));
     }
 
@@ -133,7 +132,7 @@ class LegacyPropertyProvider final : public IPropertyProvider {
 public:
     explicit LegacyPropertyProvider(TransformPropertyProvider provider) : provider_(std::move(provider)) {}
 
-    PropertySchema schema(const SelectionSnapshot& selection) const override { return provider_.schema(selection); }
+    PropertySchema     schema(const SelectionSnapshot& selection) const override { return provider_.schema(selection); }
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override {
         return provider_.read(selection, path);
     }
@@ -142,7 +141,7 @@ public:
         return provider_.makeSet(selection, path, value, mode);
     }
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
-                                            const PropertyPath& path) const override {
+                                            const PropertyPath&      path) const override {
         return provider_.makeReset(selection, path);
     }
 
@@ -308,17 +307,17 @@ TEST_CASE("editor.v2.property_model_uses_transaction_backend_for_commit_undo_and
     SelectionSnapshot         selection = sceneSelection(target);
     LocalWorldAuthority       authority(&target);
     LocalTransactionBackend   backend(&authority);
-    EditorPropertyModel       model(provider.schema(selection), selection, &provider,
-                                    PropertyModelSurface::Developer, HostProfile::developer(), &backend);
+    EditorPropertyModel       model(provider.schema(selection), selection, &provider, PropertyModelSurface::Developer,
+                                    HostProfile::developer(), &backend);
 
     bool legacySinkCalled = false;
-    model.setEditSink([&](const PropertyEditIntent &) {
+    model.setEditSink([&](const PropertyEditIntent&) {
         legacySinkCalled = true;
         return EditorResult<void>::applied();
     });
 
     const EditorValue desired = EditorValue::Array{10.0, 11.0, 12.0};
-    const auto        write = model.write("transform.position", toPresentationValue(desired));
+    const auto        write   = model.write("transform.position", toPresentationValue(desired));
     CHECK(write.accepted);
     CHECK(!legacySinkCalled);
     CHECK(target.position() == desired);
@@ -341,9 +340,9 @@ TEST_CASE("editor.v2.property_model_explicit_transaction_previews_without_mutati
     SelectionSnapshot         selection = sceneSelection(target);
     LocalWorldAuthority       authority(&target);
     LocalTransactionBackend   backend(&authority);
-    EditorPropertyModel       model(provider.schema(selection), selection, &provider,
-                                    PropertyModelSurface::Developer, HostProfile::developer(), &backend);
-    const EditorValue desired = EditorValue::Array{13.0, 14.0, 15.0};
+    EditorPropertyModel       model(provider.schema(selection), selection, &provider, PropertyModelSurface::Developer,
+                                    HostProfile::developer(), &backend);
+    const EditorValue         desired = EditorValue::Array{13.0, 14.0, 15.0};
 
     auto begun = model.beginTransaction("Set transform position");
     CHECK(begun.accepted());
@@ -369,9 +368,9 @@ TEST_CASE("editor.v2.property_model_failed_commit_keeps_target_unchanged_and_is_
     SelectionSnapshot         selection = sceneSelection(target);
     ReadOnlyAuthority         authority;
     LocalTransactionBackend   backend(&authority);
-    EditorPropertyModel       model(provider.schema(selection), selection, &provider,
-                                    PropertyModelSurface::Developer, HostProfile::developer(), &backend);
-    const EditorValue before = target.position();
+    EditorPropertyModel       model(provider.schema(selection), selection, &provider, PropertyModelSurface::Developer,
+                                    HostProfile::developer(), &backend);
+    const EditorValue         before = target.position();
 
     const auto failed = model.write("transform.position", toPresentationValue(EditorValue::Array{16.0, 17.0, 18.0}));
     CHECK(!failed.accepted);
@@ -390,8 +389,8 @@ TEST_CASE("editor.v2.property_model_binds_non_zero_provider_revision") {
     SelectionSnapshot         selection = sceneSelection(target);
     LocalWorldAuthority       authority(&target);
     LocalTransactionBackend   backend(&authority);
-    EditorPropertyModel       model(provider.schema(selection), selection, &provider,
-                                    PropertyModelSurface::Developer, HostProfile::developer(), &backend);
+    EditorPropertyModel       model(provider.schema(selection), selection, &provider, PropertyModelSurface::Developer,
+                                    HostProfile::developer(), &backend);
 
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(41));
     const auto write = model.write("transform.position", toPresentationValue(EditorValue::Array{1.0, 2.0, 3.0}));
@@ -405,8 +404,8 @@ TEST_CASE("editor.v2.property_model_rejects_external_change_until_refresh_rebase
     SelectionSnapshot         selection = sceneSelection(target);
     LocalWorldAuthority       authority(&target);
     LocalTransactionBackend   backend(&authority);
-    EditorPropertyModel       model(provider.schema(selection), selection, &provider,
-                                    PropertyModelSurface::Developer, HostProfile::developer(), &backend);
+    EditorPropertyModel       model(provider.schema(selection), selection, &provider, PropertyModelSurface::Developer,
+                                    HostProfile::developer(), &backend);
 
     const EditorValue external = EditorValue::Array{20.0, 21.0, 22.0};
     target.externalSet(external);
@@ -420,8 +419,7 @@ TEST_CASE("editor.v2.property_model_rejects_external_change_until_refresh_rebase
     const auto refreshed = model.refresh();
     CHECK(refreshed.accepted());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(8));
-    CHECK(model.read("transform.position") ==
-          std::optional<eve::Value>(toPresentationValue(external)));
+    CHECK(model.read("transform.position") == std::optional<eve::Value>(toPresentationValue(external)));
 
     const auto accepted = model.write("transform.position", toPresentationValue(EditorValue::Array{8.0, 9.0, 10.0}));
     CHECK(accepted.accepted);
@@ -434,8 +432,8 @@ TEST_CASE("editor.v2.property_model_external_change_conflict_preserves_failed_tr
     SelectionSnapshot         selection = sceneSelection(target);
     LocalWorldAuthority       authority(&target);
     LocalTransactionBackend   backend(&authority);
-    EditorPropertyModel       model(provider.schema(selection), selection, &provider,
-                                    PropertyModelSurface::Developer, HostProfile::developer(), &backend);
+    EditorPropertyModel       model(provider.schema(selection), selection, &provider, PropertyModelSurface::Developer,
+                                    HostProfile::developer(), &backend);
 
     const auto begun = model.beginTransaction("stale property edit");
     CHECK(begun.accepted());
@@ -463,7 +461,7 @@ TEST_CASE("editor.v2.legacy_property_provider_fails_closed_without_implicit_zero
     LegacyPropertyProvider    legacy(std::move(revisionAware));
     SelectionSnapshot         selection = sceneSelection(target);
     EditorPropertyModel       model(legacy.schema(selection), selection, &legacy);
-    model.setEditSink([](const PropertyEditIntent &) { return EditorResult<void>::applied(); });
+    model.setEditSink([](const PropertyEditIntent&) { return EditorResult<void>::applied(); });
 
     const auto rejected = model.write("transform.position", toPresentationValue(EditorValue::Array{2.0, 3.0, 4.0}));
     CHECK(!rejected.accepted);

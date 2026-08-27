@@ -23,8 +23,7 @@ void ScenarioRecorder::setObserver() {
     eventModule_ = eve::ModuleManager::requireInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!eventModule_) return;
     savedObserver_ = eventModule_->pollObserver();
-    eventModule_->setPollObserver(
-        [this](const eve::platform_event::Message& m) { onEventConsumed(m); });
+    eventModule_->setPollObserver([this](const eve::platform_event::Message& m) { onEventConsumed(m); });
 }
 
 void ScenarioRecorder::detachObserver() {
@@ -143,8 +142,7 @@ bool ScenarioRecorder::stageFrame() {
     const ScenarioFrame& frame = frames_[replayIndex_++];
     for (const auto& ev : frame.events) {
         std::vector<eve::platform_event::Variant> args;
-        for (const auto& a : ev.args)
-            args.push_back(eve::platform_event::Variant::makeString(a));
+        for (const auto& a : ev.args) args.push_back(eve::platform_event::Variant::makeString(a));
         eventModule_->push(new eve::platform_event::Message(ev.name, args));
     }
     return true;

@@ -269,10 +269,9 @@ bool canAttackStage(WeaponEntity& w, const WeaponDefinition* def) {
     if (state->cooldown > 0.f) return false;
     const Resource& r = state->resource;
     if (r.kind == ResourceKind::Mana || r.kind == ResourceKind::Stamina) {
-        const auto attribute = r.kind == ResourceKind::Mana
-                                   ? WeaponAttributeAdapter::manaAttribute
-                                   : WeaponAttributeAdapter::staminaAttribute;
-        auto current = WeaponAttributeAdapter::read(w, attribute);
+        const auto attribute = r.kind == ResourceKind::Mana ? WeaponAttributeAdapter::manaAttribute
+                                                            : WeaponAttributeAdapter::staminaAttribute;
+        auto       current   = WeaponAttributeAdapter::read(w, attribute);
         if (!current) {
             current.ignore("legacy bool canFire cannot expose weapon attribute diagnostics");
             return false;

@@ -124,7 +124,7 @@ private:
     std::string                            errorReport_;
     std::string                            errorSite_;
     std::function<void(const eve::platform_event::Message&)> savedObserver_;
-    eve::platform_event::PlatformEvent*                     eventModule_ = nullptr;
+    eve::platform_event::PlatformEvent*                      eventModule_ = nullptr;
 };
 
 }  // namespace eve::dev

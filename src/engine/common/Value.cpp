@@ -3,8 +3,8 @@
 #include "common/Json.h"
 
 #include <cmath>
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -20,9 +20,8 @@ Result<Value> copyJsonValue(const json::Value& source) {
     if (source.isNumber()) {
         if (source.isIntegerLiteral()) {
             if (!source.isInt64()) {
-                return Result<Value>::failure(Diagnostic::error(
-                    DiagnosticCode::ParseError,
-                    "JSON integer is outside the canonical Int64 range"));
+                return Result<Value>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "JSON integer is outside the canonical Int64 range"));
             }
             return Result<Value>::success(Value(source.asInt64()));
         }
@@ -50,19 +49,17 @@ Result<Value> copyJsonValue(const json::Value& source) {
         return Result<Value>::success(Value(std::move(result)));
     }
 
-    return Result<Value>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, "unsupported JSON value kind"));
+    return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "unsupported JSON value kind"));
 }
 
 }  // namespace
 
 Result<Value> Value::fromJson(std::string_view jsonText) {
     const std::string input(jsonText);
-    std::string error;
-    json::Document document = json::Document::parse(input, &error);
+    std::string       error;
+    json::Document    document = json::Document::parse(input, &error);
     if (!document.valid()) {
-        return Result<Value>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, std::move(error)));
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(error)));
     }
     return copyJsonValue(document.root());
 }
@@ -152,13 +149,13 @@ std::vector<std::string> Value::keys() const {
 
 std::string Value::typeName() const {
     switch (type()) {
-    case Type::Null: return "null";
-    case Type::Bool: return "bool";
-    case Type::Int64: return "int";
-    case Type::Double: return "float";
-    case Type::String: return "string";
-    case Type::Array: return "array";
-    case Type::Object: return "object";
+        case Type::Null: return "null";
+        case Type::Bool: return "bool";
+        case Type::Int64: return "int";
+        case Type::Double: return "float";
+        case Type::String: return "string";
+        case Type::Array: return "array";
+        case Type::Object: return "object";
     }
     return "null";
 }

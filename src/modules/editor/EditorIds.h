@@ -19,9 +19,7 @@ using StrongEditorId = eve::UuidIdAdapter<Tag>;
 /** @brief Hash functor for a strong editor identifier. */
 template <class Id>
 struct StrongEditorIdHash {
-    [[nodiscard]] std::size_t operator()(const Id& id) const noexcept {
-        return static_cast<std::size_t>(id.hash());
-    }
+    [[nodiscard]] std::size_t operator()(const Id& id) const noexcept { return static_cast<std::size_t>(id.hash()); }
 };
 
 /**

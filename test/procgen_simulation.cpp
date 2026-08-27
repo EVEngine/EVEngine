@@ -67,13 +67,13 @@ struct ParamsLease {
     ProcgenParamsHandleRef handle{};
     ParamsLease() = default;
     explicit ParamsLease(ProcgenParamsHandleRef value) : handle(value) {}
-    ParamsLease(const ParamsLease&) = delete;
-    ParamsLease& operator=(const ParamsLease&) = delete;
-    ParamsLease(ParamsLease&& other) noexcept : handle(other.handle) { other.handle = {}; }
-    ParamsLease& operator=(ParamsLease&& other) noexcept {
+    ParamsLease(const ParamsLease &)            = delete;
+    ParamsLease &operator=(const ParamsLease &) = delete;
+    ParamsLease(ParamsLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
+    ParamsLease &operator=(ParamsLease &&other) noexcept {
         if (this == &other) return *this;
         reset();
-        handle = other.handle;
+        handle       = other.handle;
         other.handle = {};
         return *this;
     }
@@ -84,22 +84,20 @@ struct ParamsLease {
         result.ignore("simulation params cleanup");
         handle = {};
     }
-    [[nodiscard]] eve::script::Borrowed<Params> view() const noexcept {
-        return Procgen::resolve(handle);
-    }
+    [[nodiscard]] eve::script::Borrowed<Params> view() const noexcept { return Procgen::resolve(handle); }
 };
 
 struct GridLease {
     ProcgenGridHandleRef handle{};
     GridLease() = default;
     explicit GridLease(ProcgenGridHandleRef value) : handle(value) {}
-    GridLease(const GridLease&) = delete;
-    GridLease& operator=(const GridLease&) = delete;
-    GridLease(GridLease&& other) noexcept : handle(other.handle) { other.handle = {}; }
-    GridLease& operator=(GridLease&& other) noexcept {
+    GridLease(const GridLease &)            = delete;
+    GridLease &operator=(const GridLease &) = delete;
+    GridLease(GridLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
+    GridLease &operator=(GridLease &&other) noexcept {
         if (this == &other) return *this;
         reset();
-        handle = other.handle;
+        handle       = other.handle;
         other.handle = {};
         return *this;
     }
@@ -110,28 +108,26 @@ struct GridLease {
         result.ignore("simulation grid cleanup");
         handle = {};
     }
-    [[nodiscard]] eve::script::Borrowed<Grid2D> view() const noexcept {
-        return Procgen::resolve(handle);
-    }
+    [[nodiscard]] eve::script::Borrowed<Grid2D> view() const noexcept { return Procgen::resolve(handle); }
 };
 
 struct OutputLease {
-    Procgen* owner = nullptr;
+    Procgen               *owner = nullptr;
     ProcgenOutputHandleRef handle{};
     OutputLease() = default;
-    OutputLease(Procgen& proc, ProcgenOutputHandleRef value) : owner(&proc), handle(value) {}
-    OutputLease(const OutputLease&) = delete;
-    OutputLease& operator=(const OutputLease&) = delete;
-    OutputLease(OutputLease&& other) noexcept : owner(other.owner), handle(other.handle) {
-        other.owner = nullptr;
+    OutputLease(Procgen &proc, ProcgenOutputHandleRef value) : owner(&proc), handle(value) {}
+    OutputLease(const OutputLease &)            = delete;
+    OutputLease &operator=(const OutputLease &) = delete;
+    OutputLease(OutputLease &&other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner  = nullptr;
         other.handle = {};
     }
-    OutputLease& operator=(OutputLease&& other) noexcept {
+    OutputLease &operator=(OutputLease &&other) noexcept {
         if (this == &other) return *this;
         reset();
-        owner = other.owner;
-        handle = other.handle;
-        other.owner = nullptr;
+        owner        = other.owner;
+        handle       = other.handle;
+        other.owner  = nullptr;
         other.handle = {};
         return *this;
     }
@@ -140,7 +136,7 @@ struct OutputLease {
         if (!owner || !handle.isValid()) return;
         auto result = owner->releaseOutput(handle);
         result.ignore("simulation output cleanup");
-        owner = nullptr;
+        owner  = nullptr;
         handle = {};
     }
     [[nodiscard]] eve::script::Borrowed<OutputSpec> view() const noexcept {
@@ -148,29 +144,29 @@ struct OutputLease {
     }
 };
 
-OutputLease requireOutput(Procgen& proc) {
+OutputLease requireOutput(Procgen &proc) {
     auto result = proc.newOutputHandle();
     REQUIRE(result.ok());
     return OutputLease(proc, std::move(result).takeValue());
 }
 
 struct MeshBuildLease {
-    Procgen* owner = nullptr;
+    Procgen                  *owner = nullptr;
     ProcgenMeshBuildHandleRef handle{};
     MeshBuildLease() = default;
-    MeshBuildLease(Procgen& proc, ProcgenMeshBuildHandleRef value) : owner(&proc), handle(value) {}
-    MeshBuildLease(const MeshBuildLease&) = delete;
-    MeshBuildLease& operator=(const MeshBuildLease&) = delete;
-    MeshBuildLease(MeshBuildLease&& other) noexcept : owner(other.owner), handle(other.handle) {
-        other.owner = nullptr;
+    MeshBuildLease(Procgen &proc, ProcgenMeshBuildHandleRef value) : owner(&proc), handle(value) {}
+    MeshBuildLease(const MeshBuildLease &)            = delete;
+    MeshBuildLease &operator=(const MeshBuildLease &) = delete;
+    MeshBuildLease(MeshBuildLease &&other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner  = nullptr;
         other.handle = {};
     }
-    MeshBuildLease& operator=(MeshBuildLease&& other) noexcept {
+    MeshBuildLease &operator=(MeshBuildLease &&other) noexcept {
         if (this == &other) return *this;
         reset();
-        owner = other.owner;
-        handle = other.handle;
-        other.owner = nullptr;
+        owner        = other.owner;
+        handle       = other.handle;
+        other.owner  = nullptr;
         other.handle = {};
         return *this;
     }
@@ -179,7 +175,7 @@ struct MeshBuildLease {
         if (!owner || !handle.isValid()) return;
         auto result = owner->releaseMeshBuild(handle);
         result.ignore("simulation mesh build cleanup");
-        owner = nullptr;
+        owner  = nullptr;
         handle = {};
     }
     [[nodiscard]] eve::script::Borrowed<MeshBuild> view() const noexcept {
@@ -187,25 +183,23 @@ struct MeshBuildLease {
     }
 };
 
-ParamsLease requireParams(const Params& source) {
+ParamsLease requireParams(const Params &source) {
     auto result = Procgen::newParamsHandle();
     REQUIRE(result.ok());
     auto lease = ParamsLease(std::move(result).takeValue());
-    auto view = lease.view();
+    auto view  = lease.view();
     REQUIRE(view.isBound());
     *view = source;
     return lease;
 }
 
-GridLease requireGrid(Procgen& proc, const std::string& algorithm,
-                      ProcgenParamsHandleRef params) {
+GridLease requireGrid(Procgen &proc, const std::string &algorithm, ProcgenParamsHandleRef params) {
     auto result = proc.generateHandle(algorithm, params);
     REQUIRE(result.ok());
     return GridLease(std::move(result).takeValue());
 }
 
-MeshBuildLease requireMeshBuild(Procgen& proc, const std::string& recipe,
-                                ProcgenParamsHandleRef params) {
+MeshBuildLease requireMeshBuild(Procgen &proc, const std::string &recipe, ProcgenParamsHandleRef params) {
     auto result = proc.buildMeshHandle(recipe, params);
     REQUIRE(result.ok());
     return MeshBuildLease(proc, std::move(result).takeValue());
@@ -352,7 +346,7 @@ TEST_CASE("procgen.simulation.dungeonDelve") {
     // 1) Generate semantic dungeon
     // ------------------------------------------------------------------
     auto gridLease = requireGrid(*proc, "wfc.simple", params.handle);
-    auto grid = gridLease.view();
+    auto grid      = gridLease.view();
     REQUIRE(grid.isBound());
     CHECK_EQ(grid->getWidth(), kMapW);
     CHECK_EQ(grid->getHeight(), kMapH);
@@ -406,8 +400,8 @@ TEST_CASE("procgen.simulation.dungeonDelve") {
 
     // generateTo must produce the same GIDs for the same seed.
     TileLayer *layer2 = mapMod->newLayer(kMapW, kMapH, kTile, kTile);
-    auto out = requireOutput(*proc);
-    auto outView = out.view();
+    auto       out     = requireOutput(*proc);
+    auto       outView = out.view();
     REQUIRE(outView.isBound());
     outView->setTarget("tilelayer");
     outView->setLayer(layer2);
@@ -462,7 +456,7 @@ TEST_CASE("procgen.simulation.dungeonDelve") {
     // 5) Reproducibility + JSON export a designer/debug tool would save
     // ------------------------------------------------------------------
     auto gridBLease = requireGrid(*proc, "wfc.simple", params.handle);
-    auto gridB = gridBLease.view();
+    auto gridB      = gridBLease.view();
     REQUIRE(gridB.isBound());
     CHECK(grid->cells() == gridB->cells());
     auto jsonResult = proc->gridToJson(gridLease.handle);
@@ -507,8 +501,8 @@ TEST_CASE("procgen.simulation.crystalCave") {
     islandP.setFloat("isolevel", 0.f);
 
     auto islandParams = requireParams(islandP);
-    auto islandLease = requireMeshBuild(*proc, "mesh.marchingcubes", islandParams.handle);
-    auto island = islandLease.view();
+    auto islandLease  = requireMeshBuild(*proc, "mesh.marchingcubes", islandParams.handle);
+    auto island       = islandLease.view();
     REQUIRE(island.isBound());
     CHECK(island->getVertexCount() > 200);
     CHECK_EQ(island->getIndexCount() % 3, 0);
@@ -598,7 +592,7 @@ TEST_CASE("procgen.simulation.crystalCave") {
 
     // Same island params ⇒ identical bake (cache key for a content pipeline).
     auto islandBLease = requireMeshBuild(*proc, "mesh.marchingcubes", islandParams.handle);
-    auto islandB = islandBLease.view();
+    auto islandB      = islandBLease.view();
     REQUIRE(islandB.isBound());
     CHECK(island->positions() == islandB->positions());
     CHECK(island->indices() == islandB->indices());
@@ -610,9 +604,9 @@ TEST_CASE("procgen.simulation.crystalCave") {
     caveP.setString("field", "noise");
     caveP.setFloat("scale", 2.2f);
     caveP.setFloat("threshold", 0.0f);
-    auto caveParams = requireParams(caveP);
+    auto caveParams     = requireParams(caveP);
     auto caveShellLease = requireMeshBuild(*proc, "mesh.marchingcubes", caveParams.handle);
-    auto caveShell = caveShellLease.view();
+    auto caveShell      = caveShellLease.view();
     REQUIRE(caveShell.isBound());
     CHECK(caveShell->getVertexCount() > 100);
     CHECK(caveShell->positions() != island->positions());
@@ -637,8 +631,7 @@ TEST_CASE("procgen.simulation.crystalCave") {
                 CHECK(gpuIsland->indexCount == island->getIndexCount());
 
                 // Also exercise Procgen::generateMesh convenience path.
-                auto gpuCrystal = proc->generateMeshBorrowed(
-                    "mesh.marchingcubes", islandParams.handle, gfx);
+                auto gpuCrystal = proc->generateMeshBorrowed("mesh.marchingcubes", islandParams.handle, gfx);
                 REQUIRE(gpuCrystal.isBound());
                 CHECK(gpuCrystal->indexCount == island->getIndexCount());
                 win->close();
@@ -676,14 +669,14 @@ TEST_CASE("procgen.simulation.caveExpedition") {
     p.setString("preset", "cave");
     p.setInt("maxAttempts", 64);
 
-    auto params = requireParams(p);
+    auto params    = requireParams(p);
     auto gridLease = requireGrid(*proc, "wfc.simple", params.handle);
-    auto grid = gridLease.view();
+    auto grid      = gridLease.view();
     REQUIRE(grid.isBound());
     CHECK(borderIsWallLike(*grid));
 
     TileLayer *layer = mapMod->newLayer(kMapW, kMapH, kTile, kTile);
-    auto applyResult = proc->applyToLayer(gridLease.handle, "sim_cave", *layer);
+    auto       applyResult = proc->applyToLayer(gridLease.handle, "sim_cave", *layer);
     CHECK(applyResult.ok());
 
     // Collect floor cells.
@@ -815,14 +808,14 @@ TEST_CASE("procgen.simulation.overworldBiomeTravel") {
     p.setString("preset", "terrain");
     p.setInt("maxAttempts", 64);
 
-    auto params = requireParams(p);
+    auto params    = requireParams(p);
     auto gridLease = requireGrid(*proc, "wfc.simple", params.handle);
-    auto grid = gridLease.view();
+    auto grid      = gridLease.view();
     REQUIRE(grid.isBound());
     CHECK(terrainAdjacencyOk(*grid));
 
     TileLayer *layer = mapMod->newLayer(kMapW, kMapH, kTile, kTile);
-    auto applyResult = proc->applyToLayer(gridLease.handle, "sim_biome", *layer);
+    auto       applyResult = proc->applyToLayer(gridLease.handle, "sim_biome", *layer);
     CHECK(applyResult.ok());
 
     // Pick a grass cell and a dirt/stone cell if possible.
@@ -874,7 +867,7 @@ TEST_CASE("procgen.simulation.overworldBiomeTravel") {
 
     // Reproducible overworld for save/load.
     auto grid2Lease = requireGrid(*proc, "wfc.simple", params.handle);
-    auto grid2 = grid2Lease.view();
+    auto grid2      = grid2Lease.view();
     REQUIRE(grid2.isBound());
     CHECK(grid->cells() == grid2->cells());
 
@@ -897,8 +890,8 @@ TEST_CASE("procgen.simulation.lootPropBake") {
     ringP.setFloat("minorRadius", 0.18f);
 
     auto ringParams = requireParams(ringP);
-    auto ringLease = requireMeshBuild(*proc, "mesh.marchingcubes", ringParams.handle);
-    auto ring = ringLease.view();
+    auto ringLease  = requireMeshBuild(*proc, "mesh.marchingcubes", ringParams.handle);
+    auto ring       = ringLease.view();
     REQUIRE(ring.isBound());
     CHECK(ring->getVertexCount() > 150);
     CHECK_EQ(ring->getIndexCount() % 3, 0);
@@ -909,8 +902,8 @@ TEST_CASE("procgen.simulation.lootPropBake") {
     gemP.setString("field", "sphere");
     gemP.setFloat("radius", 0.4f);
     auto gemParams = requireParams(gemP);
-    auto gemLease = requireMeshBuild(*proc, "mesh.marchingcubes", gemParams.handle);
-    auto gem = gemLease.view();
+    auto gemLease  = requireMeshBuild(*proc, "mesh.marchingcubes", gemParams.handle);
+    auto gem       = gemLease.view();
     REQUIRE(gem.isBound());
 
     const int totalTris = ring->getIndexCount() / 3 + gem->getIndexCount() / 3;
@@ -919,7 +912,7 @@ TEST_CASE("procgen.simulation.lootPropBake") {
 
     // Content-pipeline cache key: identical params → identical bytes.
     auto ring2Lease = requireMeshBuild(*proc, "mesh.marchingcubes", ringParams.handle);
-    auto ring2 = ring2Lease.view();
+    auto ring2      = ring2Lease.view();
     REQUIRE(ring2.isBound());
     CHECK(ring->positions() == ring2->positions());
     CHECK(ring->indices() == ring2->indices());
@@ -928,9 +921,8 @@ TEST_CASE("procgen.simulation.lootPropBake") {
     Params ringP2 = ringP;
     ringP2.setFloat("minorRadius", 0.22f);
     auto ring2Params = requireParams(ringP2);
-    auto ring3Lease = requireMeshBuild(*proc, "mesh.marchingcubes", ring2Params.handle);
-    auto ring3 = ring3Lease.view();
+    auto ring3Lease  = requireMeshBuild(*proc, "mesh.marchingcubes", ring2Params.handle);
+    auto ring3       = ring3Lease.view();
     REQUIRE(ring3.isBound());
     CHECK(ring->positions() != ring3->positions());
-
 }

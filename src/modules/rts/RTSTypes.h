@@ -10,12 +10,12 @@
  * cross-domain relationships are represented by typed links.
  */
 
+#include "attributes/AttributeProjection.h"
 #include "common/ECS.h"
 #include "common/Identity.h"
 #include "common/Result.h"
 #include "common/SubjectRef.h"
 #include "common/Time.h"
-#include "attributes/AttributeProjection.h"
 #include "rts/RTSEffects.h"
 
 #include <cstddef>
@@ -70,11 +70,11 @@ enum class OrderKind : std::uint8_t {
  * and is intentionally copied into the order payload.
  */
 struct CommandSpec {
-    OrderKind kind = OrderKind::Move;
+    OrderKind     kind = OrderKind::Move;
     WorldPosition target;
-    std::string definitionId;
-    int priority = 0;
-    double timeoutSeconds = 0.0;
+    std::string   definitionId;
+    int           priority       = 0;
+    double        timeoutSeconds = 0.0;
 
     /** @brief Validate coordinates and command metadata without mutating state. */
     [[nodiscard]] Result<void> validate() const;
@@ -82,11 +82,11 @@ struct CommandSpec {
 
 /** @brief Owning projection of the active generic order used by RTS systems. */
 struct OrderRecord {
-    std::string id;
-    OrderKind kind = OrderKind::Move;
+    std::string   id;
+    OrderKind     kind = OrderKind::Move;
     WorldPosition target;
-    std::string definitionId;
-    int formationSlot = -1;
+    std::string   definitionId;
+    int           formationSlot = -1;
 };
 
 /** @brief Entity-local sorted tags; this is the RTS entity's tag authority. */
@@ -122,12 +122,12 @@ public:
     /** @brief Bind a live ECS handle, rejecting a null or stale handle. */
     [[nodiscard]] static Result<EntityLink> bind(ecs::EntityHandle handle) {
         if (ecs::try_get(handle) == nullptr) {
-            return Result<EntityLink>::failure(Diagnostic::error(
-                DiagnosticCode::StaleHandle, "RTS entity link target is not live", "link.handle"));
+            return Result<EntityLink>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "RTS entity link target is not live", "link.handle"));
         }
         EntityLink result;
         result.handle_ = handle;
-        result.bound_ = true;
+        result.bound_  = true;
         return Result<EntityLink>::success(std::move(result));
     }
 
@@ -138,31 +138,27 @@ public:
     [[nodiscard]] static EntityLink fromHandleForRestore(ecs::EntityHandle handle) noexcept {
         EntityLink result;
         result.handle_ = handle;
-        result.bound_ = true;
+        result.bound_  = true;
         return result;
     }
 
     /** @brief Whether a handle has been assigned, including a stale one. */
     [[nodiscard]] bool isBound() const noexcept { return bound_; }
     /** @brief Whether the assigned target no longer resolves at its generation. */
-    [[nodiscard]] bool isStale() const noexcept {
-        return bound_ && ecs::try_get(handle_) == nullptr;
-    }
+    [[nodiscard]] bool isStale() const noexcept { return bound_ && ecs::try_get(handle_) == nullptr; }
     /** @brief Resolve the target for this call, or return null when stale. */
-    [[nodiscard]] ecs::Entity* resolve() const noexcept {
-        return bound_ ? ecs::try_get(handle_) : nullptr;
-    }
+    [[nodiscard]] ecs::Entity* resolve() const noexcept { return bound_ ? ecs::try_get(handle_) : nullptr; }
     /** @brief Return the local runtime handle retained by this link. */
     [[nodiscard]] const ecs::EntityHandle& handle() const noexcept { return handle_; }
     /** @brief Clear the relationship after source-side destruction. */
     void reset() noexcept {
-        bound_ = false;
+        bound_  = false;
         handle_ = {};
     }
 
 private:
     ecs::EntityHandle handle_{};
-    bool bound_ = false;
+    bool              bound_ = false;
 };
 
 /** @brief Typed link tag for a provider-owned capability or registry entry. */
@@ -212,7 +208,7 @@ private:
 struct FactionLinkTag {};
 struct WeaponLinkTag {};
 using FactionLink = EntityLink<FactionLinkTag>;
-using WeaponLink = EntityLink<WeaponLinkTag>;
+using WeaponLink  = EntityLink<WeaponLinkTag>;
 
 struct SensingLinkTag {};
 struct SteeringLinkTag {};
@@ -224,16 +220,16 @@ struct EconomyLinkTag {};
 struct AuthorityLinkTag {};
 struct SocialLinkTag {};
 struct GameEventLinkTag {};
-using SensingLink = ServiceLink<SensingLinkTag>;
-using SteeringLink = ServiceLink<SteeringLinkTag>;
-using CrowdLink = ServiceLink<CrowdLinkTag>;
-using ActionLink = ServiceLink<ActionLinkTag>;
+using SensingLink    = ServiceLink<SensingLinkTag>;
+using SteeringLink   = ServiceLink<SteeringLinkTag>;
+using CrowdLink      = ServiceLink<CrowdLinkTag>;
+using ActionLink     = ServiceLink<ActionLinkTag>;
 using SettlementLink = ServiceLink<SettlementLinkTag>;
-using PlacementLink = ServiceLink<PlacementLinkTag>;
-using EconomyLink = ServiceLink<EconomyLinkTag>;
-using AuthorityLink = ServiceLink<AuthorityLinkTag>;
-using SocialLink = ServiceLink<SocialLinkTag>;
-using GameEventLink = ServiceLink<GameEventLinkTag>;
+using PlacementLink  = ServiceLink<PlacementLinkTag>;
+using EconomyLink    = ServiceLink<EconomyLinkTag>;
+using AuthorityLink  = ServiceLink<AuthorityLinkTag>;
+using SocialLink     = ServiceLink<SocialLinkTag>;
+using GameEventLink  = ServiceLink<GameEventLinkTag>;
 
 /** @brief Canonical attributes component adapter, backed by attributes::AttributeSet. */
 class AttributeComponent {
@@ -274,19 +270,17 @@ public:
     /** @brief Return whether initial unit stat bases have been installed. */
     [[nodiscard]] bool initialized() const noexcept;
     /** @brief Seed unit stat bases once without replacing existing values. */
-    [[nodiscard]] Result<void> initialize(
-        std::span<const eve::attributes::AttributeSnapshotBase> values);
+    [[nodiscard]] Result<void> initialize(std::span<const eve::attributes::AttributeSnapshotBase> values);
     /** @brief Return whether the canonical attribute owner is stale. */
     [[nodiscard]] bool isStale() const noexcept;
     /** @brief Add a modifier with the common source/priority/sequence contract. */
-    [[nodiscard]] Result<eve::attributes::ModifierId> addModifier(
-        eve::attributes::AttributeModifier modifier);
+    [[nodiscard]] Result<eve::attributes::ModifierId> addModifier(eve::attributes::AttributeModifier modifier);
     /** @brief Capture selected values with owner and revision metadata. */
     [[nodiscard]] Result<eve::attributes::AttributeProjectionSnapshot> snapshot(
         std::span<const std::string_view> attributes) const;
     /** @brief Restore selected values after generation and revision checks. */
-    [[nodiscard]] Result<void> restore(
-        const eve::attributes::AttributeProjectionSnapshot& snapshot, Revision expectedRevision);
+    [[nodiscard]] Result<void> restore(const eve::attributes::AttributeProjectionSnapshot& snapshot,
+                                       Revision                                            expectedRevision);
 
 private:
     struct Impl;
@@ -339,9 +333,8 @@ public:
     ProductionComponent& operator=(ProductionComponent&& other) noexcept;
 
     /** @brief Enqueue a production task with an injected simulation duration. */
-    [[nodiscard]] Result<std::string> enqueue(std::string_view owner, std::string_view kind,
-                                              std::string_view product, Duration duration,
-                                              int priority = 0);
+    [[nodiscard]] Result<std::string> enqueue(std::string_view owner, std::string_view kind, std::string_view product,
+                                              Duration duration, int priority = 0);
     /** @brief Advance the queue using a caller-owned deterministic step. */
     [[nodiscard]] Result<void> advance(const SimulationStep& step);
     /** @brief Return the number of retained tasks. */
@@ -371,8 +364,8 @@ public:
     /** @brief Runtime identity and logical unit definition. */
     struct Identity {
         ecs::EntityHandle self{};
-        SubjectRef subject;
-        std::string displayName;
+        SubjectRef        subject;
+        std::string       displayName;
     };
     /** @brief Logical unit definition identity. */
     struct Definition {
@@ -424,11 +417,11 @@ public:
     };
     /** @brief Authoritative kinematic state used by the phase-one move slice. */
     struct Motion {
-        float x = 0.0f;
-        float y = 0.0f;
-        float speed = 1.0f;
+        float x             = 0.0f;
+        float y             = 0.0f;
+        float speed         = 1.0f;
         float arrivalRadius = 0.01f;
-        bool arrived = true;
+        bool  arrived       = true;
     };
 
     COMPONENT(Identity, identity)
@@ -454,7 +447,8 @@ public:
      * @ownership The current ECS world owns the entity; callers must release it through ECS and must not delete it.
      * @lifetime Valid until ECS destruction of the entity or its world; retain an EntityHandle across frames instead.
      * @thread Call on the owning ECS/simulation thread.
-     * @reentrancy Creation does not invoke user callbacks; do not re-enter ECS mutation while using the returned pointer.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter ECS mutation while using the returned
+     * pointer.
      */
     [[nodiscard]] static Unit* createUnit(SubjectRef subject = {}, LogicalId definition = {});
 };
@@ -470,8 +464,8 @@ public:
     /** @brief Runtime identity. */
     struct Identity {
         ecs::EntityHandle self{};
-        SubjectRef subject;
-        std::string displayName;
+        SubjectRef        subject;
+        std::string       displayName;
     };
     /** @brief Logical building definition identity. */
     struct Definition {
@@ -480,10 +474,10 @@ public:
     /** @brief Placement world key and authoritative cell state. */
     struct Placement {
         PlacementLink link;
-        int cellX = 0;
-        int cellY = 0;
-        float rotation = 0.0f;
-        bool placed = false;
+        int           cellX    = 0;
+        int           cellY    = 0;
+        float         rotation = 0.0f;
+        bool          placed   = false;
     };
     /** @brief Canonical production queue. */
     struct Production {
@@ -533,7 +527,8 @@ public:
      * @ownership The current ECS world owns the entity; callers must release it through ECS and must not delete it.
      * @lifetime Valid until ECS destruction of the entity or its world; retain an EntityHandle across frames instead.
      * @thread Call on the owning ECS/simulation thread.
-     * @reentrancy Creation does not invoke user callbacks; do not re-enter ECS mutation while using the returned pointer.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter ECS mutation while using the returned
+     * pointer.
      */
     [[nodiscard]] static Building* createBuilding(SubjectRef subject = {}, LogicalId definition = {});
 };
@@ -549,8 +544,8 @@ public:
     /** @brief Runtime identity. */
     struct Identity {
         ecs::EntityHandle self{};
-        SubjectRef subject;
-        std::string displayName;
+        SubjectRef        subject;
+        std::string       displayName;
     };
     /** @brief Authority provider link. */
     struct Authority {
@@ -587,7 +582,8 @@ public:
      * @ownership The current ECS world owns the entity; callers must release it through ECS and must not delete it.
      * @lifetime Valid until ECS destruction of the entity or its world; retain an EntityHandle across frames instead.
      * @thread Call on the owning ECS/simulation thread.
-     * @reentrancy Creation does not invoke user callbacks; do not re-enter ECS mutation while using the returned pointer.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter ECS mutation while using the returned
+     * pointer.
      */
     [[nodiscard]] static Player* createPlayer(SubjectRef subject = {});
 };
@@ -603,8 +599,8 @@ public:
     /** @brief Runtime identity. */
     struct Identity {
         ecs::EntityHandle self{};
-        SubjectRef subject;
-        std::string displayName;
+        SubjectRef        subject;
+        std::string       displayName;
     };
     /** @brief Authority provider link. */
     struct Authority {
@@ -641,7 +637,8 @@ public:
      * @ownership The current ECS world owns the entity; callers must release it through ECS and must not delete it.
      * @lifetime Valid until ECS destruction of the entity or its world; retain an EntityHandle across frames instead.
      * @thread Call on the owning ECS/simulation thread.
-     * @reentrancy Creation does not invoke user callbacks; do not re-enter ECS mutation while using the returned pointer.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter ECS mutation while using the returned
+     * pointer.
      */
     [[nodiscard]] static Faction* createFaction(SubjectRef subject = {});
 };

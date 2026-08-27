@@ -5,8 +5,8 @@
  * 设计文档：docs/dev/通用载具系统设计.md
  */
 
-#include "common/ECS.h"
 #include "common/BorrowedRef.h"
+#include "common/ECS.h"
 #include "common/Module.h"
 #include "definitions/Definitions.h"
 #include "weapon/WeaponDefinitionRuntime.h"
@@ -44,9 +44,7 @@ public:
      * @ownership Borrowed; this module retains ownership.
      * @lifetime Valid until this Weapon module is destroyed.
      */
-    [[nodiscard]] eve::definitions::DefinitionRegistry& definitionRegistry() noexcept {
-        return definitionRegistry_;
-    }
+    [[nodiscard]] eve::definitions::DefinitionRegistry& definitionRegistry() noexcept { return definitionRegistry_; }
 
     /** @brief 注册武器逻辑（C++ 插件/游戏侧扩展点；同名替换）。 */
     static void registerLogic(IWeaponLogic* logic);

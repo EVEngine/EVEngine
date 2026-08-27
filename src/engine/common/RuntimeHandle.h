@@ -37,7 +37,7 @@ template <typename Tag>
 class RuntimeHandle {
 public:
     /** @brief Unsigned owner-local slot index type. */
-    using index_type      = std::uint32_t;
+    using index_type = std::uint32_t;
     /** @brief Unsigned owner-local generation type. */
     using generation_type = std::uint32_t;
 
@@ -82,8 +82,7 @@ public:
      * @param current The current slot generation.
      * @return The next generation, or empty when the slot must be retired.
      */
-    [[nodiscard]] static constexpr std::optional<generation_type> nextGeneration(
-        generation_type current) noexcept {
+    [[nodiscard]] static constexpr std::optional<generation_type> nextGeneration(generation_type current) noexcept {
         if (current == std::numeric_limits<generation_type>::max()) return std::nullopt;
         return static_cast<generation_type>(current + 1u);
     }
@@ -105,8 +104,7 @@ public:
      *          conversion operator and must not be used as a persistent ID.
      */
     [[nodiscard]] constexpr std::uint64_t packed() const noexcept {
-        return (static_cast<std::uint64_t>(generation_) << 32u) |
-               static_cast<std::uint64_t>(index_);
+        return (static_cast<std::uint64_t>(generation_) << 32u) | static_cast<std::uint64_t>(index_);
     }
 
     /**
@@ -119,7 +117,7 @@ public:
                              static_cast<generation_type>(value >> 32u));
     }
 
-    friend constexpr bool operator==(const RuntimeHandle&, const RuntimeHandle&) noexcept = default;
+    friend constexpr bool operator==(const RuntimeHandle&, const RuntimeHandle&) noexcept  = default;
     friend constexpr auto operator<=>(const RuntimeHandle&, const RuntimeHandle&) noexcept = default;
 
 private:

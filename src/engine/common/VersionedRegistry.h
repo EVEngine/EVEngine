@@ -12,10 +12,10 @@
  */
 
 #include "common/BorrowedRef.h"
-#include "common/Subscription.h"
 #include "common/EventSequence.h"
 #include "common/Generation.h"
 #include "common/SchemaVersion.h"
+#include "common/Subscription.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -51,12 +51,9 @@ enum class RegistryOperation : std::uint8_t {
  */
 inline const char* registryOperationName(RegistryOperation operation) noexcept {
     switch (operation) {
-    case RegistryOperation::Insert:
-        return "insert";
-    case RegistryOperation::Replace:
-        return "replace";
-    case RegistryOperation::Remove:
-        return "remove";
+        case RegistryOperation::Insert: return "insert";
+        case RegistryOperation::Replace: return "replace";
+        case RegistryOperation::Remove: return "remove";
     }
     return "unknown";
 }
@@ -93,8 +90,7 @@ inline std::ostream& operator<<(std::ostream& stream, RegistryOperation operatio
  * @tparam Compare Strict weak ordering for keys; its State must be
  *         nothrow-swappable so the commit boundary cannot throw.
  */
-template <class Key, class Value, class EventData = std::monostate,
-          class Compare = std::less<Key>>
+template <class Key, class Value, class EventData = std::monostate, class Compare = std::less<Key>>
 class VersionedRegistry {
     static_assert(std::is_copy_constructible_v<Key>, "VersionedRegistry keys must be copyable");
     static_assert(std::is_copy_constructible_v<Value>, "VersionedRegistry values must be copyable");
@@ -112,13 +108,13 @@ public:
 
     /** @brief One canonical mutation event retained by the registry. */
     struct Event {
-        EventSequence   sequence;
+        EventSequence     sequence;
         RegistryOperation operation = RegistryOperation::Insert;
-        Key             key;
-        Generation      generation;
-        bool            tombstone = false;
-        std::string     label;
-        EventData       data{};
+        Key               key;
+        Generation        generation;
+        bool              tombstone = false;
+        std::string       label;
+        EventData         data{};
 
         /** @brief Whether this event advanced a key to a removed tombstone. */
         [[nodiscard]] bool isTombstone() const noexcept { return tombstone; }
@@ -126,7 +122,7 @@ public:
 
     /** @brief One stored key slot; absent value means the slot is a tombstone. */
     struct Entry {
-        Generation        generation;
+        Generation           generation;
         std::optional<Value> value;
     };
 
@@ -147,15 +143,15 @@ public:
                           "VersionedRegistry comparator must be nothrow-swappable");
             entries.swap(other.entries);
             events.swap(other.events);
-            const auto sequence      = nextEventSequence;
-            nextEventSequence        = other.nextEventSequence;
+            const auto sequence     = nextEventSequence;
+            nextEventSequence       = other.nextEventSequence;
             other.nextEventSequence = sequence;
         }
     };
 
     /** @brief Callback used to keep a legacy value field as a read-only projection of generation. */
     using GenerationProjector = std::function<void(Value&, Generation)>;
-    using ChangeCallback = std::function<void(const Event&)>;
+    using ChangeCallback      = std::function<void(const Event&)>;
 
     /**
      * @brief Constructs an empty registry.
@@ -166,11 +162,11 @@ public:
     explicit VersionedRegistry(GenerationProjector generationProjector = {})
         : generationProjector_(std::move(generationProjector)), observers_() {}
 
-    VersionedRegistry(const VersionedRegistry&) = delete;
+    VersionedRegistry(const VersionedRegistry&)            = delete;
     VersionedRegistry& operator=(const VersionedRegistry&) = delete;
-    VersionedRegistry(VersionedRegistry&&) = delete;
-    VersionedRegistry& operator=(VersionedRegistry&&) = delete;
-    ~VersionedRegistry() = default;
+    VersionedRegistry(VersionedRegistry&&)                 = delete;
+    VersionedRegistry& operator=(VersionedRegistry&&)      = delete;
+    ~VersionedRegistry()                                   = default;
 
     /**
      * @brief Inserts a new live value, or revives a tombstoned key.
@@ -180,18 +176,14 @@ public:
      * @param label Optional domain event label; the operation remains Insert.
      * @return A handle for the new incarnation, or Conflict/Failed.
      */
-    [[nodiscard]] Result<Handle> insert(Key key, Value value, EventData data = {},
-                                        std::string label = {}) {
+    [[nodiscard]] Result<Handle> insert(Key key, Value value, EventData data = {}, std::string label = {}) {
         try {
-            return mutate(RegistryOperation::Insert, std::move(key),
-                          std::optional<Value>(std::move(value)), std::move(data),
-                          std::move(label));
+            return mutate(RegistryOperation::Insert, std::move(key), std::optional<Value>(std::move(value)),
+                          std::move(data), std::move(label));
         } catch (const std::exception&) {
-            return failure<Handle>(DiagnosticCode::Failed,
-                                   "registry mutation argument preparation failed");
+            return failure<Handle>(DiagnosticCode::Failed, "registry mutation argument preparation failed");
         } catch (...) {
-            return failure<Handle>(DiagnosticCode::Failed,
-                                   "registry mutation argument preparation failed");
+            return failure<Handle>(DiagnosticCode::Failed, "registry mutation argument preparation failed");
         }
     }
 
@@ -203,18 +195,14 @@ public:
      * @param label Optional domain event label; the operation remains Replace.
      * @return A handle for the replacement incarnation, or NotFound/Failed.
      */
-    [[nodiscard]] Result<Handle> replace(Key key, Value value, EventData data = {},
-                                         std::string label = {}) {
+    [[nodiscard]] Result<Handle> replace(Key key, Value value, EventData data = {}, std::string label = {}) {
         try {
-            return mutate(RegistryOperation::Replace, std::move(key),
-                          std::optional<Value>(std::move(value)), std::move(data),
-                          std::move(label));
+            return mutate(RegistryOperation::Replace, std::move(key), std::optional<Value>(std::move(value)),
+                          std::move(data), std::move(label));
         } catch (const std::exception&) {
-            return failure<Handle>(DiagnosticCode::Failed,
-                                   "registry mutation argument preparation failed");
+            return failure<Handle>(DiagnosticCode::Failed, "registry mutation argument preparation failed");
         } catch (...) {
-            return failure<Handle>(DiagnosticCode::Failed,
-                                   "registry mutation argument preparation failed");
+            return failure<Handle>(DiagnosticCode::Failed, "registry mutation argument preparation failed");
         }
     }
 
@@ -227,14 +215,11 @@ public:
      */
     [[nodiscard]] Result<Handle> remove(Key key, EventData data = {}, std::string label = {}) {
         try {
-            return mutate(RegistryOperation::Remove, std::move(key), std::nullopt,
-                          std::move(data), std::move(label));
+            return mutate(RegistryOperation::Remove, std::move(key), std::nullopt, std::move(data), std::move(label));
         } catch (const std::exception&) {
-            return failure<Handle>(DiagnosticCode::Failed,
-                                   "registry mutation argument preparation failed");
+            return failure<Handle>(DiagnosticCode::Failed, "registry mutation argument preparation failed");
         } catch (...) {
-            return failure<Handle>(DiagnosticCode::Failed,
-                                   "registry mutation argument preparation failed");
+            return failure<Handle>(DiagnosticCode::Failed, "registry mutation argument preparation failed");
         }
     }
 
@@ -246,8 +231,7 @@ public:
     [[nodiscard]] ResultRef<const Value> resolve(const Key& key) const {
         const auto it = state_.entries.find(key);
         if (it == state_.entries.end() || !it->second.value.has_value())
-            return failure<std::reference_wrapper<const Value>>(DiagnosticCode::NotFound,
-                                                                "registry key is not live");
+            return failure<std::reference_wrapper<const Value>>(DiagnosticCode::NotFound, "registry key is not live");
         return ResultRef<const Value>::success(std::cref(*it->second.value));
     }
 
@@ -260,11 +244,10 @@ public:
         const auto it = state_.entries.find(handle.key);
         if (it == state_.entries.end())
             return failure<std::reference_wrapper<const Value>>(DiagnosticCode::NotFound,
-                                                                 "registry key is not present");
-        if (handle.generation.isZero() || it->second.generation != handle.generation ||
-            !it->second.value.has_value())
+                                                                "registry key is not present");
+        if (handle.generation.isZero() || it->second.generation != handle.generation || !it->second.value.has_value())
             return failure<std::reference_wrapper<const Value>>(DiagnosticCode::StaleHandle,
-                                                                 "registry handle is stale");
+                                                                "registry handle is stale");
         return ResultRef<const Value>::success(std::cref(*it->second.value));
     }
 
@@ -302,8 +285,8 @@ public:
     /** @brief Returns true when a handle cannot resolve to its exact live incarnation. */
     [[nodiscard]] bool isStale(const Handle& handle) const noexcept {
         const auto it = state_.entries.find(handle.key);
-        return it == state_.entries.end() || handle.generation.isZero() ||
-               it->second.generation != handle.generation || !it->second.value.has_value();
+        return it == state_.entries.end() || handle.generation.isZero() || it->second.generation != handle.generation ||
+               !it->second.value.has_value();
     }
 
     /** @brief Number of live values, excluding tombstones. */
@@ -459,9 +442,9 @@ private:
             // candidate. The live state is touched only by the nothrow swap
             // below, so Value/EventData/projector failures cannot partially
             // publish a registry mutation.
-            State candidate = state_;
-            auto it = candidate.entries.find(key);
-            const bool live = it != candidate.entries.end() && it->second.value.has_value();
+            State      candidate = state_;
+            auto       it        = candidate.entries.find(key);
+            const bool live      = it != candidate.entries.end() && it->second.value.has_value();
             if (operation == RegistryOperation::Insert && live)
                 return failure<Handle>(DiagnosticCode::AlreadyExists, "registry key already exists");
             if (operation == RegistryOperation::Replace && !live)
@@ -472,21 +455,25 @@ private:
                 return failure<Handle>(DiagnosticCode::InvariantViolation, "live registry mutation has no value");
 
             const auto current = it == candidate.entries.end() ? nullptr : &it->second;
-            auto next = nextGeneration(current);
+            auto       next    = nextGeneration(current);
             if (!next.ok()) return Result<Handle>::failure(next.status());
             const auto nextSequence = candidate.nextEventSequence.incremented();
-            if (!nextSequence)
-                return failure<Handle>(DiagnosticCode::Failed, "registry event sequence exhausted");
+            if (!nextSequence) return failure<Handle>(DiagnosticCode::Failed, "registry event sequence exhausted");
 
             if (operation != RegistryOperation::Remove) generationProject(*value, next.value());
 
             candidate.events.reserve(candidate.events.size() + 1);
-            Event event{candidate.nextEventSequence, operation, key, next.value(),
-                        operation == RegistryOperation::Remove, std::move(label), std::move(data)};
+            Event event{candidate.nextEventSequence,
+                        operation,
+                        key,
+                        next.value(),
+                        operation == RegistryOperation::Remove,
+                        std::move(label),
+                        std::move(data)};
 
             if (operation == RegistryOperation::Insert && it == candidate.entries.end()) {
-                auto [inserted, wasInserted] = candidate.entries.try_emplace(
-                    std::move(key), Entry{next.value(), std::move(value)});
+                auto [inserted, wasInserted] =
+                    candidate.entries.try_emplace(std::move(key), Entry{next.value(), std::move(value)});
                 (void)wasInserted;
                 it = inserted;
             } else if (operation == RegistryOperation::Remove) {
@@ -494,7 +481,7 @@ private:
                 it->second.value.reset();
             } else {
                 it->second.generation = next.value();
-                it->second.value = std::move(value);
+                it->second.value      = std::move(value);
             }
 
             candidate.events.push_back(std::move(event));
@@ -502,13 +489,12 @@ private:
             // Keep the notification independent of state_.events. Observer
             // dispatch is reentrant; a nested mutation is allowed to swap or
             // reallocate the canonical event vector while callbacks run.
-            const Event notification = candidate.events.back();
+            const Event  notification = candidate.events.back();
             const Handle handle{notification.key, notification.generation};
-            Status appliedStatus = Status::success(StatusCode::Applied);
-            Status callbackWarningStatus(
-                StatusCode::Applied,
-                {Diagnostic::warning(DiagnosticCode::CallbackFailure,
-                                     "registry mutation committed; observer callback failed")});
+            Status       appliedStatus = Status::success(StatusCode::Applied);
+            Status       callbackWarningStatus(
+                StatusCode::Applied, {Diagnostic::warning(DiagnosticCode::CallbackFailure,
+                                                                "registry mutation committed; observer callback failed")});
             state_.swap(candidate);
 
             // State is already committed. A user callback is outside the

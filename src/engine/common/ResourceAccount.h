@@ -51,7 +51,7 @@ public:
     /** @brief Return the canonical owned spelling. */
     [[nodiscard]] const std::string& value() const noexcept { return value_; }
 
-    friend bool operator==(const ResourceId&, const ResourceId&) noexcept = default;
+    friend bool operator==(const ResourceId&, const ResourceId&) noexcept  = default;
     friend auto operator<=>(const ResourceId&, const ResourceId&) noexcept = default;
 
 private:
@@ -101,7 +101,7 @@ public:
      */
     [[nodiscard]] eve::Result<Amount> checkedAdd(Amount other) const;
 
-    friend constexpr bool operator==(const Amount&, const Amount&) noexcept = default;
+    friend constexpr bool operator==(const Amount&, const Amount&) noexcept  = default;
     friend constexpr auto operator<=>(const Amount&, const Amount&) noexcept = default;
 
 private:
@@ -121,8 +121,7 @@ struct ResourceCost {
      * @param amountValue Positive quantity.
      * @return A validated item or a rejected Result.
      */
-    [[nodiscard]] static eve::Result<ResourceCost> create(std::string_view resourceId,
-                                                           std::int64_t amountValue);
+    [[nodiscard]] static eve::Result<ResourceCost> create(std::string_view resourceId, std::int64_t amountValue);
 };
 
 /** @brief Convenient unvalidated input used by CostSpec::from(). */
@@ -163,8 +162,7 @@ public:
      * @param amount Positive quantity.
      * @return A canonical cost or a rejected Result.
      */
-    [[nodiscard]] static eve::Result<CostSpec> single(std::string_view resource,
-                                                       std::int64_t amount);
+    [[nodiscard]] static eve::Result<CostSpec> single(std::string_view resource, std::int64_t amount);
 
     /** @brief Whether this value contains a validated non-empty cost. */
     [[nodiscard]] bool isValid() const noexcept { return !items_.empty(); }
@@ -205,7 +203,7 @@ struct ResourceShortfall {
  * Result failure instead.
  */
 struct Affordability {
-    bool                          affordable = false;
+    bool                           affordable = false;
     std::vector<ResourceShortfall> shortfalls;
 
     /** @brief Return whether every item in the queried cost is available. */
@@ -240,7 +238,7 @@ public:
     /** @brief Whether this nonce is invalid/zero. */
     [[nodiscard]] constexpr bool isZero() const noexcept { return value_ == 0; }
 
-    friend constexpr bool operator==(const AccountNonce&, const AccountNonce&) noexcept = default;
+    friend constexpr bool operator==(const AccountNonce&, const AccountNonce&) noexcept  = default;
     friend constexpr auto operator<=>(const AccountNonce&, const AccountNonce&) noexcept = default;
 
 private:
@@ -276,9 +274,7 @@ struct Reservation {
     CostSpec      cost;
 
     /** @brief Whether this credential has valid account/id identity and cost. */
-    [[nodiscard]] bool isValid() const noexcept {
-        return account.value() != 0 && id.value() != 0 && cost.isValid();
-    }
+    [[nodiscard]] bool isValid() const noexcept { return account.value() != 0 && id.value() != 0 && cost.isValid(); }
 };
 
 /**
@@ -295,9 +291,7 @@ struct Receipt {
     CostSpec         cost;
 
     /** @brief Whether this receipt contains a valid operation identity. */
-    [[nodiscard]] bool isValid() const noexcept {
-        return account.value() != 0 && id.value() != 0 && cost.isValid();
-    }
+    [[nodiscard]] bool isValid() const noexcept { return account.value() != 0 && id.value() != 0 && cost.isValid(); }
 };
 
 /**

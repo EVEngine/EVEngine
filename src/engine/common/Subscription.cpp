@@ -4,8 +4,7 @@
 
 namespace eve {
 
-Subscription::Subscription(Cancel cancel)
-    : cancel_(std::move(cancel)), disposed_(!cancel_) {}
+Subscription::Subscription(Cancel cancel) : cancel_(std::move(cancel)), disposed_(!cancel_) {}
 
 Subscription::Subscription(Subscription &&other) noexcept
     : cancel_(std::move(other.cancel_)), disposed_(other.disposed_) {
@@ -15,8 +14,8 @@ Subscription::Subscription(Subscription &&other) noexcept
 Subscription &Subscription::operator=(Subscription &&other) noexcept {
     if (this == &other) return *this;
     dispose();
-    cancel_        = std::move(other.cancel_);
-    disposed_      = other.disposed_;
+    cancel_         = std::move(other.cancel_);
+    disposed_       = other.disposed_;
     other.disposed_ = true;
     return *this;
 }

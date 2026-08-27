@@ -74,7 +74,7 @@ struct ViewportState {
 class UISystem {
 public:
     /** @brief Sets the borrowed backend used for the current UI/render lifetime. */
-    static void setBackend(UIBackend& backend);
+    static void setBackend(UIBackend &backend);
     /** @brief Clears the backend association before the backend is shut down. */
     static void clearBackend() noexcept;
     /**
@@ -93,8 +93,8 @@ public:
      * @lifetime Valid until viewport removal, refresh, or render-state reset; do not retain it.
      * @thread Call on the UI/render thread.
      */
-    [[nodiscard]] static eve::OptionalRef<ViewportState> viewportState(
-        const std::string &hostName, const std::string &nodeId);
+    [[nodiscard]] static eve::OptionalRef<ViewportState> viewportState(const std::string &hostName,
+                                                                       const std::string &nodeId);
     /**
      * @brief Creates or refreshes offscreen state for a viewport key.
      * @return A borrowed state reference, or a structured failure for invalid dimensions/key.
@@ -102,8 +102,7 @@ public:
      * @lifetime Valid until viewport removal, refresh, or render-state reset; do not retain it.
      * @thread Call on the UI/render thread.
      */
-    [[nodiscard]] static eve::ResultRef<ViewportState> ensureViewport(
-        const std::string &key, int w, int h);
+    [[nodiscard]] static eve::ResultRef<ViewportState> ensureViewport(const std::string &key, int w, int h);
 
     /** @brief Walk all UIHost (+ subclasses) via ECS View. */
     static void render();

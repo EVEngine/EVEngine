@@ -33,7 +33,7 @@ TEST_CASE("procgen.generatedArtifact.buildKeyIsCanonicalAndIdentityIsSeparate") 
     second.setInt("width", 48);
     second.setSeed(17);
 
-    const auto firstKey = BuildKey::forRecipe("mesh.hexterrain", first);
+    const auto firstKey  = BuildKey::forRecipe("mesh.hexterrain", first);
     const auto secondKey = BuildKey::forRecipe("mesh.hexterrain", second);
     REQUIRE(firstKey.has_value());
     REQUIRE(secondKey.has_value());
@@ -67,10 +67,10 @@ TEST_CASE("procgen.generatedArtifact.hexTerrainPublishesCompositeProducts") {
 
     const auto& composite = std::get<CompositeArtifact>(artifact.payload);
     REQUIRE_EQ(composite.children.size(), std::size_t(4));
-    const ArtifactPart* mesh = composite.find("mesh");
+    const ArtifactPart* mesh     = composite.find("mesh");
     const ArtifactPart* collider = composite.find("collider");
     const ArtifactPart* topology = composite.find("topology");
-    const ArtifactPart* anchors = composite.find("anchors");
+    const ArtifactPart* anchors  = composite.find("anchors");
     REQUIRE(mesh != nullptr);
     REQUIRE(collider != nullptr);
     REQUIRE(topology != nullptr);
@@ -89,12 +89,12 @@ TEST_CASE("procgen.generatedArtifact.castlePublishesCompositeProductsAndStorePro
     params.setInt("detail", 1);
     params.setInt("seed", 12);
 
-    const ArtifactId id = testId();
-    auto result = generateCastleArtifact(params, id);
+    const ArtifactId id     = testId();
+    auto             result = generateCastleArtifact(params, id);
     REQUIRE(result.ok());
-    GeneratedArtifact artifact = std::move(result).takeValue();
-    const BuildKey key = artifact.buildKey;
-    const auto& composite = std::get<CompositeArtifact>(artifact.payload);
+    GeneratedArtifact artifact  = std::move(result).takeValue();
+    const BuildKey    key       = artifact.buildKey;
+    const auto&       composite = std::get<CompositeArtifact>(artifact.payload);
     REQUIRE(composite.has("mesh"));
     REQUIRE(composite.has("collider"));
     REQUIRE(composite.has("topology"));
@@ -105,7 +105,7 @@ TEST_CASE("procgen.generatedArtifact.castlePublishesCompositeProductsAndStorePro
     CHECK_EQ(std::get<PointSet>(composite.find("anchors")->payload).getCount(), 5);
 
     ArtifactStore store;
-    auto published = store.publish(std::move(artifact));
+    auto          published = store.publish(std::move(artifact));
     REQUIRE(published.ok());
     CHECK_EQ(std::move(published).takeValue(), id);
     CHECK_EQ(store.size(), std::size_t(1));
@@ -113,7 +113,7 @@ TEST_CASE("procgen.generatedArtifact.castlePublishesCompositeProductsAndStorePro
     CHECK_EQ(store.findByBuildKey(key).size(), std::size_t(1));
 
     Params sameParams = params;
-    auto duplicate = generateCastleArtifact(sameParams, id);
+    auto   duplicate  = generateCastleArtifact(sameParams, id);
     REQUIRE(duplicate.ok());
     auto conflict = store.publish(std::move(duplicate).takeValue());
     CHECK(!conflict.ok());
@@ -128,21 +128,21 @@ TEST_CASE("procgen.generatedArtifact.castlePublishesCompositeProductsAndStorePro
 }
 
 TEST_CASE("procgen.generatedArtifact.rejectsInvalidContracts") {
-    const ArtifactId id = testId();
-    auto key = BuildKey::fromCanonical("procgen/v1/test/0000000000000001");
+    const ArtifactId id  = testId();
+    auto             key = BuildKey::fromCanonical("procgen/v1/test/0000000000000001");
     REQUIRE(key.has_value());
     Bounds bounds;
     bounds.include(0.f, 0.f, 0.f);
     Grid2D grid;
     grid.resize(1, 1);
 
-    auto nil = makeArtifact(ArtifactId::nil(), ArtifactType::Grid, eve::SchemaVersion(1), *key,
-                            bounds, {}, {}, GeneratedArtifact::Payload(grid));
+    auto nil = makeArtifact(ArtifactId::nil(), ArtifactType::Grid, eve::SchemaVersion(1), *key, bounds, {}, {},
+                            GeneratedArtifact::Payload(grid));
     CHECK(!nil.ok());
     CHECK_EQ(static_cast<int>(nil.code()), static_cast<int>(eve::StatusCode::Rejected));
 
-    auto mismatch = makeArtifact(id, ArtifactType::MeshData, eve::SchemaVersion(1), *key,
-                                 bounds, {}, {}, GeneratedArtifact::Payload(grid));
+    auto mismatch = makeArtifact(id, ArtifactType::MeshData, eve::SchemaVersion(1), *key, bounds, {}, {},
+                                 GeneratedArtifact::Payload(grid));
     CHECK(!mismatch.ok());
     CHECK_EQ(static_cast<int>(mismatch.code()), static_cast<int>(eve::StatusCode::Rejected));
 }
@@ -161,15 +161,14 @@ TEST_CASE("procgen.meshBuild.checkedGroupRestoreIsAtomic") {
 
     auto invalid = mesh.restoreGroupData({""}, {0}, 0);
     REQUIRE(!invalid.ok());
-    CHECK_EQ(static_cast<int>(invalid.error()->code()),
-             static_cast<int>(eve::DiagnosticCode::ProcgenGroupDataInvalid));
+    CHECK_EQ(static_cast<int>(invalid.error()->code()), static_cast<int>(eve::DiagnosticCode::ProcgenGroupDataInvalid));
     CHECK_EQ(mesh.getGroupName(0), std::string("main"));
     CHECK_EQ(mesh.getTriangleGroup(0), 0);
 }
 
 TEST_CASE("procgen.generatedArtifact.denseSnapshotRoundTripsEveryPayloadAndRebuildsIndexes") {
     const ArtifactId root = testId();
-    const auto key = BuildKey::fromCanonical("procgen/v1/roundtrip/0000000000000001");
+    const auto       key  = BuildKey::fromCanonical("procgen/v1/roundtrip/0000000000000001");
     REQUIRE(key.has_value());
 
     Bounds rootBounds;
@@ -187,7 +186,7 @@ TEST_CASE("procgen.generatedArtifact.denseSnapshotRoundTripsEveryPayloadAndRebui
     gridBounds.include(0.f, 0.f, 0.f);
     gridBounds.include(2.f, 0.f, 1.f);
 
-    PointSet points;
+    PointSet  points;
     const int point = points.add(1.f, 2.f, 3.f);
     points.setNormal(point, .1f, .9f, .2f);
     points.setYaw(point, .25f);
@@ -211,46 +210,42 @@ TEST_CASE("procgen.generatedArtifact.denseSnapshotRoundTripsEveryPayloadAndRebui
     meshBounds.include(1.f, 1.f, 0.f);
 
     ImageData image;
-    image.width = 2;
-    image.height = 1;
+    image.width    = 2;
+    image.height   = 1;
     image.channels = 4;
-    image.format = "rgba8";
-    image.pixels = {1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u};
+    image.format   = "rgba8";
+    image.pixels   = {1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u};
     Bounds imageBounds;
     imageBounds.include(0.f, 0.f, 0.f);
     imageBounds.include(2.f, 1.f, 0.f);
 
     Collider collider;
     collider.vertices = mesh.positions();
-    collider.indices = mesh.indices();
-    collider.bounds = meshBounds;
-    collider.shape = "triangle_mesh";
+    collider.indices  = mesh.indices();
+    collider.bounds   = meshBounds;
+    collider.shape    = "triangle_mesh";
 
-    auto makePart = [&](std::string role, ArtifactId id, ArtifactType type, Bounds bounds,
-                        ArtifactLeafPayload payload,
+    auto makePart = [&](std::string role, ArtifactId id, ArtifactType type, Bounds bounds, ArtifactLeafPayload payload,
                         std::vector<ArtifactId> dependencies = {}) {
-        return makeArtifactPart(std::move(role), id, type, eve::SchemaVersion(1), *key,
-                                bounds, std::move(dependencies), {}, std::move(payload));
+        return makeArtifactPart(std::move(role), id, type, eve::SchemaVersion(1), *key, bounds, std::move(dependencies),
+                                {}, std::move(payload));
     };
     std::vector<ArtifactPart> children;
-    auto addPart = [&](auto result) {
+    auto                      addPart = [&](auto result) {
         REQUIRE(result.ok());
         children.emplace_back(std::move(result).takeValue());
     };
     addPart(makePart("grid", root.child("grid"), ArtifactType::Grid, gridBounds, std::move(grid)));
-    addPart(makePart("points", root.child("points"), ArtifactType::PointSet, pointBounds,
-                     std::move(points)));
-    addPart(makePart("mesh", root.child("mesh"), ArtifactType::MeshData, meshBounds,
-                     std::move(mesh)));
-    addPart(makePart("image", root.child("image"), ArtifactType::ImageData, imageBounds,
-                     std::move(image)));
-    addPart(makePart("collider", root.child("collider"), ArtifactType::Collider, meshBounds,
-                     std::move(collider), {root.child("mesh")}));
+    addPart(makePart("points", root.child("points"), ArtifactType::PointSet, pointBounds, std::move(points)));
+    addPart(makePart("mesh", root.child("mesh"), ArtifactType::MeshData, meshBounds, std::move(mesh)));
+    addPart(makePart("image", root.child("image"), ArtifactType::ImageData, imageBounds, std::move(image)));
+    addPart(makePart("collider", root.child("collider"), ArtifactType::Collider, meshBounds, std::move(collider),
+                     {root.child("mesh")}));
 
     CompositeArtifact composite;
     composite.children = std::move(children);
-    auto generated = makeArtifact(root, ArtifactType::Composite, eve::SchemaVersion(1), *key,
-                                  rootBounds, {}, {}, std::move(composite));
+    auto generated     = makeArtifact(root, ArtifactType::Composite, eve::SchemaVersion(1), *key, rootBounds, {}, {},
+                                      std::move(composite));
     REQUIRE(generated.ok());
 
     ArtifactStore source;
@@ -271,10 +266,8 @@ TEST_CASE("procgen.generatedArtifact.denseSnapshotRoundTripsEveryPayloadAndRebui
     CHECK(restored.findPart(root.child("image")) != nullptr);
     CHECK(restored.findPart(root.child("collider")) != nullptr);
     REQUIRE(restored.typeOf(root.child("mesh")).has_value());
-    CHECK_EQ(static_cast<int>(*restored.typeOf(root.child("mesh"))),
-             static_cast<int>(ArtifactType::MeshData));
+    CHECK_EQ(static_cast<int>(*restored.typeOf(root.child("mesh"))), static_cast<int>(ArtifactType::MeshData));
     const auto* restoredMesh = restored.findPart(root.child("mesh"));
     REQUIRE(restoredMesh != nullptr);
-    CHECK_EQ(std::get<MeshData>(restoredMesh->payload).groupNames(),
-             std::vector<std::string>{"main"});
+    CHECK_EQ(std::get<MeshData>(restoredMesh->payload).groupNames(), std::vector<std::string>{"main"});
 }

@@ -40,11 +40,11 @@ enum class MutationKind : std::uint8_t {
  * accepted by a StatePatch-backed provider; volatile providers reject it.
  */
 struct StateMutation {
-    SubjectId subject;
-    std::string key;
-    eve::Value value;
-    MutationKind kind = MutationKind::Set;
-    bool persistent = false;
+    SubjectId    subject;
+    std::string  key;
+    eve::Value   value;
+    MutationKind kind       = MutationKind::Set;
+    bool         persistent = false;
 };
 
 /**
@@ -79,26 +79,20 @@ struct MutationReceipt {
 class EVENGINE_API IStateQuery {
 public:
     static constexpr const char* capabilityName = "eve.state.IStateQuery";
-    virtual ~IStateQuery() = default;
+    virtual ~IStateQuery()                      = default;
 
     /** @brief Query a generic world value. */
-    [[nodiscard]] virtual std::optional<eve::Value> value(std::string_view subject,
-                                                            std::string_view key) const = 0;
+    [[nodiscard]] virtual std::optional<eve::Value> value(std::string_view subject, std::string_view key) const = 0;
     /** @brief Query exact tag membership. */
-    [[nodiscard]] virtual std::optional<bool> hasTag(std::string_view subject,
-                                                      std::string_view tag) const = 0;
+    [[nodiscard]] virtual std::optional<bool> hasTag(std::string_view subject, std::string_view tag) const = 0;
     /** @brief Query a numeric or structured attribute. */
-    [[nodiscard]] virtual std::optional<eve::Value> attribute(std::string_view subject,
-                                                               std::string_view key) const = 0;
+    [[nodiscard]] virtual std::optional<eve::Value> attribute(std::string_view subject, std::string_view key) const = 0;
     /** @brief Query a resource value or marker. */
-    [[nodiscard]] virtual std::optional<eve::Value> resource(std::string_view subject,
-                                                              std::string_view key) const = 0;
+    [[nodiscard]] virtual std::optional<eve::Value> resource(std::string_view subject, std::string_view key) const = 0;
     /** @brief Query a persistent/world state value. */
-    [[nodiscard]] virtual std::optional<eve::Value> state(std::string_view subject,
-                                                           std::string_view key) const = 0;
+    [[nodiscard]] virtual std::optional<eve::Value> state(std::string_view subject, std::string_view key) const = 0;
     /** @brief Query read-only authority for a scope. */
-    [[nodiscard]] virtual std::optional<bool> authority(std::string_view subject,
-                                                         std::string_view scope) const = 0;
+    [[nodiscard]] virtual std::optional<bool> authority(std::string_view subject, std::string_view scope) const = 0;
 };
 
 /**
@@ -112,11 +106,11 @@ public:
 class EVENGINE_API IStateMutation {
 public:
     static constexpr const char* capabilityName = "eve.state.IStateMutation";
-    virtual ~IStateMutation() = default;
+    virtual ~IStateMutation()                   = default;
 
     /** @brief Apply a complete mutation set atomically. */
-    [[nodiscard]] virtual eve::Result<MutationReceipt> apply(
-        std::span<const StateMutation> mutations, const MutationContext& context) = 0;
+    [[nodiscard]] virtual eve::Result<MutationReceipt> apply(std::span<const StateMutation> mutations,
+                                                             const MutationContext&         context) = 0;
 };
 
 }  // namespace eve::state
@@ -125,10 +119,10 @@ public:
 // interfaces such as eve::ISceneQuery while retaining the state namespace as
 // the canonical spelling for new code.
 namespace eve {
-using IStateQuery    = state::IStateQuery;
-using IStateMutation = state::IStateMutation;
-using StateMutation  = state::StateMutation;
-using MutationKind   = state::MutationKind;
+using IStateQuery     = state::IStateQuery;
+using IStateMutation  = state::IStateMutation;
+using StateMutation   = state::StateMutation;
+using MutationKind    = state::MutationKind;
 using MutationContext = state::MutationContext;
 using MutationReceipt = state::MutationReceipt;
 }  // namespace eve

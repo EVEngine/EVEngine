@@ -11,8 +11,8 @@
 
 #include <Box2D/Box2D.h>
 
-#include <cstdint>
 #include <cmath>
+#include <cstdint>
 #include <memory>
 
 using namespace eve::physics;
@@ -31,30 +31,27 @@ public:
         return domain == SimulationBackendDomain::World2D;
     }
 
-    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(
-        SimulationBackendDomain domain, void* /*state*/) override {
+    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain domain,
+                                                                          void * /*state*/) override {
         if (!supports(domain)) {
-            return eve::Result<std::unique_ptr<ISimulationBackend>>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
-                                       "Mock accelerator does not implement this domain"));
+            return eve::Result<std::unique_ptr<ISimulationBackend>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "Mock accelerator does not implement this domain"));
         }
-        return eve::Result<std::unique_ptr<ISimulationBackend>>::success(
-            detail::makeMockAcceleratorBackend());
+        return eve::Result<std::unique_ptr<ISimulationBackend>>::success(detail::makeMockAcceleratorBackend());
     }
 };
 
-void checkObservableContract(ISimulationBackend& backend) {
-    const eve::SimulationStep step{eve::SimulationTick{1},
-                                   eve::Duration::fromNanoseconds(16666667)};
-    auto applied = backend.step(step, SimulationSettings{});
-    const bool appliedOk = applied.ok();
+void checkObservableContract(ISimulationBackend &backend) {
+    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromNanoseconds(16666667)};
+    auto                      applied   = backend.step(step, SimulationSettings{});
+    const bool                appliedOk = applied.ok();
     CHECK(appliedOk);
     const SimulationObservation observation = backend.observation();
     CHECK_EQ(observation.stepCount, std::uint64_t(1));
     CHECK(observation.lastTick == step.tick);
     CHECK_EQ(observation.simulatedDuration, step.delta);
 
-    auto duplicate = backend.step(step, SimulationSettings{});
+    auto       duplicate   = backend.step(step, SimulationSettings{});
     const bool duplicateOk = duplicate.ok();
     CHECK(!duplicateOk);
     CHECK_EQ(duplicate.code(), eve::StatusCode::Rejected);
@@ -63,7 +60,7 @@ void checkObservableContract(ISimulationBackend& backend) {
 }  // namespace
 
 TEST_CASE("physics.core.backendContract.isHeadlessAndObservable") {
-    auto *physics = Physics::create();
+    auto                  *physics = Physics::create();
     std::unique_ptr<World> world(physics->newWorld(0.f, 900.f));
     REQUIRE(world.get() != nullptr);
 
@@ -77,9 +74,8 @@ TEST_CASE("physics.core.backendContract.isHeadlessAndObservable") {
     CHECK_EQ(backend->determinism(), SimulationDeterminism::ToleranceBounded);
     CHECK_EQ(backend->observation().stepCount, std::uint64_t(0));
 
-    auto stepped = backend->step(
-        SimulationStep{eve::SimulationTick{1}, eve::Duration::fromNanoseconds(16666667)},
-        SimulationSettings{});
+    auto       stepped = backend->step(SimulationStep{eve::SimulationTick{1}, eve::Duration::fromNanoseconds(16666667)},
+                                       SimulationSettings{});
     const bool steppedOk = stepped.ok();
     REQUIRE(steppedOk);
     const SimulationObservation observation = backend->observation();
@@ -92,7 +88,7 @@ TEST_CASE("physics.core.backendContract.isHeadlessAndObservable") {
 
 TEST_CASE("physics.core.backendContract.cpuAndMockShareObservableRules") {
     CapabilityReset reset;
-    b2World rawWorld(b2Vec2_zero);
+    b2World         rawWorld(b2Vec2_zero);
 
     auto cpu = detail::makeBox2DSimulationBackend(&rawWorld);
     REQUIRE(cpu.get() != nullptr);
@@ -106,11 +102,10 @@ TEST_CASE("physics.core.backendContract.cpuAndMockShareObservableRules") {
 
 TEST_CASE("physics.core.backendFallbackIsStructuredAndObservable") {
     CapabilityReset reset;
-    b2World rawWorld(b2Vec2_zero);
+    b2World         rawWorld(b2Vec2_zero);
 
-    auto absent = detail::selectSimulationBackend(
-        SimulationBackendDomain::World2D,
-        detail::makeBox2DSimulationBackend(&rawWorld), &rawWorld, true);
+    auto       absent   = detail::selectSimulationBackend(SimulationBackendDomain::World2D,
+                                                          detail::makeBox2DSimulationBackend(&rawWorld), &rawWorld, true);
     const bool absentOk = absent.ok();
     REQUIRE(absentOk);
     CHECK_EQ(absent.status().code(), eve::StatusCode::Applied);
@@ -122,9 +117,8 @@ TEST_CASE("physics.core.backendFallbackIsStructuredAndObservable") {
 
     MockAcceleratorProvider provider;
     eve::cap::provide<IAcceleratorBackendProvider>(&provider);
-    auto present = detail::selectSimulationBackend(
-        SimulationBackendDomain::World2D,
-        detail::makeBox2DSimulationBackend(&rawWorld), &rawWorld, true);
+    auto       present   = detail::selectSimulationBackend(SimulationBackendDomain::World2D,
+                                                           detail::makeBox2DSimulationBackend(&rawWorld), &rawWorld, true);
     const bool presentOk = present.ok();
     REQUIRE(presentOk);
     CHECK(present.diagnostics().empty());
@@ -134,7 +128,7 @@ TEST_CASE("physics.core.backendFallbackIsStructuredAndObservable") {
 }
 
 TEST_CASE("physics.core.worldUpdateNeedsNoGraphics") {
-    auto *physics = Physics::create();
+    auto                  *physics = Physics::create();
     std::unique_ptr<World> world(physics->newWorld(0.f, 0.f));
     REQUIRE(world.get() != nullptr);
 
@@ -148,32 +142,31 @@ TEST_CASE("physics.core.worldUpdateNeedsNoGraphics") {
 }
 
 TEST_CASE("physics.core.worldAcceptsInjectedTickAndPhysicsLinkResolvesStale") {
-    auto *physics = Physics::create();
+    auto                  *physics = Physics::create();
     std::unique_ptr<World> world(physics->newWorld(0.f, 0.f));
     REQUIRE(world.get() != nullptr);
-    Body* body = world->newBody("dynamic", 0.f, 0.f);
+    Body *body = world->newBody("dynamic", 0.f, 0.f);
     body->newCircleFixture(5.f);
 
-    const eve::SimulationStep step{eve::SimulationTick{1},
-                                   eve::Duration::fromNanoseconds(16666667)};
-    auto stepped = world->step(step);
-    const bool steppedOk = stepped.ok();
+    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromNanoseconds(16666667)};
+    auto                      stepped   = world->step(step);
+    const bool                steppedOk = stepped.ok();
     REQUIRE(steppedOk);
     CHECK(world->simulationTick() == step.tick);
     CHECK_EQ(world->simulationObservation().lastTick, step.tick);
     CHECK(world->backendSelectionStatus().code() == eve::StatusCode::Applied);
 
-    auto linkResult = PhysicsLink::fromBody(*body);
-    const bool linkOk = linkResult.ok();
+    auto       linkResult = PhysicsLink::fromBody(*body);
+    const bool linkOk     = linkResult.ok();
     REQUIRE(linkOk);
-    const PhysicsLink link = std::move(linkResult).takeValue();
-    auto resolved = link.resolve(*world);
-    const bool resolvedOk = resolved.ok();
+    const PhysicsLink link       = std::move(linkResult).takeValue();
+    auto              resolved   = link.resolve(*world);
+    const bool        resolvedOk = resolved.ok();
     REQUIRE(resolvedOk);
     CHECK(std::move(resolved).takeValue() == body);
 
     body->destroy();
-    auto stale = link.resolve(*world);
+    auto       stale   = link.resolve(*world);
     const bool staleOk = stale.ok();
     CHECK(!staleOk);
     CHECK_EQ(stale.code(), eve::StatusCode::Rejected);

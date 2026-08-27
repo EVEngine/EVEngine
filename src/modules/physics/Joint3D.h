@@ -18,8 +18,8 @@ public:
     enum class Kind { Distance, Revolute, Prismatic, Spherical, Wheel };
 
     /** @brief Internal wrapper constructor; use World3D::new*Joint. */
-    Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, b3JointId jointId,
-            PhysicsJointHandle runtimeHandle, Kind kind, int id);
+    Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, b3JointId jointId, PhysicsJointHandle runtimeHandle,
+            Kind kind, int id);
     ~Joint3D();
 
     Joint3D(const Joint3D &) = delete;

@@ -22,10 +22,15 @@ void finite(float value, const char *operation, const char *name) {
 
 }  // namespace
 
-Joint3D::Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, b3JointId jointId,
-                 PhysicsJointHandle runtimeHandle, Kind kind, int id)
-    : world_(world), bodyA_(bodyA), bodyB_(bodyB), jointId_(jointId),
-      runtimeHandle_(runtimeHandle), kind_(kind), id_(id) {}
+Joint3D::Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, b3JointId jointId, PhysicsJointHandle runtimeHandle,
+                 Kind kind, int id)
+    : world_(world),
+      bodyA_(bodyA),
+      bodyB_(bodyB),
+      jointId_(jointId),
+      runtimeHandle_(runtimeHandle),
+      kind_(kind),
+      id_(id) {}
 
 Joint3D::~Joint3D() { destroy(); }
 

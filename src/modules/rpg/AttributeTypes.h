@@ -14,13 +14,13 @@
 
 namespace eve::rpg {
 
-using AttributeId = ::eve::attributes::AttributeId;
-using ModifierId = ::eve::attributes::ModifierId;
-using SourceId = ::eve::attributes::SourceId;
+using AttributeId        = ::eve::attributes::AttributeId;
+using ModifierId         = ::eve::attributes::ModifierId;
+using SourceId           = ::eve::attributes::SourceId;
 using AttributeOperation = ::eve::attributes::AttributeOperation;
-using AttributeModifier = ::eve::attributes::AttributeModifier;
-using AttributeValue = ::eve::attributes::AttributeValue;
-using AttributeOpTable = ::eve::attributes::AttributeOperationRegistry;
+using AttributeModifier  = ::eve::attributes::AttributeModifier;
+using AttributeValue     = ::eve::attributes::AttributeValue;
+using AttributeOpTable   = ::eve::attributes::AttributeOperationRegistry;
 
 /** @brief RPG exposes the canonical attributes computation without a duplicate overload. */
 using ::eve::attributes::computeAttributeValue;

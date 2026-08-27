@@ -15,7 +15,7 @@ namespace {
 class MemoryFileSystem final : public eve::service::IFileSystem {
 public:
     bool readFile(const std::string& path, std::vector<std::uint8_t>& out) override {
-        lastPath = path;
+        lastPath         = path;
         const auto found = files.find(path);
         if (found == files.end()) return false;
         out = found->second;
@@ -27,7 +27,7 @@ public:
     bool fileExists(const std::string& path) override { return files.find(path) != files.end(); }
 
     std::map<std::string, std::vector<std::uint8_t>> files;
-    std::string lastPath;
+    std::string                                      lastPath;
 };
 
 template <typename T>
@@ -39,11 +39,9 @@ T take(eve::Result<T> result) {
 }  // namespace
 
 TEST_CASE("resourceUri.acceptsOnlyKnownVirtualSchemes") {
-    for (const auto text : {"asset://01020304-0506-0708-090a-0b0c0d0e0f10",
-                            "project://textures/wood.png?quality=high#albedo",
-                            "builtin://ui/default-font",
-                            "generated://terrain/seed-1",
-                            "memory://session/preview"}) {
+    for (const auto text :
+         {"asset://01020304-0506-0708-090a-0b0c0d0e0f10", "project://textures/wood.png?quality=high#albedo",
+          "builtin://ui/default-font", "generated://terrain/seed-1", "memory://session/preview"}) {
         auto uri = eve::ResourceUri::parse(text);
         REQUIRE(uri.ok());
         CHECK(!uri.value().format().empty());
@@ -99,7 +97,7 @@ TEST_CASE("resourceReader.typedUriIsSourceOfTruth") {
     filesystem.files["textures/wood.bin"] = {1, 2, 3};
     eve::filesystem::ResourceReader reader(filesystem);
 
-    const auto uri = take(eve::ResourceUri::parse("project://textures/wood.bin"));
+    const auto uri   = take(eve::ResourceUri::parse("project://textures/wood.bin"));
     const auto bytes = take(reader.read(uri));
     CHECK_EQ(bytes, std::vector<std::uint8_t>({1, 2, 3}));
     CHECK_EQ(filesystem.lastPath, std::string("textures/wood.bin"));
@@ -115,7 +113,7 @@ TEST_CASE("resourceReader.doesNotSilentlyFallbackAcrossNamespaces") {
     eve::filesystem::ResourceReader reader(filesystem);
 
     const auto builtin = take(eve::ResourceUri::parse("builtin://textures/wood.bin"));
-    auto result = reader.read(builtin);
+    auto       result  = reader.read(builtin);
     CHECK(!result.ok());
     CHECK_EQ(result.code(), eve::StatusCode::Unsupported);
     CHECK(filesystem.lastPath.empty());

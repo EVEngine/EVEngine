@@ -17,8 +17,8 @@
  * 手持位（WeaponRigEntity）是轻量持有位，面向 ARPG/RPG 角色手持武器。
  */
 
-#include "common/ECS.h"
 #include "attributes/AttributeProjection.h"
+#include "common/ECS.h"
 #include "common/definitions/DefinitionRuntime.h"
 
 #include <cstdint>
@@ -289,9 +289,8 @@ public:
      */
     struct DefinitionBinding {
         eve::definition::InstanceIdentity identity;
-        eve::definition::ReloadPolicy reloadPolicy =
-            eve::definition::ReloadPolicy::RebuildInstance;
-        bool active = true;
+        eve::definition::ReloadPolicy     reloadPolicy = eve::definition::ReloadPolicy::RebuildInstance;
+        bool                              active       = true;
     };
 
     /** @brief 触发资源 / 冷却 / 装填 / 阶段机运行时状态。 */

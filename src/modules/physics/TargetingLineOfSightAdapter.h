@@ -49,7 +49,7 @@ public:
 
 private:
     struct RegisteredWorld {
-        World3D* world = nullptr;
+        World3D*                  world = nullptr;
         std::weak_ptr<const void> lifetime;
     };
 

@@ -10,9 +10,9 @@ using namespace eve::sensing;
 
 TEST_CASE("sensing.filtersAndSortsCandidates") {
     SensingWorld w;
-    auto b = w.upsert("b", 3, 4, "red", "unit,tank", "p1");
-    auto a = w.upsert("a", 1, 0, "blue", "unit,infantry", "p1,p2");
-    auto c = w.upsert("c", 2, 0, "red", "building", "p1");
+    auto         b = w.upsert("b", 3, 4, "red", "unit,tank", "p1");
+    auto         a = w.upsert("a", 1, 0, "blue", "unit,infantry", "p1,p2");
+    auto         c = w.upsert("c", 2, 0, "red", "building", "p1");
     REQUIRE(b.ok());
     REQUIRE(a.ok());
     REQUIRE(c.ok());
@@ -25,8 +25,8 @@ TEST_CASE("sensing.filtersAndSortsCandidates") {
 }
 TEST_CASE("sensing.ordersByDistanceThenIdAndLimits") {
     SensingWorld w;
-    auto z = w.upsert("z", 1, 0, "", "u", "");
-    auto a = w.upsert("a", -1, 0, "", "u", "");
+    auto         z = w.upsert("z", 1, 0, "", "u", "");
+    auto         a = w.upsert("a", -1, 0, "", "u", "");
     REQUIRE(z.ok());
     REQUIRE(a.ok());
     auto count = w.circle(0, 0, 2, "u", "", "", "", "", 1);
@@ -38,11 +38,11 @@ TEST_CASE("sensing.ordersByDistanceThenIdAndLimits") {
 }
 TEST_CASE("sensing.snapshotIsTransactional") {
     SensingWorld w;
-    auto inserted = w.upsert("u", 2, 3, "f", "b,a", "p");
+    auto         inserted = w.upsert("u", 2, 3, "f", "b,a", "p");
     REQUIRE(inserted.ok());
     auto         s = w.snapshotJson();
     SensingWorld x;
-    auto restored = x.restoreJson(s);
+    auto         restored = x.restoreJson(s);
     REQUIRE(restored.ok());
     CHECK_EQ(x.snapshotJson(), s);
     auto before = x.snapshotJson();
@@ -55,7 +55,7 @@ TEST_CASE("sensing.worldHandleAndScriptResultContract") {
     auto created = Sensing::newWorld();
     REQUIRE(created.ok());
     const auto reference = std::move(created).takeValue();
-    auto borrowed = Sensing::resolve(reference);
+    auto       borrowed  = Sensing::resolve(reference);
     REQUIRE(borrowed.isBound());
     auto released = Sensing::release(reference);
     REQUIRE(released.ok());

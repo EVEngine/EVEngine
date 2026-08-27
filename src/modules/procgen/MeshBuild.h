@@ -65,8 +65,8 @@ public:
      *         otherwise a stable `ProcgenGroupDataInvalid` diagnostic. Failure
      *         leaves all existing group state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreGroupData(
-        std::vector<std::string> names, std::vector<int> assignments, int activeGroup);
+    [[nodiscard]] eve::Result<void> restoreGroupData(std::vector<std::string> names, std::vector<int> assignments,
+                                                     int activeGroup);
     /**
      * @brief Copies one named group into a standalone compact mesh.
      * @param groupIndex Triangle-group index to copy.

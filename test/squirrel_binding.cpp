@@ -16,7 +16,7 @@ using eve::Result;
 using eve::Value;
 
 TEST_CASE("squirrel_binding.value_round_trip_preserves_nested_value") {
-    ssq::VM vm(1024, ssq::Libs::ALL);
+    ssq::VM      vm(1024, ssq::Libs::ALL);
     Value::Array items;
     items.emplace_back(Value::Object{{"enabled", true}, {"label", "nested"}});
     items.emplace_back(std::int64_t{9});
@@ -35,7 +35,7 @@ TEST_CASE("squirrel_binding.value_round_trip_preserves_nested_value") {
 }
 
 TEST_CASE("squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source") {
-    ssq::VM vm(1024, ssq::Libs::ALL);
+    ssq::VM    vm(1024, ssq::Libs::ALL);
     const auto top = sq_gettop(vm.getHandle());
     sq_newarray(vm.getHandle(), 0);
     sq_pushfloat(vm.getHandle(), std::numeric_limits<SQFloat>::infinity());
@@ -51,7 +51,7 @@ TEST_CASE("squirrel_binding.value_rejects_non_finite_numbers_with_path_and_sourc
 }
 
 TEST_CASE("squirrel_binding.value_enforces_depth_limit") {
-    ssq::VM vm(1024, ssq::Libs::ALL);
+    ssq::VM    vm(1024, ssq::Libs::ALL);
     const auto top = sq_gettop(vm.getHandle());
     sq_newarray(vm.getHandle(), 0);
     sq_newarray(vm.getHandle(), 0);
@@ -59,7 +59,7 @@ TEST_CASE("squirrel_binding.value_enforces_depth_limit") {
 
     eve::script::SquirrelValueOptions options;
     options.maxDepth = 1;
-    auto result = eve::script::valueFromSquirrel(vm.getHandle(), -1, options);
+    auto result      = eve::script::valueFromSquirrel(vm.getHandle(), -1, options);
     CHECK(!result.ok());
     REQUIRE(result.error() != nullptr);
     CHECK(result.error()->path() == "$[0]");
@@ -67,15 +67,15 @@ TEST_CASE("squirrel_binding.value_enforces_depth_limit") {
 }
 
 TEST_CASE("squirrel_binding.result_projection_and_explicit_ignore_are_uniform") {
-    ssq::VM vm(1024, ssq::Libs::ALL);
+    ssq::VM    vm(1024, ssq::Libs::ALL);
     ssq::Table eve = vm.addTable("eve");
     eve::script::exposeResultBindings(eve);
 
-    auto projected = eve::script::projectResult(
-        vm.getHandle(),
-        Result<int>::failure(Diagnostic::error(
-            DiagnosticCode::NotFound, "missing value", "payload.name", {}, "test.source")),
-        [](int value) { return Value(static_cast<std::int64_t>(value)); });
+    auto projected =
+        eve::script::projectResult(vm.getHandle(),
+                                   Result<int>::failure(Diagnostic::error(DiagnosticCode::NotFound, "missing value",
+                                                                          "payload.name", {}, "test.source")),
+                                   [](int value) { return Value(static_cast<std::int64_t>(value)); });
     CHECK(!projected.find("ok").toBool());
     CHECK(projected.find("checked").toBool());
     CHECK(projected.find("hasValue").toBool() == false);
@@ -86,9 +86,8 @@ TEST_CASE("squirrel_binding.result_projection_and_explicit_ignore_are_uniform") 
     CHECK(diagnostic.find("source").toString() == "test.source");
 
     eve.set("target", projected);
-    vm.run(vm.compileSource(
-        "ignored <- eve.result.ignore(eve.target, \"optional feature\");\n",
-        "result-ignore-test.nut"));
+    vm.run(vm.compileSource("ignored <- eve.result.ignore(eve.target, \"optional feature\");\n",
+                            "result-ignore-test.nut"));
     CHECK(vm.find("ignored").toBool());
     CHECK(projected.find("ignored").toBool());
     CHECK(projected.find("ignoreReason").toString() == "optional feature");

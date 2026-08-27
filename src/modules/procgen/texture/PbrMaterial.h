@@ -49,8 +49,7 @@ struct PbrTextureSet {
 };
 
 /** @brief Recipe returns a newly owned full PBR set, or null on failure. */
-using PbrRecipeFn =
-    std::function<std::unique_ptr<PbrTextureSet>(const Params &params, std::string &error)>;
+using PbrRecipeFn = std::function<std::unique_ptr<PbrTextureSet>(const Params &params, std::string &error)>;
 
 class PbrRecipeRegistry {
 public:
@@ -71,8 +70,8 @@ public:
      * @return The newly owned set, or null when the recipe is unknown or generation fails.
      * @ownership The returned set and all maps it owns belong to the caller.
      */
-    [[nodiscard]] std::unique_ptr<PbrTextureSet> generate(
-        const std::string &id, const Params &params, std::string &error) const;
+    [[nodiscard]] std::unique_ptr<PbrTextureSet> generate(const std::string &id, const Params &params,
+                                                          std::string &error) const;
     /** @brief List recipe ids. @return Sorted ids. */
     std::vector<std::string> list() const;
     /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
@@ -94,11 +93,10 @@ private:
 };
 
 /** @brief Builds a full PBR set from a texture definition and returns unique ownership. */
-[[nodiscard]] std::unique_ptr<PbrTextureSet> generatePbrSet(
-    const TextureRecipeDef &def, const Params &params, std::string &error);
+[[nodiscard]] std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const Params &params,
+                                                            std::string &error);
 
 /** @brief Builds a grayscale RGBA8 image and returns unique ownership to the caller. */
-[[nodiscard]] std::unique_ptr<image::ImageData> grayscaleImage(
-    const std::vector<float> &values, int w, int h);
+[[nodiscard]] std::unique_ptr<image::ImageData> grayscaleImage(const std::vector<float> &values, int w, int h);
 
 }  // namespace eve::procgen

@@ -16,8 +16,8 @@ void SceneComponent::attach(SceneHost *host) {
 }
 
 void SceneComponent::mountAs(const std::string &hostName) {
-    SceneHost *h = nullptr;
-    auto found = Scene::create()->findHost(hostName);
+    SceneHost *h     = nullptr;
+    auto       found = Scene::create()->findHost(hostName);
     if (found.ok()) {
         h = std::move(found).takeValue();
     } else {

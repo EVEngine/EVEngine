@@ -99,9 +99,9 @@ public:
     [[nodiscard]] std::string canonicalString() const;
 
 private:
-    uint32_t        seed_   = 1;
-    int             width_  = 32;
-    int             height_ = 32;
+    uint32_t           seed_   = 1;
+    int                width_  = 32;
+    int                height_ = 32;
     eve::Value::Object values_;
 };
 

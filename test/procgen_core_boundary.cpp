@@ -23,8 +23,7 @@ TEST_CASE("procgen.core.cpuSurfaceIsBackendNeutral") {
     params.setSize(4, 3);
     params.setBool("decorations", true);
 
-    const RecipeDescriptor recipe =
-        RecipeDescriptor::grid("core.grid", "Core Grid", "test", 1, 1, 32, 32);
+    const RecipeDescriptor recipe = RecipeDescriptor::grid("core.grid", "Core Grid", "test", 1, 1, 32, 32);
     recipe.applyDefaults(params);
     CHECK_EQ(params.getSeed(), uint32_t(42));
     CHECK_EQ(params.getWidth(), 4);
@@ -74,7 +73,7 @@ TEST_CASE("procgen.params.typedStorageConversionsAndCanonicalEncoding") {
     CHECK(params.getBool("enabled", false));
     CHECK_EQ(params.getInt("enabled", -1), 1);  // Bool has only 0/1 numeric conversion
     CHECK_EQ(params.getString("count", "wrong-kind"), "wrong-kind");
-    CHECK_EQ(params.getInt("label", -1), -1);   // String is never parsed
+    CHECK_EQ(params.getInt("label", -1), -1);  // String is never parsed
     CHECK(params.getBool("label", true));      // invalid kind returns the caller default
 
     const std::string canonical = params.canonicalString();

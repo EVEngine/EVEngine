@@ -5,8 +5,8 @@
 #include "physics/Joint3D.h"
 
 #include "common/Exception.h"
-#include "platform_event/PlatformEvent.h"
 #include "common/Profile.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <box3d/box3d.h>
 
@@ -100,30 +100,26 @@ void makeBoxProxyPoints(b3Vec3 (&points)[8], float width, float height, float de
                               static_cast<float>(z) * hz});
 }
 
-void stepBox3D(void* context, const eve::SimulationStep& step,
-               const SimulationSettings& settings) noexcept {
-    auto* worldId = static_cast<b3WorldId*>(context);
+void stepBox3D(void *context, const eve::SimulationStep &step, const SimulationSettings &settings) noexcept {
+    auto *worldId = static_cast<b3WorldId *>(context);
     b3World_Step(*worldId, static_cast<float>(step.delta.seconds()), settings.subStepCount);
 }
 
 eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick currentTick) {
     if (!std::isfinite(dt) || dt < 0.f) {
-        return eve::Result<eve::SimulationStep>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "World3D update dt must be finite and non-negative",
-            "physics.world3d.update.dt"));
+        return eve::Result<eve::SimulationStep>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "World3D update dt must be finite and non-negative", "physics.world3d.update.dt"));
     }
     const auto nextTick = currentTick.incremented();
     if (!nextTick) {
-        return eve::Result<eve::SimulationStep>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvariantViolation,
-            "World3D simulation tick cannot be incremented",
-            "physics.world3d.simulationTick"));
+        return eve::Result<eve::SimulationStep>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                   "World3D simulation tick cannot be incremented", "physics.world3d.simulationTick"));
     }
     auto duration = eve::Duration::fromSeconds(static_cast<double>(std::min(dt, 0.05f)));
     if (!duration) return eve::Result<eve::SimulationStep>::failure(duration.status());
-    return eve::Result<eve::SimulationStep>::success(
-        {*nextTick, std::move(duration).takeValue()});
+    return eve::Result<eve::SimulationStep>::success({*nextTick, std::move(duration).takeValue()});
 }
 
 }  // namespace
@@ -135,23 +131,21 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
     contactHertz_ = def.contactHertz;
     contactDampingRatio_ = def.contactDampingRatio;
     contactPushOutSpeed_ = def.contactSpeed;
-    runtimeHandle_ = detail::allocatePhysicsWorldHandle();
+    runtimeHandle_       = detail::allocatePhysicsWorldHandle();
     worldId_        = b3CreateWorld(&def);
-    auto selection = detail::selectSimulationBackend(
+    auto selection       = detail::selectSimulationBackend(
         SimulationBackendDomain::World3D,
-        detail::makeCallbackSimulationBackend(
-            &worldId_, &stepBox3D, SimulationBackendKind::Cpu,
-            SimulationDeterminism::ToleranceBounded),
+        detail::makeCallbackSimulationBackend(&worldId_, &stepBox3D, SimulationBackendKind::Cpu,
+                                                    SimulationDeterminism::ToleranceBounded),
         &worldId_, true);
     if (!selection) {
         const eve::Status status = selection.status();
-        throw eve::Exception("World3D: cannot select a simulation backend: %s",
-                             status.describe().c_str());
+        throw eve::Exception("World3D: cannot select a simulation backend: %s", status.describe().c_str());
     }
     backendSelectionStatus_ = selection.status();
-    auto selected = std::move(selection).takeValue();
-    backendFallback_ = selected.usedFallback;
-    simulation_ = std::move(selected.backend);
+    auto selected           = std::move(selection).takeValue();
+    backendFallback_        = selected.usedFallback;
+    simulation_             = std::move(selected.backend);
     registerCameraObstructionWorld(this);
     auto targetingRegistration = registerTargetingLineOfSightWorld(this);
     if (!targetingRegistration) {
@@ -454,8 +448,7 @@ Joint3D *World3D::newDistanceJoint(Body3D *bodyA, Body3D *bodyB, float anchorAX,
     def.length = length;
     const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     b3JointId id = b3CreateDistanceJoint(worldId_, &def);
-    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle,
-                              Joint3D::Kind::Distance, nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Distance, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
     jointHandles_[runtimeHandle] = joint;
@@ -490,8 +483,7 @@ Joint3D *World3D::newRevoluteJoint(Body3D *bodyA, Body3D *bodyB, float anchorX,
     def.base.collideConnected = collideConnected;
     const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     b3JointId id = b3CreateRevoluteJoint(worldId_, &def);
-    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle,
-                              Joint3D::Kind::Revolute, nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Revolute, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
     jointHandles_[runtimeHandle] = joint;
@@ -526,8 +518,7 @@ Joint3D *World3D::newPrismaticJoint(Body3D *bodyA, Body3D *bodyB, float anchorX,
     def.base.collideConnected = collideConnected;
     const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     const b3JointId id = b3CreatePrismaticJoint(worldId_, &def);
-    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Prismatic,
-                              nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Prismatic, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
     jointHandles_[runtimeHandle] = joint;
@@ -562,8 +553,7 @@ Joint3D *World3D::newSphericalJoint(Body3D *bodyA, Body3D *bodyB, float anchorX,
     def.base.collideConnected = collideConnected;
     const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     const b3JointId id = b3CreateSphericalJoint(worldId_, &def);
-    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Spherical,
-                              nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Spherical, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
     jointHandles_[runtimeHandle] = joint;
@@ -610,8 +600,7 @@ Joint3D *World3D::newWheelJoint(Body3D *bodyA, Body3D *bodyB, float anchorX,
     def.base.collideConnected = collideConnected;
     const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     const b3JointId id = b3CreateWheelJoint(worldId_, &def);
-    auto *joint =
-        new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Wheel, nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Wheel, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
     jointHandles_[runtimeHandle] = joint;
@@ -639,21 +628,17 @@ void World3D::updateFull(float dt, int subStepCount) {
         legacyStep.ignore("legacy World3D::updateFull cannot return a structured error");
         return;
     }
-    auto result = step(std::move(legacyStep).takeValue(),
-                       SimulationSettings{8, 3, subStepCount});
+    auto result = step(std::move(legacyStep).takeValue(), SimulationSettings{8, 3, subStepCount});
     result.ignore("legacy World3D::updateFull cannot return a structured result");
 }
 
-eve::Result<void> World3D::step(const eve::SimulationStep& stepValue,
-                                const SimulationSettings& settings) {
+eve::Result<void> World3D::step(const eve::SimulationStep &stepValue, const SimulationSettings &settings) {
     if (!isValid() || !simulation_) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation,
-            "Cannot step a destroyed or uninitialized 3D physics world",
+            eve::DiagnosticCode::PreconditionViolation, "Cannot step a destroyed or uninitialized 3D physics world",
             "physics.world3d.step"));
     }
-    auto valid = detail::validateSimulationStep(
-        stepValue, settings, simulation_->observation());
+    auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
     if (!valid) return valid;
     clearContactEvents();
     for (Shape3D *shape : shapes_) {
@@ -817,7 +802,7 @@ Body3D *World3D::newBody(const std::string &bodyType, float x, float y, float z)
 
     const PhysicsBodyHandle runtimeHandle = nextBodyRuntimeHandle();
     b3BodyId raw  = b3CreateBody(worldId_, &def);
-    Body3D  *body = new Body3D(this, raw, nextBodyId(), runtimeHandle);
+    Body3D                 *body          = new Body3D(this, raw, nextBodyId(), runtimeHandle);
     b3Body_SetUserData(raw, body);
     bodies_.insert(body);
     return body;
@@ -902,16 +887,21 @@ void World3D::forgetShape(Shape3D *shape) {
     const PhysicsShapeHandle handle = shape->runtimeHandle();
     if (handle.isValid()) shapeHandles_.erase(handle);
     for (auto it = shapeHandles_.begin(); it != shapeHandles_.end();) {
-        if (it->second == shape) it = shapeHandles_.erase(it); else ++it;
+        if (it->second == shape)
+            it = shapeHandles_.erase(it);
+        else
+            ++it;
     }
     for (auto it = shapeRawHandles_.begin(); it != shapeRawHandles_.end();) {
-        if (it->second == handle) it = shapeRawHandles_.erase(it); else ++it;
+        if (it->second == handle)
+            it = shapeRawHandles_.erase(it);
+        else
+            ++it;
     }
 }
 
 void World3D::registerShapeHandle(Shape3D *shape) {
-    if (!shape || !shape->getBody() || B3_IS_NULL(shape->raw()) ||
-        shape->runtimeHandle().isInvalid()) return;
+    if (!shape || !shape->getBody() || B3_IS_NULL(shape->raw()) || shape->runtimeHandle().isInvalid()) return;
     const PhysicsShapeHandle handle = shape->runtimeHandle();
     for (auto it = shapeHandles_.begin(); it != shapeHandles_.end();) {
         if (it->second == shape || it->first == handle)
@@ -920,13 +910,15 @@ void World3D::registerShapeHandle(Shape3D *shape) {
             ++it;
     }
     for (auto it = shapeRawHandles_.begin(); it != shapeRawHandles_.end();) {
-        if (it->second == handle) it = shapeRawHandles_.erase(it); else ++it;
+        if (it->second == handle)
+            it = shapeRawHandles_.erase(it);
+        else
+            ++it;
     }
-    const uint64_t rawKey = b3StoreShapeId(shape->raw());
-    shapeHandles_[handle] = shape;
+    const uint64_t rawKey    = b3StoreShapeId(shape->raw());
+    shapeHandles_[handle]    = shape;
     shapeRawHandles_[rawKey] = handle;
-    shapeRecords_[rawKey] =
-        EventShape{shape->getBody()->getId(), shape->getId(), shape->getTag()};
+    shapeRecords_[rawKey]    = EventShape{shape->getBody()->getId(), shape->getId(), shape->getTag()};
 }
 
 bool World3D::preSolveCallback(b3ShapeId shapeIdA, b3ShapeId shapeIdB, b3Pos point,
@@ -1074,8 +1066,8 @@ void World3D::emitContactEvents() {
         beginContacts_.push_back({a, b});
         if (ev) {
             std::vector<eve::platform_event::Variant> args = {
-                eve::platform_event::Variant::makeInt(a.bodyId), eve::platform_event::Variant::makeInt(b.bodyId),
-                eve::platform_event::Variant::makeInt(a.shapeId), eve::platform_event::Variant::makeInt(b.shapeId),
+                eve::platform_event::Variant::makeInt(a.bodyId),   eve::platform_event::Variant::makeInt(b.bodyId),
+                eve::platform_event::Variant::makeInt(a.shapeId),  eve::platform_event::Variant::makeInt(b.shapeId),
                 eve::platform_event::Variant::makeInt(a.shapeTag), eve::platform_event::Variant::makeInt(b.shapeTag)};
             ev->push(new eve::platform_event::Message("begincontact3d", args));
         }
@@ -1088,8 +1080,8 @@ void World3D::emitContactEvents() {
         endContacts_.push_back({a, b});
         if (ev) {
             std::vector<eve::platform_event::Variant> args = {
-                eve::platform_event::Variant::makeInt(a.bodyId), eve::platform_event::Variant::makeInt(b.bodyId),
-                eve::platform_event::Variant::makeInt(a.shapeId), eve::platform_event::Variant::makeInt(b.shapeId),
+                eve::platform_event::Variant::makeInt(a.bodyId),   eve::platform_event::Variant::makeInt(b.bodyId),
+                eve::platform_event::Variant::makeInt(a.shapeId),  eve::platform_event::Variant::makeInt(b.shapeId),
                 eve::platform_event::Variant::makeInt(a.shapeTag), eve::platform_event::Variant::makeInt(b.shapeTag)};
             ev->push(new eve::platform_event::Message("endcontact3d", args));
         }
@@ -1128,8 +1120,8 @@ void World3D::emitContactEvents() {
                          normalImpulse});
         if (ev) {
             std::vector<eve::platform_event::Variant> args = {
-                eve::platform_event::Variant::makeInt(a.bodyId), eve::platform_event::Variant::makeInt(b.bodyId),
-                eve::platform_event::Variant::makeInt(a.shapeId), eve::platform_event::Variant::makeInt(b.shapeId),
+                eve::platform_event::Variant::makeInt(a.bodyId),   eve::platform_event::Variant::makeInt(b.bodyId),
+                eve::platform_event::Variant::makeInt(a.shapeId),  eve::platform_event::Variant::makeInt(b.shapeId),
                 eve::platform_event::Variant::makeInt(a.shapeTag), eve::platform_event::Variant::makeInt(b.shapeTag)};
             ev->push(new eve::platform_event::Message("hit3d", args));
         }
@@ -1142,13 +1134,12 @@ void World3D::emitContactEvents() {
         if (sensor.shapeId == 0 || visitor.shapeId == 0) continue;
         beginTriggers_.push_back({sensor, visitor});
         if (ev) {
-            std::vector<eve::platform_event::Variant> args = {
-                eve::platform_event::Variant::makeInt(sensor.bodyId),
-                eve::platform_event::Variant::makeInt(visitor.bodyId),
-                eve::platform_event::Variant::makeInt(sensor.shapeId),
-                eve::platform_event::Variant::makeInt(visitor.shapeId),
-                eve::platform_event::Variant::makeInt(sensor.shapeTag),
-                eve::platform_event::Variant::makeInt(visitor.shapeTag)};
+            std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(sensor.bodyId),
+                                                              eve::platform_event::Variant::makeInt(visitor.bodyId),
+                                                              eve::platform_event::Variant::makeInt(sensor.shapeId),
+                                                              eve::platform_event::Variant::makeInt(visitor.shapeId),
+                                                              eve::platform_event::Variant::makeInt(sensor.shapeTag),
+                                                              eve::platform_event::Variant::makeInt(visitor.shapeTag)};
             ev->push(new eve::platform_event::Message("begintrigger3d", args));
         }
     }
@@ -1158,13 +1149,12 @@ void World3D::emitContactEvents() {
         if (sensor.shapeId == 0 || visitor.shapeId == 0) continue;
         endTriggers_.push_back({sensor, visitor});
         if (ev) {
-            std::vector<eve::platform_event::Variant> args = {
-                eve::platform_event::Variant::makeInt(sensor.bodyId),
-                eve::platform_event::Variant::makeInt(visitor.bodyId),
-                eve::platform_event::Variant::makeInt(sensor.shapeId),
-                eve::platform_event::Variant::makeInt(visitor.shapeId),
-                eve::platform_event::Variant::makeInt(sensor.shapeTag),
-                eve::platform_event::Variant::makeInt(visitor.shapeTag)};
+            std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(sensor.bodyId),
+                                                              eve::platform_event::Variant::makeInt(visitor.bodyId),
+                                                              eve::platform_event::Variant::makeInt(sensor.shapeId),
+                                                              eve::platform_event::Variant::makeInt(visitor.shapeId),
+                                                              eve::platform_event::Variant::makeInt(sensor.shapeTag),
+                                                              eve::platform_event::Variant::makeInt(visitor.shapeTag)};
             ev->push(new eve::platform_event::Message("endtrigger3d", args));
         }
     }

@@ -95,8 +95,8 @@ private:
     float matchedTime_  = 0.f;
     float lastCost_     = 0.f;
     bool  playing_      = false;
-    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
-    bool hasLastTick_ = false;
+    eve::SimulationTick lastTick_     = eve::SimulationTick::zero();
+    bool                hasLastTick_  = false;
 
     void updateUnchecked(float dt);
 };

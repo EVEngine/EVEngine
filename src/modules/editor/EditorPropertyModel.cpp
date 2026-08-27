@@ -13,7 +13,7 @@ namespace {
 
 template <class T>
 property_access::WriteResult writeFailure(const EditorResult<T> &result, std::string fallbackCode,
-                                       std::string fallbackMessage) {
+                                          std::string fallbackMessage) {
     if (!result.diagnostics.empty()) {
         const EditorDiagnostic &diagnostic = result.diagnostics.front();
         if (!diagnostic.rule.empty() && !diagnostic.message.empty())
@@ -26,13 +26,13 @@ property_access::WriteResult writeFailure(const EditorResult<T> &result, std::st
 
 TransactionId newPropertyTransactionId() {
     static std::atomic<std::uint64_t> entropySequence{1};
-    const eve::UuidV7Generator generator([](std::span<std::uint8_t> bytes) {
+    const eve::UuidV7Generator        generator([](std::span<std::uint8_t> bytes) {
         const std::uint64_t seed = entropySequence.fetch_add(1, std::memory_order_relaxed);
         for (std::size_t index = 0; index < bytes.size(); ++index)
             bytes[index] = static_cast<std::uint8_t>(seed >> ((index % sizeof(seed)) * 8u));
         return true;
     });
-    const auto generated = generator.generate(std::chrono::system_clock::now());
+    const auto                        generated = generator.generate(std::chrono::system_clock::now());
     if (!generated) {
         // A clock before the UUID epoch is not expected for a live editor, but
         // retain a valid canonical UUID path if a platform clock is malformed.
@@ -54,16 +54,16 @@ TargetId selectionTarget(const SelectionSnapshot &selection) {
 
 EditorStatus editorStatusFor(eve::StatusCode code) {
     switch (code) {
-    case eve::StatusCode::Conflict: return EditorStatus::Conflict;
-    case eve::StatusCode::NotFound: return EditorStatus::NotFound;
-    case eve::StatusCode::Unsupported: return EditorStatus::Unsupported;
-    case eve::StatusCode::Cancelled: return EditorStatus::Cancelled;
-    case eve::StatusCode::Rejected: return EditorStatus::Rejected;
-    case eve::StatusCode::Ok:
-    case eve::StatusCode::Applied:
-    case eve::StatusCode::NoOp:
-    case eve::StatusCode::Pending:
-    case eve::StatusCode::Failed: return EditorStatus::Failed;
+        case eve::StatusCode::Conflict: return EditorStatus::Conflict;
+        case eve::StatusCode::NotFound: return EditorStatus::NotFound;
+        case eve::StatusCode::Unsupported: return EditorStatus::Unsupported;
+        case eve::StatusCode::Cancelled: return EditorStatus::Cancelled;
+        case eve::StatusCode::Rejected: return EditorStatus::Rejected;
+        case eve::StatusCode::Ok:
+        case eve::StatusCode::Applied:
+        case eve::StatusCode::NoOp:
+        case eve::StatusCode::Pending:
+        case eve::StatusCode::Failed: return EditorStatus::Failed;
     }
     return EditorStatus::Failed;
 }
@@ -71,21 +71,20 @@ EditorStatus editorStatusFor(eve::StatusCode code) {
 template <class T>
 EditorResult<T> providerRevisionFailure(const eve::Result<eve::Revision> &result) {
     const eve::Status &status = result.status();
-    const char *rule = "editor.property.current-revision";
+    const char        *rule   = "editor.property.current-revision";
     switch (status.code()) {
-    case eve::StatusCode::Conflict: rule = "editor.property.revision-conflict"; break;
-    case eve::StatusCode::Unsupported: rule = "editor.property.revision-unsupported"; break;
-    case eve::StatusCode::NotFound: rule = "editor.property.target"; break;
-    default: break;
+        case eve::StatusCode::Conflict: rule = "editor.property.revision-conflict"; break;
+        case eve::StatusCode::Unsupported: rule = "editor.property.revision-unsupported"; break;
+        case eve::StatusCode::NotFound: rule = "editor.property.target"; break;
+        default: break;
     }
     return EditorResult<T>::error(editorStatusFor(status.code()), RuleId(rule), status.describe());
 }
 
 EditorResult<void> externalRevisionConflict(eve::Revision expected, eve::Revision actual) {
-    return EditorResult<void>::error(
-        EditorStatus::Conflict, RuleId("editor.property.revision-conflict"),
-        "Property target revision changed from " + std::to_string(expected.value()) + " to " +
-            std::to_string(actual.value()) + "; refresh/rebase before writing");
+    return EditorResult<void>::error(EditorStatus::Conflict, RuleId("editor.property.revision-conflict"),
+                                     "Property target revision changed from " + std::to_string(expected.value()) +
+                                         " to " + std::to_string(actual.value()) + "; refresh/rebase before writing");
 }
 
 }  // namespace
@@ -100,11 +99,14 @@ struct EditorPropertyModel::ObserverState {
 };
 
 EditorPropertyModel::EditorPropertyModel(PropertySchema schema, SelectionSnapshot selection,
-                                         const IPropertyProvider *provider,
-                                         PropertyModelSurface surface, HostProfile profile,
-                                         IEditorTransactionBackend *transactionBackend)
-    : editorSchema_(std::move(schema)), selection_(std::move(selection)), provider_(provider),
-      surface_(surface), profile_(std::move(profile)), transactionBackend_(transactionBackend),
+                                         const IPropertyProvider *provider, PropertyModelSurface surface,
+                                         HostProfile profile, IEditorTransactionBackend *transactionBackend)
+    : editorSchema_(std::move(schema)),
+      selection_(std::move(selection)),
+      provider_(provider),
+      surface_(surface),
+      profile_(std::move(profile)),
+      transactionBackend_(transactionBackend),
       observers_(std::make_shared<ObserverState>()) {
     rebuildSchema();
     const EditorResult<void> initialBinding = bind();
@@ -136,22 +138,20 @@ std::optional<eve::Value> EditorPropertyModel::read(const std::string &path) con
     return toPresentationValue(result.value);
 }
 
-property_access::WriteResult EditorPropertyModel::write(const std::string &path,
-                                                     const eve::Value &value) {
+property_access::WriteResult EditorPropertyModel::write(const std::string &path, const eve::Value &value) {
     if (!provider_) return property_access::WriteResult::reject("editor.property.provider", "No property provider");
     const EditorResult<void> revisionCheck = ensureCurrentRevision();
     if (!revisionCheck.accepted())
         return writeFailure(revisionCheck, "editor.property.revision", "Property revision is unavailable");
     if (transactionBackend_ && transactionBackend_->active() && pendingPaths_.contains(path))
         return property_access::WriteResult::reject("editor.property.duplicate-path",
-                                                 "A property may be written only once per transaction");
+                                                    "A property may be written only once per transaction");
 
-    const EditorValue editorValue = toEditorValue(value);
+    const EditorValue                editorValue = toEditorValue(value);
     EditorResult<PropertyEditIntent> intent;
     if (surface_ == PropertyModelSurface::Runtime) {
         RuntimePropertyPresenter presenter;
-        intent = presenter.editIntent(editorSchema_, selection_, PropertyPath(path),
-                                      editorValue, profile_);
+        intent = presenter.editIntent(editorSchema_, selection_, PropertyPath(path), editorValue, profile_);
     } else {
         DeveloperPropertyPresenter presenter;
         intent = presenter.editIntent(editorSchema_, selection_, PropertyPath(path), editorValue);
@@ -161,14 +161,13 @@ property_access::WriteResult EditorPropertyModel::write(const std::string &path,
     }
 
     if (transactionBackend_) {
-        EditorResult<DomainOperation> operation = provider_->makeSet(
-            selection_, PropertyPath(path), editorValue, PropertySetMode::Absolute);
+        EditorResult<DomainOperation> operation =
+            provider_->makeSet(selection_, PropertyPath(path), editorValue, PropertySetMode::Absolute);
         if (!operation.accepted() || !operation.value)
             return writeFailure(operation, "editor.property.operation", "Property operation was rejected");
         if (operation.value->target.empty())
             return property_access::WriteResult::reject("editor.property.target", "Property operation has no target");
-        if (operation.value->mergeKey.empty())
-            operation.value->mergeKey = intent.value->command.value() + ":" + path;
+        if (operation.value->mergeKey.empty()) operation.value->mergeKey = intent.value->command.value() + ":" + path;
 
         bool started = false;
         if (!transactionBackend_->active()) {
@@ -180,7 +179,7 @@ property_access::WriteResult EditorPropertyModel::write(const std::string &path,
             specification.baseRevision = targetRevision_.value();
             if (specification.id.empty())
                 return property_access::WriteResult::reject("editor.property.transaction-id",
-                                                         "Could not allocate a property transaction identity");
+                                                            "Could not allocate a property transaction identity");
             EditorResult<TransactionId> begun = transactionBackend_->begin(std::move(specification));
             if (!begun.accepted() || !begun.value)
                 return writeFailure(begun, "editor.property.transaction.begin", "Could not begin property transaction");
@@ -193,10 +192,9 @@ property_access::WriteResult EditorPropertyModel::write(const std::string &path,
                 EditorResult<void> discarded = transactionBackend_->discard();
                 if (!discarded.accepted())
                     return writeFailure(discarded, "editor.property.transaction.discard",
-                                         "Could not discard rejected property transaction");
+                                        "Could not discard rejected property transaction");
             }
-            return writeFailure(appended, "editor.property.transaction.append",
-                                "Could not stage property operation");
+            return writeFailure(appended, "editor.property.transaction.append", "Could not stage property operation");
         }
         pendingPaths_.insert(path);
 
@@ -219,8 +217,7 @@ property_access::WriteResult EditorPropertyModel::write(const std::string &path,
         if (!committed.accepted() || !committed.value)
             // Commit failure is deliberately retained by the backend so the
             // caller can inspect diagnostics, retry, or explicitly discard.
-            return writeFailure(committed, "editor.property.transaction.commit",
-                                "Property transaction commit failed");
+            return writeFailure(committed, "editor.property.transaction.commit", "Property transaction commit failed");
         targetRevision_ = eve::Revision(committed.value->afterRevision);
         pendingPaths_.clear();
         // The mutation already committed. Do not report a successful commit
@@ -229,8 +226,7 @@ property_access::WriteResult EditorPropertyModel::write(const std::string &path,
         return property_access::WriteResult::success();
     }
 
-    if (!sink_)
-        return property_access::WriteResult::reject("editor.property.sink", "No command sink is connected");
+    if (!sink_) return property_access::WriteResult::reject("editor.property.sink", "No command sink is connected");
     // The sink is a compatibility path and may not have an authority that can
     // perform a commit-time CAS. Recheck immediately before handing it the
     // intent; stale compatibility writes must fail closed as well.
@@ -238,8 +234,7 @@ property_access::WriteResult EditorPropertyModel::write(const std::string &path,
     if (!sinkRevisionCheck.accepted())
         return writeFailure(sinkRevisionCheck, "editor.property.revision", "Property revision is unavailable");
     const EditorResult<void> applied = sink_(*intent.value);
-    if (!applied.accepted())
-        return writeFailure(applied, "editor.property.command", "Property command failed");
+    if (!applied.accepted()) return writeFailure(applied, "editor.property.command", "Property command failed");
     // A legacy sink may mutate the provider without returning a receipt. Read
     // the authoritative post-command revision so the next write does not use
     // the pre-command baseline. If observation fails, retain command success
@@ -266,13 +261,11 @@ EditorResult<TransactionId> EditorPropertyModel::beginTransaction(std::string la
                                                   RuleId("editor.property.transaction-backend"),
                                                   "A transaction backend is not configured");
     if (transactionBackend_->active())
-        return EditorResult<TransactionId>::error(EditorStatus::Conflict,
-                                                  RuleId("editor.property.transaction-active"),
+        return EditorResult<TransactionId>::error(EditorStatus::Conflict, RuleId("editor.property.transaction-active"),
                                                   "A transaction is already active");
     const TargetId target = selectionTarget(selection_);
     if (target.empty())
-        return EditorResult<TransactionId>::error(EditorStatus::Rejected,
-                                                  RuleId("editor.property.target"),
+        return EditorResult<TransactionId>::error(EditorStatus::Rejected, RuleId("editor.property.target"),
                                                   "An explicit property transaction requires a selected target");
     const EditorResult<void> revisionCheck = ensureCurrentRevision();
     if (!revisionCheck.accepted()) {
@@ -282,14 +275,13 @@ EditorResult<TransactionId> EditorPropertyModel::beginTransaction(std::string la
         return result;
     }
     TransactionSpec specification;
-    specification.id       = newPropertyTransactionId();
-    specification.label   = std::move(label);
-    specification.target  = target;
+    specification.id           = newPropertyTransactionId();
+    specification.label        = std::move(label);
+    specification.target       = target;
     specification.baseRevision = targetRevision_.value();
-    specification.mergeKey = "editor.property";
+    specification.mergeKey     = "editor.property";
     if (specification.id.empty())
-        return EditorResult<TransactionId>::error(EditorStatus::Failed,
-                                                  RuleId("editor.property.transaction-id"),
+        return EditorResult<TransactionId>::error(EditorStatus::Failed, RuleId("editor.property.transaction-id"),
                                                   "Could not allocate a property transaction identity");
     EditorResult<TransactionId> result = transactionBackend_->begin(std::move(specification));
     if (result.accepted() && result.value) pendingPaths_.clear();
@@ -323,8 +315,7 @@ EditorResult<TransactionReceipt> EditorPropertyModel::commitTransaction() {
 
 EditorResult<void> EditorPropertyModel::rollbackTransaction() {
     if (!transactionBackend_)
-        return EditorResult<void>::error(EditorStatus::Unsupported,
-                                         RuleId("editor.property.transaction-backend"),
+        return EditorResult<void>::error(EditorStatus::Unsupported, RuleId("editor.property.transaction-backend"),
                                          "A transaction backend is not configured");
     EditorResult<void> result = transactionBackend_->discard();
     if (result.accepted()) pendingPaths_.clear();
@@ -353,7 +344,7 @@ EditorResult<TransactionReceipt> EditorPropertyModel::undo() {
                                                        "A transaction backend is not configured");
     EditorResult<TransactionReceipt> result = transactionBackend_->undo();
     if (!result.accepted() || !result.value) return result;
-    targetRevision_ = eve::Revision(result.value->afterRevision);
+    targetRevision_                    = eve::Revision(result.value->afterRevision);
     const EditorResult<void> refreshed = refresh();
     if (!refreshed.accepted())
         result.diagnostics.insert(result.diagnostics.end(), refreshed.diagnostics.begin(), refreshed.diagnostics.end());
@@ -367,7 +358,7 @@ EditorResult<TransactionReceipt> EditorPropertyModel::redo() {
                                                        "A transaction backend is not configured");
     EditorResult<TransactionReceipt> result = transactionBackend_->redo();
     if (!result.accepted() || !result.value) return result;
-    targetRevision_ = eve::Revision(result.value->afterRevision);
+    targetRevision_                    = eve::Revision(result.value->afterRevision);
     const EditorResult<void> refreshed = refresh();
     if (!refreshed.accepted())
         result.diagnostics.insert(result.diagnostics.end(), refreshed.diagnostics.begin(), refreshed.diagnostics.end());
@@ -387,8 +378,7 @@ property_access::Subscription EditorPropertyModel::subscribe(ChangeCallback call
 
 EditorResult<eve::Revision> EditorPropertyModel::readProviderRevision() const {
     if (!provider_)
-        return EditorResult<eve::Revision>::error(EditorStatus::Unsupported,
-                                                  RuleId("editor.property.provider"),
+        return EditorResult<eve::Revision>::error(EditorStatus::Unsupported, RuleId("editor.property.provider"),
                                                   "No property provider is connected");
     eve::Result<eve::Revision> result = provider_->currentRevision(selection_);
     if (!result.ok()) return providerRevisionFailure<eve::Revision>(result);
@@ -410,13 +400,9 @@ EditorResult<void> EditorPropertyModel::ensureCurrentRevision() const {
     return EditorResult<void>::applied();
 }
 
-EditorResult<void> EditorPropertyModel::bind() {
-    return refresh();
-}
+EditorResult<void> EditorPropertyModel::bind() { return refresh(); }
 
-EditorResult<void> EditorPropertyModel::rebase() {
-    return refresh();
-}
+EditorResult<void> EditorPropertyModel::rebase() { return refresh(); }
 
 EditorResult<void> EditorPropertyModel::refresh() {
     if (!provider_)

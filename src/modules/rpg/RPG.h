@@ -37,7 +37,8 @@ public:
      * @ownership The ECS world owns the actor; callers must release it through ECS and never delete it.
      * @lifetime Valid until actor/world destruction; retain the generation-qualified EntityHandle across frames.
      * @thread Call on the RPG module's owning ECS thread.
-     * @reentrancy The factory invokes no user callbacks; do not re-enter structural ECS mutation while using the result.
+     * @reentrancy The factory invokes no user callbacks; do not re-enter structural ECS mutation while using the
+     * result.
      */
     RPGActor *newActor();
 

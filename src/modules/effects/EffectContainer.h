@@ -104,8 +104,7 @@ public:
      *          returned UUID's `format()` is stored as the legacy projection.
      */
     [[nodiscard]] eve::Result<eve::EffectId> applyCanonical(const EffectDefinition& definition,
-                                                            const std::string& subject,
-                                                            const std::string& source = {});
+                                                            const std::string& subject, const std::string& source = {});
 
     /**
      * @brief Return a generation-qualified handle for a live instance.
@@ -128,9 +127,9 @@ public:
      * @brief Applies scalar effect fields using the canonical Result contract.
      * @return The active instance id, or a structured rejection.
      */
-    [[nodiscard]] eve::Result<std::string> apply(
-        const std::string& subject, const std::string& type, const std::string& source, int priority, double duration,
-        const std::string& stackKey, StackPolicy policy);
+    [[nodiscard]] eve::Result<std::string> apply(const std::string& subject, const std::string& type,
+                                                 const std::string& source, int priority, double duration,
+                                                 const std::string& stackKey, StackPolicy policy);
 
     /**
      * @brief Removes one active instance and emits a Removed event.
@@ -256,14 +255,14 @@ private:
     std::string           effectiveKey(const EffectDefinition& definition) const;
     eve::Result<EffectUpdateSummary> advanceInstances(double dtSeconds, eve::SimulationTick tick);
 
-    std::uint64_t           nextId_       = 1;
-    std::uint64_t           nextSequence_ = 1;
+    std::uint64_t                       nextId_       = 1;
+    std::uint64_t                       nextSequence_ = 1;
     std::optional<eve::UuidV7Generator> effectIdGenerator_;
-    std::uint64_t           generation_  = 1;
-    eve::SimulationTick     lastTick_     = eve::SimulationTick::zero();
-    bool                    hasLastTick_  = false;
-    Store                   effects_;
-    std::deque<EffectEvent> events_;
+    std::uint64_t                       generation_  = 1;
+    eve::SimulationTick                 lastTick_    = eve::SimulationTick::zero();
+    bool                                hasLastTick_ = false;
+    Store                               effects_;
+    std::deque<EffectEvent>             events_;
 };
 
 /**
@@ -285,8 +284,8 @@ public:
     [[nodiscard]] eve::Result<EffectUpdateSummary> advance(EffectContainer& container, double dtSeconds) const;
 
     /** @brief Advances using the scheduler-owned deterministic step contract. */
-    [[nodiscard]] eve::Result<EffectUpdateSummary> advance(EffectContainer& container,
-                                                            const eve::SimulationStep& step) const;
+    [[nodiscard]] eve::Result<EffectUpdateSummary> advance(EffectContainer&           container,
+                                                           const eve::SimulationStep& step) const;
 };
 
 }  // namespace eve::effects

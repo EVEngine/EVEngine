@@ -110,8 +110,7 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     reorderedView->setPointSeed(0, 99);
     reorderedView->points().push_back(pointsView->points()[0]);
     reorderedView->points().push_back(pointsView->points()[1]);
-    auto reorderedPublishResult =
-        proc.publishInstances("forest/main", reorderedHandle, "asset", "granite");
+    auto reorderedPublishResult = proc.publishInstances("forest/main", reorderedHandle, "asset", "granite");
     REQUIRE(reorderedPublishResult.ok());
     CHECK_EQ(proc.getPublishedCreatedCount("forest/main"), 1);
     CHECK_EQ(proc.getPublishedReusedCount("forest/main"), 2);
@@ -122,8 +121,7 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
 
     reorderedView->setStringAttribute(0, "instanceId", "hero-tree");
     reorderedView->setStringAttribute(1, "instanceId", "hero-tree");
-    auto duplicateResult =
-        proc.publishInstances("forest/main", reorderedHandle, "asset", "granite");
+    auto duplicateResult = proc.publishInstances("forest/main", reorderedHandle, "asset", "granite");
     REQUIRE(!duplicateResult.ok());
     CHECK(duplicateResult.status().describe().find("duplicate instance id") != std::string::npos);
     CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 3);

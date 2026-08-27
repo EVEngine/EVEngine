@@ -1,21 +1,21 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "animation/Animation.h"
 #include "animation/AnimClipRegistry.h"
 #include "animation/AnimTrail.h"
+#include "animation/Animation.h"
 #include "animation/Tween.h"
 #include "common/Time.h"
 #include "effects/EffectContainer.h"
-#include "platform_event/PlatformEvent.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleRuntime.h"
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
+#include "platform_event/PlatformEvent.h"
 
-#include <memory>
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -24,7 +24,7 @@ namespace {
 
 class TestEvent final : public eve::platform_event::PlatformEvent {
 public:
-    void pump() override {}
+    void                          pump() override {}
     eve::platform_event::Message* wait() override { return nullptr; }
 };
 
@@ -32,7 +32,7 @@ public:
 
 TEST_CASE("time.checkedConsumers.useSchedulerTickWithoutPrivateRate") {
     auto* particles = eve::particles::Particles::create();
-    auto* emitter = particles->newEmitter(4);
+    auto* emitter   = particles->newEmitter(4);
     emitter->setRandomSeed(7);
     emitter->setParticleLifetime(10.f, 10.f);
     emitter->setDirection(0.f);
@@ -41,41 +41,37 @@ TEST_CASE("time.checkedConsumers.useSchedulerTickWithoutPrivateRate") {
     emitter->setFixedTimeStep(0.5f, 1);
     emitter->emit(1);
 
-    auto advanced = emitter->advance(
-        {eve::SimulationTick(1), eve::Duration::fromNanoseconds(100000000)});
+    auto advanced = emitter->advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(100000000)});
     REQUIRE(advanced.ok());
     CHECK(std::abs(emitter->sim()->particles[0].x - 1.f) < 1e-5f);
     CHECK(emitter->currentSimulationTick() == eve::SimulationTick(1));
 
-    auto duplicate = emitter->advance(
-        {eve::SimulationTick(1), eve::Duration::fromNanoseconds(100000000)});
+    auto duplicate = emitter->advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(100000000)});
     CHECK(!duplicate);
     CHECK(static_cast<int>(duplicate.code()) == static_cast<int>(eve::StatusCode::Conflict));
 }
 
 TEST_CASE("time.checkedConsumers.effectsAndAnimationRecordTick") {
-    eve::effects::EffectContainer effects;
+    eve::effects::EffectContainer  effects;
     eve::effects::EffectDefinition definition;
-    definition.id = "temporary";
+    definition.id       = "temporary";
     definition.duration = 1.0;
-    auto applied = effects.apply(definition, "subject");
+    auto applied        = effects.apply(definition, "subject");
     REQUIRE(applied.ok());
     const std::string id = std::move(applied).takeValue();
     REQUIRE(effects.find(id) != nullptr);
 
-    auto effectStep = effects.advance(
-        {eve::SimulationTick(3), eve::Duration::fromNanoseconds(250000000)});
+    auto effectStep = effects.advance({eve::SimulationTick(3), eve::Duration::fromNanoseconds(250000000)});
     REQUIRE(effectStep.ok());
     CHECK(effectStep.value().tick == eve::SimulationTick(3));
     CHECK(std::abs(effects.find(id)->remaining - 0.75) < 1e-9);
 
-    auto animation = eve::animation::Animation::create();
+    auto                                   animation = eve::animation::Animation::create();
     std::unique_ptr<eve::animation::Tween> tween(animation->newTween(1.f));
     tween->setFrom("x", 0.f);
     tween->setTo("x", 10.f);
     tween->start();
-    auto animationStep = animation->advance(
-        {eve::SimulationTick(3), eve::Duration::fromNanoseconds(500000000)});
+    auto animationStep = animation->advance({eve::SimulationTick(3), eve::Duration::fromNanoseconds(500000000)});
     REQUIRE(animationStep.ok());
     CHECK(std::abs(tween->get("x") - 5.f) < 1e-4f);
     CHECK(animation->currentTick() == eve::SimulationTick(3));
@@ -101,7 +97,7 @@ TEST_CASE("time.checkedConsumers.animationChildrenUseInjectedStep") {
     auto duplicate = trail.advance({eve::SimulationTick(1), eve::Duration::zero()});
     CHECK(!duplicate.ok());
 
-    auto* animation = eve::animation::Animation::create();
+    auto*                                  animation = eve::animation::Animation::create();
     std::unique_ptr<eve::animation::Tween> hosted(animation->newTween(1.f));
     hosted->setFrom("x", 0.f);
     hosted->setTo("x", 10.f);
@@ -115,17 +111,16 @@ TEST_CASE("time.checkedConsumers.animationChildrenUseInjectedStep") {
 
 TEST_CASE("time.checkedConsumers.particleStatsCommitAsOneFrame") {
     auto* particles = eve::particles::Particles::create();
-    auto* emitter = particles->newEmitter(4);
+    auto* emitter   = particles->newEmitter(4);
     REQUIRE(emitter != nullptr);
     CHECK(emitter->getConfigReloadObservation() == std::string("unbound"));
 
-    auto applied = eve::particles::ParticleSimSystem::advance(
-        {eve::SimulationTick(1), eve::Duration::zero()});
+    auto applied = eve::particles::ParticleSimSystem::advance({eve::SimulationTick(1), eve::Duration::zero()});
     REQUIRE(applied.ok());
     const auto committed = eve::particles::particleFrameStats();
 
-    auto duplicate = eve::particles::ParticleSimSystem::advance(
-        {eve::SimulationTick(1), eve::Duration::fromNanoseconds(1)});
+    auto duplicate =
+        eve::particles::ParticleSimSystem::advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(1)});
     CHECK(!duplicate.ok());
     const auto afterDuplicate = eve::particles::particleFrameStats();
     CHECK(afterDuplicate.frameIndex == committed.frameIndex);
@@ -133,8 +128,8 @@ TEST_CASE("time.checkedConsumers.particleStatsCommitAsOneFrame") {
     CHECK(afterDuplicate.emittersTotal == committed.emittersTotal);
     CHECK(afterDuplicate.particlesAfter == committed.particlesAfter);
 
-    auto invalid = eve::particles::ParticleSimSystem::advance(
-        {eve::SimulationTick(2), eve::Duration::fromNanoseconds(-1)});
+    auto invalid =
+        eve::particles::ParticleSimSystem::advance({eve::SimulationTick(2), eve::Duration::fromNanoseconds(-1)});
     CHECK(!invalid.ok());
     const auto afterInvalid = eve::particles::particleFrameStats();
     CHECK(afterInvalid.frameIndex == committed.frameIndex);
@@ -143,12 +138,12 @@ TEST_CASE("time.checkedConsumers.particleStatsCommitAsOneFrame") {
 
 TEST_CASE("subscription.eventPoll.containsCallbackFailureAfterCommit") {
     TestEvent event;
-    int observed = 0;
-    auto throwing = event.subscribePoll([&](const eve::platform_event::Message&) {
+    int       observed = 0;
+    auto      throwing = event.subscribePoll([&](const eve::platform_event::Message&) {
         ++observed;
         throw std::runtime_error("listener failure");
     });
-    auto message = std::make_unique<eve::platform_event::Message>("committed");
+    auto      message  = std::make_unique<eve::platform_event::Message>("committed");
     event.push(std::move(message));
 
     auto polled = event.pollOwned();
@@ -160,19 +155,19 @@ TEST_CASE("subscription.eventPoll.containsCallbackFailureAfterCommit") {
 }
 
 TEST_CASE("subscription.eventPoll.supportsReentrantSubscribeAndDispose") {
-    TestEvent event;
-    int first = 0;
-    int second = 0;
-    bool replaced = false;
+    TestEvent         event;
+    int               first    = 0;
+    int               second   = 0;
+    bool              replaced = false;
     eve::Subscription replacement;
-    auto primary = event.subscribePoll([&](const eve::platform_event::Message&) {
+    auto              primary = event.subscribePoll([&](const eve::platform_event::Message&) {
         ++first;
         if (replaced) return;
         replaced = true;
         replacement.dispose();
         replacement = event.subscribePoll([&](const eve::platform_event::Message&) { ++second; });
     });
-    replacement = event.subscribePoll([&](const eve::platform_event::Message&) { ++second; });
+    replacement               = event.subscribePoll([&](const eve::platform_event::Message&) { ++second; });
 
     event.pushData("first");
     auto firstPolled = event.pollOwned();
@@ -191,12 +186,12 @@ TEST_CASE("subscription.eventPoll.supportsReentrantSubscribeAndDispose") {
 
 TEST_CASE("subscription.animClipReload.supportsAbsentProviderAndReentrancy") {
     eve::animation::AnimClipRegistry::clear();
-    int first = 0;
-    int second = 0;
-    bool replaced = false;
+    int               first    = 0;
+    int               second   = 0;
+    bool              replaced = false;
     eve::Subscription replacement;
-    auto primary = eve::animation::AnimClipRegistry::subscribeReload(
-        [&](const eve::animation::AnimClipRegistry::ReloadEvent&) {
+    auto              primary =
+        eve::animation::AnimClipRegistry::subscribeReload([&](const eve::animation::AnimClipRegistry::ReloadEvent&) {
             ++first;
             if (replaced) return;
             replaced = true;

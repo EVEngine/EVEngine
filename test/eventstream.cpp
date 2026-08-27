@@ -1,8 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "common/Module.h"
 #include "GameEventTestSupport.h"
+#include "common/Module.h"
 #include "game_event/GameEvent.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -13,14 +13,12 @@ using namespace eve::game_event;
 
 namespace {
 
-std::uint64_t appendSuccess(GameEventLog& stream, std::uint64_t serial,
-                            std::string type, std::string source, std::string subject,
-                            std::string causation, std::string correlation, std::uint64_t tick,
+std::uint64_t appendSuccess(GameEventLog& stream, std::uint64_t serial, std::string type, std::string source,
+                            std::string subject, std::string causation, std::string correlation, std::uint64_t tick,
                             std::uint32_t flags, std::string payload = "null") {
-    auto result = stream.append(test::envelope(serial, std::move(type), std::move(source),
-                                                std::move(subject), std::move(causation),
-                                                std::move(correlation), tick, flags,
-                                                std::move(payload)));
+    auto result =
+        stream.append(test::envelope(serial, std::move(type), std::move(source), std::move(subject),
+                                     std::move(causation), std::move(correlation), tick, flags, std::move(payload)));
     REQUIRE(result.ok());
     return result.value().value();
 }
@@ -29,10 +27,8 @@ std::uint64_t appendSuccess(GameEventLog& stream, std::uint64_t serial,
 
 TEST_CASE("game_event.emit.monotonicEnvelope") {
     GameEventLog stream;
-    CHECK_EQ(appendSuccess(stream, 1, "created", "system", "entity-7", "", "flow-2", 41, 3,
-                           "{\"hp\":9}"), uint64_t{1});
-    CHECK_EQ(appendSuccess(stream, 2, "changed", "rule", "entity-7", "1", "flow-2", 42, 0),
-             uint64_t{2});
+    CHECK_EQ(appendSuccess(stream, 1, "created", "system", "entity-7", "", "flow-2", 41, 3, "{\"hp\":9}"), uint64_t{1});
+    CHECK_EQ(appendSuccess(stream, 2, "changed", "rule", "entity-7", "1", "flow-2", 42, 0), uint64_t{2});
     REQUIRE(stream.find(2) != nullptr);
     CHECK(!stream.find(1)->eventId.isNil());
     CHECK(!stream.find(2)->eventId.isNil());
@@ -77,9 +73,9 @@ TEST_CASE("game_event.consumer.cursorReadsBatches") {
 
 TEST_CASE("game_event.retention.clearAndResetSemantics") {
     GameEventLog stream;
-    const auto a = appendSuccess(stream, 1, "a", "", "", "", "", 0, 0);
-    const auto b = appendSuccess(stream, 2, "b", "", "", "", "", 0, 0);
-    const auto c = appendSuccess(stream, 3, "c", "", "", "", "", 0, 0);
+    const auto   a = appendSuccess(stream, 1, "a", "", "", "", "", 0, 0);
+    const auto   b = appendSuccess(stream, 2, "b", "", "", "", "", 0, 0);
+    const auto   c = appendSuccess(stream, 3, "c", "", "", "", "", 0, 0);
     CHECK_EQ(a, uint64_t{1});
     CHECK_EQ(b, uint64_t{2});
     CHECK_EQ(c, uint64_t{3});
@@ -99,9 +95,9 @@ TEST_CASE("game_event.snapshot.roundTripsDeterministically") {
     CHECK_EQ(appendSuccess(original, 1, "created", "admin", "base-1", "", "campaign", 17, 5,
                            "{ \"rank\": 3, \"general\": \"g-1\" }"),
              uint64_t{1});
-    CHECK_EQ(appendSuccess(original, 2, "assigned", "admin", "general-1", "1", "campaign", 18, 0,
-                           "[\"unit-2\",\"unit-3\"]"),
-             uint64_t{2});
+    CHECK_EQ(
+        appendSuccess(original, 2, "assigned", "admin", "general-1", "1", "campaign", 18, 0, "[\"unit-2\",\"unit-3\"]"),
+        uint64_t{2});
     const std::string snapshot = original.snapshotJson();
 
     GameEventLog restored;
@@ -113,6 +109,11 @@ TEST_CASE("game_event.snapshot.roundTripsDeterministically") {
 
     const std::string before = restored.snapshotJson();
     CHECK(!restored.restore("{\"version\":1}").ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+
+    const std::string unknownField   = snapshot.substr(0, snapshot.size() - 1) + ",\"unexpected\":true}";
+    auto              schemaRejected = restored.restore(unknownField);
+    CHECK(!schemaRejected.ok());
     CHECK_EQ(restored.snapshotJson(), before);
 }
 

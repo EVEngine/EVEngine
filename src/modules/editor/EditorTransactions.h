@@ -26,8 +26,8 @@ public:
     bool isActive() const { return consumer_.active(); }
     bool canUndo() const { return consumer_.canUndo(); }
     bool canRedo() const { return consumer_.canRedo(); }
-    int undoCount() const { return static_cast<int>(consumer_.undoCount()); }
-    int redoCount() const { return static_cast<int>(consumer_.redoCount()); }
+    int  undoCount() const { return static_cast<int>(consumer_.undoCount()); }
+    int  redoCount() const { return static_cast<int>(consumer_.redoCount()); }
 
 private:
     EditorTransactionConsumer consumer_;

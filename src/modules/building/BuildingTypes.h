@@ -67,8 +67,8 @@ struct BuildingDefinition {
  * the member's stable id and are resolved by that domain.
  */
 struct GarrisonMember {
-    std::string id;
-    std::string type = "building.garrison.member";
+    std::string              id;
+    std::string              type = "building.garrison.member";
     std::vector<std::string> tags;
 };
 

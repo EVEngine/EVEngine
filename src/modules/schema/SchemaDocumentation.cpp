@@ -9,8 +9,7 @@ namespace {
 
 template <class T>
 eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path)));
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 eve::Value nodeContract(const SchemaNode& node);
@@ -40,8 +39,7 @@ eve::Value definitionContract(const SchemaDefinition& definition) {
 eve::Value nodeContract(const SchemaNode& node) {
     eve::Value::Object result;
     result.emplace("type", eve::Value(valueTypeName(node.type)));
-    if (node.elementType != ValueType::Any)
-        result.emplace("elementType", eve::Value(valueTypeName(node.elementType)));
+    if (node.elementType != ValueType::Any) result.emplace("elementType", eve::Value(valueTypeName(node.elementType)));
     if (!node.ref.empty()) {
         result.emplace("ref", eve::Value(node.ref));
         if (node.refVersion > 0) result.emplace("refVersion", eve::Value(node.refVersion));
@@ -57,8 +55,7 @@ eve::Value nodeContract(const SchemaNode& node) {
     if (!node.discriminator.empty()) result.emplace("discriminator", eve::Value(node.discriminator));
     if (!node.discriminatorMapping.empty()) {
         eve::Value::Object mapping;
-        for (const auto& [value, target] : node.discriminatorMapping)
-            mapping.emplace(value, eve::Value(target));
+        for (const auto& [value, target] : node.discriminatorMapping) mapping.emplace(value, eve::Value(target));
         result.emplace("discriminatorMapping", eve::Value(std::move(mapping)));
     }
     if (node.minimum) result.emplace("minimum", eve::Value(*node.minimum));
@@ -79,15 +76,18 @@ std::string markdownEscape(std::string_view text) {
     std::string result;
     result.reserve(text.size());
     for (const char character : text) {
-        if (character == '|') result += "\\|";
-        else if (character == '\n') result += ' ';
-        else result += character;
+        if (character == '|')
+            result += "\\|";
+        else if (character == '\n')
+            result += ' ';
+        else
+            result += character;
     }
     return result;
 }
 
-void appendFieldDocumentation(std::ostringstream& output, const FieldDefinition& field,
-                              const std::string& parentPath, int depth) {
+void appendFieldDocumentation(std::ostringstream& output, const FieldDefinition& field, const std::string& parentPath,
+                              int depth) {
     const std::string path = parentPath + "/" + field.name;
     output << std::string(static_cast<size_t>(depth), ' ') << "- `" << markdownEscape(path) << "` — `"
            << valueTypeName(field.type) << "`, " << (field.required ? "required" : "optional");
@@ -96,13 +96,11 @@ void appendFieldDocumentation(std::ostringstream& output, const FieldDefinition&
         if (field.refVersion > 0) output << "@" << field.refVersion;
         output << '`';
     }
-    if (!field.discriminator.empty())
-        output << ", discriminator=`" << markdownEscape(field.discriminator) << '`';
+    if (!field.discriminator.empty()) output << ", discriminator=`" << markdownEscape(field.discriminator) << '`';
     if (!field.description.empty()) output << " — " << markdownEscape(field.description);
     output << '\n';
     if (field.objectSchema) {
-        for (const auto& nested : field.objectSchema->fields)
-            appendFieldDocumentation(output, nested, path, depth + 2);
+        for (const auto& nested : field.objectSchema->fields) appendFieldDocumentation(output, nested, path, depth + 2);
     }
     if (field.itemSchema && field.itemSchema->objectSchema) {
         output << std::string(static_cast<size_t>(depth + 2), ' ') << "- array item shape:\n";
@@ -113,18 +111,16 @@ void appendFieldDocumentation(std::ostringstream& output, const FieldDefinition&
 
 }  // namespace
 
-eve::Result<std::string> SchemaRegistry::generateDocumentation(const std::string& schemaId,
-                                                                int schemaVersion) {
+eve::Result<std::string> SchemaRegistry::generateDocumentation(const std::string& schemaId, int schemaVersion) {
     const auto* schema = resolve(schemaId, schemaVersion);
     if (!schema)
-        return failure<std::string>(eve::DiagnosticCode::UnknownVersion,
-                                    "schema version is not registered", "schemaVersion");
+        return failure<std::string>(eve::DiagnosticCode::UnknownVersion, "schema version is not registered",
+                                    "schemaVersion");
 
     std::ostringstream output;
     output << "# " << markdownEscape(schema->id) << " (v" << schema->version << ")\n\n";
     output << "Language: Eve Schema v1\n\n";
-    output << (schema->additionalProperties ? "Unknown object fields: allow\n\n"
-                                            : "Unknown object fields: reject\n\n");
+    output << (schema->additionalProperties ? "Unknown object fields: allow\n\n" : "Unknown object fields: reject\n\n");
     if (!schema->title.empty()) output << "Title: " << markdownEscape(schema->title) << "\n\n";
     if (!schema->description.empty()) output << markdownEscape(schema->description) << "\n\n";
     output << "## Fields\n\n";
@@ -134,12 +130,11 @@ eve::Result<std::string> SchemaRegistry::generateDocumentation(const std::string
     return eve::Result<std::string>::success(output.str());
 }
 
-eve::Result<std::string> SchemaRegistry::generateBindingContract(const std::string& schemaId,
-                                                                  int schemaVersion) {
+eve::Result<std::string> SchemaRegistry::generateBindingContract(const std::string& schemaId, int schemaVersion) {
     const auto* schema = resolve(schemaId, schemaVersion);
     if (!schema)
-        return failure<std::string>(eve::DiagnosticCode::UnknownVersion,
-                                    "schema version is not registered", "schemaVersion");
+        return failure<std::string>(eve::DiagnosticCode::UnknownVersion, "schema version is not registered",
+                                    "schemaVersion");
     eve::Value::Object result;
     result.emplace("language", eve::Value("eve-schema-v1"));
     result.emplace("schemaId", eve::Value(schema->id));

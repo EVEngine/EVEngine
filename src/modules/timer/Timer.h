@@ -54,8 +54,8 @@ public:
     double elapsedSeconds() override { return getTime(); }
 
 private:
-    uint64_t                         freq_ = 0;
-    eve::MonotonicTimestamp          start_;
+    uint64_t                              freq_ = 0;
+    eve::MonotonicTimestamp               start_;
     std::unique_ptr<eve::SimulationClock> simulationClock_;
 };
 

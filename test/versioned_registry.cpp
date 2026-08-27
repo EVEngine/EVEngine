@@ -26,7 +26,7 @@ struct EventData {
 static_assert(!std::is_default_constructible_v<Value>);
 
 struct ThrowingValue {
-    inline static bool throwOnCopy = false;
+    inline static bool throwOnCopy           = false;
     inline static bool throwOnMoveAssignment = false;
 
     int             payload;
@@ -37,13 +37,13 @@ struct ThrowingValue {
 
     ThrowingValue(const ThrowingValue& other) {
         if (throwOnCopy) throw std::runtime_error("injected value copy failure");
-        payload = other.payload;
+        payload    = other.payload;
         generation = other.generation;
     }
 
     ThrowingValue& operator=(const ThrowingValue& other) {
         if (throwOnCopy) throw std::runtime_error("injected value assignment failure");
-        payload = other.payload;
+        payload    = other.payload;
         generation = other.generation;
         return *this;
     }
@@ -52,14 +52,14 @@ struct ThrowingValue {
 
     ThrowingValue& operator=(ThrowingValue&& other) {
         if (throwOnMoveAssignment) throw std::runtime_error("injected value move assignment failure");
-        payload = other.payload;
+        payload    = other.payload;
         generation = other.generation;
         return *this;
     }
 };
 
 struct ThrowingEventData {
-    inline static bool throwOnCopy = false;
+    inline static bool throwOnCopy      = false;
     inline static int  movesBeforeThrow = -1;
 
     eve::SchemaVersion version;
@@ -86,7 +86,7 @@ struct ThrowingEventData {
     ThrowingEventData& operator=(ThrowingEventData&&) noexcept = default;
 };
 
-using Registry = eve::VersionedRegistry<std::string, Value, EventData>;
+using Registry              = eve::VersionedRegistry<std::string, Value, EventData>;
 using ThrowingValueRegistry = eve::VersionedRegistry<std::string, ThrowingValue, EventData>;
 using ThrowingEventRegistry = eve::VersionedRegistry<std::string, Value, ThrowingEventData>;
 
@@ -158,9 +158,9 @@ TEST_CASE("versionedRegistry.eventsAndStateIncludeTombstones") {
     CHECK_EQ(registry.eventAt(2)->operation, eve::RegistryOperation::Remove);
     CHECK_EQ(registry.eventAt(2)->generation.value(), uint64_t{2});
 
-    const auto image = registry.snapshotState();
-    auto restored = makeRegistry();
-    auto restoreResult = restored.restoreState(image);
+    const auto image         = registry.snapshotState();
+    auto       restored      = makeRegistry();
+    auto       restoreResult = restored.restoreState(image);
     REQUIRE(restoreResult.ok());
     CHECK_EQ(restored.size(), registry.size());
     CHECK_EQ(restored.tombstoneCount(), registry.tombstoneCount());
@@ -175,18 +175,17 @@ TEST_CASE("versionedRegistry.eventsAndStateIncludeTombstones") {
 }
 
 TEST_CASE("versionedRegistry.subscriptionIsCanonicalEventSource") {
-    auto registry = makeRegistry();
+    auto                                registry = makeRegistry();
     std::vector<eve::RegistryOperation> operations;
-    auto subscription = registry.subscribe([&](const Registry::Event& event) {
-        operations.push_back(event.operation);
-    });
+    auto                                subscription =
+        registry.subscribe([&](const Registry::Event& event) { operations.push_back(event.operation); });
     REQUIRE(registry.insert("unit", Value{1}, EventData{eve::SchemaVersion(1)}).ok());
     REQUIRE(registry.replace("unit", Value{2}, EventData{eve::SchemaVersion(2)}).ok());
     auto removed = registry.remove(std::string("unit"), EventData{eve::SchemaVersion(2)});
     REQUIRE(removed.ok());
-    CHECK_EQ(operations, std::vector<eve::RegistryOperation>({eve::RegistryOperation::Insert,
-                                                               eve::RegistryOperation::Replace,
-                                                               eve::RegistryOperation::Remove}));
+    CHECK_EQ(operations,
+             std::vector<eve::RegistryOperation>(
+                 {eve::RegistryOperation::Insert, eve::RegistryOperation::Replace, eve::RegistryOperation::Remove}));
     subscription.dispose();
     REQUIRE(registry.insert("other", Value{3}, EventData{eve::SchemaVersion(3)}).ok());
     CHECK_EQ(operations.size(), std::size_t{3});
@@ -195,12 +194,12 @@ TEST_CASE("versionedRegistry.subscriptionIsCanonicalEventSource") {
 TEST_CASE("versionedRegistry.preparationFailureLeavesCanonicalStateUntouched") {
     ThrowingValue::throwOnCopy = false;
     ThrowingValueRegistry registry;
-    auto inserted = registry.insert("unit", ThrowingValue{1}, EventData{eve::SchemaVersion(1)});
+    auto                  inserted = registry.insert("unit", ThrowingValue{1}, EventData{eve::SchemaVersion(1)});
     REQUIRE(inserted.ok());
     const auto original = std::move(inserted).takeValue();
 
     ThrowingValue::throwOnCopy = true;
-    auto failed = registry.replace("unit", ThrowingValue{2}, EventData{eve::SchemaVersion(2)});
+    auto failed                = registry.replace("unit", ThrowingValue{2}, EventData{eve::SchemaVersion(2)});
     ThrowingValue::throwOnCopy = false;
 
     CHECK(!failed.ok());
@@ -212,8 +211,7 @@ TEST_CASE("versionedRegistry.preparationFailureLeavesCanonicalStateUntouched") {
     CHECK_EQ(value.value().get().payload, 1);
 
     ThrowingValue::throwOnMoveAssignment = true;
-    auto moveAssignmentFailure = registry.replace("unit", ThrowingValue{3},
-                                                   EventData{eve::SchemaVersion(3)});
+    auto moveAssignmentFailure           = registry.replace("unit", ThrowingValue{3}, EventData{eve::SchemaVersion(3)});
     ThrowingValue::throwOnMoveAssignment = false;
     CHECK(!moveAssignmentFailure.ok());
     CHECK_EQ(moveAssignmentFailure.code(), eve::StatusCode::Failed);
@@ -226,7 +224,7 @@ TEST_CASE("versionedRegistry.preparationFailureLeavesCanonicalStateUntouched") {
 TEST_CASE("versionedRegistry.eventPreparationFailureLeavesStateUntouched") {
     ThrowingEventRegistry registry;
     ThrowingEventData::throwOnCopy = true;
-    auto failed = registry.insert("unit", Value{1}, ThrowingEventData{eve::SchemaVersion(1)});
+    auto failed                    = registry.insert("unit", Value{1}, ThrowingEventData{eve::SchemaVersion(1)});
     ThrowingEventData::throwOnCopy = false;
 
     CHECK(!failed.ok());
@@ -237,11 +235,11 @@ TEST_CASE("versionedRegistry.eventPreparationFailureLeavesStateUntouched") {
 
 TEST_CASE("versionedRegistry.eventMoveFailureLeavesStateUntouched") {
     ThrowingEventRegistry registry;
-    ThrowingEventData data{eve::SchemaVersion(1)};
+    ThrowingEventData     data{eve::SchemaVersion(1)};
     // One move constructs insert's parameter and one constructs mutate's
     // parameter; the third move constructs the candidate event.
     ThrowingEventData::movesBeforeThrow = 2;
-    auto failed = registry.insert("unit", Value{1}, std::move(data));
+    auto failed                         = registry.insert("unit", Value{1}, std::move(data));
     ThrowingEventData::movesBeforeThrow = -1;
 
     CHECK(!failed.ok());
@@ -251,14 +249,11 @@ TEST_CASE("versionedRegistry.eventMoveFailureLeavesStateUntouched") {
 }
 
 TEST_CASE("versionedRegistry.callbackFailureReportsAppliedWithoutRollback") {
-    auto registry = makeRegistry();
+    auto                            registry = makeRegistry();
     std::vector<eve::EventSequence> observed;
-    auto observer = registry.subscribe([&](const Registry::Event& event) {
-        observed.push_back(event.sequence);
-    });
-    auto throwingObserver = registry.subscribe([](const Registry::Event&) {
-        throw std::runtime_error("injected observer failure");
-    });
+    auto observer = registry.subscribe([&](const Registry::Event& event) { observed.push_back(event.sequence); });
+    auto throwingObserver =
+        registry.subscribe([](const Registry::Event&) { throw std::runtime_error("injected observer failure"); });
 
     auto inserted = registry.insert("unit", Value{1}, EventData{eve::SchemaVersion(1)});
     REQUIRE(inserted.ok());
@@ -278,7 +273,7 @@ TEST_CASE("versionedRegistry.restoreProjectorFailureIsTransactional") {
     REQUIRE(source.insert("source", Value{1}, EventData{eve::SchemaVersion(1)}).ok());
     const auto image = source.snapshotState();
 
-    bool failProjection = false;
+    bool     failProjection = false;
     Registry target([&](Value& value, eve::Generation generation) {
         value.generation = generation;
         if (failProjection) throw std::runtime_error("injected generation projection failure");
@@ -287,7 +282,7 @@ TEST_CASE("versionedRegistry.restoreProjectorFailureIsTransactional") {
     const auto oldState = target.snapshotState();
 
     failProjection = true;
-    auto failed = target.restoreState(image);
+    auto failed    = target.restoreState(image);
     failProjection = false;
 
     CHECK(!failed.ok());

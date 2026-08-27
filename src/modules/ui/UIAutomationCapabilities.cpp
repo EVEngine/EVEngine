@@ -268,15 +268,14 @@ public:
         if (matches.size() != 1) return matchError(hostName, widgetId, matches.size());
         auto host = UIHost::resolve(matches[0].host);
         if (!host) return "error: UI host became stale";
-        UIHost& resolvedHost = host->get();
-        const auto tree = resolvedHost.tree();
+        UIHost&    resolvedHost = host->get();
+        const auto tree         = resolvedHost.tree();
         if (matches[0].nodeIndex < 0 || matches[0].nodeIndex >= static_cast<int>(tree->nodes.size()))
             return "error: UI widget became stale";
         UINode& node = tree->nodes[static_cast<std::size_t>(matches[0].nodeIndex)];
         if (!resolvedHost.meta()->visible || !node.visible)
             return "error: widget is not visible: " + resolvedHost.getName() + "/" + widgetId;
-        if (!isClickable(node))
-            return "error: widget is not clickable: " + resolvedHost.getName() + "/" + widgetId;
+        if (!isClickable(node)) return "error: widget is not clickable: " + resolvedHost.getName() + "/" + widgetId;
 
         UIEvent event;
         event.host         = matches[0].host;

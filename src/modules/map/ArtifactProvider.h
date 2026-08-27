@@ -23,11 +23,11 @@ using MapArtifactHandle = eve::RuntimeHandle<MapArtifactHandleTag>;
 
 /** @brief Queryable map record containing the copied semantic topology. */
 struct MapArtifactRecord {
-    eve::PersistentId id;
-    std::string buildKey;
-    MapArtifactHandle handle;
-    std::int32_t width = 0;
-    std::int32_t height = 0;
+    eve::PersistentId          id;
+    std::string                buildKey;
+    MapArtifactHandle          handle;
+    std::int32_t               width  = 0;
+    std::int32_t               height = 0;
     std::vector<std::uint32_t> cells;
 };
 
@@ -64,7 +64,7 @@ public:
     [[nodiscard]] const MapArtifactRecord* find(eve::PersistentId id) const noexcept;
     /** @brief Return one semantic cell, or empty for an invalid coordinate. */
     [[nodiscard]] std::optional<std::uint32_t> cell(eve::PersistentId id, std::int32_t x,
-                                                     std::int32_t y) const noexcept;
+                                                    std::int32_t y) const noexcept;
     /** @brief Return the number of committed map artifact records. */
     [[nodiscard]] std::size_t size() const noexcept { return records_.size(); }
     /** @brief Remove all records and reset the local handle allocator. */
@@ -74,10 +74,10 @@ public:
 
 private:
     friend class MapArtifactStage;
-    void commit(MapArtifactRecord record) noexcept;
+    void                           commit(MapArtifactRecord record) noexcept;
     std::vector<MapArtifactRecord> records_;
-    std::uint32_t nextIndex_ = 0;
-    bool failPrepare_ = false;
+    std::uint32_t                  nextIndex_   = 0;
+    bool                           failPrepare_ = false;
 };
 
 /** @brief Return the process-owned map artifact provider singleton. */

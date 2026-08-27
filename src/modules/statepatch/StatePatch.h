@@ -35,8 +35,8 @@ using PatchBatchHandleRef = eve::script::RuntimeHandleRef<PatchBatchHandleTag>;
  */
 struct StateBatchHandleRef {
     StateStoreHandleRef store;
-    PatchBatchHandleRef  batch;
-    std::uint64_t         ownerEpoch = 0;
+    PatchBatchHandleRef batch;
+    std::uint64_t       ownerEpoch = 0;
 
     /** @brief Returns the batch slot/generation projection. */
     [[nodiscard]] constexpr std::uint64_t packed() const noexcept { return batch.packed(); }
@@ -123,8 +123,7 @@ public:
      */
     [[nodiscard]] eve::Result<PatchBatchHandleRef> newBatch();
     /** @brief Resolves a live batch as a non-owning observation. */
-    [[nodiscard]] eve::script::Borrowed<PatchBatch> resolveBatch(
-        PatchBatchHandleRef reference) noexcept;
+    [[nodiscard]] eve::script::Borrowed<PatchBatch> resolveBatch(PatchBatchHandleRef reference) noexcept;
     /** @brief Releases a store-owned patch batch. */
     [[nodiscard]] eve::Result<void> releaseBatch(PatchBatchHandleRef reference);
     /** @brief Reports whether a batch reference is stale for this Store. */
@@ -170,22 +169,20 @@ public:
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
     /** @brief Captures the state-patch payload in the common snapshot envelope. */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /**
      * @brief Restores a verified or migrated state-patch envelope atomically.
      * @param snapshot Source envelope with schema `statepatch:store`.
      * @param hashProvider Explicit content-digest provider.
      * @return Success, or a failure leaving all values and metadata unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreSnapshot(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
+                                                    const eve::SnapshotHashProvider& hashProvider);
     /** @brief Serializes the common state-patch snapshot envelope. */
-    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Parses and transactionally restores a common state-patch envelope. */
-    [[nodiscard]] eve::Result<void> restoreSnapshotJson(
-        std::string_view json, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
+                                                        const eve::SnapshotHashProvider& hashProvider);
 
 private:
     friend class StoreTransactionParticipant;
@@ -199,15 +196,15 @@ private:
     Values                                           values_;
     uint64_t                                         revision_     = 0;
     uint64_t                                         nextSequence_ = 1;
-    eve::PersistentId                                instanceId_;
-    eve::SimulationTick                              tick_;
+    eve::PersistentId                                                   instanceId_;
+    eve::SimulationTick                                                 tick_;
     std::set<std::pair<std::string, std::string>>    dirty_;
     std::vector<ChangeEvent>                         events_;
     std::vector<std::string>                         query_;
     std::vector<std::pair<std::string, std::string>> dirtyQuery_;
     eve::script::RuntimeObjectRegistry<PatchBatch, PatchBatchHandleTag> batches_;
-    void copyTransactionStateFrom(const Store& source);
-    void swapTransactionState(Store& other) noexcept;
+    void                                                                copyTransactionStateFrom(const Store& source);
+    void                                                                swapTransactionState(Store& other) noexcept;
     bool transactionStateEquals(const Store& other) const;
 };
 
@@ -252,17 +249,17 @@ private:
 
     [[nodiscard]] eve::Result<void> lifecycleFailure(std::string_view operation) const;
     [[nodiscard]] eve::Result<void> contextFailure(const transaction::TransactionContext& context) const;
-    bool contextMatches(const transaction::TransactionContext& context) const noexcept;
+    bool                            contextMatches(const transaction::TransactionContext& context) const noexcept;
 
-    Store&                                      store_;
-    PatchBatch&                                 batch_;
-    std::unique_ptr<Store>                     before_;
-    std::unique_ptr<Store>                     prepared_;
-    std::unique_ptr<Store>                     expectedAfter_;
-    std::string                                 transactionId_;
-    std::string                                 correlationId_;
-    std::string                                 causationId_;
-    Phase                                       phase_ = Phase::Idle;
+    Store&                 store_;
+    PatchBatch&            batch_;
+    std::unique_ptr<Store> before_;
+    std::unique_ptr<Store> prepared_;
+    std::unique_ptr<Store> expectedAfter_;
+    std::string            transactionId_;
+    std::string            correlationId_;
+    std::string            causationId_;
+    Phase                  phase_ = Phase::Idle;
 };
 
 /** @brief Script module factory for generic state patch stores. */
@@ -279,16 +276,14 @@ public:
      */
     [[nodiscard]] static eve::Result<StateStoreHandleRef> newStore();
     /** @brief Resolves a live store as a non-owning observation. */
-    [[nodiscard]] static eve::script::Borrowed<Store> resolve(
-        StateStoreHandleRef reference) noexcept;
+    [[nodiscard]] static eve::script::Borrowed<Store> resolve(StateStoreHandleRef reference) noexcept;
     /** @brief Releases a module-owned state store. */
     [[nodiscard]] static eve::Result<void> release(StateStoreHandleRef reference);
     /** @brief Reports whether a store reference is stale for the current module. */
     [[nodiscard]] static bool isStale(StateStoreHandleRef reference) noexcept;
 
     /** @brief Resolves a store-qualified batch as a non-owning observation. */
-    [[nodiscard]] static eve::script::Borrowed<PatchBatch> resolveBatch(
-        StateBatchHandleRef reference) noexcept;
+    [[nodiscard]] static eve::script::Borrowed<PatchBatch> resolveBatch(StateBatchHandleRef reference) noexcept;
     /** @brief Releases a store-qualified patch batch. */
     [[nodiscard]] static eve::Result<void> releaseBatch(StateBatchHandleRef reference);
     /** @brief Reports whether a store-qualified batch reference is stale. */

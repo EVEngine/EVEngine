@@ -20,7 +20,7 @@ struct ParticleBudgetConfig {
 struct ParticleFrameStats {
     uint64_t frameIndex             = 0;
     /** @brief Simulation tick that produced the latest simulation counters. */
-    eve::SimulationTick simulationTick = eve::SimulationTick::zero();
+    eve::SimulationTick simulationTick         = eve::SimulationTick::zero();
     int      emittersTotal          = 0;
     int      emittersSimulated      = 0;
     int      emittersCulled         = 0;

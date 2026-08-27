@@ -30,14 +30,13 @@ enum class AttributeResourceKind : unsigned char {
 class AttributeResourceAccountAdapter final : public eve::resource::IResourceAccount {
 public:
     /** @brief Bind a named view to an existing AttributeSet resource account. */
-    AttributeResourceAccountAdapter(AttributeSetResourceAccount& account,
-                                    AttributeResourceKind kind) noexcept;
+    AttributeResourceAccountAdapter(AttributeSetResourceAccount& account, AttributeResourceKind kind) noexcept;
 
-    AttributeResourceAccountAdapter(const AttributeResourceAccountAdapter&) = delete;
+    AttributeResourceAccountAdapter(const AttributeResourceAccountAdapter&)            = delete;
     AttributeResourceAccountAdapter& operator=(const AttributeResourceAccountAdapter&) = delete;
-    AttributeResourceAccountAdapter(AttributeResourceAccountAdapter&&) = delete;
-    AttributeResourceAccountAdapter& operator=(AttributeResourceAccountAdapter&&) = delete;
-    ~AttributeResourceAccountAdapter() override = default;
+    AttributeResourceAccountAdapter(AttributeResourceAccountAdapter&&)                 = delete;
+    AttributeResourceAccountAdapter& operator=(AttributeResourceAccountAdapter&&)      = delete;
+    ~AttributeResourceAccountAdapter() override                                        = default;
 
     /** @brief Return the resource exposed by this view. */
     [[nodiscard]] AttributeResourceKind kind() const noexcept { return kind_; }
@@ -48,27 +47,21 @@ public:
      * @param amount Positive integer quantity.
      * @return Canonical CostSpec or a validation failure.
      */
-    [[nodiscard]] static eve::Result<eve::resource::CostSpec> makeCost(
-        AttributeResourceKind kind, std::int64_t amount);
+    [[nodiscard]] static eve::Result<eve::resource::CostSpec> makeCost(AttributeResourceKind kind, std::int64_t amount);
 
     /** @copydoc eve::resource::IResourceAccount::canAfford */
     [[nodiscard]] eve::Result<eve::resource::Affordability> canAfford(
         const eve::resource::CostSpec& cost) const override;
     /** @copydoc eve::resource::IResourceAccount::reserve */
-    [[nodiscard]] eve::Result<eve::resource::Reservation> reserve(
-        const eve::resource::CostSpec& cost) override;
+    [[nodiscard]] eve::Result<eve::resource::Reservation> reserve(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::debit */
-    [[nodiscard]] eve::Result<eve::resource::Receipt> debit(
-        const eve::resource::CostSpec& cost) override;
+    [[nodiscard]] eve::Result<eve::resource::Receipt> debit(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::credit */
-    [[nodiscard]] eve::Result<eve::resource::Receipt> credit(
-        const eve::resource::CostSpec& cost) override;
+    [[nodiscard]] eve::Result<eve::resource::Receipt> credit(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::commit */
-    [[nodiscard]] eve::Result<eve::resource::Receipt> commit(
-        const eve::resource::Reservation& reservation) override;
+    [[nodiscard]] eve::Result<eve::resource::Receipt> commit(const eve::resource::Reservation& reservation) override;
     /** @copydoc eve::resource::IResourceAccount::rollback */
-    [[nodiscard]] eve::Result<void> rollback(
-        const eve::resource::Reservation& reservation) override;
+    [[nodiscard]] eve::Result<void> rollback(const eve::resource::Reservation& reservation) override;
 
 private:
     /**
@@ -84,7 +77,7 @@ private:
     [[nodiscard]] eve::Result<void> validateCost(const eve::resource::CostSpec& cost) const;
 
     AttributeSetResourceAccount& account_;
-    AttributeResourceKind       kind_;
+    AttributeResourceKind        kind_;
 };
 
 /** @brief Explicit alias used by code that wants a Mana-only view. */

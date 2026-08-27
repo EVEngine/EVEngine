@@ -10,9 +10,9 @@
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
 
-#include "common/config.h"
 #include "common/Module.h"
 #include "common/SquirrelBinding.h"
+#include "common/config.h"
 #include "graphics/Graphics.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
@@ -248,13 +248,13 @@ void UI::updateHostTweens() {
     for (auto &t : hostTweens_) {
         auto host = UIHost::resolve(t.host);
         if (!host) continue;
-        auto m = host->get().meta();
+        auto         m       = host->get().meta();
         const double elapsed = now - t.startMs;
         if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
             m->hasPos = true;
             m->posX = t.toX;
             m->posY = t.toY;
-            t.host = {};  // done; removed below
+            t.host    = {};  // done; removed below
             continue;
         }
         const float k = float(elapsed / t.durationMs);
@@ -264,9 +264,7 @@ void UI::updateHostTweens() {
         m->posY = t.fromY + (t.toY - t.fromY) * ease;
     }
     hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [](const HostTween &t) {
-                                         return !UIHost::resolve(t.host).has_value();
-                                     }),
+                                     [](const HostTween &t) { return !UIHost::resolve(t.host).has_value(); }),
                       hostTweens_.end());
 }
 
@@ -297,8 +295,7 @@ void UI::fireScriptHandlers(const UIEvent &ev) {
 void UI::onClick(const std::string &id, ssq::Function fn) {
     auto host = resolveSelected();
     if (!host || id.empty()) return;
-    scriptHandlers_.push_back(
-        ScriptHandler(host->get().getName(), id, "click", std::move(fn)));
+    scriptHandlers_.push_back(ScriptHandler(host->get().getName(), id, "click", std::move(fn)));
 }
 
 void UI::onChange(const std::string &id, ssq::Function fn) {
@@ -319,9 +316,7 @@ bool UI::wantCaptureKeyboard() const {
 
 UIHostHandle UI::findHost(const std::string &name) const { return UISystem::findHost(name); }
 
-UIHostHandle UI::findHostByOwner(uint32_t ownerId) const {
-    return UISystem::findHostByOwner(ownerId);
-}
+UIHostHandle UI::findHostByOwner(uint32_t ownerId) const { return UISystem::findHostByOwner(ownerId); }
 
 bool UI::select(const std::string &name) {
     const UIHostHandle h = findHost(name);
@@ -352,10 +347,10 @@ UIHostHandle UI::ensureSelected(const std::string &preferredName) {
 
 UIHostHandle UI::mountAs(const std::string &name, WidgetDesc root) {
     UIHostHandle handle = findHost(name);
-    auto host = UIHost::resolve(handle);
+    auto         host   = UIHost::resolve(handle);
     if (!host) {
         handle = UIHost::createHost(name);
-        host = UIHost::resolve(handle);
+        host   = UIHost::resolve(handle);
     } else {
         host->get().setName(name);
     }
@@ -385,13 +380,9 @@ UIHostHandle UI::remountReconcile(WidgetDesc root) {
     return handle;
 }
 
-UIHostHandle UI::remountAs(const std::string &name, WidgetDesc root) {
-    return mountAs(name, std::move(root));
-}
+UIHostHandle UI::remountAs(const std::string &name, WidgetDesc root) { return mountAs(name, std::move(root)); }
 
-eve::OptionalRef<UIHost> UI::resolveSelected() const noexcept {
-    return UIHost::resolve(selected_);
-}
+eve::OptionalRef<UIHost> UI::resolveSelected() const noexcept { return UIHost::resolve(selected_); }
 
 void UI::beginBuild() {
     openStack_.clear();
@@ -885,16 +876,14 @@ bool UI::setListItems(const std::string &listId, const std::vector<std::string> 
     auto host = resolveSelected();
     if (!host) return false;
     WidgetDesc listNode = listButtons(listId, items);
-    auto existing = host->get().findById(listId);
+    auto       existing = host->get().findById(listId);
     if (existing && existing->get().type == NodeType::Group) {
         host->get().setTreeReconcile(
-            window(host->get().getName().empty() ? "List" : host->get().getName(),
-                   {std::move(listNode)}, "root"));
+            window(host->get().getName().empty() ? "List" : host->get().getName(), {std::move(listNode)}, "root"));
         return true;
     }
     host->get().setTree(
-        window(host->get().getName().empty() ? "List" : host->get().getName(),
-               {std::move(listNode)}, "root"));
+        window(host->get().getName().empty() ? "List" : host->get().getName(), {std::move(listNode)}, "root"));
     return true;
 }
 
@@ -1015,10 +1004,10 @@ bool UI::setImageNinePatchFile(const std::string &id, const std::string &path) {
     auto *asset = loadNinePatch(path);
     if (!asset) return false;
     n->get().textureId = asset->textureId;
-    n->get().borderL = float(asset->info.borderLeft);
-    n->get().borderT = float(asset->info.borderTop);
-    n->get().borderR = float(asset->info.borderRight);
-    n->get().borderB = float(asset->info.borderBottom);
+    n->get().borderL   = float(asset->info.borderLeft);
+    n->get().borderT   = float(asset->info.borderTop);
+    n->get().borderR   = float(asset->info.borderRight);
+    n->get().borderB   = float(asset->info.borderBottom);
     if (n->get().type == NodeType::NinePatchPanel) {
         n->get().paddingL = float(asset->info.paddingLeft);
         n->get().paddingT = float(asset->info.paddingTop);
@@ -1105,8 +1094,7 @@ void UI::setHostOverlay(bool overlay) {
 }
 
 void UI::setHostOverlayAlpha(float alpha) {
-    if (auto host = resolveSelected())
-        host->get().meta()->overlayBgAlpha = std::max(0.f, std::min(1.f, alpha));
+    if (auto host = resolveSelected()) host->get().meta()->overlayBgAlpha = std::max(0.f, std::min(1.f, alpha));
 }
 
 void UI::setHostMovable(bool movable) {
@@ -1120,7 +1108,7 @@ void UI::setHostResizable(bool resizable) {
 void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
     auto host = resolveSelected();
     if (!host) return;
-    auto m = host->get().meta();
+    auto m    = host->get().meta();
     m->hasPos = true;
     m->posX = x;
     m->posY = y;
@@ -1131,7 +1119,7 @@ void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
 void UI::setHostAnchor(float x, float y) {
     auto host = resolveSelected();
     if (!host) return;
-    auto m = host->get().meta();
+    auto m     = host->get().meta();
     m->anchorX = x;
     m->anchorY = y;
 }
@@ -1139,7 +1127,7 @@ void UI::setHostAnchor(float x, float y) {
 void UI::setHostSize(float w, float h) {
     auto host = resolveSelected();
     if (!host) return;
-    auto m = host->get().meta();
+    auto m     = host->get().meta();
     m->hasSize = true;
     m->sizeX = w;
     m->sizeY = h;
@@ -1148,7 +1136,7 @@ void UI::setHostSize(float w, float h) {
 void UI::setHostPercent(float w, float h) {
     auto host = resolveSelected();
     if (!host) return;
-    auto m = host->get().meta();
+    auto m      = host->get().meta();
     m->percentW = w;
     m->percentH = h;
 }
@@ -1156,7 +1144,7 @@ void UI::setHostPercent(float w, float h) {
 void UI::animateHostPos(float x, float y, float durationMs) {
     auto host = resolveSelected();
     if (!host) return;
-    auto m = host->get().meta();
+    auto      m = host->get().meta();
     HostTween t;
     t.host = selected_;
     t.fromX = m->hasPos ? m->posX : 0.f;
@@ -1215,7 +1203,7 @@ std::string UI::getStats() const {
 std::string UI::saveTreeJson() const {
     auto host = resolveSelected();
     if (!host) return "{}";
-    auto t = host->get().tree();
+    auto               t = host->get().tree();
     Poco::JSON::Object root;
     root.set("host", host->get().getName());
     if (t->root >= 0) nodeToJson(*t, t->nodes[size_t(t->root)], root);
@@ -1249,8 +1237,7 @@ graphics::Canvas *UI::viewportCanvas(const std::string &id) {
     auto host = resolveSelected();
     if (!host || id.empty()) return nullptr;
     const std::string key = host->get().getName() + "/" + id;
-    if (auto state = UISystem::viewportState(host->get().getName(), id))
-        return state->get().canvas;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().canvas;
     auto ensured = UISystem::ensureViewport(key, 320, 240);
     if (!ensured.ok()) return nullptr;
     return std::move(ensured).takeValue().get().canvas;
@@ -1752,10 +1739,10 @@ uint64_t UI::dbCreateInstance() {
 
 eve::Result<void> UI::dbUnregister(uint64_t id) {
     if (!databasePanel_)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "database panel is not open", {}, {}, "ui"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "database panel is not open", {}, {}, "ui"));
     const ObjectHandle handle = ObjectHandle::fromPacked(id);
-    auto result = databasePanel_->unregister(handle);
+    auto               result = databasePanel_->unregister(handle);
     if (!result.ok()) return eve::Result<void>::failure(result.status());
     return eve::Result<void>::success(result.status());
 }
@@ -2007,12 +1994,11 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("dbRegister", &UI::dbRegister);
     cls.addFunc("dbCreateInstance", &UI::dbCreateInstance);
     const HSQUIRRELVM vm = cls.getHandle();
-    cls.addFunc("dbUnregister", [vm](UI* value, uint64_t id) {
+    cls.addFunc("dbUnregister", [vm](UI *value, uint64_t id) {
         if (!value)
             return eve::script::projectResult(
-                vm, eve::Result<void>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument,
-                        "UI instance must not be null", {}, {}, "ui")));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "UI instance must not be null", {}, {}, "ui")));
         return eve::script::projectResult(vm, value->dbUnregister(id));
     });
 

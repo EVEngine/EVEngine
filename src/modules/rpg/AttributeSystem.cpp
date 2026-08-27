@@ -8,23 +8,19 @@ namespace eve::rpg {
 namespace {
 
 eve::Diagnostic invalidArgument(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
-                                  std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path));
 }
 
 eve::Result<ModifierId> actorRequired(RPGActor*) {
-    return eve::Result<ModifierId>::failure(
-        invalidArgument("attribute operation requires an actor", "actor"));
+    return eve::Result<ModifierId>::failure(invalidArgument("attribute operation requires an actor", "actor"));
 }
 
 eve::Result<void> actorRequiredVoid(RPGActor*) {
-    return eve::Result<void>::failure(
-        invalidArgument("attribute operation requires an actor", "actor"));
+    return eve::Result<void>::failure(invalidArgument("attribute operation requires an actor", "actor"));
 }
 
 eve::Result<int> actorRequiredCount(RPGActor*) {
-    return eve::Result<int>::failure(
-        invalidArgument("attribute operation requires an actor", "actor"));
+    return eve::Result<int>::failure(invalidArgument("attribute operation requires an actor", "actor"));
 }
 
 }  // namespace
@@ -55,24 +51,23 @@ eve::Result<ModifierId> AttributeSystem::addModifier(RPGActor* actor, AttributeM
     return actor->attributes()->values.addModifier(std::move(modifier));
 }
 
-std::string AttributeSystem::addModifier(RPGActor* actor, const std::string& attribute,
-                                         const std::string& source, const std::string& operation,
-                                         double value, int priority) {
+std::string AttributeSystem::addModifier(RPGActor* actor, const std::string& attribute, const std::string& source,
+                                         const std::string& operation, double value, int priority) {
     if (!actor || attribute.empty()) return {};
 
-    auto parsed = ::eve::attributes::parseAttributeOperation(operation, value);
+    auto              parsed = ::eve::attributes::parseAttributeOperation(operation, value);
     AttributeModifier modifier;
     modifier.attribute = attribute;
-    modifier.source = source;
-    modifier.priority = priority;
+    modifier.source    = source;
+    modifier.priority  = priority;
     if (parsed.ok()) {
         modifier.operation = parsed.value().operation;
-        modifier.value = parsed.value().value;
+        modifier.value     = parsed.value().value;
     } else if (customOps().has(operation)) {
         parsed.ignore("RPG custom operation compatibility fallback");
         modifier.operation = AttributeOperation::Custom;
-        modifier.policyId = operation;
-        modifier.value = value;
+        modifier.policyId  = operation;
+        modifier.value     = value;
     } else {
         parsed.ignore("unknown RPG attribute operation");
         return {};
@@ -88,22 +83,20 @@ eve::Result<void> AttributeSystem::removeModifier(RPGActor* actor, const Modifie
     return actor->attributes()->values.removeModifier(modifierId);
 }
 
-bool AttributeSystem::removeModifier(RPGActor* actor, const std::string& attribute,
-                                     const std::string& modifierId) {
+bool AttributeSystem::removeModifier(RPGActor* actor, const std::string& attribute, const std::string& modifierId) {
     if (!actor) return false;
     auto result = actor->attributes()->values.removeModifier(attribute, modifierId);
     return result.ok();
 }
 
-eve::Result<int> AttributeSystem::removeModifiersBySource(
-    RPGActor* actor, const std::string& attribute, const std::string& source) {
+eve::Result<int> AttributeSystem::removeModifiersBySource(RPGActor* actor, const std::string& attribute,
+                                                          const std::string& source) {
     if (!actor) return actorRequiredCount(actor);
     return actor->attributes()->values.removeBySource(source, attribute);
 }
 
 int AttributeSystem::removeAllModifiersBySource(RPGActor* actor, const std::string& source) {
-    auto result = actor ? actor->attributes()->values.removeBySource(source)
-                        : actorRequiredCount(actor);
+    auto result = actor ? actor->attributes()->values.removeBySource(source) : actorRequiredCount(actor);
     return result.ok() ? result.value() : 0;
 }
 

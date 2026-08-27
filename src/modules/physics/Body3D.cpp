@@ -687,8 +687,7 @@ Shape3D *Body3D::newBoxShape(float width, float height, float depth, float densi
     b3ShapeDef def = makeShapeDef(density, friction, restitution);
     b3ShapeId  id  = b3CreateHullShape(bodyId_, &def, &box.base);
 
-    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(),
-                              Shape3D::Kind::Box, hx, hy, hz);
+    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::Box, hx, hy, hz);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -705,8 +704,8 @@ Shape3D *Body3D::newSphereShape(float radius, float density, float friction, flo
     b3ShapeDef def = makeShapeDef(density, friction, restitution);
     b3ShapeId  id  = b3CreateSphereShape(bodyId_, &def, &sphere);
 
-    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(),
-                              Shape3D::Kind::Sphere, radius, 0.f, 0.f);
+    auto *shape =
+        new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::Sphere, radius, 0.f, 0.f);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -727,8 +726,8 @@ Shape3D *Body3D::newCapsuleShape(float height, float radius, float density, floa
     b3ShapeDef def = makeShapeDef(density, friction, restitution);
     b3ShapeId  id  = b3CreateCapsuleShape(bodyId_, &def, &capsule);
 
-    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(),
-                              Shape3D::Kind::Capsule, half, radius, 0.f);
+    auto *shape =
+        new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::Capsule, half, radius, 0.f);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -743,9 +742,8 @@ Shape3D *Body3D::newConvexHullShape(const std::vector<float> &vertices, int maxV
     b3ShapeId id = b3CreateHullShape(bodyId_, &def, hull);
     b3DestroyHull(hull);
 
-    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(),
-                              Shape3D::Kind::ConvexHull, 0.f, 0.f, 0.f,
-                              vertices, maxVertices);
+    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::ConvexHull, 0.f, 0.f,
+                              0.f, vertices, maxVertices);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -768,10 +766,9 @@ Shape3D *Body3D::newTriangleMeshShape(const std::vector<float> &vertices,
         b3DestroyMesh(mesh);
         throw eve::Exception("Body3D.newTriangleMeshShape: Box3D rejected the mesh shape");
     }
-    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(),
-                              Shape3D::Kind::TriangleMesh, 0.f, 0.f, 0.f,
-                              {}, 64, vertices, indices, mesh, weldVertices, weldTolerance,
-                              identifyEdges, useMedianSplit);
+    auto *shape =
+        new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::TriangleMesh, 0.f, 0.f, 0.f, {},
+                    64, vertices, indices, mesh, weldVertices, weldTolerance, identifyEdges, useMedianSplit);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -794,11 +791,9 @@ Shape3D *Body3D::newHeightFieldShape(int countX, int countZ, float cellSizeX,
         b3DestroyHeightField(heightData);
         throw eve::Exception("Body3D.newHeightFieldShape: Box3D rejected the height field");
     }
-    auto *shape = new Shape3D(
-        world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::HeightField,
-        0.f, 0.f, 0.f, {}, 64, {}, {}, nullptr,
-        true, 0.001f, true, false, heights, countX, countZ, cellSizeX, cellSizeZ, globalMin,
-        globalMax, clockwiseWinding, heightData);
+    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::HeightField, 0.f, 0.f,
+                              0.f, {}, 64, {}, {}, nullptr, true, 0.001f, true, false, heights, countX, countZ,
+                              cellSizeX, cellSizeZ, globalMin, globalMax, clockwiseWinding, heightData);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;

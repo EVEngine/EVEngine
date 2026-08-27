@@ -47,10 +47,10 @@ public:
      * the ECS component for staging/copy operations.
      */
     struct Statuses {
-        ::eve::effects::EffectContainer container;
+        ::eve::effects::EffectContainer                         container;
         std::unordered_map<std::string, StatusExecutorMetadata> metadata;
-        std::unordered_map<std::string, int> legacyIdByEffect;
-        std::unordered_map<int, std::string> effectByLegacyId;
+        std::unordered_map<std::string, int>                    legacyIdByEffect;
+        std::unordered_map<int, std::string>                    effectByLegacyId;
         int nextInstanceId = 1;
     };
 
@@ -70,7 +70,8 @@ public:
      * @ownership The ECS world owns the actor; callers must release it through ECS and never delete it.
      * @lifetime Valid until actor/world destruction; retain the generation-qualified EntityHandle across frames.
      * @thread Call on the RPG ECS thread.
-     * @reentrancy The factory invokes no user callbacks; do not re-enter structural ECS mutation while using the result.
+     * @reentrancy The factory invokes no user callbacks; do not re-enter structural ECS mutation while using the
+     * result.
      */
     static RPGActor *createActor();
 
@@ -89,8 +90,8 @@ public:
     /** @brief Canonical modifier insertion backed by AttributeSet. */
     [[nodiscard]] eve::Result<ModifierId> addAttributeModifier(AttributeModifier modifier);
     /** @brief Legacy string modifier insertion facade. */
-    std::string addAttributeModifier(const std::string &attribute, const std::string &source,
-                                     const std::string &op, double value, int priority = 0);
+    std::string addAttributeModifier(const std::string &attribute, const std::string &source, const std::string &op,
+                                     double value, int priority = 0);
     /** @brief Canonical modifier removal backed by AttributeSet. */
     [[nodiscard]] eve::Result<void> removeAttributeModifier(const ModifierId &modifierId);
     bool removeAttributeModifier(const std::string &attribute, const std::string &modifierId);

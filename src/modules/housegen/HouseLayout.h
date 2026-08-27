@@ -44,9 +44,9 @@ public:
      * @remarks Callers must resolve handles before use and must not retain resolved pointers
      *          across world mutation. Failure leaves no partially-created entities.
      */
-    [[nodiscard]] eve::Result<std::vector<ecs::EntityHandle>> instantiate(
-        graphics::Graphics &gfx, model3d::Model3D &models,
-        const HouseComponentLibrary &library) const;
+    [[nodiscard]] eve::Result<std::vector<ecs::EntityHandle>> instantiate(graphics::Graphics          &gfx,
+                                                                          model3d::Model3D            &models,
+                                                                          const HouseComponentLibrary &library) const;
 };
 
 }  // namespace housegen

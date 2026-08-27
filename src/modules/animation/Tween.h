@@ -82,7 +82,7 @@ public:
     float getEasedProgress() const;
 
     /** @brief Advance by one scheduler-owned deterministic step. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
     /** @brief Whether this tween has consumed a scheduler step. */
     [[nodiscard]] bool hasCurrentTick() const noexcept { return hasLastTick_; }
     /** @brief Last scheduler tick consumed by this tween. */
@@ -139,7 +139,7 @@ private:
     State                                   state_    = State::Idle;
     std::unordered_map<std::string, Track>  tracks_;
     std::vector<std::string>                order_;
-    eve::SimulationTick                     lastTick_ = eve::SimulationTick::zero();
+    eve::SimulationTick                     lastTick_    = eve::SimulationTick::zero();
     bool                                    hasLastTick_ = false;
 
     bool updateUnchecked(float dt);

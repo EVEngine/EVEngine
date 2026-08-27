@@ -1,8 +1,8 @@
-#include "common/Capability.h"
 #include "common/CameraObstruction.h"
+#include "common/Capability.h"
 #include "common/PhysicsQuery.h"
-#include "physics/Physics.h"
 #include "physics/ArtifactProvider.h"
+#include "physics/Physics.h"
 #include "physics/TargetingLineOfSightAdapter.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
@@ -75,11 +75,9 @@ private:
 class CameraObstructionQueryImpl final : public eve::ICameraObstructionQuery {
 public:
     void add(World3D* world, std::weak_ptr<const void> lifetime) {
-        std::erase_if(worlds_,
-                      [](const RegisteredWorld& entry) { return entry.lifetime.expired(); });
-        const auto found = std::find_if(
-            worlds_.begin(), worlds_.end(),
-            [world](const RegisteredWorld& entry) { return entry.world == world; });
+        std::erase_if(worlds_, [](const RegisteredWorld& entry) { return entry.lifetime.expired(); });
+        const auto found = std::find_if(worlds_.begin(), worlds_.end(),
+                                        [world](const RegisteredWorld& entry) { return entry.world == world; });
         if (world && found == worlds_.end()) worlds_.push_back({world, std::move(lifetime)});
     }
 
@@ -89,8 +87,8 @@ public:
         if (out) *out = eve::CameraObstructionHit{};
         if (!out) return false;
         for (const RegisteredWorld& entry : worlds_) {
-            auto lifetime = entry.lifetime.lock();
-            World3D* world = entry.world;
+            auto     lifetime = entry.lifetime.lock();
+            World3D* world    = entry.world;
             if (!lifetime || !world || !world->isValid()) continue;
             CameraSphereHit3D hit;
             if (!world->sphereCast(fromX, fromY, fromZ, toX, toY, toZ, radius, maskBits,
@@ -113,7 +111,7 @@ public:
 
 private:
     struct RegisteredWorld {
-        World3D* world = nullptr;
+        World3D*                  world = nullptr;
         std::weak_ptr<const void> lifetime;
     };
 

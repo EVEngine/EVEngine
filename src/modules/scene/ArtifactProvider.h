@@ -22,15 +22,15 @@ using SceneArtifactHandle = eve::RuntimeHandle<SceneArtifactHandleTag>;
 
 /** @brief Backend-neutral node observable emitted for one artifact part. */
 struct SceneArtifactNode {
-    std::string role;
+    std::string           role;
     eve::artifact::Bounds bounds;
 };
 
 /** @brief Queryable scene registry record for one published artifact. */
 struct SceneArtifactRecord {
-    eve::PersistentId id;
-    std::string buildKey;
-    SceneArtifactHandle handle;
+    eve::PersistentId              id;
+    std::string                    buildKey;
+    SceneArtifactHandle            handle;
     std::vector<SceneArtifactNode> nodes;
 };
 
@@ -73,10 +73,10 @@ public:
 
 private:
     friend class SceneArtifactStage;
-    void commit(SceneArtifactRecord record) noexcept;
+    void                             commit(SceneArtifactRecord record) noexcept;
     std::vector<SceneArtifactRecord> records_;
-    std::uint32_t nextIndex_ = 0;
-    bool failPrepare_ = false;
+    std::uint32_t                    nextIndex_   = 0;
+    bool                             failPrepare_ = false;
 };
 
 /** @brief Return the process-owned scene artifact provider singleton. */

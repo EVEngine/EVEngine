@@ -20,8 +20,10 @@ void Component::rebuild(bool forceFull) {
     auto host = UIHost::resolve(host_);
     if (!host) return;
     WidgetDesc tree = build();
-    if (forceFull) host->get().setTree(std::move(tree));
-    else host->get().setTreeReconcile(std::move(tree));
+    if (forceFull)
+        host->get().setTree(std::move(tree));
+    else
+        host->get().setTreeReconcile(std::move(tree));
     dirty_ = false;
 }
 

@@ -54,8 +54,7 @@ public:
 
     /** @brief Builds topology and pose state from owning caller data. */
     [[nodiscard("check surface constraint construction")]]
-    virtual eve::Result<void> build(const std::vector<glm::vec3>& positions,
-                                    const std::vector<std::uint32_t>& indices,
+    virtual eve::Result<void> build(const std::vector<glm::vec3>& positions, const std::vector<std::uint32_t>& indices,
                                     const std::vector<glm::vec2>& uvs = {}) = 0;
 
     /** @brief Applies a rigid pose while preserving the previous pose. */
@@ -64,26 +63,22 @@ public:
 
     /** @brief Applies a deformed pose with the existing topology. */
     [[nodiscard("check surface constraint pose update")]]
-    virtual eve::Result<void> setDeformedPositions(
-        const std::vector<glm::vec3>& worldPositions) = 0;
+    virtual eve::Result<void> setDeformedPositions(const std::vector<glm::vec3>& worldPositions) = 0;
 
     /** @brief Returns whether topology and poses are currently valid. */
     [[nodiscard]] virtual bool isValid() const noexcept = 0;
 
     /** @brief Evaluates a material-space location in the current pose. */
     [[nodiscard("check surface location evaluation")]]
-    virtual eve::Result<SurfaceSample> evaluate(const SurfaceLocation& location,
-                                                eve::Duration poseDelta) const = 0;
+    virtual eve::Result<SurfaceSample> evaluate(const SurfaceLocation& location, eve::Duration poseDelta) const = 0;
 
     /** @brief Projects a world point to the nearest material-space location. */
     [[nodiscard("check surface projection")]]
-    virtual eve::Result<SurfaceLocation> project(const glm::vec3& worldPosition,
-                                                  float maxDistance) const = 0;
+    virtual eve::Result<SurfaceLocation> project(const glm::vec3& worldPosition, float maxDistance) const = 0;
 
     /** @brief Walks a material-space location over triangle adjacency. */
     [[nodiscard("check surface traversal")]]
-    virtual eve::Result<SurfaceWalkResult> walk(const SurfaceLocation& start,
-                                                const glm::vec3& displacement,
+    virtual eve::Result<SurfaceWalkResult> walk(const SurfaceLocation& start, const glm::vec3& displacement,
                                                 int maxCrossings = 16) const = 0;
 };
 
@@ -98,8 +93,7 @@ public:
      * @return Applied, or a structured input/device failure.
      */
     [[nodiscard("check screen-space reconstruction")]]
-    virtual eve::Result<void> reconstruct(std::span<const glm::vec3> positions,
-                                          float particleRadius) = 0;
+    virtual eve::Result<void> reconstruct(std::span<const glm::vec3> positions, float particleRadius) = 0;
 
     /** @brief Output width in pixels. */
     [[nodiscard]] virtual int width() const noexcept = 0;
@@ -123,12 +117,12 @@ public:
     /** @param solver Borrowed CPU solver; it must outlive this adapter. */
     explicit FluidSimulationAdapter(FluidSimulation& solver) noexcept : solver_(&solver) {}
 
-    [[nodiscard]] eve::Result<void> step(const eve::SimulationStep& step) override;
-    [[nodiscard]] int particleCount() const noexcept override;
+    [[nodiscard]] eve::Result<void>              step(const eve::SimulationStep& step) override;
+    [[nodiscard]] int                            particleCount() const noexcept override;
     [[nodiscard]] std::span<const FluidParticle> particles() const noexcept override;
 
 private:
-    FluidSimulation* solver_ = nullptr;
+    FluidSimulation*    solver_   = nullptr;
     eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
 };
 
@@ -136,22 +130,19 @@ private:
 class FluidSurfaceConstraintAdapter final : public ISurfaceConstraint {
 public:
     /** @param binding Borrowed surface binding; it must outlive this adapter. */
-    explicit FluidSurfaceConstraintAdapter(FluidSurfaceBinding& binding) noexcept
-        : binding_(&binding) {}
+    explicit FluidSurfaceConstraintAdapter(FluidSurfaceBinding& binding) noexcept : binding_(&binding) {}
 
-    [[nodiscard]] eve::Result<void> build(const std::vector<glm::vec3>& positions,
+    [[nodiscard]] eve::Result<void> build(const std::vector<glm::vec3>&     positions,
                                           const std::vector<std::uint32_t>& indices,
-                                          const std::vector<glm::vec2>& uvs = {}) override;
+                                          const std::vector<glm::vec2>&     uvs = {}) override;
     [[nodiscard]] eve::Result<void> setTransform(const glm::mat4& transform) override;
-    [[nodiscard]] eve::Result<void> setDeformedPositions(
-        const std::vector<glm::vec3>& worldPositions) override;
-    [[nodiscard]] bool isValid() const noexcept override;
-    [[nodiscard]] eve::Result<SurfaceSample> evaluate(const SurfaceLocation& location,
-                                                      eve::Duration poseDelta) const override;
-    [[nodiscard]] eve::Result<SurfaceLocation> project(const glm::vec3& worldPosition,
-                                                        float maxDistance) const override;
-    [[nodiscard]] eve::Result<SurfaceWalkResult> walk(const SurfaceLocation& start,
-                                                      const glm::vec3& displacement,
+    [[nodiscard]] eve::Result<void> setDeformedPositions(const std::vector<glm::vec3>& worldPositions) override;
+    [[nodiscard]] bool              isValid() const noexcept override;
+    [[nodiscard]] eve::Result<SurfaceSample>     evaluate(const SurfaceLocation& location,
+                                                          eve::Duration          poseDelta) const override;
+    [[nodiscard]] eve::Result<SurfaceLocation>   project(const glm::vec3& worldPosition,
+                                                         float            maxDistance) const override;
+    [[nodiscard]] eve::Result<SurfaceWalkResult> walk(const SurfaceLocation& start, const glm::vec3& displacement,
                                                       int maxCrossings = 16) const override;
 
 private:
@@ -164,8 +155,7 @@ private:
  * The renderer remains a presentation implementation; callers depend only on
  * this interface and may request the GPU path without making it mandatory.
  */
-class ScreenSpaceSurfaceReconstructionAdapter final
-    : public IScreenSpaceSurfaceReconstruction {
+class ScreenSpaceSurfaceReconstructionAdapter final : public IScreenSpaceSurfaceReconstruction {
 public:
     /**
      * @param params Camera and output configuration.
@@ -175,19 +165,17 @@ public:
     ScreenSpaceSurfaceReconstructionAdapter(const FluidSurfaceParams& params, bool preferGpu);
     ~ScreenSpaceSurfaceReconstructionAdapter() override;
 
-    ScreenSpaceSurfaceReconstructionAdapter(const ScreenSpaceSurfaceReconstructionAdapter&) = delete;
-    ScreenSpaceSurfaceReconstructionAdapter& operator=(
-        const ScreenSpaceSurfaceReconstructionAdapter&) = delete;
+    ScreenSpaceSurfaceReconstructionAdapter(const ScreenSpaceSurfaceReconstructionAdapter&)            = delete;
+    ScreenSpaceSurfaceReconstructionAdapter& operator=(const ScreenSpaceSurfaceReconstructionAdapter&) = delete;
 
-    [[nodiscard]] eve::Result<void> reconstruct(std::span<const glm::vec3> positions,
-                                                float particleRadius) override;
-    [[nodiscard]] int width() const noexcept override;
-    [[nodiscard]] int height() const noexcept override;
-    [[nodiscard]] std::span<const float> depth() const noexcept override;
-    [[nodiscard]] std::span<const glm::vec3> normals() const noexcept override;
-    [[nodiscard]] std::span<const float> thickness() const noexcept override;
+    [[nodiscard]] eve::Result<void> reconstruct(std::span<const glm::vec3> positions, float particleRadius) override;
+    [[nodiscard]] int               width() const noexcept override;
+    [[nodiscard]] int               height() const noexcept override;
+    [[nodiscard]] std::span<const float>        depth() const noexcept override;
+    [[nodiscard]] std::span<const glm::vec3>    normals() const noexcept override;
+    [[nodiscard]] std::span<const float>        thickness() const noexcept override;
     [[nodiscard]] std::span<const std::uint8_t> color() const noexcept override;
-    [[nodiscard]] bool usingGpu() const noexcept override;
+    [[nodiscard]] bool                          usingGpu() const noexcept override;
 
 private:
     std::unique_ptr<FluidSurfaceRenderer> renderer_;

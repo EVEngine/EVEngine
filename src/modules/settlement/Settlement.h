@@ -13,8 +13,8 @@
 
 #include "common/Result.h"
 #include "common/SubjectRef.h"
-#include "common/Value.h"
 #include "common/Time.h"
+#include "common/Value.h"
 #include "game_event/GameEvent.h"
 
 #include <cstdint>
@@ -58,14 +58,14 @@ enum class StageKind : std::uint8_t {
  * metadata and are copied to the result event.
  */
 struct SettlementRequest {
-    SubjectRef source;
-    SubjectRef target;
-    std::string kind;
-    double magnitude = 0.0;
-    std::vector<std::string> tags;
-    Value context = Value(Value::Object{});
-    SimulationTick tick = SimulationTick::zero();
-    game_event::CausationRef causation;
+    SubjectRef                source;
+    SubjectRef                target;
+    std::string               kind;
+    double                    magnitude = 0.0;
+    std::vector<std::string>  tags;
+    Value                     context = Value(Value::Object{});
+    SimulationTick            tick    = SimulationTick::zero();
+    game_event::CausationRef  causation;
     game_event::CorrelationId correlation;
 };
 
@@ -77,12 +77,12 @@ struct SettlementRequest {
  * understand a policy-specific pointer or callback.
  */
 struct SettlementStageResult {
-    StageKind kind = StageKind::Validate;
-    std::string name;
-    eve::StatusCode status = eve::StatusCode::Ok;
-    double before = 0.0;
-    double after = 0.0;
-    Value details = Value(Value::Object{});
+    StageKind       kind = StageKind::Validate;
+    std::string     name;
+    eve::StatusCode status  = eve::StatusCode::Ok;
+    double          before  = 0.0;
+    double          after   = 0.0;
+    Value           details = Value(Value::Object{});
 };
 
 /**
@@ -95,14 +95,14 @@ struct SettlementStageResult {
  * effective amount.
  */
 struct SettlementResult {
-    double requested = 0.0;
-    double applied = 0.0;
-    double absorbed = 0.0;
-    double resisted = 0.0;
-    double clamped = 0.0;
-    bool critical = false;
-    SimulationTick tick = SimulationTick::zero();
-    std::vector<SettlementStageResult> stages;
+    double                               requested = 0.0;
+    double                               applied   = 0.0;
+    double                               absorbed  = 0.0;
+    double                               resisted  = 0.0;
+    double                               clamped   = 0.0;
+    bool                                 critical  = false;
+    SimulationTick                       tick      = SimulationTick::zero();
+    std::vector<SettlementStageResult>   stages;
     std::optional<game_event::GameEvent> event;
 
     /** @brief Return whether a named stage explanation exists. */
@@ -130,7 +130,7 @@ struct SettlementResult {
  */
 class PreparedApply {
 public:
-    using CommitFunction = std::function<eve::Result<void>()>;
+    using CommitFunction   = std::function<eve::Result<void>()>;
     using RollbackFunction = std::function<void()>;
 
     /** @brief Construct an empty invalid mutation. */
@@ -139,7 +139,7 @@ public:
     /** @brief Construct a mutation from commit and rollback callbacks. */
     PreparedApply(CommitFunction commit, RollbackFunction rollback);
 
-    PreparedApply(const PreparedApply&) = delete;
+    PreparedApply(const PreparedApply&)            = delete;
     PreparedApply& operator=(const PreparedApply&) = delete;
     PreparedApply(PreparedApply&& other) noexcept;
     PreparedApply& operator=(PreparedApply&& other) noexcept;
@@ -163,10 +163,10 @@ public:
     [[nodiscard]] bool isCommitted() const noexcept { return committed_; }
 
 private:
-    CommitFunction commit_;
+    CommitFunction   commit_;
     RollbackFunction rollback_;
-    bool committed_ = false;
-    bool rolledBack_ = false;
+    bool             committed_  = false;
+    bool             rolledBack_ = false;
 };
 
 class ISettlementPolicy;
@@ -217,8 +217,7 @@ public:
     /** @brief Mark the result as critical; late writes are rejected. */
     void setCritical(bool value) noexcept {
         if (applyPrepared_) {
-            recordMutationViolation("settlement critical flag cannot change after apply preparation",
-                                    "critical");
+            recordMutationViolation("settlement critical flag cannot change after apply preparation", "critical");
             return;
         }
         critical_ = value;
@@ -292,8 +291,7 @@ public:
 private:
     friend class SettlementPipeline;
 
-    SettlementContext(const SettlementRequest& request, SettlementResult& result,
-                      ISettlementPolicy& policy);
+    SettlementContext(const SettlementRequest& request, SettlementResult& result, ISettlementPolicy& policy);
     void beginStage() noexcept {
         stageDetails_.clear();
         mutationViolation_.reset();
@@ -302,21 +300,21 @@ private:
     void clearPendingEvent() noexcept { pendingEvent_.reset(); }
     void recordMutationViolation(std::string message, std::string path) noexcept;
 
-    const SettlementRequest& request_;
-    SettlementResult& result_;
-    ISettlementPolicy& policy_;
-    double magnitude_ = 0.0;
-    double absorbed_ = 0.0;
-    double resisted_ = 0.0;
-    double clamped_ = 0.0;
-    bool critical_ = false;
-    std::optional<double> clampMax_;
-    Value::Object stageDetails_;
-    std::optional<PreparedApply> pendingApply_;
+    const SettlementRequest&             request_;
+    SettlementResult&                    result_;
+    ISettlementPolicy&                   policy_;
+    double                               magnitude_ = 0.0;
+    double                               absorbed_  = 0.0;
+    double                               resisted_  = 0.0;
+    double                               clamped_   = 0.0;
+    bool                                 critical_  = false;
+    std::optional<double>                clampMax_;
+    Value::Object                        stageDetails_;
+    std::optional<PreparedApply>         pendingApply_;
     std::optional<game_event::GameEvent> pendingEvent_;
-    std::optional<eve::Diagnostic> mutationViolation_;
-    bool applyPrepared_ = false;
-    bool eventPrepared_ = false;
+    std::optional<eve::Diagnostic>       mutationViolation_;
+    bool                                 applyPrepared_ = false;
+    bool                                 eventPrepared_ = false;
 };
 
 /**
@@ -347,12 +345,11 @@ public:
     [[nodiscard]] virtual eve::Result<void> clamp(SettlementContext& context) = 0;
 
     /** @brief Build an atomic candidate mutation without publishing it. */
-    [[nodiscard]] virtual eve::Result<PreparedApply> prepareApply(
-        const SettlementContext& context) = 0;
+    [[nodiscard]] virtual eve::Result<PreparedApply> prepareApply(const SettlementContext& context) = 0;
 
     /** @brief Validate or prepare trigger semantics without mutating state. */
-    [[nodiscard]] virtual eve::Result<void> prepareTrigger(
-        const SettlementContext& context, const SettlementResult& result);
+    [[nodiscard]] virtual eve::Result<void> prepareTrigger(const SettlementContext& context,
+                                                           const SettlementResult&  result);
 };
 
 /**
@@ -373,8 +370,7 @@ public:
     SettlementPipeline();
 
     /** @brief Add one named custom stage; duplicate names are rejected. */
-    [[nodiscard]] eve::Result<void> addStage(StageKind kind, std::string name, int priority,
-                                             StageFunction function);
+    [[nodiscard]] eve::Result<void> addStage(StageKind kind, std::string name, int priority, StageFunction function);
 
     /**
      * @brief Execute one settlement transaction against a domain policy.
@@ -385,22 +381,21 @@ public:
      * @return A complete result, or a structured failure. Any failure rolls
      *         back the prepared mutation and leaves policy state unchanged.
      */
-    [[nodiscard]] eve::Result<SettlementResult> settle(
-        const SettlementRequest& request, ISettlementPolicy& policy,
-        game_event::GameEventLog* events = nullptr) const;
+    [[nodiscard]] eve::Result<SettlementResult> settle(const SettlementRequest& request, ISettlementPolicy& policy,
+                                                       game_event::GameEventLog* events = nullptr) const;
 
 private:
     struct StageEntry {
-        StageKind kind = StageKind::Validate;
-        std::string name;
-        int priority = 0;
+        StageKind     kind = StageKind::Validate;
+        std::string   name;
+        int           priority     = 0;
         std::uint64_t registration = 0;
-        bool terminal = false;
+        bool          terminal     = false;
         StageFunction function;
     };
 
     std::vector<StageEntry> stages_;
-    std::uint64_t nextRegistration_ = 1;
+    std::uint64_t           nextRegistration_ = 1;
 };
 
 }  // namespace eve::settlement

@@ -28,10 +28,10 @@ enum class ResourceRefKind : std::uint8_t {
 /** @brief Returns the stable resource-reference alternative spelling. */
 [[nodiscard]] constexpr std::string_view resourceRefKindName(ResourceRefKind kind) noexcept {
     switch (kind) {
-    case ResourceRefKind::Asset: return "asset";
-    case ResourceRefKind::Uri: return "uri";
-    case ResourceRefKind::Definition: return "definition";
-    case ResourceRefKind::Object: return "object";
+        case ResourceRefKind::Asset: return "asset";
+        case ResourceRefKind::Uri: return "uri";
+        case ResourceRefKind::Definition: return "definition";
+        case ResourceRefKind::Object: return "object";
     }
     return "unknown";
 }
@@ -155,9 +155,7 @@ public:
     [[nodiscard]] static ResourceRef fromUri(ResourceUri value) { return ResourceRef(std::move(value)); }
 
     /** @brief Wrap a definition reference in the generic reference union. */
-    [[nodiscard]] static ResourceRef fromDefinition(DefinitionRef value) {
-        return ResourceRef(std::move(value));
-    }
+    [[nodiscard]] static ResourceRef fromDefinition(DefinitionRef value) { return ResourceRef(std::move(value)); }
 
     /** @brief Wrap an object reference in the generic reference union. */
     [[nodiscard]] static ResourceRef fromObject(ObjectRef value) { return ResourceRef(std::move(value)); }

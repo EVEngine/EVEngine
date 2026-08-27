@@ -111,8 +111,8 @@ private:
     AnimPose           pose_;
     std::vector<Layer> layers_;
     std::vector<Event> events_;
-    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
-    bool hasLastTick_ = false;
+    eve::SimulationTick lastTick_    = eve::SimulationTick::zero();
+    bool                hasLastTick_ = false;
 
     void compose();
 };

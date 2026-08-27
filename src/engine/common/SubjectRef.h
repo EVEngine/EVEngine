@@ -29,9 +29,7 @@ public:
     SubjectRef() = default;
 
     /** @brief Wrap a persistent identity without changing its bytes. */
-    [[nodiscard]] static SubjectRef fromPersistentId(PersistentId id) noexcept {
-        return SubjectRef(id);
-    }
+    [[nodiscard]] static SubjectRef fromPersistentId(PersistentId id) noexcept { return SubjectRef(id); }
 
     /** @brief Return the invalid nil reference. */
     [[nodiscard]] static SubjectRef nil() noexcept { return {}; }

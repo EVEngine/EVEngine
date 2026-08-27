@@ -11,15 +11,15 @@
  * candidate state before exposing a staged, non-throwing commit.
  */
 
+#include "common/Generation.h"
 #include "common/Identity.h"
 #include "common/Result.h"
-#include "common/Generation.h"
 #include "common/Revision.h"
 
-#include <cstddef>
-#include <compare>
-#include <cstdint>
 #include <cmath>
+#include <compare>
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -53,7 +53,7 @@ public:
     [[nodiscard]] bool isValid() const noexcept { return !value_.empty(); }
     /** @brief Return the owned stable spelling. */
     [[nodiscard]] const std::string& value() const noexcept { return value_; }
-    friend bool operator==(const ContainerId&, const ContainerId&) noexcept = default;
+    friend bool                      operator==(const ContainerId&, const ContainerId&) noexcept = default;
 
 private:
     std::string value_;
@@ -74,7 +74,7 @@ public:
     [[nodiscard]] bool isValid() const noexcept { return !value_.empty(); }
     /** @brief Return the owned stable spelling. */
     [[nodiscard]] const std::string& value() const noexcept { return value_; }
-    friend bool operator==(const MembershipId&, const MembershipId&) noexcept = default;
+    friend bool                      operator==(const MembershipId&, const MembershipId&) noexcept = default;
 
 private:
     std::string value_;
@@ -84,19 +84,16 @@ private:
 class Capacity {
 public:
     /** @brief Construct a fixed capacity. */
-    [[nodiscard]] static constexpr Capacity fixed(std::size_t value) noexcept {
-        return Capacity(value, false);
-    }
+    [[nodiscard]] static constexpr Capacity fixed(std::size_t value) noexcept { return Capacity(value, false); }
     /** @brief Construct an unbounded capacity. */
     [[nodiscard]] static constexpr Capacity unlimited() noexcept { return Capacity(0, true); }
-    [[nodiscard]] constexpr bool isUnlimited() const noexcept { return unlimited_; }
-    [[nodiscard]] constexpr std::size_t value() const noexcept { return value_; }
+    [[nodiscard]] constexpr bool            isUnlimited() const noexcept { return unlimited_; }
+    [[nodiscard]] constexpr std::size_t     value() const noexcept { return value_; }
 
 private:
-    constexpr Capacity(std::size_t value, bool unlimited) noexcept
-        : value_(value), unlimited_(unlimited) {}
-    std::size_t value_ = 0;
-    bool unlimited_ = false;
+    constexpr Capacity(std::size_t value, bool unlimited) noexcept : value_(value), unlimited_(unlimited) {}
+    std::size_t value_     = 0;
+    bool        unlimited_ = false;
 };
 
 /** @brief Stable order semantics owned by a container adapter. */
@@ -114,10 +111,10 @@ public:
     constexpr SlotIndex() noexcept = default;
     explicit constexpr SlotIndex(std::int32_t value) noexcept : value_(value) {}
     [[nodiscard]] static constexpr SlotIndex invalid() noexcept { return SlotIndex(-1); }
-    [[nodiscard]] constexpr bool isValid() const noexcept { return value_ >= 0; }
-    [[nodiscard]] constexpr std::int32_t value() const noexcept { return value_; }
-    friend constexpr bool operator==(const SlotIndex&, const SlotIndex&) noexcept = default;
-    friend constexpr auto operator<=>(const SlotIndex&, const SlotIndex&) noexcept = default;
+    [[nodiscard]] constexpr bool             isValid() const noexcept { return value_ >= 0; }
+    [[nodiscard]] constexpr std::int32_t     value() const noexcept { return value_; }
+    friend constexpr bool                    operator==(const SlotIndex&, const SlotIndex&) noexcept  = default;
+    friend constexpr auto                    operator<=>(const SlotIndex&, const SlotIndex&) noexcept = default;
 
 private:
     std::int32_t value_ = -1;
@@ -149,39 +146,39 @@ struct ContainerObjectPayload {
 
 /** @brief Generic object facts used by filters and transfer diagnostics. */
 struct ContainerObject {
-    MembershipId id;
-    std::string type;
-    std::vector<std::string> tags;
-    std::uint32_t quantity = 1;
+    MembershipId                                  id;
+    std::string                                   type;
+    std::vector<std::string>                      tags;
+    std::uint32_t                                 quantity = 1;
     std::shared_ptr<const ContainerObjectPayload> payload;
 };
 
 /** @brief One object-to-slot relationship, including the observed generation. */
 struct Membership {
     MembershipId object;
-    SlotIndex slot;
-    Generation generation = Generation(1);
+    SlotIndex    slot;
+    Generation   generation = Generation(1);
 };
 
 /** @brief Complete adapter-owned state used to build a candidate replacement. */
 struct MembershipEntry {
-    Membership membership;
+    Membership      membership;
     ContainerObject object;
 };
 
 /** @brief Lossless snapshot of one container at one revision. */
 struct ContainerSnapshot {
-    ContainerId id;
-    Revision revision = Revision(0);
+    ContainerId                  id;
+    Revision                     revision = Revision(0);
     std::vector<MembershipEntry> entries;
 };
 
 /** @brief Static metadata and acceptance policy of a container. */
 struct ContainerDescriptor {
     ContainerId id;
-    Capacity capacity = Capacity::unlimited();
-    Ordering ordering = Ordering::Unordered;
-    Filter filter;
+    Capacity    capacity = Capacity::unlimited();
+    Ordering    ordering = Ordering::Unordered;
+    Filter      filter;
 };
 
 /** @brief Lifecycle outcome represented by every container-domain event. */
@@ -203,10 +200,10 @@ enum class ContainerEventKind : std::uint8_t {
  */
 [[nodiscard]] inline const char* containerEventTypeName(ContainerEventKind kind) noexcept {
     switch (kind) {
-    case ContainerEventKind::Enter: return "container.enter";
-    case ContainerEventKind::Exit: return "container.exit";
-    case ContainerEventKind::Accepted: return "container.accepted";
-    case ContainerEventKind::Rejected: return "container.rejected";
+        case ContainerEventKind::Enter: return "container.enter";
+        case ContainerEventKind::Exit: return "container.exit";
+        case ContainerEventKind::Accepted: return "container.accepted";
+        case ContainerEventKind::Rejected: return "container.rejected";
     }
     return "container.rejected";
 }
@@ -237,9 +234,8 @@ using GameEventSink = std::function<void(const game_event::GameEvent&)>;
  * @remarks This is identity derivation, not gameplay randomness. The serial is
  *          owned by the adapter and is not persisted as membership state.
  */
-[[nodiscard]] inline EventId deterministicContainerEventId(
-    const ContainerId& container, const MembershipId& object, ContainerEventKind kind,
-    std::uint64_t serial) noexcept {
+[[nodiscard]] inline EventId deterministicContainerEventId(const ContainerId& container, const MembershipId& object,
+                                                           ContainerEventKind kind, std::uint64_t serial) noexcept {
     auto mix = [](std::uint64_t value, std::string_view text) noexcept {
         for (const unsigned char byte : text) {
             value ^= byte;
@@ -247,19 +243,18 @@ using GameEventSink = std::function<void(const game_event::GameEvent&)>;
         }
         return value;
     };
-    std::uint64_t first = mix(14695981039346656037ull, container.value());
-    first = mix(first, object.value());
-    first = mix(first, std::string_view(containerEventTypeName(kind)));
+    std::uint64_t first  = mix(14695981039346656037ull, container.value());
+    first                = mix(first, object.value());
+    first                = mix(first, std::string_view(containerEventTypeName(kind)));
     std::uint64_t second = mix(1099511628211ull ^ serial, object.value());
-    second = mix(second, container.value());
+    second               = mix(second, container.value());
     second ^= serial + 0x9e3779b97f4a7c15ull;
 
     EventId::Bytes bytes{};
     for (std::size_t index = 0; index < sizeof(first); ++index)
         bytes[index] = static_cast<std::uint8_t>((first >> (index * 8u)) & 0xffu);
     for (std::size_t index = 0; index < sizeof(second); ++index)
-        bytes[sizeof(first) + index] =
-            static_cast<std::uint8_t>((second >> (index * 8u)) & 0xffu);
+        bytes[sizeof(first) + index] = static_cast<std::uint8_t>((second >> (index * 8u)) & 0xffu);
     // Mark the derived value as a conventional UUID variant/version while
     // retaining deterministic bytes.
     bytes[6] = static_cast<std::uint8_t>((bytes[6] & 0x0fu) | 0x50u);
@@ -309,19 +304,19 @@ public:
      *          adapter is borrowed and must outlive the returned state; the
      *          caller must externally serialize access to the adapter.
      */
-    [[nodiscard]] virtual Result<std::unique_ptr<PreparedState>> prepare(
-        const ContainerSnapshot& expected, const ContainerSnapshot& candidate) = 0;
+    [[nodiscard]] virtual Result<std::unique_ptr<PreparedState>> prepare(const ContainerSnapshot& expected,
+                                                                         const ContainerSnapshot& candidate) = 0;
 };
 
 /** @brief Strong event payload emitted only after a transfer is fully committed. */
 struct TransferEvent {
-    ContainerId source;
-    ContainerId destination;
+    ContainerId  source;
+    ContainerId  destination;
     MembershipId object;
-    SlotIndex sourceSlot;
-    SlotIndex destinationSlot;
-    Revision sourceRevision;
-    Revision destinationRevision;
+    SlotIndex    sourceSlot;
+    SlotIndex    destinationSlot;
+    Revision     sourceRevision;
+    Revision     destinationRevision;
 };
 
 /**
@@ -335,24 +330,24 @@ using TransferEventSink = std::function<void(const TransferEvent&)>;
 
 /** @brief Requested optimistic-concurrency transfer. All pointers are borrowed. */
 struct TransferRequest {
-    IContainer* source = nullptr;
-    IContainer* destination = nullptr;
-    MembershipId object;
+    IContainer*              source      = nullptr;
+    IContainer*              destination = nullptr;
+    MembershipId             object;
     std::optional<SlotIndex> sourceSlot;
     std::optional<SlotIndex> destinationSlot;
-    std::optional<Revision> expectedSourceRevision;
-    std::optional<Revision> expectedDestinationRevision;
+    std::optional<Revision>  expectedSourceRevision;
+    std::optional<Revision>  expectedDestinationRevision;
 };
 
 /** @brief Observable receipt for one committed or explicit no-op transfer. */
 struct TransferReceipt {
-    ContainerId source;
-    ContainerId destination;
+    ContainerId  source;
+    ContainerId  destination;
     MembershipId object;
-    SlotIndex sourceSlot;
-    SlotIndex destinationSlot;
-    Revision sourceRevision;
-    Revision destinationRevision;
+    SlotIndex    sourceSlot;
+    SlotIndex    destinationSlot;
+    Revision     sourceRevision;
+    Revision     destinationRevision;
 };
 
 /**
@@ -369,8 +364,8 @@ public:
      *          supported as one participant. A callback warning does not make
      *          an already committed transfer appear to have failed.
      */
-    [[nodiscard]] static Result<TransferReceipt> transfer(
-        const TransferRequest& request, TransferEventSink eventSink = {});
+    [[nodiscard]] static Result<TransferReceipt> transfer(const TransferRequest& request,
+                                                          TransferEventSink      eventSink = {});
 };
 
 // ---- Strong coordinate-space zone contract --------------------------------
@@ -398,28 +393,28 @@ struct Coordinate<World3DSpace> {
 template <class Space>
 struct Rectangle {
     Coordinate<Space> origin;
-    float width = 0.f;
-    float height = 0.f;
+    float             width  = 0.f;
+    float             height = 0.f;
 };
 
 template <class Space>
 struct Circle {
     Coordinate<Space> center;
-    float radius = 0.f;
+    float             radius = 0.f;
 };
 
 /** @brief Axis-aligned 3D box for World3DSpace zones. */
 struct Box3D {
     Coordinate<World3DSpace> origin;
-    float width = 0.f;
-    float height = 0.f;
-    float depth = 0.f;
+    float                    width  = 0.f;
+    float                    height = 0.f;
+    float                    depth  = 0.f;
 };
 
 /** @brief Spherical 3D shape for World3DSpace zones. */
 struct Sphere3D {
     Coordinate<World3DSpace> center;
-    float radius = 0.f;
+    float                    radius = 0.f;
 };
 
 template <class Space>
@@ -453,19 +448,18 @@ public:
      * @param accepted Side-effect-free condition evaluated before entry.
      * @return A valid zone or a structured validation failure.
      */
-    [[nodiscard]] static Result<Zone> create(
-        ContainerId id, ZoneShape<Space> shape,
-        Capacity capacity = Capacity::unlimited(), AcceptedCondition accepted = {}) {
+    [[nodiscard]] static Result<Zone> create(ContainerId id, ZoneShape<Space> shape,
+                                             Capacity          capacity = Capacity::unlimited(),
+                                             AcceptedCondition accepted = {}) {
         if (!id.isValid()) {
-            return Result<Zone>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "zone id must not be empty"));
+            return Result<Zone>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "zone id must not be empty"));
         }
         if (!validShape(shape)) {
-            return Result<Zone>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "zone shape must have positive dimensions"));
+            return Result<Zone>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "zone shape must have positive dimensions"));
         }
-        return Result<Zone>::success(
-            Zone(std::move(id), std::move(shape), capacity, std::move(accepted)));
+        return Result<Zone>::success(Zone(std::move(id), std::move(shape), capacity, std::move(accepted)));
     }
 
     /**
@@ -474,11 +468,9 @@ public:
      *          overload. The compatibility identity is local to this value and
      *          must not be used as a registry key.
      */
-    [[nodiscard]] static Result<Zone> create(
-        ZoneShape<Space> shape, Capacity capacity = Capacity::unlimited(),
-        AcceptedCondition accepted = {}) {
-        return create(ContainerId("zone:anonymous"), std::move(shape), capacity,
-                      std::move(accepted));
+    [[nodiscard]] static Result<Zone> create(ZoneShape<Space> shape, Capacity capacity = Capacity::unlimited(),
+                                             AcceptedCondition accepted = {}) {
+        return create(ContainerId("zone:anonymous"), std::move(shape), capacity, std::move(accepted));
     }
 
     /** @brief Return whether this factory-created zone contains valid geometry. */
@@ -497,10 +489,8 @@ public:
                 using Shape = std::decay_t<decltype(shape)>;
                 if constexpr (std::is_same_v<Space, World3DSpace>) {
                     if constexpr (std::is_same_v<Shape, Box3D>) {
-                        return point.x >= shape.origin.x && point.y >= shape.origin.y &&
-                               point.z >= shape.origin.z &&
-                               point.x <= shape.origin.x + shape.width &&
-                               point.y <= shape.origin.y + shape.height &&
+                        return point.x >= shape.origin.x && point.y >= shape.origin.y && point.z >= shape.origin.z &&
+                               point.x <= shape.origin.x + shape.width && point.y <= shape.origin.y + shape.height &&
                                point.z <= shape.origin.z + shape.depth;
                     } else {
                         const float dx = point.x - shape.center.x;
@@ -510,8 +500,7 @@ public:
                     }
                 } else if constexpr (std::is_same_v<Shape, Rectangle<Space>>) {
                     return point.x >= shape.origin.x && point.y >= shape.origin.y &&
-                           point.x <= shape.origin.x + shape.width &&
-                           point.y <= shape.origin.y + shape.height;
+                           point.x <= shape.origin.x + shape.width && point.y <= shape.origin.y + shape.height;
                 } else {
                     const float dx = point.x - shape.center.x;
                     const float dy = point.y - shape.center.y;
@@ -522,13 +511,9 @@ public:
     }
 
     /** @brief Test the zone's accepted-condition without mutating membership. */
-    [[nodiscard]] Result<void> accepts(const ContainerObject& object) const {
-        return accepted_.evaluate(object);
-    }
+    [[nodiscard]] Result<void> accepts(const ContainerObject& object) const { return accepted_.evaluate(object); }
     /** @brief Return the side-effect-free accepted condition. */
-    [[nodiscard]] const AcceptedCondition& acceptedCondition() const noexcept {
-        return accepted_;
-    }
+    [[nodiscard]] const AcceptedCondition& acceptedCondition() const noexcept { return accepted_; }
     /** @brief Return the maximum number of memberships accepted by this zone. */
     [[nodiscard]] Capacity capacity() const noexcept { return capacity_; }
     /** @brief Return the immutable shape in this zone's coordinate space. */
@@ -536,8 +521,11 @@ public:
 
 private:
     Zone(ContainerId id, ZoneShape<Space> shape, Capacity capacity, AcceptedCondition accepted)
-        : id_(std::move(id)), shape_(std::move(shape)), capacity_(capacity),
-          accepted_(std::move(accepted)), valid_(true) {}
+        : id_(std::move(id)),
+          shape_(std::move(shape)),
+          capacity_(capacity),
+          accepted_(std::move(accepted)),
+          valid_(true) {}
 
     [[nodiscard]] static bool validShape(const ZoneShape<Space>& shape) noexcept {
         return std::visit(
@@ -545,17 +533,15 @@ private:
                 using Shape = std::decay_t<decltype(value)>;
                 if constexpr (std::is_same_v<Shape, Rectangle<Space>>) {
                     return std::isfinite(value.origin.x) && std::isfinite(value.origin.y) &&
-                           std::isfinite(value.width) && std::isfinite(value.height) &&
-                           value.width > 0.f && value.height > 0.f;
+                           std::isfinite(value.width) && std::isfinite(value.height) && value.width > 0.f &&
+                           value.height > 0.f;
                 } else if constexpr (std::is_same_v<Shape, Box3D>) {
                     return std::isfinite(value.origin.x) && std::isfinite(value.origin.y) &&
-                           std::isfinite(value.origin.z) && std::isfinite(value.width) &&
-                           std::isfinite(value.height) && std::isfinite(value.depth) &&
-                           value.width > 0.f && value.height > 0.f && value.depth > 0.f;
+                           std::isfinite(value.origin.z) && std::isfinite(value.width) && std::isfinite(value.height) &&
+                           std::isfinite(value.depth) && value.width > 0.f && value.height > 0.f && value.depth > 0.f;
                 } else if constexpr (std::is_same_v<Space, World3DSpace>) {
                     return std::isfinite(value.center.x) && std::isfinite(value.center.y) &&
-                           std::isfinite(value.center.z) && std::isfinite(value.radius) &&
-                           value.radius > 0.f;
+                           std::isfinite(value.center.z) && std::isfinite(value.radius) && value.radius > 0.f;
                 } else {
                     return std::isfinite(value.center.x) && std::isfinite(value.center.y) &&
                            std::isfinite(value.radius) && value.radius > 0.f;
@@ -564,11 +550,11 @@ private:
             shape);
     }
 
-    ContainerId id_;
-    ZoneShape<Space> shape_;
-    Capacity capacity_;
+    ContainerId       id_;
+    ZoneShape<Space>  shape_;
+    Capacity          capacity_;
     AcceptedCondition accepted_;
-    bool valid_ = false;
+    bool              valid_ = false;
 };
 
 }  // namespace eve::container
@@ -576,9 +562,7 @@ private:
 namespace std {
 template <>
 struct hash<eve::container::ContainerId> {
-    size_t operator()(const eve::container::ContainerId& value) const noexcept {
-        return hash<string>{}(value.value());
-    }
+    size_t operator()(const eve::container::ContainerId& value) const noexcept { return hash<string>{}(value.value()); }
 };
 template <>
 struct hash<eve::container::MembershipId> {

@@ -43,9 +43,9 @@ class Mesh;
  * without depending on Vulkan or WebGPU headers.
  */
 struct MeshBackendDescriptor {
-    std::uint32_t vertexCount = 0;
-    std::uint32_t indexCount = 0;
-    std::uint32_t vertexStride = 0;
+    std::uint32_t vertexCount      = 0;
+    std::uint32_t indexCount       = 0;
+    std::uint32_t vertexStride     = 0;
     std::uint32_t indexElementSize = 0;
 };
 class Outline;

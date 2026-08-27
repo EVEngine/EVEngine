@@ -1,8 +1,8 @@
 // Publishes the event queue as the IMainThreadPost capability, so the thread
 // module can hand results back to the main thread without depending on event.
 
-#include "common/Capability.h"
 #include "common/MainThreadPost.h"
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "platform_event/PlatformEvent.h"
 

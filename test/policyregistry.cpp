@@ -66,7 +66,7 @@ TEST_CASE("policyregistry.generationsInvalidateStaleHandles") {
 
 TEST_CASE("policyregistry.registryParityKeepsTombstones") {
     PolicyRegistry registry;
-    auto inserted = registry.insert("movement", "ground", 1, 2, true, "builtin", "", "{}");
+    auto           inserted = registry.insert("movement", "ground", 1, 2, true, "builtin", "", "{}");
     REQUIRE(inserted.ok());
     const auto first = std::move(inserted).takeValue();
 
@@ -95,7 +95,7 @@ TEST_CASE("policyregistry.registryParityKeepsTombstones") {
 }
 
 TEST_CASE("policyregistry.subscriptionAndSnapshotEnvelopeAreCompatible") {
-    PolicyRegistry registry;
+    PolicyRegistry           registry;
     std::vector<std::string> names;
     auto subscription = registry.subscribe([&](const PolicyEvent& event) { names.push_back(event.name); });
     REQUIRE(registry.insert("orders", "safe", 1, 1, true, "script", "", "{}").ok());
@@ -111,7 +111,7 @@ TEST_CASE("policyregistry.subscriptionAndSnapshotEnvelopeAreCompatible") {
     auto envelope = registry.snapshotEnvelopeJson(hash);
     REQUIRE(envelope.ok());
     PolicyRegistry copy;
-    auto restored = copy.restoreSnapshotJson(std::move(envelope).takeValue(), hash);
+    auto           restored = copy.restoreSnapshotJson(std::move(envelope).takeValue(), hash);
     REQUIRE(restored.ok());
     auto safe = copy.resolve("orders", "safe");
     REQUIRE(safe.ok());
@@ -120,9 +120,8 @@ TEST_CASE("policyregistry.subscriptionAndSnapshotEnvelopeAreCompatible") {
 
 TEST_CASE("policyregistry.mutationPreservesObserverWarning") {
     PolicyRegistry registry;
-    auto subscription = registry.subscribe([](const PolicyEvent&) {
-        throw std::runtime_error("injected policy observer failure");
-    });
+    auto           subscription =
+        registry.subscribe([](const PolicyEvent&) { throw std::runtime_error("injected policy observer failure"); });
 
     auto result = registry.insert("orders", "safe", 1, 1, true, "script", "", "{}");
     REQUIRE(result.ok());

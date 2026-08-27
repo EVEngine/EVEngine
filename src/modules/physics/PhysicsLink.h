@@ -35,17 +35,14 @@ struct PhysicsLink {
     PhysicsBodyHandle body = PhysicsBodyHandle::invalid();
 
     /** @brief Whether both encoded handle values are non-invalid. */
-    [[nodiscard]] bool isValid() const noexcept {
-        return world.isValid() && body.isValid();
-    }
+    [[nodiscard]] bool isValid() const noexcept { return world.isValid() && body.isValid(); }
 
     /**
      * @brief Validates and constructs a link from explicit runtime handles.
      * @return A link candidate; ownership is verified by resolve().
      */
     [[nodiscard("check the link construction outcome")]]
-    static eve::Result<PhysicsLink> attach(PhysicsWorldHandle world,
-                                            PhysicsBodyHandle body);
+    static eve::Result<PhysicsLink> attach(PhysicsWorldHandle world, PhysicsBodyHandle body);
 
     /** @brief Creates a link from a live 2D body. */
     [[nodiscard("check the link construction outcome")]]
@@ -73,13 +70,10 @@ struct PhysicsShapeLink {
     PhysicsShapeHandle shape = PhysicsShapeHandle::invalid();
 
     /** @brief Whether both encoded handle values are non-invalid. */
-    [[nodiscard]] bool isValid() const noexcept {
-        return world.isValid() && shape.isValid();
-    }
+    [[nodiscard]] bool isValid() const noexcept { return world.isValid() && shape.isValid(); }
     /** @brief Constructs a shape link candidate; ownership is checked by resolve(). */
     [[nodiscard("check the shape-link construction outcome")]]
-    static eve::Result<PhysicsShapeLink> attach(PhysicsWorldHandle world,
-                                                PhysicsShapeHandle shape);
+    static eve::Result<PhysicsShapeLink> attach(PhysicsWorldHandle world, PhysicsShapeHandle shape);
     /** @brief Creates a link from a live shape. */
     [[nodiscard("check the shape-link construction outcome")]]
     static eve::Result<PhysicsShapeLink> fromShape(const Shape3D& shape);
@@ -99,13 +93,10 @@ struct PhysicsJointLink {
     PhysicsJointHandle joint = PhysicsJointHandle::invalid();
 
     /** @brief Whether both encoded handle values are non-invalid. */
-    [[nodiscard]] bool isValid() const noexcept {
-        return world.isValid() && joint.isValid();
-    }
+    [[nodiscard]] bool isValid() const noexcept { return world.isValid() && joint.isValid(); }
     /** @brief Constructs a joint link candidate; ownership is checked by resolve(). */
     [[nodiscard("check the joint-link construction outcome")]]
-    static eve::Result<PhysicsJointLink> attach(PhysicsWorldHandle world,
-                                                PhysicsJointHandle joint);
+    static eve::Result<PhysicsJointLink> attach(PhysicsWorldHandle world, PhysicsJointHandle joint);
     /** @brief Creates a link from a live joint. */
     [[nodiscard("check the joint-link construction outcome")]]
     static eve::Result<PhysicsJointLink> fromJoint(const Joint3D& joint);

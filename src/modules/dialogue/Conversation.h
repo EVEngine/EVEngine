@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dialogue/DialogueState.h"
 #include "common/Result.h"
 #include "common/StateValue.h"
+#include "dialogue/DialogueState.h"
 
 #include <functional>
 #include <string>
@@ -22,7 +22,7 @@ namespace eve::dialogue {
 struct ConversationRoute {
     std::string first;
     std::string second;
-    eve::Value condition;
+    eve::Value  condition;
     /** @brief Optional money/reputation charge committed before entering the target. */
     PaymentSpec payment;
     /** @brief Optional authoritative mutations committed with this route. */
@@ -55,7 +55,7 @@ struct ConversationAsset {
         std::string returnNode;
         StateValue arguments = StateValue::object();
         std::vector<ConversationRoute> routes;
-        CommandRequestKind commandKind = CommandRequestKind::Operation;
+        CommandRequestKind             commandKind = CommandRequestKind::Operation;
         /** @brief Optional money/reputation charge for a command node. */
         PaymentSpec payment;
         /** @brief Optional authoritative mutations committed with a command. */
@@ -95,7 +95,7 @@ public:
     };
     using CommandHandler =
         std::function<CommandResult(const StateValue&, const StateValue&, const StateValue&)>;
-    using ConditionEvaluator = std::function<eve::decision::ConditionResult(const eve::Value&)>;
+    using ConditionEvaluator       = std::function<eve::decision::ConditionResult(const eve::Value&)>;
     using CommandRequestDispatcher = std::function<CommandResponse(const CommandRequest&)>;
     using EventSink = std::function<void(const Event&)>;
 
@@ -143,9 +143,7 @@ public:
         expressionEvaluator_ = std::move(evaluator);
     }
     /** @brief Evaluate structured route conditions through decision::Condition. */
-    void setConditionEvaluator(ConditionEvaluator evaluator) {
-        conditionEvaluator_ = std::move(evaluator);
-    }
+    void setConditionEvaluator(ConditionEvaluator evaluator) { conditionEvaluator_ = std::move(evaluator); }
     /** @brief Register a cross-module command without introducing module includes. */
     void registerCommand(const std::string& name, CommandHandler handler);
     void unregisterCommand(const std::string& name);
@@ -195,9 +193,7 @@ public:
      *           destruction.
      * @thread Affine to the runner's owner thread.
      */
-    const CommandRequest* lastCommandRequest() const {
-        return lastCommandRequest_ ? &*lastCommandRequest_ : nullptr;
-    }
+    const CommandRequest* lastCommandRequest() const { return lastCommandRequest_ ? &*lastCommandRequest_ : nullptr; }
 
 private:
     struct Frame {
@@ -221,14 +217,14 @@ private:
     std::vector<Frame> callStack_;
     AssetResolver assetResolver_;
     ExpressionEvaluator expressionEvaluator_;
-    ConditionEvaluator conditionEvaluator_;
+    ConditionEvaluator                                     conditionEvaluator_;
     std::unordered_map<std::string, CommandHandler> commandHandlers_;
     std::unordered_map<std::string, CommandRequestHandler> commandRequestHandlers_;
-    CommandRequestDispatcher commandRequestDispatcher_;
+    CommandRequestDispatcher                               commandRequestDispatcher_;
     EventSink eventSink_;
     bool waitingCommand_ = false;
-    std::optional<eve::decision::ConditionResult> lastConditionResult_;
-    std::optional<CommandRequest> lastCommandRequest_;
+    std::optional<eve::decision::ConditionResult>          lastConditionResult_;
+    std::optional<CommandRequest>                          lastCommandRequest_;
 };
 
 }  // namespace eve::dialogue

@@ -121,14 +121,12 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::compensate(const Transacti
     }
 
     if (entry->second.receipt.afterRevision != target_->revision())
-        return authorityError<TransactionReceipt>(EditorStatus::Conflict,
-                                                  "editor.authority.revision-conflict",
+        return authorityError<TransactionReceipt>(EditorStatus::Conflict, "editor.authority.revision-conflict",
                                                   "Target changed after the committed transaction");
 
     auto* staging = dynamic_cast<IDomainOperationTargetStaging*>(target_);
     if (!staging)
-        return authorityError<TransactionReceipt>(EditorStatus::Unsupported,
-                                                  "editor.authority.staging-unavailable",
+        return authorityError<TransactionReceipt>(EditorStatus::Unsupported, "editor.authority.staging-unavailable",
                                                   "Target cannot stage a complete compensation candidate");
 
     TransactionReceipt compensation;
@@ -172,15 +170,14 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::compensate(const Transacti
         try {
             result = candidate->applyDomainOperation(inverseOf(*operation));
         } catch (const std::exception& exception) {
-            compensation.diagnostics.push_back(
-                {RuleId("editor.authority.candidate-exception"), DiagnosticSeverity::Error,
-                 std::string("Compensation candidate threw: ") + exception.what()});
-            return failed(EditorStatus::Failed, "editor.authority.candidate-exception",
-                          "Compensation candidate threw");
+            compensation.diagnostics.push_back({RuleId("editor.authority.candidate-exception"),
+                                                DiagnosticSeverity::Error,
+                                                std::string("Compensation candidate threw: ") + exception.what()});
+            return failed(EditorStatus::Failed, "editor.authority.candidate-exception", "Compensation candidate threw");
         } catch (...) {
-            compensation.diagnostics.push_back(
-                {RuleId("editor.authority.candidate-exception"), DiagnosticSeverity::Error,
-                 "Compensation candidate threw an unknown exception"});
+            compensation.diagnostics.push_back({RuleId("editor.authority.candidate-exception"),
+                                                DiagnosticSeverity::Error,
+                                                "Compensation candidate threw an unknown exception"});
             return failed(EditorStatus::Failed, "editor.authority.candidate-exception",
                           "Compensation candidate threw an unknown exception");
         }

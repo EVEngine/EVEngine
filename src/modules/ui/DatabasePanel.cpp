@@ -57,7 +57,7 @@ void DatabasePanel::open() {
     auto host = UIHost::resolve(host_);
     if (!host) {
         host_ = UIHost::createHost(kDatabaseHostName);
-        host = UIHost::resolve(host_);
+        host  = UIHost::resolve(host_);
     }
     if (!host) return;
     host->get().setVisible(true);
@@ -105,8 +105,7 @@ bool DatabasePanel::selectClass(const std::string& name) {
 eve::Result<ObjectHandle> DatabasePanel::createInstance() {
     if (selectedClass_.empty()) {
         return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "database panel has no selected script class"));
+            eve::DiagnosticCode::InvalidArgument, "database panel has no selected script class"));
     }
     auto result = ObjectRegistry::instance().create(selectedClass_);
     if (!result) return eve::Result<ObjectHandle>::failure(result.status());
@@ -118,8 +117,7 @@ eve::Result<ObjectHandle> DatabasePanel::createInstance() {
     return eve::Result<ObjectHandle>::success(handle);
 }
 
-eve::Result<ObjectHandle> DatabasePanel::registerObject(const ssq::Object& object,
-                                                        const std::string& label) {
+eve::Result<ObjectHandle> DatabasePanel::registerObject(const ssq::Object& object, const std::string& label) {
     auto result = ObjectRegistry::instance().registerObject(selectedClass_, object, label);
     if (!result) return eve::Result<ObjectHandle>::failure(result.status());
     const ObjectHandle handle = result.value();
@@ -166,23 +164,19 @@ void DatabasePanel::rebuildCache() {
 WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
                                      const ReflectedMember& member,
                                      const ReflectedValue& value) {
-    const std::string id =
-        "cell_" + std::to_string(entry.handle.packed()) + "_" + member.name;
-    const std::string label = cellLabel(member.name, entry.handle);
+    const std::string              id      = "cell_" + std::to_string(entry.handle.packed()) + "_" + member.name;
+    const std::string              label   = cellLabel(member.name, entry.handle);
     const std::string editor = member.attrString("editor");
     const std::vector<std::string> options = member.attrOptions("options");
     WidgetDesc cell;
     if (value.kind == ReflectedValueKind::Bool) {
-        cell = checkbox(label, value.asBool(), id,
-                        [this, entryHandle = entry.handle, name = member.name](bool v) {
-                            ReflectedValue out;
-                            out.kind = ReflectedValueKind::Bool;
-                            out.boolean = v;
-                            if (const ObjectEntry* e =
-                                    ObjectRegistry::instance().entry(entryHandle))
-                                ModuleManager::runtime()->writeProperty(e->object, name,
-                                                                        out);
-                        });
+        cell = checkbox(label, value.asBool(), id, [this, entryHandle = entry.handle, name = member.name](bool v) {
+            ReflectedValue out;
+            out.kind    = ReflectedValueKind::Bool;
+            out.boolean = v;
+            if (const ObjectEntry* e = ObjectRegistry::instance().entry(entryHandle))
+                ModuleManager::runtime()->writeProperty(e->object, name, out);
+        });
     } else if (editor == "combo" && !options.empty()) {
         int index = 0;
         const std::string current =
@@ -190,12 +184,10 @@ WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
         const auto it = std::find(options.begin(), options.end(), current);
         if (it != options.end()) index = int(it - options.begin());
         cell = combo(label, options, index, id,
-                     [this, entryHandle = entry.handle, name = member.name,
-                      kind = value.kind, options](float i) {
+                     [this, entryHandle = entry.handle, name = member.name, kind = value.kind, options](float i) {
                          const int idx = static_cast<int>(i);
                          if (idx < 0 || idx >= int(options.size())) return;
-                         const ObjectEntry* e =
-                             ObjectRegistry::instance().entry(entryHandle);
+                         const ObjectEntry* e = ObjectRegistry::instance().entry(entryHandle);
                          if (!e) return;
                          ReflectedValue out;
                          if (kind == ReflectedValueKind::Integer) {
@@ -226,18 +218,16 @@ WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
         }
         cell = text(member.name + " = " + shown, id);
     } else {
-        cell = inputText(label, valueText(value), id,
-                         [this, entryHandle = entry.handle, name = member.name,
-                          kind = value.kind](const std::string& text) {
-                             const ObjectEntry* e =
-                                 ObjectRegistry::instance().entry(entryHandle);
-                             if (!e) return;
-                             ReflectedValue out;
-                             out.kind = ReflectedValueKind::String;
-                             out.text = text;
-                             ModuleManager::runtime()->writeProperty(e->object, name,
-                                                                     out);
-                         });
+        cell = inputText(
+            label, valueText(value), id,
+            [this, entryHandle = entry.handle, name = member.name, kind = value.kind](const std::string& text) {
+                const ObjectEntry* e = ObjectRegistry::instance().entry(entryHandle);
+                if (!e) return;
+                ReflectedValue out;
+                out.kind = ReflectedValueKind::String;
+                out.text = text;
+                ModuleManager::runtime()->writeProperty(e->object, name, out);
+            });
     }
     cell.withSize(kCellWidth, 0.f);
     return cell;
@@ -264,9 +254,7 @@ WidgetDesc DatabasePanel::build() {
                           if (idx >= 0 && idx < int(classNames_.size()))
                               selectClass(classNames_[size_t(idx)]);
                       }),
-                button("+", "db_add", [this]() {
-                    createInstance().ignore("create UI database row from button");
-                }),
+                button("+", "db_add", [this]() { createInstance().ignore("create UI database row from button"); }),
             },
             "db_toolbar"));
         children.push_back(separator("db_sep"));
@@ -287,14 +275,10 @@ WidgetDesc DatabasePanel::build() {
                     entry.object, members_[c].name);
                 cells.push_back(cellWidget(entry, members_[c], value));
             }
-            cells.push_back(
-                button("x##db_" + std::to_string(entry.handle.packed()),
-                       "db_del_" + std::to_string(entry.handle.packed()),
-                       [this, entryHandle = entry.handle]() {
-                           unregister(entryHandle).ignore("delete UI database row");
-                       }));
-            rows.push_back(row(std::move(cells),
-                               "db_row_" + std::to_string(entry.handle.packed())));
+            cells.push_back(button(
+                "x##db_" + std::to_string(entry.handle.packed()), "db_del_" + std::to_string(entry.handle.packed()),
+                [this, entryHandle = entry.handle]() { unregister(entryHandle).ignore("delete UI database row"); }));
+            rows.push_back(row(std::move(cells), "db_row_" + std::to_string(entry.handle.packed())));
         }
         if (rows.empty()) {
             children.push_back(text("No instances of " + selectedClass_ +
@@ -324,9 +308,7 @@ void DatabasePanel::sync() {
                 rt->readProperty(entries_[r].object, members_[c].name);
             if (sameValue(live, cached_[r][c])) continue;
             cached_[r][c] = live;
-            const std::string id =
-                "cell_" + std::to_string(entries_[r].handle.packed()) + "_" +
-                    members_[c].name;
+            const std::string      id = "cell_" + std::to_string(entries_[r].handle.packed()) + "_" + members_[c].name;
             const ReflectedMember& member = members_[c];
             const std::string editor = member.attrString("editor");
             const std::vector<std::string> options = member.attrOptions("options");
@@ -337,8 +319,7 @@ void DatabasePanel::sync() {
                     live.kind == ReflectedValueKind::String ? live.text
                                                             : valueText(live);
                 const auto it = std::find(options.begin(), options.end(), current);
-                host->get().setValueById(id, it == options.end() ? 0.f
-                                                                  : float(it - options.begin()));
+                host->get().setValueById(id, it == options.end() ? 0.f : float(it - options.begin()));
             } else if (live.kind == ReflectedValueKind::Array ||
                        live.kind == ReflectedValueKind::Table ||
                        live.kind == ReflectedValueKind::Instance ||

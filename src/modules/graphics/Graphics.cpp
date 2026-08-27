@@ -1,11 +1,11 @@
 #include "graphics/Graphics.h"
-#include "graphics/ArtifactProvider.h"
 #include "common/Capability.h"
 #include "common/config.h"
+#include "font/FontData.h"
+#include "graphics/ArtifactProvider.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
-#include "font/FontData.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"

@@ -1,8 +1,8 @@
 #include "animation/MotionMatcher.h"
 
-#include "animation/AnimationTime.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimationTime.h"
 #include "animation/MotionDatabase.h"
 
 #include "common/Exception.h"
@@ -241,7 +241,7 @@ eve::Result<void> MotionMatcher::advance(const eve::SimulationStep& step) {
     auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "MotionMatcher");
     if (!seconds) return eve::Result<void>::failure(seconds.status());
     updateUnchecked(std::move(seconds).takeValue());
-    lastTick_ = step.tick;
+    lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }

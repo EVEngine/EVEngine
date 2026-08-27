@@ -1,12 +1,12 @@
 #pragma once
 
+#include "common/EventSequence.h"
 #include "common/Identity.h"
 #include "common/Module.h"
 #include "common/Result.h"
-#include "common/Snapshot.h"
-#include "common/EventSequence.h"
 #include "common/Revision.h"
 #include "common/SchemaVersion.h"
+#include "common/Snapshot.h"
 #include "common/Time.h"
 
 #include <cstdint>
@@ -62,7 +62,7 @@ public:
     /** @brief Creates a compatibility-only arbitrary string correlation. */
     [[nodiscard]] static CorrelationId fromLegacy(std::string value) {
         CorrelationId result;
-        result.kind_ = value.empty() ? Kind::None : Kind::Legacy;
+        result.kind_   = value.empty() ? Kind::None : Kind::Legacy;
         result.legacy_ = std::move(value);
         return result;
     }
@@ -74,16 +74,14 @@ public:
     [[nodiscard]] bool isCanonical() const noexcept { return kind_ != Kind::Legacy; }
 
     /** @brief Returns the stable ID or compatibility text projection. */
-    [[nodiscard]] std::string format() const {
-        return kind_ == Kind::Id ? id_.format() : legacy_;
-    }
+    [[nodiscard]] std::string format() const { return kind_ == Kind::Id ? id_.format() : legacy_; }
 
     friend bool operator==(const CorrelationId&, const CorrelationId&) noexcept = default;
 
 private:
-    Kind              kind_ = Kind::None;
-    EventId           id_;
-    std::string       legacy_;
+    Kind        kind_ = Kind::None;
+    EventId     id_;
+    std::string legacy_;
 };
 
 /**
@@ -103,7 +101,7 @@ public:
     [[nodiscard]] static CausationRef fromEventId(EventId value) {
         CausationRef result;
         if (!value.isNil()) {
-            result.kind_ = Kind::Event;
+            result.kind_  = Kind::Event;
             result.value_ = std::move(value);
         }
         return result;
@@ -113,7 +111,7 @@ public:
     [[nodiscard]] static CausationRef fromCommandId(CommandId value) {
         CausationRef result;
         if (!value.isNil()) {
-            result.kind_ = Kind::Command;
+            result.kind_  = Kind::Command;
             result.value_ = std::move(value);
         }
         return result;
@@ -122,7 +120,7 @@ public:
     /** @brief Creates a compatibility-only arbitrary string causation. */
     [[nodiscard]] static CausationRef fromLegacy(std::string value) {
         CausationRef result;
-        result.kind_ = value.empty() ? Kind::None : Kind::Legacy;
+        result.kind_  = value.empty() ? Kind::None : Kind::Legacy;
         result.value_ = std::move(value);
         return result;
     }
@@ -144,16 +142,16 @@ public:
     friend bool operator==(const CausationRef&, const CausationRef&) noexcept = default;
 
 private:
-    Kind kind_ = Kind::None;
+    Kind                                                          kind_ = Kind::None;
     std::variant<std::monostate, EventId, CommandId, std::string> value_;
 };
 
 /** @brief Writes a correlation representation tag for diagnostics. */
 inline std::ostream& operator<<(std::ostream& stream, CorrelationId::Kind kind) {
     switch (kind) {
-    case CorrelationId::Kind::None: return stream << "none";
-    case CorrelationId::Kind::Id: return stream << "id";
-    case CorrelationId::Kind::Legacy: return stream << "legacy";
+        case CorrelationId::Kind::None: return stream << "none";
+        case CorrelationId::Kind::Id: return stream << "id";
+        case CorrelationId::Kind::Legacy: return stream << "legacy";
     }
     return stream << "unknown";
 }
@@ -161,10 +159,10 @@ inline std::ostream& operator<<(std::ostream& stream, CorrelationId::Kind kind) 
 /** @brief Writes a causation representation tag for diagnostics. */
 inline std::ostream& operator<<(std::ostream& stream, CausationRef::Kind kind) {
     switch (kind) {
-    case CausationRef::Kind::None: return stream << "none";
-    case CausationRef::Kind::Event: return stream << "event";
-    case CausationRef::Kind::Command: return stream << "command";
-    case CausationRef::Kind::Legacy: return stream << "legacy";
+        case CausationRef::Kind::None: return stream << "none";
+        case CausationRef::Kind::Event: return stream << "event";
+        case CausationRef::Kind::Command: return stream << "command";
+        case CausationRef::Kind::Legacy: return stream << "legacy";
     }
     return stream << "unknown";
 }
@@ -212,7 +210,7 @@ struct GameEvent {
 template <class Payload>
 struct TypedEventEnvelope {
     GameEvent metadata;
-    Payload       payload;
+    Payload   payload;
 };
 
 class GameEventLog;
@@ -243,8 +241,8 @@ private:
     friend class GameEventLog;
     EventConsumer(GameEventLog* stream, EventSequence sequence);
 
-    GameEventLog*                           stream_       = nullptr;
-    EventSequence                     nextSequence_ = EventSequence(1);
+    GameEventLog*                 stream_       = nullptr;
+    EventSequence                 nextSequence_ = EventSequence(1);
     std::vector<const GameEvent*> batch_;
 };
 
@@ -359,34 +357,32 @@ public:
     [[nodiscard]] eve::Result<void> restore(std::string_view json);
 
     /** @brief Captures the stream payload in the common snapshot envelope. */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /**
      * @brief Restores a verified or migrated stream envelope atomically.
      * @param snapshot Source envelope with schema `game_event:stream`.
      * @param hashProvider Explicit content-digest provider.
      * @return Success, or a failure leaving retained events and cursors intact.
      */
-    [[nodiscard]] eve::Result<void> restoreSnapshot(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
+                                                    const eve::SnapshotHashProvider& hashProvider);
     /** @brief Serializes the common event-stream snapshot envelope. */
-    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Parses and transactionally restores a common event-stream envelope. */
-    [[nodiscard]] eve::Result<void> restoreSnapshotJson(
-        std::string_view json, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
+                                                        const eve::SnapshotHashProvider& hashProvider);
 
 private:
     friend class EventConsumer;
     [[nodiscard]] EventSequence oldestSequence() const;
 
-    std::optional<eve::UuidV7Generator> eventIdGenerator_;
-    eve::PersistentId                         instanceId_;
-    eve::Revision                             revision_ = eve::Revision::zero();
-    eve::SimulationTick                       snapshotTick_ = eve::SimulationTick::zero();
-    EventSequence                       nextSequence_ = EventSequence(1);
-    std::deque<GameEvent>                   events_;
-    std::vector<const GameEvent*>           query_;
+    std::optional<eve::UuidV7Generator>         eventIdGenerator_;
+    eve::PersistentId                           instanceId_;
+    eve::Revision                               revision_     = eve::Revision::zero();
+    eve::SimulationTick                         snapshotTick_ = eve::SimulationTick::zero();
+    EventSequence                               nextSequence_ = EventSequence(1);
+    std::deque<GameEvent>                       events_;
+    std::vector<const GameEvent*>               query_;
     std::vector<std::unique_ptr<EventConsumer>> consumers_;
 };
 
@@ -394,7 +390,7 @@ private:
 class GameEventModule : public Module {
 public:
     Module_REG(GameEventModule);
-    GameEventModule() = default;
+    GameEventModule()           = default;
     ~GameEventModule() override = default;
 
     /**

@@ -195,8 +195,7 @@ eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
     std::lock_guard<std::mutex> lock(mu_);
     for (const auto &item : prepared) {
         auto it = resources.find(item.key);
-        if (it == resources.end() || it->second.get() != item.cached)
-            return eve::Result<bool>::success(false);
+        if (it == resources.end() || it->second.get() != item.cached) return eve::Result<bool>::success(false);
     }
 
     size_t committed = 0;

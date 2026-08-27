@@ -30,7 +30,7 @@ class UIHost;
  *     </ editor = "slider", min = 0, max = 100 />   → Slider
  *     </ editor = "checkbox" />                     → Checkbox (bool)
  *     </ editor = "combo", options = "a,b,c" />     → Combo
-     *     Other controls                                     → InputText
+ *     Other controls                                     → InputText
  *
  * Inherited members are grouped under their owning (base) class header, so
  * parent properties are editable side-by-side (see docs/dev/界面设计.md).
@@ -141,7 +141,7 @@ private:
     std::vector<NestedEntry> navStack_;
     std::function<ssq::Object()> pickScene_;
     int selectedInstance_ = -1;
-    UIHostHandle host_{};
+    UIHostHandle                                         host_{};
     std::unique_ptr<scriptmodel::ReflectedPropertyModel> propertyModel_;
 };
 

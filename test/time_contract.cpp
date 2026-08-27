@@ -33,15 +33,15 @@ TEST_CASE("time.durationAndTimestampUseStrongFixedUnits") {
     CHECK_EQ(duration.value().seconds(), 1.25);
 
     eve::MonotonicTimestamp later(150);
-    auto elapsed = later.since(eve::MonotonicTimestamp(50));
+    auto                    elapsed = later.since(eve::MonotonicTimestamp(50));
     REQUIRE(elapsed.ok());
     CHECK_EQ(elapsed.value().nanoseconds(), std::int64_t(100));
 
     auto backwards = eve::MonotonicTimestamp(10).since(eve::MonotonicTimestamp(11));
     CHECK(!backwards.ok());
 
-    auto maximum = eve::MonotonicTimestamp(std::numeric_limits<std::int64_t>::max())
-                       .since(eve::MonotonicTimestamp::zero());
+    auto maximum =
+        eve::MonotonicTimestamp(std::numeric_limits<std::int64_t>::max()).since(eve::MonotonicTimestamp::zero());
     REQUIRE(maximum.ok());
     CHECK_EQ(maximum.value().nanoseconds(), std::numeric_limits<std::int64_t>::max());
 
@@ -54,7 +54,7 @@ TEST_CASE("time.durationAndTimestampUseStrongFixedUnits") {
 }
 
 TEST_CASE("time.simulationClock.fixedStepPauseAndSlowMotion") {
-    ManualTimeSource source;
+    ManualTimeSource     source;
     eve::SimulationClock clock(source, eve::Duration::fromNanoseconds(100));
 
     auto first = clock.sample();
@@ -112,7 +112,7 @@ TEST_CASE("time.clockUsesMonotonicOnlyAndWallClockIsMetadata") {
     REQUIRE(second.sample().ok());
     firstSource.advance(250);
     secondSource.advance(250);
-    auto firstSteps = first.sample();
+    auto firstSteps  = first.sample();
     auto secondSteps = second.sample();
     REQUIRE(firstSteps.ok());
     REQUIRE(secondSteps.ok());
@@ -123,13 +123,13 @@ TEST_CASE("time.clockUsesMonotonicOnlyAndWallClockIsMetadata") {
 }
 
 TEST_CASE("time.clockRejectsBackwardSourceWithoutStateMutation") {
-    ManualTimeSource source;
+    ManualTimeSource     source;
     eve::SimulationClock clock(source, eve::Duration::fromNanoseconds(100));
     REQUIRE(clock.sample().ok());
     source.advance(100);
     auto accepted = clock.sample();
     REQUIRE(accepted.ok());
-    const auto tick = clock.currentTick();
+    const auto tick  = clock.currentTick();
     const auto frame = clock.frameIndex();
 
     source.advance(-200);
@@ -144,7 +144,7 @@ TEST_CASE("time.clockRejectsTimestampDistanceOutsideDurationWithoutStateMutation
     source.setMonotonic(std::numeric_limits<std::int64_t>::min());
     eve::SimulationClock clock(source, eve::Duration::fromNanoseconds(100));
     REQUIRE(clock.sample().ok());
-    const auto tick = clock.currentTick();
+    const auto tick  = clock.currentTick();
     const auto frame = clock.frameIndex();
 
     source.setMonotonic(std::numeric_limits<std::int64_t>::max());
@@ -157,10 +157,10 @@ TEST_CASE("time.clockRejectsTimestampDistanceOutsideDurationWithoutStateMutation
 }
 
 TEST_CASE("time.clockRejectsExtremeCatchUpWithoutMultiplicationOverflow") {
-    ManualTimeSource source;
+    ManualTimeSource     source;
     eve::SimulationClock clock(source, eve::Duration::fromNanoseconds(1));
-    const auto beforeTick = clock.currentTick();
-    const auto beforeFrame = clock.frameIndex();
+    const auto           beforeTick  = clock.currentTick();
+    const auto           beforeFrame = clock.frameIndex();
 
     auto extreme = clock.advance(eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max()));
     CHECK(!extreme.ok());
@@ -170,8 +170,7 @@ TEST_CASE("time.clockRejectsExtremeCatchUpWithoutMultiplicationOverflow") {
     CHECK_EQ(clock.currentTick(), beforeTick);
     CHECK_EQ(clock.frameIndex(), beforeFrame);
 
-    eve::SimulationClock boundary(source,
-                                   eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max()));
+    eve::SimulationClock boundary(source, eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max()));
     auto oneStep = boundary.advance(eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max()));
     REQUIRE(oneStep.ok());
     CHECK_EQ(oneStep.value().size(), std::size_t(1));

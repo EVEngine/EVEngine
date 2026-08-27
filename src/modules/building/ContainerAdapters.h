@@ -41,23 +41,20 @@ public:
      * @param capacity Maximum member count.
      * @param accepted Side-effect-free condition applied before entry.
      */
-    BuildingGarrisonContainerAdapter(
-        eve::container::ContainerId id, PlacementWorld* world, int instanceId,
-        eve::container::Capacity capacity = eve::container::Capacity::unlimited(),
-        eve::container::AcceptedCondition accepted = {});
+    BuildingGarrisonContainerAdapter(eve::container::ContainerId id, PlacementWorld* world, int instanceId,
+                                     eve::container::Capacity          capacity = eve::container::Capacity::unlimited(),
+                                     eve::container::AcceptedCondition accepted = {});
 
     [[nodiscard]] const eve::container::ContainerDescriptor& descriptor() const noexcept override {
         return descriptor_;
     }
     [[nodiscard]] eve::Result<eve::container::ContainerSnapshot> snapshot() const override;
-    [[nodiscard]] eve::Result<void> validateInsert(
-        const eve::container::ContainerObject& object,
-        std::optional<eve::container::SlotIndex> destination,
-        std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
+    [[nodiscard]] eve::Result<void>                              validateInsert(
+                                     const eve::container::ContainerObject& object, std::optional<eve::container::SlotIndex> destination,
+                                     std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
     /** @copydoc eve::container::IContainer::prepare */
     [[nodiscard]] eve::Result<std::unique_ptr<eve::container::IContainer::PreparedState>> prepare(
-        const eve::container::ContainerSnapshot& expected,
-        const eve::container::ContainerSnapshot& candidate) override;
+        const eve::container::ContainerSnapshot& expected, const eve::container::ContainerSnapshot& candidate) override;
 
     /** @brief Return the authoritative garrison revision, or zero when stale. */
     [[nodiscard]] eve::Revision revision() const noexcept;
@@ -72,9 +69,8 @@ public:
      * @return The member identity, or a rejection with no membership mutation.
      */
     [[nodiscard]] eve::Result<eve::container::MembershipId> enter(
-        std::string memberId, std::string type = "building.garrison.member",
-        std::vector<std::string> tags = {}, eve::container::GameEventSink sink = {},
-        eve::SimulationTick tick = eve::SimulationTick::zero());
+        std::string memberId, std::string type = "building.garrison.member", std::vector<std::string> tags = {},
+        eve::container::GameEventSink sink = {}, eve::SimulationTick tick = eve::SimulationTick::zero());
 
     /**
      * @brief Stage and publish removal of one member.
@@ -101,14 +97,14 @@ private:
      */
     [[nodiscard]] const PlacedBuilding* building() const noexcept;
     /** @copydoc BuildingGarrisonContainerAdapter::building() */
-    [[nodiscard]] PlacedBuilding* building() noexcept;
-    [[nodiscard]] std::uint64_t nextEventSerial() noexcept;
+    [[nodiscard]] PlacedBuilding*                        building() noexcept;
+    [[nodiscard]] std::uint64_t                          nextEventSerial() noexcept;
     [[nodiscard]] static eve::container::ContainerObject describe(const GarrisonMember& member);
 
     eve::container::ContainerDescriptor descriptor_;
-    PlacementWorld* world_ = nullptr;
-    int instanceId_ = 0;
-    std::uint64_t eventSerial_ = 0;
+    PlacementWorld*                     world_       = nullptr;
+    int                                 instanceId_  = 0;
+    std::uint64_t                       eventSerial_ = 0;
 };
 
 }  // namespace eve::building

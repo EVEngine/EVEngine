@@ -196,8 +196,8 @@ public:
      * @brief Evaluate one action condition.
      * @return ConditionResult or a structured provider failure.
      */
-    [[nodiscard]] virtual Result<decision::ConditionResult> evaluate(
-        const ActionDefinition& definition, const ActionRequest& request) const = 0;
+    [[nodiscard]] virtual Result<decision::ConditionResult> evaluate(const ActionDefinition& definition,
+                                                                     const ActionRequest&    request) const = 0;
 };
 
 /**
@@ -214,8 +214,7 @@ public:
      * @brief Resolve a validated targeting query.
      * @return An owning TargetSet or a structured target failure.
      */
-    [[nodiscard]] virtual Result<sensing::TargetSet> resolve(
-        const sensing::TargetingQuery& query) const = 0;
+    [[nodiscard]] virtual Result<sensing::TargetSet> resolve(const sensing::TargetingQuery& query) const = 0;
 };
 
 /**
@@ -237,9 +236,9 @@ public:
      * @param cost Canonical cost borrowed for this call.
      * @return Affordability or a structured provider failure.
      */
-    [[nodiscard]] virtual Result<resource::Affordability> canAfford(
-        const ActionDefinition& definition, const ActionRequest& request,
-        const resource::CostSpec& cost) const = 0;
+    [[nodiscard]] virtual Result<resource::Affordability> canAfford(const ActionDefinition&   definition,
+                                                                    const ActionRequest&      request,
+                                                                    const resource::CostSpec& cost) const = 0;
 
     /**
      * @brief Reserve a cost at the Active boundary.
@@ -252,9 +251,9 @@ public:
      *          an account in the current selection, or unloading that default
      *          account must not discard the route before commit/rollback.
      */
-    [[nodiscard]] virtual Result<resource::Reservation> reserve(
-        const ActionDefinition& definition, const ActionRequest& request,
-        const resource::CostSpec& cost) = 0;
+    [[nodiscard]] virtual Result<resource::Reservation> reserve(const ActionDefinition&   definition,
+                                                                const ActionRequest&      request,
+                                                                const resource::CostSpec& cost) = 0;
 
     /**
      * @brief Commit a reservation by its account nonce.
@@ -265,8 +264,7 @@ public:
      *          must leave the reservation rollback-able; a provider must not
      *          report failure after exposing a debit without compensation.
      */
-    [[nodiscard]] virtual Result<resource::Receipt> commit(
-        const resource::Reservation& reservation) = 0;
+    [[nodiscard]] virtual Result<resource::Receipt> commit(const resource::Reservation& reservation) = 0;
 
     /**
      * @brief Roll back a reservation by its account nonce.
@@ -277,8 +275,7 @@ public:
      *          default account has been unloaded. An unknown nonce must fail
      *          explicitly and must never fall back to the current account.
      */
-    [[nodiscard]] virtual Result<void> rollback(
-        const resource::Reservation& reservation) = 0;
+    [[nodiscard]] virtual Result<void> rollback(const resource::Reservation& reservation) = 0;
 };
 
 /**
@@ -293,10 +290,10 @@ class IActionEffectOperation {
 public:
     virtual ~IActionEffectOperation() = default;
 
-    IActionEffectOperation(const IActionEffectOperation&) = delete;
+    IActionEffectOperation(const IActionEffectOperation&)            = delete;
     IActionEffectOperation& operator=(const IActionEffectOperation&) = delete;
-    IActionEffectOperation(IActionEffectOperation&&) = delete;
-    IActionEffectOperation& operator=(IActionEffectOperation&&) = delete;
+    IActionEffectOperation(IActionEffectOperation&&)                 = delete;
+    IActionEffectOperation& operator=(IActionEffectOperation&&)      = delete;
 
     /** @brief Apply the prepared operation; must not fail or throw. */
     virtual void commit() noexcept = 0;
@@ -329,9 +326,10 @@ public:
      * @param tick Deterministic simulation tick of the Active transition.
      * @return A move-only staged operation or a structured preparation failure.
      */
-    [[nodiscard]] virtual Result<std::unique_ptr<IActionEffectOperation>> prepare(
-        const ActionDefinition& definition, const ActionRequest& request,
-        const sensing::TargetSet* targets, SimulationTick tick) = 0;
+    [[nodiscard]] virtual Result<std::unique_ptr<IActionEffectOperation>> prepare(const ActionDefinition&   definition,
+                                                                                  const ActionRequest&      request,
+                                                                                  const sensing::TargetSet* targets,
+                                                                                  SimulationTick            tick) = 0;
 };
 
 /** @brief Borrowed composition ports used by one ActionRuntime owner. */
@@ -422,21 +420,24 @@ private:
     friend class ActionRuntime;
 
     ActionExecution(ActionExecutionId id, ActionDefinition definition, ActionRequest request)
-        : id_(id), definition_(std::move(definition)), request_(std::move(request)),
-          lastTick_(request_.requestedTick), status_(Status::success(StatusCode::Pending)) {}
+        : id_(id),
+          definition_(std::move(definition)),
+          request_(std::move(request)),
+          lastTick_(request_.requestedTick),
+          status_(Status::success(StatusCode::Pending)) {}
 
-    ActionExecutionId id_;
-    ActionDefinition definition_;
-    ActionRequest request_;
-    ActionPhase phase_ = ActionPhase::Requested;
-    Duration phaseElapsed_ = Duration::zero();
-    Duration totalElapsed_ = Duration::zero();
-    SimulationTick lastTick_ = SimulationTick::zero();
-    Status status_;
-    std::optional<sensing::TargetSet> resolvedTargets_;
-    std::optional<resource::Receipt> receipt_;
+    ActionExecutionId                              id_;
+    ActionDefinition                               definition_;
+    ActionRequest                                  request_;
+    ActionPhase                                    phase_        = ActionPhase::Requested;
+    Duration                                       phaseElapsed_ = Duration::zero();
+    Duration                                       totalElapsed_ = Duration::zero();
+    SimulationTick                                 lastTick_     = SimulationTick::zero();
+    Status                                         status_;
+    std::optional<sensing::TargetSet>              resolvedTargets_;
+    std::optional<resource::Receipt>               receipt_;
     std::optional<transaction::TransactionReceipt> transactionReceipt_;
-    bool activeExecuted_ = false;
+    bool                                           activeExecuted_ = false;
 };
 
 /**
@@ -451,8 +452,7 @@ public:
     SensingTargetingAdapter() = default;
 
     /** @copydoc IActionTargetResolver::resolve */
-    [[nodiscard]] Result<sensing::TargetSet> resolve(
-        const sensing::TargetingQuery& query) const override;
+    [[nodiscard]] Result<sensing::TargetSet> resolve(const sensing::TargetingQuery& query) const override;
 
 private:
     sensing::TargetingResolver resolver_;
@@ -475,11 +475,11 @@ public:
      */
     explicit ActionRuntime(ActionServices services = {}) : services_(services) {}
 
-    ActionRuntime(const ActionRuntime&) = delete;
+    ActionRuntime(const ActionRuntime&)            = delete;
     ActionRuntime& operator=(const ActionRuntime&) = delete;
-    ActionRuntime(ActionRuntime&&) = delete;
-    ActionRuntime& operator=(ActionRuntime&&) = delete;
-    ~ActionRuntime() = default;
+    ActionRuntime(ActionRuntime&&)                 = delete;
+    ActionRuntime& operator=(ActionRuntime&&)      = delete;
+    ~ActionRuntime()                               = default;
 
     /**
      * @brief Submit a validated definition/request pair in Requested phase.
@@ -488,8 +488,7 @@ public:
      * @return New execution id or a structured rejection; no state is created
      *         when validation fails.
      */
-    [[nodiscard]] Result<ActionExecutionId> submit(ActionDefinition definition,
-                                                   ActionRequest request);
+    [[nodiscard]] Result<ActionExecutionId> submit(ActionDefinition definition, ActionRequest request);
 
     /**
      * @brief Advance one execution by an injected simulation duration.
@@ -499,8 +498,7 @@ public:
      * @return Transition summary, or a structured failure. A failed/cancelled
      *         execution is observable through find() after the failure.
      */
-    [[nodiscard]] Result<ActionAdvance> advance(ActionExecutionId id, SimulationTick tick,
-                                                Duration delta);
+    [[nodiscard]] Result<ActionAdvance> advance(ActionExecutionId id, SimulationTick tick, Duration delta);
 
     /**
      * @brief Cancel a non-terminal execution before its Active transaction.
@@ -535,14 +533,14 @@ private:
     [[nodiscard]] Result<void> validateExecution(ActionExecution& execution);
     [[nodiscard]] Result<void> enterActive(ActionExecution& execution, SimulationTick tick);
     [[nodiscard]] Result<void> addElapsed(ActionExecution& execution, Duration amount);
-    void transition(ActionExecution& execution, ActionPhase next, SimulationTick tick,
-                    std::vector<ActionTransition>& transitions);
-    void failExecution(ActionExecution& execution, Status status,
-                       SimulationTick tick, std::vector<ActionTransition>* transitions = nullptr);
+    void                       transition(ActionExecution& execution, ActionPhase next, SimulationTick tick,
+                                          std::vector<ActionTransition>& transitions);
+    void                       failExecution(ActionExecution& execution, Status status, SimulationTick tick,
+                                             std::vector<ActionTransition>* transitions = nullptr);
     [[nodiscard]] Result<ActionExecutionId> nextExecutionId();
 
-    ActionServices services_;
-    ExecutionStore executions_;
+    ActionServices    services_;
+    ExecutionStore    executions_;
     ActionExecutionId nextId_{1};
 };
 

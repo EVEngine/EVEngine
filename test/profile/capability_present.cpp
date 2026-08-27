@@ -3,8 +3,8 @@
 namespace {
 struct ProbeCapability {
     static constexpr const char* capabilityName = "profile.optional.present";
-    virtual ~ProbeCapability() = default;
-    virtual int value() const = 0;
+    virtual ~ProbeCapability()                  = default;
+    virtual int value() const                   = 0;
 };
 
 struct Provider final : ProbeCapability {

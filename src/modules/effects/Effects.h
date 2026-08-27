@@ -24,7 +24,7 @@ using EffectContainerHandleRef = eve::script::RuntimeHandleRef<EffectContainerHa
 class Effects : public Module {
 public:
     Module_REG(Effects);
-    Effects() = default;
+    Effects()           = default;
     ~Effects() override = default;
 
     /**
@@ -36,8 +36,7 @@ public:
     [[nodiscard]] static eve::Result<EffectContainerHandleRef> newContainer();
 
     /** @brief Resolves a live container as a non-owning observation. */
-    [[nodiscard]] static eve::script::Borrowed<EffectContainer> resolve(
-        EffectContainerHandleRef reference) noexcept;
+    [[nodiscard]] static eve::script::Borrowed<EffectContainer> resolve(EffectContainerHandleRef reference) noexcept;
 
     /** @brief Releases a container owned by the Effects module. */
     [[nodiscard]] static eve::Result<void> release(EffectContainerHandleRef reference);

@@ -2753,7 +2753,7 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
     auto paramsResult = eve::procgen::Procgen::newParamsHandle();
     REQUIRE(paramsResult.ok());
     auto paramsHandle = std::move(paramsResult).takeValue();
-    auto paramsView = eve::procgen::Procgen::resolve(paramsHandle);
+    auto paramsView   = eve::procgen::Procgen::resolve(paramsHandle);
     REQUIRE(paramsView.isBound());
     eve::procgen::Params &params = *paramsView;
     params.setSeed(11);
@@ -2913,17 +2913,17 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     maskSp->sprite()->visible = false;
 
     auto *pg = eve::procgen::Procgen::create();
-    auto paramsResult = eve::procgen::Procgen::newParamsHandle();
+    auto  paramsResult = eve::procgen::Procgen::newParamsHandle();
     REQUIRE(paramsResult.ok());
     auto paramsHandle = std::move(paramsResult).takeValue();
-    auto paramsView = eve::procgen::Procgen::resolve(paramsHandle);
+    auto paramsView   = eve::procgen::Procgen::resolve(paramsHandle);
     REQUIRE(paramsView.isBound());
     paramsView->setSeed(1);
     paramsView->setSize(25, 19);
     auto gridResult = pg->generateHandle("dungeon.bsp", paramsHandle);
     REQUIRE(gridResult.ok());
     auto gridHandle = std::move(gridResult).takeValue();
-    auto gridView = eve::procgen::Procgen::resolve(gridHandle);
+    auto gridView   = eve::procgen::Procgen::resolve(gridHandle);
     REQUIRE(gridView.isBound());
     pg->setPaletteGid("audit", "wall", 2);
     pg->setPaletteGid("audit", "floor", 5);

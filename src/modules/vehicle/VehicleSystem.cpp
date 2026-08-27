@@ -427,16 +427,14 @@ void VehicleSystem::processOrders(VehicleEntity& v, float dt) {
 
 eve::Result<void> VehicleSystem::pushOrder(VehicleEntity& v, const VehicleOrder& order) {
     auto orders = v.orders();
-    const bool replaces = order.type == VehicleOrderType::Move ||
-                          order.type == VehicleOrderType::AttackMove ||
+    const bool replaces = order.type == VehicleOrderType::Move || order.type == VehicleOrderType::AttackMove ||
                           order.type == VehicleOrderType::Stop || order.type == VehicleOrderType::Hold;
     auto queued = replaces ? orders->adapter->replace(order) : orders->adapter->append(order);
     if (!queued.ok()) return eve::Result<void>::failure(queued.status());
     const std::string id = std::move(queued).takeValue();
     if (id.empty()) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvariantViolation, "vehicle order adapter returned an empty id",
-            "orders"));
+            eve::DiagnosticCode::InvariantViolation, "vehicle order adapter returned an empty id", "orders"));
     }
     orders->adapter->syncCompatibility(*orders);
     v.motion()->arrived = false;
@@ -450,9 +448,7 @@ void VehicleSystem::clearOrders(VehicleEntity& v) {
     v.motion()->arrived = false;
 }
 
-const VehicleOrder* VehicleSystem::currentOrder(VehicleEntity& v) {
-    return v.orders()->adapter->current();
-}
+const VehicleOrder* VehicleSystem::currentOrder(VehicleEntity& v) { return v.orders()->adapter->current(); }
 
 float VehicleSystem::steerToward(VehicleEntity& v, float targetHeadingDeg) {
     const float delta = angleDelta(v.motion()->heading, targetHeadingDeg);
@@ -481,16 +477,14 @@ const PlayerControl* VehicleSystem::playerControls(int playerId) {
 }
 
 bool VehicleSystem::enterSeat(VehicleEntity& v, int seatIndex, int playerId) {
-    VehicleSeatContainerAdapter adapter(
-        eve::container::ContainerId("vehicle:seat:" + v.identity()->id), &v);
-    auto entered = adapter.enter(eve::container::SlotIndex(seatIndex), playerId);
+    VehicleSeatContainerAdapter adapter(eve::container::ContainerId("vehicle:seat:" + v.identity()->id), &v);
+    auto                        entered = adapter.enter(eve::container::SlotIndex(seatIndex), playerId);
     return entered.ok();
 }
 
 bool VehicleSystem::exitSeat(VehicleEntity& v, int seatIndex) {
-    VehicleSeatContainerAdapter adapter(
-        eve::container::ContainerId("vehicle:seat:" + v.identity()->id), &v);
-    auto exited = adapter.exit(eve::container::SlotIndex(seatIndex));
+    VehicleSeatContainerAdapter adapter(eve::container::ContainerId("vehicle:seat:" + v.identity()->id), &v);
+    auto                        exited = adapter.exit(eve::container::SlotIndex(seatIndex));
     return exited.ok();
 }
 

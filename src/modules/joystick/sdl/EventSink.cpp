@@ -6,10 +6,10 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
-#include "platform_event/PlatformEvent.h"
-#include "platform_event/PlatformEventSink.h"
 #include "joystick/Joystick.h"
 #include "joystick/Pad.h"
+#include "platform_event/PlatformEvent.h"
+#include "platform_event/PlatformEventSink.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_gamecontroller.h>
@@ -102,8 +102,8 @@ public:
 struct Register {
     Register() {
         static JoystickEventSink sink;
-        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(
-            &sink, eve::platform_event::IPlatformEventSink::kInput);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(&sink,
+                                                                       eve::platform_event::IPlatformEventSink::kInput);
     }
 } g_register;
 

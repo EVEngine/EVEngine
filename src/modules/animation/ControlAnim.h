@@ -60,7 +60,7 @@ public:
     std::string getPropertyName(int index) const;
 
     /** @brief Advance all channels by one scheduler-owned deterministic step. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
     /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
 
@@ -90,8 +90,8 @@ private:
 
     std::unordered_map<std::string, Channel> channels_;
     std::vector<std::string> order_;
-    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
-    bool hasLastTick_ = false;
+    eve::SimulationTick                      lastTick_    = eve::SimulationTick::zero();
+    bool                                     hasLastTick_ = false;
 
     void updateUnchecked(float dt);
 };

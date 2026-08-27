@@ -31,7 +31,7 @@ public:
         return StrongUint64(value_ + 1);
     }
 
-    friend constexpr bool operator==(const StrongUint64&, const StrongUint64&) noexcept = default;
+    friend constexpr bool operator==(const StrongUint64&, const StrongUint64&) noexcept  = default;
     friend constexpr auto operator<=>(const StrongUint64&, const StrongUint64&) noexcept = default;
 
 private:

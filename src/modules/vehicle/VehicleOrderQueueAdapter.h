@@ -8,8 +8,8 @@
  * generic orders module; the adapter only maps their kind and stable id.
  */
 
-#include "vehicle/VehicleTypes.h"
 #include "common/Result.h"
+#include "vehicle/VehicleTypes.h"
 
 #include <memory>
 #include <string>

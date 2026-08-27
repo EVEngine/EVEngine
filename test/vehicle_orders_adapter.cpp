@@ -37,8 +37,8 @@ std::string takeId(eve::Result<std::string> result) {
 
 TEST_CASE("vehicle.orders.adapterUsesGenericPriorityAndLifecycle") {
     VehicleOrderQueueAdapter adapter;
-    const std::string moveId   = takeId(adapter.append(moveOrder(), 1));
-    const std::string attackId = takeId(adapter.append(attackOrder(), 5));
+    const std::string        moveId   = takeId(adapter.append(moveOrder(), 1));
+    const std::string        attackId = takeId(adapter.append(attackOrder(), 5));
 
     REQUIRE(!moveId.empty());
     REQUIRE(!attackId.empty());
@@ -54,8 +54,8 @@ TEST_CASE("vehicle.orders.adapterUsesGenericPriorityAndLifecycle") {
 
 TEST_CASE("vehicle.orders.adapterTimeoutActivatesNextDomainOrder") {
     VehicleOrderQueueAdapter adapter;
-    const std::string timedId = takeId(adapter.append(moveOrder(), 0, 0.25));
-    const std::string nextId = takeId(adapter.append(attackOrder()));
+    const std::string        timedId = takeId(adapter.append(moveOrder(), 0, 0.25));
+    const std::string        nextId  = takeId(adapter.append(attackOrder()));
 
     REQUIRE(!timedId.empty());
     REQUIRE(!nextId.empty());
@@ -70,7 +70,7 @@ TEST_CASE("vehicle.orders.adapterTimeoutActivatesNextDomainOrder") {
 
 TEST_CASE("vehicle.orders.adapterInterruptHonoursGenericPriority") {
     VehicleOrderQueueAdapter adapter;
-    const std::string activeId = takeId(adapter.append(moveOrder(), 20));
+    const std::string        activeId = takeId(adapter.append(moveOrder(), 20));
     REQUIRE(!activeId.empty());
 
     CHECK(!adapter.interrupt(attackOrder(), 19).hasValue());
@@ -86,9 +86,9 @@ TEST_CASE("vehicle.orders.adapterInterruptHonoursGenericPriority") {
 
 TEST_CASE("vehicle.orders.adapterReplaceRefreshesCompatibilityProjection") {
     eve::vehicle::VehicleEntity::Orders legacy;
-    VehicleOrderQueueAdapter adapter;
+    VehicleOrderQueueAdapter            adapter;
 
-    const std::string moveId = takeId(adapter.append(moveOrder()));
+    const std::string moveId        = takeId(adapter.append(moveOrder()));
     const std::string firstAttackId = takeId(adapter.append(attackOrder()));
     REQUIRE(!moveId.empty());
     REQUIRE(!firstAttackId.empty());
@@ -106,8 +106,8 @@ TEST_CASE("vehicle.orders.adapterReplaceRefreshesCompatibilityProjection") {
 
 TEST_CASE("vehicle.orders.adapterCopyKeepsLifecycleAndPayloadIndependent") {
     VehicleOrderQueueAdapter original;
-    const std::string moveId = takeId(original.append(moveOrder(), 3));
-    const std::string attackId = takeId(original.append(attackOrder(), 1));
+    const std::string        moveId   = takeId(original.append(moveOrder(), 3));
+    const std::string        attackId = takeId(original.append(attackOrder(), 1));
     REQUIRE(!moveId.empty());
     REQUIRE(!attackId.empty());
 
@@ -138,7 +138,7 @@ TEST_CASE("vehicle.orders.adapterCopyKeepsLifecycleAndPayloadIndependent") {
 
 TEST_CASE("vehicle.orders.componentCopyClonesAdapterNotLegacyProjection") {
     eve::vehicle::VehicleEntity::Orders source;
-    const std::string sourceId = takeId(source.adapter->append(attackOrder(), 4, 2.0));
+    const std::string                   sourceId = takeId(source.adapter->append(attackOrder(), 4, 2.0));
     REQUIRE(!sourceId.empty());
     source.adapter->syncCompatibility(source);
 

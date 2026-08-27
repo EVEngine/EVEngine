@@ -17,30 +17,29 @@ namespace eve::test_support {
 struct StatePatchBatchLease {
     StatePatchBatchLease() = default;
 
-    StatePatchBatchLease(eve::statepatch::Store* owner,
-                         eve::statepatch::PatchBatchHandleRef reference,
+    StatePatchBatchLease(eve::statepatch::Store* owner, eve::statepatch::PatchBatchHandleRef reference,
                          eve::script::Borrowed<eve::statepatch::PatchBatch> view) noexcept
         : owner(owner), reference(reference), view(view) {}
 
-    StatePatchBatchLease(const StatePatchBatchLease&) = delete;
+    StatePatchBatchLease(const StatePatchBatchLease&)            = delete;
     StatePatchBatchLease& operator=(const StatePatchBatchLease&) = delete;
 
     StatePatchBatchLease(StatePatchBatchLease&& other) noexcept
         : owner(other.owner), reference(other.reference), view(other.view) {
-        other.owner = nullptr;
+        other.owner     = nullptr;
         other.reference = {};
-        other.view = {};
+        other.view      = {};
     }
 
     StatePatchBatchLease& operator=(StatePatchBatchLease&& other) noexcept {
         if (this == &other) return *this;
         release();
-        owner = other.owner;
-        reference = other.reference;
-        view = other.view;
-        other.owner = nullptr;
+        owner           = other.owner;
+        reference       = other.reference;
+        view            = other.view;
+        other.owner     = nullptr;
         other.reference = {};
-        other.view = {};
+        other.view      = {};
         return *this;
     }
 
@@ -50,13 +49,13 @@ struct StatePatchBatchLease {
     void release() noexcept {
         if (owner != nullptr && reference.isValid())
             owner->releaseBatch(reference).ignore("release test StatePatch batch");
-        owner = nullptr;
+        owner     = nullptr;
         reference = {};
-        view = {};
+        view      = {};
     }
 
-    eve::statepatch::Store* owner = nullptr;
-    eve::statepatch::PatchBatchHandleRef reference;
+    eve::statepatch::Store*                            owner = nullptr;
+    eve::statepatch::PatchBatchHandleRef               reference;
     eve::script::Borrowed<eve::statepatch::PatchBatch> view;
 };
 
@@ -70,7 +69,7 @@ inline StatePatchBatchLease openStatePatchBatch(eve::statepatch::Store& store) {
     if (!created.ok()) return {};
 
     const auto reference = std::move(created).takeValue();
-    auto view = store.resolveBatch(reference);
+    auto       view      = store.resolveBatch(reference);
     if (!view.isBound()) {
         store.releaseBatch(reference).ignore("release unresolved test StatePatch batch");
         return {};

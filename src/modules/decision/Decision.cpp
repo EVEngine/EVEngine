@@ -1,5 +1,4 @@
 #include "decision/Decision.h"
-#include "common/SquirrelBinding.h"
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -9,6 +8,7 @@
 #include <sstream>
 #include <utility>
 #include "common/Json.h"
+#include "common/SquirrelBinding.h"
 namespace eve::decision {
 namespace {
 
@@ -22,10 +22,8 @@ struct ScriptDecisionContext {
 };
 
 template <class T>
-eve::Result<T> decisionFailure(eve::DiagnosticCode code, std::string message,
-                              std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {}, "decision"));
+eve::Result<T> decisionFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "decision"));
 }
 
 eve::Result<void> decisionApplied() {
@@ -38,27 +36,22 @@ eve::Result<bool> decisionTriggered(bool triggered) {
 }
 
 eve::Result<void> snapshotFailure(std::string path, std::string message) {
-    return decisionFailure<void>(eve::DiagnosticCode::SerializationError,
-                                 std::move(message), std::move(path));
+    return decisionFailure<void>(eve::DiagnosticCode::SerializationError, std::move(message), std::move(path));
 }
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference)
-        return eve::script::projectStatusResult(vm, reference.status(), false, false);
-    const Ref ref = std::move(reference).takeValue();
-    auto object = eve::script::makeOwnedSquirrelInstance<Proxy>(
-        vm, std::make_unique<Proxy>(ref));
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    const Ref ref    = std::move(reference).takeValue();
+    auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned decision proxy");
-        std::invoke(std::forward<Release>(release), ref).ignore(
-            "rollback failed owned decision allocation");
+        std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned decision allocation");
         return eve::script::projectStatusResult(vm, status, false, false);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(
-        vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -95,17 +88,16 @@ eve::Result<void> DecisionContext::set(const std::string& b, const std::string& 
     std::string e;
     auto        d = eve::json::Document::parse(j, &e);
     if (b.empty())
-        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "blackboard name must not be empty", "board");
+        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "blackboard name must not be empty",
+                                     "board");
     if (k.empty())
-        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "blackboard key must not be empty", "key");
+        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "blackboard key must not be empty", "key");
     if (!d.valid())
-        return decisionFailure<void>(eve::DiagnosticCode::ParseError,
-                                     e.empty() ? "invalid blackboard JSON" : e, "value");
+        return decisionFailure<void>(eve::DiagnosticCode::ParseError, e.empty() ? "invalid blackboard JSON" : e,
+                                     "value");
     if (!scalar(d.root()))
-        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "blackboard value must be a JSON scalar", "value");
+        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "blackboard value must be a JSON scalar",
+                                     "value");
     boards_[b][k] = canon(d.root());
     return decisionApplied();
 }
@@ -116,10 +108,10 @@ std::string DecisionContext::get(const std::string& b, const std::string& k, con
     return j == i->second.end() ? f : j->second;
 }
 eve::Result<void> DecisionContext::addTransition(const std::string& m, const std::string& f, const std::string& t,
-                                                const std::string& to) {
+                                                 const std::string& to) {
     if (m.empty() || f.empty() || t.empty() || to.empty())
-        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "FSM transition names must not be empty", "transition");
+        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "FSM transition names must not be empty",
+                                     "transition");
     transitions_[m][{f, t}] = to;
     return decisionApplied();
 }
@@ -137,8 +129,7 @@ eve::Result<bool> DecisionContext::trigger(const std::string& m, const std::stri
     auto s = states_.find(m);
     auto a = transitions_.find(m);
     if (s == states_.end())
-        return decisionFailure<bool>(eve::DiagnosticCode::NotFound,
-                                     "FSM machine has no current state", "machine");
+        return decisionFailure<bool>(eve::DiagnosticCode::NotFound, "FSM machine has no current state", "machine");
     if (a == transitions_.end()) return decisionTriggered(false);
     auto i = a->second.find({s->second, t});
     if (i == a->second.end()) return decisionTriggered(false);
@@ -182,40 +173,38 @@ std::string DecisionContext::choose(const std::string& s) {
 }
 eve::Result<void> DecisionContext::newGrid(const std::string& n, int w, int h, float c, float x, float y) {
     if (n.empty())
-        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "influence grid name must not be empty", "name");
+        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "influence grid name must not be empty",
+                                     "name");
     if (w <= 0 || h <= 0 || size_t(w) > 10000000 / size_t(h))
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
                                      "influence grid dimensions are invalid or too large", "dimensions");
     if (!std::isfinite(c) || c <= 0 || !std::isfinite(x) || !std::isfinite(y))
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "influence grid geometry must be finite and have a positive cell size", "geometry");
+                                     "influence grid geometry must be finite and have a positive cell size",
+                                     "geometry");
     grids_[n] = {w, h, c, x, y, std::vector<float>(size_t(w) * h)};
     return decisionApplied();
 }
 eve::Result<void> DecisionContext::setCell(const std::string& n, int x, int y, float v) {
     auto i = grids_.find(n);
     if (i == grids_.end())
-        return decisionFailure<void>(eve::DiagnosticCode::NotFound,
-                                     "influence grid does not exist", "grid");
+        return decisionFailure<void>(eve::DiagnosticCode::NotFound, "influence grid does not exist", "grid");
     if (x < 0 || y < 0 || x >= i->second.w || y >= i->second.h || !std::isfinite(v))
-        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "influence grid cell or value is invalid", "cell");
+        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "influence grid cell or value is invalid",
+                                     "cell");
     i->second.values[size_t(y) * i->second.w + x] = v;
     return decisionApplied();
 }
 eve::Result<void> DecisionContext::addCell(const std::string& n, int x, int y, float v) {
     auto i = grids_.find(n);
     if (i == grids_.end())
-        return decisionFailure<void>(eve::DiagnosticCode::NotFound,
-                                     "influence grid does not exist", "grid");
+        return decisionFailure<void>(eve::DiagnosticCode::NotFound, "influence grid does not exist", "grid");
     if (x < 0 || y < 0 || x >= i->second.w || y >= i->second.h || !std::isfinite(v))
-        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "influence grid cell or value is invalid", "cell");
+        return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "influence grid cell or value is invalid",
+                                     "cell");
     auto& z = i->second.values[size_t(y) * i->second.w + x];
     if (!std::isfinite(z + v))
-        return decisionFailure<void>(eve::DiagnosticCode::Failed,
-                                     "influence grid cell update overflowed", "cell");
+        return decisionFailure<void>(eve::DiagnosticCode::Failed, "influence grid cell update overflowed", "cell");
     z += v;
     return decisionApplied();
 }
@@ -277,13 +266,13 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
     std::string e;
     auto        d = eve::json::Document::parse(j, &e);
     if (!d.valid())
-        return decisionFailure<void>(eve::DiagnosticCode::ParseError,
-                                     e.empty() ? "invalid decision snapshot JSON" : e, "snapshot");
+        return decisionFailure<void>(eve::DiagnosticCode::ParseError, e.empty() ? "invalid decision snapshot JSON" : e,
+                                     "snapshot");
     if (!d.root().isObject()) return snapshotFailure("snapshot", "decision snapshot must be a JSON object");
     const auto version = d.root().get("version");
     if (!version.isIntegerLiteral() || version.asInt() != 1)
-        return decisionFailure<void>(eve::DiagnosticCode::UnknownVersion,
-                                     "unsupported decision snapshot version", "version");
+        return decisionFailure<void>(eve::DiagnosticCode::UnknownVersion, "unsupported decision snapshot version",
+                                     "version");
     DecisionContext n;
     auto            b = d.root().get("boards");
     if (!b.isObject()) return snapshotFailure("boards", "decision snapshot boards must be an object");
@@ -292,8 +281,8 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
         if (!v.isObject()) return snapshotFailure("boards." + bn, "blackboard must be an object");
         for (auto& k : v.keys()) {
             const auto value = v.get(k.c_str());
-            if (!scalar(value)) return snapshotFailure("boards." + bn + "." + k,
-                                                        "blackboard value must be a JSON scalar");
+            if (!scalar(value))
+                return snapshotFailure("boards." + bn + "." + k, "blackboard value must be a JSON scalar");
             auto result = n.set(bn, k, canon(value));
             if (!result.ok()) return eve::Result<void>::failure(result.status());
         }
@@ -329,12 +318,12 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
         int  w = v.getInt("w"), h = v.getInt("h");
         const auto name = v.get("name");
         const auto cell = v.get("cell");
-        const auto ox = v.get("ox");
-        const auto oy = v.get("oy");
+        const auto ox   = v.get("ox");
+        const auto oy   = v.get("oy");
         if (!name.isString() || !cell.isNumber() || !ox.isNumber() || !oy.isNumber())
             return snapshotFailure("grids[" + std::to_string(i) + "]", "influence grid fields are malformed");
-        auto grid = n.newGrid(name.asString(), w, h, float(cell.asDouble()), float(ox.asDouble()),
-                              float(oy.asDouble()));
+        auto grid =
+            n.newGrid(name.asString(), w, h, float(cell.asDouble()), float(ox.asDouble()), float(oy.asDouble()));
         if (!grid.ok()) return eve::Result<void>::failure(grid.status());
         auto vals = v.get("values");
         if (!vals.isArray() || vals.size() != size_t(w) * h)
@@ -345,8 +334,7 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
             if (!value.isNumber() || !std::isfinite(value.asDouble()))
                 return snapshotFailure("grids[" + std::to_string(i) + "].values[" + std::to_string(z) + "]",
                                        "influence grid cell must be a finite number");
-            auto result = n.setCell(name.asString(), int(z % size_t(w)), int(z / size_t(w)),
-                                    float(value.asDouble()));
+            auto result = n.setCell(name.asString(), int(z % size_t(w)), int(z / size_t(w)), float(value.asDouble()));
             if (!result.ok()) return eve::Result<void>::failure(result.status());
         }
     }
@@ -361,8 +349,7 @@ eve::Result<DecisionContextHandleRef> Decision::newContext() {
     return module->contexts_.emplace(std::make_unique<DecisionContext>());
 }
 
-eve::script::Borrowed<DecisionContext> Decision::resolve(
-    DecisionContextHandleRef reference) noexcept {
+eve::script::Borrowed<DecisionContext> Decision::resolve(DecisionContextHandleRef reference) noexcept {
     Decision* module = ModuleManager::getInstance<Decision>("Decision");
     if (!module) return {};
     return module->contexts_.resolve(reference);
@@ -371,8 +358,8 @@ eve::script::Borrowed<DecisionContext> Decision::resolve(
 eve::Result<void> Decision::release(DecisionContextHandleRef reference) {
     Decision* module = ModuleManager::getInstance<Decision>("Decision");
     if (!module)
-        return decisionFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                     "Decision module is no longer loaded", "context");
+        return decisionFailure<void>(eve::DiagnosticCode::StaleHandle, "Decision module is no longer loaded",
+                                     "context");
     return module->contexts_.erase(reference);
 }
 
@@ -387,67 +374,62 @@ void Decision::expose(ssq::Table& t) {
     const HSQUIRRELVM vm = t.getHandle();
     auto x = t.addClass<DecisionContext>("DecisionContext", std::function<DecisionContext*()>([]() { return nullptr; }),
                                          false);
-    x.addFunc("set", [vm](DecisionContext* value, const std::string& board,
-                           const std::string& key, const std::string& json) {
-        if (!value)
-            return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "decision context must not be null", "context"));
-        return eve::script::projectResult(vm, value->set(board, key, json));
-    });
+    x.addFunc("set",
+              [vm](DecisionContext* value, const std::string& board, const std::string& key, const std::string& json) {
+                  if (!value)
+                      return eve::script::projectResult(
+                          vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                    "decision context must not be null", "context"));
+                  return eve::script::projectResult(vm, value->set(board, key, json));
+              });
     x.addFunc("get", &DecisionContext::get);
-    x.addFunc("addTransition", [vm](DecisionContext* value, const std::string& machine,
-                                     const std::string& from, const std::string& trigger,
-                                     const std::string& to) {
+    x.addFunc("addTransition", [vm](DecisionContext* value, const std::string& machine, const std::string& from,
+                                    const std::string& trigger, const std::string& to) {
         if (!value)
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "decision context must not be null", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "decision context must not be null",
+                                          "context"));
         return eve::script::projectResult(vm, value->addTransition(machine, from, trigger, to));
     });
-    x.addFunc("setState", [vm](DecisionContext* value, const std::string& machine,
-                                const std::string& state) {
+    x.addFunc("setState", [vm](DecisionContext* value, const std::string& machine, const std::string& state) {
         if (!value)
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "decision context must not be null", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "decision context must not be null",
+                                          "context"));
         return eve::script::projectResult(vm, value->setState(machine, state));
     });
-    x.addFunc("trigger", [vm](DecisionContext* value, const std::string& machine,
-                               const std::string& trigger) {
+    x.addFunc("trigger", [vm](DecisionContext* value, const std::string& machine, const std::string& trigger) {
         if (!value)
-            return eve::script::projectResult(
-                vm, decisionFailure<bool>(eve::DiagnosticCode::InvalidArgument,
-                                          "decision context must not be null", "context"),
-                [](bool fired) { return eve::Value(fired); });
+            return eve::script::projectResult(vm,
+                                              decisionFailure<bool>(eve::DiagnosticCode::InvalidArgument,
+                                                                    "decision context must not be null", "context"),
+                                              [](bool fired) { return eve::Value(fired); });
         return eve::script::projectResult(vm, value->trigger(machine, trigger),
                                           [](bool fired) { return eve::Value(fired); });
     });
     x.addFunc("state", &DecisionContext::state);
     x.addFunc("utility", [](DecisionContext*, const std::string& s) { return DecisionContext::utility(s); });
     x.addFunc("choose", [](DecisionContext*, const std::string& s) { return DecisionContext::choose(s); });
-    x.addFunc("newGrid", [vm](DecisionContext* value, const std::string& name,
-                               int width, int height, float cellSize, float originX, float originY) {
+    x.addFunc("newGrid", [vm](DecisionContext* value, const std::string& name, int width, int height, float cellSize,
+                              float originX, float originY) {
         if (!value)
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "decision context must not be null", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "decision context must not be null",
+                                          "context"));
         return eve::script::projectResult(vm, value->newGrid(name, width, height, cellSize, originX, originY));
     });
-    x.addFunc("setCell", [vm](DecisionContext* value, const std::string& name,
-                               int x, int y, float cell) {
+    x.addFunc("setCell", [vm](DecisionContext* value, const std::string& name, int x, int y, float cell) {
         if (!value)
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "decision context must not be null", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "decision context must not be null",
+                                          "context"));
         return eve::script::projectResult(vm, value->setCell(name, x, y, cell));
     });
-    x.addFunc("addCell", [vm](DecisionContext* value, const std::string& name,
-                               int x, int y, float delta) {
+    x.addFunc("addCell", [vm](DecisionContext* value, const std::string& name, int x, int y, float delta) {
         if (!value)
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "decision context must not be null", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "decision context must not be null",
+                                          "context"));
         return eve::script::projectResult(vm, value->addCell(name, x, y, delta));
     });
     x.addFunc("sample", &DecisionContext::sample);
@@ -455,13 +437,12 @@ void Decision::expose(ssq::Table& t) {
     x.addFunc("restoreJson", [vm](DecisionContext* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "decision context must not be null", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "decision context must not be null",
+                                          "context"));
         return eve::script::projectResult(vm, value->restoreJson(json));
     });
     auto owned = t.addClass<ScriptDecisionContext>(
-        "DecisionContextProxy",
-        std::function<ScriptDecisionContext*()>([] { return nullptr; }), true);
+        "DecisionContextProxy", std::function<ScriptDecisionContext*()>([] { return nullptr; }), true);
     owned.addFunc("ownership", [](ScriptDecisionContext*) { return std::string("owned"); });
     owned.addFunc("ownerEpoch", [](ScriptDecisionContext* value) {
         return value ? static_cast<int64_t>(value->reference.ownerEpoch) : int64_t{0};
@@ -469,9 +450,8 @@ void Decision::expose(ssq::Table& t) {
     owned.addFunc("handle", [](ScriptDecisionContext* value) {
         return value ? static_cast<int64_t>(value->reference.packed()) : int64_t{0};
     });
-    owned.addFunc("isStale", [](ScriptDecisionContext* value) {
-        return !value || Decision::isStale(value->reference);
-    });
+    owned.addFunc("isStale",
+                  [](ScriptDecisionContext* value) { return !value || Decision::isStale(value->reference); });
     owned.addFunc("release", [vm](ScriptDecisionContext* value) {
         if (!value)
             return eve::script::projectResult(
@@ -479,8 +459,7 @@ void Decision::expose(ssq::Table& t) {
                                           "owned decision context proxy must not be null", "context"));
         return eve::script::projectResult(vm, Decision::release(value->reference));
     });
-    owned.addFunc("setState", [vm](ScriptDecisionContext* value, const std::string& machine,
-                                    const std::string& state) {
+    owned.addFunc("setState", [vm](ScriptDecisionContext* value, const std::string& machine, const std::string& state) {
         if (!value)
             return eve::script::projectResult(
                 vm, decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
@@ -488,109 +467,95 @@ void Decision::expose(ssq::Table& t) {
         auto view = Decision::resolve(value->reference);
         if (!view.isBound())
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                          "owned decision context handle is stale", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle, "owned decision context handle is stale",
+                                          "context"));
         return eve::script::projectResult(vm, view->setState(machine, state));
     });
-    owned.addFunc("set", [vm](ScriptDecisionContext* value, const std::string& board,
-                               const std::string& key, const std::string& json) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+    owned.addFunc("set", [vm](ScriptDecisionContext* value, const std::string& board, const std::string& key,
+                              const std::string& json) {
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         if (!view.isBound())
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                          "owned decision context handle is stale", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle, "owned decision context handle is stale",
+                                          "context"));
         return eve::script::projectResult(vm, view->set(board, key, json));
     });
-    owned.addFunc("get", [](ScriptDecisionContext* value, const std::string& board,
-                              const std::string& key, const std::string& fallback) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+    owned.addFunc("get", [](ScriptDecisionContext* value, const std::string& board, const std::string& key,
+                            const std::string& fallback) {
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         return view.isBound() ? view->get(board, key, fallback) : fallback;
     });
     owned.addFunc("addTransition", [vm](ScriptDecisionContext* value, const std::string& machine,
-                                         const std::string& from, const std::string& trigger,
-                                         const std::string& to) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+                                        const std::string& from, const std::string& trigger, const std::string& to) {
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         if (!view.isBound())
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                          "owned decision context handle is stale", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle, "owned decision context handle is stale",
+                                          "context"));
         return eve::script::projectResult(vm, view->addTransition(machine, from, trigger, to));
     });
-    owned.addFunc("trigger", [vm](ScriptDecisionContext* value, const std::string& machine,
-                                   const std::string& trigger) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
-        if (!view.isBound())
-            return eve::script::projectResult(
-                vm, decisionFailure<bool>(eve::DiagnosticCode::StaleHandle,
-                                          "owned decision context handle is stale", "context"),
-                [](bool fired) { return eve::Value(fired); });
-        return eve::script::projectResult(vm, view->trigger(machine, trigger),
-                                          [](bool fired) { return eve::Value(fired); });
-    });
+    owned.addFunc(
+        "trigger", [vm](ScriptDecisionContext* value, const std::string& machine, const std::string& trigger) {
+            auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
+            if (!view.isBound())
+                return eve::script::projectResult(
+                    vm,
+                    decisionFailure<bool>(eve::DiagnosticCode::StaleHandle, "owned decision context handle is stale",
+                                          "context"),
+                    [](bool fired) { return eve::Value(fired); });
+            return eve::script::projectResult(vm, view->trigger(machine, trigger),
+                                              [](bool fired) { return eve::Value(fired); });
+        });
     owned.addFunc("state", [](ScriptDecisionContext* value, const std::string& machine) {
         auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         return view.isBound() ? view->state(machine) : std::string{};
     });
-    owned.addFunc("newGrid", [vm](ScriptDecisionContext* value, const std::string& name,
-                                   int width, int height, float cellSize, float originX, float originY) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+    owned.addFunc("newGrid", [vm](ScriptDecisionContext* value, const std::string& name, int width, int height,
+                                  float cellSize, float originX, float originY) {
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         if (!view.isBound())
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                          "owned decision context handle is stale", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle, "owned decision context handle is stale",
+                                          "context"));
         return eve::script::projectResult(vm, view->newGrid(name, width, height, cellSize, originX, originY));
     });
-    owned.addFunc("setCell", [vm](ScriptDecisionContext* value, const std::string& name,
-                                   int x, int y, float cell) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+    owned.addFunc("setCell", [vm](ScriptDecisionContext* value, const std::string& name, int x, int y, float cell) {
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         if (!view.isBound())
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                          "owned decision context handle is stale", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle, "owned decision context handle is stale",
+                                          "context"));
         return eve::script::projectResult(vm, view->setCell(name, x, y, cell));
     });
-    owned.addFunc("addCell", [vm](ScriptDecisionContext* value, const std::string& name,
-                                   int x, int y, float delta) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+    owned.addFunc("addCell", [vm](ScriptDecisionContext* value, const std::string& name, int x, int y, float delta) {
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         if (!view.isBound())
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                          "owned decision context handle is stale", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle, "owned decision context handle is stale",
+                                          "context"));
         return eve::script::projectResult(vm, view->addCell(name, x, y, delta));
     });
-    owned.addFunc("sample", [](ScriptDecisionContext* value, const std::string& name,
-                                 float worldX, float worldY, float fallback) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+    owned.addFunc("sample", [](ScriptDecisionContext* value, const std::string& name, float worldX, float worldY,
+                               float fallback) {
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         return view.isBound() ? view->sample(name, worldX, worldY, fallback) : fallback;
     });
     owned.addFunc("snapshotJson", [](ScriptDecisionContext* value) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         return view.isBound() ? view->snapshotJson() : std::string{};
     });
     owned.addFunc("restoreJson", [vm](ScriptDecisionContext* value, const std::string& json) {
-        auto view = value ? Decision::resolve(value->reference)
-                          : eve::script::Borrowed<DecisionContext>();
+        auto view = value ? Decision::resolve(value->reference) : eve::script::Borrowed<DecisionContext>();
         if (!view.isBound())
             return eve::script::projectResult(
-                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                          "owned decision context handle is stale", "context"));
+                vm, decisionFailure<void>(eve::DiagnosticCode::StaleHandle, "owned decision context handle is stale",
+                                          "context"));
         return eve::script::projectResult(vm, view->restoreJson(json));
     });
-    owned.addFunc("utility", [](ScriptDecisionContext*, const std::string& input) {
-        return DecisionContext::utility(input);
-    });
-    owned.addFunc("choose", [](ScriptDecisionContext*, const std::string& input) {
-        return DecisionContext::choose(input);
-    });
+    owned.addFunc("utility",
+                  [](ScriptDecisionContext*, const std::string& input) { return DecisionContext::utility(input); });
+    owned.addFunc("choose",
+                  [](ScriptDecisionContext*, const std::string& input) { return DecisionContext::choose(input); });
     auto c = t.addClass(name, Decision::create, false);
     expose(c);
 }
@@ -598,8 +563,7 @@ void Decision::expose(ssq::Class& c) {
     c.addFunc("getName", &Decision::getName);
     c.addFunc("newContext", [vm = c.getHandle()](Decision*) -> ssq::Table {
         return makeOwnedProxy<DecisionContextHandleRef, ScriptDecisionContext>(
-            vm, Decision::newContext(),
-            [](DecisionContextHandleRef ref) { return Decision::release(ref); });
+            vm, Decision::newContext(), [](DecisionContextHandleRef ref) { return Decision::release(ref); });
     });
 }
 }  // namespace eve::decision

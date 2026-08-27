@@ -7,9 +7,9 @@
  * build state. Map, scene, graphics and image adapters belong to the public
  * Procgen facade or to their adapter translation units, not to this include set.
  */
-#include "procgen/GeneratorRegistry.h"
-#include "procgen/GeneratedArtifact.h"
 #include "procgen/ArtifactPublish.h"
+#include "procgen/GeneratedArtifact.h"
+#include "procgen/GeneratorRegistry.h"
 #include "procgen/Grid2D.h"
 #include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"

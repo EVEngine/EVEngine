@@ -77,9 +77,7 @@ int FluidSimulation::spawnDrop(const glm::vec3& center, float radius, int count)
     return added;
 }
 
-void FluidSimulation::step(float dt) {
-    step(dt, std::max(1, params_.iterations));
-}
+void FluidSimulation::step(float dt) { step(dt, std::max(1, params_.iterations)); }
 
 void FluidSimulation::step(float dt, int substeps) {
     if (count_ <= 0 || sdf_.voxelCount() <= 0) return;

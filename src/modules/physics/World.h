@@ -7,8 +7,8 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 class b2World;
@@ -88,8 +88,7 @@ public:
      * @remarks A rejected step leaves solver state and the current tick unchanged.
      */
     [[nodiscard("check the physics step outcome or explicitly ignore it")]]
-    eve::Result<void> step(const eve::SimulationStep& step,
-                           const SimulationSettings& settings = {});
+    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings = {});
 
     /** @brief Snapshot of completed backend steps and logical simulation time. */
     [[nodiscard]] SimulationObservation simulationObservation() const noexcept;
@@ -117,8 +116,7 @@ public:
      * @remarks The provider is not retained; this call is owner-thread-only.
      */
     [[nodiscard("check or persist the physics snapshot")]]
-    eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider &hashProvider) const;
 
     /**
      * @brief Restores a verified snapshot without exposing partial state.
@@ -129,8 +127,7 @@ public:
      *          never persisted or reused from its payload.
      */
     [[nodiscard("check the physics snapshot restore outcome")]]
-    eve::Result<void> restore(const eve::SnapshotEnvelope& snapshot,
-                              const eve::SnapshotHashProvider& hashProvider);
+    eve::Result<void> restore(const eve::SnapshotEnvelope &snapshot, const eve::SnapshotHashProvider &hashProvider);
 
     /** @brief Sets the world gravity vector in pixels/s^2. */
     void  setGravity(float gx, float gy);
@@ -260,14 +257,14 @@ private:
     b2World      *world_ = nullptr;
     ContactRelay *relay_ = nullptr;
     std::unique_ptr<ISimulationBackend> simulation_;
-    PhysicsWorldHandle runtimeHandle_ = PhysicsWorldHandle::invalid();
+    PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
     float         meter_ = 30.f;
     int           nextId_ = 1;
-    std::uint32_t nextBodyHandleIndex_ = 1u;
+    std::uint32_t                       nextBodyHandleIndex_    = 1u;
     bool          destroyed_ = false;
-    eve::SimulationTick simulationTick_ = eve::SimulationTick::zero();
-    eve::Status backendSelectionStatus_ = eve::Status::success();
-    bool backendFallback_ = false;
+    eve::SimulationTick                 simulationTick_         = eve::SimulationTick::zero();
+    eve::Status                         backendSelectionStatus_ = eve::Status::success();
+    bool                                backendFallback_        = false;
 
     std::unordered_set<Body *>    bodies_;
     std::unordered_set<Fixture *> fixtures_;

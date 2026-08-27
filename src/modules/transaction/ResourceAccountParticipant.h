@@ -40,14 +40,13 @@ public:
      * @param cost Validated or pending-validation canonical resource cost.
      * @param name Stable diagnostic name used by Coordinator.
      */
-    ResourceDebitParticipant(eve::resource::IResourceAccount& account,
-                             eve::resource::CostSpec cost,
+    ResourceDebitParticipant(eve::resource::IResourceAccount& account, eve::resource::CostSpec cost,
                              std::string name = "resource-debit");
 
-    ResourceDebitParticipant(const ResourceDebitParticipant&) = delete;
+    ResourceDebitParticipant(const ResourceDebitParticipant&)            = delete;
     ResourceDebitParticipant& operator=(const ResourceDebitParticipant&) = delete;
-    ResourceDebitParticipant(ResourceDebitParticipant&&) = delete;
-    ResourceDebitParticipant& operator=(ResourceDebitParticipant&&) = delete;
+    ResourceDebitParticipant(ResourceDebitParticipant&&)                 = delete;
+    ResourceDebitParticipant& operator=(ResourceDebitParticipant&&)      = delete;
 
     /** @brief Return the diagnostic name supplied at construction. */
     [[nodiscard]] std::string_view name() const noexcept override { return name_; }
@@ -69,10 +68,10 @@ public:
 
 private:
     eve::resource::IResourceAccount& account_;
-    eve::resource::CostSpec           cost_;
-    eve::resource::Reservation        reservation_;
-    std::string                       name_;
-    ResourceDebitState                state_ = ResourceDebitState::Idle;
+    eve::resource::CostSpec          cost_;
+    eve::resource::Reservation       reservation_;
+    std::string                      name_;
+    ResourceDebitState               state_ = ResourceDebitState::Idle;
 };
 
 }  // namespace eve::transaction

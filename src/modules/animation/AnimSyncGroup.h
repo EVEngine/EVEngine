@@ -30,8 +30,8 @@ private:
     int leader_ = 0;
     float phase_ = 0.f;
     bool usedMarkerSync_ = false;
-    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
-    bool hasLastTick_ = false;
+    eve::SimulationTick lastTick_       = eve::SimulationTick::zero();
+    bool                hasLastTick_    = false;
 };
 
 }  // namespace eve::animation

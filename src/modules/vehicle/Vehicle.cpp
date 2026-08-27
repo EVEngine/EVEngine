@@ -144,11 +144,11 @@ int Vehicle::registerVehiclesFromJson(const std::string& json) {
         return 0;
     }
 
-    int n = 0;
+    int        n       = 0;
     const auto publish = [this, &n](const eve::Value& value) {
         const auto* object = value.getIf<eve::Value::Object>();
         if (object == nullptr) return;
-        const auto id = object->find("id");
+        const auto  id   = object->find("id");
         const auto* name = id == object->end() ? nullptr : id->second.getIf<std::string>();
         if (name == nullptr || name->empty()) return;
 
@@ -158,18 +158,18 @@ int Vehicle::registerVehiclesFromJson(const std::string& json) {
             return;
         }
         eve::definitions::Definition source;
-        source.type = "vehicle";
-        source.id = *name;
+        source.type    = "vehicle";
+        source.id      = *name;
         source.version = eve::SchemaVersion(1);
-        source.json = encoded.value();
-        auto typed = parseVehicleDefinition(source);
+        source.json    = encoded.value();
+        auto typed     = parseVehicleDefinition(source);
         if (!typed) {
             typed.ignore("vehicle definition failed typed projection validation");
             return;
         }
 
-        auto current = definitionRegistry_.resolve("vehicle", *name);
-        const bool exists = current.ok();
+        auto       current = definitionRegistry_.resolve("vehicle", *name);
+        const bool exists  = current.ok();
         if (!exists && current.status().code() != eve::StatusCode::NotFound) return;
         auto stored = exists ? definitionRegistry_.replace("vehicle", *name, 1, source.json)
                              : definitionRegistry_.insert("vehicle", *name, 1, source.json);

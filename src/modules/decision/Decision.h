@@ -19,8 +19,7 @@ public:
      * @return Success when the value is valid and the board entry was written;
      *         otherwise a structured validation diagnostic.
      */
-    [[nodiscard]] eve::Result<void> set(
-        const std::string& board, const std::string& key, const std::string& valueJson);
+    [[nodiscard]] eve::Result<void> set(const std::string& board, const std::string& key, const std::string& valueJson);
     /** @brief Gets canonical scalar JSON or the supplied fallback. */ std::string get(
         const std::string& board, const std::string& key, const std::string& fallbackJson) const;
     /**
@@ -28,10 +27,8 @@ public:
      * @return Success when the transition was stored; invalid names return a
      *         structured validation diagnostic.
      */
-    [[nodiscard]] eve::Result<void> addTransition(const std::string& machine,
-                                                  const std::string& from,
-                                                  const std::string& trigger,
-                                                  const std::string& to);
+    [[nodiscard]] eve::Result<void> addTransition(const std::string& machine, const std::string& from,
+                                                  const std::string& trigger, const std::string& to);
     /**
      * @brief Sets the current state explicitly.
      * @return Success when the state was stored, otherwise a validation diagnostic.
@@ -43,8 +40,7 @@ public:
      *         or `false`/`NoOp` when no transition matches. Missing machines and
      *         invalid arguments are reported as structured failures.
      */
-    [[nodiscard]] eve::Result<bool> trigger(
-        const std::string& machine, const std::string& trigger);
+    [[nodiscard]] eve::Result<bool> trigger(const std::string& machine, const std::string& trigger);
     /** @brief Gets current machine state. */ std::string state(const std::string& machine) const;
     /** @brief Scores CSV considerations formatted value:weight using a weighted mean. */ static float utility(
         const std::string& considerationsCsv);
@@ -88,12 +84,12 @@ public:
     /** @brief Allocates a module-owned decision context and returns its handle. */
     [[nodiscard]] static eve::Result<DecisionContextHandleRef> newContext();
     /** @brief Resolves a live context as a non-owning observation. */
-    [[nodiscard]] static eve::script::Borrowed<DecisionContext> resolve(
-        DecisionContextHandleRef reference) noexcept;
+    [[nodiscard]] static eve::script::Borrowed<DecisionContext> resolve(DecisionContextHandleRef reference) noexcept;
     /** @brief Releases a module-owned decision context. */
     [[nodiscard]] static eve::Result<void> release(DecisionContextHandleRef reference);
     /** @brief Reports whether a decision context reference is stale. */
     [[nodiscard]] static bool isStale(DecisionContextHandleRef reference) noexcept;
+
 private:
     eve::script::RuntimeObjectRegistry<DecisionContext, DecisionContextHandleTag> contexts_;
 };

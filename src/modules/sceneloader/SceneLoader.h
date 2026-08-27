@@ -156,9 +156,9 @@ public:
      * @param out Optional borrowed output written with the applied diff.
      * @param options Import options used for the fresh decode.
      */
-    [[nodiscard("scene reload outcome must be checked")]] eve::Result<bool> reload(
-        const std::string &path, SceneDiff *out = nullptr,
-        const LoadOptions &options = {});
+    [[nodiscard("scene reload outcome must be checked")]] eve::Result<bool> reload(const std::string &path,
+                                                                                   SceneDiff         *out     = nullptr,
+                                                                                   const LoadOptions &options = {});
 
     /** @brief Dry-run diff for `path` against the currently mounted tree (no mutation). */
     SceneDiff diff(const std::string &path);

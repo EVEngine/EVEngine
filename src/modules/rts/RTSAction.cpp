@@ -40,24 +40,22 @@ std::optional<LogicalId> actionIdFor(const OrderRecord& order) {
 
 struct ActionAdapter::Impl {
     struct Pending {
-        ecs::EntityHandle unit;
-        std::string orderId;
+        ecs::EntityHandle         unit;
+        std::string               orderId;
         action::ActionExecutionId execution;
     };
 
     explicit Impl(action::ActionRuntime& runtimeValue) : runtime(runtimeValue) {}
 
     action::ActionRuntime& runtime;
-    std::vector<Pending> pending;
+    std::vector<Pending>   pending;
 };
 
-ActionAdapter::ActionAdapter(action::ActionRuntime& runtime)
-    : impl_(std::make_unique<Impl>(runtime)) {}
+ActionAdapter::ActionAdapter(action::ActionRuntime& runtime) : impl_(std::make_unique<Impl>(runtime)) {}
 
 ActionAdapter::~ActionAdapter() = default;
 
-Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderRecord& order,
-                                                     const SimulationStep& step) {
+Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderRecord& order, const SimulationStep& step) {
     if (step.delta.nanoseconds() < 0)
         return failure<ActionExecutionResult>(DiagnosticCode::InvalidArgument,
                                               "RTS action step delta must be non-negative", "step.delta");
@@ -66,10 +64,9 @@ Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderReco
                                               "RTS action adapter is not initialized", "adapter");
 
     const ecs::EntityHandle unitHandle = ecs::handle_of(&unit);
-    auto pendingForUnit = std::find_if(
-        impl_->pending.begin(), impl_->pending.end(), [&unitHandle](const Impl::Pending& pending) {
-            return sameHandle(pending.unit, unitHandle);
-        });
+    auto                    pendingForUnit =
+        std::find_if(impl_->pending.begin(), impl_->pending.end(),
+                     [&unitHandle](const Impl::Pending& pending) { return sameHandle(pending.unit, unitHandle); });
 
     if (pendingForUnit != impl_->pending.end() && pendingForUnit->orderId != order.id) {
         const auto* oldExecution = impl_->runtime.find(pendingForUnit->execution);
@@ -85,16 +82,15 @@ Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderReco
     if (pendingForUnit == impl_->pending.end()) {
         const auto logicalId = actionIdFor(order);
         if (!logicalId)
-            return failure<ActionExecutionResult>(DiagnosticCode::InvalidArgument,
-                                                  "RTS order definition is not a valid LogicalId",
-                                                  "order.definitionId");
+            return failure<ActionExecutionResult>(
+                DiagnosticCode::InvalidArgument, "RTS order definition is not a valid LogicalId", "order.definitionId");
 
         action::ActionDefinition definition;
         definition.id = *logicalId;
 
         action::ActionRequest request;
-        request.actionId = definition.id;
-        request.source = unitHandle;
+        request.actionId      = definition.id;
+        request.source        = unitHandle;
         request.requestedTick = step.tick;
 
         auto submitted = impl_->runtime.submit(std::move(definition), std::move(request));
@@ -109,27 +105,22 @@ Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderReco
     if (!advanced) {
         impl_->pending.erase(
             std::remove_if(impl_->pending.begin(), impl_->pending.end(),
-                           [&executionId](const Impl::Pending& pending) {
-                               return pending.execution == executionId;
-                           }),
+                           [&executionId](const Impl::Pending& pending) { return pending.execution == executionId; }),
             impl_->pending.end());
         return failureFrom<ActionExecutionResult>(advanced.status());
     }
 
-    const auto summary = std::move(advanced).takeValue();
-    bool completed = summary.phase == action::ActionPhase::Completed;
+    const auto summary   = std::move(advanced).takeValue();
+    bool       completed = summary.phase == action::ActionPhase::Completed;
     if (order.kind == OrderKind::Move && !unit.motion()->arrived) completed = false;
     if (completed) {
         impl_->pending.erase(
             std::remove_if(impl_->pending.begin(), impl_->pending.end(),
-                           [&executionId](const Impl::Pending& pending) {
-                               return pending.execution == executionId;
-                           }),
+                           [&executionId](const Impl::Pending& pending) { return pending.execution == executionId; }),
             impl_->pending.end());
     }
 
-    const ActionExecutionResult result{
-        completed ? ActionDisposition::Completed : ActionDisposition::Pending};
+    const ActionExecutionResult result{completed ? ActionDisposition::Completed : ActionDisposition::Pending};
     return Result<ActionExecutionResult>::success(
         result, Status::success(completed ? StatusCode::Applied : StatusCode::Pending));
 }

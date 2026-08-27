@@ -306,7 +306,7 @@ bool ConversationDocument::removeRoute(const std::string& nodeId, int index) {
 bool ConversationDocument::validate() {
     diagnostics_.clear();
     const bool valid = lintConversations({asset_}, asset_.id, diagnostics_);
-    failureMessage_       = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
+    failureMessage_  = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
     return valid;
 }
 

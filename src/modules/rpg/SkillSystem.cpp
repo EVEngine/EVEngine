@@ -1,8 +1,8 @@
 #include "rpg/SkillSystem.h"
-#include "rpg/SkillCondition.h"
+#include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
 #include "rpg/Skill.h"
-#include "rpg/AttributeSystem.h"
+#include "rpg/SkillCondition.h"
 #include "rpg/StatusSystem.h"
 
 #include <unordered_map>
@@ -24,8 +24,7 @@ std::vector<SkillCastEvent> &castQueue() {
 bool checkCostsAffordable(RPGActor *actor, const SkillDefinition &def) {
     if (!def.cost) return true;
     for (const auto &cost : def.cost->items())
-        if (AttributeSystem::getFinal(actor, cost.resource.value()) <
-            static_cast<double>(cost.amount.value()))
+        if (AttributeSystem::getFinal(actor, cost.resource.value()) < static_cast<double>(cost.amount.value()))
             return false;
     return true;
 }
@@ -33,8 +32,7 @@ bool checkCostsAffordable(RPGActor *actor, const SkillDefinition &def) {
 void deductCosts(RPGActor *actor, const SkillDefinition &def) {
     if (!def.cost) return;
     for (const auto &cost : def.cost->items())
-        AttributeSystem::modifyBase(actor, cost.resource.value(),
-                                    -static_cast<double>(cost.amount.value()));
+        AttributeSystem::modifyBase(actor, cost.resource.value(), -static_cast<double>(cost.amount.value()));
 }
 
 void resolveCast(RPGActor *actor, const SkillDefinition &def, RPGActor *target) {

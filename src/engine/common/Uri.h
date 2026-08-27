@@ -59,9 +59,8 @@ public:
      * @param fragment Optional fragment component without the leading `#`.
      * @return A canonical URI or a structured parse diagnostic.
      */
-    [[nodiscard]] static Result<Uri> fromParts(UriScheme scheme, std::string_view path,
-                                                std::string_view query = {},
-                                                std::string_view fragment = {});
+    [[nodiscard]] static Result<Uri> fromParts(UriScheme scheme, std::string_view path, std::string_view query = {},
+                                               std::string_view fragment = {});
 
     /** @brief Return the parsed scheme. */
     [[nodiscard]] UriScheme scheme() const noexcept { return scheme_; }
@@ -117,8 +116,7 @@ public:
      * @return A checked resource URI or a parse diagnostic.
      */
     [[nodiscard]] static Result<ResourceUri> fromParts(UriScheme scheme, std::string_view path,
-                                                        std::string_view query = {},
-                                                        std::string_view fragment = {});
+                                                       std::string_view query = {}, std::string_view fragment = {});
 
     /**
      * @brief Explicitly convert a legacy project-relative path.

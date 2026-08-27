@@ -85,8 +85,7 @@ public:
     void*              queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(
-        std::unique_ptr<IDomainOperationTarget> candidate) override;
+    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     EditorResult<SceneObjectSnapshot> sceneObject(const ObjectId& id) const override;
     std::vector<ObjectId>             sceneChildren(const ObjectId& parent) const override;

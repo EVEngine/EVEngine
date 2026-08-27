@@ -19,9 +19,9 @@ std::string takeId(eve::Result<std::string> result) {
 
 TEST_CASE("orders.append.priorityAndStableIds") {
     CommandQueue queue;
-    const auto first = takeId(queue.append("first", 1));
-    const auto low   = takeId(queue.append("low", 1));
-    const auto high  = takeId(queue.append("high", 10));
+    const auto   first = takeId(queue.append("first", 1));
+    const auto   low   = takeId(queue.append("low", 1));
+    const auto   high  = takeId(queue.append("high", 10));
 
     CHECK_EQ(first, std::string("order-0000000000000001"));
     CHECK_EQ(low, std::string("order-0000000000000002"));
@@ -36,9 +36,9 @@ TEST_CASE("orders.append.priorityAndStableIds") {
 
 TEST_CASE("orders.replace.cancelsUnfinishedDeterministically") {
     CommandQueue queue;
-    const auto active = takeId(queue.append("work"));
-    const auto queued = takeId(queue.append("later"));
-    const auto next   = takeId(queue.replace("replacement", 5));
+    const auto   active = takeId(queue.append("work"));
+    const auto   queued = takeId(queue.append("later"));
+    const auto   next   = takeId(queue.replace("replacement", 5));
 
     CHECK_EQ(static_cast<int>(queue.find(active)->get().state), static_cast<int>(OrderState::Cancelled));
     CHECK_EQ(static_cast<int>(queue.find(queued)->get().state), static_cast<int>(OrderState::Cancelled));
@@ -55,7 +55,7 @@ TEST_CASE("orders.replace.cancelsUnfinishedDeterministically") {
 
 TEST_CASE("orders.interrupt.honoursPriority") {
     CommandQueue queue;
-    const auto active = takeId(queue.append("critical", 20));
+    const auto   active = takeId(queue.append("critical", 20));
     CHECK(!queue.interrupt("weak", 19).hasValue());
     CHECK_EQ(queue.current()->get().id, active);
 
@@ -68,9 +68,9 @@ TEST_CASE("orders.interrupt.honoursPriority") {
 
 TEST_CASE("orders.lifecycle.completeFailCancel") {
     CommandQueue queue;
-    const auto one   = takeId(queue.append("one"));
-    const auto two   = takeId(queue.append("two"));
-    const auto three = takeId(queue.append("three"));
+    const auto   one   = takeId(queue.append("one"));
+    const auto   two   = takeId(queue.append("two"));
+    const auto   three = takeId(queue.append("three"));
 
     CHECK(queue.complete(one).ok());
     CHECK_EQ(static_cast<int>(queue.find(one)->get().state), static_cast<int>(OrderState::Completed));
@@ -85,8 +85,8 @@ TEST_CASE("orders.lifecycle.completeFailCancel") {
 
 TEST_CASE("orders.timeout.failsAndActivatesNext") {
     CommandQueue queue;
-    const auto timed = takeId(queue.append("timed", 0, 0.5));
-    const auto next  = takeId(queue.append("next"));
+    const auto   timed = takeId(queue.append("timed", 0, 0.5));
+    const auto   next  = takeId(queue.append("next"));
     CHECK(queue.update(0.25).ok());
     CHECK_EQ(queue.current()->get().id, timed);
     CHECK(queue.update(0.25).ok());
@@ -97,8 +97,8 @@ TEST_CASE("orders.timeout.failsAndActivatesNext") {
 
 TEST_CASE("orders.payload.isDeterministicJsonCompatible") {
     CommandQueue queue;
-    const auto id      = takeId(queue.append("custom"));
-    auto*      payload = &queue.find(id)->get().payload;
+    const auto   id      = takeId(queue.append("custom"));
+    auto*        payload = &queue.find(id)->get().payload;
     REQUIRE(payload != nullptr);
     payload->setString("name", "A\nB");
     payload->setNumber("x", 12.5);
@@ -111,15 +111,15 @@ TEST_CASE("orders.payload.isDeterministicJsonCompatible") {
 
 TEST_CASE("orders.snapshot.roundTripAndMalformedRestorePreservesState") {
     CommandQueue source;
-    const auto first = takeId(source.append("first", 1, 3.0));
-    const auto second = takeId(source.append("second", 5, 4.0));
-    auto firstRef = source.find(first);
+    const auto   first    = takeId(source.append("first", 1, 3.0));
+    const auto   second   = takeId(source.append("second", 5, 4.0));
+    auto         firstRef = source.find(first);
     REQUIRE(firstRef);
     firstRef->get().payload.setString("name", "alpha");
     firstRef->get().payload.setNumber("amount", 12.5);
     REQUIRE(source.complete(first).ok());
-    const auto third = takeId(source.append("third", 2, 0.5));
-    auto thirdRef = source.find(third);
+    const auto third    = takeId(source.append("third", 2, 0.5));
+    auto       thirdRef = source.find(third);
     REQUIRE(thirdRef);
     thirdRef->get().payload.setBool("urgent", true);
 
@@ -149,8 +149,8 @@ TEST_CASE("orders.snapshot.roundTripAndMalformedRestorePreservesState") {
 
     auto beforeResult = restored.snapshot();
     REQUIRE(beforeResult.ok());
-    const auto before = std::move(beforeResult).takeValue();
-    auto malformed = restored.restore("{\"schema\":\"orders.command_queue\"");
+    const auto before    = std::move(beforeResult).takeValue();
+    auto       malformed = restored.restore("{\"schema\":\"orders.command_queue\"");
     CHECK(!malformed.ok());
     auto afterMalformed = restored.snapshot();
     REQUIRE(afterMalformed.ok());

@@ -25,10 +25,10 @@ struct Node {
     bool   boolVal   = false;
     double numberVal = 0.0;
     /** Set when the literal had no fraction or exponent. */
-    bool                     integerLiteral = false;
+    bool integerLiteral = false;
     /** Set when the integer literal fits the canonical Int64 range. */
-    bool                     hasInt64       = false;
-    std::int64_t              intVal        = 0;
+    bool                     hasInt64 = false;
+    std::int64_t             intVal   = 0;
     std::string              stringVal;
     std::vector<std::string> memberNames;   // object keys, document order
     std::vector<Node>        memberValues;  // object values, parallel to memberNames
@@ -141,7 +141,7 @@ private:
             out.integerLiteral = integral;
             if (integral) {
                 try {
-                    out.intVal  = std::stoll(num);
+                    out.intVal   = std::stoll(num);
                     out.hasInt64 = true;
                 } catch (...) {
                     // Keep the finite double for compatibility with the
@@ -326,9 +326,7 @@ bool Value::isNull() const { return !node_ || node_->kind == Node::Kind::Null; }
 bool Value::isBool() const { return node_ && node_->kind == Node::Kind::Bool; }
 bool Value::isNumber() const { return node_ && node_->kind == Node::Kind::Number; }
 bool Value::isInt64() const { return node_ && node_->kind == Node::Kind::Number && node_->hasInt64; }
-bool Value::isIntegerLiteral() const {
-    return node_ && node_->kind == Node::Kind::Number && node_->integerLiteral;
-}
+bool Value::isIntegerLiteral() const { return node_ && node_->kind == Node::Kind::Number && node_->integerLiteral; }
 bool Value::isString() const { return node_ && node_->kind == Node::Kind::String; }
 bool Value::isObject() const { return node_ && node_->kind == Node::Kind::Object; }
 bool Value::isArray() const { return node_ && node_->kind == Node::Kind::Array; }
@@ -389,9 +387,7 @@ double Value::asDouble(double fallback) const {
     }
 }
 
-std::int64_t Value::asInt64(std::int64_t fallback) const {
-    return isInt64() ? node_->intVal : fallback;
-}
+std::int64_t Value::asInt64(std::int64_t fallback) const { return isInt64() ? node_->intVal : fallback; }
 
 int Value::asInt(int fallback) const {
     if (!node_) return fallback;
@@ -485,22 +481,22 @@ void appendEscapedString(std::string_view value, std::string& output) {
     output.push_back('"');
     for (const unsigned char byte : value) {
         switch (byte) {
-        case '"': output += "\\\""; break;
-        case '\\': output += "\\\\"; break;
-        case '\b': output += "\\b"; break;
-        case '\f': output += "\\f"; break;
-        case '\n': output += "\\n"; break;
-        case '\r': output += "\\r"; break;
-        case '\t': output += "\\t"; break;
-        default:
-            if (byte < 0x20) {
-                output += "\\u00";
-                output.push_back(hex[byte >> 4]);
-                output.push_back(hex[byte & 0x0f]);
-            } else {
-                output.push_back(static_cast<char>(byte));
-            }
-            break;
+            case '"': output += "\\\""; break;
+            case '\\': output += "\\\\"; break;
+            case '\b': output += "\\b"; break;
+            case '\f': output += "\\f"; break;
+            case '\n': output += "\\n"; break;
+            case '\r': output += "\\r"; break;
+            case '\t': output += "\\t"; break;
+            default:
+                if (byte < 0x20) {
+                    output += "\\u00";
+                    output.push_back(hex[byte >> 4]);
+                    output.push_back(hex[byte & 0x0f]);
+                } else {
+                    output.push_back(static_cast<char>(byte));
+                }
+                break;
         }
     }
     output.push_back('"');
@@ -568,8 +564,7 @@ Result<std::string> stringify(const eve::Value& value) {
     std::string output;
     if (!appendCanonicalJson(value, output)) {
         return Result<std::string>::failure(Diagnostic::error(
-            DiagnosticCode::SerializationError,
-            "Value contains a non-finite Double; JSON requires finite numbers"));
+            DiagnosticCode::SerializationError, "Value contains a non-finite Double; JSON requires finite numbers"));
     }
     return Result<std::string>::success(std::move(output));
 }

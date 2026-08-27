@@ -8,13 +8,10 @@ namespace {
 eve::Status lifecycleConflict(std::string message) {
     return eve::Status::failure(
         eve::StatusCode::Conflict,
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message),
-                               "resource.transaction"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), "resource.transaction"));
 }
 
-eve::Result<void> forwardFailure(eve::Result<void>& result) {
-    return eve::Result<void>::failure(result.status());
-}
+eve::Result<void> forwardFailure(eve::Result<void>& result) { return eve::Result<void>::failure(result.status()); }
 
 template <class T>
 eve::Result<void> forwardFailure(eve::Result<T>& result) {
@@ -24,8 +21,7 @@ eve::Result<void> forwardFailure(eve::Result<T>& result) {
 }  // namespace
 
 ResourceDebitParticipant::ResourceDebitParticipant(eve::resource::IResourceAccount& account,
-                                                   eve::resource::CostSpec cost,
-                                                   std::string name)
+                                                   eve::resource::CostSpec cost, std::string name)
     : account_(account), cost_(std::move(cost)), name_(std::move(name)) {
     if (name_.empty()) name_ = "resource-debit";
 }

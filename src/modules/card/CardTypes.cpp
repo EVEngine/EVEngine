@@ -123,7 +123,7 @@ bool CardData::hit(float px, float py) {
 
 std::string CardData::describe() {
     const auto *I = identity().operator->();
-    auto projected = CardAttributeAdapter::project(*this);
+    auto        projected = CardAttributeAdapter::project(*this);
     if (!projected) projected.ignore("card description retained legacy projection after attribute failure");
     const auto *S = stats().operator->();
     if (I->kind == "spell") return I->name + "（法术 · 费用 " + std::to_string(S->cost) + "）";
@@ -236,7 +236,7 @@ void renderCardBack(graphics::Graphics *gfx, float x, float y, float w, float h,
 void renderCard(graphics::Graphics *gfx, const CardData &cardRef, const LayoutConfig &cfg, bool back) {
     (void)cfg;
     CardData &card = const_cast<CardData &>(cardRef);
-    auto projected = CardAttributeAdapter::project(card);
+    auto      projected = CardAttributeAdapter::project(card);
     if (!projected) {
         projected.ignore("card renderer skipped an invalid attribute projection");
         return;

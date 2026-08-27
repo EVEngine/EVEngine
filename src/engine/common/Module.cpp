@@ -87,10 +87,9 @@ eve::Result<void> ModuleManager::finishPluginRegistration(bool commit) {
     manager.plugin_registration_added_.clear();
     manager.plugin_registration_error_.clear();
     if (!error.empty())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, error, {}, {}, "module"));
-    return eve::Result<void>::success(eve::Status::success(
-        commit ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, error, {}, {}, "module"));
+    return eve::Result<void>::success(eve::Status::success(commit ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
 
 void ModuleManager::exposeVM(ssq::VM& vm) {

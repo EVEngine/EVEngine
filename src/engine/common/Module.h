@@ -17,17 +17,17 @@ class Class;
     static void expose(ssq::Table& table); \
     static void expose(ssq::Class& vm);
 
-#define Module_REG(ModuleName) \
-    SSQ_REG \
-    virtual std::string getName() const override { return name; } \
-    /** @brief Return the manager-owned module instance for this registration. \
-     * @ownership Borrowed; ModuleManager retains ownership. \
-     * @nullable No after successful registration; factory failure is an invariant. \
-     * @lifetime Valid until module shutdown or registry teardown. \
-     * @thread Main/composition thread only. \
-     * @reentrancy Must not re-enter module registration. */ \
+#define Module_REG(ModuleName)                                                                                     \
+    SSQ_REG                                                                                                        \
+    virtual std::string getName() const override { return name; }                                                  \
+    /** @brief Return the manager-owned module instance for this registration.                                     \
+     * @ownership Borrowed; ModuleManager retains ownership.                                                       \
+     * @nullable No after successful registration; factory failure is an invariant.                                \
+     * @lifetime Valid until module shutdown or registry teardown.                                                 \
+     * @thread Main/composition thread only.                                                                       \
+     * @reentrancy Must not re-enter module registration. */                                                       \
     [[nodiscard("module instance ownership must be retained or explicitly handled")]] static ModuleName* create(); \
-    static const char* name
+    static const char*                                                                                   name
 
 #define Module_IMPL(ModuleName, newExpr) \
     ModuleRegister ModuleName##_register(ModuleName::name, \
@@ -78,15 +78,14 @@ public:
     /** @brief Registers a module factory (creator + script exposer) by name. */
     static void register_module(const char* name, creator_t c, exposer_t e);
     /** @brief Begins an atomic native-plugin module registration transaction. */
-    [[nodiscard("plugin registration outcome must be checked")]] static eve::Result<void>
-    beginPluginRegistration();
+    [[nodiscard("plugin registration outcome must be checked")]] static eve::Result<void> beginPluginRegistration();
     /** @brief Commits or rolls back the active plugin registration transaction.
      * @param commit Whether to keep newly registered modules.
      * @return Applied when committed, NoOp when explicitly rolled back, or a
      *         structured registration conflict/failure.
      */
-    [[nodiscard("plugin registration outcome must be checked")]] static eve::Result<void>
-    finishPluginRegistration(bool commit);
+    [[nodiscard("plugin registration outcome must be checked")]] static eve::Result<void> finishPluginRegistration(
+        bool commit);
     /** @brief Exposes every registered module into the given runtime's root table. */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.

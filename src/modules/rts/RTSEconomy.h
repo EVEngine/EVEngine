@@ -26,11 +26,11 @@ public:
     /** @brief Bind this adapter to a caller-owned RTS economy ledger. */
     explicit RTSEconomyAdapter(eve::economy::EconomyLedger& ledger);
 
-    RTSEconomyAdapter(const RTSEconomyAdapter&) = delete;
+    RTSEconomyAdapter(const RTSEconomyAdapter&)            = delete;
     RTSEconomyAdapter& operator=(const RTSEconomyAdapter&) = delete;
-    RTSEconomyAdapter(RTSEconomyAdapter&&) = delete;
-    RTSEconomyAdapter& operator=(RTSEconomyAdapter&&) = delete;
-    ~RTSEconomyAdapter() = default;
+    RTSEconomyAdapter(RTSEconomyAdapter&&)                 = delete;
+    RTSEconomyAdapter& operator=(RTSEconomyAdapter&&)      = delete;
+    ~RTSEconomyAdapter()                                   = default;
 
     /**
      * @brief Return the account view for direct reservation/credit operations.
@@ -46,8 +46,7 @@ public:
      * @return Committed transaction receipt or rollback/compensation diagnostics.
      */
     [[nodiscard]] eve::Result<eve::transaction::TransactionReceipt> pay(
-        const eve::resource::CostSpec& cost,
-        eve::transaction::ITransactionParticipant& effect,
+        const eve::resource::CostSpec& cost, eve::transaction::ITransactionParticipant& effect,
         std::string transactionId = {});
 
     /**
@@ -55,8 +54,7 @@ public:
      * @param cost Canonical positive resource quantity to add.
      * @return A checked credit receipt or a structured capacity/range failure.
      */
-    [[nodiscard]] eve::Result<eve::resource::Receipt> credit(
-        const eve::resource::CostSpec& cost);
+    [[nodiscard]] eve::Result<eve::resource::Receipt> credit(const eve::resource::CostSpec& cost);
 
 private:
     eve::economy::EconomyLedgerResourceAccount account_;

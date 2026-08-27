@@ -44,12 +44,12 @@ TEST_CASE("procgen.lsystem.renderDump") {
     params.setFloat("leafSize", 0.5f);
 
     Procgen generator;
-    auto paramsResult = Procgen::newParamsHandle();
+    auto    paramsResult = Procgen::newParamsHandle();
     REQUIRE(paramsResult.ok());
     auto paramsHandle = std::move(paramsResult).takeValue();
-    auto paramsView = Procgen::resolve(paramsHandle);
+    auto paramsView   = Procgen::resolve(paramsHandle);
     REQUIRE(paramsView.isBound());
-    *paramsView = params;
+    *paramsView     = params;
     auto lsMeshView = generator.generateMeshBorrowed("mesh.lsystem", paramsHandle, gfx);
     REQUIRE(lsMeshView.isBound());
     Mesh *lsMesh = lsMeshView.get();
@@ -175,18 +175,18 @@ TEST_CASE("procgen.lsystem.meshRecipeIsDeterministic") {
     auto p2Result = Procgen::newParamsHandle();
     REQUIRE(p1Result.ok());
     REQUIRE(p2Result.ok());
-    auto p1Handle = std::move(p1Result).takeValue();
-    auto p2Handle = std::move(p2Result).takeValue();
+    auto p1Handle               = std::move(p1Result).takeValue();
+    auto p2Handle               = std::move(p2Result).takeValue();
     *Procgen::resolve(p1Handle) = p1;
     *Procgen::resolve(p2Handle) = p2;
-    auto m1Result = proc.buildMeshHandle("mesh.lsystem", p1Handle);
-    auto m2Result = proc.buildMeshHandle("mesh.lsystem", p2Handle);
+    auto m1Result               = proc.buildMeshHandle("mesh.lsystem", p1Handle);
+    auto m2Result               = proc.buildMeshHandle("mesh.lsystem", p2Handle);
     REQUIRE(m1Result.ok());
     REQUIRE(m2Result.ok());
     auto m1Handle = std::move(m1Result).takeValue();
     auto m2Handle = std::move(m2Result).takeValue();
-    auto m1 = proc.resolveMeshBuild(m1Handle);
-    auto m2 = proc.resolveMeshBuild(m2Handle);
+    auto m1       = proc.resolveMeshBuild(m1Handle);
+    auto m2       = proc.resolveMeshBuild(m2Handle);
     REQUIRE(m1.isBound());
     REQUIRE(m2.isBound());
     CHECK(m1->getVertexCount() > 0);
@@ -206,9 +206,9 @@ TEST_CASE("procgen.lsystem.meshRecipeReportsErrors") {
     params.setString("style", "bogus");
     auto paramsResult = Procgen::newParamsHandle();
     REQUIRE(paramsResult.ok());
-    auto paramsHandle = std::move(paramsResult).takeValue();
+    auto paramsHandle               = std::move(paramsResult).takeValue();
     *Procgen::resolve(paramsHandle) = params;
-    auto meshResult = proc.buildMeshHandle("mesh.lsystem", paramsHandle);
+    auto meshResult                 = proc.buildMeshHandle("mesh.lsystem", paramsHandle);
     REQUIRE(!meshResult.ok());
     CHECK(meshResult.status().describe().find("unknown style") != std::string::npos);
     REQUIRE(Procgen::release(paramsHandle).ok());
@@ -216,10 +216,10 @@ TEST_CASE("procgen.lsystem.meshRecipeReportsErrors") {
 
 TEST_CASE("procgen.lsystem.scriptFacade") {
     Procgen proc;
-    auto result = proc.newLSystemHandle();
+    auto    result = proc.newLSystemHandle();
     REQUIRE(result.ok());
     auto handle = std::move(result).takeValue();
-    auto ls = proc.resolveLSystem(handle);
+    auto ls     = proc.resolveLSystem(handle);
     REQUIRE(ls.isBound());
     ls->setAxiom("F");
     ls->addRule('F', "F[+F]F[-F]F");

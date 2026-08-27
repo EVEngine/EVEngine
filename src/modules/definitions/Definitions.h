@@ -22,7 +22,7 @@ namespace eve::definitions {
  * directly. These aliases keep the Definitions module API source-compatible
  * while ensuring it cannot grow a second logical-reference representation.
  */
-using DefinitionRef = eve::DefinitionRef;
+using DefinitionRef    = eve::DefinitionRef;
 using DefinitionHandle = eve::definition::DefinitionHandle;
 
 /** @brief One immutable view of a registered versioned JSON definition. */
@@ -43,7 +43,7 @@ struct DefinitionEvent {
     std::string type;
     std::string id;
     eve::SchemaVersion version;
-    eve::Generation generation;
+    eve::Generation    generation;
 };
 
 /**
@@ -61,47 +61,42 @@ public:
      */
     explicit DefinitionRegistry(eve::PersistentId instanceId = {});
 
-    using ChangeCallback = std::function<void(const DefinitionEvent &)>;
+    using ChangeCallback = std::function<void(const DefinitionEvent&)>;
 
     /**
      * @brief Inserts a definition using the common generation-qualified registry.
      * @return The new handle, or a structured validation/conflict failure.
      */
-    [[nodiscard]] eve::Result<DefinitionHandle> insert(
-        const std::string& type, const std::string& id, int version, const std::string& json);
+    [[nodiscard]] eve::Result<DefinitionHandle> insert(const std::string& type, const std::string& id, int version,
+                                                       const std::string& json);
 
     /**
      * @brief Replaces a live definition and invalidates its previous handle.
      * @return The replacement handle, or a structured failure.
      */
-    [[nodiscard]] eve::Result<DefinitionHandle> replace(
-        const std::string& type, const std::string& id, int version, const std::string& json);
+    [[nodiscard]] eve::Result<DefinitionHandle> replace(const std::string& type, const std::string& id, int version,
+                                                        const std::string& json);
 
     /**
      * @brief Removes a definition and returns the retained tombstone handle.
      * @return A stale tombstone handle, or a structured failure.
      */
-    [[nodiscard]] eve::Result<DefinitionHandle> remove(
-        const std::string& type, const std::string& id);
+    [[nodiscard]] eve::Result<DefinitionHandle> remove(const std::string& type, const std::string& id);
 
     /**
      * @brief Resolves a definition through the common registry API.
      * @return A borrowed reference valid until the next registry mutation.
      */
-    [[nodiscard]] eve::ResultRef<const Definition> resolve(
-        const std::string& type, const std::string& id) const;
+    [[nodiscard]] eve::ResultRef<const Definition> resolve(const std::string& type, const std::string& id) const;
 
     /** @brief Resolves a generation-qualified handle and reports stale identities. */
-    [[nodiscard]] eve::ResultRef<const Definition> resolveHandle(
-        const DefinitionHandle& handle) const;
+    [[nodiscard]] eve::ResultRef<const Definition> resolveHandle(const DefinitionHandle& handle) const;
 
     /** @brief Returns the current generation-qualified handle through Result. */
-    [[nodiscard]] eve::Result<DefinitionHandle> handle(
-        const std::string& type, const std::string& id) const;
+    [[nodiscard]] eve::Result<DefinitionHandle> handle(const std::string& type, const std::string& id) const;
 
     /** @brief Returns the latest generation, including a retained tombstone. */
-    [[nodiscard]] eve::Result<eve::Generation> generationOf(
-        const std::string& type, const std::string& id) const;
+    [[nodiscard]] eve::Result<eve::Generation> generationOf(const std::string& type, const std::string& id) const;
 
     /** @brief Returns whether a key is retained as a tombstone. */
     [[nodiscard]] bool isTombstone(const std::string& type, const std::string& id) const noexcept;
@@ -135,8 +130,7 @@ public:
      * @param hashProvider Explicit content-digest provider; it is never defaulted silently.
      * @return A sealed snapshot, or a structured serialization/hash failure.
      */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
 
     /**
      * @brief Restores a verified or migratable snapshot transactionally.
@@ -144,16 +138,15 @@ public:
      * @param hashProvider Explicit provider used to verify and reseal the payload.
      * @return Success, or a failure leaving all registry state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreSnapshot(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
+                                                    const eve::SnapshotHashProvider& hashProvider);
 
     /**
      * @brief Serializes the common snapshot envelope as canonical JSON.
      * @param hashProvider Explicit content-digest provider.
      * @return Canonical envelope JSON or a structured failure.
      */
-    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
 
     /**
      * @brief Parses and transactionally restores a common snapshot envelope.
@@ -161,8 +154,8 @@ public:
      * @param hashProvider Explicit provider used to verify contentHash.
      * @return Success, or a failure leaving all registry state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreSnapshotJson(
-        std::string_view json, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
+                                                        const eve::SnapshotHashProvider& hashProvider);
 
     /**
      * @brief Subscribes to successful definition register, replace and remove operations.
@@ -179,8 +172,7 @@ public:
      *          synthesize per-definition events; callers must re-query after
      *          restore because previously borrowed Definition references expire.
      */
-    [[nodiscard("retain Subscription or explicitly dispose it")]] eve::Subscription subscribe(
-        ChangeCallback callback);
+    [[nodiscard("retain Subscription or explicitly dispose it")]] eve::Subscription subscribe(ChangeCallback callback);
 
 private:
     using Key = std::pair<std::string, std::string>;
@@ -189,16 +181,16 @@ private:
     };
     using Storage = eve::VersionedRegistry<Key, Definition, EventData>;
 
-    static DefinitionEvent projectEvent(const Storage::Event& event);
+    static DefinitionEvent  projectEvent(const Storage::Event& event);
     static DefinitionHandle projectHandle(const Storage::Handle& handle);
-    static Storage::Handle storageHandle(const DefinitionHandle& handle);
-    void clearEventProjection() const;
+    static Storage::Handle  storageHandle(const DefinitionHandle& handle);
+    void                    clearEventProjection() const;
 
-    Storage                                storage_;
-    eve::PersistentId                      instanceId_;
-    eve::Revision                          revision_;
-    eve::SimulationTick                    tick_;
-    mutable std::vector<DefinitionEvent>   eventProjection_;
+    Storage                              storage_;
+    eve::PersistentId                    instanceId_;
+    eve::Revision                        revision_;
+    eve::SimulationTick                  tick_;
+    mutable std::vector<DefinitionEvent> eventProjection_;
 };
 
 /** @brief Script module factory for independent definition registries. */

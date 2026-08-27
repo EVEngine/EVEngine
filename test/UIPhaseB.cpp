@@ -28,9 +28,7 @@ UINode *findNode(UIHost *host, const std::string &id) {
     return node ? &node->get() : nullptr;
 }
 
-UINode *findNode(UIHostHandle handle, const std::string &id) {
-    return findNode(resolveHost(handle), id);
-}
+UINode *findNode(UIHostHandle handle, const std::string &id) { return findNode(resolveHost(handle), id); }
 
 }  // namespace
 
@@ -62,7 +60,7 @@ TEST_CASE("UI.b.listAndWhen") {
                                 when(true, text("shown", "s")),
                                 listButtons("L", {"a", "b", "c"}),
                             });
-    UIHost *h = resolveHost(UIHost::createHost("listwhen"));
+    UIHost *h    = resolveHost(UIHost::createHost("listwhen"));
     REQUIRE(h != nullptr);
     h->setTree(std::move(tree));
     CHECK(findNode(h, "s") != nullptr);
@@ -122,9 +120,7 @@ TEST_CASE("UI.b.themeAndCheckbox") {
     CHECK(!ui->setTheme("unknown"));
     CHECK(ui->getTheme() == "light");  // unchanged on failure
 
-    REQUIRE(UIHost::resolve(
-                ui->mountAs("chk", window("C", {checkbox("Mute", false, "mute")}, "root")))
-                .has_value());
+    REQUIRE(UIHost::resolve(ui->mountAs("chk", window("C", {checkbox("Mute", false, "mute")}, "root"))).has_value());
     CHECK(findNode(ui->current(), "mute") != nullptr);
     CHECK(!findNode(ui->current(), "mute")->checked);
     ui->setChecked("mute", true);

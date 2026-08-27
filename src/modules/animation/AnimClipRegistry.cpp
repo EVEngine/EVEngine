@@ -33,8 +33,7 @@ std::uint64_t& reloadCallbackFailures() {
 }
 
 void notifyReload(AnimClipRegistry::ReloadEvent event) {
-    static_cast<void>(reloadObservers().notifyChecked(
-        []() noexcept { ++reloadCallbackFailures(); }, event));
+    static_cast<void>(reloadObservers().notifyChecked([]() noexcept { ++reloadCallbackFailures(); }, event));
 }
 
 bool isEvaPath(const std::string& path) {
@@ -117,14 +116,14 @@ eve::Result<int> AnimClipRegistry::reloadPath(const std::string& path) {
         delete skeleton;
         delete fresh;
         notifyReload({norm, 0, false});
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, "animation clip reload import failed", norm));
+        return eve::Result<int>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "animation clip reload import failed", norm));
     }
     if (!fresh) {
         delete skeleton;
         notifyReload({norm, 0, false});
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, "animation clip reload produced no clip", norm));
+        return eve::Result<int>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "animation clip reload produced no clip", norm));
     }
     for (AnimClip* clip : it->second) clip->adopt(*fresh);
     const int refreshed = static_cast<int>(it->second.size());

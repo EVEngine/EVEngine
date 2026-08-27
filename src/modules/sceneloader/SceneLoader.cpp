@@ -1,27 +1,27 @@
 #include "sceneloader/SceneLoader.h"
 
-#include "scene/SceneHost.h"
-#include "scene/NodeDesc.h"
-#include "scene/TransformSystem.h"
-#include "model3d/Model3D.h"
-#include "model3d/ModelData.h"
+#include "animation/AnimClip.h"
+#include "animation/AnimImporter.h"
+#include "animation/AnimSkeleton.h"
+#include "common/ECS.h"
+#include "common/Resource.h"
+#include "common/SquirrelBinding.h"
+#include "data/ByteData.h"
+#include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
-#include "filesystem/Filesystem.h"
-#include "filesystem/FileData.h"
-#include "data/ByteData.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
-#include "animation/AnimImporter.h"
-#include "animation/AnimSkeleton.h"
-#include "animation/AnimClip.h"
+#include "model3d/Model3D.h"
+#include "model3d/ModelData.h"
+#include "scene/NodeDesc.h"
+#include "scene/SceneHost.h"
+#include "scene/TransformSystem.h"
 #include "thread/ThreadPool.h"
-#include "common/ECS.h"
-#include "common/Resource.h"
-#include "common/SquirrelBinding.h"
 
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
@@ -994,17 +994,15 @@ scene::SceneHost *SceneLoader::loadPreset(const std::string &path, const std::st
     return load(path, presetOptions(preset));
 }
 
-eve::Result<bool> SceneLoader::reload(const std::string &path, SceneDiff *out,
-                                      const LoadOptions &options) {
+eve::Result<bool> SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOptions &options) {
     const std::string key = normPath(path);
     auto it = scenes_.find(key);
     if (it == scenes_.end()) {
         if (!load(path, options)) {
             const std::string message = decodeErrorFor(path);
             return eve::Result<bool>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed,
-                message.empty() ? "scene reload failed to load the scene" : message,
-                key, {}, "sceneloader.reload"));
+                eve::DiagnosticCode::Failed, message.empty() ? "scene reload failed to load the scene" : message, key,
+                {}, "sceneloader.reload"));
         }
         if (out) *out = SceneDiff{};
         return eve::Result<bool>::success(true, eve::Status::success(eve::StatusCode::Applied));
@@ -1015,9 +1013,8 @@ eve::Result<bool> SceneLoader::reload(const std::string &path, SceneDiff *out,
     if (!decode(path, options, &d)) {
         const std::string message = decodeErrorFor(path);
         return eve::Result<bool>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed,
-            message.empty() ? "scene reload failed to decode the scene" : message,
-            key, {}, "sceneloader.reload"));
+            eve::DiagnosticCode::Failed, message.empty() ? "scene reload failed to decode the scene" : message, key, {},
+            "sceneloader.reload"));
     }
 
     SceneDiff diff = diffTree(ld.host, *d.root);
@@ -1028,8 +1025,7 @@ eve::Result<bool> SceneLoader::reload(const std::string &path, SceneDiff *out,
         linkMeshNodes(ld.host, d.slots, ld.gfx, options, textures_, shared, &d.cpuImages);
         scene::TransformSystem::updateHost(ld.host);
     }
-    if (diff.empty())
-        return eve::Result<bool>::success(false, eve::Status::success(eve::StatusCode::NoOp));
+    if (diff.empty()) return eve::Result<bool>::success(false, eve::Status::success(eve::StatusCode::NoOp));
     return eve::Result<bool>::success(true, eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -1311,8 +1307,9 @@ void SceneLoader::expose(ssq::Class &cls) {
     cls.addFunc("reload", [vm](SceneLoader *value, const std::string &path) {
         if (!value)
             return eve::script::projectResult(
-                vm, eve::Result<bool>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "scene loader must not be null", "scene")),
+                vm,
+                eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                  "scene loader must not be null", "scene")),
                 [](bool changed) { return eve::Value::boolean(changed); });
         return eve::script::projectResult(vm, value->reload(path),
                                           [](bool changed) { return eve::Value::boolean(changed); });

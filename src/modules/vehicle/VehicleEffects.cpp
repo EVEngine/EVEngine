@@ -9,17 +9,15 @@ namespace {
 
 const char* kindTag(VehicleEffectKind kind) {
     switch (kind) {
-    case VehicleEffectKind::Damage: return "vehicle:damage";
-    case VehicleEffectKind::Repair: return "vehicle:repair";
-    case VehicleEffectKind::Disable: return "vehicle:disable";
+        case VehicleEffectKind::Damage: return "vehicle:damage";
+        case VehicleEffectKind::Repair: return "vehicle:repair";
+        case VehicleEffectKind::Disable: return "vehicle:disable";
     }
     return "vehicle:unknown";
 }
 
 double zoneMultiplier(const VehicleEffectTarget& target, const std::vector<std::string>& tags) {
-    const auto has = [&tags](const std::string& tag) {
-        return std::find(tags.begin(), tags.end(), tag) != tags.end();
-    };
+    const auto has = [&tags](const std::string& tag) { return std::find(tags.begin(), tags.end(), tag) != tags.end(); };
     if (has("vehicle:zone:front")) return target.frontArmorMultiplier;
     if (has("vehicle:zone:rear")) return target.rearArmorMultiplier;
     return target.sideArmorMultiplier;
@@ -28,15 +26,15 @@ double zoneMultiplier(const VehicleEffectTarget& target, const std::vector<std::
 }  // namespace
 
 eve::Result<void> VehicleEffectExecutor::validate(const VehicleEffectTarget& target) const {
-    if (!std::isfinite(target.hull) || !std::isfinite(target.maxHull) || target.maxHull <= 0.0 ||
-        target.hull < 0.0 || target.hull > target.maxHull || target.frontArmorMultiplier < 0.0 ||
-        target.sideArmorMultiplier < 0.0 || target.rearArmorMultiplier < 0.0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "vehicle effect target state is invalid", "target"));
+    if (!std::isfinite(target.hull) || !std::isfinite(target.maxHull) || target.maxHull <= 0.0 || target.hull < 0.0 ||
+        target.hull > target.maxHull || target.frontArmorMultiplier < 0.0 || target.sideArmorMultiplier < 0.0 ||
+        target.rearArmorMultiplier < 0.0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "vehicle effect target state is invalid", "target"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> VehicleEffectExecutor::applyImmediate(VehicleEffectTarget& target,
+eve::Result<void> VehicleEffectExecutor::applyImmediate(VehicleEffectTarget&           target,
                                                         const effects::EffectInstance& effect) const {
     auto valid = validate(target);
     if (!valid) return valid;
@@ -44,8 +42,8 @@ eve::Result<void> VehicleEffectExecutor::applyImmediate(VehicleEffectTarget& tar
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<VehicleEffectUpdate> VehicleEffectExecutor::settle(
-    VehicleEffectTarget& target, effects::EffectUpdateSummary lifecycle) const {
+eve::Result<VehicleEffectUpdate> VehicleEffectExecutor::settle(VehicleEffectTarget&         target,
+                                                               effects::EffectUpdateSummary lifecycle) const {
     auto valid = validate(target);
     if (!valid) return eve::Result<VehicleEffectUpdate>::failure(valid.status());
     VehicleEffectUpdate result;
@@ -78,43 +76,43 @@ eve::Result<VehicleEffectUpdate> VehicleEffectExecutor::settle(
         }
         ++result.settled;
     }
-    return eve::Result<VehicleEffectUpdate>::success(std::move(result),
-                                                     eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<VehicleEffectUpdate>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<effects::EffectHandle> VehicleEffectAdapter::apply(
-    const VehicleEffectDefinition& definition, eve::SubjectRef subject) {
+eve::Result<effects::EffectHandle> VehicleEffectAdapter::apply(const VehicleEffectDefinition& definition,
+                                                               eve::SubjectRef                subject) {
     if (definition.id.empty() || !subject.isValid() || definition.armorZone.empty())
         return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "vehicle effect requires id, zone and valid subject", "effect"));
     effects::EffectDefinition common;
-    common.id = definition.id;
-    common.stackKey = definition.id;
-    common.duration = definition.duration;
-    common.period = definition.period;
+    common.id        = definition.id;
+    common.stackKey  = definition.id;
+    common.duration  = definition.duration;
+    common.period    = definition.period;
     common.magnitude = definition.magnitude;
-    common.policy = definition.policy;
-    common.tags = definition.tags;
+    common.policy    = definition.policy;
+    common.tags      = definition.tags;
     common.tags.push_back(kindTag(definition.kind));
     common.tags.push_back("vehicle:zone:" + definition.armorZone);
     auto valid = common.validate();
     if (!valid) return eve::Result<effects::EffectHandle>::failure(valid.status());
     auto candidate = container_.clone();
-    auto applied = candidate.apply(common, subject.format(), definition.source);
+    auto applied   = candidate.apply(common, subject.format(), definition.source);
     if (!applied) return eve::Result<effects::EffectHandle>::failure(applied.status());
-    const std::string id = std::move(applied).takeValue();
-    const auto* instance = candidate.find(id);
-    if (!instance) return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvariantViolation, "vehicle effect candidate disappeared", "effect"));
+    const std::string id       = std::move(applied).takeValue();
+    const auto*       instance = candidate.find(id);
+    if (!instance)
+        return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "vehicle effect candidate disappeared", "effect"));
     auto targetCandidate = target_;
-    auto immediate = executor_.applyImmediate(targetCandidate, *instance);
+    auto immediate       = executor_.applyImmediate(targetCandidate, *instance);
     if (!immediate) return eve::Result<effects::EffectHandle>::failure(immediate.status());
     auto handle = candidate.handleFor(id);
     if (!handle) return eve::Result<effects::EffectHandle>::failure(handle.status());
-    target_ = std::move(targetCandidate);
+    target_    = std::move(targetCandidate);
     container_ = std::move(candidate);
     return eve::Result<effects::EffectHandle>::success(std::move(handle).takeValue(),
-                                                      eve::Status::success(eve::StatusCode::Applied));
+                                                       eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> VehicleEffectAdapter::remove(effects::EffectHandle handle) {
@@ -128,13 +126,12 @@ eve::Result<VehicleEffectUpdate> VehicleEffectAdapter::advance(const eve::Simula
     auto lifecycle = effects::EffectExecutor{}.advance(candidate, step);
     if (!lifecycle) return eve::Result<VehicleEffectUpdate>::failure(lifecycle.status());
     auto targetCandidate = target_;
-    auto settled = executor_.settle(targetCandidate, std::move(lifecycle).takeValue());
+    auto settled         = executor_.settle(targetCandidate, std::move(lifecycle).takeValue());
     if (!settled) return settled;
     auto result = std::move(settled).takeValue();
-    target_ = std::move(targetCandidate);
-    container_ = std::move(candidate);
-    return eve::Result<VehicleEffectUpdate>::success(std::move(result),
-                                                     eve::Status::success(eve::StatusCode::Applied));
+    target_     = std::move(targetCandidate);
+    container_  = std::move(candidate);
+    return eve::Result<VehicleEffectUpdate>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
 }
 
 VehicleEffectSnapshot VehicleEffectAdapter::snapshot() const { return {container_.snapshot(), target_}; }

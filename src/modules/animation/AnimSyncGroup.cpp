@@ -1,8 +1,8 @@
 #include "animation/AnimSyncGroup.h"
 
-#include "animation/AnimationTime.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimPlayer.h"
+#include "animation/AnimationTime.h"
 #include "common/Exception.h"
 
 #include <cmath>
@@ -25,7 +25,7 @@ eve::Result<void> AnimSyncGroup::advance(const eve::SimulationStep& step) {
     (void)std::move(seconds).takeValue();
     usedMarkerSync_ = false;
     if (entries_.empty()) {
-        lastTick_ = step.tick;
+        lastTick_    = step.tick;
         hasLastTick_ = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     }
@@ -35,11 +35,11 @@ eve::Result<void> AnimSyncGroup::advance(const eve::SimulationStep& step) {
                 eve::DiagnosticCode::Conflict, "animation sync-group player already consumed this tick"));
     }
     Entry& leader = entries_[static_cast<size_t>(leader_)];
-    auto leaderResult = leader.player->advance(step);
+    auto   leaderResult = leader.player->advance(step);
     if (!leaderResult) return eve::Result<void>::failure(leaderResult.status());
     AnimClip* leaderClip = leader.player->getClip();
     if (!leaderClip || leaderClip->getDuration() <= 1e-8f) {
-        lastTick_ = step.tick;
+        lastTick_    = step.tick;
         hasLastTick_ = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
     }
@@ -47,7 +47,7 @@ eve::Result<void> AnimSyncGroup::advance(const eve::SimulationStep& step) {
     for (int i = 0; i < getCount(); ++i) {
         if (i == leader_) continue;
         AnimPlayer* player = entries_[static_cast<size_t>(i)].player;
-        auto playerResult = player->advance(step);
+        auto        playerResult = player->advance(step);
         if (!playerResult) return eve::Result<void>::failure(playerResult.status());
         AnimClip* clip = player->getClip();
         if (!clip || clip->getDuration() <= 1e-8f) continue;
@@ -61,7 +61,7 @@ eve::Result<void> AnimSyncGroup::advance(const eve::SimulationStep& step) {
         mappedTime += entries_[static_cast<size_t>(i)].phaseOffset * clip->getDuration();
         player->setTime(clip->wrapTime(mappedTime));
     }
-    lastTick_ = step.tick;
+    lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }

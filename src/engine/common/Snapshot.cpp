@@ -15,8 +15,8 @@ Result<T> failure(DiagnosticCode code, std::string message, std::string path = {
 }
 
 bool hasOnlyEnvelopeFields(const Value::Object& object) {
-    static const std::set<std::string> fields = {
-        "contentHash", "instanceId", "payload", "revision", "schema", "schemaVersion", "tick", "type"};
+    static const std::set<std::string> fields = {"contentHash", "instanceId",    "payload", "revision",
+                                                 "schema",      "schemaVersion", "tick",    "type"};
     for (const auto& entry : object)
         if (!fields.contains(entry.first)) return false;
     return true;
@@ -27,7 +27,7 @@ Result<std::uint64_t> readUint64(const Value& value, std::string_view field) {
     if (!text || text->empty())
         return failure<std::uint64_t>(DiagnosticCode::ParseError, "snapshot integer must be a decimal string",
                                       std::string(field));
-    std::uint64_t output = 0;
+    std::uint64_t output    = 0;
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), output);
     if (error != std::errc{} || end != text->data() + text->size())
         return failure<std::uint64_t>(DiagnosticCode::ParseError, "snapshot integer is out of range",
@@ -89,8 +89,7 @@ Result<void> validateSnapshotPayloadMetadata(const Value& payload, Revision revi
         if (!parsed.ok()) return Result<void>::failure(parsed.status());
         if (parsed.value() != expected)
             return failure<void>(DiagnosticCode::Conflict,
-                                 "snapshot payload " + std::string(field) +
-                                     " disagrees with the envelope",
+                                 "snapshot payload " + std::string(field) + " disagrees with the envelope",
                                  "payload." + std::string(field));
         return Result<void>::success();
     };
@@ -102,12 +101,12 @@ Result<void> validateSnapshotPayloadMetadata(const Value& payload, Revision revi
     return Result<void>::success();
 }
 
-Result<SnapshotEnvelope> makeSnapshotEnvelope(
-    std::string type, LogicalId schema, SchemaVersion schemaVersion, PersistentId instanceId,
-    Revision revision, SimulationTick tick, Value payload, const SnapshotHashProvider& hashProvider) {
-    SnapshotEnvelope snapshot{std::move(type), std::move(schema), schemaVersion, instanceId, revision, tick,
+Result<SnapshotEnvelope> makeSnapshotEnvelope(std::string type, LogicalId schema, SchemaVersion schemaVersion,
+                                              PersistentId instanceId, Revision revision, SimulationTick tick,
+                                              Value payload, const SnapshotHashProvider& hashProvider) {
+    SnapshotEnvelope snapshot{std::move(type),  std::move(schema), schemaVersion, instanceId, revision, tick,
                               ContentId::nil(), std::move(payload)};
-    auto valid = validateHeader(snapshot);
+    auto             valid = validateHeader(snapshot);
     if (!valid.ok()) return Result<SnapshotEnvelope>::failure(valid.status());
     if (!hashProvider)
         return failure<SnapshotEnvelope>(DiagnosticCode::Unsupported, "snapshot hash provider is required",
@@ -141,23 +140,23 @@ Result<SnapshotEnvelope> parseSnapshotEnvelopeValue(const Value& value, const Sn
         return failure<SnapshotEnvelope>(DiagnosticCode::ParseError,
                                          "snapshot envelope must be an object with the exact public fields");
 
-    const auto type = value.getIf<Value::Object>()->find("type");
-    const auto schemaText = object->find("schema");
+    const auto type          = value.getIf<Value::Object>()->find("type");
+    const auto schemaText    = object->find("schema");
     const auto schemaVersion = object->find("schemaVersion");
-    const auto instanceId = object->find("instanceId");
-    const auto revision = object->find("revision");
-    const auto tick = object->find("tick");
-    const auto contentHash = object->find("contentHash");
-    const auto payload = object->find("payload");
+    const auto instanceId    = object->find("instanceId");
+    const auto revision      = object->find("revision");
+    const auto tick          = object->find("tick");
+    const auto contentHash   = object->find("contentHash");
+    const auto payload       = object->find("payload");
     if (type == object->end() || schemaText == object->end() || schemaVersion == object->end() ||
         instanceId == object->end() || revision == object->end() || tick == object->end() ||
         contentHash == object->end() || payload == object->end() || !type->second.isString() ||
         !schemaText->second.isString() || !instanceId->second.isString() || !contentHash->second.isString())
         return failure<SnapshotEnvelope>(DiagnosticCode::ParseError, "snapshot envelope has invalid fields");
 
-    const auto schema = LogicalId::parse(*schemaText->second.getIf<std::string>());
+    const auto schema       = LogicalId::parse(*schemaText->second.getIf<std::string>());
     const auto persistentId = PersistentId::parse(*instanceId->second.getIf<std::string>());
-    const auto contentId = ContentId::parse(*contentHash->second.getIf<std::string>());
+    const auto contentId    = ContentId::parse(*contentHash->second.getIf<std::string>());
     if (!schema || !persistentId || !contentId)
         return failure<SnapshotEnvelope>(DiagnosticCode::ParseError, "snapshot envelope has invalid identity fields");
 
@@ -168,12 +167,15 @@ Result<SnapshotEnvelope> parseSnapshotEnvelopeValue(const Value& value, const Sn
     auto tickValue = readUint64(tick->second, "tick");
     if (!tickValue.ok()) return Result<SnapshotEnvelope>::failure(tickValue.status());
 
-    SnapshotEnvelope snapshot{*type->second.getIf<std::string>(), *schema,
-                              SchemaVersion(std::move(version).takeValue()), *persistentId,
+    SnapshotEnvelope snapshot{*type->second.getIf<std::string>(),
+                              *schema,
+                              SchemaVersion(std::move(version).takeValue()),
+                              *persistentId,
                               Revision(std::move(revisionValue).takeValue()),
-                              SimulationTick(std::move(tickValue).takeValue()), *contentId,
+                              SimulationTick(std::move(tickValue).takeValue()),
+                              *contentId,
                               payload->second};
-    auto verified = verifySnapshotEnvelope(snapshot, hashProvider);
+    auto             verified = verifySnapshotEnvelope(snapshot, hashProvider);
     if (!verified.ok()) return Result<SnapshotEnvelope>::failure(verified.status());
     return Result<SnapshotEnvelope>::success(std::move(snapshot));
 }
@@ -184,26 +186,23 @@ Result<std::string> serializeSnapshotEnvelope(const SnapshotEnvelope& snapshot) 
     return std::move(value).andThen([](Value&& owned) { return owned.toJson(); });
 }
 
-Result<SnapshotEnvelope> parseSnapshotEnvelope(
-    std::string_view json, const SnapshotHashProvider& hashProvider) {
+Result<SnapshotEnvelope> parseSnapshotEnvelope(std::string_view json, const SnapshotHashProvider& hashProvider) {
     auto value = Value::fromJson(json);
     if (!value.ok()) return Result<SnapshotEnvelope>::failure(value.status());
     return parseSnapshotEnvelopeValue(value.value(), hashProvider);
 }
 
-Result<void> SnapshotMigrationChain::add(LogicalId schema, SchemaVersion from, SchemaVersion to,
-                                         Migration migration) {
+Result<void> SnapshotMigrationChain::add(LogicalId schema, SchemaVersion from, SchemaVersion to, Migration migration) {
     if (!schema.isValid() || from.value() >= to.value() || !migration)
         return failure<void>(DiagnosticCode::InvalidArgument, "invalid snapshot migration edge");
     const Key key{schema.format(), from.value()};
-    if (steps_.contains(key))
-        return failure<void>(DiagnosticCode::Conflict, "snapshot migration edge already exists");
+    if (steps_.contains(key)) return failure<void>(DiagnosticCode::Conflict, "snapshot migration edge already exists");
     steps_.emplace(key, Step{to, std::move(migration)});
     return Result<void>::success();
 }
 
-Result<SnapshotEnvelope> SnapshotMigrationChain::migrate(
-    SnapshotEnvelope snapshot, SchemaVersion targetVersion, const SnapshotHashProvider& hashProvider) const {
+Result<SnapshotEnvelope> SnapshotMigrationChain::migrate(SnapshotEnvelope snapshot, SchemaVersion targetVersion,
+                                                         const SnapshotHashProvider& hashProvider) const {
     auto verified = verifySnapshotEnvelope(snapshot, hashProvider);
     if (!verified.ok()) return Result<SnapshotEnvelope>::failure(verified.status());
     if (snapshot.schemaVersion.value() > targetVersion.value())
@@ -212,7 +211,7 @@ Result<SnapshotEnvelope> SnapshotMigrationChain::migrate(
     if (snapshot.schemaVersion == targetVersion) return Result<SnapshotEnvelope>::success(std::move(snapshot));
 
     while (snapshot.schemaVersion.value() < targetVersion.value()) {
-        const Key key{snapshot.schema.format(), snapshot.schemaVersion.value()};
+        const Key  key{snapshot.schema.format(), snapshot.schemaVersion.value()};
         const auto step = steps_.find(key);
         if (step == steps_.end())
             return failure<SnapshotEnvelope>(DiagnosticCode::Unsupported,
@@ -224,7 +223,7 @@ Result<SnapshotEnvelope> SnapshotMigrationChain::migrate(
                                              "schemaVersion");
         auto payload = step->second.migration(snapshot.payload);
         if (!payload.ok()) return Result<SnapshotEnvelope>::failure(payload.status());
-        snapshot.payload = std::move(payload).takeValue();
+        snapshot.payload       = std::move(payload).takeValue();
         snapshot.schemaVersion = step->second.to;
     }
 

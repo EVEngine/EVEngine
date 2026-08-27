@@ -1,8 +1,8 @@
 #pragma once
 
+#include "animation/Tween.h"
 #include "common/Module.h"
 #include "common/Time.h"
-#include "animation/Tween.h"
 
 #include <string>
 #include <memory>
@@ -174,7 +174,7 @@ public:
     AnimTrail *newTrail(int capacity = 64);
 
     /** @brief Advance all registered tweens, sprite anims, and spine anims. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
 
     /** @brief Last scheduler tick consumed by the checked module pump. */
     [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }

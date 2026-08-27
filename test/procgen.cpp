@@ -155,17 +155,17 @@ struct ParamsLease {
         auto result = Procgen::release(handle);
         result.ignore("procgen test params cleanup");
     }
-    ParamsLease(const ParamsLease&) = delete;
-    ParamsLease& operator=(const ParamsLease&) = delete;
-    ParamsLease(ParamsLease&& other) noexcept : handle(other.handle) { other.handle = {}; }
+    ParamsLease(const ParamsLease &)            = delete;
+    ParamsLease &operator=(const ParamsLease &) = delete;
+    ParamsLease(ParamsLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
     [[nodiscard]] eve::script::Borrowed<Params> view() const noexcept { return Procgen::resolve(handle); }
 };
 
-ParamsLease requireParams(const Params& source) {
+ParamsLease requireParams(const Params &source) {
     auto result = Procgen::newParamsHandle();
     REQUIRE(result.ok());
     ParamsLease lease{std::move(result).takeValue()};
-    auto view = lease.view();
+    auto        view = lease.view();
     REQUIRE(view.isBound());
     *view = source;
     return lease;
@@ -179,32 +179,31 @@ struct GridLease {
         auto result = Procgen::release(handle);
         result.ignore("procgen test grid cleanup");
     }
-    GridLease(const GridLease&) = delete;
-    GridLease& operator=(const GridLease&) = delete;
-    GridLease(GridLease&& other) noexcept : handle(other.handle) { other.handle = {}; }
+    GridLease(const GridLease &)            = delete;
+    GridLease &operator=(const GridLease &) = delete;
+    GridLease(GridLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
     [[nodiscard]] eve::script::Borrowed<Grid2D> view() const noexcept { return Procgen::resolve(handle); }
 };
 
-GridLease requireGrid(Procgen& proc, const std::string& algorithm,
-                      ProcgenParamsHandleRef params) {
+GridLease requireGrid(Procgen &proc, const std::string &algorithm, ProcgenParamsHandleRef params) {
     auto result = proc.generateHandle(algorithm, params);
     REQUIRE(result.ok());
     return GridLease{std::move(result).takeValue()};
 }
 
 struct MeshLease {
-    Procgen* owner = nullptr;
+    Procgen                  *owner = nullptr;
     ProcgenMeshBuildHandleRef handle{};
-    MeshLease(Procgen& proc, ProcgenMeshBuildHandleRef value) : owner(&proc), handle(value) {}
+    MeshLease(Procgen &proc, ProcgenMeshBuildHandleRef value) : owner(&proc), handle(value) {}
     ~MeshLease() {
         if (!owner || !handle.isValid()) return;
         auto result = owner->releaseMeshBuild(handle);
         result.ignore("procgen test mesh cleanup");
     }
-    MeshLease(const MeshLease&) = delete;
-    MeshLease& operator=(const MeshLease&) = delete;
-    MeshLease(MeshLease&& other) noexcept : owner(other.owner), handle(other.handle) {
-        other.owner = nullptr;
+    MeshLease(const MeshLease &)            = delete;
+    MeshLease &operator=(const MeshLease &) = delete;
+    MeshLease(MeshLease &&other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner  = nullptr;
         other.handle = {};
     }
     [[nodiscard]] eve::script::Borrowed<MeshBuild> view() const noexcept {
@@ -212,31 +211,29 @@ struct MeshLease {
     }
 };
 
-MeshLease requireMesh(Procgen& proc, const std::string& recipe,
-                      ProcgenParamsHandleRef params) {
+MeshLease requireMesh(Procgen &proc, const std::string &recipe, ProcgenParamsHandleRef params) {
     auto result = proc.buildMeshHandle(recipe, params);
     REQUIRE(result.ok());
     return MeshLease(proc, std::move(result).takeValue());
 }
 
 struct PbrLease {
-    Procgen* owner = nullptr;
+    Procgen                    *owner = nullptr;
     ProcgenPbrMaterialHandleRef handle{};
-    PbrLease(Procgen& proc, ProcgenPbrMaterialHandleRef value) : owner(&proc), handle(value) {}
+    PbrLease(Procgen &proc, ProcgenPbrMaterialHandleRef value) : owner(&proc), handle(value) {}
     ~PbrLease() {
         if (!owner || !handle.isValid()) return;
         auto result = owner->releasePbrMaterial(handle);
         result.ignore("procgen test PBR cleanup");
     }
-    PbrLease(const PbrLease&) = delete;
-    PbrLease& operator=(const PbrLease&) = delete;
-    PbrLease(PbrLease&& other) noexcept : owner(other.owner), handle(other.handle) {
-        other.owner = nullptr;
+    PbrLease(const PbrLease &)            = delete;
+    PbrLease &operator=(const PbrLease &) = delete;
+    PbrLease(PbrLease &&other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner  = nullptr;
         other.handle = {};
     }
     [[nodiscard]] eve::script::Borrowed<PbrTextureSet> view() const noexcept {
-        return owner ? owner->resolvePbrMaterial(handle)
-                     : eve::script::Borrowed<PbrTextureSet>();
+        return owner ? owner->resolvePbrMaterial(handle) : eve::script::Borrowed<PbrTextureSet>();
     }
 };
 
@@ -710,8 +707,8 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     params.setInt("maxChildren", 2);
 
     Procgen generator;
-    auto treeParams = requireParams(params);
-    auto treeMesh = generator.generateMeshBorrowed("mesh.tree", treeParams.handle, gfx);
+    auto    treeParams = requireParams(params);
+    auto    treeMesh   = generator.generateMeshBorrowed("mesh.tree", treeParams.handle, gfx);
     REQUIRE(treeMesh.isBound());
 
     // 4px bark/foliage atlas; UVs are partitioned by the mesh recipe.
@@ -858,8 +855,8 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
     params.setInt("twigs", 6);
 
     Procgen generator;
-    auto bushParams = requireParams(params);
-    auto bushMesh = generator.generateMeshBorrowed("mesh.bush", bushParams.handle, gfx);
+    auto    bushParams = requireParams(params);
+    auto    bushMesh   = generator.generateMeshBorrowed("mesh.bush", bushParams.handle, gfx);
     REQUIRE(bushMesh.isBound());
 
     // A tiny two-tone foliage atlas (dark base / light highlight), like the tree test.
@@ -1100,9 +1097,9 @@ TEST_CASE("procgen.wfc.simple.viaModule") {
     p.setSize(16, 12);
     p.setString("preset", "dungeon");
     p.setInt("maxAttempts", 64);
-    auto params = requireParams(p);
+    auto params    = requireParams(p);
     auto gridLease = requireGrid(*mod, "wfc.simple", params.handle);
-    auto grid = gridLease.view();
+    auto grid      = gridLease.view();
     REQUIRE(grid.isBound());
     CHECK(borderIsWall(*grid));
     CHECK_EQ(grid->getWidth(), 16);
@@ -1113,9 +1110,9 @@ TEST_CASE("procgen.wfc.simple.viaModule") {
     bad.setSize(8, 8);
     bad.setString("preset", "invalid");
     auto badParams = requireParams(bad);
-    auto failed = mod->generateHandle("wfc.simple", badParams.handle);
+    auto failed    = mod->generateHandle("wfc.simple", badParams.handle);
     CHECK(!failed.ok());
-    const eve::Diagnostic* diagnostic = failed.error();
+    const eve::Diagnostic *diagnostic = failed.error();
     REQUIRE(diagnostic != nullptr);
     CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::Failed);
 }
@@ -1218,7 +1215,7 @@ TEST_CASE("procgen.render.hexplanetPng") {
     params.setInt("subdivisions", 3);
     params.setFloat("tileInset", 0.12f);
     auto planetParams = requireParams(params);
-    auto planetMesh = procgen->generateMeshBorrowed("mesh.hexplanet", planetParams.handle, gfx);
+    auto planetMesh   = procgen->generateMeshBorrowed("mesh.hexplanet", planetParams.handle, gfx);
     REQUIRE(planetMesh.isBound());
 
     const uint8_t oceanBlue[4] = {42, 155, 181, 255};
@@ -1403,7 +1400,7 @@ TEST_CASE("procgen.render.skyscraperPng") {
     params.setFloat("windowDepth", 0.06f);
     params.setFloat("spireHeight", 5.f);
     auto towerParams = requireParams(params);
-    auto towerMesh = procgen->generateMeshBorrowed("mesh.skyscraper", towerParams.handle, gfx);
+    auto towerMesh   = procgen->generateMeshBorrowed("mesh.skyscraper", towerParams.handle, gfx);
     REQUIRE(towerMesh.isBound());
 
     // 2x2 atlas: bottom texel dark wall, top texel bright window (matches UV convention).
@@ -1490,8 +1487,8 @@ TEST_CASE("procgen.render.castlePng") {
     params.setInt("detail", 2);
     params.setFloat("towerSpacing", 15.f);
     auto castleParams = requireParams(params);
-    auto castleBuild = requireMesh(*procgen, "mesh.castle", castleParams.handle);
-    auto castleView = castleBuild.view();
+    auto castleBuild  = requireMesh(*procgen, "mesh.castle", castleParams.handle);
+    auto castleView   = castleBuild.view();
     REQUIRE(castleView.isBound());
 
     const uint8_t stone[16] = {
@@ -1739,9 +1736,9 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
     p.setSeed(3);
     p.setInt("resolution", 16);
     p.setString("field", "torus");
-    auto params = requireParams(p);
+    auto params    = requireParams(p);
     auto meshLease = requireMesh(*mod, "mesh.marchingcubes", params.handle);
-    auto m = meshLease.view();
+    auto m         = meshLease.view();
     REQUIRE(m.isBound());
     CHECK(m->getVertexCount() > 50);
     CHECK(meshIndicesInRange(*m));
@@ -1758,12 +1755,12 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
     auto badParams = requireParams(bad);
     auto badResult = mod->buildMeshHandle("mesh.marchingcubes", badParams.handle);
     CHECK(!badResult.ok());
-    const eve::Diagnostic* badDiagnostic = badResult.error();
+    const eve::Diagnostic *badDiagnostic = badResult.error();
     REQUIRE(badDiagnostic != nullptr);
     CHECK_EQ(badDiagnostic->code(), eve::DiagnosticCode::Failed);
     auto missingResult = mod->buildMeshHandle("mesh.missing", params.handle);
     CHECK(!missingResult.ok());
-    const eve::Diagnostic* missingDiagnostic = missingResult.error();
+    const eve::Diagnostic *missingDiagnostic = missingResult.error();
     REQUIRE(missingDiagnostic != nullptr);
     CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::Failed);
     auto missingGraphicsResult = mod->generateMeshBorrowed("mesh.marchingcubes", {}, nullptr);
@@ -1899,9 +1896,9 @@ TEST_CASE("procgen.mesh.marchingcubes.sphereVolumeSignStable") {
 
 TEST_CASE("procgen.mesh.marchingcubes.moduleNullAndList") {
     Procgen *mod = Procgen::create();
-    auto failed = mod->buildMeshHandle("mesh.marchingcubes", {});
+    auto     failed = mod->buildMeshHandle("mesh.marchingcubes", {});
     CHECK(!failed.ok());
-    const eve::Diagnostic* diagnostic = failed.error();
+    const eve::Diagnostic *diagnostic = failed.error();
     REQUIRE(diagnostic != nullptr);
     CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::StaleHandle);
     auto failedUpload = mod->generateMeshBorrowed("mesh.marchingcubes", {}, nullptr);
@@ -1920,9 +1917,9 @@ TEST_CASE("procgen.palette.applyToLayer") {
     Params p;
     p.setSeed(1);
     p.setSize(16, 12);
-    auto params = requireParams(p);
+    auto params    = requireParams(p);
     auto gridLease = requireGrid(*mod, "dungeon.bsp", params.handle);
-    auto grid = gridLease.view();
+    auto grid      = gridLease.view();
     REQUIRE(grid.isBound());
 
     mod->setPaletteGid("test", "wall", 10);
@@ -1930,7 +1927,7 @@ TEST_CASE("procgen.palette.applyToLayer") {
     mod->setPaletteGid("test", "corridor", 21);
 
     eve::map::TileLayer *layer = eve::map::TileLayer::createLayer(16, 12, 16.f, 16.f);
-    auto applyResult = mod->applyToLayer(gridLease.handle, "test", *layer);
+    auto                 applyResult = mod->applyToLayer(gridLease.handle, "test", *layer);
     CHECK(applyResult.ok());
     bool sawMapped = false;
     for (int y = 0; y < 12; ++y) {
@@ -1997,8 +1994,8 @@ TEST_CASE("procgen.texture.recipes.reproducible") {
         std::string err;
         // Fully qualify: `using namespace eve::procgen` would make bare `image::`
         // look outside `eve::image`.
-        auto a = TextureRecipeRegistry::instance().generate(id, p, err);
-        auto b = TextureRecipeRegistry::instance().generate(id, p, err);
+        auto       a        = TextureRecipeRegistry::instance().generate(id, p, err);
+        auto       b        = TextureRecipeRegistry::instance().generate(id, p, err);
         const bool aPresent = static_cast<bool>(a);
         const bool bPresent = static_cast<bool>(b);
         REQUIRE(aPresent);
@@ -2017,7 +2014,7 @@ TEST_CASE("procgen.texture.generateImage.andNormal") {
     p.setSeed(3);
     p.setSize(48, 48);
     p.setInt("colors", 6);
-    auto params = requireParams(p);
+    auto params      = requireParams(p);
     auto imageResult = mod->generateImageHandle("tex.marble", params.handle);
     REQUIRE(imageResult.ok());
     auto normalResult = mod->generateNormalImageHandle("tex.marble", params.handle);
@@ -2131,8 +2128,8 @@ TEST_CASE("procgen.cloud.recipes.generate") {
         p.setFloat("worldScale", 64.f);
         p.setFloat("time", 1.5f);
         std::string err;
-        auto img = TextureRecipeRegistry::instance().generate(id, p, err);
-    REQUIRE(static_cast<bool>(img));
+        auto        img = TextureRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(static_cast<bool>(img));
         CHECK_EQ(img->getFormat(), std::string("RGBA8"));
         CHECK_EQ(img->getWidth(), 48);
         CHECK_EQ(img->getHeight(), 48);
@@ -2143,10 +2140,10 @@ TEST_CASE("procgen.cloud.recipes.generate") {
 
 TEST_CASE("procgen.cloud.viaModule") {
     Procgen *mod = Procgen::create();
-    auto fieldResult = mod->newCloudFieldHandle();
+    auto     fieldResult = mod->newCloudFieldHandle();
     REQUIRE(fieldResult.ok());
     auto fieldHandle = std::move(fieldResult).takeValue();
-    auto field = mod->resolveCloudField(fieldHandle);
+    auto field       = mod->resolveCloudField(fieldHandle);
     REQUIRE(field.isBound());
     field->setSeed(3);
     field->setWorldScale(64.f);
@@ -2162,7 +2159,7 @@ TEST_CASE("procgen.cloud.viaModule") {
     auto shadowResult = mod->newCloudShadowHandle();
     REQUIRE(shadowResult.ok());
     auto shadowHandle = std::move(shadowResult).takeValue();
-    auto shadow = mod->resolveCloudShadow(shadowHandle);
+    auto shadow       = mod->resolveCloudShadow(shadowHandle);
     REQUIRE(shadow.isBound());
     shadow->setSunDirection(0.5f, 1.f, 0.f);
     shadow->setCloudAltitude(50.f);
@@ -2174,11 +2171,9 @@ TEST_CASE("procgen.cloud.viaModule") {
     CHECK(!staleFactor.ok());
 
     std::vector<float> buf(16 * 16);
-    auto sampleResult = mod->sampleCloud(fieldHandle, std::span<float>(buf), 16, 16, 0.f,
-                                         0.f, 0.f, 64.f);
+    auto               sampleResult = mod->sampleCloud(fieldHandle, std::span<float>(buf), 16, 16, 0.f, 0.f, 0.f, 64.f);
     CHECK(sampleResult.ok());
-    auto shadowSampleResult = mod->sampleCloudShadow(shadowHandle, std::span<float>(buf), 16, 16,
-                                                     0.f, 0.f, 0.f, 64.f);
+    auto shadowSampleResult = mod->sampleCloudShadow(shadowHandle, std::span<float>(buf), 16, 16, 0.f, 0.f, 0.f, 64.f);
     CHECK(shadowSampleResult.ok());
     auto releaseField = mod->releaseCloudField(fieldHandle);
     CHECK(releaseField.ok());
@@ -2198,10 +2193,10 @@ TEST_CASE("procgen.texture.builtinRecipes.expanded") {
         p.setSize(32, 32);
         p.setInt("colors", 5);
         std::string err;
-        auto a = TextureRecipeRegistry::instance().generate(id, p, err);
-        auto b = TextureRecipeRegistry::instance().generate(id, p, err);
-        const bool aPresent = static_cast<bool>(a);
-        const bool bPresent = static_cast<bool>(b);
+        auto        a        = TextureRecipeRegistry::instance().generate(id, p, err);
+        auto        b        = TextureRecipeRegistry::instance().generate(id, p, err);
+        const bool  aPresent = static_cast<bool>(a);
+        const bool  bPresent = static_cast<bool>(b);
         REQUIRE(aPresent);
         REQUIRE(bPresent);
         CHECK_EQ(a->getFormat(), std::string("RGBA8"));
@@ -2274,10 +2269,10 @@ TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
         p.setSeed(7);
         p.setSize(32, 32);
         std::string err;
-        auto a = PbrRecipeRegistry::instance().generate(id, p, err);
-        auto b = PbrRecipeRegistry::instance().generate(id, p, err);
-        const bool aPresent = static_cast<bool>(a);
-        const bool bPresent = static_cast<bool>(b);
+        auto        a        = PbrRecipeRegistry::instance().generate(id, p, err);
+        auto        b        = PbrRecipeRegistry::instance().generate(id, p, err);
+        const bool  aPresent = static_cast<bool>(a);
+        const bool  bPresent = static_cast<bool>(b);
         REQUIRE(aPresent);
         REQUIRE(bPresent);
         // All six maps present, same size, reproducible.
@@ -2310,7 +2305,7 @@ TEST_CASE("procgen.pbr.metallicAndRoughnessRange") {
     p.setFloat("roughnessLow", 0.1f);
     p.setFloat("roughnessHigh", 0.2f);
     std::string err;
-    auto set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
+    auto        set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
     REQUIRE(static_cast<bool>(set));
     const auto *m = static_cast<const uint8_t *>(set->metallic->getData());
     for (size_t i = 0; i < set->metallic->getSize(); i += 4) {
@@ -2328,11 +2323,11 @@ TEST_CASE("procgen.pbr.viaModuleAndErrors") {
     Params p;
     p.setSeed(9);
     p.setSize(40, 40);
-    auto params = requireParams(p);
+    auto params    = requireParams(p);
     auto pbrResult = mod->generatePbrMaterialHandle("pbr.wall", params.handle);
     REQUIRE(pbrResult.ok());
     auto setLease = PbrLease(*mod, std::move(pbrResult).takeValue());
-    auto set = setLease.view();
+    auto set      = setLease.view();
     REQUIRE(set.isBound());
     CHECK(set->albedo != nullptr);
     CHECK(set->normal != nullptr);
@@ -2347,12 +2342,12 @@ TEST_CASE("procgen.pbr.viaModuleAndErrors") {
 
     auto missingResult = mod->generatePbrMaterialHandle("pbr.missing", params.handle);
     CHECK(!missingResult.ok());
-    const eve::Diagnostic* missingDiagnostic = missingResult.error();
+    const eve::Diagnostic *missingDiagnostic = missingResult.error();
     REQUIRE(missingDiagnostic != nullptr);
     CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::NotFound);
     auto staleResult = mod->generatePbrMaterialHandle("pbr.wall", {});
     CHECK(!staleResult.ok());
-    const eve::Diagnostic* staleDiagnostic = staleResult.error();
+    const eve::Diagnostic *staleDiagnostic = staleResult.error();
     REQUIRE(staleDiagnostic != nullptr);
     CHECK_EQ(staleDiagnostic->code(), eve::DiagnosticCode::StaleHandle);
 }
@@ -2570,9 +2565,9 @@ TEST_CASE("procgen.mesh.linearStructure.viaModule") {
     p.setSeed(1);
     p.setInt("segments", 4);
     p.setFloat("segLength", 1.f);
-    auto params = requireParams(p);
+    auto params    = requireParams(p);
     auto meshLease = requireMesh(*mod, "mesh.stonewall", params.handle);
-    auto m = meshLease.view();
+    auto m         = meshLease.view();
     REQUIRE(m.isBound());
     CHECK(m->getVertexCount() > 0);
     CHECK(meshIndicesInRange(*m));
@@ -2580,7 +2575,7 @@ TEST_CASE("procgen.mesh.linearStructure.viaModule") {
     CHECK(mod->hasMeshRecipe("mesh.bridge"));
     auto missingResult = mod->buildMeshHandle("mesh.nonexistent", params.handle);
     CHECK(!missingResult.ok());
-    const eve::Diagnostic* missingDiagnostic = missingResult.error();
+    const eve::Diagnostic *missingDiagnostic = missingResult.error();
     REQUIRE(missingDiagnostic != nullptr);
     CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::Failed);
 }
@@ -2674,7 +2669,7 @@ TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
     CHECK(!rings->description.empty());
     auto missingSchema = mod->getMeshRecipeSchema("mesh.missing");
     CHECK(!missingSchema.ok());
-    const eve::Diagnostic* schemaDiagnostic = missingSchema.error();
+    const eve::Diagnostic *schemaDiagnostic = missingSchema.error();
     REQUIRE(schemaDiagnostic != nullptr);
     CHECK_EQ(schemaDiagnostic->code(), eve::DiagnosticCode::NotFound);
     Params p;
@@ -2685,7 +2680,7 @@ TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
     auto params = requireParams(p);
     auto failed = mod->buildMeshHandle("mesh.castle", params.handle);
     CHECK(!failed.ok());
-    const eve::Diagnostic* failedDiagnostic = failed.error();
+    const eve::Diagnostic *failedDiagnostic = failed.error();
     REQUIRE(failedDiagnostic != nullptr);
     CHECK_EQ(failedDiagnostic->code(), eve::DiagnosticCode::Failed);
 }

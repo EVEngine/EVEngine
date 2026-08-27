@@ -7,8 +7,7 @@ namespace {
 
 template <typename T>
 [[nodiscard]] Result<T> parseFailure(std::string message, std::string_view path) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, std::move(message), std::string(path)));
+    return Result<T>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(message), std::string(path)));
 }
 
 template <typename T>
@@ -31,8 +30,7 @@ Result<AssetRef> AssetRef::fromId(PersistentId id) {
 
 Result<AssetRef> AssetRef::fromUri(const ResourceUri& uri) {
     if (uri.scheme() != UriScheme::Asset || !uri.query().empty() || !uri.fragment().empty()) {
-        return parseFailure<AssetRef>("AssetRef requires an asset:// UUID without query or fragment",
-                                      uri.format());
+        return parseFailure<AssetRef>("AssetRef requires an asset:// UUID without query or fragment", uri.format());
     }
     const auto parsed = PersistentId::parse(uri.path());
     if (!parsed || parsed->isNil()) {
@@ -88,9 +86,7 @@ const AssetRef* ResourceRef::asset() const noexcept { return std::get_if<AssetRe
 
 const ResourceUri* ResourceRef::uri() const noexcept { return std::get_if<ResourceUri>(&value_); }
 
-const DefinitionRef* ResourceRef::definition() const noexcept {
-    return std::get_if<DefinitionRef>(&value_);
-}
+const DefinitionRef* ResourceRef::definition() const noexcept { return std::get_if<DefinitionRef>(&value_); }
 
 const ObjectRef* ResourceRef::object() const noexcept { return std::get_if<ObjectRef>(&value_); }
 

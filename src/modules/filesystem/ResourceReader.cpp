@@ -7,15 +7,14 @@ namespace eve::filesystem {
 namespace {
 
 [[nodiscard]] Result<std::vector<std::uint8_t>> unsupported(const ResourceUri& uri) {
-    return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
-        DiagnosticCode::Unsupported,
-        "filesystem ResourceReader has no provider for this resource namespace", uri.format()));
+    return Result<std::vector<std::uint8_t>>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported,
+                          "filesystem ResourceReader has no provider for this resource namespace", uri.format()));
 }
 
 [[nodiscard]] Result<std::vector<std::uint8_t>> readFailure(const ResourceUri& uri) {
     return Result<std::vector<std::uint8_t>>::failure(
-        Diagnostic::error(DiagnosticCode::Failed, "filesystem provider could not read resource",
-                          uri.format()));
+        Diagnostic::error(DiagnosticCode::Failed, "filesystem provider could not read resource", uri.format()));
 }
 
 template <typename T>

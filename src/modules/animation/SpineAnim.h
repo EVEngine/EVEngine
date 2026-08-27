@@ -85,7 +85,7 @@ public:
     void apply();
 
     /** @brief Advance playback by one scheduler-owned deterministic step. */
-    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
     /** @brief Whether this Spine animation has consumed a scheduler step. */
     [[nodiscard]] bool hasCurrentTick() const noexcept { return hasLastTick_; }
     /** @brief Last scheduler tick consumed by this Spine animation. */
@@ -159,7 +159,7 @@ private:
     int                                layer_ = 0;
     float                              r_ = 1.f, g_ = 1.f, b_ = 1.f, a_ = 1.f;
     std::vector<DrawSlot>              drawSlots_;
-    eve::SimulationTick                lastTick_ = eve::SimulationTick::zero();
+    eve::SimulationTick                lastTick_    = eve::SimulationTick::zero();
     bool                               hasLastTick_ = false;
 
     bool updateUnchecked(float dt);

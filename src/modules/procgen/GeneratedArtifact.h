@@ -9,13 +9,13 @@
  * dense data in typed values; metadata is deliberately small and dynamic.
  */
 
-#include "common/Identity.h"
 #include "common/ArtifactPublication.h"
+#include "common/Generation.h"
+#include "common/Identity.h"
 #include "common/Result.h"
+#include "common/SchemaVersion.h"
 #include "common/Snapshot.h"
 #include "common/Value.h"
-#include "common/Generation.h"
-#include "common/SchemaVersion.h"
 #include "procgen/Grid2D.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/Params.h"
@@ -28,8 +28,8 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <variant>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace eve::procgen {
@@ -61,14 +61,13 @@ public:
      * @param params Generation parameters.
      * @return A key containing a versioned hash of canonical recipe inputs.
      */
-    [[nodiscard]] static std::optional<BuildKey> forRecipe(std::string_view recipeId,
-                                                             const Params& params);
+    [[nodiscard]] static std::optional<BuildKey> forRecipe(std::string_view recipeId, const Params& params);
 
     /** @brief Return whether this key is non-empty. */
     [[nodiscard]] bool empty() const noexcept { return value_.empty(); }
     /** @brief Return canonical key text. */
     [[nodiscard]] const std::string& format() const noexcept { return value_; }
-    friend bool operator==(const BuildKey&, const BuildKey&) noexcept = default;
+    friend bool                      operator==(const BuildKey&, const BuildKey&) noexcept = default;
 
 private:
     explicit BuildKey(std::string value) : value_(std::move(value)) {}
@@ -78,7 +77,8 @@ private:
 }  // namespace eve::procgen
 
 namespace std {
-template <> struct hash<eve::procgen::BuildKey> {
+template <>
+struct hash<eve::procgen::BuildKey> {
     size_t operator()(const eve::procgen::BuildKey& key) const noexcept {
         return std::hash<std::string>{}(key.format());
     }
@@ -89,12 +89,12 @@ namespace eve::procgen {
 
 /** @brief Axis-aligned bounds in the artifact's declared world coordinate space. */
 struct Bounds {
-    float minX = 0.f;
-    float minY = 0.f;
-    float minZ = 0.f;
-    float maxX = 0.f;
-    float maxY = 0.f;
-    float maxZ = 0.f;
+    float minX  = 0.f;
+    float minY  = 0.f;
+    float minZ  = 0.f;
+    float maxX  = 0.f;
+    float maxY  = 0.f;
+    float maxZ  = 0.f;
     bool  valid = false;
 
     /** @brief Expand this box to include one point. */
@@ -115,10 +115,10 @@ enum class ArtifactType : std::uint8_t {
 
 /** @brief Small owning image product; raw pixels stay out of JSON metadata. */
 struct ImageData {
-    int                 width = 0;
-    int                 height = 0;
-    int                 channels = 0;
-    std::string         format;
+    int                       width    = 0;
+    int                       height   = 0;
+    int                       channels = 0;
+    std::string               format;
     std::vector<std::uint8_t> pixels;
 
     /** @brief Return whether dimensions and pixel storage describe an image. */
@@ -127,10 +127,10 @@ struct ImageData {
 
 /** @brief Backend-neutral collider product, normally a triangle mesh or hull. */
 struct Collider {
-    std::vector<float>    vertices;
+    std::vector<float>         vertices;
     std::vector<std::uint32_t> indices;
-    Bounds                bounds;
-    std::string           shape = "triangle_mesh";
+    Bounds                     bounds;
+    std::string                shape = "triangle_mesh";
 
     /** @brief Return whether the collider has complete triangle data. */
     [[nodiscard]] bool isValid() const noexcept;
@@ -144,15 +144,15 @@ using ArtifactLeafPayload = std::variant<Grid2D, PointSet, MeshData, ImageData, 
 
 /** @brief One typed, role-named child product inside a composite artifact. */
 struct ArtifactPart {
-    ArtifactId          id;
-    ArtifactType        type = ArtifactType::Grid;
-    eve::SchemaVersion  schemaVersion{1};
-    BuildKey            buildKey;
-    Bounds              bounds;
+    ArtifactId              id;
+    ArtifactType            type = ArtifactType::Grid;
+    eve::SchemaVersion      schemaVersion{1};
+    BuildKey                buildKey;
+    Bounds                  bounds;
     std::vector<ArtifactId> dependencies;
-    eve::Value::Object  metadata;
-    ArtifactLeafPayload payload;
-    std::string         role;
+    eve::Value::Object      metadata;
+    ArtifactLeafPayload     payload;
+    std::string             role;
 };
 
 /** @brief A coherent set of products published from one deterministic build. */
@@ -177,15 +177,14 @@ struct CompositeArtifact {
 
 /** @brief Complete immutable-once-published artifact record. */
 struct GeneratedArtifact {
-    ArtifactId             id;
-    ArtifactType           type = ArtifactType::Grid;
-    eve::SchemaVersion     schemaVersion{1};
-    BuildKey               buildKey;
-    Bounds                 bounds;
+    ArtifactId              id;
+    ArtifactType            type = ArtifactType::Grid;
+    eve::SchemaVersion      schemaVersion{1};
+    BuildKey                buildKey;
+    Bounds                  bounds;
     std::vector<ArtifactId> dependencies;
-    eve::Value::Object     metadata;
-    using Payload = std::variant<Grid2D, PointSet, MeshData, ImageData, Collider,
-                                 CompositeArtifact>;
+    eve::Value::Object      metadata;
+    using Payload = std::variant<Grid2D, PointSet, MeshData, ImageData, Collider, CompositeArtifact>;
     Payload payload;
 };
 
@@ -206,16 +205,17 @@ struct GeneratedArtifact {
  * @brief Validate and construct one artifact record.
  * @return A complete owning artifact or a structured rejection diagnostic.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> makeArtifact(
-    ArtifactId id, ArtifactType type, eve::SchemaVersion schemaVersion, BuildKey buildKey,
-    Bounds bounds, std::vector<ArtifactId> dependencies, eve::Value::Object metadata,
-    GeneratedArtifact::Payload payload);
+[[nodiscard]] eve::Result<GeneratedArtifact> makeArtifact(ArtifactId id, ArtifactType type,
+                                                          eve::SchemaVersion schemaVersion, BuildKey buildKey,
+                                                          Bounds bounds, std::vector<ArtifactId> dependencies,
+                                                          eve::Value::Object         metadata,
+                                                          GeneratedArtifact::Payload payload);
 
 /** @brief Validate and construct a leaf part for a composite artifact. */
-[[nodiscard]] eve::Result<ArtifactPart> makeArtifactPart(
-    std::string role, ArtifactId id, ArtifactType type, eve::SchemaVersion schemaVersion,
-    BuildKey buildKey, Bounds bounds, std::vector<ArtifactId> dependencies,
-    eve::Value::Object metadata, ArtifactLeafPayload payload);
+[[nodiscard]] eve::Result<ArtifactPart> makeArtifactPart(std::string role, ArtifactId id, ArtifactType type,
+                                                         eve::SchemaVersion schemaVersion, BuildKey buildKey,
+                                                         Bounds bounds, std::vector<ArtifactId> dependencies,
+                                                         eve::Value::Object metadata, ArtifactLeafPayload payload);
 
 /**
  * @brief In-memory owner and publisher for generated artifacts.
@@ -242,8 +242,7 @@ public:
      * @return Published top-level identities in input order.
      * @remarks A failed Result leaves the store unchanged.
      */
-    [[nodiscard]] eve::Result<std::vector<ArtifactId>> publishBatch(
-        std::vector<GeneratedArtifact> artifacts);
+    [[nodiscard]] eve::Result<std::vector<ArtifactId>> publishBatch(std::vector<GeneratedArtifact> artifacts);
 
     /**
      * @brief Prepare one store mutation for a larger provider transaction.
@@ -314,7 +313,7 @@ private:
 
     std::unordered_map<ArtifactId, GeneratedArtifact> artifacts_;
     std::unordered_map<ArtifactId, ArtifactId>        partOwners_;
-    bool stageActive_ = false;
+    bool                                              stageActive_ = false;
 };
 
 /**
@@ -324,8 +323,7 @@ private:
  * @param id Non-nil identity for the top-level artifact instance.
  * @return An owning composite artifact, or a structured generation failure.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> generateHexTerrainArtifact(
-    const Params& params, ArtifactId id);
+[[nodiscard]] eve::Result<GeneratedArtifact> generateHexTerrainArtifact(const Params& params, ArtifactId id);
 
 /**
  * @brief Generate a castle composite containing mesh, collider, ring topology
@@ -334,8 +332,7 @@ private:
  * @param id Non-nil identity for the top-level artifact instance.
  * @return An owning composite artifact, or a structured generation failure.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> generateCastleArtifact(
-    const Params& params, ArtifactId id);
+[[nodiscard]] eve::Result<GeneratedArtifact> generateCastleArtifact(const Params& params, ArtifactId id);
 
 /**
  * @brief Generate any registered mesh recipe as a CPU artifact.
@@ -344,7 +341,7 @@ private:
  * @param id Non-nil artifact instance identity.
  * @return Hex terrain and castle become composites; other recipes become MeshData artifacts.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> generateMeshArtifact(
-    std::string_view recipeId, const Params& params, ArtifactId id);
+[[nodiscard]] eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId, const Params& params,
+                                                                  ArtifactId id);
 
 }  // namespace eve::procgen

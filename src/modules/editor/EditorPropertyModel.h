@@ -31,19 +31,17 @@ class EditorPropertyModel final : public property_access::IPropertyAccess {
 public:
     using EditSink = std::function<EditorResult<void>(const PropertyEditIntent &)>;
 
-    EditorPropertyModel(PropertySchema schema, SelectionSnapshot selection,
-                        const IPropertyProvider *provider,
-                        PropertyModelSurface surface = PropertyModelSurface::Developer,
-                        HostProfile profile = HostProfile::developer(),
+    EditorPropertyModel(PropertySchema schema, SelectionSnapshot selection, const IPropertyProvider *provider,
+                        PropertyModelSurface       surface            = PropertyModelSurface::Developer,
+                        HostProfile                profile            = HostProfile::developer(),
                         IEditorTransactionBackend *transactionBackend = nullptr);
     ~EditorPropertyModel() override;
 
-    const property_access::PropertySchema &schema() const override { return presentationSchema_; }
-    std::optional<eve::Value> read(const std::string &path) const override;
-    [[nodiscard]] property_access::WriteResult write(const std::string &path,
-                                                  const eve::Value &value) override;
+    const property_access::PropertySchema     &schema() const override { return presentationSchema_; }
+    std::optional<eve::Value>                  read(const std::string &path) const override;
+    [[nodiscard]] property_access::WriteResult write(const std::string &path, const eve::Value &value) override;
     std::uint64_t revision() const override { return revision_; }
-    property_access::Subscription subscribe(ChangeCallback callback) override;
+    property_access::Subscription              subscribe(ChangeCallback callback) override;
 
     /** @brief Return the authoritative provider revision captured by this model. */
     [[nodiscard]] eve::Revision targetRevision() const noexcept { return targetRevision_; }
@@ -95,22 +93,22 @@ public:
 private:
     struct ObserverState;
     void rebuildSchema();
-    void emit(const std::string &path, const eve::Value &value);
+    void                                      emit(const std::string &path, const eve::Value &value);
     [[nodiscard]] EditorResult<eve::Revision> readProviderRevision() const;
-    [[nodiscard]] EditorResult<void> ensureCurrentRevision() const;
+    [[nodiscard]] EditorResult<void>          ensureCurrentRevision() const;
 
     PropertySchema editorSchema_;
     SelectionSnapshot selection_;
     const IPropertyProvider *provider_ = nullptr;
     PropertyModelSurface surface_ = PropertyModelSurface::Developer;
     HostProfile profile_;
-    property_access::PropertySchema presentationSchema_;
+    property_access::PropertySchema   presentationSchema_;
     std::map<std::string, eve::Value> cachedValues_;
     EditSink sink_;
-    IEditorTransactionBackend *transactionBackend_ = nullptr;
-    std::set<std::string>       pendingPaths_;
-    eve::Revision               targetRevision_;
-    bool                        bound_ = false;
+    IEditorTransactionBackend        *transactionBackend_ = nullptr;
+    std::set<std::string>             pendingPaths_;
+    eve::Revision                     targetRevision_;
+    bool                              bound_    = false;
     std::uint64_t revision_ = 0;
     std::shared_ptr<ObserverState> observers_;
 };

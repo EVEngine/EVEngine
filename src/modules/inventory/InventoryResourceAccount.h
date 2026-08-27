@@ -30,51 +30,43 @@ public:
     /** @brief Bind the adapter to one caller-owned inventory bag. */
     explicit InventoryResourceAccount(Bag& bag);
 
-    InventoryResourceAccount(const InventoryResourceAccount&) = delete;
+    InventoryResourceAccount(const InventoryResourceAccount&)            = delete;
     InventoryResourceAccount& operator=(const InventoryResourceAccount&) = delete;
-    InventoryResourceAccount(InventoryResourceAccount&&) = delete;
-    InventoryResourceAccount& operator=(InventoryResourceAccount&&) = delete;
-    ~InventoryResourceAccount() override = default;
+    InventoryResourceAccount(InventoryResourceAccount&&)                 = delete;
+    InventoryResourceAccount& operator=(InventoryResourceAccount&&)      = delete;
+    ~InventoryResourceAccount() override                                 = default;
 
     /** @copydoc eve::resource::IResourceAccount::canAfford */
     [[nodiscard]] eve::Result<eve::resource::Affordability> canAfford(
         const eve::resource::CostSpec& cost) const override;
     /** @copydoc eve::resource::IResourceAccount::reserve */
-    [[nodiscard]] eve::Result<eve::resource::Reservation> reserve(
-        const eve::resource::CostSpec& cost) override;
+    [[nodiscard]] eve::Result<eve::resource::Reservation> reserve(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::debit */
-    [[nodiscard]] eve::Result<eve::resource::Receipt> debit(
-        const eve::resource::CostSpec& cost) override;
+    [[nodiscard]] eve::Result<eve::resource::Receipt> debit(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::credit */
-    [[nodiscard]] eve::Result<eve::resource::Receipt> credit(
-        const eve::resource::CostSpec& cost) override;
+    [[nodiscard]] eve::Result<eve::resource::Receipt> credit(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::commit */
-    [[nodiscard]] eve::Result<eve::resource::Receipt> commit(
-        const eve::resource::Reservation& reservation) override;
+    [[nodiscard]] eve::Result<eve::resource::Receipt> commit(const eve::resource::Reservation& reservation) override;
     /** @copydoc eve::resource::IResourceAccount::rollback */
-    [[nodiscard]] eve::Result<void> rollback(
-        const eve::resource::Reservation& reservation) override;
+    [[nodiscard]] eve::Result<void> rollback(const eve::resource::Reservation& reservation) override;
 
 private:
     enum class ReservationState : std::uint8_t { Active, Committed, RolledBack };
     struct ReservationRecord {
         eve::resource::CostSpec cost;
-        ReservationState       state = ReservationState::Active;
+        ReservationState        state = ReservationState::Active;
     };
 
-    [[nodiscard]] eve::Result<std::int64_t> balanceOf(
-        const eve::resource::ResourceId& resource) const;
-    [[nodiscard]] eve::Result<std::int64_t> activeReservationsFor(
-        const eve::resource::ResourceId& resource) const;
-    [[nodiscard]] eve::Result<void> activeReservationsAreCovered() const;
-    [[nodiscard]] eve::Result<void> applyDelta(const eve::resource::CostSpec& cost,
-                                                bool debit);
+    [[nodiscard]] eve::Result<std::int64_t> balanceOf(const eve::resource::ResourceId& resource) const;
+    [[nodiscard]] eve::Result<std::int64_t> activeReservationsFor(const eve::resource::ResourceId& resource) const;
+    [[nodiscard]] eve::Result<void>         activeReservationsAreCovered() const;
+    [[nodiscard]] eve::Result<void>         applyDelta(const eve::resource::CostSpec& cost, bool debit);
 
-    Bag& bag_;
+    Bag&                                                                bag_;
     std::unordered_map<eve::resource::ReservationId, ReservationRecord> reservations_;
-    eve::resource::AccountNonce accountNonce_;
-    eve::resource::ReservationId nextReservation_{1};
-    eve::resource::ReceiptId      nextReceipt_{1};
+    eve::resource::AccountNonce                                         accountNonce_;
+    eve::resource::ReservationId                                        nextReservation_{1};
+    eve::resource::ReceiptId                                            nextReceipt_{1};
 };
 
 /**
@@ -92,8 +84,7 @@ public:
      * @param quantity Positive quantity.
      * @return Canonical item cost or a structured validation failure.
      */
-    [[nodiscard]] static eve::Result<eve::resource::CostSpec> itemCost(
-        std::string_view itemId, std::int64_t quantity);
+    [[nodiscard]] static eve::Result<eve::resource::CostSpec> itemCost(std::string_view itemId, std::int64_t quantity);
 
     /**
      * @brief Build a positive cost for ammunition stored as an item stack.
@@ -101,8 +92,8 @@ public:
      * @param quantity Positive number of rounds/charges.
      * @return Canonical ammunition cost or a structured validation failure.
      */
-    [[nodiscard]] static eve::Result<eve::resource::CostSpec> ammoCost(
-        std::string_view ammoItemId, std::int64_t quantity);
+    [[nodiscard]] static eve::Result<eve::resource::CostSpec> ammoCost(std::string_view ammoItemId,
+                                                                       std::int64_t     quantity);
 };
 
 }  // namespace eve::inventory

@@ -31,7 +31,7 @@ std::string floatToString(double v) {
     return buf;
 }
 
-bool squirrelToVarValueAt(HSQUIRRELVM vm, SQInteger index, Dialogue::VarValue& out) {
+bool squirrelToVarValueAt(HSQUIRRELVM vm, SQInteger index, Dialogue::VarValue &out) {
     auto converted = eve::script::valueFromSquirrel(vm, index);
     if (!converted.ok()) {
         converted.ignore("Dialogue scalar compatibility adapter rejected the value");
@@ -44,7 +44,7 @@ bool squirrelToVarValueAt(HSQUIRRELVM vm, SQInteger index, Dialogue::VarValue& o
 }
 
 /** Convert a Squirrel value through the canonical common Value adapter. */
-bool objectToDataValue(HSQUIRRELVM vm, const ssq::Object& object, DataValue& out) {
+bool objectToDataValue(HSQUIRRELVM vm, const ssq::Object &object, DataValue &out) {
     if (!vm || object.isEmpty()) return false;
     auto converted = eve::script::valueFromSquirrel(object);
     if (!converted.ok()) {
@@ -55,8 +55,8 @@ bool objectToDataValue(HSQUIRRELVM vm, const ssq::Object& object, DataValue& out
     return true;
 }
 
-bool objectToVarParams(HSQUIRRELVM vm, const ssq::Object& object,
-                       std::unordered_map<std::string, Dialogue::VarValue>& out) {
+bool objectToVarParams(HSQUIRRELVM vm, const ssq::Object &object,
+                       std::unordered_map<std::string, Dialogue::VarValue> &out) {
     out.clear();
     if (!vm || object.isEmpty() || object.getType() != ssq::Type::TABLE) return true;
     auto converted = eve::script::valueFromSquirrel(object);
@@ -64,16 +64,16 @@ bool objectToVarParams(HSQUIRRELVM vm, const ssq::Object& object,
         converted.ignore("Dialogue parameter compatibility adapter rejected the table");
         return true;
     }
-    Dialogue::VarValue value = std::move(converted).takeValue();
-    const auto* fields = value.getIf<eve::Value::Object>();
+    Dialogue::VarValue value  = std::move(converted).takeValue();
+    const auto        *fields = value.getIf<eve::Value::Object>();
     if (!fields) return true;
-    for (const auto& [key, field] : *fields) {
+    for (const auto &[key, field] : *fields) {
         if (!field.isNull() && !field.isArray() && !field.isObject()) out[key] = field;
     }
     return true;
 }
 
-void pushVarValue(HSQUIRRELVM vm, const Dialogue::VarValue& value) {
+void pushVarValue(HSQUIRRELVM vm, const Dialogue::VarValue &value) {
     auto pushed = eve::script::pushValue(vm, value);
     if (!pushed.ok()) {
         pushed.ignore("Dialogue scalar compatibility adapter could not push the value");
@@ -81,10 +81,9 @@ void pushVarValue(HSQUIRRELVM vm, const Dialogue::VarValue& value) {
     }
 }
 
-void pushVarTable(HSQUIRRELVM vm,
-                 const std::unordered_map<std::string, Dialogue::VarValue>& vars) {
+void pushVarTable(HSQUIRRELVM vm, const std::unordered_map<std::string, Dialogue::VarValue> &vars) {
     eve::Value::Object fields;
-    for (const auto& [key, value] : vars) fields.emplace(key, value);
+    for (const auto &[key, value] : vars) fields.emplace(key, value);
     auto pushed = eve::script::pushValue(vm, eve::Value(std::move(fields)));
     if (!pushed.ok()) {
         pushed.ignore("Dialogue parameter compatibility adapter could not push the table");
@@ -363,35 +362,26 @@ bool Dialogue::parseCondition(const DataValue &v, Condition &out, std::string &e
     }
     if (const DataValue *var = v.find("var")) {
         const DataValue *op = v.find("op");
-        if (var->kind() != DataValue::Kind::String || !op ||
-            op->kind() != DataValue::Kind::String) {
+        if (var->kind() != DataValue::Kind::String || !op || op->kind() != DataValue::Kind::String) {
             error = "var/op condition requires string var and op";
             return false;
         }
         static const char *kOps[] = {"eq", "ne", "gt", "ge", "lt", "le", "has", "missing"};
-        const std::string opStr = op->asString();
+        const std::string  opStr  = op->asString();
         if (std::find(std::begin(kOps), std::end(kOps), opStr) == std::end(kOps)) {
             error = "unknown condition op: " + opStr;
             return false;
         }
         out.kind = Condition::Kind::Cmp;
-        out.var = var->asString();
+        out.var   = var->asString();
         out.op = opStr;
         out.value = VarValue::string("");
         if (const DataValue *val = v.find("value")) {
             switch (val->kind()) {
-                case DataValue::Kind::Int:
-                    out.value = VarValue::integer(val->asInt());
-                    break;
-                case DataValue::Kind::Float:
-                    out.value = VarValue::number(val->asDouble());
-                    break;
-                case DataValue::Kind::Bool:
-                    out.value = VarValue::boolean(val->asBool());
-                    break;
-                case DataValue::Kind::String:
-                    out.value = VarValue::string(val->asString());
-                    break;
+                case DataValue::Kind::Int: out.value = VarValue::integer(val->asInt()); break;
+                case DataValue::Kind::Float: out.value = VarValue::number(val->asDouble()); break;
+                case DataValue::Kind::Bool: out.value = VarValue::boolean(val->asBool()); break;
+                case DataValue::Kind::String: out.value = VarValue::string(val->asString()); break;
                 default:
                     break;
             }
@@ -408,10 +398,8 @@ bool Dialogue::compareEq(const VarValue &a, const VarValue &b) const {
         const double y = b.type() == VarValue::Type::Int ? double(b.asInt()) : b.asDouble();
         return x == y;
     }
-    if (a.type() == VarValue::Type::Bool && b.type() == VarValue::Type::Bool)
-        return a.asBool() == b.asBool();
-    if (a.type() == VarValue::Type::String && b.type() == VarValue::Type::String)
-        return a.asString() == b.asString();
+    if (a.type() == VarValue::Type::Bool && b.type() == VarValue::Type::Bool) return a.asBool() == b.asBool();
+    if (a.type() == VarValue::Type::String && b.type() == VarValue::Type::String) return a.asString() == b.asString();
     return false;
 }
 
@@ -539,8 +527,10 @@ bool Dialogue::parseLineData(const std::string &poolId, const DataValue &v, int 
     }
 
     if (const DataValue *w = v.find("weight")) {
-        if (w->kind() == DataValue::Kind::Int) line.weight = double(w->asInt());
-        else if (w->kind() == DataValue::Kind::Float) line.weight = w->asDouble();
+        if (w->kind() == DataValue::Kind::Int)
+            line.weight = double(w->asInt());
+        else if (w->kind() == DataValue::Kind::Float)
+            line.weight = w->asDouble();
         else {
             error = "line '" + line.id + "': weight must be a number";
             return false;
@@ -563,18 +553,10 @@ bool Dialogue::parseLineData(const std::string &poolId, const DataValue &v, int 
         for (const auto &mkv : *fields) {
             std::string val;
             switch (mkv.second.kind()) {
-                case DataValue::Kind::String:
-                    val = mkv.second.asString();
-                    break;
-                case DataValue::Kind::Int:
-                    val = std::to_string(mkv.second.asInt());
-                    break;
-                case DataValue::Kind::Float:
-                    val = floatToString(mkv.second.asDouble());
-                    break;
-                case DataValue::Kind::Bool:
-                    val = mkv.second.asBool() ? "true" : "false";
-                    break;
+                case DataValue::Kind::String: val = mkv.second.asString(); break;
+                case DataValue::Kind::Int: val = std::to_string(mkv.second.asInt()); break;
+                case DataValue::Kind::Float: val = floatToString(mkv.second.asDouble()); break;
+                case DataValue::Kind::Bool: val = mkv.second.asBool() ? "true" : "false"; break;
                 default:
                     break;
             }
@@ -617,8 +599,10 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
             continue;
         }
         if (const DataValue *nr = kv.second.find("noRepeat")) {
-            if (nr->kind() == DataValue::Kind::Int) pool.noRepeat = int(nr->asInt());
-            else if (nr->kind() == DataValue::Kind::Float) pool.noRepeat = int(nr->asDouble());
+            if (nr->kind() == DataValue::Kind::Int)
+                pool.noRepeat = int(nr->asInt());
+            else if (nr->kind() == DataValue::Kind::Float)
+                pool.noRepeat = int(nr->asDouble());
             if (pool.noRepeat < 0) pool.noRepeat = 0;
         }
         const DataValue *lines = kv.second.find("lines");

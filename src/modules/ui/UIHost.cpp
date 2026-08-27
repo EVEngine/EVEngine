@@ -48,7 +48,7 @@ UIHostHandle UIHost::createHost(const std::string &name) {
     UIHost *h = UIHost::create();
     if (!h) return {};
     const UIHostHandle handle = ecs::handle_of(h);
-    h->meta()->entity = handle;
+    h->meta()->entity         = handle;
     if (name.empty()) {
         h->meta()->name = "host" + std::to_string(++g_anonHostSeq);
     } else {
@@ -59,8 +59,7 @@ UIHostHandle UIHost::createHost(const std::string &name) {
 
 eve::OptionalRef<UIHost> UIHost::resolve(UIHostHandle handle) noexcept {
     auto *entity = ecs::try_get(handle);
-    if (auto *host = entity ? dynamic_cast<UIHost *>(entity) : nullptr)
-        return std::ref(*host);
+    if (auto *host = entity ? dynamic_cast<UIHost *>(entity) : nullptr) return std::ref(*host);
     return std::nullopt;
 }
 
@@ -114,7 +113,7 @@ void UIHost::setEnabledById(const std::string &id, bool enabled) {
         n->get().enabled = enabled;
         if (!enabled) {
             n->get().focusRequested = false;
-            n->get().focused = false;
+            n->get().focused        = false;
         }
     }
 }
@@ -156,8 +155,7 @@ bool UIHost::moveFocus(FocusDirection direction, bool wrap) {
         const std::string &explicitId = neighbor(*current, direction);
         if (!explicitId.empty()) {
             auto explicitTarget = findById(explicitId);
-            if (explicitTarget && eligible(explicitTarget->get(), true))
-                return requestFocusById(explicitId);
+            if (explicitTarget && eligible(explicitTarget->get(), true)) return requestFocusById(explicitId);
         }
     }
 

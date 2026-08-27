@@ -28,23 +28,21 @@ namespace eve::test_support {
  * @remarks Test-only helper. It never returns a borrowed pointer or retains a
  *          grid handle after the synchronous operation.
  */
-inline void applyGridToLayer(eve::procgen::Procgen& procgen,
-                             const eve::procgen::Grid2D& source,
-                             const std::string& palette,
-                             eve::map::TileLayer& layer) {
-    auto created = eve::procgen::Procgen::newGridHandle(source.getWidth(), source.getHeight());
+inline void applyGridToLayer(eve::procgen::Procgen& procgen, const eve::procgen::Grid2D& source,
+                             const std::string& palette, eve::map::TileLayer& layer) {
+    auto       created   = eve::procgen::Procgen::newGridHandle(source.getWidth(), source.getHeight());
     const bool createdOk = created.ok();
     REQUIRE(createdOk);
     if (!createdOk) return;
 
-    const auto handle = std::move(created).takeValue();
-    auto view = eve::procgen::Procgen::resolve(handle);
+    const auto handle   = std::move(created).takeValue();
+    auto       view     = eve::procgen::Procgen::resolve(handle);
     const bool resolved = view.isBound();
     if (resolved) *view = source;
 
     if (!resolved) {
-        auto releaseResult = eve::procgen::Procgen::release(handle);
-        const bool released = releaseResult.ok();
+        auto       releaseResult = eve::procgen::Procgen::release(handle);
+        const bool released      = releaseResult.ok();
         REQUIRE(released);
         REQUIRE(false);
         return;
@@ -52,10 +50,10 @@ inline void applyGridToLayer(eve::procgen::Procgen& procgen,
 
     // Keep the operation Result alive until it has been observed before the
     // handle is released; this also avoids ZeroErr evaluating it twice.
-    auto applyResult = procgen.applyToLayer(handle, palette, layer);
-    const bool applied = applyResult.ok();
-    auto releaseResult = eve::procgen::Procgen::release(handle);
-    const bool released = releaseResult.ok();
+    auto       applyResult   = procgen.applyToLayer(handle, palette, layer);
+    const bool applied       = applyResult.ok();
+    auto       releaseResult = eve::procgen::Procgen::release(handle);
+    const bool released      = releaseResult.ok();
     REQUIRE(applied);
     REQUIRE(released);
 }

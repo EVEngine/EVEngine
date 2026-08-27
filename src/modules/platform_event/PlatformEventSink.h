@@ -31,13 +31,13 @@ class EVENGINE_API IPlatformEventSink {
 public:
     /** Dispatch order; lower runs first. */
     enum Priority {
-        kObserver = 0,    // sees everything before anyone claims it (UI)
-        kSurface = 10,    // window / swapchain lifecycle
-        kInput = 20,      // keyboard, joystick, touch
+        kObserver = 0,   // sees everything before anyone claims it (UI)
+        kSurface  = 10,  // window / swapchain lifecycle
+        kInput    = 20,  // keyboard, joystick, touch
     };
 
     static constexpr const char* capabilityName = "eve.event.IPlatformEventSink";
-    virtual ~IPlatformEventSink() = default;
+    virtual ~IPlatformEventSink()               = default;
 
     /**
      * Inspect an event before translation. Return true to consume it, so no

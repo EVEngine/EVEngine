@@ -7,7 +7,7 @@
 namespace eve {
 namespace detail {
 struct RevisionTag {};
-}
+}  // namespace detail
 /** @brief Monotonic content/state revision used for optimistic-concurrency checks. */
 using Revision = detail::StrongUint64<detail::RevisionTag>;
 }  // namespace eve

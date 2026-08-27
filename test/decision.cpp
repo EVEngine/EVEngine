@@ -5,7 +5,7 @@
 using namespace eve::decision;
 TEST_CASE("decision.blackboardsAndFsmAreExplicit") {
     DecisionContext d;
-    auto setResult = d.set("ai", "enemy", "\"tank-1\"");
+    auto            setResult = d.set("ai", "enemy", "\"tank-1\"");
     REQUIRE(setResult.ok());
     CHECK_EQ(d.get("ai", "enemy", "null"), std::string("\"tank-1\""));
     auto stateResult = d.setState("unit", "idle");
@@ -23,7 +23,7 @@ TEST_CASE("decision.utilityIsDeterministic") {
 }
 TEST_CASE("decision.influenceAndSnapshotRoundTrip") {
     DecisionContext d;
-    auto gridResult = d.newGrid("threat", 2, 2, 10, 0, 0);
+    auto            gridResult = d.newGrid("threat", 2, 2, 10, 0, 0);
     REQUIRE(gridResult.ok());
     auto setCellResult = d.setCell("threat", 1, 0, 2);
     REQUIRE(setCellResult.ok());
@@ -32,7 +32,7 @@ TEST_CASE("decision.influenceAndSnapshotRoundTrip") {
     CHECK_EQ(d.sample("threat", 15, 5, -1), 5.f);
     auto            s = d.snapshotJson();
     DecisionContext x;
-    auto restoreResult = x.restoreJson(s);
+    auto            restoreResult = x.restoreJson(s);
     REQUIRE(restoreResult.ok());
     CHECK_EQ(x.snapshotJson(), s);
     auto before = x.snapshotJson();

@@ -119,8 +119,7 @@ public:
      *          edited must override this method and return their authoritative
      *          revision, including a non-zero initial revision.
      */
-    [[nodiscard]] virtual eve::Result<eve::Revision> currentRevision(
-        const SelectionSnapshot& selection) const {
+    [[nodiscard]] virtual eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const {
         (void)selection;
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Unsupported,
@@ -162,12 +161,12 @@ property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescr
  * @param value Editor-owned deterministic value tree.
  * @return Equivalent renderer-independent value tree.
  */
-eve::Value toPresentationValue(const EditorValue &value);
+eve::Value toPresentationValue(const EditorValue& value);
 /**
  * @brief Convert a shared presentation value tree to the editor value tree.
  * @param value Renderer-independent deterministic value tree.
  * @return Equivalent editor value tree.
  */
-EditorValue toEditorValue(const eve::Value &value);
+EditorValue toEditorValue(const eve::Value& value);
 
 }  // namespace eve::editor

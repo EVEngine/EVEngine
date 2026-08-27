@@ -15,7 +15,7 @@ enum class InventoryContainerKind : std::uint8_t { Bag, Equipment };
 
 /** @brief Owning transfer payload for one inventory stack. */
 struct InventoryContainerObject final : eve::container::ContainerObjectPayload {
-    ItemStack stack;
+    ItemStack   stack;
     std::string equipmentSlot;
 };
 
@@ -50,14 +50,12 @@ public:
         return descriptor_;
     }
     [[nodiscard]] eve::Result<eve::container::ContainerSnapshot> snapshot() const override;
-    [[nodiscard]] eve::Result<void> validateInsert(
-        const eve::container::ContainerObject& object,
-        std::optional<eve::container::SlotIndex> destination,
-        std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
+    [[nodiscard]] eve::Result<void>                              validateInsert(
+                                     const eve::container::ContainerObject& object, std::optional<eve::container::SlotIndex> destination,
+                                     std::optional<eve::container::MembershipId> ignoredObject = std::nullopt) const override;
     /** @copydoc eve::container::IContainer::prepare */
     [[nodiscard]] eve::Result<std::unique_ptr<eve::container::IContainer::PreparedState>> prepare(
-        const eve::container::ContainerSnapshot& expected,
-        const eve::container::ContainerSnapshot& candidate) override;
+        const eve::container::ContainerSnapshot& expected, const eve::container::ContainerSnapshot& candidate) override;
 
     /** @brief Return the adapter revision for optimistic transfer requests. */
     [[nodiscard]] eve::Revision revision() const noexcept { return revision_; }
@@ -65,9 +63,9 @@ public:
 private:
     class PreparedState;
 
-    [[nodiscard]] static eve::container::MembershipId objectId(const ItemStack& stack);
+    [[nodiscard]] static eve::container::MembershipId    objectId(const ItemStack& stack);
     [[nodiscard]] static eve::container::ContainerObject describe(const ItemStack& stack,
-                                                                    std::string equipmentSlot = {});
+                                                                  std::string      equipmentSlot = {});
     /**
      * @brief Resolve one authoritative inventory slot for a synchronous operation.
      * @ownership Borrowed from the bound Bag or EquipmentSet; the adapter never deletes it.
@@ -79,15 +77,15 @@ private:
      */
     [[nodiscard]] const ItemStack* stackAt(eve::container::SlotIndex slot) const;
     /** @copydoc InventoryContainerAdapter::stackAt(eve::container::SlotIndex) */
-    [[nodiscard]] ItemStack* stackAt(eve::container::SlotIndex slot);
-    [[nodiscard]] std::string slotName(eve::container::SlotIndex slot) const;
+    [[nodiscard]] ItemStack*        stackAt(eve::container::SlotIndex slot);
+    [[nodiscard]] std::string       slotName(eve::container::SlotIndex slot) const;
     [[nodiscard]] eve::Result<void> validateObject(const InventoryContainerObject& object) const;
 
     eve::container::ContainerDescriptor descriptor_;
-    InventoryContainerKind kind_;
-    Bag* bag_ = nullptr;
-    EquipmentSet* equipment_ = nullptr;
-    eve::Revision revision_ = eve::Revision(0);
+    InventoryContainerKind              kind_;
+    Bag*                                bag_       = nullptr;
+    EquipmentSet*                       equipment_ = nullptr;
+    eve::Revision                       revision_  = eve::Revision(0);
 };
 
 }  // namespace eve::inventory

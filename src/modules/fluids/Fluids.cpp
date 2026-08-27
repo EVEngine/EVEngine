@@ -114,9 +114,7 @@ int FluidSimulator::spawnDrop(const glm::vec3& center, float radius, int count) 
     return sim_.spawnDrop(center, radius, count);
 }
 
-void FluidSimulator::step(float dt) {
-    stepSolver(dt, std::max(1, sim_.params().iterations));
-}
+void FluidSimulator::step(float dt) { stepSolver(dt, std::max(1, sim_.params().iterations)); }
 
 void FluidSimulator::stepSolver(float dt, int substeps) {
     if (sim_.particleCount() <= 0) return;
@@ -172,11 +170,9 @@ void FluidSimulator::stepSolver(float dt, int substeps) {
     for (int i = 0; i < sim_.particleCount(); ++i) dens[size_t(i)] = densF[size_t(i)];
 }
 
-eve::Result<void> FluidSimulator::step(
-    const eve::SimulationStep& stepValue,
-    const eve::physics::SimulationSettings& settings) {
-    auto valid = eve::physics::detail::validateSimulationStep(
-        stepValue, settings, observation_);
+eve::Result<void> FluidSimulator::step(const eve::SimulationStep&              stepValue,
+                                       const eve::physics::SimulationSettings& settings) {
+    auto valid = eve::physics::detail::validateSimulationStep(stepValue, settings, observation_);
     if (!valid) return valid;
     auto next = eve::physics::detail::advanceSimulationObservation(observation_, stepValue);
     if (!next) return eve::Result<void>::failure(next.status());
@@ -190,36 +186,31 @@ eve::Result<void> FluidSimulator::step(
                 available = false;
             }
             if (!available) {
-                backendFallback_ = true;
+                backendFallback_        = true;
                 backendSelectionStatus_ = eve::Status(
                     eve::StatusCode::Applied,
                     {eve::Diagnostic::warning(
-                        eve::DiagnosticCode::Unsupported,
-                        "Fluid GPGPU accelerator unavailable; CPU reference selected",
-                        "fluids.simulationBackend",
-                        {{"selected", "cpu"}, {"fallback", "explicit"}})});
+                        eve::DiagnosticCode::Unsupported, "Fluid GPGPU accelerator unavailable; CPU reference selected",
+                        "fluids.simulationBackend", {{"selected", "cpu"}, {"fallback", "explicit"}})});
             }
         }
         stepSolver(static_cast<float>(stepValue.delta.seconds()), settings.subStepCount);
     } catch (const std::exception& error) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed,
-            std::string("Fluid simulation step failed: ") + error.what(),
+            eve::DiagnosticCode::Failed, std::string("Fluid simulation step failed: ") + error.what(),
             "fluids.simulationBackend.step"));
     } catch (...) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed,
-            "Fluid simulation step failed with an unknown exception",
+            eve::DiagnosticCode::Failed, "Fluid simulation step failed with an unknown exception",
             "fluids.simulationBackend.step"));
     }
     observation_ = std::move(next).takeValue();
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> FluidSimulator::restoreObservation(
-    const eve::physics::SimulationObservation& observation) {
-    auto valid = eve::physics::detail::validateSimulationObservation(
-        observation, "fluids.simulationBackend.restoreObservation");
+eve::Result<void> FluidSimulator::restoreObservation(const eve::physics::SimulationObservation& observation) {
+    auto valid =
+        eve::physics::detail::validateSimulationObservation(observation, "fluids.simulationBackend.restoreObservation");
     if (!valid) return valid;
     observation_ = observation;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));

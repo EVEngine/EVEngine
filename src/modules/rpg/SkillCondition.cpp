@@ -9,11 +9,10 @@
 namespace eve::rpg {
 namespace {
 
-std::optional<eve::Value> skillValue(const RPGActor* actor, const SkillDefinition& definition,
-                                     std::string_view key) {
+std::optional<eve::Value> skillValue(const RPGActor* actor, const SkillDefinition& definition, std::string_view key) {
     if (!actor) return std::nullopt;
-    auto* mutableActor = const_cast<RPGActor*>(actor);
-    const auto* runtime = [&]() -> const SkillRuntime* {
+    auto*       mutableActor = const_cast<RPGActor*>(actor);
+    const auto* runtime      = [&]() -> const SkillRuntime* {
         const auto it = mutableActor->skills()->known.find(definition.id);
         return it == mutableActor->skills()->known.end() ? nullptr : &it->second;
     }();
@@ -55,25 +54,22 @@ std::optional<eve::Value> SkillConditionContext::resource(std::string_view key) 
     return attribute(key);
 }
 
-std::optional<eve::Value> SkillConditionContext::state(std::string_view key) const {
-    return value(key);
-}
+std::optional<eve::Value> SkillConditionContext::state(std::string_view key) const { return value(key); }
 
 std::optional<bool> SkillConditionContext::authority(std::string_view scope) const {
     if (!queries_.authority) return std::nullopt;
     return queries_.authority(scope);
 }
 
-std::optional<decision::ConditionResult> SkillConditionContext::policy(std::string_view name,
-                                                                         const eve::Value& arguments) const {
+std::optional<decision::ConditionResult> SkillConditionContext::policy(std::string_view  name,
+                                                                       const eve::Value& arguments) const {
     if (!queries_.policy) return std::nullopt;
     return queries_.policy(name, arguments);
 }
 
-decision::ConditionResult SkillConditionAdapter::evaluate(const RPGActor* actor,
-                                                          const SkillDefinition& definition,
+decision::ConditionResult SkillConditionAdapter::evaluate(const RPGActor* actor, const SkillDefinition& definition,
                                                           const decision::Condition& condition,
-                                                          SkillConditionQueries queries) {
+                                                          SkillConditionQueries      queries) {
     SkillConditionContext context(actor, definition, std::move(queries));
     return condition.evaluate(context);
 }

@@ -131,6 +131,7 @@ eve_declare_module(NAME effects LAYER 0 SCRIPT Effects SLOT effects
                    DEPS definitions
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME game_event LAYER 0 SCRIPT GameEvent SLOT game_event
+                   DEPS schema
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME settlement LIB EVSettlement LAYER 0
                    DEPS game_event

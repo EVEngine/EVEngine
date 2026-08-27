@@ -48,7 +48,7 @@ std::unique_ptr<image::ImageData> makeFromHeightFn(const Params &params, std::st
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    auto               img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     std::vector<float> height;
     fillHeightField(ctx, def.height, height);
     paintHeightToImage(*img, height, ctx.width, ctx.height, def.albedo, ctx.colors, ctx.pixelSize);
@@ -427,7 +427,7 @@ std::unique_ptr<image::ImageData> genCloud(const Params &params, std::string &er
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    auto      img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     ColorRamp ramp;
     ramp.add(0.00f, 90, 140, 205);
     ramp.add(0.30f, 168, 205, 238);
@@ -450,7 +450,7 @@ std::unique_ptr<image::ImageData> genCloudShadow(const Params &params, std::stri
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    auto      img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     ColorRamp ramp;
     ramp.add(0.00f, 18, 20, 26);   // clear (lit)
     ramp.add(0.30f, 60, 62, 70);

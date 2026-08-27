@@ -44,13 +44,15 @@ function makeUnit(id, faction, kind, x, y, commander) {
     stats.setBase("speed", tank ? 42.0 : 58.0);
     social.setOwner(id, faction);
     if (commander != "") social.assign(id, "subordinate", commander);
+    local queueResult = orders.newQueueOwned();
+    if (!queueResult.ok) throw queueResult.status.summary;
     return {
         id=id faction=faction kind=kind x=x y=y tx=x ty=y
         hp=tank ? 180.0 : 85.0 maxHp=tank ? 180.0 : 85.0
         damage=tank ? 24.0 : 10.0 speed=tank ? 42.0 : 58.0
         range=tank ? 70.0 : 48.0 cooldown=0.0 selected=false alive=true
         radius=tank ? 17.0 : 10.0 holdFire=false
-        commander=commander stats=stats queue=orders.newQueue() aimX=1.0 aimY=0.0
+        commander=commander stats=stats queue=queueResult.value aimX=1.0 aimY=0.0
     };
 }
 
@@ -63,6 +65,8 @@ function resetGame() {
     local authorityStore = authorityResult.ok ? authorityResult.value : null;
     local mindContext = mindResult.ok ? mindResult.value : null;
     local statusContainer = statusesResult.ok ? statusesResult.value : null;
+    local productionResult = production.newWorkQueue();
+    if (!productionResult.ok) throw productionResult.status.summary;
     local generalStats = attributes.newSet("general.arden");
     generalStats.setBase("administration", 76.0);
     generalStats.setBase("command", 84.0);
@@ -75,12 +79,12 @@ function resetGame() {
         crown="faction.crown" frontier="faction.frontier"
         general="general.arden" baseId="base.north" enemyBase="base.frontier"
         generalStats=generalStats baseStats=baseStats
-        authority=authorityStore factory=production.newQueue()
+        authority=authorityStore factory=productionResult.value
         sensor=sensingResult.ok ? sensingResult.value : null mind=mindContext
-        statuses=statusContainer stream=events.newStream()
+        statuses=statusContainer stream=events.newLog()
         units=[] projectiles=[] particles=[] selected=null money=520.0 enemyMoney=400.0 incomeTimer=0.0
         salaryTimer=0.0 aiTimer=0.0 spawnCursor=0 governor=true rebelled=false
-        message="北方军区已就绪。左键选兵，右键移动。" time=0.0
+        message="北方军区已就绪。左键选兵，右键移动。" time=0.0 productionTick=0
         points=[
             { id="mine.north" x=300.0 y=210.0 owner="faction.crown" governor="general.arden" capture=0.0 capturing="" contested=false },
             { id="mine.center" x=525.0 y=365.0 owner="faction.crown" governor="" capture=0.0 capturing="" contested=false },
@@ -198,7 +202,9 @@ function queueUnit(kind) {
 
 function updateProduction(dt) {
     local speed = game.baseStats.getFinal("production_speed", 1.0);
-    game.factory.update(dt, speed);
+    game.productionTick += 1;
+    local advanceResult = game.factory.advance(game.productionTick, dt * speed);
+    if (!advanceResult.ok) { game.message = advanceResult.status.summary; return; }
     while (game.spawnCursor < game.factory.taskCount()) {
         local task = game.factory.taskAt(game.spawnCursor);
         if (task.getState() != "completed") break;

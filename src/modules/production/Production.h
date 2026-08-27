@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common/Module.h"
 #include "common/BorrowedRef.h"
-#include "common/Snapshot.h"
+#include "common/Module.h"
 #include "common/Scheduling.h"
+#include "common/Snapshot.h"
 #include "common/SquirrelOwnership.h"
 #include "common/Time.h"
 
@@ -33,11 +33,11 @@ struct ProductionTask : eve::scheduling::ItemMetadata {
     std::string owner;
     std::string kind;
     std::string product;
-    eve::Value context          = eve::Value(eve::Value::Object{});
-    eve::Duration duration       = eve::Duration::zero();
-    eve::Duration progress       = eve::Duration::zero();
+    eve::Value    context         = eve::Value(eve::Value::Object{});
+    eve::Duration duration        = eve::Duration::zero();
+    eve::Duration progress        = eve::Duration::zero();
     TaskState   state           = TaskState::Queued;
-    uint64_t    enqueueSequence = 0;
+    uint64_t      enqueueSequence = 0;
 };
 
 /** @brief Deterministically sequenced production lifecycle event. */
@@ -65,19 +65,17 @@ public:
      * @param priority Higher priorities run first; enqueue order breaks ties.
      * @return A stable task ID, or a structured validation/allocation failure.
      */
-    [[nodiscard]] eve::Result<std::string> enqueue(
-        std::string_view owner, std::string_view kind, std::string_view product,
-        eve::Value context, double duration, int priority = 0);
+    [[nodiscard]] eve::Result<std::string> enqueue(std::string_view owner, std::string_view kind,
+                                                   std::string_view product, eve::Value context, double duration,
+                                                   int priority = 0);
     /** @brief Pauses a queued or running task, or returns NotFound/Conflict. */
     [[nodiscard]] eve::Result<void> pause(std::string_view taskId);
     /** @brief Returns a paused task to deterministic scheduling. */
     [[nodiscard]] eve::Result<void> resume(std::string_view taskId);
     /** @brief Cancels a non-terminal task with a structured outcome. */
-    [[nodiscard]] eve::Result<void> cancel(std::string_view taskId,
-                                           std::string_view reason = "cancelled");
+    [[nodiscard]] eve::Result<void> cancel(std::string_view taskId, std::string_view reason = "cancelled");
     /** @brief Marks a non-terminal task failed with a structured outcome. */
-    [[nodiscard]] eve::Result<void> fail(std::string_view taskId,
-                                         std::string_view reason = "failed");
+    [[nodiscard]] eve::Result<void> fail(std::string_view taskId, std::string_view reason = "failed");
 
     /**
      * @brief Applies one injected deterministic simulation step.
@@ -119,8 +117,7 @@ public:
     /** @brief Returns an owner's retained task by enqueue index, or an empty borrowed reference. */
     [[nodiscard]] eve::OptionalRef<ProductionTask> ownerTaskAt(std::string_view owner, int index);
     /** @brief Const overload of ownerTaskAt with the same immediate-borrow lifetime. */
-    [[nodiscard]] eve::OptionalRef<const ProductionTask> ownerTaskAt(
-        std::string_view owner, int index) const;
+    [[nodiscard]] eve::OptionalRef<const ProductionTask> ownerTaskAt(std::string_view owner, int index) const;
 
     /** @brief Returns retained event count. */
     int eventCount() const;
@@ -138,22 +135,20 @@ public:
     void clear();
 
     /** @brief Captures the production payload in the common snapshot envelope. */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /**
      * @brief Restores a verified or migrated production envelope atomically.
      * @param snapshot Source envelope with schema `production:queue`.
      * @param hashProvider Explicit content-digest provider.
      * @return Success, or a failure leaving queue state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreSnapshot(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
+                                                    const eve::SnapshotHashProvider& hashProvider);
     /** @brief Serializes the common production snapshot envelope. */
-    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Parses and transactionally restores a common production envelope. */
-    [[nodiscard]] eve::Result<void> restoreSnapshotJson(
-        std::string_view json, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
+                                                        const eve::SnapshotHashProvider& hashProvider);
 
 private:
     void schedule(std::string_view owner);
@@ -162,9 +157,9 @@ private:
     uint64_t                                    nextTaskId_          = 1;
     uint64_t                                    nextEnqueueSequence_ = 1;
     uint64_t                                    nextEventSequence_   = 1;
-    eve::PersistentId                            instanceId_;
-    eve::Revision                                revision_           = eve::Revision::zero();
-    eve::SimulationTick                         tick_                = eve::SimulationTick::zero();
+    eve::PersistentId                           instanceId_;
+    eve::Revision                               revision_ = eve::Revision::zero();
+    eve::SimulationTick                         tick_     = eve::SimulationTick::zero();
     std::deque<std::unique_ptr<ProductionTask>> tasks_;
     std::deque<ProductionEvent>                 events_;
     std::vector<std::pair<std::string, int>>    slots_;
@@ -173,9 +168,7 @@ private:
 /** @brief Returns the stable lowercase name of a task state. */
 std::string_view taskStateName(TaskState state);
 /** @brief Writes the stable task-state spelling to a stream. */
-inline std::ostream& operator<<(std::ostream& stream, TaskState state) {
-    return stream << taskStateName(state);
-}
+inline std::ostream& operator<<(std::ostream& stream, TaskState state) { return stream << taskStateName(state); }
 /** @brief Returns the stable lowercase name of an event kind. */
 std::string_view eventKindName(ProductionEventKind kind);
 
@@ -198,8 +191,7 @@ public:
      * @ownership Production owns the queue; the returned reference does not.
      * @lifetime Valid only until queue mutation, release, module unload, or reload.
      */
-    [[nodiscard]] static eve::ResultRef<WorkQueue> resolve(
-        WorkQueueHandleRef reference);
+    [[nodiscard]] static eve::ResultRef<WorkQueue> resolve(WorkQueueHandleRef reference);
     /** @brief Releases a module-owned queue. */
     [[nodiscard]] static eve::Result<void> release(WorkQueueHandleRef reference);
     /** @brief Reports whether a queue reference is stale for the current module. */

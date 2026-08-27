@@ -19,8 +19,7 @@ public:
 
 TEST_CASE("production.injectedStepsPauseAndRestoreTick") {
     WorkQueue queue;
-    auto idResult = queue.enqueue("factory", "vehicle", "tank",
-                                   eve::Value(eve::Value::Object{}), 1.0);
+    auto      idResult = queue.enqueue("factory", "vehicle", "tank", eve::Value(eve::Value::Object{}), 1.0);
     REQUIRE(idResult.ok());
     const auto id = std::move(idResult).takeValue();
 
@@ -51,7 +50,7 @@ TEST_CASE("production.injectedStepsPauseAndRestoreTick") {
     CHECK(saved.find("wallClock") == std::string::npos);
 
     WorkQueue restored;
-    auto restoredResult = restored.restore(saved);
+    auto      restoredResult = restored.restore(saved);
     REQUIRE(restoredResult.ok());
     CHECK_EQ(restored.currentTick().value(), std::uint64_t(2));
     auto afterRestore = restored.advance({eve::SimulationTick(3), eve::Duration::fromNanoseconds(1)});
@@ -61,12 +60,10 @@ TEST_CASE("production.injectedStepsPauseAndRestoreTick") {
 
 TEST_CASE("production.advanceFacadeAdvancesDeterministicTick") {
     WorkQueue queue;
-    auto idResult = queue.enqueue("factory", "vehicle", "tank",
-                                  eve::Value(eve::Value::Object{}), 1.0);
+    auto      idResult = queue.enqueue("factory", "vehicle", "tank", eve::Value(eve::Value::Object{}), 1.0);
     REQUIRE(idResult.ok());
-    const auto id = std::move(idResult).takeValue();
-    auto step = queue.advance(
-        {eve::SimulationTick(1), eve::Duration::fromNanoseconds(125000000)});
+    const auto id   = std::move(idResult).takeValue();
+    auto       step = queue.advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(125000000)});
     REQUIRE(step.ok());
     CHECK_EQ(queue.currentTick().value(), std::uint64_t(1));
     auto task = queue.find(id);
@@ -78,11 +75,10 @@ TEST_CASE("production.advanceFacadeAdvancesDeterministicTick") {
 }
 
 TEST_CASE("production.clockStepsAreTheOnlySimulationInput") {
-    ManualTimeSource source;
+    ManualTimeSource     source;
     eve::SimulationClock clock(source, eve::Duration::fromNanoseconds(250000000));
-    WorkQueue queue;
-    auto idResult = queue.enqueue("factory", "vehicle", "tank",
-                                  eve::Value(eve::Value::Object{}), 0.5);
+    WorkQueue            queue;
+    auto                 idResult = queue.enqueue("factory", "vehicle", "tank", eve::Value(eve::Value::Object{}), 0.5);
     REQUIRE(idResult.ok());
     const auto id = std::move(idResult).takeValue();
     REQUIRE(clock.setRate(0.5).ok());

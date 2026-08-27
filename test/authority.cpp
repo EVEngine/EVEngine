@@ -70,13 +70,13 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     const auto snapshot = original.snapshotJson();
 
     Store restored;
-    auto restoredResult = restored.restoreJson(snapshot);
+    auto  restoredResult = restored.restoreJson(snapshot);
     REQUIRE(restoredResult.ok());
     CHECK_EQ(restored.snapshotJson(), snapshot);
     CHECK(restored.can("a", "s", "read"));
     CHECK(!restored.can("a", "s", "write"));
     const auto before = restored.snapshotJson();
-    auto rejected = restored.restoreJson("{\"version\":1}");
+    auto       rejected = restored.restoreJson("{\"version\":1}");
     CHECK(!rejected.ok());
     const auto* diagnostic = rejected.error();
     REQUIRE(diagnostic != nullptr);

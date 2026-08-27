@@ -43,8 +43,8 @@ bool PbrRecipeRegistry::has(const std::string &id) const {
     return recipes_.find(id) != recipes_.end();
 }
 
-std::unique_ptr<PbrTextureSet> PbrRecipeRegistry::generate(
-    const std::string &id, const Params &params, std::string &error) const {
+std::unique_ptr<PbrTextureSet> PbrRecipeRegistry::generate(const std::string &id, const Params &params,
+                                                           std::string &error) const {
     auto it = recipes_.find(id);
     if (it == recipes_.end()) {
         error = "unknown pbr recipe: " + id;
@@ -94,7 +94,7 @@ void PbrRecipeRegistry::registerPbrBuiltins() {
 }
 
 std::unique_ptr<image::ImageData> grayscaleImage(const std::vector<float> &values, int w, int h) {
-    auto img    = std::make_unique<image::ImageData>(w, h, "RGBA8");
+    auto  img    = std::make_unique<image::ImageData>(w, h, "RGBA8");
     auto *pixels = static_cast<uint8_t *>(img->getData());
     for (int i = 0; i < w * h && i < int(values.size()); ++i) {
         const uint8_t v = uint8_t(std::lround(std::clamp(values[size_t(i)], 0.f, 1.f) * 255.f));
@@ -105,8 +105,7 @@ std::unique_ptr<image::ImageData> grayscaleImage(const std::vector<float> &value
     return img;
 }
 
-std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const Params &params,
-                                               std::string &error) {
+std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
@@ -127,7 +126,7 @@ std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const
     const int w = ctx.width;
     const int h = ctx.height;
 
-    auto set = std::make_unique<PbrTextureSet>();
+    auto set    = std::make_unique<PbrTextureSet>();
     set->albedo = new image::ImageData(w, h, "RGBA8");
     paintHeightToImage(*set->albedo, height, w, h, def.albedo, ctx.colors, ctx.pixelSize);
     set->normal = heightToNormalImage(height, w, h, pbr.normalStrength, ctx.seamless).release();

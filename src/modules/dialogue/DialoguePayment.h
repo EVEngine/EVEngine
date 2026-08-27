@@ -83,38 +83,31 @@ public:
      * @param provider Authoritative StatePatch-compatible mutation provider.
      * @param mutations Persistent or volatile mutations owned by this participant.
      */
-    DialogueStateMutationParticipant(eve::IStateMutation& provider,
-                                     std::span<const eve::StateMutation> mutations);
+    DialogueStateMutationParticipant(eve::IStateMutation& provider, std::span<const eve::StateMutation> mutations);
 
-    DialogueStateMutationParticipant(const DialogueStateMutationParticipant&) = delete;
+    DialogueStateMutationParticipant(const DialogueStateMutationParticipant&)            = delete;
     DialogueStateMutationParticipant& operator=(const DialogueStateMutationParticipant&) = delete;
-    DialogueStateMutationParticipant(DialogueStateMutationParticipant&&) = delete;
-    DialogueStateMutationParticipant& operator=(DialogueStateMutationParticipant&&) = delete;
-    ~DialogueStateMutationParticipant() override = default;
+    DialogueStateMutationParticipant(DialogueStateMutationParticipant&&)                 = delete;
+    DialogueStateMutationParticipant& operator=(DialogueStateMutationParticipant&&)      = delete;
+    ~DialogueStateMutationParticipant() override                                         = default;
 
     /** @brief Stable diagnostic name. */
-    [[nodiscard]] std::string_view name() const noexcept override {
-        return "dialogue.state-mutation";
-    }
+    [[nodiscard]] std::string_view name() const noexcept override { return "dialogue.state-mutation"; }
     /** @copydoc eve::transaction::ITransactionParticipant::prepare */
-    [[nodiscard]] eve::Result<void> prepare(
-        const eve::transaction::TransactionContext& context) override;
+    [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::commit */
-    [[nodiscard]] eve::Result<void> commit(
-        const eve::transaction::TransactionContext& context) override;
+    [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::rollback */
-    [[nodiscard]] eve::Result<void> rollback(
-        const eve::transaction::TransactionContext& context) override;
+    [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::compensate */
-    [[nodiscard]] eve::Result<void> compensate(
-        const eve::transaction::TransactionContext& context) override;
+    [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext& context) override;
 
 private:
     enum class Phase : std::uint8_t { Idle, Prepared, Committed, RolledBack };
 
-    eve::IStateMutation&             provider_;
-    std::vector<eve::StateMutation>  mutations_;
-    Phase                            phase_ = Phase::Idle;
+    eve::IStateMutation&            provider_;
+    std::vector<eve::StateMutation> mutations_;
+    Phase                           phase_ = Phase::Idle;
 };
 
 /**

@@ -78,8 +78,8 @@ public:
 private:
     static EditorResult<TransactionReceipt> project(eve::Result<EditorTransactionRecord>&& result);
     static EditorResult<EditorDryRunReport> project(eve::Result<EditorDryRunReport>&& result);
-    static EditorResult<TransactionId>       project(eve::Result<TransactionId>&& result);
-    static EditorResult<void>                project(eve::Result<void>&& result);
+    static EditorResult<TransactionId>      project(eve::Result<TransactionId>&& result);
+    static EditorResult<void>               project(eve::Result<void>&& result);
 
     EditorTransactionConsumer consumer_;
 };

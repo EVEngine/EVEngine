@@ -14,10 +14,17 @@ Schema 不是所有序列化格式的第二套解析器。SnapshotEnvelope、Eve
 decode/restore 边界完成结构、版本、hash 和事务校验；不得为了“使用 Schema”
 再维护一份可能漂移的字段真源。
 
-当前生产接入点是动态 Definition 与 Policy metadata：当写入携带的
-`(type/schemaId, version)` 在 SchemaRegistry 中存在时，registry 在任何状态
-变化前执行校验；失败返回结构化 Diagnostic，并保持原 registry 不变。这里的
-Schema 是内容契约，不是可选的 UI 提示。
+当前生产接入点包括动态 Definition/Policy metadata，以及下面两个持久化
+恢复边界：
+
+- `definitions:registry` v1：由 Definitions 模块拥有，`DefinitionRegistry::restoreJson`
+  在任何 registry 状态变化前校验完整 JSON；
+- `game_event:stream` v2：由 GameEvent 模块拥有，事件流恢复在解析和提交前
+  校验当前版本 payload。
+
+校验失败必须返回结构化 Diagnostic，并保持原状态不变。这里的 Schema
+是实际内容准入契约，不是可选的 UI 提示。`SnapshotEnvelope` 仍由 common 中的
+强类型 codec 校验，不反向依赖 schema 模块。
 
 支持的结构与关键字：
 
@@ -54,22 +61,16 @@ Schema 是内容契约，不是可选的 UI 提示。
 - 删除旧 migration 前必须先更新格式文档、fixture 与 release note，并确保受支持窗口内不存在仍依赖该 edge 的版本。
 - migration 必须先在 detached owning value 上完成全部转换与目标 schema/codec 校验，再一次性提交；任一步失败不得改变运行时状态。
 
-## 工具与文档使用的基础格式
+## Schema 所有权
 
-`schema::registerStandardSchemas()`（Schema 模块构造时也会调用）注册以下 v1
-格式。它们用于生成文档、binding contract 以及外部工具预检；强类型 codec
-仍是运行时 envelope 的唯一准入真源。helper 是 schema 模块的责任，不让
-`common` 依赖 snapshot、game_event 或 definitions：
+Schema 模块只提供注册、解析、校验、迁移、文档和 binding contract 生成能力，
+不内置 snapshot、game_event、definitions 或玩法领域的具体 schema，也不会在
+模块构造时隐式注册领域格式。
 
-| Schema id | 格式 |
-| --- | --- |
-| `snapshot:envelope` | `type`、`schema`、`schemaVersion`、`instanceId`、`revision`、`tick`、`contentHash`、`payload` |
-| `game_event:envelope` | EventEnvelope 的身份、顺序、因果、schema、tick、flags 与 `payload` |
-| `definitions:metadata` | Definition 的 `type`、`id`、`version`、`generation`、`json` |
-
-领域 payload 仍由 event/snapshot/definition 的拥有模块编码；标准 envelope schema
-只约束外层格式和 `payload` 的 JSON-compatible 边界，不把不同领域强行降级为
-同一个业务对象。
+具体 schema 必须由数据格式的权威拥有模块定义和注册，并在真实的导入、反序列化
+或跨进程边界执行校验。只被测试注册、但没有生产数据路径消费的 schema 不得加入；
+这可以避免 schema 模块成为领域协议的第二真源，也落实“设计出来的系统必须在恰当
+位置实际使用”的原则。
 
 ## Generated outputs
 

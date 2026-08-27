@@ -92,6 +92,7 @@ public:
     int getDiagnosticLine(int index) const;
     /** @brief Return a diagnostic message. */
     std::string getDiagnosticMessage(int index) const;
+
 private:
     ConversationAsset::Node*       findNode(const std::string& nodeId);
     const ConversationAsset::Node* findNode(const std::string& nodeId) const;

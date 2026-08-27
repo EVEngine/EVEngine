@@ -247,14 +247,13 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
 std::optional<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh *mesh) const {
     if (!mesh || !mesh->gpuHandle) return std::nullopt;
     const auto *gpu = static_cast<const GpuMesh *>(mesh->gpuHandle);
-    const auto owned = std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
-                                    [gpu](const std::unique_ptr<GpuMesh> &candidate) {
-                                        return candidate.get() == gpu;
-                                    });
+    const auto  owned =
+        std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
+                     [gpu](const std::unique_ptr<GpuMesh> &candidate) { return candidate.get() == gpu; });
     if (owned == ownedGpuMeshes.end()) return std::nullopt;
-    return eve::graphics::MeshBackendDescriptor{
-        gpu->vertexCount, gpu->indexCount, static_cast<std::uint32_t>(sizeof(MeshVertex)),
-        gpu->indexType == vk::IndexType::eUint16 ? 2u : 4u};
+    return eve::graphics::MeshBackendDescriptor{gpu->vertexCount, gpu->indexCount,
+                                                static_cast<std::uint32_t>(sizeof(MeshVertex)),
+                                                gpu->indexType == vk::IndexType::eUint16 ? 2u : 4u};
 }
 
 bool Graphics::bakeMeshMorph(Mesh *mesh) {

@@ -5,10 +5,10 @@
  * 模块入口 eve.Card() 见 Card.h；本文件是 CardData/Deck/Zone/Hand 等 ECS 实体与布局渲染实现。
  */
 
-#include "common/ECS.h"
-#include "common/definitions/DefinitionRuntime.h"
 #include "attributes/AttributeProjection.h"
 #include "card/CardEffects.h"
+#include "common/ECS.h"
+#include "common/definitions/DefinitionRuntime.h"
 #include "decision/Condition.h"
 
 #include <glm/vec3.hpp>
@@ -158,9 +158,8 @@ public:
      */
     struct DefinitionBinding {
         eve::definition::InstanceIdentity identity;
-        eve::definition::ReloadPolicy reloadPolicy =
-            eve::definition::ReloadPolicy::KeepInstanceValues;
-        bool active = true;
+        eve::definition::ReloadPolicy     reloadPolicy = eve::definition::ReloadPolicy::KeepInstanceValues;
+        bool                              active       = true;
     };
 
     COMPONENT(Identity, identity)

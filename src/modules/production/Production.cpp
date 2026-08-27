@@ -25,45 +25,37 @@ struct ScriptWorkQueue {
 
 /** @brief Squirrel-owned task view that re-resolves its queue handle per call. */
 struct ScriptWorkTask {
-    ScriptWorkTask(WorkQueueHandleRef queue, std::string id)
-        : reference(queue), taskId(std::move(id)) {}
+    ScriptWorkTask(WorkQueueHandleRef queue, std::string id) : reference(queue), taskId(std::move(id)) {}
     WorkQueueHandleRef reference;
-    std::string taskId;
+    std::string        taskId;
 };
 
 /** @brief Squirrel-owned event view that re-resolves its queue handle per call. */
 struct ScriptWorkEvent {
-    ScriptWorkEvent(WorkQueueHandleRef queue, int eventIndex)
-        : reference(queue), index(eventIndex) {}
+    ScriptWorkEvent(WorkQueueHandleRef queue, int eventIndex) : reference(queue), index(eventIndex) {}
     WorkQueueHandleRef reference;
-    int index = -1;
+    int                index = -1;
 };
 
 template <class T>
-eve::Result<T> productionBindingFailure(eve::DiagnosticCode code, std::string message,
-                                         std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {}, "production.squirrel"));
+eve::Result<T> productionBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "production.squirrel"));
 }
 
 template <class Ref, class Proxy, class Release>
-ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release,
-                          const char* errorPath) {
-    if (!reference)
-        return eve::script::projectStatusResult(vm, reference.status(), false, false);
-    const Ref ref = std::move(reference).takeValue();
-    auto object = eve::script::makeOwnedSquirrelInstance<Proxy>(
-        vm, std::make_unique<Proxy>(ref));
+ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release, const char* errorPath) {
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    const Ref ref    = std::move(reference).takeValue();
+    auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned production proxy");
-        std::invoke(std::forward<Release>(release), ref).ignore(
-            "rollback failed owned production allocation");
+        std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned production allocation");
         return eve::script::projectStatusResult(vm, status, false, false);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(
-        vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -117,8 +109,8 @@ std::string canonicalJson(const eve::json::Value& value) {
 
 ssq::Object projectValueObject(HSQUIRRELVM vm, const eve::Value& value) {
     if (!vm) return ssq::Object();
-    const SQInteger top = sq_gettop(vm);
-    auto pushed = eve::script::pushValue(vm, value);
+    const SQInteger top    = sq_gettop(vm);
+    auto            pushed = eve::script::pushValue(vm, value);
     if (!pushed.ok()) {
         pushed.ignore("failed to project a work-task Value payload");
         sq_settop(vm, top);
@@ -152,8 +144,7 @@ bool parseI64(const eve::json::Value& value, std::int64_t& result) {
     }
 }
 
-bool parseDuration(const eve::json::Value& nanoseconds, const eve::json::Value& legacySeconds,
-                   eve::Duration& result) {
+bool parseDuration(const eve::json::Value& nanoseconds, const eve::json::Value& legacySeconds, eve::Duration& result) {
     if (!nanoseconds.isNull()) {
         std::int64_t value = 0;
         if (!parseI64(nanoseconds, value)) return false;
@@ -214,17 +205,17 @@ eve::LogicalId productionSchema() {
 const eve::SnapshotMigrationChain& productionMigrations() {
     static const eve::SnapshotMigrationChain chain = [] {
         eve::SnapshotMigrationChain result;
-        const auto registration = result.add(
-            productionSchema(), eve::SchemaVersion(0), eve::SchemaVersion(1),
-            [](const eve::Value& payload) -> eve::Result<eve::Value> {
-                const auto* object = payload.getIf<eve::Value::Object>();
-                if (!object)
-                    return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::ParseError, "production queue payload must be an object"));
-                eve::Value::Object migrated = *object;
-                if (!migrated.contains("version")) migrated.emplace("version", eve::Value(std::int64_t(1)));
-                return eve::Result<eve::Value>::success(eve::Value(std::move(migrated)));
-            });
+        const auto                  registration =
+            result.add(productionSchema(), eve::SchemaVersion(0), eve::SchemaVersion(1),
+                       [](const eve::Value& payload) -> eve::Result<eve::Value> {
+                           const auto* object = payload.getIf<eve::Value::Object>();
+                           if (!object)
+                               return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::ParseError, "production queue payload must be an object"));
+                           eve::Value::Object migrated = *object;
+                           if (!migrated.contains("version")) migrated.emplace("version", eve::Value(std::int64_t(1)));
+                           return eve::Result<eve::Value>::success(eve::Value(std::move(migrated)));
+                       });
         if (!registration.ok()) std::terminate();
         return result;
     }();
@@ -270,8 +261,8 @@ std::string_view eventKindName(ProductionEventKind kind) {
 }
 
 void WorkQueue::emit(ProductionEventKind kind, const ProductionTask& task, std::string_view reason) {
-    events_.push_back({{nextEventSequence_++, std::string(reason)}, tick_, kind, task.id,
-                       task.owner, task.kind, task.product});
+    events_.push_back(
+        {{nextEventSequence_++, std::string(reason)}, tick_, kind, task.id, task.owner, task.kind, task.product});
     if (const auto next = revision_.incremented()) revision_ = *next;
 }
 
@@ -303,23 +294,22 @@ void WorkQueue::schedule(std::string_view owner) {
     }
 }
 
-eve::Result<std::string> WorkQueue::enqueue(std::string_view owner, std::string_view kind,
-                                            std::string_view product, eve::Value context,
-                                            double duration, int priority) {
+eve::Result<std::string> WorkQueue::enqueue(std::string_view owner, std::string_view kind, std::string_view product,
+                                            eve::Value context, double duration, int priority) {
     if (owner.empty() || kind.empty() || product.empty())
-        return productionBindingFailure<std::string>(
-            eve::DiagnosticCode::InvalidArgument, "work task owner, kind and product are required");
+        return productionBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                                     "work task owner, kind and product are required");
     if (!context.isObject())
-        return productionBindingFailure<std::string>(
-            eve::DiagnosticCode::InvalidArgument, "work task context must be a Value object", "context");
+        return productionBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                                     "work task context must be a Value object", "context");
     if (!std::isfinite(duration) || duration <= 0.0)
-        return productionBindingFailure<std::string>(
-            eve::DiagnosticCode::InvalidArgument, "work task duration must be finite and positive", "duration");
+        return productionBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                                     "work task duration must be finite and positive", "duration");
     auto durationValue = eve::Duration::fromSeconds(duration);
     if (!durationValue.ok()) return eve::Result<std::string>::failure(durationValue.status());
     if (durationValue.value().nanoseconds() <= 0)
-        return productionBindingFailure<std::string>(
-            eve::DiagnosticCode::InvalidArgument, "work task duration must be positive", "duration");
+        return productionBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                                     "work task duration must be positive", "duration");
     auto               task = std::make_unique<ProductionTask>();
     std::ostringstream id;
     id << "task-" << std::setw(16) << std::setfill('0') << nextTaskId_;
@@ -356,8 +346,7 @@ eve::OptionalRef<const ProductionTask> WorkQueue::find(std::string_view taskId) 
 eve::Result<void> WorkQueue::pause(std::string_view taskId) {
     auto taskRef = find(taskId);
     if (!taskRef)
-        return productionBindingFailure<void>(eve::DiagnosticCode::NotFound,
-                                              "work task was not found", "taskId");
+        return productionBindingFailure<void>(eve::DiagnosticCode::NotFound, "work task was not found", "taskId");
     auto& task = taskRef->get();
     if (task.state != TaskState::Queued && task.state != TaskState::Running)
         return productionBindingFailure<void>(eve::DiagnosticCode::Conflict,
@@ -371,12 +360,11 @@ eve::Result<void> WorkQueue::pause(std::string_view taskId) {
 eve::Result<void> WorkQueue::resume(std::string_view taskId) {
     auto taskRef = find(taskId);
     if (!taskRef)
-        return productionBindingFailure<void>(eve::DiagnosticCode::NotFound,
-                                              "work task was not found", "taskId");
+        return productionBindingFailure<void>(eve::DiagnosticCode::NotFound, "work task was not found", "taskId");
     auto& task = taskRef->get();
     if (task.state != TaskState::Paused)
-        return productionBindingFailure<void>(eve::DiagnosticCode::Conflict,
-                                              "only paused tasks can be resumed", "taskId");
+        return productionBindingFailure<void>(eve::DiagnosticCode::Conflict, "only paused tasks can be resumed",
+                                              "taskId");
     task.state = TaskState::Queued;
     emit(ProductionEventKind::Resumed, task);
     schedule(task.owner);
@@ -386,12 +374,11 @@ eve::Result<void> WorkQueue::resume(std::string_view taskId) {
 eve::Result<void> WorkQueue::cancel(std::string_view taskId, std::string_view reason) {
     auto taskRef = find(taskId);
     if (!taskRef)
-        return productionBindingFailure<void>(eve::DiagnosticCode::NotFound,
-                                              "work task was not found", "taskId");
+        return productionBindingFailure<void>(eve::DiagnosticCode::NotFound, "work task was not found", "taskId");
     auto& task = taskRef->get();
     if (terminal(task.state))
-        return productionBindingFailure<void>(eve::DiagnosticCode::Conflict,
-                                              "terminal work tasks cannot be cancelled", "taskId");
+        return productionBindingFailure<void>(eve::DiagnosticCode::Conflict, "terminal work tasks cannot be cancelled",
+                                              "taskId");
     task.state  = TaskState::Cancelled;
     task.reason = std::string(reason);
     emit(ProductionEventKind::Cancelled, task, reason);
@@ -402,12 +389,11 @@ eve::Result<void> WorkQueue::cancel(std::string_view taskId, std::string_view re
 eve::Result<void> WorkQueue::fail(std::string_view taskId, std::string_view reason) {
     auto taskRef = find(taskId);
     if (!taskRef)
-        return productionBindingFailure<void>(eve::DiagnosticCode::NotFound,
-                                              "work task was not found", "taskId");
+        return productionBindingFailure<void>(eve::DiagnosticCode::NotFound, "work task was not found", "taskId");
     auto& task = taskRef->get();
     if (terminal(task.state))
-        return productionBindingFailure<void>(eve::DiagnosticCode::Conflict,
-                                              "terminal work tasks cannot fail", "taskId");
+        return productionBindingFailure<void>(eve::DiagnosticCode::Conflict, "terminal work tasks cannot fail",
+                                              "taskId");
     task.state  = TaskState::Failed;
     task.reason = std::string(reason);
     emit(ProductionEventKind::Failed, task, reason);
@@ -417,20 +403,20 @@ eve::Result<void> WorkQueue::fail(std::string_view taskId, std::string_view reas
 
 eve::Result<void> WorkQueue::advance(const eve::SimulationStep& step) {
     if (step.tick <= tick_)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation, "production step tick must be strictly newer"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "production step tick must be strictly newer"));
     if (step.delta.nanoseconds() < 0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "production step duration must be non-negative"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "production step duration must be non-negative"));
 
-    tick_ = step.tick;
-    const std::int64_t delta = step.delta.nanoseconds();
+    tick_                       = step.tick;
+    const std::int64_t    delta = step.delta.nanoseconds();
     std::set<std::string> owners;
     for (auto& task : tasks_) {
         if (task->state != TaskState::Running) continue;
         const std::int64_t remaining = task->duration.nanoseconds() - task->progress.nanoseconds();
-        const std::int64_t applied = delta >= remaining ? remaining : delta;
-        task->progress = eve::Duration::fromNanoseconds(task->progress.nanoseconds() + applied);
+        const std::int64_t applied   = delta >= remaining ? remaining : delta;
+        task->progress               = eve::Duration::fromNanoseconds(task->progress.nanoseconds() + applied);
         if (task->progress >= task->duration) {
             task->state = TaskState::Completed;
             emit(ProductionEventKind::Completed, *task);
@@ -443,8 +429,8 @@ eve::Result<void> WorkQueue::advance(const eve::SimulationStep& step) {
 
 eve::Result<void> WorkQueue::setSlotCount(std::string_view owner, int slots) {
     if (owner.empty() || slots < 0)
-        return productionBindingFailure<void>(
-            eve::DiagnosticCode::InvalidArgument, "owner must be non-empty and slots must be non-negative");
+        return productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                              "owner must be non-empty and slots must be non-negative");
     auto it = std::lower_bound(slots_.begin(), slots_.end(), owner,
                                [](const auto& entry, std::string_view key) { return entry.first < key; });
     if (it != slots_.end() && it->first == owner)
@@ -479,8 +465,7 @@ eve::OptionalRef<ProductionTask> WorkQueue::ownerTaskAt(std::string_view owner, 
     return {};
 }
 
-eve::OptionalRef<const ProductionTask> WorkQueue::ownerTaskAt(
-    std::string_view owner, int index) const {
+eve::OptionalRef<const ProductionTask> WorkQueue::ownerTaskAt(std::string_view owner, int index) const {
     if (index < 0) return {};
     for (const auto& task : tasks_)
         if (task->owner == owner && index-- == 0) return std::cref(*task);
@@ -519,14 +504,14 @@ eve::Result<std::string> WorkQueue::snapshot() const {
         out << "{\"kind\":" << quote(eventKindName(event.kind)) << ",\"owner\":" << quote(event.owner)
             << ",\"product\":" << quote(event.product) << ",\"reason\":" << quote(event.reason)
             << ",\"sequence\":" << quote(std::to_string(event.sequence)) << ",\"taskId\":" << quote(event.taskId)
-            << ",\"taskKind\":" << quote(event.taskKind)
-            << ",\"tick\":" << quote(std::to_string(event.tick.value())) << '}';
+            << ",\"taskKind\":" << quote(event.taskKind) << ",\"tick\":" << quote(std::to_string(event.tick.value()))
+            << '}';
     }
     out << "],\"tasks\":[";
     for (size_t i = 0; i < tasks_.size(); ++i) {
         if (i) out << ',';
         const auto& t = *tasks_[i];
-        auto context = t.context.toJson();
+        auto        context = t.context.toJson();
         if (!context.ok()) return eve::Result<std::string>::failure(context.status());
         out << "{\"context\":" << std::move(context).takeValue()
             << ",\"durationNs\":" << quote(std::to_string(t.duration.nanoseconds()))
@@ -546,30 +531,27 @@ eve::Result<void> WorkQueue::restore(std::string_view json) {
         return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
                                               error.empty() ? "snapshot must be an object" : error);
     }
-    WorkQueue candidate(instanceId_);
+    WorkQueue       candidate(instanceId_);
     const auto      root = doc.root();
     if (root.getInt("version") != 1 || !parseU64(root.get("nextTaskId"), candidate.nextTaskId_) ||
         !parseU64(root.get("nextEnqueueSequence"), candidate.nextEnqueueSequence_) ||
-        !parseU64(root.get("nextEventSequence"), candidate.nextEventSequence_) ||
-        candidate.nextTaskId_ == 0 || candidate.nextEnqueueSequence_ == 0 || candidate.nextEventSequence_ == 0 ||
-        !root.get("slots").isArray() ||
+        !parseU64(root.get("nextEventSequence"), candidate.nextEventSequence_) || candidate.nextTaskId_ == 0 ||
+        candidate.nextEnqueueSequence_ == 0 || candidate.nextEventSequence_ == 0 || !root.get("slots").isArray() ||
         !root.get("events").isArray() || !root.get("tasks").isArray()) {
-        return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                              "invalid snapshot counters or arrays");
+        return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid snapshot counters or arrays");
     }
     if (!root.get("tick").isNull()) {
         uint64_t tick = 0;
         if (!parseU64(root.get("tick"), tick)) {
-            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                                  "invalid snapshot tick", "tick");
+            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid snapshot tick", "tick");
         }
         candidate.tick_ = eve::SimulationTick(tick);
     }
     if (!root.get("revision").isNull()) {
         uint64_t revision = 0;
         if (!parseU64(root.get("revision"), revision)) {
-            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                                  "invalid snapshot revision", "revision");
+            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid snapshot revision",
+                                                  "revision");
         }
         candidate.revision_ = eve::Revision(revision);
     } else {
@@ -578,8 +560,7 @@ eve::Result<void> WorkQueue::restore(std::string_view json) {
     for (size_t i = 0; i < root.get("slots").size(); ++i) {
         auto value = root.get("slots").at(i);
         if (!value.isObject() || !value.get("owner").isString() || !value.get("value").isNumber()) {
-            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                                  "invalid slot entry", "slots");
+            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid slot entry", "slots");
         }
         int slots = value.get("value").asInt();
         auto setSlots = candidate.setSlotCount(value.get("owner").asString(), slots);
@@ -595,37 +576,35 @@ eve::Result<void> WorkQueue::restore(std::string_view json) {
             !value.get("kind").isString() || !value.get("product").isString() ||
             (!value.get("progressNs").isString() && !value.get("progress").isNumber()) ||
             (!value.get("durationNs").isString() && !value.get("duration").isNumber()) ||
-            !value.get("priority").isNumber() || !value.get("state").isString() ||
-            !value.get("reason").isString() || !parseU64(value.get("enqueueSequence"), sequence) ||
-            !parseState(value.get("state").asString(), state) || value.get("id").asString().empty() ||
-            value.get("owner").asString().empty() || value.get("kind").asString().empty() ||
-            value.get("product").asString().empty() || !ids.insert(value.get("id").asString()).second) {
-            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                                  "invalid task entry", "tasks");
+            !value.get("priority").isNumber() || !value.get("state").isString() || !value.get("reason").isString() ||
+            !parseU64(value.get("enqueueSequence"), sequence) || !parseState(value.get("state").asString(), state) ||
+            value.get("id").asString().empty() || value.get("owner").asString().empty() ||
+            value.get("kind").asString().empty() || value.get("product").asString().empty() ||
+            !ids.insert(value.get("id").asString()).second) {
+            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid task entry", "tasks");
         }
         task->id              = value.get("id").asString();
         task->owner           = value.get("owner").asString();
         task->kind            = value.get("kind").asString();
         task->product         = value.get("product").asString();
-        auto context = eve::Value::fromJson(canonicalJson(value.get("context")));
+        auto context          = eve::Value::fromJson(canonicalJson(value.get("context")));
         if (!context.ok()) return eve::Result<void>::failure(context.status());
         if (!context.value().isObject())
             return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
                                                   "work task context must be an object", "tasks.context");
-        task->context          = std::move(context).takeValue();
+        task->context = std::move(context).takeValue();
         if (!parseDuration(value.get("durationNs"), value.get("duration"), task->duration) ||
             !parseDuration(value.get("progressNs"), value.get("progress"), task->progress)) {
-            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                                  "invalid task duration", "tasks.duration");
+            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid task duration",
+                                                  "tasks.duration");
         }
         task->priority        = value.get("priority").asInt();
         task->state           = state;
         task->enqueueSequence = sequence;
         task->reason          = value.get("reason").asString();
-        if (task->duration.nanoseconds() <= 0 || task->progress.nanoseconds() < 0 ||
-            task->progress > task->duration) {
-            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                                  "invalid task progress", "tasks.progress");
+        if (task->duration.nanoseconds() <= 0 || task->progress.nanoseconds() < 0 || task->progress > task->duration) {
+            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid task progress",
+                                                  "tasks.progress");
         }
         candidate.tasks_.push_back(std::move(task));
     }
@@ -638,8 +617,7 @@ eve::Result<void> WorkQueue::restore(std::string_view json) {
             !value.get("taskKind").isString() || !parseU64(value.get("sequence"), event.sequence) ||
             !parseEventKind(value.get("kind").asString(), event.kind) || event.sequence <= previousEventSequence ||
             event.sequence >= candidate.nextEventSequence_) {
-            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                                  "invalid event entry", "events");
+            return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid event entry", "events");
         }
         previousEventSequence = event.sequence;
         event.owner           = value.get("owner").asString();
@@ -650,8 +628,8 @@ eve::Result<void> WorkQueue::restore(std::string_view json) {
         if (!value.get("tick").isNull()) {
             uint64_t tick = 0;
             if (!parseU64(value.get("tick"), tick)) {
-                return productionBindingFailure<void>(eve::DiagnosticCode::ParseError,
-                                                      "invalid event tick", "events.tick");
+                return productionBindingFailure<void>(eve::DiagnosticCode::ParseError, "invalid event tick",
+                                                      "events.tick");
             }
             event.tick = eve::SimulationTick(tick);
         }
@@ -666,12 +644,11 @@ void WorkQueue::clear() {
     events_.clear();
     slots_.clear();
     nextTaskId_ = nextEnqueueSequence_ = nextEventSequence_ = 1;
-    revision_ = eve::Revision::zero();
-    tick_ = eve::SimulationTick::zero();
+    revision_                                               = eve::Revision::zero();
+    tick_                                                   = eve::SimulationTick::zero();
 }
 
-eve::Result<eve::SnapshotEnvelope> WorkQueue::snapshot(
-    const eve::SnapshotHashProvider& hashProvider) const {
+eve::Result<eve::SnapshotEnvelope> WorkQueue::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     auto serialized = snapshot();
     if (!serialized.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(serialized.status());
     auto payload = eve::Value::fromJson(std::move(serialized).takeValue());
@@ -680,8 +657,8 @@ eve::Result<eve::SnapshotEnvelope> WorkQueue::snapshot(
                                      revision_, tick_, std::move(payload).takeValue(), hashProvider);
 }
 
-eve::Result<void> WorkQueue::restoreSnapshot(
-    const eve::SnapshotEnvelope& source, const eve::SnapshotHashProvider& hashProvider) {
+eve::Result<void> WorkQueue::restoreSnapshot(const eve::SnapshotEnvelope&     source,
+                                             const eve::SnapshotHashProvider& hashProvider) {
     if (source.type != "production.queue" || source.schema != productionSchema())
         return snapshotFailure<void>(eve::DiagnosticCode::InvalidArgument,
                                      "snapshot does not belong to production::WorkQueue");
@@ -691,33 +668,30 @@ eve::Result<void> WorkQueue::restoreSnapshot(
     auto migrated = productionMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     const auto& candidateEnvelope = migrated.value();
-    auto metadata = eve::validateSnapshotPayloadMetadata(candidateEnvelope.payload,
-                                                         candidateEnvelope.revision,
-                                                         candidateEnvelope.tick);
+    auto        metadata = eve::validateSnapshotPayloadMetadata(candidateEnvelope.payload, candidateEnvelope.revision,
+                                                                candidateEnvelope.tick);
     if (!metadata.ok()) return eve::Result<void>::failure(metadata.status());
     auto payload = candidateEnvelope.payload.toJson();
     if (!payload.ok()) return eve::Result<void>::failure(payload.status());
 
     WorkQueue candidate(instanceId_);
-    auto restored = candidate.restore(std::move(payload).takeValue());
+    auto      restored = candidate.restore(std::move(payload).takeValue());
     if (!restored.ok()) return eve::Result<void>::failure(restored.status());
     candidate.instanceId_ = candidateEnvelope.instanceId;
     candidate.revision_   = candidateEnvelope.revision;
     candidate.tick_       = candidateEnvelope.tick;
-    *this = std::move(candidate);
+    *this                 = std::move(candidate);
     return eve::Result<void>::success();
 }
 
-eve::Result<std::string> WorkQueue::snapshotEnvelopeJson(
-    const eve::SnapshotHashProvider& hashProvider) const {
+eve::Result<std::string> WorkQueue::snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const {
     auto value = snapshot(hashProvider);
     if (!value.ok()) return eve::Result<std::string>::failure(value.status());
     return std::move(value).andThen(
         [](eve::SnapshotEnvelope&& envelope) { return eve::serializeSnapshotEnvelope(envelope); });
 }
 
-eve::Result<void> WorkQueue::restoreSnapshotJson(
-    std::string_view json, const eve::SnapshotHashProvider& hashProvider) {
+eve::Result<void> WorkQueue::restoreSnapshotJson(std::string_view json, const eve::SnapshotHashProvider& hashProvider) {
     auto source = eve::parseSnapshotEnvelope(json, hashProvider);
     if (!source.ok()) return eve::Result<void>::failure(source.status());
     return restoreSnapshot(std::move(source).takeValue(), hashProvider);
@@ -735,16 +709,16 @@ eve::ResultRef<WorkQueue> Production::resolve(WorkQueueHandleRef reference) {
             eve::DiagnosticCode::StaleHandle, "Production module is no longer loaded", "queue");
     auto view = module->queues_.resolve(reference);
     if (!view.isBound())
-        return productionBindingFailure<std::reference_wrapper<WorkQueue>>(
-            eve::DiagnosticCode::StaleHandle, "work queue handle is stale", "queue");
+        return productionBindingFailure<std::reference_wrapper<WorkQueue>>(eve::DiagnosticCode::StaleHandle,
+                                                                           "work queue handle is stale", "queue");
     return eve::ResultRef<WorkQueue>::success(std::ref(*view));
 }
 
 eve::Result<void> Production::release(WorkQueueHandleRef reference) {
     Production* module = ModuleManager::getInstance<Production>("Production");
     if (!module)
-        return productionBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                              "Production module is no longer loaded", "queue");
+        return productionBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Production module is no longer loaded",
+                                              "queue");
     return module->queues_.erase(reference);
 }
 
@@ -758,8 +732,8 @@ Module_IMPL(Production, new Production());
 
 void Production::expose(ssq::Table& table) {
     const HSQUIRRELVM vm = table.getHandle();
-    auto task = table.addClass<ScriptWorkTask>(
-        "WorkTask", std::function<ScriptWorkTask*()>([] { return nullptr; }), true);
+    auto              task =
+        table.addClass<ScriptWorkTask>("WorkTask", std::function<ScriptWorkTask*()>([] { return nullptr; }), true);
     auto resolveTask = [](ScriptWorkTask* proxy) -> eve::OptionalRef<ProductionTask> {
         if (!proxy) return {};
         auto queue = Production::resolve(proxy->reference);
@@ -810,8 +784,8 @@ void Production::expose(ssq::Table& table) {
         return value ? value->get().reason : std::string{};
     });
 
-    auto event = table.addClass<ScriptWorkEvent>(
-        "WorkEvent", std::function<ScriptWorkEvent*()>([] { return nullptr; }), true);
+    auto event =
+        table.addClass<ScriptWorkEvent>("WorkEvent", std::function<ScriptWorkEvent*()>([] { return nullptr; }), true);
     auto resolveEvent = [](ScriptWorkEvent* proxy) -> eve::OptionalRef<ProductionEvent> {
         if (!proxy) return {};
         auto queue = Production::resolve(proxy->reference);
@@ -854,8 +828,8 @@ void Production::expose(ssq::Table& table) {
         return value ? value->get().reason : std::string{};
     });
 
-    auto queue = table.addClass<ScriptWorkQueue>(
-        "WorkQueue", std::function<ScriptWorkQueue*()>([] { return nullptr; }), true);
+    auto queue =
+        table.addClass<ScriptWorkQueue>("WorkQueue", std::function<ScriptWorkQueue*()>([] { return nullptr; }), true);
     queue.addFunc("ownership", [](ScriptWorkQueue*) { return std::string("owned"); });
     queue.addFunc("ownerEpoch", [](ScriptWorkQueue* value) {
         return value ? static_cast<int64_t>(value->reference.ownerEpoch) : int64_t{0};
@@ -863,90 +837,95 @@ void Production::expose(ssq::Table& table) {
     queue.addFunc("handle", [](ScriptWorkQueue* value) {
         return value ? static_cast<int64_t>(value->reference.packed()) : int64_t{0};
     });
-    queue.addFunc("isStale", [](ScriptWorkQueue* value) {
-        return !value || Production::isStale(value->reference);
-    });
+    queue.addFunc("isStale", [](ScriptWorkQueue* value) { return !value || Production::isStale(value->reference); });
     queue.addFunc("release", [vm](ScriptWorkQueue* value) {
         if (!value)
             return eve::script::projectResult(
                 vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "work queue proxy must not be null", "queue"));
+                                                   "work queue proxy must not be null", "queue"));
         return eve::script::projectResult(vm, Production::release(value->reference));
     });
-    queue.addFunc("enqueue", [vm](ScriptWorkQueue* value, const std::string& owner,
-                                   const std::string& kind, const std::string& product,
-                                   const std::string& contextJson, float duration, int priority) {
+    queue.addFunc("enqueue", [vm](ScriptWorkQueue* value, const std::string& owner, const std::string& kind,
+                                  const std::string& product, const std::string& contextJson, float duration,
+                                  int priority) {
         if (!value)
             return eve::script::projectStatusResult(
-                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "work queue proxy must not be null", "queue")
-                        .status(), false, false);
+                vm,
+                productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                               "work queue proxy must not be null", "queue")
+                    .status(),
+                false, false);
         auto payload = eve::Value::fromJson(contextJson);
         if (!payload.ok()) return eve::script::projectStatusResult(vm, payload.status(), false, false);
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         return eve::script::projectResult(
-            vm, queueView.value().get().enqueue(owner, kind, product,
-                                                std::move(payload).takeValue(), duration, priority),
+            vm,
+            queueView.value().get().enqueue(owner, kind, product, std::move(payload).takeValue(), duration, priority),
             [](std::string id) { return eve::Value(std::move(id)); });
     });
     queue.addFunc("pause", [vm](ScriptWorkQueue* value, const std::string& id) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         return eve::script::projectResult(vm, queueView.value().get().pause(id));
     });
     queue.addFunc("resume", [vm](ScriptWorkQueue* value, const std::string& id) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         return eve::script::projectResult(vm, queueView.value().get().resume(id));
     });
-    queue.addFunc("cancel", [vm](ScriptWorkQueue* value, const std::string& id,
-                                  const std::string& reason) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+    queue.addFunc("cancel", [vm](ScriptWorkQueue* value, const std::string& id, const std::string& reason) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         return eve::script::projectResult(vm, queueView.value().get().cancel(id, reason));
     });
-    queue.addFunc("fail", [vm](ScriptWorkQueue* value, const std::string& id,
-                                const std::string& reason) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+    queue.addFunc("fail", [vm](ScriptWorkQueue* value, const std::string& id, const std::string& reason) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         return eve::script::projectResult(vm, queueView.value().get().fail(id, reason));
     });
     queue.addFunc("advance", [vm](ScriptWorkQueue* value, std::int64_t tick, float seconds) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto delta = eve::Duration::fromSeconds(seconds);
         if (!delta.ok()) return eve::script::projectStatusResult(vm, delta.status(), false, false);
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         return eve::script::projectResult(
-            vm, queueView.value().get().advance({eve::SimulationTick(static_cast<std::uint64_t>(tick)),
-                                                 std::move(delta).takeValue()}));
+            vm, queueView.value().get().advance(
+                    {eve::SimulationTick(static_cast<std::uint64_t>(tick)), std::move(delta).takeValue()}));
     });
     queue.addFunc("setSlotCount", [vm](ScriptWorkQueue* value, const std::string& owner, int slots) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         return eve::script::projectResult(vm, queueView.value().get().setSlotCount(owner, slots));
     });
     queue.addFunc("slotCount", [](ScriptWorkQueue* value, const std::string& owner) {
-        auto queueView = value ? Production::resolve(value->reference) : eve::ResultRef<WorkQueue>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
+        auto queueView = value ? Production::resolve(value->reference)
+                               : eve::ResultRef<WorkQueue>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
         if (!queueView.ok()) {
             queueView.ignore("stale work queue while reading slot count");
             return 0;
@@ -954,8 +933,9 @@ void Production::expose(ssq::Table& table) {
         return queueView.value().get().slotCount(owner);
     });
     queue.addFunc("runningCount", [](ScriptWorkQueue* value, const std::string& owner) {
-        auto queueView = value ? Production::resolve(value->reference) : eve::ResultRef<WorkQueue>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
+        auto queueView = value ? Production::resolve(value->reference)
+                               : eve::ResultRef<WorkQueue>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
         if (!queueView.ok()) {
             queueView.ignore("stale work queue while reading running count");
             return 0;
@@ -979,8 +959,9 @@ void Production::expose(ssq::Table& table) {
         return std::move(object).takeValue();
     });
     queue.addFunc("taskCount", [](ScriptWorkQueue* value) {
-        auto queueView = value ? Production::resolve(value->reference) : eve::ResultRef<WorkQueue>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
+        auto queueView = value ? Production::resolve(value->reference)
+                               : eve::ResultRef<WorkQueue>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
         if (!queueView.ok()) {
             queueView.ignore("stale work queue while reading task count");
             return 0;
@@ -995,8 +976,7 @@ void Production::expose(ssq::Table& table) {
             return ssq::Object(vm);
         }
         auto object = eve::script::makeOwnedSquirrelInstance<ScriptWorkTask>(
-            vm, std::make_unique<ScriptWorkTask>(value->reference,
-                                                 queueView.value().get().taskAt(index)->get().id));
+            vm, std::make_unique<ScriptWorkTask>(value->reference, queueView.value().get().taskAt(index)->get().id));
         if (!object.ok()) {
             object.ignore("failed to create work task proxy");
             return ssq::Object(vm);
@@ -1004,8 +984,9 @@ void Production::expose(ssq::Table& table) {
         return std::move(object).takeValue();
     });
     queue.addFunc("ownerTaskCount", [](ScriptWorkQueue* value, const std::string& owner) {
-        auto queueView = value ? Production::resolve(value->reference) : eve::ResultRef<WorkQueue>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
+        auto queueView = value ? Production::resolve(value->reference)
+                               : eve::ResultRef<WorkQueue>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
         if (!queueView.ok()) {
             queueView.ignore("stale work queue while reading owner task count");
             return 0;
@@ -1030,8 +1011,9 @@ void Production::expose(ssq::Table& table) {
         return std::move(object).takeValue();
     });
     queue.addFunc("eventCount", [](ScriptWorkQueue* value) {
-        auto queueView = value ? Production::resolve(value->reference) : eve::ResultRef<WorkQueue>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
+        auto queueView = value ? Production::resolve(value->reference)
+                               : eve::ResultRef<WorkQueue>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::InvalidArgument, "work queue proxy must not be null"));
         if (!queueView.ok()) {
             queueView.ignore("stale work queue while reading event count");
             return 0;
@@ -1054,41 +1036,48 @@ void Production::expose(ssq::Table& table) {
         return std::move(object).takeValue();
     });
     queue.addFunc("clearEvents", [vm](ScriptWorkQueue* value) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         queueView.value().get().clearEvents();
         return eve::script::projectResult(vm, eve::Result<void>::success());
     });
     queue.addFunc("snapshot", [vm](ScriptWorkQueue* value) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                       "work queue proxy must not be null", "queue"),
-            [](std::string text) { return eve::Value(std::move(text)); });
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                productionBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                                      "work queue proxy must not be null", "queue"),
+                [](std::string text) { return eve::Value(std::move(text)); });
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectResult(
-            vm, productionBindingFailure<std::string>(queueView.status().code() == eve::StatusCode::NotFound
-                                                           ? eve::DiagnosticCode::NotFound
-                                                           : eve::DiagnosticCode::StaleHandle,
-                                                       "work queue handle is stale", "queue"),
-            [](std::string text) { return eve::Value(std::move(text)); });
+        if (!queueView.ok())
+            return eve::script::projectResult(
+                vm,
+                productionBindingFailure<std::string>(queueView.status().code() == eve::StatusCode::NotFound
+                                                          ? eve::DiagnosticCode::NotFound
+                                                          : eve::DiagnosticCode::StaleHandle,
+                                                      "work queue handle is stale", "queue"),
+                [](std::string text) { return eve::Value(std::move(text)); });
         return eve::script::projectResult(vm, queueView.value().get().snapshot(),
                                           [](std::string text) { return eve::Value(std::move(text)); });
     });
     queue.addFunc("restore", [vm](ScriptWorkQueue* value, const std::string& json) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         return eve::script::projectResult(vm, queueView.value().get().restore(json));
     });
     queue.addFunc("clear", [vm](ScriptWorkQueue* value) {
-        if (!value) return eve::script::projectResult(
-            vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "work queue proxy must not be null", "queue"));
+        if (!value)
+            return eve::script::projectResult(
+                vm, productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                   "work queue proxy must not be null", "queue"));
         auto queueView = Production::resolve(value->reference);
         if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
         queueView.value().get().clear();
@@ -1102,8 +1091,7 @@ void Production::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Production::getName);
     cls.addFunc("newWorkQueue", [vm = cls.getHandle()](Production*) -> ssq::Table {
         return makeOwnedProxy<WorkQueueHandleRef, ScriptWorkQueue>(
-            vm, Production::newQueueHandle(),
-            [](WorkQueueHandleRef ref) { return Production::release(ref); }, "queue");
+            vm, Production::newQueueHandle(), [](WorkQueueHandleRef ref) { return Production::release(ref); }, "queue");
     });
 }
 

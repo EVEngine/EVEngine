@@ -40,7 +40,7 @@ property_access::PropertyKind convertKind(PropertyType type) {
 }
 
 property_access::PropertyFlag convertFlags(PropertyFlag flags) {
-    using Flag = property_access::PropertyFlag;
+    using Flag  = property_access::PropertyFlag;
     Flag result = Flag::None;
     if (hasPropertyFlag(flags, PropertyFlag::ReadOnly)) result = result | Flag::ReadOnly;
     if (hasPropertyFlag(flags, PropertyFlag::Advanced)) result = result | Flag::Advanced;
@@ -64,7 +64,7 @@ const char *legacyRule(const std::string &code) {
 
 template <class ResultValue>
 EditorResult<ResultValue> editorValidationError(const property_access::WriteResult &validation,
-                                                const PropertyDescriptor &descriptor) {
+                                                const PropertyDescriptor           &descriptor) {
     EditorResult<ResultValue> result;
     result.status = EditorStatus::Rejected;
     result.diagnostics.push_back({RuleId(legacyRule(validation.code)), DiagnosticSeverity::Error,
@@ -76,20 +76,20 @@ EditorResult<ResultValue> editorValidationError(const property_access::WriteResu
 
 property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor &source) {
     property_access::PropertyDescriptor result;
-    result.path = source.path.value();
-    result.displayName = source.displayNameKey;
-    result.description = source.descriptionKey;
-    result.category = source.category;
-    result.kind = convertKind(source.type);
-    result.flags = convertFlags(source.flags);
-    result.defaultValue = toPresentationValue(source.defaultValue);
-    result.numeric.minimum = source.numeric.minimum;
-    result.numeric.maximum = source.numeric.maximum;
-    result.numeric.step = source.numeric.step;
-    result.numeric.units = source.numeric.units;
+    result.path              = source.path.value();
+    result.displayName       = source.displayNameKey;
+    result.description       = source.descriptionKey;
+    result.category          = source.category;
+    result.kind              = convertKind(source.type);
+    result.flags             = convertFlags(source.flags);
+    result.defaultValue      = toPresentationValue(source.defaultValue);
+    result.numeric.minimum   = source.numeric.minimum;
+    result.numeric.maximum   = source.numeric.maximum;
+    result.numeric.step      = source.numeric.step;
+    result.numeric.units     = source.numeric.units;
     result.numeric.precision = source.numeric.precision;
-    result.choices = source.enumItems;
-    result.presenterHint = source.presenterHint;
+    result.choices           = source.enumItems;
+    result.presenterHint     = source.presenterHint;
     return result;
 }
 

@@ -52,19 +52,19 @@ TEST_CASE("procgen.spatialData.splineAndDeterministicSampling") {
 
 TEST_CASE("procgen.spatialData.scriptFacingApiFiltersPoints") {
     Procgen proc;
-    auto includeResult = proc.boxVolumeHandle(0.f, -1.f, 0.f, 5.f, 1.f, 5.f);
-    auto excludeResult = proc.sphereVolumeHandle(2.f, 0.f, 2.f, 1.f);
+    auto    includeResult = proc.boxVolumeHandle(0.f, -1.f, 0.f, 5.f, 1.f, 5.f);
+    auto    excludeResult = proc.sphereVolumeHandle(2.f, 0.f, 2.f, 1.f);
     REQUIRE(includeResult.ok());
     REQUIRE(excludeResult.ok());
-    auto include = std::move(includeResult).takeValue();
-    auto exclude = std::move(excludeResult).takeValue();
+    auto include      = std::move(includeResult).takeValue();
+    auto exclude      = std::move(excludeResult).takeValue();
     auto domainResult = proc.differenceSpatialHandle(include, exclude);
     REQUIRE(domainResult.ok());
     auto domain = std::move(domainResult).takeValue();
 
     auto inputResult = proc.newPointSetHandle();
     REQUIRE(inputResult.ok());
-    auto input = std::move(inputResult).takeValue();
+    auto input     = std::move(inputResult).takeValue();
     auto inputView = proc.resolvePointSet(input);
     REQUIRE(inputView.isBound());
     inputView->add(1.f, 0.f, 1.f);
@@ -74,8 +74,8 @@ TEST_CASE("procgen.spatialData.scriptFacingApiFiltersPoints") {
     auto rejectedResult = proc.filterSpatialHandle(input, domain, true);
     REQUIRE(acceptedResult.ok());
     REQUIRE(rejectedResult.ok());
-    auto accepted = std::move(acceptedResult).takeValue();
-    auto rejected = std::move(rejectedResult).takeValue();
+    auto accepted     = std::move(acceptedResult).takeValue();
+    auto rejected     = std::move(rejectedResult).takeValue();
     auto acceptedView = proc.resolvePointSet(accepted);
     auto rejectedView = proc.resolvePointSet(rejected);
     REQUIRE(acceptedView.isBound());

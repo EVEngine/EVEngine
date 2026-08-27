@@ -37,7 +37,7 @@ public:
      */
     explicit Subscription(Cancel cancel);
 
-    Subscription(const Subscription &) = delete;
+    Subscription(const Subscription &)            = delete;
     Subscription &operator=(const Subscription &) = delete;
     Subscription(Subscription &&other) noexcept;
     Subscription &operator=(Subscription &&other) noexcept;
@@ -80,11 +80,11 @@ public:
     using Callback = std::function<void(const Args &...)>;
 
     Observer() : state_(std::make_shared<State>()) {}
-    Observer(const Observer &) = delete;
+    Observer(const Observer &)            = delete;
     Observer &operator=(const Observer &) = delete;
-    Observer(Observer &&) = delete;
-    Observer &operator=(Observer &&) = delete;
-    ~Observer() = default;
+    Observer(Observer &&)                 = delete;
+    Observer &operator=(Observer &&)      = delete;
+    ~Observer()                           = default;
 
     /**
      * @brief Registers a callback owned by the returned Subscription.
@@ -96,8 +96,8 @@ public:
         compactInactive();
         if (!callback) return {};
 
-        auto entry       = std::make_shared<Entry>();
-        entry->id        = state_->nextId++;
+        auto entry      = std::make_shared<Entry>();
+        entry->id       = state_->nextId++;
         entry->callback = std::move(callback);
         state_->entries.push_back(entry);
 
@@ -105,9 +105,8 @@ public:
         return Subscription([weakState, entry]() noexcept {
             entry->active = false;
             if (const auto state = weakState.lock()) {
-                std::erase_if(state->entries, [&entry](const std::shared_ptr<Entry> &candidate) {
-                    return candidate == entry;
-                });
+                std::erase_if(state->entries,
+                              [&entry](const std::shared_ptr<Entry> &candidate) { return candidate == entry; });
             }
         });
     }
@@ -139,8 +138,8 @@ public:
      *          next-dispatch rules as notify().
      */
     template <typename FailureHandler>
-    [[nodiscard]] std::size_t notifyChecked(FailureHandler&& onFailure, const Args &...args) {
-        const auto snapshot = state_->entries;
+    [[nodiscard]] std::size_t notifyChecked(FailureHandler &&onFailure, const Args &...args) {
+        const auto  snapshot = state_->entries;
         std::size_t failures = 0;
         for (const auto &entry : snapshot) {
             if (!entry->active || !entry->callback) continue;
@@ -166,8 +165,7 @@ public:
 
     /** @brief Removes inactive entries without invoking user callbacks. */
     void compactInactive() {
-        std::erase_if(state_->entries,
-                      [](const std::shared_ptr<Entry> &entry) { return !entry->active; });
+        std::erase_if(state_->entries, [](const std::shared_ptr<Entry> &entry) { return !entry->active; });
     }
 
 private:
@@ -178,7 +176,7 @@ private:
     };
 
     struct State {
-        std::uint64_t                 nextId = 1;
+        std::uint64_t                       nextId = 1;
         std::vector<std::shared_ptr<Entry>> entries;
     };
 

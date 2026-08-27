@@ -322,7 +322,7 @@ TEST_CASE("SceneLoader.load.buildsGameObjectTreeWithRenderables") {
 
     // Hot-reload with an identical file is a fast no-op.
     SceneDiff out;
-    auto unchanged = loader->reload(name, &out);
+    auto      unchanged = loader->reload(name, &out);
     REQUIRE(unchanged.ok());
     CHECK(!unchanged.value());
     CHECK(out.empty());
@@ -521,7 +521,7 @@ TEST_CASE("SceneLoader.load.pbrTextureCacheReusesTexture") {
 
     // Reload path stays healthy (diff-based) and reuses the same cached texture.
     SceneDiff out;
-    auto unchanged = loader->reload("sl_cache.obj", &out);
+    auto      unchanged = loader->reload("sl_cache.obj", &out);
     REQUIRE(unchanged.ok());
     CHECK(!unchanged.value());
     CHECK(out.empty());

@@ -1,5 +1,5 @@
-#include "procgen/RuntimeGeneration.h"
 #include "procgen/Procgen.h"
+#include "procgen/RuntimeGeneration.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -15,22 +15,20 @@ namespace {
 class RuntimeLease {
 public:
     RuntimeLease() = default;
-    RuntimeLease(Procgen& owner, ProcgenRuntimeGenerationHandleRef handle)
-        : owner_(&owner), handle_(handle) {}
+    RuntimeLease(Procgen& owner, ProcgenRuntimeGenerationHandleRef handle) : owner_(&owner), handle_(handle) {}
 
     RuntimeLease(const RuntimeLease&)            = delete;
     RuntimeLease& operator=(const RuntimeLease&) = delete;
-    RuntimeLease(RuntimeLease&& other) noexcept
-        : owner_(other.owner_), handle_(other.handle_) {
+    RuntimeLease(RuntimeLease&& other) noexcept : owner_(other.owner_), handle_(other.handle_) {
         other.owner_  = nullptr;
         other.handle_ = {};
     }
     RuntimeLease& operator=(RuntimeLease&& other) noexcept {
         if (this == &other) return *this;
         reset();
-        owner_       = other.owner_;
-        handle_      = other.handle_;
-        other.owner_ = nullptr;
+        owner_        = other.owner_;
+        handle_       = other.handle_;
+        other.owner_  = nullptr;
         other.handle_ = {};
         return *this;
     }
@@ -47,24 +45,21 @@ public:
 
     /** @brief Provides a short-lived borrowed view of the scheduler. */
     [[nodiscard]] eve::script::Borrowed<RuntimeGeneration> view() const noexcept {
-        return owner_ ? owner_->resolveRuntimeGeneration(handle_)
-                      : eve::script::Borrowed<RuntimeGeneration>();
+        return owner_ ? owner_->resolveRuntimeGeneration(handle_) : eve::script::Borrowed<RuntimeGeneration>();
     }
 
     /** @brief Preserves the concise `runtime->operation()` test syntax. */
-    [[nodiscard]] eve::script::Borrowed<RuntimeGeneration> operator->() const noexcept {
-        return view();
-    }
+    [[nodiscard]] eve::script::Borrowed<RuntimeGeneration> operator->() const noexcept { return view(); }
 
 private:
-    Procgen*                         owner_  = nullptr;
+    Procgen*                          owner_ = nullptr;
     ProcgenRuntimeGenerationHandleRef handle_{};
 };
 
 /** @brief Converts a checked scheduler allocation Result into a test lease. */
 RuntimeLease requireRuntime(Procgen& proc, uint32_t worldSeed) {
-    auto result = proc.newRuntimeGenerationHandle(worldSeed);
-    const bool ok = result.ok();
+    auto       result = proc.newRuntimeGenerationHandle(worldSeed);
+    const bool ok     = result.ok();
     if (!ok) {
         const eve::Diagnostic* diagnostic = result.error();
         REQUIRE(diagnostic != nullptr);
@@ -76,15 +71,13 @@ RuntimeLease requireRuntime(Procgen& proc, uint32_t worldSeed) {
 /** @brief Gives an owning lifetime to a request allocated by the scheduler API. */
 using RequestLease = std::unique_ptr<ProcgenCellRequest>;
 
-[[nodiscard]] RequestLease ownRequest(ProcgenCellRequest* request) noexcept {
-    return RequestLease(request);
-}
+[[nodiscard]] RequestLease ownRequest(ProcgenCellRequest* request) noexcept { return RequestLease(request); }
 
 }  // namespace
 
 TEST_CASE("procgen.runtimeGeneration.partitionsAndPublishesCells") {
-    Procgen proc;
-    auto    runtime = requireRuntime(proc, 42);
+    Procgen   proc;
+    auto      runtime   = requireRuntime(proc, 42);
     const int nearLevel = runtime->addLevel(10.f, 8.f, 1.5f);
     const int farLevel  = runtime->addLevel(40.f, 30.f, 2.f);
     CHECK_EQ(nearLevel, 0);
@@ -269,7 +262,7 @@ TEST_CASE("procgen.runtimeGeneration.enforcesResidentCellReservations") {
     CHECK_EQ(runtime->getMaxActiveCells(), 2);
     runtime->updateSource(5.f, 5.f, 1.f, 0.f);
 
-    auto first = ownRequest(runtime->nextGenerate());
+    auto first  = ownRequest(runtime->nextGenerate());
     auto second = ownRequest(runtime->nextGenerate());
     REQUIRE(bool(first));
     REQUIRE(bool(second));

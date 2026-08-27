@@ -58,27 +58,27 @@ public:
      * @remarks The returned pointer remains valid until that host is destroyed;
      *          nodes are invalidated by a subsequent tree replacement/reconcile.
      */
-    [[nodiscard]] eve::Result<SceneHost*> mountAs(const std::string &name, NodeDesc root);
+    [[nodiscard]] eve::Result<SceneHost *> mountAs(const std::string &name, NodeDesc root);
     /**
      * @brief Mounts the tree as the default host and selects it.
      * @return Borrowed ECS-owned host, or a structured failure.
      */
-    [[nodiscard]] eve::Result<SceneHost*> mount(NodeDesc root);
+    [[nodiscard]] eve::Result<SceneHost *> mount(NodeDesc root);
     /**
      * @brief Replaces the selected host's tree.
      * @return Borrowed ECS-owned host, or a structured failure.
      */
-    [[nodiscard]] eve::Result<SceneHost*> remount(NodeDesc root);
+    [[nodiscard]] eve::Result<SceneHost *> remount(NodeDesc root);
     /**
      * @brief Reconciles the selected host, reporting whether replacement failed.
      * @return Borrowed ECS-owned host, or a structured failure.
      */
-    [[nodiscard]] eve::Result<SceneHost*> remountReconcile(NodeDesc root);
+    [[nodiscard]] eve::Result<SceneHost *> remountReconcile(NodeDesc root);
     /**
      * @brief Creates/replaces a named host through the canonical mount path.
      * @return Borrowed ECS-owned host, or a structured failure.
      */
-    [[nodiscard]] eve::Result<SceneHost*> remountAs(const std::string &name, NodeDesc root);
+    [[nodiscard]] eve::Result<SceneHost *> remountAs(const std::string &name, NodeDesc root);
 
     /** @brief Selects a named host; false when it does not exist. */
     bool select(const std::string &name);
@@ -86,12 +86,12 @@ public:
      * @brief Finds a host by name with an explicit not-found status.
      * @return Borrowed ECS-owned host, or a structured not-found/argument failure.
      */
-    [[nodiscard]] eve::Result<SceneHost*> findHost(const std::string &name) const;
+    [[nodiscard]] eve::Result<SceneHost *> findHost(const std::string &name) const;
     /**
      * @brief Finds the host bound to an owner id with an explicit status.
      * @return Borrowed ECS-owned host, or a structured not-found/argument failure.
      */
-    [[nodiscard]] eve::Result<SceneHost*> findHostByOwner(uint32_t ownerId) const;
+    [[nodiscard]] eve::Result<SceneHost *> findHostByOwner(uint32_t ownerId) const;
     /** @brief Currently selected borrowed host, or nullptr. */
     [[nodiscard]] SceneHost *current() const noexcept { return selected_; }
     /** @brief Binds the selected host to a UI/scene owner id. */
@@ -294,10 +294,8 @@ public:
     void updateScripts(float dt);
 
     std::string currentHostName() const;
-    [[nodiscard]] SceneNodeRef *getNodeRefAt(const std::string &hostName,
-                                             const std::string &nodeId) const;
-    [[nodiscard]] SceneNodeRef *getNodeRefByPathAt(const std::string &hostName,
-                                                   const std::string &path) const;
+    [[nodiscard]] SceneNodeRef *getNodeRefAt(const std::string &hostName, const std::string &nodeId) const;
+    [[nodiscard]] SceneNodeRef *getNodeRefByPathAt(const std::string &hostName, const std::string &path) const;
 
 private:
     [[nodiscard]] SceneHost *ensureSelected(const std::string &preferredName = "");
@@ -307,8 +305,7 @@ private:
 
     [[nodiscard]] SceneObject *findSceneObjectById(uint32_t id) const;
     [[nodiscard]] SceneObject *findSceneObjectByPersistentId(eve::SceneObjectId id) const;
-    [[nodiscard]] SceneObject *ensureSceneObject(SceneHost *host, SceneNode *node,
-                                                 const std::string &hostName);
+    [[nodiscard]] SceneObject *ensureSceneObject(SceneHost *host, SceneNode *node, const std::string &hostName);
     /** @brief Destroy bindings whose host/node no longer resolves; self-heal meta. */
     void pruneOrphanObjects();
     /** @brief Fire onDetach + destroy() and release every rooted instance. */

@@ -4,11 +4,11 @@
 #include "physics/PhysicsHandles.h"
 #include "physics/SimulationBackend.h"
 
-#include <string>
 #include <cstdint>
 #include <memory>
-#include <unordered_set>
+#include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -103,8 +103,7 @@ public:
      * @remarks A rejected step leaves solver state and the current tick unchanged.
      */
     [[nodiscard("check the physics step outcome or explicitly ignore it")]]
-    eve::Result<void> step(const eve::SimulationStep& step,
-                           const SimulationSettings& settings = {});
+    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings = {});
 
     /** @brief Snapshot of completed backend steps and logical simulation time. */
     [[nodiscard]] SimulationObservation simulationObservation() const noexcept;
@@ -129,8 +128,7 @@ public:
      * @remarks The provider is not retained; this call is owner-thread-only.
      */
     [[nodiscard("check or persist the physics snapshot")]]
-    eve::Result<eve::SnapshotEnvelope> snapshot(
-        const eve::SnapshotHashProvider& hashProvider) const;
+    eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider &hashProvider) const;
 
     /**
      * @brief Restores a verified snapshot without exposing partial state.
@@ -141,8 +139,7 @@ public:
      *          never persisted or reused from its payload.
      */
     [[nodiscard("check the physics snapshot restore outcome")]]
-    eve::Result<void> restore(const eve::SnapshotEnvelope& snapshot,
-                              const eve::SnapshotHashProvider& hashProvider);
+    eve::Result<void> restore(const eve::SnapshotEnvelope &snapshot, const eve::SnapshotHashProvider &hashProvider);
 
     /** @brief Gravity in m/s². */
     void  setGravity(float gx, float gy, float gz);
@@ -274,7 +271,8 @@ public:
      * @brief Creates a body in meter-space units.
      * @return Borrowed nullable body owned by this world; null means creation failed.
      * @ownership World3D owns the body and its shapes; callers must destroy it through this API.
-     * @lifetime Valid until Body3D::destroy(), World3D::destroy(), or world teardown; use PhysicsBodyHandle across frames.
+     * @lifetime Valid until Body3D::destroy(), World3D::destroy(), or world teardown; use PhysicsBodyHandle across
+     * frames.
      * @thread Call on the owning physics thread.
      * @reentrancy Creation does not invoke callbacks; do not re-enter structural world mutation while using the result.
      */
@@ -289,7 +287,8 @@ public:
      * @brief Connects two world-space anchor points with a rigid distance constraint.
      * @return Borrowed nullable joint owned by this world; null means creation failed.
      * @ownership World3D owns the joint; body pointers are borrowed inputs and are never retained after validation.
-     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use PhysicsJointHandle across frames.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
      * @thread Call on the owning physics thread.
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid bodies, anchors, length, or cross-world bodies.
@@ -301,7 +300,8 @@ public:
      * @brief Creates a hinge around a normalized world-space axis at a shared anchor.
      * @return Borrowed nullable joint owned by this world; null means creation failed.
      * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
-     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use PhysicsJointHandle across frames.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
      * @thread Call on the owning physics thread.
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid/cross-world bodies or a zero/non-finite axis.
@@ -313,7 +313,8 @@ public:
      * @brief Creates a slider whose permitted world-space translation follows axis.
      * @return Borrowed nullable joint owned by this world; null means creation failed.
      * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
-     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use PhysicsJointHandle across frames.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
      * @thread Call on the owning physics thread.
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      */
@@ -324,7 +325,8 @@ public:
      * @brief Creates a ball-and-socket joint with a world-space twist/cone axis.
      * @return Borrowed nullable joint owned by this world; null means creation failed.
      * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
-     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use PhysicsJointHandle across frames.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
      * @thread Call on the owning physics thread.
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      */
@@ -335,7 +337,8 @@ public:
      * @brief Creates a vehicle wheel joint with independent world suspension and spin axes.
      * @return Borrowed nullable joint owned by this world; null means creation failed.
      * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
-     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use PhysicsJointHandle across frames.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
      * @thread Call on the owning physics thread.
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      */
@@ -820,22 +823,22 @@ private:
     friend class Joint3D;
     friend class Shape3D;
     friend class TargetingLineOfSightAdapter;
-    friend void registerCameraObstructionWorld(World3D* world);
+    friend void registerCameraObstructionWorld(World3D *world);
 
     b3WorldId worldId_{};
     std::unique_ptr<ISimulationBackend> simulation_;
-    PhysicsWorldHandle runtimeHandle_ = PhysicsWorldHandle::invalid();
-    std::shared_ptr<const void> queryLifetime_ = std::make_shared<int>(0);
+    PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
+    std::shared_ptr<const void>         queryLifetime_          = std::make_shared<int>(0);
     bool      destroyed_ = false;
     int       nextId_    = 1;
     int       nextShapeId_ = 1;
     int       nextJointId_ = 1;
-    std::uint32_t nextBodyHandleIndex_ = 1u;
-    std::uint32_t nextShapeHandleIndex_ = 1u;
-    std::uint32_t nextJointHandleIndex_ = 1u;
-    eve::SimulationTick simulationTick_ = eve::SimulationTick::zero();
-    eve::Status backendSelectionStatus_ = eve::Status::success();
-    bool backendFallback_ = false;
+    std::uint32_t                       nextBodyHandleIndex_    = 1u;
+    std::uint32_t                       nextShapeHandleIndex_   = 1u;
+    std::uint32_t                       nextJointHandleIndex_   = 1u;
+    eve::SimulationTick                 simulationTick_         = eve::SimulationTick::zero();
+    eve::Status                         backendSelectionStatus_ = eve::Status::success();
+    bool                                backendFallback_        = false;
 
     std::unordered_set<Body3D *>  bodies_;
     std::unordered_set<Shape3D *> shapes_;
@@ -844,7 +847,7 @@ private:
     std::unordered_set<uint64_t> disabledShapePairs_;
     std::unordered_map<uint64_t, EventShape> shapeRecords_;
     std::unordered_map<PhysicsShapeHandle, Shape3D *> shapeHandles_;
-    std::unordered_map<uint64_t, PhysicsShapeHandle> shapeRawHandles_;
+    std::unordered_map<uint64_t, PhysicsShapeHandle>  shapeRawHandles_;
     std::unordered_map<PhysicsJointHandle, Joint3D *> jointHandles_;
     std::vector<ContactEvent> beginContacts_;
     std::vector<ContactEvent> endContacts_;

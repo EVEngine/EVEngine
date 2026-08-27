@@ -12,10 +12,10 @@
 namespace eve::ui {
 namespace {
 
+using eve::Value;
 using property_access::PropertyDescriptor;
 using property_access::PropertyFlag;
 using property_access::PropertyKind;
-using eve::Value;
 
 std::string sanitize(std::string value) {
     for (char &character : value)
@@ -65,13 +65,12 @@ AccessibilityRole accessibilityRole(PropertyKind kind, bool readOnly) {
     }
 }
 
-WidgetDesc makePropertyField(property_access::IPropertyAccess &model,
-                             const PropertyViewOptions &options,
+WidgetDesc makePropertyField(property_access::IPropertyAccess &model, const PropertyViewOptions &options,
                              const PropertyDescriptor &property, const Value &value) {
     const std::string id = propertyWidgetId(options, property.path);
     const std::string label = displayName(property);
-    const bool readOnly = property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
-                          property.kind == PropertyKind::ReadOnlyText;
+    const bool        readOnly =
+        property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) || property.kind == PropertyKind::ReadOnlyText;
     WidgetDesc result;
 
     if (readOnly) {
@@ -177,14 +176,10 @@ WidgetDesc makePropertyField(property_access::IPropertyAccess &model,
 }
 
 bool visible(const PropertyDescriptor &property, const PropertyViewOptions &options) {
-    if (!options.showAdvanced && property_access::hasFlag(property.flags, PropertyFlag::Advanced))
-        return false;
-    if (!options.showEditorOnly &&
-        property_access::hasFlag(property.flags, PropertyFlag::EditorOnly))
-        return false;
-    if (!options.showReadOnly &&
-        (property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
-         property.kind == PropertyKind::ReadOnlyText))
+    if (!options.showAdvanced && property_access::hasFlag(property.flags, PropertyFlag::Advanced)) return false;
+    if (!options.showEditorOnly && property_access::hasFlag(property.flags, PropertyFlag::EditorOnly)) return false;
+    if (!options.showReadOnly && (property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
+                                  property.kind == PropertyKind::ReadOnlyText))
         return false;
     return true;
 }
@@ -197,7 +192,7 @@ std::string propertyWidgetId(const PropertyViewOptions &options, const std::stri
 
 WidgetDesc buildPropertyField(property_access::IPropertyAccess &model, const std::string &path,
                               const PropertyViewOptions &options) {
-    auto property = model.schema().find(path);
+    auto                       property = model.schema().find(path);
     const std::optional<Value> value = model.read(path);
     if (!property || !value)
         return text(path + ": unavailable", propertyWidgetId(options, path))
@@ -207,8 +202,7 @@ WidgetDesc buildPropertyField(property_access::IPropertyAccess &model, const std
     return makePropertyField(model, options, property->get(), *value);
 }
 
-WidgetDesc buildPropertyView(property_access::IPropertyAccess &model,
-                             const PropertyViewOptions &options) {
+WidgetDesc buildPropertyView(property_access::IPropertyAccess &model, const PropertyViewOptions &options) {
     std::vector<WidgetDesc> children;
     if (!options.title.empty()) children.push_back(sectionHeader(options.title, options.idPrefix + "title"));
 
@@ -226,13 +220,12 @@ WidgetDesc buildPropertyView(property_access::IPropertyAccess &model,
     return column(std::move(children), options.idPrefix + "root");
 }
 
-void syncPropertyView(UIHost &host, const property_access::IPropertyAccess &model,
-                      const PropertyViewOptions &options) {
+void syncPropertyView(UIHost &host, const property_access::IPropertyAccess &model, const PropertyViewOptions &options) {
     for (const PropertyDescriptor &property : model.schema().properties) {
         const std::optional<Value> value = model.read(property.path);
         if (!value) continue;
         const std::string id = propertyWidgetId(options, property.path);
-        const bool readOnly = property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
+        const bool        readOnly = property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
                               property.kind == PropertyKind::ReadOnlyText;
         if (readOnly) {
             host.setTextById(id, displayName(property) + ": " + valueText(*value));
@@ -256,8 +249,7 @@ void syncPropertyView(UIHost &host, const property_access::IPropertyAccess &mode
     }
 }
 
-PropertyComponent::PropertyComponent(property_access::IPropertyAccess *model,
-                                     PropertyViewOptions options)
+PropertyComponent::PropertyComponent(property_access::IPropertyAccess *model, PropertyViewOptions options)
     : model_(model), options_(std::move(options)) {
     observe();
 }

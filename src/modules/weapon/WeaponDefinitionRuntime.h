@@ -29,8 +29,7 @@ class Weapon;
  * @return A value-owned projection for one consumer, or a structured parse failure.
  * @remarks The returned value is independent of the registry and does not form a second store.
  */
-[[nodiscard]] eve::Result<WeaponDefinition> parseWeaponDefinition(
-    const eve::definitions::Definition& source);
+[[nodiscard]] eve::Result<WeaponDefinition> parseWeaponDefinition(const eve::definitions::Definition& source);
 
 /**
  * @brief Mutable state owned by one typed weapon runtime instance.
@@ -41,18 +40,18 @@ class Weapon;
  * is the snapshot contract.
  */
 struct WeaponRuntimeState {
-    Resource resource;
-    float cooldown = 0.f;
-    int burstRemaining = 0;
-    float burstTimer = 0.f;
-    bool jammed = false;
-    AttackStage stage = AttackStage::Idle;
-    float stageTimer = 0.f;
-    float currentSpread = 0.f;
-    float recoilPitch = 0.f;
-    float recoilYaw = 0.f;
-    FireMode selector = FireMode::Single;
-    bool aiming = false;
+    Resource    resource;
+    float       cooldown       = 0.f;
+    int         burstRemaining = 0;
+    float       burstTimer     = 0.f;
+    bool        jammed         = false;
+    AttackStage stage          = AttackStage::Idle;
+    float       stageTimer     = 0.f;
+    float       currentSpread  = 0.f;
+    float       recoilPitch    = 0.f;
+    float       recoilYaw      = 0.f;
+    FireMode    selector       = FireMode::Single;
+    bool        aiming         = false;
 };
 
 /**
@@ -75,14 +74,12 @@ public:
      * @return A typed adapter or a structured resolution/parse failure.
      */
     [[nodiscard]] static eve::Result<WeaponDefinitionRuntime> create(
-        eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition,
-        eve::PersistentId instanceId,
+        eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
     /** @brief Create from a `weapon:<definitionId>` logical name. */
     [[nodiscard]] static eve::Result<WeaponDefinitionRuntime> create(
-        eve::definitions::DefinitionRegistry& registry, std::string_view definitionId,
-        eve::PersistentId instanceId,
+        eve::definitions::DefinitionRegistry& registry, std::string_view definitionId, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
     /** @brief Create through the existing Weapon module facade. */
@@ -90,11 +87,11 @@ public:
         Weapon& module, std::string_view definitionId, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
-    WeaponDefinitionRuntime(WeaponDefinitionRuntime&&) noexcept = default;
+    WeaponDefinitionRuntime(WeaponDefinitionRuntime&&) noexcept            = default;
     WeaponDefinitionRuntime& operator=(WeaponDefinitionRuntime&&) noexcept = default;
-    WeaponDefinitionRuntime(const WeaponDefinitionRuntime&) = delete;
-    WeaponDefinitionRuntime& operator=(const WeaponDefinitionRuntime&) = delete;
-    ~WeaponDefinitionRuntime() = default;
+    WeaponDefinitionRuntime(const WeaponDefinitionRuntime&)                = delete;
+    WeaponDefinitionRuntime& operator=(const WeaponDefinitionRuntime&)     = delete;
+    ~WeaponDefinitionRuntime()                                             = default;
 
     /** @brief Borrow the common instance identity and exact definition generation. */
     [[nodiscard]] const eve::definition::InstanceIdentity& identity() const noexcept;
@@ -125,33 +122,30 @@ public:
     [[nodiscard]] eve::Result<void> applyTo(WeaponEntity* entity) const;
 
     /** @brief Reload the registry's current generation using a typed policy. */
-    [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(
-        eve::definition::ReloadPolicy policy);
+    [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(eve::definition::ReloadPolicy policy);
 
     /** @brief Capture stable typed runtime state in the common SnapshotEnvelope. */
-    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(
-        eve::Revision revision, eve::SimulationTick tick,
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(eve::Revision revision, eve::SimulationTick tick,
+                                                              const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Serialize snapshot() as canonical deterministic JSON. */
-    [[nodiscard]] eve::Result<std::string> snapshotJson(
-        eve::Revision revision, eve::SimulationTick tick,
-        const eve::SnapshotHashProvider& hashProvider) const;
+    [[nodiscard]] eve::Result<std::string> snapshotJson(eve::Revision revision, eve::SimulationTick tick,
+                                                        const eve::SnapshotHashProvider& hashProvider) const;
     /**
      * @brief Verify and restore a same-generation snapshot transactionally.
      * @return Failure leaves all typed runtime state unchanged.
      */
-    [[nodiscard]] eve::Result<void> restore(
-        const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
+    [[nodiscard]] eve::Result<void> restore(const eve::SnapshotEnvelope&     snapshot,
+                                            const eve::SnapshotHashProvider& hashProvider);
 
 private:
-    WeaponDefinitionRuntime(eve::definitions::DefinitionRegistry& registry,
+    WeaponDefinitionRuntime(eve::definitions::DefinitionRegistry&                registry,
                             eve::definition::RuntimeInstance<WeaponRuntimeState> runtime,
-                            eve::definition::ReloadPolicy policy)
+                            eve::definition::ReloadPolicy                        policy)
         : registry_(&registry), runtime_(std::move(runtime)), policy_(policy) {}
 
-    eve::definitions::DefinitionRegistry* registry_ = nullptr;  // borrowed
+    eve::definitions::DefinitionRegistry*                registry_ = nullptr;  // borrowed
     eve::definition::RuntimeInstance<WeaponRuntimeState> runtime_;
-    eve::definition::ReloadPolicy policy_ = eve::definition::ReloadPolicy::RebuildInstance;
+    eve::definition::ReloadPolicy                        policy_ = eve::definition::ReloadPolicy::RebuildInstance;
 };
 
 }  // namespace eve::weapon

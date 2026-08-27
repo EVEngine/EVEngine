@@ -1,7 +1,7 @@
 #include "animation/Tween.h"
 
-#include "animation/AnimationTime.h"
 #include "animation/Animation.h"
+#include "animation/AnimationTime.h"
 
 #include "common/Exception.h"
 
@@ -292,11 +292,11 @@ bool Tween::updateUnchecked(float dt) {
     return isActive();
 }
 
-eve::Result<void> Tween::advance(const eve::SimulationStep& step) {
+eve::Result<void> Tween::advance(const eve::SimulationStep &step) {
     auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "Tween");
     if (!seconds) return eve::Result<void>::failure(seconds.status());
     updateUnchecked(std::move(seconds).takeValue());
-    lastTick_ = step.tick;
+    lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }

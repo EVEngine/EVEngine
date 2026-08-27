@@ -120,57 +120,55 @@ TEST_CASE("scriptmodel.property_validation_matches_presentation_contract") {
     Runtime runtime(512, ssq::Libs::ALL);
     runtime.initialize();
     runtime.runSource(kModelScript, "scriptmodel.nut");
-    ssq::Object hero = runtime.createInstance("ModelHero");
+    ssq::Object            hero = runtime.createInstance("ModelHero");
     ReflectedPropertyModel model(runtime, hero);
 
-    auto hpRef = model.schema().find("hp");
-    auto jobRef = model.schema().find("job");
+    auto hpRef   = model.schema().find("hp");
+    auto jobRef  = model.schema().find("job");
     auto tagsRef = model.schema().find("tags");
     REQUIRE(hpRef.has_value());
     REQUIRE(jobRef.has_value());
     REQUIRE(tagsRef.has_value());
-    const PropertyDescriptor *hp = &hpRef->get();
-    const PropertyDescriptor *job = &jobRef->get();
+    const PropertyDescriptor *hp   = &hpRef->get();
+    const PropertyDescriptor *job  = &jobRef->get();
     const PropertyDescriptor *tags = &tagsRef->get();
 
-    const auto sharedType = validatePropertyValue(*hp, Value("fast"));
+    const auto sharedType  = validatePropertyValue(*hp, Value("fast"));
     const auto runtimeType = model.write("hp", Value("fast"));
     CHECK(!sharedType.accepted);
     CHECK(!runtimeType.accepted);
     CHECK_EQ(sharedType.code, std::string("property_access.property.type"));
     CHECK_EQ(runtimeType.code, std::string("scriptmodel.property.type"));
 
-    const auto sharedFinite = validatePropertyValue(
-        *hp, Value(std::numeric_limits<double>::quiet_NaN()));
-    const auto runtimeFinite = model.write(
-        "hp", Value(std::numeric_limits<double>::quiet_NaN()));
+    const auto sharedFinite  = validatePropertyValue(*hp, Value(std::numeric_limits<double>::quiet_NaN()));
+    const auto runtimeFinite = model.write("hp", Value(std::numeric_limits<double>::quiet_NaN()));
     CHECK(!sharedFinite.accepted);
     CHECK(!runtimeFinite.accepted);
     CHECK_EQ(sharedFinite.code, std::string("property_access.property.finite"));
     CHECK_EQ(runtimeFinite.code, std::string("scriptmodel.property.finite"));
 
-    const auto sharedMinimum = validatePropertyValue(*hp, Value(-1.0));
+    const auto sharedMinimum  = validatePropertyValue(*hp, Value(-1.0));
     const auto runtimeMinimum = model.write("hp", Value(-1.0));
     CHECK(!sharedMinimum.accepted);
     CHECK(!runtimeMinimum.accepted);
     CHECK_EQ(sharedMinimum.code, std::string("property_access.property.minimum"));
     CHECK_EQ(runtimeMinimum.code, std::string("scriptmodel.property.minimum"));
 
-    const auto sharedMaximum = validatePropertyValue(*hp, Value(101.0));
+    const auto sharedMaximum  = validatePropertyValue(*hp, Value(101.0));
     const auto runtimeMaximum = model.write("hp", Value(101.0));
     CHECK(!sharedMaximum.accepted);
     CHECK(!runtimeMaximum.accepted);
     CHECK_EQ(sharedMaximum.code, std::string("property_access.property.maximum"));
     CHECK_EQ(runtimeMaximum.code, std::string("scriptmodel.property.maximum"));
 
-    const auto sharedChoice = validatePropertyValue(*job, Value("rogue"));
+    const auto sharedChoice  = validatePropertyValue(*job, Value("rogue"));
     const auto runtimeChoice = model.write("job", Value("rogue"));
     CHECK(!sharedChoice.accepted);
     CHECK(!runtimeChoice.accepted);
     CHECK_EQ(sharedChoice.code, std::string("property_access.property.choice"));
     CHECK_EQ(runtimeChoice.code, std::string("scriptmodel.property.choice"));
 
-    const auto sharedReadOnly = validatePropertyValue(*tags, Value(Value::Array{}));
+    const auto sharedReadOnly  = validatePropertyValue(*tags, Value(Value::Array{}));
     const auto runtimeReadOnly = model.write("tags", Value(Value::Array{}));
     CHECK(!sharedReadOnly.accepted);
     CHECK(!runtimeReadOnly.accepted);

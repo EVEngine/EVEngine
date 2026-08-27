@@ -16,7 +16,7 @@ class EVENGINE_API Schema : public Module {
 public:
     Module_REG(Schema);
 
-    /** @brief Creates the facade and bootstraps engine-owned standard schemas. */
+    /** @brief Creates an empty facade over the process schema registry. */
     Schema();
 
     /** @brief Registers or replaces a schema encoded as JSON.

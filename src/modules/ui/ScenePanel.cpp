@@ -22,7 +22,7 @@ void ScenePanel::open() {
     auto host = UIHost::resolve(host_);
     if (!host) {
         host_ = UIHost::createHost(kSceneHostName);
-        host = UIHost::resolve(host_);
+        host  = UIHost::resolve(host_);
     }
     if (!host) return;
     host->get().setVisible(true);
