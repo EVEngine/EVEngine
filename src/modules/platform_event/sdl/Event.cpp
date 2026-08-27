@@ -8,7 +8,11 @@
 #include "common/config.h"
 #include "platform_event/PlatformEventSink.h"
 
+#if __has_include(<SDL2/SDL.h>)
 #include <SDL2/SDL.h>
+#else
+#include <SDL.h>
+#endif
 
 namespace eve::platform_event::sdl
 {

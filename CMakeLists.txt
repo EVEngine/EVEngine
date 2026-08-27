@@ -564,7 +564,6 @@ function(set_include)
         # source headers for those compile-only targets; normal host builds still
         # receive the same roots in addition to the installed prefix.
         target_include_directories(eve_engine_includes INTERFACE
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL2
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL2/include
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/squirrel/include
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/simplesquirrel/include

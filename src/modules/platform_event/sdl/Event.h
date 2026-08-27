@@ -2,7 +2,11 @@
 
 #include "platform_event/PlatformEvent.h"
 
+#if __has_include(<SDL2/SDL_events.h>)
 #include <SDL2/SDL_events.h>
+#else
+#include <SDL_events.h>
+#endif
 #include <map>
 
 namespace eve::platform_event::sdl
@@ -50,4 +54,3 @@ private:
 }; // Event
 
 } // eve::platform_event::sdl
-
