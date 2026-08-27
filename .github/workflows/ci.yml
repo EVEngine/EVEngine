@@ -26,10 +26,6 @@ on:
         description: git ref to check out (release branch or moved tag)
         type: string
         default: ""
-      profile_web:
-        description: run the optional profile_matrix web profile (requires Emscripten)
-        type: boolean
-        default: false
   push:
     branches: [dev]
   pull_request:
@@ -44,10 +40,6 @@ on:
         type: choice
         default: debug
         options: [debug, release, both]
-      profile_web:
-        description: run the optional profile_matrix web profile (requires Emscripten)
-        type: boolean
-        default: false
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -1481,45 +1473,6 @@ jobs:
           fi
           "$HOME/emsdk/emsdk" install latest
           "$HOME/emsdk/emsdk" activate latest
-
-      - name: Configure optional web profile
-        if: ${{ inputs.profile_web || vars.EVENGINE_PROFILE_WEBGPU == 'true' }}
-        timeout-minutes: 20
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          source "$HOME/emsdk/emsdk_env.sh"
-          make profile/configure \
-            PROFILE=web \
-            PROFILE_BUILD_ROOT="$RUNNER_TEMP/evengine-profile-matrix-web" \
-            PROFILE_PLATFORM=webgpu \
-            PROFILE_CMAKE_COMMAND="emcmake cmake" \
-            PROFILE_JOBS=2
-
-      - name: Build optional web profile smoke target
-        if: ${{ inputs.profile_web || vars.EVENGINE_PROFILE_WEBGPU == 'true' }}
-        timeout-minutes: 35
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          source "$HOME/emsdk/emsdk_env.sh"
-          make profile/build \
-            PROFILE=web \
-            PROFILE_BUILD_ROOT="$RUNNER_TEMP/evengine-profile-matrix-web" \
-            PROFILE_PLATFORM=webgpu \
-            PROFILE_CMAKE_COMMAND="emcmake cmake" \
-            PROFILE_JOBS=2
-
-      - name: Smoke optional web profile capability probes
-        if: ${{ inputs.profile_web || vars.EVENGINE_PROFILE_WEBGPU == 'true' }}
-        timeout-minutes: 10
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          source "$HOME/emsdk/emsdk_env.sh"
-          make profile/smoke \
-            PROFILE=web \
-            PROFILE_BUILD_ROOT="$RUNNER_TEMP/evengine-profile-matrix-web" \
-            PROFILE_PLATFORM=webgpu \
-            PROFILE_CMAKE_COMMAND="emcmake cmake" \
-            PROFILE_JOBS=2
 
       - name: Configure webgpu (Emscripten/WASM)
         timeout-minutes: 15
