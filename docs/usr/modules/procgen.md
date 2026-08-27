@@ -112,6 +112,12 @@ for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
 `applyMeshRecipeDefaults` 把缺失值写入
 `Params`，已有的项目覆盖值保持不变。
 
+`generateTexture(recipeId, params, graphics)` 直接把纹理配方生成的临时
+`ImageData` 上传到传入的 `Graphics`，返回统一 Result。成功时 `value` 是由该
+`Graphics` 资源系统拥有的 borrowed `Texture`；调用方不得销毁它，也不得跨
+Graphics 关闭、资源重建或后端切换保存引用。参数、Graphics 或生成结果无效时，
+调用方必须检查失败 Result。
+
 ### Params 的类型与尺寸语义
 
 `Params` 的算法私有值由 owning 的 `Value::Object` 保存。`setInt`、`setFloat`、
@@ -956,7 +962,7 @@ local scatter = procgen.poissonDisk(100, 100, 2.5, 99, 500);  // 最多 500 点
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `abort()`、`abortSystem()`、`add()`、`addObject()`、`addObjectAt()`、`appendTransformed()`、`applyToLayer()`、`autotileGrid()`、`beginSystem()`、`buildMesh()`、`clear()`、`clearObjects()`、`commitSystem()`、`copyGroup()`、`deriveSeed()`、`empty()`、`excludeRadius()`、`fail()`、`fill()`、`filterDensity()`、`filterHeight()`、`generate()`、`generateHeightmap()`、`generateImage()`、`generateNormalImage()`
-- `generatePbrMaterial()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
+- `generatePbrMaterial()`、`generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
 - `getGroupCount()`、`getGroupName()`、`getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeshRecipeSchema()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
 - `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`、`applyMeshRecipeDefaults()`
