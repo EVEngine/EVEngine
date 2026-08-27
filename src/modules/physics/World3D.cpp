@@ -354,10 +354,10 @@ bool World3D::isValid() const { return !destroyed_ && b3World_IsValid(worldId_);
 
 void World3D::destroy() {
     if (destroyed_) return;
-    unregisterCameraObstructionWorld(this);
-    auto targetingRemoval = unregisterTargetingLineOfSightWorld(this);
-    targetingRemoval.ignore("World3D targeting LOS registration is idempotent");
     destroyed_ = true;
+    // Invalidate borrowed query registrations without touching any global
+    // registry. This keeps teardown safe for every static destruction order.
+    queryLifetime_.reset();
 
     std::vector<Joint3D *> joints(joints_.begin(), joints_.end());
     for (Joint3D *joint : joints) {

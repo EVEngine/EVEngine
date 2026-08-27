@@ -175,9 +175,13 @@ TEST_CASE("physics.artifact.compositeColliderUsesPublicProcgenPublication") {
     CHECK(provider.isBox3DBacked(persistentId));
     const auto* collider = provider.find(persistentId);
     REQUIRE(collider != nullptr);
-    const auto hit = provider.rayCast(
-        persistentId, (collider->bounds.minX + collider->bounds.maxX) * .5f,
-        collider->bounds.maxY + 10.f, (collider->bounds.minZ + collider->bounds.maxZ) * .5f,
-        0.f, -((collider->bounds.maxY - collider->bounds.minY) + 20.f), 0.f);
+    REQUIRE_GE(collider->indices.size(), std::size_t(3));
+    const auto vertex = [collider](std::size_t corner, std::size_t axis) {
+        return collider->vertices[std::size_t(collider->indices[corner]) * 3u + axis];
+    };
+    const float rayX = (vertex(0, 0) + vertex(1, 0) + vertex(2, 0)) / 3.f;
+    const float rayZ = (vertex(0, 2) + vertex(1, 2) + vertex(2, 2)) / 3.f;
+    const auto  hit  = provider.rayCast(persistentId, rayX, collider->bounds.maxY + 10.f, rayZ, 0.f,
+                                        -((collider->bounds.maxY - collider->bounds.minY) + 20.f), 0.f);
     CHECK(hit.hit);
 }

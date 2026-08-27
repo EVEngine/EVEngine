@@ -819,10 +819,13 @@ private:
     friend class Body3D;
     friend class Joint3D;
     friend class Shape3D;
+    friend class TargetingLineOfSightAdapter;
+    friend void registerCameraObstructionWorld(World3D* world);
 
     b3WorldId worldId_{};
     std::unique_ptr<ISimulationBackend> simulation_;
     PhysicsWorldHandle runtimeHandle_ = PhysicsWorldHandle::invalid();
+    std::shared_ptr<const void> queryLifetime_ = std::make_shared<int>(0);
     bool      destroyed_ = false;
     int       nextId_    = 1;
     int       nextShapeId_ = 1;

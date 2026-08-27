@@ -26,16 +26,17 @@ eve::Result<void> TargetingLineOfSightAdapter::addWorld(World3D* world) {
                              "Physics LOS cannot register an invalid World3D");
 
     for (auto it = worlds_.begin(); it != worlds_.end();) {
-        if (!*it || !(*it)->isValid()) {
+        auto lifetime = it->lifetime.lock();
+        if (!lifetime) {
             it = worlds_.erase(it);
             continue;
         }
-        if (*it == world)
+        if (it->world == world)
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
         return failure<void>(eve::DiagnosticCode::Conflict,
                              "Physics LOS already has a different active World3D");
     }
-    worlds_.push_back(world);
+    worlds_.push_back({world, world->queryLifetime_});
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -44,7 +45,7 @@ eve::Result<void> TargetingLineOfSightAdapter::removeWorld(World3D* world) {
         return failure<void>(eve::DiagnosticCode::InvalidArgument,
                              "Physics LOS cannot remove a null World3D");
     const auto before = worlds_.size();
-    worlds_.erase(std::remove(worlds_.begin(), worlds_.end(), world), worlds_.end());
+    std::erase_if(worlds_, [world](const RegisteredWorld& entry) { return entry.world == world; });
     const auto code = before == worlds_.size() ? eve::StatusCode::NoOp : eve::StatusCode::Applied;
     return eve::Result<void>::success(eve::Status::success(code));
 }
@@ -67,13 +68,17 @@ eve::Result<sensing::LineOfSightResult> TargetingLineOfSightAdapter::query(
                                                    "Physics LOS points must be finite");
 
     World3D* activeWorld = nullptr;
-    for (World3D* world : worlds_) {
-        if (!world || !world->isValid()) continue;
+    std::shared_ptr<const void> activeLifetime;
+    for (const RegisteredWorld& entry : worlds_) {
+        auto lifetime = entry.lifetime.lock();
+        World3D* world = entry.world;
+        if (!lifetime || !world || !world->isValid()) continue;
         if (activeWorld)
             return failure<sensing::LineOfSightResult>(
                 eve::DiagnosticCode::Conflict,
                 "Physics LOS has more than one valid active World3D");
         activeWorld = world;
+        activeLifetime = std::move(lifetime);
     }
     if (!activeWorld)
         return failure<sensing::LineOfSightResult>(

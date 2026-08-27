@@ -74,12 +74,13 @@ private:
 
 class CameraObstructionQueryImpl final : public eve::ICameraObstructionQuery {
 public:
-    void add(World3D* world) {
-        if (world && std::find(worlds_.begin(), worlds_.end(), world) == worlds_.end())
-            worlds_.push_back(world);
-    }
-    void remove(World3D* world) {
-        worlds_.erase(std::remove(worlds_.begin(), worlds_.end(), world), worlds_.end());
+    void add(World3D* world, std::weak_ptr<const void> lifetime) {
+        std::erase_if(worlds_,
+                      [](const RegisteredWorld& entry) { return entry.lifetime.expired(); });
+        const auto found = std::find_if(
+            worlds_.begin(), worlds_.end(),
+            [world](const RegisteredWorld& entry) { return entry.world == world; });
+        if (world && found == worlds_.end()) worlds_.push_back({world, std::move(lifetime)});
     }
 
     bool sphereCast(float fromX, float fromY, float fromZ, float toX, float toY, float toZ,
@@ -87,8 +88,10 @@ public:
                     eve::CameraObstructionHit* out) override {
         if (out) *out = eve::CameraObstructionHit{};
         if (!out) return false;
-        for (World3D* world : worlds_) {
-            if (!world || !world->isValid()) continue;
+        for (const RegisteredWorld& entry : worlds_) {
+            auto lifetime = entry.lifetime.lock();
+            World3D* world = entry.world;
+            if (!lifetime || !world || !world->isValid()) continue;
             CameraSphereHit3D hit;
             if (!world->sphereCast(fromX, fromY, fromZ, toX, toY, toZ, radius, maskBits,
                                    ignoredBodyId, &hit))
@@ -109,7 +112,12 @@ public:
     }
 
 private:
-    std::vector<World3D*> worlds_;
+    struct RegisteredWorld {
+        World3D* world = nullptr;
+        std::weak_ptr<const void> lifetime;
+    };
+
+    std::vector<RegisteredWorld> worlds_;
 };
 
 CameraObstructionQueryImpl& cameraObstructionQuery() {
@@ -132,13 +140,11 @@ void registerPhysicsCapabilities() {
     registerPhysicsArtifactProvider();
 }
 
-void registerCameraObstructionWorld(World3D* world) { cameraObstructionQuery().add(world); }
-void unregisterCameraObstructionWorld(World3D* world) { cameraObstructionQuery().remove(world); }
+void registerCameraObstructionWorld(World3D* world) {
+    if (world) cameraObstructionQuery().add(world, world->queryLifetime_);
+}
 eve::Result<void> registerTargetingLineOfSightWorld(World3D* world) {
     return targetingLineOfSightAdapter().addWorld(world);
-}
-eve::Result<void> unregisterTargetingLineOfSightWorld(World3D* world) {
-    return targetingLineOfSightAdapter().removeWorld(world);
 }
 
 }  // namespace eve::physics

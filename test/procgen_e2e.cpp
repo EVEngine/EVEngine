@@ -116,10 +116,16 @@ TEST_CASE("procgen.e2e.hexProvidersCommitQueryableObjects") {
     REQUIRE(graphics.find(persistentId(id)) != nullptr);
     CHECK_GT(graphics.find(persistentId(id))->positions.size(), std::size_t(0));
     REQUIRE(physics.find(persistentId(id)) != nullptr);
-    const auto bounds = physics.find(persistentId(id))->bounds;
-    const auto hit = physics.rayCast(persistentId(id), (bounds.minX + bounds.maxX) * .5f,
-                                     bounds.maxY + 10.f, (bounds.minZ + bounds.maxZ) * .5f,
-                                     0.f, -((bounds.maxY - bounds.minY) + 20.f), 0.f);
+    const auto* collider = physics.find(persistentId(id));
+    REQUIRE_GE(collider->indices.size(), std::size_t(3));
+    const auto vertex = [collider](std::size_t corner, std::size_t axis) {
+        return collider->vertices[std::size_t(collider->indices[corner]) * 3u + axis];
+    };
+    const float rayX   = (vertex(0, 0) + vertex(1, 0) + vertex(2, 0)) / 3.f;
+    const float rayZ   = (vertex(0, 2) + vertex(1, 2) + vertex(2, 2)) / 3.f;
+    const auto  bounds = collider->bounds;
+    const auto  hit    = physics.rayCast(persistentId(id), rayX, bounds.maxY + 10.f, rayZ, 0.f,
+                                         -((bounds.maxY - bounds.minY) + 20.f), 0.f);
     CHECK(hit.hit);
     CHECK(hit.fraction >= 0.f);
     CHECK(hit.fraction <= 1.f);
