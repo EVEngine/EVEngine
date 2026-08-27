@@ -3,8 +3,20 @@
 #include "common/Module.h"
 #include "common/SquirrelOwnership.h"
 #include "procgen/core/ProcgenCore.h"
+#include "procgen/Biome.h"
+#include "procgen/Grid2D.h"
+#include "procgen/MeshBuild.h"
 #include "procgen/OutputSpec.h"
 #include "procgen/Palette.h"
+#include "procgen/ParamSchema.h"
+#include "procgen/Params.h"
+#include "procgen/PointSet.h"
+#include "procgen/PointGraph.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/RuntimeGeneration.h"
+#include "procgen/ShapeGrammar.h"
+#include "procgen/SpatialData.h"
+#include "procgen/algorithms/LSystem.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/texture/CloudField.h"
@@ -55,6 +67,18 @@ struct ProcgenMeshBuildHandleTag {};
 struct ProcgenImageHandleTag {};
 /** @brief Handle domain for module-owned generated normal images. */
 struct ProcgenNormalImageHandleTag {};
+/** @brief Handle domain for module-owned spatial data. */
+struct ProcgenSpatialDataHandleTag {};
+/** @brief Handle domain for module-owned runtime-generation schedulers. */
+struct ProcgenRuntimeGenerationHandleTag {};
+/** @brief Handle domain for module-owned point graphs. */
+struct ProcgenPointGraphHandleTag {};
+/** @brief Handle domain for module-owned biome rules. */
+struct ProcgenBiomeRulesHandleTag {};
+/** @brief Handle domain for module-owned shape grammars. */
+struct ProcgenShapeGrammarHandleTag {};
+/** @brief Handle domain for module-owned L-system engines. */
+struct ProcgenLSystemHandleTag {};
 using ProcgenParamsHandleRef = eve::script::RuntimeHandleRef<ProcgenParamsHandleTag>;
 using ProcgenGridHandleRef = eve::script::RuntimeHandleRef<ProcgenGridHandleTag>;
 using ProcgenContextHandleRef = eve::script::RuntimeHandleRef<ProcgenContextHandleTag>;
@@ -68,6 +92,12 @@ using ProcgenPbrMaterialHandleRef = eve::script::RuntimeHandleRef<ProcgenPbrMate
 using ProcgenMeshBuildHandleRef = eve::script::RuntimeHandleRef<ProcgenMeshBuildHandleTag>;
 using ProcgenImageHandleRef = eve::script::RuntimeHandleRef<ProcgenImageHandleTag>;
 using ProcgenNormalImageHandleRef = eve::script::RuntimeHandleRef<ProcgenNormalImageHandleTag>;
+using ProcgenSpatialDataHandleRef = eve::script::RuntimeHandleRef<ProcgenSpatialDataHandleTag>;
+using ProcgenRuntimeGenerationHandleRef = eve::script::RuntimeHandleRef<ProcgenRuntimeGenerationHandleTag>;
+using ProcgenPointGraphHandleRef = eve::script::RuntimeHandleRef<ProcgenPointGraphHandleTag>;
+using ProcgenBiomeRulesHandleRef = eve::script::RuntimeHandleRef<ProcgenBiomeRulesHandleTag>;
+using ProcgenShapeGrammarHandleRef = eve::script::RuntimeHandleRef<ProcgenShapeGrammarHandleTag>;
+using ProcgenLSystemHandleRef = eve::script::RuntimeHandleRef<ProcgenLSystemHandleTag>;
 
 /**
  * @brief Procedural generation module.
@@ -152,6 +182,92 @@ public:
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> sampleSplineHandle(
         ProcgenPointSetHandleRef controlPoints, float spacing, uint32_t seed,
         float lateralJitter);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> poissonDiskHandle(
+        int width, int depth, float radius, uint32_t seed, int maxPoints);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> mergePointsHandle(
+        ProcgenPointSetHandleRef first, ProcgenPointSetHandleRef second);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> transformPointsHandle(
+        ProcgenPointSetHandleRef input, float translateX, float translateY, float translateZ,
+        float yawDegrees, float scaleX, float scaleY, float scaleZ);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterFloatAttributeHandle(
+        ProcgenPointSetHandleRef input, const std::string& name, float minValue, float maxValue,
+        bool invert);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterStringAttributeHandle(
+        ProcgenPointSetHandleRef input, const std::string& name, const std::string& value,
+        bool invert);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> densityCullHandle(
+        ProcgenPointSetHandleRef input, uint32_t seed, float multiplier);
+
+    // --- Spatial data and composable PCG domains ---
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> pointDataHandle(
+        ProcgenPointSetHandleRef points);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> boxVolumeHandle(
+        float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> sphereVolumeHandle(
+        float x, float y, float z, float radius);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> splineDataHandle(
+        ProcgenPointSetHandleRef controlPoints, float radius);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> heightfieldDataHandle(
+        ProcgenHeightmapHandleRef heightmap, float originX, float originZ, float cellSize,
+        float heightScale);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> unionSpatialHandle(
+        ProcgenSpatialDataHandleRef left, ProcgenSpatialDataHandleRef right);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> intersectSpatialHandle(
+        ProcgenSpatialDataHandleRef left, ProcgenSpatialDataHandleRef right);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> differenceSpatialHandle(
+        ProcgenSpatialDataHandleRef left, ProcgenSpatialDataHandleRef right);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> sampleSpatialHandle(
+        ProcgenSpatialDataHandleRef spatial, float spacing, uint32_t seed, float jitter);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterSpatialHandle(
+        ProcgenPointSetHandleRef input, ProcgenSpatialDataHandleRef spatial, bool invert);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> projectToSpatialHandle(
+        ProcgenPointSetHandleRef input, ProcgenSpatialDataHandleRef spatial);
+
+    [[nodiscard]] eve::Result<ProcgenRuntimeGenerationHandleRef> newRuntimeGenerationHandle(
+        uint32_t worldSeed);
+    [[nodiscard]] eve::Result<ProcgenPointGraphHandleRef> newPointGraphHandle();
+    [[nodiscard]] eve::Result<ProcgenBiomeRulesHandleRef> newBiomeRulesHandle();
+    [[nodiscard]] eve::Result<ProcgenShapeGrammarHandleRef> newShapeGrammarHandle();
+    [[nodiscard]] eve::Result<ProcgenLSystemHandleRef> newLSystemHandle();
+    [[nodiscard]] eve::script::Borrowed<SpatialData> resolveSpatialData(
+        ProcgenSpatialDataHandleRef reference) noexcept;
+    [[nodiscard]] eve::script::Borrowed<RuntimeGeneration> resolveRuntimeGeneration(
+        ProcgenRuntimeGenerationHandleRef reference) noexcept;
+    [[nodiscard]] eve::script::Borrowed<PointGraph> resolvePointGraph(
+        ProcgenPointGraphHandleRef reference) noexcept;
+    [[nodiscard]] eve::script::Borrowed<BiomeRules> resolveBiomeRules(
+        ProcgenBiomeRulesHandleRef reference) noexcept;
+    [[nodiscard]] eve::script::Borrowed<ShapeGrammar> resolveShapeGrammar(
+        ProcgenShapeGrammarHandleRef reference) noexcept;
+    [[nodiscard]] eve::script::Borrowed<LSystem> resolveLSystem(
+        ProcgenLSystemHandleRef reference) noexcept;
+    [[nodiscard]] eve::Result<void> release(ProcgenSpatialDataHandleRef reference);
+    [[nodiscard]] eve::Result<void> release(ProcgenRuntimeGenerationHandleRef reference);
+    [[nodiscard]] eve::Result<void> release(ProcgenPointGraphHandleRef reference);
+    [[nodiscard]] eve::Result<void> release(ProcgenBiomeRulesHandleRef reference);
+    [[nodiscard]] eve::Result<void> release(ProcgenShapeGrammarHandleRef reference);
+    [[nodiscard]] eve::Result<void> release(ProcgenLSystemHandleRef reference);
+    [[nodiscard]] bool isStale(ProcgenSpatialDataHandleRef reference) const noexcept;
+    [[nodiscard]] bool isStale(ProcgenRuntimeGenerationHandleRef reference) const noexcept;
+    [[nodiscard]] bool isStale(ProcgenPointGraphHandleRef reference) const noexcept;
+    [[nodiscard]] bool isStale(ProcgenBiomeRulesHandleRef reference) const noexcept;
+    [[nodiscard]] bool isStale(ProcgenShapeGrammarHandleRef reference) const noexcept;
+    [[nodiscard]] bool isStale(ProcgenLSystemHandleRef reference) const noexcept;
+
+    [[nodiscard]] eve::Result<void> publishInstances(
+        const std::string& batchId, ProcgenPointSetHandleRef points,
+        const std::string& assetAttribute, const std::string& defaultAsset);
+    [[nodiscard]] eve::Result<void> removeInstances(const std::string& batchId);
+    [[nodiscard]] eve::Result<void> publishCellInstances(
+        const std::string& prefix, const ProcgenCellRequest& request,
+        ProcgenPointSetHandleRef points, const std::string& assetAttribute,
+        const std::string& defaultAsset);
+    [[nodiscard]] eve::Result<void> removeCellInstances(
+        const std::string& prefix, const ProcgenCellRequest& request);
+    int getPublishedInstanceCount(const std::string& batchId) const;
+    int getPublishedCreatedCount(const std::string& batchId) const;
+    int getPublishedReusedCount(const std::string& batchId) const;
+    int getPublishedRemovedCount(const std::string& batchId) const;
     uint32_t  deriveSeed(uint32_t parent, const std::string& scope) const;
 
     // --- Atomic script rebuilds ---
@@ -506,6 +622,12 @@ private:
     eve::script::RuntimeObjectRegistry<Params, ProcgenParamsHandleTag> params_;
     eve::script::RuntimeObjectRegistry<Grid2D, ProcgenGridHandleTag> grids_;
     eve::script::RuntimeObjectRegistry<ProcgenContext, ProcgenContextHandleTag> contexts_;
+    eve::script::RuntimeObjectRegistry<SpatialData, ProcgenSpatialDataHandleTag> spatialData_;
+    eve::script::RuntimeObjectRegistry<RuntimeGeneration, ProcgenRuntimeGenerationHandleTag> runtimeGenerations_;
+    eve::script::RuntimeObjectRegistry<PointGraph, ProcgenPointGraphHandleTag> pointGraphs_;
+    eve::script::RuntimeObjectRegistry<BiomeRules, ProcgenBiomeRulesHandleTag> biomeRules_;
+    eve::script::RuntimeObjectRegistry<ShapeGrammar, ProcgenShapeGrammarHandleTag> shapeGrammars_;
+    eve::script::RuntimeObjectRegistry<LSystem, ProcgenLSystemHandleTag> lsystems_;
 };
 
 }  // namespace eve::procgen

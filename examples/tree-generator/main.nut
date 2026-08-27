@@ -1,15 +1,15 @@
 // Arbor Lab — interactive procedural tree recipe showcase.
 // R regenerate, 1/2 Low Poly/Realistic, A algorithm, L leaves, [/] density, C canopy.
 
-if (!("treeSeed" in getroottable())) treeSeed <- 31415;
-if (!("treeStyle" in getroottable())) treeStyle <- "lowpoly";
-if (!("treeAlgorithm" in getroottable())) treeAlgorithm <- "weberPenn";
-if (!("leafMode" in getroottable())) leafMode <- "cards";
-if (!("leafDensity" in getroottable())) leafDensity <- 0.65;
-if (!("treeMesh" in getroottable())) treeMesh <- null;
-if (!("treeObject" in getroottable())) treeObject <- null;
-if (!("treeCamera" in getroottable())) treeCamera <- null;
-if (!("treeYaw" in getroottable())) treeYaw <- 0.0;
+persist treeSeed = 31415
+persist treeStyle = "lowpoly"
+persist treeAlgorithm = "weberPenn"
+persist leafMode = "cards"
+persist leafDensity = 0.65
+persist treeMesh = null
+persist treeObject = null
+persist treeCamera = null
+persist treeYaw = 0.0
 function pressed(k) {
     return key_just_pressed(k);
 }

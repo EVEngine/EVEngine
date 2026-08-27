@@ -1,16 +1,16 @@
 // Procedural bushes crossing global height fog and two analytic local fog volumes.
 // 1/2/3/4 select fixed camera checks; V cycles views; F toggles all fog.
 
-if (!("bfCamera" in getroottable())) bfCamera <- null;
-if (!("bfFog" in getroottable())) bfFog <- null;
-if (!("bfObjects" in getroottable())) bfObjects <- [];
-if (!("bfVolumes" in getroottable())) bfVolumes <- [];
-if (!("bfView" in getroottable())) bfView <- 0;
-if (!("bfFogEnabled" in getroottable())) bfFogEnabled <- true;
-if (!("bfTexture" in getroottable())) bfTexture <- null;
-if (!("bfElapsed" in getroottable())) bfElapsed <- 0.0;
-if (!("bfCapturePending" in getroottable())) bfCapturePending <- false;
-if (!("bfCaptureName" in getroottable())) bfCaptureName <- "bush-fog-volumes.png";
+persist bfCamera = null
+persist bfFog = null
+persist bfObjects = []
+persist bfVolumes = []
+persist bfView = 0
+persist bfFogEnabled = true
+persist bfTexture = null
+persist bfElapsed = 0.0
+persist bfCapturePending = false
+persist bfCaptureName = "bush-fog-volumes.png"
 
 bfViews <- [
     { ex = 10.5, ey = 5.6, ez = 13.5, tx = 0.0, ty = 1.0, tz = -3.0 },

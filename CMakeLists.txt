@@ -1142,6 +1142,28 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-signal-handler.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Sixth patch: SDL2's Android sensor loop uses ALooper_pollAll, which the
+    # NDK 27+ headers mark unavailable (obsoleted in Android 1). Use the
+    # equivalent ALooper_pollOnce (same non-blocking semantics at timeout 0).
+    # This is upstream SDL's own fix for libsdl-org/SDL#9792 (the exact NDK-27
+    # build failure): commit 558630d "Use ALooper_pollOnce() instead of
+    # ALooper_pollAll()" notes the existing draining loop already handles all
+    # events, so no events are lost. SDL2 2.0.x never adopted it, hence the patch.
+    # The sensor looper is dedicated (not the Android UI message loop), so this
+    # cannot affect the main UI looper.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-android-alooper-pollonce.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Seventh patch: Binding Contract constraints describe the argument as a
+    # whole. Consume them at the expression's first factor so a string result
+    # does not reject numeric literals nested in concatenations or ternaries.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/squirrel-binding-contract-expression-scope.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which

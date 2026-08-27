@@ -6,6 +6,7 @@
 
 #include "common/Exception.h"
 #include "platform_event/PlatformEvent.h"
+#include "common/Profile.h"
 
 #include <box3d/box3d.h>
 
@@ -632,6 +633,7 @@ void World3D::forgetJoint(Joint3D *joint) {
 void World3D::update(float dt) { updateFull(dt, 4); }
 
 void World3D::updateFull(float dt, int subStepCount) {
+    EV_PROFILE_MODULE("physics", "World3D::update");
     auto legacyStep = makeLegacyStep(dt, simulationTick_);
     if (!legacyStep) {
         legacyStep.ignore("legacy World3D::updateFull cannot return a structured error");

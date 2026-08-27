@@ -155,7 +155,12 @@ public:
     std::vector<BindingContract> snapshot() const;
 
 private:
-    std::unordered_map<std::string, BindingContract> contracts_;
+    struct Storage {
+        std::unordered_map<std::string, BindingContract> contracts;
+    };
+
+    void                     ensureUnique();
+    std::shared_ptr<Storage> storage_ = std::make_shared<Storage>();
 };
 
 /** @brief Unified Runtime compiler facade for metadata, diagnostics, and module preparation. */
@@ -208,6 +213,7 @@ private:
     ssq::VM*                                        vm_;
     ScriptModuleResolver*                           modules_;
     BindingContractRegistry                         bindings_;
+    std::unordered_set<std::string>                 nativeGlobals_;
     std::unordered_set<std::string>                 annotations_;
     std::unordered_map<std::string, ScriptMetadata> metadata_;
 };

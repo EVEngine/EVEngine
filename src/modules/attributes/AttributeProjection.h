@@ -82,7 +82,7 @@ public:
     /** @brief Add to a canonical base value and advance the projection revision. */
     [[nodiscard]] Result<void> modifyBase(std::string_view attribute, double delta);
 
-    /** @brief Read a deterministic final value, or the supplied fallback when absent. */
+    /** @brief Read a deterministic final value, or the supplied default when absent. */
     [[nodiscard]] Result<double> getFinal(std::string_view attribute,
                                           double fallback = 0.0) const;
 

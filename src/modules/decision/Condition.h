@@ -92,7 +92,7 @@ enum class ConditionReasonCode : std::uint32_t {
 /**
  * @brief Return the stable lowercase spelling of a condition reason code.
  * @ownership Borrowed process-static text; callers must not free or modify it.
- * @nullable Never null; unknown numeric values use the stable fallback literal.
+ * @nullable Never null; unknown numeric values use the stable unknown-value literal.
  * @lifetime Process lifetime.
  * @thread Thread-safe and reentrant; no mutable state or callbacks are used.
  */
@@ -101,7 +101,7 @@ enum class ConditionReasonCode : std::uint32_t {
 /**
  * @brief Return the stable lowercase spelling of a condition node kind.
  * @ownership Borrowed process-static text; callers must not free or modify it.
- * @nullable Never null; unknown numeric values use the stable fallback literal.
+ * @nullable Never null; unknown numeric values use the stable unknown-value literal.
  * @lifetime Process lifetime.
  * @thread Thread-safe and reentrant; no mutable state or callbacks are used.
  */
@@ -110,7 +110,7 @@ enum class ConditionReasonCode : std::uint32_t {
 /**
  * @brief Return the stable lowercase spelling of a comparison operator.
  * @ownership Borrowed process-static text; callers must not free or modify it.
- * @nullable Never null; unknown numeric values use the stable fallback literal.
+ * @nullable Never null; unknown numeric values use the stable unknown-value literal.
  * @lifetime Process lifetime.
  * @thread Thread-safe and reentrant; no mutable state or callbacks are used.
  */

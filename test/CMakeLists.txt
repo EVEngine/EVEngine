@@ -33,6 +33,8 @@ file(GLOB all_test_cpp
   decal_script.cpp
   crowd.cpp
   crowd_script.cpp
+  profiler.cpp
+  profiler_script.cpp
   crashlog.cpp
   resource.cpp
   resource_account.cpp
@@ -161,6 +163,15 @@ file(GLOB all_test_cpp
   procgen_core_boundary.cpp
   procgen_schema_script.cpp
   procgen_pointset.cpp
+  procgen_lsystem.cpp
+  procgen_poisson.cpp
+  procgen_spatial_data.cpp
+  procgen_runtime_generation.cpp
+  procgen_scene_sink.cpp
+  procgen_point_graph.cpp
+  procgen_point_graph_stress.cpp
+  procgen_biome.cpp
+  procgen_shape_grammar.cpp
   urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
@@ -190,6 +201,7 @@ file(GLOB all_test_cpp
   shader.cpp
   hair.cpp
   grass.cpp
+  hd2d.cpp
   spritestack.cpp
   daynight.cpp
   weather.cpp
@@ -247,6 +259,7 @@ file(GLOB all_test_cpp
   transaction_participant.cpp
   rx.cpp
   runtime.cpp
+  language_index.cpp
   script_compiler.cpp
   script_config.cpp
   script_module.cpp
@@ -264,6 +277,7 @@ file(GLOB all_test_cpp
   editor_document_asset_v2.cpp
   editor_extension_v2.cpp
   editor_graph_material_v2.cpp
+  editor_pcg_graph.cpp
   editor_persistence_v2.cpp
   editor_property_v2.cpp
   editor_runtime_manifest_v2.cpp
@@ -356,6 +370,7 @@ file(GLOB all_test_scripts
   timer.nut
   decal.nut
   crowd.nut
+  profiler.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"

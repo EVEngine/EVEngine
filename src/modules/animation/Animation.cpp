@@ -28,6 +28,7 @@
 #include "animation/SpriteSheet.h"
 
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "graphics/Graphics.h"
 #include "graphics/Texture.h"
 #include "graphics/Mesh.h"
@@ -490,6 +491,7 @@ eve::Result<void> Animation::advance(const eve::SimulationStep& step) {
 }
 
 void Animation::update(float dt) {
+    EV_PROFILE_MODULE("animation", "Animation::update");
     auto duration = eve::Duration::fromSeconds(dt);
     if (!duration) {
         duration.ignore("legacy animation update received an invalid duration");

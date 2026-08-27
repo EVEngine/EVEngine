@@ -1632,7 +1632,9 @@ void Graphics::flushToSwapchain() {
     swapchainPass = {};
     const bool captured =
         screenReadbackEnabled ? recordSwapchainReadback(presentRecording.commandBuffer()) : false;
+    writeGpuTimestampEnd();
     presentRecording.end().submitAndPresent();
+    readGpuFrameTiming();
     presentRecording = {};
     if (captured) {
         hasPresentedFrame = true;

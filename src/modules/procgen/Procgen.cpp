@@ -1,6 +1,11 @@
 #include "procgen/Procgen.h"
 
 #include "common/SquirrelBinding.h"
+#include "common/Capability.h"
+#include "common/ProcgenSceneSink.h"
+#include "procgen/BiomeScript.h"
+#include "procgen/PointGraphScript.h"
+#include "procgen/ShapeGrammarScript.h"
 #include "procgen/ProcgenCapabilities.h"
 
 #include "image/ImageData.h"
@@ -26,8 +31,10 @@
 #include <mutex>
 #include <optional>
 #include <sstream>
+#include <stdexcept>
 #include <unordered_map>
 #include <utility>
+#include <unordered_set>
 #include <vector>
 
 namespace eve::procgen {
@@ -585,6 +592,246 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::sampleSplineHandle(
         samplePolylinePoints(*control, spacing, seed, lateralJitter)));
 }
 
+eve::Result<ProcgenPointSetHandleRef> Procgen::mergePointsHandle(
+    ProcgenPointSetHandleRef first, ProcgenPointSetHandleRef second) {
+    auto a = resolvePointSet(first);
+    auto b = resolvePointSet(second);
+    if (!a.isBound() || !b.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "mergePoints input handle is stale", "points");
+    Procgen* module = Procgen::create();
+    return ownProcgenObject(module->ownership_->points,
+                            std::make_unique<PointSet>(mergePointSets(*a, *b)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::transformPointsHandle(
+    ProcgenPointSetHandleRef input, float translateX, float translateY, float translateZ,
+    float yawDegrees, float scaleX, float scaleY, float scaleZ) {
+    auto view = resolvePointSet(input);
+    if (!view.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "transformPoints input handle is stale", "input");
+    Procgen* module = Procgen::create();
+    return ownProcgenObject(module->ownership_->points,
+                            std::make_unique<PointSet>(transformPointSet(
+                                *view, translateX, translateY, translateZ, yawDegrees,
+                                scaleX, scaleY, scaleZ)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::filterFloatAttributeHandle(
+    ProcgenPointSetHandleRef input, const std::string& name, float minValue, float maxValue,
+    bool invert) {
+    auto view = resolvePointSet(input);
+    if (!view.isBound() || name.empty())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            name.empty() ? eve::DiagnosticCode::InvalidArgument : eve::DiagnosticCode::StaleHandle,
+            "filterFloatAttribute requires a live input and attribute name", "input");
+    Procgen* module = Procgen::create();
+    return ownProcgenObject(module->ownership_->points,
+                            std::make_unique<PointSet>(filterPointFloatAttribute(
+                                *view, name, minValue, maxValue, invert)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::filterStringAttributeHandle(
+    ProcgenPointSetHandleRef input, const std::string& name, const std::string& value,
+    bool invert) {
+    auto view = resolvePointSet(input);
+    if (!view.isBound() || name.empty())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            name.empty() ? eve::DiagnosticCode::InvalidArgument : eve::DiagnosticCode::StaleHandle,
+            "filterStringAttribute requires a live input and attribute name", "input");
+    Procgen* module = Procgen::create();
+    return ownProcgenObject(module->ownership_->points,
+                            std::make_unique<PointSet>(filterPointStringAttribute(
+                                *view, name, value, invert)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::densityCullHandle(
+    ProcgenPointSetHandleRef input, uint32_t seed, float multiplier) {
+    auto view = resolvePointSet(input);
+    if (!view.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "densityCull input handle is stale", "input");
+    Procgen* module = Procgen::create();
+    return ownProcgenObject(module->ownership_->points,
+                            std::make_unique<PointSet>(densityCullPoints(*view, seed, multiplier)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::pointDataHandle(
+    ProcgenPointSetHandleRef points) {
+    auto view = resolvePointSet(points);
+    if (!view.isBound())
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "pointData point-set handle is stale", "points");
+    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::fromPoints(*view)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::boxVolumeHandle(
+    float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+    return spatialData_.emplace(std::make_unique<SpatialData>(
+        SpatialData::box(minX, minY, minZ, maxX, maxY, maxZ)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::sphereVolumeHandle(
+    float x, float y, float z, float radius) {
+    if (radius <= 0.f)
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            eve::DiagnosticCode::InvalidArgument, "sphereVolume radius must be positive", "radius");
+    return spatialData_.emplace(
+        std::make_unique<SpatialData>(SpatialData::sphere(x, y, z, radius)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::splineDataHandle(
+    ProcgenPointSetHandleRef controlPoints, float radius) {
+    auto view = resolvePointSet(controlPoints);
+    if (!view.isBound() || view->getCount() < 2 || radius < 0.f)
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
+            "splineData requires a live set with at least two points and non-negative radius",
+            "controlPoints");
+    return spatialData_.emplace(
+        std::make_unique<SpatialData>(SpatialData::spline(*view, radius)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::heightfieldDataHandle(
+    ProcgenHeightmapHandleRef heightmap, float originX, float originZ, float cellSize,
+    float heightScale) {
+    auto view = resolveHeightmap(heightmap);
+    if (!view.isBound() || view->getWidth() <= 0 || view->getHeight() <= 0 || cellSize <= 0.f)
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
+            "heightfieldData requires a live non-empty heightmap and positive cell size", "heightmap");
+    return spatialData_.emplace(std::make_unique<SpatialData>(
+        SpatialData::heightfield(*view, originX, originZ, cellSize, heightScale)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::unionSpatialHandle(
+    ProcgenSpatialDataHandleRef left, ProcgenSpatialDataHandleRef right) {
+    auto a = resolveSpatialData(left); auto b = resolveSpatialData(right);
+    if (!a.isBound() || !b.isBound())
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "unionSpatial input handle is stale", "spatial");
+    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::unite(*a, *b)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::intersectSpatialHandle(
+    ProcgenSpatialDataHandleRef left, ProcgenSpatialDataHandleRef right) {
+    auto a = resolveSpatialData(left); auto b = resolveSpatialData(right);
+    if (!a.isBound() || !b.isBound())
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "intersectSpatial input handle is stale", "spatial");
+    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::intersect(*a, *b)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::differenceSpatialHandle(
+    ProcgenSpatialDataHandleRef left, ProcgenSpatialDataHandleRef right) {
+    auto a = resolveSpatialData(left); auto b = resolveSpatialData(right);
+    if (!a.isBound() || !b.isBound())
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "differenceSpatial input handle is stale", "spatial");
+    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::subtract(*a, *b)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::sampleSpatialHandle(
+    ProcgenSpatialDataHandleRef spatial, float spacing, uint32_t seed, float jitter) {
+    auto view = resolveSpatialData(spatial);
+    if (!view.isBound() || spacing <= 0.f)
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
+            "sampleSpatial requires live spatial data and positive spacing", "spatial");
+    return ownership_->points.emplace(
+        std::make_unique<PointSet>(view->sample(spacing, seed, jitter)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::filterSpatialHandle(
+    ProcgenPointSetHandleRef input, ProcgenSpatialDataHandleRef spatial, bool invert) {
+    auto points = resolvePointSet(input); auto domain = resolveSpatialData(spatial);
+    if (!points.isBound() || !domain.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "filterSpatial input handle is stale", "input");
+    return ownership_->points.emplace(
+        std::make_unique<PointSet>(domain->filter(*points, invert)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::projectToSpatialHandle(
+    ProcgenPointSetHandleRef input, ProcgenSpatialDataHandleRef spatial) {
+    auto points = resolvePointSet(input); auto domain = resolveSpatialData(spatial);
+    if (!points.isBound() || !domain.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "projectToSpatial input handle is stale", "input");
+    return ownership_->points.emplace(
+        std::make_unique<PointSet>(domain->project(*points)));
+}
+
+eve::script::Borrowed<SpatialData> Procgen::resolveSpatialData(
+    ProcgenSpatialDataHandleRef reference) noexcept { return spatialData_.resolve(reference); }
+
+eve::Result<void> Procgen::release(ProcgenSpatialDataHandleRef reference) {
+    return spatialData_.erase(reference);
+}
+
+bool Procgen::isStale(ProcgenSpatialDataHandleRef reference) const noexcept {
+    return spatialData_.isStale(reference);
+}
+
+eve::Result<ProcgenRuntimeGenerationHandleRef> Procgen::newRuntimeGenerationHandle(
+    uint32_t worldSeed) {
+    return runtimeGenerations_.emplace(std::make_unique<RuntimeGeneration>(worldSeed));
+}
+
+eve::Result<ProcgenLSystemHandleRef> Procgen::newLSystemHandle() {
+    return lsystems_.emplace(std::make_unique<LSystem>());
+}
+
+eve::script::Borrowed<RuntimeGeneration> Procgen::resolveRuntimeGeneration(
+    ProcgenRuntimeGenerationHandleRef reference) noexcept {
+    return runtimeGenerations_.resolve(reference);
+}
+
+eve::script::Borrowed<PointGraph> Procgen::resolvePointGraph(
+    ProcgenPointGraphHandleRef reference) noexcept { return pointGraphs_.resolve(reference); }
+
+eve::script::Borrowed<BiomeRules> Procgen::resolveBiomeRules(
+    ProcgenBiomeRulesHandleRef reference) noexcept { return biomeRules_.resolve(reference); }
+
+eve::script::Borrowed<ShapeGrammar> Procgen::resolveShapeGrammar(
+    ProcgenShapeGrammarHandleRef reference) noexcept { return shapeGrammars_.resolve(reference); }
+
+eve::script::Borrowed<LSystem> Procgen::resolveLSystem(
+    ProcgenLSystemHandleRef reference) noexcept { return lsystems_.resolve(reference); }
+
+eve::Result<void> Procgen::release(ProcgenRuntimeGenerationHandleRef reference) {
+    return runtimeGenerations_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenPointGraphHandleRef reference) {
+    return pointGraphs_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenBiomeRulesHandleRef reference) {
+    return biomeRules_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenShapeGrammarHandleRef reference) {
+    return shapeGrammars_.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenLSystemHandleRef reference) {
+    return lsystems_.erase(reference);
+}
+
+bool Procgen::isStale(ProcgenRuntimeGenerationHandleRef reference) const noexcept {
+    return runtimeGenerations_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenPointGraphHandleRef reference) const noexcept {
+    return pointGraphs_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenBiomeRulesHandleRef reference) const noexcept {
+    return biomeRules_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenShapeGrammarHandleRef reference) const noexcept {
+    return shapeGrammars_.isStale(reference);
+}
+bool Procgen::isStale(ProcgenLSystemHandleRef reference) const noexcept {
+    return lsystems_.isStale(reference);
+}
+
 uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
     return eve::procgen::deriveSeed(parent, scope);
 }
@@ -593,6 +840,7 @@ eve::Result<ProcgenContextHandleRef> Procgen::beginSystemHandle(
     const std::string& name, uint32_t seed) {
     Procgen* module = Procgen::create();
     module->lastError_.clear();
+
     if (name.empty()) {
         module->lastError_ = "beginSystem: name is empty";
         return procgenBindingFailure<ProcgenContextHandleRef>(
@@ -1597,6 +1845,9 @@ void Procgen::expose(ssq::Table &table) {
     const HSQUIRRELVM vm = table.getHandle();
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
+    exposeBiomeRules(table);
+    exposePointGraph(table);
+    exposeShapeGrammar(table);
 
     auto recipe = table.addClass<RecipeDescriptor>(
         "ProcgenRecipeSchema",
@@ -1703,6 +1954,132 @@ void Procgen::expose(ssq::Table &table) {
     points.addFunc("setStringAttribute", &PointSet::setStringAttribute);
     points.addFunc("getStringAttribute", &PointSet::getStringAttribute);
     points.addFunc("hasStringAttribute", &PointSet::hasStringAttribute);
+
+auto lsystem = table.addClass<LSystem>(
+        "ProcgenLSystem", std::function<LSystem*()>([]() -> LSystem* { return nullptr; }), true);
+    lsystem.addFunc("setAxiom", &LSystem::setAxiom);
+    lsystem.addFunc("addRule", &LSystem::addRule);
+    lsystem.addFunc("addRules",
+                    [](LSystem* ls, char symbol, ssq::Array productions, ssq::Array weights) {
+                        ls->addRules(symbol, productions.convert<std::string>(),
+                                     weights.convert<float>());
+                    });
+    lsystem.addFunc("clearRules", &LSystem::clearRules);
+    lsystem.addFunc("setAngle", &LSystem::setAngle);
+    lsystem.addFunc("setStep", &LSystem::setStep);
+    lsystem.addFunc("setIterations", &LSystem::setIterations);
+    lsystem.addFunc("setSeed", &LSystem::setSeed);
+    lsystem.addFunc("getSeed", &LSystem::getSeed);
+    lsystem.addFunc("getIterations", &LSystem::getIterations);
+    lsystem.addFunc("setInitialHeading", &LSystem::setInitialHeading);
+    lsystem.addFunc("setBranchRadius", &LSystem::setBranchRadius);
+    lsystem.addFunc("setBranchRadiusFalloff", &LSystem::setBranchRadiusFalloff);
+    lsystem.addFunc("setLeafSize", &LSystem::setLeafSize);
+    lsystem.addFunc("setLeafSymbols", &LSystem::setLeafSymbols);
+    lsystem.addFunc("setTropism", &LSystem::setTropism);
+    lsystem.addFunc("derive", &LSystem::derive);
+    lsystem.addFunc("trace", [](LSystem* ls, PointSet* out) {
+        if (!out) throw std::invalid_argument("trace: null PointSet");
+        ls->toPointSet(*out);
+    });
+
+    auto spatial = table.addClass<SpatialData>(
+        "ProcgenSpatialData",
+        std::function<SpatialData*()>([]() -> SpatialData* { return nullptr; }), true);
+    spatial.addFunc("getKind", &SpatialData::getKind);
+    spatial.addFunc("contains", &SpatialData::contains);
+    spatial.addFunc("hasBounds", &SpatialData::hasBounds);
+    spatial.addFunc("getMinX", &SpatialData::getMinX);
+    spatial.addFunc("getMinY", &SpatialData::getMinY);
+    spatial.addFunc("getMinZ", &SpatialData::getMinZ);
+    spatial.addFunc("getMaxX", &SpatialData::getMaxX);
+    spatial.addFunc("getMaxY", &SpatialData::getMaxY);
+    spatial.addFunc("getMaxZ", &SpatialData::getMaxZ);
+
+    auto cellRequest = table.addClass<ProcgenCellRequest>(
+        "ProcgenCellRequest",
+        std::function<ProcgenCellRequest*()>([]() -> ProcgenCellRequest* { return nullptr; }),
+        true);
+    cellRequest.addFunc("getLevel", &ProcgenCellRequest::getLevel);
+    cellRequest.addFunc("getX", &ProcgenCellRequest::getX);
+    cellRequest.addFunc("getZ", &ProcgenCellRequest::getZ);
+    cellRequest.addFunc("getSeed", &ProcgenCellRequest::getSeed);
+    cellRequest.addFunc("getTicket", &ProcgenCellRequest::getTicket);
+    cellRequest.addFunc("getMinX", &ProcgenCellRequest::getMinX);
+    cellRequest.addFunc("getMinZ", &ProcgenCellRequest::getMinZ);
+    cellRequest.addFunc("getMaxX", &ProcgenCellRequest::getMaxX);
+    cellRequest.addFunc("getMaxZ", &ProcgenCellRequest::getMaxZ);
+
+    auto runtimeGeneration = table.addClass<RuntimeGeneration>(
+        "ProcgenRuntimeGeneration",
+        std::function<RuntimeGeneration*()>([]() -> RuntimeGeneration* { return nullptr; }), true);
+    runtimeGeneration.addFunc("clear", &RuntimeGeneration::clear);
+    runtimeGeneration.addFunc("addLevel", &RuntimeGeneration::addLevel);
+    runtimeGeneration.addFunc("getLevelCount", &RuntimeGeneration::getLevelCount);
+    runtimeGeneration.addFunc("getLevelCellSize", &RuntimeGeneration::getLevelCellSize);
+    runtimeGeneration.addFunc("getLevelGenerationRadius",
+                              &RuntimeGeneration::getLevelGenerationRadius);
+    runtimeGeneration.addFunc("getLevelCleanupRadius", &RuntimeGeneration::getLevelCleanupRadius);
+    runtimeGeneration.addFunc("setDirectionWeight", &RuntimeGeneration::setDirectionWeight);
+    runtimeGeneration.addFunc("getDirectionWeight", &RuntimeGeneration::getDirectionWeight);
+    runtimeGeneration.addFunc("setMaxGenerating", &RuntimeGeneration::setMaxGenerating);
+    runtimeGeneration.addFunc("getMaxGenerating", &RuntimeGeneration::getMaxGenerating);
+    runtimeGeneration.addFunc("setMaxActiveCells", &RuntimeGeneration::setMaxActiveCells);
+    runtimeGeneration.addFunc("getMaxActiveCells", &RuntimeGeneration::getMaxActiveCells);
+    runtimeGeneration.addFunc("setMaxPointsPerCell", &RuntimeGeneration::setMaxPointsPerCell);
+    runtimeGeneration.addFunc("getMaxPointsPerCell", &RuntimeGeneration::getMaxPointsPerCell);
+    runtimeGeneration.addFunc("setMaxResidentPoints", &RuntimeGeneration::setMaxResidentPoints);
+    runtimeGeneration.addFunc("getMaxResidentPoints", &RuntimeGeneration::getMaxResidentPoints);
+    runtimeGeneration.addFunc("getResidentPointCount",
+                              &RuntimeGeneration::getResidentPointCount);
+    runtimeGeneration.addFunc("getRejectedOutputCount",
+                              &RuntimeGeneration::getRejectedOutputCount);
+    runtimeGeneration.addFunc("trimToResidentPoints", &RuntimeGeneration::trimToResidentPoints);
+    runtimeGeneration.addFunc("setMaxGenerationRetries",
+                              &RuntimeGeneration::setMaxGenerationRetries);
+    runtimeGeneration.addFunc("getMaxGenerationRetries",
+                              &RuntimeGeneration::getMaxGenerationRetries);
+    runtimeGeneration.addFunc("setFrameTimeBudget", &RuntimeGeneration::setFrameTimeBudget);
+    runtimeGeneration.addFunc("getFrameTimeBudget", &RuntimeGeneration::getFrameTimeBudget);
+    runtimeGeneration.addFunc("beginFrame", &RuntimeGeneration::beginFrame);
+    runtimeGeneration.addFunc("updateSource", &RuntimeGeneration::updateSource);
+    runtimeGeneration.addFunc("setGenerationSource", &RuntimeGeneration::setGenerationSource);
+    runtimeGeneration.addFunc("removeGenerationSource",
+                              &RuntimeGeneration::removeGenerationSource);
+    runtimeGeneration.addFunc("clearGenerationSources",
+                              &RuntimeGeneration::clearGenerationSources);
+    runtimeGeneration.addFunc("getGenerationSourceCount",
+                              &RuntimeGeneration::getGenerationSourceCount);
+    runtimeGeneration.addFunc("getGenerationSourceId",
+                              &RuntimeGeneration::getGenerationSourceId);
+    runtimeGeneration.addFunc("refreshGenerationSources",
+                              &RuntimeGeneration::refreshGenerationSources);
+    runtimeGeneration.addFunc("setFrustumCulling", &RuntimeGeneration::setFrustumCulling);
+    runtimeGeneration.addFunc("isFrustumCullingEnabled",
+                              &RuntimeGeneration::isFrustumCullingEnabled);
+    runtimeGeneration.addFunc("getFrustumHalfAngle",
+                              &RuntimeGeneration::getFrustumHalfAngle);
+    runtimeGeneration.addFunc("getFrustumBehindRadius",
+                              &RuntimeGeneration::getFrustumBehindRadius);
+    runtimeGeneration.addFunc("getPendingGenerateCount",
+                              &RuntimeGeneration::getPendingGenerateCount);
+    runtimeGeneration.addFunc("getGeneratingCount", &RuntimeGeneration::getGeneratingCount);
+    runtimeGeneration.addFunc("getActiveCellCount", &RuntimeGeneration::getActiveCellCount);
+    runtimeGeneration.addFunc("getPendingCleanupCount",
+                              &RuntimeGeneration::getPendingCleanupCount);
+    runtimeGeneration.addFunc("getFailedCellCount", &RuntimeGeneration::getFailedCellCount);
+    runtimeGeneration.addFunc("retryFailedCells", &RuntimeGeneration::retryFailedCells);
+    runtimeGeneration.addFunc("nextGenerate", &RuntimeGeneration::nextGenerate);
+    runtimeGeneration.addFunc("nextCleanup", &RuntimeGeneration::nextCleanup);
+    runtimeGeneration.addFunc("completeGeneration", &RuntimeGeneration::completeGeneration);
+    runtimeGeneration.addFunc("failGeneration", &RuntimeGeneration::failGeneration);
+    runtimeGeneration.addFunc("completeCleanup", &RuntimeGeneration::completeCleanup);
+    runtimeGeneration.addFunc("hasCell", &RuntimeGeneration::hasCell);
+    runtimeGeneration.addFunc("getCellOutput", &RuntimeGeneration::getCellOutput);
+    runtimeGeneration.addFunc("getCellRevision", &RuntimeGeneration::getCellRevision);
+    runtimeGeneration.addFunc("serializeCell", &RuntimeGeneration::serializeCell);
+    runtimeGeneration.addFunc("deserializeCell", &RuntimeGeneration::deserializeCell);
+    runtimeGeneration.addFunc("debugReport", &RuntimeGeneration::debugReport);
 
     auto context = table.addClass<ProcgenContext>(
         "ProcgenContext",

@@ -4,15 +4,18 @@
 // Textures are CC0 images bundled under assets/ (see ATTRIBUTION.md).
 // Run: make run/win32-debug GAME=examples/linear-structures
 
-if (!("structures" in getroottable())) structures <- [];
-if (!("active" in getroottable())) active <- 0;
-if (!("segments" in getroottable())) segments <- 6;
-if (!("segLength" in getroottable())) segLength <- 2.0;
-if (!("autoSpin" in getroottable())) autoSpin <- true;
-if (!("yaw" in getroottable())) yaw <- 0.0;
-if (!("camYaw" in getroottable())) camYaw <- 0.0;
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("rWasDown" in getroottable())) rWasDown <- false;
+persist structures = []
+persist active = 0
+persist segments = 6
+persist segLength = 2.0
+persist autoSpin = true
+persist yaw = 0.0
+persist camYaw = 0.0
+persist uiReady = false
+persist rWasDown = false
+persist tabWas = false
+persist plusWas = false
+persist minusWas = false
 
 local STRUCT_RECIPES = [
     { id = "mesh.fence",       file = "assets/wood.jpg",  tex = "tex.soil",  tint = { r=1.0, g=0.92, b=0.78 } },
@@ -175,18 +178,18 @@ eve_update = function(dt) {
     }
 
     local tabDown = keyboard.isDown("tab");
-    local tabPressed = tabDown && !("tabWas" in getroottable() ? tabWas : false);
-    tabWas <- tabDown;
+    local tabPressed = tabDown && !tabWas;
+    tabWas = tabDown;
     if (tabPressed) { active = (active + 1) % STRUCT_RECIPES.len(); rebuild(); }
 
     local plus = keyboard.isDown("plus") || keyboard.isDown("equals");
-    local wasPlus = ("plusWas" in getroottable() ? plusWas : false);
-    plusWas <- plus;
+    local wasPlus = plusWas;
+    plusWas = plus;
     if (plus && !wasPlus) { segments = segments + 1; rebuild(); }
 
     local minus = keyboard.isDown("minus");
-    local wasMinus = ("minusWas" in getroottable() ? minusWas : false);
-    minusWas <- minus;
+    local wasMinus = minusWas;
+    minusWas = minus;
     if (minus && !wasMinus) { if (segments > 1) { segments = segments - 1; rebuild(); } }
 };
 

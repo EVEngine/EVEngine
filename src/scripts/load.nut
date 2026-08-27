@@ -409,7 +409,14 @@ function soft_reload_scripts() {
 // eve_asset_reload hook. Shared by local watch and remote sync.
 function handle_change(p) {
     if (path_endswith(p, ".nut")) {
-        track_script(p);
+        local isModule = false;
+        try {
+            if ("reloadScriptModule" in eve) isModule = eve.reloadScriptModule(p);
+        } catch (e) {
+            report_reload_failure("module hot-reload failed: " + p + ": " + e);
+            return;
+        }
+        if (!isModule) track_script(p);
         soft_reload_scripts();
         return;
     }
@@ -434,7 +441,7 @@ function handle_change(p) {
 function poll_hot_reload() {
     if (!config.hotReload) return;
     if (!has_module("fs")) return;
-    local needScripts = false;
+    local scripts = [];
     local assets = [];
     while (true) {
         local kind = fs.pollWatch();
@@ -451,14 +458,24 @@ function poll_hot_reload() {
             }
         }
         if (path_endswith(p, ".nut")) {
-            track_script(p);
-            needScripts = true;
+            scripts.append(p);
         } else {
             assets.append(p);
         }
     }
-    if (needScripts)
+    if (scripts.len() > 0) {
+        foreach (p in scripts) {
+            local isModule = false;
+            try {
+                if ("reloadScriptModule" in eve) isModule = eve.reloadScriptModule(p);
+            } catch (e) {
+                report_reload_failure("module hot-reload failed: " + p + ": " + e);
+                return;
+            }
+            if (!isModule) track_script(p);
+        }
         soft_reload_scripts();
+    }
     foreach (p in assets) {
         handle_change(p);
     }

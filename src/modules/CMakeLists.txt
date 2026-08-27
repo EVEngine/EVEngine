@@ -25,6 +25,14 @@ if(NOT _has_scene)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# editor/EditorPcgGraph.cpp is the optional bridge to procgen PointGraph.
+eve_module_enabled(procgen _has_procgen)
+if(NOT _has_procgen)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorPcgGraph.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
 # --- create every enabled module -------------------------------------------
 
 foreach(_mod IN LISTS EVE_ENABLED_MODULES)

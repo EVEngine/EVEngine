@@ -1,9 +1,9 @@
-if (!("hexWorld" in getroottable())) hexWorld <- null;
-if (!("hexCamera" in getroottable())) hexCamera <- null;
-if (!("hexYaw" in getroottable())) hexYaw <- 0.72;
-if (!("hexPitch" in getroottable())) hexPitch <- 0.62;
-if (!("hexSeed" in getroottable())) hexSeed <- 20260825;
-if (!("hexTime" in getroottable())) hexTime <- 0.0;
+persist hexWorld = null
+persist hexCamera = null
+persist hexYaw = 0.72
+persist hexPitch = 0.62
+persist hexSeed = 20260825
+persist hexTime = 0.0
 
 function readText(path) {
     local f=file(path,"r"); if(f==null) return null;

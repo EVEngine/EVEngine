@@ -1,6 +1,7 @@
 #include "crowd/Crowd.h"
 
 #include "common/Exception.h"
+#include "common/Profile.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -663,6 +664,7 @@ void Crowd::setResolveOverlaps(bool enable) { impl_->resolveOverlaps = enable; }
 void Crowd::setClampToField(bool enable) { impl_->clampToField = enable; }
 
 void Crowd::step(float dt) {
+    EV_PROFILE_MODULE("crowd", "Crowd::step");
     if (dt <= 0.f) return;
     impl_->simTime += dt;
     impl_->rebuildGrid();

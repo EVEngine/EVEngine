@@ -83,6 +83,8 @@ public:
     void invalidate(std::string_view canonicalUri);
     /** @brief Transactionally reloads one module, retaining the prior generation on failure. */
     void reload(std::string_view canonicalUri);
+    /** @brief Transactionally reloads a module and every cached module that imports it. */
+    std::vector<std::string> reloadAffected(std::string_view canonicalUri);
     /** @brief Returns canonical direct dependencies for an importer. */
     std::vector<std::string> dependencies(std::string_view importerUri) const;
     /** @brief Returns canonical importers that directly depend on a module. */

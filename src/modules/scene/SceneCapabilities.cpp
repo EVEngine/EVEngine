@@ -1,4 +1,5 @@
 #include "common/Capability.h"
+#include "common/ProcgenSceneSink.h"
 #include "common/SceneQuery.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
@@ -7,6 +8,8 @@
 #include <cstdint>
 #include <string>
 #include <utility>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace eve::scene {
@@ -149,11 +152,116 @@ public:
     void syncTransforms() override { TransformSystem::updateAll(); }
 };
 
+class ProcgenSceneSinkImpl final : public eve::IProcgenSceneSink {
+public:
+    bool applyBatch(const std::string& batchId,
+                    const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+        if (batchId.empty()) return false;
+        SceneHost* host = hostByName(hostName(batchId));
+        if (!host) host = borrowSceneResult(SceneHost::createHost(hostName(batchId)));
+        if (!host) return false;
+
+        NodeDesc root;
+        root.id   = "pcg-root";
+        root.key  = "pcg-root";
+        root.name = batchId;
+        root.tags = {"pcg", "pcg.batch"};
+        root.children.reserve(instances.size());
+        for (const auto& instance : instances) {
+            NodeDesc child;
+            child.id   = instance.id;
+            child.key  = instance.id;
+            child.name = instance.asset;
+            child.x    = instance.x;
+            child.y    = instance.y;
+            child.z    = instance.z;
+            child.yaw  = instance.yaw;
+            child.sx   = instance.scaleX;
+            child.sy   = instance.scaleY;
+            child.sz   = instance.scaleZ;
+            child.tags = {"pcg", "pcg.instance"};
+            if (!instance.asset.empty()) child.tags.push_back("pcg.asset:" + instance.asset);
+            root.children.push_back(std::move(child));
+        }
+        std::unordered_set<std::string> nextIds;
+        nextIds.reserve(instances.size());
+        for (const auto& instance : instances) nextIds.insert(instance.id);
+        const auto previous = ids_.find(batchId);
+        const auto& previousIds = previous == ids_.end() ? emptyIds_ : previous->second;
+        Stats stats;
+        for (const auto& id : nextIds) {
+            if (previousIds.find(id) == previousIds.end()) ++stats.created;
+            else ++stats.reused;
+        }
+        for (const auto& id : previousIds) {
+            if (nextIds.find(id) == nextIds.end()) ++stats.removed;
+        }
+
+        host->setVisible(true);
+        host->setTreeReconcile(std::move(root));
+        TransformSystem::updateHost(host);
+        counts_[batchId] = int(instances.size());
+        ids_[batchId]    = std::move(nextIds);
+        stats_[batchId]  = stats;
+        return true;
+    }
+
+    bool removeBatch(const std::string& batchId) override {
+        SceneHost* host = hostByName(hostName(batchId));
+        if (!host) return false;
+        NodeDesc root;
+        root.id   = "pcg-root";
+        root.key  = "pcg-root";
+        root.name = batchId;
+        root.tags = {"pcg", "pcg.batch"};
+        host->setTree(std::move(root));
+        host->setVisible(false);
+        Stats stats;
+        const auto ids = ids_.find(batchId);
+        if (ids != ids_.end()) stats.removed = int(ids->second.size());
+        stats_[batchId] = stats;
+        counts_.erase(batchId);
+        ids_.erase(batchId);
+        return true;
+    }
+
+    int instanceCount(const std::string& batchId) const override {
+        const auto found = counts_.find(batchId);
+        return found == counts_.end() ? 0 : found->second;
+    }
+    int lastCreatedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.created;
+    }
+    int lastReusedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.reused;
+    }
+    int lastRemovedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.removed;
+    }
+
+private:
+    struct Stats {
+        int created = 0;
+        int reused  = 0;
+        int removed = 0;
+    };
+    static std::string hostName(const std::string& batchId) { return "__pcg/" + batchId; }
+    const std::unordered_set<std::string> emptyIds_;
+    std::unordered_map<std::string, int> counts_;
+    std::unordered_map<std::string, std::unordered_set<std::string>> ids_;
+    std::unordered_map<std::string, Stats> stats_;
+};
+
 }  // namespace
 
 void registerSceneCapabilities() {
     static SceneQueryImpl impl;
+    static ProcgenSceneSinkImpl procgenSink;
     eve::cap::provide<eve::ISceneQuery>(&impl);
+    eve::cap::provide<eve::IProcgenSceneSink>(&procgenSink);
 }
 
 }  // namespace eve::scene

@@ -6,15 +6,18 @@
 //   - cinematic   过场（一组命名视角之间平滑自动切换）
 // 运行：make run/win32-debug GAME=examples/camera-controllers
 
-if (!("players" in getroottable())) players <- [];
-if (!("markers" in getroottable())) markers <- [];
-if (!("ctrl" in getroottable())) ctrl <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("mode" in getroottable())) mode <- "follow";
-if (!("spin" in getroottable())) spin <- true;
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("animT" in getroottable())) animT <- 0.0;
-if (!("statusWas" in getroottable())) statusWas <- "";
+persist players = []
+persist markers = []
+persist ctrl = null
+persist cam = null
+persist mode = "follow"
+persist spin = true
+persist uiReady = false
+persist animT = 0.0
+persist statusWas = ""
+persist spinWas = false
+persist fpYaw = 0.0
+persist fpPitch = 0.0
 
 local MODES = ["follow", "orbit", "topdown", "firstperson", "cinematic"];
 
@@ -178,8 +181,8 @@ eve_update = function(dt) {
 
     // 空格切换自动盘旋（orbit）
     local space = keyboard.isDown("Space");
-    local spinPressed = space && !("spinWas" in getroottable() ? spinWas : false);
-    spinWas <- space;
+    local spinPressed = space && !spinWas;
+    spinWas = space;
     if (spinPressed) {
         spin = !spin;
         ctrl.setOrbitSpeed(spin ? 20.0 : 0.0);
@@ -187,8 +190,6 @@ eve_update = function(dt) {
 
     // firstperson：方向键调整朝向
     if (mode == "firstperson") {
-        if (!("fpYaw" in getroottable())) fpYaw <- 0.0;
-        if (!("fpPitch" in getroottable())) fpPitch <- 0.0;
         if (keyboard.isDown("left"))  fpYaw = fpYaw - 90.0 * dt;
         if (keyboard.isDown("right")) fpYaw = fpYaw + 90.0 * dt;
         if (keyboard.isDown("up"))    fpPitch = fpPitch + 90.0 * dt;

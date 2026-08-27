@@ -3,15 +3,15 @@
 // The default texture is derived from Kenney's CC0 mini-forest colormap
 // (assets/bush_atlas.png); press T to reload it from disk at any time.
 
-if (!("bushSeed" in getroottable())) bushSeed <- 20260815;
-if (!("bushStyle" in getroottable())) bushStyle <- "mound";
-if (!("bushLeafMode" in getroottable())) bushLeafMode <- "mixed";
-if (!("bushDensity" in getroottable())) bushDensity <- 0.62;
-if (!("bushMesh" in getroottable())) bushMesh <- null;
-if (!("bushObject" in getroottable())) bushObject <- null;
-if (!("bushTexture" in getroottable())) bushTexture <- null;
-if (!("bushCamera" in getroottable())) bushCamera <- null;
-if (!("bushYaw" in getroottable())) bushYaw <- 0.0;
+persist bushSeed = 20260815
+persist bushStyle = "mound"
+persist bushLeafMode = "mixed"
+persist bushDensity = 0.62
+persist bushMesh = null
+persist bushObject = null
+persist bushTexture = null
+persist bushCamera = null
+persist bushYaw = 0.0
 function pressed(k) {
     return key_just_pressed(k);
 }

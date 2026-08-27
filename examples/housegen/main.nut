@@ -1,6 +1,6 @@
 // Runtime API smoke example. Replace model paths in the JSON with converted CC0 GLB assets.
-if (!("housegen" in getroottable())) housegen <- null;
-if (!("layout" in getroottable())) layout <- null;
+persist housegen = null
+persist layout = null
 
 eve_init = function() {
     housegen = eve.HouseGen();

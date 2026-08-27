@@ -13,16 +13,16 @@
 // 运行： make run/<platform>-debug GAME=examples/cardgame
 // ============================================================================
 
-if (!("card" in getroottable())) card <- null;
-if (!("playerCfg" in getroottable())) playerCfg <- null;
-if (!("enemyCfg" in getroottable())) enemyCfg <- null;
-if (!("mana" in getroottable())) mana <- 10;
-if (!("played" in getroottable())) played <- 0;
-if (!("discarded" in getroottable())) discarded <- 0;
-if (!("deckRemaining" in getroottable())) deckRemaining <- 0;
-if (!("selected" in getroottable())) selected <- null;
-if (!("logLines" in getroottable())) logLines <- [];
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
+persist card = null
+persist playerCfg = null
+persist enemyCfg = null
+persist mana = 10
+persist played = 0
+persist discarded = 0
+persist deckRemaining = 0
+persist selected = null
+persist logLines = []
+persist uiBuilt = false
 
 local defIds = ["flame.element", "frost.guard", "stone.golem", "jungle.drake",
                 "shadow.assassin", "iron.knight", "fireball", "healing.light", "time.warp"];

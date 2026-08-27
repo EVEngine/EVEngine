@@ -40,7 +40,9 @@
 #include "window/Window.h"
 
 #include "common/ECS.h"
+#include "common/Capability.h"
 #include "common/Module.h"
+#include "common/ProcgenSceneSink.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -238,6 +240,61 @@ TEST_CASE("Scene.identity.mountFindAndOwnershipContracts") {
     auto object = SceneObject::createObject("checked", "child");
     REQUIRE(object.ok());
     CHECK(object.value() != nullptr);
+}
+
+TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
+    Scene *mod = Scene::create();
+    auto *sink = eve::cap::query<eve::IProcgenSceneSink>();
+    REQUIRE(sink != nullptr);
+
+    std::vector<eve::ProcgenInstanceDesc> instances(2);
+    instances[0].id     = "tree-1";
+    instances[0].asset  = "oak";
+    instances[0].x      = 3.f;
+    instances[0].scaleY = 2.f;
+    instances[1].id     = "rock-2";
+    instances[1].asset  = "granite";
+    instances[1].z      = 8.f;
+    CHECK(sink->applyBatch("biome/0/0", instances));
+    CHECK_EQ(sink->instanceCount("biome/0/0"), 2);
+    CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 2);
+    CHECK_EQ(sink->lastReusedCount("biome/0/0"), 0);
+
+    auto hostResult = mod->findHost("__pcg/biome/0/0");
+    REQUIRE(hostResult.ok());
+    SceneHost *host = hostResult.value();
+    REQUIRE(host != nullptr);
+    CHECK_EQ(host->getNodeCount(), 3);
+    auto treeResult = host->findById("tree-1");
+    REQUIRE(treeResult.ok());
+    SceneNode *tree = treeResult.value();
+    REQUIRE(tree != nullptr);
+    CHECK(approxEq(tree->x, 3.f));
+    CHECK(approxEq(tree->sy, 2.f));
+    CHECK(host->hasTag(tree, "pcg.asset:oak"));
+    auto *pooledRenderable = eve::graphics::Renderable3D::create();
+    REQUIRE(host->linkRenderable3D("tree-1", pooledRenderable));
+
+    instances.resize(1);
+    instances[0].x = 7.f;
+    CHECK(sink->applyBatch("biome/0/0", instances));
+    CHECK_EQ(sink->instanceCount("biome/0/0"), 1);
+    CHECK_EQ(host->getNodeCount(), 2);
+    auto updatedTreeResult = host->findById("tree-1");
+    REQUIRE(updatedTreeResult.ok());
+    CHECK(approxEq(updatedTreeResult.value()->x, 7.f));
+    auto removedRockResult = host->findById("rock-2");
+    CHECK(!removedRockResult.ok());
+    CHECK_EQ(host->linkCount("tree-1"), 1);
+    CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 0);
+    CHECK_EQ(sink->lastReusedCount("biome/0/0"), 1);
+    CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
+
+    CHECK(sink->removeBatch("biome/0/0"));
+    CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
+    ecs::DestroyEntity(pooledRenderable);
+    CHECK_EQ(sink->instanceCount("biome/0/0"), 0);
+    CHECK_EQ(host->getNodeCount(), 1);
 }
 
 TEST_CASE("Scene.link.syncRenderable3DWorld") {

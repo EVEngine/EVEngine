@@ -19,29 +19,29 @@
 // Art: dungeon tileset is CC0 by "Buch" (OpenGameArt). The generated Grid2D
 // is translated into atlas GIDs and rendered by map.TileLayer.
 
-if (!("gen" in getroottable())) gen <- null;
-if (!("seed" in getroottable())) seed <- 20260815;
-if (!("roomCount" in getroottable())) roomCount <- 9;
-if (!("corridorStyle" in getroottable())) corridorStyle <- "l";
-if (!("floorPattern" in getroottable())) floorPattern <- "brick";
-if (!("decorSet" in getroottable())) decorSet <- "mixed";
-if (!("decorDensity" in getroottable())) decorDensity <- 0.10;
-if (!("view3D" in getroottable())) view3D <- false;
-if (!("wallHeight" in getroottable())) wallHeight <- 5.0;
-if (!("showTiles" in getroottable())) showTiles <- false;
-if (!("tileTex" in getroottable())) tileTex <- null;
-if (!("groundTex" in getroottable())) groundTex <- null;
-if (!("dungeonLayer" in getroottable())) dungeonLayer <- null;
-if (!("decorLayer" in getroottable())) decorLayer <- null;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("info" in getroottable())) info <- "";
-if (!("objInfo" in getroottable())) objInfo <- "";
+persist gen = null
+persist seed = 20260815
+persist roomCount = 9
+persist corridorStyle = "l"
+persist floorPattern = "brick"
+persist decorSet = "mixed"
+persist decorDensity = 0.10
+persist view3D = false
+persist wallHeight = 5.0
+persist showTiles = false
+persist tileTex = null
+persist groundTex = null
+persist dungeonLayer = null
+persist decorLayer = null
+persist prevKeys = {}
+persist info = ""
+persist objInfo = ""
 
-if (!("TILE" in getroottable())) TILE <- 16.0;
-if (!("MAP_W" in getroottable())) MAP_W <- 26;
-if (!("MAP_H" in getroottable())) MAP_H <- 22;
-if (!("BASE_X" in getroottable())) BASE_X <- 300.0;
-if (!("BASE_Y" in getroottable())) BASE_Y <- 112.0;
+persist TILE = 16.0
+persist MAP_W = 26
+persist MAP_H = 22
+persist BASE_X = 300.0
+persist BASE_Y = 112.0
 
 function pressed(name) {
     local slot = "key_" + name;

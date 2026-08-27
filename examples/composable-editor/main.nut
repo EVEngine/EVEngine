@@ -46,8 +46,7 @@ class WorldEditorVM {
     status = "Workspace composed from project descriptors"
 }
 
-state <- persist("composableEditor", function() {
-    return {
+persist state = {
         workspace = null
         session = null
         vm = null
@@ -88,8 +87,7 @@ state <- persist("composableEditor", function() {
         lastTargetRevision = 0
         frameCount = 0
         screenshotSaved = false
-    };
-});
+}
 
 materials <- {
     grass = { r=0.24, g=0.46, b=0.22, metallic=0.0, roughness=0.92 },

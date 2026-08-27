@@ -1,20 +1,20 @@
 // Sky Lab — interactive procedural skyscraper recipe showcase.
 // R regenerate, 1-4 fewer/more tiers, W window density, S spire toggle, T facade texture.
 
-if (!("towerSeed" in getroottable())) towerSeed <- 2026;
-if (!("tower" in getroottable())) tower <- null;
-if (!("camera" in getroottable())) camera <- null;
-if (!("tiers" in getroottable())) tiers <- 6;
-if (!("windowCols" in getroottable())) windowCols <- 6;
-if (!("windowRows" in getroottable())) windowRows <- 5;
-if (!("spireHeight" in getroottable())) spireHeight <- 5.0;
-if (!("setback" in getroottable())) setback <- 0.08;
-if (!("facadeTex" in getroottable())) facadeTex <- null;
-if (!("texName" in getroottable())) texName <- "tex.stone";
-if (!("texRecipes" in getroottable())) texRecipes <- ["tex.stone", "tex.marble", "tex.soil", "tex.water", "tex.sky_cloud"];
-if (!("texIndex" in getroottable())) texIndex <- 0;
-if (!("yaw" in getroottable())) yaw <- 0.0;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
+persist towerSeed = 2026
+persist tower = null
+persist camera = null
+persist tiers = 6
+persist windowCols = 6
+persist windowRows = 5
+persist spireHeight = 5.0
+persist setback = 0.08
+persist facadeTex = null
+persist texName = "tex.stone"
+persist texRecipes = ["tex.stone", "tex.marble", "tex.soil", "tex.water", "tex.sky_cloud"]
+persist texIndex = 0
+persist yaw = 0.0
+persist prevKeys = {}
 
 function pressed(k) {
     return key_just_pressed(k);

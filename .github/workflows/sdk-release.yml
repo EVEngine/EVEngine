@@ -41,7 +41,9 @@ env:
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
   VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
-  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '26.1.10909125' }}
+  # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
+  # images (27.3.13750724), so setup-android downloads nothing extra.
+  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
   ANDROID_API: ${{ vars.ANDROID_API || '34' }}
 
 jobs:
@@ -75,6 +77,9 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
           cache: true
+          # Release refs are one-shot cache scopes. Restore a long-lived cache
+          # when available, but do not create a copy that no later run can use.
+          cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan (SwiftShader, best-effort)
@@ -220,6 +225,7 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           # Keep full macOS tree so MoltenVK remains available.
           cache: true
+          cache_save_if: false
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -280,6 +286,7 @@ jobs:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           # Keep full macOS tree so MoltenVK / iOS xcframework remain available.
           cache: true
+          cache_save_if: false
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -380,6 +387,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe, best-effort)
@@ -545,6 +553,7 @@ jobs:
           install_runtime: true
           install_swiftshader: true
           cache: true
+          cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
@@ -728,6 +737,7 @@ jobs:
           install_runtime: true
           install_swiftshader: true
           cache: true
+          cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
@@ -902,6 +912,7 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: false
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 

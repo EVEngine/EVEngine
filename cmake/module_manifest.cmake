@@ -84,6 +84,13 @@ eve_declare_module(NAME timer REQUIRED LAYER 0 SCRIPT Timer SLOT timer
 eve_declare_module(NAME system LAYER 0 SCRIPT System SLOT system
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
+# Profiler: built-in engine-wide profiler. Scoped zones (common/Profile.h) are
+# sprinkled across the core hot systems (physics, animation, particles, audio,
+# ui, scene, map, crowd, event, graphics passes) and aggregated per frame into a
+# per-module/per-zone call tree with self/total time; GPU frame time comes from
+# Vulkan timestamp queries. Zero overhead when disabled.
+eve_declare_module(NAME profiler LAYER 0 SCRIPT Profiler SLOT profiler
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME thread LAYER 0 SCRIPT Thread SLOT thread
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
@@ -336,7 +343,7 @@ eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
                    DEPS gpgpu graphics physics
                    GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
-                   DEPS graphics image map transaction
+                   DEPS gpgpu graphics image map transaction
                    GROUP 3d)
 # L5 -- RTS domain composition profile. Provider modules remain behind typed
 # links; these are the direct implementation dependencies of the profile.
@@ -350,6 +357,12 @@ eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    GROUP 3d web)
 eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
                    DEPS data gpgpu graphics
+                   GROUP 3d)
+# HD-2D: extrudes a 2D map::TileLayer into a 3D terrain mesh (TileMap3D) and
+# renders 2D sprite sheets / characters as camera-facing 3D billboards
+# (Sprite3D) via the ECS Renderable3D forward path.
+eve_declare_module(NAME hd2d LIB EVHd2D LAYER 5 SCRIPT Hd2D SLOT hd2d
+                   DEPS graphics map
                    GROUP 3d)
 # L6 -- orchestration
 eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow

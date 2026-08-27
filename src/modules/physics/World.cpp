@@ -1,10 +1,11 @@
-#include "physics/World.h"
+﻿#include "physics/World.h"
 #include "physics/Body.h"
 #include "physics/Fixture.h"
 #include "physics/SimulationBackend.h"
 
 #include "common/Exception.h"
 #include "platform_event/PlatformEvent.h"
+#include "common/Profile.h"
 
 #include <Box2D/Box2D.h>
 
@@ -240,7 +241,7 @@ void World::destroy() {
     if (destroyed_) return;
     destroyed_ = true;
 
-    // Copy sets — Body/Fixture destructors erase from them.
+    // Copy sets 鈥?Body/Fixture destructors erase from them.
     std::vector<Body *> bodies(bodies_.begin(), bodies_.end());
     for (Body *b : bodies) {
         if (b) {
@@ -320,6 +321,7 @@ bool World::pointProbe(float x, float y, float radius, ClothContact *out) const 
 void World::update(float dt) { updateFull(dt, 8, 3); }
 
 void World::updateFull(float dt, int velocityIterations, int positionIterations) {
+    EV_PROFILE_MODULE("physics", "World::update");
     auto legacyStep = makeLegacyStep(dt, simulationTick_);
     if (!legacyStep) {
         legacyStep.ignore("legacy World::updateFull cannot return a structured error");

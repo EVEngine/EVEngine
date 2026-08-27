@@ -3,6 +3,30 @@ create_module(EVCommon common)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)
 
+# Generate the language-level contract from the same addFunc declarations that
+# SimpleSquirrel compiles. Keeping this as a build input makes stale or
+# parameter-less bindings fail before the engine is linked.
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+file(GLOB_RECURSE _eve_binding_contract_inputs CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/src/engine/*.h"
+    "${CMAKE_SOURCE_DIR}/src/engine/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/modules/*.h"
+    "${CMAKE_SOURCE_DIR}/src/modules/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/modules/*.cpp")
+string(REPLACE ";" "," _eve_binding_contract_modules "${EVE_ENABLED_MODULES}")
+set(_eve_binding_contract_cpp "${CMAKE_CURRENT_BINARY_DIR}/common/BindingContracts.generated.cpp")
+add_custom_command(
+    OUTPUT "${_eve_binding_contract_cpp}"
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
+            --modules "${_eve_binding_contract_modules}"
+            --platform "${BUILD_PLATFORM}"
+            --output "${_eve_binding_contract_cpp}"
+    DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py" ${_eve_binding_contract_inputs}
+    COMMENT "Generating strict EveScript Binding Contracts"
+    VERBATIM)
+target_sources(EVCommon PRIVATE "${_eve_binding_contract_cpp}")
+
 # Core/headless/server profiles intentionally stop after EVCommon. They do not
 # create cmdline, a window or a renderer, so a profile build cannot accidentally
 # acquire the interactive host through an unconditional executable.

@@ -10,8 +10,7 @@ const CELL = 52.0;
 const COLS = 12;
 const ROWS = 11;
 
-editorV2 <- persist("editorV2", function() {
-    return {
+persist editorV2 = {
         editor = null
         session = null
         sceneCanvas = null
@@ -22,8 +21,7 @@ editorV2 <- persist("editorV2", function() {
         revision = 0
         lastMouseDown = false
         status = "Choose an asset and click the scene"
-    };
-});
+    }
 
 assets <- [
     { id = "park.asset.tree", label = "Tree", cost = 20 },

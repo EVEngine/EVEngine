@@ -3,6 +3,7 @@
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
+#include "common/ScriptModule.h"
 #include "common/config.h"
 #include "common/ECS.h"
 #include "common/CrashLog.h"
@@ -471,6 +472,13 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             // (eve.log) so a crash shows how far the boot sequence got.
             eve.addFunc("log", [](const std::string& level, const std::string& msg) {
                 eve::recordLogEvent(level, msg);
+            });
+            eve.addFunc("reloadScriptModule", [&runtime](const std::string& path) {
+                std::string canonical;
+                std::string error;
+                if (!eve::script::ScriptModuleResolver::canonicalize({"game:/main.nut", path}, canonical, error))
+                    throw std::runtime_error(error);
+                return !runtime.scriptModules().reloadAffected(canonical).empty();
             });
             // Scene-director authoring kit (src/scripts/scene_director.nut). Host
             // games load it via `compilestring(eve.sceneDirectorScript)()`; the

@@ -171,7 +171,9 @@ void Effects::expose(ssq::Table& table) {
                                                  "effect must not be null", "effect"));
         return eve::script::projectResult(vm, value->removeTag(tag));
     });
-    effect.addFunc("hasTag", &Effect::hasTag);
+    effect.addFunc("hasTag", [](Effect* value, const std::string& tag) {
+        return value && value->hasTag(tag);
+    });
     effect.addFunc("tagCount", &Effect::tagCount);
     effect.addFunc("tagAt", &Effect::tagAt);
 

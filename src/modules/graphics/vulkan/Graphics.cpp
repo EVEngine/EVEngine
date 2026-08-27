@@ -61,6 +61,8 @@ Graphics::~Graphics() {
     detachGraphicsArtifactProvider(this);
     if (!initialized) return;
     device->waitIdle();
+    if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
+    gpuQueryPool_ = nullptr;
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them
     // first so their destructors do not see freed shader pointers.
     pipelineAA_.reset();
@@ -386,6 +388,7 @@ void Graphics::initHeadless(int width, int height) {
 }
 
 void Graphics::initWithWindow(void *nativeWindow) {
+    eve::cap::provide<eve::service::IGpuTimer>(this);
     StartupStage initStage("graphics: initWithWindow (total)");
     if (initialized) {
         // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
@@ -679,7 +682,10 @@ bool Graphics::beginPresentCommandBuffer() {
     for (int attempt = 0; attempt < 3; ++attempt) {
         if (!rebuildSwapchainIfNeeded()) return false;
         presentRecording = presentModel.begin();
-        if (presentRecording) return true;
+        if (presentRecording) {
+            writeGpuTimestampBegin();
+            return true;
+        }
         // Acquire failed without beginning the CB (see Present::begin). Rebuild once.
         if (presentModel.needs_recreate) {
             presentModel.needs_recreate = false;
@@ -791,5 +797,51 @@ void Graphics::present() {
 void Graphics::draw(eve::graphics::Graphics *, const glm::mat4 &) const {}
 void Graphics::draw(Canvas *, const glm::mat4 &) const {}
 
+// ---- GPU frame timing ------------------------------------------------------
+
+void Graphics::initGpuTiming() {
+    if (gpuQueryPool_) return;
+    try {
+        timestampPeriod_ = device.physical_device.properties.limits.timestampPeriod;
+        vk::QueryPoolCreateInfo ci;
+        ci.queryType = vk::QueryType::eTimestamp;
+        ci.queryCount = 2;
+        gpuQueryPool_ = device->createQueryPool(ci);
+        gpuTimingReady_ = true;
+    } catch (...) {
+        gpuTimingReady_ = false;
+        gpuQueryPool_ = nullptr;
+    }
+}
+
+void Graphics::writeGpuTimestampBegin() {
+    if (!gpuTimingReady_ || !presentRecording) return;
+    vk::CommandBuffer cb = presentRecording.commandBuffer();
+    cb.resetQueryPool(gpuQueryPool_, 0, 2);
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe, gpuQueryPool_, 0);
+}
+
+void Graphics::writeGpuTimestampEnd() {
+    if (!gpuTimingReady_ || !presentRecording) return;
+    vk::CommandBuffer cb = presentRecording.commandBuffer();
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe, gpuQueryPool_, 1);
+}
+
+void Graphics::readGpuFrameTiming() {
+    if (!gpuTimingReady_ || !gpuQueryPool_) return;
+    // drawFrame() waits on the in-flight fence, so results are valid here.
+    std::array<uint64_t, 2> ts{};
+    const auto r = device->getQueryPoolResults(
+        gpuQueryPool_, 0, 2, sizeof(ts), ts.data(), sizeof(uint64_t),
+        vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+    if (r == vk::Result::eSuccess && ts[1] > ts[0])
+        gpuFrameMs_ = float(double(ts[1] - ts[0]) * double(timestampPeriod_) / 1'000'000.0);
+    else
+        gpuFrameMs_ = 0.f;
+}
+
+bool Graphics::gpuTimingAvailable() const { return gpuTimingReady_ && gpuFrameMs_ > 0.f; }
+
+float Graphics::gpuFrameMs() const { return gpuFrameMs_; }
 
 }  // namespace eve::graphics::vulkan

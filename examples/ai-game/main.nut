@@ -15,8 +15,7 @@
 // 一键复现：python examples/ai-game/agent_demo.py 7529
 // ============================================================================
 
-game <- persist("game", function() {
-    return {
+persist game = {
         tick = 0
         time = 0.0
         hits = 0
@@ -24,8 +23,7 @@ game <- persist("game", function() {
         eneTimer = 0.0
         player = { hp = 100.0, maxHp = 100.0, attack = 14.0 }
         enemy  = { hp = 80.0,  maxHp = 80.0,  attack = 9.0 }
-    };
-});
+    }
 
 // --- Agent 可调用的脚本入口（MCP eve_run_script / eve_eval 均可触达） ---
 game.setEnemyHp <- function(v) { game.enemy.hp = v.tofloat(); };
@@ -81,10 +79,10 @@ eve_update = function(dt) {
     local hpText = format("玩家 HP %.0f/%.0f   敌人 HP %.0f/%.0f",
                           game.player.hp, game.player.maxHp, game.enemy.hp, game.enemy.maxHp);
     ui.setText("status", state + "\n" + hpText);
-    ui.setText("hint",
-        game.player.hp <= 0.0
-            ? "GAME OVER —— Agent 可用 eve_run_script: game.reset(); 重开"
-            : "MCP: eve_eval / eve_run_script / eve_screenshot / eve_snapshot_*");
+    local hint = game.player.hp <= 0.0
+        ? "GAME OVER —— Agent 可用 eve_run_script: game.reset(); 重开"
+        : "MCP: eve_eval / eve_run_script / eve_screenshot / eve_snapshot_*";
+    ui.setText("hint", hint);
 };
 
 eve_render = function() {

@@ -139,6 +139,7 @@ vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRende
 // --- Swapchain and graphics pipelines -----------------------------------------
 
 void Graphics::createSwapchainAndPipeline() {
+    initGpuTiming();
     // Framebuffers / command buffers alias the current swapchain images; tear
     // them down before replacing the swapchain (destroy() waitIdles first).
     presentRecording = {};

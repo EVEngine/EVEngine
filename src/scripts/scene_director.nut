@@ -20,7 +20,7 @@
 // A host game can also load it at boot (see examples/ai-stage):
 //   compilestring(eve.sceneDirectorScript)();
 
-if (!("scene_director" in getroottable())) scene_director <- null;
+persist scene_director = null
 
 // ---- internal helpers (roottable scope; reused across reinstalls) ----
 

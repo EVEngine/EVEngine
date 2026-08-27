@@ -83,6 +83,11 @@ void writeFile(const std::filesystem::path& p, const std::string& content) {
     ofs << content;
 }
 
+std::string readTextFile(const std::filesystem::path& p) {
+    std::ifstream in(p, std::ios::binary);
+    return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
+}
+
 // Reads the ZIP central directory (EOCD -> central entries) and returns the
 // entry names in archive order. Returns {} when the file is not a valid ZIP.
 std::vector<std::string> zipEntryNames(const std::filesystem::path& p) {
@@ -336,6 +341,12 @@ TEST_CASE("cmdline.createScaffoldsGame") {
     }
     REQUIRE(std::filesystem::is_regular_file(dir / "mygame" / "config.nut"));
     REQUIRE(std::filesystem::is_regular_file(dir / "mygame" / "main.nut"));
+    const std::string config = readTextFile(dir / "mygame" / "config.nut");
+    const std::string main   = readTextFile(dir / "mygame" / "main.nut");
+    CHECK(config.find("modules = [\"gfx\"]") != std::string::npos);
+    CHECK(main.find("persist boxX: float = 0.0") != std::string::npos);
+    CHECK(main.find("eve_update = function(dt: float)") != std::string::npos);
+    CHECK(main.find("getroottable") == std::string::npos);
 
     // A second run must not clobber existing files.
     {

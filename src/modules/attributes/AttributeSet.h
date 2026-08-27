@@ -33,7 +33,7 @@ enum class AttributeOperation : std::uint8_t {
  * @brief Stable spelling of a built-in attribute operation.
  * @ownership The returned string is a borrowed, process-static literal; the
  * caller must not free or retain it as mutable storage.
- * @nullable Never null for a valid enum value; the fallback spelling is also
+ * @nullable Never null for a valid enum value; the unknown-value spelling is also
  * a process-static literal for an invalid value.
  * @lifetime Valid for the process lifetime.
  * @thread Thread-safe because the function reads no mutable state.

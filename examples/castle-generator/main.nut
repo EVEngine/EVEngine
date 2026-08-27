@@ -1,14 +1,14 @@
 // Castle Forge — interactive mesh.castle showcase.
 // R seed, 1/2 wall rings, 3/4 keep floors, D detail level.
 
-if (!("castleSeed" in getroottable())) castleSeed <- 20260826;
-if (!("castleParts" in getroottable())) castleParts <- [];
-if (!("castleCamera" in getroottable())) castleCamera <- null;
-if (!("rings" in getroottable())) rings <- 2;
-if (!("floors" in getroottable())) floors <- 4;
-if (!("detail" in getroottable())) detail <- 2;
-if (!("castleYaw" in getroottable())) castleYaw <- 0.0;
-if (!("castlePrevKeys" in getroottable())) castlePrevKeys <- {};
+persist castleSeed = 20260826
+persist castleParts = []
+persist castleCamera = null
+persist rings = 2
+persist floors = 4
+persist detail = 2
+persist castleYaw = 0.0
+persist castlePrevKeys = {}
 
 function castlePressed(k) {
     local down = keyboard.isDown(k);

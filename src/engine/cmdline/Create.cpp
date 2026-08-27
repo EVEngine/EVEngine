@@ -1,8 +1,8 @@
 #include "cmdline.h"
 
 #include <CLI11.hpp>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
 #include <rang.hpp>
 
 using namespace std::filesystem;
@@ -38,27 +38,35 @@ CMD_REG(CreateArgs);
 int Cmdline::Create(std::string path, std::string projectName) {
     if (projectName.empty()) projectName = "mygame";
     std::filesystem::path dir = std::filesystem::path(path) / projectName;
-    std::error_code ec;
+    std::error_code       ec;
     std::filesystem::create_directories(dir, ec);
     if (ec) {
         cerr << rang::fg::red << "Failed to create " << dir << ": " << ec.message() << rang::fg::reset << endl;
         return 1;
     }
 
-    const std::string config = R"(config = { width=800 height=600 title=")" + projectName +
-                               R"(" hotReload=true };)";
-    const std::string main = R"(// EVEngine minimal game template.
+    const std::string config = R"(// EVEngine project configuration.
+config <- {
+    width = 800
+    height = 600
+    title = ")" + projectName +
+                               R"("
+    hotReload = true
+    modules = ["gfx"]
+}
+)";
+    const std::string main   = R"(// EVEngine minimal game template.
 // Frame: eve_init (once) -> eve_update(dt) -> eve_render().
-// Guard mutable state so hot reload (re-dofile) does not reset it.
-if (!("boxX" in getroottable())) boxX <- 0.0;
-if (!("boxY" in getroottable())) boxY <- 100.0;
-if (!("vx" in getroottable())) vx <- 240.0;
+// EveScript persist declarations retain mutable state across hot reload.
+persist boxX: float = 0.0
+persist boxY: float = 100.0
+persist vx: float = 240.0
 
 eve_init = function() {
     gfx.setBackgroundColor(0.08, 0.10, 0.20, 1.0);
 };
 
-eve_update = function(dt) {
+eve_update = function(dt: float) {
     boxX += vx * dt;
     if (boxX > config.width || boxX < 0.0) vx = -vx;
 };
