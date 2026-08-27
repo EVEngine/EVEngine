@@ -1,7 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "presentation/PropertyModel.h"
+#include "property_access/PropertyAccess.h"
+#include "TestPropertyAccess.h"
 #include "ui/PropertyView.h"
 #include "ui/UIHost.h"
 
@@ -9,8 +10,9 @@
 #include <string>
 #include <vector>
 
-using namespace eve::presentation;
+using namespace eve::property_access;
 using namespace eve::ui;
+using eve::Value;
 
 namespace {
 
@@ -59,12 +61,20 @@ PropertySchema playerSchema() {
     return schema;
 }
 
-UINode *node(UIHost &host, const std::string &id) { return host.findById(id); }
+UINode *node(UIHost &host, const std::string &id) {
+    auto found = host.findById(id);
+    return found ? &found->get() : nullptr;
+}
+
+UIHost *createHost(const std::string &name) {
+    auto host = UIHost::resolve(UIHost::createHost(name));
+    return host ? &host->get() : nullptr;
+}
 
 }  // namespace
 
 TEST_CASE("ui.presentation.dynamic_model_validates_and_notifies") {
-    DynamicPropertyModel model(playerSchema());
+    TestPropertyAccess model(playerSchema());
     std::vector<PropertyChange> changes;
     auto subscription = model.subscribe(
         [&changes](const PropertyChange &change) { changes.push_back(change); });
@@ -87,13 +97,13 @@ TEST_CASE("ui.presentation.dynamic_model_validates_and_notifies") {
 }
 
 TEST_CASE("ui.presentation.generated_view_binds_two_way") {
-    DynamicPropertyModel model(playerSchema());
+    TestPropertyAccess model(playerSchema());
     PropertyViewOptions options;
     options.idPrefix = "player/";
     options.title = "Player";
     options.showEditorOnly = false;
 
-    UIHost *host = UIHost::createHost("presentation-test");
+    UIHost *host = createHost("presentation-test");
     REQUIRE(host != nullptr);
     host->setTree(buildPropertyView(model, options));
 
@@ -131,7 +141,7 @@ TEST_CASE("ui.presentation.generated_view_binds_two_way") {
 }
 
 TEST_CASE("ui.presentation.component_tracks_model_revision") {
-    DynamicPropertyModel model(playerSchema());
+    TestPropertyAccess model(playerSchema());
     PropertyComponent component(&model);
     component.build();
     component.attach(UIHost::createHost("presentation-component"));

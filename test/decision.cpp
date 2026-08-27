@@ -5,11 +5,16 @@
 using namespace eve::decision;
 TEST_CASE("decision.blackboardsAndFsmAreExplicit") {
     DecisionContext d;
-    REQUIRE(d.set("ai", "enemy", "\"tank-1\""));
+    auto setResult = d.set("ai", "enemy", "\"tank-1\"");
+    REQUIRE(setResult.ok());
     CHECK_EQ(d.get("ai", "enemy", "null"), std::string("\"tank-1\""));
-    REQUIRE(d.setState("unit", "idle"));
-    REQUIRE(d.addTransition("unit", "idle", "enemy_seen", "attack"));
-    REQUIRE(d.trigger("unit", "enemy_seen"));
+    auto stateResult = d.setState("unit", "idle");
+    REQUIRE(stateResult.ok());
+    auto transitionResult = d.addTransition("unit", "idle", "enemy_seen", "attack");
+    REQUIRE(transitionResult.ok());
+    auto triggerResult = d.trigger("unit", "enemy_seen");
+    REQUIRE(triggerResult.ok());
+    REQUIRE(triggerResult.value());
     CHECK_EQ(d.state("unit"), std::string("attack"));
 }
 TEST_CASE("decision.utilityIsDeterministic") {
@@ -18,15 +23,21 @@ TEST_CASE("decision.utilityIsDeterministic") {
 }
 TEST_CASE("decision.influenceAndSnapshotRoundTrip") {
     DecisionContext d;
-    REQUIRE(d.newGrid("threat", 2, 2, 10, 0, 0));
-    REQUIRE(d.setCell("threat", 1, 0, 2));
-    REQUIRE(d.addCell("threat", 1, 0, 3));
+    auto gridResult = d.newGrid("threat", 2, 2, 10, 0, 0);
+    REQUIRE(gridResult.ok());
+    auto setCellResult = d.setCell("threat", 1, 0, 2);
+    REQUIRE(setCellResult.ok());
+    auto addCellResult = d.addCell("threat", 1, 0, 3);
+    REQUIRE(addCellResult.ok());
     CHECK_EQ(d.sample("threat", 15, 5, -1), 5.f);
     auto            s = d.snapshotJson();
     DecisionContext x;
-    REQUIRE(x.restoreJson(s));
+    auto restoreResult = x.restoreJson(s);
+    REQUIRE(restoreResult.ok());
     CHECK_EQ(x.snapshotJson(), s);
     auto before = x.snapshotJson();
-    CHECK(!x.restoreJson("{}"));
+    auto rejected = x.restoreJson("{}");
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.code(), eve::StatusCode::Failed);
     CHECK_EQ(x.snapshotJson(), before);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Time.h"
 #include "animation/Tween.h"
 
 #include <string>
@@ -50,7 +51,9 @@ class SpineAnim;
  * procedural drivers + motion trails + per-frame pump.
  * Script: `anim <- eve.Animation();`
  *
- * Tweens / SpriteAnim / SpineAnim can be advanced via `anim.update(dt)`.
+ * Tweens / SpriteAnim / SpineAnim can be advanced via the scheduler-owned
+ * `anim.advance(SimulationStep)` API. The `update(float)` method remains a
+ * compatibility facade and explicitly consumes the checked Result.
  * Relative property changes use `Tween::setDelta` / `setDeltaAngle`.
  *
  * 2D: `SpriteSheet` + `SpriteClip` + `SpriteAnim`; Spine region subset via
@@ -171,6 +174,12 @@ public:
     AnimTrail *newTrail(int capacity = 64);
 
     /** @brief Advance all registered tweens, sprite anims, and spine anims. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+
+    /** @brief Last scheduler tick consumed by the checked module pump. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+
+    /** @brief Legacy seconds facade; invalid input is explicitly consumed and ignored. */
     void update(float dt);
 
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
@@ -199,6 +208,8 @@ private:
     std::vector<Tween *>      tweens_;
     std::vector<SpriteAnim *> spriteAnims_;
     std::vector<SpineAnim *>  spineAnims_;
+    eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
+    bool                      hasLastTick_ = false;
 };
 
 }  // namespace eve::animation

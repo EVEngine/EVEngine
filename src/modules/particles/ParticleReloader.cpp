@@ -51,9 +51,9 @@ public:
         return ext == ".json" || isImagePath(normPath);
     }
 
-    bool reload(const std::string &normPath) override {
-        if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return false;
-        return isImagePath(normPath) ? rebindTexture(normPath) : reloadConfig(normPath);
+    eve::Result<bool> reload(const std::string &normPath) override {
+        if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return eve::Result<bool>::success(false);
+        return eve::Result<bool>::success(isImagePath(normPath) ? rebindTexture(normPath) : reloadConfig(normPath));
     }
 
 private:

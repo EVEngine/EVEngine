@@ -122,7 +122,9 @@ GAME ?=
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
-	check/test-manifest check/module-layers \
+	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
+	check/profile-matrix check/architecture-contracts check/quality \
+	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
 	init/submodules \
@@ -143,6 +145,8 @@ show-targets:
 	@echo "release -> build/$(PLATFORM)"
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
+	@echo "profile -> PROFILE=$(PROFILE) in $(PROFILE_BUILD_ROOT)"
+	@echo "profile stages -> profile/configure profile/build profile/smoke"
 
 # Verify every test/*.cpp on disk is registered in test/CMakeLists.txt.
 check/test-manifest:
@@ -158,6 +162,49 @@ check/module-layers:
 # fail, so docs cannot silently drift from the bindings.
 check/bindings:
 	python3 scripts/check_bindings.py --strict
+
+# Validate the bounded exception inventory and its reviewed baseline. This
+# target never rewrites the baseline.
+check/quality-metadata:
+	python3 scripts/check_quality_metadata.py
+
+# Compile-fail diagnostics for critical Result/ID/Subscription returns. This
+# is a source-only check and does not configure or build the engine.
+check/nodiscard:
+	python3 scripts/check_nodiscard.py
+
+# Validate the ten top-level architecture contracts and lint changed C/C++
+# lines. The source-only gate never configures or builds the engine.
+check/architecture-contracts:
+	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
+	python3 -m unittest scripts.tests.test_architecture_contracts -v
+
+# Resolve all supported module profiles without a compiler or build tree.
+check/profile-matrix:
+	python3 scripts/profile_matrix.py --check
+
+# Fast local quality gate for the profile and debt contracts.
+check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts
+
+# Profile stages are separate so CI can report configure, build, and
+# independent capability smoke failures independently. The default build root
+# is /tmp; no normal build/<platform> directory is touched.
+profile/configure:
+	python3 scripts/profile_matrix.py $(PROFILE_MATRIX_ARGS) --configure
+
+profile/build:
+	python3 scripts/profile_matrix.py $(PROFILE_MATRIX_ARGS) --build
+
+profile/smoke:
+	python3 scripts/profile_matrix.py $(PROFILE_MATRIX_ARGS) --smoke
+
+profile:
+	@$(MAKE) profile/configure PROFILE="$(PROFILE)" PROFILE_BUILD_ROOT="$(PROFILE_BUILD_ROOT)" PROFILE_GENERATOR="$(PROFILE_GENERATOR)" PROFILE_PLATFORM="$(PROFILE_PLATFORM)" PROFILE_JOBS="$(PROFILE_JOBS)" PROFILE_CMAKE_COMMAND="$(PROFILE_CMAKE_COMMAND)"
+	@$(MAKE) profile/build PROFILE="$(PROFILE)" PROFILE_BUILD_ROOT="$(PROFILE_BUILD_ROOT)" PROFILE_GENERATOR="$(PROFILE_GENERATOR)" PROFILE_PLATFORM="$(PROFILE_PLATFORM)" PROFILE_JOBS="$(PROFILE_JOBS)" PROFILE_CMAKE_COMMAND="$(PROFILE_CMAKE_COMMAND)"
+	@$(MAKE) profile/smoke PROFILE="$(PROFILE)" PROFILE_BUILD_ROOT="$(PROFILE_BUILD_ROOT)" PROFILE_GENERATOR="$(PROFILE_GENERATOR)" PROFILE_PLATFORM="$(PROFILE_PLATFORM)" PROFILE_JOBS="$(PROFILE_JOBS)" PROFILE_CMAKE_COMMAND="$(PROFILE_CMAKE_COMMAND)"
+
+profile/dry-run:
+	python3 scripts/profile_matrix.py --all --dry-run
 
 # Worktree/agent setup: initialize the pinned git submodules (external/*).
 # third-party/ itself is fetched by the first cmake configure at the pinned
@@ -191,6 +238,25 @@ CMAKE_EXTRA_ARGS ?=
 JOBS ?= 32
 ANDROID_JOBS ?= 8
 CTEST_JOBS ?= 4
+
+# Profile contract checks deliberately use a separate root so they cannot
+# mutate the normal build/<platform> tree. Set PROFILE_BUILD_ROOT explicitly
+# when several profile jobs share a workspace (CI uses runner.temp).
+PROFILE ?= minimal
+PROFILE_BUILD_ROOT ?= /tmp/evengine-profile-matrix
+PROFILE_GENERATOR ?= Ninja
+PROFILE_PLATFORM ?=
+PROFILE_JOBS ?= 4
+PROFILE_CMAKE_COMMAND ?= cmake
+PROFILE_MATRIX_ARGS = --profile "$(PROFILE)" \
+	--build-root "$(PROFILE_BUILD_ROOT)" \
+	--generator "$(PROFILE_GENERATOR)" \
+	--jobs "$(PROFILE_JOBS)" \
+	$(if $(PROFILE_PLATFORM),--platform "$(PROFILE_PLATFORM)") \
+	--cmake-command "$(PROFILE_CMAKE_COMMAND)"
+
+# Local checks inspect the current worktree diff; CI supplies the PR base SHA.
+ARCHITECTURE_BASE ?= HEAD
 
 # Reusable configure command lines: used both by the first-configure rules and
 # by the on-change reconfigure inside the build recipes below.

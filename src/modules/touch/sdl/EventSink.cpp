@@ -10,7 +10,7 @@
 #include "common/Capability.h"
 #include "common/Module.h"
 #include "common/config.h"
-#include "event/PlatformEventSink.h"
+#include "platform_event/PlatformEventSink.h"
 #include "touch/Touch.h"
 #include "touch/sdl/Touch.h"
 #include "window/Window.h"
@@ -33,9 +33,9 @@ void normalizedToDPICoords(double *x, double *y) {
 }
 #endif
 
-class TouchEventSink : public eve::event::IPlatformEventSink {
+class TouchEventSink : public eve::platform_event::IPlatformEventSink {
 public:
-    bool observePlatformEvent(const void *nativeEvent) override {
+    bool shouldConsumePlatformEvent(const void *nativeEvent) override {
         const auto &e = *static_cast<const SDL_Event *>(nativeEvent);
         if (e.type != SDL_FINGERDOWN && e.type != SDL_FINGERUP && e.type != SDL_FINGERMOTION)
             return false;
@@ -64,8 +64,8 @@ public:
 struct Register {
     Register() {
         static TouchEventSink sink;
-        eve::cap::addListener<eve::event::IPlatformEventSink>(
-            &sink, eve::event::IPlatformEventSink::kInput);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(
+            &sink, eve::platform_event::IPlatformEventSink::kInput);
     }
 } g_register;
 

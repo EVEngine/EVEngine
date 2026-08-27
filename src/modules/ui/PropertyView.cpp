@@ -12,10 +12,10 @@
 namespace eve::ui {
 namespace {
 
-using presentation::PropertyDescriptor;
-using presentation::PropertyFlag;
-using presentation::PropertyKind;
-using presentation::Value;
+using property_access::PropertyDescriptor;
+using property_access::PropertyFlag;
+using property_access::PropertyKind;
+using eve::Value;
 
 std::string sanitize(std::string value) {
     for (char &character : value)
@@ -65,12 +65,12 @@ AccessibilityRole accessibilityRole(PropertyKind kind, bool readOnly) {
     }
 }
 
-WidgetDesc makePropertyField(presentation::IPropertyModel &model,
+WidgetDesc makePropertyField(property_access::IPropertyAccess &model,
                              const PropertyViewOptions &options,
                              const PropertyDescriptor &property, const Value &value) {
     const std::string id = propertyWidgetId(options, property.path);
     const std::string label = displayName(property);
-    const bool readOnly = presentation::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
+    const bool readOnly = property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
                           property.kind == PropertyKind::ReadOnlyText;
     WidgetDesc result;
 
@@ -177,13 +177,13 @@ WidgetDesc makePropertyField(presentation::IPropertyModel &model,
 }
 
 bool visible(const PropertyDescriptor &property, const PropertyViewOptions &options) {
-    if (!options.showAdvanced && presentation::hasFlag(property.flags, PropertyFlag::Advanced))
+    if (!options.showAdvanced && property_access::hasFlag(property.flags, PropertyFlag::Advanced))
         return false;
     if (!options.showEditorOnly &&
-        presentation::hasFlag(property.flags, PropertyFlag::EditorOnly))
+        property_access::hasFlag(property.flags, PropertyFlag::EditorOnly))
         return false;
     if (!options.showReadOnly &&
-        (presentation::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
+        (property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
          property.kind == PropertyKind::ReadOnlyText))
         return false;
     return true;
@@ -195,19 +195,19 @@ std::string propertyWidgetId(const PropertyViewOptions &options, const std::stri
     return options.idPrefix + sanitize(path);
 }
 
-WidgetDesc buildPropertyField(presentation::IPropertyModel &model, const std::string &path,
+WidgetDesc buildPropertyField(property_access::IPropertyAccess &model, const std::string &path,
                               const PropertyViewOptions &options) {
-    const PropertyDescriptor *property = model.schema().find(path);
+    auto property = model.schema().find(path);
     const std::optional<Value> value = model.read(path);
     if (!property || !value)
         return text(path + ": unavailable", propertyWidgetId(options, path))
             .withFocusMode(FocusMode::None)
             .withMouseFilter(MouseFilter::Ignore)
             .withAccessibility(AccessibilityRole::Text, path, "Property is unavailable");
-    return makePropertyField(model, options, *property, *value);
+    return makePropertyField(model, options, property->get(), *value);
 }
 
-WidgetDesc buildPropertyView(presentation::IPropertyModel &model,
+WidgetDesc buildPropertyView(property_access::IPropertyAccess &model,
                              const PropertyViewOptions &options) {
     std::vector<WidgetDesc> children;
     if (!options.title.empty()) children.push_back(sectionHeader(options.title, options.idPrefix + "title"));
@@ -226,13 +226,13 @@ WidgetDesc buildPropertyView(presentation::IPropertyModel &model,
     return column(std::move(children), options.idPrefix + "root");
 }
 
-void syncPropertyView(UIHost &host, const presentation::IPropertyModel &model,
+void syncPropertyView(UIHost &host, const property_access::IPropertyAccess &model,
                       const PropertyViewOptions &options) {
     for (const PropertyDescriptor &property : model.schema().properties) {
         const std::optional<Value> value = model.read(property.path);
         if (!value) continue;
         const std::string id = propertyWidgetId(options, property.path);
-        const bool readOnly = presentation::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
+        const bool readOnly = property_access::hasFlag(property.flags, PropertyFlag::ReadOnly) ||
                               property.kind == PropertyKind::ReadOnlyText;
         if (readOnly) {
             host.setTextById(id, displayName(property) + ": " + valueText(*value));
@@ -256,13 +256,13 @@ void syncPropertyView(UIHost &host, const presentation::IPropertyModel &model,
     }
 }
 
-PropertyComponent::PropertyComponent(presentation::IPropertyModel *model,
+PropertyComponent::PropertyComponent(property_access::IPropertyAccess *model,
                                      PropertyViewOptions options)
     : model_(model), options_(std::move(options)) {
     observe();
 }
 
-void PropertyComponent::bind(presentation::IPropertyModel *model) {
+void PropertyComponent::bind(property_access::IPropertyAccess *model) {
     subscription_.dispose();
     model_ = model;
     observe();
@@ -281,7 +281,7 @@ WidgetDesc PropertyComponent::build() {
 
 void PropertyComponent::observe() {
     if (!model_) return;
-    subscription_ = model_->subscribe([this](const presentation::PropertyChange &) { markDirty(); });
+    subscription_ = model_->subscribe([this](const property_access::PropertyChange &) { markDirty(); });
 }
 
 }  // namespace eve::ui

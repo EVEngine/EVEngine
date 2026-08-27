@@ -4,7 +4,7 @@ demoSocial <- eve.Social();
 demoOrders <- eve.Orders();
 demoTags <- eve.Tags();
 demoEffects <- eve.Effects();
-demoEventStream <- eve.EventStream();
+demoGameEvent <- eve.GameEvent();
 demoTransaction <- eve.Transaction();
 demoStatePatch <- eve.StatePatch();
 demoDefinitions <- eve.Definitions();
@@ -17,9 +17,24 @@ demoDecision <- eve.Decision();
 
 demoState <- {};
 
+decision_result_ok <- function(result, operation) {
+    if (!result.ok) {
+        print("decision " + operation + " failed: " + result.status.summary + "\n");
+        return false;
+    }
+    return true;
+};
+
 reset_demo <- function() {
     demoSocial.clear();
     demoTags.clear();
+    local commandQueueResult = demoOrders.newQueueOwned();
+    local productionResult = demoProduction.newWorkQueue();
+    local statusEffectsResult = demoEffects.newContainer();
+    local authoritativeStateResult = demoStatePatch.newStore();
+    local authorityResult = demoAuthority.newStore();
+    local decisionsResult = demoDecision.newContext();
+    local sensingResult = demoSensing.newWorld();
     demoState = {
         ruler = "faction.crown"
         rebelFaction = "faction.frontier"
@@ -30,17 +45,17 @@ reset_demo <- function() {
         rebelled = false
         generalStats = demoAttributes.newSet("general.arden")
         baseStats = demoAttributes.newSet("base.north")
-        commandQueue = demoOrders.newQueue()
-        statusEffects = demoEffects.newContainer()
-        events = demoEventStream.newStream()
+        commandQueue = commandQueueResult.ok ? commandQueueResult.value : null
+        statusEffects = statusEffectsResult.ok ? statusEffectsResult.value : null
+        events = demoGameEvent.newLog()
         transactions = demoTransaction.newLedger()
-        authoritativeState = demoStatePatch.newStore()
+        authoritativeState = authoritativeStateResult.ok ? authoritativeStateResult.value : null
         definitions = demoDefinitions.newRegistry()
-        authority = demoAuthority.newStore()
-        production = demoProduction.newQueue()
+        authority = authorityResult.ok ? authorityResult.value : null
+        production = productionResult.ok ? productionResult.value : null
         policies = demoPolicyRegistry.newRegistry()
-        sensing = demoSensing.newWorld()
-        decisions = demoDecision.newContext()
+        sensing = sensingResult.ok ? sensingResult.value : null
+        decisions = decisionsResult.ok ? decisionsResult.value : null
     };
 
     demoState.generalStats.setBase("administration", 80.0);
@@ -63,43 +78,52 @@ reset_demo <- function() {
         demoState.general, demoState.baseId, "govern_base", "rank.general", 10, 0.0);
     demoState.authority.grant(
         demoState.general, demoState.armyId, "command_army", "rank.general", 10, 0.0);
-    demoState.policies.registerPolicy(
+    demoState.policies.insert(
         "administration", "governor_bonus", 1, 100, true,
         "script", "administration.governor", "{\"owner\":\"simulation.nut\"}");
-    demoState.policies.registerPolicy(
+    demoState.policies.insert(
         "administration", "no_bonus", 1, 0, true, "builtin", "", "{}");
 
     // The game mirrors only the facts its AI query needs; sensing assigns no value.
-    demoState.sensing.upsert(demoState.armyId, 0.0, 0.0, demoState.ruler,
-                             "unit,army", "faction.crown");
-    demoState.sensing.upsert("army.raiders", 30.0, 0.0, demoState.rebelFaction,
-                             "unit,army", "faction.crown");
-    demoState.sensing.upsert("base.raiders", 20.0, 0.0, demoState.rebelFaction,
-                             "building,base", "faction.crown");
-    demoState.decisions.setState("defense.ai", "patrol");
-    demoState.decisions.addTransition("defense.ai", "patrol", "enemy_seen", "engage");
-    demoState.decisions.newGrid("threat", 8, 8, 10.0, 0.0, 0.0);
-    demoState.decisions.setCell("threat", 3, 0, 0.8);
+    if (demoState.sensing == null) return;
+    if (!demoState.sensing.upsert(demoState.armyId, 0.0, 0.0, demoState.ruler,
+                                  "unit,army", "faction.crown").ok) return;
+    if (!demoState.sensing.upsert("army.raiders", 30.0, 0.0, demoState.rebelFaction,
+                                  "unit,army", "faction.crown").ok) return;
+    if (!demoState.sensing.upsert("base.raiders", 20.0, 0.0, demoState.rebelFaction,
+                                  "building,base", "faction.crown").ok) return;
+    if (!decision_result_ok(demoState.decisions.setState("defense.ai", "patrol"), "setState")) return;
+    if (!decision_result_ok(demoState.decisions.addTransition(
+            "defense.ai", "patrol", "enemy_seen", "engage"), "addTransition")) return;
+    if (!decision_result_ok(demoState.decisions.newGrid(
+            "threat", 8, 8, 10.0, 0.0, 0.0), "newGrid")) return;
+    if (!decision_result_ok(demoState.decisions.setCell("threat", 3, 0, 0.8), "setCell")) return;
 
-    demoState.definitions.registerDefinition(
+    demoState.definitions.insert(
         "rank", "rank.general", 1,
         "{\"authority\":[\"govern_base\",\"command_army\"],\"commandCapacity\":8}");
 
-    local initialOwners = demoState.authoritativeState.newBatch();
-    initialOwners.set(demoState.general, "owner", "\"faction.crown\"");
-    initialOwners.set(demoState.baseId, "owner", "\"faction.crown\"");
-    initialOwners.set(demoState.armyId, "owner", "\"faction.crown\"");
-    demoState.authoritativeState.commit(initialOwners);
+    local initialOwnersResult = demoState.authoritativeState.newBatch();
+    local initialOwners = initialOwnersResult.ok ? initialOwnersResult.value : null;
+    if (initialOwners != null) {
+        initialOwners.set(demoState.general, "owner", "\"faction.crown\"");
+        initialOwners.set(demoState.baseId, "owner", "\"faction.crown\"");
+        initialOwners.set(demoState.armyId, "owner", "\"faction.crown\"");
+        demoState.authoritativeState.commit(initialOwners);
+    }
 };
 
 run_ai_preview <- function() {
-    local count = demoState.sensing.circle(
+    if (demoState.sensing == null) return false;
+    local query = demoState.sensing.circle(
         0.0, 0.0, 100.0, "unit", "", "", demoState.ruler,
         "faction.crown", 8);
-    if (count == 0) return false;
+    if (!query.ok || query.value == 0) return false;
     local target = demoState.sensing.resultAt(0);
-    demoState.decisions.set("defense.ai", "target", "\"" + target.getId() + "\"");
-    demoState.decisions.trigger("defense.ai", "enemy_seen");
+    if (!decision_result_ok(demoState.decisions.set(
+            "defense.ai", "target", "\"" + target.getId() + "\""), "set")) return false;
+    local triggerResult = demoState.decisions.trigger("defense.ai", "enemy_seen");
+    if (!decision_result_ok(triggerResult, "trigger") || !triggerResult.value) return false;
     demoState.aiTarget <- target.getId();
     demoState.aiAction <- demoState.decisions.choose(
         "attack=0.9:2,0.8:1;retreat=0.2:2,0.4:1");
@@ -130,18 +154,21 @@ run_mixed_production <- function() {
         demoState.baseId, "issue_decree", "decree.tax_reform",
         "{\"district\":\"north\"}", 10.0, 10);
     local speed = demoState.baseStats.getFinal("production_speed", 1.0);
-    demoState.production.update(10.0, speed);
+    return demoState.production.advance(1, 10.0 * speed).ok;
 };
 
 apply_unpaid_salary <- function() {
-    local effectId = demoState.statusEffects.apply(
+    local effectResult = demoState.statusEffects.apply(
         demoState.general, "salary_unpaid", demoState.ruler,
         20, 0.0, "salary", "replace");
-    local effect = demoState.statusEffects.find(effectId);
+    if (!effectResult.ok) return false;
+    local effect = demoState.statusEffects.find(effectResult.value);
+    if (effect == null) return false;
     effect.addTag("politics");
     effect.getPayload().setNumber("loyalty_delta", -35.0);
     demoState.generalStats.addModifier(
         "salary.unpaid", "loyalty", demoState.ruler, "add", -35.0, 20);
+    return true;
 };
 
 evaluate_rebellion <- function() {
@@ -151,20 +178,31 @@ evaluate_rebellion <- function() {
         demoState.officer, demoState.general, "support", 0.0);
     if (loyalty >= 20.0 || ambition <= 75.0 || support <= 0.6) return false;
 
-    local plan = demoState.transactions.create("rebellion.north", "salary.unpaid");
+    local planResult = demoState.transactions.create(
+        "rebellion.north", "salary.unpaid",
+        "00000000-0000-4000-8000-000000000002");
+    if (!planResult.ok) return false;
+    local plan = demoState.transactions.find(planResult.value.id);
+    if (plan == null) return false;
     local generalOp = plan.stage(
-        "set_owner", demoState.general, "{\"owner\":\"faction.frontier\"}");
+        "set_owner", demoState.general, "{\"owner\":\"faction.frontier\"}",
+        "00000000-0000-4000-8000-000000000003");
     local baseOp = plan.stage(
-        "set_owner", demoState.baseId, "{\"owner\":\"faction.frontier\"}");
+        "set_owner", demoState.baseId, "{\"owner\":\"faction.frontier\"}",
+        "00000000-0000-4000-8000-000000000004");
     local armyOp = plan.stage(
-        "set_owner", demoState.armyId, "{\"owner\":\"faction.frontier\"}");
-    plan.markValid(generalOp);
-    plan.markValid(baseOp);
-    plan.markValid(armyOp);
-    if (!plan.validate()) return false;
+        "set_owner", demoState.armyId, "{\"owner\":\"faction.frontier\"}",
+        "00000000-0000-4000-8000-000000000005");
+    if (!generalOp.ok || !baseOp.ok || !armyOp.ok) return false;
+    if (!plan.markValid(generalOp.value).ok ||
+        !plan.markValid(baseOp.value).ok ||
+        !plan.markValid(armyOp.value).ok) return false;
+    if (!plan.validate().ok) return false;
 
     // The state patch is the atomic source of truth; Social is a query projection.
-    local ownership = demoState.authoritativeState.newBatch();
+    local ownershipResult = demoState.authoritativeState.newBatch();
+    local ownership = ownershipResult.ok ? ownershipResult.value : null;
+    if (ownership == null) return false;
     ownership.setExpected(
         demoState.general, "owner", "\"faction.frontier\"", "\"faction.crown\"");
     ownership.setExpected(
@@ -182,11 +220,11 @@ evaluate_rebellion <- function() {
     demoSocial.setRelation(demoState.rebelFaction, demoState.ruler, "hostility", 1.0);
     demoState.commandQueue.append("secure_assets", 100, 0.0);
     demoTags.add(demoState.rebelFaction, "faction");
-    demoState.events.emit(
-        "rebellion_started", demoState.general, demoState.rebelFaction,
-        "", "rebellion.north", 1, 1,
+    demoState.events.append(
+        "00000000-0000-4000-8000-000000000001", "rebellion_started",
+        demoState.general, demoState.rebelFaction, "", "rebellion.north", 1, 1,
         "{\"formerFaction\":\"faction.crown\"}");
-    plan.commit();
+    if (!plan.commit().ok) return false;
     demoState.rebelled = true;
     return true;
 };
@@ -194,8 +232,8 @@ evaluate_rebellion <- function() {
 run_rebellion_scenario <- function() {
     reset_demo();
     refresh_governor_bonus();
-    run_mixed_production();
+    if (!run_mixed_production()) return false;
     run_ai_preview();
-    apply_unpaid_salary();
+    if (!apply_unpaid_salary()) return false;
     return evaluate_rebellion();
 };

@@ -5,6 +5,8 @@
  * 全部策略名 / id / 标签使用字符串，便于 JSON 配置与跨版本兼容。
  */
 
+#include "common/Revision.h"
+
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -57,6 +59,19 @@ struct BuildingDefinition {
     bool maskAt(int localX, int localY) const;
 };
 
+/**
+ * @brief One persistent member of a placed building's logical garrison.
+ *
+ * The building instance owns this value. It is deliberately a compact domain
+ * record rather than an ECS base class; links to an RTS/RPG entity belong in
+ * the member's stable id and are resolved by that domain.
+ */
+struct GarrisonMember {
+    std::string id;
+    std::string type = "building.garrison.member";
+    std::vector<std::string> tags;
+};
+
 /** @brief 已放置的建筑实例。 */
 struct PlacedBuilding {
     int instanceId = 0;
@@ -71,6 +86,10 @@ struct PlacedBuilding {
     std::string channel;
     std::unordered_map<std::string, std::string> props;
     std::vector<std::string> tags;
+    /** @brief Authoritative logical garrison membership, not a render list. */
+    std::vector<GarrisonMember> garrison;
+    /** @brief Revision used by the garrison container adapter for stale checks. */
+    eve::Revision garrisonRevision = eve::Revision::zero();
 
     bool hasTag(const std::string &tag) const;
     std::string getProp(const std::string &key, const std::string &fallback = {}) const;

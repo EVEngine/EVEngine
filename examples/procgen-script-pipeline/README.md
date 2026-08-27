@@ -7,7 +7,8 @@
 make run/win32-debug GAME=examples/procgen-script-pipeline
 ```
 
-- 修改并保存 `main.nut`：`eve_reload` 会重建 `forest`；生成失败时保留上次结果。
+- 修改并保存 `main.nut`：`eve_reload` 会重建 `forest`；每个 Procgen Result 先检查
+  `ok` 再读取 `value`，生成失败时保留上次结果。
 - 按 `R`：更换根 seed 并重新生成。
 - 控制台会输出每个命名阶段的输入/输出点数、系统 revision 和 seed。
 - 按 `1` / `2` / `3` 可查看候选点、道路样条排斥结果和最终树木三个中间阶段。

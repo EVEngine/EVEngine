@@ -1,8 +1,19 @@
 #include "dialogue/Conversation.h"
 
 #include <unordered_set>
+#include <utility>
 
 namespace eve::dialogue {
+
+namespace {
+
+eve::Result<void> runnerFailure(eve::DiagnosticCode code, std::string message,
+                                std::string path = {}) {
+    return eve::Result<void>::failure(eve::Diagnostic::error(
+        code, std::move(message), std::move(path), {}, "dialogue.conversation"));
+}
+
+}  // namespace
 
 const ConversationAsset::Node* ConversationAsset::findNode(const std::string& nodeId) const {
     for (const auto& node : nodes)
@@ -29,8 +40,27 @@ bool ConversationAsset::validate(std::string* error) const {
     for (const auto& node : nodes) {
         if (!checkRef(node.id, node.next)) return false;
         if (!checkRef(node.id, node.returnNode)) return false;
-        for (const auto& route : node.routes)
+        auto paymentValid = node.payment.validate();
+        if (!paymentValid) {
+            const auto* diagnostic = paymentValid.error();
+            return fail(diagnostic ? diagnostic->message() : "invalid node payment");
+        }
+        if (!node.payment.empty() && node.kind != ConversationAsset::Node::Kind::Command)
+            return fail("node '" + node.id + "' payment is only valid for command nodes");
+        if (!node.stateMutations.empty() && node.kind != ConversationAsset::Node::Kind::Command)
+            return fail("node '" + node.id + "' state mutations are only valid for command nodes");
+        for (const auto& route : node.routes) {
+            auto routePaymentValid = route.payment.validate();
+            if (!routePaymentValid) {
+                const auto* diagnostic = routePaymentValid.error();
+                return fail(diagnostic ? diagnostic->message() : "invalid route payment");
+            }
+            if (!route.payment.empty() && node.kind != ConversationAsset::Node::Kind::Choice)
+                return fail("route payment is only valid for choice nodes");
+            if (!route.stateMutations.empty() && node.kind != ConversationAsset::Node::Kind::Choice)
+                return fail("route state mutations are only valid for choice nodes");
             if (!checkRef(node.id, route.second)) return false;
+        }
     }
     return true;
 }
@@ -51,6 +81,8 @@ bool ConversationRunner::start(const ConversationAsset* asset, StateValue bindin
     callStack_.clear();
     blocked_ = false;
     waitingCommand_ = false;
+    lastConditionResult_.reset();
+    lastCommandRequest_.reset();
     emit(Event::Kind::Started);
     return enter(asset_->entry, error) && runUntilBlocked(error);
 }
@@ -63,6 +95,8 @@ void ConversationRunner::stop() {
     blocked_ = false;
     callStack_.clear();
     waitingCommand_ = false;
+    lastConditionResult_.reset();
+    lastCommandRequest_.reset();
 }
 
 void ConversationRunner::registerCommand(const std::string& name, CommandHandler handler) {
@@ -71,6 +105,15 @@ void ConversationRunner::registerCommand(const std::string& name, CommandHandler
 
 void ConversationRunner::unregisterCommand(const std::string& name) {
     commandHandlers_.erase(name);
+}
+
+void ConversationRunner::registerCommandRequest(const std::string& name,
+                                                CommandRequestHandler handler) {
+    if (!name.empty() && handler) commandRequestHandlers_[name] = std::move(handler);
+}
+
+void ConversationRunner::unregisterCommandRequest(const std::string& name) {
+    commandRequestHandlers_.erase(name);
 }
 
 void ConversationRunner::emit(Event::Kind kind, const ConversationAsset::Node* node,
@@ -99,8 +142,18 @@ bool ConversationRunner::enter(const std::string& nodeId, std::string* error) {
 }
 
 std::string ConversationRunner::evaluateRoute(const ConversationAsset::Node& node,
-                                              std::string* error) const {
+    std::string* error) {
     for (const auto& route : node.routes) {
+        if (!route.condition.isNull()) {
+            if (!conditionEvaluator_) {
+                fail(error, "conversation: structured route requires a condition evaluator");
+                return {};
+            }
+            eve::decision::ConditionResult result = conditionEvaluator_(route.condition);
+            lastConditionResult_ = result;
+            if (result.passed()) return route.second;
+            continue;
+        }
         if (route.first.empty() || route.first == "else") return route.second;
         if (!expressionEvaluator_) {
             fail(error, "conversation: branch requires an expression evaluator");
@@ -176,22 +229,50 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
                 break;
             }
             case ConversationAsset::Node::Kind::Command: {
-                const auto it = commandHandlers_.find(node->target);
-                if (it == commandHandlers_.end())
+                const auto requestIt = commandRequestHandlers_.find(node->target);
+                const auto legacyIt = commandHandlers_.find(node->target);
+                if (requestIt == commandRequestHandlers_.end() && legacyIt == commandHandlers_.end() &&
+                    !commandRequestDispatcher_)
                     return fail(error, "conversation: command '" + node->target +
                                            "' is not registered");
                 emit(Event::Kind::Command, node, node->target);
-                CommandResult result = it->second(node->arguments, bindings_, locals_);
-                if (result.status == CommandResult::Status::Failed)
-                    return fail(error, result.error.empty() ? "conversation: command failed"
-                                                            : result.error);
-                if (result.status == CommandResult::Status::Blocked) {
-                    blocked_ = true;
-                    waitingCommand_ = true;
-                    return true;
+                if (requestIt != commandRequestHandlers_.end() || commandRequestDispatcher_) {
+                    CommandRequest request;
+                    request.name = node->target;
+                    request.kind = node->commandKind;
+                    request.arguments = toCanonicalValue(node->arguments);
+                    request.bindings = toCanonicalValue(bindings_);
+                    request.locals = toCanonicalValue(locals_);
+                    request.payment = node->payment;
+                    request.stateMutations = node->stateMutations;
+                    lastCommandRequest_ = request;
+                    const CommandRequestHandler& handler = requestIt != commandRequestHandlers_.end()
+                                                               ? requestIt->second
+                                                               : commandRequestDispatcher_;
+                    CommandResponse response = handler(request);
+                    if (response.status == CommandResponse::Status::Failed)
+                        return fail(error, response.error.empty() ? "conversation: command failed"
+                                                                   : response.error);
+                    if (response.status == CommandResponse::Status::Blocked) {
+                        blocked_ = true;
+                        waitingCommand_ = true;
+                        return true;
+                    }
+                    if (!node->expression.empty())
+                        locals_.set(node->expression, toDialogueStateValue(response.value));
+                } else {
+                    CommandResult result = legacyIt->second(node->arguments, bindings_, locals_);
+                    if (result.status == CommandResult::Status::Failed)
+                        return fail(error, result.error.empty() ? "conversation: command failed"
+                                                                : result.error);
+                    if (result.status == CommandResult::Status::Blocked) {
+                        blocked_ = true;
+                        waitingCommand_ = true;
+                        return true;
+                    }
+                    if (!node->expression.empty())
+                        locals_.set(node->expression, std::move(result.value));
                 }
-                if (!node->expression.empty())
-                    locals_.set(node->expression, std::move(result.value));
                 if (!enter(node->next, error)) return false;
                 break;
             }
@@ -299,13 +380,31 @@ bool ConversationRunner::restoreState(const StateValue& in, std::string* error) 
     return true;
 }
 
-bool ConversationRunner::resumeCommand(StateValue result, std::string* error) {
+eve::Result<void> ConversationRunner::resumeCommand(StateValue result) {
     const auto* node = currentNode();
     if (!node || !blocked_ || !waitingCommand_ ||
         node->kind != ConversationAsset::Node::Kind::Command)
-        return fail(error, "conversation: runner is not waiting for a command");
+        return runnerFailure(eve::DiagnosticCode::DialogueNotWaitingForCommand,
+                             "conversation: runner is not waiting for a command", "command");
+
+    StateValue before;
+    if (!captureState(before))
+        return runnerFailure(eve::DiagnosticCode::Failed,
+                             "conversation: could not capture command state", "command");
     if (!node->expression.empty()) locals_.set(node->expression, std::move(result));
-    return enter(node->next, error) && runUntilBlocked(error);
+    std::string error;
+    if (enter(node->next, &error) && runUntilBlocked(&error))
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+
+    std::string restoreError;
+    if (!restoreState(before, &restoreError) && error.empty()) error = restoreError;
+    return runnerFailure(eve::DiagnosticCode::Failed,
+                         error.empty() ? "conversation: command resume failed" : std::move(error),
+                         "command");
+}
+
+eve::Result<void> ConversationRunner::resumeCommand(eve::Value result) {
+    return resumeCommand(toDialogueStateValue(result));
 }
 
 bool ConversationRunner::advance(std::string* error) {
@@ -319,12 +418,59 @@ bool ConversationRunner::advance(std::string* error) {
 
 bool ConversationRunner::select(const std::string& routeId, std::string* error) {
     const auto* node = currentNode();
-    if (!node || !blocked_ || node->kind != ConversationAsset::Node::Kind::Choice)
-        return fail(error, "conversation: runner is not waiting for a choice");
-    for (const auto& route : node->routes) {
-        if (route.first == routeId) return enter(route.second, error) && runUntilBlocked(error);
+    if (node) {
+        for (const auto& route : node->routes) {
+            if (route.first == routeId && (!route.payment.empty() || !route.stateMutations.empty()))
+                return fail(error, "conversation: payment-bearing choice requires DialogueFlow integration");
+        }
     }
-    return fail(error, "conversation: unknown choice '" + routeId + "'");
+    auto result = selectRouteForTransaction(routeId);
+    if (result.ok()) {
+        if (error) error->clear();
+        return true;
+    }
+    if (error) *error = result.status().describe();
+    return false;
+}
+
+eve::Result<void> ConversationRunner::selectRouteForTransaction(const std::string& routeId) {
+    const auto* node = currentNode();
+    if (!node || !blocked_ || node->kind != ConversationAsset::Node::Kind::Choice)
+        return runnerFailure(eve::DiagnosticCode::DialogueNotWaitingForChoice,
+                             "conversation: runner is not waiting for a choice", "route");
+    for (const auto& route : node->routes) {
+        if (route.first != routeId) continue;
+        if (!route.condition.isNull()) {
+            if (!conditionEvaluator_)
+                return runnerFailure(eve::DiagnosticCode::PreconditionViolation,
+                                     "conversation: structured choice requires a condition evaluator",
+                                     "route.condition");
+            eve::decision::ConditionResult result = conditionEvaluator_(route.condition);
+            lastConditionResult_ = result;
+            if (!result.passed())
+                return runnerFailure(
+                    eve::DiagnosticCode::DialogueConditionRejected,
+                    "conversation: choice condition rejected (" +
+                        std::string(eve::decision::conditionReasonCodeName(result.reasonCode())) + ")",
+                    "route.condition");
+        }
+
+        StateValue before;
+        if (!captureState(before))
+            return runnerFailure(eve::DiagnosticCode::Failed,
+                                 "conversation: could not capture choice state", "route");
+        std::string error;
+        if (enter(route.second, &error) && runUntilBlocked(&error))
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+
+        std::string restoreError;
+        if (!restoreState(before, &restoreError) && error.empty()) error = restoreError;
+        return runnerFailure(eve::DiagnosticCode::Failed,
+                             error.empty() ? "conversation: choice selection failed" : std::move(error),
+                             "route");
+    }
+    return runnerFailure(eve::DiagnosticCode::DialogueRouteNotFound,
+                         "conversation: unknown choice '" + routeId + "'", "route");
 }
 
 }  // namespace eve::dialogue

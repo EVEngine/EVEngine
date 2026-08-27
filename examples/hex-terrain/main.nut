@@ -11,13 +11,16 @@ function readText(path) {
 }
 
 function rebuildWorld() {
-    local p=procgen.newParams();
+    local paramsResult=procgen.newParams();
+    if(!paramsResult.ok){ print("hex terrain parameters failed: "+paramsResult.status.summary+"\n"); return; }
+    local p=paramsResult.value;
     p.setInt("width",38); p.setInt("height",28); p.setInt("seed",hexSeed);
     p.setFloat("radius",0.62); p.setFloat("seaLevel",0.43);
     p.setFloat("heightScale",3.8); p.setInt("riverCount",6);
     p.setBool("decorations",true); p.setFloat("vegetationDensity",1.15);
-    local mesh=procgen.generateMesh("mesh.hexterrain",p,gfx);
-    if(mesh==null){ print("hex terrain: "+procgen.lastError()+"\n"); return; }
+    local meshResult=procgen.generateMesh("mesh.hexterrain",p,gfx);
+    if(!meshResult.ok){ print("hex terrain: "+meshResult.status.summary+"\n"); return; }
+    local mesh=meshResult.value;
     local shader=gfx.newMeshShaderVF(readText("shaders/hex_terrain.vert"),
                                      readText("shaders/hex_terrain.frag"));
     hexWorld=eve.Renderable3D(); hexWorld.setMesh(mesh); hexWorld.setShader(shader);

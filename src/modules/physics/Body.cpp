@@ -29,7 +29,8 @@ const char *bodyTypeName(b2BodyType t) {
 
 }  // namespace
 
-Body::Body(World *world, b2Body *body, int id) : world_(world), body_(body), id_(id) {}
+Body::Body(World *world, b2Body *body, int id, PhysicsBodyHandle runtimeHandle)
+    : world_(world), body_(body), id_(id), runtimeHandle_(runtimeHandle) {}
 
 Body::~Body() {
     if (body_ && world_ && world_->raw()) {
@@ -50,12 +51,14 @@ Body::~Body() {
     }
     body_  = nullptr;
     world_ = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 void Body::invalidate() {
     if (body_) body_->SetUserData(nullptr);
     body_  = nullptr;
     world_ = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 void Body::destroy() {
@@ -78,6 +81,7 @@ void Body::destroy() {
     world_->forgetBody(this);
     body_  = nullptr;
     world_ = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 void Body::setPosition(float x, float y) {

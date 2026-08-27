@@ -182,10 +182,10 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
     return out;
 }
 
-Poco::JSON::Object::Ptr hostJson(UIHost* host) {
+Poco::JSON::Object::Ptr hostJson(UIHost& host) {
     Poco::JSON::Object::Ptr out(new Poco::JSON::Object());
-    const auto              meta = host->meta();
-    const auto              tree = host->tree();
+    const auto              meta = host.meta();
+    const auto              tree = host.tree();
     out->set("name", meta->name);
     out->set("visible", meta->visible);
     out->set("layer", meta->layer);
@@ -196,28 +196,32 @@ Poco::JSON::Object::Ptr hostJson(UIHost* host) {
     return out;
 }
 
-std::vector<UIHost*> hosts() {
-    std::vector<UIHost*> result;
+std::vector<UIHostHandle> hosts() {
+    std::vector<UIHostHandle> result;
     if (ecs::current()->getManager<UIHost>() == nullptr) return result;
     auto view = ecs::View<UIHost, UIHost::Meta, UIHost::Tree>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [meta, tree] = *it;
         (void)tree;
-        if (meta->entity) result.push_back(meta->entity);
+        if (UIHost::resolve(meta->entity)) result.push_back(meta->entity);
     }
     return result;
 }
 
 struct WidgetMatch {
-    UIHost* host = nullptr;
-    UINode* node = nullptr;
+    UIHostHandle host{};
+    int          nodeIndex = -1;
 };
 
 std::vector<WidgetMatch> findWidgets(const std::string& hostName, const std::string& widgetId) {
     std::vector<WidgetMatch> result;
-    for (UIHost* host : hosts()) {
-        if (!hostName.empty() && host->getName() != hostName) continue;
-        if (UINode* node = host->findById(widgetId)) result.push_back({host, node});
+    for (UIHostHandle handle : hosts()) {
+        auto host = UIHost::resolve(handle);
+        if (!host || (!hostName.empty() && host->get().getName() != hostName)) continue;
+        auto node = host->get().findById(widgetId);
+        if (!node) continue;
+        const auto tree = host->get().tree();
+        result.push_back({handle, static_cast<int>(&node->get() - tree->nodes.data())});
     }
     return result;
 }
@@ -235,9 +239,10 @@ class UIAutomationImpl final : public eve::IUIAutomation {
 public:
     std::string tree(const std::string& hostName) const override {
         Poco::JSON::Array::Ptr items(new Poco::JSON::Array());
-        for (UIHost* host : hosts()) {
-            if (!hostName.empty() && host->getName() != hostName) continue;
-            items->add(hostJson(host));
+        for (UIHostHandle handle : hosts()) {
+            auto host = UIHost::resolve(handle);
+            if (!host || (!hostName.empty() && host->get().getName() != hostName)) continue;
+            items->add(hostJson(host->get()));
         }
         if (!hostName.empty() && items->size() == 0) return "error: UI host not found: " + hostName;
 
@@ -250,35 +255,41 @@ public:
     std::string get(const std::string& hostName, const std::string& widgetId) const override {
         const std::vector<WidgetMatch> matches = findWidgets(hostName, widgetId);
         if (matches.size() != 1) return matchError(hostName, widgetId, matches.size());
-
-        Poco::JSON::Object::Ptr out =
-            nodeJson(*matches[0].host->tree(), nodeIndex(*matches[0].host->tree(), matches[0].node));
-        out->set("host", matches[0].host->getName());
-        out->set("hostVisible", matches[0].host->meta()->visible);
+        auto host = UIHost::resolve(matches[0].host);
+        if (!host) return "error: UI host became stale";
+        Poco::JSON::Object::Ptr out = nodeJson(*host->get().tree(), matches[0].nodeIndex);
+        out->set("host", host->get().getName());
+        out->set("hostVisible", host->get().meta()->visible);
         return stringify(Poco::Dynamic::Var(out));
     }
 
     std::string click(const std::string& hostName, const std::string& widgetId) override {
         const std::vector<WidgetMatch> matches = findWidgets(hostName, widgetId);
         if (matches.size() != 1) return matchError(hostName, widgetId, matches.size());
-        UIHost* host = matches[0].host;
-        UINode* node = matches[0].node;
-        if (!host->meta()->visible || !node->visible)
-            return "error: widget is not visible: " + host->getName() + "/" + widgetId;
-        if (!isClickable(*node)) return "error: widget is not clickable: " + host->getName() + "/" + widgetId;
+        auto host = UIHost::resolve(matches[0].host);
+        if (!host) return "error: UI host became stale";
+        UIHost& resolvedHost = host->get();
+        const auto tree = resolvedHost.tree();
+        if (matches[0].nodeIndex < 0 || matches[0].nodeIndex >= static_cast<int>(tree->nodes.size()))
+            return "error: UI widget became stale";
+        UINode& node = tree->nodes[static_cast<std::size_t>(matches[0].nodeIndex)];
+        if (!resolvedHost.meta()->visible || !node.visible)
+            return "error: widget is not visible: " + resolvedHost.getName() + "/" + widgetId;
+        if (!isClickable(node))
+            return "error: widget is not clickable: " + resolvedHost.getName() + "/" + widgetId;
 
         UIEvent event;
-        event.host         = host;
-        event.hostName     = host->getName();
-        event.nodeId       = node->id;
-        event.nodeIndex    = nodeIndex(*host->tree(), node);
+        event.host         = matches[0].host;
+        event.hostName     = resolvedHost.getName();
+        event.nodeId       = node.id;
+        event.nodeIndex    = matches[0].nodeIndex;
         event.kind         = "click";
-        event.handlerIndex = node->handlerClick;
+        event.handlerIndex = node.handlerClick;
         UISystem::pendingEvents().push_back(std::move(event));
 
         Poco::JSON::Object::Ptr out(new Poco::JSON::Object());
         out->set("queued", true);
-        out->set("host", host->getName());
+        out->set("host", resolvedHost.getName());
         out->set("widget", widgetId);
         out->set("event", "click");
         return stringify(Poco::Dynamic::Var(out));

@@ -1,5 +1,6 @@
 #include "animation/AnimLayerMixer.h"
 
+#include "animation/AnimationTime.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimSkeleton.h"
 #include "common/Exception.h"
@@ -163,11 +164,9 @@ void AnimLayerMixer::applyAdditive(const Layer& layer) {
     }
 }
 
-void AnimLayerMixer::update(float dt) {
-    if (dt < 0.f) throw Exception("AnimLayerMixer.update: dt must be >= 0");
+void AnimLayerMixer::compose() {
     events_.clear();
     if (basePlayer_) {
-        basePlayer_->update(dt);
         pose_.copyFrom(basePlayer_->getPose());
         collectEvents("base", basePlayer_);
     } else {
@@ -175,7 +174,6 @@ void AnimLayerMixer::update(float dt) {
     }
     for (const Layer& layer : layers_) {
         if (!layer.enabled || !layer.player) continue;
-        layer.player->update(dt);
         if (layer.weight <= 0.f) continue;
         collectEvents(layer.name, layer.player);
         if (layer.additive)
@@ -184,6 +182,46 @@ void AnimLayerMixer::update(float dt) {
             applyOverride(layer);
     }
     pose_.computeWorld(skeleton_);
+}
+
+eve::Result<void> AnimLayerMixer::advance(const eve::SimulationStep& step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "AnimLayerMixer");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    (void)std::move(seconds).takeValue();
+
+    // The mixer owns the evaluation boundary: all referenced players consume
+    // the same injected step before their poses are combined.
+    if (basePlayer_ && basePlayer_->hasCurrentTick() && step.tick <= basePlayer_->currentTick())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "animation mixer base player already consumed this tick"));
+    for (const Layer& layer : layers_) {
+        if (layer.enabled && layer.player && layer.player->hasCurrentTick() &&
+            step.tick <= layer.player->currentTick())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "animation mixer layer player already consumed this tick"));
+    }
+    if (basePlayer_) {
+        auto result = basePlayer_->advance(step);
+        if (!result) return eve::Result<void>::failure(result.status());
+    }
+    for (const Layer& layer : layers_) {
+        if (!layer.enabled || !layer.player) continue;
+        auto result = layer.player->advance(step);
+        if (!result) return eve::Result<void>::failure(result.status());
+    }
+    compose();
+    lastTick_ = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void AnimLayerMixer::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "AnimLayerMixer");
+    if (!step) {
+        step.ignore("legacy AnimLayerMixer update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy AnimLayerMixer update");
 }
 
 std::string AnimLayerMixer::getEventLayer(int index) const {

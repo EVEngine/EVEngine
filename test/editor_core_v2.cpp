@@ -41,6 +41,24 @@ TEST_CASE("editor.v2.strong_ids_and_values") {
     CHECK(!value.withinLimits(4, 16, 4));
 }
 
+TEST_CASE("editor.v2.idsUseCommonUuidAdapterWithLegacyParse") {
+    const auto legacy = CommandId::parse("scene.object.create");
+    REQUIRE(legacy.has_value());
+    CHECK(!legacy->isCanonicalUuid());
+    CHECK_EQ(legacy->value(), std::string("scene.object.create"));
+
+    const auto projected = canonicalUuid(*legacy);
+    const auto canonical = CommandId::fromUuid(projected);
+    CHECK(canonical.isCanonicalUuid());
+    CHECK_EQ(canonical.uuid(), projected);
+    CHECK_EQ(canonical.canonicalFormat(), projected.format());
+
+    const auto parsed = CommandId::parse("01020304-0506-0708-090a-0b0c0d0e0f10");
+    REQUIRE(parsed.has_value());
+    CHECK(parsed->isCanonicalUuid());
+    CHECK_EQ(parsed->value(), std::string("01020304-0506-0708-090a-0b0c0d0e0f10"));
+}
+
 TEST_CASE("editor.v2.host_profile_is_an_execution_boundary") {
     const CommandId place("scene.asset.place");
     const CommandId importAsset("asset.import");

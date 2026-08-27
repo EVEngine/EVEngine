@@ -2,6 +2,7 @@
 #include "common/Assert.h"
 #include "common/ECS.h"
 #include "common/Runtime.h"
+#include "common/SquirrelBinding.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -55,20 +56,22 @@ void ModuleManager::register_module(const char* name, creator_t c, exposer_t e) 
     }
 }
 
-bool ModuleManager::beginPluginRegistration() {
+eve::Result<void> ModuleManager::beginPluginRegistration() {
     auto& manager = inst();
     if (manager.plugin_registration_active_)
-        return false;
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "a plugin registration transaction is already active", {}, {}, "module"));
     manager.plugin_registration_active_ = true;
     manager.plugin_registration_added_.clear();
     manager.plugin_registration_error_.clear();
-    return true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-std::string ModuleManager::finishPluginRegistration(bool commit) {
+eve::Result<void> ModuleManager::finishPluginRegistration(bool commit) {
     auto& manager = inst();
     if (!manager.plugin_registration_active_)
-        return "no plugin registration transaction is active";
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "no plugin registration transaction is active", {}, {}, "module"));
 
     const std::string error = manager.plugin_registration_error_;
     if (!commit || !error.empty()) {
@@ -83,7 +86,11 @@ std::string ModuleManager::finishPluginRegistration(bool commit) {
     manager.plugin_registration_active_ = false;
     manager.plugin_registration_added_.clear();
     manager.plugin_registration_error_.clear();
-    return error;
+    if (!error.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, error, {}, {}, "module"));
+    return eve::Result<void>::success(eve::Status::success(
+        commit ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
 
 void ModuleManager::exposeVM(ssq::VM& vm) {
@@ -92,6 +99,10 @@ void ModuleManager::exposeVM(ssq::VM& vm) {
     // sees an existing "eve" slot. Avoid find()+catch here: ASYNCIFY-wrapped
     // frames can drop the catch and leak NotFoundException to the JS boundary.
     table = vm.addTable("eve");
+    // Result/Status/Diagnostic projection is a common script contract, not a
+    // domain-module convenience. Expose it before module constructors run so
+    // every checked binding observes the same `eve.result` helper.
+    script::exposeResultBindings(table);
     for (auto& D : inst().registered_modules) {
         if (D.second.exposer) D.second.exposer(table);
         D.second.exposed = true;

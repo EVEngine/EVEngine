@@ -680,6 +680,43 @@ TEST_CASE("cmdline.getAndroidChecksumMismatchFails") {
     std::filesystem::remove_all(installRoot, ec);
 }
 
+TEST_CASE("cmdline.getAndroidEmptyReleaseResponseReturnsStructuredError") {
+    // A successful HTTP/file transfer may still contain zero bytes (for
+    // example, a truncated mirror response).  The installer must reject that
+    // response before ZIP parsing and expose a diagnostic through the C++ API.
+    const std::string tag = eve::cmd::sdk::sdkVersionTag();
+    const auto        rel = tempDir("eve_ut_cmdline_release_empty");
+    const auto        zipPath = rel / ("eve-sdk-android-" + tag + ".zip");
+    writeFile(zipPath, std::string{});
+    writeFile(rel / "SHA256SUMS", "");
+    const auto installRoot = tempDir("eve_ut_cmdline_eve_sdk_install_empty");
+
+    ScopedEnv baseEnv("EVE_SDK_BASE_URL", fileUrl(rel));
+    ScopedEnv tagEnv("EVE_SDK_TAG", tag);
+    ScopedEnv rootEnv("EVE_SDK_INSTALL_ROOT", installRoot.string());
+
+    {
+        CaptureStreams cap;
+        auto result = eve::cmd::sdk::installEveSdk(eve::cmd::sdk::Platform::Android);
+        REQUIRE(!result.ok());
+        CHECK(result.code() == eve::StatusCode::Failed);
+        const auto* diagnostic = result.error();
+        REQUIRE(diagnostic != nullptr);
+        CHECK(diagnostic->code() == eve::DiagnosticCode::Failed);
+        CHECK(diagnostic->path().find("eve-sdk-android-" + tag + ".zip") != std::string::npos);
+    }
+
+    // The CLI projection must also fail cleanly, without publishing an SDK.
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "get", "android"});
+    REQUIRE(rc == 3);
+    CHECK(cap.all().find("empty or unreadable response") != std::string::npos);
+    std::error_code ec;
+    CHECK(!std::filesystem::exists(installRoot / "android", ec));
+    std::filesystem::remove_all(rel, ec);
+    std::filesystem::remove_all(installRoot, ec);
+}
+
 TEST_CASE("cmdline.buildAndroidUsesGetInstalledSdk") {
     // `eve get android` 安装的 SDK 应能被 build 自动发现（无 --sdk / EVENGINE_SDK）。
     const auto installRoot = tempDir("eve_ut_cmdline_eve_sdk_use");

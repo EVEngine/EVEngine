@@ -18,9 +18,10 @@ public:
 
     virtual WidgetDesc build() = 0;
 
-    void attach(UIHost *host);
+    void attach(UIHostHandle host);
     void mountAs(const std::string &hostName);
-    UIHost *host() const { return host_; }
+    /** @brief Returns the attached host handle, or an empty handle before attach. */
+    [[nodiscard]] UIHostHandle host() const noexcept { return host_; }
 
     /** @brief Rebuild tree onto host (reconcile by key when possible). */
     void rebuild(bool forceFull = false);
@@ -36,7 +37,7 @@ protected:
     void setState() { dirty_ = true; }
 
 private:
-    UIHost *host_ = nullptr;
+    UIHostHandle host_{};
     bool dirty_ = true;
 };
 

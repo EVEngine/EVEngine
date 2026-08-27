@@ -77,7 +77,14 @@ public:
 };
 
 UINode* nodeById(UIHost* host, const std::string& id) {
-    return host ? host->findById(id) : nullptr;
+    if (host == nullptr) return nullptr;
+    auto node = host->findById(id);
+    return node ? &node->get() : nullptr;
+}
+
+UIHost* resolveHost(UIHostHandle handle) {
+    auto host = UIHost::resolve(handle);
+    return host ? &host->get() : nullptr;
 }
 
 }  // namespace
@@ -90,7 +97,7 @@ TEST_CASE("scenePanel.treeSelectionAndNodeEditing") {
 
     ScenePanel panel;
     panel.open();
-    UIHost* host = panel.host();
+    UIHost* host = resolveHost(panel.host());
     REQUIRE(host != nullptr);
     REQUIRE(nodeById(host, "node_root") != nullptr);
     REQUIRE(nodeById(host, "node_hero") != nullptr);

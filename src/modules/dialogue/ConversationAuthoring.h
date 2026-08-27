@@ -92,9 +92,6 @@ public:
     int getDiagnosticLine(int index) const;
     /** @brief Return a diagnostic message. */
     std::string getDiagnosticMessage(int index) const;
-    /** @brief Return the last failed authoring operation message. */
-    const std::string& getLastError() const { return lastError_; }
-
 private:
     ConversationAsset::Node*       findNode(const std::string& nodeId);
     const ConversationAsset::Node* findNode(const std::string& nodeId) const;
@@ -102,7 +99,7 @@ private:
 
     ConversationAsset                   asset_;
     std::vector<ConversationDiagnostic> diagnostics_;
-    std::string                         lastError_;
+    std::string                         failureMessage_;
 };
 
 }  // namespace eve::dialogue

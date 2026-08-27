@@ -35,6 +35,7 @@
 #include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/GraphicsCapabilities.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
@@ -57,6 +58,7 @@ namespace eve::graphics::vulkan {
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
 Graphics::~Graphics() {
+    detachGraphicsArtifactProvider(this);
     if (!initialized) return;
     device->waitIdle();
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them

@@ -34,6 +34,11 @@ public:
      * @param gravityX gravity X in pixels/s²
      * @param gravityY gravity Y in pixels/s²
      * @param sleep allow sleeping bodies
+     * @return Owning nullable world pointer; the caller is responsible for deleting the wrapper.
+     * @ownership Ownership transfers to the caller; the Physics module does not retain the wrapper.
+     * @lifetime Valid until caller destruction; call World::destroy() before releasing backend resources.
+     * @thread Create and use on the owning physics thread.
+     * @reentrancy The factory invokes no callbacks; do not re-enter physics mutation while using the result.
      */
     World *newWorld(float gravityX, float gravityY, bool sleep = true);
 
@@ -44,10 +49,22 @@ public:
      * @param gravityY gravity Y in m/s²
      * @param gravityZ gravity Z in m/s²
      * @param sleep allow sleeping bodies
+     * @return Owning nullable world pointer; the caller is responsible for deleting the wrapper.
+     * @ownership Ownership transfers to the caller; the Physics module does not retain the wrapper.
+     * @lifetime Valid until caller destruction; call World3D::destroy() before releasing backend resources.
+     * @thread Create and use on the owning physics thread.
+     * @reentrancy The factory invokes no callbacks; do not re-enter physics mutation while using the result.
      */
     World3D *newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep = true);
 
-    /** @brief Create a regular 3D signed-distance grid for map collision queries. */
+    /**
+     * @brief Create a regular 3D signed-distance grid for map collision queries.
+     * @return Owning nullable field pointer transferred to the caller.
+     * @ownership The caller owns the returned field and must delete it after use.
+     * @lifetime Valid until caller destruction; it is not retained by Physics.
+     * @thread Create and use on the owning physics thread.
+     * @reentrancy The factory invokes no callbacks.
+     */
     DistanceField3D *newDistanceField3D(int width, int height, int depth, float cellSize,
                                         float originX = 0.f, float originY = 0.f,
                                         float originZ = 0.f, float outsideDistance = 1e6f);
@@ -59,6 +76,11 @@ public:
      * @param spacing particle spacing in pixels
      * @param originX top-left X in pixels
      * @param originY top-left Y in pixels
+     * @return Owning nullable cloth pointer transferred to the caller.
+     * @ownership The caller owns the returned cloth and must delete it after use.
+     * @lifetime Valid until caller destruction; it is not retained by Physics.
+     * @thread Create and use on the owning physics thread.
+     * @reentrancy The factory invokes no callbacks.
      */
     Cloth *newCloth(int cols, int rows, float spacing, float originX, float originY);
 
@@ -70,6 +92,11 @@ public:
      * @param originX top-left X (meters)
      * @param originY top-left Y (meters)
      * @param originZ top-left Z (meters)
+     * @return Owning nullable cloth pointer transferred to the caller.
+     * @ownership The caller owns the returned cloth and must delete it after use.
+     * @lifetime Valid until caller destruction; it is not retained by Physics.
+     * @thread Create and use on the owning physics thread.
+     * @reentrancy The factory invokes no callbacks.
      */
     Cloth3D *newCloth3D(int cols, int rows, float spacing, float originX, float originY,
                         float originZ);
@@ -83,12 +110,22 @@ public:
      * @param spacing particle spacing in pixels
      * @param originX top-left X (pixels)
      * @param originY top-left Y (pixels)
+     * @return Owning nullable GPU cloth pointer transferred to the caller.
+     * @ownership The caller owns the returned cloth; its GPU resources are released on destruction.
+     * @lifetime Valid until caller destruction; it is not retained by Physics.
+     * @thread Create and use on the owning physics/render thread.
+     * @reentrancy The factory invokes no callbacks.
      */
     ClothGPU *newClothGPU(int cols, int rows, float spacing, float originX, float originY);
 
     /**
      * @brief Create an SPH fluid container with particle capacity.
      * @param capacity max particles (>= 1)
+     * @return Owning nullable fluid pointer transferred to the caller.
+     * @ownership The caller owns the returned fluid and must delete it after use.
+     * @lifetime Valid until caller destruction; it is not retained by Physics.
+     * @thread Create and use on the owning physics thread.
+     * @reentrancy The factory invokes no callbacks.
      */
     Fluid *newFluid(int capacity = 512);
 

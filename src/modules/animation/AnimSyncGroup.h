@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Time.h"
+
 #include <vector>
 
 namespace eve::animation {
@@ -14,7 +16,9 @@ public:
     int getCount() const { return static_cast<int>(entries_.size()); }
     void setLeader(int index);
     int getLeader() const { return leader_; }
-    /** @brief Advance the leader and align followers by common markers, or normalized phase as fallback. */
+    /** @brief Advance and synchronize all players using one scheduler step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
     float getPhase() const { return phase_; }
     /** @brief Whether the latest update used compatible sync markers for at least one follower. */
@@ -26,6 +30,8 @@ private:
     int leader_ = 0;
     float phase_ = 0.f;
     bool usedMarkerSync_ = false;
+    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
+    bool hasLastTick_ = false;
 };
 
 }  // namespace eve::animation

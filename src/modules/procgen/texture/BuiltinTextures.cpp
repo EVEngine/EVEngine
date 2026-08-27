@@ -41,14 +41,14 @@ float voronoiDist(const NoiseField &n, float x, float y) {
     return std::sqrt(best);
 }
 
-image::ImageData *makeFromHeightFn(const Params &params, std::string &error,
-                                   const TextureRecipeDef &def) {
+std::unique_ptr<image::ImageData> makeFromHeightFn(const Params &params, std::string &error,
+                                                   const TextureRecipeDef &def) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto *img = new image::ImageData(ctx.width, ctx.height, "RGBA8");
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     std::vector<float> height;
     fillHeightField(ctx, def.height, height);
     paintHeightToImage(*img, height, ctx.width, ctx.height, def.albedo, ctx.colors, ctx.pixelSize);
@@ -421,13 +421,13 @@ CloudField::Params cloudFieldFromParams(const Params &params) {
 }
 
 /** tex.cloud: standalone billowy cloud cover (white puffs on translucent sky). */
-image::ImageData *genCloud(const Params &params, std::string &error) {
+std::unique_ptr<image::ImageData> genCloud(const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto *img = new image::ImageData(ctx.width, ctx.height, "RGBA8");
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     ColorRamp ramp;
     ramp.add(0.00f, 90, 140, 205);
     ramp.add(0.30f, 168, 205, 238);
@@ -444,13 +444,13 @@ image::ImageData *genCloud(const Params &params, std::string &error) {
 }
 
 /** tex.cloud_shadow: projected cloud coverage cast on the ground (white = dense shadow). */
-image::ImageData *genCloudShadow(const Params &params, std::string &error) {
+std::unique_ptr<image::ImageData> genCloudShadow(const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto *img = new image::ImageData(ctx.width, ctx.height, "RGBA8");
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     ColorRamp ramp;
     ramp.add(0.00f, 18, 20, 26);   // clear (lit)
     ramp.add(0.30f, 60, 62, 70);

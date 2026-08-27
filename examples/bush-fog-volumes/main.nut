@@ -34,7 +34,9 @@ function bfMaterial() {
 }
 
 function bfBush(seed, x, z, scale) {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return null;
+    local p = paramsResult.value;
     p.setSeed(seed);
     p.setString("style", "mound");
     p.setString("leafMode", "mixed");
@@ -47,7 +49,9 @@ function bfBush(seed, x, z, scale) {
     p.setFloat("leafSize", 0.34);
     p.setInt("twigs", 7);
     local object = eve.Renderable3D();
-    object.setMesh(procgen.generateMesh("mesh.bush", p, gfx));
+    local meshResult = procgen.generateMesh("mesh.bush", p, gfx);
+    if (!meshResult.ok) return null;
+    object.setMesh(meshResult.value);
     object.setPosition(x, 0.0, z);
     object.setScale(scale, scale, scale);
     object.setYaw((seed % 11) * 0.31);

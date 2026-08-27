@@ -1,5 +1,10 @@
 #pragma once
 
+#include "common/Result.h"
+#include "common/Subscription.h"
+
+#include <cstdint>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -22,6 +27,14 @@ class AnimClip;
  */
 class AnimClipRegistry {
 public:
+    /** @brief Owning event value emitted after an EVA path reload attempt. */
+    struct ReloadEvent {
+        std::string path;
+        int         clipsRefreshed = 0;
+        bool        succeeded      = false;
+    };
+    using ReloadCallback = std::function<void(const ReloadEvent&)>;
+
     /** @brief Track a clip under a source path (keys are normalized). */
     static void registerPath(const std::string& path, AnimClip* clip);
     /** @brief Forget a clip everywhere (called from ~AnimClip). */
@@ -31,11 +44,18 @@ public:
     /** @brief Whether any clip is registered under this path. */
     static bool hasPath(const std::string& path);
     /**
-     * @brief Re-import the source and adopt into every registered clip.
-     * @return number of clips refreshed (0 when the path is unknown or the
-     *         source cannot be re-imported).
+     * @brief Reload a path and report a structured import failure.
+     * @return Refreshed clip count; an unknown path is a successful NoOp.
+     * @remarks The reload mutation is completed before listeners run. Listener
+     *          exceptions are contained and counted, never used to roll back
+     *          adopted clips.
      */
-    static int reloadPath(const std::string& path);
+    [[nodiscard]] static eve::Result<int> reloadPath(const std::string& path);
+    /** @brief Subscribe to reload attempts; token disposal is owner-thread-affine. */
+    [[nodiscard("retain Subscription or explicitly dispose it")]] static eve::Subscription subscribeReload(
+        ReloadCallback callback);
+    /** @brief Number of reload listener exceptions contained so far. */
+    [[nodiscard]] static std::uint64_t reloadCallbackFailureCount();
     /** @brief Total registered clips (tests). */
     static int count();
     /** @brief Drop all entries (tests). */

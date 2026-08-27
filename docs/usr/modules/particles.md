@@ -15,6 +15,16 @@ particles.update(dt);
 particles.render(gfx);
 ```
 
+## 配置热重载观察
+
+`setAutoReload(true)`（默认开启）后，模块会在 `pollConfigs()` 或模块更新阶段
+观察绑定配置文件的修改时间。`getConfigReloadObservation()` 返回最近一次明确观察
+到的状态字符串：`"unbound"`（没有绑定配置文件）、
+`"mtime_polling_unchanged"`（文件未改变）、`"mtime_polling_reloaded"`（已重新加载）、
+`"mtime_unavailable"`（无法取得文件修改时间）或
+`"mtime_polling_reload_failed"`（检测到变化但重新加载失败）。该接口只报告观察结果，
+不会代替 `reloadConfig()`；读取失败时发射器仍保留原配置，调用方可据此记录诊断或重试。
+
 ## 版本化多发射器特效资产
 
 复杂特效应保存为 `eve.particle-effect` 资产，而不是让玩法脚本逐个拼装发射器。版本 1 支持命名层、嵌入式发射器配置或外部 `config` 引用、局部偏移/旋转、禁用层、资产参数默认值和逐层参数覆盖。
@@ -421,7 +431,7 @@ embers.start();
 - `getMaxParticles()`、`getMaxSimulatedEmitters()`、`getQualityLevel()`、`getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()`、`getLastRenderMs()`
 - `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
 - `hasFloatParameter()`、`hasSkinSource()`、`isActive()`、`isAttached()`、`isGpuFeatureSetSupported()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEffectFromFile()`、`newEffectFromText()`、`newEmitter()`、`newEmitterFromFile()`
-- `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`
+- `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`getConfigReloadObservation()`
 - `setAutoRandomSeed()`、`setBlendMode()`、`setBudget()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setCullingMode()`、`setCullDistance()`、`setDamping()`、`setDirection()`、`setDistortionStrength()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setFloatParameter()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaterialMode()`、`setMaxDeltaTime()`、`setMaxSpawnPerFrame()`、`setMinimumQuality()`、`setNoise()`、`setNormalTexture()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setPriority()`、`setQualityLevel()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
 - `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setRotation()`、`setScale()`、`setSizeVariation()`
 - `setSizes()`、`setSkinBoneFilter()`、`setSkinBoneFilterByName()`、`setSkinPlane()`、`setSkinScale()`、`setSkinSource()`、`setSpeed()`、`setSpin()`、`setSpread()`、`setStartRotation()`、`setTangentialAcceleration()`、`setTexture()`、`setVisible()`、`start()`

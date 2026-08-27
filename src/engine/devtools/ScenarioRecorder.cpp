@@ -2,7 +2,7 @@
 #include "devtools/Snapshot.hpp"
 
 #include "common/Module.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
@@ -20,11 +20,11 @@ ScenarioRecorder& ScenarioRecorder::instance() {
 
 void ScenarioRecorder::setObserver() {
     detachObserver();
-    eventModule_ = eve::ModuleManager::requireInstance<eve::event::Event>("Event");
+    eventModule_ = eve::ModuleManager::requireInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!eventModule_) return;
     savedObserver_ = eventModule_->pollObserver();
     eventModule_->setPollObserver(
-        [this](const eve::event::Message& m) { onEventConsumed(m); });
+        [this](const eve::platform_event::Message& m) { onEventConsumed(m); });
 }
 
 void ScenarioRecorder::detachObserver() {
@@ -91,17 +91,17 @@ void ScenarioRecorder::setErrorInfo(const std::string& report, const std::string
     if (!site.empty()) errorSite_ = site;
 }
 
-void ScenarioRecorder::onEventConsumed(const eve::event::Message& msg) {
+void ScenarioRecorder::onEventConsumed(const eve::platform_event::Message& msg) {
     if (!recording_ || !vm_) return;
     ScenarioEvent ev;
     ev.name = msg.name;
     for (const auto& a : msg.args) {
         switch (a.type) {
-            case eve::event::Variant::Type::String: ev.args.push_back(a.s); break;
-            case eve::event::Variant::Type::Int:
+            case eve::platform_event::Variant::Type::String: ev.args.push_back(a.s); break;
+            case eve::platform_event::Variant::Type::Int:
                 ev.args.push_back(std::to_string(static_cast<long long>(a.i)));
                 break;
-            case eve::event::Variant::Type::Nil: ev.args.push_back({}); break;
+            case eve::platform_event::Variant::Type::Nil: ev.args.push_back({}); break;
             default:
                 // Ptr payloads (borrowed/owned native pointers) are not serializable; drop.
                 break;
@@ -130,7 +130,7 @@ bool ScenarioRecorder::beginReplay(HSQUIRRELVM vm, const std::string& path, std:
     replay_      = true;
     replayIndex_ = 0;
     // Acquire the event module for input injection (observer stays detached).
-    eventModule_ = eve::ModuleManager::requireInstance<eve::event::Event>("Event");
+    eventModule_ = eve::ModuleManager::requireInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     return true;
 }
 
@@ -142,10 +142,10 @@ bool ScenarioRecorder::stageFrame() {
     }
     const ScenarioFrame& frame = frames_[replayIndex_++];
     for (const auto& ev : frame.events) {
-        std::vector<eve::event::Variant> args;
+        std::vector<eve::platform_event::Variant> args;
         for (const auto& a : ev.args)
-            args.push_back(eve::event::Variant::makeString(a));
-        eventModule_->push(new eve::event::Message(ev.name, args));
+            args.push_back(eve::platform_event::Variant::makeString(a));
+        eventModule_->push(new eve::platform_event::Message(ev.name, args));
     }
     return true;
 }

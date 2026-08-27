@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Time.h"
+
 #include <cstdint>
 
 namespace eve::particles {
@@ -17,6 +19,8 @@ struct ParticleBudgetConfig {
 /** @brief Counters from the most recent particle update and render pass. */
 struct ParticleFrameStats {
     uint64_t frameIndex             = 0;
+    /** @brief Simulation tick that produced the latest simulation counters. */
+    eve::SimulationTick simulationTick = eve::SimulationTick::zero();
     int      emittersTotal          = 0;
     int      emittersSimulated      = 0;
     int      emittersCulled         = 0;

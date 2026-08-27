@@ -3,6 +3,7 @@
 #include "editor/EditorProtocol.h"
 #include "editor/EditorTarget.h"
 
+#include <memory>
 #include <span>
 #include <unordered_map>
 
@@ -19,6 +20,33 @@ public:
      * @return Applied on mutation, otherwise a structured rejection/failure.
      */
     virtual EditorResult<void> applyDomainOperation(const DomainOperation& operation) = 0;
+};
+
+/**
+ * @brief Optional candidate/publish capability for atomic domain operations.
+ *
+ * A LocalWorldAuthority uses this capability for compensation. The clone is
+ * fully detached from the authoritative target; all inverse operations are
+ * applied and validated on it first. The publish operation must atomically
+ * replace the target state and must leave the target unchanged when it
+ * returns a failure. Implementations that cannot provide this contract must
+ * omit the capability and receive an explicit Unsupported result.
+ */
+class IDomainOperationTargetStaging {
+public:
+    virtual ~IDomainOperationTargetStaging() = default;
+
+    /** @brief Clone the complete domain target state into an owning candidate. */
+    [[nodiscard]] virtual std::unique_ptr<IDomainOperationTarget> cloneDomainState() const = 0;
+
+    /**
+     * @brief Atomically publish a previously validated candidate state.
+     * @param candidate Owning candidate consumed by the publish attempt.
+     * @return Applied when the candidate is installed, otherwise a failure
+     *         with the original target still unchanged.
+     */
+    [[nodiscard]] virtual EditorResult<void> commitDomainState(
+        std::unique_ptr<IDomainOperationTarget> candidate) = 0;
 };
 
 /** @brief Final validation and commit boundary for editor mutations. */

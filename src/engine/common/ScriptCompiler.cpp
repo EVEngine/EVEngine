@@ -331,7 +331,12 @@ ssq::Script ScriptCompiler::compileSource(std::string_view source, std::string_v
         refreshDependencyMetadata();
         return compiled;
     } catch (const std::exception& error) {
-        next.diagnostics.push_back(makeDiagnostic(error.what(), uri));
+        const auto failure = modules_->takeCompilationFailure();
+        next.diagnostics.push_back(makeDiagnostic(failure ? *failure : error.what(), uri));
+        if (failure) {
+            metadata_[uri] = std::move(next);
+            throw std::runtime_error(*failure);
+        }
         metadata_[uri] = std::move(next);
         throw;
     }
@@ -357,7 +362,12 @@ ssq::Script ScriptCompiler::compileFile(std::string_view path) {
         refreshDependencyMetadata();
         return compiled;
     } catch (const std::exception& error) {
-        next.diagnostics.push_back(makeDiagnostic(error.what(), uri));
+        const auto failure = modules_->takeCompilationFailure();
+        next.diagnostics.push_back(makeDiagnostic(failure ? *failure : error.what(), uri));
+        if (failure) {
+            metadata_[uri] = std::move(next);
+            throw std::runtime_error(*failure);
+        }
         metadata_[uri] = std::move(next);
         throw;
     }

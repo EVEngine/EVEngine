@@ -55,7 +55,8 @@ props such as resources, roads, farms and settlements.
   scalar fields.
 - `Grid2D`, semantic generation and hex tile systems: gameplay topology,
   pathfinding, FOV and cell costs.
-- `MeshBuild` and `generateMesh`: CPU procedural geometry and Vulkan upload.
+- `MeshBuild` and `generateMesh`: CPU procedural geometry and Vulkan upload. Squirrel callers
+  consume the canonical Result projection (`ok` then `value`).
 - PBR recipes: aligned albedo, normal, roughness, metallic, height and AO image
   generation from a shared displacement field.
 - Mesh3D custom shaders: world position, normal, UV, camera and frame lighting.

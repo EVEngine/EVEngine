@@ -2,11 +2,14 @@
 
 Run with `make run/win32-debug GAME=examples/housegen`. The example exercises the Squirrel
 generation API and prints a serializable layout. To display it, place the converted CC0 GLB kit
-under `assets/` and call the native `HouseLayout::instantiate` bridge from game code.
+under `assets/`. Native integrations call `HouseLayout::instantiate`; it returns a checked
+`Result<vector<ecs::EntityHandle>>`, so the graphics ECS world remains the sole owner of
+created entities and callers resolve handles only for the current operation.
 
 Asset provenance and the required conversion record are in `test/assets/housegen/ASSET_SOURCES.md`.
 
-Player kits should use `housegen.loadComponentsFromFile("assets/my-kit/components.json")`; relative
+Player kits should use `housegen.loadComponentsFromFile("assets/my-kit/components.json")` and
+check its structured Result; relative
 `model` paths are resolved beside that manifest. A component may override selected GLB PBR fields
 without replacing unspecified material data:
 

@@ -15,7 +15,9 @@ function pressed(k) {
 }
 
 function rebuildTree() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return;
+    local p = paramsResult.value;
     p.setSeed(treeSeed);
     p.setString("style", treeStyle);
     p.setString("branchAlgorithm", treeAlgorithm);
@@ -25,7 +27,9 @@ function rebuildTree() {
     p.setFloat("crownRadius", 2.15);
     p.setInt("branchLevels", treeStyle == "realistic" ? 3 : 2);
     p.setInt("branchCount", treeStyle == "realistic" ? 10 : 6);
-    treeMesh = procgen.generateMesh("mesh.tree", p, gfx);
+    local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
+    if (!meshResult.ok) return;
+    treeMesh = meshResult.value;
     if (treeObject == null) {
         treeObject = eve.Renderable3D();
         treeObject.setPosition(1.35, -3.0, 0.0);

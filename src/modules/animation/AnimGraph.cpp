@@ -1,6 +1,7 @@
 #include "animation/AnimGraph.h"
 
 #include "animation/AnimClip.h"
+#include "animation/AnimationTime.h"
 #include "animation/AnimSkeleton.h"
 #include "common/Exception.h"
 
@@ -253,7 +254,7 @@ const AnimPose& AnimGraph::evaluate(int id) {
     return node.cache;
 }
 
-void AnimGraph::update(float dt) {
+void AnimGraph::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("AnimGraph.update: dt must be >= 0");
     if (root_ < 0) throw Exception("AnimGraph.update: root is not set");
     for (Node& node : nodes_) {
@@ -269,6 +270,24 @@ void AnimGraph::update(float dt) {
         for (Node& n : nodes_) n.cacheGeneration = 0;
     }
     output_.copyFrom(&evaluate(root_));
+}
+
+eve::Result<void> AnimGraph::advance(const eve::SimulationStep& step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "AnimGraph");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_ = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void AnimGraph::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "AnimGraph");
+    if (!step) {
+        step.ignore("legacy AnimGraph update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy AnimGraph update");
 }
 
 }  // namespace eve::animation

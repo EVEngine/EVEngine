@@ -43,6 +43,8 @@ public:
 
     void        setMeta(const std::string &key, const std::string &value);
     std::string getMeta(const std::string &key, const std::string &defaultValue) const;
+    /** @brief Return all metadata key/value pairs in deterministic map order. */
+    const std::unordered_map<std::string, std::string> &metadata() const { return meta_; }
 
     void clearObjects();
     /** @brief Script-friendly: name/type + tile coords. */

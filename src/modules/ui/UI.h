@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Result.h"
 #include "ui/NinePatch.h"
 #include "ui/UIBackend.h"
 #include "ui/UIHost.h"
@@ -58,25 +59,82 @@ public:
     /** @brief True when the UI wants to capture keyboard input this frame. */
     bool wantCaptureKeyboard() const;
 
-    /** @brief Creates/replaces a named host from a WidgetDesc tree and selects it. */
-    UIHost *mountAs(const std::string &name, WidgetDesc root);
-    /** @brief Mounts the tree as an auto-named host and selects it. */
-    UIHost *mount(WidgetDesc root);
-    /** @brief Replaces the selected host's tree. */
-    UIHost *remount(WidgetDesc root);
-    /** @brief Remount with key reconcile (props-only when structure matches). */
-    UIHost *remountReconcile(WidgetDesc root);
-    /** @brief Creates/replaces a named host (does not select it). */
-    UIHost *remountAs(const std::string &name, WidgetDesc root);
+    /**
+     * @brief Creates/replaces a named host from a WidgetDesc tree and selects it.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown; retain the generation handle across frames.
+     * @thread Call on the UI thread.
+     * @reentrancy The operation may rebuild widgets but does not invoke external callbacks before returning.
+     */
+    [[nodiscard]] UIHostHandle mountAs(const std::string &name, WidgetDesc root);
+    /**
+     * @brief Mounts the tree as an auto-named host and selects it.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown; retain the generation handle across frames.
+     * @thread Call on the UI thread.
+     * @reentrancy The operation may rebuild widgets but does not invoke external callbacks before returning.
+     */
+    [[nodiscard]] UIHostHandle mount(WidgetDesc root);
+    /**
+     * @brief Replaces the selected host's tree.
+     * @return Borrowed nullable selected host, or null when no host is selected.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy Tree callbacks are not invoked while the returned pointer is being acquired.
+     */
+    [[nodiscard]] UIHostHandle remount(WidgetDesc root);
+    /**
+     * @brief Remount with key reconcile (props-only when structure matches).
+     * @return Borrowed nullable selected host, or null when no host is selected.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy Reconciliation callbacks are completed before the pointer is returned.
+     */
+    [[nodiscard]] UIHostHandle remountReconcile(WidgetDesc root);
+    /**
+     * @brief Creates/replaces a named host (does not select it).
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The operation does not invoke external callbacks before returning.
+     */
+    [[nodiscard]] UIHostHandle remountAs(const std::string &name, WidgetDesc root);
 
     /** @brief Selects a named host; false when it does not exist. */
     bool select(const std::string &name);
-    /** @brief Finds a host by name, or nullptr. */
-    UIHost *findHost(const std::string &name) const;
-    /** @brief Finds the host bound to an owner id, or nullptr. */
-    UIHost *findHostByOwner(uint32_t ownerId) const;
-    /** @brief Currently selected host, or nullptr. */
-    UIHost *current() const { return selected_; }
+    /**
+     * @brief Finds a host by name, or null when absent.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across host mutation.
+     */
+    [[nodiscard]] UIHostHandle findHost(const std::string &name) const;
+    /**
+     * @brief Finds the host bound to an owner id, or null when absent.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across host mutation.
+     */
+    [[nodiscard]] UIHostHandle findHostByOwner(uint32_t ownerId) const;
+    /**
+     * @brief Returns the currently selected host, or null.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UI owns the host; callers must not delete it.
+     * @lifetime Valid until selection/host removal or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across selection mutation.
+     */
+    /** @brief Returns the generation-qualified selected host handle, or empty. */
+    [[nodiscard]] UIHostHandle current() const noexcept { return selected_; }
     /** @brief Binds the selected host to a UI/scene owner id. */
     void bindOwner(uint32_t ownerId);
 
@@ -258,6 +316,7 @@ public:
      * @param tex Live engine texture retained by the caller until unregisterTexture().
      * @return Opaque backend-neutral id, or zero on failure.
      */
+    [[nodiscard("retain the UI texture registration id or explicitly handle failure")]]
     uint64_t registerTexture(graphics::Texture *tex);
     /**
      * @brief Release a texture id previously returned by registerTexture().
@@ -295,7 +354,7 @@ public:
     void setHostPercent(float w, float h);
     /**
      * Animate the selected host's window position (px) from its current value
-     * to (x, y) over durationMs (0 = jump immediately). Driven by wall clock
+     * to the target x and y over durationMs; zero jumps immediately. Driven by wall clock
      * inside beginFrameAndRender().
      */
     void animateHostPos(float x, float y, float durationMs);
@@ -306,10 +365,9 @@ public:
 
     /**
      * Script-side event callbacks (P0-3): register a closure on a node id of
-     * the selected host. onClick(id, fn) fires fn(); onChange(id, fn) fires
-     * fn(kind, value) where kind is "toggle"|"value"|"text" and value matches
-     * the widget type (bool / float / string). Handlers run inside
-     * dispatchEvents() (after the C++ callbacks and before the poll queues).
+     * the selected host. onClick registers a callback for a node; onChange
+     * registers a value callback whose kind is toggle, value or text. Handlers
+     * run inside dispatchEvents after C++ callbacks and before poll queues.
      */
     void onClick(const std::string &id, ssq::Function fn);
     void onChange(const std::string &id, ssq::Function fn);
@@ -335,10 +393,12 @@ public:
     /** Replace the selected host's tree from JSON produced by saveTreeJson(). */
     bool loadTreeJson(const std::string &json);
     /**
-     * Offscreen render target of a Viewport widget in the selected host.
-     * The game renders 2D (gfx.setCanvas) or 3D (gfx.renderScene3DToCanvas)
-     * into it each frame before ui.beginFrameAndRender(); the UI then shows it.
-     * Returns nullptr until the widget has a layout rect (first render frame).
+     * @brief Returns the offscreen render target of a selected-host Viewport widget.
+     * @return Borrowed nullable Canvas owned by Graphics; null precedes layout or when the id is absent.
+     * @ownership Graphics owns the canvas; UI only registers and presents it.
+     * @lifetime Valid until viewport recreation, graphics reset, or the next mutation that replaces the target; copy no pointer across frames.
+     * @thread Call on the render/UI thread.
+     * @reentrancy The query invokes no callbacks; do not destroy or replace the target re-entrantly.
      */
     graphics::Canvas *viewportCanvas(const std::string &id);
     bool viewportHovered(const std::string &id);
@@ -388,13 +448,29 @@ public:
      * @brief Registers a live script object in the database grid.
      * @param object Live script instance.
      * @param label  Optional display label ("" = auto "Class #n").
-     * @return Entry id, or 0 on failure.
+     * @return Explicit packed process-local ObjectHandle, or 0 on failure.
+     * @remarks This integer is a Squirrel compatibility projection. C++ code
+     *          should use ui::ObjectHandle from ObjectRegistry directly; it
+     *          is not a persistent ID.
      */
+    [[nodiscard("retain the packed UI object handle or explicitly handle failure")]]
     uint64_t dbRegister(ssq::Object object, const std::string &label);
-    /** @brief Creates + registers an instance of the selected class. */
+    /**
+     * @brief Creates and registers an instance of the selected class.
+     * @return Explicit packed process-local ObjectHandle, or 0 on failure.
+     */
+    [[nodiscard("retain the packed UI object handle or explicitly handle failure")]]
     uint64_t dbCreateInstance();
-    /** @brief Removes an entry from the database grid. */
-    bool dbUnregister(uint64_t id);
+    /**
+     * @brief Removes an entry from the database grid using its packed handle.
+     * @param id Process-local generation-qualified ObjectHandle packed for the
+     *            Squirrel-facing API.
+     * @return Applied on success, or a structured failure when the panel is
+     *         unavailable or the handle is invalid/stale.
+     * @thread Call on the UI thread.
+     */
+    [[nodiscard("inspect the database removal result or explicitly ignore it")]]
+    eve::Result<void> dbUnregister(uint64_t id);
 
     // ---- DevTools editor shell --------------------------------------------
     /** @brief Opens the menu bar and docks the inspector + database panels. */
@@ -424,17 +500,39 @@ private:
         uint64_t textureId = 0;
         NinePatchInfo info;
     };
+    /**
+     * @brief Loads or finds a nine-patch resource for one synchronous build operation.
+     * @return Borrowed nullable cache entry owned by UI.
+     * @ownership UI owns the cache entry; Graphics owns its texture.
+     * @lifetime Valid until the cache mutates, releaseNinePatches(), or UI destruction.
+     * @thread Call on the UI/render thread.
+     * @reentrancy The loader does not invoke external callbacks while returning the entry.
+     */
     NinePatchResource *loadNinePatch(const std::string &path);
     void releaseNinePatches();
 
     WidgetDesc &currentParent();
     void pushOpen(WidgetDesc d);
     bool buildComplete() const;
-    UIHost *ensureSelected(const std::string &preferredName = "");
+    /**
+     * @brief Resolves or creates the selected host for one UI operation.
+     * @return Borrowed nullable UIHost owned by the UI ECS world.
+     * @ownership UI/ECS owns the host; callers must not delete it.
+     * @lifetime Valid until host removal, replacement, or UI module teardown.
+     * @thread Call on the UI thread.
+     * @reentrancy The helper may perform host selection but invokes no external callback while returning.
+     */
+    UIHostHandle ensureSelected(const std::string &preferredName = "");
+    /**
+     * @brief Resolves the selected host for one synchronous UI operation.
+     * @return A borrowed reference when the generation-qualified handle is live.
+     * @lifetime The reference is valid only for this synchronous operation.
+     */
+    [[nodiscard]] eve::OptionalRef<UIHost> resolveSelected() const noexcept;
 
     std::unique_ptr<UIBackend> backend_;
     std::unordered_map<std::string, NinePatchResource> ninePatches_;
-    UIHost *selected_ = nullptr;
+    UIHostHandle selected_{};
 
     std::vector<WidgetDesc> openStack_;
     WidgetDesc builtRoot_;
@@ -453,7 +551,7 @@ private:
     void fireScriptHandlers(const UIEvent &ev);
 
     struct HostTween {
-        UIHost *host = nullptr;
+        UIHostHandle host{};
         float fromX = 0.f;
         float fromY = 0.f;
         float toX = 0.f;

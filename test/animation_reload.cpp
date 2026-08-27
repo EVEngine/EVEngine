@@ -92,7 +92,9 @@ TEST_CASE("animClip.reloadPathRefreshesRegisteredClips") {
 
     // Rewrite the source with different content and hot-reload.
     writeEva(kRefreshEvaPath, makeEva(2.f, 4));
-    CHECK_EQ(AnimClipRegistry::reloadPath(kRefreshEvaPath), 1);
+    auto refreshed = AnimClipRegistry::reloadPath(kRefreshEvaPath);
+    REQUIRE(refreshed.ok());
+    CHECK_EQ(std::move(refreshed).takeValue(), 1);
 
     CHECK(loaded.get() == identity);  // instance identity is stable
     CHECK(loaded->getDuration() == 2.f);
@@ -103,12 +105,15 @@ TEST_CASE("animClip.reloadPathRefreshesRegisteredClips") {
 }
 
 TEST_CASE("animClip.reloadUnknownOrBrokenPathIsNoop") {
-    CHECK_EQ(AnimClipRegistry::reloadPath("no_such_file.eva"), 0);
+    auto absent = AnimClipRegistry::reloadPath("no_such_file.eva");
+    REQUIRE(absent.ok());
+    CHECK_EQ(std::move(absent).takeValue(), 0);
 
     std::unique_ptr<AnimClip> c(new AnimClip("c"));
     AnimClipRegistry::registerPath(kBrokenEvaPath, c.get());
     writeEva(kBrokenEvaPath, "not an eva file");
-    CHECK_EQ(AnimClipRegistry::reloadPath(kBrokenEvaPath), 0);
+    auto broken = AnimClipRegistry::reloadPath(kBrokenEvaPath);
+    REQUIRE(!broken.ok());
     AnimClipRegistry::clear();
     std::remove(kBrokenEvaPath);
 }

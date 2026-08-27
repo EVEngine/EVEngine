@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Time.h"
 #include "particles/ParticleEmitter.h"
 
 #include <string>
@@ -15,8 +16,12 @@ class ParticleEffect;
 
 /**
  * @brief Particles module — factory + script binding.
- * Per-frame: ParticleConfigSystem (hot reload) → ParticleSimSystem →
- * ParticleRenderSystem. Module `update`/`render` forward to Systems.
+ * Per-frame: scheduler step → config reload → ParticleSimSystem →
+ * ParticleRenderSystem. `advance(SimulationStep)` is the deterministic entry;
+ * `update(float)` remains a compatibility facade that explicitly consumes its
+ * Result. CPU particle integration is deterministic for fixed seed/tick within
+ * float integration tolerance; resident GPU integration is tolerance-bounded
+ * and may expose a backend-specific observable particle count.
  */
 class Particles : public Module {
 public:
@@ -34,6 +39,9 @@ public:
     /** @brief Return the latest effect asset parse or load error. */
     std::string getLastEffectError() const { return lastEffectError_; }
 
+    /** @brief Advance simulation from an injected scheduler step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    /** @brief Legacy seconds facade; invalid conversion/step is explicitly consumed. */
     void update(float dt);
     void render(graphics::Graphics *gfx);
     /** @brief Explicit hot-reload poll; also invoked from update(). */

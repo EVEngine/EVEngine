@@ -1,8 +1,11 @@
 #pragma once
 
+#include "common/ECS.h"
+#include "common/Result.h"
 #include "housegen/HouseGenTypes.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve {
@@ -32,14 +35,18 @@ public:
     void clear();
     /** @brief 序列化为 JSON / 从 JSON 恢复。 */
     std::string toJson() const;
-    bool fromJson(const std::string &json, std::string *error = nullptr);
+    [[nodiscard]] eve::Result<void> fromJson(std::string_view json);
     /** @brief 校验布局是否满足组件库规则。 */
-    bool validate(const HouseComponentLibrary &library, std::string *error = nullptr) const;
-    /** @brief 把布局实例化为场景中的 Renderable3D（调用方持有）。 */
-    std::vector<graphics::Renderable3D *> instantiate(graphics::Graphics *gfx,
-                                                        model3d::Model3D *models,
-                                                        const HouseComponentLibrary &library,
-                                                        std::string *error = nullptr) const;
+    [[nodiscard]] eve::Result<void> validate(const HouseComponentLibrary &library) const;
+    /**
+     * @brief 把布局实例化为场景中的 Renderable3D ECS 实体。
+     * @return Generation-checked ECS handles; the graphics ECS world owns the entities.
+     * @remarks Callers must resolve handles before use and must not retain resolved pointers
+     *          across world mutation. Failure leaves no partially-created entities.
+     */
+    [[nodiscard]] eve::Result<std::vector<ecs::EntityHandle>> instantiate(
+        graphics::Graphics &gfx, model3d::Model3D &models,
+        const HouseComponentLibrary &library) const;
 };
 
 }  // namespace housegen

@@ -12,9 +12,25 @@
 
 using namespace eve::ui;
 
+namespace {
+
+UIHost *resolveHost(UIHostHandle handle) {
+    auto host = UIHost::resolve(handle);
+    return host ? &host->get() : nullptr;
+}
+
+UINode *findNode(UIHost *host, const std::string &id) {
+    if (host == nullptr) return nullptr;
+    auto node = host->findById(id);
+    return node ? &node->get() : nullptr;
+}
+
+}  // namespace
+
 TEST_CASE("WidgetDesc.composeNestedTree") {
     int clicks = 0;
-    UIHost *h = UIHost::createHost("nest");
+    UIHost *h = resolveHost(UIHost::createHost("nest"));
+    REQUIRE(h != nullptr);
     h->setTree(window(
         "Inventory",
         {
@@ -32,12 +48,12 @@ TEST_CASE("WidgetDesc.composeNestedTree") {
     CHECK_EQ(int(t->nodes[0].type), int(NodeType::Window));
     REQUIRE_GE(t->nodes.size(), 5u);
 
-    UINode *b = h->findById("b");
+    UINode *b = findNode(h, "b");
     REQUIRE(b != nullptr);
     REQUIRE_NE(b->handlerClick, 0u);
 
     UIEvent ev;
-    ev.host = h;
+    ev.host = h->handle();
     ev.hostName = "nest";
     ev.nodeId = "b";
     ev.kind = "click";
@@ -49,7 +65,8 @@ TEST_CASE("WidgetDesc.composeNestedTree") {
 }
 
 TEST_CASE("UIHost.setSimplePanel.buildsRetainedTree") {
-    UIHost *h = UIHost::createHost("simple");
+    UIHost *h = resolveHost(UIHost::createHost("simple"));
+    REQUIRE(h != nullptr);
     h->setSimplePanel("Inventory", "Hello", "Use");
     auto t = h->tree();
     REQUIRE_EQ(t->root, 0);
@@ -59,22 +76,23 @@ TEST_CASE("UIHost.setSimplePanel.buildsRetainedTree") {
 }
 
 TEST_CASE("UIHost.setPropsAndClickHandler") {
-    UIHost *h = UIHost::createHost("props");
+    UIHost *h = resolveHost(UIHost::createHost("props"));
+    REQUIRE(h != nullptr);
     h->setTree(window("W", {text("before", "label"), button("Go", "btn")}));
     h->setTextById("label", "after");
-    CHECK(h->findById("label")->text == "after");
+    CHECK(findNode(h, "label")->text == "after");
     h->setVisibleById("btn", false);
-    CHECK(!h->findById("btn")->visible);
+    CHECK(!findNode(h, "btn")->visible);
 
     int clicks = 0;
     CHECK(h->setClickHandler("btn", [&]() { ++clicks; }));
 
     UIEvent ev;
-    ev.host = h;
+    ev.host = h->handle();
     ev.hostName = "props";
     ev.nodeId = "btn";
     ev.kind = "click";
-    ev.handlerIndex = h->findById("btn")->handlerClick;
+    ev.handlerIndex = findNode(h, "btn")->handlerClick;
     UISystem::pendingEvents().push_back(ev);
     UISystem::dispatchEvents();
     CHECK_EQ(clicks, 1);
@@ -82,7 +100,8 @@ TEST_CASE("UIHost.setPropsAndClickHandler") {
 
 TEST_CASE("UIAutomation.semanticTreeGetAndClick") {
     int clicks = 0;
-    UIHost *host = UIHost::createHost("mcp-ui-test");
+    UIHost *host = resolveHost(UIHost::createHost("mcp-ui-test"));
+    REQUIRE(host != nullptr);
     host->setTree(window("Automation", {text("Ready", "status"),
                                         button("Add Tree", "asset-tree", [&]() { ++clicks; })}));
 
@@ -111,7 +130,8 @@ TEST_CASE("UIAutomation.semanticTreeGetAndClick") {
 }
 
 TEST_CASE("UISystem.render.headlessImGuiWalk") {
-    UIHost *h = UIHost::createHost("walk");
+    UIHost *h = resolveHost(UIHost::createHost("walk"));
+    REQUIRE(h != nullptr);
     h->setTree(window("Panel", {text("Label", "label"), button("Btn", "btn")}));
 
     // This test is headless: it drives UISystem::render() with a private ImGui

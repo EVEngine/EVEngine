@@ -2,7 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Module.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 #include "rx/Rx.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -386,8 +386,8 @@ TEST_CASE("rx.script.replaySubject") {
 TEST_CASE("rx.script.fromEvent.pump") {
     std::string out = runRxSnippet(R"(
         result <- "";
-        local ev = eve.Event();
-        local ev2 = eve.Event();
+        local ev = eve.PlatformEvent();
+        local ev2 = eve.PlatformEvent();
         local stream = rx.fromEvent("quest");
         stream.subscribe(function(v) { result += v; });
         ev.pushData("quest", "A");

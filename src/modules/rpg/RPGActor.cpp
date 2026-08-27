@@ -4,6 +4,7 @@
 #include "rpg/SkillSystem.h"
 
 #include <algorithm>
+#include <utility>
 
 namespace eve::rpg {
 
@@ -63,9 +64,17 @@ bool RPGActor::hasAttribute(const std::string &attribute) {
     return AttributeSystem::hasAttribute(this, attribute);
 }
 
+eve::Result<ModifierId> RPGActor::addAttributeModifier(AttributeModifier modifier) {
+    return AttributeSystem::addModifier(this, std::move(modifier));
+}
+
 std::string RPGActor::addAttributeModifier(const std::string &attribute, const std::string &source,
                                             const std::string &op, double value, int priority) {
     return AttributeSystem::addModifier(this, attribute, source, op, value, priority);
+}
+
+eve::Result<void> RPGActor::removeAttributeModifier(const ModifierId &modifierId) {
+    return AttributeSystem::removeModifier(this, modifierId);
 }
 
 bool RPGActor::removeAttributeModifier(const std::string &attribute, const std::string &modifierId) {
@@ -74,7 +83,8 @@ bool RPGActor::removeAttributeModifier(const std::string &attribute, const std::
 
 int RPGActor::removeAttributeModifiersBySource(const std::string &attribute,
                                                 const std::string &source) {
-    return AttributeSystem::removeModifiersBySource(this, attribute, source);
+    auto result = AttributeSystem::removeModifiersBySource(this, attribute, source);
+    return result.ok() ? result.value() : 0;
 }
 
 int RPGActor::removeAllAttributeModifiersBySource(const std::string &source) {
@@ -88,10 +98,11 @@ double RPGActor::getFinalAttribute(const std::string &attribute) {
 // ---- Status ----
 
 int RPGActor::applyEffect(const std::string &effectId, const std::string &source) {
-    return StatusSystem::apply(this, effectId, source);
+    auto result = StatusSystem::apply(this, effectId, source);
+    return result.ok() ? std::move(result).takeValue() : -1;
 }
 
-bool RPGActor::removeStatus(int instanceId) { return StatusSystem::remove(this, instanceId); }
+bool RPGActor::removeStatus(int instanceId) { return StatusSystem::remove(this, instanceId).ok(); }
 
 int RPGActor::removeStatusByEffect(const std::string &effectId) {
     return StatusSystem::removeByEffect(this, effectId);

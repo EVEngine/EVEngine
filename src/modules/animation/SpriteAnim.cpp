@@ -1,6 +1,7 @@
 #include "animation/SpriteAnim.h"
 
 #include "animation/Animation.h"
+#include "animation/AnimationTime.h"
 #include "animation/SpriteClip.h"
 #include "animation/SpriteSheet.h"
 #include "common/Exception.h"
@@ -234,7 +235,7 @@ void SpriteAnim::syncBoundQuad() {
     }
 }
 
-bool SpriteAnim::update(float dt) {
+bool SpriteAnim::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("SpriteAnim.update: dt must be >= 0");
     if (!playing_ || paused_ || !clip_) return playing_ || paused_;
 
@@ -285,6 +286,26 @@ bool SpriteAnim::update(float dt) {
     }
     syncBoundQuad();
     return true;
+}
+
+eve::Result<void> SpriteAnim::advance(const eve::SimulationStep& step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "SpriteAnim");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_ = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+bool SpriteAnim::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "SpriteAnim");
+    if (!step) {
+        step.ignore("legacy SpriteAnim update");
+        return playing_ || paused_;
+    }
+    auto result = advance(std::move(step).takeValue());
+    result.ignore("legacy SpriteAnim update");
+    return playing_ || paused_;
 }
 
 }  // namespace eve::animation

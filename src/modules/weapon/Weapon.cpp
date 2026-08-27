@@ -1,6 +1,8 @@
 #include "weapon/Weapon.h"
 
-#include "common/Json.h"
+#include "common/Value.h"
+#include "weapon/WeaponAttributes.h"
+#include "weapon/WeaponDefinitionRuntime.h"
 #include "weapon/WeaponSystem.h"
 
 #include <squirrel.h>
@@ -8,101 +10,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 
 namespace eve::weapon {
 
 Module_IMPL(Weapon, new Weapon());
 
 namespace {
-
-using eve::json::Value;
-
-bool parseDefinition(Value o, std::unordered_map<std::string, WeaponDefinition>& defs) {
-    const std::string id = o.getString("id");
-    if (id.empty()) return false;
-
-    WeaponDefinition def;
-    def.id          = id;
-    def.kind        = weaponKindFromName(o.getString("kind", "ranged"));
-    def.logic       = o.getString("logic", "projectile");
-    def.damage      = o.getFloat("damage");
-    def.penetration = o.getFloat("penetration");
-    def.range       = o.getFloat("range");
-    def.spread      = o.getFloat("spread");
-    def.fireMode    = fireModeFromName(o.getString("fireMode", "single"));
-    def.cooldown    = o.getFloat("cooldown");
-    def.arc         = o.getFloat("arc");
-
-    // 散布 bloom
-    def.spreadMin     = o.getFloat("spreadMin", def.spread);
-    def.spreadMax     = o.getFloat("spreadMax");
-    def.spreadPerShot = o.getFloat("spreadPerShot");
-    def.spreadRecover = o.getFloat("spreadRecover");
-    // 后坐力
-    def.recoilPitch   = o.getFloat("recoilPitch");
-    def.recoilYaw     = o.getFloat("recoilYaw");
-    def.recoilRecover = o.getFloat("recoilRecover");
-    // 伤害类型 / 元素
-    def.damageType    = o.getString("damageType");
-    def.element       = o.getString("element");
-    // 开镜缩放
-    def.zoomFov       = o.getFloat("zoomFov");
-
-    if (Value selector = o.get("fireModes")) {
-        // fireModes: ["single","burst","auto"]；空/缺省 = 固定 fireMode。
-        if (selector.isArray()) {
-            for (size_t i = 0; i < selector.size(); ++i) {
-                def.selectableModes.push_back(fireModeFromName(selector.at(i).asString()));
-            }
-        }
-    }
-
-    if (Value res = o.get("resource")) {
-        def.resource.kind    = ResourceKind::None;
-        const std::string rk = res.getString("kind", "none");
-        if (rk == "ammo") def.resource.kind = ResourceKind::Ammo;
-        else if (rk == "mana") def.resource.kind = ResourceKind::Mana;
-        else if (rk == "charges") def.resource.kind = ResourceKind::Charges;
-        else if (rk == "stamina") def.resource.kind = ResourceKind::Stamina;
-        def.resource.max       = res.getFloat("max");
-        def.resource.regen     = res.getFloat("regen");
-        def.resource.cost      = res.getFloat("cost");
-        def.resource.infinite  = res.getBool("infinite", def.resource.kind == ResourceKind::None);
-    }
-    if (Value stages = o.get("stages")) {
-        def.stages.windupTime  = stages.getFloat("windup");
-        def.stages.activeTime  = stages.getFloat("active");
-        def.stages.recoverTime = stages.getFloat("recover");
-    }
-
-    if (Value burst = o.get("burst")) {
-        def.burstSize     = burst.getInt("size", 1);
-        def.burstInterval = burst.getFloat("interval");
-    }
-    if (Value ammo = o.get("ammo")) {
-        def.magSize     = ammo.getInt("mag", 1);
-        def.reserveSize = ammo.getInt("reserve", 0);
-        def.reloadTime  = ammo.getFloat("reload");
-    }
-    if (Value proj = o.get("projectile")) {
-        def.projectile.type    = proj.getString("type", "shell");
-        def.projectile.speed   = proj.getFloat("speed");
-        def.projectile.gravity = proj.getFloat("gravity");
-        def.projectile.aoe     = proj.getFloat("aoe");
-        def.projectile.pelletCount  = proj.getInt("pelletCount", 1);
-        def.projectile.pelletSpread = proj.getFloat("pelletSpread");
-    }
-    if (Value fx = o.get("effects")) {
-        def.effectMuzzle = fx.getString("muzzle");
-        def.effectSound  = fx.getString("sound");
-    }
-
-    // 无资源形态（近战）默认无限触发；法力/充能/体力需显式声明。
-    if (def.resource.kind == ResourceKind::None) def.resource.infinite = true;
-
-    defs[id] = def;
-    return true;
-}
 
 template <typename T>
 T* resolve(const ecs::EntityHandle& h) {
@@ -215,6 +129,7 @@ WeaponEntity* WeaponEntity::createWeapon() {
     WeaponEntity* w = WeaponEntity::create();
     w->identity();
     w->definition();
+    w->definitionBinding();
     w->state();
     w->aim();
     return w;
@@ -264,47 +179,106 @@ Weapon::~Weapon() {
 // ---------------------------------------------------------------------------
 
 int Weapon::registerWeaponsFromJson(const std::string& json) {
-    const eve::json::Document doc = eve::json::Document::parse(json);
-    if (!doc.valid()) return 0;
-    const Value root = doc.root();
-    int         n    = 0;
-    if (root.isArray()) {
-        for (size_t i = 0; i < root.size(); ++i)
-            if (parseDefinition(root.at(i), defs_)) ++n;
-    } else if (root.isObject()) {
-        if (parseDefinition(root, defs_)) ++n;
+    auto canonical = eve::Value::fromJson(json);
+    if (!canonical) {
+        canonical.ignore("weapon definition input could not be parsed as canonical Value");
+        return 0;
+    }
+
+    int n = 0;
+    const auto publish = [this, &n](const eve::Value& value) {
+        const auto* object = value.getIf<eve::Value::Object>();
+        if (object == nullptr) return;
+        const auto id = object->find("id");
+        const auto* name = id == object->end() ? nullptr : id->second.getIf<std::string>();
+        if (name == nullptr || name->empty()) return;
+
+        auto encoded = value.toJson();
+        if (!encoded) {
+            encoded.ignore("weapon definition value could not be serialized canonically");
+            return;
+        }
+        eve::definitions::Definition source;
+        source.type = "weapon";
+        source.id = *name;
+        source.version = eve::SchemaVersion(1);
+        source.json = encoded.value();
+        auto typed = parseWeaponDefinition(source);
+        if (!typed) {
+            typed.ignore("weapon definition failed typed projection validation");
+            return;
+        }
+
+        auto current = definitionRegistry_.resolve("weapon", *name);
+        const bool exists = current.ok();
+        if (!exists && current.status().code() != eve::StatusCode::NotFound) return;
+        auto stored = exists ? definitionRegistry_.replace("weapon", *name, 1, source.json)
+                             : definitionRegistry_.insert("weapon", *name, 1, source.json);
+        if (stored) {
+            ++n;
+        } else {
+            stored.ignore("weapon definition registry rejected canonical registration");
+        }
+    };
+    const eve::Value& root = canonical.value();
+    if (const auto* array = root.getIf<eve::Value::Array>()) {
+        for (const auto& value : *array) publish(value);
+    } else {
+        publish(root);
     }
     return n;
 }
 
-void Weapon::clearWeaponDefinitions() { defs_.clear(); }
+void Weapon::clearWeaponDefinitions() {
+    while (definitionRegistry_.countType("weapon") > 0) {
+        const auto* definition = definitionRegistry_.atType("weapon", 0);
+        if (definition == nullptr) break;
+        auto result = definitionRegistry_.remove("weapon", definition->id);
+        if (!result) result.ignore("weapon definition registry removal failed");
+    }
+}
 
-int Weapon::getWeaponDefinitionCount() { return static_cast<int>(defs_.size()); }
+int Weapon::getWeaponDefinitionCount() { return definitionRegistry_.countType("weapon"); }
 
-bool Weapon::hasWeaponDefinition(const std::string& id) { return defs_.count(id) != 0; }
+bool Weapon::hasWeaponDefinition(const std::string& id) {
+    return definitionRegistry_.resolve("weapon", id).ok();
+}
 
 std::string Weapon::getWeaponDefinitionLogic(const std::string& id) {
-    const WeaponDefinition* d = findDef(id);
-    return d ? d->logic : std::string{};
+    auto definition = findDef(id);
+    if (!definition) {
+        definition.ignore("legacy scalar query returns empty for an unknown weapon definition");
+        return {};
+    }
+    return definition.value().logic;
 }
 
 float Weapon::getWeaponDefinitionDamage(const std::string& id) {
-    const WeaponDefinition* d = findDef(id);
-    return d ? d->damage : 0.f;
+    auto definition = findDef(id);
+    if (!definition) {
+        definition.ignore("legacy scalar query returns zero for an unknown weapon definition");
+        return 0.f;
+    }
+    return definition.value().damage;
 }
 
 float Weapon::getWeaponDefinitionRange(const std::string& id) {
-    const WeaponDefinition* d = findDef(id);
-    return d ? d->range : 0.f;
+    auto definition = findDef(id);
+    if (!definition) {
+        definition.ignore("legacy scalar query returns zero for an unknown weapon definition");
+        return 0.f;
+    }
+    return definition.value().range;
 }
 
 void Weapon::registerLogic(IWeaponLogic* logic) { WeaponSystem::registerLogic(logic); }
 
 int Weapon::getLogicCount() { return WeaponSystem::logicCount(); }
 
-const WeaponDefinition* Weapon::findDef(const std::string& id) const {
-    auto it = defs_.find(id);
-    return it == defs_.end() ? nullptr : &it->second;
+eve::Result<WeaponDefinition> Weapon::findDef(const std::string& id) const {
+    auto resolved = definitionRegistry_.resolve("weapon", id);
+    if (!resolved) return eve::Result<WeaponDefinition>::failure(resolved.status());
+    return parseWeaponDefinition(resolved.value().get());
 }
 
 // ---------------------------------------------------------------------------
@@ -312,31 +286,37 @@ const WeaponDefinition* Weapon::findDef(const std::string& id) const {
 // ---------------------------------------------------------------------------
 
 WeaponEntity* Weapon::newWeapon(const std::string& defId) {
-    const WeaponDefinition* d = findDef(defId);
-    if (d == nullptr) return nullptr;
+    auto definition = findDef(defId);
+    if (!definition) {
+        definition.ignore("legacy nullable factory returns null for an unknown weapon definition");
+        return nullptr;
+    }
+    WeaponDefinition d = std::move(definition).takeValue();
 
     WeaponEntity* w         = WeaponEntity::createWeapon();
     w->identity()->id       = defId + "#" + std::to_string(nextInstance_++);
     w->identity()->defId    = defId;
-    w->definition()->def    = d;
-    w->state()->stages      = &d->stages;
-    w->state()->selector    = d->fireMode;
-    w->state()->currentSpread = d->spreadMin;
+    w->definition()->owned  = std::make_shared<const WeaponDefinition>(std::move(d));
+    w->definition()->def    = w->definition()->owned.get();
+    w->state()->stages      = &w->definition()->def->stages;
+    const WeaponDefinition& storedDefinition = *w->definition()->def;
+    w->state()->selector    = storedDefinition.fireMode;
+    w->state()->currentSpread = storedDefinition.spreadMin;
 
     // 运行时资源：热武器 ammo 映射到弹匣/备用；其余形态从模板 resource 拷贝。
     Resource& r = w->state()->resource;
-    r.kind      = d->resource.kind;
-    r.max       = d->resource.max;
-    r.regen     = d->resource.regen;
-    r.cost      = d->resource.cost;
-    r.infinite  = d->resource.infinite;
-    if (d->kind == WeaponKind::Ranged) {
+    r.kind      = storedDefinition.resource.kind;
+    r.max       = storedDefinition.resource.max;
+    r.regen     = storedDefinition.resource.regen;
+    r.cost      = storedDefinition.resource.cost;
+    r.infinite  = storedDefinition.resource.infinite;
+    if (storedDefinition.kind == WeaponKind::Ranged) {
         r.kind     = ResourceKind::Ammo;
-        r.max      = static_cast<float>(d->magSize);
-        r.value    = static_cast<float>(d->magSize);
+        r.max      = static_cast<float>(storedDefinition.magSize);
+        r.value    = static_cast<float>(storedDefinition.magSize);
         r.cost     = 1.f;
-        r.reserve  = d->reserveSize < 0 ? 0 : d->reserveSize;
-        r.infinite = d->reserveSize < 0;
+        r.reserve  = storedDefinition.reserveSize < 0 ? 0 : storedDefinition.reserveSize;
+        r.infinite = storedDefinition.reserveSize < 0;
     } else {
         r.value = r.infinite ? 0.f : r.max;
     }

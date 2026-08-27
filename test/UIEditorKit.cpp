@@ -13,8 +13,32 @@
 
 using namespace eve::ui;
 
+namespace {
+
+UIHost* resolveHost(UIHostHandle handle) {
+    auto host = UIHost::resolve(handle);
+    return host ? &host->get() : nullptr;
+}
+
+UIHost* createHost(const std::string& name) {
+    return resolveHost(UIHost::createHost(name));
+}
+
+UINode* findNode(UIHost* host, const std::string& id) {
+    if (host == nullptr) return nullptr;
+    auto node = host->findById(id);
+    return node ? &node->get() : nullptr;
+}
+
+UINode* findNode(UI& ui, const std::string& id) {
+    return findNode(resolveHost(ui.current()), id);
+}
+
+}  // namespace
+
 TEST_CASE("UI.editorKit.declarativeComponents") {
-    UIHost* host = UIHost::createHost("editor_kit");
+    UIHost* host = createHost("editor_kit");
+    REQUIRE(host != nullptr);
     applyTree(host, window("Editor",
                            {menuBar({menu("File", {menuItem("Save", "Ctrl+S", "save")}, "file")}, "main_menu"),
                             searchField("Search assets", "", "search").withTooltip("Filter assets"),
@@ -22,17 +46,17 @@ TEST_CASE("UI.editorKit.declarativeComponents") {
                             card({toggleSwitch("Visible", true, "visible"), badge("Modified", "state")}, "details")},
                            "root"));
 
-    CHECK(int(host->findById("main_menu")->type) == int(NodeType::MenuBar));
-    CHECK(int(host->findById("file")->type) == int(NodeType::Menu));
-    CHECK(int(host->findById("save")->type) == int(NodeType::MenuItem));
-    CHECK(host->findById("save")->valueText == "Ctrl+S");
-    CHECK(int(host->findById("search")->type) == int(NodeType::SearchField));
-    CHECK(host->findById("search")->tooltip == "Filter assets");
-    CHECK(int(host->findById("properties")->type) == int(NodeType::SectionHeader));
-    CHECK(int(host->findById("details")->type) == int(NodeType::Card));
-    CHECK(int(host->findById("visible")->type) == int(NodeType::Switch));
-    CHECK(host->findById("visible")->checked);
-    CHECK(int(host->findById("state")->type) == int(NodeType::Badge));
+    CHECK(int(findNode(host, "main_menu")->type) == int(NodeType::MenuBar));
+    CHECK(int(findNode(host, "file")->type) == int(NodeType::Menu));
+    CHECK(int(findNode(host, "save")->type) == int(NodeType::MenuItem));
+    CHECK(findNode(host, "save")->valueText == "Ctrl+S");
+    CHECK(int(findNode(host, "search")->type) == int(NodeType::SearchField));
+    CHECK(findNode(host, "search")->tooltip == "Filter assets");
+    CHECK(int(findNode(host, "properties")->type) == int(NodeType::SectionHeader));
+    CHECK(int(findNode(host, "details")->type) == int(NodeType::Card));
+    CHECK(int(findNode(host, "visible")->type) == int(NodeType::Switch));
+    CHECK(findNode(host, "visible")->checked);
+    CHECK(int(findNode(host, "state")->type) == int(NodeType::Badge));
 }
 
 TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
@@ -85,38 +109,41 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     CHECK(json.find("menuItem") != std::string::npos);
     CHECK(json.find("splitPane") != std::string::npos);
     CHECK(ui->loadTreeJson(json));
-    CHECK(int(ui->current()->findById("enabled")->type) == int(NodeType::Switch));
-    CHECK(!ui->current()->findById("active")->enabled);
-    CHECK(ui->current()->findById("search")->tooltip == "Filter scene nodes");
-    CHECK(ui->current()->findById("search")->tabIndex == 4);
-    CHECK(int(ui->current()->findById("search")->mouseFilter) ==
+    CHECK(int(findNode(*ui, "enabled")->type) == int(NodeType::Switch));
+    CHECK(!findNode(*ui, "active")->enabled);
+    CHECK(findNode(*ui, "search")->tooltip == "Filter scene nodes");
+    CHECK(findNode(*ui, "search")->tabIndex == 4);
+    CHECK(int(findNode(*ui, "search")->mouseFilter) ==
           int(MouseFilter::Pass));
-    CHECK(int(ui->current()->findById("root")->themePreset) ==
+    CHECK(int(findNode(*ui, "root")->themePreset) ==
           int(ThemePreset::Light));
-    CHECK(int(ui->current()->findById("search")->themePreset) ==
+    CHECK(int(findNode(*ui, "search")->themePreset) ==
           int(ThemePreset::Dark));
-    CHECK(ui->current()->findById("search")->focusRight == "toolbar_save");
-    CHECK(ui->current()->findById("search")->accessibilityName == "Search scene");
-    CHECK(ui->current()->findById("search")->accessibilityDescription ==
+    CHECK(findNode(*ui, "search")->focusRight == "toolbar_save");
+    CHECK(findNode(*ui, "search")->accessibilityName == "Search scene");
+    CHECK(findNode(*ui, "search")->accessibilityDescription ==
           "Filters the scene tree");
-    CHECK(int(ui->current()->findById("workspace")->type) == int(NodeType::SplitPane));
+    CHECK(int(findNode(*ui, "workspace")->type) == int(NodeType::SplitPane));
     CHECK(ui->requestFocus("search"));
     CHECK(ui->moveFocus("right"));
-    CHECK(ui->current()->findById("toolbar_save")->focusRequested);
-    ui->current()->findById("toolbar_save")->focused = true;
+    CHECK(findNode(*ui, "toolbar_save")->focusRequested);
+    findNode(*ui, "toolbar_save")->focused = true;
     CHECK(ui->getFocusedId() == "toolbar_save");
     ui->setEnabled("toolbar_save", false);
     CHECK(ui->getFocusedId().empty());
     ui->setHostMovable(true);
     ui->setHostResizable(true);
     ui->setHostOverlayAlpha(0.85f);
-    CHECK(!ui->current()->meta()->lockPos);
-    CHECK(!ui->current()->meta()->lockSize);
-    CHECK(ui->current()->meta()->overlayBgAlpha == 0.85f);
+    UIHost* current = resolveHost(ui->current());
+    REQUIRE(current != nullptr);
+    CHECK(!current->meta()->lockPos);
+    CHECK(!current->meta()->lockSize);
+    CHECK(current->meta()->overlayBgAlpha == 0.85f);
 }
 
 TEST_CASE("UI.editorKit.desktopCompositionRenders") {
-    UIHost* host          = UIHost::createHost("desktop_components");
+    UIHost* host          = createHost("desktop_components");
+    REQUIRE(host != nullptr);
     host->meta()->hasSize = true;
     host->meta()->sizeX   = 800.f;
     host->meta()->sizeY   = 560.f;
@@ -138,11 +165,11 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
              statusBar({text("Scene ready", "message"), spacer("status_space"), text("60 FPS", "fps")}, "status")},
             "root"));
 
-    CHECK(int(host->findById("toolbar")->type) == int(NodeType::Toolbar));
-    CHECK(int(host->findById("tools")->type) == int(NodeType::Toolbox));
-    CHECK(int(host->findById("sidebar")->type) == int(NodeType::Sidebar));
-    CHECK(int(host->findById("workspace")->type) == int(NodeType::SplitPane));
-    CHECK(int(host->findById("status")->type) == int(NodeType::StatusBar));
+    CHECK(int(findNode(host, "toolbar")->type) == int(NodeType::Toolbar));
+    CHECK(int(findNode(host, "tools")->type) == int(NodeType::Toolbox));
+    CHECK(int(findNode(host, "sidebar")->type) == int(NodeType::Sidebar));
+    CHECK(int(findNode(host, "workspace")->type) == int(NodeType::SplitPane));
+    CHECK(int(findNode(host, "status")->type) == int(NodeType::StatusBar));
 
     ImGuiContext* savedContext = ImGui::GetCurrentContext();
     IMGUI_CHECKVERSION();
@@ -171,10 +198,10 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
     if (savedContext) ImGui::SetCurrentContext(savedContext);
 
     CHECK(!host->tree()->dirty);
-    CHECK(host->findById("workspace")->measuredW > 0.f);
-    CHECK(host->findById("workspace")->measuredH < host->meta()->sizeY);
-    CHECK(host->findById("status")->measuredH == Theme::dark().layout.statusBarHeight);
-    CHECK(host->findById("sidebar")->measuredW >= Theme::dark().layout.minPaneSize);
-    CHECK(host->findById("content")->measuredW > host->findById("sidebar")->measuredW);
-    CHECK(host->findById("tool_search")->measuredW > Theme::dark().layout.searchMinWidth);
+    CHECK(findNode(host, "workspace")->measuredW > 0.f);
+    CHECK(findNode(host, "workspace")->measuredH < host->meta()->sizeY);
+    CHECK(findNode(host, "status")->measuredH == Theme::dark().layout.statusBarHeight);
+    CHECK(findNode(host, "sidebar")->measuredW >= Theme::dark().layout.minPaneSize);
+    CHECK(findNode(host, "content")->measuredW > findNode(host, "sidebar")->measuredW);
+    CHECK(findNode(host, "tool_search")->measuredW > Theme::dark().layout.searchMinWidth);
 }

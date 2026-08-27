@@ -16,10 +16,30 @@
 
 namespace ui = eve::ui;
 
+namespace {
+
+ui::UIHost *resolveHost(ui::UIHostHandle handle) {
+    auto host = ui::UIHost::resolve(handle);
+    return host ? &host->get() : nullptr;
+}
+
+ui::UINode *findNode(ui::UIHost *host, const std::string &id) {
+    if (host == nullptr) return nullptr;
+    auto node = host->findById(id);
+    return node ? &node->get() : nullptr;
+}
+
+ui::UINode *findNode(ui::UIHostHandle handle, const std::string &id) {
+    return findNode(resolveHost(handle), id);
+}
+
+}  // namespace
+
 TEST_CASE("UI.adv.sliderProgressInputCollapseChild") {
     float slid = 0.f;
     std::string typed;
-    ui::UIHost *h = ui::UIHost::createHost("adv");
+    ui::UIHost *h = resolveHost(ui::UIHost::createHost("adv"));
+    REQUIRE(h != nullptr);
     h->setTree(ui::window(
         "Adv",
         {
@@ -31,24 +51,24 @@ TEST_CASE("UI.adv.sliderProgressInputCollapseChild") {
         },
         "root"));
 
-    CHECK(h->findById("vol") != nullptr);
-    CHECK_EQ(int(h->findById("vol")->type), int(ui::NodeType::Slider));
-    CHECK(std::abs(h->findById("vol")->value - 0.3f) < 1e-5f);
-    CHECK_EQ(int(h->findById("hp")->type), int(ui::NodeType::Progress));
-    CHECK(h->findById("name")->valueText == "hero");
-    CHECK(h->findById("more") != nullptr);
-    CHECK(h->findById("tip") != nullptr);
-    CHECK(h->findById("scroll") != nullptr);
-    CHECK(h->findById("r1") != nullptr);
+    REQUIRE(findNode(h, "vol") != nullptr);
+    CHECK_EQ(int(findNode(h, "vol")->type), int(ui::NodeType::Slider));
+    CHECK(std::abs(findNode(h, "vol")->value - 0.3f) < 1e-5f);
+    CHECK_EQ(int(findNode(h, "hp")->type), int(ui::NodeType::Progress));
+    CHECK(findNode(h, "name")->valueText == "hero");
+    CHECK(findNode(h, "more") != nullptr);
+    CHECK(findNode(h, "tip") != nullptr);
+    CHECK(findNode(h, "scroll") != nullptr);
+    CHECK(findNode(h, "r1") != nullptr);
 
     ui::UIEvent ev;
-    ev.host = h;
+    ev.host = h->handle();
     ev.hostName = "adv";
     ev.nodeId = "vol";
     ev.kind = "value";
-    ev.handlerIndex = h->findById("vol")->handlerValue;
+    ev.handlerIndex = findNode(h, "vol")->handlerValue;
     ev.floatValue = 0.75f;
-    h->findById("vol")->value = 0.75f;
+    findNode(h, "vol")->value = 0.75f;
     ui::UISystem::pendingEvents().push_back(ev);
     ui::UISystem::dispatchEvents();
     CHECK(std::abs(slid - 0.75f) < 1e-5f);
@@ -70,15 +90,17 @@ TEST_CASE("UI.adv.builderScriptWidgets") {
     uimod->end();
     uimod->end();
     CHECK(uimod->mountBuildAs("shop"));
-    CHECK(uimod->current()->findById("price") != nullptr);
-    CHECK(uimod->current()->findById("sku")->valueText == "A1");
-    CHECK(uimod->current()->findById("info") != nullptr);
+    ui::UIHost *current = resolveHost(uimod->current());
+    REQUIRE(current != nullptr);
+    CHECK(findNode(current, "price") != nullptr);
+    CHECK(findNode(current, "sku")->valueText == "A1");
+    CHECK(findNode(current, "info") != nullptr);
     uimod->setValue("price", 42.f);
     CHECK(std::abs(uimod->getValue("price") - 42.f) < 1e-5f);
     uimod->setValueText("sku", "B2");
     CHECK(uimod->getValueText("sku") == "B2");
     uimod->setHostModal(true);
-    CHECK(uimod->current()->meta()->modal);
+    CHECK(current->meta()->modal);
 }
 
 TEST_CASE("UI.adv.wantCaptureAPI") {
@@ -143,7 +165,8 @@ TEST_CASE_FIXTURE(UIScriptComponentTest, "UI.adv.scriptUIComponent") {
 }
 
 TEST_CASE("UI.adv.flexRowColumnSpacer") {
-    ui::UIHost *h = ui::UIHost::createHost("flex");
+    ui::UIHost *h = resolveHost(ui::UIHost::createHost("flex"));
+    REQUIRE(h != nullptr);
     h->setTree(ui::window(
         "Flex",
         {
@@ -174,26 +197,26 @@ TEST_CASE("UI.adv.flexRowColumnSpacer") {
         },
         "root"));
 
-    auto *toolbar = h->findById("toolbar");
+    auto *toolbar = findNode(h, "toolbar");
     CHECK(toolbar != nullptr);
     CHECK_EQ(int(toolbar->type), int(ui::NodeType::Flex));
     CHECK_EQ(int(toolbar->flexDirection), int(ui::FlexDirection::Row));
     CHECK(std::abs(toolbar->gap - 8.f) < 1e-5f);
 
-    auto *mid = h->findById("mid");
+    auto *mid = findNode(h, "mid");
     CHECK(mid != nullptr);
     CHECK_EQ(int(mid->type), int(ui::NodeType::Spacer));
     CHECK(mid->flexGrow > 0.f);
 
-    auto *stack = h->findById("stack");
+    auto *stack = findNode(h, "stack");
     CHECK(stack != nullptr);
     CHECK_EQ(int(stack->flexDirection), int(ui::FlexDirection::Column));
     CHECK_EQ(int(stack->alignItems), int(ui::FlexAlign::Stretch));
 
-    auto *one = h->findById("one");
+    auto *one = findNode(h, "one");
     CHECK(one != nullptr);
     CHECK(std::abs(one->flexGrow - 1.f) < 1e-5f);
-    CHECK(std::abs(h->findById("two")->flexGrow - 2.f) < 1e-5f);
+    CHECK(std::abs(findNode(h, "two")->flexGrow - 2.f) < 1e-5f);
 }
 
 TEST_CASE("UI.adv.flexBuilderAPI") {
@@ -218,8 +241,10 @@ TEST_CASE("UI.adv.flexBuilderAPI") {
     uimod->end();
     uimod->end();
     CHECK(uimod->mountBuildAs("bar"));
+    ui::UIHost *current = resolveHost(uimod->current());
+    REQUIRE(current != nullptr);
 
-    auto *tools = uimod->current()->findById("tools");
+    auto *tools = findNode(current, "tools");
     CHECK(tools != nullptr);
     CHECK_EQ(int(tools->type), int(ui::NodeType::Flex));
     CHECK_EQ(int(tools->flexDirection), int(ui::FlexDirection::Row));
@@ -227,21 +252,22 @@ TEST_CASE("UI.adv.flexBuilderAPI") {
     CHECK_EQ(int(tools->alignItems), int(ui::FlexAlign::Center));
     CHECK(std::abs(tools->gap - 6.f) < 1e-5f);
 
-    auto *quit = uimod->current()->findById("quit");
+    auto *quit = findNode(current, "quit");
     CHECK(quit != nullptr);
     CHECK(std::abs(quit->sizeX - 80.f) < 1e-5f);
 
-    auto *sp = uimod->current()->findById("sp");
+    auto *sp = findNode(current, "sp");
     CHECK(sp != nullptr);
     CHECK_EQ(int(sp->type), int(ui::NodeType::Spacer));
 
-    auto *side = uimod->current()->findById("side");
+    auto *side = findNode(current, "side");
     CHECK(side != nullptr);
     CHECK_EQ(int(side->flexDirection), int(ui::FlexDirection::Column));
 }
 
 TEST_CASE("UI.adv.flexReconcileKeepsStructure") {
-    ui::UIHost *h = ui::UIHost::createHost("flexrec");
+    ui::UIHost *h = resolveHost(ui::UIHost::createHost("flexrec"));
+    REQUIRE(h != nullptr);
     auto tree1 = ui::window(
         "F", {ui::row({ui::button("A", "a"), ui::spacer("s"), ui::button("B", "b")}, "r")}, "root");
     h->setTree(tree1);
@@ -251,8 +277,8 @@ TEST_CASE("UI.adv.flexReconcileKeepsStructure") {
         "root");
     bool rebuilt = h->setTreeReconcile(std::move(tree2));
     CHECK(!rebuilt);
-    CHECK(h->findById("a")->text == "A2");
-    CHECK(std::abs(h->findById("r")->gap - 10.f) < 1e-5f);
+    CHECK(findNode(h, "a")->text == "A2");
+    CHECK(std::abs(findNode(h, "r")->gap - 10.f) < 1e-5f);
 }
 
 TEST_CASE("UI.layout.flexArrangeGrowAndJustify") {
@@ -335,7 +361,8 @@ TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
     io.Fonts->GetTexDataAsRGBA32(&pixels, &w, &h);
     ImGui::NewFrame();
 
-    ui::UIHost *host = ui::UIHost::createHost("layout");
+    ui::UIHost *host = resolveHost(ui::UIHost::createHost("layout"));
+    REQUIRE(host != nullptr);
     host->setTree(ui::window(
         "W",
         {
@@ -349,9 +376,9 @@ TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
         },
         "root"));
     ui::measureTree(*host->tree());
-    ui::UINode *outer = host->findById("outer");
-    ui::UINode *inner = host->findById("inner");
-    ui::UINode *root = host->findById("root");
+    ui::UINode *outer = findNode(host, "outer");
+    ui::UINode *inner = findNode(host, "inner");
+    ui::UINode *root = findNode(host, "root");
     REQUIRE(outer != nullptr);
     REQUIRE(inner != nullptr);
     // Nested containers previously measured 0; now they carry real sizes.
@@ -373,7 +400,8 @@ TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
 
 TEST_CASE("UI.p0.imageAndImageButton") {
     int clicks = 0;
-    ui::UIHost *h = ui::UIHost::createHost("img");
+    ui::UIHost *h = resolveHost(ui::UIHost::createHost("img"));
+    REQUIRE(h != nullptr);
     h->setTree(ui::window(
         "W",
         {
@@ -385,9 +413,9 @@ TEST_CASE("UI.p0.imageAndImageButton") {
         },
         "root"));
 
-    ui::UINode *avatar = h->findById("avatar");
-    ui::UINode *btn = h->findById("btn");
-    ui::UINode *frame = h->findById("frame");
+    ui::UINode *avatar = findNode(h, "avatar");
+    ui::UINode *btn = findNode(h, "btn");
+    ui::UINode *frame = findNode(h, "frame");
     REQUIRE(avatar != nullptr);
     REQUIRE(btn != nullptr);
     REQUIRE(frame != nullptr);
@@ -402,7 +430,7 @@ TEST_CASE("UI.p0.imageAndImageButton") {
 
     // Click routing for ImageButton via the pending-event pipeline.
     ui::UIEvent ev;
-    ev.host = h;
+    ev.host = h->handle();
     ev.hostName = "img";
     ev.nodeId = "btn";
     ev.kind = "click";
@@ -420,13 +448,13 @@ TEST_CASE("UI.p0.imageAndImageButton") {
     uimod->addImageButton("go", 32.f, 32.f);
     uimod->end();
     CHECK(uimod->mountBuildAs("imgb"));
-    CHECK(uimod->current()->findById("icon") != nullptr);
-    CHECK(uimod->current()->findById("go") != nullptr);
+    CHECK(findNode(uimod->current(), "icon") != nullptr);
+    CHECK(findNode(uimod->current(), "go") != nullptr);
     uimod->setImageTint("icon", 1.f, 0.f, 0.f, 0.5f);
-    CHECK(std::abs(uimod->current()->findById("icon")->tintR - 1.f) < 1e-5f);
-    CHECK(std::abs(uimod->current()->findById("icon")->tintA - 0.5f) < 1e-5f);
+    CHECK(std::abs(findNode(uimod->current(), "icon")->tintR - 1.f) < 1e-5f);
+    CHECK(std::abs(findNode(uimod->current(), "icon")->tintA - 0.5f) < 1e-5f);
     uimod->setImageNinePatch("go", 4.f, 4.f, 4.f, 4.f);
-    CHECK(std::abs(uimod->current()->findById("go")->borderT - 4.f) < 1e-5f);
+    CHECK(std::abs(findNode(uimod->current(), "go")->borderT - 4.f) < 1e-5f);
 }
 
 static const char *kScriptCallbackContent = R"SQ(
@@ -456,15 +484,15 @@ UnitSciptTest(UIScriptCallbackTest, kScriptCallbackContent);
 
 TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     CHECK(vm.callFunc(vm.findFunc("testScriptCallbacks"), vm).toBool());
-    ui::UIHost *host = ui::UISystem::findHost("cb");
+    ui::UIHost *host = resolveHost(ui::UISystem::findHost("cb"));
     REQUIRE(host != nullptr);
-    ui::UINode *go = host->findById("go");
-    ui::UINode *sl = host->findById("s");
+    ui::UINode *go = findNode(host, "go");
+    ui::UINode *sl = findNode(host, "s");
     REQUIRE(go != nullptr);
     REQUIRE(sl != nullptr);
 
     ui::UIEvent click;
-    click.host = host;
+    click.host = host->handle();
     click.hostName = "cb";
     click.nodeId = "go";
     click.kind = "click";
@@ -472,7 +500,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     ui::UISystem::pendingEvents().push_back(click);
 
     ui::UIEvent change;
-    change.host = host;
+    change.host = host->handle();
     change.hostName = "cb";
     change.nodeId = "s";
     change.kind = "value";
@@ -488,7 +516,8 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
 
 TEST_CASE("UI.p1.comboAndTextWrap") {
     int picked = -1;
-    ui::UIHost *h = ui::UIHost::createHost("p1");
+    ui::UIHost *h = resolveHost(ui::UIHost::createHost("p1"));
+    REQUIRE(h != nullptr);
     h->setTree(ui::window(
         "W",
         {
@@ -498,8 +527,8 @@ TEST_CASE("UI.p1.comboAndTextWrap") {
         },
         "root"));
 
-    ui::UINode *combo = h->findById("fruit");
-    ui::UINode *tip = h->findById("tip");
+    ui::UINode *combo = findNode(h, "fruit");
+    ui::UINode *tip = findNode(h, "tip");
     REQUIRE(combo != nullptr);
     REQUIRE(tip != nullptr);
     CHECK_EQ(int(combo->type), int(ui::NodeType::Combo));
@@ -509,7 +538,7 @@ TEST_CASE("UI.p1.comboAndTextWrap") {
 
     // Value change routing: pending event → C++ callback + change queue.
     ui::UIEvent ev;
-    ev.host = h;
+    ev.host = h->handle();
     ev.hostName = "p1";
     ev.nodeId = "fruit";
     ev.kind = "value";
@@ -528,10 +557,10 @@ TEST_CASE("UI.p1.comboAndTextWrap") {
     uimod->addTextWrapped("some long paragraph", 180.f, "para");
     uimod->end();
     CHECK(uimod->mountBuildAs("p1b"));
-    CHECK(uimod->current()->findById("cls") != nullptr);
-    CHECK(std::abs(uimod->current()->findById("para")->wrapWidth - 180.f) < 1e-5f);
+    CHECK(findNode(uimod->current(), "cls") != nullptr);
+    CHECK(std::abs(findNode(uimod->current(), "para")->wrapWidth - 180.f) < 1e-5f);
     uimod->setTextWrap("para", 200.f);
-    CHECK(std::abs(uimod->current()->findById("para")->wrapWidth - 200.f) < 1e-5f);
+    CHECK(std::abs(findNode(uimod->current(), "para")->wrapWidth - 200.f) < 1e-5f);
 }
 
 TEST_CASE("UI.p1.statsAfterHeadlessRender") {
@@ -547,7 +576,8 @@ TEST_CASE("UI.p1.statsAfterHeadlessRender") {
     io.Fonts->GetTexDataAsRGBA32(&pixels, &w, &h);
     ImGui::NewFrame();
 
-    ui::UIHost *host = ui::UIHost::createHost("stats");
+    ui::UIHost *host = resolveHost(ui::UIHost::createHost("stats"));
+    REQUIRE(host != nullptr);
     host->setTree(ui::window("S", {ui::text("a", "a"), ui::button("b", "b")}, "root"));
     ui::UISystem::render();
     const ui::UIStats &s = ui::UISystem::stats();
@@ -563,33 +593,35 @@ TEST_CASE("UI.p1.statsAfterHeadlessRender") {
 
 TEST_CASE("UI.p1.jsonRoundTripAndGamepadNav") {
     ui::UI *uimod = ui::UI::create();
-    uimod->mountAs("jsonhost", ui::window(
-                                   "W",
-                                   {
-                                       ui::text("HP 100", "hp").withWrap(120.f),
-                                       ui::row({ui::button("A", "a"), ui::spacer("sp"),
-                                                ui::button("B", "b")}, "r")
-                                           .withGap(8.f),
-                                       ui::image("avatar", 64.f, 64.f)
-                                           .withTint(0.2f, 0.3f, 0.4f, 0.5f)
-                                           .withCornerRadius(4.f),
-                                       ui::combo("C", {"x", "y"}, 1, "combo"),
-                                   },
-                                   "root"));
+    REQUIRE(ui::UIHost::resolve(
+                uimod->mountAs("jsonhost", ui::window(
+                                               "W",
+                                               {
+                                                   ui::text("HP 100", "hp").withWrap(120.f),
+                                                   ui::row({ui::button("A", "a"), ui::spacer("sp"),
+                                                            ui::button("B", "b")}, "r")
+                                                       .withGap(8.f),
+                                                   ui::image("avatar", 64.f, 64.f)
+                                                       .withTint(0.2f, 0.3f, 0.4f, 0.5f)
+                                                       .withCornerRadius(4.f),
+                                                   ui::combo("C", {"x", "y"}, 1, "combo"),
+                                               },
+                                               "root")))
+                .has_value());
     const std::string json = uimod->saveTreeJson();
     CHECK(json.find("\"hp\"") != std::string::npos);
     CHECK(json.find("wrapWidth") != std::string::npos);
 
     // Mutate, then load from JSON → original structure and props restored.
     uimod->setText("hp", "changed");
-    CHECK(uimod->current()->findById("hp")->text == "changed");
+    CHECK(findNode(uimod->current(), "hp")->text == "changed");
     CHECK(uimod->loadTreeJson(json));
-    CHECK(uimod->current()->findById("hp")->text == "HP 100");
-    CHECK(std::abs(uimod->current()->findById("hp")->wrapWidth - 120.f) < 1e-5f);
-    CHECK(uimod->current()->findById("a") != nullptr);
-    CHECK(uimod->current()->findById("combo")->valueText == "x\ny");
-    CHECK(std::abs(uimod->current()->findById("avatar")->tintG - 0.3f) < 1e-5f);
-    CHECK(std::abs(uimod->current()->findById("r")->gap - 8.f) < 1e-5f);
+    CHECK(findNode(uimod->current(), "hp")->text == "HP 100");
+    CHECK(std::abs(findNode(uimod->current(), "hp")->wrapWidth - 120.f) < 1e-5f);
+    CHECK(findNode(uimod->current(), "a") != nullptr);
+    CHECK(findNode(uimod->current(), "combo")->valueText == "x\ny");
+    CHECK(std::abs(findNode(uimod->current(), "avatar")->tintG - 0.3f) < 1e-5f);
+    CHECK(std::abs(findNode(uimod->current(), "r")->gap - 8.f) < 1e-5f);
     CHECK(!uimod->loadTreeJson("{not json"));
 
     uimod->setNavGamepad(true);
@@ -600,21 +632,26 @@ TEST_CASE("UI.p1.jsonRoundTripAndGamepadNav") {
 
 TEST_CASE("UI.p1.hostPosTween") {
     ui::UI *uimod = ui::UI::create();
-    uimod->mountAs("tween", ui::window("T", {ui::text("x", "x")}, "root"));
+    REQUIRE(ui::UIHost::resolve(
+                uimod->mountAs("tween", ui::window("T", {ui::text("x", "x")}, "root")))
+                .has_value());
+    ui::UIHost *current = resolveHost(uimod->current());
+    REQUIRE(current != nullptr);
     // Zero duration → jump immediately.
     uimod->animateHostPos(120.f, 60.f, 0.f);
-    CHECK(uimod->current()->meta()->hasPos);
-    CHECK(std::abs(uimod->current()->meta()->posX - 120.f) < 1e-4f);
-    CHECK(std::abs(uimod->current()->meta()->posY - 60.f) < 1e-4f);
+    CHECK(current->meta()->hasPos);
+    CHECK(std::abs(current->meta()->posX - 120.f) < 1e-4f);
+    CHECK(std::abs(current->meta()->posY - 60.f) < 1e-4f);
 
     // Long duration → starts from the current value, no jump yet.
     uimod->animateHostPos(300.f, 200.f, 5000.f);
-    CHECK(std::abs(uimod->current()->meta()->posX - 120.f) < 1e-4f);
-    CHECK(std::abs(uimod->current()->meta()->posY - 60.f) < 1e-4f);
+    CHECK(std::abs(current->meta()->posX - 120.f) < 1e-4f);
+    CHECK(std::abs(current->meta()->posY - 60.f) < 1e-4f);
 }
 
 TEST_CASE("UI.p1.scrollListNodeAndBuilder") {
-    ui::UIHost *h = ui::UIHost::createHost("sl");
+    ui::UIHost *h = resolveHost(ui::UIHost::createHost("sl"));
+    REQUIRE(h != nullptr);
     std::vector<std::string> items;
     for (int i = 0; i < 2000; ++i) items.push_back("item" + std::to_string(i));
     h->setTree(ui::window(
@@ -625,8 +662,8 @@ TEST_CASE("UI.p1.scrollListNodeAndBuilder") {
         },
         "root"));
 
-    ui::UINode *goods = h->findById("goods");
-    ui::UINode *plain = h->findById("plain");
+    ui::UINode *goods = findNode(h, "goods");
+    ui::UINode *plain = findNode(h, "plain");
     REQUIRE(goods != nullptr);
     REQUIRE(plain != nullptr);
     CHECK_EQ(int(goods->type), int(ui::NodeType::ScrollList));
@@ -635,7 +672,7 @@ TEST_CASE("UI.p1.scrollListNodeAndBuilder") {
     CHECK(std::abs(plain->itemHeight - 0.f) < 1e-5f);
 
     // 2000 rows are retained in the tree; findById sees the last one.
-    ui::UINode *last = h->findById("goods/1999");
+    ui::UINode *last = findNode(h, "goods/1999");
     REQUIRE(last != nullptr);
     CHECK(last->text == "item1999");
 
@@ -648,10 +685,10 @@ TEST_CASE("UI.p1.scrollListNodeAndBuilder") {
     uimod->end();
     uimod->end();
     CHECK(uimod->mountBuildAs("slb"));
-    CHECK(uimod->current()->findById("log") != nullptr);
-    CHECK(std::abs(uimod->current()->findById("log")->sizeY - 120.f) < 1e-5f);
-    CHECK(std::abs(uimod->current()->findById("log")->itemHeight - 20.f) < 1e-5f);
-    CHECK(uimod->current()->findById("log/2") != nullptr);
+    CHECK(findNode(uimod->current(), "log") != nullptr);
+    CHECK(std::abs(findNode(uimod->current(), "log")->sizeY - 120.f) < 1e-5f);
+    CHECK(std::abs(findNode(uimod->current(), "log")->itemHeight - 20.f) < 1e-5f);
+    CHECK(findNode(uimod->current(), "log/2") != nullptr);
 }
 
 TEST_CASE("UI.p1.scrollListHeadlessRenderLarge") {
@@ -667,7 +704,8 @@ TEST_CASE("UI.p1.scrollListHeadlessRenderLarge") {
     io.Fonts->GetTexDataAsRGBA32(&pixels, &w, &h);
     ImGui::NewFrame();
 
-    ui::UIHost *host = ui::UIHost::createHost("sllarge");
+    ui::UIHost *host = resolveHost(ui::UIHost::createHost("sllarge"));
+    REQUIRE(host != nullptr);
     std::vector<std::string> items;
     for (int i = 0; i < 5000; ++i) items.push_back("row" + std::to_string(i));
     host->setTree(ui::window("S", {ui::virtualList("rows", items, 200.f, 24.f)}, "root"));

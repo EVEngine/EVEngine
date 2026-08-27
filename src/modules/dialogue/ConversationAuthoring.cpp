@@ -79,7 +79,7 @@ ConversationDocument::ConversationDocument(std::string id) {
 ConversationDocument::ConversationDocument(ConversationAsset asset) : asset_(std::move(asset)) {}
 
 bool ConversationDocument::fail(const std::string& message) {
-    lastError_ = message;
+    failureMessage_ = message;
     return false;
 }
 
@@ -96,21 +96,21 @@ const ConversationAsset::Node* ConversationDocument::findNode(const std::string&
 bool ConversationDocument::setId(const std::string& id) {
     if (id.empty()) return fail("conversation ID must not be empty");
     asset_.id = id;
-    lastError_.clear();
+    failureMessage_.clear();
     return true;
 }
 
 bool ConversationDocument::setVersion(int version) {
     if (version <= 0) return fail("conversation version must be positive");
     asset_.version = version;
-    lastError_.clear();
+    failureMessage_.clear();
     return true;
 }
 
 bool ConversationDocument::setEntry(const std::string& nodeId) {
     if (!findNode(nodeId)) return fail("entry node not found: " + nodeId);
     asset_.entry = nodeId;
-    lastError_.clear();
+    failureMessage_.clear();
     return true;
 }
 
@@ -125,7 +125,7 @@ bool ConversationDocument::addParameter(const std::string& name) {
     if (std::find(asset_.parameters.begin(), asset_.parameters.end(), name) != asset_.parameters.end())
         return fail("parameter already exists: " + name);
     asset_.parameters.push_back(name);
-    lastError_.clear();
+    failureMessage_.clear();
     return true;
 }
 
@@ -150,7 +150,7 @@ bool ConversationDocument::addNode(const std::string& nodeId, const std::string&
     if (findNode(nodeId)) return fail("node already exists: " + nodeId);
     if (!parseKind(kind, parsed)) return fail("unknown node kind: " + kind);
     asset_.nodes.push_back({nodeId, parsed});
-    lastError_.clear();
+    failureMessage_.clear();
     return true;
 }
 
@@ -172,7 +172,7 @@ bool ConversationDocument::removeNode(const std::string& nodeId) {
 
 bool ConversationDocument::renameNode(const std::string& oldId, const std::string& newId) {
     std::vector<ConversationAsset> assets{asset_};
-    if (!renameConversationNode(assets, asset_.id, oldId, newId, &lastError_)) return false;
+    if (!renameConversationNode(assets, asset_.id, oldId, newId, &failureMessage_)) return false;
     asset_ = std::move(assets.front());
     return true;
 }
@@ -188,7 +188,7 @@ bool ConversationDocument::setNodeKind(const std::string& nodeId, const std::str
     if (!node) return fail("node not found: " + nodeId);
     if (!parseKind(kind, parsed)) return fail("unknown node kind: " + kind);
     node->kind = parsed;
-    lastError_.clear();
+    failureMessage_.clear();
     return true;
 }
 
@@ -250,13 +250,13 @@ bool ConversationDocument::setField(const std::string& nodeId, const std::string
         node->returnNode = value;
     else if (field == "arguments") {
         StateValue parsed;
-        if (!conversationStateFromJson(value, parsed, &lastError_)) return false;
+        if (!conversationStateFromJson(value, parsed, &failureMessage_)) return false;
         if (!parsed.isObject()) return fail("arguments must be a JSON object");
         node->arguments = std::move(parsed);
     } else {
         return fail("unknown node field: " + field);
     }
-    lastError_.clear();
+    failureMessage_.clear();
     return true;
 }
 
@@ -284,7 +284,7 @@ bool ConversationDocument::addRoute(const std::string& nodeId, const std::string
     if (!node) return fail("node not found: " + nodeId);
     if (node->kind != Kind::Branch && node->kind != Kind::Choice) return fail("routes require a branch or choice node");
     node->routes.emplace_back(label, target);
-    lastError_.clear();
+    failureMessage_.clear();
     return true;
 }
 
@@ -306,7 +306,7 @@ bool ConversationDocument::removeRoute(const std::string& nodeId, int index) {
 bool ConversationDocument::validate() {
     diagnostics_.clear();
     const bool valid = lintConversations({asset_}, asset_.id, diagnostics_);
-    lastError_       = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
+    failureMessage_       = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
     return valid;
 }
 

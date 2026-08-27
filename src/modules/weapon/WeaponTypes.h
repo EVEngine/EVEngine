@@ -18,8 +18,11 @@
  */
 
 #include "common/ECS.h"
+#include "attributes/AttributeProjection.h"
+#include "common/definitions/DefinitionRuntime.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,7 +31,14 @@ namespace eve::weapon {
 /** @brief 武器形态。 */
 enum class WeaponKind : uint8_t { Melee, Ranged, Magic, Missile, Custom };
 
-/** @brief 武器形态的字符串名（"melee" | "ranged" | "magic" | "missile" | "custom"）。 */
+/**
+ * @brief 武器形态的字符串名（"melee" | "ranged" | "magic" | "missile" | "custom"）。
+ * @return Borrowed non-null pointer to immutable process-lifetime storage.
+ * @ownership The returned static text is not caller-owned and must not be freed.
+ * @lifetime Valid for the process lifetime; copy it when storing it.
+ * @thread Thread-safe because the characters are immutable.
+ * @reentrancy Does not invoke callbacks.
+ */
 const char* weaponKindName(WeaponKind kind);
 
 /** @brief 从字符串解析武器形态；未知名字回退 Ranged。 */
@@ -49,7 +59,14 @@ struct AttackResource {
 /** @brief 攻击阶段。 */
 enum class AttackStage : uint8_t { Idle, Windup, Active, Recover };
 
-/** @brief 攻击阶段的字符串名（"idle" | "windup" | "active" | "recover"）。 */
+/**
+ * @brief 攻击阶段的字符串名（"idle" | "windup" | "active" | "recover"）。
+ * @return Borrowed non-null pointer to immutable process-lifetime storage.
+ * @ownership The returned static text is not caller-owned and must not be freed.
+ * @lifetime Valid for the process lifetime; copy it when storing it.
+ * @thread Thread-safe because the characters are immutable.
+ * @reentrancy Does not invoke callbacks.
+ */
 const char* attackStageName(AttackStage stage);
 
 /** @brief 阶段时长（秒）；各形态按需配置。 */
@@ -62,7 +79,14 @@ struct AttackStageSpec {
 /** @brief 开火模式（热武器保留字段）。 */
 enum class FireMode : uint8_t { Single, Burst, Auto };
 
-/** @brief 开火模式的字符串名（"single" | "burst" | "auto"）。 */
+/**
+ * @brief 开火模式的字符串名（"single" | "burst" | "auto"）。
+ * @return Borrowed non-null pointer to immutable process-lifetime storage.
+ * @ownership The returned static text is not caller-owned and must not be freed.
+ * @lifetime Valid for the process lifetime; copy it when storing it.
+ * @thread Thread-safe because the characters are immutable.
+ * @reentrancy Does not invoke callbacks.
+ */
 const char* fireModeName(FireMode mode);
 
 /** @brief 从字符串解析开火模式；未知名字回退 Single。 */
@@ -80,7 +104,14 @@ enum class WeaponEventType : uint8_t {
     AimOut
 };
 
-/** @brief 事件类型的字符串名。 */
+/**
+ * @brief 事件类型的字符串名。
+ * @return Borrowed non-null pointer to immutable process-lifetime storage.
+ * @ownership The returned static text is not caller-owned and must not be freed.
+ * @lifetime Valid for the process lifetime; copy it when storing it.
+ * @thread Thread-safe because the characters are immutable.
+ * @reentrancy Does not invoke callbacks.
+ */
 const char* weaponEventTypeName(WeaponEventType type);
 
 /** @brief 投射物参数（武器模板的一部分，供游戏侧投射物服务使用）。 */
@@ -234,9 +265,33 @@ public:
         int         ownerId = 0;
     };
 
-    /** @brief 模板指针（Weapon 模块注册表持有，实体不拥有）。 */
+    /**
+     * @brief Typed definition projection used by legacy WeaponSystem code.
+     * @ownership Borrowed through `def` when `owned` is empty. When `owned`
+     *            is present, this component owns the immutable projection and
+     *            `def` points into it.
+     * @lifetime The borrowed pointer remains valid until this component is
+     *           replaced or its owner is destroyed. Callers must not retain it
+     *           across a definition projection swap.
+     */
     struct Definition {
         const WeaponDefinition* def = nullptr;
+        /** @brief Immutable typed projection owner installed by checked adapters. */
+        std::shared_ptr<const WeaponDefinition> owned;
+    };
+
+    /**
+     * @brief Canonical definition identity and reload policy projected to ECS.
+     * @ownership The common DefinitionRegistry owns definition data; this
+     *            component only stores identity and policy.
+     * @lifetime The identity is valid with this entity and becomes stale when
+     *           the registry generation is replaced or removed.
+     */
+    struct DefinitionBinding {
+        eve::definition::InstanceIdentity identity;
+        eve::definition::ReloadPolicy reloadPolicy =
+            eve::definition::ReloadPolicy::RebuildInstance;
+        bool active = true;
     };
 
     /** @brief 触发资源 / 冷却 / 装填 / 阶段机运行时状态。 */
@@ -265,6 +320,17 @@ public:
         class AmmoPoolEntity* ammoPool = nullptr;
     };
 
+    /**
+     * @brief Canonical optional mana/stamina state for non-ammo weapons.
+     *
+     * `State::Resource` remains a one-way compatibility projection for Mana
+     * and Stamina. Ammo, charges, reload progress and cooldown stay owned by
+     * the weapon resource/phase state and are not converted to attributes.
+     */
+    struct Attributes {
+        eve::attributes::AttributeProjection values;
+    };
+
     /** @brief 炮口朝向（度）。turnSpeed 0 = 立即到位。 */
     struct Aim {
         float yaw          = 0.f;
@@ -276,10 +342,19 @@ public:
 
     COMPONENT(Identity, identity)
     COMPONENT(Definition, definition)
+    COMPONENT(DefinitionBinding, definitionBinding)
     COMPONENT(State, state)
+    COMPONENT(Attributes, attributes)
     COMPONENT(Aim, aim)
 
-    /** @brief 创建并触摸全部组件。 */
+    /**
+     * @brief 创建并触摸全部组件。
+     * @return Borrowed nullable pointer to an ECS-owned weapon.
+     * @ownership The ECS world owns the entity; callers must release through ECS and never delete it.
+     * @lifetime Valid until entity/world destruction; retain the generation-qualified handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy Creation invokes no user callbacks; do not re-enter structural ECS mutation.
+     */
     static WeaponEntity* createWeapon();
 };
 
@@ -321,7 +396,14 @@ public:
     COMPONENT(Limits, limits)
     COMPONENT(State, state)
 
-    /** @brief 创建并触摸全部组件。 */
+    /**
+     * @brief 创建并触摸全部组件。
+     * @return Borrowed nullable pointer to an ECS-owned mount.
+     * @ownership The ECS world owns the entity; callers must release through ECS and never delete it.
+     * @lifetime Valid until entity/world destruction; retain the generation-qualified handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy Creation invokes no user callbacks; do not re-enter structural ECS mutation.
+     */
     static WeaponMountEntity* createMount();
 };
 
@@ -358,7 +440,14 @@ public:
     COMPONENT(Held, held)
     COMPONENT(State, state)
 
-    /** @brief 创建并触摸全部组件。 */
+    /**
+     * @brief 创建并触摸全部组件。
+     * @return Borrowed nullable pointer to an ECS-owned rig.
+     * @ownership The ECS world owns the entity; callers must release through ECS and never delete it.
+     * @lifetime Valid until entity/world destruction; retain the generation-qualified handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy Creation invokes no user callbacks; do not re-enter structural ECS mutation.
+     */
     static WeaponRigEntity* createRig();
 };
 
@@ -384,7 +473,14 @@ public:
     COMPONENT(Identity, identity)
     COMPONENT(State, state)
 
-    /** @brief 创建并触摸全部组件。 */
+    /**
+     * @brief 创建并触摸全部组件。
+     * @return Borrowed nullable pointer to an ECS-owned ammunition pool.
+     * @ownership The ECS world owns the entity; callers must release through ECS and never delete it.
+     * @lifetime Valid until entity/world destruction; retain the generation-qualified handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy Creation invokes no user callbacks; do not re-enter structural ECS mutation.
+     */
     static AmmoPoolEntity* createPool();
 };
 

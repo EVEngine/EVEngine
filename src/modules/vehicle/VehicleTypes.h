@@ -11,8 +11,13 @@
  */
 
 #include "common/ECS.h"
+#include "common/Revision.h"
+#include "common/definitions/DefinitionRuntime.h"
+#include "attributes/AttributeProjection.h"
 
 #include <cstdint>
+#include <ostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,13 +33,27 @@ class WeaponMountEntity;
 
 namespace eve::vehicle {
 
+class VehicleOrderQueueAdapter;
+
 /** @brief RTS 命令类型。 */
 enum class VehicleOrderType : uint8_t { Move, AttackMove, Attack, Stop, Hold };
 
-/** @brief 命令类型的字符串名（"move" | "attack_move" | ...）。 */
+/**
+ * @brief 命令类型的字符串名（"move" | "attack_move" | ...）。
+ * @return Borrowed non-null pointer to immutable process-lifetime storage.
+ * @ownership The returned static text is not caller-owned and must not be freed.
+ * @lifetime Valid for the lifetime of the process; copy it when storing mutable data.
+ * @thread Thread-safe because the characters are immutable.
+ * @reentrancy Does not invoke callbacks.
+ */
 const char* vehicleOrderTypeName(VehicleOrderType type);
 
-/** @brief 一条命令（队列由 OrderSystem 逐条执行）。 */
+/** @brief Writes the stable vehicle-order protocol name. */
+inline std::ostream& operator<<(std::ostream& stream, VehicleOrderType type) {
+    return stream << vehicleOrderTypeName(type);
+}
+
+/** @brief 一条 Vehicle 领域命令（生命周期由 Vehicle order adapter 执行）。 */
 struct VehicleOrder {
     VehicleOrderType type         = VehicleOrderType::Move;
     float            x            = 0.f;
@@ -129,7 +148,14 @@ struct VehicleDefinition {
 /** @brief 载具事件类型。 */
 enum class VehicleEventType : uint8_t { OrderCompleted, Damaged, Destroyed };
 
-/** @brief 事件类型的字符串名。 */
+/**
+ * @brief 事件类型的字符串名。
+ * @return Borrowed non-null pointer to immutable process-lifetime storage.
+ * @ownership The returned static text is not caller-owned and must not be freed.
+ * @lifetime Valid for the lifetime of the process; copy it when storing mutable data.
+ * @thread Thread-safe because the characters are immutable.
+ * @reentrancy Does not invoke callbacks.
+ */
 const char* vehicleEventTypeName(VehicleEventType type);
 
 /** @brief 载具事件（帧缓存，脚本轮询）。 */
@@ -159,6 +185,23 @@ public:
     /** @brief 模板指针（Vehicle 模块注册表持有，实体不拥有）。 */
     struct Definition {
         const VehicleDefinition* def = nullptr;
+        /** @brief Immutable projection owner used by typed adapters. */
+        std::shared_ptr<const VehicleDefinition> owned;
+    };
+
+    /**
+     * @brief Canonical definition identity projected onto this ECS entity.
+     *
+     * `Definition::def` remains a one-way compatibility pointer. The typed
+     * adapter owns the registry definition and may install an immutable
+     * shared projection in `Definition::owned`; the identity and generation
+     * here are the authority for stale checks and persistence.
+     */
+    struct DefinitionBinding {
+        eve::definition::InstanceIdentity identity;
+        eve::definition::ReloadPolicy reloadPolicy =
+            eve::definition::ReloadPolicy::RebuildInstance;
+        bool active = true;
     };
 
     /** @brief 每帧输入（命令系统 / 驾驶者写入，移动模型消费）。 */
@@ -187,10 +230,42 @@ public:
         float maxHp = 0.f;
     };
 
-    /** @brief 命令队列（OrderSystem 逐条执行）。 */
+    /**
+     * @brief Canonical selected combat attributes for this vehicle.
+     *
+     * Health is projected back to `Health` for compatibility. Armor is owned
+     * here as a numeric combat value; armor-zone multipliers remain Vehicle
+     * definition policy data. Motion and physics bodies are not attributes.
+     */
+    struct Attributes {
+        eve::attributes::AttributeProjection values;
+    };
+
+    /**
+     * @brief Vehicle order lifecycle adapter and compatibility projection.
+     *
+     * The adapter owns the generic orders::CommandQueue lifecycle.  `queue` and
+     * `current` remain as a compatibility projection for existing consumers;
+     * VehicleSystem is the only writer and callers must not mutate them.
+     */
     struct Orders {
         std::vector<VehicleOrder> queue;
         int                       current = -1;
+
+        std::unique_ptr<VehicleOrderQueueAdapter> adapter;
+
+        /** @brief Creates an empty adapter-backed order component. */
+        Orders();
+        /** @brief Releases the adapter-owned generic queue. */
+        ~Orders();
+        /** @brief Deep-copies the queue and domain payload projection for ECS staging. */
+        Orders(const Orders& other);
+        /** @brief Deep-copies the queue and domain payload projection for ECS staging. */
+        Orders& operator=(const Orders& other);
+        /** @brief Transfers the adapter and compatibility projection. */
+        Orders(Orders&&) noexcept;
+        /** @brief Transfers the adapter and compatibility projection. */
+        Orders& operator=(Orders&&) noexcept;
     };
 
     /** @brief 一个挂点槽位：挂点实体 + 瞄准模式。 */
@@ -233,6 +308,8 @@ public:
     /** @brief 座位列表（FPS 面）。 */
     struct Seats {
         std::vector<SeatSlot> list;
+        /** @brief Membership revision owned by the generic seat adapter. */
+        eve::Revision revision = eve::Revision::zero();
     };
 
     /** @brief 通用标志位。 */
@@ -242,9 +319,11 @@ public:
 
     COMPONENT(Identity, identity)
     COMPONENT(Definition, definition)
+    COMPONENT(DefinitionBinding, definitionBinding)
     COMPONENT(Input, input)
     COMPONENT(Motion, motion)
     COMPONENT(Health, health)
+    COMPONENT(Attributes, attributes)
     COMPONENT(Orders, orders)
     COMPONENT(Mounts, mounts)
     COMPONENT(PhysicsBody, physicsBody)
@@ -252,7 +331,14 @@ public:
     COMPONENT(Seats, seats)
     COMPONENT(Flags, stateFlags)
 
-    /** @brief 创建并触摸全部组件。 */
+    /**
+     * @brief 创建并触摸全部组件。
+     * @return Borrowed nullable pointer to an ECS-owned VehicleEntity.
+     * @ownership The ECS world owns the entity; callers must release through ECS and never delete it.
+     * @lifetime Valid until entity/world destruction; retain the generation-qualified EntityHandle across frames.
+     * @thread Call on the owning ECS/simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not re-enter structural ECS mutation while using the result.
+     */
     static VehicleEntity* createVehicle();
 };
 

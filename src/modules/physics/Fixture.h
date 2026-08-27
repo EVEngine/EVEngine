@@ -51,7 +51,14 @@ public:
     /** @brief Id of the owning body. */
     int getBodyId() const;
 
-    /** @brief Owning body. */
+    /**
+     * @brief Returns the owning body, or null after invalidation.
+     * @return Borrowed nullable Body pointer owned by the physics world.
+     * @ownership Fixture does not own the body; callers must not delete it.
+     * @lifetime Valid until body/world destruction; use a PhysicsBodyHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
+     */
     Body *getBody() { return body_; }
 
     /** @brief Pixel-space point-in-fixture test (uses World meter). */
@@ -60,8 +67,23 @@ public:
     /** @brief Destroys the fixture inside its world. */
     void destroy();
 
-    /** @brief Raw Box2D fixture. */
+    /**
+     * @brief Exposes the underlying Box2D fixture for tightly-scoped backend integration.
+     * @return Borrowed nullable backend pointer; callers must not delete or retain it across steps.
+     * @ownership The Box2D world owns the fixture; Fixture is only its wrapper.
+     * @lifetime Valid until Fixture::destroy(), body/world destruction, or invalidate().
+     * @thread Call only on the owning physics thread.
+     * @reentrancy Does not invoke callbacks and is invalid across world mutation.
+     */
     b2Fixture *raw() { return fixture_; }
+    /**
+     * @brief Exposes the underlying Box2D fixture for read-only backend integration.
+     * @return Borrowed nullable backend pointer.
+     * @ownership The Box2D world owns the fixture; callers must not delete it.
+     * @lifetime Valid until Fixture::destroy(), body/world destruction, or invalidate().
+     * @thread Call only on the owning physics thread.
+     * @reentrancy Does not invoke callbacks and is invalid across world mutation.
+     */
     const b2Fixture *raw() const { return fixture_; }
 
     /** @brief Internal: marks the wrapper invalid after destruction. */

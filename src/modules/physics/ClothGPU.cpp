@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <exception>
+#include <utility>
 
 namespace eve::physics {
 
@@ -525,13 +527,26 @@ void ClothGPU::reset() {
 }
 
 void ClothGPU::update(float dt) {
-    if (destroyed_ || !shader_ || !gpgpu_ || !seq_) return;
+    if (destroyed_) return;
     if (dt < 0.f) dt = 0.f;
     if (dt > 0.05f) dt = 0.05f;
+    auto result = stepGpu(dt, 2);
+    result.ignore("legacy ClothGPU::update cannot return a structured result");
+}
+
+eve::Result<void> ClothGPU::stepGpu(float dt, int substeps) {
+    if (destroyed_ || !shader_ || !gpgpu_ || !seq_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation,
+            "GPU cloth resources are not available", "physics.clothGpu.step"));
+    if (substeps < 1 || substeps > 1024)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "GPU cloth substep count must be in [1, 1024]", "physics.clothGpu.step.substeps"));
 
     const int count = getParticleCount();
     ensureHashBuffers();
-    const float h = dt * 0.5f;  // two fixed substeps, matching the CPU cloth
+    const float h = dt / float(substeps);
     shader_->bindBuffer(2, linkBuf_);
     shader_->bindBuffer(3, flagBuf_);
     if (cellHeadBuf_ && cellNextBuf_ && cellItemsBuf_ && cellSlotBuf_) {
@@ -581,7 +596,7 @@ void ClothGPU::update(float dt) {
         std::swap(in, out);
     };
     seq_->begin();
-    for (int s = 0; s < 2; ++s) {
+    for (int s = 0; s < substeps; ++s) {
         pass(0.f);  // integrate
         if (selfCollision_ && nCells > 0) {
             // Clear counters, build the hash from the freshly integrated
@@ -604,6 +619,47 @@ void ClothGPU::update(float dt) {
     forceX_ = 0.f;
     forceY_ = 0.f;
     interactStrength_ = 0.f;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> ClothGPU::step(const eve::SimulationStep& stepValue,
+                                 const SimulationSettings& settings) {
+    if (destroyed_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation,
+            "Cannot step a destroyed GPU cloth", "physics.clothGpu.step"));
+    auto valid = detail::validateSimulationStep(stepValue, settings, observation_);
+    if (!valid) return valid;
+    auto next = detail::advanceSimulationObservation(observation_, stepValue);
+    if (!next) return eve::Result<void>::failure(next.status());
+    try {
+        auto applied = stepGpu(static_cast<float>(stepValue.delta.seconds()),
+                               settings.subStepCount);
+        if (!applied) return applied;
+    } catch (const std::exception& error) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed,
+            std::string("GPU cloth step failed: ") + error.what(),
+            "physics.clothGpu.step"));
+    } catch (...) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed,
+            "GPU cloth step failed with an unknown exception", "physics.clothGpu.step"));
+    }
+    observation_ = std::move(next).takeValue();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> ClothGPU::restoreObservation(const SimulationObservation& observation) {
+    auto valid = detail::validateSimulationObservation(
+        observation, "physics.clothGpu.restoreObservation");
+    if (!valid) return valid;
+    if (destroyed_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation,
+            "Cannot restore a destroyed GPU cloth", "physics.clothGpu.restoreObservation"));
+    observation_ = observation;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void ClothGPU::draw(graphics::Graphics *gfx) {

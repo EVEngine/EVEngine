@@ -31,14 +31,26 @@ public:
 
     void release() override { ecs::DestroyEntity(this); }
 
-    /** @brief 属性表：任意字符串 -> AttributeValue（base + modifiers）。 */
+    /** @brief 属性组件：AttributeSet 是属性状态与计算的唯一权威真源。 */
     struct Attributes {
-        std::unordered_map<std::string, AttributeValue> values;
+        Attributes() : values(std::string{}) {}
+
+        ::eve::attributes::AttributeSet values;
     };
 
-    /** @brief 状态（buff/debuff）运行时列表 —— ECS 组件，游戏侧常称 Buffs。 */
+    /**
+     * @brief Status lifecycle component backed by the generic effects container.
+     *
+     * `container` is the only owner of active effect instances. The integer
+     * maps and executor metadata are adapter state for legacy RPG projections;
+     * they are keyed by the canonical string instance id and are copied with
+     * the ECS component for staging/copy operations.
+     */
     struct Statuses {
-        std::vector<StatusInstance> active;
+        ::eve::effects::EffectContainer container;
+        std::unordered_map<std::string, StatusExecutorMetadata> metadata;
+        std::unordered_map<std::string, int> legacyIdByEffect;
+        std::unordered_map<int, std::string> effectByLegacyId;
         int nextInstanceId = 1;
     };
 
@@ -52,7 +64,14 @@ public:
     COMPONENT(Statuses, statuses)
     COMPONENT(Skills, skills)
 
-    /** @brief 创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。 */
+    /**
+     * @brief 创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。
+     * @return Borrowed nullable pointer to the ECS-owned actor; null means creation failed.
+     * @ownership The ECS world owns the actor; callers must release it through ECS and never delete it.
+     * @lifetime Valid until actor/world destruction; retain the generation-qualified EntityHandle across frames.
+     * @thread Call on the RPG ECS thread.
+     * @reentrancy The factory invokes no user callbacks; do not re-enter structural ECS mutation while using the result.
+     */
     static RPGActor *createActor();
 
     /**
@@ -67,8 +86,13 @@ public:
     double getBaseAttribute(const std::string &attribute);
     void modifyBaseAttribute(const std::string &attribute, double delta);
     bool hasAttribute(const std::string &attribute);
+    /** @brief Canonical modifier insertion backed by AttributeSet. */
+    [[nodiscard]] eve::Result<ModifierId> addAttributeModifier(AttributeModifier modifier);
+    /** @brief Legacy string modifier insertion facade. */
     std::string addAttributeModifier(const std::string &attribute, const std::string &source,
-                                      const std::string &op, double value, int priority = 0);
+                                     const std::string &op, double value, int priority = 0);
+    /** @brief Canonical modifier removal backed by AttributeSet. */
+    [[nodiscard]] eve::Result<void> removeAttributeModifier(const ModifierId &modifierId);
     bool removeAttributeModifier(const std::string &attribute, const std::string &modifierId);
     int removeAttributeModifiersBySource(const std::string &attribute, const std::string &source);
     int removeAllAttributeModifiersBySource(const std::string &source);

@@ -70,14 +70,26 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     const auto snapshot = original.snapshotJson();
 
     Store restored;
-    REQUIRE(restored.restoreJson(snapshot));
+    auto restoredResult = restored.restoreJson(snapshot);
+    REQUIRE(restoredResult.ok());
     CHECK_EQ(restored.snapshotJson(), snapshot);
     CHECK(restored.can("a", "s", "read"));
     CHECK(!restored.can("a", "s", "write"));
     const auto before = restored.snapshotJson();
-    CHECK(!restored.restoreJson("{\"version\":1}"));
+    auto rejected = restored.restoreJson("{\"version\":1}");
+    CHECK(!rejected.ok());
+    const auto* diagnostic = rejected.error();
+    REQUIRE(diagnostic != nullptr);
+    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::ParseError);
     CHECK_EQ(restored.snapshotJson(), before);
-    CHECK(!restored.lastError().empty());
+
+    auto malformed = restored.restoreJson("{");
+    CHECK(!malformed.ok());
+    const auto* parseDiagnostic = malformed.error();
+    REQUIRE(parseDiagnostic != nullptr);
+    CHECK_EQ(parseDiagnostic->code(), eve::DiagnosticCode::ParseError);
+    CHECK(!parseDiagnostic->message().empty());
+    CHECK_EQ(restored.snapshotJson(), before);
 }
 
 TEST_CASE("authority.input.invalidFactsDoNotMutate") {
@@ -95,13 +107,19 @@ TEST_CASE("authority.script.explainQueryAndLifecycle") {
     vm.run(vm.compileSource(R"(
         result <- "fail";
         local module = eve.Authority();
-        local store = module.newStore();
-        local grantId = store.grant("actor:7", "scope:2", "operate", "role:3", 5, 0.0);
-        local denyId = store.deny("actor:7", "scope:2", "operate", "policy:9", 5, 1.0);
-        local before = store.explain("actor:7", "scope:2", "operate");
-        store.update(1.0);
-        local after = store.explain("actor:7", "scope:2", "operate");
-        if (!before.isAllowed() && before.getWinningRuleId() == denyId &&
+        local storeResult = module.newStore();
+        local store = storeResult.ok ? storeResult.value : null;
+        local grantResult = store != null ? store.grant("actor:7", "scope:2", "operate", "role:3", 5, 0.0) : { ok = false };
+        local denyResult = store != null ? store.deny("actor:7", "scope:2", "operate", "policy:9", 5, 1.0) : { ok = false };
+        local grantId = grantResult.ok ? grantResult.value : "";
+        local denyId = denyResult.ok ? denyResult.value : "";
+        local before = store != null ? store.explain("actor:7", "scope:2", "operate") : null;
+        if (grantResult.ok && denyResult.ok && before != null) {
+            store.update(1.0);
+        }
+        local after = store != null ? store.explain("actor:7", "scope:2", "operate") : null;
+        if (grantResult.ok && denyResult.ok && before != null && after != null &&
+            !before.isAllowed() && before.getWinningRuleId() == denyId &&
             after.isAllowed() && after.getWinningRuleId() == grantId &&
             store.queryActor("actor:7") == 1 && store.eventAt(2).getKind() == "expired") {
             result = "ok";

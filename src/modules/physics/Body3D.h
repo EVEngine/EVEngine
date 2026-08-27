@@ -1,5 +1,7 @@
 #pragma once
 
+#include "physics/PhysicsHandles.h"
+
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -18,7 +20,7 @@ class Shape3D;
 class Body3D {
 public:
     /** @brief Internal: wraps a Box3D body (use World3D::newBody). */
-    Body3D(World3D *world, b3BodyId bodyId, int id);
+    Body3D(World3D *world, b3BodyId bodyId, int id, PhysicsBodyHandle runtimeHandle);
     ~Body3D();
 
     Body3D(const Body3D &)            = delete;
@@ -206,14 +208,33 @@ public:
     bool isAwake() const;
 
     /**
-     * @brief Box extents are full width/height/depth in meters (same convention as
-     * Body.newRectangleFixture). Density kg/m³.
+     * @brief Creates a box shape in meter-space units.
+     * @return Borrowed nullable shape owned by this body/world.
+     * @ownership The Box3D world owns the shape; callers must destroy it through this API.
+     * @lifetime Valid until shape/body/world destruction; use PhysicsShapeHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter world mutation while using the result.
      */
     Shape3D *newBoxShape(float width, float height, float depth, float density = 1.f,
                          float friction = 0.2f, float restitution = 0.f);
+    /**
+     * @brief Creates a sphere shape in meter-space units.
+     * @return Borrowed nullable shape owned by this body/world.
+     * @ownership The Box3D world owns the shape; callers must destroy it through this API.
+     * @lifetime Valid until shape/body/world destruction; use PhysicsShapeHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter world mutation while using the result.
+     */
     Shape3D *newSphereShape(float radius, float density = 1.f, float friction = 0.2f,
                             float restitution = 0.f);
-    /** @brief Capsule along local Y; height is distance between hemisphere centers. */
+    /**
+     * @brief Creates a capsule along local Y.
+     * @return Borrowed nullable shape owned by this body/world.
+     * @ownership The Box3D world owns the shape; callers must destroy it through this API.
+     * @lifetime Valid until shape/body/world destruction; use PhysicsShapeHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter world mutation while using the result.
+     */
     Shape3D *newCapsuleShape(float height, float radius, float density = 1.f,
                              float friction = 0.2f, float restitution = 0.f);
     /**
@@ -224,6 +245,11 @@ public:
      * @param friction Surface friction.
      * @param restitution Surface restitution.
      * @throws eve::Exception for malformed or degenerate input.
+     * @return Borrowed nullable shape owned by this body/world.
+     * @ownership The Box3D world owns the shape; callers must destroy it through this API.
+     * @lifetime Valid until shape/body/world destruction; use PhysicsShapeHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter world mutation while using the result.
      */
     Shape3D *newConvexHullShape(const std::vector<float> &vertices, int maxVertices = 64,
                                 float density = 1.f, float friction = 0.2f,
@@ -237,6 +263,11 @@ public:
      * @param identifyEdges Whether shared edges are classified for smooth collision.
      * @param useMedianSplit Faster BVH construction for regular grid-like meshes.
      * @throws eve::Exception unless this is a static Body or data is invalid/degenerate.
+     * @return Borrowed nullable shape owned by this body/world.
+     * @ownership The Box3D world owns the shape; callers must destroy it through this API.
+     * @lifetime Valid until shape/body/world destruction; use PhysicsShapeHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter world mutation while using the result.
      */
     Shape3D *newTriangleMeshShape(const std::vector<float> &vertices,
                                   const std::vector<int32_t> &indices,
@@ -252,6 +283,11 @@ public:
      * @param globalMin Shared quantization minimum; heights must lie in range.
      * @param globalMax Shared quantization maximum.
      * @param clockwiseWinding Inverts the collidable side when true.
+     * @return Borrowed nullable shape owned by this body/world.
+     * @ownership The Box3D world owns the shape; callers must destroy it through this API.
+     * @lifetime Valid until shape/body/world destruction; use PhysicsShapeHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke user callbacks; do not re-enter world mutation while using the result.
      */
     Shape3D *newHeightFieldShape(int countX, int countZ, float cellSizeX, float cellSizeZ,
                                  const std::vector<float> &heights, float globalMin,
@@ -260,11 +296,33 @@ public:
     /** @brief Destroys the body inside its world. */
     void destroy();
 
-    /** @brief Owning world / raw Box3D body id. */
+    /**
+     * @brief Returns the owning world, or null after invalidation.
+     * @return Borrowed nullable World3D pointer owned by the physics registry.
+     * @ownership Body3D does not own the world; callers must not delete it.
+     * @lifetime Valid until world destruction; use PhysicsWorldHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
+     */
     World3D  *getWorld() { return world_; }
+    /**
+     * @brief Returns the owning world as a read-only borrowed pointer.
+     * @return Borrowed nullable World3D pointer.
+     * @ownership Body3D does not own the world; callers must not delete it.
+     * @lifetime Valid until world destruction; use PhysicsWorldHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
+     */
+    const World3D *getWorld() const { return world_; }
     b3BodyId  raw() const { return bodyId_; }
     /** @brief True while the underlying Box3D body is still alive. */
     bool      isValid() const;
+
+    /**
+     * @brief Returns the process-local solver handle used by PhysicsLink.
+     * @return Generation-qualified handle; it becomes stale on destruction.
+     */
+    [[nodiscard]] PhysicsBodyHandle runtimeHandle() const noexcept { return runtimeHandle_; }
 
     /** @brief Internal: marks the wrapper invalid after world destruction. */
     void invalidate();
@@ -276,6 +334,7 @@ private:
     World3D *world_  = nullptr;
     b3BodyId bodyId_{};
     int      id_ = 0;
+    PhysicsBodyHandle runtimeHandle_ = PhysicsBodyHandle::invalid();
 };
 
 }  // namespace eve::physics

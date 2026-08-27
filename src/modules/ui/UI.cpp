@@ -12,6 +12,7 @@
 
 #include "common/config.h"
 #include "common/Module.h"
+#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
@@ -214,12 +215,13 @@ bool UI::initBackend() {
     auto *native = static_cast<SDL_Window *>(sdlWin->getHandle());
     if (!native) return false;
     const bool ok = backend_->init(native, gfx);
-    if (ok) UISystem::setBackend(backend_.get());
+    if (ok) UISystem::setBackend(*backend_);
     return ok;
 }
 
 void UI::shutdownBackend() {
     releaseNinePatches();
+    UISystem::clearBackend();
     if (backend_) backend_->shutdown();
 }
 
@@ -244,14 +246,15 @@ void UI::updateHostTweens() {
         std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
             .count();
     for (auto &t : hostTweens_) {
-        if (!t.host) continue;
-        auto m = t.host->meta();
+        auto host = UIHost::resolve(t.host);
+        if (!host) continue;
+        auto m = host->get().meta();
         const double elapsed = now - t.startMs;
         if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
             m->hasPos = true;
             m->posX = t.toX;
             m->posY = t.toY;
-            t.host = nullptr;  // done; removed below
+            t.host = {};  // done; removed below
             continue;
         }
         const float k = float(elapsed / t.durationMs);
@@ -261,7 +264,9 @@ void UI::updateHostTweens() {
         m->posY = t.fromY + (t.toY - t.fromY) * ease;
     }
     hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [](const HostTween &t) { return t.host == nullptr; }),
+                                     [](const HostTween &t) {
+                                         return !UIHost::resolve(t.host).has_value();
+                                     }),
                       hostTweens_.end());
 }
 
@@ -270,7 +275,7 @@ void UI::dispatchEvents() {
     const std::vector<UIEvent> events = UISystem::pendingEvents();
     UISystem::dispatchEvents();
     for (const auto &ev : events) {
-        if (!ev.host) continue;
+        if (!UIHost::resolve(ev.host)) continue;
         fireScriptHandlers(ev);
     }
 }
@@ -290,15 +295,17 @@ void UI::fireScriptHandlers(const UIEvent &ev) {
 }
 
 void UI::onClick(const std::string &id, ssq::Function fn) {
-    if (!selected_ || id.empty()) return;
+    auto host = resolveSelected();
+    if (!host || id.empty()) return;
     scriptHandlers_.push_back(
-        ScriptHandler(selected_->getName(), id, "click", std::move(fn)));
+        ScriptHandler(host->get().getName(), id, "click", std::move(fn)));
 }
 
 void UI::onChange(const std::string &id, ssq::Function fn) {
-    if (!selected_ || id.empty()) return;
+    auto host = resolveSelected();
+    if (!host || id.empty()) return;
     for (const char *kind : {"toggle", "value", "text"}) {
-        scriptHandlers_.push_back(ScriptHandler(selected_->getName(), id, kind, fn));
+        scriptHandlers_.push_back(ScriptHandler(host->get().getName(), id, kind, fn));
     }
 }
 
@@ -310,27 +317,29 @@ bool UI::wantCaptureKeyboard() const {
     return backend_ ? backend_->wantCaptureKeyboard() : false;
 }
 
-UIHost *UI::findHost(const std::string &name) const { return UISystem::findHost(name); }
+UIHostHandle UI::findHost(const std::string &name) const { return UISystem::findHost(name); }
 
-UIHost *UI::findHostByOwner(uint32_t ownerId) const {
+UIHostHandle UI::findHostByOwner(uint32_t ownerId) const {
     return UISystem::findHostByOwner(ownerId);
 }
 
 bool UI::select(const std::string &name) {
-    UIHost *h = findHost(name);
-    if (!h) return false;
+    const UIHostHandle h = findHost(name);
+    if (!UIHost::resolve(h)) return false;
     selected_ = h;
     return true;
 }
 
 void UI::bindOwner(uint32_t ownerId) {
-    if (selected_) selected_->setOwnerId(ownerId);
+    if (auto host = resolveSelected()) host->get().setOwnerId(ownerId);
 }
 
-UIHost *UI::ensureSelected(const std::string &preferredName) {
-    if (selected_) return selected_;
+UIHostHandle UI::ensureSelected(const std::string &preferredName) {
+    if (UIHost::resolve(selected_)) return selected_;
+    selected_ = {};
     if (!preferredName.empty()) {
-        if (UIHost *h = findHost(preferredName)) {
+        const UIHostHandle h = findHost(preferredName);
+        if (UIHost::resolve(h)) {
             selected_ = h;
             return selected_;
         }
@@ -341,37 +350,47 @@ UIHost *UI::ensureSelected(const std::string &preferredName) {
     return selected_;
 }
 
-UIHost *UI::mountAs(const std::string &name, WidgetDesc root) {
-    UIHost *h = findHost(name);
-    if (!h) h = UIHost::createHost(name);
-    else h->setName(name);
-    h->setTree(std::move(root));
-    selected_ = h;
-    return h;
+UIHostHandle UI::mountAs(const std::string &name, WidgetDesc root) {
+    UIHostHandle handle = findHost(name);
+    auto host = UIHost::resolve(handle);
+    if (!host) {
+        handle = UIHost::createHost(name);
+        host = UIHost::resolve(handle);
+    } else {
+        host->get().setName(name);
+    }
+    if (!host) return {};
+    host->get().setTree(std::move(root));
+    selected_ = handle;
+    return handle;
 }
 
-UIHost *UI::mount(WidgetDesc root) {
-    if (selected_) {
-        selected_->setTree(std::move(root));
+UIHostHandle UI::mount(WidgetDesc root) {
+    if (auto host = resolveSelected()) {
+        host->get().setTree(std::move(root));
         return selected_;
     }
     return mountAs("default", std::move(root));
 }
 
-UIHost *UI::remount(WidgetDesc root) {
-    UIHost *h = ensureSelected();
-    h->setTree(std::move(root));
-    return h;
+UIHostHandle UI::remount(WidgetDesc root) {
+    const UIHostHandle handle = ensureSelected();
+    if (auto host = UIHost::resolve(handle)) host->get().setTree(std::move(root));
+    return handle;
 }
 
-UIHost *UI::remountReconcile(WidgetDesc root) {
-    UIHost *h = ensureSelected();
-    h->setTreeReconcile(std::move(root));
-    return h;
+UIHostHandle UI::remountReconcile(WidgetDesc root) {
+    const UIHostHandle handle = ensureSelected();
+    if (auto host = UIHost::resolve(handle)) host->get().setTreeReconcile(std::move(root));
+    return handle;
 }
 
-UIHost *UI::remountAs(const std::string &name, WidgetDesc root) {
+UIHostHandle UI::remountAs(const std::string &name, WidgetDesc root) {
     return mountAs(name, std::move(root));
+}
+
+eve::OptionalRef<UIHost> UI::resolveSelected() const noexcept {
+    return UIHost::resolve(selected_);
 }
 
 void UI::beginBuild() {
@@ -849,9 +868,11 @@ bool UI::mountBuildAs(const std::string &name) {
 
 bool UI::remountBuildAs(const std::string &name) {
     if (!buildComplete()) return false;
-    UIHost *h = findHost(name);
-    if (!h) h = UIHost::createHost(name);
-    h->setTreeReconcile(std::move(builtRoot_));
+    UIHostHandle h = findHost(name);
+    if (!UIHost::resolve(h)) h = UIHost::createHost(name);
+    auto host = UIHost::resolve(h);
+    if (!host) return false;
+    host->get().setTreeReconcile(std::move(builtRoot_));
     selected_ = h;
     hasBuiltRoot_ = false;
     builtRoot_ = WidgetDesc{};
@@ -859,88 +880,95 @@ bool UI::remountBuildAs(const std::string &name) {
 }
 
 bool UI::setListItems(const std::string &listId, const std::vector<std::string> &items) {
-    if (!selected_) return false;
+    auto host = resolveSelected();
+    if (!host) return false;
     WidgetDesc listNode = listButtons(listId, items);
-    auto *existing = selected_->findById(listId);
-    if (existing && existing->type == NodeType::Group) {
-        selected_->setTreeReconcile(
-            window(selected_->getName().empty() ? "List" : selected_->getName(),
+    auto existing = host->get().findById(listId);
+    if (existing && existing->get().type == NodeType::Group) {
+        host->get().setTreeReconcile(
+            window(host->get().getName().empty() ? "List" : host->get().getName(),
                    {std::move(listNode)}, "root"));
         return true;
     }
-    selected_->setTree(
-        window(selected_->getName().empty() ? "List" : selected_->getName(), {std::move(listNode)},
-               "root"));
+    host->get().setTree(
+        window(host->get().getName().empty() ? "List" : host->get().getName(),
+               {std::move(listNode)}, "root"));
     return true;
 }
 
 void UI::setText(const std::string &id, const std::string &text) {
-    if (selected_) selected_->setTextById(id, text);
+    if (auto host = resolveSelected()) host->get().setTextById(id, text);
 }
 
 void UI::setTextWrap(const std::string &id, float width) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) n->wrapWidth = width;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) n->get().wrapWidth = width;
 }
 
 void UI::setVisible(const std::string &id, bool visible) {
-    if (selected_) selected_->setVisibleById(id, visible);
+    if (auto host = resolveSelected()) host->get().setVisibleById(id, visible);
 }
 
 void UI::setEnabled(const std::string &id, bool enabled) {
-    if (selected_) selected_->setEnabledById(id, enabled);
+    if (auto host = resolveSelected()) host->get().setEnabledById(id, enabled);
 }
 
 void UI::setChecked(const std::string &id, bool checked) {
-    if (selected_) selected_->setCheckedById(id, checked);
+    if (auto host = resolveSelected()) host->get().setCheckedById(id, checked);
 }
 
 void UI::setValue(const std::string &id, float value) {
-    if (selected_) selected_->setValueById(id, value);
+    if (auto host = resolveSelected()) host->get().setValueById(id, value);
 }
 
 void UI::setValueText(const std::string &id, const std::string &value) {
-    if (selected_) selected_->setValueTextById(id, value);
+    if (auto host = resolveSelected()) host->get().setValueTextById(id, value);
 }
 
 void UI::setImageTint(const std::string &id, float r, float g, float b, float a) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) {
-        n->tintR = r;
-        n->tintG = g;
-        n->tintB = b;
-        n->tintA = a;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) {
+        n->get().tintR = r;
+        n->get().tintG = g;
+        n->get().tintB = b;
+        n->get().tintA = a;
     }
 }
 
 void UI::setImageUv(const std::string &id, float u0, float v0, float u1, float v1) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) {
-        n->uv0x = u0;
-        n->uv0y = v0;
-        n->uv1x = u1;
-        n->uv1y = v1;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) {
+        n->get().uv0x = u0;
+        n->get().uv0y = v0;
+        n->get().uv1x = u1;
+        n->get().uv1y = v1;
     }
 }
 
 void UI::setImageNinePatch(const std::string &id, float l, float t, float r, float b) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) {
-        n->borderL = l;
-        n->borderT = t;
-        n->borderR = r;
-        n->borderB = b;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) {
+        n->get().borderL = l;
+        n->get().borderT = t;
+        n->get().borderR = r;
+        n->get().borderB = b;
     }
 }
 
 void UI::setImageCornerRadius(const std::string &id, float radius) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) n->cornerRadius = radius;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) n->get().cornerRadius = radius;
 }
 
 void UI::setImageTextureId(const std::string &id, uint64_t textureId) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) n->textureId = textureId;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) n->get().textureId = textureId;
 }
 
 uint64_t UI::registerTexture(graphics::Texture *tex) {
@@ -955,41 +983,45 @@ void UI::unregisterTexture(uint64_t textureId) {
 }
 
 float UI::getValue(const std::string &id) const {
-    if (!selected_) return 0.f;
-    if (auto *n = selected_->findById(id)) return n->value;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto n = host->get().findById(id)) return n->get().value;
     return 0.f;
 }
 
 std::string UI::getValueText(const std::string &id) const {
-    if (!selected_) return {};
-    if (auto *n = selected_->findById(id)) return n->valueText;
+    auto host = resolveSelected();
+    if (!host) return {};
+    if (auto n = host->get().findById(id)) return n->get().valueText;
     return {};
 }
 
 bool UI::getChecked(const std::string &id) const {
-    if (!selected_) return false;
-    if (auto *n = selected_->findById(id)) return n->checked;
+    auto host = resolveSelected();
+    if (!host) return false;
+    if (auto n = host->get().findById(id)) return n->get().checked;
     return false;
 }
 
 bool UI::setImageNinePatchFile(const std::string &id, const std::string &path) {
-    if (!selected_) return false;
-    auto *n = selected_->findById(id);
-    if (!n || (n->type != NodeType::Image && n->type != NodeType::ImageButton &&
-               n->type != NodeType::NinePatchPanel))
+    auto host = resolveSelected();
+    if (!host) return false;
+    auto n = host->get().findById(id);
+    if (!n || (n->get().type != NodeType::Image && n->get().type != NodeType::ImageButton &&
+               n->get().type != NodeType::NinePatchPanel))
         return false;
     auto *asset = loadNinePatch(path);
     if (!asset) return false;
-    n->textureId = asset->textureId;
-    n->borderL = float(asset->info.borderLeft);
-    n->borderT = float(asset->info.borderTop);
-    n->borderR = float(asset->info.borderRight);
-    n->borderB = float(asset->info.borderBottom);
-    if (n->type == NodeType::NinePatchPanel) {
-        n->paddingL = float(asset->info.paddingLeft);
-        n->paddingT = float(asset->info.paddingTop);
-        n->paddingR = float(asset->info.paddingRight);
-        n->paddingB = float(asset->info.paddingBottom);
+    n->get().textureId = asset->textureId;
+    n->get().borderL = float(asset->info.borderLeft);
+    n->get().borderT = float(asset->info.borderTop);
+    n->get().borderR = float(asset->info.borderRight);
+    n->get().borderB = float(asset->info.borderBottom);
+    if (n->get().type == NodeType::NinePatchPanel) {
+        n->get().paddingL = float(asset->info.paddingLeft);
+        n->get().paddingT = float(asset->info.paddingTop);
+        n->get().paddingR = float(asset->info.paddingRight);
+        n->get().paddingB = float(asset->info.paddingBottom);
     }
     return true;
 }
@@ -1038,50 +1070,55 @@ void UI::releaseNinePatches() {
 }
 
 bool UI::requestFocus(const std::string &id) {
-    return selected_ && selected_->requestFocusById(id);
+    if (auto host = resolveSelected()) return host->get().requestFocusById(id);
+    return false;
 }
 
 bool UI::moveFocus(const std::string &direction) {
-    if (!selected_) return false;
+    auto host = resolveSelected();
+    if (!host) return false;
     FocusDirection parsed = FocusDirection::Next;
-    return parseFocusDirection(direction, &parsed) && selected_->moveFocus(parsed);
+    return parseFocusDirection(direction, &parsed) && host->get().moveFocus(parsed);
 }
 
 std::string UI::getFocusedId() const {
-    return selected_ ? selected_->focusedId() : std::string();
+    if (auto host = resolveSelected()) return host->get().focusedId();
+    return {};
 }
 
 void UI::setHostVisible(bool visible) {
-    if (selected_) selected_->setVisible(visible);
+    if (auto host = resolveSelected()) host->get().setVisible(visible);
 }
 
 void UI::setHostLayer(int layer) {
-    if (selected_) selected_->setLayer(layer);
+    if (auto host = resolveSelected()) host->get().setLayer(layer);
 }
 
 void UI::setHostModal(bool modal) {
-    if (selected_) selected_->setModal(modal);
+    if (auto host = resolveSelected()) host->get().setModal(modal);
 }
 
 void UI::setHostOverlay(bool overlay) {
-    if (selected_) selected_->meta()->overlay = overlay;
+    if (auto host = resolveSelected()) host->get().meta()->overlay = overlay;
 }
 
 void UI::setHostOverlayAlpha(float alpha) {
-    if (selected_) selected_->meta()->overlayBgAlpha = std::max(0.f, std::min(1.f, alpha));
+    if (auto host = resolveSelected())
+        host->get().meta()->overlayBgAlpha = std::max(0.f, std::min(1.f, alpha));
 }
 
 void UI::setHostMovable(bool movable) {
-    if (selected_) selected_->meta()->lockPos = !movable;
+    if (auto host = resolveSelected()) host->get().meta()->lockPos = !movable;
 }
 
 void UI::setHostResizable(bool resizable) {
-    if (selected_) selected_->meta()->lockSize = !resizable;
+    if (auto host = resolveSelected()) host->get().meta()->lockSize = !resizable;
 }
 
 void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m = host->get().meta();
     m->hasPos = true;
     m->posX = x;
     m->posY = y;
@@ -1090,30 +1127,34 @@ void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
 }
 
 void UI::setHostAnchor(float x, float y) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m = host->get().meta();
     m->anchorX = x;
     m->anchorY = y;
 }
 
 void UI::setHostSize(float w, float h) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m = host->get().meta();
     m->hasSize = true;
     m->sizeX = w;
     m->sizeY = h;
 }
 
 void UI::setHostPercent(float w, float h) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m = host->get().meta();
     m->percentW = w;
     m->percentH = h;
 }
 
 void UI::animateHostPos(float x, float y, float durationMs) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m = host->get().meta();
     HostTween t;
     t.host = selected_;
     t.fromX = m->hasPos ? m->posX : 0.f;
@@ -1170,10 +1211,11 @@ std::string UI::getStats() const {
 
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 std::string UI::saveTreeJson() const {
-    if (!selected_) return "{}";
-    auto t = selected_->tree();
+    auto host = resolveSelected();
+    if (!host) return "{}";
+    auto t = host->get().tree();
     Poco::JSON::Object root;
-    root.set("host", selected_->getName());
+    root.set("host", host->get().getName());
     if (t->root >= 0) nodeToJson(*t, t->nodes[size_t(t->root)], root);
     std::ostringstream oss;
     Poco::JSON::Stringifier::stringify(root, oss, 1);
@@ -1181,14 +1223,15 @@ std::string UI::saveTreeJson() const {
 }
 
 bool UI::loadTreeJson(const std::string &json) {
-    if (!selected_ || json.empty()) return false;
+    auto host = resolveSelected();
+    if (!host || json.empty()) return false;
     try {
         Poco::JSON::Parser parser;
         const Poco::Dynamic::Var result = parser.parse(json);
         const Poco::JSON::Object::Ptr obj = result.extract<Poco::JSON::Object::Ptr>();
         if (!obj) return false;
         WidgetDesc root = descFromJson(*obj);
-        selected_->setTree(std::move(root));
+        host->get().setTree(std::move(root));
         return true;
     } catch (...) {
         return false;
@@ -1201,52 +1244,62 @@ bool UI::loadTreeJson(const std::string &) { return false; }
 #endif
 
 graphics::Canvas *UI::viewportCanvas(const std::string &id) {
-    if (!selected_ || id.empty()) return nullptr;
-    const std::string key = selected_->getName() + "/" + id;
-    ViewportState *vs = UISystem::viewportState(selected_->getName(), id);
-    if (!vs) vs = UISystem::ensureViewport(key, 320, 240);
-    return vs ? vs->canvas : nullptr;
+    auto host = resolveSelected();
+    if (!host || id.empty()) return nullptr;
+    const std::string key = host->get().getName() + "/" + id;
+    if (auto state = UISystem::viewportState(host->get().getName(), id))
+        return state->get().canvas;
+    auto ensured = UISystem::ensureViewport(key, 320, 240);
+    if (!ensured.ok()) return nullptr;
+    return std::move(ensured).takeValue().get().canvas;
 }
 
 bool UI::viewportHovered(const std::string &id) {
-    if (!selected_) return false;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->hovered;
+    auto host = resolveSelected();
+    if (!host) return false;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().hovered;
     return false;
 }
 
 bool UI::viewportActive(const std::string &id) {
-    if (!selected_) return false;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->active;
+    auto host = resolveSelected();
+    if (!host) return false;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().active;
     return false;
 }
 
 float UI::viewportMouseX(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->mouseX;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().mouseX;
     return 0.f;
 }
 
 float UI::viewportMouseY(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->mouseY;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().mouseY;
     return 0.f;
 }
 
 float UI::viewportDragDX(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->dragDX;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().dragDX;
     return 0.f;
 }
 
 float UI::viewportDragDY(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->dragDY;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().dragDY;
     return 0.f;
 }
 
 float UI::viewportWheel(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->wheel;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().wheel;
     return 0.f;
 }
 
@@ -1680,17 +1733,27 @@ bool UI::dbSelectClass(const std::string &name) {
 uint64_t UI::dbRegister(ssq::Object object, const std::string &label) {
     if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
     databasePanel_->open();  // mount the panel so the entry becomes visible
-    return databasePanel_->registerObject(object, label);
+    auto result = databasePanel_->registerObject(object, label);
+    if (!result) return 0;
+    return result.value().packed();
 }
 
 uint64_t UI::dbCreateInstance() {
     if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
     databasePanel_->open();
-    return databasePanel_->createInstance();
+    auto result = databasePanel_->createInstance();
+    if (!result) return 0;
+    return result.value().packed();
 }
 
-bool UI::dbUnregister(uint64_t id) {
-    return databasePanel_ && databasePanel_->unregister(id);
+eve::Result<void> UI::dbUnregister(uint64_t id) {
+    if (!databasePanel_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "database panel is not open", {}, {}, "ui"));
+    const ObjectHandle handle = ObjectHandle::fromPacked(id);
+    auto result = databasePanel_->unregister(handle);
+    if (!result.ok()) return eve::Result<void>::failure(result.status());
+    return eve::Result<void>::success(result.status());
 }
 
 bool UI::editorOpen() {
@@ -1939,7 +2002,15 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("dbSelectClass", &UI::dbSelectClass);
     cls.addFunc("dbRegister", &UI::dbRegister);
     cls.addFunc("dbCreateInstance", &UI::dbCreateInstance);
-    cls.addFunc("dbUnregister", &UI::dbUnregister);
+    const HSQUIRRELVM vm = cls.getHandle();
+    cls.addFunc("dbUnregister", [vm](UI* value, uint64_t id) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument,
+                        "UI instance must not be null", {}, {}, "ui")));
+        return eve::script::projectResult(vm, value->dbUnregister(id));
+    });
 
     cls.addFunc("editorOpen", &UI::editorOpen);
     cls.addFunc("editorClose", &UI::editorClose);

@@ -1,4 +1,6 @@
 #include "animation/Tween.h"
+
+#include "animation/AnimationTime.h"
 #include "animation/Animation.h"
 
 #include "common/Exception.h"
@@ -256,7 +258,7 @@ void Tween::finishCycle() {
     state_ = State::Running;
 }
 
-bool Tween::update(float dt) {
+bool Tween::updateUnchecked(float dt) {
     if (dt < 0.f) dt = 0.f;
 
     if (state_ == State::Paused) return true;
@@ -287,6 +289,26 @@ bool Tween::update(float dt) {
     }
 
     if (state_ == State::Running) applyProgress(getProgress());
+    return isActive();
+}
+
+eve::Result<void> Tween::advance(const eve::SimulationStep& step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "Tween");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_ = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+bool Tween::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "Tween");
+    if (!step) {
+        step.ignore("legacy Tween update");
+        return isActive();
+    }
+    auto result = advance(std::move(step).takeValue());
+    result.ignore("legacy Tween update");
     return isActive();
 }
 

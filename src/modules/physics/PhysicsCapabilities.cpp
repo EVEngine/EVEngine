@@ -2,6 +2,8 @@
 #include "common/CameraObstruction.h"
 #include "common/PhysicsQuery.h"
 #include "physics/Physics.h"
+#include "physics/ArtifactProvider.h"
+#include "physics/TargetingLineOfSightAdapter.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
 
@@ -115,15 +117,28 @@ CameraObstructionQueryImpl& cameraObstructionQuery() {
     return impl;
 }
 
+TargetingLineOfSightAdapter& targetingLineOfSightAdapter() {
+    static TargetingLineOfSightAdapter impl;
+    return impl;
+}
+
 }  // namespace
 
 void registerPhysicsCapabilities() {
     static PhysicsQueryImpl impl;
     eve::cap::provide<eve::IPhysicsQuery>(&impl);
     eve::cap::provide<eve::ICameraObstructionQuery>(&cameraObstructionQuery());
+    eve::cap::provide<eve::sensing::ILineOfSightQuery>(&targetingLineOfSightAdapter());
+    registerPhysicsArtifactProvider();
 }
 
 void registerCameraObstructionWorld(World3D* world) { cameraObstructionQuery().add(world); }
 void unregisterCameraObstructionWorld(World3D* world) { cameraObstructionQuery().remove(world); }
+eve::Result<void> registerTargetingLineOfSightWorld(World3D* world) {
+    return targetingLineOfSightAdapter().addWorld(world);
+}
+eve::Result<void> unregisterTargetingLineOfSightWorld(World3D* world) {
+    return targetingLineOfSightAdapter().removeWorld(world);
+}
 
 }  // namespace eve::physics

@@ -38,11 +38,19 @@ public:
      * as UINode::textureId (0 = unsupported / failure). The texture must stay
      * alive while registered.
      */
+    [[nodiscard("retain the UI texture registration id or explicitly handle failure")]]
     virtual uint64_t registerTexture(graphics::Texture * /*tex*/) { return 0; }
     virtual void unregisterTexture(uint64_t /*id*/) {}
     /** Texture pixel size for a registered id (used by nine-patch UV math). */
     virtual bool textureSize(uint64_t /*id*/, int * /*w*/, int * /*h*/) const { return false; }
-    /** Backend draw handle (ImTextureID) for a registered id; null if unknown. */
+    /**
+     * @brief Returns an opaque backend draw handle for a registered texture.
+     * @return Borrowed nullable handle owned by the backend; null means unknown or unsupported.
+     * @ownership The backend owns the handle and callers must not free or cast it beyond the backend contract.
+     * @lifetime Valid until unregisterTexture(), backend shutdown, or device reset.
+     * @thread Call on the UI/render thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across backend mutation.
+     */
     virtual void *textureHandle(uint64_t /*id*/) const { return nullptr; }
 
     /**

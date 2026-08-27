@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <optional>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
@@ -119,7 +120,7 @@ struct ScriptModuleResolver::Impl {
             if (std::find(edges.begin(), edges.end(), dependency) == edges.end()) edges.push_back(dependency);
             return SQ_OK;
         } catch (const std::exception& error) {
-            self.lastError = error.what();
+            self.recordCompilationFailure(error.what());
             return SQ_ERROR;
         }
     }
@@ -135,9 +136,13 @@ struct ScriptModuleResolver::Impl {
             *exports = found->second.exports;
             return SQ_OK;
         } catch (const std::exception& error) {
-            self.lastError = error.what();
+            self.recordCompilationFailure(error.what());
             return SQ_ERROR;
         }
+    }
+
+    void recordCompilationFailure(std::string message) {
+        if (!pendingCompilationFailure) pendingCompilationFailure = std::move(message);
     }
 
     std::string resolve(const ScriptModuleRequest& request) {
@@ -191,7 +196,11 @@ struct ScriptModuleResolver::Impl {
                                        SQTrue))) {
             sq_settop(vm, top);
             modules.erase(canonical);
-            if (!lastError.empty()) throw std::runtime_error(lastError);
+            if (pendingCompilationFailure) {
+                std::string failure = std::move(*pendingCompilationFailure);
+                pendingCompilationFailure.reset();
+                throw std::runtime_error(std::move(failure));
+            }
             throw std::runtime_error("failed to compile script module: " + canonical);
         }
         sq_getstackobj(vm, -1, &module.closure);
@@ -289,7 +298,7 @@ struct ScriptModuleResolver::Impl {
     std::vector<ProviderEntry>                                providers;
     std::unordered_map<std::string, Module>                   modules;
     std::unordered_map<std::string, std::vector<std::string>> dependencies;
-    std::string                                               lastError;
+    std::optional<std::string>                                pendingCompilationFailure;
 };
 
 ScriptModuleResolver::ScriptModuleResolver(SQVM* vm) : impl_(std::make_unique<Impl>(vm)) {}
@@ -316,13 +325,17 @@ bool ScriptModuleResolver::unregisterProvider(ProviderId id) {
 void ScriptModuleResolver::registerDefaultProviders() { registerProvider(std::make_shared<GameFileProvider>()); }
 
 void ScriptModuleResolver::beginCompilation(std::string_view importerUri) {
-    impl_->lastError.clear();
+    impl_->pendingCompilationFailure.reset();
     impl_->dependencies.erase(std::string(importerUri));
 }
 
-void ScriptModuleResolver::prepareDependencies(std::string_view importerUri) {
-    if (!impl_->lastError.empty()) throw std::runtime_error(impl_->lastError);
+std::optional<std::string> ScriptModuleResolver::takeCompilationFailure() {
+    std::optional<std::string> failure = std::move(impl_->pendingCompilationFailure);
+    impl_->pendingCompilationFailure.reset();
+    return failure;
+}
 
+void ScriptModuleResolver::prepareDependencies(std::string_view importerUri) {
     enum class Visit { Visiting, Ready };
     std::unordered_map<std::string, Visit> visits;
     std::vector<std::string>               stack;
@@ -389,8 +402,6 @@ void ScriptModuleResolver::invalidate(std::string_view canonicalUri) {
 }
 
 void ScriptModuleResolver::reload(std::string_view canonicalUri) { impl_->reload(std::string(canonicalUri)); }
-
-const std::string& ScriptModuleResolver::lastError() const noexcept { return impl_->lastError; }
 
 std::vector<std::string> ScriptModuleResolver::dependencies(std::string_view importerUri) const {
     const auto found = impl_->dependencies.find(std::string(importerUri));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "common/Time.h"
 
 #include <string>
 #include <unordered_map>
@@ -16,7 +17,7 @@ class AnimSkeleton;
  * per-bone masks, one-shots and 1D/2D blend spaces. Script type: `AnimGraph`.
  *
  * Nodes are stable integer handles. A graph owns runtime state but not skeletons
- * or clips; those must outlive the graph. Call update() once per frame and read
+ * or clips; those must outlive the graph. Call advance(step) once per frame and read
  * getPose(). Graph evaluation is memoized so shared subgraphs sample only once.
  */
 class AnimGraph {
@@ -50,6 +51,9 @@ public:
     void trigger(int node);
     bool isOneShotActive(int node) const;
 
+    /** @brief Evaluate the graph using one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void      update(float dt);
     AnimPose* getPose() { return &output_; }
 
@@ -92,6 +96,10 @@ private:
     AnimPose          output_;
     int               root_       = -1;
     unsigned          generation_ = 0;
+    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
+    bool hasLastTick_ = false;
+
+    void updateUnchecked(float dt);
 };
 
 }  // namespace eve::animation

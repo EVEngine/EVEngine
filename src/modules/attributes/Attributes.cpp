@@ -32,8 +32,15 @@ void Attributes::expose(ssq::Table& table) {
                                   const std::string& source, const std::string& operation, float value, int priority) {
         return s && s->addModifier(id, attribute, source, operation, value, priority);
     });
-    set.addFunc("removeModifier", &AttributeSet::removeModifier);
-    set.addFunc("removeBySource", &AttributeSet::removeBySource);
+    set.addFunc("removeModifier", [](AttributeSet *s, const std::string &id) {
+        return s && s->removeModifier(id).ok();
+    });
+    set.addFunc("removeBySource", [](AttributeSet *s, const std::string &source,
+                                      const std::string &attribute) {
+        if (!s) return 0;
+        auto result = s->removeBySource(source, attribute);
+        return result.ok() ? result.value() : 0;
+    });
     set.addFunc("clearModifiers", &AttributeSet::clearModifiers);
     set.addFunc("getModifierCount", &AttributeSet::modifierCount);
     set.addFunc("getModifierId", [](AttributeSet* s, int index) {
@@ -47,6 +54,20 @@ void Attributes::expose(ssq::Table& table) {
     set.addFunc("getModifierSource", [](AttributeSet* s, int index) {
         const auto* m = s ? s->modifierAt(index) : nullptr;
         return m ? m->source : std::string{};
+    });
+    set.addFunc("getModifierOperation", [](AttributeSet* s, int index) {
+        const auto* m = s ? s->modifierAt(index) : nullptr;
+        if (!m) return std::string{};
+        if (m->operation == AttributeOperation::Custom) return m->policyId;
+        return std::string(attributeOperationName(m->operation));
+    });
+    set.addFunc("getModifierPriority", [](AttributeSet* s, int index) {
+        const auto* m = s ? s->modifierAt(index) : nullptr;
+        return m ? m->priority : 0;
+    });
+    set.addFunc("getModifierSequence", [](AttributeSet* s, int index) {
+        const auto* m = s ? s->modifierAt(index) : nullptr;
+        return m ? m->sequence : std::uint64_t(0);
     });
 }
 

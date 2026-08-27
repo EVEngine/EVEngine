@@ -16,7 +16,7 @@ TEST_CASE("binding.selfcheck.scriptSurface") {
         local hot = {
             Math = ["newVec2", "newMat4", "setRandomSeed"],
             DataModule = ["newByteData", "decodeJson", "encodeJson"],
-            Event = ["pump", "poll", "pushData"],
+            PlatformEvent = ["pump", "poll", "pushData"],
             Timer = ["getTime", "step"],
             Rx = ["newSubject"],
             Spatial = ["newQuadTree", "newOctree"],

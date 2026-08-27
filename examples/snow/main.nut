@@ -54,16 +54,22 @@ function surfaceHeight(wx, wz) {
 }
 
 function regenTerrain() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return;
+    local p = paramsResult.value;
     p.setSize(W, H);
     p.setSeed(20260822);
     p.setFloat("frequency", 1.0 / 24.0);
     p.setInt("octaves", 5);
-    local generated = procgen.generateHeightmap(p);
-    if (generated != null) {
-        terrainHm = generated;
+    local generatedResult = procgen.generateHeightmap(p);
+    if (generatedResult.ok) {
+        terrainHm = generatedResult.value;
     } else {
-        if (terrainHm == null) terrainHm = procgen.newHeightmap(W, H);
+        if (terrainHm == null) {
+            local fallbackResult = procgen.newHeightmap(W, H);
+            if (!fallbackResult.ok) return;
+            terrainHm = fallbackResult.value;
+        }
         for (local z = 0; z < H; z++) {
             for (local x = 0; x < W; x++) {
                 terrainHm.setHeight(x, z,
@@ -77,7 +83,11 @@ function regenTerrain() {
         sf = snow.newField(W, H);
         sf.fill(0.85);
     }
-    if (combinedHm == null) combinedHm = procgen.newHeightmap(W, H);
+    if (combinedHm == null) {
+        local combinedResult = procgen.newHeightmap(W, H);
+        if (!combinedResult.ok) return;
+        combinedHm = combinedResult.value;
+    }
 
     if (terrainMesh == null) {
         snow.applyToHeightmap(sf, terrainHm, combinedHm, SNOW_SCALE);

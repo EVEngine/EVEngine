@@ -1,7 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 #include "network/Network.h"
 #include "network/TcpSocket.h"
 #include "network/UdpSocket.h"
@@ -21,12 +21,12 @@
 #include <cstring>
 #include <string>
 
-using eve::event::Event;
-using eve::event::Message;
-using eve::event::Variant;
+using eve::platform_event::PlatformEvent;
+using eve::platform_event::Message;
+using eve::platform_event::Variant;
 
 TEST_CASE("event.VariantMessage") {
-    auto* ev = eve::event::Event::create();
+    auto* ev = eve::platform_event::PlatformEvent::create();
     std::vector<Variant> args;
     args.push_back(Variant::makeInt(200));
     args.push_back(Variant::makeString("ok"));
@@ -69,7 +69,7 @@ TEST_CASE("network.NetWorker.stopFromJobDoesNotDeadlock") {
 
 TEST_CASE("network.Channel.fragmentedAndCoalescedFrames") {
     auto* net = eve::network::Network::create();
-    auto* ev = eve::event::Event::create();
+    auto* ev = eve::platform_event::PlatformEvent::create();
     eve::network::TcpSocket socket(net);
     eve::network::Channel channel(&socket);
 
@@ -96,7 +96,7 @@ TEST_CASE("network.Channel.fragmentedAndCoalescedFrames") {
 
 TEST_CASE("network.Channel.rejectsOversizedFrameHeader") {
     auto* net = eve::network::Network::create();
-    auto* ev = eve::event::Event::create();
+    auto* ev = eve::platform_event::PlatformEvent::create();
     while (ev->pollOwned()) {}
     eve::network::TcpSocket socket(net);
     eve::network::Channel channel(&socket);
@@ -115,7 +115,7 @@ TEST_CASE("network.Channel.rejectsOversizedFrameHeader") {
 
 TEST_CASE("network.TcpEcho") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     REQUIRE(net != nullptr);
     REQUIRE(ev != nullptr);
 
@@ -168,7 +168,7 @@ TEST_CASE("network.TcpEcho") {
 
 TEST_CASE("network.UdpSendTo") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     auto* a = net->newUdp();
     auto* b = net->newUdp();
     REQUIRE(a->bind(39301));
@@ -197,7 +197,7 @@ TEST_CASE("network.UdpSendTo") {
 
 TEST_CASE("network.HttpGetLocal") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39311;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -245,7 +245,7 @@ TEST_CASE("network.HttpGetLocal") {
 
 TEST_CASE("network.ChannelFrames") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39321;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -327,7 +327,7 @@ TEST_CASE("network.Network.cppFactoriesReturnOwners") {
 
 TEST_CASE("network.Tcp.connectedAndLocalPort") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39291;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -366,7 +366,7 @@ TEST_CASE("network.Tcp.connectedAndLocalPort") {
 
 TEST_CASE("network.Session.addGetRemoveCloseAll") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39331;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -409,7 +409,7 @@ TEST_CASE("network.Session.addGetRemoveCloseAll") {
 
 TEST_CASE("network.Http.setHeaderAndBody") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39341;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -477,7 +477,7 @@ TEST_CASE("network.Http.httpsReturnsTlsWithoutSslBackend") {
     http->setVerifySsl(true);  // request-level override is stored / resolved in submit()
     REQUIRE(http->submit());
 
-    auto* ev = eve::event::Event::create();
+    auto* ev = eve::platform_event::PlatformEvent::create();
     REQUIRE(ev != nullptr);
     bool gotTls = false;
     for (int i = 0; i < 200 && !gotTls; ++i) {
@@ -565,7 +565,7 @@ TEST_CASE("network.NetReaderOverrunIsSticky") {
 
 TEST_CASE("network.TcpLargeSendFlushesFully") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39351;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -644,7 +644,7 @@ TEST_CASE("network.TcpLargeSendFlushesFully") {
 
 TEST_CASE("network.ChannelLargeMessageReassembles") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39361;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));

@@ -2,7 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Module.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 #include "scripts.h"
 #include "thread/Thread.h"
 #include "timer/Timer.h"
@@ -28,7 +28,7 @@ std::string runAsyncSnippet(const std::string& body) {
     std::string prelude = R"(
         timer <- eve.Timer();
         thread <- eve.Thread();
-        event <- eve.Event();
+        event <- eve.PlatformEvent();
         if ("asyncScript" in eve && eve.asyncScript != "")
             compilestring(eve.asyncScript)();
     )";
@@ -133,7 +133,7 @@ TEST_CASE("async.asyncPost.sameNameCorrelatedByTask") {
 
 TEST_CASE("async.postMain.event") {
     auto* th = eve::thread::Thread::create();
-    auto* ev = eve::event::Event::create();
+    auto* ev = eve::platform_event::PlatformEvent::create();
     th->postMain("asynctest", "payload");
     CHECK_EQ(ev->pollName(), std::string("asynctest"));
     CHECK_EQ(ev->getLastData(), std::string("payload"));

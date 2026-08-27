@@ -1,185 +1,118 @@
 #include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
 
-#include <algorithm>
-#include <atomic>
+#include <utility>
 
 namespace eve::rpg {
 
-void AttributeOpTable::registerOp(const std::string &name, Fn fn) { ops_[name] = std::move(fn); }
+namespace {
 
-void AttributeOpTable::unregisterOp(const std::string &name) { ops_.erase(name); }
-
-bool AttributeOpTable::has(const std::string &name) const { return ops_.find(name) != ops_.end(); }
-
-double AttributeOpTable::apply(const std::string &name, double current, double value) const {
-    auto it = ops_.find(name);
-    if (it == ops_.end()) return current;
-    return it->second(current, value);
+eve::Diagnostic invalidArgument(std::string message, std::string path = {}) {
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
+                                  std::move(path));
 }
 
-double computeAttributeValue(const AttributeValue &attr, const AttributeOpTable *customOps) {
-    double addSum = 0.0;
-    double mulAddSum = 0.0;
-    double mulMulProduct = 1.0;
-    std::vector<const AttributeModifier *> sequential;
-    sequential.reserve(attr.modifiers.size());
-
-    for (const auto &m : attr.modifiers) {
-        if (m.op == "add")
-            addSum += m.value;
-        else if (m.op == "mulAdd")
-            mulAddSum += m.value;
-        else if (m.op == "mulMul")
-            mulMulProduct *= (1.0 + m.value);
-        else
-            sequential.push_back(&m);
-    }
-
-    double result = attr.base + addSum;
-    result *= (1.0 + mulAddSum);
-    result *= mulMulProduct;
-
-    // override / clampMin / clampMax / custom ops are order-sensitive: apply by
-    // ascending priority (stable, so equal-priority keeps insertion order).
-    std::stable_sort(sequential.begin(), sequential.end(),
-                      [](const AttributeModifier *a, const AttributeModifier *b) {
-                          return a->priority < b->priority;
-                      });
-
-    for (const AttributeModifier *m : sequential) {
-        if (m->op == "override")
-            result = m->value;
-        else if (m->op == "clampMin")
-            result = std::max(result, m->value);
-        else if (m->op == "clampMax")
-            result = std::min(result, m->value);
-        else if (customOps && customOps->has(m->op))
-            result = customOps->apply(m->op, result, m->value);
-        // unknown op names are silently ignored (forward-compat: data may
-        // reference ops from a newer game build not registered here).
-    }
-    return result;
+eve::Result<ModifierId> actorRequired(RPGActor*) {
+    return eve::Result<ModifierId>::failure(
+        invalidArgument("attribute operation requires an actor", "actor"));
 }
 
-AttributeOpTable &AttributeSystem::customOps() {
+eve::Result<void> actorRequiredVoid(RPGActor*) {
+    return eve::Result<void>::failure(
+        invalidArgument("attribute operation requires an actor", "actor"));
+}
+
+eve::Result<int> actorRequiredCount(RPGActor*) {
+    return eve::Result<int>::failure(
+        invalidArgument("attribute operation requires an actor", "actor"));
+}
+
+}  // namespace
+
+AttributeOpTable& AttributeSystem::customOps() {
     static AttributeOpTable table;
     return table;
 }
 
-std::string AttributeSystem::nextModifierId() {
-    static std::atomic<uint64_t> counter{0};
-    return "mod#" + std::to_string(++counter);
+void AttributeSystem::setBase(RPGActor* actor, const std::string& attribute, double value) {
+    if (actor) actor->attributes()->values.setBase(attribute, value);
 }
 
-void AttributeSystem::setBase(RPGActor *actor, const std::string &attribute, double value) {
-    if (!actor) return;
-    auto &av = actor->attributes()->values[attribute];
-    av.base = value;
-    av.dirty = true;
+double AttributeSystem::getBase(RPGActor* actor, const std::string& attribute) {
+    return actor ? actor->attributes()->values.getBase(attribute) : 0.0;
 }
 
-double AttributeSystem::getBase(RPGActor *actor, const std::string &attribute) {
-    if (!actor) return 0.0;
-    auto &values = actor->attributes()->values;
-    auto it = values.find(attribute);
-    return it == values.end() ? 0.0 : it->second.base;
+void AttributeSystem::modifyBase(RPGActor* actor, const std::string& attribute, double delta) {
+    if (actor) actor->attributes()->values.modifyBase(attribute, delta);
 }
 
-void AttributeSystem::modifyBase(RPGActor *actor, const std::string &attribute, double delta) {
-    if (!actor) return;
-    auto &av = actor->attributes()->values[attribute];
-    av.base += delta;
-    av.dirty = true;
+bool AttributeSystem::hasAttribute(RPGActor* actor, const std::string& attribute) {
+    return actor && actor->attributes()->values.has(attribute);
 }
 
-bool AttributeSystem::hasAttribute(RPGActor *actor, const std::string &attribute) {
-    if (!actor) return false;
-    auto &values = actor->attributes()->values;
-    return values.find(attribute) != values.end();
+eve::Result<ModifierId> AttributeSystem::addModifier(RPGActor* actor, AttributeModifier modifier) {
+    if (!actor) return actorRequired(actor);
+    return actor->attributes()->values.addModifier(std::move(modifier));
 }
 
-std::string AttributeSystem::addModifier(RPGActor *actor, const std::string &attribute,
-                                          const std::string &source, const std::string &op,
-                                          double value, int priority) {
-    if (!actor) return {};
-    std::string id = nextModifierId();
-    auto &av = actor->attributes()->values[attribute];
-    AttributeModifier mod;
-    mod.id = id;
-    mod.source = source;
-    mod.op = op;
-    mod.value = value;
-    mod.priority = priority;
-    av.modifiers.push_back(std::move(mod));
-    av.dirty = true;
-    return id;
-}
+std::string AttributeSystem::addModifier(RPGActor* actor, const std::string& attribute,
+                                         const std::string& source, const std::string& operation,
+                                         double value, int priority) {
+    if (!actor || attribute.empty()) return {};
 
-bool AttributeSystem::removeModifier(RPGActor *actor, const std::string &attribute,
-                                      const std::string &modifierId) {
-    if (!actor) return false;
-    auto &values = actor->attributes()->values;
-    auto it = values.find(attribute);
-    if (it == values.end()) return false;
-    auto &mods = it->second.modifiers;
-    auto mit = std::find_if(mods.begin(), mods.end(),
-                             [&](const AttributeModifier &m) { return m.id == modifierId; });
-    if (mit == mods.end()) return false;
-    mods.erase(mit);
-    it->second.dirty = true;
-    return true;
-}
-
-int AttributeSystem::removeModifiersBySource(RPGActor *actor, const std::string &attribute,
-                                              const std::string &source) {
-    if (!actor) return 0;
-    auto &values = actor->attributes()->values;
-    auto it = values.find(attribute);
-    if (it == values.end()) return 0;
-    auto &mods = it->second.modifiers;
-    size_t before = mods.size();
-    mods.erase(std::remove_if(mods.begin(), mods.end(),
-                               [&](const AttributeModifier &m) { return m.source == source; }),
-               mods.end());
-    int removed = int(before - mods.size());
-    if (removed > 0) it->second.dirty = true;
-    return removed;
-}
-
-int AttributeSystem::removeAllModifiersBySource(RPGActor *actor, const std::string &source) {
-    if (!actor) return 0;
-    int total = 0;
-    for (auto &kv : actor->attributes()->values) {
-        auto &mods = kv.second.modifiers;
-        size_t before = mods.size();
-        mods.erase(std::remove_if(mods.begin(), mods.end(),
-                                   [&](const AttributeModifier &m) { return m.source == source; }),
-                   mods.end());
-        int removed = int(before - mods.size());
-        if (removed > 0) {
-            kv.second.dirty = true;
-            total += removed;
-        }
+    auto parsed = ::eve::attributes::parseAttributeOperation(operation, value);
+    AttributeModifier modifier;
+    modifier.attribute = attribute;
+    modifier.source = source;
+    modifier.priority = priority;
+    if (parsed.ok()) {
+        modifier.operation = parsed.value().operation;
+        modifier.value = parsed.value().value;
+    } else if (customOps().has(operation)) {
+        parsed.ignore("RPG custom operation compatibility fallback");
+        modifier.operation = AttributeOperation::Custom;
+        modifier.policyId = operation;
+        modifier.value = value;
+    } else {
+        parsed.ignore("unknown RPG attribute operation");
+        return {};
     }
-    return total;
+
+    auto result = addModifier(actor, std::move(modifier));
+    if (!result.ok()) return {};
+    return result.value();
 }
 
-double AttributeSystem::getFinal(RPGActor *actor, const std::string &attribute) {
-    if (!actor) return 0.0;
-    auto &av = actor->attributes()->values[attribute];
-    if (av.dirty) {
-        av.cached = computeAttributeValue(av, &customOps());
-        av.dirty = false;
-    }
-    return av.cached;
+eve::Result<void> AttributeSystem::removeModifier(RPGActor* actor, const ModifierId& modifierId) {
+    if (!actor) return actorRequiredVoid(actor);
+    return actor->attributes()->values.removeModifier(modifierId);
 }
 
-void AttributeSystem::invalidate(RPGActor *actor, const std::string &attribute) {
-    if (!actor) return;
-    auto &values = actor->attributes()->values;
-    auto it = values.find(attribute);
-    if (it != values.end()) it->second.dirty = true;
+bool AttributeSystem::removeModifier(RPGActor* actor, const std::string& attribute,
+                                     const std::string& modifierId) {
+    if (!actor) return false;
+    auto result = actor->attributes()->values.removeModifier(attribute, modifierId);
+    return result.ok();
+}
+
+eve::Result<int> AttributeSystem::removeModifiersBySource(
+    RPGActor* actor, const std::string& attribute, const std::string& source) {
+    if (!actor) return actorRequiredCount(actor);
+    return actor->attributes()->values.removeBySource(source, attribute);
+}
+
+int AttributeSystem::removeAllModifiersBySource(RPGActor* actor, const std::string& source) {
+    auto result = actor ? actor->attributes()->values.removeBySource(source)
+                        : actorRequiredCount(actor);
+    return result.ok() ? result.value() : 0;
+}
+
+double AttributeSystem::getFinal(RPGActor* actor, const std::string& attribute) {
+    return actor ? actor->attributes()->values.getFinal(attribute, 0.0, &customOps()) : 0.0;
+}
+
+void AttributeSystem::invalidate(RPGActor* actor, const std::string& attribute) {
+    if (actor) actor->attributes()->values.invalidate(attribute);
 }
 
 }  // namespace eve::rpg

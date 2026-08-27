@@ -6,6 +6,10 @@
  */
 
 #include "common/ECS.h"
+#include "common/definitions/DefinitionRuntime.h"
+#include "attributes/AttributeProjection.h"
+#include "card/CardEffects.h"
+#include "decision/Condition.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -78,6 +82,10 @@ struct CardDefinition {
     int         attack = 0;
     int         health = 0;
     glm::vec3   tint{0.62f, 0.50f, 0.40f};
+    /** @brief Side-effect-free condition tree required before this card can play. */
+    eve::decision::Condition playCondition;
+    /** @brief Definition tags available to HasTag nodes. */
+    std::vector<std::string> tags;
 };
 
 /** @brief 单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。 */
@@ -101,6 +109,20 @@ public:
         int cost = 0;
         int attack = 0;
         int health = 0;
+    };
+    /**
+     * @brief Canonical selected card stats backed by the attributes module.
+     *
+     * `Stats` is a one-way compatibility projection refreshed by
+     * CardAttributeAdapter. Card layout, interaction state and card-zone
+     * membership deliberately remain outside this component.
+     */
+    struct Attributes {
+        eve::attributes::AttributeProjection values;
+    };
+    /** @brief Canonical effect lifecycle and card combat target state. */
+    struct Effects {
+        CardEffectAdapter values;
     };
     /** @brief 朝向、禁用、色调、卡图。 */
     struct Visual {
@@ -126,11 +148,29 @@ public:
         bool dragging = false;
     };
 
+    /**
+     * @brief Definition link and reload policy for this card instance.
+     *
+     * This is a cold ECS component: `identity` is authoritative for the
+     * definition incarnation, while the legacy `Identity::definitionId` is a
+     * read-only compatibility projection. The component is rebuilt by the
+     * CardDefinitionRuntime adapter after a successful hot reload.
+     */
+    struct DefinitionBinding {
+        eve::definition::InstanceIdentity identity;
+        eve::definition::ReloadPolicy reloadPolicy =
+            eve::definition::ReloadPolicy::KeepInstanceValues;
+        bool active = true;
+    };
+
     COMPONENT(Identity, identity)
     COMPONENT(Stats, stats)
+    COMPONENT(Attributes, attributes)
+    COMPONENT(Effects, effects)
     COMPONENT(Visual, visual)
     COMPONENT(Layout, layout)
     COMPONENT(State, state)
+    COMPONENT(DefinitionBinding, definitionBinding)
 
     /** @brief 创建并触摸全部组件。 */
     static CardData *createCard();

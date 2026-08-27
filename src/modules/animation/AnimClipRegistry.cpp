@@ -22,6 +22,21 @@ EntryMap& entries() {
     return map;
 }
 
+eve::Observer<AnimClipRegistry::ReloadEvent>& reloadObservers() {
+    static eve::Observer<AnimClipRegistry::ReloadEvent> observer;
+    return observer;
+}
+
+std::uint64_t& reloadCallbackFailures() {
+    static std::uint64_t failures = 0;
+    return failures;
+}
+
+void notifyReload(AnimClipRegistry::ReloadEvent event) {
+    static_cast<void>(reloadObservers().notifyChecked(
+        []() noexcept { ++reloadCallbackFailures(); }, event));
+}
+
 bool isEvaPath(const std::string& path) {
     if (path.size() < 5) return false;
     std::string ext = path.substr(path.size() - 4);
@@ -38,7 +53,11 @@ public:
         return isEvaPath(AnimClipRegistry::normalizePath(normPath));
     }
 
-    bool reload(const std::string& normPath) override { return AnimClipRegistry::reloadPath(normPath) > 0; }
+    eve::Result<bool> reload(const std::string& normPath) override {
+        auto result = AnimClipRegistry::reloadPath(normPath);
+        if (!result) return eve::Result<bool>::failure(result.status());
+        return eve::Result<bool>::success(std::move(result).takeValue() > 0);
+    }
 };
 
 struct Register {
@@ -82,10 +101,13 @@ std::vector<AnimClip*> AnimClipRegistry::findByPath(const std::string& path) {
 
 bool AnimClipRegistry::hasPath(const std::string& path) { return entries().count(normalizePath(path)) > 0; }
 
-int AnimClipRegistry::reloadPath(const std::string& path) {
+eve::Result<int> AnimClipRegistry::reloadPath(const std::string& path) {
     const std::string norm = normalizePath(path);
     const auto        it   = entries().find(norm);
-    if (it == entries().end() || it->second.empty()) return 0;
+    if (it == entries().end() || it->second.empty()) {
+        notifyReload({norm, 0, false});
+        return eve::Result<int>::success(0, eve::Status::success(eve::StatusCode::NoOp));
+    }
 
     AnimSkeleton* skeleton = nullptr;
     AnimClip*     fresh    = nullptr;
@@ -94,17 +116,29 @@ int AnimClipRegistry::reloadPath(const std::string& path) {
     } catch (...) {
         delete skeleton;
         delete fresh;
-        return 0;
+        notifyReload({norm, 0, false});
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "animation clip reload import failed", norm));
     }
     if (!fresh) {
         delete skeleton;
-        return 0;
+        notifyReload({norm, 0, false});
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "animation clip reload produced no clip", norm));
     }
     for (AnimClip* clip : it->second) clip->adopt(*fresh);
+    const int refreshed = static_cast<int>(it->second.size());
     delete fresh;
     delete skeleton;
-    return static_cast<int>(it->second.size());
+    notifyReload({norm, refreshed, true});
+    return eve::Result<int>::success(refreshed, eve::Status::success(eve::StatusCode::Applied));
 }
+
+eve::Subscription AnimClipRegistry::subscribeReload(ReloadCallback callback) {
+    return reloadObservers().subscribe(std::move(callback));
+}
+
+std::uint64_t AnimClipRegistry::reloadCallbackFailureCount() { return reloadCallbackFailures(); }
 
 int AnimClipRegistry::count() {
     int n = 0;

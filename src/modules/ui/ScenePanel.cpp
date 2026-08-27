@@ -15,26 +15,32 @@ constexpr const char* kSceneHostName = "eve_scene";
 }  // namespace
 
 ScenePanel::~ScenePanel() {
-    if (host_) host_->setTree(window("", {}));
+    if (auto host = UIHost::resolve(host_)) host->get().setTree(window("", {}));
 }
 
 void ScenePanel::open() {
-    if (!host_) host_ = UIHost::createHost(kSceneHostName);
-    host_->setVisible(true);
-    host_->setLayer(80);
+    auto host = UIHost::resolve(host_);
+    if (!host) {
+        host_ = UIHost::createHost(kSceneHostName);
+        host = UIHost::resolve(host_);
+    }
+    if (!host) return;
+    host->get().setVisible(true);
+    host->get().setLayer(80);
     refresh();
 }
 
 void ScenePanel::close() {
-    if (host_) host_->setVisible(false);
+    if (auto host = UIHost::resolve(host_)) host->get().setVisible(false);
 }
 
 bool ScenePanel::isOpen() const {
-    return host_ && host_->meta()->visible;
+    auto host = UIHost::resolve(host_);
+    return host && host->get().meta()->visible;
 }
 
 void ScenePanel::refresh() {
-    if (host_) host_->setTree(build());
+    if (auto host = UIHost::resolve(host_)) host->get().setTree(build());
 }
 
 bool ScenePanel::selectNode(const std::string& id) {
@@ -162,8 +168,9 @@ WidgetDesc ScenePanel::build() {
 }
 
 void ScenePanel::rebuildHost() {
-    if (!host_ || !host_->meta()->visible) return;
-    host_->setTree(build());
+    auto host = UIHost::resolve(host_);
+    if (!host || !host->get().meta()->visible) return;
+    host->get().setTree(build());
 }
 
 }  // namespace eve::ui

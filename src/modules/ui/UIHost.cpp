@@ -44,15 +44,24 @@ const std::string &neighbor(const UINode &node, FocusDirection direction) {
 
 }  // namespace
 
-UIHost *UIHost::createHost(const std::string &name) {
+UIHostHandle UIHost::createHost(const std::string &name) {
     UIHost *h = UIHost::create();
-    h->meta()->entity = h;
+    if (!h) return {};
+    const UIHostHandle handle = ecs::handle_of(h);
+    h->meta()->entity = handle;
     if (name.empty()) {
         h->meta()->name = "host" + std::to_string(++g_anonHostSeq);
     } else {
         h->meta()->name = name;
     }
-    return h;
+    return handle;
+}
+
+eve::OptionalRef<UIHost> UIHost::resolve(UIHostHandle handle) noexcept {
+    auto *entity = ecs::try_get(handle);
+    if (auto *host = entity ? dynamic_cast<UIHost *>(entity) : nullptr)
+        return std::ref(*host);
+    return std::nullopt;
 }
 
 void UIHost::setName(const std::string &name) { meta()->name = name; }
@@ -74,60 +83,60 @@ void UIHost::setSimplePanel(const std::string &title, const std::string &labelTe
                    "root"));
 }
 
-UINode *UIHost::findById(const std::string &id) {
-    if (id.empty()) return nullptr;
+eve::OptionalRef<UINode> UIHost::findById(const std::string &id) {
+    if (id.empty()) return std::nullopt;
     auto t = tree();
     for (auto &n : t->nodes) {
-        if (n.id == id) return &n;
+        if (n.id == id) return std::ref(n);
     }
-    return nullptr;
+    return std::nullopt;
 }
 
-UINode *UIHost::findByKey(const std::string &key) {
-    if (key.empty()) return nullptr;
+eve::OptionalRef<UINode> UIHost::findByKey(const std::string &key) {
+    if (key.empty()) return std::nullopt;
     auto t = tree();
     for (auto &n : t->nodes) {
-        if (n.key == key) return &n;
+        if (n.key == key) return std::ref(n);
     }
-    return nullptr;
+    return std::nullopt;
 }
 
 void UIHost::setTextById(const std::string &id, const std::string &text) {
-    if (auto *n = findById(id)) n->text = text;
+    if (auto n = findById(id)) n->get().text = text;
 }
 
 void UIHost::setVisibleById(const std::string &id, bool visible) {
-    if (auto *n = findById(id)) n->visible = visible;
+    if (auto n = findById(id)) n->get().visible = visible;
 }
 
 void UIHost::setEnabledById(const std::string &id, bool enabled) {
-    if (auto *n = findById(id)) {
-        n->enabled = enabled;
+    if (auto n = findById(id)) {
+        n->get().enabled = enabled;
         if (!enabled) {
-            n->focusRequested = false;
-            n->focused = false;
+            n->get().focusRequested = false;
+            n->get().focused = false;
         }
     }
 }
 
 void UIHost::setCheckedById(const std::string &id, bool checked) {
-    if (auto *n = findById(id)) n->checked = checked;
+    if (auto n = findById(id)) n->get().checked = checked;
 }
 
 void UIHost::setValueById(const std::string &id, float value) {
-    if (auto *n = findById(id)) n->value = value;
+    if (auto n = findById(id)) n->get().value = value;
 }
 
 void UIHost::setValueTextById(const std::string &id, const std::string &value) {
-    if (auto *n = findById(id)) n->valueText = value;
+    if (auto n = findById(id)) n->get().valueText = value;
 }
 
 bool UIHost::requestFocusById(const std::string &id) {
-    UINode *target = findById(id);
-    if (!target || !eligible(*target, false)) return false;
+    auto target = findById(id);
+    if (!target || !eligible(target->get(), false)) return false;
     auto t = tree();
     for (auto &node : t->nodes) node.focusRequested = false;
-    target->focusRequested = true;
+    target->get().focusRequested = true;
     return true;
 }
 
@@ -146,8 +155,8 @@ bool UIHost::moveFocus(FocusDirection direction, bool wrap) {
     if (current) {
         const std::string &explicitId = neighbor(*current, direction);
         if (!explicitId.empty()) {
-            UINode *explicitTarget = findById(explicitId);
-            if (explicitTarget && eligible(*explicitTarget, true))
+            auto explicitTarget = findById(explicitId);
+            if (explicitTarget && eligible(explicitTarget->get(), true))
                 return requestFocusById(explicitId);
         }
     }
@@ -194,66 +203,66 @@ std::string UIHost::focusedId() {
 }
 
 bool UIHost::setClickHandler(const std::string &id, std::function<void()> fn) {
-    auto *n = findById(id);
+    auto n = findById(id);
     if (!n) return false;
     auto t = tree();
-    if (n->handlerClick != 0) {
-        size_t idx = size_t(n->handlerClick - 1);
+    if (n->get().handlerClick != 0) {
+        size_t idx = size_t(n->get().handlerClick - 1);
         if (idx < t->clickHandlers.size()) {
             t->clickHandlers[idx] = std::move(fn);
             return true;
         }
     }
     t->clickHandlers.push_back(std::move(fn));
-    n->handlerClick = static_cast<uint32_t>(t->clickHandlers.size());
+    n->get().handlerClick = static_cast<uint32_t>(t->clickHandlers.size());
     return true;
 }
 
 bool UIHost::setToggleHandler(const std::string &id, std::function<void(bool)> fn) {
-    auto *n = findById(id);
+    auto n = findById(id);
     if (!n) return false;
     auto t = tree();
-    if (n->handlerToggle != 0) {
-        size_t idx = size_t(n->handlerToggle - 1);
+    if (n->get().handlerToggle != 0) {
+        size_t idx = size_t(n->get().handlerToggle - 1);
         if (idx < t->toggleHandlers.size()) {
             t->toggleHandlers[idx] = std::move(fn);
             return true;
         }
     }
     t->toggleHandlers.push_back(std::move(fn));
-    n->handlerToggle = static_cast<uint32_t>(t->toggleHandlers.size());
+    n->get().handlerToggle = static_cast<uint32_t>(t->toggleHandlers.size());
     return true;
 }
 
 bool UIHost::setValueHandler(const std::string &id, std::function<void(float)> fn) {
-    auto *n = findById(id);
+    auto n = findById(id);
     if (!n) return false;
     auto t = tree();
-    if (n->handlerValue != 0) {
-        size_t idx = size_t(n->handlerValue - 1);
+    if (n->get().handlerValue != 0) {
+        size_t idx = size_t(n->get().handlerValue - 1);
         if (idx < t->valueHandlers.size()) {
             t->valueHandlers[idx] = std::move(fn);
             return true;
         }
     }
     t->valueHandlers.push_back(std::move(fn));
-    n->handlerValue = static_cast<uint32_t>(t->valueHandlers.size());
+    n->get().handlerValue = static_cast<uint32_t>(t->valueHandlers.size());
     return true;
 }
 
 bool UIHost::setTextHandler(const std::string &id, std::function<void(const std::string &)> fn) {
-    auto *n = findById(id);
+    auto n = findById(id);
     if (!n) return false;
     auto t = tree();
-    if (n->handlerText != 0) {
-        size_t idx = size_t(n->handlerText - 1);
+    if (n->get().handlerText != 0) {
+        size_t idx = size_t(n->get().handlerText - 1);
         if (idx < t->textHandlers.size()) {
             t->textHandlers[idx] = std::move(fn);
             return true;
         }
     }
     t->textHandlers.push_back(std::move(fn));
-    n->handlerText = static_cast<uint32_t>(t->textHandlers.size());
+    n->get().handlerText = static_cast<uint32_t>(t->textHandlers.size());
     return true;
 }
 

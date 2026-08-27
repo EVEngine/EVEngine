@@ -261,13 +261,27 @@ function mountWorkspacePanels() {
 }
 
 function generateTerrain() {
-    local params = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        state.vm.status = "Parameter creation failed: " + paramsResult.status.summary;
+        return;
+    }
+    local params = paramsResult.value;
     params.setSize(MAP_W, MAP_H);
     params.setSeed(state.vm.seed);
     params.setFloat("frequency", 1.0 / 18.0);
     params.setInt("octaves", 5);
-    state.heightmap = procgen.generateHeightmap(params);
-    if (state.heightmap == null) state.heightmap = procgen.newHeightmap(MAP_W, MAP_H);
+    local heightmapResult = procgen.generateHeightmap(params);
+    if (heightmapResult.ok) {
+        state.heightmap = heightmapResult.value;
+    } else if (state.heightmap == null) {
+        local fallbackResult = procgen.newHeightmap(MAP_W, MAP_H);
+        if (!fallbackResult.ok) {
+            state.vm.status = "Heightmap creation failed: " + fallbackResult.status.summary;
+            return;
+        }
+        state.heightmap = fallbackResult.value;
+    }
 
     if (state.terrainMesh == null) {
         state.terrainMesh = editor.newHeightmapMeshSmooth(state.heightmap, CELL, HEIGHT_SCALE);
@@ -313,11 +327,12 @@ function applyMaterial(name) {
 
 function generateAndApplyPbrMaterial() {
     if (state.terrainEntity == null) return;
-    state.materialSet = procgen.generatePbrMaterial(state.materialRecipe, state.materialParams);
-    if (state.materialSet == null) {
-        state.vm.status = "Material generation failed: " + procgen.lastError();
+    local materialResult = procgen.generatePbrMaterial(state.materialRecipe, state.materialParams);
+    if (!materialResult.ok) {
+        state.vm.status = "Material generation failed: " + materialResult.status.summary;
         return;
     }
+    state.materialSet = materialResult.value;
     local albedo = gfx.newTexture(state.materialSet.getAlbedo(), true, true);
     local normal = gfx.newTexture(state.materialSet.getNormal(), true, true);
     local height = gfx.newTexture(state.materialSet.getHeight(), true, true);
@@ -384,7 +399,7 @@ function applyDialogueDocument() {
         spawnArchetype("dialogue.document");
         state.vm.status = "Applied project-composed Dialogue document";
     } else {
-        state.vm.status = "Dialogue validation failed: " + state.dialogueComponent.document.getLastError();
+        state.vm.status = "Dialogue validation failed: " + state.dialogueComponent.document.getDiagnosticMessage(0);
     }
 }
 
@@ -403,10 +418,11 @@ function updateRecipeParam(schema, params, prefix, id) {
 }
 
 function generateProcgenPreview() {
-    state.procgenPreview = procgen.generate(state.procgenAlgorithm, state.procgenParams);
-    if (state.procgenPreview == null) {
-        state.vm.status = "Procgen failed: " + procgen.lastError();
+    local previewResult = procgen.generate(state.procgenAlgorithm, state.procgenParams);
+    if (!previewResult.ok) {
+        state.vm.status = "Procgen failed: " + previewResult.status.summary;
     } else {
+        state.procgenPreview = previewResult.value;
         state.vm.status = procgen.getAlgorithmDisplayName(state.procgenAlgorithm) + " preview " +
                           state.procgenPreview.getWidth() + "x" + state.procgenPreview.getHeight();
     }
@@ -553,13 +569,41 @@ function syncViews() {
 
 eve_init = function() {
     state.vm = WorldEditorVM();
-    state.procgenParams = procgen.newParams();
-    procgen.applyAlgorithmDefaults(state.procgenAlgorithm, state.procgenParams);
-    state.procgenSchema = procgen.getAlgorithmSchema(state.procgenAlgorithm);
-    state.materialParams = procgen.newParams();
+    local procgenParamsResult = procgen.newParams();
+    if (!procgenParamsResult.ok) {
+        state.vm.status = "Procgen parameter creation failed: " + procgenParamsResult.status.summary;
+        return;
+    }
+    state.procgenParams = procgenParamsResult.value;
+    local procgenDefaultsResult = procgen.applyAlgorithmDefaults(state.procgenAlgorithm, state.procgenParams);
+    if (!procgenDefaultsResult.ok) {
+        state.vm.status = "Procgen defaults failed: " + procgenDefaultsResult.status.summary;
+        return;
+    }
+    local procgenSchemaResult = procgen.getAlgorithmSchema(state.procgenAlgorithm);
+    if (!procgenSchemaResult.ok) {
+        state.vm.status = "Procgen schema failed: " + procgenSchemaResult.status.summary;
+        return;
+    }
+    state.procgenSchema = procgenSchemaResult.value;
+    local materialParamsResult = procgen.newParams();
+    if (!materialParamsResult.ok) {
+        state.vm.status = "Material parameter creation failed: " + materialParamsResult.status.summary;
+        return;
+    }
+    state.materialParams = materialParamsResult.value;
     state.materialParams.setSize(128, 128);
-    procgen.applyPbrRecipeDefaults(state.materialRecipe, state.materialParams);
-    state.materialSchema = procgen.getPbrRecipeSchema(state.materialRecipe);
+    local materialDefaultsResult = procgen.applyPbrRecipeDefaults(state.materialRecipe, state.materialParams);
+    if (!materialDefaultsResult.ok) {
+        state.vm.status = "Material defaults failed: " + materialDefaultsResult.status.summary;
+        return;
+    }
+    local materialSchemaResult = procgen.getPbrRecipeSchema(state.materialRecipe);
+    if (!materialSchemaResult.ok) {
+        state.vm.status = "Material schema failed: " + materialSchemaResult.status.summary;
+        return;
+    }
+    state.materialSchema = materialSchemaResult.value;
     state.dialogueComponent = DialogueEditorComponent(dialogueFlow, "quest.example");
     state.gameplayComponents = GameplayEditorComponents();
     configureWorkspace();

@@ -463,22 +463,41 @@ function regenerate() {
     configureHex(layer);
     layer.setCamera(cam);
 
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        status = "参数创建失败: " + paramsResult.status.summary;
+        pushLog(status);
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(seed);
     p.setSize(MAP_W, MAP_H);
     applyProcgenParams(p);
 
-    local out = procgen.newOutput();
+    local outputResult = procgen.newOutput();
+    if (!outputResult.ok) {
+        status = "输出创建失败: " + outputResult.status.summary;
+        pushLog(status);
+        return;
+    }
+    local out = outputResult.value;
     out.setTarget("tilelayer");
     out.setLayer(layer);
     out.setPalette("hex_levels");
-    if (!procgen.generateTo(algo, p, out)) {
-        status = "生成失败: " + procgen.lastError();
+    local outputWriteResult = procgen.generateTo(algo, p, out);
+    if (!outputWriteResult.ok) {
+        status = "生成失败: " + outputWriteResult.status.summary;
         pushLog(status);
         return;
     }
 
-    local grid = procgen.generate(algo, p);
+    local gridResult = procgen.generate(algo, p);
+    if (!gridResult.ok) {
+        status = "网格生成失败: " + gridResult.status.summary;
+        pushLog(status);
+        return;
+    }
+    local grid = gridResult.value;
     spawnTx = -1;
     spawnTy = -1;
     exitTx = -1;

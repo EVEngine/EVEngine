@@ -85,6 +85,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_.xzRegion(); }
     bool apply() override;
     void revert() override;
+    [[nodiscard]] std::unique_ptr<IEditCommand> clone() const override;
     bool mergeWith(const IEditCommand& later) override;
 
 private:

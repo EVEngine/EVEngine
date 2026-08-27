@@ -21,6 +21,7 @@
 #include "thread/ThreadPool.h"
 #include "common/ECS.h"
 #include "common/Resource.h"
+#include "common/SquirrelBinding.h"
 
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
@@ -69,6 +70,12 @@ SceneLoader::~SceneLoader() {
 namespace {
 
 constexpr float kEps = 1e-5f;
+
+template <class T>
+T *borrowResult(eve::Result<T *> result) {
+    if (!result.ok()) return nullptr;
+    return result.value();
+}
 
 std::string normPath(const std::string &p) {
     std::string out;
@@ -826,7 +833,7 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
                                 const CpuImageMap *predecoded) {
     if (!gfx) return;
     for (const auto &kv : slots) {
-        scene::SceneNode *n = host->findById(kv.first);
+        scene::SceneNode *n = borrowResult(host->findById(kv.first));
         if (!n || kv.second.empty()) continue;
         if (std::find(n->tags.begin(), n->tags.end(), "collision") != n->tags.end()) continue;
         if (host->findLink(n, scene::findLinkKind("renderable3d"))) continue;
@@ -885,7 +892,7 @@ bool SceneLoader::decode(const std::string &path, const LoadOptions &options, De
     // The unified resource cache may hold a decode from an earlier load; a
     // reload/diff must see the file as it is now, so refresh the cached entry
     // before asking for it (no-op when nothing is cached yet).
-    eve::ResourceManager::getInstance().reload(path);
+    eve::ResourceManager::getInstance().reload(path).ignore("scene reload");
 
     auto *mod3d = ModuleManager::getInstance<model3d::Model3D>("Model3D");
     if (!mod3d) mod3d = model3d::Model3D::create();
@@ -929,7 +936,8 @@ bool SceneLoader::decode(const std::string &path, const LoadOptions &options, De
 }
 
 scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
-    scene::SceneHost *host = scene::SceneHost::createHost(d.path);
+    scene::SceneHost *host = borrowResult(scene::SceneHost::createHost(d.path));
+    if (!host) return nullptr;
     host->setTree(std::move(*d.root));
 
     graphics::Graphics *gfx = currentGraphics();
@@ -968,7 +976,8 @@ scene::SceneHost *SceneLoader::load(const std::string &path, bool linkRenderable
         return nullptr;
     }
     if (!linkRenderables) {
-        scene::SceneHost *host = scene::SceneHost::createHost(d.path);
+        scene::SceneHost *host = borrowResult(scene::SceneHost::createHost(d.path));
+        if (!host) return nullptr;
         host->setTree(std::move(*d.root));
         scene::TransformSystem::updateHost(host);
         scenes_[d.path] = Loaded{d.path, host, nullptr, options, {}, {}, nullptr, {}};
@@ -986,18 +995,31 @@ scene::SceneHost *SceneLoader::loadPreset(const std::string &path, const std::st
     return load(path, presetOptions(preset));
 }
 
-bool SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOptions &options) {
+eve::Result<bool> SceneLoader::reload(const std::string &path, SceneDiff *out,
+                                      const LoadOptions &options) {
     const std::string key = normPath(path);
     auto it = scenes_.find(key);
     if (it == scenes_.end()) {
-        load(path, options);
+        if (!load(path, options)) {
+            const std::string message = decodeErrorFor(path);
+            return eve::Result<bool>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed,
+                message.empty() ? "scene reload failed to load the scene" : message,
+                key, {}, "sceneloader.reload"));
+        }
         if (out) *out = SceneDiff{};
-        return true;
+        return eve::Result<bool>::success(true, eve::Status::success(eve::StatusCode::Applied));
     }
     Loaded &ld = it->second;
 
     DecodedScene d;
-    if (!decode(path, options, &d)) return false;
+    if (!decode(path, options, &d)) {
+        const std::string message = decodeErrorFor(path);
+        return eve::Result<bool>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed,
+            message.empty() ? "scene reload failed to decode the scene" : message,
+            key, {}, "sceneloader.reload"));
+    }
 
     SceneDiff diff = diffTree(ld.host, *d.root);
     if (out) *out = diff;
@@ -1007,12 +1029,14 @@ bool SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOpti
         linkMeshNodes(ld.host, d.slots, ld.gfx, options, textures_, shared, &d.cpuImages);
         scene::TransformSystem::updateHost(ld.host);
     }
-    return !diff.empty();
+    if (diff.empty())
+        return eve::Result<bool>::success(false, eve::Status::success(eve::StatusCode::NoOp));
+    return eve::Result<bool>::success(true, eve::Status::success(eve::StatusCode::Applied));
 }
 
 SceneDiff SceneLoader::diff(const std::string &path) {
     const std::string key = normPath(path);
-    eve::ResourceManager::getInstance().reload(path);  // fresh decode for diffing
+    eve::ResourceManager::getInstance().reload(path).ignore("scene diff reload");  // fresh decode for diffing
     auto *mod3d = ModuleManager::getInstance<model3d::Model3D>("Model3D");
     if (!mod3d) mod3d = model3d::Model3D::create();
     model3d::ModelData *md = nullptr;
@@ -1159,7 +1183,7 @@ int SceneLoader::pendingAsyncCount() const {
     return static_cast<int>(pending_.size() + inFlight_.size());
 }
 
-std::string SceneLoader::lastError(const std::string &path) const {
+std::string SceneLoader::decodeErrorFor(const std::string &path) const {
     std::lock_guard<std::mutex> lock(pendingMu_);
     auto it = lastErrors_.find(normPath(path));
     return it == lastErrors_.end() ? std::string{} : it->second;
@@ -1284,7 +1308,16 @@ void SceneLoader::expose(ssq::Class &cls) {
                     }));
     cls.addFunc("loadPreset", &SceneLoader::loadPreset);
     cls.addFunc("host", &SceneLoader::host);
-    cls.addFunc("reloadChecked", &SceneLoader::reloadChecked);
+    const HSQUIRRELVM vm = cls.getHandle();
+    cls.addFunc("reload", [vm](SceneLoader *value, const std::string &path) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<bool>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "scene loader must not be null", "scene")),
+                [](bool changed) { return eve::Value::boolean(changed); });
+        return eve::script::projectResult(vm, value->reload(path),
+                                          [](bool changed) { return eve::Value::boolean(changed); });
+    });
     cls.addFunc("nodeCount", &SceneLoader::nodeCount);
     cls.addFunc("loaded", &SceneLoader::loaded);
     cls.addFunc("unload", &SceneLoader::unload);
@@ -1295,7 +1328,6 @@ void SceneLoader::expose(ssq::Class &cls) {
     cls.addFunc("prewarmed", &SceneLoader::prewarmed);
     cls.addFunc("clearPrewarm", &SceneLoader::clearPrewarm);
     cls.addFunc("prewarm", &SceneLoader::prewarm);
-    cls.addFunc("lastError", &SceneLoader::lastError);
     cls.addFunc("warningCount", &SceneLoader::warningCount);
     cls.addFunc("warning", &SceneLoader::warning);
     cls.addFunc("setLod", &SceneLoader::setLod);

@@ -1,19 +1,24 @@
 # Arbor Lab — 随机树木生成器
 
 `mesh.tree` 是 EVEngine 的原生程序化网格配方。相同 seed 与参数会生成一致的网格，可通过
-`procgen.buildMesh` 获取 CPU 数据，或通过 `procgen.generateMesh` 直接上传 GPU。
+`procgen.buildMesh` 获取 CPU 数据，或通过 `procgen.generateMesh` 直接上传 GPU；两者都返回
+Result 投影，必须检查 `ok` 后才能读取 `value`。
 
 ## 快速使用
 
 ```squirrel
-local p = procgen.newParams();
+local paramsResult = procgen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setSeed(31415);
 p.setString("style", "lowpoly");
 p.setString("branchAlgorithm", "weberPenn");
 p.setString("leafMode", "canopy");
 p.setFloat("leafDensity", 0.75);
 
-local mesh = procgen.generateMesh("mesh.tree", p, gfx);
+local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
+if (!meshResult.ok) throw meshResult.status.summary;
+local mesh = meshResult.value;
 ```
 
 `branchAlgorithm` 只能选择一种骨架算法：`weberPenn` 是默认值，规则稳定、生成较快；

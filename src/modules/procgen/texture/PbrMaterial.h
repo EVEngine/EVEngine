@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -22,6 +23,8 @@ namespace eve::procgen {
  * line up pixel-for-pixel.
  */
 struct PbrTextureSet {
+    /** @brief Releases all generated maps when the owning set is destroyed. */
+    ~PbrTextureSet();
     image::ImageData *albedo    = nullptr;  // RGBA8
     image::ImageData *normal    = nullptr;  // RGBA8 tangent-space normal
     image::ImageData *roughness = nullptr;  // RGBA8, grayscale 0=glossy 1=rough
@@ -45,8 +48,9 @@ struct PbrTextureSet {
     void destroy();
 };
 
-/** @brief Recipe returns a full PBR set (caller owns), or nullptr on failure. */
-using PbrRecipeFn = std::function<PbrTextureSet *(const Params &params, std::string &error)>;
+/** @brief Recipe returns a newly owned full PBR set, or null on failure. */
+using PbrRecipeFn =
+    std::function<std::unique_ptr<PbrTextureSet>(const Params &params, std::string &error)>;
 
 class PbrRecipeRegistry {
 public:
@@ -59,8 +63,16 @@ public:
     void registerPbrRecipe(RecipeDescriptor descriptor, PbrRecipeFn fn);
     /** @brief Test whether a recipe exists. @param id Recipe id. @return True when registered. */
     bool has(const std::string &id) const;
-    /** @brief Generate a PBR set. @param id Recipe id. @param params Values. @param error Failure text. @return Caller-owned set or nullptr. */
-    PbrTextureSet *generate(const std::string &id, const Params &params, std::string &error) const;
+    /**
+     * @brief Generates a PBR map set and transfers its unique ownership to the caller.
+     * @param id Stable recipe id.
+     * @param params Validated recipe parameters.
+     * @param error Receives a human-readable failure description when generation fails.
+     * @return The newly owned set, or null when the recipe is unknown or generation fails.
+     * @ownership The returned set and all maps it owns belong to the caller.
+     */
+    [[nodiscard]] std::unique_ptr<PbrTextureSet> generate(
+        const std::string &id, const Params &params, std::string &error) const;
     /** @brief List recipe ids. @return Sorted ids. */
     std::vector<std::string> list() const;
     /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
@@ -81,11 +93,12 @@ private:
     bool builtinsRegistered_ = false;
 };
 
-/** @brief Build a full PBR set from a texture definition. Caller owns the result. */
-PbrTextureSet *generatePbrSet(const TextureRecipeDef &def, const Params &params,
-                              std::string &error);
+/** @brief Builds a full PBR set from a texture definition and returns unique ownership. */
+[[nodiscard]] std::unique_ptr<PbrTextureSet> generatePbrSet(
+    const TextureRecipeDef &def, const Params &params, std::string &error);
 
-/** @brief Build a grayscale RGBA8 image from per-pixel values in [0,1]. Caller owns. */
-image::ImageData *grayscaleImage(const std::vector<float> &values, int w, int h);
+/** @brief Builds a grayscale RGBA8 image and returns unique ownership to the caller. */
+[[nodiscard]] std::unique_ptr<image::ImageData> grayscaleImage(
+    const std::vector<float> &values, int w, int h);
 
 }  // namespace eve::procgen

@@ -1,4 +1,6 @@
 #include "map/Map.h"
+
+#include "map/ArtifactProvider.h"
 #include "map/DualGrid.h"
 #include "map/TileSystem.h"
 #include "map/TileConfig.h"
@@ -16,6 +18,8 @@
 #include <algorithm>
 
 namespace eve::map {
+
+Map::Map() { registerMapArtifactProvider(); }
 
 Module_IMPL(Map, new Map());
 

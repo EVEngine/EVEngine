@@ -23,8 +23,8 @@ if (host != null) {
 
 ### 场景热重载
 
-编辑器里改模型/材质后调用 `loader.reloadChecked(path)`：重新解码 → diff →
-只增删改变化节点，未变化对象不重传 GPU。返回 true 表示有更新。
+编辑器里改模型/材质后调用 `loader.reload(path)`：重新解码 → diff →
+只增删改变化节点，未变化对象不重传 GPU。返回统一 Result；成功且 value 为 true 表示有更新，成功且 value 为 false 表示无变化。
 
 ### 大场景异步加载
 
@@ -34,7 +34,7 @@ if (loader.pendingAsyncCount() == 0) loader.loadAsync("models/big.glb"); // 后�
 loader.pollAsync();          // 就绪后挂载（GPU 上传在主线程）
 ```
 
-失败后用 `lastError(path)` 取得解码错误；成功后可用 `warningCount(path)` / `warning(path, i)` 检查缺失 normals、UV 等非致命问题。
+失败时 `reload()` 返回结构化 Result；成功后可用 `warningCount(path)` / `warning(path, i)` 检查缺失 normals、UV 等非致命问题。
 
 ### 导入 preset 与生产命名
 
@@ -51,13 +51,13 @@ loader.pollAsync();          // 就绪后挂载（GPU 上传在主线程）
 - `getName()`：模块名（"SceneLoader"）。
 - `load(path)` → `SceneHost`（null 表示失败）；默认自动链接 Renderable3D。
 - `host(path)` → 已挂载的 `SceneHost`。
-- `reloadChecked(path)` → bool：热重载并 diff 应用。
+- `reload(path)` → Result<bool>：热重载并 diff 应用；解码失败通过 Result 状态和诊断返回。
 - `unload(path)`：卸载并销毁链接的 Renderable3D。
 - `nodeCount(path)` / `loaded(path)`。
 - 异步：`loadAsync(path)`、`loadAsyncPreset(path, preset)`、`pollAsync()`、`pendingAsyncCount()`、`prewarm(path)` / `clearPrewarm()` /
   `prewarmed(path)`。
 - preset/LOD/socket/collision：`loadPreset()`、`setLod()`、`socketCount()`、`socketName()`、`collisionCount()`、`collisionName()`。
-- 诊断：`lastError()`、`warningCount()`、`warning()`。
+- 诊断：`warningCount()`、`warning()`；失败操作通过结构化 Result 返回诊断。
 - 内容统计：`lightCount(path)`、`cameraCount(path)`、`animationCount(path)`。
 - 内容对象：`light(path, i)`、`camera(path, i)`、`skeleton(path)`、`clip(path, i)`。
 

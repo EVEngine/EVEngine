@@ -31,7 +31,14 @@ public:
     RPG() = default;
     ~RPG() override = default;
 
-    /** @brief 创建一个空白 RPGActor。 */
+    /**
+     * @brief 创建一个空白 RPGActor。
+     * @return Borrowed nullable pointer to an ECS-owned actor; null means creation failed.
+     * @ownership The ECS world owns the actor; callers must release it through ECS and never delete it.
+     * @lifetime Valid until actor/world destruction; retain the generation-qualified EntityHandle across frames.
+     * @thread Call on the RPG module's owning ECS thread.
+     * @reentrancy The factory invokes no user callbacks; do not re-enter structural ECS mutation while using the result.
+     */
     RPGActor *newActor();
 
     /** @brief 效果定义注册（数据驱动，进程级注册表）。 */
@@ -49,6 +56,14 @@ public:
 
     /** @brief 周期状态 tick 事件（上一次 update() 产生的，供脚本轮询）。 */
     int getTickEventCount() const;
+    /**
+     * @brief Returns the actor referenced by a retained tick event, or null for an invalid index.
+     * @return Borrowed nullable ECS actor pointer from the event projection.
+     * @ownership The ECS world owns the actor; the event cache never transfers ownership.
+     * @lifetime Valid until actor/world destruction; use the actor's persistent identity or handle after the poll.
+     * @thread Call on the RPG simulation thread before the next event-producing update.
+     * @reentrancy Do not retain across callbacks or event-cache refresh.
+     */
     RPGActor *getTickEventActor(int index) const;
     int getTickEventInstanceId(int index) const;
     std::string getTickEventEffectId(int index) const;
@@ -57,6 +72,14 @@ public:
 
     /** @brief 状态生命周期变更事件（apply/refresh/extend/stack/remove/expire/reject）。 */
     int getStatusChangeEventCount() const;
+    /**
+     * @brief Returns the actor referenced by a status event, or null for an invalid index.
+     * @return Borrowed nullable ECS actor pointer from the event projection.
+     * @ownership The ECS world owns the actor; the event cache never transfers ownership.
+     * @lifetime Valid until actor/world destruction; use a persistent identity or handle after polling.
+     * @thread Call on the RPG simulation thread before the next event-producing update.
+     * @reentrancy Do not retain across callbacks or event-cache refresh.
+     */
     RPGActor *getStatusChangeEventActor(int index) const;
     int getStatusChangeEventInstanceId(int index) const;
     std::string getStatusChangeEventEffectId(int index) const;
@@ -67,11 +90,34 @@ public:
 
     /** @brief 技能释放结算事件。 */
     int getCastEventCount() const;
+    /**
+     * @brief Returns the caster referenced by a cast event, or null for an invalid index.
+     * @return Borrowed nullable ECS actor pointer from the event projection.
+     * @ownership The ECS world owns the actor; the event cache never transfers ownership.
+     * @lifetime Valid until actor/world destruction; use a persistent identity or handle after polling.
+     * @thread Call on the RPG simulation thread before the next event-producing update.
+     * @reentrancy Do not retain across callbacks or event-cache refresh.
+     */
     RPGActor *getCastEventCaster(int index) const;
+    /**
+     * @brief Returns the target referenced by a cast event, or null for an invalid index.
+     * @return Borrowed nullable ECS actor pointer from the event projection.
+     * @ownership The ECS world owns the actor; the event cache never transfers ownership.
+     * @lifetime Valid until actor/world destruction; use a persistent identity or handle after polling.
+     * @thread Call on the RPG simulation thread before the next event-producing update.
+     * @reentrancy Do not retain across callbacks or event-cache refresh.
+     */
     RPGActor *getCastEventTarget(int index) const;
     std::string getCastEventSkillId(int index) const;
 
-    /** @brief 结算：新建上下文 / 运行流水线 / 配置阶段。 */
+    /**
+     * @brief 结算：新建上下文 / 运行流水线 / 配置阶段。
+     * @return Owned nullable heap context; the caller must destroy it after the synchronous pipeline call.
+     * @ownership The caller owns the returned context and is responsible for its explicit destruction.
+     * @lifetime Valid until the caller destroys it; it is not retained by RPG or the settlement registry.
+     * @thread Create and use on the owning simulation thread.
+     * @reentrancy Construction invokes no external callbacks; do not pass the context to re-entrant mutation.
+     */
     SettlementContext *newSettlementContext();
     void runSettlement(const std::string &pipeline, SettlementContext *ctx);
     int getSettlementStageCount(const std::string &pipeline);

@@ -64,7 +64,8 @@ definitions and presenters while retaining the same libraries.
 
 Mesh generators use the same contract: call `getMeshRecipeSchema` and
 `applyMeshRecipeDefaults`, pass the returned schema to `renderRecipeFields`, and feed
-the edited `Params` to `buildMesh` or `generateMesh`. Built-in schemas cover marching
+the edited `Params` to `buildMesh` or `generateMesh`; check each Result's `ok` before
+reading its `value`. Built-in schemas cover marching
 cubes, rocks, planets, trees, bushes, buildings, linear structures, and urban blocks;
 projects decide whether those become asset inspectors, world brushes, RTS construction
 tools, or runtime customization screens.

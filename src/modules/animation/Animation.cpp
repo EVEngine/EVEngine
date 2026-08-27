@@ -428,21 +428,84 @@ void Animation::unregisterSpineAnim(SpineAnim *a) {
     if (a->owner() == this) a->setOwner(nullptr);
 }
 
-void Animation::update(float dt) {
+eve::Result<void> Animation::advance(const eve::SimulationStep& step) {
+    if (step.delta.nanoseconds() < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation simulation delta must be non-negative"));
+    if (hasLastTick_ && step.tick <= lastTick_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "animation simulation tick must advance monotonically"));
+
+    const float dt = static_cast<float>(step.delta.seconds());
+    if (!std::isfinite(dt))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation simulation delta is outside float range"));
+
+    // Preflight every live child before mutating any of them. A child may also
+    // be driven directly by a caller, so the host must preserve all-or-none
+    // behavior when one child has already consumed this tick.
+    for (Tween *t : tweens_) {
+        if (t && t->isActive() && t->hasCurrentTick() && step.tick <= t->currentTick())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "animation Tween child already consumed this tick"));
+    }
+    for (SpriteAnim *a : spriteAnims_) {
+        if (a && a->isPlaying() && a->hasCurrentTick() && step.tick <= a->currentTick())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "animation SpriteAnim child already consumed this tick"));
+    }
+    for (SpineAnim *a : spineAnims_) {
+        if (a && a->isPlaying() && a->hasCurrentTick() && step.tick <= a->currentTick())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "animation SpineAnim child already consumed this tick"));
+    }
+
     // Copy pointer lists: destructors during update must not invalidate iteration.
     std::vector<Tween *> tweenSnap = tweens_;
     for (Tween *t : tweenSnap) {
         if (!t) continue;
-        if (t->isActive()) t->update(dt);
+        if (t->isActive()) {
+            auto result = t->advance(step);
+            if (!result) return eve::Result<void>::failure(result.status());
+        }
     }
     std::vector<SpriteAnim *> spriteSnap = spriteAnims_;
     for (SpriteAnim *a : spriteSnap) {
-        if (a && a->isPlaying()) a->update(dt);
+        if (a && a->isPlaying()) {
+            auto result = a->advance(step);
+            if (!result) return eve::Result<void>::failure(result.status());
+        }
     }
     std::vector<SpineAnim *> spineSnap = spineAnims_;
     for (SpineAnim *a : spineSnap) {
-        if (a && a->isPlaying()) a->update(dt);
+        if (a && a->isPlaying()) {
+            auto result = a->advance(step);
+            if (!result) return eve::Result<void>::failure(result.status());
+        }
     }
+
+    lastTick_ = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void Animation::update(float dt) {
+    auto duration = eve::Duration::fromSeconds(dt);
+    if (!duration) {
+        duration.ignore("legacy animation update received an invalid duration");
+        return;
+    }
+    auto nextTick = hasLastTick_ ? lastTick_.incremented()
+                                 : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
+    if (!nextTick) {
+        eve::Result<void>::failure(eve::Diagnostic::error(
+                                       eve::DiagnosticCode::InvariantViolation,
+                                       "animation simulation tick overflow"))
+            .ignore("legacy animation update tick overflow");
+        return;
+    }
+    advance({*nextTick, std::move(duration).takeValue()})
+        .ignore("legacy animation update facade");
 }
 
 int Animation::getActiveCount() const {

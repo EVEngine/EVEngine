@@ -10,7 +10,7 @@
 #include "network/NetHost.h"
 #include "network/NetRpc.h"
 #include "data/ByteData.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <Poco/Net/StreamSocket.h>
 #include <Poco/Net/ServerSocket.h>
@@ -311,11 +311,11 @@ void Network::pollSockets() {
 }
 
 void Network::emitCompletion(const NetCompletion& c) {
-    auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
 
-    using eve::event::Variant;
-    using eve::event::Message;
+    using eve::platform_event::Variant;
+    using eve::platform_event::Message;
 
     std::vector<Variant> args;
     switch (c.type) {

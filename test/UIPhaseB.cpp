@@ -15,6 +15,25 @@
 
 using namespace eve::ui;
 
+namespace {
+
+UIHost *resolveHost(UIHostHandle handle) {
+    auto host = UIHost::resolve(handle);
+    return host ? &host->get() : nullptr;
+}
+
+UINode *findNode(UIHost *host, const std::string &id) {
+    if (host == nullptr) return nullptr;
+    auto node = host->findById(id);
+    return node ? &node->get() : nullptr;
+}
+
+UINode *findNode(UIHostHandle handle, const std::string &id) {
+    return findNode(resolveHost(handle), id);
+}
+
+}  // namespace
+
 class InventoryPanel : public Component {
 public:
     std::vector<std::string> items{"Sword", "Potion"};
@@ -43,41 +62,43 @@ TEST_CASE("UI.b.listAndWhen") {
                                 when(true, text("shown", "s")),
                                 listButtons("L", {"a", "b", "c"}),
                             });
-    UIHost *h = UIHost::createHost("listwhen");
+    UIHost *h = resolveHost(UIHost::createHost("listwhen"));
+    REQUIRE(h != nullptr);
     h->setTree(std::move(tree));
-    CHECK(h->findById("s") != nullptr);
-    CHECK(h->findById("h") == nullptr);  // when(false) → empty group, no "h"
-    CHECK(h->findById("L/0") != nullptr);
-    CHECK(h->findById("L/2") != nullptr);
+    CHECK(findNode(h, "s") != nullptr);
+    CHECK(findNode(h, "h") == nullptr);  // when(false) → empty group, no "h"
+    CHECK(findNode(h, "L/0") != nullptr);
+    CHECK(findNode(h, "L/2") != nullptr);
 }
 
 TEST_CASE("UI.b.keyReconcilePropsOnly") {
-    UIHost *h = UIHost::createHost("rec");
+    UIHost *h = resolveHost(UIHost::createHost("rec"));
+    REQUIRE(h != nullptr);
     h->setTree(window("W", {text("v1", "label"), button("Go", "btn")}, "root"));
     bool rebuilt = h->setTreeReconcile(window("W", {text("v2", "label"), button("Go", "btn")}, "root"));
     CHECK(!rebuilt);  // structure same → props patch
-    CHECK(h->findById("label")->text == "v2");
+    CHECK(findNode(h, "label")->text == "v2");
 
     rebuilt = h->setTreeReconcile(
         window("W", {text("v3", "label"), button("Go", "btn"), button("New", "n")}, "root"));
     CHECK(rebuilt);  // child count changed → full rebuild
-    CHECK(h->findById("n") != nullptr);
+    CHECK(findNode(h, "n") != nullptr);
 }
 
 TEST_CASE("UI.b.componentRebuild") {
     InventoryPanel panel;
     panel.mountAs("inv");
-    UIHost *h = UISystem::findHost("inv");
+    UIHost *h = resolveHost(UISystem::findHost("inv"));
     REQUIRE(h != nullptr);
-    CHECK(h->findById("gold")->text == "Gold 10");
-    CHECK(h->findById("items/0") != nullptr);
+    CHECK(findNode(h, "gold")->text == "Gold 10");
+    CHECK(findNode(h, "items/0") != nullptr);
 
     panel.gold = 9;
     panel.items.push_back("Shield");
     panel.markDirty();
     CHECK(panel.updateIfDirty());
-    CHECK(h->findById("gold")->text == "Gold 9");
-    CHECK(h->findById("items/2") != nullptr);
+    CHECK(findNode(h, "gold")->text == "Gold 9");
+    CHECK(findNode(h, "items/2") != nullptr);
 }
 
 TEST_CASE("UI.b.themeAndCheckbox") {
@@ -101,11 +122,13 @@ TEST_CASE("UI.b.themeAndCheckbox") {
     CHECK(!ui->setTheme("unknown"));
     CHECK(ui->getTheme() == "light");  // unchanged on failure
 
-    ui->mountAs("chk", window("C", {checkbox("Mute", false, "mute")}, "root"));
-    CHECK(ui->current()->findById("mute") != nullptr);
-    CHECK(!ui->current()->findById("mute")->checked);
+    REQUIRE(UIHost::resolve(
+                ui->mountAs("chk", window("C", {checkbox("Mute", false, "mute")}, "root")))
+                .has_value());
+    CHECK(findNode(ui->current(), "mute") != nullptr);
+    CHECK(!findNode(ui->current(), "mute")->checked);
     ui->setChecked("mute", true);
-    CHECK(ui->current()->findById("mute")->checked);
+    CHECK(findNode(ui->current(), "mute")->checked);
 }
 
 TEST_CASE("UI.b.themeTokensUnified") {
@@ -158,11 +181,12 @@ TEST_CASE("UI.b.semanticIcons") {
     CHECK(static_cast<int>(value) == static_cast<int>(Icon::FolderOpen));
     CHECK(!iconFromName("missing", &value));
 
-    UIHost *host = UIHost::createHost("icon_widgets");
+    UIHost *host = resolveHost(UIHost::createHost("icon_widgets"));
+    REQUIRE(host != nullptr);
     applyTree(host, window("Icons", {icon(Icon::Search, "search"),
                                      iconButton(Icon::Save, "Save", "save")}));
-    CHECK(host->findById("search")->text == std::string(iconGlyph(Icon::Search)));
-    CHECK(host->findById("save")->text == iconText(Icon::Save, "Save"));
+    CHECK(findNode(host, "search")->text == std::string(iconGlyph(Icon::Search)));
+    CHECK(findNode(host, "save")->text == iconText(Icon::Save, "Save"));
 }
 
 TEST_CASE("UI.b.scriptListBuilder") {
@@ -177,6 +201,6 @@ TEST_CASE("UI.b.scriptListBuilder") {
     ui->addCheckbox("Member", false, "mem");
     ui->end();
     CHECK(ui->mountBuildAs("shop"));
-    CHECK(ui->current()->findById("goods/1") != nullptr);
-    CHECK(ui->current()->findById("mem") != nullptr);
+    CHECK(findNode(ui->current(), "goods/1") != nullptr);
+    CHECK(findNode(ui->current(), "mem") != nullptr);
 }

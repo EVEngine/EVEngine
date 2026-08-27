@@ -35,6 +35,10 @@ PropertySchema schema() {
 
 class PropertyProvider final : public IPropertyProvider {
 public:
+    [[nodiscard]] eve::Result<eve::Revision> currentRevision(const SelectionSnapshot &) const override {
+        return eve::Result<eve::Revision>::success(eve::Revision{});
+    }
+
     PropertySchema schema(const SelectionSnapshot &) const override { return ::schema(); }
 
     PropertyReadResult read(const SelectionSnapshot &, const PropertyPath &path) const override {
@@ -84,8 +88,8 @@ TEST_CASE("editor.property_model_routes_runtime_writes_through_command_intent") 
 
     std::string changedPath;
     auto subscription = model.subscribe(
-        [&](const eve::presentation::PropertyChange &change) { changedPath = change.path; });
-    CHECK(model.write("movement.speed", eve::presentation::Value(9.5)).accepted);
+        [&](const eve::property_access::PropertyChange &change) { changedPath = change.path; });
+    CHECK(model.write("movement.speed", eve::Value(9.5)).accepted);
     CHECK(sinkCalled);
     CHECK_EQ(provider.speed, 9.5);
     CHECK_EQ(changedPath, std::string("movement.speed"));

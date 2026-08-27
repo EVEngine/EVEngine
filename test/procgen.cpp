@@ -138,11 +138,107 @@ TEST_CASE("procgen.params.booleanRoundTrip") {
     CHECK(p.getBool("decorations", true));
     p.setBool("decorations", false);
     CHECK(!p.getBool("decorations", true));
-    p.setString("textBool", "true");
-    CHECK(p.getBool("textBool", false));
+    // Text is a distinct Value kind; getters never parse or stringify it.
+    p.setString("textBool", "false");
+    CHECK(p.getBool("textBool", true));
+    CHECK_EQ(p.getInt("textBool", -1), -1);
+    CHECK_EQ(p.getString("decorations", "missing"), "missing");
 }
 
 namespace {
+
+struct ParamsLease {
+    ProcgenParamsHandleRef handle{};
+    explicit ParamsLease(ProcgenParamsHandleRef value) : handle(value) {}
+    ~ParamsLease() {
+        if (!handle.isValid()) return;
+        auto result = Procgen::release(handle);
+        result.ignore("procgen test params cleanup");
+    }
+    ParamsLease(const ParamsLease&) = delete;
+    ParamsLease& operator=(const ParamsLease&) = delete;
+    ParamsLease(ParamsLease&& other) noexcept : handle(other.handle) { other.handle = {}; }
+    [[nodiscard]] eve::script::Borrowed<Params> view() const noexcept { return Procgen::resolve(handle); }
+};
+
+ParamsLease requireParams(const Params& source) {
+    auto result = Procgen::newParamsHandle();
+    REQUIRE(result.ok());
+    ParamsLease lease{std::move(result).takeValue()};
+    auto view = lease.view();
+    REQUIRE(view.isBound());
+    *view = source;
+    return lease;
+}
+
+struct GridLease {
+    ProcgenGridHandleRef handle{};
+    explicit GridLease(ProcgenGridHandleRef value) : handle(value) {}
+    ~GridLease() {
+        if (!handle.isValid()) return;
+        auto result = Procgen::release(handle);
+        result.ignore("procgen test grid cleanup");
+    }
+    GridLease(const GridLease&) = delete;
+    GridLease& operator=(const GridLease&) = delete;
+    GridLease(GridLease&& other) noexcept : handle(other.handle) { other.handle = {}; }
+    [[nodiscard]] eve::script::Borrowed<Grid2D> view() const noexcept { return Procgen::resolve(handle); }
+};
+
+GridLease requireGrid(Procgen& proc, const std::string& algorithm,
+                      ProcgenParamsHandleRef params) {
+    auto result = proc.generateHandle(algorithm, params);
+    REQUIRE(result.ok());
+    return GridLease{std::move(result).takeValue()};
+}
+
+struct MeshLease {
+    Procgen* owner = nullptr;
+    ProcgenMeshBuildHandleRef handle{};
+    MeshLease(Procgen& proc, ProcgenMeshBuildHandleRef value) : owner(&proc), handle(value) {}
+    ~MeshLease() {
+        if (!owner || !handle.isValid()) return;
+        auto result = owner->releaseMeshBuild(handle);
+        result.ignore("procgen test mesh cleanup");
+    }
+    MeshLease(const MeshLease&) = delete;
+    MeshLease& operator=(const MeshLease&) = delete;
+    MeshLease(MeshLease&& other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner = nullptr;
+        other.handle = {};
+    }
+    [[nodiscard]] eve::script::Borrowed<MeshBuild> view() const noexcept {
+        return owner ? owner->resolveMeshBuild(handle) : eve::script::Borrowed<MeshBuild>();
+    }
+};
+
+MeshLease requireMesh(Procgen& proc, const std::string& recipe,
+                      ProcgenParamsHandleRef params) {
+    auto result = proc.buildMeshHandle(recipe, params);
+    REQUIRE(result.ok());
+    return MeshLease(proc, std::move(result).takeValue());
+}
+
+struct PbrLease {
+    Procgen* owner = nullptr;
+    ProcgenPbrMaterialHandleRef handle{};
+    PbrLease(Procgen& proc, ProcgenPbrMaterialHandleRef value) : owner(&proc), handle(value) {}
+    ~PbrLease() {
+        if (!owner || !handle.isValid()) return;
+        auto result = owner->releasePbrMaterial(handle);
+        result.ignore("procgen test PBR cleanup");
+    }
+    PbrLease(const PbrLease&) = delete;
+    PbrLease& operator=(const PbrLease&) = delete;
+    PbrLease(PbrLease&& other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner = nullptr;
+        other.handle = {};
+    }
+    [[nodiscard]] eve::script::Borrowed<PbrTextureSet> view() const noexcept {
+        return owner ? owner->resolvePbrMaterial(handle)
+                     : eve::script::Borrowed<PbrTextureSet>();
+    }
+};
 
 bool gridsEqual(const Grid2D &a, const Grid2D &b) {
     if (a.getWidth() != b.getWidth() || a.getHeight() != b.getHeight()) return false;
@@ -614,8 +710,9 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     params.setInt("maxChildren", 2);
 
     Procgen generator;
-    Mesh *treeMesh = generator.generateMesh("mesh.tree", &params, gfx);
-    REQUIRE(treeMesh != nullptr);
+    auto treeParams = requireParams(params);
+    auto treeMesh = generator.generateMeshBorrowed("mesh.tree", treeParams.handle, gfx);
+    REQUIRE(treeMesh.isBound());
 
     // 4px bark/foliage atlas; UVs are partitioned by the mesh recipe.
     const uint8_t atlasPixels[] = {
@@ -626,7 +723,7 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     REQUIRE(atlas != nullptr);
 
     auto *tree = Renderable3D::create();
-    tree->setMesh(treeMesh);
+    tree->setMesh(treeMesh.get());
     tree->setTexture(atlas);
     tree->setTint(1.f, 1.f, 1.f, 1.f);
     tree->setRoughness(0.88f);
@@ -761,8 +858,9 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
     params.setInt("twigs", 6);
 
     Procgen generator;
-    Mesh *bushMesh = generator.generateMesh("mesh.bush", &params, gfx);
-    REQUIRE(bushMesh != nullptr);
+    auto bushParams = requireParams(params);
+    auto bushMesh = generator.generateMeshBorrowed("mesh.bush", bushParams.handle, gfx);
+    REQUIRE(bushMesh.isBound());
 
     // A tiny two-tone foliage atlas (dark base / light highlight), like the tree test.
     const uint8_t atlasPixels[] = {
@@ -772,7 +870,7 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
     REQUIRE(atlas != nullptr);
 
     auto *bush = Renderable3D::create();
-    bush->setMesh(bushMesh);
+    bush->setMesh(bushMesh.get());
     bush->setTexture(atlas);
     bush->setTint(1.f, 1.f, 1.f, 1.f);
     bush->setRoughness(0.9f);
@@ -1002,19 +1100,24 @@ TEST_CASE("procgen.wfc.simple.viaModule") {
     p.setSize(16, 12);
     p.setString("preset", "dungeon");
     p.setInt("maxAttempts", 64);
-    Grid2D *grid = mod->generate("wfc.simple", &p);
-    REQUIRE(grid != nullptr);
+    auto params = requireParams(p);
+    auto gridLease = requireGrid(*mod, "wfc.simple", params.handle);
+    auto grid = gridLease.view();
+    REQUIRE(grid.isBound());
     CHECK(borderIsWall(*grid));
     CHECK_EQ(grid->getWidth(), 16);
     CHECK_EQ(grid->getHeight(), 12);
-    delete grid;
 
     Params bad;
     bad.setSeed(1);
     bad.setSize(8, 8);
     bad.setString("preset", "invalid");
-    CHECK(mod->generate("wfc.simple", &bad) == nullptr);
-    CHECK(mod->lastError().find("preset") != std::string::npos);
+    auto badParams = requireParams(bad);
+    auto failed = mod->generateHandle("wfc.simple", badParams.handle);
+    CHECK(!failed.ok());
+    const eve::Diagnostic* diagnostic = failed.error();
+    REQUIRE(diagnostic != nullptr);
+    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::Failed);
 }
 
 TEST_CASE("procgen.meshBuild.accessors") {
@@ -1114,15 +1217,16 @@ TEST_CASE("procgen.render.hexplanetPng") {
     params.setFloat("radius", 1.f);
     params.setInt("subdivisions", 3);
     params.setFloat("tileInset", 0.12f);
-    Mesh *planetMesh = procgen->generateMesh("mesh.hexplanet", &params, gfx);
-    REQUIRE(planetMesh != nullptr);
+    auto planetParams = requireParams(params);
+    auto planetMesh = procgen->generateMeshBorrowed("mesh.hexplanet", planetParams.handle, gfx);
+    REQUIRE(planetMesh.isBound());
 
     const uint8_t oceanBlue[4] = {42, 155, 181, 255};
     Texture *planetTexture = gfx->newTexture(1, 1, oceanBlue);
     REQUIRE(planetTexture != nullptr);
 
     auto *planet = eve::graphics::Renderable3D::create();
-    planet->setMesh(planetMesh);
+    planet->setMesh(planetMesh.get());
     planet->setTexture(planetTexture);
     planet->setMetallic(0.05f);
     planet->setRoughness(0.72f);
@@ -1298,8 +1402,9 @@ TEST_CASE("procgen.render.skyscraperPng") {
     params.setInt("windowRows", 5);
     params.setFloat("windowDepth", 0.06f);
     params.setFloat("spireHeight", 5.f);
-    Mesh *towerMesh = procgen->generateMesh("mesh.skyscraper", &params, gfx);
-    REQUIRE(towerMesh != nullptr);
+    auto towerParams = requireParams(params);
+    auto towerMesh = procgen->generateMeshBorrowed("mesh.skyscraper", towerParams.handle, gfx);
+    REQUIRE(towerMesh.isBound());
 
     // 2x2 atlas: bottom texel dark wall, top texel bright window (matches UV convention).
     const uint8_t atlas[16] = {
@@ -1312,7 +1417,7 @@ TEST_CASE("procgen.render.skyscraperPng") {
     REQUIRE(towerTexture != nullptr);
 
     auto *tower = eve::graphics::Renderable3D::create();
-    tower->setMesh(towerMesh);
+    tower->setMesh(towerMesh.get());
     tower->setTexture(towerTexture);
     tower->setMetallic(0.02f);
     tower->setRoughness(0.85f);
@@ -1384,8 +1489,10 @@ TEST_CASE("procgen.render.castlePng") {
     params.setInt("keepFloors", 4);
     params.setInt("detail", 2);
     params.setFloat("towerSpacing", 15.f);
-    std::unique_ptr<MeshBuild> castleBuild(procgen->buildMesh("mesh.castle", &params));
-    REQUIRE(castleBuild.get() != nullptr);
+    auto castleParams = requireParams(params);
+    auto castleBuild = requireMesh(*procgen, "mesh.castle", castleParams.handle);
+    auto castleView = castleBuild.view();
+    REQUIRE(castleView.isBound());
 
     const uint8_t stone[16] = {
         126, 116, 98, 255,  150, 139, 116, 255,
@@ -1400,13 +1507,13 @@ TEST_CASE("procgen.render.castlePng") {
         {.48f,.43f,.36f}, {.71f,.65f,.54f}, {.60f,.55f,.45f},
     };
     std::vector<eve::graphics::Renderable3D *> castleParts;
-    for (int group = 0; group < castleBuild->getGroupCount(); ++group) {
-        std::unique_ptr<MeshBuild> part(castleBuild->copyGroup(group));
+    for (int group = 0; group < castleView->getGroupCount(); ++group) {
+        auto part = castleView->copyGroup(group);
         if (!part) continue;
-        Mesh *gpuPart = procgen->uploadMesh(part.get(), gfx);
-        REQUIRE(gpuPart != nullptr);
+        auto gpuPart = procgen->uploadMeshBorrowed(*part, *gfx);
+        REQUIRE(gpuPart.isBound());
         auto *renderable = eve::graphics::Renderable3D::create();
-        renderable->setMesh(gpuPart);
+        renderable->setMesh(gpuPart.get());
         renderable->setTexture(stoneTexture);
         const int tint = std::min(group, 6);
         renderable->setTint(groupTint[tint][0], groupTint[tint][1], groupTint[tint][2], 1.f);
@@ -1632,8 +1739,10 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
     p.setSeed(3);
     p.setInt("resolution", 16);
     p.setString("field", "torus");
-    MeshBuild *m = mod->buildMesh("mesh.marchingcubes", &p);
-    REQUIRE(m != nullptr);
+    auto params = requireParams(p);
+    auto meshLease = requireMesh(*mod, "mesh.marchingcubes", params.handle);
+    auto m = meshLease.view();
+    REQUIRE(m.isBound());
     CHECK(m->getVertexCount() > 50);
     CHECK(meshIndicesInRange(*m));
     CHECK(mod->hasMeshRecipe("mesh.marchingcubes"));
@@ -1643,15 +1752,22 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
         if (mod->getMeshRecipeId(i) == "mesh.marchingcubes") listed = true;
     }
     CHECK(listed);
-    delete m;
-
     Params bad;
     bad.setInt("resolution", 8);
     bad.setString("field", "nope");
-    CHECK(mod->buildMesh("mesh.marchingcubes", &bad) == nullptr);
-    CHECK(mod->lastError().find("field") != std::string::npos);
-    CHECK(mod->buildMesh("mesh.missing", &p) == nullptr);
-    CHECK(mod->generateMesh("mesh.marchingcubes", nullptr, nullptr) == nullptr);
+    auto badParams = requireParams(bad);
+    auto badResult = mod->buildMeshHandle("mesh.marchingcubes", badParams.handle);
+    CHECK(!badResult.ok());
+    const eve::Diagnostic* badDiagnostic = badResult.error();
+    REQUIRE(badDiagnostic != nullptr);
+    CHECK_EQ(badDiagnostic->code(), eve::DiagnosticCode::Failed);
+    auto missingResult = mod->buildMeshHandle("mesh.missing", params.handle);
+    CHECK(!missingResult.ok());
+    const eve::Diagnostic* missingDiagnostic = missingResult.error();
+    REQUIRE(missingDiagnostic != nullptr);
+    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::Failed);
+    auto missingGraphicsResult = mod->generateMeshBorrowed("mesh.marchingcubes", {}, nullptr);
+    CHECK(!missingGraphicsResult.isBound());
 }
 
 TEST_CASE("procgen.wfc.simple.dungeonAdjacencyAndListing") {
@@ -1783,9 +1899,13 @@ TEST_CASE("procgen.mesh.marchingcubes.sphereVolumeSignStable") {
 
 TEST_CASE("procgen.mesh.marchingcubes.moduleNullAndList") {
     Procgen *mod = Procgen::create();
-    CHECK(mod->buildMesh("mesh.marchingcubes", nullptr) == nullptr);
-    CHECK(mod->lastError().find("null") != std::string::npos);
-    CHECK(mod->generateMesh("mesh.marchingcubes", nullptr, nullptr) == nullptr);
+    auto failed = mod->buildMeshHandle("mesh.marchingcubes", {});
+    CHECK(!failed.ok());
+    const eve::Diagnostic* diagnostic = failed.error();
+    REQUIRE(diagnostic != nullptr);
+    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::StaleHandle);
+    auto failedUpload = mod->generateMeshBorrowed("mesh.marchingcubes", {}, nullptr);
+    CHECK(!failedUpload.isBound());
 
     CHECK(mod->getMeshRecipeCount() >= 1);
     bool found = false;
@@ -1800,15 +1920,18 @@ TEST_CASE("procgen.palette.applyToLayer") {
     Params p;
     p.setSeed(1);
     p.setSize(16, 12);
-    Grid2D *grid = mod->generate("dungeon.bsp", &p);
-    CHECK(grid != nullptr);
+    auto params = requireParams(p);
+    auto gridLease = requireGrid(*mod, "dungeon.bsp", params.handle);
+    auto grid = gridLease.view();
+    REQUIRE(grid.isBound());
 
     mod->setPaletteGid("test", "wall", 10);
     mod->setPaletteGid("test", "floor", 20);
     mod->setPaletteGid("test", "corridor", 21);
 
     eve::map::TileLayer *layer = eve::map::TileLayer::createLayer(16, 12, 16.f, 16.f);
-    CHECK(mod->applyToLayer(grid, "test", layer));
+    auto applyResult = mod->applyToLayer(gridLease.handle, "test", *layer);
+    CHECK(applyResult.ok());
     bool sawMapped = false;
     for (int y = 0; y < 12; ++y) {
         for (int x = 0; x < 16; ++x) {
@@ -1827,7 +1950,6 @@ TEST_CASE("procgen.palette.applyToLayer") {
         }
     }
     CHECK(sawMapped);
-    delete grid;
     layer->release();
 }
 
@@ -1875,17 +1997,17 @@ TEST_CASE("procgen.texture.recipes.reproducible") {
         std::string err;
         // Fully qualify: `using namespace eve::procgen` would make bare `image::`
         // look outside `eve::image`.
-        eve::image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
-        eve::image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(a != nullptr);
-        REQUIRE(b != nullptr);
+        auto a = TextureRecipeRegistry::instance().generate(id, p, err);
+        auto b = TextureRecipeRegistry::instance().generate(id, p, err);
+        const bool aPresent = static_cast<bool>(a);
+        const bool bPresent = static_cast<bool>(b);
+        REQUIRE(aPresent);
+        REQUIRE(bPresent);
         CHECK_EQ(a->getWidth(), 32);
         CHECK_EQ(a->getHeight(), 32);
         CHECK_EQ(a->getFormat(), std::string("RGBA8"));
         CHECK_EQ(a->getSize(), b->getSize());
         CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
-        delete a;
-        delete b;
     }
 }
 
@@ -1895,14 +2017,11 @@ TEST_CASE("procgen.texture.generateImage.andNormal") {
     p.setSeed(3);
     p.setSize(48, 48);
     p.setInt("colors", 6);
-    eve::image::ImageData *img = mod->generateImage("tex.marble", &p);
-    REQUIRE(img != nullptr);
-    eve::image::ImageData *nrm = mod->generateNormalImage("tex.marble", &p);
-    REQUIRE(nrm != nullptr);
-    CHECK_EQ(nrm->getWidth(), 48);
-    CHECK_EQ(nrm->getHeight(), 48);
-    delete img;
-    delete nrm;
+    auto params = requireParams(p);
+    auto imageResult = mod->generateImageHandle("tex.marble", params.handle);
+    REQUIRE(imageResult.ok());
+    auto normalResult = mod->generateNormalImageHandle("tex.marble", params.handle);
+    REQUIRE(normalResult.ok());
     CHECK(mod->hasTextureRecipe("tex.soil"));
     CHECK(mod->getTextureRecipeCount() >= 5);
 }
@@ -2012,12 +2131,11 @@ TEST_CASE("procgen.cloud.recipes.generate") {
         p.setFloat("worldScale", 64.f);
         p.setFloat("time", 1.5f);
         std::string err;
-        eve::image::ImageData *img = TextureRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(img != nullptr);
+        auto img = TextureRecipeRegistry::instance().generate(id, p, err);
+    REQUIRE(static_cast<bool>(img));
         CHECK_EQ(img->getFormat(), std::string("RGBA8"));
         CHECK_EQ(img->getWidth(), 48);
         CHECK_EQ(img->getHeight(), 48);
-        delete img;
     }
     CHECK(TextureRecipeRegistry::instance().has("tex.cloud"));
     CHECK(TextureRecipeRegistry::instance().has("tex.cloud_shadow"));
@@ -2025,29 +2143,47 @@ TEST_CASE("procgen.cloud.recipes.generate") {
 
 TEST_CASE("procgen.cloud.viaModule") {
     Procgen *mod = Procgen::create();
-    CloudField *f = mod->newCloudField();
-    REQUIRE(f != nullptr);
-    f->setSeed(3);
-    f->setWorldScale(64.f);
-    f->setCoverage(0.5f);
-    const float c0 = mod->cloudCoverageAt(f, 2.f, 3.f, 0.f);
+    auto fieldResult = mod->newCloudFieldHandle();
+    REQUIRE(fieldResult.ok());
+    auto fieldHandle = std::move(fieldResult).takeValue();
+    auto field = mod->resolveCloudField(fieldHandle);
+    REQUIRE(field.isBound());
+    field->setSeed(3);
+    field->setWorldScale(64.f);
+    field->setCoverage(0.5f);
+    auto coverageResult = mod->cloudCoverageAt(fieldHandle, 2.f, 3.f, 0.f);
+    REQUIRE(coverageResult.ok());
+    const float c0 = std::move(coverageResult).takeValue();
     CHECK(c0 >= 0.f);
     CHECK(c0 <= 1.f);
-    CHECK(mod->cloudCoverageAt(nullptr, 0.f, 0.f, 0.f) == 0.f);
+    auto staleCoverage = mod->cloudCoverageAt({}, 0.f, 0.f, 0.f);
+    CHECK(!staleCoverage.ok());
 
-    CloudShadow *s = mod->newCloudShadow();
-    REQUIRE(s != nullptr);
-    s->setSunDirection(0.5f, 1.f, 0.f);
-    s->setCloudAltitude(50.f);
-    s->setStrength(0.8f);
-    CHECK(mod->cloudShadowFactor(s, 2.f, 3.f, 0.f) >= 0.f);
-    CHECK(mod->cloudShadowFactor(nullptr, 0.f, 0.f, 0.f) == 1.f);
+    auto shadowResult = mod->newCloudShadowHandle();
+    REQUIRE(shadowResult.ok());
+    auto shadowHandle = std::move(shadowResult).takeValue();
+    auto shadow = mod->resolveCloudShadow(shadowHandle);
+    REQUIRE(shadow.isBound());
+    shadow->setSunDirection(0.5f, 1.f, 0.f);
+    shadow->setCloudAltitude(50.f);
+    shadow->setStrength(0.8f);
+    auto factorResult = mod->cloudShadowFactor(shadowHandle, 2.f, 3.f, 0.f);
+    REQUIRE(factorResult.ok());
+    CHECK(std::move(factorResult).takeValue() >= 0.f);
+    auto staleFactor = mod->cloudShadowFactor({}, 0.f, 0.f, 0.f);
+    CHECK(!staleFactor.ok());
 
     std::vector<float> buf(16 * 16);
-    mod->sampleCloud(f, buf.data(), 16, 16, 0.f, 0.f, 0.f, 64.f);
-    mod->sampleCloudShadow(s, buf.data(), 16, 16, 0.f, 0.f, 0.f, 64.f);
-    delete f;
-    delete s;
+    auto sampleResult = mod->sampleCloud(fieldHandle, std::span<float>(buf), 16, 16, 0.f,
+                                         0.f, 0.f, 64.f);
+    CHECK(sampleResult.ok());
+    auto shadowSampleResult = mod->sampleCloudShadow(shadowHandle, std::span<float>(buf), 16, 16,
+                                                     0.f, 0.f, 0.f, 64.f);
+    CHECK(shadowSampleResult.ok());
+    auto releaseField = mod->releaseCloudField(fieldHandle);
+    CHECK(releaseField.ok());
+    auto releaseShadow = mod->releaseCloudShadow(shadowHandle);
+    CHECK(releaseShadow.ok());
 }
 
 
@@ -2062,14 +2198,14 @@ TEST_CASE("procgen.texture.builtinRecipes.expanded") {
         p.setSize(32, 32);
         p.setInt("colors", 5);
         std::string err;
-        eve::image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
-        eve::image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(a != nullptr);
-        REQUIRE(b != nullptr);
+        auto a = TextureRecipeRegistry::instance().generate(id, p, err);
+        auto b = TextureRecipeRegistry::instance().generate(id, p, err);
+        const bool aPresent = static_cast<bool>(a);
+        const bool bPresent = static_cast<bool>(b);
+        REQUIRE(aPresent);
+        REQUIRE(bPresent);
         CHECK_EQ(a->getFormat(), std::string("RGBA8"));
         CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
-        delete a;
-        delete b;
     }
 }
 
@@ -2138,10 +2274,12 @@ TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
         p.setSeed(7);
         p.setSize(32, 32);
         std::string err;
-        PbrTextureSet *a = PbrRecipeRegistry::instance().generate(id, p, err);
-        PbrTextureSet *b = PbrRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(a != nullptr);
-        REQUIRE(b != nullptr);
+        auto a = PbrRecipeRegistry::instance().generate(id, p, err);
+        auto b = PbrRecipeRegistry::instance().generate(id, p, err);
+        const bool aPresent = static_cast<bool>(a);
+        const bool bPresent = static_cast<bool>(b);
+        REQUIRE(aPresent);
+        REQUIRE(bPresent);
         // All six maps present, same size, reproducible.
         REQUIRE(a->albedo != nullptr);
         REQUIRE(a->normal != nullptr);
@@ -2160,10 +2298,6 @@ TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
             if (px[i + 3] != 255) alphaOk = false;
         }
         CHECK(alphaOk);
-        a->destroy();
-        b->destroy();
-        delete a;
-        delete b;
     }
 }
 
@@ -2176,8 +2310,8 @@ TEST_CASE("procgen.pbr.metallicAndRoughnessRange") {
     p.setFloat("roughnessLow", 0.1f);
     p.setFloat("roughnessHigh", 0.2f);
     std::string err;
-    PbrTextureSet *set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
-    REQUIRE(set != nullptr);
+    auto set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
+    REQUIRE(static_cast<bool>(set));
     const auto *m = static_cast<const uint8_t *>(set->metallic->getData());
     for (size_t i = 0; i < set->metallic->getSize(); i += 4) {
         CHECK_EQ(m[i], 255);  // fully metallic
@@ -2187,8 +2321,6 @@ TEST_CASE("procgen.pbr.metallicAndRoughnessRange") {
         CHECK(r[i] >= 25);  // roughnessLow 0.1 -> 25
         CHECK(r[i] <= 51);  // roughnessHigh 0.2 -> 51
     }
-    set->destroy();
-    delete set;
 }
 
 TEST_CASE("procgen.pbr.viaModuleAndErrors") {
@@ -2196,12 +2328,14 @@ TEST_CASE("procgen.pbr.viaModuleAndErrors") {
     Params p;
     p.setSeed(9);
     p.setSize(40, 40);
-    PbrTextureSet *set = mod->generatePbrMaterial("pbr.wall", &p);
-    REQUIRE(set != nullptr);
+    auto params = requireParams(p);
+    auto pbrResult = mod->generatePbrMaterialHandle("pbr.wall", params.handle);
+    REQUIRE(pbrResult.ok());
+    auto setLease = PbrLease(*mod, std::move(pbrResult).takeValue());
+    auto set = setLease.view();
+    REQUIRE(set.isBound());
     CHECK(set->albedo != nullptr);
     CHECK(set->normal != nullptr);
-    set->destroy();
-    delete set;
 
     CHECK(mod->hasPbrRecipe("pbr.wood"));
     CHECK(mod->getPbrRecipeCount() >= 13);
@@ -2211,9 +2345,16 @@ TEST_CASE("procgen.pbr.viaModuleAndErrors") {
     }
     CHECK(listed);
 
-    CHECK(mod->generatePbrMaterial("pbr.missing", &p) == nullptr);
-    CHECK(mod->generatePbrMaterial("pbr.wall", nullptr) == nullptr);
-    CHECK(mod->lastError().find("null") != std::string::npos);
+    auto missingResult = mod->generatePbrMaterialHandle("pbr.missing", params.handle);
+    CHECK(!missingResult.ok());
+    const eve::Diagnostic* missingDiagnostic = missingResult.error();
+    REQUIRE(missingDiagnostic != nullptr);
+    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::NotFound);
+    auto staleResult = mod->generatePbrMaterialHandle("pbr.wall", {});
+    CHECK(!staleResult.ok());
+    const eve::Diagnostic* staleDiagnostic = staleResult.error();
+    REQUIRE(staleDiagnostic != nullptr);
+    CHECK_EQ(staleDiagnostic->code(), eve::DiagnosticCode::StaleHandle);
 }
 
 static Color colorForSemantic(int sem) {
@@ -2429,16 +2570,19 @@ TEST_CASE("procgen.mesh.linearStructure.viaModule") {
     p.setSeed(1);
     p.setInt("segments", 4);
     p.setFloat("segLength", 1.f);
-    MeshBuild *m = mod->buildMesh("mesh.stonewall", &p);
-    REQUIRE(m != nullptr);
+    auto params = requireParams(p);
+    auto meshLease = requireMesh(*mod, "mesh.stonewall", params.handle);
+    auto m = meshLease.view();
+    REQUIRE(m.isBound());
     CHECK(m->getVertexCount() > 0);
     CHECK(meshIndicesInRange(*m));
     CHECK(mod->hasMeshRecipe("mesh.stonewall"));
     CHECK(mod->hasMeshRecipe("mesh.bridge"));
-    delete m;
-
-    CHECK(mod->buildMesh("mesh.nonexistent", &p) == nullptr);
-    CHECK(mod->lastError().find("unknown") != std::string::npos);
+    auto missingResult = mod->buildMeshHandle("mesh.nonexistent", params.handle);
+    CHECK(!missingResult.ok());
+    const eve::Diagnostic* missingDiagnostic = missingResult.error();
+    REQUIRE(missingDiagnostic != nullptr);
+    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::Failed);
 }
 
 TEST_CASE("procgen.mesh.castle.multilevelDeterministicAndComplete") {
@@ -2474,7 +2618,7 @@ TEST_CASE("procgen.mesh.castle.multilevelDeterministicAndComplete") {
     for (int i = 0; i < a.getGroupCount(); ++i)
         if (a.getGroupName(i) == "stairs") stairGroup = i;
     REQUIRE(stairGroup >= 0);
-    std::unique_ptr<MeshBuild> stairs(a.copyGroup(stairGroup));
+    auto stairs = a.copyGroup(stairGroup);
     REQUIRE(stairs.get() != nullptr);
     CHECK(stairs->getVertexCount() > 100);
     CHECK_EQ(stairs->getMeta("group", ""), "stairs");
@@ -2516,10 +2660,11 @@ TEST_CASE("procgen.mesh.castle.parametersControlTopologyAndBounds") {
 TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
     Procgen *mod = Procgen::create();
     CHECK(mod->hasMeshRecipe("mesh.castle"));
-    RecipeDescriptor *schema = mod->getMeshRecipeSchema("mesh.castle");
-    REQUIRE(schema != nullptr);
-    CHECK_EQ(schema->getParamCount(), 25);
-    const ParamDescriptor *rings = schema->find("rings");
+    auto schemaResult = mod->getMeshRecipeSchema("mesh.castle");
+    REQUIRE(schemaResult.ok());
+    auto schema = std::move(schemaResult).takeValue();
+    CHECK_EQ(schema.getParamCount(), 25);
+    const ParamDescriptor *rings = schema.find("rings");
     REQUIRE(rings != nullptr);
     CHECK_EQ(rings->defaultValue, "2");
     CHECK(rings->hasMinimum);
@@ -2527,15 +2672,22 @@ TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
     CHECK_EQ(rings->minimum, 1.0);
     CHECK_EQ(rings->maximum, 4.0);
     CHECK(!rings->description.empty());
-    delete schema;
-    CHECK(mod->getMeshRecipeSchema("mesh.missing") == nullptr);
+    auto missingSchema = mod->getMeshRecipeSchema("mesh.missing");
+    CHECK(!missingSchema.ok());
+    const eve::Diagnostic* schemaDiagnostic = missingSchema.error();
+    REQUIRE(schemaDiagnostic != nullptr);
+    CHECK_EQ(schemaDiagnostic->code(), eve::DiagnosticCode::NotFound);
     Params p;
     p.setFloat("width", 16.f);
     p.setFloat("depth", 16.f);
     p.setFloat("towerRadius", 7.f);
     p.setFloat("wallThickness", 3.f);
-    CHECK(mod->buildMesh("mesh.castle", &p) == nullptr);
-    CHECK(mod->lastError().find("too small") != std::string::npos);
+    auto params = requireParams(p);
+    auto failed = mod->buildMeshHandle("mesh.castle", params.handle);
+    CHECK(!failed.ok());
+    const eve::Diagnostic* failedDiagnostic = failed.error();
+    REQUIRE(failedDiagnostic != nullptr);
+    CHECK_EQ(failedDiagnostic->code(), eve::DiagnosticCode::Failed);
 }
 
 TEST_CASE("procgen.meshBuild.appendTransformedComposesRecipeNodes") {

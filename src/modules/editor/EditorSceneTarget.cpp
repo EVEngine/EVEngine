@@ -105,6 +105,22 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
     return EditorResult<void>::applied();
 }
 
+std::unique_ptr<IDomainOperationTarget> SceneTargetBase::cloneDomainState() const {
+    return std::make_unique<SceneTargetBase>(*this);
+}
+
+EditorResult<void> SceneTargetBase::commitDomainState(
+    std::unique_ptr<IDomainOperationTarget> candidate) {
+    auto* staged = dynamic_cast<SceneTargetBase*>(candidate.get());
+    if (!staged || staged->id_ != id_ || staged->type_ != type_)
+        return sceneError<void>(EditorStatus::Conflict, "editor.scene.candidate-mismatch",
+                                "Scene candidate does not belong to this target");
+    objects_.swap(staged->objects_);
+    revision_ = staged->revision_;
+    dirty_    = staged->dirty_;
+    return EditorResult<void>::applied();
+}
+
 EditorResult<SceneObjectSnapshot> SceneTargetBase::sceneObject(const ObjectId& id) const {
     auto object = objects_.find(id);
     if (object == objects_.end())

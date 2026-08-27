@@ -6,10 +6,17 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace eve::scene {
 namespace {
+
+template <class T>
+T *borrowSceneResult(eve::Result<T *> result) {
+    if (!result.ok()) return nullptr;
+    return std::move(result).takeValue();
+}
 
 SceneHost *hostByName(const std::string &name) {
     if (name.empty()) return nullptr;
@@ -114,7 +121,7 @@ public:
     bool getNodeIn(const std::string &hostName, const std::string &id,
                    SceneNodeInfo *out) const override {
         SceneHost *h = hostName.empty() ? host() : hostByName(hostName);
-        SceneNode *n = h ? h->findById(id) : nullptr;
+        SceneNode *n = h ? borrowSceneResult(h->findById(id)) : nullptr;
         if (!n || !out) return false;
         *out = toInfo(h, *n);
         return true;
@@ -122,7 +129,7 @@ public:
 
     bool setNodeTransform(const std::string &id, float x, float y, float z) override {
         auto *h = host();
-        SceneNode *n = h ? h->findById(id) : nullptr;
+        SceneNode *n = h ? borrowSceneResult(h->findById(id)) : nullptr;
         if (!n) return false;
         n->x = x;
         n->y = y;
@@ -133,7 +140,7 @@ public:
 
     bool setNodeVisible(const std::string &id, bool visible) override {
         auto *h = host();
-        SceneNode *n = h ? h->findById(id) : nullptr;
+        SceneNode *n = h ? borrowSceneResult(h->findById(id)) : nullptr;
         if (!n) return false;
         n->visible = visible;
         return true;

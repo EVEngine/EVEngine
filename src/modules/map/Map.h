@@ -25,7 +25,7 @@ namespace eve::map {
 class Map : public Module {
 public:
     Module_REG(Map);
-    Map() = default;
+    Map();
     ~Map() override = default;
 
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);

@@ -103,6 +103,10 @@ void IntVolumeEditCommand::revert() {
         volume->writeInt3(it->x, it->y, it->z, it->before);
 }
 
+std::unique_ptr<IEditCommand> IntVolumeEditCommand::clone() const {
+    return std::make_unique<IntVolumeEditCommand>(*this);
+}
+
 bool IntVolumeEditCommand::mergeWith(const IEditCommand& laterBase) {
     const auto* later = dynamic_cast<const IntVolumeEditCommand*>(&laterBase);
     if (!later || later->target_ != target_) return false;

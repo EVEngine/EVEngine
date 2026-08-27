@@ -1,6 +1,6 @@
-diff --git a/medialoader/sound-libs/mpg123/src/compat/compat.c b/medialoader/sound-libs/mpg123/src/compat/compat.c
---- a/medialoader/sound-libs/mpg123/src/compat/compat.c
-+++ b/medialoader/sound-libs/mpg123/src/compat/compat.c
+diff --git a/sound-libs/mpg123/src/compat/compat.c b/sound-libs/mpg123/src/compat/compat.c
+--- a/sound-libs/mpg123/src/compat/compat.c
++++ b/sound-libs/mpg123/src/compat/compat.c
 @@ -500 +500 @@
 -	new_sa.sa_handler = handler;
 +	new_sa.sa_handler = (void (*)(int))handler;

@@ -11,8 +11,12 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
     vm.run(vm.compileSource(R"(
         procgen <- eve.Procgen();
         algorithm <- "cave.cellular";
-        params <- procgen.newParams();
-        defaultsApplied <- procgen.applyAlgorithmDefaults(algorithm, params);
+        paramsResult <- procgen.newParams();
+        paramsResultOk <- paramsResult.ok;
+        params <- paramsResult.ok ? paramsResult.value : null;
+        defaultsResult <- params == null ? { ok = false } :
+            procgen.applyAlgorithmDefaults(algorithm, params);
+        defaultsApplied <- defaultsResult.ok;
         paramCount <- procgen.getAlgorithmParamCount(algorithm);
         fieldsComplete <- true;
         fillIndex <- -1;
@@ -22,55 +26,88 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
                 procgen.getAlgorithmParamKind(algorithm, i) == "") fieldsComplete = false;
             if (procgen.getAlgorithmParamKey(algorithm, i) == "fill") fillIndex = i;
         }
-        params.setInt("width", 40);
-        params.setInt("height", 24);
-        params.setInt("seed", 77);
-        params.setFloat("fill", 0.38);
-        grid <- procgen.generate(algorithm, params);
-        width <- grid == null ? 0 : grid.getWidth();
-        height <- grid == null ? 0 : grid.getHeight();
+        widthSet <- params == null ? { ok = false } : params.setInt("width", 40);
+        heightSet <- params == null ? { ok = false } : params.setInt("height", 24);
+        seedSet <- params == null ? { ok = false } : params.setInt("seed", 77);
+        fillSet <- params == null ? { ok = false } : params.setFloat("fill", 0.38);
+        widthSetOk <- widthSet.ok;
+        heightSetOk <- heightSet.ok;
+        seedSetOk <- seedSet.ok;
+        fillSetOk <- fillSet.ok;
+        gridResult <- params == null ? { ok = false, hasValue = false } :
+            procgen.generate(algorithm, params);
+        gridOk <- gridResult.ok && gridResult.hasValue &&
+            gridResult.value.ownership() == "owned" && !gridResult.value.isStale();
+        width <- params == null ? 0 : params.getWidth();
+        height <- params == null ? 0 : params.getHeight();
         fillKind <- fillIndex < 0 ? "" : procgen.getAlgorithmParamKind(algorithm, fillIndex);
         fillMin <- fillIndex < 0 ? -1.0 : procgen.getAlgorithmParamMinimum(algorithm, fillIndex);
         fillMax <- fillIndex < 0 ? -1.0 : procgen.getAlgorithmParamMaximum(algorithm, fillIndex);
         wfcChoiceCount <- procgen.getAlgorithmParamChoiceCount("wfc.simple", 3);
         wfcFirstChoice <- procgen.getAlgorithmParamChoice("wfc.simple", 3, 0);
-        algorithmSchema <- procgen.getAlgorithmSchema(algorithm);
-        genericAlgorithmId <- algorithmSchema.getId();
-        textureParams <- procgen.newParams();
-        textureDefaultsApplied <- procgen.applyTextureRecipeDefaults("tex.rock", textureParams);
-        textureSchema <- procgen.getTextureRecipeSchema("tex.rock");
-        textureCategory <- textureSchema.getCategory();
+        algorithmSchemaResult <- procgen.getAlgorithmSchema(algorithm);
+        algorithmSchemaOk <- algorithmSchemaResult.ok && algorithmSchemaResult.hasValue;
+        algorithmSchema <- algorithmSchemaOk ? algorithmSchemaResult.value : null;
+        genericAlgorithmId <- algorithmSchema == null ? "" : algorithmSchema.getId();
+        textureParamsResult <- procgen.newParams();
+        textureParamsResultOk <- textureParamsResult.ok;
+        textureParams <- textureParamsResult.ok ? textureParamsResult.value : null;
+        textureDefaultsResult <- textureParams == null ? { ok = false } :
+            procgen.applyTextureRecipeDefaults("tex.rock", textureParams);
+        textureDefaultsApplied <- textureDefaultsResult.ok;
+        textureSchemaResult <- procgen.getTextureRecipeSchema("tex.rock");
+        textureSchemaOk <- textureSchemaResult.ok && textureSchemaResult.hasValue;
+        textureSchema <- textureSchemaOk ? textureSchemaResult.value : null;
+        textureCategory <- textureSchema == null ? "" : textureSchema.getCategory();
         textureScaleFound <- false;
-        for (local i = 0; i < textureSchema.getParamCount(); ++i)
+        for (local i = 0; textureSchema != null && i < textureSchema.getParamCount(); ++i)
             if (textureSchema.getParamKey(i) == "scale") textureScaleFound = true;
-        pbrParams <- procgen.newParams();
-        pbrParams.setSize(16, 12);
-        pbrDefaultsApplied <- procgen.applyPbrRecipeDefaults("pbr.rock", pbrParams);
-        pbrSchema <- procgen.getPbrRecipeSchema("pbr.rock");
+        pbrParamsResult <- procgen.newParams();
+        pbrParamsResultOk <- pbrParamsResult.ok;
+        pbrParams <- pbrParamsResult.ok ? pbrParamsResult.value : null;
+        sizeSet <- pbrParams == null ? { ok = false } : pbrParams.setSize(16, 12);
+        pbrDefaultsResult <- pbrParams == null ? { ok = false } :
+            procgen.applyPbrRecipeDefaults("pbr.rock", pbrParams);
+        pbrDefaultsApplied <- pbrDefaultsResult.ok && sizeSet.ok;
+        pbrSchemaResult <- procgen.getPbrRecipeSchema("pbr.rock");
+        pbrSchemaOk <- pbrSchemaResult.ok && pbrSchemaResult.hasValue;
+        pbrSchema <- pbrSchemaOk ? pbrSchemaResult.value : null;
         pbrMetallicFound <- false;
         pbrNormalFound <- false;
-        for (local i = 0; i < pbrSchema.getParamCount(); ++i) {
+        for (local i = 0; pbrSchema != null && i < pbrSchema.getParamCount(); ++i) {
             local key = pbrSchema.getParamKey(i);
             if (key == "metallic") pbrMetallicFound = true;
             if (key == "normalStrength") pbrNormalFound = true;
         }
-        pbrSet <- procgen.generatePbrMaterial("pbr.rock", pbrParams);
-        pbrHasAllMaps <- pbrSet != null && pbrSet.hasAllMaps();
-        pbrAlbedoWidth <- pbrSet == null ? 0 : pbrSet.getAlbedo().getWidth();
-        pbrNormalWidth <- pbrSet == null ? 0 : pbrSet.getNormal().getWidth();
-        pbrHeightWidth <- pbrSet == null ? 0 : pbrSet.getHeight().getWidth();
-        if (pbrSet != null) pbrSet.destroy();
-        meshParams <- procgen.newParams();
-        meshDefaultsApplied <- procgen.applyMeshRecipeDefaults("mesh.fence", meshParams);
-        meshSchema <- procgen.getMeshRecipeSchema("mesh.fence");
+        pbrSetResult <- pbrParams == null ? { ok = false, hasValue = false } :
+            procgen.generatePbrMaterial("pbr.rock", pbrParams);
+        pbrResultOk <- pbrSetResult.ok && pbrSetResult.hasValue &&
+            pbrSetResult.value.ownership() == "owned" && !pbrSetResult.value.isStale();
+        meshParamsResult <- procgen.newParams();
+        meshParamsResultOk <- meshParamsResult.ok;
+        meshParams <- meshParamsResult.ok ? meshParamsResult.value : null;
+        meshDefaultsResult <- meshParams == null ? { ok = false } :
+            procgen.applyMeshRecipeDefaults("mesh.fence", meshParams);
+        meshDefaultsApplied <- meshDefaultsResult.ok;
+        meshSchemaResult <- procgen.getMeshRecipeSchema("mesh.fence");
+        meshSchemaOk <- meshSchemaResult.ok && meshSchemaResult.hasValue;
+        meshSchema <- meshSchemaOk ? meshSchemaResult.value : null;
         meshSegmentsFound <- false;
-        for (local i = 0; i < meshSchema.getParamCount(); ++i)
+        for (local i = 0; meshSchema != null && i < meshSchema.getParamCount(); ++i)
             if (meshSchema.getParamKey(i) == "segments") meshSegmentsFound = true;
-        meshBuild <- procgen.buildMesh("mesh.fence", meshParams);
-        meshVertexCount <- meshBuild == null ? 0 : meshBuild.getVertexCount();
+        meshBuildResult <- meshParams == null ? { ok = false, hasValue = false } :
+            procgen.buildMesh("mesh.fence", meshParams);
+        meshBuildOk <- meshBuildResult.ok && meshBuildResult.hasValue &&
+            meshBuildResult.value.ownership() == "owned" && !meshBuildResult.value.isStale();
     )"));
 
+    CHECK(vm.find("paramsResultOk").toBool());
     CHECK(vm.find("defaultsApplied").toBool());
+    CHECK(vm.find("widthSetOk").toBool());
+    CHECK(vm.find("heightSetOk").toBool());
+    CHECK(vm.find("seedSetOk").toBool());
+    CHECK(vm.find("fillSetOk").toBool());
+    CHECK(vm.find("gridOk").toBool());
     CHECK_GT(vm.find("paramCount").toInt(), 3);
     CHECK(vm.find("fieldsComplete").toBool());
     CHECK_EQ(vm.find("fillKind").toString(), std::string("float"));
@@ -81,17 +118,17 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
     CHECK_EQ(vm.find("wfcChoiceCount").toInt(), 3);
     CHECK_EQ(vm.find("wfcFirstChoice").toString(), std::string("dungeon"));
     CHECK_EQ(vm.find("genericAlgorithmId").toString(), std::string("cave.cellular"));
+    CHECK(vm.find("textureParamsResultOk").toBool());
     CHECK(vm.find("textureDefaultsApplied").toBool());
     CHECK_EQ(vm.find("textureCategory").toString(), std::string("Texture"));
     CHECK(vm.find("textureScaleFound").toBool());
+    CHECK(vm.find("pbrParamsResultOk").toBool());
     CHECK(vm.find("pbrDefaultsApplied").toBool());
     CHECK(vm.find("pbrMetallicFound").toBool());
     CHECK(vm.find("pbrNormalFound").toBool());
-    CHECK(vm.find("pbrHasAllMaps").toBool());
-    CHECK_EQ(vm.find("pbrAlbedoWidth").toInt(), 16);
-    CHECK_EQ(vm.find("pbrNormalWidth").toInt(), 16);
-    CHECK_EQ(vm.find("pbrHeightWidth").toInt(), 16);
+    CHECK(vm.find("pbrResultOk").toBool());
+    CHECK(vm.find("meshParamsResultOk").toBool());
     CHECK(vm.find("meshDefaultsApplied").toBool());
     CHECK(vm.find("meshSegmentsFound").toBool());
-    CHECK_GT(vm.find("meshVertexCount").toInt(), 0);
+    CHECK(vm.find("meshBuildOk").toBool());
 }

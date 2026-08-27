@@ -1206,6 +1206,20 @@ void ParticleEmitter::setAutoReload(bool enable) { resource()->autoReload = enab
 bool ParticleEmitter::getAutoReload() { return resource()->autoReload; }
 std::string ParticleEmitter::getConfigPath() { return resource()->path; }
 
+std::string ParticleEmitter::getConfigReloadObservation() const {
+    auto *const buffer = storage ? storage->getComponentBuffer<Resource>() : nullptr;
+    if (!buffer || id >= buffer->size()) return "unbound";
+    switch (buffer->get(id).lastReloadObservation) {
+        case Resource::ReloadObservation::Unbound: return "unbound";
+        case Resource::ReloadObservation::AutoReloadDisabled: return "auto_reload_disabled";
+        case Resource::ReloadObservation::MtimePollingUnchanged: return "mtime_polling_unchanged";
+        case Resource::ReloadObservation::MtimePollingReloaded: return "mtime_polling_reloaded";
+        case Resource::ReloadObservation::MtimeUnavailable: return "mtime_unavailable";
+        case Resource::ReloadObservation::MtimePollingReloadFailed: return "mtime_polling_reload_failed";
+    }
+    return "unbound";
+}
+
 void ParticleEmitter::attachToBone(animation::AnimPose *pose, int boneIndex) {
     auto a = attach();
     clearAttachSources(*a);

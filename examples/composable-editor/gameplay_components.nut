@@ -34,8 +34,8 @@ class GameplayEditorComponents {
             ]}");
 
         local cardJson = @"{""id"":""card.scout"",""name"":""Terrain Scout"",""kind"":""creature"",""cost"":2,""attack"":3,""health"":2}";
-        if (schemas.validateJson("card.definition", cardJson)) {
-            definitions.registerDefinition("card", "card.scout", 1, cardJson);
+        if (schemas.validateJson("card.definition", cardJson).ok) {
+            definitions.insert("card", "card.scout", 1, cardJson);
             cards.registerCardsFromJson(cardJson);
         }
         deck = cards.newDeck();
@@ -62,8 +62,9 @@ class GameplayEditorComponents {
 
     function createRtsUnit(stableId, entity, x, z) {
         local unitJson = "{\"id\":\"" + stableId + "\",\"speed\":6,\"radius\":0.35}";
-        if (!schemas.validateJson("rts.unit", unitJson)) return false;
-        definitions.registerDefinition("rts.unit", stableId, 1, unitJson);
+        if (!schemas.validateJson("rts.unit", unitJson).ok) return false;
+        local definitionResult = definitions.insert("rts.unit", stableId, 1, unitJson);
+        if (!definitionResult.ok) return false;
         local index = crowdSim.addNamedAgent(stableId, x, z, 0.0, 0.35);
         if (index < 0) return false;
         crowdSim.setAgentSpeed(index, 6.0);

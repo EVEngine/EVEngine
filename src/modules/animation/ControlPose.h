@@ -2,6 +2,7 @@
 
 #include "animation/AnimControlMath.h"
 #include "animation/AnimPose.h"
+#include "common/Time.h"
 
 #include <string>
 #include <vector>
@@ -50,6 +51,9 @@ public:
     AnimPose *getPose();
     AnimPose *getTargetPose();
 
+    /** @brief Advance pose dynamics by one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
 
 private:
@@ -90,6 +94,10 @@ private:
 
     std::vector<BoneState> bones_;
     bool hasTarget_ = false;
+    eve::SimulationTick lastTick_ = eve::SimulationTick::zero();
+    bool hasLastTick_ = false;
+
+    void updateUnchecked(float dt);
 };
 
 }  // namespace eve::animation

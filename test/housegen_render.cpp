@@ -275,7 +275,8 @@ TEST_CASE("housegen.renderPreview") {
     ]})";
 
     HouseComponentLibrary library;
-    REQUIRE(library.loadFromJson(kit));
+    auto kitResult = library.loadFromJson(kit);
+    REQUIRE(kitResult.ok());
     HouseRequest request;
     request.seed = static_cast<unsigned>(envInt("EVHOUSE_PREVIEW_SEED", 20260815));
     request.width = envInt("EVHOUSE_PREVIEW_WIDTH", 7);
@@ -286,8 +287,9 @@ TEST_CASE("housegen.renderPreview") {
     request.entrance = envString("EVHOUSE_PREVIEW_ENTRANCE", "auto");
     request.floorHeight = 2.4f;
     HouseLayout layout;
-    HouseGenerator generator(&library);
-    REQUIRE(generator.generate(request, layout));
+    HouseGenerator generator(library);
+    auto generated = generator.generate(request, layout);
+    REQUIRE(generated.ok());
 
     auto *window = eve::window::Window::create();
     auto *gfx = Graphics::create();
@@ -321,17 +323,17 @@ TEST_CASE("housegen.renderPreview") {
     box(cube, plotCenterX, -0.30f, plotCenterZ, float(request.width + 4), 0.25f,
         float(request.depth + 4), 0.20f, 0.42f, 0.18f);
     for (const auto &instance : layout.instances) {
-        const auto *component = library.find(instance.componentId);
-        REQUIRE(component != nullptr);
-        if (component->category == "foundation") {
+        const auto component = library.find(instance.componentId);
+        REQUIRE(component.has_value());
+        if (component->get().category == "foundation") {
             box(cube, float(instance.x), -0.08f, float(instance.y), 0.96f, 0.16f, 0.96f,
                 0.35f, 0.34f, 0.33f);
-        } else if (component->category == "floor") {
+        } else if (component->get().category == "floor") {
             box(cube, float(instance.x), float(instance.z) * request.floorHeight - 0.03f,
                 float(instance.y), 0.96f, 0.06f, 0.96f, 0.48f, 0.33f, 0.22f);
-        } else if (component->category == "wall") {
+        } else if (component->get().category == "wall") {
             addWallModule(cube, instance, request.floorHeight);
-        } else if (component->category == "door") {
+        } else if (component->get().category == "door") {
             addDoorModule(cube, instance, request.floorHeight);
         }
     }
@@ -340,14 +342,14 @@ TEST_CASE("housegen.renderPreview") {
     // footprint and elevation from the generated request/layout.
     int roofLevel = 0;
     for (const auto &instance : layout.instances) {
-        const auto *component = library.find(instance.componentId);
-        if (component && component->category == "roof")
+        const auto component = library.find(instance.componentId);
+        if (component && component->get().category == "roof")
             roofLevel = std::max(roofLevel, instance.z);
     }
     int roofMinX = request.width, roofMaxX = 0, roofMinZ = request.depth, roofMaxZ = 0;
     for (const auto &instance : layout.instances) {
-        const auto *component = library.find(instance.componentId);
-        if (component && component->category == "roof" && instance.z == roofLevel) {
+        const auto component = library.find(instance.componentId);
+        if (component && component->get().category == "roof" && instance.z == roofLevel) {
             roofMinX = std::min(roofMinX, instance.x);
             roofMaxX = std::max(roofMaxX, instance.x);
             roofMinZ = std::min(roofMinZ, instance.y);
@@ -361,8 +363,8 @@ TEST_CASE("housegen.renderPreview") {
     const float eaveY = roofLevel * request.floorHeight;
     std::unordered_set<int> topRoofCells;
     for (const auto &instance : layout.instances) {
-        const auto *component = library.find(instance.componentId);
-        if (component && component->category == "roof" && instance.z == roofLevel)
+        const auto component = library.find(instance.componentId);
+        if (component && component->get().category == "roof" && instance.z == roofLevel)
             topRoofCells.insert(instance.y * request.width + instance.x);
     }
     auto hasTopRoof = [&](int x, int z) {
@@ -371,8 +373,8 @@ TEST_CASE("housegen.renderPreview") {
     };
     // Roof instances below the main roof are mandatory covers for cells exposed by a setback.
     for (const auto &instance : layout.instances) {
-        const auto *component = library.find(instance.componentId);
-        if (!component || component->category != "roof" || instance.z == roofLevel) continue;
+        const auto component = library.find(instance.componentId);
+        if (!component || component->get().category != "roof" || instance.z == roofLevel) continue;
         box(cube, float(instance.x), instance.z * request.floorHeight, float(instance.y),
             1.02f, 0.14f, 1.02f, gPalette.roofR, gPalette.roofG, gPalette.roofB);
     }
@@ -397,8 +399,8 @@ TEST_CASE("housegen.renderPreview") {
         const float shedAngle = layout.roofStyle == "shed" ? -0.16f : 0.f;
         const float roofY = eaveY + (layout.roofStyle == "shed" ? roofWidth * 0.08f : 0.f);
         for (const auto &instance : layout.instances) {
-            const auto *component = library.find(instance.componentId);
-            if (!component || component->category != "roof" || instance.z != roofLevel) continue;
+            const auto component = library.find(instance.componentId);
+            if (!component || component->get().category != "roof" || instance.z != roofLevel) continue;
             const float slopeY = layout.roofStyle == "shed"
                 ? (roofCenterX - float(instance.x)) * 0.16f : 0.f;
             box(cube, float(instance.x), roofY + slopeY, float(instance.y),
@@ -487,11 +489,14 @@ TEST_CASE("housegen.materialPreview") {
     const std::filesystem::path assetDir =
         eve_test_path::pathBesideTestDir(__FILE__, "assets/housegen/kenney-modular-buildings");
     HouseComponentLibrary library;
-    std::string error;
-    REQUIRE(library.loadFromFile((assetDir / "components.json").string(), &error));
+    auto loaded = library.loadFromFile((assetDir / "components.json").string());
+    REQUIRE(loaded.ok());
     REQUIRE_EQ(library.count(), 4);
-    for (const auto &id : library.ids())
-        REQUIRE(std::filesystem::is_regular_file(library.find(id)->modelPath));
+    for (const auto &id : library.ids()) {
+        const auto component = library.find(id);
+        REQUIRE(component.has_value());
+        REQUIRE(std::filesystem::is_regular_file(component->get().modelPath));
+    }
 
     auto *window = eve::window::Window::create();
     auto *gfx = Graphics::create();
@@ -520,14 +525,16 @@ TEST_CASE("housegen.materialPreview") {
         {"kenney.door", 2, 0, 0, 0},
         {"kenney.roof.gable", 3, 0, 0, 0},
     };
-    const auto entities = layout.instantiate(gfx, models, library, &error);
-    if (!error.empty()) std::printf("housegen material instantiate error: %s\n", error.c_str());
-    REQUIRE(error.empty());
+    auto instantiated = layout.instantiate(*gfx, *models, library);
+    REQUIRE(instantiated.ok());
+    auto entities = std::move(instantiated).takeValue();
     REQUIRE(entities.size() >= layout.instances.size());
-    REQUIRE(entities.front()->meshRenderer()->texture != nullptr);
-    REQUIRE(entities.front()->meshRenderer()->normalTexture != nullptr);
-    REQUIRE(entities.front()->meshRenderer()->heightTexture != nullptr);
-    REQUIRE(entities.front()->meshRenderer()->parallaxScale > 0.f);
+    auto *first = static_cast<Renderable3D *>(ecs::try_get(entities.front()));
+    REQUIRE(first != nullptr);
+    REQUIRE(first->meshRenderer()->texture != nullptr);
+    REQUIRE(first->meshRenderer()->normalTexture != nullptr);
+    REQUIRE(first->meshRenderer()->heightTexture != nullptr);
+    REQUIRE(first->meshRenderer()->parallaxScale > 0.f);
 
     auto *camera = Camera3D::createCamera();
     camera->setTarget(2.1f, 0.55f, 0.f);

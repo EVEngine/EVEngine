@@ -126,9 +126,9 @@ bool ResourceManager::handlesPath(const std::string &normPath) const {
     return false;
 }
 
-bool ResourceManager::reload(const std::string &normPath) {
+eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
     const std::string norm = normalizePath(normPath);
-    if (norm.empty()) return false;
+    if (norm.empty()) return eve::Result<bool>::success(false);
 
     struct Prepared {
         std::string               key;
@@ -170,7 +170,7 @@ bool ResourceManager::reload(const std::string &normPath) {
             }
         }
     }
-    if (keys.empty()) return false;
+    if (keys.empty()) return eve::Result<bool>::success(false);
 
     // Decode every root and dependent into detached candidates. A single
     // invalid file aborts the whole graph without touching live objects.
@@ -183,19 +183,20 @@ bool ResourceManager::reload(const std::string &normPath) {
         {
             std::lock_guard<std::mutex> lock(mu_);
             auto it = resources.find(key);
-            if (it == resources.end()) return false;
+            if (it == resources.end()) return eve::Result<bool>::success(false);
             cached = it->second.get();
             keepAlive.emplace_back(cached);
         }
         std::unique_ptr<Resource> replacement(loadReplacement(key));
-        if (!replacement) return false;
+        if (!replacement) return eve::Result<bool>::success(false);
         prepared.push_back({key, cached, std::move(replacement)});
     }
 
     std::lock_guard<std::mutex> lock(mu_);
     for (const auto &item : prepared) {
         auto it = resources.find(item.key);
-        if (it == resources.end() || it->second.get() != item.cached) return false;
+        if (it == resources.end() || it->second.get() != item.cached)
+            return eve::Result<bool>::success(false);
     }
 
     size_t committed = 0;
@@ -215,9 +216,9 @@ bool ResourceManager::reload(const std::string &normPath) {
                 // violates it.
             }
         }
-        return false;
+        return eve::Result<bool>::success(false);
     }
-    return true;
+    return eve::Result<bool>::success(true, eve::Status::success(eve::StatusCode::Applied));
 }
 
 Resource *ResourceManager::loadReplacement(const std::string &key) {

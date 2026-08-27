@@ -1,4 +1,5 @@
 #include "card/Card.h"
+#include "card/CardAttributes.h"
 
 #include <cmath>
 
@@ -10,6 +11,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <utility>
 
 namespace eve::card {
 
@@ -77,6 +79,7 @@ bool parseDefinition(Value o, std::unordered_map<std::string, CardDefinition> &d
     def.cost = o.getInt("cost");
     def.attack = o.getInt("attack");
     def.health = o.getInt("health");
+    def.tags = o.getStringArray("tags");
     auto tint = o.getFloatArray("tint");
     if (tint.size() >= 3) def.tint = glm::vec3(tint[0], tint[1], tint[2]);
     defs[id] = def;
@@ -86,6 +89,14 @@ bool parseDefinition(Value o, std::unordered_map<std::string, CardDefinition> &d
 template <typename T>
 T *resolve(const ecs::EntityHandle &h) {
     return static_cast<T *>(ecs::try_get(h));
+}
+
+bool ownsCard(const std::vector<ecs::EntityHandle> &handles, const CardData &card) {
+    const auto live = ecs::handle_of(const_cast<CardData *>(&card));
+    return std::any_of(handles.begin(), handles.end(), [&live](const auto &handle) {
+        return handle.table == live.table && handle.type == live.type && handle.id == live.id &&
+               handle.generation == live.generation;
+    });
 }
 
 void destroyHandles(std::vector<ecs::EntityHandle> &hs) {
@@ -205,9 +216,96 @@ bool Card::removeCardDefinition(const std::string &id) {
     return true;
 }
 
+eve::Result<void> Card::setCardPlayCondition(const std::string &id, decision::Condition condition) {
+    auto it = defs_.find(id);
+    if (it == defs_.end())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "card definition was not found", id));
+    if (!condition.isValid())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card play condition is invalid", id));
+    it->second.playCondition = std::move(condition);
+    return eve::Result<void>::success();
+}
+
 const CardDefinition *Card::findDef(const std::string &id) const {
     auto it = defs_.find(id);
     return it == defs_.end() ? nullptr : &it->second;
+}
+
+decision::ConditionResult Card::evaluatePlay(const CardData* card,
+                                             CardPlayConditionQueries queries) const {
+    if (!card) return decision::ConditionResult::failed(decision::ConditionReasonCode::InvalidCondition);
+    const auto* definition = findDef(const_cast<CardData*>(card)->identity()->definitionId);
+    if (!definition) return decision::ConditionResult::failed(decision::ConditionReasonCode::InvalidCondition);
+    return CardPlayConditionAdapter::evaluate(card, *definition, definition->playCondition, std::move(queries));
+}
+
+eve::Result<double> Card::getCardAttribute(CardData &card, std::string_view attribute) const {
+    if (!ownsCard(cards_, card))
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "card does not belong to this Card facade", "card"));
+    return CardAttributeAdapter::read(card, attribute);
+}
+
+eve::Result<void> Card::setCardAttribute(CardData &card, std::string_view attribute,
+                                         double value) const {
+    if (!ownsCard(cards_, card))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "card does not belong to this Card facade", "card"));
+    return CardAttributeAdapter::setBase(card, attribute, value);
+}
+
+eve::Result<effects::EffectHandle> Card::applyEffect(
+    CardData &card, const CardEffectDefinition &definition, eve::SubjectRef subject) const {
+    if (!ownsCard(cards_, card))
+        return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "card does not belong to this Card facade", "card"));
+    auto attributes = CardAttributeAdapter::ensure(card);
+    if (!attributes)
+        return eve::Result<effects::EffectHandle>::failure(attributes.status());
+    return card.effects()->values.apply(definition, subject);
+}
+
+eve::Result<std::size_t> Card::step(const eve::SimulationStep &simulationStep) {
+    std::size_t settled = 0;
+    for (const auto &handle : cards_) {
+        auto *card = resolve<CardData>(handle);
+        if (card == nullptr || card->effects()->values.count() == 0) continue;
+        auto updated = card->effects()->values.advance(simulationStep);
+        if (!updated) return eve::Result<std::size_t>::failure(updated.status());
+        auto result = std::move(updated).takeValue();
+        auto projected = CardAttributeAdapter::setBase(
+            *card, CardAttributeAdapter::healthAttribute,
+            static_cast<double>(card->effects()->values.target().health));
+        if (!projected)
+            return eve::Result<std::size_t>::failure(projected.status());
+        settled += result.settled;
+    }
+    return eve::Result<std::size_t>::success(
+        settled, eve::Status::success(settled == 0 ? eve::StatusCode::NoOp
+                                                   : eve::StatusCode::Applied));
+}
+
+eve::Result<eve::transaction::TransactionReceipt> Card::play(
+    CardData &card, eve::resource::IResourceAccount &playerAccount,
+    CardPlayComposition composition, std::string transactionId) {
+    if (!ownsCard(cards_, card))
+        return eve::Result<eve::transaction::TransactionReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                   "card does not belong to this Card facade", "card"));
+    const auto *definition = findDef(card.identity()->definitionId);
+    if (definition == nullptr)
+        return eve::Result<eve::transaction::TransactionReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                   "card definition was not found", "definition"));
+    CardPlayRequest request;
+    request.card = &card;
+    request.definition = definition;
+    request.playerAccount = &playerAccount;
+    request.composition = std::move(composition);
+    request.transactionId = std::move(transactionId);
+    return CardPlayPaymentAdapter::play(std::move(request));
 }
 
 std::string Card::getCardDefinitionName(const std::string &id) {
@@ -274,6 +372,21 @@ CardData *Card::newCard(const std::string &defId) {
     c->stats()->attack = d->attack;
     c->stats()->health = d->health;
     c->visual()->tint = d->tint;
+    auto attributes = CardAttributeAdapter::ensure(*c);
+    if (!attributes) {
+        attributes.ignore("Card::newCard could not seed canonical attributes");
+        c->release();
+        return nullptr;
+    }
+    if (d->health > 0) {
+        auto target = c->effects()->values.initializeTarget(
+            CardEffectTarget{d->health, d->health, 0, 0});
+        if (!target) {
+            target.ignore("Card::newCard could not seed the effect target");
+            c->release();
+            return nullptr;
+        }
+    }
     cards_.push_back(ecs::handle_of(c));
     return c;
 }

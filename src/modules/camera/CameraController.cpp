@@ -3,7 +3,7 @@
 #include "common/CameraObstruction.h"
 #include "common/Capability.h"
 #include "common/Json.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 #include "graphics/RenderSystem3D.h"
 #include "scene/SceneNodeRef.h"
 
@@ -334,7 +334,7 @@ bool CameraController::addTimelineEvent(float time, const std::string& name, con
     return true;
 }
 
-void CameraController::setEventSink(event::Event* sink) { eventSink_ = sink; }
+void CameraController::setEventSink(platform_event::PlatformEvent* sink) { eventSink_ = sink; }
 
 void CameraController::playTimeline(bool loop) {
     timelineLoop_    = loop;

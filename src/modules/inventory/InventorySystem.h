@@ -15,6 +15,7 @@ namespace eve::inventory {
 
 class Bag;
 class EquipmentSet;
+class InventoryResourceAccount;
 
 class InventorySystem {
 public:
@@ -75,6 +76,8 @@ public:
     static int nextInstanceId();
 
 private:
+    friend class InventoryResourceAccount;
+
     static bool canStackTogether(const Bag &bag, const ItemStack &a, const ItemStack &b,
                                  const ItemDefinition &def);
     static bool checkAccept(const Bag &bag, const ItemDefinition &def, int quantity,
@@ -91,6 +94,7 @@ private:
     static std::vector<InventoryChangeEvent> &eventQueue();
     static int &instanceCounter();
     static bool &builtinsReady();
+    static bool &changeHooksSuppressed();
 };
 
 }  // namespace eve::inventory

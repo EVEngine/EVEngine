@@ -6,8 +6,8 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
-#include "event/Event.h"
-#include "event/PlatformEventSink.h"
+#include "platform_event/PlatformEvent.h"
+#include "platform_event/PlatformEventSink.h"
 #include "joystick/Joystick.h"
 #include "joystick/Pad.h"
 
@@ -19,15 +19,15 @@
 namespace eve::joystick::sdl {
 namespace {
 
-using eve::event::Message;
-using eve::event::Variant;
+using eve::platform_event::Message;
+using eve::platform_event::Variant;
 
 /** Axis values travel as thousandths so the message stays integral. */
 int64_t axisMilli(int16_t raw) {
     return static_cast<int64_t>(std::lround(clampAxis(raw / 32768.0f) * 1000.0f));
 }
 
-class JoystickEventSink : public eve::event::IPlatformEventSink {
+class JoystickEventSink : public eve::platform_event::IPlatformEventSink {
 public:
     Message *translatePlatformEvent(const void *nativeEvent) override {
         const auto &e = *static_cast<const SDL_Event *>(nativeEvent);
@@ -102,8 +102,8 @@ public:
 struct Register {
     Register() {
         static JoystickEventSink sink;
-        eve::cap::addListener<eve::event::IPlatformEventSink>(
-            &sink, eve::event::IPlatformEventSink::kInput);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(
+            &sink, eve::platform_event::IPlatformEventSink::kInput);
     }
 } g_register;
 

@@ -49,6 +49,7 @@
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
+#include <utility>
 
 using namespace eve::scene;
 using namespace eve::graphics;
@@ -64,6 +65,13 @@ bool matApproxEq(const glm::mat4 &a, const glm::mat4 &b, float eps = 1e-4f) {
         }
     }
     return true;
+}
+
+template <class T>
+T *sceneValue(eve::Result<T *> result) {
+    CHECK(result.ok());
+    if (!result.ok()) return nullptr;
+    return std::move(result).takeValue();
 }
 
 class BattleScene : public SceneComponent {
@@ -86,7 +94,7 @@ public:
 }  // namespace
 
 TEST_CASE("Scene.NodeDesc.composeNestedTree") {
-    SceneHost *h = SceneHost::createHost("nest");
+    SceneHost *h = sceneValue(SceneHost::createHost("nest"));
     h->setTree(node("root",
                     {
                         node("a").withPosition(1.f, 0.f, 0.f),
@@ -96,21 +104,21 @@ TEST_CASE("Scene.NodeDesc.composeNestedTree") {
     auto t = h->tree();
     REQUIRE_EQ(t->root, 0);
     REQUIRE_GE(t->nodes.size(), 4u);
-    CHECK(h->findById("a") != nullptr);
-    CHECK(h->findById("b") != nullptr);
-    CHECK_EQ(h->findById("root")->firstChild, 1);
+    CHECK(sceneValue(h->findById("a")) != nullptr);
+    CHECK(sceneValue(h->findById("b")) != nullptr);
+    CHECK_EQ(sceneValue(h->findById("root"))->firstChild, 1);
 }
 
 TEST_CASE("Scene.reconcile.patchesPropsKeepsIdentity") {
-    SceneHost *h = SceneHost::createHost("recon");
+    SceneHost *h = sceneValue(SceneHost::createHost("recon"));
     h->setTree(node("root", {node("player").withPosition(0.f, 0.f, 0.f)}));
-    SceneNode *before = h->findById("player");
+    SceneNode *before = sceneValue(h->findById("player"));
     REQUIRE(before != nullptr);
     const std::string *idPtr = &before->id;
 
     bool rebuilt = h->setTreeReconcile(node("root", {node("player").withPosition(3.f, 4.f, 5.f)}));
     CHECK(!rebuilt);
-    SceneNode *after = h->findById("player");
+    SceneNode *after = sceneValue(h->findById("player"));
     REQUIRE(after != nullptr);
     CHECK_EQ(&after->id, idPtr);
     CHECK(approxEq(after->x, 3.f));
@@ -119,20 +127,20 @@ TEST_CASE("Scene.reconcile.patchesPropsKeepsIdentity") {
 }
 
 TEST_CASE("Scene.reconcile.structureChangeRebuilds") {
-    SceneHost *h = SceneHost::createHost("recon2");
+    SceneHost *h = sceneValue(SceneHost::createHost("recon2"));
     h->setTree(node("root", {node("a")}));
     bool rebuilt = h->setTreeReconcile(node("root", {node("a"), node("b")}));
     CHECK(rebuilt);
-    CHECK(h->findById("b") != nullptr);
+    CHECK(sceneValue(h->findById("b")) != nullptr);
 }
 
 TEST_CASE("Scene.TransformSystem.parentChildWorld") {
-    SceneHost *h = SceneHost::createHost("xf");
+    SceneHost *h = sceneValue(SceneHost::createHost("xf"));
     h->setTree(node("root", {node("child").withPosition(1.f, 0.f, 0.f)}).withPosition(10.f, 0.f, 0.f));
     TransformSystem::updateHost(h);
 
-    SceneNode *root = h->findById("root");
-    SceneNode *child = h->findById("child");
+    SceneNode *root = sceneValue(h->findById("root"));
+    SceneNode *child = sceneValue(h->findById("child"));
     REQUIRE(root != nullptr);
     REQUIRE(child != nullptr);
 
@@ -143,7 +151,7 @@ TEST_CASE("Scene.TransformSystem.parentChildWorld") {
 }
 
 TEST_CASE("Scene.hierarchy.cycleRejected") {
-    SceneHost *h = SceneHost::createHost("cycle");
+    SceneHost *h = sceneValue(SceneHost::createHost("cycle"));
     h->setTree(node("root", {node("a", {node("b")})}));
     int root = h->findIndexById("root");
     int a = h->findIndexById("a");
@@ -162,25 +170,25 @@ TEST_CASE("Scene.SceneComponent.buildWhenAndSlot") {
     comp.slot = node("hud").withPosition(0.f, 1.f, 0.f);
     comp.mountAs("battle_host");
 
-    SceneHost *h = Scene::create()->findHost("battle_host");
+    SceneHost *h = sceneValue(Scene::create()->findHost("battle_host"));
     REQUIRE(h != nullptr);
-    CHECK(h->findById("ally") != nullptr);
-    CHECK(h->findById("hud") != nullptr);
+    CHECK(sceneValue(h->findById("ally")) != nullptr);
+    CHECK(sceneValue(h->findById("hud")) != nullptr);
 
     comp.showAlly = false;
     comp.markDirty();
     CHECK(comp.updateIfDirty());
-    CHECK(h->findById("ally") == nullptr);
-    CHECK(h->findById("hud") != nullptr);
+    CHECK(sceneValue(h->findById("ally")) == nullptr);
+    CHECK(sceneValue(h->findById("hud")) != nullptr);
 }
 
 TEST_CASE("Scene.module.mountAndSetNode") {
     Scene *mod = Scene::create();
-    mod->mountAs("main", node("root", {node("p").withPosition(0.f, 0.f, 0.f)}));
+    mod->mountAs("main", node("root", {node("p").withPosition(0.f, 0.f, 0.f)})).ignore("test setup");
     CHECK(mod->select("main"));
     CHECK(mod->setNodePosition("p", 2.f, 3.f, 4.f));
     TransformSystem::updateHost(mod->current());
-    SceneNode *p = mod->current()->findById("p");
+    SceneNode *p = sceneValue(mod->current()->findById("p"));
     REQUIRE(p != nullptr);
     CHECK(approxEq(p->x, 2.f));
     CHECK(approxEq(p->world[3][0], 2.f));
@@ -201,15 +209,39 @@ TEST_CASE("Scene.builder.mountBuildAs") {
     mod->addNode("child");
     mod->end();
     CHECK(mod->mountBuildAs("built"));
-    SceneHost *h = mod->findHost("built");
+    SceneHost *h = sceneValue(mod->findHost("built"));
     REQUIRE(h != nullptr);
-    CHECK(h->findById("root") != nullptr);
-    CHECK(h->findById("child") != nullptr);
-    CHECK(approxEq(h->findById("root")->x, 1.f));
+    CHECK(sceneValue(h->findById("root")) != nullptr);
+    CHECK(sceneValue(h->findById("child")) != nullptr);
+    CHECK(approxEq(sceneValue(h->findById("root"))->x, 1.f));
+}
+
+TEST_CASE("Scene.identity.mountFindAndOwnershipContracts") {
+    Scene *mod = Scene::create();
+    auto mounted = mod->mountAs("checked", node("root", {node("child")}));
+    REQUIRE(mounted.ok());
+    SceneHost *host = mounted.value();
+    REQUIRE(host != nullptr);
+
+    auto found = mod->findHost("checked");
+    REQUIRE(found.ok());
+    CHECK_EQ(found.value(), host);
+    auto missingHost = mod->findHost("missing");
+    CHECK(!missingHost.ok());
+
+    auto foundNode = host->findById("child");
+    REQUIRE(foundNode.ok());
+    CHECK_EQ(foundNode.value()->id, std::string("child"));
+    auto missingNode = host->findById("missing");
+    CHECK(!missingNode.ok());
+
+    auto object = SceneObject::createObject("checked", "child");
+    REQUIRE(object.ok());
+    CHECK(object.value() != nullptr);
 }
 
 TEST_CASE("Scene.link.syncRenderable3DWorld") {
-    SceneHost *h = SceneHost::createHost("link3d");
+    SceneHost *h = sceneValue(SceneHost::createHost("link3d"));
     h->setTree(node("root", {node("mesh").withPosition(1.f, 2.f, 3.f)}).withPosition(10.f, 0.f, 0.f));
 
     auto *r = eve::graphics::Renderable3D::create();
@@ -223,7 +255,7 @@ TEST_CASE("Scene.link.syncRenderable3DWorld") {
     // Rebuild preserves link by id
     h->setTree(node("root", {node("mesh").withPosition(0.f, 0.f, 0.f)}).withPosition(5.f, 0.f, 0.f));
     TransformSystem::updateHost(h);
-    SceneNode *mesh = h->findById("mesh");
+    SceneNode *mesh = sceneValue(h->findById("mesh"));
     REQUIRE(mesh != nullptr);
     REQUIRE_EQ(mesh->links.size(), 1u);
     CHECK(mesh->links[0].target == r);
@@ -231,7 +263,7 @@ TEST_CASE("Scene.link.syncRenderable3DWorld") {
 }
 
 TEST_CASE("Scene.link.syncRenderable2DWorld") {
-    SceneHost *h = SceneHost::createHost("link2d");
+    SceneHost *h = sceneValue(SceneHost::createHost("link2d"));
     h->setTree(node("root", {node("spr").withSpace("2d").withPosition(2.f, 3.f, 0.f)})
                    .withSpace("2d")
                    .withPosition(4.f, 5.f, 0.f));
@@ -244,7 +276,7 @@ TEST_CASE("Scene.link.syncRenderable2DWorld") {
 }
 
 TEST_CASE("Scene.query.pathParentChildren") {
-    SceneHost *h = SceneHost::createHost("query");
+    SceneHost *h = sceneValue(SceneHost::createHost("query"));
     h->setTree(node("root",
                     {
                         node("player", {node("weapon").withName("gun")}),
@@ -258,16 +290,16 @@ TEST_CASE("Scene.query.pathParentChildren") {
     CHECK_EQ(h->getChildCountById("root"), 2);
     CHECK(h->getChildAtById("root", 0)->id == "player");
     CHECK(h->getPathById("weapon") == "root/player/weapon");
-    CHECK(h->findByPath("root/player/weapon")->id == "weapon");
-    CHECK(h->findByPath("player/weapon")->id == "weapon");
-    CHECK(h->findByName("gun")->id == "weapon");
+    CHECK(sceneValue(h->findByPath("root/player/weapon"))->id == "weapon");
+    CHECK(sceneValue(h->findByPath("player/weapon"))->id == "weapon");
+    CHECK(sceneValue(h->findByName("gun"))->id == "weapon");
     CHECK(h->isAncestorOfById("root", "weapon"));
     CHECK(h->isDescendantOfById("weapon", "player"));
     CHECK(!h->isAncestorOfById("enemy", "weapon"));
 }
 
 TEST_CASE("Scene.query.walkFilterCollect") {
-    SceneHost *h = SceneHost::createHost("walk");
+    SceneHost *h = sceneValue(SceneHost::createHost("walk"));
     h->setTree(node("root",
                     {
                         node("a", {node("a1")}),
@@ -306,7 +338,7 @@ TEST_CASE("Scene.query.walkFilterCollect") {
 
 TEST_CASE("Scene.module.queryWrappers") {
     Scene *mod = Scene::create();
-    mod->mountAs("q", node("root", {node("p", {node("c").withName("child")})}));
+    mod->mountAs("q", node("root", {node("p", {node("c").withName("child")})})).ignore("test setup");
     CHECK(mod->select("q"));
     CHECK(mod->hasNode("c"));
     CHECK(mod->getRootId() == "root");
@@ -346,7 +378,7 @@ TEST_CASE("Scene.render.parentChildOrbitPreview") {
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
 
-    SceneHost *h = SceneHost::createHost("orbit");
+    SceneHost *h = sceneValue(SceneHost::createHost("orbit"));
     h->setTree(node("root",
                     {
                         node("hub")
@@ -400,8 +432,8 @@ TEST_CASE("Scene.render.parentChildOrbitPreview") {
     float prevHX = hand->transform()->x;
     for (int frame = 0; frame < 90; ++frame) {
         const float t = float(frame) * 0.06f;
-        SceneNode *arm = h->findById("arm");
-        SceneNode *moonN = h->findById("moon");
+        SceneNode *arm = sceneValue(h->findById("arm"));
+        SceneNode *moonN = sceneValue(h->findById("moon"));
         REQUIRE(arm != nullptr);
         REQUIRE(moonN != nullptr);
         arm->roll = t;
@@ -431,18 +463,18 @@ TEST_CASE("Scene.render.parentChildOrbitPreview") {
 }
 
 TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
-    SceneHost *h = SceneHost::createHost("objid");
+    SceneHost *h = sceneValue(SceneHost::createHost("objid"));
     h->setTree(node("root", {node("p")}));
-    SceneNode *p = h->findById("p");
+    SceneNode *p = sceneValue(h->findById("p"));
     REQUIRE(p != nullptr);
 
-    SceneObject *o = SceneObject::createObject("objid", "p");
+    SceneObject *o = sceneValue(SceneObject::createObject("objid", "p"));
     p->objectId = uint32_t(o->id);
 
     // Full rebuild keeps the binding marker on same-id nodes, not on new ones.
     h->setTree(node("root", {node("p"), node("q")}));
-    SceneNode *p2 = h->findById("p");
-    SceneNode *q = h->findById("q");
+    SceneNode *p2 = sceneValue(h->findById("p"));
+    SceneNode *q = sceneValue(h->findById("q"));
     REQUIRE(p2 != nullptr);
     REQUIRE(q != nullptr);
     CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id));
@@ -450,7 +482,7 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
 
     // Reconcile patch keeps the marker too.
     h->setTreeReconcile(node("root", {node("p").withPosition(1.f, 0.f, 0.f)}));
-    SceneNode *p3 = h->findById("p");
+    SceneNode *p3 = sceneValue(h->findById("p"));
     REQUIRE(p3 != nullptr);
     CHECK_EQ(uint32_t(p3->objectId), uint32_t(o->id));
 
@@ -458,7 +490,7 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
 }
 
 TEST_CASE("Scene.link.genericMultiLinkAndSync") {
-    SceneHost *h = SceneHost::createHost("genlink");
+    SceneHost *h = sceneValue(SceneHost::createHost("genlink"));
     h->setTree(node("root", {node("soldier")}));
 
     auto *r3 = eve::graphics::Renderable3D::create();
@@ -472,7 +504,7 @@ TEST_CASE("Scene.link.genericMultiLinkAndSync") {
     CHECK_EQ(h->linkCount("soldier"), 3);
 
     // node → body + camera (syncMode 0)
-    SceneNode *n = h->findById("soldier");
+    SceneNode *n = sceneValue(h->findById("soldier"));
     REQUIRE(n != nullptr);
     n->x = 3.f;
     n->y = 4.f;
@@ -501,7 +533,7 @@ TEST_CASE("Scene.link.genericMultiLinkAndSync") {
 
     // full rebuild preserves remaining links by id
     h->setTree(node("root", {node("soldier")}));
-    SceneNode *n2 = h->findById("soldier");
+    SceneNode *n2 = sceneValue(h->findById("soldier"));
     REQUIRE(n2 != nullptr);
     REQUIRE_EQ(n2->links.size(), 2u);
     bool hasMesh = false, hasCam = false;
@@ -518,7 +550,7 @@ TEST_CASE("Scene.link.genericMultiLinkAndSync") {
 }
 
 TEST_CASE("Scene.link.physics2D") {
-    SceneHost *h = SceneHost::createHost("link2dphys");
+    SceneHost *h = sceneValue(SceneHost::createHost("link2dphys"));
     h->setTree(node("root", {node("p").withSpace("2d").withPosition(10.f, 20.f, 0.f)}));
 
     eve::physics::World w(0.f, 0.f, true, 1.f);
@@ -533,7 +565,7 @@ TEST_CASE("Scene.link.physics2D") {
     b->setPosition(30.f, 40.f);
     b->setAngle(0.5f);
     TransformSystem::updateHost(h);
-    SceneNode *n = h->findById("p");
+    SceneNode *n = sceneValue(h->findById("p"));
     REQUIRE(n != nullptr);
     CHECK(approxEq(n->x, 30.f));
     CHECK(approxEq(n->y, 40.f));
@@ -548,7 +580,7 @@ TEST_CASE("Scene.api.transformGettersAndSpaceConversion") {
     Scene *mod = Scene::create();
     mod->mountAs("api1",
                  node("root", {node("child").withPosition(1.f, 0.f, 0.f)})
-                     .withPosition(10.f, 0.f, 0.f));
+                     .withPosition(10.f, 0.f, 0.f)).ignore("test setup");
     mod->updateTransformsAll();
 
     auto p = mod->getNodePositionAt("api1", "child");
@@ -592,7 +624,7 @@ TEST_CASE("Scene.api.transformGettersAndSpaceConversion") {
 }
 
 TEST_CASE("Scene.api.hierarchyOps") {
-    SceneHost *h = SceneHost::createHost("hier");
+    SceneHost *h = sceneValue(SceneHost::createHost("hier"));
     h->setTree(node("root", {node("a"), node("b")}));
     REQUIRE(h->setParentById("b", "a"));
     CHECK(h->getParentById("b")->id == "a");
@@ -601,7 +633,7 @@ TEST_CASE("Scene.api.hierarchyOps") {
     CHECK(h->getParentById("b") == nullptr);
 
     Scene *mod = Scene::create();
-    mod->mountAs("hier2", node("root", {node("x"), node("y")}));
+    mod->mountAs("hier2", node("root", {node("x"), node("y")})).ignore("test setup");
     mod->select("hier2");
     CHECK(mod->setNodeParentAt("hier2", "y", "x"));
     CHECK(mod->getParentId("y") == "x");
@@ -616,7 +648,7 @@ TEST_CASE("Scene.api.hierarchyOps") {
 
 TEST_CASE("Scene.api.quaternionAndLookAt") {
     Scene *mod = Scene::create();
-    mod->mountAs("quat2", node("root", {node("n")}));
+    mod->mountAs("quat2", node("root", {node("n")})).ignore("test setup");
 
     // quaternion round trip
     CHECK(mod->setNodeRotation("n", 0.5f, 0.25f, 0.1f));
@@ -631,7 +663,7 @@ TEST_CASE("Scene.api.quaternionAndLookAt") {
     CHECK(mod->setNodePosition("n", 0.f, 0.f, 0.f));
     CHECK(mod->setNodeLookAtAt("quat2", "n", 5.f, 0.f, 0.f));
     mod->updateTransformsAll();
-    SceneNode *n2 = mod->findHost("quat2")->findById("n");
+    SceneNode *n2 = sceneValue(sceneValue(mod->findHost("quat2"))->findById("n"));
     REQUIRE(n2 != nullptr);
     glm::vec3 f(n2->world[2]);
     CHECK(approxEq(f.x, 1.f));
@@ -647,10 +679,10 @@ TEST_CASE("Scene.api.quaternionAndLookAt") {
 }
 
 TEST_CASE("Scene.api.tagsAndLayer") {
-    SceneHost *h = SceneHost::createHost("tags");
+    SceneHost *h = sceneValue(SceneHost::createHost("tags"));
     h->setTree(node("root", {node("a").withTag("enemy").withLayer(2),
                              node("b").withTag("ally")}));
-    SceneNode *a = h->findById("a");
+    SceneNode *a = sceneValue(h->findById("a"));
     REQUIRE(a != nullptr);
     CHECK(h->hasTag(a, "enemy"));
     CHECK_EQ(a->layer, 2);
@@ -663,7 +695,7 @@ TEST_CASE("Scene.api.tagsAndLayer") {
     CHECK(tagged[0]->id == "a");
 
     Scene *mod = Scene::create();
-    mod->mountAs("tags2", node("root", {node("a").withTag("enemy"), node("b")}));
+    mod->mountAs("tags2", node("root", {node("a").withTag("enemy"), node("b")})).ignore("test setup");
     CHECK(mod->addNodeTagAt("tags2", "a", "boss"));
     CHECK(mod->hasNodeTagAt("tags2", "a", "enemy"));
     auto ids = mod->collectIdsByTagAt("tags2", "enemy");
@@ -676,13 +708,13 @@ TEST_CASE("Scene.api.tagsAndLayer") {
 
     // reconcile patch propagates declarative tags/layer
     h->setTreeReconcile(node("root", {node("a").withTag("enemy"), node("b").withLayer(5)}));
-    SceneNode *b = h->findById("b");
+    SceneNode *b = sceneValue(h->findById("b"));
     REQUIRE(b != nullptr);
     CHECK_EQ(b->layer, 5);
 }
 
 TEST_CASE("Scene.api.duplicateIdsRejected") {
-    SceneHost *h = SceneHost::createHost("dupid");
+    SceneHost *h = sceneValue(SceneHost::createHost("dupid"));
     REQUIRE_THROWS(([&]() -> bool {
         h->setTree(node("root", {node("dup"), node("dup")}));
         return true;
@@ -690,7 +722,7 @@ TEST_CASE("Scene.api.duplicateIdsRejected") {
 }
 
 TEST_CASE("Scene.link.purgeDeadTargets") {
-    SceneHost *h = SceneHost::createHost("purge");
+    SceneHost *h = sceneValue(SceneHost::createHost("purge"));
     h->setTree(node("root", {node("m")}));
     auto *r = eve::graphics::Renderable3D::create();
     REQUIRE(h->linkRenderable3D("m", r));
@@ -702,15 +734,15 @@ TEST_CASE("Scene.link.purgeDeadTargets") {
 
 TEST_CASE("Scene.transform.incrementalDirtySubtree") {
     Scene *mod = Scene::create();
-    mod->mountAs("inc", node("root", {node("a", {node("a1")}), node("b")}));
+    mod->mountAs("inc", node("root", {node("a", {node("a1")}), node("b")})).ignore("test setup");
     mod->updateTransformsAll();
 
     // API edit on "a" → incremental path; a1 follows, sibling b untouched.
     CHECK(mod->setNodePosition("a", 5.f, 0.f, 0.f));
     mod->updateTransformsAll();
-    SceneHost *h = mod->findHost("inc");
-    SceneNode *a1 = h->findById("a1");
-    SceneNode *b = h->findById("b");
+    SceneHost *h = sceneValue(mod->findHost("inc"));
+    SceneNode *a1 = sceneValue(h->findById("a1"));
+    SceneNode *b = sceneValue(h->findById("b"));
     REQUIRE(a1 != nullptr);
     REQUIRE(b != nullptr);
     CHECK(approxEq(a1->world[3][0], 5.f));
@@ -725,21 +757,21 @@ TEST_CASE("Scene.transform.incrementalDirtySubtree") {
 }
 
 TEST_CASE("Scene.index.lazyRebuild") {
-    SceneHost *h = SceneHost::createHost("idx");
+    SceneHost *h = sceneValue(SceneHost::createHost("idx"));
     h->setTree(node("root", {node("a"), node("b")}));
-    CHECK(h->findById("b") != nullptr);
+    CHECK(sceneValue(h->findById("b")) != nullptr);
     h->setTree(node("root", {node("b"), node("c")}));
-    CHECK(h->findById("b") != nullptr);
-    CHECK(h->findById("a") == nullptr);
+    CHECK(sceneValue(h->findById("b")) != nullptr);
+    CHECK(sceneValue(h->findById("a")) == nullptr);
     h->setTreeReconcile(node("root", {node("b"), node("c"), node("d")}));
-    CHECK(h->findById("d") != nullptr);
+    CHECK(sceneValue(h->findById("d")) != nullptr);
     CHECK(h->getParentById("d") != nullptr);
 }
 
 TEST_CASE("Scene.reconcile.movePreservesIdentity") {
-    SceneHost *h = SceneHost::createHost("mv");
+    SceneHost *h = sceneValue(SceneHost::createHost("mv"));
     h->setTree(node("root", {node("a"), node("b"), node("c")}));
-    SceneNode *b = h->findById("b");
+    SceneNode *b = sceneValue(h->findById("b"));
     REQUIRE(b != nullptr);
     auto *r = eve::graphics::Renderable3D::create();
     CHECK(h->linkRenderable3D("b", r));
@@ -747,7 +779,7 @@ TEST_CASE("Scene.reconcile.movePreservesIdentity") {
     // Same key set, different order → reorder without full rebuild.
     bool rebuilt = h->setTreeReconcile(node("root", {node("c"), node("a"), node("b")}));
     CHECK(!rebuilt);
-    SceneNode *b2 = h->findById("b");
+    SceneNode *b2 = sceneValue(h->findById("b"));
     REQUIRE(b2 != nullptr);
     CHECK(b2 == b);  // arena identity preserved
     CHECK(h->getChildAtById("root", 0)->id == "c");
@@ -757,11 +789,11 @@ TEST_CASE("Scene.reconcile.movePreservesIdentity") {
 
     // Nested reorder also keeps identity.
     h->setTree(node("root", {node("p", {node("p1"), node("p2")})}));
-    SceneNode *p1 = h->findById("p1");
+    SceneNode *p1 = sceneValue(h->findById("p1"));
     REQUIRE(p1 != nullptr);
     rebuilt = h->setTreeReconcile(node("root", {node("p", {node("p2"), node("p1")})}));
     CHECK(!rebuilt);
-    CHECK(h->findById("p1") == p1);
+    CHECK(sceneValue(h->findById("p1")) == p1);
     CHECK(h->getChildAtById("p", 0)->id == "p2");
 
     ecs::DestroyEntity(r);
@@ -777,7 +809,7 @@ TEST_CASE("Scene.serialize.roundTrip") {
                                    .withLayer(2)
                                    .withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
                                node("b", {node("b1")})})
-                     .withPosition(10.f, 0.f, 0.f));
+                     .withPosition(10.f, 0.f, 0.f)).ignore("test setup");
 
     const std::string json = mod->serializeHostAt("s1");
     CHECK(json.find("\"root\"") != std::string::npos);
@@ -805,7 +837,7 @@ TEST_CASE("Scene.pick.rayAndScreen") {
     mod->mountAs("pk",
                  node("root", {node("target").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
                                node("back").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f)
-                                   .withPosition(0.f, 0.f, -10.f)}));
+                                   .withPosition(0.f, 0.f, -10.f)})).ignore("test setup");
     mod->updateTransformsAll();
     CHECK(mod->pickRayAt("pk", 0.f, 0.f, 5.f, 0.f, 0.f, -1.f) == "target");
     CHECK(mod->pickRayAt("pk", 10.f, 0.f, 5.f, 0.f, 0.f, -1.f).empty());
@@ -823,7 +855,7 @@ TEST_CASE("Scene.cull.frustum") {
     mod->mountAs("cu",
                  node("root", {node("front").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f),
                                node("side").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f)
-                                   .withPosition(10.f, 0.f, 0.f)}));
+                                   .withPosition(10.f, 0.f, 0.f)})).ignore("test setup");
     auto *cam = eve::graphics::Camera3D::createCamera();
     cam->setEye(0.f, 0.f, 5.f);
     cam->setTarget(0.f, 0.f, 0.f);
@@ -843,7 +875,7 @@ TEST_CASE("Scene.spatial.syncOctree") {
     Scene *mod = Scene::create();
     mod->mountAs("sp",
                  node("root", {node("a").withBounds(-2.f, -2.f, -2.f, 2.f, 2.f, 2.f)
-                                   .withPosition(5.f, 0.f, 0.f)}));
+                                   .withPosition(5.f, 0.f, 0.f)})).ignore("test setup");
     mod->updateTransformsAll();
     eve::spatial::Octree ot(-100.f, -100.f, -100.f, 100.f, 100.f, 100.f);
     REQUIRE(mod->syncSpatialIndexAt("sp", &ot));
@@ -1199,7 +1231,7 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {
 
 TEST_CASE("Scene.nodeRef.transformsAndStructure") {
     Scene *mod = Scene::create();
-    mod->mountAs("refs", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
+    mod->mountAs("refs", node("root", {node("child").withPosition(1.f, 2.f, 3.f)})).ignore("test setup");
 
     SceneNodeRef ref("refs", "child");
     CHECK(ref.isValid());
@@ -1262,7 +1294,7 @@ TEST_CASE("Scene.nodeRef.transformsAndStructure") {
 
 TEST_CASE("Scene.nodeRef.invalidRefs") {
     Scene *mod = Scene::create();
-    mod->mountAs("refs2", node("root", {node("child")}));
+    mod->mountAs("refs2", node("root", {node("child")})).ignore("test setup");
 
     SceneNodeRef missing("refs2", "nope");
     CHECK(!missing.isValid());
@@ -1296,19 +1328,24 @@ TEST_CASE("Scene.nodeRef.invalidRefs") {
 TEST_CASE("Scene.api.hostManagement") {
     Scene *mod = Scene::create();
     CHECK(!mod->select("nope"));
-    CHECK_EQ(mod->findHost("nope"), nullptr);
-    CHECK_EQ(mod->findHostByOwner(0), nullptr);  // owner id 0 never resolves
+    auto missing = mod->findHost("nope");
+    CHECK(!missing.ok());
+    auto invalidOwner = mod->findHostByOwner(0);
+    CHECK(!invalidOwner.ok());  // owner id 0 never resolves
 
-    SceneHost *h = mod->mountAs("mgmt", node("root"));
+    SceneHost *h = sceneValue(mod->mountAs("mgmt", node("root")));
     REQUIRE(h != nullptr);
     CHECK(mod->select("mgmt"));
     CHECK_EQ(mod->current(), h);
 
     mod->bindOwner(99);
-    CHECK_EQ(mod->findHostByOwner(99), h);
+    auto owned = mod->findHostByOwner(99);
+    REQUIRE(owned.ok());
+    CHECK_EQ(owned.value(), h);
     CHECK_EQ(h->getOwnerId(), 99u);
     mod->bindOwner(0);
-    CHECK_EQ(mod->findHostByOwner(0), nullptr);
+    auto invalidOwnerAfterBind = mod->findHostByOwner(0);
+    CHECK(!invalidOwnerAfterBind.ok());
 
     mod->setHostVisible(false);
     CHECK(!h->meta()->visible);

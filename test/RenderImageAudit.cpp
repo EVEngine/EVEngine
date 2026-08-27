@@ -2750,45 +2750,59 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
 
     auto *pg = eve::procgen::Procgen::create();
     REQUIRE(pg != nullptr);
-    eve::procgen::Params texP;
-    texP.setSeed(11);
-    texP.setSize(64, 64);
-    texP.setInt("colors", 6);
-    texP.setInt("pixelSize", 2);
-    texP.setInt("seamless", 1);
+    auto paramsResult = eve::procgen::Procgen::newParamsHandle();
+    REQUIRE(paramsResult.ok());
+    auto paramsHandle = std::move(paramsResult).takeValue();
+    auto paramsView = eve::procgen::Procgen::resolve(paramsHandle);
+    REQUIRE(paramsView.isBound());
+    eve::procgen::Params &params = *paramsView;
+    params.setSeed(11);
+    params.setSize(64, 64);
+    params.setInt("colors", 6);
+    params.setInt("pixelSize", 2);
+    params.setInt("seamless", 1);
     const char *recipes[] = {"tex.soil", "tex.stone", "tex.marble"};
     for (const char *id : recipes) {
-        Texture *tex = pg->generateTexture(id, &texP, gfx);
-        REQUIRE(tex != nullptr);
-        studio.subject->setTexture(tex);
+        auto textureView = pg->generateTextureBorrowed(id, paramsHandle, gfx);
+        REQUIRE(textureView.isBound());
+        studio.subject->setTexture(textureView.get());
         auditGpuFrame(gfx, "procgen", id, bg);
     }
 
-    Texture *nrm = nullptr;
-    {
-        eve::image::ImageData *nimg = pg->generateNormalImage("tex.stone", &texP);
-        REQUIRE(nimg != nullptr);
-        nrm = gfx->newTexture(nimg);
-        delete nimg;
-    }
+    auto normalResult = pg->generateNormalImageHandle("tex.stone", paramsHandle);
+    REQUIRE(normalResult.ok());
+    auto normalHandle = std::move(normalResult).takeValue();
+    CHECK(!eve::procgen::Procgen::isStale(normalHandle));
+    auto normalView = eve::procgen::Procgen::resolve(normalHandle);
+    REQUIRE(normalView.isBound());
+    Texture *nrm = gfx->newTextureFromImageData(normalView.get(), true, true);
     REQUIRE(nrm != nullptr);
     studio.subject->setNormalTexture(nrm);
-    studio.subject->setTexture(pg->generateTexture("tex.stone", &texP, gfx));
+    auto stoneTextureView = pg->generateTextureBorrowed("tex.stone", paramsHandle, gfx);
+    REQUIRE(stoneTextureView.isBound());
+    studio.subject->setTexture(stoneTextureView.get());
     auditGpuFrame(gfx, "procgen", "stone_normal", bg);
     studio.subject->setNormalTexture(nullptr);
+    auto releaseNormalResult = eve::procgen::Procgen::release(normalHandle);
+    REQUIRE(releaseNormalResult.ok());
+    CHECK(eve::procgen::Procgen::isStale(normalHandle));
 
-    eve::procgen::Params meshP;
-    meshP.setSeed(1);
-    meshP.setInt("resolution", 16);
-    meshP.setString("field", "sphere");
-    meshP.setFloat("radius", 0.7f);
-    meshP.setFloat("isolevel", 0.f);
-    Mesh *mc = pg->generateMesh("mesh.marchingcubes", &meshP, gfx);
-    REQUIRE(mc != nullptr);
-    studio.subject->setMesh(mc);
-    studio.subject->setTexture(pg->generateTexture("tex.marble", &texP, gfx));
+    params.setSeed(1);
+    params.setInt("resolution", 16);
+    params.setString("field", "sphere");
+    params.setFloat("radius", 0.7f);
+    params.setFloat("isolevel", 0.f);
+    auto meshView = pg->generateMeshBorrowed("mesh.marchingcubes", paramsHandle, gfx);
+    REQUIRE(meshView.isBound());
+    studio.subject->setMesh(meshView.get());
+    auto marbleTextureView = pg->generateTextureBorrowed("tex.marble", paramsHandle, gfx);
+    REQUIRE(marbleTextureView.isBound());
+    studio.subject->setTexture(marbleTextureView.get());
     studio.subject->setScale(0.7f, 0.7f, 0.7f);
     auditGpuFrame(gfx, "procgen", "marching_cubes", bg);
+
+    auto releaseParamsResult = eve::procgen::Procgen::release(paramsHandle);
+    REQUIRE(releaseParamsResult.ok());
 
     Texture *sceneTex = capturePresented(gfx);
     REQUIRE(sceneTex != nullptr);
@@ -2899,23 +2913,35 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     maskSp->sprite()->visible = false;
 
     auto *pg = eve::procgen::Procgen::create();
-    eve::procgen::Params dungeonP;
-    dungeonP.setSeed(1);
-    dungeonP.setSize(25, 19);
-    eve::procgen::Grid2D *grid = pg->generate("dungeon.bsp", &dungeonP);
-    REQUIRE(grid != nullptr);
+    auto paramsResult = eve::procgen::Procgen::newParamsHandle();
+    REQUIRE(paramsResult.ok());
+    auto paramsHandle = std::move(paramsResult).takeValue();
+    auto paramsView = eve::procgen::Procgen::resolve(paramsHandle);
+    REQUIRE(paramsView.isBound());
+    paramsView->setSeed(1);
+    paramsView->setSize(25, 19);
+    auto gridResult = pg->generateHandle("dungeon.bsp", paramsHandle);
+    REQUIRE(gridResult.ok());
+    auto gridHandle = std::move(gridResult).takeValue();
+    auto gridView = eve::procgen::Procgen::resolve(gridHandle);
+    REQUIRE(gridView.isBound());
     pg->setPaletteGid("audit", "wall", 2);
     pg->setPaletteGid("audit", "floor", 5);
     pg->setPaletteGid("audit", "corridor", 6);
     layer->setVisible(true);
-    REQUIRE(pg->applyToLayer(grid, "audit", layer));
+    auto applyResult = pg->applyToLayer(gridHandle, "audit", *layer);
+    REQUIRE(applyResult.ok());
     for (int y = 0; y < 19; ++y)
         for (int x = 0; x < 25; ++x)
             if (layer->getTile(x, y) == 0) layer->setTile(x, y, 5);
-    delete grid;
+    auto releaseGridResult = eve::procgen::Procgen::release(gridHandle);
+    REQUIRE(releaseGridResult.ok());
     presentMap();
     auditSwapchain(gfx, "mapfov", "dungeon_bsp", bg);
     layer->setVisible(false);
+
+    auto releaseParamsResult = eve::procgen::Procgen::release(paramsHandle);
+    REQUIRE(releaseParamsResult.ok());
 
     eve::map::TileLayer *hex = map->newLayer(18, 16, 32.f, 28.f);
     hex->config()->orientation = eve::map::MapOrientation::Hexagonal;
@@ -3805,7 +3831,9 @@ TEST_CASE("graphics.imageAudit.sceneGraph") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    eve::scene::SceneHost *host = eve::scene::SceneHost::createHost("audit3d");
+    auto hostResult = eve::scene::SceneHost::createHost("audit3d");
+    REQUIRE(hostResult.ok());
+    eve::scene::SceneHost *host = hostResult.value();
     REQUIRE(host != nullptr);
     host->setTree(eve::scene::node(
         "root", {eve::scene::node("subject").withPosition(0.f, 0.15f, 0.f).withScale(0.55f)}));
@@ -3916,5 +3944,3 @@ TEST_CASE("graphics.imageAudit.fovHeightHex") {
     presentMap();
     auditSwapchain(gfx, "fovmore", "hex_topology", bg);
 }
-
-

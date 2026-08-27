@@ -18,42 +18,54 @@ function selectDebugStage(name) {
 }
 
 function rebuildForest() {
-    local ctx = procgen.beginSystem("forest", forestSeed);
-    if (ctx == null) {
-        pipelineStatus = procgen.lastError();
+    local contextResult = procgen.beginSystem("forest", forestSeed);
+    if (!contextResult.ok) {
+        pipelineStatus = contextResult.status.summary;
         return;
     }
+    local ctx = contextResult.value;
 
     try {
         if (!ctx.beginTrace("sampleGrid", 0)) throw ctx.getError();
-        local candidates = procgen.sampleGrid(28, 18, 28.0, ctx.seedFor("candidates"), 0.8);
+        local candidatesResult = procgen.sampleGrid(28, 18, 28.0, ctx.seedFor("candidates"), 0.8);
+        if (!candidatesResult.ok) throw candidatesResult.status.summary;
+        local candidates = candidatesResult.value;
         if (!ctx.endTrace(candidates.getCount())) throw ctx.getError();
-        ctx.captureDebug("candidates", candidates);
+        if (!ctx.captureDebug("candidates", candidates)) throw ctx.getError();
 
-        local road = procgen.newPointSet();
-        road.add(20.0, 0.0, 40.0);
-        road.add(260.0, 0.0, 170.0);
-        road.add(510.0, 0.0, 150.0);
-        road.add(720.0, 0.0, 410.0);
+        local roadResult = procgen.newPointSet();
+        if (!roadResult.ok) throw roadResult.status.summary;
+        local road = roadResult.value;
+        if (road.add(20.0, 0.0, 40.0) < 0) throw "road point insertion failed";
+        if (road.add(260.0, 0.0, 170.0) < 0) throw "road point insertion failed";
+        if (road.add(510.0, 0.0, 150.0) < 0) throw "road point insertion failed";
+        if (road.add(720.0, 0.0, 410.0) < 0) throw "road point insertion failed";
         local roadKey = "road-preview-v1:seed=" + forestSeed;
         roadPoints = ctx.reuseStage("road preview", roadKey);
         if (roadPoints == null) {
-            roadPoints = procgen.sampleSpline(road, 10.0, ctx.seedFor("road preview"), 0.0);
+            local roadPointsResult = procgen.sampleSpline(road, 10.0, ctx.seedFor("road preview"), 0.0);
+            if (!roadPointsResult.ok) throw roadPointsResult.status.summary;
+            roadPoints = roadPointsResult.value;
             if (!ctx.cacheStage("road preview", roadKey, roadPoints)) throw ctx.getError();
         }
         if (!ctx.beginTrace("exclude road", candidates.getCount())) throw ctx.getError();
-        local awayFromRoad = procgen.filterSplineDistance(candidates, road, 42.0, 100000.0);
+        local awayResult = procgen.filterSplineDistance(candidates, road, 42.0, 100000.0);
+        if (!awayResult.ok) throw awayResult.status.summary;
+        local awayFromRoad = awayResult.value;
         if (!ctx.endTrace(awayFromRoad.getCount())) throw ctx.getError();
-        ctx.captureDebug("outside road", awayFromRoad);
-        ctx.captureDebug("road", roadPoints);
+        if (!ctx.captureDebug("outside road", awayFromRoad)) throw ctx.getError();
+        if (!ctx.captureDebug("road", roadPoints)) throw ctx.getError();
 
         if (!ctx.beginTrace("self prune", awayFromRoad.getCount())) throw ctx.getError();
-        local trees = procgen.selfPrune(awayFromRoad, 32.0);
+        local treesResult = procgen.selfPrune(awayFromRoad, 32.0);
+        if (!treesResult.ok) throw treesResult.status.summary;
+        local trees = treesResult.value;
         if (!ctx.endTrace(trees.getCount())) throw ctx.getError();
-        ctx.captureDebug("trees", trees);
+        if (!ctx.captureDebug("trees", trees)) throw ctx.getError();
         if (!ctx.publish("trees", trees)) throw ctx.getError();
 
-        if (!procgen.commitSystem(ctx)) throw procgen.lastError();
+        local commitResult = procgen.commitSystem(ctx);
+        if (!commitResult.ok) throw commitResult.status.summary;
         forestPoints = procgen.getSystemOutput("forest", "trees");
         selectDebugStage(debugStage);
         pipelineStatus = procgen.getSystemDebugReport("forest");
@@ -63,9 +75,10 @@ function rebuildForest() {
     } catch (error) {
         ctx.fail(error.tostring());
         // A failed commit closes staging but leaves the last committed forest intact.
-        procgen.commitSystem(ctx);
+        local rollbackResult = procgen.commitSystem(ctx);
         forestPoints = procgen.getSystemOutput("forest", "trees");
         pipelineStatus = "rebuild failed, previous snapshot kept: " + error.tostring();
+        if (!rollbackResult.ok) pipelineStatus += " (rollback: " + rollbackResult.status.summary + ")";
     }
 }
 

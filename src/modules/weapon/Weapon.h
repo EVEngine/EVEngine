@@ -6,12 +6,14 @@
  */
 
 #include "common/ECS.h"
+#include "common/BorrowedRef.h"
 #include "common/Module.h"
+#include "definitions/Definitions.h"
+#include "weapon/WeaponDefinitionRuntime.h"
 #include "weapon/WeaponLogic.h"
 #include "weapon/WeaponTypes.h"
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace eve::weapon {
@@ -35,16 +37,48 @@ public:
     float       getWeaponDefinitionDamage(const std::string& id);
     float       getWeaponDefinitionRange(const std::string& id);
 
+    /**
+     * @brief Return the common registry backing legacy weapon definitions.
+     * @return A borrowed owner-thread-affine registry used by
+     *         WeaponDefinitionRuntime. The module owns it.
+     * @ownership Borrowed; this module retains ownership.
+     * @lifetime Valid until this Weapon module is destroyed.
+     */
+    [[nodiscard]] eve::definitions::DefinitionRegistry& definitionRegistry() noexcept {
+        return definitionRegistry_;
+    }
+
     /** @brief 注册武器逻辑（C++ 插件/游戏侧扩展点；同名替换）。 */
     static void registerLogic(IWeaponLogic* logic);
     /** @brief 已注册逻辑数量（内置 hitscan / projectile 起步）。 */
     static int getLogicCount();
 
-    /** @brief 工厂：对象由 ECS 表持有，脚本持有的是非拥有句柄。 */
+    /**
+     * @brief 工厂：对象由 ECS 表持有，脚本持有的是非拥有句柄。
+     * @return Borrowed nullable ECS-owned weapon; null means validation or creation failed.
+     * @ownership The ECS world owns the entity; callers must not delete it.
+     * @lifetime Valid until entity/world destruction; retain its generation handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy Creation invokes no external callbacks; do not re-enter structural ECS mutation.
+     */
     WeaponEntity* newWeapon(const std::string& defId);
-    /** @brief 创建一个挂点（炮塔/机枪座等）。 */
+    /**
+     * @brief 创建一个挂点（炮塔/机枪座等）。
+     * @return Borrowed nullable ECS-owned mount; null means creation failed.
+     * @ownership The ECS world owns the entity; callers must not delete it.
+     * @lifetime Valid until entity/world destruction; retain its generation handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy Creation invokes no external callbacks; do not re-enter structural ECS mutation.
+     */
     WeaponMountEntity* newMount(const std::string& id, const std::string& type = "turret");
-    /** @brief 创建一个手持位（ARPG/RPG 角色手持武器）。 */
+    /**
+     * @brief 创建一个手持位（ARPG/RPG 角色手持武器）。
+     * @return Borrowed nullable ECS-owned rig; null means creation failed.
+     * @ownership The ECS world owns the entity; callers must not delete it.
+     * @lifetime Valid until entity/world destruction; retain its generation handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy Creation invokes no external callbacks; do not re-enter structural ECS mutation.
+     */
     WeaponRigEntity* newRig(const std::string& id, const std::string& wield = "right_hand");
 
     /** @brief 手持位操作：挂武器 / 取武器 / 设置持有位姿。 */
@@ -53,15 +87,39 @@ public:
     void          rigSetPose(WeaponRigEntity* rig, float px, float py, float pz, float rx, float ry, float rz);
 
     /** @brief 共享弹药池操作：创建 / 补弹 / 查询 / 绑定武器 / 解绑 / 取绑定池。 */
+    /**
+     * @brief Creates an ECS-owned shared ammunition pool.
+     * @return Borrowed nullable ECS-owned pool; null means creation failed.
+     * @ownership The ECS world owns the pool; callers must not delete it.
+     * @lifetime Valid until pool/world destruction; retain its generation handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy Creation invokes no external callbacks; do not re-enter structural ECS mutation.
+     */
     AmmoPoolEntity* newAmmoPool(const std::string& id, const std::string& ammoType, int max = -1);
     void            ammoPoolAdd(AmmoPoolEntity* pool, int n);
     int             ammoPoolGetCount(AmmoPoolEntity* pool);
     bool            bindAmmoPool(WeaponEntity* w, AmmoPoolEntity* pool);
     void            unbindAmmoPool(WeaponEntity* w);
+    /**
+     * @brief Returns the weapon's shared ammunition pool, or null when unbound.
+     * @return Borrowed nullable ECS-owned pool.
+     * @ownership The ECS world owns the pool; this query transfers no ownership.
+     * @lifetime Valid until pool/world destruction or unbinding; use its generation handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy The query invokes no callbacks and is invalid across ECS mutation.
+     */
     AmmoPoolEntity* getAmmoPool(WeaponEntity* w);
 
     /** @brief 挂点操作：挂武器 / 取武器 / 限位 / 瞄准 / 击毁。 */
     bool          mountAttachWeapon(WeaponMountEntity* m, WeaponEntity* w);
+    /**
+     * @brief Returns the weapon mounted on a mount, or null when empty.
+     * @return Borrowed nullable ECS-owned weapon.
+     * @ownership The ECS world owns the weapon; this query transfers no ownership.
+     * @lifetime Valid until weapon/world destruction or unmounting; use its generation handle across frames.
+     * @thread Call on the owning ECS thread.
+     * @reentrancy The query invokes no callbacks and is invalid across ECS mutation.
+     */
     WeaponEntity* mountGetWeapon(WeaponMountEntity* m);
     void          mountSetLimits(WeaponMountEntity* m, float yawMin, float yawMax, float pitchMin, float pitchMax,
                                  float rotSpeed, float firingArc);
@@ -127,9 +185,24 @@ public:
     float getResourceValue(WeaponEntity* w) const;
 
 private:
-    const WeaponDefinition* findDef(const std::string& id) const;
+    /**
+     * @brief Finds one registered weapon definition for a synchronous operation.
+     * @return Borrowed nullable definition owned by this module's registry.
+     * @ownership Weapon owns the definition map; callers must not delete or mutate the result.
+     * @lifetime Valid until definition registration/clear or module destruction; copy data before mutation.
+     * @thread Call on the Weapon module's owning thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across registry mutation.
+     */
+    /**
+     * @brief Resolves one canonical weapon definition into an owning typed snapshot.
+     * @return An independent value safe to move into an entity projection; failure describes
+     *         an unknown or invalid registry definition.
+     * @ownership The returned snapshot owns its fields; the registry owns canonical JSON.
+     * @lifetime Independent of later lookups and registry mutation.
+     */
+    [[nodiscard]] eve::Result<WeaponDefinition> findDef(const std::string& id) const;
 
-    std::unordered_map<std::string, WeaponDefinition> defs_;
+    eve::definitions::DefinitionRegistry              definitionRegistry_;
     std::vector<ecs::EntityHandle>                    weapons_;
     std::vector<ecs::EntityHandle>                    mounts_;
     std::vector<ecs::EntityHandle>                    rigs_;

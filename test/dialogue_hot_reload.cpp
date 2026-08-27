@@ -27,7 +27,7 @@ endconversation
 )";
     CHECK(flow.reloadFromDnut(brokenReference, "greeting.dnut") == 0);
     CHECK(flow.hasConversation("greeting"));
-    CHECK(flow.getLastError().find("missing conversation") != std::string::npos);
+    CHECK(flow.getDiagnosticMessage(0).find("missing conversation") != std::string::npos);
 
     const std::string shared = R"(
 conversation shared entry=end

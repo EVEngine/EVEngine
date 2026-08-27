@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
+#include <stdexcept>
 #include <utility>
 
 namespace eve::animation {
@@ -268,7 +270,7 @@ bool AnimStateMachine::tryTransition() {
     return false;
 }
 
-void AnimStateMachine::update(float dt) {
+void AnimStateMachine::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("AnimStateMachine.update: dt must be >= 0");
     if (!started_) {
         if (!stateOrder_.empty()) setEntry(stateOrder_.front());
@@ -300,6 +302,43 @@ void AnimStateMachine::update(float dt) {
     tryTransition();
 }
 
+eve::Result<void> AnimStateMachine::advance(const eve::SimulationStep& step) {
+    if (step.delta.nanoseconds() < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation state-machine delta must be non-negative"));
+    if (hasLastTick_ && step.tick <= lastTick_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "animation state-machine tick must advance monotonically"));
+
+    const float dt = static_cast<float>(step.delta.seconds());
+    if (!std::isfinite(dt))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation state-machine delta is outside float range"));
+    updateUnchecked(dt);
+    lastTick_ = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void AnimStateMachine::update(float dt) {
+    auto duration = eve::Duration::fromSeconds(dt);
+    if (!duration) {
+        duration.ignore("legacy animation state-machine update received an invalid duration");
+        return;
+    }
+    auto nextTick = hasLastTick_ ? lastTick_.incremented()
+                                 : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
+    if (!nextTick) {
+        eve::Result<void>::failure(eve::Diagnostic::error(
+                                       eve::DiagnosticCode::InvariantViolation,
+                                       "animation state-machine simulation tick overflow"))
+            .ignore("legacy animation state-machine update tick overflow");
+        return;
+    }
+    advance({*nextTick, std::move(duration).takeValue()})
+        .ignore("legacy animation state-machine update facade");
+}
+
 bool AnimStateMachine::captureState(StateValue& out) const {
     out = StateValue::object();
     out.set("currentState", StateValue::string(currentState_));
@@ -309,6 +348,8 @@ bool AnimStateMachine::captureState(StateValue& out) const {
     out.set("blendElapsed", StateValue::number(blendElapsed_));
     out.set("blending", StateValue::boolean(blending_));
     out.set("started", StateValue::boolean(started_));
+    out.set("hasSimulationTick", StateValue::boolean(hasLastTick_));
+    out.set("simulationTick", StateValue::string(std::to_string(lastTick_.value())));
 
     StateValue floats = StateValue::object();
     for (const auto& kv : floats_) floats.set(kv.first, StateValue::number(kv.second));
@@ -340,6 +381,27 @@ bool AnimStateMachine::restoreState(const StateValue& in, std::string* err) {
     if (wasStarted && !stateName.empty() && !hasState(stateName)) {
         if (err) *err = "anim: unknown state '" + stateName + "'";
         return false;
+    }
+
+    eve::SimulationTick restoredTick = eve::SimulationTick::zero();
+    bool restoredHasTick = false;
+    if (const StateValue* hasTick = in.find("hasSimulationTick"); hasTick && hasTick->isBool())
+        restoredHasTick = hasTick->asBool();
+    if (restoredHasTick) {
+        const StateValue* tick = in.find("simulationTick");
+        if (!tick || !tick->isString()) {
+            if (err) *err = "anim: missing simulationTick";
+            return false;
+        }
+        try {
+            std::size_t parsed = 0;
+            const std::uint64_t value = std::stoull(tick->asString(), &parsed);
+            if (parsed != tick->asString().size()) throw std::invalid_argument("trailing characters");
+            restoredTick = eve::SimulationTick(value);
+        } catch (...) {
+            if (err) *err = "anim: invalid simulationTick";
+            return false;
+        }
     }
 
     floats_.clear();
@@ -375,6 +437,8 @@ bool AnimStateMachine::restoreState(const StateValue& in, std::string* err) {
         blendElapsed_ = static_cast<float>(stateNumber(*be));
     if (const StateValue* bl = in.find("blending"); bl && bl->isBool()) blending_ = bl->asBool();
     started_ = wasStarted;
+    lastTick_ = restoredTick;
+    hasLastTick_ = restoredHasTick;
 
     if (started_ && !currentState_.empty()) {
         states_.at(currentState_).clip->sample(stateTime_, &pose_, skeleton_);
@@ -391,6 +455,8 @@ bool AnimStateMachine::resetToDefaults() {
     stateTime_     = 0.f;
     blendDuration_ = 0.f;
     blendElapsed_  = 0.f;
+    lastTick_ = eve::SimulationTick::zero();
+    hasLastTick_ = false;
     if (!stateOrder_.empty()) {
         setEntry(stateOrder_.front());
         return true;
