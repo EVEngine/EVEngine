@@ -852,7 +852,8 @@ bool UI::buildComplete() const { return openStack_.empty() && hasBuiltRoot_; }
 
 bool UI::mountBuild() {
     if (!buildComplete()) return false;
-    remount(std::move(builtRoot_));
+    const UIHostHandle handle = remount(std::move(builtRoot_));
+    if (!UIHost::resolve(handle)) return false;
     hasBuiltRoot_ = false;
     builtRoot_ = WidgetDesc{};
     return true;
@@ -860,7 +861,8 @@ bool UI::mountBuild() {
 
 bool UI::mountBuildAs(const std::string &name) {
     if (!buildComplete()) return false;
-    mountAs(name, std::move(builtRoot_));
+    const UIHostHandle handle = mountAs(name, std::move(builtRoot_));
+    if (!UIHost::resolve(handle)) return false;
     hasBuiltRoot_ = false;
     builtRoot_ = WidgetDesc{};
     return true;
@@ -1607,7 +1609,9 @@ WidgetDesc descFromJson(const Poco::JSON::Object &o) {
 
 void UI::mountSimple(const std::string &title, const std::string &labelText,
                      const std::string &buttonText) {
-    mountAs("default", window(title, {text(labelText, "label"), button(buttonText, "btn")}, "root"));
+    const UIHostHandle handle =
+        mountAs("default", window(title, {text(labelText, "label"), button(buttonText, "btn")}, "root"));
+    if (!UIHost::resolve(handle)) return;
 }
 
 bool UI::inspectOpen() {

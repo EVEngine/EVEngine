@@ -419,9 +419,10 @@ void maskToTintable(std::vector<uint8_t> &rgba) {
 bool loadSwayMaskPng(const std::string &path, std::vector<uint8_t> &rgba, int &w, int &h) {
     std::vector<char> raw;
     if (!readWholeFile(path, raw)) return false;
-    eve::image::Image::create();
+    eve::image::Image *image = eve::image::Image::create();
+    if (!image) return false;
     eve::data::ByteData bytes(raw.data(), raw.size());
-    std::unique_ptr<eve::image::ImageData> img(eve::image::Image::create()->newImageData(&bytes));
+    std::unique_ptr<eve::image::ImageData> img(image->newImageData(&bytes));
     if (!img) return false;
     w = img->getWidth();
     h = img->getHeight();
