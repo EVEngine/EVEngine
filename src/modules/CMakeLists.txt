@@ -57,6 +57,15 @@ endforeach()
 
 # --- per-module build settings ----------------------------------------------
 
+eve_module_enabled(data _has_data)
+if(_has_data)
+  # Compressor.cpp uses the vendored API directly. Profile builds may reuse a
+  # prebuilt dependency install that contains liblz4 but not its development
+  # headers, so the source checkout is the authoritative header location.
+  target_include_directories(EVData BEFORE PRIVATE
+    ${CMAKE_SOURCE_DIR}/third-party)
+endif()
+
 eve_module_enabled(graphics _has_graphics)
 if(_has_graphics)
   # Header-only VKBuilder: prefer the source tree over a stale third-party install.

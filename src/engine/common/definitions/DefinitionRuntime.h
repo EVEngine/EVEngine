@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <exception>
 #include <functional>
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -157,15 +158,14 @@ struct ReloadOutcome {
  * the instance.  The instance itself owns `state()`; references returned by
  * that accessor are borrowed until the next successful reload or destruction.
  *
- * @tparam State Domain-specific, copyable runtime state. It must be nothrow
- *         swappable so the reload commit cannot partially mutate state.
+ * @tparam State Domain-specific, copyable runtime state. Candidate state is
+ *         prepared behind an owning pointer so the commit itself is a
+ *         non-throwing pointer swap.
  */
 template <class State>
 class RuntimeInstance {
     static_assert(std::is_copy_constructible_v<State>,
                   "RuntimeInstance state must be copy constructible");
-    static_assert(std::is_nothrow_swappable_v<State>,
-                  "RuntimeInstance state must be nothrow swappable");
 
 public:
     using RebuildFunction = std::function<eve::Result<State>(
@@ -174,13 +174,23 @@ public:
 private:
     /** @brief Construct a runtime instance from a validated identity and typed state. */
     RuntimeInstance(InstanceIdentity identity, State state, bool active = true)
-        : identity_(std::move(identity)), state_(std::move(state)), active_(active) {}
+        : identity_(std::move(identity)), state_(std::make_unique<State>(std::move(state))),
+          active_(active) {}
 
 public:
     /** @brief Copy a typed runtime instance. */
-    RuntimeInstance(const RuntimeInstance&) = default;
+    RuntimeInstance(const RuntimeInstance& other)
+        : identity_(other.identity_), state_(std::make_unique<State>(*other.state_)),
+          active_(other.active_) {}
     /** @brief Copy-assign a typed runtime instance. */
-    RuntimeInstance& operator=(const RuntimeInstance&) = default;
+    RuntimeInstance& operator=(const RuntimeInstance& other) {
+        if (this == &other) return *this;
+        auto candidate = std::make_unique<State>(*other.state_);
+        identity_      = other.identity_;
+        state_.swap(candidate);
+        active_ = other.active_;
+        return *this;
+    }
     /** @brief Move a typed runtime instance. */
     RuntimeInstance(RuntimeInstance&&) noexcept = default;
     /** @brief Move-assign a typed runtime instance. */
@@ -205,9 +215,9 @@ public:
     /** @brief Borrow the complete immutable identity. */
     [[nodiscard]] const InstanceIdentity& identity() const noexcept { return identity_; }
     /** @brief Borrow the current typed state. */
-    [[nodiscard]] const State& state() const noexcept { return state_; }
+    [[nodiscard]] const State& state() const noexcept { return *state_; }
     /** @brief Mutate typed state on the owning domain thread. */
-    [[nodiscard]] State& state() noexcept { return state_; }
+    [[nodiscard]] State& state() noexcept { return *state_; }
     /** @brief Whether the instance participates in active simulation. */
     [[nodiscard]] bool isActive() const noexcept { return active_; }
     /** @brief Set active state; this does not reload or rebuild the instance. */
@@ -274,7 +284,7 @@ public:
                 "common.definitions"));
 
         try {
-            State candidate(state_);
+            State candidate(*state_);
             ReloadDisposition disposition = ReloadDisposition::Kept;
             if (policy == ReloadPolicy::ReapplyDefaults) {
                 candidate = defaults;
@@ -285,7 +295,7 @@ public:
                         eve::DiagnosticCode::InvalidArgument,
                         "rebuild policy requires a rebuild callback", "rebuild", {},
                         "common.definitions"));
-                auto rebuilt = rebuild(state_, identity_, next);
+                auto rebuilt = rebuild(*state_, identity_, next);
                 if (!rebuilt) return eve::Result<ReloadOutcome>::failure(rebuilt.status());
                 candidate = std::move(rebuilt).takeValue();
                 disposition = ReloadDisposition::Rebuilt;
@@ -295,8 +305,8 @@ public:
                 disposition = ReloadDisposition::Kept;
             }
 
-            using std::swap;
-            swap(state_, candidate);
+            auto committed = std::make_unique<State>(std::move(candidate));
+            state_.swap(committed);
             identity_.definitionGeneration = next.generation;
             outcome.disposition = disposition;
             return eve::Result<ReloadOutcome>::success(
@@ -342,15 +352,15 @@ public:
                 "runtime snapshot definition generation is not current", "identity.definitionGeneration",
                 {}, "common.definitions"));
 
-        using std::swap;
-        swap(state_, state);
+        auto committed = std::make_unique<State>(std::move(state));
+        state_.swap(committed);
         active_ = active;
         return eve::Result<void>::success();
     }
 
 private:
     InstanceIdentity identity_;
-    State           state_;
+    std::unique_ptr<State> state_;
     bool            active_ = true;
 };
 

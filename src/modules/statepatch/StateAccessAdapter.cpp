@@ -26,7 +26,7 @@ eve::Result<eve::Value> readJsonValue(const Store& store, std::string_view subje
             eve::DiagnosticCode::NotFound, "state value is absent", "state"));
     auto parsed = eve::Value::fromJson(store.get(std::string(subject), std::string(key)));
     if (!parsed) return eve::Result<eve::Value>::failure(parsed.status());
-    return std::move(parsed);
+    return parsed;
 }
 
 bool numeric(const eve::Value& value, double& output) {
