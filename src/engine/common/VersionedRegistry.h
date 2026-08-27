@@ -140,10 +140,18 @@ public:
         std::map<Key, Entry, Compare> entries;
         std::vector<Event>            events;
         EventSequence                 nextEventSequence{1};
-    };
 
-    static_assert(std::is_nothrow_swappable_v<State>,
-                  "VersionedRegistry state must be nothrow-swappable for atomic commit");
+        /** @brief Atomically exchanges complete registry state without allocation. */
+        void swap(State& other) noexcept {
+            static_assert(std::is_nothrow_swappable_v<Compare>,
+                          "VersionedRegistry comparator must be nothrow-swappable");
+            entries.swap(other.entries);
+            events.swap(other.events);
+            const auto sequence      = nextEventSequence;
+            nextEventSequence        = other.nextEventSequence;
+            other.nextEventSequence = sequence;
+        }
+    };
 
     /** @brief Callback used to keep a legacy value field as a read-only projection of generation. */
     using GenerationProjector = std::function<void(Value&, Generation)>;
@@ -411,7 +419,7 @@ public:
         if (!previous.isZero() && candidate.nextEventSequence <= previous)
             return failure<void>(DiagnosticCode::ParseError, "next event sequence must exceed retained events");
 
-        std::swap(state_, candidate);
+        state_.swap(candidate);
         return Result<void>::success();
     }
 
@@ -501,7 +509,7 @@ private:
                 StatusCode::Applied,
                 {Diagnostic::warning(DiagnosticCode::CallbackFailure,
                                      "registry mutation committed; observer callback failed")});
-            std::swap(state_, candidate);
+            state_.swap(candidate);
 
             // State is already committed. A user callback is outside the
             // transaction boundary: never roll back an event that another

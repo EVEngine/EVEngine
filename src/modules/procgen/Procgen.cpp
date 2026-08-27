@@ -657,6 +657,123 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::densityCullHandle(
                             std::make_unique<PointSet>(densityCullPoints(*view, seed, multiplier)));
 }
 
+eve::Result<ProcgenPointSetHandleRef> Procgen::poissonDiskHandle(
+    int width, int depth, float radius, uint32_t seed, int maxPoints) {
+    if (width < 0 || depth < 0 || radius <= 0.f || maxPoints < 0)
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::InvalidArgument,
+            "poissonDisk requires non-negative dimensions/count and a positive radius");
+    Procgen* module = Procgen::create();
+    return ownProcgenObject(
+        module->ownership_->points,
+        std::make_unique<PointSet>(poissonDiskPoints(width, depth, radius, seed, maxPoints)));
+}
+
+eve::Result<void> Procgen::publishInstances(
+    const std::string& batchId, ProcgenPointSetHandleRef points,
+    const std::string& assetAttribute, const std::string& defaultAsset) {
+    const auto view = resolvePointSet(points);
+    if (batchId.empty() || !view.isBound())
+        return procgenBindingFailure<void>(
+            !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
+            "publishInstances requires a batch id and a live point-set handle");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed,
+                                           "publishInstances scene sink is unavailable");
+
+    std::vector<eve::ProcgenInstanceDesc> instances;
+    instances.reserve(view->points().size());
+    std::unordered_map<uint32_t, size_t> seedOccurrences;
+    std::unordered_set<std::string>      instanceIds;
+    for (const auto& point : view->points()) {
+        eve::ProcgenInstanceDesc instance;
+        const auto explicitId = point.stringAttributes.find("instanceId");
+        if (explicitId != point.stringAttributes.end() && !explicitId->second.empty())
+            instance.id = explicitId->second;
+        else
+            instance.id = "pcg-" + std::to_string(point.seed) + "-" +
+                          std::to_string(seedOccurrences[point.seed]++);
+        if (!instanceIds.insert(instance.id).second)
+            return procgenBindingFailure<void>(eve::DiagnosticCode::Conflict,
+                                               "publishInstances duplicate instance id: " + instance.id);
+        instance.asset = defaultAsset;
+        if (!assetAttribute.empty()) {
+            const auto found = point.stringAttributes.find(assetAttribute);
+            if (found != point.stringAttributes.end()) instance.asset = found->second;
+        }
+        instance.x   = point.x;
+        instance.y   = point.y;
+        instance.z   = point.z;
+        instance.yaw = point.yaw;
+        instance.scaleX = point.scaleX;
+        instance.scaleY = point.scaleY;
+        instance.scaleZ = point.scaleZ;
+        instance.seed   = point.seed;
+        instances.push_back(std::move(instance));
+    }
+    if (!sink->applyBatch(batchId, instances))
+        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed,
+                                           "publishInstances scene sink rejected batch");
+    return eve::Result<void>::success();
+}
+
+eve::Result<void> Procgen::removeInstances(const std::string& batchId) {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (batchId.empty())
+        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                           "removeInstances requires a batch id");
+    if (!sink)
+        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed,
+                                           "removeInstances scene sink is unavailable");
+    if (!sink->removeBatch(batchId))
+        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed,
+                                           "removeInstances scene sink rejected batch");
+    return eve::Result<void>::success();
+}
+
+eve::Result<void> Procgen::publishCellInstances(
+    const std::string& prefix, const ProcgenCellRequest& request,
+    ProcgenPointSetHandleRef points, const std::string& assetAttribute,
+    const std::string& defaultAsset) {
+    if (prefix.empty())
+        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                           "publishCellInstances requires a prefix");
+    const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
+                                std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
+    return publishInstances(batchId, points, assetAttribute, defaultAsset);
+}
+
+eve::Result<void> Procgen::removeCellInstances(
+    const std::string& prefix, const ProcgenCellRequest& request) {
+    if (prefix.empty())
+        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                           "removeCellInstances requires a prefix");
+    const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
+                                std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
+    return removeInstances(batchId);
+}
+
+int Procgen::getPublishedInstanceCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->instanceCount(batchId) : 0;
+}
+
+int Procgen::getPublishedCreatedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastCreatedCount(batchId) : 0;
+}
+
+int Procgen::getPublishedReusedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastReusedCount(batchId) : 0;
+}
+
+int Procgen::getPublishedRemovedCount(const std::string& batchId) const {
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    return sink && !batchId.empty() ? sink->lastRemovedCount(batchId) : 0;
+}
+
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::pointDataHandle(
     ProcgenPointSetHandleRef points) {
     auto view = resolvePointSet(points);

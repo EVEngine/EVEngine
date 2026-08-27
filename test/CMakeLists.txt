@@ -242,7 +242,9 @@ file(GLOB all_test_cpp
   effects_lifecycle.cpp
   status_effect_adapter.cpp
   effects_domain_adapters.cpp
-  game_event.cpp
+  eventstream.cpp
+  card_rts_production_integration.cpp
+  schema_production_integration.cpp
   orders.cpp
   policyregistry.cpp
   production.cpp

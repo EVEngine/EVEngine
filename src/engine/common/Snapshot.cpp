@@ -96,9 +96,9 @@ Result<void> validateSnapshotPayloadMetadata(const Value& payload, Revision revi
     };
 
     auto revisionResult = validate("revision", revision.value());
-    if (!revisionResult.ok()) return std::move(revisionResult);
+    if (!revisionResult.ok()) return revisionResult;
     auto tickResult = validate("tick", tick.value());
-    if (!tickResult.ok()) return std::move(tickResult);
+    if (!tickResult.ok()) return tickResult;
     return Result<void>::success();
 }
 

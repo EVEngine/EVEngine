@@ -72,7 +72,7 @@ eve_declare_module(NAME scriptmodel LAYER 1
                    GROUP minimal 2d 3d web)
 # L0 -- foundation (continued)
 eve_declare_module(NAME data LAYER 0 SCRIPT DataModule
-                   THIRDPARTY poco xxhash
+                   THIRDPARTY lz4 poco xxhash
                    GROUP minimal 2d 3d web)
 # Filesystem also exposes HotReload, the asset-reload dispatcher.
 eve_declare_module(NAME filesystem REQUIRED LIB EVFileSystem LAYER 0 SCRIPT Filesystem HotReload SLOT fs hot

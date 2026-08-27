@@ -1,7 +1,6 @@
 #include "procgen/Params.h"
 
 #include <algorithm>
-#include <charconv>
 #include <cmath>
 #include <limits>
 #include <locale>
@@ -25,12 +24,6 @@ void appendLength(std::string& output, std::string_view value) {
 std::string doubleToken(double value) {
     if (std::isnan(value)) return "nan";
     if (std::isinf(value)) return std::signbit(value) ? "-inf" : "+inf";
-
-    char buffer[64];
-    const auto converted = std::to_chars(buffer, buffer + sizeof(buffer), value,
-                                         std::chars_format::general,
-                                         std::numeric_limits<double>::max_digits10);
-    if (converted.ec == std::errc{}) return std::string(buffer, converted.ptr);
 
     std::ostringstream stream;
     stream.imbue(std::locale::classic());
