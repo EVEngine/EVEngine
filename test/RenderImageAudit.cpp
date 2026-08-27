@@ -570,7 +570,7 @@ void paintDefectOverlay(ImageData &img, const std::vector<RenderDefect> &defs) {
 }
 
 bool saveImagePng(const ImageData &img, const std::string &path) {
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         img.encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false);
     if (!png) return false;
@@ -3399,7 +3399,7 @@ TEST_CASE("graphics.imageAudit.reloadTexBytes") {
     auto *fs = eve::filesystem::Filesystem::create();
     REQUIRE(fs->setIdentity("ev_ut_image_audit_texbytes", true));
     REQUIRE(fs->setupWriteDirectory());
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     auto writeSolidPng = [&](uint8_t r, uint8_t g, uint8_t b) {
         eve::image::ImageData img(32, 32, "RGBA8");
@@ -3767,7 +3767,7 @@ TEST_CASE("graphics.imageAudit.imageRotate") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     gfx->setBackgroundColor(Color(0.08f, 0.09f, 0.11f, 1.f));
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     ImageData src(64, 64, "RGBA8");
     auto *px = static_cast<uint8_t *>(src.getData());
     for (int y = 0; y < 64; ++y) {

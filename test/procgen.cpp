@@ -1259,7 +1259,7 @@ TEST_CASE("procgen.render.hexplanetPng") {
         eve::graphics::RenderSystem::render(*gfx);
     }
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const           imageModule = eve::image::Image::create();
     std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
     REQUIRE(static_cast<bool>(image));
     std::unique_ptr<eve::filesystem::FileData> png(
@@ -1447,7 +1447,7 @@ TEST_CASE("procgen.render.skyscraperPng") {
         eve::graphics::RenderSystem::render(*gfx);
     }
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const           imageModule = eve::image::Image::create();
     std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
     REQUIRE(static_cast<bool>(image));
     std::unique_ptr<eve::filesystem::FileData> png(
@@ -1544,7 +1544,7 @@ TEST_CASE("procgen.render.castlePng") {
         RenderSystem::render(*gfx);
     }
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const           imageModule = eve::image::Image::create();
     std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
     REQUIRE(static_cast<bool>(image));
     RenderAuditConfig auditCfg;
@@ -2923,7 +2923,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     REQUIRE(win->setWindowSettings(settings));
 
     // Blue-ish sky cubemap so reflection is visible.
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule        = eve::image::Image::create();
     const int fs = 4;
     const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces × 4×4 × RGBA
     for (int f = 0; f < 6; ++f)
@@ -3072,7 +3072,7 @@ TEST_CASE("graphics.water.render.plane") {
     settings.height = 480;
     settings.centered = true;
     REQUIRE(win->setWindowSettings(settings));
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Gradient sky cubemap: deep blue at the zenith, pale near the horizon.
     const int fs = 16;
@@ -3213,7 +3213,7 @@ TEST_CASE("graphics.water.render.ssr") {
     settings.height = 480;
     settings.centered = true;
     REQUIRE(win->setWindowSettings(settings));
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Gradient sky cubemap.
     const int fs = 16;
@@ -3432,7 +3432,7 @@ TEST_CASE("graphics.water.render.planar") {
     settings.height = 480;
     settings.centered = true;
     REQUIRE(win->setWindowSettings(settings));
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     const int fs = 16;
     std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));

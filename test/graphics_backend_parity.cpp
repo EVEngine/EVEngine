@@ -57,7 +57,7 @@ void writeParityArtifact(const eve::image::ImageData &image, const std::string &
     const char *root = std::getenv("EVENGINE_RENDER_PARITY_DIR");
     if (!root || root[0] == '\0') return;
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const               imageModule = eve::image::Image::create();
     std::unique_ptr<eve::filesystem::FileData> png(
         image.encode(medialoader::FormatHandler::ENCODED_PNG, (scene + ".png").c_str(), false));
     REQUIRE(png.get() != nullptr);

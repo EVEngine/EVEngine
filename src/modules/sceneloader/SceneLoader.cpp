@@ -237,8 +237,8 @@ graphics::Texture *resolveTexture(graphics::Graphics *gfx, const aiScene *scene,
     const char *p = path.C_Str();
     if (!p || !p[0]) return nullptr;
 
-    const SamplerSpec s = samplerFor(mat, type, wantMips);
-    eve::image::Image::create();
+    const SamplerSpec s           = samplerFor(mat, type, wantMips);
+    auto *const       imageModule = eve::image::Image::create();
 
     const std::string keySuffix =
         std::string(s.repeatU ? "|1" : "|0") + (s.repeatV ? "1" : "0") + "|" + s.filter + "|" +
@@ -258,7 +258,7 @@ graphics::Texture *resolveTexture(graphics::Graphics *gfx, const aiScene *scene,
         if (tex->mHeight == 0) {
             eve::data::ByteData bytes(tex->pcData, static_cast<size_t>(tex->mWidth));
             try {
-                eve::image::ImageData *img = eve::image::Image::create()->newImageData(&bytes);
+                eve::image::ImageData *img = imageModule->newImageData(&bytes);
                 t = gfx->newTextureWithSampler(img, s.repeatU, s.repeatV, s.mips, 8.f, s.filter,
                                                s.mipmap);
                 delete img;
@@ -307,7 +307,7 @@ graphics::Texture *resolveTexture(graphics::Graphics *gfx, const aiScene *scene,
         auto *fs = eve::filesystem::Filesystem::create();
         std::unique_ptr<eve::filesystem::FileData> fd(fs->read(p));
         if (fd && fd->getSize() > 0) {
-            eve::image::ImageData *img = eve::image::Image::create()->newImageData(fd.get());
+            eve::image::ImageData *img = imageModule->newImageData(fd.get());
             graphics::Texture *t = gfx->newTextureWithSampler(img, s.repeatU, s.repeatV, s.mips,
                                                               8.f, s.filter, s.mipmap);
             delete img;
@@ -324,7 +324,7 @@ graphics::Texture *resolveTexture(graphics::Graphics *gfx, const aiScene *scene,
 void collectCpuImages(const aiScene *scene, const MeshSlotMap &slots, bool wantMips,
                       SceneLoader::CpuImageMap &out) {
     if (!scene) return;
-    eve::image::Image::create();
+    auto *const         imageModule = eve::image::Image::create();
     const aiTextureType kTypes[4] = {aiTextureType_BASE_COLOR, aiTextureType_DIFFUSE,
                                      aiTextureType_NORMALS, aiTextureType_HEIGHT};
     for (const auto &kv : slots) {
@@ -345,8 +345,7 @@ void collectCpuImages(const aiScene *scene, const MeshSlotMap &slots, bool wantM
                     auto *fs = eve::filesystem::Filesystem::create();
                     std::unique_ptr<eve::filesystem::FileData> fd(fs->read(c));
                     if (!fd || fd->getSize() == 0) continue;
-                    eve::image::ImageData *img =
-                        eve::image::Image::create()->newImageData(fd.get());
+                    eve::image::ImageData *img = imageModule->newImageData(fd.get());
                     if (!img) continue;
                     if (img->getFormat() == "RGBA8") {
                         SceneLoader::CpuImage ci;

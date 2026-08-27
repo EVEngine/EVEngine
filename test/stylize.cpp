@@ -133,7 +133,7 @@ void resetScene3D() {
 
 void saveImageDataPng(ImageData *frame, const std::string &path) {
     REQUIRE(frame != nullptr);
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         frame->encode(medialoader::FormatHandler::ENCODED_PNG, "stylize.png", false);
     REQUIRE(png != nullptr);
@@ -208,7 +208,7 @@ ImageData *renderCylinderFrame(Graphics *gfx, Mesh *mesh, Texture *albedo, Shade
     CHECK(luma(mid) > 0.12f);
     CHECK(luma(mid) < 0.92f);
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     return frame;

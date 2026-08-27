@@ -831,7 +831,7 @@ TEST_CASE("RenderSystem3D.entityIdMaskPixels") {
     CHECK(sawBg);     // 背景为 (0,0,0,0)
 
     // 保存 ID mask PNG 供人工核对（可选）。
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         img->encode(medialoader::FormatHandler::ENCODED_PNG, "entity_id_mask.png", false);
     if (png) {

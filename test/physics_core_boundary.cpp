@@ -180,5 +180,11 @@ TEST_CASE("physics.core.worldAcceptsInjectedTickAndPhysicsLinkResolvesStale") {
 }
 
 TEST_CASE("physics.core.backendContract.rejectsNullWorld") {
-    CHECK_THROWS((detail::makeBox2DSimulationBackend(nullptr), false));
+    bool threw = false;
+    try {
+        [[maybe_unused]] auto backend = detail::makeBox2DSimulationBackend(nullptr);
+    } catch (...) {
+        threw = true;
+    }
+    CHECK(threw);
 }

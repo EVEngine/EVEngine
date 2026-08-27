@@ -226,7 +226,7 @@ void addDoorModule(Mesh *mesh, const HouseInstance &instance, float floorHeight)
 }
 
 void saveFrame(Graphics *gfx, const std::string &name) {
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     auto *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     auto *png = frame->encode(medialoader::FormatHandler::ENCODED_PNG, name.c_str(), false);

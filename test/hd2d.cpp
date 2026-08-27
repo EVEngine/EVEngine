@@ -39,7 +39,7 @@ std::string testOutDir() { return std::string(EVENGINE_TEST_BINARY_DIR) + "/out"
 
 void savePng(eve::image::ImageData *frame, const std::string &name) {
     REQUIRE(frame != nullptr);
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const               imageModule = eve::image::Image::create();
     std::unique_ptr<eve::filesystem::FileData> png(
         frame->encode(eve::image::ImageData::FormatHandler::ENCODED_PNG, name.c_str(), false));
     REQUIRE(png.get() != nullptr);

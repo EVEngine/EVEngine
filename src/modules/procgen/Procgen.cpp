@@ -424,23 +424,16 @@ bool Procgen::isStale(ProcgenGridHandleRef reference) noexcept {
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::newPointSetHandle() {
-    Procgen* module = Procgen::create();
-    return ownProcgenObject(module->ownership_->points, std::make_unique<PointSet>());
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>());
 }
 
 eve::script::Borrowed<PointSet> Procgen::resolvePointSet(
     ProcgenPointSetHandleRef reference) noexcept {
-    Procgen* module = ModuleManager::getInstance<Procgen>("Procgen");
-    return module ? module->ownership_->points.resolve(reference)
-                  : eve::script::Borrowed<PointSet>();
+    return ownership_->points.resolve(reference);
 }
 
 eve::Result<void> Procgen::releasePointSet(ProcgenPointSetHandleRef reference) {
-    Procgen* module = ModuleManager::getInstance<Procgen>("Procgen");
-    if (!module)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                           "Procgen module is no longer loaded", "pointSet");
-    return module->ownership_->points.erase(reference);
+    return ownership_->points.erase(reference);
 }
 
 bool Procgen::isPointSetStale(ProcgenPointSetHandleRef reference) const noexcept {

@@ -122,7 +122,8 @@ TEST_CASE("decal.managerAtlasBlendSetters") {
 
 TEST_CASE("decal.capabilityProvidedToConsumers") {
     // Instantiate the decal module (registers the drawer + capability).
-    eve::ModuleManager::requireInstance<eve::decal::Decal>("Decal");
+    auto *const decalModule = eve::ModuleManager::requireInstance<eve::decal::Decal>("Decal");
+    REQUIRE(decalModule != nullptr);
     auto *q = eve::cap::query<eve::IDecalQuery>();
     REQUIRE(q != nullptr);
     q->clearAll();

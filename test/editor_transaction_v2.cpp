@@ -221,7 +221,11 @@ TEST_CASE("editor.v2.planned_command_is_dry_run_and_revision_safe") {
                       for (const DomainOperation& operation : plan.operations) {
                           auto appended = backend.append(operation);
                           if (!appended.accepted()) {
-                              backend.rollback();
+                              auto rolledBack = backend.rollback();
+                              if (!rolledBack.accepted())
+                                  return EditorResult<TransactionReceipt>::error(rolledBack.status,
+                                                                                 RuleId("test.command.rollback"),
+                                                                                 "Could not roll back transaction");
                               return EditorResult<TransactionReceipt>::error(
                                   appended.status, RuleId("test.command.append"), "Could not append operation");
                           }
