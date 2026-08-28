@@ -235,7 +235,7 @@ function rebuildDungeon() {
     p.setInt("corridorWidth", 1);
     p.setString("layoutStyle", "clustered");
     p.setString("corridorStyle", "l");
-    p.setString("connectionStyle", "nearest");
+    p.setString("connectionStyle", "growth");
     p.setString("floorPattern", "cobble");
     p.setString("decorSet", "mixed");
     p.setFloat("decorDensity", 0.055);
@@ -407,12 +407,13 @@ function rebuildDungeon() {
         // authored at floor origin, so overlays sharing a table cell are raised.
         if (role == "light" && (flags & 2) != 0) py = 2.15;
         else if (role == "weapon") py = 2.0;
+        else if (role == "banner") py = 1.35;
         else if (role == "food") py = 1.88;
 
         local propScale = 1.0;
         if (role == "table" || role == "tavern") propScale = 1.65;
         else if (role == "bed") propScale = 1.45;
-        else if (role == "banner") propScale = 1.18;
+        else if (role == "banner") propScale = 1.42;
         else if (role == "seating" || role == "container") propScale = 1.55;
         else if (role == "treasure") propScale = 1.40;
         addAsset(id, px, py, pz, yaw, propScale, propScale, propScale);
@@ -424,8 +425,8 @@ function rebuildDungeon() {
         local light = eve.Light3D();
         light.setType("point");
         light.setPosition(candidate[0], candidate[1], candidate[2]);
-        light.setColor(1.0, 0.55, 0.25, 3.2);
-        light.setRadius(DUNGEON_CELL * 3.0);
+        light.setColor(1.0, 0.62, 0.34, 2.45);
+        light.setRadius(DUNGEON_CELL * 3.6);
         dungeonLights.append(light);
     }
 }
@@ -438,12 +439,12 @@ if (dungeonCamera == null) {
     dungeonCamera.setFov(58.0);
     dungeonCamera.setOrthographic(190.0);
     dungeonCamera.setClipPlanes(0.1, 400.0);
-    dungeonCamera.setAmbient(0.62, 0.64, 0.70);
+    dungeonCamera.setAmbient(0.76, 0.78, 0.84);
     dungeonCamera.setActive(true);
-    gfx.setDirectionalLight(-0.45, -1.0, -0.25, 1.75, 1.62, 1.45);
+    gfx.setDirectionalLight(-0.45, -1.0, -0.25, 2.05, 1.92, 1.76);
 }
 if (dungeonGrid == null) rebuildDungeon();
-gfx.setBackgroundColor(0.025, 0.015, 0.055, 1.0);
+gfx.setBackgroundColor(0.045, 0.018, 0.085, 1.0);
 
 function eve_update(dt) {
     if (keyboard.isDown("r") || keyboard.isDown("R")) {

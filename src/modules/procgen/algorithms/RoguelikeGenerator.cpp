@@ -214,6 +214,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     const int cols  = std::max(1, int(std::sqrt(double(roomCount))));
     const int rows  = std::max(1, (roomCount + cols - 1) / cols);
     std::vector<Rect> rooms;
+    std::vector<size_t> roomParents;
     std::uniform_int_distribution<int> dim(roomMin, roomMax);
     std::uniform_int_distribution<int> jx(0, 0), jy(0, 0);
 
@@ -221,11 +222,13 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
         const int firstW = std::min(dim(rng), w - padding * 2);
         const int firstH = std::min(dim(rng), h - padding * 2);
         rooms.push_back({(w - firstW) / 2, (h - firstH) / 2, firstW, firstH});
+        roomParents.push_back(0);
         std::uniform_int_distribution<int> jitter(-1, 1);
         std::uniform_int_distribution<int> clusterGap(clusterGapMin, clusterGapMax);
         const int maxAttempts = roomCount * 160;
         for (int attempt = 0; attempt < maxAttempts && int(rooms.size()) < roomCount; ++attempt) {
-            const Rect &parent = rooms[size_t(rng()) % rooms.size()];
+            const size_t parentIndex = size_t(rng()) % rooms.size();
+            const Rect &parent = rooms[parentIndex];
             const int rw = std::min(dim(rng), w - padding * 2);
             const int rh = std::min(dim(rng), h - padding * 2);
             const int gap = clusterGap(rng);
@@ -254,7 +257,10 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             for (const Rect &other : rooms) {
                 if (rectsOverlap(cand, other, spacing)) { ok = false; break; }
             }
-            if (ok) rooms.push_back(cand);
+            if (ok) {
+                rooms.push_back(cand);
+                roomParents.push_back(parentIndex);
+            }
         }
     } else {
         for (int r = 0; r < rows; ++r) {
@@ -277,7 +283,11 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                     for (const Rect &other : rooms) {
                         if (rectsOverlap(cand, other, spacing)) { ok = false; break; }
                     }
-                    if (ok) { rooms.push_back(cand); break; }
+                    if (ok) {
+                        roomParents.push_back(rooms.empty() ? 0 : rooms.size() - 1);
+                        rooms.push_back(cand);
+                        break;
+                    }
                 }
             }
         }
@@ -287,6 +297,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
         const int rw = std::max(roomMin, w / 3);
         const int rh = std::max(roomMin, h / 3);
         rooms.push_back({(w - rw) / 2, (h - rh) / 2, rw, rh});
+        roomParents.push_back(0);
     }
 
     // 2) Carve room floors.
@@ -296,7 +307,9 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     // instead of long row-wrap corridors while preserving deterministic output.
     for (size_t i = 1; i < rooms.size(); ++i) {
         size_t parent = i - 1;
-        if (connections == "nearest") {
+        if (connections == "growth" && i < roomParents.size()) {
+            parent = roomParents[i];
+        } else if (connections == "nearest") {
             int bestDistance = w + h + 1;
             const int bx = rooms[i].x + rooms[i].w / 2;
             const int by = rooms[i].y + rooms[i].h / 2;
@@ -652,7 +665,8 @@ void registerRoguelikeGenerator(GeneratorRegistry &registry) {
     descriptor.params.push_back(ParamDescriptor::choice("layoutStyle", "Room Layout", "grid",
                                                         {"grid", "clustered"}));
     descriptor.params.push_back(ParamDescriptor::choice("connectionStyle", "Room Connections",
-                                                        "sequential", {"sequential", "nearest"}));
+                                                        "sequential",
+                                                        {"sequential", "nearest", "growth"}));
     descriptor.params.push_back(ParamDescriptor::choice("corridorStyle", "Corridor Style", "l",
                                                         {"l", "straight", "diagonal"}));
     descriptor.params.push_back(ParamDescriptor::choice("floorPattern", "Floor Pattern", "brick",

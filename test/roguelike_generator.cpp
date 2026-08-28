@@ -287,7 +287,7 @@ TEST_CASE("procgen.roguelike.rulesChangeLayout") {
         pView->setString("floorPattern", pattern);
         pView->setString("corridorStyle", style);
         pView->setString("layoutStyle", layout);
-        pView->setString("connectionStyle", layout == "clustered" ? "nearest" : "sequential");
+        pView->setString("connectionStyle", layout == "clustered" ? "growth" : "sequential");
         auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
         auto g      = gLease.view();
         REQUIRE(g.isBound());
