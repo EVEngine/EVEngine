@@ -124,6 +124,7 @@ file(GLOB all_test_cpp
   rpg.cpp
   action_timeline.cpp
   ability_system.cpp
+  combat_damage.cpp
   gameplay_action.cpp
   rpg_simulation.cpp
   rpg_reload.cpp
