@@ -313,8 +313,10 @@ eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
                    GROUP 2d)
-eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
-                   DEPS data graphics image model3d)
+# housegen consumes procgen's BuildKey / ArtifactStore for deterministic layout
+# identity, hot-reload comparison and snapshot persistence, so it sits at L5.
+eve_declare_module(NAME housegen LIB EVHouseGen LAYER 5 SCRIPT HouseGen
+                   DEPS data graphics image model3d procgen)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
                    DEPS attributes decision definitions effects graphics transaction)
 eve_declare_module(NAME demo LAYER 4 SCRIPT Demo

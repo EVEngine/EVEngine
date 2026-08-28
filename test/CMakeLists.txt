@@ -175,6 +175,7 @@ file(GLOB all_test_cpp
   urban_generator.cpp
   housegen.cpp
   housegen_render.cpp
+  housegen_persistence.cpp
   procgen_simulation.cpp
   roguelike_generator.cpp
   stylize.cpp

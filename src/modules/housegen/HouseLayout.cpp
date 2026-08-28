@@ -127,7 +127,7 @@ std::string HouseLayout::toJson() const {
       << "\",\"entranceSide\":\"" << esc(entranceSide) << "\",\"instances\":[";
     for (size_t i = 0; i < instances.size(); ++i) { const auto &v = instances[i]; if (i) o << ','; o << "{\"componentId\":\"" << esc(v.componentId) << "\",\"x\":" << v.x << ",\"y\":" << v.y << ",\"z\":" << v.z << ",\"rotationDeg\":" << v.rotationDeg << '}'; }
     o << "],\"rooms\":[";
-    for (size_t i = 0; i < rooms.size(); ++i) { const auto &v = rooms[i]; if (i) o << ','; o << "{\"type\":\"" << esc(v.type) << "\",\"x\":" << v.x << ",\"y\":" << v.y << ",\"width\":" << v.width << ",\"depth\":" << v.depth << '}'; }
+    for (size_t i = 0; i < rooms.size(); ++i) { const auto &v = rooms[i]; if (i) o << ','; o << "{\"type\":\"" << esc(v.type) << "\",\"x\":" << v.x << ",\"y\":" << v.y << ",\"z\":" << v.z << ",\"width\":" << v.width << ",\"depth\":" << v.depth << '}'; }
     o << "],\"diagnostics\":[";
     for (size_t i = 0; i < diagnostics.size(); ++i) { if (i) o << ','; o << '"' << esc(diagnostics[i]) << '"'; }
     o << "]}";
@@ -171,7 +171,7 @@ eve::Result<void> HouseLayout::fromJson(std::string_view json) {
         if (!v.has("type") || !v.has("x") || !v.has("y") || !v.has("width") || !v.has("depth"))
             return failure<void>(eve::DiagnosticCode::ParseError, "room needs type, x, y, width and depth", "rooms");
         parsed.rooms.push_back({v.getString("type"), v.getInt("x"), v.getInt("y"),
-                                v.getInt("width"), v.getInt("depth")});
+                                v.getInt("z", 0), v.getInt("width"), v.getInt("depth")});
     }
 
     parsed.diagnostics = o.getStringArray("diagnostics");

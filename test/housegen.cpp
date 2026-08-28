@@ -15,7 +15,8 @@ static const char *kKit = R"({"components":[
  {"id":"wall","model":"fixtures/wall.glb","category":"wall","weight":2},
  {"id":"wall.alt","model":"fixtures/wall.glb","category":"wall","weight":1},
  {"id":"door","model":"fixtures/door.glb","category":"door"},
- {"id":"roof","model":"fixtures/roof.glb","category":"roof"}
+ {"id":"roof","model":"fixtures/roof.glb","category":"roof"},
+ {"id":"stairs","model":"fixtures/stairs.glb","category":"stairs"}
 ]})";
 
 TEST_CASE("housegen.library.validatesManifest") {
@@ -192,7 +193,8 @@ TEST_CASE("housegen.facadeKeepsCornersSolidAndWindowsAligned") {
       {"id":"wall.solid","model":"wall.glb","category":"wall"},
       {"id":"wall.window","model":"window.glb","category":"wall","tags":["window"]},
       {"id":"door","model":"door.glb","category":"door"},
-      {"id":"roof","model":"roof.glb","category":"roof"}
+      {"id":"roof","model":"roof.glb","category":"roof"},
+      {"id":"stairs","model":"stairs.glb","category":"stairs"}
     ]})";
     HouseComponentLibrary lib;
     auto                  loaded = lib.loadFromJson(facadeKit);
@@ -219,4 +221,148 @@ TEST_CASE("housegen.facadeKeepsCornersSolidAndWindowsAligned") {
     REQUIRE(!groundWindows.empty());
     for (const auto &window : groundWindows)
         CHECK(std::find(upperWindows.begin(), upperWindows.end(), window) != upperWindows.end());
+}
+
+TEST_CASE("housegen.stairwellConnectsFloorsAndCarvesColumn") {
+    HouseComponentLibrary lib;
+    auto                  loaded = lib.loadFromJson(kKit);
+    REQUIRE(loaded.ok());
+    HouseRequest r;
+    r.seed   = 2718;
+    r.width  = 6;
+    r.depth  = 5;
+    r.floors = 3;
+    r.footprint = "rectangle"; r.roof = "flat"; r.entrance = "north";
+    HouseLayout    layout;
+    HouseGenerator generator(lib);
+    auto           generated = generator.generate(r, layout);
+    REQUIRE(generated.ok());
+    REQUIRE(layout.validate(lib).ok());
+
+    // Every level that the house occupies carries a stair component at one column.
+    std::unordered_map<int, std::pair<int, int>> stairColumns;  // floor -> (x,y)
+    std::vector<std::tuple<int, int, int>>       stairCells;
+    for (const auto &instance : layout.instances) {
+        const auto component = lib.find(instance.componentId);
+        REQUIRE(component.has_value());
+        if (component->get().category == "stairs") {
+            stairColumns[instance.z] = {instance.x, instance.y};
+            stairCells.emplace_back(instance.x, instance.y, instance.z);
+        }
+    }
+    REQUIRE_EQ(stairColumns.size(), 3u);  // one stair per floor
+    const auto column = stairColumns[0];
+    for (int z = 1; z < r.floors; ++z) CHECK(stairColumns[z] == column);
+    // The stair column is carved: no floor or foundation instance occupies those cells.
+    for (const auto &instance : layout.instances) {
+        const auto component = lib.find(instance.componentId);
+        if (!component) continue;
+        const std::string category = component->get().category;
+        if (category == "floor" || category == "foundation") {
+            CHECK(!(instance.x == column.first && instance.y == column.second));
+        }
+    }
+    CHECK_EQ(stairCells.size(), 3u);
+}
+
+TEST_CASE("housegen.interiorPartitionProducesRequestedRooms") {
+    constexpr char partitionedKit[] = R"({"components":[
+      {"id":"foundation","model":"foundation.glb","category":"foundation"},
+      {"id":"floor","model":"floor.glb","category":"floor"},
+      {"id":"wall","model":"wall.glb","category":"wall"},
+      {"id":"door","model":"door.glb","category":"door"},
+      {"id":"roof","model":"roof.glb","category":"roof"},
+      {"id":"stairs","model":"stairs.glb","category":"stairs"},
+      {"id":"iwall","model":"iwall.glb","category":"interior_wall"},
+      {"id":"idoor","model":"idoor.glb","category":"interior_door"}
+    ]})";
+    HouseComponentLibrary lib;
+    auto                  loaded = lib.loadFromJson(partitionedKit);
+    REQUIRE(loaded.ok());
+    HouseRequest r;
+    r.seed   = 5150;
+    r.width  = 7;
+    r.depth  = 6;
+    r.floors = 2;
+    r.footprint = "rectangle"; r.roof = "flat"; r.entrance = "south";
+    r.requiredRooms = {"living", "kitchen", "bedroom"};
+    HouseLayout    layout;
+    HouseGenerator generator(lib);
+    auto           generated = generator.generate(r, layout);
+    REQUIRE(generated.ok());
+    REQUIRE(layout.validate(lib).ok());
+
+    bool hasInnerWall = false, hasInnerDoor = false;
+    for (const auto &instance : layout.instances) {
+        const auto component = lib.find(instance.componentId);
+        if (!component) continue;
+        const std::string category = component->get().category;
+        hasInnerWall = hasInnerWall || category == "interior_wall";
+        hasInnerDoor = hasInnerDoor || category == "interior_door";
+    }
+    CHECK(hasInnerWall);
+    CHECK(hasInnerDoor);
+
+    // Each requested room name appears as a labelled room on the ground floor.
+    for (const std::string &name : r.requiredRooms)
+        CHECK(std::find_if(layout.rooms.begin(), layout.rooms.end(), [&](const HouseRoom &room) {
+                  return room.type == name && room.z == 0;
+              }) != layout.rooms.end());
+}
+
+TEST_CASE("housegen.multiRoomWithoutInteriorKitFallsBack") {
+    HouseComponentLibrary lib;
+    auto                  loaded = lib.loadFromJson(kKit);
+    REQUIRE(loaded.ok());
+    HouseRequest r;
+    r.seed = 7; r.width = 6; r.depth = 5; r.floors = 2;
+    r.requiredRooms = {"living", "kitchen"};
+    HouseLayout    layout;
+    HouseGenerator generator(lib);
+    auto           generated = generator.generate(r, layout);
+    REQUIRE(generated.ok());
+    CHECK(!layout.diagnostics.empty());
+    CHECK(layout.validate(lib).ok());
+}
+
+TEST_CASE("housegen.polygonFootprintProducesArbitraryOutline") {
+    HouseComponentLibrary lib;
+    auto                  loaded = lib.loadFromJson(kKit);
+    REQUIRE(loaded.ok());
+    HouseRequest r;
+    r.seed = 31337; r.width = 7; r.depth = 6; r.floors = 1;
+    r.footprint = "polygon";
+    // L-shaped outline in corner coordinates [0,7]x[0,6]: the top-right quadrant is cut out.
+    r.perimeter = {{0.f, 0.f}, {4.f, 0.f}, {4.f, 3.f}, {7.f, 3.f}, {7.f, 6.f}, {0.f, 6.f}};
+    HouseLayout    layout;
+    HouseGenerator generator(lib);
+    auto           generated = generator.generate(r, layout);
+    REQUIRE(generated.ok());
+    REQUIRE(layout.validate(lib).ok());
+    CHECK_EQ(layout.footprintStyle, std::string("polygon"));
+
+    bool hasBottomRight = false, hasCutTopRight = false;
+    for (const auto &instance : layout.instances) {
+        const auto component = lib.find(instance.componentId);
+        if (!component || component->get().category != "floor") continue;
+        if (instance.x == 6 && instance.y == 1) hasBottomRight = true;   // inside (y<3)
+        if (instance.x == 6 && instance.y == 5) hasCutTopRight = true;   // outside (y>3, x>4)
+    }
+    CHECK(hasBottomRight);
+    CHECK(!hasCutTopRight);
+    CHECK_GT(layout.instances.size(), 20u);
+}
+
+TEST_CASE("housegen.polygonRequiresAtLeastThreePoints") {
+    HouseComponentLibrary lib;
+    auto                  loaded = lib.loadFromJson(kKit);
+    REQUIRE(loaded.ok());
+    HouseRequest r;
+    r.seed = 1; r.width = 6; r.depth = 6; r.floors = 1;
+    r.footprint = "polygon";
+    r.perimeter = {{0.f, 0.f}, {6.f, 0.f}};
+    HouseLayout    layout;
+    HouseGenerator generator(lib);
+    auto           generated = generator.generate(r, layout);
+    REQUIRE(!generated.ok());
 }

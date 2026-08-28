@@ -271,7 +271,8 @@ TEST_CASE("housegen.renderPreview") {
       {"id":"wall.solid","model":"wall.glb","category":"wall","weight":2},
       {"id":"wall.window","model":"window.glb","category":"wall","weight":5,"tags":["window"]},
       {"id":"door","model":"door.glb","category":"door"},
-      {"id":"roof","model":"roof.glb","category":"roof"}
+      {"id":"roof","model":"roof.glb","category":"roof"},
+      {"id":"stairs","model":"stairs.glb","category":"stairs"}
     ]})";
 
     HouseComponentLibrary library;
