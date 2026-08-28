@@ -486,31 +486,72 @@ EditorResult<void> ActionTimelineEditor::seek(Duration time) {
 }
 
 EditorResult<std::size_t> ActionTimelineEditor::update(Duration delta) {
-    previewEvents_.clear();
-    if (!playing_) {
+    auto plan = planPreview(delta);
+    if (!plan.accepted())
+        return EditorResult<std::size_t>::error(plan.status, RuleId("editor.action.timeline.preview-plan"),
+                                                "Could not prepare preview advance");
+    if (plan.status == EditorStatus::NoOp) {
+        previewEvents_.clear();
         EditorResult<std::size_t> result;
         result.status = EditorStatus::NoOp;
         result.value  = 0;
         return result;
     }
+    return applyPreviewPlan(std::move(*plan.value));
+}
+
+EditorResult<ActionTimelinePreviewPlan> ActionTimelineEditor::planPreview(Duration delta) const {
+    if (!playing_) {
+        ActionTimelinePreviewPlan plan;
+        plan.timelineRevision = target_.revision();
+        plan.previous         = previewTime_;
+        plan.current          = previewTime_;
+        EditorResult<ActionTimelinePreviewPlan> result;
+        result.status = EditorStatus::NoOp;
+        result.value  = std::move(plan);
+        return result;
+    }
     if (delta < Duration::zero())
-        return EditorResult<std::size_t>::error(EditorStatus::Rejected, RuleId("editor.action.timeline.preview-delta"),
-                                                "Preview delta must be non-negative");
+        return EditorResult<ActionTimelinePreviewPlan>::error(EditorStatus::Rejected,
+                                                              RuleId("editor.action.timeline.preview-delta"),
+                                                              "Preview delta must be non-negative");
     auto next = previewTime_.tryAdd(delta);
     if (!next)
-        return EditorResult<std::size_t>::error(
+        return EditorResult<ActionTimelinePreviewPlan>::error(
             EditorStatus::Rejected, RuleId("editor.action.timeline.preview-overflow"), "Preview time overflowed");
     Duration current = std::move(next).takeValue();
     if (current > target_.timeline().duration) current = target_.timeline().duration;
     auto sampled = target_.timeline().sample(previewTime_, current, !previewStarted_);
     if (!sampled)
+        return EditorResult<ActionTimelinePreviewPlan>::error(
+            EditorStatus::Rejected, RuleId("editor.action.timeline.preview-invalid"),
+            commonMessage(sampled.status(), "Could not sample action timeline"));
+    ActionTimelinePreviewPlan plan;
+    plan.timelineRevision = target_.revision();
+    plan.previous         = previewTime_;
+    plan.current          = current;
+    plan.includeStart     = !previewStarted_;
+    plan.reachesEnd       = current == target_.timeline().duration;
+    plan.events           = std::move(sampled).takeValue();
+    return EditorResult<ActionTimelinePreviewPlan>::applied(std::move(plan));
+}
+
+EditorResult<std::size_t> ActionTimelineEditor::applyPreviewPlan(ActionTimelinePreviewPlan plan) {
+    if (!playing_ || plan.timelineRevision != target_.revision() || plan.previous != previewTime_ ||
+        plan.includeStart == previewStarted_)
+        return EditorResult<std::size_t>::error(EditorStatus::Conflict,
+                                                RuleId("editor.action.timeline.preview-plan-stale"),
+                                                "Prepared preview advance no longer matches transport state");
+    auto expected = target_.timeline().sample(plan.previous, plan.current, plan.includeStart);
+    if (!expected || expected.value() != plan.events ||
+        plan.reachesEnd != (plan.current == target_.timeline().duration))
         return EditorResult<std::size_t>::error(EditorStatus::Rejected,
-                                                RuleId("editor.action.timeline.preview-invalid"),
-                                                commonMessage(sampled.status(), "Could not sample action timeline"));
-    previewEvents_  = std::move(sampled).takeValue();
-    previewTime_    = current;
+                                                RuleId("editor.action.timeline.preview-plan-invalid"),
+                                                "Prepared preview advance does not match the authoritative timeline");
+    previewEvents_  = std::move(plan.events);
+    previewTime_    = plan.current;
     previewStarted_ = true;
-    if (previewTime_ == target_.timeline().duration) playing_ = false;
+    if (plan.reachesEnd) playing_ = false;
     return EditorResult<std::size_t>::applied(previewEvents_.size());
 }
 

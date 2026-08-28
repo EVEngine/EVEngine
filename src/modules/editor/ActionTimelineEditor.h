@@ -16,6 +16,16 @@
 
 namespace eve::editor {
 
+/** @brief Prepared deterministic preview advance that can be validated before presentation side effects. */
+struct ActionTimelinePreviewPlan {
+    unsigned long long                       timelineRevision = 0;
+    Duration                                 previous;
+    Duration                                 current;
+    bool                                     includeStart = false;
+    bool                                     reachesEnd   = false;
+    std::vector<action::ActionTimelineEvent> events;
+};
+
 /**
  * @brief Authoritative editor target for one action timeline asset.
  *
@@ -124,6 +134,10 @@ public:
     [[nodiscard]] EditorResult<void> seek(Duration time);
     /** @brief Advance preview by injected time and collect crossed events. */
     [[nodiscard]] EditorResult<std::size_t> update(Duration delta);
+    /** @brief Prepare a preview advance without mutating transport state. */
+    [[nodiscard]] EditorResult<ActionTimelinePreviewPlan> planPreview(Duration delta) const;
+    /** @brief Commit an unchanged prepared preview advance. */
+    [[nodiscard]] EditorResult<std::size_t> applyPreviewPlan(ActionTimelinePreviewPlan plan);
     /** @brief Current deterministic preview cursor. */
     Duration previewTime() const noexcept { return previewTime_; }
     /** @brief Whether preview transport is playing. */
