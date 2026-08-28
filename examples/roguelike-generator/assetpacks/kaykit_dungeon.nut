@@ -29,7 +29,7 @@ function configureDungeonAssetPack(p) {
 
     // Freestanding, wall-mounted and tabletop props.
     p.setString("assets.column", "column,pillar,pillar_decorated");
-    p.setString("assets.container", "barrel_large_decorated,barrel_large_decorated,barrel_small_stack,crates_stacked,crates_stacked,box_stacked,barrel_large,barrel_small,box_large,box_small,box_small_decorated,trunk_large_A,trunk_large_B,trunk_large_C,trunk_medium_A,trunk_medium_B,trunk_medium_C,trunk_small_A,trunk_small_B,trunk_small_C");
+    p.setString("assets.container", "barrel_large_decorated,barrel_large_decorated,barrel_large_decorated,barrel_large,barrel_large,barrel_small_stack,barrel_small_stack,crates_stacked,crates_stacked,crates_stacked,crates_stacked,box_stacked,box_stacked,trunk_large_A,trunk_large_A,trunk_large_B,trunk_large_B,trunk_large_C,trunk_large_C,barrel_small,box_large,box_small,box_small_decorated,trunk_medium_A,trunk_medium_B,trunk_medium_C,trunk_small_A,trunk_small_B,trunk_small_C");
     p.setString("assets.treasure", "chest,chest_gold,chest_lid,chest_gold_lid,coin,coin_stack_small,coin_stack_medium,coin_stack_large,key,keyring,keyring_hanging");
     p.setString("assets.table", "table_medium_decorated_A,table_medium_decorated_A,table_long_decorated_A,table_long_decorated_C,table_long_tablecloth_decorated_A,table_small,table_small_decorated_A,table_small_decorated_B,table_medium,table_medium_broken,table_medium_tablecloth,table_medium_tablecloth_decorated_B,table_long,table_long_broken,table_long_tablecloth");
     p.setString("assets.seating", "chair,stool");

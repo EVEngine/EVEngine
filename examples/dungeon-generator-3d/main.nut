@@ -158,10 +158,39 @@ function floorTone(x, y) {
 }
 
 function wallAsset(x, y, side) {
-    if (!("walls" in dungeonAssets) || dungeonAssets.walls.len() == 0)
-        return dungeonAssets.wall;
     local hash = x * 73856093 + y * 19349663 + side * 83492791 + dungeonSeed;
     if (hash < 0) hash = -hash;
+    local straight = false;
+    if (side == 0 || side == 1) {
+        local outsideY = y + (side == 0 ? -1 : 1);
+        straight = walkable(x - 1, y) && walkable(x + 1, y) &&
+                   !walkable(x - 1, outsideY) && !walkable(x + 1, outsideY);
+    } else {
+        local outsideX = x + (side == 2 ? -1 : 1);
+        straight = walkable(x, y - 1) && walkable(x, y + 1) &&
+                   !walkable(outsideX, y - 1) && !walkable(outsideX, y + 1);
+    }
+    local rates = dungeonAssets.wallVariantRates;
+    local roll = hash % 100;
+    local cursor = 0;
+    if (straight) {
+        cursor += rates.window;
+        if (roll < cursor && dungeonAssets.windows.len() > 0)
+            return dungeonAssets.windows[hash % dungeonAssets.windows.len()];
+    }
+    cursor += rates.broken;
+    if (roll < cursor && dungeonAssets.brokenWalls.len() > 0)
+        return dungeonAssets.brokenWalls[hash % dungeonAssets.brokenWalls.len()];
+    if (straight) {
+        cursor += rates.scaffold;
+        if (roll < cursor && dungeonAssets.scaffoldWalls.len() > 0)
+            return dungeonAssets.scaffoldWalls[hash % dungeonAssets.scaffoldWalls.len()];
+        cursor += rates.gated;
+        if (roll < cursor && dungeonAssets.gatedWalls.len() > 0)
+            return dungeonAssets.gatedWalls[hash % dungeonAssets.gatedWalls.len()];
+    }
+    if (!("walls" in dungeonAssets) || dungeonAssets.walls.len() == 0)
+        return dungeonAssets.wall;
     return dungeonAssets.walls[hash % dungeonAssets.walls.len()];
 }
 
@@ -197,18 +226,18 @@ function rebuildDungeon() {
     local p = paramsResult.value;
     p.setSeed(dungeonSeed);
     p.setSize(DUNGEON_W, DUNGEON_H);
-    p.setInt("roomCount", 11);
-    p.setInt("roomMin", 5);
-    p.setInt("roomMax", 9);
-    p.setInt("spacing", 1);
-    p.setInt("corridorWidth", 2);
+    p.setInt("roomCount", 12);
+    p.setInt("roomMin", 4);
+    p.setInt("roomMax", 7);
+    p.setInt("spacing", 0);
+    p.setInt("corridorWidth", 1);
     p.setString("layoutStyle", "clustered");
     p.setString("corridorStyle", "l");
     p.setString("connectionStyle", "nearest");
     p.setString("floorPattern", "cobble");
     p.setString("decorSet", "mixed");
     p.setFloat("decorDensity", 0.055);
-    p.setFloat("propDensity", 0.62);
+    p.setFloat("propDensity", 0.78);
     p.setFloat("corridorLightDensity", 0.08);
     configureDungeonAssetPack(p);
     local generated = procgen.generate("level.roguelike", p);
@@ -379,11 +408,11 @@ function rebuildDungeon() {
         else if (role == "food") py = 1.88;
 
         local propScale = 1.0;
-        if (role == "table" || role == "tavern") propScale = 1.50;
-        else if (role == "bed") propScale = 1.25;
+        if (role == "table" || role == "tavern") propScale = 1.65;
+        else if (role == "bed") propScale = 1.45;
         else if (role == "banner") propScale = 1.18;
-        else if (role == "seating" || role == "container") propScale = 1.35;
-        else if (role == "treasure") propScale = 1.25;
+        else if (role == "seating" || role == "container") propScale = 1.55;
+        else if (role == "treasure") propScale = 1.40;
         addAsset(id, px, py, pz, yaw, propScale, propScale, propScale);
         if (role == "light") lightCandidates.append([px, py + 0.35, pz]);
     }

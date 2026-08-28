@@ -323,13 +323,14 @@ TEST_CASE("procgen.roguelike.configurableAssetDressing") {
     pView->setString("assets.light", "sconce_custom");
     pView->setString("assets.banner", "wall_hanging_custom");
     pView->setString("assets.floor", "floor_a,floor_b");
-    pView->setFloat("propDensity", 0.2f);
+    pView->setFloat("propDensity", 0.6f);
     auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
     auto g = gLease.view();
     REQUIRE(g.isBound());
     CHECK_EQ(g->getMeta("assetPack", ""), "test-pack");
     CHECK_EQ(g->getMeta("assets.floor", ""), "floor_a,floor_b");
     CHECK_GT(std::stoi(g->getMeta("placedProps", "0")), 0);
+    CHECK_GE(std::stoi(g->getMeta("minimumRoomProps", "0")), 8);
 
     bool customLight = false;
     bool fractionalPlacement = false;

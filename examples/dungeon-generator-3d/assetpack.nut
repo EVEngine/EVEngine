@@ -8,9 +8,14 @@ dungeonAssets <- {
     // floor material is suitable for direct rendering.
     usePackFloors = false,
     wall = "wall",
-    // Repetition weights the common straight wall more heavily.
-    walls = ["wall", "wall", "wall", "wall", "wall", "wall",
-             "wall_cracked", "wall", "wall_window_closed", "wall", "wall_broken", "wall"],
+    walls = ["wall", "wall", "wall", "wall_cracked", "wall_arched", "wall_pillar"],
+    windows = ["wall_window_closed", "wall_window_open", "wall_archedwindow_open",
+               "wall_archedwindow_gated"],
+    brokenWalls = ["wall_broken", "wall_cracked"],
+    scaffoldWalls = ["wall_scaffold", "wall_open_scaffold",
+                     "wall_window_closed_scaffold", "wall_window_open_scaffold"],
+    gatedWalls = ["wall_gated", "wall_arched"],
+    wallVariantRates = { window=14, broken=8, scaffold=5, gated=4 },
     corners = ["wall_corner_small", "wall_corner_small", "wall_corner_small", "wall_corner_gated"],
     doorways = ["wall_doorway", "wall_doorway", "wall_doorway_sides", "wall_doorway_door"],
     stairs = "stairs_walled",

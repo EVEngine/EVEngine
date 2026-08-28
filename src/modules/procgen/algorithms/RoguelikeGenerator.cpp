@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <random>
 #include <sstream>
 #include <string>
@@ -384,6 +385,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
         std::clamp(params.getFloat("corridorLightDensity", 0.035f), 0.f, 0.25f);
     std::unordered_set<int> occupied;
     int objectSerial = 0;
+    int minimumRoomProps = std::numeric_limits<int>::max();
     auto cellKey = [w](int x, int y) { return y * w + x; };
     auto place = [&](const std::string &role, const std::vector<std::string> &pool, float x, float y,
                      float rotation, int flags, float ow = 1.f, float oh = 1.f) {
@@ -413,6 +415,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             out.addAssetObject("room" + std::to_string(roomIndex), "room",
                                kThemeNames[theme], float(r.x), float(r.y),
                                float(r.w), float(r.h), 0.f, 32);
+            const int propsBeforeRoom = objectSerial;
 
             // Every furnished room receives wall-mounted light and occasional banner.
             place("light", wallLights, left, cy, 90.f, 2 | 4);
@@ -511,6 +514,33 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("clutter", clutter, spot.first, spot.second,
                       float((i + int(roomIndex)) % 4) * 90.f, 16);
             }
+
+            // Enforce a visible minimum for dense showcase presets. Failed
+            // blocking placements simply advance to another interior edge;
+            // non-blocking clutter remains cosmetic and navigation-safe.
+            if (propDensity >= 0.35f) {
+                // Scale the visual budget with room area. A fixed count makes
+                // large chambers look abandoned even at high density.
+                const int roomArea = r.w * r.h;
+                const int targetProps = clampInt(
+                    4 + int(std::ceil(propDensity * float(roomArea) * 0.28f)), 4, 16);
+                const std::pair<int, int> fillerSpots[] = {
+                    {left + 1, top + 1}, {right - 1, top + 1},
+                    {left + 1, bottom - 1}, {right - 1, bottom - 1},
+                    {cx - 1, bottom - 1}, {cx + 1, top + 1}};
+                for (int attempt = 0;
+                     attempt < 24 && objectSerial - propsBeforeRoom < targetProps; ++attempt) {
+                    const auto &spot = fillerSpots[(size_t(attempt) + roomIndex) % 6];
+                    if ((attempt & 1) == 0)
+                        place("container", containers, spot.first, spot.second,
+                              float((attempt + int(roomIndex)) % 4) * 90.f, 1);
+                    else
+                        place("container", containers, float(spot.first) + 0.35f,
+                              float(spot.second) - 0.25f,
+                              float((attempt * 37) % 360), 16);
+                }
+            }
+            minimumRoomProps = std::min(minimumRoomProps, objectSerial - propsBeforeRoom);
         }
 
         // Long connectors in the reference are punctuated by sparse sconces.
@@ -585,6 +615,9 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     out.setMeta("connectionStyle", connections);
     out.setMeta("assetPack", params.getString("assetPack", "semantic-default"));
     out.setMeta("placedProps", std::to_string(objectSerial));
+    out.setMeta("minimumRoomProps",
+                std::to_string(minimumRoomProps == std::numeric_limits<int>::max()
+                                   ? 0 : minimumRoomProps));
     // Tile renderers use these semantic pools to resolve every architecture cell.
     // Copying them into metadata keeps the generated artifact self-describing.
     static const char *architectureRoles[] = {
