@@ -1,43 +1,54 @@
 #include "decision/Decision.h"
+
 #include <cmath>
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+
 using namespace eve::decision;
+
 TEST_CASE("decision.blackboardsAndFsmAreExplicit") {
-    DecisionContext d;
-    auto            setResult = d.set("ai", "enemy", "\"tank-1\"");
+    DecisionContext context;
+
+    auto setResult = context.set("ai", "enemy", "\"tank-1\"");
     REQUIRE(setResult.ok());
-    CHECK_EQ(d.get("ai", "enemy", "null"), std::string("\"tank-1\""));
-    auto stateResult = d.setState("unit", "idle");
+    CHECK_EQ(context.get("ai", "enemy", "null"), std::string("\"tank-1\""));
+
+    auto stateResult = context.setState("unit", "idle");
     REQUIRE(stateResult.ok());
-    auto transitionResult = d.addTransition("unit", "idle", "enemy_seen", "attack");
+    auto transitionResult = context.addTransition("unit", "idle", "enemy_seen", "attack");
     REQUIRE(transitionResult.ok());
-    auto triggerResult = d.trigger("unit", "enemy_seen");
+    auto triggerResult = context.trigger("unit", "enemy_seen");
     REQUIRE(triggerResult.ok());
     REQUIRE(triggerResult.value());
-    CHECK_EQ(d.state("unit"), std::string("attack"));
+    CHECK_EQ(context.state("unit"), std::string("attack"));
 }
+
 TEST_CASE("decision.utilityIsDeterministic") {
     CHECK(std::abs(DecisionContext::utility("1:2,0:1") - .6666667f) < .001f);
     CHECK_EQ(DecisionContext::choose("retreat=0.8:1;attack=0.8:1"), std::string("attack"));
 }
+
 TEST_CASE("decision.influenceAndSnapshotRoundTrip") {
-    DecisionContext d;
-    auto            gridResult = d.newGrid("threat", 2, 2, 10, 0, 0);
+    DecisionContext context;
+
+    auto gridResult = context.newGrid("threat", 2, 2, 10, 0, 0);
     REQUIRE(gridResult.ok());
-    auto setCellResult = d.setCell("threat", 1, 0, 2);
+    auto setCellResult = context.setCell("threat", 1, 0, 2);
     REQUIRE(setCellResult.ok());
-    auto addCellResult = d.addCell("threat", 1, 0, 3);
+    auto addCellResult = context.addCell("threat", 1, 0, 3);
     REQUIRE(addCellResult.ok());
-    CHECK_EQ(d.sample("threat", 15, 5, -1), 5.f);
-    auto            s = d.snapshotJson();
-    DecisionContext x;
-    auto            restoreResult = x.restoreJson(s);
+    CHECK_EQ(context.sample("threat", 15, 5, -1), 5.f);
+
+    auto            snapshot = context.snapshotJson();
+    DecisionContext restored;
+    auto            restoreResult = restored.restoreJson(snapshot);
     REQUIRE(restoreResult.ok());
-    CHECK_EQ(x.snapshotJson(), s);
-    auto before = x.snapshotJson();
-    auto rejected = x.restoreJson("{}");
+    CHECK_EQ(restored.snapshotJson(), snapshot);
+
+    auto beforeInvalidRestore = restored.snapshotJson();
+    auto rejected             = restored.restoreJson("{}");
     CHECK(!rejected.ok());
     CHECK_EQ(rejected.code(), eve::StatusCode::Failed);
-    CHECK_EQ(x.snapshotJson(), before);
+    CHECK_EQ(restored.snapshotJson(), beforeInvalidRestore);
 }

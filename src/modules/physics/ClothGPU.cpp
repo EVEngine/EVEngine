@@ -124,7 +124,7 @@ void main() {
         p.x += vx + ax * dt * dt;
         p.y += vy + ay * dt * dt;
 
-        // Pointer field (Fluid-style attract/repel).
+        // Pointer field (Fluid2D-style attract/repel).
         float ir = pc.data[16];
         if (ir > 0.0 && abs(pc.data[17]) > 1e-9) {
             float dx = pc.data[14] - p.x;

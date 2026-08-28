@@ -3,7 +3,7 @@
 Interactive 3D Verlet cloth demo: a curtain hangs from a top bar and drapes
 over static Box3D bodies (box + sphere). Demonstrates self-collision, the
 dihedral fold-angle limit, particle-vs-rigid-body collision, and the
-Fluid-style `interactAt` pointer field.
+Fluid2D-style `interactAt` pointer field.
 
 ## Run
 

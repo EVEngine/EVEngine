@@ -33,7 +33,7 @@ function resetScene() {
     cloth.setBounds(0.0, 0.0, w, h);
     cloth.setColor(0.78, 0.84, 0.98, 1.0);
 
-    fluid = physics.newFluid(600);
+    fluid = physics.newFluid2D(600);
     fluid.setBounds(w * 0.52, 48.0, w * 0.42, h - 96.0);
     fluid.setGravity(0.0, 980.0);
     fluid.setSmoothingRadius(18.0);
