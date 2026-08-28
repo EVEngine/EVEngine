@@ -90,8 +90,8 @@ void HouseGen::expose(ssq::Table &table) {
                 const size_t comma = segment.find(',');
                 if (comma != std::string::npos) {
                     HousePolygonPoint p;
-                    p.x = std::atof(segment.substr(0, comma).c_str());
-                    p.y = std::atof(segment.substr(comma + 1).c_str());
+                    p.x = static_cast<float>(std::atof(segment.substr(0, comma).c_str()));
+                    p.y = static_cast<float>(std::atof(segment.substr(comma + 1).c_str()));
                     r->perimeter.push_back(p);
                 }
                 segment.clear();

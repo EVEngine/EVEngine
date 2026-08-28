@@ -56,11 +56,19 @@ if (generation.ok) {
 
 - `setSeed(int)`、`setPlot(w, d)`、`setFloors(int)`、`setStyle(string)`、
   `setFootprint(string)`、`setRoof(string)`、`setEntrance(string)`。
+- `setRequiredRooms(csv)`：逗号分隔的房间名，如 `"living,kitchen,bedroom"`；多于 1 个且库提供
+  `interior_wall`/`interior_door` 时触发室内房间划分。
+- `setPerimeter(csv)`：分号分隔的多边形顶点（角坐标），如 `"0,0;5,0;5,3;9,3;9,8;0,8"`；
+  需配合 `setFootprint("polygon")`，生成任意轮廓占地。
 
 ### `HouseLayout`
 
 - `toJson()`、`fromJson(json)` → structured Result、`getInstanceCount()`、
-  `getDiagnosticCount()`。
+  `getDiagnosticCount()`、`getRoomCount()`。
+- 实例访问：`getInstanceComponentId(i)`、`getInstanceX(i)`、`getInstanceY(i)`、
+  `getInstanceZ(i)`、`getInstanceRotationDeg(i)`（供脚本遍历布局渲染/查询）。
+- 元数据：`getModuleSize()`、`getFloorHeight()`、`getFootprintStyle()`、
+  `getRoofStyle()`、`getEntranceSide()`。
 
 ## 生命周期
 

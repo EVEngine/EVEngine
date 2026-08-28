@@ -313,10 +313,6 @@ eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
                    GROUP 2d)
-# housegen consumes procgen's BuildKey / ArtifactStore for deterministic layout
-# identity, hot-reload comparison and snapshot persistence, so it sits at L5.
-eve_declare_module(NAME housegen LIB EVHouseGen LAYER 5 SCRIPT HouseGen
-                   DEPS data graphics image model3d procgen)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
                    DEPS attributes decision definitions effects graphics transaction)
 eve_declare_module(NAME demo LAYER 4 SCRIPT Demo
@@ -348,6 +344,10 @@ eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS gpgpu graphics image map transaction
                    GROUP 3d)
+# housegen consumes procgen's BuildKey / ArtifactStore for deterministic layout
+# identity, hot-reload comparison and snapshot persistence, so it sits at L5.
+eve_declare_module(NAME housegen LIB EVHouseGen LAYER 5 SCRIPT HouseGen
+                   DEPS data graphics image model3d procgen)
 # L5 -- RTS domain composition profile. Provider modules remain behind typed
 # links; these are the direct implementation dependencies of the profile.
 eve_declare_module(NAME rts LAYER 5 SCRIPT RTS SLOT rts
