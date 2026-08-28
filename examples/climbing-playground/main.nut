@@ -144,7 +144,7 @@ function startAction() {
 
 function fixedUpdate() {
     movingTime += FIXED_DT;
-    local movingY = 0.65 + math.sin(movingTime * 1.4) * 0.28;
+    local movingY = 0.65 + sin(movingTime * 1.4) * 0.28;
     movingBody.setPosition(6.0, movingY, 2.0);
     movingVisual.setPosition(6.0, movingY, 2.0);
     world.update(FIXED_DT);

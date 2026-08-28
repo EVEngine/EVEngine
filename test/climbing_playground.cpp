@@ -15,10 +15,12 @@ TEST_CASE("climbing.playground.mainScriptCompilesThroughEveScriptFrontend") {
     REQUIRE(input.is_open());
     std::ostringstream source;
     source << input.rdbuf();
+    CHECK(source.str().find("math.sin") == std::string::npos);
 
     eve::Runtime runtime(2048, ssq::Libs::ALL);
     bool         compiled = true;
     try {
+        runtime.runSource("climbing_playground_sine_probe <- sin(0.0);", "climbing-playground-sine-probe.nut");
         runtime.compileSource(source.str(), "examples/climbing-playground/main.nut");
     } catch (...) {
         compiled = false;
