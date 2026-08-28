@@ -192,6 +192,28 @@ file(GLOB all_test_cpp
   indirect_builder.cpp
   box2d.cpp
   box3d.cpp
+    climbing.cpp
+    climbing_anchor_execution.cpp
+    climbing_anchor_graph.cpp
+    climbing_anchor_route.cpp
+    climbing_anchor_authoring.cpp
+    climbing_animation.cpp
+    climbing_codec.cpp
+    climbing_definition_policy.cpp
+    climbing_services.cpp
+    climbing_ecs.cpp
+    climbing_events.cpp
+    climbing_input.cpp
+    climbing_parkour.cpp
+    climbing_performance.cpp
+    climbing_physics_policy.cpp
+    climbing_pose.cpp
+    climbing_prediction.cpp
+    climbing_playground.cpp
+    climbing_reload.cpp
+    climbing_snapshot.cpp
+    climbing_telemetry.cpp
+    climbing_vault.cpp
   binding_selfcheck.cpp
   squirrel_binding.cpp
   script_ownership.cpp

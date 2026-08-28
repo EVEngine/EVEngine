@@ -353,6 +353,10 @@ eve_declare_module(NAME rts LAYER 5 SCRIPT RTS SLOT rts
                    GROUP 2d 3d)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
                    DEPS animation graphics model3d scene)
+# Deterministic climbing/parkour planning and capsule-constrained execution.
+eve_declare_module(NAME climbing LAYER 5 SCRIPT Climbing SLOT climbing
+                   DEPS animation physics
+                   GROUP 3d)
 eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    DEPS gpgpu
                    GROUP 3d web)

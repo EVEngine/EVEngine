@@ -95,6 +95,7 @@ set(_doc_module_pages
     "audio.md|mod_audio|音频播放模块"
     "building.md|mod_building|建筑放置模块"
     "cardgame.md|mod_cardgame|卡牌游戏工具模块"
+    "climbing.md|mod_climbing|攀爬与跑酷模块"
     "data.md|mod_data|数据模块"
     "daynight.md|mod_daynight|昼夜循环模块"
     "demo.md|mod_demo|内置演示模块"
@@ -156,7 +157,7 @@ endforeach()
 set(_doc_sidebar_groups
     "usr_env|运行环境与输入|mod_window,mod_event,mod_rx,mod_timer,mod_system,mod_keyboard,mod_mouse,mod_touch,mod_joystick"
     "usr_assets|资源与 I/O|mod_filesystem,mod_data,mod_image,mod_font,mod_i18n,mod_sound,mod_audio,mod_model3d,mod_network"
-    "usr_gameplay|游戏玩法|mod_entity,mod_physics,mod_map,mod_particles,mod_animation,mod_rpg,mod_inventory,mod_cardgame,mod_building,mod_procgen"
+    "usr_gameplay|游戏玩法|mod_entity,mod_physics,mod_map,mod_particles,mod_animation,mod_climbing,mod_rpg,mod_inventory,mod_cardgame,mod_building,mod_procgen"
     "usr_scene|表现与场景|mod_graphics,mod_voxel,mod_spritestack,mod_daynight,mod_weather,mod_ui,mod_scene"
     "usr_advanced|高级能力|mod_math,mod_spatial,mod_editor,mod_ik,mod_gpgpu,mod_tensor,mod_thread,mod_plugins,mod_demo")
 
