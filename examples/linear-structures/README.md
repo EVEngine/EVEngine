@@ -34,12 +34,16 @@ make run/win32-debug GAME=examples/linear-structures
 ## Reusable API
 
 ```squirrel
-local p = procgen.newParams();
+local paramsResult = procgen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setInt("segments", 8);      // repeat count along X
 p.setFloat("segLength", 2.0); // length of one tileable unit
 p.setFloat("height", 1.5);    // per-kind override
 p.setFloat("uvRepeat", 2.0);  // texture repeats per world unit
-local mesh = procgen.generateMesh("mesh.stonewall", p, gfx);
+local meshResult = procgen.generateMesh("mesh.stonewall", p, gfx);
+if (!meshResult.ok) throw meshResult.status.summary;
+local mesh = meshResult.value;
 ```
 
 Shared params: `segments`, `segLength`, `height`, `depth`, `thickness`, `scale`,

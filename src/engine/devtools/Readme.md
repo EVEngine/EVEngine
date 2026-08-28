@@ -45,7 +45,7 @@
 
 引擎视为无状态：恢复游戏状态 = 恢复脚本变量 + 原生 `IStateProvider`。因此一个 bug 场景可被描述为 **基线快照 + 一串逐帧输入/事件**，从基线重放这串事件即可确定性复现（前提是游戏逻辑与 RNG seed 确定）。
 
-- **录制**：`eve.dev.beginScenario()` 抓基线快照并挂上事件队列观察钩子（`event::Event::setPollObserver`），`eve.dev.scenarioFrame()` 每帧标记帧边界，把该帧从事件队列消费到的键鼠/异步消息按帧记下；出错时 `notifyError` 会把错误报告与出错位置写进场景。`eve.dev.endScenario("scenario_boss.json")` 落盘。
+- **录制**：`eve.dev.beginScenario()` 抓基线快照并挂上事件队列观察钩子（`platform_event::PlatformEvent::setPollObserver`），`eve.dev.scenarioFrame()` 每帧标记帧边界，把该帧从事件队列消费到的键鼠/异步消息按帧记下；出错时 `notifyError` 会把错误报告与出错位置写进场景。`eve.dev.endScenario("scenario_boss.json")` 落盘。
 - **回放**：`eve.dev.beginReplay("scenario_boss.json")` 恢复基线快照；随后每驱动一帧游戏逻辑前调 `eve.dev.replayFrame()` 把该帧记录的事件重新注入事件队列，直到 `eve.dev.replayRemaining()==0`。若同一错误再次抛出即复现成功，`eve.dev.replayErrorReport()` 可读出原错误报告。
 - 脚本 API：`beginScenario / scenarioFrame / scenarioRecording / endScenario / cancelScenario / beginReplay / replayFrame / replayRemaining / replayErrorReport`。
 - C++：`eve::dev::ScenarioRecorder`（`record / end / beginReplay / stageFrame`）。

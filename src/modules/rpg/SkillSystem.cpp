@@ -1,7 +1,8 @@
 #include "rpg/SkillSystem.h"
+#include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
 #include "rpg/Skill.h"
-#include "rpg/AttributeSystem.h"
+#include "rpg/SkillCondition.h"
 #include "rpg/StatusSystem.h"
 
 #include <unordered_map>
@@ -21,19 +22,24 @@ std::vector<SkillCastEvent> &castQueue() {
 }
 
 bool checkCostsAffordable(RPGActor *actor, const SkillDefinition &def) {
-    for (const auto &cost : def.costs)
-        if (AttributeSystem::getFinal(actor, cost.attribute) < cost.amount) return false;
+    if (!def.cost) return true;
+    for (const auto &cost : def.cost->items())
+        if (AttributeSystem::getFinal(actor, cost.resource.value()) < static_cast<double>(cost.amount.value()))
+            return false;
     return true;
 }
 
 void deductCosts(RPGActor *actor, const SkillDefinition &def) {
-    for (const auto &cost : def.costs) AttributeSystem::modifyBase(actor, cost.attribute, -cost.amount);
+    if (!def.cost) return;
+    for (const auto &cost : def.cost->items())
+        AttributeSystem::modifyBase(actor, cost.resource.value(), -static_cast<double>(cost.amount.value()));
 }
 
 void resolveCast(RPGActor *actor, const SkillDefinition &def, RPGActor *target) {
     RPGActor *effectTarget = target ? target : actor;
     for (const std::string &effectId : def.grantedEffects)
-        StatusSystem::apply(effectTarget, effectId, "skill:" + def.id);
+        StatusSystem::apply(effectTarget, effectId, "skill:" + def.id)
+            .ignore("skill effect application is reported through cast events");
 
     SkillCastEvent evt;
     evt.caster = actor;
@@ -97,6 +103,8 @@ bool SkillSystem::canCast(RPGActor *actor, const std::string &skillId, std::stri
         std::string r;
         if (!kv.second(actor, *def, r)) return fail(r.empty() ? kv.first : r);
     }
+    const auto condition = SkillConditionAdapter::evaluate(actor, *def, def->castCondition);
+    if (!condition.passed()) return fail(decision::conditionReasonCodeName(condition.reasonCode()));
     return true;
 }
 

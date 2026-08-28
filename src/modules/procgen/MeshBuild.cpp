@@ -1,5 +1,6 @@
 #include "procgen/MeshBuild.h"
 
+#include <algorithm>
 #include <cmath>
 
 namespace eve::procgen {
@@ -68,9 +69,27 @@ int MeshBuild::getTriangleGroup(int triangleIndex) const {
     return triangleGroups_[size_t(triangleIndex)];
 }
 
-MeshBuild *MeshBuild::copyGroup(int groupIndex) const {
-    if (groupIndex < 0 || groupIndex >= getGroupCount()) return nullptr;
-    auto *result = new MeshBuild();
+eve::Result<void> MeshBuild::restoreGroupData(std::vector<std::string> names, std::vector<int> assignments,
+                                              int activeGroup) {
+    const auto invalid = [&](std::string message, std::string path) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ProcgenGroupDataInvalid, std::move(message), std::move(path), {}, "procgen.mesh"));
+    };
+    if (assignments.size() != indices_.size() / 3u || activeGroup < -1 ||
+        activeGroup >= static_cast<int>(names.size()) ||
+        std::any_of(names.begin(), names.end(), [](const std::string &name) { return name.empty(); }) ||
+        std::any_of(assignments.begin(), assignments.end(),
+                    [&](int group) { return group < -1 || group >= static_cast<int>(names.size()); }))
+        return invalid("mesh group sidecar is inconsistent with dense mesh streams", "groups");
+    groupNames_     = std::move(names);
+    triangleGroups_ = std::move(assignments);
+    activeGroup_    = activeGroup;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+std::unique_ptr<MeshBuild> MeshBuild::copyGroup(int groupIndex) const {
+    if (groupIndex < 0 || groupIndex >= getGroupCount()) return {};
+    auto result = std::make_unique<MeshBuild>();
     result->setActiveGroup(groupNames_[size_t(groupIndex)]);
     std::unordered_map<uint32_t, uint32_t> remap;
     for (int t = 0; t < int(triangleGroups_.size()); ++t) {
@@ -89,7 +108,7 @@ MeshBuild *MeshBuild::copyGroup(int groupIndex) const {
         }
         result->addTriangle(dst[0], dst[1], dst[2]);
     }
-    if (result->empty()) { delete result; return nullptr; }
+    if (result->empty()) return {};
     result->meta_ = meta_;
     result->setMeta("group", groupNames_[size_t(groupIndex)]);
     return result;

@@ -7,20 +7,30 @@ namespace {
 
 constexpr const char* kShellHostName = "eve_editor";
 
+void setHostVisible(UIHostHandle handle, bool visible) {
+    auto host = UIHost::resolve(handle);
+    if (host) host->get().setVisible(visible);
+}
+
 }  // namespace
 
 EditorShell::~EditorShell() {
-    if (host_) host_->setTree(window("", {}));
+    auto host = UIHost::resolve(host_);
+    if (host) host->get().setTree(window("", {}));
 }
 
-void EditorShell::open(UIHost* inspector, UIHost* database, UIHost* scene) {
+void EditorShell::open(UIHostHandle inspector, UIHostHandle database, UIHostHandle scene) {
     inspector_ = inspector;
     database_  = database;
     scene_     = scene;
-    if (!host_) {
+    auto host  = UIHost::resolve(host_);
+    if (!host) {
         host_ = UIHost::createHost(kShellHostName);
+        host  = UIHost::resolve(host_);
     }
-    auto meta            = host_->meta();
+    if (!host) return;
+    UIHost& shell        = host->get();
+    auto    meta         = shell.meta();
     meta->overlay        = true;  // no title bar
     meta->hasPos         = true;
     meta->lockPos        = true;
@@ -34,59 +44,66 @@ void EditorShell::open(UIHost* inspector, UIHost* database, UIHost* scene) {
     meta->visible        = true;
     meta->overlayBgAlpha = 1.f;
     meta->overlayFlush   = true;
-    host_->setTree(build());
+    shell.setTree(build());
     relayout();
-    if (inspector_) inspector_->setVisible(true);
-    if (database_) database_->setVisible(true);
-    if (scene_) scene_->setVisible(true);
+    setHostVisible(inspector_, true);
+    setHostVisible(database_, true);
+    setHostVisible(scene_, true);
 }
 
 void EditorShell::close() {
-    if (host_) host_->setVisible(false);
-    if (inspector_) inspector_->setVisible(false);
-    if (database_) database_->setVisible(false);
-    if (scene_) scene_->setVisible(false);
+    setHostVisible(host_, false);
+    setHostVisible(inspector_, false);
+    setHostVisible(database_, false);
+    setHostVisible(scene_, false);
 }
 
-bool EditorShell::isOpen() const { return host_ && host_->meta()->visible; }
+bool EditorShell::isOpen() const {
+    auto host = UIHost::resolve(host_);
+    return host && host->get().meta()->visible;
+}
 
 bool EditorShell::selectPanel(const std::string& name) {
-    if (!host_ || !host_->meta()->visible) return false;
+    auto host = UIHost::resolve(host_);
+    if (!host || !host->get().meta()->visible) return false;
     if (name == "inspector") {
-        if (inspector_) inspector_->setVisible(true);
-        if (database_) database_->setVisible(false);
-        if (scene_) scene_->setVisible(false);
+        setHostVisible(inspector_, true);
+        setHostVisible(database_, false);
+        setHostVisible(scene_, false);
         return true;
     }
     if (name == "database") {
-        if (database_) database_->setVisible(true);
-        if (inspector_) inspector_->setVisible(false);
-        if (scene_) scene_->setVisible(false);
+        setHostVisible(database_, true);
+        setHostVisible(inspector_, false);
+        setHostVisible(scene_, false);
         return true;
     }
     if (name == "scene") {
-        if (scene_) scene_->setVisible(true);
-        if (inspector_) inspector_->setVisible(false);
-        if (database_) database_->setVisible(false);
+        setHostVisible(scene_, true);
+        setHostVisible(inspector_, false);
+        setHostVisible(database_, false);
         return true;
     }
     if (name.empty()) {
-        if (inspector_) inspector_->setVisible(false);
-        if (database_) database_->setVisible(false);
-        if (scene_) scene_->setVisible(false);
+        setHostVisible(inspector_, false);
+        setHostVisible(database_, false);
+        setHostVisible(scene_, false);
         return true;
     }
     return false;
 }
 
 bool EditorShell::togglePanel(const std::string& name) {
-    if (!host_ || !host_->meta()->visible) return false;
-    UIHost* panel = nullptr;
-    if (name == "inspector") panel = inspector_;
-    if (name == "database") panel = database_;
-    if (name == "scene") panel = scene_;
+    auto host = UIHost::resolve(host_);
+    if (!host || !host->get().meta()->visible) return false;
+    UIHostHandle handle{};
+    if (name == "inspector") handle = inspector_;
+    if (name == "database") handle = database_;
+    if (name == "scene") handle = scene_;
+    auto panel = UIHost::resolve(handle);
     if (!panel) return false;
-    panel->setVisible(!panel->meta()->visible);
+    UIHost& panelHost = panel->get();
+    panelHost.setVisible(!panelHost.meta()->visible);
     return true;
 }
 
@@ -115,8 +132,8 @@ void EditorShell::relayout() {
     // Seed a responsive three-column workspace once. lockPos/lockSize are
     // disabled so subsequent user adjustments are stored/restored by ImGui's
     // standard ini workspace persistence.
-    if (inspector_) {
-        auto meta      = inspector_->meta();
+    if (auto inspector = UIHost::resolve(inspector_)) {
+        auto meta      = inspector->get().meta();
         meta->hasPos   = true;
         meta->posX     = 0.f;
         meta->posY     = toolbarHeight_;
@@ -130,8 +147,8 @@ void EditorShell::relayout() {
         meta->percentH = 0.9f;
         meta->lockSize = false;
     }
-    if (database_) {
-        auto meta      = database_->meta();
+    if (auto database = UIHost::resolve(database_)) {
+        auto meta      = database->get().meta();
         meta->hasPos   = true;
         meta->posX     = 0.f;
         meta->posY     = toolbarHeight_;
@@ -145,8 +162,8 @@ void EditorShell::relayout() {
         meta->percentH = 0.9f;
         meta->lockSize = false;
     }
-    if (scene_) {
-        auto meta      = scene_->meta();
+    if (auto scene = UIHost::resolve(scene_)) {
+        auto meta      = scene->get().meta();
         meta->hasPos   = true;
         meta->posX     = 0.f;
         meta->posY     = toolbarHeight_;

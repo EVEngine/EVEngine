@@ -119,8 +119,7 @@ TEST_CASE("scriptModule.rejectsCyclesBeforeExecution") {
     try {
         runtime.compileSource("import { a } from \"mem:/a.nut\"\n", "game:/main.nut");
     } catch (const ScriptException& error) {
-        rejected = std::string(error.what()).find("cyclic script import") != std::string::npos ||
-                   runtime.scriptModules().lastError().find("cyclic script import") != std::string::npos;
+        rejected = std::string(error.what()).find("cyclic script import") != std::string::npos;
     }
     REQUIRE(rejected);
 }

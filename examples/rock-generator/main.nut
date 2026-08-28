@@ -23,7 +23,13 @@ function coreId() {
 }
 
 function buildRock() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        ui.select("lab");
+        ui.setText("status", "Parameter creation failed: " + paramsResult.status.summary);
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(seed);
     p.setInt("subdivisions", 3);
     p.setString("baseShape", shapeNames[shapeIndex]);
@@ -35,26 +41,51 @@ function buildRock() {
     p.setFloat("scale", noiseScale);
     p.setInt("octaves", 4);
 
-    local mesh = procgen.generateMesh("mesh.rock", p, gfx);
-    if (mesh == null) {
+    local meshResult = procgen.generateMesh("mesh.rock", p, gfx);
+    if (!meshResult.ok) {
         ui.select("lab");
-        ui.setText("status", "Generation failed: " + procgen.lastError());
+        ui.setText("status", "Generation failed: " + meshResult.status.summary);
         return;
     }
+    local mesh = meshResult.value;
     p.setInt("subdivisions", 2);
-    local lod1 = procgen.generateMesh("mesh.rock", p, gfx);
+    local lod1Result = procgen.generateMesh("mesh.rock", p, gfx);
+    if (!lod1Result.ok) {
+        ui.setText("status", "LOD1 generation failed: " + lod1Result.status.summary);
+        return;
+    }
+    local lod1 = lod1Result.value;
     p.setInt("subdivisions", 1);
-    local lod2 = procgen.generateMesh("mesh.rock", p, gfx);
+    local lod2Result = procgen.generateMesh("mesh.rock", p, gfx);
+    if (!lod2Result.ok) {
+        ui.setText("status", "LOD2 generation failed: " + lod2Result.status.summary);
+        return;
+    }
+    local lod2 = lod2Result.value;
 
-    local tp = procgen.newParams();
+    local textureParamsResult = procgen.newParams();
+    if (!textureParamsResult.ok) {
+        ui.setText("status", "Texture parameter creation failed: " + textureParamsResult.status.summary);
+        return;
+    }
+    local tp = textureParamsResult.value;
     tp.setSeed(seed);
     tp.setSize(256, 256);
     tp.setFloat("scale", 4.2);
     tp.setInt("octaves", 5);
     tp.setInt("seamless", 1);
-    local albedo = procgen.generateTexture("tex.stone", tp, gfx);
-    local normalImage = procgen.generateNormalImage("tex.stone", tp);
-    local normal = normalImage == null ? null : gfx.newTexture(normalImage, true, true);
+    local albedoResult = procgen.generateTexture("tex.stone", tp, gfx);
+    if (!albedoResult.ok) {
+        ui.setText("status", "Albedo generation failed: " + albedoResult.status.summary);
+        return;
+    }
+    local albedo = albedoResult.value;
+    local normalImageResult = procgen.generateNormalImage("tex.stone", tp);
+    if (!normalImageResult.ok) {
+        ui.setText("status", "Normal generation failed: " + normalImageResult.status.summary);
+        return;
+    }
+    local normal = gfx.newTexture(normalImageResult.value, true, true);
 
     if (rock == null) rock = eve.Renderable3D();
     rock.clearMeshLod();

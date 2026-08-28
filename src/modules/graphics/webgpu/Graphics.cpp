@@ -1,6 +1,7 @@
 #include "graphics/webgpu/Graphics.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/GraphicsCapabilities.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderControl.h"
@@ -8,9 +9,9 @@
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
+#include "graphics/webgpu/BindGroupLayoutBuilder.h"
 #include "graphics/webgpu/Canvas.h"
 #include "graphics/webgpu/InitFlow.h"
-#include "graphics/webgpu/BindGroupLayoutBuilder.h"
 #include "graphics/webgpu/PipelineBuilder.h"
 #include "graphics/webgpu/wgsl_shaders.h"
 
@@ -90,7 +91,7 @@ Graphics::Graphics() {
     }
 }
 
-Graphics::~Graphics() = default;
+Graphics::~Graphics() { detachGraphicsArtifactProvider(this); }
 
 // ---------------------------------------------------------------------------
 // Init
@@ -2077,6 +2078,17 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::unique_ptr<Mesh>(mesh));
     return mesh;
+}
+
+std::optional<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh *mesh) const {
+    if (!mesh || !mesh->gpuHandle) return std::nullopt;
+    const auto *gpu = static_cast<const GpuMesh *>(mesh->gpuHandle);
+    const auto  owned =
+        std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
+                     [gpu](const std::unique_ptr<GpuMesh> &candidate) { return candidate.get() == gpu; });
+    if (owned == ownedGpuMeshes.end()) return std::nullopt;
+    return eve::graphics::MeshBackendDescriptor{gpu->vertexCount, gpu->indexCount, gpu->vertexStride,
+                                                gpu->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u};
 }
 
 Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {

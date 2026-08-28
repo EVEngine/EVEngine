@@ -200,7 +200,7 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
     gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.22f, 1.0f));
 
     auto *fs = bootstrapFilesystemForSaveIO("evengine_gfx_smoke_clear");
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     auto checkerPx = makeCheckerRGBA(64, 64, 8, 255, 220, 60, 40, 40, 180);
     eve::image::ImageData src(64, 64, "RGBA8");
@@ -287,7 +287,7 @@ TEST_CASE("GraphicsSmoke.newTextureFromFileThrowsOnMissing") {
 
     // No write-dir bootstrap: missing-file should throw from PhysFS open alone.
     // (Parallel GraphicsSmoke.clearAndPresentWindow used to race the same identity.)
-    eve::filesystem::Filesystem::create();
+    [[maybe_unused]] auto *const filesystemModule = eve::filesystem::Filesystem::create();
     bool threw = false;
     try {
         gfx->newTextureFromFile("definitely_missing_evengine_xyz.png");

@@ -53,7 +53,12 @@ function regenerateMap() {
     local h = 40;
     ensureLayer(w, h);
 
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        status = "MAP PARAMS FAIL: " + paramsResult.status.summary;
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(seed);
     p.setSize(w, h);
     if (algo == "cave.cellular") {
@@ -69,17 +74,28 @@ function regenerateMap() {
         p.setInt("maxAttempts", 64);
     }
 
-    local out = procgen.newOutput();
+    local outputResult = procgen.newOutput();
+    if (!outputResult.ok) {
+        status = "OUTPUT FAIL: " + outputResult.status.summary;
+        return;
+    }
+    local out = outputResult.value;
     out.setTarget("tilelayer");
     out.setLayer(layer);
     out.setPalette("demo");
 
-    if (!procgen.generateTo(algo, p, out)) {
-        status = "MAP FAIL: " + procgen.lastError();
+    local outputWriteResult = procgen.generateTo(algo, p, out);
+    if (!outputWriteResult.ok) {
+        status = "MAP FAIL: " + outputWriteResult.status.summary;
         return;
     }
 
-    local grid = procgen.generate(algo, p);
+    local gridResult = procgen.generate(algo, p);
+    if (!gridResult.ok) {
+        status = "MAP GRID FAIL: " + gridResult.status.summary;
+        return;
+    }
+    local grid = gridResult.value;
     local objInfo = "";
     if (grid != null) {
         local n = grid.getObjectCount();
@@ -95,7 +111,12 @@ function regenerateMap() {
 }
 
 function regenerateTexture() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        status = "TEX PARAMS FAIL: " + paramsResult.status.summary;
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(texSeed);
     p.setSize(128, 128);
     p.setFloat("scale", 4.0);
@@ -104,18 +125,19 @@ function regenerateTexture() {
     p.setInt("pixelSize", 2);
     p.setInt("seamless", 1);
     if (showNormal) {
-        local img = procgen.generateNormalImage(texRecipe, p);
-        if (img == null) {
-            status = "TEX FAIL: " + procgen.lastError();
+        local imageResult = procgen.generateNormalImage(texRecipe, p);
+        if (!imageResult.ok) {
+            status = "TEX FAIL: " + imageResult.status.summary;
             return;
         }
-        tex = gfx.newTexture(img, true, true);
+        tex = gfx.newTexture(imageResult.value, true, true);
     } else {
-        tex = procgen.generateTexture(texRecipe, p, gfx);
-        if (tex == null) {
-            status = "TEX FAIL: " + procgen.lastError();
+        local textureResult = procgen.generateTexture(texRecipe, p, gfx);
+        if (!textureResult.ok) {
+            status = "TEX FAIL: " + textureResult.status.summary;
             return;
         }
+        tex = textureResult.value;
     }
     status = algo + " seed=" + seed + " | " + texRecipe + (showNormal ? " [normal]" : "") +
              " tseed=" + texSeed;

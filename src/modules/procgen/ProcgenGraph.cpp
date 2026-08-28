@@ -4,6 +4,8 @@
 
 namespace eve::procgen {
 
-PointGraph* Procgen::newPointGraph() { return new PointGraph(); }
+eve::Result<ProcgenPointGraphHandleRef> Procgen::newPointGraphHandle() {
+    return pointGraphs_.emplace(std::make_unique<PointGraph>());
+}
 
 }  // namespace eve::procgen

@@ -2,7 +2,7 @@
 #include "common/Runtime.h"
 #include "devtools/DevTool.hpp"
 #include "devtools/ScenarioRecorder.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -27,7 +27,7 @@ function consumeTap(name) {
 // Polls every pending event and dispatches "tap" into consumeTap, catching the
 // thrown error. Mirrors how the game loop consumes the event queue per frame.
 bool drainTaps(ssq::VM& vm, bool& threw) {
-    auto* ev = eve::ModuleManager::requireInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::requireInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return false;
     while (auto msg = ev->pollOwned()) {
         if (msg->name == "tap") {
@@ -49,7 +49,7 @@ TEST_CASE("devtools.scenario.recordPersistLoadRoundTrip") {
 
     Runtime rt(256, ssq::Libs::ALL);
     rt.runSource(kTapScript, "taps.nut");
-    auto* ev = eve::ModuleManager::requireInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::requireInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     ev->clear();
 
     auto& rec = dev::ScenarioRecorder::instance();
@@ -95,7 +95,7 @@ TEST_CASE("devtools.scenario.replayReproducesStateDrivenError") {
     // --- Record the failing run ---
     Runtime rt(256, ssq::Libs::ALL);
     rt.runSource(kTapScript, "taps.nut");
-    auto* ev = eve::ModuleManager::requireInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::requireInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     ev->clear();
 
     auto& rec = dev::ScenarioRecorder::instance();

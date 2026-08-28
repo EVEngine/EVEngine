@@ -245,4 +245,3 @@ std::string Profiler::textReport() {
 }
 
 }  // namespace eve::prof
-

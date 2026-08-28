@@ -23,7 +23,13 @@ function loadBushTexture() {
 }
 
 function rebuildBush() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        ui.select("lab");
+        ui.setText("status", "Parameter creation failed: " + paramsResult.status.summary);
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(bushSeed);
     p.setString("style", bushStyle);
     p.setString("leafMode", bushLeafMode);
@@ -35,7 +41,13 @@ function rebuildBush() {
     p.setInt("radialSegments", 12);
     p.setFloat("leafSize", 0.32);
     p.setInt("twigs", 6);
-    bushMesh = procgen.generateMesh("mesh.bush", p, gfx);
+    local meshResult = procgen.generateMesh("mesh.bush", p, gfx);
+    if (!meshResult.ok) {
+        ui.select("lab");
+        ui.setText("status", "Generation failed: " + meshResult.status.summary);
+        return;
+    }
+    bushMesh = meshResult.value;
     if (bushObject == null) {
         bushObject = eve.Renderable3D();
         bushObject.setPosition(0.0, 0.0, 0.0);

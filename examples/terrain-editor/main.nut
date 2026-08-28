@@ -30,16 +30,22 @@ const CELL = 0.5;      // world units per heightmap cell
 const HSCALE = 3.2;    // world units per unit of height
 
 function regenTerrain() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return;
+    local p = paramsResult.value;
     p.setSize(W, H);
     p.setSeed(20260819);
     p.setFloat("frequency", 1.0 / 22.0);
     p.setInt("octaves", 5);
-    local generated = procgen.generateHeightmap(p);
-    if (generated != null) {
-        hm = generated;
+    local generatedResult = procgen.generateHeightmap(p);
+    if (generatedResult.ok) {
+        hm = generatedResult.value;
     } else {
-        if (hm == null) hm = procgen.newHeightmap(W, H);
+        if (hm == null) {
+            local fallbackResult = procgen.newHeightmap(W, H);
+            if (!fallbackResult.ok) return;
+            hm = fallbackResult.value;
+        }
         for (local y = 0; y < H; y++) {
             for (local x = 0; x < W; x++) {
                 hm.setHeight(x, y, 0.5 + 0.22 * sin(x * 0.18) * cos(y * 0.18));

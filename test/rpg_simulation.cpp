@@ -479,7 +479,9 @@ TEST_CASE("rpg.simulation.villageDefenseSystems") {
     // Fireball spends mana and applies burn DOT.
     double manaBefore = player->getFinalAttribute("mana");
     REQUIRE(player->beginCastSkill("sim.fireball", enemy));
-    rpg->update(0.016f);
+    // The zero-cast-time skill resolves synchronously. Poll the event cache
+    // without aging the newly-created damage-over-time effect.
+    rpg->update(0.0f);
     CHECK(enemy->hasEffect("sim.dot.burn"));
     CHECK(player->getFinalAttribute("mana") < manaBefore);
 
@@ -503,8 +505,9 @@ TEST_CASE("rpg.simulation.villageDefenseSystems") {
     CHECK(enemy->getFinalAttribute("health") > 0.0);
 
     // Finish with strikes until enemy falls; heal potion mid-fight.
-    player->applyEffect("sim.instant.heal");
-    CHECK(approxEqD(player->getFinalAttribute("health"), 100.0));
+    const int healResult = player->applyEffect("sim.instant.heal");
+    CHECK_EQ(healResult, 0);
+    CHECK_EQ(player->getFinalAttribute("health"), 100.0);
 
     int safety = 0;
     while (enemy->getFinalAttribute("health") > 0.0 && safety < 20) {

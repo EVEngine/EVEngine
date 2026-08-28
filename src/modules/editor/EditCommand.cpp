@@ -29,6 +29,9 @@ void IntFieldEditCommand::revert() {
     if (!field) return;
     for (auto it = changes_.rbegin(); it != changes_.rend(); ++it) field->writeInt(it->x, it->y, it->before);
 }
+std::unique_ptr<IEditCommand> IntFieldEditCommand::clone() const {
+    return std::make_unique<IntFieldEditCommand>(*this);
+}
 bool IntFieldEditCommand::mergeWith(const IEditCommand &laterBase) {
     auto *later = dynamic_cast<const IntFieldEditCommand *>(&laterBase);
     if (!later || later->target_ != target_) return false;
@@ -71,6 +74,9 @@ void ScalarFieldEditCommand::revert() {
     auto *field = target_ ? target_->query<IScalarFieldTarget>() : nullptr;
     if (!field) return;
     for (auto it = changes_.rbegin(); it != changes_.rend(); ++it) field->writeScalar(it->x, it->y, it->before);
+}
+std::unique_ptr<IEditCommand> ScalarFieldEditCommand::clone() const {
+    return std::make_unique<ScalarFieldEditCommand>(*this);
 }
 bool ScalarFieldEditCommand::mergeWith(const IEditCommand &laterBase) {
     auto *later = dynamic_cast<const ScalarFieldEditCommand *>(&laterBase);

@@ -9,10 +9,10 @@
 struct SQVM;
 typedef struct SQVM* HSQUIRRELVM;
 
-namespace eve::event {
-class Event;
+namespace eve::platform_event {
+class PlatformEvent;
 class Message;
-}  // namespace eve::event
+}  // namespace eve::platform_event
 
 namespace eve::dev {
 
@@ -90,7 +90,7 @@ public:
     /** @brief Called by DevTool when a script error is dumped during recording. */
     void setErrorInfo(const std::string& report, const std::string& site);
     /** @brief Invoked by the event poll observer for every consumed message. */
-    void onEventConsumed(const eve::event::Message& msg);
+    void onEventConsumed(const eve::platform_event::Message& msg);
     /** @brief Ensure the event observer is detached (restore previous); safe to call repeatedly. */
     void detachObserver();
 
@@ -123,8 +123,8 @@ private:
     std::vector<ScenarioFrame>             frames_;
     std::string                            errorReport_;
     std::string                            errorSite_;
-    std::function<void(const eve::event::Message&)> savedObserver_;
-    eve::event::Event*                     eventModule_ = nullptr;
+    std::function<void(const eve::platform_event::Message&)> savedObserver_;
+    eve::platform_event::PlatformEvent*                      eventModule_ = nullptr;
 };
 
 }  // namespace eve::dev

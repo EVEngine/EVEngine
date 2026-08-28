@@ -3,7 +3,8 @@
 #include "procgen/ShapeGrammar.h"
 
 #include <cmath>
-#include <zeroerr.hpp>
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
 using namespace eve::procgen;
 

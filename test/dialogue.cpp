@@ -318,7 +318,7 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
             kids.push_back(text("[advance]", "hint"));
         }
 
-        ui->remountAs("dlg", window("Dialogue", kids, "root"));
+        REQUIRE(UIHost::resolve(ui->remountAs("dlg", window("Dialogue", kids, "root"))).has_value());
         ui->beginFrameAndRender();
         RenderSystem::render(*gfx);
         ui->dispatchEvents();

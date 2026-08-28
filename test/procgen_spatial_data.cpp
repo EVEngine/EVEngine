@@ -1,7 +1,8 @@
 #include "procgen/Procgen.h"
 #include "procgen/SpatialData.h"
 
-#include <zeroerr.hpp>
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
 #include <cmath>
 
@@ -51,29 +52,43 @@ TEST_CASE("procgen.spatialData.splineAndDeterministicSampling") {
 
 TEST_CASE("procgen.spatialData.scriptFacingApiFiltersPoints") {
     Procgen proc;
-    SpatialData* include = proc.boxVolume(0.f, -1.f, 0.f, 5.f, 1.f, 5.f);
-    SpatialData* exclude = proc.sphereVolume(2.f, 0.f, 2.f, 1.f);
-    REQUIRE(bool(include));
-    REQUIRE(bool(exclude));
-    SpatialData* domain = proc.differenceSpatial(include, exclude);
-    REQUIRE(bool(domain));
+    auto    includeResult = proc.boxVolumeHandle(0.f, -1.f, 0.f, 5.f, 1.f, 5.f);
+    auto    excludeResult = proc.sphereVolumeHandle(2.f, 0.f, 2.f, 1.f);
+    REQUIRE(includeResult.ok());
+    REQUIRE(excludeResult.ok());
+    auto include      = std::move(includeResult).takeValue();
+    auto exclude      = std::move(excludeResult).takeValue();
+    auto domainResult = proc.differenceSpatialHandle(include, exclude);
+    REQUIRE(domainResult.ok());
+    auto domain = std::move(domainResult).takeValue();
 
-    PointSet input;
-    input.add(1.f, 0.f, 1.f);
-    input.add(2.f, 0.f, 2.f);
-    input.add(9.f, 0.f, 9.f);
-    PointSet* accepted = proc.filterSpatial(&input, domain, false);
-    PointSet* rejected = proc.filterSpatial(&input, domain, true);
-    REQUIRE(bool(accepted));
-    REQUIRE(bool(rejected));
-    CHECK_EQ(accepted->getCount(), 1);
-    CHECK_EQ(rejected->getCount(), 2);
+    auto inputResult = proc.newPointSetHandle();
+    REQUIRE(inputResult.ok());
+    auto input     = std::move(inputResult).takeValue();
+    auto inputView = proc.resolvePointSet(input);
+    REQUIRE(inputView.isBound());
+    inputView->add(1.f, 0.f, 1.f);
+    inputView->add(2.f, 0.f, 2.f);
+    inputView->add(9.f, 0.f, 9.f);
+    auto acceptedResult = proc.filterSpatialHandle(input, domain, false);
+    auto rejectedResult = proc.filterSpatialHandle(input, domain, true);
+    REQUIRE(acceptedResult.ok());
+    REQUIRE(rejectedResult.ok());
+    auto accepted     = std::move(acceptedResult).takeValue();
+    auto rejected     = std::move(rejectedResult).takeValue();
+    auto acceptedView = proc.resolvePointSet(accepted);
+    auto rejectedView = proc.resolvePointSet(rejected);
+    REQUIRE(acceptedView.isBound());
+    REQUIRE(rejectedView.isBound());
+    CHECK_EQ(acceptedView->getCount(), 1);
+    CHECK_EQ(rejectedView->getCount(), 2);
 
-    delete rejected;
-    delete accepted;
-    delete domain;
-    delete exclude;
-    delete include;
+    REQUIRE(proc.releasePointSet(rejected).ok());
+    REQUIRE(proc.releasePointSet(accepted).ok());
+    REQUIRE(proc.releasePointSet(input).ok());
+    REQUIRE(proc.release(domain).ok());
+    REQUIRE(proc.release(exclude).ok());
+    REQUIRE(proc.release(include).ok());
 }
 
 TEST_CASE("procgen.spatialData.heightfieldSamplesAndProjectsSurface") {

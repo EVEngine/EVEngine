@@ -35,7 +35,9 @@ function loadStructureTexture(spec, p) {
             // Fall back to a procedural texture if the CC0 file is missing.
         }
     }
-    local tp = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return null;
+    local tp = paramsResult.value;
     tp.setSeed(7);
     tp.setSize(128, 128);
     tp.setFloat("scale", 4.0);
@@ -43,21 +45,30 @@ function loadStructureTexture(spec, p) {
     tp.setInt("colors", 6);
     tp.setInt("pixelSize", 2);
     tp.setInt("seamless", 1);
-    return procgen.generateTexture(spec.tex, tp, gfx);
+    local textureResult = procgen.generateTexture(spec.tex, tp, gfx);
+    if (!textureResult.ok) return null;
+    return textureResult.value;
 }
 
 function buildOne(spec, x, y, z) {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        ui.select("lab");
+        ui.setText("status", "Parameter creation failed: " + paramsResult.status.summary);
+        return null;
+    }
+    local p = paramsResult.value;
     p.setInt("segments", segments);
     p.setFloat("segLength", segLength);
     p.setFloat("uvRepeat", 2.0);
 
-    local mesh = procgen.generateMesh(spec.id, p, gfx);
-    if (mesh == null) {
+    local meshResult = procgen.generateMesh(spec.id, p, gfx);
+    if (!meshResult.ok) {
         ui.select("lab");
-        ui.setText("status", "FAIL " + spec.id + ": " + procgen.lastError());
+        ui.setText("status", "FAIL " + spec.id + ": " + meshResult.status.summary);
         return null;
     }
+    local mesh = meshResult.value;
     local tex = loadStructureTexture(spec, p);
 
     local ent = eve.Renderable3D();

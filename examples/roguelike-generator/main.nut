@@ -181,7 +181,12 @@ function syncTileLayers() {
 
 function regenerate(useRandom) {
     if (useRandom) seed = procgen.randomSeed();
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        info = "PARAMS FAILED: " + paramsResult.status.summary;
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(seed);
     p.setSize(MAP_W, MAP_H);
     p.setInt("roomCount", roomCount);
@@ -195,11 +200,12 @@ function regenerate(useRandom) {
     p.setFloat("decorDensity", decorDensity);
     p.setInt("autotile", 1);
 
-    gen = procgen.generate("level.roguelike", p);
-    if (gen == null) {
-        info = "GENERATE FAILED: " + procgen.lastError();
+    local generationResult = procgen.generate("level.roguelike", p);
+    if (!generationResult.ok) {
+        info = "GENERATE FAILED: " + generationResult.status.summary;
         return;
     }
+    gen = generationResult.value;
     ensureConnected();
 
     objInfo = "";

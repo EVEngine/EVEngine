@@ -4,6 +4,18 @@
 
 按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
 
+## Result 投影约定
+
+Procgen 的创建、生成、输出和事务提交 API 都返回统一的 Squirrel Result 表：
+`{ ok, code, hasValue, status, diagnostics, value }`。调用方必须先读取 `ok`；只有
+`ok == true` 时才读取 `value`。失败信息使用 `status.summary` 或结构化
+`diagnostics`，不再通过空值和全局错误字符串拼接错误协议。Graphics 上传属于
+C++ render bridge 的 borrowed 边界，不是 Squirrel 的第二套生成入口。
+
+这里的 `newParams`、`generate`、`buildMesh` 等是当前 canonical Squirrel 方法名；
+Procgen 不提供 `lastError()`、`*Owned` 或 `*Checked` 的兼容命名。Result 的 `value`
+可以是由 generation handle 支持的 owned proxy，释放和 stale 检查遵循该 proxy 的
+公共方法。
 ## UE PCG 对标范围
 
 本模块对标的是 UE PCG 的核心工作流，而不是复制 UE 类型或资产格式：统一 Spatial Data、
@@ -20,10 +32,36 @@ PointGraph 定义。
 
 ```squirrel
 local gen = eve.Procgen();
-local p = gen.newParams();
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setSeed(42); p.setSize(64, 40);
-local grid = gen.generate("dungeon.bsp", p);
+local gridResult = gen.generate("dungeon.bsp", p);
+if (!gridResult.ok) throw gridResult.status.summary;
+local grid = gridResult.value;
 ```
+
+### 受检 artifact API
+
+跨存档、跨进程或需要发布到可选后端时，使用 `buildArtifact()` 与
+`publishArtifact()`。两个方法都返回公共 Result 投影表；脚本必须检查
+`result.ok`，或用 `eve.result.ignore(result, "明确原因")` 记录有意忽略。artifact
+身份必须是非 nil 的规范 UUID 文本，发布选项依次为 scene、graphics、physics、map：
+
+```squirrel
+local artifactResult = gen.buildArtifact("mesh.castle", p,
+                                         "11111111-1111-4111-8111-111111111111");
+if (!artifactResult.ok) throw artifactResult.status.summary;
+local artifact = artifactResult.value;
+local receiptResult = gen.publishArtifact("mesh.castle", p,
+    "11111111-1111-4111-8111-111111111111", false, true, false, false);
+if (!receiptResult.ok) throw receiptResult.status.summary;
+local receipt = receiptResult.value;
+```
+
+所有可能失败的 Procgen 创建、生成、上传、输出和提交操作都返回同一套 Result
+投影；成功后才读取 `value`，失败时使用 `status.summary` 或 `diagnostics`。
+不要用空值与另一个错误字符串拼接成错误协议。
 
 ## 参数 schema 与动态编辑 UI
 
@@ -33,8 +71,11 @@ local grid = gen.generate("dungeon.bsp", p);
 
 ```squirrel
 local algorithm = "cave.cellular";
-local params = gen.newParams();
-gen.applyAlgorithmDefaults(algorithm, params);
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local params = paramsResult.value;
+local defaultsResult = gen.applyAlgorithmDefaults(algorithm, params);
+if (!defaultsResult.ok) throw defaultsResult.status.summary;
 
 for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
     local key = gen.getAlgorithmParamKey(algorithm, i);
@@ -71,15 +112,41 @@ for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
 `applyMeshRecipeDefaults` 把缺失值写入
 `Params`，已有的项目覆盖值保持不变。
 
+`generateTexture(recipeId, params, graphics)` 直接把纹理配方生成的临时
+`ImageData` 上传到传入的 `Graphics`，返回统一 Result。成功时 `value` 是由该
+`Graphics` 资源系统拥有的 borrowed `Texture`；调用方不得销毁它，也不得跨
+Graphics 关闭、资源重建或后端切换保存引用。参数、Graphics 或生成结果无效时，
+调用方必须检查失败 Result。
+
+### Params 的类型与尺寸语义
+
+`Params` 的算法私有值由 owning 的 `Value::Object` 保存。`setInt`、`setFloat`、
+`setBool`、`setString` 分别保留整数、浮点数、布尔值和字符串类型；getter 不会把
+字符串解析成数字/布尔，也不会把数字 stringify 成字符串。`getInt` 支持范围内的
+整数、有限整数浮点数和 `bool -> 0/1`；`getFloat` 支持可表示的整数/浮点数和
+`bool -> 0/1`；`getBool` 只接受布尔值或精确数值 `0/1`；不匹配时返回默认值。
+
+`seed`、`width`、`height` 的 `setSeed`/`setSize` 和 `setInt` 路径属于独立的生成
+维度域。浮点、布尔或字符串 setter 使用同名 key 时属于算法私有域，不会修改
+`getSeed`/`getWidth`/`getHeight`。`canonicalString()` 稳定排序并带类型标签，
+因此同一组参数在不同插入顺序下相同，而 `1`、`1.0`、`true`、`"1"` 不会碰撞。
+
 ```squirrel
 local recipe = "pbr.rock";
-local values = gen.newParams();
+local valuesResult = gen.newParams();
+if (!valuesResult.ok) throw valuesResult.status.summary;
+local values = valuesResult.value;
 values.setSize(128, 128);
-gen.applyPbrRecipeDefaults(recipe, values);
-local schema = gen.getPbrRecipeSchema(recipe);
+local defaultsResult = gen.applyPbrRecipeDefaults(recipe, values);
+if (!defaultsResult.ok) throw defaultsResult.status.summary;
+local schemaResult = gen.getPbrRecipeSchema(recipe);
+if (!schemaResult.ok) throw schemaResult.status.summary;
+local schema = schemaResult.value;
 for (local i = 0; i < schema.getParamCount(); ++i)
     buildProjectField(schema, values, i);
-local maps = gen.generatePbrMaterial(recipe, values);
+local mapsResult = gen.generatePbrMaterial(recipe, values);
+if (!mapsResult.ok) throw mapsResult.status.summary;
+local maps = mapsResult.value;
 local albedo = maps.getAlbedo();
 local normal = maps.getNormal();
 local roughness = maps.getRoughness();
@@ -105,10 +172,16 @@ roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材�
 
 ```squirrel
 local rootSeed = 42;
-local candidates = procgen.sampleGrid(32, 20, 2.0,
-                                      procgen.deriveSeed(rootSeed, "trees"), 0.75);
-local outsideRoad = procgen.excludeRadius(candidates, 20.0, 12.0, 4.0);
-local trees = procgen.selfPrune(outsideRoad, 1.8);
+local candidatesResult = procgen.sampleGrid(32, 20, 2.0,
+                                            procgen.deriveSeed(rootSeed, "trees"), 0.75);
+if (!candidatesResult.ok) throw candidatesResult.status.summary;
+local candidates = candidatesResult.value;
+local outsideRoadResult = procgen.excludeRadius(candidates, 20.0, 12.0, 4.0);
+if (!outsideRoadResult.ok) throw outsideRoadResult.status.summary;
+local outsideRoad = outsideRoadResult.value;
+local treesResult = procgen.selfPrune(outsideRoad, 1.8);
+if (!treesResult.ok) throw treesResult.status.summary;
+local trees = treesResult.value;
 ```
 
 空间约束也可继续用纯函数串接。`filterBox` / `excludeBox` 接受世界空间 AABB，
@@ -116,10 +189,18 @@ local trees = procgen.selfPrune(outsideRoad, 1.8);
 地表法线，随后可用 `filterSlope` 按角度筛选：
 
 ```squirrel
-local region = procgen.filterBox(candidates, 0, -100, 0, 512, 100, 512);
-local ground = procgen.projectToHeightmap(region, terrain, 0, 0, 2.0, 80.0);
-local buildable = procgen.filterSlope(ground, 0.0, 28.0);
-local outsideTown = procgen.excludeBox(buildable, 120, -100, 120, 240, 100, 240);
+local regionResult = procgen.filterBox(candidates, 0, -100, 0, 512, 100, 512);
+if (!regionResult.ok) throw regionResult.status.summary;
+local region = regionResult.value;
+local groundResult = procgen.projectToHeightmap(region, terrain, 0, 0, 2.0, 80.0);
+if (!groundResult.ok) throw groundResult.status.summary;
+local ground = groundResult.value;
+local buildableResult = procgen.filterSlope(ground, 0.0, 28.0);
+if (!buildableResult.ok) throw buildableResult.status.summary;
+local buildable = buildableResult.value;
+local outsideTownResult = procgen.excludeBox(buildable, 120, -100, 120, 240, 100, 240);
+if (!outsideTownResult.ok) throw outsideTownResult.status.summary;
+local outsideTown = outsideTownResult.value;
 ```
 
 任意多边形和折线样条同样用 `PointSet` 表示控制点，不需要额外节点类型。
@@ -129,17 +210,31 @@ local outsideTown = procgen.excludeBox(buildable, 120, -100, 120, 240, 100, 240)
 路灯、护栏等资产：
 
 ```squirrel
-local road = procgen.newPointSet();
+local roadResult = procgen.newPointSet();
+if (!roadResult.ok) throw roadResult.status.summary;
+local road = roadResult.value;
 road.add(0, 0, 0); road.add(80, 0, 30); road.add(140, 0, 120);
-local reserved = procgen.filterSplineDistance(candidates, road, 0.0, 8.0);
-local outsideRoad = procgen.filterSplineDistance(candidates, road, 8.0, 100000.0);
-local lamps = procgen.sampleSpline(road, 12.0,
-                                   procgen.deriveSeed(rootSeed, "lamps"), 0.0);
+local reservedResult = procgen.filterSplineDistance(candidates, road, 0.0, 8.0);
+if (!reservedResult.ok) throw reservedResult.status.summary;
+local reserved = reservedResult.value;
+local outsideRoadResult = procgen.filterSplineDistance(candidates, road, 8.0, 100000.0);
+if (!outsideRoadResult.ok) throw outsideRoadResult.status.summary;
+local outsideRoad = outsideRoadResult.value;
+local lampsResult = procgen.sampleSpline(road, 12.0,
+                                         procgen.deriveSeed(rootSeed, "lamps"), 0.0);
+if (!lampsResult.ok) throw lampsResult.status.summary;
+local lamps = lampsResult.value;
 
-local town = procgen.newPointSet();
+local townResult = procgen.newPointSet();
+if (!townResult.ok) throw townResult.status.summary;
+local town = townResult.value;
 town.add(20, 0, 20); town.add(160, 0, 35); town.add(130, 0, 150); town.add(35, 0, 120);
-local townCandidates = procgen.filterPolygon(candidates, town);
-local wilderness = procgen.excludePolygon(candidates, town);
+local townCandidatesResult = procgen.filterPolygon(candidates, town);
+if (!townCandidatesResult.ok) throw townCandidatesResult.status.summary;
+local townCandidates = townCandidatesResult.value;
+local wildernessResult = procgen.excludePolygon(candidates, town);
+if (!wildernessResult.ok) throw wildernessResult.status.summary;
+local wilderness = wildernessResult.value;
 ```
 
 不要让不同内容共享一个可变随机流。用 `deriveSeed(root, "trees")`、
@@ -480,16 +575,25 @@ viewport bounds 与性能热区覆盖；无效输入、绑定失败、执行失�
 
 ```squirrel
 function rebuildForest(seed) {
-    local ctx = procgen.beginSystem("forest", seed);
+    local contextResult = procgen.beginSystem("forest", seed);
+    if (!contextResult.ok) throw contextResult.status.summary;
+    local ctx = contextResult.value;
     try {
-        local points = procgen.sampleGrid(32, 20, 2.0, ctx.seedFor("trees"), 0.8);
-        local trees = procgen.selfPrune(points, 1.8);
+        local pointsResult = procgen.sampleGrid(32, 20, 2.0, ctx.seedFor("trees"), 0.8);
+        if (!pointsResult.ok) throw pointsResult.status.summary;
+        local points = pointsResult.value;
+        local treesResult = procgen.selfPrune(points, 1.8);
+        if (!treesResult.ok) throw treesResult.status.summary;
+        local trees = treesResult.value;
         ctx.trace("self prune", points.getCount(), trees.getCount(), 0.0);
         if (!ctx.publish("trees", trees)) throw ctx.getError();
-        if (!procgen.commitSystem(ctx)) throw procgen.lastError();
+        local commitResult = procgen.commitSystem(ctx);
+        if (!commitResult.ok) throw commitResult.status.summary;
     } catch (error) {
         ctx.fail(error.tostring());
-        procgen.commitSystem(ctx); // 失败并关闭 staging；旧快照仍然有效
+        local rollbackResult = procgen.commitSystem(ctx);
+        if (!rollbackResult.ok) throw rollbackResult.status.summary;
+        // 失败并关闭 staging；旧快照仍然有效
     }
 }
 
@@ -507,8 +611,9 @@ buildKey 都相同时，context 的 `isCacheHit()` 为 true 且无需执行或�
 
 ```squirrel
 local key = "forest-layout-v2:size=" + worldSize;
-local ctx = procgen.beginCachedSystem("forest", seed, key);
-if (ctx == null) throw procgen.lastError();
+local contextResult = procgen.beginCachedSystem("forest", seed, key);
+if (!contextResult.ok) throw contextResult.status.summary;
+local ctx = contextResult.value;
 if (ctx.isCacheHit()) {
     local cachedKey = ctx.getBuildKey();
     return procgen.getSystemOutput("forest", "trees");
@@ -570,7 +675,9 @@ local firstName = procgen.getSystemDebugStageName("forest", 0);
 
 ```nut
 if (!ctx.beginTrace("self prune", candidates.getCount())) throw ctx.getError();
-local trees = procgen.selfPrune(candidates, 32.0);
+local treesResult = procgen.selfPrune(candidates, 32.0);
+if (!treesResult.ok) throw treesResult.status.summary;
+local trees = treesResult.value;
 if (!ctx.endTrace(trees.getCount())) throw ctx.getError();
 ```
 
@@ -601,12 +708,17 @@ print(procgen.getSystemDebugDiffReport("forest") + "\n");
 ### 生成等值面网格（Marching Cubes）
 
 ```squirrel
-local p = gen.newParams();
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setSeed(1);
 p.setInt("resolution", 32);
 p.setString("field", "sphere"); // sphere | torus | noise | terrain
-local cpu = gen.buildMesh("mesh.marchingcubes", p);
-local gpu = gen.generateMesh("mesh.marchingcubes", p, gfx);
+local cpuResult = gen.buildMesh("mesh.marchingcubes", p);
+if (!cpuResult.ok) throw cpuResult.status.summary;
+local cpu = cpuResult.value;
+// Graphics 上传由 C++ render bridge 的 generateMeshBorrowed 完成；
+// 当前 Squirrel facade 只返回 handle-backed CPU MeshBuild。
 ```
 
 ### 生成六边形网格星球
@@ -617,13 +729,17 @@ local gpu = gen.generateMesh("mesh.marchingcubes", p, gfx);
 
 ```squirrel
 local gen = eve.Procgen();
-local p = gen.newParams();
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setFloat("radius", 1.0);
 p.setInt("subdivisions", 3);
 p.setFloat("tileInset", 0.12);
 
-local cpu = gen.buildMesh("mesh.hexplanet", p);
-local gpu = gen.generateMesh("mesh.hexplanet", p, gfx);
+local cpuResult = gen.buildMesh("mesh.hexplanet", p);
+if (!cpuResult.ok) throw cpuResult.status.summary;
+local cpu = cpuResult.value;
+// Graphics 上传由 C++ render bridge 的 generateMeshBorrowed 完成。
 ```
 
 参数：
@@ -652,7 +768,9 @@ local gpu = gen.generateMesh("mesh.hexplanet", p, gfx);
   便于复现或存档关卡。
 
 ```squirrel
-local p = procgen.newParams();
+local paramsResult = procgen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setSeed(42);
 p.setSize(48, 32);
 p.setInt("roomCount", 12);
@@ -660,7 +778,9 @@ p.setString("corridorStyle", "l");   // l | straight | diagonal
 p.setString("floorPattern", "brick");// brick | checker | plank | cobble | plain
 p.setFloat("decorDensity", 0.06);
 p.setString("decorSet", "mixed");    // none | pillars | treasure | mixed
-local grid = procgen.generate("level.roguelike", p);
+local gridResult = procgen.generate("level.roguelike", p);
+if (!gridResult.ok) throw gridResult.status.summary;
+local grid = gridResult.value;
 ```
 
 常用规则：`roomCount` / `roomMin` / `roomMax`（房间预算与尺寸）、
@@ -690,7 +810,9 @@ local grid = procgen.generate("level.roguelike", p);
 4. 全局几何优化（规则角、边/街平滑、交叉口直角、贴近初始），带“变差回滚”保护。
 
 ```squirrel
-local p = gen.newParams();
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setSeed(20260823);
 p.setString("land", "rect");          // rect | triangle | ellipse | l | hexagon
 p.setFloat("landWidth", 100);
@@ -701,11 +823,15 @@ p.setString("streetPattern", "default"); // default | loop | culdesac | tree
 p.setInt("optimize", 1);
 
 // 1) 语义地图：路 = Semantic::Road(11)，地块 = Floor(2)，detail = 地块 id(1..N)
-local grid = gen.generate("urban.parcels", p);
+local gridResult = gen.generate("urban.parcels", p);
+if (!gridResult.ok) throw gridResult.status.summary;
+local grid = gridResult.value;
 
-// 2) 城区网格：地块块 + 街道带（extrude>0 时挤压成体块）
+// 2) 城区网格的 CPU 表示：地块块 + 街道带（extrude>0 时挤压成体块）
 p.setFloat("extrude", 6.0);
-local mesh = gen.generateMesh("mesh.urban", p, gfx);
+local meshResult = gen.buildMesh("mesh.urban", p);
+if (!meshResult.ok) throw meshResult.status.summary;
+local mesh = meshResult.value;
 ```
 
 常用参数：`land` 也支持显式多边形（`"0,0;100,0;100,60;0,60"`）；
@@ -724,7 +850,9 @@ local mesh = gen.generateMesh("mesh.urban", p, gfx);
 - `spaceColonization`：让枝梢向树冠吸引点迭代生长，适合更不规则的冠形。
 
 ```squirrel
-local p = gen.newParams();
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setSeed(31415);
 p.setString("style", "lowpoly");           // lowpoly | realistic
 p.setString("branchAlgorithm", "weberPenn");
@@ -733,7 +861,9 @@ p.setFloat("leafDensity", 0.75);
 p.setFloat("height", 6.0);
 p.setFloat("crownRadius", 2.0);
 
-local tree = gen.generateMesh("mesh.tree", p, gfx);
+local treeResult = gen.buildMesh("mesh.tree", p);
+if (!treeResult.ok) throw treeResult.status.summary;
+local tree = treeResult.value;
 ```
 
 两种算法共享主干曲率、向性、下垂、随高度变化的枝长/枝径，以及上下层叶片覆盖参数。常用调整：
@@ -752,13 +882,16 @@ local tree = gen.generateMesh("mesh.tree", p, gfx);
 将单个可拼接单元段沿 X 轴重复 N 次生成连续结构，接缝处纹理连续平铺。
 
 ```squirrel
-local p = gen.newParams();
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setInt("segments", 8);      // 重复单元数
 p.setFloat("segLength", 2.0); // 单元段长度
 p.setFloat("height", 1.5);    // 高度覆盖
 p.setFloat("uvRepeat", 2.0);  // 每世界单位的纹理重复次数
-local mesh = gen.generateMesh("mesh.stonewall", p, gfx); // 或 mesh.fence / mesh.bridge
-                                                         // mesh.greatwall / mesh.hedge / mesh.chevaldefrise
+local meshResult = gen.buildMesh("mesh.stonewall", p); // 或 mesh.fence / mesh.bridge
+if (!meshResult.ok) throw meshResult.status.summary;
+local mesh = meshResult.value; // mesh.greatwall / mesh.hedge / mesh.chevaldefrise
 ```
 
 共享参数：`segments`、`segLength`、`height`、`depth`、`thickness`、`scale`、`uvRepeat`。
@@ -772,7 +905,9 @@ local mesh = gen.generateMesh("mesh.stonewall", p, gfx); // 或 mesh.fence / mes
 `mesh.castle` 生成可复现的完整城堡网格：同心多层城墙、转角与区间塔楼、带真实门洞的城门楼、墙顶步道、中央多层主堡，以及通往每圈墙顶和每层主堡的实体楼梯。
 
 ```squirrel
-local p = gen.newParams();
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setSeed(20260826);
 p.setFloat("width", 48.0);
 p.setFloat("depth", 40.0);
@@ -781,12 +916,14 @@ p.setInt("keepFloors", 4);     // 1..8 层主堡
 p.setInt("detail", 2);         // 0 主体，1 垛口，2 区间塔楼与庭院建筑
 p.setFloat("towerSpacing", 16.0);
 p.setFloat("stairWidth", 2.0);
-local castle = gen.generateMesh("mesh.castle", p, gfx);
+local castleResult = gen.buildMesh("mesh.castle", p);
+if (!castleResult.ok) throw castleResult.status.summary;
+local castle = castleResult.value;
 ```
 
 主要参数还包括 `wallHeight`、`wallThickness`、`ringInset`、`ringHeightStep`、`towerRadius`、`towerHeight`、`towerHeightStep`、`towerSides`、`gateWidth`、`keepWidth`、`keepDepth`、`floorHeight`、`courtyardBuildings`、`stepHeight`、`merlonWidth`、`uvRepeat` 和 `scale`。CPU `buildMesh()` 的元数据提供 `rings`、`wallSections`、`towerCount`、`stairFlights`、`keepFloors`、`courtyardBuildings`、`detail` 与 `seed`，可用于生成图调试、预算检查和自动化验证。
 
-城堡还输出 `walls`、`battlements`、`towers`、`gatehouses`、`stairs`、`keep`、`courtyard` 命名三角形组。可用 `copyGroup()` 提取组件、`appendTransformed()` 组合多个生成结果，再用 `uploadMesh()` 上传；因此墙体、楼梯和塔楼可以使用不同材质、碰撞或 LOD 策略，而无需重新实现 recipe。
+城堡还输出 `walls`、`battlements`、`towers`、`gatehouses`、`stairs`、`keep`、`courtyard` 命名三角形组。可用 `copyGroup()` 提取组件、`appendTransformed()` 组合多个生成结果；需要上传时由 C++ render bridge 调用 `uploadMeshBorrowed()`，因此墙体、楼梯和塔楼可以使用不同材质、碰撞或 LOD 策略，而无需重新实现 recipe。
 
 `getMeshRecipeSchema()` 返回统一的 `RecipeDescriptor` 输入 schema，`applyMeshRecipeDefaults()` 可填充缺省参数。编辑器或可视化生成图可据此自动创建输入 pin、滑杆、默认值和帮助文本，不必硬编码 `Params` 字符串键。
 
@@ -824,15 +961,16 @@ local scatter = procgen.poissonDisk(100, 100, 2.5, 99, 500);  // 最多 500 点
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `abort()`、`abortSystem()`、`add()`、`addObject()`、`addObjectAt()`、`appendTransformed()`、`applyToLayer()`、`autotileGrid()`、`beginSystem()`、`buildMesh()`、`clear()`、`clearObjects()`、`commitSystem()`、`copyGroup()`、`deriveSeed()`、`empty()`、`excludeRadius()`、`fail()`、`fill()`、`filterDensity()`、`filterHeight()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
-- `generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getBool()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
+- `abort()`、`abortSystem()`、`add()`、`addObject()`、`addObjectAt()`、`appendTransformed()`、`applyToLayer()`、`autotileGrid()`、`beginSystem()`、`buildMesh()`、`clear()`、`clearObjects()`、`commitSystem()`、`copyGroup()`、`deriveSeed()`、`empty()`、`excludeRadius()`、`fail()`、`fill()`、`filterDensity()`、`filterHeight()`、`generate()`、`generateHeightmap()`、`generateImage()`、`generateNormalImage()`
+- `generatePbrMaterial()`、`generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
 - `getGroupCount()`、`getGroupName()`、`getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeshRecipeSchema()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
 - `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`、`applyMeshRecipeDefaults()`
-- `getDensity()`、`getError()`、`getFloatAttribute()`、`getNormalX()`、`getNormalY()`、`getNormalZ()`、`getOutput()`、`getOutputCount()`、`getOutputName()`、`getPointSeed()`、`getScaleX()`、`getScaleY()`、`getScaleZ()`、`getStringAttribute()`、`getSystemDebugReport()`、`getSystemOutput()`、`getSystemOutputCount()`、`getSystemOutputName()`、`getSystemRevision()`、`getSystemSeed()`、`getTraceCount()`、`getTraceInputCount()`、`getTraceMilliseconds()`、`getTraceName()`、`getTraceOutputCount()`、`getTriangleGroup()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`hasFailed()`、`hasFloatAttribute()`、`hasOutput()`、`hasStringAttribute()`、`hasSystem()`、`isActive()`、`jitterPoints()`、`lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`newPointSet()`、`publish()`、`randomSeed()`、`removeSystem()`、`resize()`、`sampleGrid()`、`seedFor()`、`selfPrune()`、`setCell()`、`setDensity()`、`setDetail()`、`setFloat()`、`setFloatAttribute()`、`setInt()`
-- `setBool()`、`setLayer()`、`setMeta()`、`setNormal()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setPointSeed()`、`setPosition()`、`setScale()`、`setSeed()`、`setSize()`、`setString()`、`setStringAttribute()`、`setYaw()`、`trace()`、`uploadMesh()`、`setActiveGroup()`
-- L-system 引擎(`ProcgenLSystem`)：`addRule()`、`addRules()`、`clearRules()`、`derive()`、`getIterations()`、`getSeed()`、`newLSystem()`、`setAngle()`、`setAxiom()`、`setBranchRadius()`、`setBranchRadiusFalloff()`、`setInitialHeading()`、`setIterations()`、`setLeafSize()`、`setLeafSymbols()`、`setStep()`、`setTropism()`；蓝噪声撒点：`poissonDisk()`
+- `getDensity()`、`getError()`、`getFloatAttribute()`、`getNormalX()`、`getNormalY()`、`getNormalZ()`、`getOutput()`、`getOutputCount()`、`getOutputName()`、`getPointSeed()`、`getScaleX()`、`getScaleY()`、`getScaleZ()`、`getStringAttribute()`、`getSystemDebugReport()`、`getSystemOutput()`、`getSystemOutputCount()`、`getSystemOutputName()`、`getSystemRevision()`、`getSystemSeed()`、`getTraceCount()`、`getTraceInputCount()`、`getTraceMilliseconds()`、`getTraceName()`、`getTraceOutputCount()`、`getTriangleGroup()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`hasFailed()`、`hasFloatAttribute()`、`hasOutput()`、`hasStringAttribute()`、`hasSystem()`、`isActive()`、`jitterPoints()`、`newGrid()`、`newOutput()`、`newParams()`、`newPointSet()`、`publish()`、`randomSeed()`、`removeSystem()`、`resize()`、`sampleGrid()`、`seedFor()`、`selfPrune()`、`setCell()`、`setDensity()`、`setDetail()`、`setFloat()`、`setFloatAttribute()`、`setInt()`
+- `setLayer()`、`setMeta()`、`setNormal()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setPointSeed()`、`setPosition()`、`setScale()`、`setSeed()`、`setSize()`、`setString()`、`setStringAttribute()`、`setYaw()`、`trace()`、`setActiveGroup()`
+- L-system 引擎(`ProcgenLSystem`)：`addRule()`、`addRules()`、`clearRules()`、`derive()`、`getIterations()`、`getSeed()`、`setAngle()`、`setAxiom()`、`setBranchRadius()`、`setBranchRadiusFalloff()`、`setInitialHeading()`、`setIterations()`、`setLeafSize()`、`setLeafSymbols()`、`setStep()`、`setTropism()`；蓝噪声撒点：`poissonDisk()`。这些创建与转换入口返回统一 Result，其 `value` 是带所有权的代理。
 - `setTarget()`
+- Handle 生命周期：`ownership()`、`ownerEpoch()`、`isStale()`、`release()`；这些接口用于检查资源所属模块、拒绝过期引用并显式释放模块持有对象。
 - UE PCG 扩展：`clearCache()`、`clearGenerationSources()`、`clearParameterOverride()`、`disconnect()`、`exposeParameter()`、`getActiveCellCount()`、`getAssetCount()`、`getAssetName()`、`getCacheHitCount()`、`getCellRevision()`、`getComputeBufferReuseCount()`、`getComputeDispatchCount()`、`getComputeFallbackReason()`、`getComputeMinimumPoints()`、`getComputePeakBufferBytes()`、`getComputePolicy()`、`getComputeReadbackCount()`、`getComputeUploadCount()`、`getDirectionWeight()`、`getExclusionCount()`、`getExecutionCount()`、`getExecutionNodeBudget()`、`getFailedCellCount()`、`getFrameTimeBudget()`、`getFrustumBehindRadius()`、`getFrustumHalfAngle()`、`getGeneratingCount()`、`getGenerationSourceCount()`、`getGenerationSourceId()`、`getInputNode()`、`getLastFusedTransformCount()`、`getLayerCount()`、`getLayerDensity()`、`getLayerName()`、`getLayerPriority()`、`getLevelCellSize()`、`getLevelCleanupRadius()`、`getLevelCount()`、`getLevelGenerationRadius()`、`getMaxActiveCells()`、`getMaxGenerating()`、`getMaxGenerationRetries()`、`getMaxY()`、`getMetricBackend()`、`getMetricCount()`、`getMetricMilliseconds()`、`getMetricNodeId()`、`getMetricOutputCount()`、`getMinY()`、`getModuleCount()`、`getModuleSymbol()`、`getNodeCount()`、`getNodeId()`、`getNodeOperation()`、`getOperationInputCount()`、`getOperationParamCount()`、`getOperationParamDefault()`、`getOperationParamKey()`、`getOperationParamKind()`、`getParameterCount()`、`getParameterFloat()`、`getParameterInt()`、`getParameterKind()`、`getParameterName()`、`getParameterString()`、`getPendingCleanupCount()`、`getPendingGenerateCount()`、`getRevision()`、`getTicket()`、`getVariantAsset()`、`getVariantCount()`、`getVariantLength()`、`hasCell()`、`hasLayer()`、`hasModule()`、`hasNode()`、`hasParameterOverride()`、`intersectSpatial()`、`isFrustumCullingEnabled()`、`isMetricCacheHit()`、`pointData()`、`refreshGenerationSources()`、`removeLayer()`、`removeModule()`、`removeNode()`、`requestCancel()`、`resetCancellation()`、`retryFailedCells()`、`setComputeMinimumPoints()`、`setComputePolicy()`、`setExecutionNodeBudget()`、`setMaxActiveCells()`、`setMaxGenerationRetries()`、`setNodeString()`、`setParameterFloat()`、`setParameterInt()`、`setParameterString()`、`wasCancelled()`。
 
 ## 使用要点

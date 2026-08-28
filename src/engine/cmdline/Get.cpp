@@ -47,7 +47,10 @@ int Cmdline::Get(std::string name) {
              << platformName(p) << "' yet (supported: android)" << rang::fg::reset << endl;
         return 2;
     }
-    return installAndroidSdk();
+    auto result = installAndroidSdk();
+    if (result.ok()) return 0;
+    cerr << rang::fg::red << "eve get: " << result.status().describe() << rang::fg::reset << endl;
+    return 3;
 }
 
 }  // namespace eve::cmd

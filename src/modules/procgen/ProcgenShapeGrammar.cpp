@@ -4,6 +4,8 @@
 
 namespace eve::procgen {
 
-ShapeGrammar* Procgen::newShapeGrammar() { return new ShapeGrammar(); }
+eve::Result<ProcgenShapeGrammarHandleRef> Procgen::newShapeGrammarHandle() {
+    return shapeGrammars_.emplace(std::make_unique<ShapeGrammar>());
+}
 
 }  // namespace eve::procgen

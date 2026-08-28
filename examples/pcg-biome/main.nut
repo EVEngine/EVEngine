@@ -17,13 +17,17 @@ function cellKey(request) {
 }
 
 function buildBiomeCell(request) {
-    local domain = procgen.boxVolume(request.getMinX(), 0.0, request.getMinZ(),
-                                     request.getMaxX(), 0.0, request.getMaxZ());
+    local domainResult = procgen.boxVolume(request.getMinX(), 0.0, request.getMinZ(),
+                                           request.getMaxX(), 0.0, request.getMaxZ());
+    if (!domainResult.ok) throw domainResult.status.summary;
+    local domain = domainResult.value;
     local spacing = request.getLevel() == 0 ? 56.0 : 18.0;
     local rules = request.getLevel() == 0 ? coarseBiome : detailBiome;
     local attributed = rules.generate(domain, spacing, request.getSeed(), 0.72);
     if (attributed == null) throw rules.getError();
-    local graph = procgen.newPointGraph();
+    local graphResult = procgen.newPointGraph();
+    if (!graphResult.ok) throw graphResult.status.summary;
+    local graph = graphResult.value;
     graph.addNode("biome", "input");
     graph.setNodePoints("biome", attributed);
     graph.addNode("prune", "self.prune");
@@ -41,8 +45,9 @@ function pumpRuntime() {
          request = biomeRuntime.nextGenerate()) {
         try {
             local points = buildBiomeCell(request);
-            if (!procgen.publishCellInstances("biome", request, points, "asset", "unknown"))
-                throw procgen.lastError();
+            local publishResult = procgen.publishCellInstances(
+                "biome", request, points, "asset", "unknown");
+            if (!publishResult.ok) throw publishResult.status.summary;
             if (!biomeRuntime.completeGeneration(request, points))
                 throw "stale cell generation request";
             biomeCells[cellKey(request)] <- points;
@@ -64,7 +69,12 @@ function pumpRuntime() {
 function resetBiome() {
     foreach (key, points in biomeCells) procgen.removeInstances("biome/" + key);
     biomeCells = {};
-    biomeRuntime = procgen.newRuntimeGeneration(42017);
+    local runtimeResult = procgen.newRuntimeGeneration(42017);
+    if (!runtimeResult.ok) {
+        biomeStatus = runtimeResult.status.summary;
+        return;
+    }
+    biomeRuntime = runtimeResult.value;
     biomeRuntime.addLevel(256.0, 430.0, 1.35);
     biomeRuntime.addLevel(64.0, 150.0, 1.65);
     biomeRuntime.setDirectionWeight(0.3);
@@ -72,21 +82,34 @@ function resetBiome() {
     biomeRuntime.setMaxGenerating(3);
     biomeRuntime.setFrameTimeBudget(3.0);
 
-    local road = procgen.newPointSet();
+    local roadResult = procgen.newPointSet();
+    if (!roadResult.ok) {
+        biomeStatus = roadResult.status.summary;
+        return;
+    }
+    local road = roadResult.value;
     road.add(-100.0, 0.0, 80.0);
     road.add(260.0, 0.0, 210.0);
     road.add(680.0, 0.0, 260.0);
     road.add(1100.0, 0.0, 500.0);
-    roadSpatial = procgen.splineData(road, 30.0);
+    local roadSpatialResult = procgen.splineData(road, 30.0);
+    if (!roadSpatialResult.ok) { biomeStatus = roadSpatialResult.status.summary; return; }
+    roadSpatial = roadSpatialResult.value;
 
-    local world = procgen.boxVolume(-2048.0, 0.0, -2048.0, 2048.0, 0.0, 2048.0);
-    coarseBiome = procgen.newBiomeRules();
+    local worldResult = procgen.boxVolume(-2048.0, 0.0, -2048.0, 2048.0, 0.0, 2048.0);
+    if (!worldResult.ok) { biomeStatus = worldResult.status.summary; return; }
+    local world = worldResult.value;
+    local coarseResult = procgen.newBiomeRules();
+    if (!coarseResult.ok) { biomeStatus = coarseResult.status.summary; return; }
+    coarseBiome = coarseResult.value;
     coarseBiome.addLayer("forest", world, 10, 0.72);
     coarseBiome.addAsset("forest", "oak", 4.0, 0.8, 1.2, true);
     coarseBiome.addAsset("forest", "pine", 1.0, 0.9, 1.3, true);
     coarseBiome.addExclusion(roadSpatial);
 
-    detailBiome = procgen.newBiomeRules();
+    local detailResult = procgen.newBiomeRules();
+    if (!detailResult.ok) { biomeStatus = detailResult.status.summary; return; }
+    detailBiome = detailResult.value;
     detailBiome.addLayer("undergrowth", world, 10, 0.52);
     detailBiome.addAsset("undergrowth", "grass", 3.0, 0.7, 1.15, true);
     detailBiome.addAsset("undergrowth", "rock", 1.0, 0.65, 1.4, true);

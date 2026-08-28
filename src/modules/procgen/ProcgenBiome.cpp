@@ -4,6 +4,8 @@
 
 namespace eve::procgen {
 
-BiomeRules* Procgen::newBiomeRules() { return new BiomeRules(); }
+eve::Result<ProcgenBiomeRulesHandleRef> Procgen::newBiomeRulesHandle() {
+    return biomeRules_.emplace(std::make_unique<BiomeRules>());
+}
 
 }  // namespace eve::procgen

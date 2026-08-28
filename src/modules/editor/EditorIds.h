@@ -1,41 +1,37 @@
 #pragma once
 
-#include <compare>
-#include <functional>
-#include <string>
-#include <utility>
+#include "common/Identity.h"
+
+#include <cstddef>
 
 namespace eve::editor {
 
 /**
- * @brief Strong string identifier used at editor API and persistence boundaries.
- * @tparam Tag Empty tag type that prevents identifiers from unrelated domains
- *             from being mixed accidentally.
+ * @brief Compatibility alias for the common UUID-backed editor identifier.
+ * @tparam Tag Empty editor tag that keeps unrelated domains non-interchangeable.
+ * @remarks Canonical UUID parsing, hashing and ordering live in
+ *          `eve::UuidIdAdapter`. Non-UUID editor strings remain accepted as
+ *          compatibility spellings and are never treated as persistent UUID text.
  */
 template <class Tag>
-class StrongEditorId {
-public:
-    StrongEditorId() = default;
-    explicit StrongEditorId(const char* value) : value_(value ? value : "") {}
-    explicit StrongEditorId(std::string value) : value_(std::move(value)) {}
-
-    /** @brief Return the stable textual representation. */
-    const std::string& value() const { return value_; }
-    /** @brief True when no identity has been assigned. */
-    bool     empty() const { return value_.empty(); }
-    explicit operator bool() const { return !empty(); }
-
-    auto operator<=>(const StrongEditorId&) const = default;
-
-private:
-    std::string value_;
-};
+using StrongEditorId = eve::UuidIdAdapter<Tag>;
 
 /** @brief Hash functor for a strong editor identifier. */
 template <class Id>
 struct StrongEditorIdHash {
-    size_t operator()(const Id& id) const noexcept { return std::hash<std::string>{}(id.value()); }
+    [[nodiscard]] std::size_t operator()(const Id& id) const noexcept { return static_cast<std::size_t>(id.hash()); }
 };
+
+/**
+ * @brief Explicitly projects an editor identifier to its common UUID value.
+ * @tparam Tag Editor domain tag.
+ * @param id Compatibility-aware editor identifier.
+ * @return Canonical UUID, including a deterministic projection for legacy text.
+ */
+template <class Tag>
+[[nodiscard]] eve::StrongUuid<Tag> canonicalUuid(const StrongEditorId<Tag>& id) noexcept {
+    return id.uuid();
+}
 
 struct SessionIdTag;
 struct TargetIdTag;

@@ -9,8 +9,22 @@
 
 using namespace eve::ui;
 
+namespace {
+
+UIHost *createHost(const std::string &name) {
+    auto host = UIHost::resolve(UIHost::createHost(name));
+    return host ? &host->get() : nullptr;
+}
+
+UINode *node(UIHost &host, const std::string &id) {
+    auto found = host.findById(id);
+    return found ? &found->get() : nullptr;
+}
+
+}  // namespace
+
 TEST_CASE("ui.control.policies_survive_flatten_and_reconcile") {
-    UIHost *host = UIHost::createHost("control-semantics");
+    UIHost *host = createHost("control-semantics");
     REQUIRE(host != nullptr);
 
     WidgetDesc action = button("Apply", "apply")
@@ -24,21 +38,20 @@ TEST_CASE("ui.control.policies_survive_flatten_and_reconcile") {
                                                "Commits the current property edits");
     host->setTree(window("Controls", {std::move(action)}, "root"));
 
-    UINode *node = host->findById("apply");
-    REQUIRE(node != nullptr);
-    CHECK(!node->enabled);
-    CHECK_EQ(static_cast<int>(node->focusMode), static_cast<int>(FocusMode::Click));
-    CHECK_EQ(static_cast<int>(node->mouseFilter), static_cast<int>(MouseFilter::Ignore));
-    CHECK_EQ(node->tabIndex, 7);
-    CHECK_EQ(node->focusPrevious, std::string("cancel"));
-    CHECK_EQ(node->focusNext, std::string("reset"));
-    CHECK_EQ(node->focusLeft, std::string("left"));
-    CHECK_EQ(node->focusRight, std::string("right"));
-    CHECK_EQ(node->focusUp, std::string("up"));
-    CHECK_EQ(node->focusDown, std::string("down"));
-    CHECK_EQ(static_cast<int>(node->accessibilityRole),
-             static_cast<int>(AccessibilityRole::Button));
-    CHECK_EQ(node->accessibilityName, std::string("Apply changes"));
+    UINode *applyNode = node(*host, "apply");
+    REQUIRE(applyNode != nullptr);
+    CHECK(!applyNode->enabled);
+    CHECK_EQ(static_cast<int>(applyNode->focusMode), static_cast<int>(FocusMode::Click));
+    CHECK_EQ(static_cast<int>(applyNode->mouseFilter), static_cast<int>(MouseFilter::Ignore));
+    CHECK_EQ(applyNode->tabIndex, 7);
+    CHECK_EQ(applyNode->focusPrevious, std::string("cancel"));
+    CHECK_EQ(applyNode->focusNext, std::string("reset"));
+    CHECK_EQ(applyNode->focusLeft, std::string("left"));
+    CHECK_EQ(applyNode->focusRight, std::string("right"));
+    CHECK_EQ(applyNode->focusUp, std::string("up"));
+    CHECK_EQ(applyNode->focusDown, std::string("down"));
+    CHECK_EQ(static_cast<int>(applyNode->accessibilityRole), static_cast<int>(AccessibilityRole::Button));
+    CHECK_EQ(applyNode->accessibilityName, std::string("Apply changes"));
 
     WidgetDesc updated = button("Apply now", "apply")
                              .withFocusMode(FocusMode::All)
@@ -46,18 +59,18 @@ TEST_CASE("ui.control.policies_survive_flatten_and_reconcile") {
                              .withTabIndex(2)
                              .withAccessibility(AccessibilityRole::Button, "Apply now");
     CHECK(host->setTreeReconcile(window("Controls", {std::move(updated)}, "root")));
-    node = host->findById("apply");
-    REQUIRE(node != nullptr);
-    CHECK(node->enabled);
-    CHECK_EQ(static_cast<int>(node->focusMode), static_cast<int>(FocusMode::All));
-    CHECK_EQ(static_cast<int>(node->mouseFilter), static_cast<int>(MouseFilter::Pass));
-    CHECK_EQ(node->tabIndex, 2);
-    CHECK(node->focusPrevious.empty());
-    CHECK_EQ(node->accessibilityName, std::string("Apply now"));
+    applyNode = node(*host, "apply");
+    REQUIRE(applyNode != nullptr);
+    CHECK(applyNode->enabled);
+    CHECK_EQ(static_cast<int>(applyNode->focusMode), static_cast<int>(FocusMode::All));
+    CHECK_EQ(static_cast<int>(applyNode->mouseFilter), static_cast<int>(MouseFilter::Pass));
+    CHECK_EQ(applyNode->tabIndex, 2);
+    CHECK(applyNode->focusPrevious.empty());
+    CHECK_EQ(applyNode->accessibilityName, std::string("Apply now"));
 }
 
 TEST_CASE("ui.control.focus_request_rejects_ineligible_controls") {
-    UIHost *host = UIHost::createHost("focus-semantics");
+    UIHost *host = createHost("focus-semantics");
     REQUIRE(host != nullptr);
     host->setTree(window("Focus",
                          {button("First", "first"),
@@ -70,17 +83,17 @@ TEST_CASE("ui.control.focus_request_rejects_ineligible_controls") {
     CHECK(!host->requestFocusById("decorative"));
     CHECK(!host->requestFocusById("root"));
     CHECK(host->requestFocusById("first"));
-    CHECK(host->findById("first")->focusRequested);
+    CHECK(node(*host, "first")->focusRequested);
 
-    host->findById("first")->focused = true;
+    node(*host, "first")->focused = true;
     CHECK_EQ(host->focusedId(), std::string("first"));
     host->setEnabledById("first", false);
     CHECK(host->focusedId().empty());
-    CHECK(!host->findById("first")->focusRequested);
+    CHECK(!node(*host, "first")->focusRequested);
 }
 
 TEST_CASE("ui.control.focus_navigation_uses_neighbors_then_stable_tab_order") {
-    UIHost *host = UIHost::createHost("focus-navigation");
+    UIHost *host = createHost("focus-navigation");
     REQUIRE(host != nullptr);
     host->setTree(window(
         "Focus",
@@ -98,29 +111,29 @@ TEST_CASE("ui.control.focus_navigation_uses_neighbors_then_stable_tab_order") {
     // No current focus: select the lowest eligible tab index. Decorative,
     // disabled and click-only nodes do not participate in keyboard traversal.
     CHECK(host->moveFocus(FocusDirection::Next));
-    CHECK(host->findById("second")->focusRequested);
+    CHECK(node(*host, "second")->focusRequested);
 
-    host->findById("second")->focused = true;
+    node(*host, "second")->focused = true;
     CHECK(host->moveFocus(FocusDirection::Next));
-    CHECK(host->findById("first")->focusRequested);
+    CHECK(node(*host, "first")->focusRequested);
 
-    host->findById("second")->focused = false;
-    host->findById("first")->focused = true;
+    node(*host, "second")->focused = false;
+    node(*host, "first")->focused  = true;
     CHECK(host->moveFocus(FocusDirection::Next));
-    CHECK(host->findById("special")->focusRequested);
+    CHECK(node(*host, "special")->focusRequested);
 
-    host->findById("first")->focused = false;
-    host->findById("special")->focused = true;
+    node(*host, "first")->focused   = false;
+    node(*host, "special")->focused = true;
     CHECK(host->moveFocus(FocusDirection::Previous));
-    CHECK(host->findById("second")->focusRequested);
+    CHECK(node(*host, "second")->focusRequested);
 
-    host->findById("special")->focused = false;
-    host->findById("first")->focused = true;
+    node(*host, "special")->focused = false;
+    node(*host, "first")->focused   = true;
     CHECK(host->moveFocus(FocusDirection::Left));
-    CHECK(host->findById("second")->focusRequested);
+    CHECK(node(*host, "second")->focusRequested);
 
-    host->findById("first")->focused = false;
-    host->findById("special")->focused = true;
+    node(*host, "first")->focused   = false;
+    node(*host, "special")->focused = true;
     CHECK(!host->moveFocus(FocusDirection::Next, false));
 }
 
@@ -128,7 +141,7 @@ TEST_CASE("ui.control.mouse_pass_bubbles_click_and_stop_contains_it") {
     int childClicks = 0;
     int ignoredClicks = 0;
     int rootClicks = 0;
-    UIHost *host = UIHost::createHost("pointer-routing");
+    UIHost *host          = createHost("pointer-routing");
     REQUIRE(host != nullptr);
 
     WidgetDesc child = button("Action", "action", [&]() { ++childClicks; })
@@ -141,7 +154,7 @@ TEST_CASE("ui.control.mouse_pass_bubbles_click_and_stop_contains_it") {
                           .withMouseFilter(MouseFilter::Stop);
     host->setTree(std::move(root));
 
-    UINode *action = host->findById("action");
+    UINode *action = node(*host, "action");
     REQUIRE(action != nullptr);
     auto tree = host->tree();
     REQUIRE(!tree->nodes.empty());
@@ -150,7 +163,7 @@ TEST_CASE("ui.control.mouse_pass_bubbles_click_and_stop_contains_it") {
     UISystem::pendingEvents().clear();
     UISystem::clickQueue().clear();
     UIEvent event;
-    event.host = host;
+    event.host         = host->handle();
     event.hostName = host->getName();
     event.nodeId = action->id;
     event.nodeIndex = int(action - tree->nodes.data());

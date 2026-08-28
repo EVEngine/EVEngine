@@ -18,7 +18,9 @@ function castlePressed(k) {
 }
 
 function rebuildCastle() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) { print("castle parameter creation failed: " + paramsResult.status.summary); return; }
+    local p = paramsResult.value;
     p.setSeed(castleSeed);
     p.setFloat("width", 48.0);
     p.setFloat("depth", 40.0);
@@ -34,8 +36,9 @@ function rebuildCastle() {
     p.setFloat("stairWidth", 2.0);
     p.setFloat("stepHeight", 0.28);
     p.setInt("detail", detail);
-    local build = procgen.buildMesh("mesh.castle", p);
-    if (build == null) { print("castle generation failed: " + procgen.lastError()); return; }
+    local buildResult = procgen.buildMesh("mesh.castle", p);
+    if (!buildResult.ok) { print("castle generation failed: " + buildResult.status.summary); return; }
+    local build = buildResult.value;
     local tints = {
         walls=[0.74,0.69,0.58], battlements=[0.82,0.76,0.64],
         towers=[0.66,0.61,0.52], gatehouses=[0.58,0.53,0.46],
@@ -44,8 +47,9 @@ function rebuildCastle() {
     for (local i = 0; i < build.getGroupCount(); ++i) {
         local component = build.copyGroup(i);
         if (component == null) continue;
-        local mesh = procgen.uploadMesh(component, gfx);
-        if (mesh == null) { print("component upload failed: " + procgen.lastError()); continue; }
+        local meshResult = procgen.uploadMesh(component, gfx);
+        if (!meshResult.ok) { print("component upload failed: " + meshResult.status.summary); continue; }
+        local mesh = meshResult.value;
         while (castleParts.len() <= i) castleParts.append(eve.Renderable3D());
         local part = castleParts[i];
         local name = build.getGroupName(i);

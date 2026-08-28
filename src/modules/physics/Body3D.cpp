@@ -174,8 +174,8 @@ b3HeightFieldData *createCheckedHeightField(int countX, int countZ, float cellSi
 
 }  // namespace
 
-Body3D::Body3D(World3D *world, b3BodyId bodyId, int id)
-    : world_(world), bodyId_(bodyId), id_(id) {}
+Body3D::Body3D(World3D *world, b3BodyId bodyId, int id, PhysicsBodyHandle runtimeHandle)
+    : world_(world), bodyId_(bodyId), id_(id), runtimeHandle_(runtimeHandle) {}
 
 Body3D::~Body3D() {
     if (isValid() && world_ && world_->isValid()) {
@@ -200,6 +200,7 @@ Body3D::~Body3D() {
     }
     bodyId_ = {};
     world_  = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 bool Body3D::isValid() const { return b3Body_IsValid(bodyId_); }
@@ -208,6 +209,7 @@ void Body3D::invalidate() {
     if (isValid()) b3Body_SetUserData(bodyId_, nullptr);
     bodyId_ = {};
     world_  = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 void Body3D::destroy() {
@@ -236,6 +238,7 @@ void Body3D::destroy() {
     world_->forgetBody(this);
     bodyId_ = {};
     world_  = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 void Body3D::setPosition(float x, float y, float z) {
@@ -684,7 +687,7 @@ Shape3D *Body3D::newBoxShape(float width, float height, float depth, float densi
     b3ShapeDef def = makeShapeDef(density, friction, restitution);
     b3ShapeId  id  = b3CreateHullShape(bodyId_, &def, &box.base);
 
-    auto *shape = new Shape3D(world_, this, id, Shape3D::Kind::Box, hx, hy, hz);
+    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::Box, hx, hy, hz);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -701,7 +704,8 @@ Shape3D *Body3D::newSphereShape(float radius, float density, float friction, flo
     b3ShapeDef def = makeShapeDef(density, friction, restitution);
     b3ShapeId  id  = b3CreateSphereShape(bodyId_, &def, &sphere);
 
-    auto *shape = new Shape3D(world_, this, id, Shape3D::Kind::Sphere, radius, 0.f, 0.f);
+    auto *shape =
+        new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::Sphere, radius, 0.f, 0.f);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -722,7 +726,8 @@ Shape3D *Body3D::newCapsuleShape(float height, float radius, float density, floa
     b3ShapeDef def = makeShapeDef(density, friction, restitution);
     b3ShapeId  id  = b3CreateCapsuleShape(bodyId_, &def, &capsule);
 
-    auto *shape = new Shape3D(world_, this, id, Shape3D::Kind::Capsule, half, radius, 0.f);
+    auto *shape =
+        new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::Capsule, half, radius, 0.f);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -737,8 +742,8 @@ Shape3D *Body3D::newConvexHullShape(const std::vector<float> &vertices, int maxV
     b3ShapeId id = b3CreateHullShape(bodyId_, &def, hull);
     b3DestroyHull(hull);
 
-    auto *shape = new Shape3D(world_, this, id, Shape3D::Kind::ConvexHull, 0.f, 0.f, 0.f,
-                              vertices, maxVertices);
+    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::ConvexHull, 0.f, 0.f,
+                              0.f, vertices, maxVertices);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -761,9 +766,9 @@ Shape3D *Body3D::newTriangleMeshShape(const std::vector<float> &vertices,
         b3DestroyMesh(mesh);
         throw eve::Exception("Body3D.newTriangleMeshShape: Box3D rejected the mesh shape");
     }
-    auto *shape = new Shape3D(world_, this, id, Shape3D::Kind::TriangleMesh, 0.f, 0.f, 0.f,
-                              {}, 64, vertices, indices, mesh, weldVertices, weldTolerance,
-                              identifyEdges, useMedianSplit);
+    auto *shape =
+        new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::TriangleMesh, 0.f, 0.f, 0.f, {},
+                    64, vertices, indices, mesh, weldVertices, weldTolerance, identifyEdges, useMedianSplit);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;
@@ -786,10 +791,9 @@ Shape3D *Body3D::newHeightFieldShape(int countX, int countZ, float cellSizeX,
         b3DestroyHeightField(heightData);
         throw eve::Exception("Body3D.newHeightFieldShape: Box3D rejected the height field");
     }
-    auto *shape = new Shape3D(
-        world_, this, id, Shape3D::Kind::HeightField, 0.f, 0.f, 0.f, {}, 64, {}, {}, nullptr,
-        true, 0.001f, true, false, heights, countX, countZ, cellSizeX, cellSizeZ, globalMin,
-        globalMax, clockwiseWinding, heightData);
+    auto *shape = new Shape3D(world_, this, id, world_->nextShapeRuntimeHandle(), Shape3D::Kind::HeightField, 0.f, 0.f,
+                              0.f, {}, 64, {}, {}, nullptr, true, 0.001f, true, false, heights, countX, countZ,
+                              cellSizeX, cellSizeZ, globalMin, globalMax, clockwiseWinding, heightData);
     b3Shape_SetUserData(id, shape);
     world_->shapes_.insert(shape);
     return shape;

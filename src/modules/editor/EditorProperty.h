@@ -1,7 +1,10 @@
 #pragma once
 
+#include "common/Result.h"
+#include "common/Revision.h"
 #include "editor/EditorProtocol.h"
 #include "editor/EditorSelection.h"
+#include "property_access/PropertyAccess.h"
 
 #include <cstdint>
 #include <optional>
@@ -104,6 +107,26 @@ enum class PropertySetMode { Absolute, Relative, Reset };
 class IPropertyProvider {
 public:
     virtual ~IPropertyProvider() = default;
+
+    /**
+     * @brief Return the provider's authoritative revision for this selection.
+     * @param selection Immutable selection whose properties are being edited.
+     * @return The current strong revision, or `Unsupported` when a legacy
+     *         provider has not implemented the revision contract.
+     * @remarks The compatibility default fails closed. It never reports zero,
+     *          because zero would hide an external change and permit a stale
+     *          editor model to overwrite newer state. Providers that can be
+     *          edited must override this method and return their authoritative
+     *          revision, including a non-zero initial revision.
+     */
+    [[nodiscard]] virtual eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const {
+        (void)selection;
+        return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported,
+            "Property provider must implement currentRevision; implicit revision zero is not allowed",
+            "editor.property.current-revision", {}, "editor.IPropertyProvider"));
+    }
+
     /** @brief Return the compatible schema for the captured selection. */
     virtual PropertySchema schema(const SelectionSnapshot& selection) const = 0;
     /** @brief Read one property without returning internal references. */
@@ -117,11 +140,33 @@ public:
 };
 
 /**
- * @brief Validate a value against one descriptor's type and numeric range.
+ * @brief Validate a value against one descriptor's shared and editor rules.
  * @param descriptor Property contract.
  * @param value Candidate structured value.
- * @return Applied when valid, otherwise a structured rejection.
+ * @return Applied when valid, otherwise a structured rejection. Type, enum,
+ * finite and numeric-range checks are delegated to presentation's shared
+ * validator; editor-only rules remain in this adapter.
  */
 EditorResult<void> validatePropertyValue(const PropertyDescriptor& descriptor, const EditorValue& value);
+
+/**
+ * @brief Convert an editor descriptor to the shared property-access contract.
+ * @param source Editor descriptor, including editor-only extensions.
+ * @return Presentation descriptor containing only renderer-independent fields.
+ */
+property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor& source);
+
+/**
+ * @brief Convert an editor value tree to the shared presentation value tree.
+ * @param value Editor-owned deterministic value tree.
+ * @return Equivalent renderer-independent value tree.
+ */
+eve::Value toPresentationValue(const EditorValue& value);
+/**
+ * @brief Convert a shared presentation value tree to the editor value tree.
+ * @param value Renderer-independent deterministic value tree.
+ * @return Equivalent editor value tree.
+ */
+EditorValue toEditorValue(const eve::Value& value);
 
 }  // namespace eve::editor

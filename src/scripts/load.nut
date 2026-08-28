@@ -672,11 +672,11 @@ eve_frame <- function() {
         _log("frame: reached frame " + getroottable()._frame_count);
     local running = true;
     dev_scenario_frame();
-    event.pump();
+    platform_event.pump();
     while (true) {
-        local name = event.poll();
+        local name = platform_event.poll();
         if (name == "") break;
-        local data = event.getLastData();
+        local data = platform_event.getLastData();
         if ("async_dispatch_event" in getroottable())
             async_dispatch_event(name, data);
         if (name == "keypressed") {

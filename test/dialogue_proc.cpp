@@ -442,8 +442,8 @@ TEST_CASE("dialogueProc.sceneVarsAutoClear") {
     dlg->setVarValue("keep", Dialogue::VarValue::integer(1), "global");
 
     eve::scene::Scene *scn = eve::scene::Scene::create();
-    scn->mountAs("dialogueSceneA", eve::scene::node("root"));
-    scn->mountAs("dialogueSceneB", eve::scene::node("root"));
+    scn->mountAs("dialogueSceneA", eve::scene::node("root")).ignore("test setup");
+    scn->mountAs("dialogueSceneB", eve::scene::node("root")).ignore("test setup");
     scn->select("dialogueSceneA");
 
     dlg->update(0.016f);  // record current scene name

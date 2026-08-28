@@ -101,7 +101,7 @@ function setupCameraController() {
     ctrl.addView("close",  0.0, 2.0, 4.0, 0.0, 1.0, 0.0);
 
     // Timeline 切换 Rig 并产生可被全局 Event 或 controller 消费的 marker。
-    ctrl.setEventSink(event);
+    ctrl.setEventSink(platform_event);
     ctrl.addTimelineCut(0.0, "cinematic", 0.0);
     ctrl.addTimelineEvent(1.0, "camera.beat", "front");
     ctrl.addTimelineCut(3.0, "orbit", 0.8);

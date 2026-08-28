@@ -2,6 +2,7 @@
 
 #include "common/ECS.h"
 #include "common/RenderTypes.h"
+#include "common/Time.h"
 #include "particles/ParticleCurve.h"
 
 #include <algorithm>
@@ -255,6 +256,9 @@ public:
         float lastY = 0.f;
         bool overflowWarned = false;
         int activeSeed = 0;
+        /** @brief Last scheduler tick observed by the checked simulation API. */
+        eve::SimulationTick simulationTick    = eve::SimulationTick::zero();
+        bool                hasSimulationTick = false;
         /** @brief Temporary automatic-spawn quota set by ParticleSimSystem (-1 = unlimited). */
         int spawnQuota = -1;
         int spawnedThisFrame = 0;
@@ -276,11 +280,21 @@ public:
 
     /** @brief Bound config file for hot reload (empty path = unbound). */
     struct Resource {
+        enum class ReloadObservation {
+            Unbound,
+            AutoReloadDisabled,
+            MtimePollingUnchanged,
+            MtimePollingReloaded,
+            MtimeUnavailable,
+            MtimePollingReloadFailed,
+        };
         std::string path;
         std::string texturePath;
         std::string normalTexturePath;
         int64_t modtime = -1;
         bool autoReload = true;
+        /** @brief Last explicit observation made by ParticleConfigSystem::poll. */
+        ReloadObservation lastReloadObservation = ReloadObservation::Unbound;
     };
 
     /**
@@ -572,6 +586,30 @@ public:
     void reset();
     void emit(int count);
 
+    /**
+     * @brief Advance this emitter by one scheduler-owned simulation step.
+     * @param step Injected tick and duration; no wall clock or private fixed-step
+     *          accumulator is consulted by this checked path.
+     * @return Checked status; repeated/rewound ticks and invalid durations are
+     *         rejected without changing simulation state.
+     * @remarks ParticleSimSystem::advance is the preferred path when GPU
+     *          residency and global budgets are enabled. This method is the
+     *          CPU emitter-domain adapter.
+     */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+
+    /** @brief Last scheduler tick consumed by the checked emitter API. */
+    [[nodiscard]] eve::SimulationTick currentSimulationTick() const noexcept {
+        // ECS.hpp's generated accessor has no const overload and would create
+        // a missing component. Query the existing table buffer directly so a
+        // read-only tick query neither casts away constness nor mutates ECS.
+        auto *const buffer = storage ? storage->getComponentBuffer<Sim>() : nullptr;
+        if (!buffer || id >= buffer->size()) return eve::SimulationTick::zero();
+        // The size guard makes this existing-slot read non-mutating; ECS.hpp's
+        // const overload currently attempts to resize its deque.
+        return buffer->get(id).simulationTick;
+    }
+
     bool isActive();
     bool isPaused();
     bool isStopped();
@@ -588,6 +626,8 @@ public:
     void setAutoReload(bool enable);
     bool getAutoReload();
     std::string getConfigPath();
+    /** @brief Return the explicit config reload observation state. */
+    [[nodiscard]] std::string getConfigReloadObservation() const;
 
     // --- Bone attachment (3D AnimPose / 2D Spine / IK 2D·3D) ---
     void attachToBone(animation::AnimPose *pose, int boneIndex);
@@ -627,6 +667,9 @@ bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, fl
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
 float advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt);
+/** @brief Advance with scheduler-provided Duration/Tick; no local playback scaling. */
+[[nodiscard]] eve::Result<void> advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
+                                                  const eve::SimulationStep &step);
 /** @brief World collision query used by emitters with worldCollision enabled. */
 using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
 void setWorldCollisionResolver(WorldCollisionFn fn);

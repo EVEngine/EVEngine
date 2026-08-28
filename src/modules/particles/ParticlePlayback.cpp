@@ -37,6 +37,34 @@ float advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim,
     return float(steps) * step;
 }
 
+eve::Result<void> advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim,
+                                    const eve::SimulationStep& step) {
+    if (step.delta.nanoseconds() < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "particle simulation delta must be non-negative"));
+    if (sim.hasSimulationTick && step.tick <= sim.simulationTick)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "particle simulation tick must advance monotonically"));
+
+    const float dt = static_cast<float>(step.delta.seconds());
+    if (!std::isfinite(dt))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "particle simulation delta is outside float range"));
+
+    // Scheduler-owned pause, rate and fixed-step policy are already reflected
+    // in the supplied SimulationStep. The legacy emitter playback controls are
+    // intentionally not consulted here.
+    if (!sim.paused && dt > 0.f) stepEmitterSim(cfg, sim, dt);
+    sim.simulationTick    = step.tick;
+    sim.hasSimulationTick = true;
+    return eve::Result<void>::success(
+        eve::Status::success((sim.paused || dt == 0.f) ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
+}
+
+eve::Result<void> ParticleEmitter::advance(const eve::SimulationStep& step) {
+    return advanceEmitterSim(*config(), *sim(), step);
+}
+
 void ParticleEmitter::setEmissionRateOverDistance(float rate) {
     config()->emissionRateOverDistance = rate > 0.f ? rate : 0.f;
 }

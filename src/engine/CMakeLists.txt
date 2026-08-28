@@ -1,5 +1,8 @@
 create_module(EVCommon common)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)
+
 # Generate the language-level contract from the same addFunc declarations that
 # SimpleSquirrel compiles. Keeping this as a build input makes stale or
 # parameter-less bindings fail before the engine is linked.
@@ -24,6 +27,14 @@ add_custom_command(
     VERBATIM)
 target_sources(EVCommon PRIVATE "${_eve_binding_contract_cpp}")
 
+# Core/headless/server profiles intentionally stop after EVCommon. They do not
+# create cmdline, a window or a renderer, so a profile build cannot accidentally
+# acquire the interactive host through an unconditional executable.
+if(NOT EVENGINE_BUILD_HOST)
+    set(EVENGINE_NATIVE_TARGET "" CACHE INTERNAL "Host target for SDK install" FORCE)
+    return()
+endif()
+
 eve_module_enabled(devtools _has_devtools)
 if(_has_devtools)
     create_module(EVDevTools devtools)
@@ -37,9 +48,6 @@ create_module(EVCmdLine cmdline)
 # DevTool.hpp (pulled in by cmdline/Run.cpp) includes Poco JSON/Net headers;
 # keep the same no-auto-link contract so the debug Poco libs (*mdd) are used.
 target_compile_definitions(EVCmdLine PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)
 
 set(EVENGINE_IOS_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum iOS/iPadOS deployment target")
 

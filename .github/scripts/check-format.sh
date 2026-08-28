@@ -48,7 +48,7 @@ for file in $CHANGED_FILES; do
     fi
     # --diff exits non-zero when differences are found; keep going so we can
     # print the diff as the failure message.
-    git clang-format --diff "$MERGE_BASE" -- "$file" >>"$DIFF_FILE" || true
+    git clang-format --quiet --diff "$MERGE_BASE" -- "$file" >>"$DIFF_FILE" || true
 done
 
 if [ -s "$DIFF_FILE" ]; then

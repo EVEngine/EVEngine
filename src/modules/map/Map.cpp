@@ -1,21 +1,25 @@
 #include "map/Map.h"
-#include "map/DualGrid.h"
-#include "map/TileSystem.h"
-#include "map/TileConfig.h"
-#include "map/Pathfinder.h"
-#include "map/Path.h"
-#include "map/FlowField.h"
-#include "map/Fov.h"
+
+#include "common/Capability.h"
+#include "common/Module.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
-#include "common/Module.h"
-#include "common/Capability.h"
+#include "map/ArtifactProvider.h"
+#include "map/DualGrid.h"
+#include "map/FlowField.h"
+#include "map/Fov.h"
+#include "map/Path.h"
+#include "map/Pathfinder.h"
+#include "map/TileConfig.h"
+#include "map/TileSystem.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
 
 namespace eve::map {
+
+Map::Map() { registerMapArtifactProvider(); }
 
 Module_IMPL(Map, new Map());
 

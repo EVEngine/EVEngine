@@ -42,7 +42,12 @@ function pressed(k) {
 }
 
 function regenerate() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        info = "PARAMS FAIL: " + paramsResult.status.summary;
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(urbanSeed);
     p.setString("land", landPreset);
     p.setFloat("landWidth", 100.0);
@@ -54,11 +59,12 @@ function regenerate() {
     p.setFloat("streetWidth", 1.2);
     p.setFloat("extrude", extrude);
 
-    cityMesh = procgen.generateMesh("mesh.urban", p, gfx);
-    if (cityMesh == null) {
-        info = "MESH FAIL: " + procgen.lastError();
+    local meshResult = procgen.generateMesh("mesh.urban", p, gfx);
+    if (!meshResult.ok) {
+        info = "MESH FAIL: " + meshResult.status.summary;
         return;
     }
+    cityMesh = meshResult.value;
     if (cityObject == null) {
         cityObject = eve.Renderable3D();
         cityObject.setPosition(0.0, 0.0, 0.0);
@@ -69,8 +75,9 @@ function regenerate() {
     cityObject.setMesh(cityMesh);
 
     // Optional 2D parcel/road grid preview (Semantic::Road / Floor + parcel detail).
-    local g = procgen.generate("urban.parcels", p);
-    if (g != null) {
+    local gridResult = procgen.generate("urban.parcels", p);
+    if (gridResult.ok) {
+        local g = gridResult.value;
         if (gridLayer == null) {
             gridLayer = map.newLayer(g.getWidth(), g.getHeight(), 0.5, 0.5);
             gridLayer.setOrigin(8.0, 400.0);
@@ -83,11 +90,20 @@ function regenerate() {
         procgen.setPaletteGid("urban_demo", "wall", 0);
         procgen.setPaletteGid("urban_demo", "road", 3);
         procgen.setPaletteGid("urban_demo", "floor", 1);
-        local out = procgen.newOutput();
+        local outputResult = procgen.newOutput();
+        if (!outputResult.ok) {
+            info = "OUTPUT FAIL: " + outputResult.status.summary;
+            return;
+        }
+        local out = outputResult.value;
         out.setTarget("tilelayer");
         out.setLayer(gridLayer);
         out.setPalette("urban_demo");
-        procgen.generateTo("urban.parcels", p, out);
+        local outputWriteResult = procgen.generateTo("urban.parcels", p, out);
+        if (!outputWriteResult.ok) {
+            info = "OUTPUT WRITE FAIL: " + outputWriteResult.status.summary;
+            return;
+        }
         info = "seed=" + urbanSeed + "  land=" + landPreset +
                "  pattern=" + streetPattern + (doOptimize ? "  optimize" : "  raw") +
                "  parcels=" + g.getMeta("parcels", "?") +

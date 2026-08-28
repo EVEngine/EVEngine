@@ -1,24 +1,38 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a9711f3..3094332 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -203,6 +203,19 @@ set(SQUIRREL_LIBRARIES squirrel_static CACHE STRING "" FORCE)
- set(SQSTDLIB_LIBRARIESRARIES sqstdlib_static CACHE STRING "" FORCE)
- add_subdirectory(simplesquirrel)
- 
-+# Windows plugin host: eve.exe must export the Squirrel C API and ssq symbols
-+# so native plugins (which link eve.lib only) can resolve them. Mark them
-+# dllexport at the library build — /GL (LTCG) defeats WINDOWS_EXPORT_ALL_SYMBOLS,
-+# so an explicit export attribute is required. Plugin consumers include the
-+# unmodified headers (plain extern), which resolves against eve.lib.
-+if(WIN32 AND MSVC)
+diff --git a/squirrel/squirrel/CMakeLists.txt b/squirrel/squirrel/CMakeLists.txt
+index f96b958..cf2d1c5 100644
+--- a/squirrel/squirrel/CMakeLists.txt
++++ b/squirrel/squirrel/CMakeLists.txt
+@@ -41,5 +41,9 @@ if(NOT DISABLE_STATIC)
+   target_include_directories(squirrel_static PUBLIC
+     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+     )
++  if(MSVC)
 +    target_compile_definitions(squirrel_static PRIVATE
-+        "SQUIRREL_API=__declspec(dllexport)")
++      "SQUIRREL_API=__declspec(dllexport)")
++  endif()
+ endif()
+diff --git a/squirrel/sqstdlib/CMakeLists.txt b/squirrel/sqstdlib/CMakeLists.txt
+index 34fba82..3d7c3b9 100644
+--- a/squirrel/sqstdlib/CMakeLists.txt
++++ b/squirrel/sqstdlib/CMakeLists.txt
+@@ -38,5 +38,9 @@ if(NOT DISABLE_STATIC)
+   target_include_directories(sqstdlib_static PUBLIC
+     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+     )
++  if(MSVC)
 +    target_compile_definitions(sqstdlib_static PRIVATE
-+        "SQUIRREL_API=__declspec(dllexport)")
-+    target_compile_definitions(simplesquirrel_static PRIVATE SSQ_DLL SSQ_EXPORTS)
++      "SQUIRREL_API=__declspec(dllexport)")
++  endif()
+ endif()
+diff --git a/simplesquirrel/CMakeLists.txt b/simplesquirrel/CMakeLists.txt
+index 227938d..50b3c2f 100644
+--- a/simplesquirrel/CMakeLists.txt
++++ b/simplesquirrel/CMakeLists.txt
+@@ -58,2 +58,5 @@
+ # Install
++if(MSVC)
++  target_compile_definitions(${PROJECT_NAME}_static PRIVATE SSQ_EXPORTS=1 SSQ_DLL=1)
 +endif()
-+
- # for poco
- set(POCO_STATIC ON CACHE BOOL "" FORCE)
- set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+ if(BUILD_INSTALL)

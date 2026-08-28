@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -65,6 +66,15 @@ public:
 
     /** @brief Clears prior diagnostics and dependency edges before compiling an importer. */
     void beginCompilation(std::string_view importerUri);
+    /**
+     * @brief Consumes the native failure captured while resolving the current compilation.
+     *
+     * Squirrel's compiler reports only a generic import failure after a native
+     * resolver callback returns an error. This one-shot diagnostic bridge lets
+     * ScriptCompiler preserve the actionable resolver message without exposing
+     * a persistent last-error side channel.
+     */
+    [[nodiscard]] std::optional<std::string> takeCompilationFailure();
     /** @brief Compiles all imports discovered while compiling an importer. */
     void prepareDependencies(std::string_view importerUri);
     /** @brief Instantiates the importer's dependencies in topological order. */
@@ -75,8 +85,6 @@ public:
     void reload(std::string_view canonicalUri);
     /** @brief Transactionally reloads a module and every cached module that imports it. */
     std::vector<std::string> reloadAffected(std::string_view canonicalUri);
-    /** @brief Last resolver diagnostic produced by a Squirrel callback. */
-    const std::string& lastError() const noexcept;
     /** @brief Returns canonical direct dependencies for an importer. */
     std::vector<std::string> dependencies(std::string_view importerUri) const;
     /** @brief Returns canonical importers that directly depend on a module. */

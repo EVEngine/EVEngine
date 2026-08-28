@@ -1,10 +1,11 @@
 #include "graphics/Graphics.h"
 #include "common/Capability.h"
 #include "common/config.h"
+#include "font/FontData.h"
+#include "graphics/ArtifactProvider.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
-#include "font/FontData.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
@@ -139,9 +140,13 @@ Graphics::Graphics() {
     // by the time it is used; see common/WindowSurfaceHost.h.
     eve::cap::provide<IWindowSurfaceHost>(this);
     registerGraphicsCapabilities();
+    registerGraphicsArtifactProvider(this);
 }
 
 Graphics::~Graphics() {
+    // Derived backends detach first, while their virtual releaseMesh boundary
+    // is still live. This base path covers host-only Graphics subclasses.
+    detachGraphicsArtifactProvider(this);
     // Out-of-line so unique_ptr members of effect classes (Outline, AO, GI, …)
     // are destroyed where the complete types are visible.
 }

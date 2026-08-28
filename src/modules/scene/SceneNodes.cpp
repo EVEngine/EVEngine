@@ -18,14 +18,25 @@
 
 #include <limits>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace eve::scene {
 
+namespace {
+
+template <class T>
+T *borrowSceneResult(eve::Result<T *> result) {
+    if (!result.ok()) return nullptr;
+    return std::move(result).takeValue();
+}
+
+}  // namespace
+
 bool Scene::setNodePosition(const std::string &id, float x, float y, float z) {
     SceneHost *h = selected_;
     if (!h) return false;
-    SceneNode *n = h->findById(id);
+    SceneNode *n = borrowSceneResult(h->findById(id));
     if (!n) return false;
     n->x = x;
     n->y = y;
@@ -37,7 +48,7 @@ bool Scene::setNodePosition(const std::string &id, float x, float y, float z) {
 bool Scene::setNodeRotation(const std::string &id, float yaw, float pitch, float roll) {
     SceneHost *h = selected_;
     if (!h) return false;
-    SceneNode *n = h->findById(id);
+    SceneNode *n = borrowSceneResult(h->findById(id));
     if (!n) return false;
     n->yaw = yaw;
     n->pitch = pitch;
@@ -49,7 +60,7 @@ bool Scene::setNodeRotation(const std::string &id, float yaw, float pitch, float
 bool Scene::setNodeScale(const std::string &id, float sx, float sy, float sz) {
     SceneHost *h = selected_;
     if (!h) return false;
-    SceneNode *n = h->findById(id);
+    SceneNode *n = borrowSceneResult(h->findById(id));
     if (!n) return false;
     n->sx = sx;
     n->sy = sy;
@@ -61,7 +72,7 @@ bool Scene::setNodeScale(const std::string &id, float sx, float sy, float sz) {
 bool Scene::setNodeVisible(const std::string &id, bool visible) {
     SceneHost *h = selected_;
     if (!h) return false;
-    SceneNode *n = h->findById(id);
+    SceneNode *n = borrowSceneResult(h->findById(id));
     if (!n) return false;
     n->visible = visible;
     h->markSubtreeDirtyById(id);  // resync renderable visibility via links
@@ -166,7 +177,7 @@ int Scene::linkCountAt(const std::string &hostName, const std::string &nodeId) {
 std::vector<float> Scene::getNodePositionAt(const std::string &hostName,
                                             const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {0.f, 0.f, 0.f};
     return {n->x, n->y, n->z};
 }
@@ -174,7 +185,7 @@ std::vector<float> Scene::getNodePositionAt(const std::string &hostName,
 std::vector<float> Scene::getNodeRotationAt(const std::string &hostName,
                                             const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {0.f, 0.f, 0.f};
     return {n->yaw, n->pitch, n->roll};
 }
@@ -182,7 +193,7 @@ std::vector<float> Scene::getNodeRotationAt(const std::string &hostName,
 std::vector<float> Scene::getNodeScaleAt(const std::string &hostName,
                                          const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {0.f, 0.f, 0.f};
     return {n->sx, n->sy, n->sz};
 }
@@ -190,14 +201,14 @@ std::vector<float> Scene::getNodeScaleAt(const std::string &hostName,
 bool Scene::getNodeVisibleAt(const std::string &hostName,
                              const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     return n ? n->visible : false;
 }
 
 std::vector<float> Scene::getNodeWorldPositionAt(const std::string &hostName,
                                                  const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {0.f, 0.f, 0.f};
     return {n->world[3][0], n->world[3][1], n->world[3][2]};
 }
@@ -205,7 +216,7 @@ std::vector<float> Scene::getNodeWorldPositionAt(const std::string &hostName,
 std::vector<float> Scene::getNodeWorldRotationAt(const std::string &hostName,
                                                  const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {0.f, 0.f, 0.f};
     glm::vec3 pos, euler, scale;
     decomposeWorld(n->world, pos, euler, scale);
@@ -215,7 +226,7 @@ std::vector<float> Scene::getNodeWorldRotationAt(const std::string &hostName,
 std::vector<float> Scene::getNodeWorldScaleAt(const std::string &hostName,
                                               const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {0.f, 0.f, 0.f};
     glm::vec3 pos, euler, scale;
     decomposeWorld(n->world, pos, euler, scale);
@@ -226,7 +237,7 @@ std::vector<float> Scene::localToWorldAt(const std::string &hostName,
                                          const std::string &nodeId, float x, float y,
                                          float z) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {x, y, z};
     glm::vec4 p = n->world * glm::vec4(x, y, z, 1.f);
     return {p.x, p.y, p.z};
@@ -236,7 +247,7 @@ std::vector<float> Scene::worldToLocalAt(const std::string &hostName,
                                          const std::string &nodeId, float x, float y,
                                          float z) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {x, y, z};
     glm::vec4 p = glm::inverse(n->world) * glm::vec4(x, y, z, 1.f);
     return {p.x, p.y, p.z};
@@ -280,7 +291,7 @@ bool Scene::removeChildAt(const std::string &hostName, const std::string &parent
 bool Scene::setNodeQuaternionAt(const std::string &hostName, const std::string &nodeId,
                                 float qx, float qy, float qz, float qw) {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!h || !n) return false;
     glm::quat q(qw, qx, qy, qz);
     glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
@@ -294,7 +305,7 @@ bool Scene::setNodeQuaternionAt(const std::string &hostName, const std::string &
 std::vector<float> Scene::getNodeQuaternionAt(const std::string &hostName,
                                               const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {0.f, 0.f, 0.f, 1.f};
     glm::quat q = nodeQuaternion(*n);
     return {q.x, q.y, q.z, q.w};
@@ -303,7 +314,7 @@ std::vector<float> Scene::getNodeQuaternionAt(const std::string &hostName,
 bool Scene::setNodeLookAtAt(const std::string &hostName, const std::string &nodeId,
                             float tx, float ty, float tz) {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!h || !n) return false;
     glm::vec3 pos(n->x, n->y, n->z);
     glm::vec3 target(tx, ty, tz);
@@ -327,28 +338,28 @@ bool Scene::setNodeLookAtAt(const std::string &hostName, const std::string &node
 bool Scene::addNodeTagAt(const std::string &hostName, const std::string &nodeId,
                          const std::string &tag) {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     return h ? h->addTag(n, tag) : false;
 }
 
 bool Scene::removeNodeTagAt(const std::string &hostName, const std::string &nodeId,
                             const std::string &tag) {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     return h ? h->removeTag(n, tag) : false;
 }
 
 bool Scene::hasNodeTagAt(const std::string &hostName, const std::string &nodeId,
                          const std::string &tag) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     return h ? h->hasTag(n, tag) : false;
 }
 
 std::vector<std::string> Scene::getNodeTagsAt(const std::string &hostName,
                                               const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return {};
     return n->tags;
 }
@@ -367,7 +378,7 @@ std::vector<std::string> Scene::collectIdsByTagAt(const std::string &hostName,
 bool Scene::setNodeLayerAt(const std::string &hostName, const std::string &nodeId,
                            int layer) {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return false;
     n->layer = layer;
     return true;
@@ -375,7 +386,7 @@ bool Scene::setNodeLayerAt(const std::string &hostName, const std::string &nodeI
 
 int Scene::getNodeLayerAt(const std::string &hostName, const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     return n ? n->layer : 0;
 }
 
@@ -431,7 +442,7 @@ bool Scene::setNodeBoundsAt(const std::string &hostName, const std::string &node
                             float minX, float minY, float minZ, float maxX, float maxY,
                             float maxZ) {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n) return false;
     n->bminX = minX;
     n->bminY = minY;
@@ -445,14 +456,14 @@ bool Scene::setNodeBoundsAt(const std::string &hostName, const std::string &node
 
 bool Scene::hasNodeBoundsAt(const std::string &hostName, const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     return n ? n->hasBounds : false;
 }
 
 std::vector<float> Scene::getNodeBoundsAt(const std::string &hostName,
                                           const std::string &nodeId) const {
     SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
+    SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!n || !n->hasBounds) return {0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
     return {n->bminX, n->bminY, n->bminZ, n->bmaxX, n->bmaxY, n->bmaxZ};
 }
@@ -539,14 +550,14 @@ std::string Scene::getChildIdAt(const std::string &parentId, int childOrdinal) {
 std::string Scene::findIdByName(const std::string &name) {
     SceneHost *h = selected_;
     if (!h) return {};
-    SceneNode *n = h->findByName(name);
+    SceneNode *n = borrowSceneResult(h->findByName(name));
     return n ? n->id : std::string{};
 }
 
 std::string Scene::findIdByPath(const std::string &path) {
     SceneHost *h = selected_;
     if (!h) return {};
-    SceneNode *n = h->findByPath(path);
+    SceneNode *n = borrowSceneResult(h->findByPath(path));
     return n ? n->id : std::string{};
 }
 

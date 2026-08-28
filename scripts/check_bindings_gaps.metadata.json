@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "baselineCount": 859,
+  "default": {
+    "owner": "engine-foundation",
+    "issue": "EVENGINE-ARCH-2026-08-BINDING-GAPS",
+    "reason": "Pre-existing binding documentation debt retained while module chapters are migrated.",
+    "expiry": "2026-12-31"
+  },
+  "policy": {
+    "allowNetGrowth": false,
+    "metadataFileIsReadOnly": true,
+    "gapFileOwner": "binding-lint"
+  }
+}

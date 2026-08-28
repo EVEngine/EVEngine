@@ -1,17 +1,16 @@
 #include "scriptmodel/ReflectedPropertyModel.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cstdlib>
 #include <utility>
 
 namespace eve::scriptmodel {
 namespace {
 
-using presentation::PropertyDescriptor;
-using presentation::PropertyFlag;
-using presentation::PropertyKind;
-using presentation::Value;
+using eve::Value;
+using property_access::PropertyDescriptor;
+using property_access::PropertyFlag;
+using property_access::PropertyKind;
 
 PropertyKind propertyKind(const ReflectedMember &member) {
     if (member.attrString("editor") == "combo" && !member.attrOptions("options").empty())
@@ -79,6 +78,20 @@ ReflectedValue toReflectedValue(const Value &value) {
         result.text = *text;
     }
     return result;
+}
+
+const char *scriptValidationCode(const std::string &presentationCode) {
+    if (presentationCode == "property_access.property.read-only") return "scriptmodel.property.read-only";
+    if (presentationCode == "property_access.property.type") return "scriptmodel.property.type";
+    if (presentationCode == "property_access.property.choice") return "scriptmodel.property.choice";
+    if (presentationCode == "property_access.property.finite") return "scriptmodel.property.finite";
+    if (presentationCode == "property_access.property.minimum") return "scriptmodel.property.minimum";
+    if (presentationCode == "property_access.property.maximum") return "scriptmodel.property.maximum";
+    return "scriptmodel.property.validation";
+}
+
+property_access::WriteResult validationFailure(const property_access::WriteResult &validation) {
+    return property_access::WriteResult::reject(scriptValidationCode(validation.code), validation.message);
 }
 
 }  // namespace
@@ -192,74 +205,30 @@ std::optional<Value> ReflectedPropertyModel::read(const std::string &path) const
     return convertValue(path, runtime_->readProperty(instance_, path));
 }
 
-presentation::WriteResult ReflectedPropertyModel::write(const std::string &path,
-                                                        const Value &value) {
-    const PropertyDescriptor *descriptor = schema_.find(path);
+property_access::WriteResult ReflectedPropertyModel::write(const std::string &path, const Value &value) {
+    auto descriptor = schema_.find(path);
     if (!descriptor)
-        return presentation::WriteResult::reject("scriptmodel.property.missing",
-                                                  "Property is not reflected");
-    if (presentation::hasFlag(descriptor->flags, PropertyFlag::ReadOnly))
-        return presentation::WriteResult::reject("scriptmodel.property.read-only",
-                                                  "Property is read-only");
-    const Value::Type type = value.type();
-    bool compatible = false;
-    switch (descriptor->kind) {
-        case PropertyKind::Bool: compatible = type == Value::Type::Bool; break;
-        case PropertyKind::Integer: compatible = type == Value::Type::Integer; break;
-        case PropertyKind::Number:
-            compatible = type == Value::Type::Integer || type == Value::Type::Number;
-            break;
-        case PropertyKind::String: compatible = type == Value::Type::String; break;
-        case PropertyKind::Enum: compatible = type == Value::Type::String; break;
-        default: compatible = false; break;
-    }
-    if (!compatible)
-        return presentation::WriteResult::reject("scriptmodel.property.type",
-                                                  "Property value type does not match schema");
-    if (descriptor->kind == PropertyKind::Enum) {
-        const auto *choice = value.getIf<std::string>();
-        if (!choice || std::find(descriptor->choices.begin(), descriptor->choices.end(),
-                                 *choice) == descriptor->choices.end())
-            return presentation::WriteResult::reject("scriptmodel.property.choice",
-                                                      "Value is not an allowed choice");
-    }
-    double numeric = 0.0;
-    bool hasNumeric = false;
-    if (const auto *integer = value.getIf<std::int64_t>()) {
-        numeric = static_cast<double>(*integer);
-        hasNumeric = true;
-    } else if (const auto *number = value.getIf<double>()) {
-        numeric = *number;
-        if (!std::isfinite(numeric))
-            return presentation::WriteResult::reject("scriptmodel.property.finite",
-                                                      "Numeric values must be finite");
-        hasNumeric = true;
-    }
-    if (hasNumeric && descriptor->numeric.minimum && numeric < *descriptor->numeric.minimum)
-        return presentation::WriteResult::reject("scriptmodel.property.minimum",
-                                                  "Value is below the minimum");
-    if (hasNumeric && descriptor->numeric.maximum && numeric > *descriptor->numeric.maximum)
-        return presentation::WriteResult::reject("scriptmodel.property.maximum",
-                                                  "Value is above the maximum");
+        return property_access::WriteResult::reject("scriptmodel.property.missing", "Property is not reflected");
+    const property_access::WriteResult validation = property_access::validatePropertyValue(descriptor->get(), value);
+    if (!validation.accepted) return validationFailure(validation);
 
     ReflectedValue reflected = toReflectedValue(value);
     if (reflected.empty())
-        return presentation::WriteResult::reject("scriptmodel.property.type",
-                                                  "Unsupported property value type");
+        return property_access::WriteResult::reject("scriptmodel.property.type", "Unsupported property value type");
     if (!runtime_->writeProperty(instance_, path, reflected))
-        return presentation::WriteResult::reject("scriptmodel.property.write",
-                                                  "Runtime rejected the property write");
+        return property_access::WriteResult::reject("scriptmodel.property.write",
+                                                    "Runtime rejected the property write");
     const Value applied = convertValue(path, runtime_->readProperty(instance_, path));
     const auto found = cachedValues_.find(path);
     if (found == cachedValues_.end() || found->second != applied) emit(path, applied);
-    return presentation::WriteResult::success();
+    return property_access::WriteResult::success();
 }
 
-presentation::Subscription ReflectedPropertyModel::subscribe(ChangeCallback callback) {
+property_access::Subscription ReflectedPropertyModel::subscribe(ChangeCallback callback) {
     const std::uint64_t id = observers_->nextId++;
     observers_->entries.push_back({id, std::move(callback)});
     std::weak_ptr<ObserverState> weak = observers_;
-    return presentation::Subscription([weak, id]() {
+    return property_access::Subscription([weak, id]() {
         if (const auto state = weak.lock())
             std::erase_if(state->entries,
                           [id](const ObserverState::Entry &entry) { return entry.id == id; });
@@ -278,7 +247,7 @@ void ReflectedPropertyModel::refresh() {
 
 void ReflectedPropertyModel::emit(const std::string &path, const Value &value) {
     cachedValues_[path] = value;
-    const presentation::PropertyChange change{path, value, ++revision_};
+    const property_access::PropertyChange change{path, value, ++revision_};
     const auto snapshot = observers_->entries;
     for (const ObserverState::Entry &entry : snapshot)
         if (entry.callback) entry.callback(change);

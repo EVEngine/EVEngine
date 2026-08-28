@@ -34,10 +34,10 @@ connected street network in two stages, exactly as the paper describes:
 
 Two output paths are exposed on `eve.Procgen()`:
 
-- `generate("urban.parcels", p)` → `Grid2D` with `Semantic::Road` streets,
+- `generate("urban.parcels", p)` → Result whose `value` is a `Grid2D` with `Semantic::Road` streets,
   `Semantic::Floor` parcels (per-parcel id in `getDetail`), parcel anchor
   objects and metadata.
-- `buildMesh("mesh.urban", p, gfx)` / `generateMesh(...)` → flat or extruded
+- `buildMesh("mesh.urban", p, gfx)` / `generateMesh(...)` → Result whose `value` is a flat or extruded
   parcel blocks + street ribbons, ready for the 3D renderer.
 
 ## Parameters

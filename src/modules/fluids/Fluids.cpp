@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <exception>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <utility>
 
 namespace eve::fluids {
 namespace {
@@ -112,15 +114,17 @@ int FluidSimulator::spawnDrop(const glm::vec3& center, float radius, int count) 
     return sim_.spawnDrop(center, radius, count);
 }
 
-void FluidSimulator::step(float dt) {
+void FluidSimulator::step(float dt) { stepSolver(dt, std::max(1, sim_.params().iterations)); }
+
+void FluidSimulator::stepSolver(float dt, int substeps) {
     if (sim_.particleCount() <= 0) return;
     if (preferGpu_ && !gpuOk_) ensureGpu();
     if (!gpuOk_) {
-        sim_.step(dt);
+        sim_.step(dt, substeps);
         return;
     }
 
-    const int   iters = std::max(1, sim_.params().iterations);
+    const int   iters = std::max(1, substeps);
     const float sub   = dt / float(iters);
 
     seq_->begin();
@@ -164,6 +168,52 @@ void FluidSimulator::step(float dt) {
     }
     std::vector<float>& dens = sim_.densities();
     for (int i = 0; i < sim_.particleCount(); ++i) dens[size_t(i)] = densF[size_t(i)];
+}
+
+eve::Result<void> FluidSimulator::step(const eve::SimulationStep&              stepValue,
+                                       const eve::physics::SimulationSettings& settings) {
+    auto valid = eve::physics::detail::validateSimulationStep(stepValue, settings, observation_);
+    if (!valid) return valid;
+    auto next = eve::physics::detail::advanceSimulationObservation(observation_, stepValue);
+    if (!next) return eve::Result<void>::failure(next.status());
+
+    try {
+        if (preferGpu_ && !gpuOk_) {
+            bool available = false;
+            try {
+                available = ensureGpu();
+            } catch (...) {
+                available = false;
+            }
+            if (!available) {
+                backendFallback_        = true;
+                backendSelectionStatus_ = eve::Status(
+                    eve::StatusCode::Applied,
+                    {eve::Diagnostic::warning(
+                        eve::DiagnosticCode::Unsupported, "Fluid GPGPU accelerator unavailable; CPU reference selected",
+                        "fluids.simulationBackend", {{"selected", "cpu"}, {"fallback", "explicit"}})});
+            }
+        }
+        stepSolver(static_cast<float>(stepValue.delta.seconds()), settings.subStepCount);
+    } catch (const std::exception& error) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("Fluid simulation step failed: ") + error.what(),
+            "fluids.simulationBackend.step"));
+    } catch (...) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "Fluid simulation step failed with an unknown exception",
+            "fluids.simulationBackend.step"));
+    }
+    observation_ = std::move(next).takeValue();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> FluidSimulator::restoreObservation(const eve::physics::SimulationObservation& observation) {
+    auto valid =
+        eve::physics::detail::validateSimulationObservation(observation, "fluids.simulationBackend.restoreObservation");
+    if (!valid) return valid;
+    observation_ = observation;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void FluidSimulator::readPositions(std::vector<glm::vec3>& out) const {
@@ -369,7 +419,7 @@ void Fluids::expose(ssq::Table& table) {
     sim.addFunc("setParticleRadius", &FluidSimulator::setParticleRadius);
     sim.addFunc("setSupportRadius", &FluidSimulator::setSupportRadius);
     sim.addFunc("spawnDrop", &FluidSimulator::spawnDrop);
-    sim.addFunc("step", &FluidSimulator::step);
+    sim.addFunc("step", static_cast<void (FluidSimulator::*)(float)>(&FluidSimulator::step));
     sim.addFunc("getParticleCount", &FluidSimulator::getParticleCount);
     sim.addFunc("getMaxParticles", &FluidSimulator::getMaxParticles);
     sim.addFunc("usingGpu", &FluidSimulator::usingGpu);

@@ -81,7 +81,7 @@ Rig。`setRigPriority` / `setRigEnabled` 可在游戏状态变化时驱动 Direc
 ## Timeline 与 Event
 
 ```squirrel
-local cameraEvents = eve.Event();
+local cameraEvents = eve.PlatformEvent();
 ctrl.setEventSink(cameraEvents);
 ctrl.clearTimeline();
 ctrl.addTimelineCut(0.0, "gameplay", 0.0);

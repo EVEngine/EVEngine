@@ -33,7 +33,7 @@ std::string valueText(const ReflectedValue& value) {
 Inspector::~Inspector() {
     // The ECS host outlives this panel; drop its tree so the stored widget
     // callbacks (which capture `this`) are released while we are still alive.
-    if (host_) host_->setTree(window("", {}));
+    if (auto host = UIHost::resolve(host_)) host->get().setTree(window("", {}));
 }
 
 Runtime* Inspector::runtime() const {
@@ -74,18 +74,24 @@ void Inspector::refresh() {
 }
 
 void Inspector::open() {
-    if (!host_) host_ = UIHost::createHost(kInspectorHostName);
-    host_->setVisible(true);
-    host_->setLayer(100);
+    auto host = UIHost::resolve(host_);
+    if (!host) {
+        host_ = UIHost::createHost(kInspectorHostName);
+        host  = UIHost::resolve(host_);
+    }
+    if (!host) return;
+    host->get().setVisible(true);
+    host->get().setLayer(100);
     refresh();
 }
 
 void Inspector::close() {
-    if (host_) host_->setVisible(false);
+    if (auto host = UIHost::resolve(host_)) host->get().setVisible(false);
 }
 
 bool Inspector::isOpen() const {
-    return host_ && host_->meta()->visible;
+    auto host = UIHost::resolve(host_);
+    return host && host->get().meta()->visible;
 }
 
 bool Inspector::selectClass(const std::string& name) {
@@ -489,12 +495,14 @@ WidgetDesc Inspector::build() {
 }
 
 void Inspector::rebuildHost() {
-    if (!host_ || !host_->meta()->visible) return;
-    host_->setTreeReconcile(build());
+    auto host = UIHost::resolve(host_);
+    if (!host || !host->get().meta()->visible) return;
+    host->get().setTreeReconcile(build());
 }
 
 void Inspector::sync() {
-    if (!host_ || !host_->meta()->visible) return;
+    auto host = UIHost::resolve(host_);
+    if (!host || !host->get().meta()->visible) return;
     Runtime* rt = runtime();
     if (!rt || selectedInstance_ < 0 ||
         size_t(selectedInstance_) >= instances_.size())
@@ -507,7 +515,7 @@ void Inspector::sync() {
     options.showAdvanced = true;
     options.showEditorOnly = true;
     options.groupCategories = false;
-    syncPropertyView(*host_, *propertyModel_, options);
+    syncPropertyView(host->get(), *propertyModel_, options);
 }
 
 }  // namespace eve::ui

@@ -1,8 +1,33 @@
 enable_testing()
 
+# Compile-fail fixtures for critical non-Result return values. This target is
+# intentionally independent of unit_test and never triggers a full engine
+# build by itself; CI also runs the same script in the fast structural job.
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+add_custom_target(nodiscard_compile_check
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
+          --source-dir ${CMAKE_SOURCE_DIR}
+  USES_TERMINAL)
+add_test(NAME common.nodiscard_compile_diagnostics
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
+          --source-dir ${CMAKE_SOURCE_DIR})
+set_tests_properties(common.nodiscard_compile_diagnostics PROPERTIES LABELS "quality")
+add_test(NAME cmake.third_party_patch_idempotence
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/test_patch_third_party.py)
+set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "quality;cmake")
+
 file(GLOB all_test_cpp
   ECS.cpp
   capability.cpp
+  common_identity_version.cpp
+  identity_result_audit.cpp
+  runtime_handle.cpp
+  common_subscription.cpp
+  time_subscription_consumers.cpp
+  container_transfer.cpp
+  container_adapters.cpp
+  versioned_registry.cpp
+  time_contract.cpp
   data.cpp
   decal.cpp
   decal_script.cpp
@@ -12,6 +37,10 @@ file(GLOB all_test_cpp
   profiler_script.cpp
   crashlog.cpp
   resource.cpp
+  resource_account.cpp
+  resource_uri.cpp
+  result.cpp
+  value.cpp
   state_value.cpp
   json.cpp
   filesystem.cpp
@@ -59,6 +88,8 @@ file(GLOB all_test_cpp
   UISystem.cpp
   UIBuilder.cpp
   editor_property_model.cpp
+  editor_transaction_consumer.cpp
+  property_validation_parity.cpp
   script_property_model.cpp
   ui_control_semantics.cpp
   ui_nine_patch.cpp
@@ -91,6 +122,7 @@ file(GLOB all_test_cpp
   map_path.cpp
   map_fov.cpp
   rpg.cpp
+  gameplay_action.cpp
   rpg_simulation.cpp
   rpg_reload.cpp
   hex_level_simulation.cpp
@@ -119,8 +151,16 @@ file(GLOB all_test_cpp
   dialogue_voice.cpp
   dialogue_proc.cpp
   dialogue_proc_script.cpp
+  dialogue_state_integration.cpp
+  dialogue_payment.cpp
+  physics_core_boundary.cpp
+  physics_artifact_provider.cpp
   physics_cloth.cpp
   procgen.cpp
+  procgen_e2e.cpp
+  procgen_artifact_publish.cpp
+  procgen_generated_artifact.cpp
+  procgen_core_boundary.cpp
   procgen_schema_script.cpp
   procgen_pointset.cpp
   procgen_lsystem.cpp
@@ -152,6 +192,8 @@ file(GLOB all_test_cpp
   box2d.cpp
   box3d.cpp
   binding_selfcheck.cpp
+  squirrel_binding.cpp
+  script_ownership.cpp
   softbody.cpp
   softbody_gpu.cpp
   hotreload.cpp
@@ -165,6 +207,9 @@ file(GLOB all_test_cpp
   weather.cpp
   weapon.cpp
   vehicle.cpp
+  attribute_domain_adapters.cpp
+  rts_composition.cpp
+  vehicle_orders_adapter.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
@@ -177,23 +222,43 @@ file(GLOB all_test_cpp
   window_cpp.cpp
   image.cpp
   event.cpp
+  event_envelope.cpp
   economy.cpp
   attributes.cpp
+  attributes_rpg_unification.cpp
   decision.cpp
+  condition.cpp
+  rpg_skill_condition.cpp
+  card_play_condition.cpp
+  resource_gameplay_adapters.cpp
   authority.cpp
   definitions.cpp
+  definition_runtime.cpp
+  definition_runtime_skill_vehicle.cpp
+  definition_runtime_weapon.cpp
+  snapshot_envelope.cpp
+  snapshot_consumers.cpp
   effects.cpp
+  effects_lifecycle.cpp
+  status_effect_adapter.cpp
+  effects_domain_adapters.cpp
   eventstream.cpp
+  card_rts_production_integration.cpp
+  schema_production_integration.cpp
   orders.cpp
   policyregistry.cpp
   production.cpp
+  production_time.cpp
   sensing.cpp
+  targeting.cpp
   schema.cpp
+  schema_contract.cpp
   social.cpp
   statepatch.cpp
   steering.cpp
   tags.cpp
   transaction.cpp
+  transaction_participant.cpp
   rx.cpp
   runtime.cpp
   language_index.cpp
@@ -383,47 +448,12 @@ endif()
 # Platform system libraries, shared with the host binary
 # (see cmake/system_libraries.cmake).
 eve_append_system_libraries(SystemLibraries)
-
-# Windows lib names must match local + CI third-party install (md/mdd postfixes).
-# FreeType uses its own Debug postfix "d" (freetyped) and Release "md" (freetypemd).
-if(WIN32)
-  if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd lz4mdd Box2Dmdd box3dd
-      vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd freetyped)
-  else()
-    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstaticmd lz4md Box2Dmd box3dmd
-      vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md freetypemd)
-  endif()
-else()
-  if(APPLE)
-    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4 Box2D box3d
-      vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal freetype)
-  else()
-    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4 Box2D box3d
-      vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal freetype)
-  endif()
-endif()
-
-if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-  set(ThirdParty ${ThirdParty} simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd SDL2d
-    PocoDataSQLitemdd PocoDatamdd PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
-    ${SystemLibraries})
-else()
-  if(WIN32)
-    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2md
-      PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
-      ${SystemLibraries})
-  elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-    # Same unprefixed static names as the engine Android build; SDL2 stays shared.
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-      PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
-      ${SystemLibraries})
-  else()
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
-      PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
-      ${SystemLibraries})
-  endif()
-endif()
+ # Keep the test runner's link closure identical to the host's manifest-derived
+ # closure. The previous hand-written list linked codecs, OpenAL, Box2D and
+ # PocoData even when a profile had removed their modules, making profile tests
+ # falsely depend on the full third-party aggregate.
+eve_thirdparty_libs(_eve_test_tp_libs ${EVE_THIRDPARTY_GROUPS})
+set(ThirdParty ${_eve_test_tp_libs} ${SystemLibraries})
 
 set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
 

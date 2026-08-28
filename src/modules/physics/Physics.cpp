@@ -851,7 +851,7 @@ void Physics::expose(ssq::Table &table) {
     });
     shape3.addFunc("setGroupIndex", &Shape3D::setGroupIndex);
     shape3.addFunc("getGroupIndex", &Shape3D::getGroupIndex);
-    shape3.addFunc("getBody", &Shape3D::getBody);
+    shape3.addFunc("getBody", [](Shape3D *shape) { return shape->getBody(); });
     shape3.addFunc("testPoint", &Shape3D::testPoint);
     shape3.addFunc("destroy", &Shape3D::destroy);
 

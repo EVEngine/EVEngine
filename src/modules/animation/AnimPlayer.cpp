@@ -148,7 +148,7 @@ void AnimPlayer::dispatchEvents(float oldTime, float newTime) {
     }
 }
 
-void AnimPlayer::update(float dt) {
+void AnimPlayer::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("AnimPlayer.update: dt must be >= 0");
     events_.clear();
     if (!playing_ || paused_ || !clip_) return;
@@ -219,6 +219,40 @@ void AnimPlayer::update(float dt) {
     } else {
         pose_.copyFrom(&sampledPose_);
     }
+}
+
+eve::Result<void> AnimPlayer::advance(const eve::SimulationStep& step) {
+    if (step.delta.nanoseconds() < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation player delta must be non-negative"));
+    if (hasLastTick_ && step.tick <= lastTick_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "animation player tick must advance monotonically"));
+
+    const float dt = static_cast<float>(step.delta.seconds());
+    if (!std::isfinite(dt))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation player delta is outside float range"));
+    updateUnchecked(dt);
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void AnimPlayer::update(float dt) {
+    auto duration = eve::Duration::fromSeconds(dt);
+    if (!duration) {
+        duration.ignore("legacy animation player update received an invalid duration");
+        return;
+    }
+    auto nextTick = hasLastTick_ ? lastTick_.incremented() : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
+    if (!nextTick) {
+        eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                          "animation player simulation tick overflow"))
+            .ignore("legacy animation player update tick overflow");
+        return;
+    }
+    advance({*nextTick, std::move(duration).takeValue()}).ignore("legacy animation player update facade");
 }
 
 }  // namespace eve::animation

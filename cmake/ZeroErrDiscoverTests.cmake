@@ -4,6 +4,7 @@ function(zeroerr_discover_tests TARGET)
     COMMAND ${CMAKE_COMMAND}
       -DZEROERR_EXE=$<TARGET_FILE:${TARGET}>
       -DCTEST_FILE=${ctest_file}
+      -DZEROERR_WORKING_DIRECTORY=${CMAKE_SOURCE_DIR}
       -P ${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTestsImpl.cmake
     BYPRODUCTS ${ctest_file}
     COMMENT "Discovering zeroerr tests for ${TARGET}"

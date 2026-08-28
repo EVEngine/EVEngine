@@ -1,20 +1,25 @@
 #pragma once
 
-// Read-only JSON facade shared by every module that loads data-driven config.
+// Read-only JSON facade and canonical Value serializer shared by every module
+// that loads data-driven config.
 //
 // The backend is a self-contained recursive-descent parser (Json.cpp) rather
 // than Poco, so EVCommon stays dependency-free and modules that only read JSON
 // (rpg / inventory / building / card / voxel / housegen / i18n) no longer pull
 // Poco in just to parse a config file. Writing JSON still goes through
-// data::JsonDocument / Poco.
+// `stringify` is the single canonical serializer for common::Value. The
+// legacy data::JsonDocument/Poco facade remains available for mutable legacy
+// integrations, but must not be used as a second Value serialization format.
 //
 // Accessors never throw: a missing key, a wrong type or an out-of-range index
 // yields the supplied fallback (or a null Value), which is what config loading
 // wants and what the per-module helpers this replaces already did.
 
 #include "common/Export.h"
+#include "common/Result.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -39,6 +44,10 @@ public:
     bool isNull() const;
     bool isBool() const;
     bool isNumber() const;
+    /** @brief True when the JSON number was an integer literal that fits Int64. */
+    bool isInt64() const;
+    /** @brief True when the JSON number had no fraction or exponent. */
+    bool isIntegerLiteral() const;
     bool isString() const;
     bool isObject() const;
     bool isArray() const;
@@ -63,6 +72,8 @@ public:
     int         asInt(int fallback = 0) const;
     float       asFloat(float fallback = 0.f) const;
     double      asDouble(double fallback = 0.0) const;
+    /** @brief Read an exact Int64 literal, or return the caller-supplied default for other numbers. */
+    std::int64_t asInt64(std::int64_t fallback = 0) const;
     std::string asString(const std::string& fallback = {}) const;
 
     // --- keyed shorthand ---------------------------------------------------
@@ -116,3 +127,21 @@ private:
 };
 
 }  // namespace eve::json
+
+namespace eve {
+
+class Value;
+
+namespace json {
+
+/**
+ * @brief Serialize the canonical owning Value as deterministic compact JSON.
+ * @param value Owning value containing only JSON-compatible kinds.
+ * @return JSON text, or SerializationError when a Double is NaN or infinity.
+ * @remarks Object keys are emitted in lexicographic order. This is the single
+ *          canonical JSON serializer used by owning Value adapters.
+ */
+[[nodiscard]] EVENGINE_API Result<std::string> stringify(const eve::Value& value);
+
+}  // namespace json
+}  // namespace eve

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "generated_at": "2099-01-01",
+  "counts": {
+    "fixture-binding": 1,
+    "fixture-fallback": 1,
+    "fixture-soft-skip": 1,
+    "fixture-todo": 1
+  }
+}

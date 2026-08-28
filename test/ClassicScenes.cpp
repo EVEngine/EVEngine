@@ -177,7 +177,7 @@ Texture *loadAssimpDiffuseTexture(Graphics *gfx, const aiScene *scene, const aiM
     const char *p = path.C_Str();
     if (!p || !p[0]) return nullptr;
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     if (p[0] == '*') {
         int idx = std::atoi(p + 1);
@@ -1693,4 +1693,3 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
                 bestTag);
     REQUIRE(globalBest > 1.0);
 }
-

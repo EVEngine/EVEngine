@@ -63,7 +63,9 @@ function sd_build_mesh(kind, seed, mesh_params) {
         local recipe = "mesh." + key;
         try {
             if (procgen.hasMeshRecipe(recipe)) {
-                local p = procgen.newParams();
+                local paramsResult = procgen.newParams();
+                if (!paramsResult.ok) return null;
+                local p = paramsResult.value;
                 p.setSeed(seed);
                 p.setFloat("scale", 1.0);
                 if (typeof mesh_params == "table") {
@@ -74,7 +76,9 @@ function sd_build_mesh(kind, seed, mesh_params) {
                         else if (tk == "string") p.setString(k, v);
                     }
                 }
-                return procgen.generateMesh(recipe, p, gfx);
+                local meshResult = procgen.generateMesh(recipe, p, gfx);
+                if (!meshResult.ok) return null;
+                return meshResult.value;
             }
         } catch (e) {
             return null;

@@ -34,6 +34,20 @@ class GlobalIllumination;
 class GrassField;
 class Material;
 class Mesh;
+
+/**
+ * @brief Backend-owned layout facts for a mesh uploaded through Graphics.
+ *
+ * Implementations return this only for a live mesh owned by that backend. The
+ * descriptor is deliberately small so consumers can verify upload parity
+ * without depending on Vulkan or WebGPU headers.
+ */
+struct MeshBackendDescriptor {
+    std::uint32_t vertexCount      = 0;
+    std::uint32_t indexCount       = 0;
+    std::uint32_t vertexStride     = 0;
+    std::uint32_t indexElementSize = 0;
+};
 class Outline;
 class Quad;
 class RenderControl;
@@ -513,6 +527,16 @@ public:
      */
     virtual Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                     int vertexCount, const uint32_t *indices, int indexCount) = 0;
+
+    /**
+     * @brief Describe a live mesh created by this Graphics backend.
+     * @param mesh Borrowed mesh handle returned by this backend.
+     * @return Backend layout facts, or empty for an unknown/foreign handle.
+     */
+    [[nodiscard]] virtual std::optional<MeshBackendDescriptor> describeMesh(Mesh *mesh) const {
+        (void)mesh;
+        return std::nullopt;
+    }
 
     /**
      * @brief In-place update of a mesh's vertex/index data (CPU -> host-visible VBO).

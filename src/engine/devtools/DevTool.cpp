@@ -12,7 +12,7 @@
 #include "common/RenderTrace.h"
 #include "common/Runtime.h"
 #include "common/ScriptError.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
@@ -531,17 +531,17 @@ void DevTool::handleDebugHotkey(const std::string& key) {
 void DevTool::pumpWhilePaused() {
     poll();  // DAP continue / next / pause
 
-    auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
     ev->pump();
 
     // Consume debug hotkeys so F5/F8/F10/F11 work while blocked in the line hook;
     // re-queue everything else for the main loop after resume.
-    std::vector<std::unique_ptr<eve::event::Message>> keep;
+    std::vector<std::unique_ptr<eve::platform_event::Message>> keep;
     while (auto msg = ev->pollOwned()) {
         bool handled = false;
         if (msg->name == "keypressed" && !msg->args.empty() &&
-            msg->args[0].type == eve::event::Variant::Type::String) {
+            msg->args[0].type == eve::platform_event::Variant::Type::String) {
             const std::string& key = msg->args[0].s;
             if (key == "F5" || key == "F8" || key == "F10" || key == "F11" || key == "Pause") {
                 handleDebugHotkey(key);

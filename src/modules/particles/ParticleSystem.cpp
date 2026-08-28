@@ -243,15 +243,16 @@ void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu
     gpu.deathTimes.clear();
 }
 
-bool advanceResidentGpu(graphics::Graphics* gfx, ParticleEmitter* emitter, float dt) {
+eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *emitter, const eve::SimulationStep &step,
+                                     bool legacyControls) {
     auto cfg = emitter->config();
     auto sim = emitter->sim();
     auto gpu = emitter->gpuSim();
-    if (!gfx || !gfx->canSubmitGpuParticles()) return false;
+    if (!gfx || !gfx->canSubmitGpuParticles()) return eve::Result<bool>::success(false);
 
     if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) {
         gpu->residentHandle = gfx->createGpuParticleEmitter(std::uint32_t(sim->particles.size()));
-        if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) return false;
+        if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) return eve::Result<bool>::success(false);
     }
 
     const bool  hadLastPosition  = sim->hasLastPos;
@@ -264,7 +265,14 @@ bool advanceResidentGpu(graphics::Graphics* gfx, ParticleEmitter* emitter, float
     else
         sim->spawnQuota = std::min(sim->spawnQuota, conservativeRoom);
 
-    const float simulatedDt = advanceEmitterSim(*cfg, *sim, dt);
+    float simulatedDt = 0.f;
+    if (legacyControls) {
+        simulatedDt = advanceEmitterSim(*cfg, *sim, static_cast<float>(step.delta.seconds()));
+    } else {
+        auto simulation = advanceEmitterSim(*cfg, *sim, step);
+        if (!simulation) return eve::Result<bool>::failure(simulation.status());
+        simulatedDt = static_cast<float>(step.delta.seconds());
+    }
     gpu->timeline += simulatedDt;
     auto minHeap = std::greater<float>{};
     while (!gpu->deathTimes.empty() && gpu->deathTimes.front() <= float(gpu->timeline) + 1e-6f) {
@@ -309,26 +317,42 @@ bool advanceResidentGpu(graphics::Graphics* gfx, ParticleEmitter* emitter, float
         // rather than losing it through an implicit CPU migration.
         if (!gpu->residentActive) deactivateResidentGpu(gfx, *gpu);
         gpu->failed = true;
-        return true;
+        return eve::Result<bool>::success(true);
     }
 
     for (int i = 0; i < sim->alive; ++i) sim->particles[std::size_t(i)].life = 0.f;
     sim->alive          = 0;
     gpu->residentActive = true;
     gpu->estimatedAlive = int(gpu->deathTimes.size());
-    return true;
+    return eve::Result<bool>::success(true);
 }
 
 }  // namespace
 
-void ParticleSimSystem::update(float dt) {
-    auto &stats = mutableParticleFrameStats();
-    const uint64_t nextFrame = stats.frameIndex + 1;
-    stats = ParticleFrameStats{};
-    stats.frameIndex = nextFrame;
+eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool legacyControls) {
+    if (step.delta.nanoseconds() < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "particle simulation delta must be non-negative"));
+    const float dt = static_cast<float>(step.delta.seconds());
+    if (!std::isfinite(dt))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "particle simulation delta is outside float range"));
+
+    // Build the complete frame record off to the side. Checked failures must
+    // not publish counters that describe only the prefix of a frame; the
+    // previous published record remains the observable snapshot until the
+    // simulation reaches its commit point below.
+    ParticleFrameStats nextStats;
+    const uint64_t     nextFrame = particleFrameStats().frameIndex + 1;
+    nextStats.frameIndex         = nextFrame;
+    nextStats.simulationTick     = step.tick;
+    auto      &stats             = nextStats;
     const auto begin = std::chrono::steady_clock::now();
 
-    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
+    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) {
+        mutableParticleFrameStats() = nextStats;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    }
 
     std::vector<ParticleEmitter *> allEmitters;
     std::vector<ParticleEmitter *> emitters;
@@ -339,6 +363,10 @@ void ParticleSimSystem::update(float dt) {
             if (!cfg->entity) continue;
             allEmitters.push_back(cfg->entity);
             auto sim = cfg->entity->sim();
+            if (!legacyControls && sim->hasSimulationTick && step.tick <= sim->simulationTick)
+                return eve::Result<void>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                           "particle simulation tick must advance monotonically for every emitter"));
             if (sim->active || liveParticleCount(cfg->entity) > 0) emitters.push_back(cfg->entity);
         }
     }
@@ -406,8 +434,20 @@ void ParticleSimSystem::update(float dt) {
         const bool gpuEligible = emitter->isGpuFeatureSetSupported();
         if (gpuSim->residentActive && (!cfg->gpuSimulation || !gpuEligible)) deactivateResidentGpu(gfx, *gpuSim);
         const bool wantsResident = cfg->gpuSimulation && gpuEligible;
-        const bool handled       = wantsResident && advanceResidentGpu(gfx, emitter, dt);
-        if (!handled) advanceEmitterSim(*cfg, *sim, dt);
+        bool       handled       = false;
+        if (wantsResident) {
+            auto gpuAdvance = advanceResidentGpu(gfx, emitter, step, legacyControls);
+            if (!gpuAdvance) return eve::Result<void>::failure(gpuAdvance.status());
+            handled = std::move(gpuAdvance).takeValue();
+        }
+        if (!handled) {
+            if (legacyControls)
+                advanceEmitterSim(*cfg, *sim, dt);
+            else {
+                auto cpuAdvance = advanceEmitterSim(*cfg, *sim, step);
+                if (!cpuAdvance) return eve::Result<void>::failure(cpuAdvance.status());
+            }
+        }
         ++stats.emittersSimulated;
         processedAlive += liveParticleCount(emitter);
         if (budget.maxParticles > 0 || cfg->maxSpawnPerFrame > 0) sim->spawnQuota = 0;
@@ -433,6 +473,30 @@ void ParticleSimSystem::update(float dt) {
     stats.simulationMs =
         std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin)
             .count();
+
+    if (!legacyControls) {
+        for (auto *emitter : allEmitters) {
+            auto sim               = emitter->sim();
+            sim->simulationTick    = step.tick;
+            sim->hasSimulationTick = true;
+        }
+    }
+    mutableParticleFrameStats() = nextStats;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep &step) {
+    return runParticleSimulation(step, false);
+}
+
+void ParticleSimSystem::update(float dt) {
+    auto duration = eve::Duration::fromSeconds(dt);
+    if (!duration) {
+        duration.ignore("legacy particle update received an invalid duration");
+        return;
+    }
+    runParticleSimulation({eve::SimulationTick(1), std::move(duration).takeValue()}, true)
+        .ignore("legacy particle update facade");
 }
 
 void ParticleRenderSystem::render(graphics::Graphics *gfx) {
@@ -568,17 +632,39 @@ void ParticleLightSystem::update() {
 int ParticleConfigSystem::poll() {
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return 0;
 
-    // Watch events are drained by load.nut / HotReload; use modtime as fallback.
+    // Watch events are drained by load.nut / HotReload. This polling path is a
+    // deliberate, explicit file-state observation for hosts that do not
+    // deliver a watch event; its result is recorded on each Resource.
     int reloaded = 0;
     auto view =
         ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Resource>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, res] = *it;
-        if (!res->autoReload || res->path.empty() || !cfg->entity) continue;
+        if (!cfg->entity) continue;
+        if (res->path.empty()) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::Unbound;
+            continue;
+        }
+        if (!res->autoReload) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::AutoReloadDisabled;
+            continue;
+        }
 
         const int64_t mt = fileModtime(res->path);
-        if (mt < 0 || mt == res->modtime) continue;
-        if (reloadConfigFile(cfg->entity, nullptr)) ++reloaded;
+        if (mt < 0) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimeUnavailable;
+            continue;
+        }
+        if (mt == res->modtime) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimePollingUnchanged;
+            continue;
+        }
+        if (reloadConfigFile(cfg->entity, nullptr)) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimePollingReloaded;
+            ++reloaded;
+        } else {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimePollingReloadFailed;
+        }
     }
     return reloaded;
 }

@@ -1,15 +1,15 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <chrono>
 #include <memory>
 #include <thread>
 
-using eve::event::Event;
-using eve::event::Message;
-using eve::event::Variant;
+using eve::platform_event::Message;
+using eve::platform_event::PlatformEvent;
+using eve::platform_event::Variant;
 
 namespace {
 
@@ -21,8 +21,8 @@ struct TrackedPayload {
 
 }  // namespace
 
-TEST_CASE("Event.quitMessageSurvivesPumpPoll") {
-    auto* ev = Event::create();
+TEST_CASE("PlatformEvent.quitMessageSurvivesPumpPoll") {
+    auto* ev = PlatformEvent::create();
     ev->push(new Message("quit"));
     auto* msg = ev->poll();
     REQUIRE(msg != nullptr);
@@ -31,8 +31,8 @@ TEST_CASE("Event.quitMessageSurvivesPumpPoll") {
     CHECK(ev->poll() == nullptr);
 }
 
-TEST_CASE("Event.pollNameReturnsEmptyWhenEmpty") {
-    auto* ev = Event::create();
+TEST_CASE("PlatformEvent.pollNameReturnsEmptyWhenEmpty") {
+    auto* ev = PlatformEvent::create();
     CHECK(ev->pollName() == "");
 }
 
@@ -91,7 +91,7 @@ TEST_CASE("event.Message.withArgs") {
 }
 
 TEST_CASE("event.pushPollRoundTrip") {
-    auto* ev = Event::create();
+    auto* ev = PlatformEvent::create();
     ev->push(new Message("first"));
     ev->push(new Message("second"));
     auto* m1 = ev->poll();
@@ -106,7 +106,7 @@ TEST_CASE("event.pushPollRoundTrip") {
 }
 
 TEST_CASE("event.ownedPushPollDestroysPayloadWithMessage") {
-    auto* ev = Event::create();
+    auto*                ev           = PlatformEvent::create();
     int destructions = 0;
     std::vector<Variant> args;
     args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
@@ -123,7 +123,7 @@ TEST_CASE("event.ownedPushPollDestroysPayloadWithMessage") {
 }
 
 TEST_CASE("event.clearDestroysOwnedPayloadExactlyOnce") {
-    auto* ev = Event::create();
+    auto*                ev           = PlatformEvent::create();
     int destructions = 0;
     std::vector<Variant> args;
     args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
@@ -136,7 +136,7 @@ TEST_CASE("event.clearDestroysOwnedPayloadExactlyOnce") {
 }
 
 TEST_CASE("event.pollNameConsumesMessage") {
-    auto* ev = Event::create();
+    auto* ev = PlatformEvent::create();
     ev->push(new Message("hello"));
     CHECK(ev->pollName() == "hello");
     CHECK(ev->pollName() == "");
@@ -144,12 +144,12 @@ TEST_CASE("event.pollNameConsumesMessage") {
 }
 
 TEST_CASE("event.pollEmptyQueue") {
-    auto* ev = Event::create();
+    auto* ev = PlatformEvent::create();
     CHECK(ev->poll() == nullptr);
 }
 
 TEST_CASE("event.clearThenPollEmpty") {
-    auto* ev = Event::create();
+    auto* ev = PlatformEvent::create();
     ev->push(new Message("a"));
     ev->push(new Message("b"));
     ev->clear();
@@ -157,8 +157,8 @@ TEST_CASE("event.clearThenPollEmpty") {
     CHECK(ev->pollName() == "");
 }
 
-TEST_CASE("Event.wait.returnsQueuedMessage") {
-    auto* ev = Event::create();
+TEST_CASE("PlatformEvent.wait.returnsQueuedMessage") {
+    auto* ev = PlatformEvent::create();
     ev->pushData("wait.queued", "payload");
     auto* msg = ev->wait();
     REQUIRE(msg != nullptr);
@@ -167,12 +167,12 @@ TEST_CASE("Event.wait.returnsQueuedMessage") {
 }
 
 TEST_CASE("event.pumpSmoke") {
-    auto* ev = Event::create();
+    auto* ev = PlatformEvent::create();
     ev->pump();
 }
 
 TEST_CASE("event.workerPushWakesWait") {
-    auto *ev = Event::create();
+    auto* ev = PlatformEvent::create();
     ev->clear();
     std::thread producer([ev] {
         std::this_thread::sleep_for(std::chrono::milliseconds(20));

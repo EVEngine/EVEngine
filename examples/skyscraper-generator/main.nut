@@ -21,7 +21,12 @@ function pressed(k) {
 }
 
 function rebuildTower() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        print("tower parameter creation failed: " + paramsResult.status.summary);
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(towerSeed);
     p.setFloat("baseWidth", 10.0);
     p.setFloat("baseDepth", 10.0);
@@ -33,11 +38,12 @@ function rebuildTower() {
     p.setFloat("windowDepth", 0.05);
     p.setFloat("spireHeight", spireHeight);
 
-    local mesh = procgen.generateMesh("mesh.skyscraper", p, gfx);
-    if (mesh == null) {
-        print("tower generation failed: " + procgen.lastError());
+    local meshResult = procgen.generateMesh("mesh.skyscraper", p, gfx);
+    if (!meshResult.ok) {
+        print("tower generation failed: " + meshResult.status.summary);
         return;
     }
+    local mesh = meshResult.value;
     if (tower == null) tower = eve.Renderable3D();
     tower.setMesh(mesh);
     tower.setTint(0.78, 0.80, 0.82, 1.0);
@@ -49,7 +55,12 @@ function rebuildTower() {
 }
 
 function rebuildTexture() {
-    local tp = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        print("facade parameter creation failed: " + paramsResult.status.summary);
+        return;
+    }
+    local tp = paramsResult.value;
     tp.setSeed(towerSeed);
     tp.setSize(128, 256);
     tp.setFloat("scale", 3.0);
@@ -57,7 +68,12 @@ function rebuildTexture() {
     tp.setInt("colors", 5);
     tp.setInt("pixelSize", 2);
     tp.setInt("seamless", 1);
-    facadeTex = procgen.generateTexture(texName, tp, gfx);
+    local textureResult = procgen.generateTexture(texName, tp, gfx);
+    if (!textureResult.ok) {
+        print("facade texture generation failed: " + textureResult.status.summary);
+        return;
+    }
+    facadeTex = textureResult.value;
 }
 
 if (camera == null) {

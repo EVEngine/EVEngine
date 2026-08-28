@@ -1,6 +1,9 @@
 #pragma once
 
+#include "common/Result.h"
+
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -47,11 +50,30 @@ public:
     std::string getGroupName(int groupIndex) const;
     /** @brief Group index for a triangle (not an index-buffer element), or -1. */
     int getTriangleGroup(int triangleIndex) const;
+    /** @brief Return the dense triangle-to-group assignments. */
+    const std::vector<int> &triangleGroups() const { return triangleGroups_; }
+    /** @brief Return the stable ordered group names. */
+    const std::vector<std::string> &groupNames() const { return groupNames_; }
+    /** @brief Return the currently selected group, or -1 when none is active. */
+    int activeGroup() const { return activeGroup_; }
     /**
-     * @brief Copy one named group into a standalone compact mesh (caller owns).
-     * @return Null for an invalid or empty group.
+     * @brief Restore the complete group sidecar after dense streams are loaded.
+     * @param names Ordered group names.
+     * @param assignments One group index per triangle.
+     * @param activeGroup Current group used by subsequent addTriangle calls.
+     * @return Applied when the sidecar is structurally compatible with the mesh;
+     *         otherwise a stable `ProcgenGroupDataInvalid` diagnostic. Failure
+     *         leaves all existing group state unchanged.
      */
-    MeshBuild *copyGroup(int groupIndex) const;
+    [[nodiscard]] eve::Result<void> restoreGroupData(std::vector<std::string> names, std::vector<int> assignments,
+                                                     int activeGroup);
+    /**
+     * @brief Copies one named group into a standalone compact mesh.
+     * @param groupIndex Triangle-group index to copy.
+     * @return A uniquely owned mesh, or null for an invalid or empty group.
+     * @ownership The returned mesh is owned by the caller.
+     */
+    [[nodiscard]] std::unique_ptr<MeshBuild> copyGroup(int groupIndex) const;
 
     int getVertexCount() const;
     int getIndexCount() const;
@@ -74,6 +96,8 @@ public:
     const std::vector<float>    &normals() const { return normals_; }
     const std::vector<float>    &uvs() const { return uvs_; }
     const std::vector<uint32_t> &indices() const { return indices_; }
+    /** @brief Return all metadata key/value pairs in deterministic map order. */
+    const std::unordered_map<std::string, std::string> &metadata() const { return meta_; }
 
     std::vector<float>    &positions() { return positions_; }
     std::vector<float>    &normals() { return normals_; }

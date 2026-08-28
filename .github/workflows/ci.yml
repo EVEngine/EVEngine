@@ -96,6 +96,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
 
       - name: Check module dependency layering
         timeout-minutes: 5
@@ -104,6 +105,10 @@ jobs:
       - name: Check script bindings are documented (all modules)
         timeout-minutes: 5
         run: python3 scripts/check_bindings.py --strict
+
+      - name: Check binding gap ownership and budget metadata
+        timeout-minutes: 5
+        run: python3 scripts/check_binding_gap_metadata.py
 
       - name: Check declared module layers vs includes
         timeout-minutes: 5
@@ -118,6 +123,10 @@ jobs:
         timeout-minutes: 5
         run: python3 scripts/check_test_manifest.py
 
+      - name: Check critical return-value diagnostics
+        timeout-minutes: 5
+        run: python3 scripts/check_nodiscard.py
+
       - name: Test release.py
         timeout-minutes: 5
         run: python3 -m unittest discover -s scripts/tests -p "test_release*.py" -v
@@ -125,6 +134,74 @@ jobs:
       - name: Check release version consistency
         timeout-minutes: 5
         run: python3 scripts/release.py check-versions
+
+  quality-contracts:
+    name: Quality metadata and profile contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Check bounded quality debt and profile matrix
+        timeout-minutes: 5
+        run: make check/quality
+
+      - name: Run quality metadata fixture tests
+        timeout-minutes: 5
+        run: python3 -m unittest scripts.tests.test_quality_metadata -v
+
+      - name: Audit top-level architecture contracts and changed API shapes
+        timeout-minutes: 5
+        run: |
+          python3 scripts/check_architecture_contracts.py \
+            --base "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD^' }}"
+          python3 -m unittest scripts.tests.test_architecture_contracts -v
+
+  profile-matrix:
+    name: Profile ${{ matrix.profile }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, headless, server]
+    env:
+      PROFILE: ${{ matrix.profile }}
+      PROFILE_BUILD_ROOT: /tmp/evengine-profile-matrix
+      PROFILE_JOBS: 2
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install profile toolchain
+        timeout-minutes: 15
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build libvulkan-dev \
+            libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
+            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev
+
+      - name: Configure profile
+        timeout-minutes: 30
+        run: make profile/configure
+
+      - name: Build independent profile smoke target
+        timeout-minutes: 35
+        run: make profile/build
+
+      - name: Run independent capability smoke probes
+        timeout-minutes: 10
+        run: make profile/smoke
 
   python-tools:
     name: Python tools
@@ -1081,7 +1158,9 @@ jobs:
     name: Linux (ASan+UBSan)
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The build and test steps have independent 40-minute guards. Leave
+    # enough job-level budget for both plus toolchain setup and cache reporting.
+    timeout-minutes: 90
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1159,7 +1238,10 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (ASan+UBSan)
-        timeout-minutes: 30
+        # The process-isolated 2730-case suite reached 2484/2730 at the old
+        # 30-minute limit. Keep a bounded guard while allowing the measured
+        # sanitizer overhead to finish on a hosted runner.
+        timeout-minutes: 40
         env:
           ALSOFT_DRIVERS: "null"
         run: |

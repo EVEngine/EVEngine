@@ -147,7 +147,9 @@ bool HotReload::tryReload(std::string path) {
         // kind targets exactly one reloader and ignores the extension, so a
         // config file with an unexpected suffix can still be bound by hand.
         const bool wanted = (kind == "auto") ? r->handlesPath(norm) : (kind == r->reloadKind());
-        if (wanted && r->reload(norm)) any = true;
+        if (!wanted) return;
+        auto result = r->reload(norm);
+        if (result.ok() && result.value()) any = true;
     });
     return any;
 }

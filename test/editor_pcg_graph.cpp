@@ -1,7 +1,7 @@
 #include "editor/EditorPcgGraph.h"
 #include "procgen/PointGraph.h"
 
-#include <zeroerr.hpp>
+#include "zeroerr/unittest.h"
 
 #include <algorithm>
 

@@ -24,7 +24,10 @@ EditorResult<TransactionReceipt> commitOperation(SceneTargetBase& target, LocalT
                                                        "Could not begin scene transaction");
     auto appended = transactions.append(operation);
     if (!appended.accepted()) {
-        transactions.rollback();
+        auto rolledBack = transactions.rollback();
+        if (!rolledBack.accepted())
+            return EditorResult<TransactionReceipt>::error(rolledBack.status, RuleId("test.scene.rollback"),
+                                                           "Could not roll back scene transaction");
         return EditorResult<TransactionReceipt>::error(appended.status, RuleId("test.scene.append"),
                                                        "Could not append scene operation");
     }

@@ -87,6 +87,16 @@ void Particles::update(float dt) {
     ParticleLightSystem::update();
 }
 
+eve::Result<void> Particles::advance(const eve::SimulationStep &step) {
+    // Config polling is an asset-side concern. Simulation itself is driven
+    // exclusively by the injected scheduler step below.
+    ParticleConfigSystem::poll();
+    auto simulation = ParticleSimSystem::advance(step);
+    if (!simulation) return eve::Result<void>::failure(simulation.status());
+    ParticleLightSystem::update();
+    return simulation;
+}
+
 void Particles::render(graphics::Graphics *gfx) { ParticleRenderSystem::render(gfx); }
 
 int Particles::pollConfigs() { return ParticleConfigSystem::poll(); }
@@ -336,6 +346,7 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setAutoReload", &ParticleEmitter::setAutoReload);
     em.addFunc("getAutoReload", &ParticleEmitter::getAutoReload);
     em.addFunc("getConfigPath", &ParticleEmitter::getConfigPath);
+    em.addFunc("getConfigReloadObservation", &ParticleEmitter::getConfigReloadObservation);
     em.addFunc("attachToBone", &ParticleEmitter::attachToBone);
     em.addFunc("attachToBoneByName", &ParticleEmitter::attachToBoneByName);
     em.addFunc("attachToSpineBone", &ParticleEmitter::attachToSpineBone);

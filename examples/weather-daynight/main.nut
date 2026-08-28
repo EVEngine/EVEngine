@@ -57,7 +57,9 @@ function buildLivingScene() {
     const TW = 72;
     const TH = 72;
     const CELL = 0.5;
-    local hm = procgen.newHeightmap(TW, TH);
+    local heightmapResult = procgen.newHeightmap(TW, TH);
+    if (!heightmapResult.ok) throw heightmapResult.status.summary;
+    local hm = heightmapResult.value;
     for (local z = 0; z < TH; ++z) {
         for (local x = 0; x < TW; ++x) {
             local wx = (x - 36) * CELL;

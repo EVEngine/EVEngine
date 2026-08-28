@@ -44,8 +44,15 @@ TEST_CASE("procgen.lsystem.renderDump") {
     params.setFloat("leafSize", 0.5f);
 
     Procgen generator;
-    Mesh *lsMesh = generator.generateMesh("mesh.lsystem", &params, gfx);
-    REQUIRE(lsMesh != nullptr);
+    auto    paramsResult = Procgen::newParamsHandle();
+    REQUIRE(paramsResult.ok());
+    auto paramsHandle = std::move(paramsResult).takeValue();
+    auto paramsView   = Procgen::resolve(paramsHandle);
+    REQUIRE(paramsView.isBound());
+    *paramsView     = params;
+    auto lsMeshView = generator.generateMeshBorrowed("mesh.lsystem", paramsHandle, gfx);
+    REQUIRE(lsMeshView.isBound());
+    Mesh *lsMesh = lsMeshView.get();
 
     // 4px bark/foliage atlas; UVs are partitioned by the mesh recipe (left = bark).
     const uint8_t atlasPixels[] = {
@@ -81,6 +88,7 @@ TEST_CASE("procgen.lsystem.renderDump") {
     REQUIRE(image.get() != nullptr);
     REQUIRE(saveImagePng(*image, outputPath));
     std::printf("lsystem render saved: %s\n", outputPath);
+    REQUIRE(Procgen::release(paramsHandle).ok());
     win->close();
 }
 
@@ -163,17 +171,32 @@ TEST_CASE("procgen.lsystem.meshRecipeIsDeterministic") {
 
     Params p2 = p1;
 
-    MeshBuild* m1 = proc.buildMesh("mesh.lsystem", &p1);
-    MeshBuild* m2 = proc.buildMesh("mesh.lsystem", &p2);
-    REQUIRE(bool(m1));
-    REQUIRE(bool(m2));
+    auto p1Result = Procgen::newParamsHandle();
+    auto p2Result = Procgen::newParamsHandle();
+    REQUIRE(p1Result.ok());
+    REQUIRE(p2Result.ok());
+    auto p1Handle               = std::move(p1Result).takeValue();
+    auto p2Handle               = std::move(p2Result).takeValue();
+    *Procgen::resolve(p1Handle) = p1;
+    *Procgen::resolve(p2Handle) = p2;
+    auto m1Result               = proc.buildMeshHandle("mesh.lsystem", p1Handle);
+    auto m2Result               = proc.buildMeshHandle("mesh.lsystem", p2Handle);
+    REQUIRE(m1Result.ok());
+    REQUIRE(m2Result.ok());
+    auto m1Handle = std::move(m1Result).takeValue();
+    auto m2Handle = std::move(m2Result).takeValue();
+    auto m1       = proc.resolveMeshBuild(m1Handle);
+    auto m2       = proc.resolveMeshBuild(m2Handle);
+    REQUIRE(m1.isBound());
+    REQUIRE(m2.isBound());
     CHECK(m1->getVertexCount() > 0);
     CHECK_EQ(m1->getVertexCount(), m2->getVertexCount());
     CHECK_EQ(m1->getIndexCount(), m2->getIndexCount());
     CHECK_EQ(m1->getMeta("recipe", ""), std::string("mesh.lsystem"));
-
-    delete m2;
-    delete m1;
+    REQUIRE(proc.releaseMeshBuild(m2Handle).ok());
+    REQUIRE(proc.releaseMeshBuild(m1Handle).ok());
+    REQUIRE(Procgen::release(p2Handle).ok());
+    REQUIRE(Procgen::release(p1Handle).ok());
 }
 
 TEST_CASE("procgen.lsystem.meshRecipeReportsErrors") {
@@ -181,22 +204,30 @@ TEST_CASE("procgen.lsystem.meshRecipeReportsErrors") {
     Params  params;
     params.setSeed(1);
     params.setString("style", "bogus");
-    CHECK(!proc.buildMesh("mesh.lsystem", &params));
-    CHECK(proc.lastError().find("unknown style") != std::string::npos);
+    auto paramsResult = Procgen::newParamsHandle();
+    REQUIRE(paramsResult.ok());
+    auto paramsHandle               = std::move(paramsResult).takeValue();
+    *Procgen::resolve(paramsHandle) = params;
+    auto meshResult                 = proc.buildMeshHandle("mesh.lsystem", paramsHandle);
+    REQUIRE(!meshResult.ok());
+    CHECK(meshResult.status().describe().find("unknown style") != std::string::npos);
+    REQUIRE(Procgen::release(paramsHandle).ok());
 }
 
 TEST_CASE("procgen.lsystem.scriptFacade") {
     Procgen proc;
-    LSystem* ls = proc.newLSystem();
-    REQUIRE(bool(ls));
+    auto    result = proc.newLSystemHandle();
+    REQUIRE(result.ok());
+    auto handle = std::move(result).takeValue();
+    auto ls     = proc.resolveLSystem(handle);
+    REQUIRE(ls.isBound());
     ls->setAxiom("F");
     ls->addRule('F', "F[+F]F[-F]F");
     ls->setIterations(2);
     ls->setSeed(5);
 
-    PointSet* points = new PointSet();
-    ls->toPointSet(*points);
-    CHECK(points->getCount() > 0);
-    delete points;
-    delete ls;
+    PointSet points;
+    ls->toPointSet(points);
+    CHECK(points.getCount() > 0);
+    REQUIRE(proc.release(handle).ok());
 }

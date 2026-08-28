@@ -4,7 +4,8 @@
 
 #include <memory>
 #include <string>
-#include <zeroerr.hpp>
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
 using namespace eve::procgen;
 

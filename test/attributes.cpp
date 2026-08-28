@@ -37,9 +37,11 @@ TEST_CASE("attributes.overrideAndRemoval") {
     REQUIRE(set.addModifier("unpaid", "loyalty", "treasury", "add", -10.0));
     REQUIRE(set.addModifier("scripted", "loyalty", "scenario", "override", 5.0, 100));
     CHECK_EQ(set.getFinal("loyalty"), 5.0);
-    CHECK(set.removeModifier("scripted"));
+    CHECK(set.removeModifier("scripted").ok());
     CHECK_EQ(set.getFinal("loyalty"), 40.0);
-    CHECK_EQ(set.removeBySource("treasury"), 1);
+    auto removedTreasury = set.removeBySource("treasury");
+    REQUIRE(removedTreasury.ok());
+    CHECK_EQ(removedTreasury.value(), 1);
     CHECK_EQ(set.getFinal("loyalty"), 50.0);
 }
 
@@ -55,7 +57,9 @@ TEST_CASE("attributes.modifierEnumerationIsStable") {
     CHECK_EQ(set.modifierAt(0)->id, "a");
     CHECK_EQ(set.modifierAt(1)->id, "b");
     CHECK_EQ(set.modifierAt(2)->id, "c");
-    CHECK_EQ(set.removeBySource("one"), 2);
+    auto removedOne = set.removeBySource("one");
+    REQUIRE(removedOne.ok());
+    CHECK_EQ(removedOne.value(), 2);
     REQUIRE_EQ(set.modifierCount(), 1);
     CHECK_EQ(set.modifierAt(0)->id, "b");
 }

@@ -30,7 +30,7 @@ void RPG::clearSkillDefinitions() { SkillRegistry::clear(); }
 int RPG::getSkillDefinitionCount() { return SkillRegistry::count(); }
 
 void RPG::update(float dt) {
-    StatusSystem::update(dt);
+    StatusSystem::update(static_cast<double>(dt)).ignore("RPG script update tick");
     SkillSystem::update(dt);
 
     ticks_.clear();
@@ -181,7 +181,10 @@ void RPG::expose(ssq::Table &table) {
                       return a ? a->addAttributeModifier(attribute, source, op, double(value), priority)
                                : std::string{};
                   });
-    actor.addFunc("removeAttributeModifier", &RPGActor::removeAttributeModifier);
+    actor.addFunc("removeAttributeModifier",
+                  [](RPGActor *a, const std::string &attribute, const std::string &modifierId) {
+                      return a && a->removeAttributeModifier(attribute, modifierId);
+                  });
     actor.addFunc("removeAttributeModifiersBySource", &RPGActor::removeAttributeModifiersBySource);
     actor.addFunc("removeAllAttributeModifiersBySource",
                    &RPGActor::removeAllAttributeModifiersBySource);

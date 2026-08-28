@@ -61,4 +61,12 @@ int EconomyLedger::getExpense(const std::string& type) const {
     return it == expense_.end() ? 0 : it->second;
 }
 
+void EconomyLedger::swap(EconomyLedger& other) noexcept {
+    using std::swap;
+    swap(current_, other.current_);
+    swap(wasted_, other.wasted_);
+    swap(income_, other.income_);
+    swap(expense_, other.expense_);
+}
+
 }  // namespace eve::economy

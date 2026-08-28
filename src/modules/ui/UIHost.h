@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/BorrowedRef.h"
 #include "common/ECS.h"
 
 #include <cstdint>
@@ -8,6 +9,8 @@
 #include <vector>
 
 namespace eve::ui {
+
+using UIHostHandle = ecs::EntityHandle;
 
 /** @brief Widget node kinds understood by the UI renderer. */
 enum class NodeType : uint8_t {
@@ -218,7 +221,7 @@ public:
         float overlayBgAlpha = 0.4f;
         bool overlayFlush = false;  // remove outer WindowPadding for desktop chrome
         uint32_t ownerId = 0;
-        UIHost *entity = nullptr;
+        UIHostHandle entity{};
     };
 
     struct Tree {
@@ -234,7 +237,32 @@ public:
     COMPONENT(Meta, meta)
     COMPONENT(Tree, tree)
 
-    static UIHost *createHost(const std::string &name = "");
+    /**
+     * @brief Creates an ECS-owned UI host.
+     * @return A generation-checked handle; an empty handle means creation failed.
+     * @ownership The UI ECS world owns the host; callers must not delete it.
+     * @lifetime The handle is valid until ECS destruction or UI module teardown; resolve it at each use.
+     * @thread Call on the UI ECS thread.
+     * @reentrancy The factory invokes no external callbacks.
+     */
+    [[nodiscard]] static UIHostHandle createHost(const std::string &name = "");
+
+    /**
+     * @brief Resolves a UI host handle with ECS generation checking.
+     * @param handle Candidate host handle.
+     * @return A temporary borrowed host for the current UI operation, or null when stale.
+     * @ownership The UI ECS world owns the returned host; callers must not delete it.
+     * @lifetime Valid only until the next UI ECS structural mutation or world teardown.
+     * @thread Call on the UI ECS thread.
+     * @reentrancy Does not invoke callbacks; do not retain the returned pointer across frames.
+     */
+    [[nodiscard]] static eve::OptionalRef<UIHost> resolve(UIHostHandle handle) noexcept;
+
+    /**
+     * @brief Returns this host's generation-qualified ECS handle.
+     * @return A handle that becomes stale when this host is destroyed or replaced.
+     */
+    [[nodiscard]] UIHostHandle handle() const noexcept { return ecs::handle_of(this); }
 
     /** @brief Names the host. */
     void setName(const std::string &name);
@@ -265,9 +293,24 @@ public:
     bool setToggleHandler(const std::string &id, std::function<void(bool)> fn);
     bool setValueHandler(const std::string &id, std::function<void(float)> fn);
     bool setTextHandler(const std::string &id, std::function<void(const std::string &)> fn);
-    /** @brief Looks up a node by id or reconciliation key. */
-    UINode *findById(const std::string &id);
-    UINode *findByKey(const std::string &key);
+    /**
+     * @brief Looks up a node by stable id without transferring ownership.
+     * @return Borrowed nullable node owned by this host's tree.
+     * @ownership UIHost owns the node tree; callers must not delete the result.
+     * @lifetime Valid until the next tree replacement/reconcile or host destruction.
+     * @thread Call on the UI thread owning this host.
+     * @reentrancy Do not retain across callbacks or tree mutation.
+     */
+    [[nodiscard]] eve::OptionalRef<UINode> findById(const std::string &id);
+    /**
+     * @brief Looks up a node by reconciliation key without transferring ownership.
+     * @return Borrowed nullable node owned by this host's tree.
+     * @ownership UIHost owns the node tree; callers must not delete the result.
+     * @lifetime Valid until the next tree replacement/reconcile or host destruction.
+     * @thread Call on the UI thread owning this host.
+     * @reentrancy Do not retain across callbacks or tree mutation.
+     */
+    [[nodiscard]] eve::OptionalRef<UINode> findByKey(const std::string &key);
     /** @brief Request keyboard/gamepad focus for a control on the next frame. */
     bool requestFocusById(const std::string &id);
     /**

@@ -5,9 +5,9 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
-#include "event/Event.h"
-#include "event/PlatformEventSink.h"
 #include "keyboard/Keyboard.h"
+#include "platform_event/PlatformEvent.h"
+#include "platform_event/PlatformEventSink.h"
 
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keyboard.h>
@@ -15,10 +15,10 @@
 namespace eve::keyboard::sdl {
 namespace {
 
-using eve::event::Message;
-using eve::event::Variant;
+using eve::platform_event::Message;
+using eve::platform_event::Variant;
 
-class KeyboardEventSink : public eve::event::IPlatformEventSink {
+class KeyboardEventSink : public eve::platform_event::IPlatformEventSink {
 public:
     Message *translatePlatformEvent(const void *nativeEvent) override {
         const auto &e = *static_cast<const SDL_Event *>(nativeEvent);
@@ -58,8 +58,8 @@ public:
 struct Register {
     Register() {
         static KeyboardEventSink sink;
-        eve::cap::addListener<eve::event::IPlatformEventSink>(
-            &sink, eve::event::IPlatformEventSink::kInput);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(&sink,
+                                                                       eve::platform_event::IPlatformEventSink::kInput);
     }
 } g_register;
 

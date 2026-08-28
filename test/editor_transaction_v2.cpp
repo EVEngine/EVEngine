@@ -7,13 +7,14 @@
 #include "editor/EditorTransactionService.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 using namespace eve::editor;
 
 namespace {
 
-class IntegerOperationTarget final : public IDomainOperationTarget {
+class IntegerOperationTarget final : public IDomainOperationTarget, public IDomainOperationTargetStaging {
 public:
     explicit IntegerOperationTarget(std::string id, int value = 0) : id_(std::move(id)), value_(value) {}
 
@@ -39,7 +40,26 @@ public:
         return EditorResult<void>::applied();
     }
 
+    std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override {
+        return std::make_unique<IntegerOperationTarget>(*this);
+    }
+
+    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override {
+        if (failCandidateCommit)
+            return EditorResult<void>::error(EditorStatus::Failed, RuleId("test.candidate.publish"),
+                                             "Injected candidate publish failure");
+        auto* staged = dynamic_cast<IntegerOperationTarget*>(candidate.get());
+        if (!staged || staged->id_ != id_)
+            return EditorResult<void>::error(EditorStatus::Conflict, RuleId("test.candidate.identity"),
+                                             "Candidate belongs to another target");
+        value_    = staged->value_;
+        revision_ = staged->revision_;
+        dirty_    = staged->dirty_;
+        return EditorResult<void>::applied();
+    }
+
     int value() const { return value_; }
+    bool failCandidateCommit = false;
 
 private:
     std::string        id_;
@@ -48,9 +68,10 @@ private:
     EditRegion         dirty_;
 };
 
-DomainOperation setInteger(const IntegerOperationTarget& target, int before, int after) {
+DomainOperation setInteger(const IntegerOperationTarget& target, int before, int after, std::string inverseType = {}) {
     DomainOperation operation;
     operation.type       = "test.integer.set.v1";
+    operation.inverseType = std::move(inverseType);
     operation.target     = TargetId(target.targetId());
     operation.payload    = EditorValue(after);
     operation.inverse    = EditorValue(before);
@@ -85,6 +106,15 @@ TEST_CASE("editor.v2.authority_preflight_commit_and_compensate") {
     CHECK_EQ(committed.value->beforeRevision, static_cast<Revision>(0));
     CHECK_EQ(committed.value->afterRevision, static_cast<Revision>(1));
 
+    target.failCandidateCommit                  = true;
+    const auto valueBeforeFailedCompensation    = target.value();
+    const auto revisionBeforeFailedCompensation = target.revision();
+    auto       failedCompensation               = authority.compensate(*committed.value);
+    CHECK(!failedCompensation.accepted());
+    CHECK_EQ(target.value(), valueBeforeFailedCompensation);
+    CHECK_EQ(target.revision(), revisionBeforeFailedCompensation);
+
+    target.failCandidateCommit = false;
     auto compensated = authority.compensate(*committed.value);
     CHECK(compensated.accepted());
     CHECK_EQ(target.value(), 1);
@@ -92,6 +122,28 @@ TEST_CASE("editor.v2.authority_preflight_commit_and_compensate") {
 
     auto conflict = authority.preflight(specification, std::span<const DomainOperation>(&operation, 1));
     CHECK_EQ(static_cast<int>(conflict.status), static_cast<int>(EditorStatus::Conflict));
+}
+
+TEST_CASE("editor.v2.authority_compensation_validates_full_inverse_on_candidate") {
+    IntegerOperationTarget target("integer", 0);
+    LocalWorldAuthority    authority(&target);
+    const DomainOperation  operations[] = {
+        setInteger(target, 0, 9, "test.fail.v1"),
+        setInteger(target, 9, 5),
+    };
+
+    auto plan = authority.preflight(transaction(target, "transaction.candidate-failure"), operations);
+    CHECK(plan.accepted());
+    auto committed = authority.commit(*plan.value);
+    CHECK(committed.accepted());
+    CHECK_EQ(target.value(), 5);
+    const auto revisionAfterCommit = target.revision();
+
+    auto compensation = authority.compensate(*committed.value);
+    CHECK(!compensation.accepted());
+    CHECK_EQ(static_cast<int>(compensation.status), static_cast<int>(EditorStatus::Failed));
+    CHECK_EQ(target.value(), 5);
+    CHECK_EQ(target.revision(), revisionAfterCommit);
 }
 
 TEST_CASE("editor.v2.authority_rolls_back_partial_commit") {
@@ -168,7 +220,11 @@ TEST_CASE("editor.v2.planned_command_is_dry_run_and_revision_safe") {
                       for (const DomainOperation& operation : plan.operations) {
                           auto appended = backend.append(operation);
                           if (!appended.accepted()) {
-                              backend.rollback();
+                              auto rolledBack = backend.rollback();
+                              if (!rolledBack.accepted())
+                                  return EditorResult<TransactionReceipt>::error(rolledBack.status,
+                                                                                 RuleId("test.command.rollback"),
+                                                                                 "Could not roll back transaction");
                               return EditorResult<TransactionReceipt>::error(
                                   appended.status, RuleId("test.command.append"), "Could not append operation");
                           }

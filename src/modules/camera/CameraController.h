@@ -12,8 +12,8 @@
 namespace eve::graphics {
 class Camera3D;
 }
-namespace eve::event {
-class Event;
+namespace eve::platform_event {
+class PlatformEvent;
 }
 namespace eve::scene {
 class SceneNodeRef;
@@ -129,7 +129,7 @@ public:
     bool        addTimelineEvent(float time, const std::string& name, const std::string& data);
     /** @brief Adds a linearly interpolated camera property key. */
     bool        addTimelineFloat(float time, const std::string& property, float value);
-    void        setEventSink(event::Event* sink);
+    void        setEventSink(platform_event::PlatformEvent* sink);
     void        playTimeline(bool loop);
     void        pauseTimeline();
     void        stopTimeline();
@@ -278,7 +278,7 @@ private:
     std::vector<TimelineCut>   timelineCuts_;
     std::vector<TimelineEvent> timelineEvents_;
     std::vector<TimelineFloat> timelineFloats_;
-    event::Event*              eventSink_        = nullptr;
+    platform_event::PlatformEvent*                  eventSink_        = nullptr;
     float                      timelineTime_     = 0.f;
     float                      timelineDuration_ = 0.f;
     bool                       timelinePlaying_  = false;

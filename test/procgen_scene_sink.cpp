@@ -2,9 +2,13 @@
 #include "common/ProcgenSceneSink.h"
 #include "procgen/Procgen.h"
 
-#include <zeroerr.hpp>
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
+#include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 using namespace eve::procgen;
 
@@ -68,17 +72,22 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     MockProcgenSceneSink sink;
     eve::cap::provide<eve::IProcgenSceneSink>(&sink);
 
-    Procgen  proc;
-    PointSet points;
-    const int tree = points.add(1.f, 2.f, 3.f);
-    points.setPointSeed(tree, 77);
-    points.setYaw(tree, 30.f);
-    points.setScale(tree, 2.f, 3.f, 4.f);
-    points.setStringAttribute(tree, "asset", "oak");
-    const int rock = points.add(8.f, 0.f, 9.f);
-    points.setPointSeed(rock, 88);
+    Procgen proc;
+    auto    pointsResult = proc.newPointSetHandle();
+    REQUIRE(pointsResult.ok());
+    const auto pointsHandle = std::move(pointsResult).takeValue();
+    auto       pointsView   = proc.resolvePointSet(pointsHandle);
+    REQUIRE(pointsView.isBound());
+    const int tree = pointsView->add(1.f, 2.f, 3.f);
+    pointsView->setPointSeed(tree, 77);
+    pointsView->setYaw(tree, 30.f);
+    pointsView->setScale(tree, 2.f, 3.f, 4.f);
+    pointsView->setStringAttribute(tree, "asset", "oak");
+    const int rock = pointsView->add(8.f, 0.f, 9.f);
+    pointsView->setPointSeed(rock, 88);
 
-    CHECK(proc.publishInstances("forest/main", &points, "asset", "granite"));
+    auto publishedResult = proc.publishInstances("forest/main", pointsHandle, "asset", "granite");
+    REQUIRE(publishedResult.ok());
     CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 2);
     CHECK_EQ(proc.getPublishedCreatedCount("forest/main"), 2);
     CHECK_EQ(proc.getPublishedReusedCount("forest/main"), 0);
@@ -92,12 +101,17 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     CHECK_EQ(published[1].asset, std::string("granite"));
     CHECK_EQ(published[1].id, std::string("pcg-88-0"));
 
-    PointSet reordered;
-    reordered.add(-1.f, 0.f, 0.f);
-    reordered.setPointSeed(0, 99);
-    reordered.points().push_back(points.points()[0]);
-    reordered.points().push_back(points.points()[1]);
-    CHECK(proc.publishInstances("forest/main", &reordered, "asset", "granite"));
+    auto reorderedResult = proc.newPointSetHandle();
+    REQUIRE(reorderedResult.ok());
+    const auto reorderedHandle = std::move(reorderedResult).takeValue();
+    auto       reorderedView   = proc.resolvePointSet(reorderedHandle);
+    REQUIRE(reorderedView.isBound());
+    reorderedView->add(-1.f, 0.f, 0.f);
+    reorderedView->setPointSeed(0, 99);
+    reorderedView->points().push_back(pointsView->points()[0]);
+    reorderedView->points().push_back(pointsView->points()[1]);
+    auto reorderedPublishResult = proc.publishInstances("forest/main", reorderedHandle, "asset", "granite");
+    REQUIRE(reorderedPublishResult.ok());
     CHECK_EQ(proc.getPublishedCreatedCount("forest/main"), 1);
     CHECK_EQ(proc.getPublishedReusedCount("forest/main"), 2);
     CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 0);
@@ -105,23 +119,34 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     CHECK_EQ(reconciled[1].id, std::string("pcg-77-0"));
     CHECK_EQ(reconciled[2].id, std::string("pcg-88-0"));
 
-    reordered.setStringAttribute(0, "instanceId", "hero-tree");
-    reordered.setStringAttribute(1, "instanceId", "hero-tree");
-    CHECK(!proc.publishInstances("forest/main", &reordered, "asset", "granite"));
-    CHECK(proc.lastError().find("duplicate instance id") != std::string::npos);
+    reorderedView->setStringAttribute(0, "instanceId", "hero-tree");
+    reorderedView->setStringAttribute(1, "instanceId", "hero-tree");
+    auto duplicateResult = proc.publishInstances("forest/main", reorderedHandle, "asset", "granite");
+    REQUIRE(!duplicateResult.ok());
+    CHECK(duplicateResult.status().describe().find("duplicate instance id") != std::string::npos);
     CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 3);
 
-    CHECK(proc.removeInstances("forest/main"));
+    auto removeResult = proc.removeInstances("forest/main");
+    REQUIRE(removeResult.ok());
     CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 0);
     CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 3);
+    REQUIRE(proc.releasePointSet(reorderedHandle).ok());
+    REQUIRE(proc.releasePointSet(pointsHandle).ok());
     eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
 }
 
 TEST_CASE("procgen.sceneSink.reportsMissingProvider") {
     eve::cap::detail::clearAllRaw();
-    Procgen  proc;
-    PointSet points;
-    points.add(0.f, 0.f, 0.f);
-    CHECK(!proc.publishInstances("missing", &points, "asset", "tree"));
-    CHECK(proc.lastError().find("unavailable") != std::string::npos);
+    Procgen proc;
+    auto    pointsResult = proc.newPointSetHandle();
+    REQUIRE(pointsResult.ok());
+    const auto pointsHandle = std::move(pointsResult).takeValue();
+    auto       pointsView   = proc.resolvePointSet(pointsHandle);
+    REQUIRE(pointsView.isBound());
+    pointsView->add(0.f, 0.f, 0.f);
+
+    auto publishResult = proc.publishInstances("missing", pointsHandle, "asset", "tree");
+    REQUIRE(!publishResult.ok());
+    CHECK(publishResult.status().describe().find("unavailable") != std::string::npos);
+    REQUIRE(proc.releasePointSet(pointsHandle).ok());
 }

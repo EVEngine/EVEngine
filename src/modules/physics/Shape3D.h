@@ -1,5 +1,7 @@
 #pragma once
 
+#include "physics/PhysicsHandles.h"
+
 #include <box3d/id.h>
 #include <box3d/types.h>
 
@@ -23,16 +25,13 @@ public:
     enum class Kind { Box, Sphere, Capsule, ConvexHull, TriangleMesh, HeightField };
 
     /** @brief Internal: wraps a Box3D shape (use Body3D::new*Shape). */
-    Shape3D(World3D *world, Body3D *body, b3ShapeId shapeId, Kind kind, float a, float b,
-            float c, std::vector<float> hullVertices = {}, int hullMaxVertices = 64,
-            std::vector<float> meshVertices = {}, std::vector<int32_t> meshIndices = {},
-            b3MeshData *meshData = nullptr, bool meshWeldVertices = true,
-            float meshWeldTolerance = 0.001f, bool meshIdentifyEdges = true,
-            bool meshUseMedianSplit = false, std::vector<float> heightValues = {},
-            int heightCountX = 0, int heightCountZ = 0, float heightCellSizeX = 1.f,
-            float heightCellSizeZ = 1.f, float heightGlobalMin = 0.f,
-            float heightGlobalMax = 0.f, bool heightClockwise = false,
-            b3HeightFieldData *heightData = nullptr);
+    Shape3D(World3D *world, Body3D *body, b3ShapeId shapeId, PhysicsShapeHandle runtimeHandle, Kind kind, float a,
+            float b, float c, std::vector<float> hullVertices = {}, int hullMaxVertices = 64,
+            std::vector<float> meshVertices = {}, std::vector<int32_t> meshIndices = {}, b3MeshData *meshData = nullptr,
+            bool meshWeldVertices = true, float meshWeldTolerance = 0.001f, bool meshIdentifyEdges = true,
+            bool meshUseMedianSplit = false, std::vector<float> heightValues = {}, int heightCountX = 0,
+            int heightCountZ = 0, float heightCellSizeX = 1.f, float heightCellSizeZ = 1.f, float heightGlobalMin = 0.f,
+            float heightGlobalMax = 0.f, bool heightClockwise = false, b3HeightFieldData *heightData = nullptr);
     ~Shape3D();
 
     Shape3D(const Shape3D &)            = delete;
@@ -40,6 +39,8 @@ public:
 
     /** @brief Stable world-local id, preserved when sensor state recreates the backend shape. */
     int getId() const { return id_; }
+    /** @brief Process-local generation-qualified handle owned by World3D. */
+    [[nodiscard]] PhysicsShapeHandle runtimeHandle() const noexcept { return runtimeHandle_; }
     /** @brief User-defined integer tag preserved for the wrapper lifetime. */
     void setTag(int tag);
     /** @brief User-defined integer tag, zero by default. */
@@ -269,8 +270,24 @@ public:
     void setGroupIndex(int index);
     int getGroupIndex() const;
 
-    /** @brief Owning body. */
+    /**
+     * @brief Returns the owning body, or null after invalidation.
+     * @return Borrowed nullable Body3D pointer owned by the physics world.
+     * @ownership Shape3D does not own the body; callers must not delete it.
+     * @lifetime Valid until body/world destruction; use a PhysicsBodyHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
+     */
     Body3D *getBody() { return body_; }
+    /**
+     * @brief Returns the owning body for read-only link construction.
+     * @return Borrowed nullable Body3D pointer owned by the physics world.
+     * @ownership Shape3D does not own the body; callers must not delete it.
+     * @lifetime Valid until body/world destruction; use a PhysicsBodyHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
+     */
+    const Body3D *getBody() const { return body_; }
 
     /** @brief Point-in-shape test in world meters. */
     bool testPoint(float x, float y, float z) const;
@@ -298,6 +315,7 @@ private:
     World3D  *world_ = nullptr;
     Body3D   *body_  = nullptr;
     b3ShapeId shapeId_{};
+    PhysicsShapeHandle             runtimeHandle_ = PhysicsShapeHandle::invalid();
     Kind      kind_ = Kind::Box;
     float     a_ = 0.f;  // box hx | sphere r | capsule half-height
     float     b_ = 0.f;  // box hy | unused   | capsule radius

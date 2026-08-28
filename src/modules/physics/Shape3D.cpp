@@ -163,24 +163,38 @@ b3HeightFieldData *createCheckedHeightField(int countX, int countZ, float cellSi
 
 }  // namespace
 
-Shape3D::Shape3D(World3D *world, Body3D *body, b3ShapeId shapeId, Kind kind, float a, float b,
-                 float c, std::vector<float> hullVertices, int hullMaxVertices,
-                 std::vector<float> meshVertices, std::vector<int32_t> meshIndices,
-                 b3MeshData *meshData, bool meshWeldVertices, float meshWeldTolerance,
-                 bool meshIdentifyEdges, bool meshUseMedianSplit,
-                 std::vector<float> heightValues, int heightCountX, int heightCountZ,
-                 float heightCellSizeX, float heightCellSizeZ, float heightGlobalMin,
-                 float heightGlobalMax, bool heightClockwise, b3HeightFieldData *heightData)
-    : world_(world), body_(body), shapeId_(shapeId), kind_(kind), a_(a), b_(b), c_(c),
-      hullVertices_(std::move(hullVertices)), hullMaxVertices_(hullMaxVertices),
-      meshVertices_(std::move(meshVertices)), meshIndices_(std::move(meshIndices)),
-      meshData_(meshData), meshWeldVertices_(meshWeldVertices),
-      meshWeldTolerance_(meshWeldTolerance), meshIdentifyEdges_(meshIdentifyEdges),
+Shape3D::Shape3D(World3D *world, Body3D *body, b3ShapeId shapeId, PhysicsShapeHandle runtimeHandle, Kind kind, float a,
+                 float b, float c, std::vector<float> hullVertices, int hullMaxVertices,
+                 std::vector<float> meshVertices, std::vector<int32_t> meshIndices, b3MeshData *meshData,
+                 bool meshWeldVertices, float meshWeldTolerance, bool meshIdentifyEdges, bool meshUseMedianSplit,
+                 std::vector<float> heightValues, int heightCountX, int heightCountZ, float heightCellSizeX,
+                 float heightCellSizeZ, float heightGlobalMin, float heightGlobalMax, bool heightClockwise,
+                 b3HeightFieldData *heightData)
+    : world_(world),
+      body_(body),
+      shapeId_(shapeId),
+      runtimeHandle_(runtimeHandle),
+      kind_(kind),
+      a_(a),
+      b_(b),
+      c_(c),
+      hullVertices_(std::move(hullVertices)),
+      hullMaxVertices_(hullMaxVertices),
+      meshVertices_(std::move(meshVertices)),
+      meshIndices_(std::move(meshIndices)),
+      meshData_(meshData),
+      meshWeldVertices_(meshWeldVertices),
+      meshWeldTolerance_(meshWeldTolerance),
+      meshIdentifyEdges_(meshIdentifyEdges),
       meshUseMedianSplit_(meshUseMedianSplit),
-      heightValues_(std::move(heightValues)), heightCountX_(heightCountX),
-      heightCountZ_(heightCountZ), heightCellSizeX_(heightCellSizeX),
-      heightCellSizeZ_(heightCellSizeZ), heightGlobalMin_(heightGlobalMin),
-      heightGlobalMax_(heightGlobalMax), heightClockwise_(heightClockwise),
+      heightValues_(std::move(heightValues)),
+      heightCountX_(heightCountX),
+      heightCountZ_(heightCountZ),
+      heightCellSizeX_(heightCellSizeX),
+      heightCellSizeZ_(heightCellSizeZ),
+      heightGlobalMin_(heightGlobalMin),
+      heightGlobalMax_(heightGlobalMax),
+      heightClockwise_(heightClockwise),
       heightData_(heightData),
       id_(world ? world->nextShapeId() : 0) {
     if (kind_ == Kind::TriangleMesh && isValid() && !meshMaterialsDirty_) {
@@ -196,8 +210,8 @@ Shape3D::~Shape3D() {
     if (isValid() && body_ && body_->isValid()) {
         b3Shape_SetUserData(shapeId_, nullptr);
         b3DestroyShape(shapeId_, true);
-        if (world_) world_->forgetShape(this);
     }
+    if (world_) world_->forgetShape(this);
     if (meshData_) {
         b3DestroyMesh(meshData_);
         meshData_ = nullptr;
@@ -209,15 +223,18 @@ Shape3D::~Shape3D() {
     shapeId_ = {};
     body_    = nullptr;
     world_   = nullptr;
+    runtimeHandle_ = PhysicsShapeHandle::invalid();
 }
 
 bool Shape3D::isValid() const { return b3Shape_IsValid(shapeId_); }
 
 void Shape3D::invalidate() {
     if (isValid()) b3Shape_SetUserData(shapeId_, nullptr);
+    if (world_) world_->forgetShape(this);
     shapeId_ = {};
     body_    = nullptr;
     world_   = nullptr;
+    runtimeHandle_ = PhysicsShapeHandle::invalid();
 }
 
 void Shape3D::destroy() {
@@ -247,6 +264,7 @@ void Shape3D::destroy() {
     shapeId_ = {};
     body_    = nullptr;
     world_   = nullptr;
+    runtimeHandle_ = PhysicsShapeHandle::invalid();
 }
 
 void Shape3D::recreate(bool sensor) {

@@ -1,5 +1,6 @@
 #include "schema/Schema.h"
 
+#include "common/SquirrelBinding.h"
 #include "schema/SchemaRegistry.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -12,6 +13,15 @@
 namespace eve::schema {
 
 Module_IMPL(Schema, new Schema());
+
+Schema::Schema() = default;
+
+eve::Result<void> Schema::registerJson(const std::string& json) {
+    auto result = SchemaRegistry::registerFromJson(json);
+    if (!result.ok()) return eve::Result<void>::failure(result.status());
+    validationErrors_.clear();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
 
 namespace {
 
@@ -183,17 +193,12 @@ void applyFieldAttributes(HSQUIRRELVM vm, SQInteger attrsIdx, FieldDefinition& f
 
 }  // namespace
 
-bool Schema::registerJson(const std::string& json) {
-    lastError_.clear();
-    return SchemaRegistry::registerFromJson(json, &lastError_);
-}
-
-bool Schema::registerFromClass(const ssq::Object& classOrInstance) {
-    lastError_.clear();
+eve::Result<void> Schema::registerFromClass(const ssq::Object& classOrInstance) {
     const ssq::Type type = classOrInstance.getType();
     if (type != ssq::Type::CLASS && type != ssq::Type::INSTANCE) {
-        lastError_ = "registerFromClass expects a class or an instance of a class";
-        return false;
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "registerFromClass expects a class or an instance of a class", "class"));
     }
     HSQUIRRELVM     vm  = classOrInstance.getHandle();
     const SQInteger top = sq_gettop(vm);
@@ -201,8 +206,8 @@ bool Schema::registerFromClass(const ssq::Object& classOrInstance) {
     sq_pushobject(vm, classOrInstance.getRaw());
     if (type == ssq::Type::INSTANCE && SQ_FAILED(sq_getclass(vm, -1))) {
         sq_settop(vm, top);
-        lastError_ = "could not resolve the instance's class";
-        return false;
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "could not resolve the instance's class", "class"));
     }
     const SQInteger clsIdx = sq_gettop(vm);
 
@@ -225,8 +230,9 @@ bool Schema::registerFromClass(const ssq::Object& classOrInstance) {
 
     if (definition.id.empty()) {
         sq_settop(vm, top);
-        lastError_ = "schema id is required (set the class-level attribute 'id')";
-        return false;
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "schema id is required (set the class-level attribute 'id')", "schema.id"));
     }
 
     std::unordered_set<std::string> names;
@@ -271,17 +277,29 @@ bool Schema::registerFromClass(const ssq::Object& classOrInstance) {
     }
     sq_settop(vm, top);
 
-    return SchemaRegistry::registerSchema(definition, &lastError_);
+    auto result = SchemaRegistry::registerSchema(definition);
+    if (!result.ok()) return eve::Result<void>::failure(result.status());
+    validationErrors_.clear();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void Schema::clear() {
     SchemaRegistry::clear();
-    lastError_.clear();
     validationErrors_.clear();
 }
 
 bool Schema::has(const std::string& id) const { return SchemaRegistry::find(id) != nullptr; }
+bool Schema::hasVersion(const std::string& id, int version) const {
+    return SchemaRegistry::resolve(id, version) != nullptr;
+}
 int  Schema::getSchemaCount() const { return SchemaRegistry::count(); }
+int  Schema::getSchemaVersionCount(const std::string& id) const {
+    return static_cast<int>(SchemaRegistry::versions(id).size());
+}
+int Schema::getSchemaVersionAt(const std::string& id, int index) const {
+    const auto values = SchemaRegistry::versions(id);
+    return index >= 0 && static_cast<size_t>(index) < values.size() ? values[static_cast<size_t>(index)] : 0;
+}
 
 std::string Schema::getSchemaId(int index) const {
     const auto values = SchemaRegistry::ids();
@@ -307,8 +325,6 @@ bool Schema::getSchemaAdditionalProperties(const std::string& id) const {
     const auto* value = SchemaRegistry::find(id);
     return value && value->additionalProperties;
 }
-
-std::string Schema::getLastError() const { return lastError_; }
 
 const FieldDefinition* Schema::field(const std::string& id, int index) const {
     const auto* value = SchemaRegistry::find(id);
@@ -379,9 +395,19 @@ std::string Schema::getFieldEnumValue(const std::string& id, int fieldIndex, int
     return value->enumValues[static_cast<size_t>(valueIndex)];
 }
 
-bool Schema::validateJson(const std::string& schemaId, const std::string& json) {
+eve::Result<void> Schema::validateJson(const std::string& schemaId, const std::string& json) {
     validationErrors_ = SchemaRegistry::validate(schemaId, json);
-    return validationErrors_.empty();
+    if (validationErrors_.empty()) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    const auto& error = validationErrors_.front();
+    return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error.message, error.path, {}, "schema"));
+}
+eve::Result<void> Schema::validateJsonVersioned(const std::string& schemaId, int version, const std::string& json) {
+    validationErrors_ = SchemaRegistry::validate(schemaId, version, json);
+    if (validationErrors_.empty()) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    const auto& error = validationErrors_.front();
+    return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error.message, error.path, {}, "schema"));
 }
 int         Schema::getValidationErrorCount() const { return static_cast<int>(validationErrors_.size()); }
 std::string Schema::getValidationErrorPath(int index) const {
@@ -406,18 +432,35 @@ void Schema::expose(ssq::Table& table) {
 }
 
 void Schema::expose(ssq::Class& cls) {
+    const HSQUIRRELVM vm = cls.getHandle();
     cls.addFunc("getName", &Schema::getName);
-    cls.addFunc("registerJson", &Schema::registerJson);
-    cls.addFunc("registerFromClass", &Schema::registerFromClass);
+    cls.addFunc("registerJson", [vm](Schema* value, const std::string& json) {
+        if (!value) {
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "schema facade must not be null", "schema")));
+        }
+        return eve::script::projectResult(vm, value->registerJson(json));
+    });
+    cls.addFunc("registerFromClass", [vm](Schema* value, const ssq::Object& classOrInstance) {
+        if (!value) {
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "schema facade must not be null", "schema")));
+        }
+        return eve::script::projectResult(vm, value->registerFromClass(classOrInstance));
+    });
     cls.addFunc("clear", &Schema::clear);
     cls.addFunc("has", &Schema::has);
+    cls.addFunc("hasVersion", &Schema::hasVersion);
     cls.addFunc("getSchemaCount", &Schema::getSchemaCount);
+    cls.addFunc("getSchemaVersionCount", &Schema::getSchemaVersionCount);
+    cls.addFunc("getSchemaVersionAt", &Schema::getSchemaVersionAt);
     cls.addFunc("getSchemaId", &Schema::getSchemaId);
     cls.addFunc("getSchemaVersion", &Schema::getSchemaVersion);
     cls.addFunc("getSchemaTitle", &Schema::getSchemaTitle);
     cls.addFunc("getSchemaDescription", &Schema::getSchemaDescription);
     cls.addFunc("getSchemaAdditionalProperties", &Schema::getSchemaAdditionalProperties);
-    cls.addFunc("getLastError", &Schema::getLastError);
     cls.addFunc("getFieldCount", &Schema::getFieldCount);
     cls.addFunc("getFieldName", &Schema::getFieldName);
     cls.addFunc("getFieldType", &Schema::getFieldType);
@@ -433,7 +476,23 @@ void Schema::expose(ssq::Class& cls) {
     cls.addFunc("getFieldMaximum", &Schema::getFieldMaximum);
     cls.addFunc("getFieldEnumCount", &Schema::getFieldEnumCount);
     cls.addFunc("getFieldEnumValue", &Schema::getFieldEnumValue);
-    cls.addFunc("validateJson", &Schema::validateJson);
+    cls.addFunc("validateJson", [vm](Schema* value, const std::string& id, const std::string& json) {
+        if (!value) {
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "schema facade must not be null", "schema")));
+        }
+        return eve::script::projectResult(vm, value->validateJson(id, json));
+    });
+    cls.addFunc("validateJsonVersioned",
+                [vm](Schema* value, const std::string& id, int version, const std::string& json) {
+                    if (!value) {
+                        return eve::script::projectResult(
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "schema facade must not be null", "schema")));
+                    }
+                    return eve::script::projectResult(vm, value->validateJsonVersioned(id, version, json));
+                });
     cls.addFunc("getValidationErrorCount", &Schema::getValidationErrorCount);
     cls.addFunc("getValidationErrorPath", &Schema::getValidationErrorPath);
     cls.addFunc("getValidationErrorCode", &Schema::getValidationErrorCode);

@@ -97,6 +97,13 @@ public:
         return isModelPath(eve::ResourceManager::pathOfKey(normPath));
     }
 
+    /**
+     * @brief Participate in the canonical cache reload protocol.
+     * @return `false`; ResourceManager reloads the owned CPU ModelData and
+     *         keeps its identity stable for existing holders.
+     */
+    eve::Result<bool> reload(const std::string &) override { return eve::Result<bool>::success(false); }
+
     eve::Resource *load(const std::string &key) override {
         const std::string path = eve::ResourceManager::pathOfKey(key);
         if (!isModelPath(path)) return nullptr;

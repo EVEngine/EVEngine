@@ -24,10 +24,13 @@ make run/linux-debug GAME=examples/castle-generator
 The recipe exposes dimensions, ring inset and height progression, wall and tower
 proportions, tower tessellation and spacing, gate width, keep footprint and floors,
 floor/stair dimensions, courtyard density, merlon size, detail level, UV repeat and
-world scale. `buildMesh()` metadata reports the generated structural counts
+world scale. `buildMesh()` returns a Result projection; after checking `ok`, its
+`value` metadata reports the generated structural counts
 for graph tooling and budget checks.
 
 The example deliberately uses the graph-style path rather than the one-call shortcut:
-`buildMesh()` → `copyGroup()` → `uploadMesh()`. Named wall, tower, stair, keep and
+`buildMesh()` → `copyGroup()` → `uploadMesh()`; check the Result returned by the
+generation/upload operations before reading `value`. `copyGroup()` itself returns
+an owning mesh object. Named wall, tower, stair, keep and
 gatehouse groups receive separate material tints and can independently receive
 collision or LOD policies in a game.
