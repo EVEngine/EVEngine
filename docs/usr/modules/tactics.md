@@ -27,6 +27,10 @@ local moved = battle.move("00000000-0000-0000-0000-000000001002", 1, 0, 0);
 代理内部只保存带 module epoch 的 generation handle；`release()` 或模块卸载后，后续写操作返回
 `StaleHandle`。脚本不会接触 ECS handle 或跨帧裸指针。
 
+`Tactics.getName()` 返回模块名；`battleCount()`、`sideCount()` 和 `unitCount()` 返回当前存活的
+战局、阵营与单位数量。战局代理的 `ownership()` 返回 `"owned"`，`isStale()` 用于在调用其他
+战局方法前显式检查代理是否已因 `release()` 或模块 epoch 变化而失效。
+
 可用的战局操作包括 `setTopology/addCell/addSide/addUnit/start/advance/move/face/wait/defeatUnit`，查询包括
 `status/phase/activeUnit/unitCell/revision/eventCount/eventAt`。所有可能失败的写操作都返回统一
 `{ok, code, status, diagnostics, value}` 结构。

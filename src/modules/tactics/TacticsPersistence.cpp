@@ -92,7 +92,7 @@ Result<Cell> parseCell(const Value& value, std::string path) {
     if (candidate.value()->size() != 3)
         return fail<Cell>(DiagnosticCode::ParseError, "cell has unknown or missing fields", std::move(path));
     Cell result;
-    for (const auto [name, target] : {std::pair{"x", &result.x}, {"y", &result.y}, {"layer", &result.layer}}) {
+    for (const auto& [name, target] : {std::pair{"x", &result.x}, {"y", &result.y}, {"layer", &result.layer}}) {
         auto member = field(*candidate.value(), name, path);
         if (!member) return Result<Cell>::failure(member.status());
         auto parsed = integer(*member.value(), path + "." + name);
@@ -755,7 +755,7 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
             definition = *parsedDefinition;
         }
         TacticalUnit::TurnResources turn;
-        for (const auto [name, target] :
+        for (const auto& [name, target] :
              {std::pair{"actionPoints", &turn.actionPoints}, {"movePoints", &turn.movePoints},
               {"reactionPoints", &turn.reactionPoints}, {"roundActionPoints", &turn.roundActionPoints},
               {"roundMovePoints", &turn.roundMovePoints},
