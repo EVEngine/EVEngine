@@ -16,13 +16,13 @@ namespace eve::hd2d {
 
 namespace {
 
-// Unit quad in the XY plane, normal +Z, full 0..1 UV. Spans [-0.5,0.5] so the
+// Unit quad in the XY plane, normal -Z, full 0..1 UV. Spans [-0.5,0.5] so the
 // Renderable3D scale maps it to the requested world-space size.
 const std::vector<float> kQuadPos = {-0.5f, -0.5f, 0.f, 0.5f, -0.5f, 0.f,
                                      0.5f,  0.5f,  0.f, -0.5f, 0.5f, 0.f};
-const std::vector<float> kQuadNrm = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
-                                     0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
-const std::vector<uint32_t> kQuadIdx = {0, 1, 2, 0, 2, 3};
+const std::vector<float> kQuadNrm = {0.f, 0.f, -1.f, 0.f, 0.f, -1.f,
+                                     0.f, 0.f, -1.f, 0.f, 0.f, -1.f};
+const std::vector<uint32_t> kQuadIdx = {0, 2, 1, 0, 3, 2};
 const std::vector<float> kQuadUv = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
 
 }  // namespace

@@ -118,6 +118,64 @@ for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
 Graphics 关闭、资源重建或后端切换保存引用。参数、Graphics 或生成结果无效时，
 调用方必须检查失败 Result。
 
+## 内置原型建造套件（纯程序化）
+
+模型分类和视觉语言参考 [RGSDev Free 3D Modular Low Poly Assets](https://rgsdev.itch.io/free-3d-modular-low-poly-assets-for-prototyping-by-rgsdev)，纹理方向参考 [Kenney Prototype Textures](https://kenney-assets.itch.io/prototype-textures)。实现只生成新的顶点、索引和 RGBA8 像素数据，不复制、打包或运行时加载参考资源中的模型与图片文件。
+
+`prototype.*` 提供 75 个基础 3D 原型模块，覆盖方块、锥体、圆柱、门窗、墙角、
+楼梯、坡道、围栏、栏杆、柱子、梯子、地面、机关和标记物。它们不是内置 FBX，
+也不会从项目目录读取模型；每次生成都由 CPU 几何函数直接写入 `MeshBuild`。
+所有网格使用 Y-up、XZ 居中占地、Y=0 落地的统一原点，避免导入资源中常见的
+偏移和旋转修正。
+
+```squirrel
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
+local defaultsResult = gen.applyMeshRecipeDefaults("prototype.stairs-corner", p);
+if (!defaultsResult.ok) throw defaultsResult.status.summary;
+p.setFloat("width", 4.0);
+p.setFloat("height", 2.0);
+p.setFloat("depth", 4.0);
+p.setFloat("thickness", 0.16);
+p.setInt("steps", 8);
+local meshResult = gen.buildMesh("prototype.stairs-corner", p);
+if (!meshResult.ok) throw meshResult.status.summary;
+local mesh = meshResult.value;
+```
+
+通用参数为 `scale`、`width`、`height`、`depth`、`thickness`、`detail`、
+`steps` 和 `uvScale`（每世界单位的纹理重复次数）。`detail` 控制圆柱、球体和圆环等的
+径向细分，`steps` 控制楼梯和梯级数量；
+每个 recipe 的尺寸默认值来自同一份 `RecipeDescriptor`。C++ 可用
+`prototypePieceDescriptors()` 枚举，或调用 `generatePrototypePiece()` 获得带结构化
+诊断的 owning `MeshBuild`。
+
+`tex.prototype.*` 提供 13 种原型图案：标注/象限/细分/面板网格、两种斜线网格、
+两种棋盘格、弱网格、楼梯/门洞/窗洞尺寸引导和十字定位点。每种图案通过
+`palette` 参数选择 `dark`、`light`、`purple`、`orange`、`green`、`red`，因此同一套
+13 个函数可产生 78 个标准组合；`custom` 还允许自定义背景与线色。纹理像素由
+CPU 直接绘制，不嵌入 PNG/SVG。
+
+```squirrel
+local textureParamsResult = gen.newParams();
+if (!textureParamsResult.ok) throw textureParamsResult.status.summary;
+local tp = textureParamsResult.value;
+tp.setSize(1024, 1024);
+tp.setString("palette", "orange");
+tp.setInt("cellSize", 128);
+tp.setInt("lineWidth", 2);
+tp.setFloat("minorAlpha", 0.10);
+tp.setFloat("majorAlpha", 0.45);
+local textureResult = gen.generateTexture("tex.prototype.diagonal-grid", tp, gfx);
+if (!textureResult.ok) throw textureResult.status.summary;
+local texture = textureResult.value;
+```
+
+纹理参数还包括 `guideSteps`、`backgroundR/G/B` 与 `lineR/G/B`。C++ 可用
+`prototypeTextureDescriptors()` 枚举，并以 `generatePrototypeTexture()` 生成 owning
+RGBA8 `ImageData`。相同参数逐字节确定；生成结果应按参数 build key 缓存，不能每帧重建。
+
 ### Params 的类型与尺寸语义
 
 `Params` 的算法私有值由 owning 的 `Value::Object` 保存。`setInt`、`setFloat`、

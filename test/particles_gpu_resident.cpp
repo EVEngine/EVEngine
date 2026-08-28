@@ -34,7 +34,7 @@ eve::graphics::Mesh* makeLeftHalfDepthPlane(eve::graphics::Graphics* gfx) {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const std::array<float, 8>         uvs     = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const std::array<std::uint32_t, 6> indices = {0, 1, 2, 0, 2, 3};
+    const std::array<std::uint32_t, 6> indices = {0, 2, 1, 0, 3, 2};
     return gfx->newMeshFromArrays(positions.data(), normals.data(), uvs.data(), 4, indices.data(), 6);
 }
 
@@ -46,7 +46,7 @@ eve::graphics::Mesh* makeFullscreenPlane(eve::graphics::Graphics* gfx) {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const std::array<float, 8>         uvs     = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const std::array<std::uint32_t, 6> indices = {0, 1, 2, 0, 2, 3};
+    const std::array<std::uint32_t, 6> indices = {0, 2, 1, 0, 3, 2};
     return gfx->newMeshFromArrays(positions.data(), normals.data(), uvs.data(), 4, indices.data(), 6);
 }
 

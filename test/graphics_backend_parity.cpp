@@ -471,7 +471,10 @@ TEST_CASE("graphics.backendParity.gbufferAlphaCutout") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    // These 3D parity fixtures use identity clip transforms rather than
+    // perspectiveVulkanRH_ZO, so reverse the quad to preserve the engine's
+    // framebuffer-space CCW front-face convention.
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
 
@@ -523,7 +526,7 @@ TEST_CASE("graphics.backendParity.decalLayerProjection") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
     const uint8_t white[] = {255, 255, 255, 255};
@@ -588,7 +591,7 @@ TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
 
@@ -668,7 +671,7 @@ TEST_CASE("graphics.backendParity.pbrEnvironmentAndCloudShadow") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
 
@@ -744,7 +747,7 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     const uint8_t halfAlpha[] = {255, 255, 255, 128};
     Texture *albedo = gfx->newTexture(1, 1, halfAlpha);
@@ -808,8 +811,8 @@ TEST_CASE("graphics.backendParity.surfaceBlendDepthWriteAndCulling") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t frontIndices[] = {0, 1, 2, 2, 3, 0};
-    const uint32_t backIndices[] = {0, 2, 1, 2, 0, 3};
+    const uint32_t frontIndices[] = {0, 2, 1, 2, 0, 3};
+    const uint32_t backIndices[] = {0, 1, 2, 2, 3, 0};
     Mesh *front = gfx->newMeshFromArrays(positions, normals, uvs, 4, frontIndices, 6);
     Mesh *back = gfx->newMeshFromArrays(positions, normals, uvs, 4, backIndices, 6);
     const uint8_t halfRed[] = {255, 0, 0, 128};

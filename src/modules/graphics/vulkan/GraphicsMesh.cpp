@@ -430,12 +430,7 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     std::vector<uint32_t> indices;
     indices.reserve(size_t(slices) * size_t(stacks) * 6u);
 
-    // Quads between consecutive rows. Winding must be consistent for outward
-    // faces (object-space CCW; mesh pipelines use Clockwise frontFace after the
-    // Vulkan Y flip in perspectiveVulkanRH_ZO). Use the same winding that
-    // closed the south pole in-game: rowA[x], rowB[x], rowA[x+1] /
-    // rowA[x+1], rowB[x], rowB[x+1] — derived from ring→next with
-    // (i0,i2,i1)+(i1,i2,i3) which equals (lon,lat)->(lon,lat+1)->(lon+1,lat).
+    // Quads between consecutive rows use outward object-space CCW winding.
     for (int y = 0; y < stacks; ++y) {
         const uint32_t row0 = uint32_t(y * stride);
         const uint32_t row1 = uint32_t((y + 1) * stride);
@@ -444,13 +439,12 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
             const uint32_t i1 = row0 + uint32_t(x + 1);
             const uint32_t i2 = row1 + uint32_t(x);
             const uint32_t i3 = row1 + uint32_t(x + 1);
-            // Outward for RH Y-up (verified against south-cap fix): i0,i2,i1 + i1,i2,i3
             indices.push_back(i0);
-            indices.push_back(i2);
-            indices.push_back(i1);
             indices.push_back(i1);
             indices.push_back(i2);
+            indices.push_back(i1);
             indices.push_back(i3);
+            indices.push_back(i2);
         }
     }
 
@@ -517,11 +511,11 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
             const uint32_t i2 = row1 + uint32_t(x);
             const uint32_t i3 = row1 + uint32_t(x + 1);
             indices.push_back(i0);
-            indices.push_back(i2);
-            indices.push_back(i1);
             indices.push_back(i1);
             indices.push_back(i2);
+            indices.push_back(i1);
             indices.push_back(i3);
+            indices.push_back(i2);
         }
     }
 
@@ -540,8 +534,8 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
         }
         for (int x = 0; x < slices; ++x) {
             indices.push_back(topCenter);
-            indices.push_back(topRing + uint32_t(x));
             indices.push_back(topRing + uint32_t(x + 1));
+            indices.push_back(topRing + uint32_t(x));
         }
 
         // Bottom cap (y = -1, normal -Y).
@@ -557,10 +551,9 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
                      0.5f + 0.5f * sz);
         }
         for (int x = 0; x < slices; ++x) {
-            // CW when viewed from below so outward (-Y) faces are CCW from outside.
             indices.push_back(botCenter);
-            indices.push_back(botRing + uint32_t(x + 1));
             indices.push_back(botRing + uint32_t(x));
+            indices.push_back(botRing + uint32_t(x + 1));
         }
     }
 
