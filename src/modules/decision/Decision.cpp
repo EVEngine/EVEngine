@@ -1,4 +1,8 @@
 #include "decision/Decision.h"
+
+#include "common/Json.h"
+#include "common/SquirrelBinding.h"
+
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -7,8 +11,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
 #include <utility>
-#include "common/Json.h"
-#include "common/SquirrelBinding.h"
+
 namespace eve::decision {
 namespace {
 
@@ -41,7 +44,10 @@ eve::Result<void> snapshotFailure(std::string path, std::string message) {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) {
+        return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    }
+
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
@@ -58,54 +64,80 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
     result.set("handle", static_cast<std::int64_t>(ref.packed()));
     return result;
 }
-std::string q(const std::string& s) {
-    std::ostringstream o;
-    o << '"';
-    for (char c : s) {
-        if (c == '"' || c == '\\') o << '\\';
-        o << c;
+
+std::string quote(const std::string& value) {
+    std::ostringstream output;
+    output << '"';
+    for (char character : value) {
+        if (character == '"' || character == '\\') {
+            output << '\\';
+        }
+        output << character;
     }
-    return o.str() + '"';
+    return output.str() + '"';
 }
-bool        scalar(const eve::json::Value& v) { return v.isNull() || v.isBool() || v.isNumber() || v.isString(); }
-std::string canon(const eve::json::Value& v) {
-    if (v.isNull()) return "null";
-    if (v.isBool()) return v.asBool() ? "true" : "false";
-    if (v.isNumber()) return v.asString();
-    return q(v.asString());
+
+bool isScalar(const eve::json::Value& value) {
+    return value.isNull() || value.isBool() || value.isNumber() || value.isString();
 }
-bool num(const std::string& s, float& v) {
+
+std::string canonicalize(const eve::json::Value& value) {
+    if (value.isNull()) {
+        return "null";
+    }
+    if (value.isBool()) {
+        return value.asBool() ? "true" : "false";
+    }
+    if (value.isNumber()) {
+        return value.asString();
+    }
+    return quote(value.asString());
+}
+
+bool parseNumber(const std::string& text, float& value) {
     try {
-        size_t n = 0;
-        v        = std::stof(s, &n);
-        return n == s.size() && std::isfinite(v);
+        size_t parsedLength = 0;
+        value               = std::stof(text, &parsedLength);
+        return parsedLength == text.size() && std::isfinite(value);
     } catch (...) {
         return false;
     }
 }
+
 }  // namespace
-eve::Result<void> DecisionContext::set(const std::string& b, const std::string& k, const std::string& j) {
-    std::string e;
-    auto        d = eve::json::Document::parse(j, &e);
-    if (b.empty())
+
+eve::Result<void> DecisionContext::set(const std::string& board, const std::string& key, const std::string& valueJson) {
+    std::string parseError;
+    auto        document = eve::json::Document::parse(valueJson, &parseError);
+    if (board.empty()) {
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "blackboard name must not be empty",
                                      "board");
-    if (k.empty())
+    }
+    if (key.empty()) {
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "blackboard key must not be empty", "key");
-    if (!d.valid())
-        return decisionFailure<void>(eve::DiagnosticCode::ParseError, e.empty() ? "invalid blackboard JSON" : e,
-                                     "value");
-    if (!scalar(d.root()))
+    }
+    if (!document.valid()) {
+        return decisionFailure<void>(eve::DiagnosticCode::ParseError,
+                                     parseError.empty() ? "invalid blackboard JSON" : parseError, "value");
+    }
+    if (!isScalar(document.root())) {
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "blackboard value must be a JSON scalar",
                                      "value");
-    boards_[b][k] = canon(d.root());
+    }
+
+    boards_[board][key] = canonicalize(document.root());
     return decisionApplied();
 }
-std::string DecisionContext::get(const std::string& b, const std::string& k, const std::string& f) const {
-    auto i = boards_.find(b);
-    if (i == boards_.end()) return f;
-    auto j = i->second.find(k);
-    return j == i->second.end() ? f : j->second;
+
+std::string DecisionContext::get(const std::string& board, const std::string& key,
+                                 const std::string& fallbackJson) const {
+    auto boardIt = boards_.find(board);
+    if (boardIt == boards_.end()) {
+        return fallbackJson;
+    }
+
+    auto valueIt = boardIt->second.find(key);
+    return valueIt == boardIt->second.end() ? fallbackJson : valueIt->second;
 }
 eve::Result<void> DecisionContext::addTransition(const std::string& m, const std::string& f, const std::string& t,
                                                  const std::string& to) {
@@ -140,81 +172,120 @@ std::string DecisionContext::state(const std::string& m) const {
     auto i = states_.find(m);
     return i == states_.end() ? std::string{} : i->second;
 }
-float DecisionContext::utility(const std::string& s) {
-    std::stringstream in(s);
-    std::string       p;
-    double            sum = 0, w = 0;
-    while (std::getline(in, p, ',')) {
-        auto c = p.find(':');
-        if (c == std::string::npos) continue;
-        float v = 0, a = 0;
-        if (num(p.substr(0, c), v) && num(p.substr(c + 1), a) && a > 0) {
-            sum += std::clamp(v, 0.f, 1.f) * a;
-            w += a;
+float DecisionContext::utility(const std::string& considerationsCsv) {
+    std::stringstream input(considerationsCsv);
+    std::string       consideration;
+    double            weightedSum = 0;
+    double            totalWeight = 0;
+
+    while (std::getline(input, consideration, ',')) {
+        auto separator = consideration.find(':');
+        if (separator == std::string::npos) {
+            continue;
+        }
+
+        float value  = 0;
+        float weight = 0;
+        if (parseNumber(consideration.substr(0, separator), value) &&
+            parseNumber(consideration.substr(separator + 1), weight) && weight > 0) {
+            weightedSum += std::clamp(value, 0.f, 1.f) * weight;
+            totalWeight += weight;
         }
     }
-    return w ? float(sum / w) : 0.f;
+
+    return totalWeight ? float(weightedSum / totalWeight) : 0.f;
 }
-std::string DecisionContext::choose(const std::string& s) {
-    std::stringstream in(s);
-    std::string       p, best;
-    float             score = -1;
-    while (std::getline(in, p, ';')) {
-        auto c = p.find('=');
-        if (c == std::string::npos || c == 0) continue;
-        auto  name = p.substr(0, c);
-        float v    = utility(p.substr(c + 1));
-        if (v > score || (v == score && (best.empty() || name < best))) {
-            score = v;
-            best  = name;
+
+std::string DecisionContext::choose(const std::string& options) {
+    std::stringstream input(options);
+    std::string       option;
+    std::string       bestName;
+    float             bestScore = -1;
+
+    while (std::getline(input, option, ';')) {
+        auto separator = option.find('=');
+        if (separator == std::string::npos || separator == 0) {
+            continue;
+        }
+
+        auto  name  = option.substr(0, separator);
+        float score = utility(option.substr(separator + 1));
+        if (score > bestScore || (score == bestScore && (bestName.empty() || name < bestName))) {
+            bestScore = score;
+            bestName  = name;
         }
     }
-    return best;
+
+    return bestName;
 }
-eve::Result<void> DecisionContext::newGrid(const std::string& n, int w, int h, float c, float x, float y) {
-    if (n.empty())
+
+eve::Result<void> DecisionContext::newGrid(const std::string& name, int width, int height, float cellSize,
+                                           float originX, float originY) {
+    if (name.empty()) {
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "influence grid name must not be empty",
                                      "name");
-    if (w <= 0 || h <= 0 || size_t(w) > 10000000 / size_t(h))
+    }
+    if (width <= 0 || height <= 0 || size_t(width) > 10000000 / size_t(height)) {
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
                                      "influence grid dimensions are invalid or too large", "dimensions");
-    if (!std::isfinite(c) || c <= 0 || !std::isfinite(x) || !std::isfinite(y))
+    }
+    if (!std::isfinite(cellSize) || cellSize <= 0 || !std::isfinite(originX) || !std::isfinite(originY)) {
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument,
                                      "influence grid geometry must be finite and have a positive cell size",
                                      "geometry");
-    grids_[n] = {w, h, c, x, y, std::vector<float>(size_t(w) * h)};
+    }
+
+    grids_[name] = {width, height, cellSize, originX, originY, std::vector<float>(size_t(width) * height)};
     return decisionApplied();
 }
-eve::Result<void> DecisionContext::setCell(const std::string& n, int x, int y, float v) {
-    auto i = grids_.find(n);
-    if (i == grids_.end())
+
+eve::Result<void> DecisionContext::setCell(const std::string& name, int x, int y, float value) {
+    auto gridIt = grids_.find(name);
+    if (gridIt == grids_.end()) {
         return decisionFailure<void>(eve::DiagnosticCode::NotFound, "influence grid does not exist", "grid");
-    if (x < 0 || y < 0 || x >= i->second.w || y >= i->second.h || !std::isfinite(v))
+    }
+    if (x < 0 || y < 0 || x >= gridIt->second.width || y >= gridIt->second.height || !std::isfinite(value)) {
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "influence grid cell or value is invalid",
                                      "cell");
-    i->second.values[size_t(y) * i->second.w + x] = v;
+    }
+
+    gridIt->second.values[size_t(y) * gridIt->second.width + x] = value;
     return decisionApplied();
 }
-eve::Result<void> DecisionContext::addCell(const std::string& n, int x, int y, float v) {
-    auto i = grids_.find(n);
-    if (i == grids_.end())
+
+eve::Result<void> DecisionContext::addCell(const std::string& name, int x, int y, float delta) {
+    auto gridIt = grids_.find(name);
+    if (gridIt == grids_.end()) {
         return decisionFailure<void>(eve::DiagnosticCode::NotFound, "influence grid does not exist", "grid");
-    if (x < 0 || y < 0 || x >= i->second.w || y >= i->second.h || !std::isfinite(v))
+    }
+    if (x < 0 || y < 0 || x >= gridIt->second.width || y >= gridIt->second.height || !std::isfinite(delta)) {
         return decisionFailure<void>(eve::DiagnosticCode::InvalidArgument, "influence grid cell or value is invalid",
                                      "cell");
-    auto& z = i->second.values[size_t(y) * i->second.w + x];
-    if (!std::isfinite(z + v))
+    }
+
+    auto& cell = gridIt->second.values[size_t(y) * gridIt->second.width + x];
+    if (!std::isfinite(cell + delta)) {
         return decisionFailure<void>(eve::DiagnosticCode::Failed, "influence grid cell update overflowed", "cell");
-    z += v;
+    }
+
+    cell += delta;
     return decisionApplied();
 }
-float DecisionContext::sample(const std::string& n, float x, float y, float f) const {
-    auto i = grids_.find(n);
-    if (i == grids_.end()) return f;
-    int cx = int(std::floor((x - i->second.ox) / i->second.cell)),
-        cy = int(std::floor((y - i->second.oy) / i->second.cell));
-    return cx < 0 || cy < 0 || cx >= i->second.w || cy >= i->second.h ? f
-                                                                      : i->second.values[size_t(cy) * i->second.w + cx];
+
+float DecisionContext::sample(const std::string& name, float worldX, float worldY, float fallback) const {
+    auto gridIt = grids_.find(name);
+    if (gridIt == grids_.end()) {
+        return fallback;
+    }
+
+    const Grid& grid  = gridIt->second;
+    int         cellX = int(std::floor((worldX - grid.originX) / grid.cellSize));
+    int         cellY = int(std::floor((worldY - grid.originY) / grid.cellSize));
+    if (cellX < 0 || cellY < 0 || cellX >= grid.width || cellY >= grid.height) {
+        return fallback;
+    }
+
+    return grid.values[size_t(cellY) * grid.width + cellX];
 }
 std::string DecisionContext::snapshotJson() const {
     std::ostringstream o;
@@ -223,12 +294,12 @@ std::string DecisionContext::snapshotJson() const {
     for (auto& [b, vs] : boards_) {
         if (!a) o << ',';
         a = false;
-        o << q(b) << ":{";
+        o << quote(b) << ":{";
         bool f = true;
         for (auto& [k, v] : vs) {
             if (!f) o << ',';
             f = false;
-            o << q(k) << ':' << v;
+            o << quote(k) << ':' << v;
         }
         o << '}';
     }
@@ -237,7 +308,7 @@ std::string DecisionContext::snapshotJson() const {
     for (auto& [m, s] : states_) {
         if (!a) o << ',';
         a = false;
-        o << q(m) << ':' << q(s);
+        o << quote(m) << ':' << quote(s);
     }
     o << "},\"transitions\":[";
     a = true;
@@ -245,15 +316,15 @@ std::string DecisionContext::snapshotJson() const {
         for (auto& [key, to] : ts) {
             if (!a) o << ',';
             a = false;
-            o << "[" << q(m) << ',' << q(key.first) << ',' << q(key.second) << ',' << q(to) << "]";
+            o << "[" << quote(m) << ',' << quote(key.first) << ',' << quote(key.second) << ',' << quote(to) << "]";
         }
     o << "],\"grids\":[";
     a = true;
     for (auto& [n, g] : grids_) {
         if (!a) o << ',';
         a = false;
-        o << "{\"name\":" << q(n) << ",\"w\":" << g.w << ",\"h\":" << g.h << ",\"cell\":" << g.cell
-          << ",\"ox\":" << g.ox << ",\"oy\":" << g.oy << ",\"values\":[";
+        o << "{\"name\":" << quote(n) << ",\"w\":" << g.width << ",\"h\":" << g.height << ",\"cell\":" << g.cellSize
+          << ",\"ox\":" << g.originX << ",\"oy\":" << g.originY << ",\"values\":[";
         for (size_t i = 0; i < g.values.size(); ++i) {
             if (i) o << ',';
             o << g.values[i];
@@ -281,9 +352,9 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
         if (!v.isObject()) return snapshotFailure("boards." + bn, "blackboard must be an object");
         for (auto& k : v.keys()) {
             const auto value = v.get(k.c_str());
-            if (!scalar(value))
+            if (!isScalar(value))
                 return snapshotFailure("boards." + bn + "." + k, "blackboard value must be a JSON scalar");
-            auto result = n.set(bn, k, canon(value));
+            auto result = n.set(bn, k, canonicalize(value));
             if (!result.ok()) return eve::Result<void>::failure(result.status());
         }
     }
@@ -315,7 +386,7 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
         auto v = gs.at(i);
         if (!v.isObject())
             return snapshotFailure("grids[" + std::to_string(i) + "]", "influence grid must be an object");
-        int  w = v.getInt("w"), h = v.getInt("h");
+        int        w = v.getInt("w"), h = v.getInt("h");
         const auto name = v.get("name");
         const auto cell = v.get("cell");
         const auto ox   = v.get("ox");
