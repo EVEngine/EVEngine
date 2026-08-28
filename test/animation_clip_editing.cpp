@@ -39,6 +39,21 @@ TEST_CASE("animation.clip.editableTracksStaySorted") {
     CHECK_EQ(clip.getEventCount(), 0);
 }
 
+TEST_CASE("animation.clip.notifyContractRejectsMissingSemanticEvents") {
+    AnimClip clip("vault-low");
+    clip.setDuration(1.f);
+    clip.addEvent(0.25f, "contact.left_hand");
+    clip.addEvent(0.75f, "land");
+
+    CHECK(clip.hasEvent("contact.left_hand"));
+    CHECK(!clip.hasEvent("contact.right_hand"));
+    auto complete = clip.validateNotifyContract({"contact.left_hand", "land"});
+    REQUIRE(complete.ok());
+    auto missing = clip.validateNotifyContract({"contact.left_hand", "contact.right_hand", "land"});
+    CHECK(!missing.ok());
+    CHECK_EQ(static_cast<int>(missing.code()), static_cast<int>(eve::StatusCode::Rejected));
+}
+
 TEST_CASE("animation.script.composesClipTimelineFromReflectedKeys") {
     ssq::VM vm(1024, ssq::Libs::ALL);
     eve::ModuleManager::expose(vm);

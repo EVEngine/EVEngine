@@ -19,6 +19,40 @@
 namespace eve::physics {
 namespace {
 
+class ScopedQueryState3D {
+public:
+    ScopedQueryState3D(World3D& world, QueryFilter3D filter)
+        : world_(world), category_(world.getQueryCategoryBits()), mask_(world.getQueryMaskBits()),
+          body_(world.getQueryIgnoredBodyId()), shape_(world.getQueryIgnoredShapeId()) {
+        world_.setQueryFilter(static_cast<int>(filter.categoryBits), static_cast<int>(filter.maskBits));
+        world_.setQueryIgnoredBodyId(filter.ignoredBodyId);
+        world_.setQueryIgnoredShapeId(filter.ignoredShapeId);
+    }
+
+    ~ScopedQueryState3D() noexcept {
+        world_.setQueryFilter(category_, mask_);
+        world_.setQueryIgnoredBodyId(body_);
+        world_.setQueryIgnoredShapeId(shape_);
+    }
+
+private:
+    World3D& world_;
+    int category_;
+    int mask_;
+    int body_;
+    int shape_;
+};
+
+template <class T>
+eve::Result<T> ownedQueryFailure(eve::DiagnosticCode code, std::string message,
+                                 std::string path = {}) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "physics.query3d"));
+}
+
+}  // namespace
+namespace {
+
 constexpr uint64_t combineModeMask = 0x7ull;
 constexpr int frictionModeShift = 32;
 constexpr int restitutionModeShift = 35;
@@ -1219,6 +1253,66 @@ int World3D::rayCastFiltered(float x1, float y1, float z1, float x2, float y2, f
     return rayHitBodyId_;
 }
 
+eve::Result<RayHit3D> World3D::rayCastOwned(float x1, float y1, float z1, float x2,
+                                            float y2, float z2, QueryFilter3D filter) {
+    if (!isValid())
+        return ownedQueryFailure<RayHit3D>(eve::DiagnosticCode::StaleHandle,
+                                           "physics world is no longer valid", "world");
+    try {
+        ScopedQueryState3D queryState(*this, filter);
+        RayHit3D result;
+        result.world = runtimeHandle_;
+        if (!std::isfinite(x1) || !std::isfinite(y1) || !std::isfinite(z1) ||
+            !std::isfinite(x2) || !std::isfinite(y2) || !std::isfinite(z2))
+            return ownedQueryFailure<RayHit3D>(eve::DiagnosticCode::InvalidArgument,
+                                               "ray endpoints must be finite", "ray");
+        struct Collector {
+            World3D* world = nullptr;
+            RayHit3D* result = nullptr;
+            static float callback(b3ShapeId shapeId, b3Pos point, b3Vec3 normal, float fraction,
+                                  uint64_t materialId, int triangleIndex, int, void* context) {
+                auto* self = static_cast<Collector*>(context);
+                if (self->world->shouldIgnoreQueryShape(shapeId)) return -1.f;
+                Body3D* body = bodyFromShape(shapeId);
+                Shape3D* shape = shapeFromShape(shapeId);
+                if (!body || !shape || !body->isValid() || !shape->isValid()) return -1.f;
+                RayHit3D candidate;
+                candidate.hit = true;
+                candidate.world = self->result->world;
+                candidate.body = body->runtimeHandle();
+                candidate.shape = shape->runtimeHandle();
+                candidate.bodyId = body->getId();
+                candidate.shapeId = shape->getId();
+                candidate.shapeTag = shape->getTag();
+                candidate.materialId = static_cast<int>(static_cast<std::uint32_t>(materialId));
+                candidate.triangleIndex = triangleIndex;
+                candidate.x = static_cast<float>(point.x);
+                candidate.y = static_cast<float>(point.y);
+                candidate.z = static_cast<float>(point.z);
+                candidate.normalX = normal.x;
+                candidate.normalY = normal.y;
+                candidate.normalZ = normal.z;
+                candidate.fraction = fraction;
+                if (!self->result->hit || fraction < self->result->fraction ||
+                    (fraction == self->result->fraction && candidate.shapeId < self->result->shapeId))
+                    *self->result = candidate;
+                return self->result->fraction;
+            }
+        } collector{this, &result};
+        b3World_CastRay(worldId_, b3Pos{x1, y1, z1}, b3Vec3{x2 - x1, y2 - y1, z2 - z1},
+                        makeQueryFilter(), &Collector::callback, &collector);
+        if (!result.hit) return eve::Result<RayHit3D>::success(std::move(result));
+        if (result.body.isInvalid() || result.shape.isInvalid())
+            return ownedQueryFailure<RayHit3D>(
+                eve::DiagnosticCode::InvariantViolation,
+                "ray hit could not be mapped to live generation-qualified handles", "hit");
+        return eve::Result<RayHit3D>::success(std::move(result));
+    } catch (const std::exception& error) {
+        return ownedQueryFailure<RayHit3D>(eve::DiagnosticCode::InvalidArgument, error.what(),
+                                           "ray");
+    }
+}
+
 int World3D::rayCastAll(float x1, float y1, float z1, float x2, float y2, float z2,
                         int maxHits) {
     return rayCastAllInternal(x1, y1, z1, x2, y2, z2, maxHits, makeQueryFilter());
@@ -1353,6 +1447,59 @@ int World3D::queryAABB(float minX, float minY, float minZ, float maxX, float max
     return static_cast<int>(queryBodyIds_.size());
 }
 
+eve::Result<BroadPhaseAabb3D> World3D::queryAabbBroadPhaseOwned(
+    float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+    QueryFilter3D filter) {
+    if (!isValid())
+        return ownedQueryFailure<BroadPhaseAabb3D>(eve::DiagnosticCode::StaleHandle,
+                                                   "physics world is no longer valid", "world");
+    if (!std::isfinite(minX) || !std::isfinite(minY) || !std::isfinite(minZ) ||
+        !std::isfinite(maxX) || !std::isfinite(maxY) || !std::isfinite(maxZ))
+        return ownedQueryFailure<BroadPhaseAabb3D>(eve::DiagnosticCode::InvalidArgument,
+                                                   "broad-phase AABB must be finite", "aabb");
+    try {
+        ScopedQueryState3D queryState(*this, filter);
+        BroadPhaseAabb3D result;
+        struct Collector {
+            World3D* world = nullptr;
+            BroadPhaseAabb3D* result = nullptr;
+
+            static bool less(const BroadPhaseHit3D& lhs, const BroadPhaseHit3D& rhs) noexcept {
+                return lhs.bodyId != rhs.bodyId ? lhs.bodyId < rhs.bodyId : lhs.shapeId < rhs.shapeId;
+            }
+
+            static bool callback(b3ShapeId shapeId, void* context) {
+                auto* self = static_cast<Collector*>(context);
+                if (self->world->shouldIgnoreQueryShape(shapeId)) return true;
+                Body3D* body = bodyFromShape(shapeId);
+                Shape3D* shape = shapeFromShape(shapeId);
+                if (!body || !shape || !body->isValid() || !shape->isValid()) return true;
+                BroadPhaseHit3D hit{body->runtimeHandle(), shape->runtimeHandle(), body->getId(),
+                                    shape->getId(), shape->getTag(), shape->getMaterialId()};
+                auto& output = *self->result;
+                if (output.count < BroadPhaseAabb3D::Capacity) {
+                    output.hits[output.count++] = hit;
+                } else {
+                    output.truncated = true;
+                    auto worst = std::max_element(output.hits.begin(), output.hits.end(), less);
+                    if (less(hit, *worst)) *worst = hit;
+                }
+                return true;
+            }
+        } collector{this, &result};
+        b3AABB bounds;
+        bounds.lowerBound = {std::min(minX, maxX), std::min(minY, maxY), std::min(minZ, maxZ)};
+        bounds.upperBound = {std::max(minX, maxX), std::max(minY, maxY), std::max(minZ, maxZ)};
+        b3World_OverlapAABB(worldId_, bounds, makeQueryFilter(), &Collector::callback, &collector);
+        std::sort(result.hits.begin(), result.hits.begin() + static_cast<std::ptrdiff_t>(result.count),
+                  Collector::less);
+        return eve::Result<BroadPhaseAabb3D>::success(std::move(result));
+    } catch (const std::exception& error) {
+        return ownedQueryFailure<BroadPhaseAabb3D>(eve::DiagnosticCode::InvalidArgument,
+                                                   error.what(), "aabb");
+    }
+}
+
 int World3D::overlapProxy(b3Pos origin, const b3ShapeProxy &proxy) {
     queryBodyIds_.clear();
     queryShapes_.clear();
@@ -1406,6 +1553,51 @@ int World3D::queryCapsule(float ax, float ay, float az, float bx, float by, floa
     const b3Vec3 points[2] = {b3Vec3_zero, b3Vec3{bx - ax, by - ay, bz - az}};
     const b3ShapeProxy proxy{points, 2, radius};
     return overlapProxy(b3Pos{ax, ay, az}, proxy);
+}
+
+eve::Result<CapsuleOverlap3D> World3D::queryCapsuleOwned(
+    float ax, float ay, float az, float bx, float by, float bz, float radius,
+    QueryFilter3D filter) {
+    if (!isValid())
+        return ownedQueryFailure<CapsuleOverlap3D>(eve::DiagnosticCode::StaleHandle,
+                                                   "physics world is no longer valid", "world");
+    try {
+        ScopedQueryState3D queryState(*this, filter);
+        if (!std::isfinite(ax) || !std::isfinite(ay) || !std::isfinite(az) ||
+            !std::isfinite(bx) || !std::isfinite(by) || !std::isfinite(bz) ||
+            !std::isfinite(radius) || radius < 0.f)
+            return ownedQueryFailure<CapsuleOverlap3D>(eve::DiagnosticCode::InvalidArgument,
+                                                       "capsule coordinates and radius are invalid", "capsule");
+        CapsuleOverlap3D result;
+        result.world = runtimeHandle_;
+        struct Collector {
+            World3D* world = nullptr;
+            std::array<int, 256> bodyIds{};
+            std::size_t count = 0;
+            static bool callback(b3ShapeId shapeId, void* context) {
+                auto* self = static_cast<Collector*>(context);
+                if (self->world->shouldIgnoreQueryShape(shapeId)) return true;
+                Body3D* body = bodyFromShape(shapeId);
+                if (!body || !body->isValid()) return true;
+                const int bodyId = body->getId();
+                if (std::find(self->bodyIds.begin(),
+                              self->bodyIds.begin() + static_cast<std::ptrdiff_t>(self->count),
+                              bodyId) != self->bodyIds.begin() + static_cast<std::ptrdiff_t>(self->count))
+                    return true;
+                if (self->count < self->bodyIds.size()) self->bodyIds[self->count++] = bodyId;
+                return true;
+            }
+        } collector{this};
+        const b3Vec3 points[2] = {b3Vec3_zero, b3Vec3{bx - ax, by - ay, bz - az}};
+        const b3ShapeProxy proxy{points, 2, radius};
+        b3World_OverlapShape(worldId_, b3Pos{ax, ay, az}, &proxy, makeQueryFilter(),
+                             &Collector::callback, &collector);
+        result.bodyCount = static_cast<int>(collector.count);
+        return eve::Result<CapsuleOverlap3D>::success(std::move(result));
+    } catch (const std::exception& error) {
+        return ownedQueryFailure<CapsuleOverlap3D>(eve::DiagnosticCode::InvalidArgument,
+                                                   error.what(), "capsule");
+    }
 }
 
 int World3D::queryBox(float x, float y, float z, float width, float height, float depth, float qx,
@@ -1745,6 +1937,49 @@ bool World3D::moveCapsule(float ax, float ay, float az, float bx, float by, floa
     moverGroundDot_ = collector.maxUpDot;
     moverGrounded_ = moverGroundDot_ >= moverSlopeCos_;
     return collided;
+}
+
+eve::Result<CapsuleMove3D> World3D::moveCapsuleOwned(
+    float ax, float ay, float az, float bx, float by, float bz, float radius, float dx,
+    float dy, float dz, QueryFilter3D filter, CapsuleMovePolicy3D policy) {
+    if (!isValid())
+        return ownedQueryFailure<CapsuleMove3D>(eve::DiagnosticCode::StaleHandle,
+                                                "physics world is no longer valid", "world");
+    const float upLengthSquared = policy.upX * policy.upX + policy.upY * policy.upY + policy.upZ * policy.upZ;
+    if (!std::isfinite(policy.upX) || !std::isfinite(policy.upY) || !std::isfinite(policy.upZ) ||
+        upLengthSquared <= 1e-12f || !std::isfinite(policy.maxSlopeRadians) ||
+        policy.maxSlopeRadians < 0.f || policy.maxSlopeRadians >= 1.57079633f)
+        return ownedQueryFailure<CapsuleMove3D>(eve::DiagnosticCode::InvalidArgument,
+                                                "capsule mover policy is invalid", "policy");
+    const b3Vec3 previousUp = moverUp_;
+    const float previousSlopeCos = moverSlopeCos_;
+    try {
+        ScopedQueryState3D queryState(*this, filter);
+        const float inverseUpLength = 1.f / std::sqrt(upLengthSquared);
+        moverUp_ = {policy.upX * inverseUpLength, policy.upY * inverseUpLength,
+                    policy.upZ * inverseUpLength};
+        moverSlopeCos_ = std::cos(policy.maxSlopeRadians);
+        CapsuleMove3D result;
+        result.world = runtimeHandle_;
+        result.constrained = moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
+        result.grounded = isMoverGrounded();
+        result.deltaX = getMoverDeltaX();
+        result.deltaY = getMoverDeltaY();
+        result.deltaZ = getMoverDeltaZ();
+        result.normalX = getMoverNormalX();
+        result.normalY = getMoverNormalY();
+        result.normalZ = getMoverNormalZ();
+        result.planeCount = getMoverPlaneCount();
+        result.iterations = getMoverIterations();
+        moverUp_ = previousUp;
+        moverSlopeCos_ = previousSlopeCos;
+        return eve::Result<CapsuleMove3D>::success(std::move(result));
+    } catch (const std::exception& error) {
+        moverUp_ = previousUp;
+        moverSlopeCos_ = previousSlopeCos;
+        return ownedQueryFailure<CapsuleMove3D>(eve::DiagnosticCode::InvalidArgument,
+                                                error.what(), "capsuleMove");
+    }
 }
 
 int World3D::getQueryBodyId(int index) const {
