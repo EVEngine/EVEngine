@@ -128,6 +128,7 @@ file(GLOB all_test_cpp
   action_preview_controller.cpp
   animation_action_preview.cpp
   projectile_runtime.cpp
+  ability_controller.cpp
   ability_system.cpp
   combat_damage.cpp
   gameplay_action.cpp
