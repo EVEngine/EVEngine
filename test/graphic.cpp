@@ -9,3 +9,4 @@ UnitSciptTest(GraphicTest, graphic_content);
     }
 
 TestScript(basic)
+TestScript(hasDrawText)

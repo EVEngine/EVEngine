@@ -213,8 +213,8 @@ void printCentered(graphics::Graphics *gfx, const std::string &text, float cx, f
     if (!font) return;
     const float tw = font->getWidth(text) * scale;
     const float th = font->getHeight() * scale;
-    // print 的 y 是基线；基线位于字形中心略下方
-    gfx->print(text, cx - tw * 0.5f, cy - th * 0.35f, color, scale);
+    // drawText 的 y 是行顶；视觉中心按现有卡牌布局略作补偿。
+    gfx->drawText(font, text, cx - tw * 0.5f, cy - th * 0.35f, color, scale);
 }
 
 void renderCardBack(graphics::Graphics *gfx, float x, float y, float w, float h, float angle, float a) {

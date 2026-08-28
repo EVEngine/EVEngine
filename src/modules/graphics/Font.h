@@ -23,7 +23,8 @@ uint32_t nextCodepointUtf8(const std::string &text, size_t &i);
 /**
  * @brief GPU-side font: wraps a decoded `font::FontData` and rasterizes a fixed
  * set of codepoints into a single RGBA8 glyph atlas texture up front, so
- * `Graphics::print()` can draw text with plain textured-quad draws.
+ * `Graphics::drawText()` and `Graphics::print()` can draw text with plain
+ * textured-quad draws.
  *
  * Codepoints outside the pre-rasterized charset still advance the pen using
  * `FontData` metrics (via FreeType) but are not drawn (no atlas entry).
