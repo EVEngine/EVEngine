@@ -105,7 +105,7 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
                    DEPS action property_access tags transaction
                    GROUP 3d web
-                   OPTIONAL_DEPS procgen map voxel)
+                   OPTIONAL_DEPS animation procgen map voxel)
 # L0 -- foundation (continued)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)
