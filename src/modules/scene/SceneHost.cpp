@@ -151,10 +151,10 @@ void SceneHost::setTree(NodeDesc root) { applyTree(this, std::move(root)); }
 
 bool SceneHost::setTreeReconcile(NodeDesc root) { return applyTreeReconcile(this, std::move(root)); }
 
-bool SceneHost::appendNode(SceneNode node, const std::string &parentId) {
-    if (node.id.empty() || hasNode(node.id)) return false;
+SceneMutationStatus SceneHost::appendNode(SceneNode node, const std::string &parentId) {
+    if (node.id.empty() || hasNode(node.id)) return SceneMutationStatus::Rejected;
     const int parentIndex = parentId.empty() ? -1 : findIndexById(parentId);
-    if (!parentId.empty() && parentIndex < 0) return false;
+    if (!parentId.empty() && parentIndex < 0) return SceneMutationStatus::Rejected;
     node.parent = -1;
     node.firstChild = -1;
     node.nextSibling = -1;
@@ -171,13 +171,13 @@ bool SceneHost::appendNode(SceneNode node, const std::string &parentId) {
     value->transformDirty = true;
     value->indexValid = false;
     fireEvent("node_added", value->nodes[size_t(index)].id, parentId);
-    return true;
+    return SceneMutationStatus::Applied;
 }
 
-bool SceneHost::removeLeaf(const std::string &nodeId) {
+SceneMutationStatus SceneHost::removeLeaf(const std::string &nodeId) {
     const int index = findIndexById(nodeId);
     auto value = tree();
-    if (index < 0 || value->nodes[size_t(index)].firstChild >= 0) return false;
+    if (index < 0 || value->nodes[size_t(index)].firstChild >= 0) return SceneMutationStatus::Rejected;
     const int oldParent = value->nodes[size_t(index)].parent;
     const std::string parentId = oldParent >= 0 ? value->nodes[size_t(oldParent)].id : std::string{};
     unlinkFromParent(*value, index);
@@ -195,23 +195,23 @@ bool SceneHost::removeLeaf(const std::string &nodeId) {
     value->transformDirty = true;
     value->indexValid = false;
     fireEvent("node_removed", nodeId, parentId);
-    return true;
+    return SceneMutationStatus::Applied;
 }
 
-bool SceneHost::renameNode(const std::string &nodeId, const std::string &name) {
-    if (name.empty()) return false;
+SceneMutationStatus SceneHost::renameNode(const std::string &nodeId, const std::string &name) {
+    if (name.empty()) return SceneMutationStatus::Rejected;
     const int index = findIndexById(nodeId);
-    if (index < 0) return false;
+    if (index < 0) return SceneMutationStatus::Rejected;
     tree()->nodes[size_t(index)].name = name;
     tree()->dirty = true;
     fireEvent("node_changed", nodeId);
-    return true;
+    return SceneMutationStatus::Applied;
 }
 
-bool SceneHost::setLocalTransform(const std::string &nodeId, float x, float y, float z,
+SceneMutationStatus SceneHost::setLocalTransform(const std::string &nodeId, float x, float y, float z,
                                   float yaw, float pitch, float roll, float sx, float sy, float sz) {
     const int index = findIndexById(nodeId);
-    if (index < 0 || sx == 0.f || sy == 0.f || sz == 0.f) return false;
+    if (index < 0 || sx == 0.f || sy == 0.f || sz == 0.f) return SceneMutationStatus::Rejected;
     SceneNode &node = tree()->nodes[size_t(index)];
     node.x = x;
     node.y = y;
@@ -224,7 +224,7 @@ bool SceneHost::setLocalTransform(const std::string &nodeId, float x, float y, f
     node.sz = sz;
     markSubtreeDirty(index);
     fireEvent("node_changed", nodeId);
-    return true;
+    return SceneMutationStatus::Applied;
 }
 
 eve::Result<SceneNode *> SceneHost::findById(const std::string &id) {

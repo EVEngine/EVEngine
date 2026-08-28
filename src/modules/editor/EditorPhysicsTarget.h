@@ -25,6 +25,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
@@ -107,6 +108,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
@@ -177,7 +179,7 @@ public:
                                  const IPhysicsColliderAssetResolver* assets = nullptr)
         : body_(body), current_(current), assets_(assets) {}
     EditorResult<void> publish(const PhysicsColliderTarget& candidate) override;
-    /** @brief Return the current borrowed shape after the latest successful swap. */
+    /** @brief Return the current borrowed shape after the latest successful swap. @return Borrowed pointer owned by the physics world. @lifetime Valid until the next publish, world mutation, or runtime destruction. */
     physics::Shape3D* shape() const { return current_; }
 
 private:
@@ -194,7 +196,7 @@ public:
                                  const IPhysicsColliderAssetResolver* assets = nullptr)
         : body_(body), current_(current), assets_(assets) {}
     EditorResult<void> publish(const PhysicsColliderTarget& candidate) override;
-    /** @brief Return the current borrowed fixture after the latest successful swap. */
+    /** @brief Return the current borrowed fixture after the latest successful swap. @return Borrowed pointer owned by the physics world. @lifetime Valid until the next publish, world mutation, or runtime destruction. */
     physics::Fixture* fixture() const { return current_; }
 
 private:

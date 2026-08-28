@@ -68,7 +68,10 @@ class IAvatarTextureResolver { public:virtual~IAvatarTextureResolver()=default;v
 class AvatarDocumentRuntime {
 public:
     AvatarDocumentRuntime();~AvatarDocumentRuntime();
-    /** @brief Build all layers, metadata and expressions before replacing the live generation. */
+    /** @brief Build all layers, metadata and expressions before replacing the live generation.
+     * @param textures Optional borrowed resolver; it is used only during this call and is never retained.
+     * @lifetime The caller must keep textures alive for the duration of publish.
+     */
     EditorResult<void>publish(const AvatarDocumentTarget&,const IAvatarTextureResolver* textures=nullptr);
     avatar::AvatarInstance*instance()const{return instance_.get();}Revision revision()const{return revision_;}
 private:std::unique_ptr<avatar::AvatarInstance>instance_;Revision revision_=0;

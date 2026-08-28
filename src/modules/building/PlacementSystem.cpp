@@ -606,22 +606,23 @@ int PlacementSystem::placeGhost(PlacementWorld *world, Ghost *ghost) {
     return id;
 }
 
-bool PlacementSystem::restoreExact(PlacementWorld *world, const PlacedBuilding &placed,
-                                   std::string *reason) {
+PlacementRestoreStatus PlacementSystem::restoreExact(PlacementWorld *world,
+                                                      const PlacedBuilding &placed,
+                                                      std::string *reason) {
     ensureBuiltins();
     if (!world || placed.instanceId <= 0 || world->hasBuilding(placed.instanceId)) {
         if (reason) *reason = "instance_id_conflict";
-        return false;
+        return PlacementRestoreStatus::Rejected;
     }
     const BuildingDefinition *def = BuildingRegistry::find(placed.buildingId);
     if (!def) {
         if (reason) *reason = "unknown_building";
-        return false;
+        return PlacementRestoreStatus::Rejected;
     }
     const float rotation = normalizeRotation(placed.buildingId, placed.rotationDeg);
     if (!canPlaceElev(world, placed.buildingId, placed.originCellX, placed.originCellY,
                       placed.elevation, rotation, 0, reason))
-        return false;
+        return PlacementRestoreStatus::Rejected;
     PlacedBuilding restored = placed;
     restored.rotationDeg = rotation;
     restored.channel = def->channel;
@@ -644,7 +645,7 @@ bool PlacementSystem::restoreExact(PlacementWorld *world, const PlacedBuilding &
     event.elevation = restored.elevation;
     event.channel = restored.channel;
     emit(std::move(event));
-    return true;
+    return PlacementRestoreStatus::Restored;
 }
 
 bool PlacementSystem::removeBuilding(PlacementWorld *world, int instanceId) {

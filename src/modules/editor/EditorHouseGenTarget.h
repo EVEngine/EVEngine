@@ -32,6 +32,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
@@ -72,7 +73,9 @@ public:
     EditorResult<void> publish(const HouseGenDocumentTarget& document);
     /** @brief Build grid cells, component bounds and room overlays for the active generation. */
     EditorResult<EditorGizmoSnapshot> gizmo(Revision expectedRevision) const;
+    /** @brief Access the published layout. @return Borrowed pointer owned by this runtime. @lifetime Valid until the next successful publish or destruction. */
     const housegen::HouseLayout* layout() const { return layout_.get(); }
+    /** @brief Access the published component library. @return Borrowed pointer owned by this runtime. @lifetime Valid until the next successful publish or destruction. */
     const housegen::HouseComponentLibrary* library() const { return library_.get(); }
     Revision revision() const { return revision_; }
 private:

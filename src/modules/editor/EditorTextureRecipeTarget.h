@@ -17,6 +17,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override;
     EditorResult<void> applyDomainOperation(const DomainOperation&) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
@@ -48,6 +49,7 @@ public:
     TextureRecipePreviewRuntime();
     ~TextureRecipePreviewRuntime();
     EditorResult<TextureRecipePreviewArtifact> generate(const TextureRecipeTarget&);
+    /** @brief Access the generated image. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid until the next generation or runtime destruction. */
     const image::ImageData* image() const { return image_.get(); }
     Revision revision() const { return revision_; }
 private:

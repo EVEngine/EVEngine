@@ -11,7 +11,7 @@ public:
     void play() override { isPlaying = true; ++plays; }
     void pause() override { isPlaying = false; }
     void stop() override { isPlaying = false; position = 0.0; ++stops; }
-    bool seek(double seconds) override { if (!seekable) return false; position = seconds; return true; }
+    EditorResult<void> seek(double seconds) override { if (!seekable) return EditorResult<void>::error(EditorStatus::Failed, RuleId("test.audio.seek"), "seek rejected"); position = seconds; return EditorResult<void>::applied(); }
     double tell() const override { return position; }
     double duration() const override { return length; }
     bool playing() const override { return isPlaying; }

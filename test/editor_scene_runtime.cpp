@@ -86,7 +86,8 @@ TEST_CASE("editor.scene.live_host_staged_create_delete_and_conflict_are_atomic")
     auto rename = stagedScene->makeRename(ObjectId("existing"), "Changed");
     REQUIRE(rename.value);
     REQUIRE(stagedScene->SceneTargetBase::applyDomainOperation(*rename.value).accepted());
-    REQUIRE(host->renameNode("existing", "External Change"));
+    REQUIRE_EQ(static_cast<int>(host->renameNode("existing", "External Change")),
+               static_cast<int>(eve::scene::SceneMutationStatus::Applied));
     const auto conflict = target.commitDomainState(std::move(staged));
     CHECK_EQ(static_cast<int>(conflict.status), static_cast<int>(EditorStatus::Conflict));
     CHECK_EQ(take(host->findById("existing"))->name, "External Change");

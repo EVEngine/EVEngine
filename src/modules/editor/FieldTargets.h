@@ -27,7 +27,7 @@ public:
     void clearDirtyRegion() override { dirty_.clear(); }
     int width() const override;
     int height() const override;
-    bool inBounds(int x, int y) const override;
+    bool containsCell(int x, int y) const override;
     int readInt(int x, int y) const override;
     bool writeInt(int x, int y, int value) override;
     TileBuffer *buffer() const { return buffer_; }
@@ -49,7 +49,7 @@ public:
     void clearDirtyRegion() override { dirty_.clear(); }
     int width() const override;
     int height() const override;
-    bool inBounds(int x, int y) const override;
+    bool containsCell(int x, int y) const override;
     int readInt(int x, int y) const override;
     bool writeInt(int x, int y, int value) override;
     map::TileLayer *layer() const { return layer_; }
@@ -71,9 +71,9 @@ public:
     void clearDirtyRegion() override { dirty_.clear(); }
     int width() const override;
     int height() const override;
-    bool inBounds(int x, int y) const override;
+    bool containsCell(int x, int y) const override;
     float readScalar(int x, int y) const override;
-    bool writeScalar(int x, int y, float value) override;
+    FieldWriteStatus writeScalar(int x, int y, float value) override;
     float sampleScalar(float x, float y) const override;
     procgen::Heightmap *heightmap() const { return heightmap_; }
 private:
@@ -96,11 +96,11 @@ public:
     void clearDirtyRegion() override { dirty_.clear(); }
     int width() const override;
     int height() const override;
-    bool inBounds(int x, int y) const override;
+    bool containsCell(int x, int y) const override;
     float readScalar(int x, int y) const override;
-    bool writeScalar(int x, int y, float value) override;
+    FieldWriteStatus writeScalar(int x, int y, float value) override;
     float sampleScalar(float x, float y) const override;
-    /** @brief Return the borrowed live field. */
+    /** @brief Return the borrowed live field. @return Borrowed pointer owned externally. @lifetime Valid only while the source SnowField outlives this adapter and is not destroyed. */
     snow::SnowField* field() const { return field_; }
 private:
     std::string id_;

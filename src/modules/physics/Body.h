@@ -121,6 +121,8 @@ public:
      * @param restitution Surface restitution.
      * @return Borrowed fixture owned by the world.
      * @throws eve::Exception when the body is dead or vertices are malformed/degenerate.
+     * @return Borrowed pointer to a fixture owned by this body.
+     * @lifetime Valid until the fixture or owning body is destroyed.
      */
     Fixture *newPolygonFixture(const std::vector<float> &vertices, float density = 1.f,
                                float friction = 0.2f, float restitution = 0.f);

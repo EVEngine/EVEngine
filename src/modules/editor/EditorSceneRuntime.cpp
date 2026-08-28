@@ -156,7 +156,7 @@ EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase&
 
     for (const auto& [id, object] : current) {
         static_cast<void>(object);
-        if (!desired.contains(id) && !host_->removeLeaf(id.value()))
+        if (!desired.contains(id) && host_->removeLeaf(id.value()) != scene::SceneMutationStatus::Applied)
             return liveError<void>(EditorStatus::Conflict, "editor.scene.live-delete-failed",
                                    "Live SceneHost rejected leaf deletion: " + id.value());
     }
@@ -171,7 +171,7 @@ EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase&
                 ++iterator;
                 continue;
             }
-            if (!host_->appendNode(runtimeNode(object), object.parent.value()))
+            if (host_->appendNode(runtimeNode(object), object.parent.value()) != scene::SceneMutationStatus::Applied)
                 return liveError<void>(EditorStatus::Conflict, "editor.scene.live-create-failed",
                                        "Live SceneHost rejected object creation: " + object.id.value());
             iterator = pending.erase(iterator);
@@ -188,19 +188,20 @@ EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase&
             return liveError<void>(EditorStatus::Conflict, "editor.scene.live-reparent-failed",
                                    "Live SceneHost rejected object reparent: " + id.value());
         if (old == current.end() || old->second.name != object.name)
-            if (!host_->renameNode(id.value(), object.name))
+            if (host_->renameNode(id.value(), object.name) != scene::SceneMutationStatus::Applied)
                 return liveError<void>(EditorStatus::Conflict, "editor.scene.live-rename-failed",
                                        "Live SceneHost rejected object rename: " + id.value());
         if (old == current.end() || !sameTransform(old->second.transform, object.transform)) {
             const SceneTransformValue& transform = object.transform;
-            if (!host_->setLocalTransform(id.value(), static_cast<float>(transform.x),
+            if (host_->setLocalTransform(id.value(), static_cast<float>(transform.x),
                                           static_cast<float>(transform.y), static_cast<float>(transform.z),
                                           static_cast<float>(transform.rotationY),
                                           static_cast<float>(transform.rotationX),
                                           static_cast<float>(transform.rotationZ),
                                           static_cast<float>(transform.scaleX),
                                           static_cast<float>(transform.scaleY),
-                                          static_cast<float>(transform.scaleZ)))
+                                          static_cast<float>(transform.scaleZ)) !=
+                scene::SceneMutationStatus::Applied)
                 return liveError<void>(EditorStatus::Conflict, "editor.scene.live-transform-failed",
                                        "Live SceneHost rejected object transform: " + id.value());
         }

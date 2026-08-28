@@ -88,6 +88,64 @@ file(GLOB all_test_cpp
   UISystem.cpp
   UIBuilder.cpp
   editor_property_model.cpp
+  editor_animation_clip.cpp
+  editor_animation_graph.cpp
+  editor_audio_effects.cpp
+  editor_audio_import_diagnostics.cpp
+  editor_audio_target.cpp
+  editor_audio_transport.cpp
+  editor_audio_waveform.cpp
+  editor_avatar_target.cpp
+  editor_behavior_graph.cpp
+  editor_biome_target.cpp
+  editor_building_target.cpp
+  editor_camera_target.cpp
+  editor_crowd_document.cpp
+  editor_curve_document.cpp
+  editor_decal_target.cpp
+  editor_definition_target.cpp
+  editor_dialogue_graph.cpp
+  editor_dialogue_preview.cpp
+  editor_domain_offscreen.cpp
+  editor_environment_browser.cpp
+  editor_event_timeline.cpp
+  editor_fluid_target.cpp
+  editor_gizmo_preview.cpp
+  editor_hd2d_target.cpp
+  editor_housegen_target.cpp
+  editor_import_coordinator.cpp
+  editor_input_map_target.cpp
+  editor_lighting_target.cpp
+  editor_localization.cpp
+  editor_map_document.cpp
+  editor_material_preview.cpp
+  editor_material_target.cpp
+  editor_network_telemetry.cpp
+  editor_offscreen_preview.cpp
+  editor_particle_graph.cpp
+  editor_physics_asset.cpp
+  editor_physics_publication.cpp
+  editor_physics_target.cpp
+  editor_plugin_permissions.cpp
+  editor_prefab.cpp
+  editor_project_settings.cpp
+  editor_queue_inspector.cpp
+  editor_scene_component_payload.cpp
+  editor_scene_import_target.cpp
+  editor_scene_runtime.cpp
+  editor_simulation_preview.cpp
+  editor_skeleton_overlay.cpp
+  editor_snow_target.cpp
+  editor_social_document.cpp
+  editor_spritestack_target.cpp
+  editor_stylize_target.cpp
+  editor_surface_fluid_preview.cpp
+  editor_surface_fluid_target.cpp
+  editor_texture_recipe_target.cpp
+  editor_ui_document.cpp
+  editor_ui_skin_preview.cpp
+  editor_virtualgeometry_target.cpp
+  editor_voxel_palette.cpp
   editor_transaction_consumer.cpp
   property_validation_parity.cpp
   script_property_model.cpp

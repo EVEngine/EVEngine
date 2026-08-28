@@ -178,13 +178,15 @@ namespace eve::editor {
 class SceneHostEditorTarget final : public SceneTargetBase, public ISceneComponentInspector {
 public:
     /** @brief Import one borrowed SceneHost; the host must outlive this target. */
+    /** @brief Wrap a live scene host. @param host Borrowed host, or null for a staging clone. @lifetime A non-null host must outlive this target. */
     SceneHostEditorTarget(std::string id, scene::SceneHost* host);
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     [[nodiscard]] EditorResult<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
-    /** @brief Return the borrowed live host, or nullptr for a staging clone. */
+    /** @brief Return the borrowed live host, or nullptr for a staging clone. @return Borrowed pointer owned externally, or null. @lifetime Valid only while the host outlives this target. */
     scene::SceneHost* host() const { return host_; }
     EditorResult<std::vector<SceneComponentLinkSnapshot>> componentLinks(
         const ObjectId& object) const override;

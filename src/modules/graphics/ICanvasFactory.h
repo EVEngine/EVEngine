@@ -8,7 +8,7 @@ class Canvas;
 class ICanvasFactory {
 public:
     virtual ~ICanvasFactory() = default;
-    /** @brief Allocate a backend-owned sampleable Canvas with positive dimensions. */
+    /** @brief Allocate a backend-owned sampleable Canvas with positive dimensions. @return Borrowed pointer owned by the graphics backend. @lifetime Valid until backend teardown or explicit canvas destruction. */
     virtual Canvas* newCanvas(int width, int height) = 0;
 };
 

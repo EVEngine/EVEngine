@@ -363,7 +363,8 @@ EditorResult<void> BuildingPlacementTarget::applyDomainOperation(const DomainOpe
         const building::PlacedBuilding desired = runtime(*parsed.value);
         if (!world_->hasBuilding(desired.instanceId)) {
             std::string reason;
-            if (!building::PlacementSystem::restoreExact(world_, desired, &reason))
+            if (building::PlacementSystem::restoreExact(world_, desired, &reason) !=
+                building::PlacementRestoreStatus::Restored)
                 return buildingError<void>(EditorStatus::Rejected,
                                            "editor.building." + (reason.empty() ? "restore-failed" : reason),
                                            "PlacementSystem rejected exact instance restore: " + reason);

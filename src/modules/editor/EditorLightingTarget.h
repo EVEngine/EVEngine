@@ -30,6 +30,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
@@ -43,7 +44,7 @@ public:
     EditorValue snapshotValue() const;
     /** @brief Atomically load a schema-version-one property snapshot. */
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
-    /** @brief Read a typed runtime-neutral property value by path. */
+    /** @brief Read a typed runtime-neutral property value by path. @return Borrowed pointer into this target, or null. @lifetime Valid until the target is mutated or destroyed. */
     const EditorValue* value(const std::string& path) const;
 
 protected:

@@ -8,7 +8,7 @@ IntFieldEditCommand::IntFieldEditCommand(std::string name, IEditableTarget *targ
     : name_(std::move(name)), target_(target) {}
 bool IntFieldEditCommand::record(int x, int y, int after) {
     auto *field = target_ ? target_->query<IIntFieldTarget>() : nullptr;
-    if (!field || !field->inBounds(x, y)) return false;
+    if (!field || !field->containsCell(x, y)) return false;
     for (auto &change : changes_) {
         if (change.x == x && change.y == y) { change.after = after; return true; }
     }
@@ -54,7 +54,7 @@ ScalarFieldEditCommand::ScalarFieldEditCommand(std::string name, IEditableTarget
     : name_(std::move(name)), target_(target) {}
 bool ScalarFieldEditCommand::record(int x, int y, float after) {
     auto *field = target_ ? target_->query<IScalarFieldTarget>() : nullptr;
-    if (!field || !field->inBounds(x, y)) return false;
+    if (!field || !field->containsCell(x, y)) return false;
     for (auto &change : changes_) {
         if (change.x == x && change.y == y) { change.after = after; return true; }
     }

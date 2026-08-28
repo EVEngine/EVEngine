@@ -62,6 +62,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
@@ -118,7 +119,7 @@ public:
     ~CameraDocumentRuntime();
     /** @brief Build a complete controller before replacing the active generation. */
     EditorResult<void> publish(const CameraDocumentTarget& document, graphics::Camera3D* camera);
-    /** @brief Access the active controller generation. */
+    /** @brief Access the active controller generation. @return Borrowed pointer owned by this runtime. @lifetime Valid until the next successful publish or runtime destruction. */
     camera::CameraController* controller() const { return controller_.get(); }
     Revision revision() const { return revision_; }
 private:

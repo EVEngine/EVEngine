@@ -26,6 +26,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
@@ -37,7 +38,7 @@ public:
                                           const EditorValue& value, PropertySetMode mode) const override;
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
-    /** @brief Read a renderer-neutral property by stable path. */
+    /** @brief Read a renderer-neutral property by stable path. @return Borrowed pointer into this target, or null. @lifetime Valid until the target is mutated or destroyed. */
     const EditorValue* value(const std::string& path) const;
     /** @brief Validate projection geometry, fades, UVs and texture-channel rules. */
     std::vector<EditorDiagnostic> validate() const;

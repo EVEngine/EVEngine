@@ -30,7 +30,8 @@ public:
     virtual void play() = 0;
     virtual void pause() = 0;
     virtual void stop() = 0;
-    virtual bool seek(double seconds) = 0;
+    /** @brief Seek the backend playhead. @return Structured failure when the backend rejects the position. */
+    virtual EditorResult<void> seek(double seconds) = 0;
     virtual double tell() const = 0;
     virtual double duration() const = 0;
     virtual bool playing() const = 0;
@@ -76,7 +77,7 @@ public:
     void play() override;
     void pause() override;
     void stop() override;
-    bool seek(double seconds) override;
+    EditorResult<void> seek(double seconds) override;
     double tell() const override;
     double duration() const override;
     bool playing() const override;

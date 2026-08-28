@@ -10,6 +10,9 @@
 
 namespace eve::editor {
 
+/** @brief Whether a registry or binding removal changed authoritative state. */
+enum class SceneComponentChange { Changed, Unchanged };
+
 /** @brief Stable, pointer-free reference to one editable component instance. */
 struct SceneComponentPayloadRef {
     TargetId target;
@@ -66,7 +69,7 @@ public:
                             IDomainOperationTarget* operations,
                             Validator validator = {});
     /** @brief Remove one exact scene component binding. */
-    bool unbind(const TargetId& scene, const StableId& component);
+    SceneComponentChange unbind(const TargetId& scene, const StableId& component);
 
     std::vector<SceneComponentPayloadRef> components(const TargetId& scene,
                                                       const ObjectId& object) const override;
@@ -92,8 +95,10 @@ private:
         Validator validator;
     };
 
+    /** @brief Translate a scene selection. @return Result containing a borrowed binding pointer. @lifetime The pointer is valid until this binding collection is mutated or destroyed. */
     EditorResult<std::pair<const Binding*, SelectionSnapshot>> translate(
         const SelectionSnapshot& selection) const;
+    /** @brief Find an exact binding. @return Borrowed pointer into this collection, or null. @lifetime Valid until the collection is mutated or destroyed. */
     const Binding* find(const TargetId& scene, const StableId& component) const;
 
     std::string componentType_;
@@ -126,7 +131,7 @@ public:
     /** @brief Register one provider; component types must be non-empty and unique. */
     EditorResult<void> registerProvider(ISceneComponentPayloadProvider* provider);
     /** @brief Remove a provider only when the exact registered instance matches. */
-    bool unregisterProvider(ISceneComponentPayloadProvider* provider);
+    SceneComponentChange unregisterProvider(ISceneComponentPayloadProvider* provider);
 
     EditorResult<std::vector<SceneComponentPayloadRef>> componentPayloads(
         const TargetId& scene, const ObjectId& object) const override;

@@ -259,7 +259,8 @@ TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
     HeightmapTarget terrain("height", &heightmap);
     auto *scalars = terrain.query<IScalarFieldTarget>();
     CHECK(scalars != nullptr);
-    CHECK(scalars->writeScalar(1, 1, 0.75f));
+    CHECK_EQ(static_cast<int>(scalars->writeScalar(1, 1, 0.75f)),
+             static_cast<int>(FieldWriteStatus::Applied));
     CHECK_EQ(scalars->readScalar(1, 1), 0.75f);
     CHECK(scalars->sampleScalar(1.f, 1.f) == 0.75f);
 

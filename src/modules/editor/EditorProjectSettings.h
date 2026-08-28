@@ -36,6 +36,7 @@ public:
     EditRegion dirtyRegion() const override { return dirty_; }
     void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
@@ -53,6 +54,7 @@ public:
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Find a setting descriptor. @return Borrowed pointer into the immutable descriptor table, or null. @lifetime Valid for the lifetime of this target. */
     const ProjectSettingDescriptor* descriptor(const PropertyPath& path) const;
     bool selectionMatches(const SelectionSnapshot& selection) const;
     std::string id_;

@@ -21,10 +21,10 @@ TileBufferTarget::TileBufferTarget(std::string id, TileBuffer *buffer)
     : id_(std::move(id)), buffer_(buffer) {}
 int TileBufferTarget::width() const { return buffer_ ? buffer_->getWidth() : 0; }
 int TileBufferTarget::height() const { return buffer_ ? buffer_->getHeight() : 0; }
-bool TileBufferTarget::inBounds(int x, int y) const { return buffer_ && buffer_->inBounds(x, y); }
-int TileBufferTarget::readInt(int x, int y) const { return inBounds(x, y) ? buffer_->getGid(x, y) : 0; }
+bool TileBufferTarget::containsCell(int x, int y) const { return buffer_ && buffer_->inBounds(x, y); }
+int TileBufferTarget::readInt(int x, int y) const { return containsCell(x, y) ? buffer_->getGid(x, y) : 0; }
 bool TileBufferTarget::writeInt(int x, int y, int value) {
-    if (!inBounds(x, y) || buffer_->getGid(x, y) == value) return false;
+    if (!containsCell(x, y) || buffer_->getGid(x, y) == value) return false;
     buffer_->setGid(x, y, value);
     ++revision_;
     dirty_.include(x, y);
@@ -39,12 +39,12 @@ unsigned long long TileLayerTarget::revision() const {
 }
 int TileLayerTarget::width() const { return layer_ ? layer_->getMapWidth() : 0; }
 int TileLayerTarget::height() const { return layer_ ? layer_->getMapHeight() : 0; }
-bool TileLayerTarget::inBounds(int x, int y) const {
+bool TileLayerTarget::containsCell(int x, int y) const {
     return layer_ && x >= 0 && y >= 0 && x < width() && y < height();
 }
-int TileLayerTarget::readInt(int x, int y) const { return inBounds(x, y) ? layer_->getTile(x, y) : 0; }
+int TileLayerTarget::readInt(int x, int y) const { return containsCell(x, y) ? layer_->getTile(x, y) : 0; }
 bool TileLayerTarget::writeInt(int x, int y, int value) {
-    if (!inBounds(x, y)) return false;
+    if (!containsCell(x, y)) return false;
     if (layer_->getTile(x, y) == value) return true;
     layer_->setTile(x, y, value);
     dirty_.include(x, y);
@@ -57,16 +57,17 @@ HeightmapTarget::HeightmapTarget(std::string id, procgen::Heightmap *heightmap)
     : id_(std::move(id)), heightmap_(heightmap) {}
 int HeightmapTarget::width() const { return heightmap_ ? heightmap_->getWidth() : 0; }
 int HeightmapTarget::height() const { return heightmap_ ? heightmap_->getHeight() : 0; }
-bool HeightmapTarget::inBounds(int x, int y) const { return heightmap_ && heightmap_->inBounds(x, y); }
+bool HeightmapTarget::containsCell(int x, int y) const { return heightmap_ && heightmap_->inBounds(x, y); }
 float HeightmapTarget::readScalar(int x, int y) const {
-    return inBounds(x, y) ? heightmap_->height(x, y) : 0.f;
+    return containsCell(x, y) ? heightmap_->height(x, y) : 0.f;
 }
-bool HeightmapTarget::writeScalar(int x, int y, float value) {
-    if (!inBounds(x, y) || heightmap_->height(x, y) == value) return false;
+FieldWriteStatus HeightmapTarget::writeScalar(int x, int y, float value) {
+    if (!containsCell(x, y)) return FieldWriteStatus::Rejected;
+    if (heightmap_->height(x, y) == value) return FieldWriteStatus::Unchanged;
     heightmap_->setHeight(x, y, value);
     ++revision_;
     dirty_.include(x, y);
-    return true;
+    return FieldWriteStatus::Applied;
 }
 float HeightmapTarget::sampleScalar(float x, float y) const {
     return heightmap_ ? heightmap_->sampleBilinear(x, y) : 0.f;
@@ -78,13 +79,13 @@ SnowFieldTarget::SnowFieldTarget(std::string id, snow::SnowField* field)
     : id_(std::move(id)), field_(field) {}
 int SnowFieldTarget::width() const { return field_ ? field_->getWidth() : 0; }
 int SnowFieldTarget::height() const { return field_ ? field_->getHeight() : 0; }
-bool SnowFieldTarget::inBounds(int x, int y) const { return field_ && field_->inBounds(x, y); }
-float SnowFieldTarget::readScalar(int x, int y) const { return inBounds(x, y) ? field_->height(x, y) : 0.0F; }
-bool SnowFieldTarget::writeScalar(int x, int y, float value) {
-    if (!inBounds(x, y) || !std::isfinite(value)) return false;
+bool SnowFieldTarget::containsCell(int x, int y) const { return field_ && field_->inBounds(x, y); }
+float SnowFieldTarget::readScalar(int x, int y) const { return containsCell(x, y) ? field_->height(x, y) : 0.0F; }
+FieldWriteStatus SnowFieldTarget::writeScalar(int x, int y, float value) {
+    if (!containsCell(x, y) || !std::isfinite(value)) return FieldWriteStatus::Rejected;
     value = std::clamp(value, 0.0F, 1.0F);
-    if (field_->height(x, y) == value) return false;
-    field_->setHeight(x, y, value); ++revision_; dirty_.include(x, y); return true;
+    if (field_->height(x, y) == value) return FieldWriteStatus::Unchanged;
+    field_->setHeight(x, y, value); ++revision_; dirty_.include(x, y); return FieldWriteStatus::Applied;
 }
 float SnowFieldTarget::sampleScalar(float x, float y) const {
     if (!field_ || width() <= 0 || height() <= 0 || !std::isfinite(x) || !std::isfinite(y)) return 0.0F;

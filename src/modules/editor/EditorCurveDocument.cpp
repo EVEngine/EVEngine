@@ -149,7 +149,8 @@ double EditorCurveDocument::sampleCurve(double time) const {
     const auto values = keys(); if (values.empty()) return 0.0;
     time = std::clamp(time, 0.0, 1.0);
     const auto upper = std::upper_bound(values.begin(), values.end(), time, [](double t, const auto& key) { return t < key.time; });
-    if (upper == values.begin()) return upper->value; if (upper == values.end()) return values.back().value;
+    if (upper == values.begin()) return upper->value;
+    if (upper == values.end()) return values.back().value;
     const auto& a = *(upper - 1); const auto& b = *upper; const double span = b.time - a.time;
     const double t = span > 0.0 ? (time - a.time) / span : 0.0;
     if (a.interpolation == "constant") return a.value;
@@ -163,7 +164,8 @@ std::array<double, 4> EditorCurveDocument::sampleGradient(double time) const {
     const auto values = stops(); if (values.empty()) return {1.0, 1.0, 1.0, 1.0};
     time = std::clamp(time, 0.0, 1.0);
     const auto upper = std::upper_bound(values.begin(), values.end(), time, [](double t, const auto& stop) { return t < stop.time; });
-    if (upper == values.begin()) return upper->color; if (upper == values.end()) return values.back().color;
+    if (upper == values.begin()) return upper->color;
+    if (upper == values.end()) return values.back().color;
     const auto& a = *(upper - 1); const auto& b = *upper; const double t = b.time > a.time ? (time - a.time) / (b.time - a.time) : 0.0;
     std::array<double, 4> result; for (std::size_t i = 0; i < 4; ++i) result[i] = mix(a.color[i], b.color[i], t); return result;
 }

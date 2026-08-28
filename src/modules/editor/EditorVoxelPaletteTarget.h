@@ -46,6 +46,7 @@ class VoxelPaletteRuntime {
 public:VoxelPaletteRuntime();~VoxelPaletteRuntime();
  /** @brief Build a complete registry before replacing the active generation. */
  EditorResult<std::vector<VoxelPalettePublishedEntry>>publish(const VoxelPaletteTarget&);
+ /** @brief Access the published registry. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid until the next publish or runtime destruction. */
  const voxel::CubeTypeRegistry*registry()const{return registry_.get();}Revision revision()const{return revision_;}
 private:std::unique_ptr<voxel::CubeTypeRegistry>registry_;Revision revision_=0;
 };

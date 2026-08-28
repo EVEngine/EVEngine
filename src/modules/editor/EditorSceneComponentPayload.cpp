@@ -32,13 +32,13 @@ EditorResult<void> SceneComponentPropertyBindings::bind(
     return EditorResult<void>::applied();
 }
 
-bool SceneComponentPropertyBindings::unbind(const TargetId& scene, const StableId& component) {
+SceneComponentChange SceneComponentPropertyBindings::unbind(const TargetId& scene, const StableId& component) {
     const auto found = std::find_if(bindings_.begin(), bindings_.end(), [&](const Binding& binding) {
         return binding.component.target == scene && binding.component.component == component;
     });
-    if (found == bindings_.end()) return false;
+    if (found == bindings_.end()) return SceneComponentChange::Unchanged;
     bindings_.erase(found);
-    return true;
+    return SceneComponentChange::Changed;
 }
 
 const SceneComponentPropertyBindings::Binding* SceneComponentPropertyBindings::find(
@@ -172,12 +172,12 @@ EditorResult<void> SceneComponentPayloadRegistry::registerProvider(
     return EditorResult<void>::applied();
 }
 
-bool SceneComponentPayloadRegistry::unregisterProvider(ISceneComponentPayloadProvider* provider) {
-    if (!provider) return false;
+SceneComponentChange SceneComponentPayloadRegistry::unregisterProvider(ISceneComponentPayloadProvider* provider) {
+    if (!provider) return SceneComponentChange::Unchanged;
     const auto found = providers_.find(provider->componentType());
-    if (found == providers_.end() || found->second != provider) return false;
+    if (found == providers_.end() || found->second != provider) return SceneComponentChange::Unchanged;
     providers_.erase(found);
-    return true;
+    return SceneComponentChange::Changed;
 }
 
 EditorResult<std::vector<SceneComponentPayloadRef>> SceneComponentPayloadRegistry::componentPayloads(
