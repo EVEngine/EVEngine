@@ -769,6 +769,24 @@ TEST_CASE("Camera3D.screenToRayPick") {
     CHECK(std::fabs(len - 1.f) < 1e-4f);
 }
 
+TEST_CASE("Camera3D.orthographicScreenRaysAreParallel") {
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 10.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setOrthographic(8.f);
+
+    cam->screenToRay(20.f, 60.f, 160.f, 120.f);
+    const float leftOrigin = cam->getScreenRayOriginX();
+    const float leftDirX = cam->getScreenRayDirX();
+    const float leftDirZ = cam->getScreenRayDirZ();
+    cam->screenToRay(140.f, 60.f, 160.f, 120.f);
+
+    CHECK(cam->getScreenRayOriginX() > leftOrigin + 1.f);
+    CHECK(std::fabs(cam->getScreenRayDirX() - leftDirX) < 1e-4f);
+    CHECK(std::fabs(cam->getScreenRayDirZ() - leftDirZ) < 1e-4f);
+    CHECK(cam->getScreenRayDirZ() < -0.99f);
+}
+
 // ---------------------------------------------------------------------------
 // GPU 验证：逐像素实体 ID mask（renderEntityIdMask）与通用纹理读回
 // （readTextureToImageData）。这两条路径支撑 capture_render_frame 的
