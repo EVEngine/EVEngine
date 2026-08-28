@@ -13,10 +13,13 @@ composition used here. `clusterBranchBias` samples older parent rooms more
 often, producing a multi-branch hub instead of a long chain. It also uses an
 orthographic camera framed from the occupied bounds, merged
 cut-corner stone floor meshes, modular wall/corner/doorway pieces, perimeter
-stairs, theme-aware furniture clusters and evenly distributed warm point lights.
+stairs (`stairCount=2` selects separated entrances), theme-aware furniture
+clusters and evenly distributed warm point lights. `stairSideMask` restricts
+entrances to camera-visible or gameplay-appropriate sides when desired.
 
 The renderer is not coupled to KayKit. Edit `assetpack.nut` to change the asset root,
-file extension and architecture models, and replace `configureDungeonAssetPack(p)`
+file extension, architecture models, semantic `verticalOffsets` / `roleScales`,
+and replace `configureDungeonAssetPack(p)`
 with another semantic-pool adapter.
 
 `assetpack.nut` is the renderer-side contract: `walls`, `corners`, `doorways`,

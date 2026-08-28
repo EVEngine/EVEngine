@@ -207,6 +207,7 @@ TEST_CASE("procgen.roguelike.structure") {
     pView->setSeed(7);
     pView->setSize(48, 32);
     pView->setInt("roomCount", 12);
+    pView->setInt("stairCount", 2);
     pView->setString("connectionStyle", "nearest");
     pView->setFloat("decorDensity", 0.06f);
     pView->setString("decorSet", "mixed");
@@ -234,11 +235,12 @@ TEST_CASE("procgen.roguelike.structure") {
     CHECK_EQ(g->getMeta("seed", ""), "7");
 
     // Objects carry spawn/stairs plus props.
-    bool hasSpawn = false, hasStairs = false;
+    bool hasSpawn = false;
+    int stairObjects = 0;
     for (int i = 0; i < g->getObjectCount(); ++i) {
         if (g->getObjectType(i) == "spawn") hasSpawn = true;
         if (g->getObjectType(i) == "stairs") {
-            hasStairs = true;
+            ++stairObjects;
             CHECK((g->getObjectFlags(i) & 64) != 0);
             const int x = int(g->getObjectX(i)), y = int(g->getObjectY(i));
             const float rotation = g->getObjectRotation(i);
@@ -249,7 +251,8 @@ TEST_CASE("procgen.roguelike.structure") {
         }
     }
     CHECK(hasSpawn);
-    CHECK(hasStairs);
+    CHECK_EQ(stairObjects, 2);
+    CHECK_EQ(g->getMeta("stairs", ""), "2");
 }
 
 TEST_CASE("procgen.roguelike.seedVaries") {

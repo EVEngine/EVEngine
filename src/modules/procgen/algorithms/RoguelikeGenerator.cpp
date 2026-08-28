@@ -195,6 +195,8 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                                              clusterGapMin, 12);
     const int      clusterBranchBias = clampInt(params.getInt("clusterBranchBias", 0), 0, 4);
     const int      corridorW   = clampInt(params.getInt("corridorWidth", 1), 1, 3);
+    const int      stairCount  = clampInt(params.getInt("stairCount", 1), 0, 4);
+    const int      stairSideMask = clampInt(params.getInt("stairSideMask", 15), 1, 15);
     const std::string layout   = params.getString("layoutStyle", "grid");
     const std::string style    = params.getString("corridorStyle", "l");
     const std::string connections = params.getString("connectionStyle", "sequential");
@@ -444,6 +446,10 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             place("light", wallLights, left, cy, 90.f, 2 | 4);
             if (r.w >= 6) place("light", wallLights, right, cy, 270.f, 2 | 4);
             if ((rng() % 3u) != 0) place("banner", banners, left, cy - 1, 90.f, 2);
+            if (propDensity >= 0.45f && r.w >= 5 && (roomIndex % 2) == 0)
+                place("banner", banners, cx + (r.w >= 7 ? 1 : 0), bottom, 0.f, 2);
+            if (propDensity >= 0.6f && r.w >= 6 && (roomIndex % 2) != 0)
+                place("light", wallLights, cx, bottom, 0.f, 2 | 4);
 
             if (decorSet == "pillars") {
                 place("column", columns, left + 1, top + 1, 0.f, 1);
@@ -590,27 +596,53 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     // 8) Spawn + an outward-facing perimeter stair. Stairs are architecture,
     // not arbitrary floor clutter: orientation identifies the wall opening the
     // renderer should replace (0 north, 180 south, 90 west, 270 east).
-    struct StairCandidate { int x, y; float rotation; };
+    struct StairCandidate { int x, y; float rotation; int side; };
     std::vector<StairCandidate> stairCandidates;
     for (const Rect &r : rooms) {
         for (int x = r.x + 1; x < r.x + r.w - 1; ++x) {
-            if (uint32_t(out.getCell(x, r.y - 1)) == Semantic::Wall)
-                stairCandidates.push_back({x, r.y, 180.f});
-            if (uint32_t(out.getCell(x, r.y + r.h)) == Semantic::Wall)
-                stairCandidates.push_back({x, r.y + r.h - 1, 0.f});
+            if ((stairSideMask & 1) && uint32_t(out.getCell(x, r.y - 1)) == Semantic::Wall)
+                stairCandidates.push_back({x, r.y, 180.f, 1});
+            if ((stairSideMask & 2) && uint32_t(out.getCell(x, r.y + r.h)) == Semantic::Wall)
+                stairCandidates.push_back({x, r.y + r.h - 1, 0.f, 2});
         }
         for (int y = r.y + 1; y < r.y + r.h - 1; ++y) {
-            if (uint32_t(out.getCell(r.x - 1, y)) == Semantic::Wall)
-                stairCandidates.push_back({r.x, y, 270.f});
-            if (uint32_t(out.getCell(r.x + r.w, y)) == Semantic::Wall)
-                stairCandidates.push_back({r.x + r.w - 1, y, 90.f});
+            if ((stairSideMask & 4) && uint32_t(out.getCell(r.x - 1, y)) == Semantic::Wall)
+                stairCandidates.push_back({r.x, y, 270.f, 4});
+            if ((stairSideMask & 8) && uint32_t(out.getCell(r.x + r.w, y)) == Semantic::Wall)
+                stairCandidates.push_back({r.x + r.w - 1, y, 90.f, 8});
         }
     }
-    if (!stairCandidates.empty()) {
-        const StairCandidate &stairs = stairCandidates[size_t(seed) % stairCandidates.size()];
-        out.addAssetObject("stairs", "stairs", pickAsset(stairsAssets, rng),
-                           float(stairs.x), float(stairs.y), 1.f, 1.f,
-                           stairs.rotation, 64);
+    std::vector<size_t> selectedStairs;
+    for (int entrance = 0;
+         entrance < stairCount && selectedStairs.size() < stairCandidates.size(); ++entrance) {
+        size_t best = size_t(seed) % stairCandidates.size();
+        int bestDistance = -1;
+        if (!selectedStairs.empty()) {
+            for (size_t candidate = 0; candidate < stairCandidates.size(); ++candidate) {
+                bool duplicate = false;
+                int nearest = w + h;
+                for (size_t chosen : selectedStairs) {
+                    if (stairCandidates[candidate].x == stairCandidates[chosen].x &&
+                        stairCandidates[candidate].y == stairCandidates[chosen].y) {
+                        duplicate = true;
+                        break;
+                    }
+                    nearest = std::min(nearest,
+                        std::abs(stairCandidates[candidate].x - stairCandidates[chosen].x) +
+                        std::abs(stairCandidates[candidate].y - stairCandidates[chosen].y));
+                }
+                if (!duplicate && nearest > bestDistance) {
+                    bestDistance = nearest;
+                    best = candidate;
+                }
+            }
+            if (bestDistance < 0) break;
+        }
+        selectedStairs.push_back(best);
+        const StairCandidate &stairs = stairCandidates[best];
+        out.addAssetObject("stairs" + std::to_string(entrance), "stairs",
+                           pickAsset(stairsAssets, rng), float(stairs.x), float(stairs.y),
+                           1.f, 1.f, stairs.rotation, 64);
         occupied.insert(cellKey(stairs.x, stairs.y));
     }
 
@@ -641,6 +673,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     out.setMeta("minimumRoomProps",
                 std::to_string(minimumRoomProps == std::numeric_limits<int>::max()
                                    ? 0 : minimumRoomProps));
+    out.setMeta("stairs", std::to_string(selectedStairs.size()));
     // Tile renderers use these semantic pools to resolve every architecture cell.
     // Copying them into metadata keeps the generated artifact self-describing.
     static const char *architectureRoles[] = {
@@ -670,6 +703,9 @@ void registerRoguelikeGenerator(GeneratorRegistry &registry) {
     descriptor.params.push_back(ParamDescriptor::integer(
         "clusterBranchBias", "Cluster Branch Bias", 0, 0, 4));
     descriptor.params.push_back(ParamDescriptor::integer("corridorWidth", "Corridor Width", 1, 1, 3));
+    descriptor.params.push_back(ParamDescriptor::integer("stairCount", "Stair Count", 1, 0, 4));
+    descriptor.params.push_back(ParamDescriptor::integer(
+        "stairSideMask", "Stair Side Mask", 15, 1, 15));
     descriptor.params.push_back(ParamDescriptor::choice("layoutStyle", "Room Layout", "grid",
                                                         {"grid", "clustered"}));
     descriptor.params.push_back(ParamDescriptor::choice("connectionStyle", "Room Connections",

@@ -20,6 +20,15 @@ dungeonAssets <- {
     doorways = ["wall_doorway", "wall_doorway", "wall_doorway_sides", "wall_doorway_door"],
     stairs = "stairs_walled",
     stairsVerticalOffset = -3.0,
+    // Semantic anchors/scales belong to the adapter because model origins and
+    // authored units differ between packs. Renderer code only consumes roles.
+    verticalOffsets = {
+        wallLight=2.15, weapon=2.0, banner=0.0, wallShelf=2.2, food=1.88
+    },
+    roleScales = {
+        table=1.65, tavern=1.65, bed=1.45, banner=1.08,
+        seating=1.55, container=1.55, treasure=1.40
+    },
     details = ["coin_stack_small", "plate_small", "bottle_A_brown"],
     roles = {
         column="pillar_decorated", container="barrel_large_decorated",

@@ -238,6 +238,8 @@ function rebuildDungeon() {
     p.setInt("clusterGapMax", 1);
     p.setInt("clusterBranchBias", 2);
     p.setInt("corridorWidth", 1);
+    p.setInt("stairCount", 2);
+    p.setInt("stairSideMask", 9); // north + east, facing this isometric view
     p.setString("layoutStyle", "clustered");
     p.setString("corridorStyle", "l");
     p.setString("connectionStyle", "growth");
@@ -407,20 +409,16 @@ function rebuildDungeon() {
             py = dungeonAssets.stairsVerticalOffset;
         }
 
-        // KayKit wall torches and weapon plaques are modelled around their
-        // local origin; lift those roles to a natural eye-level mount. Food is
-        // authored at floor origin, so overlays sharing a table cell are raised.
-        if (role == "light" && (flags & 2) != 0) py = 2.15;
-        else if (role == "weapon") py = 2.0;
-        else if (role == "banner") py = 1.35;
-        else if (role == "food") py = 1.88;
+        local anchorRole = role;
+        if ((flags & 2) != 0 && role == "light") anchorRole = "wallLight";
+        else if ((flags & 2) != 0 && role == "shelf") anchorRole = "wallShelf";
+        if (("verticalOffsets" in dungeonAssets) &&
+            (anchorRole in dungeonAssets.verticalOffsets))
+            py = dungeonAssets.verticalOffsets[anchorRole];
 
         local propScale = 1.0;
-        if (role == "table" || role == "tavern") propScale = 1.65;
-        else if (role == "bed") propScale = 1.45;
-        else if (role == "banner") propScale = 1.42;
-        else if (role == "seating" || role == "container") propScale = 1.55;
-        else if (role == "treasure") propScale = 1.40;
+        if (("roleScales" in dungeonAssets) && (role in dungeonAssets.roleScales))
+            propScale = dungeonAssets.roleScales[role];
         addAsset(id, px, py, pz, yaw, propScale, propScale, propScale);
         if (role == "light") lightCandidates.append([px, py + 0.35, pz]);
     }
