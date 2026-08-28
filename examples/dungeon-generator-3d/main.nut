@@ -9,6 +9,7 @@ persist dungeonTemplates = {}
 persist dungeonSeed = 20260828
 persist dungeonFloorMesh = null
 persist dungeonFloorMaterials = {}
+persist dungeonFloorMeshes = []
 
 const DUNGEON_W = 42;
 const DUNGEON_H = 32;
@@ -83,6 +84,61 @@ function addFloor(x, z, variant, tone) {
     dungeonInstances.append(floor);
 }
 
+function floorMaterial(tone) {
+    local key = tone[0].tostring() + ":" + tone[1].tostring() + ":" + tone[2].tostring();
+    if (!(key in dungeonFloorMaterials)) {
+        local material = gfx.newMaterial();
+        material.setTint(tone[0] * 1.08, tone[1] * 1.08, tone[2] * 1.08, 1.0);
+        material.setRoughness(0.98);
+        dungeonFloorMaterials[key] <- material;
+    }
+    return dungeonFloorMaterials[key];
+}
+
+function queueFloor(groups, x, z, variant, tone) {
+    local key = tone[0].tostring() + ":" + tone[1].tostring() + ":" + tone[2].tostring();
+    if (!(key in groups)) groups[key] <- { tone=tone, cells=[] };
+    groups[key].cells.append([x, z, variant]);
+}
+
+function buildMergedFloor(group) {
+    local pos = [], nrm = [], uv = [], idx = [];
+    local points = [[-0.76,-0.98], [0.76,-0.98], [0.98,-0.76], [0.98,0.76],
+                    [0.76,0.98], [-0.76,0.98], [-0.98,0.76], [-0.98,-0.76]];
+    foreach (cell in group.cells) {
+        for (local sy = 0; sy < 2; ++sy) {
+            for (local sx = 0; sx < 2; ++sx) {
+                local cx = cell[0] + (sx == 0 ? -1.0 : 1.0);
+                local cz = cell[1] + (sy == 0 ? -1.0 : 1.0);
+                local py = -0.035 + ((cell[2] + sx * 3 + sy * 5) % 3) * 0.008;
+                local vertexBase = pos.len() / 3;
+                pos.push(cx); pos.push(py); pos.push(cz);
+                nrm.push(0.0); nrm.push(1.0); nrm.push(0.0);
+                uv.push(0.5); uv.push(0.5);
+                foreach (point in points) {
+                    pos.push(cx + point[0]); pos.push(py); pos.push(cz + point[1]);
+                    nrm.push(0.0); nrm.push(1.0); nrm.push(0.0);
+                    uv.push((point[0] + 1.0) * 0.5); uv.push((point[1] + 1.0) * 0.5);
+                }
+                for (local edge = 0; edge < 8; ++edge) {
+                    idx.push(vertexBase);
+                    idx.push(vertexBase + 1 + edge);
+                    idx.push(vertexBase + 1 + ((edge + 1) % 8));
+                }
+            }
+        }
+    }
+    local mesh = gfx.newMeshFromArrays(pos, nrm, uv, pos.len() / 3, idx, idx.len());
+    dungeonFloorMeshes.append(mesh);
+    local floor = eve.Renderable3D();
+    floor.setMesh(mesh);
+    floor.setMaterial(floorMaterial(group.tone));
+    floor.setReceiveLight(false);
+    floor.setCastShadow(false);
+    floor.setReceiveShadow(false);
+    dungeonInstances.append(floor);
+}
+
 function floorTone(x, y) {
     for (local i = 0; i < dungeonGrid.getObjectCount(); ++i) {
         if (dungeonGrid.getObjectType(i) != "room") continue;
@@ -127,6 +183,7 @@ function clearDungeon() {
     foreach (light in dungeonLights) light.setEnabled(false);
     dungeonInstances.clear();
     dungeonLights.clear();
+    dungeonFloorMeshes.clear();
 }
 
 function rebuildDungeon() {
@@ -141,12 +198,14 @@ function rebuildDungeon() {
     p.setInt("roomMax", 9);
     p.setInt("spacing", 1);
     p.setInt("corridorWidth", 2);
+    p.setString("layoutStyle", "clustered");
     p.setString("corridorStyle", "l");
     p.setString("connectionStyle", "nearest");
     p.setString("floorPattern", "cobble");
     p.setString("decorSet", "mixed");
     p.setFloat("decorDensity", 0.055);
     p.setFloat("propDensity", 0.62);
+    p.setFloat("corridorLightDensity", 0.08);
     configureDungeonAssetPack(p);
     local generated = procgen.generate("level.roguelike", p);
     if (!generated.ok) throw generated.status.summary;
@@ -154,6 +213,7 @@ function rebuildDungeon() {
 
     local ox = -DUNGEON_W * DUNGEON_CELL * 0.5;
     local oz = -DUNGEON_H * DUNGEON_CELL * 0.5;
+    local floorGroups = {};
     local minWalkX = DUNGEON_W, minWalkY = DUNGEON_H;
     local maxWalkX = 0, maxWalkY = 0;
     for (local y = 0; y < DUNGEON_H; ++y) {
@@ -168,7 +228,11 @@ function rebuildDungeon() {
                 // A neutral modular slab stays readable independently of the
                 // external pack's material conventions. Packs can still map
                 // every decorative role without renderer-specific coupling.
-                addFloor(cx, cz, dungeonGrid.getDetail(x, y), floorTone(x, y));
+                local tone = floorTone(x, y);
+                if (("usePackFloors" in dungeonAssets) && dungeonAssets.usePackFloors)
+                    addFloor(cx, cz, dungeonGrid.getDetail(x, y), tone);
+                else
+                    queueFloor(floorGroups, cx, cz, dungeonGrid.getDetail(x, y), tone);
 
                 local detail = dungeonGrid.getDetail(x, y);
                 if (detail >= 100 && dungeonAssets.details.len() > 0) {
@@ -238,6 +302,8 @@ function rebuildDungeon() {
         }
     }
 
+    foreach (group in floorGroups) buildMergedFloor(group);
+
     // Frame the occupied bounds, not the configured grid. The diagonal span
     // maps cleanly to an isometric camera and remains stable across seeds.
     local targetX = ox + (minWalkX + maxWalkX) * DUNGEON_CELL * 0.5;
@@ -245,8 +311,9 @@ function rebuildDungeon() {
     local diagonalCells = (maxWalkX - minWalkX + 1) + (maxWalkY - minWalkY + 1);
     dungeonCamera.setTarget(targetX, 0.0, targetZ);
     dungeonCamera.setEye(targetX + 100.0, 120.0, targetZ - 120.0);
-    dungeonCamera.setOrthographic(diagonalCells * DUNGEON_CELL * 0.54);
+    dungeonCamera.setOrthographic(diagonalCells * DUNGEON_CELL * 0.49);
 
+    local lightCandidates = [];
     for (local i = 0; i < dungeonGrid.getObjectCount(); ++i) {
         local role = dungeonGrid.getObjectType(i);
         if (role == "room") continue;
@@ -282,17 +349,21 @@ function rebuildDungeon() {
 
         local propScale = 1.0;
         if (role == "table" || role == "bed" || role == "tavern") propScale = 1.30;
+        else if (role == "banner") propScale = 1.18;
         else if (role == "seating" || role == "container" || role == "treasure" ||
                  role == "clutter") propScale = 1.18;
         addAsset(id, px, py, pz, yaw, propScale, propScale, propScale);
-        if (role == "light" && dungeonLights.len() < 8) {
-            local light = eve.Light3D();
-            light.setType("point");
-            light.setPosition(px, py + 0.35, pz);
-            light.setColor(1.0, 0.55, 0.25, 3.2);
-            light.setRadius(DUNGEON_CELL * 3.0);
-            dungeonLights.append(light);
-        }
+        if (role == "light") lightCandidates.append([px, py + 0.35, pz]);
+    }
+    local lightCount = lightCandidates.len() < 8 ? lightCandidates.len() : 8;
+    for (local i = 0; i < lightCount; ++i) {
+        local candidate = lightCandidates[((i * lightCandidates.len()) / lightCount).tointeger()];
+        local light = eve.Light3D();
+        light.setType("point");
+        light.setPosition(candidate[0], candidate[1], candidate[2]);
+        light.setColor(1.0, 0.55, 0.25, 3.2);
+        light.setRadius(DUNGEON_CELL * 3.0);
+        dungeonLights.append(light);
     }
 }
 

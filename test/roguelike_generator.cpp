@@ -267,7 +267,8 @@ TEST_CASE("procgen.roguelike.seedVaries") {
 
 TEST_CASE("procgen.roguelike.rulesChangeLayout") {
     Procgen *mod = Procgen::create();
-    auto     gen = [&](int rooms, const std::string &pattern, const std::string &style) {
+    auto     gen = [&](int rooms, const std::string &pattern, const std::string &style,
+                       const std::string &layout) {
         auto p     = requireParams();
         auto pView = p.view();
         REQUIRE(pView.isBound());
@@ -276,6 +277,8 @@ TEST_CASE("procgen.roguelike.rulesChangeLayout") {
         pView->setInt("roomCount", rooms);
         pView->setString("floorPattern", pattern);
         pView->setString("corridorStyle", style);
+        pView->setString("layoutStyle", layout);
+        pView->setString("connectionStyle", layout == "clustered" ? "nearest" : "sequential");
         auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
         auto g      = gLease.view();
         REQUIRE(g.isBound());
@@ -283,15 +286,19 @@ TEST_CASE("procgen.roguelike.rulesChangeLayout") {
         return copy;
     };
 
-    Grid2D few  = gen(5, "brick", "l");
-    Grid2D many = gen(20, "brick", "l");
+    Grid2D few  = gen(5, "brick", "l", "grid");
+    Grid2D many = gen(20, "brick", "l", "grid");
     CHECK(few.cells() != many.cells());
 
     // Pattern change keeps same base but alters floor detail.
-    Grid2D brick   = gen(9, "brick", "l");
-    Grid2D checker = gen(9, "checker", "l");
+    Grid2D brick   = gen(9, "brick", "l", "grid");
+    Grid2D checker = gen(9, "checker", "l", "grid");
     CHECK_EQ(brick.cells(), checker.cells());
     CHECK(brick.detail() != checker.detail());
+
+    Grid2D clustered = gen(9, "brick", "l", "clustered");
+    CHECK(clustered.cells() != brick.cells());
+    CHECK(allWalkableConnected(clustered));
 }
 
 TEST_CASE("procgen.roguelike.configurableAssetDressing") {

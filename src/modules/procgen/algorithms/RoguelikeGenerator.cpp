@@ -190,6 +190,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     const int      padding     = clampInt(params.getInt("padding", 1), 0, 4);
     const int      spacing     = clampInt(params.getInt("spacing", 2), 0, 8);
     const int      corridorW   = clampInt(params.getInt("corridorWidth", 1), 1, 3);
+    const std::string layout   = params.getString("layoutStyle", "grid");
     const std::string style    = params.getString("corridorStyle", "l");
     const std::string connections = params.getString("connectionStyle", "sequential");
     const std::string pattern  = params.getString("floorPattern", "brick");
@@ -212,35 +213,66 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     std::uniform_int_distribution<int> dim(roomMin, roomMax);
     std::uniform_int_distribution<int> jx(0, 0), jy(0, 0);
 
-    for (int r = 0; r < rows; ++r) {
-        for (int c = 0; c < cols; ++c) {
-            if (int(rooms.size()) >= roomCount) break;
-            // Compute the slot's usable area (leave `padding` on each side).
-            const int sx = padding + int((long(c) * (w - 2 * padding)) / cols);
-            const int ex = padding + int((long(c + 1) * (w - 2 * padding)) / cols);
-            const int sy = padding + int((long(r) * (h - 2 * padding)) / rows);
-            const int ey = padding + int((long(r + 1) * (h - 2 * padding)) / rows);
-            const int slotW = std::max(roomMin, ex - sx);
-            const int slotH = std::max(roomMin, ey - sy);
-            if (slotW < roomMin || slotH < roomMin) continue;
-
-            // Try a few candidate sizes/offsets inside the slot before giving up.
-            for (int attempt = 0; attempt < 24; ++attempt) {
-                const int rw = std::min(dim(rng), slotW);
-                const int rh = std::min(dim(rng), slotH);
-                const int maxX = sx + (slotW - rw);
-                const int maxY = sy + (slotH - rh);
-                std::uniform_int_distribution<int> ox(sx, maxX);
-                std::uniform_int_distribution<int> oy(sy, maxY);
-                const Rect cand{ox(rng), oy(rng), rw, rh};
-
-                bool ok = true;
-                for (const Rect &other : rooms) {
-                    if (rectsOverlap(cand, other, spacing)) { ok = false; break; }
-                }
-                if (ok) {
-                    rooms.push_back(cand);
-                    break;
+    if (layout == "clustered") {
+        const int firstW = std::min(dim(rng), w - padding * 2);
+        const int firstH = std::min(dim(rng), h - padding * 2);
+        rooms.push_back({(w - firstW) / 2, (h - firstH) / 2, firstW, firstH});
+        std::uniform_int_distribution<int> jitter(-2, 2);
+        const int maxAttempts = roomCount * 160;
+        for (int attempt = 0; attempt < maxAttempts && int(rooms.size()) < roomCount; ++attempt) {
+            const Rect &parent = rooms[size_t(rng()) % rooms.size()];
+            const int rw = std::min(dim(rng), w - padding * 2);
+            const int rh = std::min(dim(rng), h - padding * 2);
+            const int gap = spacing + 1 + int(rng() % 3u);
+            Rect cand{0, 0, rw, rh};
+            switch (rng() % 4u) {
+            case 0: // east
+                cand.x = parent.x + parent.w + gap;
+                cand.y = parent.y + parent.h / 2 - rh / 2 + jitter(rng);
+                break;
+            case 1: // west
+                cand.x = parent.x - rw - gap;
+                cand.y = parent.y + parent.h / 2 - rh / 2 + jitter(rng);
+                break;
+            case 2: // south
+                cand.x = parent.x + parent.w / 2 - rw / 2 + jitter(rng);
+                cand.y = parent.y + parent.h + gap;
+                break;
+            default: // north
+                cand.x = parent.x + parent.w / 2 - rw / 2 + jitter(rng);
+                cand.y = parent.y - rh - gap;
+                break;
+            }
+            if (cand.x < padding || cand.y < padding ||
+                cand.x + cand.w > w - padding || cand.y + cand.h > h - padding) continue;
+            bool ok = true;
+            for (const Rect &other : rooms) {
+                if (rectsOverlap(cand, other, spacing)) { ok = false; break; }
+            }
+            if (ok) rooms.push_back(cand);
+        }
+    } else {
+        for (int r = 0; r < rows; ++r) {
+            for (int c = 0; c < cols; ++c) {
+                if (int(rooms.size()) >= roomCount) break;
+                const int sx = padding + int((long(c) * (w - 2 * padding)) / cols);
+                const int ex = padding + int((long(c + 1) * (w - 2 * padding)) / cols);
+                const int sy = padding + int((long(r) * (h - 2 * padding)) / rows);
+                const int ey = padding + int((long(r + 1) * (h - 2 * padding)) / rows);
+                const int slotW = std::max(roomMin, ex - sx);
+                const int slotH = std::max(roomMin, ey - sy);
+                if (slotW < roomMin || slotH < roomMin) continue;
+                for (int attempt = 0; attempt < 24; ++attempt) {
+                    const int rw = std::min(dim(rng), slotW);
+                    const int rh = std::min(dim(rng), slotH);
+                    std::uniform_int_distribution<int> ox(sx, sx + slotW - rw);
+                    std::uniform_int_distribution<int> oy(sy, sy + slotH - rh);
+                    const Rect cand{ox(rng), oy(rng), rw, rh};
+                    bool ok = true;
+                    for (const Rect &other : rooms) {
+                        if (rectsOverlap(cand, other, spacing)) { ok = false; break; }
+                    }
+                    if (ok) { rooms.push_back(cand); break; }
                 }
             }
         }
@@ -347,6 +379,8 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     const auto tavern = assetPool(params, "tavern", "tavern_prop");
     const auto clutter = assetPool(params, "clutter", "clutter");
     const float propDensity = std::clamp(params.getFloat("propDensity", 0.16f), 0.f, 1.f);
+    const float corridorLightDensity =
+        std::clamp(params.getFloat("corridorLightDensity", 0.035f), 0.f, 0.25f);
     std::unordered_set<int> occupied;
     int objectSerial = 0;
     auto cellKey = [w](int x, int y) { return y * w + x; };
@@ -369,7 +403,10 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             const int left = r.x, right = r.x + r.w - 1;
             const int top = r.y, bottom = r.y + r.h - 1;
             const int cx = r.x + r.w / 2, cy = r.y + r.h / 2;
-            const int theme = int((roomIndex + seed) % 7); // storage/quarters/dining/armory/treasury/shrine/tavern
+            // The clustered layout grows from room zero, making it the visual
+            // hub. Give that hub a dense dining composition instead of a quiet
+            // edge-oriented theme; remaining rooms still cycle deterministically.
+            const int theme = roomIndex == 0 ? 2 : int((roomIndex + seed) % 7);
             static constexpr const char *kThemeNames[] = {
                 "storage", "quarters", "dining", "armory", "treasury", "shrine", "tavern"};
             out.addAssetObject("room" + std::to_string(roomIndex), "room",
@@ -379,7 +416,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             // Every furnished room receives wall-mounted light and occasional banner.
             place("light", wallLights, left, cy, 90.f, 2 | 4);
             if (r.w >= 6) place("light", wallLights, right, cy, 270.f, 2 | 4);
-            if ((rng() % 3u) != 0) place("banner", banners, cx, top, 180.f, 2);
+            if ((rng() % 3u) != 0) place("banner", banners, left, cy - 1, 90.f, 2);
 
             if (decorSet == "pillars") {
                 place("column", columns, left + 1, top + 1, 0.f, 1);
@@ -398,8 +435,8 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("container", containers, right, bottom - 1, 270.f, 1);
                 place("container", containers, right - 0.75f, top + 1.35f, 245.f, 16);
                 place("container", containers, right - 0.55f, bottom - 1.25f, 300.f, 16);
-                place("shelf", wallShelves, cx, top, 180.f, 1 | 2);
-                if (r.w >= 7) place("shelf", wallShelves, cx - 2, top, 180.f, 1 | 2);
+                place("shelf", wallShelves, cx, bottom, 0.f, 1 | 2);
+                if (r.h >= 7) place("shelf", wallShelves, left, cy + 1, 90.f, 1 | 2);
                 if (r.w >= 8) place("container", containers, left + 2, bottom, 0.f, 1);
                 place("clutter", clutter, left + 1, bottom, 0.f, 16);
             } else if (theme == 1) {
@@ -424,15 +461,17 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                     place("food", food, cx - 2, cy, 70.f, 16);
                 }
             } else if (theme == 3) {
-                place("weapon", weapons, right, cy, 270.f, 2);
-                place("weapon", weapons, cx, top, 180.f, 2);
+                place("weapon", weapons, left, cy, 90.f, 2);
+                place("weapon", weapons, cx, bottom, 0.f, 2);
                 place("column", columns, cx, cy, 0.f, 1);
+                if (r.w >= 7) place("column", columns, left + 1, bottom - 1, 0.f, 1);
                 place("container", containers, right, top + 1, 270.f, 1);
                 if ((rng() & 1u) != 0) place("trap", traps, cx - 1, cy, 0.f, 8);
             } else if (theme == 5) {
-                place("column", columns, cx, cy, 0.f, 1);
-                place("light", lights, cx - 1, cy, 0.f, 4);
-                place("light", lights, cx + 1, cy, 0.f, 4);
+                place("table", tables, cx, cy, 0.f, 1, 2.f, 1.f);
+                place("light", lights, cx - 0.45f, cy, 0.f, 4);
+                place("light", lights, cx + 0.45f, cy, 0.f, 4);
+                place("food", food, cx, cy, 0.f, 16);
                 place("seating", seating, cx, bottom - 1, 180.f, 1);
                 if (r.w >= 7) {
                     place("seating", seating, cx - 2, bottom - 1, 180.f, 1);
@@ -451,6 +490,16 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("tavern", tavern, right - 0.7f, bottom - 1.2f, 250.f, 16);
             }
 
+            // High-density presets add a secondary wall-side storage vignette.
+            // This is intentionally shared across themes: barrels, trunks, and
+            // crates are the visual glue that makes modular rooms feel occupied.
+            if (propDensity >= 0.45f && theme != 0 && theme != 4 && theme != 6) {
+                place("container", containers, right, bottom - 1, 270.f, 1);
+                place("container", containers, right - 0.65f, bottom - 1.3f, 245.f, 16);
+                if (r.w >= 7 && theme != 2)
+                    place("seating", seating, left + 1, top + 1, 45.f, 1);
+            }
+
             // Sparse edge clutter gives the dense, lived-in reference look without
             // turning room centres and corridors into an obstacle field.
             const int clutterAttempts = clampInt(int(std::ceil(propDensity * 1.5f)), 0, 2);
@@ -460,6 +509,26 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 const auto &spot = clutterSpots[(size_t(i) + roomIndex) % 4];
                 place("clutter", clutter, spot.first, spot.second,
                       float((i + int(roomIndex)) % 4) * 90.f, 16);
+            }
+        }
+
+        // Long connectors in the reference are punctuated by sparse sconces.
+        // Keep this semantic and density-driven so packs can substitute any
+        // wall-mounted light prefab without changing the generator.
+        const uint32_t lightThreshold = uint32_t(corridorLightDensity * 1000.f);
+        for (int y = 1; y < h - 1; ++y) {
+            for (int x = 1; x < w - 1; ++x) {
+                if (uint32_t(out.getCell(x, y)) != Semantic::Corridor) continue;
+                const uint32_t hash = uint32_t(x) * 73856093u ^ uint32_t(y) * 19349663u ^ seed;
+                if ((hash % 1000u) >= lightThreshold) continue;
+                if (uint32_t(out.getCell(x - 1, y)) == Semantic::Wall)
+                    place("light", wallLights, float(x), float(y), 90.f, 2 | 4);
+                else if (uint32_t(out.getCell(x + 1, y)) == Semantic::Wall)
+                    place("light", wallLights, float(x), float(y), 270.f, 2 | 4);
+                else if (uint32_t(out.getCell(x, y - 1)) == Semantic::Wall)
+                    place("light", wallLights, float(x), float(y), 180.f, 2 | 4);
+                else if (uint32_t(out.getCell(x, y + 1)) == Semantic::Wall)
+                    place("light", wallLights, float(x), float(y), 0.f, 2 | 4);
             }
         }
     }
@@ -488,6 +557,8 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     out.setMeta("floorPattern", pattern);
     out.setMeta("decorTiles", std::to_string(decorTiles.size()));
     out.setMeta("corridorStyle", style);
+    out.setMeta("layoutStyle", layout);
+    out.setMeta("connectionStyle", connections);
     out.setMeta("assetPack", params.getString("assetPack", "semantic-default"));
     out.setMeta("placedProps", std::to_string(objectSerial));
     // Tile renderers use these semantic pools to resolve every architecture cell.
@@ -513,6 +584,10 @@ void registerRoguelikeGenerator(GeneratorRegistry &registry) {
     descriptor.params.push_back(ParamDescriptor::integer("padding", "Room Padding", 1, 0, 4));
     descriptor.params.push_back(ParamDescriptor::integer("spacing", "Room Spacing", 2, 0, 8));
     descriptor.params.push_back(ParamDescriptor::integer("corridorWidth", "Corridor Width", 1, 1, 3));
+    descriptor.params.push_back(ParamDescriptor::choice("layoutStyle", "Room Layout", "grid",
+                                                        {"grid", "clustered"}));
+    descriptor.params.push_back(ParamDescriptor::choice("connectionStyle", "Room Connections",
+                                                        "sequential", {"sequential", "nearest"}));
     descriptor.params.push_back(ParamDescriptor::choice("corridorStyle", "Corridor Style", "l",
                                                         {"l", "straight", "diagonal"}));
     descriptor.params.push_back(ParamDescriptor::choice("floorPattern", "Floor Pattern", "brick",
@@ -524,6 +599,9 @@ void registerRoguelikeGenerator(GeneratorRegistry &registry) {
                                                         {"mixed", "pillars", "treasure", "none"}));
     descriptor.params.push_back(ParamDescriptor::floating("propDensity", "Prop Density", 0.16f,
                                                           0.f, 1.f, 0.01f));
+    descriptor.params.push_back(ParamDescriptor::floating("corridorLightDensity",
+                                                          "Corridor Light Density", 0.035f,
+                                                          0.f, 0.25f, 0.005f));
     descriptor.params.push_back(ParamDescriptor::boolean("autotile", "Autotile", true));
     registry.registerAlgorithm(std::move(descriptor), genRoguelike);
 }
