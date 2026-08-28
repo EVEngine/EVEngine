@@ -929,7 +929,7 @@ wgpu::RenderPipeline Graphics::getMesh3DPipeline(BlendMode blend, bool depthWrit
     pd.vertex.buffers = &vb;
     pd.fragment = &fs;
     pd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
-    pd.primitive.frontFace = WGPUFrontFace_CW;
+    pd.primitive.frontFace = WGPUFrontFace_CCW;
     pd.primitive.cullMode = doubleSided ? WGPUCullMode_None : WGPUCullMode_Back;
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
@@ -993,7 +993,7 @@ void Graphics::createMesh3DClusteredPipeline() {
     fs.targets = &target;
     pd.fragment = &fs;
     pd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
-    pd.primitive.frontFace = WGPUFrontFace_CW;
+    pd.primitive.frontFace = WGPUFrontFace_CCW;
     pd.primitive.cullMode = WGPUCullMode_Back;
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
@@ -2345,11 +2345,11 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
             int a = y * (slices + 1) + x;
             int b = a + slices + 1;
             idx.push_back(a);
-            idx.push_back(b);
             idx.push_back(a + 1);
             idx.push_back(b);
+            idx.push_back(b);
+            idx.push_back(a + 1);
             idx.push_back(b + 1);
-            idx.push_back(a + 1);
         }
     }
     return newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3), idx.data(),
@@ -2403,8 +2403,8 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
             nrm.push_back(0.f); nrm.push_back(-1.f); nrm.push_back(0.f);
             uv.push_back(0.5f + 0.5f * std::cos(theta1)); uv.push_back(0.5f + 0.5f * std::sin(theta1));
             idx.push_back(base);
-            idx.push_back(i1);
             idx.push_back(i0);
+            idx.push_back(i1);
         }
         base = int(pos.size() / 3);
         pos.push_back(0.f); pos.push_back(1.f); pos.push_back(0.f);
@@ -2422,8 +2422,8 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
             nrm.push_back(0.f); nrm.push_back(1.f); nrm.push_back(0.f);
             uv.push_back(0.5f + 0.5f * std::cos(theta1)); uv.push_back(0.5f + 0.5f * std::sin(theta1));
             idx.push_back(base);
-            idx.push_back(i0);
             idx.push_back(i1);
+            idx.push_back(i0);
         }
     }
     return newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3), idx.data(),

@@ -1,5 +1,6 @@
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/NoiseField.h"
+#include "procgen/texture/PrototypeTextures.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
@@ -484,6 +485,7 @@ const std::vector<TextureRecipeDef> &builtinTextureDefs() {
 
 void TextureRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
+    registerPrototypeTextureRecipes(*this);
     auto cloudDescriptor = [](std::string id, std::string name, bool shadow) {
         RecipeDescriptor schema = RecipeDescriptor::grid(std::move(id), std::move(name), "Atmosphere", 1, 1);
         schema.params.push_back(ParamDescriptor::floating("worldScale", "World Scale", 96.f, 1.f, 4096.f, 1.f));
