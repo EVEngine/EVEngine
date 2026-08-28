@@ -175,9 +175,16 @@ TEST_CASE("housegen.everyFloorCellRequiresCoverage") {
     auto valid = layout.validate(lib);
     REQUIRE(valid.ok());
 
+    // Pick a top roof that actually covers a floor cell below it (the stairwell roof is
+    // exempt — there is no floor beneath it), so removing it must break the coverage rule.
     auto roof = std::find_if(layout.instances.begin(), layout.instances.end(), [&](const auto &instance) {
         const auto component = lib.find(instance.componentId);
-        return component && component->get().category == "roof" && instance.z == r.floors;
+        if (!component || component->get().category != "roof" || instance.z != r.floors) return false;
+        return std::find_if(layout.instances.begin(), layout.instances.end(), [&](const auto &other) {
+                   const auto otherComp = lib.find(other.componentId);
+                   return otherComp && otherComp->get().category == "floor" && other.x == instance.x &&
+                          other.y == instance.y && other.z == r.floors - 1;
+               }) != layout.instances.end();
     });
     REQUIRE(roof != layout.instances.end());
     layout.instances.erase(roof);
