@@ -38,7 +38,14 @@ struct QuestDefinition {
 class QuestRegistry {
 public:
     static void registerQuest(const QuestDefinition &def);
+    /**
+     * @brief Find a registered quest definition by id.
+     * @return Borrowed nullable definition owned by the process-local registry.
+     * @ownership QuestRegistry owns the definition; callers must not delete or mutate it.
+     * @lifetime Valid until remove(), clear(), or replacement of the same id; copy data before registry mutation.
+     */
     static const QuestDefinition *find(const std::string &id);
+    /** @brief Remove a quest by id (compatibility facade returning whether it was present). */
     static bool remove(const std::string &id);
     static void clear();
     static int count();

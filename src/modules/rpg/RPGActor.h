@@ -196,6 +196,7 @@ public:
     double getXp();
     double getXpToNext();
     void setXpToNext(double value);
+    /** @brief 增加经验并可能升级（compatibility facade (脚本兼容门面)；返回是否升级）。 */
     bool gainXp(double amount);
 
     /** @brief 生命等当前资源（VitalsSystem 的薄转发，max 取同名最终属性）。 */
@@ -209,6 +210,7 @@ public:
 
     /** @brief 特征（TraitSystem 的薄转发）。 */
     int applyTrait(const std::string &traitId, const std::string &source = "");
+    /** @brief 移除一个特征（compatibility facade (脚本兼容门面)；成功返回 true）。 */
     bool removeTrait(int instanceId);
     int removeTraitsBySource(const std::string &source);
     int removeTraitsByTrait(const std::string &traitId);
@@ -228,6 +230,7 @@ public:
     std::vector<std::string> getAttackStates();
 
     /** @brief 职业（ClassSystem 的薄转发）。 */
+    /** @brief 设定职业（compatibility facade (脚本兼容门面)；成功返回 true）。 */
     bool setClass(const std::string &classId);
     std::string getClassId();
     bool hasClass(const std::string &classId);

@@ -23,27 +23,28 @@ public:
     /** @brief 补建 Registry 里尚不在 Tracker 上的条目，并解开前置已齐的 locked 条目。 */
     static void syncAuto(Tracker *t);
 
-    /** @brief def 的全部 requires 在本 Tracker 上均已 completed。 */
-    static bool requiresMet(const Tracker &t, const QuestDefinition &def);
+    /** @brief def 的全部 requires 在本 Tracker 上均已 completed（谓词查询）。 */
+    static bool hasMetRequirements(const Tracker &t, const QuestDefinition &def);
 
     /** @brief 解锁后的落点：startPolicy==auto → "active"，否则 "inactive"。 */
     static std::string stateForUnlocked(const QuestDefinition &def);
 
-    /** @brief 激活：仅 inactive 且前置已齐时成功；否则 push reject 并返回 false。 */
+    /** @brief 激活：仅 inactive 且前置已齐时成功；否则 push reject 并返回 false（compatibility facade (脚本兼容门面)）。 */
     static bool activate(Tracker *t, const std::string &id, std::string *reason = nullptr);
+    /** @brief 是否可激活（谓词查询，可返回 reason）。 */
     static bool canActivate(Tracker *t, const std::string &id, std::string *reason = nullptr);
-    /** @brief "" 可激活；否则 unknown/locked/alreadyActive/alreadyCompleted/failed/ready。 */
+    /** @brief 不可激活的原因（"" 可激活，否则 unknown/locked/alreadyActive/alreadyCompleted/failed/ready）。 */
     static std::string canActivateReason(Tracker *t, const std::string &id);
 
     /** @brief 报告事实 (topic, target, amount)；只推进 state==active 的条目。 */
     static void notify(Tracker *t, const std::string &topic, const std::string &target, int amount);
 
-    /** @brief 仅 state==ready 时成功 → completed 并触发解锁；否则 reject。 */
+    /** @brief 仅 state==ready 时成功 → completed 并触发解锁；否则 reject（compatibility facade (脚本兼容门面)）。 */
     static bool claim(Tracker *t, const std::string &id, std::string *reason = nullptr);
 
-    /** @brief 进度清零并按当前 requires 回落 locked/inactive/active；不级联。 */
+    /** @brief 进度清零并按当前 requires 回落 locked/inactive/active；不级联（compatibility facade (脚本兼容门面)）。 */
     static bool reset(Tracker *t, const std::string &id);
-    /** @brief abandon/fail → failed；对 completed/failed/locked/未知 id 为 reject。 */
+    /** @brief abandon/fail → failed；对 completed/failed/locked/未知 id 为 reject（compatibility facade (脚本兼容门面)）。 */
     static bool abandon(Tracker *t, const std::string &id);
     static bool fail(Tracker *t, const std::string &id, const std::string &reason);
 

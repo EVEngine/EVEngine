@@ -27,13 +27,18 @@ public:
     /** @brief 补建 Registry 里尚未出现的条目并按前置解锁。 */
     void syncAuto();
 
+    /** @brief 激活任务（compatibility facade (脚本兼容门面)）。 */
     bool activate(const std::string &id);
     bool canActivate(const std::string &id);
     std::string canActivateReason(const std::string &id);
     void notify(const std::string &topic, const std::string &target, int amount);
+    /** @brief 完成任务（compatibility facade (脚本兼容门面)）。 */
     bool claim(const std::string &id);
+    /** @brief 重置进度（compatibility facade (脚本兼容门面)）。 */
     bool reset(const std::string &id);
+    /** @brief 放弃任务（compatibility facade (脚本兼容门面)）。 */
     bool abandon(const std::string &id);
+    /** @brief 失败任务（compatibility facade (脚本兼容门面)）。 */
     bool fail(const std::string &id, const std::string &reason);
 
     /** @brief 把 pending 移到 polled 并清空 pending；随后 getEvent* 读 polled。 */

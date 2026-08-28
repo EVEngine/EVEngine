@@ -44,7 +44,7 @@ public:
     static void setLevel(RPGActor *actor, int level);
 
     /**
-     * @brief 增加经验；每跨过阈值升一级并发出 LevelUpEvent。
+     * @brief 增加经验；每跨过阈值升一级并发出 LevelUpEvent（compatibility facade (脚本兼容门面)）。
      * @return 是否至少升了一级。
      * @param xpGrowth 每级阈值增长比例（默认 1.2）。
      */

@@ -436,6 +436,10 @@ void RPG::expose(ssq::Table &table) {
     actor.addFunc("getExParam", [](RPGActor *a, const std::string &e) -> float {
         return a ? float(a->getExParam(e)) : 0.f;
     });
+    actor.addFunc("getAttackSpeed", [](RPGActor *a) -> float {
+        return a ? float(a->getAttackSpeed()) : 0.f;
+    });
+    actor.addFunc("getAttackTimesAdd", &RPGActor::getAttackTimesAdd);
 
     // 职业
     actor.addFunc("setClass", &RPGActor::setClass);

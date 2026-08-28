@@ -41,7 +41,14 @@ struct TraitDefinition {
 class TraitRegistry {
 public:
     static void registerTrait(const TraitDefinition &def);
+    /**
+     * @brief Find a registered trait definition by id.
+     * @return Borrowed nullable definition owned by the process-local registry.
+     * @ownership TraitRegistry owns the definition; callers must not delete or mutate it.
+     * @lifetime Valid until remove(), clear(), or replacement of the same id; copy data before registry mutation.
+     */
     static const TraitDefinition *find(const std::string &id);
+    /** @brief Remove a trait by id (compatibility facade returning whether it was present). */
     static bool remove(const std::string &id);
     static void clear();
     static int count();

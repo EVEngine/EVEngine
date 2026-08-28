@@ -155,7 +155,7 @@ gs.setVariable("gold", 100);
 - `hasSettlementStage()`、`hasTag()`、`heal()`、`isCastingSkill()`、`isDead()`、`knowsSkill()`、`learnSkill()`、`modifyBaseAttribute()`
 - `newActor()`、`newBattle()`、`newGameState()`、`newSettlementContext()`、`newTracker()`、`registerClassesFromJson()`、`registerEffectsFromJson()`、`globalGameState()`
 - `removeAllAttributeModifiersBySource()`、`removeAttributeModifier()`、`removeAttributeModifiersBySource()`、`removeSettlementStage()`、`removeStatus()`、`removeStatusByEffect()`、`removeStatusBySource()`、`removeStatusByTag()`
-- `revive()`、`rollLoot()`、`runSettlement()`、`set()`、`setBaseAttribute()`、`setCurrent()`、`setSettlementStageEnabled()`、`setSettlementStagePriority()`
+- `release()`（销毁 ECS actor）、`revive()`、`rollLoot()`、`runSettlement()`、`set()`、`setBaseAttribute()`、`setCurrent()`、`setSettlementStageEnabled()`、`setSettlementStagePriority()`
 - `setSkillCooldown()`、`setXpToNext()`、`syncEquipModifiers()`、`takeDamage()`、`registerItemStatsFromJson()`、`registerLootTablesFromJson()`、`registerQuestsFromJson()`、`registerSkillDamage()`、`registerSkillsFromJson()`、`registerTraitsFromJson()`、`clearTraitDefinitions()`、`getTraitDefinitionCount()`、`getClassDefinitionCount()`、`update()`
 
 **Tracker 方法：** `activate()`、`abandon()`、`canActivate()`、`canActivateReason()`、`claim()`、`fail()`、`getCount()`、`getEventAction()`、`getEventAmount()`、`getEventCount()`、`getEventEntryId()`、`getEventObjectiveId()`、`getEventReason()`、`getEventTarget()`、`getEventTopic()`、`getExtra()`、`getId()`、`getObjectiveCount()`、`getObjectiveCountRequired()`、`getObjectiveCurrent()`、`getObjectiveId()`、`getRewardAmount()`、`getRewardCount()`、`getRewardId()`、`getRewardType()`、`getState()`、`hasTag()`、`isObjectiveDone()`、`notify()`、`pollEvents()`、`reset()`、`syncAuto()`

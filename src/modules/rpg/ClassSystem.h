@@ -21,7 +21,7 @@ class RPGActor;
 class ClassSystem {
 public:
     /**
-     * @brief 设定职业并施加职业基础特征。
+     * @brief 设定职业并施加职业基础特征（compatibility facade (脚本兼容门面)；成功返回 true）。
      * @return 未知职业 id 返回 false。
      */
     static bool setClass(RPGActor *actor, const std::string &classId);

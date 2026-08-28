@@ -28,7 +28,7 @@ public:
      * @return 适配器分配的实例 id（>0）；未知特征 / 空 actor 返回 0。
      */
     static int apply(RPGActor *actor, const std::string &traitId, const std::string &source = "");
-    /** @brief 按实例 id 移除。 */
+    /** @brief 按实例 id 移除（compatibility facade (脚本兼容门面)；成功返回 true）。 */
     static bool remove(RPGActor *actor, int instanceId);
     /** @brief 移除该 actor 上所有来自 source 的特征；返回移除数。 */
     static int removeBySource(RPGActor *actor, const std::string &source);

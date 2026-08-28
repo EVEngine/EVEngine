@@ -143,6 +143,55 @@
       "phase": "deterministic simulation phase before presentation and after command ingestion"
     },
     {
+      "id": "rpg-ecs-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/rpg/*.h",
+      "owner": "rpg module systems",
+      "issue": "EVENGINE-ARCH-ECS-SYSTEM-METADATA",
+      "reason": "RPG systems publish access contracts; none mutate ECS structure and each names its owning component and thread.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rpg/LevelSystem.h",
+        "src/modules/rpg/VitalsSystem.h",
+        "src/modules/rpg/TraitSystem.h",
+        "src/modules/rpg/ClassSystem.h",
+        "src/modules/rpg/QuestSystem.h",
+        "src/modules/rpg/Battle.h",
+        "src/modules/rpg/BattleSystem.h",
+        "src/modules/rpg/EquipmentSystem.h",
+        "src/modules/rpg/LootSystem.h"
+      ],
+      "tests": [
+        "test/rpg_quest.cpp",
+        "test/rpg_progression.cpp",
+        "test/rpg_trait.cpp",
+        "test/rpg_battle.cpp",
+        "test/rpg_class.cpp",
+        "test/rpg_equipment.cpp",
+        "test/rpg_gamestate.cpp"
+      ],
+      "systems": [
+        "LevelSystem",
+        "VitalsSystem",
+        "TraitSystem",
+        "ClassSystem",
+        "QuestSystem",
+        "Tracker",
+        "Battle",
+        "BattleSystem",
+        "EquipmentSystem",
+        "LootSystem"
+      ],
+      "entity_scope": "RPGActor ECS entities registered by RPGActor::createActor / liveActors()",
+      "view": "no View traversal that mutates while iterated; systems read actor components and run on liveActors()",
+      "read_set": "Attributes, Statuses, Skills, Progression, Vitals, Traits and ClassInfo components as applicable",
+      "write_set": "the system's owning component (Vitals/Progression/Traits/ClassInfo/Skills) and event queues only",
+      "structural_changes": "no structural ECS mutation from within update; actor destruction is explicit and deferred by callers",
+      "events": "status tick/change, cast, vitals, level-up and battle events polled after update",
+      "services": "injected dt/turn time and named seed streams; no global mutable time or wall clock",
+      "phase": "script/game-driven simulation; Battle is turn-based, others are update(dt)-driven"
+    },
+    {
       "id": "time-rng-policy",
       "rule": "time-rng",
       "scope": "src/**",

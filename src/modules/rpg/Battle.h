@@ -55,7 +55,7 @@ public:
     void autoEnemyActions();
     /** @brief 结算所有已设行动：先攻排序、清空待行动，回合数 +1。 */
     void startRound();
-    /** @brief 执行下一条行动；返回是否执行了一条。 */
+    /** @brief 执行下一条行动（compatibility facade (脚本兼容门面)）；返回是否执行了一条。 */
     bool executeNextAction();
     /** @brief 战斗是否已结束（仅剩一方存活 / 双方全灭）。 */
     bool isFinished() const;
@@ -73,6 +73,12 @@ public:
     bool isActorAlive(RPGActor *actor) const;
 
     int getActorCount() const;
+    /**
+     * @brief Return a participant actor by index, or null when out of range.
+     * @return Borrowed nullable ECS actor; the battle does not own it.
+     * @ownership The ECS world owns the actor; callers must not delete it.
+     * @lifetime Valid until the actor or battle is destroyed; do not retain across rounds.
+     */
     RPGActor *getActor(int index) const;
     int getSide(int index) const;
 
@@ -82,7 +88,19 @@ public:
     // 事件字段访问（脚本向）
     std::string getEventAction(int index) const;
     std::string getEventSkillId(int index) const;
+    /**
+     * @brief Return the caster of a polled event, or null when out of range.
+     * @return Borrowed nullable ECS actor; the event cache does not own it.
+     * @ownership The ECS world owns the actor; callers must not delete it.
+     * @lifetime Valid until the actor is destroyed; do not retain beyond the poll.
+     */
     RPGActor *getEventCaster(int index) const;
+    /**
+     * @brief Return the target of a polled event, or null when out of range.
+     * @return Borrowed nullable ECS actor; the event cache does not own it.
+     * @ownership The ECS world owns the actor; callers must not delete it.
+     * @lifetime Valid until the actor is destroyed; do not retain beyond the poll.
+     */
     RPGActor *getEventTarget(int index) const;
     double getEventAmount(int index) const;
     bool getEventCrit(int index) const;
@@ -102,6 +120,11 @@ private:
     bool isDead(const Participant &p) const;
     std::vector<RPGActor *> livingOnSide(int side) const;
     int sideOf(RPGActor *actor) const;
+    /**
+     * @brief Pick a random living opponent for a side (borrowed actor).
+     * @ownership The ECS world owns the returned actor; callers must not delete it.
+     * @lifetime Valid until the actor is destroyed; do not retain across rounds.
+     */
     RPGActor *randomOpponent(int mySide);
     int computeWinnerSide() const;
     void execute(PendingAction &pa, unsigned &seedCounter);

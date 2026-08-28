@@ -37,7 +37,14 @@ struct ClassDefinition {
 class ClassRegistry {
 public:
     static void registerClass(const ClassDefinition &def);
+    /**
+     * @brief Find a registered class definition by id.
+     * @return Borrowed nullable definition owned by the process-local registry.
+     * @ownership ClassRegistry owns the definition; callers must not delete or mutate it.
+     * @lifetime Valid until remove(), clear(), or replacement of the same id; copy data before registry mutation.
+     */
     static const ClassDefinition *find(const std::string &id);
+    /** @brief Remove a class by id (compatibility facade returning whether it was present). */
     static bool remove(const std::string &id);
     static void clear();
     static int count();

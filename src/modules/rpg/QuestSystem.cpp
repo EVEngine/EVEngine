@@ -45,7 +45,7 @@ void onObjectivesFull(Tracker *t, QuestRuntime &rt) {
 
 }  // namespace
 
-bool QuestSystem::requiresMet(const Tracker &t, const QuestDefinition &def) {
+bool QuestSystem::hasMetRequirements(const Tracker &t, const QuestDefinition &def) {
     for (const auto &id : def.requiresIds) {
         auto it = t.entries.find(id);
         if (it == t.entries.end()) return false;
@@ -86,7 +86,7 @@ void QuestSystem::syncAuto(Tracker *t) {
             if (rt.state != "locked") continue;
             const QuestDefinition *def = QuestRegistry::find(id);
             if (!def) continue;
-            if (!requiresMet(*t, *def)) continue;
+            if (!hasMetRequirements(*t, *def)) continue;
             const std::string newState = stateForUnlocked(*def);
             rt.state = newState;
             if (newState == "active") pushEvent(t, {id, "", "activate", "", "", 0, ""});
@@ -109,7 +109,7 @@ std::string QuestSystem::canActivateReason(Tracker *t, const std::string &id) {
     if (state == "completed") return "alreadyCompleted";
     if (state == "failed") return "failed";
     if (state == "ready") return "ready";
-    if (!requiresMet(*t, *def)) return "locked";
+    if (!hasMetRequirements(*t, *def)) return "locked";
     return "";
 }
 
@@ -210,7 +210,7 @@ bool QuestSystem::reset(Tracker *t, const std::string &id) {
             rt.objectives.push_back(std::move(orun));
         }
     }
-    rt.state = (def && requiresMet(*t, *def)) ? stateForUnlocked(*def) : std::string("locked");
+    rt.state = (def && hasMetRequirements(*t, *def)) ? stateForUnlocked(*def) : std::string("locked");
     pushEvent(t, {id, "", "reset", "", "", 0, ""});
     if (rt.state == "active" && objectivesFull(rt)) onObjectivesFull(t, rt);
     return true;
