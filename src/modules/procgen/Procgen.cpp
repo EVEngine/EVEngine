@@ -117,7 +117,7 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
     }
 
     const SQInteger top = sq_gettop(vm);
-    const size_t hashCode = ssq::detail::stableTypeHash<T*>();
+    const size_t hashCode = eve::script::detail::squirrelTypeHash<T*>();
     sq_pushobject(vm, ssq::detail::getClassObj(vm, hashCode));
     if (SQ_FAILED(sq_createinstance(vm, -1))) {
         sq_settop(vm, top);

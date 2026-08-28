@@ -47,6 +47,11 @@ gfx.renderSprites();
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
 
+`Camera3D` 默认使用透视投影。等距视图可调用 `setOrthographic(height)`，其中
+`height` 是世界空间中的垂直可视范围；`setPerspective()` 恢复透视投影。
+`setClipPlanes(near, far)` 配置两种投影共用的近、远裁剪面，并要求
+`0 < near < far`。
+
 ### 纹理过滤（mipmap / 各向异性 / LOD）
 
 默认 `newTexture` 仍为线性过滤、单级 mip（兼容旧行为）。需要三线性与各向异性时：

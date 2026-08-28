@@ -41,6 +41,12 @@ if (!gridResult.ok) throw gridResult.status.summary;
 local grid = gridResult.value;
 ```
 
+`Grid2D` 的资产对象接口用于把生成布局与任意项目资产包解耦：
+`addAssetObject(name, role, asset, x, y, width, height, rotation, flags)` 添加带语义角色、
+资产标识、占地、旋转和标志位的对象；读取时使用 `getObjectAsset(index)`、
+`getObjectRotation(index)` 与 `getObjectFlags(index)`。资产标识只是调用方配置的字符串，
+具体 prefab、模型或精灵由渲染适配器解析。
+
 ### 受检 artifact API
 
 跨存档、跨进程或需要发布到可选后端时，使用 `buildArtifact()` 与

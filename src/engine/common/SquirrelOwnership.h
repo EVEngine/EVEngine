@@ -16,6 +16,7 @@
 #include <atomic>
 #include <cstdint>
 #include <exception>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -468,6 +469,12 @@ private:
 namespace detail {
 
 template <class T>
+[[nodiscard]] inline std::size_t squirrelTypeHash() {
+    static const std::size_t value = std::hash<std::string>{}(typeid(T).name());
+    return value;
+}
+
+template <class T>
 SQInteger ownedInstanceReleaseHook(SQUserPointer pointer, SQInteger) noexcept {
     delete static_cast<T*>(pointer);
     return 0;
@@ -493,7 +500,7 @@ template <class T>
     const SQInteger top         = sq_gettop(vm);
     bool            transferred = false;
     try {
-        const size_t hashCode = ssq::detail::stableTypeHash<T*>();
+        const size_t hashCode = detail::squirrelTypeHash<T*>();
         const HSQOBJECT& classObject = ssq::detail::getClassObj(vm, hashCode);
         sq_pushobject(vm, classObject);
         if (SQ_FAILED(sq_createinstance(vm, -1)))

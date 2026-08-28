@@ -412,14 +412,14 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     int objectSerial = 0;
     int minimumRoomProps = std::numeric_limits<int>::max();
     auto cellKey = [w](int x, int y) { return y * w + x; };
-    auto place = [&](const std::string &role, const std::vector<std::string> &pool, float x, float y,
+    auto place = [&](const std::string &role, const std::vector<std::string> &pool, double x, double y,
                      float rotation, int flags, float ow = 1.f, float oh = 1.f) {
         const int cellX = clampInt(int(std::round(x)), 0, w - 1);
         const int cellY = clampInt(int(std::round(y)), 0, h - 1);
         if (pool.empty() || !isWalkable(uint32_t(out.getCell(cellX, cellY)))) return false;
         if ((flags & 1) && occupied.count(cellKey(cellX, cellY))) return false;
         out.addAssetObject(role + std::to_string(objectSerial++), role, pickAsset(pool, rng),
-                           x, y, ow, oh, rotation, flags);
+                           static_cast<float>(x), static_cast<float>(y), ow, oh, rotation, flags);
         if (flags & 1) occupied.insert(cellKey(cellX, cellY));
         return true;
     };
