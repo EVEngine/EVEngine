@@ -78,6 +78,13 @@ public:
     [[nodiscard]] EditorResult<void> addState(const LogicalId& trackId, action::ActionNotifyState state);
     /** @brief Move one notify or state by an exact deterministic delta. */
     [[nodiscard]] EditorResult<void> moveItem(const LogicalId& itemId, Duration delta);
+    /** @brief Resize one notify-state interval to exact validated boundaries. */
+    [[nodiscard]] EditorResult<void> resizeState(const LogicalId& itemId, Duration start, Duration end);
+    /** @brief Replace one item's type and owning payload through one undoable transaction. */
+    [[nodiscard]] EditorResult<void> updateItem(const LogicalId& itemId, LogicalId type, Value::Object payload);
+    /** @brief Atomically replace one item's timing, type and owning payload. */
+    [[nodiscard]] EditorResult<void> editItem(const LogicalId& itemId, Duration start, Duration end, LogicalId type,
+                                              Value::Object payload);
     /** @brief Remove one notify or state. */
     [[nodiscard]] EditorResult<void> removeItem(const LogicalId& itemId);
     /** @brief Mute/unmute one track through an undoable operation. */
@@ -87,8 +94,12 @@ public:
     [[nodiscard]] EditorResult<std::size_t> boxSelect(Duration start, Duration end);
     /** @brief Clear selection. */
     void clearSelection() { selection_.clear(); }
+    /** @brief Select one existing item, optionally preserving the current selection. */
+    [[nodiscard]] EditorResult<void> selectItem(const LogicalId& itemId, bool additive = false);
     /** @brief Number of selected timeline items. */
     std::size_t selectionCount() const noexcept { return selection_.size(); }
+    /** @brief Return selected item IDs in lexical order as owning values. */
+    [[nodiscard]] std::vector<LogicalId> selectedItemIds() const;
     /** @brief Copy selected items into an owning editor clipboard. */
     [[nodiscard]] EditorResult<std::size_t> copySelection();
     /** @brief Paste copied items at an exact offset with new stable ids. */

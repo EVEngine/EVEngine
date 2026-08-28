@@ -242,6 +242,77 @@ EditorResult<void> ActionTimelineEditor::moveItem(const LogicalId& itemId, Durat
     return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
 }
 
+EditorResult<void> ActionTimelineEditor::resizeState(const LogicalId& itemId, Duration start, Duration end) {
+    if (start < Duration::zero() || end < start || end > target_.timeline().duration)
+        return rejected("editor.action.timeline.state-range", "Notify-state range is outside the timeline");
+    action::ActionTimeline candidate = target_.timeline();
+    for (auto& track : candidate.tracks) {
+        auto found = std::find_if(track.states.begin(), track.states.end(),
+                                  [&](const auto& value) { return value.id == itemId; });
+        if (found == track.states.end()) continue;
+        if (track.locked) return rejected("editor.action.timeline.track-locked", "Action track is locked");
+        found->start = start;
+        found->end   = end;
+        sortTrack(track);
+        return commit(std::move(candidate), "Resize action notify state", "action.timeline.state.resize");
+    }
+    return rejected("editor.action.timeline.state-not-found", "Notify state was not found");
+}
+
+EditorResult<void> ActionTimelineEditor::updateItem(const LogicalId& itemId, LogicalId type, Value::Object payload) {
+    if (!type.isValid()) return rejected("editor.action.timeline.type-invalid", "Timeline item type is invalid");
+    action::ActionTimeline candidate = target_.timeline();
+    for (auto& track : candidate.tracks) {
+        for (auto& notify : track.notifies) {
+            if (notify.id != itemId) continue;
+            if (track.locked) return rejected("editor.action.timeline.track-locked", "Action track is locked");
+            notify.type    = std::move(type);
+            notify.payload = std::move(payload);
+            return commit(std::move(candidate), "Edit action notify", "action.timeline.item.properties");
+        }
+        for (auto& state : track.states) {
+            if (state.id != itemId) continue;
+            if (track.locked) return rejected("editor.action.timeline.track-locked", "Action track is locked");
+            state.type    = std::move(type);
+            state.payload = std::move(payload);
+            return commit(std::move(candidate), "Edit action notify state", "action.timeline.item.properties");
+        }
+    }
+    return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
+}
+
+EditorResult<void> ActionTimelineEditor::editItem(const LogicalId& itemId, Duration start, Duration end, LogicalId type,
+                                                  Value::Object payload) {
+    if (!type.isValid()) return rejected("editor.action.timeline.type-invalid", "Timeline item type is invalid");
+    if (start < Duration::zero() || end < start || end > target_.timeline().duration)
+        return rejected("editor.action.timeline.item-range", "Timeline item range is outside the timeline");
+    action::ActionTimeline candidate = target_.timeline();
+    for (auto& track : candidate.tracks) {
+        for (auto& notify : track.notifies) {
+            if (notify.id != itemId) continue;
+            if (track.locked) return rejected("editor.action.timeline.track-locked", "Action track is locked");
+            if (start != end)
+                return rejected("editor.action.timeline.notify-range", "Instant notify start and end must match");
+            notify.time    = start;
+            notify.type    = std::move(type);
+            notify.payload = std::move(payload);
+            sortTrack(track);
+            return commit(std::move(candidate), "Edit action notify", "action.timeline.item.edit");
+        }
+        for (auto& state : track.states) {
+            if (state.id != itemId) continue;
+            if (track.locked) return rejected("editor.action.timeline.track-locked", "Action track is locked");
+            state.start   = start;
+            state.end     = end;
+            state.type    = std::move(type);
+            state.payload = std::move(payload);
+            sortTrack(track);
+            return commit(std::move(candidate), "Edit action notify state", "action.timeline.item.edit");
+        }
+    }
+    return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
+}
+
 EditorResult<void> ActionTimelineEditor::removeItem(const LogicalId& itemId) {
     action::ActionTimeline candidate = target_.timeline();
     for (auto& track : candidate.tracks) {
@@ -287,6 +358,30 @@ EditorResult<std::size_t> ActionTimelineEditor::boxSelect(Duration start, Durati
             if (state.end >= start && state.start <= end) selection_.insert(state.id.format());
     }
     return EditorResult<std::size_t>::applied(selection_.size());
+}
+
+EditorResult<void> ActionTimelineEditor::selectItem(const LogicalId& itemId, bool additive) {
+    bool found = false;
+    for (const auto& track : target_.timeline().tracks) {
+        found = found || std::any_of(track.notifies.begin(), track.notifies.end(),
+                                     [&](const auto& item) { return item.id == itemId; });
+        found = found || std::any_of(track.states.begin(), track.states.end(),
+                                     [&](const auto& item) { return item.id == itemId; });
+    }
+    if (!found) return rejected("editor.action.timeline.item-not-found", "Timeline item was not found");
+    if (!additive) selection_.clear();
+    selection_.insert(itemId.format());
+    return EditorResult<void>::applied();
+}
+
+std::vector<LogicalId> ActionTimelineEditor::selectedItemIds() const {
+    std::vector<LogicalId> result;
+    result.reserve(selection_.size());
+    for (const auto& value : selection_) {
+        auto parsed = LogicalId::parse(value);
+        if (parsed) result.push_back(std::move(*parsed));
+    }
+    return result;
 }
 
 EditorResult<std::size_t> ActionTimelineEditor::copySelection() {
