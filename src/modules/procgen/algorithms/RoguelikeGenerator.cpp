@@ -128,13 +128,17 @@ bool rectsOverlap(const Rect &a, const Rect &b, int pad) {
 
 void carveCorridor(Grid2D &out, int ax, int ay, int bx, int by, int width,
                    const std::string &style, std::mt19937 &rng) {
+    auto carve = [&](int x, int y) {
+        if (uint32_t(out.getCell(x, y)) == Semantic::Wall)
+            out.setCell(x, y, int(Semantic::Corridor));
+    };
     if (style == "diagonal") {
         int x = ax;
         int y = ay;
         while (x != bx || y != by) {
             for (int oy = 0; oy < width; ++oy)
                 for (int ox = 0; ox < width; ++ox)
-                    out.setCell(x + ox, y + oy, int(Semantic::Corridor));
+                    carve(x + ox, y + oy);
             if (x != bx && y != by && (rng() & 1u)) {
                 x += (bx > x) ? 1 : -1;
             } else if (x != bx) {
@@ -144,7 +148,7 @@ void carveCorridor(Grid2D &out, int ax, int ay, int bx, int by, int width,
             }
         }
         for (int oy = 0; oy < width; ++oy)
-            for (int ox = 0; ox < width; ++ox) out.setCell(x + ox, y + oy, int(Semantic::Corridor));
+            for (int ox = 0; ox < width; ++ox) carve(x + ox, y + oy);
         return;
     }
 
@@ -162,13 +166,13 @@ void carveCorridor(Grid2D &out, int ax, int ay, int bx, int by, int width,
     const int x1 = std::max(ax, cornerX);
     for (int x = x0; x <= x1; ++x)
         for (int oy = 0; oy < width; ++oy)
-            out.setCell(x, cornerY + oy, int(Semantic::Corridor));
+            carve(x, cornerY + oy);
 
     const int y0 = std::min(cornerY, by);
     const int y1 = std::max(cornerY, by);
     for (int y = y0; y <= y1; ++y)
         for (int ox = 0; ox < width; ++ox)
-            out.setCell(cornerX + ox, y, int(Semantic::Corridor));
+            carve(cornerX + ox, y);
 }
 
 bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
@@ -366,9 +370,15 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             const int top = r.y, bottom = r.y + r.h - 1;
             const int cx = r.x + r.w / 2, cy = r.y + r.h / 2;
             const int theme = int((roomIndex + seed) % 7); // storage/quarters/dining/armory/treasury/shrine/tavern
+            static constexpr const char *kThemeNames[] = {
+                "storage", "quarters", "dining", "armory", "treasury", "shrine", "tavern"};
+            out.addAssetObject("room" + std::to_string(roomIndex), "room",
+                               kThemeNames[theme], float(r.x), float(r.y),
+                               float(r.w), float(r.h), 0.f, 32);
 
             // Every furnished room receives wall-mounted light and occasional banner.
             place("light", wallLights, left, cy, 90.f, 2 | 4);
+            if (r.w >= 6) place("light", wallLights, right, cy, 270.f, 2 | 4);
             if ((rng() % 3u) != 0) place("banner", banners, cx, top, 180.f, 2);
 
             if (decorSet == "pillars") {
@@ -443,7 +453,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
 
             // Sparse edge clutter gives the dense, lived-in reference look without
             // turning room centres and corridors into an obstacle field.
-            const int clutterAttempts = clampInt(int(std::ceil(propDensity * 4.f)), 0, 4);
+            const int clutterAttempts = clampInt(int(std::ceil(propDensity * 1.5f)), 0, 2);
             const std::pair<int, int> clutterSpots[] = {
                 {left, top + 1}, {right, bottom - 1}, {left + 1, bottom}, {right - 1, top}};
             for (int i = 0; i < clutterAttempts; ++i) {

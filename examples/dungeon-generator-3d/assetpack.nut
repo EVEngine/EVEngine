@@ -3,10 +3,16 @@ dungeonAssets <- {
     root = "assets/kaykit-dungeon/obj/",
     extension = ".obj",
     floor = "floor_tile_large",
+    // Some packs author floor albedo in very dark atlas regions. Keep the
+    // neutral slab fallback by default; set true when a replacement pack's
+    // floor material is suitable for direct rendering.
+    usePackFloors = false,
     wall = "wall",
     // Repetition weights the common straight wall more heavily.
     walls = ["wall", "wall", "wall", "wall", "wall", "wall",
              "wall_cracked", "wall", "wall_window_closed", "wall", "wall_broken", "wall"],
+    corners = ["wall_corner_small", "wall_corner_small", "wall_corner_small", "wall_corner_gated"],
+    doorways = ["wall_doorway", "wall_doorway", "wall_doorway_sides", "wall_doorway_door"],
     stairs = "stairs",
     details = ["coin_stack_small", "plate_small", "bottle_A_brown"],
     roles = {

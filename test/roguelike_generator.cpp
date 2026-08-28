@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <queue>
 #include <set>
 #include <string>
 #include <vector>
@@ -141,6 +142,32 @@ bool markersWalkable(const Grid2D &g) {
     return true;
 }
 
+bool allWalkableConnected(const Grid2D &g) {
+    const int w = g.getWidth(), h = g.getHeight();
+    int start = -1, total = 0;
+    for (int y = 0; y < h; ++y)
+        for (int x = 0; x < w; ++x)
+            if (isWalkableCell(g, x, y)) { if (start < 0) start = y * w + x; ++total; }
+    if (start < 0) return true;
+    std::vector<bool> seen(size_t(w * h), false);
+    std::queue<int> pending;
+    pending.push(start); seen[size_t(start)] = true;
+    int reached = 0;
+    constexpr int dx[] = {1, -1, 0, 0};
+    constexpr int dy[] = {0, 0, 1, -1};
+    while (!pending.empty()) {
+        const int key = pending.front(); pending.pop(); ++reached;
+        const int x = key % w, y = key / w;
+        for (int i = 0; i < 4; ++i) {
+            const int nx = x + dx[i], ny = y + dy[i];
+            if (nx < 0 || ny < 0 || nx >= w || ny >= h || !isWalkableCell(g, nx, ny)) continue;
+            const int next = ny * w + nx;
+            if (!seen[size_t(next)]) { seen[size_t(next)] = true; pending.push(next); }
+        }
+    }
+    return reached == total;
+}
+
 }  // namespace
 
 TEST_CASE("procgen.roguelike.reproducible") {
@@ -180,6 +207,7 @@ TEST_CASE("procgen.roguelike.structure") {
     pView->setSeed(7);
     pView->setSize(48, 32);
     pView->setInt("roomCount", 12);
+    pView->setString("connectionStyle", "nearest");
     pView->setFloat("decorDensity", 0.06f);
     pView->setString("decorSet", "mixed");
     auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
@@ -199,6 +227,7 @@ TEST_CASE("procgen.roguelike.structure") {
     // Detail layer: wall autotile masks + floor variants are present.
     CHECK(wallMasksConsistent(*g));
     CHECK(markersWalkable(*g));
+    CHECK(allWalkableConnected(*g));
 
     // Metadata describes the run.
     CHECK_EQ(g->getMeta("algorithm", ""), "level.roguelike");
@@ -288,7 +317,16 @@ TEST_CASE("procgen.roguelike.configurableAssetDressing") {
 
     bool customLight = false;
     bool fractionalPlacement = false;
+    bool roomZone = false;
     for (int i = 0; i < g->getObjectCount(); ++i) {
+        if (g->getObjectType(i) == "room") {
+            roomZone = true;
+            const int rx = int(g->getObjectX(i)), ry = int(g->getObjectY(i));
+            const int rw = int(g->getObjectWidth(i)), rh = int(g->getObjectHeight(i));
+            for (int y = ry; y < ry + rh; ++y)
+                for (int x = rx; x < rx + rw; ++x)
+                    CHECK_EQ(g->getCell(x, y), int(Semantic::Floor));
+        }
         if (g->getObjectType(i) == "light") {
             customLight = customLight || g->getObjectAsset(i) == "sconce_custom";
             CHECK((g->getObjectFlags(i) & 4) != 0);
@@ -300,6 +338,7 @@ TEST_CASE("procgen.roguelike.configurableAssetDressing") {
             std::abs(g->getObjectY(i) - std::round(g->getObjectY(i))) > 0.01f;
     }
     CHECK(customLight);
+    CHECK(roomZone);
     CHECK(fractionalPlacement);
     CHECK(markersWalkable(*g));
 }

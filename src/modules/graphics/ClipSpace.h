@@ -2,6 +2,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <algorithm>
+
 namespace eve {
 namespace graphics {
 
@@ -30,6 +32,16 @@ inline glm::mat4 orthoVulkanRH_ZO(float left, float right, float bottom, float t
     glm::mat4 p = glm::orthoRH_ZO(left, right, bottom, top, zNear, zFar);
     p[1][1] *= -1.f;
     return p;
+}
+
+/** @brief Camera projection shared by rendering, picking, and diagnostic passes. */
+inline glm::mat4 cameraProjectionVulkanRH_ZO(bool orthographic, float fovyRad,
+                                              float orthoHeight, float aspect,
+                                              float zNear, float zFar) {
+    if (!orthographic) return perspectiveVulkanRH_ZO(fovyRad, aspect, zNear, zFar);
+    const float halfH = std::max(0.001f, orthoHeight * 0.5f);
+    const float halfW = halfH * std::max(0.001f, aspect);
+    return orthoVulkanRH_ZO(-halfW, halfW, -halfH, halfH, zNear, zFar);
 }
 
 }  // namespace graphics
