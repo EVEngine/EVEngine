@@ -132,6 +132,7 @@ file(GLOB all_test_cpp
   ability_system.cpp
   combat_attributes.cpp
   combat_damage.cpp
+  combat_framework_composition.cpp
   standard_combat_abilities.cpp
   gameplay_action.cpp
   rpg_simulation.cpp
