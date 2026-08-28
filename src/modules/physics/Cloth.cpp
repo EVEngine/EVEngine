@@ -457,7 +457,7 @@ void Cloth::integrate(float dt) {
             }
         }
         // Cap the per-substep displacement so dense pile-ups cannot accumulate
-        // unbounded kinetic energy (mirrors Fluid::update's maxSpeed clamp).
+        // unbounded kinetic energy (mirrors Fluid2D::update's maxSpeed clamp).
         constexpr float maxSpeed = 900.f;  // pixels/s
         const float maxDisp = maxSpeed * dt;
         const float dvx = p.x - p.px;

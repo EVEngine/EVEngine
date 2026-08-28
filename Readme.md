@@ -45,7 +45,7 @@ Evolutionary Vision Engine
 6. 可扩展的战斗模型组件；
 7. 对话框及脚本；
 8. Avatar 分层渲染；
-9. 2D 流体引擎（`Physics.newFluid`；另含可交互布料 `newCloth`）；
+9. 2D 流体引擎（`Physics.newFluid2D`；另含可交互布料 `newCloth`）；
 10. 粒子系统；
 11. Sprite-stacking 伪 3D 技术；
 12. 真实 3D 模型渲染。

@@ -45,7 +45,7 @@ Built-in systems:
 6. Extensible combat model components
 7. Dialogs and scripting
 8. Layered avatar rendering
-9. 2D fluid engine (`Physics.newFluid`; also interactive cloth via `newCloth`)
+9. 2D fluid engine (`Physics.newFluid2D`; also interactive cloth via `newCloth`)
 10. Particle system
 11. Sprite-stacking pseudo-3D
 12. Real 3D model rendering

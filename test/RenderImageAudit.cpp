@@ -73,7 +73,7 @@ using eve::graphics::Color;
 #include "particles/Particles.h"
 #include "physics/Body.h"
 #include "physics/Cloth.h"
-#include "physics/Fluid.h"
+#include "physics/Fluid2D.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
 #include "procgen/Params.h"
@@ -3190,7 +3190,7 @@ TEST_CASE("graphics.imageAudit.clusteredHair") {
     rc->compile();
 }
 
-TEST_CASE("graphics.imageAudit.clothFluid") {
+TEST_CASE("graphics.imageAudit.clothFluid2D") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
@@ -3235,7 +3235,7 @@ TEST_CASE("graphics.imageAudit.clothFluid") {
     presentExtra([&]() { cloth.draw(gfx); });
     auditSwapchain(gfx, "phys2d", "cloth_wind", bg);
 
-    eve::physics::Fluid fluid(512);
+    eve::physics::Fluid2D fluid(512);
     fluid.setGravity(0.f, 0.f);
     fluid.setParticleSize(18.f);
     fluid.setColor(0.25f, 0.6f, 0.95f, 1.f);

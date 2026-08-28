@@ -9,7 +9,7 @@ class World3D;
 class Cloth;
 class Cloth3D;
 class ClothGPU;
-class Fluid;
+class Fluid2D;
 class DistanceField3D;
 
 /**
@@ -119,15 +119,15 @@ public:
     ClothGPU *newClothGPU(int cols, int rows, float spacing, float originX, float originY);
 
     /**
-     * @brief Create an SPH fluid container with particle capacity.
-     * @param capacity max particles (>= 1)
+     * @brief Creates an interactive 2D particle fluid in pixel space.
+     * @param capacity maximum number of particles (>= 1)
      * @return Owning nullable fluid pointer transferred to the caller.
      * @ownership The caller owns the returned fluid and must delete it after use.
      * @lifetime Valid until caller destruction; it is not retained by Physics.
      * @thread Create and use on the owning physics thread.
      * @reentrancy The factory invokes no callbacks.
      */
-    Fluid *newFluid(int capacity = 512);
+    Fluid2D *newFluid2D(int capacity = 512);
 
 private:
     float meter_ = 30.f;

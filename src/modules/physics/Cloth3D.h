@@ -134,7 +134,7 @@ public:
     void applyForce(float fx, float fy, float fz);
 
     /**
-     * @brief Pointer-field interaction like Fluid::interactAt (3D): positive
+     * @brief Pointer-field interaction like Fluid2D::interactAt (3D): positive
      * strength attracts, negative repels within radius (meters).
      */
     void interactAt(float x, float y, float z, float radius, float strength);

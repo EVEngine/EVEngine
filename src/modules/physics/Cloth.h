@@ -129,7 +129,7 @@ public:
     void applyForce(float fx, float fy);
 
     /**
-     * @brief Pointer-field interaction like Fluid::interactAt: positive strength
+     * @brief Pointer-field interaction like Fluid2D::interactAt: positive strength
      * attracts, negative repels. Applied as acceleration within radius (pixels)
      * during the next update.
      */

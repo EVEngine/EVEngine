@@ -1,4 +1,4 @@
-#include "physics/Fluid.h"
+#include "physics/Fluid2D.h"
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
@@ -12,43 +12,43 @@ namespace eve::physics {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
 
-Fluid::Fluid(int capacity) : capacity_(capacity) {
-    if (capacity_ < 1) throw Exception("Fluid: capacity must be >= 1");
+Fluid2D::Fluid2D(int capacity) : capacity_(capacity) {
+    if (capacity_ < 1) throw Exception("Fluid2D: capacity must be >= 1");
     particles_.reserve(static_cast<size_t>(capacity_));
 }
 
-Fluid::~Fluid() { destroy(); }
+Fluid2D::~Fluid2D() { destroy(); }
 
-void Fluid::destroy() {
+void Fluid2D::destroy() {
     destroyed_ = true;
     particles_.clear();
     hash_.clear();
 }
 
-void Fluid::setGravity(float gx, float gy) {
+void Fluid2D::setGravity(float gx, float gy) {
     gravityX_ = gx;
     gravityY_ = gy;
 }
 
-void Fluid::setSmoothingRadius(float radius) {
-    if (radius <= 0.f) throw Exception("Fluid.setSmoothingRadius: radius must be > 0");
+void Fluid2D::setSmoothingRadius(float radius) {
+    if (radius <= 0.f) throw Exception("Fluid2D.setSmoothingRadius: radius must be > 0");
     h_ = radius;
 }
 
-void Fluid::setRestDensity(float density) {
-    if (density <= 0.f) throw Exception("Fluid.setRestDensity: density must be > 0");
+void Fluid2D::setRestDensity(float density) {
+    if (density <= 0.f) throw Exception("Fluid2D.setRestDensity: density must be > 0");
     restDensity_ = density;
 }
 
-void Fluid::setPressureStiffness(float k) { pressureK_ = std::max(0.f, k); }
+void Fluid2D::setPressureStiffness(float k) { pressureK_ = std::max(0.f, k); }
 
-void Fluid::setNearPressureStiffness(float k) { nearPressureK_ = std::max(0.f, k); }
+void Fluid2D::setNearPressureStiffness(float k) { nearPressureK_ = std::max(0.f, k); }
 
-void Fluid::setViscosity(float viscosity) { viscosity_ = std::clamp(viscosity, 0.f, 1.f); }
+void Fluid2D::setViscosity(float viscosity) { viscosity_ = std::clamp(viscosity, 0.f, 1.f); }
 
-void Fluid::setIterations(int iterations) { iterations_ = std::max(1, iterations); }
+void Fluid2D::setIterations(int iterations) { iterations_ = std::max(1, iterations); }
 
-void Fluid::setBounds(float x, float y, float w, float h) {
+void Fluid2D::setBounds(float x, float y, float w, float h) {
     if (w <= 0.f || h <= 0.f) {
         clearBounds();
         return;
@@ -60,9 +60,9 @@ void Fluid::setBounds(float x, float y, float w, float h) {
     boundH_ = h;
 }
 
-void Fluid::clearBounds() { hasBounds_ = false; }
+void Fluid2D::clearBounds() { hasBounds_ = false; }
 
-int Fluid::emit(float x, float y, int count, float vx, float vy) {
+int Fluid2D::emit(float x, float y, int count, float vx, float vy) {
     if (destroyed_ || count <= 0) return 0;
     int added = 0;
     const float step = std::max(2.5f, h_ * 0.35f);
@@ -81,56 +81,56 @@ int Fluid::emit(float x, float y, int count, float vx, float vy) {
     return added;
 }
 
-void Fluid::clear() {
+void Fluid2D::clear() {
     particles_.clear();
     hash_.clear();
 }
 
-void Fluid::interactAt(float x, float y, float radius, float strength) {
+void Fluid2D::interactAt(float x, float y, float radius, float strength) {
     interactX_ = x;
     interactY_ = y;
     interactRadius_ = std::max(0.f, radius);
     interactStrength_ = strength;
 }
 
-void Fluid::setColor(float r, float g, float b, float a) {
+void Fluid2D::setColor(float r, float g, float b, float a) {
     colorR_ = r;
     colorG_ = g;
     colorB_ = b;
     colorA_ = a;
 }
 
-void Fluid::setParticleSize(float size) { particleSize_ = std::max(1.f, size); }
+void Fluid2D::setParticleSize(float size) { particleSize_ = std::max(1.f, size); }
 
-bool Fluid::validIndex(int index) const {
+bool Fluid2D::validIndex(int index) const {
     return index >= 0 && index < getParticleCount();
 }
 
-float Fluid::getParticleX(int index) const {
+float Fluid2D::getParticleX(int index) const {
     if (!validIndex(index)) return 0.f;
     return particles_[static_cast<size_t>(index)].x;
 }
 
-float Fluid::getParticleY(int index) const {
+float Fluid2D::getParticleY(int index) const {
     if (!validIndex(index)) return 0.f;
     return particles_[static_cast<size_t>(index)].y;
 }
 
-float Fluid::getParticleVx(int index) const {
+float Fluid2D::getParticleVx(int index) const {
     if (!validIndex(index)) return 0.f;
     return particles_[static_cast<size_t>(index)].vx;
 }
 
-float Fluid::getParticleVy(int index) const {
+float Fluid2D::getParticleVy(int index) const {
     if (!validIndex(index)) return 0.f;
     return particles_[static_cast<size_t>(index)].vy;
 }
 
-int64_t Fluid::cellKey(int cx, int cy) const {
+int64_t Fluid2D::cellKey(int cx, int cy) const {
     return (int64_t(uint32_t(cx)) << 32) | int64_t(uint32_t(cy));
 }
 
-void Fluid::rebuildHash() {
+void Fluid2D::rebuildHash() {
     hash_.clear();
     const float inv = 1.f / h_;
     for (int i = 0; i < getParticleCount(); ++i) {
@@ -141,7 +141,7 @@ void Fluid::rebuildHash() {
     }
 }
 
-void Fluid::applyViscosity(float dt) {
+void Fluid2D::applyViscosity(float dt) {
     if (viscosity_ <= 0.f || getParticleCount() == 0) return;
     const float inv = 1.f / h_;
     for (int i = 0; i < getParticleCount(); ++i) {
@@ -174,7 +174,7 @@ void Fluid::applyViscosity(float dt) {
     }
 }
 
-void Fluid::doubleDensityRelaxation() {
+void Fluid2D::doubleDensityRelaxation() {
     const float inv = 1.f / h_;
     for (int i = 0; i < getParticleCount(); ++i) {
         Particle &pi = particles_[static_cast<size_t>(i)];
@@ -236,7 +236,7 @@ void Fluid::doubleDensityRelaxation() {
     }
 }
 
-void Fluid::collideBounds() {
+void Fluid2D::collideBounds() {
     if (!hasBounds_) return;
     const float pad = particleSize_ * 0.5f;
     const float minX = boundX_ + pad;
@@ -263,7 +263,7 @@ void Fluid::collideBounds() {
     }
 }
 
-void Fluid::update(float dt) {
+void Fluid2D::update(float dt) {
     if (destroyed_) return;
     if (getParticleCount() == 0) {
         interactStrength_ = 0.f;
@@ -326,7 +326,7 @@ void Fluid::update(float dt) {
     interactStrength_ = 0.f;
 }
 
-void Fluid::draw(graphics::Graphics *gfx) {
+void Fluid2D::draw(graphics::Graphics *gfx) {
     if (!gfx || destroyed_) return;
     const float s = particleSize_;
     for (const Particle &p : particles_) {
