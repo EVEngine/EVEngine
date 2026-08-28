@@ -2,7 +2,7 @@
 config = {
     width = 1280
     height = 720
-    title = "EVEngine 卡牌工具示例（UiCard）"
+    title = "EVEngine 52 张扑克牌示例"
     debug = false
     hotReload = true
 };
