@@ -1039,6 +1039,18 @@ run/macosx: ensure-built/macosx
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run $(RUN_ARGS); \
 	else build/macosx/src/engine/eve $(RUN_ARGS); fi
 
+debug/win32:
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
+	else build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
+
+debug/linux:
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
+	else build/linux-debug/src/engine/eve $(RUN_ARGS); fi
+
+debug/macosx:
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
+	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
+
 tools/debug:
 	cd tools/vscode-eve-debug && npx @vscode/vsce package 
 	cursor --install-extension ./tools/vscode-eve-debug/*.vsix
