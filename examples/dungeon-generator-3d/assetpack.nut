@@ -13,7 +13,8 @@ dungeonAssets <- {
              "wall_cracked", "wall", "wall_window_closed", "wall", "wall_broken", "wall"],
     corners = ["wall_corner_small", "wall_corner_small", "wall_corner_small", "wall_corner_gated"],
     doorways = ["wall_doorway", "wall_doorway", "wall_doorway_sides", "wall_doorway_door"],
-    stairs = "stairs",
+    stairs = "stairs_walled",
+    stairsVerticalOffset = -3.0,
     details = ["coin_stack_small", "plate_small", "bottle_A_brown"],
     roles = {
         column="pillar_decorated", container="barrel_large_decorated",

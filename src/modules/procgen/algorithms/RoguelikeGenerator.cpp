@@ -378,6 +378,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     const auto food = assetPool(params, "food", "food");
     const auto tavern = assetPool(params, "tavern", "tavern_prop");
     const auto clutter = assetPool(params, "clutter", "clutter");
+    const auto stairsAssets = assetPool(params, "stairs", "stairs");
     const float propDensity = std::clamp(params.getFloat("propDensity", 0.16f), 0.f, 1.f);
     const float corridorLightDensity =
         std::clamp(params.getFloat("corridorLightDensity", 0.035f), 0.f, 0.25f);
@@ -533,7 +534,33 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
         }
     }
 
-    // 8) Spawn + stairs on unoccupied walkable cells.
+    // 8) Spawn + an outward-facing perimeter stair. Stairs are architecture,
+    // not arbitrary floor clutter: orientation identifies the wall opening the
+    // renderer should replace (0 north, 180 south, 90 west, 270 east).
+    struct StairCandidate { int x, y; float rotation; };
+    std::vector<StairCandidate> stairCandidates;
+    for (const Rect &r : rooms) {
+        for (int x = r.x + 1; x < r.x + r.w - 1; ++x) {
+            if (uint32_t(out.getCell(x, r.y - 1)) == Semantic::Wall)
+                stairCandidates.push_back({x, r.y, 180.f});
+            if (uint32_t(out.getCell(x, r.y + r.h)) == Semantic::Wall)
+                stairCandidates.push_back({x, r.y + r.h - 1, 0.f});
+        }
+        for (int y = r.y + 1; y < r.y + r.h - 1; ++y) {
+            if (uint32_t(out.getCell(r.x - 1, y)) == Semantic::Wall)
+                stairCandidates.push_back({r.x, y, 270.f});
+            if (uint32_t(out.getCell(r.x + r.w, y)) == Semantic::Wall)
+                stairCandidates.push_back({r.x + r.w - 1, y, 90.f});
+        }
+    }
+    if (!stairCandidates.empty()) {
+        const StairCandidate &stairs = stairCandidates[size_t(seed) % stairCandidates.size()];
+        out.addAssetObject("stairs", "stairs", pickAsset(stairsAssets, rng),
+                           float(stairs.x), float(stairs.y), 1.f, 1.f,
+                           stairs.rotation, 64);
+        occupied.insert(cellKey(stairs.x, stairs.y));
+    }
+
     std::vector<std::pair<int, int>> walkable;
     for (int y = 0; y < h; ++y)
         for (int x = 0; x < w; ++x)
@@ -544,10 +571,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             return walkable[(seed * 1664525u + s * 1013904223u) % walkable.size()];
         };
         auto a = pick(1);
-        auto b = pick(7);
-        if (a == b && walkable.size() > 1) b = walkable[(size_t(seed) + 1) % walkable.size()];
         out.addObjectAt("spawn", "spawn", float(a.first), float(a.second));
-        out.addObjectAt("stairs", "stairs", float(b.first), float(b.second));
     }
 
     // 9) Metadata.

@@ -178,6 +178,10 @@ function walkable(x, y) {
     return cell == 2 || cell == 3;
 }
 
+function openingKey(x, y, side) {
+    return x.tostring() + ":" + y.tostring() + ":" + side.tostring();
+}
+
 function clearDungeon() {
     foreach (instance in dungeonInstances) instance.setVisible(false);
     foreach (light in dungeonLights) light.setEnabled(false);
@@ -210,6 +214,16 @@ function rebuildDungeon() {
     local generated = procgen.generate("level.roguelike", p);
     if (!generated.ok) throw generated.status.summary;
     dungeonGrid = generated.value;
+
+    local stairOpenings = {};
+    for (local i = 0; i < dungeonGrid.getObjectCount(); ++i) {
+        if (dungeonGrid.getObjectType(i) != "stairs") continue;
+        local rotation = dungeonGrid.getObjectRotation(i);
+        local side = rotation == 180.0 ? 0 : (rotation == 0.0 ? 1 :
+                     (rotation == 270.0 ? 2 : 3));
+        stairOpenings[openingKey(dungeonGrid.getObjectX(i).tointeger(),
+                                 dungeonGrid.getObjectY(i).tointeger(), side)] <- true;
+    }
 
     local ox = -DUNGEON_W * DUNGEON_CELL * 0.5;
     local oz = -DUNGEON_H * DUNGEON_CELL * 0.5;
@@ -244,34 +258,42 @@ function rebuildDungeon() {
                 // KayKit wall pieces are four units long and half a unit thick.
                 // Place them on the walkable cell edges instead of at solid-cell
                 // centres so corners and corridors form a continuous perimeter.
-                if (!walkable(x, y - 1))
+                if (!walkable(x, y - 1) && !(openingKey(x, y, 0) in stairOpenings))
                     addAsset(wallAsset(x, y, 0), cx, 0.0, cz - DUNGEON_CELL * 0.5, 0.0);
-                if (!walkable(x, y + 1))
+                if (!walkable(x, y + 1) && !(openingKey(x, y, 1) in stairOpenings))
                     addAsset(wallAsset(x, y, 1), cx, 0.0, cz + DUNGEON_CELL * 0.5, 3.1415926);
-                if (!walkable(x - 1, y))
+                if (!walkable(x - 1, y) && !(openingKey(x, y, 2) in stairOpenings))
                     addAsset(wallAsset(x, y, 2), cx - DUNGEON_CELL * 0.5, 0.0, cz, 1.5707963);
-                if (!walkable(x + 1, y))
+                if (!walkable(x + 1, y) && !(openingKey(x, y, 3) in stairOpenings))
                     addAsset(wallAsset(x, y, 3), cx + DUNGEON_CELL * 0.5, 0.0, cz, 4.7123890);
 
                 // Small modular corner caps hide straight-piece intersections.
                 // Their semantic pool is replaceable, so other packs can use a
                 // pillar, corner prefab, or leave the array empty.
-                if (!walkable(x, y - 1) && !walkable(x - 1, y)) {
+                if (!walkable(x, y - 1) && !walkable(x - 1, y) &&
+                    !(openingKey(x, y, 0) in stairOpenings) &&
+                    !(openingKey(x, y, 2) in stairOpenings)) {
                     local id = architectureAsset("corners", x, y, 0);
                     if (id != "") addAsset(id, cx - DUNGEON_CELL * 0.5, 0.0,
                                            cz - DUNGEON_CELL * 0.5, 1.5707963);
                 }
-                if (!walkable(x, y - 1) && !walkable(x + 1, y)) {
+                if (!walkable(x, y - 1) && !walkable(x + 1, y) &&
+                    !(openingKey(x, y, 0) in stairOpenings) &&
+                    !(openingKey(x, y, 3) in stairOpenings)) {
                     local id = architectureAsset("corners", x, y, 1);
                     if (id != "") addAsset(id, cx + DUNGEON_CELL * 0.5, 0.0,
                                            cz - DUNGEON_CELL * 0.5, 0.0);
                 }
-                if (!walkable(x, y + 1) && !walkable(x + 1, y)) {
+                if (!walkable(x, y + 1) && !walkable(x + 1, y) &&
+                    !(openingKey(x, y, 1) in stairOpenings) &&
+                    !(openingKey(x, y, 3) in stairOpenings)) {
                     local id = architectureAsset("corners", x, y, 2);
                     if (id != "") addAsset(id, cx + DUNGEON_CELL * 0.5, 0.0,
                                            cz + DUNGEON_CELL * 0.5, 4.7123890);
                 }
-                if (!walkable(x, y + 1) && !walkable(x - 1, y)) {
+                if (!walkable(x, y + 1) && !walkable(x - 1, y) &&
+                    !(openingKey(x, y, 1) in stairOpenings) &&
+                    !(openingKey(x, y, 2) in stairOpenings)) {
                     local id = architectureAsset("corners", x, y, 3);
                     if (id != "") addAsset(id, cx - DUNGEON_CELL * 0.5, 0.0,
                                            cz + DUNGEON_CELL * 0.5, 3.1415926);
@@ -340,6 +362,15 @@ function rebuildDungeon() {
             else pz += edge;
         }
 
+        if (role == "stairs" && (flags & 64) != 0) {
+            local edge = DUNGEON_CELL * 0.5;
+            if (rotationDegrees == 0.0) pz += edge;
+            else if (rotationDegrees == 180.0) pz -= edge;
+            else if (rotationDegrees == 90.0) px += edge;
+            else px -= edge;
+            py = dungeonAssets.stairsVerticalOffset;
+        }
+
         // KayKit wall torches and weapon plaques are modelled around their
         // local origin; lift those roles to a natural eye-level mount. Food is
         // authored at floor origin, so overlays sharing a table cell are raised.
@@ -348,10 +379,11 @@ function rebuildDungeon() {
         else if (role == "food") py = 1.88;
 
         local propScale = 1.0;
-        if (role == "table" || role == "bed" || role == "tavern") propScale = 1.30;
+        if (role == "table" || role == "tavern") propScale = 1.50;
+        else if (role == "bed") propScale = 1.25;
         else if (role == "banner") propScale = 1.18;
-        else if (role == "seating" || role == "container" || role == "treasure" ||
-                 role == "clutter") propScale = 1.18;
+        else if (role == "seating" || role == "container") propScale = 1.35;
+        else if (role == "treasure") propScale = 1.25;
         addAsset(id, px, py, pz, yaw, propScale, propScale, propScale);
         if (role == "light") lightCandidates.append([px, py + 0.35, pz]);
     }

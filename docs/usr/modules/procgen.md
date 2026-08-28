@@ -774,11 +774,14 @@ local p = paramsResult.value;
 p.setSeed(42);
 p.setSize(48, 32);
 p.setInt("roomCount", 12);
+p.setString("layoutStyle", "clustered");       // grid | clustered
+p.setString("connectionStyle", "nearest");    // sequential | nearest
 p.setString("corridorStyle", "l");   // l | straight | diagonal
 p.setString("floorPattern", "brick");// brick | checker | plank | cobble | plain
 p.setFloat("decorDensity", 0.06);
 p.setString("decorSet", "mixed");    // none | pillars | treasure | mixed
 p.setFloat("propDensity", 0.16);     // themed room-edge prop dressing
+p.setFloat("corridorLightDensity", 0.035); // semantic wall lights on corridors
 // Optional, asset-pack-neutral pools (model/prefab ids, comma separated):
 p.setString("assetPack", "my-dungeon-pack");
 p.setString("assets.container", "crate,barrel,chest");
@@ -790,7 +793,9 @@ local grid = gridResult.value;
 
 常用规则：`roomCount` / `roomMin` / `roomMax`（房间预算与尺寸）、
 `corridorWidth`（走廊宽）、`padding`（外框墙厚）、`spacing`（房间间距）、
-`floorVariants`（地板变体数）、`autotile`（是否写入墙方向掩码）。
+`floorVariants`（地板变体数）、`autotile`（是否写入墙方向掩码）。`clustered`
+布局从中心房间向四周生长，配合 `nearest` 连接可得到短走廊和分叉拓扑；默认值仍为
+`grid` / `sequential`，以保持既有调用结果。
 
 配套工具：
 
@@ -798,6 +803,8 @@ local grid = gridResult.value;
   为其它算法生成的关卡也加上“瓦片方向”细节。
 - `procgen.randomSeed()`：产生一个非 0 的随机种子，用于再掷一局。
 - 自动布景会给房间选择储藏、寝室、餐厅、军械、宝库、祭坛或酒馆主题。
+  每个房间还会输出带主题资产名与矩形范围的 `room` 区域对象；楼梯对象带朝向与
+  边界开口标记，3D 渲染器可据此替换对应墙段并生成向外下行的入口。
   对象通过 `getObjectType/Asset/Rotation/Flags` 暴露语义角色、可替换资产、朝向和
   放置属性；`assets.<role>` 池可映射任意 3D 资产包，无需修改生成器。
 

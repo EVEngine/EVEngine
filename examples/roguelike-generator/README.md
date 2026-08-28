@@ -26,7 +26,8 @@ On top of the plain wall/floor grid, `level.roguelike` writes a per-cell
 | corridor | `3`   | floor-pattern variant `1..N` |
 | decor tile | `2`  | `>= 100` → scattered decor tile (rubble / grass / pebble) |
 
-Objects (`getObjectType`) place the player **spawn**, **stairs**, and themed props.
+Objects (`getObjectType`) place the player **spawn**, a perimeter-aligned **stairs**
+entrance, themed props, and non-rendered `room` zones carrying each theme and bounds.
 Each prop exposes its semantic role, configurable asset id (`getObjectAsset`),
 rotation, footprint and placement flags. `getMeta` records `seed`, `rooms`, `floorPattern`,
 `decorTiles`, `corridorStyle` so a level can be reproduced or saved.
@@ -50,11 +51,15 @@ height remains adjustable.
 - `seed` — deterministic replay.
 - `roomCount`, `roomMin`, `roomMax` — room placement budget / sizes.
 - `corridorStyle` = `"l" | "straight" | "diagonal"`.
+- `layoutStyle` = `"grid" | "clustered"` — evenly distributed slots or organic
+  parent-room growth.
+- `connectionStyle` = `"sequential" | "nearest"` — linear chain or compact branch tree.
 - `floorPattern` = `"brick" | "checker" | "plank" | "cobble" | "plain"`.
 - `floorVariants` — number of floor variants (detail 1..N).
 - `decorDensity` (0..1) — how many floor cells get scattered decor tiles.
 - `decorSet` = `"none" | "pillars" | "treasure" | "nature" | "mixed"`.
 - `propDensity` (0..1) — sparse room-edge clutter budget.
+- `corridorLightDensity` (0..0.25) — semantic wall-light frequency on connectors.
 - `assetPack` — informational pack id; the algorithm never branches on it.
 - `assets.<role>` — comma-separated model/prefab ids for architecture and prop
   roles. See `assetpacks/kaykit_dungeon.nut` for the optional KayKit adapter.

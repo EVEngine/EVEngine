@@ -237,7 +237,16 @@ TEST_CASE("procgen.roguelike.structure") {
     bool hasSpawn = false, hasStairs = false;
     for (int i = 0; i < g->getObjectCount(); ++i) {
         if (g->getObjectType(i) == "spawn") hasSpawn = true;
-        if (g->getObjectType(i) == "stairs") hasStairs = true;
+        if (g->getObjectType(i) == "stairs") {
+            hasStairs = true;
+            CHECK((g->getObjectFlags(i) & 64) != 0);
+            const int x = int(g->getObjectX(i)), y = int(g->getObjectY(i));
+            const float rotation = g->getObjectRotation(i);
+            if (rotation == 180.f) CHECK_EQ(g->getCell(x, y - 1), int(Semantic::Wall));
+            else if (rotation == 0.f) CHECK_EQ(g->getCell(x, y + 1), int(Semantic::Wall));
+            else if (rotation == 270.f) CHECK_EQ(g->getCell(x - 1, y), int(Semantic::Wall));
+            else { CHECK_EQ(rotation, 90.f); CHECK_EQ(g->getCell(x + 1, y), int(Semantic::Wall)); }
+        }
     }
     CHECK(hasSpawn);
     CHECK(hasStairs);
