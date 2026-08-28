@@ -193,6 +193,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     const int      clusterGapMin = clampInt(params.getInt("clusterGapMin", spacing + 1), 1, 8);
     const int      clusterGapMax = clampInt(params.getInt("clusterGapMax", spacing + 3),
                                              clusterGapMin, 12);
+    const int      clusterBranchBias = clampInt(params.getInt("clusterBranchBias", 0), 0, 4);
     const int      corridorW   = clampInt(params.getInt("corridorWidth", 1), 1, 3);
     const std::string layout   = params.getString("layoutStyle", "grid");
     const std::string style    = params.getString("corridorStyle", "l");
@@ -227,7 +228,12 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
         std::uniform_int_distribution<int> clusterGap(clusterGapMin, clusterGapMax);
         const int maxAttempts = roomCount * 160;
         for (int attempt = 0; attempt < maxAttempts && int(rooms.size()) < roomCount; ++attempt) {
-            const size_t parentIndex = size_t(rng()) % rooms.size();
+            size_t parentIndex = size_t(rng()) % rooms.size();
+            // Sampling additional candidates and keeping the oldest biases
+            // growth toward established hubs without prescribing a layout.
+            // Zero preserves uniform parent selection.
+            for (int sample = 0; sample < clusterBranchBias; ++sample)
+                parentIndex = std::min(parentIndex, size_t(rng()) % rooms.size());
             const Rect &parent = rooms[parentIndex];
             const int rw = std::min(dim(rng), w - padding * 2);
             const int rh = std::min(dim(rng), h - padding * 2);
@@ -457,12 +463,12 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("container", containers, right - 0.75f, top + 1.35f, 245.f, 16);
                 place("container", containers, right - 0.55f, bottom - 1.25f, 300.f, 16);
                 place("shelf", wallShelves, cx, bottom, 0.f, 1 | 2);
-                if (r.h >= 7) place("shelf", wallShelves, left, cy + 1, 90.f, 1 | 2);
-                if (r.w >= 8) place("container", containers, left + 2, bottom, 0.f, 1);
+                if (r.h >= 6) place("shelf", wallShelves, left, cy + 1, 90.f, 1 | 2);
+                if (r.w >= 6) place("container", containers, left + 2, bottom, 0.f, 1);
                 place("clutter", clutter, left + 1, bottom, 0.f, 16);
             } else if (theme == 1) {
                 place("bed", beds, right, cy, 270.f, 1, 1.f, 2.f);
-                if (r.h >= 7) place("bed", beds, right, cy - 2, 270.f, 1, 1.f, 2.f);
+                if (r.h >= 6) place("bed", beds, right, cy - 2, 270.f, 1, 1.f, 2.f);
                 place("container", containers, right - 1, top, 180.f, 1);
                 place("light", lights, right - 1, cy, 0.f, 4);
                 place("seating", seating, left + 1, bottom - 1, 45.f, 1);
@@ -475,7 +481,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("food", food, cx, cy, 0.f, 16);
                 place("food", food, cx - 0.38f, cy + 0.18f, 25.f, 16);
                 place("food", food, cx + 0.38f, cy - 0.18f, 205.f, 16);
-                if (r.w >= 8) {
+                if (r.w >= 6) {
                     place("table", tables, cx - 2, cy, 0.f, 1, 2.f, 1.f);
                     place("seating", seating, cx - 2, cy - 1, 0.f, 1);
                     place("seating", seating, cx - 2, cy + 1, 180.f, 1);
@@ -485,7 +491,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("weapon", weapons, left, cy, 90.f, 2);
                 place("weapon", weapons, cx, bottom, 0.f, 2);
                 place("column", columns, cx, cy, 0.f, 1);
-                if (r.w >= 7) place("column", columns, left + 1, bottom - 1, 0.f, 1);
+                if (r.w >= 6) place("column", columns, left + 1, bottom - 1, 0.f, 1);
                 place("container", containers, right, top + 1, 270.f, 1);
                 if ((rng() & 1u) != 0) place("trap", traps, cx - 1, cy, 0.f, 8);
             } else if (theme == 5) {
@@ -494,7 +500,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("light", lights, cx + 0.45f, cy, 0.f, 4);
                 place("food", food, cx, cy, 0.f, 16);
                 place("seating", seating, cx, bottom - 1, 180.f, 1);
-                if (r.w >= 7) {
+                if (r.w >= 6) {
                     place("seating", seating, cx - 2, bottom - 1, 180.f, 1);
                     place("seating", seating, cx + 2, bottom - 1, 180.f, 1);
                 }
@@ -517,7 +523,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             if (propDensity >= 0.45f && theme != 0 && theme != 4 && theme != 6) {
                 place("container", containers, right, bottom - 1, 270.f, 1);
                 place("container", containers, right - 0.65f, bottom - 1.3f, 245.f, 16);
-                if (r.w >= 7 && theme != 2)
+                if (r.w >= 6 && theme != 2)
                     place("seating", seating, left + 1, top + 1, 45.f, 1);
             }
 
@@ -661,6 +667,8 @@ void registerRoguelikeGenerator(GeneratorRegistry &registry) {
         "clusterGapMin", "Cluster Minimum Gap", 2, 1, 8));
     descriptor.params.push_back(ParamDescriptor::integer(
         "clusterGapMax", "Cluster Maximum Gap", 4, 1, 12));
+    descriptor.params.push_back(ParamDescriptor::integer(
+        "clusterBranchBias", "Cluster Branch Bias", 0, 0, 4));
     descriptor.params.push_back(ParamDescriptor::integer("corridorWidth", "Corridor Width", 1, 1, 3));
     descriptor.params.push_back(ParamDescriptor::choice("layoutStyle", "Room Layout", "grid",
                                                         {"grid", "clustered"}));

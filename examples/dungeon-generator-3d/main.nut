@@ -96,8 +96,12 @@ function floorMaterial(tone) {
 }
 
 function queueFloor(groups, x, z, variant, tone) {
-    local key = tone[0].tostring() + ":" + tone[1].tostring() + ":" + tone[2].tostring();
-    if (!(key in groups)) groups[key] <- { tone=tone, cells=[] };
+    local shade = (((variant * 7 + (x * 0.25).tointeger() * 3 +
+                     (z * 0.25).tointeger() * 5) % 5) - 2) * 0.012;
+    local variedTone = [tone[0] + shade, tone[1] + shade, tone[2] + shade];
+    local key = variedTone[0].tostring() + ":" + variedTone[1].tostring() +
+                ":" + variedTone[2].tostring();
+    if (!(key in groups)) groups[key] <- { tone=variedTone, cells=[] };
     groups[key].cells.append([x, z, variant]);
 }
 
@@ -232,6 +236,7 @@ function rebuildDungeon() {
     p.setInt("spacing", 0);
     p.setInt("clusterGapMin", 1);
     p.setInt("clusterGapMax", 1);
+    p.setInt("clusterBranchBias", 2);
     p.setInt("corridorWidth", 1);
     p.setString("layoutStyle", "clustered");
     p.setString("corridorStyle", "l");

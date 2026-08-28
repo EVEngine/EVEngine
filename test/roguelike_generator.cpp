@@ -277,7 +277,7 @@ TEST_CASE("procgen.roguelike.seedVaries") {
 TEST_CASE("procgen.roguelike.rulesChangeLayout") {
     Procgen *mod = Procgen::create();
     auto     gen = [&](int rooms, const std::string &pattern, const std::string &style,
-                       const std::string &layout) {
+                       const std::string &layout, int branchBias) {
         auto p     = requireParams();
         auto pView = p.view();
         REQUIRE(pView.isBound());
@@ -288,6 +288,7 @@ TEST_CASE("procgen.roguelike.rulesChangeLayout") {
         pView->setString("corridorStyle", style);
         pView->setString("layoutStyle", layout);
         pView->setString("connectionStyle", layout == "clustered" ? "growth" : "sequential");
+        pView->setInt("clusterBranchBias", branchBias);
         auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
         auto g      = gLease.view();
         REQUIRE(g.isBound());
@@ -295,19 +296,22 @@ TEST_CASE("procgen.roguelike.rulesChangeLayout") {
         return copy;
     };
 
-    Grid2D few  = gen(5, "brick", "l", "grid");
-    Grid2D many = gen(20, "brick", "l", "grid");
+    Grid2D few  = gen(5, "brick", "l", "grid", 0);
+    Grid2D many = gen(20, "brick", "l", "grid", 0);
     CHECK(few.cells() != many.cells());
 
     // Pattern change keeps same base but alters floor detail.
-    Grid2D brick   = gen(9, "brick", "l", "grid");
-    Grid2D checker = gen(9, "checker", "l", "grid");
+    Grid2D brick   = gen(9, "brick", "l", "grid", 0);
+    Grid2D checker = gen(9, "checker", "l", "grid", 0);
     CHECK_EQ(brick.cells(), checker.cells());
     CHECK(brick.detail() != checker.detail());
 
-    Grid2D clustered = gen(9, "brick", "l", "clustered");
+    Grid2D clustered = gen(9, "brick", "l", "clustered", 0);
     CHECK(clustered.cells() != brick.cells());
     CHECK(allWalkableConnected(clustered));
+    Grid2D hubClustered = gen(9, "brick", "l", "clustered", 2);
+    CHECK(hubClustered.cells() != clustered.cells());
+    CHECK(allWalkableConnected(hubClustered));
 }
 
 TEST_CASE("procgen.roguelike.configurableAssetDressing") {

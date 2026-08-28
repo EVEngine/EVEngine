@@ -9,7 +9,9 @@ The showcase uses the generator's `clustered` room growth and `growth`
 connections, which preserve the generated parent-child tree and make short,
 direct door links. `clusterGapMin` and `clusterGapMax` configure the structural gap
 between clustered rooms; setting both to `1` produces the compact, short-link
-composition used here. It also uses an orthographic camera framed from the occupied bounds, merged
+composition used here. `clusterBranchBias` samples older parent rooms more
+often, producing a multi-branch hub instead of a long chain. It also uses an
+orthographic camera framed from the occupied bounds, merged
 cut-corner stone floor meshes, modular wall/corner/doorway pieces, perimeter
 stairs, theme-aware furniture clusters and evenly distributed warm point lights.
 
