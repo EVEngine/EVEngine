@@ -157,6 +157,18 @@ void Camera3D::setUp(float x, float y, float z) {
 
 void Camera3D::setFov(float fovYDeg) { data()->fovYDeg = fovYDeg; }
 
+void Camera3D::setOrthographic(float height) {
+    data()->orthographic = true;
+    data()->orthoHeight = std::max(0.001f, height);
+}
+
+void Camera3D::setPerspective() { data()->orthographic = false; }
+
+void Camera3D::setClipPlanes(float nearZ, float farZ) {
+    data()->nearZ = std::max(0.001f, nearZ);
+    data()->farZ = std::max(data()->nearZ + 0.001f, farZ);
+}
+
 void Camera3D::setActive(bool active) { data()->active = active; }
 
 void Camera3D::setAmbient(float r, float g, float b) {
@@ -188,7 +200,8 @@ void Camera3D::screenToRay(float screenX, float screenY, float viewW, float view
     const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
     const float aspect = viewW / viewH;
     const float fovRad = d->fovYDeg * 0.017453292519943295f;
-    const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, d->nearZ, d->farZ);
+    const glm::mat4 projM = cameraProjectionVulkanRH_ZO(
+        d->orthographic, fovRad, d->orthoHeight, aspect, d->nearZ, d->farZ);
     const glm::mat4 invVP = glm::inverse(projM * viewM);
 
     // Screen pixel → Vulkan NDC (Y-down; matches perspectiveVulkanRH_ZO).
@@ -211,6 +224,11 @@ void Camera3D::screenToRay(float screenX, float screenY, float viewW, float view
     d->screenRayOx = eye.x;
     d->screenRayOy = eye.y;
     d->screenRayOz = eye.z;
+    if (d->orthographic) {
+        d->screenRayOx = nearPt.x;
+        d->screenRayOy = nearPt.y;
+        d->screenRayOz = nearPt.z;
+    }
     d->screenRayDx = dir.x;
     d->screenRayDy = dir.y;
     d->screenRayDz = dir.z;
@@ -512,11 +530,13 @@ CameraView buildCameraView(Camera3D::Data *cd, const std::vector<PackedLight3D> 
     const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
     cv.view     = glm::lookAtRH(cv.eye, look, up);
     cv.fovRad   = cd->fovYDeg * 0.017453292519943295f;
-    cv.proj     = perspectiveVulkanRH_ZO(cv.fovRad, aspect, cd->nearZ, cd->farZ);
+    cv.proj     = cameraProjectionVulkanRH_ZO(cd->orthographic, cv.fovRad,
+                                              cd->orthoHeight, aspect,
+                                              cd->nearZ, cd->farZ);
     cv.viewProj = cv.proj * cv.view;
     cv.frustum  = extractFrustum(cv.viewProj);
     cv.lighting = packLights3D(packed, cd);
-    if (useClustered) {
+    if (useClustered && !cd->orthographic) {
         cv.clustered      = buildClusteredLighting(clusteredPoints, clusteredDirs, cv.view, cd->nearZ, cd->farZ,
                                                    gfx.getWidth(), gfx.getHeight(), cv.fovRad,
                                                    glm::vec4(cd->ambientR, cd->ambientG, cd->ambientB, 0.f));
@@ -1098,7 +1118,8 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
     const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
     const glm::mat4 viewM = glm::lookAtRH(eye, look, up);
     const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-    const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
+    const glm::mat4 projM = cameraProjectionVulkanRH_ZO(
+        cd->orthographic, fovRad, cd->orthoHeight, aspect, cd->nearZ, cd->farZ);
     gfx.setMesh3DViewProj(projM * viewM);
     gfx.setMesh3DView(viewM);
     gfx.setMesh3DClip(cd->nearZ, cd->farZ);
@@ -1112,7 +1133,8 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
     ClusteredLightingUpload noClustered{};
     noClustered.active = false;
     gfx.setMesh3DClusteredLighting(noClustered);
-    gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+    const Lighting3DPack sceneLighting = packLights3D(packed, cd.operator->());
+    gfx.setMesh3DLighting(sceneLighting);
     ShadowUpload noShadow{};
     noShadow.active = false;
     gfx.setMesh3DShadows(noShadow);
@@ -1122,19 +1144,61 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [xf, mr] = *it;
             if (!mr->visible) continue;
-            // Legacy per-entity material path (no parts / materials / hair).
-            gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
-            gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
-            gfx.setMesh3DNormalTexture(mr->normalTexture);
-            gfx.setMesh3DHeightTexture(mr->heightTexture);
-            gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers, mr->parallaxMaxLayers);
-            gfx.setMesh3DShadowReceive(false);
-            Texture *albedo = mr->texture;
-            Color tint(mr->r, mr->g, mr->b, mr->a);
-            Shader *shader = mr->shader;
             const glm::mat4 model = modelFromTransform(*xf);
-            eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
-            gfx.drawMeshShader(mr->mesh, model, albedo, tint, shader);
+
+            auto drawPreviewMesh = [&](Mesh *mesh, Material *material) {
+                if (!mesh) return;
+
+                Texture *albedo = mr->texture;
+                Color    tint(mr->r, mr->g, mr->b, mr->a);
+                Shader  *shader = mr->shader;
+                bool     lit    = mr->receiveLight;
+                if (material) {
+                    material->bind(gfx);
+                    albedo = material->getAlbedoTexture();
+                    tint   = Color(material->getTintR(), material->getTintG(),
+                                   material->getTintB(), material->getTintA());
+                    shader = material->effectiveShader();
+                    lit    = material->getReceiveLight();
+                } else {
+                    gfx.setMesh3DSurface(mr->isHair ? SurfaceMode::Transparent
+                                                    : SurfaceMode::Opaque,
+                                         BlendMode::Alpha, false, mr->isHair, 0.5f);
+                    gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
+                    gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength,
+                                             mr->texBombRot);
+                    gfx.setMesh3DNormalTexture(mr->normalTexture);
+                    gfx.setMesh3DHeightTexture(mr->heightTexture);
+                    gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers,
+                                          mr->parallaxMaxLayers);
+                }
+
+                // The preview intentionally omits shadow and clustered passes, but
+                // it must preserve the material's lighting contract.
+                gfx.setMesh3DClusteredActive(false);
+                gfx.setMesh3DShadowReceive(false);
+                if (lit) {
+                    gfx.setMesh3DLighting(sceneLighting);
+                } else {
+                    Lighting3DPack unlit{};
+                    unlit.count   = 0;
+                    unlit.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+                    gfx.setMesh3DLighting(unlit);
+                }
+
+                eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
+                gfx.drawMeshShader(mesh, model, albedo, tint, shader);
+            };
+
+            if (mr->usesParts()) {
+                for (int p = 0; p < mr->partCount; ++p) {
+                    Material *material =
+                        mr->parts[p].material ? mr->parts[p].material : mr->material;
+                    drawPreviewMesh(mr->parts[p].mesh, material);
+                }
+            } else {
+                drawPreviewMesh(mr->mesh, mr->material);
+            }
         }
     }
 

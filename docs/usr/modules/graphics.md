@@ -22,6 +22,11 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 
 在 `eve_render()` 开始调用 `clear()`，随后按背景、地图、角色、粒子、UI 的顺序提交。纯色占位使用 `drawSolidRect()`；已有 Texture 使用 `drawTexturedRect()`。需要围绕矩形中心旋转的精灵可调用 `drawTexturedRectRotated(texture, centerX, centerY, width, height, degrees, r, g, b, a)`；屏幕坐标 Y 轴向下，因此正角度表现为顺时针旋转。正常主循环由引擎负责 present。
 
+`drawText(font, text, x, y, r, g, b, a, scale)` 在当前屏幕或 Canvas 坐标的任意
+位置绘制 UTF-8 文本，`(x, y)` 是该行左上角。`font` 必须是 `newFont()` 返回的字体；
+绘制调用不读取或修改当前字体状态。原有的 `print(text, x, y, r, g, b, a, scale)`
+继续保留，并使用 `setFont()` 选择的当前字体。
+
 需要 UV 动画、旋转、独立混合模式或程序化变换时，使用脚本精灵对象：
 
 ```squirrel
@@ -46,6 +51,11 @@ gfx.renderSprites();
 ### 渲染带光照的 3D 对象
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
+
+`Camera3D` 默认使用透视投影。等距视图可调用 `setOrthographic(height)`，其中
+`height` 是世界空间中的垂直可视范围；`setPerspective()` 恢复透视投影。
+`setClipPlanes(near, far)` 配置两种投影共用的近、远裁剪面，并要求
+`0 < near < far`。
 
 ### 纹理过滤（mipmap / 各向异性 / LOD）
 
@@ -248,7 +258,7 @@ fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);
 - `setReceiveLight()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setHair()`、`getHair()`、`setShadowBias()`、`setShadowStrength()`
 - `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setParallax()`、`getParallaxScale()`、`getParallaxMinLayers()`、`getParallaxMaxLayers()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
-- 字体：`newFont()`、`setFont()`、`getFont()`、`getAscent()`、`getBaseline()`、`hasGlyph()`
+- 字体：`newFont()`、`setFont()`、`getFont()`、`drawText()`、`print()`、`getAscent()`、`getBaseline()`、`hasGlyph()`
 - `AlphaMask`：`newAlphaMask()`、`setThreshold()`、`getThreshold()`、`setSoftness()`、`getSoftness()`、`setInverted()`、`getInverted()`
 - `Sprite2D`：`setPosition()`、`getX()`、`getY()`、`setRotation()`、`getRotation()`、`setScale()`、`getScaleX()`、`getScaleY()`、`setSize()`、`getWidth()`、`getHeight()`、`setTexture()`、`getTexture()`、`setQuad()`、`getQuad()`、`setColor()`、`setLayer()`、`getLayer()`、`setVisible()`、`getVisible()`、`setReceiveLight()`、`getReceiveLight()`、`setBlend()`、`getBlend()`、`setAnchor()`、`getAnchorX()`、`getAnchorY()`、`setFlip()`、`getFlipX()`、`getFlipY()`、`setFrameLayout()`、`setCastOcclusion()`、`getCastOcclusion()`、`destroy()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等

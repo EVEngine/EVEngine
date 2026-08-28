@@ -13,6 +13,22 @@
 namespace eve::physics {
 namespace {
 
+template <class T>
+eve::Result<T> bodyValueFailure(eve::DiagnosticCode code, std::string message, std::string path) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "physics.body3d"));
+}
+
+eve::Result<void> validateOwnedTransformInput(const Body3D& body, float x, float y, float z) {
+    if (!body.isValid())
+        return bodyValueFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                      "physics body is no longer valid", "body");
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
+        return bodyValueFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                      "transform input must be finite", "value");
+    return eve::Result<void>::success();
+}
+
 b3BodyType parseBodyType(const std::string &type) {
     if (type == "static") return b3_staticBody;
     if (type == "kinematic") return b3_kinematicBody;
@@ -351,6 +367,14 @@ std::vector<float> Body3D::localToWorldPoint(float x, float y, float z) const {
             static_cast<float>(value.z)};
 }
 
+eve::Result<PhysicsVector3D> Body3D::localToWorldPointOwned(float x, float y, float z) const {
+    auto valid = validateOwnedTransformInput(*this, x, y, z);
+    if (!valid) return eve::Result<PhysicsVector3D>::failure(valid.status());
+    const b3Pos value = b3Body_GetWorldPoint(bodyId_, b3Vec3{x, y, z});
+    return eve::Result<PhysicsVector3D>::success(
+        {static_cast<float>(value.x), static_cast<float>(value.y), static_cast<float>(value.z)});
+}
+
 std::vector<float> Body3D::worldToLocalPoint(float x, float y, float z) const {
     if (!isValid()) return {0.f, 0.f, 0.f};
     const b3Vec3 value = b3Body_GetLocalPoint(
@@ -358,11 +382,25 @@ std::vector<float> Body3D::worldToLocalPoint(float x, float y, float z) const {
     return {value.x, value.y, value.z};
 }
 
+eve::Result<PhysicsVector3D> Body3D::worldToLocalPointOwned(float x, float y, float z) const {
+    auto valid = validateOwnedTransformInput(*this, x, y, z);
+    if (!valid) return eve::Result<PhysicsVector3D>::failure(valid.status());
+    const b3Vec3 value = b3Body_GetLocalPoint(bodyId_, b3Vec3{x, y, z});
+    return eve::Result<PhysicsVector3D>::success({value.x, value.y, value.z});
+}
+
 std::vector<float> Body3D::localToWorldVector(float x, float y, float z) const {
     if (!isValid()) return {0.f, 0.f, 0.f};
     const b3Vec3 value = b3Body_GetWorldVector(
         bodyId_, checkedVector(x, y, z, "Body3D.localToWorldVector", "vector"));
     return {value.x, value.y, value.z};
+}
+
+eve::Result<PhysicsVector3D> Body3D::localToWorldVectorOwned(float x, float y, float z) const {
+    auto valid = validateOwnedTransformInput(*this, x, y, z);
+    if (!valid) return eve::Result<PhysicsVector3D>::failure(valid.status());
+    const b3Vec3 value = b3Body_GetWorldVector(bodyId_, b3Vec3{x, y, z});
+    return eve::Result<PhysicsVector3D>::success({value.x, value.y, value.z});
 }
 
 std::vector<float> Body3D::worldToLocalVector(float x, float y, float z) const {
@@ -377,6 +415,13 @@ std::vector<float> Body3D::getLocalPointVelocity(float x, float y, float z) cons
     const b3Vec3 value = b3Body_GetLocalPointVelocity(
         bodyId_, checkedVector(x, y, z, "Body3D.getLocalPointVelocity", "point"));
     return {value.x, value.y, value.z};
+}
+
+eve::Result<PhysicsVector3D> Body3D::getLocalPointVelocityOwned(float x, float y, float z) const {
+    auto valid = validateOwnedTransformInput(*this, x, y, z);
+    if (!valid) return eve::Result<PhysicsVector3D>::failure(valid.status());
+    const b3Vec3 value = b3Body_GetLocalPointVelocity(bodyId_, b3Vec3{x, y, z});
+    return eve::Result<PhysicsVector3D>::success({value.x, value.y, value.z});
 }
 
 std::vector<float> Body3D::getWorldPointVelocity(float x, float y, float z) const {

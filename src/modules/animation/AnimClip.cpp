@@ -90,8 +90,7 @@ bool AnimClip::setPositionKey(int boneIndex, int keyIndex, float time, float x, 
     return true;
 }
 
-bool AnimClip::setRotationKey(int boneIndex, int keyIndex, float time, float x, float y, float z,
-                              float w) {
+bool AnimClip::setRotationKey(int boneIndex, int keyIndex, float time, float x, float y, float z, float w) {
     if (time < 0.f) throw Exception("AnimClip.setRotationKey: time must be >= 0");
     if (boneIndex < 0 || boneIndex >= getTrackCount()) return false;
     auto& keys = tracks_[static_cast<size_t>(boneIndex)].rotations;
@@ -102,8 +101,7 @@ bool AnimClip::setRotationKey(int boneIndex, int keyIndex, float time, float x, 
     normalized.qz = z;
     normalized.qw = w;
     normalized.normalizeRotation();
-    keys[static_cast<size_t>(keyIndex)] =
-        {time, normalized.qx, normalized.qy, normalized.qz, normalized.qw};
+    keys[static_cast<size_t>(keyIndex)] = {time, normalized.qx, normalized.qy, normalized.qz, normalized.qw};
     std::stable_sort(keys.begin(), keys.end(), [](const QuatKey& a, const QuatKey& b) { return a.t < b.t; });
     if (time > duration_) duration_ = time;
     return true;
@@ -191,10 +189,29 @@ std::string AnimClip::getEventPayload(int index) const {
     return events_[static_cast<size_t>(index)].payload;
 }
 
+bool AnimClip::hasEvent(std::string_view name) const noexcept {
+    return !name.empty() &&
+           std::any_of(events_.begin(), events_.end(), [name](const EventMarker& event) { return event.name == name; });
+}
+
+eve::Result<void> AnimClip::validateNotifyContract(const std::vector<std::string>& requiredNames) const {
+    for (std::size_t index = 0; index < requiredNames.size(); ++index) {
+        const std::string& name = requiredNames[index];
+        if (name.empty())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "animation notify contract contains an empty semantic name",
+                "requiredNames[" + std::to_string(index) + "]", {}, "animation"));
+        if (!hasEvent(name))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "animation clip is missing required notify: " + name, "clip.events", {},
+                "animation"));
+    }
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
 void AnimClip::addSyncMarker(float time, const std::string& name) {
     if (time < 0.f) throw Exception("AnimClip.addSyncMarker: time must be >= 0");
-    if (duration_ > 0.f && time > duration_)
-        throw Exception("AnimClip.addSyncMarker: time lies past clip duration");
+    if (duration_ > 0.f && time > duration_) throw Exception("AnimClip.addSyncMarker: time lies past clip duration");
     if (name.empty()) throw Exception("AnimClip.addSyncMarker: name is empty");
     syncMarkers_.push_back({time, name});
     std::stable_sort(syncMarkers_.begin(), syncMarkers_.end(),
@@ -204,8 +221,7 @@ void AnimClip::addSyncMarker(float time, const std::string& name) {
 bool AnimClip::setSyncMarker(int index, float time, const std::string& name) {
     if (index < 0 || index >= getSyncMarkerCount()) return false;
     if (time < 0.f) throw Exception("AnimClip.setSyncMarker: time must be >= 0");
-    if (duration_ > 0.f && time > duration_)
-        throw Exception("AnimClip.setSyncMarker: time lies past clip duration");
+    if (duration_ > 0.f && time > duration_) throw Exception("AnimClip.setSyncMarker: time lies past clip duration");
     if (name.empty()) throw Exception("AnimClip.setSyncMarker: name is empty");
     syncMarkers_[static_cast<size_t>(index)] = {time, name};
     std::stable_sort(syncMarkers_.begin(), syncMarkers_.end(),
@@ -248,7 +264,7 @@ bool AnimClip::hasCompatibleSyncMarkers(const AnimClip* target) const {
     const size_t targetPairCount = target->loop_ ? targetCommon.size() : targetCommon.size() - 1;
     for (size_t sourceIndex = 0; sourceIndex < sourcePairCount; ++sourceIndex) {
         const std::string& previous = sourceCommon[sourceIndex]->name;
-        const std::string& next = sourceCommon[(sourceIndex + 1) % sourceCommon.size()]->name;
+        const std::string& next     = sourceCommon[(sourceIndex + 1) % sourceCommon.size()]->name;
         for (size_t targetIndex = 0; targetIndex < targetPairCount; ++targetIndex)
             if (targetCommon[targetIndex]->name == previous &&
                 targetCommon[(targetIndex + 1) % targetCommon.size()]->name == next)
@@ -258,8 +274,7 @@ bool AnimClip::hasCompatibleSyncMarkers(const AnimClip* target) const {
 }
 
 float AnimClip::mapSyncTimeTo(float time, const AnimClip* target) const {
-    if (!target || duration_ <= 1e-8f || target->duration_ <= 1e-8f)
-        return 0.f;
+    if (!target || duration_ <= 1e-8f || target->duration_ <= 1e-8f) return 0.f;
     const float normalizedFallback = wrapTime(time) / duration_ * target->duration_;
     if (!hasCompatibleSyncMarkers(target)) return normalizedFallback;
 
@@ -281,13 +296,15 @@ float AnimClip::mapSyncTimeTo(float time, const AnimClip* target) const {
         return normalizedFallback;
     size_t sourcePrevious = sourceCommon.size() - 1;
     for (size_t i = 0; i < sourceCommon.size(); ++i) {
-        if (sourceCommon[i]->t <= sourceTime) sourcePrevious = i;
-        else break;
+        if (sourceCommon[i]->t <= sourceTime)
+            sourcePrevious = i;
+        else
+            break;
     }
-    const size_t sourceNext = (sourcePrevious + 1) % sourceCommon.size();
-    const float sourceStart = sourceCommon[sourcePrevious]->t;
-    float sourceEnd = sourceCommon[sourceNext]->t;
-    float adjustedSourceTime = sourceTime;
+    const size_t sourceNext         = (sourcePrevious + 1) % sourceCommon.size();
+    const float  sourceStart        = sourceCommon[sourcePrevious]->t;
+    float        sourceEnd          = sourceCommon[sourceNext]->t;
+    float        adjustedSourceTime = sourceTime;
     if (sourceNext == 0) {
         sourceEnd += duration_;
         if (adjustedSourceTime < sourceStart) adjustedSourceTime += duration_;
@@ -296,43 +313,41 @@ float AnimClip::mapSyncTimeTo(float time, const AnimClip* target) const {
     if (span <= 1e-8f) return normalizedFallback;
     const float alpha = clampf((adjustedSourceTime - sourceStart) / span, 0.f, 1.f);
 
-    const std::string& previousName = sourceCommon[sourcePrevious]->name;
-    const std::string& nextName = sourceCommon[sourceNext]->name;
-    int bestTarget = -1;
-    float bestDistance = target->duration_ + 1.f;
-    const float sourcePhase = sourceStart / duration_;
-    const size_t targetPairCount = target->loop_ ? targetCommon.size() : targetCommon.size() - 1;
+    const std::string& previousName    = sourceCommon[sourcePrevious]->name;
+    const std::string& nextName        = sourceCommon[sourceNext]->name;
+    int                bestTarget      = -1;
+    float              bestDistance    = target->duration_ + 1.f;
+    const float        sourcePhase     = sourceStart / duration_;
+    const size_t       targetPairCount = target->loop_ ? targetCommon.size() : targetCommon.size() - 1;
     for (size_t i = 0; i < targetPairCount; ++i) {
-        if (targetCommon[i]->name != previousName ||
-            targetCommon[(i + 1) % targetCommon.size()]->name != nextName) continue;
-        const float targetPhase = targetCommon[i]->t / target->duration_;
-        const float distance = std::abs(targetPhase - sourcePhase);
+        if (targetCommon[i]->name != previousName || targetCommon[(i + 1) % targetCommon.size()]->name != nextName)
+            continue;
+        const float targetPhase      = targetCommon[i]->t / target->duration_;
+        const float distance         = std::abs(targetPhase - sourcePhase);
         const float circularDistance = std::min(distance, 1.f - distance);
         if (circularDistance < bestDistance) {
             bestDistance = circularDistance;
-            bestTarget = static_cast<int>(i);
+            bestTarget   = static_cast<int>(i);
         }
     }
     if (bestTarget < 0) return normalizedFallback;
     const size_t targetPrevious = static_cast<size_t>(bestTarget);
-    const size_t targetNext = (targetPrevious + 1) % targetCommon.size();
-    const float targetStart = targetCommon[targetPrevious]->t;
-    float targetEnd = targetCommon[targetNext]->t;
+    const size_t targetNext     = (targetPrevious + 1) % targetCommon.size();
+    const float  targetStart    = targetCommon[targetPrevious]->t;
+    float        targetEnd      = targetCommon[targetNext]->t;
     if (targetNext == 0) targetEnd += target->duration_;
     float mapped = targetStart + alpha * (targetEnd - targetStart);
     if (target->getLoop()) mapped = std::fmod(mapped, target->duration_);
     return target->wrapTime(mapped);
 }
 
-void AnimClip::collectEvents(float previousTime, float currentTime, bool loop,
-                             std::vector<std::string>& out) const {
+void AnimClip::collectEvents(float previousTime, float currentTime, bool loop, std::vector<std::string>& out) const {
     if (events_.empty() || duration_ <= 0.f || currentTime == previousTime) return;
     const float from        = wrapTime(previousTime);
     const float to          = wrapTime(currentTime);
     auto        appendRange = [&](float lo, float hi, bool includeLo) {
         for (const EventMarker& event : events_) {
-            if ((includeLo ? event.t >= lo : event.t > lo) && event.t <= hi)
-                out.push_back(event.name);
+            if ((includeLo ? event.t >= lo : event.t > lo) && event.t <= hi) out.push_back(event.name);
         }
     };
     if (loop && (currentTime - previousTime >= duration_ || to < from)) {
@@ -541,7 +556,7 @@ void AnimClip::sampleLod(float time, AnimPose* out, const AnimSkeleton* skeleton
     time = clampf(wrapTime(time), 0.f, duration_);
     for (int i = 0; i < boneCount; ++i) {
         const TransformTRS& bind = skeleton->bindLocal(i);
-        out->local(i) = lodLevel <= skeleton->getBoneLodLimit(i) ? sampleBone(i, time, bind) : bind;
+        out->local(i)            = lodLevel <= skeleton->getBoneLodLimit(i) ? sampleBone(i, time, bind) : bind;
     }
 }
 
@@ -560,24 +575,27 @@ int AnimClip::compress(float positionError, float rotationErrorDegrees, float sc
     if (positionError < 0.f || rotationErrorDegrees < 0.f || scaleError < 0.f)
         throw Exception("AnimClip.compress: tolerances must be >= 0");
     const float rotationError = rotationErrorDegrees * 0.01745329251994329577f;
-    int removed = 0;
+    int         removed       = 0;
     for (BoneTrack& track : tracks_) {
         auto reduceVec3 = [&](std::vector<Vec3Key>& keys, float tolerance) {
             if (keys.size() <= 2) return;
             std::vector<unsigned char> keep(keys.size(), 0);
-            keep.front() = keep.back() = 1;
+            keep.front() = keep.back()                = 1;
             std::function<void(size_t, size_t)> split = [&](size_t first, size_t last) {
                 if (last <= first + 1) return;
-                const float span = keys[last].t - keys[first].t;
-                float worst = -1.f;
-                size_t worstIndex = first;
+                const float span       = keys[last].t - keys[first].t;
+                float       worst      = -1.f;
+                size_t      worstIndex = first;
                 for (size_t i = first + 1; i < last; ++i) {
                     const float alpha = span > 1e-8f ? (keys[i].t - keys[first].t) / span : 0.f;
-                    const float dx = keys[i].x - lerpf(keys[first].x, keys[last].x, alpha);
-                    const float dy = keys[i].y - lerpf(keys[first].y, keys[last].y, alpha);
-                    const float dz = keys[i].z - lerpf(keys[first].z, keys[last].z, alpha);
+                    const float dx    = keys[i].x - lerpf(keys[first].x, keys[last].x, alpha);
+                    const float dy    = keys[i].y - lerpf(keys[first].y, keys[last].y, alpha);
+                    const float dz    = keys[i].z - lerpf(keys[first].z, keys[last].z, alpha);
                     const float error = std::sqrt(dx * dx + dy * dy + dz * dz);
-                    if (error > worst) { worst = error; worstIndex = i; }
+                    if (error > worst) {
+                        worst      = error;
+                        worstIndex = i;
+                    }
                 }
                 if (worst > tolerance) {
                     keep[worstIndex] = 1;
@@ -588,28 +606,31 @@ int AnimClip::compress(float positionError, float rotationErrorDegrees, float sc
             split(0, keys.size() - 1);
             std::vector<Vec3Key> reduced;
             reduced.reserve(keys.size());
-            for (size_t i = 0; i < keys.size(); ++i) if (keep[i]) reduced.push_back(keys[i]);
+            for (size_t i = 0; i < keys.size(); ++i)
+                if (keep[i]) reduced.push_back(keys[i]);
             removed += static_cast<int>(keys.size() - reduced.size());
             keys.swap(reduced);
         };
         auto reduceQuat = [&](std::vector<QuatKey>& keys) {
             if (keys.size() <= 2) return;
             std::vector<unsigned char> keep(keys.size(), 0);
-            keep.front() = keep.back() = 1;
+            keep.front() = keep.back()                = 1;
             std::function<void(size_t, size_t)> split = [&](size_t first, size_t last) {
                 if (last <= first + 1) return;
-                const float span = keys[last].t - keys[first].t;
-                float worst = -1.f;
-                size_t worstIndex = first;
+                const float span       = keys[last].t - keys[first].t;
+                float       worst      = -1.f;
+                size_t      worstIndex = first;
                 for (size_t i = first + 1; i < last; ++i) {
                     const float alpha = span > 1e-8f ? (keys[i].t - keys[first].t) / span : 0.f;
-                    float x, y, z, w;
-                    slerpQuat(keys[first].x, keys[first].y, keys[first].z, keys[first].w,
-                              keys[last].x, keys[last].y, keys[last].z, keys[last].w,
-                              alpha, x, y, z, w);
-                    const float dot = std::abs(x * keys[i].x + y * keys[i].y + z * keys[i].z + w * keys[i].w);
+                    float       x, y, z, w;
+                    slerpQuat(keys[first].x, keys[first].y, keys[first].z, keys[first].w, keys[last].x, keys[last].y,
+                              keys[last].z, keys[last].w, alpha, x, y, z, w);
+                    const float dot   = std::abs(x * keys[i].x + y * keys[i].y + z * keys[i].z + w * keys[i].w);
                     const float error = 2.f * std::acos(clampf(dot, -1.f, 1.f));
-                    if (error > worst) { worst = error; worstIndex = i; }
+                    if (error > worst) {
+                        worst      = error;
+                        worstIndex = i;
+                    }
                 }
                 if (worst > rotationError) {
                     keep[worstIndex] = 1;
@@ -620,7 +641,8 @@ int AnimClip::compress(float positionError, float rotationErrorDegrees, float sc
             split(0, keys.size() - 1);
             std::vector<QuatKey> reduced;
             reduced.reserve(keys.size());
-            for (size_t i = 0; i < keys.size(); ++i) if (keep[i]) reduced.push_back(keys[i]);
+            for (size_t i = 0; i < keys.size(); ++i)
+                if (keep[i]) reduced.push_back(keys[i]);
             removed += static_cast<int>(keys.size() - reduced.size());
             keys.swap(reduced);
         };
@@ -654,7 +676,7 @@ void AnimRetargetProfile::setRootTranslationScale(float horizontal, float vertic
     if (horizontal < 0.f || vertical < 0.f)
         throw Exception("AnimRetargetProfile.setRootTranslationScale: scales must be >= 0");
     rootHorizontalScale_ = horizontal;
-    rootVerticalScale_ = vertical;
+    rootVerticalScale_   = vertical;
 }
 
 std::string AnimRetargetProfile::getUnmatchedTargetBone(int index) const {
@@ -664,13 +686,13 @@ std::string AnimRetargetProfile::getUnmatchedTargetBone(int index) const {
 
 namespace {
 
-struct RetargetQuat { float x = 0.f, y = 0.f, z = 0.f, w = 1.f; };
+struct RetargetQuat {
+    float x = 0.f, y = 0.f, z = 0.f, w = 1.f;
+};
 
 RetargetQuat retargetMul(const RetargetQuat& a, const RetargetQuat& b) {
-    return {a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
-            a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
-            a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
-            a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z};
+    return {a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y, a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+            a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w, a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z};
 }
 
 RetargetQuat retargetInverse(const RetargetQuat& q) { return {-q.x, -q.y, -q.z, q.w}; }
@@ -681,8 +703,8 @@ RetargetQuat rotationOf(const TransformTRS& transform) {
 
 std::string normalizedBoneName(const std::string& name) {
     const size_t separator = name.find_last_of(":|/");
-    const size_t begin = separator == std::string::npos ? 0 : separator + 1;
-    std::string out;
+    const size_t begin     = separator == std::string::npos ? 0 : separator + 1;
+    std::string  out;
     for (size_t i = begin; i < name.size(); ++i) {
         const unsigned char c = static_cast<unsigned char>(name[i]);
         if (std::isalnum(c)) out.push_back(static_cast<char>(std::tolower(c)));
@@ -692,7 +714,7 @@ std::string normalizedBoneName(const std::string& name) {
 
 int findNormalizedBone(const AnimSkeleton* skeleton, const std::string& name) {
     const std::string normalized = normalizedBoneName(name);
-    int match = -1;
+    int               match      = -1;
     for (int bone = 0; bone < skeleton->getBoneCount(); ++bone) {
         if (normalizedBoneName(skeleton->getBoneName(bone)) != normalized) continue;
         if (match >= 0) return -1;  // Ambiguous normalized names must be mapped explicitly.
@@ -706,14 +728,14 @@ float skeletonExtent(const AnimSkeleton* skeleton) {
     skeleton->applyBindPose(&bind);
     bind.computeWorld(skeleton);
     if (skeleton->getBoneCount() == 0) return 1.f;
-    const TransformTRS& root = bind.world(0);
-    float extent = 0.f;
+    const TransformTRS& root   = bind.world(0);
+    float               extent = 0.f;
     for (int bone = 1; bone < skeleton->getBoneCount(); ++bone) {
         const TransformTRS& world = bind.world(bone);
-        const float dx = world.px - root.px;
-        const float dy = world.py - root.py;
-        const float dz = world.pz - root.pz;
-        extent = std::max(extent, std::sqrt(dx * dx + dy * dy + dz * dz));
+        const float         dx    = world.px - root.px;
+        const float         dy    = world.py - root.py;
+        const float         dz    = world.pz - root.pz;
+        extent                    = std::max(extent, std::sqrt(dx * dx + dy * dy + dz * dz));
     }
     return std::max(extent, 1e-6f);
 }
@@ -722,12 +744,12 @@ float retargetRootMeasure(const AnimSkeleton* skeleton, const AnimPose& bindPose
     if (retargetRoot < 0) return skeletonExtent(skeleton);
     int hierarchyRoot = retargetRoot;
     while (skeleton->getParent(hierarchyRoot) >= 0) hierarchyRoot = skeleton->getParent(hierarchyRoot);
-    const TransformTRS& root = bindPose.world(hierarchyRoot);
-    const TransformTRS& pelvis = bindPose.world(retargetRoot);
-    const float dx = pelvis.px - root.px;
-    const float dy = pelvis.py - root.py;
-    const float dz = pelvis.pz - root.pz;
-    const float distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+    const TransformTRS& root     = bindPose.world(hierarchyRoot);
+    const TransformTRS& pelvis   = bindPose.world(retargetRoot);
+    const float         dx       = pelvis.px - root.px;
+    const float         dy       = pelvis.py - root.py;
+    const float         dz       = pelvis.pz - root.pz;
+    const float         distance = std::sqrt(dx * dx + dy * dy + dz * dz);
     return distance > 1e-6f ? distance : skeletonExtent(skeleton);
 }
 
@@ -743,11 +765,11 @@ AnimClip* AnimClip::retargetWithProfile(const AnimSkeleton* sourceSkeleton, cons
     if (!sourceSkeleton || !targetSkeleton) throw Exception("AnimClip.retargetWithProfile: skeleton is null");
     if (!profile) throw Exception("AnimClip.retargetWithProfile: profile is null");
 
-    auto out = std::make_unique<AnimClip>(name_ + "_retargeted");
-    out->duration_ = duration_;
-    out->loop_ = loop_;
-    out->sampleRate_ = sampleRate_;
-    out->events_ = events_;
+    auto out          = std::make_unique<AnimClip>(name_ + "_retargeted");
+    out->duration_    = duration_;
+    out->loop_        = loop_;
+    out->sampleRate_  = sampleRate_;
+    out->events_      = events_;
     out->syncMarkers_ = syncMarkers_;
     out->tracks_.resize(static_cast<size_t>(targetSkeleton->getBoneCount()));
 
@@ -755,13 +777,13 @@ AnimClip* AnimClip::retargetWithProfile(const AnimSkeleton* sourceSkeleton, cons
     profile->matchedBoneCount_ = 0;
     profile->unmatchedTargetBones_.clear();
     for (int targetBone = 0; targetBone < targetSkeleton->getBoneCount(); ++targetBone) {
-        const std::string targetName = targetSkeleton->getBoneName(targetBone);
-        int sourceBone = -1;
-        bool explicitlyMapped = false;
+        const std::string targetName       = targetSkeleton->getBoneName(targetBone);
+        int               sourceBone       = -1;
+        bool              explicitlyMapped = false;
         for (const auto& mapping : profile->mappings_) {
             if (mapping.target == targetName) {
                 explicitlyMapped = true;
-                sourceBone = sourceSkeleton->findBone(mapping.source);
+                sourceBone       = sourceSkeleton->findBone(mapping.source);
                 break;
             }
         }
@@ -784,7 +806,8 @@ AnimClip* AnimClip::retargetWithProfile(const AnimSkeleton* sourceSkeleton, cons
         for (int targetBone = 0; targetBone < targetSkeleton->getBoneCount(); ++targetBone) {
             const int candidate = sourceForTarget[static_cast<size_t>(targetBone)];
             if (candidate < 0 || candidate >= static_cast<int>(tracks_.size()) ||
-                tracks_[static_cast<size_t>(candidate)].positions.empty()) continue;
+                tracks_[static_cast<size_t>(candidate)].positions.empty())
+                continue;
             const std::string name = normalizedBoneName(targetSkeleton->getBoneName(targetBone));
             if (name.find("hips") != std::string::npos || name.find("pelvis") != std::string::npos) {
                 targetRoot = targetBone;
@@ -809,9 +832,9 @@ AnimClip* AnimClip::retargetWithProfile(const AnimSkeleton* sourceSkeleton, cons
     sourceBindPose.computeWorld(sourceSkeleton);
     targetBindPose.computeWorld(targetSkeleton);
     const float automaticScale = profile->autoRootScale_
-        ? retargetRootMeasure(targetSkeleton, targetBindPose, targetRoot) /
-              retargetRootMeasure(sourceSkeleton, sourceBindPose, sourceRoot)
-        : 1.f;
+                                     ? retargetRootMeasure(targetSkeleton, targetBindPose, targetRoot) /
+                                           retargetRootMeasure(sourceSkeleton, sourceBindPose, sourceRoot)
+                                     : 1.f;
 
     const int frameCount = duration_ <= 0.f ? 1 : std::max(1, static_cast<int>(std::ceil(duration_ * sampleRate_)));
     std::vector<TransformTRS> targetWorld(static_cast<size_t>(targetSkeleton->getBoneCount()));
@@ -822,25 +845,26 @@ AnimClip* AnimClip::retargetWithProfile(const AnimSkeleton* sourceSkeleton, cons
         sourcePose.computeWorld(sourceSkeleton);
 
         for (int targetBone = 0; targetBone < targetSkeleton->getBoneCount(); ++targetBone) {
-            const int sourceBone = sourceForTarget[static_cast<size_t>(targetBone)];
-            TransformTRS local = targetSkeleton->bindLocal(targetBone);
+            const int    sourceBone = sourceForTarget[static_cast<size_t>(targetBone)];
+            TransformTRS local      = targetSkeleton->bindLocal(targetBone);
             if (sourceBone >= 0 && sourceBone < static_cast<int>(tracks_.size())) {
-                const BoneTrack& sourceTrack = tracks_[static_cast<size_t>(sourceBone)];
+                const BoneTrack&    sourceTrack = tracks_[static_cast<size_t>(sourceBone)];
                 const TransformTRS& sourceLocal = sourcePose.local(sourceBone);
-                const TransformTRS& sourceBind = sourceSkeleton->bindLocal(sourceBone);
-                const TransformTRS& targetBind = targetSkeleton->bindLocal(targetBone);
+                const TransformTRS& sourceBind  = sourceSkeleton->bindLocal(sourceBone);
+                const TransformTRS& targetBind  = targetSkeleton->bindLocal(targetBone);
                 const float sourceLength = std::sqrt(sourceBind.px * sourceBind.px + sourceBind.py * sourceBind.py +
                                                      sourceBind.pz * sourceBind.pz);
                 const float targetLength = std::sqrt(targetBind.px * targetBind.px + targetBind.py * targetBind.py +
                                                      targetBind.pz * targetBind.pz);
-                const float boneScale = sourceLength > 1e-6f && targetLength > 1e-6f ? targetLength / sourceLength : 1.f;
+                const float boneScale =
+                    sourceLength > 1e-6f && targetLength > 1e-6f ? targetLength / sourceLength : 1.f;
                 if (!sourceTrack.positions.empty()) {
                     if (targetBone == targetRoot && sourceBone == sourceRoot) {
                         const float horizontal = automaticScale * profile->rootHorizontalScale_;
-                        const float vertical = automaticScale * profile->rootVerticalScale_;
-                        local.px = targetBind.px + (sourceLocal.px - sourceBind.px) * horizontal;
-                        local.py = targetBind.py + (sourceLocal.py - sourceBind.py) * vertical;
-                        local.pz = targetBind.pz + (sourceLocal.pz - sourceBind.pz) * horizontal;
+                        const float vertical   = automaticScale * profile->rootVerticalScale_;
+                        local.px               = targetBind.px + (sourceLocal.px - sourceBind.px) * horizontal;
+                        local.py               = targetBind.py + (sourceLocal.py - sourceBind.py) * vertical;
+                        local.pz               = targetBind.pz + (sourceLocal.pz - sourceBind.pz) * horizontal;
                     } else {
                         local.px = targetBind.px + (sourceLocal.px - sourceBind.px) * boneScale;
                         local.py = targetBind.py + (sourceLocal.py - sourceBind.py) * boneScale;
@@ -853,36 +877,48 @@ AnimClip* AnimClip::retargetWithProfile(const AnimSkeleton* sourceSkeleton, cons
                     RetargetQuat desired;
                     if (profile->skeletonSpaceRotation_) {
                         desired = retargetMul(rotationOf(targetBindPose.world(targetBone)),
-                                  retargetMul(retargetInverse(rotationOf(sourceBindPose.world(sourceBone))),
-                                              rotationOf(sourcePose.world(sourceBone))));
+                                              retargetMul(retargetInverse(rotationOf(sourceBindPose.world(sourceBone))),
+                                                          rotationOf(sourcePose.world(sourceBone))));
                         const int parent = targetSkeleton->getParent(targetBone);
                         if (parent >= 0)
-                            desired = retargetMul(retargetInverse(rotationOf(targetWorld[static_cast<size_t>(parent)])), desired);
+                            desired = retargetMul(retargetInverse(rotationOf(targetWorld[static_cast<size_t>(parent)])),
+                                                  desired);
                     } else {
-                        desired = retargetMul(rotationOf(targetBind),
-                                  retargetMul(retargetInverse(rotationOf(sourceBind)), rotationOf(sourceLocal)));
+                        desired =
+                            retargetMul(rotationOf(targetBind),
+                                        retargetMul(retargetInverse(rotationOf(sourceBind)), rotationOf(sourceLocal)));
                     }
-                    local.qx = desired.x; local.qy = desired.y; local.qz = desired.z; local.qw = desired.w;
+                    local.qx = desired.x;
+                    local.qy = desired.y;
+                    local.qz = desired.z;
+                    local.qw = desired.w;
                     local.normalizeRotation();
                     out->tracks_[static_cast<size_t>(targetBone)].rotations.push_back(
                         {time, local.qx, local.qy, local.qz, local.qw});
                 }
                 if (!sourceTrack.scales.empty()) {
-                    local.sx = targetBind.sx * (std::abs(sourceBind.sx) > 1e-6f ? sourceLocal.sx / sourceBind.sx : sourceLocal.sx);
-                    local.sy = targetBind.sy * (std::abs(sourceBind.sy) > 1e-6f ? sourceLocal.sy / sourceBind.sy : sourceLocal.sy);
-                    local.sz = targetBind.sz * (std::abs(sourceBind.sz) > 1e-6f ? sourceLocal.sz / sourceBind.sz : sourceLocal.sz);
-                    out->tracks_[static_cast<size_t>(targetBone)].scales.push_back({time, local.sx, local.sy, local.sz});
+                    local.sx = targetBind.sx *
+                               (std::abs(sourceBind.sx) > 1e-6f ? sourceLocal.sx / sourceBind.sx : sourceLocal.sx);
+                    local.sy = targetBind.sy *
+                               (std::abs(sourceBind.sy) > 1e-6f ? sourceLocal.sy / sourceBind.sy : sourceLocal.sy);
+                    local.sz = targetBind.sz *
+                               (std::abs(sourceBind.sz) > 1e-6f ? sourceLocal.sz / sourceBind.sz : sourceLocal.sz);
+                    out->tracks_[static_cast<size_t>(targetBone)].scales.push_back(
+                        {time, local.sx, local.sy, local.sz});
                 }
             }
             const int parent = targetSkeleton->getParent(targetBone);
             if (parent < 0) {
                 targetWorld[static_cast<size_t>(targetBone)] = local;
             } else {
-                const TransformTRS& parentWorld = targetWorld[static_cast<size_t>(parent)];
-                TransformTRS& world = targetWorld[static_cast<size_t>(targetBone)];
-                const RetargetQuat worldRotation = retargetMul(rotationOf(parentWorld), rotationOf(local));
-                world = local;
-                world.qx = worldRotation.x; world.qy = worldRotation.y; world.qz = worldRotation.z; world.qw = worldRotation.w;
+                const TransformTRS& parentWorld   = targetWorld[static_cast<size_t>(parent)];
+                TransformTRS&       world         = targetWorld[static_cast<size_t>(targetBone)];
+                const RetargetQuat  worldRotation = retargetMul(rotationOf(parentWorld), rotationOf(local));
+                world                             = local;
+                world.qx                          = worldRotation.x;
+                world.qy                          = worldRotation.y;
+                world.qz                          = worldRotation.z;
+                world.qw                          = worldRotation.w;
             }
         }
     }

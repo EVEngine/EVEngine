@@ -117,7 +117,8 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
     }
 
     const SQInteger top = sq_gettop(vm);
-    sq_pushobject(vm, ssq::detail::getClassObj(vm, typeid(T*).hash_code()));
+    const size_t hashCode = eve::script::detail::squirrelTypeHash<T*>();
+    sq_pushobject(vm, ssq::detail::getClassObj(vm, hashCode));
     if (SQ_FAILED(sq_createinstance(vm, -1))) {
         sq_settop(vm, top);
         std::invoke(release, ref).ignore("rollback failed Squirrel procgen instance");
@@ -138,7 +139,7 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
                 ref, [ref, release = std::forward<Release>(release)]() mutable { return std::invoke(release, ref); }});
     }
     sq_setinstanceup(vm, -1, native);
-    sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(typeid(T*).hash_code()));
+    sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(hashCode));
     sq_setreleasehook(vm, -1, &releaseNativeProxy<T>);
 
     ssq::Instance value(vm);
@@ -1932,6 +1933,7 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("clearObjects", &Grid2D::clearObjects);
     grid.addFunc("addObjectAt", &Grid2D::addObjectAt);
     grid.addFunc("addObject", &Grid2D::addObject);
+    grid.addFunc("addAssetObject", &Grid2D::addAssetObject);
     grid.addFunc("getObjectCount", &Grid2D::getObjectCount);
     grid.addFunc("getObjectName", &Grid2D::getObjectName);
     grid.addFunc("getObjectType", &Grid2D::getObjectType);
@@ -1940,6 +1942,9 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getObjectWidth", &Grid2D::getObjectWidth);
     grid.addFunc("getObjectHeight", &Grid2D::getObjectHeight);
     grid.addFunc("getObjectGid", &Grid2D::getObjectGid);
+    grid.addFunc("getObjectAsset", &Grid2D::getObjectAsset);
+    grid.addFunc("getObjectRotation", &Grid2D::getObjectRotation);
+    grid.addFunc("getObjectFlags", &Grid2D::getObjectFlags);
 
     auto points = table.addClass<PointSet>("ProcgenPointSet",
                                            std::function<PointSet*()>([]() -> PointSet* { return nullptr; }), true);
@@ -2333,6 +2338,18 @@ auto lsystem = table.addClass<LSystem>(
     ownedGrid.addFunc("getObjectGid", [](ScriptProcgenGrid* value, int index) {
         auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
         return view.isBound() ? view->getObjectGid(index) : 0;
+    });
+    ownedGrid.addFunc("getObjectAsset", [](ScriptProcgenGrid* value, int index) {
+        auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
+        return view.isBound() ? view->getObjectAsset(index) : std::string{};
+    });
+    ownedGrid.addFunc("getObjectRotation", [](ScriptProcgenGrid* value, int index) {
+        auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
+        return view.isBound() ? view->getObjectRotation(index) : 0.f;
+    });
+    ownedGrid.addFunc("getObjectFlags", [](ScriptProcgenGrid* value, int index) {
+        auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
+        return view.isBound() ? view->getObjectFlags(index) : 0;
     });
     ownedGrid.addFunc("getMeta", [](ScriptProcgenGrid* value, const std::string& key, const std::string& fallback) {
         auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();

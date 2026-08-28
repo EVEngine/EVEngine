@@ -19,6 +19,8 @@
 // Art: dungeon tileset is CC0 by "Buch" (OpenGameArt). The generated Grid2D
 // is translated into atlas GIDs and rendered by map.TileLayer.
 
+dofile("assetpacks/kaykit_dungeon.nut");
+
 persist gen = null
 persist seed = 20260815
 persist roomCount = 9
@@ -198,7 +200,9 @@ function regenerate(useRandom) {
     p.setString("floorPattern", floorPattern);
     p.setString("decorSet", decorSet);
     p.setFloat("decorDensity", decorDensity);
+    p.setFloat("propDensity", 0.18);
     p.setInt("autotile", 1);
+    configureDungeonAssetPack(p);
 
     local generationResult = procgen.generate("level.roguelike", p);
     if (!generationResult.ok) {
@@ -276,7 +280,13 @@ function drawMarkers() {
         local col = colors().chest;
         if (t == "spawn") col = colors().spawn;
         else if (t == "stairs") col = colors().stairs;
-        else if (t == "pillar") col = colors().pillar;
+        else if (t == "column") col = colors().pillar;
+        else if (t == "light") col = [1.0, 0.78, 0.28];
+        else if (t == "banner") col = [0.22, 0.45, 0.70];
+        else if (t == "bed") col = [0.72, 0.40, 0.30];
+        else if (t == "table" || t == "seating") col = [0.48, 0.27, 0.16];
+        else if (t == "container" || t == "tavern") col = [0.55, 0.32, 0.18];
+        else if (t == "trap") col = [0.70, 0.22, 0.18];
         local px = BASE_X + x * TILE;
         local py = BASE_Y + y * TILE + (view3D ? y * 2.0 : 0);
         gfx.drawSolidRect(px + 3, py + 3, TILE - 6, TILE - 6, col[0], col[1], col[2], 1.0);

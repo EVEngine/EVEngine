@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/Snapshot.h"
+#include "common/Result.h"
+#include "physics/OwnedQuery3D.h"
 #include "physics/PhysicsHandles.h"
 #include "physics/SimulationBackend.h"
 
@@ -360,6 +362,17 @@ public:
     /** @brief 带形状类别掩码的最短射线查询（掩码为接受的 shape categoryBits）。 */
     int rayCastFiltered(float x1, float y1, float z1, float x2, float y2, float z2,
                         uint64_t maskBits);
+    /**
+     * @brief Performs one ray query and returns an owning, generation-qualified snapshot.
+     * @param filter Filter and exclusions used only for this operation; prior world query state is restored.
+     * @return A successful snapshot whose `hit` field distinguishes a normal miss, or a structured failure.
+     * @ownership The returned value owns its scalar data and retains no body, shape, or world pointers.
+     * @lifetime Handles must be re-resolved before later use and become stale with their physics owners.
+     * @thread Call on the owning physics simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not concurrently mutate this world.
+     */
+    [[nodiscard]] eve::Result<RayHit3D> rayCastOwned(float x1, float y1, float z1, float x2,
+                                                     float y2, float z2, QueryFilter3D filter = {});
     /** @brief Internal camera query: swept sphere against non-sensor shapes. */
     bool sphereCast(float x1, float y1, float z1, float x2, float y2, float z2,
                     float radius, uint64_t maskBits, int ignoredBodyId,
@@ -418,6 +431,16 @@ public:
      * Returns match count; read ids with getQueryBodyId(i).
      */
     int queryAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /**
+     * @brief Queries one AABB into a fixed owning result without using the legacy query cache.
+     * @param filter Filter and exclusions scoped to this operation.
+     * @return Stable-id-sorted nearest-set evidence; truncated is observable when capacity is exceeded.
+     * @thread Call on the owning physics simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not concurrently mutate this world.
+     */
+    [[nodiscard]] eve::Result<BroadPhaseAabb3D> queryAabbBroadPhaseOwned(
+        float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+        QueryFilter3D filter = {});
 
     /**
      * @brief Query shapes overlapping a sphere in world meters.
@@ -435,6 +458,16 @@ public:
      * @return number of unique bodies hit
      */
     int queryCapsule(float ax, float ay, float az, float bx, float by, float bz, float radius);
+    /**
+     * @brief Performs one capsule overlap and returns an owning summary without exposing the query cache.
+     * @param filter Filter and exclusions scoped to this operation.
+     * @return Owning overlap summary, or a structured failure for invalid input/world state.
+     * @thread Call on the owning physics simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not concurrently mutate this world.
+     */
+    [[nodiscard]] eve::Result<CapsuleOverlap3D> queryCapsuleOwned(
+        float ax, float ay, float az, float bx, float by, float bz, float radius,
+        QueryFilter3D filter = {});
 
     /**
      * @brief Query shapes overlapping an oriented box.
@@ -572,6 +605,17 @@ public:
      */
     bool moveCapsule(float ax, float ay, float az, float bx, float by, float bz, float radius,
                      float dx, float dy, float dz);
+    /**
+     * @brief Moves a capsule and returns all resolved movement data as one owning result.
+     * @param filter Filter and exclusions scoped to this operation.
+     * @param policy Up direction and walkable-slope policy scoped to this operation.
+     * @return Owning movement result, or a structured failure for invalid input/world state.
+     * @thread Call on the owning physics simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not concurrently mutate this world.
+     */
+    [[nodiscard]] eve::Result<CapsuleMove3D> moveCapsuleOwned(
+        float ax, float ay, float az, float bx, float by, float bz, float radius, float dx,
+        float dy, float dz, QueryFilter3D filter = {}, CapsuleMovePolicy3D policy = {});
     /** @brief Resolved translation X from the last moveCapsule call. */
     float getMoverDeltaX() const { return moverDeltaX_; }
     /** @brief Resolved translation Y from the last moveCapsule call. */

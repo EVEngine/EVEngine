@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Result.h"
+#include "physics/OwnedQuery3D.h"
 #include "physics/PhysicsHandles.h"
 
 #include <string>
@@ -59,14 +61,22 @@ public:
 
     /** @brief Converts a body-local point to world coordinates; returns {x,y,z}. */
     std::vector<float> localToWorldPoint(float x, float y, float z) const;
+    /** @brief Converts a local point to an allocation-free owning value with structured stale/input failure. */
+    [[nodiscard]] eve::Result<PhysicsVector3D> localToWorldPointOwned(float x, float y, float z) const;
     /** @brief Converts a world point to body-local coordinates; returns {x,y,z}. */
     std::vector<float> worldToLocalPoint(float x, float y, float z) const;
+    /** @brief Converts a world point to an allocation-free owning value with structured stale/input failure. */
+    [[nodiscard]] eve::Result<PhysicsVector3D> worldToLocalPointOwned(float x, float y, float z) const;
     /** @brief Rotates a body-local direction/vector into world space; returns {x,y,z}. */
     std::vector<float> localToWorldVector(float x, float y, float z) const;
+    /** @brief Rotates a local vector into an allocation-free owning world vector. */
+    [[nodiscard]] eve::Result<PhysicsVector3D> localToWorldVectorOwned(float x, float y, float z) const;
     /** @brief Rotates a world direction/vector into body-local space; returns {x,y,z}. */
     std::vector<float> worldToLocalVector(float x, float y, float z) const;
     /** @brief World-space velocity at a point expressed in body-local coordinates. */
     std::vector<float> getLocalPointVelocity(float x, float y, float z) const;
+    /** @brief Returns allocation-free world velocity at a body-local point. */
+    [[nodiscard]] eve::Result<PhysicsVector3D> getLocalPointVelocityOwned(float x, float y, float z) const;
     /** @brief World-space velocity at the supplied world point. */
     std::vector<float> getWorldPointVelocity(float x, float y, float z) const;
 

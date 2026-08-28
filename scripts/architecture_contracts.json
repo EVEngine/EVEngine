@@ -192,6 +192,39 @@
       "phase": "script/game-driven simulation; Battle is turn-based, others are update(dt)-driven"
     },
     {
+      "id": "climbing-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/climbing/**",
+      "owner": "climbing::ClimbingRuntime",
+      "issue": "EVENGINE-ARCH-CLIMBING-SYSTEMS",
+      "reason": "Climbing input and selection publish their deterministic access and commit contracts before ECS integration.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/climbing/ClimbingInput.h",
+        "docs/dev/superpowers/specs/2026-08-28-climbing-parkour-system.md"
+      ],
+      "tests": [
+        "test/climbing_input.cpp",
+        "test/climbing.cpp",
+        "test/climbing_anchor_execution.cpp",
+        "test/climbing_anchor_graph.cpp",
+        "test/climbing_events.cpp",
+        "test/climbing_snapshot.cpp"
+      ],
+      "systems": [
+        "ClimbingInputSystem",
+        "ClimbingSelectionSystem"
+      ],
+      "entity_scope": "characters carrying a ClimbingIntent and an owner-qualified ClimbingRuntime",
+      "view": "generation-checked character view; Physics is borrowed synchronously during candidate preparation",
+      "read_set": "ClimbingPose, ClimbingProfileDefinition, ClimbingIntent, ClimbingAnchorGraphDefinition and Physics world geometry",
+      "write_set": "ClimbingIntent consumption evidence, ClimbingRuntime execution state, and claim-generation-protected graph occupancy reservations only at transaction commit or atomic restore",
+      "structural_changes": "none; entity/component creation and removal remain the caller's deferred responsibility",
+      "events": "Started/anchor-transition/contact/terminal facts enter the runtime-owned bounded queue only after authoritative mutation; drain detaches the batch before any callback or script runs",
+      "services": "injected SimulationTick, last grounded tick and borrowed owner-thread Physics World3D",
+      "phase": "input buffering in Input; candidate preparation and atomic selection in PrePhysics"
+    },
+    {
       "id": "time-rng-policy",
       "rule": "time-rng",
       "scope": "src/**",

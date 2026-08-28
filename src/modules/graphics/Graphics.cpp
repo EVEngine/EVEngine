@@ -345,6 +345,9 @@ void Graphics::expose(ssq::Table& table) {
     cam.addFunc("setTarget", &Camera3D::setTarget);
     cam.addFunc("setUp", &Camera3D::setUp);
     cam.addFunc("setFov", &Camera3D::setFov);
+    cam.addFunc("setOrthographic", &Camera3D::setOrthographic);
+    cam.addFunc("setPerspective", &Camera3D::setPerspective);
+    cam.addFunc("setClipPlanes", &Camera3D::setClipPlanes);
     cam.addFunc("setActive", &Camera3D::setActive);
     cam.addFunc("setAmbient", &Camera3D::setAmbient);
     cam.addFunc("setEnvMap", &Camera3D::setEnvMap);
@@ -837,6 +840,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newFont", &Graphics::newFont);
     cls.addFunc("setFont", &Graphics::setFont);
     cls.addFunc("getFont", &Graphics::getFont);
+    cls.addFunc("drawText", &Graphics::drawTextRGBA);
     cls.addFunc("print", &Graphics::printRGBA);
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
@@ -1149,12 +1153,20 @@ void Graphics::print(const std::string& text, float x, float y, const Color& col
         eve::debug::rtDraw("print", "no-font");
         throw eve::Exception("Graphics::print: no font set (call setFont first)");
     }
-    eve::debug::rtBind("font", "current");
-    eve::debug::rtDraw("print", text.empty() ? "" : "text");
+    drawText(currentFont, text, x, y, color, scale);
+}
 
-    font::FontData* data          = currentFont->getData();
+void Graphics::drawText(Font* font, const std::string& text, float x, float y, const Color& color, float scale) {
+    if (font == nullptr) {
+        eve::debug::rtDraw("drawText", "no-font");
+        throw eve::Exception("Graphics::drawText: font must not be null");
+    }
+    eve::debug::rtBind("font", "explicit");
+    eve::debug::rtDraw("drawText", text.empty() ? "" : "text");
+
+    eve::font::FontData* data     = font->getData();
     float           penX          = x;
-    float           baseline      = y + currentFont->getBaseline() * scale;
+    float           baseline      = y + font->getBaseline() * scale;
     int             prevCodepoint = -1;
 
     size_t i = 0;
@@ -1165,11 +1177,11 @@ void Graphics::print(const std::string& text, float x, float y, const Color& col
 
         if (prevCodepoint >= 0) penX += data->getKerning(prevCodepoint, code) * scale;
 
-        if (const Font::Glyph* g = currentFont->findGlyph(code)) {
+        if (const Font::Glyph* g = font->findGlyph(code)) {
             if (g->width > 0 && g->height > 0) {
                 float gx = penX + static_cast<float>(g->bearingX) * scale;
                 float gy = baseline - static_cast<float>(g->bearingY) * scale;
-                drawTexturedRectUV(currentFont->getTexture(), gx, gy, static_cast<float>(g->width) * scale,
+                drawTexturedRectUV(font->getTexture(), gx, gy, static_cast<float>(g->width) * scale,
                                    static_cast<float>(g->height) * scale, g->u0, g->v0, g->u1, g->v1, color);
             }
             penX += static_cast<float>(g->advance) * scale;
@@ -1181,4 +1193,5 @@ void Graphics::print(const std::string& text, float x, float y, const Color& col
         prevCodepoint = code;
     }
 }
+
 }  // namespace eve::graphics

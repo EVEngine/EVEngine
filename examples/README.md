@@ -48,6 +48,7 @@ make run/<platform>-debug GAME=examples/<name>
 |---|---|
 | [camera-controllers](camera-controllers/README.md) | 第三人称相机：follow / orbit / topdown / firstperson / cinematic |
 | [building-3d](building-3d/README.md) | 3D 地面放置：射线求交、网格吸附、鬼影与放置会话 |
+| [climbing-playground](climbing-playground/README.md) | 攀爬与跑酷：真实物理探测、低/高跨越、翻越、空中抓边、阻挡与移动平台 |
 | [daynight](daynight/README.md) | 昼夜循环：太阳轨道、程序化天空盒、月光 / 星光 / 火焰 / 萤火虫 |
 | [weather](weather/README.md) | 天气系统：雨 / 雪 / 雷暴 / 雾 / 风，实时滑块 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |

@@ -122,6 +122,19 @@ file(GLOB all_test_cpp
   map_path.cpp
   map_fov.cpp
   rpg.cpp
+  action_timeline.cpp
+  action_notify_registry.cpp
+  action_timeline_widget.cpp
+  action_preview_controller.cpp
+  animation_action_preview.cpp
+  projectile_runtime.cpp
+  ability_controller.cpp
+  ability_system.cpp
+  combat_attributes.cpp
+  combat_damage.cpp
+  combat_framework_composition.cpp
+  kaykit_combat_assets.cpp
+  standard_combat_abilities.cpp
   gameplay_action.cpp
   rpg_battle.cpp
   rpg_class.cpp
@@ -164,6 +177,7 @@ file(GLOB all_test_cpp
   physics_artifact_provider.cpp
   physics_cloth.cpp
   procgen.cpp
+  prototype_kit.cpp
   procgen_e2e.cpp
   procgen_artifact_publish.cpp
   procgen_generated_artifact.cpp
@@ -198,6 +212,28 @@ file(GLOB all_test_cpp
   indirect_builder.cpp
   box2d.cpp
   box3d.cpp
+    climbing.cpp
+    climbing_anchor_execution.cpp
+    climbing_anchor_graph.cpp
+    climbing_anchor_route.cpp
+    climbing_anchor_authoring.cpp
+    climbing_animation.cpp
+    climbing_codec.cpp
+    climbing_definition_policy.cpp
+    climbing_services.cpp
+    climbing_ecs.cpp
+    climbing_events.cpp
+    climbing_input.cpp
+    climbing_parkour.cpp
+    climbing_performance.cpp
+    climbing_physics_policy.cpp
+    climbing_pose.cpp
+    climbing_prediction.cpp
+    climbing_playground.cpp
+    climbing_reload.cpp
+    climbing_snapshot.cpp
+    climbing_telemetry.cpp
+    climbing_vault.cpp
   binding_selfcheck.cpp
   squirrel_binding.cpp
   script_ownership.cpp
@@ -264,6 +300,7 @@ file(GLOB all_test_cpp
   statepatch.cpp
   steering.cpp
   tags.cpp
+  gameplay_tags.cpp
   transaction.cpp
   transaction_participant.cpp
   rx.cpp
@@ -293,6 +330,7 @@ file(GLOB all_test_cpp
   editor_scene_target_v2.cpp
   editor_session_persistence.cpp
   editor_script_v2.cpp
+  editor_action_timeline_script.cpp
   editor_field_tool_script.cpp
   editor_tilemap_target_script.cpp
   editor_voxel_target_script.cpp

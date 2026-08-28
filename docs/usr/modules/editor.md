@@ -240,6 +240,37 @@ ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
 完整组合示例见 [`examples/composable-editor`](../../../examples/composable-editor)：项目脚本用
 五个面板 builder 组合地形、材质、反射 MVVM、ECS 与游戏命令；C++ 不认识这些具体面板。
 
+### 动作时间轴编辑器
+
+`newActionTimelineEditor(targetId, timelineTable)` 把版本化的 `eve.action.timeline`
+资产交给原生动作编辑器。原生对象是时间轴、命中测试、事务、撤销/重做和确定性预览游标的
+唯一事实源；脚本只负责用项目自己的 UI 绘制 `getItem*` 布局并转发指针输入。
+
+```squirrel
+local created = editor.newActionTimelineEditor("ability.light-attack", timelineAsset);
+if (!created.ok) throw created.status.summary;
+local actionEditor = created.value; // ownership == "owned"
+
+local ws = editor.newWorkspace("combat", "Combat Action Editor");
+local composed = actionEditor.configureWorkspace(ws); // Assets/Preview/Inspector/Timeline
+actionEditor.setViewport(900.0, 36.0, 145.0);
+
+// 视口输入；一次 Down..Up 只生成一个撤销事务。
+actionEditor.pointerDown(mouseX, mouseY, false);
+actionEditor.pointerMove(mouseX);
+actionEditor.pointerUp(mouseX);
+
+actionEditor.play();
+actionEditor.update(dt);
+animationPlayer.setTime(actionEditor.getPreviewTime());
+```
+
+工厂与所有可能失败的编辑操作返回通用 Result 表：`ok`、`value`、`status.code`、
+`status.summary` 和 `status.diagnostics`。返回的动作编辑器由 Squirrel VM release hook 拥有，
+仅可在创建它的线程使用；`configureWorkspace` 不保留传入的 Workspace 指针，`snapshot`
+返回与编辑器生命周期解耦的规范化资产值。完整可运行示例见
+[`examples/combat-action-editor`](../../../examples/combat-action-editor)。
+
 ```squirrel
 local dock = editor.newDock();
 dock.setRegionSize("left", 200);
@@ -266,6 +297,7 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 | `Brush` | 笔刷工具；产出 preview / change 列表 |
 | `EditorHistory` | 撤销栈；瓦片分组可 `applyLastToBuffer` |
 | Toolbar / Inspector / Dock | 仅状态与矩形，由 `ui` 渲染 |
+| `ActionTimelineEditor` | 版本化动作时间轴、事务、撤销/重做和确定性预览 |
 
 ## 目标导向指南
 
@@ -285,8 +317,9 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 ## API 快查
 
-- 模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `newTileBufferTarget` / `newTileLayerTarget` / `newHeightmapTarget` / `newVoxelWorldTarget` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
+- 模块：`newWorkspace` / `newActionTimelineEditor` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `newTileBufferTarget` / `newTileLayerTarget` / `newHeightmapTarget` / `newVoxelWorldTarget` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newTileBuffer` / `newBrush` / `newToolbar` / `newInspector` / `newDock` / `newHistory` / `applyHeightmapBrush` / `newHeightmapMesh` / `updateHeightmapMesh` / `newHeightmapMeshSmooth` / `updateHeightmapMeshSmooth`
 - Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
+- 动作时间轴：`configureWorkspace` / `setViewport` / `pointerDown` / `pointerMove` / `pointerUp` / `seekX` / `seekSeconds` / `resizeState` / `undo` / `redo` / `update` / `snapshot` / `play` / `pause` / `isPlaying` / `canUndo` / `canRedo` / `isDragging` / `getDuration` / `getPreviewTime` / `getRevision` / `getAnimationUri` / `getTrackCount` / `getTrackId` / `getTrackLabel` / `getTrackKind` / `getTrackMuted` / `getLayoutWidth` / `getLayoutHeight` / `getPlayheadX` / `getItemCount` / `getItemId` / `getItemType` / `getItemState` / `getItemSelected` / `getItemMinX` / `getItemMaxX` / `getItemMinY` / `getItemMaxY` / `getStateStart` / `getStateEnd` / `getEventCount` / `getEventItemId` / `getEventType` / `getEventTime` / `getEventKind`
 - 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `bindTileBufferTarget` / `bindTileLayerTarget` / `bindHeightmapTarget` / `bindVoxelWorldTarget` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`

@@ -14,13 +14,13 @@ namespace eve::physics {
  * @brief Interactive 2D particle fluid (double-density relaxation) in pixel space.
  * Script-owned; independent of Box2D World.
  */
-class Fluid {
+class Fluid2D {
 public:
-    explicit Fluid(int capacity = 512);
-    ~Fluid();
+    explicit Fluid2D(int capacity = 512);
+    ~Fluid2D();
 
-    Fluid(const Fluid &)            = delete;
-    Fluid &operator=(const Fluid &) = delete;
+    Fluid2D(const Fluid2D &)            = delete;
+    Fluid2D &operator=(const Fluid2D &) = delete;
 
     void update(float dt);
 

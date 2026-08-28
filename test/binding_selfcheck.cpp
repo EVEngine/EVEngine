@@ -23,6 +23,7 @@ TEST_CASE("binding.selfcheck.scriptSurface") {
             IK = ["newSkeleton2D", "newSolver2D"],
             RPG = ["newActor"],
             Inventory = ["newBag"],
+            Climbing = ["newRuntime", "newAnchorGraphJson"],
         };
         foreach (cls, methods in hot) {
             if (!(cls in eve)) { missing.push(cls + ":ctor-missing"); continue; }

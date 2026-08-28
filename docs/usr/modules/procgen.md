@@ -41,6 +41,12 @@ if (!gridResult.ok) throw gridResult.status.summary;
 local grid = gridResult.value;
 ```
 
+`Grid2D` 的资产对象接口用于把生成布局与任意项目资产包解耦：
+`addAssetObject(name, role, asset, x, y, width, height, rotation, flags)` 添加带语义角色、
+资产标识、占地、旋转和标志位的对象；读取时使用 `getObjectAsset(index)`、
+`getObjectRotation(index)` 与 `getObjectFlags(index)`。资产标识只是调用方配置的字符串，
+具体 prefab、模型或精灵由渲染适配器解析。
+
 ### 受检 artifact API
 
 跨存档、跨进程或需要发布到可选后端时，使用 `buildArtifact()` 与
@@ -117,6 +123,64 @@ for (local i = 0; i < gen.getAlgorithmParamCount(algorithm); ++i) {
 `Graphics` 资源系统拥有的 borrowed `Texture`；调用方不得销毁它，也不得跨
 Graphics 关闭、资源重建或后端切换保存引用。参数、Graphics 或生成结果无效时，
 调用方必须检查失败 Result。
+
+## 内置原型建造套件（纯程序化）
+
+模型分类和视觉语言参考 [RGSDev Free 3D Modular Low Poly Assets](https://rgsdev.itch.io/free-3d-modular-low-poly-assets-for-prototyping-by-rgsdev)，纹理方向参考 [Kenney Prototype Textures](https://kenney-assets.itch.io/prototype-textures)。实现只生成新的顶点、索引和 RGBA8 像素数据，不复制、打包或运行时加载参考资源中的模型与图片文件。
+
+`prototype.*` 提供 75 个基础 3D 原型模块，覆盖方块、锥体、圆柱、门窗、墙角、
+楼梯、坡道、围栏、栏杆、柱子、梯子、地面、机关和标记物。它们不是内置 FBX，
+也不会从项目目录读取模型；每次生成都由 CPU 几何函数直接写入 `MeshBuild`。
+所有网格使用 Y-up、XZ 居中占地、Y=0 落地的统一原点，避免导入资源中常见的
+偏移和旋转修正。
+
+```squirrel
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
+local defaultsResult = gen.applyMeshRecipeDefaults("prototype.stairs-corner", p);
+if (!defaultsResult.ok) throw defaultsResult.status.summary;
+p.setFloat("width", 4.0);
+p.setFloat("height", 2.0);
+p.setFloat("depth", 4.0);
+p.setFloat("thickness", 0.16);
+p.setInt("steps", 8);
+local meshResult = gen.buildMesh("prototype.stairs-corner", p);
+if (!meshResult.ok) throw meshResult.status.summary;
+local mesh = meshResult.value;
+```
+
+通用参数为 `scale`、`width`、`height`、`depth`、`thickness`、`detail`、
+`steps` 和 `uvScale`（每世界单位的纹理重复次数）。`detail` 控制圆柱、球体和圆环等的
+径向细分，`steps` 控制楼梯和梯级数量；
+每个 recipe 的尺寸默认值来自同一份 `RecipeDescriptor`。C++ 可用
+`prototypePieceDescriptors()` 枚举，或调用 `generatePrototypePiece()` 获得带结构化
+诊断的 owning `MeshBuild`。
+
+`tex.prototype.*` 提供 13 种原型图案：标注/象限/细分/面板网格、两种斜线网格、
+两种棋盘格、弱网格、楼梯/门洞/窗洞尺寸引导和十字定位点。每种图案通过
+`palette` 参数选择 `dark`、`light`、`purple`、`orange`、`green`、`red`，因此同一套
+13 个函数可产生 78 个标准组合；`custom` 还允许自定义背景与线色。纹理像素由
+CPU 直接绘制，不嵌入 PNG/SVG。
+
+```squirrel
+local textureParamsResult = gen.newParams();
+if (!textureParamsResult.ok) throw textureParamsResult.status.summary;
+local tp = textureParamsResult.value;
+tp.setSize(1024, 1024);
+tp.setString("palette", "orange");
+tp.setInt("cellSize", 128);
+tp.setInt("lineWidth", 2);
+tp.setFloat("minorAlpha", 0.10);
+tp.setFloat("majorAlpha", 0.45);
+local textureResult = gen.generateTexture("tex.prototype.diagonal-grid", tp, gfx);
+if (!textureResult.ok) throw textureResult.status.summary;
+local texture = textureResult.value;
+```
+
+纹理参数还包括 `guideSteps`、`backgroundR/G/B` 与 `lineR/G/B`。C++ 可用
+`prototypeTextureDescriptors()` 枚举，并以 `generatePrototypeTexture()` 生成 owning
+RGBA8 `ImageData`。相同参数逐字节确定；生成结果应按参数 build key 缓存，不能每帧重建。
 
 ### Params 的类型与尺寸语义
 
@@ -774,10 +838,18 @@ local p = paramsResult.value;
 p.setSeed(42);
 p.setSize(48, 32);
 p.setInt("roomCount", 12);
+p.setString("layoutStyle", "clustered");       // grid | clustered
+p.setString("connectionStyle", "nearest");    // sequential | nearest
 p.setString("corridorStyle", "l");   // l | straight | diagonal
 p.setString("floorPattern", "brick");// brick | checker | plank | cobble | plain
 p.setFloat("decorDensity", 0.06);
 p.setString("decorSet", "mixed");    // none | pillars | treasure | mixed
+p.setFloat("propDensity", 0.16);     // themed room-edge prop dressing
+p.setFloat("corridorLightDensity", 0.035); // semantic wall lights on corridors
+// Optional, asset-pack-neutral pools (model/prefab ids, comma separated):
+p.setString("assetPack", "my-dungeon-pack");
+p.setString("assets.container", "crate,barrel,chest");
+p.setString("assets.light", "torch,candle");
 local gridResult = procgen.generate("level.roguelike", p);
 if (!gridResult.ok) throw gridResult.status.summary;
 local grid = gridResult.value;
@@ -785,13 +857,20 @@ local grid = gridResult.value;
 
 常用规则：`roomCount` / `roomMin` / `roomMax`（房间预算与尺寸）、
 `corridorWidth`（走廊宽）、`padding`（外框墙厚）、`spacing`（房间间距）、
-`floorVariants`（地板变体数）、`autotile`（是否写入墙方向掩码）。
+`floorVariants`（地板变体数）、`autotile`（是否写入墙方向掩码）。`clustered`
+布局从中心房间向四周生长，配合 `nearest` 连接可得到短走廊和分叉拓扑；默认值仍为
+`grid` / `sequential`，以保持既有调用结果。
 
 配套工具：
 
 - `procgen.autotileGrid(grid)`：对**任意**已生成网格的墙格补写 8 位方向掩码，
   为其它算法生成的关卡也加上“瓦片方向”细节。
 - `procgen.randomSeed()`：产生一个非 0 的随机种子，用于再掷一局。
+- 自动布景会给房间选择储藏、寝室、餐厅、军械、宝库、祭坛或酒馆主题。
+  每个房间还会输出带主题资产名与矩形范围的 `room` 区域对象；楼梯对象带朝向与
+  边界开口标记，3D 渲染器可据此替换对应墙段并生成向外下行的入口。
+  对象通过 `getObjectType/Asset/Rotation/Flags` 暴露语义角色、可替换资产、朝向和
+  放置属性；`assets.<role>` 池可映射任意 3D 资产包，无需修改生成器。
 
 可运行脚本与快捷键见 [`examples/roguelike-generator`](../../../examples/roguelike-generator/README.md)。
 

@@ -1,5 +1,6 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/HexTerrain.h"
+#include "procgen/algorithms/PrototypeKit.h"
 #include "procgen/algorithms/RockMesh.h"
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
@@ -495,6 +496,7 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
+    registerPrototypePieceRecipes(*this);
     auto mesh = [](std::string id, std::string name) {
         RecipeDescriptor schema{std::move(id), std::move(name), "Mesh", {}};
         schema.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));

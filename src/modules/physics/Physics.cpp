@@ -7,7 +7,7 @@
 #include "physics/Cloth3D.h"
 #include "physics/ClothGPU.h"
 #include "physics/Fixture.h"
-#include "physics/Fluid.h"
+#include "physics/Fluid2D.h"
 #include "physics/PhysicsCapabilities.h"
 #include "physics/Shape3D.h"
 #include "physics/World.h"
@@ -65,7 +65,7 @@ ClothGPU *Physics::newClothGPU(int cols, int rows, float spacing, float originX,
     return new ClothGPU(gpgpu, cols, rows, spacing, originX, originY);
 }
 
-Fluid *Physics::newFluid(int capacity) { return new Fluid(capacity); }
+Fluid2D *Physics::newFluid2D(int capacity) { return new Fluid2D(capacity); }
 
 void Physics::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Physics::create, false);
@@ -995,40 +995,40 @@ void Physics::expose(ssq::Table &table) {
     clothGpu.addFunc("reset", &ClothGPU::reset);
     clothGpu.addFunc("destroy", &ClothGPU::destroy);
 
-    auto fluid = table.addClass<Fluid>(
-        "Fluid", std::function<Fluid *()>([]() -> Fluid * { return nullptr; }), true);
-    fluid.addFunc("update", &Fluid::update);
-    fluid.addFunc("setGravity", &Fluid::setGravity);
-    fluid.addFunc("getGravityX", &Fluid::getGravityX);
-    fluid.addFunc("getGravityY", &Fluid::getGravityY);
-    fluid.addFunc("setSmoothingRadius", &Fluid::setSmoothingRadius);
-    fluid.addFunc("getSmoothingRadius", &Fluid::getSmoothingRadius);
-    fluid.addFunc("setRestDensity", &Fluid::setRestDensity);
-    fluid.addFunc("getRestDensity", &Fluid::getRestDensity);
-    fluid.addFunc("setPressureStiffness", &Fluid::setPressureStiffness);
-    fluid.addFunc("getPressureStiffness", &Fluid::getPressureStiffness);
-    fluid.addFunc("setNearPressureStiffness", &Fluid::setNearPressureStiffness);
-    fluid.addFunc("getNearPressureStiffness", &Fluid::getNearPressureStiffness);
-    fluid.addFunc("setViscosity", &Fluid::setViscosity);
-    fluid.addFunc("getViscosity", &Fluid::getViscosity);
-    fluid.addFunc("setIterations", &Fluid::setIterations);
-    fluid.addFunc("getIterations", &Fluid::getIterations);
-    fluid.addFunc("setBounds", &Fluid::setBounds);
-    fluid.addFunc("clearBounds", &Fluid::clearBounds);
-    fluid.addFunc("emit", &Fluid::emit);
-    fluid.addFunc("clear", &Fluid::clear);
-    fluid.addFunc("interactAt", &Fluid::interactAt);
-    fluid.addFunc("setColor", &Fluid::setColor);
-    fluid.addFunc("setParticleSize", &Fluid::setParticleSize);
-    fluid.addFunc("getParticleSize", &Fluid::getParticleSize);
-    fluid.addFunc("draw", &Fluid::draw);
-    fluid.addFunc("getCapacity", &Fluid::getCapacity);
-    fluid.addFunc("getParticleCount", &Fluid::getParticleCount);
-    fluid.addFunc("getParticleX", &Fluid::getParticleX);
-    fluid.addFunc("getParticleY", &Fluid::getParticleY);
-    fluid.addFunc("getParticleVx", &Fluid::getParticleVx);
-    fluid.addFunc("getParticleVy", &Fluid::getParticleVy);
-    fluid.addFunc("destroy", &Fluid::destroy);
+    auto fluid = table.addClass<Fluid2D>(
+        "Fluid2D", std::function<Fluid2D *()>([]() -> Fluid2D * { return nullptr; }), true);
+    fluid.addFunc("update", &Fluid2D::update);
+    fluid.addFunc("setGravity", &Fluid2D::setGravity);
+    fluid.addFunc("getGravityX", &Fluid2D::getGravityX);
+    fluid.addFunc("getGravityY", &Fluid2D::getGravityY);
+    fluid.addFunc("setSmoothingRadius", &Fluid2D::setSmoothingRadius);
+    fluid.addFunc("getSmoothingRadius", &Fluid2D::getSmoothingRadius);
+    fluid.addFunc("setRestDensity", &Fluid2D::setRestDensity);
+    fluid.addFunc("getRestDensity", &Fluid2D::getRestDensity);
+    fluid.addFunc("setPressureStiffness", &Fluid2D::setPressureStiffness);
+    fluid.addFunc("getPressureStiffness", &Fluid2D::getPressureStiffness);
+    fluid.addFunc("setNearPressureStiffness", &Fluid2D::setNearPressureStiffness);
+    fluid.addFunc("getNearPressureStiffness", &Fluid2D::getNearPressureStiffness);
+    fluid.addFunc("setViscosity", &Fluid2D::setViscosity);
+    fluid.addFunc("getViscosity", &Fluid2D::getViscosity);
+    fluid.addFunc("setIterations", &Fluid2D::setIterations);
+    fluid.addFunc("getIterations", &Fluid2D::getIterations);
+    fluid.addFunc("setBounds", &Fluid2D::setBounds);
+    fluid.addFunc("clearBounds", &Fluid2D::clearBounds);
+    fluid.addFunc("emit", &Fluid2D::emit);
+    fluid.addFunc("clear", &Fluid2D::clear);
+    fluid.addFunc("interactAt", &Fluid2D::interactAt);
+    fluid.addFunc("setColor", &Fluid2D::setColor);
+    fluid.addFunc("setParticleSize", &Fluid2D::setParticleSize);
+    fluid.addFunc("getParticleSize", &Fluid2D::getParticleSize);
+    fluid.addFunc("draw", &Fluid2D::draw);
+    fluid.addFunc("getCapacity", &Fluid2D::getCapacity);
+    fluid.addFunc("getParticleCount", &Fluid2D::getParticleCount);
+    fluid.addFunc("getParticleX", &Fluid2D::getParticleX);
+    fluid.addFunc("getParticleY", &Fluid2D::getParticleY);
+    fluid.addFunc("getParticleVx", &Fluid2D::getParticleVx);
+    fluid.addFunc("getParticleVy", &Fluid2D::getParticleVy);
+    fluid.addFunc("destroy", &Fluid2D::destroy);
 }
 
 void Physics::expose(ssq::Class &cls) {
@@ -1041,7 +1041,7 @@ void Physics::expose(ssq::Class &cls) {
     cls.addFunc("newCloth", &Physics::newCloth);
     cls.addFunc("newCloth3D", &Physics::newCloth3D);
     cls.addFunc("newClothGPU", &Physics::newClothGPU);
-    cls.addFunc("newFluid", &Physics::newFluid);
+    cls.addFunc("newFluid2D", &Physics::newFluid2D);
 }
 
 }  // namespace eve::physics

@@ -23,7 +23,7 @@ persist uiBuilt = false
 
 function pushLog(text) {
     logLines.push(text);
-    while (logLines.len() > 8)
+    while (logLines.len() > 2)
         logLines.remove(0);
 }
 
@@ -185,7 +185,7 @@ eve_render = function() {
     local cols = 4;
     local cell = 48.0;
     local ox = 40.0;
-    local oy = 120.0;
+    local oy = 220.0;
     for (local i = 0; i < bag.getSlotCount(); i += 1) {
         local x = ox + (i % cols) * (cell + 8.0);
         local y = oy + (i / cols).tointeger() * (cell + 8.0);
@@ -196,15 +196,16 @@ eve_render = function() {
     }
 
     if (eq.isSlotEmpty("weapon"))
-        gfx.drawSolidRect(320.0, 120.0, 64.0, 64.0, 0.25, 0.22, 0.22, 1.0);
+        gfx.drawSolidRect(320.0, 220.0, 64.0, 64.0, 0.25, 0.22, 0.22, 1.0);
     else
-        gfx.drawSolidRect(320.0, 120.0, 64.0, 64.0, 0.70, 0.30, 0.28, 1.0);
+        gfx.drawSolidRect(320.0, 220.0, 64.0, 64.0, 0.70, 0.30, 0.28, 1.0);
 
     local used = stash.getUsedSlotCount().tofloat();
     local maxs = stash.getSlotCount().tofloat();
-    gfx.drawSolidRect(420.0, 120.0, 200.0, 24.0, 0.18, 0.20, 0.26, 1.0);
+
+    gfx.drawSolidRect(420.0, 220.0, 200.0, 24.0, 0.18, 0.20, 0.26, 1.0);
     if (maxs > 0.0)
-        gfx.drawSolidRect(420.0, 120.0, 200.0 * used / maxs, 24.0, 0.30, 0.45, 0.70, 1.0);
+        gfx.drawSolidRect(420.0, 220.0, 200.0 * used / maxs, 24.0, 0.30, 0.45, 0.70, 1.0);
 
     ui.beginFrameAndRender();
 };

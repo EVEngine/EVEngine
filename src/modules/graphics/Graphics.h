@@ -1024,25 +1024,48 @@ public:
     /**
      * @brief Build a GPU font (glyph atlas texture) from decoded font data.
      * Rasterizes `charset` (UTF-8, default: printable ASCII) up front;
-     virtual * codepoints outside it still advance in print() but aren't drawn.
+     * Codepoints outside it still advance in drawText() but aren't drawn.
      * Caller owns Font* (not tracked by Graphics — unlike newTexture /
      * newMesh / newShader handles, which Graphics owns).
      */
     Font *newFont(font::FontData *data, std::string charset = Font::defaultCharset());
 
-    /** @brief Font used by subsequent print() calls; nullptr = none set. */
+    /** @brief Optional shared font used by legacy consumers; nullptr = none set. */
     virtual void setFont(Font *font) { currentFont = font; }
     Font *getFont() const { return currentFont; }
 
     /**
-     * @brief Draws UTF-8 `text` with the current font (see setFont), baseline-aligned
-     * so that (x,y) is the top-left of the line. Throws if no font is set.
+     * @brief Draw UTF-8 text with the font selected by setFont().
+     * @param text Borrowed UTF-8 text, retained only for this call.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param color Glyph tint and opacity.
+     * @param scale Uniform text scale; `1` uses the decoded font pixel size.
+     * @throws eve::Exception if no current font has been selected.
+     * @note Render-thread only. The call is synchronous and invokes no callbacks.
      */
-    virtual void print(const std::string &text, float x, float y, const Color &color = Color(1.f, 1.f, 1.f, 1.f),
-                       float scale = 1.f);
+    virtual void print(const std::string &text, float x, float y,
+                       const Color &color = Color(1.f, 1.f, 1.f, 1.f), float scale = 1.f);
+
+    /**
+     * @brief Draw UTF-8 text with an explicitly supplied GPU font.
+     * @param font Borrowed non-null font created by this Graphics instance; it is
+     * retained only for this call and must remain valid until the call returns.
+     * @param text Borrowed UTF-8 text, retained only for this call.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param color Glyph tint and opacity.
+     * @param scale Uniform text scale; `1` uses the decoded font pixel size.
+     * @throws eve::Exception if `font` is nullptr.
+     * @note Render-thread only. The call is synchronous and does not invoke callbacks.
+     */
+    virtual void drawText(Font *font, const std::string &text, float x, float y,
+                          const Color &color = Color(1.f, 1.f, 1.f, 1.f), float scale = 1.f);
 
     /**
      * @brief Script-friendly UTF-8 text drawing overload using RGBA components.
+     * @param font Borrowed non-null font created by this Graphics instance; valid
+     * for the duration of the call.
      * @param text UTF-8 text to draw.
      * @param x Left edge in the current canvas coordinate space.
      * @param y Top edge in the current canvas coordinate space.
@@ -1051,6 +1074,26 @@ public:
      * @param b Blue color component.
      * @param a Alpha color component.
      * @param scale Uniform text scale.
+     * @throws eve::Exception if `font` is nullptr.
+     * @note Render-thread only. The call retains no arguments and invokes no callbacks.
+     */
+    void drawTextRGBA(Font *font, const std::string &text, float x, float y, float r, float g,
+                      float b, float a, float scale = 1.f) {
+        drawText(font, text, x, y, Color(r, g, b, a), scale);
+    }
+
+    /**
+     * @brief Script-friendly stateful print overload using RGBA components.
+     * @param text UTF-8 text to draw.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param r Red color component.
+     * @param g Green color component.
+     * @param b Blue color component.
+     * @param a Alpha color component.
+     * @param scale Uniform text scale.
+     * @throws eve::Exception if no current font has been selected.
+     * @note Render-thread only. The call retains no arguments and invokes no callbacks.
      */
     void printRGBA(const std::string &text, float x, float y, float r, float g, float b, float a,
                    float scale = 1.f) {
