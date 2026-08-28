@@ -9,7 +9,8 @@ eve_init = function() {
       {""id"":""floor"",""model"":""assets/floor.glb"",""category"":""floor""},
       {""id"":""wall"",""model"":""assets/wall.glb"",""category"":""wall""},
       {""id"":""door"",""model"":""assets/door.glb"",""category"":""door""},
-      {""id"":""roof"",""model"":""assets/roof.glb"",""category"":""roof""}
+      {""id"":""roof"",""model"":""assets/roof.glb"",""category"":""roof""},
+      {""id"":""stairs"",""model"":""assets/stairs.glb"",""category"":""stairs""}
     ]";
     local componentResult = housegen.loadComponentsFromJson(kit);
     if (!componentResult.ok) {
@@ -26,6 +27,18 @@ eve_init = function() {
         print("house generation failed: " + generationResult.status.summary + "\n");
     else
         print("generated " + layout.getInstanceCount() + " component instances\n" + layout.toJson() + "\n");
+
+    // New: procgen-backed deterministic identity + snapshot persistence.
+    local requestKey = housegen.requestBuildKey(request);
+    local layoutKey = housegen.layoutBuildKey(layout);
+    print("request build key: " + (requestKey.ok ? requestKey.value : "?") + "\n");
+    print("layout  build key: " + (layoutKey.ok ? layoutKey.value : "?") + "\n");
+    local published = housegen.publishLayout(layout);
+    if (published.ok) {
+        local restored = housegen.findLayout(published.value);
+        print("published " + published.value + "; restored instances=" +
+              (restored.ok ? layout.getInstanceCount() : -1) + " layouts=" + housegen.layoutCount() + "\n");
+    }
 };
 
 eve_render = function() { gfx.clear(); };
