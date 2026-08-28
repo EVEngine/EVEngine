@@ -8,6 +8,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <functional>
+#include <cstdlib>
 #include <utility>
 
 namespace eve::housegen {
@@ -66,6 +67,39 @@ void HouseGen::expose(ssq::Table &table) {
     request.addFunc("setFootprint", [](HouseRequest *r, const std::string &v) { r->footprint = v; });
     request.addFunc("setRoof", [](HouseRequest *r, const std::string &v) { r->roof = v; });
     request.addFunc("setEntrance", [](HouseRequest *r, const std::string &v) { r->entrance = v; });
+    // Comma-separated room names, e.g. "living,kitchen,bedroom".
+    request.addFunc("setRequiredRooms", [](HouseRequest *r, const std::string &csv) {
+        r->requiredRooms.clear();
+        std::string current;
+        for (const char c : csv) {
+            if (c == ',') {
+                if (!current.empty()) r->requiredRooms.push_back(current);
+                current.clear();
+            } else {
+                current.push_back(c);
+            }
+        }
+        if (!current.empty()) r->requiredRooms.push_back(current);
+    });
+    // Semicolon-separated corner points, e.g. "0,0;4,0;4,3;7,3;7,6;0,6".
+    request.addFunc("setPerimeter", [](HouseRequest *r, const std::string &csv) {
+        r->perimeter.clear();
+        std::string segment;
+        for (size_t i = 0; i <= csv.size(); ++i) {
+            if (i == csv.size() || csv[i] == ';') {
+                const size_t comma = segment.find(',');
+                if (comma != std::string::npos) {
+                    HousePolygonPoint p;
+                    p.x = std::atof(segment.substr(0, comma).c_str());
+                    p.y = std::atof(segment.substr(comma + 1).c_str());
+                    r->perimeter.push_back(p);
+                }
+                segment.clear();
+            } else {
+                segment.push_back(csv[i]);
+            }
+        }
+    });
     auto layout = table.addClass<HouseLayout>("HouseLayout", std::function<HouseLayout *()>([] { return new HouseLayout(); }), true);
     layout.addFunc("toJson", &HouseLayout::toJson);
     layout.addFunc("fromJson", [vm](HouseLayout *value, const std::string &json) {
@@ -77,7 +111,28 @@ void HouseGen::expose(ssq::Table &table) {
         return eve::script::projectResult(vm, value->fromJson(json));
     });
     layout.addFunc("getInstanceCount", [](HouseLayout *v) { return int(v->instances.size()); });
+    layout.addFunc("getInstanceComponentId", [](HouseLayout *v, int i) {
+        return (v && i >= 0 && i < int(v->instances.size())) ? v->instances[i].componentId : std::string();
+    });
+    layout.addFunc("getInstanceX", [](HouseLayout *v, int i) {
+        return (v && i >= 0 && i < int(v->instances.size())) ? v->instances[i].x : 0;
+    });
+    layout.addFunc("getInstanceY", [](HouseLayout *v, int i) {
+        return (v && i >= 0 && i < int(v->instances.size())) ? v->instances[i].y : 0;
+    });
+    layout.addFunc("getInstanceZ", [](HouseLayout *v, int i) {
+        return (v && i >= 0 && i < int(v->instances.size())) ? v->instances[i].z : 0;
+    });
+    layout.addFunc("getInstanceRotationDeg", [](HouseLayout *v, int i) {
+        return (v && i >= 0 && i < int(v->instances.size())) ? v->instances[i].rotationDeg : 0;
+    });
+    layout.addFunc("getModuleSize", [](HouseLayout *v) { return v ? v->moduleSize : 1.f; });
+    layout.addFunc("getFloorHeight", [](HouseLayout *v) { return v ? v->floorHeight : 3.f; });
+    layout.addFunc("getFootprintStyle", [](HouseLayout *v) { return v ? v->footprintStyle : std::string(); });
+    layout.addFunc("getRoofStyle", [](HouseLayout *v) { return v ? v->roofStyle : std::string(); });
+    layout.addFunc("getEntranceSide", [](HouseLayout *v) { return v ? v->entranceSide : std::string(); });
     layout.addFunc("getDiagnosticCount", [](HouseLayout *v) { return int(v->diagnostics.size()); });
+    layout.addFunc("getRoomCount", [](HouseLayout *v) { return int(v->rooms.size()); });
 }
 
 void HouseGen::expose(ssq::Class &cls) {
