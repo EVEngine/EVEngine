@@ -8,6 +8,8 @@
 #include "procgen/Params.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
+#include "procgen/heightmap/TerrainPipeline.h"
+#include "procgen/heightmap/TerrainMesh.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 
@@ -18,11 +20,16 @@ namespace eve::graphics {
 class Graphics;
 class Texture;
 class Mesh;
+class Shader;
 }  // namespace eve::graphics
 
 namespace eve::image {
 class ImageData;
 }  // namespace eve::image
+
+namespace eve::data {
+class ByteData;
+}  // namespace eve::data
 
 namespace eve::procgen {
 class PbrTextureSet;
@@ -130,6 +137,77 @@ public:
     Heightmap *generateHeightmap(Params *params);
     /** @brief Classify a heightmap into a semantic Grid2D using params bands (waterMax…). */
     bool heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out);
+    /** @brief Apply mass-conserving thermal erosion in place. */
+    bool erodeTerrainThermal(Heightmap *heightmap, int iterations, float talus, float strength);
+    /** @brief Apply deterministic grid water/sediment erosion in place. */
+    bool erodeTerrainHydraulic(Heightmap *heightmap, int iterations, float rainfall,
+                               float evaporation, float capacity, float erosion,
+                               float deposition);
+    /** @brief Cut drainage-connected river valleys into a heightmap in place. */
+    bool erodeTerrainFluvial(Heightmap *heightmap, int iterations, float riverThreshold,
+                             float incision, float maxDepth, float bankWidth);
+    /** @brief Cut valleys with independent limits for channel incision and spill-sill breaching. */
+    bool erodeTerrainFluvialAdvanced(Heightmap *heightmap, int iterations, float riverThreshold,
+                                     float incision, float maxDepth, float bankWidth,
+                                     float maxBreachDepth);
+    /** @brief Cut valleys with explicit raster-to-physical coordinate scaling. */
+    bool erodeTerrainFluvialScaled(Heightmap *heightmap, int iterations, float riverThreshold,
+                                   float incision, float maxDepth, float bankWidth,
+                                   float maxBreachDepth, float coordinateScale);
+    /** @brief Cut scaled river valleys and return wear/deposition diagnostic layers (caller owns). */
+    TerrainErosionMap *erodeTerrainFluvialDetailed(
+        Heightmap *heightmap, int iterations, float riverThreshold, float incision,
+        float maxDepth, float bankWidth, float maxBreachDepth, float coordinateScale);
+    /** @brief Build river drainage, climate, and biome layers (caller owns). */
+    TerrainLayers *analyzeTerrain(Heightmap *heightmap, float riverThreshold, float seaLevel,
+                                  float latitude);
+    /** @brief Analyze terrain with resolution-independent routing perturbations. */
+    TerrainLayers *analyzeTerrainScaled(Heightmap *heightmap, float riverThreshold, float seaLevel,
+                                        float latitude, float coordinateScale);
+    /** @brief Bake a heightmap and analyzed layers into a chunked EVTR asset (caller owns). */
+    data::ByteData *bakeTerrainAsset(Heightmap *heightmap, TerrainLayers *layers, int chunkSize);
+    /** @brief Build one LOD terrain render chunk with skirts and ecological splat weights. */
+    TerrainMeshChunk *buildTerrainChunk(Heightmap *heightmap, TerrainLayers *layers,
+                                        int originX, int originY, int cellsX, int cellsY, int lod,
+                                        float cellSize, float heightScale, float skirtDepth);
+    /** @brief Select terrain LOD from measured screen-space geometric error. */
+    int selectTerrainLod(Heightmap *heightmap, int originX, int originY, int cellsX, int cellsY,
+                         int maxLod, float cellSize, float heightScale, float cameraDistance,
+                         float viewportHeight, float verticalFovDegrees, float targetPixelError);
+    /** @brief Upload a built terrain chunk through the engine's standard 3D mesh path. */
+    graphics::Mesh *generateTerrainChunkMesh(TerrainMeshChunk *chunk, graphics::Graphics *gfx);
+    /** @brief Generate a flow-aligned water ribbon mesh for one terrain chunk. */
+    graphics::Mesh *generateTerrainRiverMesh(Heightmap *heightmap, TerrainLayers *layers,
+                                             graphics::Graphics *gfx, int originX, int originY,
+                                             int cellsX, int cellsY, float cellSize,
+                                             float heightScale, float minWidth, float maxWidth,
+                                             float heightOffset);
+    /** @brief Generate one slope-banded river surface batch, such as calm water or cascades. */
+    graphics::Mesh *generateTerrainRiverMeshAdvanced(
+        Heightmap *heightmap, TerrainLayers *layers, graphics::Graphics *gfx,
+        int originX, int originY, int cellsX, int cellsY, float cellSize,
+        float heightScale, float minWidth, float maxWidth, float heightOffset,
+        float minSurfaceSlope, float maxSurfaceSlope);
+    /** @brief Generate resolved closed-basin lake surfaces for one terrain chunk. */
+    graphics::Mesh *generateTerrainLakeMesh(Heightmap *heightmap, TerrainLayers *layers,
+                                            graphics::Graphics *gfx, int originX, int originY,
+                                            int cellsX, int cellsY, float cellSize,
+                                            float heightScale, float minimumDepth,
+                                            float heightOffset);
+    /** @brief Create an RGBA8 sand/vegetation/rock/snow splat map for a terrain chunk. */
+    image::ImageData *generateTerrainSplatMap(TerrainMeshChunk *chunk);
+    /** @brief Create an opaque diagnostic albedo map by blending the terrain material weights. */
+    image::ImageData *generateTerrainAlbedoMap(TerrainMeshChunk *chunk);
+    /** @brief Visualize erosion wear (orange) and deposition (cyan) as an RGBA8 image. */
+    image::ImageData *generateTerrainErosionMap(TerrainErosionMap *erosion, float exposure);
+    /** @brief Visualize gross erosion as an orange RGBA8 image. */
+    image::ImageData *generateTerrainWearMap(TerrainErosionMap *erosion, float exposure);
+    /** @brief Visualize deposited material as a cyan RGBA8 image. */
+    image::ImageData *generateTerrainDepositionMap(TerrainErosionMap *erosion, float exposure);
+    /** @brief Create the runtime four-layer splat/PBR terrain mesh shader. */
+    graphics::Shader *createTerrainMaterialShader(graphics::Graphics *gfx);
+    /** @brief Create a Fresnel/specular procedural water shader for rivers and lakes. */
+    graphics::Shader *createTerrainWaterShader(graphics::Graphics *gfx);
 
     PaletteTable &palettes() { return palettes_; }
 

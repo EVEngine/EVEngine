@@ -7,6 +7,7 @@
 #include "voxel/VoxelPack.h"
 
 #include "procgen/heightmap/TerrainSampler.h"
+#include "procgen/heightmap/TerrainStreaming.h"
 
 #include <cmath>
 #include <cstdint>
@@ -98,14 +99,21 @@ public:
         terrainAmplitude_ = amplitude < 0.f ? 0.f : amplitude;
         terrainEnabled_ = true;
     }
-    void disableTerrain() { terrainEnabled_ = false; }
-    bool terrainEnabled() const { return terrainEnabled_; }
+    void disableTerrain() { terrainEnabled_ = false; terrainAssetEnabled_ = false; terrainAsset_.clear(); }
+    bool terrainEnabled() const { return terrainEnabled_ || terrainAssetEnabled_; }
+
+    /** @brief Open a baked EVTR terrain asset. Height = offset + stored height * scale. */
+    bool loadTerrainAsset(data::ByteData *bytes, float heightOffset = 0.f, float heightScale = 1.f);
+    /** @brief Decode/evict EVTR chunks around a world-space column with an optional load budget. */
+    procgen::TerrainStreamStats streamTerrainAssetAround(int worldX, int worldZ, int radiusChunks,
+                                                          int maxLoads = 0);
+    /** @brief Configure biome surface ids: vegetation, sand, snow, alpine rock, river bed. */
+    void setTerrainAssetMaterials(uint8_t vegetation, uint8_t sand, uint8_t snow,
+                                  uint8_t alpine, uint8_t riverbed);
+    int getTerrainAssetResidentCount() const { return terrainAsset_.getResidentCount(); }
 
     /** @brief Terrain height (world blocks) at a column for the configured seed. */
-    int terrainHeightAt(int wx, int wz) const {
-        const float e = terrainSampler_.sample(float(wx), float(wz));
-        return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
-    }
+    int terrainHeightAt(int wx, int wz) const;
 
     /**
      * @brief Persistence: serialize every chunk (coords + raw voxels) into `out`.
@@ -221,6 +229,7 @@ private:
 
     /** Mark the six adjacent chunks dirty when an edit lands on a border face. */
     void markNeighborChunksDirty(int cx, int cy, int cz, int lx, int ly, int lz);
+    uint8_t terrainSurfaceAt(int wx, int wz) const;
 
     std::unordered_map<uint64_t, std::unique_ptr<Chunk>> chunks_;
     std::vector<DrawBatch> visible_;
@@ -233,6 +242,15 @@ private:
     float terrainBase_ = 8.f;
     float terrainAmplitude_ = 14.f;
     bool terrainEnabled_ = false;
+    procgen::TerrainStreamingCache terrainAsset_;
+    bool terrainAssetEnabled_ = false;
+    float terrainAssetOffset_ = 0.f;
+    float terrainAssetScale_ = 1.f;
+    uint8_t terrainVegetation_ = 1;
+    uint8_t terrainSand_ = 1;
+    uint8_t terrainSnow_ = 1;
+    uint8_t terrainAlpine_ = 3;
+    uint8_t terrainRiverbed_ = 2;
 
     bool raycastHit_ = false;
     int raycastHitX_ = 0;

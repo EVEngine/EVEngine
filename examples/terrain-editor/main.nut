@@ -17,6 +17,8 @@ if (!("dist" in getroottable())) dist <- 26.0;
 if (!("tool" in getroottable())) tool <- "raise";
 if (!("brushR" in getroottable())) brushR <- 4.0;
 if (!("strength" in getroottable())) strength <- 0.02;
+if (!("terrainLayers" in getroottable())) terrainLayers <- null;
+if (!("analysisText" in getroottable())) analysisText <- "not analyzed";
 
 const W = 64;
 const H = 64;
@@ -42,7 +44,19 @@ function regenTerrain() {
             }
         }
     }
+    analyzeTerrainLayers();
     rebuildMesh();
+}
+
+function analyzeTerrainLayers() {
+    if (hm == null) return;
+    terrainLayers = procgen.analyzeTerrain(hm, 48.0, 0.25, 0.65);
+    if (terrainLayers != null) {
+        local cx = W / 2;
+        local cy = H / 2;
+        analysisText = "center biome=" + terrainLayers.getBiomeName(cx, cy) +
+                       "  flow=" + terrainLayers.getFlowAccumulation(cx, cy);
+    }
 }
 
 function rebuildMesh() {
@@ -85,6 +99,9 @@ eve_init = function() {
     ui.button("Raise (1)", "raise");
     ui.button("Lower (2)", "lower");
     ui.button("Regenerate (R)", "reset");
+    ui.button("Thermal erosion", "thermal");
+    ui.button("Hydraulic erosion", "hydraulic");
+    ui.button("Analyze rivers/biomes", "analyze");
     ui.separator("sep");
     ui.text("Brush radius", "lbl_brush");
     ui.slider("Radius", brushR, 1.0, 12.0, "brush");
@@ -164,6 +181,18 @@ eve_update = function(dt) {
             tool = "lower";
         } else if (c == "ed/reset") {
             regenTerrain();
+        } else if (c == "ed/thermal") {
+            if (procgen.erodeTerrainThermal(hm, 20, 0.018, 0.32)) {
+                analyzeTerrainLayers();
+                rebuildMesh();
+            }
+        } else if (c == "ed/hydraulic") {
+            if (procgen.erodeTerrainHydraulic(hm, 40, 0.01, 0.08, 2.0, 0.16, 0.12)) {
+                analyzeTerrainLayers();
+                rebuildMesh();
+            }
+        } else if (c == "ed/analyze") {
+            analyzeTerrainLayers();
         }
         c = ui.consumeClick();
     }
@@ -172,7 +201,7 @@ eve_update = function(dt) {
         if (ch == "ed/brush") brushR = ui.getValue("brush");
         ch = ui.consumeChange();
     }
-    ui.setText("status", "tool=" + tool + "  radius=" + brushR + "  yaw=" + yaw);
+    ui.setText("status", "tool=" + tool + "  radius=" + brushR + "\n" + analysisText);
 };
 
 eve_render = function() {

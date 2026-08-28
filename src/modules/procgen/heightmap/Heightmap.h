@@ -35,6 +35,8 @@ public:
     float sampleBilinearSeamless(float x, float y) const;
 
     const std::vector<float> &data() const { return data_; }
+    /** @brief Mutable row-major samples for terrain processing and asset import. */
+    std::vector<float> &data() { return data_; }
 
     /** @brief Materialize a Heightmap by sampling `sampler` at every pixel center. */
     static Heightmap generate(const TerrainSampler &sampler, int width, int height);

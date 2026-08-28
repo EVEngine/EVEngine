@@ -56,6 +56,27 @@ void Voxel::expose(ssq::Table &table) {
                                     baseHeight, amplitude, scale);
             }));
     world.addFunc("terrainHeightAt", &VoxelWorld::terrainHeightAt);
+    world.addFunc(
+        "loadTerrainAsset",
+        std::function<bool(VoxelWorld *, data::ByteData *, float, float)>(
+            [](VoxelWorld *w, data::ByteData *bytes, float offset, float scale) {
+                return w && w->loadTerrainAsset(bytes, offset, scale);
+            }));
+    world.addFunc(
+        "streamTerrainAssetAround",
+        std::function<int(VoxelWorld *, int, int, int, int)>(
+            [](VoxelWorld *w, int wx, int wz, int radius, int maxLoads) {
+                return w ? w->streamTerrainAssetAround(wx, wz, radius, maxLoads).loaded : 0;
+            }));
+    world.addFunc(
+        "setTerrainAssetMaterials",
+        std::function<void(VoxelWorld *, int, int, int, int, int)>(
+            [](VoxelWorld *w, int vegetation, int sand, int snow, int alpine, int riverbed) {
+                if (w) w->setTerrainAssetMaterials(uint8_t(vegetation), uint8_t(sand),
+                                                   uint8_t(snow), uint8_t(alpine),
+                                                   uint8_t(riverbed));
+            }));
+    world.addFunc("getTerrainAssetResidentCount", &VoxelWorld::getTerrainAssetResidentCount);
     world.addFunc("disableTerrain", &VoxelWorld::disableTerrain);
     world.addFunc("saveWorld", &VoxelWorld::saveWorld);
     world.addFunc("loadWorld", &VoxelWorld::loadWorld);

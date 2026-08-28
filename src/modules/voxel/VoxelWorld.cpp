@@ -49,6 +49,67 @@ void VoxelWorld::clear() {
     visibleChunkKeys_.clear();
 }
 
+bool VoxelWorld::loadTerrainAsset(data::ByteData *bytes, float heightOffset, float heightScale) {
+    if (!bytes || !std::isfinite(heightOffset) || !std::isfinite(heightScale)) return false;
+    std::string error;
+    if (!terrainAsset_.open(static_cast<const uint8_t *>(bytes->getData()), bytes->getSize(),
+                            &error)) return false;
+    terrainAssetOffset_ = heightOffset;
+    terrainAssetScale_ = heightScale;
+    terrainAssetEnabled_ = true;
+    return true;
+}
+
+procgen::TerrainStreamStats VoxelWorld::streamTerrainAssetAround(int worldX, int worldZ,
+                                                                 int radiusChunks,
+                                                                 int maxLoads) {
+    if (!terrainAssetEnabled_) return {};
+    return terrainAsset_.streamAround(worldX, worldZ, radiusChunks, maxLoads);
+}
+
+void VoxelWorld::setTerrainAssetMaterials(uint8_t vegetation, uint8_t sand, uint8_t snow,
+                                          uint8_t alpine, uint8_t riverbed) {
+    terrainVegetation_ = vegetation;
+    terrainSand_ = sand;
+    terrainSnow_ = snow;
+    terrainAlpine_ = alpine;
+    terrainRiverbed_ = riverbed;
+}
+
+int VoxelWorld::terrainHeightAt(int wx, int wz) const {
+    if (terrainAssetEnabled_) {
+        float storedHeight = 0.f;
+        if (terrainAsset_.sampleHeight(float(wx), float(wz), storedHeight))
+            return int(std::floor(terrainAssetOffset_ + terrainAssetScale_ * storedHeight));
+    }
+    if (terrainEnabled_) {
+        const float e = terrainSampler_.sample(float(wx), float(wz));
+        return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
+    }
+    return int(std::floor(terrainAssetOffset_));
+}
+
+uint8_t VoxelWorld::terrainSurfaceAt(int wx, int wz) const {
+    if (!terrainAssetEnabled_) return terrainTop_;
+    procgen::TerrainSample sample;
+    if (!terrainAsset_.sampleCell(wx, wz, sample)) return terrainTop_;
+    switch (sample.biome) {
+    case procgen::Biome::Ocean:
+    case procgen::Biome::Beach:
+    case procgen::Biome::Desert:
+        return terrainSand_;
+    case procgen::Biome::Tundra:
+    case procgen::Biome::Taiga:
+        return terrainSnow_;
+    case procgen::Biome::Alpine:
+        return terrainAlpine_;
+    case procgen::Biome::River:
+        return terrainRiverbed_;
+    default:
+        return terrainVegetation_;
+    }
+}
+
 int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks) {
     if (radiusChunks < 0) return 0;
     const int64_t r2 = int64_t(radiusChunks) * int64_t(radiusChunks);
@@ -76,6 +137,15 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
     StreamStats stats;
     if (radiusChunks < 0) return stats;
 
+    if (!generator && terrainAssetEnabled_) {
+        const int assetChunk = terrainAsset_.asset().getChunkSize();
+        const int worldRadius = (radiusChunks + 1) * kChunkSize;
+        const int assetRadius = assetChunk > 0
+            ? int(std::ceil(float(worldRadius) * 1.41421356f / float(assetChunk))) + 1 : 0;
+        terrainAsset_.streamAround(centerX * kChunkSize + kChunkSize / 2,
+                                   centerZ * kChunkSize + kChunkSize / 2, assetRadius);
+    }
+
     // Evict first so far-away dirty chunks are not remeshed below.
     stats.evicted = unloadChunksOutside(centerX, centerY, centerZ, radiusChunks);
 
@@ -92,7 +162,7 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                 Chunk *c = getOrCreateChunk(nx, ny, nz);
                 if (generator)
                     generator(*c, nx, ny, nz);
-                else if (terrainEnabled_) {
+                else if (terrainEnabled_ || terrainAssetEnabled_) {
                     // Heightmap terrain via procgen::TerrainSampler: one column
                     // per (x, z); sampling world coords keeps chunk seams flush.
                     const int wy0 = ny * kChunkSize;
@@ -100,6 +170,8 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                         for (int lx = 0; lx < kChunkSize; ++lx) {
                             const int h = terrainHeightAt(nx * kChunkSize + lx,
                                                           nz * kChunkSize + lz);
+                            const uint8_t surface = terrainSurfaceAt(nx * kChunkSize + lx,
+                                                                     nz * kChunkSize + lz);
                             for (int ly = 0; ly < kChunkSize; ++ly) {
                                 const int wy = wy0 + ly;
                                 if (wy <= h - 4)
@@ -107,7 +179,7 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                                 else if (wy <= h - 1)
                                     c->set(lx, ly, lz, terrainSub_);
                                 else if (wy == h)
-                                    c->set(lx, ly, lz, terrainTop_);
+                                    c->set(lx, ly, lz, surface);
                             }
                         }
                 }
