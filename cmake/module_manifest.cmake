@@ -155,7 +155,7 @@ eve_declare_module(NAME action LIB EVAction LAYER 1
                    GROUP minimal 2d 3d web)
 # L2 -- combat resolution consuming the action protocol
 eve_declare_module(NAME combat LIB EVCombat LAYER 2
-                   DEPS action tags
+                   DEPS action attributes tags
                    GROUP minimal 2d 3d web)
 # L0 -- foundation (continued)
 eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
