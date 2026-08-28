@@ -3,6 +3,11 @@
 演示 `eve.Card()`：扇形手牌布局（间距 / 弧高 / 悬浮放大 / 移动速度）、抽牌洗牌、
 敌方手牌翻面偷看、拖拽出牌 / 弃牌、费用不足自动置灰，以及一个实时调节全部布局参数的配置面板。
 
+示例使用 MrEliptik 的
+[Stylized Playing Cards Pack](https://mreliptik.itch.io/playing-cards-packs-52-cards)
+黑底套装显示完整 52 张牌。原始 655×930 PNG 被等比例缩小为 262×372，降低示例的磁盘与显存开销；
+素材采用 CC0，许可文本保存在 `assets/playing-cards/LICENSE.txt`。
+
 ## 运行
 
 ```bash
