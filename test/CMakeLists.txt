@@ -121,7 +121,7 @@ file(GLOB all_test_cpp
   map.cpp
   map_path.cpp
   map_fov.cpp
-rpg.cpp
+  rpg.cpp
   gameplay_action.cpp
   rpg_battle.cpp
   rpg_class.cpp
