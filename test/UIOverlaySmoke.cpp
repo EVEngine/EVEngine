@@ -140,6 +140,7 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
     REQUIRE(ui->initBackend());
+    gfx->setScreenReadbackEnabled(true);
 
     gfx->setBackgroundColor(Color(0.09f, 0.10f, 0.14f, 1.0f));
 
@@ -240,6 +241,7 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
     REQUIRE(ui->initBackend());
+    gfx->setScreenReadbackEnabled(true);
 
     const UIHostHandle viewportHost =
         ui->mountAs("vpsmoke", window("Viewport", {viewport("vp", 420.f, 260.f)}, "root"));
@@ -283,9 +285,29 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
     auto *cube = Renderable3D::create();
     cube->setMesh(gfx->newMeshCube(1.f));
     cube->setVisible(true);
+    cube->setTint(1.f, 0.f, 0.f, 1.f);
+    auto *previewMaterial = new Material();
+    previewMaterial->setShadingModel("unlit");
+    previewMaterial->setTint(0.f, 1.f, 0.f, 1.f);
+    cube->setMaterial(previewMaterial);
     gfx->setDirectionalLight(-0.4f, 0.9f, 0.3f, 1.8f, 1.6f, 1.3f);
     gfx->renderScene3DToCanvas(viewportState.canvas, cam);
     CHECK(viewportState.canvas->getTexture() != nullptr);
+    const Color previewCenter = viewportState.canvas->getPixel(viewportState.canvas->getWidth() / 2,
+                                                               viewportState.canvas->getHeight() / 2);
+    CHECK_GT(previewCenter.g, previewCenter.r);
 
+    // Composite the viewport through the real UI target. Opaque viewport draws
+    // must not leak the mesh shader's depth-in-alpha channel into the final UI
+    // resolve or the preview becomes an almost-black silhouette.
+    ui->beginFrameAndRender();
+    RenderSystem::render(*gfx);
+    float maxGreen = 0.f;
+    for (int y = 0; y < gfx->getHeight(); y += 4)
+        for (int x = 0; x < gfx->getWidth(); x += 4)
+            maxGreen = std::max(maxGreen, gfx->getPixel(x, y).g);
+    CHECK_GT(maxGreen, 0.5f);
+
+    gfx->setScreenReadbackEnabled(false);
     win->close();
 }

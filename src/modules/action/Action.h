@@ -13,6 +13,7 @@
  * an affordability query and therefore never leaves a cross-frame reservation.
  */
 
+#include "action/ActionTimeline.h"
 #include "common/ECS.h"
 #include "common/Identity.h"
 #include "common/ResourceAccount.h"
@@ -103,6 +104,8 @@ struct ActionDefinition {
     bool activeExecutionRequired = false;
     /** @brief Deterministic extension data owned by this definition. */
     Value::Object metadata;
+    /** @brief Optional versioned choreography authored by the action editor. */
+    std::optional<ActionTimeline> timeline;
 
     /**
      * @brief Validate definition invariants without changing the definition.
@@ -178,6 +181,8 @@ struct ActionAdvance {
     Duration phaseElapsed = Duration::zero();
     /** @brief Total simulation duration consumed by the execution. */
     Duration totalElapsed = Duration::zero();
+    /** @brief Owning timeline boundaries crossed by this advance. */
+    std::vector<ActionTimelineEvent> timelineEvents;
 };
 
 /**
@@ -437,7 +442,8 @@ private:
     std::optional<sensing::TargetSet>              resolvedTargets_;
     std::optional<resource::Receipt>               receipt_;
     std::optional<transaction::TransactionReceipt> transactionReceipt_;
-    bool                                           activeExecuted_ = false;
+    bool                                           activeExecuted_  = false;
+    bool                                           timelineStarted_ = false;
 };
 
 /**

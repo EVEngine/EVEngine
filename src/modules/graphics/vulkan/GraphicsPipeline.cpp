@@ -76,6 +76,7 @@
 #include "graphics/shaders/resolve_vis_frag_spv.inc"
 #include "graphics/shaders/resolve_vis_vert_spv.inc"
 #include "graphics/shaders/textured_frag_spv.inc"
+#include "graphics/shaders/textured_opaque_frag_spv.inc"
 #include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/vulkan/GraphicsInternal.h"
 
@@ -604,11 +605,13 @@ void Graphics::createUiColorResources(int uiW, int uiH) {
     if (!uiTexturePipeline) {
         const auto vert = embeddedSpirv(textured_vert_spv);
         const auto frag = embeddedSpirv(textured_frag_spv);
+        const auto opaqueFrag = embeddedSpirv(textured_opaque_frag_spv);
         uiTexturePipeline = createTexturedStylePipeline(vert, frag, uiRenderPass,
                                                         texPipelineLayout, BlendMode::Alpha,
                                                         uiColorSamples);
         uiTextureOpaquePipeline = createTexturedStylePipeline(
-            vert, frag, uiRenderPass, texPipelineLayout, BlendMode::Opaque, uiColorSamples);
+            vert, opaqueFrag, uiRenderPass, texPipelineLayout, BlendMode::Opaque,
+            uiColorSamples);
     }
 
     if (!uiColorSlots.empty() && uiColorWidth == uiW && uiColorHeight == uiH &&

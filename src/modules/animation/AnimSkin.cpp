@@ -416,7 +416,12 @@ bool AnimSkin::applyToMesh(graphics::Graphics* gfx, graphics::Mesh* mesh, const 
 
     if (!updateSkinnedPositions(pose)) return false;
     updateSkinnedNormals(pose);
-    return gfx->updateMeshVertices(mesh, skinnedPos_.data(), skinnedNrmValid_ ? skinnedNrm_.data() : nullptr, nullptr,
+    const auto& importedUv = mesh->importedUv(0);
+    const float* uv = importedUv.size() == static_cast<size_t>(vertexCount_) * 2u
+                          ? importedUv.data()
+                          : nullptr;
+    return gfx->updateMeshVertices(mesh, skinnedPos_.data(),
+                                   skinnedNrmValid_ ? skinnedNrm_.data() : nullptr, uv,
                                    vertexCount_, nullptr, 0);
 }
 

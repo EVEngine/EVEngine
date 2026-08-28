@@ -98,6 +98,20 @@ Result<void> ActionDefinition::validate() const {
         if (effectId.empty())
             return failure(DiagnosticCode::InvalidArgument, "action effect ids must not be empty", "effectIds");
     }
+    if (timeline) {
+        auto timelineValid = timeline->validate();
+        if (!timelineValid) return failureFrom(timelineValid.status());
+        if (timeline->actionId != id)
+            return failure(DiagnosticCode::InvalidArgument, "action timeline id does not match its definition",
+                           "timeline.actionId");
+        auto windupAndActive = timing.windup.tryAdd(timing.active);
+        if (!windupAndActive) return failureFrom(windupAndActive.status());
+        auto total = windupAndActive.value().tryAdd(timing.recover);
+        if (!total) return failureFrom(total.status());
+        if (timeline->duration != total.value())
+            return failure(DiagnosticCode::InvalidArgument,
+                           "action timeline duration must equal windup + active + recover", "timeline.durationNs");
+    }
     return Result<void>::success();
 }
 
@@ -375,7 +389,8 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
         return failureFrom<ActionAdvance>(invalidStatus("action advance duration must be non-negative", "delta"));
     if (tick < execution->lastTick_)
         return failureFrom<ActionAdvance>(invalidStatus("action simulation tick moved backwards", "tick"));
-    execution->lastTick_ = tick;
+    execution->lastTick_            = tick;
+    const Duration timelinePrevious = execution->totalElapsed_;
 
     if (execution->phase_ == ActionPhase::Completed) {
         ActionAdvance result{id, execution->phase_, {}, execution->phaseElapsed_, execution->totalElapsed_};
@@ -489,13 +504,32 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
         if (isTerminal(execution->phase_)) break;
     }
 
+    std::vector<ActionTimelineEvent> timelineEvents;
+    if (execution->definition_.timeline) {
+        auto sampled = execution->definition_.timeline->sample(timelinePrevious, execution->totalElapsed_,
+                                                               !execution->timelineStarted_);
+        if (!sampled) {
+            failExecution(*execution, sampled.status(), tick, &transitions);
+            return failureFrom<ActionAdvance>(execution->status());
+        }
+        timelineEvents              = std::move(sampled).takeValue();
+        execution->timelineStarted_ = true;
+    }
     if (execution->phase_ == ActionPhase::Completed) {
-        ActionAdvance result{id, execution->phase_, std::move(transitions), execution->phaseElapsed_,
-                             execution->totalElapsed_};
+        ActionAdvance result{id,
+                             execution->phase_,
+                             std::move(transitions),
+                             execution->phaseElapsed_,
+                             execution->totalElapsed_,
+                             std::move(timelineEvents)};
         return Result<ActionAdvance>::success(std::move(result), Status::success(StatusCode::Applied));
     }
-    ActionAdvance result{id, execution->phase_, std::move(transitions), execution->phaseElapsed_,
-                         execution->totalElapsed_};
+    ActionAdvance result{id,
+                         execution->phase_,
+                         std::move(transitions),
+                         execution->phaseElapsed_,
+                         execution->totalElapsed_,
+                         std::move(timelineEvents)};
     return Result<ActionAdvance>::success(std::move(result), pendingStatus());
 }
 

@@ -103,9 +103,9 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS property_access transaction
+                   DEPS action property_access tags transaction
                    GROUP 3d web
-                   OPTIONAL_DEPS procgen map voxel)
+                   OPTIONAL_DEPS animation procgen map voxel)
 # L0 -- foundation (continued)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)
@@ -151,7 +151,11 @@ eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
 # (RPG Skill, Weapon Attack, Card Play, RTS Command) depend on this protocol;
 # the core depends on sensing/decision values but never on a gameplay domain.
 eve_declare_module(NAME action LIB EVAction LAYER 1
-                   DEPS decision sensing transaction
+                   DEPS decision sensing tags transaction
+                   GROUP minimal 2d 3d web)
+# L2 -- combat resolution consuming the action protocol
+eve_declare_module(NAME combat LIB EVCombat LAYER 2
+                   DEPS action attributes tags
                    GROUP minimal 2d 3d web)
 # L0 -- foundation (continued)
 eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
