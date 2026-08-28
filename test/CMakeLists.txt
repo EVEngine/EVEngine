@@ -258,6 +258,7 @@ file(GLOB all_test_cpp
   statepatch.cpp
   steering.cpp
   tags.cpp
+  gameplay_tags.cpp
   transaction.cpp
   transaction_participant.cpp
   rx.cpp

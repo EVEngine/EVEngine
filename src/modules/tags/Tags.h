@@ -2,6 +2,7 @@
 
 #include "common/Module.h"
 #include "tags/TagStore.h"
+#include "tags/GameplayTag.h"
 
 #include <string>
 
@@ -58,9 +59,26 @@ public:
     void clearEvents();
     /** @brief Gives C++ callers direct access to the underlying store. */
     TagStore& store() { return store_; }
+    /**
+     * @brief Gives C++ callers owner-thread access to the canonical gameplay-tag registry.
+     * @return Borrowed mutable reference owned by this module.
+     * @lifetime Valid until this Tags module is destroyed; definitions returned by the registry are owning copies.
+     * @thread Owner-thread-only; no synchronization is performed.
+     * @reentrancy Does not invoke callbacks.
+     */
+    GameplayTagRegistry& registry() { return registry_; }
+    /**
+     * @brief Gives C++ callers immutable owner-thread access to the canonical gameplay-tag registry.
+     * @return Borrowed immutable reference owned by this module.
+     * @lifetime Valid until this Tags module is destroyed.
+     * @thread Owner-thread-only; no synchronization is performed.
+     * @reentrancy Does not invoke callbacks.
+     */
+    const GameplayTagRegistry& registry() const { return registry_; }
 
 private:
     TagStore store_;
+    GameplayTagRegistry registry_;
 };
 
 }  // namespace eve::tags

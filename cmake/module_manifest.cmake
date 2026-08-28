@@ -103,7 +103,7 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS action property_access transaction
+                   DEPS action property_access tags transaction
                    GROUP 3d web
                    OPTIONAL_DEPS procgen map voxel)
 # L0 -- foundation (continued)

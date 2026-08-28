@@ -1,5 +1,7 @@
 #pragma once
 
+#include "tags/GameplayTag.h"
+
 #include <cstdint>
 #include <map>
 #include <set>
@@ -28,14 +30,24 @@ public:
     bool removeTag(const SubjectId& subject, const std::string& tag);
     /** @brief Tests whether a subject has an exact tag. */
     bool hasTag(const SubjectId& subject, const std::string& tag) const;
+    /** @brief Tests an exact tag or any dot-boundary descendant. */
+    bool hasTagMatching(const SubjectId& subject, const std::string& tag, GameplayTagMatch match) const;
     /** @brief Returns a subject's tags in lexical order. */
     std::vector<std::string> tagsOf(const SubjectId& subject) const;
     /** @brief Returns subjects carrying a tag in lexical order. */
     std::vector<SubjectId> subjectsWithTag(const std::string& tag) const;
+    /** @brief Returns subjects carrying an exact tag or descendant in lexical order. */
+    std::vector<SubjectId> subjectsWithTagMatching(const std::string& tag, GameplayTagMatch match) const;
     /** @brief Tests whether a subject has every requested tag; an empty request succeeds. */
     bool requireAllTags(const SubjectId& subject, const std::vector<std::string>& tags) const;
     /** @brief Tests whether a subject has any requested tag; an empty request fails. */
     bool requireAnyTag(const SubjectId& subject, const std::vector<std::string>& tags) const;
+    /** @brief Tests whether every query has an exact/descendant match. */
+    bool matchesAllTags(const SubjectId& subject, const std::vector<std::string>& tags,
+                        GameplayTagMatch match) const;
+    /** @brief Tests whether any query has an exact/descendant match. */
+    bool matchesAnyTag(const SubjectId& subject, const std::vector<std::string>& tags,
+                       GameplayTagMatch match) const;
 
     /** @brief Adds a capability to a subject. @return True only when the set changed. */
     bool addCapability(const SubjectId& subject, const std::string& capability);
