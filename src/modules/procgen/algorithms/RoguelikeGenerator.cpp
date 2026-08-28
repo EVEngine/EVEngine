@@ -22,7 +22,9 @@
 #include <cmath>
 #include <cstdint>
 #include <random>
+#include <sstream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace eve::procgen {
@@ -57,6 +59,24 @@ struct Rect {
 };
 
 int clampInt(int v, int lo, int hi) { return std::max(lo, std::min(hi, v)); }
+
+std::vector<std::string> assetPool(const Params &params, const std::string &role,
+                                   const std::string &fallback) {
+    std::vector<std::string> result;
+    std::stringstream input(params.getString("assets." + role, fallback));
+    std::string item;
+    while (std::getline(input, item, ',')) {
+        const auto first = item.find_first_not_of(" \t");
+        const auto last = item.find_last_not_of(" \t");
+        if (first != std::string::npos) result.push_back(item.substr(first, last - first + 1));
+    }
+    return result;
+}
+
+std::string pickAsset(const std::vector<std::string> &pool, std::mt19937 &rng) {
+    if (pool.empty()) return {};
+    return pool[size_t(rng()) % pool.size()];
+}
 
 /** Assign a wall-autotile mask for every wall cell adjacent to walkable floor. */
 void autotileWalls(Grid2D &out) {
@@ -253,7 +273,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
         }
     }
 
-    // 6) Scatter decor (ground tiles + placed props), avoiding the walkway
+    // 6) Scatter non-blocking ground detail, avoiding narrow doorways.
     //    through doorways (cells with a wall on two opposite sides) and the
     //    outer border so spawn/stairs stay reachable.
     std::vector<std::pair<int, int>> floorCells;
@@ -284,39 +304,98 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
         }
     }
 
-    // 7) Props (pillars / chests) from the chosen decor set.
-    auto propCount = [&](int base) {
-        return decorSet == "none" ? 0 : std::max(0, int(float(base) * 0.35f));
+    // 7) Semantic asset dressing. Pools are comma-separated asset ids supplied
+    // by the caller. Generic fallbacks deliberately contain no KayKit names.
+    // Renderers resolve `getObjectAsset()` however they like (GLTF, prefab, sprite…).
+    const auto containers = assetPool(params, "container", "container");
+    const auto treasure = assetPool(params, "treasure", "treasure");
+    const auto columns = assetPool(params, "column", "column");
+    const auto tables = assetPool(params, "table", "table");
+    const auto seating = assetPool(params, "seating", "seat");
+    const auto beds = assetPool(params, "bed", "bed");
+    const auto shelves = assetPool(params, "shelf", "shelf");
+    const auto lights = assetPool(params, "light", "light");
+    const auto banners = assetPool(params, "banner", "banner");
+    const auto weapons = assetPool(params, "weapon", "weapon_display");
+    const auto traps = assetPool(params, "trap", "trap");
+    const auto food = assetPool(params, "food", "food");
+    const auto tavern = assetPool(params, "tavern", "tavern_prop");
+    const auto clutter = assetPool(params, "clutter", "clutter");
+    const float propDensity = std::clamp(params.getFloat("propDensity", 0.16f), 0.f, 1.f);
+    std::unordered_set<int> occupied;
+    int objectSerial = 0;
+    auto cellKey = [w](int x, int y) { return y * w + x; };
+    auto place = [&](const std::string &role, const std::vector<std::string> &pool, int x, int y,
+                     float rotation, int flags, float ow = 1.f, float oh = 1.f) {
+        if (pool.empty() || !isWalkable(uint32_t(out.getCell(x, y)))) return false;
+        if ((flags & 1) && occupied.count(cellKey(x, y))) return false;
+        out.addAssetObject(role + std::to_string(objectSerial++), role, pickAsset(pool, rng),
+                           float(x), float(y), ow, oh, rotation, flags);
+        if (flags & 1) occupied.insert(cellKey(x, y));
+        return true;
     };
-    std::uniform_int_distribution<int> yroll(0, 2);
-    if (decorSet == "pillars" || decorSet == "mixed") {
-        const int n = propCount(roomCount);
-        for (int i = 0; i < n; ++i) {
-            if (rooms.empty()) break;
-            const Rect &r = rooms[size_t(i) % rooms.size()];
-            if (r.w < 4 || r.h < 4) continue;
-            const int px = r.x + r.w / 2 + (yroll(rng) - 1);
-            const int py = r.y + r.h / 2 + (yroll(rng) - 1);
-            out.addObject("pillar" + std::to_string(i), "pillar", float(px), float(py), 1.f, 1.f,
-                          0);
-        }
-    }
-    if (decorSet == "treasure" || decorSet == "mixed") {
-        const int n = propCount(roomCount);
-        for (int i = 0; i < n; ++i) {
-            if (rooms.empty()) break;
-            const Rect &r = rooms[size_t(i) % rooms.size()];
-            const int px = r.x + r.w / 2 + (yroll(rng) - 1);
-            const int py = r.y + r.h / 2 + (yroll(rng) - 1);
-            out.addObject("chest" + std::to_string(i), "chest", float(px), float(py), 1.f, 1.f, 0);
+
+    if (decorSet != "none") {
+        for (size_t roomIndex = 0; roomIndex < rooms.size(); ++roomIndex) {
+            const Rect &r = rooms[roomIndex];
+            if (r.w < 3 || r.h < 3) continue;
+            const int left = r.x, right = r.x + r.w - 1;
+            const int top = r.y, bottom = r.y + r.h - 1;
+            const int cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+            const int theme = int((roomIndex + seed) % 7); // storage/quarters/dining/armory/treasury/shrine/tavern
+
+            // Every furnished room receives wall-mounted light and occasional banner.
+            place("light", lights, left, cy, 90.f, 2 | 4);
+            if ((rng() % 3u) != 0) place("banner", banners, cx, top, 180.f, 2);
+
+            if (decorSet == "pillars") {
+                place("column", columns, left + 1, top + 1, 0.f, 1);
+                place("column", columns, right - 1, bottom - 1, 0.f, 1);
+                continue;
+            }
+            if (decorSet == "treasure" || theme == 4) {
+                place("container", containers, right, cy, 270.f, 1);
+                place("treasure", treasure, right - 1, cy, 0.f, 16);
+            } else if (theme == 0) {
+                place("container", containers, right, top + 1, 270.f, 1);
+                place("container", containers, right, bottom - 1, 270.f, 1);
+                place("shelf", shelves, cx, top, 180.f, 1 | 2);
+            } else if (theme == 1) {
+                place("bed", beds, right, cy, 270.f, 1, 1.f, 2.f);
+                place("container", containers, right - 1, top, 180.f, 1);
+            } else if (theme == 2) {
+                place("table", tables, cx, cy, (rng() & 1u) ? 0.f : 90.f, 1, 2.f, 1.f);
+                place("seating", seating, cx - 1, cy, 270.f, 1);
+                place("seating", seating, cx + 1, cy, 90.f, 1);
+                place("food", food, cx, cy, 0.f, 16);
+            } else if (theme == 3) {
+                place("weapon", weapons, right, cy, 270.f, 2);
+                place("column", columns, cx, cy, 0.f, 1);
+                if ((rng() & 1u) != 0) place("trap", traps, cx - 1, cy, 0.f, 8);
+            } else if (theme == 5) {
+                place("column", columns, cx, cy, 0.f, 1);
+                place("light", lights, cx - 1, cy, 0.f, 4);
+                place("light", lights, cx + 1, cy, 0.f, 4);
+            } else {
+                place("tavern", tavern, right, cy, 270.f, 1);
+                place("table", tables, cx, cy, 0.f, 1, 2.f, 1.f);
+                place("seating", seating, cx, cy + 1, 180.f, 1);
+                place("food", food, cx, cy, 0.f, 16);
+            }
+
+            // Sparse edge clutter gives the dense, lived-in reference look without
+            // turning room centres and corridors into an obstacle field.
+            if (float(rng() % 1000u) / 1000.f < propDensity * 3.f)
+                place("clutter", clutter, left, top + 1, 90.f, 16);
         }
     }
 
-    // 8) Spawn + stairs on walkable cells (props from step 7 stay in place).
+    // 8) Spawn + stairs on unoccupied walkable cells.
     std::vector<std::pair<int, int>> walkable;
     for (int y = 0; y < h; ++y)
         for (int x = 0; x < w; ++x)
-            if (isWalkable(uint32_t(out.getCell(x, y)))) walkable.emplace_back(x, y);
+            if (isWalkable(uint32_t(out.getCell(x, y))) && !occupied.count(cellKey(x, y)))
+                walkable.emplace_back(x, y);
     if (!walkable.empty()) {
         auto pick = [&](uint32_t s) {
             return walkable[(seed * 1664525u + s * 1013904223u) % walkable.size()];
@@ -335,6 +414,18 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     out.setMeta("floorPattern", pattern);
     out.setMeta("decorTiles", std::to_string(decorTiles.size()));
     out.setMeta("corridorStyle", style);
+    out.setMeta("assetPack", params.getString("assetPack", "semantic-default"));
+    out.setMeta("placedProps", std::to_string(objectSerial));
+    // Tile renderers use these semantic pools to resolve every architecture cell.
+    // Copying them into metadata keeps the generated artifact self-describing.
+    static const char *architectureRoles[] = {
+        "wall", "wallCorner", "wallJunction", "wallDoor", "wallWindow", "wallHalf",
+        "wallBroken", "wallScaffold", "floor", "floorBroken", "floorDirt", "floorWood",
+        "floorGrate", "floorFoundation", "ceiling", "stairs", "stairsRail", "door", "barrier"};
+    for (const char *role : architectureRoles) {
+        const std::string key = std::string("assets.") + role;
+        if (params.has(key)) out.setMeta(key, params.getString(key, ""));
+    }
     return true;
 }
 
@@ -357,6 +448,8 @@ void registerRoguelikeGenerator(GeneratorRegistry &registry) {
                                                           1.f, 0.01f));
     descriptor.params.push_back(ParamDescriptor::choice("decorSet", "Decoration Set", "mixed",
                                                         {"mixed", "pillars", "treasure", "none"}));
+    descriptor.params.push_back(ParamDescriptor::floating("propDensity", "Prop Density", 0.16f,
+                                                          0.f, 1.f, 0.01f));
     descriptor.params.push_back(ParamDescriptor::boolean("autotile", "Autotile", true));
     registry.registerAlgorithm(std::move(descriptor), genRoguelike);
 }

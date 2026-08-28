@@ -264,6 +264,40 @@ TEST_CASE("procgen.roguelike.rulesChangeLayout") {
     CHECK(brick.detail() != checker.detail());
 }
 
+TEST_CASE("procgen.roguelike.configurableAssetDressing") {
+    Procgen *mod = Procgen::create();
+    auto p = requireParams();
+    auto pView = p.view();
+    REQUIRE(pView.isBound());
+    pView->setSeed(23);
+    pView->setSize(52, 38);
+    pView->setInt("roomCount", 14);
+    pView->setString("assetPack", "test-pack");
+    pView->setString("assets.container", "crate_a,crate_b");
+    pView->setString("assets.light", "sconce_custom");
+    pView->setString("assets.banner", "wall_hanging_custom");
+    pView->setString("assets.floor", "floor_a,floor_b");
+    pView->setFloat("propDensity", 0.2f);
+    auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
+    auto g = gLease.view();
+    REQUIRE(g.isBound());
+    CHECK_EQ(g->getMeta("assetPack", ""), "test-pack");
+    CHECK_EQ(g->getMeta("assets.floor", ""), "floor_a,floor_b");
+    CHECK_GT(std::stoi(g->getMeta("placedProps", "0")), 0);
+
+    bool customLight = false;
+    for (int i = 0; i < g->getObjectCount(); ++i) {
+        if (g->getObjectType(i) == "light") {
+            customLight = customLight || g->getObjectAsset(i) == "sconce_custom";
+            CHECK((g->getObjectFlags(i) & 4) != 0);
+        }
+        CHECK_GE(g->getObjectRotation(i), 0.f);
+        CHECK_LT(g->getObjectRotation(i), 360.f);
+    }
+    CHECK(customLight);
+    CHECK(markersWalkable(*g));
+}
+
 TEST_CASE("procgen.roguelike.errors") {
     Procgen *mod = Procgen::create();
     auto     p     = requireParams();

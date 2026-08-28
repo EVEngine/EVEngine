@@ -26,8 +26,9 @@ On top of the plain wall/floor grid, `level.roguelike` writes a per-cell
 | corridor | `3`   | floor-pattern variant `1..N` |
 | decor tile | `2`  | `>= 100` → scattered decor tile (rubble / grass / pebble) |
 
-Objects (`getObjectType`) place the player **spawn**, **stairs**, and props
-(**pillar** / **chest**). `getMeta` records `seed`, `rooms`, `floorPattern`,
+Objects (`getObjectType`) place the player **spawn**, **stairs**, and themed props.
+Each prop exposes its semantic role, configurable asset id (`getObjectAsset`),
+rotation, footprint and placement flags. `getMeta` records `seed`, `rooms`, `floorPattern`,
 `decorTiles`, `corridorStyle` so a level can be reproduced or saved.
 
 The 8-bit wall mask is exactly the "tile direction" detail that powers
@@ -53,6 +54,10 @@ height remains adjustable.
 - `floorVariants` — number of floor variants (detail 1..N).
 - `decorDensity` (0..1) — how many floor cells get scattered decor tiles.
 - `decorSet` = `"none" | "pillars" | "treasure" | "nature" | "mixed"`.
+- `propDensity` (0..1) — sparse room-edge clutter budget.
+- `assetPack` — informational pack id; the algorithm never branches on it.
+- `assets.<role>` — comma-separated model/prefab ids for architecture and prop
+  roles. See `assetpacks/kaykit_dungeon.nut` for the optional KayKit adapter.
 - `autotile` (0/1) — compute wall direction masks into `detail`.
 - `padding` / `spacing` / `corridorWidth` — wall border, room gaps, corridor width.
 
@@ -71,6 +76,14 @@ height remains adjustable.
 | `T` | toggle the CC0 tileset preview panel |
 
 ## Assets
+
+The generator is asset-pack agnostic. `assetpacks/kaykit_dungeon.nut` maps the
+complete Dungeon Pack families (modular walls, corners/junctions, doors/windows,
+floors/foundations/grates, ceilings, stairs/rails, barriers, columns, furniture,
+storage, treasure, lighting, banners, traps, food, tavern pieces and clutter) to
+semantic pools. Copy that small file to adapt another pack or change any pool at
+runtime; no engine rebuild is needed. The actual KayKit models are intentionally
+not vendored by this example.
 
 `textures/dungeon_tiles.png` is a **CC0** "Dungeon tileset" by Buch
 (OpenGameArt) — see [`textures/README.md`](textures/README.md).

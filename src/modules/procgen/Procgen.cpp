@@ -1932,6 +1932,7 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("clearObjects", &Grid2D::clearObjects);
     grid.addFunc("addObjectAt", &Grid2D::addObjectAt);
     grid.addFunc("addObject", &Grid2D::addObject);
+    grid.addFunc("addAssetObject", &Grid2D::addAssetObject);
     grid.addFunc("getObjectCount", &Grid2D::getObjectCount);
     grid.addFunc("getObjectName", &Grid2D::getObjectName);
     grid.addFunc("getObjectType", &Grid2D::getObjectType);
@@ -1940,6 +1941,9 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getObjectWidth", &Grid2D::getObjectWidth);
     grid.addFunc("getObjectHeight", &Grid2D::getObjectHeight);
     grid.addFunc("getObjectGid", &Grid2D::getObjectGid);
+    grid.addFunc("getObjectAsset", &Grid2D::getObjectAsset);
+    grid.addFunc("getObjectRotation", &Grid2D::getObjectRotation);
+    grid.addFunc("getObjectFlags", &Grid2D::getObjectFlags);
 
     auto points = table.addClass<PointSet>("ProcgenPointSet",
                                            std::function<PointSet*()>([]() -> PointSet* { return nullptr; }), true);

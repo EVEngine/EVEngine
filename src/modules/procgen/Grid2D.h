@@ -7,7 +7,13 @@
 
 namespace eve::procgen {
 
-/** @brief Named rectangle emitted by a procedural generator, in tile coordinates. */
+/**
+ * @brief Named rectangle or asset placement emitted by a procedural generator.
+ *
+ * Coordinates and dimensions are expressed in tiles. The value owns all strings,
+ * has no external lifetime requirements, and may be copied between threads when
+ * the containing Grid2D is not being mutated concurrently.
+ */
 struct GridObject {
     std::string name;
     std::string type;
@@ -16,6 +22,9 @@ struct GridObject {
     float width = 0.f;
     float height = 0.f;
     uint32_t gid = 0;
+    std::string asset;
+    float rotationDegrees = 0.f;
+    uint32_t placementFlags = 0;
 };
 
 /**
@@ -51,6 +60,10 @@ public:
     void addObjectAt(const std::string &name, const std::string &type, float x, float y);
     void addObject(const std::string &name, const std::string &type, float x, float y, float width,
                    float height, int gid);
+    /** @brief Add a placed asset while preserving its semantic role, asset id and orientation. */
+    void addAssetObject(const std::string &name, const std::string &role,
+                        const std::string &asset, float x, float y, float width, float height,
+                        float rotationDegrees, int flags);
     int         getObjectCount() const;
     std::string getObjectName(int i) const;
     std::string getObjectType(int i) const;
@@ -59,6 +72,9 @@ public:
     float       getObjectWidth(int i) const;
     float       getObjectHeight(int i) const;
     int         getObjectGid(int i) const;
+    std::string getObjectAsset(int i) const;
+    float       getObjectRotation(int i) const;
+    int         getObjectFlags(int i) const;
 
     const std::vector<uint32_t>     &cells() const { return cells_; }
     std::vector<uint32_t>           &cells() { return cells_; }
