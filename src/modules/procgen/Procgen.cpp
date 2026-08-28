@@ -2339,6 +2339,18 @@ auto lsystem = table.addClass<LSystem>(
         auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
         return view.isBound() ? view->getObjectGid(index) : 0;
     });
+    ownedGrid.addFunc("getObjectAsset", [](ScriptProcgenGrid* value, int index) {
+        auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
+        return view.isBound() ? view->getObjectAsset(index) : std::string{};
+    });
+    ownedGrid.addFunc("getObjectRotation", [](ScriptProcgenGrid* value, int index) {
+        auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
+        return view.isBound() ? view->getObjectRotation(index) : 0.f;
+    });
+    ownedGrid.addFunc("getObjectFlags", [](ScriptProcgenGrid* value, int index) {
+        auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
+        return view.isBound() ? view->getObjectFlags(index) : 0;
+    });
     ownedGrid.addFunc("getMeta", [](ScriptProcgenGrid* value, const std::string& key, const std::string& fallback) {
         auto view = value ? Procgen::resolve(value->reference) : eve::script::Borrowed<Grid2D>();
         return view.isBound() ? view->getMeta(key, fallback) : fallback;

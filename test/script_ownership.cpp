@@ -137,3 +137,30 @@ TEST_CASE("scriptOwnership.procgenAndStateModulesOwnedBindings") {
     )"));
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
+
+TEST_CASE("scriptOwnership.procgenOwnedGridExposesAssetPlacement") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local paramsResult = procgen.newParams();
+        if (paramsResult.ok) {
+            local params = paramsResult.value;
+            params.setSize(32, 24);
+            params.setSeed(23);
+            params.setString("assets.light", "sconce_probe");
+            local generated = procgen.generate("level.roguelike", params);
+            if (generated.ok) {
+                local grid = generated.value;
+                for (local i = 0; i < grid.getObjectCount(); ++i) {
+                    if (grid.getObjectType(i) == "light" &&
+                        grid.getObjectAsset(i) == "sconce_probe" &&
+                        grid.getObjectRotation(i) >= 0.0 &&
+                        (grid.getObjectFlags(i) & 4) != 0) result = "ok";
+                }
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}

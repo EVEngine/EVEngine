@@ -50,6 +50,8 @@ public:
     void setTarget(float x, float y, float z);
     void setUp(float x, float y, float z);
     void setFov(float fovYDeg);
+    /** @brief Set positive near/far clipping distances; far is kept beyond near. */
+    void setClipPlanes(float nearZ, float farZ);
     void setActive(bool active);
     void setAmbient(float r, float g, float b);
     /** @brief Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL. */

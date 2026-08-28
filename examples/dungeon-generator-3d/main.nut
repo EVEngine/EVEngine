@@ -104,6 +104,13 @@ function rebuildDungeon() {
                 // every decorative role without renderer-specific coupling.
                 addFloor(cx, cz);
 
+                local detail = dungeonGrid.getDetail(x, y);
+                if (detail >= 100 && dungeonAssets.details.len() > 0) {
+                    local detailId = dungeonAssets.details[(detail - 100) % dungeonAssets.details.len()];
+                    local detailYaw = ((x * 17 + y * 31 + dungeonSeed) % 4) * 1.5707963;
+                    addAsset(detailId, cx, 0.06, cz, detailYaw);
+                }
+
                 // KayKit wall pieces are four units long and half a unit thick.
                 // Place them on the walkable cell edges instead of at solid-cell
                 // centres so corners and corridors form a continuous perimeter.
@@ -121,12 +128,37 @@ function rebuildDungeon() {
 
     for (local i = 0; i < dungeonGrid.getObjectCount(); ++i) {
         local role = dungeonGrid.getObjectType(i);
-        local id = role in dungeonAssets.roles ? dungeonAssets.roles[role] : "";
+        local id = dungeonGrid.getObjectAsset(i);
+        if (id == "" && role in dungeonAssets.roles) id = dungeonAssets.roles[role];
         if (role == "spawn") continue;
         if (role == "stairs") id = dungeonAssets.stairs;
         if (id == "") continue;
-        addAsset(id, ox + dungeonGrid.getObjectX(i) * DUNGEON_CELL, 0.0,
-                 oz + dungeonGrid.getObjectY(i) * DUNGEON_CELL, 0.0);
+
+        local rotationDegrees = dungeonGrid.getObjectRotation(i);
+        local yaw = rotationDegrees * 0.01745329252;
+        local flags = dungeonGrid.getObjectFlags(i);
+        local px = ox + dungeonGrid.getObjectX(i) * DUNGEON_CELL;
+        local pz = oz + dungeonGrid.getObjectY(i) * DUNGEON_CELL;
+        local py = 0.0;
+
+        // Bit 2 marks a wall-aligned prop. Move it from the tile centre to the
+        // wall plane selected by its authored cardinal rotation.
+        if ((flags & 2) != 0) {
+            local edge = DUNGEON_CELL * 0.43;
+            if (rotationDegrees == 90.0) px -= edge;
+            else if (rotationDegrees == 180.0) pz -= edge;
+            else if (rotationDegrees == 270.0) px += edge;
+            else pz += edge;
+        }
+
+        // KayKit wall torches and weapon plaques are modelled around their
+        // local origin; lift those roles to a natural eye-level mount. Food is
+        // authored at floor origin, so overlays sharing a table cell are raised.
+        if (role == "light" && (flags & 2) != 0) py = 2.15;
+        else if (role == "weapon") py = 2.0;
+        else if (role == "food") py = 1.88;
+
+        addAsset(id, px, py, pz, yaw);
     }
 }
 
@@ -136,6 +168,7 @@ if (dungeonCamera == null) {
     dungeonCamera.setTarget(0.0, 0.0, 0.0);
     dungeonCamera.setUp(0.0, 1.0, 0.0);
     dungeonCamera.setFov(66.0);
+    dungeonCamera.setClipPlanes(0.1, 400.0);
     dungeonCamera.setAmbient(0.62, 0.64, 0.70);
     dungeonCamera.setActive(true);
     gfx.setDirectionalLight(-0.45, -1.0, -0.25, 1.75, 1.62, 1.45);

@@ -5,6 +5,7 @@ dungeonAssets <- {
     floor = "floor_tile_large",
     wall = "wall",
     stairs = "stairs",
+    details = ["coin_stack_small", "plate_small", "bottle_A_brown"],
     roles = {
         column="pillar_decorated", container="barrel_large_decorated",
         treasure="chest_gold", table="table_medium_decorated_A", seating="chair",

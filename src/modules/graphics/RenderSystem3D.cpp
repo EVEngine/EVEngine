@@ -157,6 +157,11 @@ void Camera3D::setUp(float x, float y, float z) {
 
 void Camera3D::setFov(float fovYDeg) { data()->fovYDeg = fovYDeg; }
 
+void Camera3D::setClipPlanes(float nearZ, float farZ) {
+    data()->nearZ = std::max(0.001f, nearZ);
+    data()->farZ = std::max(data()->nearZ + 0.001f, farZ);
+}
+
 void Camera3D::setActive(bool active) { data()->active = active; }
 
 void Camera3D::setAmbient(float r, float g, float b) {

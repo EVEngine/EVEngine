@@ -315,6 +315,10 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     const auto beds = assetPool(params, "bed", "bed");
     const auto shelves = assetPool(params, "shelf", "shelf");
     const auto lights = assetPool(params, "light", "light");
+    const auto wallLights = assetPool(params, "wallLight",
+                                      params.getString("assets.light", "light"));
+    const auto wallShelves = assetPool(params, "wallShelf",
+                                       params.getString("assets.shelf", "shelf"));
     const auto banners = assetPool(params, "banner", "banner");
     const auto weapons = assetPool(params, "weapon", "weapon_display");
     const auto traps = assetPool(params, "trap", "trap");
@@ -345,7 +349,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             const int theme = int((roomIndex + seed) % 7); // storage/quarters/dining/armory/treasury/shrine/tavern
 
             // Every furnished room receives wall-mounted light and occasional banner.
-            place("light", lights, left, cy, 90.f, 2 | 4);
+            place("light", wallLights, left, cy, 90.f, 2 | 4);
             if ((rng() % 3u) != 0) place("banner", banners, cx, top, 180.f, 2);
 
             if (decorSet == "pillars") {
@@ -359,10 +363,12 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             } else if (theme == 0) {
                 place("container", containers, right, top + 1, 270.f, 1);
                 place("container", containers, right, bottom - 1, 270.f, 1);
-                place("shelf", shelves, cx, top, 180.f, 1 | 2);
+                place("shelf", wallShelves, cx, top, 180.f, 1 | 2);
+                place("clutter", clutter, left + 1, bottom, 0.f, 16);
             } else if (theme == 1) {
                 place("bed", beds, right, cy, 270.f, 1, 1.f, 2.f);
                 place("container", containers, right - 1, top, 180.f, 1);
+                place("light", lights, right - 1, cy, 0.f, 4);
             } else if (theme == 2) {
                 place("table", tables, cx, cy, (rng() & 1u) ? 0.f : 90.f, 1, 2.f, 1.f);
                 place("seating", seating, cx - 1, cy, 270.f, 1);
@@ -371,6 +377,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             } else if (theme == 3) {
                 place("weapon", weapons, right, cy, 270.f, 2);
                 place("column", columns, cx, cy, 0.f, 1);
+                place("container", containers, right, top + 1, 270.f, 1);
                 if ((rng() & 1u) != 0) place("trap", traps, cx - 1, cy, 0.f, 8);
             } else if (theme == 5) {
                 place("column", columns, cx, cy, 0.f, 1);
@@ -379,14 +386,23 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             } else {
                 place("tavern", tavern, right, cy, 270.f, 1);
                 place("table", tables, cx, cy, 0.f, 1, 2.f, 1.f);
+                place("seating", seating, cx - 1, cy, 270.f, 1);
+                place("seating", seating, cx + 1, cy, 90.f, 1);
                 place("seating", seating, cx, cy + 1, 180.f, 1);
                 place("food", food, cx, cy, 0.f, 16);
+                place("container", containers, right, bottom - 1, 270.f, 1);
             }
 
             // Sparse edge clutter gives the dense, lived-in reference look without
             // turning room centres and corridors into an obstacle field.
-            if (float(rng() % 1000u) / 1000.f < propDensity * 3.f)
-                place("clutter", clutter, left, top + 1, 90.f, 16);
+            const int clutterAttempts = clampInt(int(std::ceil(propDensity * 4.f)), 0, 4);
+            const std::pair<int, int> clutterSpots[] = {
+                {left, top + 1}, {right, bottom - 1}, {left + 1, bottom}, {right - 1, top}};
+            for (int i = 0; i < clutterAttempts; ++i) {
+                const auto &spot = clutterSpots[(size_t(i) + roomIndex) % 4];
+                place("clutter", clutter, spot.first, spot.second,
+                      float((i + int(roomIndex)) % 4) * 90.f, 16);
+            }
         }
     }
 

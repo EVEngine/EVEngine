@@ -36,6 +36,8 @@ function configureDungeonAssetPack(p) {
     p.setString("assets.bed", "bed_frame,bed_floor,bed_decorated");
     p.setString("assets.shelf", "shelf_small,shelf_small_candles,shelf_large,shelves,wall_shelves");
     p.setString("assets.light", "candle,candle_lit,candle_melted,candle_thin,candle_thin_lit,candle_triple,torch,torch_lit,torch_mounted");
+    p.setString("assets.wallShelf", "shelf_small,shelf_small_candles,wall_shelves");
+    p.setString("assets.wallLight", "torch_mounted");
     p.setString("assets.banner", "banner_blue,banner_brown,banner_green,banner_red,banner_white,banner_yellow,banner_patternA_blue,banner_patternA_brown,banner_patternA_green,banner_patternA_red,banner_patternA_white,banner_patternA_yellow,banner_patternB_blue,banner_patternB_brown,banner_patternB_green,banner_patternB_red,banner_patternB_white,banner_patternB_yellow,banner_patternC_blue,banner_patternC_brown,banner_patternC_green,banner_patternC_red,banner_patternC_white,banner_patternC_yellow,banner_shield_blue,banner_shield_brown,banner_shield_green,banner_shield_red,banner_shield_white,banner_shield_yellow,banner_thin_blue,banner_thin_brown,banner_thin_green,banner_thin_red,banner_thin_white,banner_thin_yellow,banner_triple_blue,banner_triple_brown,banner_triple_green,banner_triple_red,banner_triple_white,banner_triple_yellow");
     p.setString("assets.weapon", "sword_shield,sword_shield_broken,sword_shield_gold");
     p.setString("assets.trap", "spikes,floor_tile_big_spikes");

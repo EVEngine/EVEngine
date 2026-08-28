@@ -345,6 +345,7 @@ void Graphics::expose(ssq::Table& table) {
     cam.addFunc("setTarget", &Camera3D::setTarget);
     cam.addFunc("setUp", &Camera3D::setUp);
     cam.addFunc("setFov", &Camera3D::setFov);
+    cam.addFunc("setClipPlanes", &Camera3D::setClipPlanes);
     cam.addFunc("setActive", &Camera3D::setActive);
     cam.addFunc("setAmbient", &Camera3D::setAmbient);
     cam.addFunc("setEnvMap", &Camera3D::setEnvMap);
