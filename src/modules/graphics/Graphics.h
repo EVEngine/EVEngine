@@ -11,6 +11,8 @@
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Canvas.h"
+#include "graphics/ICanvasFactory.h"
+#include "graphics/ICanvasTarget.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
 #include "graphics/GpuDrivenTypes.h"
@@ -19,6 +21,7 @@
 #include "graphics/IGraphics3D.h"
 #include "graphics/IPostFX.h"
 #include "graphics/IResourceFactory.h"
+#include "graphics/ISolidRectRenderer.h"
 #include "graphics/SurfaceMode.h"
 
 struct aiMesh;
@@ -71,7 +74,10 @@ class Graphics : public Module,
                  public IWindowSurfaceHost,
                  public IGraphics2D,
                  public IGraphics3D,
+                 public ICanvasFactory,
+                 public ICanvasTarget,
                  public IResourceFactory,
+                 public ISolidRectRenderer,
                  public IPostFX {
 public:
     Module_REG(Graphics);

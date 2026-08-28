@@ -180,6 +180,8 @@ public:
      * @reentrancy Do not retain across event callbacks or queue mutation.
      */
     [[nodiscard]] eve::OptionalRef<OrderEvent> eventAt(int index);
+    /** @brief Returns a read-only event by sequence order, or null for an invalid index. */
+    [[nodiscard]] eve::OptionalRef<const OrderEvent> eventAt(int index) const;
     /** @brief Clears retained events without resetting their sequence counter. */
     void clearEvents();
 

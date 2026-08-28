@@ -13,6 +13,91 @@ if(NOT _has_font)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# editor/EditorParticleGraphRuntime.cpp applies compiled particle module graphs
+# to the real emitter only when the particles module is enabled.
+eve_module_enabled(particles _has_particles_editor_bridge)
+if(NOT _has_particles_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorParticleGraphRuntime.cpp;EditorParticleOffscreenRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Crowd authoring documents stay standalone; this bridge applies them to the
+# live simulation only when the crowd runtime module is selected.
+eve_module_enabled(crowd _has_crowd_editor_bridge)
+if(NOT _has_crowd_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorCrowdRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# The shared queue inspector copies both Orders and Production runtime state.
+eve_module_enabled(orders _has_orders_editor_bridge)
+eve_module_enabled(production _has_production_editor_bridge)
+if(NOT _has_orders_editor_bridge OR NOT _has_production_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorQueueInspectorRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(social _has_social_editor_bridge)
+if(NOT _has_social_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorSocialRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Lighting and environment documents are standalone; each live applier follows
+# only the runtime module it includes.
+eve_module_enabled(graphics _has_graphics_editor_bridge)
+if(NOT _has_graphics_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorLightingRuntime.cpp;EditorMaterialRuntime.cpp;EditorParticleOffscreenRuntime.cpp;EditorSurfaceFluidOffscreen.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+eve_module_enabled(image _has_image_editor_bridge)
+if(NOT _has_graphics_editor_bridge OR NOT _has_image_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorOffscreenPreviewRuntime.cpp;EditorMaterialOffscreen.cpp;EditorParticleOffscreen.cpp;EditorUiOffscreen.cpp;EditorSurfaceFluidOffscreen.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+eve_module_enabled(building _has_building_editor_bridge)
+if(NOT _has_building_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorBuildingRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+eve_module_enabled(daynight _has_daynight_editor_bridge)
+if(NOT _has_daynight_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorEnvironmentDayNightRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+eve_module_enabled(weather _has_weather_editor_bridge)
+if(NOT _has_weather_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorEnvironmentWeatherRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# editor/EditorPhysicsRuntime.cpp is the optional bridge creating actual
+# Box2D/Box3D primitive shapes from backend-neutral collider documents.
+eve_module_enabled(physics _has_physics_editor_bridge)
+if(NOT _has_physics_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorPhysicsRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# editor/EditorAudioRuntime.cpp applies backend-neutral source documents to a
+# live OpenAL Source only when the audio module is enabled.
+eve_module_enabled(audio _has_audio_editor_bridge)
+if(NOT _has_audio_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorAudioRuntime.cpp;EditorAudioTransportRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
 # graphics/SceneLinks.cpp registers the link kinds graphics owns and
 # graphics/ScenePicking.cpp implements the scene picking entry points that
 # need a complete Camera3D; both include scene headers, so dropping scene
@@ -21,7 +106,7 @@ endif()
 eve_module_enabled(scene _has_scene)
 if(NOT _has_scene)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp;ScenePicking.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp;ScenePicking.cpp;EditorSceneRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -29,7 +114,148 @@ endif()
 eve_module_enabled(procgen _has_procgen)
 if(NOT _has_procgen)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorPcgGraph.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorPcgGraph.cpp;EditorBiomeTarget.cpp;EditorBiomeRuntime.cpp;EditorTextureRecipeTarget.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(network _has_network_editor_bridge)
+if(NOT _has_network_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorNetworkTelemetryRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(sceneloader _has_sceneloader_editor_bridge)
+if(NOT _has_sceneloader_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorSceneImportRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Animation editor documents remain standalone; these files are optional bridges
+# to real runtime clips and state machines.
+eve_module_enabled(animation _has_animation_editor_bridge)
+if(NOT _has_animation_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorAnimationGraphRuntime.cpp;EditorAnimationClipRuntime.cpp;EditorSkeletonOverlayRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# UI document style/layout preview stays standalone. Runtime publication is
+# included only when the retained UI module is enabled.
+eve_module_enabled(ui _has_ui_editor_bridge)
+if(NOT _has_ui_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorUiRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(decal _has_decal_editor_bridge)
+if(NOT _has_decal_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorDecalRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(stylize _has_stylize_editor_bridge)
+if(NOT _has_stylize_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorStylizeTarget.cpp;EditorStylizeRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Camera assets are renderer-neutral; only the publication bridge needs the
+# runtime CameraController module.
+eve_module_enabled(camera _has_camera_editor_bridge)
+if(NOT _has_camera_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorCameraRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(housegen _has_housegen_editor_bridge)
+if(NOT _has_housegen_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorHouseGenTarget.cpp;EditorHouseGenRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(spritestack _has_spritestack_editor_bridge)
+if(NOT _has_spritestack_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorSpriteStackTarget.cpp;EditorSpriteStackRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(virtualgeometry _has_virtualgeometry_editor_bridge)
+if(NOT _has_virtualgeometry_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorVirtualGeometryTarget.cpp;EditorVirtualGeometryRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(avatar _has_avatar_editor_bridge)
+if(NOT _has_avatar_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorAvatarTarget.cpp;EditorAvatarRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Voxel brush targets are neutral; palette publication follows the voxel runtime.
+eve_module_enabled(voxel _has_voxel_editor_bridge)
+if(NOT _has_voxel_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorVoxelPaletteTarget.cpp;EditorVoxelPaletteRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(hd2d _has_hd2d_editor_bridge)
+if(NOT _has_hd2d_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorHd2dTarget.cpp;EditorHd2dRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Schema-driven definition forms consume reflected SchemaDefinition metadata;
+# raw DefinitionDocument editing remains available without the schema module.
+eve_module_enabled(schema _has_schema_editor_bridge)
+if(NOT _has_schema_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorDefinitionFormRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Fluid settings and budget previews are standalone; only the live parameter
+# applier includes FluidSimulation.
+eve_module_enabled(fluids _has_fluids_editor_bridge)
+if(NOT _has_fluids_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorFluidRuntime.cpp;EditorSurfaceFluidRuntime.cpp;EditorSurfaceFluidPreview.cpp;EditorSurfaceFluidOffscreen.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# editor/EditorDialogueGraphRuntime.cpp converts the standalone graph value to
+# ConversationDocument only when the dialogue module is enabled.
+eve_module_enabled(dialogue _has_dialogue_editor_bridge)
+if(NOT _has_dialogue_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorDialogueGraphRuntime.cpp;EditorLocalizationRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# editor/EditorDefinitionRuntime.cpp publishes neutral definition documents to
+# DefinitionRegistry only when the definitions module is enabled.
+eve_module_enabled(definitions _has_definitions_editor_bridge)
+if(NOT _has_definitions_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorDefinitionRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Voice audition needs both the dialogue voice service and a live audio Source.
+if(NOT _has_audio_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorLocalizationRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 

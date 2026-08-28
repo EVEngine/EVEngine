@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <mutex>
+#include <atomic>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -84,6 +85,11 @@ public:
     void setVerifySsl(bool verify);
     bool getVerifySsl() const;
 
+    /** @brief Return a thread-safe copied telemetry snapshot for diagnostics tools. */
+    NetTelemetrySnapshot telemetrySnapshot() const;
+    /** @brief Reset cumulative telemetry counters without affecting live sockets. */
+    void resetTelemetry();
+
     /** @brief Drains worker completions and emits them as events; call per frame. */
     void pump();
 
@@ -102,6 +108,8 @@ private:
 
     /** @brief Posts a completion to the worker queue (thread-safe). */
     void post(NetCompletion c);
+    /** @brief Record bytes successfully handed to a transport. */
+    void recordSent(size_t bytes);
     /** @brief Drains pending worker completions into out. */
     void drainCompletions(std::vector<NetCompletion>& out);
     /** @brief Returns the module-owned worker to internal network collaborators. */
@@ -141,6 +149,9 @@ private:
 
     std::unordered_map<UdpSocket*, UdpLink*> udpLinks_;
     std::unordered_map<UdpSocket*, NetHost*> udpHosts_;
+    std::atomic<uint64_t> telemetryRevision_{1};
+    std::atomic<uint64_t> sentBytes_{0}, receivedBytes_{0}, completions_{0};
+    std::atomic<uint64_t> errors_{0}, connections_{0};
 };
 
 }  // namespace eve::network

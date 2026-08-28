@@ -326,6 +326,7 @@ file(GLOB all_test_cpp
   editor_pcg_graph.cpp
   editor_persistence_v2.cpp
   editor_property_v2.cpp
+  editor_profiler.cpp
   editor_runtime_manifest_v2.cpp
   editor_scene_target_v2.cpp
   editor_session_persistence.cpp
