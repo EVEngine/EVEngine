@@ -7,6 +7,7 @@
 #include "procgen/algorithms/RoguelikeGenerator.h"
 
 #include <algorithm>
+#include <cmath>
 #include <set>
 #include <string>
 #include <vector>
@@ -286,6 +287,7 @@ TEST_CASE("procgen.roguelike.configurableAssetDressing") {
     CHECK_GT(std::stoi(g->getMeta("placedProps", "0")), 0);
 
     bool customLight = false;
+    bool fractionalPlacement = false;
     for (int i = 0; i < g->getObjectCount(); ++i) {
         if (g->getObjectType(i) == "light") {
             customLight = customLight || g->getObjectAsset(i) == "sconce_custom";
@@ -293,8 +295,12 @@ TEST_CASE("procgen.roguelike.configurableAssetDressing") {
         }
         CHECK_GE(g->getObjectRotation(i), 0.f);
         CHECK_LT(g->getObjectRotation(i), 360.f);
+        fractionalPlacement = fractionalPlacement ||
+            std::abs(g->getObjectX(i) - std::round(g->getObjectX(i))) > 0.01f ||
+            std::abs(g->getObjectY(i) - std::round(g->getObjectY(i))) > 0.01f;
     }
     CHECK(customLight);
+    CHECK(fractionalPlacement);
     CHECK(markersWalkable(*g));
 }
 

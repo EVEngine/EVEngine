@@ -4,6 +4,9 @@ dungeonAssets <- {
     extension = ".obj",
     floor = "floor_tile_large",
     wall = "wall",
+    // Repetition weights the common straight wall more heavily.
+    walls = ["wall", "wall", "wall", "wall", "wall", "wall",
+             "wall_cracked", "wall", "wall_window_closed", "wall", "wall_broken", "wall"],
     stairs = "stairs",
     details = ["coin_stack_small", "plate_small", "bottle_A_brown"],
     roles = {

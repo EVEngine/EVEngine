@@ -187,6 +187,7 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     const int      spacing     = clampInt(params.getInt("spacing", 2), 0, 8);
     const int      corridorW   = clampInt(params.getInt("corridorWidth", 1), 1, 3);
     const std::string style    = params.getString("corridorStyle", "l");
+    const std::string connections = params.getString("connectionStyle", "sequential");
     const std::string pattern  = params.getString("floorPattern", "brick");
     const int      variants    = clampInt(params.getInt("floorVariants", 4), 1, kFloorMaxVariant);
     const float    decorDensity = std::clamp(params.getFloat("decorDensity", 0.05f), 0.f, 1.f);
@@ -250,10 +251,26 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     // 2) Carve room floors.
     for (const Rect &r : rooms) carveRect(out, r, Semantic::Floor);
 
-    // 3) Connect consecutive rooms.
+    // 3) Connect rooms. Nearest-parent mode produces a compact branching tree
+    // instead of long row-wrap corridors while preserving deterministic output.
     for (size_t i = 1; i < rooms.size(); ++i) {
-        const int ax = rooms[i - 1].x + rooms[i - 1].w / 2;
-        const int ay = rooms[i - 1].y + rooms[i - 1].h / 2;
+        size_t parent = i - 1;
+        if (connections == "nearest") {
+            int bestDistance = w + h + 1;
+            const int bx = rooms[i].x + rooms[i].w / 2;
+            const int by = rooms[i].y + rooms[i].h / 2;
+            for (size_t candidate = 0; candidate < i; ++candidate) {
+                const int ax = rooms[candidate].x + rooms[candidate].w / 2;
+                const int ay = rooms[candidate].y + rooms[candidate].h / 2;
+                const int distance = std::abs(ax - bx) + std::abs(ay - by);
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    parent = candidate;
+                }
+            }
+        }
+        const int ax = rooms[parent].x + rooms[parent].w / 2;
+        const int ay = rooms[parent].y + rooms[parent].h / 2;
         const int bx = rooms[i].x + rooms[i].w / 2;
         const int by = rooms[i].y + rooms[i].h / 2;
         carveCorridor(out, ax, ay, bx, by, corridorW, style, rng);
@@ -329,13 +346,15 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     std::unordered_set<int> occupied;
     int objectSerial = 0;
     auto cellKey = [w](int x, int y) { return y * w + x; };
-    auto place = [&](const std::string &role, const std::vector<std::string> &pool, int x, int y,
+    auto place = [&](const std::string &role, const std::vector<std::string> &pool, float x, float y,
                      float rotation, int flags, float ow = 1.f, float oh = 1.f) {
-        if (pool.empty() || !isWalkable(uint32_t(out.getCell(x, y)))) return false;
-        if ((flags & 1) && occupied.count(cellKey(x, y))) return false;
+        const int cellX = clampInt(int(std::round(x)), 0, w - 1);
+        const int cellY = clampInt(int(std::round(y)), 0, h - 1);
+        if (pool.empty() || !isWalkable(uint32_t(out.getCell(cellX, cellY)))) return false;
+        if ((flags & 1) && occupied.count(cellKey(cellX, cellY))) return false;
         out.addAssetObject(role + std::to_string(objectSerial++), role, pickAsset(pool, rng),
-                           float(x), float(y), ow, oh, rotation, flags);
-        if (flags & 1) occupied.insert(cellKey(x, y));
+                           x, y, ow, oh, rotation, flags);
+        if (flags & 1) occupied.insert(cellKey(cellX, cellY));
         return true;
     };
 
@@ -360,22 +379,43 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
             if (decorSet == "treasure" || theme == 4) {
                 place("container", containers, right, cy, 270.f, 1);
                 place("treasure", treasure, right - 1, cy, 0.f, 16);
+                place("treasure", treasure, right - 1.35f, cy + 0.45f, 35.f, 16);
+                place("treasure", treasure, right - 0.65f, cy - 0.45f, 320.f, 16);
+                place("column", columns, left + 1, top + 1, 0.f, 1);
+                place("column", columns, left + 1, bottom - 1, 0.f, 1);
             } else if (theme == 0) {
                 place("container", containers, right, top + 1, 270.f, 1);
                 place("container", containers, right, bottom - 1, 270.f, 1);
+                place("container", containers, right - 0.75f, top + 1.35f, 245.f, 16);
+                place("container", containers, right - 0.55f, bottom - 1.25f, 300.f, 16);
                 place("shelf", wallShelves, cx, top, 180.f, 1 | 2);
+                if (r.w >= 7) place("shelf", wallShelves, cx - 2, top, 180.f, 1 | 2);
+                if (r.w >= 8) place("container", containers, left + 2, bottom, 0.f, 1);
                 place("clutter", clutter, left + 1, bottom, 0.f, 16);
             } else if (theme == 1) {
                 place("bed", beds, right, cy, 270.f, 1, 1.f, 2.f);
+                if (r.h >= 7) place("bed", beds, right, cy - 2, 270.f, 1, 1.f, 2.f);
                 place("container", containers, right - 1, top, 180.f, 1);
                 place("light", lights, right - 1, cy, 0.f, 4);
+                place("seating", seating, left + 1, bottom - 1, 45.f, 1);
             } else if (theme == 2) {
                 place("table", tables, cx, cy, (rng() & 1u) ? 0.f : 90.f, 1, 2.f, 1.f);
                 place("seating", seating, cx - 1, cy, 270.f, 1);
                 place("seating", seating, cx + 1, cy, 90.f, 1);
+                place("seating", seating, cx, cy - 1, 0.f, 1);
+                place("seating", seating, cx, cy + 1, 180.f, 1);
                 place("food", food, cx, cy, 0.f, 16);
+                place("food", food, cx - 0.38f, cy + 0.18f, 25.f, 16);
+                place("food", food, cx + 0.38f, cy - 0.18f, 205.f, 16);
+                if (r.w >= 8) {
+                    place("table", tables, cx - 2, cy, 0.f, 1, 2.f, 1.f);
+                    place("seating", seating, cx - 2, cy - 1, 0.f, 1);
+                    place("seating", seating, cx - 2, cy + 1, 180.f, 1);
+                    place("food", food, cx - 2, cy, 70.f, 16);
+                }
             } else if (theme == 3) {
                 place("weapon", weapons, right, cy, 270.f, 2);
+                place("weapon", weapons, cx, top, 180.f, 2);
                 place("column", columns, cx, cy, 0.f, 1);
                 place("container", containers, right, top + 1, 270.f, 1);
                 if ((rng() & 1u) != 0) place("trap", traps, cx - 1, cy, 0.f, 8);
@@ -383,6 +423,11 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("column", columns, cx, cy, 0.f, 1);
                 place("light", lights, cx - 1, cy, 0.f, 4);
                 place("light", lights, cx + 1, cy, 0.f, 4);
+                place("seating", seating, cx, bottom - 1, 180.f, 1);
+                if (r.w >= 7) {
+                    place("seating", seating, cx - 2, bottom - 1, 180.f, 1);
+                    place("seating", seating, cx + 2, bottom - 1, 180.f, 1);
+                }
             } else {
                 place("tavern", tavern, right, cy, 270.f, 1);
                 place("table", tables, cx, cy, 0.f, 1, 2.f, 1.f);
@@ -390,7 +435,10 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
                 place("seating", seating, cx + 1, cy, 90.f, 1);
                 place("seating", seating, cx, cy + 1, 180.f, 1);
                 place("food", food, cx, cy, 0.f, 16);
+                place("food", food, cx - 0.4f, cy, 20.f, 16);
+                place("food", food, cx + 0.4f, cy, 340.f, 16);
                 place("container", containers, right, bottom - 1, 270.f, 1);
+                place("tavern", tavern, right - 0.7f, bottom - 1.2f, 250.f, 16);
             }
 
             // Sparse edge clutter gives the dense, lived-in reference look without

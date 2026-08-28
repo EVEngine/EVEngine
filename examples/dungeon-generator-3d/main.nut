@@ -4,12 +4,13 @@ dofile("assetpack.nut");
 persist dungeonGrid = null
 persist dungeonCamera = null
 persist dungeonInstances = []
+persist dungeonLights = []
 persist dungeonTemplates = {}
 persist dungeonSeed = 20260828
 persist dungeonFloorMesh = null
 
-const DUNGEON_W = 34;
-const DUNGEON_H = 26;
+const DUNGEON_W = 50;
+const DUNGEON_H = 38;
 const DUNGEON_CELL = 4.0;
 
 function modelPath(id) {
@@ -46,18 +47,27 @@ function addAsset(id, x, y, z, yaw, sx=1.0, sy=1.0, sz=1.0,
     }
 }
 
-function addFloor(x, z) {
+function addFloor(x, z, variant) {
     if (dungeonFloorMesh == null) dungeonFloorMesh = gfx.newMeshCube(1.0);
     local floor = eve.Renderable3D();
     floor.setMesh(dungeonFloorMesh);
     floor.setPosition(x, -0.05, z);
     floor.setScale(DUNGEON_CELL, 0.18, DUNGEON_CELL);
-    floor.setTint(0.56, 0.55, 0.52, 1.0);
+    local shade = 0.015 * ((variant % 5) - 2);
+    floor.setTint(0.48 + shade, 0.47 + shade, 0.44 + shade, 1.0);
     floor.setRoughness(0.96);
     floor.setReceiveLight(false);
     floor.setCastShadow(false);
     floor.setReceiveShadow(false);
     dungeonInstances.append(floor);
+}
+
+function wallAsset(x, y, side) {
+    if (!("walls" in dungeonAssets) || dungeonAssets.walls.len() == 0)
+        return dungeonAssets.wall;
+    local hash = x * 73856093 + y * 19349663 + side * 83492791 + dungeonSeed;
+    if (hash < 0) hash = -hash;
+    return dungeonAssets.walls[hash % dungeonAssets.walls.len()];
 }
 
 function walkable(x, y) {
@@ -68,7 +78,9 @@ function walkable(x, y) {
 
 function clearDungeon() {
     foreach (instance in dungeonInstances) instance.setVisible(false);
+    foreach (light in dungeonLights) light.setEnabled(false);
     dungeonInstances.clear();
+    dungeonLights.clear();
 }
 
 function rebuildDungeon() {
@@ -78,15 +90,17 @@ function rebuildDungeon() {
     local p = paramsResult.value;
     p.setSeed(dungeonSeed);
     p.setSize(DUNGEON_W, DUNGEON_H);
-    p.setInt("roomCount", 11);
-    p.setInt("roomMin", 4);
-    p.setInt("roomMax", 7);
+    p.setInt("roomCount", 15);
+    p.setInt("roomMin", 5);
+    p.setInt("roomMax", 9);
     p.setInt("spacing", 1);
+    p.setInt("corridorWidth", 2);
     p.setString("corridorStyle", "l");
+    p.setString("connectionStyle", "nearest");
     p.setString("floorPattern", "cobble");
     p.setString("decorSet", "mixed");
-    p.setFloat("decorDensity", 0.08);
-    p.setFloat("propDensity", 0.28);
+    p.setFloat("decorDensity", 0.055);
+    p.setFloat("propDensity", 0.62);
     configureDungeonAssetPack(p);
     local generated = procgen.generate("level.roguelike", p);
     if (!generated.ok) throw generated.status.summary;
@@ -102,7 +116,7 @@ function rebuildDungeon() {
                 // A neutral modular slab stays readable independently of the
                 // external pack's material conventions. Packs can still map
                 // every decorative role without renderer-specific coupling.
-                addFloor(cx, cz);
+                addFloor(cx, cz, dungeonGrid.getDetail(x, y));
 
                 local detail = dungeonGrid.getDetail(x, y);
                 if (detail >= 100 && dungeonAssets.details.len() > 0) {
@@ -115,13 +129,13 @@ function rebuildDungeon() {
                 // Place them on the walkable cell edges instead of at solid-cell
                 // centres so corners and corridors form a continuous perimeter.
                 if (!walkable(x, y - 1))
-                    addAsset(dungeonAssets.wall, cx, 0.0, cz - DUNGEON_CELL * 0.5, 0.0);
+                    addAsset(wallAsset(x, y, 0), cx, 0.0, cz - DUNGEON_CELL * 0.5, 0.0);
                 if (!walkable(x, y + 1))
-                    addAsset(dungeonAssets.wall, cx, 0.0, cz + DUNGEON_CELL * 0.5, 3.1415926);
+                    addAsset(wallAsset(x, y, 1), cx, 0.0, cz + DUNGEON_CELL * 0.5, 3.1415926);
                 if (!walkable(x - 1, y))
-                    addAsset(dungeonAssets.wall, cx - DUNGEON_CELL * 0.5, 0.0, cz, 1.5707963);
+                    addAsset(wallAsset(x, y, 2), cx - DUNGEON_CELL * 0.5, 0.0, cz, 1.5707963);
                 if (!walkable(x + 1, y))
-                    addAsset(dungeonAssets.wall, cx + DUNGEON_CELL * 0.5, 0.0, cz, 4.7123890);
+                    addAsset(wallAsset(x, y, 3), cx + DUNGEON_CELL * 0.5, 0.0, cz, 4.7123890);
             }
         }
     }
@@ -158,16 +172,28 @@ function rebuildDungeon() {
         else if (role == "weapon") py = 2.0;
         else if (role == "food") py = 1.88;
 
-        addAsset(id, px, py, pz, yaw);
+        local propScale = 1.0;
+        if (role == "table" || role == "bed" || role == "tavern") propScale = 1.30;
+        else if (role == "seating" || role == "container" || role == "treasure" ||
+                 role == "clutter") propScale = 1.18;
+        addAsset(id, px, py, pz, yaw, propScale, propScale, propScale);
+        if (role == "light" && dungeonLights.len() < 8) {
+            local light = eve.Light3D();
+            light.setType("point");
+            light.setPosition(px, py + 0.35, pz);
+            light.setColor(1.0, 0.55, 0.25, 3.2);
+            light.setRadius(DUNGEON_CELL * 3.0);
+            dungeonLights.append(light);
+        }
     }
 }
 
 if (dungeonCamera == null) {
     dungeonCamera = eve.Camera3D();
-    dungeonCamera.setEye(90.0, 110.0, -110.0);
+    dungeonCamera.setEye(78.0, 96.0, -102.0);
     dungeonCamera.setTarget(0.0, 0.0, 0.0);
     dungeonCamera.setUp(0.0, 1.0, 0.0);
-    dungeonCamera.setFov(66.0);
+    dungeonCamera.setFov(58.0);
     dungeonCamera.setClipPlanes(0.1, 400.0);
     dungeonCamera.setAmbient(0.62, 0.64, 0.70);
     dungeonCamera.setActive(true);
