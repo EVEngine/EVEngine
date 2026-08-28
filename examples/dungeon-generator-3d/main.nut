@@ -132,7 +132,7 @@ function rebuildDungeon() {
 
 if (dungeonCamera == null) {
     dungeonCamera = eve.Camera3D();
-    dungeonCamera.setEye(45.0, 55.0, -55.0);
+    dungeonCamera.setEye(90.0, 110.0, -110.0);
     dungeonCamera.setTarget(0.0, 0.0, 0.0);
     dungeonCamera.setUp(0.0, 1.0, 0.0);
     dungeonCamera.setFov(66.0);
