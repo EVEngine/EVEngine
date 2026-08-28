@@ -133,6 +133,7 @@ file(GLOB all_test_cpp
   combat_attributes.cpp
   combat_damage.cpp
   combat_framework_composition.cpp
+  kaykit_combat_assets.cpp
   standard_combat_abilities.cpp
   gameplay_action.cpp
   rpg_simulation.cpp
@@ -300,6 +301,7 @@ file(GLOB all_test_cpp
   editor_scene_target_v2.cpp
   editor_session_persistence.cpp
   editor_script_v2.cpp
+  editor_action_timeline_script.cpp
   editor_field_tool_script.cpp
   editor_tilemap_target_script.cpp
   editor_voxel_target_script.cpp

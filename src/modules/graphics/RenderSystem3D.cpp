@@ -1112,7 +1112,8 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
     ClusteredLightingUpload noClustered{};
     noClustered.active = false;
     gfx.setMesh3DClusteredLighting(noClustered);
-    gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+    const Lighting3DPack sceneLighting = packLights3D(packed, cd.operator->());
+    gfx.setMesh3DLighting(sceneLighting);
     ShadowUpload noShadow{};
     noShadow.active = false;
     gfx.setMesh3DShadows(noShadow);
@@ -1122,19 +1123,61 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [xf, mr] = *it;
             if (!mr->visible) continue;
-            // Legacy per-entity material path (no parts / materials / hair).
-            gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
-            gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
-            gfx.setMesh3DNormalTexture(mr->normalTexture);
-            gfx.setMesh3DHeightTexture(mr->heightTexture);
-            gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers, mr->parallaxMaxLayers);
-            gfx.setMesh3DShadowReceive(false);
-            Texture *albedo = mr->texture;
-            Color tint(mr->r, mr->g, mr->b, mr->a);
-            Shader *shader = mr->shader;
             const glm::mat4 model = modelFromTransform(*xf);
-            eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
-            gfx.drawMeshShader(mr->mesh, model, albedo, tint, shader);
+
+            auto drawPreviewMesh = [&](Mesh *mesh, Material *material) {
+                if (!mesh) return;
+
+                Texture *albedo = mr->texture;
+                Color    tint(mr->r, mr->g, mr->b, mr->a);
+                Shader  *shader = mr->shader;
+                bool     lit    = mr->receiveLight;
+                if (material) {
+                    material->bind(gfx);
+                    albedo = material->getAlbedoTexture();
+                    tint   = Color(material->getTintR(), material->getTintG(),
+                                   material->getTintB(), material->getTintA());
+                    shader = material->effectiveShader();
+                    lit    = material->getReceiveLight();
+                } else {
+                    gfx.setMesh3DSurface(mr->isHair ? SurfaceMode::Transparent
+                                                    : SurfaceMode::Opaque,
+                                         BlendMode::Alpha, false, mr->isHair, 0.5f);
+                    gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
+                    gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength,
+                                             mr->texBombRot);
+                    gfx.setMesh3DNormalTexture(mr->normalTexture);
+                    gfx.setMesh3DHeightTexture(mr->heightTexture);
+                    gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers,
+                                          mr->parallaxMaxLayers);
+                }
+
+                // The preview intentionally omits shadow and clustered passes, but
+                // it must preserve the material's lighting contract.
+                gfx.setMesh3DClusteredActive(false);
+                gfx.setMesh3DShadowReceive(false);
+                if (lit) {
+                    gfx.setMesh3DLighting(sceneLighting);
+                } else {
+                    Lighting3DPack unlit{};
+                    unlit.count   = 0;
+                    unlit.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+                    gfx.setMesh3DLighting(unlit);
+                }
+
+                eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
+                gfx.drawMeshShader(mesh, model, albedo, tint, shader);
+            };
+
+            if (mr->usesParts()) {
+                for (int p = 0; p < mr->partCount; ++p) {
+                    Material *material =
+                        mr->parts[p].material ? mr->parts[p].material : mr->material;
+                    drawPreviewMesh(mr->parts[p].mesh, material);
+                }
+            } else {
+                drawPreviewMesh(mr->mesh, mr->material);
+            }
         }
     }
 
