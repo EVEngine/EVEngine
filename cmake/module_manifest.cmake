@@ -151,7 +151,7 @@ eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
 # (RPG Skill, Weapon Attack, Card Play, RTS Command) depend on this protocol;
 # the core depends on sensing/decision values but never on a gameplay domain.
 eve_declare_module(NAME action LIB EVAction LAYER 1
-                   DEPS decision sensing transaction
+                   DEPS decision sensing tags transaction
                    GROUP minimal 2d 3d web)
 # L0 -- foundation (continued)
 eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema

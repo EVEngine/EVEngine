@@ -123,6 +123,7 @@ file(GLOB all_test_cpp
   map_fov.cpp
   rpg.cpp
   action_timeline.cpp
+  ability_system.cpp
   gameplay_action.cpp
   rpg_simulation.cpp
   rpg_reload.cpp
