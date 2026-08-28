@@ -83,12 +83,35 @@ public:
     virtual void setShader() = 0;
     virtual Shader *getShader() const = 0;
 
-    /** @brief Font used by print(); nullptr = none set. */
+    /** @brief Optional shared font used by legacy consumers; nullptr = none set. */
     virtual void setFont(Font *font) = 0;
     virtual Font *getFont() const = 0;
-    /** @brief Draws UTF-8 text with the current font (throws when unset). */
+    /**
+     * @brief Draws UTF-8 text with the font selected by setFont().
+     * @param text Borrowed UTF-8 text retained only for this call.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param color Glyph tint and opacity.
+     * @param scale Uniform text scale.
+     * @throws eve::Exception if no current font has been selected.
+     * @note Render-thread only. The call is synchronous and invokes no callbacks.
+     */
     virtual void print(const std::string &text, float x, float y,
                        const Color &color = Color(1.f, 1.f, 1.f, 1.f), float scale = 1.f) = 0;
+    /**
+     * @brief Draws UTF-8 text with an explicitly supplied GPU font.
+     * @param font Borrowed non-null font belonging to this graphics backend; it
+     * is not retained beyond the call.
+     * @param text Borrowed UTF-8 text retained only for this call.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param color Glyph tint and opacity.
+     * @param scale Uniform text scale.
+     * @throws eve::Exception if `font` is nullptr.
+     * @note Render-thread only. The call is synchronous and invokes no callbacks.
+     */
+    virtual void drawText(Font *font, const std::string &text, float x, float y,
+                          const Color &color = Color(1.f, 1.f, 1.f, 1.f), float scale = 1.f) = 0;
 
     virtual void draw(Drawable *drawable, const glm::mat4 &m) = 0;
     virtual void drawOcclusion(Drawable *drawable, const glm::mat4 &m) = 0;

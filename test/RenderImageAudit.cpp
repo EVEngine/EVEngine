@@ -1089,10 +1089,11 @@ int findFirstSkinnedMesh(const eve::model3d::ModelData *model) {
 void printOverlayThunk(void *userdata, void *) {
     auto *gfx = static_cast<Graphics *>(userdata);
     if (!gfx || !gfx->getFont()) return;
+    Font *font = gfx->getFont();
     const char *icon = "\xEF\x80\x80";
     std::string row;
     for (int i = 0; i < 8; ++i) row += icon;
-    gfx->print(row, 8.f, 8.f, Color(1.f, 0.82f, 0.2f, 1.f), 2.4f);
+    gfx->drawText(font, row, 8.f, 8.f, Color(1.f, 0.82f, 0.2f, 1.f), 2.4f);
 }
 
 }  // namespace
@@ -2388,7 +2389,7 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     gfx->setFont(gpuFont);
     gfx->setPresentOverlay(&printOverlayThunk, gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
-    auditGpuFrame(gfx, "overlay", "font_print", bg);
+    auditGpuFrame(gfx, "overlay", "font_draw_text", bg);
     gfx->setPresentOverlay(nullptr, nullptr);
 
     auto *parts = eve::particles::Particles::create();
