@@ -122,6 +122,7 @@ file(GLOB all_test_cpp
   map_path.cpp
   map_fov.cpp
   rpg.cpp
+  action_timeline.cpp
   gameplay_action.cpp
   rpg_simulation.cpp
   rpg_reload.cpp
