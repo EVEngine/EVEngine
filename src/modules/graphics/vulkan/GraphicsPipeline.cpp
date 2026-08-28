@@ -1716,7 +1716,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
                                      .addAttributeDescription<MeshVertex>())
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                           vk::FrontFace::eClockwise)
+                           vk::FrontFace::eCounterClockwise)
             .setMultisampler(false, samples)
             .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
             .setColorBlending(cbs)
@@ -1730,7 +1730,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
                                             .addAttributeDescription<MeshVertex>())
                    .setDynamicStatesViewportScissor()
                    .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eClockwise)
+                                  vk::FrontFace::eCounterClockwise)
                    .setMultisampler(false, samples)
                    .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
                    .setAlphaBlending(1)
@@ -1744,7 +1744,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
                                             .addAttributeDescription<MeshVertex>())
                    .setDynamicStatesViewportScissor()
                    .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eClockwise)
+                                  vk::FrontFace::eCounterClockwise)
                    .setMultisampler(false, samples)
                    .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
                    .setColorAttachmentCount(1)

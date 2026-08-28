@@ -169,6 +169,7 @@ file(GLOB all_test_cpp
   physics_artifact_provider.cpp
   physics_cloth.cpp
   procgen.cpp
+  prototype_kit.cpp
   procgen_e2e.cpp
   procgen_artifact_publish.cpp
   procgen_generated_artifact.cpp
