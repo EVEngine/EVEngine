@@ -23,6 +23,11 @@ optional model-wide `assetTint`,
 and replace `configureDungeonAssetPack(p)`
 with another semantic-pool adapter.
 
+When the configured pack is not installed, the example substitutes procedural cube
+geometry so repository smoke tests and configuration work can run without downloading
+or redistributing third-party assets. Installing the configured pack automatically
+restores its authored models and materials.
+
 `assetpack.nut` is the renderer-side contract: `walls`, `corners`, `doorways`,
 `stairs`, `details`, and `roles` can point at OBJ names, GLTF-derived prefabs, or
 another pack's equivalent pieces. `usePackFloors=false` keeps the neutral merged

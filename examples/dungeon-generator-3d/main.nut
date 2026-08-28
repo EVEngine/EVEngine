@@ -10,6 +10,9 @@ persist dungeonSeed = 20260828
 persist dungeonFloorMesh = null
 persist dungeonFloorMaterials = {}
 persist dungeonFloorMeshes = []
+persist dungeonAssetPackAvailable = null
+persist dungeonFallbackMesh = null
+persist dungeonFallbackMaterial = null
 
 const DUNGEON_W = 42;
 const DUNGEON_H = 32;
@@ -19,8 +22,25 @@ function modelPath(id) {
     return dungeonAssets.root + id + dungeonAssets.extension;
 }
 
+if (dungeonAssetPackAvailable == null) {
+    dungeonAssetPackAvailable = file_exists(modelPath(dungeonAssets.wall));
+    if (!dungeonAssetPackAvailable)
+        print("dungeon-generator-3d: configured asset pack is unavailable; using procedural placeholders\n");
+}
+
 function templatesFor(id) {
     if (id in dungeonTemplates) return dungeonTemplates[id];
+    if (!dungeonAssetPackAvailable) {
+        if (dungeonFallbackMesh == null) dungeonFallbackMesh = gfx.newMeshCube(1.0);
+        if (dungeonFallbackMaterial == null) {
+            dungeonFallbackMaterial = gfx.newMaterial();
+            dungeonFallbackMaterial.setTint(0.44, 0.47, 0.50, 1.0);
+            dungeonFallbackMaterial.setRoughness(0.92);
+        }
+        local fallback = [{mesh=dungeonFallbackMesh, material=dungeonFallbackMaterial}];
+        dungeonTemplates[id] <- fallback;
+        return fallback;
+    }
     local data = model3d.newModelDataFromFile(modelPath(id));
     local templates = [];
     for (local i = 0; i < data.getMeshCount(); ++i) {
