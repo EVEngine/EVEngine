@@ -230,6 +230,8 @@ function rebuildDungeon() {
     p.setInt("roomMin", 4);
     p.setInt("roomMax", 7);
     p.setInt("spacing", 0);
+    p.setInt("clusterGapMin", 1);
+    p.setInt("clusterGapMax", 1);
     p.setInt("corridorWidth", 1);
     p.setString("layoutStyle", "clustered");
     p.setString("corridorStyle", "l");

@@ -190,6 +190,9 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
     const int      roomMax     = clampInt(params.getInt("roomMax", 8), roomMin, w);
     const int      padding     = clampInt(params.getInt("padding", 1), 0, 4);
     const int      spacing     = clampInt(params.getInt("spacing", 2), 0, 8);
+    const int      clusterGapMin = clampInt(params.getInt("clusterGapMin", spacing + 1), 1, 8);
+    const int      clusterGapMax = clampInt(params.getInt("clusterGapMax", spacing + 3),
+                                             clusterGapMin, 12);
     const int      corridorW   = clampInt(params.getInt("corridorWidth", 1), 1, 3);
     const std::string layout   = params.getString("layoutStyle", "grid");
     const std::string style    = params.getString("corridorStyle", "l");
@@ -218,13 +221,14 @@ bool genRoguelike(const Params &params, Grid2D &out, std::string &error) {
         const int firstW = std::min(dim(rng), w - padding * 2);
         const int firstH = std::min(dim(rng), h - padding * 2);
         rooms.push_back({(w - firstW) / 2, (h - firstH) / 2, firstW, firstH});
-        std::uniform_int_distribution<int> jitter(-2, 2);
+        std::uniform_int_distribution<int> jitter(-1, 1);
+        std::uniform_int_distribution<int> clusterGap(clusterGapMin, clusterGapMax);
         const int maxAttempts = roomCount * 160;
         for (int attempt = 0; attempt < maxAttempts && int(rooms.size()) < roomCount; ++attempt) {
             const Rect &parent = rooms[size_t(rng()) % rooms.size()];
             const int rw = std::min(dim(rng), w - padding * 2);
             const int rh = std::min(dim(rng), h - padding * 2);
-            const int gap = spacing + 1 + int(rng() % 3u);
+            const int gap = clusterGap(rng);
             Rect cand{0, 0, rw, rh};
             switch (rng() % 4u) {
             case 0: // east
@@ -640,6 +644,10 @@ void registerRoguelikeGenerator(GeneratorRegistry &registry) {
     descriptor.params.push_back(ParamDescriptor::integer("roomMax", "Maximum Room Size", 8, 2, 256));
     descriptor.params.push_back(ParamDescriptor::integer("padding", "Room Padding", 1, 0, 4));
     descriptor.params.push_back(ParamDescriptor::integer("spacing", "Room Spacing", 2, 0, 8));
+    descriptor.params.push_back(ParamDescriptor::integer(
+        "clusterGapMin", "Cluster Minimum Gap", 2, 1, 8));
+    descriptor.params.push_back(ParamDescriptor::integer(
+        "clusterGapMax", "Cluster Maximum Gap", 4, 1, 12));
     descriptor.params.push_back(ParamDescriptor::integer("corridorWidth", "Corridor Width", 1, 1, 3));
     descriptor.params.push_back(ParamDescriptor::choice("layoutStyle", "Room Layout", "grid",
                                                         {"grid", "clustered"}));

@@ -6,7 +6,9 @@ generator's automatically placed themed props with their emitted asset id, yaw,
 footprint and placement flags.
 
 The showcase uses the generator's `clustered` room growth and nearest-parent
-connections, an orthographic camera framed from the occupied bounds, merged
+connections. `clusterGapMin` and `clusterGapMax` configure the structural gap
+between clustered rooms; setting both to `1` produces the compact, short-link
+composition used here. It also uses an orthographic camera framed from the occupied bounds, merged
 cut-corner stone floor meshes, modular wall/corner/doorway pieces, perimeter
 stairs, theme-aware furniture clusters and evenly distributed warm point lights.
 
