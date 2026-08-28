@@ -121,9 +121,16 @@ file(GLOB all_test_cpp
   map.cpp
   map_path.cpp
   map_fov.cpp
-  rpg.cpp
+rpg.cpp
   gameplay_action.cpp
+  rpg_battle.cpp
+  rpg_class.cpp
+  rpg_equipment.cpp
+  rpg_gamestate.cpp
+  rpg_progression.cpp
+  rpg_quest.cpp
   rpg_simulation.cpp
+  rpg_trait.cpp
   rpg_reload.cpp
   hex_level_simulation.cpp
   hex_level_data.cpp

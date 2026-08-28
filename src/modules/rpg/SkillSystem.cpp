@@ -74,6 +74,12 @@ bool SkillSystem::forget(RPGActor *actor, const std::string &skillId) {
     return actor->skills()->known.erase(skillId) > 0;
 }
 
+std::string SkillSystem::getTargetType(RPGActor *actor, const std::string &skillId) {
+    if (!actor || !knows(actor, skillId)) return {};
+    const SkillDefinition *def = SkillRegistry::find(skillId);
+    return def ? def->targetType : std::string{};
+}
+
 float SkillSystem::getCooldownRemaining(RPGActor *actor, const std::string &skillId) {
     if (!actor) return 0.f;
     auto &known = actor->skills()->known;

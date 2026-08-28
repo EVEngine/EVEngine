@@ -1,7 +1,8 @@
 #pragma once
 
 /**
- * @brief RPG 模块入口：属性 / 效果 / 状态 / 技能 / 结算五套系统的脚本绑定与帧调度点。
+ * @brief RPG 模块入口：属性 / 效果 / 状态 / 技能 / 结算 / 任务 / 成长 / 生命 的
+ * 脚本绑定与帧调度点。
  *
  * 各系统的完整设计说明见对应头文件：
  *   AttributeSystem.h / AttributeTypes.h — 属性
@@ -9,20 +10,35 @@
  *   StatusSystem.h / StatusTypes.h       — 状态（运行时实例，buff/debuff）
  *   Skill.h / SkillSystem.h / SkillTypes.h — 技能
  *   Settlement.h                         — 结算流水线
- * 以及总体设计文档：docs/2026-08-08-rpg-module-design.md
+ *   Quest.h / Tracker.h / QuestSystem.h  — 任务/成就/教程追踪器
+ *   LevelSystem.h                        — 等级 / 经验
+ *   VitalsSystem.h                       — 当前资源 / 受伤 / 死亡
+ * 以及总体设计文档：docs/dev/RPG系统设计.md
  */
 
 #include "common/Module.h"
+#include "rpg/LevelSystem.h"
 #include "rpg/RPGActor.h"
 #include "rpg/StatusTypes.h"
 #include "rpg/SkillTypes.h"
+#include "rpg/VitalsSystem.h"
 
 #include <string>
 #include <vector>
 
+namespace eve {
+namespace inventory {
+class Bag;
+class EquipmentSet;
+}
+}  // namespace eve
+
 namespace eve::rpg {
 
 struct SettlementContext;
+class Tracker;
+class Battle;
+class GameState;
 
 /** @brief RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。 */
 class RPG : public Module {
@@ -51,6 +67,88 @@ public:
     int registerSkillsFromJson(const std::string &json);
     void clearSkillDefinitions();
     int getSkillDefinitionCount();
+
+    /** @brief 任务定义注册。 */
+    int registerQuestsFromJson(const std::string &json);
+    void clearQuestDefinitions();
+    int getQuestDefinitionCount();
+    /**
+     * @brief 创建一个新的目标追踪器（任务日志 / 成就 / 教程各建一份）。
+     * @return Owned nullable tracker created with new; the caller must destroy it.
+     * @ownership The caller owns the returned tracker and is responsible for its destruction.
+     * @lifetime Valid until the caller destroys it; not retained by RPG.
+     * @thread Create and use on the owning simulation thread.
+     * @reentrancy Construction calls syncAuto which emits activation events; poll before reading.
+     */
+    Tracker *newTracker();
+
+    /** @brief 升级事件缓存（上一次 update() 产生的，供脚本轮询）。 */
+    int getLevelUpEventCount() const;
+    RPGActor *getLevelUpEventActor(int index) const;
+    int getLevelUpEventPreviousLevel(int index) const;
+    int getLevelUpEventNewLevel(int index) const;
+
+    /** @brief 生命等资源事件缓存（上一次 update() 产生的，供脚本轮询）。 */
+    int getVitalsEventCount() const;
+    RPGActor *getVitalsEventActor(int index) const;
+    std::string getVitalsEventResource(int index) const;
+    std::string getVitalsEventAction(int index) const;
+    double getVitalsEventAmount(int index) const;
+    std::string getVitalsEventSource(int index) const;
+    double getVitalsEventCurrent(int index) const;
+    double getVitalsEventMax(int index) const;
+
+    /** @brief 装备加成（物品 id → 属性加成）注册与同步。 */
+    int registerItemStatsFromJson(const std::string &itemId, const std::string &json);
+    void clearItemStats(const std::string &itemId);
+    void clearAllItemStats();
+    int getItemStatCount();
+    /** @brief 把装备栏当前装备同步为 actor 属性修改器；返回施加条数。 */
+    int syncEquipModifiers(RPGActor *actor, inventory::EquipmentSet *equip);
+
+    /** @brief 掉落表注册与 roll。 */
+    int registerLootTablesFromJson(const std::string &json);
+    void clearLootTables();
+    int getLootTableCount();
+    /** @brief 用种子随机流 roll 掉落表，把命中物品加入背包；返回掉落物品种类数。 */
+    int rollLoot(const std::string &tableId, inventory::Bag *bag, int seed);
+
+    /** @brief 特征定义注册。 */
+    int registerTraitsFromJson(const std::string &json);
+    void clearTraitDefinitions();
+    int getTraitDefinitionCount();
+
+    /** @brief 职业定义注册。 */
+    int registerClassesFromJson(const std::string &json);
+    void clearClassDefinitions();
+    int getClassDefinitionCount();
+
+    /** @brief 技能伤害注册（战斗用）与战斗对象。 */
+    int registerSkillDamage(const std::string &skillId, const std::string &damageType,
+                            const std::string &formula, const std::string &element,
+                            double critChance, int hitChance);
+    void clearSkillDamage();
+    /**
+     * @brief 创建一场新的回合制战斗。
+     * @return Owned nullable Battle; the caller must destroy it after the battle ends.
+     * @ownership The caller owns the returned battle and is responsible for its destruction.
+     * @lifetime Valid until the caller destroys it; not retained by RPG.
+     * @thread Create and drive on the owning simulation thread.
+     */
+    Battle *newBattle();
+
+    /**
+     * @brief 创建一份新的游戏状态（开关/变量）。
+     * @return Owned nullable GameState; the caller must destroy it.
+     * @ownership The caller owns the returned state and is responsible for its destruction.
+     * @lifetime Valid until the caller destroys it; not retained by RPG.
+     */
+    GameState *newGameState();
+    /**
+     * @brief 进程级全局游戏状态（借用，不销毁）。
+     * @return Borrowed nullable global GameState owned by the process.
+     */
+    GameState *globalGameState();
 
     /** @brief 推进 StatusSystem / SkillSystem，并刷新本帧的 tick / change / cast 事件缓存。 */
     void update(float dt);
@@ -134,6 +232,8 @@ private:
     std::vector<StatusTickEvent> ticks_;
     std::vector<StatusChangeEvent> changes_;
     std::vector<SkillCastEvent> casts_;
+    std::vector<LevelUpEvent> levelUps_;
+    std::vector<VitalsEvent> vitals_;
 };
 
 }  // namespace eve::rpg
