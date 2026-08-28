@@ -123,6 +123,7 @@ file(GLOB all_test_cpp
   map_fov.cpp
   rpg.cpp
   action_timeline.cpp
+  action_notify_registry.cpp
   ability_system.cpp
   combat_damage.cpp
   gameplay_action.cpp
