@@ -29,6 +29,7 @@ dungeonAssets <- {
         table=1.65, tavern=1.65, bed=1.45, banner=1.08,
         seating=1.55, container=1.55, treasure=1.40
     },
+    assetTint = [1.12, 1.10, 1.08],
     details = ["coin_stack_small", "plate_small", "bottle_A_brown"],
     roles = {
         column="pillar_decorated", container="barrel_large_decorated",

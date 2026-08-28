@@ -19,6 +19,7 @@ entrances to camera-visible or gameplay-appropriate sides when desired.
 
 The renderer is not coupled to KayKit. Edit `assetpack.nut` to change the asset root,
 file extension, architecture models, semantic `verticalOffsets` / `roleScales`,
+optional model-wide `assetTint`,
 and replace `configureDungeonAssetPack(p)`
 with another semantic-pool adapter.
 

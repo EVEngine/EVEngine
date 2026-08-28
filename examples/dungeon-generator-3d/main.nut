@@ -34,6 +34,11 @@ function templatesFor(id) {
 
 function addAsset(id, x, y, z, yaw, sx=1.0, sy=1.0, sz=1.0,
                   receiveLight=true, tintR=1.0, tintG=1.0, tintB=1.0) {
+    if ("assetTint" in dungeonAssets) {
+        tintR *= dungeonAssets.assetTint[0];
+        tintG *= dungeonAssets.assetTint[1];
+        tintB *= dungeonAssets.assetTint[2];
+    }
     foreach (template in templatesFor(id)) {
         local instance = eve.Renderable3D();
         instance.setMesh(template.mesh);
@@ -447,7 +452,7 @@ if (dungeonCamera == null) {
     gfx.setDirectionalLight(-0.45, -1.0, -0.25, 2.05, 1.92, 1.76);
 }
 if (dungeonGrid == null) rebuildDungeon();
-gfx.setBackgroundColor(0.045, 0.018, 0.085, 1.0);
+gfx.setBackgroundColor(0.070, 0.025, 0.130, 1.0);
 
 function eve_update(dt) {
     if (keyboard.isDown("r") || keyboard.isDown("R")) {
