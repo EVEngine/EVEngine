@@ -493,14 +493,15 @@ template <class T>
     const SQInteger top         = sq_gettop(vm);
     bool            transferred = false;
     try {
-        const HSQOBJECT& classObject = ssq::detail::getClassObj(vm, typeid(T*).hash_code());
+        const size_t hashCode = ssq::detail::stableTypeHash<T*>();
+        const HSQOBJECT& classObject = ssq::detail::getClassObj(vm, hashCode);
         sq_pushobject(vm, classObject);
         if (SQ_FAILED(sq_createinstance(vm, -1)))
             throw ssq::RuntimeException("failed to create owned Squirrel instance");
         sq_remove(vm, -2);
         if (SQ_FAILED(sq_setinstanceup(vm, -1, static_cast<SQUserPointer>(object.get()))))
             throw ssq::RuntimeException("failed to attach owned Squirrel instance");
-        sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(typeid(T*).hash_code()));
+        sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(hashCode));
         sq_setreleasehook(vm, -1, &detail::ownedInstanceReleaseHook<T>);
         object.release();
         transferred = true;

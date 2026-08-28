@@ -117,7 +117,8 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
     }
 
     const SQInteger top = sq_gettop(vm);
-    sq_pushobject(vm, ssq::detail::getClassObj(vm, typeid(T*).hash_code()));
+    const size_t hashCode = ssq::detail::stableTypeHash<T*>();
+    sq_pushobject(vm, ssq::detail::getClassObj(vm, hashCode));
     if (SQ_FAILED(sq_createinstance(vm, -1))) {
         sq_settop(vm, top);
         std::invoke(release, ref).ignore("rollback failed Squirrel procgen instance");
@@ -138,7 +139,7 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
                 ref, [ref, release = std::forward<Release>(release)]() mutable { return std::invoke(release, ref); }});
     }
     sq_setinstanceup(vm, -1, native);
-    sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(typeid(T*).hash_code()));
+    sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(hashCode));
     sq_setreleasehook(vm, -1, &releaseNativeProxy<T>);
 
     ssq::Instance value(vm);
