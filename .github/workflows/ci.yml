@@ -386,7 +386,9 @@ jobs:
         shell: pwsh
         run: |
           cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
-            -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl `
+            -DCMAKE_BUILD_TYPE=Debug `
+            -DCMAKE_C_COMPILER="$PWD/cmake/msvc-cl.cmd" `
+            -DCMAKE_CXX_COMPILER="$PWD/cmake/msvc-cl.cmd" `
             -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
             -DEVENGINE_COMPILER_CACHE=SCCACHE `
             -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
