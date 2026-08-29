@@ -1170,7 +1170,7 @@ jobs:
     runs-on: ubuntu-24.04
     # The build and test steps have independent bounded guards. Leave
     # enough job-level budget for both plus toolchain setup and cache reporting.
-    timeout-minutes: 100
+    timeout-minutes: 120
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1235,7 +1235,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug (ASan+UBSan)
-        timeout-minutes: 40
+        # A cold full-profile sanitizer build now takes just over 40 minutes
+        # after the asset pipeline modules and tests were added.
+        timeout-minutes: 55
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-

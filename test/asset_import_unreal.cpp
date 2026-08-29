@@ -8,6 +8,8 @@
 #include "procgen/PointSet.h"
 #include "procgen/SpatialData.h"
 
+#include <algorithm>
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

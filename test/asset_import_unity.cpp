@@ -8,6 +8,7 @@
 #include "asset_procgen/EvpackTerrainMaterialLoader.h"
 #include "asset_scene/EvpackSceneTemplateLoader.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "zeroerr/assert.h"
