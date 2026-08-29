@@ -203,7 +203,8 @@ Result<PreparedAssetImport> prepareLegacyAnimationImport(const LegacyAnimationIm
     if (!skeletonRef) return Result<PreparedAssetImport>::failure(skeletonRef.status());
     if (!clipRef) return Result<PreparedAssetImport>::failure(clipRef.status());
 
-    std::vector<std::uint8_t> skeletonBlob{'E','V','S','K','E','L',0,1}; put32(skeletonBlob, fixture.bones.size());
+    std::vector<std::uint8_t> skeletonBlob{'E','V','S','K','E','L',0,1};
+    put32(skeletonBlob, static_cast<std::uint32_t>(fixture.bones.size()));
     for (auto bone : fixture.bones) {
         put32(skeletonBlob, static_cast<std::uint32_t>(bone.parent)); putString(skeletonBlob, bone.name);
         bone.position = {bone.position[0] * .01f, bone.position[1] * .01f, -bone.position[2] * .01f};
@@ -214,11 +215,14 @@ Result<PreparedAssetImport> prepareLegacyAnimationImport(const LegacyAnimationIm
     }
     std::vector<std::uint8_t> clipBlob{'E','V','A','N','I','M',0,1};
     putFloat(clipBlob, fixture.duration); putFloat(clipBlob, fixture.rate); put32(clipBlob, fixture.loop ? 1 : 0);
-    put32(clipBlob, fixture.markers.size()); put32(clipBlob, fixture.tracks.size());
+    put32(clipBlob, static_cast<std::uint32_t>(fixture.markers.size()));
+    put32(clipBlob, static_cast<std::uint32_t>(fixture.tracks.size()));
     for (const auto& marker : fixture.markers) { putFloat(clipBlob, marker.time); putString(clipBlob, marker.name); }
     for (auto track : fixture.tracks) {
-        put32(clipBlob, track.bone); put32(clipBlob, track.position.size());
-        put32(clipBlob, track.rotation.size()); put32(clipBlob, track.scale.size());
+        put32(clipBlob, track.bone);
+        put32(clipBlob, static_cast<std::uint32_t>(track.position.size()));
+        put32(clipBlob, static_cast<std::uint32_t>(track.rotation.size()));
+        put32(clipBlob, static_cast<std::uint32_t>(track.scale.size()));
         for (auto key : track.position) { putFloat(clipBlob, key.time); putFloat(clipBlob, key.value[0] * .01f); putFloat(clipBlob, key.value[1] * .01f); putFloat(clipBlob, -key.value[2] * .01f); }
         for (auto key : track.rotation) { putFloat(clipBlob, key.time); putFloat(clipBlob, -key.value[0]); putFloat(clipBlob, -key.value[1]); putFloat(clipBlob, key.value[2]); putFloat(clipBlob, key.value[3]); }
         for (auto key : track.scale) { putFloat(clipBlob, key.time); for (float value : key.value) putFloat(clipBlob, value); }
