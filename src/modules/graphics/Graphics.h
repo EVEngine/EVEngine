@@ -211,7 +211,8 @@ public:
     /** @brief Clear resident state before the next submitted frame. */
     virtual void resetGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
 
-    /** @brief Upload one simulation step and optional spawn commands. */
+    /** @brief Upload one simulation step and optional spawn commands.
+     * @compatibility Preserves the established GPU-particle boolean submission contract. */
     virtual bool updateGpuParticleEmitter(GpuParticleHandle handle,
                                           const GpuParticleUpdate& update,
                                           const GpuParticleSpawn* spawns,
@@ -408,6 +409,7 @@ public:
     /**
      * @brief Allocate a linear RGBA16F six-layer staging cubemap for runtime capture.
      * @return Graphics-owned texture, or nullptr when unsupported by the backend.
+     * @lifetime The returned texture remains valid until released by Graphics.
      */
     virtual Texture *newHDRCubemap(int faceSize) {
         (void)faceSize;
@@ -417,6 +419,7 @@ public:
     /**
      * @brief Copy one RGBA16F Canvas into a staging cubemap base-level face.
      * @return True when the GPU copy was submitted.
+     * @compatibility Preserves the established backend boolean submission contract.
      */
     virtual bool copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int face) {
         (void)source;
@@ -434,6 +437,7 @@ public:
      * @param faceCount Number of entries in sources; must be between 1 and 6.
      * @param cubemap Destination HDR cubemap.
      * @return True when every requested face copy was submitted.
+     * @compatibility Preserves the established backend boolean submission contract.
      */
     virtual bool copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
                                           Texture *cubemap) {
@@ -443,7 +447,10 @@ public:
         return true;
     }
 
-    /** @brief Generate GGX specular mips and final diffuse irradiance for an HDR cubemap. */
+    /**
+     * @brief Generate GGX specular mips and final diffuse irradiance for an HDR cubemap.
+     * @compatibility Preserves the established backend boolean submission contract.
+     */
     virtual bool filterHDRReflectionCubemap(Texture *cubemap, int sampleCount = 64) {
         (void)cubemap;
         (void)sampleCount;
@@ -1332,9 +1339,11 @@ public:
      * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
      */
     Water *newWater();
-    /** @brief Create an incremental six-face HDR reflection-probe capture. */
+    /** @brief Create an incremental six-face HDR reflection-probe capture.
+     * @ownership The caller owns the returned capture object. */
     ReflectionProbeCapture *newReflectionProbeCapture();
-    /** @brief Create a scene-level automatic reflection-probe selector. */
+    /** @brief Create a scene-level automatic reflection-probe selector.
+     * @ownership The caller owns the returned registry. */
     ReflectionProbeRegistry *newReflectionProbeRegistry();
 
     /** @brief Create an offscreen render target (sampleable). Owned by Graphics. */
@@ -1345,6 +1354,7 @@ public:
      * @param width Pixel width.
      * @param height Pixel height.
      * @return Graphics-owned sampleable Canvas. Pixel readback is unsupported.
+     * @lifetime The returned canvas remains valid until released by Graphics.
      */
     virtual Canvas *newHDRCanvas(int width, int height) = 0;
 
@@ -1391,23 +1401,30 @@ public:
      * @brief Pipeline-owned AO / GI / AA used by RenderSystem3D when features
      * "ao" / "gi" / "aa" are enabled. Created on first use; Graphics owns them.
      */
+    /** @lifetime Pipeline effect getters return Graphics-owned objects valid until shutdown. */
     AmbientOcclusion *pipelineAmbientOcclusion();
     GlobalIllumination *pipelineGlobalIllumination();
     ScreenSpaceReflection *pipelineScreenSpaceReflection();
     AntiAliasing *pipelineAntiAliasing();
-    /** @brief Pipeline-owned linear-HDR bloom pyramid, created on first use. */
+    /** @brief Pipeline-owned linear-HDR bloom pyramid, created on first use.
+     * @lifetime Returned effect remains valid until Graphics shutdown. */
     Bloom *pipelineBloom();
-    /** @brief Pipeline-owned GPU exposure metering and eye adaptation. */
+    /** @brief Pipeline-owned GPU exposure metering and eye adaptation.
+     * @lifetime Returned effect remains valid until Graphics shutdown. */
     Exposure *pipelineExposure();
-    /** @brief Pipeline-owned shared min/max depth hierarchy for screen-space effects. */
+    /** @brief Pipeline-owned shared min/max depth hierarchy for screen-space effects.
+     * @lifetime Returned effect remains valid until Graphics shutdown. */
     DepthPyramid *pipelineDepthPyramid();
-    /** @brief Build the shared linear-HDR AA, bloom, and exposure result for final ACES. */
+    /** @brief Build the shared linear-HDR AA, bloom, and exposure result for final ACES.
+     * @lifetime Returned texture is Graphics-owned and valid for the current target allocation. */
     Texture *prepareFinalSceneTexture(Texture *scene, Texture *motion = nullptr);
-    /** @brief Return a reusable HDR target for composing screen-space lighting. */
+    /** @brief Return a reusable HDR target for composing screen-space lighting.
+     * @lifetime Returned canvas is Graphics-owned and valid for the current target allocation. */
     Canvas *pipelineReflectionComposite(int width, int height);
     /** @brief Override the HDR source consumed by the next backend scene resolve. */
     void setFinalSceneTexture(Texture *texture) { finalSceneTexture_ = texture; }
-    /** @brief Consume and clear the per-frame HDR scene resolve override. */
+    /** @brief Consume and clear the per-frame HDR scene resolve override.
+     * @lifetime Returned texture is borrowed and retains its original owner's lifetime. */
     Texture *takeFinalSceneTexture() {
         Texture *texture = finalSceneTexture_;
         finalSceneTexture_ = nullptr;

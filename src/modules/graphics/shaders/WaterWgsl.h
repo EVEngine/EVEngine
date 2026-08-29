@@ -98,6 +98,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     }
     var reflection = textureSampleLevel(environment, mainSampler, reflected, lod).rgb *
                      frame.lightColor.w * (1.0 - probeWeightSum);
+    // @lifetime Shader math below does not declare host pointers.
     if (probeWeight0 > 0.0) {
         let probeLod = f32(max(i32(textureNumLevels(reflectionProbe0)) - 1, 0));
         reflection += textureSampleLevel(reflectionProbe0, mainSampler,

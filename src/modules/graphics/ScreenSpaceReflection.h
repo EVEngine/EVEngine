@@ -14,6 +14,7 @@ class Texture;
 
 /**
  * @brief Screen-space reflections (SSR) as a fullscreen post pass.
+ * @lifetime All Graphics and texture arguments are borrowed by this effect.
  *
  * Reads the lit scene color, hardware depth (D32) and world normal, and for
  * each pixel ray-marches the reflected ray in screen space. Where the ray hits

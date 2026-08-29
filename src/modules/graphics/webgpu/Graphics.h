@@ -244,10 +244,13 @@ public:
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                         const TextureCreateInfo &info) override;
+    /** @lifetime Returned texture is Graphics-owned until explicitly released. */
     Texture *newHDRCubemap(int faceSize) override;
+    /** @compatibility Implements the Graphics boolean submission facade. */
     bool copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int face) override;
     bool copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
                                   Texture *cubemap) override;
+    /** @compatibility Implements the Graphics boolean submission facade. */
     bool filterHDRReflectionCubemap(Texture *cubemap, int sampleCount = 64) override;
     Texture *newTexture(image::ImageData *data) override;
     Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) override;
@@ -403,6 +406,7 @@ public:
     image::ImageData *readDecalLayerToImageData(const std::string &attachment) override;
 
     Canvas *newCanvas(int width, int height) override;
+    /** @lifetime Returned canvas is Graphics-owned until explicitly released. */
     Canvas *newHDRCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
     bool isCanvasActive() const override;
@@ -425,7 +429,8 @@ public:
     /** @brief Blocking CPU readback of an offscreen canvas or scene color target. */
     Color getPixelImpl(OffscreenCanvas *canvas, int x, int y);
     image::ImageData *newImageDataImpl(OffscreenCanvas *canvas);
-    /** @brief Blocking linear RGBA16F readback of an HDR offscreen canvas. */
+    /** @brief Blocking linear RGBA16F readback of an HDR offscreen canvas.
+     * @ownership The caller owns the returned image data. */
     image::ImageData *newHDRImageDataImpl(OffscreenCanvas *canvas);
 
     wgpu::Instance &getInstance() { return instance; }

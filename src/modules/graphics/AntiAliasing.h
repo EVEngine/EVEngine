@@ -68,12 +68,21 @@ public:
                            float height, float r = 1.f, float g = 1.f, float b = 1.f,
                            float a = 1.f);
     void applyTemporal(Graphics *gfx, Texture *source, Texture *motion = nullptr);
-    /** @brief Resolve TAA into history and return the linear HDR result without compositing it. */
+    /**
+     * @brief Resolve TAA into history and return the linear HDR result without compositing it.
+     * @lifetime Returned texture is borrowed from this resolver until temporal targets are recreated.
+     */
     Texture *resolveTemporal(Graphics *gfx, Texture *source, Texture *motion = nullptr);
 
-    /** @brief Prepare uniforms/resources for a backend-recorded temporal pass. */
+    /**
+     * @brief Prepare uniforms/resources for a backend-recorded temporal pass.
+     * @lifetime Returned canvas is borrowed from this resolver until temporal targets are recreated.
+     */
     Canvas *beginTemporalFrame(Texture *source, Texture *motion = nullptr);
-    /** @brief Previous resolved frame, or nullptr when history is invalid. */
+    /**
+     * @brief Previous resolved frame, or nullptr when history is invalid.
+     * @lifetime Returned texture is borrowed from this resolver until temporal targets are recreated.
+     */
     Texture *getTemporalReadTexture() const;
     /** @brief Mark the prepared write target valid and rotate temporal buffers. */
     void endTemporalFrame();
@@ -95,6 +104,7 @@ public:
     /** @brief Upload texel uniforms from `source` without drawing (3D scene-color resolve). */
     void prepareSource(Texture *source);
 
+    /** @lifetime Shader getters return Graphics-owned borrowed shaders. */
     Shader *getFxaaShader() const { return fxaa_; }
     Shader *getSmaaShader() const { return smaa_; }
     Shader *getSsaaShader() const { return ssaa_; }

@@ -21,6 +21,7 @@ public:
      * @param maxLevels Maximum hierarchy levels to build for the active quality budget.
      * @return RG min/max depth atlas; level zero starts at x=0 and each lower
      * level is packed directly to the right of its predecessor.
+     * @lifetime The returned texture is owned by this DepthPyramid until the next target resize.
      */
     Texture *build(Texture *depth, int maxLevels = 8);
 

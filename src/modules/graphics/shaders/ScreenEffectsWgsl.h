@@ -48,6 +48,7 @@ fn ssr_depth(uv:vec2f)->f32{return ssr_depth_range(uv,0).r;}
  return vec4f(0);}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kSsrTemporal = R"wgsl(
 fn ssr_reprojection()->mat4x4f{return mat4x4f(u.data[0],u.data[1],u.data[2],u.data[3]);}
 fn temporal_decode_input(v0:vec4f)->vec4f{var v=v0;if p(23)>.5{v=vec4f(v.rgb*v.a,v.a);}return v;}

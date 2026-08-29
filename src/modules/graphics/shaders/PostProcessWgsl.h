@@ -2,6 +2,7 @@
 
 namespace eve::graphics::shaders {
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kPostCommon = R"wgsl(
 struct FSIn { @location(0) color: vec4f, @location(1) uv: vec2f };
 struct Externals { data: array<vec4f, 8> };
@@ -24,6 +25,7 @@ fn hdr_ycocg(c:vec3f)->vec3f{let q=rgb_to_ycocg(max(c,vec3f(0)));let r=1+max(q.x
 fn hdr_rgb(c:vec3f)->vec3f{let y=max(exp2(c.x)-1,0);let r=1+y;return max(ycocg_to_rgb(vec3f(y,c.yz*r)),vec3f(0));}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kBloomDownsample = R"wgsl(
 fn bloom_luma(c:vec3f)->f32{return dot(c,vec3f(.2126,.7152,.0722));}
 fn bloom_prefilter(c0:vec3f)->vec3f{let c=max(c0,vec3f(0));let threshold=max(p(3),0);let knee=max(p(4),.0001);let brightness=max(c.r,max(c.g,c.b));let soft=clamp((brightness-threshold+knee)/(2*knee),0,1);let contribution=max(brightness-threshold,0)+soft*soft*knee;return c*(contribution/max(brightness,.0001));}
@@ -32,23 +34,28 @@ fn bloom_karis(a:vec3f,b:vec3f,c:vec3f,d:vec3f)->vec3f{let w=vec4f(1/(1+bloom_lu
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{let t=vec2f(p(0),p(1));let center=bloom_sample(i.uv);let inner=bloom_karis(bloom_sample(i.uv+t*vec2f(-1,-1)),bloom_sample(i.uv+t*vec2f(1,-1)),bloom_sample(i.uv+t*vec2f(-1,1)),bloom_sample(i.uv+t*vec2f(1,1)));let outer=bloom_karis(bloom_sample(i.uv+t*vec2f(-2,-2)),bloom_sample(i.uv+t*vec2f(2,-2)),bloom_sample(i.uv+t*vec2f(-2,2)),bloom_sample(i.uv+t*vec2f(2,2)));let axial=bloom_karis(bloom_sample(i.uv+t*vec2f(-2,0)),bloom_sample(i.uv+t*vec2f(2,0)),bloom_sample(i.uv+t*vec2f(0,-2)),bloom_sample(i.uv+t*vec2f(0,2)));return vec4f((center*.25+inner*.5+(outer+axial)*.125)*i.color.rgb,1);}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kBloomUpsample = R"wgsl(
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{let t=vec2f(p(0),p(1))*max(p(2),.5);var c=tex(i.uv).rgb*4;c+=tex(i.uv+vec2f(-t.x,0)).rgb*2;c+=tex(i.uv+vec2f(t.x,0)).rgb*2;c+=tex(i.uv+vec2f(0,-t.y)).rgb*2;c+=tex(i.uv+vec2f(0,t.y)).rgb*2;c+=tex(i.uv+vec2f(-t.x,-t.y)).rgb;c+=tex(i.uv+vec2f(t.x,-t.y)).rgb;c+=tex(i.uv+vec2f(-t.x,t.y)).rgb;c+=tex(i.uv+vec2f(t.x,t.y)).rgb;return vec4f(c*(1.0/16.0)*i.color.rgb,1);}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kExposureMeter = R"wgsl(
 fn exposure_luma(c:vec3f)->f32{return max(dot(max(c,vec3f(0)),vec3f(.2126,.7152,.0722)),.00001);}
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{var v:array<f32,16>;var n=0;for(var y=0;y<4;y++){for(var x=0;x<4;x++){let uv=(vec2f(f32(x),f32(y))+.5)*.25;v[n]=log2(exposure_luma(tex(uv).rgb));n++;}}for(var a=1;a<16;a++){let value=v[a];var b=a-1;loop{if b<0||v[b]<=value{break;}v[b+1]=v[b];b--;}v[b+1]=value;}var average=0.0;for(var q=2;q<14;q++){average+=v[q];}average/=12;let ev=clamp(log2(.18)-average,p(0),p(1));return vec4f(exp2(ev),ev,0,1);}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kExposureAdapt = R"wgsl(
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{let target=max(tex(vec2f(.5)).r,.00001);let previous=max(aux_load(vec2f(.5)).r,.00001);let speed=select(max(p(2),0),max(p(1),0),target>previous);let blend=select(1-exp(-speed*max(p(0),0)),1.0,p(3)>.5);let exposure=mix(previous,target,clamp(blend,0,1));return vec4f(exposure,log2(exposure),0,1);}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kExposureApply = R"wgsl(
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{let hdr=tex(i.uv);let automatic=select(1.0,aux_load(vec2f(.5)).r,p(1)>.5);return vec4f(hdr.rgb*max(p(0),0)*automatic,hdr.a);}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kDepthPyramidDownsample = R"wgsl(
 fn depth_range(uv:vec2f)->vec2f{let v=tex(uv);return select(v.rg,vec2f(v.r),p(2)>.5);}
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{let t=vec2f(p(0),p(1));let a=depth_range(i.uv+t*vec2f(-.5,-.5));let b=depth_range(i.uv+t*vec2f(.5,-.5));let c=depth_range(i.uv+t*vec2f(-.5,.5));let d=depth_range(i.uv+t*vec2f(.5,.5));return vec4f(min(min(a.x,b.x),min(c.x,d.x)),max(max(a.y,b.y),max(c.y,d.y)),0,1);}
@@ -72,6 +79,7 @@ inline constexpr const char *kNfaa = R"wgsl(
  return vec4f(mix(c,f,clamp(amt,0,1))*i.color.rgb,1);}
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kTaa = R"wgsl(
 fn taa_reprojection()->mat4x4f{return mat4x4f(
  vec4f(p(7),p(8),p(9),p(10)),vec4f(p(11),p(12),p(13),p(14)),

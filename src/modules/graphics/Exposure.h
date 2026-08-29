@@ -23,6 +23,7 @@ public:
      * @param meterSource Optional pre-bloom HDR source used for luminance metering.
      * @param deltaSeconds Frame delta used by eye adaptation.
      * @return Full-resolution pre-exposed linear HDR texture.
+     * @lifetime The returned texture is owned by this Exposure until the next target resize.
      */
     Texture *apply(Texture *source, float manualExposure, bool automatic, float minEV,
                    float maxEV, Texture *meterSource = nullptr,

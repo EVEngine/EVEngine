@@ -80,7 +80,10 @@ public:
 
     TransformGizmo* newGizmo();
     GizmoManager*   newGizmoManager();
-    /** @brief Create a renderer-independent visualizer for a runtime reflection probe. */
+    /**
+     * @brief Create a renderer-independent visualizer for a runtime reflection probe.
+     * @ownership The caller owns the returned visualizer; the borrowed probe must outlive it.
+     */
     ReflectionProbeVisualizer* newReflectionProbeVisualizer(
         graphics::ReflectionProbeCapture* probe);
 

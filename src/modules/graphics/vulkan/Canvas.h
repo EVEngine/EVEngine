@@ -24,6 +24,7 @@ public:
                std::optional<double> depth) override;
     Color getPixel(int x, int y) override;
     image::ImageData *newImageData() override;
+    /** @ownership The caller owns the returned HDR image data. */
     image::ImageData *newHDRImageData() override;
 
     void draw(eve::graphics::Graphics *, const glm::mat4 &) const override {}

@@ -316,7 +316,9 @@ public:
     }
     bool gpuDrivenMaterialUsable(Material *material) override;
     uint32_t gpuDrivenReflectionProbeSlot(Texture *cubemap) override;
+    /** @compatibility Implements the established GPU-driven boolean submission facade. */
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    /** @lifetime Returned texture is borrowed from the active scene targets. */
     Texture *getSceneLinearDepthTexture() override;
 
     bool supportsGpuParticles() const override { return initialized && !headless_; }
@@ -324,9 +326,11 @@ public:
     GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) override;
     void releaseGpuParticleEmitter(GpuParticleHandle handle) override;
     void resetGpuParticleEmitter(GpuParticleHandle handle) override;
+    /** @compatibility Implements the established GPU-particle boolean submission facade. */
     bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate &update,
                                   const GpuParticleSpawn *spawns,
                                   std::uint32_t spawnCount) override;
+    /** @compatibility Implements the established GPU-particle boolean submission facade. */
     bool drawGpuParticleEmitter(GpuParticleHandle handle,
                                 const GpuParticleDraw &draw) override;
     GpuParticleStats getGpuParticleStats(GpuParticleHandle handle) const override;
@@ -379,10 +383,13 @@ public:
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                         const TextureCreateInfo &info) override;
+    /** @lifetime Returned texture is Graphics-owned until explicitly released. */
     Texture *newHDRCubemap(int faceSize) override;
+    /** @compatibility Implements the Graphics boolean submission facade. */
     bool copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int face) override;
     bool copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
                                   Texture *cubemap) override;
+    /** @compatibility Implements the Graphics boolean submission facade. */
     bool filterHDRReflectionCubemap(Texture *cubemap, int sampleCount = 64) override;
     Texture *newTexture(image::ImageData *data) override;
     Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) override;
@@ -538,6 +545,7 @@ public:
     void endDecalPass() override;
 
     Canvas *newCanvas(int width, int height) override;
+    /** @lifetime Returned canvas is Graphics-owned until explicitly released. */
     Canvas *newHDRCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
     bool isCanvasActive() const override;

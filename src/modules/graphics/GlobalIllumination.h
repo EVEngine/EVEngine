@@ -14,6 +14,7 @@ class Texture;
 
 /**
  * @brief Screen-space single-bounce GI (SSGI).
+ * @lifetime All texture arguments are borrowed for the duration of each call.
  *
  * Samples scene color (RGB = lit radiance) plus hardware D32 depth, and adds
  * bounced light from nearby occluders. It can be used as a manual fullscreen
@@ -93,11 +94,16 @@ public:
     void applyFromDepthTo(Graphics *gfx, Texture *packedAlbedo, Canvas *dest);
     void applyFromSceneTo(Graphics *gfx, Texture *color, Texture *hwDepth, Canvas *dest);
     void applyFromSceneTo(Graphics *gfx, Texture *color, Texture *hwDepth);
+    /** @lifetime Returned canvas is borrowed from this effect until its targets are recreated. */
     Canvas *getWorkingCanvas();
-    /** @brief Temporally resolved GI texture, or the raw working texture before history exists. */
+    /**
+     * @brief Temporally resolved GI texture, or the raw working texture before history exists.
+     * @lifetime Returned texture is borrowed from this effect until its targets are recreated.
+     */
     Texture *getWorkingTexture();
     void applyFromScene(Graphics *gfx, Texture *color, Texture *hwDepth);
 
+    /** @lifetime Returned shader is borrowed and owned by Graphics. */
     Shader *getShader() const { return ssgi_; }
 
 private:

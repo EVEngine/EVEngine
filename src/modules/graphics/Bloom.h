@@ -26,6 +26,7 @@ public:
      * @param threshold Linear soft-knee threshold.
      * @param scatter Tent reconstruction radius in source texels.
      * @return Reconstructed half-resolution linear HDR bloom texture.
+     * @lifetime The returned texture is owned by this Bloom and remains valid until its targets resize.
      */
     Texture *build(Texture *source, float threshold, float scatter = 1.f);
 
@@ -36,6 +37,7 @@ public:
      * @param threshold Linear soft-knee threshold.
      * @param scatter Tent reconstruction radius.
      * @return Full-resolution linear HDR source plus bloom.
+     * @lifetime The returned texture is owned by this Bloom and remains valid until its targets resize.
      */
     Texture *apply(Texture *source, float intensity, float threshold, float scatter = 1.f);
 

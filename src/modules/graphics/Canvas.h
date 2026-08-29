@@ -40,6 +40,7 @@ public:
     /**
      * @brief Copy an HDR Canvas as linear RGBA16F without tone mapping.
      * @return Caller-owned ImageData, or nullptr when this Canvas is not HDR.
+     * @ownership The caller owns the returned image data.
      */
     virtual image::ImageData *newHDRImageData() { return nullptr; }
 

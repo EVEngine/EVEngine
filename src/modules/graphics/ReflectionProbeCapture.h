@@ -51,10 +51,14 @@ public:
     /**
      * @brief Capture up to @p faceBudget dirty faces.
      * @return True when all six HDR faces are complete.
+     * @compatibility Preserves the scripting API's boolean completion result.
      */
     bool update(int faceBudget = 1);
 
-    /** @brief Return one captured HDR face Canvas in +X,-X,+Y,-Y,+Z,-Z order. */
+    /**
+     * @brief Return one captured HDR face Canvas in +X,-X,+Y,-Y,+Z,-Z order.
+     * @lifetime Returned canvas is borrowed from this capture until destruction.
+     */
     Canvas *getFaceCanvas(int face) const;
     /** @brief True while one or more faces still need capture. */
     bool isCapturePending() const { return pending_; }
@@ -64,15 +68,27 @@ public:
     bool isCaptureComplete() const { return revision_ > 0 && !pending_; }
     /** @brief Monotonic revision incremented after each complete six-face capture. */
     uint32_t getRevision() const { return revision_; }
-    /** @brief Copy a complete capture revision into a backend HDR staging cubemap. */
+    /**
+     * @brief Copy a complete capture revision into a backend HDR staging cubemap.
+     * @compatibility Preserves the scripting API's boolean submitted result.
+     */
     bool stageCapturedFaces();
-    /** @brief Backend HDR staging cubemap; not yet filtered or safe for lighting. */
+    /**
+     * @brief Backend HDR staging cubemap; not yet filtered or safe for lighting.
+     * @lifetime Returned texture is Graphics-owned and borrowed by this capture.
+     */
     Texture *getStagingCubemap() const { return stagingCubemap_; }
     /** @brief Last capture revision fully copied into the staging cubemap. */
     uint32_t getStagedRevision() const { return stagedRevision_; }
-    /** @brief Filter with 8-512 samples and atomically publish the active cubemap. */
+    /**
+     * @brief Filter with 8-512 samples and atomically publish the active cubemap.
+     * @compatibility Preserves the scripting API's boolean publication result.
+     */
     bool filterAndPublish(int sampleCount = 64);
-    /** @brief Last fully filtered cubemap, safe to assign to Camera3D reflection probes. */
+    /**
+     * @brief Last fully filtered cubemap, safe to assign to Camera3D reflection probes.
+     * @lifetime Returned texture is Graphics-owned and borrowed by this capture.
+     */
     Texture *getActiveCubemap() const { return activeCubemap_; }
     /** @brief Last capture revision atomically published for lighting. */
     uint32_t getPublishedRevision() const { return publishedRevision_; }
@@ -95,7 +111,10 @@ public:
      * Local reflection probes remain disabled on the capture camera.
      */
     void setEnvironmentLighting(Texture *environment, float intensity = 1.f);
-    /** @brief Return the global environment texture used while capturing. */
+    /**
+     * @brief Return the global environment texture used while capturing.
+     * @lifetime Returned texture is borrowed; its owner must outlive this capture.
+     */
     Texture *getEnvironmentLighting() const { return environmentLighting_; }
     /** @brief Return the global environment-lighting intensity used while capturing. */
     float getEnvironmentLightingIntensity() const { return environmentLightingIntensity_; }
@@ -121,7 +140,10 @@ public:
      * @param texture RGBA sky face matching cubemap projection, or nullptr for color backup.
      */
     void setSkyFaceTexture(int face, Texture *texture);
-    /** @brief Return one directional per-pixel sky texture, or nullptr. */
+    /**
+     * @brief Return one directional per-pixel sky texture, or nullptr.
+     * @lifetime Returned texture is borrowed; its owner must outlive this capture.
+     */
     Texture *getSkyFaceTexture(int face) const;
     /** @brief Set the linear HDR radiance multiplier for one sky face texture. */
     void setSkyFaceTextureScale(int face, float scale);
@@ -163,11 +185,13 @@ public:
     /**
      * @brief Advance capture and filtering using the GPU-budget controller's workload.
      * @return True only when this call publishes a new active revision.
+     * @compatibility Preserves the scripting API's boolean publication result.
      */
     bool tickAdaptive();
     /**
      * @brief Advance capture, staging, filtering and publishing under the selected policy.
      * @return True only when this call publishes a new active revision.
+     * @compatibility Preserves the scripting API's boolean publication result.
      */
     bool tick(int faceBudget = 1, int filterSamples = 64);
     /**
@@ -193,11 +217,15 @@ public:
     float getInfluenceBlendDistance() const { return influenceBlendDistance_; }
     /** @brief Return persistent overlap-selection priority. */
     int getInfluencePriority() const { return influencePriority_; }
-    /** @brief Submit the persistent influence and active cubemap to a Camera3D slot. */
+    /**
+     * @brief Submit the persistent influence and active cubemap to a Camera3D slot.
+     * @compatibility Preserves the scripting API's boolean assignment result.
+     */
     bool applyConfiguredToCamera(Camera3D *camera, int slot);
     /**
      * @brief Assign the active cubemap to a Camera3D local reflection-probe slot.
      * @return False when no filtered revision has been published yet.
+     * @compatibility Preserves the scripting API's boolean assignment result.
      */
     bool applyToCamera(Camera3D *camera, int slot, float extentX, float extentY, float extentZ,
                        float intensity = 1.f, float blendDistance = 1.f, int priority = 0);

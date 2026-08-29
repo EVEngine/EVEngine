@@ -711,6 +711,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
                       envIntensity * globalWeight;
         var envDiffuse = textureSampleLevel(envSampler, mainSamp, n, maxLod).rgb *
                          envIntensity * globalWeight;
+        // @lifetime Shader math below does not declare host pointers.
         if (probeWeight0 > 0.0) {
             let center = ubo.reflectionProbeCenter[0].xyz;
             let extent = ubo.reflectionProbeExtent[0].xyz;
@@ -728,6 +729,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
             envDiffuse += textureSampleLevel(reflectionProbe0, mainSamp, n, probeLod).rgb *
                 ubo.reflectionProbeCenter[0].w * probeWeight0;
         }
+        // @lifetime Shader math below does not declare host pointers.
         if (probeWeight1 > 0.0) {
             let center = ubo.reflectionProbeCenter[1].xyz;
             let extent = ubo.reflectionProbeExtent[1].xyz;
@@ -1164,6 +1166,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
                       envIntensity * globalWeight;
         var envDiffuse = textureSampleLevel(envSampler, mainSamp, n, maxLod).rgb *
                          envIntensity * globalWeight;
+        // @lifetime Shader math below does not declare host pointers.
         if (probeWeight0 > 0.0) {
             let center = ubo.reflectionProbeCenter[0].xyz;
             let extent = ubo.reflectionProbeExtent[0].xyz;
@@ -1181,6 +1184,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
             envDiffuse += textureSampleLevel(reflectionProbe0, mainSamp, n, probeLod).rgb *
                 ubo.reflectionProbeCenter[0].w * probeWeight0;
         }
+        // @lifetime Shader math below does not declare host pointers.
         if (probeWeight1 > 0.0) {
             let center = ubo.reflectionProbeCenter[1].xyz;
             let extent = ubo.reflectionProbeExtent[1].xyz;

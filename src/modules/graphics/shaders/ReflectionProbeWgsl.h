@@ -2,6 +2,7 @@
 
 namespace eve::graphics::shaders {
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kReflectionProbeFilterWgsl = R"wgsl(
 struct Params { data: vec4f } // face, roughness, diffuse, sampleCount
 @group(0) @binding(0) var sourceCube: texture_cube<f32>;
