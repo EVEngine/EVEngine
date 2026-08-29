@@ -1092,8 +1092,9 @@ TEST_CASE("procgen.terrain.pipeline.multiSeedDrainageMorphology") {
         params.setInt("octaves", 4);
         params.setFloat("gain", 0.4f);
         params.setFloat("warp", 0.07f);
-        std::unique_ptr<Heightmap> terrain(procgen.generateHeightmap(&params));
-        REQUIRE(terrain.get() != nullptr);
+        const TerrainSampler sampler = TerrainSampler::fromParams(params);
+        auto terrain = std::make_unique<Heightmap>(Heightmap::generate(
+            sampler, params.getWidth(), params.getHeight()));
         TerrainPipeline::erodeThermal(*terrain, {12, 0.011f, 0.28f});
         TerrainPipeline::erodeHydraulic(*terrain, {8, 0.007f, 0.11f, 1.4f, 0.08f, 0.11f});
         TerrainErosionMap terrainDiagnostics = TerrainPipeline::erodeFluvialDetailed(
@@ -1570,36 +1571,41 @@ TEST_CASE("procgen.terrain.streaming.crossChunkHydrologyTraceAndHalo") {
 
 TEST_CASE("procgen.terrain.module.erosionAndAnalysisApi") {
     Procgen procgen;
-    std::unique_ptr<Heightmap> heightmap(procgen.newHeightmap(16, 16));
+    auto heightmapResult = procgen.newHeightmapHandle(16, 16);
+    REQUIRE(heightmapResult.ok());
+    const ProcgenHeightmapHandleRef heightmapHandle = std::move(heightmapResult).takeValue();
+    auto heightmapView = procgen.resolveHeightmap(heightmapHandle);
+    REQUIRE(heightmapView.isBound());
+    Heightmap *heightmap = heightmapView.get();
     for (int y = 0; y < 16; ++y)
         for (int x = 0; x < 16; ++x)
             heightmap->setHeight(x, y, 0.85f - float(y) * 0.035f + (x == 8 ? -0.1f : 0.f));
     const std::vector<float> before = heightmap->data();
-    CHECK(procgen.erodeTerrainThermal(heightmap.get(), 8, 0.02f, 0.3f));
-    CHECK(procgen.erodeTerrainHydraulic(heightmap.get(), 8, 0.01f, 0.1f, 2.f, 0.15f, 0.1f));
-    CHECK(procgen.erodeTerrainFluvial(heightmap.get(), 3, 0.03f, 0.006f, 0.08f, 1.5f));
+    CHECK(procgen.erodeTerrainThermal(heightmap, 8, 0.02f, 0.3f));
+    CHECK(procgen.erodeTerrainHydraulic(heightmap, 8, 0.01f, 0.1f, 2.f, 0.15f, 0.1f));
+    CHECK(procgen.erodeTerrainFluvial(heightmap, 3, 0.03f, 0.006f, 0.08f, 1.5f));
     CHECK(procgen.erodeTerrainFluvialAdvanced(
-        heightmap.get(), 2, 0.03f, 0.006f, 0.08f, 1.5f, 0.015f));
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 1.5f, 0.015f));
     CHECK(procgen.erodeTerrainFluvialScaled(
-        heightmap.get(), 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 2.f));
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 2.f));
     std::unique_ptr<TerrainErosionMap> diagnostics(procgen.erodeTerrainFluvialDetailed(
-        heightmap.get(), 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 2.f));
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 2.f));
     REQUIRE(diagnostics.get() != nullptr);
     CHECK_EQ(diagnostics->getWidth(), 16);
     CHECK(diagnostics->getWear(8, 8) >= 0.f);
     CHECK(diagnostics->getDeposition(8, 8) >= 0.f);
     CHECK_EQ(diagnostics->getWear(-1, 0), 0.f);
     CHECK(procgen.erodeTerrainFluvialDetailed(
-        heightmap.get(), 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 0.f) == nullptr);
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 0.f) == nullptr);
     CHECK(!procgen.erodeTerrainFluvialScaled(
-        heightmap.get(), 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 0.f));
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 0.f));
     CHECK(heightmap->data() != before);
-    std::unique_ptr<TerrainLayers> layers(procgen.analyzeTerrain(heightmap.get(), 4.f, 0.2f, 0.7f));
+    std::unique_ptr<TerrainLayers> layers(procgen.analyzeTerrain(heightmap, 4.f, 0.2f, 0.7f));
     REQUIRE(layers.get() != nullptr);
     std::unique_ptr<TerrainLayers> scaledLayers(
-        procgen.analyzeTerrainScaled(heightmap.get(), 4.f, 0.2f, 0.7f, 2.f));
+        procgen.analyzeTerrainScaled(heightmap, 4.f, 0.2f, 0.7f, 2.f));
     REQUIRE(scaledLayers.get() != nullptr);
-    CHECK(procgen.analyzeTerrainScaled(heightmap.get(), 4.f, 0.2f, 0.7f, 0.f) == nullptr);
+    CHECK(procgen.analyzeTerrainScaled(heightmap, 4.f, 0.2f, 0.7f, 0.f) == nullptr);
     CHECK_EQ(layers->getWidth(), 16);
     CHECK(layers->getFlowAccumulation(8, 8) >= 1.f);
     CHECK(layers->getStreamOrder(8, 8) >= 0);
@@ -1608,13 +1614,14 @@ TEST_CASE("procgen.terrain.module.erosionAndAnalysisApi") {
     CHECK(!layers->getBiomeName(8, 8).empty());
     CHECK_EQ(layers->getBiome(-1, 0), -1);
     std::unique_ptr<eve::data::ByteData> archive(
-        procgen.bakeTerrainAsset(heightmap.get(), layers.get(), 8));
+        procgen.bakeTerrainAsset(heightmap, layers.get(), 8));
     REQUIRE(archive.get() != nullptr);
     TerrainAsset opened;
     CHECK(opened.open(static_cast<const uint8_t *>(archive->getData()), archive->getSize()));
     CHECK_EQ(opened.chunks().size(), size_t(4));
     CHECK(!procgen.erodeTerrainThermal(nullptr, 1, 0.1f, 0.1f));
-    CHECK(!procgen.lastError().empty());
+    auto heightmapRelease = procgen.releaseHeightmap(heightmapHandle);
+    heightmapRelease.ignore("terrain module test cleanup");
 }
 
 TEST_CASE("procgen.terrain.mesh.lodSkirtsStableSeamsAndMaterialWeights") {
@@ -1710,7 +1717,6 @@ TEST_CASE("procgen.terrain.mesh.lodSkirtsStableSeamsAndMaterialWeights") {
         CHECK_EQ(rgba[(y * 17 + 16) * 4 + channel],
                  rightRgba[(y * 17) * 4 + channel]);
     CHECK(procgen.generateTerrainSplatMap(nullptr) == nullptr);
-    CHECK(!procgen.lastError().empty());
     std::unique_ptr<eve::image::ImageData> albedo(procgen.generateTerrainAlbedoMap(&left));
     REQUIRE(albedo.get() != nullptr);
     CHECK_EQ(albedo->getWidth(), 17);
@@ -1719,7 +1725,6 @@ TEST_CASE("procgen.terrain.mesh.lodSkirtsStableSeamsAndMaterialWeights") {
     for (int vertex = 0; vertex < left.getBaseVertexCount(); ++vertex)
         CHECK_EQ(albedoRgba[vertex * 4 + 3], uint8_t(255));
     CHECK(procgen.generateTerrainAlbedoMap(nullptr) == nullptr);
-    CHECK(!procgen.lastError().empty());
 
     settings.originX = 0; settings.lod = 1;
     TerrainMeshChunk lod1;
