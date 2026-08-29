@@ -3867,9 +3867,10 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
 
 void Graphics::createSceneColorResources(int width, int height) {
     if (!device) return;
-    const bool featureMsaa = !renderControl_ || renderControl_->isEnabled("msaa");
-    // WebGPU only supports 1x and 4x multisampling; clamp anything >= 2 to 4.
-    const uint32_t want = featureMsaa && msaaSamples >= 2 ? 4u : 1u;
+    // Keep the main WebGPU scene single-sampled. Dawn/Metal does not complete
+    // the current MSAA resolve followed by synchronous scene readback chain.
+    // Temporal AA remains available; Vulkan owns the multisampled main path.
+    const uint32_t want = 1u;
     if (sceneColorWidth == width && sceneColorHeight == height && sceneColorSamples == want &&
         !sceneColorSlots.empty())
         return;
