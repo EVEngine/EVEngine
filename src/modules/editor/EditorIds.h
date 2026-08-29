@@ -1,8 +1,6 @@
 #pragma once
 
-#include "common/Identity.h"
-
-#include <cstddef>
+#include "editing/EditingIds.h"
 
 namespace eve::editor {
 
@@ -14,13 +12,11 @@ namespace eve::editor {
  *          compatibility spellings and are never treated as persistent UUID text.
  */
 template <class Tag>
-using StrongEditorId = eve::UuidIdAdapter<Tag>;
+using StrongEditorId = eve::editing::StrongId<Tag>;
 
 /** @brief Hash functor for a strong editor identifier. */
 template <class Id>
-struct StrongEditorIdHash {
-    [[nodiscard]] std::size_t operator()(const Id& id) const noexcept { return static_cast<std::size_t>(id.hash()); }
-};
+using StrongEditorIdHash = eve::editing::StrongIdHash<Id>;
 
 /**
  * @brief Explicitly projects an editor identifier to its common UUID value.
@@ -28,43 +24,23 @@ struct StrongEditorIdHash {
  * @param id Compatibility-aware editor identifier.
  * @return Canonical UUID, including a deterministic projection for legacy text.
  */
-template <class Tag>
-[[nodiscard]] eve::StrongUuid<Tag> canonicalUuid(const StrongEditorId<Tag>& id) noexcept {
-    return id.uuid();
-}
+using eve::editing::canonicalUuid;
 
-struct SessionIdTag;
-struct TargetIdTag;
-struct CommandIdTag;
-struct ToolIdTag;
-struct RuleIdTag;
-struct CapabilityIdTag;
-struct TransactionIdTag;
-struct PlanIdTag;
-struct StableIdTag;
-struct PropertyPathTag;
-struct ObjectIdTag;
-struct AssetGuidTag;
-struct DocumentIdTag;
-struct GraphNodeIdTag;
-struct GraphPinIdTag;
-struct TaskIdTag;
-
-using SessionId     = StrongEditorId<SessionIdTag>;
-using TargetId      = StrongEditorId<TargetIdTag>;
-using CommandId     = StrongEditorId<CommandIdTag>;
-using ToolId        = StrongEditorId<ToolIdTag>;
-using RuleId        = StrongEditorId<RuleIdTag>;
-using CapabilityId  = StrongEditorId<CapabilityIdTag>;
-using TransactionId = StrongEditorId<TransactionIdTag>;
-using PlanId        = StrongEditorId<PlanIdTag>;
-using StableId      = StrongEditorId<StableIdTag>;
-using PropertyPath  = StrongEditorId<PropertyPathTag>;
-using ObjectId      = StrongEditorId<ObjectIdTag>;
-using AssetGuid     = StrongEditorId<AssetGuidTag>;
-using DocumentId    = StrongEditorId<DocumentIdTag>;
-using GraphNodeId   = StrongEditorId<GraphNodeIdTag>;
-using GraphPinId    = StrongEditorId<GraphPinIdTag>;
-using TaskId        = StrongEditorId<TaskIdTag>;
+using SessionId     = eve::editing::SessionId;
+using TargetId      = eve::editing::TargetId;
+using CommandId     = eve::editing::CommandId;
+using ToolId        = eve::editing::ToolId;
+using RuleId        = eve::editing::RuleId;
+using CapabilityId  = eve::editing::CapabilityId;
+using TransactionId = eve::editing::TransactionId;
+using PlanId        = eve::editing::PlanId;
+using StableId      = eve::editing::StableId;
+using PropertyPath  = eve::editing::PropertyPath;
+using ObjectId      = eve::editing::ObjectId;
+using AssetGuid     = eve::editing::AssetGuid;
+using DocumentId    = eve::editing::DocumentId;
+using GraphNodeId   = eve::editing::GraphNodeId;
+using GraphPinId    = eve::editing::GraphPinId;
+using TaskId        = eve::editing::TaskId;
 
 }  // namespace eve::editor

@@ -1,10 +1,10 @@
-#include "editor/EditorValue.h"
+#include "editing/EditingValue.h"
 
 #include <type_traits>
 
-namespace eve::editor {
+namespace eve::editing {
 
-EditorValue::Type EditorValue::type() const { return static_cast<Type>(storage_.index()); }
+Value::Type Value::type() const { return static_cast<Type>(storage_.index()); }
 
 namespace {
 
@@ -13,7 +13,7 @@ struct ValueBudget {
     size_t stringBytes = 0;
 };
 
-bool checkValue(const EditorValue& value, size_t depth, size_t maxDepth, size_t maxElements, size_t maxStringBytes,
+bool checkValue(const Value& value, size_t depth, size_t maxDepth, size_t maxElements, size_t maxStringBytes,
                 ValueBudget& budget) {
     if (depth > maxDepth) return false;
     return std::visit(
@@ -22,13 +22,13 @@ bool checkValue(const EditorValue& value, size_t depth, size_t maxDepth, size_t 
             if constexpr (std::is_same_v<T, std::string>) {
                 budget.stringBytes += current.size();
                 return budget.stringBytes <= maxStringBytes;
-            } else if constexpr (std::is_same_v<T, EditorValue::Array>) {
+            } else if constexpr (std::is_same_v<T, Value::Array>) {
                 budget.elements += current.size();
                 if (budget.elements > maxElements) return false;
                 for (const auto& entry : current)
                     if (!checkValue(entry, depth + 1, maxDepth, maxElements, maxStringBytes, budget)) return false;
                 return true;
-            } else if constexpr (std::is_same_v<T, EditorValue::Object>) {
+            } else if constexpr (std::is_same_v<T, Value::Object>) {
                 budget.elements += current.size();
                 if (budget.elements > maxElements) return false;
                 for (const auto& [key, entry] : current) {
@@ -47,10 +47,10 @@ bool checkValue(const EditorValue& value, size_t depth, size_t maxDepth, size_t 
 
 }  // namespace
 
-bool EditorValue::withinLimits(size_t maxDepth, size_t maxElements, size_t maxStringBytes) const {
+bool Value::withinLimits(size_t maxDepth, size_t maxElements, size_t maxStringBytes) const {
     if (maxDepth == 0) return false;
     ValueBudget budget;
     return checkValue(*this, 1, maxDepth, maxElements, maxStringBytes, budget);
 }
 
-}  // namespace eve::editor
+}  // namespace eve::editing
