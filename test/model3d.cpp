@@ -976,6 +976,32 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
     REQUIRE(md != nullptr);
     REQUIRE(md->getMeshCount() >= 1);
 
+    const aiMesh *sourceMesh = md->getMesh(0);
+    REQUIRE(sourceMesh != nullptr);
+    REQUIRE(sourceMesh->mNumFaces > 0);
+    const aiFace &sourceFace = sourceMesh->mFaces[0];
+    REQUIRE(sourceFace.mNumIndices == 3);
+    const aiVector3D centroid =
+        (sourceMesh->mVertices[sourceFace.mIndices[0]] +
+         sourceMesh->mVertices[sourceFace.mIndices[1]] +
+         sourceMesh->mVertices[sourceFace.mIndices[2]]) / 3.f;
+    auto mapped = md->mapSurfacePointToUv(0, 0, centroid.x, centroid.y, centroid.z, 0);
+    REQUIRE(mapped.ok());
+    const auto surfaceUv = std::move(mapped).takeValue();
+    const float expectedU =
+        (sourceMesh->mTextureCoords[0][sourceFace.mIndices[0]].x +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[1]].x +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[2]].x) / 3.f;
+    const float expectedV =
+        (sourceMesh->mTextureCoords[0][sourceFace.mIndices[0]].y +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[1]].y +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[2]].y) / 3.f;
+    CHECK(std::fabs(surfaceUv.u - expectedU) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.v - expectedV) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricA - 1.f / 3.f) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricB - 1.f / 3.f) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricC - 1.f / 3.f) < 1e-5f);
+
     // Material API on the synthetic file: PBR factors + embedded texture.
     CHECK(md->getMaterialMetallicFactor(0) == 0.f);
     CHECK(md->getMaterialRoughnessFactor(0) == 1.f);
