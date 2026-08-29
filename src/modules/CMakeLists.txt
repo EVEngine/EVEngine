@@ -283,6 +283,11 @@ if(_has_data)
     ${CMAKE_SOURCE_DIR}/third-party)
 endif()
 
+eve_module_enabled(asset _has_asset)
+if(_has_asset)
+  target_link_libraries(EVAsset PRIVATE ${EVENGINE_ASSET_ZSTD_TARGET} ${EVENGINE_ASSET_UTF8PROC_TARGET})
+endif()
+
 eve_module_enabled(graphics _has_graphics)
 if(_has_graphics)
   # Header-only VKBuilder: prefer the source tree over a stale third-party install.

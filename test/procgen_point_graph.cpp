@@ -58,6 +58,26 @@ TEST_CASE("procgen.pointGraph.rejectsCyclesAndBadInputs") {
     CHECK(!graph.addNode("unknown", "not-an-operation"));
 }
 
+TEST_CASE("procgen.pointGraph.filtersProjectedTerrainSlope") {
+    PointSet source;
+    source.add(0.f, 0.f, 0.f);
+    source.add(1.f, 0.f, 0.f);
+    source.setNormal(0, 0.f, 1.f, 0.f);
+    source.setNormal(1, 1.f, 0.f, 0.f);
+    PointGraph graph;
+    CHECK(graph.addNode("source", "input"));
+    CHECK(graph.addNode("slope", "filter.slope"));
+    CHECK(graph.setNodePoints("source", &source));
+    CHECK(graph.connect("source", "slope"));
+    CHECK(graph.setNodeFloat("slope", "minDegrees", 0.f));
+    CHECK(graph.setNodeFloat("slope", "maxDegrees", 45.f));
+    CHECK(graph.validate());
+    std::unique_ptr<PointSet> result(graph.execute("slope"));
+    REQUIRE(bool(result));
+    CHECK_EQ(result->getCount(), 1);
+    CHECK_EQ(result->getNormalY(0), 1.f);
+}
+
 TEST_CASE("procgen.pointGraph.supportsBranchesAndNestedGraphs") {
     PointSet source;
     source.add(1.f, 0.f, 0.f);
@@ -98,6 +118,7 @@ TEST_CASE("procgen.pointGraph.reflectsOperationsForEditors") {
     CHECK_EQ(PointGraph::getOperationParamKey("spatial.sample", 0), std::string("spacing"));
     CHECK_EQ(PointGraph::getOperationParamKind("spatial.sample", 1), std::string("int"));
     CHECK_EQ(PointGraph::getOperationParamDefault("branch", 0), std::string("false"));
+    CHECK_EQ(PointGraph::getOperationInputCount("filter.slope"), 1);
     CHECK_EQ(PointGraph::getOperationInputCount("missing"), -1);
 }
 

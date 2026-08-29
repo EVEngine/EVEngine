@@ -163,6 +163,7 @@ private:
             case DiagnosticCode::Unsupported: return StatusCode::Unsupported;
             case DiagnosticCode::Cancelled: return StatusCode::Cancelled;
             case DiagnosticCode::StaleHandle: return StatusCode::Rejected;
+            case DiagnosticCode::TypeMismatch: return StatusCode::Rejected;
             case DiagnosticCode::ParseError:
             case DiagnosticCode::SerializationError:
             case DiagnosticCode::InvariantViolation:

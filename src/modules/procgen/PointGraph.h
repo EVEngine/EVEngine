@@ -59,7 +59,7 @@ public:
 
     /** @brief Assign a copied PointSet to an `input` node. */
     bool setNodePoints(const std::string& id, PointSet* points);
-    /** @brief Assign copied spatial data to spatial.sample or spatial.filter. */
+    /** @brief Assign copied spatial data to a spatial sample, filter, projection, or biome node. */
     bool setNodeSpatial(const std::string& id, SpatialData* spatial);
     /** @brief Assign copied biome rules to a `biome.generate` node. */
     bool setNodeBiomeRules(const std::string& id, BiomeRules* rules);

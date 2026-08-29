@@ -46,13 +46,15 @@ PROFILES = (
     "web",
     "procgen-core-only",
     "physics-core-only",
+    "asset-core-only",
     "headless",
     "server",
 )
-HOSTLESS = {"procgen-core-only", "physics-core-only", "headless", "server"}
+HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "headless", "server"}
 CORE_SEEDS = {
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),
+    "asset-core-only": ("common", "data", "asset"),
     "headless": ("common", "data", "platform_event", "timer"),
     "server": (
         "common",

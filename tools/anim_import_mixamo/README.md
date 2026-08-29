@@ -1,6 +1,6 @@
 # convert_mixamo
 
-Offline helper: Assimp FBX → compact `.eva` fixtures for animation tests.
+Offline helper: Assimp FBX → compact `*.anim.txt` fixtures for animation tests.
 
 ```bash
 g++ -std=c++17 -O2 \
@@ -12,7 +12,7 @@ g++ -std=c++17 -O2 \
   convert_mixamo.cpp exception_stub.cpp \
   -lassimp -o convert_mixamo
 
-./convert_mixamo Idle.fbx Idle.eva Idle
+./convert_mixamo Idle.fbx Idle.anim.txt Idle
 ```
 
 See `test/assets/mixamo/README.md` for fixture provenance.

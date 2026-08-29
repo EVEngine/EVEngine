@@ -202,14 +202,14 @@ TEST_CASE("subscription.animClipReload.supportsAbsentProviderAndReentrancy") {
     replacement = eve::animation::AnimClipRegistry::subscribeReload(
         [&](const eve::animation::AnimClipRegistry::ReloadEvent&) { ++second; });
 
-    auto absent = eve::animation::AnimClipRegistry::reloadPath("missing.eva");
+    auto absent = eve::animation::AnimClipRegistry::reloadPath("missing.anim.txt");
     REQUIRE(absent.ok());
     const int absentCount = std::move(absent).takeValue();
     CHECK_EQ(absentCount, 0);
     CHECK_EQ(first, 1);
     CHECK_EQ(second, 0);
 
-    auto absentAgain = eve::animation::AnimClipRegistry::reloadPath("missing.eva");
+    auto absentAgain = eve::animation::AnimClipRegistry::reloadPath("missing.anim.txt");
     REQUIRE(absentAgain.ok());
     const int absentAgainCount = std::move(absentAgain).takeValue();
     CHECK_EQ(absentAgainCount, 0);

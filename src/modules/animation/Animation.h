@@ -139,14 +139,35 @@ public:
     ControlPose *newControlPose(AnimSkeleton *skeleton);
 
     /**
-     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact `.eva`
-     * fixtures (see AnimImporter).
+     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact
+     * `*.anim.txt` test fixtures (see AnimImporter).
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
     AnimClip     *newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
                                    int animIndex = 0);
-    AnimSkeleton *newSkeletonFromEvaFile(const std::string &path);
-    AnimClip     *newClipFromEvaFile(const std::string &path);
+    /**
+     * @brief Load a skeleton from an internal `*.anim.txt` test fixture.
+     * @param path Filesystem path read synchronously during this call.
+     * @return Newly allocated skeleton owned by the caller; never null on success.
+     * @ownership Owned; the caller must delete the returned skeleton.
+     * @lifetime Independent of this Animation module after construction.
+     * @throws Exception when the fixture is missing, malformed, or unsupported.
+     * @thread Main-thread animation API; no internal synchronization.
+     * @reentrancy Does not invoke user callbacks.
+     */
+    AnimSkeleton *newSkeletonFromAnimationFixtureText(const std::string &path);
+    /**
+     * @brief Load an animation clip from an internal `*.anim.txt` test fixture.
+     * @param path Filesystem path read synchronously during this call.
+     * @return Newly allocated clip owned by the caller; never null on success.
+     * @ownership Owned; the caller must delete the returned clip.
+     * @lifetime Independent of this Animation module after construction; registered hot-reload
+     *           tracking remains valid until the clip is destroyed.
+     * @throws Exception when the fixture is missing, malformed, or unsupported.
+     * @thread Main-thread animation API; no internal synchronization.
+     * @reentrancy Does not invoke user callbacks while loading.
+     */
+    AnimClip *newClipFromAnimationFixtureText(const std::string &path);
 
     /**
      * @brief CPU linear-blend skin binding for a skinned mesh on ModelData.
