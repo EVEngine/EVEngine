@@ -49,6 +49,21 @@ endif()
 
 project(EVEngine)
 
+if(WIN32 AND MSVC AND CMAKE_GENERATOR MATCHES "Ninja")
+    # sccache (and any other launcher) CreateProcess()es cl.exe with a pipe;
+    # localized cl then writes ACP /showIncludes (GBK) while Ninja's
+    # msvc_deps_prefix is UTF-8, so every header leaks into the build log.
+    # Route compiles through cmake/msvc-cl.cmd so cl inherits CP65001.
+    set(_eve_msvc_cl_wrap "${CMAKE_SOURCE_DIR}/cmake/msvc-cl.cmd")
+    foreach(_eve_lang IN ITEMS C CXX)
+        get_filename_component(_eve_comp_name "${CMAKE_${_eve_lang}_COMPILER}" NAME)
+        if(_eve_comp_name MATCHES "^cl(\\.exe)?$")
+            set(CMAKE_${_eve_lang}_COMPILER "${_eve_msvc_cl_wrap}"
+                CACHE FILEPATH "MSVC cl UTF-8 /showIncludes wrapper" FORCE)
+        endif()
+    endforeach()
+endif()
+
 if(_eve_sccache_enabled AND MSVC)
     if(POLICY CMP0141)
         # Embed debug information in each object. Cached objects are then
