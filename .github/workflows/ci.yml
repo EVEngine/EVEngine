@@ -165,7 +165,9 @@ jobs:
   profile-matrix:
     name: Profile ${{ matrix.profile }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    # This job builds and tests both Vulkan and native Dawn sequentially. A cold
+    # read-only PR cache can legitimately exceed 90 minutes on hosted runners.
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
