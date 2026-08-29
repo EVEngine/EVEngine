@@ -5,6 +5,7 @@
 #include "graphics/CubemapPrefilter.h"
 #include "graphics/shaders/ReflectionProbeWgsl.h"
 #include "graphics/GBuffer.h"
+#include "graphics/GraphicsCapabilities.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderControl.h"
@@ -251,136 +252,6 @@ void Graphics::initWithWindow(void *nativeWindow) {
     createDefaultTextures();
     initialized = true;
     deviceInitDone = true;
-}
-
-void Graphics::createInstanceAndAdapter() {
-#if defined(__EMSCRIPTEN__)
-    instance = wgpu::CreateInstance();
-#else
-    const WGPUInstanceFeatureName requiredFeatures[] = {WGPUInstanceFeatureName_TimedWaitAny};
-    WGPUInstanceDescriptor        instanceDesc{};
-    instanceDesc.requiredFeatureCount = 1;
-    instanceDesc.requiredFeatures     = requiredFeatures;
-    instance = wgpu::CreateInstance(reinterpret_cast<const wgpu::InstanceDescriptor*>(&instanceDesc));
-#endif
-    if (!instance) throw Exception("WebGPU: wgpuCreateInstance failed");
-
-    WGPURequestAdapterOptions opts{};
-    opts.compatibleSurface = surface.Get();
-    opts.powerPreference = WGPUPowerPreference_HighPerformance;
-
-    adapterReceived = false;
-    WGPURequestAdapterCallbackInfo cbInfo{};
-    cbInfo.nextInChain = nullptr;
-    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
-    cbInfo.callback = [](WGPURequestAdapterStatus status, WGPUAdapter a, WGPUStringView msg,
-                         void *userdata1, void * /*userdata2*/) {
-        auto *self = static_cast<Graphics *>(userdata1);
-        if (status == WGPURequestAdapterStatus_Success && a) {
-            self->adapter = wgpu::Adapter(a);
-        } else {
-            self->adapterError =
-                msg.data ? std::string(msg.data, msg.length) : "unknown adapter error";
-        }
-        self->adapterReceived.store(true);
-    };
-    cbInfo.userdata1 = this;
-    cbInfo.userdata2 = nullptr;
-
-    wgpuInstanceRequestAdapter(instance.Get(), &opts, cbInfo);
-    waitForAdapter();
-    if (!adapter) {
-        throw Exception("WebGPU: no adapter found (%s)", adapterError.c_str());
-    }
-}
-
-void Graphics::requestDevice() {
-    WGPUDeviceDescriptor devDesc{};
-    devDesc.label = sv("eve_device");
-    WGPUFeatureName requestedFeatures[1]{};
-    offscreenTimestampSupported =
-        wgpuAdapterHasFeature(adapter.Get(), WGPUFeatureName_TimestampQuery);
-    if (offscreenTimestampSupported) {
-        requestedFeatures[0] = WGPUFeatureName_TimestampQuery;
-        devDesc.requiredFeatureCount = 1;
-        devDesc.requiredFeatures = requestedFeatures;
-    }
-    devDesc.uncapturedErrorCallbackInfo.callback =
-        [](WGPUDevice const *, WGPUErrorType type, WGPUStringView message, void *, void *) {
-            std::fprintf(stderr, "[webgpu] uncaptured error type=%d: %.*s\n", int(type),
-                         int(message.length), message.data ? message.data : "");
-        };
-
-    deviceReceived = false;
-    WGPURequestDeviceCallbackInfo cbInfo{};
-    cbInfo.nextInChain = nullptr;
-    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
-    cbInfo.callback = [](WGPURequestDeviceStatus status, WGPUDevice d, WGPUStringView msg,
-                         void *userdata1, void * /*userdata2*/) {
-        auto *self = static_cast<Graphics *>(userdata1);
-        if (status == WGPURequestDeviceStatus_Success && d) {
-            self->device = wgpu::Device(d);
-            // Default device limits support 8+ uniform/vertex/storage buffers.
-            self->deviceReceived.store(true);
-            self->deviceError.clear();
-        } else {
-            self->deviceError =
-                msg.data ? std::string(msg.data, msg.length) : "unknown device error";
-            self->deviceReceived.store(true);
-        }
-    };
-    cbInfo.userdata1 = this;
-    cbInfo.userdata2 = nullptr;
-
-    wgpuAdapterRequestDevice(adapter.Get(), &devDesc, cbInfo);
-    waitForDevice();
-    if (!device) {
-        throw Exception("WebGPU: device request failed (%s)", deviceError.c_str());
-    }
-    if (offscreenTimestampSupported) {
-        WGPUQuerySetDescriptor queryDesc{};
-        queryDesc.label = sv("eve_offscreen_3d_timestamps");
-        queryDesc.type = WGPUQueryType_Timestamp;
-        queryDesc.count = 2;
-        offscreenTimestampQuerySet = device.CreateQuerySet(
-            reinterpret_cast<const wgpu::QuerySetDescriptor *>(&queryDesc));
-
-        WGPUBufferDescriptor resolveDesc{};
-        resolveDesc.label = sv("eve_offscreen_3d_timestamp_resolve");
-        resolveDesc.size = sizeof(uint64_t) * 2;
-        resolveDesc.usage = WGPUBufferUsage_QueryResolve | WGPUBufferUsage_CopySrc;
-        offscreenTimestampResolveBuffer = device.CreateBuffer(
-            reinterpret_cast<const wgpu::BufferDescriptor *>(&resolveDesc));
-        for (auto &slot : offscreenTimestampReadbacks) {
-            WGPUBufferDescriptor readbackDesc{};
-            readbackDesc.label = sv("eve_offscreen_3d_timestamp_readback");
-            readbackDesc.size = sizeof(uint64_t) * 2;
-            readbackDesc.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;
-            slot.owner = this;
-            slot.buffer = device.CreateBuffer(
-                reinterpret_cast<const wgpu::BufferDescriptor *>(&readbackDesc));
-        }
-    }
-}
-
-void Graphics::waitForAdapter() {
-    while (!adapterReceived.load()) {
-#if defined(__EMSCRIPTEN__)
-        // Yield to the browser event loop so the JS requestAdapter promise can
-        // resolve and fire the callback, then flush it with ProcessEvents.
-        emscripten_sleep(0);
-#endif
-        wgpuInstanceProcessEvents(instance.Get());
-    }
-}
-
-void Graphics::waitForDevice() {
-    while (!deviceReceived.load()) {
-#if defined(__EMSCRIPTEN__)
-        emscripten_sleep(0);
-#endif
-        wgpuInstanceProcessEvents(instance.Get());
-    }
 }
 
 void Graphics::setVSync(bool enabled) {

@@ -9,11 +9,6 @@
 
 namespace eve::graphics::webgpu {
 
-namespace {
-/** Build a WGPUStringView from a C string (null-safe). */
-WGPUStringView sv(const char *s) { return WGPUStringView{s, s ? std::strlen(s) : 0}; }
-}  // namespace
-
 OffscreenCanvas::OffscreenCanvas(Graphics *gfx, int width, int height, bool hdr)
     : gfx(gfx), width(width), height(height), hdr(hdr) {
     if (!gfx || !gfx->getDevice() || width <= 0 || height <= 0)
