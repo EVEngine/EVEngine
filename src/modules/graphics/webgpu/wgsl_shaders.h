@@ -271,12 +271,6 @@ struct Frame {
     clipInfo: vec4f,
     cloud: vec4f,
     cloudWind: vec4f,
-    envProbeCenter: vec4f,
-    envProbeExtent: vec4f,
-    skinInfo: vec4f,
-    skinBones: array<mat4x4f, 128>,
-    reflectionProbeCenter: array<vec4f, 2>,
-    reflectionProbeExtent: array<vec4f, 2>,
 };
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
@@ -308,8 +302,6 @@ struct FSIn {
 @group(0) @binding(12) var decalAlbedoLayer: texture_2d<f32>;
 @group(0) @binding(13) var decalNormalLayer: texture_2d<f32>;
 @group(0) @binding(14) var decalParamsLayer: texture_2d<f32>;
-@group(0) @binding(16) var reflectionProbe0: texture_cube<f32>;
-@group(0) @binding(17) var reflectionProbe1: texture_cube<f32>;
 
 const PI: f32 = 3.14159265359;
 
@@ -477,8 +469,7 @@ fn cloudShadowFactor(worldPos: vec3f) -> f32 {
     let covered = mix(c, c * d, ubo.cloudWind.w);
     return 1.0 - clamp(covered, 0.0, 1.0) * clamp(ubo.cloud.x, 0.0, 1.0);
 }
-fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
-    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
+fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
     // Shadow-map vertices mirror clip Y for WebGPU. Undo that mirror when
     // projecting the shared Vulkan-convention light matrix for sampling.
@@ -491,9 +482,16 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     var sum: f32 = 0.0;
     let zref = depth - bias;
     for (var i = 0; i < 9; i = i + 1) {
-        let x = f32(i % 3) - 1.0;
-        let y = f32(i / 3) - 1.0;
-        let s = uv + vec2f(x, y) * texel;
+        var s: vec2f;
+        if (i == 0) { s = uv + vec2f(-0.5, -0.5) * texel; }
+        else if (i == 1) { s = uv + vec2f(0.0, -0.6) * texel; }
+        else if (i == 2) { s = uv + vec2f(0.5, -0.5) * texel; }
+        else if (i == 3) { s = uv + vec2f(-0.6, 0.0) * texel; }
+        else if (i == 4) { s = uv; }
+        else if (i == 5) { s = uv + vec2f(0.6, 0.0) * texel; }
+        else if (i == 6) { s = uv + vec2f(-0.5, 0.5) * texel; }
+        else if (i == 7) { s = uv + vec2f(0.0, 0.6) * texel; }
+        else { s = uv + vec2f(0.5, 0.5) * texel; }
         if (s.x >= 0.0 && s.x <= 1.0 && s.y >= 0.0 && s.y <= 1.0) {
             sum += textureSampleCompareLevel(shadowMap, shadowSamp, s, cascade, zref);
         }
@@ -522,7 +520,7 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
     else if (cascade == 1) { tw = shadow.cascadeTexel.y; }
     else { tw = shadow.cascadeTexel.z; }
     let p = worldPos + n * ((2.0 * max(tw, 1e-6)) / max(ndl, 0.2));
-    var vis: f32 = 1.0;
+    var vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl));
 
     var hi: f32;
     var lo: f32;
@@ -536,7 +534,6 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
         hi = shadow.splits.z;
         lo = shadow.splits.y;
     }
-    vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl));
     let band = max(0.5, (hi - lo) * 0.1);
     let toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
     let toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
@@ -633,100 +630,14 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let wrap = max(dot(n, primaryL) * 0.5 + 0.5, 0.0);
     color += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic);
     let envIntensity = ubo.lightColor.w;
-    let edge0 = ubo.reflectionProbeExtent[0].xyz -
-                abs(in.vWorldPos - ubo.reflectionProbeCenter[0].xyz);
-    let edge1 = ubo.reflectionProbeExtent[1].xyz -
-                abs(in.vWorldPos - ubo.reflectionProbeCenter[1].xyz);
-    var probeWeight0 = select(0.0,
-        clamp(min(edge0.x, min(edge0.y, edge0.z)) /
-              max(ubo.reflectionProbeExtent[0].w, 0.0001), 0.0, 1.0),
-        min(edge0.x, min(edge0.y, edge0.z)) > 0.0 && ubo.reflectionProbeCenter[0].w > 0.0);
-    var probeWeight1 = select(0.0,
-        clamp(min(edge1.x, min(edge1.y, edge1.z)) /
-              max(ubo.reflectionProbeExtent[1].w, 0.0001), 0.0, 1.0),
-        min(edge1.x, min(edge1.y, edge1.z)) > 0.0 && ubo.reflectionProbeCenter[1].w > 0.0);
-    var probeWeightSum = probeWeight0 + probeWeight1;
-    if (probeWeightSum > 1.0) {
-        probeWeight0 /= probeWeightSum;
-        probeWeight1 /= probeWeightSum;
-        probeWeightSum = 1.0;
-    }
-    let globalWeight = 1.0 - probeWeightSum;
-    if (envIntensity * globalWeight + probeWeight0 + probeWeight1 > 1e-4) {
-        var r = reflect(-v, n);
-        let probeExtent = ubo.envProbeExtent.xyz;
-        let probeLocal = in.vWorldPos - ubo.envProbeCenter.xyz;
-        if (min(probeExtent.x, min(probeExtent.y, probeExtent.z)) > 0.0001 &&
-            all(abs(probeLocal) <= probeExtent)) {
-            let safeR = select(vec3f(0.00001), r, abs(r) > vec3f(0.00001));
-            let t0 = (ubo.envProbeCenter.xyz - probeExtent - in.vWorldPos) / safeR;
-            let t1 = (ubo.envProbeCenter.xyz + probeExtent - in.vWorldPos) / safeR;
-            let exitT = max(t0, t1);
-            let distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
-            if (distanceToBox > 0.0) {
-                let projected = in.vWorldPos + r * distanceToBox - ubo.envProbeCenter.xyz;
-                let minExtent = min(probeExtent.x, min(probeExtent.y, probeExtent.z));
-                let edgeDistance = probeExtent - abs(probeLocal);
-                let influence = smoothstep(0.0, max(minExtent * 0.1, 0.01),
-                    min(edgeDistance.x, min(edgeDistance.y, edgeDistance.z)));
-                r = normalize(mix(normalize(r), normalize(projected), influence));
-            }
-        }
-        let maxLod = f32(max(i32(textureNumLevels(envSampler)) - 1, 0));
-        let specMaxLod = select(maxLod, maxLod - 1.0, maxLod >= 2.0);
-        var envSpec = textureSampleLevel(envSampler, mainSamp, r, rough * specMaxLod).rgb *
-                      envIntensity * globalWeight;
-        var envDiffuse = textureSampleLevel(envSampler, mainSamp, n, maxLod).rgb *
-                         envIntensity * globalWeight;
-        // @lifetime Shader math below does not declare host pointers.
-        if (probeWeight0 > 0.0) {
-            let center = ubo.reflectionProbeCenter[0].xyz;
-            let extent = ubo.reflectionProbeExtent[0].xyz;
-            let rawR = reflect(-v, n);
-            let safeR = select(vec3f(0.00001), rawR, abs(rawR) > vec3f(0.00001));
-            let exitT = max((center - extent - in.vWorldPos) / safeR,
-                            (center + extent - in.vWorldPos) / safeR);
-            let distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
-            let probeR = select(normalize(rawR),
-                normalize(in.vWorldPos + rawR * distanceToBox - center), distanceToBox > 0.0);
-            let probeLod = f32(max(i32(textureNumLevels(reflectionProbe0)) - 1, 0));
-            envSpec += textureSampleLevel(reflectionProbe0, mainSamp, probeR,
-                rough * max(probeLod - 1.0, 0.0)).rgb *
-                ubo.reflectionProbeCenter[0].w * probeWeight0;
-            envDiffuse += textureSampleLevel(reflectionProbe0, mainSamp, n, probeLod).rgb *
-                ubo.reflectionProbeCenter[0].w * probeWeight0;
-        }
-        // @lifetime Shader math below does not declare host pointers.
-        if (probeWeight1 > 0.0) {
-            let center = ubo.reflectionProbeCenter[1].xyz;
-            let extent = ubo.reflectionProbeExtent[1].xyz;
-            let rawR = reflect(-v, n);
-            let safeR = select(vec3f(0.00001), rawR, abs(rawR) > vec3f(0.00001));
-            let exitT = max((center - extent - in.vWorldPos) / safeR,
-                            (center + extent - in.vWorldPos) / safeR);
-            let distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
-            let probeR = select(normalize(rawR),
-                normalize(in.vWorldPos + rawR * distanceToBox - center), distanceToBox > 0.0);
-            let probeLod = f32(max(i32(textureNumLevels(reflectionProbe1)) - 1, 0));
-            envSpec += textureSampleLevel(reflectionProbe1, mainSamp, probeR,
-                rough * max(probeLod - 1.0, 0.0)).rgb *
-                ubo.reflectionProbeCenter[1].w * probeWeight1;
-            envDiffuse += textureSampleLevel(reflectionProbe1, mainSamp, n, probeLod).rgb *
-                ubo.reflectionProbeCenter[1].w * probeWeight1;
-        }
+    if (envIntensity > 1e-4) {
+        let r = reflect(-v, n);
+        let envSpec = textureSampleLevel(envSampler, mainSamp, r, rough * 5.0).rgb * envIntensity;
         let f0 = mix(vec3f(0.04), albedo, metallic);
-        let noV = max(dot(n, v), 0.0);
-        let brdf = rough * vec4f(-1.0, -0.0275, -0.572, 0.022) +
-                   vec4f(1.0, 0.0425, 1.04, -0.04);
-        let a004 = min(brdf.x * brdf.x, exp2(-9.28 * noV)) * brdf.x + brdf.y;
-        let dfg = vec2f(-1.04, 1.04) * a004 + brdf.zw;
-        let specWeight = max(f0 * dfg.x + dfg.y, vec3f(0.0));
-        let directionalAlbedo = max(dfg.x + dfg.y, 0.001);
-        let multiScatter = vec3f(1.0) + f0 * (min(1.0 / directionalAlbedo, 8.0) - 1.0);
-        let horizon = clamp(1.0 + dot(reflect(-v, n), normalize(in.vNormal)), 0.0, 1.0);
-        color += envSpec * specWeight * multiScatter * (horizon * horizon);
-        let f = fresnelSchlick(noV, f0);
-        color += albedo * envDiffuse * (1.0 - metallic) * (1.0 - f) * 0.45;
+        let f = fresnelSchlick(max(dot(n, v), 0.0), f0);
+        color += envSpec * f;
+        let irr2 = textureSampleLevel(envSampler, mainSamp, n, 5.0).rgb * envIntensity;
+        color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
     }
     // Screen-space ambient occlusion (G-buffer SSAO pass output; strength in
     // texBomb.w is 0 when AO is disabled via RenderControl, which also keeps
@@ -737,9 +648,17 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let aoUV = (in.fragCoord.xy * 0.5) / vec2f(textureDimensions(aoTex));
     let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
     color *= mix(1.0, ao, clamp(ubo.surface.z, 0.0, 1.0));
-    color = max(color, vec3f(0.0));
+    // Match the Vulkan tonemap.glsl: keep values below `white` linear so dim
+    // scenes stay readable, compress only the HDR remainder into (white, 1].
+    let white = 0.85;
+    let over = max(color - vec3f(white), vec3f(0.0));
+    color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
     color += emissive;
-    let outputAlpha = select(1.0, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
+    let nearZ = max(ubo.clipInfo.x, 1e-4);
+    let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
+    let viewZ = max(-in.vViewPos.z, 0.0);
+    let linearDepth = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
+    let outputAlpha = select(linearDepth, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
     return vec4f(color, outputAlpha);
 }
 )wgsl";
@@ -828,10 +747,6 @@ struct Frame {
     texBomb: vec4f,
     parallax: vec4f,
     surface: vec4f,
-    envProbeCenter: vec4f,
-    envProbeExtent: vec4f,
-    reflectionProbeCenter: array<vec4f, 2>,
-    reflectionProbeExtent: array<vec4f, 2>,
 };
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
@@ -867,8 +782,6 @@ struct FSIn {
 @group(0) @binding(15) var decalAlbedoLayer: texture_2d<f32>;
 @group(0) @binding(16) var decalNormalLayer: texture_2d<f32>;
 @group(0) @binding(17) var decalParamsLayer: texture_2d<f32>;
-@group(0) @binding(18) var reflectionProbe0: texture_cube<f32>;
-@group(0) @binding(19) var reflectionProbe1: texture_cube<f32>;
 
 const PI: f32 = 3.14159265359;
 
@@ -916,9 +829,16 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     var sum: f32 = 0.0;
     let zref = depth - bias;
     for (var i = 0; i < 9; i = i + 1) {
-        let x = f32(i % 3) - 1.0;
-        let y = f32(i / 3) - 1.0;
-        let s = uv + vec2f(x, y) * texel;
+        var s: vec2f;
+        if (i == 0) { s = uv + vec2f(-0.5, -0.5) * texel; }
+        else if (i == 1) { s = uv + vec2f(0.0, -0.6) * texel; }
+        else if (i == 2) { s = uv + vec2f(0.5, -0.5) * texel; }
+        else if (i == 3) { s = uv + vec2f(-0.6, 0.0) * texel; }
+        else if (i == 4) { s = uv; }
+        else if (i == 5) { s = uv + vec2f(0.6, 0.0) * texel; }
+        else if (i == 6) { s = uv + vec2f(-0.5, 0.5) * texel; }
+        else if (i == 7) { s = uv + vec2f(0.0, 0.6) * texel; }
+        else { s = uv + vec2f(0.5, 0.5) * texel; }
         if (s.x >= 0.0 && s.x <= 1.0 && s.y >= 0.0 && s.y <= 1.0) {
             sum += textureSampleCompareLevel(shadowMap, shadowSamp, s, cascade, zref);
         }
@@ -947,7 +867,7 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
     else if (cascade == 1) { tw = shadow.cascadeTexel.y; }
     else { tw = shadow.cascadeTexel.z; }
     let p = worldPos + n * ((2.0 * max(tw, 1e-6)) / max(ndl, 0.2));
-    var vis: f32 = 1.0;
+    var vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl));
 
     var hi: f32;
     var lo: f32;
@@ -961,7 +881,6 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
         hi = shadow.splits.z;
         lo = shadow.splits.y;
     }
-    vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl));
     let band = max(0.5, (hi - lo) * 0.1);
     let toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
     let toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
@@ -1054,106 +973,26 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let irr = mix(gndIrr, skyIrr, hemi);
     var color = albedo * irr * (1.0 - metallic) + lo + emissive;
     let envIntensity = ubo.lightColor.w;
-    let edge0 = ubo.reflectionProbeExtent[0].xyz -
-                abs(in.vWorldPos - ubo.reflectionProbeCenter[0].xyz);
-    let edge1 = ubo.reflectionProbeExtent[1].xyz -
-                abs(in.vWorldPos - ubo.reflectionProbeCenter[1].xyz);
-    var probeWeight0 = select(0.0,
-        clamp(min(edge0.x, min(edge0.y, edge0.z)) /
-              max(ubo.reflectionProbeExtent[0].w, 0.0001), 0.0, 1.0),
-        min(edge0.x, min(edge0.y, edge0.z)) > 0.0 && ubo.reflectionProbeCenter[0].w > 0.0);
-    var probeWeight1 = select(0.0,
-        clamp(min(edge1.x, min(edge1.y, edge1.z)) /
-              max(ubo.reflectionProbeExtent[1].w, 0.0001), 0.0, 1.0),
-        min(edge1.x, min(edge1.y, edge1.z)) > 0.0 && ubo.reflectionProbeCenter[1].w > 0.0);
-    var probeWeightSum = probeWeight0 + probeWeight1;
-    if (probeWeightSum > 1.0) {
-        probeWeight0 /= probeWeightSum;
-        probeWeight1 /= probeWeightSum;
-        probeWeightSum = 1.0;
-    }
-    let globalWeight = 1.0 - probeWeightSum;
-    if (envIntensity * globalWeight + probeWeight0 + probeWeight1 > 1e-4) {
-        var r = reflect(-v, n);
-        let probeExtent = ubo.envProbeExtent.xyz;
-        let probeLocal = in.vWorldPos - ubo.envProbeCenter.xyz;
-        if (min(probeExtent.x, min(probeExtent.y, probeExtent.z)) > 0.0001 &&
-            all(abs(probeLocal) <= probeExtent)) {
-            let safeR = select(vec3f(0.00001), r, abs(r) > vec3f(0.00001));
-            let t0 = (ubo.envProbeCenter.xyz - probeExtent - in.vWorldPos) / safeR;
-            let t1 = (ubo.envProbeCenter.xyz + probeExtent - in.vWorldPos) / safeR;
-            let exitT = max(t0, t1);
-            let distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
-            if (distanceToBox > 0.0) {
-                let projected = in.vWorldPos + r * distanceToBox - ubo.envProbeCenter.xyz;
-                let minExtent = min(probeExtent.x, min(probeExtent.y, probeExtent.z));
-                let edgeDistance = probeExtent - abs(probeLocal);
-                let influence = smoothstep(0.0, max(minExtent * 0.1, 0.01),
-                    min(edgeDistance.x, min(edgeDistance.y, edgeDistance.z)));
-                r = normalize(mix(normalize(r), normalize(projected), influence));
-            }
-        }
-        let maxLod = f32(max(i32(textureNumLevels(envSampler)) - 1, 0));
-        let specMaxLod = select(maxLod, maxLod - 1.0, maxLod >= 2.0);
-        var envSpec = textureSampleLevel(envSampler, mainSamp, r, rough * specMaxLod).rgb *
-                      envIntensity * globalWeight;
-        var envDiffuse = textureSampleLevel(envSampler, mainSamp, n, maxLod).rgb *
-                         envIntensity * globalWeight;
-        // @lifetime Shader math below does not declare host pointers.
-        if (probeWeight0 > 0.0) {
-            let center = ubo.reflectionProbeCenter[0].xyz;
-            let extent = ubo.reflectionProbeExtent[0].xyz;
-            let rawR = reflect(-v, n);
-            let safeR = select(vec3f(0.00001), rawR, abs(rawR) > vec3f(0.00001));
-            let exitT = max((center - extent - in.vWorldPos) / safeR,
-                            (center + extent - in.vWorldPos) / safeR);
-            let distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
-            let probeR = select(normalize(rawR),
-                normalize(in.vWorldPos + rawR * distanceToBox - center), distanceToBox > 0.0);
-            let probeLod = f32(max(i32(textureNumLevels(reflectionProbe0)) - 1, 0));
-            envSpec += textureSampleLevel(reflectionProbe0, mainSamp, probeR,
-                rough * max(probeLod - 1.0, 0.0)).rgb *
-                ubo.reflectionProbeCenter[0].w * probeWeight0;
-            envDiffuse += textureSampleLevel(reflectionProbe0, mainSamp, n, probeLod).rgb *
-                ubo.reflectionProbeCenter[0].w * probeWeight0;
-        }
-        // @lifetime Shader math below does not declare host pointers.
-        if (probeWeight1 > 0.0) {
-            let center = ubo.reflectionProbeCenter[1].xyz;
-            let extent = ubo.reflectionProbeExtent[1].xyz;
-            let rawR = reflect(-v, n);
-            let safeR = select(vec3f(0.00001), rawR, abs(rawR) > vec3f(0.00001));
-            let exitT = max((center - extent - in.vWorldPos) / safeR,
-                            (center + extent - in.vWorldPos) / safeR);
-            let distanceToBox = min(exitT.x, min(exitT.y, exitT.z));
-            let probeR = select(normalize(rawR),
-                normalize(in.vWorldPos + rawR * distanceToBox - center), distanceToBox > 0.0);
-            let probeLod = f32(max(i32(textureNumLevels(reflectionProbe1)) - 1, 0));
-            envSpec += textureSampleLevel(reflectionProbe1, mainSamp, probeR,
-                rough * max(probeLod - 1.0, 0.0)).rgb *
-                ubo.reflectionProbeCenter[1].w * probeWeight1;
-            envDiffuse += textureSampleLevel(reflectionProbe1, mainSamp, n, probeLod).rgb *
-                ubo.reflectionProbeCenter[1].w * probeWeight1;
-        }
+    if (envIntensity > 1e-4) {
+        let r = reflect(-v, n);
+        let envSpec = textureSampleLevel(envSampler, mainSamp, r, rough * 5.0).rgb * envIntensity;
         let f0 = mix(vec3f(0.04), albedo, metallic);
-        let noV = max(dot(n, v), 0.0);
-        let brdf = rough * vec4f(-1.0, -0.0275, -0.572, 0.022) +
-                   vec4f(1.0, 0.0425, 1.04, -0.04);
-        let a004 = min(brdf.x * brdf.x, exp2(-9.28 * noV)) * brdf.x + brdf.y;
-        let dfg = vec2f(-1.04, 1.04) * a004 + brdf.zw;
-        let specWeight = max(f0 * dfg.x + dfg.y, vec3f(0.0));
-        let directionalAlbedo = max(dfg.x + dfg.y, 0.001);
-        let multiScatter = vec3f(1.0) + f0 * (min(1.0 / directionalAlbedo, 8.0) - 1.0);
-        let horizon = clamp(1.0 + dot(reflect(-v, n), normalize(in.vNormal)), 0.0, 1.0);
-        color += envSpec * specWeight * multiScatter * (horizon * horizon);
-        let f = fresnelSchlick(noV, f0);
-        color += albedo * envDiffuse * (1.0 - metallic) * (1.0 - f) * 0.45;
+        let f = fresnelSchlick(max(dot(n, v), 0.0), f0);
+        color += envSpec * f;
+        let irr2 = textureSampleLevel(envSampler, mainSamp, n, 5.0).rgb * envIntensity;
+        color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
     }
     let aoUV = (in.fragCoord.xy * 0.5) / vec2f(textureDimensions(aoTex));
     let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
     color *= mix(1.0, ao, clamp(ubo.surface.z, 0.0, 1.0));
-    color = max(color, vec3f(0.0));
-    return vec4f(color, 1.0);
+    let white = 0.85;
+    let over = max(color - vec3f(white), vec3f(0.0));
+    color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
+    let nearZ = max(ubo.clipInfo.x, 1e-4);
+    let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
+    let viewZ = max(-in.vViewPos.z, 0.0);
+    let linearDepth = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
+    return vec4f(color, linearDepth);
 }
 )wgsl";
 
