@@ -477,32 +477,8 @@ fn cloudShadowFactor(worldPos: vec3f) -> f32 {
     let covered = mix(c, c * d, ubo.cloudWind.w);
     return 1.0 - clamp(covered, 0.0, 1.0) * clamp(ubo.cloud.x, 0.0, 1.0);
 }
-fn blockerPenumbra(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
+fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
-    let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
-    let uv = vec2f(ndc.x, -ndc.y) * 0.5 + 0.5;
-    if (any(uv < vec2f(0.0)) || any(uv > vec2f(1.0))) { return 0.5; }
-    let dims = textureDimensions(shadowMap);
-    let base = vec2i(clamp(floor(uv * vec2f(dims)), vec2f(0.0), vec2f(dims) - 1.0));
-    let offsets = array<vec2i, 8>(vec2i(-2, -2), vec2i(0, -3), vec2i(2, -2),
-        vec2i(-3, 0), vec2i(3, 0), vec2i(-2, 2), vec2i(0, 3), vec2i(2, 2));
-    let receiver = ndc.z - bias;
-    var blockerSum = 0.0;
-    var blockerCount = 0.0;
-    for (var i = 0; i < 8; i++) {
-        let pixel = clamp(base + offsets[i], vec2i(0), vec2i(dims) - 1);
-        let blocker = textureLoad(shadowMap, pixel, cascade, 0);
-        if (blocker < receiver) {
-            blockerSum += blocker;
-            blockerCount += 1.0;
-        }
-    }
-    if (blockerCount < 0.5) { return 0.5; }
-    let separation = max(receiver - blockerSum / blockerCount, 0.0);
-    return clamp(0.5 + separation * f32(dims.x) * max(shadow.bias.w, 0.0), 0.5, 4.0);
-}
-
-fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32, filterRadius: f32) -> f32 {    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
     // Shadow-map vertices mirror clip Y for WebGPU. Undo that mirror when
     // projecting the shared Vulkan-convention light matrix for sampling.
@@ -512,18 +488,12 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32, filterRadius: f
         return 1.0;
     }
     let texel = 1.0 / vec2f(textureDimensions(shadowMap));
-    var worldTexel: f32;
-    if (cascade == 0) { worldTexel = shadow.cascadeTexel.x; }
-    else if (cascade == 1) { worldTexel = shadow.cascadeTexel.y; }
-    else { worldTexel = shadow.cascadeTexel.z; }
-    let cell = floor(worldPos.xz / max(worldTexel * 4.0, 1e-4));
-    let angle = fract(sin(dot(cell, vec2f(12.9898, 78.233))) * 43758.5453) * 6.2831853;
-    let rotation = mat2x2f(cos(angle), sin(angle), -sin(angle), cos(angle));
-    let poisson = array<vec2f, 9>(vec2f(0), vec2f(-0.326, -0.406), vec2f(-0.840, -0.074), vec2f(-0.696, 0.457), vec2f(-0.203, 0.621), vec2f(0.473, -0.480), vec2f(0.519, 0.767), vec2f(0.185, -0.893), vec2f(0.896, 0.262));
     var sum: f32 = 0.0;
     let zref = depth - bias;
     for (var i = 0; i < 9; i = i + 1) {
-        let s = uv + rotation * poisson[i] * texel * filterRadius;
+        let x = f32(i % 3) - 1.0;
+        let y = f32(i / 3) - 1.0;
+        let s = uv + vec2f(x, y) * texel;
         if (s.x >= 0.0 && s.x <= 1.0 && s.y >= 0.0 && s.y <= 1.0) {
             sum += textureSampleCompareLevel(shadowMap, shadowSamp, s, cascade, zref);
         }
@@ -566,19 +536,16 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
         hi = shadow.splits.z;
         lo = shadow.splits.y;
     }
-    let cascadeT = clamp((viewDepth - lo) / max(hi - lo, 1e-3), 0.0, 1.0);
-    let filterRadius = max(mix(0.5, 2.0, cascadeT),
-        blockerPenumbra(p, cascade, slopeScaledBias(cascade, ndl)));
-    vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl), filterRadius);
+    vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl));
     let band = max(0.5, (hi - lo) * 0.1);
     let toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
     let toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
     if (toPrev > 0.0 && cascade > 0) {
-        let previous = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, ndl), filterRadius);
+        let previous = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, ndl));
         vis = mix(vis, previous, toPrev);
     }
     if (toNext > 0.0 && cascade < 2) {
-        let next = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, ndl), filterRadius);
+        let next = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, ndl));
         vis = mix(vis, next, toNext);
     }
     vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
@@ -935,32 +902,7 @@ fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: v
     let kd = (vec3f(1.0) - f) * (1.0 - metallic);
     return (kd * albedo * diffuse + spec * ndl) * rad;
 }
-fn blockerPenumbra(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
-    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
-    let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
-    let uv = vec2f(ndc.x, -ndc.y) * 0.5 + 0.5;
-    if (any(uv < vec2f(0.0)) || any(uv > vec2f(1.0))) { return 0.5; }
-    let dims = textureDimensions(shadowMap);
-    let base = vec2i(clamp(floor(uv * vec2f(dims)), vec2f(0.0), vec2f(dims) - 1.0));
-    let offsets = array<vec2i, 8>(vec2i(-2, -2), vec2i(0, -3), vec2i(2, -2),
-        vec2i(-3, 0), vec2i(3, 0), vec2i(-2, 2), vec2i(0, 3), vec2i(2, 2));
-    let receiver = ndc.z - bias;
-    var blockerSum = 0.0;
-    var blockerCount = 0.0;
-    for (var i = 0; i < 8; i++) {
-        let pixel = clamp(base + offsets[i], vec2i(0), vec2i(dims) - 1);
-        let blocker = textureLoad(shadowMap, pixel, cascade, 0);
-        if (blocker < receiver) {
-            blockerSum += blocker;
-            blockerCount += 1.0;
-        }
-    }
-    if (blockerCount < 0.5) { return 0.5; }
-    let separation = max(receiver - blockerSum / blockerCount, 0.0);
-    return clamp(0.5 + separation * f32(dims.x) * max(shadow.bias.w, 0.0), 0.5, 4.0);
-}
-
-fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32, filterRadius: f32) -> f32 {
+fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
     // Shadow-map vertices mirror clip Y for WebGPU. Undo that mirror when
@@ -971,18 +913,12 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32, filterRadius: f
         return 1.0;
     }
     let texel = 1.0 / vec2f(textureDimensions(shadowMap));
-    var worldTexel: f32;
-    if (cascade == 0) { worldTexel = shadow.cascadeTexel.x; }
-    else if (cascade == 1) { worldTexel = shadow.cascadeTexel.y; }
-    else { worldTexel = shadow.cascadeTexel.z; }
-    let cell = floor(worldPos.xz / max(worldTexel * 4.0, 1e-4));
-    let angle = fract(sin(dot(cell, vec2f(12.9898, 78.233))) * 43758.5453) * 6.2831853;
-    let rotation = mat2x2f(cos(angle), sin(angle), -sin(angle), cos(angle));
-    let poisson = array<vec2f, 9>(vec2f(0), vec2f(-0.326, -0.406), vec2f(-0.840, -0.074), vec2f(-0.696, 0.457), vec2f(-0.203, 0.621), vec2f(0.473, -0.480), vec2f(0.519, 0.767), vec2f(0.185, -0.893), vec2f(0.896, 0.262));
     var sum: f32 = 0.0;
     let zref = depth - bias;
     for (var i = 0; i < 9; i = i + 1) {
-        let s = uv + rotation * poisson[i] * texel * filterRadius;
+        let x = f32(i % 3) - 1.0;
+        let y = f32(i / 3) - 1.0;
+        let s = uv + vec2f(x, y) * texel;
         if (s.x >= 0.0 && s.x <= 1.0 && s.y >= 0.0 && s.y <= 1.0) {
             sum += textureSampleCompareLevel(shadowMap, shadowSamp, s, cascade, zref);
         }
@@ -1025,19 +961,16 @@ fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
         hi = shadow.splits.z;
         lo = shadow.splits.y;
     }
-    let cascadeT = clamp((viewDepth - lo) / max(hi - lo, 1e-3), 0.0, 1.0);
-    let filterRadius = max(mix(0.5, 2.0, cascadeT),
-        blockerPenumbra(p, cascade, slopeScaledBias(cascade, ndl)));
-    vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl), filterRadius);
+    vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, ndl));
     let band = max(0.5, (hi - lo) * 0.1);
     let toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
     let toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
     if (toPrev > 0.0 && cascade > 0) {
-        let previous = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, ndl), filterRadius);
+        let previous = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, ndl));
         vis = mix(vis, previous, toPrev);
     }
     if (toNext > 0.0 && cascade < 2) {
-        let next = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, ndl), filterRadius);
+        let next = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, ndl));
         vis = mix(vis, next, toNext);
     }
     vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
