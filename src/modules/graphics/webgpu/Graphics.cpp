@@ -1040,6 +1040,43 @@ void Graphics::create2DPipelines() {
                                              WGPUTextureFormat_RGBA8Unorm, true);
 }
 
+wgpu::RenderPipeline Graphics::get2DColorPipeline(BlendMode blend, bool offscreen) {
+    switch (blend) {
+        case BlendMode::Additive:
+            return offscreen ? offscreenColorAdditivePipeline : colorAdditivePipeline;
+        case BlendMode::Premultiplied:
+            return offscreen ? offscreenColorPremultipliedPipeline : colorPremultipliedPipeline;
+        case BlendMode::Multiply:
+            return offscreen ? offscreenColorMultiplyPipeline : colorMultiplyPipeline;
+        case BlendMode::Opaque:
+            return offscreen ? offscreenColorOpaquePipeline : colorOpaquePipeline;
+        case BlendMode::Alpha:
+        default:
+            return offscreen ? offscreenColorPipeline : colorPipeline;
+    }
+}
+
+wgpu::RenderPipeline Graphics::get2DTexturedPipeline(BlendMode blend, bool offscreen) {
+    switch (blend) {
+        case BlendMode::Additive:
+            return offscreen ? offscreenTexturedAdditivePipeline : texturedAdditivePipeline;
+        case BlendMode::Premultiplied:
+            return offscreen ? offscreenTexturedPremultipliedPipeline
+                             : texturedPremultipliedPipeline;
+        case BlendMode::Multiply:
+            return offscreen ? offscreenTexturedMultiplyPipeline : texturedMultiplyPipeline;
+        case BlendMode::Opaque:
+            return offscreen ? offscreenTexturedOpaquePipeline : texturedOpaquePipeline;
+        case BlendMode::Alpha:
+        default:
+            return offscreen ? offscreenTexturedPipeline : texturedPipeline;
+    }
+}
+
+wgpu::RenderPipeline Graphics::get2DLitPipeline(bool offscreen) {
+    return offscreen ? offscreenLitPipeline : lit2dPipeline;
+}
+
 void Graphics::createMesh3DPipelines() {
     mesh3dSetLayout = makeMesh3DBindGroupLayout();
     // Bind groups reference the layout; drop cached groups when it changes.
