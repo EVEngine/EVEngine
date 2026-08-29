@@ -438,7 +438,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: READ_ONLY
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -583,7 +583,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: READ_ONLY
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -743,7 +743,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: READ_ONLY
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -1077,7 +1077,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: READ_ONLY
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
