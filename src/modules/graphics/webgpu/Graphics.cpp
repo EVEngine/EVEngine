@@ -427,7 +427,7 @@ void Graphics::createPipelineResources() {
 // ---------------------------------------------------------------------------
 
 wgpu::BindGroupLayout Graphics::make2DBindGroupLayout() {
-    WGPUBindGroupLayoutEntry entries[11]{};
+    BindGroupLayoutBuilder b;
     // 0: color texture
     b.texture(0, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
               wgpu::TextureViewDimension::e2D);
@@ -440,43 +440,23 @@ wgpu::BindGroupLayout Graphics::make2DBindGroupLayout() {
     b.sampler(3, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
     // 4: Externals UBO (push-constant replacement, dynamic offset). Sized for
     //    the largest consumer: custom 2D shaders (128 B) and lit2D (Lighting2DUBO).
-    entries[4].binding = 4;
-    entries[4].visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
-    entries[4].buffer.type = WGPUBufferBindingType_Uniform;
-    entries[4].buffer.hasDynamicOffset = true;
-    entries[4].buffer.minBindingSize =
-        std::max<uint32_t>(Shader::kPushConstantBytes, uint32_t(sizeof(Lighting2DUBO)));
-    entries[5].binding = 5;
-    entries[5].visibility = WGPUShaderStage_Fragment;
-    entries[5].texture.sampleType = WGPUTextureSampleType_Float;
-    entries[5].texture.viewDimension = WGPUTextureViewDimension_2D;
-    entries[6].binding = 6;
-    entries[6].visibility = WGPUShaderStage_Fragment;
-    entries[6].sampler.type = WGPUSamplerBindingType_Filtering;
-    entries[7].binding = 7;
-    entries[7].visibility = WGPUShaderStage_Fragment;
-    entries[7].texture.sampleType = WGPUTextureSampleType_Float;
-    entries[7].texture.viewDimension = WGPUTextureViewDimension_2D;
-    entries[8].binding = 8;
-    entries[8].visibility = WGPUShaderStage_Fragment;
-    entries[8].sampler.type = WGPUSamplerBindingType_Filtering;
-    entries[9].binding = 9;
-    entries[9].visibility = WGPUShaderStage_Fragment;
-    entries[9].texture.sampleType = WGPUTextureSampleType_Float;
-    entries[9].texture.viewDimension = WGPUTextureViewDimension_2D;
-    entries[10].binding = 10;
-    entries[10].visibility = WGPUShaderStage_Fragment;
-    entries[10].sampler.type = WGPUSamplerBindingType_Filtering;
-
-    WGPUBindGroupLayoutDescriptor desc{};
-    desc.label = sv("eve_2d");
-    desc.entryCount = 11;
-    desc.entries = entries;
-    return device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&desc));
+    b.buffer(4, wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment,
+             wgpu::BufferBindingType::Uniform, true,
+             std::max<uint32_t>(Shader::kPushConstantBytes, uint32_t(sizeof(Lighting2DUBO))));
+    b.texture(5, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::e2D);
+    b.sampler(6, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    b.texture(7, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::e2D);
+    b.sampler(8, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    b.texture(9, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::e2D);
+    b.sampler(10, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    return b.build(device, "eve_2d");
 }
 
 wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
-    WGPUBindGroupLayoutEntry entries[18]{};
+    BindGroupLayoutBuilder b;
     // 0: Frame UBO (dynamic)
     b.buffer(0, wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment,
              wgpu::BufferBindingType::Uniform, true, sizeof(Mesh3DUBO));
@@ -515,27 +495,15 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
         b.texture(i, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
                   wgpu::TextureViewDimension::e2D);
     }
-    entries[15].binding = 15;
     // Custom mesh shaders may use their external parameters for vertex
     // deformation as well as fragment shading (for example grass billboards).
-    entries[15].visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
-    entries[15].buffer.type = WGPUBufferBindingType_Uniform;
-    entries[15].buffer.hasDynamicOffset = true;
-    entries[15].buffer.minBindingSize = Shader::kPushConstantBytes;
-
-    WGPUBindGroupLayoutDescriptor desc{};
-    desc.label = sv("eve_mesh3d");
-    entries[16].binding = 16;
-    entries[16].visibility = WGPUShaderStage_Fragment;
-    entries[16].texture.sampleType = WGPUTextureSampleType_Float;
-    entries[16].texture.viewDimension = WGPUTextureViewDimension_Cube;
-    entries[17].binding = 17;
-    entries[17].visibility = WGPUShaderStage_Fragment;
-    entries[17].texture.sampleType = WGPUTextureSampleType_Float;
-    entries[17].texture.viewDimension = WGPUTextureViewDimension_Cube;
-    desc.entryCount = 18;
-    desc.entries = entries;
-    return device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&desc));
+    b.buffer(15, wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment,
+             wgpu::BufferBindingType::Uniform, true, Shader::kPushConstantBytes);
+    b.texture(16, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::Cube);
+    b.texture(17, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::Cube);
+    return b.build(device, "eve_mesh3d");
 }
 
 wgpu::BindGroupLayout Graphics::makeShadowBindGroupLayout() {
@@ -605,7 +573,7 @@ wgpu::PipelineLayout Graphics::makeMesh3DPipelineLayout() {
 }
 
 wgpu::BindGroupLayout Graphics::makeMesh3DClusteredBindGroupLayout() {
-    WGPUBindGroupLayoutEntry entries[20]{};
+    BindGroupLayoutBuilder b;
     // 0: Frame UBO (dynamic; clustered layout)
     b.buffer(0, wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment,
              wgpu::BufferBindingType::Uniform, true, sizeof(Mesh3DClusteredUBO));
@@ -650,19 +618,11 @@ wgpu::BindGroupLayout Graphics::makeMesh3DClusteredBindGroupLayout() {
                   wgpu::TextureViewDimension::e2D);
     }
 
-    WGPUBindGroupLayoutDescriptor desc{};
-    desc.label = sv("eve_mesh3d_clustered");
-    entries[18].binding = 18;
-    entries[18].visibility = WGPUShaderStage_Fragment;
-    entries[18].texture.sampleType = WGPUTextureSampleType_Float;
-    entries[18].texture.viewDimension = WGPUTextureViewDimension_Cube;
-    entries[19].binding = 19;
-    entries[19].visibility = WGPUShaderStage_Fragment;
-    entries[19].texture.sampleType = WGPUTextureSampleType_Float;
-    entries[19].texture.viewDimension = WGPUTextureViewDimension_Cube;
-    desc.entryCount = 20;
-    desc.entries = entries;
-    return device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&desc));
+    b.texture(18, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::Cube);
+    b.texture(19, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+              wgpu::TextureViewDimension::Cube);
+    return b.build(device, "eve_mesh3d_clustered");
 }
 
 wgpu::PipelineLayout Graphics::makeMesh3DClusteredPipelineLayout() {
