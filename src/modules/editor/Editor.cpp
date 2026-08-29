@@ -4,7 +4,7 @@
 #include "common/EditorAutomation.h"
 #include "editor/ActionTimelineScriptBindings.h"
 #include "editor/Brush.h"
-#include "editor/EditorAuthoringService.h"
+#include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
@@ -20,6 +20,8 @@
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
 #include "editor/VolumeBrushTool.h"
+#include "material_editing/MaterialEditingCommands.h"
+#include "scene_editing/SceneEditingCommands.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
@@ -32,6 +34,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -408,19 +411,23 @@ void buildHeightmapArrays(const eve::procgen::Heightmap& hm, float cell, float h
 #endif
 
 Editor::Editor()
-    : authoring_(std::make_unique<EditorAuthoringService>(commandService_)),
-      automation_(std::make_unique<EditorAutomationProvider>(commandService_, *authoring_)) {
+    : targets_(std::make_unique<EditorTargetCoordinator>(commandService_)),
+      automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
+    const auto sceneCommands = eve::scene_editing::registerEditingCommands(*targets_);
+    const auto materialCommands = eve::material_editing::registerEditingCommands(*targets_);
+    if (!sceneCommands.accepted() || !materialCommands.accepted())
+        throw std::runtime_error("Failed to register built-in domain editing commands");
     eve::cap::provide<eve::IEditorAutomation>(automation_.get());
 }
 
 Editor::~Editor() { eve::cap::revoke<eve::IEditorAutomation>(automation_.get()); }
 
-EditorResult<void> Editor::registerAuthoringTarget(IEditableTargetV2& target) {
-    return authoring_->registerTarget(target);
+EditorResult<void> Editor::registerEditingTarget(IEditableTarget& target) {
+    return targets_->registerTarget(target);
 }
 
-EditorResult<void> Editor::unregisterAuthoringTarget(const TargetId& target) {
-    auto result = authoring_->unregisterTarget(target);
+EditorResult<void> Editor::unregisterEditingTarget(const TargetId& target) {
+    auto result = targets_->unregisterTarget(target);
     if (result.status == EditorStatus::Applied) automation_->targetUnregistered(target);
     return result;
 }

@@ -18,7 +18,7 @@ using editing::DomainOperation;
 using editing::EditRegion;
 using editing::IDomainOperationTarget;
 using editing::IDomainOperationTargetStaging;
-using editing::IEditableTargetV2;
+using editing::IEditableTarget;
 using editing::IPropertyProvider;
 using editing::PropertyDescriptor;
 using editing::PropertyFlag;
@@ -45,7 +45,7 @@ using EditorDiagnostic = editing::Diagnostic;
 using IPhysicsColliderAssetResolver = eve::physics_editing::IPhysicsColliderAssetResolver;
 
 /** @brief Serializable, backend-neutral 2D/3D collider authoring target. */
-class PhysicsColliderTarget final : public IEditableTargetV2,
+class PhysicsColliderTarget final : public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IDomainOperationTargetStaging,
                                     public IPropertyProvider {
@@ -124,7 +124,7 @@ private:
 };
 
 /** @brief Serializable joint authoring target using stable body references. */
-class PhysicsJointTarget final : public IEditableTargetV2,
+class PhysicsJointTarget final : public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {

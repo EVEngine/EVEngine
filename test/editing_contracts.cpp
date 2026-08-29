@@ -20,7 +20,6 @@
 #include "editor/EditorResult.h"
 #include "editor/EditorSelection.h"
 #include "editor/EditorTarget.h"
-#include "editor/EditorTargetV2.h"
 #include "editor/EditorValue.h"
 #include "physics_editing/PhysicsColliderAsset.h"
 #include "physics_editing/PhysicsTarget.h"
@@ -37,7 +36,6 @@ static_assert(std::is_same_v<eve::editor::CommandRequest, eve::editing::CommandR
 static_assert(std::is_same_v<eve::editor::TransactionReceipt, eve::editing::TransactionReceipt>);
 static_assert(std::is_same_v<eve::editor::SelectionSnapshot, eve::editing::SelectionSnapshot>);
 static_assert(std::is_same_v<eve::editor::IEditableTarget, eve::editing::IEditableTarget>);
-static_assert(std::is_same_v<eve::editor::IEditableTargetV2, eve::editing::IEditableTargetV2>);
 static_assert(std::is_same_v<eve::editor::IDomainOperationTarget, eve::editing::IDomainOperationTarget>);
 static_assert(
     std::is_same_v<eve::editor::IDomainOperationTargetStaging, eve::editing::IDomainOperationTargetStaging>);

@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <map>
 #include <string>
@@ -26,7 +26,7 @@ struct ProjectSettingsSchema {
 };
 
 /** @brief Schema-driven, reversible settings target with secret-reference enforcement. */
-class ProjectSettingsTarget final : public IEditableTargetV2,
+class ProjectSettingsTarget final : public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IPropertyProvider {
 public:

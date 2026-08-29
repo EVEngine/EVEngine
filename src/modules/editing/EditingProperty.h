@@ -117,6 +117,8 @@ enum class PropertySetMode { Absolute, Relative, Reset };
 class IPropertyProvider {
 public:
     virtual ~IPropertyProvider() = default;
+    /** @brief Stable capability identity for generic property editing. */
+    static CapabilityId editingCapabilityId() { return CapabilityId("eve.editor.target.material-properties"); }
     [[nodiscard]] virtual eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const {
         (void)selection;
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(

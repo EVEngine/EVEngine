@@ -2,6 +2,7 @@
 
 #include "common/Module.h"
 #include "editor/EditorCommandService.h"
+#include "editor/EditorTarget.h"
 
 #include <memory>
 #include <string>
@@ -62,8 +63,7 @@ class VolumeBrushTool;
 class VoxelWorldTarget;
 #endif
 class EditorAutomationProvider;
-class EditorAuthoringService;
-class IEditableTargetV2;
+class EditorTargetCoordinator;
 
 /**
  * @brief Editor building blocks — not a shipped 3D/map editor app.
@@ -97,17 +97,17 @@ public:
     /** @brief Return the immutable command registry owned by this editor module. */
     const EditorCommandService& commandService() const { return commandService_; }
     /**
-     * @brief Register a borrowed Scene, Material, or other V2 target for authoring automation.
-     * @param target Target owned by the caller and kept alive until unregisterAuthoringTarget().
+     * @brief Register a borrowed editable target for UI, script and automation access.
+     * @param target Target owned by the caller and kept alive until unregisterEditingTarget().
      * @return Applied, NoOp for the same registration, or structured diagnostics.
      * @thread Owner-thread only.
      */
-    [[nodiscard]] EditorResult<void> registerAuthoringTarget(IEditableTargetV2& target);
+    [[nodiscard]] EditorResult<void> registerEditingTarget(IEditableTarget& target);
     /**
-     * @brief Remove a borrowed authoring target and its local transaction history.
+     * @brief Remove a borrowed editing target and its local transaction history.
      * @return Applied when removed, or NoOp when the target was not registered.
      */
-    [[nodiscard]] EditorResult<void> unregisterAuthoringTarget(const TargetId& target);
+    [[nodiscard]] EditorResult<void> unregisterEditingTarget(const TargetId& target);
     /** @brief Adapt existing fields to capability-based editor targets. */
     TileBufferTarget* newTileBufferTarget(const std::string& id, TileBuffer* buffer);
 #ifdef EVENGINE_HAS_MAP
@@ -198,9 +198,9 @@ public:
 #endif
 
 private:
-    EditorCommandService                      commandService_;
-    std::unique_ptr<EditorAuthoringService>   authoring_;
-    std::unique_ptr<EditorAutomationProvider> automation_;
+    EditorCommandService                       commandService_;
+    std::unique_ptr<EditorTargetCoordinator>   targets_;
+    std::unique_ptr<EditorAutomationProvider>  automation_;
 };
 
 }  // namespace eve::editor

@@ -1,6 +1,6 @@
 #include "editor/EditorAutomationProvider.h"
 
-#include "editor/EditorAuthoringService.h"
+#include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorCommandService.h"
 #include "editor/EditorValueJson.h"
 
@@ -101,8 +101,8 @@ std::string errorJson(EditorStatus status, const char* rule, std::string message
 }  // namespace
 
 EditorAutomationProvider::EditorAutomationProvider(EditorCommandService& commands,
-                                                   EditorAuthoringService& authoring)
-    : commands_(&commands), authoring_(&authoring) {
+                                                   EditorTargetCoordinator& targets)
+    : commands_(&commands), targets_(&targets) {
     session_.setCommandService(commands_);
     session_.setSessionId(SessionId("editor.mcp"));
 }
@@ -122,7 +122,7 @@ std::string EditorAutomationProvider::invoke(const std::string& operation, const
     const auto& request = *parsed.value->getIf<EditorValue::Object>();
     if (operation == "commands") return commandsJson();
     if (operation == "inspect") {
-        auto result = authoring_->inspect(TargetId(stringField(request, "target")));
+        auto result = targets_->inspect(TargetId(stringField(request, "target")));
         lastDiagnostics_ = result.diagnostics;
         EditorValue response = resultValue(result.status, result.diagnostics);
         if (result.value) (*response.getIf<EditorValue::Object>())["target"] = std::move(*result.value);
@@ -174,7 +174,7 @@ std::string EditorAutomationProvider::invoke(const std::string& operation, const
     if (operation == "undo" || operation == "redo") {
         const TargetId target(stringField(request, "target"));
         if (!target.empty()) {
-            auto result = operation == "undo" ? authoring_->undo(target) : authoring_->redo(target);
+            auto result = operation == "undo" ? targets_->undo(target) : targets_->redo(target);
             lastDiagnostics_ = result.diagnostics;
             return editorValueToJson(receiptValue(result));
         }
@@ -217,7 +217,7 @@ std::string EditorAutomationProvider::commandsJson() {
 EditorResult<void> EditorAutomationProvider::bindRequestedTarget(const EditorValue::Object& request) {
     const std::string target = stringField(request, "target");
     if (target.empty()) return EditorResult<void>::applied();
-    return authoring_->bind(session_, TargetId(target));
+    return targets_->bind(session_, TargetId(target));
 }
 
 }  // namespace eve::editor

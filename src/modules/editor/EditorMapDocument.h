@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <map>
 #include <memory>
@@ -123,7 +123,7 @@ public:
 };
 
 /** @brief UI-neutral map structure document with reversible domain operations. */
-class MapDocumentTarget final : public IEditableTargetV2,
+class MapDocumentTarget final : public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IMapStructureEditTarget {

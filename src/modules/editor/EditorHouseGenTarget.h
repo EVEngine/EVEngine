@@ -3,7 +3,7 @@
 #include "editor/EditorAuthority.h"
 #include "editor/EditorGizmoPreview.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 #include "housegen/HouseGenTypes.h"
 
 #include <memory>
@@ -21,7 +21,7 @@ struct HouseKitComponentValue {
 };
 
 /** @brief Revisioned component-kit and deterministic generation-request asset. */
-class HouseGenDocumentTarget final : public IEditableTargetV2,
+class HouseGenDocumentTarget final : public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging,
                                      public IPropertyProvider {

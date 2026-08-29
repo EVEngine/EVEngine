@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <functional>
 #include <string>
@@ -22,7 +22,7 @@ struct DefinitionReferenceField {
 };
 
 /** @brief UI-neutral versioned definition asset and cross-reference model. */
-class DefinitionDocument : public IEditableTargetV2, public IDomainOperationTarget {
+class DefinitionDocument : public virtual IEditableTarget, public IDomainOperationTarget {
 public:
     using ReferenceResolver = std::function<bool(const std::string& type, const std::string& id)>;
     using SchemaValidator = std::function<std::vector<EditorDiagnostic>(const std::string& type,

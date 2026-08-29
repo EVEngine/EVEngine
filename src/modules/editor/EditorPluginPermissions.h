@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <map>
 #include <memory>
@@ -20,7 +20,7 @@ struct PluginPermissionGrant {
 };
 
 /** @brief Revisioned plugin permission policy with reversible, auditable grants. */
-class PluginPermissionTarget final : public IEditableTargetV2,
+class PluginPermissionTarget final : public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging {
 public:

@@ -484,7 +484,7 @@ World Manifest 也由单独的小集成改动维护。关卡 Agent 输出“需�
 优先复用现有实现：
 
 - `editor::DomainOperation`
-- `IEditableTargetV2`
+- `editing::IEditableTarget`
 - `IEditAuthority`
 - `EditorTransactionService`
 - `common/IEditorAutomation`

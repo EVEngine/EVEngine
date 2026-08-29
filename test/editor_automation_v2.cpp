@@ -78,15 +78,15 @@ void addSceneObject(SceneDocumentTarget& target, const char* id) {
 
 }  // namespace
 
-TEST_CASE("editor.v2.automation_authoring_commands_keep_level_histories_independent") {
+TEST_CASE("editor.automation.editing_commands_keep_level_histories_independent") {
     SceneDocumentTarget village("level.village");
     SceneDocumentTarget forest("level.forest");
     addSceneObject(village, "player");
     addSceneObject(forest, "player");
 
     Editor editor;
-    REQUIRE(editor.registerAuthoringTarget(village).accepted());
-    REQUIRE(editor.registerAuthoringTarget(forest).accepted());
+    REQUIRE(editor.registerEditingTarget(village).accepted());
+    REQUIRE(editor.registerEditingTarget(forest).accepted());
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
@@ -131,14 +131,14 @@ TEST_CASE("editor.v2.automation_authoring_commands_keep_level_histories_independ
     CHECK(inspected.find("\"id\":\"level.forest\"") != std::string::npos);
     CHECK(inspected.find("player") != std::string::npos);
 
-    CHECK(editor.unregisterAuthoringTarget(TargetId("level.village")).accepted());
-    CHECK(editor.unregisterAuthoringTarget(TargetId("level.forest")).accepted());
+    CHECK(editor.unregisterEditingTarget(TargetId("level.village")).accepted());
+    CHECK(editor.unregisterEditingTarget(TargetId("level.forest")).accepted());
 }
 
 TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path") {
     MaterialDocumentTarget material("material.player");
     Editor                 editor;
-    REQUIRE(editor.registerAuthoringTarget(material).accepted());
+    REQUIRE(editor.registerEditingTarget(material).accepted());
     auto* automation = eve::cap::query<eve::IEditorAutomation>();
     REQUIRE(automation != nullptr);
 
@@ -153,5 +153,5 @@ TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path
     CHECK(undone.find("\"status\":\"applied\"") != std::string::npos);
     CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") != EditorValue(0.65));
 
-    CHECK(editor.unregisterAuthoringTarget(TargetId("material.player")).accepted());
+    CHECK(editor.unregisterEditingTarget(TargetId("material.player")).accepted());
 }

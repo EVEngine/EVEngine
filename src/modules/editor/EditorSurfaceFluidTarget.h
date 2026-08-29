@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <string>
 #include <vector>
@@ -32,7 +32,7 @@ struct SurfaceFluidSettings {
 };
 
 /** @brief Reversible document for surface droplets, wet traces and material response. */
-class SurfaceFluidTarget final : public IEditableTargetV2,
+class SurfaceFluidTarget final : public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IPropertyProvider {
 public:

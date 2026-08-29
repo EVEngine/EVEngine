@@ -41,13 +41,16 @@ TargetDescriptor MaterialDocumentTarget::describe() const {
     result.id = TargetId(id_);
     result.type = "material-document";
     result.revision = revision_;
-    result.capabilities = {CapabilityId("eve.editor.target.material-properties")};
+    result.capabilities = {IPropertyProvider::editingCapabilityId(),
+                           eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     return result;
 }
 
 void* MaterialDocumentTarget::queryCapability(const CapabilityId& capability) {
-    if (capability == CapabilityId("eve.editor.target.material-properties"))
+    if (capability == IPropertyProvider::editingCapabilityId())
         return static_cast<IPropertyProvider*>(this);
+    if (capability == eve::editing::IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<eve::editing::IEditingSnapshotProvider*>(this);
     return nullptr;
 }
 

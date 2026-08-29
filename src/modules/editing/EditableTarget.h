@@ -26,6 +26,16 @@ struct EditRegion {
         }
     }
 };
+
+/** @brief Stable discovery metadata exposed by every editable target. */
+struct TargetDescriptor {
+    TargetId                  id;
+    std::string               type;
+    Revision                  revision = 0;
+    bool                      readOnly = false;
+    std::vector<CapabilityId> capabilities;
+};
+
 class IEditableTarget {
 public:
     virtual ~IEditableTarget()                     = default;
@@ -33,6 +43,20 @@ public:
     virtual unsigned long long revision() const    = 0;
     virtual EditRegion         dirtyRegion() const = 0;
     virtual void               clearDirtyRegion()  = 0;
+    /** @brief Describe the target for tools and automation. */
+    virtual TargetDescriptor describe() const {
+        return {TargetId(targetId()), {}, revision(), false, {}};
+    }
+    /**
+     * @brief Query an optional stable capability.
+     * @param capability Stable capability identifier.
+     * @return Borrowed pointer owned by this target, or null when unsupported.
+     * @lifetime Valid until this target is destroyed or the capability is explicitly invalidated.
+     */
+    virtual void* queryCapability(const CapabilityId& capability) {
+        (void)capability;
+        return nullptr;
+    }
     template <class C>
     C* query() {
         static_assert(std::is_polymorphic_v<C>);
@@ -63,17 +87,13 @@ public:
     virtual FieldWriteStatus writeScalar(int, int, float)     = 0;
     virtual float            sampleScalar(float, float) const = 0;
 };
-struct TargetDescriptor {
-    TargetId                  id;
-    std::string               type;
-    Revision                  revision = 0;
-    bool                      readOnly = false;
-    std::vector<CapabilityId> capabilities;
-};
-class IEditableTargetV2 : public virtual IEditableTarget {
+/** @brief Optional capability exposing a deterministic, persistence-safe editing snapshot. */
+class IEditingSnapshotProvider {
 public:
-    ~IEditableTargetV2() override                                 = default;
-    virtual TargetDescriptor describe() const                     = 0;
-    virtual void*            queryCapability(const CapabilityId&) = 0;
+    virtual ~IEditingSnapshotProvider() = default;
+    /** @brief Stable capability identity shared by every editable domain target. */
+    static CapabilityId editingCapabilityId() { return CapabilityId("eve.editing.target.snapshot.v1"); }
+    /** @brief Capture the target without exposing mutable runtime storage. */
+    [[nodiscard]] virtual Value snapshotValue() const = 0;
 };
 }  // namespace eve::editing

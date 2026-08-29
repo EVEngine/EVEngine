@@ -9,14 +9,14 @@
 
 namespace eve::editor {
 
-class EditorAuthoringService;
+class EditorTargetCoordinator;
 class EditorCommandService;
 
-/** @brief MCP/DevTools adapter over the canonical editor command and authoring services. */
+/** @brief MCP/DevTools adapter over command discovery and target coordination. */
 class EditorAutomationProvider final : public eve::IEditorAutomation {
 public:
     /** @brief Bind borrowed services that outlive this provider. */
-    EditorAutomationProvider(EditorCommandService& commands, EditorAuthoringService& authoring);
+    EditorAutomationProvider(EditorCommandService& commands, EditorTargetCoordinator& targets);
 
     /** @brief Invoke discovery, inspect, execute, plan, commit, undo or redo. */
     std::string invoke(const std::string& operation, const std::string& requestJson) override;
@@ -30,7 +30,7 @@ private:
     EditorResult<void> bindRequestedTarget(const EditorValue::Object& request);
 
     EditorCommandService*         commands_ = nullptr;
-    EditorAuthoringService*       authoring_ = nullptr;
+    EditorTargetCoordinator*      targets_ = nullptr;
     EditorSession                 session_;
     std::vector<EditorDiagnostic> lastDiagnostics_;
 };

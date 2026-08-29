@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 
 #include <array>
 #include <map>
@@ -26,7 +26,7 @@ struct AvatarParameterValue { ObjectId id;std::string name;float defaultValue=0,
 struct AvatarExpressionValue { ObjectId id;std::string name;std::map<std::string,float> channels; };
 
 /** @brief Revisioned image/Live2D/VRoid Avatar authoring asset. */
-class AvatarDocumentTarget final : public IEditableTargetV2,
+class AvatarDocumentTarget final : public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider {

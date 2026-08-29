@@ -134,7 +134,7 @@ transaction 路径；差异仅限权限、持久化策略、shell 和 presentati
 第一批迁入 `editing` 的候选：
 
 - `EditorIds`；
-- `EditorTarget` / `EditorTargetV2` 的统一后继接口；
+- 唯一的 `editing::IEditableTarget` 接口（不再并存 V1/V2 target）；
 - `EditorCommandTypes`；
 - `EditorProtocol` 中不依赖 host policy 的 operation/descriptor；
 - `EditorSelection` 的 owning snapshot；
@@ -152,6 +152,8 @@ transaction 路径；差异仅限权限、持久化策略、shell 和 presentati
 领域迁移示例：
 
 - `EditorPhysics*` -> `physics_editing`；
+- Scene Transform 命令 -> `scene_editing`；
+- Material Property 命令 -> `material_editing`；
 - `EditorAudio*` -> `audio_editing`；
 - `EditorMap*`、地图专属 road/object import -> `map_editing`；
 - `EditorAnimation*` -> `animation_editing`；
@@ -285,4 +287,3 @@ git diff --check
 - 不用无类型 JSON/`Value` 取代稳定的领域对象和 handle；
 - 不在一次 PR 中机械搬迁全部三万余行 editor 代码；
 - 不在没有两个真实 consumer 和裁剪证据前稳定新的公共抽象。
-

@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 #include "editor/EditorGizmoPreview.h"
 
 #include <map>
@@ -15,7 +15,7 @@ namespace eve::decal { class DecalManager; }
 namespace eve::editor {
 
 /** @brief Stable, serializable authoring document for one projected decal. */
-class DecalDocumentTarget final : public IEditableTargetV2,
+class DecalDocumentTarget final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider {

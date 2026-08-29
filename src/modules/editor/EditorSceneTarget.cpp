@@ -29,7 +29,8 @@ TargetDescriptor SceneTargetBase::describe() const {
     descriptor.type         = type_;
     descriptor.revision     = revision_;
     descriptor.capabilities = {ISceneHierarchyEditTarget::editorCapabilityId(),
-                               ITransformEditTarget::editorCapabilityId()};
+                               ITransformEditTarget::editingCapabilityId(),
+                               eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     if (componentPayloads_)
         descriptor.capabilities.push_back(ISceneComponentPayloadTarget::editorCapabilityId());
     return descriptor;
@@ -38,7 +39,9 @@ TargetDescriptor SceneTargetBase::describe() const {
 void* SceneTargetBase::queryCapability(const CapabilityId& capability) {
     if (capability == ISceneHierarchyEditTarget::editorCapabilityId())
         return static_cast<ISceneHierarchyEditTarget*>(this);
-    if (capability == ITransformEditTarget::editorCapabilityId()) return static_cast<ITransformEditTarget*>(this);
+    if (capability == ITransformEditTarget::editingCapabilityId()) return static_cast<ITransformEditTarget*>(this);
+    if (capability == eve::editing::IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<eve::editing::IEditingSnapshotProvider*>(this);
     if (componentPayloads_ && capability == ISceneComponentPayloadTarget::editorCapabilityId())
         return static_cast<ISceneComponentPayloadTarget*>(componentPayloads_);
     return nullptr;
@@ -423,7 +426,7 @@ EditorValue SceneTargetBase::objectValue(const SceneObjectSnapshot& object) {
     return EditorValue(std::move(value));
 }
 
-EditorResult<DomainOperation> ScenePlacementToolLogic::plan(IEditableTargetV2&              target,
+EditorResult<DomainOperation> ScenePlacementToolLogic::plan(IEditableTarget&              target,
                                                             const CreateSceneObjectRequest& request) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
         target.queryCapability(ISceneHierarchyEditTarget::editorCapabilityId()));
@@ -433,17 +436,17 @@ EditorResult<DomainOperation> ScenePlacementToolLogic::plan(IEditableTargetV2&  
     return hierarchy->makeCreate(request);
 }
 
-EditorResult<DomainOperation> SceneTransformToolLogic::plan(IEditableTargetV2& target, const ObjectId& object,
+EditorResult<DomainOperation> SceneTransformToolLogic::plan(IEditableTarget& target, const ObjectId& object,
                                                             const SceneTransformValue& transform) const {
     auto* transforms =
-        static_cast<ITransformEditTarget*>(target.queryCapability(ITransformEditTarget::editorCapabilityId()));
+        static_cast<ITransformEditTarget*>(target.queryCapability(ITransformEditTarget::editingCapabilityId()));
     if (!transforms)
         return sceneError<DomainOperation>(EditorStatus::Unsupported, "editor.scene.transform-unavailable",
                                            "Target does not expose transform editing");
     return transforms->makeSetTransform(object, transform);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTargetV2& target,
+EditorResult<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTarget& target,
                                                                   const ObjectId& object) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
         target.queryCapability(ISceneHierarchyEditTarget::editorCapabilityId()));
@@ -453,7 +456,7 @@ EditorResult<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTarge
     return hierarchy->makeDelete(object);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTargetV2& target,
+EditorResult<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTarget& target,
                                                                   const ObjectId& object,
                                                                   const std::string& name) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
@@ -464,7 +467,7 @@ EditorResult<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTarge
     return hierarchy->makeRename(object, name);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planReparent(IEditableTargetV2& target,
+EditorResult<DomainOperation> SceneHierarchyToolLogic::planReparent(IEditableTarget& target,
                                                                     const ObjectId& object,
                                                                     const ObjectId& parent) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(

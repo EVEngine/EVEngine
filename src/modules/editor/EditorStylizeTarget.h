@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 #include "editor/EditorOffscreenPreview.h"
 
 #include <map>
@@ -25,7 +25,7 @@ struct StylizePassValue {
 };
 
 /** @brief Serializable ordered style recipe with dynamic parameter Inspector. */
-class StylizeRecipeTarget final : public IEditableTargetV2,
+class StylizeRecipeTarget final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider {

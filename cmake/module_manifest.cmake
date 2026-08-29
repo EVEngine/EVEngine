@@ -107,7 +107,7 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS action editing property_access tags transaction
+                   DEPS action editing material_editing property_access scene_editing tags transaction
                    GROUP 3d web
                    OPTIONAL_DEPS animation audio avatar building camera crowd daynight definitions dialogue fluids graphics hd2d housegen image network orders particles physics physics_editing production procgen profiler map scene sceneloader schema snow social spritestack ui virtualgeometry voxel weather)
 # L0 -- foundation (continued)
@@ -222,6 +222,13 @@ eve_declare_module(NAME network LAYER 1 SCRIPT Network
 # ---------------------------------------------------------------------------
 # L2 -- input state and playback
 # ---------------------------------------------------------------------------
+
+eve_declare_module(NAME scene_editing LAYER 2
+                   DEPS editing
+                   GROUP 3d web)
+eve_declare_module(NAME material_editing LAYER 2
+                   DEPS editing
+                   GROUP 3d web)
 
 eve_declare_module(NAME keyboard LAYER 2 SCRIPT Keyboard SLOT keyboard
                    DEPS platform_event window
