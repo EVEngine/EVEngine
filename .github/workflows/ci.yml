@@ -396,7 +396,9 @@ jobs:
             -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
 
       - name: Build native Dawn parity lane
-        timeout-minutes: 40
+        # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
+        # 95% only when the former 40-minute guard fired on windows-latest.
+        timeout-minutes: 60
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
