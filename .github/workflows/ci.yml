@@ -165,9 +165,7 @@ jobs:
   profile-matrix:
     name: Profile ${{ matrix.profile }}
     runs-on: ubuntu-24.04
-    # This job builds and tests both Vulkan and native Dawn sequentially. A cold
-    # read-only PR cache can legitimately exceed 90 minutes on hosted runners.
-    timeout-minutes: 180
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -256,7 +254,9 @@ jobs:
     name: Windows
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: windows-latest
-    timeout-minutes: 90
+    # This job builds and tests both Vulkan and native Dawn sequentially. A cold
+    # read-only PR cache can legitimately exceed 90 minutes on hosted runners.
+    timeout-minutes: 180
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
