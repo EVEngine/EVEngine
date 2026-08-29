@@ -881,11 +881,11 @@ void Graphics::drawTexturedRectShader5(Texture *color, Texture *depth, Texture *
     noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
 }
 
-bool Graphics::drawSceneColorDistortionUVRotated(Texture *displacement, float cx, float cy,
-                                                  float w, float h, float degrees, float u0,
-                                                  float v0, float u1, float v1,
-                                                  float strengthPixels, float opacity,
-                                                  bool rotatedUV) {
+bool Graphics::tryDrawSceneColorDistortionUVRotated(Texture *displacement, float cx, float cy,
+                                                     float w, float h, float degrees, float u0,
+                                                     float v0, float u1, float v1,
+                                                     float strengthPixels, float opacity,
+                                                     bool rotatedUV) {
     Texture *scene = getSceneColorTexture();
     if (!displacement || !scene || !scene->gpuHandle || !particleDistortionPipeline) return false;
 
