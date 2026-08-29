@@ -778,7 +778,7 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
     attrs[0].format = wgpu::VertexFormat::Float32x2;
     attrs[0].offset = 0;
     attrs[0].shaderLocation = 0;
-    attrs[1].format = WGPUVertexFormat_Float32x4;
+    attrs[1].format = wgpu::VertexFormat::Float32x4;
     attrs[1].offset = 8;
     attrs[1].shaderLocation = 1;
 
@@ -804,7 +804,7 @@ wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLay
     attrs[0].format = WGPUVertexFormat_Float32x2;
     attrs[0].offset = 0;
     attrs[0].shaderLocation = 0;
-    attrs[1].format = wgpu::VertexFormat::Float32x4;
+    attrs[1].format = WGPUVertexFormat_Float32x4;
     attrs[1].offset = 8;
     attrs[1].shaderLocation = 1;
     attrs[2].format = WGPUVertexFormat_Float32x2;
