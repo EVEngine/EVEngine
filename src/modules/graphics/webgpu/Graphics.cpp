@@ -1130,37 +1130,16 @@ wgpu::RenderPipeline Graphics::getMesh3DPipeline(BlendMode blend, bool depthWrit
     pd.depthStencil = &ds;
     pd.multisample.count = canvasTarget ? 1 : sceneColorSamples;
     pd.multisample.mask = 0xFFFFFFFFu;
-    for (int blendValue = int(BlendMode::Alpha); blendValue <= int(BlendMode::Multiply);
-         ++blendValue) {
-        const BlendMode blend = BlendMode(blendValue);
-        for (int depthValue = 0; depthValue < 2; ++depthValue) {
-            for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
-                const bool depthWrite = depthValue != 0;
-                const bool doubleSided = doubleValue != 0;
-                const size_t index = meshPipelineIndex(blend, depthWrite, doubleSided);
-                WGPUBlendState blendDesc = blendState(blend);
-                target.blend = blend == BlendMode::Opaque ? nullptr : &blendDesc;
-                target.format = sceneColorFormat;
-                ds.depthWriteEnabled =
-                    depthWrite ? WGPUOptionalBool_True : WGPUOptionalBool_False;
-                pd.primitive.cullMode = doubleSided ? WGPUCullMode_None : WGPUCullMode_Back;
-                pd.multisample.count = sceneColorSamples;
-                pd.label = sv("eve_mesh3d_surface");
-                mesh3dPipelines[index] = device.CreateRenderPipeline(
-                    reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
-                target.format = WGPUTextureFormat_RGBA8Unorm;
-                pd.multisample.count = 1;
-                pd.label = sv("eve_mesh3d_canvas_surface");
-                mesh3dCanvasPipelines[index] = device.CreateRenderPipeline(
-                    reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
-            }
-        }
-    }
-    mesh3dPipeline = mesh3dPipelines[meshPipelineIndex(BlendMode::Opaque, true, false)];
-    mesh3dTransparentPipeline =
-        mesh3dPipelines[meshPipelineIndex(BlendMode::Alpha, false, false)];
-    mesh3dCanvasPipeline =
-        mesh3dCanvasPipelines[meshPipelineIndex(BlendMode::Opaque, true, false)];
+    pipeline = device.CreateRenderPipeline(
+        reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&pd));
+
+    if (!canvasTarget && blend == BlendMode::Opaque && depthWrite && !doubleSided)
+        mesh3dPipeline = pipeline;
+    if (!canvasTarget && blend == BlendMode::Alpha && !depthWrite && !doubleSided)
+        mesh3dTransparentPipeline = pipeline;
+    if (canvasTarget && blend == BlendMode::Opaque && depthWrite && !doubleSided)
+        mesh3dCanvasPipeline = pipeline;
+    return pipeline;
 }
 
 void Graphics::createMesh3DClusteredPipeline() {
