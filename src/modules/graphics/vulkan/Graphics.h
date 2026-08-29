@@ -2,11 +2,17 @@
 #include <array>
 #include <atomic>
 #include <cstdint>
-#include <glm/glm.hpp>
+#include <glm/ext/vector_uint4_sized.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <memory>
 #include <optional>
 #include <unordered_map>
 #include <vector>
+#include "common/Capability.h"
+#include "common/GpuTimer.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
@@ -15,13 +21,11 @@
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
+#include "graphics/vulkan/ComputePass.h"
+#include "graphics/vulkan/FrameArena.h"
+#include "graphics/vulkan/GpuDriven.h"
 #include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
-#include "graphics/vulkan/GpuDriven.h"
-#include "graphics/vulkan/FrameArena.h"
-#include "graphics/vulkan/ComputePass.h"
-#include "common/Capability.h"
-#include "common/GpuTimer.h"
 
 namespace eve::graphics::vulkan {
 
