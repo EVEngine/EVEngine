@@ -275,6 +275,9 @@ void Graphics::createTexturedPipeline() {
                                                       BlendMode::Multiply);
     opaqueTexPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout,
                                                     BlendMode::Opaque);
+    particleDistortionPipeline = createTexturedStylePipeline(
+        vert, embeddedSpirv(particle_distortion_frag_spv), renderpass, texPipelineLayout,
+        BlendMode::Alpha);
     sceneTonemapPipeline = createTexturedStylePipeline(
         vert, embeddedSpirv(scene_tonemap_frag_spv), renderpass, texPipelineLayout,
         BlendMode::Opaque);
