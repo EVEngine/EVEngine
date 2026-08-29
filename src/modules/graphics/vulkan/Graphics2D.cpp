@@ -512,6 +512,14 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     std::memcpy(img->getData(), mapped, size_t(byteSize));
     device->unmapMemory(staging.memory);
     staging.release();
+    if (attachment == "depth") {
+        auto *pixels = static_cast<uint8_t *>(img->getData());
+        const size_t pixelCount = size_t(w) * size_t(h);
+        for (size_t i = 0; i < pixelCount; ++i) {
+            pixels[i * 4u + 1u] = pixels[i * 4u];
+            pixels[i * 4u + 2u] = pixels[i * 4u];
+        }
+    }
     return img;
 }
 
@@ -871,6 +879,26 @@ void Graphics::drawTexturedRectShader5(Texture *color, Texture *depth, Texture *
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
     noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
+bool Graphics::drawSceneColorDistortionUVRotated(Texture *displacement, float cx, float cy,
+                                                  float w, float h, float degrees, float u0,
+                                                  float v0, float u1, float v1,
+                                                  float strengthPixels, float opacity,
+                                                  bool rotatedUV) {
+    Texture *scene = getSceneColorTexture();
+    if (!displacement || !scene || !scene->gpuHandle || !particleDistortionPipeline) return false;
+
+    TexturedBatch batch{scene, displacement, nullptr, BlendMode::Alpha, Batcher{}};
+    batch.effect = TexturedBatch::Effect::SceneColorDistortion;
+    batch.batch.addTexturedRectRotated(cx, cy, w, h, degrees,
+                                      Color(strengthPixels, 0.f, 0.f, opacity), u0, v0, u1, v1,
+                                      rotatedUV);
+    texturedBatches.push_back(std::move(batch));
+    // Distortion samples scene color but does not replace the base scene
+    // composite; keep the automatic scene resolve underneath this overlay.
+    noteTexturedOverlay(nullptr, uint32_t(texturedBatches.size() - 1));
+    return true;
 }
 
 void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
@@ -1555,6 +1583,9 @@ void Graphics::flushToSwapchain() {
         }
         recordDeferredFrameGraph();
     }
+
+    if (!(continue3D && !hasScenePath))
+        recordGpuParticleCompute(presentRecording.commandBuffer());
 
     materializeSceneColorResolve();
 

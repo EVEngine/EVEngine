@@ -1401,7 +1401,6 @@ void Graphics::queueSceneColorResolve() {
     Texture *src = takeFinalSceneTexture();
     if (!src) src = getSceneColorTexture();
     if (!src || !src->gpuHandle || sceneColorComposited) return;
-    if (sceneColorComposited) return;
     const bool reflectionPasses = renderControl_ &&
                                   (renderControl_->isEnabled("rtgi") ||
                                    renderControl_->isEnabled("ssr") ||
