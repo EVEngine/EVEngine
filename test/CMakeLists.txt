@@ -136,7 +136,14 @@ file(GLOB all_test_cpp
   kaykit_combat_assets.cpp
   standard_combat_abilities.cpp
   gameplay_action.cpp
+  rpg_battle.cpp
+  rpg_class.cpp
+  rpg_equipment.cpp
+  rpg_gamestate.cpp
+  rpg_progression.cpp
+  rpg_quest.cpp
   rpg_simulation.cpp
+  rpg_trait.cpp
   rpg_reload.cpp
   hex_level_simulation.cpp
   hex_level_data.cpp

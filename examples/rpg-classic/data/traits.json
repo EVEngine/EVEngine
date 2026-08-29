@@ -1,0 +1,11 @@
+[
+  {"id": "trait.mighty",
+   "traits": [
+     {"kind": "paramRate", "target": "attack", "value": 1.2},
+     {"kind": "exParam", "target": "critRate", "value": 0.10}
+   ],
+   "tags": ["class"]},
+  {"id": "trait.fire_guard",
+   "traits": [{"kind": "elementRate", "target": "fire", "value": 0.5}],
+   "tags": ["defense"]}
+]

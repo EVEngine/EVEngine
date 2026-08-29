@@ -1,0 +1,7 @@
+[
+  {"id": "skill.strike", "targetType": "enemySingle", "castTime": 0.0},
+  {"id": "skill.fireball", "targetType": "enemySingle", "castTime": 0.0},
+  {"id": "skill.cleave", "targetType": "enemySingle", "castTime": 0.0},
+  {"id": "skill.self_heal", "targetType": "self", "castTime": 0.0},
+  {"id": "skill.enemy_claw", "targetType": "enemySingle", "castTime": 0.0}
+]

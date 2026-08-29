@@ -113,7 +113,7 @@ eve_declare_module(NAME database LAYER 0 SCRIPT Database
                    THIRDPARTY poco_data poco)
 # L1 -- gameplay domain adapter
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
-                   DEPS action attributes decision definitions effects settlement)
+                   DEPS action attributes decision definitions effects inventory settlement)
 # L0 -- foundation (continued)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy

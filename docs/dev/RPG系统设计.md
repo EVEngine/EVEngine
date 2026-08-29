@@ -1,9 +1,18 @@
 # RPG 模块设计：属性 / 效果 / 状态 / 技能 / 结算
 
 日期：2026-08-08
-状态：已实现（首版，`src/modules/rpg/`）
+状态：已实现（`src/modules/rpg/`）
 
-任务 / 目标追踪器（第六子系统）见单独文档 [RPG任务系统设计.md](./RPG任务系统设计.md)（2026-08-18，待实现）。
+任务 / 目标追踪器（第六子系统）见单独文档 [RPG任务系统设计.md](./RPG任务系统设计.md)（已实现，2026-08-18）。
+
+新增子系统：
+- **成长（LevelSystem）** — 等级 / 经验 / 升级事件（`RPGActor::Progression`）。
+- **当前资源（VitalsSystem）** — 受伤 / 治疗 / 死亡 / 复活（`RPGActor::Vitals`，上限取同名最终属性）。
+- **装备加成与掉落（EquipmentSystem / LootSystem）** — 把已装备物品（`inventory::EquipmentSet`）的注册属性加成同步到 actor，掉落表按概率随机入包（`inventory::Bag`）。
+- **特征（Trait / TraitSystem）** — 参数倍率（落属性）、元素/状态耐性、暴击/命中/闪避等特殊参数、攻击附加元素/状态；`RPGActor::Traits`。
+- **回合制战斗（BattleSystem / Battle）** — 伤害公式 DSL（`a.atk * 4 - b.def * 2`）、命中/暴击/元素耐性结算、行动顺序、胜败判定。**阵营是任意整数 id（多派系），伤害目标资源名任意（`damageType` 即资源名，`XHeal` 后缀为治疗）**；`setPlayerSide`/`getWinnerSide` 支持非默认玩家侧。
+- **职业（Class / ClassSystem）** — 职业定义、职业基础特征、升级学技能（`RPGActor::ClassInfo`）。
+- **全局状态（GameState）** — 开关 / 变量 / 独立变量（RPG Maker 的 `$gameSwitches` / `$gameVariables`）。
 
 ## 目标
 
