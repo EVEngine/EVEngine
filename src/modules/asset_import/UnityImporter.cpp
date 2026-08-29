@@ -230,7 +230,7 @@ std::vector<UnityObject> documents(std::string_view yaml) {
     const std::regex header(R"(^---\s*!u!([0-9]+)\s*&(-?[0-9]+).*$)", std::regex::multiline);
     struct Start { std::size_t header; std::size_t body; UnityObject object; };
     std::vector<Start> starts;
-    for (std::cregex_iterator it(yaml.begin(), yaml.end(), header), end; it != end; ++it) {
+    for (std::cregex_iterator it(yaml.data(), yaml.data() + yaml.size(), header), end; it != end; ++it) {
         const std::string signedText = (*it)[2].str();
         std::int64_t signedId = 0;
         const auto parsedId = std::from_chars(signedText.data(), signedText.data() + signedText.size(), signedId);
