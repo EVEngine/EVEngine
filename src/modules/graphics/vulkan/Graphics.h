@@ -427,10 +427,10 @@ public:
     void drawTexturedRectShader5(Texture *color, Texture *depth, Texture *motion, Texture *extra,
                                  Texture *specular, Shader *shader, float x, float y, float w,
                                  float h, const Color &tint) override;
-    bool tryDrawSceneColorDistortionUVRotated(Texture *displacement, float cx, float cy, float w,
-                                              float h, float degrees, float u0, float v0, float u1,
-                                              float v1, float strengthPixels, float opacity,
-                                              bool rotatedUV = false) override;
+    SceneColorDistortionStatus drawSceneColorDistortionUVRotated(
+        Texture *displacement, float cx, float cy, float w, float h, float degrees, float u0,
+        float v0, float u1, float v1, float strengthPixels, float opacity,
+        bool rotatedUV = false) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
                                float u0, float v0, float u1, float v1, const Color &color) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;

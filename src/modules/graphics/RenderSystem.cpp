@@ -432,9 +432,10 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
         if (it.sceneColorDistortion) {
             eve::debug::rtBind("texture", "distortion");
             eve::debug::rtBind("texture", "sceneColor");
-            eve::debug::rtDraw("tryDrawSceneColorDistortionUVRotated", "distortion");
-            gfx.tryDrawSceneColorDistortionUVRotated(it.texture, centerX, centerY, sw, sh, it.rotation, u0, v0, u1, v1,
-                                                     it.distortionStrength, it.color.a, it.rotatedUV);
+            eve::debug::rtDraw("drawSceneColorDistortionUVRotated", "distortion");
+            gfx.drawSceneColorDistortionUVRotated(it.texture, centerX, centerY, sw, sh, it.rotation,
+                                                  u0, v0, u1, v1, it.distortionStrength,
+                                                  it.color.a, it.rotatedUV);
         } else if (it.litPath) {
             eve::debug::rtBind("texture", "albedo");
             eve::debug::rtBind("texture", "normal");

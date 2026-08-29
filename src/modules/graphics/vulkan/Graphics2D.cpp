@@ -881,13 +881,12 @@ void Graphics::drawTexturedRectShader5(Texture *color, Texture *depth, Texture *
     noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
 }
 
-bool Graphics::tryDrawSceneColorDistortionUVRotated(Texture *displacement, float cx, float cy,
-                                                     float w, float h, float degrees, float u0,
-                                                     float v0, float u1, float v1,
-                                                     float strengthPixels, float opacity,
-                                                     bool rotatedUV) {
+Graphics::SceneColorDistortionStatus Graphics::drawSceneColorDistortionUVRotated(
+    Texture *displacement, float cx, float cy, float w, float h, float degrees, float u0, float v0,
+    float u1, float v1, float strengthPixels, float opacity, bool rotatedUV) {
     Texture *scene = getSceneColorTexture();
-    if (!displacement || !scene || !scene->gpuHandle || !particleDistortionPipeline) return false;
+    if (!displacement || !scene || !scene->gpuHandle || !particleDistortionPipeline)
+        return SceneColorDistortionStatus::Unavailable;
 
     TexturedBatch batch{scene, displacement, nullptr, BlendMode::Alpha, Batcher{}};
     batch.effect = TexturedBatch::Effect::SceneColorDistortion;
@@ -898,7 +897,7 @@ bool Graphics::tryDrawSceneColorDistortionUVRotated(Texture *displacement, float
     // Distortion samples scene color but does not replace the base scene
     // composite; keep the automatic scene resolve underneath this overlay.
     noteTexturedOverlay(nullptr, uint32_t(texturedBatches.size() - 1));
-    return true;
+    return SceneColorDistortionStatus::Queued;
 }
 
 void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {

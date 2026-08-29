@@ -577,10 +577,13 @@ public:
      * in alpha. Returns false when no
      * resolved scene color is available for the current frame.
      */
-    virtual bool tryDrawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
-                                                      float degrees, float u0, float v0, float u1, float v1,
-                                                      float strengthPixels, float opacity, bool rotatedUV = false) {
-        return false;
+    enum class SceneColorDistortionStatus { Queued, Unavailable };
+
+    virtual SceneColorDistortionStatus drawSceneColorDistortionUVRotated(
+        Texture* displacement, float cx, float cy, float w, float h, float degrees, float u0,
+        float v0, float u1, float v1, float strengthPixels, float opacity,
+        bool rotatedUV = false) {
+        return SceneColorDistortionStatus::Unavailable;
     }
 
     /**
