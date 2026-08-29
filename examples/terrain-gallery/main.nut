@@ -20,7 +20,9 @@ function retain(value) {
 function buildTerrain(seed, worldOffsetX) {
     local heightScale = 7.5;
     local cellSize = 0.0875;
-    local params = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return false;
+    local params = retain(paramsResult.value);
     params.setSize(257, 257);
     params.setSeed(seed);
     params.setFloat("frequency", 1.0 / 124.0);
@@ -32,7 +34,9 @@ function buildTerrain(seed, worldOffsetX) {
     params.setFloat("continent", 1.0);
     params.setFloat("island", 0.0);
     params.setFloat("coast", 0.35);
-    local heightmap = retain(procgen.generateHeightmap(params));
+    local heightmapResult = procgen.generateHeightmap(params);
+    if (!heightmapResult.ok) return false;
+    local heightmap = retain(heightmapResult.value);
     procgen.erodeTerrainThermal(heightmap, 16, 0.011, 0.28);
     procgen.erodeTerrainHydraulic(heightmap, 18, 0.007, 0.11, 1.4, 0.08, 0.11);
     // A relatively sparse display threshold keeps minor D8 drainage lines out
@@ -88,6 +92,7 @@ function buildTerrain(seed, worldOffsetX) {
             }
         }
     }
+    return true;
 }
 
 eve_init = function() {
@@ -95,9 +100,9 @@ eve_init = function() {
     gfx.setDirectionalLight(-0.42, 0.88, 0.32, 1.75, 1.58, 1.30);
     terrainShader = retain(procgen.createTerrainMaterialShader(gfx));
     waterShader = retain(procgen.createTerrainWaterShader(gfx));
-    buildTerrain(17, 0.0);
-    buildTerrain(1031, 25.0);
-    buildTerrain(8191, 50.0);
+    if (!buildTerrain(17, 0.0)) return;
+    if (!buildTerrain(1031, 25.0)) return;
+    if (!buildTerrain(8191, 50.0)) return;
 
     camera = retain(eve.Camera3D());
     camera.setEye(36.0, 34.0, 58.0);

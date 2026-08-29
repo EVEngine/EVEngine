@@ -21,7 +21,9 @@ eve_init = function() {
     terrainMaterialShader = procgen.createTerrainMaterialShader(gfx);
     waterMaterialShader = procgen.createTerrainWaterShader(gfx);
 
-    local params = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return;
+    local params = paramsResult.value;
     params.setSize(257, 257);
     params.setSeed(20260826);
     params.setFloat("frequency", 1.0 / 124.0);
@@ -33,7 +35,9 @@ eve_init = function() {
     params.setFloat("continent", 1.0);
     params.setFloat("island", 0.0);
     params.setFloat("coast", 0.35);
-    local heightmap = procgen.generateHeightmap(params);
+    local heightmapResult = procgen.generateHeightmap(params);
+    if (!heightmapResult.ok) return;
+    local heightmap = heightmapResult.value;
     procgen.erodeTerrainThermal(heightmap, 30, 0.0055, 0.30);
     procgen.erodeTerrainHydraulic(heightmap, 20, 0.007, 0.11, 1.4, 0.08, 0.11);
     procgen.erodeTerrainFluvialAdvanced(heightmap, 24, 0.0050, 0.11, 0.17, 8.0, 0.025);
