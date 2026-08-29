@@ -29,7 +29,8 @@ void putU64(std::vector<uint8_t> &out, uint64_t v) {
 void putFloat(std::vector<uint8_t> &out, float v) { uint32_t bits; std::memcpy(&bits, &v, 4); putU32(out, bits); }
 
 bool getU16(const uint8_t *&p, const uint8_t *end, uint16_t &v) {
-    if (end - p < 2) return false; v = uint16_t(p[0]) | uint16_t(p[1] << 8); p += 2; return true;
+    if (end - p < 2) return false;
+    v = uint16_t(p[0]) | uint16_t(p[1] << 8); p += 2; return true;
 }
 bool getU32(const uint8_t *&p, const uint8_t *end, uint32_t &v) {
     if (end - p < 4) return false;
@@ -37,7 +38,8 @@ bool getU32(const uint8_t *&p, const uint8_t *end, uint32_t &v) {
 }
 bool getI32(const uint8_t *&p, const uint8_t *end, int32_t &v) { uint32_t u; if (!getU32(p, end, u)) return false; v = int32_t(u); return true; }
 bool getU64(const uint8_t *&p, const uint8_t *end, uint64_t &v) {
-    if (end - p < 8) return false; v = 0; for (int i = 0; i < 8; ++i) v |= uint64_t(p[i]) << (i * 8); p += 8; return true;
+    if (end - p < 8) return false;
+    v = 0; for (int i = 0; i < 8; ++i) v |= uint64_t(p[i]) << (i * 8); p += 8; return true;
 }
 bool getFloat(const uint8_t *&p, const uint8_t *end, float &v) { uint32_t bits; if (!getU32(p, end, bits)) return false; std::memcpy(&v, &bits, 4); return true; }
 
@@ -189,7 +191,8 @@ bool TerrainAsset::open(const uint8_t *data, size_t size, std::string *error) {
         const uint32_t expectedWidth = coordinateValid ? std::min(cs, w - uint32_t(x) * cs) : 0;
         const uint32_t expectedHeight = coordinateValid ? std::min(cs, h - uint32_t(y) * cs) : 0;
         if (compression > 1 || !getU64(p, end, e.offset) || !getU32(p, end, e.storedSize) || !getU32(p, end, e.rawSize) || !getU32(p, end, e.checksum) ||
-            !reservedClear || !coordinateValid || e.width != expectedWidth || e.height != expectedHeight ||
+            !reservedClear || !coordinateValid || uint32_t(e.width) != expectedWidth ||
+            uint32_t(e.height) != expectedHeight ||
             e.rawSize != uint64_t(e.width) * uint64_t(e.height) * bytesPerCell(version) ||
             (!e.compressed && e.storedSize != e.rawSize) || e.offset < payloadStart ||
             e.offset > size || e.storedSize > size - e.offset) {

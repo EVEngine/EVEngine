@@ -1376,6 +1376,8 @@ eve::Result<void> Procgen::autotileGrid(ProcgenGridHandleRef grid) {
 
 uint32_t Procgen::randomSeed() { return eve::procgen::randomSeedValue(); }
 
+std::string Procgen::lastError() const { return lastError_; }
+
 eve::Result<std::string> Procgen::gridToJson(ProcgenGridHandleRef grid) const {
     auto view = Procgen::resolve(grid);
     if (!view.isBound())
@@ -1831,6 +1833,15 @@ eve::Result<void> Procgen::releaseHeightmap(ProcgenHeightmapHandleRef reference)
 
 bool Procgen::isHeightmapStale(ProcgenHeightmapHandleRef reference) const noexcept {
     return reference.isValid() && ownership_->heightmaps.isStale(reference);
+}
+
+Heightmap *Procgen::newHeightmap(int width, int height) {
+    if (width <= 0 || height <= 0) {
+        lastError_ = "newHeightmap: dimensions must be positive";
+        return nullptr;
+    }
+    lastError_.clear();
+    return new Heightmap(width, height);
 }
 
 eve::Result<ProcgenHeightmapHandleRef> Procgen::generateHeightmapHandle(ProcgenParamsHandleRef params) {

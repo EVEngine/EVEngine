@@ -387,6 +387,8 @@ public:
 
     /** @brief Fresh non-zero seed for regenerating a level. */
     uint32_t randomSeed();
+    /** @brief Return the most recent compatibility-facade diagnostic. */
+    std::string lastError() const;
 
     [[nodiscard]] eve::Result<std::string> gridToJson(ProcgenGridHandleRef grid) const;
 
@@ -581,6 +583,8 @@ public:
     [[nodiscard]] eve::script::Borrowed<Heightmap>       resolveHeightmap(ProcgenHeightmapHandleRef) noexcept;
     [[nodiscard]] eve::Result<void>                      releaseHeightmap(ProcgenHeightmapHandleRef);
     [[nodiscard]] bool                                   isHeightmapStale(ProcgenHeightmapHandleRef) const noexcept;
+    /** @brief Compatibility constructor for an in-memory heightmap. @ownership Caller owns the result. */
+    Heightmap *newHeightmap(int width, int height);
     /** @brief Compatibility facade that materializes a heightmap. @ownership Caller owns the result. */
     Heightmap *generateHeightmap(Params *params);
     /** @brief Compatibility facade that classifies a heightmap into a semantic Grid2D. */
