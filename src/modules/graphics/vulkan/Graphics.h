@@ -317,6 +317,19 @@ public:
     bool gpuDrivenMaterialUsable(Material *material) override;
     uint32_t gpuDrivenReflectionProbeSlot(Texture *cubemap) override;
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    Texture *getSceneLinearDepthTexture() override;
+
+    bool supportsGpuParticles() const override { return initialized && !headless_; }
+    bool canSubmitGpuParticles() const override;
+    GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) override;
+    void releaseGpuParticleEmitter(GpuParticleHandle handle) override;
+    void resetGpuParticleEmitter(GpuParticleHandle handle) override;
+    bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate &update,
+                                  const GpuParticleSpawn *spawns,
+                                  std::uint32_t spawnCount) override;
+    bool drawGpuParticleEmitter(GpuParticleHandle handle,
+                                const GpuParticleDraw &draw) override;
+    GpuParticleStats getGpuParticleStats(GpuParticleHandle handle) const override;
     /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
     uint32_t debugBindlessIndex(Texture *tex) const;
     uint32_t debugMeshRecordIndex(Mesh *mesh) const;
@@ -795,6 +808,7 @@ private:
     vk::Pipeline premultipliedTexPipeline;
     vk::Pipeline multiplyTexPipeline;
     vk::Pipeline opaqueTexPipeline;
+    vk::Pipeline particleDistortionPipeline;
     vk::Pipeline sceneTonemapPipeline;
     float sceneExposure = 1.f;
     bool sceneAutoExposure = false;
@@ -1383,6 +1397,7 @@ private:
         Shader *shader = nullptr;
         BlendMode blend = BlendMode::Alpha;
         Batcher batch;
+        Effect effect = Effect::Default;
         Texture *motion = nullptr;
         Texture *extra = nullptr;
         Texture *specular = nullptr;

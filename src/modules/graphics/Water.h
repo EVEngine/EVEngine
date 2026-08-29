@@ -85,7 +85,7 @@ public:
      * @brief Optional screen-space reflection overlay. When enabled, the shader
      * samples the temporally resolved SSR-chain result (bound through mesh
      * binding 6) at the fragment's screen UV and blends it over the environment
-     * cubemap fallback. The drawable viewport is inferred when setViewport was
+     * cubemap backup. The drawable viewport is inferred when setViewport was
      * not called. SSR must also be enabled on RenderControl.
      */
     void setScreenSpaceReflection(bool enabled, float strength = 0.85f);

@@ -100,7 +100,7 @@ public:
     /** @brief Return the global environment-lighting intensity used while capturing. */
     float getEnvironmentLightingIntensity() const { return environmentLightingIntensity_; }
     /**
-     * @brief Set a linear HDR fallback sky color for empty capture pixels.
+     * @brief Set a linear HDR backup sky color for empty capture pixels.
      * @param r Linear red channel before intensity scaling.
      * @param g Linear green channel before intensity scaling.
      * @param b Linear blue channel before intensity scaling.
@@ -108,7 +108,7 @@ public:
      */
     void setSkyColor(float r, float g, float b, float intensity = 1.f);
     /**
-     * @brief Override one directional fallback sky face in +X,-X,+Y,-Y,+Z,-Z order.
+     * @brief Override one directional backup sky face in +X,-X,+Y,-Y,+Z,-Z order.
      * @param face Face index in [0,5].
      * @param r Linear red channel.
      * @param g Linear green channel.
@@ -118,7 +118,7 @@ public:
     /**
      * @brief Set a directional per-pixel sky texture for one capture face.
      * @param face Face index in +X,-X,+Y,-Y,+Z,-Z order.
-     * @param texture RGBA sky face matching cubemap projection, or nullptr for color fallback.
+     * @param texture RGBA sky face matching cubemap projection, or nullptr for color backup.
      */
     void setSkyFaceTexture(int face, Texture *texture);
     /** @brief Return one directional per-pixel sky texture, or nullptr. */
@@ -129,13 +129,13 @@ public:
     float getSkyFaceTextureScale(int face) const;
     /** @brief Return one directional sky-face color component, or zero for invalid indices. */
     float getSkyFaceColor(int face, int component) const;
-    /** @brief Return the unscaled fallback sky red channel. */
+    /** @brief Return the unscaled backup sky red channel. */
     float getSkyR() const { return skyR_[0]; }
-    /** @brief Return the unscaled fallback sky green channel. */
+    /** @brief Return the unscaled backup sky green channel. */
     float getSkyG() const { return skyG_[0]; }
-    /** @brief Return the unscaled fallback sky blue channel. */
+    /** @brief Return the unscaled backup sky blue channel. */
     float getSkyB() const { return skyB_[0]; }
-    /** @brief Return the fallback sky HDR multiplier. */
+    /** @brief Return the backup sky HDR multiplier. */
     float getSkyIntensity() const { return skyIntensity_; }
     /** @brief Number of cubemap faces remaining in the current capture revision. */
     int getPendingFaceCount() const { return pending_ ? 6 - nextFace_ : 0; }

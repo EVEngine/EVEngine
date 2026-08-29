@@ -18,7 +18,7 @@ class Texture;
  * Reads the lit scene color, hardware depth (D32) and world normal, and for
  * each pixel ray-marches the reflected ray in screen space. Where the ray hits
  * geometry it emits the reflected scene color with A = hit validity, so a
- * surface (e.g. Water) can blend it over an env-cubemap fallback.
+ * surface (e.g. Water) can blend it over an env-cubemap backup.
  *
  * Mirrors GlobalIllumination and can be invoked manually with applyFromSceneTo.
  * RenderSystem3D also runs it automatically when `ssr` or `reflectionChain`
@@ -61,7 +61,7 @@ public:
     void setMaxSteps(int steps);
     void setThickness(float meters);
     void setStrength(float strength);
-    /** @brief Skip SSR above this material roughness and rely on reflection fallback. */
+    /** @brief Skip SSR above this material roughness and rely on reflection backup. */
     void setMaxRoughness(float roughness);
     /** @brief Set internal SSR resolution scale in the range 0.25 to 1.0. */
     void setResolutionScale(float scale);

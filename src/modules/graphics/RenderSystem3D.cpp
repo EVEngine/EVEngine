@@ -1160,7 +1160,7 @@ void RenderSystem3D::render(Graphics &gfx) {
                 gfx.setMesh3DCameraPos(cv.eye);
                 gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
                 gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
-                gfx.setMesh3DReflectionProbes({});
+                gfx.setMesh3DReflectionProbes(ReflectionProbeUpload{});
                 ClusteredLightingUpload off{};
                 off.active = false;
                 gfx.setMesh3DClusteredLighting(off);
