@@ -89,6 +89,12 @@ const CommandDescriptor* EditorCommandService::find(const CommandId& id) const {
     return it == commands_.end() ? nullptr : &it->descriptor;
 }
 
+bool EditorCommandService::supportsPlanning(const CommandId& id) const {
+    const auto it = std::find_if(commands_.begin(), commands_.end(),
+                                 [&](const Registration& entry) { return entry.descriptor.id == id; });
+    return it != commands_.end() && static_cast<bool>(it->planner) && static_cast<bool>(it->planExecutor);
+}
+
 std::vector<CommandDescriptor> EditorCommandService::commands(const HostProfile& profile) const {
     std::vector<CommandDescriptor> result;
     result.reserve(commands_.size());

@@ -4,12 +4,13 @@
 #include "common/EditorAutomation.h"
 #include "editor/ActionTimelineScriptBindings.h"
 #include "editor/Brush.h"
+#include "editor/EditorAuthoringService.h"
+#include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorToolbar.h"
-#include "editor/EditorValueJson.h"
 #include "editor/EditorVolumeTarget.h"
 #include "editor/EditorWorkspace.h"
 #include "editor/FieldBrushTool.h"
@@ -67,27 +68,6 @@ const char* transactionStateName(TransactionState state) {
         case TransactionState::Failed: return "failed";
     }
     return "failed";
-}
-
-EditorValue diagnosticsValue(const std::vector<EditorDiagnostic>& diagnostics) {
-    EditorValue::Array values;
-    for (const EditorDiagnostic& diagnostic : diagnostics) {
-        EditorValue::Object value;
-        value["rule"]     = EditorValue(diagnostic.rule.value());
-        value["severity"] = EditorValue(static_cast<std::int64_t>(diagnostic.severity));
-        value["message"]  = EditorValue(diagnostic.message);
-        values.emplace_back(std::move(value));
-    }
-    return EditorValue(std::move(values));
-}
-
-EditorValue resultValue(EditorStatus status, const std::vector<EditorDiagnostic>& diagnostics) {
-    EditorValue::Object result;
-    result["status"] = EditorValue(statusName(status));
-    result["accepted"] =
-        EditorValue(status == EditorStatus::Applied || status == EditorStatus::Pending || status == EditorStatus::NoOp);
-    result["diagnostics"] = diagnosticsValue(diagnostics);
-    return EditorValue(std::move(result));
 }
 
 bool squirrelToEditorValue(HSQUIRRELVM vm, SQInteger index, EditorValue& out, size_t depth = 0) {
@@ -427,135 +407,23 @@ void buildHeightmapArrays(const eve::procgen::Heightmap& hm, float cell, float h
 }  // namespace
 #endif
 
-class EditorAutomationProvider final : public eve::IEditorAutomation {
-public:
-    explicit EditorAutomationProvider(EditorCommandService* commands) : commands_(commands) {
-        session_.setCommandService(commands_);
-        session_.setSessionId(SessionId("editor.mcp"));
-    }
-
-    std::string invoke(const std::string& operation, const std::string& requestJson) override {
-        refreshProfile();
-        EditorResult<EditorValue> parsed = editorValueFromJson(requestJson.empty() ? "{}" : requestJson);
-        if (!parsed.accepted() || !parsed.value || parsed.value->type() != EditorValue::Type::Object)
-            return errorJson(EditorStatus::Rejected, "editor.automation.invalid-json", "Request must be a JSON object");
-        const auto& request = *parsed.value->getIf<EditorValue::Object>();
-        if (operation == "commands") return commandsJson();
-        if (operation == "plan") {
-            const std::string       command = stringField(request, "command");
-            std::optional<Revision> expected;
-            if (const auto* value = integerField(request, "expectedRevision")) expected = static_cast<Revision>(*value);
-            auto result          = session_.retainPlan(CommandId(command), valueField(request, "payload"),
-                                                       CommandSource::Automation, expected);
-            lastDiagnostics_     = result.diagnostics;
-            EditorValue response = resultValue(result.status, result.diagnostics);
-            if (result.value) (*response.getIf<EditorValue::Object>())["planId"] = EditorValue(result.value->value());
-            return editorValueToJson(response);
-        }
-        if (operation == "commit") {
-            auto result =
-                session_.executeRetainedPlan(PlanId(stringField(request, "planId")), CommandSource::Automation);
-            lastDiagnostics_     = result.diagnostics;
-            EditorValue response = resultValue(result.status, result.diagnostics);
-            if (result.value) {
-                auto* object                = response.getIf<EditorValue::Object>();
-                (*object)["transactionId"]  = EditorValue(result.value->id.value());
-                (*object)["state"]          = EditorValue(transactionStateName(result.value->state));
-                (*object)["beforeRevision"] = EditorValue(static_cast<std::int64_t>(result.value->beforeRevision));
-                (*object)["afterRevision"]  = EditorValue(static_cast<std::int64_t>(result.value->afterRevision));
-            }
-            return editorValueToJson(response);
-        }
-        if (operation == "execute") {
-            auto result = session_.executeCommandReceipt(CommandId(stringField(request, "command")),
-                                                         valueField(request, "payload"), CommandSource::Automation);
-            lastDiagnostics_     = result.diagnostics;
-            EditorValue response = resultValue(result.status, result.diagnostics);
-            if (result.value) {
-                auto* object                = response.getIf<EditorValue::Object>();
-                (*object)["transactionId"]  = EditorValue(result.value->id.value());
-                (*object)["state"]          = EditorValue(transactionStateName(result.value->state));
-                (*object)["beforeRevision"] = EditorValue(static_cast<std::int64_t>(result.value->beforeRevision));
-                (*object)["afterRevision"]  = EditorValue(static_cast<std::int64_t>(result.value->afterRevision));
-            }
-            return editorValueToJson(response);
-        }
-        if (operation == "cancel") {
-            auto result      = session_.cancelRetainedPlan(PlanId(stringField(request, "planId")));
-            lastDiagnostics_ = result.diagnostics;
-            return editorValueToJson(resultValue(result.status, result.diagnostics));
-        }
-        if (operation == "undo" || operation == "redo") {
-            const bool  changed = operation == "undo" ? session_.transactions().undo() : session_.transactions().redo();
-            EditorValue response = resultValue(changed ? EditorStatus::Applied : EditorStatus::NoOp, {});
-            (*response.getIf<EditorValue::Object>())["changed"] = EditorValue(changed);
-            return editorValueToJson(response);
-        }
-        if (operation == "diagnostics") {
-            EditorValue response = resultValue(EditorStatus::Applied, lastDiagnostics_);
-            return editorValueToJson(response);
-        }
-        return errorJson(EditorStatus::Unsupported, "editor.automation.unsupported-operation",
-                         "Unsupported editor automation operation: " + operation);
-    }
-
-private:
-    void refreshProfile() {
-        HostProfile profile = HostProfile::automation();
-        if (commands_)
-            for (const CommandDescriptor& command : commands_->commands(HostProfile::developer()))
-                if (command.automationAllowed && profile.hasFeatures(command.requiredFeatures))
-                    profile.allowCommand(command.id);
-        session_.setHostProfile(std::move(profile));
-    }
-
-    std::string commandsJson() {
-        EditorValue::Array descriptors;
-        for (const CommandDescriptor& command : session_.availableCommands()) {
-            EditorValue::Object descriptor;
-            descriptor["id"]          = EditorValue(command.id.value());
-            descriptor["displayName"] = EditorValue(command.displayName);
-            descriptor["category"]    = EditorValue(command.category);
-            descriptor["owner"]       = EditorValue(command.ownerModule);
-            descriptor["planned"]     = EditorValue(command.createsTransaction);
-            descriptors.emplace_back(std::move(descriptor));
-        }
-        EditorValue response                                 = resultValue(EditorStatus::Applied, {});
-        (*response.getIf<EditorValue::Object>())["commands"] = EditorValue(std::move(descriptors));
-        return editorValueToJson(response);
-    }
-
-    static const EditorValue* findField(const EditorValue::Object& request, const char* key) {
-        const auto found = request.find(key);
-        return found == request.end() ? nullptr : &found->second;
-    }
-    static std::string stringField(const EditorValue::Object& request, const char* key) {
-        const EditorValue* value = findField(request, key);
-        const auto*        text  = value ? value->getIf<std::string>() : nullptr;
-        return text ? *text : std::string{};
-    }
-    static const std::int64_t* integerField(const EditorValue::Object& request, const char* key) {
-        const EditorValue* value = findField(request, key);
-        return value ? value->getIf<std::int64_t>() : nullptr;
-    }
-    static EditorValue valueField(const EditorValue::Object& request, const char* key) {
-        const EditorValue* value = findField(request, key);
-        return value ? *value : EditorValue{};
-    }
-    static std::string errorJson(EditorStatus status, const char* rule, std::string message) {
-        return editorValueToJson(resultValue(status, {{RuleId(rule), DiagnosticSeverity::Error, std::move(message)}}));
-    }
-
-    EditorCommandService*         commands_ = nullptr;
-    EditorSession                 session_;
-    std::vector<EditorDiagnostic> lastDiagnostics_;
-};
-
-Editor::Editor() : automation_(std::make_unique<EditorAutomationProvider>(&commandService_)) {
+Editor::Editor()
+    : authoring_(std::make_unique<EditorAuthoringService>(commandService_)),
+      automation_(std::make_unique<EditorAutomationProvider>(commandService_, *authoring_)) {
     eve::cap::provide<eve::IEditorAutomation>(automation_.get());
 }
 
 Editor::~Editor() { eve::cap::revoke<eve::IEditorAutomation>(automation_.get()); }
+
+EditorResult<void> Editor::registerAuthoringTarget(IEditableTargetV2& target) {
+    return authoring_->registerTarget(target);
+}
+
+EditorResult<void> Editor::unregisterAuthoringTarget(const TargetId& target) {
+    auto result = authoring_->unregisterTarget(target);
+    if (result.status == EditorStatus::Applied) automation_->targetUnregistered(target);
+    return result;
+}
 
 TransformGizmo* Editor::newGizmo() { return new TransformGizmo(); }
 
