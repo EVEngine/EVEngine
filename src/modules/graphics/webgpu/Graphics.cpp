@@ -5384,6 +5384,50 @@ bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queu
     return true;
 }
 
+float decodeHalf(uint16_t value) {
+    const uint32_t sign = uint32_t(value & 0x8000u) << 16u;
+    uint32_t exponent = (value >> 10u) & 0x1fu;
+    uint32_t mantissa = value & 0x03ffu;
+    uint32_t bits = 0;
+    if (exponent == 0) {
+        if (mantissa == 0) {
+            bits = sign;
+        } else {
+            exponent = 1;
+            while ((mantissa & 0x0400u) == 0) {
+                mantissa <<= 1u;
+                --exponent;
+            }
+            mantissa &= 0x03ffu;
+            bits = sign | ((exponent + 112u) << 23u) | (mantissa << 13u);
+        }
+    } else if (exponent == 31u) {
+        bits = sign | 0x7f800000u | (mantissa << 13u);
+    } else {
+        bits = sign | ((exponent + 112u) << 23u) | (mantissa << 13u);
+    }
+    float result = 0.f;
+    std::memcpy(&result, &bits, sizeof(result));
+    return result;
+}
+
+float hdrToDisplay(float value) {
+    const float linear = std::max(value, 0.f);
+    const float mapped = std::clamp((linear * (2.51f * linear + 0.03f)) /
+                                        (linear * (2.43f * linear + 0.59f) + 0.14f),
+                                    0.f, 1.f);
+    return mapped <= 0.0031308f ? mapped * 12.92f
+                               : 1.055f * std::pow(mapped, 1.f / 2.4f) - 0.055f;
+}
+
+Color hdrPixelToColor(const uint8_t *pixel) {
+    uint16_t channels[4]{};
+    std::memcpy(channels, pixel, sizeof(channels));
+    return Color(hdrToDisplay(decodeHalf(channels[0])), hdrToDisplay(decodeHalf(channels[1])),
+                 hdrToDisplay(decodeHalf(channels[2])),
+                 std::clamp(decodeHalf(channels[3]), 0.f, 1.f));
+}
+
 }  // namespace
 
 Color Graphics::getPixelImpl(OffscreenCanvas* canvas, int x, int y) {
@@ -5394,7 +5438,11 @@ Color Graphics::getPixelImpl(OffscreenCanvas* canvas, int x, int y) {
     wgpu::Texture src = canvas ? canvas->color
                                : (sceneColorSlots.empty() ? nullptr
                                                           : sceneColorSlots[lastPresentSlot].color);
-    if (!src || !copyTextureToCpu(instance, device, queue, src, w, h, rgba)) return clearColor;
+    const bool hdrScene = canvas == nullptr;
+    if (!src || !copyTextureToCpu(instance, device, queue, src, w, h, rgba,
+                                  hdrScene ? 8 : 4))
+        return clearColor;
+    if (hdrScene) return hdrPixelToColor(rgba.data() + (size_t(y) * w + x) * 8);
     const uint8_t *p = rgba.data() + (size_t(y) * w + x) * 4;
     return Color(p[0] / 255.f, p[1] / 255.f, p[2] / 255.f, p[3] / 255.f);
 }
@@ -5407,8 +5455,21 @@ image::ImageData *Graphics::newImageDataImpl(OffscreenCanvas *canvas) {
     wgpu::Texture src = canvas ? canvas->color
                                : (sceneColorSlots.empty() ? nullptr
                                                           : sceneColorSlots[lastPresentSlot].color);
-    if (src && copyTextureToCpu(instance, device, queue, src, w, h, rgba)) {
-        std::memcpy(img->getData(), rgba.data(), rgba.size());
+    const bool hdrScene = canvas == nullptr;
+    if (src && copyTextureToCpu(instance, device, queue, src, w, h, rgba,
+                                hdrScene ? 8 : 4)) {
+        if (!hdrScene) {
+            std::memcpy(img->getData(), rgba.data(), rgba.size());
+        } else {
+            auto *dst = static_cast<uint8_t *>(img->getData());
+            for (size_t pixel = 0; pixel < size_t(w) * h; ++pixel) {
+                const Color color = hdrPixelToColor(rgba.data() + pixel * 8);
+                dst[pixel * 4 + 0] = uint8_t(std::clamp(color.r * 255.f, 0.f, 255.f));
+                dst[pixel * 4 + 1] = uint8_t(std::clamp(color.g * 255.f, 0.f, 255.f));
+                dst[pixel * 4 + 2] = uint8_t(std::clamp(color.b * 255.f, 0.f, 255.f));
+                dst[pixel * 4 + 3] = uint8_t(std::clamp(color.a * 255.f, 0.f, 255.f));
+            }
+        }
     }
     return img;
 }
