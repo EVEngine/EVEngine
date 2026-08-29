@@ -71,7 +71,7 @@ Result<void> writeExclusiveAndFlush(const std::filesystem::path& path,
 Result<std::vector<std::uint8_t>> readBounded(const std::filesystem::path& path, std::uint64_t maximumBytes) {
     std::error_code ec;
     const auto size = std::filesystem::file_size(path, ec);
-    if (ec || size > maximumBytes || size > std::numeric_limits<std::size_t>::max())
+    if (ec || size > maximumBytes || size > (std::numeric_limits<std::size_t>::max)())
         return storeFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
                                                        "temporary package size is outside limits", path);
     std::ifstream input(path, std::ios::binary);

@@ -114,14 +114,15 @@ Result<std::vector<std::uint8_t>> decodePng(std::span<const std::uint8_t> bytes,
     const std::uint64_t rowBytes = std::uint64_t(width) * channels;
     const std::uint64_t filteredSize = std::uint64_t(height) * (rowBytes + 1);
     const std::uint64_t rgbaSize = std::uint64_t(width) * height * 4;
-    if (!sawHeader || !sawEnd || compressed.empty() || filteredSize > maximumDecodedBytes ||
+    if (!sawHeader || !sawEnd || compressed.empty() || compressed.size() > (std::numeric_limits<uLong>::max)() ||
+        filteredSize > maximumDecodedBytes ||
         rgbaSize > maximumDecodedBytes || rgbaSize + 24 > maximumDecodedBytes ||
         filteredSize > std::numeric_limits<uLongf>::max())
         return failure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
                                                   "PNG decoded dimensions exceed Cook budget");
     std::vector<std::uint8_t> filtered(static_cast<std::size_t>(filteredSize));
     uLongf outputSize = static_cast<uLongf>(filtered.size());
-    if (uncompress(filtered.data(), &outputSize, compressed.data(), compressed.size()) != Z_OK ||
+    if (uncompress(filtered.data(), &outputSize, compressed.data(), static_cast<uLong>(compressed.size())) != Z_OK ||
         outputSize != filtered.size())
         return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
                                                   "PNG zlib stream is invalid or has unexpected size");
