@@ -139,8 +139,13 @@ Renderable3D *makeRenderable(IResourceFactory *gfx, ModelData *model, int meshIn
     const aiMesh *ai = scene->mMeshes[meshIndex];
     if (!ai || ai->mNumVertices == 0 || ai->mNumFaces == 0) return nullptr;
 
-    Mesh *mesh = options.bakeWorldTransform ? gfx->newMeshFromAssimp(*ai, world)
-                                            : gfx->newMeshFromAssimp(*ai);
+    // Skinned vertex positions and inverse-bind matrices share the model's
+    // bind-pose space. Baking the owning node transform into only the vertices
+    // makes the skin palette apply that transform a second time, separating
+    // modular body parts (notably KayKit heads, armour and limbs). Static
+    // meshes still use the established baked scene transform.
+    const bool bakeWorld = options.bakeWorldTransform && !ai->HasBones();
+    Mesh *mesh = bakeWorld ? gfx->newMeshFromAssimp(*ai, world) : gfx->newMeshFromAssimp(*ai);
     if (!mesh) return nullptr;
 
     const int matIndex = model->getMaterialIndex(meshIndex);

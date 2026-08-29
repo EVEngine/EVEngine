@@ -412,6 +412,15 @@ file(GLOB all_test_cpp
   tensor.cpp
   tensor_llm.cpp
   tensor_quant.cpp
+  tactics_action.cpp
+  tactics_board.cpp
+  tactics_objective.cpp
+  tactics_path.cpp
+  tactics_reaction.cpp
+  tactics_replay.cpp
+  tactics_rpg_integration.cpp
+  tactics_script.cpp
+  tactics_turn.cpp
   callgraph.cpp
   renderflow.cpp
   resource_lifetime.cpp
