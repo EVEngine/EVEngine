@@ -1,5 +1,5 @@
-if(NOT DEFINED ZEROERR_EXE OR NOT DEFINED CTEST_FILE)
-  message(FATAL_ERROR "ZEROERR_EXE and CTEST_FILE required")
+if(NOT DEFINED ZEROERR_EXE OR NOT DEFINED CTEST_FILE OR NOT DEFINED ZEROERR_WORKING_DIRECTORY)
+  message(FATAL_ERROR "ZEROERR_EXE, CTEST_FILE, and ZEROERR_WORKING_DIRECTORY required")
 endif()
 
 # 1) Collect test cases.
@@ -83,7 +83,7 @@ set(_content "")
 foreach(_basename IN LISTS _bundle_files)
   string(APPEND _content
     "add_test(\"bundle/${_basename}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=.*${_basename}\")\n"
-    "set_tests_properties(\"bundle/${_basename}\" PROPERTIES LABELS \"bundle\")\n")
+    "set_tests_properties(\"bundle/${_basename}\" PROPERTIES LABELS \"bundle\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
   foreach(_entry IN LISTS _cases)
     string(REPLACE "|" ";" _parts "${_entry}")
     list(GET _parts 0 _name)
@@ -91,7 +91,8 @@ foreach(_basename IN LISTS _bundle_files)
     if(_file STREQUAL _basename)
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
       string(APPEND _content
-        "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n")
+        "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
+        "set_tests_properties(\"${_name}\" PROPERTIES WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
     endif()
   endforeach()
 endforeach()

@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <cmath>
@@ -11,7 +12,27 @@
 #include <vector>
 
 #include "data/ByteData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Material.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
@@ -33,18 +54,6 @@ std::vector<char> readBinaryFile(const std::string &path) {
     return std::vector<char>((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 }
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320, int h = 240) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 void resetScene3D() {
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {
@@ -122,7 +131,7 @@ Texture *makeFaceColoredCubemap(Graphics *gfx, const uint8_t faceRgb[6][3], int 
 
 /** Load 128^2 PNG faces (px,nx,py,ny,pz,nz) under test/Textures/env/<name>/. */
 Texture *loadEnvCubemap(Graphics *gfx, const char *name) {
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     static const char *kFaces[6] = {"px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"};
 
     int faceSize = 0;

@@ -1,13 +1,33 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "map/Map.h"
-#include "map/TileLayer.h"
-#include "map/Pathfinder.h"
-#include "map/Path.h"
-#include "map/FlowField.h"
-#include "map/TileOrientation.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+#include "map/FlowField.h"
+#include "map/Map.h"
+#include "map/Path.h"
+#include "map/Pathfinder.h"
+#include "map/TileLayer.h"
+#include "map/TileOrientation.h"
 #include "window/Window.h"
 
 #include <SDL2/SDL.h>
@@ -15,6 +35,8 @@
 #include <cmath>
 #include <string>
 #include <vector>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::map;
 using namespace eve::graphics;
@@ -300,7 +322,6 @@ TEST_CASE("map.path.astar.routePreview") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 400;
@@ -382,4 +403,56 @@ TEST_CASE("map.path.astar.routePreview") {
     delete path;
     delete pf;
     win->close();
+}
+
+TEST_CASE("map.path.accessorRoundTrips") {
+    auto *mod = Map::create();
+    Pathfinder *pf = mod->newPathfinderSize(4, 4);
+    REQUIRE(pf != nullptr);
+
+    pf->setDiagonal(true);
+    CHECK(pf->getDiagonal());
+    pf->setDiagonal(false);
+    CHECK(!pf->getDiagonal());
+
+    pf->setBlockEmpty(true);
+    CHECK(pf->getBlockEmpty());
+    pf->setBlockEmpty(false);
+    CHECK(!pf->getBlockEmpty());
+
+    pf->setCellCost(1, 1, 2.5f);
+    CHECK_EQ(pf->getCellCost(1, 1), 2.5f);
+    CHECK_EQ(pf->getCellCost(9, 9), 0.f);  // out of bounds
+
+    pf->blockGid(7);
+    pf->setBlocked(0, 0, true);
+    pf->unblockGid(7);
+    pf->clearBlockedGids();
+    pf->invalidateCache();
+    // setBlocked cells stay blocked until explicitly cleared; gid blocking is gone.
+    CHECK(!pf->isWalkable(0, 0));
+    pf->setBlocked(0, 0, false);
+    CHECK(pf->isWalkable(0, 0));
+
+    delete pf;
+}
+
+TEST_CASE("map.path.boundLayerAutoSyncsRevision") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(5, 1, 8.f, 8.f);
+    layer->fill(2);
+    Pathfinder *pf = mod->newPathfinder(layer);
+    pf->blockGid(1);
+    Path *initial = pf->findPath(0, 0, 4, 0);
+    CHECK_GT(initial->getLength(), 0);
+    delete initial;
+    layer->setTile(2, 0, 1);
+    Path *blocked = pf->findPath(0, 0, 4, 0);
+    CHECK_EQ(blocked->getLength(), 0);
+    delete blocked;
+    layer->setTile(2, 0, 2);
+    Path *open = pf->findPath(0, 0, 4, 0);
+    CHECK_GT(open->getLength(), 0);
+    delete open;
+    delete pf;
 }

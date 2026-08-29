@@ -1,0 +1,8 @@
+[
+  {"id": "quest.slayer",
+   "startPolicy": "manual",
+   "completePolicy": "claim",
+   "objectives": [{"id": "kill_slimes", "topic": "kill", "target": "slime", "count": 3}],
+   "rewards": [{"type": "attribute", "id": "gold", "amount": 50}],
+   "tags": ["main"], "extra": {"title": "清剿史莱姆"}}
+]

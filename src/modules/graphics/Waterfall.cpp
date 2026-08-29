@@ -2,8 +2,10 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/shaders/WaterfallWgsl.h"
 #include "graphics/shaders/waterfall_mesh_frag_spv.inc"
 
+#include <algorithm>
 #include <cmath>
 #include <string>
 #include <vector>
@@ -28,9 +30,14 @@ const int kUniformCount = int(sizeof(kUniformNames) / sizeof(kUniformNames[0]));
 }  // namespace
 
 Shader *newWaterfallShader(Graphics *gfx) {
-    std::vector<uint32_t> frag(waterfall_mesh_frag_spv,
-                               waterfall_mesh_frag_spv + waterfall_mesh_frag_spv_count);
-    Shader *sh = gfx->newMeshShaderFromSpv({}, frag);
+    Shader *sh = nullptr;
+    if (gfx->getBackendName() == "webgpu") {
+        sh = gfx->newMeshShaderFromWgsl({}, shaders::kWaterfallFragWgsl);
+    } else {
+        std::vector<uint32_t> frag(waterfall_mesh_frag_spv,
+                                   waterfall_mesh_frag_spv + waterfall_mesh_frag_spv_count);
+        sh = gfx->newMeshShaderFromSpv({}, frag);
+    }
     for (int i = 0; i < kUniformCount; ++i) {
         if (std::string(kUniformNames[i]) == "waterCol")
             sh->declareVec3(kUniformNames[i]);
@@ -53,20 +60,34 @@ Waterfall::Waterfall(Graphics *gfx) : gfx_(gfx) {
 }
 
 void Waterfall::createSheet(float width, float height, int segX, int segY) {
+    createCurvedSheet(width, height, segX, segY, 0.f, 0.f);
+}
+
+void Waterfall::createCurvedSheet(float width, float height, int segX, int segY,
+                                  float curveDepth, float lipOverhang) {
     segX = std::max(1, segX);
     segY = std::max(1, segY);
+    curveDepth = std::max(0.f, curveDepth);
+    lipOverhang = std::max(0.f, lipOverhang);
     std::vector<float> pos, nrm, uv;
     std::vector<uint32_t> idx;
     for (int y = 0; y <= segY; ++y) {
+        const float v = float(y) / float(segY);
+        const float lowerFan = 1.f + 0.12f * (1.f - v) * (1.f - v);
         for (int x = 0; x <= segX; ++x) {
-            pos.push_back(-width * 0.5f + width * float(x) / segX);
-            pos.push_back(-height * 0.5f + height * float(y) / segY);
-            pos.push_back(0.f);
+            const float u = float(x) / float(segX);
+            const float across = u * 2.f - 1.f;
+            const float crown = std::max(0.f, 1.f - across * across);
+            const float bow = curveDepth * crown * (0.62f + 0.38f * v);
+            const float lip = lipOverhang * v * v;
+            pos.push_back(across * width * 0.5f * lowerFan);
+            pos.push_back(-height * 0.5f + height * v);
+            pos.push_back(bow + lip);
             nrm.push_back(0.f);
             nrm.push_back(0.f);
             nrm.push_back(1.f);
-            uv.push_back(float(x) / segX);
-            uv.push_back(float(y) / segY);
+            uv.push_back(u);
+            uv.push_back(v);
         }
     }
     for (int y = 0; y < segY; ++y) {

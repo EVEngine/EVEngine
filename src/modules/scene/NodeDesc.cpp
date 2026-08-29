@@ -14,6 +14,7 @@ int appendNode(SceneHost::Tree &tree, NodeDesc &&desc, int parentIndex) {
     const int index = int(tree.nodes.size());
     SceneNode node;
     node.id = std::move(desc.id);
+    node.persistentId = desc.persistentId;
     node.key = desc.key.empty() ? node.id : std::move(desc.key);
     node.name = desc.name.empty() ? node.id : std::move(desc.name);
     node.space = std::move(desc.space);
@@ -184,6 +185,7 @@ void patchProps(SceneHost *host, int nodeIndex, NodeDesc &&desc) {
     n.sx = desc.sx;
     n.sy = desc.sy;
     n.sz = desc.sz;
+    if (!desc.persistentId.isNil()) n.persistentId = desc.persistentId;
     if (!desc.space.empty()) n.space = desc.space;
     if (!desc.id.empty()) n.id = desc.id;
     if (!desc.name.empty()) n.name = desc.name;

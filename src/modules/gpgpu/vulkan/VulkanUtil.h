@@ -1,10 +1,14 @@
 #pragma once
 
-#include "graphics/vulkan/Graphics.h"
+#include "vkbuilder.hpp"
 
 #include <cstdint>
 #include <string>
 #include <vector>
+
+namespace eve::graphics::vulkan {
+class Graphics;
+}
 
 namespace eve::gpgpu {
 

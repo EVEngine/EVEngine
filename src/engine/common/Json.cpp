@@ -1,9 +1,15 @@
 #include "common/Json.h"
 
+#include "common/Value.h"
+
+#include <charconv>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
+#include <locale>
 #include <sstream>
+#include <string_view>
+#include <type_traits>
 #include <utility>
 
 namespace eve::json {
@@ -15,15 +21,18 @@ namespace eve::json {
 struct Node {
     enum class Kind { Null, Bool, Number, String, Object, Array };
 
-    Kind kind = Kind::Null;
-    bool boolVal = false;
+    Kind   kind      = Kind::Null;
+    bool   boolVal   = false;
     double numberVal = 0.0;
-    /** Set when the literal had no fraction/exponent, so ints round-trip exactly. */
-    bool integral = false;
-    long long intVal = 0;
-    std::string stringVal;
-    std::vector<std::pair<std::string, Node>> members;  // object, document order
-    std::vector<Node> elements;                         // array
+    /** Set when the literal had no fraction or exponent. */
+    bool integerLiteral = false;
+    /** Set when the integer literal fits the canonical Int64 range. */
+    bool                     hasInt64 = false;
+    std::int64_t             intVal   = 0;
+    std::string              stringVal;
+    std::vector<std::string> memberNames;   // object keys, document order
+    std::vector<Node>        memberValues;  // object values, parallel to memberNames
+    std::vector<Node>        elements;      // array
 };
 
 namespace {
@@ -51,22 +60,23 @@ public:
     }
 
 private:
-    const std::string& s_;
-    size_t pos_ = 0;
+    static constexpr size_t kMaxDepth = 256;
+    const std::string&      s_;
+    size_t                  pos_ = 0;
 
     void skipWs() {
-        while (pos_ < s_.size() &&
-               (s_[pos_] == ' ' || s_[pos_] == '\t' || s_[pos_] == '\n' || s_[pos_] == '\r'))
+        while (pos_ < s_.size() && (s_[pos_] == ' ' || s_[pos_] == '\t' || s_[pos_] == '\n' || s_[pos_] == '\r'))
             ++pos_;
     }
 
     bool peek(char c) const { return pos_ < s_.size() && s_[pos_] == c; }
 
-    bool parseValue(Node& out) {
+    bool parseValue(Node& out, size_t depth = 0) {
+        if (depth > kMaxDepth) return false;
         if (pos_ >= s_.size()) return false;
         switch (s_[pos_]) {
-            case '{': return parseObject(out);
-            case '[': return parseArray(out);
+            case '{': return parseObject(out, depth);
+            case '[': return parseArray(out, depth);
             case '"':
                 if (!parseString(out.stringVal)) return false;
                 out.kind = Node::Kind::String;
@@ -82,7 +92,7 @@ private:
         const size_t n = std::char_traits<char>::length(lit);
         if (s_.compare(pos_, n, lit) != 0) return false;
         pos_ += n;
-        out.kind = Node::Kind::Bool;
+        out.kind    = Node::Kind::Bool;
         out.boolVal = value;
         return true;
     }
@@ -96,31 +106,49 @@ private:
 
     bool parseNumber(Node& out) {
         const size_t start = pos_;
-        if (pos_ < s_.size() && (s_[pos_] == '-' || s_[pos_] == '+')) ++pos_;
-        bool hasDigit = false;
-        while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') {
+        if (pos_ < s_.size() && s_[pos_] == '-') ++pos_;
+        if (pos_ >= s_.size()) return false;
+        if (s_[pos_] == '0') {
             ++pos_;
-            hasDigit = true;
+            // RFC 8259 forbids leading zeroes in the integer component.
+            if (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') return false;
+        } else if (s_[pos_] >= '1' && s_[pos_] <= '9') {
+            while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') ++pos_;
+        } else {
+            return false;
         }
         bool integral = true;
         if (pos_ < s_.size() && s_[pos_] == '.') {
             integral = false;
             ++pos_;
+            const size_t fractionStart = pos_;
             while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') ++pos_;
+            if (pos_ == fractionStart) return false;
         }
         if (pos_ < s_.size() && (s_[pos_] == 'e' || s_[pos_] == 'E')) {
             integral = false;
             ++pos_;
             if (pos_ < s_.size() && (s_[pos_] == '-' || s_[pos_] == '+')) ++pos_;
+            const size_t exponentStart = pos_;
             while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') ++pos_;
+            if (pos_ == exponentStart) return false;
         }
-        if (!hasDigit) return false;
         const std::string num = s_.substr(start, pos_ - start);
         try {
-            out.numberVal = std::stod(num);
+            size_t used   = 0;
+            out.numberVal = std::stod(num, &used);
+            if (used != num.size() || !std::isfinite(out.numberVal)) return false;
+            out.integerLiteral = integral;
             if (integral) {
-                out.intVal = std::stoll(num);
-                out.integral = true;
+                try {
+                    out.intVal   = std::stoll(num);
+                    out.hasInt64 = true;
+                } catch (...) {
+                    // Keep the finite double for compatibility with the
+                    // lenient read-only JSON facade. Owning Value conversion
+                    // rejects this integer because it cannot preserve Int64.
+                    out.hasInt64 = false;
+                }
             }
         } catch (...) {
             // Out of long long range but still a valid double (or vice versa):
@@ -128,7 +156,6 @@ private:
             if (!integral) return false;
             try {
                 out.numberVal = std::stod(num);
-                out.integral = false;
             } catch (...) {
                 return false;
             }
@@ -145,6 +172,7 @@ private:
             const char c = s_[pos_++];
             if (c == '"') return true;
             if (c != '\\') {
+                if (static_cast<unsigned char>(c) < 0x20) return false;
                 out += c;
                 continue;
             }
@@ -163,21 +191,23 @@ private:
                     if (pos_ + 4 > s_.size()) return false;
                     const char hex[5] = {s_[pos_], s_[pos_ + 1], s_[pos_ + 2], s_[pos_ + 3], '\0'};
                     pos_ += 4;
-                    char* end = nullptr;
-                    const unsigned cp = static_cast<unsigned>(std::strtoul(hex, &end, 16));
+                    char*          end = nullptr;
+                    const unsigned cp  = static_cast<unsigned>(std::strtoul(hex, &end, 16));
                     if (!end || *end != '\0') return false;
                     // A high surrogate followed by "\uXXXX" forms one code point.
                     if (cp >= 0xD800 && cp <= 0xDBFF && pos_ + 6 <= s_.size() && s_[pos_] == '\\' &&
                         s_[pos_ + 1] == 'u') {
-                        const char lohex[5] = {s_[pos_ + 2], s_[pos_ + 3], s_[pos_ + 4],
-                                               s_[pos_ + 5], '\0'};
+                        const char lohex[5] = {s_[pos_ + 2], s_[pos_ + 3], s_[pos_ + 4], s_[pos_ + 5], '\0'};
                         pos_ += 6;
-                        char* loEnd = nullptr;
-                        const unsigned lo = static_cast<unsigned>(std::strtoul(lohex, &loEnd, 16));
-                        if (loEnd && *loEnd == '\0' && lo >= 0xDC00 && lo <= 0xDFFF)
+                        char*          loEnd = nullptr;
+                        const unsigned lo    = static_cast<unsigned>(std::strtoul(lohex, &loEnd, 16));
+                        if (loEnd && *loEnd == '\0' && lo >= 0xDC00 && lo <= 0xDFFF) {
                             appendUtf8(out, 0x10000 + ((cp - 0xD800) << 10) + (lo - 0xDC00));
-                        else
-                            appendUtf8(out, cp);
+                        } else {
+                            return false;
+                        }
+                    } else if (cp >= 0xD800 && cp <= 0xDFFF) {
+                        return false;
                     } else {
                         appendUtf8(out, cp);
                     }
@@ -207,7 +237,7 @@ private:
         }
     }
 
-    bool parseObject(Node& out) {
+    bool parseObject(Node& out, size_t depth) {
         ++pos_;  // '{'
         skipWs();
         if (peek('}')) {
@@ -219,13 +249,16 @@ private:
             skipWs();
             std::string key;
             if (!parseString(key)) return false;
+            for (const std::string& existing : out.memberNames)
+                if (existing == key) return false;
             skipWs();
             if (!peek(':')) return false;
             ++pos_;
             skipWs();
             Node val;
-            if (!parseValue(val)) return false;
-            out.members.emplace_back(std::move(key), std::move(val));
+            if (!parseValue(val, depth + 1)) return false;
+            out.memberNames.emplace_back(std::move(key));
+            out.memberValues.emplace_back(std::move(val));
             skipWs();
             if (peek('}')) {
                 ++pos_;
@@ -237,7 +270,7 @@ private:
         }
     }
 
-    bool parseArray(Node& out) {
+    bool parseArray(Node& out, size_t depth) {
         ++pos_;  // '['
         skipWs();
         if (peek(']')) {
@@ -248,7 +281,7 @@ private:
         while (true) {
             skipWs();
             Node val;
-            if (!parseValue(val)) return false;
+            if (!parseValue(val, depth + 1)) return false;
             out.elements.push_back(std::move(val));
             skipWs();
             if (peek(']')) {
@@ -264,7 +297,7 @@ private:
 
 /** Compact double formatting; matches what ostringstream default produces. */
 std::string numberToString(const Node& n) {
-    if (n.integral) return std::to_string(n.intVal);
+    if (n.hasInt64) return std::to_string(n.intVal);
     std::ostringstream os;
     os << n.numberVal;
     return os.str();
@@ -292,6 +325,8 @@ bool stringToDouble(const std::string& s, double& out) {
 bool Value::isNull() const { return !node_ || node_->kind == Node::Kind::Null; }
 bool Value::isBool() const { return node_ && node_->kind == Node::Kind::Bool; }
 bool Value::isNumber() const { return node_ && node_->kind == Node::Kind::Number; }
+bool Value::isInt64() const { return node_ && node_->kind == Node::Kind::Number && node_->hasInt64; }
+bool Value::isIntegerLiteral() const { return node_ && node_->kind == Node::Kind::Number && node_->integerLiteral; }
 bool Value::isString() const { return node_ && node_->kind == Node::Kind::String; }
 bool Value::isObject() const { return node_ && node_->kind == Node::Kind::Object; }
 bool Value::isArray() const { return node_ && node_->kind == Node::Kind::Array; }
@@ -300,23 +335,23 @@ bool Value::has(const char* key) const { return static_cast<bool>(get(key)); }
 
 Value Value::get(const char* key) const {
     if (!node_ || node_->kind != Node::Kind::Object || !key) return Value();
-    for (const auto& m : node_->members)
-        if (m.first == key) return Value(&m.second);
+    for (size_t i = 0; i < node_->memberNames.size(); ++i)
+        if (node_->memberNames[i] == key) return Value(&node_->memberValues[i]);
     return Value();
 }
 
 std::vector<std::string> Value::keys() const {
     std::vector<std::string> out;
     if (!node_ || node_->kind != Node::Kind::Object) return out;
-    out.reserve(node_->members.size());
-    for (const auto& m : node_->members) out.push_back(m.first);
+    out.reserve(node_->memberNames.size());
+    for (const auto& name : node_->memberNames) out.push_back(name);
     return out;
 }
 
 size_t Value::size() const {
     if (!node_) return 0;
     if (node_->kind == Node::Kind::Array) return node_->elements.size();
-    if (node_->kind == Node::Kind::Object) return node_->members.size();
+    if (node_->kind == Node::Kind::Object) return node_->memberValues.size();
     return 0;
 }
 
@@ -352,9 +387,11 @@ double Value::asDouble(double fallback) const {
     }
 }
 
+std::int64_t Value::asInt64(std::int64_t fallback) const { return isInt64() ? node_->intVal : fallback; }
+
 int Value::asInt(int fallback) const {
     if (!node_) return fallback;
-    if (node_->kind == Node::Kind::Number && node_->integral) {
+    if (node_->kind == Node::Kind::Number && node_->hasInt64) {
         if (node_->intVal < std::numeric_limits<int>::min() ||
             node_->intVal > std::numeric_limits<int>::max())
             return fallback;
@@ -435,6 +472,101 @@ std::unordered_map<std::string, int> Value::getIntMap(const char* key) const {
     if (!obj.isObject()) return out;
     for (const auto& name : obj.keys()) out[name] = obj.getInt(name.c_str(), 0);
     return out;
+}
+
+namespace {
+
+void appendEscapedString(std::string_view value, std::string& output) {
+    constexpr char hex[] = "0123456789abcdef";
+    output.push_back('"');
+    for (const unsigned char byte : value) {
+        switch (byte) {
+            case '"': output += "\\\""; break;
+            case '\\': output += "\\\\"; break;
+            case '\b': output += "\\b"; break;
+            case '\f': output += "\\f"; break;
+            case '\n': output += "\\n"; break;
+            case '\r': output += "\\r"; break;
+            case '\t': output += "\\t"; break;
+            default:
+                if (byte < 0x20) {
+                    output += "\\u00";
+                    output.push_back(hex[byte >> 4]);
+                    output.push_back(hex[byte & 0x0f]);
+                } else {
+                    output.push_back(static_cast<char>(byte));
+                }
+                break;
+        }
+    }
+    output.push_back('"');
+}
+
+bool appendCanonicalJson(const eve::Value& value, std::string& output) {
+    return std::visit(
+        [&output](const auto& current) -> bool {
+            using T = std::decay_t<decltype(current)>;
+            if constexpr (std::is_same_v<T, std::monostate>) {
+                output += "null";
+                return true;
+            } else if constexpr (std::is_same_v<T, bool>) {
+                output += current ? "true" : "false";
+                return true;
+            } else if constexpr (std::is_same_v<T, std::int64_t>) {
+                char buffer[32];
+                const auto [end, error] = std::to_chars(buffer, buffer + sizeof(buffer), current);
+                if (error != std::errc()) return false;
+                output.append(buffer, end);
+                return true;
+            } else if constexpr (std::is_same_v<T, double>) {
+                if (!std::isfinite(current)) return false;
+                std::ostringstream stream;
+                stream.imbue(std::locale::classic());
+                stream.precision(std::numeric_limits<double>::max_digits10);
+                stream << current;
+                const std::string number = stream.str();
+                output += number;
+                if (number.find_first_of(".eE") == std::string_view::npos) output += ".0";
+                return true;
+            } else if constexpr (std::is_same_v<T, std::string>) {
+                appendEscapedString(current, output);
+                return true;
+            } else if constexpr (std::is_same_v<T, eve::Value::Array>) {
+                output.push_back('[');
+                bool first = true;
+                for (const eve::Value& element : current) {
+                    if (!first) output.push_back(',');
+                    first = false;
+                    if (!appendCanonicalJson(element, output)) return false;
+                }
+                output.push_back(']');
+                return true;
+            } else if constexpr (std::is_same_v<T, eve::Value::Object>) {
+                output.push_back('{');
+                bool first = true;
+                for (const auto& [key, element] : current) {
+                    if (!first) output.push_back(',');
+                    first = false;
+                    appendEscapedString(key, output);
+                    output.push_back(':');
+                    if (!appendCanonicalJson(element, output)) return false;
+                }
+                output.push_back('}');
+                return true;
+            }
+        },
+        value.storage());
+}
+
+}  // namespace
+
+Result<std::string> stringify(const eve::Value& value) {
+    std::string output;
+    if (!appendCanonicalJson(value, output)) {
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::SerializationError, "Value contains a non-finite Double; JSON requires finite numbers"));
+    }
+    return Result<std::string>::success(std::move(output));
 }
 
 // ---------------------------------------------------------------------------

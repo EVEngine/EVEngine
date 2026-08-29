@@ -1,12 +1,16 @@
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/NoiseField.h"
+#include "procgen/texture/PrototypeTextures.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 
+#include "image/ImageData.h"
+
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <utility>
 #include <vector>
 
 namespace eve::procgen {
@@ -38,14 +42,14 @@ float voronoiDist(const NoiseField &n, float x, float y) {
     return std::sqrt(best);
 }
 
-image::ImageData *makeFromHeightFn(const Params &params, std::string &error,
-                                   const TextureRecipeDef &def) {
+std::unique_ptr<image::ImageData> makeFromHeightFn(const Params &params, std::string &error,
+                                                   const TextureRecipeDef &def) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto *img = new image::ImageData(ctx.width, ctx.height, "RGBA8");
+    auto               img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     std::vector<float> height;
     fillHeightField(ctx, def.height, height);
     paintHeightToImage(*img, height, ctx.width, ctx.height, def.albedo, ctx.colors, ctx.pixelSize);
@@ -418,13 +422,13 @@ CloudField::Params cloudFieldFromParams(const Params &params) {
 }
 
 /** tex.cloud: standalone billowy cloud cover (white puffs on translucent sky). */
-image::ImageData *genCloud(const Params &params, std::string &error) {
+std::unique_ptr<image::ImageData> genCloud(const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto *img = new image::ImageData(ctx.width, ctx.height, "RGBA8");
+    auto      img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     ColorRamp ramp;
     ramp.add(0.00f, 90, 140, 205);
     ramp.add(0.30f, 168, 205, 238);
@@ -441,13 +445,13 @@ image::ImageData *genCloud(const Params &params, std::string &error) {
 }
 
 /** tex.cloud_shadow: projected cloud coverage cast on the ground (white = dense shadow). */
-image::ImageData *genCloudShadow(const Params &params, std::string &error) {
+std::unique_ptr<image::ImageData> genCloudShadow(const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
         return nullptr;
     }
-    auto *img = new image::ImageData(ctx.width, ctx.height, "RGBA8");
+    auto      img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     ColorRamp ramp;
     ramp.add(0.00f, 18, 20, 26);   // clear (lit)
     ramp.add(0.30f, 60, 62, 70);
@@ -481,10 +485,28 @@ const std::vector<TextureRecipeDef> &builtinTextureDefs() {
 
 void TextureRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
-    registerRecipe("tex.cloud", genCloud);
-    registerRecipe("tex.cloud_shadow", genCloudShadow);
+    registerPrototypeTextureRecipes(*this);
+    auto cloudDescriptor = [](std::string id, std::string name, bool shadow) {
+        RecipeDescriptor schema = RecipeDescriptor::grid(std::move(id), std::move(name), "Atmosphere", 1, 1);
+        schema.params.push_back(ParamDescriptor::floating("worldScale", "World Scale", 96.f, 1.f, 4096.f, 1.f));
+        schema.params.push_back(ParamDescriptor::floating("cloudCoverage", "Coverage", 0.55f, 0.f, 1.f, 0.01f));
+        schema.params.push_back(ParamDescriptor::floating("cloudSoftness", "Softness", 0.12f, 0.001f, 1.f, 0.01f));
+        schema.params.push_back(ParamDescriptor::floating("cloudDetail", "Detail", 0.5f, 0.f, 2.f, 0.01f));
+        schema.params.push_back(ParamDescriptor::floating("windSpeed", "Wind Speed", 4.f, 0.f, 256.f, 0.1f));
+        schema.params.push_back(ParamDescriptor::floating("windAngle", "Wind Angle", 0.f, -6.2832f, 6.2832f, 0.01f));
+        schema.params.push_back(ParamDescriptor::integer("octaves", "Octaves", 4, 1, 12));
+        schema.params.push_back(ParamDescriptor::floating("time", "Time", 0.f, 0.f, 86400.f, 0.1f));
+        schema.params.push_back(ParamDescriptor::floating("extent", "Extent", 96.f, 1.f, 4096.f, 1.f));
+        if (shadow) {
+            schema.params.push_back(ParamDescriptor::floating("cloudAltitude", "Cloud Altitude", 60.f, 0.f, 10000.f, 1.f));
+            schema.params.push_back(ParamDescriptor::floating("cloudShadowStrength", "Shadow Strength", 0.8f, 0.f, 1.f, 0.01f));
+        }
+        return schema;
+    };
+    registerRecipe(cloudDescriptor("tex.cloud", "Cloud", false), genCloud);
+    registerRecipe(cloudDescriptor("tex.cloud_shadow", "Cloud Shadow", true), genCloudShadow);
     for (const TextureRecipeDef &def : builtinTextureDefs()) {
-        registerRecipe(def.id, [def](const Params &params, std::string &error) {
+        registerRecipe(makeTextureRecipeDescriptor(def), [def](const Params &params, std::string &error) {
             return makeFromHeightFn(params, error, def);
         });
     }

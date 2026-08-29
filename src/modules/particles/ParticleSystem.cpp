@@ -1,6 +1,7 @@
 #include "particles/ParticleSystem.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleConfig.h"
+#include "particles/ParticleRuntime.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
@@ -10,7 +11,9 @@
 #include "common/Module.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
+#include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -88,6 +91,8 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
         const float len = std::max(w, speed * cfg.stretchFactor);
         item.w = len;
         item.rotation = std::atan2(p.vy, p.vx) * kRad2Deg;
+    } else if (cfg.renderMode == "axis") {
+        item.rotation = cfg.renderAxisDegrees;
     } else {
         item.rotation = p.rot * kRad2Deg;
         if (!cfg.rotationCurve.empty()) item.rotation += cfg.rotationCurve.sample(t, 0.f);
@@ -98,10 +103,14 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
     item.layer = draw.layer;
     item.blend = draw.blend;
     item.texture = draw.texture;
+    item.normal       = cfg.materialMode == "lit" ? draw.normalTexture : nullptr;
     item.shader = draw.shader;
     item.canvas = draw.canvas;
     item.camera = draw.camera;
-    item.receiveLight = false;
+    item.receiveLight = cfg.materialMode == "lit";
+    item.litPath = item.receiveLight && item.texture != nullptr && item.normal != nullptr && item.shader == nullptr;
+    item.sceneColorDistortion = cfg.materialMode == "distortion";
+    item.distortionStrength   = cfg.distortionStrength;
     if (draw.texture && (cfg.hframes > 1 || cfg.vframes > 1)) {
         flipbookUV(cfg, p.frame, item.u0, item.v0, item.u1, item.v1);
         item.hasUV = true;
@@ -109,10 +118,71 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
     out.push_back(item);
 }
 
+void appendEmitterItems(const ParticleEmitter::Config& cfg, const ParticleEmitter::Sim& sim,
+                        const ParticleEmitter::Draw& draw, int& order, std::vector<graphics::DrawItem2D>& out) {
+    if (cfg.sortMode == "none") {
+        for (int i = 0; i < sim.alive; ++i) appendParticleItem(cfg, draw, sim.particles[std::size_t(i)], order++, out);
+        return;
+    }
+
+    std::vector<int> indices(std::size_t(sim.alive));
+    for (int i = 0; i < sim.alive; ++i) indices[std::size_t(i)] = i;
+    auto age = [&](int index) {
+        const Particle& p = sim.particles[std::size_t(index)];
+        return p.lifetime > 0.f ? 1.f - p.life / p.lifetime : 1.f;
+    };
+    if (cfg.sortMode == "oldest") {
+        std::stable_sort(indices.begin(), indices.end(), [&](int a, int b) { return age(a) > age(b); });
+    } else if (cfg.sortMode == "youngest") {
+        std::stable_sort(indices.begin(), indices.end(), [&](int a, int b) { return age(a) < age(b); });
+    } else if (cfg.sortMode == "distance" && draw.camera) {
+        const float cameraX         = draw.camera->data()->x;
+        const float cameraY         = draw.camera->data()->y;
+        auto        distanceSquared = [&](int index) {
+            const Particle& p  = sim.particles[std::size_t(index)];
+            const float     dx = p.x - cameraX;
+            const float     dy = p.y - cameraY;
+            return dx * dx + dy * dy;
+        };
+        std::stable_sort(indices.begin(), indices.end(),
+                         [&](int a, int b) { return distanceSquared(a) > distanceSquared(b); });
+    }
+    for (int index : indices) appendParticleItem(cfg, draw, sim.particles[std::size_t(index)], order++, out);
+}
+
+int appendRibbonItems(const ParticleEmitter::Config& cfg, const ParticleEmitter::Sim& sim,
+                      const ParticleEmitter::Draw& draw, int& order, std::vector<graphics::DrawItem2D>& out) {
+    int segments = 0;
+    for (int i = 1; i < sim.alive; ++i) {
+        const Particle& previous = sim.particles[std::size_t(i - 1)];
+        const Particle& current  = sim.particles[std::size_t(i)];
+        const float     dx       = current.x - previous.x;
+        const float     dy       = current.y - previous.y;
+        const float     length   = std::sqrt(dx * dx + dy * dy);
+        if (length < cfg.ribbonMinSegmentLength) continue;
+
+        appendParticleItem(cfg, draw, current, order++, out);
+        auto&       item = out.back();
+        const float h    = item.h * cfg.ribbonWidth;
+        item.x           = (previous.x + current.x - length) * 0.5f;
+        item.y           = (previous.y + current.y - h) * 0.5f;
+        item.w           = length;
+        item.h           = h;
+        item.rotation    = std::atan2(dy, dx) * kRad2Deg;
+        ++segments;
+    }
+    return segments;
+}
+
 /** True when the emitter center is well outside the camera view (skip sim). */
 bool emitterOffscreen(const ParticleEmitter::Config &cfg, const ParticleEmitter::Draw &draw) {
     auto *cam = draw.camera;
     if (!cam) return false;
+    if (cfg.cullDistance > 0.f) {
+        const float dx = cfg.x - cam->data()->x;
+        const float dy = cfg.y - cam->data()->y;
+        if (dx * dx + dy * dy > cfg.cullDistance * cfg.cullDistance) return true;
+    }
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) return false;
     const float viewW = draw.canvas ? float(draw.canvas->getWidth()) : float(gfx->getWidth());
@@ -138,30 +208,307 @@ int64_t fileModtime(const std::string &path) {
     return info.modtime;
 }
 
+int liveParticleCount(ParticleEmitter* emitter) {
+    auto gpu = emitter->gpuSim();
+    return gpu->residentActive ? gpu->estimatedAlive + emitter->sim()->alive : emitter->sim()->alive;
+}
+
+graphics::GpuParticleSpawn gpuSpawn(const Particle& particle) {
+    graphics::GpuParticleSpawn out;
+    out.x          = particle.x;
+    out.y          = particle.y;
+    out.vx         = particle.vx;
+    out.vy         = particle.vy;
+    out.life       = particle.life;
+    out.lifetime   = particle.lifetime;
+    out.size       = particle.size;
+    out.rotation   = particle.rot;
+    out.spin       = particle.spin;
+    out.frame      = particle.frame;
+    out.radial     = particle.radial;
+    out.tangential = particle.tangential;
+    out.ax         = particle.ax;
+    out.ay         = particle.ay;
+    out.noisePhase = particle.noisePhase;
+    return out;
+}
+
+void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu) {
+    if (gfx && gpu.residentHandle != graphics::kInvalidGpuParticleHandle)
+        gfx->releaseGpuParticleEmitter(gpu.residentHandle);
+    gpu.residentHandle = graphics::kInvalidGpuParticleHandle;
+    gpu.residentActive = false;
+    gpu.estimatedAlive = 0;
+    gpu.timeline       = 0.0;
+    gpu.deathTimes.clear();
+}
+
+eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *emitter, const eve::SimulationStep &step,
+                                     bool legacyControls) {
+    auto cfg = emitter->config();
+    auto sim = emitter->sim();
+    auto gpu = emitter->gpuSim();
+    if (!gfx || !gfx->canSubmitGpuParticles()) return eve::Result<bool>::success(false);
+
+    if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) {
+        gpu->residentHandle = gfx->createGpuParticleEmitter(std::uint32_t(sim->particles.size()));
+        if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) return eve::Result<bool>::success(false);
+    }
+
+    const bool  hadLastPosition  = sim->hasLastPos;
+    const float previousX        = sim->lastX;
+    const float previousY        = sim->lastY;
+    const int   capacity         = int(sim->particles.size());
+    const int   conservativeRoom = std::max(0, capacity - gpu->estimatedAlive - sim->alive);
+    if (sim->spawnQuota < 0)
+        sim->spawnQuota = conservativeRoom;
+    else
+        sim->spawnQuota = std::min(sim->spawnQuota, conservativeRoom);
+
+    float simulatedDt = 0.f;
+    if (legacyControls) {
+        simulatedDt = advanceEmitterSim(*cfg, *sim, static_cast<float>(step.delta.seconds()));
+    } else {
+        auto simulation = advanceEmitterSim(*cfg, *sim, step);
+        if (!simulation) return eve::Result<bool>::failure(simulation.status());
+        simulatedDt = static_cast<float>(step.delta.seconds());
+    }
+    gpu->timeline += simulatedDt;
+    auto minHeap = std::greater<float>{};
+    while (!gpu->deathTimes.empty() && gpu->deathTimes.front() <= float(gpu->timeline) + 1e-6f) {
+        std::pop_heap(gpu->deathTimes.begin(), gpu->deathTimes.end(), minHeap);
+        gpu->deathTimes.pop_back();
+    }
+
+    const int room     = std::max(0, capacity - int(gpu->deathTimes.size()));
+    const int accepted = std::min(sim->alive, room);
+    if (sim->alive > accepted) sim->droppedSpawnsThisFrame += sim->alive - accepted;
+    std::vector<graphics::GpuParticleSpawn> spawns;
+    spawns.reserve(std::size_t(accepted));
+    for (int i = 0; i < accepted; ++i) {
+        const Particle& particle = sim->particles[std::size_t(i)];
+        if (particle.life <= 0.f) continue;
+        spawns.push_back(gpuSpawn(particle));
+        gpu->deathTimes.push_back(float(gpu->timeline) + particle.life);
+        std::push_heap(gpu->deathTimes.begin(), gpu->deathTimes.end(), minHeap);
+    }
+
+    graphics::GpuParticleUpdate update;
+    update.dt             = simulatedDt;
+    update.emitterX       = cfg->x;
+    update.emitterY       = cfg->y;
+    update.gravityX       = cfg->gravityX;
+    update.gravityY       = cfg->gravityY;
+    update.damping        = cfg->damping;
+    update.velocityLimit  = cfg->limitVelocity;
+    update.noiseStrength  = cfg->noiseStrength;
+    update.noiseFrequency = cfg->noiseFrequency;
+    update.noiseSpeed     = cfg->noiseSpeed;
+    update.time           = sim->emitterAge;
+    update.frameRate      = cfg->frameRate;
+    if (cfg->simSpace == "local" && hadLastPosition) {
+        update.localOffsetX = cfg->x - previousX;
+        update.localOffsetY = cfg->y - previousY;
+    }
+
+    if (!gfx->updateGpuParticleEmitter(gpu->residentHandle, update, spawns.data(), std::uint32_t(spawns.size()))) {
+        // Before activation the CPU state remains authoritative and already
+        // advanced. Once resident, a transient submit failure freezes state
+        // rather than losing it through an implicit CPU migration.
+        if (!gpu->residentActive) deactivateResidentGpu(gfx, *gpu);
+        gpu->failed = true;
+        return eve::Result<bool>::success(true);
+    }
+
+    for (int i = 0; i < sim->alive; ++i) sim->particles[std::size_t(i)].life = 0.f;
+    sim->alive          = 0;
+    gpu->residentActive = true;
+    gpu->estimatedAlive = int(gpu->deathTimes.size());
+    return eve::Result<bool>::success(true);
+}
+
 }  // namespace
 
-void ParticleSimSystem::update(float dt) {
-    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
+eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool legacyControls) {
+    if (step.delta.nanoseconds() < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "particle simulation delta must be non-negative"));
+    const float dt = static_cast<float>(step.delta.seconds());
+    if (!std::isfinite(dt))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "particle simulation delta is outside float range"));
 
-    auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Sim,
-                          ParticleEmitter::Draw, ParticleEmitter::Attach,
-                          ParticleEmitter::SkinSource, ParticleEmitter::GpuSim>();
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [cfg, sim, draw, attach, skinSrc, gpuSim] = *it;
-        if (sim->alive <= 0 && emitterOffscreen(*cfg, *draw)) continue;
-        syncEmitterSources(*cfg, *sim, *attach, *skinSrc);
-        if (cfg->gpuSimulation) {
-            if (!stepEmitterSimGpu(*cfg, *sim, *gpuSim, dt)) stepEmitterSim(*cfg, *sim, dt);
-        } else {
-            stepEmitterSim(*cfg, *sim, dt);
+    // Build the complete frame record off to the side. Checked failures must
+    // not publish counters that describe only the prefix of a frame; the
+    // previous published record remains the observable snapshot until the
+    // simulation reaches its commit point below.
+    ParticleFrameStats nextStats;
+    const uint64_t     nextFrame = particleFrameStats().frameIndex + 1;
+    nextStats.frameIndex         = nextFrame;
+    nextStats.simulationTick     = step.tick;
+    auto      &stats             = nextStats;
+    const auto begin = std::chrono::steady_clock::now();
+
+    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) {
+        mutableParticleFrameStats() = nextStats;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    }
+
+    std::vector<ParticleEmitter *> allEmitters;
+    std::vector<ParticleEmitter *> emitters;
+    {
+        auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [cfg] = *it;
+            if (!cfg->entity) continue;
+            allEmitters.push_back(cfg->entity);
+            auto sim = cfg->entity->sim();
+            if (!legacyControls && sim->hasSimulationTick && step.tick <= sim->simulationTick)
+                return eve::Result<void>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                           "particle simulation tick must advance monotonically for every emitter"));
+            if (sim->active || liveParticleCount(cfg->entity) > 0) emitters.push_back(cfg->entity);
         }
     }
+    std::stable_sort(emitters.begin(), emitters.end(), [](ParticleEmitter *a, ParticleEmitter *b) {
+        return a->config()->priority > b->config()->priority;
+    });
+
+    const auto &budget = particleBudgetConfig();
+    stats.emittersTotal = int(emitters.size());
+    for (auto *emitter : allEmitters) {
+        auto sim = emitter->sim();
+        stats.particlesBefore += liveParticleCount(emitter);
+        sim->spawnedThisFrame = 0;
+        sim->droppedSpawnsThisFrame = 0;
+        sim->spawnQuota = budget.maxParticles > 0 ? 0 : -1;
+    }
+    int reservedAlive = 0;
+    for (auto* emitter : emitters) reservedAlive += liveParticleCount(emitter);
+
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+
+    int processedAlive = 0;
+    for (auto *emitter : emitters) {
+        auto cfg = emitter->config();
+        auto sim = emitter->sim();
+        auto draw = emitter->draw();
+        const int aliveBefore = liveParticleCount(emitter);
+        reservedAlive -= aliveBefore;
+
+        if (budget.qualityLevel < cfg->minimumQuality) {
+            ++stats.emittersQualitySkipped;
+            processedAlive += aliveBefore;
+            continue;
+        }
+
+        const bool offscreen = emitterOffscreen(*cfg, *draw);
+        const bool culled    = cfg->cullingMode == "pause"    ? offscreen
+                               : cfg->cullingMode == "always" ? false
+                                                              : (aliveBefore <= 0 && offscreen);
+        if (culled) {
+            ++stats.emittersCulled;
+            processedAlive += aliveBefore;
+            continue;
+        }
+
+        if (budget.maxSimulatedEmitters > 0 &&
+            stats.emittersSimulated >= budget.maxSimulatedEmitters) {
+            ++stats.emittersBudgetSkipped;
+            processedAlive += aliveBefore;
+            continue;
+        }
+
+        int spawnQuota = cfg->maxSpawnPerFrame > 0 ? cfg->maxSpawnPerFrame : -1;
+        if (budget.maxParticles > 0) {
+            const int existingTotal = processedAlive + aliveBefore + reservedAlive;
+            const int globalRoom = std::max(0, budget.maxParticles - existingTotal);
+            spawnQuota = spawnQuota < 0 ? globalRoom : std::min(spawnQuota, globalRoom);
+        }
+        sim->spawnQuota = spawnQuota;
+
+        auto attach = emitter->attach();
+        auto skinSrc = emitter->skinSource();
+        auto gpuSim  = emitter->gpuSim();
+        syncEmitterSources(*cfg, *sim, *attach, *skinSrc);
+        const bool gpuEligible = emitter->isGpuFeatureSetSupported();
+        if (gpuSim->residentActive && (!cfg->gpuSimulation || !gpuEligible)) deactivateResidentGpu(gfx, *gpuSim);
+        const bool wantsResident = cfg->gpuSimulation && gpuEligible;
+        bool       handled       = false;
+        if (wantsResident) {
+            auto gpuAdvance = advanceResidentGpu(gfx, emitter, step, legacyControls);
+            if (!gpuAdvance) return eve::Result<void>::failure(gpuAdvance.status());
+            handled = std::move(gpuAdvance).takeValue();
+        }
+        if (!handled) {
+            if (legacyControls)
+                advanceEmitterSim(*cfg, *sim, dt);
+            else {
+                auto cpuAdvance = advanceEmitterSim(*cfg, *sim, step);
+                if (!cpuAdvance) return eve::Result<void>::failure(cpuAdvance.status());
+            }
+        }
+        ++stats.emittersSimulated;
+        processedAlive += liveParticleCount(emitter);
+        if (budget.maxParticles > 0 || cfg->maxSpawnPerFrame > 0) sim->spawnQuota = 0;
+    }
+
+    stats.particlesAfter = 0;
+    stats.particlesSpawned = 0;
+    stats.droppedSpawns = 0;
+    for (auto *emitter : allEmitters) {
+        auto sim = emitter->sim();
+        auto gpu = emitter->gpuSim();
+        stats.particlesAfter += liveParticleCount(emitter);
+        stats.particlesSpawned += sim->spawnedThisFrame;
+        stats.droppedSpawns += sim->droppedSpawnsThisFrame;
+        if (gpu->residentActive) {
+            ++stats.gpuResidentEmitters;
+            stats.gpuResidentParticles += gpu->estimatedAlive;
+        }
+        sim->spawnQuota = -1;
+    }
+    stats.particlesKilled =
+        std::max(0, stats.particlesBefore + stats.particlesSpawned - stats.particlesAfter);
+    stats.simulationMs =
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin)
+            .count();
+
+    if (!legacyControls) {
+        for (auto *emitter : allEmitters) {
+            auto sim               = emitter->sim();
+            sim->simulationTick    = step.tick;
+            sim->hasSimulationTick = true;
+        }
+    }
+    mutableParticleFrameStats() = nextStats;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep &step) {
+    return runParticleSimulation(step, false);
+}
+
+void ParticleSimSystem::update(float dt) {
+    auto duration = eve::Duration::fromSeconds(dt);
+    if (!duration) {
+        duration.ignore("legacy particle update received an invalid duration");
+        return;
+    }
+    runParticleSimulation({eve::SimulationTick(1), std::move(duration).takeValue()}, true)
+        .ignore("legacy particle update facade");
 }
 
 void ParticleRenderSystem::render(graphics::Graphics *gfx) {
+    auto &stats = mutableParticleFrameStats();
+    stats.renderedParticles = 0;
+    stats.renderCulledEmitters = 0;
+    stats.renderMs = 0.0;
+    const auto begin = std::chrono::steady_clock::now();
     if (!gfx) return;
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
 
+    const auto &budget = particleBudgetConfig();
     std::vector<graphics::DrawItem2D> items;
     auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Sim,
                           ParticleEmitter::Draw>();
@@ -169,18 +516,72 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
     int order = 0;
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, sim, draw] = *it;
-        if (!draw->visible || sim->alive <= 0) continue;
+        auto* emitter         = cfg->entity;
+        if (!emitter) continue;
+        auto      gpu   = emitter->gpuSim();
+        const int alive = liveParticleCount(emitter);
+        if (!draw->visible || alive <= 0) continue;
+        if (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(*cfg, *draw)) {
+            ++stats.renderCulledEmitters;
+            continue;
+        }
+        if (gpu->residentActive) {
+            graphics::GpuParticleDraw gpuDraw;
+            gpuDraw.texture        = draw->texture;
+            gpuDraw.sceneDepth     = gfx->getSceneLinearDepthTexture();
+            gpuDraw.blend          = draw->blend;
+            gpuDraw.viewportWidth  = float(gfx->getWidth());
+            gpuDraw.viewportHeight = float(gfx->getHeight());
+            if (draw->camera) {
+                gpuDraw.cameraEnabled = true;
+                gpuDraw.cameraX       = draw->camera->data()->x;
+                gpuDraw.cameraY       = draw->camera->data()->y;
+                gpuDraw.cameraZoom    = draw->camera->data()->zoom;
+            }
+            gpuDraw.particleWidth  = cfg->particleW;
+            gpuDraw.particleHeight = cfg->particleH;
+            gpuDraw.sizeStart      = cfg->sizeStart;
+            gpuDraw.sizeEnd        = cfg->sizeEnd;
+            gpuDraw.stretchFactor  = cfg->stretchFactor;
+            gpuDraw.facing         = cfg->renderMode == "stretched" ? graphics::GpuParticleFacingMode::Velocity
+                                     : cfg->renderMode == "axis"    ? graphics::GpuParticleFacingMode::Axis
+                                                                    : graphics::GpuParticleFacingMode::ParticleRotation;
+            gpuDraw.axisRotationRadians = cfg->renderAxisDegrees / kRad2Deg;
+            gpuDraw.softParticles       = cfg->softParticles;
+            gpuDraw.particleDepth       = cfg->softParticleDepth;
+            gpuDraw.softFadeDistance    = cfg->softFadeDistance;
+            gpuDraw.colorStart[0]  = cfg->colorStart.r;
+            gpuDraw.colorStart[1]  = cfg->colorStart.g;
+            gpuDraw.colorStart[2]  = cfg->colorStart.b;
+            gpuDraw.colorStart[3]  = cfg->colorStart.a;
+            gpuDraw.colorEnd[0]    = cfg->colorEnd.r;
+            gpuDraw.colorEnd[1]    = cfg->colorEnd.g;
+            gpuDraw.colorEnd[2]    = cfg->colorEnd.b;
+            gpuDraw.colorEnd[3]    = cfg->colorEnd.a;
+            gpuDraw.hframes        = cfg->hframes;
+            gpuDraw.vframes        = cfg->vframes;
+            if (gfx->drawGpuParticleEmitter(gpu->residentHandle, gpuDraw))
+                stats.renderedParticles += gpu->estimatedAlive;
+            else
+                ++stats.renderCulledEmitters;
+            continue;
+        }
         if (draw->canvas) anyCanvas = true;
-        for (int i = 0; i < sim->alive; ++i) {
-            appendParticleItem(*cfg, *draw, sim->particles[size_t(i)], order++, items);
+        if (cfg->renderMode == "ribbon")
+            stats.renderedParticles += appendRibbonItems(*cfg, *sim, *draw, order, items);
+        else {
+            appendEmitterItems(*cfg, *sim, *draw, order, items);
+            stats.renderedParticles += sim->alive;
         }
     }
-    if (items.empty()) return;
 
     // Unified 2D sprite path: rotation / flipbook UV / blend / layer sorting
     // and camera handling all come from RenderSystem::drawItems.
-    graphics::RenderSystem::drawItems(*gfx, items, false);
+    if (!items.empty()) graphics::RenderSystem::drawItems(*gfx, items, false);
     if (anyCanvas) gfx->setCanvas();
+    stats.renderMs =
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin)
+            .count();
 }
 
 void ParticleLightSystem::update() {
@@ -231,17 +632,39 @@ void ParticleLightSystem::update() {
 int ParticleConfigSystem::poll() {
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return 0;
 
-    // Watch events are drained by load.nut / HotReload; use modtime as fallback.
+    // Watch events are drained by load.nut / HotReload. This polling path is a
+    // deliberate, explicit file-state observation for hosts that do not
+    // deliver a watch event; its result is recorded on each Resource.
     int reloaded = 0;
     auto view =
         ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Resource>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, res] = *it;
-        if (!res->autoReload || res->path.empty() || !cfg->entity) continue;
+        if (!cfg->entity) continue;
+        if (res->path.empty()) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::Unbound;
+            continue;
+        }
+        if (!res->autoReload) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::AutoReloadDisabled;
+            continue;
+        }
 
         const int64_t mt = fileModtime(res->path);
-        if (mt < 0 || mt == res->modtime) continue;
-        if (reloadConfigFile(cfg->entity, nullptr)) ++reloaded;
+        if (mt < 0) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimeUnavailable;
+            continue;
+        }
+        if (mt == res->modtime) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimePollingUnchanged;
+            continue;
+        }
+        if (reloadConfigFile(cfg->entity, nullptr)) {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimePollingReloaded;
+            ++reloaded;
+        } else {
+            res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimePollingReloadFailed;
+        }
     }
     return reloaded;
 }

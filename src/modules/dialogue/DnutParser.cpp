@@ -26,15 +26,11 @@ std::string floatToString(double v) {
 }
 
 std::string scalarToString(const DataValue &v) {
-    switch (v.kind) {
-        case DataValue::Kind::String:
-            return v.s;
-        case DataValue::Kind::Int:
-            return std::to_string(v.i);
-        case DataValue::Kind::Float:
-            return floatToString(v.f);
-        case DataValue::Kind::Bool:
-            return v.b ? "true" : "false";
+    switch (v.kind()) {
+        case DataValue::Kind::String: return v.asString();
+        case DataValue::Kind::Int: return std::to_string(v.asInt());
+        case DataValue::Kind::Float: return floatToString(v.asDouble());
+        case DataValue::Kind::Bool: return v.asBool() ? "true" : "false";
         default:
             return {};
     }
@@ -48,9 +44,8 @@ DataValue numValue(const std::string &raw) {
 
 DataValue negNumValue(const std::string &raw) {
     DataValue v = numValue(raw);
-    if (v.kind == DataValue::Kind::Int) v.i = -v.i;
-    else v.f = -v.f;
-    return v;
+    if (v.kind() == DataValue::Kind::Int) return DataValue::integer(-v.asInt());
+    return DataValue::number(-v.asDouble());
 }
 
 class Parser {
@@ -298,10 +293,10 @@ private:
             adv();
             DataValue right = parseNot();
             bool appended = false;
-            if (left.kind == DataValue::Kind::Object) {
-                for (auto &kv : left.obj) {
-                    if (kv.first == "all" && kv.second.kind == DataValue::Kind::Array) {
-                        kv.second.arr.push_back(std::move(right));
+            if (left.kind() == DataValue::Kind::Object) {
+                for (auto &kv : *left.getIf<DataValue::Object>()) {
+                    if (kv.first == "all" && kv.second.kind() == DataValue::Kind::Array) {
+                        kv.second.pushBack(std::move(right));
                         appended = true;
                         break;
                     }
@@ -321,10 +316,10 @@ private:
             adv();
             DataValue right = parseAnd();
             bool appended = false;
-            if (left.kind == DataValue::Kind::Object) {
-                for (auto &kv : left.obj) {
-                    if (kv.first == "any" && kv.second.kind == DataValue::Kind::Array) {
-                        kv.second.arr.push_back(std::move(right));
+            if (left.kind() == DataValue::Kind::Object) {
+                for (auto &kv : *left.getIf<DataValue::Object>()) {
+                    if (kv.first == "any" && kv.second.kind() == DataValue::Kind::Array) {
+                        kv.second.pushBack(std::move(right));
                         appended = true;
                         break;
                     }
@@ -338,27 +333,27 @@ private:
         return left;
     }
 
-    void parseAttrs(const int lineNum, std::vector<std::pair<std::string, DataValue>> &out) {
+    void parseAttrs(const int lineNum, DataValue::Object &out) {
         while (cur().line == lineNum && !isPunct("}") && cur().kind != Tok::Eof) {
             if (!isIdent()) fail("期望属性名");
             const std::string name = adv().value;
             if (name == "meta" && isPunct("(")) {
                 adv();
-                std::vector<std::pair<std::string, DataValue>> metaFields;
+                DataValue::Object metaFields;
                 while (!isPunct(")")) {
                     if (!isIdent()) fail("meta 键应为标识符");
                     const std::string k = adv().value;
                     expectPunct("=");
                     DataValue v = parseLiteralValue();
-                    if (v.kind != DataValue::Kind::String && v.kind != DataValue::Kind::Int &&
-                        v.kind != DataValue::Kind::Float && v.kind != DataValue::Kind::Bool)
+                    if (v.kind() != DataValue::Kind::String && v.kind() != DataValue::Kind::Int &&
+                        v.kind() != DataValue::Kind::Float && v.kind() != DataValue::Kind::Bool)
                         fail("meta 值只支持标量");
-                    metaFields.emplace_back(k, DataValue::string(scalarToString(v)));
+                    metaFields.emplace(k, DataValue::string(scalarToString(v)));
                     if (isPunct(",")) adv();
                     else if (!isPunct(")")) fail("meta 内期望 ',' 或 ')'");
                 }
                 adv();  // )
-                out.emplace_back("meta", DataValue::object(std::move(metaFields)));
+                out.emplace("meta", DataValue::object(std::move(metaFields)));
                 continue;
             }
             if (name == "tags") {
@@ -373,13 +368,13 @@ private:
                     else if (!isPunct("]")) fail("tags 内期望 ',' 或 ']'");
                 }
                 adv();  // ]
-                out.emplace_back("tags", DataValue::array(std::move(arr)));
+                out.emplace("tags", DataValue::array(std::move(arr)));
                 continue;
             }
             expectPunct("=");
             DataValue v = parseLiteralValue();
             if (name == "weight" || name == "i18n" || name == "id") {
-                out.emplace_back(name, std::move(v));
+                out.emplace(name, std::move(v));
             } else {
                 fail("未知属性 '" + name + "'");
             }
@@ -401,22 +396,22 @@ private:
         if (cur().kind != Tok::Str) fail("期望台词字符串");
         const std::string text = adv().value;
 
-        std::vector<std::pair<std::string, DataValue>> fields;
-        fields.emplace_back("speaker", DataValue::string(speaker));
-        fields.emplace_back("text", DataValue::string(text));
-        if (inheritWhen) fields.emplace_back("when", *inheritWhen);
-        std::vector<std::pair<std::string, DataValue>> attrs;
+        DataValue::Object fields;
+        fields.emplace("speaker", DataValue::string(speaker));
+        fields.emplace("text", DataValue::string(text));
+        if (inheritWhen) fields.emplace("when", *inheritWhen);
+        DataValue::Object attrs;
         parseAttrs(lineNum, attrs);
         bool hasId = false;
         for (auto &kv : attrs) {
             if (kv.first == "id") hasId = true;
-            fields.push_back(std::move(kv));
+            fields.emplace(std::move(kv.first), std::move(kv.second));
         }
-        if (!hasId) fields.emplace_back("id", DataValue::string(poolId + "." + std::to_string(idx)));
+        if (!hasId) fields.emplace("id", DataValue::string(poolId + "." + std::to_string(idx)));
         return DataValue::object(std::move(fields));
     }
 
-    void parsePool(std::vector<std::pair<std::string, DataValue>> &pools) {
+    void parsePool(DataValue::Object &pools) {
         expectIdent("pool");
         const std::string poolId = expectIdent("pool 名称");
         long long noRepeat = -1;
@@ -451,14 +446,14 @@ private:
         }
         adv();  // }
 
-        std::vector<std::pair<std::string, DataValue>> poolFields;
-        poolFields.emplace_back("lines", DataValue::array(std::move(lines)));
-        if (noRepeat >= 0) poolFields.emplace_back("noRepeat", DataValue::integer(noRepeat));
-        pools.emplace_back(poolId, DataValue::object(std::move(poolFields)));
+        DataValue::Object poolFields;
+        poolFields.emplace("lines", DataValue::array(std::move(lines)));
+        if (noRepeat >= 0) poolFields.emplace("noRepeat", DataValue::integer(noRepeat));
+        pools.emplace(poolId, DataValue::object(std::move(poolFields)));
     }
 
     DataValue parsePools() {
-        std::vector<std::pair<std::string, DataValue>> pools;
+        DataValue::Object pools;
         while (cur().kind != Tok::Eof) parsePool(pools);
         return DataValue::object({{"pools", DataValue::object(std::move(pools))}});
     }

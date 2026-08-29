@@ -13,12 +13,23 @@ if(NOT _has_font)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
-# Each of graphics / physics / audio has a SceneLinks.cpp registering the link
-# kinds it owns (scene/SceneLink.h). They all share the basename, so dropping
-# scene drops all three in one rule.
+# graphics/SceneLinks.cpp registers the link kinds graphics owns and
+# graphics/ScenePicking.cpp implements the scene picking entry points that
+# need a complete Camera3D; both include scene headers, so dropping scene
+# drops both files. physics / audio each have their own SceneLinks.cpp with
+# the same basename, so one rule covers all three.
 eve_module_enabled(scene _has_scene)
 if(NOT _has_scene)
-  set(EVENGINE_EXCLUDED_MODULE_FILES "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp"
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp;ScenePicking.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# editor/EditorPcgGraph.cpp is the optional bridge to procgen PointGraph.
+eve_module_enabled(procgen _has_procgen)
+if(NOT _has_procgen)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorPcgGraph.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -46,11 +57,20 @@ endforeach()
 
 # --- per-module build settings ----------------------------------------------
 
+eve_module_enabled(data _has_data)
+if(_has_data)
+  # Compressor.cpp uses the vendored API directly. Profile builds may reuse a
+  # prebuilt dependency install that contains liblz4 but not its development
+  # headers, so the source checkout is the authoritative header location.
+  target_include_directories(EVData BEFORE PRIVATE
+    ${CMAKE_SOURCE_DIR}/third-party)
+endif()
+
 eve_module_enabled(graphics _has_graphics)
 if(_has_graphics)
   # Header-only VKBuilder: prefer the source tree over a stale third-party install.
   target_include_directories(EVGraphics BEFORE PUBLIC
-    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
   # Graphics.h includes <assimp/matrix4x4.h> (header-only usage). On WASM the
   # vendored assimp library is skipped but the header tree is still present.
   target_include_directories(EVGraphics BEFORE PUBLIC
@@ -113,16 +133,81 @@ if(_has_audio)
 endif()
 
 eve_module_enabled(physics _has_physics)
-if(_has_physics)
+option(EVENGINE_BUILD_PHYSICS_CORE_CHECK
+  "Compile the physics domain core without graphics/gpgpu presentation paths" OFF)
+set(_eve_physics_core_profile FALSE)
+if(EVENGINE_PROFILE STREQUAL "physics-core-only")
+  set(_eve_physics_core_profile TRUE)
+endif()
+if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHECK)
   # Box2D headers use <Box2D/Common/...>; prefer source tree over flattened install.
   # Box3D (Erin Catto) is a compiled library linked by name from the manifest.
-  target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
+  if(_has_physics)
+    target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
+  endif()
+
+  # World/Body/Shape/Joint/query/fixed-step are the physics domain boundary.
+  # Keep its source list explicit so this check cannot accidentally pull in the
+  # graphics debug bridge, ClothGPU, or another presentation/accelerator TU.
+  set(_eve_physics_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Fixture.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Joint3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/SimulationBackend.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp)
+  set(_eve_physics_core_boundary_files ${_eve_physics_core_sources}
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Fixture.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Joint3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/SimulationBackend.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.h)
+  foreach(_eve_physics_core_file IN LISTS _eve_physics_core_boundary_files)
+    if(NOT EXISTS "${_eve_physics_core_file}")
+      message(FATAL_ERROR "Physics core source is missing: ${_eve_physics_core_file}")
+    endif()
+    file(READ "${_eve_physics_core_file}" _eve_physics_core_content)
+    if(_eve_physics_core_content MATCHES "include[ \t]*[\"<](graphics|gpgpu)/")
+      message(FATAL_ERROR
+        "Physics core source must not include graphics/gpgpu: ${_eve_physics_core_file}")
+    endif()
+  endforeach()
+  if(EVENGINE_BUILD_PHYSICS_CORE_CHECK OR _eve_physics_core_profile)
+    add_library(EVPhysicsCoreCheck OBJECT ${_eve_physics_core_sources})
+    target_link_libraries(EVPhysicsCoreCheck PRIVATE eve_engine_includes)
+    target_include_directories(EVPhysicsCoreCheck PRIVATE
+      ${CMAKE_SOURCE_DIR}/src/modules
+      ${CMAKE_SOURCE_DIR}/third-party
+      ${CMAKE_SOURCE_DIR}/third-party/box3d/include)
+    set_target_properties(EVPhysicsCoreCheck PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  endif()
+endif()
+
+# vehicle 在 physics 开启时会包含 physics 头文件（Body3D.h -> <box3d/id.h>），
+# 需要与 EVPhysics 相同的第三方头文件路径。
+eve_module_enabled(vehicle _has_vehicle)
+eve_module_enabled(physics _has_physics)
+if(_has_vehicle AND _has_physics)
+  target_include_directories(EVVehicle PRIVATE
+    ${CMAKE_SOURCE_DIR}/third-party
+    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include
+    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include)
 endif()
 
 eve_module_enabled(gpgpu _has_gpgpu)
 if(_has_gpgpu)
   target_include_directories(EVGpgpu BEFORE PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
   if(WIN32 AND DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
     # In-process GLSL -> SPIR-V via the Vulkan SDK's shaderc (glslang + SPIRV-Tools
     # static archive). The tensor module's runtime kernel codegen compiles generated
@@ -150,7 +235,7 @@ endif()
 eve_module_enabled(virtualgeometry _has_virtualgeometry)
 if(_has_virtualgeometry)
   target_include_directories(EVVirtualGeometry BEFORE PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
 endif()
 
 if(_has_font)
@@ -166,14 +251,63 @@ if(_has_font)
 endif()
 
 eve_module_enabled(procgen _has_procgen)
-if(_has_procgen)
-  # Compat shims first (Apple Clang: missing drawOperatorArray in upstream DTL),
-  # then DTL. BEFORE must precede the visibility keyword so -I dtl_compat wins
-  # over the submodule.
-  target_include_directories(EVProcgen BEFORE PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
-  target_include_directories(EVProcgen PUBLIC
-    ${CMAKE_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+option(EVENGINE_BUILD_PROCGEN_CORE_CHECK
+  "Compile procgen CPU core sources without graphics/map/scene adapters" OFF)
+set(_eve_procgen_core_profile FALSE)
+if(EVENGINE_PROFILE STREQUAL "procgen-core-only")
+  set(_eve_procgen_core_profile TRUE)
+endif()
+if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHECK)
+  if(_has_procgen)
+    # Compat shims first (Apple Clang: missing drawOperatorArray in upstream DTL),
+    # then DTL. BEFORE must precede the visibility keyword so -I dtl_compat wins
+    # over the submodule.
+    target_include_directories(EVProcgen BEFORE PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
+    target_include_directories(EVProcgen PUBLIC
+      ${CMAKE_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+  endif()
+
+  # Procgen's CPU data and recipe path is compiled separately as a dependency
+  # boundary check. This is intentionally an OBJECT target: it proves that the
+  # selected core translation units compile without linking graphics, map or
+  # scene adapters, while the normal EVProcgen target keeps the public facade
+  # and all compatibility implementations unchanged.
+  set(_eve_procgen_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratorRegistry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Grid2D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/JsonExport.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/MeshBuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Palette.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ParamSchema.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Params.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointSet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ProcgenSystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Semantic.cpp)
+  set(_eve_procgen_core_boundary_files ${_eve_procgen_core_sources}
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.h)
+  foreach(_eve_procgen_core_file IN LISTS _eve_procgen_core_boundary_files)
+    if(NOT EXISTS "${_eve_procgen_core_file}")
+      message(FATAL_ERROR "Procgen core source is missing: ${_eve_procgen_core_file}")
+    endif()
+    file(READ "${_eve_procgen_core_file}" _eve_procgen_core_content)
+    if(_eve_procgen_core_content MATCHES "include[ \t]*[\"<](graphics|map|scene)/")
+      message(FATAL_ERROR
+        "Procgen core source must not include a presentation adapter: ${_eve_procgen_core_file}")
+    endif()
+  endforeach()
+  if(EVENGINE_BUILD_PROCGEN_CORE_CHECK OR _eve_procgen_core_profile)
+    add_library(EVProcgenCoreCheck OBJECT ${_eve_procgen_core_sources})
+    target_link_libraries(EVProcgenCoreCheck PRIVATE eve_engine_includes)
+    target_include_directories(EVProcgenCoreCheck PRIVATE
+      ${CMAKE_SOURCE_DIR}/src/modules)
+    set_target_properties(EVProcgenCoreCheck PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  endif()
 endif()
 
 if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
@@ -186,6 +320,12 @@ endif()
 
 eve_module_enabled(ui _has_ui)
 if(_has_ui)
+  # Stage the editor icon font beside other runtime shared data. The backend
+  # resolves this from SDL_GetBasePath, so games may run from any working dir.
+  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/share/eve/fonts")
+  configure_file(
+    "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/FontAwesome.ttf"
+    "${CMAKE_BINARY_DIR}/share/eve/fonts/FontAwesome.ttf" COPYONLY)
   if(EVENGINE_THIRD_PARTY_BINARY_ONLY AND NOT BUILD_PLATFORM STREQUAL "webgpu")
     # The shared prefix already contains ImGui and its SDL/Vulkan backends.
     add_library(eve_imgui INTERFACE)
@@ -196,6 +336,8 @@ if(_has_ui)
     else()
       target_link_libraries(eve_imgui INTERFACE imgui)
     endif()
+    # INTERFACE library: only propagate the shared include set to consumers.
+    target_link_libraries(eve_imgui INTERFACE eve_engine_includes)
   else()
     # Compiled from third-party sources (also installed by the ExternalProject).
     set(_eve_imgui_sources
@@ -212,21 +354,33 @@ if(_has_ui)
         ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
     endif()
     add_library(eve_imgui STATIC ${_eve_imgui_sources})
+    # Vendored third-party imgui mixes public/private enums (input-text/tree
+    # flags); GCC 15's -Wdeprecated-enum-enum-conversion is noise for this
+    # bundled library. Engine call sites that mix enums are fixed at the
+    # source instead (only relevant when strict warnings are enabled).
+    if(NOT MSVC AND EVENGINE_ENABLE_STRICT_WARNINGS)
+      target_compile_options(eve_imgui PRIVATE -Wno-deprecated-enum-enum-conversion)
+    endif()
     target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
     # On Emscripten SDL2 headers come from the port sysroot.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
       target_include_directories(eve_imgui PRIVATE ${EMSCRIPTEN_SYSROOT}/include)
     else()
       target_include_directories(eve_imgui PRIVATE
+        ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/SDL2
         ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
         ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
       )
     endif()
     target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
+    # STATIC library: PUBLIC so eve_imgui's own TUs (imgui_impl_vulkan.cpp /
+    # imgui_impl_sdl.cpp) compile against the shared include set (Vulkan SDK,
+    # SDL2, engine headers) and consumers inherit it transitively.
+    target_link_libraries(eve_imgui PUBLIC eve_engine_includes)
   endif()
 
   target_link_libraries(EVUI PUBLIC eve_imgui)
   target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
   target_include_directories(EVUI BEFORE PUBLIC
-    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
 endif()

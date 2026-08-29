@@ -1,4 +1,8 @@
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/Immortal.hpp"
+
+#include "common/ScriptError.h"
+#include "common/ScriptCompiler.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
@@ -118,9 +122,8 @@ std::string formatValue(HSQUIRRELVM vm, SQInteger idx) {
 }  // namespace
 
 ConsolePanel& ConsolePanel::instance() {
-    // Intentionally leaked (matches AiPanel / McpServer lifetime patterns).
-    static ConsolePanel* inst = new ConsolePanel();
-    return *inst;
+    // Process-immortal singleton; see devtools/Immortal.hpp.
+    return Immortal<ConsolePanel>::get();
 }
 
 std::string ConsolePanel::nowStamp() {
@@ -221,17 +224,23 @@ std::string ConsolePanel::eval(const std::string& expression) {
     const SQInteger top = sq_gettop(vm);
     // Compile `return (expr);` so the evaluation result lands on the stack.
     const std::string source = "return (" + expression + ");";
-    if (SQ_FAILED(sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()),
-                                   _SC("console_repl.nut"), SQTrue))) {
+    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
+            vm, source.c_str(), static_cast<SQInteger>(source.size()), _SC("console_repl.nut"), SQTrue))) {
         sq_settop(vm, top);
-        std::string err = "error: compile failed";
+        const eve::script::ScriptErrorContext ctx = eve::script::captureCompileError(vm);
+        const std::string err = "error: " +
+                                (ctx.empty() ? std::string("compile failed")
+                                             : eve::script::formatScriptError(ctx));
         addLog("error", err);
         return err;
     }
     sq_pushroottable(vm);
     if (SQ_FAILED(sq_call(vm, 1, SQTrue, SQTrue))) {
         sq_settop(vm, top);
-        std::string err = "error: runtime failed";
+        eve::script::ScriptErrorContext ctx = eve::script::takeLastScriptError(vm);
+        const std::string err = "error: " +
+                                (ctx.empty() ? std::string("runtime failed")
+                                             : eve::script::formatScriptError(ctx));
         addLog("error", err);
         return err;
     }

@@ -5,6 +5,7 @@
 #include "map/MapObject.h"
 #include "map/Pathfinder.h"
 #include "map/Fov.h"
+#include "map/TileCollision.h"
 
 #include <string>
 #include <vector>
@@ -24,7 +25,7 @@ namespace eve::map {
 class Map : public Module {
 public:
     Module_REG(Map);
-    Map() = default;
+    Map();
     ~Map() override = default;
 
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);
@@ -54,6 +55,20 @@ public:
     void update(float dt);
     void render(graphics::Graphics *gfx);
     int pollConfigs();
+    /** @brief Last tile collection counters for project-owned diagnostics UIs. */
+    int getLastVisibleTileCount() const;
+    int getLastCustomVisualCount() const;
+    int getLastAtlasCount() const;
+    int getLastVisitedChunkCount() const;
+    int getLastVisitedCellCount() const;
+
+    /** @brief Generate merged collision from non-walkable tile metadata and notify adapters. */
+    int publishCollision(TileLayer *layer);
+    int getCollisionRectCount() const;
+    float getCollisionRectX(int index) const;
+    float getCollisionRectY(int index) const;
+    float getCollisionRectWidth(int index) const;
+    float getCollisionRectHeight(int index) const;
 
     int getLayerCount() const;
     /** @brief Layer created by the most recent loadFromFile/newLayerFromFile call. */
@@ -91,6 +106,7 @@ private:
     std::vector<MapObject> objects_;
     std::vector<TileLayer *> loadedLayers_;
     std::string dualGridError_;
+    std::vector<TileCollisionRect> collisionRects_;
 };
 
 }  // namespace eve::map

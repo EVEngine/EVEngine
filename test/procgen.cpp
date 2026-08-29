@@ -2,6 +2,10 @@
 #include "zeroerr/unittest.h"
 
 #include "data/ByteData.h"
+#include "filesystem/FileData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
 #include "procgen/Procgen.h"
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
@@ -12,6 +16,7 @@
 #include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStreaming.h"
+#include "procgen/algorithms/CastleMesh.h"
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/NoiseField.h"
@@ -20,11 +25,42 @@
 #include "image/ImageData.h"
 #include "graphics/Graphics.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "window/Window.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/Image.h"
-#include "filesystem/FileData.h"
+#include "image/ImageData.h"
+#include "map/TileLayer.h"
+#include "procgen/GeneratorRegistry.h"
+#include "procgen/JsonExport.h"
+#include "procgen/MeshBuild.h"
+#include "procgen/Procgen.h"
+#include "procgen/Semantic.h"
+#include "procgen/algorithms/LinearStructure.h"
+#include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/HexTerrain.h"
+#include "procgen/texture/ColorRamp.h"
+#include "procgen/texture/NoiseField.h"
+#include "procgen/texture/PbrMaterial.h"
+#include "procgen/texture/TextureRecipe.h"
+#include "window/Window.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include "RenderImageAudit.h"
@@ -44,11 +80,168 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::procgen;
 using namespace eve::graphics;
 
+TEST_CASE("procgen.hexTerrain.biomesRiversCliffsDeterministic") {
+    Params p;
+    p.setInt("width", 38);
+    p.setInt("height", 28);
+    p.setInt("seed", 20260825);
+    p.setInt("riverCount", 8);
+    p.setFloat("radius", 0.62f);
+    p.setFloat("heightScale", 3.8f);
+    MeshBuild a, b;
+    std::string error;
+    REQUIRE(generateHexTerrainMesh(p, a, error));
+    REQUIRE(generateHexTerrainMesh(p, b, error));
+    CHECK_EQ(a.positions(), b.positions());
+    CHECK_EQ(a.indices(), b.indices());
+    CHECK_EQ(a.getMeta("algorithm", ""), std::string("mesh.hexterrain"));
+    CHECK_EQ(a.getMeta("shoreGeometry", ""), std::string("edge-bands"));
+    CHECK_EQ(a.getMeta("hydrology", ""),
+             std::string("drainage-rivers+basin-lakes+confluences"));
+    CHECK_EQ(a.getMeta("riverGeometry", ""), std::string("seeded-quadratic-ribbons"));
+    CHECK_EQ(a.getMeta("cliffGeometry", ""),
+             std::string("seeded-segmented-rock-walls"));
+    CHECK_EQ(a.getMeta("mountainGeometry", ""),
+             std::string("seeded-offset-three-ring-peaks"));
+    CHECK(std::stoi(a.getMeta("cells.deepOcean", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.ocean", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.coast", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.grassland", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.hills", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.mountain", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.forest", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.swamp", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.rainforest", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.ice", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("cells.river", "0")) > 0);
+    CHECK(std::stoi(a.getMeta("edges.cliff", "0")) > 0);
+    CHECK(a.getVertexCount() >= 38 * 28 * 7);
+    CHECK(a.getIndexCount() >= 38 * 28 * 18);
+
+    bool hasOcean = false, hasLand = false, hasRiver = false, hasCliff = false;
+    for (int i = 0; i < a.getVertexCount(); ++i) {
+        const int primary = int(std::floor(a.getUvU(i)));
+        const int secondary = int(std::floor(a.getUvV(i)));
+        hasOcean = hasOcean || primary <= 1;
+        hasLand = hasLand || (primary >= 3 && primary <= 9);
+        hasRiver = hasRiver || secondary == 11;
+        hasCliff = hasCliff || primary == 10;
+    }
+    CHECK(hasOcean);
+    CHECK(hasLand);
+    CHECK(hasRiver);
+    CHECK(hasCliff);
+}
+
+TEST_CASE("procgen.params.booleanRoundTrip") {
+    Params p;
+    CHECK(p.getBool("decorations", true));
+    p.setBool("decorations", false);
+    CHECK(!p.getBool("decorations", true));
+    // Text is a distinct Value kind; getters never parse or stringify it.
+    p.setString("textBool", "false");
+    CHECK(p.getBool("textBool", true));
+    CHECK_EQ(p.getInt("textBool", -1), -1);
+    CHECK_EQ(p.getString("decorations", "missing"), "missing");
+}
+
 namespace {
+
+struct ParamsLease {
+    ProcgenParamsHandleRef handle{};
+    explicit ParamsLease(ProcgenParamsHandleRef value) : handle(value) {}
+    ~ParamsLease() {
+        if (!handle.isValid()) return;
+        auto result = Procgen::release(handle);
+        result.ignore("procgen test params cleanup");
+    }
+    ParamsLease(const ParamsLease &)            = delete;
+    ParamsLease &operator=(const ParamsLease &) = delete;
+    ParamsLease(ParamsLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
+    [[nodiscard]] eve::script::Borrowed<Params> view() const noexcept { return Procgen::resolve(handle); }
+};
+
+ParamsLease requireParams(const Params &source) {
+    auto result = Procgen::newParamsHandle();
+    REQUIRE(result.ok());
+    ParamsLease lease{std::move(result).takeValue()};
+    auto        view = lease.view();
+    REQUIRE(view.isBound());
+    *view = source;
+    return lease;
+}
+
+struct GridLease {
+    ProcgenGridHandleRef handle{};
+    explicit GridLease(ProcgenGridHandleRef value) : handle(value) {}
+    ~GridLease() {
+        if (!handle.isValid()) return;
+        auto result = Procgen::release(handle);
+        result.ignore("procgen test grid cleanup");
+    }
+    GridLease(const GridLease &)            = delete;
+    GridLease &operator=(const GridLease &) = delete;
+    GridLease(GridLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
+    [[nodiscard]] eve::script::Borrowed<Grid2D> view() const noexcept { return Procgen::resolve(handle); }
+};
+
+GridLease requireGrid(Procgen &proc, const std::string &algorithm, ProcgenParamsHandleRef params) {
+    auto result = proc.generateHandle(algorithm, params);
+    REQUIRE(result.ok());
+    return GridLease{std::move(result).takeValue()};
+}
+
+struct MeshLease {
+    Procgen                  *owner = nullptr;
+    ProcgenMeshBuildHandleRef handle{};
+    MeshLease(Procgen &proc, ProcgenMeshBuildHandleRef value) : owner(&proc), handle(value) {}
+    ~MeshLease() {
+        if (!owner || !handle.isValid()) return;
+        auto result = owner->releaseMeshBuild(handle);
+        result.ignore("procgen test mesh cleanup");
+    }
+    MeshLease(const MeshLease &)            = delete;
+    MeshLease &operator=(const MeshLease &) = delete;
+    MeshLease(MeshLease &&other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner  = nullptr;
+        other.handle = {};
+    }
+    [[nodiscard]] eve::script::Borrowed<MeshBuild> view() const noexcept {
+        return owner ? owner->resolveMeshBuild(handle) : eve::script::Borrowed<MeshBuild>();
+    }
+};
+
+MeshLease requireMesh(Procgen &proc, const std::string &recipe, ProcgenParamsHandleRef params) {
+    auto result = proc.buildMeshHandle(recipe, params);
+    REQUIRE(result.ok());
+    return MeshLease(proc, std::move(result).takeValue());
+}
+
+struct PbrLease {
+    Procgen                    *owner = nullptr;
+    ProcgenPbrMaterialHandleRef handle{};
+    PbrLease(Procgen &proc, ProcgenPbrMaterialHandleRef value) : owner(&proc), handle(value) {}
+    ~PbrLease() {
+        if (!owner || !handle.isValid()) return;
+        auto result = owner->releasePbrMaterial(handle);
+        result.ignore("procgen test PBR cleanup");
+    }
+    PbrLease(const PbrLease &)            = delete;
+    PbrLease &operator=(const PbrLease &) = delete;
+    PbrLease(PbrLease &&other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner  = nullptr;
+        other.handle = {};
+    }
+    [[nodiscard]] eve::script::Borrowed<PbrTextureSet> view() const noexcept {
+        return owner ? owner->resolvePbrMaterial(handle) : eve::script::Borrowed<PbrTextureSet>();
+    }
+};
 
 bool gridsEqual(const Grid2D &a, const Grid2D &b) {
     if (a.getWidth() != b.getWidth() || a.getHeight() != b.getHeight()) return false;
@@ -238,6 +431,42 @@ TEST_CASE("procgen.registry.builtins") {
     CHECK(GeneratorRegistry::instance().has("maze.backtrack"));
     CHECK(GeneratorRegistry::instance().has("noise.terrain"));
     CHECK(GeneratorRegistry::instance().has("wfc.simple"));
+}
+
+TEST_CASE("procgen.registry.schemas.describe_every_grid_generator") {
+    auto& registry = GeneratorRegistry::instance();
+    registry.registerBuiltins();
+    const auto ids = registry.list();
+    REQUIRE(!ids.empty());
+    for (const std::string& id : ids) {
+        const GeneratorDescriptor* schema = registry.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->id, id);
+        CHECK(!schema->displayName.empty());
+        CHECK(!schema->category.empty());
+        CHECK(!schema->params.empty());
+        for (const ParamDescriptor& param : schema->params) {
+            CHECK(!param.key.empty());
+            CHECK(!param.displayName.empty());
+            if (param.hasMinimum && param.hasMaximum) CHECK_LE(param.minimum, param.maximum);
+            if (param.kind == ParamKind::Choice) {
+                CHECK(!param.choices.empty());
+                CHECK(std::find(param.choices.begin(), param.choices.end(), param.defaultValue) !=
+                      param.choices.end());
+            }
+        }
+    }
+
+    Params params;
+    REQUIRE(registry.applyDefaults("cave.cellular", params));
+    CHECK(params.has("fill"));
+    CHECK_LT(std::abs(params.getFloat("fill", 0.f) - 0.45f), 0.0001f);
+    params.setInt("width", 96);
+    params.setInt("height", 48);
+    params.setInt("seed", 7);
+    CHECK_EQ(params.getWidth(), 96);
+    CHECK_EQ(params.getHeight(), 48);
+    CHECK_EQ(params.getSeed(), 7u);
 }
 
 TEST_CASE("procgen.mesh.rock.reproducibleAndControllable") {
@@ -457,7 +686,6 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings ws;
     ws.width = 900;
     ws.height = 700;
@@ -485,8 +713,9 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     params.setInt("maxChildren", 2);
 
     Procgen generator;
-    Mesh *treeMesh = generator.generateMesh("mesh.tree", &params, gfx);
-    REQUIRE(treeMesh != nullptr);
+    auto    treeParams = requireParams(params);
+    auto    treeMesh   = generator.generateMeshBorrowed("mesh.tree", treeParams.handle, gfx);
+    REQUIRE(treeMesh.isBound());
 
     // 4px bark/foliage atlas; UVs are partitioned by the mesh recipe.
     const uint8_t atlasPixels[] = {
@@ -497,7 +726,7 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     REQUIRE(atlas != nullptr);
 
     auto *tree = Renderable3D::create();
-    tree->setMesh(treeMesh);
+    tree->setMesh(treeMesh.get());
     tree->setTexture(atlas);
     tree->setTint(1.f, 1.f, 1.f, 1.f);
     tree->setRoughness(0.88f);
@@ -612,7 +841,6 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings ws;
     ws.width = 900;
     ws.height = 700;
@@ -626,25 +854,26 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
     params.setFloat("height", 1.7f);
     params.setFloat("width", 2.6f);
     params.setInt("blobs", 12);
-    params.setInt("rings", 3);
-    params.setInt("radialSegments", 8);
+    params.setInt("rings", 5);
+    params.setInt("radialSegments", 12);
     params.setFloat("leafDensity", 0.8f);
     params.setFloat("leafSize", 0.32f);
     params.setInt("twigs", 6);
 
     Procgen generator;
-    Mesh *bushMesh = generator.generateMesh("mesh.bush", &params, gfx);
-    REQUIRE(bushMesh != nullptr);
+    auto    bushParams = requireParams(params);
+    auto    bushMesh   = generator.generateMeshBorrowed("mesh.bush", bushParams.handle, gfx);
+    REQUIRE(bushMesh.isBound());
 
     // A tiny two-tone foliage atlas (dark base / light highlight), like the tree test.
     const uint8_t atlasPixels[] = {
-        52, 86, 40, 255, 84, 132, 60, 255,
+        104, 67, 38, 255, 84, 132, 60, 255,
     };
     Texture *atlas = gfx->newTexture(2, 1, atlasPixels);
     REQUIRE(atlas != nullptr);
 
     auto *bush = Renderable3D::create();
-    bush->setMesh(bushMesh);
+    bush->setMesh(bushMesh.get());
     bush->setTexture(atlas);
     bush->setTint(1.f, 1.f, 1.f, 1.f);
     bush->setRoughness(0.9f);
@@ -1723,19 +1952,24 @@ TEST_CASE("procgen.wfc.simple.viaModule") {
     p.setSize(16, 12);
     p.setString("preset", "dungeon");
     p.setInt("maxAttempts", 64);
-    Grid2D *grid = mod->generate("wfc.simple", &p);
-    REQUIRE(grid != nullptr);
+    auto params    = requireParams(p);
+    auto gridLease = requireGrid(*mod, "wfc.simple", params.handle);
+    auto grid      = gridLease.view();
+    REQUIRE(grid.isBound());
     CHECK(borderIsWall(*grid));
     CHECK_EQ(grid->getWidth(), 16);
     CHECK_EQ(grid->getHeight(), 12);
-    delete grid;
 
     Params bad;
     bad.setSeed(1);
     bad.setSize(8, 8);
     bad.setString("preset", "invalid");
-    CHECK(mod->generate("wfc.simple", &bad) == nullptr);
-    CHECK(mod->lastError().find("preset") != std::string::npos);
+    auto badParams = requireParams(bad);
+    auto failed    = mod->generateHandle("wfc.simple", badParams.handle);
+    CHECK(!failed.ok());
+    const eve::Diagnostic *diagnostic = failed.error();
+    REQUIRE(diagnostic != nullptr);
+    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::Failed);
 }
 
 TEST_CASE("procgen.meshBuild.accessors") {
@@ -1824,7 +2058,6 @@ TEST_CASE("procgen.render.hexplanetPng") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 768;
     settings.height = 768;
@@ -1836,15 +2069,16 @@ TEST_CASE("procgen.render.hexplanetPng") {
     params.setFloat("radius", 1.f);
     params.setInt("subdivisions", 3);
     params.setFloat("tileInset", 0.12f);
-    Mesh *planetMesh = procgen->generateMesh("mesh.hexplanet", &params, gfx);
-    REQUIRE(planetMesh != nullptr);
+    auto planetParams = requireParams(params);
+    auto planetMesh   = procgen->generateMeshBorrowed("mesh.hexplanet", planetParams.handle, gfx);
+    REQUIRE(planetMesh.isBound());
 
     const uint8_t oceanBlue[4] = {42, 155, 181, 255};
     Texture *planetTexture = gfx->newTexture(1, 1, oceanBlue);
     REQUIRE(planetTexture != nullptr);
 
     auto *planet = eve::graphics::Renderable3D::create();
-    planet->setMesh(planetMesh);
+    planet->setMesh(planetMesh.get());
     planet->setTexture(planetTexture);
     planet->setMetallic(0.05f);
     planet->setRoughness(0.72f);
@@ -1877,7 +2111,7 @@ TEST_CASE("procgen.render.hexplanetPng") {
         eve::graphics::RenderSystem::render(*gfx);
     }
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const           imageModule = eve::image::Image::create();
     std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
     REQUIRE(static_cast<bool>(image));
     std::unique_ptr<eve::filesystem::FileData> png(
@@ -1904,7 +2138,6 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 256;
     settings.height = 256;
@@ -2003,7 +2236,6 @@ TEST_CASE("procgen.render.skyscraperPng") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 720;
@@ -2022,8 +2254,9 @@ TEST_CASE("procgen.render.skyscraperPng") {
     params.setInt("windowRows", 5);
     params.setFloat("windowDepth", 0.06f);
     params.setFloat("spireHeight", 5.f);
-    Mesh *towerMesh = procgen->generateMesh("mesh.skyscraper", &params, gfx);
-    REQUIRE(towerMesh != nullptr);
+    auto towerParams = requireParams(params);
+    auto towerMesh   = procgen->generateMeshBorrowed("mesh.skyscraper", towerParams.handle, gfx);
+    REQUIRE(towerMesh.isBound());
 
     // 2x2 atlas: bottom texel dark wall, top texel bright window (matches UV convention).
     const uint8_t atlas[16] = {
@@ -2036,7 +2269,7 @@ TEST_CASE("procgen.render.skyscraperPng") {
     REQUIRE(towerTexture != nullptr);
 
     auto *tower = eve::graphics::Renderable3D::create();
-    tower->setMesh(towerMesh);
+    tower->setMesh(towerMesh.get());
     tower->setTexture(towerTexture);
     tower->setMetallic(0.02f);
     tower->setRoughness(0.85f);
@@ -2066,7 +2299,7 @@ TEST_CASE("procgen.render.skyscraperPng") {
         eve::graphics::RenderSystem::render(*gfx);
     }
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const           imageModule = eve::image::Image::create();
     std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
     REQUIRE(static_cast<bool>(image));
     std::unique_ptr<eve::filesystem::FileData> png(
@@ -2085,6 +2318,102 @@ TEST_CASE("procgen.render.skyscraperPng") {
     REQUIRE(output.good());
     output.close();
     std::printf("skyscraper render saved: %s\n", outPath.string().c_str());
+    win->close();
+}
+
+TEST_CASE("procgen.render.castlePng") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width = 900;
+    settings.height = 700;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    Procgen *procgen = Procgen::create();
+    Params params;
+    params.setSeed(20260826);
+    params.setFloat("width", 48.f);
+    params.setFloat("depth", 40.f);
+    params.setInt("rings", 2);
+    params.setInt("keepFloors", 4);
+    params.setInt("detail", 2);
+    params.setFloat("towerSpacing", 15.f);
+    auto castleParams = requireParams(params);
+    auto castleBuild  = requireMesh(*procgen, "mesh.castle", castleParams.handle);
+    auto castleView   = castleBuild.view();
+    REQUIRE(castleView.isBound());
+
+    const uint8_t stone[16] = {
+        126, 116, 98, 255,  150, 139, 116, 255,
+        105, 96, 82, 255,   169, 157, 132, 255,
+    };
+    Texture *stoneTexture = gfx->newTexture(2, 2, stone);
+    REQUIRE(stoneTexture != nullptr);
+    // Exercise the graph-style group filter + CPU-to-GPU upload path. Each
+    // semantic component can now have independent material/collision policy.
+    const float groupTint[][3] = {
+        {.74f,.69f,.58f}, {.82f,.76f,.64f}, {.66f,.61f,.52f}, {.58f,.53f,.46f},
+        {.48f,.43f,.36f}, {.71f,.65f,.54f}, {.60f,.55f,.45f},
+    };
+    std::vector<eve::graphics::Renderable3D *> castleParts;
+    for (int group = 0; group < castleView->getGroupCount(); ++group) {
+        auto part = castleView->copyGroup(group);
+        if (!part) continue;
+        auto gpuPart = procgen->uploadMeshBorrowed(*part, *gfx);
+        REQUIRE(gpuPart.isBound());
+        auto *renderable = eve::graphics::Renderable3D::create();
+        renderable->setMesh(gpuPart.get());
+        renderable->setTexture(stoneTexture);
+        const int tint = std::min(group, 6);
+        renderable->setTint(groupTint[tint][0], groupTint[tint][1], groupTint[tint][2], 1.f);
+        renderable->setMetallic(0.01f);
+        renderable->setRoughness(0.94f);
+        renderable->setCastShadow(true);
+        renderable->setReceiveShadow(true);
+        castleParts.push_back(renderable);
+    }
+    CHECK_EQ(castleParts.size(), size_t(7));
+
+    auto *camera = eve::graphics::Camera3D::createCamera();
+    // View from the south-east so the gate opening and both wall stair systems
+    // are part of the visual contract rather than hidden behind the north wall.
+    camera->setEye(42.f, 32.f, -64.f);
+    camera->setTarget(0.f, 5.5f, 0.f);
+    camera->setFov(43.f);
+    camera->setAmbient(0.19f, 0.20f, 0.23f);
+    auto *present = eve::graphics::Renderable2D::create();
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+    gfx->setBackgroundColor(Color(0.09f, 0.13f, 0.19f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.6f, 0.95f, 0.8f, 1.35f, 1.18f, 0.96f);
+    for (int frame = 0; frame < 8; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+
+    [[maybe_unused]] auto *const           imageModule = eve::image::Image::create();
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(static_cast<bool>(image));
+    RenderAuditConfig auditCfg;
+    auditCfg.scene = "procgen";
+    auditCfg.phase = "castle";
+    auditCfg.width = image->getWidth();
+    auditCfg.height = image->getHeight();
+    const RenderAuditResult audit = auditImage(*image, auditCfg, {0.09f, 0.13f, 0.19f}, 2);
+    CHECK(!audit.empty);
+    CHECK(audit.occupancy > 0.08f);
+    CHECK(audit.meanLuma > 12.f);
+    const std::filesystem::path outDir = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
+    std::filesystem::create_directories(outDir);
+    const std::filesystem::path outPath = outDir / "castle.png";
+    REQUIRE(saveImagePng(*image, outPath.string()));
+    std::printf("castle render saved: %s occupancy=%.3f luma=%.3f\n",
+                outPath.string().c_str(), audit.occupancy, audit.meanLuma);
     win->close();
 }
 
@@ -2262,8 +2591,10 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
     p.setSeed(3);
     p.setInt("resolution", 16);
     p.setString("field", "torus");
-    MeshBuild *m = mod->buildMesh("mesh.marchingcubes", &p);
-    REQUIRE(m != nullptr);
+    auto params    = requireParams(p);
+    auto meshLease = requireMesh(*mod, "mesh.marchingcubes", params.handle);
+    auto m         = meshLease.view();
+    REQUIRE(m.isBound());
     CHECK(m->getVertexCount() > 50);
     CHECK(meshIndicesInRange(*m));
     CHECK(mod->hasMeshRecipe("mesh.marchingcubes"));
@@ -2273,15 +2604,22 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
         if (mod->getMeshRecipeId(i) == "mesh.marchingcubes") listed = true;
     }
     CHECK(listed);
-    delete m;
-
     Params bad;
     bad.setInt("resolution", 8);
     bad.setString("field", "nope");
-    CHECK(mod->buildMesh("mesh.marchingcubes", &bad) == nullptr);
-    CHECK(mod->lastError().find("field") != std::string::npos);
-    CHECK(mod->buildMesh("mesh.missing", &p) == nullptr);
-    CHECK(mod->generateMesh("mesh.marchingcubes", nullptr, nullptr) == nullptr);
+    auto badParams = requireParams(bad);
+    auto badResult = mod->buildMeshHandle("mesh.marchingcubes", badParams.handle);
+    CHECK(!badResult.ok());
+    const eve::Diagnostic *badDiagnostic = badResult.error();
+    REQUIRE(badDiagnostic != nullptr);
+    CHECK_EQ(badDiagnostic->code(), eve::DiagnosticCode::Failed);
+    auto missingResult = mod->buildMeshHandle("mesh.missing", params.handle);
+    CHECK(!missingResult.ok());
+    const eve::Diagnostic *missingDiagnostic = missingResult.error();
+    REQUIRE(missingDiagnostic != nullptr);
+    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::Failed);
+    auto missingGraphicsResult = mod->generateMeshBorrowed("mesh.marchingcubes", {}, nullptr);
+    CHECK(!missingGraphicsResult.isBound());
 }
 
 TEST_CASE("procgen.wfc.simple.dungeonAdjacencyAndListing") {
@@ -2413,9 +2751,13 @@ TEST_CASE("procgen.mesh.marchingcubes.sphereVolumeSignStable") {
 
 TEST_CASE("procgen.mesh.marchingcubes.moduleNullAndList") {
     Procgen *mod = Procgen::create();
-    CHECK(mod->buildMesh("mesh.marchingcubes", nullptr) == nullptr);
-    CHECK(mod->lastError().find("null") != std::string::npos);
-    CHECK(mod->generateMesh("mesh.marchingcubes", nullptr, nullptr) == nullptr);
+    auto     failed = mod->buildMeshHandle("mesh.marchingcubes", {});
+    CHECK(!failed.ok());
+    const eve::Diagnostic *diagnostic = failed.error();
+    REQUIRE(diagnostic != nullptr);
+    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::StaleHandle);
+    auto failedUpload = mod->generateMeshBorrowed("mesh.marchingcubes", {}, nullptr);
+    CHECK(!failedUpload.isBound());
 
     CHECK(mod->getMeshRecipeCount() >= 1);
     bool found = false;
@@ -2430,15 +2772,18 @@ TEST_CASE("procgen.palette.applyToLayer") {
     Params p;
     p.setSeed(1);
     p.setSize(16, 12);
-    Grid2D *grid = mod->generate("dungeon.bsp", &p);
-    CHECK(grid != nullptr);
+    auto params    = requireParams(p);
+    auto gridLease = requireGrid(*mod, "dungeon.bsp", params.handle);
+    auto grid      = gridLease.view();
+    REQUIRE(grid.isBound());
 
     mod->setPaletteGid("test", "wall", 10);
     mod->setPaletteGid("test", "floor", 20);
     mod->setPaletteGid("test", "corridor", 21);
 
     eve::map::TileLayer *layer = eve::map::TileLayer::createLayer(16, 12, 16.f, 16.f);
-    CHECK(mod->applyToLayer(grid, "test", layer));
+    auto                 applyResult = mod->applyToLayer(gridLease.handle, "test", *layer);
+    CHECK(applyResult.ok());
     bool sawMapped = false;
     for (int y = 0; y < 12; ++y) {
         for (int x = 0; x < 16; ++x) {
@@ -2457,7 +2802,6 @@ TEST_CASE("procgen.palette.applyToLayer") {
         }
     }
     CHECK(sawMapped);
-    delete grid;
     layer->release();
 }
 
@@ -2505,17 +2849,17 @@ TEST_CASE("procgen.texture.recipes.reproducible") {
         std::string err;
         // Fully qualify: `using namespace eve::procgen` would make bare `image::`
         // look outside `eve::image`.
-        eve::image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
-        eve::image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(a != nullptr);
-        REQUIRE(b != nullptr);
+        auto       a        = TextureRecipeRegistry::instance().generate(id, p, err);
+        auto       b        = TextureRecipeRegistry::instance().generate(id, p, err);
+        const bool aPresent = static_cast<bool>(a);
+        const bool bPresent = static_cast<bool>(b);
+        REQUIRE(aPresent);
+        REQUIRE(bPresent);
         CHECK_EQ(a->getWidth(), 32);
         CHECK_EQ(a->getHeight(), 32);
         CHECK_EQ(a->getFormat(), std::string("RGBA8"));
         CHECK_EQ(a->getSize(), b->getSize());
         CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
-        delete a;
-        delete b;
     }
 }
 
@@ -2525,14 +2869,11 @@ TEST_CASE("procgen.texture.generateImage.andNormal") {
     p.setSeed(3);
     p.setSize(48, 48);
     p.setInt("colors", 6);
-    eve::image::ImageData *img = mod->generateImage("tex.marble", &p);
-    REQUIRE(img != nullptr);
-    eve::image::ImageData *nrm = mod->generateNormalImage("tex.marble", &p);
-    REQUIRE(nrm != nullptr);
-    CHECK_EQ(nrm->getWidth(), 48);
-    CHECK_EQ(nrm->getHeight(), 48);
-    delete img;
-    delete nrm;
+    auto params      = requireParams(p);
+    auto imageResult = mod->generateImageHandle("tex.marble", params.handle);
+    REQUIRE(imageResult.ok());
+    auto normalResult = mod->generateNormalImageHandle("tex.marble", params.handle);
+    REQUIRE(normalResult.ok());
     CHECK(mod->hasTextureRecipe("tex.soil"));
     CHECK(mod->getTextureRecipeCount() >= 5);
 }
@@ -2642,12 +2983,11 @@ TEST_CASE("procgen.cloud.recipes.generate") {
         p.setFloat("worldScale", 64.f);
         p.setFloat("time", 1.5f);
         std::string err;
-        eve::image::ImageData *img = TextureRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(img != nullptr);
+        auto        img = TextureRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(static_cast<bool>(img));
         CHECK_EQ(img->getFormat(), std::string("RGBA8"));
         CHECK_EQ(img->getWidth(), 48);
         CHECK_EQ(img->getHeight(), 48);
-        delete img;
     }
     CHECK(TextureRecipeRegistry::instance().has("tex.cloud"));
     CHECK(TextureRecipeRegistry::instance().has("tex.cloud_shadow"));
@@ -2655,30 +2995,45 @@ TEST_CASE("procgen.cloud.recipes.generate") {
 
 TEST_CASE("procgen.cloud.viaModule") {
     Procgen *mod = Procgen::create();
-    CloudField *f = mod->newCloudField();
-    REQUIRE(f != nullptr);
-    f->setSeed(3);
-    f->setWorldScale(64.f);
-    f->setCoverage(0.5f);
-    const float c0 = mod->cloudCoverageAt(f, 2.f, 3.f, 0.f);
-    const float c1 = mod->cloudCoverageAt(f, 2.f, 3.f, 4.f);
+    auto     fieldResult = mod->newCloudFieldHandle();
+    REQUIRE(fieldResult.ok());
+    auto fieldHandle = std::move(fieldResult).takeValue();
+    auto field       = mod->resolveCloudField(fieldHandle);
+    REQUIRE(field.isBound());
+    field->setSeed(3);
+    field->setWorldScale(64.f);
+    field->setCoverage(0.5f);
+    auto coverageResult = mod->cloudCoverageAt(fieldHandle, 2.f, 3.f, 0.f);
+    REQUIRE(coverageResult.ok());
+    const float c0 = std::move(coverageResult).takeValue();
     CHECK(c0 >= 0.f);
     CHECK(c0 <= 1.f);
-    CHECK(mod->cloudCoverageAt(nullptr, 0.f, 0.f, 0.f) == 0.f);
+    auto staleCoverage = mod->cloudCoverageAt({}, 0.f, 0.f, 0.f);
+    CHECK(!staleCoverage.ok());
 
-    CloudShadow *s = mod->newCloudShadow();
-    REQUIRE(s != nullptr);
-    s->setSunDirection(0.5f, 1.f, 0.f);
-    s->setCloudAltitude(50.f);
-    s->setStrength(0.8f);
-    CHECK(mod->cloudShadowFactor(s, 2.f, 3.f, 0.f) >= 0.f);
-    CHECK(mod->cloudShadowFactor(nullptr, 0.f, 0.f, 0.f) == 1.f);
+    auto shadowResult = mod->newCloudShadowHandle();
+    REQUIRE(shadowResult.ok());
+    auto shadowHandle = std::move(shadowResult).takeValue();
+    auto shadow       = mod->resolveCloudShadow(shadowHandle);
+    REQUIRE(shadow.isBound());
+    shadow->setSunDirection(0.5f, 1.f, 0.f);
+    shadow->setCloudAltitude(50.f);
+    shadow->setStrength(0.8f);
+    auto factorResult = mod->cloudShadowFactor(shadowHandle, 2.f, 3.f, 0.f);
+    REQUIRE(factorResult.ok());
+    CHECK(std::move(factorResult).takeValue() >= 0.f);
+    auto staleFactor = mod->cloudShadowFactor({}, 0.f, 0.f, 0.f);
+    CHECK(!staleFactor.ok());
 
     std::vector<float> buf(16 * 16);
-    mod->sampleCloud(f, buf.data(), 16, 16, 0.f, 0.f, 0.f, 64.f);
-    mod->sampleCloudShadow(s, buf.data(), 16, 16, 0.f, 0.f, 0.f, 64.f);
-    delete f;
-    delete s;
+    auto               sampleResult = mod->sampleCloud(fieldHandle, std::span<float>(buf), 16, 16, 0.f, 0.f, 0.f, 64.f);
+    CHECK(sampleResult.ok());
+    auto shadowSampleResult = mod->sampleCloudShadow(shadowHandle, std::span<float>(buf), 16, 16, 0.f, 0.f, 0.f, 64.f);
+    CHECK(shadowSampleResult.ok());
+    auto releaseField = mod->releaseCloudField(fieldHandle);
+    CHECK(releaseField.ok());
+    auto releaseShadow = mod->releaseCloudShadow(shadowHandle);
+    CHECK(releaseShadow.ok());
 }
 
 
@@ -2693,15 +3048,69 @@ TEST_CASE("procgen.texture.builtinRecipes.expanded") {
         p.setSize(32, 32);
         p.setInt("colors", 5);
         std::string err;
-        eve::image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
-        eve::image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(a != nullptr);
-        REQUIRE(b != nullptr);
+        auto        a        = TextureRecipeRegistry::instance().generate(id, p, err);
+        auto        b        = TextureRecipeRegistry::instance().generate(id, p, err);
+        const bool  aPresent = static_cast<bool>(a);
+        const bool  bPresent = static_cast<bool>(b);
+        REQUIRE(aPresent);
+        REQUIRE(bPresent);
         CHECK_EQ(a->getFormat(), std::string("RGBA8"));
         CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
-        delete a;
-        delete b;
     }
+}
+
+TEST_CASE("procgen.recipeSchemas.textureAndPbrDefaults") {
+    auto &textures = TextureRecipeRegistry::instance();
+    auto &materials = PbrRecipeRegistry::instance();
+    textures.registerBuiltins();
+    materials.registerPbrBuiltins();
+    for (const std::string &id : textures.list()) {
+        const RecipeDescriptor *schema = textures.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->id, id);
+        CHECK(!schema->displayName.empty());
+        CHECK(schema->find("seed") != nullptr);
+    }
+    for (const std::string &id : materials.list()) {
+        const RecipeDescriptor *schema = materials.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->category, std::string("Material"));
+        CHECK(schema->find("metallic") != nullptr);
+        CHECK(schema->find("normalStrength") != nullptr);
+    }
+    Params defaults;
+    REQUIRE(materials.applyDefaults("pbr.rock", defaults));
+    const RecipeDescriptor *rock = materials.descriptor("pbr.rock");
+    REQUIRE(rock != nullptr);
+    REQUIRE(rock->find("metallic") != nullptr);
+    CHECK_EQ(defaults.getFloat("metallic", -1.f), std::stof(rock->find("metallic")->defaultValue));
+    CHECK(!materials.applyDefaults("pbr.missing", defaults));
+    RecipeDescriptor copied = *rock;
+    copied.displayName = "Project Rock";
+    CHECK_NE(copied.displayName, rock->displayName);
+}
+
+TEST_CASE("procgen.recipeSchemas.meshDefaults") {
+    auto &meshes = MeshRecipeRegistry::instance();
+    meshes.registerBuiltins();
+    for (const std::string &id : meshes.list()) {
+        const RecipeDescriptor *schema = meshes.descriptor(id);
+        REQUIRE(schema != nullptr);
+        CHECK_EQ(schema->id, id);
+        CHECK(!schema->displayName.empty());
+        CHECK(!schema->category.empty());
+        CHECK(schema->find("seed") != nullptr);
+    }
+
+    Params defaults;
+    REQUIRE(meshes.applyDefaults("mesh.fence", defaults));
+    CHECK_EQ(defaults.getInt("segments", 0), 6);
+    CHECK_EQ(defaults.getFloat("height", 0.f), 1.1f);
+    MeshBuild mesh;
+    std::string error;
+    REQUIRE(meshes.generate("mesh.fence", defaults, mesh, error));
+    CHECK_GT(mesh.getVertexCount(), 0);
+    CHECK(!meshes.applyDefaults("mesh.missing", defaults));
 }
 
 TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
@@ -2715,10 +3124,12 @@ TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
         p.setSeed(7);
         p.setSize(32, 32);
         std::string err;
-        PbrTextureSet *a = PbrRecipeRegistry::instance().generate(id, p, err);
-        PbrTextureSet *b = PbrRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(a != nullptr);
-        REQUIRE(b != nullptr);
+        auto        a        = PbrRecipeRegistry::instance().generate(id, p, err);
+        auto        b        = PbrRecipeRegistry::instance().generate(id, p, err);
+        const bool  aPresent = static_cast<bool>(a);
+        const bool  bPresent = static_cast<bool>(b);
+        REQUIRE(aPresent);
+        REQUIRE(bPresent);
         // All six maps present, same size, reproducible.
         REQUIRE(a->albedo != nullptr);
         REQUIRE(a->normal != nullptr);
@@ -2737,10 +3148,6 @@ TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
             if (px[i + 3] != 255) alphaOk = false;
         }
         CHECK(alphaOk);
-        a->destroy();
-        b->destroy();
-        delete a;
-        delete b;
     }
 }
 
@@ -2753,8 +3160,8 @@ TEST_CASE("procgen.pbr.metallicAndRoughnessRange") {
     p.setFloat("roughnessLow", 0.1f);
     p.setFloat("roughnessHigh", 0.2f);
     std::string err;
-    PbrTextureSet *set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
-    REQUIRE(set != nullptr);
+    auto        set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
+    REQUIRE(static_cast<bool>(set));
     const auto *m = static_cast<const uint8_t *>(set->metallic->getData());
     for (size_t i = 0; i < set->metallic->getSize(); i += 4) {
         CHECK_EQ(m[i], 255);  // fully metallic
@@ -2764,8 +3171,6 @@ TEST_CASE("procgen.pbr.metallicAndRoughnessRange") {
         CHECK(r[i] >= 25);  // roughnessLow 0.1 -> 25
         CHECK(r[i] <= 51);  // roughnessHigh 0.2 -> 51
     }
-    set->destroy();
-    delete set;
 }
 
 TEST_CASE("procgen.pbr.viaModuleAndErrors") {
@@ -2773,12 +3178,14 @@ TEST_CASE("procgen.pbr.viaModuleAndErrors") {
     Params p;
     p.setSeed(9);
     p.setSize(40, 40);
-    PbrTextureSet *set = mod->generatePbrMaterial("pbr.wall", &p);
-    REQUIRE(set != nullptr);
+    auto params    = requireParams(p);
+    auto pbrResult = mod->generatePbrMaterialHandle("pbr.wall", params.handle);
+    REQUIRE(pbrResult.ok());
+    auto setLease = PbrLease(*mod, std::move(pbrResult).takeValue());
+    auto set      = setLease.view();
+    REQUIRE(set.isBound());
     CHECK(set->albedo != nullptr);
     CHECK(set->normal != nullptr);
-    set->destroy();
-    delete set;
 
     CHECK(mod->hasPbrRecipe("pbr.wood"));
     CHECK(mod->getPbrRecipeCount() >= 13);
@@ -2788,9 +3195,16 @@ TEST_CASE("procgen.pbr.viaModuleAndErrors") {
     }
     CHECK(listed);
 
-    CHECK(mod->generatePbrMaterial("pbr.missing", &p) == nullptr);
-    CHECK(mod->generatePbrMaterial("pbr.wall", nullptr) == nullptr);
-    CHECK(mod->lastError().find("null") != std::string::npos);
+    auto missingResult = mod->generatePbrMaterialHandle("pbr.missing", params.handle);
+    CHECK(!missingResult.ok());
+    const eve::Diagnostic *missingDiagnostic = missingResult.error();
+    REQUIRE(missingDiagnostic != nullptr);
+    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::NotFound);
+    auto staleResult = mod->generatePbrMaterialHandle("pbr.wall", {});
+    CHECK(!staleResult.ok());
+    const eve::Diagnostic *staleDiagnostic = staleResult.error();
+    REQUIRE(staleDiagnostic != nullptr);
+    CHECK_EQ(staleDiagnostic->code(), eve::DiagnosticCode::StaleHandle);
 }
 
 static Color colorForSemantic(int sem) {
@@ -2844,7 +3258,6 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 720;
     s.height = 420;
@@ -3007,16 +3420,144 @@ TEST_CASE("procgen.mesh.linearStructure.viaModule") {
     p.setSeed(1);
     p.setInt("segments", 4);
     p.setFloat("segLength", 1.f);
-    MeshBuild *m = mod->buildMesh("mesh.stonewall", &p);
-    REQUIRE(m != nullptr);
+    auto params    = requireParams(p);
+    auto meshLease = requireMesh(*mod, "mesh.stonewall", params.handle);
+    auto m         = meshLease.view();
+    REQUIRE(m.isBound());
     CHECK(m->getVertexCount() > 0);
     CHECK(meshIndicesInRange(*m));
     CHECK(mod->hasMeshRecipe("mesh.stonewall"));
     CHECK(mod->hasMeshRecipe("mesh.bridge"));
-    delete m;
+    auto missingResult = mod->buildMeshHandle("mesh.nonexistent", params.handle);
+    CHECK(!missingResult.ok());
+    const eve::Diagnostic *missingDiagnostic = missingResult.error();
+    REQUIRE(missingDiagnostic != nullptr);
+    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::Failed);
+}
 
-    CHECK(mod->buildMesh("mesh.nonexistent", &p) == nullptr);
-    CHECK(mod->lastError().find("unknown") != std::string::npos);
+TEST_CASE("procgen.mesh.castle.multilevelDeterministicAndComplete") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(8675309);
+    p.setFloat("width", 48.f);
+    p.setFloat("depth", 40.f);
+    p.setInt("rings", 2);
+    p.setInt("keepFloors", 4);
+    p.setInt("detail", 2);
+    MeshBuild a, b;
+    std::string err;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.castle", p, a, err));
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.castle", p, b, err));
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK(a.getVertexCount() > 5000);
+    CHECK_EQ(a.getMeta("algorithm", ""), "mesh.castle");
+    CHECK_EQ(a.getMeta("rings", ""), "2");
+    CHECK_EQ(a.getMeta("keepFloors", ""), "4");
+    CHECK(std::stoi(a.getMeta("towerCount", "0")) >= 12);
+    // One stair per wall ring plus one between every pair of keep floors.
+    CHECK_EQ(a.getMeta("stairFlights", ""), "5");
+    std::set<std::string> groups;
+    for (int i = 0; i < a.getGroupCount(); ++i) groups.insert(a.getGroupName(i));
+    for (const char *required : {"walls", "battlements", "towers", "gatehouses", "stairs", "keep", "courtyard"})
+        CHECK(groups.count(required) == 1);
+    int stairGroup = -1;
+    for (int i = 0; i < a.getGroupCount(); ++i)
+        if (a.getGroupName(i) == "stairs") stairGroup = i;
+    REQUIRE(stairGroup >= 0);
+    auto stairs = a.copyGroup(stairGroup);
+    REQUIRE(stairs.get() != nullptr);
+    CHECK(stairs->getVertexCount() > 100);
+    CHECK_EQ(stairs->getMeta("group", ""), "stairs");
+    CHECK(meshIndicesInRange(*stairs));
+}
+
+TEST_CASE("procgen.mesh.castle.parametersControlTopologyAndBounds") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params simple;
+    simple.setInt("rings", 1);
+    simple.setInt("keepFloors", 1);
+    simple.setInt("detail", 0);
+    simple.setFloat("width", 30.f);
+    simple.setFloat("depth", 26.f);
+    Params elaborate = simple;
+    elaborate.setInt("rings", 3);
+    elaborate.setInt("keepFloors", 5);
+    elaborate.setInt("detail", 2);
+    elaborate.setFloat("width", 58.f);
+    elaborate.setFloat("depth", 50.f);
+    MeshBuild a, b;
+    std::string err;
+    REQUIRE(generateCastleMesh(simple, a, err));
+    REQUIRE(generateCastleMesh(elaborate, b, err));
+    CHECK(b.getVertexCount() > a.getVertexCount() * 2);
+    CHECK(std::stoi(b.getMeta("towerCount", "0")) > std::stoi(a.getMeta("towerCount", "0")));
+    CHECK_EQ(b.getMeta("stairFlights", ""), "7");
+
+    Params scaled = simple;
+    scaled.setFloat("scale", 2.f);
+    MeshBuild s;
+    REQUIRE(generateCastleMesh(scaled, s, err));
+    float maxA = 0.f, maxS = 0.f;
+    for (int i=0;i<a.getVertexCount();++i) maxA=std::max(maxA,std::fabs(a.getPositionX(i)));
+    for (int i=0;i<s.getVertexCount();++i) maxS=std::max(maxS,std::fabs(s.getPositionX(i)));
+    CHECK(std::fabs(maxS - maxA*2.f) < 1e-3f);
+}
+
+TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
+    Procgen *mod = Procgen::create();
+    CHECK(mod->hasMeshRecipe("mesh.castle"));
+    auto schemaResult = mod->getMeshRecipeSchema("mesh.castle");
+    REQUIRE(schemaResult.ok());
+    auto schema = std::move(schemaResult).takeValue();
+    CHECK_EQ(schema.getParamCount(), 25);
+    const ParamDescriptor *rings = schema.find("rings");
+    REQUIRE(rings != nullptr);
+    CHECK_EQ(rings->defaultValue, "2");
+    CHECK(rings->hasMinimum);
+    CHECK(rings->hasMaximum);
+    CHECK_EQ(rings->minimum, 1.0);
+    CHECK_EQ(rings->maximum, 4.0);
+    CHECK(!rings->description.empty());
+    auto missingSchema = mod->getMeshRecipeSchema("mesh.missing");
+    CHECK(!missingSchema.ok());
+    const eve::Diagnostic *schemaDiagnostic = missingSchema.error();
+    REQUIRE(schemaDiagnostic != nullptr);
+    CHECK_EQ(schemaDiagnostic->code(), eve::DiagnosticCode::NotFound);
+    Params p;
+    p.setFloat("width", 16.f);
+    p.setFloat("depth", 16.f);
+    p.setFloat("towerRadius", 7.f);
+    p.setFloat("wallThickness", 3.f);
+    auto params = requireParams(p);
+    auto failed = mod->buildMeshHandle("mesh.castle", params.handle);
+    CHECK(!failed.ok());
+    const eve::Diagnostic *failedDiagnostic = failed.error();
+    REQUIRE(failedDiagnostic != nullptr);
+    CHECK_EQ(failedDiagnostic->code(), eve::DiagnosticCode::Failed);
+}
+
+TEST_CASE("procgen.meshBuild.appendTransformedComposesRecipeNodes") {
+    Params p;
+    p.setInt("segments", 1);
+    p.setFloat("segLength", 2.f);
+    MeshBuild source, combined;
+    std::string err;
+    REQUIRE(generateLinearStructure("mesh.stonewall", p, source, err));
+    REQUIRE(combined.appendTransformed(&source, 3.f, 2.f, -4.f, 90.f, 2.f, 1.f, .5f));
+    CHECK_EQ(combined.getVertexCount(), source.getVertexCount());
+    CHECK_EQ(combined.getIndexCount(), source.getIndexCount());
+    CHECK(meshIndicesInRange(combined));
+    CHECK(meshNormalsFiniteUnit(combined));
+    REQUIRE(combined.appendTransformed(&source, -3.f, 0.f, 4.f, 0.f, -1.f, 1.f, 1.f));
+    CHECK_EQ(combined.getVertexCount(), source.getVertexCount() * 2);
+    CHECK_EQ(combined.getIndexCount(), source.getIndexCount() * 2);
+    CHECK(!combined.appendTransformed(&combined, 0, 0, 0, 0, 1, 1, 1));
+    CHECK(!combined.appendTransformed(nullptr, 0, 0, 0, 0, 1, 1, 1));
+    CHECK(!combined.appendTransformed(&source, 0, 0, 0, 0, 0, 1, 1));
 }
 
 // --- Water (graphics): sky reflection + animated edge waves + middle drop ripples ---
@@ -3070,7 +3611,6 @@ TEST_CASE("graphics.waterfall.paramsRoundTrip") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 128;
     settings.height = 128;
@@ -3109,9 +3649,84 @@ TEST_CASE("graphics.waterfall.paramsRoundTrip") {
     win->close();
 }
 
-TEST_CASE("graphics.water.paramsRoundTrip") {
-    auto *gfx = Graphics::create();
+TEST_CASE("graphics.waterfall.render.flowAndFoam") {
+    auto* win = eve::window::Window::create();
+    auto* gfx = Graphics::create();
+    REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 256;
+    settings.height   = 256;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    auto* camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, 7.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(50.f);
+    camera->setAmbient(0.2f, 0.22f, 0.25f);
+
+    gfx->setBackgroundColor(Color(0.01f, 0.015f, 0.025f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.2f, 0.8f, 0.5f, 1.f, 0.95f, 0.85f);
+
+    auto* present             = Renderable2D::create();
+    present->sprite()->width  = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a      = 0.f;
+
+    Waterfall* wf = gfx->newWaterfall();
+    REQUIRE(wf != nullptr);
+    wf->createCurvedSheet(4.f, 6.f, 24, 32, 0.35f, 0.15f);
+    wf->setWaterColor(0.05f, 0.28f, 0.5f);
+    wf->setReflectionIntensity(0.65f);
+    wf->setSunIntensity(0.8f);
+    wf->setTurbulence(0.75f);
+    wf->setStreakCount(7);
+
+    auto* waterfallEnt = Renderable3D::create();
+    waterfallEnt->setMesh(wf->getMesh());
+    waterfallEnt->setShader(wf->getShader());
+    waterfallEnt->setReceiveShadow(false);
+    waterfallEnt->setCastShadow(false);
+    waterfallEnt->setCamera(camera);
+
+    auto capture = [&](float time, float foam) {
+        wf->setTime(time);
+        wf->setFoamAmount(foam);
+        wf->bindParams();
+        return waterCaptureLuma(gfx, 16);
+    };
+
+    const WaterLumaGrid t0       = capture(0.f, 0.8f);
+    const WaterLumaGrid t1       = capture(0.4f, 0.8f);
+    float               rendered = 0.f;
+    for (float cell : t0.cells) rendered += cell;
+    rendered /= float(t0.cells.size());
+    const float flowDiff = waterDiff(t0, t1);
+
+    const WaterLumaGrid noFoam   = capture(0.2f, 0.f);
+    const WaterLumaGrid foam     = capture(0.2f, 1.1f);
+    const float         foamDiff = waterDiff(noFoam, foam);
+    std::printf("waterfall render: rendered=%.2f flowDiff=%.2f foamDiff=%.2f\n", rendered, flowDiff, foamDiff);
+    REQUIRE(rendered > 1.f);
+    REQUIRE(flowDiff > 0.15f);
+    REQUIRE(foamDiff > 0.15f);
+
+    delete wf;
+    win->close();
+}
+
+TEST_CASE("graphics.water.paramsRoundTrip") {
+    auto* win = eve::window::Window::create();
+    auto* gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 128;
+    settings.height   = 128;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
     Water *w = gfx->newWater();
     REQUIRE(w != nullptr);
     REQUIRE(w->getShader() != nullptr);
@@ -3143,6 +3758,7 @@ TEST_CASE("graphics.water.paramsRoundTrip") {
     CHECK(Water::paramCount() > 0);
     CHECK(!Water::paramName(0).empty());
     delete w;
+    win->close();
 }
 
 TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
@@ -3150,7 +3766,6 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 256;
     settings.height = 256;
@@ -3158,7 +3773,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     REQUIRE(win->setWindowSettings(settings));
 
     // Blue-ish sky cubemap so reflection is visible.
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule        = eve::image::Image::create();
     const int fs = 4;
     const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces × 4×4 × RGBA
     for (int f = 0; f < 6; ++f)
@@ -3217,15 +3832,15 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     };
 
     // Dynamic ripples: different times give different patterns (and it renders).
-    const WaterLumaGrid t0 = captureWater(0.f);
-    const WaterLumaGrid t1 = captureWater(0.35f);
-    const float dynamic = waterDiff(t0, t1);
-    float rendered = 0.f;
+    const WaterLumaGrid t0       = captureWater(0.f);
+    const WaterLumaGrid t1       = captureWater(0.35f);
+    const float         dynamic  = waterDiff(t0, t1);
+    float               rendered = 0.f;
     for (float c : t0.cells) rendered += c;
     rendered /= float(t0.cells.size());
     std::printf("water render: dynamic=%.2f rendered=%.2f\n", dynamic, rendered);
-    CHECK(rendered > 1.f);      // water surface is actually drawn
-    CHECK(dynamic > 0.3f);      // ripples move over time
+    REQUIRE(rendered > 1.f);  // water surface is actually drawn
+    REQUIRE(dynamic > 0.3f);  // ripples move over time
 
     // Edge waves + middle drop ripples: flat (no ripples) differs from rippled.
     const WaterLumaGrid flat = [&] {
@@ -3246,7 +3861,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     }();
     const float rippleDiff = waterDiff(flat, wavy);
     std::printf("water render: rippleDiff=%.2f\n", rippleDiff);
-    CHECK(rippleDiff > 0.2f);   // ripples (edge + middle) change the surface
+    REQUIRE(rippleDiff > 0.2f);  // ripples (edge + middle) change the surface
 
     delete w;
     win->close();
@@ -3302,13 +3917,12 @@ TEST_CASE("graphics.water.render.plane") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;
     settings.centered = true;
     REQUIRE(win->setWindowSettings(settings));
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Gradient sky cubemap: deep blue at the zenith, pale near the horizon.
     const int fs = 16;
@@ -3444,13 +4058,12 @@ TEST_CASE("graphics.water.render.ssr") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;
     settings.centered = true;
     REQUIRE(win->setWindowSettings(settings));
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Gradient sky cubemap.
     const int fs = 16;
@@ -3592,7 +4205,6 @@ TEST_CASE("graphics.render3d.toCanvas") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
@@ -3665,13 +4277,12 @@ TEST_CASE("graphics.water.render.planar") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;
     settings.centered = true;
     REQUIRE(win->setWindowSettings(settings));
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     const int fs = 16;
     std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));

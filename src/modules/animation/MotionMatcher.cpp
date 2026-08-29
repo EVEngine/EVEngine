@@ -1,6 +1,8 @@
 #include "animation/MotionMatcher.h"
+
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimationTime.h"
 #include "animation/MotionDatabase.h"
 
 #include "common/Exception.h"
@@ -10,7 +12,7 @@
 
 namespace eve::animation {
 
-MotionMatcher::MotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database)
+MotionMatcher::MotionMatcher(AnimSkeleton* skeleton, MotionDatabase* database)
     : skeleton_(skeleton), database_(database) {
     if (!skeleton_) throw Exception("MotionMatcher: skeleton is null");
     if (!database_) throw Exception("MotionMatcher: database is null");
@@ -65,9 +67,9 @@ int MotionMatcher::getMatchedClipIndex() const {
     return database_->getFrameClipIndex(matchedFrame_);
 }
 
-AnimPose *MotionMatcher::getPose() { return &pose_; }
+AnimPose* MotionMatcher::getPose() { return &pose_; }
 
-void MotionMatcher::buildQuery(std::vector<float> &query) const {
+void MotionMatcher::buildQuery(std::vector<float>& query) const {
     if (!database_->isBaked()) throw Exception("MotionMatcher: database not baked");
     const int n = database_->getFeatureSize();
     query.assign(static_cast<size_t>(n), 0.f);
@@ -94,52 +96,54 @@ void MotionMatcher::buildQuery(std::vector<float> &query) const {
     AnimPose cur;
     cur.copyFrom(&pose_);
     cur.computeWorld(skeleton_);
-    const int root    = database_->getRootBone();
+    const int   root  = database_->getRootBone();
     const float rootX = cur.getWorldPositionX(root);
     const float rootZ = cur.getWorldPositionZ(root);
     // Estimate current yaw from root rotation.
-    const float qy = cur.getWorldRotationY(root);
-    const float qw = cur.getWorldRotationW(root);
-    const float yaw =
-        std::atan2(2.f * (qw * qy), 1.f - 2.f * (qy * qy));
-    const float c2 = std::cos(yaw);
-    const float s2 = std::sin(yaw);
+    const float qy  = cur.getWorldRotationY(root);
+    const float qw  = cur.getWorldRotationW(root);
+    const float yaw = std::atan2(2.f * (qw * qy), 1.f - 2.f * (qy * qy));
+    const float c2  = std::cos(yaw);
+    const float s2  = std::sin(yaw);
 
     int base = 10;
     for (int i = 0; i < database_->getFeatureBoneCount(); ++i) {
-        const int b  = database_->getFeatureBone(i);
-        const float dx = cur.getWorldPositionX(b) - rootX;
-        const float dz = cur.getWorldPositionZ(b) - rootZ;
-        const float lx = dx * c2 + dz * s2;
-        const float lz = -dx * s2 + dz * c2;
+        const int   b                        = database_->getFeatureBone(i);
+        const float dx                       = cur.getWorldPositionX(b) - rootX;
+        const float dz                       = cur.getWorldPositionZ(b) - rootZ;
+        const float lx                       = dx * c2 + dz * s2;
+        const float lz                       = -dx * s2 + dz * c2;
         query[static_cast<size_t>(base)]     = lx;
         query[static_cast<size_t>(base + 1)] = cur.getWorldPositionY(b);
         query[static_cast<size_t>(base + 2)] = lz;
         base += 3;
     }
+    database_->normalizeFeature(query);
 }
 
-float MotionMatcher::cost(const std::vector<float> &query,
-                          const std::vector<float> &cand) const {
-    const int n = static_cast<int>(query.size());
-    float sum   = 0.f;
+float MotionMatcher::cost(const std::vector<float>& query, const std::vector<float>& cand, float upperBound) const {
+    const int n   = static_cast<int>(query.size());
+    float     sum = 0.f;
     for (int i = 0; i < n; ++i) {
         const float d = query[static_cast<size_t>(i)] - cand[static_cast<size_t>(i)];
-        float w       = poseWeight_;
-        if (i < 2) w = velWeight_;
-        else if (i < 10) w = trajWeight_;
+        float       w = poseWeight_;
+        if (i < 2)
+            w = velWeight_;
+        else if (i < 10)
+            w = trajWeight_;
         sum += w * d * d;
+        if (sum >= upperBound) return sum;
     }
     return sum;
 }
 
-void MotionMatcher::sampleMatched(AnimPose *out) const {
+void MotionMatcher::sampleMatched(AnimPose* out) const {
     if (matchedFrame_ < 0) {
         skeleton_->applyBindPose(out);
         return;
     }
-    const int ci     = database_->getFrameClipIndex(matchedFrame_);
-    AnimClip *clip   = database_->getClip(ci);
+    const int ci   = database_->getFrameClipIndex(matchedFrame_);
+    AnimClip* clip = database_->getClip(ci);
     clip->sample(matchedTime_, out, skeleton_);
 }
 
@@ -162,8 +166,8 @@ void MotionMatcher::search() {
                 continue;
             }
         }
-        const auto &f = database_->frameAt(i);
-        const float c = cost(query, f.feature);
+        const auto& f = database_->frameAt(i);
+        const float c = cost(query, f.feature, bestCost);
         if (c < bestCost) {
             bestCost = c;
             best     = i;
@@ -173,8 +177,8 @@ void MotionMatcher::search() {
     // If everything skipped, fall back to exhaustive.
     if (!std::isfinite(bestCost)) {
         for (int i = 0; i < database_->getFrameCount(); ++i) {
-            const auto &f = database_->frameAt(i);
-            const float c = cost(query, f.feature);
+            const auto& f = database_->frameAt(i);
+            const float c = cost(query, f.feature, bestCost);
             if (c < bestCost) {
                 bestCost = c;
                 best     = i;
@@ -199,7 +203,7 @@ void MotionMatcher::search() {
     }
 }
 
-void MotionMatcher::update(float dt) {
+void MotionMatcher::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("MotionMatcher.update: dt must be >= 0");
     if (!database_->isBaked()) return;
 
@@ -231,6 +235,24 @@ void MotionMatcher::update(float dt) {
     } else if (matchedFrame_ >= 0) {
         pose_.copyFrom(&matchedPose_);
     }
+}
+
+eve::Result<void> MotionMatcher::advance(const eve::SimulationStep& step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "MotionMatcher");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void MotionMatcher::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "MotionMatcher");
+    if (!step) {
+        step.ignore("legacy MotionMatcher update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy MotionMatcher update");
 }
 
 }  // namespace eve::animation

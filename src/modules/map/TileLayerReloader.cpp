@@ -51,9 +51,9 @@ public:
         return ext == ".json" || isImagePath(normPath);
     }
 
-    bool reload(const std::string &normPath) override {
-        if (ecs::current()->getManager<TileLayer>() == nullptr) return false;
-        return isImagePath(normPath) ? rebindTileset(normPath) : reloadConfig(normPath);
+    eve::Result<bool> reload(const std::string &normPath) override {
+        if (ecs::current()->getManager<TileLayer>() == nullptr) return eve::Result<bool>::success(false);
+        return eve::Result<bool>::success(isImagePath(normPath) ? rebindTileset(normPath) : reloadConfig(normPath));
     }
 
 private:

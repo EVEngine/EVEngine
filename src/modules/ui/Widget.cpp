@@ -3,7 +3,7 @@
 namespace eve::ui {
 namespace {
 
-int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
+int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     const int index = int(tree.nodes.size());
     UINode node;
     node.type = desc.type;
@@ -11,9 +11,24 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     node.key = desc.key.empty() ? node.id : std::move(desc.key);
     node.text = std::move(desc.text);
     node.valueText = std::move(desc.valueText);
+    node.tooltip = std::move(desc.tooltip);
     node.visible = desc.visible;
+    node.enabled = desc.enabled;
     node.checked = desc.checked;
     node.open = desc.open;
+    node.focusMode = desc.focusMode;
+    node.mouseFilter = desc.mouseFilter;
+    node.themePreset = desc.themePreset;
+    node.tabIndex = desc.tabIndex;
+    node.focusNext = std::move(desc.focusNext);
+    node.focusPrevious = std::move(desc.focusPrevious);
+    node.focusLeft = std::move(desc.focusLeft);
+    node.focusRight = std::move(desc.focusRight);
+    node.focusUp = std::move(desc.focusUp);
+    node.focusDown = std::move(desc.focusDown);
+    node.accessibilityRole = desc.accessibilityRole;
+    node.accessibilityName = std::move(desc.accessibilityName);
+    node.accessibilityDescription = std::move(desc.accessibilityDescription);
     node.value = desc.value;
     node.minValue = desc.minValue;
     node.maxValue = desc.maxValue;
@@ -59,6 +74,7 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     node.justifyContent = desc.justifyContent;
     node.gap = desc.gap;
     node.flexGrow = desc.flexGrow;
+    node.parent = parent;
     node.firstChild = -1;
     node.nextSibling = -1;
     node.handlerClick = 0;
@@ -88,7 +104,7 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     int prevChild = -1;
     int firstChild = -1;
     for (auto &child : desc.children) {
-        int childIndex = appendNode(tree, std::move(child));
+        int childIndex = appendNode(tree, std::move(child), index);
         if (firstChild < 0) firstChild = childIndex;
         if (prevChild >= 0) tree.nodes[size_t(prevChild)].nextSibling = childIndex;
         prevChild = childIndex;
@@ -130,9 +146,24 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     UINode &n = tree.nodes[size_t(nodeIndex)];
     n.text = std::move(desc.text);
     n.valueText = std::move(desc.valueText);
+    n.tooltip = std::move(desc.tooltip);
     n.visible = desc.visible;
+    n.enabled = desc.enabled;
     n.checked = desc.checked;
     n.open = desc.open;
+    n.focusMode = desc.focusMode;
+    n.mouseFilter = desc.mouseFilter;
+    n.themePreset = desc.themePreset;
+    n.tabIndex = desc.tabIndex;
+    n.focusNext = std::move(desc.focusNext);
+    n.focusPrevious = std::move(desc.focusPrevious);
+    n.focusLeft = std::move(desc.focusLeft);
+    n.focusRight = std::move(desc.focusRight);
+    n.focusUp = std::move(desc.focusUp);
+    n.focusDown = std::move(desc.focusDown);
+    n.accessibilityRole = desc.accessibilityRole;
+    n.accessibilityName = std::move(desc.accessibilityName);
+    n.accessibilityDescription = std::move(desc.accessibilityDescription);
     n.value = desc.value;
     n.minValue = desc.minValue;
     n.maxValue = desc.maxValue;
@@ -251,6 +282,13 @@ WidgetDesc button(std::string label, std::string id, std::function<void()> onCli
     return d;
 }
 
+WidgetDesc icon(Icon value, std::string id) { return text(iconGlyph(value), std::move(id)); }
+
+WidgetDesc iconButton(Icon value, std::string label, std::string id,
+                      std::function<void()> onClick) {
+    return button(iconText(value, label), std::move(id), std::move(onClick));
+}
+
 WidgetDesc group(std::vector<WidgetDesc> children, std::string id) {
     WidgetDesc d;
     d.type = NodeType::Group;
@@ -313,7 +351,7 @@ WidgetDesc progress(float fraction, std::string id, std::string overlay) {
 }
 
 WidgetDesc combo(std::string label, std::vector<std::string> options, int selected,
-                 std::string id, std::function<void(int)> onValue) {
+                 std::string id, std::function<void(float)> onValue) {
     WidgetDesc d;
     d.type = NodeType::Combo;
     d.id = std::move(id);
@@ -369,6 +407,164 @@ WidgetDesc inputText(std::string label, std::string value, std::string id,
     d.text = std::move(label);
     d.valueText = std::move(value);
     d.onTextChange = std::move(onChange);
+    return d;
+}
+
+WidgetDesc searchField(std::string hint, std::string value, std::string id,
+                       std::function<void(const std::string &)> onChange) {
+    WidgetDesc d;
+    d.type = NodeType::SearchField;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(hint);
+    d.valueText = std::move(value);
+    d.onTextChange = std::move(onChange);
+    return d;
+}
+
+WidgetDesc toggleSwitch(std::string label, bool checked, std::string id,
+                        std::function<void(bool)> onToggle) {
+    WidgetDesc d;
+    d.type = NodeType::Switch;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.checked = checked;
+    d.onToggle = std::move(onToggle);
+    return d;
+}
+
+WidgetDesc badge(std::string label, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Badge;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.tintR = 0.96f;
+    d.tintG = 0.35f;
+    d.tintB = 0.40f;
+    d.tintA = 0.20f;
+    return d;
+}
+
+WidgetDesc card(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Card;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children, std::string id,
+                          uint64_t textureId) {
+    WidgetDesc d;
+    d.type = NodeType::NinePatchPanel;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.textureId = textureId;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc sectionHeader(std::string label, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::SectionHeader;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    return d;
+}
+
+WidgetDesc menuBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::MenuBar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc menu(std::string label, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Menu;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc menuItem(std::string label, std::string shortcut, std::string id,
+                    std::function<void()> onClick, bool selected) {
+    WidgetDesc d;
+    d.type = NodeType::MenuItem;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.valueText = std::move(shortcut);
+    d.checked = selected;
+    d.onClick = std::move(onClick);
+    return d;
+}
+
+WidgetDesc toolbar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Toolbar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems = FlexAlign::Center;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc toolbox(std::vector<WidgetDesc> children, std::string id, float cellSize,
+                   int columns) {
+    WidgetDesc d;
+    d.type = NodeType::Toolbox;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.itemHeight = cellSize > 0.f ? cellSize : 40.f;
+    d.value = float(std::max(0, columns));
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc sidebar(std::vector<WidgetDesc> children, std::string id, float width) {
+    WidgetDesc d;
+    d.type = NodeType::Sidebar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.sizeX = width;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc statusBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::StatusBar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems = FlexAlign::Center;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc second, float ratio,
+                     std::string id, std::function<void(float)> onResize) {
+    WidgetDesc d;
+    d.type = NodeType::SplitPane;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = direction;
+    d.value = std::max(0.1f, std::min(0.9f, ratio));
+    d.minValue = 0.1f;
+    d.maxValue = 0.9f;
+    d.onValue = std::move(onResize);
+    d.children.push_back(std::move(first));
+    d.children.push_back(std::move(second));
     return d;
 }
 

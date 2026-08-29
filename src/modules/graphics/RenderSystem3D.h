@@ -26,6 +26,8 @@ public:
         float targetX = 0.f, targetY = 0.f, targetZ = 0.f;
         float upX = 0.f, upY = 1.f, upZ = 0.f;
         float fovYDeg = 60.f, nearZ = 0.1f, farZ = 100.f;
+        bool orthographic = false;
+        float orthoHeight = 20.f;
         float ambientR = 0.12f, ambientG = 0.12f, ambientB = 0.14f;
         Texture *envMap = nullptr;   // cubemap; nullptr → no IBL
         float envIntensity = 1.f;
@@ -50,6 +52,12 @@ public:
     void setTarget(float x, float y, float z);
     void setUp(float x, float y, float z);
     void setFov(float fovYDeg);
+    /** @brief Enable an orthographic projection with the given vertical world-space span. */
+    void setOrthographic(float height);
+    /** @brief Return to perspective projection, retaining the configured field of view. */
+    void setPerspective();
+    /** @brief Set positive near/far clipping distances; far is kept beyond near. */
+    void setClipPlanes(float nearZ, float farZ);
     void setActive(bool active);
     void setAmbient(float r, float g, float b);
     /** @brief Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL. */
@@ -174,6 +182,8 @@ public:
     float getYaw();
     void setScale(float sx, float sy, float sz);
     void setMesh(Mesh *mesh);
+    /** @brief Main (non-part) mesh attached via setMesh; nullptr when unset. */
+    Mesh *getMesh();
     void setTexture(Texture *texture);
     void setNormalTexture(Texture *texture);
     /** @brief Height map for parallax (R channel; white = raised). nullptr disables sampling. */
@@ -263,6 +273,17 @@ public:
         std::function<void(Graphics &gfx, const Camera3D::Data &cam,
                            const glm::mat4 &viewProj, float aspect)>;
     static void addGBufferExtraDrawer(GBufferExtraDrawer drawer);
+
+    /**
+     * @brief Register a callback that draws screen-space decals (box-projected
+     * volumes writing the DecalLayer) after the G-buffer fill and before the
+     * forward pass. Invoked between gfx.beginDecalPass / endDecalPass; call
+     * gfx.drawDecal(...) there (optionally gfx.setDecalCamera first).
+     */
+    using DecalExtraDrawer =
+        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
+                           const glm::mat4 &viewProj, float aspect)>;
+    static void addDecalExtraDrawer(DecalExtraDrawer drawer);
 
     /**
      * @brief Register a callback that casts shadows for geometry outside the

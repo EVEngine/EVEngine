@@ -8,7 +8,7 @@
 
 namespace eve::animation {
 
-MotionDatabase::MotionDatabase(AnimSkeleton *skeleton) : skeleton_(skeleton) {
+MotionDatabase::MotionDatabase(AnimSkeleton* skeleton) : skeleton_(skeleton) {
     if (!skeleton_) throw Exception("MotionDatabase: skeleton is null");
     scratchPose_.resize(skeleton_->getBoneCount());
     // Default: use every non-root bone if none specified before bake.
@@ -25,7 +25,7 @@ void MotionDatabase::addFeatureBone(int boneIndex) {
     baked_ = false;
 }
 
-void MotionDatabase::addFeatureBoneByName(const std::string &name) {
+void MotionDatabase::addFeatureBoneByName(const std::string& name) {
     const int id = skeleton_->findBone(name);
     if (id < 0) throw Exception("MotionDatabase.addFeatureBoneByName: unknown '%s'", name.c_str());
     addFeatureBone(id);
@@ -39,19 +39,19 @@ void MotionDatabase::setRootBone(int boneIndex) {
     baked_    = false;
 }
 
-void MotionDatabase::setRootBoneByName(const std::string &name) {
+void MotionDatabase::setRootBoneByName(const std::string& name) {
     const int id = skeleton_->findBone(name);
     if (id < 0) throw Exception("MotionDatabase.setRootBoneByName: unknown '%s'", name.c_str());
     setRootBone(id);
 }
 
-void MotionDatabase::addClip(AnimClip *clip) {
+void MotionDatabase::addClip(AnimClip* clip) {
     if (!clip) throw Exception("MotionDatabase.addClip: clip is null");
     clips_.push_back(clip);
     baked_ = false;
 }
 
-AnimClip *MotionDatabase::getClip(int clipIndex) const {
+AnimClip* MotionDatabase::getClip(int clipIndex) const {
     if (clipIndex < 0 || clipIndex >= getClipCount()) {
         throw Exception("MotionDatabase.getClip: invalid index %d", clipIndex);
     }
@@ -75,9 +75,8 @@ int MotionDatabase::getFeatureBone(int index) const {
     return featureBones_[static_cast<size_t>(index)];
 }
 
-void MotionDatabase::extractFeature(AnimClip *clip, float time, float dtSample,
-                                    std::vector<float> &out, float &rootX, float &rootZ,
-                                    float &rootYaw, float &velX, float &velZ) const {
+void MotionDatabase::extractFeature(AnimClip* clip, float time, float dtSample, std::vector<float>& out, float& rootX,
+                                    float& rootZ, float& rootYaw, float& velX, float& velZ) const {
     out.assign(static_cast<size_t>(featureSize_), 0.f);
     clip->sample(time, &scratchPose_, skeleton_);
     scratchPose_.computeWorld(skeleton_);
@@ -85,18 +84,16 @@ void MotionDatabase::extractFeature(AnimClip *clip, float time, float dtSample,
     const int root = rootBone_;
     rootX          = scratchPose_.getWorldPositionX(root);
     rootZ          = scratchPose_.getWorldPositionZ(root);
-    rootYaw        = yawFromQuat(scratchPose_.getWorldRotationX(root),
-                          scratchPose_.getWorldRotationY(root),
-                          scratchPose_.getWorldRotationZ(root),
-                          scratchPose_.getWorldRotationW(root));
+    rootYaw        = yawFromQuat(scratchPose_.getWorldRotationX(root), scratchPose_.getWorldRotationY(root),
+                                 scratchPose_.getWorldRotationZ(root), scratchPose_.getWorldRotationW(root));
 
     // Velocity from nearby sample.
     const float t1 = time + std::max(dtSample, 1e-3f);
-    AnimPose next;
+    AnimPose    next;
     clip->sample(t1, &next, skeleton_);
     next.computeWorld(skeleton_);
-    const float nX = next.getWorldPositionX(root);
-    const float nZ = next.getWorldPositionZ(root);
+    const float nX  = next.getWorldPositionX(root);
+    const float nZ  = next.getWorldPositionZ(root);
     const float dtt = std::max(dtSample, 1e-3f);
     velX            = (nX - rootX) / dtt;
     velZ            = (nZ - rootZ) / dtt;
@@ -104,7 +101,7 @@ void MotionDatabase::extractFeature(AnimClip *clip, float time, float dtSample,
     float cs = std::cos(rootYaw);
     float sn = std::sin(rootYaw);
     // Character-space: rotate world xz by -yaw
-    auto toLocal = [&](float wx, float wz, float &lx, float &lz) {
+    auto toLocal = [&](float wx, float wz, float& lx, float& lz) {
         const float dx = wx - rootX;
         const float dz = wz - rootZ;
         lx             = dx * cs + dz * sn;
@@ -131,7 +128,7 @@ void MotionDatabase::extractFeature(AnimClip *clip, float time, float dtSample,
         fut.computeWorld(skeleton_);
         const float fyaw = yawFromQuat(fut.getWorldRotationX(root), fut.getWorldRotationY(root),
                                        fut.getWorldRotationZ(root), fut.getWorldRotationW(root));
-        float fx, fz;
+        float       fx, fz;
         yawToForward(fyaw - rootYaw, fx, fz);
         out[8] = fx;
         out[9] = fz;
@@ -139,10 +136,9 @@ void MotionDatabase::extractFeature(AnimClip *clip, float time, float dtSample,
 
     int base = 10;
     for (int bone : featureBones_) {
-        float lx, lz;
+        float       lx, lz;
         const float wy = scratchPose_.getWorldPositionY(bone);
-        toLocal(scratchPose_.getWorldPositionX(bone), scratchPose_.getWorldPositionZ(bone), lx,
-                lz);
+        toLocal(scratchPose_.getWorldPositionX(bone), scratchPose_.getWorldPositionZ(bone), lx, lz);
         out[static_cast<size_t>(base)]     = lx;
         out[static_cast<size_t>(base + 1)] = wy;
         out[static_cast<size_t>(base + 2)] = lz;
@@ -161,7 +157,7 @@ void MotionDatabase::bake() {
     frames_.clear();
 
     for (int ci = 0; ci < getClipCount(); ++ci) {
-        AnimClip *clip = clips_[static_cast<size_t>(ci)];
+        AnimClip*   clip = clips_[static_cast<size_t>(ci)];
         const float rate = clip->getSampleRate() > 0.f ? clip->getSampleRate() : 30.f;
         const float dt   = 1.f / rate;
         const float dur  = clip->getDuration();
@@ -181,14 +177,36 @@ void MotionDatabase::bake() {
             frames_.push_back(std::move(f));
         }
     }
+    featureMean_.assign(static_cast<size_t>(featureSize_), 0.f);
+    featureInvStd_.assign(static_cast<size_t>(featureSize_), 0.f);
+    for (const Frame& frame : frames_)
+        for (int i = 0; i < featureSize_; ++i)
+            featureMean_[static_cast<size_t>(i)] += frame.feature[static_cast<size_t>(i)];
+    const float invCount = 1.f / static_cast<float>(frames_.size());
+    for (float& mean : featureMean_) mean *= invCount;
+    for (const Frame& frame : frames_)
+        for (int i = 0; i < featureSize_; ++i) {
+            const float d = frame.feature[static_cast<size_t>(i)] - featureMean_[static_cast<size_t>(i)];
+            featureInvStd_[static_cast<size_t>(i)] += d * d;
+        }
+    for (float& invStd : featureInvStd_) invStd = 1.f / std::sqrt(invStd * invCount + 1e-6f);
+    for (Frame& frame : frames_) normalizeFeature(frame.feature);
     baked_ = true;
+}
+
+void MotionDatabase::normalizeFeature(std::vector<float>& feature) const {
+    if (static_cast<int>(feature.size()) != featureSize_ || static_cast<int>(featureMean_.size()) != featureSize_)
+        return;
+    for (int i = 0; i < featureSize_; ++i)
+        feature[static_cast<size_t>(i)] = (feature[static_cast<size_t>(i)] - featureMean_[static_cast<size_t>(i)]) *
+                                          featureInvStd_[static_cast<size_t>(i)];
 }
 
 void MotionDatabase::requireBaked() const {
     if (!baked_) throw Exception("MotionDatabase: not baked; call bake() first");
 }
 
-const MotionDatabase::Frame &MotionDatabase::frameAt(int index) const {
+const MotionDatabase::Frame& MotionDatabase::frameAt(int index) const {
     requireBaked();
     if (index < 0 || index >= getFrameCount()) {
         throw Exception("MotionDatabase: invalid frame %d", index);
@@ -198,12 +216,10 @@ const MotionDatabase::Frame &MotionDatabase::frameAt(int index) const {
 
 float MotionDatabase::getFrameTime(int frameIndex) const { return frameAt(frameIndex).time; }
 
-int MotionDatabase::getFrameClipIndex(int frameIndex) const {
-    return frameAt(frameIndex).clipIndex;
-}
+int MotionDatabase::getFrameClipIndex(int frameIndex) const { return frameAt(frameIndex).clipIndex; }
 
-void MotionDatabase::getFeature(int frameIndex, float *out, int outCount) const {
-    const Frame &f = frameAt(frameIndex);
+void MotionDatabase::getFeature(int frameIndex, float* out, int outCount) const {
+    const Frame& f = frameAt(frameIndex);
     if (!out || outCount < featureSize_) {
         throw Exception("MotionDatabase.getFeature: buffer too small");
     }

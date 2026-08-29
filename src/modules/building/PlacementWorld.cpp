@@ -17,26 +17,35 @@ namespace eve::building {
 PlacementWorld::PlacementWorld(int width, int height, float cellSize) {
     width_ = width > 0 ? width : 1;
     height_ = height > 0 ? height : 1;
-    grid_.cellW = cellSize > 0.f ? cellSize : 1.f;
-    grid_.cellH = grid_.cellW;
+    grid_ = std::make_unique<grid::GridConfig>();
+    grid_->cellW = cellSize > 0.f ? cellSize : 1.f;
+    grid_->cellH = grid_->cellW;
     occupancy_.assign(size_t(width_) * size_t(height_), 0);
     terrain_.assign(size_t(width_) * size_t(height_), 0);
     terrainOverrides_.assign(size_t(width_) * size_t(height_), 0);
     PlacementSystem::ensureBuiltins();
 }
 
+PlacementWorld::~PlacementWorld() = default;
+
+float PlacementWorld::getCellSize() const { return grid_->cellW; }
+float PlacementWorld::getOriginX() const { return grid_->originX; }
+float PlacementWorld::getOriginY() const { return grid_->originY; }
+const grid::GridConfig &PlacementWorld::getGrid() const { return *grid_; }
+grid::GridConfig &PlacementWorld::getGrid() { return *grid_; }
+
 void PlacementWorld::destroy() { delete this; }
 
 void PlacementWorld::setCellSize(float s) {
     if (s > 0.f) {
-        grid_.cellW = s;
-        grid_.cellH = s;
+        grid_->cellW = s;
+        grid_->cellH = s;
     }
 }
 
 void PlacementWorld::setOrigin(float x, float y) {
-    grid_.originX = x;
-    grid_.originY = y;
+    grid_->originX = x;
+    grid_->originY = y;
 }
 
 void PlacementWorld::setExtra(const std::string &key, const std::string &value) {
@@ -51,32 +60,32 @@ std::string PlacementWorld::getExtra(const std::string &key, const std::string &
 // ---- Grid 配置 ----
 
 void PlacementWorld::setGridLayout(const std::string &layout) {
-    grid_.layout = grid::GridConfig::layoutFromName(layout);
+    grid_->layout = grid::GridConfig::layoutFromName(layout);
 }
 
 std::string PlacementWorld::getGridLayoutName() const {
-    return grid::GridConfig::layoutName(grid_.layout);
+    return grid::GridConfig::layoutName(grid_->layout);
 }
 
 void PlacementWorld::setGridPlane(const std::string &plane) {
-    grid_.plane = grid::GridConfig::planeFromName(plane);
+    grid_->plane = grid::GridConfig::planeFromName(plane);
 }
 
 std::string PlacementWorld::getGridPlaneName() const {
-    return grid::GridConfig::planeName(grid_.plane);
+    return grid::GridConfig::planeName(grid_->plane);
 }
 
 void PlacementWorld::setCellGap(float gapX, float gapY) {
-    grid_.cellGapX = gapX;
-    grid_.cellGapY = gapY;
+    grid_->cellGapX = gapX;
+    grid_->cellGapY = gapY;
 }
 
-void PlacementWorld::setHexSideLength(float s) { grid_.hexSideLength = s; }
+void PlacementWorld::setHexSideLength(float s) { grid_->hexSideLength = s; }
 
 void PlacementWorld::setStagger(const std::string &axis, const std::string &index) {
-    grid_.staggerAxis = (axis == "x" || axis == "X") ? grid::StaggerAxis::X
+    grid_->staggerAxis = (axis == "x" || axis == "X") ? grid::StaggerAxis::X
                                                      : grid::StaggerAxis::Y;
-    grid_.staggerIndex = (index == "even" || index == "Even") ? grid::StaggerIndex::Even
+    grid_->staggerIndex = (index == "even" || index == "Even") ? grid::StaggerIndex::Even
                                                               : grid::StaggerIndex::Odd;
 }
 
@@ -85,64 +94,64 @@ void PlacementWorld::setGridFromLayer(map::TileLayer *layer) {
     const auto &c = *layer->config();
     switch (c.orientation) {
         case map::MapOrientation::Orthogonal:
-            grid_.layout = grid::GridLayout::Rectangle;
+            grid_->layout = grid::GridLayout::Rectangle;
             break;
         case map::MapOrientation::Isometric:
-            grid_.layout = grid::GridLayout::Isometric;
+            grid_->layout = grid::GridLayout::Isometric;
             break;
         case map::MapOrientation::Staggered:
-            grid_.layout = grid::GridLayout::Staggered;
+            grid_->layout = grid::GridLayout::Staggered;
             break;
         case map::MapOrientation::Hexagonal:
-            grid_.layout = grid::GridLayout::Hexagon;
+            grid_->layout = grid::GridLayout::Hexagon;
             break;
     }
-    grid_.cellW = c.tileW;
-    grid_.cellH = c.tileH;
-    grid_.originX = c.originX;
-    grid_.originY = c.originY;
-    grid_.staggerAxis = c.staggerAxis == map::StaggerAxis::Y ? grid::StaggerAxis::Y
+    grid_->cellW = c.tileW;
+    grid_->cellH = c.tileH;
+    grid_->originX = c.originX;
+    grid_->originY = c.originY;
+    grid_->staggerAxis = c.staggerAxis == map::StaggerAxis::Y ? grid::StaggerAxis::Y
                                                              : grid::StaggerAxis::X;
-    grid_.staggerIndex = c.staggerIndex == map::StaggerIndex::Odd ? grid::StaggerIndex::Odd
+    grid_->staggerIndex = c.staggerIndex == map::StaggerIndex::Odd ? grid::StaggerIndex::Odd
                                                                   : grid::StaggerIndex::Even;
-    grid_.hexSideLength = c.hexSideLength;
+    grid_->hexSideLength = c.hexSideLength;
 }
 
 // ---- 坐标换算 ----
 
 int PlacementWorld::worldToCellX(float worldX) const {
     int cx = 0, cy = 0;
-    grid::worldToCell(grid_, worldX, 0.f, cx, cy, width_, height_);
+    grid::worldToCell(*grid_, worldX, 0.f, cx, cy, width_, height_);
     return cx;
 }
 
 int PlacementWorld::worldToCellY(float worldY) const {
     int cx = 0, cy = 0;
-    grid::worldToCell(grid_, 0.f, worldY, cx, cy, width_, height_);
+    grid::worldToCell(*grid_, 0.f, worldY, cx, cy, width_, height_);
     return cy;
 }
 
 float PlacementWorld::cellToWorldX(int cellX) const {
     float px = 0.f, py = 0.f;
-    grid::cellToWorld(grid_, cellX, 0, px, py);
+    grid::cellToWorld(*grid_, cellX, 0, px, py);
     return px;
 }
 
 float PlacementWorld::cellToWorldY(int cellY) const {
     float px = 0.f, py = 0.f;
-    grid::cellToWorld(grid_, 0, cellY, px, py);
+    grid::cellToWorld(*grid_, 0, cellY, px, py);
     return py;
 }
 
 void PlacementWorld::cellToWorldPlane(int cellX, int cellY, float &px, float &py) const {
-    grid::cellToWorld(grid_, cellX, cellY, px, py);
+    grid::cellToWorld(*grid_, cellX, cellY, px, py);
 }
 
 void PlacementWorld::cellToWorld3D(int cellX, int cellY, float elevation, float &worldX,
                                    float &worldY, float &worldZ) const {
     float px = 0.f, py = 0.f;
-    grid::cellToWorld(grid_, cellX, cellY, px, py);
-    if (grid_.plane == grid::GridPlane::XZ) {
+    grid::cellToWorld(*grid_, cellX, cellY, px, py);
+    if (grid_->plane == grid::GridPlane::XZ) {
         worldX = px;
         worldY = elevation;
         worldZ = py;
@@ -174,8 +183,8 @@ float PlacementWorld::cellToWorld3DZ(int cellX, int cellY, float elevation) cons
 void PlacementWorld::worldToCell3D(float worldX, float worldY, float worldZ, int &cellX,
                                    int &cellY) const {
     const float px = worldX;
-    const float py = (grid_.plane == grid::GridPlane::XZ) ? worldZ : worldY;
-    grid::worldToCell(grid_, px, py, cellX, cellY, width_, height_);
+    const float py = (grid_->plane == grid::GridPlane::XZ) ? worldZ : worldY;
+    grid::worldToCell(*grid_, px, py, cellX, cellY, width_, height_);
 }
 
 int PlacementWorld::worldToCell3DX(float worldX, float worldY, float worldZ) const {
@@ -337,14 +346,14 @@ float PlacementWorld::getBuildingWorldY(int instanceId) const {
     if (it == buildings_.end()) return 0.f;
     const PlacedBuilding &pb = it->second;
     // 真实世界 Y：XZ 平面 = 高度；XY 平面 = 平面第二轴。
-    return grid_.plane == grid::GridPlane::XZ ? pb.elevation : pb.worldY;
+    return grid_->plane == grid::GridPlane::XZ ? pb.elevation : pb.worldY;
 }
 
 float PlacementWorld::getBuildingWorldZ(int instanceId) const {
     auto it = buildings_.find(instanceId);
     if (it == buildings_.end()) return 0.f;
     const PlacedBuilding &pb = it->second;
-    return grid_.plane == grid::GridPlane::XZ ? pb.worldY : pb.elevation;
+    return grid_->plane == grid::GridPlane::XZ ? pb.worldY : pb.elevation;
 }
 
 float PlacementWorld::getBuildingElevation(int instanceId) const {

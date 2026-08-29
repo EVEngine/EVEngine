@@ -1,11 +1,14 @@
 #include "animation/SpineAnim.h"
 
 #include "animation/Animation.h"
+#include "animation/AnimationTime.h"
 #include "animation/SpineAtlas.h"
 #include "animation/SpineSkeleton.h"
 #include "common/Exception.h"
+#include "graphics/DrawItem2D.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
+#include "graphics/Texture.h"
 
 #include <algorithm>
 #include <cmath>
@@ -271,7 +274,7 @@ void SpineAnim::apply() {
     rebuildDrawSlots();
 }
 
-bool SpineAnim::update(float dt) {
+bool SpineAnim::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("SpineAnim.update: dt must be >= 0");
     if (!playing_ || paused_) return playing_ || paused_;
 
@@ -286,6 +289,26 @@ bool SpineAnim::update(float dt) {
     }
     apply();
     return true;
+}
+
+eve::Result<void> SpineAnim::advance(const eve::SimulationStep &step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "SpineAnim");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+bool SpineAnim::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "SpineAnim");
+    if (!step) {
+        step.ignore("legacy SpineAnim update");
+        return playing_ || paused_;
+    }
+    auto result = advance(std::move(step).takeValue());
+    result.ignore("legacy SpineAnim update");
+    return playing_ || paused_;
 }
 
 void SpineAnim::draw(graphics::Graphics *gfx) {

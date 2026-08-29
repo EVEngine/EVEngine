@@ -1,7 +1,7 @@
 #pragma once
 
-// 状态（buff/debuff）系统：把 EffectDefinition 施加/移除为具体 actor 身上的
-// StatusInstance，并驱动持续时间 / 周期 tick。
+// 状态（buff/debuff）系统：把 RPG EffectDefinition 适配到通用
+// effects::EffectContainer，并由 RPG executor 驱动 modifier / 周期结算。
 //
 // 可插拔扩展点（与 inventory 模块同风格）：
 //  - registerApplyCondition  — 免疫 / 抗性 / 互斥等"能否施加"判断
@@ -9,6 +9,7 @@
 //  - registerLifecycleHook   — 施加/刷新/叠层/移除/到期时的副作用（UI、成就、VFX）
 //  - EffectDefinition::extra / StatusInstance::props — 任意自定义字段无需扩结构体
 
+#include "common/Result.h"
 #include "rpg/StatusTypes.h"
 
 #include <functional>
@@ -31,10 +32,12 @@ public:
                                                const std::string &source, std::string &outReason)>;
 
     /**
-     * @brief 自定义叠加策略：当已存在同 effectId 实例且 stackPolicy 名命中本注册表时调用。
-     * 返回值约定与 apply() 相同（-1 拒绝 / >0 实例 id）。策略内部可改写 stacks/remaining，
-     * 并应在需要时自行调用 AttributeSystem 或依赖 StatusSystem 后续的 modifier 刷新。
-     * 返回后若实例仍在列表中且 period<=0，StatusSystem 会按新 stacks 重写属性修改器。
+     * @brief 自定义叠加策略：在已有效果的临时 StatusInstance projection 上运行。
+     *
+     * 返回值约定与 apply() 相同（成功返回 adapter-owned 实例 id）。传入的
+     * `existing` 永远是候选副本；策略不得通过 actor 直接修改状态或属性。
+     * 只有回调成功且候选数据通过校验后，StatusSystem 才会一次性提交
+     * EffectContainer、AttributeSet 和 executor metadata。
      */
     using StackPolicyFn = std::function<int(RPGActor *actor, StatusInstance &existing,
                                              const EffectDefinition &def, const std::string &source)>;
@@ -58,15 +61,19 @@ public:
     static void clearLifecycleHooks();
 
     /**
-     * @brief 施加一个效果。返回值：
-     *   -1  — 失败（actor 为空 / 效果不存在 / 条件拒绝 / stackPolicy 拒绝重复）
-     *    0  — durationPolicy=="instant"：已立即生效，无需跟踪的状态实例
-     *   >0  — 新建或更新后的状态实例 id
+     * @brief Status application backed by the generic EffectContainer.
+     * @return Success with the adapter-owned legacy integer id (zero for an
+     *         instant effect), or a structured rejection. The string
+     *         EffectInstance id remains the lifecycle identity.
      */
-    static int apply(RPGActor *actor, const std::string &effectId, const std::string &source = "");
+    [[nodiscard]] static eve::Result<int> apply(RPGActor *actor, const std::string &effectId,
+                                                const std::string &source = "");
 
-    /** @brief 按实例 id 精确移除（撤销其属性修改器）；返回是否命中。 */
-    static bool remove(RPGActor *actor, int instanceId);
+    /**
+     * @brief Removal of one status by its legacy adapter id.
+     * @return Applied when removed, or NotFound/Rejected with diagnostics.
+     */
+    [[nodiscard]] static eve::Result<void> remove(RPGActor *actor, int instanceId);
 
     /** @brief 移除该 actor 身上所有 effectId 匹配的实例；返回移除数量。 */
     static int removeByEffect(RPGActor *actor, const std::string &effectId);
@@ -93,8 +100,11 @@ public:
     static bool setProp(RPGActor *actor, int instanceId, const std::string &key,
                         const std::string &value);
 
-    /** @brief 遍历 RPGActor::liveActors()：倒计时长、到期移除、周期效果产生 tick 事件。 */
-    static void update(float dt);
+    /**
+     * @brief Advance all live RPG status executors with an injected simulation delta.
+     * @return Expiry/tick summary; invalid deltas leave all actor state unchanged.
+     */
+    [[nodiscard]] static eve::Result<StatusUpdateSummary> update(double dt);
 
     /** @brief 取出并清空自上次调用以来累积的周期 tick 事件（push/poll 风格，见 event 模块）。 */
     static void pollTicks(std::vector<StatusTickEvent> &out);
@@ -104,7 +114,6 @@ public:
 
 private:
     static void emitChange(StatusChangeEvent ev);
-    static StatusInstance *findByInstanceId(RPGActor *actor, int instanceId);
 
     static std::unordered_map<std::string, ApplyCondition> &applyConditions();
     static std::unordered_map<std::string, StackPolicyFn> &stackPolicies();

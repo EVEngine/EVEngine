@@ -1,12 +1,32 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "Fixtures.h"
 #include "common/Exception.h"
 #include "data/ByteData.h"
 #include "font/Font.h"
 #include "font/FontData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
 
@@ -28,6 +48,8 @@ constexpr int         kIconCodepoint = 0xF000;
 constexpr const char *kIconUtf8      = "\xEF\x80\x80";  // UTF-8 for U+F000
 
 #include "PathBesideSource.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 std::vector<char> readBinaryFile(const std::string &path) {
@@ -42,25 +64,6 @@ std::unique_ptr<eve::font::FontData> loadFontAwesome(int size = 32) {
     eve::data::ByteData data(raw.data(), raw.size());
     return std::unique_ptr<eve::font::FontData>(eve::font::Font::create()->newFontData(&data, size));
 }
-
-// Prepares a small headless window + Graphics pair, matching the pattern
-// used by test/RenderSystem.cpp's GraphicsSmoke.* cases.
-struct GraphicsFixture {
-    eve::window::Window *win = nullptr;
-    Graphics             *gfx = nullptr;
-
-    GraphicsFixture(int w = 320, int h = 240) {
-        win = eve::window::Window::create();
-        gfx = Graphics::create();
-        win->setGraphics(gfx);
-        eve::window::WindowSettings s;
-        s.width    = static_cast<uint16_t>(w);
-        s.height   = static_cast<uint16_t>(h);
-        s.centered = true;
-        win->setWindowSettings(s);
-    }
-    ~GraphicsFixture() { win->close(); }
-};
 
 bool expectException(const std::function<void()> &fn) {
     try {
@@ -77,7 +80,7 @@ TEST_CASE("graphics.font.newFontBuildsAtlasForCharset") {
     auto fontData = loadFontAwesome(32);
     REQUIRE(fontData.get() != nullptr);
 
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     REQUIRE(fx.gfx != nullptr);
 
     std::unique_ptr<Font> gfont(fx.gfx->newFont(fontData.get(), kIconUtf8));
@@ -109,7 +112,7 @@ TEST_CASE("graphics.font.newFontDefaultCharsetDoesNotCrash") {
     auto fontData = loadFontAwesome(24);
     REQUIRE(fontData.get() != nullptr);
 
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     // FontAwesome has no printable ASCII glyphs, so most/all of the default
     // charset will be skipped — this exercises the "no glyphs rasterized"
     // fallback path (a valid 1x1 placeholder atlas) without throwing.
@@ -118,29 +121,68 @@ TEST_CASE("graphics.font.newFontDefaultCharsetDoesNotCrash") {
     REQUIRE(gfont->getTexture() != nullptr);
 }
 
-TEST_CASE("graphics.print.throwsWithoutFont") {
-    GraphicsFixture fx;
+// Shared coverage for Vulkan and WebGPU font rendering.
+TEST_CASE("graphics.drawText.throwsWithNullFont") {
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     fx.gfx->setFont(nullptr);
     CHECK(fx.gfx->getFont() == nullptr);
-    CHECK(expectException([&] { fx.gfx->print("hello", 0, 0); }));
+    CHECK(expectException([&] { fx.gfx->print("hello", 0.f, 0.f); }));
+    CHECK(expectException([&] { fx.gfx->drawText(nullptr, "hello", 12.f, 18.f); }));
 }
 
-TEST_CASE("graphics.print.rendersGlyphPixelsOnCanvas") {
+TEST_CASE("graphics.drawText.rendersAtRequestedPosition") {
     auto fontData = loadFontAwesome(32);
     REQUIRE(fontData.get() != nullptr);
 
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     std::unique_ptr<Font> gfont(fx.gfx->newFont(fontData.get(), kIconUtf8));
     REQUIRE(gfont.get() != nullptr);
     fx.gfx->setFont(gfont.get());
     CHECK(fx.gfx->getFont() == gfont.get());
+    fx.gfx->print("", 0.f, 0.f);
+    fx.gfx->setFont(nullptr);
+
+    Canvas *rt = fx.gfx->newCanvas(96, 96);
+    REQUIRE(rt != nullptr);
+    fx.gfx->setCanvas(rt);
+    fx.gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
+    fx.gfx->drawText(gfont.get(), kIconUtf8, 48.f, 48.f);
+    fx.gfx->setCanvas();
+
+    std::unique_ptr<eve::image::ImageData> img(rt->newImageData());
+    REQUIRE(img.get() != nullptr);
+    const auto *px = static_cast<const unsigned char *>(img->getData());
+    long long   litNearRequestedPosition = 0;
+    long long   litInOppositeCorner      = 0;
+    for (int y = 0; y < img->getHeight(); ++y) {
+        for (int x = 0; x < img->getWidth(); ++x) {
+            const unsigned char *p = px + (static_cast<size_t>(y) * img->getWidth() + x) * 4;
+            if (p[0] <= 40 && p[1] <= 40 && p[2] <= 40) continue;
+            if (x >= 44 && y >= 44) ++litNearRequestedPosition;
+            if (x < 32 && y < 32) ++litInOppositeCorner;
+        }
+    }
+    CHECK(litNearRequestedPosition > 0);
+    CHECK(litInOppositeCorner == 0);
+
+    CHECK(fx.gfx->getFont() == nullptr);
+}
+
+TEST_CASE("graphics.drawText.rendersGlyphPixelsOnCanvas") {
+    auto fontData = loadFontAwesome(32);
+    REQUIRE(fontData.get() != nullptr);
+
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
+    std::unique_ptr<Font> gfont(fx.gfx->newFont(fontData.get(), kIconUtf8));
+    REQUIRE(gfont.get() != nullptr);
+    fx.gfx->setFont(nullptr);
 
     Canvas *rt = fx.gfx->newCanvas(64, 64);
     REQUIRE(rt != nullptr);
 
     fx.gfx->setCanvas(rt);
     fx.gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
-    fx.gfx->print(kIconUtf8, 4.f, 4.f, Color(1.f, 1.f, 1.f, 1.f));
+    fx.gfx->drawText(gfont.get(), kIconUtf8, 4.f, 4.f, Color(1.f, 1.f, 1.f, 1.f));
     fx.gfx->setCanvas();
 
     std::unique_ptr<eve::image::ImageData> img(rt->newImageData());
@@ -160,23 +202,25 @@ TEST_CASE("graphics.print.rendersGlyphPixelsOnCanvas") {
     }
     CHECK(litPixels > 0);
 
-    // Hold the window open so the glyph is visible while debugging (~2s).
-    // Left: magnified canvas from the assert above. Right: live print at 3x.
-    fx.gfx->setBackgroundColorRGBA(0.08f, 0.08f, 0.1f, 1.f);
-    for (int frame = 0; frame < 60; ++frame) {
-        fx.gfx->clearScreen();
-        fx.gfx->drawTexturedRect(rt->getTexture(), 16.f, 16.f, 128.f, 128.f,
-                                 Color(1.f, 1.f, 1.f, 1.f));
-        fx.gfx->print(kIconUtf8, 160.f, 40.f, Color(1.f, 1.f, 1.f, 1.f), 3.f);
-        fx.gfx->present();
+    // Windowed-only debug preview: hold the window open so the glyph is visible
+    // while debugging (~2s). Skipped in headless mode (present() is a no-op).
+    if (!fx.gfx->isHeadless()) {
+        fx.gfx->setBackgroundColorRGBA(0.08f, 0.08f, 0.1f, 1.f);
+        for (int frame = 0; frame < 60; ++frame) {
+            fx.gfx->clearScreen();
+            fx.gfx->drawTexturedRect(rt->getTexture(), 16.f, 16.f, 128.f, 128.f,
+                                     Color(1.f, 1.f, 1.f, 1.f));
+            fx.gfx->drawText(gfont.get(), kIconUtf8, 160.f, 40.f,
+                             Color(1.f, 1.f, 1.f, 1.f), 3.f);
+            fx.gfx->present();
 
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) break;
+            SDL_Event e;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) break;
+            }
+            SDL_Delay(16);
         }
-        SDL_Delay(16);
     }
 
-    // Reset so other tests don't inherit this font.
-    fx.gfx->setFont(nullptr);
+    CHECK(fx.gfx->getFont() == nullptr);
 }

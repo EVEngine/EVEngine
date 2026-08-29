@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <assimp/material.h>
@@ -27,7 +28,26 @@
 
 #include "data/ByteData.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Material.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderControl.h"
@@ -63,18 +83,6 @@ float luma(const Color &c) {
     return 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b;
 }
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 960, int h = 540) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 void resetScene3D() {
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {
@@ -169,7 +177,7 @@ Texture *loadAssimpDiffuseTexture(Graphics *gfx, const aiScene *scene, const aiM
     const char *p = path.C_Str();
     if (!p || !p[0]) return nullptr;
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     if (p[0] == '*') {
         int idx = std::atoi(p + 1);
@@ -490,6 +498,12 @@ float viewHz() {
     return 30.f;
 }
 
+/** Extra per-phase / diagnostic PNGs. Default is one hero shot per scene. */
+bool dumpPhaseFrames() {
+    const char *env = std::getenv("EVENGINE_DUMP_PHASES");
+    return env && env[0] && env[0] != '0';
+}
+
 std::string classicOutDir() {
     return std::string(EVENGINE_TEST_BINARY_DIR) + "/out/classic_scenes";
 }
@@ -580,7 +594,8 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
         RenderSystem::render(*gfx);
         eve::image::ImageData *snap = gfx->newImageData();
         REQUIRE(snap != nullptr);
-        saveFramePng(gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
+        if (dumpPhaseFrames())
+            saveFramePng(gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
         auditCapturedFrame(snap, gfx, sceneTag, ex.tag);
         delete snap;
         gfx->setScreenReadbackEnabled(false);
@@ -945,7 +960,8 @@ std::vector<CamKey> makeSponzaPath(const Bounds &b) {
 
 /**
  * Fly the camera through @p path while cycling render configs.
- * Presents live frames to the window and writes PNG snapshots per phase.
+ * Presents live frames to the window and writes one FullLit PNG per scene
+ * (`{tag}.png`). Set EVENGINE_DUMP_PHASES=1 to also write per-phase dumps.
  * Returns mean luma sampled at the end of each config phase.
  */
 std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
@@ -974,9 +990,26 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
     const float secPerPhase = viewSecondsPerPhase();
     const float totalSec = float(nPhases) * secPerPhase;
     const int legs = int(path.size()) - 1;
-    const float tFly0 = timer->getTime();
     std::printf("ClassicScenes[%s] view %.1fs/phase @ %.0f Hz (set EVENGINE_VIEW_SECONDS to change)\n",
                 sceneTag, secPerPhase, hz);
+
+    auto dumpHero = [&]() {
+        applyCam(actors.cam, path[0]);
+        if (std::string(sceneTag) == "pbr_chart") {
+            for (auto *e : actors.ents) e->transform()->yaw = 0.f;
+        }
+        applyConfig(actors, RenderCfg::FullLit, polishMetalsForIbl);
+        resetRenderControl(gfx);
+        gfx->setScreenReadbackEnabled(true);
+        warmPresent(gfx);
+        eve::image::ImageData *hero = gfx->newImageData();
+        REQUIRE(hero != nullptr);
+        saveFramePng(gfx, std::string(sceneTag) + ".png", hero);
+        delete hero;
+        gfx->setScreenReadbackEnabled(false);
+    };
+    dumpHero();
+    const float tFly0 = timer->getTime();
 
     int frame = 0;
     for (int pi = 0; pi < nPhases; ++pi) {
@@ -1030,12 +1063,16 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
         phaseLuma.push_back(L);
         eve::image::ImageData *snap = gfx->newImageData();
         REQUIRE(snap != nullptr);
-        saveFramePng(gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
+        if (dumpPhaseFrames())
+            saveFramePng(gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
         auditCapturedFrame(snap, gfx, sceneTag, cfgName(phases[pi]));
         delete snap;
         std::printf("ClassicScenes[%s] phase=%s meanLuma=%.4f\n", sceneTag, cfgName(phases[pi]), L);
         gfx->setScreenReadbackEnabled(false);
     }
+
+    dumpHero();
+
     // Callers (cornell wall sampling) may read pixels after we return.
     gfx->setScreenReadbackEnabled(true);
     return phaseLuma;
@@ -1191,11 +1228,9 @@ double benchGltfOrbitScene(Graphics *gfx, const char *relDir, const char *gltfFi
 
         auto path = makeOrbitPath(actors.bounds, elev, distScale);
         const double best = benchAllConfigs(gfx, actors, path, tag, polishMetalsForIbl);
-        delete md;
         return best;
     } catch (const std::exception &ex) {
         std::printf("ClassicScenes.perf[%s]: skip after error: %s\n", tag, ex.what());
-        delete md;
         return 0.0;
     }
 }
@@ -1256,7 +1291,7 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     auto L = flyThroughConfigs(gfx, actors, path, "cornell", /*polishMetalsForIbl=*/true);
     expectLightingResponse(L);
     snapStaticConfigGrid(gfx, actors, "cornell", /*polishMetals=*/true);
-    dumpCornellShadowSweep(gfx, actors, path);
+    if (dumpPhaseFrames()) dumpCornellShadowSweep(gfx, actors, path);
 
     // Red vs green walls should remain distinguishable under directional light.
     applyConfig(actors, RenderCfg::DirectionalLit, false);
@@ -1295,7 +1330,6 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     REQUIRE(botL > 0.02f);
     REQUIRE(topL > 0.01f);
 
-    delete md;
     win->close();
 }
 
@@ -1324,7 +1358,7 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
     auto L = flyThroughConfigs(gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
     expectLightingResponse(L);
     snapStaticConfigGrid(gfx, actors, "pbr_chart", /*polishMetals=*/false);
-    dumpPbrChartGroundDiag(gfx, actors, path[0]);
+    if (dumpPhaseFrames()) dumpPbrChartGroundDiag(gfx, actors, path[0]);
 
     // IBL phase should brighten metals relative to ambient-only.
     CHECK(L[4] > L[0] + 0.01f);
@@ -1385,7 +1419,6 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     REQUIRE(L[2] > 0.02f);
     REQUIRE(std::abs(L[2] - L[1]) < 0.45f);
 
-    delete md;
     win->close();
 }
 
@@ -1471,7 +1504,6 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
         auto L = flyThroughConfigs(gfx, actors, path, tag, polishMetalsForIbl);
         expectLightingResponse(L);
 
-        delete md;
         md = nullptr;
         win->close();
         win = nullptr;
@@ -1486,11 +1518,9 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
             // Chaining many large glTF scenes can exhaust device memory / lose the surface.
             std::printf("ClassicScenes.%s: soft-skip after GPU/surface error: %s\n", tag,
                         msg.c_str());
-            delete md;
             if (win) win->close();
             return false;
         }
-        delete md;
         if (win) win->close();
         throw;
     }
@@ -1628,7 +1658,6 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
             setupLights(actors, actors.bounds);
             note("cornell", benchAllConfigs(gfx, actors, makeCornellPath(actors.bounds), "cornell",
                                             true));
-            delete md;
         }
     } catch (const std::exception &ex) {
         std::printf("ClassicScenes.perf[cornell]: skip after error: %s\n", ex.what());
@@ -1652,7 +1681,6 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
             setSunColor(actors, 1.f, 0.98f, 0.94f, 6.f);
             note("sponza", benchAllConfigs(gfx, actors, makeSponzaPath(actors.bounds), "sponza",
                                            false));
-            delete md;
         } else {
             std::printf("ClassicScenes.perf[sponza]: skip (asset not downloaded)\n");
         }
@@ -1694,4 +1722,3 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
                 bestTag);
     REQUIRE(globalBest > 1.0);
 }
-

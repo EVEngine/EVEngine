@@ -1,7 +1,8 @@
 # CAMERA — 3D Camera Controllers
 
-Demonstrates `eve.Camera` / `eve.CameraController`: a small module that drives a
-`Camera3D` with gameplay-friendly view behaviors, all smoothed by exponential damping.
+Demonstrates `eve.Camera` / `eve.CameraController`: gameplay rigs selected by a
+priority director, obstruction recovery, additive impulses, and a camera timeline with
+event markers, in addition to the basic smoothed view behaviors.
 
 Run it like any example:
 
@@ -16,6 +17,9 @@ make run/win32-debug GAME=examples/camera-controllers
 - **topdown** — 俯视。从 `target` 正上方 `radius` 高处往下拍。
 - **firstperson** — 第一人称。`eye` 位于 `target`，用 `yaw` / `pitch` 控制朝向。
 - **cinematic** — 过场 / 自动切换视角。在一组命名 `View` 之间平滑插值。
+
+The center obstacle also exercises camera collision. Cinematic mode plays a looped
+timeline that cuts between rigs and emits `camera.beat` markers.
 
 ## Controls
 

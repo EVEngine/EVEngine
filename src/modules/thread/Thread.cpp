@@ -19,6 +19,8 @@ Thread::Thread() = default;
 Thread::~Thread() {
     if (defaultPool_)
         defaultPool_->stop();
+    if (defaultJobSystem_)
+        defaultJobSystem_->stop();
 }
 
 int Thread::getHardwareConcurrency() const {
@@ -39,29 +41,36 @@ ThreadPool *Thread::newThreadPool(int workerCount) {
     return new ThreadPool(workerCount);
 }
 
-Channel *Thread::getChannel(std::string name) {
-    if (name.empty())
+JobSystem *Thread::getJobSystem() {
+    std::lock_guard<std::mutex> lock(mu_);
+    if (!defaultJobSystem_)
+        defaultJobSystem_ = std::unique_ptr<JobSystem>(createJobSystem(getHardwareConcurrency()));
+    return defaultJobSystem_.get();
+}
+
+Channel *Thread::getChannel(std::string channelName) {
+    if (channelName.empty())
         throw eve::Exception("Thread::getChannel: name must not be empty");
     std::lock_guard<std::mutex> lock(mu_);
-    auto it = namedChannels_.find(name);
+    auto it = namedChannels_.find(channelName);
     if (it != namedChannels_.end())
         return it->second.get();
-    auto ch = std::make_unique<Channel>(name);
+    auto ch = std::make_unique<Channel>(channelName);
     Channel *raw = ch.get();
-    namedChannels_.emplace(std::move(name), std::move(ch));
+    namedChannels_.emplace(std::move(channelName), std::move(ch));
     return raw;
 }
 
 Channel *Thread::newChannel() { return new Channel(); }
 
-void Thread::postMain(std::string name, std::string data) {
-    if (name.empty())
+void Thread::postMain(std::string eventName, std::string data) {
+    if (eventName.empty())
         throw eve::Exception("Thread::postMain: name must not be empty");
     auto *poster = cap::query<caps::IMainThreadPost>();
     if (!poster)
         throw eve::Exception("Thread::postMain: no main-thread queue (event module not linked)");
     poster->prepare();
-    poster->postToMainThread(std::move(name), std::move(data));
+    poster->postToMainThread(std::move(eventName), std::move(data));
 }
 
 void Thread::expose(ssq::Table &table) {

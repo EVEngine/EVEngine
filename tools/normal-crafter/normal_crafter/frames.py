@@ -16,10 +16,8 @@ from __future__ import annotations
 import os
 import re
 import subprocess
-import tempfile
 from typing import List, Optional, Tuple
 
-import numpy as np
 
 _FRAME_RE = re.compile(r".*?(\d+)\.png$", re.IGNORECASE)
 

@@ -6,8 +6,8 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
-#include "event/PlatformEventSink.h"
-#include "graphics/Graphics.h"
+#include "common/WindowSurfaceHost.h"
+#include "platform_event/PlatformEventSink.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
@@ -22,8 +22,7 @@ namespace {
 /** Re-reads the real window size after a resize, rotation or resume. */
 void syncWindowPixelSize() {
     auto *win = eve::ModuleManager::getInstance<eve::window::Window>("Window");
-    auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-    if (!win || !gfx) return;
+    if (!win) return;
     auto *sdlWin = dynamic_cast<Window *>(win);
     if (!sdlWin) return;
     SDL_Window *native = static_cast<SDL_Window *>(sdlWin->getHandle());
@@ -50,20 +49,20 @@ void syncWindowPixelSize() {
  * gone.
  */
 int SDLCALL watchAppEvents(void * /*udata*/, SDL_Event *event) {
-    auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-    if (!gfx) return 1;
+    auto *surfaceHost = eve::cap::query<IWindowSurfaceHost>();
+    if (!surfaceHost) return 1;
 
     switch (event->type) {
         case SDL_APP_DIDENTERBACKGROUND:
             // Stop presenting: the native surface is being torn down.
-            gfx->setActive(false);
+            surfaceHost->setActive(false);
             break;
         case SDL_APP_WILLENTERFOREGROUND:
         case SDL_APP_DIDENTERFOREGROUND:
             // The native window is recreated on resume; rebuild the render
             // surface and swapchain, then resume presenting.
-            gfx->requestSurfaceRecreate();
-            gfx->setActive(true);
+            surfaceHost->requestSurfaceRecreate();
+            surfaceHost->setActive(true);
             syncWindowPixelSize();
             break;
         default:
@@ -72,9 +71,9 @@ int SDLCALL watchAppEvents(void * /*udata*/, SDL_Event *event) {
     return 1;
 }
 
-class WindowEventSink : public eve::event::IPlatformEventSink {
+class WindowEventSink : public eve::platform_event::IPlatformEventSink {
 public:
-    bool observePlatformEvent(const void *nativeEvent) override {
+    bool shouldConsumePlatformEvent(const void *nativeEvent) override {
         const auto &e = *static_cast<const SDL_Event *>(nativeEvent);
         if (e.type == SDL_WINDOWEVENT && (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED ||
                                           e.window.event == SDL_WINDOWEVENT_RESIZED))
@@ -99,8 +98,8 @@ private:
 struct Register {
     Register() {
         static WindowEventSink sink;
-        eve::cap::addListener<eve::event::IPlatformEventSink>(
-            &sink, eve::event::IPlatformEventSink::kSurface);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(
+            &sink, eve::platform_event::IPlatformEventSink::kSurface);
     }
 } g_register;
 

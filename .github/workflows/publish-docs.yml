@@ -1,0 +1,72 @@
+# Build the latest docs (Doxygen: src + Readme + docs/usr) and publish them to
+# GitHub Pages through the orphan `gh-pages` branch in this repo. The branch is
+# recreated on every publish (empty history, holds only the compiled HTML).
+#
+# Served at https://<owner>.github.io/<repo>/ once Pages is configured with
+# source = Deploy from a branch: gh-pages / (root).
+#
+# The workflow file lives on `dev` (daily development) and `main` (releases);
+# it runs on doc-relevant pushes to either branch, or manually via
+# workflow_dispatch.
+
+name: Publish Docs
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - "src/**"
+      - "docs/**"
+      - "Readme.md"
+      - "Readme.en.md"
+      - "Doxyfile.in"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Build and publish docs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        timeout-minutes: 5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install doxygen
+        timeout-minutes: 10
+        run: |
+          # Same apt hardening as ci.yml: normalize the Ubuntu mirror and bound
+          # the update so a sick runner fails fast instead of hanging.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo apt-get update -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo apt-get install -y --no-install-recommends doxygen
+
+      - name: Build docs
+        timeout-minutes: 15
+        run: |
+          cmake -S docs -B build/docs
+          cmake --build build/docs --target docs
+          test -f docs/api/html/index.html
+
+      - name: Publish to gh-pages branch
+        timeout-minutes: 10
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          WORK="$(mktemp -d)"
+          cp -R docs/api/html/. "$WORK/"
+          touch "$WORK/.nojekyll"
+          cd "$WORK"
+          git init -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs: publish ${{ github.sha }} ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin gh-pages

@@ -41,3 +41,12 @@ function readDir() {
     p.setSource(".");
     return true;
 }
+
+function textRoundTrip() {
+    local p = eve.Filesystem();
+    p.setIdentity("ev_ut_filesystem_text", true);
+    if (!p.setupWriteDirectory()) return false;
+    local expected = "galgame-save-v1\nnode=choice\n好感=2";
+    if (!p.writeText("slot1.sav", expected)) return false;
+    return p.readText("slot1.sav") == expected;
+}

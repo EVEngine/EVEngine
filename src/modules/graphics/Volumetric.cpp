@@ -1,5 +1,8 @@
 #include "graphics/Volumetric.h"
 
+#include "graphics/AtmosphereVolume.h"
+#include "graphics/FogVolume.h"
+
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
@@ -11,6 +14,9 @@
 #include "graphics/shaders/volumetric_post_frag_spv.inc"
 #include "graphics/shaders/volumetric_raymarch_frag_spv.inc"
 #include "graphics/shaders/volumetric_fog_frag_spv.inc"
+#include "graphics/shaders/volumetric_froxel_frag_spv.inc"
+#include "graphics/shaders/volumetric_cloud_frag_spv.inc"
+#include "graphics/shaders/VolumetricWgsl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -24,12 +30,18 @@
 namespace eve::graphics {
 namespace {
 
+Shader *newVolShader(Graphics *gfx, const std::vector<uint32_t> &frag, const char *wgsl) {
+    if (gfx->getBackendName() == "webgpu")
+        return gfx->newShaderFromWgsl({}, std::string(shaders::kVolCommon) + wgsl);
+    return gfx->newShaderFromSpv({}, frag);
+}
+
 Shader *createScreenspaceShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("Volumetric: null graphics");
     std::vector<uint32_t> frag(volumetric_post_frag_spv,
                                volumetric_post_frag_spv + volumetric_post_frag_spv_count);
     std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolScreen);
     sh->declareFloat("lightX");
     sh->declareFloat("lightY");
     sh->declareFloat("exposure");
@@ -75,7 +87,7 @@ Shader *createRayMarchShader(Graphics *gfx) {
     std::vector<uint32_t> frag(volumetric_raymarch_frag_spv,
                                volumetric_raymarch_frag_spv + volumetric_raymarch_frag_spv_count);
     std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolRay);
     sh->declareMatrix("invViewProj");
     sh->declareFloat("lightDx");
     sh->declareFloat("lightDy");
@@ -119,7 +131,7 @@ Shader *createFogShader(Graphics *gfx) {
     std::vector<uint32_t> frag(volumetric_fog_frag_spv,
                                volumetric_fog_frag_spv + volumetric_fog_frag_spv_count);
     std::vector<uint32_t> vert;
-    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolFog);
     sh->declareMatrix("invViewProj");
     sh->declareFloat("lightDx");
     sh->declareFloat("lightDy");
@@ -158,12 +170,77 @@ Shader *createFogShader(Graphics *gfx) {
     return sh;
 }
 
+Shader *createFroxelShader(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("Volumetric: null graphics");
+    std::vector<uint32_t> frag(volumetric_froxel_frag_spv,
+                               volumetric_froxel_frag_spv + volumetric_froxel_frag_spv_count);
+    std::vector<uint32_t> vert;
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolFroxel);
+    sh->declareFloat("atlasCols");
+    sh->declareFloat("atlasRows");
+    sh->declareFloat("sliceCount");
+    sh->declareFloat("nearDistance");
+    sh->declareFloat("farDistance");
+    sh->sendFloat("atlasCols", 1.f);
+    sh->sendFloat("atlasRows", 1.f);
+    sh->sendFloat("sliceCount", 1.f);
+    sh->sendFloat("nearDistance", 0.1f);
+    sh->sendFloat("farDistance", 100.f);
+    return sh;
+}
+
+Shader *createCloudShader(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("Volumetric: null graphics");
+    std::vector<uint32_t> frag(volumetric_cloud_frag_spv,
+                               volumetric_cloud_frag_spv + volumetric_cloud_frag_spv_count);
+    std::vector<uint32_t> vert;
+    Shader *sh = newVolShader(gfx, frag, shaders::kVolCloud);
+    sh->declareMatrix("invViewProj");
+    sh->declareFloat("lightDx");
+    sh->declareFloat("lightDy");
+    sh->declareFloat("lightDz");
+    sh->declareFloat("time");
+    sh->declareFloat("cloudBottom");
+    sh->declareFloat("cloudTop");
+    sh->declareFloat("cloudCoverage");
+    sh->declareFloat("cloudDensity");
+    sh->declareFloat("cloudScale");
+    sh->declareFloat("cloudWindX");
+    sh->declareFloat("cloudWindZ");
+    sh->declareFloat("sampleCount");
+    sh->declareFloat("shadowSteps");
+    sh->declareFloat("cloudLightR");
+    sh->declareFloat("cloudLightG");
+    sh->declareFloat("cloudLightB");
+    sh->sendMatrix("invViewProj", glm::mat4(1.f));
+    sh->sendFloat("lightDx", 0.4f);
+    sh->sendFloat("lightDy", 1.f);
+    sh->sendFloat("lightDz", 0.3f);
+    sh->sendFloat("time", 0.f);
+    sh->sendFloat("cloudBottom", 8.f);
+    sh->sendFloat("cloudTop", 16.f);
+    sh->sendFloat("cloudCoverage", 0.55f);
+    sh->sendFloat("cloudDensity", 1.f);
+    sh->sendFloat("cloudScale", 18.f);
+    sh->sendFloat("cloudWindX", 1.5f);
+    sh->sendFloat("cloudWindZ", 0.4f);
+    sh->sendFloat("sampleCount", 32.f);
+    sh->sendFloat("shadowSteps", 6.f);
+    sh->sendFloat("cloudLightR", 1.f);
+    sh->sendFloat("cloudLightG", 0.92f);
+    sh->sendFloat("cloudLightB", 0.78f);
+    return sh;
+}
+
 }  // namespace
 
 Volumetric::Volumetric(Graphics *gfx) : gfx_(gfx) {
     shader_ = createScreenspaceShader(gfx);
     rayShader_ = createRayMarchShader(gfx);
     fogShader_ = createFogShader(gfx);
+    cloudShader_ = createCloudShader(gfx);
+    froxelShader_ = createFroxelShader(gfx);
+    atmosphereVolume_ = std::make_unique<AtmosphereVolume>();
     applyQualityDefaults();
 }
 
@@ -181,6 +258,9 @@ void Volumetric::applyQualityDefaults() {
             fogShader_->sendFloat("sampleCount", 8.f);
             fogShader_->sendFloat("noiseAmount", 0.15f);
             fogShader_->sendFloat("density", 0.18f);
+        } else if (mode_ == "cloud") {
+            cloudShader_->sendFloat("sampleCount", 16.f);
+            cloudShader_->sendFloat("shadowSteps", 3.f);
         } else {
             setFloat("sampleCount", 16.f);
             setFloat("dustAmount", 0.12f);
@@ -198,6 +278,9 @@ void Volumetric::applyQualityDefaults() {
             fogShader_->sendFloat("sampleCount", 48.f);
             fogShader_->sendFloat("noiseAmount", 0.45f);
             fogShader_->sendFloat("density", 0.32f);
+        } else if (mode_ == "cloud") {
+            cloudShader_->sendFloat("sampleCount", 64.f);
+            cloudShader_->sendFloat("shadowSteps", 10.f);
         } else {
             setFloat("sampleCount", 96.f);
             setFloat("dustAmount", 0.35f);
@@ -216,6 +299,9 @@ void Volumetric::applyQualityDefaults() {
             fogShader_->sendFloat("sampleCount", 24.f);
             fogShader_->sendFloat("noiseAmount", 0.35f);
             fogShader_->sendFloat("density", 0.25f);
+        } else if (mode_ == "cloud") {
+            cloudShader_->sendFloat("sampleCount", 32.f);
+            cloudShader_->sendFloat("shadowSteps", 6.f);
         } else {
             setFloat("sampleCount", 48.f);
             setFloat("dustAmount", 0.25f);
@@ -235,6 +321,10 @@ void Volumetric::setMode(const std::string &mode) {
         mode_ = "raymarch";
     else if (mode == "fog")
         mode_ = "fog";
+    else if (mode == "froxel")
+        mode_ = "froxel";
+    else if (mode == "cloud")
+        mode_ = "cloud";
     else
         mode_ = "screenspace";
     applyQualityDefaults();
@@ -267,12 +357,16 @@ void Volumetric::setLightDirection(float dx, float dy, float dz) {
     fogShader_->sendFloat("lightDx", d.x);
     fogShader_->sendFloat("lightDy", d.y);
     fogShader_->sendFloat("lightDz", d.z);
+    cloudShader_->sendFloat("lightDx", d.x);
+    cloudShader_->sendFloat("lightDy", d.y);
+    cloudShader_->sendFloat("lightDz", d.z);
 }
 
 void Volumetric::setInvViewProj(const glm::mat4 &invViewProj) {
     invViewProj_ = invViewProj;
     rayShader_->sendMatrix("invViewProj", invViewProj_);
     fogShader_->sendMatrix("invViewProj", invViewProj_);
+    cloudShader_->sendMatrix("invViewProj", invViewProj_);
 }
 
 void Volumetric::setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY,
@@ -350,9 +444,45 @@ void Volumetric::setFogNoise(float amount) {
     fogShader_->sendFloat("noiseAmount", fogNoise_);
 }
 
+void Volumetric::setCloudLayer(float bottom, float top) {
+    cloudBottom_ = bottom;
+    cloudTop_ = top > bottom + 0.01f ? top : bottom + 0.01f;
+    cloudShader_->sendFloat("cloudBottom", cloudBottom_);
+    cloudShader_->sendFloat("cloudTop", cloudTop_);
+}
+
+void Volumetric::setCloudCoverage(float coverage) {
+    cloudCoverage_ = std::clamp(coverage, 0.f, 1.f);
+    cloudShader_->sendFloat("cloudCoverage", cloudCoverage_);
+}
+
+void Volumetric::setCloudDensity(float density) {
+    cloudDensity_ = std::max(density, 0.f);
+    cloudShader_->sendFloat("cloudDensity", cloudDensity_);
+}
+
+void Volumetric::setCloudScale(float worldScale) {
+    cloudScale_ = std::max(worldScale, 0.01f);
+    cloudShader_->sendFloat("cloudScale", cloudScale_);
+}
+
+void Volumetric::setCloudWind(float x, float z) {
+    cloudWind_ = glm::vec3(x, 0.f, z);
+    cloudShader_->sendFloat("cloudWindX", x);
+    cloudShader_->sendFloat("cloudWindZ", z);
+}
+
+void Volumetric::setCloudLightColor(float r, float g, float b) {
+    cloudLightColor_ = glm::vec3(std::max(r, 0.f), std::max(g, 0.f), std::max(b, 0.f));
+    cloudShader_->sendFloat("cloudLightR", cloudLightColor_.x);
+    cloudShader_->sendFloat("cloudLightG", cloudLightColor_.y);
+    cloudShader_->sendFloat("cloudLightB", cloudLightColor_.z);
+}
+
 bool Volumetric::hasParam(const std::string &name) const {
     return (shader_ && shader_->hasUniform(name)) || (rayShader_ && rayShader_->hasUniform(name)) ||
-           (fogShader_ && fogShader_->hasUniform(name));
+           (fogShader_ && fogShader_->hasUniform(name)) ||
+           (cloudShader_ && cloudShader_->hasUniform(name));
 }
 
 void Volumetric::setFloat(const std::string &name, float value) {
@@ -360,6 +490,7 @@ void Volumetric::setFloat(const std::string &name, float value) {
     if (shader_->hasUniform(name)) shader_->sendFloat(name, value);
     if (rayShader_ && rayShader_->hasUniform(name)) rayShader_->sendFloat(name, value);
     if (fogShader_ && fogShader_->hasUniform(name)) fogShader_->sendFloat(name, value);
+    if (cloudShader_ && cloudShader_->hasUniform(name)) cloudShader_->sendFloat(name, value);
 }
 
 float Volumetric::getFloat(const std::string &name) const {
@@ -372,6 +503,10 @@ float Volumetric::getFloat(const std::string &name) const {
         float v = 0.f;
         if (fogShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
     }
+    if (mode_ == "cloud" && cloudShader_ && cloudShader_->hasUniform(name)) {
+        float v = 0.f;
+        if (cloudShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
+    }
     if (shader_ && shader_->hasUniform(name)) {
         float v = 0.f;
         if (shader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
@@ -383,6 +518,10 @@ float Volumetric::getFloat(const std::string &name) const {
     if (fogShader_ && fogShader_->hasUniform(name)) {
         float v = 0.f;
         if (fogShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
+    }
+    if (cloudShader_ && cloudShader_->hasUniform(name)) {
+        float v = 0.f;
+        if (cloudShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
     }
     throw eve::Exception("Volumetric.getFloat: missing param '%s'", name.c_str());
 }
@@ -420,6 +559,23 @@ void Volumetric::uploadFogCommon() {
     fogShader_->sendFloat("fogStart", fogStart_);
     fogShader_->sendFloat("fogEnd", fogEnd_);
     fogShader_->sendFloat("noiseAmount", fogNoise_);
+}
+
+void Volumetric::uploadCloudCommon() {
+    cloudShader_->sendMatrix("invViewProj", invViewProj_);
+    cloudShader_->sendFloat("lightDx", lightDir_.x);
+    cloudShader_->sendFloat("lightDy", lightDir_.y);
+    cloudShader_->sendFloat("lightDz", lightDir_.z);
+    cloudShader_->sendFloat("cloudBottom", cloudBottom_);
+    cloudShader_->sendFloat("cloudTop", cloudTop_);
+    cloudShader_->sendFloat("cloudCoverage", cloudCoverage_);
+    cloudShader_->sendFloat("cloudDensity", cloudDensity_);
+    cloudShader_->sendFloat("cloudScale", cloudScale_);
+    cloudShader_->sendFloat("cloudWindX", cloudWind_.x);
+    cloudShader_->sendFloat("cloudWindZ", cloudWind_.z);
+    cloudShader_->sendFloat("cloudLightR", cloudLightColor_.x);
+    cloudShader_->sendFloat("cloudLightG", cloudLightColor_.y);
+    cloudShader_->sendFloat("cloudLightB", cloudLightColor_.z);
 }
 
 void Volumetric::drawFullscreen(Graphics *gfx, Texture *source, Shader *shader) {
@@ -530,6 +686,102 @@ void Volumetric::applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFog(gfx, linearDepth);
+    gfx->setCanvas(prev == gfx ? nullptr : prev);
+}
+
+void Volumetric::renderClouds(Graphics *gfx, Texture *linearDepth) {
+    uploadCloudCommon();
+    drawFullscreen(gfx, linearDepth, cloudShader_);
+}
+
+void Volumetric::renderCloudsTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
+    if (!gfx) throw eve::Exception("Volumetric.renderCloudsTo: null graphics");
+    if (!dest) throw eve::Exception("Volumetric.renderCloudsTo: null dest");
+    Canvas *prev = gfx->getCanvas();
+    gfx->setCanvas(dest);
+    renderClouds(gfx, linearDepth);
+    gfx->setCanvas(prev == gfx ? nullptr : prev);
+}
+
+void Volumetric::configureFroxelGrid(int width, int height, int depth, float nearDistance,
+                                     float farDistance) {
+    atmosphereVolume_->resize(width, height, depth);
+    atmosphereVolume_->setDepthRange(nearDistance, farDistance);
+    froxelAtlasCols_ = std::max(1, int(std::ceil(std::sqrt(float(atmosphereVolume_->getDepth())))));
+    froxelAtlasRows_ = std::max(1, (atmosphereVolume_->getDepth() + froxelAtlasCols_ - 1) /
+        froxelAtlasCols_);
+}
+
+void Volumetric::clearFroxelGrid() { atmosphereVolume_->clear(); }
+
+void Volumetric::injectFroxelHeightFog(float extinction, float albedoR, float albedoG,
+                                       float albedoB, float baseHeight, float heightFalloff,
+                                       float minWorldY, float maxWorldY) {
+    atmosphereVolume_->injectHeightFog(extinction, glm::vec3(albedoR, albedoG, albedoB),
+                                       baseHeight, heightFalloff, minWorldY, maxWorldY);
+}
+
+void Volumetric::injectFroxelLocalVolume(FogVolume *volume) {
+    if (!volume) throw eve::Exception("Volumetric.injectFroxelLocalVolume: null volume");
+    atmosphereVolume_->injectLocalVolumeFrustum(*volume, invViewProj_);
+}
+
+void Volumetric::integrateFroxel(float lightR, float lightG, float lightB, float phaseScale) {
+    atmosphereVolume_->integrate(glm::vec3(lightR, lightG, lightB), phaseScale);
+}
+
+void Volumetric::uploadFroxel(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("Volumetric.uploadFroxel: null graphics");
+    const int w = atmosphereVolume_->getWidth();
+    const int h = atmosphereVolume_->getHeight();
+    const int d = atmosphereVolume_->getDepth();
+    if (w <= 0 || h <= 0 || d <= 0)
+        throw eve::Exception("Volumetric.uploadFroxel: grid is not configured");
+    const int atlasW = w * froxelAtlasCols_;
+    const int atlasH = h * froxelAtlasRows_;
+    std::vector<uint8_t> rgba(std::size_t(atlasW) * std::size_t(atlasH) * 4u, 0u);
+    for (int z = 0; z < d; ++z) {
+        const int ox = (z % froxelAtlasCols_) * w;
+        const int oy = (z / froxelAtlasCols_) * h;
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                const glm::vec4 value = atmosphereVolume_->integratedAt(x, y, z);
+                const std::size_t offset = (std::size_t(oy + y) * std::size_t(atlasW) +
+                                            std::size_t(ox + x)) * 4u;
+                const glm::vec3 mapped = glm::vec3(value) / (glm::vec3(1.f) + glm::vec3(value));
+                rgba[offset + 0] = uint8_t(std::lround(glm::clamp(mapped.r, 0.f, 1.f) * 255.f));
+                rgba[offset + 1] = uint8_t(std::lround(glm::clamp(mapped.g, 0.f, 1.f) * 255.f));
+                rgba[offset + 2] = uint8_t(std::lround(glm::clamp(mapped.b, 0.f, 1.f) * 255.f));
+                rgba[offset + 3] = uint8_t(std::lround(glm::clamp(value.a, 0.f, 1.f) * 255.f));
+            }
+        }
+    }
+    if (!froxelAtlas_ || froxelAtlas_->getWidth() != atlasW || froxelAtlas_->getHeight() != atlasH)
+        froxelAtlas_ = gfx->newTexture(atlasW, atlasH, rgba.data());
+    else
+        gfx->updateTexture(froxelAtlas_, atlasW, atlasH, rgba.data());
+    froxelShader_->sendFloat("atlasCols", float(froxelAtlasCols_));
+    froxelShader_->sendFloat("atlasRows", float(froxelAtlasRows_));
+    froxelShader_->sendFloat("sliceCount", float(d));
+    froxelShader_->sendFloat("nearDistance", atmosphereVolume_->getNearDistance());
+    froxelShader_->sendFloat("farDistance", atmosphereVolume_->getFarDistance());
+}
+
+void Volumetric::applyFroxel(Graphics *gfx, Texture *linearDepth) {
+    if (!gfx) throw eve::Exception("Volumetric.applyFroxel: null graphics");
+    if (!linearDepth) throw eve::Exception("Volumetric.applyFroxel: null depth");
+    if (!froxelAtlas_) throw eve::Exception("Volumetric.applyFroxel: uploadFroxel not called");
+    const float dw = gfx->getCanvas() ? float(gfx->getCanvas()->getWidth()) : float(gfx->getWidth());
+    const float dh = gfx->getCanvas() ? float(gfx->getCanvas()->getHeight()) : float(gfx->getHeight());
+    gfx->drawTexturedRectShaderDepth(linearDepth, froxelAtlas_, froxelShader_, 0.f, 0.f, dw, dh,
+                                     Color(1.f, 1.f, 1.f, 1.f));
+}
+
+void Volumetric::applyFroxelTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
+    if (!gfx || !dest) throw eve::Exception("Volumetric.applyFroxelTo: null argument");
+    Canvas *prev = gfx->getCanvas();
+    gfx->setCanvas(dest);
+    applyFroxel(gfx, linearDepth);
     gfx->setCanvas(prev == gfx ? nullptr : prev);
 }
 

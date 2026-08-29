@@ -1,4 +1,5 @@
 #include "graphics/webgpu/Canvas.h"
+#include "graphics/TextureSampler.h"
 #include "graphics/webgpu/Graphics.h"
 
 #include "common/Exception.h"
@@ -7,11 +8,6 @@
 #include <cstring>
 
 namespace eve::graphics::webgpu {
-
-namespace {
-/** Build a WGPUStringView from a C string (null-safe). */
-WGPUStringView sv(const char *s) { return WGPUStringView{s, s ? std::strlen(s) : 0}; }
-}  // namespace
 
 OffscreenCanvas::OffscreenCanvas(Graphics *gfx, int width, int height)
     : gfx(gfx), width(width), height(height) {
@@ -55,6 +51,7 @@ OffscreenCanvas::OffscreenCanvas(Graphics *gfx, int width, int height)
     sd.magFilter = WGPUFilterMode_Linear;
     sd.minFilter = WGPUFilterMode_Linear;
     sd.mipmapFilter = WGPUMipmapFilterMode_Nearest;
+    sd.maxAnisotropy = 1;
     colorGpu.sampler = device.CreateSampler(reinterpret_cast<const wgpu::SamplerDescriptor*>(&sd));
 
     colorTex.gpuHandle = &colorGpu;

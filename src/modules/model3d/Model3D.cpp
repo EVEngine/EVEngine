@@ -4,16 +4,24 @@
 
 #include "common/Data.h"
 #include "common/Exception.h"
+#include "common/Resource.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/Graphics.h"
+#include "image/ImageData.h"
 
 #include "medialoader/Exception.h"
 #include "medialoader/model/ModelLoader.h"
 
+#include "model3d/ModelLoader.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cctype>
+#include <cstdint>
+#include <cstring>
 #include <functional>
+#include <vector>
 
 namespace eve {
 namespace model3d {
@@ -59,6 +67,20 @@ medialoader::ModelScene loadOrThrow(medialoader::ModelLoader &loader, const void
     }
 }
 
+constexpr char kEvModelMagic[4] = {'E', 'V', 'M', '1'};
+
+bool unpackEvModel(const void *data, size_t size, const uint8_t **payload, size_t *payloadSize,
+                   std::string *hint) {
+    if (!data || size < 6 || std::memcmp(data, kEvModelMagic, 4) != 0) return false;
+    const auto *bytes = static_cast<const uint8_t *>(data);
+    const uint16_t n = uint16_t(bytes[4]) | (uint16_t(bytes[5]) << 8u);
+    if (n == 0 || size < size_t(6u + n)) return false;
+    hint->assign(reinterpret_cast<const char *>(bytes + 6), n);
+    *payload = bytes + 6 + n;
+    *payloadSize = size - 6 - n;
+    return *payloadSize > 0;
+}
+
 }  // namespace
 
 ModelData *Model3D::newModelData(Data *data, std::string hintExt) {
@@ -76,6 +98,17 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
             hint = ensureDotExt(fd->getExtension());
     }
 
+    const void *encoded = data->getData();
+    size_t encodedSize = data->getSize();
+    if (hint == ".evmodel") {
+        const uint8_t *payload = nullptr;
+        std::string packedHint;
+        if (!unpackEvModel(encoded, encodedSize, &payload, &encodedSize, &packedHint))
+            throw eve::Exception("Invalid or truncated .evmodel envelope");
+        encoded = payload;
+        hint = ensureDotExt(std::move(packedHint));
+    }
+
     // Prefer VFS for sidecar resolution when FileData carries a filename.
     filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
     if (!fs)
@@ -84,7 +117,7 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
     EveFileSystem eveFs(fs);
     medialoader::ModelLoader loader(&eveFs);
 
-    auto scene = loadOrThrow(loader, data->getData(), data->getSize(), hint.c_str(),
+    auto scene = loadOrThrow(loader, encoded, encodedSize, hint.c_str(),
                              toMedialoader(options));
     if (scene.empty())
         throw eve::Exception("Could not decode model data");
@@ -104,21 +137,13 @@ ModelData *Model3D::newModelDataFromFile(std::string path, const ModelLoadOption
     if (path.empty())
         throw eve::Exception("Model3D::newModelDataFromFile: empty path");
 
-    filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
-    if (!fs)
-        fs = filesystem::Filesystem::create();
-
-    EveFileSystem eveFs(fs);
-    medialoader::ModelLoader loader(&eveFs);
-
-    try {
-        auto scene = loader.loadFromPath(path.c_str(), toMedialoader(options));
-        if (scene.empty())
-            throw eve::Exception("Could not load model: %s", path.c_str());
-        return new ModelData(std::move(scene), "file://" + path);
-    } catch (const medialoader::Exception &e) {
-        throw eve::Exception("%s", e.what());
-    }
+    // Route through the unified resource cache: options are part of the key,
+    // so identical (path, options) requests share one decoded Assimp scene.
+    const std::string key = modelCacheKey(path, options);
+    eve::Resource *resource = eve::ResourceManager::getInstance().get(key);
+    if (!resource)
+        throw eve::Exception("Could not load model: %s", path.c_str());
+    return static_cast<ModelData *>(resource);
 }
 
 graphics::Renderable3D *Model3D::createRenderable(graphics::Graphics *gfx, ModelData *model,
@@ -128,6 +153,33 @@ graphics::Renderable3D *Model3D::createRenderable(graphics::Graphics *gfx, Model
     if (!model)
         throw eve::Exception("Model3D::createRenderable: null ModelData");
     return buildRenderable(*gfx, model, meshIndex);
+}
+
+bool Model3D::bakeModel(const std::string &sourcePath, const std::string &destinationPath) {
+    if (sourcePath.empty() || destinationPath.empty()) return false;
+    filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
+    if (!fs) fs = filesystem::Filesystem::create();
+    filesystem::FileData *sourceRaw = fs->read(sourcePath);
+    if (!sourceRaw) return false;
+    eve::ref<filesystem::FileData> source(sourceRaw);
+    if (!source->getData() || source->getSize() == 0) return false;
+    const std::string hint = ensureDotExt(source->getExtension());
+    if (hint.empty() || hint == ".evmodel" || hint.size() > 65535u) return false;
+    std::vector<uint8_t> packed;
+    packed.reserve(6u + hint.size() + source->getSize());
+    packed.insert(packed.end(), kEvModelMagic, kEvModelMagic + 4);
+    const uint16_t n = static_cast<uint16_t>(hint.size());
+    packed.push_back(static_cast<uint8_t>(n & 0xffu));
+    packed.push_back(static_cast<uint8_t>((n >> 8u) & 0xffu));
+    packed.insert(packed.end(), hint.begin(), hint.end());
+    const auto *bytes = static_cast<const uint8_t *>(source->getData());
+    packed.insert(packed.end(), bytes, bytes + source->getSize());
+    try {
+        fs->write(destinationPath, packed.data(), static_cast<int64_t>(packed.size()));
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
 void Model3D::expose(ssq::Table &table) {
@@ -143,6 +195,15 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getFaceCount", &ModelData::getFaceCount);
     md.addFunc("hasNormals", &ModelData::hasNormals);
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);
+    md.addFunc("getTexCoordChannelCount", &ModelData::getTexCoordChannelCount);
+    md.addFunc("hasTexCoordChannel", &ModelData::hasTexCoordChannel);
+    md.addFunc("getTexCoord", &ModelData::getTexCoord);
+    md.addFunc("hasTangents", &ModelData::hasTangents);
+    md.addFunc("getTangent", &ModelData::getTangent);
+    md.addFunc("getBitangent", &ModelData::getBitangent);
+    md.addFunc("getVertexColorChannelCount", &ModelData::getVertexColorChannelCount);
+    md.addFunc("hasVertexColorChannel", &ModelData::hasVertexColorChannel);
+    md.addFunc("getVertexColor", &ModelData::getVertexColor);
     md.addFunc("getMaterialIndex", &ModelData::getMaterialIndex);
     md.addFunc("getMaterialName", &ModelData::getMaterialName);
     md.addFunc("getMaterialBaseColorR", &ModelData::getMaterialBaseColorR);
@@ -153,6 +214,8 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getMaterialRoughnessFactor", &ModelData::getMaterialRoughnessFactor);
     md.addFunc("getMaterialOpacity", &ModelData::getMaterialOpacity);
     md.addFunc("getMaterialTwoSided", &ModelData::getMaterialTwoSided);
+    md.addFunc("getMaterialAlphaMode", &ModelData::getMaterialAlphaMode);
+    md.addFunc("getMaterialAlphaCutoff", &ModelData::getMaterialAlphaCutoff);
     md.addFunc("getMaterialTextureSlotCount", &ModelData::getMaterialTextureSlotCount);
     md.addFunc("getMaterialTexturePath", &ModelData::getMaterialTexturePath);
     md.addFunc("getMaterialTextureEmbeddedIndex", &ModelData::getMaterialTextureEmbeddedIndex);
@@ -172,16 +235,6 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getBoneWeightValue", &ModelData::getBoneWeightValue);
     md.addFunc("getAnimationCount", &ModelData::getAnimationCount);
     md.addFunc("getAnimationName", &ModelData::getAnimationName);
-
-    // Minimal ImageData surface so getEmbeddedTextureImageData results are
-    // usable from scripts (same pattern as the Font module).
-    auto img = table.addClass<image::ImageData>(
-        "ImageData", std::function<image::ImageData *()>([]() -> image::ImageData * { return nullptr; }),
-        true);
-    img.addFunc("getWidth", &image::ImageData::getWidth);
-    img.addFunc("getHeight", &image::ImageData::getHeight);
-    img.addFunc("getFormat", &image::ImageData::getFormat);
-    img.addFunc("getSize", &image::ImageData::getSize);
 }
 
 void Model3D::expose(ssq::Class &cls) {
@@ -191,6 +244,7 @@ void Model3D::expose(ssq::Class &cls) {
     cls.addFunc("newModelDataFromFile",
                 static_cast<ModelData *(Model3D::*)(std::string)>(&Model3D::newModelDataFromFile));
     cls.addFunc("createRenderable", &Model3D::createRenderable);
+    cls.addFunc("bakeModel", &Model3D::bakeModel);
 }
 
 }  // namespace model3d

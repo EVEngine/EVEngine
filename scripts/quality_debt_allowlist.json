@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "binding-gaps-legacy",
+      "kind": "binding_gap",
+      "scope": "scripts/check_bindings_gaps.txt",
+      "owner": "engine-scripting",
+      "issue": "EVENGINE-QUALITY-BASELINE",
+      "reason": "Pre-existing binding documentation gaps are tracked by the binding checker and are reduced incrementally.",
+      "expiry": "2027-12-31",
+      "max_net_growth": 0
+    },
+    {
+      "id": "todo-markers-legacy",
+      "kind": "todo",
+      "scope": "*",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-QUALITY-BASELINE",
+      "reason": "Existing TODO/FIXME/HACK markers remain visible while each new marker is reviewed and the inventory is reduced.",
+      "expiry": "2027-12-31",
+      "max_net_growth": 0
+    },
+    {
+      "id": "soft-skip-contracts",
+      "kind": "soft_skip",
+      "scope": "*",
+      "owner": "engine-test-infrastructure",
+      "issue": "EVENGINE-QUALITY-BASELINE",
+      "reason": "Environment-dependent test skips are retained only when the test reports the missing capability and remains covered elsewhere.",
+      "expiry": "2027-12-31",
+      "max_net_growth": 0
+    },
+    {
+      "id": "fallback-contract-inventory",
+      "kind": "fallback",
+      "scope": "*",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-QUALITY-BASELINE",
+      "reason": "Fallback behavior is inventoried as existing contract surface; new fallback paths require an explicit reviewed budget.",
+      "expiry": "2027-12-31",
+      "max_net_growth": 0
+    }
+  ]
+}

@@ -6,21 +6,28 @@
 #include <glm/glm.hpp>
 
 #include <cmath>
+#include <utility>
 
 namespace eve::scene {
 namespace {
+
+template <class T>
+T *borrowSceneResult(eve::Result<T *> result) {
+    if (!result.ok()) return nullptr;
+    return std::move(result).takeValue();
+}
 
 SceneHost *resolveHost(const std::string &hostName) {
     Scene *s = Scene::create();
     if (!s) return nullptr;
     if (hostName.empty()) return s->current();
-    return s->findHost(hostName);
+    return borrowSceneResult(s->findHost(hostName));
 }
 
 SceneNode *resolveNode(const std::string &hostName, const std::string &nodeId) {
     if (nodeId.empty()) return nullptr;
     SceneHost *h = resolveHost(hostName);
-    return h ? h->findById(nodeId) : nullptr;
+    return h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
 }
 
 glm::vec3 normalizedColumn(const glm::mat4 &m, int col) {
@@ -33,6 +40,11 @@ glm::vec3 normalizedColumn(const glm::mat4 &m, int col) {
 }  // namespace
 
 bool SceneNodeRef::isValid() const { return resolveNode(hostName_, nodeId_) != nullptr; }
+
+eve::SceneObjectId SceneNodeRef::persistentId() const {
+    const SceneNode *node = resolveNode(hostName_, nodeId_);
+    return node ? node->persistentId : eve::SceneObjectId::nil();
+}
 
 Scene *SceneNodeRef::getScene() const { return Scene::create(); }
 

@@ -6,9 +6,7 @@
 #include "voxel/Frustum.h"
 #include "voxel/VoxelPack.h"
 
-#include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/heightmap/TerrainStreaming.h"
-
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -16,6 +14,10 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+namespace eve::procgen {
+class TerrainSampler;
+}
 
 namespace eve::graphics {
 class Graphics;
@@ -50,8 +52,9 @@ struct DrawBatch {
  */
 class VoxelWorld {
 public:
-    VoxelWorld() = default;
-    explicit VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
+    VoxelWorld();
+    ~VoxelWorld();
+    explicit VoxelWorld(const CubeTypeRegistry &types);
 
     Chunk *getOrCreateChunk(int cx, int cy, int cz);
     Chunk *getChunk(int cx, int cy, int cz);
@@ -61,6 +64,8 @@ public:
     void clear();
 
     int getChunkCount() const { return int(chunks_.size()); }
+    /** @brief Monotonic content revision incremented by voxel/chunk mutations. */
+    uint64_t getRevision() const { return revision_; }
 
     /**
      * @brief Streaming eviction: drop chunks whose center is farther than
@@ -85,20 +90,20 @@ public:
      * sampling itself lives in procgen::TerrainSampler (deterministic Perlin
      * fBm); voxel only adapts it to 32³ chunk filling.
      */
-    void setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone,
-                          float baseHeight, float amplitude, float scale) {
-        terrainSampler_.setSeed(seed);
-        terrainSampler_.setBase(0.f);
-        terrainSampler_.setAmplitude(1.f);
-        terrainSampler_.setClamp(true, 0.f, 1.f);
-        terrainSampler_.setFrequency(scale > 0.f ? scale : 1.f / 32.f);
-        terrainTop_ = top;
-        terrainSub_ = sub;
-        terrainStone_ = stone;
-        terrainBase_ = baseHeight;
-        terrainAmplitude_ = amplitude < 0.f ? 0.f : amplitude;
-        terrainEnabled_ = true;
-    }
+    void setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight, float amplitude,
+                          float scale);
+
+    /**
+     * @brief 细粒度地形参数配置（脚本用）。key 支持：
+     *   seed/top/sub/stone/sand/base/amplitude/scale(=frequency)/
+     *   octaves/lacunarity/gain/ridge/warp/exponent/continent/island/coast/
+     *   worldWidth/worldHeight/sandLevel/enable
+     * 所有参数以 float 传入（整数在内部取整）。sandLevel ∈ (0,1] 时，
+     * 采样高度 ≤ sandLevel 的柱子顶层用 sand 纹理（沙滩带）；0 或负值关闭。
+     * enable=1 打开地形（默认流式生成开启），enable=0 关闭。
+     */
+    void setTerrainParam(const std::string &key, float value);
+
     void disableTerrain() { terrainEnabled_ = false; terrainAssetEnabled_ = false; terrainAsset_.clear(); }
     bool terrainEnabled() const { return terrainEnabled_ || terrainAssetEnabled_; }
 
@@ -140,7 +145,8 @@ public:
      * @param viewProj16 column-major 4x4 RH+ZO view-projection (16 floats)
      * @param eyeX/Y/Z  camera eye world position
      * @param viewRange max distance from eye to chunk center (world units; ≤0 disables)
-     * @param faceCull  when true, drop face buffers whose outward normal points away
+     * @param faceCull  when true, conservatively drop face-direction buffers that are
+     *                  back-facing from every possible face plane in the chunk
      */
     void selectVisible(const float *viewProj16, float eyeX, float eyeY, float eyeZ, float viewRange,
                        bool faceCull = true);
@@ -156,6 +162,8 @@ public:
     /**
      * @brief Issue Graphics::drawVoxelFaceInstances for every visible batch.
      * Requires begin3DFrame + setMesh3DViewProj already done.
+     * 参数用主类 Graphics*（而非 IGraphics3D*）：脚本绑定对接口指针
+     * 不做次基类偏移调整，经接口的虚调用会错位到别的 vtable 槽位。
      */
     void drawVisible(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow = 16);
 
@@ -232,13 +240,16 @@ private:
     uint8_t terrainSurfaceAt(int wx, int wz) const;
 
     std::unordered_map<uint64_t, std::unique_ptr<Chunk>> chunks_;
+    uint64_t revision_ = 0;
     std::vector<DrawBatch> visible_;
     std::vector<uint64_t> visibleChunkKeys_;
     CubeTypeRegistry types_;
-    procgen::TerrainSampler terrainSampler_;
+    std::unique_ptr<procgen::TerrainSampler>             terrainSampler_;
     uint8_t terrainTop_ = 1;
     uint8_t terrainSub_ = 2;
     uint8_t terrainStone_ = 3;
+    uint8_t terrainSand_ = 0;  // 0 = 沙滩带关闭
+    float sandLevel_ = 0.f;    // 归一化采样高度阈值；≤0 关闭
     float terrainBase_ = 8.f;
     float terrainAmplitude_ = 14.f;
     bool terrainEnabled_ = false;
@@ -247,7 +258,7 @@ private:
     float terrainAssetOffset_ = 0.f;
     float terrainAssetScale_ = 1.f;
     uint8_t terrainVegetation_ = 1;
-    uint8_t terrainSand_ = 1;
+    uint8_t terrainAssetSand_ = 1;
     uint8_t terrainSnow_ = 1;
     uint8_t terrainAlpine_ = 3;
     uint8_t terrainRiverbed_ = 2;

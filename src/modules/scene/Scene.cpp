@@ -1,10 +1,11 @@
 #include "scene/Scene.h"
 
+#include "scene/ArtifactProvider.h"
+#include "scene/SceneBounds.h"
+#include "scene/SceneCapabilities.h"
+#include "scene/SceneInternal.h"
 #include "scene/TransformSystem.h"
 
-#include "graphics/ClipSpace.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
 #include "spatial/Octree.h"
 
 #ifdef EVENGINE_SCENE_JSON
@@ -28,9 +29,25 @@
 
 namespace eve::scene {
 
+Scene::Scene() {
+    registerSceneCapabilities();
+    registerSceneArtifactProvider();
+}
+
 Module_IMPL(Scene, new Scene());
 
 namespace {
+
+template <class T>
+eve::Result<T> sceneFailure(eve::DiagnosticCode code, std::string message) {
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), "scene"));
+}
+
+template <class T>
+T *borrowSceneResult(eve::Result<T *> result) {
+    if (!result.ok()) return nullptr;
+    return std::move(result).takeValue();
+}
 
 SceneHost *findHostByName(const std::string &name) {
     if (name.empty()) return nullptr;
@@ -77,120 +94,13 @@ bool sameScriptObject(const HSQOBJECT &a, const HSQOBJECT &b) {
            std::memcmp(&a._unVal, &b._unVal, sizeof(a._unVal)) == 0;
 }
 
-/**
- * The script API already names link kinds with strings, which is exactly the
- * registry's key, so an unknown name and a kind whose module was trimmed out
- * are the same case: -1.
- */
-int linkKindFromString(const std::string &kind) { return findLinkKind(kind.c_str()); }
-
-int syncModeFromString(const std::string &mode) {
-    return mode == "body" ? 1 : 0;
-}
-
-glm::quat nodeQuaternion(const SceneNode &n) {
-    return glm::angleAxis(n.yaw, glm::vec3(0.f, 1.f, 0.f)) *
-           glm::angleAxis(n.pitch, glm::vec3(1.f, 0.f, 0.f)) *
-           glm::angleAxis(n.roll, glm::vec3(0.f, 0.f, 1.f));
-}
-
-/** Decompose a world matrix into position / euler(yaw,pitch,roll) / scale. */
-void decomposeWorld(const glm::mat4 &w, glm::vec3 &pos, glm::vec3 &euler,
-                    glm::vec3 &scale) {
-    pos = glm::vec3(w[3]);
-    glm::vec3 c0(w[0]), c1(w[1]), c2(w[2]);
-    scale = glm::vec3(glm::length(c0), glm::length(c1), glm::length(c2));
-    if (scale.x > 1e-8f) c0 /= scale.x;
-    if (scale.y > 1e-8f) c1 /= scale.y;
-    if (scale.z > 1e-8f) c2 /= scale.z;
-    glm::mat3 rot(c0, c1, c2);
-    glm::quat q = glm::quat_cast(rot);
-    glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-    euler = glm::vec3(e.y, e.x, e.z);
-}
-
-struct AABB3f {
-    glm::vec3 min;
-    glm::vec3 max;
-};
-
-/** World-space AABB of a node's local bounds (8 corners through world matrix). */
-AABB3f worldBoundsOf(const SceneNode &n) {
-    glm::vec3 lo(n.bminX, n.bminY, n.bminZ);
-    glm::vec3 hi(n.bmaxX, n.bmaxY, n.bmaxZ);
-    glm::vec3 mn(std::numeric_limits<float>::max());
-    glm::vec3 mx(std::numeric_limits<float>::lowest());
-    for (int i = 0; i < 8; ++i) {
-        glm::vec3 p((i & 1) ? hi.x : lo.x, (i & 2) ? hi.y : lo.y,
-                    (i & 4) ? hi.z : lo.z);
-        glm::vec4 w = n.world * glm::vec4(p, 1.f);
-        for (int c = 0; c < 3; ++c) {
-            mn[c] = std::min(mn[c], w[c]);
-            mx[c] = std::max(mx[c], w[c]);
-        }
-    }
-    return {mn, mx};
-}
-
-/** Slab ray-AABB intersection; fills entry/exit t (t0 <= t1). */
-bool rayAABB(const glm::vec3 &o, const glm::vec3 &d, const AABB3f &b, float &t0,
-             float &t1) {
-    t0 = -std::numeric_limits<float>::max();
-    t1 = std::numeric_limits<float>::max();
-    for (int axis = 0; axis < 3; ++axis) {
-        const float oa = o[axis];
-        const float da = d[axis];
-        const float mn = b.min[axis];
-        const float mx = b.max[axis];
-        if (std::fabs(da) < 1e-12f) {
-            if (oa < mn || oa > mx) return false;
-        } else {
-            const float inv = 1.f / da;
-            float tA = (mn - oa) * inv;
-            float tB = (mx - oa) * inv;
-            if (tA > tB) std::swap(tA, tB);
-            t0 = std::max(t0, tA);
-            t1 = std::min(t1, tB);
-            if (t0 > t1) return false;
-        }
-    }
-    return true;
-}
-
-bool cornerInsideClip(const glm::mat4 &m, const glm::vec3 &p) {
-    const glm::vec4 c = m * glm::vec4(p, 1.f);
-    return c.w > 1e-8f && std::fabs(c.x) <= c.w && std::fabs(c.y) <= c.w &&
-           c.z >= 0.f && c.z <= c.w;
-}
-
-/** Conservative AABB ↔ frustum overlap (AABB corners + frustum corners). */
-bool aabbIntersectsFrustum(const glm::mat4 &clip, const glm::mat4 &invClip,
-                           const AABB3f &b) {
-    for (int i = 0; i < 8; ++i) {
-        const glm::vec3 p((i & 1) ? b.max.x : b.min.x, (i & 2) ? b.max.y : b.min.y,
-                          (i & 4) ? b.max.z : b.min.z);
-        if (cornerInsideClip(clip, p)) return true;
-    }
-    for (int i = 0; i < 8; ++i) {
-        const glm::vec3 ndc((i & 1) ? 1.f : -1.f, (i & 2) ? 1.f : -1.f,
-                            (i & 4) ? 1.f : 0.f);
-        const glm::vec4 w = invClip * glm::vec4(ndc, 1.f);
-        if (std::fabs(w.w) < 1e-8f) continue;
-        const glm::vec3 q = glm::vec3(w) / w.w;
-        if (q.x >= b.min.x && q.x <= b.max.x && q.y >= b.min.y && q.y <= b.max.y &&
-            q.z >= b.min.z && q.z <= b.max.z) {
-            return true;
-        }
-    }
-    return false;
-}
-
 // --- JSON serialization helpers ---
 
 #ifdef EVENGINE_SCENE_JSON
 Poco::JSON::Object::Ptr nodeToJson(const SceneHost::Tree &tree, const SceneNode *n) {
     Poco::JSON::Object::Ptr o = new Poco::JSON::Object;
     o->set("id", n->id);
+    if (!n->persistentId.isNil()) o->set("persistentId", n->persistentId.format());
     o->set("key", n->key);
     o->set("name", n->name);
     o->set("space", n->space);
@@ -232,6 +142,10 @@ Poco::JSON::Object::Ptr nodeToJson(const SceneHost::Tree &tree, const SceneNode 
 NodeDesc nodeFromJson(const Poco::JSON::Object::Ptr &o) {
     NodeDesc d;
     d.id = o->optValue<std::string>("id", "");
+    const std::string persistentId = o->optValue<std::string>("persistentId", "");
+    if (!persistentId.empty()) {
+        if (const auto parsed = eve::SceneObjectId::parse(persistentId)) d.persistentId = *parsed;
+    }
     d.key = o->optValue<std::string>("key", d.id);
     d.name = o->optValue<std::string>("name", d.id);
     d.space = o->optValue<std::string>("space", "3d");
@@ -258,13 +172,13 @@ NodeDesc nodeFromJson(const Poco::JSON::Object::Ptr &o) {
     if (o->has("tags")) {
         Poco::JSON::Array::Ptr arr = o->getArray("tags");
         for (size_t i = 0; i < arr->size(); ++i) {
-            d.tags.push_back(arr->getElement<std::string>(i));
+            d.tags.push_back(arr->getElement<std::string>(static_cast<unsigned int>(i)));
         }
     }
     if (o->has("children")) {
         Poco::JSON::Array::Ptr kids = o->getArray("children");
         for (size_t i = 0; i < kids->size(); ++i) {
-            d.children.push_back(nodeFromJson(kids->getObject(i)));
+            d.children.push_back(nodeFromJson(kids->getObject(static_cast<unsigned int>(i))));
         }
     }
     return d;
@@ -700,42 +614,78 @@ SceneHost *Scene::ensureSelected(const std::string &preferredName) {
     if (!preferredName.empty()) {
         selected_ = findHostByName(preferredName);
         if (selected_) return selected_;
-        selected_ = SceneHost::createHost(preferredName);
+        auto created = SceneHost::createHost(preferredName);
+        if (!created.ok()) return nullptr;
+        selected_ = std::move(created).takeValue();
         return selected_;
     }
-    selected_ = SceneHost::createHost("default");
+    auto created = SceneHost::createHost("default");
+    if (!created.ok()) return nullptr;
+    selected_ = std::move(created).takeValue();
     return selected_;
 }
 
-SceneHost *Scene::mountAs(const std::string &name, NodeDesc root) {
+eve::Result<SceneHost *> Scene::mountAs(const std::string &name, NodeDesc root) {
     SceneHost *h = findHostByName(name);
-    if (!h) h = SceneHost::createHost(name);
-    h->setTree(std::move(root));
-    TransformSystem::updateHost(h);
-    pruneOrphanObjects();
+    if (!h) {
+        auto created = SceneHost::createHost(name);
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
+        h = std::move(created).takeValue();
+    }
+    try {
+        h->setTree(std::move(root));
+        TransformSystem::updateHost(h);
+        pruneOrphanObjects();
+    } catch (const std::exception &error) {
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
+                                         std::string("scene mount rejected: ") + error.what());
+    }
     selected_ = h;
-    return h;
+    return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
 }
 
-SceneHost *Scene::mount(NodeDesc root) { return mountAs("default", std::move(root)); }
+eve::Result<SceneHost *> Scene::mount(NodeDesc root) { return mountAs("default", std::move(root)); }
 
-SceneHost *Scene::remount(NodeDesc root) {
-    SceneHost *h = ensureSelected("default");
-    h->setTree(std::move(root));
-    TransformSystem::updateHost(h);
-    pruneOrphanObjects();
-    return h;
+eve::Result<SceneHost *> Scene::remount(NodeDesc root) {
+    SceneHost *h = selected_ ? selected_ : findHostByName("default");
+    if (!h) {
+        auto created = SceneHost::createHost("default");
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
+        h = std::move(created).takeValue();
+    }
+    try {
+        h->setTree(std::move(root));
+        TransformSystem::updateHost(h);
+        pruneOrphanObjects();
+    } catch (const std::exception &error) {
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
+                                         std::string("scene remount rejected: ") + error.what());
+    }
+    selected_ = h;
+    return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
 }
 
-SceneHost *Scene::remountReconcile(NodeDesc root) {
-    SceneHost *h = ensureSelected("default");
-    h->setTreeReconcile(std::move(root));
-    TransformSystem::updateHost(h);
-    pruneOrphanObjects();
-    return h;
+eve::Result<SceneHost *> Scene::remountReconcile(NodeDesc root) {
+    SceneHost *h = selected_ ? selected_ : findHostByName("default");
+    if (!h) {
+        auto created = SceneHost::createHost("default");
+        if (!created.ok()) return eve::Result<SceneHost *>::failure(created.status());
+        h = std::move(created).takeValue();
+    }
+    try {
+        const bool rebuilt = h->setTreeReconcile(std::move(root));
+        TransformSystem::updateHost(h);
+        pruneOrphanObjects();
+        selected_ = h;
+        return eve::Result<SceneHost *>::success(
+            h, eve::Status::success(rebuilt ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
+    } catch (const std::exception &error) {
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
+                                         std::string("scene reconcile rejected: ") + error.what());
+    }
 }
 
-SceneHost *Scene::remountAs(const std::string &name, NodeDesc root) {
+eve::Result<SceneHost *> Scene::remountAs(const std::string &name, NodeDesc root) {
     return mountAs(name, std::move(root));
 }
 
@@ -746,9 +696,21 @@ bool Scene::select(const std::string &name) {
     return true;
 }
 
-SceneHost *Scene::findHost(const std::string &name) const { return findHostByName(name); }
+eve::Result<SceneHost *> Scene::findHost(const std::string &name) const {
+    if (name.empty())
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::InvalidArgument, "scene host name must not be empty");
+    if (SceneHost *host = findHostByName(name)) return eve::Result<SceneHost *>::success(host, eve::Status::success());
+    return sceneFailure<SceneHost *>(eve::DiagnosticCode::NotFound, "scene host was not found: " + name);
+}
 
-SceneHost *Scene::findHostByOwner(uint32_t ownerId) const { return findHostByOwnerId(ownerId); }
+eve::Result<SceneHost *> Scene::findHostByOwner(uint32_t ownerId) const {
+    if (ownerId == 0)
+        return sceneFailure<SceneHost *>(eve::DiagnosticCode::InvalidArgument, "scene host owner id must not be zero");
+    if (SceneHost *host = findHostByOwnerId(ownerId))
+        return eve::Result<SceneHost *>::success(host, eve::Status::success());
+    return sceneFailure<SceneHost *>(eve::DiagnosticCode::NotFound,
+                                     "scene host owner id was not found: " + std::to_string(ownerId));
+}
 
 void Scene::bindOwner(uint32_t ownerId) {
     SceneHost *h = ensureSelected();
@@ -770,440 +732,6 @@ void Scene::updateTransforms() {
 
 void Scene::updateTransformsAll() { TransformSystem::updateAll(); }
 
-bool Scene::setNodePosition(const std::string &id, float x, float y, float z) {
-    SceneHost *h = selected_;
-    if (!h) return false;
-    SceneNode *n = h->findById(id);
-    if (!n) return false;
-    n->x = x;
-    n->y = y;
-    n->z = z;
-    h->markSubtreeDirtyById(id);
-    return true;
-}
-
-bool Scene::setNodeRotation(const std::string &id, float yaw, float pitch, float roll) {
-    SceneHost *h = selected_;
-    if (!h) return false;
-    SceneNode *n = h->findById(id);
-    if (!n) return false;
-    n->yaw = yaw;
-    n->pitch = pitch;
-    n->roll = roll;
-    h->markSubtreeDirtyById(id);
-    return true;
-}
-
-bool Scene::setNodeScale(const std::string &id, float sx, float sy, float sz) {
-    SceneHost *h = selected_;
-    if (!h) return false;
-    SceneNode *n = h->findById(id);
-    if (!n) return false;
-    n->sx = sx;
-    n->sy = sy;
-    n->sz = sz;
-    h->markSubtreeDirtyById(id);
-    return true;
-}
-
-bool Scene::setNodeVisible(const std::string &id, bool visible) {
-    SceneHost *h = selected_;
-    if (!h) return false;
-    SceneNode *n = h->findById(id);
-    if (!n) return false;
-    n->visible = visible;
-    h->markSubtreeDirtyById(id);  // resync renderable visibility via links
-    return true;
-}
-
-bool Scene::linkRenderable2D(const std::string &nodeId, graphics::Renderable2D *r) {
-    return linkRenderable2DAt(currentHostName(), nodeId, r);
-}
-
-bool Scene::linkRenderable3D(const std::string &nodeId, graphics::Renderable3D *r) {
-    return linkRenderable3DAt(currentHostName(), nodeId, r);
-}
-
-bool Scene::unlinkNode(const std::string &nodeId) {
-    return unlinkNodeAt(currentHostName(), nodeId);
-}
-
-// ---------------------------------------------------------------------------
-// Generic link system (host-scoped primitives)
-// ---------------------------------------------------------------------------
-
-bool Scene::linkRenderable2DAt(const std::string &hostName, const std::string &nodeId,
-                               graphics::Renderable2D *r) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    if (!h->linkRenderable2D(nodeId, r)) return false;
-    TransformSystem::updateHost(h);
-    return true;
-}
-
-bool Scene::linkRenderable3DAt(const std::string &hostName, const std::string &nodeId,
-                               graphics::Renderable3D *r) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    if (!h->linkRenderable3D(nodeId, r)) return false;
-    TransformSystem::updateHost(h);
-    return true;
-}
-
-bool Scene::linkPhysics2DAt(const std::string &hostName, const std::string &nodeId,
-                            physics::Body *b, const std::string &mode) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    if (!h->linkPhysics2D(nodeId, b, syncModeFromString(mode))) return false;
-    TransformSystem::updateHost(h);
-    return true;
-}
-
-bool Scene::linkPhysics3DAt(const std::string &hostName, const std::string &nodeId,
-                            physics::Body3D *b, const std::string &mode) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    if (!h->linkPhysics3D(nodeId, b, syncModeFromString(mode))) return false;
-    TransformSystem::updateHost(h);
-    return true;
-}
-
-bool Scene::linkCamera3DAt(const std::string &hostName, const std::string &nodeId,
-                           graphics::Camera3D *c) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    if (!h->linkCamera3D(nodeId, c)) return false;
-    TransformSystem::updateHost(h);
-    return true;
-}
-
-bool Scene::linkAudio3DAt(const std::string &hostName, const std::string &nodeId,
-                          audio::Source *s) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    if (!h->linkAudio3D(nodeId, s)) return false;
-    TransformSystem::updateHost(h);
-    return true;
-}
-
-bool Scene::unlinkNodeAt(const std::string &hostName, const std::string &nodeId) {
-    SceneHost *h = resolveHost(hostName);
-    return h ? h->unlink(nodeId) : false;
-}
-
-bool Scene::unlinkNodeKindAt(const std::string &hostName, const std::string &nodeId,
-                             const std::string &kind) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    const int k = linkKindFromString(kind);
-    if (k < 0) return false;
-    const bool removed = h->unlink(nodeId, k);
-    if (removed) TransformSystem::updateHost(h);
-    return removed;
-}
-
-int Scene::linkCountAt(const std::string &hostName, const std::string &nodeId) {
-    SceneHost *h = resolveHost(hostName);
-    return h ? h->linkCount(nodeId) : 0;
-}
-
-// ---------------------------------------------------------------------------
-// Script-API completeness: transform getters / hierarchy / math / tags / layer
-// ---------------------------------------------------------------------------
-
-std::vector<float> Scene::getNodePositionAt(const std::string &hostName,
-                                            const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {0.f, 0.f, 0.f};
-    return {n->x, n->y, n->z};
-}
-
-std::vector<float> Scene::getNodeRotationAt(const std::string &hostName,
-                                            const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {0.f, 0.f, 0.f};
-    return {n->yaw, n->pitch, n->roll};
-}
-
-std::vector<float> Scene::getNodeScaleAt(const std::string &hostName,
-                                         const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {0.f, 0.f, 0.f};
-    return {n->sx, n->sy, n->sz};
-}
-
-bool Scene::getNodeVisibleAt(const std::string &hostName,
-                             const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    return n ? n->visible : false;
-}
-
-std::vector<float> Scene::getNodeWorldPositionAt(const std::string &hostName,
-                                                 const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {0.f, 0.f, 0.f};
-    return {n->world[3][0], n->world[3][1], n->world[3][2]};
-}
-
-std::vector<float> Scene::getNodeWorldRotationAt(const std::string &hostName,
-                                                 const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {0.f, 0.f, 0.f};
-    glm::vec3 pos, euler, scale;
-    decomposeWorld(n->world, pos, euler, scale);
-    return {euler.x, euler.y, euler.z};
-}
-
-std::vector<float> Scene::getNodeWorldScaleAt(const std::string &hostName,
-                                              const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {0.f, 0.f, 0.f};
-    glm::vec3 pos, euler, scale;
-    decomposeWorld(n->world, pos, euler, scale);
-    return {scale.x, scale.y, scale.z};
-}
-
-std::vector<float> Scene::localToWorldAt(const std::string &hostName,
-                                         const std::string &nodeId, float x, float y,
-                                         float z) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {x, y, z};
-    glm::vec4 p = n->world * glm::vec4(x, y, z, 1.f);
-    return {p.x, p.y, p.z};
-}
-
-std::vector<float> Scene::worldToLocalAt(const std::string &hostName,
-                                         const std::string &nodeId, float x, float y,
-                                         float z) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {x, y, z};
-    glm::vec4 p = glm::inverse(n->world) * glm::vec4(x, y, z, 1.f);
-    return {p.x, p.y, p.z};
-}
-
-bool Scene::setNodeParentAt(const std::string &hostName, const std::string &childId,
-                            const std::string &parentId) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    const bool ok = h->setParentById(childId, parentId);
-    if (ok) TransformSystem::updateHost(h);
-    return ok;
-}
-
-bool Scene::removeNodeAt(const std::string &hostName, const std::string &nodeId) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    const bool ok = h->setParentById(nodeId, "");
-    if (ok) TransformSystem::updateHost(h);
-    return ok;
-}
-
-bool Scene::addChildAt(const std::string &hostName, const std::string &parentId,
-                       const std::string &childId) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    const bool ok = h->setParentById(childId, parentId);
-    if (ok) TransformSystem::updateHost(h);
-    return ok;
-}
-
-bool Scene::removeChildAt(const std::string &hostName, const std::string &parentId,
-                          const std::string &childId) {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    const bool ok = h->removeChildById(parentId, childId);
-    if (ok) TransformSystem::updateHost(h);
-    return ok;
-}
-
-bool Scene::setNodeQuaternionAt(const std::string &hostName, const std::string &nodeId,
-                                float qx, float qy, float qz, float qw) {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!h || !n) return false;
-    glm::quat q(qw, qx, qy, qz);
-    glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-    n->yaw = e.y;
-    n->pitch = e.x;
-    n->roll = e.z;
-    h->markSubtreeDirtyById(nodeId);
-    return true;
-}
-
-std::vector<float> Scene::getNodeQuaternionAt(const std::string &hostName,
-                                              const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {0.f, 0.f, 0.f, 1.f};
-    glm::quat q = nodeQuaternion(*n);
-    return {q.x, q.y, q.z, q.w};
-}
-
-bool Scene::setNodeLookAtAt(const std::string &hostName, const std::string &nodeId,
-                            float tx, float ty, float tz) {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!h || !n) return false;
-    glm::vec3 pos(n->x, n->y, n->z);
-    glm::vec3 target(tx, ty, tz);
-    glm::vec3 f = target - pos;
-    if (glm::dot(f, f) < 1e-8f) return false;
-    f = glm::normalize(f);
-    glm::vec3 up(0.f, 1.f, 0.f);
-    glm::vec3 right = glm::normalize(glm::cross(up, f));
-    if (glm::dot(right, right) < 1e-8f) right = glm::vec3(1.f, 0.f, 0.f);  // f ∥ up
-    glm::vec3 up2 = glm::normalize(glm::cross(f, right));
-    glm::mat3 rot(right, up2, f);
-    glm::quat q = glm::quat_cast(rot);
-    glm::vec3 e = glm::eulerAngles(q);
-    n->yaw = e.y;
-    n->pitch = e.x;
-    n->roll = e.z;
-    h->markSubtreeDirtyById(nodeId);
-    return true;
-}
-
-bool Scene::addNodeTagAt(const std::string &hostName, const std::string &nodeId,
-                         const std::string &tag) {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    return h ? h->addTag(n, tag) : false;
-}
-
-bool Scene::removeNodeTagAt(const std::string &hostName, const std::string &nodeId,
-                            const std::string &tag) {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    return h ? h->removeTag(n, tag) : false;
-}
-
-bool Scene::hasNodeTagAt(const std::string &hostName, const std::string &nodeId,
-                         const std::string &tag) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    return h ? h->hasTag(n, tag) : false;
-}
-
-std::vector<std::string> Scene::getNodeTagsAt(const std::string &hostName,
-                                              const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return {};
-    return n->tags;
-}
-
-std::vector<std::string> Scene::collectIdsByTagAt(const std::string &hostName,
-                                                  const std::string &tag) const {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return {};
-    std::vector<std::string> out;
-    for (SceneNode *n : h->findAllByTag(tag)) {
-        if (n) out.push_back(n->id);
-    }
-    return out;
-}
-
-bool Scene::setNodeLayerAt(const std::string &hostName, const std::string &nodeId,
-                           int layer) {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return false;
-    n->layer = layer;
-    return true;
-}
-
-int Scene::getNodeLayerAt(const std::string &hostName, const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    return n ? n->layer : 0;
-}
-
-bool Scene::setNodeEventHandlerAt(const std::string &hostName, ssq::Object cb) {
-    if (!vm_) return false;
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return false;
-    const std::string name = hostName.empty() ? h->getName() : hostName;
-
-    auto it = eventCbs_.find(name);
-    if (it != eventCbs_.end()) {
-        sq_release(vm_, &it->second);
-        eventCbs_.erase(it);
-    }
-    HSQOBJECT raw = cb.getRaw();
-    if (raw._type == OT_NULL) {  // clear handler
-        h->setEventHandler({});
-        return true;
-    }
-    if (raw._type != OT_CLOSURE && raw._type != OT_NATIVECLOSURE) return false;
-    sq_addref(vm_, &raw);
-    eventCbs_[name] = raw;
-    h->setEventHandler(
-        [this, name](SceneHost *, const std::string &action, const std::string &nodeId,
-                     const std::string &parentId) {
-            callEventCallback(name, action, nodeId, parentId);
-        });
-    return true;
-}
-
-void Scene::callEventCallback(const std::string &hostName, const std::string &action,
-                              const std::string &nodeId, const std::string &parentId) {
-    if (!vm_) return;
-    auto it = eventCbs_.find(hostName);
-    if (it == eventCbs_.end()) return;
-    const SQInteger top = sq_gettop(vm_);
-    sq_pushobject(vm_, it->second);
-    sq_pushstring(vm_, action.c_str(), -1);
-    sq_pushstring(vm_, nodeId.c_str(), -1);
-    sq_pushstring(vm_, parentId.c_str(), -1);
-    if (SQ_FAILED(sq_call(vm_, 3, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return;
-    }
-    sq_settop(vm_, top);
-}
-
-// ---------------------------------------------------------------------------
-// Bounds / serialization / picking / culling
-// ---------------------------------------------------------------------------
-
-bool Scene::setNodeBoundsAt(const std::string &hostName, const std::string &nodeId,
-                            float minX, float minY, float minZ, float maxX, float maxY,
-                            float maxZ) {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n) return false;
-    n->bminX = minX;
-    n->bminY = minY;
-    n->bminZ = minZ;
-    n->bmaxX = maxX;
-    n->bmaxY = maxY;
-    n->bmaxZ = maxZ;
-    n->hasBounds = true;
-    return true;
-}
-
-bool Scene::hasNodeBoundsAt(const std::string &hostName, const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    return n ? n->hasBounds : false;
-}
-
-std::vector<float> Scene::getNodeBoundsAt(const std::string &hostName,
-                                          const std::string &nodeId) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->findById(nodeId) : nullptr;
-    if (!n || !n->hasBounds) return {0.f, 0.f, 0.f, 0.f, 0.f, 0.f};
-    return {n->bminX, n->bminY, n->bminZ, n->bmaxX, n->bmaxY, n->bmaxZ};
-}
 
 #ifdef EVENGINE_SCENE_JSON
 std::string Scene::serializeHostAt(const std::string &hostName) const {
@@ -1226,8 +754,8 @@ bool Scene::deserializeHostAt(const std::string &hostName, const std::string &js
         Poco::JSON::Object::Ptr tree = root->getObject("root");
         if (!tree) return false;
         NodeDesc desc = nodeFromJson(tree);
-        mountAs(hostName.empty() ? "default" : hostName, std::move(desc));
-        return true;
+        auto     mounted = mountAs(hostName.empty() ? "default" : hostName, std::move(desc));
+        return mounted.ok();
     } catch (...) {
         return false;
     }
@@ -1244,185 +772,6 @@ bool Scene::deserializeHostAt(const std::string &hostName, const std::string &js
     return false;
 }
 #endif
-
-std::string Scene::pickRayAt(const std::string &hostName, float ox, float oy, float oz,
-                             float dx, float dy, float dz) const {
-    SceneHost *h = resolveHost(hostName);
-    if (!h) return {};
-    const glm::vec3 origin(ox, oy, oz);
-    glm::vec3 dir(dx, dy, dz);
-    if (glm::dot(dir, dir) < 1e-12f) return {};
-    dir = glm::normalize(dir);
-
-    float bestT = std::numeric_limits<float>::max();
-    std::string best;
-    h->walkDepthFirst([&](SceneHost *, int, SceneNode &n) {
-        if (!n.hasBounds) return;
-        const AABB3f w = worldBoundsOf(n);
-        float t0 = 0.f, t1 = 0.f;
-        if (rayAABB(origin, dir, w, t0, t1) && t1 >= 0.f && t0 < bestT) {
-            bestT = std::max(t0, 0.f);
-            best = n.id;
-        }
-    });
-    return best;
-}
-
-std::string Scene::pickScreenAt(const std::string &hostName, graphics::Camera3D *cam,
-                                float screenX, float screenY, float viewW,
-                                float viewH) const {
-    if (!cam) return {};
-    cam->screenToRay(screenX, screenY, viewW, viewH);
-    return pickRayAt(hostName, cam->getScreenRayOriginX(), cam->getScreenRayOriginY(),
-                     cam->getScreenRayOriginZ(), cam->getScreenRayDirX(),
-                     cam->getScreenRayDirY(), cam->getScreenRayDirZ());
-}
-
-std::vector<std::string> Scene::collectFrustumIdsAt(const std::string &hostName,
-                                                    graphics::Camera3D *cam, float viewW,
-                                                    float viewH) const {
-    SceneHost *h = resolveHost(hostName);
-    std::vector<std::string> out;
-    if (!h || !cam || viewW <= 0.f || viewH <= 0.f) return out;
-    auto d = cam->data();
-    const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
-    const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
-    const glm::vec3 up(d->upX, d->upY, d->upZ);
-    const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-    const glm::mat4 projM =
-        graphics::perspectiveVulkanRH_ZO(glm::radians(d->fovYDeg), viewW / viewH,
-                                         d->nearZ, d->farZ);
-    const glm::mat4 clip = projM * viewM;
-    const glm::mat4 invClip = glm::inverse(clip);
-
-    h->walkDepthFirst([&](SceneHost *, int, SceneNode &n) {
-        if (!n.hasBounds) return;
-        if (aabbIntersectsFrustum(clip, invClip, worldBoundsOf(n))) {
-            out.push_back(n.id);
-        }
-    });
-    return out;
-}
-
-bool Scene::syncSpatialIndexAt(const std::string &hostName, spatial::Octree *ot) const {
-    SceneHost *h = resolveHost(hostName);
-    if (!h || !ot) return false;
-    bool any = false;
-    h->walkDepthFirst([&](SceneHost *, int index, SceneNode &n) {
-        if (!n.hasBounds) return;
-        const AABB3f w = worldBoundsOf(n);
-        ot->insert(index, w.min.x, w.min.y, w.min.z, w.max.x, w.max.y, w.max.z);
-        any = true;
-    });
-    return any;
-}
-
-std::string Scene::nodeIdFromSpatialIdAt(const std::string &hostName, int index) const {
-    SceneHost *h = resolveHost(hostName);
-    SceneNode *n = h ? h->getNode(index) : nullptr;
-    return n ? n->id : std::string{};
-}
-
-bool Scene::hasNode(const std::string &id) {
-    SceneHost *h = selected_;
-    return h ? h->hasNode(id) : false;
-}
-
-int Scene::getNodeCount() {
-    SceneHost *h = selected_;
-    return h ? h->getNodeCount() : 0;
-}
-
-std::string Scene::getRootId() {
-    SceneHost *h = selected_;
-    if (!h) return {};
-    SceneNode *r = h->getRoot();
-    return r ? r->id : std::string{};
-}
-
-std::string Scene::getParentId(const std::string &id) {
-    SceneHost *h = selected_;
-    if (!h) return {};
-    SceneNode *p = h->getParentById(id);
-    return p ? p->id : std::string{};
-}
-
-int Scene::getChildCount(const std::string &id) {
-    SceneHost *h = selected_;
-    return h ? h->getChildCountById(id) : 0;
-}
-
-std::string Scene::getChildIdAt(const std::string &parentId, int childOrdinal) {
-    SceneHost *h = selected_;
-    if (!h) return {};
-    SceneNode *c = h->getChildAtById(parentId, childOrdinal);
-    return c ? c->id : std::string{};
-}
-
-std::string Scene::findIdByName(const std::string &name) {
-    SceneHost *h = selected_;
-    if (!h) return {};
-    SceneNode *n = h->findByName(name);
-    return n ? n->id : std::string{};
-}
-
-std::string Scene::findIdByPath(const std::string &path) {
-    SceneHost *h = selected_;
-    if (!h) return {};
-    SceneNode *n = h->findByPath(path);
-    return n ? n->id : std::string{};
-}
-
-std::string Scene::getNodePath(const std::string &id) {
-    SceneHost *h = selected_;
-    return h ? h->getPathById(id) : std::string{};
-}
-
-bool Scene::isAncestor(const std::string &ancestorId, const std::string &nodeId) {
-    SceneHost *h = selected_;
-    return h ? h->isAncestorOfById(ancestorId, nodeId) : false;
-}
-
-bool Scene::isDescendant(const std::string &nodeId, const std::string &ancestorId) {
-    SceneHost *h = selected_;
-    return h ? h->isDescendantOfById(nodeId, ancestorId) : false;
-}
-
-std::vector<std::string> Scene::collectIds() {
-    SceneHost *h = selected_;
-    return h ? h->collectIds() : std::vector<std::string>{};
-}
-
-std::vector<std::string> Scene::collectIdsFrom(const std::string &id) {
-    SceneHost *h = selected_;
-    if (!h) return {};
-    return h->collectIdsFrom(h->findIndexById(id));
-}
-
-std::vector<std::string> Scene::collectIdsByName(const std::string &name) {
-    SceneHost *h = selected_;
-    return h ? h->collectIdsByName(name) : std::vector<std::string>{};
-}
-
-std::vector<std::string> Scene::collectIdsVisible(bool visible) {
-    SceneHost *h = selected_;
-    return h ? h->collectIdsVisible(visible) : std::vector<std::string>{};
-}
-
-std::vector<std::string> Scene::collectChildIds(const std::string &parentId) {
-    SceneHost *h = selected_;
-    return h ? h->getChildIds(parentId) : std::vector<std::string>{};
-}
-
-std::vector<std::string> Scene::walkDepthFirstIds() { return collectIds(); }
-
-std::vector<std::string> Scene::walkBreadthFirstIds() {
-    SceneHost *h = selected_;
-    if (!h) return {};
-    std::vector<std::string> out;
-    h->walkBreadthFirst([&](SceneHost *, int, SceneNode &n) { out.push_back(n.id); });
-    return out;
-}
 
 void Scene::beginBuild() {
     openStack_.clear();
@@ -1492,7 +841,8 @@ bool Scene::buildComplete() const { return openStack_.empty() && hasBuiltRoot_; 
 
 bool Scene::mountBuild() {
     if (!buildComplete()) return false;
-    remount(std::move(builtRoot_));
+    auto mounted = remount(std::move(builtRoot_));
+    if (!mounted.ok()) return false;
     hasBuiltRoot_ = false;
     builtRoot_ = NodeDesc{};
     return true;
@@ -1500,7 +850,8 @@ bool Scene::mountBuild() {
 
 bool Scene::mountBuildAs(const std::string &name) {
     if (!buildComplete()) return false;
-    mountAs(name, std::move(builtRoot_));
+    auto mounted = mountAs(name, std::move(builtRoot_));
+    if (!mounted.ok()) return false;
     hasBuiltRoot_ = false;
     builtRoot_ = NodeDesc{};
     return true;
@@ -1508,8 +859,12 @@ bool Scene::mountBuildAs(const std::string &name) {
 
 bool Scene::remountBuildAs(const std::string &name) {
     if (!buildComplete()) return false;
-    SceneHost *h = findHost(name);
-    if (!h) h = SceneHost::createHost(name);
+    SceneHost *h = findHostByName(name);
+    if (!h) {
+        auto created = SceneHost::createHost(name);
+        if (!created.ok()) return false;
+        h = std::move(created).takeValue();
+    }
     h->setTreeReconcile(std::move(builtRoot_));
     TransformSystem::updateHost(h);
     pruneOrphanObjects();
@@ -1539,13 +894,36 @@ SceneObject *Scene::findSceneObjectById(uint32_t id) const {
     return nullptr;
 }
 
+SceneObject *Scene::findSceneObjectByPersistentId(eve::SceneObjectId id) const {
+    if (id.isNil() || ecs::current()->getManager<SceneObject>() == nullptr) return nullptr;
+    auto view = ecs::View<SceneObject, SceneObject::Meta>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [meta] = *it;
+        if (meta->entity && meta->persistentId == id) return meta->entity;
+    }
+    return nullptr;
+}
+
 SceneObject *Scene::ensureSceneObject(SceneHost *host, SceneNode *node,
                                       const std::string &hostName) {
     if (node->objectId != 0) {
-        if (SceneObject *o = findSceneObjectById(node->objectId)) return o;
+        if (SceneObject *o = findSceneObjectById(node->objectId)) {
+            if (!node->persistentId.isNil()) o->meta()->persistentId = node->persistentId;
+            return o;
+        }
         node->objectId = 0;  // stale id (entity was released)
     }
-    SceneObject *o = SceneObject::createObject(hostName, node->id);
+    if (!node->persistentId.isNil()) {
+        if (SceneObject *o = findSceneObjectByPersistentId(node->persistentId)) {
+            node->objectId      = uint32_t(o->id);
+            o->meta()->hostName = hostName;
+            o->meta()->nodeId   = node->id;
+            return o;
+        }
+    }
+    auto created = SceneObject::createObject(hostName, node->id, node->persistentId);
+    if (!created.ok()) return nullptr;
+    SceneObject *o = std::move(created).takeValue();
     node->objectId = uint32_t(o->id);
     return o;
 }
@@ -1555,7 +933,7 @@ bool Scene::rootEntity(const std::string &hostName, const std::string &nodeId,
     if (!vm_) return false;
     SceneHost *h = resolveHost(hostName);
     if (!h) return false;
-    SceneNode *n = h->findById(nodeId);
+    SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return false;
     HSQOBJECT raw = instance.getRaw();
     if (raw._type != OT_INSTANCE) return false;
@@ -1575,7 +953,7 @@ bool Scene::unrootEntityAt(const std::string &hostName, const std::string &nodeI
     if (!vm_) return false;
     SceneHost *h = resolveHost(hostName);
     if (!h) return false;
-    SceneNode *n = h->findById(nodeId);
+    SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return false;
     SceneObject *obj = n->objectId ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return false;
@@ -1596,7 +974,7 @@ int Scene::forEachEntity(const std::string &hostName, const std::string &nodeId,
     if (!vm_) return 0;
     SceneHost *h = resolveHost(hostName);
     if (!h) return 0;
-    SceneNode *n = h->findById(nodeId);
+    SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return 0;
     SceneObject *obj = n->objectId ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return 0;
@@ -1652,7 +1030,7 @@ SceneNodeRef *Scene::getNodeRefByPathAt(const std::string &hostName,
                         : hostName;
     SceneHost *host = resolveHost(hostName);
     if (!host) return new SceneNodeRef(std::move(h), "");
-    SceneNode *n = host->findByPath(path);
+    SceneNode *n = borrowSceneResult(host->findByPath(path));
     return new SceneNodeRef(std::move(h), n ? n->id : std::string{});
 }
 
@@ -1669,11 +1047,12 @@ void Scene::pruneOrphanObjects() {
                 orphans.push_back(meta->entity);
                 continue;
             }
-            SceneNode *n = h->findById(meta->nodeId);
+            SceneNode *n = borrowSceneResult(h->findById(meta->nodeId));
             if (!n || n->objectId != uint32_t(meta->entity->id)) {
                 orphans.push_back(meta->entity);
                 continue;
             }
+            if (!n->persistentId.isNil()) meta->persistentId = n->persistentId;
             (void)sb;
             // Self-heal: node id / host renamed (reconcile patch), keep binding.
             if (meta->hostName != h->getName() || meta->nodeId != n->id) {
@@ -1780,6 +1159,8 @@ void Scene::expose(ssq::Table &table) {
         std::function<SceneNodeRef *()>([]() -> SceneNodeRef * { return nullptr; }), true);
     refCls.addFunc("getNodeId", &SceneNodeRef::getNodeId);
     refCls.addFunc("getHostName", &SceneNodeRef::getHostName);
+    refCls.addFunc("getPersistentId",
+                   [](SceneNodeRef *ref) { return ref ? ref->persistentId().format() : std::string{}; });
     refCls.addFunc("isValid", &SceneNodeRef::isValid);
     refCls.addFunc("getScene", &SceneNodeRef::getScene);
     refCls.addFunc("setPosition", &SceneNodeRef::setPosition);

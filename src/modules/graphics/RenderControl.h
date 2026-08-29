@@ -27,10 +27,18 @@ class Graphics;
  *   "clustered"     — prefer clustered forward when light count > 8 (default on)
  *   "ao"            — screen-space AO overlay after FXAA resolve (implies gbuffer; default on)
  *   "outline"       — screen-space model outline from depth+normal (implies gbuffer; default off)
+ *   "frustumCull"   — conservative bounding-sphere frustum culling during the job-ified
+ *                     frame data prep (default off; meshes without bounds are never culled)
  *   "gi"            — enables gbufferAlbedo; mesh hemispheric GI (fullscreen SSGI is not auto-applied)
  *   "aa"            — FXAA resolve of the 3D scene color into the swapchain (default on)
  *   "msaa"          — hardware MSAA on the 3D scene color pass (default on; sample count via
  *                     Graphics.setMsaaSamples, default 4, clamped to device support)
+ *   "decal"         — screen-space decal layer pass between gbuffer and forward
+ *                     (implies gbuffer; default off)
+ *   "atmosphere"    — analytic sky/aerial-perspective pass (default on)
+ *   "volumetricFog" — froxel media, lighting, integration and composite passes
+ *   "fogLocalVolumes" — local volume injection (implies volumetricFog)
+ *   "fogTemporal"   — history filtering (implies volumetricFog)
  *
  * 3D draws into a sampleable scene color target (not the swapchain). Present
  * resolves that target (FXAA when "aa" is on), then composites AO/HUD.
@@ -60,7 +68,7 @@ public:
     bool isDirty() const { return dirty_; }
 
     int getPassCount() const { return int(passes_.size()); }
-    /** @brief Pass names: "shadow" | "gbuffer" | "forward" | "hair" */
+    /** @brief Return the compiled pass name at index, or an empty string. */
     std::string getPassName(int index) const;
     bool hasPass(const std::string &name) const;
 

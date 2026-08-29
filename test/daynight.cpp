@@ -3,6 +3,7 @@
 
 #include "daynight/DayNight.h"
 
+#include <algorithm>
 #include <cmath>
 
 using namespace eve::daynight;
@@ -56,6 +57,20 @@ TEST_CASE("daynight.sunDirectionNormalized") {
     CHECK(std::fabs(len - 1.0f) < 1e-3f);
 }
 
+TEST_CASE("daynight.sunColorWarmsNearHorizon") {
+    DayNight d;
+    d.setTimeOfDay(12.0f);
+    const float noonBlueRatio = d.getSunB() / std::max(d.getSunR(), 1e-6f);
+    d.setTimeOfDay(7.0f);
+    CHECK(d.getSunR() >= d.getSunG());
+    CHECK(d.getSunG() >= d.getSunB());
+    CHECK(d.getSunB() / std::max(d.getSunR(), 1e-6f) < noonBlueRatio);
+    d.setTimeOfDay(0.0f);
+    CHECK(d.getSunR() == 0.0f);
+    CHECK(d.getSunG() == 0.0f);
+    CHECK(d.getSunB() == 0.0f);
+}
+
 TEST_CASE("daynight.ambientBounded") {
     DayNight d;
     float a = d.getAmbientBrightness();
@@ -89,4 +104,20 @@ TEST_CASE("daynight.firePositionStored") {
     DayNight d;
     d.setFirePosition(1.0f, 0.5f, -2.0f);
     CHECK(d.getSkyR() >= 0.0f);  // no throw; position is consumed on init
+}
+
+TEST_CASE("daynight.atmosphereParametersClampAndRoundTrip") {
+    DayNight d;
+    d.setTurbidity(4.5f);
+    d.setSkyExposure(1.4f);
+    d.setMieStrength(0.8f);
+    CHECK(std::fabs(d.getTurbidity() - 4.5f) < 1e-5f);
+    CHECK(std::fabs(d.getSkyExposure() - 1.4f) < 1e-5f);
+    CHECK(std::fabs(d.getMieStrength() - 0.8f) < 1e-5f);
+    d.setTurbidity(-10.f);
+    d.setSkyExposure(100.f);
+    d.setMieStrength(-1.f);
+    CHECK(d.getTurbidity() >= 1.5f);
+    CHECK(d.getSkyExposure() <= 8.f);
+    CHECK(d.getMieStrength() == 0.f);
 }

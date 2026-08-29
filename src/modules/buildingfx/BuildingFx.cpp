@@ -4,6 +4,7 @@
 #include "building/Ghost.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
+#include "grid/GridConfig.h"
 #include "common/ECS.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
@@ -16,6 +17,9 @@
 #include <cmath>
 
 namespace eve::buildingfx {
+
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 Module_IMPL(BuildingFx, new BuildingFx());
 

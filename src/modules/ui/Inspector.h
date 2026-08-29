@@ -1,0 +1,148 @@
+#pragma once
+
+#include "common/Export.h"
+#include "common/Runtime.h"
+#include "scriptmodel/ReflectedPropertyModel.h"
+#include "ui/Widget.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace eve::ui {
+
+class UIHost;
+
+/**
+ * @brief Reflection-driven property inspector (DevTools phase C, MVVM).
+ *
+ * ViewModel: script class instances registered in the active eve Runtime.
+ * View: a declarative UIHost ("eve_inspector") rebuilt from reflected members.
+ * Binding: widget change callbacks write back to the script instance and
+ * `sync()` pulls model values into the tree (two-way).
+ *
+ * Script classes are auto-scanned from Runtime::reflectedClasses(); members
+ * become editable widgets using Squirrel attribute metadata:
+ *
+ *     </ editor = "slider", min = 0, max = 100 />   → Slider
+ *     </ editor = "checkbox" />                     → Checkbox (bool)
+ *     </ editor = "combo", options = "a,b,c" />     → Combo
+ *     Other controls                                     → InputText
+ *
+ * Inherited members are grouped under their owning (base) class header, so
+ * parent properties are editable side-by-side (see docs/dev/界面设计.md).
+ */
+class EVENGINE_API Inspector {
+public:
+    Inspector() = default;
+    ~Inspector();
+    Inspector(const Inspector&) = delete;
+    Inspector& operator=(const Inspector&) = delete;
+
+    /** @brief Re-scans the active Runtime's reflected classes. */
+    void refresh();
+    /** @brief Mounts (or updates) the inspector host on the UI ECS world. */
+    void open();
+    /** @brief Hides the inspector host. */
+    void close();
+    /** @brief True while the inspector host is mounted and visible. */
+    bool isOpen() const;
+    /** @brief Returns the mounted inspector host handle, or an empty handle until open(). */
+    [[nodiscard]] UIHostHandle host() const noexcept { return host_; }
+
+    /** @brief Selects a class, auto-creating its first instance. */
+    bool selectClass(const std::string& name);
+    /**
+     * @brief Inspects a caller-provided live script instance (the game model).
+     *
+     * The panel binds to this exact object: edits write back to it and sync()
+     * pulls its values into the view. The class must already be reflected.
+     */
+    bool inspectObject(const ssq::Object& object);
+    /** @brief Name of the currently selected class ("" when none). */
+    const std::string& selectedClass() const { return selectedClass_; }
+    /** @brief Creates another instance of the selected class and selects it. */
+    bool addInstance();
+    /**
+     * @brief Registers the scene-pick source used by the Pick button.
+     * @param pickScene Returns the live script instance under the pick cursor
+     *                  an empty object when nothing was picked.
+     */
+    void setPickScene(std::function<ssq::Object()> pickScene);
+    /** @brief Selects an instance by index; false when out of range. */
+    bool selectInstance(int index);
+    /** @brief Navigates into a nested script instance (reference editing). */
+    void openNested(const std::string& className, const ssq::Object& object);
+    /** @brief Returns to the previously inspected instance. */
+    void back();
+    /** @brief Number of live instances of the selected class. */
+    int instanceCount() const { return int(instances_.size()); }
+    /** @brief Index of the selected instance; -1 when none. */
+    int selectedIndex() const { return selectedInstance_; }
+    /** @brief Live script object of the selected instance (empty when none). */
+    ssq::Object selectedInstance() const {
+        return (selectedInstance_ >= 0 &&
+                size_t(selectedInstance_) < instances_.size())
+                   ? instances_[size_t(selectedInstance_)].object
+                   : ssq::Object();
+    }
+
+    /** @brief Pulls model → view for the selected instance (per-frame). */
+    void sync();
+    /** @brief Declarative tree of the current selection. */
+    WidgetDesc build();
+
+private:
+    struct InstanceEntry {
+        std::string label;
+        ssq::Object object;
+    };
+    struct NestedEntry {
+        std::string className;
+        ssq::Object object;
+    };
+
+    /**
+     * @brief Resolves the active script runtime for one inspector operation.
+     * @return Borrowed nullable Runtime owned by the module manager.
+     * @ownership Inspector does not own the runtime.
+     * @lifetime Valid while the runtime is installed; do not retain across stop/unload.
+     * @thread Call on the UI/script thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across runtime teardown.
+     */
+    Runtime* runtime() const;
+    /**
+     * @brief Returns the selected script object observation, or null when none is selected.
+     * @return Borrowed nullable pointer to an object owned by the inspector's rooted entry.
+     * @ownership Inspector retains the Squirrel object; callers do not release this pointer.
+     * @lifetime Valid until selection/navigation changes or the inspector is destroyed.
+     * @thread Call on the UI/script thread.
+     * @reentrancy Do not retain across callbacks or selection mutation.
+     */
+    const ssq::Object* currentInstance() const;
+    int currentClassIndex() const;
+    void rebuildPropertyModel();
+    void rebuildHost();
+    WidgetDesc propertyWidget(const std::string& ownerClass,
+                              const ReflectedMember& member,
+                              const ReflectedValue& value,
+                              const ssq::Object& instance);
+    WidgetDesc arrayWidget(const std::string& ownerClass, const ReflectedMember& member,
+                           const ssq::Object& instance);
+    WidgetDesc tableWidget(const std::string& ownerClass, const ReflectedMember& member,
+                           const ssq::Object& instance);
+
+    std::vector<std::string> classNames_;
+    std::string selectedClass_;
+    std::vector<InstanceEntry> instances_;
+    std::vector<NestedEntry> navStack_;
+    std::function<ssq::Object()> pickScene_;
+    int selectedInstance_ = -1;
+    UIHostHandle                                         host_{};
+    std::unique_ptr<scriptmodel::ReflectedPropertyModel> propertyModel_;
+};
+
+}  // namespace eve::ui

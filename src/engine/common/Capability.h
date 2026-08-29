@@ -47,6 +47,7 @@
 
 #include <cstddef>
 #include <utility>
+#include <vector>
 
 namespace eve::cap {
 
@@ -106,29 +107,42 @@ I* listenerAt(size_t index) {
 }
 
 /**
- * Call `fn` for every implementation of I in priority order. Iterating by
- * index keeps this valid if a listener registers or withdraws another during
- * dispatch.
+ * @brief Call `fn` for every implementation of I in priority order.
+ *
+ * Dispatch uses a snapshot of the listener pointers taken before the first
+ * callback. Registrations and withdrawals made by a callback affect later
+ * dispatches, but not the dispatch already in progress. A withdrawn listener
+ * must therefore remain alive until the current dispatch returns.
  */
 template <class I, class F>
 void forEach(F&& fn) {
     const size_t n = detail::listenerCountRaw(I::capabilityName);
-    for (size_t i = 0; i < n; ++i)
+    std::vector<I*> snapshot;
+    snapshot.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
         if (auto* impl = static_cast<I*>(detail::listenerAtRaw(I::capabilityName, i)))
-            fn(impl);
+            snapshot.push_back(impl);
+    }
+    for (auto* impl : snapshot) fn(impl);
 }
 
 /**
- * Call `fn` for each implementation of I until one returns true; returns
- * whether any did. Used where the first handler that recognises an item wins.
+ * @brief Call `fn` for each snapshotted implementation until one returns true.
+ *
+ * Listener mutations have the same next-dispatch semantics as forEach().
+ * @return Whether any implementation returned true.
  */
 template <class I, class F>
 bool forEachUntil(F&& fn) {
     const size_t n = detail::listenerCountRaw(I::capabilityName);
+    std::vector<I*> snapshot;
+    snapshot.reserve(n);
     for (size_t i = 0; i < n; ++i) {
-        auto* impl = static_cast<I*>(detail::listenerAtRaw(I::capabilityName, i));
-        if (impl && fn(impl)) return true;
+        if (auto* impl = static_cast<I*>(detail::listenerAtRaw(I::capabilityName, i)))
+            snapshot.push_back(impl);
     }
+    for (auto* impl : snapshot)
+        if (fn(impl)) return true;
     return false;
 }
 

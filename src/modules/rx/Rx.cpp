@@ -1,6 +1,6 @@
 #include "rx/Rx.h"
 
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -315,12 +315,12 @@ public:
     ReactivePropertyV* newProperty(const Value& initial) { return new ReactivePropertyV(initial); }
 
     // Event bridge: fromEvent(name) returns an Observable that forwards matching
-    // messages pushed by pump() (fed from an eve::event::Event queue).
-    ObservableV* fromEvent(const std::string& name) {
+    // messages pushed by pump() (fed from an eve::platform_event::PlatformEvent queue).
+    ObservableV* fromEvent(const std::string& eventName) {
         auto subject = std::make_shared<SubjectV>();
         {
             std::lock_guard<std::mutex> lock(mu_);
-            bridges_[name] = subject;
+            bridges_[eventName] = subject;
         }
         // Return a fresh observable that subscribes to the shared subject. The
         // returned AnonymousObservable is owned by the script; the shared subject
@@ -330,23 +330,21 @@ public:
         });
     }
 
-    void pump(event::Event* ev) {
+    void pump(platform_event::PlatformEvent* ev) {
         if (!ev) return;
-        event::Message* msg = nullptr;
-        while ((msg = ev->poll()) != nullptr) {
-            std::string name = msg->name;
+        while (auto msg = ev->pollOwned()) {
+            std::string eventName = msg->name;
             std::string data;
             for (const auto& a : msg->args) {
-                if (a.type == event::Variant::Type::String) {
+                if (a.type == platform_event::Variant::Type::String) {
                     data = a.s;
                     break;
                 }
             }
-            delete msg;
             std::shared_ptr<SubjectV> subject;
             {
                 std::lock_guard<std::mutex> lock(mu_);
-                auto it = bridges_.find(name);
+                auto it = bridges_.find(eventName);
                 if (it != bridges_.end()) subject = it->second;
             }
             if (subject) subject->onNext(Value::makeString(data));

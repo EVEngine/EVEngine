@@ -6,56 +6,69 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <utility>
 
 namespace eve::housegen {
 namespace {
 
 using eve::json::Value;
 
-SocketDirection parseDirection(const std::string &s, bool *ok) {
-    *ok = true;
-    if (s == "north") return SocketDirection::North;
-    if (s == "east") return SocketDirection::East;
-    if (s == "south") return SocketDirection::South;
-    if (s == "west") return SocketDirection::West;
-    if (s == "up") return SocketDirection::Up;
-    if (s == "down") return SocketDirection::Down;
-    *ok = false;
-    return SocketDirection::North;
+template <typename T>
+eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "housegen.components"));
 }
 
-bool parseComponent(Value o, HouseComponent &out, std::string *error) {
-    if (!o.isObject()) { if (error) *error = "component must be an object"; return false; }
-    out.id = o.getString("id");
-    out.modelPath = o.getString("model");
-    out.category = o.getString("category");
-    out.width = o.getInt("width", 1);
-    out.depth = o.getInt("depth", 1);
-    out.height = o.getInt("height", 1);
-    out.weight = o.getInt("weight", 1);
-    out.tags = o.getStringArray("tags");
-    if (o.get("rotations").isArray()) out.rotations = o.getIntArray("rotations");
+eve::Result<SocketDirection> parseDirection(std::string_view value) {
+    if (value == "north") return eve::Result<SocketDirection>::success(SocketDirection::North);
+    if (value == "east") return eve::Result<SocketDirection>::success(SocketDirection::East);
+    if (value == "south") return eve::Result<SocketDirection>::success(SocketDirection::South);
+    if (value == "west") return eve::Result<SocketDirection>::success(SocketDirection::West);
+    if (value == "up") return eve::Result<SocketDirection>::success(SocketDirection::Up);
+    if (value == "down") return eve::Result<SocketDirection>::success(SocketDirection::Down);
+    return failure<SocketDirection>(eve::DiagnosticCode::InvalidArgument, "socket direction is invalid", "direction");
+}
 
-    const Value sockets = o.get("sockets");
+eve::Result<HouseComponent> parseComponent(Value object) {
+    if (!object.isObject())
+        return failure<HouseComponent>(eve::DiagnosticCode::ParseError, "component must be an object");
+
+    HouseComponent out;
+    out.id        = object.getString("id");
+    out.modelPath = object.getString("model");
+    out.category  = object.getString("category");
+    out.width     = object.getInt("width", 1);
+    out.depth     = object.getInt("depth", 1);
+    out.height    = object.getInt("height", 1);
+    out.weight    = object.getInt("weight", 1);
+    out.tags      = object.getStringArray("tags");
+    if (object.get("rotations").isArray()) out.rotations = object.getIntArray("rotations");
+
+    const Value sockets = object.get("sockets");
     for (size_t i = 0; i < sockets.size(); ++i) {
-        const Value so = sockets.at(i);
-        bool ok = false;
-        HouseSocket s;
-        s.direction = parseDirection(so.getString("direction"), &ok);
-        s.type = so.getString("type");
-        s.accepts = so.getStringArray("accepts");
-        if (!ok || s.type.empty()) { if (error) *error = "socket needs a valid direction and type"; return false; }
-        out.sockets.push_back(std::move(s));
+        const Value socketObject = sockets.at(i);
+        if (!socketObject.isObject())
+            return failure<HouseComponent>(eve::DiagnosticCode::ParseError, "socket must be an object", "sockets");
+        auto direction = parseDirection(socketObject.getString("direction"));
+        if (!direction.ok()) return eve::Result<HouseComponent>::failure(direction.status());
+
+        HouseSocket socket;
+        socket.direction = std::move(direction).takeValue();
+        socket.type      = socketObject.getString("type");
+        socket.accepts   = socketObject.getStringArray("accepts");
+        if (socket.type.empty())
+            return failure<HouseComponent>(eve::DiagnosticCode::InvalidArgument,
+                                           "socket needs a valid direction and type", "sockets");
+        out.sockets.push_back(std::move(socket));
     }
 
-    const Value material = o.get("material");
+    const Value material = object.get("material");
     if (material.isObject()) {
         const Value color = material.get("baseColor");
         if (color.isArray()) {
-            if (color.size() != 3 && color.size() != 4) {
-                if (error) *error = "material baseColor needs 3 or 4 values";
-                return false;
-            }
+            if (color.size() != 3 && color.size() != 4)
+                return failure<HouseComponent>(eve::DiagnosticCode::InvalidArgument,
+                                               "material baseColor needs 3 or 4 values", "material.baseColor");
             out.material.hasBaseColor = true;
             out.material.baseColorR = color.at(0).asFloat();
             out.material.baseColorG = color.at(1).asFloat();
@@ -80,92 +93,117 @@ bool parseComponent(Value o, HouseComponent &out, std::string *error) {
         out.material.cellBombStrength = material.getFloat("cellBombStrength", 0.f);
         out.material.cellBombRotation = material.getFloat("cellBombRotation", 1.f);
     }
-    return true;
+    return eve::Result<HouseComponent>::success(std::move(out));
 }
 
 }  // namespace
 
-bool HouseComponentLibrary::registerComponent(const HouseComponent &c, std::string *error) {
-    if (c.id.empty() || c.modelPath.empty() || c.category.empty()) {
-        if (error) *error = "component needs id, model and category";
-        return false;
+eve::Result<void> HouseComponentLibrary::registerComponent(const HouseComponent &component) {
+    if (component.id.empty() || component.modelPath.empty() || component.category.empty())
+        return failure<void>(eve::DiagnosticCode::InvalidArgument, "component needs id, model and category");
+    if (component.width < 1 || component.depth < 1 || component.height < 1 || component.weight < 1)
+        return failure<void>(eve::DiagnosticCode::InvalidArgument, "component dimensions and weight must be positive");
+    for (const int rotation : component.rotations) {
+        if (rotation < 0 || rotation >= 360 || rotation % 90 != 0)
+            return failure<void>(eve::DiagnosticCode::InvalidArgument, "rotations must be cardinal degrees",
+                                 "rotations");
     }
-    if (c.width < 1 || c.depth < 1 || c.height < 1 || c.weight < 1) {
-        if (error) *error = "component dimensions and weight must be positive";
-        return false;
-    }
-    for (int r : c.rotations) if (r < 0 || r >= 360 || r % 90 != 0) {
-        if (error) *error = "rotations must be cardinal degrees";
-        return false;
-    }
-    const auto inUnitRange = [](float v) { return v >= 0.f && v <= 1.f; };
-    if ((c.material.hasBaseColor &&
-         (!inUnitRange(c.material.baseColorR) || !inUnitRange(c.material.baseColorG) ||
-          !inUnitRange(c.material.baseColorB) || !inUnitRange(c.material.baseColorA))) ||
-        (c.material.hasMetallic && !inUnitRange(c.material.metallic)) ||
-        (c.material.hasRoughness && !inUnitRange(c.material.roughness)) ||
-        !inUnitRange(c.material.cellBombStrength) || !inUnitRange(c.material.cellBombRotation)) {
-        if (error) *error = "material values must be between 0 and 1";
-        return false;
-    }
-    if (c.material.parallaxScale < 0.f || c.material.parallaxScale > 0.2f ||
-        c.material.parallaxMinLayers < 1.f ||
-        c.material.parallaxMaxLayers < c.material.parallaxMinLayers ||
-        c.material.cellBombScale <= 0.f) {
-        if (error) *error = "material sampling parameters are invalid";
-        return false;
-    }
-    if (components_.contains(c.id)) { if (error) *error = "duplicate component id: " + c.id; return false; }
-    components_.emplace(c.id, c);
-    return true;
+
+    const auto inUnitRange = [](float value) { return value >= 0.f && value <= 1.f; };
+    if ((component.material.hasBaseColor &&
+         (!inUnitRange(component.material.baseColorR) || !inUnitRange(component.material.baseColorG) ||
+          !inUnitRange(component.material.baseColorB) || !inUnitRange(component.material.baseColorA))) ||
+        (component.material.hasMetallic && !inUnitRange(component.material.metallic)) ||
+        (component.material.hasRoughness && !inUnitRange(component.material.roughness)) ||
+        !inUnitRange(component.material.cellBombStrength) || !inUnitRange(component.material.cellBombRotation))
+        return failure<void>(eve::DiagnosticCode::InvalidArgument, "material values must be between 0 and 1",
+                             "material");
+    if (component.material.parallaxScale < 0.f || component.material.parallaxScale > 0.2f ||
+        component.material.parallaxMinLayers < 1.f ||
+        component.material.parallaxMaxLayers < component.material.parallaxMinLayers ||
+        component.material.cellBombScale <= 0.f)
+        return failure<void>(eve::DiagnosticCode::InvalidArgument, "material sampling parameters are invalid",
+                             "material");
+    if (components_.contains(component.id))
+        return failure<void>(eve::DiagnosticCode::Conflict, "duplicate component id: " + component.id, "id");
+
+    components_.emplace(component.id, component);
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-bool HouseComponentLibrary::loadFromJson(const std::string &json, std::string *error) {
-    const eve::json::Document doc = eve::json::Document::parse(json, error);
-    if (!doc.valid()) return false;
-    const Value root = doc.root();
+eve::Result<void> HouseComponentLibrary::loadFromJson(std::string_view json) {
+    std::string               parseError;
+    const eve::json::Document document = eve::json::Document::parse(std::string(json), &parseError);
+    if (!document.valid())
+        return failure<void>(eve::DiagnosticCode::ParseError,
+                             parseError.empty() ? "invalid component manifest" : parseError);
+
+    const Value root   = document.root();
     const Value values = root.isArray() ? root : root.get("components");
-    if (!values.isArray()) { if (error) *error = "expected components array"; return false; }
+    if (!values.isArray())
+        return failure<void>(eve::DiagnosticCode::ParseError, "expected components array", "components");
+
     HouseComponentLibrary candidate;
     for (size_t i = 0; i < values.size(); ++i) {
-        HouseComponent c;
-        if (!parseComponent(values.at(i), c, error) || !candidate.registerComponent(c, error))
-            return false;
+        auto component = parseComponent(values.at(i));
+        if (!component.ok()) return eve::Result<void>::failure(component.status());
+        auto registered = candidate.registerComponent(std::move(component).takeValue());
+        if (!registered.ok()) return registered;
     }
     components_ = std::move(candidate.components_);
-    return true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-bool HouseComponentLibrary::loadFromFile(const std::string &filename, std::string *error) {
-    std::ifstream input(filename, std::ios::binary);
-    if (!input) {
-        if (error) *error = "cannot open component manifest: " + filename;
-        return false;
-    }
+eve::Result<void> HouseComponentLibrary::loadFromFile(std::string_view filename) {
+    const std::string path(filename);
+    std::ifstream     input(path, std::ios::binary);
+    if (!input) return failure<void>(eve::DiagnosticCode::NotFound, "cannot open component manifest: " + path, path);
+
     std::ostringstream json;
     json << input.rdbuf();
     HouseComponentLibrary candidate;
-    if (!candidate.loadFromJson(json.str(), error)) return false;
-    const std::filesystem::path assetRoot =
-        std::filesystem::absolute(std::filesystem::path(filename)).parent_path();
+    auto                  loaded = candidate.loadFromJson(json.str());
+    if (!loaded.ok()) return loaded;
+
+    const std::filesystem::path assetRoot = std::filesystem::absolute(std::filesystem::path(path)).parent_path();
     for (auto &[_, component] : candidate.components_) {
         std::filesystem::path model(component.modelPath);
         if (model.is_relative()) component.modelPath = (assetRoot / model).lexically_normal().string();
     }
     components_ = std::move(candidate.components_);
-    return true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void HouseComponentLibrary::clear() { components_.clear(); }
-const HouseComponent *HouseComponentLibrary::find(const std::string &id) const { auto it = components_.find(id); return it == components_.end() ? nullptr : &it->second; }
+
+eve::OptionalRef<const HouseComponent> HouseComponentLibrary::find(std::string_view id) const {
+    const auto it = components_.find(std::string(id));
+    if (it == components_.end()) return {};
+    return std::cref(it->second);
+}
+
 int HouseComponentLibrary::count() const { return int(components_.size()); }
-std::vector<std::string> HouseComponentLibrary::ids() const { std::vector<std::string> out; for (const auto &[id, _] : components_) out.push_back(id); std::sort(out.begin(), out.end()); return out; }
-std::vector<const HouseComponent *> HouseComponentLibrary::byCategory(const std::string &category, const std::string &style) const {
-    std::vector<const HouseComponent *> out;
-    for (const auto &[_, c] : components_) if (c.category == category && (style.empty() || std::find(c.tags.begin(), c.tags.end(), style) != c.tags.end())) out.push_back(&c);
-    if (out.empty() && !style.empty()) return byCategory(category, {});
-    std::sort(out.begin(), out.end(), [](auto *a, auto *b) { return a->id < b->id; });
-    return out;
+
+std::vector<std::string> HouseComponentLibrary::ids() const {
+    std::vector<std::string> result;
+    result.reserve(components_.size());
+    for (const auto &[id, _] : components_) result.push_back(id);
+    std::sort(result.begin(), result.end());
+    return result;
+}
+
+std::vector<std::reference_wrapper<const HouseComponent>> HouseComponentLibrary::byCategory(
+    std::string_view category, std::string_view style) const {
+    std::vector<std::reference_wrapper<const HouseComponent>> result;
+    for (const auto &[_, component] : components_) {
+        if (component.category == category &&
+            (style.empty() || std::find(component.tags.begin(), component.tags.end(), style) != component.tags.end()))
+            result.push_back(std::cref(component));
+    }
+    if (result.empty() && !style.empty()) return byCategory(category, {});
+    std::sort(result.begin(), result.end(),
+              [](const auto &left, const auto &right) { return left.get().id < right.get().id; });
+    return result;
 }
 
 }  // namespace eve::housegen

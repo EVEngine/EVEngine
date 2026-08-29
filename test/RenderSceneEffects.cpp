@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <assimp/matrix4x4.h>
@@ -14,19 +15,36 @@
 #include <vector>
 
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "medialoader/model/ModelLoader.h"
 #include "window/Window.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::graphics;
 
@@ -34,18 +52,6 @@ namespace {
 
 float luma(const Color &c) { return 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b; }
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 400, int h = 300) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 void resetScene3D() {
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {

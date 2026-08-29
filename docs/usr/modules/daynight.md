@@ -33,6 +33,10 @@ daynight.update(dt, gfx);
 camera.setAmbient(daynight.getAmbientR(),
                   daynight.getAmbientG(),
                   daynight.getAmbientB());
+
+// 用同一套太阳方向和大气衰减颜色驱动体积云，日落霞光会与天空一致。
+cloud.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(), daynight.getSunDirZ());
+cloud.setCloudLightColor(daynight.getSunR(), daynight.getSunG(), daynight.getSunB());
 gfx.render3D();
 ```
 
@@ -50,6 +54,10 @@ gfx.render3D();
 | `getSunElevation()` / `getSunAzimuth()` | 太阳高度角 / 方位角（度） |
 | `getSunDirX/Y/Z()` | 指向太阳的世界方向（单位向量） |
 | `getSunIntensity()` | 太阳能量 `[0,1]`，低于地平线为 0 |
+| `setTurbidity(v)` / `getTurbidity()` | 大气浑浊度 `[1.5,10]`；越高，地平线雾霾与暖色霞光越强 |
+| `setMieStrength(v)` / `getMieStrength()` | 米氏气溶胶强度 `[0,4]`，控制太阳周围光晕与地平线泛白 |
+| `setSkyExposure(v)` / `getSkyExposure()` | 天空写入 RGBA8 cubemap 前的曝光 `[0.05,8]` |
+| `applyAtmosphere(volumetric)` | 将当前太阳方向、直射光、天空色和天气影响统一写入 `Volumetric` fog/cloud 对象，避免脚本分别维护不一致参数 |
 
 太阳高度角在正午达到约 `70°`，方位角在一天内转动 360°。
 
@@ -58,10 +66,16 @@ gfx.render3D();
 | API | 说明 |
 |-----|------|
 | `setSkyboxEnabled(b)` / `isSkyboxEnabled()` | 开关程序化天空盒（IBL 环境光） |
+| `setWeatherInfluence(cloudiness, flash)` | 注入天气影响：云量 `[0,1]` 压低天空、日光与星光，闪电亮度 `[0,1]` 短暂照亮环境 |
+| `getWeatherCloudiness()` / `getWeatherFlash()` | 读取当前云量和闪电环境光影响 |
 | `getSkyR/G/B()` | 地平线处天空基调色（用于清屏背景） |
 | `getAmbientR/G/B()` / `getAmbientBrightness()` | 建议的相机环境光 |
 
-天空盒仅在太阳角变化到新“桶”时才重新生成，避免逐帧 GPU 分配。
+天空使用波长相关的瑞利散射、近似米氏散射、太阳路径消光和多散射底色生成，
+因此低太阳高度会自然产生暖色太阳、地平线霞光和更宽的气溶胶光晕。天空盒为
+每面 128×128；仅在太阳角变化到新“桶”或大气参数改变时重新生成，避免逐帧
+GPU 分配。当前图形后端的环境贴图格式仍为 RGBA8，模块使用 ACES 拟合曲线映射
+物理辐亮度；后端升级至浮点环境贴图后可移除此中间映射。
 
 ## 夜间光照系统
 
@@ -79,8 +93,8 @@ gfx.render3D();
 
 - **太阳轨道**：由时钟推导高度角 / 方位角，再换算为世界方向驱动方向光，
   高度角低时太阳能量平滑衰减至 0。
-- **程序化天空盒**：每张面按像素计算“天顶蓝 → 地平线浅色”渐变，叠加太阳
-  光盘与宽泛辉光，夜间再撒上确定性散列的星光；随太阳角分桶重新生成并写入
-  IBL 环境光，达到“天空随太阳转动”的效果。
+- **程序化天空盒**：每张面计算波长相关的大气单次散射、太阳消光及近似多次
+  散射，叠加具有真实角尺度的太阳盘，夜间再撒上确定性星光；同一天空写入 IBL，
+  使可见天空与材质反射保持一致。
 - **夜间光源**：月亮为方向光，篝火为暖色点光，萤火虫为绕锚点正弦漂移的一
   组点光；全部按命名开关启停。

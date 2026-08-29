@@ -1,8 +1,10 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "filesystem/Filesystem.h"
 #include "i18n/I18n.h"
 
+#include <cstring>
 #include <string>
 
 using namespace eve::i18n;
@@ -178,4 +180,64 @@ TEST_CASE("i18n.languageEnumeration") {
     CHECK_EQ(i18n->getLanguageAt(1), std::string("ja"));
     CHECK_EQ(i18n->getLanguageAt(2), std::string("zh"));
     CHECK_EQ(i18n->getLanguageAt(3), std::string(""));
+}
+
+TEST_CASE("i18n.pluralMoreLanguages") {
+    I18n *i18n = I18n::create();
+    i18n->clear();
+    i18n->loadFromJson("fr", R"({"m": { "one": "un", "other": "plusieurs" }})");
+    i18n->loadFromJson("pl",
+                       R"({"m": { "one": "jeden", "few": "kilka", "many": "duzo" }})");
+    i18n->loadFromJson("cs", R"({"m": { "one": "jedna", "few": "par", "other": "hodne" }})");
+    i18n->loadFromJson("zh-CN", R"({"m": { "one": "yi", "other": "duo" }})");
+
+    i18n->setLanguage("fr");
+    CHECK_EQ(i18n->getPlural("m", 0), std::string("un"));
+    CHECK_EQ(i18n->getPlural("m", 2), std::string("plusieurs"));
+
+    i18n->setLanguage("pl");
+    CHECK_EQ(i18n->getPlural("m", 1), std::string("jeden"));
+    CHECK_EQ(i18n->getPlural("m", 3), std::string("kilka"));
+    CHECK_EQ(i18n->getPlural("m", 15), std::string("duzo"));
+
+    i18n->setLanguage("cs");
+    CHECK_EQ(i18n->getPlural("m", 1), std::string("jedna"));
+    CHECK_EQ(i18n->getPlural("m", 3), std::string("par"));
+    CHECK_EQ(i18n->getPlural("m", 7), std::string("hodne"));
+
+    i18n->setLanguage("zh-CN");
+    CHECK_EQ(i18n->getPlural("m", 1), std::string("duo"));
+}
+
+TEST_CASE("i18n.autoReloadAndUpdateNoop") {
+    I18n *i18n = I18n::create();
+    i18n->clear();
+    CHECK(i18n->isAutoReload());  // module default is on
+    i18n->setAutoReload(false);
+    CHECK(!i18n->isAutoReload());
+    i18n->setAutoReload(true);
+    CHECK(i18n->isAutoReload());
+    i18n->loadFromJson("en", R"({"a": "A"})");
+    CHECK_EQ(i18n->update(0.0f), 0);  // JSON-loaded locales have no file path to watch
+    i18n->setAutoReload(false);
+    CHECK(!i18n->isAutoReload());
+}
+
+TEST_CASE("i18n.loadFromFileRoundTripAndMissing") {
+    I18n *i18n = I18n::create();
+    i18n->clear();
+    CHECK(!i18n->loadFromFile("en", ""));
+    CHECK(!i18n->loadFromFile("en", "nope.json"));
+    CHECK(!i18n->loadFromFile("", "nope.json"));
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_i18n", true));
+    REQUIRE(fs->setupWriteDirectory());
+    const char *json = R"({"hello": "world", "n": 42})";
+    fs->write("i18n_locale.json", json, std::strlen(json));
+
+    CHECK(i18n->loadFromFile("en", "i18n_locale.json"));
+    CHECK(i18n->hasLanguage("en"));
+    CHECK_EQ(i18n->get("hello"), std::string("world"));
+    CHECK_EQ(i18n->get("n"), std::string("42"));
 }

@@ -33,6 +33,41 @@ void SpriteClip::addFrameByName(SpriteSheet *sheet, const std::string &frameName
     addFrame(idx, duration);
 }
 
+void SpriteClip::addRange(int firstSheetFrame, int lastSheetFrame, float fps) {
+    if (firstSheetFrame < 0 || lastSheetFrame < firstSheetFrame)
+        throw Exception("SpriteClip.addRange: expected 0 <= first <= last");
+    if (fps <= 0.f) throw Exception("SpriteClip.addRange: fps must be > 0");
+    const float duration = 1.f / fps;
+    for (int frame = firstSheetFrame; frame <= lastSheetFrame; ++frame)
+        addFrame(frame, duration);
+}
+
+void SpriteClip::setFPS(float fps) {
+    if (fps <= 0.f) throw Exception("SpriteClip.setFPS: fps must be > 0");
+    const float duration = 1.f / fps;
+    for (Entry &entry : frames_) entry.duration = duration;
+}
+
+float SpriteClip::getFPS() const {
+    if (frames_.empty()) return 0.f;
+    const float duration = frames_.front().duration;
+    if (duration <= 0.f) return 0.f;
+    for (const Entry &entry : frames_) {
+        if (std::fabs(entry.duration - duration) > 1e-6f) return 0.f;
+    }
+    return 1.f / duration;
+}
+
+void SpriteClip::addEvent(int clipFrame, const std::string &name) {
+    checkIndex(clipFrame);
+    events_[clipFrame] = name;
+}
+
+std::string SpriteClip::getEvent(int clipFrame) const {
+    auto it = events_.find(clipFrame);
+    return it == events_.end() ? std::string() : it->second;
+}
+
 void SpriteClip::clear() { frames_.clear(); }
 
 int SpriteClip::getSheetFrame(int index) const {

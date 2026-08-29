@@ -6,11 +6,12 @@
 #include <Poco/DirectoryWatcher.h>
 #endif
 
+#include <chrono>
+#include <deque>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 namespace eve::filesystem {
 
@@ -54,6 +55,10 @@ public:
 
 private:
     struct DirWatch;
+    struct PendingEvent {
+        Event                                 event;
+        std::chrono::steady_clock::time_point readyAt;
+    };
 
 #ifndef EVENGINE_WEBGPU
     void onAdded(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
@@ -61,12 +66,16 @@ private:
     void onModified(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
     void onMovedFrom(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
     void onMovedTo(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
+
+    /** @brief Unsubscribe a watcher's Poco delegates; must be called without holding mu_. */
+    void unsubscribeDelegates(DirWatch *dw);
 #endif
 
     void handlePocoEvent(const std::string &kind, const std::string &itemPath);
+    void enqueue(Event event);
 
     mutable std::mutex mu_;
-    std::vector<Event> queue_;
+    std::deque<PendingEvent> queue_;
     std::unordered_map<std::string, std::unique_ptr<DirWatch>> byDir_;
     std::unordered_map<std::string, std::string> reportToDir_;
 };

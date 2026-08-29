@@ -4,16 +4,16 @@
 // into a stone / stone wall using Blender's Python package (bpy), then reloads
 // the produced .glb back into EVEngine with model3d to prove the pipeline.
 
-if (!("mc" in getroottable())) mc <- null;
-if (!("md" in getroottable())) md <- null;
-if (!("seed" in getroottable())) seed <- 1847;
-if (!("converter" in getroottable())) converter <- "stone";
-if (!("converterNames" in getroottable())) converterNames <- [];
-if (!("converterIndex" in getroottable())) converterIndex <- 0;
-if (!("status" in getroottable())) status <- "loading";
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("autoRun" in getroottable())) autoRun <- true;
-if (!("ran" in getroottable())) ran <- false;
+persist mc = null
+persist md = null
+persist seed = 1847
+persist converter = "stone"
+persist converterNames = []
+persist converterIndex = 0
+persist status = "loading"
+persist uiReady = false
+persist autoRun = true
+persist ran = false
 
 function repoRoot() { return "../.."; }
 function converterDir() { return repoRoot() + "/modelconverter/converters"; }

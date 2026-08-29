@@ -2,7 +2,6 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
-#include "graphics/Graphics.h"
 #include "window/sdl/Window.h"
 
 namespace eve {
@@ -30,7 +29,6 @@ void Window::expose(ssq::Class& cls) {
     cls.addFunc("setWindowSettings", &Window::setWindowSettings);
     cls.addFunc("getWindowSettings", &Window::getWindowSettings);
     cls.addFunc("close", &Window::close);
-    cls.addFunc("setGraphics", &Window::setGraphics);
 }
 
 }  // namespace window

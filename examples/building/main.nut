@@ -12,22 +12,22 @@
 //        或 make building
 // ============================================================================
 
-if (!("bld" in getroottable())) bld <- null;
-if (!("world" in getroottable())) world <- null;
-if (!("ghost" in getroottable())) ghost <- null;
-if (!("palette" in getroottable())) palette <- [];
-if (!("paletteIndex" in getroottable())) paletteIndex <- 0;
-if (!("gold" in getroottable())) gold <- 0;
-if (!("wood" in getroottable())) wood <- 0;
-if (!("logLines" in getroottable())) logLines <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("prevMouse" in getroottable())) prevMouse <- { left = false, right = false };
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
-if (!("mapOriginX" in getroottable())) mapOriginX <- 24.0;
-if (!("mapOriginY" in getroottable())) mapOriginY <- 88.0;
-if (!("cellPx" in getroottable())) cellPx <- 28.0;
-if (!("gridW" in getroottable())) gridW <- 24;
-if (!("gridH" in getroottable())) gridH <- 18;
+persist bld = null
+persist world = null
+persist ghost = null
+persist palette = []
+persist paletteIndex = 0
+persist gold = 0
+persist wood = 0
+persist logLines = []
+persist prevKeys = {}
+persist prevMouse = { left = false, right = false }
+persist uiBuilt = false
+persist mapOriginX = 24.0
+persist mapOriginY = 88.0
+persist cellPx = 28.0
+persist gridW = 24
+persist gridH = 18
 
 // 地形语义：1=陆地 2=水域
 TERRAIN_LAND <- 1;
@@ -40,21 +40,18 @@ function pushLog(text) {
 }
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
+// 鼠标按键编号：1 = 左键，2 = 右键（与 engine mouse::isDown 一致）。
 function mousePressed(button) {
     local down = mouse.isDown(button);
     local was = false;
-    if (button == 0)
+    if (button == 1)
         was = prevMouse.left;
     else if (button == 2)
         was = prevMouse.right;
-    if (button == 0)
+    if (button == 1)
         prevMouse.left = down;
     else if (button == 2)
         prevMouse.right = down;
@@ -320,7 +317,7 @@ eve_update = function(dt) {
 
     updateGhostFromMouse();
 
-    if (mousePressed(0))
+    if (mousePressed(1))
         tryPlace();
     if (mousePressed(2))
         tryRemove();

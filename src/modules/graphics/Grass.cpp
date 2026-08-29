@@ -9,6 +9,7 @@
 #include "graphics/TextureSampler.h"
 #include "graphics/shaders/mesh3d_grass_frag_spv.inc"
 #include "graphics/shaders/mesh3d_grass_vert_spv.inc"
+#include "graphics/shaders/GrassWgsl.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 
@@ -345,9 +346,14 @@ void setFrameDuration(Shader *shader, float seconds) {
 
 Shader *createShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("grass::createShader: null graphics");
-    auto vert = copySpv(mesh3d_grass_vert_spv, mesh3d_grass_vert_spv_count);
-    auto frag = copySpv(mesh3d_grass_frag_spv, mesh3d_grass_frag_spv_count);
-    Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
+    Shader *sh = nullptr;
+    if (gfx->getBackendName() == "webgpu") {
+        sh = gfx->newMeshShaderFromWgsl(shaders::kGrassVertWgsl, shaders::kGrassFragWgsl);
+    } else {
+        auto vert = copySpv(mesh3d_grass_vert_spv, mesh3d_grass_vert_spv_count);
+        auto frag = copySpv(mesh3d_grass_frag_spv, mesh3d_grass_frag_spv_count);
+        sh = gfx->newMeshShaderFromSpv(vert, frag);
+    }
     if (!sh || !sh->gpuHandle)
         throw eve::Exception("grass::createShader: failed to create grass shader");
     bindDefaults(sh);
@@ -413,9 +419,10 @@ void maskToTintable(std::vector<uint8_t> &rgba) {
 bool loadSwayMaskPng(const std::string &path, std::vector<uint8_t> &rgba, int &w, int &h) {
     std::vector<char> raw;
     if (!readWholeFile(path, raw)) return false;
-    eve::image::Image::create();
+    eve::image::Image *image = eve::image::Image::create();
+    if (!image) return false;
     eve::data::ByteData bytes(raw.data(), raw.size());
-    std::unique_ptr<eve::image::ImageData> img(eve::image::Image::create()->newImageData(&bytes));
+    std::unique_ptr<eve::image::ImageData> img(image->newImageData(&bytes));
     if (!img) return false;
     w = img->getWidth();
     h = img->getHeight();

@@ -46,7 +46,8 @@ void basisFor(V3 axis, V3 &right, V3 &forward) {
 
 // Closed ellipsoid. The per-vertex normal is the analytic ellipsoid normal so the
 // bush shades smoothly under directional light. UVs fall inside [uMin, uMax].
-void addEllipsoidBlob(MeshBuild &out, V3 c, V3 r, int rings, int sides, float uMin, float uMax) {
+void addEllipsoidBlob(MeshBuild &out, V3 c, V3 r, int rings, int sides, float uMin, float uMax,
+                      float phase = 0.f) {
     const uint32_t base = uint32_t(out.getVertexCount());
     for (int y = 0; y <= rings; ++y) {
         const float v   = float(y) / float(rings);
@@ -54,8 +55,14 @@ void addEllipsoidBlob(MeshBuild &out, V3 c, V3 r, int rings, int sides, float uM
         for (int x = 0; x < sides; ++x) {
             const float u     = float(x) / float(sides);
             const float theta = u * 2.f * kPi;
-            const V3    n     = {std::sin(phi) * std::cos(theta), std::cos(phi), std::sin(phi) * std::sin(theta)};
-            const V3    p     = {c.x + n.x * r.x, c.y + n.y * r.y, c.z + n.z * r.z};
+            const V3 n = {std::sin(phi) * std::cos(theta), std::cos(phi), std::sin(phi) * std::sin(theta)};
+            // Two low-frequency harmonics break the unmistakable primitive-sphere
+            // silhouette without producing noisy, faceted normals. Keep both poles
+            // fixed so neighbouring lobes still close cleanly.
+            const float equator = std::sin(phi);
+            const float swell = 1.f + equator * (0.075f * std::sin(theta * 3.f + phase) +
+                                                 0.035f * std::sin(theta * 5.f - phase * 0.7f));
+            const V3 p = {c.x + n.x * r.x * swell, c.y + n.y * r.y, c.z + n.z * r.z * swell};
             // Ellipsoid normal = N/R divided by its length (finite since radii > 0).
             const V3 normal = norm({n.x / r.x, n.y / r.y, n.z / r.z});
             out.addVertex(p.x, p.y, p.z, normal.x, normal.y, normal.z, uMin + u * (uMax - uMin), v);
@@ -101,25 +108,36 @@ void addTwig(MeshBuild &out, V3 a, V3 b, float r0, float r1, int sides, float uM
     }
 }
 
-// A two-triangle leaf card. Facing the given direction with a random twist.
+// A rounded, slightly cupped leaf. The eight-point outline avoids both the
+// rectangular-card look and the long triangular spikes of a diamond leaf.
 void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float size, float uMin, float uMax) {
     V3 right, up;
     basisFor(norm(direction), right, up);
     const float twist = randomRange(rng, 0.f, 2.f * kPi);
     right             = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
     up                   = norm(cross(norm(direction), right));
-    const V3       r = mul(right, size * 0.5f), u = mul(up, size);
-    const V3       normal    = norm(cross(right, up));
-    const uint32_t base      = uint32_t(out.getVertexCount());
-    const V3       points[4] = {sub(sub(c, r), u), add(sub(c, u), r), add(add(c, r), u), add(sub(c, r), u)};
-    const float    uv[4][2]  = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
-    for (int i = 0; i < 4; ++i)
-        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z,
-                      uMin + uv[i][0] * (uMax - uMin), uv[i][1]);
-    out.addTriangle(base, base + 1, base + 2);
-    out.addTriangle(base, base + 2, base + 3);
-    out.addTriangle(base + 2, base + 1, base);
-    out.addTriangle(base + 3, base + 2, base);
+    const V3 normal = norm(cross(right, up));
+    const float halfWidth = size * randomRange(rng, 0.34f, 0.44f);
+    const float halfLength = size * randomRange(rng, 0.58f, 0.72f);
+    const uint32_t base = uint32_t(out.getVertexCount());
+    const V3 center = add(c, mul(normal, size * 0.06f));
+    out.addVertex(center.x, center.y, center.z, normal.x, normal.y, normal.z,
+                  (uMin + uMax) * 0.5f, 0.5f);
+    constexpr int outline = 8;
+    for (int i = 0; i < outline; ++i) {
+        const float angle = -0.5f * kPi + float(i) * 2.f * kPi / float(outline);
+        const float x = std::cos(angle) * halfWidth;
+        const float y = std::sin(angle) * halfLength;
+        const V3 point = add(c, add(mul(right, x), mul(up, y)));
+        out.addVertex(point.x, point.y, point.z, normal.x, normal.y, normal.z,
+                      uMin + (0.5f + x / (2.f * halfWidth)) * (uMax - uMin), 0.5f + y / (2.f * halfLength));
+    }
+    for (int i = 0; i < outline; ++i) {
+        const uint32_t a = base + 1u + uint32_t(i);
+        const uint32_t b = base + 1u + uint32_t((i + 1) % outline);
+        out.addTriangle(base, a, b);
+        out.addTriangle(base, b, a);
+    }
 }
 
 }  // namespace
@@ -146,55 +164,73 @@ bool generateBushMesh(const Params &params, MeshBuild &out, std::string &error) 
     const float leafSize = std::max(0.02f, params.getFloat("leafSize", height * 0.16f));
     const int   twigs    = std::clamp(params.getInt("twigs", 4), 0, 16);
     const float twigLen  = std::max(0.05f, params.getFloat("twigLength", height * 0.30f));
+    const float twigScale = std::clamp(twigLen / (height * 0.30f), 0.35f, 1.65f);
     const bool  sphere   = style == "sphere";
 
     std::mt19937 rng(params.getSeed());
     out.clear();
 
+    // Build the woody skeleton first. Each stem bends outward and forks once;
+    // foliage is then placed around these endpoints instead of being scattered
+    // independently. The clear lower third keeps the branch structure readable.
+    std::vector<V3> crownAnchors;
+    const float branchR = width * 0.022f;
+    for (int i = 0; i < twigs; ++i) {
+        const float angle = float(i) * 2.399963f + randomRange(rng, -0.12f, 0.12f);
+        const V3 root{std::cos(angle) * halfW * 0.05f, 0.02f, std::sin(angle) * halfW * 0.05f};
+        const V3 joint{std::cos(angle) * halfW * randomRange(rng, 0.22f, 0.34f) * twigScale,
+                       height * randomRange(rng, 0.30f, 0.43f) * twigScale,
+                       std::sin(angle) * halfW * randomRange(rng, 0.22f, 0.34f) * twigScale};
+        const float reach = halfW * randomRange(rng, 0.58f, 0.76f) * twigScale;
+        const V3 tip{std::cos(angle) * reach, height * randomRange(rng, 0.58f, 0.78f) * twigScale,
+                     std::sin(angle) * reach};
+        const float forkAngle = angle + (i & 1 ? 0.38f : -0.38f);
+        const V3 forkTip{joint.x + std::cos(forkAngle) * halfW * randomRange(rng, 0.28f, 0.40f) * twigScale,
+                         joint.y + height * randomRange(rng, 0.22f, 0.33f) * twigScale,
+                         joint.z + std::sin(forkAngle) * halfW * randomRange(rng, 0.28f, 0.40f) * twigScale};
+        addTwig(out, root, joint, branchR * 1.35f, branchR, std::max(5, sides - 2), kBarkUMin, kBarkUMax);
+        addTwig(out, joint, tip, branchR, branchR * 0.38f, std::max(4, sides - 3), kBarkUMin, kBarkUMax);
+        addTwig(out, joint, forkTip, branchR * 0.78f, branchR * 0.28f, std::max(4, sides - 3), kBarkUMin,
+                kBarkUMax);
+        crownAnchors.push_back(tip);
+        crownAnchors.push_back(forkTip);
+    }
+
     // Cluster squashed lobes under a dome silhouette so the bush reads as one
     // rounded mound rather than a set of disconnected balls.
     for (int i = 0; i < blobs; ++i) {
-        const float radial = halfW * std::sqrt(random01(rng));
+        const float radial = halfW * 0.58f * std::sqrt(random01(rng));
         const float theta  = randomRange(rng, 0.f, 2.f * kPi);
         const float heightFactor = 1.f - (radial / halfW) * (radial / halfW);
         const float cy = height * (sphere ? 0.5f + 0.20f * random01(rng)
-                                          : heightFactor * (0.45f + 0.45f * random01(rng)));
-        const float rx = halfW * 0.30f * randomRange(rng, 0.70f, 1.25f);
-        const float ry = height * (sphere ? 0.24f : 0.28f) * randomRange(rng, 0.60f, 1.05f);
+                                          : 0.18f + heightFactor * (0.34f + 0.34f * random01(rng)));
+        const float rx = halfW * 0.29f * randomRange(rng, 0.82f, 1.16f);
+        const float ry = height * (sphere ? 0.21f : 0.22f) * randomRange(rng, 0.65f, 1.02f);
         const float rz = rx * randomRange(rng, 0.80f, 1.20f);
-        const V3   center{std::cos(theta) * radial, cy, std::sin(theta) * radial};
-        addEllipsoidBlob(out, center, {rx, ry, rz}, rings, sides, kFoliageUMin, kFoliageUMax);
+        V3 center{std::cos(theta) * radial, cy, std::sin(theta) * radial};
+        if (!crownAnchors.empty() && i < int(crownAnchors.size())) {
+            center = crownAnchors[size_t(i)];
+            center.x += randomRange(rng, -0.10f, 0.10f) * halfW;
+            center.y += randomRange(rng, -0.04f, 0.08f) * height;
+            center.z += randomRange(rng, -0.10f, 0.10f) * halfW;
+        }
+        addEllipsoidBlob(out, center, {rx, ry, rz}, rings, sides, kFoliageUMin, kFoliageUMax,
+                         randomRange(rng, 0.f, 2.f * kPi));
     }
     // Always cap the top so the dome has no gap at its peak.
-    const float topRx = halfW * 0.22f;
+    const float topRx = halfW * 0.18f;
     addEllipsoidBlob(out, {0.f, height * (sphere ? 0.62f : 0.72f), 0.f}, {topRx, height * 0.20f, topRx},
-                     rings, sides, kFoliageUMin, kFoliageUMax);
-
-    // Emergent woody twigs plus a small foliage tuft on each tip.
-    const float twigR0 = width * 0.015f;
-    for (int i = 0; i < twigs; ++i) {
-        const float angle = float(i) * 2.399963f;
-        const float radial = halfW * randomRange(rng, 0.15f, 0.60f);
-        const V3   base{std::cos(angle) * radial, height * randomRange(rng, 0.10f, 0.45f),
-                        std::sin(angle) * radial};
-        V3 dir = norm(add(V3{0.f, 1.f, 0.f}, {randomRange(rng, -0.35f, 0.35f), 0.f, randomRange(rng, -0.35f, 0.35f)}));
-        const float len = twigLen * randomRange(rng, 0.60f, 1.10f);
-        const V3   tip = add(base, mul(dir, len));
-        addTwig(out, base, tip, twigR0, twigR0 * 0.35f, std::max(3, sides - 3), kBarkUMin, kBarkUMax);
-        if (leafMode == "cards" || leafMode == "mixed") {
-            addEllipsoidBlob(out, tip, {leafSize * 0.8f, leafSize * 0.9f, leafSize * 0.8f}, 2, std::max(4, sides - 2),
-                             kFoliageUMin, kFoliageUMax);
-        }
-    }
+                     rings, sides, kFoliageUMin, kFoliageUMax, randomRange(rng, 0.f, 2.f * kPi));
 
     // Optional loose leaf cards across the canopy for a fuller look.
     if (leafMode == "cards" || leafMode == "mixed") {
-        const int cards = std::max(1, int(std::round(float(blobs) * 3.5f * density)));
+        const int cards = std::max(1, int(std::round(float(blobs) * 8.f * density)));
         for (int i = 0; i < cards; ++i) {
-            const float radial = halfW * std::sqrt(random01(rng));
+            const float radial = halfW * 0.86f * std::sqrt(random01(rng));
             const float theta  = randomRange(rng, 0.f, 2.f * kPi);
             const float heightFactor = 1.f - (radial / halfW) * (radial / halfW);
-            const V3 c{std::cos(theta) * radial, height * heightFactor * randomRange(rng, 0.45f, 0.90f),
+            const V3 c{std::cos(theta) * radial,
+                       height * (0.20f + heightFactor * randomRange(rng, 0.38f, 0.72f)),
                        std::sin(theta) * radial};
             const V3 face = norm({randomRange(rng, -1.f, 1.f), randomRange(rng, 0.2f, 0.9f),
                                   randomRange(rng, -1.f, 1.f)});

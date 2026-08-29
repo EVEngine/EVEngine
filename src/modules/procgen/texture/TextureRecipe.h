@@ -1,37 +1,64 @@
 #pragma once
 
 #include "procgen/Params.h"
+#include "procgen/ParamSchema.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 
-#include "image/ImageData.h"
-
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+namespace eve::image {
+class ImageData;
+}
+
 namespace eve::procgen {
 
-/** @brief Recipe returns a new RGBA8 ImageData (caller owns), or nullptr on failure. */
-using TextureRecipeFn =
-    std::function<image::ImageData *(const Params &params, std::string &error)>;
+/** @brief Recipe returns a newly owned RGBA8 image, or null on failure. */
+using TextureRecipeFn = std::function<std::unique_ptr<image::ImageData>(const Params &params, std::string &error)>;
 
 class TextureRecipeRegistry {
 public:
+    /** @brief Access the process-wide texture recipe registry. @return Registry instance. */
     static TextureRecipeRegistry &instance();
 
+    /** @brief Register a recipe without metadata. @param id Stable recipe id. @param fn Generator callback. */
     void registerRecipe(const std::string &id, TextureRecipeFn fn);
+    /** @brief Register a texture recipe with reusable metadata. @param descriptor Recipe schema. @param fn Generator callback. */
+    void registerRecipe(RecipeDescriptor descriptor, TextureRecipeFn fn);
+    /** @brief Test whether a recipe exists. @param id Recipe id. @return True when registered. */
     bool has(const std::string &id) const;
-    image::ImageData *generate(const std::string &id, const Params &params, std::string &error) const;
+    /**
+     * @brief Generates an image and transfers its unique ownership to the caller.
+     * @param id Stable recipe id.
+     * @param params Validated recipe parameters.
+     * @param error Receives a human-readable failure description when generation fails.
+     * @return The newly owned image, or null when the recipe is unknown or generation fails.
+     * @ownership The returned image is owned by the caller.
+     */
+    [[nodiscard]] std::unique_ptr<image::ImageData> generate(const std::string &id, const Params &params,
+                                                             std::string &error) const;
+    /** @brief List registered recipe ids. @return Sorted ids. */
     std::vector<std::string> list() const;
+    /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
+    const RecipeDescriptor *descriptor(const std::string &id) const;
+    /** @brief Fill missing values from metadata. @param id Recipe id. @param params Values to update. @return False for an unknown recipe. */
+    bool applyDefaults(const std::string &id, Params &params) const;
 
+    /** @brief Register engine-provided recipes once. */
     void registerBuiltins();
 
 private:
+    struct Entry {
+        TextureRecipeFn fn;
+        RecipeDescriptor descriptor;
+    };
     TextureRecipeRegistry() = default;
-    std::unordered_map<std::string, TextureRecipeFn> recipes_;
+    std::unordered_map<std::string, Entry> recipes_;
     bool builtinsRegistered_ = false;
 };
 
@@ -57,8 +84,12 @@ void fillHeightField(const TextureGenContext &ctx,
                      const std::function<float(float, float, const NoiseField &)> &fn,
                      std::vector<float> &height);
 
-image::ImageData *heightToNormalImage(const std::vector<float> &height, int w, int h,
-                                      float strength, bool seamless);
+/**
+ * @brief Builds a normal-map image and transfers its unique ownership to the caller.
+ * @return The newly owned image, or null only when allocation fails.
+ */
+[[nodiscard]] std::unique_ptr<image::ImageData> heightToNormalImage(const std::vector<float> &height, int w, int h,
+                                                                    float strength, bool seamless);
 
 /**
  * @brief PBR surface defaults for a generated material. Every map in a PBR set is
@@ -89,5 +120,8 @@ struct TextureRecipeDef {
 
 /** @brief All built-in texture definitions (albedo + PBR). Populated lazily. */
 const std::vector<TextureRecipeDef> &builtinTextureDefs();
+
+/** @brief Build editable metadata for a texture definition. @param definition Definition to describe. @return Recipe metadata. */
+RecipeDescriptor makeTextureRecipeDescriptor(const TextureRecipeDef &definition);
 
 }  // namespace eve::procgen

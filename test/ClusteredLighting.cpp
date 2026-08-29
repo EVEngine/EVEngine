@@ -1,34 +1,44 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
 #include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "window/Window.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::graphics;
 
 static float luma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
 
-static void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320, int h = 240) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 static void resetScene3D() {
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {
@@ -91,6 +101,52 @@ TEST_CASE("ClusteredLighting.buildProducesNonEmptyTables") {
     uint32_t total = 0;
     for (const auto &e : upload.clusterTable) total += e.count;
     CHECK_GT(total, 0u);
+}
+
+TEST_CASE("ClusteredLighting.reportsFrameAndClusterBudgetOverflow") {
+    std::vector<ClusteredLightGpu> points;
+    points.reserve(300);
+    for (int i = 0; i < 300; ++i) {
+        ClusteredLightGpu light{};
+        // Deliberately overlap every candidate so at least one cluster exceeds 32 lights.
+        light.posRadius = glm::vec4(0.f, 0.f, 0.f, 4.f);
+        light.color = glm::vec4(1.f + float(i) * 0.001f, 1.f, 1.f, 1.f);
+        points.push_back(light);
+    }
+    const glm::mat4 view =
+        glm::lookAtRH(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    const auto upload = buildClusteredLighting(points, {}, view, 0.1f, 100.f, 1920, 1080, 1.f,
+                                                glm::vec4(0.f));
+    REQUIRE(upload.active);
+    CHECK_EQ(upload.lights.size(), size_t(ClusteredLightConfig::kMaxLights));
+    CHECK_EQ(upload.truncatedLightCount, 44u);
+    CHECK_GT(upload.overflowClusterCount, 0u);
+    CHECK_GT(upload.droppedLightReferenceCount, 0u);
+    for (const auto &cluster : upload.clusterTable)
+        CHECK_LE(cluster.count, uint32_t(ClusteredLightConfig::kMaxLightsPerCluster));
+}
+
+TEST_CASE("ClusteredLighting.acceptsDistributed256LightBudget") {
+    std::vector<ClusteredLightGpu> points;
+    points.reserve(ClusteredLightConfig::kMaxLights);
+    for (int i = 0; i < ClusteredLightConfig::kMaxLights; ++i) {
+        ClusteredLightGpu light{};
+        const int column = i % 16;
+        const int row = (i / 16) % 4;
+        const int depth = i / 64;
+        light.posRadius = glm::vec4((float(column) - 7.5f) * 1.5f,
+                                    (float(row) - 1.5f) * 1.5f,
+                                    -4.f - float(depth) * 12.f, 0.45f);
+        light.color = glm::vec4(1.f);
+        points.push_back(light);
+    }
+    const auto upload = buildClusteredLighting(points, {}, glm::mat4(1.f), 0.1f, 100.f, 1920,
+                                                1080, 1.f, glm::vec4(0.f));
+    REQUIRE(upload.active);
+    CHECK_EQ(upload.lights.size(), size_t(ClusteredLightConfig::kMaxLights));
+    CHECK_EQ(upload.truncatedLightCount, 0u);
+    CHECK_EQ(upload.overflowClusterCount, 0u);
+    CHECK_EQ(upload.droppedLightReferenceCount, 0u);
 }
 
 TEST_CASE("ClusteredLighting.manyPointLightsBrightenCenter") {

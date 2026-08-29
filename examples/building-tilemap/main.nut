@@ -11,18 +11,18 @@
 // 运行： make run/<platform>-debug GAME=examples/building-tilemap
 // ============================================================================
 
-if (!("bld" in getroottable())) bld <- null;
-if (!("mapMod" in getroottable())) mapMod <- null;
-if (!("layer" in getroottable())) layer <- null;
-if (!("world" in getroottable())) world <- null;
-if (!("session" in getroottable())) session <- null;
-if (!("fx" in getroottable())) fx <- null;
-if (!("palette" in getroottable())) palette <- [];
-if (!("paletteIndex" in getroottable())) paletteIndex <- 0;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("prevMouse" in getroottable())) prevMouse <- { left = false, right = false };
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
-if (!("layout" in getroottable())) layout <- "isometric";
+persist bld = null
+persist mapMod = null
+persist layer = null
+persist world = null
+persist session = null
+persist fx = null
+persist palette = []
+persist paletteIndex = 0
+persist prevKeys = {}
+persist prevMouse = { left = false, right = false }
+persist uiBuilt = false
+persist layout = "isometric"
 
 const MAP_W = 16;
 const MAP_H = 12;
@@ -32,19 +32,16 @@ const GID_LAND = 1;
 const GID_WATER = 2;
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
+// 鼠标按键编号：1 = 左键，2 = 右键（与 engine mouse::isDown 一致）。
 function mousePressed(button) {
     local down = mouse.isDown(button);
     local was = false;
-    if (button == 0) was = prevMouse.left;
+    if (button == 1) was = prevMouse.left;
     else if (button == 2) was = prevMouse.right;
-    if (button == 0) prevMouse.left = down;
+    if (button == 1) prevMouse.left = down;
     else if (button == 2) prevMouse.right = down;
     return down && !was;
 }
@@ -174,7 +171,7 @@ eve_update = function(dt) {
     local my = mouse.getY();
     session.updateFromWorld(world, mx, my);
 
-    if (mousePressed(0)) {
+    if (mousePressed(1)) {
         session.setMode("place");
         local id = session.execute();
         if (id <= 0)

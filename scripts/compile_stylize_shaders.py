@@ -18,6 +18,14 @@ FRAGS = [
     "pixel_post.frag",
     "ink_mesh.frag",
     "xray_mesh.frag",
+    # Ported effect / material shaders (Unity / Godot style).
+    "rim_mesh.frag",
+    "dissolve_mesh.frag",
+    "hologram_mesh.frag",
+    "snow_mesh.frag",
+    "vignette_post.frag",
+    "chromatic_post.frag",
+    "grain_post.frag",
 ]
 
 

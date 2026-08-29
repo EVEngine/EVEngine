@@ -1,0 +1,110 @@
+--- a/simplesquirrel/include/simplesquirrel/args.hpp
++++ b/simplesquirrel/include/simplesquirrel/args.hpp
+@@ -4,7 +4,9 @@
+ 
+ #include "exceptions.hpp"
+ #include <squirrel.h>
++#include <functional>
+ #include <iostream>
++#include <string>
+ #include <typeinfo>
+ #include <vector>
+ 
+@@ -16,6 +18,12 @@ namespace ssq {
+ 
+ #ifndef DOXYGEN_SHOULD_SKIP_THIS
+     namespace detail {
++        template <typename T>
++        inline size_t stableTypeHash() {
++            static const size_t value = std::hash<std::string>{}(typeid(T).name());
++            return value;
++        }
++
+         SSQ_API void addClassObj(HSQUIRRELVM vm, size_t hashCode, const HSQOBJECT& obj);
+         SSQ_API const HSQOBJECT& getClassObj(HSQUIRRELVM vm, size_t hashCode);
+ 
+@@ -50,7 +58,7 @@ namespace ssq {
+             if(type == OT_USERDATA) {
+                 sq_getuserdata(vm, index, &ptr, &typetag);
+ 
+-                if(reinterpret_cast<size_t>(typetag) != typeid(T).hash_code()) {
++                if(reinterpret_cast<size_t>(typetag) != stableTypeHash<T>()) {
+                     throw TypeException("bad cast", typeid(T).name(), "UNKNOWN");
+                 }
+ 
+@@ -61,7 +69,7 @@ namespace ssq {
+                 sq_getinstanceup(vm, index, &ptr, &typetag);
+                 sq_gettypetag(vm, index, &typetag);
+ 
+-                if(reinterpret_cast<size_t>(typetag) != typeid(T*).hash_code()) {
++                if(reinterpret_cast<size_t>(typetag) != stableTypeHash<T*>()) {
+                     throw TypeException("bad cast", typeid(T).name(), "UNKNOWN");
+                 }
+ 
+@@ -265,7 +273,7 @@ namespace ssq {
+ 
+         template<typename T>
+         inline void pushByCopy(HSQUIRRELVM vm, const T& value) {
+-            static const auto hashCode = typeid(T*).hash_code();
++            static const auto hashCode = stableTypeHash<T*>();
+             try {
+                 sq_pushobject(vm, getClassObj(vm, hashCode));
+                 sq_createinstance(vm, -1);
+@@ -279,7 +287,7 @@ namespace ssq {
+                 T** data = reinterpret_cast<T**>(sq_newuserdata(vm, sizeof(T*)));
+                 *data = new T(value);
+                 sq_setreleasehook(vm, -1, classPtrDestructor<T>);
+-                sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(typeid(T).hash_code()));
++                sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(stableTypeHash<T>()));
+             }
+         }
+ 
+@@ -436,7 +444,7 @@ namespace ssq {
+ 
+         template<typename T>
+         inline void pushByPtr(HSQUIRRELVM vm, T* value) {
+-            static const auto hashCode = typeid(T*).hash_code();
++            static const auto hashCode = stableTypeHash<T*>();
+             if (value == nullptr) {
+                 sq_pushnull(vm);
+             }
+--- a/simplesquirrel/include/simplesquirrel/binding.hpp
++++ b/simplesquirrel/include/simplesquirrel/binding.hpp
+@@ -92,7 +92,7 @@ namespace ssq {
+ 
+         template<typename T, typename... Args>
+         static Object addClass(HSQUIRRELVM vm, const char* name, const std::function<T*(Args...)>& allocator, bool release = true) {
+-            static const auto hashCode = typeid(T*).hash_code();
++            static const auto hashCode = stableTypeHash<T*>();
+             static const std::size_t nparams = sizeof...(Args);
+ 
+             Object clsObj(vm);
+@@ -130,7 +130,7 @@ namespace ssq {
+ 
+         template<typename T>
+         static Object addAbstractClass(HSQUIRRELVM vm, const char* name) {
+-            static const auto hashCode = typeid(T*).hash_code();
++            static const auto hashCode = stableTypeHash<T*>();
+             Object clsObj(vm);
+ 
+             sq_pushstring(vm, name, strlen(name));
+--- a/simplesquirrel/include/simplesquirrel/allocators.hpp
++++ b/simplesquirrel/include/simplesquirrel/allocators.hpp
+@@ -74,7 +74,7 @@ namespace ssq {
+             sq_setreleasehook(vm, -2 -off, &detail::classDestructor<T>);
+ 
+             sq_getclass(vm, -2 -off);
+-            sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(typeid(T*).hash_code()));
++            sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(stableTypeHash<T*>()));
+             sq_pop(vm, 1); // Pop class
+             return nparams;
+         }
+@@ -99,7 +99,7 @@ namespace ssq {
+             sq_setinstanceup(vm, -2 -off, p);
+ 
+             sq_getclass(vm, -2 -off);
+-            sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(typeid(T*).hash_code()));
++            sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(stableTypeHash<T*>()));
+             sq_pop(vm, 1); // Pop class
+             return nparams;
+         }

@@ -5,7 +5,7 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
-#include "event/PlatformEventSink.h"
+#include "platform_event/PlatformEventSink.h"
 #include "ui/UI.h"
 
 #include <SDL2/SDL_events.h>
@@ -13,9 +13,9 @@
 namespace eve::ui {
 namespace {
 
-class UIEventSink : public eve::event::IPlatformEventSink {
+class UIEventSink : public eve::platform_event::IPlatformEventSink {
 public:
-    bool observePlatformEvent(const void *nativeEvent) override {
+    bool shouldConsumePlatformEvent(const void *nativeEvent) override {
         if (auto *ui = eve::ModuleManager::getInstance<UI>("UI"))
             ui->processEvent(static_cast<const SDL_Event *>(nativeEvent));
         // ImGui records the event for its own state but does not claim it; the
@@ -27,8 +27,8 @@ public:
 struct Register {
     Register() {
         static UIEventSink sink;
-        eve::cap::addListener<eve::event::IPlatformEventSink>(
-            &sink, eve::event::IPlatformEventSink::kObserver);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(
+            &sink, eve::platform_event::IPlatformEventSink::kObserver);
     }
 } g_register;
 

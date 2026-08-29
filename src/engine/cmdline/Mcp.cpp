@@ -1,15 +1,17 @@
 #include "cmdline.h"
 
+#include "common/Capability.h"
+#include "common/EditorHost.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
+#include "filesystem/HotReload.h"
 #include "filesystem/physfs/FileApi.h"
 
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
-#include "ui/EditorHost.h"
 #endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -21,6 +23,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
+#include <map>
 #include <string>
 #include <thread>
 
@@ -35,6 +38,18 @@ void hostPrintFunc(HSQUIRRELVM, const SQChar* s, ...) {
     vsnprintf(buf, sizeof(buf), s, args);
     va_end(args);
     fputs(buf, stderr);
+}
+
+bool endsWith(const std::string& value, const std::string& suffix) {
+    return value.size() >= suffix.size() &&
+           value.compare(value.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+bool isEditorHostResource(const std::string& path) {
+    if (path == "mcp.nut") return true;
+    if (path.rfind("mcp/", 0) == 0 && endsWith(path, ".nut")) return true;
+    if (path.rfind("editors/", 0) != 0) return false;
+    return endsWith(path, ".vm.nut") || endsWith(path, ".editor.json");
 }
 
 }  // namespace
@@ -82,6 +97,7 @@ int Cmdline::McpHost(std::string path, int port) {
                 gameDir = std::filesystem::absolute(path, ec).string();
             if (ec) gameDir = path;
         }
+
         if (!gameDir.empty() && gameDir != ".") {
             std::error_code ec;
             std::filesystem::current_path(gameDir, ec);
@@ -100,14 +116,15 @@ int Cmdline::McpHost(std::string path, int port) {
         // Optional for the headless host: keep running when the environment
         // cannot initialize PhysFS (sandboxed/CI shells), scripts just lose
         // the PhysFS-backed file API.
+        eve::filesystem::Filesystem* projectFs = nullptr;
         try {
-            auto* fs = eve::filesystem::Filesystem::create();
-            if (fs) {
+            projectFs = eve::filesystem::Filesystem::create();
+            if (projectFs) {
                 std::error_code ec;
                 auto            cwd = std::filesystem::current_path(ec);
                 if (!ec) {
                     try {
-                        fs->setSource(cwd.string());
+                        projectFs->setSource(cwd.string());
                     } catch (...) {
                     }
                 }
@@ -120,13 +137,38 @@ int Cmdline::McpHost(std::string path, int port) {
         // DevTools: attach the VM so eve_eval / eve_run_script / snapshot work;
         // expose eve.dev. No statement-level local sampling (host is a service).
         auto& dt = eve::dev::DevTool::instance();
-        dt.attach(runtime.vm(), /*sampleLocals=*/false);
+        dt.attach(runtime, /*sampleLocals=*/false);
         dt.exposeScriptApi(runtime.vm());
 
+        // The headless host never runs load.nut, so registered modules are not
+        // instantiated automatically and their capability providers
+        // (IEditorHost, IRenderCapture, ISceneQuery, ...) are absent. Mirror
+        // load.nut's binding loop so the host exposes the full tool surface.
+        eve::ModuleManager::requireAll();
+
         // Editor host: JSON Views <-> Squirrel ViewModel binding + window/render.
-        auto& host = eve::ui::EditorHost::instance();
-        host.start(runtime.vm(), gameDir, /*allowWindow=*/true);
-        host.exposeScriptApi(runtime.vm());
+        auto* host = eve::cap::query<eve::IEditorHost>();
+        if (host) {
+            host->start(runtime.vm(), gameDir, /*allowWindow=*/true);
+            host->exposeScriptApi(runtime.vm());
+        } else {
+            std::cerr << "eve mcp: editor host unavailable (ui module missing)"
+                      << std::endl;
+            return 3;
+        }
+
+        // Unlike `eve run`, the MCP host does not execute load.nut. Start the
+        // same project watcher here and route editor/host scripts through the
+        // EditorHost while other assets keep using the shared asset reloaders.
+        auto* hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload");
+        const int watchCount = projectFs && hot ? hot->watchTree(".") : 0;
+        host->setHotReloadWatchCount(watchCount);
+        if (std::filesystem::is_regular_file(std::filesystem::path(gameDir) / "mcp.nut")) {
+            const std::string initial = host->reloadResource("mcp.nut");
+            if (initial.rfind("error:", 0) == 0)
+                std::cerr << "MCP host script load failed: " << initial << std::endl;
+        }
+        std::cerr << "MCP hot-reload: watching " << watchCount << " path(s)" << std::endl;
 
         auto& mcp = dt.mcp();
         mcp.setGameRoot(gameDir);
@@ -148,9 +190,36 @@ int Cmdline::McpHost(std::string path, int port) {
                       << ")" << std::endl;
         }
 
-        while (!host.exitRequested()) {
+        std::map<std::string, std::chrono::steady_clock::time_point> pendingReloads;
+        constexpr auto reloadDebounce = std::chrono::milliseconds(100);
+        while (!host->exitRequested()) {
             dt.poll();  // drains MCP requests on the main thread
-            host.frame();
+            if (projectFs) {
+                while (true) {
+                    const std::string kind = projectFs->pollWatch();
+                    if (kind.empty()) break;
+                    if (kind != "modified" && kind != "added" && kind != "movedTo") continue;
+                    std::string changed = projectFs->getLastWatchPath();
+                    changed = eve::filesystem::HotReload::normalizePath(std::move(changed));
+                    if (!changed.empty()) pendingReloads[changed] = std::chrono::steady_clock::now();
+                }
+            }
+            const auto now = std::chrono::steady_clock::now();
+            for (auto it = pendingReloads.begin(); it != pendingReloads.end();) {
+                if (now - it->second < reloadDebounce) {
+                    ++it;
+                    continue;
+                }
+                const std::string changed = it->first;
+                if (isEditorHostResource(changed)) {
+                    const std::string result = host->reloadResource(changed);
+                    std::cerr << "MCP hot-reload: " << changed << ": " << result << std::endl;
+                } else if (hot && hot->tryReload(changed)) {
+                    std::cerr << "MCP hot-reload asset: " << changed << std::endl;
+                }
+                it = pendingReloads.erase(it);
+            }
+            host->frame();
             if (mcp.transport() == eve::dev::McpServer::Transport::Stdio &&
                 mcp.stdinClosed()) {
                 std::cerr << "MCP stdio closed; host exiting" << std::endl;
@@ -159,7 +228,7 @@ int Cmdline::McpHost(std::string path, int port) {
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
         }
 
-        host.stop();
+        host->stop();
         dt.detach();
         return 0;
     } catch (const std::exception& e) {

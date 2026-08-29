@@ -1,9 +1,13 @@
 #include "Audio.h"
 #include "Source.h"
 
+#include "AudioCapabilities.h"
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "common/StartupTiming.h"
+#include "sound/Decoder.h"
 #include "sound/Sound.h"
+#include "sound/SoundData.h"
 
 #include <AL/al.h>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -17,6 +21,7 @@ namespace audio {
 Module_IMPL(Audio, new Audio());
 
 Audio::Audio() {
+    registerAudioCapabilities();
     StartupStage stage("audio: OpenAL device/context + worker thread");
     device = alcOpenDevice(nullptr);
     if (!device)
@@ -170,6 +175,7 @@ void Audio::setOrientation(float fx, float fy, float fz, float ux, float uy, flo
 }
 
 void Audio::pump() {
+    EV_PROFILE_MODULE("audio", "Audio::pump");
     // Same guarantee as workerMain: destruction removes the source under this
     // mutex, so the pointer stays valid for the whole iteration.
     std::lock_guard<std::mutex> lock(mutex);

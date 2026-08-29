@@ -2,8 +2,14 @@
 
 /**
  * @brief 卡牌游戏 UI 工具模块：数据模型与渲染/交互逻辑（功能参考 ycarowr/UiCard）。
- * 模块入口 eve.Card() 见 Card.h；本文件是 CardData/Deck/Zone/Hand 等对象与布局渲染实现。
+ * 模块入口 eve.Card() 见 Card.h；本文件是 CardData/Deck/Zone/Hand 等 ECS 实体与布局渲染实现。
  */
+
+#include "attributes/AttributeProjection.h"
+#include "card/CardEffects.h"
+#include "common/ECS.h"
+#include "common/definitions/DefinitionRuntime.h"
+#include "decision/Condition.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -76,83 +82,168 @@ struct CardDefinition {
     int         attack = 0;
     int         health = 0;
     glm::vec3   tint{0.62f, 0.50f, 0.40f};
+    /** @brief Side-effect-free condition tree required before this card can play. */
+    eve::decision::Condition playCondition;
+    /** @brief Definition tags available to HasTag nodes. */
+    std::vector<std::string> tags;
 };
 
-/** @brief 单张卡牌：数据 + 运行时布局状态。 */
-class CardData {
+/** @brief 单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。 */
+class CardData : public ecs::Entity {
 public:
-    std::string      id;
-    std::string      name;
-    std::string      kind = "creature";
-    int              cost = 0;
-    int              attack = 0;
-    int              health = 0;
-    /** @brief 是否正面朝上（false 渲染为牌背）。 */
-    bool             faceUp = true;
-    /** @brief 禁用：置灰且不可拖拽。 */
-    bool             disabled = false;
-    CardState        state = CardState::Deck;
-    glm::vec3        tint{0.62f, 0.50f, 0.40f};
-    /** @brief 可选卡图。 */
-    graphics::Texture *texture = nullptr;
+    ENTITY(CardData, ecs::Entity)
 
-    /** @brief 运行时布局（由 Hand 维护）：中心坐标。 */
-    float x = 0.f;
-    float y = 0.f;
-    /** @brief 宽高/旋转/缩放/透明度。 */
-    float w = 0.f;
-    float h = 0.f;
-    float angle = 0.f;
-    float scale = 1.f;
-    float alpha = 1.f;
-    bool  hovered = false;
-    bool  dragging = false;
+    void release() override { ecs::DestroyEntity(this); }
+
+    /** @brief 稳定实例 id、显示名、种类。 */
+    struct Identity {
+        /** @brief Stable runtime instance identifier, unique within the owning Card module. */
+        std::string id;
+        /** @brief Registered definition identifier used to construct this instance. */
+        std::string definitionId;
+        std::string name;
+        std::string kind = "creature";
+    };
+    /** @brief 费用 / 攻击 / 生命。 */
+    struct Stats {
+        int cost = 0;
+        int attack = 0;
+        int health = 0;
+    };
+    /**
+     * @brief Canonical selected card stats backed by the attributes module.
+     *
+     * `Stats` is a one-way compatibility projection refreshed by
+     * CardAttributeAdapter. Card layout, interaction state and card-zone
+     * membership deliberately remain outside this component.
+     */
+    struct Attributes {
+        eve::attributes::AttributeProjection values;
+    };
+    /** @brief Canonical effect lifecycle and card combat target state. */
+    struct Effects {
+        CardEffectAdapter values;
+    };
+    /** @brief 朝向、禁用、色调、卡图。 */
+    struct Visual {
+        bool faceUp = true;
+        bool disabled = false;
+        glm::vec3 tint{0.62f, 0.50f, 0.40f};
+        graphics::Texture *texture = nullptr;
+    };
+    /** @brief 运行时布局（由 Hand 维护）：中心坐标与变换。 */
+    struct Layout {
+        float x = 0.f;
+        float y = 0.f;
+        float w = 0.f;
+        float h = 0.f;
+        float angle = 0.f;
+        float scale = 1.f;
+        float alpha = 1.f;
+    };
+    /** @brief 运行时交互状态。 */
+    struct State {
+        CardState phase = CardState::Deck;
+        bool hovered = false;
+        bool dragging = false;
+    };
+
+    /**
+     * @brief Definition link and reload policy for this card instance.
+     *
+     * This is a cold ECS component: `identity` is authoritative for the
+     * definition incarnation, while the legacy `Identity::definitionId` is a
+     * read-only compatibility projection. The component is rebuilt by the
+     * CardDefinitionRuntime adapter after a successful hot reload.
+     */
+    struct DefinitionBinding {
+        eve::definition::InstanceIdentity identity;
+        eve::definition::ReloadPolicy     reloadPolicy = eve::definition::ReloadPolicy::KeepInstanceValues;
+        bool                              active       = true;
+    };
+
+    COMPONENT(Identity, identity)
+    COMPONENT(Stats, stats)
+    COMPONENT(Attributes, attributes)
+    COMPONENT(Effects, effects)
+    COMPONENT(Visual, visual)
+    COMPONENT(Layout, layout)
+    COMPONENT(State, state)
+    COMPONENT(DefinitionBinding, definitionBinding)
+
+    /** @brief 创建并触摸全部组件。 */
+    static CardData *createCard();
 
     /** @brief 以当前中心 + 缩放判断点是否命中。 */
-    bool hit(float px, float py) const;
+    bool hit(float px, float py);
     /** @brief 卡牌描述字符串（调试用）。 */
-    std::string describe() const;
+    std::string describe();
 };
 
 /** @brief 牌库（栈顶在末尾）。 */
-class Deck {
+class Deck : public ecs::Entity {
 public:
-    std::vector<CardData *> cards;
+    ENTITY(Deck, ecs::Entity)
+
+    void release() override { ecs::DestroyEntity(this); }
+
+    /** @brief 有序牌堆；栈顶在 vector 末尾。 */
+    struct Membership {
+        std::vector<CardData *> cards;
+    };
+
+    COMPONENT(Membership, membership)
+
+    /** @brief 创建并触摸 Membership。 */
+    static Deck *createDeck();
 
     /** @brief 将卡牌压入栈顶（末尾）。 */
-    void push(CardData *c) { cards.push_back(c); }
+    void push(CardData *c) { membership()->cards.push_back(c); }
     /** @brief 弹出栈顶卡牌（末尾）；空牌库返回 nullptr。 */
     CardData *draw();
     /** @brief 查看栈顶卡牌（不弹出）。 */
-    CardData *peek() const;
+    CardData *peek();
     /** @brief 清空牌库。 */
-    void clear() { cards.clear(); }
+    void clear() { membership()->cards.clear(); }
     /** @brief 洗牌。 */
     void shuffle();
     /** @brief 牌库数量/是否为空/按下标取牌。 */
-    int  count() const { return static_cast<int>(cards.size()); }
-    bool isEmpty() const { return cards.empty(); }
-    CardData *get(int index) const;
+    int  count() { return static_cast<int>(membership()->cards.size()); }
+    bool isEmpty() { return membership()->cards.empty(); }
+    CardData *get(int index);
 };
 
 /** @brief 落牌区（手牌区 / 出牌区 / 弃牌区），用于拖放命中判定。 */
-class Zone {
+class Zone : public ecs::Entity {
 public:
-    std::string id;
-    std::string label;
-    /** @brief 区域矩形（像素）。 */
-    float x = 0.f, y = 0.f, w = 0.f, h = 0.f;
-    /** @brief 区域底色。 */
-    glm::vec3 color{0.30f, 0.60f, 0.30f};
-    float alpha = 0.16f;
-    bool  enabled = true;
+    ENTITY(Zone, ecs::Entity)
+
+    void release() override { ecs::DestroyEntity(this); }
+
+    /** @brief 区域矩形与绘制参数。 */
+    struct Rect {
+        std::string id;
+        std::string label;
+        float x = 0.f, y = 0.f, w = 0.f, h = 0.f;
+        glm::vec3 color{0.30f, 0.60f, 0.30f};
+        float alpha = 0.16f;
+        bool  enabled = true;
+    };
     /** @brief 接受的卡牌 kind；空 = 接受任意 kind。 */
-    std::vector<std::string> acceptKinds;
+    struct Filter {
+        std::vector<std::string> acceptKinds;
+    };
+
+    COMPONENT(Rect, rect)
+    COMPONENT(Filter, filter)
+
+    /** @brief 创建并触摸组件。 */
+    static Zone *createZone();
 
     /** @brief 点是否落在区域内。 */
-    bool contains(float px, float py) const;
+    bool contains(float px, float py);
     /** @brief 该区域是否接受这张卡。 */
-    bool accepts(const CardData *card) const;
+    bool accepts(CardData *card);
     /** @brief 绘制落牌区。 */
     void render(graphics::Graphics *gfx, bool showLabel);
 };
@@ -171,38 +262,52 @@ struct CardEvent {
 };
 
 /** @brief 手牌：扇形布局 + 悬浮 + 拖拽 + 落区判定 + 渲染。 */
-class Hand {
+class Hand : public ecs::Entity {
 public:
-    std::string owner = "player";
-    /** @brief 指向模块拥有的布局配置。 */
-    LayoutConfig *config = nullptr;
-    std::vector<CardData *> cards;
-    /** @brief 整手渲染为牌背（敌方手牌）。 */
-    bool faceDown = false;
-    /** @brief 偷看：faceDown 时也渲染正面。 */
-    bool peek = false;
-    /** @brief 是否允许拖拽。 */
-    bool interactive = true;
+    ENTITY(Hand, ecs::Entity)
 
+    void release() override { ecs::DestroyEntity(this); }
+
+    /** @brief 所有者与布局/交互开关。 */
+    struct Meta {
+        std::string owner = "player";
+        LayoutConfig *config = nullptr;
+        bool faceDown = false;
+        bool peek = false;
+        bool interactive = true;
+    };
+    /** @brief 有序手牌列表。 */
+    struct Membership {
+        std::vector<CardData *> cards;
+    };
     /** @brief 拖拽内部状态（勿直接修改）。 */
-    CardData *_dragCard = nullptr;
-    CardData *_pressCard = nullptr;
-    float _dragOx = 0.f, _dragOy = 0.f;
-    float _pressX = 0.f, _pressY = 0.f;
-    bool  _wasDown = false;
+    struct Drag {
+        CardData *card = nullptr;
+        CardData *press = nullptr;
+        float ox = 0.f, oy = 0.f;
+        float pressX = 0.f, pressY = 0.f;
+        bool wasDown = false;
+    };
+
+    COMPONENT(Meta, meta)
+    COMPONENT(Membership, membership)
+    COMPONENT(Drag, drag)
+
+    /** @brief 创建并触摸全部组件。 */
+    static Hand *createHand();
 
     /** @brief 手牌增删与查询。 */
     void addCard(CardData *c);
     bool removeCard(CardData *c);
     void clear();
-    int  count() const { return static_cast<int>(cards.size()); }
-    CardData *get(int index) const;
-    CardData *find(const std::string &id) const;
+    int  count() { return static_cast<int>(membership()->cards.size()); }
+    CardData *get(int index);
+    CardData *find(const std::string &id);
     /** @brief 命中检测：返回 (px,py) 处最上层卡牌。 */
-    CardData *pick(float px, float py) const;
+    CardData *pick(float px, float py);
 
     /** @brief 第 i 张（共 n 张）的扇形目标位置（牌中心）。 */
-    void slotTransform(int i, int n, float &ox, float &oy, float &angle) const;
+    void slotTransform(int i, int n, float &ox, float &oy, float &angle);
 
     /** @brief 每帧推进：布局 + 悬浮 + 拖拽状态机，产出事件到 out。 */
     void update(float dt, float mx, float my, bool down, const std::vector<Zone *> &zones,

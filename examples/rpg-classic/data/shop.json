@@ -1,0 +1,5 @@
+[
+  {"id": "potion", "name": "治疗药水", "desc": "恢复 25 生命", "price": 20},
+  {"id": "iron_sword", "name": "铁剑", "desc": "攻击 +8", "price": 120},
+  {"id": "leather_armor", "name": "皮甲", "desc": "防御 +6", "price": 90}
+]

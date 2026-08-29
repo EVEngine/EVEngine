@@ -69,10 +69,10 @@ void EditorHost::exposeScriptApi(ssq::VM&) {}
 #else  // full implementation
 
 #include "common/Module.h"
-#include "event/Event.h"
 #include "filesystem/FileData.h"
 #include "graphics/Graphics.h"
 #include "image/ImageData.h"
+#include "platform_event/PlatformEvent.h"
 #include "timer/Timer.h"
 #include "ui/UI.h"
 #include "window/Window.h"
@@ -195,7 +195,8 @@ std::vector<float> varFloats(const Var& v) {
     if (!arr) return out;
     for (size_t i = 0; i < arr->size(); ++i) {
         try {
-            out.push_back(static_cast<float>(arr->get(i).convert<double>()));
+            out.push_back(
+                static_cast<float>(arr->get(static_cast<unsigned int>(i)).convert<double>()));
         } catch (...) {
             out.push_back(0.f);
         }
@@ -218,7 +219,8 @@ std::vector<std::string> varStrings(const Var& v) {
     std::vector<std::string> out;
     Array::Ptr arr = varToArray(v);
     if (!arr) return out;
-    for (size_t i = 0; i < arr->size(); ++i) out.push_back(varString(arr->get(i)));
+    for (size_t i = 0; i < arr->size(); ++i)
+        out.push_back(varString(arr->get(static_cast<unsigned int>(i))));
     return out;
 }
 
@@ -298,7 +300,7 @@ void pushVar(HSQUIRRELVM vm, const Var& v) {
             sq_newarray(vm, 0);
             if (arr) {
                 for (size_t i = 0; i < arr->size(); ++i) {
-                    pushVar(vm, arr->get(i));
+                    pushVar(vm, arr->get(static_cast<unsigned int>(i)));
                     if (SQ_FAILED(sq_arrayappend(vm, -2))) break;
                 }
             }
@@ -523,7 +525,7 @@ struct EditorHost::Impl {
     eve::window::Window*      win         = nullptr;
     eve::graphics::Graphics*  gfx         = nullptr;
     eve::ui::UI*              ui          = nullptr;
-    eve::event::Event*        event       = nullptr;
+    eve::platform_event::PlatformEvent* event       = nullptr;
     eve::timer::Timer*        timer       = nullptr;
     bool                      windowOpen  = false;
     bool                      inFrame     = false;
@@ -573,7 +575,6 @@ std::string EditorHost::openWindow(const std::string& title, int width, int heig
     try {
         if (!I.win) I.win = ModuleManager::requireInstance<eve::window::Window>("Window");
         if (!I.gfx) I.gfx = ModuleManager::requireInstance<eve::graphics::Graphics>("Graphics");
-        I.win->setGraphics(I.gfx);
         eve::window::WindowSettings s;
         s.width    = static_cast<uint16_t>(width > 0 ? width : 1280);
         s.height   = static_cast<uint16_t>(height > 0 ? height : 800);
@@ -1006,7 +1007,8 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
                     if (!cells) continue;
                     for (size_t c = 0; c < cells->size(); ++c) {
                         ImGui::TableSetColumnIndex(static_cast<int>(c));
-                        ImGui::TextUnformatted(varString(cells->get(c)).c_str());
+                        ImGui::TextUnformatted(
+                            varString(cells->get(static_cast<unsigned int>(c))).c_str());
                     }
                 }
             }
@@ -1134,7 +1136,7 @@ void EditorHost::frame() {
     if (!impl_ || !impl_->windowOpen || !impl_->vm) return;
     auto& I = *impl_;
     I.inFrame = true;
-    if (!I.event) I.event = ModuleManager::requireInstance<eve::event::Event>("Event");
+    if (!I.event) I.event = ModuleManager::requireInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!I.timer) I.timer = ModuleManager::requireInstance<eve::timer::Timer>("Timer");
     if (!I.gfx) {
         I.inFrame = false;
@@ -1142,9 +1144,8 @@ void EditorHost::frame() {
     }
 
     I.event->pump();
-    while (eve::event::Message* m = I.event->poll()) {
+    while (auto m = I.event->pollOwned()) {
         const std::string name = m->name;
-        delete m;
         if (name == "quit") {
             closeWindow();
             requestExit();
@@ -1166,12 +1167,9 @@ void EditorHost::frame() {
     I.inFrame = false;
 }
 
-std::string EditorHost::setEditorValue(const std::string& editorId, const std::string& widgetId,
-                                       const std::string& jsonValue) {
-    if (!impl_) return "error: host not started";
-    auto it = impl_->editors.find(editorId);
-    if (it == impl_->editors.end()) return "error: editor not found: " + editorId;
-    if (widgetId.empty()) return "error: missing widget";
+namespace {
+
+Var parseEditorValue(const std::string& jsonValue) {
     Var v;
     try {
         Poco::JSON::Parser p;
@@ -1179,26 +1177,58 @@ std::string EditorHost::setEditorValue(const std::string& editorId, const std::s
     } catch (...) {
         // Poco's parser wants a top-level JSON value; some clients pass bare
         // numbers/booleans without JSON quoting. Handle those explicitly.
-        if (jsonValue == "true") v = Var(true);
-        else if (jsonValue == "false") v = Var(false);
-        else if (jsonValue == "null") v = Var();
+        if (jsonValue == "true")
+            v = Var(true);
+        else if (jsonValue == "false")
+            v = Var(false);
+        else if (jsonValue == "null")
+            v = Var();
         else {
-            char* end = nullptr;
-            const double d = std::strtod(jsonValue.c_str(), &end);
+            char*        end = nullptr;
+            const double d   = std::strtod(jsonValue.c_str(), &end);
             if (end && end != jsonValue.c_str() && *end == '\0')
                 v = Var(d);
             else
                 v = Var(jsonValue);  // plain text
         }
     }
+    return v;
+}
+
+}  // namespace
+
+std::string EditorHost::setEditorValue(const std::string& editorId, const std::string& widgetId,
+                                       const std::string& jsonValue) {
+    if (!impl_) return "error: host not started";
+    auto it = impl_->editors.find(editorId);
+    if (it == impl_->editors.end()) return "error: editor not found: " + editorId;
+    if (widgetId.empty()) return "error: missing widget";
+    const Var v = parseEditorValue(jsonValue);
     setWidgetValue(*impl_, it->second, widgetId, v);
+    return "ok";
+}
+
+std::string EditorHost::restoreEditorValue(const std::string& editorId, const std::string& widgetId,
+                                           const std::string& jsonValue) {
+    if (!impl_ || !impl_->vm) return "error: host not started";
+    auto it = impl_->editors.find(editorId);
+    if (it == impl_->editors.end()) return "error: editor not found: " + editorId;
+    if (widgetId.empty()) return "error: missing widget";
+    const Var v                 = parseEditorValue(jsonValue);
+    it->second.values[widgetId] = v;
+    auto       vmIt             = impl_->vms.find(it->second.vmName);
+    const auto widget           = findWidget(it->second.view, widgetId);
+    if (vmIt != impl_->vms.end() && widget) {
+        const std::string bind = strOf(widget, "bind");
+        if (!bind.empty()) writeVMVar(*impl_->vm, vmIt->second, bind, v);
+    }
     return "ok";
 }
 
 std::string EditorHost::consumeEvents(const std::string& editorId) {
     if (!impl_) return "[]";
-    Array::Ptr arr = new Array();
-    auto drain = [&](Editor& ed) {
+    Array::Ptr arr   = new Array();
+    auto       drain = [&](Editor& ed) {
         for (const auto& e : ed.events) {
             Object::Ptr eo = new Object();
             eo->set("editor", ed.id);
@@ -1457,6 +1487,12 @@ void EditorHost::exposeScriptApi(ssq::VM& vm) {
         });
         host.addFunc("runScript", [](std::string source) {
             return EditorHost::instance().runScript(source);
+        });
+        host.addFunc("reloadResource", [](std::string path) {
+            return EditorHost::instance().reloadResource(path);
+        });
+        host.addFunc("hotReloadStatus", []() {
+            return EditorHost::instance().hotReloadStatus();
         });
     } catch (...) {
         // eve table missing — the host surface is optional.

@@ -3,6 +3,8 @@
 #include "voxel/FaceDir.h"
 
 #include "data/ByteData.h"
+#include "graphics/Graphics.h"
+#include "procgen/heightmap/TerrainSampler.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -55,6 +57,7 @@ void Voxel::expose(ssq::Table &table) {
                 w->setTerrainParams(uint32_t(seed), uint8_t(top), uint8_t(sub), uint8_t(stone),
                                     baseHeight, amplitude, scale);
             }));
+    world.addFunc("setTerrainParam", &VoxelWorld::setTerrainParam);
     world.addFunc("terrainHeightAt", &VoxelWorld::terrainHeightAt);
     world.addFunc(
         "loadTerrainAsset",
@@ -82,6 +85,7 @@ void Voxel::expose(ssq::Table &table) {
     world.addFunc("loadWorld", &VoxelWorld::loadWorld);
     world.addFunc("clear", &VoxelWorld::clear);
     world.addFunc("getChunkCount", &VoxelWorld::getChunkCount);
+    world.addFunc("getRevision", &VoxelWorld::getRevision);
     world.addFunc("remeshDirty",
                   std::function<int(VoxelWorld *)>([](VoxelWorld *w) -> int {
                       return w ? w->remeshDirty() : 0;

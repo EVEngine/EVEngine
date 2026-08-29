@@ -30,3 +30,14 @@ TEST_CASE("timer.step.deltaPositiveAfterSleep") {
     CHECK(delta > 0.f);
     CHECK(t->getDelta() == delta);
 }
+
+TEST_CASE("timer.simulationClockUsesInjectedFixedSteps") {
+    auto*      t      = eve::timer::Timer::create();
+    const auto before = t->getFrameIndex();
+    auto       steps  = t->stepSimulation();
+    REQUIRE(steps.ok());
+    CHECK(t->getFrameIndex() > before);
+    CHECK(t->getDeltaDuration().nanoseconds() >= 0);
+    CHECK(t->monotonicNow() >= eve::MonotonicTimestamp::zero());
+    CHECK(t->wallClockNow().unixNanoseconds() != 0);
+}

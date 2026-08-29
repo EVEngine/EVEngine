@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/AnimControlMath.h"
+#include "common/Time.h"
 
 #include <string>
 #include <unordered_map>
@@ -58,7 +59,9 @@ public:
     int  getPropertyCount() const { return static_cast<int>(order_.size()); }
     std::string getPropertyName(int index) const;
 
-    /** @brief Advance all channels by dt seconds. */
+    /** @brief Advance all channels by one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
 
 private:
@@ -87,6 +90,10 @@ private:
 
     std::unordered_map<std::string, Channel> channels_;
     std::vector<std::string> order_;
+    eve::SimulationTick                      lastTick_    = eve::SimulationTick::zero();
+    bool                                     hasLastTick_ = false;
+
+    void updateUnchecked(float dt);
 };
 
 }  // namespace eve::animation

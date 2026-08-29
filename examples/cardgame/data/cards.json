@@ -1,0 +1,678 @@
+[
+  {
+    "id": "Clovers_A",
+    "name": "梅花 A",
+    "kind": "card",
+    "cost": 1,
+    "attack": 1,
+    "health": 13,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_2",
+    "name": "梅花 2",
+    "kind": "card",
+    "cost": 1,
+    "attack": 2,
+    "health": 12,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_3",
+    "name": "梅花 3",
+    "kind": "card",
+    "cost": 1,
+    "attack": 3,
+    "health": 11,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_4",
+    "name": "梅花 4",
+    "kind": "card",
+    "cost": 2,
+    "attack": 4,
+    "health": 10,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_5",
+    "name": "梅花 5",
+    "kind": "card",
+    "cost": 2,
+    "attack": 5,
+    "health": 9,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_6",
+    "name": "梅花 6",
+    "kind": "card",
+    "cost": 2,
+    "attack": 6,
+    "health": 8,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_7",
+    "name": "梅花 7",
+    "kind": "card",
+    "cost": 3,
+    "attack": 7,
+    "health": 7,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_8",
+    "name": "梅花 8",
+    "kind": "card",
+    "cost": 3,
+    "attack": 8,
+    "health": 6,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_9",
+    "name": "梅花 9",
+    "kind": "card",
+    "cost": 3,
+    "attack": 9,
+    "health": 5,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_10",
+    "name": "梅花 10",
+    "kind": "card",
+    "cost": 4,
+    "attack": 10,
+    "health": 4,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_Jack",
+    "name": "梅花 J",
+    "kind": "card",
+    "cost": 4,
+    "attack": 11,
+    "health": 3,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_Queen",
+    "name": "梅花 Q",
+    "kind": "card",
+    "cost": 4,
+    "attack": 12,
+    "health": 2,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Clovers_King",
+    "name": "梅花 K",
+    "kind": "card",
+    "cost": 5,
+    "attack": 13,
+    "health": 1,
+    "tint": [
+      0.3,
+      0.78,
+      0.48
+    ]
+  },
+  {
+    "id": "Hearts_A",
+    "name": "红桃 A",
+    "kind": "card",
+    "cost": 1,
+    "attack": 1,
+    "health": 13,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_2",
+    "name": "红桃 2",
+    "kind": "card",
+    "cost": 1,
+    "attack": 2,
+    "health": 12,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_3",
+    "name": "红桃 3",
+    "kind": "card",
+    "cost": 1,
+    "attack": 3,
+    "health": 11,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_4",
+    "name": "红桃 4",
+    "kind": "card",
+    "cost": 2,
+    "attack": 4,
+    "health": 10,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_5",
+    "name": "红桃 5",
+    "kind": "card",
+    "cost": 2,
+    "attack": 5,
+    "health": 9,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_6",
+    "name": "红桃 6",
+    "kind": "card",
+    "cost": 2,
+    "attack": 6,
+    "health": 8,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_7",
+    "name": "红桃 7",
+    "kind": "card",
+    "cost": 3,
+    "attack": 7,
+    "health": 7,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_8",
+    "name": "红桃 8",
+    "kind": "card",
+    "cost": 3,
+    "attack": 8,
+    "health": 6,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_9",
+    "name": "红桃 9",
+    "kind": "card",
+    "cost": 3,
+    "attack": 9,
+    "health": 5,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_10",
+    "name": "红桃 10",
+    "kind": "card",
+    "cost": 4,
+    "attack": 10,
+    "health": 4,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_Jack",
+    "name": "红桃 J",
+    "kind": "card",
+    "cost": 4,
+    "attack": 11,
+    "health": 3,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_Queen",
+    "name": "红桃 Q",
+    "kind": "card",
+    "cost": 4,
+    "attack": 12,
+    "health": 2,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Hearts_King",
+    "name": "红桃 K",
+    "kind": "card",
+    "cost": 5,
+    "attack": 13,
+    "health": 1,
+    "tint": [
+      0.95,
+      0.33,
+      0.36
+    ]
+  },
+  {
+    "id": "Pikes_A",
+    "name": "黑桃 A",
+    "kind": "card",
+    "cost": 1,
+    "attack": 1,
+    "health": 13,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_2",
+    "name": "黑桃 2",
+    "kind": "card",
+    "cost": 1,
+    "attack": 2,
+    "health": 12,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_3",
+    "name": "黑桃 3",
+    "kind": "card",
+    "cost": 1,
+    "attack": 3,
+    "health": 11,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_4",
+    "name": "黑桃 4",
+    "kind": "card",
+    "cost": 2,
+    "attack": 4,
+    "health": 10,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_5",
+    "name": "黑桃 5",
+    "kind": "card",
+    "cost": 2,
+    "attack": 5,
+    "health": 9,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_6",
+    "name": "黑桃 6",
+    "kind": "card",
+    "cost": 2,
+    "attack": 6,
+    "health": 8,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_7",
+    "name": "黑桃 7",
+    "kind": "card",
+    "cost": 3,
+    "attack": 7,
+    "health": 7,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_8",
+    "name": "黑桃 8",
+    "kind": "card",
+    "cost": 3,
+    "attack": 8,
+    "health": 6,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_9",
+    "name": "黑桃 9",
+    "kind": "card",
+    "cost": 3,
+    "attack": 9,
+    "health": 5,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_10",
+    "name": "黑桃 10",
+    "kind": "card",
+    "cost": 4,
+    "attack": 10,
+    "health": 4,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_Jack",
+    "name": "黑桃 J",
+    "kind": "card",
+    "cost": 4,
+    "attack": 11,
+    "health": 3,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_Queen",
+    "name": "黑桃 Q",
+    "kind": "card",
+    "cost": 4,
+    "attack": 12,
+    "health": 2,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Pikes_King",
+    "name": "黑桃 K",
+    "kind": "card",
+    "cost": 5,
+    "attack": 13,
+    "health": 1,
+    "tint": [
+      0.32,
+      0.58,
+      0.92
+    ]
+  },
+  {
+    "id": "Tiles_A",
+    "name": "方块 A",
+    "kind": "card",
+    "cost": 1,
+    "attack": 1,
+    "health": 13,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_2",
+    "name": "方块 2",
+    "kind": "card",
+    "cost": 1,
+    "attack": 2,
+    "health": 12,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_3",
+    "name": "方块 3",
+    "kind": "card",
+    "cost": 1,
+    "attack": 3,
+    "health": 11,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_4",
+    "name": "方块 4",
+    "kind": "card",
+    "cost": 2,
+    "attack": 4,
+    "health": 10,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_5",
+    "name": "方块 5",
+    "kind": "card",
+    "cost": 2,
+    "attack": 5,
+    "health": 9,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_6",
+    "name": "方块 6",
+    "kind": "card",
+    "cost": 2,
+    "attack": 6,
+    "health": 8,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_7",
+    "name": "方块 7",
+    "kind": "card",
+    "cost": 3,
+    "attack": 7,
+    "health": 7,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_8",
+    "name": "方块 8",
+    "kind": "card",
+    "cost": 3,
+    "attack": 8,
+    "health": 6,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_9",
+    "name": "方块 9",
+    "kind": "card",
+    "cost": 3,
+    "attack": 9,
+    "health": 5,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_10",
+    "name": "方块 10",
+    "kind": "card",
+    "cost": 4,
+    "attack": 10,
+    "health": 4,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_Jack",
+    "name": "方块 J",
+    "kind": "card",
+    "cost": 4,
+    "attack": 11,
+    "health": 3,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_Queen",
+    "name": "方块 Q",
+    "kind": "card",
+    "cost": 4,
+    "attack": 12,
+    "health": 2,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  },
+  {
+    "id": "Tiles_King",
+    "name": "方块 K",
+    "kind": "card",
+    "cost": 5,
+    "attack": 13,
+    "health": 1,
+    "tint": [
+      0.92,
+      0.68,
+      0.24
+    ]
+  }
+]

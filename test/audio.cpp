@@ -3,10 +3,12 @@
 
 #include "audio/Audio.h"
 #include "audio/Source.h"
-#include "sound/Sound.h"
+#include "common/Exception.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
-#include "common/Exception.h"
+#include "sound/Decoder.h"
+#include "sound/Sound.h"
+#include "sound/SoundData.h"
 
 #include <algorithm>
 #include <chrono>
@@ -96,7 +98,6 @@ TEST_CASE("audio.streamSource.pump") {
     auto *audio = tryCreateAudio();
     if (!audio)
         return;
-    auto *sound = eve::sound::Sound::create();
     auto wav = makeSilentWav(44100);
     eve::data::ByteData data(wav.data(), wav.size());
     auto *src = audio->newSourceFromData(&data, "stream");

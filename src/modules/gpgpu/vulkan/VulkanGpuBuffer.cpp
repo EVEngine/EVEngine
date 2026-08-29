@@ -1,6 +1,8 @@
 #include "gpgpu/vulkan/VulkanGpuBuffer.h"
 #include "gpgpu/vulkan/VulkanUtil.h"
 
+#include "graphics/vulkan/Graphics.h"
+
 #include "common/Exception.h"
 #include "data/ByteData.h"
 

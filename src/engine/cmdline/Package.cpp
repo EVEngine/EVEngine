@@ -1,11 +1,18 @@
 #include "cmdline.h"
 #include "zip_writer.h"
+#include "common/ScriptCompiler.h"
+#include "common/ScriptModule.h"
 #include "common/config.h"
+#include <algorithm>
 #include <filesystem>
+#include <fstream>
+#include <map>
+#include <set>
+#include <sstream>
 #include <CLI11.hpp>
 #include <rang.hpp>
 
-#ifdef EVENGINE_WINDOWS
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -19,12 +26,17 @@ namespace eve::cmd
 
 namespace {
 
-// Runtime binary name inside the SDK's bin/: eve.exe on Windows, eve elsewhere.
-#ifdef EVENGINE_WINDOWS
-constexpr const char* kEveRuntimeName = "eve.exe";
-#else
-constexpr const char* kEveRuntimeName = "eve";
-#endif
+// Runtime binary name inside the *target* SDK's bin/. The packaged game runs on
+// the SDK's platform, which is not necessarily the host running `eve package`
+// (e.g. a Linux host can produce a Windows game folder for the win32 SDK).
+std::string targetRuntimeName(const std::string& sdkRoot) {
+    std::ifstream in(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
+    std::string   plat;
+    std::getline(in, plat);
+    while (!plat.empty() && (plat.back() == '\r' || plat.back() == '\n' || plat.back() == ' '))
+        plat.pop_back();
+    return plat == "win32" ? "eve.exe" : "eve";
+}
 
 bool copyFileIf(const path& src, const path& dst) {
     error_code ec;
@@ -43,6 +55,100 @@ bool copyFirst(const std::string& dll, const std::vector<path>& candidates, cons
     return false;
 }
 
+struct ScriptPackageManifest {
+    std::map<std::string, std::vector<std::string>> graph;
+    std::string                                     error;
+
+    std::string serialize() const {
+        std::ostringstream out;
+        out << "version=1\n";
+        for (const auto& [module, dependencies] : graph) {
+            out << module;
+            for (const std::string& dependency : dependencies) out << '\t' << dependency;
+            out << '\n';
+        }
+        return out.str();
+    }
+};
+
+bool canonicalGameModule(std::string_view importer, std::string_view specifier, std::string& result,
+                         std::string& error) {
+    script::ScriptModuleRequest request{std::string(importer), std::string(specifier)};
+    if (!script::ScriptModuleResolver::canonicalize(request, result, error)) return false;
+    if (result.rfind("game:/", 0) != 0) {
+        error = "package cannot statically resolve non-game script module: " + result;
+        return false;
+    }
+    return true;
+}
+
+ScriptPackageManifest scanScriptPackage(const path& gameDir) {
+    ScriptPackageManifest manifest;
+    std::error_code       ec;
+    for (recursive_directory_iterator it(gameDir, directory_options::skip_permission_denied, ec), end; it != end;
+         it.increment(ec)) {
+        if (ec) {
+            ec.clear();
+            continue;
+        }
+        if (!it->is_regular_file() || it->path().extension() != ".nut") continue;
+        std::ifstream input(it->path(), std::ios::binary);
+        if (!input) {
+            manifest.error = "cannot read script during package scan: " + it->path().string();
+            return manifest;
+        }
+        const std::string source(std::istreambuf_iterator<char>(input), {});
+        const std::string relative = std::filesystem::relative(it->path(), gameDir, ec).generic_string();
+        if (ec) {
+            manifest.error = "cannot canonicalize packaged script: " + it->path().string();
+            return manifest;
+        }
+        const std::string canonical = "game:/" + relative;
+        auto&             edges     = manifest.graph[canonical];
+        for (const std::string& specifier : script::ScriptCompiler::analyze(source, canonical).imports) {
+            std::string dependency;
+            if (!canonicalGameModule(canonical, specifier, dependency, manifest.error)) return manifest;
+            edges.push_back(std::move(dependency));
+        }
+        std::sort(edges.begin(), edges.end());
+        edges.erase(std::unique(edges.begin(), edges.end()), edges.end());
+    }
+
+    for (const auto& [module, dependencies] : manifest.graph) {
+        for (const std::string& dependency : dependencies) {
+            if (manifest.graph.find(dependency) == manifest.graph.end()) {
+                manifest.error = "script module imported by " + module + " is missing from package: " + dependency;
+                return manifest;
+            }
+        }
+    }
+
+    enum class Visit { Visiting, Ready };
+    std::map<std::string, Visit> visits;
+    std::vector<std::string>     stack;
+    const auto visit = [&](const auto& self, const std::string& module) -> bool {
+        if (const auto found = visits.find(module); found != visits.end()) {
+            if (found->second == Visit::Ready) return true;
+            manifest.error = "cyclic script import in package";
+            for (const std::string& entry : stack) manifest.error += " -> " + entry;
+            manifest.error += " -> " + module;
+            return false;
+        }
+        visits[module] = Visit::Visiting;
+        stack.push_back(module);
+        for (const std::string& dependency : manifest.graph[module]) {
+            if (!self(self, dependency)) return false;
+        }
+        stack.pop_back();
+        visits[module] = Visit::Ready;
+        return true;
+    };
+    for (const auto& [module, _] : manifest.graph) {
+        if (!visit(visit, module)) return manifest;
+    }
+    return manifest;
+}
+
 // Locate the target SDK root: --sdk, EVENGINE_SDK, or next to the running binary.
 std::string resolveSdkRoot(const std::string& sdkArg) {
     if (!sdkArg.empty() && is_directory(sdkArg)) return sdkArg;
@@ -52,7 +158,7 @@ std::string resolveSdkRoot(const std::string& sdkArg) {
 
     // Running from <sdk>/bin/<runtime> -> root is two directories up.
     path exe;
-#ifdef EVENGINE_WINDOWS
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     wchar_t buf[MAX_PATH + 1] = {0};
     if (GetModuleFileNameW(nullptr, buf, MAX_PATH) != 0) exe = path(buf);
 #else
@@ -107,6 +213,12 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         return 2;
     }
 
+    const ScriptPackageManifest scripts = scanScriptPackage(gamePath);
+    if (!scripts.error.empty()) {
+        cerr << rang::fg::red << "Script dependency scan failed: " << scripts.error << rang::fg::reset << endl;
+        return 5;
+    }
+
     // Game folder name, trailing separators stripped.
     std::string gameName = gamePath;
     while (!gameName.empty() && (gameName.back() == '/' || gameName.back() == '\\'))
@@ -119,56 +231,92 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     create_directories(outDir, ec);
 
     path sdkBin  = path(sdkRoot) / "bin";
+    path sdkLib  = path(sdkRoot) / "lib";
     path sdkPlat = path(sdkRoot) / "platform";
 
+    const std::string runtimeName = targetRuntimeName(sdkRoot);
+
     // 1. Runtime executable.
-    path runtimeSrc = sdkBin / kEveRuntimeName;
-    path runtimeDst = outDir / kEveRuntimeName;
+    path runtimeSrc = sdkBin / runtimeName;
+    path runtimeDst = outDir / runtimeName;
     if (!copyFileIf(runtimeSrc, runtimeDst)) {
         cerr << rang::fg::red << "SDK missing " << runtimeSrc.string() << rang::fg::reset << endl;
         return 3;
     }
 
-#ifdef EVENGINE_WINDOWS
-    // 2. Windows runtime DLLs the executable needs (vulkan + VC CRT). Best-effort.
-    std::vector<path> crtCandidates;
-    if (exists(sdkBin)) crtCandidates.push_back(sdkBin);
-    // VC redist (version-independent glob): both release CRT and debug CRT.
-    for (const auto& msroot : {"C:/Program Files/Microsoft Visual Studio"}) {
-        path base = path(msroot);
-        if (exists(base / "18")) base = base / "18";
-        for (const auto& entry : directory_iterator(base, ec)) {
-            if (!entry.is_directory()) continue;
-            path redist = entry.path() / "Community" / "VC" / "Redist" / "MSVC";
-            if (!exists(redist)) continue;
-            for (const auto& ver : directory_iterator(redist, ec)) {
-                for (const auto& crtDir : {"x64", "debug_nonredist/x64"}) {
-                    path crt = ver.path() / crtDir;
-                    if (!exists(crt)) continue;
-                    for (const auto& sub : directory_iterator(crt, ec)) {
-                        if (!sub.is_directory()) continue;
-                        const std::string n = sub.path().filename().string();
-                        if (n.find("Microsoft.VC") == 0 && (n.find(".CRT") != string::npos ||
-                            n.find("DebugCRT") != string::npos))
-                            crtCandidates.push_back(sub.path());
+    // 2. Windows runtime DLLs the packaged game needs (vulkan loader + VC CRT).
+    // win32 SDKs bundle them in bin/ so ANY host can produce a self-contained
+    // package; on a Windows host we also fall back to the local VS redist for
+    // older SDKs that predate bundling.
+    if (runtimeName == "eve.exe") {
+        std::vector<path> crtCandidates;
+        if (exists(sdkBin)) crtCandidates.push_back(sdkBin);
+        if (exists(sdkLib)) crtCandidates.push_back(sdkLib);
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+        // VC redist (version-independent glob): both release CRT and debug CRT.
+        for (const auto& msroot : {"C:/Program Files/Microsoft Visual Studio"}) {
+            path base = path(msroot);
+            if (exists(base / "18")) base = base / "18";
+            for (const auto& entry : directory_iterator(base, ec)) {
+                if (!entry.is_directory()) continue;
+                path redist = entry.path() / "Community" / "VC" / "Redist" / "MSVC";
+                if (!exists(redist)) continue;
+                for (const auto& ver : directory_iterator(redist, ec)) {
+                    for (const auto& crtDir : {"x64", "debug_nonredist/x64"}) {
+                        path crt = ver.path() / crtDir;
+                        if (!exists(crt)) continue;
+                        for (const auto& sub : directory_iterator(crt, ec)) {
+                            if (!sub.is_directory()) continue;
+                            const std::string n = sub.path().filename().string();
+                            if (n.find("Microsoft.VC") == 0 &&
+                                (n.find(".CRT") != string::npos ||
+                                 n.find("DebugCRT") != string::npos))
+                                crtCandidates.push_back(sub.path());
+                        }
                     }
                 }
             }
         }
-    }
-    if (exists(path("C:/Windows/System32"))) crtCandidates.push_back(path("C:/Windows/System32"));
+        if (exists(path("C:/Windows/System32")))
+            crtCandidates.push_back(path("C:/Windows/System32"));
+#endif
 
-    // eve.exe links the VC runtime dynamically; bundle both release and debug sets so
-    // the package is self-contained regardless of build type.
-    for (const auto& dll : {"vulkan-1.dll", "msvcp140.dll", "msvcp140_1.dll",
-                            "msvcp140_2.dll", "vcruntime140.dll", "vcruntime140_1.dll",
-                            "concrt140.dll", "msvcp140d.dll", "vcruntime140d.dll",
-                            "vcruntime140_1d.dll", "ucrtbased.dll", "concrt140d.dll"}) {
-        if (!copyFirst(dll, crtCandidates, outDir))
-            cerr << rang::fg::yellow << "note: runtime DLL not found (may be system-installed): "
-                 << dll << rang::fg::reset << endl;
+        // eve.exe links the VC runtime dynamically; bundle both release and
+        // debug sets so the package is self-contained regardless of build type.
+        for (const auto& dll : {"vulkan-1.dll", "msvcp140.dll", "msvcp140_1.dll",
+                                "msvcp140_2.dll", "vcruntime140.dll",
+                                "vcruntime140_1.dll", "concrt140.dll",
+                                "msvcp140d.dll", "vcruntime140d.dll",
+                                "vcruntime140_1d.dll", "ucrtbased.dll",
+                                "concrt140d.dll"}) {
+            if (!copyFirst(dll, crtCandidates, outDir))
+                cerr << rang::fg::yellow
+                     << "note: runtime DLL not found (may be system-installed): "
+                     << dll << rang::fg::reset << endl;
+        }
     }
-#endif  // EVENGINE_WINDOWS
+
+#ifdef EVENGINE_MACOSX
+    // 2b. macOS: copy the SDK's lib/ tree (Vulkan loader + MoltenVK + ICD
+    // manifest + zlib/PNG dylibs) into <out>/lib. eve carries INSTALL_RPATH
+    // "@loader_path/../lib", and platform/macosx bootstrapBundledVulkan points
+    // SDL at <out>/lib/libvulkan.1.dylib + <out>/lib/MoltenVK_icd.json, so the
+    // packaged game is self-contained next to the eve binary. Copying the tree
+    // (not just *.dylib) keeps the ICD manifest and any subdirectories.
+    if (exists(sdkLib)) {
+        std::ifstream platIn(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
+        std::string   plat;
+        std::getline(platIn, plat);
+        while (!plat.empty() && (plat.back() == '\r' || plat.back() == '\n' || plat.back() == ' '))
+            plat.pop_back();
+        // Only macOS-target packages get the dylib tree; cross-packaged
+        // win32/linux games must stay clean.
+        if (plat == "macosx")
+            copy(sdkLib, outDir / "lib",
+                 copy_options::recursive | copy_options::overwrite_existing, ec);
+        ec.clear();
+    }
+#endif  // EVENGINE_MACOSX
 
     // 3. Platform packaging template (win32/linux README etc).
     if (exists(sdkPlat)) {
@@ -181,7 +329,8 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
 
     // 4. Compress the game directory into game.eve inside the package.
     path archive = outDir / "game.eve";
-    if (!cmdline::createGameArchive(gamePath, archive)) {
+    if (!cmdline::createGameArchive(gamePath, archive,
+                                    {{".eve/script-modules.manifest", scripts.serialize()}})) {
         cerr << rang::fg::red << "Failed to package game archive." << rang::fg::reset << endl;
         return 4;
     }

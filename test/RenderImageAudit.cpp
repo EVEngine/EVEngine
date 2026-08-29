@@ -4,6 +4,7 @@
 #include "zeroerr/unittest.h"
 
 #include <SDL2/SDL.h>
+#include "filesystem/FileData.h"
 
 #include <algorithm>
 #include <cmath>
@@ -34,8 +35,20 @@
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Outline.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -60,7 +73,7 @@
 #include "particles/Particles.h"
 #include "physics/Body.h"
 #include "physics/Cloth.h"
-#include "physics/Fluid.h"
+#include "physics/Fluid2D.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
 #include "procgen/Params.h"
@@ -557,7 +570,7 @@ void paintDefectOverlay(ImageData &img, const std::vector<RenderDefect> &defs) {
 }
 
 bool saveImagePng(const ImageData &img, const std::string &path) {
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         img.encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false);
     if (!png) return false;
@@ -771,7 +784,8 @@ void resetScene3D() {
 }
 
 void auditGpuFrame(Graphics *gfx, const char *scene, const char *phase, const RenderAuditBg &bg,
-                   bool flicker = false, const std::function<void()> &after3D = {}) {
+                   bool flicker = false, const std::function<void()> &after3D = {},
+                   const char *rawCaptureName = nullptr) {
     auto drawOnce = [&]() {
         RenderSystem3D::render(*gfx);
         if (after3D) after3D();
@@ -783,6 +797,8 @@ void auditGpuFrame(Graphics *gfx, const char *scene, const char *phase, const Re
     drawOnce();
     std::unique_ptr<ImageData> a(gfx->newImageData());
     REQUIRE(a.get() != nullptr);
+    if (rawCaptureName)
+        REQUIRE(saveImagePng(*a, auditOutDir() + "/" + rawCaptureName));
     RenderAuditConfig cfg{scene, phase, "", 0};
     auto result = auditImage(*a, cfg, bg, /*step=*/2);
     if (flicker) {
@@ -1073,10 +1089,11 @@ int findFirstSkinnedMesh(const eve::model3d::ModelData *model) {
 void printOverlayThunk(void *userdata, void *) {
     auto *gfx = static_cast<Graphics *>(userdata);
     if (!gfx || !gfx->getFont()) return;
+    Font *font = gfx->getFont();
     const char *icon = "\xEF\x80\x80";
     std::string row;
     for (int i = 0; i < 8; ++i) row += icon;
-    gfx->print(row, 8.f, 8.f, Color(1.f, 0.82f, 0.2f, 1.f), 2.4f);
+    gfx->drawText(font, row, 8.f, 8.f, Color(1.f, 0.82f, 0.2f, 1.f), 2.4f);
 }
 
 }  // namespace
@@ -1166,7 +1183,6 @@ TEST_CASE("graphics.imageAudit.pipelineConfigs") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 480;
     s.height = 360;
@@ -1390,7 +1406,6 @@ TEST_CASE("graphics.imageAudit.materialsAndCamera") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1522,7 +1537,6 @@ TEST_CASE("graphics.imageAudit.postFx") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1679,7 +1693,6 @@ TEST_CASE("graphics.imageAudit.composite2d3d") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1735,7 +1748,6 @@ TEST_CASE("graphics.imageAudit.stylizeAndSsaa") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1794,7 +1806,6 @@ TEST_CASE("graphics.imageAudit.multiObjectLod") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1882,7 +1893,6 @@ TEST_CASE("graphics.imageAudit.lightsAndXform") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1945,7 +1955,6 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1959,9 +1968,9 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     Texture *checker = makeChecker(gfx, 32, 32);
     studio.subject->setTexture(checker);
 
-    gfx->setTextureSamplerParams(checker, "nearest", "none", 1.f, 0.f);
+    gfx->setTextureSampler(checker, "nearest", "none", 1.f, 0.f);
     auditGpuFrame(gfx, "sampler", "nearest", bg);
-    gfx->setTextureSamplerParams(checker, "linear", "none", 1.f, 0.f);
+    gfx->setTextureSampler(checker, "linear", "none", 1.f, 0.f);
     auditGpuFrame(gfx, "sampler", "linear", bg);
 
     TextureCreateInfo mip = TextureCreateInfo::withMipmaps(true, 8.f);
@@ -1978,7 +1987,7 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     }
     Texture *mipTex = gfx->newTexture(32, 32, mipPx.data(), mip);
     studio.subject->setTexture(mipTex);
-    gfx->setTextureSamplerParams(mipTex, "linear", "linear", 8.f, 2.5f);
+    gfx->setTextureSampler(mipTex, "linear", "linear", 8.f, 2.5f);
     auditGpuFrame(gfx, "sampler", "mip_lod_bias", bg);
 
     Texture *rep = makeChecker(gfx, 16, 16, true);
@@ -2026,7 +2035,6 @@ TEST_CASE("graphics.imageAudit.gbufferViews") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2037,6 +2045,7 @@ TEST_CASE("graphics.imageAudit.gbufferViews") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
+    (void)studio;
     RenderControl *rc = gfx->getRenderControl();
     REQUIRE(rc != nullptr);
     rc->enable("gbuffer");
@@ -2071,7 +2080,6 @@ TEST_CASE("graphics.imageAudit.occlusionScatter") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2141,7 +2149,6 @@ TEST_CASE("graphics.imageAudit.textureSources") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2193,7 +2200,6 @@ TEST_CASE("graphics.imageAudit.renderControlToggles") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2252,7 +2258,7 @@ TEST_CASE("graphics.imageAudit.renderControlToggles") {
         }
     }
     Texture *aniso = gfx->newTexture(32, 32, px.data(), mip);
-    gfx->setTextureSamplerParams(aniso, "linear", "linear", 16.f, 0.f);
+    gfx->setTextureSampler(aniso, "linear", "linear", 16.f, 0.f);
     studio.ground->setTexture(aniso);
     studio.subject->setTexture(aniso);
     auditGpuFrame(gfx, "rctrl", "aniso_mip", bg);
@@ -2263,7 +2269,6 @@ TEST_CASE("graphics.imageAudit.sprite2dCamera") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2339,7 +2344,6 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2350,6 +2354,7 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
+    (void)studio;
     Texture *sceneTex = capturePresented(gfx);
     REQUIRE(sceneTex != nullptr);
 
@@ -2384,7 +2389,7 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     gfx->setFont(gpuFont);
     gfx->setPresentOverlay(&printOverlayThunk, gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
-    auditGpuFrame(gfx, "overlay", "font_print", bg);
+    auditGpuFrame(gfx, "overlay", "font_draw_text", bg);
     gfx->setPresentOverlay(nullptr, nullptr);
 
     auto *parts = eve::particles::Particles::create();
@@ -2408,7 +2413,6 @@ TEST_CASE("graphics.imageAudit.voxelAndHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2470,7 +2474,6 @@ TEST_CASE("graphics.imageAudit.uiAndMap") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2553,7 +2556,6 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2566,7 +2568,7 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_still"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_still"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -2590,7 +2592,6 @@ TEST_CASE("graphics.imageAudit.skinnedPose") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2603,7 +2604,7 @@ TEST_CASE("graphics.imageAudit.skinnedPose") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_pose"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_pose"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -2650,7 +2651,6 @@ TEST_CASE("graphics.imageAudit.reloadTex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2680,7 +2680,6 @@ TEST_CASE("graphics.imageAudit.morphInflate") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2738,7 +2737,6 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2753,45 +2751,59 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
 
     auto *pg = eve::procgen::Procgen::create();
     REQUIRE(pg != nullptr);
-    eve::procgen::Params texP;
-    texP.setSeed(11);
-    texP.setSize(64, 64);
-    texP.setInt("colors", 6);
-    texP.setInt("pixelSize", 2);
-    texP.setInt("seamless", 1);
+    auto paramsResult = eve::procgen::Procgen::newParamsHandle();
+    REQUIRE(paramsResult.ok());
+    auto paramsHandle = std::move(paramsResult).takeValue();
+    auto paramsView   = eve::procgen::Procgen::resolve(paramsHandle);
+    REQUIRE(paramsView.isBound());
+    eve::procgen::Params &params = *paramsView;
+    params.setSeed(11);
+    params.setSize(64, 64);
+    params.setInt("colors", 6);
+    params.setInt("pixelSize", 2);
+    params.setInt("seamless", 1);
     const char *recipes[] = {"tex.soil", "tex.stone", "tex.marble"};
     for (const char *id : recipes) {
-        Texture *tex = pg->generateTexture(id, &texP, gfx);
-        REQUIRE(tex != nullptr);
-        studio.subject->setTexture(tex);
+        auto textureView = pg->generateTextureBorrowed(id, paramsHandle, gfx);
+        REQUIRE(textureView.isBound());
+        studio.subject->setTexture(textureView.get());
         auditGpuFrame(gfx, "procgen", id, bg);
     }
 
-    Texture *nrm = nullptr;
-    {
-        eve::image::ImageData *nimg = pg->generateNormalImage("tex.stone", &texP);
-        REQUIRE(nimg != nullptr);
-        nrm = gfx->newTexture(nimg);
-        delete nimg;
-    }
+    auto normalResult = pg->generateNormalImageHandle("tex.stone", paramsHandle);
+    REQUIRE(normalResult.ok());
+    auto normalHandle = std::move(normalResult).takeValue();
+    CHECK(!eve::procgen::Procgen::isStale(normalHandle));
+    auto normalView = eve::procgen::Procgen::resolve(normalHandle);
+    REQUIRE(normalView.isBound());
+    Texture *nrm = gfx->newTextureFromImageData(normalView.get(), true, true);
     REQUIRE(nrm != nullptr);
     studio.subject->setNormalTexture(nrm);
-    studio.subject->setTexture(pg->generateTexture("tex.stone", &texP, gfx));
+    auto stoneTextureView = pg->generateTextureBorrowed("tex.stone", paramsHandle, gfx);
+    REQUIRE(stoneTextureView.isBound());
+    studio.subject->setTexture(stoneTextureView.get());
     auditGpuFrame(gfx, "procgen", "stone_normal", bg);
     studio.subject->setNormalTexture(nullptr);
+    auto releaseNormalResult = eve::procgen::Procgen::release(normalHandle);
+    REQUIRE(releaseNormalResult.ok());
+    CHECK(eve::procgen::Procgen::isStale(normalHandle));
 
-    eve::procgen::Params meshP;
-    meshP.setSeed(1);
-    meshP.setInt("resolution", 16);
-    meshP.setString("field", "sphere");
-    meshP.setFloat("radius", 0.7f);
-    meshP.setFloat("isolevel", 0.f);
-    Mesh *mc = pg->generateMesh("mesh.marchingcubes", &meshP, gfx);
-    REQUIRE(mc != nullptr);
-    studio.subject->setMesh(mc);
-    studio.subject->setTexture(pg->generateTexture("tex.marble", &texP, gfx));
+    params.setSeed(1);
+    params.setInt("resolution", 16);
+    params.setString("field", "sphere");
+    params.setFloat("radius", 0.7f);
+    params.setFloat("isolevel", 0.f);
+    auto meshView = pg->generateMeshBorrowed("mesh.marchingcubes", paramsHandle, gfx);
+    REQUIRE(meshView.isBound());
+    studio.subject->setMesh(meshView.get());
+    auto marbleTextureView = pg->generateTextureBorrowed("tex.marble", paramsHandle, gfx);
+    REQUIRE(marbleTextureView.isBound());
+    studio.subject->setTexture(marbleTextureView.get());
     studio.subject->setScale(0.7f, 0.7f, 0.7f);
     auditGpuFrame(gfx, "procgen", "marching_cubes", bg);
+
+    auto releaseParamsResult = eve::procgen::Procgen::release(paramsHandle);
+    REQUIRE(releaseParamsResult.ok());
 
     Texture *sceneTex = capturePresented(gfx);
     REQUIRE(sceneTex != nullptr);
@@ -2814,7 +2826,6 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2903,23 +2914,35 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     maskSp->sprite()->visible = false;
 
     auto *pg = eve::procgen::Procgen::create();
-    eve::procgen::Params dungeonP;
-    dungeonP.setSeed(1);
-    dungeonP.setSize(25, 19);
-    eve::procgen::Grid2D *grid = pg->generate("dungeon.bsp", &dungeonP);
-    REQUIRE(grid != nullptr);
+    auto  paramsResult = eve::procgen::Procgen::newParamsHandle();
+    REQUIRE(paramsResult.ok());
+    auto paramsHandle = std::move(paramsResult).takeValue();
+    auto paramsView   = eve::procgen::Procgen::resolve(paramsHandle);
+    REQUIRE(paramsView.isBound());
+    paramsView->setSeed(1);
+    paramsView->setSize(25, 19);
+    auto gridResult = pg->generateHandle("dungeon.bsp", paramsHandle);
+    REQUIRE(gridResult.ok());
+    auto gridHandle = std::move(gridResult).takeValue();
+    auto gridView   = eve::procgen::Procgen::resolve(gridHandle);
+    REQUIRE(gridView.isBound());
     pg->setPaletteGid("audit", "wall", 2);
     pg->setPaletteGid("audit", "floor", 5);
     pg->setPaletteGid("audit", "corridor", 6);
     layer->setVisible(true);
-    REQUIRE(pg->applyToLayer(grid, "audit", layer));
+    auto applyResult = pg->applyToLayer(gridHandle, "audit", *layer);
+    REQUIRE(applyResult.ok());
     for (int y = 0; y < 19; ++y)
         for (int x = 0; x < 25; ++x)
             if (layer->getTile(x, y) == 0) layer->setTile(x, y, 5);
-    delete grid;
+    auto releaseGridResult = eve::procgen::Procgen::release(gridHandle);
+    REQUIRE(releaseGridResult.ok());
     presentMap();
     auditSwapchain(gfx, "mapfov", "dungeon_bsp", bg);
     layer->setVisible(false);
+
+    auto releaseParamsResult = eve::procgen::Procgen::release(paramsHandle);
+    REQUIRE(releaseParamsResult.ok());
 
     eve::map::TileLayer *hex = map->newLayer(18, 16, 32.f, 28.f);
     hex->config()->orientation = eve::map::MapOrientation::Hexagonal;
@@ -2956,7 +2979,6 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2969,7 +2991,7 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_part"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_part"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -3042,7 +3064,6 @@ TEST_CASE("graphics.imageAudit.materialHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3053,7 +3074,8 @@ TEST_CASE("graphics.imageAudit.materialHair") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
-    makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
+    auto *auditBanner =
+        makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
     studio.subject->setReceiveLight(false);
     studio.subject->setTexture(makeSolid(gfx, 220, 90, 70));
@@ -3073,6 +3095,35 @@ TEST_CASE("graphics.imageAudit.materialHair") {
     card->setCastShadow(false);
     auditGpuFrame(gfx, "mathair", "hair_material", bg);
 
+    // General-purpose transparent PBR materials must use the transparent
+    // forward queue without pretending to be hair. Isolate this frame from the
+    // preceding hair audit, then place one overlapping card behind the opaque
+    // sphere and one in front to make depth testing and compositing unambiguous.
+    card->setPosition(100.f, 100.f, 100.f);
+    auditBanner->sprite()->visible = false;
+    studio.subject->setTexture(makeSolid(gfx, 205, 210, 220));
+    Material *glassBack = gfx->newMaterial();
+    glassBack->setSurfaceMode("transparent");
+    glassBack->setTint(0.08f, 0.35f, 1.f, 0.48f);
+    glassBack->setSortPriority(0);
+    auto *backCard = Renderable3D::create();
+    backCard->setMesh(makeHairCard(gfx));
+    backCard->setMaterial(glassBack);
+    backCard->setPosition(-0.22f, -0.05f, -0.3f);
+    backCard->setCastShadow(false);
+
+    Material *glassFront = gfx->newMaterial();
+    glassFront->setSurfaceMode("transparent");
+    glassFront->setTint(1.f, 0.12f, 0.04f, 0.42f);
+    glassFront->setSortPriority(0);
+    auto *frontCard = Renderable3D::create();
+    frontCard->setMesh(makeHairCard(gfx));
+    frontCard->setMaterial(glassFront);
+    frontCard->setPosition(0.22f, -0.05f, 0.65f);
+    frontCard->setCastShadow(false);
+    auditGpuFrame(gfx, "mathair", "transparent_pbr_overlap", bg, false, {},
+                  "mathair_transparent_pbr_overlap.png");
+
     studio.subject->setVisible(false);
     makeSprite(makeSolid(gfx, 90, 140, 200), 0.f, 0.f, 200.f, 150.f, false);
     makeSprite(makeSolid(gfx, 200, 90, 70), 200.f, 0.f, 200.f, 150.f, false);
@@ -3086,7 +3137,6 @@ TEST_CASE("graphics.imageAudit.clusteredHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3141,12 +3191,11 @@ TEST_CASE("graphics.imageAudit.clusteredHair") {
     rc->compile();
 }
 
-TEST_CASE("graphics.imageAudit.clothFluid") {
+TEST_CASE("graphics.imageAudit.clothFluid2D") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3187,7 +3236,7 @@ TEST_CASE("graphics.imageAudit.clothFluid") {
     presentExtra([&]() { cloth.draw(gfx); });
     auditSwapchain(gfx, "phys2d", "cloth_wind", bg);
 
-    eve::physics::Fluid fluid(512);
+    eve::physics::Fluid2D fluid(512);
     fluid.setGravity(0.f, 0.f);
     fluid.setParticleSize(18.f);
     fluid.setColor(0.25f, 0.6f, 0.95f, 1.f);
@@ -3204,7 +3253,6 @@ TEST_CASE("graphics.imageAudit.particlePresets") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3215,6 +3263,7 @@ TEST_CASE("graphics.imageAudit.particlePresets") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
+    (void)studio;
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
     auto *parts = eve::particles::Particles::create();
@@ -3259,7 +3308,6 @@ TEST_CASE("graphics.imageAudit.mapPath") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3337,7 +3385,6 @@ TEST_CASE("graphics.imageAudit.reloadTexBytes") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3353,7 +3400,7 @@ TEST_CASE("graphics.imageAudit.reloadTexBytes") {
     auto *fs = eve::filesystem::Filesystem::create();
     REQUIRE(fs->setIdentity("ev_ut_image_audit_texbytes", true));
     REQUIRE(fs->setupWriteDirectory());
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     auto writeSolidPng = [&](uint8_t r, uint8_t g, uint8_t b) {
         eve::image::ImageData img(32, 32, "RGBA8");
@@ -3389,7 +3436,6 @@ TEST_CASE("graphics.imageAudit.postQuality") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3400,6 +3446,7 @@ TEST_CASE("graphics.imageAudit.postQuality") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto studio = makeStudio3D(gfx);
+    (void)studio;
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
     const int w = 400, h = 300;
 
@@ -3481,7 +3528,6 @@ TEST_CASE("graphics.imageAudit.dualIsoFov") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3569,7 +3615,6 @@ TEST_CASE("graphics.imageAudit.avatarImage") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3617,7 +3662,6 @@ TEST_CASE("graphics.imageAudit.avatarVroid") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3631,7 +3675,7 @@ TEST_CASE("graphics.imageAudit.avatarVroid") {
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
     studio.subject->setVisible(false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_vroid"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_vroid"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -3664,7 +3708,6 @@ TEST_CASE("graphics.imageAudit.box2dDebug") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3715,7 +3758,6 @@ TEST_CASE("graphics.imageAudit.imageRotate") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3726,7 +3768,7 @@ TEST_CASE("graphics.imageAudit.imageRotate") {
 
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     gfx->setBackgroundColor(Color(0.08f, 0.09f, 0.11f, 1.f));
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     ImageData src(64, 64, "RGBA8");
     auto *px = static_cast<uint8_t *>(src.getData());
     for (int y = 0; y < 64; ++y) {
@@ -3778,7 +3820,6 @@ TEST_CASE("graphics.imageAudit.sceneGraph") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3791,7 +3832,9 @@ TEST_CASE("graphics.imageAudit.sceneGraph") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    eve::scene::SceneHost *host = eve::scene::SceneHost::createHost("audit3d");
+    auto hostResult = eve::scene::SceneHost::createHost("audit3d");
+    REQUIRE(hostResult.ok());
+    eve::scene::SceneHost *host = hostResult.value();
     REQUIRE(host != nullptr);
     host->setTree(eve::scene::node(
         "root", {eve::scene::node("subject").withPosition(0.f, 0.15f, 0.f).withScale(0.55f)}));
@@ -3825,7 +3868,6 @@ TEST_CASE("graphics.imageAudit.fovHeightHex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3903,5 +3945,3 @@ TEST_CASE("graphics.imageAudit.fovHeightHex") {
     presentMap();
     auditSwapchain(gfx, "fovmore", "hex_topology", bg);
 }
-
-

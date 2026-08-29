@@ -1,18 +1,38 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "sceneloader/SceneLoader.h"
+#include "filesystem/Filesystem.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
+#include "model3d/Model3D.h"
 #include "scene/NodeDesc.h"
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
-#include "graphics/Graphics.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "filesystem/Filesystem.h"
-#include "model3d/Model3D.h"
+#include "sceneloader/SceneLoader.h"
 #include "window/Window.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
 
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
@@ -20,6 +40,7 @@
 
 #include <SDL2/SDL.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
@@ -37,15 +58,25 @@ EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool approx(float a, float b, float eps = 1e-4f) { return std::fabs(a - b) < eps; }
 
+template <class T>
+T *sceneValue(eve::Result<T *> result) {
+    if (!result.ok()) return nullptr;
+    return result.value();
+}
+
+SceneNode *sceneNode(SceneHost *host, const std::string &id) {
+    if (!host) return nullptr;
+    return sceneValue(host->findById(id));
+}
+
 void openGfx(eve::window::Window *&win, eve::graphics::Graphics *&gfx, int w = 320, int h = 240) {
     win = eve::window::Window::create();
     gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
+    s.width  = static_cast<uint16_t>(w);
+    s.height = static_cast<uint16_t>(h);
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
 }
@@ -127,7 +158,7 @@ std::string buildPbrGltf() {
 // ---- pure diff / apply logic (no graphics required) ----
 
 TEST_CASE("SceneLoader.diff.addRemoveModifyMove") {
-    SceneHost *h = SceneHost::createHost("sl");
+    SceneHost *h = sceneValue(SceneHost::createHost("sl"));
     h->setTree(node("root", {node("a"), node("b").withPosition(1.f, 0.f, 0.f), node("c", {node("c1")})}));
 
     // b modified, a removed, d added, c stays.
@@ -145,18 +176,18 @@ TEST_CASE("SceneLoader.diff.addRemoveModifyMove") {
     CHECK_EQ(d.moved, 0);
 
     REQUIRE(SceneLoader::applyTreeDiff(h, newRoot, d, nullptr, nullptr));
-    CHECK(h->findById("a") == nullptr);
-    CHECK(h->findById("d") != nullptr);
-    CHECK(h->findById("b") != nullptr);
-    CHECK(approx(h->findById("b")->x, 9.f));
-    CHECK(h->findById("c") != nullptr);
-    CHECK(h->findById("c1") != nullptr);
+    CHECK(sceneNode(h, "a") == nullptr);
+    CHECK(sceneNode(h, "d") != nullptr);
+    CHECK(sceneNode(h, "b") != nullptr);
+    CHECK(approx(sceneNode(h, "b")->x, 9.f));
+    CHECK(sceneNode(h, "c") != nullptr);
+    CHECK(sceneNode(h, "c1") != nullptr);
     // Root keeps its identity.
     CHECK(h->getRoot()->id == "root");
 }
 
 TEST_CASE("SceneLoader.diff.movesReparent") {
-    SceneHost *h = SceneHost::createHost("slmove");
+    SceneHost *h = sceneValue(SceneHost::createHost("slmove"));
     h->setTree(node("root", {node("a"), node("b")}));
 
     // Move b under a.
@@ -172,7 +203,7 @@ TEST_CASE("SceneLoader.diff.movesReparent") {
 }
 
 TEST_CASE("SceneLoader.diff.unchangedIsNoop") {
-    SceneHost *h = SceneHost::createHost("slnop");
+    SceneHost *h = sceneValue(SceneHost::createHost("slnop"));
     h->setTree(node("root", {node("m1").withPosition(1.f, 2.f, 3.f), node("m2")}));
 
     NodeDesc same = node("root", {node("m1").withPosition(1.f, 2.f, 3.f), node("m2")});
@@ -184,7 +215,7 @@ TEST_CASE("SceneLoader.diff.unchangedIsNoop") {
 }
 
 TEST_CASE("SceneLoader.apply.preservesUnchangedRenderableIdentity") {
-    SceneHost *h = SceneHost::createHost("slid");
+    SceneHost *h = sceneValue(SceneHost::createHost("slid"));
     h->setTree(node("root", {node("keep"), node("gone")}));
 
     // Manually link a Renderable3D to "keep" (pure ECS entity; no mesh upload here).
@@ -199,16 +230,42 @@ TEST_CASE("SceneLoader.apply.preservesUnchangedRenderableIdentity") {
     CHECK_EQ(d.added, 1);
 
     REQUIRE(SceneLoader::applyTreeDiff(h, newRoot, d, nullptr, nullptr));
-    SceneNode *after = h->findById("keep");
+    SceneNode *after = sceneNode(h, "keep");
     REQUIRE(after != nullptr);
     // The unchanged GameObject keeps its linked Renderable3D — no rebuild / re-upload.
     REQUIRE_EQ(after->links.size(), 1u);
     CHECK(after->links[0].target == r);
     CHECK(after->links[0].kind == eve::scene::findLinkKind("renderable3d"));
-    CHECK(h->findById("keep2") != nullptr);
-    CHECK(h->findById("gone") == nullptr);
+    CHECK(sceneNode(h, "keep2") != nullptr);
+    CHECK(sceneNode(h, "gone") == nullptr);
 
     ecs::DestroyEntity(r);
+}
+
+TEST_CASE("SceneLoader.importConventions.lodCollisionSocket") {
+    aiScene scene{};
+    scene.mRootNode = new aiNode("Root");
+    scene.mRootNode->mNumChildren = 4;
+    scene.mRootNode->mChildren = new aiNode *[4];
+    scene.mRootNode->mChildren[0] = new aiNode("Building_LOD0");
+    scene.mRootNode->mChildren[1] = new aiNode("Building_LOD1");
+    scene.mRootNode->mChildren[2] = new aiNode("UCX_Building");
+    scene.mRootNode->mChildren[3] = new aiNode("SOCKET_Door");
+    for (unsigned i = 0; i < 4; ++i) scene.mRootNode->mChildren[i]->mParent = scene.mRootNode;
+
+    NodeDesc root = SceneLoader::buildNodeDesc(&scene);
+    REQUIRE_EQ(root.children.size(), 4u);
+    CHECK(root.children[0].visible);
+    CHECK(!root.children[1].visible);
+    CHECK(!root.children[2].visible);
+    CHECK(std::find(root.children[0].tags.begin(), root.children[0].tags.end(), "lod:0") !=
+          root.children[0].tags.end());
+    CHECK(std::find(root.children[1].tags.begin(), root.children[1].tags.end(), "lod:1") !=
+          root.children[1].tags.end());
+    CHECK(std::find(root.children[2].tags.begin(), root.children[2].tags.end(), "collision") !=
+          root.children[2].tags.end());
+    CHECK(std::find(root.children[3].tags.begin(), root.children[3].tags.end(), "model-socket") !=
+          root.children[3].tags.end());
 }
 
 // ---- integration: decode a real 3D scene into ECS GameObjects + hot reload ----
@@ -265,13 +322,17 @@ TEST_CASE("SceneLoader.load.buildsGameObjectTreeWithRenderables") {
 
     // Hot-reload with an identical file is a fast no-op.
     SceneDiff out;
-    CHECK(!loader->reload(name, &out));
+    auto      unchanged = loader->reload(name, &out);
+    REQUIRE(unchanged.ok());
+    CHECK(!unchanged.value());
     CHECK(out.empty());
 
     // Overwrite with a two-cube scene (two `o` objects) -> diff detects an add.
     const std::string twoCubes = std::string("o cubeA\n") + kCubeObj + "o cubeB\n" + kCubeObj;
     fs->write(name, twoCubes.data(), twoCubes.size());
-    REQUIRE(loader->reload(name, &out));
+    auto changed = loader->reload(name, &out);
+    REQUIRE(changed.ok());
+    REQUIRE(changed.value());
     CHECK_GT(out.added, 0);
     // A second (unchanged) mesh object still has a linked Renderable3D.
     std::vector<SceneNode *> linked2 = h->findAllLinked();
@@ -315,11 +376,11 @@ TEST_CASE("SceneLoader.bounds.fillFromMeshAndUnion") {
     NodeDesc root = SceneLoader::buildNodeDesc(scene, &slots);
     REQUIRE(slots.count("tank_mesh0") == 1u);
 
-    SceneHost *h = SceneHost::createHost("boundstest");
+    SceneHost *h = sceneValue(SceneHost::createHost("boundstest"));
     h->setTree(std::move(root));
     SceneLoader::fillSceneBounds(h, slots);
 
-    SceneNode *meshN = h->findById("tank_mesh0");
+    SceneNode *meshN = sceneNode(h, "tank_mesh0");
     REQUIRE(meshN != nullptr);
     CHECK(meshN->hasBounds);
     CHECK(approx(meshN->bminX, -1.f));
@@ -327,7 +388,7 @@ TEST_CASE("SceneLoader.bounds.fillFromMeshAndUnion") {
     CHECK(approx(meshN->bmaxZ, 1.f));
 
     // ancestor union: mesh child has identity TRS → same local AABB
-    SceneNode *tank = h->findById("tank");
+    SceneNode *tank = sceneNode(h, "tank");
     REQUIRE(tank != nullptr);
     CHECK(tank->hasBounds);
     CHECK(approx(tank->bminX, -1.f));
@@ -340,10 +401,10 @@ TEST_CASE("SceneLoader.bounds.fillFromMeshAndUnion") {
     CHECK(approx(tank->bmaxX, 6.f));
 
     // fresh host: transformed child union lands in parent local space
-    SceneHost *h2 = SceneHost::createHost("boundstest2");
+    SceneHost *h2 = sceneValue(SceneHost::createHost("boundstest2"));
     h2->setTree(node("tank", {node("tank_mesh0").withPosition(5.f, 0.f, 0.f)}));
     SceneLoader::fillSceneBounds(h2, slots);
-    SceneNode *tank2 = h2->findById("tank");
+    SceneNode *tank2 = sceneNode(h2, "tank");
     REQUIRE(tank2 != nullptr);
     CHECK(approx(tank2->bminX, 4.f));
     CHECK(approx(tank2->bmaxX, 6.f));
@@ -352,7 +413,7 @@ TEST_CASE("SceneLoader.bounds.fillFromMeshAndUnion") {
     NodeDesc newRoot = node("tank", {node("tank_mesh0")});
     SceneDiff d = SceneLoader::diffTree(h, newRoot);
     REQUIRE(SceneLoader::applyTreeDiff(h, newRoot, d, nullptr, nullptr));
-    SceneNode *kept = h->findById("tank_mesh0");
+    SceneNode *kept = sceneNode(h, "tank_mesh0");
     REQUIRE(kept != nullptr);
     CHECK(kept->hasBounds);
     CHECK(approx(kept->bminX, -1.f));
@@ -460,7 +521,9 @@ TEST_CASE("SceneLoader.load.pbrTextureCacheReusesTexture") {
 
     // Reload path stays healthy (diff-based) and reuses the same cached texture.
     SceneDiff out;
-    CHECK(!loader->reload("sl_cache.obj", &out));
+    auto      unchanged = loader->reload("sl_cache.obj", &out);
+    REQUIRE(unchanged.ok());
+    CHECK(!unchanged.value());
     CHECK(out.empty());
 
     loader->unload("sl_cache.obj");
