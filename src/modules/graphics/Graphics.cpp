@@ -4,10 +4,11 @@
 #include "graphics/DepthPyramid.h"
 #include "common/Capability.h"
 #include "common/config.h"
+#include "font/FontData.h"
+#include "graphics/ArtifactProvider.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
-#include "font/FontData.h"
 
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
@@ -127,6 +128,14 @@ void setCanvasScript(Graphics *gfx, ssq::Object obj) {
     gfx->setCanvas(obj.toPtrUnsafe<Canvas *>());
 }
 
+void setShaderScript(Graphics *gfx, ssq::Object obj) {
+    if (obj.isNull()) {
+        gfx->setShader();
+        return;
+    }
+    gfx->setShader(obj.toPtrUnsafe<Shader *>());
+}
+
 }  // namespace
 
 Graphics::Graphics() {
@@ -136,9 +145,13 @@ Graphics::Graphics() {
     // by the time it is used; see common/WindowSurfaceHost.h.
     eve::cap::provide<IWindowSurfaceHost>(this);
     registerGraphicsCapabilities();
+    registerGraphicsArtifactProvider(this);
 }
 
 Graphics::~Graphics() {
+    // Derived backends detach first, while their virtual releaseMesh boundary
+    // is still live. This base path covers host-only Graphics subclasses.
+    detachGraphicsArtifactProvider(this);
     // Out-of-line so unique_ptr members of effect classes (Outline, AO, GI, …)
     // are destroyed where the complete types are visible.
 }
@@ -233,7 +246,7 @@ void Graphics::expose(ssq::Table& table) {
 
 #ifndef EVENGINE_WEBGPU
     auto fontCls =
-        table.addClass<Font>("Font", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
+        table.addClass<Font>("GraphicsFont", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
     fontCls.addFunc("getHeight", &Font::getHeight);
     fontCls.addFunc("getAscent", &Font::getAscent);
     fontCls.addFunc("getBaseline", &Font::getBaseline);
@@ -342,6 +355,9 @@ void Graphics::expose(ssq::Table& table) {
     cam.addFunc("setTarget", &Camera3D::setTarget);
     cam.addFunc("setUp", &Camera3D::setUp);
     cam.addFunc("setFov", &Camera3D::setFov);
+    cam.addFunc("setOrthographic", &Camera3D::setOrthographic);
+    cam.addFunc("setPerspective", &Camera3D::setPerspective);
+    cam.addFunc("setClipPlanes", &Camera3D::setClipPlanes);
     cam.addFunc("setActive", &Camera3D::setActive);
     cam.addFunc("setAmbient", &Camera3D::setAmbient);
     cam.addFunc("setEnvMap", &Camera3D::setEnvMap);
@@ -1003,6 +1019,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newFont", &Graphics::newFont);
     cls.addFunc("setFont", &Graphics::setFont);
     cls.addFunc("getFont", &Graphics::getFont);
+    cls.addFunc("drawText", &Graphics::drawTextRGBA);
     cls.addFunc("print", &Graphics::printRGBA);
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
@@ -1027,6 +1044,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShader));
     cls.addFunc("newShaderFromWgsl", &Graphics::newShaderFromWgsl);
     cls.addFunc("newMeshShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newMeshShader));
+    cls.addFunc("newMeshShaderVF", &Graphics::newMeshShaderVF);
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
@@ -1036,7 +1054,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newWater", &Graphics::newWater);
     cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShaderFromSpvFile));
-    cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader*)>(&Graphics::setShader));
+    cls.addFunc("setShader", std::function<void(Graphics *, ssq::Object)>(setShaderScript));
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
     cls.addFunc("begin3DFrame", &Graphics::begin3DFrame);
@@ -1057,6 +1075,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getWidth", &Graphics::getWidth);
     cls.addFunc("getHeight", &Graphics::getHeight);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
+    cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
     cls.addFunc("setMsaaSamples", &Graphics::setMsaaSamples);
@@ -1387,12 +1406,20 @@ void Graphics::print(const std::string& text, float x, float y, const Color& col
         eve::debug::rtDraw("print", "no-font");
         throw eve::Exception("Graphics::print: no font set (call setFont first)");
     }
-    eve::debug::rtBind("font", "current");
-    eve::debug::rtDraw("print", text.empty() ? "" : "text");
+    drawText(currentFont, text, x, y, color, scale);
+}
 
-    font::FontData* data          = currentFont->getData();
+void Graphics::drawText(Font* font, const std::string& text, float x, float y, const Color& color, float scale) {
+    if (font == nullptr) {
+        eve::debug::rtDraw("drawText", "no-font");
+        throw eve::Exception("Graphics::drawText: font must not be null");
+    }
+    eve::debug::rtBind("font", "explicit");
+    eve::debug::rtDraw("drawText", text.empty() ? "" : "text");
+
+    eve::font::FontData* data     = font->getData();
     float           penX          = x;
-    float           baseline      = y + currentFont->getBaseline() * scale;
+    float           baseline      = y + font->getBaseline() * scale;
     int             prevCodepoint = -1;
 
     size_t i = 0;
@@ -1403,11 +1430,11 @@ void Graphics::print(const std::string& text, float x, float y, const Color& col
 
         if (prevCodepoint >= 0) penX += data->getKerning(prevCodepoint, code) * scale;
 
-        if (const Font::Glyph* g = currentFont->findGlyph(code)) {
+        if (const Font::Glyph* g = font->findGlyph(code)) {
             if (g->width > 0 && g->height > 0) {
                 float gx = penX + static_cast<float>(g->bearingX) * scale;
                 float gy = baseline - static_cast<float>(g->bearingY) * scale;
-                drawTexturedRectUV(currentFont->getTexture(), gx, gy, static_cast<float>(g->width) * scale,
+                drawTexturedRectUV(font->getTexture(), gx, gy, static_cast<float>(g->width) * scale,
                                    static_cast<float>(g->height) * scale, g->u0, g->v0, g->u1, g->v1, color);
             }
             penX += static_cast<float>(g->advance) * scale;
@@ -1419,4 +1446,5 @@ void Graphics::print(const std::string& text, float x, float y, const Color& col
         prevCodepoint = code;
     }
 }
+
 }  // namespace eve::graphics

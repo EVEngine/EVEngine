@@ -18,7 +18,14 @@ class IVehicleMobility {
 public:
     virtual ~IVehicleMobility() = default;
 
-    /** @brief 稳定名字（"kinematic" / "wheel" / "track" / "hover" / ...）。 */
+    /**
+     * @brief 稳定名字（"kinematic" / "wheel" / "track" / "hover" / ...）。
+     * @return Borrowed non-null pointer to immutable provider-owned/static text.
+     * @ownership The mobility implementation owns the storage; callers must not free it.
+     * @lifetime Valid while the implementation is registered; copy the text if retaining it.
+     * @thread Query on the registry/vehicle thread unless the implementation documents a broader guarantee.
+     * @reentrancy This accessor must not invoke callbacks or mutate the registry.
+     */
     virtual const char* name() const = 0;
 
     /** @brief 每帧推进：把 v.input() 转成 v.motion() 的变化。 */

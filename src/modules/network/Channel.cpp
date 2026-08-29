@@ -1,11 +1,11 @@
 #include "network/Channel.h"
-#include "network/TcpSocket.h"
-#include "network/Network.h"
-#include "network/NetTypes.h"
-#include "data/ByteData.h"
-#include "event/Event.h"
 #include "common/Assert.h"
 #include "common/Module.h"
+#include "data/ByteData.h"
+#include "network/NetTypes.h"
+#include "network/Network.h"
+#include "network/TcpSocket.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <cstring>
 
@@ -104,9 +104,9 @@ void Channel::feed(const std::vector<char>& bytes) {
             c.handle = this;
             c.bytes  = std::move(payload);
             // Emit directly via event on main thread — feed is called from pump
-            using eve::event::Variant;
-            using eve::event::Message;
-            auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+            using eve::platform_event::Message;
+            using eve::platform_event::Variant;
+            auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
             if (ev) {
                 eve::data::ByteData* bd = nullptr;
                 if (c.bytes && !c.bytes->empty())

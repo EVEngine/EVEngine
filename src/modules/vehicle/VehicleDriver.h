@@ -30,7 +30,14 @@ class IVehicleDriver {
 public:
     virtual ~IVehicleDriver() = default;
 
-    /** @brief 稳定名字（"player" 等）。 */
+    /**
+     * @brief 稳定名字（"player" 等）。
+     * @return Borrowed non-null pointer to immutable provider-owned/static text.
+     * @ownership The driver implementation owns the storage; callers must not free it.
+     * @lifetime Valid while the driver implementation is registered; copy the text if retaining it.
+     * @thread Query on the registry/vehicle thread unless the implementation documents a broader guarantee.
+     * @reentrancy This accessor must not invoke callbacks or mutate the registry.
+     */
     virtual const char* name() const = 0;
 
     /** @brief 采样 occupantId 乘客的控制；返回是否有效（有效则填充 out）。 */

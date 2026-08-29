@@ -16,6 +16,9 @@ namespace eve::building {
 class PlacementWorld;
 class Ghost;
 
+/** @brief Outcome of restoring an exact placement snapshot. */
+enum class PlacementRestoreStatus { Restored, Rejected };
+
 class PlacementSystem {
 public:
     using ValidateFn = std::function<bool(const PlacementWorld &world, const PlacementQuery &q,
@@ -112,6 +115,16 @@ public:
     static int placeAtWorld3D(PlacementWorld *world, const std::string &buildingId, float worldX,
                               float worldY, float worldZ, float rotationDeg = 0.f);
     static int placeGhost(PlacementWorld *world, Ghost *ghost);
+
+    /**
+     * @brief Restore an exact persistent instance for editor undo or snapshot loading.
+     * @param world Destination placement world.
+     * @param placed Complete instance value with a positive unused instance id.
+     * @param reason Optional validation failure token.
+     * @return Restored when validation passed and the exact id/pose was restored; otherwise Rejected.
+     */
+    static PlacementRestoreStatus restoreExact(PlacementWorld *world, const PlacedBuilding &placed,
+                                                std::string *reason = nullptr);
 
     static bool removeBuilding(PlacementWorld *world, int instanceId);
     static bool moveBuilding(PlacementWorld *world, int instanceId, int cellX, int cellY,

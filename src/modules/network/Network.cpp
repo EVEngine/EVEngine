@@ -1,16 +1,16 @@
 #include "network/Network.h"
-#include "network/NetWorker.h"
-#include "network/TcpSocket.h"
-#include "network/UdpSocket.h"
-#include "network/HttpRequest.h"
+#include "data/ByteData.h"
 #include "network/Channel.h"
-#include "network/Session.h"
-#include "network/NetStream.h"
-#include "network/UdpLink.h"
+#include "network/HttpRequest.h"
 #include "network/NetHost.h"
 #include "network/NetRpc.h"
-#include "data/ByteData.h"
-#include "event/Event.h"
+#include "network/NetStream.h"
+#include "network/NetWorker.h"
+#include "network/Session.h"
+#include "network/TcpSocket.h"
+#include "network/UdpLink.h"
+#include "network/UdpSocket.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <Poco/Net/StreamSocket.h>
 #include <Poco/Net/ServerSocket.h>
@@ -184,7 +184,44 @@ bool Network::getVerifySsl() const {
 }
 
 void Network::post(NetCompletion c) {
+    ++completions_;
+    ++telemetryRevision_;
+    if (c.bytes && (c.type == NetEvType::Data || c.type == NetEvType::HttpResp))
+        receivedBytes_ += c.bytes->size();
+    if (c.type == NetEvType::Err) ++errors_;
+    if (c.type == NetEvType::Conn && c.reason == "ok") ++connections_;
     if (worker_) worker_->post(std::move(c));
+}
+
+void Network::recordSent(size_t bytes) {
+    sentBytes_ += bytes;
+    ++telemetryRevision_;
+}
+
+NetTelemetrySnapshot Network::telemetrySnapshot() const {
+    NetTelemetrySnapshot result;
+    result.revision = telemetryRevision_.load();
+    result.sentBytes = sentBytes_.load();
+    result.receivedBytes = receivedBytes_.load();
+    result.completions = completions_.load();
+    result.errors = errors_.load();
+    result.connections = connections_.load();
+    {
+        std::lock_guard<std::mutex> lock(watchMu_);
+        result.watchedTcp = watchedTcp_.size();
+        result.watchedUdp = watchedUdp_.size();
+        for (const auto* socket : watchedTcp_) if (socket) result.queuedTcpBytes += socket->pendingSendBytes();
+    }
+    {
+        std::lock_guard<std::mutex> lock(channelMu_);
+        result.channels = channels_.size();
+    }
+    return result;
+}
+
+void Network::resetTelemetry() {
+    sentBytes_ = receivedBytes_ = completions_ = errors_ = connections_ = 0;
+    ++telemetryRevision_;
 }
 
 void Network::drainCompletions(std::vector<NetCompletion>& out) {
@@ -193,34 +230,43 @@ void Network::drainCompletions(std::vector<NetCompletion>& out) {
 
 void Network::watchTcp(TcpSocket* sock) {
     std::lock_guard<std::mutex> lock(watchMu_);
-    if (std::find(watchedTcp_.begin(), watchedTcp_.end(), sock) == watchedTcp_.end())
+    if (std::find(watchedTcp_.begin(), watchedTcp_.end(), sock) == watchedTcp_.end()) {
         watchedTcp_.push_back(sock);
+        ++telemetryRevision_;
+    }
 }
 
 void Network::unwatchTcp(TcpSocket* sock) {
     std::lock_guard<std::mutex> lock(watchMu_);
+    const auto before=watchedTcp_.size();
     watchedTcp_.erase(std::remove(watchedTcp_.begin(), watchedTcp_.end(), sock), watchedTcp_.end());
+    if(before!=watchedTcp_.size())++telemetryRevision_;
 }
 
 void Network::watchUdp(UdpSocket* sock) {
     std::lock_guard<std::mutex> lock(watchMu_);
-    if (std::find(watchedUdp_.begin(), watchedUdp_.end(), sock) == watchedUdp_.end())
+    if (std::find(watchedUdp_.begin(), watchedUdp_.end(), sock) == watchedUdp_.end()) {
         watchedUdp_.push_back(sock);
+        ++telemetryRevision_;
+    }
 }
 
 void Network::unwatchUdp(UdpSocket* sock) {
     std::lock_guard<std::mutex> lock(watchMu_);
+    const auto before=watchedUdp_.size();
     watchedUdp_.erase(std::remove(watchedUdp_.begin(), watchedUdp_.end(), sock), watchedUdp_.end());
+    if(before!=watchedUdp_.size())++telemetryRevision_;
 }
 
 void Network::bindChannel(TcpSocket* sock, Channel* ch) {
     std::lock_guard<std::mutex> lock(channelMu_);
     channels_[sock] = ch;
+    ++telemetryRevision_;
 }
 
 void Network::unbindChannel(TcpSocket* sock) {
     std::lock_guard<std::mutex> lock(channelMu_);
-    channels_.erase(sock);
+    if(channels_.erase(sock))++telemetryRevision_;
 }
 
 Channel* Network::channelFor(TcpSocket* sock) const {
@@ -311,11 +357,11 @@ void Network::pollSockets() {
 }
 
 void Network::emitCompletion(const NetCompletion& c) {
-    auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
 
-    using eve::event::Variant;
-    using eve::event::Message;
+    using eve::platform_event::Message;
+    using eve::platform_event::Variant;
 
     std::vector<Variant> args;
     switch (c.type) {

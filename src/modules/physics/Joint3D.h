@@ -1,5 +1,7 @@
 #pragma once
 
+#include "physics/PhysicsHandles.h"
+
 #include <box3d/id.h>
 
 #include <string>
@@ -16,8 +18,8 @@ public:
     enum class Kind { Distance, Revolute, Prismatic, Spherical, Wheel };
 
     /** @brief Internal wrapper constructor; use World3D::new*Joint. */
-    Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, b3JointId jointId, Kind kind,
-            int id);
+    Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, b3JointId jointId, PhysicsJointHandle runtimeHandle,
+            Kind kind, int id);
     ~Joint3D();
 
     Joint3D(const Joint3D &) = delete;
@@ -25,12 +27,16 @@ public:
 
     /** @brief Stable world-local identifier. */
     int getId() const { return id_; }
+    /** @brief Process-local generation-qualified handle owned by World3D. */
+    [[nodiscard]] PhysicsJointHandle runtimeHandle() const noexcept { return runtimeHandle_; }
     /** @brief Joint kind: "distance", "revolute", "prismatic", "spherical", or "wheel". */
     std::string getKind() const;
     /** @brief Stable ID of attached body A, or -1 after invalidation. */
     int getBodyAId() const;
     /** @brief Stable ID of attached body B, or -1 after invalidation. */
     int getBodyBId() const;
+    /** @brief Owning world, or null after joint destruction. */
+    [[nodiscard]] World3D *getWorld() const noexcept { return world_; }
     /** @brief Enables or disables collision between the attached bodies. */
     void setCollideConnected(bool collide);
     /** @brief Whether attached bodies may collide. */
@@ -149,6 +155,7 @@ private:
     Body3D *bodyA_ = nullptr;
     Body3D *bodyB_ = nullptr;
     b3JointId jointId_{};
+    PhysicsJointHandle runtimeHandle_ = PhysicsJointHandle::invalid();
     Kind kind_ = Kind::Distance;
     int id_ = 0;
 };

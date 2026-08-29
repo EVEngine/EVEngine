@@ -254,8 +254,9 @@ public:
         if (outHeight) *outHeight = vh;
         if (vw <= 0 || vh <= 0) return "{\"error\":\"empty viewport\"}";
         const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-        const glm::mat4 projM = perspectiveVulkanRH_ZO(degToRad(d->fovYDeg), float(vw) / float(vh),
-                                                       d->nearZ, d->farZ);
+        const glm::mat4 projM = cameraProjectionVulkanRH_ZO(
+            d->orthographic, degToRad(d->fovYDeg), d->orthoHeight,
+            float(vw) / float(vh), d->nearZ, d->farZ);
         const glm::mat4 viewProj = projM * viewM;
 
         std::vector<Graphics::EntityIdDraw> draws;
@@ -324,8 +325,9 @@ public:
             return false;
         }
         const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-        const glm::mat4 projM = perspectiveVulkanRH_ZO(degToRad(d->fovYDeg), float(vw) / float(vh),
-                                                       d->nearZ, d->farZ);
+        const glm::mat4 projM = cameraProjectionVulkanRH_ZO(
+            d->orthographic, degToRad(d->fovYDeg), d->orthoHeight,
+            float(vw) / float(vh), d->nearZ, d->farZ);
         const glm::mat4 viewProj = projM * viewM;
         std::vector<Graphics::EntityIdDraw> draws;
         int id = 1;

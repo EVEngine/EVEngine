@@ -10,15 +10,19 @@
 #include "common/Module.h"
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
-#include "graphics/SurfaceMode.h"
 #include "graphics/Canvas.h"
+#include "graphics/ICanvasFactory.h"
+#include "graphics/ICanvasTarget.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
+#include "graphics/GpuDrivenTypes.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/IGraphics2D.h"
 #include "graphics/IGraphics3D.h"
 #include "graphics/IPostFX.h"
 #include "graphics/IResourceFactory.h"
-#include "graphics/GpuDrivenTypes.h"
+#include "graphics/ISolidRectRenderer.h"
+#include "graphics/SurfaceMode.h"
 
 struct aiMesh;
 
@@ -36,6 +40,20 @@ class GlobalIllumination;
 class GrassField;
 class Material;
 class Mesh;
+
+/**
+ * @brief Backend-owned layout facts for a mesh uploaded through Graphics.
+ *
+ * Implementations return this only for a live mesh owned by that backend. The
+ * descriptor is deliberately small so consumers can verify upload parity
+ * without depending on Vulkan or WebGPU headers.
+ */
+struct MeshBackendDescriptor {
+    std::uint32_t vertexCount      = 0;
+    std::uint32_t indexCount       = 0;
+    std::uint32_t vertexStride     = 0;
+    std::uint32_t indexElementSize = 0;
+};
 class Outline;
 class Quad;
 class RenderControl;
@@ -61,7 +79,10 @@ class Graphics : public Module,
                  public IWindowSurfaceHost,
                  public IGraphics2D,
                  public IGraphics3D,
+                 public ICanvasFactory,
+                 public ICanvasTarget,
                  public IResourceFactory,
+                 public ISolidRectRenderer,
                  public IPostFX {
 public:
     Module_REG(Graphics);
@@ -168,6 +189,51 @@ public:
     virtual uint32_t gpuDrivenReflectionProbeSlot(Texture *cubemap) {
         (void)cubemap;
         return kInvalidGpuDrivenSlot;
+    }
+
+    // ---- GPU-resident 2D particles ---------------------------------------
+
+    /** @brief True when this backend supports resident compute + indirect particle draws. */
+    virtual bool supportsGpuParticles() const { return false; }
+
+    /** @brief True when the current frame topology can accept a GPU particle compute section. */
+    virtual bool canSubmitGpuParticles() const { return false; }
+
+    /** @brief Allocate backend-owned resident state for one particle emitter. */
+    virtual GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) {
+        (void)capacity;
+        return kInvalidGpuParticleHandle;
+    }
+
+    /** @brief Release a GPU particle emitter. Explicit release may wait for in-flight frames. */
+    virtual void releaseGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
+
+    /** @brief Clear resident state before the next submitted frame. */
+    virtual void resetGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
+
+    /** @brief Upload one simulation step and optional spawn commands. */
+    virtual bool updateGpuParticleEmitter(GpuParticleHandle handle,
+                                          const GpuParticleUpdate& update,
+                                          const GpuParticleSpawn* spawns,
+                                          std::uint32_t spawnCount) {
+        (void)handle;
+        (void)update;
+        (void)spawns;
+        (void)spawnCount;
+        return false;
+    }
+
+    /** @brief Queue an indirect draw at the current 2D overlay position. */
+    virtual bool drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) {
+        (void)handle;
+        (void)draw;
+        return false;
+    }
+
+    /** @brief Return the latest fence-complete counters without waiting on the GPU. */
+    virtual GpuParticleStats getGpuParticleStats(GpuParticleHandle handle) const {
+        (void)handle;
+        return {};
     }
 
     /**
@@ -497,6 +563,20 @@ public:
                                          const Color &tint) = 0;
 
     /**
+     * @brief Refract the resolved 3D scene color through a displacement texture.
+     *
+     * The displacement
+     * texture stores a signed screen-space offset in red/green and coverage
+     * in alpha. Returns false when no
+     * resolved scene color is available for the current frame.
+     */
+    virtual bool drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
+                                                   float degrees, float u0, float v0, float u1, float v1,
+                                                   float strengthPixels, float opacity, bool rotatedUV = false) {
+        return false;
+    }
+
+    /**
      * @brief Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
      * normal may be null → treated as flat (0.5,0.5,1) only if a default normal tex exists.
      */
@@ -528,6 +608,16 @@ public:
      */
     virtual Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                     int vertexCount, const uint32_t *indices, int indexCount) = 0;
+
+    /**
+     * @brief Describe a live mesh created by this Graphics backend.
+     * @param mesh Borrowed mesh handle returned by this backend.
+     * @return Backend layout facts, or empty for an unknown/foreign handle.
+     */
+    [[nodiscard]] virtual std::optional<MeshBackendDescriptor> describeMesh(Mesh *mesh) const {
+        (void)mesh;
+        return std::nullopt;
+    }
 
     /**
      * @brief In-place update of a mesh's vertex/index data (CPU -> host-visible VBO).
@@ -707,6 +797,8 @@ public:
      * Valid after begin3DFrame until present; nullptr when 3D did not run offscreen.
      */
     virtual Texture *getSceneColorTexture() { return nullptr; }
+    /** @brief Sampleable scene linear depth in [0,1], or nullptr when unavailable. */
+    virtual Texture* getSceneLinearDepthTexture() { return nullptr; }
 
     /**
      * @brief Per-pixel mesh entity-ID pass. Renders each EntityIdDraw's mesh with the
@@ -1045,25 +1137,48 @@ public:
     /**
      * @brief Build a GPU font (glyph atlas texture) from decoded font data.
      * Rasterizes `charset` (UTF-8, default: printable ASCII) up front;
-     virtual * codepoints outside it still advance in print() but aren't drawn.
+     * Codepoints outside it still advance in drawText() but aren't drawn.
      * Caller owns Font* (not tracked by Graphics — unlike newTexture /
      * newMesh / newShader handles, which Graphics owns).
      */
     Font *newFont(font::FontData *data, std::string charset = Font::defaultCharset());
 
-    /** @brief Font used by subsequent print() calls; nullptr = none set. */
+    /** @brief Optional shared font used by legacy consumers; nullptr = none set. */
     virtual void setFont(Font *font) { currentFont = font; }
     Font *getFont() const { return currentFont; }
 
     /**
-     * @brief Draws UTF-8 `text` with the current font (see setFont), baseline-aligned
-     * so that (x,y) is the top-left of the line. Throws if no font is set.
+     * @brief Draw UTF-8 text with the font selected by setFont().
+     * @param text Borrowed UTF-8 text, retained only for this call.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param color Glyph tint and opacity.
+     * @param scale Uniform text scale; `1` uses the decoded font pixel size.
+     * @throws eve::Exception if no current font has been selected.
+     * @note Render-thread only. The call is synchronous and invokes no callbacks.
      */
-    virtual void print(const std::string &text, float x, float y, const Color &color = Color(1.f, 1.f, 1.f, 1.f),
-                       float scale = 1.f);
+    virtual void print(const std::string &text, float x, float y,
+                       const Color &color = Color(1.f, 1.f, 1.f, 1.f), float scale = 1.f);
+
+    /**
+     * @brief Draw UTF-8 text with an explicitly supplied GPU font.
+     * @param font Borrowed non-null font created by this Graphics instance; it is
+     * retained only for this call and must remain valid until the call returns.
+     * @param text Borrowed UTF-8 text, retained only for this call.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param color Glyph tint and opacity.
+     * @param scale Uniform text scale; `1` uses the decoded font pixel size.
+     * @throws eve::Exception if `font` is nullptr.
+     * @note Render-thread only. The call is synchronous and does not invoke callbacks.
+     */
+    virtual void drawText(Font *font, const std::string &text, float x, float y,
+                          const Color &color = Color(1.f, 1.f, 1.f, 1.f), float scale = 1.f);
 
     /**
      * @brief Script-friendly UTF-8 text drawing overload using RGBA components.
+     * @param font Borrowed non-null font created by this Graphics instance; valid
+     * for the duration of the call.
      * @param text UTF-8 text to draw.
      * @param x Left edge in the current canvas coordinate space.
      * @param y Top edge in the current canvas coordinate space.
@@ -1072,6 +1187,26 @@ public:
      * @param b Blue color component.
      * @param a Alpha color component.
      * @param scale Uniform text scale.
+     * @throws eve::Exception if `font` is nullptr.
+     * @note Render-thread only. The call retains no arguments and invokes no callbacks.
+     */
+    void drawTextRGBA(Font *font, const std::string &text, float x, float y, float r, float g,
+                      float b, float a, float scale = 1.f) {
+        drawText(font, text, x, y, Color(r, g, b, a), scale);
+    }
+
+    /**
+     * @brief Script-friendly stateful print overload using RGBA components.
+     * @param text UTF-8 text to draw.
+     * @param x Left edge in the current canvas coordinate space.
+     * @param y Top edge in the current canvas coordinate space.
+     * @param r Red color component.
+     * @param g Green color component.
+     * @param b Blue color component.
+     * @param a Alpha color component.
+     * @param scale Uniform text scale.
+     * @throws eve::Exception if no current font has been selected.
+     * @note Render-thread only. The call retains no arguments and invokes no callbacks.
      */
     void printRGBA(const std::string &text, float x, float y, float r, float g, float b, float a,
                    float scale = 1.f) {
@@ -1129,6 +1264,15 @@ public:
     virtual Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
                                           const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
+    /**
+     * @brief Creates a Mesh3D shader from separate vertex and fragment GLSL sources.
+     * @param vertGlsl Vertex shader source.
+     * @param fragGlsl Fragment shader source.
+     * @return A graphics-owned shader, or nullptr when compilation fails.
+     */
+    Shader *newMeshShaderVF(const std::string &vertGlsl, const std::string &fragGlsl) {
+        return newMeshShader(vertGlsl, fragGlsl);
+    }
     Shader *newMeshShader(const std::string &fragGlsl) {
         return newMeshShader(std::string(), fragGlsl);
     }

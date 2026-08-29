@@ -1,8 +1,10 @@
 #pragma once
 
 #include "animation/AnimMath.h"
+#include "common/Result.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve::animation {
@@ -55,16 +57,18 @@ public:
 
 private:
     friend class AnimClip;
-    struct Mapping { std::string source, target; };
-    std::vector<Mapping> mappings_;
-    std::string sourceRoot_;
-    std::string targetRoot_;
-    bool normalizedNameMatching_ = true;
-    bool autoRootScale_ = true;
-    bool skeletonSpaceRotation_ = true;
-    float rootHorizontalScale_ = 1.f;
-    float rootVerticalScale_ = 1.f;
-    int matchedBoneCount_ = 0;
+    struct Mapping {
+        std::string source, target;
+    };
+    std::vector<Mapping>     mappings_;
+    std::string              sourceRoot_;
+    std::string              targetRoot_;
+    bool                     normalizedNameMatching_ = true;
+    bool                     autoRootScale_          = true;
+    bool                     skeletonSpaceRotation_  = true;
+    float                    rootHorizontalScale_    = 1.f;
+    float                    rootVerticalScale_      = 1.f;
+    int                      matchedBoneCount_       = 0;
     std::vector<std::string> unmatchedTargetBones_;
 };
 
@@ -126,6 +130,19 @@ public:
     std::string getEventName(int index) const;
     /** @brief Return an event marker's optional payload. */
     std::string getEventPayload(int index) const;
+    /** @brief Whether this clip contains at least one event with the stable semantic name. */
+    [[nodiscard]] bool hasEvent(std::string_view name) const noexcept;
+    /**
+     * @brief Validates that every required semantic notify exists before gameplay registration.
+     * @param
+     * requiredNames Stable notify names such as contact.left_hand or land.
+     * @return Applied when the contract is
+     * complete, otherwise a structured rejection.
+     * @thread Owner thread; this call is read-only and does not
+     * retain the input span.
+     * @reentrancy Does not invoke callbacks or scripts.
+     */
+    [[nodiscard]] eve::Result<void> validateNotifyContract(const std::vector<std::string>& requiredNames) const;
 
     /** @brief Add a named locomotion sync marker at clip-local time. */
     void addSyncMarker(float time, const std::string& name);
@@ -178,8 +195,7 @@ public:
      * @param scaleError Maximum local scale-vector error.
      * @return Number of removed keys.
      */
-    int compress(float positionError = 0.001f, float rotationErrorDegrees = 0.1f,
-                 float scaleError = 0.001f);
+    int compress(float positionError = 0.001f, float rotationErrorDegrees = 0.1f, float scaleError = 0.001f);
 
     /**
      * @brief Bake this clip onto a target skeleton by matching bone names and preserving bind-pose deltas.
@@ -249,11 +265,11 @@ private:
     static void sampleQuat(const std::vector<QuatKey>& keys, float time, float& x, float& y, float& z, float& w,
                            bool& ok);
 
-    std::string             name_;
-    float                   duration_   = 0.f;
-    bool                    loop_       = true;
-    float                   sampleRate_ = 30.f;
-    std::vector<BoneTrack>  tracks_;
+    std::string              name_;
+    float                    duration_   = 0.f;
+    bool                     loop_       = true;
+    float                    sampleRate_ = 30.f;
+    std::vector<BoneTrack>   tracks_;
     std::vector<EventMarker> events_;
     std::vector<SyncMarker>  syncMarkers_;
 };

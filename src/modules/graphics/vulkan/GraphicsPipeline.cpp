@@ -47,7 +47,6 @@
 #include <assimp/vector3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "graphics/shaders/color_vert_spv.inc"
 #include "graphics/shaders/color_frag_spv.inc"
 #include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/shaders/textured_frag_spv.inc"
@@ -74,10 +73,35 @@
 #include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
 #include "graphics/shaders/decal_box_vert_spv.inc"
 #include "graphics/shaders/decal_box_frag_spv.inc"
-#include "graphics/shaders/mesh3d_hair_vert_spv.inc"
-#include "graphics/shaders/mesh3d_hair_frag_spv.inc"
-#include "graphics/shaders/lit2d_vert_spv.inc"
+#include "graphics/shaders/decal_box_vert_spv.inc"
 #include "graphics/shaders/lit2d_frag_spv.inc"
+#include "graphics/shaders/lit2d_vert_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
+#include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
+#include "graphics/shaders/mesh3d_hair_frag_spv.inc"
+#include "graphics/shaders/mesh3d_hair_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_skin_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
+#include "graphics/shaders/mesh3d_vert_spv.inc"
+#include "graphics/shaders/particle_distortion_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_vert_spv.inc"
+#include "graphics/shaders/textured_frag_spv.inc"
+#include "graphics/shaders/textured_opaque_frag_spv.inc"
+#include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/vulkan/GraphicsInternal.h"
 
 namespace eve::graphics::vulkan {
@@ -140,6 +164,7 @@ vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRende
 // --- Swapchain and graphics pipelines -----------------------------------------
 
 void Graphics::createSwapchainAndPipeline() {
+    initGpuTiming();
     // Framebuffers / command buffers alias the current swapchain images; tear
     // them down before replacing the swapchain (destroy() waitIdles first).
     presentRecording = {};
@@ -246,10 +271,11 @@ void Graphics::createTexturedPipeline() {
         // pool size type; without this entry the first dynamic set allocation
         // fails with VK_ERROR_OUT_OF_POOL_MEMORY.
         {vk::DescriptorType::eUniformBufferDynamic, 4096},
-        {vk::DescriptorType::eStorageBuffer, 256},
+        {vk::DescriptorType::eStorageBuffer, 16384},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
-    poolInfo.maxSets = 4096;
+    poolInfo.flags         = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+    poolInfo.maxSets       = 8192;
     poolInfo.poolSizeCount = 4;
     poolInfo.pPoolSizes = poolSizes;
     descriptorPool = device->createDescriptorPool(poolInfo);
@@ -276,6 +302,7 @@ void Graphics::createTexturedPipeline() {
         BlendMode::Opaque);
 
     createLit2DPipeline();
+    createGpuParticlePipelines();
 }
 
 vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &vert,
@@ -621,11 +648,13 @@ void Graphics::createUiColorResources(int uiW, int uiH) {
     if (!uiTexturePipeline) {
         const auto vert = embeddedSpirv(textured_vert_spv);
         const auto frag = embeddedSpirv(textured_frag_spv);
+        const auto opaqueFrag = embeddedSpirv(textured_opaque_frag_spv);
         uiTexturePipeline = createTexturedStylePipeline(vert, frag, uiRenderPass,
                                                         texPipelineLayout, BlendMode::Alpha,
                                                         uiColorSamples);
         uiTextureOpaquePipeline = createTexturedStylePipeline(
-            vert, frag, uiRenderPass, texPipelineLayout, BlendMode::Opaque, uiColorSamples);
+            vert, opaqueFrag, uiRenderPass, texPipelineLayout, BlendMode::Opaque,
+            uiColorSamples);
     }
 
     if (!uiColorSlots.empty() && uiColorWidth == uiW && uiColorHeight == uiH &&
@@ -791,17 +820,18 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                             .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
                             .addAttachmentRef(1, vk::ImageLayout::eColorAttachmentOptimal)
                             .addAttachmentRef(2, vk::ImageLayout::eColorAttachmentOptimal)
-                            .setDepthStencilAttachment(
-                                3, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-            .addDependency(0, VK_SUBPASS_EXTERNAL,
-                           vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                               vk::PipelineStageFlagBits::eEarlyFragmentTests |
-                               vk::PipelineStageFlagBits::eLateFragmentTests,
-                           vk::PipelineStageFlagBits::eVertexShader |
-                               vk::PipelineStageFlagBits::eFragmentShader,
-                           vk::AccessFlagBits::eColorAttachmentWrite |
-                               vk::AccessFlagBits::eDepthStencilAttachmentWrite,
-                           vk::AccessFlagBits::eShaderRead)
+                            .setDepthStencilAttachment(3, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+            // Match the FrameGraph render pass used to record this pipeline:
+            // imported G-buffer targets begin undefined and leave sampled, so
+            // only the subpass-to-reader dependency is materialized.
+            .addDependency(
+                0, VK_SUBPASS_EXTERNAL,
+                vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                    vk::PipelineStageFlagBits::eLateFragmentTests,
+                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader |
+                    vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests,
+                vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eDepthStencilAttachmentRead)
             .build();
     gbufferRenderPass = gbufferPass;
 
@@ -1811,7 +1841,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
                                      .addAttributeDescription<MeshVertex>())
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                           vk::FrontFace::eClockwise)
+                           vk::FrontFace::eCounterClockwise)
             .setMultisampler(false, samples)
             .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
             .setColorBlending(cbs)
@@ -1825,7 +1855,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
                                             .addAttributeDescription<MeshVertex>())
                    .setDynamicStatesViewportScissor()
                    .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eClockwise)
+                                  vk::FrontFace::eCounterClockwise)
                    .setMultisampler(false, samples)
                    .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
                    .setAlphaBlending(1)
@@ -1839,7 +1869,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
                                             .addAttributeDescription<MeshVertex>())
                    .setDynamicStatesViewportScissor()
                    .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eClockwise)
+                                  vk::FrontFace::eCounterClockwise)
                    .setMultisampler(false, samples)
                    .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
                    .setColorAttachmentCount(1)

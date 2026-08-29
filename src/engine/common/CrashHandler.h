@@ -14,7 +14,11 @@
 #include <windows.h>
 #include <backward.hpp>
 
+#include "common/CrashLog.h"
+
 #include <cstdio>
+#include <iomanip>
+#include <sstream>
 
 // backward.hpp pulls in <imagehlp.h> with its own packing; declaring the one
 // DbgHelp entry point we call directly avoids including dbghelp.h again. Match
@@ -34,9 +38,10 @@ inline LONG WINAPI crashHandler(EXCEPTION_POINTERS *ep) {
     // DbgHelp must be initialized before StackWalk64, otherwise the walk
     // produces garbage frames. Ignore the "already initialized" failure.
     SymInitialize(GetCurrentProcess(), nullptr, TRUE);
-    std::fprintf(stderr, "\n[crash] code=0x%08lX at %p\n",
-                 ep->ExceptionRecord->ExceptionCode,
-                 ep->ExceptionRecord->ExceptionAddress);
+    std::ostringstream report;
+    report << "[crash] code=0x" << std::hex << std::setw(8) << std::setfill('0')
+           << ep->ExceptionRecord->ExceptionCode << std::dec << std::setfill(' ')
+           << " at " << ep->ExceptionRecord->ExceptionAddress << "\n";
     try {
         backward::StackTrace st;
         // Walk from the handler's own frame: the exception dispatch ran on the
@@ -47,11 +52,14 @@ inline LONG WINAPI crashHandler(EXCEPTION_POINTERS *ep) {
         backward::Printer p;
         p.snippet = false;
         p.color_mode = backward::ColorMode::never;
-        p.print(st, stderr);
+        p.print(st, report);
     } catch (...) {
-        std::fprintf(stderr, "[crash] backtrace unavailable\n");
+        report << "[crash] backtrace unavailable\n";
     }
+    const std::string text = report.str();
+    std::fputs(text.c_str(), stderr);
     std::fflush(stderr);
+    eve::recordCrashEvent(text);
     return EXCEPTION_CONTINUE_SEARCH;
 }
 

@@ -207,7 +207,7 @@ Texture *loadAssimpDiffuseTexture(Graphics *gfx, const aiScene *scene, const aiM
     if (!p || !p[0])
         return nullptr;
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Embedded: "*0", "*1", ...
     if (p[0] == '*') {
@@ -295,7 +295,7 @@ Texture *loadTextureFile(Graphics *gfx, const char *relPathBesideTest) {
     auto fileBytes = readBinaryFile(pathBesideThisSource(relPathBesideTest));
     if (fileBytes.empty())
         return nullptr;
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     try {
         eve::data::ByteData bytes(fileBytes.data(), fileBytes.size());
         eve::image::ImageData *img = eve::image::Image::create()->newImageData(&bytes);
@@ -504,7 +504,6 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName,
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.05f);
 
-    eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *png =
@@ -961,7 +960,7 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
             p[3] = 255;
         }
     }
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData pngImg(tw, th, "RGBA8", px.data(), false);
     eve::filesystem::FileData *png =
         pngImg.encode(eve::image::ImageData::FormatHandler::ENCODED_PNG, "gltf_uv.png", false);
@@ -1039,7 +1038,6 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
     CHECK(top.r > top.b);  // red on top → not V-flipped
     CHECK(bot.b > bot.r);  // blue on bottom
 
-    eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *framePng =
@@ -1129,7 +1127,7 @@ TEST_CASE("model3d.render.cesiumManGltf") {
     const Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.05f);
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *png =

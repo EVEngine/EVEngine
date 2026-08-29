@@ -231,7 +231,7 @@ Texture *loadCesiumManDiffuseTexture(Graphics *gfx) {
     const std::string path = cesiumManDir() + "/CesiumMan_img0.jpg";
     const auto bytes = readBinaryFile(path);
     if (bytes.empty()) return nullptr;
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     try {
         eve::data::ByteData data(bytes.data(), bytes.size());
         eve::image::ImageData *img = eve::image::Image::create()->newImageData(&data);
@@ -250,7 +250,7 @@ Texture *makeSolidGray(Graphics *gfx, uint8_t g) {
 }
 
 void savePng(Graphics *gfx, const char *pngName) {
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *png =

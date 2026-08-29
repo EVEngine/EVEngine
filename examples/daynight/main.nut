@@ -11,13 +11,13 @@
 //   Up/Down : speed up / slow down the clock
 //   Left    : reset to solar noon
 
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("camAngle" in getroottable())) camAngle <- 0.0;
-if (!("autoOrbit" in getroottable())) autoOrbit <- true;
-if (!("props" in getroottable())) props <- [];
-if (!("clouds" in getroottable())) clouds <- null;
-if (!("cloudPreviewTime" in getroottable())) cloudPreviewTime <- 0.0;
-if (!("cloudPreviewSaved" in getroottable())) cloudPreviewSaved <- false;
+persist uiReady = false
+persist camAngle = 0.0
+persist autoOrbit = true
+persist props = []
+persist clouds = null
+persist cloudPreviewTime = 0.0
+persist cloudPreviewSaved = false
 
 // Firefly spawn ring around the campfire.
 fireflies <- [];

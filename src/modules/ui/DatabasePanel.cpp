@@ -41,8 +41,8 @@ std::string valueText(const ReflectedValue& value) {
 }
 
 /** Cell label keeps the ImGui ID unique per entry while hiding the suffix. */
-std::string cellLabel(const std::string& memberName, uint64_t entryId) {
-    return memberName + "##db_" + std::to_string(entryId) + "_" + memberName;
+std::string cellLabel(const std::string& memberName, ObjectHandle handle) {
+    return memberName + "##db_" + std::to_string(handle.packed()) + "_" + memberName;
 }
 
 }  // namespace
@@ -50,22 +50,28 @@ std::string cellLabel(const std::string& memberName, uint64_t entryId) {
 DatabasePanel::~DatabasePanel() {
     // The ECS host outlives this panel; drop its tree so the stored widget
     // callbacks (which capture `this`) are released while we are still alive.
-    if (host_) host_->setTree(window("", {}));
+    if (auto host = UIHost::resolve(host_)) host->get().setTree(window("", {}));
 }
 
 void DatabasePanel::open() {
-    if (!host_) host_ = UIHost::createHost(kDatabaseHostName);
-    host_->setVisible(true);
-    host_->setLayer(90);
+    auto host = UIHost::resolve(host_);
+    if (!host) {
+        host_ = UIHost::createHost(kDatabaseHostName);
+        host  = UIHost::resolve(host_);
+    }
+    if (!host) return;
+    host->get().setVisible(true);
+    host->get().setLayer(90);
     refresh();
 }
 
 void DatabasePanel::close() {
-    if (host_) host_->setVisible(false);
+    if (auto host = UIHost::resolve(host_)) host->get().setVisible(false);
 }
 
 bool DatabasePanel::isOpen() const {
-    return host_ && host_->meta()->visible;
+    auto host = UIHost::resolve(host_);
+    return host && host->get().meta()->visible;
 }
 
 void DatabasePanel::refresh() {
@@ -96,34 +102,40 @@ bool DatabasePanel::selectClass(const std::string& name) {
     return true;
 }
 
-uint64_t DatabasePanel::createInstance() {
-    if (selectedClass_.empty()) return 0;
-    const uint64_t id = ObjectRegistry::instance().create(selectedClass_);
-    if (id != 0) {
+eve::Result<ObjectHandle> DatabasePanel::createInstance() {
+    if (selectedClass_.empty()) {
+        return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "database panel has no selected script class"));
+    }
+    auto result = ObjectRegistry::instance().create(selectedClass_);
+    if (!result) return eve::Result<ObjectHandle>::failure(result.status());
+    const ObjectHandle handle = result.value();
+    if (handle.isValid()) {
         rebuildCache();
         rebuildHost();
     }
-    return id;
+    return eve::Result<ObjectHandle>::success(handle);
 }
 
-uint64_t DatabasePanel::registerObject(const ssq::Object& object,
-                                       const std::string& label) {
-    const uint64_t id =
-        ObjectRegistry::instance().registerObject(selectedClass_, object, label);
-    if (id != 0) {
+eve::Result<ObjectHandle> DatabasePanel::registerObject(const ssq::Object& object, const std::string& label) {
+    auto result = ObjectRegistry::instance().registerObject(selectedClass_, object, label);
+    if (!result) return eve::Result<ObjectHandle>::failure(result.status());
+    const ObjectHandle handle = result.value();
+    if (handle.isValid()) {
         rebuildCache();
         rebuildHost();
     }
-    return id;
+    return eve::Result<ObjectHandle>::success(handle);
 }
 
-bool DatabasePanel::unregister(uint64_t id) {
-    const bool removed = ObjectRegistry::instance().unregister(id);
-    if (removed) {
+eve::Result<void> DatabasePanel::unregister(ObjectHandle handle) {
+    auto result = ObjectRegistry::instance().unregister(handle);
+    if (!result) return eve::Result<void>::failure(result.status());
+    if (result.status().code() == eve::StatusCode::Applied) {
         rebuildCache();
         rebuildHost();
     }
-    return removed;
+    return result;
 }
 
 void DatabasePanel::rebuildCache() {
@@ -152,23 +164,19 @@ void DatabasePanel::rebuildCache() {
 WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
                                      const ReflectedMember& member,
                                      const ReflectedValue& value) {
-    const std::string id =
-        "cell_" + std::to_string(entry.id) + "_" + member.name;
-    const std::string label = cellLabel(member.name, entry.id);
+    const std::string              id      = "cell_" + std::to_string(entry.handle.packed()) + "_" + member.name;
+    const std::string              label   = cellLabel(member.name, entry.handle);
     const std::string editor = member.attrString("editor");
     const std::vector<std::string> options = member.attrOptions("options");
     WidgetDesc cell;
     if (value.kind == ReflectedValueKind::Bool) {
-        cell = checkbox(label, value.asBool(), id,
-                        [this, entryId = entry.id, name = member.name](bool v) {
-                            ReflectedValue out;
-                            out.kind = ReflectedValueKind::Bool;
-                            out.boolean = v;
-                            if (const ObjectEntry* e =
-                                    ObjectRegistry::instance().entry(entryId))
-                                ModuleManager::runtime()->writeProperty(e->object, name,
-                                                                        out);
-                        });
+        cell = checkbox(label, value.asBool(), id, [this, entryHandle = entry.handle, name = member.name](bool v) {
+            ReflectedValue out;
+            out.kind    = ReflectedValueKind::Bool;
+            out.boolean = v;
+            if (const ObjectEntry* e = ObjectRegistry::instance().entry(entryHandle))
+                ModuleManager::runtime()->writeProperty(e->object, name, out);
+        });
     } else if (editor == "combo" && !options.empty()) {
         int index = 0;
         const std::string current =
@@ -176,12 +184,10 @@ WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
         const auto it = std::find(options.begin(), options.end(), current);
         if (it != options.end()) index = int(it - options.begin());
         cell = combo(label, options, index, id,
-                     [this, entryId = entry.id, name = member.name,
-                      kind = value.kind, options](float i) {
+                     [this, entryHandle = entry.handle, name = member.name, kind = value.kind, options](float i) {
                          const int idx = static_cast<int>(i);
                          if (idx < 0 || idx >= int(options.size())) return;
-                         const ObjectEntry* e =
-                             ObjectRegistry::instance().entry(entryId);
+                         const ObjectEntry* e = ObjectRegistry::instance().entry(entryHandle);
                          if (!e) return;
                          ReflectedValue out;
                          if (kind == ReflectedValueKind::Integer) {
@@ -212,18 +218,16 @@ WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
         }
         cell = text(member.name + " = " + shown, id);
     } else {
-        cell = inputText(label, valueText(value), id,
-                         [this, entryId = entry.id, name = member.name,
-                          kind = value.kind](const std::string& text) {
-                             const ObjectEntry* e =
-                                 ObjectRegistry::instance().entry(entryId);
-                             if (!e) return;
-                             ReflectedValue out;
-                             out.kind = ReflectedValueKind::String;
-                             out.text = text;
-                             ModuleManager::runtime()->writeProperty(e->object, name,
-                                                                     out);
-                         });
+        cell = inputText(
+            label, valueText(value), id,
+            [this, entryHandle = entry.handle, name = member.name, kind = value.kind](const std::string& text) {
+                const ObjectEntry* e = ObjectRegistry::instance().entry(entryHandle);
+                if (!e) return;
+                ReflectedValue out;
+                out.kind = ReflectedValueKind::String;
+                out.text = text;
+                ModuleManager::runtime()->writeProperty(e->object, name, out);
+            });
     }
     cell.withSize(kCellWidth, 0.f);
     return cell;
@@ -250,7 +254,7 @@ WidgetDesc DatabasePanel::build() {
                           if (idx >= 0 && idx < int(classNames_.size()))
                               selectClass(classNames_[size_t(idx)]);
                       }),
-                button("+", "db_add", [this]() { createInstance(); }),
+                button("+", "db_add", [this]() { createInstance().ignore("create UI database row from button"); }),
             },
             "db_toolbar"));
         children.push_back(separator("db_sep"));
@@ -271,11 +275,10 @@ WidgetDesc DatabasePanel::build() {
                     entry.object, members_[c].name);
                 cells.push_back(cellWidget(entry, members_[c], value));
             }
-            cells.push_back(
-                button("x##db_" + std::to_string(entry.id),
-                       "db_del_" + std::to_string(entry.id),
-                       [this, entryId = entry.id]() { unregister(entryId); }));
-            rows.push_back(row(std::move(cells), "db_row_" + std::to_string(entry.id)));
+            cells.push_back(button(
+                "x##db_" + std::to_string(entry.handle.packed()), "db_del_" + std::to_string(entry.handle.packed()),
+                [this, entryHandle = entry.handle]() { unregister(entryHandle).ignore("delete UI database row"); }));
+            rows.push_back(row(std::move(cells), "db_row_" + std::to_string(entry.handle.packed())));
         }
         if (rows.empty()) {
             children.push_back(text("No instances of " + selectedClass_ +
@@ -289,12 +292,14 @@ WidgetDesc DatabasePanel::build() {
 }
 
 void DatabasePanel::rebuildHost() {
-    if (!host_ || !host_->meta()->visible) return;
-    host_->setTreeReconcile(build());
+    auto host = UIHost::resolve(host_);
+    if (!host || !host->get().meta()->visible) return;
+    host->get().setTreeReconcile(build());
 }
 
 void DatabasePanel::sync() {
-    if (!host_ || !host_->meta()->visible) return;
+    auto host = UIHost::resolve(host_);
+    if (!host || !host->get().meta()->visible) return;
     Runtime* rt = ModuleManager::runtime();
     if (!rt || entries_.size() != cached_.size()) return;
     for (size_t r = 0; r < entries_.size(); ++r) {
@@ -303,20 +308,18 @@ void DatabasePanel::sync() {
                 rt->readProperty(entries_[r].object, members_[c].name);
             if (sameValue(live, cached_[r][c])) continue;
             cached_[r][c] = live;
-            const std::string id =
-                "cell_" + std::to_string(entries_[r].id) + "_" + members_[c].name;
+            const std::string      id = "cell_" + std::to_string(entries_[r].handle.packed()) + "_" + members_[c].name;
             const ReflectedMember& member = members_[c];
             const std::string editor = member.attrString("editor");
             const std::vector<std::string> options = member.attrOptions("options");
             if (live.kind == ReflectedValueKind::Bool) {
-                host_->setCheckedById(id, live.asBool());
+                host->get().setCheckedById(id, live.asBool());
             } else if (editor == "combo" && !options.empty()) {
                 const std::string current =
                     live.kind == ReflectedValueKind::String ? live.text
                                                             : valueText(live);
                 const auto it = std::find(options.begin(), options.end(), current);
-                host_->setValueById(id, it == options.end() ? 0.f
-                                                            : float(it - options.begin()));
+                host->get().setValueById(id, it == options.end() ? 0.f : float(it - options.begin()));
             } else if (live.kind == ReflectedValueKind::Array ||
                        live.kind == ReflectedValueKind::Table ||
                        live.kind == ReflectedValueKind::Instance ||
@@ -324,7 +327,7 @@ void DatabasePanel::sync() {
                        live.kind == ReflectedValueKind::Other) {
                 // read-only cell; nothing to patch
             } else {
-                host_->setValueTextById(id, valueText(live));
+                host->get().setValueTextById(id, valueText(live));
             }
         }
     }

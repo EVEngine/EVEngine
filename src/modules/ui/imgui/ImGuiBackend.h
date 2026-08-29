@@ -48,9 +48,18 @@ private:
     /** @brief Warn when the built atlas lacks CJK or semantic icon glyphs. */
     void checkFontCoverage() const;
 
+    [[nodiscard("retain the UI texture registration id or explicitly handle failure")]]
     uint64_t registerTexture(graphics::Texture *tex) override;
     void unregisterTexture(uint64_t id) override;
     bool textureSize(uint64_t id, int *w, int *h) const override;
+    /**
+     * @brief Returns the ImGui texture handle for a registered id.
+     * @return Borrowed nullable opaque handle owned by ImGui/the backend.
+     * @ownership ImGuiBackend owns the descriptor resources; callers must not free or cast the handle.
+     * @lifetime Valid until unregisterTexture(), shutdown(), or Vulkan device reset.
+     * @thread Call on the UI/render thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across backend mutation.
+     */
     void *textureHandle(uint64_t id) const override;
     bool usesQueuedTextureDraws() const override;
     void queueTextureDraw(uint64_t id, float x, float y, float w, float h, float u0, float v0,
@@ -97,7 +106,21 @@ private:
     eve::graphics::Graphics *gfx_ = nullptr;
     SDL_Window *window_ = nullptr;
     void *imguiDescriptorPool_ = nullptr;   // VkDescriptorPool
+    /**
+     * @brief Backend-owned Vulkan descriptor pool used only by ImGui internals.
+     * @ownership ImGuiBackend owns the descriptor pool and destroys it during shutdown.
+     * @lifetime Valid while initialized_; never expose or retain the address across shutdown.
+     * @thread Access only on the UI/render thread.
+     * @reentrancy The field is not valid while shutdown or device reset is re-entrant.
+     */
     void *imguiTexturePool_ = nullptr;      // VkDescriptorPool (texture sets)
+    /**
+     * @brief Backend-owned Vulkan descriptor layout used only by ImGui internals.
+     * @ownership ImGuiBackend owns the descriptor layout and destroys it during shutdown.
+     * @lifetime Valid while initialized_; never expose or retain the address across shutdown.
+     * @thread Access only on the UI/render thread.
+     * @reentrancy The field is not valid while shutdown or device reset is re-entrant.
+     */
     void *imguiTextureLayout_ = nullptr;    // VkDescriptorSetLayout (texture sets)
     ImGuiContext *ctx_ = nullptr;           // ImGui context owned by this backend
 };

@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Physics()`
 
-创建 World、Body、Fixture（Box2D 2D 刚体）、World3D / Body3D / Shape3D（Box3D 3D 刚体），以及可交互的 `Cloth`（2D Verlet 布料）、`Cloth3D`（3D Verlet 布料）与 `Fluid`（2D 粒子流体）。2D 脚本使用像素坐标并按 meter 换算；3D 使用米（Box3D 原生单位）；2D 布料/流体在像素空间模拟，3D 布料在米制空间模拟。
+创建 World、Body、Fixture（Box2D 2D 刚体）、World3D / Body3D / Shape3D（Box3D 3D 刚体），以及可交互的 `Cloth`（2D Verlet 布料）、`Cloth3D`（3D Verlet 布料）与 `Fluid2D`（2D 粒子流体）。2D 脚本使用像素坐标并按 meter 换算；3D 使用米（Box3D 原生单位）；2D 布料/流体在像素空间模拟，3D 布料在米制空间模拟。
 
 ## 基本用法
 
@@ -143,7 +143,7 @@ cloth3.setBounds(-4, -1, -3, 8, 5.5, 6);  // 原点 + 宽高深
 // local idx = cloth3.grabAt(x, y, z, 0.5);
 // if (idx >= 0) cloth3.moveGrab(x, y, z);
 cloth3.applyForce(1.0, 0, 0);         // 均匀风
-cloth3.interactAt(x, y, z, 1.1, -14); // 指针场：正吸引 / 负排斥（与 Fluid 相同语义）
+cloth3.interactAt(x, y, z, 1.1, -14); // 指针场：正吸引 / 负排斥（与 Fluid2D 相同语义）
 cloth3.update(dt);
 cloth3.draw(gfx);                     // 需要处于 3D 帧内（gfx.render3D 之后）
 ```
@@ -173,7 +173,7 @@ clothG.draw(gfx);
 ### 流体
 
 ```squirrel
-local fluid = physics.newFluid(600);
+local fluid = physics.newFluid2D(600);
 fluid.setBounds(400, 48, 360, 500);
 fluid.setGravity(0, 980);
 fluid.emit(520, 100, 120, 0, 40);          // x, y, count, vx, vy
@@ -187,7 +187,7 @@ fluid.draw(gfx);
 示例：[`examples/softbody/`](../../../examples/softbody/)（2D 布料 + 流体）、[`examples/softbody3d/`](../../../examples/softbody3d/)（3D 布料）
 
 `Physics` 保存 2D 像素/米比例并创建 World / World3D / DistanceField3D / Cloth /
-Cloth3D / Fluid。World 管理 Body 与 Fixture；World3D 管理 Body3D、Shape3D 和 Joint3D。
+Cloth3D / Fluid2D。World 管理 Body 与 Fixture；World3D 管理 Body3D、Shape3D 和 Joint3D。
 布料、流体和距离场可按需组合；`Cloth.setCollideWorld(world)` /
 `Cloth3D.setCollideWorld(world3)` 可将布料接到刚体世界做碰撞。2D 碰撞消息为
 `begincontact` / `endcontact`；3D 普通碰撞为 `begincontact3d` / `endcontact3d`，Sensor
@@ -817,7 +817,7 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 
 ### 可交互流体
 
-1. `newFluid(capacity)` 后 `setBounds` 建容器。
+1. `newFluid2D(capacity)` 后 `setBounds` 建容器。
 2. `emit` 喷射粒子；`interactAt` 做吸引/排斥搅拌。
 3. 可调 `setSmoothingRadius` / `setRestDensity` / `setPressureStiffness` / `setViscosity`。
 4. `draw(gfx)` 按密度着色绘制粒子。
@@ -836,7 +836,7 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 
 ## API 快查
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`World3D`、`Body3D`、`Cloth`、`Cloth3D`、`Fluid`）的方法也列在这里。
+下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`World3D`、`Body3D`、`Cloth`、`Cloth3D`、`Fluid2D`）的方法也列在这里。
 
 - `applyAngularImpulse()`、`applyForce()`、`applyForceAt()`、`applyLinearImpulse()`、`clear()`、`clearBounds()`、`destroy()`、`destroyBody()`
 - `draw()`、`drawDebug()`、`emit()`、`getAngle()`、`getAngularVelocity()`、`getAngularVelocityX()`、`getAngularVelocityY()`、`getAngularVelocityZ()`、`getBody()`、`getCapacity()`、`getCols()`
@@ -846,7 +846,7 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 - `getRayHitNormalX()`、`getRayHitNormalY()`、`getRayHitNormalZ()`、`getRayHitX()`、`getRayHitY()`、`getRayHitZ()`、`getRestDensity()`、`getRestitution()`、`getRotW()`、`getRotX()`、`getRotY()`、`getRotZ()`、`getRows()`、`getSmoothingRadius()`
 - `getOriginX()`、`getOriginY()`、`getOriginZ()`、`getSelfCollision()`、`getSpacing()`、`getStiffness()`、`getType()`、`getViscosity()`、`getX()`、`getY()`、`getZ()`、`grabAt()`、`hasRayHit()`
 - `interactAt()`、`isActive()`、`isAwake()`、`isBullet()`、`isFixedRotation()`、`isGrabbing()`、`isPinned()`、`isSensor()`
-- `moveGrab()`、`newBody()`、`newBoxShape()`、`newCapsuleShape()`、`newCircleFixture()`、`newCloth()`、`newCloth3D()`、`newClothGPU()`、`newFluid()`、`newRectangleFixture()`、`newSphereShape()`、`newWorld()`、`newWorld3D()`、`pin()`
+- `moveGrab()`、`newBody()`、`newBoxShape()`、`newCapsuleShape()`、`newCircleFixture()`、`newCloth()`、`newCloth3D()`、`newClothGPU()`、`newFluid2D()`、`newRectangleFixture()`、`newSphereShape()`、`newWorld()`、`newWorld3D()`、`pin()`
 - `pinTopRow()`、`queryAABB()`、`rayCast()`、`releaseGrab()`、`reset()`、`setActive()`、`setAngle()`、`setAngularVelocity()`、`setAwake()`
 - `setBounds()`、`setBullet()`、`setCollideWorld()`、`setColor()`、`setDamping()`、`setDensity()`、`setFixedRotation()`、`setFoldStiffness()`、`setFriction()`、`setGravity()`
 - `setIterations()`、`setLinearVelocity()`、`setMeter()`、`setMaxFoldAngle()`、`setNearPressureStiffness()`、`setParticleMass()`、`setParticlePosition()`、`setParticleSize()`、`setPosition()`、`setPressureStiffness()`

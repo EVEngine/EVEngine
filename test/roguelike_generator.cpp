@@ -7,6 +7,8 @@
 #include "procgen/algorithms/RoguelikeGenerator.h"
 
 #include <algorithm>
+#include <cmath>
+#include <queue>
 #include <set>
 #include <string>
 #include <vector>
@@ -14,6 +16,66 @@
 using namespace eve::procgen;
 
 namespace {
+
+struct ParamsLease {
+    ProcgenParamsHandleRef handle{};
+    ParamsLease() = default;
+    explicit ParamsLease(ProcgenParamsHandleRef value) : handle(value) {}
+    ParamsLease(const ParamsLease &)            = delete;
+    ParamsLease &operator=(const ParamsLease &) = delete;
+    ParamsLease(ParamsLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
+    ParamsLease &operator=(ParamsLease &&other) noexcept {
+        if (this == &other) return *this;
+        reset();
+        handle       = other.handle;
+        other.handle = {};
+        return *this;
+    }
+    ~ParamsLease() { reset(); }
+    void reset() noexcept {
+        if (!handle.isValid()) return;
+        auto result = Procgen::release(handle);
+        result.ignore("roguelike params cleanup");
+        handle = {};
+    }
+    [[nodiscard]] eve::script::Borrowed<Params> view() const noexcept { return Procgen::resolve(handle); }
+};
+
+struct GridLease {
+    ProcgenGridHandleRef handle{};
+    GridLease() = default;
+    explicit GridLease(ProcgenGridHandleRef value) : handle(value) {}
+    GridLease(const GridLease &)            = delete;
+    GridLease &operator=(const GridLease &) = delete;
+    GridLease(GridLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
+    GridLease &operator=(GridLease &&other) noexcept {
+        if (this == &other) return *this;
+        reset();
+        handle       = other.handle;
+        other.handle = {};
+        return *this;
+    }
+    ~GridLease() { reset(); }
+    void reset() noexcept {
+        if (!handle.isValid()) return;
+        auto result = Procgen::release(handle);
+        result.ignore("roguelike grid cleanup");
+        handle = {};
+    }
+    [[nodiscard]] eve::script::Borrowed<Grid2D> view() const noexcept { return Procgen::resolve(handle); }
+};
+
+ParamsLease requireParams() {
+    auto result = Procgen::newParamsHandle();
+    REQUIRE(result.ok());
+    return ParamsLease(std::move(result).takeValue());
+}
+
+GridLease requireGrid(Procgen &proc, const std::string &algorithm, ProcgenParamsHandleRef params) {
+    auto result = proc.generateHandle(algorithm, params);
+    REQUIRE(result.ok());
+    return GridLease(std::move(result).takeValue());
+}
 
 int countSemantic(const Grid2D &g, int semantic) {
     int n = 0;
@@ -80,44 +142,78 @@ bool markersWalkable(const Grid2D &g) {
     return true;
 }
 
+bool allWalkableConnected(const Grid2D &g) {
+    const int w = g.getWidth(), h = g.getHeight();
+    int start = -1, total = 0;
+    for (int y = 0; y < h; ++y)
+        for (int x = 0; x < w; ++x)
+            if (isWalkableCell(g, x, y)) { if (start < 0) start = y * w + x; ++total; }
+    if (start < 0) return true;
+    std::vector<bool> seen(size_t(w * h), false);
+    std::queue<int> pending;
+    pending.push(start); seen[size_t(start)] = true;
+    int reached = 0;
+    constexpr int dx[] = {1, -1, 0, 0};
+    constexpr int dy[] = {0, 0, 1, -1};
+    while (!pending.empty()) {
+        const int key = pending.front(); pending.pop(); ++reached;
+        const int x = key % w, y = key / w;
+        for (int i = 0; i < 4; ++i) {
+            const int nx = x + dx[i], ny = y + dy[i];
+            if (nx < 0 || ny < 0 || nx >= w || ny >= h || !isWalkableCell(g, nx, ny)) continue;
+            const int next = ny * w + nx;
+            if (!seen[size_t(next)]) { seen[size_t(next)] = true; pending.push(next); }
+        }
+    }
+    return reached == total;
+}
+
 }  // namespace
 
 TEST_CASE("procgen.roguelike.reproducible") {
     Procgen *mod = Procgen::create();
     CHECK(mod->hasAlgorithm("level.roguelike"));
 
-    Params p;
-    p.setSeed(42);
-    p.setSize(48, 32);
-    p.setInt("roomCount", 10);
-    Grid2D *a = mod->generate("level.roguelike", &p);
-    REQUIRE(a != nullptr);
+    auto p     = requireParams();
+    auto pView = p.view();
+    REQUIRE(pView.isBound());
+    pView->setSeed(42);
+    pView->setSize(48, 32);
+    pView->setInt("roomCount", 10);
+    auto aLease = requireGrid(*mod, "level.roguelike", p.handle);
+    auto a      = aLease.view();
+    REQUIRE(a.isBound());
 
-    Params q;
-    q.setSeed(42);
-    q.setSize(48, 32);
-    q.setInt("roomCount", 10);
-    Grid2D *b = mod->generate("level.roguelike", &q);
-    REQUIRE(b != nullptr);
+    auto q     = requireParams();
+    auto qView = q.view();
+    REQUIRE(qView.isBound());
+    qView->setSeed(42);
+    qView->setSize(48, 32);
+    qView->setInt("roomCount", 10);
+    auto bLease = requireGrid(*mod, "level.roguelike", q.handle);
+    auto b      = bLease.view();
+    REQUIRE(b.isBound());
 
     // Same seed -> identical cells and detail.
     CHECK(a->cells() == b->cells());
     CHECK(a->detail() == b->detail());
-    delete a;
-    delete b;
 }
 
 TEST_CASE("procgen.roguelike.structure") {
     Procgen *mod = Procgen::create();
-    Params p;
-    p.setSeed(7);
-    p.setSize(48, 32);
-    p.setInt("roomCount", 12);
-    p.setFloat("decorDensity", 0.06f);
-    p.setString("decorSet", "mixed");
-
-    Grid2D *g = mod->generate("level.roguelike", &p);
-    REQUIRE(g != nullptr);
+    auto     p     = requireParams();
+    auto     pView = p.view();
+    REQUIRE(pView.isBound());
+    pView->setSeed(7);
+    pView->setSize(48, 32);
+    pView->setInt("roomCount", 12);
+    pView->setInt("stairCount", 2);
+    pView->setString("connectionStyle", "nearest");
+    pView->setFloat("decorDensity", 0.06f);
+    pView->setString("decorSet", "mixed");
+    auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
+    auto g      = gLease.view();
+    REQUIRE(g.isBound());
 
     const int floorCount = countSemantic(*g, Semantic::Floor) + countSemantic(*g, Semantic::Corridor);
     const int wallCount  = countSemantic(*g, Semantic::Wall);
@@ -132,33 +228,46 @@ TEST_CASE("procgen.roguelike.structure") {
     // Detail layer: wall autotile masks + floor variants are present.
     CHECK(wallMasksConsistent(*g));
     CHECK(markersWalkable(*g));
+    CHECK(allWalkableConnected(*g));
 
     // Metadata describes the run.
     CHECK_EQ(g->getMeta("algorithm", ""), "level.roguelike");
     CHECK_EQ(g->getMeta("seed", ""), "7");
 
     // Objects carry spawn/stairs plus props.
-    bool hasSpawn = false, hasStairs = false;
+    bool hasSpawn = false;
+    int stairObjects = 0;
     for (int i = 0; i < g->getObjectCount(); ++i) {
         if (g->getObjectType(i) == "spawn") hasSpawn = true;
-        if (g->getObjectType(i) == "stairs") hasStairs = true;
+        if (g->getObjectType(i) == "stairs") {
+            ++stairObjects;
+            CHECK((g->getObjectFlags(i) & 64) != 0);
+            const int x = int(g->getObjectX(i)), y = int(g->getObjectY(i));
+            const float rotation = g->getObjectRotation(i);
+            if (rotation == 180.f) CHECK_EQ(g->getCell(x, y - 1), int(Semantic::Wall));
+            else if (rotation == 0.f) CHECK_EQ(g->getCell(x, y + 1), int(Semantic::Wall));
+            else if (rotation == 270.f) CHECK_EQ(g->getCell(x - 1, y), int(Semantic::Wall));
+            else { CHECK_EQ(rotation, 90.f); CHECK_EQ(g->getCell(x + 1, y), int(Semantic::Wall)); }
+        }
     }
     CHECK(hasSpawn);
-    CHECK(hasStairs);
-    delete g;
+    CHECK_EQ(stairObjects, 2);
+    CHECK_EQ(g->getMeta("stairs", ""), "2");
 }
 
 TEST_CASE("procgen.roguelike.seedVaries") {
     Procgen *mod = Procgen::create();
-    auto run = [&](uint32_t seed) {
-        Params p;
-        p.setSeed(seed);
-        p.setSize(40, 28);
-        p.setInt("roomCount", 9);
-        Grid2D *g = mod->generate("level.roguelike", &p);
-        REQUIRE(g != nullptr);
+    auto     run = [&](uint32_t seed) {
+        auto p     = requireParams();
+        auto pView = p.view();
+        REQUIRE(pView.isBound());
+        pView->setSeed(seed);
+        pView->setSize(40, 28);
+        pView->setInt("roomCount", 9);
+        auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
+        auto g      = gLease.view();
+        REQUIRE(g.isBound());
         Grid2D copy = *g;
-        delete g;
         return copy;
     };
     Grid2D s1 = run(1);
@@ -170,47 +279,118 @@ TEST_CASE("procgen.roguelike.seedVaries") {
 
 TEST_CASE("procgen.roguelike.rulesChangeLayout") {
     Procgen *mod = Procgen::create();
-    auto gen = [&](int rooms, const std::string &pattern, const std::string &style) {
-        Params p;
-        p.setSeed(11);
-        p.setSize(48, 32);
-        p.setInt("roomCount", rooms);
-        p.setString("floorPattern", pattern);
-        p.setString("corridorStyle", style);
-        Grid2D *g = mod->generate("level.roguelike", &p);
-        REQUIRE(g != nullptr);
+    auto     gen = [&](int rooms, const std::string &pattern, const std::string &style,
+                       const std::string &layout, int branchBias) {
+        auto p     = requireParams();
+        auto pView = p.view();
+        REQUIRE(pView.isBound());
+        pView->setSeed(11);
+        pView->setSize(48, 32);
+        pView->setInt("roomCount", rooms);
+        pView->setString("floorPattern", pattern);
+        pView->setString("corridorStyle", style);
+        pView->setString("layoutStyle", layout);
+        pView->setString("connectionStyle", layout == "clustered" ? "growth" : "sequential");
+        pView->setInt("clusterBranchBias", branchBias);
+        auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
+        auto g      = gLease.view();
+        REQUIRE(g.isBound());
         Grid2D copy = *g;
-        delete g;
         return copy;
     };
 
-    Grid2D few  = gen(5, "brick", "l");
-    Grid2D many = gen(20, "brick", "l");
+    Grid2D few  = gen(5, "brick", "l", "grid", 0);
+    Grid2D many = gen(20, "brick", "l", "grid", 0);
     CHECK(few.cells() != many.cells());
 
     // Pattern change keeps same base but alters floor detail.
-    Grid2D brick   = gen(9, "brick", "l");
-    Grid2D checker = gen(9, "checker", "l");
+    Grid2D brick   = gen(9, "brick", "l", "grid", 0);
+    Grid2D checker = gen(9, "checker", "l", "grid", 0);
     CHECK_EQ(brick.cells(), checker.cells());
     CHECK(brick.detail() != checker.detail());
+
+    Grid2D clustered = gen(9, "brick", "l", "clustered", 0);
+    CHECK(clustered.cells() != brick.cells());
+    CHECK(allWalkableConnected(clustered));
+    Grid2D hubClustered = gen(9, "brick", "l", "clustered", 2);
+    CHECK(hubClustered.cells() != clustered.cells());
+    CHECK(allWalkableConnected(hubClustered));
+}
+
+TEST_CASE("procgen.roguelike.configurableAssetDressing") {
+    Procgen *mod = Procgen::create();
+    auto p = requireParams();
+    auto pView = p.view();
+    REQUIRE(pView.isBound());
+    pView->setSeed(23);
+    pView->setSize(52, 38);
+    pView->setInt("roomCount", 14);
+    pView->setString("assetPack", "test-pack");
+    pView->setString("assets.container", "crate_a,crate_b");
+    pView->setString("assets.light", "sconce_custom");
+    pView->setString("assets.banner", "wall_hanging_custom");
+    pView->setString("assets.floor", "floor_a,floor_b");
+    pView->setFloat("propDensity", 0.6f);
+    auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
+    auto g = gLease.view();
+    REQUIRE(g.isBound());
+    CHECK_EQ(g->getMeta("assetPack", ""), "test-pack");
+    CHECK_EQ(g->getMeta("assets.floor", ""), "floor_a,floor_b");
+    CHECK_GT(std::stoi(g->getMeta("placedProps", "0")), 0);
+    CHECK_GE(std::stoi(g->getMeta("minimumRoomProps", "0")), 8);
+
+    bool customLight = false;
+    bool fractionalPlacement = false;
+    bool roomZone = false;
+    for (int i = 0; i < g->getObjectCount(); ++i) {
+        if (g->getObjectType(i) == "room") {
+            roomZone = true;
+            const int rx = int(g->getObjectX(i)), ry = int(g->getObjectY(i));
+            const int rw = int(g->getObjectWidth(i)), rh = int(g->getObjectHeight(i));
+            for (int y = ry; y < ry + rh; ++y)
+                for (int x = rx; x < rx + rw; ++x)
+                    CHECK_EQ(g->getCell(x, y), int(Semantic::Floor));
+        }
+        if (g->getObjectType(i) == "light") {
+            customLight = customLight || g->getObjectAsset(i) == "sconce_custom";
+            CHECK((g->getObjectFlags(i) & 4) != 0);
+        }
+        CHECK_GE(g->getObjectRotation(i), 0.f);
+        CHECK_LT(g->getObjectRotation(i), 360.f);
+        fractionalPlacement = fractionalPlacement ||
+            std::abs(g->getObjectX(i) - std::round(g->getObjectX(i))) > 0.01f ||
+            std::abs(g->getObjectY(i) - std::round(g->getObjectY(i))) > 0.01f;
+    }
+    CHECK(customLight);
+    CHECK(roomZone);
+    CHECK(fractionalPlacement);
+    CHECK(markersWalkable(*g));
 }
 
 TEST_CASE("procgen.roguelike.errors") {
     Procgen *mod = Procgen::create();
-    Params p;
-    p.setSeed(1);
-    p.setSize(4, 4);  // too small
-    CHECK(mod->generate("level.roguelike", &p) == nullptr);
-    CHECK(mod->lastError().find("at least 9x9") != std::string::npos);
+    auto     p     = requireParams();
+    auto     pView = p.view();
+    REQUIRE(pView.isBound());
+    pView->setSeed(1);
+    pView->setSize(4, 4);  // too small
+    auto failed = mod->generateHandle("level.roguelike", p.handle);
+    CHECK(!failed.ok());
+    const eve::Diagnostic *diagnostic = failed.error();
+    REQUIRE(diagnostic != nullptr);
+    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::Failed);
 }
 
 TEST_CASE("procgen.roguelike.manualFillDetail") {
     Procgen *mod = Procgen::create();
-    Params p;
-    p.setSeed(3);
-    p.setSize(32, 24);
-    Grid2D *g = mod->generate("level.roguelike", &p);
-    REQUIRE(g != nullptr);
+    auto     p     = requireParams();
+    auto     pView = p.view();
+    REQUIRE(pView.isBound());
+    pView->setSeed(3);
+    pView->setSize(32, 24);
+    auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
+    auto g      = gLease.view();
+    REQUIRE(g.isBound());
 
     // Ultimate control: script can override any cell / detail after generation.
     g->setCell(1, 1, int(Semantic::Floor));
@@ -220,21 +400,23 @@ TEST_CASE("procgen.roguelike.manualFillDetail") {
     CHECK_EQ(g->getDetail(-5, -5), 0);   // out of bounds -> 0
     g->setDetail(0, 0, 999);             // clamps to 255
     CHECK_EQ(g->getDetail(0, 0), 255);
-    delete g;
 }
 
 TEST_CASE("procgen.autotileGrid.postProcess") {
     Procgen *mod = Procgen::create();
-    Params p;
-    p.setSeed(9);
-    p.setSize(40, 30);
-    p.setInt("roomCount", 8);
-    p.setInt("autotile", 0);  // disable built-in autotile to test the helper alone
-    Grid2D *g = mod->generate("level.roguelike", &p);
-    REQUIRE(g != nullptr);
-    CHECK(mod->autotileGrid(g));
+    auto     p     = requireParams();
+    auto     pView = p.view();
+    REQUIRE(pView.isBound());
+    pView->setSeed(9);
+    pView->setSize(40, 30);
+    pView->setInt("roomCount", 8);
+    pView->setInt("autotile", 0);  // disable built-in autotile to test the helper alone
+    auto gLease = requireGrid(*mod, "level.roguelike", p.handle);
+    auto g      = gLease.view();
+    REQUIRE(g.isBound());
+    auto autotile = mod->autotileGrid(gLease.handle);
+    CHECK(autotile.ok());
     CHECK(wallMasksConsistent(*g));
-    delete g;
 }
 
 TEST_CASE("procgen.randomSeed.nonZeroAndVaries") {

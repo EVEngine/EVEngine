@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "api-shape-policy",
+      "rule": "api-shape",
+      "scope": "src/**",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-QUALITY-API-SHAPES",
+      "reason": "Changed-line lint rejects new ambiguous operation bools and lastError channels; predicates remain valid bool APIs.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/Result检查与不得丢弃返回值规范.md",
+        "scripts/check_nodiscard.py"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py",
+        "scripts/tests/fixtures_architecture_contracts/valid_api.h"
+      ],
+      "result_policy": "Operation outcomes use Result<T> or a named status enum; predicates may return bool.",
+      "nodiscard_policy": "Critical handles, subscriptions, scopes and operation Results are [[nodiscard]].",
+      "pointer_policy": "A public pointer requires Doxygen ownership/lifetime wording or an explicit reviewed adapter contract."
+    },
+    {
+      "id": "physics-link-contract",
+      "rule": "link",
+      "scope": "src/modules/physics/PhysicsLink.h",
+      "owner": "physics::World3D and physics::World",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Physics links are process-local projections and must be stale-safe across either destruction order and restore.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/PhysicsLink.h",
+        "docs/dev/物理系统分层与后端契约.md"
+      ],
+      "tests": [
+        "test/physics_artifact_provider.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "PhysicsLink",
+        "PhysicsShapeLink",
+        "PhysicsJointLink"
+      ],
+      "create": "attach/fromBody/fromShape/fromJoint validate owner-qualified runtime handles",
+      "ownership": "World owns bodies, shapes and joints; gameplay stores only the typed link projection.",
+      "destroy_order": "Shape/Joint before Body/World and World before dependants both invalidate to StaleHandle.",
+      "restore": "Rebuild process-local links from persistent identity after transactional world restore or hot reload.",
+      "stale": "Generation and owner identity are checked by resolve; encoded validity alone is insufficient."
+    },
+    {
+      "id": "rts-link-contract",
+      "rule": "link",
+      "scope": "src/modules/rts/RTSTypes.h",
+      "owner": "RTS ECS world and registered RTS services",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "RTS cross-domain links distinguish ECS generation handles from service keys and rebuild after restore.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSTypes.h",
+        "docs/dev/领域短根继承与跨域组合架构.md"
+      ],
+      "tests": [
+        "test/rts_composition.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "EntityLink",
+        "ServiceLink",
+        "FactionLink",
+        "WeaponLink"
+      ],
+      "create": "EntityLink::bind and ServiceLink::bind return checked links.",
+      "ownership": "The ECS world or capability registry owns the target; a link never claims target ownership.",
+      "destroy_order": "Target destruction invalidates generation links; service unregister invalidates key links.",
+      "restore": "Entity links rebuild from entity identity and service links rebind by stable logical key.",
+      "stale": "Entity generation and service presence are checked before use."
+    },
+    {
+      "id": "scene-link-contract",
+      "rule": "link",
+      "scope": "src/modules/scene/SceneLink.h",
+      "owner": "scene node owner plus target-module provider",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Scene link dispatch stays module-neutral and drops dead targets through provider-owned liveness checks.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/SceneLink.h",
+        "docs/dev/模块编排与裁剪架构.md"
+      ],
+      "tests": [
+        "test/scene.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "LinkOps",
+        "SceneLink"
+      ],
+      "create": "The target module registers LinkOps and the scene stores a typed-kind projection.",
+      "ownership": "Scene owns link records; the provider owns the target object and callback table.",
+      "destroy_order": "Target teardown unregisters or reports dead before scene link dispatch; scene teardown drops records.",
+      "restore": "Provider re-registers operations and scene rebuilds link records from persistent node identity.",
+      "stale": "alive callback is consulted before push/pull; an absent operation id is not dereferenced."
+    },
+    {
+      "id": "state-owner-policy",
+      "rule": "state-owner",
+      "scope": "src/**",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-ARCH-STATE-OWNERSHIP",
+      "reason": "Every mutable fact has one owner; adapters, snapshots and links are explicitly non-authoritative projections.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/重构代码质量与系统完整性规范.md",
+        "src/engine/common/StateAccess.h"
+      ],
+      "tests": [
+        "test/snapshot_envelope.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "state": "Mutable runtime state, persistent snapshot state and cached projections are named separately.",
+      "authoritative_owner": "The domain registry/container/world named by the contract is the sole writer of the fact.",
+      "projections": "Links, handles, ECS views and UI/script values are invalidatable projections and cannot become a second store."
+    },
+    {
+      "id": "rts-ecs-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/rts/RTSSystems.h",
+      "owner": "rts::RTSSystems",
+      "issue": "EVENGINE-ARCH-ECS-SYSTEM-METADATA",
+      "reason": "RTS systems publish machine-readable access contracts before view iteration and deferred structural changes.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSSystems.h",
+        "src/modules/rts/RTSSystems.cpp"
+      ],
+      "tests": [
+        "test/rts_composition.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "CommandFanOutSystem",
+        "MotionSystem",
+        "OrderActionSystem",
+        "BuildingProductionSystem",
+        "EffectSystem"
+      ],
+      "entity_scope": "live Unit and Building ECS entities in the current world",
+      "view": "typed generation-checked Unit/Building views with no mutation while the view is iterated",
+      "read_set": "Transform, Motion, OrderComponent, Production and Effect components as applicable",
+      "write_set": "Transform, Motion, OrderComponent and lifecycle component outputs",
+      "structural_changes": "enqueue deferred add/remove/despawn operations after view traversal",
+      "events": "order accepted/completed, production advanced and effect lifecycle events",
+      "services": "injected SimulationStep, action executor and capability services",
+      "phase": "deterministic simulation phase before presentation and after command ingestion"
+    },
+    {
+      "id": "rpg-ecs-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/rpg/*.h",
+      "owner": "rpg module systems",
+      "issue": "EVENGINE-ARCH-ECS-SYSTEM-METADATA",
+      "reason": "RPG systems publish access contracts; none mutate ECS structure and each names its owning component and thread.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rpg/LevelSystem.h",
+        "src/modules/rpg/VitalsSystem.h",
+        "src/modules/rpg/TraitSystem.h",
+        "src/modules/rpg/ClassSystem.h",
+        "src/modules/rpg/QuestSystem.h",
+        "src/modules/rpg/Battle.h",
+        "src/modules/rpg/BattleSystem.h",
+        "src/modules/rpg/EquipmentSystem.h",
+        "src/modules/rpg/LootSystem.h"
+      ],
+      "tests": [
+        "test/rpg_quest.cpp",
+        "test/rpg_progression.cpp",
+        "test/rpg_trait.cpp",
+        "test/rpg_battle.cpp",
+        "test/rpg_class.cpp",
+        "test/rpg_equipment.cpp",
+        "test/rpg_gamestate.cpp"
+      ],
+      "systems": [
+        "LevelSystem",
+        "VitalsSystem",
+        "TraitSystem",
+        "ClassSystem",
+        "QuestSystem",
+        "Tracker",
+        "Battle",
+        "BattleSystem",
+        "EquipmentSystem",
+        "LootSystem"
+      ],
+      "entity_scope": "RPGActor ECS entities registered by RPGActor::createActor / liveActors()",
+      "view": "no View traversal that mutates while iterated; systems read actor components and run on liveActors()",
+      "read_set": "Attributes, Statuses, Skills, Progression, Vitals, Traits and ClassInfo components as applicable",
+      "write_set": "the system's owning component (Vitals/Progression/Traits/ClassInfo/Skills) and event queues only",
+      "structural_changes": "no structural ECS mutation from within update; actor destruction is explicit and deferred by callers",
+      "events": "status tick/change, cast, vitals, level-up and battle events polled after update",
+      "services": "injected dt/turn time and named seed streams; no global mutable time or wall clock",
+      "phase": "script/game-driven simulation; Battle is turn-based, others are update(dt)-driven"
+    },
+    {
+      "id": "climbing-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/climbing/**",
+      "owner": "climbing::ClimbingRuntime",
+      "issue": "EVENGINE-ARCH-CLIMBING-SYSTEMS",
+      "reason": "Climbing input and selection publish their deterministic access and commit contracts before ECS integration.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/climbing/ClimbingInput.h",
+        "docs/dev/superpowers/specs/2026-08-28-climbing-parkour-system.md"
+      ],
+      "tests": [
+        "test/climbing_input.cpp",
+        "test/climbing.cpp",
+        "test/climbing_anchor_execution.cpp",
+        "test/climbing_anchor_graph.cpp",
+        "test/climbing_events.cpp",
+        "test/climbing_snapshot.cpp"
+      ],
+      "systems": [
+        "ClimbingInputSystem",
+        "ClimbingSelectionSystem"
+      ],
+      "entity_scope": "characters carrying a ClimbingIntent and an owner-qualified ClimbingRuntime",
+      "view": "generation-checked character view; Physics is borrowed synchronously during candidate preparation",
+      "read_set": "ClimbingPose, ClimbingProfileDefinition, ClimbingIntent, ClimbingAnchorGraphDefinition and Physics world geometry",
+      "write_set": "ClimbingIntent consumption evidence, ClimbingRuntime execution state, and claim-generation-protected graph occupancy reservations only at transaction commit or atomic restore",
+      "structural_changes": "none; entity/component creation and removal remain the caller's deferred responsibility",
+      "events": "Started/anchor-transition/contact/terminal facts enter the runtime-owned bounded queue only after authoritative mutation; drain detaches the batch before any callback or script runs",
+      "services": "injected SimulationTick, last grounded tick and borrowed owner-thread Physics World3D",
+      "phase": "input buffering in Input; candidate preparation and atomic selection in PrePhysics"
+    },
+    {
+      "id": "time-rng-policy",
+      "rule": "time-rng",
+      "scope": "src/**",
+      "owner": "simulation-maintainers",
+      "issue": "EVENGINE-ARCH-TIME-RNG-INJECTION",
+      "reason": "Simulation code receives typed time and named random streams; wall clock access is kept at adapters.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/Time.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/time_contract.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "time_source": "SimulationStep/SimulationTick supplied by the scheduler; wall clock is not read by deterministic systems.",
+      "rng_stream": "named seed/stream is supplied by the owning simulation context and is not global mutable state.",
+      "determinism": "same inputs, tick and named streams produce replay/lockstep-identical results where declared deterministic.",
+      "tolerance": "backend or floating-point paths declare an explicit tolerance rather than silently claiming bit identity."
+    },
+    {
+      "id": "public-api-lifetime-policy",
+      "rule": "api-lifetime",
+      "scope": "src/**",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-QUALITY-API-LIFETIME",
+      "reason": "Public pointer and callback APIs must state ownership, lifetime, affinity and reentrancy in Doxygen.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "AGENTS.md",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py",
+        "scripts/check_nodiscard.py"
+      ],
+      "thread_affinity": "each public API names caller/owner thread or explicitly states thread-safe access.",
+      "reentrancy": "callbacks and script calls state whether reentrant and are not invoked while a mutex is held.",
+      "ownership_contract": "owned, borrowed, observer and transferred values are explicit.",
+      "lifetime": "borrowed values are bounded by the documented call/frame/task lifetime; handles are stale-safe.",
+      "lock_callback_policy": "release internal locks before invoking unknown callbacks or scripts."
+    },
+    {
+      "id": "persistence-contract-policy",
+      "rule": "persistence",
+      "scope": "src/**",
+      "owner": "serialization-maintainers",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Persistent formats are versioned and restore is candidate-first so failures do not publish partial state.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/Snapshot.h",
+        "src/modules/schema/Schema.h",
+        "docs/dev/Eve-Schema子集与绑定契约.md"
+      ],
+      "tests": [
+        "test/snapshot_envelope.cpp",
+        "test/schema_contract.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "schema": "stable logical schema id and content hash identify the payload.",
+      "version": "SchemaVersion and snapshot revision/tick are distinct typed fields.",
+      "migration": "known older versions migrate into a local candidate before validation and commit.",
+      "unknown_fields": "unknown fields follow the schema's explicit reject, preserve or ignore policy.",
+      "restore_atomicity": "parse, validate and migrate locally; publish once; failure leaves the observable owner unchanged."
+    },
+    {
+      "id": "optional-capability-policy",
+      "rule": "optional-capability",
+      "scope": "src/**",
+      "owner": "platform-maintainers",
+      "issue": "EVENGINE-ARCH-OPTIONAL-CAPABILITIES",
+      "reason": "Capability absence is a tested state, not an implicit soft skip; fallback behavior is observable and classified.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "cmake/profile_checks.cmake",
+        "docs/dev/2026-08-26-profile-quality-gates.md"
+      ],
+      "tests": [
+        "test/profile/capability_present.cpp",
+        "test/profile/capability_absent.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "present_test": "provider-present profile builds and runs the capability probe.",
+      "absent_test": "provider-absent profile builds and runs the explicit absence probe.",
+      "fallback_observable": "fallback status/diagnostic is exposed to the caller and is not a silent success.",
+      "fallback_policy": "fallbacks are named, classified and tracked by the bounded quality-debt metadata gate."
+    },
+    {
+      "id": "backend-contract-policy",
+      "rule": "backend-contract",
+      "scope": "src/**",
+      "owner": "runtime-platform-maintainers",
+      "issue": "EVENGINE-ARCH-BACKEND-CONTRACTS",
+      "reason": "CPU/GPU and provider implementations share observable contracts and inject failures at lifecycle boundaries.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/物理系统分层与后端契约.md",
+        "src/modules/physics/SimulationBackend.h"
+      ],
+      "tests": [
+        "test/physics_artifact_provider.cpp",
+        "test/procgen_artifact_publish.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "contract": "provider implementations expose the same Result/status, ownership, determinism and failure semantics.",
+      "providers": "CPU reference plus production GPU/Vulkan/WebGPU providers where the profile supplies them.",
+      "shared_contract_tests": "the same lifecycle and parity assertions run against each available provider.",
+      "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
+    },
+    {
+      "id": "quality-debt-policy",
+      "rule": "debt-metadata",
+      "scope": "scripts/**",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-QUALITY-DEBT",
+      "reason": "All explicit debt has owner, issue, reason, expiry and zero net-growth budget; the existing gate remains authoritative.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "scripts/check_quality_metadata.py",
+        "scripts/quality_debt_allowlist.json",
+        "scripts/quality_debt_baseline.json"
+      ],
+      "tests": [
+        "scripts/tests/test_quality_metadata.py",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "removal_condition": "remove the debt entry when the corresponding migration or documentation is complete; expiry forces review before renewal.",
+      "max_net_growth": 0
+    },
+    {
+      "id": "tactics-ecs-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/tactics/TacticsBattle.h",
+      "owner": "tactics::BattleSystem",
+      "issue": "EVENGINE-ARCH-ECS-SYSTEM-METADATA",
+      "reason": "Tactics phase systems publish their access contract before operating on battle, side and unit roots.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/tactics/TacticsBattle.h",
+        "docs/dev/战棋系统设计.md"
+      ],
+      "tests": [
+        "test/tactics_board.cpp",
+        "test/tactics_turn.cpp",
+        "test/tactics_action.cpp",
+        "test/tactics_objective.cpp",
+        "test/tactics_replay.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "BattleSystem"
+      ],
+      "entity_scope": "Battle, TacticalSide and TacticalUnit roots linked to the supplied module-owned battle",
+      "view": "generation-checked battle membership handles; systems perform no structural mutation during ECS view traversal",
+      "read_set": "identity, membership, turn resources and board cell/occupancy facts",
+      "write_set": "battle revision/turn/events/commands/objectives/reactions/board and tactical unit membership, position, resources and alive state",
+      "structural_changes": "none inside BattleSystem; Tactics facade creates candidates before checked registration and destroys rejected candidates",
+      "events": "battle, round, turn, action, reaction, defeat and objective transitions appended in deterministic sequence order",
+      "services": "injected SimulationStep and the shared ActionRuntime effect-executor contract; no required rendering provider",
+      "phase": "owner simulation thread after setup/command ingestion and before presentation"
+    },
+    {
+      "id": "tactics-link-contract",
+      "rule": "link",
+      "scope": "src/modules/tactics/*.h",
+      "owner": "tactics::Tactics facade and ECS world",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Tactics membership distinguishes process-local ECS generations from persisted SubjectRef identities.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/tactics/TacticsTypes.h",
+        "src/modules/tactics/TacticsPersistence.cpp",
+        "docs/dev/战棋系统设计.md"
+      ],
+      "tests": [
+        "test/tactics_turn.cpp",
+        "test/tactics_replay.cpp",
+        "test/tactics_script.cpp"
+      ],
+      "symbols": [
+        "Membership",
+        "TacticsBattleSessionRef"
+      ],
+      "create": "Tactics facade validates battle/side membership before assigning ECS handles; script sessions are allocated through RuntimeObjectRegistry.",
+      "ownership": "The ECS world owns entities, Tactics owns aggregate destruction responsibility, and scripts own only a generation/epoch proxy.",
+      "destroy_order": "Units release before sides and battles; either proxy-first or module-first destruction observes generations before release.",
+      "restore": "Snapshot restore resolves persisted SubjectRef identities against live target entities and never serializes ECS/runtime handles.",
+      "stale": "Every ECS use calls ecs::try_get and every script call resolves RuntimeHandleRef generation plus module owner epoch."
+    },
+    {
+      "id": "tactics-persistence-contract",
+      "rule": "persistence",
+      "scope": "src/modules/tactics/TacticsPersistence.h",
+      "owner": "tactics::Battle",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Battle snapshots and accepted command logs are deterministic inputs for save, replay and divergence diagnosis.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/tactics/TacticsPersistence.h",
+        "src/modules/tactics/TacticsPersistence.cpp",
+        "src/modules/tactics/TacticsReplay.cpp"
+      ],
+      "tests": [
+        "test/tactics_replay.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
+      "version": "SchemaVersion 1; battle Revision and SimulationTick remain separate typed envelope fields.",
+      "migration": "There is no older released tactics schema; version 1 is exact and newer/unknown versions are rejected until an explicit migration is registered.",
+      "unknown_fields": "Envelope and tactics payload objects reject unknown or missing fields; arrays validate every owning record.",
+      "restore_atomicity": "Hash, identity, version, complete payload, links and invariants are validated in a local Candidate before one commit to battle/components."
+    }
+  ]
+}

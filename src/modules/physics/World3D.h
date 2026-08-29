@@ -1,16 +1,21 @@
 #pragma once
 
-#include <string>
+#include "common/Snapshot.h"
+#include "common/Result.h"
+#include "physics/OwnedQuery3D.h"
+#include "physics/PhysicsHandles.h"
+#include "physics/SimulationBackend.h"
+
 #include <cstdint>
-#include <unordered_set>
+#include <memory>
+#include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include <box3d/id.h>
 #include <box3d/types.h>
-
-#include <cstdint>
 
 namespace eve::physics {
 
@@ -91,6 +96,52 @@ public:
     void update(float dt);
     /** @brief Steps with an explicit substep count. */
     void updateFull(float dt, int subStepCount);
+
+    /**
+     * @brief Advances the 3D domain with an injected deterministic step.
+     * @param step Tick and fixed duration supplied by SimulationClock or replay.
+     * @param settings Solver policy; subStepCount controls Box3D substeps.
+     * @return Applied when the step completed, or a structured rejection/failure.
+     * @remarks A rejected step leaves solver state and the current tick unchanged.
+     */
+    [[nodiscard("check the physics step outcome or explicitly ignore it")]]
+    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings = {});
+
+    /** @brief Snapshot of completed backend steps and logical simulation time. */
+    [[nodiscard]] SimulationObservation simulationObservation() const noexcept;
+    /** @brief Selected CPU/GPU/mock backend family. */
+    [[nodiscard]] SimulationBackendKind backendKind() const noexcept;
+    /** @brief Replay/numeric guarantee declared by the selected backend. */
+    [[nodiscard]] SimulationDeterminism backendDeterminism() const noexcept;
+    /** @brief Current deterministic tick; save data should persist this value. */
+    [[nodiscard]] eve::SimulationTick simulationTick() const noexcept { return simulationTick_; }
+    /** @brief Process-local identity used by PhysicsLink; invalid after destruction. */
+    [[nodiscard]] PhysicsWorldHandle runtimeHandle() const noexcept { return runtimeHandle_; }
+    /** @brief Whether optional accelerator selection fell back to CPU. */
+    [[nodiscard]] bool usedBackendFallback() const noexcept { return backendFallback_; }
+    /** @brief Selection status, including a structured absent-capability warning. */
+    [[nodiscard("inspect backend selection diagnostics")]]
+    eve::Status backendSelectionStatus() const;
+
+    /**
+     * @brief Captures a versioned, integrity-checked 3D world snapshot.
+     * @param hashProvider Injected digest provider used to seal the envelope.
+     * @return A snapshot containing the exact SimulationTick and body state.
+     * @remarks The provider is not retained; this call is owner-thread-only.
+     */
+    [[nodiscard("check or persist the physics snapshot")]]
+    eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider &hashProvider) const;
+
+    /**
+     * @brief Restores a verified snapshot without exposing partial state.
+     * @param snapshot Versioned envelope produced for this world schema.
+     * @param hashProvider Provider used to verify its content hash.
+     * @return Applied when all body identities and tick metadata match.
+     * @remarks The snapshot is borrowed for this call and runtime handles are
+     *          never persisted or reused from its payload.
+     */
+    [[nodiscard("check the physics snapshot restore outcome")]]
+    eve::Result<void> restore(const eve::SnapshotEnvelope &snapshot, const eve::SnapshotHashProvider &hashProvider);
 
     /** @brief Gravity in m/s². */
     void  setGravity(float gx, float gy, float gz);
@@ -218,10 +269,30 @@ public:
     /** @brief Latest sensor processing time in milliseconds. */
     float getProfileSensorsMs() const;
 
-    /** @brief bodyType: "static" | "kinematic" | "dynamic". Position in meters. */
+    /**
+     * @brief Creates a body in meter-space units.
+     * @return Borrowed nullable body owned by this world; null means creation failed.
+     * @ownership World3D owns the body and its shapes; callers must destroy it through this API.
+     * @lifetime Valid until Body3D::destroy(), World3D::destroy(), or world teardown; use PhysicsBodyHandle across
+     * frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not re-enter structural world mutation while using the result.
+     */
     Body3D *newBody(const std::string &bodyType, float x, float y, float z);
+    /** @brief Resolves a live body handle; returns null for a stale or foreign handle. */
+    [[nodiscard]] Body3D *findBody(PhysicsBodyHandle handle) const;
+    /** @brief Resolves a live shape handle; returns null when stale or foreign. */
+    [[nodiscard]] Shape3D *findShape(PhysicsShapeHandle handle) const;
+    /** @brief Resolves a live joint handle; returns null when stale or foreign. */
+    [[nodiscard]] Joint3D *findJoint(PhysicsJointHandle handle) const;
     /**
      * @brief Connects two world-space anchor points with a rigid distance constraint.
+     * @return Borrowed nullable joint owned by this world; null means creation failed.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are never retained after validation.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid bodies, anchors, length, or cross-world bodies.
      */
     Joint3D *newDistanceJoint(Body3D *bodyA, Body3D *bodyB, float anchorAX, float anchorAY,
@@ -229,21 +300,49 @@ public:
                               float length, bool collideConnected = false);
     /**
      * @brief Creates a hinge around a normalized world-space axis at a shared anchor.
+     * @return Borrowed nullable joint owned by this world; null means creation failed.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid/cross-world bodies or a zero/non-finite axis.
      */
     Joint3D *newRevoluteJoint(Body3D *bodyA, Body3D *bodyB, float anchorX, float anchorY,
                               float anchorZ, float axisX, float axisY, float axisZ,
                               bool collideConnected = false);
-    /** @brief Creates a slider whose permitted world-space translation follows axis. */
+    /**
+     * @brief Creates a slider whose permitted world-space translation follows axis.
+     * @return Borrowed nullable joint owned by this world; null means creation failed.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     */
     Joint3D *newPrismaticJoint(Body3D *bodyA, Body3D *bodyB, float anchorX, float anchorY,
                                float anchorZ, float axisX, float axisY, float axisZ,
                                bool collideConnected = false);
-    /** @brief Creates a ball-and-socket joint with a world-space twist/cone axis. */
+    /**
+     * @brief Creates a ball-and-socket joint with a world-space twist/cone axis.
+     * @return Borrowed nullable joint owned by this world; null means creation failed.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     */
     Joint3D *newSphericalJoint(Body3D *bodyA, Body3D *bodyB, float anchorX, float anchorY,
                                float anchorZ, float axisX, float axisY, float axisZ,
                                bool collideConnected = false);
     /**
      * @brief Creates a vehicle wheel joint with independent world suspension and spin axes.
+     * @return Borrowed nullable joint owned by this world; null means creation failed.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      */
     Joint3D *newWheelJoint(Body3D *bodyA, Body3D *bodyB, float anchorX, float anchorY,
                            float anchorZ, float suspensionAxisX, float suspensionAxisY,
@@ -263,6 +362,17 @@ public:
     /** @brief 带形状类别掩码的最短射线查询（掩码为接受的 shape categoryBits）。 */
     int rayCastFiltered(float x1, float y1, float z1, float x2, float y2, float z2,
                         uint64_t maskBits);
+    /**
+     * @brief Performs one ray query and returns an owning, generation-qualified snapshot.
+     * @param filter Filter and exclusions used only for this operation; prior world query state is restored.
+     * @return A successful snapshot whose `hit` field distinguishes a normal miss, or a structured failure.
+     * @ownership The returned value owns its scalar data and retains no body, shape, or world pointers.
+     * @lifetime Handles must be re-resolved before later use and become stale with their physics owners.
+     * @thread Call on the owning physics simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not concurrently mutate this world.
+     */
+    [[nodiscard]] eve::Result<RayHit3D> rayCastOwned(float x1, float y1, float z1, float x2,
+                                                     float y2, float z2, QueryFilter3D filter = {});
     /** @brief Internal camera query: swept sphere against non-sensor shapes. */
     bool sphereCast(float x1, float y1, float z1, float x2, float y2, float z2,
                     float radius, uint64_t maskBits, int ignoredBodyId,
@@ -321,6 +431,16 @@ public:
      * Returns match count; read ids with getQueryBodyId(i).
      */
     int queryAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /**
+     * @brief Queries one AABB into a fixed owning result without using the legacy query cache.
+     * @param filter Filter and exclusions scoped to this operation.
+     * @return Stable-id-sorted nearest-set evidence; truncated is observable when capacity is exceeded.
+     * @thread Call on the owning physics simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not concurrently mutate this world.
+     */
+    [[nodiscard]] eve::Result<BroadPhaseAabb3D> queryAabbBroadPhaseOwned(
+        float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+        QueryFilter3D filter = {});
 
     /**
      * @brief Query shapes overlapping a sphere in world meters.
@@ -338,6 +458,16 @@ public:
      * @return number of unique bodies hit
      */
     int queryCapsule(float ax, float ay, float az, float bx, float by, float bz, float radius);
+    /**
+     * @brief Performs one capsule overlap and returns an owning summary without exposing the query cache.
+     * @param filter Filter and exclusions scoped to this operation.
+     * @return Owning overlap summary, or a structured failure for invalid input/world state.
+     * @thread Call on the owning physics simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not concurrently mutate this world.
+     */
+    [[nodiscard]] eve::Result<CapsuleOverlap3D> queryCapsuleOwned(
+        float ax, float ay, float az, float bx, float by, float bz, float radius,
+        QueryFilter3D filter = {});
 
     /**
      * @brief Query shapes overlapping an oriented box.
@@ -475,6 +605,17 @@ public:
      */
     bool moveCapsule(float ax, float ay, float az, float bx, float by, float bz, float radius,
                      float dx, float dy, float dz);
+    /**
+     * @brief Moves a capsule and returns all resolved movement data as one owning result.
+     * @param filter Filter and exclusions scoped to this operation.
+     * @param policy Up direction and walkable-slope policy scoped to this operation.
+     * @return Owning movement result, or a structured failure for invalid input/world state.
+     * @thread Call on the owning physics simulation thread.
+     * @reentrancy Does not invoke user callbacks; do not concurrently mutate this world.
+     */
+    [[nodiscard]] eve::Result<CapsuleMove3D> moveCapsuleOwned(
+        float ax, float ay, float az, float bx, float by, float bz, float radius, float dx,
+        float dy, float dz, QueryFilter3D filter = {}, CapsuleMovePolicy3D policy = {});
     /** @brief Resolved translation X from the last moveCapsule call. */
     float getMoverDeltaX() const { return moverDeltaX_; }
     /** @brief Resolved translation Y from the last moveCapsule call. */
@@ -707,6 +848,12 @@ public:
 
     /** @brief Internal: next stable body id. */
     int nextBodyId();
+    /** @brief Internal: next generation-qualified body handle. */
+    PhysicsBodyHandle nextBodyRuntimeHandle();
+    /** @brief Internal: next generation-qualified shape handle. */
+    PhysicsShapeHandle nextShapeRuntimeHandle();
+    /** @brief Internal: next generation-qualified joint handle. */
+    PhysicsJointHandle nextJointRuntimeHandle();
     /** @brief Internal: next stable shape id. */
     int nextShapeId() { return nextShapeId_++; }
     /** @brief Internal: next stable joint id. */
@@ -717,13 +864,25 @@ public:
 
 private:
     friend class Body3D;
+    friend class Joint3D;
     friend class Shape3D;
+    friend class TargetingLineOfSightAdapter;
+    friend void registerCameraObstructionWorld(World3D *world);
 
     b3WorldId worldId_{};
+    std::unique_ptr<ISimulationBackend> simulation_;
+    PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
+    std::shared_ptr<const void>         queryLifetime_          = std::make_shared<int>(0);
     bool      destroyed_ = false;
     int       nextId_    = 1;
     int       nextShapeId_ = 1;
     int       nextJointId_ = 1;
+    std::uint32_t                       nextBodyHandleIndex_    = 1u;
+    std::uint32_t                       nextShapeHandleIndex_   = 1u;
+    std::uint32_t                       nextJointHandleIndex_   = 1u;
+    eve::SimulationTick                 simulationTick_         = eve::SimulationTick::zero();
+    eve::Status                         backendSelectionStatus_ = eve::Status::success();
+    bool                                backendFallback_        = false;
 
     std::unordered_set<Body3D *>  bodies_;
     std::unordered_set<Shape3D *> shapes_;
@@ -731,7 +890,9 @@ private:
     std::unordered_set<uint64_t> disabledBodyPairs_;
     std::unordered_set<uint64_t> disabledShapePairs_;
     std::unordered_map<uint64_t, EventShape> shapeRecords_;
-    std::unordered_map<uint64_t, Shape3D *> shapeHandles_;
+    std::unordered_map<PhysicsShapeHandle, Shape3D *> shapeHandles_;
+    std::unordered_map<uint64_t, PhysicsShapeHandle>  shapeRawHandles_;
+    std::unordered_map<PhysicsJointHandle, Joint3D *> jointHandles_;
     std::vector<ContactEvent> beginContacts_;
     std::vector<ContactEvent> endContacts_;
     std::vector<TriggerEvent> beginTriggers_;

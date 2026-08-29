@@ -8,7 +8,7 @@ IntFieldEditCommand::IntFieldEditCommand(std::string name, IEditableTarget *targ
     : name_(std::move(name)), target_(target) {}
 bool IntFieldEditCommand::record(int x, int y, int after) {
     auto *field = target_ ? target_->query<IIntFieldTarget>() : nullptr;
-    if (!field || !field->inBounds(x, y)) return false;
+    if (!field || !field->containsCell(x, y)) return false;
     for (auto &change : changes_) {
         if (change.x == x && change.y == y) { change.after = after; return true; }
     }
@@ -28,6 +28,9 @@ void IntFieldEditCommand::revert() {
     auto *field = target_ ? target_->query<IIntFieldTarget>() : nullptr;
     if (!field) return;
     for (auto it = changes_.rbegin(); it != changes_.rend(); ++it) field->writeInt(it->x, it->y, it->before);
+}
+std::unique_ptr<IEditCommand> IntFieldEditCommand::clone() const {
+    return std::make_unique<IntFieldEditCommand>(*this);
 }
 bool IntFieldEditCommand::mergeWith(const IEditCommand &laterBase) {
     auto *later = dynamic_cast<const IntFieldEditCommand *>(&laterBase);
@@ -51,7 +54,7 @@ ScalarFieldEditCommand::ScalarFieldEditCommand(std::string name, IEditableTarget
     : name_(std::move(name)), target_(target) {}
 bool ScalarFieldEditCommand::record(int x, int y, float after) {
     auto *field = target_ ? target_->query<IScalarFieldTarget>() : nullptr;
-    if (!field || !field->inBounds(x, y)) return false;
+    if (!field || !field->containsCell(x, y)) return false;
     for (auto &change : changes_) {
         if (change.x == x && change.y == y) { change.after = after; return true; }
     }
@@ -71,6 +74,9 @@ void ScalarFieldEditCommand::revert() {
     auto *field = target_ ? target_->query<IScalarFieldTarget>() : nullptr;
     if (!field) return;
     for (auto it = changes_.rbegin(); it != changes_.rend(); ++it) field->writeScalar(it->x, it->y, it->before);
+}
+std::unique_ptr<IEditCommand> ScalarFieldEditCommand::clone() const {
+    return std::make_unique<ScalarFieldEditCommand>(*this);
 }
 bool ScalarFieldEditCommand::mergeWith(const IEditCommand &laterBase) {
     auto *later = dynamic_cast<const ScalarFieldEditCommand *>(&laterBase);

@@ -6,6 +6,8 @@
 
 #include <Box2D/Box2D.h>
 
+#include <cmath>
+
 #include <cstring>
 
 namespace eve::physics {
@@ -29,7 +31,8 @@ const char *bodyTypeName(b2BodyType t) {
 
 }  // namespace
 
-Body::Body(World *world, b2Body *body, int id) : world_(world), body_(body), id_(id) {}
+Body::Body(World *world, b2Body *body, int id, PhysicsBodyHandle runtimeHandle)
+    : world_(world), body_(body), id_(id), runtimeHandle_(runtimeHandle) {}
 
 Body::~Body() {
     if (body_ && world_ && world_->raw()) {
@@ -50,12 +53,14 @@ Body::~Body() {
     }
     body_  = nullptr;
     world_ = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 void Body::invalidate() {
     if (body_) body_->SetUserData(nullptr);
     body_  = nullptr;
     world_ = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 void Body::destroy() {
@@ -78,6 +83,7 @@ void Body::destroy() {
     world_->forgetBody(this);
     body_  = nullptr;
     world_ = nullptr;
+    runtimeHandle_ = PhysicsBodyHandle::invalid();
 }
 
 void Body::setPosition(float x, float y) {
@@ -254,6 +260,70 @@ Fixture *Body::newCircleFixture(float radius, float density, float friction, flo
     raw->SetUserData(fx);
     world_->fixtures_.insert(fx);
     return fx;
+}
+
+Fixture *Body::newPolygonFixture(const std::vector<float> &vertices, float density,
+                                 float friction, float restitution) {
+    if (!body_ || !world_) throw eve::Exception("Body.newPolygonFixture: body destroyed");
+    if (vertices.size() < 6 || vertices.size() > 16 || vertices.size() % 2 != 0)
+        throw eve::Exception("Body.newPolygonFixture: expected 3..8 packed XY vertices");
+    std::vector<b2Vec2> points;
+    points.reserve(vertices.size() / 2);
+    for (size_t index = 0; index < vertices.size(); index += 2) {
+        if (!std::isfinite(vertices[index]) || !std::isfinite(vertices[index + 1]))
+            throw eve::Exception("Body.newPolygonFixture: vertices must be finite");
+        points.emplace_back(world_->toMeters(vertices[index]), world_->toMeters(vertices[index + 1]));
+    }
+    b2PolygonShape shape;
+    shape.Set(points.data(), static_cast<int32>(points.size()));
+    if (shape.GetVertexCount() < 3)
+        throw eve::Exception("Body.newPolygonFixture: vertices do not form a convex polygon");
+    b2FixtureDef def;
+    def.shape = &shape;
+    def.density = density;
+    def.friction = friction;
+    def.restitution = restitution;
+    b2Fixture *raw = body_->CreateFixture(&def);
+    if (!raw) throw eve::Exception("Body.newPolygonFixture: Box2D rejected the fixture");
+    auto *fixture = new Fixture(world_, this, raw);
+    raw->SetUserData(fixture);
+    world_->fixtures_.insert(fixture);
+    return fixture;
+}
+
+Fixture *Body::newChainFixture(const std::vector<float> &vertices, bool loop, float friction,
+                               float restitution) {
+    if (!body_ || !world_) throw eve::Exception("Body.newChainFixture: body destroyed");
+    const size_t count = vertices.size() / 2;
+    if (vertices.size() % 2 != 0 || count < (loop ? 3U : 2U) || count > 100000U)
+        throw eve::Exception("Body.newChainFixture: invalid packed XY vertex count");
+    std::vector<b2Vec2> points;
+    points.reserve(count);
+    for (size_t index = 0; index < vertices.size(); index += 2) {
+        if (!std::isfinite(vertices[index]) || !std::isfinite(vertices[index + 1]))
+            throw eve::Exception("Body.newChainFixture: vertices must be finite");
+        const b2Vec2 point(world_->toMeters(vertices[index]), world_->toMeters(vertices[index + 1]));
+        if (!points.empty() && point == points.back())
+            throw eve::Exception("Body.newChainFixture: consecutive vertices must be distinct");
+        points.push_back(point);
+    }
+    if (loop && points.front() == points.back())
+        throw eve::Exception("Body.newChainFixture: loop endpoint is implicit and must not be repeated");
+    b2ChainShape shape;
+    if (loop)
+        shape.CreateLoop(points.data(), static_cast<int32>(points.size()));
+    else
+        shape.CreateChain(points.data(), static_cast<int32>(points.size()));
+    b2FixtureDef def;
+    def.shape = &shape;
+    def.friction = friction;
+    def.restitution = restitution;
+    b2Fixture *raw = body_->CreateFixture(&def);
+    if (!raw) throw eve::Exception("Body.newChainFixture: Box2D rejected the fixture");
+    auto *fixture = new Fixture(world_, this, raw);
+    raw->SetUserData(fixture);
+    world_->fixtures_.insert(fixture);
+    return fixture;
 }
 
 }  // namespace eve::physics

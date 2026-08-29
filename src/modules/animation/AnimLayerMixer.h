@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "common/Time.h"
 
 #include <string>
 #include <vector>
@@ -65,7 +66,9 @@ public:
     int getLayerCount() const { return static_cast<int>(layers_.size()); }
     /** @brief Return a layer name, or empty for an invalid index. */
     std::string getLayerName(int index) const;
-    /** @brief Advance referenced players and build the combined pose. */
+    /** @brief Advance all referenced players and combine their poses. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     void update(float dt);
     /** @brief Return the most recently combined pose. */
     AnimPose* getPose() { return &pose_; }
@@ -108,6 +111,10 @@ private:
     AnimPose           pose_;
     std::vector<Layer> layers_;
     std::vector<Event> events_;
+    eve::SimulationTick lastTick_    = eve::SimulationTick::zero();
+    bool                hasLastTick_ = false;
+
+    void compose();
 };
 
 }  // namespace eve::animation

@@ -113,7 +113,7 @@ endconversation
 ```
 
 - 内容：`loadFromDnut/loadFromDnutFile`、`importYarn/importTwee`、`clear`、
-  `getConversationCount()`、`getConversationId(index)`、`hasConversation`、`getLastError`。
+  `getConversationCount()`、`getConversationId(index)`、`hasConversation`；失败详情通过诊断查询 API 获取。
 - 外部格式：Yarn Spinner 节点和 Twine Twee 3 passages 会转换为相同的稳定节点模型；
   角色前缀、参数占位符、双向 Twine 链接、Yarn shortcut options、`jump/stop/wait/call/set`
   命令以及 `#line:/#voice:` 标签都会保留，并进入统一的引用校验流程。Twee 的
@@ -193,7 +193,7 @@ if (doc.validate()) dialogueFlow.applyDocument(doc);
 - 连线：`getRouteCount/getRouteLabel/getRouteTarget/addRoute/setRoute/removeRoute`；
   route 适用于 branch 与 choice，节点改名或删除会同步维护引用。
 - 结构化诊断：`validate`、`getDiagnosticCount/getDiagnosticSeverity/getDiagnosticPath`
-  `/getDiagnosticLine/getDiagnosticMessage`、`getLastError`。
+  `/getDiagnosticLine/getDiagnosticMessage`。
 - Registry 桥接：`DialogueFlow.newDocument/getDocument/applyDocument`。文档只是数据类，
   不依赖 editor 或 ui 模块，因此同一资产可被桌面编辑器、游戏内工具、自动化生成器和测试复用。
 

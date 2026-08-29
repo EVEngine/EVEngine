@@ -28,7 +28,7 @@ public:
     bool hasScreenKeyboard() const override;
 
 private:
-    // Consumed by event::sdl::Event when converting SDL_KEYDOWN repeats.
+    // Consumed by platform_event::sdl::Event when converting SDL_KEYDOWN repeats.
     bool keyRepeat_ = false;
 };
 

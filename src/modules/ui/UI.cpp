@@ -10,9 +10,12 @@
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
 
-#include "common/config.h"
 #include "common/Module.h"
+#include "common/SquirrelBinding.h"
+#include "common/config.h"
 #include "graphics/Graphics.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
@@ -72,29 +75,69 @@ eve.UIComponent <- class {
     hostName = ""
     dirty = true
     forceFull = false
+    props = null
+    state = null
     _ui = null
+    _parent = null
+    _mounted = false
 
-    constructor(uiInstance = null) {
+    constructor(uiInstance = null, initialProps = null) {
         _ui = uiInstance
         hostName = ""
         dirty = true
         forceFull = false
+        props = initialProps != null ? initialProps : {}
+        state = {}
+        _parent = null
+        _mounted = false
     }
 
-    function setUI(uiInstance) { _ui = uiInstance }
+    function setUI(uiInstance) { _ui = uiInstance; return this }
+
+    function setProps(nextProps, replace = false) {
+        if (nextProps == null) return this
+        if (replace) props = {}
+        foreach (key, value in nextProps) props.rawset(key, value)
+        markDirty()
+        return this
+    }
 
     function mountAs(name) {
         hostName = name
         dirty = true
         forceFull = true
         updateIfDirty()
+        return this
     }
 
-    function setState() { dirty = true }
-    function markDirty() { dirty = true }
+    function setState(patch = null) {
+        if (patch != null) {
+            foreach (key, value in patch) state.rawset(key, value)
+        }
+        markDirty()
+        return this
+    }
+    function markDirty() {
+        dirty = true
+        if (_parent != null && _parent != this) _parent.markDirty()
+        return this
+    }
+
+    // Compose a persistent child instance inside this component's active build pass.
+    function renderChild(component, nextProps = null) {
+        if (component == null) return null
+        component._parent = this
+        component.setUI(ui())
+        if (nextProps != null) component.props = nextProps
+        component.build()
+        component.dirty = false
+        return component
+    }
 
     // Override in subclass: call this.ui().beginWindow / text / button / end ...
     function build() {}
+    function onMount() {}
+    function onUpdated() {}
 
     function ui() {
         if (_ui != null) return _ui
@@ -107,6 +150,7 @@ eve.UIComponent <- class {
 
     function updateIfDirty() {
         if (!dirty) return false
+        local firstMount = !_mounted
         local u = ui()
         u.beginBuild()
         build()
@@ -119,6 +163,9 @@ eve.UIComponent <- class {
             u.remountBuildAs(name)
         }
         dirty = false
+        _mounted = true
+        if (firstMount) onMount()
+        else onUpdated()
         return true
     }
 
@@ -168,11 +215,13 @@ bool UI::initBackend() {
     auto *native = static_cast<SDL_Window *>(sdlWin->getHandle());
     if (!native) return false;
     const bool ok = backend_->init(native, gfx);
-    if (ok) UISystem::setBackend(backend_.get());
+    if (ok) UISystem::setBackend(*backend_);
     return ok;
 }
 
 void UI::shutdownBackend() {
+    releaseNinePatches();
+    UISystem::clearBackend();
     if (backend_) backend_->shutdown();
 }
 
@@ -197,14 +246,15 @@ void UI::updateHostTweens() {
         std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
             .count();
     for (auto &t : hostTweens_) {
-        if (!t.host) continue;
-        auto m = t.host->meta();
+        auto host = UIHost::resolve(t.host);
+        if (!host) continue;
+        auto         m       = host->get().meta();
         const double elapsed = now - t.startMs;
         if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
             m->hasPos = true;
             m->posX = t.toX;
             m->posY = t.toY;
-            t.host = nullptr;  // done; removed below
+            t.host    = {};  // done; removed below
             continue;
         }
         const float k = float(elapsed / t.durationMs);
@@ -214,7 +264,7 @@ void UI::updateHostTweens() {
         m->posY = t.fromY + (t.toY - t.fromY) * ease;
     }
     hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [](const HostTween &t) { return t.host == nullptr; }),
+                                     [](const HostTween &t) { return !UIHost::resolve(t.host).has_value(); }),
                       hostTweens_.end());
 }
 
@@ -223,7 +273,7 @@ void UI::dispatchEvents() {
     const std::vector<UIEvent> events = UISystem::pendingEvents();
     UISystem::dispatchEvents();
     for (const auto &ev : events) {
-        if (!ev.host) continue;
+        if (!UIHost::resolve(ev.host)) continue;
         fireScriptHandlers(ev);
     }
 }
@@ -243,15 +293,16 @@ void UI::fireScriptHandlers(const UIEvent &ev) {
 }
 
 void UI::onClick(const std::string &id, ssq::Function fn) {
-    if (!selected_ || id.empty()) return;
-    scriptHandlers_.push_back(
-        ScriptHandler(selected_->getName(), id, "click", std::move(fn)));
+    auto host = resolveSelected();
+    if (!host || id.empty()) return;
+    scriptHandlers_.push_back(ScriptHandler(host->get().getName(), id, "click", std::move(fn)));
 }
 
 void UI::onChange(const std::string &id, ssq::Function fn) {
-    if (!selected_ || id.empty()) return;
+    auto host = resolveSelected();
+    if (!host || id.empty()) return;
     for (const char *kind : {"toggle", "value", "text"}) {
-        scriptHandlers_.push_back(ScriptHandler(selected_->getName(), id, kind, fn));
+        scriptHandlers_.push_back(ScriptHandler(host->get().getName(), id, kind, fn));
     }
 }
 
@@ -263,27 +314,27 @@ bool UI::wantCaptureKeyboard() const {
     return backend_ ? backend_->wantCaptureKeyboard() : false;
 }
 
-UIHost *UI::findHost(const std::string &name) const { return UISystem::findHost(name); }
+UIHostHandle UI::findHost(const std::string &name) const { return UISystem::findHost(name); }
 
-UIHost *UI::findHostByOwner(uint32_t ownerId) const {
-    return UISystem::findHostByOwner(ownerId);
-}
+UIHostHandle UI::findHostByOwner(uint32_t ownerId) const { return UISystem::findHostByOwner(ownerId); }
 
 bool UI::select(const std::string &name) {
-    UIHost *h = findHost(name);
-    if (!h) return false;
+    const UIHostHandle h = findHost(name);
+    if (!UIHost::resolve(h)) return false;
     selected_ = h;
     return true;
 }
 
 void UI::bindOwner(uint32_t ownerId) {
-    if (selected_) selected_->setOwnerId(ownerId);
+    if (auto host = resolveSelected()) host->get().setOwnerId(ownerId);
 }
 
-UIHost *UI::ensureSelected(const std::string &preferredName) {
-    if (selected_) return selected_;
+UIHostHandle UI::ensureSelected(const std::string &preferredName) {
+    if (UIHost::resolve(selected_)) return selected_;
+    selected_ = {};
     if (!preferredName.empty()) {
-        if (UIHost *h = findHost(preferredName)) {
+        const UIHostHandle h = findHost(preferredName);
+        if (UIHost::resolve(h)) {
             selected_ = h;
             return selected_;
         }
@@ -294,38 +345,44 @@ UIHost *UI::ensureSelected(const std::string &preferredName) {
     return selected_;
 }
 
-UIHost *UI::mountAs(const std::string &name, WidgetDesc root) {
-    UIHost *h = findHost(name);
-    if (!h) h = UIHost::createHost(name);
-    else h->setName(name);
-    h->setTree(std::move(root));
-    selected_ = h;
-    return h;
+UIHostHandle UI::mountAs(const std::string &name, WidgetDesc root) {
+    UIHostHandle handle = findHost(name);
+    auto         host   = UIHost::resolve(handle);
+    if (!host) {
+        handle = UIHost::createHost(name);
+        host   = UIHost::resolve(handle);
+    } else {
+        host->get().setName(name);
+    }
+    if (!host) return {};
+    host->get().setTree(std::move(root));
+    selected_ = handle;
+    return handle;
 }
 
-UIHost *UI::mount(WidgetDesc root) {
-    if (selected_) {
-        selected_->setTree(std::move(root));
+UIHostHandle UI::mount(WidgetDesc root) {
+    if (auto host = resolveSelected()) {
+        host->get().setTree(std::move(root));
         return selected_;
     }
     return mountAs("default", std::move(root));
 }
 
-UIHost *UI::remount(WidgetDesc root) {
-    UIHost *h = ensureSelected();
-    h->setTree(std::move(root));
-    return h;
+UIHostHandle UI::remount(WidgetDesc root) {
+    const UIHostHandle handle = ensureSelected();
+    if (auto host = UIHost::resolve(handle)) host->get().setTree(std::move(root));
+    return handle;
 }
 
-UIHost *UI::remountReconcile(WidgetDesc root) {
-    UIHost *h = ensureSelected();
-    h->setTreeReconcile(std::move(root));
-    return h;
+UIHostHandle UI::remountReconcile(WidgetDesc root) {
+    const UIHostHandle handle = ensureSelected();
+    if (auto host = UIHost::resolve(handle)) host->get().setTreeReconcile(std::move(root));
+    return handle;
 }
 
-UIHost *UI::remountAs(const std::string &name, WidgetDesc root) {
-    return mountAs(name, std::move(root));
-}
+UIHostHandle UI::remountAs(const std::string &name, WidgetDesc root) { return mountAs(name, std::move(root)); }
+
+eve::OptionalRef<UIHost> UI::resolveSelected() const noexcept { return UIHost::resolve(selected_); }
 
 void UI::beginBuild() {
     openStack_.clear();
@@ -358,6 +415,27 @@ void UI::beginChild(const std::string &id, float width, float height) {
 }
 
 void UI::beginCard(const std::string &id) { pushOpen(card({}, id)); }
+
+bool UI::beginNinePatch(const std::string &path, const std::string &id, float width,
+                        float height) {
+    auto *asset = loadNinePatch(path);
+    if (!asset) return false;
+    WidgetDesc d = ninePatchPanel({}, id, asset->textureId);
+    d.sizeX = width;
+    d.sizeY = height;
+    d.minSizeX = float(asset->info.width);
+    d.minSizeY = float(asset->info.height);
+    d.borderL = float(asset->info.borderLeft);
+    d.borderT = float(asset->info.borderTop);
+    d.borderR = float(asset->info.borderRight);
+    d.borderB = float(asset->info.borderBottom);
+    d.paddingL = float(asset->info.paddingLeft);
+    d.paddingT = float(asset->info.paddingTop);
+    d.paddingR = float(asset->info.paddingRight);
+    d.paddingB = float(asset->info.paddingBottom);
+    pushOpen(std::move(d));
+    return true;
+}
 
 void UI::beginMenuBar(const std::string &id) { pushOpen(menuBar({}, id)); }
 
@@ -412,6 +490,58 @@ FlexJustify parseFlexJustify(const std::string &justify) {
         return FlexJustify::SpaceBetween;
     if (j == "spacearound" || j == "space-around" || j == "around") return FlexJustify::SpaceAround;
     return FlexJustify::Start;
+}
+
+FocusMode parseFocusMode(const std::string &mode) {
+    const std::string value = toLowerCopy(mode);
+    if (value == "none") return FocusMode::None;
+    if (value == "click") return FocusMode::Click;
+    return FocusMode::All;
+}
+
+MouseFilter parseMouseFilter(const std::string &filter) {
+    const std::string value = toLowerCopy(filter);
+    if (value == "pass") return MouseFilter::Pass;
+    if (value == "ignore") return MouseFilter::Ignore;
+    return MouseFilter::Stop;
+}
+
+ThemePreset parseThemePreset(const std::string &theme) {
+    const std::string value = toLowerCopy(theme);
+    if (value == "dark") return ThemePreset::Dark;
+    if (value == "light") return ThemePreset::Light;
+    return ThemePreset::Inherit;
+}
+
+AccessibilityRole parseAccessibilityRole(const std::string &role) {
+    const std::string value = toLowerCopy(role);
+    if (value == "button") return AccessibilityRole::Button;
+    if (value == "checkbox") return AccessibilityRole::Checkbox;
+    if (value == "slider") return AccessibilityRole::Slider;
+    if (value == "text") return AccessibilityRole::Text;
+    if (value == "textinput" || value == "text-input") return AccessibilityRole::TextInput;
+    if (value == "list") return AccessibilityRole::List;
+    if (value == "listitem" || value == "list-item") return AccessibilityRole::ListItem;
+    if (value == "menu") return AccessibilityRole::Menu;
+    if (value == "menuitem" || value == "menu-item") return AccessibilityRole::MenuItem;
+    if (value == "progress") return AccessibilityRole::Progress;
+    if (value == "region") return AccessibilityRole::Region;
+    if (value == "tab") return AccessibilityRole::Tab;
+    if (value == "window") return AccessibilityRole::Window;
+    return AccessibilityRole::Auto;
+}
+
+bool parseFocusDirection(const std::string &direction, FocusDirection *out) {
+    if (!out) return false;
+    const std::string value = toLowerCopy(direction);
+    if (value == "next") *out = FocusDirection::Next;
+    else if (value == "previous" || value == "prev") *out = FocusDirection::Previous;
+    else if (value == "left") *out = FocusDirection::Left;
+    else if (value == "right") *out = FocusDirection::Right;
+    else if (value == "up") *out = FocusDirection::Up;
+    else if (value == "down") *out = FocusDirection::Down;
+    else return false;
+    return true;
 }
 
 }  // namespace
@@ -497,6 +627,21 @@ void UI::addProgress(float fraction, const std::string &id, const std::string &o
 
 void UI::addImage(const std::string &id, float width, float height) {
     currentParent().children.push_back(image(id, width, height));
+}
+
+bool UI::addNinePatch(const std::string &path, const std::string &id, float width,
+                      float height) {
+    auto *asset = loadNinePatch(path);
+    if (!asset) return false;
+    WidgetDesc d = image(id, width > 0.f ? width : float(asset->info.width),
+                         height > 0.f ? height : float(asset->info.height));
+    d.textureId = asset->textureId;
+    d.borderL = float(asset->info.borderLeft);
+    d.borderT = float(asset->info.borderTop);
+    d.borderR = float(asset->info.borderRight);
+    d.borderB = float(asset->info.borderBottom);
+    currentParent().children.push_back(std::move(d));
+    return true;
 }
 
 void UI::addImageButton(const std::string &id, float width, float height) {
@@ -619,6 +764,61 @@ void UI::setItemTooltip(const std::string &text) {
     parent.children.back().tooltip = text;
 }
 
+void UI::setItemEnabled(bool enabled) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().enabled = enabled;
+}
+
+void UI::setItemFocusMode(const std::string &mode) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().focusMode = parseFocusMode(mode);
+}
+
+void UI::setItemMouseFilter(const std::string &filter) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().mouseFilter = parseMouseFilter(filter);
+}
+
+void UI::setItemTheme(const std::string &theme) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().themePreset = parseThemePreset(theme);
+}
+
+void UI::setThemeScope(const std::string &theme) {
+    currentParent().themePreset = parseThemePreset(theme);
+}
+
+void UI::setItemTabIndex(int index) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().tabIndex = index;
+}
+
+void UI::setItemFocusOrder(const std::string &previous, const std::string &next) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().focusPrevious = previous;
+    parent.children.back().focusNext = next;
+}
+
+void UI::setItemFocusNeighbors(const std::string &left, const std::string &right,
+                               const std::string &up, const std::string &down) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().focusLeft = left;
+    parent.children.back().focusRight = right;
+    parent.children.back().focusUp = up;
+    parent.children.back().focusDown = down;
+}
+
+void UI::setItemAccessibility(const std::string &role, const std::string &name,
+                              const std::string &description) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().accessibilityRole = parseAccessibilityRole(role);
+    parent.children.back().accessibilityName = name;
+    parent.children.back().accessibilityDescription = description;
+}
+
 void UI::setFlexAlign(const std::string &align) {
     WidgetDesc &parent = currentParent();
     if (parent.type != NodeType::Flex) return;
@@ -643,7 +843,8 @@ bool UI::buildComplete() const { return openStack_.empty() && hasBuiltRoot_; }
 
 bool UI::mountBuild() {
     if (!buildComplete()) return false;
-    remount(std::move(builtRoot_));
+    const UIHostHandle handle = remount(std::move(builtRoot_));
+    if (!UIHost::resolve(handle)) return false;
     hasBuiltRoot_ = false;
     builtRoot_ = WidgetDesc{};
     return true;
@@ -651,7 +852,8 @@ bool UI::mountBuild() {
 
 bool UI::mountBuildAs(const std::string &name) {
     if (!buildComplete()) return false;
-    mountAs(name, std::move(builtRoot_));
+    const UIHostHandle handle = mountAs(name, std::move(builtRoot_));
+    if (!UIHost::resolve(handle)) return false;
     hasBuiltRoot_ = false;
     builtRoot_ = WidgetDesc{};
     return true;
@@ -659,9 +861,11 @@ bool UI::mountBuildAs(const std::string &name) {
 
 bool UI::remountBuildAs(const std::string &name) {
     if (!buildComplete()) return false;
-    UIHost *h = findHost(name);
-    if (!h) h = UIHost::createHost(name);
-    h->setTreeReconcile(std::move(builtRoot_));
+    UIHostHandle h = findHost(name);
+    if (!UIHost::resolve(h)) h = UIHost::createHost(name);
+    auto host = UIHost::resolve(h);
+    if (!host) return false;
+    host->get().setTreeReconcile(std::move(builtRoot_));
     selected_ = h;
     hasBuiltRoot_ = false;
     builtRoot_ = WidgetDesc{};
@@ -669,84 +873,93 @@ bool UI::remountBuildAs(const std::string &name) {
 }
 
 bool UI::setListItems(const std::string &listId, const std::vector<std::string> &items) {
-    if (!selected_) return false;
+    auto host = resolveSelected();
+    if (!host) return false;
     WidgetDesc listNode = listButtons(listId, items);
-    auto *existing = selected_->findById(listId);
-    if (existing && existing->type == NodeType::Group) {
-        selected_->setTreeReconcile(
-            window(selected_->getName().empty() ? "List" : selected_->getName(),
-                   {std::move(listNode)}, "root"));
+    auto       existing = host->get().findById(listId);
+    if (existing && existing->get().type == NodeType::Group) {
+        host->get().setTreeReconcile(
+            window(host->get().getName().empty() ? "List" : host->get().getName(), {std::move(listNode)}, "root"));
         return true;
     }
-    selected_->setTree(
-        window(selected_->getName().empty() ? "List" : selected_->getName(), {std::move(listNode)},
-               "root"));
+    host->get().setTree(
+        window(host->get().getName().empty() ? "List" : host->get().getName(), {std::move(listNode)}, "root"));
     return true;
 }
 
 void UI::setText(const std::string &id, const std::string &text) {
-    if (selected_) selected_->setTextById(id, text);
+    if (auto host = resolveSelected()) host->get().setTextById(id, text);
 }
 
 void UI::setTextWrap(const std::string &id, float width) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) n->wrapWidth = width;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) n->get().wrapWidth = width;
 }
 
 void UI::setVisible(const std::string &id, bool visible) {
-    if (selected_) selected_->setVisibleById(id, visible);
+    if (auto host = resolveSelected()) host->get().setVisibleById(id, visible);
+}
+
+void UI::setEnabled(const std::string &id, bool enabled) {
+    if (auto host = resolveSelected()) host->get().setEnabledById(id, enabled);
 }
 
 void UI::setChecked(const std::string &id, bool checked) {
-    if (selected_) selected_->setCheckedById(id, checked);
+    if (auto host = resolveSelected()) host->get().setCheckedById(id, checked);
 }
 
 void UI::setValue(const std::string &id, float value) {
-    if (selected_) selected_->setValueById(id, value);
+    if (auto host = resolveSelected()) host->get().setValueById(id, value);
 }
 
 void UI::setValueText(const std::string &id, const std::string &value) {
-    if (selected_) selected_->setValueTextById(id, value);
+    if (auto host = resolveSelected()) host->get().setValueTextById(id, value);
 }
 
 void UI::setImageTint(const std::string &id, float r, float g, float b, float a) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) {
-        n->tintR = r;
-        n->tintG = g;
-        n->tintB = b;
-        n->tintA = a;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) {
+        n->get().tintR = r;
+        n->get().tintG = g;
+        n->get().tintB = b;
+        n->get().tintA = a;
     }
 }
 
 void UI::setImageUv(const std::string &id, float u0, float v0, float u1, float v1) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) {
-        n->uv0x = u0;
-        n->uv0y = v0;
-        n->uv1x = u1;
-        n->uv1y = v1;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) {
+        n->get().uv0x = u0;
+        n->get().uv0y = v0;
+        n->get().uv1x = u1;
+        n->get().uv1y = v1;
     }
 }
 
 void UI::setImageNinePatch(const std::string &id, float l, float t, float r, float b) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) {
-        n->borderL = l;
-        n->borderT = t;
-        n->borderR = r;
-        n->borderB = b;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) {
+        n->get().borderL = l;
+        n->get().borderT = t;
+        n->get().borderR = r;
+        n->get().borderB = b;
     }
 }
 
 void UI::setImageCornerRadius(const std::string &id, float radius) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) n->cornerRadius = radius;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) n->get().cornerRadius = radius;
 }
 
 void UI::setImageTextureId(const std::string &id, uint64_t textureId) {
-    if (!selected_) return;
-    if (auto *n = selected_->findById(id)) n->textureId = textureId;
+    auto host = resolveSelected();
+    if (!host) return;
+    if (auto n = host->get().findById(id)) n->get().textureId = textureId;
 }
 
 uint64_t UI::registerTexture(graphics::Texture *tex) {
@@ -761,54 +974,141 @@ void UI::unregisterTexture(uint64_t textureId) {
 }
 
 float UI::getValue(const std::string &id) const {
-    if (!selected_) return 0.f;
-    if (auto *n = selected_->findById(id)) return n->value;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto n = host->get().findById(id)) return n->get().value;
     return 0.f;
 }
 
 std::string UI::getValueText(const std::string &id) const {
-    if (!selected_) return {};
-    if (auto *n = selected_->findById(id)) return n->valueText;
+    auto host = resolveSelected();
+    if (!host) return {};
+    if (auto n = host->get().findById(id)) return n->get().valueText;
     return {};
 }
 
 bool UI::getChecked(const std::string &id) const {
-    if (!selected_) return false;
-    if (auto *n = selected_->findById(id)) return n->checked;
+    auto host = resolveSelected();
+    if (!host) return false;
+    if (auto n = host->get().findById(id)) return n->get().checked;
     return false;
 }
 
+bool UI::setImageNinePatchFile(const std::string &id, const std::string &path) {
+    auto host = resolveSelected();
+    if (!host) return false;
+    auto n = host->get().findById(id);
+    if (!n || (n->get().type != NodeType::Image && n->get().type != NodeType::ImageButton &&
+               n->get().type != NodeType::NinePatchPanel))
+        return false;
+    auto *asset = loadNinePatch(path);
+    if (!asset) return false;
+    n->get().textureId = asset->textureId;
+    n->get().borderL   = float(asset->info.borderLeft);
+    n->get().borderT   = float(asset->info.borderTop);
+    n->get().borderR   = float(asset->info.borderRight);
+    n->get().borderB   = float(asset->info.borderBottom);
+    if (n->get().type == NodeType::NinePatchPanel) {
+        n->get().paddingL = float(asset->info.paddingLeft);
+        n->get().paddingT = float(asset->info.paddingTop);
+        n->get().paddingR = float(asset->info.paddingRight);
+        n->get().paddingB = float(asset->info.paddingBottom);
+    }
+    return true;
+}
+
+UI::NinePatchResource *UI::loadNinePatch(const std::string &path) {
+    if (auto found = ninePatches_.find(path); found != ninePatches_.end())
+        return &found->second;
+    auto *images = eve::ModuleManager::getInstance<eve::image::Image>("Image");
+    auto *graphics = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    if (!images || !graphics) return nullptr;
+    try {
+        eve::ref<eve::image::ImageData> source(images->newImageDataFromFile(path));
+        NinePatchResource resource;
+        std::string error;
+        if (!parseNinePatch(*source, resource.info, &error)) {
+            std::fprintf(stderr, "[ui] invalid .9.png '%s': %s\n", path.c_str(),
+                         error.c_str());
+            return nullptr;
+        }
+        auto cropped = stripNinePatchBorder(*source);
+        if (!cropped) return nullptr;
+        resource.texture = graphics->newTexture(cropped.get());
+        if (!resource.texture) return nullptr;
+        resource.textureId = registerTexture(resource.texture);
+        if (resource.textureId == 0) {
+            graphics->releaseTexture(resource.texture);
+            return nullptr;
+        }
+        auto inserted = ninePatches_.emplace(path, std::move(resource));
+        return &inserted.first->second;
+    } catch (const std::exception &e) {
+        std::fprintf(stderr, "[ui] failed to load .9.png '%s': %s\n", path.c_str(), e.what());
+        return nullptr;
+    }
+}
+
+void UI::releaseNinePatches() {
+    auto *graphics = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    for (auto &[path, resource] : ninePatches_) {
+        (void)path;
+        if (backend_ && resource.textureId != 0)
+            backend_->unregisterTexture(resource.textureId);
+        if (graphics && resource.texture) graphics->releaseTexture(resource.texture);
+    }
+    ninePatches_.clear();
+}
+
+bool UI::requestFocus(const std::string &id) {
+    if (auto host = resolveSelected()) return host->get().requestFocusById(id);
+    return false;
+}
+
+bool UI::moveFocus(const std::string &direction) {
+    auto host = resolveSelected();
+    if (!host) return false;
+    FocusDirection parsed = FocusDirection::Next;
+    return parseFocusDirection(direction, &parsed) && host->get().moveFocus(parsed);
+}
+
+std::string UI::getFocusedId() const {
+    if (auto host = resolveSelected()) return host->get().focusedId();
+    return {};
+}
+
 void UI::setHostVisible(bool visible) {
-    if (selected_) selected_->setVisible(visible);
+    if (auto host = resolveSelected()) host->get().setVisible(visible);
 }
 
 void UI::setHostLayer(int layer) {
-    if (selected_) selected_->setLayer(layer);
+    if (auto host = resolveSelected()) host->get().setLayer(layer);
 }
 
 void UI::setHostModal(bool modal) {
-    if (selected_) selected_->setModal(modal);
+    if (auto host = resolveSelected()) host->get().setModal(modal);
 }
 
 void UI::setHostOverlay(bool overlay) {
-    if (selected_) selected_->meta()->overlay = overlay;
+    if (auto host = resolveSelected()) host->get().meta()->overlay = overlay;
 }
 
 void UI::setHostOverlayAlpha(float alpha) {
-    if (selected_) selected_->meta()->overlayBgAlpha = std::max(0.f, std::min(1.f, alpha));
+    if (auto host = resolveSelected()) host->get().meta()->overlayBgAlpha = std::max(0.f, std::min(1.f, alpha));
 }
 
 void UI::setHostMovable(bool movable) {
-    if (selected_) selected_->meta()->lockPos = !movable;
+    if (auto host = resolveSelected()) host->get().meta()->lockPos = !movable;
 }
 
 void UI::setHostResizable(bool resizable) {
-    if (selected_) selected_->meta()->lockSize = !resizable;
+    if (auto host = resolveSelected()) host->get().meta()->lockSize = !resizable;
 }
 
 void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m    = host->get().meta();
     m->hasPos = true;
     m->posX = x;
     m->posY = y;
@@ -817,30 +1117,34 @@ void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
 }
 
 void UI::setHostAnchor(float x, float y) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m     = host->get().meta();
     m->anchorX = x;
     m->anchorY = y;
 }
 
 void UI::setHostSize(float w, float h) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m     = host->get().meta();
     m->hasSize = true;
     m->sizeX = w;
     m->sizeY = h;
 }
 
 void UI::setHostPercent(float w, float h) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto m      = host->get().meta();
     m->percentW = w;
     m->percentH = h;
 }
 
 void UI::animateHostPos(float x, float y, float durationMs) {
-    if (!selected_) return;
-    auto m = selected_->meta();
+    auto host = resolveSelected();
+    if (!host) return;
+    auto      m = host->get().meta();
     HostTween t;
     t.host = selected_;
     t.fromX = m->hasPos ? m->posX : 0.f;
@@ -897,10 +1201,11 @@ std::string UI::getStats() const {
 
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 std::string UI::saveTreeJson() const {
-    if (!selected_) return "{}";
-    auto t = selected_->tree();
+    auto host = resolveSelected();
+    if (!host) return "{}";
+    auto               t = host->get().tree();
     Poco::JSON::Object root;
-    root.set("host", selected_->getName());
+    root.set("host", host->get().getName());
     if (t->root >= 0) nodeToJson(*t, t->nodes[size_t(t->root)], root);
     std::ostringstream oss;
     Poco::JSON::Stringifier::stringify(root, oss, 1);
@@ -908,14 +1213,15 @@ std::string UI::saveTreeJson() const {
 }
 
 bool UI::loadTreeJson(const std::string &json) {
-    if (!selected_ || json.empty()) return false;
+    auto host = resolveSelected();
+    if (!host || json.empty()) return false;
     try {
         Poco::JSON::Parser parser;
         const Poco::Dynamic::Var result = parser.parse(json);
         const Poco::JSON::Object::Ptr obj = result.extract<Poco::JSON::Object::Ptr>();
         if (!obj) return false;
         WidgetDesc root = descFromJson(*obj);
-        selected_->setTree(std::move(root));
+        host->get().setTree(std::move(root));
         return true;
     } catch (...) {
         return false;
@@ -928,52 +1234,61 @@ bool UI::loadTreeJson(const std::string &) { return false; }
 #endif
 
 graphics::Canvas *UI::viewportCanvas(const std::string &id) {
-    if (!selected_ || id.empty()) return nullptr;
-    const std::string key = selected_->getName() + "/" + id;
-    ViewportState *vs = UISystem::viewportState(selected_->getName(), id);
-    if (!vs) vs = UISystem::ensureViewport(key, 320, 240);
-    return vs ? vs->canvas : nullptr;
+    auto host = resolveSelected();
+    if (!host || id.empty()) return nullptr;
+    const std::string key = host->get().getName() + "/" + id;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().canvas;
+    auto ensured = UISystem::ensureViewport(key, 320, 240);
+    if (!ensured.ok()) return nullptr;
+    return std::move(ensured).takeValue().get().canvas;
 }
 
 bool UI::viewportHovered(const std::string &id) {
-    if (!selected_) return false;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->hovered;
+    auto host = resolveSelected();
+    if (!host) return false;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().hovered;
     return false;
 }
 
 bool UI::viewportActive(const std::string &id) {
-    if (!selected_) return false;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->active;
+    auto host = resolveSelected();
+    if (!host) return false;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().active;
     return false;
 }
 
 float UI::viewportMouseX(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->mouseX;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().mouseX;
     return 0.f;
 }
 
 float UI::viewportMouseY(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->mouseY;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().mouseY;
     return 0.f;
 }
 
 float UI::viewportDragDX(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->dragDX;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().dragDX;
     return 0.f;
 }
 
 float UI::viewportDragDY(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->dragDY;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().dragDY;
     return 0.f;
 }
 
 float UI::viewportWheel(const std::string &id) {
-    if (!selected_) return 0.f;
-    if (auto *vs = UISystem::viewportState(selected_->getName(), id)) return vs->wheel;
+    auto host = resolveSelected();
+    if (!host) return 0.f;
+    if (auto state = UISystem::viewportState(host->get().getName(), id)) return state->get().wheel;
     return 0.f;
 }
 
@@ -1005,6 +1320,7 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Switch: return "switch";
     case NodeType::Badge: return "badge";
     case NodeType::Card: return "card";
+    case NodeType::NinePatchPanel: return "ninePatchPanel";
     case NodeType::SectionHeader: return "sectionHeader";
     case NodeType::MenuBar: return "menuBar";
     case NodeType::Menu: return "menu";
@@ -1041,6 +1357,7 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "switch") return NodeType::Switch;
     if (s == "badge") return NodeType::Badge;
     if (s == "card") return NodeType::Card;
+    if (s == "ninePatchPanel") return NodeType::NinePatchPanel;
     if (s == "sectionHeader") return NodeType::SectionHeader;
     if (s == "menuBar") return NodeType::MenuBar;
     if (s == "menu") return NodeType::Menu;
@@ -1061,6 +1378,43 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (!n.valueText.empty()) o.set("valueText", n.valueText);
     if (!n.tooltip.empty()) o.set("tooltip", n.tooltip);
     if (!n.visible) o.set("visible", false);
+    if (!n.enabled) o.set("enabled", false);
+    if (n.focusMode != FocusMode::All)
+        o.set("focusMode", n.focusMode == FocusMode::None ? "none" : "click");
+    if (n.mouseFilter != MouseFilter::Stop)
+        o.set("mouseFilter", n.mouseFilter == MouseFilter::Pass ? "pass" : "ignore");
+    if (n.themePreset != ThemePreset::Inherit)
+        o.set("theme", n.themePreset == ThemePreset::Dark ? "dark" : "light");
+    if (n.tabIndex != 0) o.set("tabIndex", n.tabIndex);
+    if (!n.focusPrevious.empty()) o.set("focusPrevious", n.focusPrevious);
+    if (!n.focusNext.empty()) o.set("focusNext", n.focusNext);
+    if (!n.focusLeft.empty()) o.set("focusLeft", n.focusLeft);
+    if (!n.focusRight.empty()) o.set("focusRight", n.focusRight);
+    if (!n.focusUp.empty()) o.set("focusUp", n.focusUp);
+    if (!n.focusDown.empty()) o.set("focusDown", n.focusDown);
+    if (n.accessibilityRole != AccessibilityRole::Auto) {
+        const char *role = "auto";
+        switch (n.accessibilityRole) {
+            case AccessibilityRole::Button: role = "button"; break;
+            case AccessibilityRole::Checkbox: role = "checkbox"; break;
+            case AccessibilityRole::Slider: role = "slider"; break;
+            case AccessibilityRole::Text: role = "text"; break;
+            case AccessibilityRole::TextInput: role = "text-input"; break;
+            case AccessibilityRole::List: role = "list"; break;
+            case AccessibilityRole::ListItem: role = "list-item"; break;
+            case AccessibilityRole::Menu: role = "menu"; break;
+            case AccessibilityRole::MenuItem: role = "menu-item"; break;
+            case AccessibilityRole::Progress: role = "progress"; break;
+            case AccessibilityRole::Region: role = "region"; break;
+            case AccessibilityRole::Tab: role = "tab"; break;
+            case AccessibilityRole::Window: role = "window"; break;
+            case AccessibilityRole::Auto: break;
+        }
+        o.set("accessibilityRole", role);
+    }
+    if (!n.accessibilityName.empty()) o.set("accessibilityName", n.accessibilityName);
+    if (!n.accessibilityDescription.empty())
+        o.set("accessibilityDescription", n.accessibilityDescription);
     if (n.checked) o.set("checked", true);
     if (!n.open) o.set("open", false);
     if (n.value != 0.f) o.set("value", n.value);
@@ -1124,6 +1478,29 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
     if (o.has("valueText")) d.valueText = o.getValue<std::string>("valueText");
     if (o.has("tooltip")) d.tooltip = o.getValue<std::string>("tooltip");
     if (o.has("visible")) d.visible = o.getValue<bool>("visible");
+    if (o.has("enabled")) d.enabled = o.getValue<bool>("enabled");
+    if (o.has("focusMode"))
+        d.focusMode = parseFocusMode(o.getValue<std::string>("focusMode"));
+    if (o.has("mouseFilter"))
+        d.mouseFilter = parseMouseFilter(o.getValue<std::string>("mouseFilter"));
+    if (o.has("theme"))
+        d.themePreset = parseThemePreset(o.getValue<std::string>("theme"));
+    if (o.has("tabIndex")) d.tabIndex = int(fnum(o.get("tabIndex")));
+    if (o.has("focusPrevious"))
+        d.focusPrevious = o.getValue<std::string>("focusPrevious");
+    if (o.has("focusNext")) d.focusNext = o.getValue<std::string>("focusNext");
+    if (o.has("focusLeft")) d.focusLeft = o.getValue<std::string>("focusLeft");
+    if (o.has("focusRight")) d.focusRight = o.getValue<std::string>("focusRight");
+    if (o.has("focusUp")) d.focusUp = o.getValue<std::string>("focusUp");
+    if (o.has("focusDown")) d.focusDown = o.getValue<std::string>("focusDown");
+    if (o.has("accessibilityRole"))
+        d.accessibilityRole =
+            parseAccessibilityRole(o.getValue<std::string>("accessibilityRole"));
+    if (o.has("accessibilityName"))
+        d.accessibilityName = o.getValue<std::string>("accessibilityName");
+    if (o.has("accessibilityDescription"))
+        d.accessibilityDescription =
+            o.getValue<std::string>("accessibilityDescription");
     if (o.has("checked")) d.checked = o.getValue<bool>("checked");
     if (o.has("open")) d.open = o.getValue<bool>("open");
     if (o.has("value")) d.value = fnum(o.get("value"));
@@ -1219,7 +1596,9 @@ WidgetDesc descFromJson(const Poco::JSON::Object &o) {
 
 void UI::mountSimple(const std::string &title, const std::string &labelText,
                      const std::string &buttonText) {
-    mountAs("default", window(title, {text(labelText, "label"), button(buttonText, "btn")}, "root"));
+    const UIHostHandle handle =
+        mountAs("default", window(title, {text(labelText, "label"), button(buttonText, "btn")}, "root"));
+    if (!UIHost::resolve(handle)) return;
 }
 
 bool UI::inspectOpen() {
@@ -1345,17 +1724,27 @@ bool UI::dbSelectClass(const std::string &name) {
 uint64_t UI::dbRegister(ssq::Object object, const std::string &label) {
     if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
     databasePanel_->open();  // mount the panel so the entry becomes visible
-    return databasePanel_->registerObject(object, label);
+    auto result = databasePanel_->registerObject(object, label);
+    if (!result) return 0;
+    return result.value().packed();
 }
 
 uint64_t UI::dbCreateInstance() {
     if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
     databasePanel_->open();
-    return databasePanel_->createInstance();
+    auto result = databasePanel_->createInstance();
+    if (!result) return 0;
+    return result.value().packed();
 }
 
-bool UI::dbUnregister(uint64_t id) {
-    return databasePanel_ && databasePanel_->unregister(id);
+eve::Result<void> UI::dbUnregister(uint64_t id) {
+    if (!databasePanel_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "database panel is not open", {}, {}, "ui"));
+    const ObjectHandle handle = ObjectHandle::fromPacked(id);
+    auto               result = databasePanel_->unregister(handle);
+    if (!result.ok()) return eve::Result<void>::failure(result.status());
+    return eve::Result<void>::success(result.status());
 }
 
 bool UI::editorOpen() {
@@ -1471,6 +1860,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginCollapsing", &UI::beginCollapsing);
     cls.addFunc("beginChild", &UI::beginChild);
     cls.addFunc("beginCard", &UI::beginCard);
+    cls.addFunc("beginNinePatch", &UI::beginNinePatch);
     cls.addFunc("beginMenuBar", &UI::beginMenuBar);
     cls.addFunc("beginMenu", &UI::beginMenu);
     cls.addFunc("beginToolbar", &UI::beginToolbar);
@@ -1494,6 +1884,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("slider", &UI::addSlider);
     cls.addFunc("progress", &UI::addProgress);
     cls.addFunc("image", &UI::addImage);
+    cls.addFunc("ninePatch", &UI::addNinePatch);
     cls.addFunc("imageButton", &UI::addImageButton);
     cls.addFunc("viewport", &UI::addViewport);
     cls.addFunc("combo", &UI::addCombo);
@@ -1513,6 +1904,15 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setItemPercent", &UI::setItemPercent);
     cls.addFunc("setItemAbsolute", &UI::setItemAbsolute);
     cls.addFunc("setItemTooltip", &UI::setItemTooltip);
+    cls.addFunc("setItemEnabled", &UI::setItemEnabled);
+    cls.addFunc("setItemFocusMode", &UI::setItemFocusMode);
+    cls.addFunc("setItemMouseFilter", &UI::setItemMouseFilter);
+    cls.addFunc("setItemTheme", &UI::setItemTheme);
+    cls.addFunc("setThemeScope", &UI::setThemeScope);
+    cls.addFunc("setItemTabIndex", &UI::setItemTabIndex);
+    cls.addFunc("setItemFocusOrder", &UI::setItemFocusOrder);
+    cls.addFunc("setItemFocusNeighbors", &UI::setItemFocusNeighbors);
+    cls.addFunc("setItemAccessibility", &UI::setItemAccessibility);
     cls.addFunc("setFlexAlign", &UI::setFlexAlign);
     cls.addFunc("setFlexJustify", &UI::setFlexJustify);
     cls.addFunc("listItem", &UI::addListItem);
@@ -1521,12 +1921,14 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setText", &UI::setText);
     cls.addFunc("setTextWrap", &UI::setTextWrap);
     cls.addFunc("setVisible", &UI::setVisible);
+    cls.addFunc("setEnabled", &UI::setEnabled);
     cls.addFunc("setChecked", &UI::setChecked);
     cls.addFunc("setValue", &UI::setValue);
     cls.addFunc("setValueText", &UI::setValueText);
     cls.addFunc("setImageTint", &UI::setImageTint);
     cls.addFunc("setImageUv", &UI::setImageUv);
     cls.addFunc("setImageNinePatch", &UI::setImageNinePatch);
+    cls.addFunc("setImageNinePatchFile", &UI::setImageNinePatchFile);
     cls.addFunc("setImageCornerRadius", &UI::setImageCornerRadius);
     cls.addFunc("setImageTextureId", &UI::setImageTextureId);
     cls.addFunc("registerTexture", &UI::registerTexture);
@@ -1534,6 +1936,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("getValue", &UI::getValue);
     cls.addFunc("getValueText", &UI::getValueText);
     cls.addFunc("getChecked", &UI::getChecked);
+    cls.addFunc("requestFocus", &UI::requestFocus);
+    cls.addFunc("moveFocus", &UI::moveFocus);
+    cls.addFunc("getFocusedId", &UI::getFocusedId);
     cls.addFunc("setHostVisible", &UI::setHostVisible);
     cls.addFunc("setHostLayer", &UI::setHostLayer);
     cls.addFunc("setHostModal", &UI::setHostModal);
@@ -1588,7 +1993,14 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("dbSelectClass", &UI::dbSelectClass);
     cls.addFunc("dbRegister", &UI::dbRegister);
     cls.addFunc("dbCreateInstance", &UI::dbCreateInstance);
-    cls.addFunc("dbUnregister", &UI::dbUnregister);
+    const HSQUIRRELVM vm = cls.getHandle();
+    cls.addFunc("dbUnregister", [vm](UI *value, uint64_t id) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "UI instance must not be null", {}, {}, "ui")));
+        return eve::script::projectResult(vm, value->dbUnregister(id));
+    });
 
     cls.addFunc("editorOpen", &UI::editorOpen);
     cls.addFunc("editorClose", &UI::editorClose);

@@ -120,12 +120,12 @@ left_to_try <- capture_tries + 1;
 captured <- false;
 
 while (true) {
-    event.pump();
+    platform_event.pump();
     local running = true;
     while (true) {
-        local name = event.poll();
+        local name = platform_event.poll();
         if (name == "") break;
-        local data = event.getLastData();
+        local data = platform_event.getLastData();
         if ("async_dispatch_event" in getroottable())
             async_dispatch_event(name, data);
         if (name == "quit") {

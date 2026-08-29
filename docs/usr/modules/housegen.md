@@ -10,7 +10,8 @@
 
 ```squirrel
 hg <- eve.HouseGen();
-hg.loadComponentsFromFile("components/house.json");   // 组件库（必需）
+local components = hg.loadComponentsFromFile("components/house.json");   // 组件库（必需）
+if (!components.ok) throw components.status.summary;
 
 local req = hg.newRequest();
 req.setSeed(20260822);
@@ -19,11 +20,12 @@ req.setFloors(2);
 req.setStyle("cottage");
 
 local layout = hg.newLayout();
-if (hg.generate(req, layout)) {
+local generation = hg.generate(req, layout);
+if (generation.ok) {
     local json = layout.toJson();
     print("instances=" + layout.getInstanceCount() + " diag=" + layout.getDiagnosticCount() + "\n");
 } else {
-    print("failed: " + hg.lastError() + "\n");
+    print("failed: " + generation.status.summary + "\n");
 }
 ```
 
@@ -46,7 +48,9 @@ if (hg.generate(req, layout)) {
 - `loadComponentsFromJson(json)` / `loadComponentsFromFile(path)` / `clearComponents()` /
   `getComponentCount()`。
 - `newRequest()` / `newLayout()`。
-- `generate(request, layout)` → bool；失败原因 `lastError()`。
+- `generate(request, layout)` → structured Result；失败原因在 Result 的诊断字段中。
+- 所有可能失败的脚本调用都返回统一 Result 投影：检查 `ok`，再读取
+  `code`、`status`、`diagnostics` 或 `value`；不存在 `lastError()` 旁路。
 
 ### `HouseRequest`
 
@@ -55,10 +59,12 @@ if (hg.generate(req, layout)) {
 
 ### `HouseLayout`
 
-- `toJson()`、`fromJson(json)` → bool、`getInstanceCount()`、`getDiagnosticCount()`。
+- `toJson()`、`fromJson(json)` → structured Result、`getInstanceCount()`、
+  `getDiagnosticCount()`。
 
 ## 生命周期
 
-- 必须先加载组件库，否则 `generate` 返回 false（`lastError` 说明原因）。
+- 必须先加载组件库，否则 `generate` 返回失败 Result，并携带结构化诊断。
 - `HouseRequest` / `HouseLayout` 由脚本持有；`generate` 失败后可改参数重试。
-
+- C++ `HouseLayout::instantiate` 返回 ECS `EntityHandle` 的 Result 集合；实体由 ECS
+  world 所有，使用前必须通过 `ecs::try_get` 解析，不能缓存实体地址跨越 world mutation。

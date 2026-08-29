@@ -9,12 +9,12 @@
 // Run: make run/linux-debug GAME=examples/softbody
 // ============================================================================
 
-if (!("physics" in getroottable())) physics <- null;
-if (!("cloth" in getroottable())) cloth <- null;
-if (!("fluid" in getroottable())) fluid <- null;
-if (!("grabbing" in getroottable())) grabbing <- false;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("windT" in getroottable())) windT <- 0.0;
+persist physics = null
+persist cloth = null
+persist fluid = null
+persist grabbing = false
+persist prevKeys = {}
+persist windT = 0.0
 
 function edgePressed(key, down) {
     local was = (key in prevKeys) ? prevKeys[key] : false;
@@ -33,7 +33,7 @@ function resetScene() {
     cloth.setBounds(0.0, 0.0, w, h);
     cloth.setColor(0.78, 0.84, 0.98, 1.0);
 
-    fluid = physics.newFluid(600);
+    fluid = physics.newFluid2D(600);
     fluid.setBounds(w * 0.52, 48.0, w * 0.42, h - 96.0);
     fluid.setGravity(0.0, 980.0);
     fluid.setSmoothingRadius(18.0);

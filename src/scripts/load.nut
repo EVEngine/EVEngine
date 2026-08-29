@@ -109,6 +109,12 @@ function _startup_ms(label) {
     print("[startup] " + label + ": " + ms + " ms\n");
 }
 
+// Append a milestone to the crash/error log (eve.log) so a crash shows how far
+// the boot sequence got. Bound by the host (eve.log); no-op when unavailable.
+function _log(msg) {
+    if ("log" in eve) eve.log("info", msg);
+}
+
 // ---------------------------------------------------------------------------
 // Bind the modules this build actually contains.
 // ---------------------------------------------------------------------------
@@ -126,6 +132,7 @@ foreach (m in eve.moduleList) {
         print("[startup] module " + m.cls + " took " + _mdt + " ms\n");
 }
 _startup_ms("all modules instantiated");
+_log("boot: " + eve.moduleList.len() + " module(s) instantiated");
 
 // Project-wide module requirements belong to config.nut.  Validate them only
 // after the build's module list has been instantiated, and before any game
@@ -170,6 +177,7 @@ if (!win.setWindowSettings(s)) {
 config.width = win.getWidth();
 config.height = win.getHeight();
 _startup_ms("window created + vulkan initialized");
+_log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -401,7 +409,14 @@ function soft_reload_scripts() {
 // eve_asset_reload hook. Shared by local watch and remote sync.
 function handle_change(p) {
     if (path_endswith(p, ".nut")) {
-        track_script(p);
+        local isModule = false;
+        try {
+            if ("reloadScriptModule" in eve) isModule = eve.reloadScriptModule(p);
+        } catch (e) {
+            report_reload_failure("module hot-reload failed: " + p + ": " + e);
+            return;
+        }
+        if (!isModule) track_script(p);
         soft_reload_scripts();
         return;
     }
@@ -426,7 +441,7 @@ function handle_change(p) {
 function poll_hot_reload() {
     if (!config.hotReload) return;
     if (!has_module("fs")) return;
-    local needScripts = false;
+    local scripts = [];
     local assets = [];
     while (true) {
         local kind = fs.pollWatch();
@@ -443,14 +458,24 @@ function poll_hot_reload() {
             }
         }
         if (path_endswith(p, ".nut")) {
-            track_script(p);
-            needScripts = true;
+            scripts.append(p);
         } else {
             assets.append(p);
         }
     }
-    if (needScripts)
+    if (scripts.len() > 0) {
+        foreach (p in scripts) {
+            local isModule = false;
+            try {
+                if ("reloadScriptModule" in eve) isModule = eve.reloadScriptModule(p);
+            } catch (e) {
+                report_reload_failure("module hot-reload failed: " + p + ": " + e);
+                return;
+            }
+            if (!isModule) track_script(p);
+        }
         soft_reload_scripts();
+    }
     foreach (p in assets) {
         handle_change(p);
     }
@@ -496,6 +521,7 @@ if (file_exists("main.nut")) {
     }
 }
 _startup_ms("game script loaded");
+_log("boot: game script loaded");
 
 if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
@@ -543,6 +569,13 @@ function dev_should_update() {
 function dev_notify_frame_done() {
     if (has_dev())
         eve.dev.notifyFrameDone();
+}
+
+// Scenario recording: mark a new frame bucket before this frame's events are
+// polled, so the recorded input/event stream maps to the frame that consumed it.
+function dev_scenario_frame() {
+    if (has_dev())
+        eve.dev.scenarioFrame();
 }
 
 function handle_dev_key(key, scancode) {
@@ -629,13 +662,21 @@ eve_frame <- function() {
     if (!("_startup_first_frame" in getroottable())) {
         getroottable()._startup_first_frame <- true;
         _startup_ms("first frame begins");
+        _log("frame: first frame begins");
     }
+    // Coarse "how far did the loop get" marker: log every 300 frames so a crash
+    // log reveals the approximate frame the process reached.
+    if (!("_frame_count" in getroottable())) getroottable()._frame_count <- 0;
+    getroottable()._frame_count += 1;
+    if ((getroottable()._frame_count % 300) == 0)
+        _log("frame: reached frame " + getroottable()._frame_count);
     local running = true;
-    event.pump();
+    dev_scenario_frame();
+    platform_event.pump();
     while (true) {
-        local name = event.poll();
+        local name = platform_event.poll();
         if (name == "") break;
-        local data = event.getLastData();
+        local data = platform_event.getLastData();
         if ("async_dispatch_event" in getroottable())
             async_dispatch_event(name, data);
         if (name == "keypressed") {
@@ -694,6 +735,7 @@ eve_frame <- function() {
     if (!("_startup_first_present" in getroottable())) {
         getroottable()._startup_first_present <- true;
         _startup_ms("first present - window shows content");
+        _log("frame: first present");
     }
     if ("bootBench" in eve && eve.bootBench)
         return false;

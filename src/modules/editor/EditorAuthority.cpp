@@ -120,25 +120,91 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::compensate(const Transacti
                                                       "Transaction contains an operation without an inverse");
     }
 
+    if (entry->second.receipt.afterRevision != target_->revision())
+        return authorityError<TransactionReceipt>(EditorStatus::Conflict, "editor.authority.revision-conflict",
+                                                  "Target changed after the committed transaction");
+
+    auto* staging = dynamic_cast<IDomainOperationTargetStaging*>(target_);
+    if (!staging)
+        return authorityError<TransactionReceipt>(EditorStatus::Unsupported, "editor.authority.staging-unavailable",
+                                                  "Target cannot stage a complete compensation candidate");
+
     TransactionReceipt compensation;
     compensation.id             = TransactionId(receipt.id.value() + ".undo." + std::to_string(++receiptSequence_));
     compensation.state          = TransactionState::PendingAuthority;
     compensation.beforeRevision = target_->revision();
+
+    const auto failed = [&](EditorStatus status, std::string rule, std::string message) {
+        compensation.state         = TransactionState::Failed;
+        compensation.afterRevision = target_->revision();
+        if (compensation.diagnostics.empty())
+            compensation.diagnostics.push_back(
+                {RuleId(std::move(rule)), DiagnosticSeverity::Error, std::move(message)});
+        EditorResult<TransactionReceipt> out;
+        out.status      = status;
+        out.value       = compensation;
+        out.diagnostics = compensation.diagnostics;
+        return out;
+    };
+
+    std::unique_ptr<IDomainOperationTarget> candidate;
+    try {
+        candidate = staging->cloneDomainState();
+    } catch (const std::exception& exception) {
+        return failed(EditorStatus::Failed, "editor.authority.candidate-exception",
+                      std::string("Could not clone compensation candidate: ") + exception.what());
+    } catch (...) {
+        return failed(EditorStatus::Failed, "editor.authority.candidate-exception",
+                      "Could not clone compensation candidate");
+    }
+    if (!candidate)
+        return failed(EditorStatus::Unsupported, "editor.authority.staging-unavailable",
+                      "Target did not provide a compensation candidate");
+    if (candidate->targetId() != target_->targetId())
+        return failed(EditorStatus::Conflict, "editor.authority.candidate-mismatch",
+                      "Compensation candidate belongs to another target");
+
     for (auto operation = entry->second.operations.rbegin(); operation != entry->second.operations.rend();
          ++operation) {
-        EditorResult<void> result = target_->applyDomainOperation(inverseOf(*operation));
+        EditorResult<void> result;
+        try {
+            result = candidate->applyDomainOperation(inverseOf(*operation));
+        } catch (const std::exception& exception) {
+            compensation.diagnostics.push_back({RuleId("editor.authority.candidate-exception"),
+                                                DiagnosticSeverity::Error,
+                                                std::string("Compensation candidate threw: ") + exception.what()});
+            return failed(EditorStatus::Failed, "editor.authority.candidate-exception", "Compensation candidate threw");
+        } catch (...) {
+            compensation.diagnostics.push_back({RuleId("editor.authority.candidate-exception"),
+                                                DiagnosticSeverity::Error,
+                                                "Compensation candidate threw an unknown exception"});
+            return failed(EditorStatus::Failed, "editor.authority.candidate-exception",
+                          "Compensation candidate threw an unknown exception");
+        }
         if (!result.accepted()) {
-            compensation.state         = TransactionState::Failed;
-            compensation.afterRevision = target_->revision();
             compensation.diagnostics   = std::move(result.diagnostics);
-            EditorResult<TransactionReceipt> out;
-            out.status      = EditorStatus::Failed;
-            out.value       = compensation;
-            out.diagnostics = compensation.diagnostics;
-            return out;
+            return failed(result.status, "editor.authority.compensation-candidate-rejected",
+                          "Compensation candidate rejected an inverse operation");
         }
         appendAffected(compensation, *operation);
     }
+
+    EditorResult<void> published;
+    try {
+        published = staging->commitDomainState(std::move(candidate));
+    } catch (const std::exception& exception) {
+        return failed(EditorStatus::Failed, "editor.authority.candidate-publish-exception",
+                      std::string("Could not publish compensation candidate: ") + exception.what());
+    } catch (...) {
+        return failed(EditorStatus::Failed, "editor.authority.candidate-publish-exception",
+                      "Could not publish compensation candidate");
+    }
+    if (!published.accepted()) {
+        compensation.diagnostics = std::move(published.diagnostics);
+        return failed(published.status, "editor.authority.candidate-publish-rejected",
+                      "Target rejected the compensation candidate");
+    }
+
     compensation.state            = TransactionState::Committed;
     compensation.afterRevision    = target_->revision();
     compensation.authorityReceipt = "local:" + std::to_string(receiptSequence_);

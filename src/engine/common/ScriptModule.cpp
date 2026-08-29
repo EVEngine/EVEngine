@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <optional>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
@@ -119,7 +120,7 @@ struct ScriptModuleResolver::Impl {
             if (std::find(edges.begin(), edges.end(), dependency) == edges.end()) edges.push_back(dependency);
             return SQ_OK;
         } catch (const std::exception& error) {
-            self.lastError = error.what();
+            self.recordCompilationFailure(error.what());
             return SQ_ERROR;
         }
     }
@@ -135,9 +136,13 @@ struct ScriptModuleResolver::Impl {
             *exports = found->second.exports;
             return SQ_OK;
         } catch (const std::exception& error) {
-            self.lastError = error.what();
+            self.recordCompilationFailure(error.what());
             return SQ_ERROR;
         }
+    }
+
+    void recordCompilationFailure(std::string message) {
+        if (!pendingCompilationFailure) pendingCompilationFailure = std::move(message);
     }
 
     std::string resolve(const ScriptModuleRequest& request) {
@@ -191,7 +196,11 @@ struct ScriptModuleResolver::Impl {
                                        SQTrue))) {
             sq_settop(vm, top);
             modules.erase(canonical);
-            if (!lastError.empty()) throw std::runtime_error(lastError);
+            if (pendingCompilationFailure) {
+                std::string failure = std::move(*pendingCompilationFailure);
+                pendingCompilationFailure.reset();
+                throw std::runtime_error(std::move(failure));
+            }
             throw std::runtime_error("failed to compile script module: " + canonical);
         }
         sq_getstackobj(vm, -1, &module.closure);
@@ -246,42 +255,56 @@ struct ScriptModuleResolver::Impl {
         sq_resetobject(&module.exports);
     }
 
-    void reload(const std::string& canonical) {
-        const auto found = modules.find(canonical);
-        if (found == modules.end()) throw std::runtime_error("cannot reload unknown script module: " + canonical);
-        Module&                        previous      = found->second;
-        const Module::State            previousState = previous.state;
-        const std::vector<std::string> previousEdges = dependencies[canonical];
-        Module                         candidate;
-        sq_resetobject(&candidate.closure);
-        sq_resetobject(&candidate.exports);
-        try {
-            candidate.source = load(canonical);
-            candidate.state  = Module::State::Compiling;
-            dependencies.erase(canonical);
-            previous.state      = Module::State::Compiling;
-            const SQInteger top = sq_gettop(vm);
-            if (SQ_FAILED(sq_compilebuffer(vm, candidate.source.utf8Source.c_str(),
-                                           static_cast<SQInteger>(candidate.source.utf8Source.size()),
-                                           canonical.c_str(), SQTrue))) {
-                sq_settop(vm, top);
-                throw std::runtime_error("failed to compile script module generation: " + canonical);
+    std::vector<std::string> reloadAffected(const std::string& canonical) {
+        if (modules.find(canonical) == modules.end()) return {};
+
+        std::unordered_set<std::string> affected{canonical};
+        bool                            changed = true;
+        while (changed) {
+            changed = false;
+            for (const auto& [importer, edges] : dependencies) {
+                if (affected.count(importer) || modules.find(importer) == modules.end()) continue;
+                if (std::any_of(edges.begin(), edges.end(), [&](const auto& edge) { return affected.count(edge); })) {
+                    affected.insert(importer);
+                    changed = true;
+                }
             }
-            sq_getstackobj(vm, -1, &candidate.closure);
-            sq_addref(vm, &candidate.closure);
-            sq_settop(vm, top);
-            candidate.dependencies = dependencies[canonical];
-            candidate.state        = Module::State::Compiled;
-            previous.state         = previousState;
-            instantiateModule(canonical, candidate);
+        }
+
+        std::vector<std::string> order(affected.begin(), affected.end());
+        std::sort(order.begin(), order.end());
+        const auto                      previousEdges = dependencies;
+        std::unordered_set<std::string> previousKeys;
+        for (const auto& [uri, _] : modules) previousKeys.insert(uri);
+
+        std::unordered_map<std::string, Module> previous;
+        for (const std::string& uri : order) {
+            auto found = modules.find(uri);
+            if (found == modules.end()) continue;
+            previous.emplace(uri, std::move(found->second));
+            modules.erase(found);
+            dependencies.erase(uri);
+        }
+
+        try {
+            for (const std::string& uri : order) ensureCompiled("game:/__hot_reload__.nut", uri);
+            for (const std::string& uri : order) instantiate(uri);
         } catch (...) {
-            previous.state          = previousState;
-            dependencies[canonical] = previousEdges;
-            release(candidate);
+            for (auto it = modules.begin(); it != modules.end();) {
+                if (affected.count(it->first) || !previousKeys.count(it->first)) {
+                    release(it->second);
+                    it = modules.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+            for (auto& [uri, module] : previous) modules.emplace(uri, std::move(module));
+            dependencies = previousEdges;
             throw;
         }
-        release(previous);
-        previous = std::move(candidate);
+
+        for (auto& [_, module] : previous) release(module);
+        return order;
     }
 
     SQVM*                                                     vm             = nullptr;
@@ -289,7 +312,7 @@ struct ScriptModuleResolver::Impl {
     std::vector<ProviderEntry>                                providers;
     std::unordered_map<std::string, Module>                   modules;
     std::unordered_map<std::string, std::vector<std::string>> dependencies;
-    std::string                                               lastError;
+    std::optional<std::string>                                pendingCompilationFailure;
 };
 
 ScriptModuleResolver::ScriptModuleResolver(SQVM* vm) : impl_(std::make_unique<Impl>(vm)) {}
@@ -316,17 +339,21 @@ bool ScriptModuleResolver::unregisterProvider(ProviderId id) {
 void ScriptModuleResolver::registerDefaultProviders() { registerProvider(std::make_shared<GameFileProvider>()); }
 
 void ScriptModuleResolver::beginCompilation(std::string_view importerUri) {
-    impl_->lastError.clear();
+    impl_->pendingCompilationFailure.reset();
     impl_->dependencies.erase(std::string(importerUri));
 }
 
-void ScriptModuleResolver::prepareDependencies(std::string_view importerUri) {
-    if (!impl_->lastError.empty()) throw std::runtime_error(impl_->lastError);
+std::optional<std::string> ScriptModuleResolver::takeCompilationFailure() {
+    std::optional<std::string> failure = std::move(impl_->pendingCompilationFailure);
+    impl_->pendingCompilationFailure.reset();
+    return failure;
+}
 
+void ScriptModuleResolver::prepareDependencies(std::string_view importerUri) {
     enum class Visit { Visiting, Ready };
     std::unordered_map<std::string, Visit> visits;
     std::vector<std::string>               stack;
-    const auto verify = [&](const auto& self, const std::string& uri) -> void {
+    const auto                             verify = [&](const auto& self, const std::string& uri) -> void {
         if (const auto seen = visits.find(uri); seen != visits.end()) {
             if (seen->second == Visit::Ready) return;
             std::string cycle;
@@ -388,9 +415,14 @@ void ScriptModuleResolver::invalidate(std::string_view canonicalUri) {
     }
 }
 
-void ScriptModuleResolver::reload(std::string_view canonicalUri) { impl_->reload(std::string(canonicalUri)); }
+void ScriptModuleResolver::reload(std::string_view canonicalUri) {
+    if (impl_->reloadAffected(std::string(canonicalUri)).empty())
+        throw std::runtime_error("cannot reload unknown script module: " + std::string(canonicalUri));
+}
 
-const std::string& ScriptModuleResolver::lastError() const noexcept { return impl_->lastError; }
+std::vector<std::string> ScriptModuleResolver::reloadAffected(std::string_view canonicalUri) {
+    return impl_->reloadAffected(std::string(canonicalUri));
+}
 
 std::vector<std::string> ScriptModuleResolver::dependencies(std::string_view importerUri) const {
     const auto found = impl_->dependencies.find(std::string(importerUri));

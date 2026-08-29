@@ -71,6 +71,10 @@ set(EVENGINE_DEV_VERSION "-dev")
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
 
 option(BUILD_TESTING "enable testing" ON)
+option(EVENGINE_BUILD_HOST
+    "Build the interactive/native eve host (disabled by core/headless/server profiles)" ON)
+option(EVENGINE_BUILD_PROFILE_CHECKS
+    "Build independent public-header and optional-capability profile checks" OFF)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
@@ -115,6 +119,8 @@ option(EVENGINE_ENABLE_STRICT_WARNINGS
      Third-party targets are not affected."
     OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
+message("Build native host: " ${EVENGINE_BUILD_HOST})
+message("Build profile checks: " ${EVENGINE_BUILD_PROFILE_CHECKS})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
 message("Build Android test app: " ${EVENGINE_ANDROID_TEST_APP})
 message("Build iOS test app: " ${EVENGINE_IOS_TEST_APP})
@@ -167,6 +173,24 @@ function(main)
     # and the third-party install trees register their include/link dirs here.
     add_library(eve_engine_includes INTERFACE)
     get_available_build()
+    # Resolve the manifest before loading the aggregate dependency project. The
+    # selected third-party groups are passed to that project, so a trimmed
+    # profile does not configure/build an unrelated codec, renderer or database.
+    include(${CMAKE_SOURCE_DIR}/cmake/module_manifest.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/thirdparty_libs.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/system_libraries.cmake)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten" AND NOT EVENGINE_PROFILE)
+        # The browser runtime drops the modules whose third-party deps were cut.
+        set(EVENGINE_PROFILE "web")
+    endif()
+    # DevTools (DAP / MCP / snapshot) rely on Poco JSON+Net and have never been
+    # part of the mobile or browser runtimes.
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
+       OR EVENGINE_IOS OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        set(EVENGINE_MODULE_devtools OFF)
+    endif()
+    eve_resolve_modules()
+
     load_third_party()
     load_webgpu_backend()
     set_include()
@@ -340,24 +364,6 @@ function(main)
     elseif(BUILD_PLATFORM STREQUAL "webgpu" AND BUILD_TESTING)
         message(STATUS "webgpu (native Dawn) build: unit tests enabled")
     endif()
-    # Resolve which modules this build contains before descending into any
-    # subdirectory: src/modules, src/engine and src/scripts all derive their
-    # content from the result. See cmake/module_manifest.cmake.
-    include(${CMAKE_SOURCE_DIR}/cmake/module_manifest.cmake)
-    include(${CMAKE_SOURCE_DIR}/cmake/thirdparty_libs.cmake)
-    include(${CMAKE_SOURCE_DIR}/cmake/system_libraries.cmake)
-    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten" AND NOT EVENGINE_PROFILE)
-        # The browser runtime drops the modules whose third-party deps were cut.
-        set(EVENGINE_PROFILE "web")
-    endif()
-    # DevTools (DAP / MCP / snapshot) rely on Poco JSON+Net and have never been
-    # part of the mobile or browser runtimes.
-    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
-       OR EVENGINE_IOS OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        set(EVENGINE_MODULE_devtools OFF)
-    endif()
-    eve_resolve_modules()
-
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
@@ -367,13 +373,18 @@ function(main)
         add_compile_definitions($<$<NOT:$<CONFIG:Debug>>:ZEROERR_NO_ASSERT>)
     endif()
 
-    # Platform CMake may set EVENGINE_PLATFORM_LIB; clear stale cache from other platforms.
-    unset(EVENGINE_PLATFORM_LIB CACHE)
-    add_subdirectory(platform/${BUILD_PLATFORM})
-    # Platform libraries (android / ios / macosx / webgpu) also compile against
-    # the shared engine include set.
-    if(EVENGINE_PLATFORM_LIB AND TARGET ${EVENGINE_PLATFORM_LIB})
-        target_link_libraries(${EVENGINE_PLATFORM_LIB} PUBLIC eve_engine_includes)
+    if(EVENGINE_BUILD_HOST)
+        # Platform CMake may set EVENGINE_PLATFORM_LIB; clear stale cache from other platforms.
+        unset(EVENGINE_PLATFORM_LIB CACHE)
+        add_subdirectory(platform/${BUILD_PLATFORM})
+        # Platform libraries (android / ios / macosx / webgpu) also compile against
+        # the shared engine include set.
+        if(EVENGINE_PLATFORM_LIB AND TARGET ${EVENGINE_PLATFORM_LIB})
+            target_link_libraries(${EVENGINE_PLATFORM_LIB} PUBLIC eve_engine_includes)
+        endif()
+    else()
+        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+        message(STATUS "Hostless profile: platform runtime and unit_test disabled")
     endif()
     # Build metadata: bake the engine git commit/dirty + build time + the
     # third-party version into a generated header consumed by
@@ -408,19 +419,26 @@ function(main)
     endif()
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
-    add_subdirectory(src/scripts)
+    if(EVENGINE_BUILD_HOST)
+        add_subdirectory(src/scripts)
+    endif()
 
-    if(BUILD_TESTING)
+    if(EVENGINE_BUILD_PROFILE_CHECKS)
+        include(${CMAKE_SOURCE_DIR}/cmake/profile_checks.cmake)
+    endif()
+
+    if(EVENGINE_BUILD_HOST AND BUILD_TESTING)
         add_subdirectory(test)
     endif()
 
     # Doxygen documentation lives in docs/CMakeLists.txt (`--target docs`).
     add_subdirectory(docs)
 
-    include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
-    eve_stage_timidity_share()
-
-    include(${CMAKE_SOURCE_DIR}/cmake/install_sdk.cmake)
+    if(EVENGINE_BUILD_HOST)
+        include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
+        eve_stage_timidity_share()
+        include(${CMAKE_SOURCE_DIR}/cmake/install_sdk.cmake)
+    endif()
 endfunction()
 
 
@@ -474,7 +492,14 @@ macro(create_module libname folder)
     
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${folder}_src.txt)
     
-    add_dependencies(${libname} third-party check_sources_${folder})
+    if(EVENGINE_PROFILE_HOSTLESS)
+        # Hostless/core profile targets are compile-only boundaries. Their
+        # headers come from the pinned checkout and they must not pull the
+        # aggregate ExternalProject merely to prove source isolation.
+        add_dependencies(${libname} check_sources_${folder})
+    else()
+        add_dependencies(${libname} third-party check_sources_${folder})
+    endif()
 endmacro()
 
 
@@ -534,6 +559,20 @@ function(set_include)
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
             # Dungeon Template Library (header-only)
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+        # Hostless/core profiles still compile selected domain translation units
+        # without building the aggregate third-party project. Expose the pinned
+        # source headers for those compile-only targets; normal host builds still
+        # receive the same roots in addition to the installed prefix.
+        target_include_directories(eve_engine_includes INTERFACE
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL2/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/squirrel/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/simplesquirrel/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Foundation/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/JSON/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Net/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/XML/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Data/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Data/SQLite/include)
         # Third-party headers are external for warning purposes on strict
         # builds (vendored header-only libraries).
         eve_external_include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include)
@@ -555,6 +594,11 @@ function(set_include)
     # WebGPU builds (browser WASM or native Dawn) use webgpu.h and do not touch
     # the Vulkan SDK at all; the Vulkan backend directories are excluded by the
     # source scanner, so this probe would only ever FATAL_ERROR a valid build.
+    if(NOT EVENGINE_BUILD_HOST)
+        message(STATUS "Hostless profile: skipping Vulkan SDK probe")
+        set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target (unused by hostless profiles)")
+        return()
+    endif()
     if(EVENGINE_WEBGPU)
         message(STATUS "WebGPU build: skipping Vulkan SDK probe")
         set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target (unused on webgpu)")
@@ -581,6 +625,18 @@ function(set_include)
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
+    # LunarG Linux SDK 1.4.357+ may package the loader in its own install
+    # prefix instead of directly under $VULKAN_SDK/lib. FindVulkan only probes
+    # the legacy location, so retry with the packaged loader while retaining
+    # the headers and shader tools discovered from the SDK root.
+    if(NOT Vulkan_FOUND AND UNIX AND NOT APPLE
+       AND DEFINED ENV{VULKAN_SDK}
+       AND EXISTS "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so")
+        set(Vulkan_LIBRARY
+            "$ENV{VULKAN_SDK}/lib/VulkanLoader/lib/libvulkan.so"
+            CACHE FILEPATH "Vulkan loader library" FORCE)
+        find_package(Vulkan QUIET)
+    endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         find_library(ANDROID_VULKAN_LIB vulkan)
         if(NOT ANDROID_VULKAN_LIB)
@@ -987,6 +1043,13 @@ function(check_third_party_project name repo)
         -DCMAKE_BUILD_TYPE=${_eve_tp_build_type}
         -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
     )
+    # Pass the resolved logical groups into the isolated dependency project.
+    # Comma encoding keeps one CMake argument intact across ExternalProject's
+    # list expansion on POSIX, Ninja, MSBuild and Emscripten.
+    string(JOIN "," _eve_tp_groups_arg ${EVE_THIRDPARTY_GROUPS})
+    list(APPEND _eve_tp_cmake_args
+        -DEVENGINE_THIRD_PARTY_GROUPS=${_eve_tp_groups_arg}
+        -DEVENGINE_BUILD_HOST=${EVENGINE_BUILD_HOST})
     # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
     # match the names the engine already links. Do not set these on Apple/Linux.
     if(WIN32)
@@ -1071,6 +1134,43 @@ function(check_third_party_project name repo)
     set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
         COMMAND ${CMAKE_COMMAND}
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-object-move-init.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Fifth patch: mpg123's K&R-style signal handler type is rejected by GCC
+    # 15; use the POSIX void(int) signature accepted by sigaction.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-signal-handler.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Sixth patch: SDL2's Android sensor loop uses ALooper_pollAll, which the
+    # NDK 27+ headers mark unavailable (obsoleted in Android 1). Use the
+    # equivalent ALooper_pollOnce (same non-blocking semantics at timeout 0).
+    # This is upstream SDL's own fix for libsdl-org/SDL#9792 (the exact NDK-27
+    # build failure): commit 558630d "Use ALooper_pollOnce() instead of
+    # ALooper_pollAll()" notes the existing draining loop already handles all
+    # events, so no events are lost. SDL2 2.0.x never adopted it, hence the patch.
+    # The sensor looper is dedicated (not the Android UI message loop), so this
+    # cannot affect the main UI looper.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-android-alooper-pollonce.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Seventh patch: Binding Contract constraints describe the argument as a
+    # whole. Consume them at the expression's first factor so a string result
+    # does not reject numeric literals nested in concatenations or ternaries.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/squirrel-binding-contract-expression-scope.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Eighth patch: RTTI hash_code is not stable across macOS dynamic-library
+    # boundaries. Use a type-name hash so returned native objects retain their
+    # registered Squirrel class when producer and consumer live in different modules.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-stable-type-hash.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
@@ -1247,7 +1347,7 @@ endfunction()
 #   * Native desktop: Google Dawn is fetched via FetchContent and linked through
 #     Dawn's native WebGPU target (set into EVENGINE_WEBGPU_LIB).
 function(load_webgpu_backend)
-    if(NOT BUILD_PLATFORM STREQUAL "webgpu")
+    if(NOT EVENGINE_BUILD_HOST OR NOT BUILD_PLATFORM STREQUAL "webgpu")
         set(EVENGINE_WEBGPU_LIB "" CACHE INTERNAL "WebGPU link target (unused)")
         return()
     endif()

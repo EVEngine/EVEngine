@@ -1,6 +1,7 @@
 #include "weapon/WeaponSystem.h"
 
 #include "common/Capability.h"
+#include "weapon/WeaponAttributes.h"
 #include "weapon/WeaponLogic.h"
 
 #include <algorithm>
@@ -267,7 +268,18 @@ bool canAttackStage(WeaponEntity& w, const WeaponDefinition* def) {
     if (state->jammed) return false;
     if (state->cooldown > 0.f) return false;
     const Resource& r = state->resource;
-    if (!r.infinite && r.value < r.cost) return false;
+    if (r.kind == ResourceKind::Mana || r.kind == ResourceKind::Stamina) {
+        const auto attribute = r.kind == ResourceKind::Mana ? WeaponAttributeAdapter::manaAttribute
+                                                            : WeaponAttributeAdapter::staminaAttribute;
+        auto       current   = WeaponAttributeAdapter::read(w, attribute);
+        if (!current) {
+            current.ignore("legacy bool canFire cannot expose weapon attribute diagnostics");
+            return false;
+        }
+        if (!r.infinite && current.value() < static_cast<double>(r.cost)) return false;
+    } else if (!r.infinite && r.value < r.cost) {
+        return false;
+    }
     const IWeaponLogic* logic = WeaponSystem::findLogic(def->logic);
     return logic == nullptr || logic->canFire(w);
 }
@@ -277,7 +289,15 @@ bool tryAttackStage(WeaponEntity& w, const AttackRequest& req, const WeaponDefin
 
     auto     state = w.state();
     Resource& r     = state->resource;
-    if (!r.infinite) r.value = std::max(0.f, r.value - r.cost);
+    if (r.kind == ResourceKind::Mana || r.kind == ResourceKind::Stamina) {
+        auto consumed = WeaponAttributeAdapter::consumeTriggerResource(w);
+        if (!consumed) {
+            consumed.ignore("legacy bool tryFire cannot expose weapon attribute diagnostics");
+            return false;
+        }
+    } else if (!r.infinite) {
+        r.value = std::max(0.f, r.value - r.cost);
+    }
 
     state->stage       = AttackStage::Windup;
     state->stageTimer  = 0.f;

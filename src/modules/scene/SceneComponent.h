@@ -23,6 +23,14 @@ public:
 
     void attach(SceneHost *host);
     void mountAs(const std::string &hostName);
+    /**
+     * @brief Returns the currently attached host, or null before attach.
+     * @return Borrowed nullable SceneHost owned by the scene ECS/world registry.
+     * @ownership SceneComponent does not own the host and must not delete it.
+     * @lifetime Valid until detach/host destruction; do not retain across rebuild or module teardown.
+     * @thread Call on the scene thread that owns the host.
+     * @reentrancy This accessor invokes no callbacks and is not a synchronization primitive.
+     */
     SceneHost *host() const { return host_; }
 
     /** @brief Rebuild tree onto host (reconcile by key when possible). */

@@ -2,6 +2,7 @@
 
 #include "common/Module.h"
 #include "common/StateValue.h"
+#include "common/Value.h"
 
 #include <squirrel.h>
 
@@ -23,82 +24,15 @@ class Object;
 namespace eve::dialogue {
 
 /**
- * @brief Generic JSON-like value tree used by the Squirrel bridge: dialogue pools and
- * conditions arrive as Squirrel tables and are converted into this structure
- * so the core loader/evaluator stays script-agnostic and unit-testable.
+ * @brief Canonical data value used by dialogue pools, conditions and scripts.
+ *
+ * These aliases intentionally do not add another storage tree. The factory
+ * names and scalar helpers are retained by `eve::Value` for source-compatible
+ * dialogue scripts and tests, while all new cross-module data uses the common
+ * deterministic value protocol.
  */
-struct DataValue {
-    enum class Kind { Null, Int, Float, Bool, String, Array, Object };
-
-    Kind kind = Kind::Null;
-    long long i = 0;
-    double f = 0.0;
-    bool b = false;
-    std::string s;
-    std::vector<DataValue> arr;
-    std::vector<std::pair<std::string, DataValue>> obj;
-
-    DataValue();
-    ~DataValue();
-    DataValue(const DataValue &) = default;
-    DataValue(DataValue &&) noexcept = default;
-    DataValue &operator=(const DataValue &) = default;
-    DataValue &operator=(DataValue &&) noexcept = default;
-
-    static DataValue null();
-    static DataValue integer(long long v);
-    static DataValue number(double v);
-    static DataValue boolean(bool v);
-    static DataValue string(std::string v);
-    static DataValue array(std::vector<DataValue> v);
-    static DataValue object(std::vector<std::pair<std::string, DataValue>> v);
-    const DataValue *find(const std::string &key) const;
-};
-
-inline DataValue::DataValue() = default;
-inline DataValue::~DataValue() = default;
-inline DataValue DataValue::null() { return {}; }
-inline DataValue DataValue::integer(long long v) {
-    DataValue d;
-    d.kind = Kind::Int;
-    d.i = v;
-    return d;
-}
-inline DataValue DataValue::number(double v) {
-    DataValue d;
-    d.kind = Kind::Float;
-    d.f = v;
-    return d;
-}
-inline DataValue DataValue::boolean(bool v) {
-    DataValue d;
-    d.kind = Kind::Bool;
-    d.b = v;
-    return d;
-}
-inline DataValue DataValue::string(std::string v) {
-    DataValue d;
-    d.kind = Kind::String;
-    d.s = std::move(v);
-    return d;
-}
-inline DataValue DataValue::array(std::vector<DataValue> v) {
-    DataValue d;
-    d.kind = Kind::Array;
-    d.arr = std::move(v);
-    return d;
-}
-inline DataValue DataValue::object(std::vector<std::pair<std::string, DataValue>> v) {
-    DataValue d;
-    d.kind = Kind::Object;
-    d.obj = std::move(v);
-    return d;
-}
-inline const DataValue *DataValue::find(const std::string &key) const {
-    for (const auto &kv : obj)
-        if (kv.first == key) return &kv.second;
-    return nullptr;
-}
+using DataValue = eve::Value;
+using VarValue  = eve::Value;
 
 /**
  * @brief Visual-novel style dialogue stage.
@@ -109,6 +43,10 @@ inline const DataValue *DataValue::find(const std::string &key) const {
  */
 class Dialogue : public Module {
 public:
+    // Keep the historical nested names as zero-cost aliases for C++ callers.
+    using DataValue = eve::Value;
+    using VarValue  = eve::Value;
+
     Module_REG(Dialogue);
     Dialogue();
     ~Dialogue() override;
@@ -172,25 +110,6 @@ public:
     std::string getSelectedChoiceId() const { return selectedChoiceId_; }
 
     // ---- variables (global / scene; scene auto-cleared on scene switch) ----
-    struct VarValue {
-        enum class Type { Int, Float, Bool, String };
-
-        Type type = Type::String;
-        long long i = 0;
-        double f = 0.0;
-        bool b = false;
-        std::string s;
-
-        std::string toString() const;
-        std::string typeName() const;
-        bool isNumeric() const { return type == Type::Int || type == Type::Float; }
-
-        static VarValue integer(long long v);
-        static VarValue number(double v);
-        static VarValue boolean(bool v);
-        static VarValue string(std::string v);
-    };
-
     /** Squirrel-facing setter: value may be int/float/bool/string. */
     bool setVar(const std::string &name, ssq::Object value, const std::string &scope);
     /** C++ core setter (also used by unit tests). */

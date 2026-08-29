@@ -16,13 +16,14 @@ TEST_CASE("binding.selfcheck.scriptSurface") {
         local hot = {
             Math = ["newVec2", "newMat4", "setRandomSeed"],
             DataModule = ["newByteData", "decodeJson", "encodeJson"],
-            Event = ["pump", "poll", "pushData"],
+            PlatformEvent = ["pump", "poll", "pushData"],
             Timer = ["getTime", "step"],
             Rx = ["newSubject"],
             Spatial = ["newQuadTree", "newOctree"],
             IK = ["newSkeleton2D", "newSolver2D"],
             RPG = ["newActor"],
             Inventory = ["newBag"],
+            Climbing = ["newRuntime", "newAnchorGraphJson"],
         };
         foreach (cls, methods in hot) {
             if (!(cls in eve)) { missing.push(cls + ":ctor-missing"); continue; }

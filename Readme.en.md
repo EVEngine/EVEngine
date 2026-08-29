@@ -45,7 +45,7 @@ Built-in systems:
 6. Extensible combat model components
 7. Dialogs and scripting
 8. Layered avatar rendering
-9. 2D fluid engine (`Physics.newFluid`; also interactive cloth via `newCloth`)
+9. 2D fluid engine (`Physics.newFluid2D`; also interactive cloth via `newCloth`)
 10. Particle system
 11. Sprite-stacking pseudo-3D
 12. Real 3D model rendering
@@ -103,7 +103,7 @@ bin\eve.exe run mygame
 
 ### What you can do with the engine
 
-- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven from Squirrel scripts. See the [module handbook](docs/usr/MODULES.md).
+- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven by EveScript (Squirrel-compatible). Start with the [EveScript tutorial](docs/usr/EVESCRIPT.md), then use the [module handbook](docs/usr/MODULES.md).
 - **Hot reload for scripts and assets**: on desktop, edits take effect immediately; on mobile, push changes to the device with the `eve dev` dev server — no reinstall.
 - **Debug**: pause the game loop, breakpoints, watches, snapshots; VS Code debug adapter and AI (MCP) assisted development.
 - **Package and publish**: `eve zip` compresses a game into a `.eve` archive; `eve package --sdk <sdk>` produces a distributable folder containing the runtime and your game; Android/iOS use the SDK's bundled templates to assemble APK / .app.
@@ -200,7 +200,7 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 | Host | macOS / Linux (Makefile paths default to macOS Homebrew) |
 | JDK | **OpenJDK 17** (`brew install openjdk@17`) |
 | Android SDK | command-line tools + `platform-tools` + `platforms;android-34` + `build-tools;34.0.0` |
-| NDK | **26.1.10909125** (`sdkmanager "ndk;26.1.10909125"`) |
+| NDK | **27.3.13750724** (`sdkmanager "ndk;27.3.13750724"`) |
 | CMake (SDK) | `cmake;3.22.1` (for Gradle; the engine itself cross-compiles with host CMake/Ninja) |
 | ABI / minSdk | **arm64-v8a** / **24** |
 | Device | Physical device with **Vulkan** (emulator is not a v1 acceptance target) |
@@ -210,7 +210,7 @@ Environment variables (add to `~/.zshrc` or export before building):
 ```sh
 export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-export ANDROID_NDK="$ANDROID_HOME/ndk/26.1.10909125"
+export ANDROID_NDK="$ANDROID_HOME/ndk/27.3.13750724"
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 ```
 

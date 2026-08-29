@@ -20,6 +20,8 @@
 #include "graphics/vulkan/GpuDriven.h"
 #include "graphics/vulkan/FrameArena.h"
 #include "graphics/vulkan/ComputePass.h"
+#include "common/Capability.h"
+#include "common/GpuTimer.h"
 
 namespace eve::graphics::vulkan {
 
@@ -235,13 +237,26 @@ struct GpuShader {
     Shader *owner = nullptr;
 };
 
-class Graphics final : public eve::graphics::Graphics {
+class Graphics final : public eve::graphics::Graphics, public eve::service::IGpuTimer {
 public:
     // Keep the base draw(Drawable*, mat4) overload visible alongside the
     // canvas composite overloads below.
     using eve::graphics::Graphics::draw;
 
     ~Graphics() override;
+
+    // ---- GPU frame timing (eve::service::IGpuTimer) ----------------------
+    /** @brief Creates the GPU timestamp query pool; call after device init. */
+    void initGpuTiming();
+    /** @brief Writes a begin timestamp into the current present command buffer. */
+    void writeGpuTimestampBegin();
+    /** @brief Writes an end timestamp into the current present command buffer. */
+    void writeGpuTimestampEnd();
+    /** @brief Reads the query results after the frame's submit has completed. */
+    void readGpuFrameTiming();
+
+    bool gpuTimingAvailable() const override;
+    float gpuFrameMs() const override;
 
     std::string getBackendName() const override;
 
@@ -415,6 +430,8 @@ public:
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
+    /** @brief Return layout facts from the owned Vulkan mesh upload. */
+    [[nodiscard]] std::optional<eve::graphics::MeshBackendDescriptor> describeMesh(Mesh *mesh) const override;
     bool bakeMeshMorph(Mesh *mesh) override;
     bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
@@ -560,6 +577,9 @@ public:
     };
 
 private:
+    struct GpuParticleDrawRequest;
+    struct GpuParticleResource;
+
     struct Mesh3dFrameSlots;
     struct Mesh3dClusteredFrameSlots;
     struct DecalSlot;
@@ -569,6 +589,10 @@ private:
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
     void createLit2DPipeline();
+    void          createGpuParticlePipelines();
+    void          destroyGpuParticleResources();
+    void          recordGpuParticleCompute(vk::CommandBuffer cb);
+    void          drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDrawRequest& request);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void createVoxelRectPipeline();
@@ -1341,12 +1365,19 @@ private:
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;
 
+    // GPU timestamp queries (one pool of 2: [0]=frame begin, [1]=frame end).
+    vk::QueryPool gpuQueryPool_{};
+    float         timestampPeriod_ = 1.f;
+    bool          gpuTimingReady_  = false;
+    float         gpuFrameMs_      = 0.f;
+
     struct SolidBatch {
         BlendMode blend = BlendMode::Alpha;
         Batcher batch;
     };
     std::vector<SolidBatch> solidBatches;
     struct TexturedBatch {
+        enum class Effect { Default, SceneColorDistortion };
         Texture *texture = nullptr;
         Texture *depth = nullptr;
         Shader *shader = nullptr;
@@ -1360,7 +1391,7 @@ private:
 
     std::vector<LitBatch> litBatches;
 
-    enum class OverlayKind : uint8_t { Solid, Textured, Lit };
+    enum class OverlayKind : uint8_t { Solid, Textured, Lit, GpuParticles };
     struct OverlaySpan {
         OverlayKind kind = OverlayKind::Solid;
         uint32_t index = 0;
@@ -1373,6 +1404,24 @@ private:
     Texture *pendingSceneResolveSource = nullptr;
     std::optional<TexturedBatch> pendingUiResolve;
     bool sceneColorComposited = false;
+
+    struct GpuParticleDrawRequest {
+        GpuParticleHandle handle = kInvalidGpuParticleHandle;
+        GpuParticleDraw   draw;
+    };
+    std::unordered_map<GpuParticleHandle, GpuParticleResource*> gpuParticles_;
+    std::vector<GpuParticleDrawRequest>                         gpuParticleDraws_;
+    GpuParticleHandle                                           nextGpuParticleHandle_ = 1;
+    vk::DescriptorSetLayout                                     gpuParticleComputeSetLayout_{};
+    vk::DescriptorSetLayout                                     gpuParticleDrawSetLayout_{};
+    vk::PipelineLayout                                          gpuParticleComputeLayout_{};
+    vk::PipelineLayout                                          gpuParticleDrawLayout_{};
+    vk::Pipeline                                                gpuParticleComputePipeline_{};
+    vk::Pipeline                                                gpuParticleAlphaPipeline_{};
+    vk::Pipeline                                                gpuParticleAdditivePipeline_{};
+    vk::Pipeline                                                gpuParticlePremultipliedPipeline_{};
+    vk::Pipeline                                                gpuParticleMultiplyPipeline_{};
+    vk::Pipeline                                                gpuParticleOpaquePipeline_{};
 
     // Persistent host-visible vertex buffers for 2D batching, reused across
     // frames. GenericBuffer now owns the Vulkan handles.

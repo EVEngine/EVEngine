@@ -631,6 +631,7 @@ void Graphics::clear2DBatches() {
     litBatches.clear();
     overlaySpans.clear();
     engine3DSpans.clear();
+    gpuParticleDraws_.clear();
     pendingSceneResolve.reset();
     pendingUiResolve.reset();
     sceneColorComposited = false;
@@ -1574,6 +1575,7 @@ void Graphics::flushToSwapchain() {
     auto lit = std::move(litBatches);
     auto spans = std::move(overlaySpans);
     auto engineSpans = std::move(engine3DSpans);
+    auto       gpuParticleDraws = std::move(gpuParticleDraws_);
     auto sceneResolve = std::move(pendingSceneResolve);
     auto uiResolve = std::move(pendingUiResolve);
     const bool autoScene = sceneResolve.has_value() && !sceneColorComposited;
@@ -1650,7 +1652,11 @@ void Graphics::flushToSwapchain() {
         vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
         vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
-        if (tb.shader && tb.shader->gpuHandle) {
+        if (tb.effect == TexturedBatch::Effect::SceneColorDistortion) {
+            if (!particleDistortionPipeline) return;
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, particleDistortionPipeline);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0, nullptr);
+        } else if (tb.shader && tb.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
             vk::Pipeline customPipeline =
                 tb.blend == BlendMode::Opaque && gs->swapchainOpaquePipeline
@@ -1712,6 +1718,8 @@ void Graphics::flushToSwapchain() {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
                 drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
+                drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
         }
     };
@@ -1752,6 +1760,8 @@ void Graphics::flushToSwapchain() {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
                 drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
+                drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
         }
     }
@@ -1772,7 +1782,9 @@ void Graphics::flushToSwapchain() {
     swapchainPass = {};
     const bool captured =
         screenReadbackEnabled ? recordSwapchainReadback(presentRecording.commandBuffer()) : false;
+    writeGpuTimestampEnd();
     presentRecording.end().submitAndPresent();
+    readGpuFrameTiming();
     presentRecording = {};
     if (captured) {
         hasPresentedFrame = true;

@@ -33,7 +33,14 @@ class InspectorHero extends InspectorBase {
 )SQ";
 
 UINode* nodeById(UIHost* host, const std::string& id) {
-    return host ? host->findById(id) : nullptr;
+    if (host == nullptr) return nullptr;
+    auto node = host->findById(id);
+    return node ? &node->get() : nullptr;
+}
+
+UIHost* resolveHost(UIHostHandle handle) {
+    auto host = UIHost::resolve(handle);
+    return host ? &host->get() : nullptr;
 }
 
 }  // namespace
@@ -161,7 +168,7 @@ TEST_CASE("inspector.buildsEditablePanelAndBindsTwoWay") {
     inspector.refresh();
     CHECK(inspector.selectClass("InspectorHero"));
     inspector.open();
-    UIHost* host = inspector.host();
+    UIHost* host = resolveHost(inspector.host());
     REQUIRE(host != nullptr);
 
     // Class + instance selectors exist.
@@ -283,7 +290,7 @@ class NestedHolder {
     inspector.refresh();
     CHECK(inspector.selectClass("NestedHolder"));
     inspector.open();
-    UIHost* host = inspector.host();
+    UIHost* host = resolveHost(inspector.host());
     REQUIRE(host != nullptr);
 
     UINode* skill0 = nodeById(host, "arr_NestedHolder_skills_0");
@@ -333,7 +340,7 @@ TEST_CASE("inspector.pickSceneInspectsPickedObject") {
     inspector.refresh();
     inspector.setPickScene([picked]() { return picked; });
     inspector.open();
-    UIHost *host = inspector.host();
+    UIHost* host = resolveHost(inspector.host());
     REQUIRE(host != nullptr);
 
     UINode *pick = nodeById(host, "inspector_pick");

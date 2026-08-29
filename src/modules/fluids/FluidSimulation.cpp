@@ -77,9 +77,11 @@ int FluidSimulation::spawnDrop(const glm::vec3& center, float radius, int count)
     return added;
 }
 
-void FluidSimulation::step(float dt) {
+void FluidSimulation::step(float dt) { step(dt, std::max(1, params_.iterations)); }
+
+void FluidSimulation::step(float dt, int substeps) {
     if (count_ <= 0 || sdf_.voxelCount() <= 0) return;
-    const int   iters = std::max(1, params_.iterations);
+    const int   iters = std::max(1, substeps);
     const float sub   = dt / float(iters);
     for (int i = 0; i < iters; ++i) {
         rebuildGrid();

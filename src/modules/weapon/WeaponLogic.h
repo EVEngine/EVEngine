@@ -23,7 +23,14 @@ class IWeaponLogic {
 public:
     virtual ~IWeaponLogic() = default;
 
-    /** @brief 稳定名字（"hitscan" / "projectile" / "melee" / 自定义名）。 */
+    /**
+     * @brief 稳定名字（"hitscan" / "projectile" / "melee" / 自定义名）。
+     * @return Borrowed non-null pointer to immutable provider-owned/static text.
+     * @ownership The logic implementation owns the storage; callers must not free it.
+     * @lifetime Valid while the implementation is registered; copy it if retaining it.
+     * @thread Query on the weapon registry thread unless the implementation documents otherwise.
+     * @reentrancy Must not invoke callbacks or mutate the registry.
+     */
     virtual const char* name() const = 0;
 
     /** @brief 逻辑自身的触发条件（资源/冷却/阶段由 WeaponSystem 统一检查）。 */

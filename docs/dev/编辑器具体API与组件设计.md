@@ -76,7 +76,7 @@ src/modules/editor/
     EditorTool.h
     TransformGizmo.*
     FieldBrushTool.*
-  presentation/
+  property_access/
     EditorPresentation.h
     EditorDescriptors.h
 

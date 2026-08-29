@@ -13,8 +13,9 @@ make run GAME=examples/bush-generator               # current host debug
 
 ## How it works
 
-`procgen.generateMesh("mesh.bush", p, gfx)` returns a GPU `Mesh`; use
-`procgen.buildMesh("mesh.bush", p)` for the CPU `MeshBuild`. The generator
+`procgen.generateMesh("mesh.bush", p, gfx)` returns a Result projection whose
+`value` is a GPU `Mesh`; use `procgen.buildMesh("mesh.bush", p)` for the CPU
+`MeshBuild`. Check `ok` before reading either `value`. The generator
 clusters a set of squashed foliage ellipsoids under a dome silhouette, adds a
 few woody twigs poking out, and optionally scatters loose leaf cards.
 
@@ -45,12 +46,16 @@ The mesh uses a two-region atlas, matching the `mesh.tree` convention:
 Squirrel example:
 
 ```squirrel
-local p = procgen.newParams();
+local paramsResult = procgen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
 p.setSeed(20260815);
 p.setString("style", "mound");
 p.setString("leafMode", "mixed");
 p.setFloat("height", 1.7);
-local mesh = procgen.generateMesh("mesh.bush", p, gfx);
+local meshResult = procgen.generateMesh("mesh.bush", p, gfx);
+if (!meshResult.ok) throw meshResult.status.summary;
+local mesh = meshResult.value;
 ```
 
 ## Controls

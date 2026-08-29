@@ -1,17 +1,17 @@
 // LIVING SKY — unified DayNight + Weather + volumetric clouds / height fog.
 // 1..5 weather, Space pause, Left/Right scrub time, S lightning, C camera.
 
-if (!("skyUiReady" in getroottable())) skyUiReady <- false;
-if (!("skyProps" in getroottable())) skyProps <- [];
-if (!("skyCamera" in getroottable())) skyCamera <- null;
-if (!("skyClouds" in getroottable())) skyClouds <- null;
-if (!("skyFog" in getroottable())) skyFog <- null;
-if (!("skyWeather" in getroottable())) skyWeather <- "clear";
-if (!("skyCamAngle" in getroottable())) skyCamAngle <- 1.35;
-if (!("skyAutoCamera" in getroottable())) skyAutoCamera <- true;
-if (!("skyStrikeDown" in getroottable())) skyStrikeDown <- false;
-if (!("skyTerrain" in getroottable())) skyTerrain <- null;
-if (!("skyWaterfall" in getroottable())) skyWaterfall <- null;
+persist skyUiReady = false
+persist skyProps = []
+persist skyCamera = null
+persist skyClouds = null
+persist skyFog = null
+persist skyWeather = "clear"
+persist skyCamAngle = 1.35
+persist skyAutoCamera = true
+persist skyStrikeDown = false
+persist skyTerrain = null
+persist skyWaterfall = null
 
 skyPresets <- {
     clear =   { rain=0.0, wind=1.0, dir=15.0, cloud=0.18, cover=0.22, density=0.48,
@@ -57,7 +57,9 @@ function buildLivingScene() {
     const TW = 72;
     const TH = 72;
     const CELL = 0.5;
-    local hm = procgen.newHeightmap(TW, TH);
+    local heightmapResult = procgen.newHeightmap(TW, TH);
+    if (!heightmapResult.ok) throw heightmapResult.status.summary;
+    local hm = heightmapResult.value;
     for (local z = 0; z < TH; ++z) {
         for (local x = 0; x < TW; ++x) {
             local wx = (x - 36) * CELL;

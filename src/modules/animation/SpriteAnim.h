@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Time.h"
+
 #include <string>
 #include <vector>
 
@@ -18,7 +20,7 @@ class SpriteSheet;
  * @brief 2D sprite-sheet clip player.
  *
  * Advances frame time, optionally keeps a bound Quad in sync with the current
- * sheet cell. Register with Animation for module-level `anim.update(dt)`.
+ * sheet cell. Register with Animation for module-level `anim.advance(step)`.
  * Script type: `SpriteAnim`.
  */
 class SpriteAnim {
@@ -94,6 +96,13 @@ public:
      * @brief Advance playback. Returns true while still active (playing or paused).
      * Auto-applies to boundQuad when sheet is set.
      */
+    /** @brief Advance playback by one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+    /** @brief Whether this sprite animation has consumed a scheduler step. */
+    [[nodiscard]] bool hasCurrentTick() const noexcept { return hasLastTick_; }
+    /** @brief Last scheduler tick consumed by this sprite animation. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     bool update(float dt);
 
 private:
@@ -133,6 +142,10 @@ private:
     std::string        speedCurveInterpolation_ = "linear";
     SpriteClip        *queuedClip_ = nullptr;
     std::string        pendingEvent_;
+    eve::SimulationTick     lastTick_    = eve::SimulationTick::zero();
+    bool                    hasLastTick_ = false;
+
+    bool updateUnchecked(float dt);
 };
 
 }  // namespace eve::animation

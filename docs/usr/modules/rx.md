@@ -65,7 +65,7 @@ print(hp.get());  // 80
 ### 桥接事件队列
 
 ```squirrel
-local ev = eve.Event();
+local ev = eve.PlatformEvent();
 local rx = eve.Rx();
 local quest = rx.fromEvent("quest-complete");
 quest.subscribe(function(data) { print("quest done: " + data); });

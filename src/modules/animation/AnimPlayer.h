@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "common/Time.h"
 
 #include <string>
 #include <vector>
@@ -73,10 +74,19 @@ public:
     void clearEvents() { events_.clear(); }
 
     /** @brief Advance playback and sample into internal pose. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep& step);
+
+    /** @brief Last scheduler tick consumed by the checked playback API. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+    /** @brief Whether the player has consumed at least one checked step. */
+    [[nodiscard]] bool hasCurrentTick() const noexcept { return hasLastTick_; }
+
+    /** @brief Legacy seconds facade retained for scripts and old callers. */
     void update(float dt);
 
 private:
     bool effectiveLoop() const;
+    void updateUnchecked(float dt);
 
     AnimSkeleton*            skeleton_ = nullptr;
     AnimClip*                clip_     = nullptr;
@@ -107,6 +117,8 @@ private:
         std::string payload;
     };
     std::vector<DispatchedEvent> events_;
+    eve::SimulationTick          lastTick_    = eve::SimulationTick::zero();
+    bool                         hasLastTick_ = false;
 
     void dispatchEvents(float oldTime, float newTime);
 };

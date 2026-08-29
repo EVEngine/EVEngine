@@ -1,5 +1,6 @@
 #include "scene/TransformSystem.h"
 
+#include "common/Profile.h"
 #include "scene/SceneHost.h"
 #include "scene/SceneLink.h"
 
@@ -161,6 +162,7 @@ void TransformSystem::updateHost(SceneHost *host) {
 }
 
 void TransformSystem::updateAll() {
+    EV_PROFILE_MODULE("scene", "TransformSystem::updateAll");
     if (ecs::current()->getManager<SceneHost>() == nullptr) return;
     auto view = ecs::View<SceneHost, SceneHost::Meta, SceneHost::Tree>();
     for (auto it = view.begin(); it != view.end(); ++it) {

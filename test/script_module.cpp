@@ -1,5 +1,5 @@
-#include "common/Runtime.h"
 #include "common/Capability.h"
+#include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
 #include "common/ServiceInterfaces.h"
@@ -119,8 +119,7 @@ TEST_CASE("scriptModule.rejectsCyclesBeforeExecution") {
     try {
         runtime.compileSource("import { a } from \"mem:/a.nut\"\n", "game:/main.nut");
     } catch (const ScriptException& error) {
-        rejected = std::string(error.what()).find("cyclic script import") != std::string::npos ||
-                   runtime.scriptModules().lastError().find("cyclic script import") != std::string::npos;
+        rejected = std::string(error.what()).find("cyclic script import") != std::string::npos;
     }
     REQUIRE(rejected);
 }
@@ -150,4 +149,43 @@ TEST_CASE("scriptModule.reloadReplacesGenerationAtomically") {
     runtime.runSource("import { value } from \"mem:/value.nut\"\nnew_generation <- value()\n",
                       "game:/new-generation.nut");
     CHECK_EQ(runtime.vm().get<int64_t>("new_generation"), int64_t(2));
+}
+
+TEST_CASE("scriptModule.reloadAffectedRebuildsReverseDependencyGenerations") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    auto    provider                    = std::make_shared<MemoryModuleProvider>();
+    provider->sources["mem:/value.nut"] = "export function value() { return 1 }\n";
+    provider->sources["mem:/user.nut"] =
+        "import { value } from \"mem:/value.nut\"\nexport function answer() { return value() }\n";
+    runtime.scriptModules().registerProvider(provider, 100);
+    runtime.runSource("import { answer } from \"mem:/user.nut\"\nfirst_answer <- answer()\n", "game:/first.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("first_answer"), int64_t(1));
+
+    provider->sources["mem:/value.nut"] = "export function value() { return 2 }\n";
+    const auto affected                 = runtime.scriptModules().reloadAffected("mem:/value.nut");
+    CHECK_EQ(affected.size(), size_t(2));
+    runtime.runSource("import { answer } from \"mem:/user.nut\"\nsecond_answer <- answer()\n", "game:/second.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("second_answer"), int64_t(2));
+}
+
+TEST_CASE("scriptModule.reloadAffectedRollsBackWholeGenerationGroup") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    auto    provider                    = std::make_shared<MemoryModuleProvider>();
+    provider->sources["mem:/value.nut"] = "export function value() { return 3 }\n";
+    provider->sources["mem:/user.nut"] =
+        "import { value } from \"mem:/value.nut\"\nexport function answer() { return value() }\n";
+    runtime.scriptModules().registerProvider(provider, 100);
+    runtime.runSource("import { answer } from \"mem:/user.nut\"\nbefore_failure <- answer()\n", "game:/before.nut");
+
+    provider->sources["mem:/value.nut"] = "export function value() { return 4 }\n";
+    provider->sources["mem:/user.nut"]  = "export function answer( {\n";
+    bool failed                         = false;
+    try {
+        runtime.scriptModules().reloadAffected("mem:/value.nut");
+    } catch (const std::exception&) {
+        failed = true;
+    }
+    REQUIRE(failed);
+    runtime.runSource("import { answer } from \"mem:/user.nut\"\nafter_failure <- answer()\n", "game:/after.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("after_failure"), int64_t(3));
 }

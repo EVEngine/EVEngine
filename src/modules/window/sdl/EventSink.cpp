@@ -7,7 +7,7 @@
 #include "common/Capability.h"
 #include "common/Module.h"
 #include "common/WindowSurfaceHost.h"
-#include "event/PlatformEventSink.h"
+#include "platform_event/PlatformEventSink.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
@@ -71,9 +71,9 @@ int SDLCALL watchAppEvents(void * /*udata*/, SDL_Event *event) {
     return 1;
 }
 
-class WindowEventSink : public eve::event::IPlatformEventSink {
+class WindowEventSink : public eve::platform_event::IPlatformEventSink {
 public:
-    bool observePlatformEvent(const void *nativeEvent) override {
+    bool shouldConsumePlatformEvent(const void *nativeEvent) override {
         const auto &e = *static_cast<const SDL_Event *>(nativeEvent);
         if (e.type == SDL_WINDOWEVENT && (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED ||
                                           e.window.event == SDL_WINDOWEVENT_RESIZED))
@@ -98,8 +98,8 @@ private:
 struct Register {
     Register() {
         static WindowEventSink sink;
-        eve::cap::addListener<eve::event::IPlatformEventSink>(
-            &sink, eve::event::IPlatformEventSink::kSurface);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(
+            &sink, eve::platform_event::IPlatformEventSink::kSurface);
     }
 } g_register;
 

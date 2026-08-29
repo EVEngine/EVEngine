@@ -5,6 +5,7 @@
 #include "zeroerr/unittest.h"
 
 #include "PathBesideSource.h"
+#include "ProcgenGridTestSupport.h"
 #include "data/DataModule.h"
 #include "data/JsonDocument.h"
 #include "filesystem/Filesystem.h"
@@ -183,7 +184,7 @@ TEST_CASE("hex.data.lootTables.placeFromOffsets") {
     gen->setPaletteGid("hex_data", "floor", 2);
     gen->setPaletteGid("hex_data", "corridor", 2);
     gen->setPaletteGid("hex_data", "door", 3);
-    REQUIRE(gen->applyToLayer(&grid, "hex_data", layer));
+    eve::test_support::applyGridToLayer(*gen, grid, "hex_data", *layer);
 
     int spawnX = -1, spawnY = -1;
     for (int i = 0; i < grid.getObjectCount(); ++i) {
@@ -538,7 +539,7 @@ TEST_CASE("hex.data.catalog.driveLevelGeneration") {
         Grid2D grid;
         std::string err;
         REQUIRE(GeneratorRegistry::instance().generate(algo, p, grid, err));
-        REQUIRE(gen->applyToLayer(&grid, "hex_catalog", layer));
+        eve::test_support::applyGridToLayer(*gen, grid, "hex_catalog", *layer);
         CHECK(countWalkable(grid) >= 4);
 
         Pathfinder *pf = mapMod->newPathfinder(layer);
@@ -621,7 +622,7 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
         Grid2D grid;
         std::string err;
         REQUIRE(GeneratorRegistry::instance().generate(algo, p, grid, err));
-        REQUIRE(gen->applyToLayer(&grid, "hex_boot", layer));
+        eve::test_support::applyGridToLayer(*gen, grid, "hex_boot", *layer);
         CHECK(countWalkable(grid) >= 1);
 
         Pathfinder *pf = mapMod->newPathfinder(layer);
@@ -858,7 +859,7 @@ TEST_CASE("hex.data.lootTables.allTablesPlaceable") {
     gen->setPaletteGid("hex_loot_all", "floor", 2);
     gen->setPaletteGid("hex_loot_all", "corridor", 2);
     gen->setPaletteGid("hex_loot_all", "door", 3);
-    REQUIRE(gen->applyToLayer(&grid, "hex_loot_all", layer));
+    eve::test_support::applyGridToLayer(*gen, grid, "hex_loot_all", *layer);
 
     int spawnX = -1, spawnY = -1;
     for (int i = 0; i < grid.getObjectCount(); ++i) {
@@ -996,7 +997,7 @@ TEST_CASE("hex.data.seedsMatrix.pathToExitSample") {
         Grid2D grid;
         std::string err;
         REQUIRE(GeneratorRegistry::instance().generate("dungeon.bsp", p, grid, err));
-        REQUIRE(gen->applyToLayer(&grid, "hex_seed_path", layer));
+        eve::test_support::applyGridToLayer(*gen, grid, "hex_seed_path", *layer);
 
         int spawnX = -1, spawnY = -1, exitX = -1, exitY = -1;
         for (int i = 0; i < grid.getObjectCount(); ++i) {
@@ -1154,7 +1155,7 @@ TEST_CASE("hex.data.particles.mistOnDungeon") {
     gen->setPaletteGid("hex_mist", "floor", 2);
     gen->setPaletteGid("hex_mist", "corridor", 2);
     gen->setPaletteGid("hex_mist", "door", 3);
-    REQUIRE(gen->applyToLayer(&grid, "hex_mist", layer));
+    eve::test_support::applyGridToLayer(*gen, grid, "hex_mist", *layer);
 
     auto *parts = Particles::create();
     ParticleEmitter *fog = parts->newEmitterFromFile("mist_fog.json");

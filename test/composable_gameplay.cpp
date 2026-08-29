@@ -30,7 +30,8 @@ TEST_CASE("composableGameplay.scriptBuildsRebellionWithoutDomainCpp") {
         scenarioEvent <- demoState.events.at(0).getType();
         scenarioTransaction <- demoState.transactions.at(0).getState();
         scenarioStateOwner <- demoState.authoritativeState.get(demoState.baseId, "owner");
-        scenarioRank <- demoState.definitions.resolve("rank", "rank.general").getJson();
+        scenarioRankResult <- demoState.definitions.resolve("rank", "rank.general");
+        scenarioRank <- scenarioRankResult.ok ? scenarioRankResult.value.json : "";
         scenarioAuthority <- demoState.authority.can(demoState.general, demoState.baseId, "govern_base");
         scenarioPolicy <- demoState.policies.select("administration").getName();
         scenarioProductionA <- demoState.production.taskAt(0).getState() + ":" +
@@ -79,9 +80,12 @@ TEST_CASE("composableGameplay.scriptBuildsRebellionWithoutDomainCpp") {
     vm.run(vm.compileSource(R"(
         reset_demo();
         apply_unpaid_salary();
-        local conflict = demoState.authoritativeState.newBatch();
-        conflict.setExpected(demoState.baseId, "owner", "\"faction.usurper\"", "\"faction.crown\"");
-        demoState.authoritativeState.commit(conflict);
+        conflictResult <- demoState.authoritativeState.newBatch();
+        local conflict = conflictResult.ok ? conflictResult.value : null;
+        if (conflict != null) {
+            conflict.setExpected(demoState.baseId, "owner", "\"faction.usurper\"", "\"faction.crown\"");
+            demoState.authoritativeState.commit(conflict);
+        }
         conflictResult <- evaluate_rebellion();
         conflictGeneralOwner <- demoState.authoritativeState.get(demoState.general, "owner");
         conflictSocialOwner <- demoSocial.ownerOf(demoState.general);
@@ -108,7 +112,8 @@ TEST_CASE("composableGameplay.cardAndRtsAdaptersShareDefinitionsTerrainAndIdenti
     vm.run(vm.compileSource(source.str().c_str()));
     vm.run(vm.compileSource(R"(
         gameplay <- GameplayEditorComponents();
-        heightmap <- eve.Procgen().newHeightmap(8, 8);
+        heightmapResult <- eve.Procgen().newHeightmap(8, 8);
+        heightmap <- heightmapResult.ok ? heightmapResult.value : null;
         for (local y = 0; y < 8; ++y)
             for (local x = 0; x < 8; ++x) heightmap.setHeight(x, y, (x + y).tofloat() / 16.0);
         gameplay.bindTerrain(heightmap, 1.0);

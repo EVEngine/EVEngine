@@ -5,7 +5,8 @@
 #include "physics/Joint3D.h"
 
 #include "common/Exception.h"
-#include "event/Event.h"
+#include "common/Profile.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <box3d/box3d.h>
 
@@ -13,8 +14,43 @@
 #include <cfloat>
 #include <cmath>
 #include <unordered_set>
+#include <utility>
 
 namespace eve::physics {
+namespace {
+
+class ScopedQueryState3D {
+public:
+    ScopedQueryState3D(World3D& world, QueryFilter3D filter)
+        : world_(world), category_(world.getQueryCategoryBits()), mask_(world.getQueryMaskBits()),
+          body_(world.getQueryIgnoredBodyId()), shape_(world.getQueryIgnoredShapeId()) {
+        world_.setQueryFilter(static_cast<int>(filter.categoryBits), static_cast<int>(filter.maskBits));
+        world_.setQueryIgnoredBodyId(filter.ignoredBodyId);
+        world_.setQueryIgnoredShapeId(filter.ignoredShapeId);
+    }
+
+    ~ScopedQueryState3D() noexcept {
+        world_.setQueryFilter(category_, mask_);
+        world_.setQueryIgnoredBodyId(body_);
+        world_.setQueryIgnoredShapeId(shape_);
+    }
+
+private:
+    World3D& world_;
+    int category_;
+    int mask_;
+    int body_;
+    int shape_;
+};
+
+template <class T>
+eve::Result<T> ownedQueryFailure(eve::DiagnosticCode code, std::string message,
+                                 std::string path = {}) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "physics.query3d"));
+}
+
+}  // namespace
 namespace {
 
 constexpr uint64_t combineModeMask = 0x7ull;
@@ -98,6 +134,28 @@ void makeBoxProxyPoints(b3Vec3 (&points)[8], float width, float height, float de
                               static_cast<float>(z) * hz});
 }
 
+void stepBox3D(void *context, const eve::SimulationStep &step, const SimulationSettings &settings) noexcept {
+    auto *worldId = static_cast<b3WorldId *>(context);
+    b3World_Step(*worldId, static_cast<float>(step.delta.seconds()), settings.subStepCount);
+}
+
+eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick currentTick) {
+    if (!std::isfinite(dt) || dt < 0.f) {
+        return eve::Result<eve::SimulationStep>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "World3D update dt must be finite and non-negative", "physics.world3d.update.dt"));
+    }
+    const auto nextTick = currentTick.incremented();
+    if (!nextTick) {
+        return eve::Result<eve::SimulationStep>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                   "World3D simulation tick cannot be incremented", "physics.world3d.simulationTick"));
+    }
+    auto duration = eve::Duration::fromSeconds(static_cast<double>(std::min(dt, 0.05f)));
+    if (!duration) return eve::Result<eve::SimulationStep>::failure(duration.status());
+    return eve::Result<eve::SimulationStep>::success({*nextTick, std::move(duration).takeValue()});
+}
+
 }  // namespace
 
 World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
@@ -107,8 +165,29 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
     contactHertz_ = def.contactHertz;
     contactDampingRatio_ = def.contactDampingRatio;
     contactPushOutSpeed_ = def.contactSpeed;
+    runtimeHandle_       = detail::allocatePhysicsWorldHandle();
     worldId_        = b3CreateWorld(&def);
+    auto selection       = detail::selectSimulationBackend(
+        SimulationBackendDomain::World3D,
+        detail::makeCallbackSimulationBackend(&worldId_, &stepBox3D, SimulationBackendKind::Cpu,
+                                                    SimulationDeterminism::ToleranceBounded),
+        &worldId_, true);
+    if (!selection) {
+        const eve::Status status = selection.status();
+        throw eve::Exception("World3D: cannot select a simulation backend: %s", status.describe().c_str());
+    }
+    backendSelectionStatus_ = selection.status();
+    auto selected           = std::move(selection).takeValue();
+    backendFallback_        = selected.usedFallback;
+    simulation_             = std::move(selected.backend);
     registerCameraObstructionWorld(this);
+    auto targetingRegistration = registerTargetingLineOfSightWorld(this);
+    if (!targetingRegistration) {
+        // Physics supports multiple worlds; targeting LOS deliberately exposes
+        // only one, so an explicitly consumed Conflict leaves this world valid
+        // without making its query context ambiguous.
+        targetingRegistration.ignore("another World3D is already the active targeting LOS world");
+    }
     b3World_SetFrictionCallback(worldId_, &mixFriction);
     b3World_SetRestitutionCallback(worldId_, &mixRestitution);
     b3World_SetCustomFilterCallback(worldId_, &World3D::customFilterCallback, this);
@@ -303,8 +382,10 @@ bool World3D::isValid() const { return !destroyed_ && b3World_IsValid(worldId_);
 
 void World3D::destroy() {
     if (destroyed_) return;
-    unregisterCameraObstructionWorld(this);
     destroyed_ = true;
+    // Invalidate borrowed query registrations without touching any global
+    // registry. This keeps teardown safe for every static destruction order.
+    queryLifetime_.reset();
 
     std::vector<Joint3D *> joints(joints_.begin(), joints_.end());
     for (Joint3D *joint : joints) {
@@ -326,13 +407,17 @@ void World3D::destroy() {
     }
     shapes_.clear();
 
+    simulation_.reset();
     if (b3World_IsValid(worldId_)) {
         b3DestroyWorld(worldId_);
     }
     clearContactEvents();
     shapeRecords_.clear();
     shapeHandles_.clear();
+    shapeRawHandles_.clear();
+    jointHandles_.clear();
     worldId_ = {};
+    runtimeHandle_ = PhysicsWorldHandle::invalid();
 }
 
 bool World3D::sphereCast(float x1, float y1, float z1, float x2, float y2, float z2,
@@ -395,10 +480,12 @@ Joint3D *World3D::newDistanceJoint(Body3D *bodyA, Body3D *bodyB, float anchorAX,
     def.base.localFrameB.p = b3Body_GetLocalPoint(bodyB->raw(), b3Pos{anchorBX, anchorBY, anchorBZ});
     def.base.collideConnected = collideConnected;
     def.length = length;
+    const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     b3JointId id = b3CreateDistanceJoint(worldId_, &def);
-    auto *joint = new Joint3D(this, bodyA, bodyB, id, Joint3D::Kind::Distance, nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Distance, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
+    jointHandles_[runtimeHandle] = joint;
     return joint;
 }
 
@@ -428,10 +515,12 @@ Joint3D *World3D::newRevoluteJoint(Body3D *bodyA, Body3D *bodyB, float anchorX,
     def.base.localFrameA.q = b3ComputeQuatBetweenUnitVectors(b3Vec3_axisZ, localAxisA);
     def.base.localFrameB.q = b3ComputeQuatBetweenUnitVectors(b3Vec3_axisZ, localAxisB);
     def.base.collideConnected = collideConnected;
+    const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     b3JointId id = b3CreateRevoluteJoint(worldId_, &def);
-    auto *joint = new Joint3D(this, bodyA, bodyB, id, Joint3D::Kind::Revolute, nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Revolute, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
+    jointHandles_[runtimeHandle] = joint;
     return joint;
 }
 
@@ -461,11 +550,12 @@ Joint3D *World3D::newPrismaticJoint(Body3D *bodyA, Body3D *bodyB, float anchorX,
     def.base.localFrameB.q = b3ComputeQuatBetweenUnitVectors(
         b3Vec3_axisX, b3Body_GetLocalVector(bodyB->raw(), worldAxis));
     def.base.collideConnected = collideConnected;
+    const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     const b3JointId id = b3CreatePrismaticJoint(worldId_, &def);
-    auto *joint = new Joint3D(this, bodyA, bodyB, id, Joint3D::Kind::Prismatic,
-                              nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Prismatic, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
+    jointHandles_[runtimeHandle] = joint;
     return joint;
 }
 
@@ -495,11 +585,12 @@ Joint3D *World3D::newSphericalJoint(Body3D *bodyA, Body3D *bodyB, float anchorX,
     def.base.localFrameB.q = b3ComputeQuatBetweenUnitVectors(
         b3Vec3_axisZ, b3Body_GetLocalVector(bodyB->raw(), worldAxis));
     def.base.collideConnected = collideConnected;
+    const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     const b3JointId id = b3CreateSphericalJoint(worldId_, &def);
-    auto *joint = new Joint3D(this, bodyA, bodyB, id, Joint3D::Kind::Spherical,
-                              nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Spherical, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
+    jointHandles_[runtimeHandle] = joint;
     return joint;
 }
 
@@ -541,30 +632,72 @@ Joint3D *World3D::newWheelJoint(Body3D *bodyA, Body3D *bodyB, float anchorX,
     def.base.localFrameB.q = b3ComputeQuatBetweenUnitVectors(
         b3Vec3_axisZ, b3Body_GetLocalVector(bodyB->raw(), wheelAxis));
     def.base.collideConnected = collideConnected;
+    const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
     const b3JointId id = b3CreateWheelJoint(worldId_, &def);
-    auto *joint =
-        new Joint3D(this, bodyA, bodyB, id, Joint3D::Kind::Wheel, nextJointId());
+    auto *joint = new Joint3D(this, bodyA, bodyB, id, runtimeHandle, Joint3D::Kind::Wheel, nextJointId());
     b3Joint_SetUserData(id, joint);
     joints_.insert(joint);
+    jointHandles_[runtimeHandle] = joint;
     return joint;
 }
 
-void World3D::forgetJoint(Joint3D *joint) { joints_.erase(joint); }
+void World3D::forgetJoint(Joint3D *joint) {
+    if (!joint) return;
+    joints_.erase(joint);
+    if (joint->runtimeHandle().isValid()) jointHandles_.erase(joint->runtimeHandle());
+    for (auto it = jointHandles_.begin(); it != jointHandles_.end();) {
+        if (it->second == joint)
+            it = jointHandles_.erase(it);
+        else
+            ++it;
+    }
+}
 
 void World3D::update(float dt) { updateFull(dt, 4); }
 
 void World3D::updateFull(float dt, int subStepCount) {
+    EV_PROFILE_MODULE("physics", "World3D::update");
+    auto legacyStep = makeLegacyStep(dt, simulationTick_);
+    if (!legacyStep) {
+        legacyStep.ignore("legacy World3D::updateFull cannot return a structured error");
+        return;
+    }
+    auto result = step(std::move(legacyStep).takeValue(), SimulationSettings{8, 3, subStepCount});
+    result.ignore("legacy World3D::updateFull cannot return a structured result");
+}
+
+eve::Result<void> World3D::step(const eve::SimulationStep &stepValue, const SimulationSettings &settings) {
+    if (!isValid() || !simulation_) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "Cannot step a destroyed or uninitialized 3D physics world",
+            "physics.world3d.step"));
+    }
+    auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
+    if (!valid) return valid;
     clearContactEvents();
-    if (!isValid()) return;
-    if (dt < 0.f) dt = 0.f;
-    if (dt > 0.05f) dt = 0.05f;
-    if (subStepCount < 1) subStepCount = 1;
     for (Shape3D *shape : shapes_) {
         if (shape && shape->isOneWay()) shape->refreshOneWayWorldData();
     }
-    b3World_Step(worldId_, dt, subStepCount);
+    auto result = simulation_->step(stepValue, settings);
+    if (!result) return result;
+    simulationTick_ = stepValue.tick;
     emitContactEvents();
+    return result;
 }
+
+SimulationObservation World3D::simulationObservation() const noexcept {
+    return simulation_ ? simulation_->observation() : SimulationObservation{};
+}
+
+SimulationBackendKind World3D::backendKind() const noexcept {
+    return simulation_ ? simulation_->kind() : SimulationBackendKind::Cpu;
+}
+
+SimulationDeterminism World3D::backendDeterminism() const noexcept {
+    return simulation_ ? simulation_->determinism() : SimulationDeterminism::ToleranceBounded;
+}
+
+eve::Status World3D::backendSelectionStatus() const { return backendSelectionStatus_; }
 
 void World3D::setGravity(float gx, float gy, float gz) {
     if (!isValid()) return;
@@ -675,6 +808,24 @@ void World3D::removeCollisionOverridesForShape(int shapeId) {
 
 int World3D::nextBodyId() { return nextId_++; }
 
+PhysicsBodyHandle World3D::nextBodyRuntimeHandle() {
+    if (nextBodyHandleIndex_ == PhysicsBodyHandle::invalidIndex)
+        throw eve::Exception("World3D.newBody: process-local body handle space exhausted");
+    return PhysicsBodyHandle(nextBodyHandleIndex_++, 1u);
+}
+
+PhysicsShapeHandle World3D::nextShapeRuntimeHandle() {
+    if (nextShapeHandleIndex_ == PhysicsShapeHandle::invalidIndex)
+        throw eve::Exception("Body3D.newShape: process-local shape handle space exhausted");
+    return PhysicsShapeHandle(nextShapeHandleIndex_++, 1u);
+}
+
+PhysicsJointHandle World3D::nextJointRuntimeHandle() {
+    if (nextJointHandleIndex_ == PhysicsJointHandle::invalidIndex)
+        throw eve::Exception("World3D.newJoint: process-local joint handle space exhausted");
+    return PhysicsJointHandle(nextJointHandleIndex_++, 1u);
+}
+
 Body3D *World3D::newBody(const std::string &bodyType, float x, float y, float z) {
     if (!isValid()) throw eve::Exception("World3D.newBody: world destroyed");
 
@@ -683,11 +834,34 @@ Body3D *World3D::newBody(const std::string &bodyType, float x, float y, float z)
     def.position  = b3Pos{x, y, z};
     def.rotation  = b3Quat_identity;
 
+    const PhysicsBodyHandle runtimeHandle = nextBodyRuntimeHandle();
     b3BodyId raw  = b3CreateBody(worldId_, &def);
-    Body3D  *body = new Body3D(this, raw, nextBodyId());
+    Body3D                 *body          = new Body3D(this, raw, nextBodyId(), runtimeHandle);
     b3Body_SetUserData(raw, body);
     bodies_.insert(body);
     return body;
+}
+
+Body3D *World3D::findBody(PhysicsBodyHandle handle) const {
+    if (!isValid() || handle.isInvalid()) return nullptr;
+    for (Body3D *body : bodies_) {
+        if (body && body->isValid() && body->runtimeHandle() == handle) return body;
+    }
+    return nullptr;
+}
+
+Shape3D *World3D::findShape(PhysicsShapeHandle handle) const {
+    if (!isValid() || handle.isInvalid()) return nullptr;
+    const auto found = shapeHandles_.find(handle);
+    if (found == shapeHandles_.end() || !found->second || !found->second->isValid()) return nullptr;
+    return found->second;
+}
+
+Joint3D *World3D::findJoint(PhysicsJointHandle handle) const {
+    if (!isValid() || handle.isInvalid()) return nullptr;
+    const auto found = jointHandles_.find(handle);
+    if (found == jointHandles_.end() || !found->second || !found->second->isValid()) return nullptr;
+    return found->second;
 }
 
 b3QueryFilter World3D::makeQueryFilter() const {
@@ -741,27 +915,44 @@ void World3D::forgetBody(Body3D *body) {
     bodies_.erase(body);
 }
 void World3D::forgetShape(Shape3D *shape) {
-    if (shape) removeCollisionOverridesForShape(shape->getId());
+    if (!shape) return;
+    removeCollisionOverridesForShape(shape->getId());
     shapes_.erase(shape);
+    const PhysicsShapeHandle handle = shape->runtimeHandle();
+    if (handle.isValid()) shapeHandles_.erase(handle);
     for (auto it = shapeHandles_.begin(); it != shapeHandles_.end();) {
         if (it->second == shape)
             it = shapeHandles_.erase(it);
+        else
+            ++it;
+    }
+    for (auto it = shapeRawHandles_.begin(); it != shapeRawHandles_.end();) {
+        if (it->second == handle)
+            it = shapeRawHandles_.erase(it);
         else
             ++it;
     }
 }
 
 void World3D::registerShapeHandle(Shape3D *shape) {
-    if (!shape || !shape->getBody() || B3_IS_NULL(shape->raw())) return;
+    if (!shape || !shape->getBody() || B3_IS_NULL(shape->raw()) || shape->runtimeHandle().isInvalid()) return;
+    const PhysicsShapeHandle handle = shape->runtimeHandle();
     for (auto it = shapeHandles_.begin(); it != shapeHandles_.end();) {
-        if (it->second == shape)
+        if (it->second == shape || it->first == handle)
             it = shapeHandles_.erase(it);
         else
             ++it;
     }
-    shapeHandles_[b3StoreShapeId(shape->raw())] = shape;
-    shapeRecords_[b3StoreShapeId(shape->raw())] =
-        EventShape{shape->getBody()->getId(), shape->getId(), shape->getTag()};
+    for (auto it = shapeRawHandles_.begin(); it != shapeRawHandles_.end();) {
+        if (it->second == handle)
+            it = shapeRawHandles_.erase(it);
+        else
+            ++it;
+    }
+    const uint64_t rawKey    = b3StoreShapeId(shape->raw());
+    shapeHandles_[handle]    = shape;
+    shapeRawHandles_[rawKey] = handle;
+    shapeRecords_[rawKey]    = EventShape{shape->getBody()->getId(), shape->getId(), shape->getTag()};
 }
 
 bool World3D::preSolveCallback(b3ShapeId shapeIdA, b3ShapeId shapeIdB, b3Pos point,
@@ -769,7 +960,9 @@ bool World3D::preSolveCallback(b3ShapeId shapeIdA, b3ShapeId shapeIdB, b3Pos poi
     auto *world = static_cast<World3D *>(context);
     if (!world) return true;
     auto findShape = [world](b3ShapeId id) -> Shape3D * {
-        const auto found = world->shapeHandles_.find(b3StoreShapeId(id));
+        const auto raw = world->shapeRawHandles_.find(b3StoreShapeId(id));
+        if (raw == world->shapeRawHandles_.end()) return nullptr;
+        const auto found = world->shapeHandles_.find(raw->second);
         return found == world->shapeHandles_.end() ? nullptr : found->second;
     };
     Shape3D *shapeA = findShape(shapeIdA);
@@ -896,7 +1089,7 @@ int World3D::queryBodyContacts(int bodyId, int maxPoints) {
 void World3D::emitContactEvents() {
     if (!isValid()) return;
 
-    auto *ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto *ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
 
     b3ContactEvents contacts = b3World_GetContactEvents(worldId_);
     for (int i = 0; i < contacts.beginCount; ++i) {
@@ -906,11 +1099,11 @@ void World3D::emitContactEvents() {
         if (a.shapeId > b.shapeId) std::swap(a, b);
         beginContacts_.push_back({a, b});
         if (ev) {
-            std::vector<eve::event::Variant> args = {
-                eve::event::Variant::makeInt(a.bodyId), eve::event::Variant::makeInt(b.bodyId),
-                eve::event::Variant::makeInt(a.shapeId), eve::event::Variant::makeInt(b.shapeId),
-                eve::event::Variant::makeInt(a.shapeTag), eve::event::Variant::makeInt(b.shapeTag)};
-            ev->push(new eve::event::Message("begincontact3d", args));
+            std::vector<eve::platform_event::Variant> args = {
+                eve::platform_event::Variant::makeInt(a.bodyId),   eve::platform_event::Variant::makeInt(b.bodyId),
+                eve::platform_event::Variant::makeInt(a.shapeId),  eve::platform_event::Variant::makeInt(b.shapeId),
+                eve::platform_event::Variant::makeInt(a.shapeTag), eve::platform_event::Variant::makeInt(b.shapeTag)};
+            ev->push(new eve::platform_event::Message("begincontact3d", args));
         }
     }
     for (int i = 0; i < contacts.endCount; ++i) {
@@ -920,11 +1113,11 @@ void World3D::emitContactEvents() {
         if (a.shapeId > b.shapeId) std::swap(a, b);
         endContacts_.push_back({a, b});
         if (ev) {
-            std::vector<eve::event::Variant> args = {
-                eve::event::Variant::makeInt(a.bodyId), eve::event::Variant::makeInt(b.bodyId),
-                eve::event::Variant::makeInt(a.shapeId), eve::event::Variant::makeInt(b.shapeId),
-                eve::event::Variant::makeInt(a.shapeTag), eve::event::Variant::makeInt(b.shapeTag)};
-            ev->push(new eve::event::Message("endcontact3d", args));
+            std::vector<eve::platform_event::Variant> args = {
+                eve::platform_event::Variant::makeInt(a.bodyId),   eve::platform_event::Variant::makeInt(b.bodyId),
+                eve::platform_event::Variant::makeInt(a.shapeId),  eve::platform_event::Variant::makeInt(b.shapeId),
+                eve::platform_event::Variant::makeInt(a.shapeTag), eve::platform_event::Variant::makeInt(b.shapeTag)};
+            ev->push(new eve::platform_event::Message("endcontact3d", args));
         }
     }
 
@@ -960,11 +1153,11 @@ void World3D::emitContactEvents() {
                          source.approachSpeed,
                          normalImpulse});
         if (ev) {
-            std::vector<eve::event::Variant> args = {
-                eve::event::Variant::makeInt(a.bodyId), eve::event::Variant::makeInt(b.bodyId),
-                eve::event::Variant::makeInt(a.shapeId), eve::event::Variant::makeInt(b.shapeId),
-                eve::event::Variant::makeInt(a.shapeTag), eve::event::Variant::makeInt(b.shapeTag)};
-            ev->push(new eve::event::Message("hit3d", args));
+            std::vector<eve::platform_event::Variant> args = {
+                eve::platform_event::Variant::makeInt(a.bodyId),   eve::platform_event::Variant::makeInt(b.bodyId),
+                eve::platform_event::Variant::makeInt(a.shapeId),  eve::platform_event::Variant::makeInt(b.shapeId),
+                eve::platform_event::Variant::makeInt(a.shapeTag), eve::platform_event::Variant::makeInt(b.shapeTag)};
+            ev->push(new eve::platform_event::Message("hit3d", args));
         }
     }
 
@@ -975,14 +1168,13 @@ void World3D::emitContactEvents() {
         if (sensor.shapeId == 0 || visitor.shapeId == 0) continue;
         beginTriggers_.push_back({sensor, visitor});
         if (ev) {
-            std::vector<eve::event::Variant> args = {
-                eve::event::Variant::makeInt(sensor.bodyId),
-                eve::event::Variant::makeInt(visitor.bodyId),
-                eve::event::Variant::makeInt(sensor.shapeId),
-                eve::event::Variant::makeInt(visitor.shapeId),
-                eve::event::Variant::makeInt(sensor.shapeTag),
-                eve::event::Variant::makeInt(visitor.shapeTag)};
-            ev->push(new eve::event::Message("begintrigger3d", args));
+            std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(sensor.bodyId),
+                                                              eve::platform_event::Variant::makeInt(visitor.bodyId),
+                                                              eve::platform_event::Variant::makeInt(sensor.shapeId),
+                                                              eve::platform_event::Variant::makeInt(visitor.shapeId),
+                                                              eve::platform_event::Variant::makeInt(sensor.shapeTag),
+                                                              eve::platform_event::Variant::makeInt(visitor.shapeTag)};
+            ev->push(new eve::platform_event::Message("begintrigger3d", args));
         }
     }
     for (int i = 0; i < sensors.endCount; ++i) {
@@ -991,14 +1183,13 @@ void World3D::emitContactEvents() {
         if (sensor.shapeId == 0 || visitor.shapeId == 0) continue;
         endTriggers_.push_back({sensor, visitor});
         if (ev) {
-            std::vector<eve::event::Variant> args = {
-                eve::event::Variant::makeInt(sensor.bodyId),
-                eve::event::Variant::makeInt(visitor.bodyId),
-                eve::event::Variant::makeInt(sensor.shapeId),
-                eve::event::Variant::makeInt(visitor.shapeId),
-                eve::event::Variant::makeInt(sensor.shapeTag),
-                eve::event::Variant::makeInt(visitor.shapeTag)};
-            ev->push(new eve::event::Message("endtrigger3d", args));
+            std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(sensor.bodyId),
+                                                              eve::platform_event::Variant::makeInt(visitor.bodyId),
+                                                              eve::platform_event::Variant::makeInt(sensor.shapeId),
+                                                              eve::platform_event::Variant::makeInt(visitor.shapeId),
+                                                              eve::platform_event::Variant::makeInt(sensor.shapeTag),
+                                                              eve::platform_event::Variant::makeInt(visitor.shapeTag)};
+            ev->push(new eve::platform_event::Message("endtrigger3d", args));
         }
     }
 
@@ -1018,12 +1209,12 @@ void World3D::emitContactEvents() {
              static_cast<int>(joint->kind_), force.x, force.y, force.z, torque.x, torque.y,
              torque.z});
         if (ev) {
-            std::vector<eve::event::Variant> args = {
-                eve::event::Variant::makeInt(joint->getId()),
-                eve::event::Variant::makeInt(joint->getBodyAId()),
-                eve::event::Variant::makeInt(joint->getBodyBId()),
-                eve::event::Variant::makeInt(static_cast<int>(joint->kind_))};
-            ev->push(new eve::event::Message("jointstress3d", args));
+            std::vector<eve::platform_event::Variant> args = {
+                eve::platform_event::Variant::makeInt(joint->getId()),
+                eve::platform_event::Variant::makeInt(joint->getBodyAId()),
+                eve::platform_event::Variant::makeInt(joint->getBodyBId()),
+                eve::platform_event::Variant::makeInt(static_cast<int>(joint->kind_))};
+            ev->push(new eve::platform_event::Message("jointstress3d", args));
         }
     }
 
@@ -1035,8 +1226,14 @@ void World3D::emitContactEvents() {
         else
             ++it;
     }
-    for (auto it = shapeHandles_.begin(); it != shapeHandles_.end();) {
+    for (auto it = shapeRawHandles_.begin(); it != shapeRawHandles_.end();) {
         if (!b3Shape_IsValid(b3LoadShapeId(it->first)))
+            it = shapeRawHandles_.erase(it);
+        else
+            ++it;
+    }
+    for (auto it = shapeHandles_.begin(); it != shapeHandles_.end();) {
+        if (!it->second || !it->second->isValid())
             it = shapeHandles_.erase(it);
         else
             ++it;
@@ -1054,6 +1251,66 @@ int World3D::rayCastFiltered(float x1, float y1, float z1, float x2, float y2, f
     filter.maskBits = maskBits;
     rayCastAllInternal(x1, y1, z1, x2, y2, z2, 1, filter);
     return rayHitBodyId_;
+}
+
+eve::Result<RayHit3D> World3D::rayCastOwned(float x1, float y1, float z1, float x2,
+                                            float y2, float z2, QueryFilter3D filter) {
+    if (!isValid())
+        return ownedQueryFailure<RayHit3D>(eve::DiagnosticCode::StaleHandle,
+                                           "physics world is no longer valid", "world");
+    try {
+        ScopedQueryState3D queryState(*this, filter);
+        RayHit3D result;
+        result.world = runtimeHandle_;
+        if (!std::isfinite(x1) || !std::isfinite(y1) || !std::isfinite(z1) ||
+            !std::isfinite(x2) || !std::isfinite(y2) || !std::isfinite(z2))
+            return ownedQueryFailure<RayHit3D>(eve::DiagnosticCode::InvalidArgument,
+                                               "ray endpoints must be finite", "ray");
+        struct Collector {
+            World3D* world = nullptr;
+            RayHit3D* result = nullptr;
+            static float callback(b3ShapeId shapeId, b3Pos point, b3Vec3 normal, float fraction,
+                                  uint64_t materialId, int triangleIndex, int, void* context) {
+                auto* self = static_cast<Collector*>(context);
+                if (self->world->shouldIgnoreQueryShape(shapeId)) return -1.f;
+                Body3D* body = bodyFromShape(shapeId);
+                Shape3D* shape = shapeFromShape(shapeId);
+                if (!body || !shape || !body->isValid() || !shape->isValid()) return -1.f;
+                RayHit3D candidate;
+                candidate.hit = true;
+                candidate.world = self->result->world;
+                candidate.body = body->runtimeHandle();
+                candidate.shape = shape->runtimeHandle();
+                candidate.bodyId = body->getId();
+                candidate.shapeId = shape->getId();
+                candidate.shapeTag = shape->getTag();
+                candidate.materialId = static_cast<int>(static_cast<std::uint32_t>(materialId));
+                candidate.triangleIndex = triangleIndex;
+                candidate.x = static_cast<float>(point.x);
+                candidate.y = static_cast<float>(point.y);
+                candidate.z = static_cast<float>(point.z);
+                candidate.normalX = normal.x;
+                candidate.normalY = normal.y;
+                candidate.normalZ = normal.z;
+                candidate.fraction = fraction;
+                if (!self->result->hit || fraction < self->result->fraction ||
+                    (fraction == self->result->fraction && candidate.shapeId < self->result->shapeId))
+                    *self->result = candidate;
+                return self->result->fraction;
+            }
+        } collector{this, &result};
+        b3World_CastRay(worldId_, b3Pos{x1, y1, z1}, b3Vec3{x2 - x1, y2 - y1, z2 - z1},
+                        makeQueryFilter(), &Collector::callback, &collector);
+        if (!result.hit) return eve::Result<RayHit3D>::success(std::move(result));
+        if (result.body.isInvalid() || result.shape.isInvalid())
+            return ownedQueryFailure<RayHit3D>(
+                eve::DiagnosticCode::InvariantViolation,
+                "ray hit could not be mapped to live generation-qualified handles", "hit");
+        return eve::Result<RayHit3D>::success(std::move(result));
+    } catch (const std::exception& error) {
+        return ownedQueryFailure<RayHit3D>(eve::DiagnosticCode::InvalidArgument, error.what(),
+                                           "ray");
+    }
 }
 
 int World3D::rayCastAll(float x1, float y1, float z1, float x2, float y2, float z2,
@@ -1190,6 +1447,59 @@ int World3D::queryAABB(float minX, float minY, float minZ, float maxX, float max
     return static_cast<int>(queryBodyIds_.size());
 }
 
+eve::Result<BroadPhaseAabb3D> World3D::queryAabbBroadPhaseOwned(
+    float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+    QueryFilter3D filter) {
+    if (!isValid())
+        return ownedQueryFailure<BroadPhaseAabb3D>(eve::DiagnosticCode::StaleHandle,
+                                                   "physics world is no longer valid", "world");
+    if (!std::isfinite(minX) || !std::isfinite(minY) || !std::isfinite(minZ) ||
+        !std::isfinite(maxX) || !std::isfinite(maxY) || !std::isfinite(maxZ))
+        return ownedQueryFailure<BroadPhaseAabb3D>(eve::DiagnosticCode::InvalidArgument,
+                                                   "broad-phase AABB must be finite", "aabb");
+    try {
+        ScopedQueryState3D queryState(*this, filter);
+        BroadPhaseAabb3D result;
+        struct Collector {
+            World3D* world = nullptr;
+            BroadPhaseAabb3D* result = nullptr;
+
+            static bool less(const BroadPhaseHit3D& lhs, const BroadPhaseHit3D& rhs) noexcept {
+                return lhs.bodyId != rhs.bodyId ? lhs.bodyId < rhs.bodyId : lhs.shapeId < rhs.shapeId;
+            }
+
+            static bool callback(b3ShapeId shapeId, void* context) {
+                auto* self = static_cast<Collector*>(context);
+                if (self->world->shouldIgnoreQueryShape(shapeId)) return true;
+                Body3D* body = bodyFromShape(shapeId);
+                Shape3D* shape = shapeFromShape(shapeId);
+                if (!body || !shape || !body->isValid() || !shape->isValid()) return true;
+                BroadPhaseHit3D hit{body->runtimeHandle(), shape->runtimeHandle(), body->getId(),
+                                    shape->getId(), shape->getTag(), shape->getMaterialId()};
+                auto& output = *self->result;
+                if (output.count < BroadPhaseAabb3D::Capacity) {
+                    output.hits[output.count++] = hit;
+                } else {
+                    output.truncated = true;
+                    auto worst = std::max_element(output.hits.begin(), output.hits.end(), less);
+                    if (less(hit, *worst)) *worst = hit;
+                }
+                return true;
+            }
+        } collector{this, &result};
+        b3AABB bounds;
+        bounds.lowerBound = {std::min(minX, maxX), std::min(minY, maxY), std::min(minZ, maxZ)};
+        bounds.upperBound = {std::max(minX, maxX), std::max(minY, maxY), std::max(minZ, maxZ)};
+        b3World_OverlapAABB(worldId_, bounds, makeQueryFilter(), &Collector::callback, &collector);
+        std::sort(result.hits.begin(), result.hits.begin() + static_cast<std::ptrdiff_t>(result.count),
+                  Collector::less);
+        return eve::Result<BroadPhaseAabb3D>::success(std::move(result));
+    } catch (const std::exception& error) {
+        return ownedQueryFailure<BroadPhaseAabb3D>(eve::DiagnosticCode::InvalidArgument,
+                                                   error.what(), "aabb");
+    }
+}
+
 int World3D::overlapProxy(b3Pos origin, const b3ShapeProxy &proxy) {
     queryBodyIds_.clear();
     queryShapes_.clear();
@@ -1243,6 +1553,51 @@ int World3D::queryCapsule(float ax, float ay, float az, float bx, float by, floa
     const b3Vec3 points[2] = {b3Vec3_zero, b3Vec3{bx - ax, by - ay, bz - az}};
     const b3ShapeProxy proxy{points, 2, radius};
     return overlapProxy(b3Pos{ax, ay, az}, proxy);
+}
+
+eve::Result<CapsuleOverlap3D> World3D::queryCapsuleOwned(
+    float ax, float ay, float az, float bx, float by, float bz, float radius,
+    QueryFilter3D filter) {
+    if (!isValid())
+        return ownedQueryFailure<CapsuleOverlap3D>(eve::DiagnosticCode::StaleHandle,
+                                                   "physics world is no longer valid", "world");
+    try {
+        ScopedQueryState3D queryState(*this, filter);
+        if (!std::isfinite(ax) || !std::isfinite(ay) || !std::isfinite(az) ||
+            !std::isfinite(bx) || !std::isfinite(by) || !std::isfinite(bz) ||
+            !std::isfinite(radius) || radius < 0.f)
+            return ownedQueryFailure<CapsuleOverlap3D>(eve::DiagnosticCode::InvalidArgument,
+                                                       "capsule coordinates and radius are invalid", "capsule");
+        CapsuleOverlap3D result;
+        result.world = runtimeHandle_;
+        struct Collector {
+            World3D* world = nullptr;
+            std::array<int, 256> bodyIds{};
+            std::size_t count = 0;
+            static bool callback(b3ShapeId shapeId, void* context) {
+                auto* self = static_cast<Collector*>(context);
+                if (self->world->shouldIgnoreQueryShape(shapeId)) return true;
+                Body3D* body = bodyFromShape(shapeId);
+                if (!body || !body->isValid()) return true;
+                const int bodyId = body->getId();
+                if (std::find(self->bodyIds.begin(),
+                              self->bodyIds.begin() + static_cast<std::ptrdiff_t>(self->count),
+                              bodyId) != self->bodyIds.begin() + static_cast<std::ptrdiff_t>(self->count))
+                    return true;
+                if (self->count < self->bodyIds.size()) self->bodyIds[self->count++] = bodyId;
+                return true;
+            }
+        } collector{this};
+        const b3Vec3 points[2] = {b3Vec3_zero, b3Vec3{bx - ax, by - ay, bz - az}};
+        const b3ShapeProxy proxy{points, 2, radius};
+        b3World_OverlapShape(worldId_, b3Pos{ax, ay, az}, &proxy, makeQueryFilter(),
+                             &Collector::callback, &collector);
+        result.bodyCount = static_cast<int>(collector.count);
+        return eve::Result<CapsuleOverlap3D>::success(std::move(result));
+    } catch (const std::exception& error) {
+        return ownedQueryFailure<CapsuleOverlap3D>(eve::DiagnosticCode::InvalidArgument,
+                                                   error.what(), "capsule");
+    }
 }
 
 int World3D::queryBox(float x, float y, float z, float width, float height, float depth, float qx,
@@ -1582,6 +1937,49 @@ bool World3D::moveCapsule(float ax, float ay, float az, float bx, float by, floa
     moverGroundDot_ = collector.maxUpDot;
     moverGrounded_ = moverGroundDot_ >= moverSlopeCos_;
     return collided;
+}
+
+eve::Result<CapsuleMove3D> World3D::moveCapsuleOwned(
+    float ax, float ay, float az, float bx, float by, float bz, float radius, float dx,
+    float dy, float dz, QueryFilter3D filter, CapsuleMovePolicy3D policy) {
+    if (!isValid())
+        return ownedQueryFailure<CapsuleMove3D>(eve::DiagnosticCode::StaleHandle,
+                                                "physics world is no longer valid", "world");
+    const float upLengthSquared = policy.upX * policy.upX + policy.upY * policy.upY + policy.upZ * policy.upZ;
+    if (!std::isfinite(policy.upX) || !std::isfinite(policy.upY) || !std::isfinite(policy.upZ) ||
+        upLengthSquared <= 1e-12f || !std::isfinite(policy.maxSlopeRadians) ||
+        policy.maxSlopeRadians < 0.f || policy.maxSlopeRadians >= 1.57079633f)
+        return ownedQueryFailure<CapsuleMove3D>(eve::DiagnosticCode::InvalidArgument,
+                                                "capsule mover policy is invalid", "policy");
+    const b3Vec3 previousUp = moverUp_;
+    const float previousSlopeCos = moverSlopeCos_;
+    try {
+        ScopedQueryState3D queryState(*this, filter);
+        const float inverseUpLength = 1.f / std::sqrt(upLengthSquared);
+        moverUp_ = {policy.upX * inverseUpLength, policy.upY * inverseUpLength,
+                    policy.upZ * inverseUpLength};
+        moverSlopeCos_ = std::cos(policy.maxSlopeRadians);
+        CapsuleMove3D result;
+        result.world = runtimeHandle_;
+        result.constrained = moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
+        result.grounded = isMoverGrounded();
+        result.deltaX = getMoverDeltaX();
+        result.deltaY = getMoverDeltaY();
+        result.deltaZ = getMoverDeltaZ();
+        result.normalX = getMoverNormalX();
+        result.normalY = getMoverNormalY();
+        result.normalZ = getMoverNormalZ();
+        result.planeCount = getMoverPlaneCount();
+        result.iterations = getMoverIterations();
+        moverUp_ = previousUp;
+        moverSlopeCos_ = previousSlopeCos;
+        return eve::Result<CapsuleMove3D>::success(std::move(result));
+    } catch (const std::exception& error) {
+        moverUp_ = previousUp;
+        moverSlopeCos_ = previousSlopeCos;
+        return ownedQueryFailure<CapsuleMove3D>(eve::DiagnosticCode::InvalidArgument,
+                                                error.what(), "capsuleMove");
+    }
 }
 
 int World3D::getQueryBodyId(int index) const {

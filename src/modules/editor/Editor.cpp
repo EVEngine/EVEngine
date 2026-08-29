@@ -2,6 +2,7 @@
 
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
+#include "editor/ActionTimelineScriptBindings.h"
 #include "editor/Brush.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
@@ -708,6 +709,7 @@ bool Editor::updateHeightmapMeshSmooth(graphics::Mesh* mesh, graphics::Graphics*
 void Editor::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Editor::create, false);
     expose(cls);
+    exposeActionTimelineScriptBindings(table, cls);
 
     auto gizmo = table.addClass<TransformGizmo>(
         "TransformGizmo", std::function<TransformGizmo*()>([]() -> TransformGizmo* { return nullptr; }), true);

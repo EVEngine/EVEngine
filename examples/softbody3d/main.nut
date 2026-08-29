@@ -3,7 +3,7 @@
 //
 // 3D cloth in meter space (+Y up), grid in the XZ plane, top row pinned.
 // Self-collision + dihedral fold-angle limit + collision with a Box3D world
-// (static box platform + sphere), plus Fluid-style interactAt pointer field.
+// (static box platform + sphere), plus Fluid2D-style interactAt pointer field.
 //
 // Controls:
 //   Left drag — grab / drag cloth
@@ -15,16 +15,16 @@
 // Run: make run/linux-debug GAME=examples/softbody3d
 // ============================================================================
 
-if (!("physics" in getroottable())) physics <- null;
-if (!("world3" in getroottable())) world3 <- null;
-if (!("cloth" in getroottable())) cloth <- null;
-if (!("grabbing" in getroottable())) grabbing <- false;
-if (!("windOn" in getroottable())) windOn <- true;
-if (!("selfCollisionOn" in getroottable())) selfCollisionOn <- true;
-if (!("foldOn" in getroottable())) foldOn <- true;
-if (!("windT" in getroottable())) windT <- 0.0;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("prevMouse" in getroottable())) prevMouse <- false;
+persist physics = null
+persist world3 = null
+persist cloth = null
+persist grabbing = false
+persist windOn = true
+persist selfCollisionOn = true
+persist foldOn = true
+persist windT = 0.0
+persist prevKeys = {}
+persist prevMouse = false
 
 const CLOTH_TOP_Y = 3.2;   // pinned top row height (meters)
 const GRAB_HEIGHT  = 2.0;  // ray-plane height used for mouse grab
@@ -159,7 +159,7 @@ eve_update = function(dt) {
         cloth.applyForce(math.polarY(1.8, windT * 1.3), 0.0, math.polarX(0.6, windT * 0.9));
     }
 
-    // Pointer field: right mouse repels nearby particles (Fluid-style).
+    // Pointer field: right mouse repels nearby particles (Fluid2D-style).
     if (mouse.isDown(2)) {
         local pt = grabPoint();
         if (pt) cloth.interactAt(pt[0], pt[1], pt[2], 1.1, -14.0);

@@ -1,22 +1,22 @@
 // Developer-evaluation sample for independent 300x300 isometric PNG tiles.
 // Arrow keys / WASD move one logical cell. Click a cell to follow an A* path.
 
-if (!("isoMap" in getroottable())) isoMap <- null;
-if (!("logicLayer" in getroottable())) logicLayer <- null;
-if (!("groundLayer" in getroottable())) groundLayer <- null;
-if (!("routeLayer" in getroottable())) routeLayer <- null;
-if (!("objectLayer" in getroottable())) objectLayer <- null;
-if (!("pathfinder" in getroottable())) pathfinder <- null;
-if (!("textures" in getroottable())) textures <- {};
-if (!("playerX" in getroottable())) playerX <- 1;
-if (!("playerY" in getroottable())) playerY <- 1;
-if (!("activePath" in getroottable())) activePath <- null;
-if (!("pathIndex" in getroottable())) pathIndex <- 0;
-if (!("stepClock" in getroottable())) stepClock <- 0.0;
-if (!("statusText" in getroottable())) statusText <- "Ready";
-if (!("hudBuilt" in getroottable())) hudBuilt <- false;
-if (!("previousKeys" in getroottable())) previousKeys <- {};
-if (!("previousMouseDown" in getroottable())) previousMouseDown <- false;
+persist isoMap = null
+persist logicLayer = null
+persist groundLayer = null
+persist routeLayer = null
+persist objectLayer = null
+persist pathfinder = null
+persist textures = {}
+persist playerX = 1
+persist playerY = 1
+persist activePath = null
+persist pathIndex = 0
+persist stepClock = 0.0
+persist statusText = "Ready"
+persist hudBuilt = false
+persist previousKeys = {}
+persist previousMouseDown = false
 
 const MAP_W = 4;
 const MAP_H = 4;

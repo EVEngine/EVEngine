@@ -622,6 +622,12 @@ bool Graphics::prepareSkinPass(Mesh *mesh, Texture *albedo, const glm::mat4 &mvp
                                vk::DescriptorSet &set, uint32_t &uboOffset) {
     if (!mesh || !mesh->hasGpuSkinning()) return false;
     auto &fslots = currentMesh3dFrameSlots();
+    // A 3D frame can inherit an already-open present command buffer (for
+    // example, when script-side 2D clear work precedes render3D).  In that
+    // path begin3DFrame may not have initialized this slot yet.  Allocate the
+    // empty slot lazily before the first skinned draw; no recorded command can
+    // reference it while capacity is zero.
+    if (!fslots.uboRing.buffer || fslots.capacity == 0) ensureMesh3dRing(fslots);
     if (fslots.drawIndex >= fslots.capacity) {
         std::fprintf(stderr, "[vulkan] skin pass UBO ring exhausted (%zu draws); draw skipped\n",
                      fslots.capacity);

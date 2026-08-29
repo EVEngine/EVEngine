@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/Result.h"
 
 #include <functional>
 #include <memory>
@@ -70,6 +71,16 @@ struct SceneDiff {
     int moved = 0;
 
     bool empty() const { return entries.empty(); }
+};
+
+/** @brief CPU-only import inspection result used by editor preflight. */
+struct SceneInspection {
+    SceneDiff diff;
+    int nodeCount = 0;
+    int meshNodeCount = 0;
+    std::vector<std::string> warnings;
+    std::vector<std::string> sockets;
+    std::vector<std::string> collisions;
 };
 
 /**
@@ -149,17 +160,21 @@ public:
 
     /**
      * @brief Hot-reload `path`. Re-decodes, diffs, and applies only what changed.
-     * Returns false if the file failed to decode (old scene is kept) or nothing
-     * changed. When `out` is non-null it is filled with the applied diff.
+     * @return A checked result whose value is true when anything changed. A
+     *         successful false value is a decoded no-op; decode failures are
+     *         reported through the structured status and leave the old scene intact.
+     * @param out Optional borrowed output written with the applied diff.
+     * @param options Import options used for the fresh decode.
      */
-    bool reload(const std::string &path, SceneDiff *out = nullptr,
-                const LoadOptions &options = {});
-
-    /** @brief Script-friendly reload: returns true when anything was updated. */
-    bool reloadChecked(const std::string &path) { return reload(path, nullptr); }
+    [[nodiscard("scene reload outcome must be checked")]] eve::Result<bool> reload(const std::string &path,
+                                                                                   SceneDiff         *out     = nullptr,
+                                                                                   const LoadOptions &options = {});
 
     /** @brief Dry-run diff for `path` against the currently mounted tree (no mutation). */
     SceneDiff diff(const std::string &path);
+    /** @brief Decode with explicit options and return copied metadata without mounting or GPU upload. */
+    [[nodiscard]] eve::Result<SceneInspection> inspect(const std::string &path,
+                                                       const LoadOptions &options = {});
 
     /** @brief The mounted host for `path`, or nullptr if not loaded. */
     scene::SceneHost *host(const std::string &path);
@@ -205,8 +220,6 @@ public:
     /** @brief Number of async loads still waiting to be mounted. */
     int pendingAsyncCount() const;
 
-    /** @brief Last decode/mount error for path, cleared by the next successful decode. */
-    std::string lastError(const std::string &path) const;
     /** @brief Number of non-fatal import warnings retained for path. */
     int warningCount(const std::string &path) const;
     /** @brief Non-fatal import warning at index, or an empty string. */
@@ -316,6 +329,8 @@ private:
                        const CpuImageMap *predecoded = nullptr);
     /** @brief Release textures created by this loader (shared across scenes). */
     void clearTextures();
+    /** @brief Reads an internal decode diagnostic while constructing a structured Result. */
+    std::string decodeErrorFor(const std::string &path) const;
 
     std::unordered_map<std::string, Loaded> scenes_;
     std::unordered_map<std::string, DecodedScene> prewarmed_;
@@ -323,6 +338,7 @@ private:
     std::shared_ptr<thread::ThreadPool> pool_;
     std::vector<DecodedScene> pending_;
     std::unordered_set<std::string> inFlight_;
+    // Internal async/decode diagnostics; public operations return structured Results.
     std::unordered_map<std::string, std::string> lastErrors_;
     std::unordered_map<std::string, std::vector<std::string>> warnings_;
     mutable std::mutex pendingMu_;

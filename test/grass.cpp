@@ -400,7 +400,7 @@ Mesh *makeGroundMesh(Graphics *gfx, float sizeX, float sizeZ) {
 
 void savePng(eve::image::ImageData *frame, const std::string &path) {
     REQUIRE(frame != nullptr);
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         frame->encode(medialoader::FormatHandler::ENCODED_PNG, "grass.png", false);
     REQUIRE(png != nullptr);
@@ -543,7 +543,7 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
         RenderSystem::render(*gfx);
     }
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     std::unique_ptr<eve::image::ImageData> ownedFrame(frame);

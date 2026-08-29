@@ -57,7 +57,7 @@ void writeParityArtifact(const eve::image::ImageData &image, const std::string &
     const char *root = std::getenv("EVENGINE_RENDER_PARITY_DIR");
     if (!root || root[0] == '\0') return;
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const               imageModule = eve::image::Image::create();
     std::unique_ptr<eve::filesystem::FileData> png(
         image.encode(medialoader::FormatHandler::ENCODED_PNG, (scene + ".png").c_str(), false));
     REQUIRE(png.get() != nullptr);
@@ -471,7 +471,10 @@ TEST_CASE("graphics.backendParity.gbufferAlphaCutout") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    // These 3D parity fixtures use identity clip transforms rather than
+    // perspectiveVulkanRH_ZO, so reverse the quad to preserve the engine's
+    // framebuffer-space CCW front-face convention.
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
 
@@ -523,7 +526,7 @@ TEST_CASE("graphics.backendParity.decalLayerProjection") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
     const uint8_t white[] = {255, 255, 255, 255};
@@ -588,7 +591,7 @@ TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
 
@@ -668,7 +671,7 @@ TEST_CASE("graphics.backendParity.pbrEnvironmentAndCloudShadow") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
 
@@ -744,7 +747,7 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2, 2, 3, 0};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
     Mesh *mesh = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     const uint8_t halfAlpha[] = {255, 255, 255, 128};
     Texture *albedo = gfx->newTexture(1, 1, halfAlpha);
@@ -777,14 +780,24 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
     REQUIRE(pixel(*cutoffKept, 32, 32)[0] > 180);
     REQUIRE(pixel(*cutoffDiscarded, 32, 32)[0] < 32);
 
-    for (const char *technique : {"dither", "coverage"}) {
-        auto dithered = render(0.5f, technique, technique);
+    auto visiblePixels = [](const eve::image::ImageData &image) {
         int visible = 0;
         for (int y = 0; y < 64; ++y)
             for (int x = 0; x < 64; ++x)
-                if (pixel(*dithered, x, y)[0] > 180) ++visible;
-        REQUIRE(visible > 1200);
-        REQUIRE(visible < 2900);
+                if (pixel(image, x, y)[0] > 180) ++visible;
+        return visible;
+    };
+    const int fullyCovered = visiblePixels(*cutoffKept);
+    REQUIRE(fullyCovered > 3500);
+
+    for (const char *technique : {"dither", "coverage"}) {
+        auto dithered = render(0.5f, technique, technique);
+        const int visible = visiblePixels(*dithered);
+        // Alpha hashing is backend-specific at fragment-coordinate precision. Validate the
+        // material contract (partial coverage) relative to the rendered quad instead of a
+        // Vulkan-tuned absolute pixel count.
+        REQUIRE(visible * 5 > fullyCovered);
+        REQUIRE(visible * 20 < fullyCovered * 17);
     }
 }
 
@@ -798,8 +811,8 @@ TEST_CASE("graphics.backendParity.surfaceBlendDepthWriteAndCulling") {
         0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
     };
     const float uvs[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t frontIndices[] = {0, 1, 2, 2, 3, 0};
-    const uint32_t backIndices[] = {0, 2, 1, 2, 0, 3};
+    const uint32_t frontIndices[] = {0, 2, 1, 2, 0, 3};
+    const uint32_t backIndices[] = {0, 1, 2, 2, 3, 0};
     Mesh *front = gfx->newMeshFromArrays(positions, normals, uvs, 4, frontIndices, 6);
     Mesh *back = gfx->newMeshFromArrays(positions, normals, uvs, 4, backIndices, 6);
     const uint8_t halfRed[] = {255, 0, 0, 128};

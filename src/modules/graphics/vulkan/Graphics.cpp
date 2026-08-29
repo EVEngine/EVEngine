@@ -30,10 +30,12 @@
 #include <unistd.h>
 #endif
 
+#include "common/CrashLog.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/GraphicsCapabilities.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
@@ -56,14 +58,18 @@ namespace eve::graphics::vulkan {
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
 Graphics::~Graphics() {
+    detachGraphicsArtifactProvider(this);
     if (!initialized) return;
     device->waitIdle();
+    if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
+    gpuQueryPool_ = nullptr;
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them
     // first so their destructors do not see freed shader pointers.
     pipelineAA_.reset();
     pipelineAO_.reset();
     pipelineGI_.reset();
     renderControl_.reset();
+    destroyGpuParticleResources();
     ownedCanvases.clear();
     ownedMeshes.clear();
     ownedGpuMeshes.clear();
@@ -241,6 +247,33 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
 #endif
         auto phys = selector.select();
         {
+            // Record the GPU identity into the crash/error log before any Vulkan
+            // work, so a device/driver crash can be tied to the exact GPU+driver.
+            const auto &pp = phys.properties;
+            const char *vendor = "unknown";
+            switch (pp.vendorID) {
+                case 0x10DE: vendor = "NVIDIA"; break;
+                case 0x1002: vendor = "AMD"; break;
+                case 0x8086: vendor = "Intel"; break;
+                case 0x13B5: vendor = "ARM"; break;
+                case 0x5143: vendor = "Qualcomm"; break;
+                default: break;
+            }
+            char vendorHex[16], deviceHex[16], driverHex[16];
+            std::snprintf(vendorHex, sizeof(vendorHex), "%04X", pp.vendorID);
+            std::snprintf(deviceHex, sizeof(deviceHex), "%04X", pp.deviceID);
+            std::snprintf(driverHex, sizeof(driverHex), "%08X", pp.driverVersion);
+            const uint32_t maj = VK_API_VERSION_MAJOR(pp.apiVersion);
+            const uint32_t min = VK_API_VERSION_MINOR(pp.apiVersion);
+            const uint32_t pat = VK_API_VERSION_PATCH(pp.apiVersion);
+            eve::recordLogEvent(
+                "info",
+                std::string("gpu: ") + vendor + " '" + std::string(pp.deviceName.data()) +
+                    "' vendorId=0x" + vendorHex + " deviceId=0x" + deviceHex + " api=" +
+                    std::to_string(maj) + "." + std::to_string(min) + "." + std::to_string(pat) +
+                    " driver=0x" + driverHex + (nativeWindow ? "" : " [headless]"));
+        }
+        {
             const vk::PhysicalDeviceFeatures supported = phys->getFeatures();
             if (supported.samplerAnisotropy) {
                 phys.features.samplerAnisotropy = VK_TRUE;
@@ -283,6 +316,10 @@ void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames
         deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
+        eve::recordLogEvent("info",
+            "gpu: logical device created (gpuDriven=" +
+            std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+            ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
     }
 }
 
@@ -357,9 +394,11 @@ void Graphics::initHeadless(int width, int height) {
         StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
         initGpuDrivenResources();
     }
+    eve::recordLogEvent("info", "gfx: graphics initialized (headless)");
 }
 
 void Graphics::initWithWindow(void *nativeWindow) {
+    eve::cap::provide<eve::service::IGpuTimer>(this);
     StartupStage initStage("graphics: initWithWindow (total)");
     if (initialized) {
         // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
@@ -403,6 +442,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
     {
         StartupStage stage("  vulkan: swapchain + solid pipelines");
         createSwapchainAndPipeline();
+        eve::recordLogEvent("info", "gfx: swapchain + solid pipelines created");
     }
     {
         StartupStage stage("  vulkan: textured/lit2d pipelines");
@@ -439,6 +479,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
         initGpuDrivenResources();
     }
+    eve::recordLogEvent("info", "gfx: graphics initialized (window)");
 }
 
 void Graphics::onNativeWindowDestroyed() {
@@ -575,6 +616,11 @@ Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
     return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
 }
 
+Texture* Graphics::getSceneLinearDepthTexture() {
+    auto* slot = currentGBufferSlot();
+    return slot && gbufferPending ? &slot->depthColorTex : nullptr;
+}
+
 Graphics::DecalSlot *Graphics::currentDecalSlot() {
     if (decalSlots.empty()) return nullptr;
     return &decalSlots[currentFrameSlot() % decalSlots.size()];
@@ -646,7 +692,10 @@ bool Graphics::beginPresentCommandBuffer() {
     for (int attempt = 0; attempt < 3; ++attempt) {
         if (!rebuildSwapchainIfNeeded()) return false;
         presentRecording = presentModel.begin();
-        if (presentRecording) return true;
+        if (presentRecording) {
+            writeGpuTimestampBegin();
+            return true;
+        }
         // Acquire failed without beginning the CB (see Present::begin). Rebuild once.
         if (presentModel.needs_recreate) {
             presentModel.needs_recreate = false;
@@ -758,5 +807,51 @@ void Graphics::present() {
 void Graphics::draw(eve::graphics::Graphics *, const glm::mat4 &) const {}
 void Graphics::draw(Canvas *, const glm::mat4 &) const {}
 
+// ---- GPU frame timing ------------------------------------------------------
+
+void Graphics::initGpuTiming() {
+    if (gpuQueryPool_) return;
+    try {
+        timestampPeriod_ = device.physical_device.properties.limits.timestampPeriod;
+        vk::QueryPoolCreateInfo ci;
+        ci.queryType = vk::QueryType::eTimestamp;
+        ci.queryCount = 2;
+        gpuQueryPool_ = device->createQueryPool(ci);
+        gpuTimingReady_ = true;
+    } catch (...) {
+        gpuTimingReady_ = false;
+        gpuQueryPool_ = nullptr;
+    }
+}
+
+void Graphics::writeGpuTimestampBegin() {
+    if (!gpuTimingReady_ || !presentRecording) return;
+    vk::CommandBuffer cb = presentRecording.commandBuffer();
+    cb.resetQueryPool(gpuQueryPool_, 0, 2);
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe, gpuQueryPool_, 0);
+}
+
+void Graphics::writeGpuTimestampEnd() {
+    if (!gpuTimingReady_ || !presentRecording) return;
+    vk::CommandBuffer cb = presentRecording.commandBuffer();
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe, gpuQueryPool_, 1);
+}
+
+void Graphics::readGpuFrameTiming() {
+    if (!gpuTimingReady_ || !gpuQueryPool_) return;
+    // drawFrame() waits on the in-flight fence, so results are valid here.
+    std::array<uint64_t, 2> ts{};
+    const auto r = device->getQueryPoolResults(
+        gpuQueryPool_, 0, 2, sizeof(ts), ts.data(), sizeof(uint64_t),
+        vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+    if (r == vk::Result::eSuccess && ts[1] > ts[0])
+        gpuFrameMs_ = float(double(ts[1] - ts[0]) * double(timestampPeriod_) / 1'000'000.0);
+    else
+        gpuFrameMs_ = 0.f;
+}
+
+bool Graphics::gpuTimingAvailable() const { return gpuTimingReady_ && gpuFrameMs_ > 0.f; }
+
+float Graphics::gpuFrameMs() const { return gpuFrameMs_; }
 
 }  // namespace eve::graphics::vulkan

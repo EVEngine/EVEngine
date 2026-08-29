@@ -1,7 +1,7 @@
 #include "devtools/McpServer.hpp"
 
 #include "common/EditorAutomation.h"
-#include "common/ScriptCompiler.h"
+#include "common/ScriptError.h"
 #include "devtools/Immortal.hpp"
 
 #include "devtools/AiPanel.hpp"
@@ -50,6 +50,9 @@
 
 namespace eve::dev {
 namespace {
+
+constexpr const SQChar* kMcpSnippetSource       = _SC("memory://mcp/snippet");
+constexpr const SQChar* kMcpSceneDirectorSource = _SC("memory://mcp/scene-director");
 
 std::string mcpStringify(const Poco::Dynamic::Var& v) {
     std::ostringstream oss;
@@ -284,8 +287,11 @@ std::string snippetErrorText(HSQUIRRELVM vm, bool compile) {
 // Compile + run a snippet against the live VM (no return value captured).
 bool runVmSnippet(HSQUIRRELVM vm, const std::string& source, std::string* err) {
     const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
-            vm, source.c_str(), static_cast<SQInteger>(source.size()), _SC("mcp_snippet.nut"), SQTrue))) {
+    // MCP snippets are transient input, not project scripts. Compile them
+    // directly from memory so the unified project compiler cannot register a
+    // file-shaped source that hot reload may later treat as user content.
+    if (SQ_FAILED(
+            sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()), kMcpSnippetSource, SQTrue))) {
         sq_settop(vm, top);
         if (err) *err = snippetErrorText(vm, true);
         return false;
@@ -365,8 +371,8 @@ std::string sqValueToJson(HSQUIRRELVM vm, SQInteger idx) {
 // return value (e.g. `return ::scene_director.info();`).
 std::string callSceneDirectorReturn(HSQUIRRELVM vm, const std::string& snippet, std::string* err) {
     const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
-            vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()), _SC("mcp_scene_director.nut"), SQTrue))) {
+    if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()), kMcpSceneDirectorSource,
+                                   SQTrue))) {
         sq_settop(vm, top);
         if (err) *err = snippetErrorText(vm, true);
         return {};
@@ -840,6 +846,21 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
+    if (name == "eve_skeleton_inspect") {
+        const std::string actor = argString(args, "actor");
+        const std::string bone  = argString(args, "bone");
+        if (actor.empty()) return "error: missing actor";
+        const std::string expr = "eve_mcp_skeleton_inspect(\"" + sqStringLiteralEscape(actor) +
+                                 "\",\"" + sqStringLiteralEscape(bone) + "\")";
+        auto info = dbg.evaluate(expr);
+        if (info.value.empty()) return "error: eve_mcp_skeleton_inspect is unavailable";
+        // Debugger string values are display-quoted. The project hook returns
+        // canonical JSON, so remove only that outer presentation pair.
+        if (info.value.size() >= 2 && info.value.front() == '"' && info.value.back() == '"')
+            return info.value.substr(1, info.value.size() - 2);
+        return info.value;
+    }
+
     if (name == "eve_pause") {
         dbg.pause(PauseReason::PauseKey);
         dap.notifyStopped(PauseReason::PauseKey, dbg.pauseLocation());
@@ -990,18 +1011,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!vm) return "error: no VM";
         const std::string source = argString(args, "source");
         if (source.empty()) return "error: missing source";
-        const SQInteger top = sq_gettop(vm);
-        if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(
-                vm, source.c_str(), static_cast<SQInteger>(source.size()), _SC("mcp_snippet.nut"), SQTrue))) {
-            sq_settop(vm, top);
-            return "error: " + snippetErrorText(vm, true);
-        }
-        sq_pushroottable(vm);
-        if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return "error: " + snippetErrorText(vm, false);
-        }
-        sq_settop(vm, top);
+        std::string error;
+        if (!runVmSnippet(vm, source, &error)) return "error: " + error;
         return "ok";
     }
 
@@ -1248,6 +1259,8 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_eval\",\"description\":\"Evaluate a Squirrel expression (local or roottable).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"expression\":{\"type\":\"string\"}},\"required\":["
         "\"expression\"]}},"
+        "{\"name\":\"eve_skeleton_inspect\",\"description\":\"Inspect a published runtime skeleton hierarchy and bind/current bone transforms. The game provides eve_mcp_skeleton_inspect.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"actor\":{\"type\":\"string\"},\"bone\":{\"type\":\"string\"}},\"required\":[\"actor\"]}},"
         "{\"name\":\"eve_pause\",\"description\":\"Pause the game / script.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_continue\",\"description\":\"Continue from pause.\","

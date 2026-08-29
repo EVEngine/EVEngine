@@ -15,6 +15,57 @@ particles.update(dt);
 particles.render(gfx);
 ```
 
+## 配置热重载观察
+
+`setAutoReload(true)`（默认开启）后，模块会在 `pollConfigs()` 或模块更新阶段
+观察绑定配置文件的修改时间。`getConfigReloadObservation()` 返回最近一次明确观察
+到的状态字符串：`"unbound"`（没有绑定配置文件）、
+`"mtime_polling_unchanged"`（文件未改变）、`"mtime_polling_reloaded"`（已重新加载）、
+`"mtime_unavailable"`（无法取得文件修改时间）或
+`"mtime_polling_reload_failed"`（检测到变化但重新加载失败）。该接口只报告观察结果，
+不会代替 `reloadConfig()`；读取失败时发射器仍保留原配置，调用方可据此记录诊断或重试。
+
+## 版本化多发射器特效资产
+
+复杂特效应保存为 `eve.particle-effect` 资产，而不是让玩法脚本逐个拼装发射器。版本 1 支持命名层、嵌入式发射器配置或外部 `config` 引用、局部偏移/旋转、禁用层、资产参数默认值和逐层参数覆盖。
+
+```json
+{
+  "type": "eve.particle-effect",
+  "version": 1,
+  "parameters": { "intensity": 1.0 },
+  "emitters": [
+    {
+      "name": "core",
+      "offset": [0, -6],
+      "emitter": {
+        "buffer": 128,
+        "preset": "fire",
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.0 }
+        ]
+      }
+    },
+    { "name": "smoke", "config": "emitters/smoke.json" }
+  ]
+}
+```
+
+```squirrel
+local impact = particles.newEffectFromFile("effects/impact.effect.json");
+if (impact == null) {
+    print(particles.getLastEffectError() + "\n");
+} else {
+    impact.setPosition(480, 320);
+    impact.setRotation(0.5);
+    impact.setFloatParameter("intensity", 1.4);
+    impact.start();
+    local sparks = impact.getEmitterByName("sparks"); // 仍可精调单层
+}
+```
+
+`newEffectFromText()` 供编辑器预览未落盘的 JSON。组对象提供 `setPosition`、`setRotation`、`setScale`、`setLayer`、`setVisible`、`start`、`pause`、`stop`、`reset` 和命名层 `emit`；组销毁时会一起回收所拥有的发射器。未知版本、重名层和无效配置会拒绝实例化，并通过 `getLastEffectError()` 返回可展示的诊断。
+
 ## 绑定到动态骨骼
 
 粒子仍是 2D。支持多种运行时骨骼源；每帧 `particles.update` 会自动 `syncAttach`。
@@ -179,6 +230,80 @@ JSON 等价配置：
 - `noise` 为 CPU 值噪声湍流（强度/频率/时间流速），适合烟雾、火焰的自然扰动。
 - `maxDeltaTime` 限制单帧模拟步长，防止卡顿后的粒子爆炸。
 
+## 可复现播放、固定步进与按距离发射
+
+需要录制回放、网络同步、慢动作或稳定拖尾时，可显式控制粒子时间线：
+
+```squirrel
+local trail = particles.newEmitter(512);
+trail.setRandomSeed(20260826);             // 每次 start() 重放相同随机序列
+trail.setAutoRandomSeed(false);
+trail.setEmitterLifetime(1.5);
+trail.setLooping(true);                    // 有限时间线循环，burst 也会重新触发
+trail.setPlaybackSpeed(0.5);               // 半速播放；0 = 冻结
+trail.setFixedTimeStep(1.0 / 120.0, 8);    // 固定步长 + 每帧最多追 8 步
+trail.setEmissionRateOverDistance(0.25);   // 每移动 4 个世界单位发射 1 个
+trail.start();
+```
+
+JSON 等价配置：
+
+```json
+{
+  "randomSeed": 20260826,
+  "autoRandomSeed": false,
+  "emitterLife": 1.5,
+  "looping": true,
+  "playbackSpeed": 0.5,
+  "fixedTimeStep": 0.008333333,
+  "maxSubSteps": 8,
+  "emissionRateOverDistance": 0.25
+}
+```
+
+- 固定种子会让寿命、速度、方向、大小、旋转、发射形状和序列帧起点等随机采样可复现；`autoRandomSeed: true`（默认）则每次 `start()` 生成新序列。
+- 固定步进由 `maxSubSteps` 限制追帧工作量，超过上限的时间债务会被丢弃，避免暂停恢复后形成长时间尖峰。
+- 按距离发射会沿上一位置到当前位置的线段均匀插值，世界空间拖尾不会因帧率变化形成粒子团。第一次更新只建立运动基线，不会补发创建前的路径。
+
+## 质量等级、预算、剔除与性能统计
+
+大规模战斗或天气效果应通过运行时预算稳定降级，而不是等粒子缓冲溢出：
+
+```squirrel
+particles.setQualityLevel(2);       // 0=最低，3=最高
+particles.setBudget(50000, 256);    // 全局存活粒子软上限、每帧模拟发射器上限；0=不限
+
+local heroFx = particles.newEmitter(2048);
+heroFx.setPriority(100);            // 高优先级先获得模拟/生成预算
+heroFx.setMinimumQuality(0);        // 所有质量等级都保留
+heroFx.setCullingMode("always");    // 即使离屏也继续模拟
+heroFx.setMaxSpawnPerFrame(256);
+
+local ambience = particles.newEmitter(8192);
+ambience.setPriority(-10);
+ambience.setMinimumQuality(2);
+ambience.setCullingMode("pause");  // 离屏或超出距离时冻结
+ambience.setCullDistance(1800);
+ambience.setMaxSpawnPerFrame(96);
+```
+
+JSON 发射器策略：
+
+```json
+{
+  "priority": -10,
+  "minimumQuality": 2,
+  "cullingMode": "pause",
+  "cullDistance": 1800,
+  "maxSpawnPerFrame": 96
+}
+```
+
+- 发射器按 `priority` 从高到低分配每帧模拟器数量和剩余粒子空间；总粒子数是软上限，调低预算不会立即删除已经存活的粒子，但会停止超额生成，让它们自然死亡。
+- `cullingMode`：`"automatic"`（默认，仅跳过离屏且为空的发射器）、`"pause"`（离屏时冻结全部模拟）、`"always"`（关键玩法效果始终模拟）。渲染阶段仍会跳过确定不可见的粒子。
+- `minimumQuality` 高于当前全局质量等级时，发射器冻结且不渲染；恢复质量后继续运行，不破坏已有粒子状态。
+- 每次 `update`/`render` 后可读取 `getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()` 与 `getLastRenderMs()`，用于 HUD、自动伸缩和性能回归。
+
 ## 碰撞与子发射器
 
 ```squirrel
@@ -196,7 +321,41 @@ sparks.addSubEmitter(smoke, "death", 0.3);  // 继承 30% 速度
 
 JSON：`collision: {mode, radius, restitution, lifetimeLoss}`、`collisionBounds: {enabled, minX, minY, maxX, maxY}`、`worldCollision: true`。子发射器目前通过脚本 `addSubEmitter(target, trigger, inherit)` 关联（trigger 为 `"birth"` / `"death"` / `"collision"`）。
 
-拖尾：`setRenderMode("stretched", factor)` 或 JSON `renderMode: "stretched"` + `stretch`，粒子沿速度方向拉伸成彗星/流光。
+精灵朝向统一由 `setRenderMode` 控制：`"billboard"` 使用粒子自身旋转，`"axis"` 配合 `setRenderAxis(degrees)` 固定到屏幕空间轴，`"stretched"`（也接受 `"velocity"`）按速度方向拉伸。JSON 对应 `renderMode`、`renderAxis` 和 `stretch`。
+
+透明粒子可用 `setSortMode("none" | "oldest" | "youngest" | "distance")` 选择稳定的逐发射器提交顺序，`getSortMode()` 返回规范化后的策略。`distance` 在有相机时按远到近排列。当前 GPU 常驻后端只支持 `none`；其他策略明确保留在 CPU 后端，避免宣称排序已在 GPU 上完成。
+
+连续拖尾使用 `setRibbon(width, minSegmentLength)`，它按稳定的粒子出生顺序连接相邻控制点，跳过过短段，并沿段方向生成带宽度的纹理四边形；JSON 为 `ribbon: {width, minSegmentLength}`。Ribbon 当前明确使用 CPU 渲染后端，适合配合 `setEmissionRateOverDistance` 制作弹道、刀光和移动轨迹。
+
+`setSoftParticles(true, depth, fadeDistance)` 让常驻粒子采样当前 G-buffer 的线性场景深度，在与几何相交或被遮挡时平滑衰减 alpha；JSON 为 `softParticles: {enabled, depth, fadeDistance}`，深度值均为 `[0,1]` 线性深度。`isSoftParticlesActive()` 只有在 GPU 常驻渲染器已激活且当前帧确实产生场景深度时才返回 true；纯 2D 帧不会伪造深度，而是保持普通粒子外观。
+
+粒子材质默认是 `unlit`，不受场景灯光影响。`setMaterialMode("lit")` 会让粒子接收现有 2D 环境光和点光/方向光；配合 `setNormalTexture(normalTex)` 时使用切线空间法线贴图，否则使用无贴图的逐粒子中心光照。JSON 可写为：
+
+```json
+{
+  "material": {
+    "mode": "lit",
+    "normalTexture": "particles/smoke-normal.png"
+  }
+}
+```
+
+Lit/法线贴图目前明确使用 CPU 粒子模拟加 GPU 2D lit 绘制；即使请求了 `gpuSimulation`，也会安全回退，不会静默忽略灯光。切回 `unlit` 后可重新满足 GPU 常驻条件。
+
+`setMaterialMode("distortion")` 把粒子纹理解释为屏幕空间位移场：R/G 的 0.5 表示零偏移，0/1 表示负/正方向，A 控制羽化覆盖；`setDistortionStrength(pixels)`（`getDistortionStrength()` 可读回）设置最大折射像素数。它采样同一帧已解析的 3D 场景颜色，因此纯 2D 帧或离屏 Canvas 不会伪造背景。JSON 示例：`material: {mode: "distortion", distortionStrength: 12}`。Distortion 当前使用 CPU 粒子模拟和专用 GPU 合成管线。
+
+运行时诊断可读取 `getSimulationBackend()`（`"cpu"` / `"gpu"`）和 `getGpuFallbackReason()`。后者在 GPU 已激活时为空；可返回 `disabled`、`backend_unavailable`、`pending_activation`，或具体功能原因：`canvas`、`custom_shader`、`collision`、`force_fields`、`sub_emitters`、`particle_lights`、`curves`、`sorting`、`ribbon`、`lit_material`、`distortion_material`。`isGpuFeatureSetSupported()` 只检查当前功能组合，不把机器是否支持 Vulkan resident 后端混在一起。
+
+玩法和效果资产可通过命名浮点参数实时驱动 emitter，无需重建或覆盖基础配置：
+
+```squirrel
+fire.setFloatParameter("intensity", 1.5);
+fire.bindFloatParameter("intensity", "emission", 1.0, 0.0);
+fire.bindFloatParameter("intensity", "speed", 0.5, 0.25);
+fire.bindFloatParameter("intensity", "size", 0.35, 0.65);
+```
+
+支持的 target 是 `emission`、`speed`、`size`、`playback`，解析公式为 `max(0, value * scale + offset)`；参数缺失或未绑定时倍率为 1。JSON 使用 `parameters` 对象和 `parameterBindings` 数组。这些值在 CPU 与 GPU resident 的生成输入上保持一致，适合武器充能、天气强度、角色状态与关卡脚本驱动。
 
 健壮性：`overflowMode`（`"drop"` 默认 / `"pause"` 暂停发射直到有空位 / `"warn"` 日志提示）；`setMaxDeltaTime` 限制单帧步长；带相机的发射器在屏幕外且无存活粒子时会跳过模拟。
 
@@ -220,7 +379,7 @@ JSON：`forceFields: [{x, y, radius, strength, falloff}]`；`lights: {enabled, m
 
 ## GPU 加速模拟
 
-`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 可为单个发射器开启 GPU 模拟：每粒子的运动积分（重力、阻尼、限速、径向/切向加速度、速度帧、噪声湍流、旋转、序列帧推进、寿命衰减）在计算着色器中执行，生成与回收、碰撞、子发射器仍由 CPU 处理。不可用（无 GPU 设备/计算管线失败）时自动回退到 CPU 模拟，行为保持一致。
+`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 会请求常驻 GPU 后端。首次可提交帧把当前新生粒子上传到后端拥有的多帧 SSBO；之后更新、死亡剔除、存活压缩和 `VkDrawIndirectCommand` 都在同一帧命令缓冲内完成。渲染直接读取压缩后的 SSBO，不逐帧回读粒子状态，也不为每个发射器单独提交或等待队列。CPU 只维护确定性的发射调度、预算和寿命数量估计。
 
 ```squirrel
 local embers = particles.newEmitter(20000);  // 上万粒子场景
@@ -229,7 +388,11 @@ embers.setGravity(0, 30);
 embers.start();
 ```
 
-实现说明：粒子状态以 16 个 float/粒子存放在 SSBO（`ParticleGpuKernel.h`），每帧 upload → dispatch（64 线程/组）→ readback 后走原有渲染路径；渲染仍是 CPU 批量四边形，因此收益集中在把每粒子物理计算移到 GPU。该模式下暂不参与 GPU 的项：力场、噪声外的 CPU 专属逻辑仍在 CPU 侧生效（碰撞等）。GLSL 内核可通过 `glslc` 单独编译验证（`ParticleGpuKernel.h` 内注释含布局说明）。
+调用 `isGpuSimulationActive()` 可区分“资产请求 GPU”与“本帧已经迁移到 GPU”。`particles.getLastGpuResidentEmitters()` 和 `particles.getLastGpuResidentParticles()` 可用于性能 HUD 和自动质量伸缩。后者是 CPU 侧精确寿命估计；后端的存活、生成、死亡、丢弃和间接实例计数采用帧槽延迟读数，不会阻塞当前帧。
+
+当前常驻 GPU 后端覆盖基础点/线/矩形/椭圆发射、重力、线性/径向/切向加速度、阻尼、限速、噪声、本地/世界空间、旋转、尺寸和起止颜色、flipbook、拉伸与常用混合模式。需要玩法回调或逐粒子 CPU 状态的功能会自动保留在确定性 CPU 后端，包括碰撞、力场、子发射器、粒子灯光、自定义 shader/canvas，以及自定义速度/尺寸/旋转曲线和多段颜色渐变。没有可用图形后端时也安全回退 CPU。
+
+着色器源位于 `graphics/shaders/particle_resident.*`；修改后运行 `python scripts/compile_particle_gpu_shaders.py` 更新随引擎编译的 SPIR-V 与 include 文件。
 
 ## 对象关系与调用时机
 
@@ -263,13 +426,14 @@ embers.start();
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`clearBursts()`、`clearColorGradient()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getGpuSimulation()`、`getLightsEnabled()`、`getPrewarmSeconds()`、`getShader()`
-- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getLayer()`、`getName()`
+- `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`bindFloatParameter()`、`clearBursts()`、`clearColorGradient()`、`clearFloatParameterBindings()`、`clearFloatParameters()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoRandomSeed()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getEmissionRateOverDistance()`、`getFixedTimeStep()`、`getGpuSimulation()`、`getLightsEnabled()`、`getLooping()`、`getPlaybackSpeed()`、`getPrewarmSeconds()`、`getRandomSeed()`、`getShader()`
+- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getEmitterName()`、`getEmitter()`、`getEmitterByName()`、`getFloatParameter()`、`getGpuFallbackReason()`、`getLastEffectError()`、`getLayer()`、`getName()`、`getPriority()`、`getMinimumQuality()`、`getCullingMode()`、`getCullDistance()`、`getMaxSpawnPerFrame()`、`getMaterialMode()`、`getDistortionStrength()`、`getNormalTexture()`、`getResolvedParameterScale()`、`getRotation()`、`getScale()`、`getSimulationBackend()`、`getSourcePath()`、`getVersion()`
+- `getMaxParticles()`、`getMaxSimulatedEmitters()`、`getQualityLevel()`、`getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()`、`getLastRenderMs()`
 - `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
-- `hasSkinSource()`、`isActive()`、`isAttached()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEmitter()`、`newEmitterFromFile()`
-- `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`
-- `setBlendMode()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setDamping()`、`setDirection()`、`setEmissionArea()`、`setEmissionRate()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFlipbook()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setMaxDeltaTime()`、`setNoise()`、`setOverflowMode()`、`setPrewarm()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
-- `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setSizeVariation()`
+- `hasFloatParameter()`、`hasSkinSource()`、`isActive()`、`isAttached()`、`isGpuFeatureSetSupported()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEffectFromFile()`、`newEffectFromText()`、`newEmitter()`、`newEmitterFromFile()`
+- `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`getConfigReloadObservation()`
+- `setAutoRandomSeed()`、`setBlendMode()`、`setBudget()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setCullingMode()`、`setCullDistance()`、`setDamping()`、`setDirection()`、`setDistortionStrength()`、`setEmissionArea()`、`setEmissionRate()`、`setEmissionRateOverDistance()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFixedTimeStep()`、`setFlipbook()`、`setFloatParameter()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setLooping()`、`setMaterialMode()`、`setMaxDeltaTime()`、`setMaxSpawnPerFrame()`、`setMinimumQuality()`、`setNoise()`、`setNormalTexture()`、`setOverflowMode()`、`setPlaybackSpeed()`、`setPrewarm()`、`setPriority()`、`setQualityLevel()`、`setRandomSeed()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
+- `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setRotation()`、`setScale()`、`setSizeVariation()`
 - `setSizes()`、`setSkinBoneFilter()`、`setSkinBoneFilterByName()`、`setSkinPlane()`、`setSkinScale()`、`setSkinSource()`、`setSpeed()`、`setSpin()`、`setSpread()`、`setStartRotation()`、`setTangentialAcceleration()`、`setTexture()`、`setVisible()`、`start()`
 - `stop()`、`syncAttach()`、`update()`
 
@@ -280,4 +444,4 @@ embers.start();
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/particles/`](../../../src/modules/particles/)
-**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
+**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_effect_asset.cpp`](../../../test/particles_effect_asset.cpp)、[`test/particles_reference_effects.cpp`](../../../test/particles_reference_effects.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Identity.h"
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,8 +24,17 @@ public:
     std::string getHostName() const { return hostName_; }
     std::string getNodeId() const { return nodeId_; }
     /** @brief True when host + node currently resolve. */
-    bool isValid() const;
-    /** @brief The eve.Scene module instance (for entity binding forwarding). */
+    [[nodiscard]] bool isValid() const;
+    /** @brief Return the persisted UUID of the resolved node, or nil if absent. */
+    [[nodiscard]] eve::SceneObjectId persistentId() const;
+    /**
+     * @brief Returns the eve.Scene module instance for entity-binding forwarding.
+     * @return Borrowed nullable module singleton; null means the module is unavailable.
+     * @ownership The module system owns the Scene instance; callers must not delete it.
+     * @lifetime Valid while the scene module is loaded; do not retain across unload.
+     * @thread Call on the scene/script thread.
+     * @reentrancy The accessor invokes no callbacks and is invalid across module teardown.
+     */
     Scene *getScene() const;
 
     // --- local transform ---

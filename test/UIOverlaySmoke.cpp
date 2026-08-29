@@ -25,6 +25,7 @@
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
 #include "ui/UI.h"
+#include "ui/UIHost.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
 #include "window/Window.h"
@@ -82,13 +83,13 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
     solid->sprite()->b = 0.35f;
     solid->sprite()->visible = true;
 
-    ui->mountAs("smoke",
-                window("Overlay",
-                       {
-                           text("UI+RenderSystem", "label"),
-                           button("Ping", "ping"),
-                       },
-                       "root"));
+    const UIHostHandle smokeHost = ui->mountAs("smoke", window("Overlay",
+                                                               {
+                                                                   text("UI+RenderSystem", "label"),
+                                                                   button("Ping", "ping"),
+                                                               },
+                                                               "root"));
+    REQUIRE(UIHost::resolve(smokeHost).has_value());
 
     int framesOk = 0;
     for (int frame = 0; frame < 30; ++frame) {
@@ -116,8 +117,10 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
     }
 
     CHECK_EQ(framesOk, 30);
-    CHECK(UISystem::findHost("smoke") != nullptr);
-    CHECK(ui->current()->findById("label") != nullptr);
+    CHECK(UIHost::resolve(UISystem::findHost("smoke")).has_value());
+    auto currentHost = UIHost::resolve(ui->current());
+    REQUIRE(currentHost.has_value());
+    CHECK(currentHost->get().findById("label").has_value());
 
     gfx->setScreenReadbackEnabled(false);
     win->close();
@@ -137,6 +140,7 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
     REQUIRE(ui->initBackend());
+    gfx->setScreenReadbackEnabled(true);
 
     gfx->setBackgroundColor(Color(0.09f, 0.10f, 0.14f, 1.0f));
 
@@ -170,39 +174,40 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
     bool muted = false;
     int clicks = 0;
 
-    ui->mountAs("gallery",
-                window("EVEngine Preview",
-                       {
-                           text("UI overlay + world sprites", "title"),
-                           separator("sep0"),
-                           checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
-                           slider("Volume", volume, 0.f, 1.f, "vol", [&](float v) { volume = v; }),
-                           progress(volume, "prog", "level"),
-                           button("Ping", "ping", [&]() { ++clicks; }),
-                           text("clicks: 0", "clicks"),
-                       },
-                       "root"));
+    const UIHostHandle galleryHost =
+        ui->mountAs("gallery", window("EVEngine Preview",
+                                      {
+                                          text("UI overlay + world sprites", "title"),
+                                          separator("sep0"),
+                                          checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
+                                          slider("Volume", volume, 0.f, 1.f, "vol", [&](float v) { volume = v; }),
+                                          progress(volume, "prog", "level"),
+                                          button("Ping", "ping", [&]() { ++clicks; }),
+                                          text("clicks: 0", "clicks"),
+                                      },
+                                      "root"));
+    REQUIRE(UIHost::resolve(galleryHost).has_value());
 
     for (int frame = 0; frame < 90; ++frame) {
         bgA->transform()->x = 40.f + float(frame) * 1.2f;
         bgB->transform()->y = 220.f + std::sin(float(frame) * 0.08f) * 24.f;
         volume = 0.35f + 0.3f * (0.5f + 0.5f * std::sin(float(frame) * 0.06f));
 
-        ui->remountAs("gallery",
-                      window("EVEngine Preview",
-                             {
-                                 text("UI overlay + world sprites", "title"),
-                                 separator("sep0"),
-                                 checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
-                                 slider("Volume", volume, 0.f, 1.f, "vol",
-                                        [&](float v) { volume = v; }),
-                                 progress(volume, "prog", muted ? "muted" : "level"),
-                                 button("Ping", "ping", [&]() { ++clicks; }),
-                                 text("clicks: " + std::to_string(clicks) +
-                                          "  vol: " + std::to_string(int(volume * 100.f)),
-                                      "clicks"),
-                             },
-                             "root"));
+        const UIHostHandle remounted = ui->remountAs(
+            "gallery",
+            window("EVEngine Preview",
+                   {
+                       text("UI overlay + world sprites", "title"),
+                       separator("sep0"),
+                       checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
+                       slider("Volume", volume, 0.f, 1.f, "vol", [&](float v) { volume = v; }),
+                       progress(volume, "prog", muted ? "muted" : "level"),
+                       button("Ping", "ping", [&]() { ++clicks; }),
+                       text("clicks: " + std::to_string(clicks) + "  vol: " + std::to_string(int(volume * 100.f)),
+                            "clicks"),
+                   },
+                   "root"));
+        REQUIRE(UIHost::resolve(remounted).has_value());
 
         ui->beginFrameAndRender();
         RenderSystem::render(*gfx);
@@ -216,7 +221,7 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
         SDL_Delay(16);
     }
 
-    CHECK(UISystem::findHost("gallery") != nullptr);
+    CHECK(UIHost::resolve(UISystem::findHost("gallery")).has_value());
     bgA->sprite()->visible = false;
     bgB->sprite()->visible = false;
     win->close();
@@ -236,8 +241,11 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
     REQUIRE(ui->initBackend());
+    gfx->setScreenReadbackEnabled(true);
 
-    ui->mountAs("vpsmoke", window("Viewport", {viewport("vp", 420.f, 260.f)}, "root"));
+    const UIHostHandle viewportHost =
+        ui->mountAs("vpsmoke", window("Viewport", {viewport("vp", 420.f, 260.f)}, "root"));
+    REQUIRE(UIHost::resolve(viewportHost).has_value());
 
     for (int frame = 0; frame < 4; ++frame) {
         // UI pass first: ensures the offscreen canvas exists at the widget rect.
@@ -262,12 +270,13 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
         }
     }
 
-    auto *vs = UISystem::viewportState("vpsmoke", "vp");
-    REQUIRE(vs != nullptr);
-    CHECK(vs->canvas != nullptr);
-    CHECK(vs->textureId != 0);
-    CHECK(vs->width == 420);
-    CHECK(vs->height == 260);
+    auto vs = UISystem::viewportState("vpsmoke", "vp");
+    REQUIRE(vs.has_value());
+    ViewportState &viewportState = vs->get();
+    CHECK(viewportState.canvas != nullptr);
+    CHECK(viewportState.textureId != 0);
+    CHECK(viewportState.width == 420);
+    CHECK(viewportState.height == 260);
 
     // 3D: render a cube scene into the same canvas (preview-quality pass).
     auto *cam = Camera3D::createCamera();
@@ -276,9 +285,29 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
     auto *cube = Renderable3D::create();
     cube->setMesh(gfx->newMeshCube(1.f));
     cube->setVisible(true);
+    cube->setTint(1.f, 0.f, 0.f, 1.f);
+    auto *previewMaterial = new Material();
+    previewMaterial->setShadingModel("unlit");
+    previewMaterial->setTint(0.f, 1.f, 0.f, 1.f);
+    cube->setMaterial(previewMaterial);
     gfx->setDirectionalLight(-0.4f, 0.9f, 0.3f, 1.8f, 1.6f, 1.3f);
-    gfx->renderScene3DToCanvas(vs->canvas, cam);
-    CHECK(vs->canvas->getTexture() != nullptr);
+    gfx->renderScene3DToCanvas(viewportState.canvas, cam);
+    CHECK(viewportState.canvas->getTexture() != nullptr);
+    const Color previewCenter = viewportState.canvas->getPixel(viewportState.canvas->getWidth() / 2,
+                                                               viewportState.canvas->getHeight() / 2);
+    CHECK_GT(previewCenter.g, previewCenter.r);
 
+    // Composite the viewport through the real UI target. Opaque viewport draws
+    // must not leak the mesh shader's depth-in-alpha channel into the final UI
+    // resolve or the preview becomes an almost-black silhouette.
+    ui->beginFrameAndRender();
+    RenderSystem::render(*gfx);
+    float maxGreen = 0.f;
+    for (int y = 0; y < gfx->getHeight(); y += 4)
+        for (int x = 0; x < gfx->getWidth(); x += 4)
+            maxGreen = std::max(maxGreen, gfx->getPixel(x, y).g);
+    CHECK_GT(maxGreen, 0.5f);
+
+    gfx->setScreenReadbackEnabled(false);
     win->close();
 }

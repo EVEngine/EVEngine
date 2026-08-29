@@ -606,6 +606,48 @@ int PlacementSystem::placeGhost(PlacementWorld *world, Ghost *ghost) {
     return id;
 }
 
+PlacementRestoreStatus PlacementSystem::restoreExact(PlacementWorld *world,
+                                                      const PlacedBuilding &placed,
+                                                      std::string *reason) {
+    ensureBuiltins();
+    if (!world || placed.instanceId <= 0 || world->hasBuilding(placed.instanceId)) {
+        if (reason) *reason = "instance_id_conflict";
+        return PlacementRestoreStatus::Rejected;
+    }
+    const BuildingDefinition *def = BuildingRegistry::find(placed.buildingId);
+    if (!def) {
+        if (reason) *reason = "unknown_building";
+        return PlacementRestoreStatus::Rejected;
+    }
+    const float rotation = normalizeRotation(placed.buildingId, placed.rotationDeg);
+    if (!canPlaceElev(world, placed.buildingId, placed.originCellX, placed.originCellY,
+                      placed.elevation, rotation, 0, reason))
+        return PlacementRestoreStatus::Rejected;
+    PlacedBuilding restored = placed;
+    restored.rotationDeg = rotation;
+    restored.channel = def->channel;
+    if (restored.tags.empty()) restored.tags = def->tags;
+    writeOccupancy(*world, *def, restored, restored.instanceId);
+    world->buildings()[restored.instanceId] = restored;
+    world->instanceOrder_.push_back(restored.instanceId);
+    instanceCounter() = std::max(instanceCounter(), restored.instanceId);
+
+    BuildingChangeEvent event;
+    event.action = "place";
+    event.worldId = world->getId();
+    event.buildingId = restored.buildingId;
+    event.instanceId = restored.instanceId;
+    event.cellX = restored.originCellX;
+    event.cellY = restored.originCellY;
+    event.rotationDeg = restored.rotationDeg;
+    event.worldX = restored.worldX;
+    event.worldY = restored.worldY;
+    event.elevation = restored.elevation;
+    event.channel = restored.channel;
+    emit(std::move(event));
+    return PlacementRestoreStatus::Restored;
+}
+
 bool PlacementSystem::removeBuilding(PlacementWorld *world, int instanceId) {
     if (!world || instanceId <= 0) return false;
     auto it = world->buildings().find(instanceId);

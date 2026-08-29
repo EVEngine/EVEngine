@@ -1,6 +1,6 @@
 #include "rx/Rx.h"
 
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -315,7 +315,7 @@ public:
     ReactivePropertyV* newProperty(const Value& initial) { return new ReactivePropertyV(initial); }
 
     // Event bridge: fromEvent(name) returns an Observable that forwards matching
-    // messages pushed by pump() (fed from an eve::event::Event queue).
+    // messages pushed by pump() (fed from an eve::platform_event::PlatformEvent queue).
     ObservableV* fromEvent(const std::string& eventName) {
         auto subject = std::make_shared<SubjectV>();
         {
@@ -330,13 +330,13 @@ public:
         });
     }
 
-    void pump(event::Event* ev) {
+    void pump(platform_event::PlatformEvent* ev) {
         if (!ev) return;
         while (auto msg = ev->pollOwned()) {
             std::string eventName = msg->name;
             std::string data;
             for (const auto& a : msg->args) {
-                if (a.type == event::Variant::Type::String) {
+                if (a.type == platform_event::Variant::Type::String) {
                     data = a.s;
                     break;
                 }

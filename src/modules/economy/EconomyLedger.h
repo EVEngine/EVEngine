@@ -30,6 +30,14 @@ public:
     /** @brief 累计出账。 */
     int getExpense(const std::string& type) const;
 
+    /**
+     * @brief Swap two ledgers without exposing an intermediate partial state.
+     * @param other Ledger whose complete state is exchanged with this one.
+     * @remarks Used by atomic adapters after a candidate ledger has been
+     *          fully validated and built.
+     */
+    void swap(EconomyLedger& other) noexcept;
+
 private:
     std::unordered_map<std::string, int> current_;
     std::unordered_map<std::string, int> wasted_;

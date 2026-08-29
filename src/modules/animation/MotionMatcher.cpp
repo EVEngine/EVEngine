@@ -1,6 +1,8 @@
 #include "animation/MotionMatcher.h"
+
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimationTime.h"
 #include "animation/MotionDatabase.h"
 
 #include "common/Exception.h"
@@ -201,7 +203,7 @@ void MotionMatcher::search() {
     }
 }
 
-void MotionMatcher::update(float dt) {
+void MotionMatcher::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("MotionMatcher.update: dt must be >= 0");
     if (!database_->isBaked()) return;
 
@@ -233,6 +235,24 @@ void MotionMatcher::update(float dt) {
     } else if (matchedFrame_ >= 0) {
         pose_.copyFrom(&matchedPose_);
     }
+}
+
+eve::Result<void> MotionMatcher::advance(const eve::SimulationStep& step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "MotionMatcher");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void MotionMatcher::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "MotionMatcher");
+    if (!step) {
+        step.ignore("legacy MotionMatcher update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy MotionMatcher update");
 }
 
 }  // namespace eve::animation

@@ -57,6 +57,12 @@ bool TagStore::hasTag(const SubjectId& subject, const std::string& tag) const {
     const auto found = tags_.find(subject);
     return found != tags_.end() && found->second.contains(tag);
 }
+bool TagStore::hasTagMatching(const SubjectId& subject, const std::string& tag, GameplayTagMatch match) const {
+    const auto found = tags_.find(subject);
+    return found != tags_.end() && std::any_of(found->second.begin(), found->second.end(), [&](const auto& held) {
+               return gameplayTagMatches(held, tag, match);
+           });
+}
 std::vector<std::string> TagStore::tagsOf(const SubjectId& subject) const {
     const auto found = tags_.find(subject);
     return values(found == tags_.end() ? nullptr : &found->second);
@@ -66,6 +72,13 @@ std::vector<SubjectId> TagStore::subjectsWithTag(const std::string& tag) const {
     return found == subjectsByTag_.end() ? std::vector<SubjectId>{}
                                          : std::vector<SubjectId>(found->second.begin(), found->second.end());
 }
+std::vector<SubjectId> TagStore::subjectsWithTagMatching(const std::string& tag, GameplayTagMatch match) const {
+    if (match == GameplayTagMatch::Exact) return subjectsWithTag(tag);
+    std::set<SubjectId> matches;
+    for (const auto& [held, subjects] : subjectsByTag_)
+        if (gameplayTagMatches(held, tag, match)) matches.insert(subjects.begin(), subjects.end());
+    return {matches.begin(), matches.end()};
+}
 bool TagStore::requireAllTags(const SubjectId& subject, const std::vector<std::string>& requested) const {
     const auto found = tags_.find(subject);
     return requireAll(found == tags_.end() ? nullptr : &found->second, requested);
@@ -73,6 +86,16 @@ bool TagStore::requireAllTags(const SubjectId& subject, const std::vector<std::s
 bool TagStore::requireAnyTag(const SubjectId& subject, const std::vector<std::string>& requested) const {
     const auto found = tags_.find(subject);
     return requireAny(found == tags_.end() ? nullptr : &found->second, requested);
+}
+bool TagStore::matchesAllTags(const SubjectId& subject, const std::vector<std::string>& requested,
+                              GameplayTagMatch match) const {
+    return std::all_of(requested.begin(), requested.end(),
+                       [&](const auto& query) { return hasTagMatching(subject, query, match); });
+}
+bool TagStore::matchesAnyTag(const SubjectId& subject, const std::vector<std::string>& requested,
+                             GameplayTagMatch match) const {
+    return std::any_of(requested.begin(), requested.end(),
+                       [&](const auto& query) { return hasTagMatching(subject, query, match); });
 }
 
 bool TagStore::addCapability(const SubjectId& subject, const std::string& capability) {

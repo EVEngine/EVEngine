@@ -1,5 +1,7 @@
 #include "card/CardTypes.h"
 
+#include "card/CardAttributes.h"
+
 #include "graphics/Graphics.h"
 
 #include <algorithm>
@@ -101,9 +103,12 @@ CardData *CardData::createCard() {
     CardData *c = CardData::create();
     c->identity();
     c->stats();
+    c->attributes();
+    c->effects();
     c->visual();
     c->layout();
     c->state();
+    c->definitionBinding();
     return c;
 }
 
@@ -118,6 +123,8 @@ bool CardData::hit(float px, float py) {
 
 std::string CardData::describe() {
     const auto *I = identity().operator->();
+    auto        projected = CardAttributeAdapter::project(*this);
+    if (!projected) projected.ignore("card description retained legacy projection after attribute failure");
     const auto *S = stats().operator->();
     if (I->kind == "spell") return I->name + "（法术 · 费用 " + std::to_string(S->cost) + "）";
     return I->name + "（" + std::to_string(S->attack) + "/" + std::to_string(S->health) + " · 费用 " +
@@ -206,8 +213,8 @@ void printCentered(graphics::Graphics *gfx, const std::string &text, float cx, f
     if (!font) return;
     const float tw = font->getWidth(text) * scale;
     const float th = font->getHeight() * scale;
-    // print 的 y 是基线；基线位于字形中心略下方
-    gfx->print(text, cx - tw * 0.5f, cy - th * 0.35f, color, scale);
+    // drawText 的 y 是行顶；视觉中心按现有卡牌布局略作补偿。
+    gfx->drawText(font, text, cx - tw * 0.5f, cy - th * 0.35f, color, scale);
 }
 
 void renderCardBack(graphics::Graphics *gfx, float x, float y, float w, float h, float angle, float a) {
@@ -229,6 +236,11 @@ void renderCardBack(graphics::Graphics *gfx, float x, float y, float w, float h,
 void renderCard(graphics::Graphics *gfx, const CardData &cardRef, const LayoutConfig &cfg, bool back) {
     (void)cfg;
     CardData &card = const_cast<CardData &>(cardRef);
+    auto      projected = CardAttributeAdapter::project(card);
+    if (!projected) {
+        projected.ignore("card renderer skipped an invalid attribute projection");
+        return;
+    }
     const auto *L = card.layout().operator->();
     const auto *V = card.visual().operator->();
     const auto *I = card.identity().operator->();

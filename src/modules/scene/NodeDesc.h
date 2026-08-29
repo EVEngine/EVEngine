@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Identity.h"
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +16,14 @@ class SceneHost;
  */
 struct NodeDesc {
     std::string id;
+    /**
+     * @brief Optional persisted object identity.
+     *
+     * `id` remains the legacy host-local locator used by scripts and
+     * reconciliation. This UUID is the identity that may cross a save/load
+     * or process boundary; it is never an ECS entity id.
+     */
+    eve::SceneObjectId persistentId;
     /** @brief Reconciliation key; defaults to id when empty. */
     std::string key;
     std::string name;
@@ -34,6 +44,11 @@ struct NodeDesc {
 
     NodeDesc &withId(std::string v) {
         id = std::move(v);
+        return *this;
+    }
+    /** @brief Assign a stable persisted scene-object UUID. */
+    NodeDesc &withPersistentId(eve::SceneObjectId v) {
+        persistentId = v;
         return *this;
     }
     NodeDesc &withKey(std::string v) {

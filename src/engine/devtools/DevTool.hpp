@@ -5,6 +5,7 @@
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/RenderFlow.hpp"
+#include "devtools/ScenarioRecorder.h"
 #include "devtools/Snapshot.hpp"
 
 #include <string>
@@ -17,6 +18,10 @@ typedef struct SQVM* HSQUIRRELVM;
 
 namespace ssq {
 class VM;
+}
+
+namespace eve {
+class Runtime;
 }
 
 namespace eve::dev {
@@ -50,6 +55,14 @@ public:
     /** @brief Attach script tracer to VM and enable render tracing. */
     void attach(ssq::VM& vm, bool sampleLocals = true);
     void attach(HSQUIRRELVM vm, bool sampleLocals = true);
+    /**
+     * @brief Attach to a Runtime and route its boundary errors into the slicer.
+     * @param runtime     Runtime whose errors (compile/reflect/unload, plus any
+     *                    uncaught error the VM hook did not already report) are
+     *                    forwarded to notifyError().
+     * @param sampleLocals Whether to sample frame locals for data-flow slicing.
+     */
+    void attach(eve::Runtime& runtime, bool sampleLocals = true);
     /** @brief Enable render-flow tracing without a Squirrel VM (C++ / unit tests). */
     void enableRenderTrace(bool on = true);
     void detach();
@@ -81,6 +94,7 @@ public:
     const RenderFlow& renderFlow() const { return renderFlow_; }
     Debugger&         debugger() { return Debugger::instance(); }
     Snapshot&         snapshot() { return Snapshot::instance(); }
+    ScenarioRecorder& scenario() { return ScenarioRecorder::instance(); }
     DebugAdapter&     dap() { return DebugAdapter::instance(); }
     McpServer&        mcp();
     AiPanel&          ai();
@@ -132,6 +146,8 @@ private:
     HSQUIRRELVM vm_               = nullptr;
     bool        sampleLocals_     = true;
     bool        renderTraceEnabled_ = false;
+    /** @brief Runtime whose boundary errors are routed into the slicer (if any). */
+    eve::Runtime* runtime_        = nullptr;
     CallGraph   graph_;
     RenderFlow  renderFlow_;
     std::string lastReport_;

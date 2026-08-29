@@ -1,0 +1,9 @@
+diff --git a/sound-libs/mpg123/src/compat/compat.c b/sound-libs/mpg123/src/compat/compat.c
+--- a/sound-libs/mpg123/src/compat/compat.c
++++ b/sound-libs/mpg123/src/compat/compat.c
+@@ -500 +500 @@
+-	new_sa.sa_handler = handler;
++	new_sa.sa_handler = (void (*)(int))handler;
+@@ -505 +505 @@
+-	return (old_sa.sa_handler);
++	return ((void (*)())old_sa.sa_handler);

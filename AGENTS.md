@@ -61,9 +61,10 @@ export ALSOFT_DRIVERS=null                                     # OpenAL Soft nul
 - The benign `[ALSOFT] Failed to set real-time priority` warning is expected on this VM.
 
 ### Capturing a rendered frame (visual artifact)
-There is no on-screen display; grab the framebuffer from a manual Xvfb display:
-`Xvfb :99 -screen 0 800x600x24 &` then run `eve` with `DISPLAY=:99`, and
-`ffmpeg -f x11grab -video_size 800x600 -i :99 -frames:v 1 out.png`.
+Do not capture Xvfb's framebuffer or use it as visual-correctness evidence; that
+path is unreliable. Start `eve`, connect to the engine's built-in MCP endpoint,
+and use the engine-owned screenshot function. Xvfb may only provide an SDL
+display for automated non-visual tests; it is not a screenshot backend.
 
 ## Windows (native) instructions
 
@@ -266,3 +267,61 @@ model behind them.
 - **PR granularity.** An interface change ships as one PR that updates the
   interface, every backend and every consumer — no intermediate commits that
   break CI. Use `codex/` branch prefixes for agent work.
+
+## Mandatory architecture rules for refactoring agents
+
+Before changing a public API, ECS model, persistent format, module boundary, or
+cross-domain lifecycle, read and follow:
+
+- `docs/dev/重构代码质量与系统完整性规范.md`
+- `docs/dev/领域短根继承与跨域组合架构.md`
+- `docs/dev/Result检查与不得丢弃返回值规范.md`
+- `docs/dev/2026-08-26-architecture-consolidation-checklist.md`
+
+These are requirements, not optional design suggestions:
+
+- Do not add ambiguous operation-result `bool`, `nullptr/false + lastError`, or
+  discardable critical return values. Use structured `Result`, strong status
+  enums, and `[[nodiscard]]` according to the Result specification.
+- Domain types use short inheritance roots. Orthogonal state/capability uses
+  components; cross-domain relationships use typed Link/Handle. Do not create a
+  universal GameObject, GameplaySubject, or GameplayActor root.
+- Each mutable fact has one authoritative owner. For every Link define ownership,
+  stale detection, both destruction orders, and restore/hot-reload rebuilding.
+- Before implementing an ECS System, record its entity/type scope, View,
+  read/write component sets, structural mutations, events, services, and phase.
+  Use deferred structural mutation while iterating views.
+- Inject simulation time, dt, and named RNG streams. State the determinism or
+  tolerance contract for replay, serialization, networking, and backend parity.
+- Document public API ownership/lifetime, thread affinity, and callback reentrancy.
+  Never retain temporary raw pointers across frames/tasks or invoke unknown
+  callbacks/scripts while holding a lock.
+- Persistent/cross-process data requires schema id, version, unknown-field policy,
+  and migration. Restore/import must not leave partially mutated observable state.
+- An optional dependency is only optional after tests cover both provider-present
+  and provider-absent configurations. Fallbacks must be explicit and observable.
+- Interface implementations share contract tests. Cross-module refactors include
+  a composition test and relevant trimmed-build profile, plus failure injection
+  for important lifecycle and transaction paths.
+- New TODO/HACK/FALLBACK/ALLOWLIST/soft-skip entries require an issue, owner,
+  reason, and removal condition or expiry. Do not create a second source of truth
+  as a compatibility shortcut.
+
+In the final handoff, report which of these rules applied, what was verified, and
+any deliberate exception. An exception requires explicit user approval; an agent
+must not silently waive these requirements.
+
+### Mandatory top-level architecture gate
+
+Before handing off a refactor, run the source-only contract gate and its fixtures:
+
+```sh
+ARCHITECTURE_BASE=HEAD make check/architecture-contracts
+```
+
+CI supplies the pull-request base SHA. `scripts/architecture_contracts.json` is the
+single catalogue for contract evidence; do not silence a finding with a new baseline,
+allowlist, or broad scope. A compatibility facade may retain a legacy shape only when
+the public documentation states that it is compatibility-only and the canonical
+Result/status API is the inward implementation. New debt markers still require the
+owner/issue/reason/expiry/removal metadata enforced by `check/quality-metadata`.

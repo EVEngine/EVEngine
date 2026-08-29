@@ -11,7 +11,8 @@
 # switched off and its dependencies, its third-party libraries and its script
 # binding follow automatically.
 #
-#   -DEVENGINE_PROFILE=minimal|2d|3d|full|web    pick a preset (default: full)
+#   -DEVENGINE_PROFILE=minimal|2d|3d|full|web|procgen-core-only|physics-core-only|headless|server
+#                                                   pick a preset (default: full)
 #   -DEVENGINE_MODULE_<NAME>=ON|OFF              override one module
 #
 # See docs/dev/模块编排与裁剪架构.md.
@@ -93,11 +94,55 @@ function(eve_resolve_modules)
         set(EVENGINE_PROFILE "full")
     endif()
 
-    set(_valid full minimal 2d 3d web)
+    set(_valid full minimal 2d 3d web procgen-core-only physics-core-only headless server)
     if(NOT EVENGINE_PROFILE IN_LIST _valid)
         message(FATAL_ERROR "EVENGINE_PROFILE must be one of: ${_valid} (got: ${EVENGINE_PROFILE})")
     endif()
     message(STATUS "Module profile: ${EVENGINE_PROFILE}")
+
+    # Host profiles retain the historical required runtime (cmdline, window,
+    # graphics, ...). Core/server profiles are deliberately different: they
+    # compile and smoke-test domain code without constructing a window or
+    # linking a renderer. Keep the seed list explicit so adding a new module
+    # cannot silently turn a server build into a client build.
+    set(_hostless_profile FALSE)
+    set(_profile_seed "")
+    if(EVENGINE_PROFILE STREQUAL "procgen-core-only")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common)
+        set(EVENGINE_PROFILE_CORE_KIND procgen CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "physics-core-only")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common event)
+        set(EVENGINE_PROFILE_CORE_KIND physics CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "headless")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common data event timer)
+        set(EVENGINE_PROFILE_CORE_KIND headless CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "server")
+        set(_hostless_profile TRUE)
+        set(_profile_seed
+            common data event timer network authority decision definitions effects
+            game_event orders schema social statepatch steering tags transaction
+            economy attributes sensing spatial action settlement tactics)
+        set(EVENGINE_PROFILE_CORE_KIND server CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    else()
+        unset(EVENGINE_PROFILE_CORE_KIND CACHE)
+    endif()
+    if(_hostless_profile)
+        set(EVENGINE_BUILD_HOST OFF CACHE BOOL
+            "Build the interactive/native host executable" FORCE)
+        set(EVENGINE_PROFILE_HOSTLESS ON CACHE INTERNAL
+            "The active profile does not build a host executable" FORCE)
+        message(STATUS "Hostless profile: renderer/window host disabled")
+    else()
+        set(EVENGINE_PROFILE_HOSTLESS OFF CACHE INTERNAL
+            "The active profile does not build a host executable" FORCE)
+    endif()
 
     # Accept either casing for the overrides: -DEVENGINE_MODULE_map=OFF and
     # -DEVENGINE_MODULE_MAP=OFF mean the same thing.
@@ -112,7 +157,11 @@ function(eve_resolve_modules)
     set(_wanted "")
     foreach(m IN LISTS EVE_ALL_MODULES)
         set(_on FALSE)
-        if(EVE_MODULE_${m}_REQUIRED)
+        if(_hostless_profile)
+            if("${m}" IN_LIST _profile_seed)
+                set(_on TRUE)
+            endif()
+        elseif(EVE_MODULE_${m}_REQUIRED)
             set(_on TRUE)
         elseif(EVENGINE_PROFILE STREQUAL "full")
             set(_on TRUE)
@@ -122,9 +171,15 @@ function(eve_resolve_modules)
 
         # --- 2. explicit override -------------------------------------------
         if(DEFINED EVENGINE_MODULE_${m})
-            if(EVE_MODULE_${m}_REQUIRED AND NOT EVENGINE_MODULE_${m})
+            if(EVE_MODULE_${m}_REQUIRED AND NOT EVENGINE_MODULE_${m} AND NOT _hostless_profile)
                 message(FATAL_ERROR
                     "Module '${m}' is required by the engine core and cannot be disabled")
+            endif()
+            if(_hostless_profile AND EVENGINE_MODULE_${m} AND NOT "${m}" IN_LIST _profile_seed)
+                message(FATAL_ERROR
+                    "Hostless profile '${EVENGINE_PROFILE}' cannot enable '${m}'. "
+                    "Use a normal client profile for the interactive/renderer module, "
+                    "or add it to the explicit server/core profile seed.")
             endif()
             set(_on ${EVENGINE_MODULE_${m}})
         endif()

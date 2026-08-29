@@ -3,7 +3,7 @@
 namespace eve::ui {
 namespace {
 
-int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
+int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     const int index = int(tree.nodes.size());
     UINode node;
     node.type = desc.type;
@@ -13,8 +13,22 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     node.valueText = std::move(desc.valueText);
     node.tooltip = std::move(desc.tooltip);
     node.visible = desc.visible;
+    node.enabled = desc.enabled;
     node.checked = desc.checked;
     node.open = desc.open;
+    node.focusMode = desc.focusMode;
+    node.mouseFilter = desc.mouseFilter;
+    node.themePreset = desc.themePreset;
+    node.tabIndex = desc.tabIndex;
+    node.focusNext = std::move(desc.focusNext);
+    node.focusPrevious = std::move(desc.focusPrevious);
+    node.focusLeft = std::move(desc.focusLeft);
+    node.focusRight = std::move(desc.focusRight);
+    node.focusUp = std::move(desc.focusUp);
+    node.focusDown = std::move(desc.focusDown);
+    node.accessibilityRole = desc.accessibilityRole;
+    node.accessibilityName = std::move(desc.accessibilityName);
+    node.accessibilityDescription = std::move(desc.accessibilityDescription);
     node.value = desc.value;
     node.minValue = desc.minValue;
     node.maxValue = desc.maxValue;
@@ -60,6 +74,7 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     node.justifyContent = desc.justifyContent;
     node.gap = desc.gap;
     node.flexGrow = desc.flexGrow;
+    node.parent = parent;
     node.firstChild = -1;
     node.nextSibling = -1;
     node.handlerClick = 0;
@@ -89,7 +104,7 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     int prevChild = -1;
     int firstChild = -1;
     for (auto &child : desc.children) {
-        int childIndex = appendNode(tree, std::move(child));
+        int childIndex = appendNode(tree, std::move(child), index);
         if (firstChild < 0) firstChild = childIndex;
         if (prevChild >= 0) tree.nodes[size_t(prevChild)].nextSibling = childIndex;
         prevChild = childIndex;
@@ -133,8 +148,22 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.valueText = std::move(desc.valueText);
     n.tooltip = std::move(desc.tooltip);
     n.visible = desc.visible;
+    n.enabled = desc.enabled;
     n.checked = desc.checked;
     n.open = desc.open;
+    n.focusMode = desc.focusMode;
+    n.mouseFilter = desc.mouseFilter;
+    n.themePreset = desc.themePreset;
+    n.tabIndex = desc.tabIndex;
+    n.focusNext = std::move(desc.focusNext);
+    n.focusPrevious = std::move(desc.focusPrevious);
+    n.focusLeft = std::move(desc.focusLeft);
+    n.focusRight = std::move(desc.focusRight);
+    n.focusUp = std::move(desc.focusUp);
+    n.focusDown = std::move(desc.focusDown);
+    n.accessibilityRole = desc.accessibilityRole;
+    n.accessibilityName = std::move(desc.accessibilityName);
+    n.accessibilityDescription = std::move(desc.accessibilityDescription);
     n.value = desc.value;
     n.minValue = desc.minValue;
     n.maxValue = desc.maxValue;
@@ -423,6 +452,17 @@ WidgetDesc card(std::vector<WidgetDesc> children, std::string id) {
     d.type = NodeType::Card;
     d.id = std::move(id);
     d.key = d.id;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children, std::string id,
+                          uint64_t textureId) {
+    WidgetDesc d;
+    d.type = NodeType::NinePatchPanel;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.textureId = textureId;
     d.children = std::move(children);
     return d;
 }

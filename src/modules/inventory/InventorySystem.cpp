@@ -59,6 +59,11 @@ bool &InventorySystem::builtinsReady() {
     return ready;
 }
 
+bool &InventorySystem::changeHooksSuppressed() {
+    static bool suppressed = false;
+    return suppressed;
+}
+
 void InventorySystem::registerAcceptRule(const std::string &name, AcceptFn fn) {
     if (name.empty() || !fn) return;
     acceptRules()[name] = std::move(fn);
@@ -198,8 +203,10 @@ void InventorySystem::ensureBuiltins() {
 int InventorySystem::nextInstanceId() { return instanceCounter()++; }
 
 void InventorySystem::emit(InventoryChangeEvent ev) {
-    for (auto &kv : changeHooks()) {
-        if (kv.second) kv.second(ev);
+    if (!changeHooksSuppressed()) {
+        for (auto &kv : changeHooks()) {
+            if (kv.second) kv.second(ev);
+        }
     }
     eventQueue().push_back(std::move(ev));
 }

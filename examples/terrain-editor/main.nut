@@ -6,23 +6,23 @@
 //
 // Run: make run/win32-debug GAME=examples/terrain-editor
 
-if (!("hm" in getroottable())) hm <- null;
-if (!("terrainMesh" in getroottable())) terrainMesh <- null;
-if (!("terrainEnt" in getroottable())) terrainEnt <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("vpCanvas" in getroottable())) vpCanvas <- null;
-if (!("yaw" in getroottable())) yaw <- 0.75;
-if (!("pitch" in getroottable())) pitch <- 0.45;
-if (!("dist" in getroottable())) dist <- 26.0;
-if (!("tool" in getroottable())) tool <- "raise";
-if (!("brushR" in getroottable())) brushR <- 4.0;
-if (!("strength" in getroottable())) strength <- 0.06;
-if (!("orbitDragging" in getroottable())) orbitDragging <- false;
-if (!("orbitMouseX" in getroottable())) orbitMouseX <- 0.0;
-if (!("orbitMouseY" in getroottable())) orbitMouseY <- 0.0;
-if (!("editStatus" in getroottable())) editStatus <- "ready";
-if (!("meshDirty" in getroottable())) meshDirty <- false;
-if (!("meshCooldown" in getroottable())) meshCooldown <- 0.0;
+persist hm = null
+persist terrainMesh = null
+persist terrainEnt = null
+persist cam = null
+persist vpCanvas = null
+persist yaw = 0.75
+persist pitch = 0.45
+persist dist = 26.0
+persist tool = "raise"
+persist brushR = 4.0
+persist strength = 0.06
+persist orbitDragging = false
+persist orbitMouseX = 0.0
+persist orbitMouseY = 0.0
+persist editStatus = "ready"
+persist meshDirty = false
+persist meshCooldown = 0.0
 
 const W = 64;
 const H = 64;
@@ -30,16 +30,22 @@ const CELL = 0.5;      // world units per heightmap cell
 const HSCALE = 3.2;    // world units per unit of height
 
 function regenTerrain() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return;
+    local p = paramsResult.value;
     p.setSize(W, H);
     p.setSeed(20260819);
     p.setFloat("frequency", 1.0 / 22.0);
     p.setInt("octaves", 5);
-    local generated = procgen.generateHeightmap(p);
-    if (generated != null) {
-        hm = generated;
+    local generatedResult = procgen.generateHeightmap(p);
+    if (generatedResult.ok) {
+        hm = generatedResult.value;
     } else {
-        if (hm == null) hm = procgen.newHeightmap(W, H);
+        if (hm == null) {
+            local fallbackResult = procgen.newHeightmap(W, H);
+            if (!fallbackResult.ok) return;
+            hm = fallbackResult.value;
+        }
         for (local y = 0; y < H; y++) {
             for (local x = 0; x < W; x++) {
                 hm.setHeight(x, y, 0.5 + 0.22 * sin(x * 0.18) * cos(y * 0.18));

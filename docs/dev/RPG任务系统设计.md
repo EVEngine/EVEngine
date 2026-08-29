@@ -1,7 +1,7 @@
 # RPG 模块设计：任务 / 目标追踪器
 
 日期：2026-08-18
-状态：设计已确认，待实现（`src/modules/rpg/` 第六子系统）
+状态：已实现（`src/modules/rpg/`：Quest.h/.cpp、Tracker.h/.cpp、QuestSystem.h/.cpp、QuestTypes.h；测试 `test/rpg_quest.cpp`）
 
 相关：[RPG系统设计.md](./RPG系统设计.md)（属性 / 效果 / 状态 / 技能 / 结算）、[模块设计.md](./模块设计.md)
 

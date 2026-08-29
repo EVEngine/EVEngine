@@ -4,20 +4,13 @@
 // Soft hot-reload: put one-time setup in eve_init; guard mutable state so
 // re-dofile does not wipe C++ entity refs. Optional eve_reload / eve_asset_reload.
 
-if (!("fx" in getroottable()))
-    fx <- null;
-if (!("tileLayer" in getroottable()))
-    tileLayer <- null;
-if (!("world" in getroottable()))
-    world <- null;
-if (!("ground" in getroottable()))
-    ground <- null;
-if (!("boxBody" in getroottable()))
-    boxBody <- null;
-if (!("boxW" in getroottable()))
-    boxW <- 48.0;
-if (!("boxH" in getroottable()))
-    boxH <- 48.0;
+persist fx = null
+persist tileLayer = null
+persist world = null
+persist ground = null
+persist boxBody = null
+persist boxW = 48.0
+persist boxH = 48.0
 
 eve_init = function() {
     gfx.setBackgroundColor(0.08, 0.09, 0.14, 1.0);

@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <sstream>
 
 #include <zlib.h>
@@ -37,6 +38,18 @@ int processId() {
 #else
     return static_cast<int>(getpid());
 #endif
+}
+
+[[nodiscard]] eve::Result<void> sdkFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
+    return eve::Result<void>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "cmdline.sdk"));
+}
+
+bool nonEmptyRegularFile(const std::filesystem::path& path, std::error_code& ec) {
+    ec.clear();
+    if (!std::filesystem::is_regular_file(path, ec) || ec) return false;
+    const auto size = std::filesystem::file_size(path, ec);
+    return !ec && size > 0;
 }
 
 // 校验 zip 条目路径安全：拒绝绝对路径与 ".."/"." 组件（zip-slip 防护）。
@@ -78,11 +91,12 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
     // EOCD 在文件末尾 64KB+22 字节内。
     size_t eocd = std::string::npos;
     const size_t searchStart = data.size() > 65557 ? data.size() - 65557 : 0;
-    for (size_t i = data.size() - 22; i + 1 > searchStart; --i) {
+    for (size_t i = data.size() - 22;; --i) {
         if (data[i] == 'P' && data[i + 1] == 'K' && data[i + 2] == 5 && data[i + 3] == 6) {
             eocd = i;
             break;
         }
+        if (i == searchStart) break;
     }
     if (eocd == std::string::npos) return false;
     const uint32_t cdOffset = le32(eocd + 16);
@@ -91,18 +105,26 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
 
     size_t pos = cdOffset;
     const size_t cdEnd = cdOffset + cdSize;
-    while (pos + 46 <= cdEnd && data[pos] == 'P' && data[pos + 1] == 'K' &&
-           data[pos + 2] == 1 && data[pos + 3] == 2) {
+    while (cdEnd - pos >= 46 && data[pos] == 'P' && data[pos + 1] == 'K' && data[pos + 2] == 1 && data[pos + 3] == 2) {
+        const size_t   entryStart = pos;
         const uint16_t method = le16(pos + 10);
+        const uint32_t entryCrc   = le32(pos + 16);
         const uint32_t compSz = le32(pos + 20);
         const uint32_t uncompSz = le32(pos + 24);
         const uint16_t nameLen = le16(pos + 28);
         const uint16_t extraLen = le16(pos + 30);
         const uint16_t commentLen = le16(pos + 32);
         const uint32_t localOff = le32(pos + 42);
-        if (pos + 46 + nameLen + extraLen + commentLen > cdEnd) return false;
-        const std::string name(data.data() + pos + 46, nameLen);
-        pos += 46 + nameLen + extraLen + commentLen;
+        const size_t   entrySize  = static_cast<size_t>(46) + nameLen + extraLen + commentLen;
+        if (entrySize > cdEnd - pos) return false;
+        const std::string name(data.data() + entryStart + 46, nameLen);
+        // Read the central-directory attributes before advancing to the next entry.
+        // Reading them from `pos` after the increment was the vector overrun seen
+        // when installing the local release fixture.
+#if !defined(_WIN32)
+        const uint32_t extAttr = le32(entryStart + 38);
+#endif
+        pos += entrySize;
 
         if (!zipEntryPathSafe(name)) return false;
         const bool isDir = !name.empty() && name.back() == '/';
@@ -112,11 +134,14 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
             std::filesystem::create_directories(dest, ec);
             continue;
         }
-        if (localOff + 30 > data.size() || data[localOff] != 'P' ||
+        if (localOff > data.size() || data.size() - localOff < 30 || data[localOff] != 'P' ||
             data[localOff + 1] != 'K' || data[localOff + 2] != 3 || data[localOff + 3] != 4)
             return false;
-        const size_t lData = localOff + 30 + le16(localOff + 26) + le16(localOff + 28);
-        if (lData + compSz > data.size()) return false;
+        const size_t localHeaderSize = static_cast<size_t>(30) + le16(localOff + 26) + le16(localOff + 28);
+        if (localHeaderSize > data.size() - localOff) return false;
+        const size_t lData = localOff + localHeaderSize;
+        if (compSz > data.size() - lData || compSz > static_cast<uint32_t>(std::numeric_limits<uInt>::max()))
+            return false;
 
         std::vector<char> out;
         if (method == 0) {
@@ -144,8 +169,12 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
             return false;  // 不支持的方法（zip 里极罕见）。
         }
         if (out.size() != uncompSz) return false;
+        if (static_cast<uint32_t>(
+                crc32(0, reinterpret_cast<const Bytef*>(out.data()), static_cast<uInt>(out.size()))) != entryCrc)
+            return false;
 
         std::filesystem::create_directories(dest.parent_path(), ec);
+        if (ec) return false;
         std::ofstream ofs(dest, std::ios::binary | std::ios::trunc);
         if (!ofs) return false;
         ofs.write(out.data(), static_cast<std::streamsize>(out.size()));
@@ -154,8 +183,6 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
         // Preserve the unix mode recorded in the zip's external attributes
         // (bits 16-23) so extracted tools stay executable: gradle, sdkmanager,
         // aapt/adb all ship as scripts/binaries with +x in their archives.
-        // Captured before pos advances past this central-directory entry.
-        const uint32_t extAttr = le32(pos + 38);
         const auto mode = static_cast<unsigned>((extAttr >> 16) & 0xFFFF);
         if (mode & 0111) {
             std::error_code pec;
@@ -166,7 +193,7 @@ bool extractZip(const std::string& zipPath, const std::string& destDir) {
         }
 #endif
     }
-    return true;
+    return pos == cdEnd;
 }
 
 }  // namespace
@@ -372,16 +399,14 @@ bool moveOrCopy(const std::filesystem::path& from, const std::filesystem::path& 
 
 }  // namespace
 
-int installEveSdk(Platform p) {
+eve::Result<void> installEveSdk(Platform p) {
     namespace fs = std::filesystem;
-    if (p == Platform::Unknown) return 3;
+    if (p == Platform::Unknown) return sdkFailure(eve::DiagnosticCode::InvalidArgument, "unknown SDK platform");
     const std::string plat = platformName(p);
     const std::string tag = sdkVersionTag();
     if (tag.empty() || tag[0] != 'v') {
-        std::cerr << "eve get: cannot determine the current EVEngine version. "
-                     "Set EVE_SDK_TAG to the release tag (e.g. EVE_SDK_TAG=v0.1.0)."
-                  << std::endl;
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::InvalidArgument,
+                          "cannot determine the current EVEngine version; set EVE_SDK_TAG", "EVE_SDK_TAG");
     }
     const std::string expectedVer = tag.substr(1);
     const std::string installRoot = eveSdkInstallRoot();
@@ -393,7 +418,7 @@ int installEveSdk(Platform p) {
     if (!currentVer.empty() && currentVer == expectedVer) {
         std::cout << "eve get: EVEngine " << plat << " SDK already installed at "
                   << destRoot << " (" << tag << ")" << std::endl;
-        return 0;
+        return eve::Result<void>::success();
     }
 
     const std::string base = eveSdkBaseUrl();
@@ -403,25 +428,35 @@ int installEveSdk(Platform p) {
     const auto work =
         fs::temp_directory_path(ec) / ("eve-get-" + plat + "-" + std::to_string(processId()));
     if (ec) {
-        std::cerr << "eve get: no temporary directory available" << std::endl;
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "no temporary directory available");
     }
     fs::remove_all(work, ec);
     fs::create_directories(work, ec);
+    if (ec) {
+        return sdkFailure(eve::DiagnosticCode::Failed, "cannot create SDK download workspace: " + ec.message(),
+                          work.string());
+    }
     const std::string zipPath = (work / zipName).string();
     const std::string sumsPath = (work / "SHA256SUMS").string();
 
     std::cout << "eve get: downloading " << zipName << " (" << zipUrl << ")...\n";
     if (runShell("curl -fL --retry 3 -o \"" + zipPath + "\" \"" + zipUrl + "\"") != 0) {
-        std::cerr << "eve get: download failed: " << zipUrl << std::endl;
         fs::remove_all(work, ec);
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "SDK archive download failed", zipUrl);
+    }
+    if (!nonEmptyRegularFile(zipPath, ec)) {
+        fs::remove_all(work, ec);
+        return sdkFailure(eve::DiagnosticCode::Failed, "SDK archive download returned an empty or unreadable response",
+                          zipUrl);
     }
     if (runShell("curl -fL --retry 3 -o \"" + sumsPath + "\" \"" + sumsUrl + "\"") != 0) {
-        std::cerr << "eve get: failed to download the checksum file: " << sumsUrl
-                  << std::endl;
         fs::remove_all(work, ec);
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "SDK checksum file download failed", sumsUrl);
+    }
+    if (!nonEmptyRegularFile(sumsPath, ec)) {
+        fs::remove_all(work, ec);
+        return sdkFailure(eve::DiagnosticCode::Failed, "SDK checksum download returned an empty or unreadable response",
+                          sumsUrl);
     }
     {
         std::ifstream in(sumsPath);
@@ -430,60 +465,61 @@ int installEveSdk(Platform p) {
         const std::string expected = sha256ForName(sums, zipName);
         const std::string actual = fileSha256(zipPath);
         if (expected.empty() || actual.empty() || lower(expected) != lower(actual)) {
-            std::cerr << "eve get: SHA-256 verification failed for " << zipName
-                      << " (expected "
-                      << (expected.empty() ? std::string("<missing in SHA256SUMS>") : expected)
-                      << ", got " << (actual.empty() ? std::string("<error>") : actual) << ").\n"
-                      << "The download may be corrupt; retry, or point EVE_SDK_BASE_URL "
-                         "at a mirror."
-                      << std::endl;
             fs::remove_all(work, ec);
-            return 3;
+            return sdkFailure(eve::DiagnosticCode::HashMismatch, "SDK SHA-256 verification failed for " + zipName,
+                              zipPath);
         }
     }
 
     const std::string extractDir = (work / "extract").string();
     fs::create_directories(extractDir, ec);
-    if (!extractZip(zipPath, extractDir)) {
-        std::cerr << "eve get: failed to extract " << zipName << std::endl;
+    if (ec) {
         fs::remove_all(work, ec);
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "cannot create SDK extraction directory: " + ec.message(),
+                          extractDir);
+    }
+    if (!extractZip(zipPath, extractDir)) {
+        fs::remove_all(work, ec);
+        return sdkFailure(eve::DiagnosticCode::ParseError,
+                          "SDK archive is empty, truncated, or not a supported ZIP archive", zipPath);
     }
     const auto srcRoot = fs::path(extractDir) / "eve-sdk" / plat;
     if (!fs::is_directory(srcRoot, ec)) {
-        std::cerr << "eve get: unexpected SDK archive layout (expected eve-sdk/"
-                  << plat << "/ at the archive root): " << zipName << std::endl;
         fs::remove_all(work, ec);
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::ParseError,
+                          "unexpected SDK archive layout; expected eve-sdk/" + plat + "/", zipPath);
     }
     {
         const std::string platMarker = sdkTargetPlatform(srcRoot.string());
         const std::string verMarker = sdkVersion(srcRoot.string());
         if (platMarker != plat) {
-            std::cerr << "eve get: " << zipName << " targets '" << platMarker
-                      << "', not '" << plat << "'." << std::endl;
             fs::remove_all(work, ec);
-            return 3;
+            return sdkFailure(eve::DiagnosticCode::InvalidArgument,
+                              "SDK archive targets '" + platMarker + "', not '" + plat + "'",
+                              (srcRoot / "share" / "eve" / "TARGET_PLATFORM").string());
         }
         if (verMarker != expectedVer) {
-            std::cerr << "eve get: " << zipName << " contains version '" << verMarker
-                      << "', expected '" << expectedVer << "'." << std::endl;
             fs::remove_all(work, ec);
-            return 3;
+            return sdkFailure(eve::DiagnosticCode::InvalidArgument,
+                              "SDK archive contains version '" + verMarker + "', expected '" + expectedVer + "'",
+                              (srcRoot / "share" / "eve" / "VERSION").string());
         }
     }
 
     fs::create_directories(installRoot, ec);
-    if (!moveOrCopy(srcRoot, fs::path(destRoot))) {
-        std::cerr << "eve get: failed to install the SDK into " << destRoot
-                  << std::endl;
+    if (ec) {
         fs::remove_all(work, ec);
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "cannot create SDK install directory: " + ec.message(),
+                          installRoot);
+    }
+    if (!moveOrCopy(srcRoot, fs::path(destRoot))) {
+        fs::remove_all(work, ec);
+        return sdkFailure(eve::DiagnosticCode::Failed, "failed to install the SDK", destRoot);
     }
     fs::remove_all(work, ec);
     std::cout << "eve get: EVEngine " << plat << " SDK " << tag << " installed at "
               << destRoot << std::endl;
-    return 0;
+    return eve::Result<void>::success();
 }
 
 std::string sdkTargetPlatform(const std::string& sdkRoot) {
@@ -623,21 +659,31 @@ bool jdkHomeExists(const std::string& home) {
 }
 
 // 下载一个压缩包并用系统 tar 解压（Windows 10+ 自带 bsdtar）。
-int downloadAndExtract(const std::string& url, const std::string& zipPath,
-                       const std::string& extractDir) {
+[[nodiscard]] eve::Result<void> downloadAndExtract(const std::string& url, const std::string& zipPath,
+                                                   const std::string& extractDir) {
     if (runShell("curl -fL --retry 3 -o \"" + zipPath + "\" \"" + url + "\"") != 0) {
-        std::cerr << "eve get: download failed: " << url << std::endl;
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "download failed", url);
     }
     std::error_code ec;
+    if (!nonEmptyRegularFile(zipPath, ec)) {
+        return sdkFailure(eve::DiagnosticCode::Failed, "download returned an empty or unreadable response", url);
+    }
     std::filesystem::remove_all(extractDir, ec);
     std::filesystem::create_directories(extractDir, ec);
+    if (ec) {
+        return sdkFailure(eve::DiagnosticCode::Failed, "cannot create extraction directory: " + ec.message(),
+                          extractDir);
+    }
     if (!extractZip(zipPath, extractDir)) {
-        std::cerr << "eve get: failed to extract " << zipPath << std::endl;
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::ParseError, "downloaded archive is empty, truncated, or unsupported",
+                          zipPath);
     }
     std::filesystem::remove(zipPath, ec);
-    return 0;
+    if (ec) {
+        return sdkFailure(eve::DiagnosticCode::Failed, "cannot remove temporary downloaded archive: " + ec.message(),
+                          zipPath);
+    }
+    return eve::Result<void>::success();
 }
 
 // move 失败（跨盘符等）时退化为递归 copy。
@@ -654,11 +700,12 @@ bool moveOrCopy(const std::filesystem::path& from, const std::filesystem::path& 
     return !ec;
 }
 
-int installJdk(const std::string& root) {
+[[nodiscard]] eve::Result<void> installJdk(const std::string& root) {
     const std::string url = getEnv("EVE_JDK17_URL", temurinJdk17Url());
     std::cout << "eve get: downloading JDK 17 (Temurin)...\n";
     const std::string tmp = root + "/.jdk-extract";
-    if (downloadAndExtract(url, root + "/jdk17.zip", tmp) != 0) return 3;
+    auto              downloaded = downloadAndExtract(url, root + "/jdk17.zip", tmp);
+    if (!downloaded.ok()) return eve::Result<void>::failure(downloaded.status());
     std::error_code ec;
     std::filesystem::path jdkDir;
     for (const auto& entry : std::filesystem::directory_iterator(tmp, ec)) {
@@ -667,28 +714,27 @@ int installJdk(const std::string& root) {
             break;
         }
     }
-    if (jdkDir.empty() || !moveOrCopy(jdkDir, std::filesystem::path(root) / "jdk17")) {
-        std::cerr << "eve get: unexpected JDK archive layout in " << tmp << std::endl;
-        return 3;
+    if (ec || jdkDir.empty() || !moveOrCopy(jdkDir, std::filesystem::path(root) / "jdk17")) {
+        return sdkFailure(eve::DiagnosticCode::ParseError, "unexpected JDK archive layout", tmp);
     }
     std::filesystem::remove_all(tmp, ec);
-    return 0;
+    return eve::Result<void>::success();
 }
 
-int installGradle(const std::string& root) {
+[[nodiscard]] eve::Result<void> installGradle(const std::string& root) {
     const std::string url = getEnv("EVE_GRADLE_URL", gradleUrl());
     std::cout << "eve get: downloading Gradle " << kGradleVersion << "...\n";
     const std::string tmp = root + "/.gradle-extract";
-    if (downloadAndExtract(url, root + "/gradle.zip", tmp) != 0) return 3;
+    auto              downloaded = downloadAndExtract(url, root + "/gradle.zip", tmp);
+    if (!downloaded.ok()) return eve::Result<void>::failure(downloaded.status());
     std::error_code ec;
     const auto gradleDir = std::filesystem::path(root) / ("gradle-" + std::string(kGradleVersion));
     if (!moveOrCopy(std::filesystem::path(tmp) / ("gradle-" + std::string(kGradleVersion)),
                     gradleDir)) {
-        std::cerr << "eve get: unexpected Gradle archive layout in " << tmp << std::endl;
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::ParseError, "unexpected Gradle archive layout", tmp);
     }
     std::filesystem::remove_all(tmp, ec);
-    return 0;
+    return eve::Result<void>::success();
 }
 
 bool gradleInstalled(const std::string& gradleHome) {
@@ -709,18 +755,17 @@ bool isAndroidSdkInstalled(const std::string& root) {
         ec);
 }
 
-int installAndroidSdk() {
+eve::Result<void> installAndroidSdk() {
     // EVEngine 官方 android SDK 优先：预编译 native 库 + APK 模板按当前 eve
     // 版本从 GitHub Release 下载（校验 SHA256）。
-    if (installEveSdk(Platform::Android) != 0) return 3;
+    auto eveSdk = installEveSdk(Platform::Android);
+    if (!eveSdk.ok()) return eve::Result<void>::failure(eveSdk.status());
 
     const std::string root = androidSdkRoot();
     std::error_code ec;
     std::filesystem::create_directories(root, ec);
     if (ec) {
-        std::cerr << "eve get: cannot create SDK directory " << root << ": "
-                  << ec.message() << std::endl;
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "cannot create Android SDK directory: " + ec.message(), root);
     }
 
     const std::string sdkManager =
@@ -732,17 +777,16 @@ int installAndroidSdk() {
         const std::string url =
             getEnv("EVE_ANDROID_CMDLINE_TOOLS_URL", androidCmdlineToolsUrl());
         const std::string tmp = root + "/.cmdline-tools-extract";
-        if (downloadAndExtract(url, root + "/cmdline-tools.zip", tmp) != 0) return 3;
+        auto              downloaded = downloadAndExtract(url, root + "/cmdline-tools.zip", tmp);
+        if (!downloaded.ok()) return eve::Result<void>::failure(downloaded.status());
         if (!std::filesystem::is_directory(std::filesystem::path(tmp) / "cmdline-tools", ec)) {
-            std::cerr << "eve get: unexpected command-line tools archive layout in "
-                      << tmp << std::endl;
-            return 3;
+            return sdkFailure(eve::DiagnosticCode::ParseError, "unexpected Android command-line tools archive layout",
+                              tmp);
         }
         if (!moveOrCopy(std::filesystem::path(tmp) / "cmdline-tools",
                         std::filesystem::path(root) / "cmdline-tools" / "latest")) {
-            std::cerr << "eve get: failed to move cmdline-tools into "
-                      << root << "/cmdline-tools/latest" << std::endl;
-            return 3;
+            return sdkFailure(eve::DiagnosticCode::Failed, "failed to install Android command-line tools",
+                              root + "/cmdline-tools/latest");
         }
         std::filesystem::remove_all(tmp, ec);
     }
@@ -751,7 +795,10 @@ int installAndroidSdk() {
     std::string javaHome = getEnv("JAVA_HOME");
     if (javaHome.empty()) {
         javaHome = (std::filesystem::path(root) / "jdk17").string();
-        if (!jdkHomeExists(javaHome) && installJdk(root) != 0) return 3;
+        if (!jdkHomeExists(javaHome)) {
+            auto jdk = installJdk(root);
+            if (!jdk.ok()) return eve::Result<void>::failure(jdk.status());
+        }
     } else if (!jdkHomeExists(javaHome)) {
         std::cerr << "eve get: warning: JAVA_HOME=" << javaHome
                   << " does not contain bin/java; make sure it points at a JDK 17+.\n";
@@ -762,7 +809,13 @@ int installAndroidSdk() {
     const std::string lic = root + "/.eve-licenses.txt";
     {
         std::ofstream f(lic, std::ios::binary | std::ios::trunc);
+        if (!f) {
+            return sdkFailure(eve::DiagnosticCode::Failed, "cannot create Android SDK license input", lic);
+        }
         for (int i = 0; i < 200; ++i) f << "y\n";
+        if (!f) {
+            return sdkFailure(eve::DiagnosticCode::Failed, "cannot write Android SDK license input", lic);
+        }
     }
 #if defined(_WIN32)
     // cmd /c strips the first/last quote of a command that starts with one, so
@@ -773,22 +826,23 @@ int installAndroidSdk() {
 #endif
     std::cout << "eve get: accepting Android SDK licenses...\n";
     if (runShell(sdkCmd + " --licenses < \"" + lic + "\"") != 0) {
-        std::cerr << "eve get: failed to accept Android SDK licenses" << std::endl;
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "failed to accept Android SDK licenses", sdkManager);
     }
     std::cout << "eve get: installing SDK packages (platform-tools, android-34, "
                  "build-tools)...\n";
     const std::string packages = "\"platform-tools\" \"" + std::string(kAndroidPlatform) +
                                  "\" \"" + std::string(kAndroidBuildTools) + "\"";
     if (runShell(sdkCmd + " " + packages) != 0) {
-        std::cerr << "eve get: failed to install Android SDK packages" << std::endl;
-        return 3;
+        return sdkFailure(eve::DiagnosticCode::Failed, "failed to install Android SDK packages", sdkManager);
     }
     std::filesystem::remove(lic, ec);
 
     // Gradle：APK 模板没有 gradlew.bat，直接用发行版启动器，无需额外工具。
     std::string gradleHome = (std::filesystem::path(root) / ("gradle-" + std::string(kGradleVersion))).string();
-    if (!gradleInstalled(gradleHome) && installGradle(root) != 0) return 3;
+    if (!gradleInstalled(gradleHome)) {
+        auto gradle = installGradle(root);
+        if (!gradle.ok()) return eve::Result<void>::failure(gradle.status());
+    }
 
     // 记录环境，供 `eve build android` 在环境变量未设置时使用。
     const std::string eveSdkRoot =
@@ -796,17 +850,25 @@ int installAndroidSdk() {
     {
         std::ofstream f(std::filesystem::path(root) / "eve-android.env",
                         std::ios::binary | std::ios::trunc);
+        if (!f) {
+            return sdkFailure(eve::DiagnosticCode::Failed, "cannot write Android SDK environment file",
+                              (std::filesystem::path(root) / "eve-android.env").string());
+        }
         f << "ANDROID_HOME=" << root << "\n"
           << "ANDROID_SDK_ROOT=" << root << "\n"
           << "JAVA_HOME=" << javaHome << "\n"
           << "GRADLE_HOME=" << gradleHome << "\n"
           << "EVENGINE_SDK=" << eveSdkRoot << "\n";
+        if (!f) {
+            return sdkFailure(eve::DiagnosticCode::Failed, "cannot finish writing Android SDK environment file",
+                              (std::filesystem::path(root) / "eve-android.env").string());
+        }
     }
 
     std::cout << "eve get: Android SDK ready at " << root << "\n"
               << "eve get: run `eve build android` to build an APK "
                  "(or `eve build -d android` for a debug APK).\n";
-    return 0;
+    return eve::Result<void>::success();
 }
 
 namespace {

@@ -18,32 +18,36 @@
 //   E        toggle block extrusion (flat / 6 units)
 //   L        toggle parcel grid overlay (urban.parcels Grid2D preview)
 
-if (!("urbanSeed" in getroottable())) urbanSeed <- 20260823;
-if (!("landPreset" in getroottable())) landPreset <- "rect";
-if (!("streetPattern" in getroottable())) streetPattern <- "default";
-if (!("doOptimize" in getroottable())) doOptimize <- true;
-if (!("targetParcels" in getroottable())) targetParcels <- 120;
-if (!("minParcelArea" in getroottable())) minParcelArea <- 4.0;
-if (!("extrude" in getroottable())) extrude <- 6.0;
-if (!("cityMesh" in getroottable())) cityMesh <- null;
-if (!("cityObject" in getroottable())) cityObject <- null;
-if (!("cityCamera" in getroottable())) cityCamera <- null;
-if (!("cityYaw" in getroottable())) cityYaw <- 0.0;
-if (!("cityPitch" in getroottable())) cityPitch <- 0.62;
-if (!("cityDist" in getroottable())) cityDist <- 150.0;
-if (!("showGrid" in getroottable())) showGrid <- false;
-if (!("gridLayer" in getroottable())) gridLayer <- null;
-if (!("info" in getroottable())) info <- "";
-if (!("patterns" in getroottable()))
-    patterns <- ["default", "loop", "culdesac", "tree"];
-if (!("patternIndex" in getroottable())) patternIndex <- 0;
+persist urbanSeed = 20260823
+persist landPreset = "rect"
+persist streetPattern = "default"
+persist doOptimize = true
+persist targetParcels = 120
+persist minParcelArea = 4.0
+persist extrude = 6.0
+persist cityMesh = null
+persist cityObject = null
+persist cityCamera = null
+persist cityYaw = 0.0
+persist cityPitch = 0.62
+persist cityDist = 150.0
+persist showGrid = false
+persist gridLayer = null
+persist info = ""
+persist patterns = ["default", "loop", "culdesac", "tree"]
+persist patternIndex = 0
 
 function pressed(k) {
     return key_just_pressed(k);
 }
 
 function regenerate() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        info = "PARAMS FAIL: " + paramsResult.status.summary;
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(urbanSeed);
     p.setString("land", landPreset);
     p.setFloat("landWidth", 100.0);
@@ -55,11 +59,12 @@ function regenerate() {
     p.setFloat("streetWidth", 1.2);
     p.setFloat("extrude", extrude);
 
-    cityMesh = procgen.generateMesh("mesh.urban", p, gfx);
-    if (cityMesh == null) {
-        info = "MESH FAIL: " + procgen.lastError();
+    local meshResult = procgen.generateMesh("mesh.urban", p, gfx);
+    if (!meshResult.ok) {
+        info = "MESH FAIL: " + meshResult.status.summary;
         return;
     }
+    cityMesh = meshResult.value;
     if (cityObject == null) {
         cityObject = eve.Renderable3D();
         cityObject.setPosition(0.0, 0.0, 0.0);
@@ -70,8 +75,9 @@ function regenerate() {
     cityObject.setMesh(cityMesh);
 
     // Optional 2D parcel/road grid preview (Semantic::Road / Floor + parcel detail).
-    local g = procgen.generate("urban.parcels", p);
-    if (g != null) {
+    local gridResult = procgen.generate("urban.parcels", p);
+    if (gridResult.ok) {
+        local g = gridResult.value;
         if (gridLayer == null) {
             gridLayer = map.newLayer(g.getWidth(), g.getHeight(), 0.5, 0.5);
             gridLayer.setOrigin(8.0, 400.0);
@@ -84,11 +90,20 @@ function regenerate() {
         procgen.setPaletteGid("urban_demo", "wall", 0);
         procgen.setPaletteGid("urban_demo", "road", 3);
         procgen.setPaletteGid("urban_demo", "floor", 1);
-        local out = procgen.newOutput();
+        local outputResult = procgen.newOutput();
+        if (!outputResult.ok) {
+            info = "OUTPUT FAIL: " + outputResult.status.summary;
+            return;
+        }
+        local out = outputResult.value;
         out.setTarget("tilelayer");
         out.setLayer(gridLayer);
         out.setPalette("urban_demo");
-        procgen.generateTo("urban.parcels", p, out);
+        local outputWriteResult = procgen.generateTo("urban.parcels", p, out);
+        if (!outputWriteResult.ok) {
+            info = "OUTPUT WRITE FAIL: " + outputWriteResult.status.summary;
+            return;
+        }
         info = "seed=" + urbanSeed + "  land=" + landPreset +
                "  pattern=" + streetPattern + (doOptimize ? "  optimize" : "  raw") +
                "  parcels=" + g.getMeta("parcels", "?") +

@@ -19,29 +19,31 @@
 // Art: dungeon tileset is CC0 by "Buch" (OpenGameArt). The generated Grid2D
 // is translated into atlas GIDs and rendered by map.TileLayer.
 
-if (!("gen" in getroottable())) gen <- null;
-if (!("seed" in getroottable())) seed <- 20260815;
-if (!("roomCount" in getroottable())) roomCount <- 9;
-if (!("corridorStyle" in getroottable())) corridorStyle <- "l";
-if (!("floorPattern" in getroottable())) floorPattern <- "brick";
-if (!("decorSet" in getroottable())) decorSet <- "mixed";
-if (!("decorDensity" in getroottable())) decorDensity <- 0.10;
-if (!("view3D" in getroottable())) view3D <- false;
-if (!("wallHeight" in getroottable())) wallHeight <- 5.0;
-if (!("showTiles" in getroottable())) showTiles <- false;
-if (!("tileTex" in getroottable())) tileTex <- null;
-if (!("groundTex" in getroottable())) groundTex <- null;
-if (!("dungeonLayer" in getroottable())) dungeonLayer <- null;
-if (!("decorLayer" in getroottable())) decorLayer <- null;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("info" in getroottable())) info <- "";
-if (!("objInfo" in getroottable())) objInfo <- "";
+dofile("assetpacks/kaykit_dungeon.nut");
 
-if (!("TILE" in getroottable())) TILE <- 16.0;
-if (!("MAP_W" in getroottable())) MAP_W <- 26;
-if (!("MAP_H" in getroottable())) MAP_H <- 22;
-if (!("BASE_X" in getroottable())) BASE_X <- 300.0;
-if (!("BASE_Y" in getroottable())) BASE_Y <- 112.0;
+persist gen = null
+persist seed = 20260815
+persist roomCount = 9
+persist corridorStyle = "l"
+persist floorPattern = "brick"
+persist decorSet = "mixed"
+persist decorDensity = 0.10
+persist view3D = false
+persist wallHeight = 5.0
+persist showTiles = false
+persist tileTex = null
+persist groundTex = null
+persist dungeonLayer = null
+persist decorLayer = null
+persist prevKeys = {}
+persist info = ""
+persist objInfo = ""
+
+persist TILE = 16.0
+persist MAP_W = 26
+persist MAP_H = 22
+persist BASE_X = 300.0
+persist BASE_Y = 112.0
 
 function pressed(name) {
     local slot = "key_" + name;
@@ -181,7 +183,12 @@ function syncTileLayers() {
 
 function regenerate(useRandom) {
     if (useRandom) seed = procgen.randomSeed();
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        info = "PARAMS FAILED: " + paramsResult.status.summary;
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(seed);
     p.setSize(MAP_W, MAP_H);
     p.setInt("roomCount", roomCount);
@@ -193,13 +200,16 @@ function regenerate(useRandom) {
     p.setString("floorPattern", floorPattern);
     p.setString("decorSet", decorSet);
     p.setFloat("decorDensity", decorDensity);
+    p.setFloat("propDensity", 0.18);
     p.setInt("autotile", 1);
+    configureDungeonAssetPack(p);
 
-    gen = procgen.generate("level.roguelike", p);
-    if (gen == null) {
-        info = "GENERATE FAILED: " + procgen.lastError();
+    local generationResult = procgen.generate("level.roguelike", p);
+    if (!generationResult.ok) {
+        info = "GENERATE FAILED: " + generationResult.status.summary;
         return;
     }
+    gen = generationResult.value;
     ensureConnected();
 
     objInfo = "";
@@ -270,7 +280,13 @@ function drawMarkers() {
         local col = colors().chest;
         if (t == "spawn") col = colors().spawn;
         else if (t == "stairs") col = colors().stairs;
-        else if (t == "pillar") col = colors().pillar;
+        else if (t == "column") col = colors().pillar;
+        else if (t == "light") col = [1.0, 0.78, 0.28];
+        else if (t == "banner") col = [0.22, 0.45, 0.70];
+        else if (t == "bed") col = [0.72, 0.40, 0.30];
+        else if (t == "table" || t == "seating") col = [0.48, 0.27, 0.16];
+        else if (t == "container" || t == "tavern") col = [0.55, 0.32, 0.18];
+        else if (t == "trap") col = [0.70, 0.22, 0.18];
         local px = BASE_X + x * TILE;
         local py = BASE_Y + y * TILE + (view3D ? y * 2.0 : 0);
         gfx.drawSolidRect(px + 3, py + 3, TILE - 6, TILE - 6, col[0], col[1], col[2], 1.0);

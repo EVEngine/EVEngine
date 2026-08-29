@@ -37,6 +37,12 @@ public:
         return path.size() >= 4 && path.compare(path.size() - 4, 4, ".dat") == 0;
     }
 
+    eve::Result<bool> reload(const std::string &) override {
+        // ResourceManager owns the test cache refresh; this provider only
+        // supplies detached candidates through load().
+        return eve::Result<bool>::success(false);
+    }
+
     eve::Resource *load(const std::string &key) override {
         if (!handlesPath(key)) return nullptr;
         if (failures.count(key)) return nullptr;
@@ -168,7 +174,9 @@ TEST_CASE("resource.reloadRefreshesInPlace") {
     TestResource *ptr = static_cast<TestResource *>(a);
     CHECK_EQ(ptr->value, 1);
 
-    CHECK(eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(result.value());
     CHECK(a == ptr);  // identity stays stable
     CHECK_EQ(ptr->value, 2);                             // fresh payload adopted
     CHECK_EQ(eve::ResourceManager::getInstance().count(), 1u);
@@ -179,7 +187,9 @@ TEST_CASE("resource.reloadWithoutCachedEntryIsNoop") {
     provider();
 
     CHECK(!eve::ResourceManager::getInstance().handlesPath("a.dat"));
-    CHECK(!eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(!result.value());
 }
 
 TEST_CASE("resource.reloadTriggersDependents") {
@@ -194,7 +204,9 @@ TEST_CASE("resource.reloadTriggersDependents") {
     CHECK_EQ(static_cast<TestResource *>(a)->value, 1);
     CHECK_EQ(static_cast<TestResource *>(b)->value, 1);
 
-    CHECK(eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(result.value());
     CHECK_EQ(static_cast<TestResource *>(a)->value, 2);
     // The dependent entry refreshed transitively, in place.
     CHECK_EQ(static_cast<TestResource *>(b)->value, 2);
@@ -212,7 +224,9 @@ TEST_CASE("resource.reloadDependencyCycleIsSafe") {
     a->addDependency(eve::ref<eve::Resource>(b));
     b->addDependency(eve::ref<eve::Resource>(a));
 
-    CHECK(eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(result.value());
     CHECK_EQ(static_cast<TestResource *>(a)->value, 2);
     CHECK_EQ(static_cast<TestResource *>(b)->value, 2);
 }
@@ -227,7 +241,9 @@ TEST_CASE("resource.reloadAllVariantsIsTransactional") {
     REQUIRE(large != nullptr);
     TestProvider::failures.insert("a.dat?size=32");
 
-    CHECK(!eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(!result.value());
     CHECK_EQ(small->value, 1);
     CHECK_EQ(large->value, 1);
 }
@@ -243,7 +259,9 @@ TEST_CASE("resource.reloadDependentFailureRollsBackWholeGraph") {
     derived->addDependency(eve::ref<eve::Resource>(source));
     TestProvider::failures.insert("derived.dat");
 
-    CHECK(!eve::ResourceManager::getInstance().reload("source.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("source.dat");
+    CHECK(result.ok());
+    CHECK(!result.value());
     CHECK_EQ(source->value, 1);
     CHECK_EQ(derived->value, 1);
 }
@@ -258,7 +276,9 @@ TEST_CASE("resource.reloadCommitFailureRollsBackEarlierEntries") {
     REQUIRE(second != nullptr);
     TestProvider::adoptFailures.insert("a.dat?variant=2");
 
-    CHECK(!eve::ResourceManager::getInstance().reload("a.dat"));
+    auto result = eve::ResourceManager::getInstance().reload("a.dat");
+    CHECK(result.ok());
+    CHECK(!result.value());
     CHECK_EQ(first->value, 1);
     CHECK_EQ(second->value, 1);
 }

@@ -54,12 +54,14 @@ public:
 };
 
 /** @brief Capability for a bounded two-dimensional editable field. */
+enum class FieldWriteStatus { Applied, Unchanged, Rejected };
+
 class IGridTarget {
 public:
     virtual ~IGridTarget() = default;
     virtual int width() const = 0;
     virtual int height() const = 0;
-    virtual bool inBounds(int x, int y) const = 0;
+    virtual bool containsCell(int x, int y) const = 0;
 };
 
 /** @brief Capability for integer fields such as tiles, zones and masks. */
@@ -73,7 +75,7 @@ public:
 class IScalarFieldTarget : public virtual IGridTarget {
 public:
     virtual float readScalar(int x, int y) const = 0;
-    virtual bool writeScalar(int x, int y, float value) = 0;
+    virtual FieldWriteStatus writeScalar(int x, int y, float value) = 0;
     virtual float sampleScalar(float x, float y) const = 0;
 };
 

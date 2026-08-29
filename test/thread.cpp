@@ -2,7 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Exception.h"
-#include "event/Event.h"
+#include "platform_event/PlatformEvent.h"
 #include "thread/Channel.h"
 #include "thread/JobSystem.h"
 #include "thread/Task.h"
@@ -108,7 +108,7 @@ TEST_CASE("thread.channel.demandBlocksUntilValue") {
 }
 
 TEST_CASE("thread.postMain.pushesToEventQueue") {
-    auto *ev = eve::event::Event::create();
+    auto *ev = eve::platform_event::PlatformEvent::create();
     REQUIRE(ev != nullptr);
     ev->clear();
 
@@ -123,7 +123,7 @@ TEST_CASE("thread.postMain.emptyNameThrows") {
 }
 
 TEST_CASE("thread.postMain.fromWorkerThread") {
-    auto *ev = eve::event::Event::create();
+    auto *ev = eve::platform_event::PlatformEvent::create();
     REQUIRE(ev != nullptr);
     ev->clear();
 

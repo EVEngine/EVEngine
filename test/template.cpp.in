@@ -13,3 +13,4 @@ const char* crowd_content          = R"content(@crowd_content@)content";
 const char* i18n_content           = R"content(@i18n_content@)content";
 const char* dialogue_proc_script_content = R"content(@dialogue_proc_script_content@)content";
 const char* physics_cloth_content = R"content(@physics_cloth_content@)content";
+const char* profiler_content = R"content(@profiler_content@)content";
