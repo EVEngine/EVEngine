@@ -1,6 +1,8 @@
 @echo off
 chcp 65001 >nul
 setlocal
+rem Prefer English cl.exe messages when the 1033 language pack is installed.
+set "VSLANG=1033"
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" (
   echo error: vswhere.exe not found at "%VSWHERE%" >&2
