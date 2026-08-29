@@ -194,7 +194,8 @@ public:
 			paddedLength += 120 - paddedLength % 64;
 
 		uint8_t *padded = new uint8_t[paddedLength + 8];
-		memcpy(padded, input, length);
+		if (length != 0)
+			memcpy(padded, input, length);
 		memset(padded + length, 0, paddedLength - length);
 		padded[length] = 0x80;
 
@@ -297,7 +298,8 @@ public:
 			paddedLength += 120 - paddedLength % 64;
 
 		uint8_t *padded = new uint8_t[paddedLength + 8];
-		memcpy(padded, input, length);
+		if (length != 0)
+			memcpy(padded, input, length);
 		memset(padded + length, 0, paddedLength - length);
 		padded[length] = 0x80;
 
@@ -454,7 +456,8 @@ public:
 
 		uint8_t *padded = new uint8_t[paddedLength + 16];
 		paddedLength += 8;
-		memcpy(padded, input, length);
+		if (length != 0)
+			memcpy(padded, input, length);
 		memset(padded + length, 0, paddedLength - length);
 		padded[length] = 0x80;
 
