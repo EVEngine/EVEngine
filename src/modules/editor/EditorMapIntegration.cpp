@@ -19,7 +19,7 @@ EditorResult<void> MapRoadMeshPublisher::publish(const MapDocumentTarget& docume
             preview.diagnostics.empty() ? RuleId("editor.map.road-preview-failed") : preview.diagnostics.front().rule,
             preview.diagnostics.empty() ? "Road preview failed" : preview.diagnostics.front().message);
     auto published = sink.publishRoad(document.targetId(), road, preview.documentRevision, preview.mesh);
-    if (!published.accepted()) return published;
+    if (!published.isAccepted()) return published;
     if (document.revision() != expectedRevision)
         return EditorResult<void>::error(EditorStatus::Conflict, RuleId("editor.map.road-changed-during-publish"),
                                          "Map road changed while its generated mesh was being published");

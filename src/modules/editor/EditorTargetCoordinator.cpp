@@ -64,14 +64,14 @@ struct EditorTargetCoordinator::Impl {
         specification.target       = plan.target;
         specification.baseRevision = plan.baseRevision;
         auto begun = selected->transactions.begin(std::move(specification));
-        if (!begun.accepted())
+        if (!begun.isAccepted())
             return coordinatorError<TransactionReceipt>(begun.status, "editor.target.begin-failed",
                                                          "Could not begin the editing transaction");
         for (const DomainOperation& operation : plan.operations) {
             auto appended = selected->transactions.append(operation);
-            if (appended.accepted()) continue;
+            if (appended.isAccepted()) continue;
             auto discarded = selected->transactions.discard();
-            if (!discarded.accepted())
+            if (!discarded.isAccepted())
                 return coordinatorError<TransactionReceipt>(EditorStatus::Failed, "editor.target.discard-failed",
                                                              "Could not discard a rejected transaction");
             return coordinatorError<TransactionReceipt>(appended.status, "editor.target.append-failed",

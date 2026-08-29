@@ -64,14 +64,15 @@ class EditorContext {
 public:
     explicit EditorContext(EditorSession* session = nullptr) : session_(session) {}
 
-    /** @brief Session currently dispatching the tool callback. */
+    /** @brief Session currently dispatching the tool callback. @return Borrowed session pointer, or null. @lifetime Valid only for the current dispatch callback. */
     EditorSession* session() const { return session_; }
-    /** @brief Target currently bound to the session, or nullptr. */
+    /** @brief Target currently bound to the session. @return Borrowed target pointer, or null. @lifetime Valid only for the current dispatch callback. */
     IEditableTarget*    target() const { return target_; }
     EditorTransactions& transactions() const;
     /** @brief Send a command through constraints into the active transaction. */
     bool execute(std::unique_ptr<IEditCommand> command) const;
 
+    /** @brief Query a capability from the current target. @return Borrowed capability pointer, or null. @lifetime Valid only for the current dispatch callback. */
     template <typename Capability>
     Capability* targetCapability() const;
 

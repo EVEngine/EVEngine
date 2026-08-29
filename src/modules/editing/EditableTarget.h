@@ -79,7 +79,7 @@ public:
 class IIntFieldTarget : public virtual IGridTarget {
 public:
     virtual int  readInt(int, int) const = 0;
-    virtual bool writeInt(int, int, int) = 0;
+    [[nodiscard]] virtual FieldWriteStatus writeInt(int, int, int) = 0;
 };
 class IScalarFieldTarget : public virtual IGridTarget {
 public:

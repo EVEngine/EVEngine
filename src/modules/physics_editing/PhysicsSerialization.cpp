@@ -47,7 +47,7 @@ EditorResult<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapsh
             return snapshotError<void>(EditorStatus::Unsupported, "editor.physics.snapshot-property",
                                        "Collider snapshot contains unknown property: " + path);
         auto valid = validateAssignment(*descriptor, value);
-        if (!valid.accepted()) return valid;
+        if (!valid.isAccepted()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);

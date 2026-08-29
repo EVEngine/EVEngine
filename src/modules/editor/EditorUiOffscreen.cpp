@@ -44,7 +44,7 @@ EditorResult<OffscreenPreviewArtifact> UiOffscreenPreviewRenderer::render(
         }
         if (skins_) {
             auto rendered = skins_->render(skinPlan);
-            if (!rendered.accepted()) return rendered;
+            if (!rendered.isAccepted()) return rendered;
         }
         return EditorResult<void>::applied();
     });

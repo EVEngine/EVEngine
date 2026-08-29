@@ -248,7 +248,7 @@ EditorResult<void> PhysicsCollider3DRuntimeSink::publish(const PhysicsColliderTa
     EditorResult<physics::Shape3D*> built = assets_
                                                 ? PhysicsColliderRuntimeBuilder().build3D(candidate, body_, *assets_)
                                                 : PhysicsColliderRuntimeBuilder().build3D(candidate, body_);
-    if (!built.accepted() || !built.value || !*built.value) {
+    if (!built.isAccepted() || !built.value || !*built.value) {
         if (previousBodyType != desiredBodyType) {
             try {
                 body_->setType(previousBodyType);
@@ -306,7 +306,7 @@ EditorResult<void> PhysicsCollider2DRuntimeSink::publish(const PhysicsColliderTa
     EditorResult<physics::Fixture*> built = assets_
                                                 ? PhysicsColliderRuntimeBuilder().build2D(candidate, body_, *assets_)
                                                 : PhysicsColliderRuntimeBuilder().build2D(candidate, body_);
-    if (!built.accepted() || !built.value || !*built.value) {
+    if (!built.isAccepted() || !built.value || !*built.value) {
         if (desiredType != previousType) body_->setType(previousType);
         EditorResult<void> failed;
         failed.status      = built.status;

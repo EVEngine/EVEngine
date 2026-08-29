@@ -51,7 +51,7 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                                                    "Material property requires a property target, path and value");
             auto operation = properties->makeSet(selectionFor(target), editing::PropertyPath(*path), *value,
                                                  editing::PropertySetMode::Absolute);
-            if (!operation.accepted() || !operation.value)
+            if (!operation.isAccepted() || !operation.value)
                 return error<editing::CommandPlan>(operation.status, "material.editing.property-operation",
                                                    "Material target rejected the property value");
             editing::CommandPlan plan;

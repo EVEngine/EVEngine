@@ -33,7 +33,7 @@ struct [[nodiscard]] Result {
     std::vector<Diagnostic> diagnostics;
 
     /** @brief True when the request was accepted by the service. */
-    bool accepted() const { return status == Status::Applied || status == Status::Pending || status == Status::NoOp; }
+    bool isAccepted() const { return status == Status::Applied || status == Status::Pending || status == Status::NoOp; }
 
     /** @brief Construct a successful result containing a value. */
     static Result applied(T result) {
@@ -59,7 +59,7 @@ struct [[nodiscard]] Result<void> {
     std::vector<Diagnostic> diagnostics;
 
     /** @brief True when the request was accepted by the service. */
-    bool accepted() const { return status == Status::Applied || status == Status::Pending || status == Status::NoOp; }
+    bool isAccepted() const { return status == Status::Applied || status == Status::Pending || status == Status::NoOp; }
 
     /** @brief Construct a successful result. */
     static Result applied() {

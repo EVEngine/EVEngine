@@ -117,7 +117,7 @@ void EditorAutomationProvider::targetUnregistered(const TargetId& target) {
 std::string EditorAutomationProvider::invoke(const std::string& operation, const std::string& requestJson) {
     refreshProfile();
     EditorResult<EditorValue> parsed = editorValueFromJson(requestJson.empty() ? "{}" : requestJson);
-    if (!parsed.accepted() || !parsed.value || parsed.value->type() != EditorValue::Type::Object)
+    if (!parsed.isAccepted() || !parsed.value || parsed.value->type() != EditorValue::Type::Object)
         return errorJson(EditorStatus::Rejected, "editor.automation.invalid-json", "Request must be a JSON object");
     const auto& request = *parsed.value->getIf<EditorValue::Object>();
     if (operation == "commands") return commandsJson();
@@ -130,7 +130,7 @@ std::string EditorAutomationProvider::invoke(const std::string& operation, const
     }
     if (operation == "plan" || operation == "execute") {
         auto bound = bindRequestedTarget(request);
-        if (!bound.accepted()) return editorValueToJson(resultValue(bound.status, bound.diagnostics));
+        if (!bound.isAccepted()) return editorValueToJson(resultValue(bound.status, bound.diagnostics));
     }
     if (operation == "plan") {
         const std::string command = stringField(request, "command");
@@ -153,7 +153,7 @@ std::string EditorAutomationProvider::invoke(const std::string& operation, const
         EditorResult<TransactionReceipt> result;
         if (commands_->supportsPlanning(command)) {
             auto planned = session_.planCommand(command, valueField(request, "payload"), CommandSource::Automation);
-            if (!planned.accepted() || !planned.value) {
+            if (!planned.isAccepted() || !planned.value) {
                 result.status      = planned.status;
                 result.diagnostics = std::move(planned.diagnostics);
             } else {

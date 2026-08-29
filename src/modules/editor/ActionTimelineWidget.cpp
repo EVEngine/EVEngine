@@ -45,7 +45,7 @@ Duration difference(Duration left, Duration right) {
 }
 
 EditorResult<void> adapt(const EditorResult<std::size_t>& result, std::string rule, std::string message) {
-    if (result.accepted()) return EditorResult<void>::applied();
+    if (result.isAccepted()) return EditorResult<void>::applied();
     EditorResult<void> adapted;
     adapted.status      = result.status;
     adapted.diagnostics = result.diagnostics;
@@ -173,7 +173,7 @@ EditorResult<void> ActionTimelineWidget::pointerDown(float x, float y, bool addi
                            EditorStatus::Conflict);
     if (item->locked) return widgetError("editor.action.timeline.track-locked", "Action track is locked");
     auto selected = editor_.selectItem(item->itemId, additiveSelection);
-    if (!selected.accepted()) return selected;
+    if (!selected.isAccepted()) return selected;
     drag_ = DragState{item->itemId, hit->part, xToTime(x), item->start, item->end, item->start, item->end, item->state};
     return EditorResult<void>::applied();
 }
@@ -217,7 +217,7 @@ EditorResult<void> ActionTimelineWidget::pointerMove(float x) { return updateDra
 
 EditorResult<void> ActionTimelineWidget::pointerUp(float x) {
     auto updated = updateDrag(x);
-    if (!updated.accepted()) return updated;
+    if (!updated.isAccepted()) return updated;
     const DragState completed = *drag_;
     drag_.reset();
     if (completed.state && completed.part != TimelineHitPart::Body)
@@ -307,7 +307,7 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
                 if (item && (!earliest || item->start < *earliest)) earliest = item->start;
             }
             auto copied = editor_.copySelection();
-            if (copied.accepted()) clipboardAnchor_ = earliest;
+            if (copied.isAccepted()) clipboardAnchor_ = earliest;
             return adapt(copied, "editor.action.timeline.widget.copy", "Could not copy timeline selection");
         }
         case TimelineWidgetCommand::Paste: {
@@ -319,7 +319,7 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
         case TimelineWidgetCommand::DeleteSelection: return editor_.deleteSelection();
         case TimelineWidgetCommand::Undo: {
             auto result = editor_.undo();
-            if (result.accepted()) return EditorResult<void>::applied();
+            if (result.isAccepted()) return EditorResult<void>::applied();
             EditorResult<void> adapted;
             adapted.status      = result.status;
             adapted.diagnostics = result.diagnostics;
@@ -327,7 +327,7 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
         }
         case TimelineWidgetCommand::Redo: {
             auto result = editor_.redo();
-            if (result.accepted()) return EditorResult<void>::applied();
+            if (result.isAccepted()) return EditorResult<void>::applied();
             EditorResult<void> adapted;
             adapted.status      = result.status;
             adapted.diagnostics = result.diagnostics;

@@ -75,14 +75,14 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
     for (const auto* result : {static_cast<const EditorResult<graphics::Texture*>*>(&albedo),
                                static_cast<const EditorResult<graphics::Texture*>*>(&normal),
                                static_cast<const EditorResult<graphics::Texture*>*>(&height)}) {
-        if (!result->accepted() || !result->value) {
+        if (!result->isAccepted() || !result->value) {
             EditorResult<void> failed;
             failed.status = result->status;
             failed.diagnostics = result->diagnostics;
             return failed;
         }
     }
-    if (!shader.accepted() || !shader.value) {
+    if (!shader.isAccepted() || !shader.value) {
         EditorResult<void> failed;
         failed.status = shader.status;
         failed.diagnostics = std::move(shader.diagnostics);

@@ -50,11 +50,11 @@ EditorResult<TransactionReceipt> commit(PhysicsColliderPublishingTarget& target,
     specification.target = TargetId(target.targetId());
     specification.baseRevision = target.revision();
     auto begun = transactions.begin(std::move(specification));
-    if (!begun.accepted())
+    if (!begun.isAccepted())
         return EditorResult<TransactionReceipt>::error(begun.status, RuleId("test.physics.begin"),
                                                        "Could not begin collider transaction");
     auto appended = transactions.append(operation);
-    if (!appended.accepted())
+    if (!appended.isAccepted())
         return EditorResult<TransactionReceipt>::error(appended.status, RuleId("test.physics.append"),
                                                        "Could not append collider operation");
     return transactions.commit();
@@ -77,14 +77,14 @@ TEST_CASE("editor.physics.live_shape_publication_swaps_after_build_and_undoes") 
     auto change = target.authoringTarget().makeSet(selection(target), PropertyPath("shape.kind"),
                                                    "sphere", PropertySetMode::Absolute);
     REQUIRE(change.value);
-    REQUIRE(commit(target, transactions, *change.value, "physics.live.sphere").accepted());
+    REQUIRE(commit(target, transactions, *change.value, "physics.live.sphere").isAccepted());
     REQUIRE(sink.shape());
     CHECK_EQ(sink.shape()->getKind(), std::string("sphere"));
     CHECK(!initial->isValid());
     CHECK(sink.shape()->runtimeHandle() != initialHandle);
     eve::physics::Shape3D* sphere = sink.shape();
 
-    REQUIRE(transactions.undo().accepted());
+    REQUIRE(transactions.undo().isAccepted());
     REQUIRE(sink.shape());
     CHECK_EQ(sink.shape()->getKind(), std::string("box"));
     CHECK(!sphere->isValid());
@@ -133,7 +133,7 @@ TEST_CASE("editor.physics.live_2d_polygon_publication_swaps_after_build_and_undo
     auto asset = target.authoringTarget().makeSet(selection(target), PropertyPath("shape.asset"),
                                                   "asset://polygon", PropertySetMode::Absolute);
     REQUIRE(asset.value);
-    REQUIRE(commit(target, transactions, *asset.value, "physics.live.2d-asset").accepted());
+    REQUIRE(commit(target, transactions, *asset.value, "physics.live.2d-asset").isAccepted());
     eve::physics::Fixture* boxWithAsset = sink.fixture();
     REQUIRE(boxWithAsset);
     CHECK(!initial->raw());
@@ -141,7 +141,7 @@ TEST_CASE("editor.physics.live_2d_polygon_publication_swaps_after_build_and_undo
     auto polygon = target.authoringTarget().makeSet(selection(target), PropertyPath("shape.kind"),
                                                     "polygon", PropertySetMode::Absolute);
     REQUIRE(polygon.value);
-    REQUIRE(commit(target, transactions, *polygon.value, "physics.live.2d-polygon").accepted());
+    REQUIRE(commit(target, transactions, *polygon.value, "physics.live.2d-polygon").isAccepted());
     eve::physics::Fixture* livePolygon = sink.fixture();
     REQUIRE(livePolygon);
     CHECK(livePolygon->raw());
@@ -149,7 +149,7 @@ TEST_CASE("editor.physics.live_2d_polygon_publication_swaps_after_build_and_undo
     CHECK_EQ(target.authoringTarget().read(selection(target), PropertyPath("shape.kind")).value,
              EditorValue("polygon"));
 
-    REQUIRE(transactions.undo().accepted());
+    REQUIRE(transactions.undo().isAccepted());
     REQUIRE(sink.fixture());
     CHECK(sink.fixture()->raw());
     CHECK(!livePolygon->raw());

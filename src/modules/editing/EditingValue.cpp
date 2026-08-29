@@ -47,7 +47,7 @@ bool checkValue(const Value& value, size_t depth, size_t maxDepth, size_t maxEle
 
 }  // namespace
 
-bool Value::withinLimits(size_t maxDepth, size_t maxElements, size_t maxStringBytes) const {
+bool Value::isWithinLimits(size_t maxDepth, size_t maxElements, size_t maxStringBytes) const {
     if (maxDepth == 0) return false;
     ValueBudget budget;
     return checkValue(*this, 1, maxDepth, maxElements, maxStringBytes, budget);

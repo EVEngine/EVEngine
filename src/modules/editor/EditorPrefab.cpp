@@ -103,7 +103,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::capture(const AssetGuid& a
         return prefabError<PrefabAssetSnapshot>(EditorStatus::Rejected, "editor.prefab.asset-required",
                                                 "Prefab asset identity is required");
     auto rootObject = scene.sceneObject(root);
-    if (!rootObject.accepted() || !rootObject.value)
+    if (!rootObject.isAccepted() || !rootObject.value)
         return prefabError<PrefabAssetSnapshot>(EditorStatus::NotFound, "editor.prefab.root-not-found",
                                                 "Prefab capture root does not exist");
     PrefabAssetSnapshot prefab;
@@ -113,7 +113,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::capture(const AssetGuid& a
     for (size_t index = 0; index < pending.size(); ++index) {
         const ObjectId id = pending[index];
         auto object = scene.sceneObject(id);
-        if (!object.accepted() || !object.value)
+        if (!object.isAccepted() || !object.value)
             return prefabError<PrefabAssetSnapshot>(EditorStatus::Conflict, "editor.prefab.capture-diverged",
                                                     "Scene hierarchy changed during prefab capture");
         prefab.objects.push_back({id, id == root ? ObjectId{} : object.value->parent,
@@ -128,10 +128,10 @@ EditorResult<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAss
                                                                  const std::string& instanceId,
                                                                  const ObjectId& parent,
                                                                  const SceneTargetBase& scene) const {
-    if (!validatePrefab(prefab).accepted() || instanceId.empty())
+    if (!validatePrefab(prefab).isAccepted() || instanceId.empty())
         return prefabError<PrefabInstancePlan>(EditorStatus::Rejected, "editor.prefab.invalid-instance",
                                                "Prefab and non-empty instance id are required");
-    if (!parent.empty() && !scene.sceneObject(parent).accepted())
+    if (!parent.empty() && !scene.sceneObject(parent).isAccepted())
         return prefabError<PrefabInstancePlan>(EditorStatus::NotFound, "editor.prefab.scene-parent-not-found",
                                                "Prefab instance parent does not exist");
     PrefabInstancePlan plan;
@@ -140,7 +140,7 @@ EditorResult<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAss
     plan.sourceRevision = prefab.revision;
     for (const PrefabObjectRecord& object : prefab.objects) {
         const ObjectId id = instanceObject(instanceId, object.sourceId);
-        if (scene.sceneObject(id).accepted())
+        if (scene.sceneObject(id).isAccepted())
             return prefabError<PrefabInstancePlan>(EditorStatus::Conflict, "editor.prefab.instance-id-conflict",
                                                    "Prefab instance object already exists: " + id.value());
         CreateSceneObjectRequest request;
@@ -151,7 +151,7 @@ EditorResult<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAss
         request.name = object.name;
         request.transform = object.transform;
         auto operation = scene.makeCreate(request);
-        if (!operation.accepted() || !operation.value) {
+        if (!operation.isAccepted() || !operation.value) {
             // Parents created earlier in this plan are intentionally not yet in
             // the target, so construct the same validated operation value here.
             DomainOperation create;
@@ -175,14 +175,14 @@ EditorResult<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAss
 EditorResult<std::vector<DomainOperation>> ScenePrefabService::revertOverrides(
     const PrefabAssetSnapshot& prefab, const std::string& instanceId, const ObjectId& parent,
     const SceneTargetBase& scene) const {
-    if (!validatePrefab(prefab).accepted() || instanceId.empty())
+    if (!validatePrefab(prefab).isAccepted() || instanceId.empty())
         return prefabError<std::vector<DomainOperation>>(EditorStatus::Rejected, "editor.prefab.invalid-instance",
                                                         "Prefab and instance id are required");
     std::vector<DomainOperation> operations;
     for (const PrefabObjectRecord& source : prefab.objects) {
         const ObjectId id = instanceObject(instanceId, source.sourceId);
         auto object = scene.sceneObject(id);
-        if (!object.accepted() || !object.value)
+        if (!object.isAccepted() || !object.value)
             return prefabError<std::vector<DomainOperation>>(EditorStatus::Conflict,
                                                              "editor.prefab.instance-structure-changed",
                                                              "Prefab instance object is missing: " + id.value());
@@ -215,7 +215,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::applyOverrides(const Prefa
                                                                      const std::string& instanceId,
                                                                      const ObjectId& parent,
                                                                      const SceneTargetBase& scene) const {
-    if (!validatePrefab(prefab).accepted() || instanceId.empty())
+    if (!validatePrefab(prefab).isAccepted() || instanceId.empty())
         return prefabError<PrefabAssetSnapshot>(EditorStatus::Rejected, "editor.prefab.invalid-instance",
                                                 "Prefab and instance id are required");
     PrefabAssetSnapshot result = prefab;
@@ -226,7 +226,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::applyOverrides(const Prefa
     for (PrefabObjectRecord& destination : result.objects) {
         const ObjectId instance = instanceObject(instanceId, destination.sourceId);
         auto object = scene.sceneObject(instance);
-        if (!object.accepted() || !object.value)
+        if (!object.isAccepted() || !object.value)
             return prefabError<PrefabAssetSnapshot>(EditorStatus::Conflict,
                                                     "editor.prefab.instance-structure-changed",
                                                     "Prefab instance object is missing: " + instance.value());
@@ -253,7 +253,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::applyOverrides(const Prefa
 EditorResult<std::vector<PrefabOverrideRecord>> ScenePrefabService::inspectOverrides(
     const PrefabAssetSnapshot& prefab, const std::string& instanceId, const ObjectId& parent,
     const SceneTargetBase& scene) const {
-    if (!validatePrefab(prefab).accepted() || instanceId.empty())
+    if (!validatePrefab(prefab).isAccepted() || instanceId.empty())
         return prefabError<std::vector<PrefabOverrideRecord>>(EditorStatus::Rejected,
             "editor.prefab.invalid-instance", "Prefab and instance id are required");
     std::vector<PrefabOverrideRecord> result;
@@ -284,7 +284,7 @@ PrefabDependencyReport ScenePrefabService::inspectDependencies(
     const PrefabAssetSnapshot& prefab, const PrefabResolver& resolver) const {
     PrefabDependencyReport report;
     report.rootAsset = prefab.asset; report.rootRevision = prefab.revision;
-    if (!resolver || !validatePrefab(prefab).accepted()) {
+    if (!resolver || !validatePrefab(prefab).isAccepted()) {
         report.status = EditorStatus::Rejected;
         report.diagnostics.push_back({RuleId("editor.prefab.invalid-dependency-root"),
                                       DiagnosticSeverity::Error,
@@ -309,7 +309,7 @@ PrefabDependencyReport ScenePrefabService::inspectDependencies(
                                               "Nested prefab cannot be resolved: " + object.nestedPrefab.value()});
                 valid = false; continue;
             }
-            if (!validatePrefab(*resolved.value).accepted()) {
+            if (!validatePrefab(*resolved.value).isAccepted()) {
                 report.diagnostics.push_back({RuleId("editor.prefab.dependency-invalid"), DiagnosticSeverity::Error,
                                               "Nested prefab is invalid: " + object.nestedPrefab.value()});
                 valid = false; continue;
@@ -411,7 +411,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::loadSnapshot(const EditorV
                                   nestedAsset, nestedRevision});
     }
     auto valid = validatePrefab(prefab);
-    if (!valid.accepted()) {
+    if (!valid.isAccepted()) {
         EditorResult<PrefabAssetSnapshot> result;
         result.status = valid.status;
         result.diagnostics = std::move(valid.diagnostics);

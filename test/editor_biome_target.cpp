@@ -16,7 +16,7 @@ SelectionSnapshot select(const BiomeDocumentTarget& target, const ObjectId& id,
 }
 void apply(BiomeDocumentTarget& target, EditorResult<DomainOperation> operation) {
     REQUIRE(operation.value);
-    REQUIRE(target.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
 }
 class SpatialResolver final : public IBiomeSpatialResolver {
 public:
@@ -41,11 +41,11 @@ TEST_CASE("editor.biome.properties_are_reversible_and_snapshot_load_is_atomic") 
     const auto scale = target.makeSet(selection, PropertyPath("asset.scale"),
                                       EditorValue::Array{.5, 1.5}, PropertySetMode::Absolute);
     REQUIRE(scale.value);
-    REQUIRE(target.applyDomainOperation(*scale.value).accepted());
+    REQUIRE(target.applyDomainOperation(*scale.value).isAccepted());
     CHECK_EQ(target.layers()[0].assets[0].minScale, .5f);
     DomainOperation undo = *scale.value;
     undo.payload = scale.value->inverse;
-    REQUIRE(target.applyDomainOperation(undo).accepted());
+    REQUIRE(target.applyDomainOperation(undo).isAccepted());
     CHECK_EQ(target.layers()[0].assets[0].minScale, .8f);
 
     const EditorValue before = target.snapshotValue();
@@ -72,7 +72,7 @@ TEST_CASE("editor.biome.runtime_publishes_candidates_and_previews_deterministica
     SpatialResolver resolver;
     resolver.assets["areas/forest.spatial"] = &domain;
     BiomeDocumentRuntime runtime;
-    REQUIRE(runtime.publish(target, resolver).accepted());
+    REQUIRE(runtime.publish(target, resolver).isAccepted());
     const Revision published = runtime.revision();
     auto first = runtime.preview(&domain, 2.f, 42, 0.f, published);
     auto second = runtime.preview(&domain, 2.f, 42, 0.f, published);

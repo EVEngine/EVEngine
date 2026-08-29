@@ -41,12 +41,20 @@ public:
     /** @brief Return mutable storage; all child borrows are invalidated by mutation. */
     Storage& storage() { return storage_; }
 
-    /** @brief Return an immediately borrowed typed value or null on mismatch. */
+    /**
+     * @brief Return an immediately borrowed typed value.
+     * @return Borrowed pointer into this value, or null on type mismatch.
+     * @lifetime Valid until this Value is mutated or destroyed.
+     */
     template <class T>
     const T* getIf() const {
         return std::get_if<T>(&storage_);
     }
-    /** @brief Return an immediately borrowed mutable value or null on mismatch. */
+    /**
+     * @brief Return an immediately borrowed mutable value.
+     * @return Borrowed pointer into this value, or null on type mismatch.
+     * @lifetime Valid until this Value is mutated or destroyed.
+     */
     template <class T>
     T* getIf() {
         return std::get_if<T>(&storage_);
@@ -59,7 +67,7 @@ public:
      * @param maxStringBytes Maximum total bytes across keys and string values.
      * @return True when all limits are satisfied.
      */
-    bool withinLimits(size_t maxDepth, size_t maxElements, size_t maxStringBytes) const;
+    bool isWithinLimits(size_t maxDepth, size_t maxElements, size_t maxStringBytes) const;
 
     bool operator==(const Value&) const = default;
 

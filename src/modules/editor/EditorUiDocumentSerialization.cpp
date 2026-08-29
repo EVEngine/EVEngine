@@ -194,13 +194,13 @@ EditorResult<UiWidgetSnapshot> UiDocumentTarget::parseWidget(const EditorValue& 
         return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget",
                                                      "UI widget fields are missing or invalid");
     auto parsedLayout = parseLayout(*layout);
-    if (!parsedLayout.accepted() || !parsedLayout.value)
+    if (!parsedLayout.isAccepted() || !parsedLayout.value)
         return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget-layout",
                                                      "UI widget layout is invalid");
     UiStyleValue parsedStyle;
     if (styleValueEntry) {
         auto style = parseStyle(*styleValueEntry);
-        if (!style.accepted() || !style.value)
+        if (!style.isAccepted() || !style.value)
             return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget-style",
                                                          "UI widget style is invalid");
         parsedStyle = std::move(*style.value);
@@ -208,7 +208,7 @@ EditorResult<UiWidgetSnapshot> UiDocumentTarget::parseWidget(const EditorValue& 
     UiContentValue parsedContent;
     if (contentValueEntry) {
         auto content = parseContent(*contentValueEntry);
-        if (!content.accepted() || !content.value)
+        if (!content.isAccepted() || !content.value)
             return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected,
                 "editor.ui.invalid-widget-content", "UI widget content skin is invalid");
         parsedContent = std::move(*content.value);
@@ -242,7 +242,7 @@ EditorResult<void> UiDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     std::map<ObjectId, UiWidgetSnapshot> candidate;
     for (const EditorValue& value : *widgets) {
         auto parsed = parseWidget(value);
-        if (!parsed.accepted() || !parsed.value)
+        if (!parsed.isAccepted() || !parsed.value)
             return serializationError<void>(EditorStatus::Rejected, "editor.ui.snapshot-widget",
                                             "UI snapshot contains an invalid widget");
         if (!candidate.emplace(parsed.value->id, *parsed.value).second)

@@ -55,7 +55,7 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 return error<editing::CommandPlan>(editing::Status::Rejected, "scene.editing.transform-payload",
                                                    "Scene transform requires a transform target and object id");
             auto current = capability->readTransform(editing::ObjectId(*object));
-            if (!current.accepted() || !current.value)
+            if (!current.isAccepted() || !current.value)
                 return error<editing::CommandPlan>(current.status, "scene.editing.transform-object",
                                                    "Scene object transform is unavailable");
             SceneTransformValue transform = *current.value;
@@ -66,7 +66,7 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 return error<editing::CommandPlan>(editing::Status::Rejected, "scene.editing.transform-vector",
                                                    "Position, rotation and scale must contain three numbers");
             auto operation = capability->makeSetTransform(editing::ObjectId(*object), transform);
-            if (!operation.accepted() || !operation.value)
+            if (!operation.isAccepted() || !operation.value)
                 return error<editing::CommandPlan>(operation.status, "scene.editing.transform-operation",
                                                    "Scene target rejected the transform");
             editing::CommandPlan plan;

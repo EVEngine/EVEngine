@@ -65,7 +65,7 @@ EditorResult<void> PhysicsColliderTarget::applyDomainOperation(const DomainOpera
         return physicsError<void>(EditorStatus::Unsupported, "editor.physics.property-unsupported",
                                   "Unknown physics collider property: " + *path);
     auto valid = validateAssignment(*descriptor, *value);
-    if (!valid.accepted()) return valid;
+    if (!valid.isAccepted()) return valid;
     values_[*path] = *value;
     ++revision_;
     dirty_.include(0, 0);
@@ -117,7 +117,7 @@ EditorResult<DomainOperation> PhysicsColliderTarget::makeSet(const SelectionSnap
         return physicsError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.property-unsupported",
                                              "Unknown collider property: " + path.value());
     auto valid = validateAssignment(*descriptor, value);
-    if (!valid.accepted()) {
+    if (!valid.isAccepted()) {
         EditorResult<DomainOperation> failed;
         failed.status      = valid.status;
         failed.diagnostics = std::move(valid.diagnostics);
@@ -211,7 +211,7 @@ std::map<std::string, EditorValue> PhysicsColliderTarget::defaults() const {
 EditorResult<void> PhysicsColliderTarget::validateAssignment(const PropertyDescriptor& descriptor,
                                                              const EditorValue&        value) const {
     auto result = validatePropertyValue(descriptor, value);
-    if (!result.accepted()) return result;
+    if (!result.isAccepted()) return result;
     if (descriptor.path == PropertyPath("shape.size") || descriptor.path == PropertyPath("shape.offset")) {
         const auto*       tuple    = value.getIf<EditorValue::Array>();
         const std::size_t expected = dimensions_ == 2 ? 2 : 3;

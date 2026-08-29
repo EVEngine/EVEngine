@@ -18,7 +18,7 @@ SelectionSnapshot selection(const char* target) {
 void set(IPropertyProvider& provider, IDomainOperationTarget& target,
          const SelectionSnapshot& selected, const char* path, EditorValue value) {
     auto operation = provider.makeSet(selected, PropertyPath(path), value, PropertySetMode::Absolute);
-    REQUIRE(operation.value); CHECK(target.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(operation.value); CHECK(target.applyDomainOperation(*operation.value).isAccepted());
 }
 }
 

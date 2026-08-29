@@ -209,7 +209,7 @@ template <class T>
 ssq::Table resultTable(HSQUIRRELVM vm, const EditorResult<T>& result) {
     ssq::Table out(vm);
     out.set("status", std::string(statusName(result.status)));
-    out.set("accepted", result.accepted());
+    out.set("accepted", result.isAccepted());
     out.set("diagnostics", diagnosticArray(vm, result.diagnostics));
     return out;
 }
@@ -275,7 +275,7 @@ bool registerScriptCommand(Editor* editor, const std::string& id, const std::str
                 return EditorResult<TransactionReceipt>::applied(std::move(receipt));
             },
             true)
-        .accepted();
+        .isAccepted();
 }
 
 }  // namespace
@@ -415,7 +415,7 @@ Editor::Editor()
       automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
     const auto sceneCommands = eve::scene_editing::registerEditingCommands(*targets_);
     const auto materialCommands = eve::material_editing::registerEditingCommands(*targets_);
-    if (!sceneCommands.accepted() || !materialCommands.accepted())
+    if (!sceneCommands.isAccepted() || !materialCommands.isAccepted())
         throw std::runtime_error("Failed to register built-in domain editing commands");
     eve::cap::provide<eve::IEditorAutomation>(automation_.get());
 }

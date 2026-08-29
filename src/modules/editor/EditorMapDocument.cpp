@@ -616,7 +616,7 @@ EditorResult<void> MapDocumentTarget::loadSnapshot(const EditorValue& snapshot) 
         auto layer = parseLayer(value);
         if (!layer.value) return mapError<void>(EditorStatus::Rejected, "editor.map.invalid-layer", "Invalid layer");
         auto create = candidate.makeCreateLayer(*layer.value);
-        if (!create.value || !candidate.applyDomainOperation(*create.value).accepted())
+        if (!create.value || !candidate.applyDomainOperation(*create.value).isAccepted())
             return mapError<void>(EditorStatus::Rejected, "editor.map.invalid-layer-set",
                                   "Map snapshot contains conflicting layers");
     }
@@ -624,7 +624,7 @@ EditorResult<void> MapDocumentTarget::loadSnapshot(const EditorValue& snapshot) 
         auto road = parseRoad(value);
         if (!road.value) return mapError<void>(EditorStatus::Rejected, "editor.map.invalid-road", "Invalid road");
         auto set = candidate.makeSetRoad(*road.value);
-        if (!set.value || !candidate.applyDomainOperation(*set.value).accepted())
+        if (!set.value || !candidate.applyDomainOperation(*set.value).isAccepted())
             return mapError<void>(EditorStatus::Rejected, "editor.map.invalid-road-set",
                                   "Map snapshot contains an invalid road layer reference");
     }
@@ -633,7 +633,7 @@ EditorResult<void> MapDocumentTarget::loadSnapshot(const EditorValue& snapshot) 
         if (!placement.value)
             return mapError<void>(EditorStatus::Rejected, "editor.map.invalid-placement", "Invalid placement");
         auto set = candidate.makeSetPlacement(*placement.value);
-        if (!set.value || !candidate.applyDomainOperation(*set.value).accepted())
+        if (!set.value || !candidate.applyDomainOperation(*set.value).isAccepted())
             return mapError<void>(EditorStatus::Rejected, "editor.map.invalid-placement-set",
                                   "Map snapshot contains an invalid placement layer reference");
     }

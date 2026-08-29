@@ -59,7 +59,7 @@ EditorResult<void> PhysicsJointTarget::applyDomainOperation(const DomainOperatio
         return jointError<void>(EditorStatus::Unsupported, "editor.physics.joint-property",
                                 "Unknown joint property: " + *path);
     auto valid = validatePropertyValue(*descriptor, *value);
-    if (!valid.accepted()) return valid;
+    if (!valid.isAccepted()) return valid;
     values_[*path] = *value;
     ++revision_;
     dirty_.include(0, 0);
@@ -106,7 +106,7 @@ EditorResult<DomainOperation> PhysicsJointTarget::makeSet(const SelectionSnapsho
         return jointError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.joint-property",
                                            "Unknown joint property: " + path.value());
     auto valid = validatePropertyValue(*descriptor, value);
-    if (!valid.accepted()) {
+    if (!valid.isAccepted()) {
         EditorResult<DomainOperation> failed;
         failed.status      = valid.status;
         failed.diagnostics = std::move(valid.diagnostics);

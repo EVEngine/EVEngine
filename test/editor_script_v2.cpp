@@ -63,7 +63,7 @@ TEST_CASE("editor.v2.script_discovers_plans_and_executes_registered_command") {
                       receipt.authorityReceipt = "local:test.script";
                       return EditorResult<TransactionReceipt>::applied(std::move(receipt));
                   })
-              .accepted());
+              .isAccepted());
 
     ssq::VM vm(1024, ssq::Libs::ALL);
     eve::ModuleManager::expose(vm);
