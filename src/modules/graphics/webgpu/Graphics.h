@@ -891,7 +891,7 @@ private:
     int sceneColorWidth = 0, sceneColorHeight = 0;
     // Internal 3D lighting target. Script-created Canvas textures remain
     // RGBA8Unorm and are composited after the scene resolve.
-    WGPUTextureFormat sceneColorFormat = WGPUTextureFormat_RGBA16Float;
+    WGPUTextureFormat sceneColorFormat = WGPUTextureFormat_RGBA8Unorm;
     uint32_t sceneColorSamples = 1;
     std::vector<SceneColorSlot> sceneColorSlots;
 

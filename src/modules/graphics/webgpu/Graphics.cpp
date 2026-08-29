@@ -5438,7 +5438,7 @@ Color Graphics::getPixelImpl(OffscreenCanvas* canvas, int x, int y) {
     wgpu::Texture src = canvas ? canvas->color
                                : (sceneColorSlots.empty() ? nullptr
                                                           : sceneColorSlots[lastPresentSlot].color);
-    const bool hdrScene = canvas == nullptr;
+    const bool hdrScene = canvas == nullptr && sceneColorFormat == WGPUTextureFormat_RGBA16Float;
     if (!src || !copyTextureToCpu(instance, device, queue, src, w, h, rgba,
                                   hdrScene ? 8 : 4))
         return clearColor;
@@ -5455,7 +5455,7 @@ image::ImageData *Graphics::newImageDataImpl(OffscreenCanvas *canvas) {
     wgpu::Texture src = canvas ? canvas->color
                                : (sceneColorSlots.empty() ? nullptr
                                                           : sceneColorSlots[lastPresentSlot].color);
-    const bool hdrScene = canvas == nullptr;
+    const bool hdrScene = canvas == nullptr && sceneColorFormat == WGPUTextureFormat_RGBA16Float;
     if (src && copyTextureToCpu(instance, device, queue, src, w, h, rgba,
                                 hdrScene ? 8 : 4)) {
         if (!hdrScene) {
