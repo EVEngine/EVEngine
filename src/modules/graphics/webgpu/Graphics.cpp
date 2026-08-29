@@ -4975,104 +4975,6 @@ void Graphics::present() {
         pass.End();
     }
 
-    Texture *taaResolved = nullptr;
-    if (false && sceneView && !sceneColorComposited && renderControl_ &&
-        renderControl_->isEnabled("taa")) {
-        if (!fullscreenQuadReady) {
-            float verts[32] = {
-                -1.f, -1.f, 1.f, 1.f, 1.f, 1.f, 0.f, 0.f,
-                 1.f, -1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 0.f,
-                 1.f,  1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f,
-                -1.f,  1.f, 1.f, 1.f, 1.f, 1.f, 0.f, 1.f,
-            };
-            uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
-            WGPUBufferDescriptor vbd{};
-            vbd.label = sv("eve_fullscreen_vb");
-            vbd.size = sizeof(verts);
-            vbd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-            fullscreenQuadVb =
-                device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&vbd));
-            queue.WriteBuffer(fullscreenQuadVb, 0, verts, sizeof(verts));
-            WGPUBufferDescriptor ibd{};
-            ibd.label = sv("eve_fullscreen_ib");
-            ibd.size = sizeof(indices);
-            ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-            fullscreenQuadIb =
-                device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor *>(&ibd));
-            queue.WriteBuffer(fullscreenQuadIb, 0, indices, sizeof(indices));
-            fullscreenQuadReady = true;
-        }
-
-        AntiAliasing *aa = pipelineAntiAliasing();
-        aa->setMode("taa");
-        const std::string requested = renderControl_->getPostProcessQuality();
-        const std::string quality = requested == "ultra" ? "high" : requested;
-        if (aa->getQuality() != quality) aa->setQuality(quality);
-        Texture *motion = renderControl_->getGBuffer()->getVelocityTexture();
-        auto *writeCanvas =
-            static_cast<OffscreenCanvas *>(aa->beginTemporalFrame(sceneColorTexture, motion));
-        Texture *history = aa->getTemporalReadTexture();
-        Shader *taaShader = aa->getTaaShader();
-        auto *taaGpu = taaShader ? static_cast<GpuShader *>(taaShader->gpuHandle) : nullptr;
-        if (writeCanvas && taaGpu && taaGpu->hdrOffscreenOpaquePipeline) {
-            GpuTexture sceneGpu;
-            sceneGpu.texture = sceneTex;
-            sceneGpu.view = sceneView;
-            sceneGpu.sampler = createLinearSampler(device);
-            GpuTexture *historyGpu = gpuForTexture(history);
-            GpuTexture *motionGpu = gpuForTexture(motion);
-
-            ensureUboArena(uboArena, uboArena.used + 256);
-            uint32_t pushOffset = uboArena.alloc(Shader::kPushConstantBytes, 256);
-            queue.WriteBuffer(uboArena.buffer, pushOffset, taaShader->pushConstantData(),
-                              Shader::kPushConstantBytes);
-            wgpu::BindGroup bg = makeTex2DBindGroup(&sceneGpu, historyGpu, motionGpu);
-            uint32_t offsets[1] = {pushOffset};
-
-            WGPURenderPassColorAttachment colorAtt{};
-            colorAtt.view = writeCanvas->colorView.Get();
-            colorAtt.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
-            colorAtt.loadOp = WGPULoadOp_Clear;
-            colorAtt.storeOp = WGPUStoreOp_Store;
-            colorAtt.clearValue = {0.f, 0.f, 0.f, 1.f};
-            WGPURenderPassDescriptor rp{};
-            rp.colorAttachmentCount = 1;
-            rp.colorAttachments = &colorAtt;
-            wgpu::RenderPassEncoder taaPass =
-                encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor *>(&rp));
-            taaPass.SetPipeline(taaGpu->hdrOffscreenOpaquePipeline);
-            taaPass.SetBindGroup(0, bg, 1, offsets);
-            taaPass.SetVertexBuffer(0, fullscreenQuadVb, 0, 4 * 32);
-            taaPass.SetIndexBuffer(fullscreenQuadIb, wgpu::IndexFormat::Uint32, 0, 24);
-            taaPass.DrawIndexed(6, 1, 0, 0, 0);
-            taaPass.End();
-            taaResolved = writeCanvas->getTexture();
-            aa->endTemporalFrame();
-        }
-    }
-
-    if (sceneView && !sceneColorComposited) {
-        wgpu::CommandBuffer sceneCommand = encoder.Finish();
-        queue.Submit(1, &sceneCommand);
-        auto savedSolid = std::move(solidBatches);
-        auto savedTextured = std::move(texturedBatches);
-        auto savedLit = std::move(litBatches);
-        auto savedSpans = std::move(overlaySpans);
-        solidBatches.clear();
-        texturedBatches.clear();
-        litBatches.clear();
-        overlaySpans.clear();
-        Texture *motion = renderControl_ ? renderControl_->getGBuffer()->getVelocityTexture() : nullptr;
-        Texture *resolveSource = takeFinalSceneTexture();
-        if (!resolveSource) resolveSource = sceneColorTexture;
-        taaResolved = prepareFinalSceneTexture(resolveSource, motion);
-        solidBatches = std::move(savedSolid);
-        texturedBatches = std::move(savedTextured);
-        litBatches = std::move(savedLit);
-        overlaySpans = std::move(savedSpans);
-        encoder = device.CreateCommandEncoder();
-    }
-
     // 4. Active canvas: flush 2D batches into the offscreen target instead.
     if (activeCanvas) {
         auto *oc = static_cast<OffscreenCanvas *>(activeCanvas);
@@ -5121,45 +5023,11 @@ void Graphics::present() {
             sceneGpu.texture = sceneTex;
             sceneGpu.view = sceneView;
             sceneGpu.sampler = createLinearSampler(device);
-            GpuTexture *compositeGpu = gpuForTexture(taaResolved);
-            if (!compositeGpu) {
-                compositeGpu = &sceneGpu;
-            }
-            wgpu::BindGroup bg = makeTex2DBindGroup(compositeGpu, &sceneGpu);
+            wgpu::BindGroup bg = makeTex2DBindGroup(&sceneGpu, nullptr);
             uint32_t offsets[1] = {0};
-            const float autoEnabled = sceneAutoExposure ? 1.f : 0.f;
-            const float minEvQ = std::round(std::clamp(sceneAutoExposureMinEV, -16.f, 15.875f) *
-                                                8.f +
-                                            128.f);
-            const float maxEvQ = std::round(std::clamp(sceneAutoExposureMaxEV, -16.f, 15.875f) *
-                                                8.f +
-                                            128.f);
-            const float exposurePack = minEvQ + maxEvQ * 256.f;
-            const float bloomQ = 0.f;  // Bloom is precomposited in the linear HDR pyramid.
-            const float thresholdQ =
-                std::round(std::clamp(sceneBloomThreshold, 0.f, 15.9375f) * 16.f);
-            const bool outputIsSrgb = surfaceFormat == WGPUTextureFormat_BGRA8UnormSrgb ||
-                                      surfaceFormat == WGPUTextureFormat_RGBA8UnormSrgb;
-            const float bloomPack = bloomQ + thresholdQ * 256.f +
-                                    (outputIsSrgb ? 0.f : 65536.f);
-            float toneVerts[32] = {
-                -1.f, -1.f, sceneExposure, autoEnabled, exposurePack, bloomPack, 0.f, 0.f,
-                 1.f, -1.f, sceneExposure, autoEnabled, exposurePack, bloomPack, 1.f, 0.f,
-                 1.f,  1.f, sceneExposure, autoEnabled, exposurePack, bloomPack, 1.f, 1.f,
-                -1.f,  1.f, sceneExposure, autoEnabled, exposurePack, bloomPack, 0.f, 1.f,
-            };
-            if (!toneMapQuadVb) {
-                WGPUBufferDescriptor bd{};
-                bd.label = sv("eve_tonemap_vb");
-                bd.size = sizeof(toneVerts);
-                bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-                toneMapQuadVb = device.CreateBuffer(
-                    reinterpret_cast<const wgpu::BufferDescriptor *>(&bd));
-            }
-            queue.WriteBuffer(toneMapQuadVb, 0, toneVerts, sizeof(toneVerts));
-            pass.SetPipeline(sceneTonemapPipeline);
+            pass.SetPipeline(get2DTexturedPipeline(BlendMode::Alpha, false));
             pass.SetBindGroup(0, bg, 1, offsets);
-            pass.SetVertexBuffer(0, toneMapQuadVb, 0, sizeof(toneVerts));
+            pass.SetVertexBuffer(0, fullscreenQuadVb, 0, 4 * 32);
             pass.SetIndexBuffer(fullscreenQuadIb, wgpu::IndexFormat::Uint32, 0, 24);
             pass.DrawIndexed(6, 1, 0, 0, 0);
         }
