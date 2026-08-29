@@ -57,7 +57,8 @@ EditorResult<SurfaceFluidSettings> parse(const EditorValue& value) {
     SurfaceFluidSettings s;
     const auto number = [&](const char* key, double& destination) {
         const auto* entry = field(value, key); const auto* v = entry ? entry->getIf<double>() : nullptr;
-        if (v) destination = *v; return v != nullptr;
+        if (v) destination = *v;
+        return v != nullptr;
     };
     const auto* gravityValue = field(value, "gravity");
     const auto* gravity = gravityValue ? gravityValue->getIf<EditorValue::Array>() : nullptr;
@@ -114,7 +115,11 @@ PropertySchema SurfaceFluidTarget::schema(const SelectionSnapshot&)const{
 }
 PropertyReadResult SurfaceFluidTarget::read(const SelectionSnapshot&s,const PropertyPath&p)const{if(!matches(s)||!schema(s).find(p))return{};const auto* v=field(settingsValue(settings_),p.value());return v?PropertyReadResult{PropertyReadState::Value,*v,{}}:PropertyReadResult{};}
 EditorResult<DomainOperation> SurfaceFluidTarget::makeSet(const SelectionSnapshot&s,const PropertyPath&p,const EditorValue&v,PropertySetMode m)const{
-    if(m==PropertySetMode::Reset)return makeReset(s,p);auto d=schema(s).find(p);if(!matches(s)||!d||m!=PropertySetMode::Absolute)return fail<DomainOperation>(EditorStatus::Rejected,"editor.surface-fluid.set","Surface fluid property requires a matching absolute edit");
+    if (m == PropertySetMode::Reset) return makeReset(s, p);
+    auto d = schema(s).find(p);
+    if (!matches(s) || !d || m != PropertySetMode::Absolute)
+        return fail<DomainOperation>(EditorStatus::Rejected, "editor.surface-fluid.set",
+                                     "Surface fluid property requires a matching absolute edit");
     auto checked=validatePropertyValue(*d,v);if(!checked.accepted()){EditorResult<DomainOperation> r;r.status=checked.status;r.diagnostics=std::move(checked.diagnostics);return r;}
     EditorValue candidate=settingsValue(settings_);(*candidate.getIf<EditorValue::Object>())[p.value()]=v;auto parsed=parse(candidate);if(!parsed.value)return fail<DomainOperation>(parsed.status,"editor.surface-fluid.invalid","Surface fluid property conflicts with other settings");
     DomainOperation op;op.type="surface-fluid.settings.replace.v1";op.inverseType=op.type;op.target=TargetId(id_);op.payload=settingsValue(*parsed.value);op.inverse=settingsValue(settings_);op.hasInverse=true;op.affectedProperties.push_back(p.value());op.mergeKey="surface-fluid:"+id_+":"+p.value();return EditorResult<DomainOperation>::applied(std::move(op));

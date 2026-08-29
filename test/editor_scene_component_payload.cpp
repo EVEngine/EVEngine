@@ -291,7 +291,8 @@ TEST_CASE("editor.scene.component_payload_registry_rejects_mixed_and_stale_refer
                    {SelectionDomain::Scene, TargetId("scene"), StableId("hero.audio"), "audio"}};
     CHECK_EQ(static_cast<int>(registry.propertyProvider(mixed).status),
              static_cast<int>(EditorStatus::Rejected));
-    REQUIRE_EQ(static_cast<int>(registry.unregisterProvider(&provider)),
+    const auto unregisterResult = registry.unregisterProvider(&provider);
+    REQUIRE_EQ(static_cast<int>(unregisterResult),
                static_cast<int>(SceneComponentChange::Changed));
     auto selection = makeSceneComponentSelection("scene", *references.value);
     REQUIRE(selection.value);

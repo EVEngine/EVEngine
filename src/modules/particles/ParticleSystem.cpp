@@ -547,7 +547,8 @@ int ParticleRenderSystem::renderEmitter(graphics::Graphics* gfx, ParticleEmitter
     int order=0;
     const int rendered=appendOneEmitter(*gfx,*emitter,items,order,false,usedCanvas,culled);
     if(!items.empty()) graphics::RenderSystem::drawItems(*gfx,items,false);
-    if(usedCanvas) gfx->setCanvas(); return rendered;
+    if (usedCanvas) gfx->setCanvas();
+    return rendered;
 }
 
 void ParticleRenderSystem::render(graphics::Graphics *gfx) {
