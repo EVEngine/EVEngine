@@ -778,7 +778,7 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
     attrs[0].format = wgpu::VertexFormat::Float32x2;
     attrs[0].offset = 0;
     attrs[0].shaderLocation = 0;
-    attrs[1].format = wgpu::VertexFormat::Float32x4;
+    attrs[1].format = WGPUVertexFormat_Float32x4;
     attrs[1].offset = 8;
     attrs[1].shaderLocation = 1;
 
@@ -807,9 +807,11 @@ wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLay
     attrs[1].format = wgpu::VertexFormat::Float32x4;
     attrs[1].offset = 8;
     attrs[1].shaderLocation = 1;
-    attrs[2].format = wgpu::VertexFormat::Float32x2;
+    attrs[2].format = WGPUVertexFormat_Float32x2;
     attrs[2].offset = 24;
     attrs[2].shaderLocation = 2;
+    WGPUVertexBufferLayout vb{};
+    fillVertexLayout(vb, 32, attrs, 3);
 
     WGPUColorTargetState target{};
     target.format = format;
@@ -983,7 +985,6 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device &dev, wgpu::PipelineLayout l
 void Graphics::create2DPipelines() {
     tex2DSetLayout = make2DBindGroupLayout();
     tex2DPipelineLayout = make2DPipelineLayout();
-}
 
     colorPipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Alpha);
     texturedPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
