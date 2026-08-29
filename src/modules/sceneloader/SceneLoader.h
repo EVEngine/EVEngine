@@ -73,6 +73,16 @@ struct SceneDiff {
     bool empty() const { return entries.empty(); }
 };
 
+/** @brief CPU-only import inspection result used by editor preflight. */
+struct SceneInspection {
+    SceneDiff diff;
+    int nodeCount = 0;
+    int meshNodeCount = 0;
+    std::vector<std::string> warnings;
+    std::vector<std::string> sockets;
+    std::vector<std::string> collisions;
+};
+
 /**
  * @brief A GPU mesh reference for one Assimp mesh referenced by an aiNode. The loader
  * uploads one Renderable3D (with its own mesh + material) per aiMesh, so every
@@ -162,6 +172,9 @@ public:
 
     /** @brief Dry-run diff for `path` against the currently mounted tree (no mutation). */
     SceneDiff diff(const std::string &path);
+    /** @brief Decode with explicit options and return copied metadata without mounting or GPU upload. */
+    [[nodiscard]] eve::Result<SceneInspection> inspect(const std::string &path,
+                                                       const LoadOptions &options = {});
 
     /** @brief The mounted host for `path`, or nullptr if not loaded. */
     scene::SceneHost *host(const std::string &path);

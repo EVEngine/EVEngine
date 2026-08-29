@@ -3,6 +3,7 @@
 #include "physics/PhysicsHandles.h"
 
 #include <string>
+#include <vector>
 
 class b2Body;
 
@@ -112,6 +113,30 @@ public:
      */
     Fixture *newCircleFixture(float radius, float density = 1.f, float friction = 0.2f,
                               float restitution = 0.f);
+    /**
+     * @brief Create a bounded convex polygon fixture from packed local pixel-space XY vertices.
+     * @param vertices Three to eight finite convex vertices as x0,y0,x1,y1,... .
+     * @param density Mass density.
+     * @param friction Surface friction.
+     * @param restitution Surface restitution.
+     * @return Borrowed fixture owned by the world.
+     * @throws eve::Exception when the body is dead or vertices are malformed/degenerate.
+     * @return Borrowed pointer to a fixture owned by this body.
+     * @lifetime Valid until the fixture or owning body is destroyed.
+     */
+    Fixture *newPolygonFixture(const std::vector<float> &vertices, float density = 1.f,
+                               float friction = 0.2f, float restitution = 0.f);
+    /**
+     * @brief Create an open chain or closed loop from packed local pixel-space XY vertices.
+     * @param vertices At least two finite vertices for a chain or three for a loop.
+     * @param loop Whether to connect the final vertex back to the first.
+     * @param friction Surface friction.
+     * @param restitution Surface restitution.
+     * @return Borrowed fixture owned by the world.
+     * @throws eve::Exception when the body is dead or vertices are malformed/degenerate.
+     */
+    Fixture *newChainFixture(const std::vector<float> &vertices, bool loop = false,
+                             float friction = 0.2f, float restitution = 0.f);
 
     /** @brief Destroys the body inside its world. */
     void destroy();

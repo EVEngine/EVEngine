@@ -402,6 +402,11 @@ eve::OptionalRef<OrderEvent> CommandQueue::eventAt(int index) {
     return std::ref(events_[static_cast<size_t>(index)]);
 }
 
+eve::OptionalRef<const OrderEvent> CommandQueue::eventAt(int index) const {
+    if (index < 0 || static_cast<size_t>(index) >= events_.size()) return {};
+    return std::cref(events_[static_cast<size_t>(index)]);
+}
+
 void CommandQueue::clearEvents() { events_.clear(); }
 
 eve::Result<std::string> CommandQueue::snapshot() const {

@@ -1060,6 +1060,44 @@ SceneDiff SceneLoader::diff(const std::string &path) {
     return d;
 }
 
+eve::Result<SceneInspection> SceneLoader::inspect(const std::string &path,
+                                                  const LoadOptions &options) {
+    DecodedScene decoded;
+    if (!decode(path, options, &decoded)) {
+        const std::string message = decodeErrorFor(path);
+        return eve::Result<SceneInspection>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed,
+            message.empty() ? "scene inspection failed to decode the source" : message,
+            normPath(path), {}, "sceneloader.inspect"));
+    }
+    SceneInspection result;
+    const auto mounted = scenes_.find(normPath(path));
+    if (mounted != scenes_.end() && mounted->second.host)
+        result.diff = diffTree(mounted->second.host, *decoded.root);
+    else {
+        std::function<void(const scene::NodeDesc&, const std::string&)> add =
+            [&](const scene::NodeDesc& node, const std::string& parent) {
+                result.diff.entries.push_back({SceneDiffEntry::Action::Add, node.id, parent});
+                ++result.diff.added;
+                for (const auto& child : node.children) add(child, node.id);
+            };
+        add(*decoded.root, "");
+    }
+    std::function<void(const scene::NodeDesc&)> collect = [&](const scene::NodeDesc& node) {
+        ++result.nodeCount;
+        if (decoded.slots.find(node.id) != decoded.slots.end()) ++result.meshNodeCount;
+        if (std::find(node.tags.begin(), node.tags.end(), "model-socket") != node.tags.end())
+            result.sockets.push_back(node.name);
+        if (std::find(node.tags.begin(), node.tags.end(), "collision") != node.tags.end())
+            result.collisions.push_back(node.name);
+        for (const auto& child : node.children) collect(child);
+    };
+    collect(*decoded.root);
+    const int count = warningCount(path);
+    for (int i = 0; i < count; ++i) result.warnings.push_back(warning(path, i));
+    return eve::Result<SceneInspection>::success(std::move(result));
+}
+
 scene::SceneHost *SceneLoader::host(const std::string &path) {
     auto it = scenes_.find(normPath(path));
     return (it != scenes_.end()) ? it->second.host : nullptr;

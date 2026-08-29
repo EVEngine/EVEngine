@@ -8,6 +8,8 @@ class Graphics;
 
 namespace eve::particles {
 
+class ParticleEmitter;
+
 /** @brief Advances all ParticleEmitter Sim components. */
 class ParticleSimSystem {
 public:
@@ -27,6 +29,11 @@ public:
 /** @brief Draws all visible ParticleEmitter entities via Graphics batch path. */
 class ParticleRenderSystem {
 public:
+    /**
+     * @brief Draw exactly one emitter without traversing the global ECS registry.
+     * @return Number of particles submitted, or zero when hidden/empty/unsupported.
+     */
+    static int renderEmitter(graphics::Graphics* gfx, ParticleEmitter* emitter);
     static void render(graphics::Graphics *gfx);
 };
 

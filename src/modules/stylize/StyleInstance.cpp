@@ -29,7 +29,9 @@ std::string StyleInstance::getStage() const {
     return graphics::postEffectStageName(findStyleDefinition(style_)->stage);
 }
 
-int StyleInstance::getPriority() const { return findStyleDefinition(style_)->priority; }
+int StyleInstance::getPriority() const {
+    return priority_.value_or(findStyleDefinition(style_)->priority);
+}
 
 bool StyleInstance::requiresInput(const std::string& input) const {
     const StyleDefinition* def = findStyleDefinition(style_);

@@ -58,7 +58,7 @@ void exerciseSceneBackend(SceneTargetBase& target, const std::string& transactio
     CHECK(commitOperation(target, transactions, *childOperation.value, transactionPrefix + ".child").accepted());
     CHECK_EQ(target.sceneChildren(root.id).size(), static_cast<std::size_t>(1));
 
-    SceneTransformValue moved{8.0, 3.0, 5.0};
+    SceneTransformValue moved{8.0, 3.0, 5.0, 0.1, 0.5, -0.2, 2.0, 1.5, 0.75};
     auto                transformOperation = transform.plan(target, child.id, moved);
     CHECK(transformOperation.accepted());
     CHECK(commitOperation(target, transactions, *transformOperation.value, transactionPrefix + ".move").accepted());
@@ -68,6 +68,49 @@ void exerciseSceneBackend(SceneTargetBase& target, const std::string& transactio
     CHECK(target.readTransform(child.id).value == child.transform);
     CHECK(transactions.redo().accepted());
     CHECK(target.readTransform(child.id).value == moved);
+}
+
+TEST_CASE("editor.v2.scene_transform_supports_atomic_multi_object_trs_edits") {
+    RuntimeWorldTarget       target("runtime");
+    LocalWorldAuthority      authority(&target);
+    LocalTransactionBackend transactions(&authority);
+    ScenePlacementToolLogic  placement;
+    SceneTransformToolLogic  transform;
+
+    for (const std::string id : {"left", "right"}) {
+        CreateSceneObjectRequest request;
+        request.id   = ObjectId(id);
+        request.name = id;
+        auto operation = placement.plan(target, request);
+        REQUIRE(operation.accepted());
+        REQUIRE(commitOperation(target, transactions, *operation.value, "create." + id).accepted());
+    }
+
+    const SceneTransformValue leftValue{1.0, 2.0, 3.0, 0.0, 0.25, 0.0, 2.0, 2.0, 2.0};
+    const SceneTransformValue rightValue{-1.0, 4.0, 6.0, 0.5, 0.0, 1.0, 0.5, 1.0, 1.5};
+    auto left  = transform.plan(target, ObjectId("left"), leftValue);
+    auto right = transform.plan(target, ObjectId("right"), rightValue);
+    REQUIRE(left.accepted());
+    REQUIRE(right.accepted());
+
+    TransactionSpec specification;
+    specification.id           = TransactionId("transform.multi");
+    specification.label        = "Transform selection";
+    specification.target       = TargetId(target.targetId());
+    specification.baseRevision = target.revision();
+    REQUIRE(transactions.begin(std::move(specification)).accepted());
+    REQUIRE(transactions.append(*left.value).accepted());
+    REQUIRE(transactions.append(*right.value).accepted());
+    REQUIRE(transactions.commit().accepted());
+    CHECK(target.readTransform(ObjectId("left")).value == leftValue);
+    CHECK(target.readTransform(ObjectId("right")).value == rightValue);
+
+    REQUIRE(transactions.undo().accepted());
+    CHECK(target.readTransform(ObjectId("left")).value == SceneTransformValue{});
+    CHECK(target.readTransform(ObjectId("right")).value == SceneTransformValue{});
+    REQUIRE(transactions.redo().accepted());
+    CHECK(target.readTransform(ObjectId("left")).value == leftValue);
+    CHECK(target.readTransform(ObjectId("right")).value == rightValue);
 }
 
 }  // namespace
@@ -109,4 +152,97 @@ TEST_CASE("editor.v2.scene_create_is_reversible_through_authority") {
     CHECK(target.sceneObject(request.id).accepted());
     CHECK(transactions.undo().accepted());
     CHECK_EQ(static_cast<int>(target.sceneObject(request.id).status), static_cast<int>(EditorStatus::NotFound));
+}
+
+TEST_CASE("editor.v2.scene_hierarchy_edits_are_reversible_and_cycle_safe") {
+    SceneDocumentTarget     target("scene");
+    LocalWorldAuthority     authority(&target);
+    LocalTransactionBackend transactions(&authority);
+    ScenePlacementToolLogic placement;
+    SceneHierarchyToolLogic hierarchy;
+
+    for (const auto& request : {CreateSceneObjectRequest{ObjectId("root"), {}, "Root", {}},
+                                CreateSceneObjectRequest{ObjectId("group"), ObjectId("root"), "Group", {}},
+                                CreateSceneObjectRequest{ObjectId("leaf"), ObjectId("group"), "Leaf", {}}}) {
+        auto operation = placement.plan(target, request);
+        REQUIRE(operation.accepted());
+        REQUIRE(commitOperation(target, transactions, *operation.value, "create." + request.id.value()).accepted());
+    }
+
+    auto cycle = hierarchy.planReparent(target, ObjectId("root"), ObjectId("leaf"));
+    CHECK_EQ(static_cast<int>(cycle.status), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(static_cast<int>(hierarchy.planDelete(target, ObjectId("group")).status),
+             static_cast<int>(EditorStatus::Rejected));
+
+    auto rename = hierarchy.planRename(target, ObjectId("leaf"), "Camera");
+    REQUIRE(rename.accepted());
+    REQUIRE(commitOperation(target, transactions, *rename.value, "rename").accepted());
+    CHECK_EQ(target.sceneObject(ObjectId("leaf")).value->name, std::string("Camera"));
+    REQUIRE(transactions.undo().accepted());
+    CHECK_EQ(target.sceneObject(ObjectId("leaf")).value->name, std::string("Leaf"));
+    REQUIRE(transactions.redo().accepted());
+
+    auto reparent = hierarchy.planReparent(target, ObjectId("leaf"), ObjectId("root"));
+    REQUIRE(reparent.accepted());
+    REQUIRE(commitOperation(target, transactions, *reparent.value, "reparent").accepted());
+    CHECK(target.sceneObject(ObjectId("leaf")).value->parent == ObjectId("root"));
+
+    auto remove = hierarchy.planDelete(target, ObjectId("leaf"));
+    REQUIRE(remove.accepted());
+    REQUIRE(commitOperation(target, transactions, *remove.value, "delete").accepted());
+    CHECK_EQ(static_cast<int>(target.sceneObject(ObjectId("leaf")).status),
+             static_cast<int>(EditorStatus::NotFound));
+    REQUIRE(transactions.undo().accepted());
+    CHECK_EQ(target.sceneObject(ObjectId("leaf")).value->name, std::string("Camera"));
+    CHECK(target.sceneObject(ObjectId("leaf")).value->parent == ObjectId("root"));
+}
+
+TEST_CASE("editor.v2.scene_property_provider_multi_edits_generic_trs_inspector") {
+    SceneDocumentTarget     target("scene");
+    LocalWorldAuthority     authority(&target);
+    LocalTransactionBackend transactions(&authority);
+    ScenePlacementToolLogic placement;
+    for (const std::string id : {"one", "two"}) {
+        CreateSceneObjectRequest request;
+        request.id   = ObjectId(id);
+        request.name = id;
+        auto operation = placement.plan(target, request);
+        REQUIRE(operation.accepted());
+        REQUIRE(commitOperation(target, transactions, *operation.value, "property.create." + id).accepted());
+    }
+
+    SelectionSnapshot selection;
+    selection.channel = "scene";
+    for (const std::string id : {"one", "two"}) {
+        SelectionItem item;
+        item.domain = SelectionDomain::Scene;
+        item.target = TargetId(target.targetId());
+        item.item   = StableId(id);
+        item.type   = "scene.object";
+        selection.items.push_back(item);
+    }
+    selection.primary = selection.items.front();
+
+    ScenePropertyProvider provider(&target);
+    CHECK_EQ(provider.schema(selection).properties.size(), static_cast<std::size_t>(3));
+    CHECK_EQ(static_cast<int>(provider.read(selection, PropertyPath("transform.scale")).state),
+             static_cast<int>(PropertyReadState::Value));
+    auto setScale = provider.makeSet(selection, PropertyPath("transform.scale"),
+                                     EditorValue::Array{2.0, 3.0, 4.0}, PropertySetMode::Absolute);
+    REQUIRE(setScale.accepted());
+    REQUIRE(commitOperation(target, transactions, *setScale.value, "property.scale").accepted());
+    CHECK_EQ(target.readTransform(ObjectId("one")).value->scaleY, 3.0);
+    CHECK_EQ(target.readTransform(ObjectId("two")).value->scaleZ, 4.0);
+    REQUIRE(transactions.undo().accepted());
+    CHECK_EQ(target.readTransform(ObjectId("one")).value->scaleY, 1.0);
+    CHECK_EQ(target.readTransform(ObjectId("two")).value->scaleZ, 1.0);
+
+    SceneTransformToolLogic transform;
+    SceneTransformValue distinct;
+    distinct.x = 9.0;
+    auto moveOne = transform.plan(target, ObjectId("one"), distinct);
+    REQUIRE(moveOne.accepted());
+    REQUIRE(commitOperation(target, transactions, *moveOne.value, "property.mixed").accepted());
+    CHECK_EQ(static_cast<int>(provider.read(selection, PropertyPath("transform.position")).state),
+             static_cast<int>(PropertyReadState::Mixed));
 }

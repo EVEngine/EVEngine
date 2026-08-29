@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <optional>
 #include <unordered_map>
 
 namespace eve::graphics {
@@ -29,6 +30,10 @@ public:
     std::string getStyle() const { return style_; }
     std::string getStage() const;
     int         getPriority() const;
+    /** @brief Override built-in ordering for authored recipe composition. */
+    void        setPriority(int priority) { priority_ = priority; }
+    /** @brief Restore the style definition's built-in priority. */
+    void        resetPriority() { priority_.reset(); }
     bool        requiresInput(const std::string& input) const;
     int         getParamCount() const;
     std::string getParamName(int index) const;
@@ -53,6 +58,7 @@ private:
 
     std::string                            style_;
     std::unordered_map<std::string, float> overrides_;
+    std::optional<int>                     priority_;
 };
 
 }  // namespace eve::stylize
