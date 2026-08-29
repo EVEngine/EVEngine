@@ -45,7 +45,7 @@ struct TerrainStreamingWindow {
  */
 class TerrainStreamingCache {
 public:
-    /** @brief Open an EVTR archive and clear all previously decoded chunks. */
+    /** @brief Compatibility operation that opens EVTR and clears decoded chunks. */
     bool open(const uint8_t *data, size_t size, std::string *error = nullptr);
     void clear();
 
@@ -57,10 +57,11 @@ public:
     TerrainStreamStats streamAround(int worldX, int worldY, int radiusChunks,
                                     int maxLoads = 0, std::string *error = nullptr);
 
+    /** @brief Borrow a resident chunk. @lifetime Pointer remains valid until cache mutation. */
     const TerrainChunkData *getChunk(int chunkX, int chunkY) const;
-    /** @brief Read an integer world cell; returns false when its chunk is not resident. */
+    /** @brief Compatibility operation that reads a resident integer world cell. */
     bool sampleCell(int worldX, int worldY, TerrainSample &out) const;
-    /** @brief Bilinear height sampling across resident chunk boundaries. */
+    /** @brief Compatibility operation for cross-chunk bilinear height sampling. */
     bool sampleHeight(float worldX, float worldY, float &out) const;
     /**
      * @brief Resolve a cell's D8 receiver in global coordinates, including an adjacent chunk.
@@ -68,7 +69,7 @@ public:
      */
     bool getReceiver(int worldX, int worldY, int &receiverX, int &receiverY) const;
     /**
-     * @brief Follow resident D8 receivers across chunk boundaries.
+     * @brief Compatibility operation that follows D8 receivers across chunks.
      * @param maxSteps Safety limit; must be positive.
      * @param out Global cell coordinates, including the starting cell.
      * @return False if tracing reaches a non-resident chunk or an invalid/cyclic receiver.
@@ -76,7 +77,7 @@ public:
     bool traceFlow(int worldX, int worldY, int maxSteps,
                    std::vector<std::pair<int, int>> &out) const;
     /**
-     * @brief Assemble a dense hydrology window from any set of resident chunks.
+     * @brief Compatibility operation that assembles a dense hydrology window.
      *
      * Requesting one extra cell on each side provides the halo needed for seam-stable
      * river ribbons, normals, and bank calculations. Coordinates are global cells.

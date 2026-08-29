@@ -107,7 +107,7 @@ public:
     void disableTerrain() { terrainEnabled_ = false; terrainAssetEnabled_ = false; terrainAsset_.clear(); }
     bool terrainEnabled() const { return terrainEnabled_ || terrainAssetEnabled_; }
 
-    /** @brief Open a baked EVTR terrain asset. Height = offset + stored height * scale. */
+    /** @brief Compatibility operation that opens baked EVTR terrain data. */
     bool loadTerrainAsset(data::ByteData *bytes, float heightOffset = 0.f, float heightScale = 1.f);
     /** @brief Decode/evict EVTR chunks around a world-space column with an optional load budget. */
     procgen::TerrainStreamStats streamTerrainAssetAround(int worldX, int worldZ, int radiusChunks,

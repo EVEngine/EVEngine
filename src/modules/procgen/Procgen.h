@@ -581,40 +581,40 @@ public:
     [[nodiscard]] eve::script::Borrowed<Heightmap>       resolveHeightmap(ProcgenHeightmapHandleRef) noexcept;
     [[nodiscard]] eve::Result<void>                      releaseHeightmap(ProcgenHeightmapHandleRef);
     [[nodiscard]] bool                                   isHeightmapStale(ProcgenHeightmapHandleRef) const noexcept;
-    /** @brief Build a sampler from params (seed/scale/octaves/…) and materialize it (caller owns). */
+    /** @brief Compatibility facade that materializes a heightmap. @ownership Caller owns the result. */
     Heightmap *generateHeightmap(Params *params);
-    /** @brief Classify a heightmap into a semantic Grid2D using params bands (waterMax…). */
+    /** @brief Compatibility facade that classifies a heightmap into a semantic Grid2D. */
     bool heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out);
-    /** @brief Apply mass-conserving thermal erosion in place. */
+    /** @brief Compatibility facade that applies mass-conserving thermal erosion in place. */
     bool erodeTerrainThermal(Heightmap *heightmap, int iterations, float talus, float strength);
-    /** @brief Apply deterministic grid water/sediment erosion in place. */
+    /** @brief Compatibility facade that applies deterministic grid water/sediment erosion. */
     bool erodeTerrainHydraulic(Heightmap *heightmap, int iterations, float rainfall,
                                float evaporation, float capacity, float erosion,
                                float deposition);
-    /** @brief Cut drainage-connected river valleys into a heightmap in place. */
+    /** @brief Compatibility facade that cuts drainage-connected river valleys in place. */
     bool erodeTerrainFluvial(Heightmap *heightmap, int iterations, float riverThreshold,
                              float incision, float maxDepth, float bankWidth);
-    /** @brief Cut valleys with independent limits for channel incision and spill-sill breaching. */
+    /** @brief Compatibility facade with independent incision and spill-sill limits. */
     bool erodeTerrainFluvialAdvanced(Heightmap *heightmap, int iterations, float riverThreshold,
                                      float incision, float maxDepth, float bankWidth,
                                      float maxBreachDepth);
-    /** @brief Cut valleys with explicit raster-to-physical coordinate scaling. */
+    /** @brief Compatibility facade with explicit raster-to-physical scaling. */
     bool erodeTerrainFluvialScaled(Heightmap *heightmap, int iterations, float riverThreshold,
                                    float incision, float maxDepth, float bankWidth,
                                    float maxBreachDepth, float coordinateScale);
-    /** @brief Cut scaled river valleys and return wear/deposition diagnostic layers (caller owns). */
+    /** @brief Compatibility facade for detailed erosion. @ownership Caller owns the result. */
     TerrainErosionMap *erodeTerrainFluvialDetailed(
         Heightmap *heightmap, int iterations, float riverThreshold, float incision,
         float maxDepth, float bankWidth, float maxBreachDepth, float coordinateScale);
-    /** @brief Build river drainage, climate, and biome layers (caller owns). */
+    /** @brief Compatibility facade for terrain analysis. @ownership Caller owns the result. */
     TerrainLayers *analyzeTerrain(Heightmap *heightmap, float riverThreshold, float seaLevel,
                                   float latitude);
-    /** @brief Analyze terrain with resolution-independent routing perturbations. */
+    /** @brief Compatibility facade for scaled analysis. @ownership Caller owns the result. */
     TerrainLayers *analyzeTerrainScaled(Heightmap *heightmap, float riverThreshold, float seaLevel,
                                         float latitude, float coordinateScale);
-    /** @brief Bake a heightmap and analyzed layers into a chunked EVTR asset (caller owns). */
+    /** @brief Compatibility facade for EVTR baking. @ownership Caller owns the result. */
     data::ByteData *bakeTerrainAsset(Heightmap *heightmap, TerrainLayers *layers, int chunkSize);
-    /** @brief Build one LOD terrain render chunk with skirts and ecological splat weights. */
+    /** @brief Compatibility facade for LOD chunks. @ownership Caller owns the result. */
     TerrainMeshChunk *buildTerrainChunk(Heightmap *heightmap, TerrainLayers *layers,
                                         int originX, int originY, int cellsX, int cellsY, int lod,
                                         float cellSize, float heightScale, float skirtDepth);
@@ -622,39 +622,39 @@ public:
     int selectTerrainLod(Heightmap *heightmap, int originX, int originY, int cellsX, int cellsY,
                          int maxLod, float cellSize, float heightScale, float cameraDistance,
                          float viewportHeight, float verticalFovDegrees, float targetPixelError);
-    /** @brief Upload a built terrain chunk through the engine's standard 3D mesh path. */
+    /** @brief Compatibility upload facade. @lifetime Returned mesh is owned by Graphics. */
     graphics::Mesh *generateTerrainChunkMesh(TerrainMeshChunk *chunk, graphics::Graphics *gfx);
-    /** @brief Generate a flow-aligned water ribbon mesh for one terrain chunk. */
+    /** @brief Compatibility river mesh facade. @lifetime Returned mesh is owned by Graphics. */
     graphics::Mesh *generateTerrainRiverMesh(Heightmap *heightmap, TerrainLayers *layers,
                                              graphics::Graphics *gfx, int originX, int originY,
                                              int cellsX, int cellsY, float cellSize,
                                              float heightScale, float minWidth, float maxWidth,
                                              float heightOffset);
-    /** @brief Generate one slope-banded river surface batch, such as calm water or cascades. */
+    /** @brief Compatibility slope-banded river facade. @lifetime Returned mesh is owned by Graphics. */
     graphics::Mesh *generateTerrainRiverMeshAdvanced(
         Heightmap *heightmap, TerrainLayers *layers, graphics::Graphics *gfx,
         int originX, int originY, int cellsX, int cellsY, float cellSize,
         float heightScale, float minWidth, float maxWidth, float heightOffset,
         float minSurfaceSlope, float maxSurfaceSlope);
-    /** @brief Generate resolved closed-basin lake surfaces for one terrain chunk. */
+    /** @brief Compatibility lake mesh facade. @lifetime Returned mesh is owned by Graphics. */
     graphics::Mesh *generateTerrainLakeMesh(Heightmap *heightmap, TerrainLayers *layers,
                                             graphics::Graphics *gfx, int originX, int originY,
                                             int cellsX, int cellsY, float cellSize,
                                             float heightScale, float minimumDepth,
                                             float heightOffset);
-    /** @brief Create an RGBA8 sand/vegetation/rock/snow splat map for a terrain chunk. */
+    /** @brief Compatibility splat facade. @ownership Caller owns the returned image. */
     image::ImageData *generateTerrainSplatMap(TerrainMeshChunk *chunk);
-    /** @brief Create an opaque diagnostic albedo map by blending the terrain material weights. */
+    /** @brief Compatibility albedo facade. @ownership Caller owns the returned image. */
     image::ImageData *generateTerrainAlbedoMap(TerrainMeshChunk *chunk);
-    /** @brief Visualize erosion wear (orange) and deposition (cyan) as an RGBA8 image. */
+    /** @brief Compatibility erosion facade. @ownership Caller owns the returned image. */
     image::ImageData *generateTerrainErosionMap(TerrainErosionMap *erosion, float exposure);
-    /** @brief Visualize gross erosion as an orange RGBA8 image. */
+    /** @brief Compatibility wear facade. @ownership Caller owns the returned image. */
     image::ImageData *generateTerrainWearMap(TerrainErosionMap *erosion, float exposure);
-    /** @brief Visualize deposited material as a cyan RGBA8 image. */
+    /** @brief Compatibility deposition facade. @ownership Caller owns the returned image. */
     image::ImageData *generateTerrainDepositionMap(TerrainErosionMap *erosion, float exposure);
-    /** @brief Create the runtime four-layer splat/PBR terrain mesh shader. */
+    /** @brief Compatibility material facade. @lifetime Returned shader is owned by Graphics. */
     graphics::Shader *createTerrainMaterialShader(graphics::Graphics *gfx);
-    /** @brief Create a Fresnel/specular procedural water shader for rivers and lakes. */
+    /** @brief Compatibility water facade. @lifetime Returned shader is owned by Graphics. */
     graphics::Shader *createTerrainWaterShader(graphics::Graphics *gfx);
     [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> generateHeightmapHandle(ProcgenParamsHandleRef params);
     /** @brief Classify a heightmap into a module-owned grid using params bands. */

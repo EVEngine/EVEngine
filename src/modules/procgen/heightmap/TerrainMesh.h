@@ -53,6 +53,7 @@ private:
 /** @brief Builds LOD heightfield chunks with stable normals, skirts, and biome splat weights. */
 class TerrainMeshBuilder {
 public:
+    /** @brief Compatibility operation that builds a terrain mesh chunk. */
     static bool build(const Heightmap &heightmap, const TerrainLayers *layers,
                       const TerrainMeshSettings &settings, TerrainMeshChunk &out,
                       std::string *error = nullptr);
@@ -90,6 +91,7 @@ struct TerrainRiverMeshSettings {
 /** @brief Builds overlapping flow-aligned water ribbons from a terrain river network. */
 class TerrainRiverMeshBuilder {
 public:
+    /** @brief Compatibility operation that builds river surface geometry. */
     static bool build(const Heightmap &heightmap, const TerrainLayers &layers,
                       const TerrainRiverMeshSettings &settings, MeshBuild &out,
                       std::string *error = nullptr);
@@ -107,6 +109,7 @@ struct TerrainLakeMeshSettings {
 /** @brief Builds flat water-surface cells for Priority-Flood depressions. */
 class TerrainLakeMeshBuilder {
 public:
+    /** @brief Compatibility operation that builds lake surface geometry. */
     static bool build(const Heightmap &heightmap, const TerrainLayers &layers,
                       const TerrainLakeMeshSettings &settings, MeshBuild &out,
                       std::string *error = nullptr);

@@ -42,14 +42,14 @@ struct TerrainChunkEntry {
  */
 class TerrainAsset {
 public:
-    /** @brief Bake all terrain layers into a portable EVTR byte buffer. */
+    /** @brief Compatibility operation that bakes all terrain layers into EVTR. */
     static bool bake(const Heightmap &heightmap, const HydrologyMap &hydrology,
                      const ClimateMap &climate, int chunkSize, std::vector<uint8_t> &out,
                      std::string *error = nullptr);
 
-    /** @brief Open only the header and directory; chunk payloads stay compressed. */
+    /** @brief Compatibility operation that opens only the header and directory. */
     bool open(const uint8_t *data, size_t size, std::string *error = nullptr);
-    /** @brief Load and verify one chunk without decoding any other chunk. */
+    /** @brief Compatibility operation that loads and verifies one chunk. */
     bool loadChunk(int chunkX, int chunkY, TerrainChunkData &out,
                    std::string *error = nullptr) const;
 

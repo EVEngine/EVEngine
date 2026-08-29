@@ -3773,10 +3773,6 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
     cls.addFunc("getMeshRecipeId", &Procgen::getMeshRecipeId);
     cls.addFunc("hasMeshRecipe", &Procgen::hasMeshRecipe);
-    cls.addFunc("newTerrainSampler", &Procgen::newTerrainSampler);
-    cls.addFunc("newHeightmap", &Procgen::newHeightmap);
-    cls.addFunc("generateHeightmap", &Procgen::generateHeightmap);
-    cls.addFunc("heightmapToGrid", &Procgen::heightmapToGrid);
     cls.addFunc("erodeTerrainThermal", &Procgen::erodeTerrainThermal);
     cls.addFunc("erodeTerrainHydraulic", &Procgen::erodeTerrainHydraulic);
     cls.addFunc("erodeTerrainFluvial", &Procgen::erodeTerrainFluvial);
@@ -3799,12 +3795,6 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("generateTerrainDepositionMap", &Procgen::generateTerrainDepositionMap);
     cls.addFunc("createTerrainMaterialShader", &Procgen::createTerrainMaterialShader);
     cls.addFunc("createTerrainWaterShader", &Procgen::createTerrainWaterShader);
-    cls.addFunc("newCloudField", &Procgen::newCloudField);
-    cls.addFunc("newCloudShadow", &Procgen::newCloudShadow);
-    cls.addFunc("cloudCoverageAt", &Procgen::cloudCoverageAt);
-    cls.addFunc("cloudShadowFactor", &Procgen::cloudShadowFactor);
-    cls.addFunc("sampleCloud", &Procgen::sampleCloud);
-    cls.addFunc("sampleCloudShadow", &Procgen::sampleCloudShadow);
     cls.addFunc("getMeshRecipeSchema", [vm = cls.getHandle()](Procgen* value, const std::string& recipe) {
         if (!value)
             return eve::script::projectStatusResult(
