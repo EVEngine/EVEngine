@@ -236,7 +236,7 @@ void Graphics::expose(ssq::Table& table) {
 
 #ifndef EVENGINE_WEBGPU
     auto fontCls =
-        table.addClass<Font>("Font", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
+        table.addClass<Font>("GraphicsFont", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
     fontCls.addFunc("getHeight", &Font::getHeight);
     fontCls.addFunc("getAscent", &Font::getAscent);
     fontCls.addFunc("getBaseline", &Font::getBaseline);

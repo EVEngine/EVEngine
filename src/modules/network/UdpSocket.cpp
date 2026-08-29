@@ -79,6 +79,7 @@ bool UdpSocket::sendTo(eve::data::ByteData* data, std::string host, uint16_t por
             if (!self->sock_) return;
             self->sock_->sendTo(buf->data(), static_cast<int>(buf->size()),
                                 Poco::Net::SocketAddress(host, port));
+            self->net_->recordSent(buf->size());
         } catch (...) {
             NetCompletion c;
             c.type   = NetEvType::Err;
@@ -108,6 +109,7 @@ bool UdpSocket::send(eve::data::ByteData* data) {
         try {
             if (!self->sock_) return;
             self->sock_->sendBytes(buf->data(), static_cast<int>(buf->size()));
+            self->net_->recordSent(buf->size());
         } catch (...) {
             NetCompletion c;
             c.type   = NetEvType::Err;

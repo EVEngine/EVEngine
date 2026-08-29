@@ -35,6 +35,9 @@ class Source;
 
 namespace eve::scene {
 
+/** @brief Outcome of an atomic scene-tree mutation. */
+enum class SceneMutationStatus { Applied, Rejected };
+
 /**
  * @brief Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.
  */
@@ -207,6 +210,27 @@ public:
     bool setParent(int childIndex, int parentIndex);
     bool addChild(int parentIndex, int childIndex);
     bool removeChild(int parentIndex, int childIndex);
+
+    /**
+     * @brief Append one retained node without rebuilding existing nodes or links.
+     * @param node Node value with a unique non-empty id; hierarchy indices are ignored.
+     * @param parentId Existing parent id, or empty to append a detached root-level node.
+     * @return True when the node was appended and linked successfully.
+     * @remarks Appending may reallocate the node arena and invalidates borrowed SceneNode pointers.
+     */
+    SceneMutationStatus appendNode(SceneNode node, const std::string &parentId = {});
+    /**
+     * @brief Remove a leaf node while preserving every other node and external link.
+     * @param nodeId Stable id of a node without children.
+     * @return True when the leaf existed and was removed.
+     * @remarks Removal compacts the arena and invalidates borrowed SceneNode pointers.
+     */
+    SceneMutationStatus removeLeaf(const std::string &nodeId);
+    /** @brief Rename a retained node and emit a node_changed event. */
+    SceneMutationStatus renameNode(const std::string &nodeId, const std::string &name);
+    /** @brief Replace a node's local TRS and mark its subtree dirty. */
+    SceneMutationStatus setLocalTransform(const std::string &nodeId, float x, float y, float z,
+                           float yaw, float pitch, float roll, float sx, float sy, float sz);
 
     /** @brief Depth-first visit of arena indices under `nodeIndex` (inclusive). C callback. */
     void forEachDepthFirst(int nodeIndex, void (*fn)(SceneHost *, int, void *), void *user);

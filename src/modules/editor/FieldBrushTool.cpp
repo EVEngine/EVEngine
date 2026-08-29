@@ -27,7 +27,7 @@ std::unique_ptr<IEditCommand> AddScalarFieldOperation::createCommand(
     auto command = std::make_unique<ScalarFieldEditCommand>("add scalar field", target);
     for (int i = 0; i < samples.size(); ++i) {
         const BrushPoint &point = samples.point(i);
-        if (point.weight > 0.f && field->inBounds(point.x, point.y)) {
+        if (point.weight > 0.f && field->containsCell(point.x, point.y)) {
             command->record(point.x, point.y,
                             field->readScalar(point.x, point.y) + strength * point.weight);
         }

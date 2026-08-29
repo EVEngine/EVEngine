@@ -38,6 +38,7 @@ bool Profiler::enabled() const { return eve::prof::Profiler::enabled(); }
 void Profiler::reset() {
     eve::prof::Profiler::reset();
     frameMs_ = 0.f;
+    captureSequence_ = 0;
 }
 
 void Profiler::beginFrame() { frameBeginNs_ = nowNs(); }
@@ -47,6 +48,7 @@ void Profiler::endFrame() {
     const double totalMs = static_cast<double>(nowNs() - frameBeginNs_) / 1'000'000.0;
     frameMs_             = static_cast<float>(totalMs);
     eve::prof::Profiler::frameMark();
+    ++captureSequence_;
 }
 
 void Profiler::begin(const char* name) {
@@ -80,6 +82,28 @@ float Profiler::frameMs() const { return frameMs_; }
 float Profiler::gpuFrameMs() const {
     auto* t = eve::cap::query<eve::service::IGpuTimer>();
     return t ? t->gpuFrameMs() : 0.f;
+}
+
+eve::Result<ProfilerFrameSnapshot> Profiler::captureFrame() const {
+    if (!hasFrame()) {
+        return eve::Result<ProfilerFrameSnapshot>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "No completed profiler frame is available",
+            "profiler.frame", {}, "profiler.capture-frame"));
+    }
+    ProfilerFrameSnapshot snapshot;
+    snapshot.sequence   = captureSequence_;
+    snapshot.cpuFrameMs = frameMs_;
+    if (auto* timer = eve::cap::query<eve::service::IGpuTimer>()) {
+        snapshot.gpuTimingAvailable = timer->gpuTimingAvailable();
+        if (snapshot.gpuTimingAvailable) snapshot.gpuFrameMs = timer->gpuFrameMs();
+    }
+    const auto& samples = eve::prof::Profiler::lastFrame();
+    snapshot.zones.reserve(samples.size());
+    for (const auto& sample : samples) {
+        snapshot.zones.push_back({sample.module, sample.name, sample.thread, sample.selfMs,
+                                  sample.totalMs, sample.count, sample.minDepth});
+    }
+    return eve::Result<ProfilerFrameSnapshot>::success(std::move(snapshot));
 }
 
 std::string Profiler::textReport() const {

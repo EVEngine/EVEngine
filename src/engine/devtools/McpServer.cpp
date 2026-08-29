@@ -846,6 +846,21 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
+    if (name == "eve_skeleton_inspect") {
+        const std::string actor = argString(args, "actor");
+        const std::string bone  = argString(args, "bone");
+        if (actor.empty()) return "error: missing actor";
+        const std::string expr = "eve_mcp_skeleton_inspect(\"" + sqStringLiteralEscape(actor) +
+                                 "\",\"" + sqStringLiteralEscape(bone) + "\")";
+        auto info = dbg.evaluate(expr);
+        if (info.value.empty()) return "error: eve_mcp_skeleton_inspect is unavailable";
+        // Debugger string values are display-quoted. The project hook returns
+        // canonical JSON, so remove only that outer presentation pair.
+        if (info.value.size() >= 2 && info.value.front() == '"' && info.value.back() == '"')
+            return info.value.substr(1, info.value.size() - 2);
+        return info.value;
+    }
+
     if (name == "eve_pause") {
         dbg.pause(PauseReason::PauseKey);
         dap.notifyStopped(PauseReason::PauseKey, dbg.pauseLocation());
@@ -1244,6 +1259,8 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_eval\",\"description\":\"Evaluate a Squirrel expression (local or roottable).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"expression\":{\"type\":\"string\"}},\"required\":["
         "\"expression\"]}},"
+        "{\"name\":\"eve_skeleton_inspect\",\"description\":\"Inspect a published runtime skeleton hierarchy and bind/current bone transforms. The game provides eve_mcp_skeleton_inspect.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"actor\":{\"type\":\"string\"},\"bone\":{\"type\":\"string\"}},\"required\":[\"actor\"]}},"
         "{\"name\":\"eve_pause\",\"description\":\"Pause the game / script.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_continue\",\"description\":\"Continue from pause.\","

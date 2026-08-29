@@ -6,9 +6,11 @@
 #include "editor/EditorSelection.h"
 #include "property_access/PropertyAccess.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace eve::editor {
@@ -80,14 +82,45 @@ struct PropertyDescriptor {
     std::vector<RuleId>      validators;
 };
 
+/** @brief Owning result of a property-schema lookup. */
+class PropertyDescriptorLookup {
+public:
+    PropertyDescriptorLookup() = default;
+    explicit PropertyDescriptorLookup(PropertyDescriptor descriptor)
+        : descriptor_(std::move(descriptor)) {}
+
+    /** @brief Whether the requested descriptor exists. */
+    [[nodiscard]] explicit operator bool() const noexcept { return descriptor_.has_value(); }
+    /** @brief Access the owning descriptor snapshot. Requires a successful lookup. */
+    [[nodiscard]] const PropertyDescriptor& operator*() const { return descriptor_.value(); }
+    /** @brief Access the owning descriptor snapshot. Requires a successful lookup. */
+    [[nodiscard]] const PropertyDescriptor* operator->() const { return &descriptor_.value(); }
+
+    friend bool operator==(const PropertyDescriptorLookup& lookup, std::nullptr_t) noexcept {
+        return !lookup.descriptor_;
+    }
+    friend bool operator!=(const PropertyDescriptorLookup& lookup, std::nullptr_t) noexcept {
+        return lookup.descriptor_.has_value();
+    }
+
+private:
+    std::optional<PropertyDescriptor> descriptor_;
+};
+
 /** @brief Versioned property schema shared by developer, runtime and automation hosts. */
 struct PropertySchema {
     std::string                     typeId;
     std::uint32_t                   version = 1;
     std::vector<PropertyDescriptor> properties;
 
-    /** @brief Find one property by stable path, or nullptr. */
-    const PropertyDescriptor* find(const PropertyPath& path) const;
+    /**
+     * @brief Find one property by stable path.
+     * @param path Stable property path to query.
+     * @return An owning descriptor snapshot, or `std::nullopt` when absent.
+     * @remarks The returned value is independent of this schema's lifetime and
+     * is safe when the schema itself is a temporary value.
+     */
+    [[nodiscard]] PropertyDescriptorLookup find(const PropertyPath& path) const;
 };
 
 /** @brief Read state for single- and multi-selection property queries. */

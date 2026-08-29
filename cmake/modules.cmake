@@ -127,7 +127,7 @@ function(eve_resolve_modules)
         set(_profile_seed
             common data event timer network authority decision definitions effects
             game_event orders schema social statepatch steering tags transaction
-            economy attributes sensing spatial action settlement)
+            economy attributes sensing spatial action settlement tactics)
         set(EVENGINE_PROFILE_CORE_KIND server CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     else()

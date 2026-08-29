@@ -499,6 +499,58 @@ void ParticleSimSystem::update(float dt) {
         .ignore("legacy particle update facade");
 }
 
+namespace {
+int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
+                     std::vector<graphics::DrawItem2D>& items, int& order,
+                     bool respectSceneCulling, bool& usedCanvas, bool& culled) {
+    auto cfg = emitter.config(); auto sim = emitter.sim(); auto draw = emitter.draw();
+    auto gpu = emitter.gpuSim(); const int alive = liveParticleCount(&emitter);
+    if (!draw->visible || alive <= 0) return 0;
+    const auto& budget = particleBudgetConfig();
+    if (respectSceneCulling &&
+        (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(*cfg, *draw))) {
+        culled = true; return 0;
+    }
+    if (gpu->residentActive) {
+        graphics::GpuParticleDraw gpuDraw;
+        gpuDraw.texture = draw->texture; gpuDraw.sceneDepth = gfx.getSceneLinearDepthTexture();
+        gpuDraw.blend = draw->blend; gpuDraw.viewportWidth = float(gfx.getWidth());
+        gpuDraw.viewportHeight = float(gfx.getHeight());
+        if (draw->camera) { gpuDraw.cameraEnabled = true; gpuDraw.cameraX = draw->camera->data()->x;
+            gpuDraw.cameraY = draw->camera->data()->y; gpuDraw.cameraZoom = draw->camera->data()->zoom; }
+        gpuDraw.particleWidth = cfg->particleW; gpuDraw.particleHeight = cfg->particleH;
+        gpuDraw.sizeStart = cfg->sizeStart; gpuDraw.sizeEnd = cfg->sizeEnd;
+        gpuDraw.stretchFactor = cfg->stretchFactor;
+        gpuDraw.facing = cfg->renderMode == "stretched" ? graphics::GpuParticleFacingMode::Velocity
+                       : cfg->renderMode == "axis" ? graphics::GpuParticleFacingMode::Axis
+                                                    : graphics::GpuParticleFacingMode::ParticleRotation;
+        gpuDraw.axisRotationRadians = cfg->renderAxisDegrees / kRad2Deg;
+        gpuDraw.softParticles = cfg->softParticles; gpuDraw.particleDepth = cfg->softParticleDepth;
+        gpuDraw.softFadeDistance = cfg->softFadeDistance;
+        gpuDraw.colorStart[0]=cfg->colorStart.r; gpuDraw.colorStart[1]=cfg->colorStart.g;
+        gpuDraw.colorStart[2]=cfg->colorStart.b; gpuDraw.colorStart[3]=cfg->colorStart.a;
+        gpuDraw.colorEnd[0]=cfg->colorEnd.r; gpuDraw.colorEnd[1]=cfg->colorEnd.g;
+        gpuDraw.colorEnd[2]=cfg->colorEnd.b; gpuDraw.colorEnd[3]=cfg->colorEnd.a;
+        gpuDraw.hframes=cfg->hframes; gpuDraw.vframes=cfg->vframes;
+        if (gfx.drawGpuParticleEmitter(gpu->residentHandle, gpuDraw)) return gpu->estimatedAlive;
+        culled = true; return 0;
+    }
+    if (draw->canvas) usedCanvas = true;
+    if (cfg->renderMode == "ribbon") return appendRibbonItems(*cfg, *sim, *draw, order, items);
+    appendEmitterItems(*cfg, *sim, *draw, order, items); return sim->alive;
+}
+}
+
+int ParticleRenderSystem::renderEmitter(graphics::Graphics* gfx, ParticleEmitter* emitter) {
+    if (!gfx || !emitter) return 0;
+    std::vector<graphics::DrawItem2D> items; bool usedCanvas=false, culled=false;
+    int order=0;
+    const int rendered=appendOneEmitter(*gfx,*emitter,items,order,false,usedCanvas,culled);
+    if(!items.empty()) graphics::RenderSystem::drawItems(*gfx,items,false);
+    if (usedCanvas) gfx->setCanvas();
+    return rendered;
+}
+
 void ParticleRenderSystem::render(graphics::Graphics *gfx) {
     auto &stats = mutableParticleFrameStats();
     stats.renderedParticles = 0;
@@ -508,71 +560,18 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
     if (!gfx) return;
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
 
-    const auto &budget = particleBudgetConfig();
     std::vector<graphics::DrawItem2D> items;
     auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Sim,
                           ParticleEmitter::Draw>();
     bool anyCanvas = false;
     int order = 0;
     for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [cfg, sim, draw] = *it;
-        auto* emitter         = cfg->entity;
+        auto [cfg, sim, draw] = *it; (void)sim; (void)draw;
+        auto* emitter = cfg->entity;
         if (!emitter) continue;
-        auto      gpu   = emitter->gpuSim();
-        const int alive = liveParticleCount(emitter);
-        if (!draw->visible || alive <= 0) continue;
-        if (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(*cfg, *draw)) {
-            ++stats.renderCulledEmitters;
-            continue;
-        }
-        if (gpu->residentActive) {
-            graphics::GpuParticleDraw gpuDraw;
-            gpuDraw.texture        = draw->texture;
-            gpuDraw.sceneDepth     = gfx->getSceneLinearDepthTexture();
-            gpuDraw.blend          = draw->blend;
-            gpuDraw.viewportWidth  = float(gfx->getWidth());
-            gpuDraw.viewportHeight = float(gfx->getHeight());
-            if (draw->camera) {
-                gpuDraw.cameraEnabled = true;
-                gpuDraw.cameraX       = draw->camera->data()->x;
-                gpuDraw.cameraY       = draw->camera->data()->y;
-                gpuDraw.cameraZoom    = draw->camera->data()->zoom;
-            }
-            gpuDraw.particleWidth  = cfg->particleW;
-            gpuDraw.particleHeight = cfg->particleH;
-            gpuDraw.sizeStart      = cfg->sizeStart;
-            gpuDraw.sizeEnd        = cfg->sizeEnd;
-            gpuDraw.stretchFactor  = cfg->stretchFactor;
-            gpuDraw.facing         = cfg->renderMode == "stretched" ? graphics::GpuParticleFacingMode::Velocity
-                                     : cfg->renderMode == "axis"    ? graphics::GpuParticleFacingMode::Axis
-                                                                    : graphics::GpuParticleFacingMode::ParticleRotation;
-            gpuDraw.axisRotationRadians = cfg->renderAxisDegrees / kRad2Deg;
-            gpuDraw.softParticles       = cfg->softParticles;
-            gpuDraw.particleDepth       = cfg->softParticleDepth;
-            gpuDraw.softFadeDistance    = cfg->softFadeDistance;
-            gpuDraw.colorStart[0]  = cfg->colorStart.r;
-            gpuDraw.colorStart[1]  = cfg->colorStart.g;
-            gpuDraw.colorStart[2]  = cfg->colorStart.b;
-            gpuDraw.colorStart[3]  = cfg->colorStart.a;
-            gpuDraw.colorEnd[0]    = cfg->colorEnd.r;
-            gpuDraw.colorEnd[1]    = cfg->colorEnd.g;
-            gpuDraw.colorEnd[2]    = cfg->colorEnd.b;
-            gpuDraw.colorEnd[3]    = cfg->colorEnd.a;
-            gpuDraw.hframes        = cfg->hframes;
-            gpuDraw.vframes        = cfg->vframes;
-            if (gfx->drawGpuParticleEmitter(gpu->residentHandle, gpuDraw))
-                stats.renderedParticles += gpu->estimatedAlive;
-            else
-                ++stats.renderCulledEmitters;
-            continue;
-        }
-        if (draw->canvas) anyCanvas = true;
-        if (cfg->renderMode == "ribbon")
-            stats.renderedParticles += appendRibbonItems(*cfg, *sim, *draw, order, items);
-        else {
-            appendEmitterItems(*cfg, *sim, *draw, order, items);
-            stats.renderedParticles += sim->alive;
-        }
+        bool culled=false;
+        stats.renderedParticles += appendOneEmitter(*gfx,*emitter,items,order,true,anyCanvas,culled);
+        if(culled) ++stats.renderCulledEmitters;
     }
 
     // Unified 2D sprite path: rotation / flipbook UV / blend / layer sorting

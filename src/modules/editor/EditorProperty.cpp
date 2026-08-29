@@ -7,10 +7,11 @@
 
 namespace eve::editor {
 
-const PropertyDescriptor* PropertySchema::find(const PropertyPath& path) const {
+PropertyDescriptorLookup PropertySchema::find(const PropertyPath& path) const {
     auto found = std::find_if(properties.begin(), properties.end(),
                               [&](const PropertyDescriptor& property) { return property.path == path; });
-    return found == properties.end() ? nullptr : &*found;
+    if (found == properties.end()) return {};
+    return PropertyDescriptorLookup(*found);
 }
 
 namespace {

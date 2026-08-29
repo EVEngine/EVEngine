@@ -204,6 +204,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundHotReloadStatus = false;
     bool foundEditorCommands  = false;
     bool foundEditorPlan      = false;
+    bool foundSkeletonInspect = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
@@ -230,6 +231,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_host_hot_reload_status") foundHotReloadStatus = true;
         if (name == "eve_editor_commands") foundEditorCommands = true;
         if (name == "eve_editor_plan") foundEditorPlan = true;
+        if (name == "eve_skeleton_inspect") foundSkeletonInspect = true;
     }
     CHECK(foundStatus);
     CHECK(foundEval);
@@ -254,6 +256,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundHotReloadStatus);
     CHECK(foundEditorCommands);
     CHECK(foundEditorPlan);
+    CHECK(foundSkeletonInspect);
 
     client.sendRequest(3, "tools/call", "{\"name\":\"eve_status\",\"arguments\":{}}");
     auto statusMsg = client.expectResult(3);
@@ -353,7 +356,11 @@ TEST_CASE("devtools.mcp.evalAndPause") {
     std::filesystem::create_directories(projectRoot);
 
     eve::Runtime runtime(1024, ssq::Libs::ALL);
-    runtime.runSource("score <- 42;\n", "game:/main.nut");
+    runtime.runSource(
+        "score <- 42;\n"
+        "eve_mcp_skeleton_inspect <- function(actor,bone) { "
+        "return \"{\\\"actor\\\":\\\"\" + actor + \"\\\",\\\"bone\\\":\\\"\" + bone + \"\\\"}\"; };\n",
+        "game:/main.nut");
     dt.attach(runtime, false);
     mcp.setGameRoot(projectRoot.string());
 
@@ -390,12 +397,23 @@ TEST_CASE("devtools.mcp.evalAndPause") {
     }
     CHECK(!foundScript);
 
-    client.sendRequest(4, "tools/call", "{\"name\":\"eve_pause\",\"arguments\":{}}");
-    REQUIRE(client.expectResult(4));
+    client.sendRequest(4, "tools/call",
+                       "{\"name\":\"eve_skeleton_inspect\",\"arguments\":{\"actor\":\"Lyra\",\"bone\":\"handslot.r\"}}");
+    auto skeletonMsg = client.expectResult(4);
+    REQUIRE(skeletonMsg);
+    const std::string skeletonText = skeletonMsg->getObject("result")
+                                         ->getArray("content")
+                                         ->getObject(0)
+                                         ->getValue<std::string>("text");
+    CHECK(skeletonText.find("\"actor\":\"Lyra\"") != std::string::npos);
+    CHECK(skeletonText.find("\"bone\":\"handslot.r\"") != std::string::npos);
+
+    client.sendRequest(5, "tools/call", "{\"name\":\"eve_pause\",\"arguments\":{}}");
+    REQUIRE(client.expectResult(5));
     CHECK(dbg.isPaused());
 
-    client.sendRequest(5, "tools/call", "{\"name\":\"eve_continue\",\"arguments\":{}}");
-    REQUIRE(client.expectResult(5));
+    client.sendRequest(6, "tools/call", "{\"name\":\"eve_continue\",\"arguments\":{}}");
+    REQUIRE(client.expectResult(6));
     CHECK(!dbg.isPaused());
 
     mcp.stop();

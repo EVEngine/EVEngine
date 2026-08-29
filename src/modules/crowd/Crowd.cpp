@@ -376,6 +376,7 @@ struct Crowd::Impl {
 Module_IMPL(Crowd, new Crowd());
 
 Crowd::Crowd() : impl_(std::make_unique<Impl>()) {}
+Crowd::~Crowd() = default;
 
 // --- 流场 ---
 
