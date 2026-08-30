@@ -56,7 +56,6 @@ eve_update = function(dt) {
     local left = mouse.isDown(1);
     if (left && !previousLeft) paintHit();
     previousLeft = left;
-    world.update(dt);
 };
 
 eve_render = function() {
