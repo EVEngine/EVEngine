@@ -3,7 +3,7 @@
 #include "editor/EditorAuthority.h"
 #include "editor/EditorGizmoPreview.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 
 #include <glm/glm.hpp>
 
@@ -51,7 +51,7 @@ struct CameraTimelineKeyValue {
 };
 
 /** @brief Revisioned camera-rig and director-timeline editing document. */
-class CameraDocumentTarget final : public IEditableTargetV2,
+class CameraDocumentTarget final : public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider {

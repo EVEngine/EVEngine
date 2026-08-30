@@ -38,7 +38,7 @@ EditorResult<void> UiDocumentTarget::applyDomainOperation(const DomainOperation&
                              "UI operation targets another document");
     if (operation.type == "ui.widget.create.v1") {
         auto parsed = parseWidget(operation.payload);
-        if (!parsed.accepted() || !parsed.value)
+        if (!parsed.isAccepted() || !parsed.value)
             return uiError<void>(EditorStatus::Rejected, "editor.ui.create-payload",
                                  "UI create payload is invalid");
         const UiWidgetSnapshot& value = *parsed.value;
@@ -51,7 +51,7 @@ EditorResult<void> UiDocumentTarget::applyDomainOperation(const DomainOperation&
         widgets_.emplace(value.id, value);
     } else if (operation.type == "ui.widget.delete.v1") {
         auto parsed = parseWidget(operation.payload);
-        if (!parsed.accepted() || !parsed.value || !widgets_.contains(parsed.value->id))
+        if (!parsed.isAccepted() || !parsed.value || !widgets_.contains(parsed.value->id))
             return uiError<void>(EditorStatus::NotFound, "editor.ui.widget-not-found",
                                  "UI widget does not exist");
         if (!children(parsed.value->id).empty())
@@ -60,7 +60,7 @@ EditorResult<void> UiDocumentTarget::applyDomainOperation(const DomainOperation&
         widgets_.erase(parsed.value->id);
     } else if (operation.type == "ui.widget.replace.v1") {
         auto parsed = parseWidget(operation.payload);
-        if (!parsed.accepted() || !parsed.value)
+        if (!parsed.isAccepted() || !parsed.value)
             return uiError<void>(EditorStatus::Rejected, "editor.ui.replace-payload",
                                  "UI replacement payload is invalid");
         auto current = widgets_.find(parsed.value->id);
@@ -82,7 +82,7 @@ EditorResult<void> UiDocumentTarget::applyDomainOperation(const DomainOperation&
         auto candidate = widgets_;
         for (const EditorValue& entry : *entries) {
             auto parsed = parseWidget(entry);
-            if (!parsed.accepted() || !parsed.value || !candidate.contains(parsed.value->id))
+            if (!parsed.isAccepted() || !parsed.value || !candidate.contains(parsed.value->id))
                 return uiError<void>(EditorStatus::Rejected, "editor.ui.multi-widget",
                                      "UI multi-edit references an invalid widget");
             candidate[parsed.value->id] = *parsed.value;
@@ -157,7 +157,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeCreate(const CreateUiWidgetR
 
 EditorResult<DomainOperation> UiDocumentTarget::makeDelete(const ObjectId& id) const {
     auto current = widget(id);
-    if (!current.accepted() || !current.value)
+    if (!current.isAccepted() || !current.value)
         return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
                                         "UI widget does not exist");
     if (!children(id).empty())
@@ -177,7 +177,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeDelete(const ObjectId& id) c
 EditorResult<DomainOperation> UiDocumentTarget::makeRename(const ObjectId& id,
                                                             const std::string& name) const {
     auto current = widget(id);
-    if (!current.accepted() || !current.value)
+    if (!current.isAccepted() || !current.value)
         return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
                                         "UI widget does not exist");
     if (name.empty())
@@ -191,7 +191,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeRename(const ObjectId& id,
 EditorResult<DomainOperation> UiDocumentTarget::makeReparent(const ObjectId& id,
                                                               const ObjectId& parent) const {
     auto current = widget(id);
-    if (!current.accepted() || !current.value)
+    if (!current.isAccepted() || !current.value)
         return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
                                         "UI widget does not exist");
     if (!parent.empty() && !widgets_.contains(parent))
@@ -208,7 +208,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeReparent(const ObjectId& id,
 EditorResult<DomainOperation> UiDocumentTarget::makeSetLayout(const ObjectId& id,
                                                                const UiLayoutValue& layout) const {
     auto current = widget(id);
-    if (!current.accepted() || !current.value)
+    if (!current.isAccepted() || !current.value)
         return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
                                         "UI widget does not exist");
     if (layout.width < 0.0 || layout.height < 0.0 || layout.anchorX < 0.0 ||
@@ -224,7 +224,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSetLayout(const ObjectId& id
 EditorResult<DomainOperation> UiDocumentTarget::makeSetStyle(const ObjectId& id,
                                                               const UiStyleValue& style) const {
     auto current = widget(id);
-    if (!current.accepted() || !current.value)
+    if (!current.isAccepted() || !current.value)
         return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
                                         "UI widget does not exist");
     const double values[]{style.marginLeft, style.marginTop, style.marginRight, style.marginBottom,
@@ -255,7 +255,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSetStyle(const ObjectId& id,
 EditorResult<DomainOperation> UiDocumentTarget::makeSetContent(const ObjectId& id,
                                                                 const UiContentValue& content) const {
     auto current = widget(id);
-    if (!current.accepted() || !current.value)
+    if (!current.isAccepted() || !current.value)
         return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
                                         "UI widget does not exist");
     const double colors[]{content.textR, content.textG, content.textB, content.textA};

@@ -214,9 +214,19 @@ function(main)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     # cl.exe gets STL/UCRT from %INCLUDE% (vcvars); CMake omits those from compile_commands.json.
     # Export them so clangd can resolve <cstdint> etc. Configure via cmake/with-msvc.cmd.
+    # Do not use CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES: CMake emits those as
+    # /external:I, which vanilla clangd rejects (drv_unknown_argument) and then
+    # fails the whole TU. -I is accepted by both cl.exe and clang; for cl.exe it
+    # is redundant with %INCLUDE% and does not change search order in practice.
     if(MSVC AND DEFINED ENV{INCLUDE} AND NOT "$ENV{INCLUDE}" STREQUAL "")
-        set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES $ENV{INCLUDE})
-        set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES $ENV{INCLUDE})
+        set(_eve_msvc_include "$ENV{INCLUDE}")
+        foreach(_eve_std_inc IN LISTS _eve_msvc_include)
+            if(NOT _eve_std_inc STREQUAL "")
+                add_compile_options("-I${_eve_std_inc}")
+            endif()
+        endforeach()
+        unset(_eve_msvc_include)
+        unset(_eve_std_inc)
         message(STATUS "Exported MSVC INCLUDE paths into compile_commands for clangd")
     elseif(MSVC)
         message(STATUS "MSVC INCLUDE unset; clangd may not find STL headers. Use cmake/with-msvc.cmd")

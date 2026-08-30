@@ -1,11 +1,10 @@
-#include "editor/EditorProperty.h"
+#include "editing/EditingProperty.h"
 
 #include <algorithm>
 #include <type_traits>
-#include <utility>
 #include <variant>
 
-namespace eve::editor {
+namespace eve::editing {
 
 PropertyDescriptorLookup PropertySchema::find(const PropertyPath& path) const {
     auto found = std::find_if(properties.begin(), properties.end(),
@@ -53,7 +52,7 @@ property_access::PropertyFlag convertFlags(PropertyFlag flags) {
     return result;
 }
 
-const char *legacyRule(const std::string &code) {
+const char* legacyRule(const std::string& code) {
     if (code == "property_access.property.type") return "editor.property.type-mismatch";
     if (code == "property_access.property.read-only") return "editor.property.read-only";
     if (code == "property_access.property.choice") return "editor.property.invalid-enum";
@@ -64,10 +63,10 @@ const char *legacyRule(const std::string &code) {
 }
 
 template <class ResultValue>
-EditorResult<ResultValue> editorValidationError(const property_access::WriteResult &validation,
-                                                const PropertyDescriptor           &descriptor) {
-    EditorResult<ResultValue> result;
-    result.status = EditorStatus::Rejected;
+Result<ResultValue> validationError(const property_access::WriteResult& validation,
+                                    const PropertyDescriptor&           descriptor) {
+    Result<ResultValue> result;
+    result.status = Status::Rejected;
     result.diagnostics.push_back({RuleId(legacyRule(validation.code)), DiagnosticSeverity::Error,
                                   validation.message + ": " + descriptor.path.value()});
     return result;
@@ -75,7 +74,7 @@ EditorResult<ResultValue> editorValidationError(const property_access::WriteResu
 
 }  // namespace
 
-property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor &source) {
+property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor& source) {
     property_access::PropertyDescriptor result;
     result.path              = source.path.value();
     result.displayName       = source.displayNameKey;
@@ -94,20 +93,20 @@ property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescr
     return result;
 }
 
-eve::Value toPresentationValue(const EditorValue &value) {
+eve::Value toPresentationValue(const Value& value) {
     return std::visit(
-        [](const auto &current) -> eve::Value {
+        [](const auto& current) -> eve::Value {
             using T = std::decay_t<decltype(current)>;
             if constexpr (std::is_same_v<T, std::monostate>) {
                 return {};
-            } else if constexpr (std::is_same_v<T, EditorValue::Array>) {
+            } else if constexpr (std::is_same_v<T, Value::Array>) {
                 eve::Value::Array result;
                 result.reserve(current.size());
-                for (const EditorValue &entry : current) result.push_back(toPresentationValue(entry));
+                for (const Value& entry : current) result.push_back(toPresentationValue(entry));
                 return result;
-            } else if constexpr (std::is_same_v<T, EditorValue::Object>) {
+            } else if constexpr (std::is_same_v<T, Value::Object>) {
                 eve::Value::Object result;
-                for (const auto &[key, entry] : current) result.emplace(key, toPresentationValue(entry));
+                for (const auto& [key, entry] : current) result.emplace(key, toPresentationValue(entry));
                 return result;
             } else {
                 return eve::Value(current);
@@ -116,39 +115,36 @@ eve::Value toPresentationValue(const EditorValue &value) {
         value.storage());
 }
 
-EditorValue toEditorValue(const eve::Value &value) {
+Value toEditingValue(const eve::Value& value) {
     return std::visit(
-        [](const auto &current) -> EditorValue {
+        [](const auto& current) -> Value {
             using T = std::decay_t<decltype(current)>;
             if constexpr (std::is_same_v<T, std::monostate>) {
                 return {};
             } else if constexpr (std::is_same_v<T, eve::Value::Array>) {
-                EditorValue::Array result;
+                Value::Array result;
                 result.reserve(current.size());
-                for (const eve::Value &entry : current) result.push_back(toEditorValue(entry));
+                for (const eve::Value& entry : current) result.push_back(toEditingValue(entry));
                 return result;
             } else if constexpr (std::is_same_v<T, eve::Value::Object>) {
-                EditorValue::Object result;
-                for (const auto &[key, entry] : current) result.emplace(key, toEditorValue(entry));
+                Value::Object result;
+                for (const auto& [key, entry] : current) result.emplace(key, toEditingValue(entry));
                 return result;
             } else {
-                return EditorValue(current);
+                return Value(current);
             }
         },
         value.storage());
 }
 
-EditorResult<void> validatePropertyValue(const PropertyDescriptor &descriptor, const EditorValue &value) {
+Result<void> validatePropertyValue(const PropertyDescriptor& descriptor, const Value& value) {
     const property_access::WriteResult validation =
         property_access::validatePropertyValue(toPresentationDescriptor(descriptor), toPresentationValue(value));
-    if (!validation.accepted) return editorValidationError<void>(validation, descriptor);
-    // Action payloads are an editor-specific compatibility rule. Presentation
-    // buttons may carry a payload, while editor command intents historically
-    // use null to represent an action invocation.
-    if (descriptor.type == PropertyType::Action && value.type() != EditorValue::Type::Null)
-        return EditorResult<void>::error(EditorStatus::Rejected, RuleId("editor.property.type-mismatch"),
-                                         "Value type does not match property: " + descriptor.path.value());
-    return EditorResult<void>::applied();
+    if (!validation.accepted) return validationError<void>(validation, descriptor);
+    if (descriptor.type == PropertyType::Action && value.type() != Value::Type::Null)
+        return Result<void>::error(Status::Rejected, RuleId("editor.property.type-mismatch"),
+                                   "Value type does not match property: " + descriptor.path.value());
+    return Result<void>::applied();
 }
 
-}  // namespace eve::editor
+}  // namespace eve::editing

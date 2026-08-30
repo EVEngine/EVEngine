@@ -49,7 +49,7 @@ EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::load() const {
         return persistenceError(EditorStatus::Rejected, "editor.persistence.invalid",
                                 "Persistence store and URI are required");
     auto stored = store_->read(resourceUri_);
-    if (!stored.accepted() || !stored.value) {
+    if (!stored.isAccepted() || !stored.value) {
         if (stored.status == EditorStatus::NotFound) {
             EditorPersistenceSnapshot empty;
             empty.kind = kind_;
@@ -77,7 +77,7 @@ EditorResult<EditorPersistenceSnapshot> EditorPersistenceAdapter::commit(const E
     envelope["journal"]       = EditorValue(std::move(serializedJournal));
     auto stored =
         store_->compareAndSwap(resourceUri_, base.revision, base.contentHash, EditorValue(std::move(envelope)));
-    if (!stored.accepted() || !stored.value) {
+    if (!stored.isAccepted() || !stored.value) {
         EditorResult<EditorPersistenceSnapshot> result;
         result.status      = stored.status;
         result.diagnostics = std::move(stored.diagnostics);

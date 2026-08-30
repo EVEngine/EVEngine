@@ -112,7 +112,7 @@ EditorResult<DomainOperation> FluidSimulationTarget::makeSet(const SelectionSnap
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     auto property = schema(selection).find(path);
     if (!matches(selection) || !property || mode != PropertySetMode::Absolute) return fluidError<DomainOperation>(EditorStatus::Rejected, "editor.fluid.invalid-property-set", "Fluid property requires matching selection and absolute assignment");
-    auto valid = validatePropertyValue(*property, value); if (!valid.accepted()) { EditorResult<DomainOperation> failed; failed.status = valid.status; failed.diagnostics = std::move(valid.diagnostics); return failed; }
+    auto valid = validatePropertyValue(*property, value); if (!valid.isAccepted()) { EditorResult<DomainOperation> failed; failed.status = valid.status; failed.diagnostics = std::move(valid.diagnostics); return failed; }
     EditorValue candidateValue = settingsValue(settings_); auto* object = candidateValue.getIf<EditorValue::Object>(); (*object)[path.value()] = value;
     auto candidate = parseSettings(candidateValue); if (!candidate.value) return fluidError<DomainOperation>(candidate.status, "editor.fluid.invalid-settings", "Fluid property conflicts with other settings");
     DomainOperation operation; operation.type = "fluid.settings.replace.v1"; operation.inverseType = operation.type; operation.target = TargetId(id_);

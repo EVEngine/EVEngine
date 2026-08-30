@@ -111,7 +111,7 @@ TEST_CASE("actionPreviewController.explicitlyReportsMissingRootMotionProvider") 
     RecordingSink                        sink;
     eve::editor::ActionPreviewController preview(editor, sink);
 
-    REQUIRE(preview.refresh().accepted());
+    REQUIRE(preview.refresh().isAccepted());
     REQUIRE(sink.presented.has_value());
     CHECK(static_cast<int>(sink.presented->rootMotionState) ==
           static_cast<int>(eve::action::RootMotionPreviewState::Unavailable));
@@ -123,9 +123,9 @@ TEST_CASE("actionPreviewController.samplesAndDrawsOwningRootMotionPath") {
     RecordingSink                        sink;
     RecordingRootMotion                  rootMotion;
     eve::editor::ActionPreviewController preview(editor, sink, &rootMotion);
-    REQUIRE(preview.setRootMotionSampleCount(32).accepted());
+    REQUIRE(preview.setRootMotionSampleCount(32).isAccepted());
 
-    REQUIRE(preview.refresh().accepted());
+    REQUIRE(preview.refresh().isAccepted());
     CHECK_EQ(rootMotion.calls, 1);
     CHECK_EQ(rootMotion.lastAnimationUri, "asset://animations/preview-test.eva");
     CHECK_EQ(rootMotion.lastDuration, eve::Duration::fromNanoseconds(100));
@@ -149,7 +149,7 @@ TEST_CASE("actionPreviewController.routesPresentationAndStateBoundaryCues") {
     editor.play();
 
     auto advanced = preview.update(eve::Duration::fromNanoseconds(40));
-    REQUIRE(advanced.accepted());
+    REQUIRE(advanced.isAccepted());
     REQUIRE_EQ(*advanced.value, 4u);
     REQUIRE(sink.presented.has_value());
     CHECK(static_cast<int>(sink.presented->reason) == static_cast<int>(eve::action::ActionPreviewReason::Advance));
@@ -171,7 +171,7 @@ TEST_CASE("actionPreviewController.prepareFailureLeavesTransportUnchanged") {
     editor.play();
 
     auto advanced = preview.update(eve::Duration::fromNanoseconds(40));
-    CHECK(!advanced.accepted());
+    CHECK(!advanced.isAccepted());
     CHECK_EQ(editor.previewTime(), eve::Duration::zero());
     CHECK_EQ(sink.prepareCount, 1);
     CHECK_EQ(sink.presentCount, 0);
@@ -181,22 +181,22 @@ TEST_CASE("actionTimelineEditor.rejectsStaleAndForgedPreviewPlans") {
     eve::editor::ActionTimelineEditor editor("asset.combat.preview", timelineFixture());
     editor.play();
     auto stale = editor.planPreview(eve::Duration::fromNanoseconds(40));
-    REQUIRE(stale.accepted());
+    REQUIRE(stale.isAccepted());
     REQUIRE(editor
                 .addNotify(id("combat-track:presentation"), {id("combat-notify:late"),
                                                              id("gameplay:event"),
                                                              eve::Duration::fromNanoseconds(60),
                                                              {{"tag", eve::Value("Combat.Late")}}})
-                .accepted());
+                .isAccepted());
     auto staleCommit = editor.applyPreviewPlan(std::move(*stale.value));
-    CHECK(!staleCommit.accepted());
+    CHECK(!staleCommit.isAccepted());
     CHECK_EQ(editor.previewTime(), eve::Duration::zero());
 
     auto forged = editor.planPreview(eve::Duration::fromNanoseconds(40));
-    REQUIRE(forged.accepted());
+    REQUIRE(forged.isAccepted());
     forged.value->events.clear();
     auto forgedCommit = editor.applyPreviewPlan(std::move(*forged.value));
-    CHECK(!forgedCommit.accepted());
+    CHECK(!forgedCommit.isAccepted());
     CHECK_EQ(editor.previewTime(), eve::Duration::zero());
 }
 
@@ -205,9 +205,9 @@ TEST_CASE("actionPreviewController.seekValidatesBeforePreparing") {
     RecordingSink                        sink;
     eve::editor::ActionPreviewController preview(editor, sink);
 
-    CHECK(!preview.seek(eve::Duration::fromNanoseconds(101)).accepted());
+    CHECK(!preview.seek(eve::Duration::fromNanoseconds(101)).isAccepted());
     CHECK_EQ(sink.prepareCount, 0);
-    REQUIRE(preview.seek(eve::Duration::fromNanoseconds(60)).accepted());
+    REQUIRE(preview.seek(eve::Duration::fromNanoseconds(60)).isAccepted());
     CHECK_EQ(sink.prepareCount, 1);
     CHECK_EQ(sink.presentCount, 1);
     CHECK_EQ(editor.previewTime(), eve::Duration::fromNanoseconds(60));

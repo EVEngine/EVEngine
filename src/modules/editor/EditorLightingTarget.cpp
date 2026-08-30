@@ -142,7 +142,7 @@ EditorResult<void> LightingPropertyTargetBase::applyDomainOperation(const Domain
         return lightingError<void>(EditorStatus::Rejected, "editor.lighting.invalid-operation",
                                    "Lighting operation requires a known path and value");
     auto valid = validatePropertyValue(*descriptor, *assigned);
-    if (!valid.accepted()) return valid;
+    if (!valid.isAccepted()) return valid;
     values_[*path] = *assigned;
     ++revision_;
     dirty_.include(0, 0);
@@ -184,7 +184,7 @@ EditorResult<DomainOperation> LightingPropertyTargetBase::makeSet(const Selectio
         return lightingError<DomainOperation>(EditorStatus::Unsupported, "editor.lighting.property-unsupported",
                                               "Lighting property is unknown: " + path.value());
     auto valid = validatePropertyValue(*descriptor, assigned);
-    if (!valid.accepted()) {
+    if (!valid.isAccepted()) {
         EditorResult<DomainOperation> failed;
         failed.status = valid.status;
         failed.diagnostics = std::move(valid.diagnostics);
@@ -236,7 +236,7 @@ EditorResult<void> LightingPropertyTargetBase::loadSnapshot(const EditorValue& s
             return lightingError<void>(EditorStatus::Unsupported, "editor.lighting.snapshot-property",
                                        "Lighting snapshot contains an unknown property: " + path);
         auto valid = validatePropertyValue(*descriptor, assigned);
-        if (!valid.accepted()) return valid;
+        if (!valid.isAccepted()) return valid;
         candidate[path] = assigned;
     }
     values_ = std::move(candidate);

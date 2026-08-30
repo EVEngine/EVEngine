@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <map>
 #include <string>
@@ -11,9 +11,10 @@
 namespace eve::editor {
 
 /** @brief UI-neutral, serializable material authoring target. */
-class MaterialDocumentTarget final : public IEditableTargetV2,
+class MaterialDocumentTarget final : public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging,
+                                     public eve::editing::IEditingSnapshotProvider,
                                      public IPropertyProvider {
 public:
     explicit MaterialDocumentTarget(std::string id);
@@ -39,7 +40,7 @@ public:
                                             const PropertyPath& path) const override;
 
     /** @brief Capture deterministic content suitable for DocumentService persistence. */
-    EditorValue snapshotValue() const;
+    EditorValue snapshotValue() const override;
     /** @brief Replace content when opening a persisted material document. */
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Validate cross-field authoring rules without mutating the target. */

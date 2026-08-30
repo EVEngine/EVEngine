@@ -42,7 +42,7 @@ EditorResult<void> ParticleEmitterOffscreenPresenter::draw(
     if(!emitter.get())return fail<void>(EditorStatus::Failed,"editor.particles.preview-emitter",
                                         "Could not create an isolated particle emitter");
     auto applied=ParticleGraphRuntimeBuilder().apply(request.graph,emitter.get(),textures_);
-    if(!applied.accepted())return applied;
+    if(!applied.isAccepted())return applied;
     emitter.get()->setGpuSimulation(false);
     emitter.get()->setAutoRandomSeed(false);
     emitter.get()->setCanvas(canvas);

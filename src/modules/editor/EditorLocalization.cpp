@@ -168,7 +168,7 @@ EditorResult<void> LocalizationDocument::loadSnapshot(const EditorValue& snapsho
         const auto* source = sourceValue ? sourceValue->getIf<std::string>() : nullptr;
         const auto* context = contextValue ? contextValue->getIf<std::string>() : nullptr;
         const auto* variants = variantsValue ? variantsValue->getIf<EditorValue::Object>() : nullptr;
-        if (!key || !source || !context || !variants || !candidate.addRow(*key, *source, *context).accepted())
+        if (!key || !source || !context || !variants || !candidate.addRow(*key, *source, *context).isAccepted())
             return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-row",
                                            "Localization snapshot contains an invalid source row");
         for (const auto& [locale, variantValue] : *variants) {
@@ -181,7 +181,7 @@ EditorResult<void> LocalizationDocument::loadSnapshot(const EditorValue& snapsho
             const auto* status = statusValue ? statusValue->getIf<std::string>() : nullptr;
             const auto* duration = durationValue ? durationValue->getIf<double>() : nullptr;
             if (!text || !asset || !status || !duration ||
-                !candidate.setVariant(*key, locale, {*text, *asset, *status, *duration}).accepted())
+                !candidate.setVariant(*key, locale, {*text, *asset, *status, *duration}).isAccepted())
                 return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-variant",
                                                "Localization snapshot contains an invalid locale variant");
         }

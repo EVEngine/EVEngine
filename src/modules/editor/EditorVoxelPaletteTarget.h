@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 #include "voxel/CubeType.h"
 
 #include <memory>
@@ -16,7 +16,7 @@ namespace eve::editor {
 struct VoxelPaletteEntryValue { ObjectId id;voxel::CubeType type; };
 
 /** @brief Revisioned Voxel CubeType palette with face-material Inspector. */
-class VoxelPaletteTarget final:public IEditableTargetV2,public IDomainOperationTarget,
+class VoxelPaletteTarget final:public virtual IEditableTarget,public IDomainOperationTarget,
  public IDomainOperationTargetStaging,public IPropertyProvider {
 public:
  explicit VoxelPaletteTarget(std::string id);

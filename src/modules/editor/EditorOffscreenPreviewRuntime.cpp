@@ -80,7 +80,7 @@ EditorResult<OffscreenPreviewArtifact> GraphicsOffscreenPreviewService::render(
         return EditorResult<OffscreenPreviewArtifact>::error(EditorStatus::Failed,
             RuleId("editor.preview.draw-exception"), "Offscreen preview draw callback threw an exception");
     }
-    if (!drawn.accepted()) {
+    if (!drawn.isAccepted()) {
         EditorResult<OffscreenPreviewArtifact> result;
         result.status = drawn.status; result.diagnostics = std::move(drawn.diagnostics); return result;
     }

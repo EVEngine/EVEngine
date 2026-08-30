@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 
 #include <array>
 #include <map>
@@ -66,7 +66,7 @@ struct CrowdOverlayResult {
 };
 
 /** @brief UI-neutral agent/zone/path document with reversible domain operations. */
-class CrowdDocumentTarget final : public IEditableTargetV2,
+class CrowdDocumentTarget final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging {
 public:

@@ -38,7 +38,7 @@ TEST_CASE("editor.scene.live_host_applies_incremental_hierarchy_and_trs_without_
     CHECK_EQ(links.value->at(0).syncMode, 0);
     auto rename = target.makeRename(ObjectId("mesh"), "Hero Mesh");
     REQUIRE(rename.value);
-    REQUIRE(target.applyDomainOperation(*rename.value).accepted());
+    REQUIRE(target.applyDomainOperation(*rename.value).isAccepted());
     mesh = take(host->findById("mesh"));
     CHECK_EQ(mesh->name, "Hero Mesh");
     REQUIRE_EQ(mesh->links.size(), size_t{1});
@@ -47,7 +47,7 @@ TEST_CASE("editor.scene.live_host_applies_incremental_hierarchy_and_trs_without_
     SceneTransformValue transform{4.0, 5.0, 6.0, 0.1, 0.2, 0.3, 2.0, 3.0, 4.0};
     auto move = target.makeSetTransform(ObjectId("mesh"), transform);
     REQUIRE(move.value);
-    REQUIRE(target.applyDomainOperation(*move.value).accepted());
+    REQUIRE(target.applyDomainOperation(*move.value).isAccepted());
     mesh = take(host->findById("mesh"));
     CHECK_EQ(mesh->x, 4.f);
     CHECK_EQ(mesh->pitch, 0.1f);
@@ -57,7 +57,7 @@ TEST_CASE("editor.scene.live_host_applies_incremental_hierarchy_and_trs_without_
 
     auto reparent = target.makeReparent(ObjectId("mesh"), ObjectId("socket"));
     REQUIRE(reparent.value);
-    REQUIRE(target.applyDomainOperation(*reparent.value).accepted());
+    REQUIRE(target.applyDomainOperation(*reparent.value).isAccepted());
     CHECK_EQ(host->getParentById("mesh")->id, "socket");
 }
 
@@ -71,13 +71,13 @@ TEST_CASE("editor.scene.live_host_staged_create_delete_and_conflict_are_atomic")
                                      SceneTransformValue{1.0, 0.0, 0.0}};
     auto create = target.makeCreate(request);
     REQUIRE(create.value);
-    REQUIRE(target.applyDomainOperation(*create.value).accepted());
+    REQUIRE(target.applyDomainOperation(*create.value).isAccepted());
     CHECK(host->hasNode("created"));
     CHECK_EQ(host->getParentById("created")->id, "root");
 
     auto remove = target.makeDelete(ObjectId("created"));
     REQUIRE(remove.value);
-    REQUIRE(target.applyDomainOperation(*remove.value).accepted());
+    REQUIRE(target.applyDomainOperation(*remove.value).isAccepted());
     CHECK(!host->hasNode("created"));
 
     auto staged = target.cloneDomainState();
@@ -85,7 +85,7 @@ TEST_CASE("editor.scene.live_host_staged_create_delete_and_conflict_are_atomic")
     REQUIRE(stagedScene);
     auto rename = stagedScene->makeRename(ObjectId("existing"), "Changed");
     REQUIRE(rename.value);
-    REQUIRE(stagedScene->SceneTargetBase::applyDomainOperation(*rename.value).accepted());
+    REQUIRE(stagedScene->SceneTargetBase::applyDomainOperation(*rename.value).isAccepted());
     REQUIRE_EQ(static_cast<int>(host->renameNode("existing", "External Change")),
                static_cast<int>(eve::scene::SceneMutationStatus::Applied));
     const auto conflict = target.commitDomainState(std::move(staged));

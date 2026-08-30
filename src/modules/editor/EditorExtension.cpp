@@ -84,7 +84,7 @@ EditorResult<EditorValue> EditorExtensionRegistry::registerCommand(CommandDescri
                                                 "Commands may only be registered while loading an extension");
     descriptor.ownerModule           = activeOwner_;
     EditorResult<EditorValue> result = commands_->registerCommand(descriptor, std::move(handler));
-    if (result.accepted()) commandVisibility_.push_back({descriptor.id, activeOwner_, audiences});
+    if (result.isAccepted()) commandVisibility_.push_back({descriptor.id, activeOwner_, audiences});
     return result;
 }
 

@@ -22,7 +22,7 @@ TEST_CASE("editor.settings.secret_references_are_redacted_and_raw_values_rejecte
     auto secret = settings.makeSet(selected, PropertyPath("network.auth-token"),
                                    "secret://project/network-token", PropertySetMode::Absolute);
     REQUIRE(secret.value);
-    CHECK(settings.applyDomainOperation(*secret.value).accepted());
+    CHECK(settings.applyDomainOperation(*secret.value).isAccepted());
     auto read = settings.read(selected, PropertyPath("network.auth-token"));
     CHECK(read.value == EditorValue("secret://redacted"));
     const EditorValue snapshot = settings.snapshotValue();
@@ -36,11 +36,11 @@ TEST_CASE("editor.settings_changes_are_reversible_restart_aware_and_atomic") {
     const auto selected = selection(settings);
     auto change = settings.makeSet(selected, PropertyPath("content.asset-root"), "content",
                                    PropertySetMode::Absolute);
-    REQUIRE(change.value); CHECK(settings.applyDomainOperation(*change.value).accepted());
+    REQUIRE(change.value); CHECK(settings.applyDomainOperation(*change.value).isAccepted());
     CHECK_EQ(settings.pendingRestart().size(), 1U);
     DomainOperation undo = *change.value; undo.type = change.value->inverseType;
     undo.payload = change.value->inverse;
-    CHECK(settings.applyDomainOperation(undo).accepted());
+    CHECK(settings.applyDomainOperation(undo).isAccepted());
     CHECK(settings.read(selected, PropertyPath("content.asset-root")).value == EditorValue("assets"));
 
     const auto validSnapshot = settings.snapshotValue();

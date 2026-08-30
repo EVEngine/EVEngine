@@ -70,6 +70,10 @@ eve_declare_module(NAME property_access LAYER 0
 eve_declare_module(NAME scriptmodel LAYER 1
                    DEPS property_access
                    GROUP minimal 2d 3d web)
+# UI-independent editable-target, command and transaction contracts shared by
+# developer editors, in-game builders and automation hosts.
+eve_declare_module(NAME editing LAYER 1
+                   DEPS property_access schema transaction)
 # L0 -- foundation (continued)
 eve_declare_module(NAME data LAYER 0 SCRIPT DataModule
                    THIRDPARTY lz4 poco xxhash
@@ -103,9 +107,9 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS action property_access tags transaction
+                   DEPS action editing material_editing property_access scene_editing tags transaction
                    GROUP 3d web
-                   OPTIONAL_DEPS animation audio avatar building camera crowd daynight definitions dialogue fluids graphics hd2d housegen image network orders particles physics production procgen profiler map scene sceneloader schema snow social spritestack ui virtualgeometry voxel weather)
+                   OPTIONAL_DEPS animation audio avatar building camera crowd daynight definitions dialogue fluids graphics hd2d housegen image network orders particles physics physics_editing production procgen profiler map scene sceneloader schema snow social spritestack ui virtualgeometry voxel weather)
 # L0 -- foundation (continued)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)
@@ -219,6 +223,13 @@ eve_declare_module(NAME network LAYER 1 SCRIPT Network
 # L2 -- input state and playback
 # ---------------------------------------------------------------------------
 
+eve_declare_module(NAME scene_editing LAYER 2
+                   DEPS editing
+                   GROUP 3d web)
+eve_declare_module(NAME material_editing LAYER 2
+                   DEPS editing
+                   GROUP 3d web)
+
 eve_declare_module(NAME keyboard LAYER 2 SCRIPT Keyboard SLOT keyboard
                    DEPS platform_event window
                    THIRDPARTY sdl2
@@ -285,6 +296,12 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
                    GROUP 2d 3d)
 # L5 -- vehicle adapter
+# Optional editing satellite. Runtime-only profiles can enable physics without
+# pulling editing/editor contracts or AssetDB adapters.
+eve_declare_module(NAME physics_editing LAYER 5
+                   DEPS editing physics
+                   GROUP 3d web)
+
 # Vehicle entities, kinematic/tracked/wheeled mobility and the Vehicle adapter
 # over the generic orders queue. Depends on weapon so definitions can declare
 # weapon mounts.

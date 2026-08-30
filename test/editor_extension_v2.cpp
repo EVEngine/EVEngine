@@ -21,13 +21,14 @@ public:
         append.displayName      = "Append Track Segment";
         append.category         = "park.track";
         append.requiredFeatures = HostFeature::RuntimeWorld;
-        registry.registerCommand(
+        CHECK(registry.registerCommand(
             append,
             [&](const CommandContext&, const EditorValue& payload) {
                 ++calls;
                 return EditorResult<EditorValue>::applied(payload);
             },
-            ExtensionAudience::Developer | ExtensionAudience::Player | ExtensionAudience::Automation);
+            ExtensionAudience::Developer | ExtensionAudience::Player | ExtensionAudience::Automation)
+                  .isAccepted());
 
         ExtensionToolDescriptor tool;
         tool.id                 = ToolId("park.track.build");
@@ -35,7 +36,7 @@ public:
         tool.category           = "park.track";
         tool.targetRequirements = {CapabilityId("park.target.track-network")};
         tool.audiences          = ExtensionAudience::Developer | ExtensionAudience::Player;
-        registry.registerTool(std::move(tool));
+        CHECK(registry.registerTool(std::move(tool)).isAccepted());
 
         ExtensionPaletteDescriptor developer;
         developer.id        = StableId("park.level-design-palette");
@@ -43,7 +44,7 @@ public:
         developer.tools     = {ToolId("park.track.build")};
         developer.commands  = {CommandId("park.track.append-segment")};
         developer.audiences = ExtensionAudience::Developer;
-        registry.registerPalette(std::move(developer));
+        CHECK(registry.registerPalette(std::move(developer)).isAccepted());
 
         ExtensionPaletteDescriptor player;
         player.id        = StableId("park.build-rides-palette");
@@ -51,12 +52,12 @@ public:
         player.tools     = {ToolId("park.track.build")};
         player.commands  = {CommandId("park.track.append-segment")};
         player.audiences = ExtensionAudience::Player;
-        registry.registerPalette(std::move(player));
+        CHECK(registry.registerPalette(std::move(player)).isAccepted());
 
         ExtensionRuleDescriptor budget;
         budget.id        = RuleId("park.policy.build-cost");
         budget.audiences = ExtensionAudience::Player | ExtensionAudience::Automation;
-        registry.registerRule(std::move(budget));
+        CHECK(registry.registerRule(std::move(budget)).isAccepted());
     }
 
     int calls = 0;
@@ -68,10 +69,11 @@ public:
     void        registerEditor(IEditorExtensionRegistry& registry) override {
         CommandDescriptor command;
         command.id = CommandId("throwing.partial");
-        registry.registerCommand(
+        CHECK(registry.registerCommand(
             command,
             [](const CommandContext&, const EditorValue&) { return EditorResult<EditorValue>::applied(EditorValue{}); },
-            ExtensionAudience::Developer);
+            ExtensionAudience::Developer)
+                  .isAccepted());
         throw std::runtime_error("extension load failed");
     }
 };
@@ -82,7 +84,7 @@ TEST_CASE("editor.v2.game_extension_injects_same_tool_into_editor_and_game") {
     EditorCommandService    commands;
     EditorExtensionRegistry extensions(&commands);
     ParkBuilderExtension    park;
-    CHECK(extensions.load(park).accepted());
+    CHECK(extensions.load(park).isAccepted());
 
     HostProfile developer = HostProfile::developer();
     HostProfile runtime   = HostProfile::runtimeBuilder();
@@ -106,7 +108,7 @@ TEST_CASE("editor.v2.game_extension_injects_same_tool_into_editor_and_game") {
     CommandContext context;
     context.profile = &runtime;
     auto result     = commands.execute(CommandId("park.track.append-segment"), context, EditorValue("segment"));
-    CHECK(result.accepted());
+    CHECK(result.isAccepted());
     CHECK_EQ(park.calls, 1);
 
     CHECK(extensions.unload("park") > 0);

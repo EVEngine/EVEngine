@@ -247,8 +247,10 @@ TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
     auto *ints = base->query<IIntFieldTarget>();
     CHECK(ints != nullptr);
     CHECK(base->query<IScalarFieldTarget>() == nullptr);
-    CHECK(ints->writeInt(2, 1, 9));
-    CHECK(!ints->writeInt(2, 1, 9));
+    CHECK_EQ(static_cast<int>(ints->writeInt(2, 1, 9)),
+             static_cast<int>(FieldWriteStatus::Applied));
+    CHECK_EQ(static_cast<int>(ints->writeInt(2, 1, 9)),
+             static_cast<int>(FieldWriteStatus::Unchanged));
     CHECK_EQ(ints->readInt(2, 1), 9);
     CHECK_EQ(tiles.revision(), 1ULL);
     CHECK_EQ(tiles.dirtyRegion().minX, 2);
@@ -341,7 +343,8 @@ TEST_CASE("editor.map.tileLayerTargetUsesLiveRevision") {
     Editor editor;
     std::unique_ptr<TileLayerTarget> target(editor.newTileLayerTarget("ground", layer));
     const auto before = target->revision();
-    CHECK(target->writeInt(2, 1, 9));
+    CHECK_EQ(static_cast<int>(target->writeInt(2, 1, 9)),
+             static_cast<int>(FieldWriteStatus::Applied));
     CHECK_EQ(layer->getTile(2, 1), 9);
     CHECK_GT(target->revision(), before);
     CHECK_EQ(target->dirtyRegion().minX, 2);

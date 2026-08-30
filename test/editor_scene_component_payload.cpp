@@ -88,7 +88,7 @@ public:
             return EditorResult<DomainOperation>::error(EditorStatus::Rejected,
                 RuleId("test.health.selection"), "Invalid health component selection");
         const auto validation = validatePropertyValue(schema(selection).properties.front(), value);
-        if (!validation.accepted()) {
+        if (!validation.isAccepted()) {
             EditorResult<DomainOperation> result;
             result.status = validation.status;
             result.diagnostics = validation.diagnostics;
@@ -218,11 +218,11 @@ EditorResult<TransactionReceipt> commit(IDomainOperationTarget& target,
     specification.target = TargetId(target.targetId());
     specification.baseRevision = baseRevision;
     auto begun = transactions.begin(std::move(specification));
-    if (!begun.accepted())
+    if (!begun.isAccepted())
         return EditorResult<TransactionReceipt>::error(begun.status, RuleId("test.begin"),
                                                        "Could not begin transaction");
     auto appended = transactions.append(operation);
-    if (!appended.accepted())
+    if (!appended.isAccepted())
         return EditorResult<TransactionReceipt>::error(appended.status, RuleId("test.append"),
                                                        "Could not append operation");
     return transactions.commit();
@@ -233,7 +233,7 @@ EditorResult<TransactionReceipt> commit(IDomainOperationTarget& target,
 TEST_CASE("editor.scene.component_payload_registry_routes_schema_transactions_and_undo") {
     HealthPayloadProvider provider;
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&provider).accepted());
+    REQUIRE(registry.registerProvider(&provider).isAccepted());
     CHECK_EQ(static_cast<int>(registry.registerProvider(&provider).status),
              static_cast<int>(EditorStatus::Conflict));
 
@@ -266,9 +266,9 @@ TEST_CASE("editor.scene.component_payload_registry_routes_schema_transactions_an
     LocalWorldAuthority authority(*target.value);
     LocalTransactionBackend transactions(&authority);
     const Revision baseRevision = (*target.value)->revision();
-    REQUIRE(commit(**target.value, transactions, *operation.value, baseRevision, "health.set").accepted());
+    REQUIRE(commit(**target.value, transactions, *operation.value, baseRevision, "health.set").isAccepted());
     CHECK_EQ(provider.points(), 25.0);
-    REQUIRE(transactions.undo().accepted());
+    REQUIRE(transactions.undo().isAccepted());
     CHECK_EQ(provider.points(), 80.0);
 
     auto stale = commit(**target.value, transactions, *operation.value, baseRevision, "health.stale");
@@ -278,7 +278,7 @@ TEST_CASE("editor.scene.component_payload_registry_routes_schema_transactions_an
 TEST_CASE("editor.scene.component_payload_registry_rejects_mixed_and_stale_references") {
     HealthPayloadProvider provider;
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&provider).accepted());
+    REQUIRE(registry.registerProvider(&provider).isAccepted());
     auto references = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
     REQUIRE(references.value);
     SceneComponentPayloadRef stale = references.value->front();
@@ -313,22 +313,22 @@ TEST_CASE("editor.scene.component_bindings_reuse_audio_physics_and_material_targ
     REQUIRE(audioBindings.bind(
         {scene, hero, StableId("hero.audio"), "audio.source", 1, 0},
         {SelectionDomain::Scene, TargetId(audio.targetId()), StableId("source"), "audio.source"},
-        &audio, &audio, [&] { return audio.validate(); }).accepted());
+        &audio, &audio, [&] { return audio.validate(); }).isAccepted());
     REQUIRE(physicsBindings.bind(
         {scene, hero, StableId("hero.collider"), "physics.collider3d", 2, 0},
         {SelectionDomain::Scene, TargetId(collider.targetId()), StableId("collider"),
          "physics.collider3d"},
-        &collider, &collider, [&] { return collider.validate(); }).accepted());
+        &collider, &collider, [&] { return collider.validate(); }).isAccepted());
     REQUIRE(materialBindings.bind(
         {scene, hero, StableId("hero.material"), "graphics.material", 3, 0},
         {SelectionDomain::Scene, TargetId(material.targetId()), StableId("material"),
          "graphics.material"},
-        &material, &material, [&] { return material.validate(); }).accepted());
+        &material, &material, [&] { return material.validate(); }).isAccepted());
 
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&audioBindings).accepted());
-    REQUIRE(registry.registerProvider(&physicsBindings).accepted());
-    REQUIRE(registry.registerProvider(&materialBindings).accepted());
+    REQUIRE(registry.registerProvider(&audioBindings).isAccepted());
+    REQUIRE(registry.registerProvider(&physicsBindings).isAccepted());
+    REQUIRE(registry.registerProvider(&materialBindings).isAccepted());
     auto all = registry.componentPayloads(scene, hero);
     REQUIRE(all.value);
     REQUIRE_EQ(all.value->size(), size_t{3});
@@ -350,13 +350,13 @@ TEST_CASE("editor.scene.component_bindings_reuse_audio_physics_and_material_targ
     LocalWorldAuthority authority(*operationTarget.value);
     LocalTransactionBackend transactions(&authority);
     REQUIRE(commit(**operationTarget.value, transactions, *setVolume.value,
-                   (*operationTarget.value)->revision(), "component.audio.volume").accepted());
+                   (*operationTarget.value)->revision(), "component.audio.volume").isAccepted());
     CHECK_EQ(*audio.read({"module", {{SelectionDomain::Scene, TargetId(audio.targetId()),
                                      StableId("source"), "audio.source"}}, {}, 0},
                          PropertyPath("play.volume")).value.getIf<double>(), 0.25);
     CHECK_EQ(static_cast<int>(registry.validatePayload(audioRef).status),
              static_cast<int>(EditorStatus::Conflict));
-    REQUIRE(transactions.undo().accepted());
+    REQUIRE(transactions.undo().isAccepted());
     CHECK_EQ(*audio.read({"module", {{SelectionDomain::Scene, TargetId(audio.targetId()),
                                      StableId("source"), "audio.source"}}, {}, 0},
                          PropertyPath("play.volume")).value.getIf<double>(), 1.0);
@@ -379,9 +379,9 @@ TEST_CASE("editor.scene.audio_component_publication_is_staged_live_and_reversibl
         {TargetId("scene"), ObjectId("hero"), StableId("hero.audio"), "audio.source", 1, 0},
         {SelectionDomain::Scene, TargetId(live.targetId()), StableId("source"), "audio.source"},
         &live.authoringTarget(), &live,
-        [&] { return live.authoringTarget().validate(); }).accepted());
+        [&] { return live.authoringTarget().validate(); }).isAccepted());
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&bindings).accepted());
+    REQUIRE(registry.registerProvider(&bindings).isAccepted());
     auto components = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
     REQUIRE(components.value);
     auto selection = makeSceneComponentSelection("inspector", *components.value);
@@ -397,11 +397,11 @@ TEST_CASE("editor.scene.audio_component_publication_is_staged_live_and_reversibl
     LocalWorldAuthority authority(*operationTarget.value);
     LocalTransactionBackend transactions(&authority);
     REQUIRE(commit(**operationTarget.value, transactions, *change.value,
-                   (*operationTarget.value)->revision(), "audio.live.volume").accepted());
+                   (*operationTarget.value)->revision(), "audio.live.volume").isAccepted());
     CHECK_EQ(sink.volume, 0.4);
     CHECK_EQ(sink.revision, live.revision());
     CHECK_EQ(sink.publishes, 1);
-    REQUIRE(transactions.undo().accepted());
+    REQUIRE(transactions.undo().isAccepted());
     CHECK_EQ(sink.volume, 1.0);
     CHECK_EQ(sink.publishes, 2);
 
@@ -427,9 +427,9 @@ TEST_CASE("editor.scene.material_component_publication_is_staged_live_and_revers
         {SelectionDomain::Asset, TargetId(live.targetId()), StableId("material"),
          "graphics.material"},
         &live.authoringTarget(), &live,
-        [&] { return live.authoringTarget().validate(); }).accepted());
+        [&] { return live.authoringTarget().validate(); }).isAccepted());
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&bindings).accepted());
+    REQUIRE(registry.registerProvider(&bindings).isAccepted());
     auto components = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
     REQUIRE(components.value);
     auto selection = makeSceneComponentSelection("inspector", *components.value);
@@ -446,10 +446,10 @@ TEST_CASE("editor.scene.material_component_publication_is_staged_live_and_revers
     LocalWorldAuthority authority(*operationTarget.value);
     LocalTransactionBackend transactions(&authority);
     REQUIRE(commit(**operationTarget.value, transactions, *change.value,
-                   (*operationTarget.value)->revision(), "material.live.roughness").accepted());
+                   (*operationTarget.value)->revision(), "material.live.roughness").isAccepted());
     CHECK_EQ(sink.roughness, 0.8);
     CHECK_EQ(sink.revision, live.revision());
-    REQUIRE(transactions.undo().accepted());
+    REQUIRE(transactions.undo().isAccepted());
     CHECK_EQ(sink.roughness, 0.45);
 
     auto rejected = (*properties.value)->makeSet(*selection.value,

@@ -1,16 +1,17 @@
 #pragma once
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 #include <cstdint>
 #include <memory>
 #include <string>
 namespace eve::image { class ImageData; }
 namespace eve::editor {
 /** @brief Revisioned, schema-driven procedural texture recipe asset. */
-class TextureRecipeTarget final : public IEditableTargetV2, public IDomainOperationTarget,
+class TextureRecipeTarget final : public virtual IEditableTarget, public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging, public IPropertyProvider {
 public:
+    /** @brief Construct a registered procedural texture recipe target. @throws std::invalid_argument When recipe is not registered. */
     TextureRecipeTarget(std::string id, std::string recipe);
     const std::string& targetId() const override { return id_; }
     unsigned long long revision() const override { return revision_; }

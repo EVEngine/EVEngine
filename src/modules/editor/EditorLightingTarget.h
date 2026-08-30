@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <map>
 #include <string>
@@ -21,7 +21,7 @@ class Weather;
 namespace eve::editor {
 
 /** @brief Shared property-document implementation for light and environment targets. */
-class LightingPropertyTargetBase : public IEditableTargetV2,
+class LightingPropertyTargetBase : public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IPropertyProvider {
 public:

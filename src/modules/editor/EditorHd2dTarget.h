@@ -1,7 +1,7 @@
 #pragma once
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 #include <array>
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@ namespace eve::editor{
 /** @brief Authored HD-2D sprite-sheet and tile-extrusion preset. */
 struct Hd2dAssetValue{std::string kind="sprite";std::string sourceAsset;int columns=1,rows=1,frame=0,animStart=0,animEnd=0;float fps=12;bool flipX=false,flipY=false,visible=true;std::array<float,2>size{1,1};std::array<float,4>tint{1,1,1,1};float sideDepth=6,heightScale=1;std::array<float,4>wallUv{0,0,.05f,.05f};};
 /** @brief Revisioned HD-2D sprite/tilemap presentation asset. */
-class Hd2dDocumentTarget final:public IEditableTargetV2,public IDomainOperationTarget,public IDomainOperationTargetStaging,public IPropertyProvider{
+class Hd2dDocumentTarget final:public virtual IEditableTarget,public IDomainOperationTarget,public IDomainOperationTargetStaging,public IPropertyProvider{
 public:explicit Hd2dDocumentTarget(std::string id);const std::string&targetId()const override{return id_;}unsigned long long revision()const override{return revision_;}EditRegion dirtyRegion()const override{return dirty_;}void clearDirtyRegion()override{dirty_.clear();}TargetDescriptor describe()const override;void*queryCapability(const CapabilityId&)override;EditorResult<void>applyDomainOperation(const DomainOperation&)override;std::unique_ptr<IDomainOperationTarget>cloneDomainState()const override;EditorResult<void>commitDomainState(std::unique_ptr<IDomainOperationTarget>)override;eve::Result<eve::Revision>currentRevision(const SelectionSnapshot&)const override;PropertySchema schema(const SelectionSnapshot&)const override;PropertyReadResult read(const SelectionSnapshot&,const PropertyPath&)const override;EditorResult<DomainOperation>makeSet(const SelectionSnapshot&,const PropertyPath&,const EditorValue&,PropertySetMode)const override;EditorResult<DomainOperation>makeReset(const SelectionSnapshot&,const PropertyPath&)const override;const Hd2dAssetValue&value()const{return value_;}std::vector<EditorDiagnostic>validate()const;EditorValue snapshotValue()const;EditorResult<void>loadSnapshot(const EditorValue&);
 private:bool matches(const SelectionSnapshot&)const;EditorValue contentValue()const;EditorResult<DomainOperation>replacement(EditorValue,std::string)const;std::string id_;Revision revision_=1;EditRegion dirty_;Hd2dAssetValue value_;};
 /** @brief Deterministically sampled sprite-sheet frame and UV rectangle. */

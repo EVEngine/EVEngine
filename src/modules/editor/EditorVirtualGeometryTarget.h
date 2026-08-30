@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 #include "virtualgeometry/Builder.h"
 
 #include <cstdint>
@@ -27,7 +27,7 @@ struct VirtualGeometryImportValue {
 };
 
 /** @brief Revisioned VirtualGeometry importer preset. */
-class VirtualGeometryDocumentTarget final : public IEditableTargetV2,
+class VirtualGeometryDocumentTarget final : public virtual IEditableTarget,
                                             public IDomainOperationTarget,
                                             public IDomainOperationTargetStaging,
                                             public IPropertyProvider {

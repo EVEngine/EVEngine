@@ -8,7 +8,7 @@ using namespace eve::editor;
 
 namespace {
 void apply(HouseGenDocumentTarget& target, EditorResult<DomainOperation> operation) {
-    REQUIRE(operation.value); REQUIRE(target.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(operation.value); REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
 }
 HouseKitComponentValue component(const char* id, const char* category) {
     HouseKitComponentValue value; value.id=ObjectId(std::string("editor-")+id);
@@ -31,11 +31,11 @@ TEST_CASE("editor.housegen.kit_supports_incremental_authoring_properties_and_sna
     CHECK(!target.validate().empty());
     auto selection=select(target,"editor-wall");
     auto edit=target.makeSet(selection,PropertyPath("component.weight"),int64_t{5},PropertySetMode::Absolute);
-    REQUIRE(edit.value);REQUIRE(target.applyDomainOperation(*edit.value).accepted());
+    REQUIRE(edit.value);REQUIRE(target.applyDomainOperation(*edit.value).isAccepted());
     CHECK_EQ(*target.read(selection,PropertyPath("component.weight")).value.getIf<int64_t>(),int64_t{5});
-    DomainOperation undo=*edit.value;undo.payload=edit.value->inverse;REQUIRE(target.applyDomainOperation(undo).accepted());
+    DomainOperation undo=*edit.value;undo.payload=edit.value->inverse;REQUIRE(target.applyDomainOperation(undo).isAccepted());
     CHECK_EQ(*target.read(selection,PropertyPath("component.weight")).value.getIf<int64_t>(),int64_t{1});
-    HouseGenDocumentTarget restored("copy");REQUIRE(restored.loadSnapshot(target.snapshotValue()).accepted());
+    HouseGenDocumentTarget restored("copy");REQUIRE(restored.loadSnapshot(target.snapshotValue()).isAccepted());
     CHECK_EQ(restored.components().size(),static_cast<std::size_t>(1));
 }
 
@@ -43,9 +43,9 @@ TEST_CASE("editor.housegen.preview_is_deterministic_revision_safe_and_failure_at
     HouseGenDocumentTarget target("kit");completeKit(target);
     eve::housegen::HouseRequest request;request.seed=42;request.width=5;request.depth=4;request.floors=2;
     apply(target,target.makeSetRequest(request));
-    HouseGenPreviewRuntime runtime;REQUIRE(runtime.publish(target).accepted());
+    HouseGenPreviewRuntime runtime;REQUIRE(runtime.publish(target).isAccepted());
     const std::string first=runtime.layout()->toJson();const auto revision=runtime.revision();
-    REQUIRE(runtime.publish(target).accepted());CHECK_EQ(runtime.layout()->toJson(),first);
+    REQUIRE(runtime.publish(target).isAccepted());CHECK_EQ(runtime.layout()->toJson(),first);
     auto overlay=runtime.gizmo(revision);REQUIRE(overlay.value);CHECK(!overlay.value->primitives.empty());
     apply(target,target.makeDeleteComponent(ObjectId("editor-roof")));
     CHECK_EQ(static_cast<int>(runtime.publish(target).status),static_cast<int>(EditorStatus::Rejected));

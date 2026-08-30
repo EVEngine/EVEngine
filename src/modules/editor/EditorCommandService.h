@@ -76,6 +76,8 @@ public:
 
     /** @brief Return command metadata or nullptr when it is not registered. */
     const CommandDescriptor* find(const CommandId& id) const;
+    /** @brief Return whether the registered command requires plan/commit execution. */
+    [[nodiscard]] bool supportsPlanning(const CommandId& id) const;
     /** @brief Return descriptors visible to a host profile. */
     std::vector<CommandDescriptor> commands(const HostProfile& profile) const;
     /** @brief Monotonic registry generation changed by registration mutations. */

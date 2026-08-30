@@ -31,7 +31,7 @@ TEST_CASE("editor.simulation.preview_pauses_steps_and_bakes_without_mutating_sou
     FakeSimulation source;
     SimulationPreviewController controller;
     CHECK_EQ(static_cast<int>(controller.update(source).status), static_cast<int>(EditorStatus::NoOp));
-    REQUIRE(controller.setFixedDelta(0.5).accepted());
+    REQUIRE(controller.setFixedDelta(0.5).isAccepted());
     auto frame = controller.singleStep(source); REQUIRE(frame.value); CHECK_EQ(frame.value->objects[0].positionX, 1.5);
     frame = controller.singleStep(source); REQUIRE(frame.value); CHECK_EQ(frame.value->objects[0].positionX, 3.0);
     CHECK_EQ(source.position(), 0.0);
