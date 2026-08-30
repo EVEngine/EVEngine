@@ -910,25 +910,36 @@ macro(get_available_build)
     # the scan — ImGuiBackend.cpp is the EVUI implementation and gains a
     # webgpu branch instead.
     if(BUILD_PLATFORM STREQUAL "webgpu")
-        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "vulkan" CACHE INTERNAL
-            "Backend subdirs excluded from webgpu builds" FORCE)
+        set(_eve_excluded_backend_subdirs "vulkan")
+        set(_eve_backend_exclusion_help "Backend subdirs excluded from webgpu builds")
     else()
-        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "webgpu" CACHE INTERNAL
-            "Backend subdirs excluded from native builds" FORCE)
+        set(_eve_excluded_backend_subdirs "webgpu")
+        set(_eve_backend_exclusion_help "Backend subdirs excluded from native builds")
     endif()
+    # Keep both bindings synchronized. With CMP0126=NEW, updating a CACHE entry
+    # does not replace a same-named normal variable in the current scope, and
+    # create_module() reads the normal variable first.
+    set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "${_eve_excluded_backend_subdirs}")
+    set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "${_eve_excluded_backend_subdirs}"
+        CACHE INTERNAL "${_eve_backend_exclusion_help}" FORCE)
 
     # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
     # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
     # DataModule files that require Poco. Font/FreeType is supported on WASM.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        set(EVENGINE_EXCLUDED_MODULE_FILES
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp"
-            CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten" FORCE)
+        set(_eve_excluded_module_files
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp")
+        set(_eve_module_exclusion_help
+            "Exact basenames excluded from module source scan on Emscripten")
     else()
-        set(EVENGINE_EXCLUDED_MODULE_FILES
-            "ImGuiHostPanels.cpp"
-            CACHE INTERNAL "Exact basenames excluded from module source scan" FORCE)
+        set(_eve_excluded_module_files "ImGuiHostPanels.cpp")
+        set(_eve_module_exclusion_help "Exact basenames excluded from module source scan")
     endif()
+    set(EVENGINE_EXCLUDED_MODULE_FILES "${_eve_excluded_module_files}")
+    set(EVENGINE_EXCLUDED_MODULE_FILES "${_eve_excluded_module_files}"
+        CACHE INTERNAL "${_eve_module_exclusion_help}" FORCE)
+
+    message(STATUS "Backend source exclusions: ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS}")
 
     message("Available: ${AVAILABLE_PLATFORM}")
 
@@ -1450,6 +1461,11 @@ function(load_webgpu_backend)
     endif()
 
     message(STATUS "WebGPU (native): fetching Google Dawn")
+    # Dawn also owns a generic BUILD_PLATFORM cache entry. Preserve EVEngine's
+    # target before adding the dependency so Dawn's host value (for example
+    # win32) cannot change an automatic top-level CMake reconfigure back from
+    # webgpu to the native renderer.
+    set(_eve_selected_build_platform "${BUILD_PLATFORM}")
     include(FetchContent)
     set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -1480,6 +1496,12 @@ function(load_webgpu_backend)
         DOWNLOAD_EXTRACT_TIMESTAMP FALSE
     )
     FetchContent_MakeAvailable(dawn)
+
+    set(BUILD_PLATFORM "${_eve_selected_build_platform}")
+    set(BUILD_PLATFORM "${_eve_selected_build_platform}" CACHE STRING
+        "The EVEngine target build platform (${AVAILABLE_PLATFORM})" FORCE)
+    set(BUILD_PLATFORM "${_eve_selected_build_platform}" PARENT_SCOPE)
+    set_property(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
 
     if(TARGET dawn::webgpu_dawn)
         set(_eve_dawn_target dawn::webgpu_dawn)
