@@ -164,12 +164,16 @@ jobs:
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}
+    # Pull requests already run the toolchain-free profile contract check in
+    # quality-contracts. Full configure/build/smoke coverage belongs to dev
+    # pushes, scheduled/manual runs and release workflow calls.
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
-        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, headless, server]
+        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, asset-core-only, headless, server]
     env:
       PROFILE: ${{ matrix.profile }}
       PROFILE_BUILD_ROOT: /tmp/evengine-profile-matrix
