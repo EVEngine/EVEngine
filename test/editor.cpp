@@ -383,7 +383,7 @@ TEST_CASE("editor.constraints.accept_warn_and_reject_without_core_types") {
 }
 
 TEST_CASE("editor.module.name") {
-    auto *mod = Editor::create();
+    auto* mod = Editor::create();
     CHECK_EQ(mod->getName(), std::string("Editor"));
     CHECK_EQ(Editor::create(), mod);
 }
@@ -453,10 +453,10 @@ TEST_CASE("editor.gizmo.rotate_and_scale_modes") {
 
 TEST_CASE("editor.gizmo.invalid_mode") {
     std::unique_ptr<TransformGizmo> g(new TransformGizmo());
-    bool threw = false;
+    bool                            threw = false;
     try {
         g->setMode("skew");
-    } catch (const eve::Exception &) {
+    } catch (const eve::Exception&) {
         threw = true;
     }
     CHECK(threw);
@@ -470,7 +470,7 @@ TEST_CASE("editor.gizmo_manager.multi_mode") {
     mgr->attach();
     mgr->setPositionEnabled(true);
     mgr->setRotationEnabled(true);
-    TransformGizmo *g = mgr->getGizmo();
+    TransformGizmo* g = mgr->getGizmo();
     g->setPosition(0.f, 0.f, 0.f);
     g->setSize(1.f);
 
@@ -489,7 +489,7 @@ TEST_CASE("editor.brush.paint_fill_line_rect") {
     std::unique_ptr<Editor> ed(Editor::create());
     // Module singleton — don't delete; use factories only
     std::unique_ptr<TileBuffer> buf(new TileBuffer(8, 8));
-    std::unique_ptr<Brush> brush(new Brush());
+    std::unique_ptr<Brush>      brush(new Brush());
 
     brush->setTool("paint");
     brush->setTile(3);
@@ -526,7 +526,7 @@ TEST_CASE("editor.brush.paint_fill_line_rect") {
 
 TEST_CASE("editor.brush.stamp_and_erase") {
     std::unique_ptr<TileBuffer> buf(new TileBuffer(5, 5));
-    std::unique_ptr<Brush> brush(new Brush());
+    std::unique_ptr<Brush>      brush(new Brush());
     brush->setStampSize(2, 2);
     brush->setStampTile(0, 0, 9);
     brush->setStampTile(1, 0, 8);
@@ -577,8 +577,8 @@ TEST_CASE("editor.toolbar_inspector_dock") {
 }
 
 TEST_CASE("editor.history.tiles_undo_redo") {
-    std::unique_ptr<TileBuffer> buf(new TileBuffer(4, 4));
-    std::unique_ptr<Brush> brush(new Brush());
+    std::unique_ptr<TileBuffer>    buf(new TileBuffer(4, 4));
+    std::unique_ptr<Brush>         brush(new Brush());
     std::unique_ptr<EditorHistory> hist(new EditorHistory());
 
     brush->setTile(5);
@@ -606,15 +606,15 @@ TEST_CASE("editor.history.tiles_undo_redo") {
 }
 
 TEST_CASE("editor.factories") {
-    Editor *ed = Editor::create();
-    std::unique_ptr<TransformGizmo> g(ed->newGizmo());
-    std::unique_ptr<GizmoManager> m(ed->newGizmoManager());
-    std::unique_ptr<TileBuffer> b(ed->newTileBuffer(2, 2));
-    std::unique_ptr<Brush> br(ed->newBrush());
-    std::unique_ptr<EditorToolbar> t(ed->newToolbar());
+    Editor*                          ed = Editor::create();
+    std::unique_ptr<TransformGizmo>  g(ed->newGizmo());
+    std::unique_ptr<GizmoManager>    m(ed->newGizmoManager());
+    std::unique_ptr<TileBuffer>      b(ed->newTileBuffer(2, 2));
+    std::unique_ptr<Brush>           br(ed->newBrush());
+    std::unique_ptr<EditorToolbar>   t(ed->newToolbar());
     std::unique_ptr<EditorInspector> i(ed->newInspector());
-    std::unique_ptr<EditorDock> d(ed->newDock());
-    std::unique_ptr<EditorHistory> h(ed->newHistory());
+    std::unique_ptr<EditorDock>      d(ed->newDock());
+    std::unique_ptr<EditorHistory>   h(ed->newHistory());
     // zeroerr CHECK copies the expression for printing — use raw pointers, not unique_ptr.
     CHECK(g.get() != nullptr);
     CHECK(m.get() != nullptr);
