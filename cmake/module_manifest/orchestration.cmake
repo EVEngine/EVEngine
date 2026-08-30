@@ -39,9 +39,6 @@ eve_declare_module(NAME lighting_editing LAYER 5
 eve_declare_module(NAME building_editing LAYER 5
                    DEPS building editing
                    GROUP 2d 3d web)
-eve_declare_module(NAME sceneloader_editing LAYER 5
-                   DEPS editing sceneloader
-                   GROUP 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS animation data filesystem graphics ik
                    THIRDPARTY poco
@@ -84,6 +81,9 @@ eve_declare_module(NAME hd2d LIB EVHd2D LAYER 5 SCRIPT Hd2D SLOT hd2d
                    DEPS graphics map
                    GROUP 3d)
 # L6 -- orchestration
+eve_declare_module(NAME sceneloader_editing LAYER 6
+                   DEPS editing sceneloader
+                   GROUP 3d web)
 eve_declare_module(NAME voxel_editing LAYER 6
                    DEPS editing voxel
                    GROUP 3d)

@@ -36,6 +36,9 @@ eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
                    DEPS data filesystem graphics grid
                    THIRDPARTY poco
                    GROUP 2d 3d)
+eve_declare_module(NAME map_editing LAYER 4
+                   DEPS editing map
+                   GROUP 3d web)
 eve_declare_module(NAME buildingfx LIB EVBuildingFx LAYER 4 SCRIPT BuildingFx SLOT buildingfx
                    DEPS building graphics)
 # Weapon definitions, entities, mounts and fire logic. Standalone so buildings /

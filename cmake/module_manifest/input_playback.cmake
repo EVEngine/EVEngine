@@ -11,9 +11,6 @@ eve_declare_module(NAME material_editing LAYER 2
 eve_declare_module(NAME audio_editing LAYER 2
                    DEPS editing
                    GROUP 3d web)
-eve_declare_module(NAME map_editing LAYER 2
-                   DEPS editing map
-                   GROUP 3d web)
 eve_declare_module(NAME input_editing LAYER 2
                    DEPS editing
                    GROUP 2d 3d web)
