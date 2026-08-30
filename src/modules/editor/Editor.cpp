@@ -6,6 +6,8 @@
 #include "editor/EditorInspector.h"
 #include "editor/EditorToolbar.h"
 #include "editor/GizmoManager.h"
+#include "editor/LevelDocument.h"
+#include "editor/LevelFormat.h"
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
 
@@ -25,15 +27,14 @@ Module_IMPL(Editor, new Editor());
 namespace {
 
 struct HeightmapArrays {
-    std::vector<float> pos;
-    std::vector<float> nrm;
-    std::vector<float> uv;
+    std::vector<float>    pos;
+    std::vector<float>    nrm;
+    std::vector<float>    uv;
     std::vector<uint32_t> idx;
 };
 
 /** Flat-shaded terrain mesh: two triangles per cell, 6 vertices per quad. */
-void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float hScale,
-                          HeightmapArrays &out) {
+void buildHeightmapArrays(const eve::procgen::Heightmap& hm, float cell, float hScale, HeightmapArrays& out) {
     out.pos.clear();
     out.nrm.clear();
     out.uv.clear();
@@ -44,16 +45,15 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
     const float uw = float(w - 1);
     const float uh = float(h - 1);
 
-    auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx,
-                      float cz, float cy) {
+    auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx, float cz, float cy) {
         const float p0x = ax * cell, p0y = ay * hScale, p0z = az * cell;
         const float p1x = bx * cell, p1y = by * hScale, p1z = bz * cell;
         const float p2x = cx * cell, p2y = cy * hScale, p2z = cz * cell;
         const float e1x = p1x - p0x, e1y = p1y - p0y, e1z = p1z - p0z;
         const float e2x = p2x - p0x, e2y = p2y - p0y, e2z = p2z - p0z;
-        float nx = e1y * e2z - e1z * e2y;
-        float ny = e1z * e2x - e1x * e2z;
-        float nz = e1x * e2y - e1y * e2x;
+        float       nx  = e1y * e2z - e1z * e2y;
+        float       ny  = e1z * e2x - e1x * e2z;
+        float       nz  = e1x * e2y - e1y * e2x;
         const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
         if (len > 1e-8f) {
             nx /= len;
@@ -63,8 +63,7 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
         const uint32_t base = uint32_t(out.pos.size() / 3);
         out.pos.insert(out.pos.end(), {p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z});
         out.nrm.insert(out.nrm.end(), {nx, ny, nz, nx, ny, nz, nx, ny, nz});
-        out.uv.insert(out.uv.end(),
-                      {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
+        out.uv.insert(out.uv.end(), {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
         out.idx.insert(out.idx.end(), {base, base + 1, base + 2});
     };
 
@@ -76,58 +75,61 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
             const float h11 = hm.height(x + 1, y + 1);
             // Grid is XZ; y in the function is the XZ "row" axis.
             addTri(float(x), float(y), h00, float(x + 1), float(y), h10, float(x), float(y + 1), h01);
-            addTri(float(x + 1), float(y), h10, float(x + 1), float(y + 1), h11, float(x),
-                   float(y + 1), h01);
+            addTri(float(x + 1), float(y), h10, float(x + 1), float(y + 1), h11, float(x), float(y + 1), h01);
         }
     }
 }
 
 }  // namespace
 
-TransformGizmo *Editor::newGizmo() { return new TransformGizmo(); }
+TransformGizmo* Editor::newGizmo() { return new TransformGizmo(); }
 
-GizmoManager *Editor::newGizmoManager() { return new GizmoManager(); }
+GizmoManager* Editor::newGizmoManager() { return new GizmoManager(); }
 
-TileBuffer *Editor::newTileBuffer(int width, int height) { return new TileBuffer(width, height); }
+TileBuffer* Editor::newTileBuffer(int width, int height) { return new TileBuffer(width, height); }
 
-Brush *Editor::newBrush() { return new Brush(); }
+Brush* Editor::newBrush() { return new Brush(); }
 
-EditorToolbar *Editor::newToolbar() { return new EditorToolbar(); }
+EditorToolbar* Editor::newToolbar() { return new EditorToolbar(); }
 
-EditorInspector *Editor::newInspector() { return new EditorInspector(); }
+EditorInspector* Editor::newInspector() { return new EditorInspector(); }
 
-EditorDock *Editor::newDock() { return new EditorDock(); }
+EditorDock* Editor::newDock() { return new EditorDock(); }
 
-EditorHistory *Editor::newHistory() { return new EditorHistory(); }
+EditorHistory* Editor::newHistory() { return new EditorHistory(); }
 
-graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,
-                                         float heightScale) {
-    auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
+LevelDocument* Editor::newLevel(int width, int height, float tileWidth, float tileHeight) {
+    return new LevelDocument(width, height, tileWidth, tileHeight);
+}
+
+LevelFormatRegistry* Editor::newLevelFormats() { return new LevelFormatRegistry(); }
+
+graphics::Mesh* Editor::newHeightmapMesh(procgen::Heightmap* hm, float cellSize, float heightScale) {
+    auto* gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
     if (!gfx || !hm) return nullptr;
     HeightmapArrays a;
     buildHeightmapArrays(*hm, cellSize, heightScale, a);
     if (a.idx.empty()) return nullptr;
-    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(),
-                                  int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), a.idx.data(),
+                                  int(a.idx.size()));
 }
 
-bool Editor::updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
-                                 procgen::Heightmap *hm, float cellSize, float heightScale) {
+bool Editor::updateHeightmapMesh(graphics::Mesh* mesh, graphics::Graphics* gfx, procgen::Heightmap* hm, float cellSize,
+                                 float heightScale) {
     if (!mesh || !gfx || !hm) return false;
     HeightmapArrays a;
     buildHeightmapArrays(*hm, cellSize, heightScale, a);
     if (a.idx.empty()) return false;
-    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
-                                   int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(), int(a.pos.size() / 3), a.idx.data(),
+                                   int(a.idx.size()));
 }
 
-void Editor::expose(ssq::Table &table) {
+void Editor::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Editor::create, false);
     expose(cls);
 
     auto gizmo = table.addClass<TransformGizmo>(
-        "TransformGizmo",
-        std::function<TransformGizmo *()>([]() -> TransformGizmo * { return nullptr; }), true);
+        "TransformGizmo", std::function<TransformGizmo*()>([]() -> TransformGizmo* { return nullptr; }), true);
     gizmo.addFunc("setMode", &TransformGizmo::setMode);
     gizmo.addFunc("getMode", &TransformGizmo::getMode);
     gizmo.addFunc("setSpace", &TransformGizmo::setSpace);
@@ -188,8 +190,7 @@ void Editor::expose(ssq::Table &table) {
     gizmo.addFunc("getPartRadius", &TransformGizmo::getPartRadius);
 
     auto mgr = table.addClass<GizmoManager>(
-        "GizmoManager",
-        std::function<GizmoManager *()>([]() -> GizmoManager * { return nullptr; }), true);
+        "GizmoManager", std::function<GizmoManager*()>([]() -> GizmoManager* { return nullptr; }), true);
     mgr.addFunc("getGizmo", &GizmoManager::getGizmo);
     mgr.addFunc("setPositionEnabled", &GizmoManager::setPositionEnabled);
     mgr.addFunc("setRotationEnabled", &GizmoManager::setRotationEnabled);
@@ -209,9 +210,8 @@ void Editor::expose(ssq::Table &table) {
     mgr.addFunc("isDragging", &GizmoManager::isDragging);
     mgr.addFunc("isHovered", &GizmoManager::isHovered);
 
-    auto buf = table.addClass<TileBuffer>(
-        "TileBuffer", std::function<TileBuffer *()>([]() -> TileBuffer * { return nullptr; }),
-        true);
+    auto buf = table.addClass<TileBuffer>("TileBuffer",
+                                          std::function<TileBuffer*()>([]() -> TileBuffer* { return nullptr; }), true);
     buf.addFunc("getWidth", &TileBuffer::getWidth);
     buf.addFunc("getHeight", &TileBuffer::getHeight);
     buf.addFunc("resize", &TileBuffer::resize);
@@ -221,8 +221,39 @@ void Editor::expose(ssq::Table &table) {
     buf.addFunc("getGid", &TileBuffer::getGid);
     buf.addFunc("inBounds", &TileBuffer::inBounds);
 
-    auto brush = table.addClass<Brush>(
-        "Brush", std::function<Brush *()>([]() -> Brush * { return nullptr; }), true);
+    auto level = table.addClass<LevelDocument>(
+        "LevelDocument", std::function<LevelDocument*()>([]() -> LevelDocument* { return nullptr; }), true);
+    level.addFunc("resize", &LevelDocument::resize);
+    level.addFunc("getWidth", &LevelDocument::getWidth);
+    level.addFunc("getHeight", &LevelDocument::getHeight);
+    level.addFunc("getTileWidth", &LevelDocument::getTileWidth);
+    level.addFunc("getTileHeight", &LevelDocument::getTileHeight);
+    level.addFunc("setTileSize", &LevelDocument::setTileSize);
+    level.addFunc("setOrientation", &LevelDocument::setOrientation);
+    level.addFunc("getOrientation", &LevelDocument::getOrientation);
+    level.addFunc("addTileLayer", &LevelDocument::addTileLayer);
+    level.addFunc("addObjectLayer", &LevelDocument::addObjectLayer);
+    level.addFunc("removeLayer", &LevelDocument::removeLayer);
+    level.addFunc("moveLayer", &LevelDocument::moveLayer);
+    level.addFunc("getLayerCount", &LevelDocument::getLayerCount);
+    level.addFunc("getLayerName", &LevelDocument::getLayerName);
+    level.addFunc("setLayerName", &LevelDocument::setLayerName);
+    level.addFunc("getLayerKind", &LevelDocument::getLayerKind);
+    level.addFunc("getTileLayer", static_cast<TileBuffer* (LevelDocument::*)(int)>(&LevelDocument::getTileLayer));
+    level.addFunc("addObject", &LevelDocument::addObject);
+    level.addFunc("getObjectCount", &LevelDocument::getObjectCount);
+    level.addFunc("removeObject", &LevelDocument::removeObject);
+    level.addFunc("setProperty", &LevelDocument::setProperty);
+    level.addFunc("getProperty", &LevelDocument::getProperty);
+
+    auto formats = table.addClass<LevelFormatRegistry>(
+        "LevelFormatRegistry", std::function<LevelFormatRegistry*()>([]() -> LevelFormatRegistry* { return nullptr; }),
+        true);
+    formats.addFunc("getFormatCount", &LevelFormatRegistry::getFormatCount);
+    formats.addFunc("getFormatId", &LevelFormatRegistry::getFormatId);
+    formats.addFunc("detect", &LevelFormatRegistry::detect);
+
+    auto brush = table.addClass<Brush>("Brush", std::function<Brush*()>([]() -> Brush* { return nullptr; }), true);
     brush.addFunc("setTool", &Brush::setTool);
     brush.addFunc("getTool", &Brush::getTool);
     brush.addFunc("setSize", &Brush::setSize);
@@ -258,8 +289,7 @@ void Editor::expose(ssq::Table &table) {
     brush.addFunc("getChangeNewGid", &Brush::getChangeNewGid);
 
     auto tb = table.addClass<EditorToolbar>(
-        "EditorToolbar",
-        std::function<EditorToolbar *()>([]() -> EditorToolbar * { return nullptr; }), true);
+        "EditorToolbar", std::function<EditorToolbar*()>([]() -> EditorToolbar* { return nullptr; }), true);
     tb.addFunc("clear", &EditorToolbar::clear);
     tb.addFunc("addTool", &EditorToolbar::addTool);
     tb.addFunc("setShortcut", &EditorToolbar::setShortcut);
@@ -272,8 +302,7 @@ void Editor::expose(ssq::Table &table) {
     tb.addFunc("getToolShortcut", &EditorToolbar::getToolShortcut);
 
     auto insp = table.addClass<EditorInspector>(
-        "EditorInspector",
-        std::function<EditorInspector *()>([]() -> EditorInspector * { return nullptr; }), true);
+        "EditorInspector", std::function<EditorInspector*()>([]() -> EditorInspector* { return nullptr; }), true);
     insp.addFunc("clear", &EditorInspector::clear);
     insp.addFunc("addFloat", &EditorInspector::addFloat);
     insp.addFunc("addFloat3", &EditorInspector::addFloat3);
@@ -305,9 +334,8 @@ void Editor::expose(ssq::Table &table) {
     insp.addFunc("clearAllDirty", &EditorInspector::clearAllDirty);
     insp.addFunc("pollChangedId", &EditorInspector::pollChangedId);
 
-    auto dock = table.addClass<EditorDock>(
-        "EditorDock", std::function<EditorDock *()>([]() -> EditorDock * { return nullptr; }),
-        true);
+    auto dock = table.addClass<EditorDock>("EditorDock",
+                                           std::function<EditorDock*()>([]() -> EditorDock* { return nullptr; }), true);
     dock.addFunc("setRegionSize", &EditorDock::setRegionSize);
     dock.addFunc("getRegionSize", &EditorDock::getRegionSize);
     dock.addFunc("layout", &EditorDock::layout);
@@ -317,8 +345,7 @@ void Editor::expose(ssq::Table &table) {
     dock.addFunc("getRegionH", &EditorDock::getRegionH);
 
     auto hist = table.addClass<EditorHistory>(
-        "EditorHistory",
-        std::function<EditorHistory *()>([]() -> EditorHistory * { return nullptr; }), true);
+        "EditorHistory", std::function<EditorHistory*()>([]() -> EditorHistory* { return nullptr; }), true);
     hist.addFunc("clear", &EditorHistory::clear);
     hist.addFunc("push", &EditorHistory::push);
     hist.addFunc("beginGroup", &EditorHistory::beginGroup);
@@ -342,7 +369,7 @@ void Editor::expose(ssq::Table &table) {
     hist.addFunc("getLastTileNewGid", &EditorHistory::getLastTileNewGid);
 }
 
-void Editor::expose(ssq::Class &cls) {
+void Editor::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Editor::getName);
     cls.addFunc("newGizmo", &Editor::newGizmo);
     cls.addFunc("newGizmoManager", &Editor::newGizmoManager);
@@ -352,6 +379,8 @@ void Editor::expose(ssq::Class &cls) {
     cls.addFunc("newInspector", &Editor::newInspector);
     cls.addFunc("newDock", &Editor::newDock);
     cls.addFunc("newHistory", &Editor::newHistory);
+    cls.addFunc("newLevel", &Editor::newLevel);
+    cls.addFunc("newLevelFormats", &Editor::newLevelFormats);
     cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
     cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
 }
