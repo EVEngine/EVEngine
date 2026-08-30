@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "data/ByteData.h"
 #include "filesystem/FileData.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -12,6 +13,9 @@
 #include "procgen/MeshBuild.h"
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/LinearStructure.h"
+#include "procgen/heightmap/TerrainAsset.h"
+#include "procgen/heightmap/TerrainPipeline.h"
+#include "procgen/heightmap/TerrainStreaming.h"
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/PbrMaterial.h"
@@ -64,12 +68,14 @@
 #include <SDL2/SDL.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <numeric>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -965,6 +971,860 @@ TEST_CASE("procgen.noise.terrain.reproducible") {
     std::set<int> kinds;
     for (uint32_t c : a.cells()) kinds.insert(int(c));
     CHECK(kinds.size() >= 2);
+}
+
+TEST_CASE("procgen.terrain.pipeline.erosionHydrologyAndBiomes") {
+    Heightmap ridge(32, 24);
+    for (int y = 0; y < ridge.getHeight(); ++y) {
+        for (int x = 0; x < ridge.getWidth(); ++x) {
+            const float downhill = 0.82f - float(y) * 0.018f;
+            const float channel = (x == 15 || x == 16) ? -0.08f : 0.f;
+            ridge.setHeight(x, y, downhill + channel);
+        }
+    }
+    const float massBefore = std::accumulate(ridge.data().begin(), ridge.data().end(), 0.f);
+    Heightmap thermal = ridge;
+    ThermalErosionSettings thermalSettings;
+    thermalSettings.iterations = 12;
+    TerrainPipeline::erodeThermal(thermal, thermalSettings);
+    const float massAfter = std::accumulate(thermal.data().begin(), thermal.data().end(), 0.f);
+    CHECK(std::abs(massAfter - massBefore) < 0.001f);
+    CHECK(thermal.height(15, 12) > ridge.height(15, 12));
+    const auto [thermalMin, thermalMax] = std::minmax_element(thermal.data().begin(), thermal.data().end());
+    const auto [ridgeMin, ridgeMax] = std::minmax_element(ridge.data().begin(), ridge.data().end());
+    CHECK(*thermalMin >= *ridgeMin - 0.0001f);
+    CHECK(*thermalMax <= *ridgeMax + 0.0001f);
+
+    Heightmap hydraulicA = ridge, hydraulicB = ridge;
+    HydraulicErosionSettings hydraulicSettings;
+    hydraulicSettings.iterations = 20;
+    TerrainPipeline::erodeHydraulic(hydraulicA, hydraulicSettings);
+    TerrainPipeline::erodeHydraulic(hydraulicB, hydraulicSettings);
+    CHECK(hydraulicA.data() == hydraulicB.data());
+    CHECK(hydraulicA.data() != ridge.data());
+    const auto [hydraulicMin, hydraulicMax] =
+        std::minmax_element(hydraulicA.data().begin(), hydraulicA.data().end());
+    CHECK(std::isfinite(*hydraulicMin));
+    CHECK(std::isfinite(*hydraulicMax));
+    CHECK(*hydraulicMin >= 0.f);
+    CHECK(*hydraulicMax <= *ridgeMax + 0.0001f);
+
+    const HydrologyMap hydrology = TerrainPipeline::buildHydrology(ridge, 8.f, 0.2f);
+    CHECK_EQ(hydrology.flowAccumulation.size(), ridge.data().size());
+    CHECK(std::count(hydrology.rivers.begin(), hydrology.rivers.end(), uint8_t(1)) > 0);
+    for (int y = 1; y + 1 < ridge.getHeight(); ++y)
+        for (int x = 1; x + 1 < ridge.getWidth(); ++x)
+            CHECK(hydrology.flowDirection[size_t(y * ridge.getWidth() + x)] >= 0);
+    const ClimateMap climate = TerrainPipeline::buildClimate(ridge, hydrology, 0.2f, 0.8f);
+    CHECK_EQ(climate.biomes.size(), ridge.data().size());
+    CHECK(std::count(climate.biomes.begin(), climate.biomes.end(), Biome::River) > 0);
+    std::set<Biome> biomes(climate.biomes.begin(), climate.biomes.end());
+    CHECK(biomes.size() >= 3);
+
+    Heightmap fluvialA = ridge, fluvialB = ridge;
+    FluvialErosionSettings fluvialSettings;
+    fluvialSettings.iterations = 6;
+    fluvialSettings.riverThreshold = 0.02f;
+    TerrainPipeline::erodeFluvial(fluvialA, fluvialSettings);
+    TerrainPipeline::erodeFluvial(fluvialB, fluvialSettings);
+    CHECK(fluvialA.data() == fluvialB.data());
+    const auto maxCardinalStep = [](const Heightmap &map) {
+        float result = 0.f;
+        for (int y = 0; y < map.getHeight(); ++y) for (int x = 0; x < map.getWidth(); ++x) {
+            if (x + 1 < map.getWidth())
+                result = std::max(result, std::abs(map.height(x, y) - map.height(x + 1, y)));
+            if (y + 1 < map.getHeight())
+                result = std::max(result, std::abs(map.height(x, y) - map.height(x, y + 1)));
+        }
+        return result;
+    };
+    // Valley widening must not introduce a hard circular rim or terrace scarp.
+    CHECK(maxCardinalStep(fluvialA) <= maxCardinalStep(ridge) + 0.08f);
+    const HydrologyMap erodedHydrology =
+        TerrainPipeline::buildHydrology(fluvialA, fluvialSettings.riverThreshold,
+                                        -std::numeric_limits<float>::infinity());
+    const float channelCutoff = fluvialSettings.riverThreshold * float(fluvialA.data().size());
+    int channelLinks = 0, uphillLinks = 0;
+    for (size_t start = 0; start < erodedHydrology.flowDirection.size(); ++start) {
+        if (erodedHydrology.flowAccumulation[start] < channelCutoff) continue;
+        size_t current = start;
+        bool reachedBoundary = false;
+        for (size_t step = 0; step <= fluvialA.data().size(); ++step) {
+            const int x = int(current % size_t(fluvialA.getWidth()));
+            const int y = int(current / size_t(fluvialA.getWidth()));
+            if (x == 0 || y == 0 || x + 1 == fluvialA.getWidth() || y + 1 == fluvialA.getHeight()) {
+                reachedBoundary = true;
+                break;
+            }
+            const int direction = erodedHydrology.flowDirection[current];
+            REQUIRE(direction >= 0);
+            static constexpr int flowDx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+            static constexpr int flowDy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+            const size_t receiver = size_t((y + flowDy[direction]) * fluvialA.getWidth() +
+                                           x + flowDx[direction]);
+            if (fluvialA.data()[receiver] > fluvialA.data()[current] + 0.001f) ++uphillLinks;
+            ++channelLinks;
+            current = receiver;
+        }
+        CHECK(reachedBoundary);
+    }
+    REQUIRE(channelLinks > 0);
+    CHECK(uphillLinks * 20 <= channelLinks); // at least 95% of the bed is non-uphill
+    int loweredCells = 0;
+    for (size_t i = 0; i < fluvialA.data().size(); ++i) {
+        if (fluvialA.data()[i] < ridge.data()[i] - 0.0001f) ++loweredCells;
+        CHECK(fluvialA.data()[i] >= ridge.data()[i] - fluvialSettings.maxDepth - 0.0001f);
+    }
+    CHECK(loweredCells > 0);
+}
+
+TEST_CASE("procgen.terrain.pipeline.multiSeedDrainageMorphology") {
+    Procgen procgen;
+    std::set<uint64_t> terrainHashes;
+    static constexpr std::array<int, 5> seeds{17, 1031, 8191, 20260826, 7340033};
+    static constexpr int flowDx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+    static constexpr int flowDy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+    for (int seed : seeds) {
+        Params params;
+        params.setSeed(seed);
+        params.setSize(65, 65);
+        params.setFloat("frequency", 1.f / 31.f);
+        params.setInt("octaves", 4);
+        params.setFloat("gain", 0.4f);
+        params.setFloat("warp", 0.07f);
+        const TerrainSampler sampler = TerrainSampler::fromParams(params);
+        auto terrain = std::make_unique<Heightmap>(Heightmap::generate(
+            sampler, params.getWidth(), params.getHeight()));
+        TerrainPipeline::erodeThermal(*terrain, {12, 0.011f, 0.28f});
+        TerrainPipeline::erodeHydraulic(*terrain, {8, 0.007f, 0.11f, 1.4f, 0.08f, 0.11f});
+        TerrainErosionMap terrainDiagnostics = TerrainPipeline::erodeFluvialDetailed(
+            *terrain, {10, 0.008f, 0.12f, 0.18f, 2.5f});
+        if (seed == seeds.front()) {
+            if (const char *path = std::getenv("EVENGINE_TERRAIN_NATURAL_EROSION_PNG")) {
+                std::unique_ptr<eve::image::ImageData> image(
+                    procgen.generateTerrainErosionMap(&terrainDiagnostics, 0.f));
+                REQUIRE(image.get() != nullptr);
+                REQUIRE(saveImagePng(*image, path));
+            }
+        }
+        const HydrologyMap hydro = TerrainPipeline::buildHydrology(*terrain, 24.f, 0.2f);
+        const auto [minIt, maxIt] = std::minmax_element(terrain->data().begin(), terrain->data().end());
+        CHECK(*maxIt - *minIt > 0.18f);
+        const int riverCells = int(std::count(hydro.rivers.begin(), hydro.rivers.end(), uint8_t(1)));
+        CHECK(riverCells >= 12);
+        CHECK(riverCells < int(terrain->data().size() / 5));
+        CHECK_EQ(hydro.streamOrder.size(), hydro.rivers.size());
+        CHECK(*std::max_element(hydro.streamOrder.begin(), hydro.streamOrder.end()) >= 2);
+
+        int junctions = 0, longestChain = 0;
+        for (int y = 1; y + 1 < terrain->getHeight(); ++y) {
+            for (int x = 1; x + 1 < terrain->getWidth(); ++x) {
+                const size_t i = size_t(y * terrain->getWidth() + x);
+                if (!hydro.rivers[i]) continue;
+                int incoming = 0;
+                for (int d = 0; d < 8; ++d) {
+                    const int nx = x + flowDx[d], ny = y + flowDy[d];
+                    const size_t n = size_t(ny * terrain->getWidth() + nx);
+                    const int receiver = hydro.flowDirection[n];
+                    if (hydro.rivers[n] && receiver >= 0 &&
+                        nx + flowDx[receiver] == x && ny + flowDy[receiver] == y) ++incoming;
+                }
+                if (incoming >= 2) ++junctions;
+                size_t current = i;
+                int chain = 0;
+                for (; chain < int(terrain->data().size()); ++chain) {
+                    const int cx = int(current % size_t(terrain->getWidth()));
+                    const int cy = int(current / size_t(terrain->getWidth()));
+                    const int direction = hydro.flowDirection[current];
+                    if (direction < 0 || cx == 0 || cy == 0 ||
+                        cx + 1 == terrain->getWidth() || cy + 1 == terrain->getHeight()) break;
+                    const size_t receiver = size_t((cy + flowDy[direction]) * terrain->getWidth() +
+                                                   cx + flowDx[direction]);
+                    // A thresholded D8 channel must never disappear merely
+                    // because its contributing area shrinks downstream.
+                    CHECK(hydro.flowAccumulation[receiver] >= hydro.flowAccumulation[current]);
+                    if (terrain->data()[receiver] > 0.2f && hydro.lakeDepth[receiver] <= 0.f)
+                        CHECK(hydro.rivers[receiver]);
+                    current = receiver;
+                }
+                longestChain = std::max(longestChain, chain);
+            }
+        }
+        CHECK(junctions > 0);
+        CHECK(longestChain >= 8);
+
+        uint64_t hash = 1469598103934665603ull;
+        for (float value : terrain->data()) {
+            uint32_t bits = 0;
+            std::memcpy(&bits, &value, sizeof(bits));
+            hash = (hash ^ bits) * 1099511628211ull;
+        }
+        terrainHashes.insert(hash);
+    }
+    CHECK_EQ(terrainHashes.size(), seeds.size());
+}
+
+TEST_CASE("procgen.terrain.pipeline.fluvialBreachesClosedBasinSpillSill") {
+    Heightmap basin(41, 41);
+    const int center = 20;
+    for (int y = 0; y < 41; ++y) for (int x = 0; x < 41; ++x) {
+        const float radial = std::hypot(float(x - center), float(y - center));
+        float elevation = 0.18f + 0.012f * radial;
+        if (radial > 12.f && radial < 15.f) elevation += 0.32f;
+        if (radial >= 15.f) elevation = 0.25f - 0.006f * (radial - 15.f);
+        basin.setHeight(x, y, elevation);
+    }
+    const HydrologyMap closedHydro = TerrainPipeline::buildHydrology(
+        basin, 3.f, -std::numeric_limits<float>::infinity());
+    CHECK(closedHydro.lakeDepth[size_t(center * 41 + center)] > 0.2f);
+    CHECK(!closedHydro.rivers[size_t(center * 41 + center)]);
+    const ClimateMap closedClimate = TerrainPipeline::buildClimate(basin, closedHydro, 0.f, 0.5f);
+    CHECK_EQ(int(closedClimate.biomes[size_t(center * 41 + center)]), int(Biome::Lake));
+    CHECK(std::count(closedClimate.biomes.begin(), closedClimate.biomes.end(), Biome::Wetland) > 0);
+
+    // A deep connected basin is one geomorphic unit. A shallow fringe cell
+    // must not be incised merely because its own fill depth is below the breach
+    // limit; otherwise Priority-Flood's routing tree appears as radial stripes.
+    Heightmap preservedBasin = basin;
+    TerrainPipeline::erodeFluvial(preservedBasin, {24, 3.f, 0.14f, 0.55f, 4.f, 0.05f});
+    const HydrologyMap preservedHydro = TerrainPipeline::buildHydrology(
+        preservedBasin, 3.f, -std::numeric_limits<float>::infinity());
+    CHECK(preservedHydro.lakeDepth[size_t(center * 41 + center)] > 0.15f);
+    CHECK(std::abs(preservedBasin.height(center, center) - basin.height(center, center)) < 0.01f);
+
+    // The same basin may be deliberately opened when the caller supplies a
+    // breach budget larger than the component's maximum depression depth.
+    TerrainPipeline::erodeFluvial(basin, {24, 3.f, 0.14f, 0.55f, 4.f, 0.55f});
+    const HydrologyMap hydro = TerrainPipeline::buildHydrology(
+        basin, 3.f, -std::numeric_limits<float>::infinity());
+    size_t current = size_t(center * 41 + center);
+    int links = 0;
+    for (; links < 41 * 41; ++links) {
+        const int x = int(current % 41u), y = int(current / 41u);
+        if (x == 0 || y == 0 || x == 40 || y == 40) break;
+        const int direction = hydro.flowDirection[current];
+        REQUIRE(direction >= 0);
+        static constexpr int flowDx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+        static constexpr int flowDy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+        const size_t receiver = size_t((y + flowDy[direction]) * 41 + x + flowDx[direction]);
+        CHECK(basin.data()[receiver] <= basin.data()[current] + 0.001f);
+        current = receiver;
+    }
+    CHECK(links >= 15);
+    CHECK(links < 41 * 41);
+}
+
+TEST_CASE("procgen.terrain.pipeline.classifiesPerennialLakeBasins") {
+    Heightmap puddle(25, 25);
+    for (int y = 0; y < 25; ++y) for (int x = 0; x < 25; ++x)
+        puddle.setHeight(x, y, 0.5f - float(y) * 0.002f);
+    puddle.setHeight(12, 12, puddle.height(12, 12) - 0.018f);
+
+    const HydrologyMap raw = TerrainPipeline::buildHydrology(
+        puddle, 8.f, -std::numeric_limits<float>::infinity(), 1.f, false);
+    REQUIRE(raw.lakeDepth[size_t(12 * 25 + 12)] > 0.01f);
+    const HydrologyMap classified = TerrainPipeline::buildHydrology(
+        puddle, 8.f, -std::numeric_limits<float>::infinity());
+    CHECK_EQ(classified.lakeDepth[size_t(12 * 25 + 12)], 0.f);
+
+    Heightmap lake(25, 25);
+    for (int y = 0; y < 25; ++y) for (int x = 0; x < 25; ++x) {
+        const float radius = std::hypot(float(x - 12), float(y - 12));
+        lake.setHeight(x, y, 0.30f + std::min(radius, 8.f) * 0.012f);
+    }
+    const HydrologyMap perennial = TerrainPipeline::buildHydrology(
+        lake, 8.f, -std::numeric_limits<float>::infinity());
+    CHECK(perennial.lakeDepth[size_t(12 * 25 + 12)] > 0.05f);
+    CHECK(std::count_if(perennial.lakeDepth.begin(), perennial.lakeDepth.end(),
+                        [](float depth) { return depth > 0.f; }) >= 20);
+}
+
+TEST_CASE("procgen.terrain.pipeline.fluvialResolvesValleyCrossSections") {
+    Heightmap slope(65, 65);
+    for (int y = 0; y < 65; ++y) for (int x = 0; x < 65; ++x) {
+        const float broadRelief = 0.055f * std::sin(float(x) * 0.145f) +
+                                  0.025f * std::sin(float(x + y) * 0.071f);
+        slope.setHeight(x, y, 0.88f - float(y) * 0.009f + broadRelief);
+    }
+    const Heightmap originalSlope = slope;
+    FluvialErosionSettings settings;
+    settings.iterations = 18;
+    settings.riverThreshold = 0.008f;
+    settings.incision = 0.075f;
+    settings.maxDepth = 0.12f;
+    settings.bankWidth = 5.f;
+    settings.maxBreachDepth = 0.015f;
+    TerrainErosionMap erosionMap = TerrainPipeline::erodeFluvialDetailed(slope, settings);
+    REQUIRE_EQ(erosionMap.width, 65);
+    REQUIRE_EQ(erosionMap.height, 65);
+    REQUIRE_EQ(erosionMap.wear.size(), slope.data().size());
+    float totalWear = 0.f, totalDeposition = 0.f;
+    for (size_t i = 0; i < slope.data().size(); ++i) {
+        totalWear += erosionMap.wear[i];
+        totalDeposition += erosionMap.deposition[i];
+        CHECK(std::abs((erosionMap.deposition[i] - erosionMap.wear[i]) -
+                       erosionMap.heightDelta[i]) < 1e-5f);
+    }
+    CHECK(totalWear > 0.1f);
+    CHECK(totalDeposition > 0.f);
+    Procgen diagnosticProcgen;
+    std::unique_ptr<eve::image::ImageData> combined(
+        diagnosticProcgen.generateTerrainErosionMap(&erosionMap, 0.f));
+    std::unique_ptr<eve::image::ImageData> wearImage(
+        diagnosticProcgen.generateTerrainWearMap(&erosionMap, 0.f));
+    std::unique_ptr<eve::image::ImageData> depositImage(
+        diagnosticProcgen.generateTerrainDepositionMap(&erosionMap, 0.f));
+    REQUIRE(combined.get() != nullptr);
+    REQUIRE(wearImage.get() != nullptr);
+    REQUIRE(depositImage.get() != nullptr);
+    CHECK_EQ(combined->getWidth(), 65);
+    CHECK(std::memcmp(combined->getData(), wearImage->getData(), combined->getSize()) != 0);
+    CHECK(std::memcmp(combined->getData(), depositImage->getData(), combined->getSize()) != 0);
+    if (const char *path = std::getenv("EVENGINE_TERRAIN_EROSION_PNG"))
+        REQUIRE(saveImagePng(*combined, path));
+    const HydrologyMap hydro = TerrainPipeline::buildHydrology(
+        slope, settings.riverThreshold, -std::numeric_limits<float>::infinity());
+    const float cutoff = settings.riverThreshold * float(slope.data().size());
+    static constexpr int flowDx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+    static constexpr int flowDy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+    std::vector<float> crossSectionRelief;
+    std::vector<std::pair<float, int>> flowAndIncisedWidth;
+    int materiallyIncised = 0;
+    for (int y = 9; y < 56; ++y) for (int x = 9; x < 56; ++x) {
+        const size_t i = size_t(y * 65 + x);
+        if (hydro.flowAccumulation[i] < cutoff || hydro.flowDirection[i] < 0) continue;
+        const int d = hydro.flowDirection[i];
+        const int px = -flowDy[d], py = flowDx[d];
+        const float left = slope.height(x + px * 4, y + py * 4);
+        const float right = slope.height(x - px * 4, y - py * 4);
+        crossSectionRelief.push_back((left + right) * 0.5f - slope.height(x, y));
+        int incisedWidth = 0;
+        for (int offset = -8; offset <= 8; ++offset) {
+            const int sx = x + px * offset, sy = y + py * offset;
+            if (originalSlope.height(sx, sy) - slope.height(sx, sy) > 0.002f)
+                ++incisedWidth;
+        }
+        flowAndIncisedWidth.emplace_back(hydro.flowAccumulation[i], incisedWidth);
+        if (originalSlope.height(x, y) - slope.height(x, y) > 0.01f) ++materiallyIncised;
+    }
+    REQUIRE(crossSectionRelief.size() >= 8);
+    std::sort(crossSectionRelief.begin(), crossSectionRelief.end());
+    CHECK(crossSectionRelief[crossSectionRelief.size() / 2] > 0.008f);
+    CHECK(materiallyIncised >= int(crossSectionRelief.size() / 3));
+    // A larger contributing basin must create a wider geomorphic corridor,
+    // not merely a wider water ribbon at render time.
+    std::sort(flowAndIncisedWidth.begin(), flowAndIncisedWidth.end());
+    const size_t quartile = std::max<size_t>(1, flowAndIncisedWidth.size() / 4);
+    float headwaterWidth = 0.f, trunkWidth = 0.f;
+    for (size_t n = 0; n < quartile; ++n) {
+        headwaterWidth += float(flowAndIncisedWidth[n].second);
+        trunkWidth += float(flowAndIncisedWidth[flowAndIncisedWidth.size() - 1 - n].second);
+    }
+    CHECK(trunkWidth / float(quartile) > headwaterWidth / float(quartile) + 0.5f);
+}
+
+TEST_CASE("procgen.terrain.pipeline.resolutionScaledHydrologyAndValleys") {
+    auto physicalTerrain = [](int resolution) {
+        Heightmap map(resolution, resolution);
+        const float extent = float(resolution - 1);
+        for (int y = 0; y < resolution; ++y) for (int x = 0; x < resolution; ++x) {
+            const float u = float(x) / extent, v = float(y) / extent;
+            const float ridge = 0.075f * std::sin(u * 6.28318530718f) +
+                                0.035f * std::sin((u * 2.1f + v * 0.55f) * 6.28318530718f);
+            map.setHeight(x, y, 0.88f - 0.34f * v + ridge);
+        }
+        return map;
+    };
+    Heightmap coarse = physicalTerrain(33);
+    Heightmap fine = physicalTerrain(65);
+    const HydrologyMap coarseBefore = TerrainPipeline::buildHydrology(
+        coarse, 0.015f, -std::numeric_limits<float>::infinity(), 1.f);
+    const HydrologyMap fineBefore = TerrainPipeline::buildHydrology(
+        fine, 0.015f, -std::numeric_limits<float>::infinity(), 2.f);
+    const float coarseRiverFraction = float(std::count(
+        coarseBefore.rivers.begin(), coarseBefore.rivers.end(), uint8_t(1))) /
+        float(coarseBefore.rivers.size());
+    const float fineRiverFraction = float(std::count(
+        fineBefore.rivers.begin(), fineBefore.rivers.end(), uint8_t(1))) /
+        float(fineBefore.rivers.size());
+    CHECK(fineRiverFraction > coarseRiverFraction * 0.45f);
+    CHECK(fineRiverFraction < coarseRiverFraction * 2.2f);
+    const float coarsePeakFlow = *std::max_element(
+        coarseBefore.flowAccumulation.begin(), coarseBefore.flowAccumulation.end()) /
+        float(coarse.data().size());
+    const float finePeakFlow = *std::max_element(
+        fineBefore.flowAccumulation.begin(), fineBefore.flowAccumulation.end()) /
+        float(fine.data().size());
+    CHECK(std::abs(coarsePeakFlow - finePeakFlow) < 0.12f);
+
+    const Heightmap coarseOriginal = coarse, fineOriginal = fine;
+    TerrainPipeline::erodeFluvial(coarse, {10, 0.015f, 0.055f, 0.10f, 3.f, 0.01f, 1.f});
+    TerrainPipeline::erodeFluvial(fine, {10, 0.015f, 0.055f, 0.10f, 6.f, 0.01f, 2.f});
+    float correspondenceError = 0.f, coarseLowering = 0.f, fineLowering = 0.f;
+    int samples = 0;
+    for (int y = 2; y < 31; ++y) for (int x = 2; x < 31; ++x) {
+        correspondenceError += std::abs(coarse.height(x, y) - fine.height(x * 2, y * 2));
+        coarseLowering += coarseOriginal.height(x, y) - coarse.height(x, y);
+        fineLowering += fineOriginal.height(x * 2, y * 2) - fine.height(x * 2, y * 2);
+        ++samples;
+    }
+    correspondenceError /= float(samples);
+    coarseLowering /= float(samples);
+    fineLowering /= float(samples);
+    CHECK(correspondenceError < 0.035f);
+    REQUIRE(coarseLowering > 0.f);
+    CHECK(fineLowering > coarseLowering * 0.35f);
+    CHECK(fineLowering < coarseLowering * 2.8f);
+}
+
+TEST_CASE("procgen.terrain.asset.chunkedRoundTripAndCorruptionDetection") {
+    Heightmap heightmap(19, 13);
+    for (int y = 0; y < heightmap.getHeight(); ++y)
+        for (int x = 0; x < heightmap.getWidth(); ++x)
+            heightmap.setHeight(x, y, 10.f + float(x) * 0.25f + float(y) * 0.5f);
+    HydrologyMap hydrology = TerrainPipeline::buildHydrology(heightmap, 5.f, 10.f);
+    hydrology.lakeDepth[size_t(12 * 19 + 18)] = 2.1f;
+    const ClimateMap climate = TerrainPipeline::buildClimate(heightmap, hydrology, 10.f, 0.6f);
+    std::vector<uint8_t> bytesA, bytesB;
+    std::string error;
+    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, bytesA, &error));
+    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, bytesB, &error));
+    CHECK(bytesA == bytesB);
+
+    TerrainAsset asset;
+    REQUIRE(asset.open(bytesA.data(), bytesA.size(), &error));
+    CHECK_EQ(asset.getWidth(), 19);
+    CHECK_EQ(asset.getHeight(), 13);
+    CHECK_EQ(asset.getChunkSize(), 8);
+    CHECK_EQ(asset.chunks().size(), size_t(6));
+    CHECK(std::any_of(asset.chunks().begin(), asset.chunks().end(),
+                      [](const TerrainChunkEntry &entry) { return entry.compressed; }));
+
+    TerrainChunkData edge;
+    REQUIRE(asset.loadChunk(2, 1, edge, &error));
+    CHECK_EQ(edge.width, 3);
+    CHECK_EQ(edge.height, 5);
+    CHECK(std::abs(edge.heights.height(2, 4) - heightmap.height(18, 12)) < 0.001f);
+    CHECK_EQ(edge.rivers.size(), size_t(15));
+    CHECK_EQ(edge.flowDirection.size(), size_t(15));
+    CHECK_EQ(int(edge.flowDirection.front()),
+             int(hydrology.flowDirection[size_t(8 * 19 + 16)]));
+    CHECK_EQ(edge.flowVectorX.size(), size_t(15));
+    CHECK_EQ(edge.flowVectorY.size(), size_t(15));
+    CHECK(std::abs(edge.flowVectorX.front() -
+                   hydrology.flowVectorX[size_t(8 * 19 + 16)]) < 0.009f);
+    CHECK(std::abs(edge.flowVectorY.front() -
+                   hydrology.flowVectorY[size_t(8 * 19 + 16)]) < 0.009f);
+    CHECK_EQ(edge.streamOrder.size(), size_t(15));
+    CHECK_EQ(edge.streamOrder.front(), hydrology.streamOrder[size_t(8 * 19 + 16)]);
+    CHECK_EQ(edge.lakeDepth.size(), size_t(15));
+    CHECK(std::abs(edge.lakeDepth.back() - 2.1f) < 0.05f);
+    CHECK_EQ(edge.biomes.size(), size_t(15));
+
+    std::vector<uint8_t> corrupt = bytesA;
+    const TerrainChunkEntry first = asset.chunks().front();
+    corrupt[size_t(first.offset) + first.storedSize / 2] ^= 0x5au;
+    TerrainAsset corruptAsset;
+    REQUIRE(corruptAsset.open(corrupt.data(), corrupt.size(), &error));
+    TerrainChunkData rejected;
+    CHECK(!corruptAsset.loadChunk(first.chunkX, first.chunkY, rejected, &error));
+
+    std::vector<uint8_t> malformed = bytesA;
+    malformed[57] = 1; // directory reserved bytes must remain zero
+    TerrainAsset malformedAsset;
+    CHECK(!malformedAsset.open(malformed.data(), malformed.size(), &error));
+    malformed = bytesA;
+    malformed[44] = 0xff; malformed[45] = 0xff; malformed[46] = 0xff; malformed[47] = 0x7f;
+    CHECK(!malformedAsset.open(malformed.data(), malformed.size(), &error));
+    malformed = bytesA;
+    malformed[24] = 0; malformed[25] = 0; malformed[26] = 0xc0; malformed[27] = 0x7f; // NaN min height
+    CHECK(!malformedAsset.open(malformed.data(), malformed.size(), &error));
+
+    // EVTR v1/v2/v3/v4 remain readable. Missing layers are supplied with safe
+    // defaults or reconstructed from D8 instead of invalidating a world.
+    auto legacyAsset = [](uint16_t version) {
+        std::vector<uint8_t> raw{0x00, 0x80, 0xff}; // height UNORM16, drainage
+        if (version >= 3) raw.push_back(5);          // D8 east (encoded + 1)
+        if (version >= 4) raw.insert(raw.end(), {0xff, 0x80}); // continuous east
+        if (version >= 2) raw.push_back(0x40);       // lake depth
+        raw.insert(raw.end(), {0x80, 0x40, 0x01, uint8_t(Biome::Grassland)});
+        uint32_t hash = 2166136261u;
+        for (uint8_t byte : raw) { hash ^= byte; hash *= 16777619u; }
+        std::vector<uint8_t> result{'E', 'V', 'T', 'R'};
+        auto u16 = [&](uint16_t v) { result.push_back(uint8_t(v)); result.push_back(uint8_t(v >> 8)); };
+        auto u32 = [&](uint32_t v) { for (int b = 0; b < 4; ++b) result.push_back(uint8_t(v >> (b * 8))); };
+        auto u64 = [&](uint64_t v) { for (int b = 0; b < 8; ++b) result.push_back(uint8_t(v >> (b * 8))); };
+        auto f32 = [&](float v) { uint32_t bits; std::memcpy(&bits, &v, 4); u32(bits); };
+        u16(version); u16(0); u32(1); u32(1); u32(1); u32(1);
+        f32(0.f); f32(1.f); f32(10.f); u64(44);
+        u32(0); u32(0); u16(1); u16(1);
+        result.insert(result.end(), {0, 0, 0, 0}); u64(80);
+        u32(uint32_t(raw.size())); u32(uint32_t(raw.size())); u32(hash);
+        result.insert(result.end(), raw.begin(), raw.end());
+        return result;
+    };
+    for (uint16_t version : {uint16_t(1), uint16_t(2), uint16_t(3), uint16_t(4)}) {
+        const std::vector<uint8_t> legacy = legacyAsset(version);
+        TerrainAsset legacyReader;
+        REQUIRE(legacyReader.open(legacy.data(), legacy.size(), &error));
+        TerrainChunkData legacyChunk;
+        REQUIRE(legacyReader.loadChunk(0, 0, legacyChunk, &error));
+        CHECK_EQ(int(legacyChunk.flowDirection[0]), version >= 3 ? 4 : -1);
+        CHECK(std::abs(legacyChunk.flowVectorX[0] - (version >= 3 ? 1.f : 0.f)) < 0.001f);
+        CHECK(std::abs(legacyChunk.flowVectorY[0]) < 0.001f);
+        CHECK_EQ(legacyChunk.streamOrder[0], uint8_t(0));
+        if (version == 1) CHECK_EQ(legacyChunk.lakeDepth[0], 0.f);
+        else CHECK(std::abs(legacyChunk.lakeDepth[0] - float(0x40) / 255.f) < 0.0001f);
+    }
+}
+
+TEST_CASE("procgen.terrain.streaming.budgetEvictionAndCrossChunkSampling") {
+    Heightmap heightmap(24, 24);
+    for (int y = 0; y < 24; ++y)
+        for (int x = 0; x < 24; ++x) heightmap.setHeight(x, y, float(x + y * 2));
+    HydrologyMap hydrology = TerrainPipeline::buildHydrology(heightmap, 5.f, -1.f);
+    hydrology.lakeDepth[size_t(12 * 24 + 12)] = 3.f;
+    const ClimateMap climate = TerrainPipeline::buildClimate(heightmap, hydrology, -1.f, 0.5f);
+    std::vector<uint8_t> bytes;
+    std::string error;
+    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, bytes, &error));
+
+    TerrainStreamingCache stream;
+    REQUIRE(stream.open(bytes.data(), bytes.size(), &error));
+    TerrainStreamStats first = stream.streamAround(12, 12, 1, 2, &error);
+    CHECK_EQ(first.loaded, 2);
+    CHECK_EQ(first.pending, 3);
+    CHECK_EQ(first.resident, 2);
+    TerrainStreamStats second = stream.streamAround(12, 12, 1, 0, &error);
+    CHECK_EQ(second.loaded, 3);
+    CHECK_EQ(second.pending, 0);
+    CHECK_EQ(second.resident, 5);
+    TerrainStreamStats stable = stream.streamAround(12, 12, 1, 0, &error);
+    CHECK_EQ(stable.loaded, 0);
+    CHECK_EQ(stable.evicted, 0);
+
+    float interpolated = 0.f;
+    REQUIRE(stream.sampleHeight(7.5f, 12.f, interpolated));
+    CHECK(std::abs(interpolated - 31.5f) < 0.002f);
+    TerrainSample sample;
+    REQUIRE(stream.sampleCell(12, 12, sample));
+    CHECK(std::abs(sample.height - 36.f) < 0.002f);
+    CHECK_EQ(sample.flowDirection, int(hydrology.flowDirection[size_t(12 * 24 + 12)]));
+    CHECK(std::abs(sample.flowVectorX - hydrology.flowVectorX[size_t(12 * 24 + 12)]) < 0.009f);
+    CHECK(std::abs(sample.flowVectorY - hydrology.flowVectorY[size_t(12 * 24 + 12)]) < 0.009f);
+    CHECK_EQ(sample.streamOrder, int(hydrology.streamOrder[size_t(12 * 24 + 12)]));
+    CHECK(std::abs(sample.lakeDepth - 3.f) < 0.28f);
+    CHECK(sample.lake);
+
+    TerrainStreamStats moved = stream.streamAround(23, 23, 0, 0, &error);
+    CHECK_EQ(moved.evicted, 5);
+    CHECK_EQ(moved.loaded, 1);
+    CHECK_EQ(moved.resident, 1);
+    CHECK(!stream.sampleCell(12, 12, sample));
+    REQUIRE(stream.sampleCell(23, 23, sample));
+    CHECK(std::abs(sample.height - 69.f) < 0.002f);
+    TerrainStreamStats noOp = stream.streamAround(0, 0, -1, 0, &error);
+    CHECK_EQ(noOp.resident, 1);
+}
+
+TEST_CASE("procgen.terrain.streaming.crossChunkHydrologyTraceAndHalo") {
+    Heightmap heightmap(24, 9);
+    for (int y = 0; y < 9; ++y) for (int x = 0; x < 24; ++x)
+        heightmap.setHeight(x, y, 100.f - float(x) * 2.f + std::abs(float(y - 4)) * 3.f);
+    HydrologyMap hydrology = TerrainPipeline::buildHydrology(heightmap, 2.f, -1.f);
+    const ClimateMap climate = TerrainPipeline::buildClimate(heightmap, hydrology, -1.f, 0.5f);
+    std::vector<uint8_t> bytes;
+    std::string error;
+    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, bytes, &error));
+
+    TerrainStreamingCache stream;
+    REQUIRE(stream.open(bytes.data(), bytes.size(), &error));
+    REQUIRE_EQ(stream.streamAround(7, 4, 1, 0, &error).resident, 3);
+
+    int receiverX = -1, receiverY = -1;
+    REQUIRE(stream.getReceiver(7, 4, receiverX, receiverY));
+    CHECK_EQ(receiverX, 8);
+    CHECK_EQ(receiverY, 4);
+
+    std::vector<std::pair<int, int>> path;
+    CHECK(!stream.traceFlow(7, 4, 64, path)); // third X chunk is not resident yet
+    CHECK(path.size() > size_t(8));
+    REQUIRE_EQ(stream.streamAround(12, 4, 2, 0, &error).resident, 6);
+    REQUIRE(stream.traceFlow(7, 4, 64, path));
+    CHECK_EQ(path.front().first, 7);
+    CHECK_EQ(path.front().second, 4);
+    CHECK_EQ(path.back().first, 23);
+    CHECK_EQ(path.back().second, 4);
+
+    TerrainStreamingWindow halo;
+    REQUIRE(stream.buildWindow(7, 3, 3, 3, halo));
+    CHECK_EQ(halo.originX, 7);
+    CHECK_EQ(halo.heights.getWidth(), 3);
+    for (int y = 0; y < 3; ++y) for (int x = 0; x < 3; ++x) {
+        const size_t local = size_t(y * 3 + x);
+        const size_t global = size_t((y + 3) * 24 + x + 7);
+        CHECK(std::abs(halo.heights.height(x, y) - heightmap.height(x + 7, y + 3)) < 0.002f);
+        CHECK_EQ(int(halo.hydrology.flowDirection[local]), int(hydrology.flowDirection[global]));
+        CHECK_EQ(halo.hydrology.streamOrder[local], hydrology.streamOrder[global]);
+    }
+}
+
+TEST_CASE("procgen.terrain.module.erosionAndAnalysisApi") {
+    Procgen procgen;
+    auto heightmapResult = procgen.newHeightmapHandle(16, 16);
+    REQUIRE(heightmapResult.ok());
+    const ProcgenHeightmapHandleRef heightmapHandle = std::move(heightmapResult).takeValue();
+    auto heightmapView = procgen.resolveHeightmap(heightmapHandle);
+    REQUIRE(heightmapView.isBound());
+    Heightmap *heightmap = heightmapView.get();
+    for (int y = 0; y < 16; ++y)
+        for (int x = 0; x < 16; ++x)
+            heightmap->setHeight(x, y, 0.85f - float(y) * 0.035f + (x == 8 ? -0.1f : 0.f));
+    const std::vector<float> before = heightmap->data();
+    CHECK(procgen.erodeTerrainThermal(heightmap, 8, 0.02f, 0.3f));
+    CHECK(procgen.erodeTerrainHydraulic(heightmap, 8, 0.01f, 0.1f, 2.f, 0.15f, 0.1f));
+    CHECK(procgen.erodeTerrainFluvial(heightmap, 3, 0.03f, 0.006f, 0.08f, 1.5f));
+    CHECK(procgen.erodeTerrainFluvialAdvanced(
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 1.5f, 0.015f));
+    CHECK(procgen.erodeTerrainFluvialScaled(
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 2.f));
+    std::unique_ptr<TerrainErosionMap> diagnostics(procgen.erodeTerrainFluvialDetailed(
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 2.f));
+    REQUIRE(diagnostics.get() != nullptr);
+    CHECK_EQ(diagnostics->getWidth(), 16);
+    CHECK(diagnostics->getWear(8, 8) >= 0.f);
+    CHECK(diagnostics->getDeposition(8, 8) >= 0.f);
+    CHECK_EQ(diagnostics->getWear(-1, 0), 0.f);
+    CHECK(procgen.erodeTerrainFluvialDetailed(
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 0.f) == nullptr);
+    CHECK(!procgen.erodeTerrainFluvialScaled(
+        heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 0.f));
+    CHECK(heightmap->data() != before);
+    std::unique_ptr<TerrainLayers> layers(procgen.analyzeTerrain(heightmap, 4.f, 0.2f, 0.7f));
+    REQUIRE(layers.get() != nullptr);
+    std::unique_ptr<TerrainLayers> scaledLayers(
+        procgen.analyzeTerrainScaled(heightmap, 4.f, 0.2f, 0.7f, 2.f));
+    REQUIRE(scaledLayers.get() != nullptr);
+    CHECK(procgen.analyzeTerrainScaled(heightmap, 4.f, 0.2f, 0.7f, 0.f) == nullptr);
+    CHECK_EQ(layers->getWidth(), 16);
+    CHECK(layers->getFlowAccumulation(8, 8) >= 1.f);
+    CHECK(layers->getStreamOrder(8, 8) >= 0);
+    CHECK(layers->getTemperature(8, 8) >= 0.f);
+    CHECK(layers->getMoisture(8, 8) >= 0.f);
+    CHECK(!layers->getBiomeName(8, 8).empty());
+    CHECK_EQ(layers->getBiome(-1, 0), -1);
+    std::unique_ptr<eve::data::ByteData> archive(
+        procgen.bakeTerrainAsset(heightmap, layers.get(), 8));
+    REQUIRE(archive.get() != nullptr);
+    TerrainAsset opened;
+    CHECK(opened.open(static_cast<const uint8_t *>(archive->getData()), archive->getSize()));
+    CHECK_EQ(opened.chunks().size(), size_t(4));
+    CHECK(!procgen.erodeTerrainThermal(nullptr, 1, 0.1f, 0.1f));
+    auto heightmapRelease = procgen.releaseHeightmap(heightmapHandle);
+    heightmapRelease.ignore("terrain module test cleanup");
+}
+
+TEST_CASE("procgen.terrain.mesh.lodSkirtsStableSeamsAndMaterialWeights") {
+    Heightmap heightmap(33, 17);
+    for (int y = 0; y < 17; ++y)
+        for (int x = 0; x < 33; ++x)
+            heightmap.setHeight(x, y, 0.2f + float(x) * 0.012f + 0.04f * std::sin(float(y) * 0.4f));
+    HydrologyMap hydrology;
+    hydrology.width = 33; hydrology.height = 17;
+    hydrology.flowDirection.assign(33 * 17, -1);
+    hydrology.flowAccumulation.assign(33 * 17, 1.f);
+    hydrology.rivers.assign(33 * 17, 0);
+    ClimateMap climate;
+    climate.width = 33; climate.height = 17;
+    climate.temperature.assign(33 * 17, 0.6f);
+    climate.moisture.assign(33 * 17, 0.7f);
+    climate.biomes.assign(33 * 17, Biome::Forest);
+    for (int y = 0; y < 17; ++y)
+        for (int x = 16; x < 33; ++x) climate.biomes[size_t(y * 33 + x)] = Biome::Desert;
+    TerrainLayers layers(std::move(hydrology), std::move(climate));
+
+    TerrainMeshSettings settings;
+    settings.cellsX = 16; settings.cellsY = 16;
+    settings.cellSize = 2.f; settings.heightScale = 10.f; settings.skirtDepth = 3.f;
+    TerrainMeshSettings lodErrorSettings = settings;
+    lodErrorSettings.lod = 1;
+    const float lod1Error = TerrainMeshBuilder::estimateGeometricError(heightmap, lodErrorSettings);
+    lodErrorSettings.lod = 2;
+    const float lod2Error = TerrainMeshBuilder::estimateGeometricError(heightmap, lodErrorSettings);
+    CHECK(lod1Error > 0.f);
+    CHECK(lod2Error >= lod1Error);
+    const int nearLod = TerrainLodSelector::select(heightmap, settings, 3, 5.f, 1080.f, 60.f, 1.f);
+    const int farLod = TerrainLodSelector::select(heightmap, settings, 3, 10000.f, 1080.f, 60.f, 1.f);
+    CHECK_EQ(nearLod, 0);
+    CHECK_EQ(farLod, 3);
+    CHECK_EQ(TerrainLodSelector::select(heightmap, settings, 3, -1.f, 1080.f, 60.f, 1.f), -1);
+    TerrainMeshChunk left, right;
+    std::string error;
+    REQUIRE(TerrainMeshBuilder::build(heightmap, &layers, settings, left, &error));
+    settings.originX = 16;
+    REQUIRE(TerrainMeshBuilder::build(heightmap, &layers, settings, right, &error));
+    CHECK_EQ(left.getBaseVertexCount(), 17 * 17);
+    CHECK_EQ(left.getVertexCount(), 17 * 17 + 4 * 17 * 2);
+    CHECK_EQ(left.getIndexCount(), 16 * 16 * 6 + 4 * 16 * 6);
+    CHECK(meshIndicesInRange(left.mesh()));
+    CHECK(meshNormalsFiniteUnit(left.mesh(), 0.02f));
+    for (int y = 0; y < 17; ++y) {
+        const int li = y * 17 + 16, ri = y * 17;
+        CHECK(std::abs(left.mesh().getPositionY(li) - right.mesh().getPositionY(ri)) < 0.0001f);
+        CHECK(std::abs(left.mesh().getNormalX(li) - right.mesh().getNormalX(ri)) < 0.0001f);
+        CHECK(std::abs(left.mesh().getNormalY(li) - right.mesh().getNormalY(ri)) < 0.0001f);
+        CHECK(std::abs(left.mesh().getNormalZ(li) - right.mesh().getNormalZ(ri)) < 0.0001f);
+        CHECK_EQ(left.getBiome(li), right.getBiome(ri));
+        for (int channel = 0; channel < 4; ++channel)
+            CHECK(std::abs(left.getMaterialWeight(li, channel) -
+                           right.getMaterialWeight(ri, channel)) < 0.0001f);
+    }
+    const int firstSkirtTop = left.getBaseVertexCount(), firstSkirtBottom = firstSkirtTop + 1;
+    CHECK(std::abs(left.mesh().getPositionY(firstSkirtTop) -
+                   left.mesh().getPositionY(firstSkirtBottom) - 3.f) < 0.0001f);
+    for (int vertex = 0; vertex < left.getVertexCount(); ++vertex) {
+        float sum = 0.f;
+        for (int channel = 0; channel < 4; ++channel) {
+            CHECK(left.getMaterialWeight(vertex, channel) >= 0.f);
+            sum += left.getMaterialWeight(vertex, channel);
+        }
+        CHECK(std::abs(sum - 1.f) < 0.0001f);
+    }
+    CHECK_EQ(left.getBiome(4), int(Biome::Forest));
+    CHECK_EQ(right.getBiome(4), int(Biome::Desert));
+    CHECK_EQ(left.getBiome(-1), -1);
+    CHECK(left.getMaterialWeight(4, 1) > left.getMaterialWeight(4, 0));
+    CHECK(right.getMaterialWeight(4, 0) > right.getMaterialWeight(4, 1));
+    Procgen procgen;
+    std::unique_ptr<eve::image::ImageData> splat(procgen.generateTerrainSplatMap(&left));
+    std::unique_ptr<eve::image::ImageData> rightSplat(procgen.generateTerrainSplatMap(&right));
+    REQUIRE(splat.get() != nullptr);
+    REQUIRE(rightSplat.get() != nullptr);
+    CHECK_EQ(splat->getWidth(), 17);
+    CHECK_EQ(splat->getHeight(), 17);
+    const auto *rgba = static_cast<const uint8_t *>(splat->getData());
+    const auto *rightRgba = static_cast<const uint8_t *>(rightSplat->getData());
+    for (int vertex = 0; vertex < left.getBaseVertexCount(); ++vertex) {
+        int sum = 0;
+        for (int channel = 0; channel < 4; ++channel) {
+            sum += rgba[vertex * 4 + channel];
+            CHECK(std::abs(float(rgba[vertex * 4 + channel]) / 255.f -
+                           left.getMaterialWeight(vertex, channel)) <= 1.f / 255.f);
+        }
+        CHECK_EQ(sum, 255);
+    }
+    for (int y = 0; y < 17; ++y) for (int channel = 0; channel < 4; ++channel)
+        CHECK_EQ(rgba[(y * 17 + 16) * 4 + channel],
+                 rightRgba[(y * 17) * 4 + channel]);
+    CHECK(procgen.generateTerrainSplatMap(nullptr) == nullptr);
+    std::unique_ptr<eve::image::ImageData> albedo(procgen.generateTerrainAlbedoMap(&left));
+    REQUIRE(albedo.get() != nullptr);
+    CHECK_EQ(albedo->getWidth(), 17);
+    CHECK_EQ(albedo->getHeight(), 17);
+    const auto *albedoRgba = static_cast<const uint8_t *>(albedo->getData());
+    for (int vertex = 0; vertex < left.getBaseVertexCount(); ++vertex)
+        CHECK_EQ(albedoRgba[vertex * 4 + 3], uint8_t(255));
+    CHECK(procgen.generateTerrainAlbedoMap(nullptr) == nullptr);
+
+    settings.originX = 0; settings.lod = 1;
+    TerrainMeshChunk lod1;
+    REQUIRE(TerrainMeshBuilder::build(heightmap, &layers, settings, lod1, &error));
+    CHECK_EQ(lod1.getLodStep(), 2);
+    CHECK(std::abs(lod1.getGeometricError() - lod1Error) < 0.0001f);
+    CHECK_EQ(lod1.getBaseVertexCount(), 9 * 9);
+    CHECK_EQ(lod1.getVertexCount(), 9 * 9 + 4 * 9 * 2);
+    CHECK_EQ(lod1.getIndexCount(), 8 * 8 * 6 + 4 * 8 * 6);
+    for (int y = 0; y < 9; ++y) for (int x = 0; x < 9; ++x) {
+        const int coarse = y * 9 + x;
+        const int fine = (y * 2) * 17 + x * 2;
+        CHECK_EQ(lod1.getBiome(coarse), left.getBiome(fine));
+        for (int channel = 0; channel < 4; ++channel)
+            CHECK(std::abs(lod1.getMaterialWeight(coarse, channel) -
+                           left.getMaterialWeight(fine, channel)) < 0.0001f);
+    }
+
+    Heightmap riverHeight(9, 9);
+    HydrologyMap riverHydrology;
+    riverHydrology.width = 9; riverHydrology.height = 9;
+    riverHydrology.flowDirection.assign(81, -1);
+    riverHydrology.flowAccumulation.assign(81, 1.f);
+    riverHydrology.rivers.assign(81, 0);
+    ClimateMap riverClimate;
+    riverClimate.width = 9; riverClimate.height = 9;
+    riverClimate.temperature.assign(81, 0.5f);
+    riverClimate.moisture.assign(81, 0.8f);
+    riverClimate.biomes.assign(81, Biome::Grassland);
+    for (int y = 0; y < 8; ++y) {
+        const size_t i = size_t(y * 9 + 4);
+        riverHeight.setHeight(4, y, 0.8f - float(y) * 0.05f);
+        riverHydrology.flowDirection[i] = 6;
+        riverHydrology.flowAccumulation[i] = float(y + 2) * 10.f;
+        riverHydrology.rivers[i] = 1;
+        riverClimate.biomes[i] = Biome::River;
+    }
+    TerrainLayers riverLayers(std::move(riverHydrology), std::move(riverClimate));
+    TerrainRiverMeshSettings riverSettings;
+    riverSettings.cellsX = 8; riverSettings.cellsY = 8;
+    riverSettings.minWidth = 0.1f; riverSettings.maxWidth = 0.5f;
+    MeshBuild riverMesh;
+    REQUIRE(TerrainRiverMeshBuilder::build(riverHeight, riverLayers, riverSettings, riverMesh, &error));
+    CHECK_EQ(riverMesh.getVertexCount(), 8 * (4 + 9));
+    CHECK_EQ(riverMesh.getIndexCount(), 8 * (6 + 24));
+    CHECK(meshIndicesInRange(riverMesh));
+    CHECK(meshNormalsFiniteUnit(riverMesh, 0.001f));
+
+    TerrainRiverMeshSettings excludedSlope = riverSettings;
+    excludedSlope.minSurfaceSlope = 0.10f;
+    excludedSlope.maxSurfaceSlope = 0.20f;
+    MeshBuild excludedRiverMesh;
+    REQUIRE(TerrainRiverMeshBuilder::build(
+        riverHeight, riverLayers, excludedSlope, excludedRiverMesh, &error));
+    CHECK(excludedRiverMesh.empty());
+    excludedSlope.maxSurfaceSlope = excludedSlope.minSurfaceSlope;
+    CHECK(!TerrainRiverMeshBuilder::build(
+        riverHeight, riverLayers, excludedSlope, excludedRiverMesh, &error));
+
+    TerrainRiverMeshSettings leftRiverSettings = riverSettings;
+    leftRiverSettings.cellsX = 4;
+    TerrainRiverMeshSettings rightRiverSettings = leftRiverSettings;
+    rightRiverSettings.originX = 4;
+    MeshBuild leftRiverMesh, rightRiverMesh;
+    REQUIRE(TerrainRiverMeshBuilder::build(riverHeight, riverLayers, leftRiverSettings,
+                                           leftRiverMesh, &error));
+    REQUIRE(TerrainRiverMeshBuilder::build(riverHeight, riverLayers, rightRiverSettings,
+                                           rightRiverMesh, &error));
+    REQUIRE_EQ(leftRiverMesh.getVertexCount(), rightRiverMesh.getVertexCount());
+    for (int vertex = 0; vertex < leftRiverMesh.getVertexCount(); ++vertex) {
+        CHECK(std::abs(leftRiverMesh.getPositionX(vertex) -
+                       (rightRiverMesh.getPositionX(vertex) + 4.f)) < 0.0001f);
+        CHECK(std::abs(leftRiverMesh.getPositionY(vertex) -
+                       rightRiverMesh.getPositionY(vertex)) < 0.0001f);
+        CHECK(std::abs(leftRiverMesh.getPositionZ(vertex) -
+                       rightRiverMesh.getPositionZ(vertex)) < 0.0001f);
+    }
+
+    Heightmap lakeHeight(9, 9);
+    HydrologyMap lakeHydrology;
+    lakeHydrology.width = 9; lakeHydrology.height = 9;
+    lakeHydrology.flowDirection.assign(81, -1);
+    lakeHydrology.flowAccumulation.assign(81, 1.f);
+    lakeHydrology.lakeDepth.assign(81, 0.f);
+    lakeHydrology.rivers.assign(81, 0);
+    ClimateMap lakeClimate;
+    lakeClimate.width = 9; lakeClimate.height = 9;
+    lakeClimate.temperature.assign(81, 0.5f);
+    lakeClimate.moisture.assign(81, 1.f);
+    lakeClimate.biomes.assign(81, Biome::Grassland);
+    for (int y = 2; y <= 6; ++y) for (int x = 2; x <= 6; ++x)
+        lakeHydrology.lakeDepth[size_t(y * 9 + x)] = 0.2f;
+    TerrainLayers lakeLayers(std::move(lakeHydrology), std::move(lakeClimate));
+    TerrainLakeMeshSettings lakeSettings;
+    lakeSettings.cellsX = 8; lakeSettings.cellsY = 8; lakeSettings.minimumDepth = 0.01f;
+    MeshBuild lakeMesh;
+    REQUIRE(TerrainLakeMeshBuilder::build(lakeHeight, lakeLayers, lakeSettings, lakeMesh, &error));
+    CHECK(lakeMesh.getVertexCount() > 0);
+    CHECK(meshIndicesInRange(lakeMesh));
+    CHECK(meshNormalsFiniteUnit(lakeMesh, 0.001f));
 }
 
 TEST_CASE("procgen.wfc.simple.reproducible") {
