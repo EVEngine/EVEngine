@@ -21,7 +21,7 @@ namespace {
 
 using Vars = std::unordered_map<std::string, Dialogue::VarValue>;
 
-DataValue O(std::vector<std::pair<std::string, DataValue>> v) {
+DataValue O(DataValue::Object v) {
     return DataValue::object(std::move(v));
 }
 
@@ -442,8 +442,8 @@ TEST_CASE("dialogueProc.sceneVarsAutoClear") {
     dlg->setVarValue("keep", Dialogue::VarValue::integer(1), "global");
 
     eve::scene::Scene *scn = eve::scene::Scene::create();
-    scn->mountAs("dialogueSceneA", eve::scene::node("root"));
-    scn->mountAs("dialogueSceneB", eve::scene::node("root"));
+    scn->mountAs("dialogueSceneA", eve::scene::node("root")).ignore("test setup");
+    scn->mountAs("dialogueSceneB", eve::scene::node("root")).ignore("test setup");
     scn->select("dialogueSceneA");
 
     dlg->update(0.016f);  // record current scene name
@@ -454,6 +454,53 @@ TEST_CASE("dialogueProc.sceneVarsAutoClear") {
     dlg->update(0.016f);  // scene changed -> scene vars cleared
     CHECK(!dlg->hasVar("tmp", "scene"));
     CHECK(dlg->hasVar("keep", "global"));
+
+    resetDialogue(dlg);
+}
+
+TEST_CASE("dialogueProc.stateCaptureRestoreRoundtrip") {
+    Dialogue* dlg = Dialogue::create();
+    resetDialogue(dlg);
+    dlg->setVarValue("hp", Dialogue::VarValue::integer(100), "global");
+    dlg->setVarValue("mood", Dialogue::VarValue::string("happy"), "scene");
+    dlg->setRandomSeed(12345);
+    dlg->say("hero", "Hello world");
+    dlg->skipTyping();
+    CHECK(dlg->isWaitingAdvance());
+
+    eve::StateValue captured;
+    REQUIRE(dlg->captureState(captured));
+
+    // Mutate, then restore.
+    dlg->reset();
+    dlg->setVarValue("hp", Dialogue::VarValue::integer(1), "global");
+
+    std::string err;
+    CHECK(dlg->restoreState(captured, &err));
+    CHECK(err.empty());
+    CHECK_EQ(dlg->getVarInt("hp", 0, "global"), 100);
+    CHECK_EQ(dlg->getVarString("mood", "", "scene"), std::string("happy"));
+    CHECK_EQ(dlg->getRandomSeed(), 12345);
+    CHECK(dlg->isWaitingAdvance());
+    CHECK_EQ(dlg->getFullText(), std::string("Hello world"));
+    CHECK_EQ(dlg->getSpeakerId(), std::string("hero"));
+
+    resetDialogue(dlg);
+}
+
+TEST_CASE("dialogueProc.stateRestoreRejectsMalformed") {
+    Dialogue* dlg = Dialogue::create();
+    resetDialogue(dlg);
+
+    eve::StateValue bad = eve::StateValue::object();
+    bad.set("phase", eve::StateValue::string("no_such_phase"));
+    std::string err;
+    CHECK(!dlg->restoreState(bad, &err));
+    CHECK(!err.empty());
+
+    eve::StateValue missing = eve::StateValue::object();
+    CHECK(!dlg->restoreState(missing, &err));
+    CHECK(!err.empty());
 
     resetDialogue(dlg);
 }

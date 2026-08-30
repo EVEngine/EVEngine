@@ -1,24 +1,8 @@
-/**
- * Copyright (c) 2006-2021 LOVE Development Team
- *
- * This software is provided 'as-is', without any express or implied
- * warranty.  In no event will the authors be held liable for any damages
- * arising from the use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software
- *    in a product, an acknowledgment in the product documentation would be
- *    appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- **/
+
 
 #include "Image.h"
+#include "common/Exception.h"
+#include "common/Resource.h"
 #include "common/config.h"
 
 #include "medialoader/image/PNGHandler.h"
@@ -72,6 +56,17 @@ Image::~Image()
 ImageData *Image::newImageData(Data *data)
 {
 	return new ImageData(data);
+}
+
+ImageData *Image::newImageDataFromFile(std::string path)
+{
+	if (path.empty())
+		throw eve::Exception("Image::newImageDataFromFile: empty path");
+
+	eve::Resource *resource = eve::ResourceManager::getInstance().get(path);
+	if (!resource)
+		throw eve::Exception("Could not load image file: %s", path.c_str());
+	return static_cast<ImageData *>(resource);
 }
 
 ImageData *Image::newImageData(int width, int height, std::string format)
@@ -214,10 +209,61 @@ std::vector<eve::ref<ImageData>> Image::newVolumeLayers(ImageData *src)
 void Image::expose(ssq::Table &table) {
 	auto cls = table.addClass(name, Image::create, false);
 	expose(cls);
+
+	// Single ImageData class for every module that hands image::ImageData*
+	// to scripts (Font glyphs, Model3D embedded textures, this module).
+	auto img = table.addClass<image::ImageData>(
+		"ImageData", std::function<image::ImageData *()>([]() -> image::ImageData * { return nullptr; }),
+		true);
+	img.addFunc("getWidth", &image::ImageData::getWidth);
+	img.addFunc("getHeight", &image::ImageData::getHeight);
+	img.addFunc("getFormat", &image::ImageData::getFormat);
+	img.addFunc("getSize", &image::ImageData::getSize);
+	img.addFunc("getPixelSize", &image::ImageData::getPixelSize);
+	img.addFunc("isSRGB", &image::ImageData::isSRGB);
+	img.addFunc("inside", &image::ImageData::inside);
+	img.addFunc("clone", &image::ImageData::clone);
+	img.addFunc("paste", &image::ImageData::paste);
+	img.addFunc("rotate", &image::ImageData::rotate);
+	img.addFunc("getPixelR", [](image::ImageData *self, int x, int y) -> float {
+		if (!self) return 0.f;
+		return self->getPixel(x, y).r;
+	});
+	img.addFunc("getPixelG", [](image::ImageData *self, int x, int y) -> float {
+		if (!self) return 0.f;
+		return self->getPixel(x, y).g;
+	});
+	img.addFunc("getPixelB", [](image::ImageData *self, int x, int y) -> float {
+		if (!self) return 0.f;
+		return self->getPixel(x, y).b;
+	});
+	img.addFunc("getPixelA", [](image::ImageData *self, int x, int y) -> float {
+		if (!self) return 0.f;
+		return self->getPixel(x, y).a;
+	});
+	img.addFunc("setPixel", [](image::ImageData *self, int x, int y, float r, float g, float b, float a) {
+		if (!self) return;
+		self->setPixel(x, y, image::ImageData::Colorf{r, g, b, a});
+	});
+	img.addFunc("paintCircleUv", [](image::ImageData *self, float u, float v, float radius,
+	                                  float r, float g, float b, float a, bool wrapU, bool wrapV) {
+		if (!self) throw eve::Exception("ImageData.paintCircleUv: null image");
+		auto painted = self->paintCircleUv(u, v, radius, image::ImageData::Colorf{r, g, b, a}, wrapU, wrapV);
+		if (!painted.ok()) throw eve::Exception("%s", painted.status().describe().c_str());
+		return std::move(painted).takeValue().changedPixelCount;
+	});
 }
 
 void Image::expose(ssq::Class &cls) {
 	cls.addFunc("getName", &Image::getName);
+	cls.addFunc("newImageData", static_cast<ImageData *(Image::*)(Data *)>(&Image::newImageData));
+	cls.addFunc("newImageDataFromFile", &Image::newImageDataFromFile);
+	cls.addFunc("newEmptyImageData",
+	            [](Image *self, int width, int height, const std::string &format) -> ImageData * {
+		            if (!self) return nullptr;
+		            return self->newImageData(width, height, format);
+	            });
+	cls.addFunc("isCompressed", &Image::isCompressed);
 }
 
 } // image

@@ -2,6 +2,8 @@
 #include "zeroerr/unittest.h"
 
 #include "data/ByteData.h"
+#include "procgen/heightmap/TerrainAsset.h"
+#include "procgen/heightmap/TerrainSampler.h"
 #include "voxel/Chunk.h"
 #include "voxel/CubeTypeRegistry.h"
 #include "voxel/FaceDir.h"
@@ -589,6 +591,28 @@ TEST_CASE("voxel.world.face_cull_all_six_axes") {
         CHECK(sawKeep);
         CHECK(!sawDrop);
     }
+}
+
+TEST_CASE("voxel.world.perspective_face_cull_keeps_far_half_faces") {
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    // The camera is on the +X side of the chunk centre, but on the -X side of this
+    // voxel. Its -X face is therefore front-facing and must not be dropped with the
+    // whole direction batch.
+    world->getOrCreateChunk(0, 0, 0)->set(31, 16, 16, 1);
+    world->remeshDirty();
+
+    const float eyeX = 20.f, eyeY = 16.5f, eyeZ = 16.5f;
+    float view[16], proj[16], vp[16];
+    lookAtRH(eyeX, eyeY, eyeZ, 31.5f, 16.5f, 16.5f, 0, 1, 0, view);
+    perspectiveRH_ZO(60.f * 3.14159265f / 180.f, 1.f, 0.1f, 100.f, proj);
+    mul4(proj, view, vp);
+    world->selectVisible(vp, eyeX, eyeY, eyeZ, 100.f, true);
+
+    bool sawNegX = false;
+    for (int i = 0; i < world->getVisibleBatchCount(); ++i) {
+        if (world->getVisibleBatch(i).dir == FaceDir::NegX) sawNegX = true;
+    }
+    CHECK(sawNegX);
 }
 
 TEST_CASE("voxel.world.visible_batches_decode_on_chunk_origin") {
@@ -2163,6 +2187,24 @@ TEST_CASE("voxel.ao.raised_neighbor_darkens_corner") {
     CHECK_EQ(q.ao[3], 3);
 }
 
+TEST_CASE("voxel.ao.nonuniform_cells_do_not_merge_into_brightness_blocks") {
+    Chunk chunk;
+    chunk.set(0, 0, 0, 1);
+    chunk.set(1, 0, 0, 1);
+    chunk.set(2, 1, 0, 1);  // Darkens only the outer corners of the second top face.
+    chunk.remesh();
+
+    int baseTopRects = 0;
+    int baseTopArea = 0;
+    for (const PackedRect &rect : chunk.faceRects(FaceDir::PosY)) {
+        if (rect.y() != 0) continue;
+        ++baseTopRects;
+        baseTopArea += rect.width() * rect.height();
+    }
+    CHECK_EQ(baseTopArea, 2);
+    CHECK_EQ(baseTopRects, 2);
+}
+
 TEST_CASE("voxel.world.serialize_roundtrip") {
     VoxelWorld world;
     world.setVoxel(0, 0, 0, 1);
@@ -2267,6 +2309,151 @@ TEST_CASE("voxel.terrain.fill_columns") {
     highWorld.setTerrainParams(7, 1, 2, 3, 8.f, 14.f, 1.f / 32.f);
     highWorld.streamAround(0, 1, 0, 0);
     CHECK_EQ(highWorld.getChunk(0, 1, 0)->totalRectCount(), 0);
+}
+
+TEST_CASE("voxel.terrain.evtr_streams_height_and_biome_surface_materials") {
+    eve::procgen::Heightmap heightmap(32, 32);
+    std::fill(heightmap.data().begin(), heightmap.data().end(), 8.f);
+    eve::procgen::HydrologyMap hydrology;
+    hydrology.width = 32;
+    hydrology.height = 32;
+    hydrology.flowDirection.assign(32 * 32, -1);
+    hydrology.flowAccumulation.assign(32 * 32, 1.f);
+    hydrology.rivers.assign(32 * 32, 0);
+    eve::procgen::ClimateMap climate;
+    climate.width = 32;
+    climate.height = 32;
+    climate.temperature.assign(32 * 32, 0.6f);
+    climate.moisture.assign(32 * 32, 0.5f);
+    climate.biomes.assign(32 * 32, eve::procgen::Biome::Grassland);
+    for (int z = 0; z < 32; ++z) {
+        for (int x = 16; x < 32; ++x)
+            climate.biomes[size_t(z * 32 + x)] = eve::procgen::Biome::Desert;
+        climate.biomes[size_t(z * 32 + 8)] = eve::procgen::Biome::River;
+        hydrology.rivers[size_t(z * 32 + 8)] = 1;
+    }
+    std::vector<uint8_t> archive;
+    std::string error;
+    REQUIRE(eve::procgen::TerrainAsset::bake(heightmap, hydrology, climate, 8, archive, &error));
+    eve::data::ByteData bytes(archive.data(), archive.size());
+
+    VoxelWorld world;
+    REQUIRE(world.loadTerrainAsset(&bytes, 2.f, 1.f));
+    world.setTerrainAssetMaterials(11, 14, 15, 13, 16);
+    StreamStats streamed = world.streamAround(0, 0, 0, 0);
+    CHECK_EQ(streamed.created, 1);
+    CHECK(world.getTerrainAssetResidentCount() > 0);
+    CHECK_EQ(world.terrainHeightAt(5, 5), 10);
+    Chunk *chunk = world.getChunk(0, 0, 0);
+    REQUIRE(chunk != nullptr);
+    CHECK_EQ(int(chunk->get(5, 10, 5)), 11);   // grassland vegetation
+    CHECK_EQ(int(chunk->get(20, 10, 5)), 14);  // desert sand
+    CHECK_EQ(int(chunk->get(8, 10, 5)), 16);   // river bed
+    CHECK_EQ(int(chunk->get(5, 9, 5)), 2);     // existing subsurface contract
+    CHECK_EQ(int(chunk->get(5, 6, 5)), 3);     // existing stone contract
+}
+
+TEST_CASE("voxel.terrain.param_api_sand_band") {
+    VoxelWorld world;
+    world.setTerrainParam("seed", 123);
+    world.setTerrainParam("base", 0.f);
+    world.setTerrainParam("amplitude", 36.f);
+    world.setTerrainParam("scale", 1.f / 48.f);
+    world.setTerrainParam("island", 0.40f);
+    world.setTerrainParam("worldWidth", 512);
+    world.setTerrainParam("worldHeight", 512);
+    world.setTerrainParam("top", 1);
+    world.setTerrainParam("sub", 2);
+    world.setTerrainParam("stone", 3);
+    world.setTerrainParam("sand", 5);
+    world.setTerrainParam("sandLevel", 0.40f);
+    world.setTerrainParam("enable", 1.f);
+    CHECK(world.terrainEnabled());
+    const int created = world.streamAround(8, 0, 8, 0).created;
+    CHECK_EQ(created, 1);
+
+    Chunk *c = world.getChunk(8, 0, 8);
+    REQUIRE(c != nullptr);
+
+    // Same sampler config as the world uses (base/amplitude are the voxel-side
+    // height mapping; the sampler itself stays in normalized [0, 1]).
+    eve::procgen::TerrainSampler sampler;
+    sampler.setSeed(123);
+    sampler.setFrequency(1.f / 48.f);
+    sampler.setIsland(0.40f);
+    sampler.setWorldSize(512, 512);
+
+    int sandSeen = 0;
+    int grassSeen = 0;
+    for (int lx = 0; lx < 32; ++lx) {
+        for (int lz = 0; lz < 32; ++lz) {
+            const float e = sampler.sample(float(8 * 32 + lx), float(8 * 32 + lz));
+            const int h = int(std::floor(0.f + 36.f * e));
+            if (h < 0 || h >= 32) continue;
+            const uint8_t top = c->get(lx, h, lz);
+            if (e <= 0.40f) {
+                CHECK_EQ(int(top), 5);  // sand band
+                ++sandSeen;
+            } else {
+                CHECK_EQ(int(top), 1);  // grass elsewhere
+                ++grassSeen;
+            }
+        }
+    }
+    CHECK(sandSeen > 0);
+    CHECK(grassSeen > 0);
+
+    // Disabling the sand band restores the configured top texture everywhere.
+    VoxelWorld noSand;
+    noSand.setTerrainParam("seed", 123);
+    noSand.setTerrainParam("base", 0.f);
+    noSand.setTerrainParam("amplitude", 36.f);
+    noSand.setTerrainParam("scale", 1.f / 48.f);
+    noSand.setTerrainParam("island", 0.40f);
+    noSand.setTerrainParam("worldWidth", 512);
+    noSand.setTerrainParam("worldHeight", 512);
+    noSand.setTerrainParam("top", 1);
+    noSand.setTerrainParam("sub", 2);
+    noSand.setTerrainParam("stone", 3);
+    noSand.setTerrainParam("sand", 5);
+    noSand.setTerrainParam("sandLevel", 0.f);  // off
+    noSand.setTerrainParam("enable", 1.f);
+    noSand.streamAround(8, 0, 8, 0);
+    Chunk *ns = noSand.getChunk(8, 0, 8);
+    REQUIRE(ns != nullptr);
+    for (int lx = 0; lx < 32; ++lx)
+        for (int lz = 0; lz < 32; ++lz) {
+            const int h = noSand.terrainHeightAt(8 * 32 + lx, 8 * 32 + lz);
+            if (h < 0 || h >= 32) continue;
+            CHECK_EQ(int(ns->get(lx, h, lz)), 1);
+        }
+}
+
+TEST_CASE("voxel.terrain.param_api_deterministic_and_distinct") {
+    VoxelWorld a, b;
+    a.setTerrainParam("seed", 7);
+    a.setTerrainParam("island", 0.4f);
+    a.setTerrainParam("ridge", 0.7f);
+    a.setTerrainParam("worldWidth", 512);
+    a.setTerrainParam("worldHeight", 512);
+    a.setTerrainParam("enable", 1.f);
+    b.setTerrainParam("seed", 7);
+    b.setTerrainParam("island", 0.4f);
+    b.setTerrainParam("ridge", 0.7f);
+    b.setTerrainParam("worldWidth", 512);
+    b.setTerrainParam("worldHeight", 512);
+    b.setTerrainParam("enable", 1.f);
+    for (int i = 0; i < 100; ++i)
+        CHECK_EQ(a.terrainHeightAt(i * 5, i * 9), b.terrainHeightAt(i * 5, i * 9));
+
+    // Island falloff (worldSize + island) changes the shape vs the simple
+    // base/amplitude mapping of setTerrainParams.
+    VoxelWorld plain;
+    plain.setTerrainParams(7, 1, 2, 3, 8.f, 14.f, 1.f / 32.f);
+    bool anyDiff = false;
+    for (int i = 0; i < 400 && !anyDiff; ++i)
+        if (a.terrainHeightAt(i, i * 2) != plain.terrainHeightAt(i, i * 2)) anyDiff = true;
+    CHECK(anyDiff);
 }
 
 TEST_CASE("voxel.world.streamAround_evicts_and_creates") {

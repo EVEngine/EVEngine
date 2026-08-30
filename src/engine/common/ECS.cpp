@@ -1,7 +1,9 @@
 #include "common/ECS.h"
+#include "common/ScriptError.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <cstdio>
 #include <cstring>
 #include <string>
 #include <unordered_map>
@@ -482,10 +484,18 @@ void injectEcsScript(ssq::Table& eveTable) {
                                    static_cast<SQInteger>(std::strlen(kEcsScript)),
                                    "ecs.nut", SQTrue))) {
         sq_settop(vm, top);
+        const script::ScriptErrorContext ctx = script::captureCompileError(vm);
+        std::fprintf(stderr, "EVEngine: ECS bootstrap script failed to compile: %s\n",
+                     ctx.empty() ? "unknown error" : ctx.message.c_str());
         return;
     }
     sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
+    if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
+        const script::ScriptErrorContext ctx = script::takeLastScriptError(vm);
+        std::fprintf(stderr, "EVEngine: ECS bootstrap script failed to run: %s\n",
+                     ctx.empty() ? "unknown error"
+                                 : script::formatScriptError(ctx).c_str());
+    }
     sq_settop(vm, top);
 }
 

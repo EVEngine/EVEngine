@@ -1,7 +1,11 @@
 #include "voxel/VoxelWorld.h"
 
+#include "procgen/heightmap/TerrainSampler.h"
+
 #include "data/ByteData.h"
 #include "graphics/Graphics.h"
+#include "graphics/IGraphics3D.h"
+#include "thread/Thread.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,6 +14,90 @@
 #include <thread>
 
 namespace eve::voxel {
+
+VoxelWorld::VoxelWorld() = default;
+VoxelWorld::VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
+VoxelWorld::~VoxelWorld() = default;
+
+void VoxelWorld::setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight,
+                                  float amplitude, float scale) {
+    if (!terrainSampler_) terrainSampler_ = std::make_unique<procgen::TerrainSampler>();
+    terrainSampler_->setSeed(seed);
+    terrainSampler_->setBase(0.f);
+    terrainSampler_->setAmplitude(1.f);
+    terrainSampler_->setClamp(true, 0.f, 1.f);
+    terrainSampler_->setFrequency(scale > 0.f ? scale : 1.f / 32.f);
+    terrainTop_       = top;
+    terrainSub_       = sub;
+    terrainStone_     = stone;
+    terrainBase_      = baseHeight;
+    terrainAmplitude_ = amplitude < 0.f ? 0.f : amplitude;
+    terrainEnabled_   = true;
+}
+
+void VoxelWorld::setTerrainParam(const std::string &key, float value) {
+    if (!terrainSampler_) terrainSampler_ = std::make_unique<procgen::TerrainSampler>();
+    if (key == "seed") {
+        terrainSampler_->setSeed(uint32_t(value));
+    } else if (key == "top") {
+        terrainTop_ = uint8_t(value);
+    } else if (key == "sub") {
+        terrainSub_ = uint8_t(value);
+    } else if (key == "stone") {
+        terrainStone_ = uint8_t(value);
+    } else if (key == "sand") {
+        terrainSand_ = uint8_t(value);
+    } else if (key == "base") {
+        terrainBase_ = value;
+    } else if (key == "amplitude") {
+        terrainAmplitude_ = value < 0.f ? 0.f : value;
+    } else if (key == "scale" || key == "frequency") {
+        terrainSampler_->setFrequency(value > 0.f ? value : 1.f / 32.f);
+    } else if (key == "octaves") {
+        terrainSampler_->setOctaves(int(value));
+    } else if (key == "lacunarity") {
+        terrainSampler_->setLacunarity(value);
+    } else if (key == "gain") {
+        terrainSampler_->setGain(value);
+    } else if (key == "ridge") {
+        terrainSampler_->setRidge(value);
+    } else if (key == "warp") {
+        terrainSampler_->setWarp(value);
+    } else if (key == "exponent") {
+        terrainSampler_->setExponent(value);
+    } else if (key == "continent") {
+        terrainSampler_->setContinent(value);
+    } else if (key == "island") {
+        terrainSampler_->setIsland(value);
+    } else if (key == "coast") {
+        terrainSampler_->setCoastSoftness(value);
+    } else if (key == "worldWidth") {
+        terrainSampler_->setWorldSize(int(value), terrainSampler_->getWorldHeight());
+    } else if (key == "worldHeight") {
+        terrainSampler_->setWorldSize(terrainSampler_->getWorldWidth(), int(value));
+    } else if (key == "sandLevel") {
+        sandLevel_ = value;
+    } else if (key == "enable") {
+        terrainEnabled_ = value != 0.f;
+    }
+}
+
+namespace {
+
+/** @brief Sample one terrain column: height plus top-layer texture (sand band). */
+void sampleTerrainColumn(const procgen::TerrainSampler *sampler, float base, float amp, uint8_t topTexDefault,
+                         uint8_t sandTex, float sandLevel, int wx, int wz, int &height, uint8_t &topTex) {
+    if (!sampler) {
+        height = int(base);
+        topTex = topTexDefault;
+        return;
+    }
+    const float e = sampler->sample(float(wx), float(wz));
+    height = int(std::floor(base + amp * e));
+    topTex = (sandLevel > 0.f && sandTex != 0 && e <= sandLevel) ? sandTex : topTexDefault;
+}
+
+}  // namespace
 
 namespace {
 // Cap remesh worker count: enough to parallelize chunk meshing without
@@ -41,12 +129,78 @@ bool VoxelWorld::hasChunk(int cx, int cy, int cz) const {
     return chunks_.find(key(cx, cy, cz)) != chunks_.end();
 }
 
-void VoxelWorld::removeChunk(int cx, int cy, int cz) { chunks_.erase(key(cx, cy, cz)); }
+void VoxelWorld::removeChunk(int cx, int cy, int cz) {
+    if (chunks_.erase(key(cx, cy, cz)) > 0) ++revision_;
+}
 
 void VoxelWorld::clear() {
+    const bool changed = !chunks_.empty();
     chunks_.clear();
     visible_.clear();
     visibleChunkKeys_.clear();
+    if (changed) ++revision_;
+}
+
+bool VoxelWorld::loadTerrainAsset(data::ByteData *bytes, float heightOffset, float heightScale) {
+    if (!bytes || !std::isfinite(heightOffset) || !std::isfinite(heightScale)) return false;
+    std::string error;
+    if (!terrainAsset_.open(static_cast<const uint8_t *>(bytes->getData()), bytes->getSize(),
+                            &error)) return false;
+    terrainAssetOffset_ = heightOffset;
+    terrainAssetScale_ = heightScale;
+    terrainAssetEnabled_ = true;
+    return true;
+}
+
+procgen::TerrainStreamStats VoxelWorld::streamTerrainAssetAround(int worldX, int worldZ,
+                                                                 int radiusChunks,
+                                                                 int maxLoads) {
+    if (!terrainAssetEnabled_) return {};
+    return terrainAsset_.streamAround(worldX, worldZ, radiusChunks, maxLoads);
+}
+
+void VoxelWorld::setTerrainAssetMaterials(uint8_t vegetation, uint8_t sand, uint8_t snow,
+                                          uint8_t alpine, uint8_t riverbed) {
+    terrainVegetation_ = vegetation;
+    terrainAssetSand_ = sand;
+    terrainSnow_ = snow;
+    terrainAlpine_ = alpine;
+    terrainRiverbed_ = riverbed;
+}
+
+int VoxelWorld::terrainHeightAt(int wx, int wz) const {
+    if (terrainAssetEnabled_) {
+        float storedHeight = 0.f;
+        if (terrainAsset_.sampleHeight(float(wx), float(wz), storedHeight))
+            return int(std::floor(terrainAssetOffset_ + terrainAssetScale_ * storedHeight));
+    }
+    if (terrainEnabled_) {
+        if (!terrainSampler_) return int(std::floor(terrainBase_));
+        const float e = terrainSampler_->sample(float(wx), float(wz));
+        return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
+    }
+    return int(std::floor(terrainAssetOffset_));
+}
+
+uint8_t VoxelWorld::terrainSurfaceAt(int wx, int wz) const {
+    if (!terrainAssetEnabled_) return terrainTop_;
+    procgen::TerrainSample sample;
+    if (!terrainAsset_.sampleCell(wx, wz, sample)) return terrainTop_;
+    switch (sample.biome) {
+    case procgen::Biome::Ocean:
+    case procgen::Biome::Beach:
+    case procgen::Biome::Desert:
+        return terrainAssetSand_;
+    case procgen::Biome::Tundra:
+    case procgen::Biome::Taiga:
+        return terrainSnow_;
+    case procgen::Biome::Alpine:
+        return terrainAlpine_;
+    case procgen::Biome::River:
+        return terrainRiverbed_;
+    default:
+        return terrainVegetation_;
+    }
 }
 
 int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks) {
@@ -67,6 +221,7 @@ int VoxelWorld::unloadChunksOutside(int centerX, int centerY, int centerZ, int r
         // Batch pointers may dangle after eviction; force re-selection.
         visible_.clear();
         visibleChunkKeys_.clear();
+        ++revision_;
     }
     return int(evict.size());
 }
@@ -75,6 +230,15 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                                      const std::function<void(Chunk &, int, int, int)> &generator) {
     StreamStats stats;
     if (radiusChunks < 0) return stats;
+
+    if (!generator && terrainAssetEnabled_) {
+        const int assetChunk = terrainAsset_.asset().getChunkSize();
+        const int worldRadius = (radiusChunks + 1) * kChunkSize;
+        const int assetRadius = assetChunk > 0
+            ? int(std::ceil(float(worldRadius) * 1.41421356f / float(assetChunk))) + 1 : 0;
+        terrainAsset_.streamAround(centerX * kChunkSize + kChunkSize / 2,
+                                   centerZ * kChunkSize + kChunkSize / 2, assetRadius);
+    }
 
     // Evict first so far-away dirty chunks are not remeshed below.
     stats.evicted = unloadChunksOutside(centerX, centerY, centerZ, radiusChunks);
@@ -92,14 +256,23 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                 Chunk *c = getOrCreateChunk(nx, ny, nz);
                 if (generator)
                     generator(*c, nx, ny, nz);
-                else if (terrainEnabled_) {
+                else if (terrainEnabled_ || terrainAssetEnabled_) {
                     // Heightmap terrain via procgen::TerrainSampler: one column
                     // per (x, z); sampling world coords keeps chunk seams flush.
                     const int wy0 = ny * kChunkSize;
                     for (int lz = 0; lz < kChunkSize; ++lz)
                         for (int lx = 0; lx < kChunkSize; ++lx) {
-                            const int h = terrainHeightAt(nx * kChunkSize + lx,
-                                                          nz * kChunkSize + lz);
+                            int h = 0;
+                            uint8_t surface = terrainTop_;
+                            const int wx = nx * kChunkSize + lx;
+                            const int wz = nz * kChunkSize + lz;
+                            if (terrainAssetEnabled_) {
+                                h = terrainHeightAt(wx, wz);
+                                surface = terrainSurfaceAt(wx, wz);
+                            } else {
+                                sampleTerrainColumn(terrainSampler_.get(), terrainBase_, terrainAmplitude_,
+                                                    terrainTop_, terrainSand_, sandLevel_, wx, wz, h, surface);
+                            }
                             for (int ly = 0; ly < kChunkSize; ++ly) {
                                 const int wy = wy0 + ly;
                                 if (wy <= h - 4)
@@ -107,14 +280,17 @@ StreamStats VoxelWorld::streamAround(int centerX, int centerY, int centerZ, int 
                                 else if (wy <= h - 1)
                                     c->set(lx, ly, lz, terrainSub_);
                                 else if (wy == h)
-                                    c->set(lx, ly, lz, terrainTop_);
+                                    c->set(lx, ly, lz, surface);
                             }
                         }
                 }
                 ++stats.created;
             }
 
-    if (stats.created > 0) remeshDirty();
+    if (stats.created > 0) {
+        ++revision_;
+        remeshDirty();
+    }
     return stats;
 }
 
@@ -189,6 +365,7 @@ bool VoxelWorld::deserializeWorld(const uint8_t *data, size_t size) {
         c->setVoxelData(p);
         p += voxelBytes;
     }
+    ++revision_;
     return true;
 }
 
@@ -228,38 +405,26 @@ int VoxelWorld::remeshDirty(int maxThreads) {
         return count;
     }
 
-    // Parallel remesh: each worker remeshes its own slice of distinct chunks.
-    // The sampler only reads the chunk map (no concurrent mutation), and each
-    // chunk is touched by exactly one thread, so this is safe. The main thread
-    // takes the remainder slice, then joins.
-    std::vector<std::thread> threads;
-    int next = 0;
-    const int perWorker = (count + workers - 1) / workers;
+    // Parallel remesh through the engine JobSystem: each child task remeshes
+    // its own slice of distinct chunks. The sampler only reads the chunk map
+    // (no concurrent mutation), and each chunk is touched by exactly one task,
+    // so this is safe. wait() on the loop joins every slice.
+    auto *jobs = thread::Thread::create()->getJobSystem();
+    thread::Job *loop = nullptr;
     try {
-        threads.reserve(size_t(workers - 1));
-        for (int i = 0; i < workers - 1 && next < count; ++i) {
-            const int begin = next;
-            const int end = std::min(count, begin + perWorker);
-            next = end;
-            threads.emplace_back([this, &dirty, &remeshOne, begin, end] {
-                for (int k = begin; k < end; ++k) remeshOne(dirty[size_t(k)]);
-            });
-        }
+        loop = jobs->parallelFor(0, count,
+            [this, &dirty, &remeshOne](int first, int last) {
+                for (int k = first; k < last; ++k) remeshOne(dirty[size_t(k)]);
+            },
+            (count + workers - 1) / workers);
     } catch (...) {
-        // Thread creation failed (resource limits): join what we have and
-        // finish everything serially. Remesh is idempotent, so any chunks the
-        // created workers already handled are simply done twice.
-        for (auto &w : threads) {
-            if (w.joinable()) w.join();
-        }
-        threads.clear();
+        // Job allocation failed (resource limits): finish everything serially.
+        // Remesh is idempotent, so any chunks already handled are done twice.
         for (Chunk *c : dirty) remeshOne(c);
         return count;
     }
-    for (int k = next; k < count; ++k) remeshOne(dirty[size_t(k)]);
-    for (auto &w : threads) {
-        if (w.joinable()) w.join();
-    }
+    loop->wait();
+    delete loop;
     return count;
 }
 
@@ -296,18 +461,28 @@ void VoxelWorld::selectVisible(const float *viewProj16, float eyeX, float eyeY, 
 
         visibleChunkKeys_.push_back(kv.first);
 
-        const float toCamX = eyeX - cx;
-        const float toCamY = eyeY - cy;
-        const float toCamZ = eyeZ - cz;
         for (int i = 0; i < faceDirCount(); ++i) {
             const FaceDir dir = FaceDir(i);
             const int count = chunk->faceRectCount(dir);
             if (count <= 0) continue;
 
             if (faceCull) {
-                float nx, ny, nz;
-                faceNormal(dir, nx, ny, nz);
-                if (nx * toCamX + ny * toCamY + nz * toCamZ <= 0.f) continue;
+                // A perspective camera has a different view vector at every surface point.
+                // Reject a direction only when every possible face plane in the chunk faces
+                // away from the eye.  Testing against the chunk centre is not conservative:
+                // when the eye crosses that centre plane it can discard faces on the far half
+                // of the chunk that are still front-facing and visible (notably cave walls).
+                bool allBackFacing = false;
+                switch (dir) {
+                    case FaceDir::PosX: allBackFacing = eyeX <= minX; break;
+                    case FaceDir::NegX: allBackFacing = eyeX >= maxX; break;
+                    case FaceDir::PosY: allBackFacing = eyeY <= minY; break;
+                    case FaceDir::NegY: allBackFacing = eyeY >= maxY; break;
+                    case FaceDir::PosZ: allBackFacing = eyeZ <= minZ; break;
+                    case FaceDir::NegZ: allBackFacing = eyeZ >= maxZ; break;
+                    case FaceDir::Count: break;
+                }
+                if (allBackFacing) continue;
             }
 
             DrawBatch batch;
@@ -363,6 +538,7 @@ void VoxelWorld::setVoxel(int wx, int wy, int wz, uint8_t texId) {
     const int lz = wz - cz * kChunkSize;
 
     Chunk *c = getChunk(cx, cy, cz);
+    if (c && c->get(lx, ly, lz) == texId) return;
     if (texId == 0) {
         // Clearing an unallocated chunk is a no-op (air needs no storage).
         if (!c) return;
@@ -371,6 +547,7 @@ void VoxelWorld::setVoxel(int wx, int wy, int wz, uint8_t texId) {
         if (!c) c = getOrCreateChunk(cx, cy, cz);
         c->set(lx, ly, lz, texId);
     }
+    ++revision_;
     markNeighborChunksDirty(cx, cy, cz, lx, ly, lz);
 }
 

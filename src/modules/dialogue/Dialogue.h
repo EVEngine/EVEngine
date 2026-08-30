@@ -1,13 +1,19 @@
 #pragma once
 
-#include "avatar/AvatarInstance.h"
 #include "common/Module.h"
+#include "common/StateValue.h"
+#include "common/Value.h"
 
 #include <squirrel.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <unordered_map>
+
+namespace eve::avatar {
+class AvatarInstance;
+}
 #include <utility>
 #include <vector>
 
@@ -18,65 +24,15 @@ class Object;
 namespace eve::dialogue {
 
 /**
- * @brief Generic JSON-like value tree used by the Squirrel bridge: dialogue pools and
- * conditions arrive as Squirrel tables and are converted into this structure
- * so the core loader/evaluator stays script-agnostic and unit-testable.
+ * @brief Canonical data value used by dialogue pools, conditions and scripts.
+ *
+ * These aliases intentionally do not add another storage tree. The factory
+ * names and scalar helpers are retained by `eve::Value` for source-compatible
+ * dialogue scripts and tests, while all new cross-module data uses the common
+ * deterministic value protocol.
  */
-struct DataValue {
-    enum class Kind { Null, Int, Float, Bool, String, Array, Object };
-
-    Kind kind = Kind::Null;
-    long long i = 0;
-    double f = 0.0;
-    bool b = false;
-    std::string s;
-    std::vector<DataValue> arr;
-    std::vector<std::pair<std::string, DataValue>> obj;
-
-    static DataValue null() { return {}; }
-    static DataValue integer(long long v) {
-        DataValue d;
-        d.kind = Kind::Int;
-        d.i = v;
-        return d;
-    }
-    static DataValue number(double v) {
-        DataValue d;
-        d.kind = Kind::Float;
-        d.f = v;
-        return d;
-    }
-    static DataValue boolean(bool v) {
-        DataValue d;
-        d.kind = Kind::Bool;
-        d.b = v;
-        return d;
-    }
-    static DataValue string(std::string v) {
-        DataValue d;
-        d.kind = Kind::String;
-        d.s = std::move(v);
-        return d;
-    }
-    static DataValue array(std::vector<DataValue> v) {
-        DataValue d;
-        d.kind = Kind::Array;
-        d.arr = std::move(v);
-        return d;
-    }
-    static DataValue object(std::vector<std::pair<std::string, DataValue>> v) {
-        DataValue d;
-        d.kind = Kind::Object;
-        d.obj = std::move(v);
-        return d;
-    }
-
-    const DataValue *find(const std::string &key) const {
-        for (const auto &kv : obj)
-            if (kv.first == key) return &kv.second;
-        return nullptr;
-    }
-};
+using DataValue = eve::Value;
+using VarValue  = eve::Value;
 
 /**
  * @brief Visual-novel style dialogue stage.
@@ -87,6 +43,10 @@ struct DataValue {
  */
 class Dialogue : public Module {
 public:
+    // Keep the historical nested names as zero-cost aliases for C++ callers.
+    using DataValue = eve::Value;
+    using VarValue  = eve::Value;
+
     Module_REG(Dialogue);
     Dialogue();
     ~Dialogue() override;
@@ -150,25 +110,6 @@ public:
     std::string getSelectedChoiceId() const { return selectedChoiceId_; }
 
     // ---- variables (global / scene; scene auto-cleared on scene switch) ----
-    struct VarValue {
-        enum class Type { Int, Float, Bool, String };
-
-        Type type = Type::String;
-        long long i = 0;
-        double f = 0.0;
-        bool b = false;
-        std::string s;
-
-        std::string toString() const;
-        std::string typeName() const;
-        bool isNumeric() const { return type == Type::Int || type == Type::Float; }
-
-        static VarValue integer(long long v);
-        static VarValue number(double v);
-        static VarValue boolean(bool v);
-        static VarValue string(std::string v);
-    };
-
     /** Squirrel-facing setter: value may be int/float/bool/string. */
     bool setVar(const std::string &name, ssq::Object value, const std::string &scope);
     /** C++ core setter (also used by unit tests). */
@@ -228,11 +169,26 @@ public:
     /** @brief 重置舞台与台词状态。 */
     void reset();
 
+    /** @brief Serialize conversation state (vars, rng, phase, choices, stage). */
+    bool captureState(StateValue& out) const;
+
+    /**
+     * @brief Restore conversation state captured by captureState().
+     * @return false when the captured
+     * state is malformed; the reload session
+     *         then falls back to resetToDefaults().
+     */
+    bool restoreState(const StateValue& in, std::string* err = nullptr);
+
+    /** @brief Reset stage and line state (restore fallback). */
+    bool resetToDefaults();
+
 private:
     struct Character {
         std::string id;
         std::string displayName;
         avatar::AvatarInstance *avatar = nullptr;
+        std::optional<size_t> avatarHook;  // destroy-hook id on the bound avatar
         std::string slot;
         bool shown = false;
     };

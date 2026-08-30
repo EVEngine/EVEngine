@@ -4,7 +4,10 @@
 
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/Graphics.h"
+#include "graphics/IResourceFactory.h"
+#include "graphics/Material.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "image/Image.h"
 
 #include <assimp/matrix4x4.h>
@@ -19,12 +22,13 @@
 namespace eve::model3d {
 namespace {
 
-using eve::graphics::Graphics;
+using eve::graphics::IResourceFactory;
 using eve::graphics::Mesh;
+using eve::graphics::Material;
 using eve::graphics::Renderable3D;
 using eve::graphics::Texture;
 
-Texture *textureFromImageData(Graphics *gfx, image::ImageData *img) {
+Texture *textureFromImageData(IResourceFactory *gfx, image::ImageData *img) {
     if (!img) return nullptr;
     try {
         return gfx->newTexture(img);
@@ -33,7 +37,7 @@ Texture *textureFromImageData(Graphics *gfx, image::ImageData *img) {
     }
 }
 
-Texture *loadEmbeddedTexture(Graphics *gfx, ModelData *model, int idx) {
+Texture *loadEmbeddedTexture(IResourceFactory *gfx, ModelData *model, int idx) {
     image::ImageData *img = model->getEmbeddedTextureImageData(idx);
     Texture *tex = textureFromImageData(gfx, img);
     delete img;
@@ -45,7 +49,7 @@ std::string basenameOf(const std::string &path) {
     return slash == std::string::npos ? path : path.substr(slash + 1);
 }
 
-Texture *loadExternalTexture(Graphics *gfx, const std::string &path) {
+Texture *loadExternalTexture(IResourceFactory *gfx, const std::string &path) {
     auto *fs = filesystem::Filesystem::create();
     std::unique_ptr<filesystem::FileData> fd;
     try {
@@ -76,8 +80,7 @@ Texture *loadExternalTexture(Graphics *gfx, const std::string &path) {
     }
 }
 
-Texture *loadTextureSlot(Graphics *gfx, ModelData *model, int matIndex,
-                         const std::string &type) {
+Texture *loadTextureSlot(IResourceFactory *gfx, ModelData *model, int matIndex, const std::string &type) {
     if (model->getMaterialTextureSlotCount(matIndex, type) <= 0) return nullptr;
     const int embedded = model->getMaterialTextureEmbeddedIndex(matIndex, type, 0);
     if (embedded >= 0) return loadEmbeddedTexture(gfx, model, embedded);
@@ -93,10 +96,12 @@ struct TextureLook {
     float tr = 1.f, tg = 1.f, tb = 1.f, ta = 1.f;
     float metallic = 0.f;
     float roughness = 0.45f;
+    std::string alphaMode = "OPAQUE";
+    float alphaCutoff = 0.5f;
+    bool doubleSided = false;
 };
 
-TextureLook materialLook(Graphics *gfx, ModelData *model, int matIndex,
-                         const ModelRenderOptions &options,
+TextureLook materialLook(IResourceFactory *gfx, ModelData *model, int matIndex, const ModelRenderOptions &options,
                          std::unordered_map<int, TextureLook> &cache) {
     auto it = cache.find(matIndex);
     if (it != cache.end()) return it->second;
@@ -109,6 +114,10 @@ TextureLook materialLook(Graphics *gfx, ModelData *model, int matIndex,
         look.ta = model->getMaterialBaseColorA(matIndex);
         look.metallic = model->getMaterialMetallicFactor(matIndex);
         look.roughness = model->getMaterialRoughnessFactor(matIndex);
+        look.ta *= model->getMaterialOpacity(matIndex);
+        look.alphaMode = model->getMaterialAlphaMode(matIndex);
+        look.alphaCutoff = model->getMaterialAlphaCutoff(matIndex);
+        look.doubleSided = model->getMaterialTwoSided(matIndex);
         if (options.importAlbedo) {
             look.albedo = loadTextureSlot(gfx, model, matIndex, "base_color");
             if (!look.albedo) look.albedo = loadTextureSlot(gfx, model, matIndex, "diffuse");
@@ -122,17 +131,21 @@ TextureLook materialLook(Graphics *gfx, ModelData *model, int matIndex,
     return look;
 }
 
-Renderable3D *makeRenderable(Graphics *gfx, ModelData *model, int meshIndex,
-                             const aiMatrix4x4 &world, const ModelRenderOptions &options,
-                             std::unordered_map<int, TextureLook> &cache) {
+Renderable3D *makeRenderable(IResourceFactory *gfx, ModelData *model, int meshIndex, const aiMatrix4x4 &world,
+                             const ModelRenderOptions &options, std::unordered_map<int, TextureLook> &cache) {
     const aiScene *scene = model->getScene();
     if (!scene || meshIndex < 0 || static_cast<unsigned>(meshIndex) >= scene->mNumMeshes)
         return nullptr;
     const aiMesh *ai = scene->mMeshes[meshIndex];
     if (!ai || ai->mNumVertices == 0 || ai->mNumFaces == 0) return nullptr;
 
-    Mesh *mesh = options.bakeWorldTransform ? gfx->newMeshFromAssimp(*ai, world)
-                                            : gfx->newMeshFromAssimp(*ai);
+    // Skinned vertex positions and inverse-bind matrices share the model's
+    // bind-pose space. Baking the owning node transform into only the vertices
+    // makes the skin palette apply that transform a second time, separating
+    // modular body parts (notably KayKit heads, armour and limbs). Static
+    // meshes still use the established baked scene transform.
+    const bool bakeWorld = options.bakeWorldTransform && !ai->HasBones();
+    Mesh *mesh = bakeWorld ? gfx->newMeshFromAssimp(*ai, world) : gfx->newMeshFromAssimp(*ai);
     if (!mesh) return nullptr;
 
     const int matIndex = model->getMaterialIndex(meshIndex);
@@ -141,16 +154,37 @@ Renderable3D *makeRenderable(Graphics *gfx, ModelData *model, int meshIndex,
     Renderable3D *ent = Renderable3D::create();
     ent->meshRenderer()->visible = true;
     ent->setMesh(mesh);
+    // Preserve the established Renderable3D inspection API. The Material below
+    // is authoritative for drawing, while these mirrored fields keep imported
+    // models compatible with callers that query meshRenderer()/getTexture().
     if (look.albedo) ent->setTexture(look.albedo);
     if (look.normal) ent->setNormalTexture(look.normal);
     if (look.height) ent->setHeightTexture(look.height);
     ent->setTint(look.tr, look.tg, look.tb, look.ta);
     ent->setMetallic(look.metallic);
     ent->setRoughness(look.roughness);
+    // Keep imported surface semantics in one Material instead of losing glTF
+    // alphaMode/alphaCutoff on the legacy renderer fields.
+    Material *material = new Material();
+    material->setAlbedoTexture(look.albedo);
+    material->setNormalTexture(look.normal);
+    material->setHeightTexture(look.height);
+    material->setTint(look.tr, look.tg, look.tb, look.ta);
+    material->setMetallic(look.metallic);
+    material->setRoughness(look.roughness);
+    material->setDoubleSided(look.doubleSided);
+    material->setAlphaCutoff(look.alphaCutoff);
+    if (look.alphaMode == "MASK")
+        material->setSurfaceMode("masked");
+    else if (look.alphaMode == "BLEND")
+        material->setSurfaceMode("transparent");
+    else
+        material->setSurfaceMode("opaque");
+    ent->setMaterial(material);
     return ent;
 }
 
-void walkNodes(const aiNode *node, const aiMatrix4x4 &parent, Graphics *gfx, ModelData *model,
+void walkNodes(const aiNode *node, const aiMatrix4x4 &parent, IResourceFactory *gfx, ModelData *model,
                const ModelRenderOptions &options, std::vector<Renderable3D *> &out,
                std::unordered_map<int, TextureLook> &cache) {
     if (!node) return;
@@ -181,7 +215,7 @@ bool findMeshTransform(const aiNode *node, const aiMatrix4x4 &parent, unsigned m
 
 }  // namespace
 
-Renderable3D *buildRenderable(Graphics &gfx, ModelData *model, int meshIndex,
+Renderable3D *buildRenderable(IResourceFactory &gfx, ModelData *model, int meshIndex,
                               const ModelRenderOptions &options) {
     if (!model) return nullptr;
     const aiScene *scene = model->getScene();
@@ -196,7 +230,7 @@ Renderable3D *buildRenderable(Graphics &gfx, ModelData *model, int meshIndex,
     return makeRenderable(&gfx, model, meshIndex, world, options, cache);
 }
 
-std::vector<Renderable3D *> buildRenderables(Graphics &gfx, ModelData *model,
+std::vector<Renderable3D *> buildRenderables(IResourceFactory &gfx, ModelData *model,
                                              const ModelRenderOptions &options) {
     std::vector<Renderable3D *> out;
     if (!model) return out;

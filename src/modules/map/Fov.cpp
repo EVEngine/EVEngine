@@ -220,6 +220,7 @@ struct Fov::Impl {
     int height = 0;
     int depth = 1;
     TileLayer *layer = nullptr;
+    uint64_t layerRevision = 0;
     Algorithm algorithm = Algorithm::Shadowcast;
     RadiusMetric metric = RadiusMetric::Euclidean;
     Mode mode = Mode::Grid2D;
@@ -304,6 +305,7 @@ struct Fov::Impl {
         if (!layer) return;
         auto cfg = layer->config();
         auto tiles = layer->tiles();
+        auto tileset = layer->tileset();
         if (cfg->mapW != width || cfg->mapH != height || depth != 1) {
             resize(cfg->mapW, cfg->mapH, 1);
         }
@@ -314,8 +316,13 @@ struct Fov::Impl {
             bool isOpaque = false;
             if (blockEmpty && gid == 0u) isOpaque = true;
             if (opaqueGids.count(gid)) isOpaque = true;
+            const auto visual =
+                std::find_if(tileset->visuals.begin(), tileset->visuals.end(),
+                             [gid](const TileLayer::Tileset::Visual &candidate) { return candidate.gid == int(gid); });
+            if (visual != tileset->visuals.end()) isOpaque = isOpaque || visual->opaque;
             opaque[size_t(i)] = isOpaque ? 1u : 0u;
         }
+        layerRevision = tiles->revision;
         dirty = true;
     }
 
@@ -894,6 +901,7 @@ struct Fov::Impl {
     }
 
     void compute() {
+        if (layer && layerRevision != layer->tiles()->revision) syncFromLayer();
         if (!dirty) return;
         resetVisibleKeepExplored();
         for (const auto &r : revealers) computeRevealer(r);

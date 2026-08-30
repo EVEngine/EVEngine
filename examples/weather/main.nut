@@ -8,25 +8,25 @@
 //   鈥?Sliders tune intensity + wind live
 //   鈥?Camera auto-orbits the diorama
 
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("preset" in getroottable())) preset <- "clear";
-if (!("camAngle" in getroottable())) camAngle <- 0.0;
-if (!("autoOrbit" in getroottable())) autoOrbit <- true;
-if (!("autoCycle" in getroottable())) autoCycle <- false;
-if (!("cycleTimer" in getroottable())) cycleTimer <- 0.0;
-if (!("props" in getroottable())) props <- [];
-if (!("strikeWasDown" in getroottable())) strikeWasDown <- false;
+persist uiReady = false
+persist preset = "clear"
+persist camAngle = 0.0
+persist autoOrbit = true
+persist autoCycle = false
+persist cycleTimer = 0.0
+persist props = []
+persist strikeWasDown = false
 
 
 presetOrder <- ["clear", "drizzle", "rain", "storm", "snow", "fog"];
 
 presets <- {
-    clear   = { intensity = 0.0,  wind = 1.5, dir = 0,  sky = [0.45, 0.53, 0.62], sun = 1.0,  fog = [0.55, 0.58, 0.62], fogD = 0.0015, lightning = false }
-    drizzle = { intensity = 0.25, wind = 4.0, dir = 20, sky = [0.40, 0.46, 0.55], sun = 0.8, fog = [0.52, 0.54, 0.56], fogD = 0.006,  lightning = false }
-    rain    = { intensity = 0.65, wind = 7.0, dir = 35, sky = [0.34, 0.39, 0.47], sun = 0.5, fog = [0.45, 0.48, 0.51], fogD = 0.012,  lightning = false }
-    storm   = { intensity = 0.9,  wind = 13.0, dir = 55, sky = [0.22, 0.26, 0.32], sun = 0.25, fog = [0.30, 0.32, 0.36], fogD = 0.02,   lightning = true }
-    snow    = { intensity = 0.75, wind = 5.0,  dir = 10, sky = [0.62, 0.68, 0.74], sun = 0.7, fog = [0.72, 0.76, 0.80], fogD = 0.01,   lightning = false }
-    fog     = { intensity = 0.0,  wind = 1.0,  dir = 0,  sky = [0.45, 0.47, 0.50], sun = 0.4, fog = [0.60, 0.62, 0.65], fogD = 0.05,   lightning = false }
+    clear   = { intensity = 0.0,  wind = 1.5, dir = 0.0,  sky = [0.45, 0.53, 0.62], sun = 1.0,  fog = [0.55, 0.58, 0.62], fogD = 0.0015, lightning = false }
+    drizzle = { intensity = 0.25, wind = 4.0, dir = 20.0, sky = [0.40, 0.46, 0.55], sun = 0.8, fog = [0.52, 0.54, 0.56], fogD = 0.006,  lightning = false }
+    rain    = { intensity = 0.65, wind = 7.0, dir = 35.0, sky = [0.34, 0.39, 0.47], sun = 0.5, fog = [0.45, 0.48, 0.51], fogD = 0.012,  lightning = false }
+    storm   = { intensity = 0.9,  wind = 13.0, dir = 55.0, sky = [0.22, 0.26, 0.32], sun = 0.25, fog = [0.30, 0.32, 0.36], fogD = 0.02,   lightning = true }
+    snow    = { intensity = 0.75, wind = 5.0,  dir = 10.0, sky = [0.62, 0.68, 0.74], sun = 0.7, fog = [0.72, 0.76, 0.80], fogD = 0.01,   lightning = false }
+    fog     = { intensity = 0.0,  wind = 1.0,  dir = 0.0,  sky = [0.45, 0.47, 0.50], sun = 0.4, fog = [0.60, 0.62, 0.65], fogD = 0.05,   lightning = false }
 };
 
 camera <- null;

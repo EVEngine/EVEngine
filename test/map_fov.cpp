@@ -1,11 +1,31 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+#include "map/Fov.h"
 #include "map/Map.h"
 #include "map/TileLayer.h"
-#include "map/Fov.h"
-#include "graphics/Graphics.h"
-#include "graphics/Texture.h"
+#include "window/Window.h"
 
 #include <cstdint>
 #include <string>
@@ -196,6 +216,22 @@ TEST_CASE("map.fov.layerOpaqueGid") {
     fov->compute();
     CHECK(!fov->isOpaque(3, 1));
     CHECK(fov->isVisible(5, 1));
+    delete fov;
+}
+
+TEST_CASE("map.fov.boundLayerAutoSyncsRevision") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(7, 1, 8.f, 8.f);
+    layer->fill(2);
+    Fov *fov = mod->newFov(layer);
+    fov->setBlockEmpty(false);
+    fov->blockOpaqueGid(1);
+    fov->addRevealer(0, 0, 7);
+    fov->compute();
+    CHECK(fov->isVisible(6, 0));
+    layer->setTile(3, 0, 1);
+    fov->compute();
+    CHECK(!fov->isVisible(6, 0));
     delete fov;
 }
 
@@ -430,21 +466,64 @@ TEST_CASE("map.fov.perception.canDetect") {
 }
 
 TEST_CASE("map.fov.gpuMaskTexture") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = eve::graphics::Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 4;
+    settings.height   = 4;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
     auto *mod = Map::create();
-    Fov *fov = mod->newFovSize(4, 4);
+    Fov  *fov = mod->newFovSize(4, 4);
     fov->setBlockEmpty(false);
     fov->addRevealer(1, 1, 1);
     fov->compute();
     CHECK(fov->buildMaskTexture(nullptr) == nullptr);
 
-    auto *gfx = eve::graphics::Graphics::create();
-    REQUIRE(gfx != nullptr);
     auto *tex = fov->buildMaskTexture(gfx);
     REQUIRE(tex != nullptr);
     CHECK_EQ(tex->getWidth(), 4);
     CHECK_EQ(tex->getHeight(), 4);
     delete tex;
     delete fov;
+    win->close();
 }
 
+TEST_CASE("map.fov.accessorRoundTrips") {
+    auto *mod = Map::create();
+    Fov  *fov = mod->newFovSize(4, 4);
+    REQUIRE(fov != nullptr);
 
+    fov->setCornerPeek(true);
+    CHECK(fov->getCornerPeek());
+    fov->setCornerPeek(false);
+    CHECK(!fov->getCornerPeek());
+
+    fov->setEyeOffset(1.f);
+    CHECK_EQ(fov->getEyeOffset(), 1.f);
+
+    fov->setCliffBlock(0.5f);
+    CHECK_EQ(fov->getCliffBlock(), 0.5f);
+
+    fov->setVerticalRange(3);
+    CHECK_EQ(fov->getVerticalRange(), 3);
+
+    fov->setPerceptionRadiusScale(1.5f);
+    CHECK_EQ(fov->getPerceptionRadiusScale(), 1.5f);
+
+    const int id = fov->addRevealer(1, 1, 2);
+    REQUIRE(id >= 0);
+    fov->setRevealerPosition3(id, 2, 3, 1);
+    fov->setRevealerRadius(id, 4);
+    fov->setRevealerPerception(id, 2.f);
+    CHECK_EQ(fov->getRevealerPerception(id), 2.f);
+    CHECK_EQ(fov->getRevealerCount(), 1);
+    fov->setRevealerEnabled(id, false);
+    CHECK_EQ(fov->getRevealerCount(), 1);  // disabled revealers stay registered
+    CHECK_EQ(fov->getRevealerPerception(999), 0.f);  // unknown id
+
+    delete fov;
+}

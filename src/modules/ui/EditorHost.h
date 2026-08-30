@@ -15,7 +15,8 @@ namespace eve::ui {
  * @brief Headless MCP editor host (MVVM).
  *
  * The AI drives an EVEngine process through MCP: the View is a JSON widget
- * tree (applyEditor), the ViewModel is a Squirrel table (registerVM) that the
+ * tree assembled by applyEditor, and the ViewModel is a Squirrel table
+ * registered by registerVM that the
  * host binds to the View each frame (two-way `bind`, one-way commands /
  * `onChange` / `bind:options` / `bind:label` / `bind:visible` / `bind:enabled`).
  * Model data lives in the engine (Heightmap / Material / Scene) and is only
@@ -62,6 +63,9 @@ public:
     void syncBindings();
     std::string setEditorValue(const std::string& editorId, const std::string& widgetId,
                                const std::string& jsonValue);
+    /** @brief Restore a widget and its binding without emitting events or onChange. */
+    std::string restoreEditorValue(const std::string& editorId, const std::string& widgetId,
+                                   const std::string& jsonValue);
     /** @brief Read and clear pending interaction events for one editor ("" = all). */
     std::string consumeEvents(const std::string& editorId);
     /** @brief Last-frame widget rect JSON (for script drawing inside viewports). */
@@ -83,6 +87,12 @@ public:
     // ---- misc --------------------------------------------------------------
     std::string runScript(const std::string& source);
     std::string capture(const std::string& path);
+    /** @brief Reload mcp.nut, scripts under mcp, or editor VM and manifest files. */
+    std::string reloadResource(const std::string& path);
+    /** @brief Watch count, reload counters and latest diagnostic as compact JSON. */
+    std::string hotReloadStatus() const;
+    /** @brief Set active project watch count reported by hotReloadStatus(). */
+    void setHotReloadWatchCount(int count);
     std::string status() const;
     void        requestExit() { exitRequested_ = true; }
     bool        exitRequested() const { return exitRequested_; }

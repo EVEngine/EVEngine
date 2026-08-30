@@ -32,7 +32,7 @@ inline bool rawDeflate(const char* in, size_t inLen, std::vector<char>& out) {
     if (deflateInit2(&stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -15, 8, Z_DEFAULT_STRATEGY) != Z_OK)
         return false;
 
-    out.resize(inLen > 0 ? static_cast<size_t>(deflateBound(&stream, inLen)) : 1024);
+    out.resize(inLen > 0 ? static_cast<size_t>(deflateBound(&stream, static_cast<uLong>(inLen))) : 1024);
 
     stream.next_out  = reinterpret_cast<Bytef*>(out.data());
     stream.avail_out = static_cast<uInt>(out.size());
@@ -178,23 +178,39 @@ private:
 };
 
     // Walk a game directory and write every regular file into a single .eve archive.
-    inline bool createGameArchive(const std::filesystem::path& gameDir,
-                                  const std::filesystem::path& outArchive) {
+    inline bool createGameArchive(
+        const std::filesystem::path& gameDir, const std::filesystem::path& outArchive,
+        const std::vector<std::pair<std::string, std::string>>& generatedEntries = {}) {
         std::error_code ec;
         if (!std::filesystem::is_directory(gameDir, ec)) return false;
 
         ZipWriter writer;
         if (!writer.open(outArchive.string())) return false;
 
-        // Recursively collect files, preserving relative paths with '/' separators.
-        std::vector<std::filesystem::path> files;
-        std::filesystem::recursive_directory_iterator it(
-            gameDir, std::filesystem::directory_options::skip_permission_denied, ec);
-        std::filesystem::recursive_directory_iterator end;
-        for (; it != end; it.increment(ec)) {
-            if (ec) { ec.clear(); continue; }
-            if (it->is_regular_file()) files.push_back(it->path());
+    // Recursively collect files, preserving relative paths with '/' separators.
+    std::vector<std::filesystem::path> files;
+    // Never archive the output file itself: `eve zip .` writes <cwd>.eve into
+    // the directory being walked, and a mid-write snapshot of the archive would
+    // be embedded (or fail to open) depending on the OS's file-sharing rules.
+    std::filesystem::path outAbs;
+    {
+        std::error_code aec;
+        outAbs = std::filesystem::absolute(outArchive, aec).lexically_normal();
+        if (aec) outAbs.clear();
+    }
+    std::filesystem::recursive_directory_iterator it(
+        gameDir, std::filesystem::directory_options::skip_permission_denied, ec);
+    std::filesystem::recursive_directory_iterator end;
+    for (; it != end; it.increment(ec)) {
+        if (ec) { ec.clear(); continue; }
+        if (!it->is_regular_file()) continue;
+        if (!outAbs.empty()) {
+            std::error_code aec;
+            if (std::filesystem::absolute(it->path(), aec).lexically_normal() == outAbs)
+                continue;
         }
+        files.push_back(it->path());
+    }
 
         for (const auto& file : files) {
             std::string rel = std::filesystem::relative(file, gameDir, ec).generic_string();
@@ -213,6 +229,11 @@ private:
             if (!in && size > 0) continue;
 
             if (!writer.addFile(rel, buf.data(), buf.size())) return false;
+        }
+
+        for (const auto& [name, contents] : generatedEntries) {
+            if (name.empty() || name.front() == '/' || name.find("..") != std::string::npos) return false;
+            if (!writer.addFile(name, contents.data(), contents.size())) return false;
         }
 
         return writer.finish();

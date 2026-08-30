@@ -1,0 +1,14 @@
+Playground asset attribution
+===========================
+
+All bundled assets are CC0 1.0 (public domain) and may be used for any purpose.
+
+wood.jpg
+    Resized 1024 px tile from Wikimedia Commons, CC0:
+    https://commons.wikimedia.org/wiki/File:Wood_texture,_light.jpg
+    (same file as examples/linear-structures/assets/wood.jpg)
+
+background_forest.png, crate.png, tiles.png
+    "Platformer Pack Redux" by Kenney Vleugels (www.kenney.nl), CC0:
+    http://creativecommons.org/publicdomain/zero/1.0/
+    (same files as examples/metroidvania/assets/)

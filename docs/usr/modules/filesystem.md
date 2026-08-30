@@ -27,7 +27,7 @@ fs.watch("config/game.json");
 
 ### 热更新配置
 
-对配置文件调用 `fs.watch(path)`，在更新阶段轮询 `pollWatch()`；返回变化后读取 `getLastWatchPath()` 并重新解析。资源对象可登记到 `hot`，但热更新回调中只替换成功加载的新对象，失败时保留旧对象。
+对配置文件调用 `fs.watch(path)`，在更新阶段轮询 `pollWatch()`；返回变化后读取 `getLastWatchPath()` 并重新解析。用 `hot.watchTree(root)` 递归监视内容目录时，若运行期间收到新建目录事件，再调用 `hot.watchNewDirectory(path)`，它会为该目录及其当前子目录补注册监视。资源对象可登记到 `hot`，但热更新回调中只替换成功加载的新对象，失败时保留旧对象。
 
 ### 远程热更新（`eve dev` + 全平台）
 
@@ -57,10 +57,10 @@ fs.watch("config/game.json");
 - `append()`、`areSymlinksEnabled()`、`bind()`、`createDirectory()`、`getAppdataDirectory()`、`getCRequirePath()`、`getDirectoryItems()`、`getExecutablePath()`
 - `getIdentity()`、`getLastWatchPath()`、`getLastWatchRealPath()`、`getName()`、`getRealDirectory()`、`getRequirePath()`、`getSaveDirectory()`、`getSource()`
 - `getSourceBaseDirectory()`、`getUserDirectory()`、`getWatchCount()`、`getWorkingDirectory()`、`isAndroidSaveExternal()`、`isFused()`、`isRealDirectory()`、`newFile()`
-- `newFileData()`、`pollWatch()`、`read()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
-- `setSymlinksEnabled()`、`setupWriteDirectory()`、`tryReload()`、`unbind()`、`unwatch()`、`unwatchAll()`、`watch()`、`watchTree()`
+- `newFileData()`、`pollWatch()`、`read()`、`readText()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
+- `setSymlinksEnabled()`、`setupWriteDirectory()`、`tryReload()`、`unbind()`、`unwatch()`、`unwatchAll()`、`watch()`、`watchTree()`、`watchNewDirectory()`
 - `startRemoteSync()`、`stopRemoteSync()`、`isRemoteSyncing()`、`remoteSyncStatus()`、`pollRemoteChange()`、`setRemoteHotDir()`
-- `write()`
+- `write()`、`writeText()`、`mountExternalReadOnly()`
 
 ## 使用要点
 

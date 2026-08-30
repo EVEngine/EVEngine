@@ -4,11 +4,15 @@
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpServer.hpp"
+#include "devtools/ReloadSession.h"
 #include "devtools/RenderVision.hpp"
+#include "devtools/ScenarioRecorder.h"
 
 #include "common/Module.h"
 #include "common/RenderTrace.h"
-#include "event/Event.h"
+#include "common/Runtime.h"
+#include "common/ScriptError.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
@@ -86,31 +90,17 @@ void nativeDebugHook(HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQ
 /** Runtime error handler: uncaught script errors are routed to DevTool. */
 SQInteger runtimeErrorHook(HSQUIRRELVM v) {
     if (!g_active) return 0;
-    std::string msg = "script error";
-    if (sq_gettop(v) >= 2) {
-        switch (sq_gettype(v, 2)) {
-            case OT_STRING: {
-                const SQChar* s = nullptr;
-                if (SQ_SUCCEEDED(sq_getstring(v, 2, &s)) && s) msg = s;
-                break;
-            }
-            case OT_INTEGER: {
-                SQInteger i = 0;
-                if (SQ_SUCCEEDED(sq_getinteger(v, 2, &i)))
-                    msg = "script error " + std::to_string(static_cast<long long>(i));
-                break;
-            }
-            case OT_BOOL: {
-                SQBool b = SQFalse;
-                if (SQ_SUCCEEDED(sq_getbool(v, 2, &b)))
-                    msg = b ? "script error: true" : "script error: false";
-                break;
-            }
-            default:
-                break;
-        }
+    // Capture the full context (message + live call stack) so Runtime::execute
+    // can enrich the ScriptException it throws once the call unwinds.
+    eve::script::ScriptErrorContext ctx = eve::script::captureScriptError(v);
+    const std::string msg = ctx.empty() ? std::string("script error")
+                                        : eve::script::formatScriptError(ctx);
+    try {
+        g_active->notifyError(msg);
+    } catch (...) {
     }
-    g_active->notifyError(msg);
+    ctx.reported = true;
+    eve::script::setLastScriptError(v, std::move(ctx));
     return 0;
 }
 
@@ -133,6 +123,22 @@ DevTool& DevTool::instance() {
 }
 
 void DevTool::attach(ssq::VM& vm, bool sampleLocals) { attach(vm.getHandle(), sampleLocals); }
+
+void DevTool::attach(eve::Runtime& runtime, bool sampleLocals) {
+    attach(runtime.vm(), sampleLocals);
+    runtime_ = &runtime;
+    // Route Runtime-boundary errors into the slicer/report. The VM error hook
+    // covers uncaught script errors; this sink catches the rest — compile,
+    // reflect and unload failures, plus any uncaught error the hook already
+    // marked reported() so we skip it and avoid slicing twice.
+    runtime.setErrorHandler([this](const eve::ScriptException& error) {
+        if (error.reported()) return;
+        try {
+            notifyError(error.what());
+        } catch (...) {
+        }
+    });
+}
 
 void DevTool::installRenderTracer() {
     renderFlow_.clear();
@@ -177,6 +183,11 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
 }
 
 void DevTool::detach() {
+    ScenarioRecorder::instance().cancel();
+    if (runtime_) {
+        runtime_->setErrorHandler({});
+        runtime_ = nullptr;
+    }
     stopDap();
     stopMcp();
     Debugger::instance().detach();
@@ -310,6 +321,13 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
                     [](std::string name) { Snapshot::instance().markRoot(std::move(name)); });
         dev.addFunc("unmarkStateRoot",
                     [](std::string name) { Snapshot::instance().unmarkRoot(name); });
+        dev.addFunc("markTransientStateRoot",
+                    [](std::string name) { Snapshot::instance().markTransientRoot(std::move(name)); });
+        dev.addFunc("unmarkTransientStateRoot",
+                    [](std::string name) { Snapshot::instance().unmarkTransientRoot(name); });
+        dev.addFunc("clearStateRoots", []() { Snapshot::instance().clearRoots(); });
+        dev.addFunc("stateRoots", [this]() { return snapshot().rootsFor(vm_); });
+        dev.addFunc("transientStateRoots", []() { return Snapshot::instance().transientRoots(); });
         dev.addFunc("saveSnapshot", [this](std::string path) {
             std::string err;
             const bool  ok = snapshot().saveFile(vm_, path, &err);
@@ -332,6 +350,50 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             if (!ok) return std::string("error:") + err;
             return std::string("ok");
         });
+        dev.addFunc("beginStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().begin(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
+        });
+        dev.addFunc("commitStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().commit(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
+        });
+        dev.addFunc("abortStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().abort(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
+        });
+
+        // ---- state-driven bug reproduction (baseline snapshot + step replay) ----
+        dev.addFunc("beginScenario", [this]() {
+            std::string err;
+            if (!ScenarioRecorder::instance().begin(vm_, &err))
+                return std::string("error:") + err;
+            return std::string("ok");
+        });
+        dev.addFunc("scenarioFrame", []() { ScenarioRecorder::instance().markFrame(); });
+        dev.addFunc("scenarioRecording",
+                    []() { return ScenarioRecorder::instance().recording(); });
+        dev.addFunc("endScenario", [](std::string path) {
+            std::string err;
+            if (!ScenarioRecorder::instance().end(path, &err))
+                return std::string("error:") + err;
+            return std::string("ok");
+        });
+        dev.addFunc("cancelScenario", []() { ScenarioRecorder::instance().cancel(); });
+        dev.addFunc("beginReplay", [this](std::string path) {
+            std::string err;
+            if (!ScenarioRecorder::instance().beginReplay(vm_, path, &err))
+                return std::string("error:") + err;
+            return std::string("ok");
+        });
+        dev.addFunc("replayFrame", []() { return ScenarioRecorder::instance().stageFrame(); });
+        dev.addFunc("replayRemaining",
+                    []() { return ScenarioRecorder::instance().framesRemaining(); });
+        dev.addFunc("replayErrorReport",
+                    []() { return ScenarioRecorder::instance().errorReport(); });
 
         // AI / MCP surface (DevTools panel + agent session log).
         ssq::Table ai = dev.addTable("ai");
@@ -469,29 +531,26 @@ void DevTool::handleDebugHotkey(const std::string& key) {
 void DevTool::pumpWhilePaused() {
     poll();  // DAP continue / next / pause
 
-    auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
     ev->pump();
 
     // Consume debug hotkeys so F5/F8/F10/F11 work while blocked in the line hook;
     // re-queue everything else for the main loop after resume.
-    std::vector<eve::event::Message*> keep;
-    while (eve::event::Message* msg = ev->poll()) {
+    std::vector<std::unique_ptr<eve::platform_event::Message>> keep;
+    while (auto msg = ev->pollOwned()) {
         bool handled = false;
         if (msg->name == "keypressed" && !msg->args.empty() &&
-            msg->args[0].type == eve::event::Variant::Type::String) {
+            msg->args[0].type == eve::platform_event::Variant::Type::String) {
             const std::string& key = msg->args[0].s;
             if (key == "F5" || key == "F8" || key == "F10" || key == "F11" || key == "Pause") {
                 handleDebugHotkey(key);
                 handled = true;
             }
         }
-        if (handled)
-            delete msg;
-        else
-            keep.push_back(msg);
+        if (!handled) keep.push_back(std::move(msg));
     }
-    for (eve::event::Message* msg : keep) ev->push(msg);
+    for (auto& msg : keep) ev->push(std::move(msg));
 }
 
 void DevTool::sampleFrameLocals(HSQUIRRELVM vm, const SourceLoc& loc) {
@@ -651,6 +710,10 @@ std::string DevTool::notifyError(const std::string& errorMessage,
     if (report.empty()) report = std::string("Error: ") + errorMessage + "\n";
     lastReport_ = report;
     lastError_  = errorMessage;
+
+    // If a scenario is being recorded, pair the failure report + site with it so
+    // the dumped scenario becomes a reproducible baseline + input sequence.
+    ScenarioRecorder::instance().setErrorInfo(report, site.source + ":" + std::to_string(site.line));
 
     RenderVision::instance().notifyPending("error", site.source, site.line);
     if (debugger().breakOnError()) {

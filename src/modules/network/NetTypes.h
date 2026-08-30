@@ -40,4 +40,18 @@ struct NetCompletion {
     int status = 0;
 };
 
+/** @brief Copied aggregate counters for editor/profiler network inspection. */
+struct NetTelemetrySnapshot {
+    uint64_t revision = 0;
+    uint64_t sentBytes = 0;
+    uint64_t receivedBytes = 0;
+    uint64_t completions = 0;
+    uint64_t errors = 0;
+    uint64_t connections = 0;
+    size_t watchedTcp = 0;
+    size_t watchedUdp = 0;
+    size_t channels = 0;
+    size_t queuedTcpBytes = 0;
+};
+
 }  // namespace eve::network

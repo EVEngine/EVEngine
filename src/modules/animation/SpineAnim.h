@@ -1,8 +1,15 @@
 #pragma once
 
+#include "common/Time.h"
+
+#include <string>
+#include <vector>
 #include "animation/SpineSkeletonData.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Texture.h"
+
+namespace eve::graphics {
+struct DrawItem2D;
+class Texture;
+}  // namespace eve::graphics
 
 #include <string>
 #include <vector>
@@ -77,6 +84,13 @@ public:
     /** @brief Apply current animation time to skeleton and update world transforms. */
     void apply();
 
+    /** @brief Advance playback by one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+    /** @brief Whether this Spine animation has consumed a scheduler step. */
+    [[nodiscard]] bool hasCurrentTick() const noexcept { return hasLastTick_; }
+    /** @brief Last scheduler tick consumed by this Spine animation. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+    /** @brief Legacy seconds facade; explicitly forwards to advance(). */
     bool update(float dt);
 
     /** @brief Append region attachment quads into the shared 2D draw queue. */
@@ -145,6 +159,10 @@ private:
     int                                layer_ = 0;
     float                              r_ = 1.f, g_ = 1.f, b_ = 1.f, a_ = 1.f;
     std::vector<DrawSlot>              drawSlots_;
+    eve::SimulationTick                lastTick_    = eve::SimulationTick::zero();
+    bool                               hasLastTick_ = false;
+
+    bool updateUnchecked(float dt);
 };
 
 }  // namespace eve::animation

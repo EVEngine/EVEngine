@@ -2,6 +2,7 @@
 
 #include <CLI11.hpp>
 #include <filesystem>
+#include <fstream>
 #include <rang.hpp>
 
 using namespace std::filesystem;
@@ -20,8 +21,10 @@ struct CreateArgs : Handler {
         if (create->parsed()) {
             string name = cmd.get_remaining(create, "mygame");
             int    res  = cmd.Create(".", name);
-            if (res == 0)
+            if (res == 0) {
                 cout << rang::fg::green << "Created " << name << " in current path" << rang::fg::reset << endl;
+                cout << "  run it: eve run " << name << endl;
+            }
             return res;
         }
         return -1;  // not handle
@@ -32,8 +35,60 @@ CMD_REG(CreateArgs);
 
 
 // create a new project
-int Cmdline::Create(std::string path, std::string name) {
-    create_directory(path + "/" + name);
+int Cmdline::Create(std::string path, std::string projectName) {
+    if (projectName.empty()) projectName = "mygame";
+    std::filesystem::path dir = std::filesystem::path(path) / projectName;
+    std::error_code       ec;
+    std::filesystem::create_directories(dir, ec);
+    if (ec) {
+        cerr << rang::fg::red << "Failed to create " << dir << ": " << ec.message() << rang::fg::reset << endl;
+        return 1;
+    }
+
+    const std::string config = R"(// EVEngine project configuration.
+config <- {
+    width = 800
+    height = 600
+    title = ")" + projectName +
+                               R"("
+    hotReload = true
+    modules = ["gfx"]
+}
+)";
+    const std::string main   = R"(// EVEngine minimal game template.
+// Frame: eve_init (once) -> eve_update(dt) -> eve_render().
+// EveScript persist declarations retain mutable state across hot reload.
+persist boxX: float = 0.0
+persist boxY: float = 100.0
+persist vx: float = 240.0
+
+eve_init = function() {
+    gfx.setBackgroundColor(0.08, 0.10, 0.20, 1.0);
+};
+
+eve_update = function(dt: float) {
+    boxX += vx * dt;
+    if (boxX > config.width || boxX < 0.0) vx = -vx;
+};
+
+eve_render = function() {
+    gfx.clear();
+    gfx.drawSolidRect(boxX - 20.0, boxY - 20.0, 40.0, 40.0, 1.3, 0.8, 0.4, 1.0);
+};
+)";
+
+    auto writeIfMissing = [&](const char* file, const std::string& content) {
+        auto p = dir / file;
+        if (std::filesystem::exists(p)) {
+            cout << "  skip existing " << file << endl;
+            return;
+        }
+        std::ofstream out(p, std::ios::binary);
+        out << content;
+        out.close();
+    };
+    writeIfMissing("config.nut", config);
+    writeIfMissing("main.nut", main);
     return 0;
 }
 

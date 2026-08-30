@@ -35,6 +35,24 @@ TEST_CASE("material.shadingModelAndParams") {
     CHECK(std::fabs(mat.getFloat("outlineWidth") - 1.25f) < 1e-5f);
 }
 
+TEST_CASE("material.surfaceModesAndTransparencyPolicies") {
+    Material mat;
+    CHECK(mat.getSurfaceMode() == "opaque");
+    mat.setSurfaceMode("masked");
+    mat.setAlphaCutoff(0.37f);
+    mat.setDoubleSided(true);
+    CHECK(mat.getSurfaceMode() == "masked");
+    CHECK(std::fabs(mat.getAlphaCutoff() - 0.37f) < 1e-5f);
+    CHECK(mat.getDoubleSided());
+    mat.setSurfaceMode("transparent");
+    mat.setBlendMode("premultiplied");
+    mat.setSortPriority(12);
+    CHECK(mat.getBlendMode() == "premultiplied");
+    CHECK(mat.getSortPriority() == 12);
+    mat.setAlphaTechnique("dither");
+    CHECK(mat.getAlphaTechnique() == "dither");
+}
+
 TEST_CASE("renderControl.compileFeaturesToPasses") {
     RenderControl rc;
     CHECK(rc.supports("gbuffer"));
@@ -92,6 +110,25 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.isEnabled("gbuffer"));
     rc.disable("gbuffer");
     CHECK(!rc.isEnabled("gbufferAlbedo"));
+}
+
+TEST_CASE("renderControl.atmospherePassDependencies") {
+    RenderControl rc;
+    CHECK(rc.supports("atmosphere"));
+    CHECK(rc.supports("volumetricFog"));
+    rc.enable("fogTemporal");
+    rc.compile();
+    CHECK(rc.isEnabled("gbuffer"));
+    CHECK(rc.isEnabled("atmosphere"));
+    CHECK(rc.isEnabled("volumetricFog"));
+    CHECK(rc.hasPass("atmosphere"));
+    CHECK(rc.hasPass("fogMedia"));
+    CHECK(rc.hasPass("fogLighting"));
+    CHECK(rc.hasPass("fogTemporal"));
+    CHECK(rc.hasPass("fogIntegrate"));
+    CHECK(rc.hasPass("fogComposite"));
+    rc.disable("volumetricFog");
+    CHECK(!rc.isEnabled("fogTemporal"));
 }
 
 TEST_CASE("renderable3d.materialAndParts") {

@@ -8,6 +8,7 @@
 namespace eve::graphics {
 class Graphics;
 class Light3D;
+class Volumetric;
 }  // namespace eve::graphics
 
 namespace eve::daynight {
@@ -69,6 +70,23 @@ public:
     float getSunDirZ() const;
     /** @brief 0..1 sun energy; ramps to 0 below the horizon. */
     float getSunIntensity() const;
+    /** @brief Atmosphere-attenuated direct sunlight red channel, including intensity. */
+    float getSunR() const;
+    /** @brief Atmosphere-attenuated direct sunlight green channel, including intensity. */
+    float getSunG() const;
+    /** @brief Atmosphere-attenuated direct sunlight blue channel, including intensity. */
+    float getSunB() const;
+
+    // ---- atmosphere ----
+    /** @brief Set aerosol turbidity. 1.5 is very clear; 10 is hazy. */
+    void setTurbidity(float turbidity);
+    float getTurbidity() const;
+    /** @brief Exposure used when mapping physical sky radiance to the RGBA8 sky cubemap. */
+    void setSkyExposure(float exposure);
+    float getSkyExposure() const;
+    /** @brief Relative Mie aerosol density; controls horizon haze and solar halo. */
+    void setMieStrength(float strength);
+    float getMieStrength() const;
 
     // ---- sky / ambient (sampled by the scene) ----
     float getSkyR() const;
@@ -78,6 +96,27 @@ public:
     float getAmbientG() const;
     float getAmbientB() const;
     float getAmbientBrightness() const;
+
+    /**
+     * @brief Synchronize sun direction and atmosphere-derived fog lighting.
+     *
+     * This is the supported bridge between the day/night atmosphere and a
+     * graphics Volumetric instance. Density and height remain scene/weather
+     * controls; sky color, sun direction, exposure and animation time are
+     * supplied by this module.
+     * @param fog Target volumetric fog or cloud renderer; null is ignored.
+     */
+    void applyAtmosphere(graphics::Volumetric *fog) const;
+
+    // ---- weather coupling ----
+    /**
+     * @brief Apply cloud cover and lightning exposure to the unified sky/lighting model.
+     * @param cloudiness Cloud attenuation in [0,1].
+     * @param lightningFlash Transient lightning energy in [0,1].
+     */
+    void setWeatherInfluence(float cloudiness, float lightningFlash);
+    float getWeatherCloudiness() const;
+    float getWeatherFlash() const;
 
     // ---- skybox ----
     void setSkyboxEnabled(bool enabled);

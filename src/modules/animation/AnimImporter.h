@@ -19,7 +19,7 @@ class AnimClip;
 
 /**
  * @brief Import AnimSkeleton / AnimClip from an Assimp scene (FBX/glTF/etc),
- * or from compact `.eva` text fixtures derived from those assets.
+ * or from compact `*.anim.txt` fixtures derived from those assets.
  */
 class AnimImporter {
 public:
@@ -43,14 +43,15 @@ public:
      * @brief Serialize skeleton + clip to a compact text format (no mesh).
      * Used to ship Mixamo-derived test fixtures without redistributing skins.
      */
-    static std::string exportEva(const AnimSkeleton *skeleton, const AnimClip *clip);
+    static std::string exportAnimationFixtureText(const AnimSkeleton *skeleton, const AnimClip *clip);
 
-    /** @brief Load skeleton+clip from exportEva text (new'd; caller owns). */
-    static void importEva(const std::string &text, AnimSkeleton **skeletonOut, AnimClip **clipOut);
+    /** @brief Load skeleton+clip from fixture text (new'd; caller owns). */
+    static void importAnimationFixtureText(const std::string &text, AnimSkeleton **skeletonOut,
+                                           AnimClip **clipOut);
 
-    /** @brief Load from `.eva` file path. */
-    static void importEvaFile(const std::string &path, AnimSkeleton **skeletonOut,
-                              AnimClip **clipOut);
+    /** @brief Load from an `*.anim.txt` fixture path. */
+    static void importAnimationFixtureTextFile(const std::string &path, AnimSkeleton **skeletonOut,
+                                               AnimClip **clipOut);
 
 private:
     static void collectBones(const aiNode *node, int parent, AnimSkeleton *skeleton,

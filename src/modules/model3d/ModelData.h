@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common/Resource.h"
+#include "common/Result.h"
 
-#include "image/ImageData.h"
 #include "medialoader/model/ModelScene.h"
 
 #include <string>
@@ -12,7 +12,21 @@ struct aiScene;
 struct aiMaterial;
 
 namespace eve {
+namespace image {
+class ImageData;
+}
 namespace model3d {
+
+/** @brief Owning result of mapping a triangle-local surface point to one UV channel. */
+struct SurfaceUv {
+    float u = 0.f;
+    float v = 0.f;
+    float barycentricA = 0.f;
+    float barycentricB = 0.f;
+    float barycentricC = 0.f;
+    int triangleIndex = -1;
+    int uvChannel = 0;
+};
 
 /**
  * @brief CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene).
@@ -26,10 +40,51 @@ public:
     bool empty() const;
     int getMeshCount() const;
     int getMaterialCount() const;
+    /** @throws eve::Exception when meshIndex is out of range. */
     int getVertexCount(int meshIndex) const;
+    /** @throws eve::Exception when meshIndex is out of range. */
     int getFaceCount(int meshIndex) const;
+    /** @brief Source position component for one vertex (component 0=x, 1=y, 2=z). */
+    float getVertexPosition(int meshIndex, int vertexIndex, int component) const;
+    /** @brief Source vertex index for one triangle corner (corner 0..2). */
+    int getFaceVertexIndex(int meshIndex, int triangleIndex, int corner) const;
+    /** @throws eve::Exception when meshIndex is out of range. */
     bool hasNormals(int meshIndex) const;
+    /** @throws eve::Exception when meshIndex is out of range. */
     bool hasTexCoords(int meshIndex) const;
+    /** @brief Number of populated UV channels (0..AI_MAX_NUMBER_OF_TEXTURECOORDS). */
+    int getTexCoordChannelCount(int meshIndex) const;
+    /** @brief Whether a mesh has the requested UV channel. */
+    bool hasTexCoordChannel(int meshIndex, int channel) const;
+    /** @brief UV component in channel for vertex (component 0=u, 1=v, 2=w). */
+    float getTexCoord(int meshIndex, int channel, int vertexIndex, int component) const;
+    /**
+     * @brief Map a point on one source triangle to UV coordinates by barycentric interpolation.
+     * @param meshIndex Source mesh index.
+     * @param triangleIndex Source triangle index, matching a triangle-mesh collider built from this mesh.
+     * @param localX Point X in the model mesh's local coordinate space.
+     * @param localY Point Y in the model mesh's local coordinate space.
+     * @param localZ Point Z in the model mesh's local coordinate space.
+     * @param channel UV channel to sample.
+     * @return Owning UV/barycentric snapshot, or a structured failure for invalid or degenerate input.
+     * @thread Safe for concurrent calls while this ModelData is not hot-reloaded.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<SurfaceUv> mapSurfacePointToUv(
+        int meshIndex, int triangleIndex, float localX, float localY, float localZ,
+        int channel = 0) const;
+    /** @brief Whether imported tangent and bitangent streams exist. */
+    bool hasTangents(int meshIndex) const;
+    /** @brief Tangent XYZ component for a vertex. */
+    float getTangent(int meshIndex, int vertexIndex, int component) const;
+    /** @brief Bitangent XYZ component for a vertex. */
+    float getBitangent(int meshIndex, int vertexIndex, int component) const;
+    /** @brief Number of populated vertex-color channels. */
+    int getVertexColorChannelCount(int meshIndex) const;
+    /** @brief Whether a mesh has the requested vertex-color channel. */
+    bool hasVertexColorChannel(int meshIndex, int channel) const;
+    /** @brief RGBA component (0..3) in a vertex-color channel. */
+    float getVertexColor(int meshIndex, int channel, int vertexIndex, int component) const;
 
     // ---- material accessors ----
     /** @brief Assimp material slot referenced by a mesh; -1 when invalid. */
@@ -45,6 +100,9 @@ public:
     float getMaterialRoughnessFactor(int matIndex) const;
     float getMaterialOpacity(int matIndex) const;
     bool getMaterialTwoSided(int matIndex) const;
+    /** @brief glTF alpha mode normalized to "OPAQUE", "MASK", or "BLEND". */
+    std::string getMaterialAlphaMode(int matIndex) const;
+    float getMaterialAlphaCutoff(int matIndex) const;
 
     /**
      * @brief Texture type names (Squirrel strings): "base_color", "diffuse",
@@ -89,7 +147,11 @@ public:
     std::string getAnimationName(int animIndex) const;
 
     const aiScene *getScene() const;
+    /** @brief Raw Assimp mesh at meshIndex; returns nullptr when out of range. */
     const aiMesh *getMesh(int meshIndex) const;
+
+    /** @brief Replace this scene with `replacement`'s (cache reload). */
+    void adopt(eve::Resource &replacement) override;
 
 private:
     const aiMesh *meshAt(int meshIndex) const;

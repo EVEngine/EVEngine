@@ -62,6 +62,14 @@ struct EffectDefinition {
 class EffectRegistry {
 public:
     static void registerEffect(const EffectDefinition &def);
+    /**
+     * @brief Find a registered effect definition by id.
+     * @return Borrowed nullable definition owned by the process-local registry.
+     * @ownership EffectRegistry owns the definition; callers must not delete or mutate it.
+     * @lifetime Valid until remove(), clear(), or replacement of the same id; copy data before registry mutation.
+     * @thread Call on the RPG registry thread.
+     * @reentrancy The lookup does not invoke callbacks and is not valid across re-entrant registry mutation.
+     */
     static const EffectDefinition *find(const std::string &id);
     static bool remove(const std::string &id);
     static void clear();

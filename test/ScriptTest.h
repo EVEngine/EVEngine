@@ -20,7 +20,7 @@ using namespace eve;
 class ScriptTest {
 public:
   ScriptTest(const char* script)
-    : vm(2048, ssq::Libs::ALL), script(script) {
+    : script(script), vm(2048, ssq::Libs::ALL) {
     expose(vm);
     ssq::Script s = vm.compileSource(script);
     vm.run(s);

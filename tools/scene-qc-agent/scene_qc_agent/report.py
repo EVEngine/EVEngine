@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
-from typing import Any, List, Optional
+from typing import List, Optional
 
 SEVERITIES = ("critical", "high", "medium", "low")
 VERDICTS = ("PASS", "ESCALATE", "FAIL")

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "common/StateValue.h"
+#include "common/Time.h"
 
 #include <string>
 #include <unordered_map>
@@ -18,7 +20,7 @@ class AnimSkeleton;
 class AnimStateMachine {
 public:
     explicit AnimStateMachine(AnimSkeleton *skeleton);
-    ~AnimStateMachine() = default;
+    ~AnimStateMachine();
 
     AnimStateMachine(const AnimStateMachine &)            = delete;
     AnimStateMachine &operator=(const AnimStateMachine &) = delete;
@@ -52,12 +54,37 @@ public:
     bool getBool(const std::string &name) const;
     void setTrigger(const std::string &name);
     void resetTrigger(const std::string &name);
+    /** @brief Query a trigger's current state. */
+    bool getTrigger(const std::string& name) const {
+        auto it = triggers_.find(name);
+        return it != triggers_.end() && it->second;
+    }
 
     AnimPose *getPose();
     float getStateTime() const { return stateTime_; }
     bool isBlending() const { return blending_; }
 
+    /** @brief Advance state and pose using one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+
+    /** @brief Last scheduler tick consumed by the checked state-machine API. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+
+    /** @brief Legacy seconds facade retained for scripts and old callers. */
     void update(float dt);
+
+    /** @brief Serialize runtime state (params, current/next state, blend). */
+    bool captureState(StateValue& out) const;
+
+    /**
+     * @brief Restore runtime state captured by captureState().
+     * @return false when the captured current state is not defined here; the
+     *         reload session then falls back to resetToDefaults().
+     */
+    bool restoreState(const StateValue& in, std::string* err = nullptr);
+
+    /** @brief Clear params and re-seat the entry state (restore fallback). */
+    bool resetToDefaults();
 
 private:
     enum class CondKind { Float, Bool, Trigger };
@@ -90,6 +117,7 @@ private:
     static FloatOp parseFloatOp(const std::string &op);
     bool           conditionsMet(const Transition &tr) const;
     bool           tryTransition();
+    void           updateUnchecked(float dt);
 
     AnimSkeleton *skeleton_ = nullptr;
     AnimPose      pose_;
@@ -111,6 +139,8 @@ private:
     float       blendElapsed_  = 0.f;
     bool        blending_      = false;
     bool        started_       = false;
+    eve::SimulationTick lastTick_      = eve::SimulationTick::zero();
+    bool                hasLastTick_   = false;
 };
 
 }  // namespace eve::animation

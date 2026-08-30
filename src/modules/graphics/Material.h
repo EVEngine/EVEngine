@@ -1,7 +1,9 @@
 #pragma once
 
 #include "graphics/Mesh.h"
+#include "graphics/BlendMode.h"
 #include "graphics/Shader.h"
+#include "graphics/SurfaceMode.h"
 #include "graphics/Texture.h"
 
 #include <map>
@@ -104,6 +106,25 @@ public:
     /** @brief True when this material should go through the hair transparent pass. */
     bool isTransparentHair() const;
 
+    /** @brief Set "opaque", "masked", or "transparent" surface classification. */
+    void setSurfaceMode(const std::string &mode);
+    std::string getSurfaceMode() const;
+    SurfaceMode surfaceMode() const { return surfaceMode_; }
+    void setAlphaCutoff(float cutoff);
+    float getAlphaCutoff() const { return alphaCutoff_; }
+    /** @brief Set "alpha", "premultiplied", "additive", or "multiply". */
+    void setBlendMode(const std::string &mode);
+    std::string getBlendMode() const;
+    BlendMode blendMode() const { return blendMode_; }
+    void setDepthWrite(bool enabled) { depthWrite_ = enabled; }
+    bool getDepthWrite() const { return depthWrite_; }
+    void setDoubleSided(bool enabled) { doubleSided_ = enabled; }
+    bool getDoubleSided() const { return doubleSided_; }
+    void setSortPriority(int priority) { sortPriority_ = priority; }
+    int getSortPriority() const { return sortPriority_; }
+    /** @brief Optional masked transparency quality: "cutoff", "dither", "coverage". */
+    void setAlphaTechnique(const std::string &technique);
+    std::string getAlphaTechnique() const { return alphaTechnique_; }
 private:
     std::string shadingModel_ = "pbr";
     Texture *albedo_ = nullptr;
@@ -124,6 +145,13 @@ private:
     bool receiveShadow_ = true;
     bool castOcclusion_ = true;
     bool isHair_ = false;
+    SurfaceMode surfaceMode_ = SurfaceMode::Opaque;
+    BlendMode blendMode_ = BlendMode::Alpha;
+    float alphaCutoff_ = 0.5f;
+    bool depthWrite_ = false;
+    bool doubleSided_ = false;
+    int sortPriority_ = 0;
+    std::string alphaTechnique_ = "cutoff";
     std::map<std::string, float> params_;
 };
 

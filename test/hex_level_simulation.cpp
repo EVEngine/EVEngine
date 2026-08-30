@@ -40,18 +40,38 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "ProcgenGridTestSupport.h"
 #include "RenderImageAudit.h"
+#include "filesystem/Filesystem.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
 #include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
 #include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/ImageData.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/Inventory.h"
 #include "inventory/InventorySystem.h"
 #include "inventory/Item.h"
+#include "map/DualGrid.h"
 #include "map/FlowField.h"
 #include "map/Fov.h"
 #include "map/Map.h"
@@ -60,10 +80,9 @@
 #include "map/TileLayer.h"
 #include "map/TileOrientation.h"
 #include "map/TileSystem.h"
-#include "map/DualGrid.h"
 #include "particles/ParticleEmitter.h"
-#include "particles/Particles.h"
 #include "particles/ParticleSystem.h"
+#include "particles/Particles.h"
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Grid2D.h"
 #include "procgen/Params.h"
@@ -73,7 +92,6 @@
 #include "spatial/Spatial.h"
 #include "spatial/SpatialHash2D.h"
 #include "window/Window.h"
-#include "filesystem/Filesystem.h"
 
 #include <SDL2/SDL.h>
 #include <algorithm>
@@ -84,6 +102,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::map;
 using namespace eve::procgen;
@@ -188,7 +208,7 @@ HexDungeon buildHexDungeon(Map *mapMod, Procgen *gen, uint32_t seed, int w, int 
     gen->setPaletteGid("hex_test", "floor", kFloorGid);
     gen->setPaletteGid("hex_test", "corridor", kFloorGid);
     gen->setPaletteGid("hex_test", "door", kDoorGid);
-    REQUIRE(gen->applyToLayer(&d.grid, "hex_test", d.layer));
+    eve::test_support::applyGridToLayer(*gen, d.grid, "hex_test", *d.layer);
 
     for (int i = 0; i < d.grid.getObjectCount(); ++i) {
         const std::string t = d.grid.getObjectType(i);
@@ -313,7 +333,6 @@ void previewHex(Map *mapMod, TileLayer *layer, int spawnTx, int spawnTy, int exi
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings ws;
     ws.width = 960;
     ws.height = 540;
@@ -2273,7 +2292,7 @@ TEST_CASE("hex.level.26.drunkardCaveHex") {
     gen->setPaletteGid("hex_drunk", "floor", kFloorGid);
     gen->setPaletteGid("hex_drunk", "corridor", kFloorGid);
     gen->setPaletteGid("hex_drunk", "door", kDoorGid);
-    REQUIRE(gen->applyToLayer(&grid, "hex_drunk", layer));
+    eve::test_support::applyGridToLayer(*gen, grid, "hex_drunk", *layer);
 
     int floors = 0;
     for (uint32_t c : grid.cells())
@@ -2338,7 +2357,7 @@ TEST_CASE("hex.level.28.wfcDungeonHex") {
         gen->setPaletteGid("hex_wfc", "floor", kFloorGid);
         gen->setPaletteGid("hex_wfc", "corridor", kFloorGid);
         gen->setPaletteGid("hex_wfc", "door", kDoorGid);
-        REQUIRE(gen->applyToLayer(&grid, "hex_wfc", layer));
+        eve::test_support::applyGridToLayer(*gen, grid, "hex_wfc", *layer);
         Pathfinder *pf = mapMod->newPathfinder(layer);
         pf->blockGid(kWallGid);
         pf->setTopology("hex");

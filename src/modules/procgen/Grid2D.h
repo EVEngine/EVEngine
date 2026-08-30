@@ -1,13 +1,31 @@
 #pragma once
 
-#include "map/MapObject.h"
-
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace eve::procgen {
+
+/**
+ * @brief Named rectangle or asset placement emitted by a procedural generator.
+ *
+ * Coordinates and dimensions are expressed in tiles. The value owns all strings,
+ * has no external lifetime requirements, and may be copied between threads when
+ * the containing Grid2D is not being mutated concurrently.
+ */
+struct GridObject {
+    std::string name;
+    std::string type;
+    float x = 0.f;
+    float y = 0.f;
+    float width = 0.f;
+    float height = 0.f;
+    uint32_t gid = 0;
+    std::string asset;
+    float rotationDegrees = 0.f;
+    uint32_t placementFlags = 0;
+};
 
 /**
  * @brief Intermediate 2D generation result. `cells` store semantic ids (see Semantic.h),
@@ -34,12 +52,18 @@ public:
 
     void        setMeta(const std::string &key, const std::string &value);
     std::string getMeta(const std::string &key, const std::string &defaultValue) const;
+    /** @brief Return all metadata key/value pairs in deterministic map order. */
+    const std::unordered_map<std::string, std::string> &metadata() const { return meta_; }
 
     void clearObjects();
     /** @brief Script-friendly: name/type + tile coords. */
     void addObjectAt(const std::string &name, const std::string &type, float x, float y);
     void addObject(const std::string &name, const std::string &type, float x, float y, float width,
                    float height, int gid);
+    /** @brief Add a placed asset while preserving its semantic role, asset id and orientation. */
+    void addAssetObject(const std::string &name, const std::string &role,
+                        const std::string &asset, float x, float y, float width, float height,
+                        float rotationDegrees, int flags);
     int         getObjectCount() const;
     std::string getObjectName(int i) const;
     std::string getObjectType(int i) const;
@@ -48,12 +72,15 @@ public:
     float       getObjectWidth(int i) const;
     float       getObjectHeight(int i) const;
     int         getObjectGid(int i) const;
+    std::string getObjectAsset(int i) const;
+    float       getObjectRotation(int i) const;
+    int         getObjectFlags(int i) const;
 
     const std::vector<uint32_t>     &cells() const { return cells_; }
     std::vector<uint32_t>           &cells() { return cells_; }
     const std::vector<uint8_t>      &detail() const { return detail_; }
     std::vector<uint8_t>            &detail() { return detail_; }
-    const std::vector<map::MapObject> &objects() const { return objects_; }
+    const std::vector<GridObject> &objects() const { return objects_; }
 
 private:
     bool inBounds(int x, int y) const;
@@ -63,7 +90,7 @@ private:
     std::vector<uint32_t>                    cells_;
     std::vector<uint8_t>                     detail_;
     std::unordered_map<std::string, std::string> meta_;
-    std::vector<map::MapObject>              objects_;
+    std::vector<GridObject>                  objects_;
 };
 
 }  // namespace eve::procgen

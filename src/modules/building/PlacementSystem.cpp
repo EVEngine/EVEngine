@@ -26,39 +26,37 @@ int cardinalQuarter(float rotationDeg) {
 
 }  // namespace
 
+PlacementSystem &PlacementSystem::inst() {
+    static PlacementSystem instance;
+    return instance;
+}
+
 std::unordered_map<std::string, PlacementSystem::ValidateFn> &PlacementSystem::validateRules() {
-    static std::unordered_map<std::string, ValidateFn> m;
-    return m;
+    return inst().validateRules_;
 }
 
 std::unordered_map<std::string, PlacementSystem::SnapFn> &PlacementSystem::snapRules() {
-    static std::unordered_map<std::string, SnapFn> m;
-    return m;
+    return inst().snapRules_;
 }
 
 std::unordered_map<std::string, PlacementSystem::ChangeHook> &PlacementSystem::changeHooks() {
-    static std::unordered_map<std::string, ChangeHook> m;
-    return m;
+    return inst().changeHooks_;
 }
 
 std::unordered_map<std::string, PlacementSystem::SurfaceFn> &PlacementSystem::surfaces() {
-    static std::unordered_map<std::string, SurfaceFn> m;
-    return m;
+    return inst().surfaces_;
 }
 
 std::vector<BuildingChangeEvent> &PlacementSystem::eventQueue() {
-    static std::vector<BuildingChangeEvent> q;
-    return q;
+    return inst().eventQueue_;
 }
 
 int &PlacementSystem::instanceCounter() {
-    static int c = 0;
-    return c;
+    return inst().instanceCounter_;
 }
 
 bool &PlacementSystem::builtinsReady() {
-    static bool ready = false;
-    return ready;
+    return inst().builtinsReady_;
 }
 
 void PlacementSystem::registerValidateRule(const std::string &name, ValidateFn fn) {
@@ -132,8 +130,7 @@ void PlacementSystem::setPlaneSurfaceHeight(float h) { planeSurfaceHeight() = h;
 float PlacementSystem::getPlaneSurfaceHeight() { return planeSurfaceHeight(); }
 
 float &PlacementSystem::planeSurfaceHeight() {
-    static float h = 0.f;
-    return h;
+    return inst().planeSurfaceHeight_;
 }
 
 void PlacementSystem::ensureBuiltins() {
@@ -607,6 +604,48 @@ int PlacementSystem::placeGhost(PlacementWorld *world, Ghost *ghost) {
         it->second.elevation = ghost->getElevation();
     }
     return id;
+}
+
+PlacementRestoreStatus PlacementSystem::restoreExact(PlacementWorld *world,
+                                                      const PlacedBuilding &placed,
+                                                      std::string *reason) {
+    ensureBuiltins();
+    if (!world || placed.instanceId <= 0 || world->hasBuilding(placed.instanceId)) {
+        if (reason) *reason = "instance_id_conflict";
+        return PlacementRestoreStatus::Rejected;
+    }
+    const BuildingDefinition *def = BuildingRegistry::find(placed.buildingId);
+    if (!def) {
+        if (reason) *reason = "unknown_building";
+        return PlacementRestoreStatus::Rejected;
+    }
+    const float rotation = normalizeRotation(placed.buildingId, placed.rotationDeg);
+    if (!canPlaceElev(world, placed.buildingId, placed.originCellX, placed.originCellY,
+                      placed.elevation, rotation, 0, reason))
+        return PlacementRestoreStatus::Rejected;
+    PlacedBuilding restored = placed;
+    restored.rotationDeg = rotation;
+    restored.channel = def->channel;
+    if (restored.tags.empty()) restored.tags = def->tags;
+    writeOccupancy(*world, *def, restored, restored.instanceId);
+    world->buildings()[restored.instanceId] = restored;
+    world->instanceOrder_.push_back(restored.instanceId);
+    instanceCounter() = std::max(instanceCounter(), restored.instanceId);
+
+    BuildingChangeEvent event;
+    event.action = "place";
+    event.worldId = world->getId();
+    event.buildingId = restored.buildingId;
+    event.instanceId = restored.instanceId;
+    event.cellX = restored.originCellX;
+    event.cellY = restored.originCellY;
+    event.rotationDeg = restored.rotationDeg;
+    event.worldX = restored.worldX;
+    event.worldY = restored.worldY;
+    event.elevation = restored.elevation;
+    event.channel = restored.channel;
+    emit(std::move(event));
+    return PlacementRestoreStatus::Restored;
 }
 
 bool PlacementSystem::removeBuilding(PlacementWorld *world, int instanceId) {

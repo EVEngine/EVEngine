@@ -21,17 +21,17 @@ class AnimSkeleton;
  */
 class MotionDatabase {
 public:
-    explicit MotionDatabase(AnimSkeleton *skeleton);
+    explicit MotionDatabase(AnimSkeleton* skeleton);
     ~MotionDatabase() = default;
 
-    MotionDatabase(const MotionDatabase &)            = delete;
-    MotionDatabase &operator=(const MotionDatabase &) = delete;
+    MotionDatabase(const MotionDatabase&)            = delete;
+    MotionDatabase& operator=(const MotionDatabase&) = delete;
 
-    AnimSkeleton *getSkeleton() const { return skeleton_; }
+    AnimSkeleton* getSkeleton() const { return skeleton_; }
 
     /** @brief Include bone world position in pose features (by index). */
     void addFeatureBone(int boneIndex);
-    void addFeatureBoneByName(const std::string &name);
+    void addFeatureBoneByName(const std::string& name);
 
     /**
      * @brief Bone used for trajectory / velocity features (default 0).
@@ -39,9 +39,9 @@ public:
      */
     void setRootBone(int boneIndex);
     int  getRootBone() const { return rootBone_; }
-    void setRootBoneByName(const std::string &name);
+    void setRootBoneByName(const std::string& name);
 
-    void addClip(AnimClip *clip);
+    void addClip(AnimClip* clip);
     int  getClipCount() const { return static_cast<int>(clips_.size()); }
 
     /** @brief Bake all clips into searchable frames. Call after addClip / feature bones. */
@@ -51,15 +51,17 @@ public:
     int getFrameCount() const { return static_cast<int>(frames_.size()); }
     int getFeatureSize() const { return featureSize_; }
 
-    float getFrameTime(int frameIndex) const;
-    int   getFrameClipIndex(int frameIndex) const;
-    AnimClip *getClip(int clipIndex) const;
+    float     getFrameTime(int frameIndex) const;
+    int       getFrameClipIndex(int frameIndex) const;
+    AnimClip* getClip(int clipIndex) const;
 
     int getFeatureBoneCount() const { return static_cast<int>(featureBones_.size()); }
     int getFeatureBone(int index) const;
 
     /** @brief Copy feature vector into out[0..featureSize). */
-    void getFeature(int frameIndex, float *out, int outCount) const;
+    void getFeature(int frameIndex, float* out, int outCount) const;
+    /** @brief Normalize a query with statistics computed by bake(). */
+    void normalizeFeature(std::vector<float>& feature) const;
 
     struct Frame {
         int                clipIndex = 0;
@@ -70,24 +72,25 @@ public:
         float velX = 0.f, velZ = 0.f;
     };
 
-    const Frame &frameAt(int index) const;
+    const Frame& frameAt(int index) const;
 
 private:
-    void        requireBaked() const;
-    void        computeFeatureSize();
-    void        extractFeature(AnimClip *clip, float time, float dtSample, std::vector<float> &out,
-                               float &rootX, float &rootZ, float &rootYaw, float &velX,
-                               float &velZ) const;
+    void requireBaked() const;
+    void computeFeatureSize();
+    void extractFeature(AnimClip* clip, float time, float dtSample, std::vector<float>& out, float& rootX, float& rootZ,
+                        float& rootYaw, float& velX, float& velZ) const;
     static float yawFromQuat(float x, float y, float z, float w);
 
-    AnimSkeleton              *skeleton_ = nullptr;
-    std::vector<AnimClip *>    clips_;
-    std::vector<int>           featureBones_;
-    std::vector<Frame>         frames_;
-    int                        featureSize_ = 0;
-    int                        rootBone_    = 0;
-    bool                       baked_       = false;
-    mutable AnimPose           scratchPose_;
+    AnimSkeleton*          skeleton_ = nullptr;
+    std::vector<AnimClip*> clips_;
+    std::vector<int>       featureBones_;
+    std::vector<Frame>     frames_;
+    int                    featureSize_ = 0;
+    int                    rootBone_    = 0;
+    bool                   baked_       = false;
+    std::vector<float>     featureMean_;
+    std::vector<float>     featureInvStd_;
+    mutable AnimPose       scratchPose_;
 };
 
 }  // namespace eve::animation

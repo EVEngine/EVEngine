@@ -1,11 +1,31 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "data/ByteData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "virtualgeometry/VirtualGeometry.h"
 #include "virtualgeometry/VirtualGeometryRenderer.h"
-#include "graphics/Graphics.h"
 #include "window/Window.h"
-#include "data/ByteData.h"
 
 #include <cmath>
 #include <string>
@@ -15,16 +35,12 @@ using namespace eve::virtualgeometry;
 
 namespace {
 
-bool tryInitGpuWindow() {
-    auto *win = eve::window::Window::create();
+/** GPU cluster building only needs a live graphics device; headless init is enough. */
+bool tryInitHeadlessGfx() {
     auto *gfx = eve::graphics::Graphics::create();
-    if (!win || !gfx) return false;
-    win->setGraphics(gfx);
-    eve::window::WindowSettings s;
-    s.width = 320;
-    s.height = 240;
-    s.centered = true;
-    return win->setWindowSettings(s);
+    if (!gfx) return false;
+    gfx->initHeadless(320, 240);
+    return true;
 }
 
 }  // namespace
@@ -36,7 +52,7 @@ TEST_CASE("virtualgeometry.module.create") {
 }
 
 TEST_CASE("virtualgeometry.gpu.buildIcosphere") {
-    if (!tryInitGpuWindow()) return;  // headless: skip
+    if (!tryInitHeadlessGfx()) return;
 
     auto *mod = VirtualGeometry::create();
     if (!mod->isAvailable()) return;
@@ -55,7 +71,7 @@ TEST_CASE("virtualgeometry.gpu.buildIcosphere") {
 }
 
 TEST_CASE("virtualgeometry.gpu.cullRasterResolve") {
-    if (!tryInitGpuWindow()) return;  // headless: skip
+    if (!tryInitHeadlessGfx()) return;
 
     auto *mod = VirtualGeometry::create();
     if (!mod->isAvailable()) return;
@@ -98,7 +114,7 @@ TEST_CASE("virtualgeometry.gpu.cullRasterResolve") {
 // transitions are smooth: fine detail up close, coarse detail far away, with a
 // continuous, hole-free cover the whole time.
 TEST_CASE("virtualgeometry.gpu.lodTransitionSweep") {
-    if (!tryInitGpuWindow()) return;  // headless: skip
+    if (!tryInitHeadlessGfx()) return;
 
     auto *mod = VirtualGeometry::create();
     if (!mod->isAvailable()) return;

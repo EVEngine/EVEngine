@@ -2,6 +2,8 @@
 #include "Audio.h"
 
 #include "common/Exception.h"
+#include "sound/Decoder.h"
+#include "sound/SoundData.h"
 
 #include <algorithm>
 #include <cstring>
@@ -326,7 +328,6 @@ void Source::pump() {
             chunk = std::move(pending.front());
             pending.pop();
         }
-        ALuint b = streamBuffers[i];
         // Find a buffer not currently queued — for initial, buffers 0..n unused
         // Use streamBuffers[queued] style
         ALuint buf = streamBuffers[queued];

@@ -1,11 +1,104 @@
 #include "graphics/Mesh.h"
 
+#include <assimp/mesh.h>
+
 #include "graphics/Graphics.h"
 
 #include <algorithm>
 #include <cmath>
 
 namespace eve::graphics {
+
+namespace {
+const std::vector<float> kEmptyAttribute;
+}
+
+void Mesh::captureImportedAttributes(const ::aiMesh &mesh) {
+    importedUvs_.clear();
+    for (unsigned channel = 0; channel < mesh.GetNumUVChannels(); ++channel) {
+        if (!mesh.HasTextureCoords(channel)) continue;
+        std::vector<float> values;
+        values.reserve(size_t(mesh.mNumVertices) * 2u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            values.push_back(mesh.mTextureCoords[channel][i].x);
+            values.push_back(mesh.mTextureCoords[channel][i].y);
+        }
+        importedUvs_.push_back(std::move(values));
+    }
+    importedColors_.clear();
+    for (unsigned channel = 0; channel < mesh.GetNumColorChannels(); ++channel) {
+        if (!mesh.HasVertexColors(channel)) continue;
+        std::vector<float> values;
+        values.reserve(size_t(mesh.mNumVertices) * 4u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            const aiColor4D &c = mesh.mColors[channel][i];
+            values.insert(values.end(), {c.r, c.g, c.b, c.a});
+        }
+        importedColors_.push_back(std::move(values));
+    }
+    importedTangents_.clear();
+    importedBitangents_.clear();
+    if (mesh.HasTangentsAndBitangents()) {
+        importedTangents_.reserve(size_t(mesh.mNumVertices) * 3u);
+        importedBitangents_.reserve(size_t(mesh.mNumVertices) * 3u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            const aiVector3D &t = mesh.mTangents[i];
+            const aiVector3D &b = mesh.mBitangents[i];
+            importedTangents_.insert(importedTangents_.end(), {t.x, t.y, t.z});
+            importedBitangents_.insert(importedBitangents_.end(), {b.x, b.y, b.z});
+        }
+    }
+}
+
+const std::vector<float> &Mesh::importedUv(int channel) const {
+    return channel >= 0 && static_cast<size_t>(channel) < importedUvs_.size()
+               ? importedUvs_[static_cast<size_t>(channel)]
+               : kEmptyAttribute;
+}
+
+const std::vector<float> &Mesh::importedColor(int channel) const {
+    return channel >= 0 && static_cast<size_t>(channel) < importedColors_.size()
+               ? importedColors_[static_cast<size_t>(channel)]
+               : kEmptyAttribute;
+}
+
+bool Mesh::setSkinPalette(const float *matrices, int matrixCount) {
+    if (!matrices || matrixCount <= 0 || matrixCount > kMaxSkinBones) return false;
+    skinPalette_.assign(matrices, matrices + static_cast<size_t>(matrixCount) * 16u);
+    return true;
+}
+
+void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
+    boundsCx     = 0.f;
+    boundsCy     = 0.f;
+    boundsCz     = 0.f;
+    boundsRadius = 0.f;
+    if (!posXYZ || vertexCount <= 0) return;
+
+    const size_t n = size_t(vertexCount);
+    glm::vec3    c(0.f);
+    for (size_t i = 0; i < n; ++i) {
+        c.x += posXYZ[i * 3u + 0u];
+        c.y += posXYZ[i * 3u + 1u];
+        c.z += posXYZ[i * 3u + 2u];
+    }
+    c /= float(n);
+    boundsCx = c.x;
+    boundsCy = c.y;
+    boundsCz = c.z;
+
+    float r = 0.f;
+    for (size_t i = 0; i < n; ++i) {
+        const float dx = posXYZ[i * 3u + 0u] - c.x;
+        const float dy = posXYZ[i * 3u + 1u] - c.y;
+        const float dz = posXYZ[i * 3u + 2u] - c.z;
+        const float d  = std::sqrt(dx * dx + dy * dy + dz * dz);
+        if (d > r) r = d;
+    }
+    // Degenerate (single-point) meshes still get a tiny non-zero sphere so
+    // hasBounds() stays meaningful and the culler never drops point geometry.
+    boundsRadius = r > 0.f ? r : 1e-4f;
+}
 
 void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
     if (!gfx || !getCastOcclusion()) return;
@@ -68,7 +161,10 @@ bool Mesh::addMorphTargetAbsolute(const std::string &name, const float *absPosXY
     return true;
 }
 
-int Mesh::getVertexCount() const { return int(basePos_.size() / 3); }
+int Mesh::getVertexCount() const {
+    if (!basePos_.empty()) return int(basePos_.size() / 3);
+    return gpuVertexCount;
+}
 
 int Mesh::getMorphCount() const { return int(morphs_.size()); }
 

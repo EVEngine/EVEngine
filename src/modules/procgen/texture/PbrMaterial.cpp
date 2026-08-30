@@ -2,10 +2,25 @@
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 
+#include "image/ImageData.h"
+
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 namespace eve::procgen {
+
+PbrTextureSet::~PbrTextureSet() { destroy(); }
+
+void PbrTextureSet::destroy() {
+    delete albedo;
+    delete normal;
+    delete roughness;
+    delete metallic;
+    delete height;
+    delete ao;
+    albedo = normal = roughness = metallic = height = ao = nullptr;
+}
 
 PbrRecipeRegistry &PbrRecipeRegistry::instance() {
     static PbrRecipeRegistry reg;
@@ -13,21 +28,41 @@ PbrRecipeRegistry &PbrRecipeRegistry::instance() {
 }
 
 void PbrRecipeRegistry::registerPbrRecipe(const std::string &id, PbrRecipeFn fn) {
-    recipes_[id] = std::move(fn);
+    RecipeDescriptor descriptor;
+    descriptor.id = id;
+    descriptor.displayName = id;
+    registerPbrRecipe(std::move(descriptor), std::move(fn));
+}
+
+void PbrRecipeRegistry::registerPbrRecipe(RecipeDescriptor descriptor, PbrRecipeFn fn) {
+    const std::string id = descriptor.id;
+    recipes_[id] = Entry{std::move(fn), std::move(descriptor)};
 }
 
 bool PbrRecipeRegistry::has(const std::string &id) const {
     return recipes_.find(id) != recipes_.end();
 }
 
-PbrTextureSet *PbrRecipeRegistry::generate(const std::string &id, const Params &params,
-                                           std::string &error) const {
+std::unique_ptr<PbrTextureSet> PbrRecipeRegistry::generate(const std::string &id, const Params &params,
+                                                           std::string &error) const {
     auto it = recipes_.find(id);
     if (it == recipes_.end()) {
         error = "unknown pbr recipe: " + id;
-        return nullptr;
+        return {};
     }
-    return it->second(params, error);
+    return it->second.fn(params, error);
+}
+
+const RecipeDescriptor *PbrRecipeRegistry::descriptor(const std::string &id) const {
+    const auto it = recipes_.find(id);
+    return it == recipes_.end() ? nullptr : &it->second.descriptor;
+}
+
+bool PbrRecipeRegistry::applyDefaults(const std::string &id, Params &params) const {
+    const RecipeDescriptor *schema = descriptor(id);
+    if (!schema) return false;
+    schema->applyDefaults(params);
+    return true;
 }
 
 std::vector<std::string> PbrRecipeRegistry::list() const {
@@ -42,15 +77,24 @@ void PbrRecipeRegistry::registerPbrBuiltins() {
     if (builtinsRegistered_) return;
     for (const TextureRecipeDef &def : builtinTextureDefs()) {
         const std::string id = "pbr." + def.id.substr(def.id.find('.') + 1);
-        registerPbrRecipe(id, [def](const Params &params, std::string &error) {
+        RecipeDescriptor descriptor = makeTextureRecipeDescriptor(def);
+        descriptor.id = id;
+        descriptor.category = "Material";
+        descriptor.params.push_back(ParamDescriptor::floating("roughnessLow", "Low Roughness", def.pbr.roughnessLow, 0.f, 1.f, 0.01f));
+        descriptor.params.push_back(ParamDescriptor::floating("roughnessHigh", "High Roughness", def.pbr.roughnessHigh, 0.f, 1.f, 0.01f));
+        descriptor.params.push_back(ParamDescriptor::floating("metallic", "Metallic", def.pbr.metallic, 0.f, 1.f, 0.01f));
+        descriptor.params.push_back(ParamDescriptor::floating("normalStrength", "Normal Strength", def.pbr.normalStrength, 0.01f, 32.f, 0.05f));
+        descriptor.params.push_back(ParamDescriptor::floating("aoStrength", "AO Strength", def.pbr.aoStrength, 0.f, 5.f, 0.05f));
+        descriptor.params.push_back(ParamDescriptor::floating("heightStrength", "Height Strength", def.pbr.heightStrength, 0.f, 16.f, 0.05f));
+        registerPbrRecipe(std::move(descriptor), [def](const Params &params, std::string &error) {
             return generatePbrSet(def, params, error);
         });
     }
     builtinsRegistered_ = true;
 }
 
-image::ImageData *grayscaleImage(const std::vector<float> &values, int w, int h) {
-    auto *img    = new image::ImageData(w, h, "RGBA8");
+std::unique_ptr<image::ImageData> grayscaleImage(const std::vector<float> &values, int w, int h) {
+    auto  img    = std::make_unique<image::ImageData>(w, h, "RGBA8");
     auto *pixels = static_cast<uint8_t *>(img->getData());
     for (int i = 0; i < w * h && i < int(values.size()); ++i) {
         const uint8_t v = uint8_t(std::lround(std::clamp(values[size_t(i)], 0.f, 1.f) * 255.f));
@@ -61,12 +105,11 @@ image::ImageData *grayscaleImage(const std::vector<float> &values, int w, int h)
     return img;
 }
 
-PbrTextureSet *generatePbrSet(const TextureRecipeDef &def, const Params &params,
-                              std::string &error) {
+std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
-        return nullptr;
+        return {};
     }
 
     // Recipe defaults, then per-call overrides.
@@ -83,10 +126,10 @@ PbrTextureSet *generatePbrSet(const TextureRecipeDef &def, const Params &params,
     const int w = ctx.width;
     const int h = ctx.height;
 
-    auto *set = new PbrTextureSet();
+    auto set    = std::make_unique<PbrTextureSet>();
     set->albedo = new image::ImageData(w, h, "RGBA8");
     paintHeightToImage(*set->albedo, height, w, h, def.albedo, ctx.colors, ctx.pixelSize);
-    set->normal = heightToNormalImage(height, w, h, pbr.normalStrength, ctx.seamless);
+    set->normal = heightToNormalImage(height, w, h, pbr.normalStrength, ctx.seamless).release();
 
     std::vector<float> rough(size_t(w * h));
     std::vector<float> heightMap(size_t(w * h));
@@ -120,10 +163,10 @@ PbrTextureSet *generatePbrSet(const TextureRecipeDef &def, const Params &params,
             ao[i] = std::clamp(1.f - pbr.aoStrength * std::max(0.f, local - hh), 0.f, 1.f);
         }
     }
-    set->roughness = grayscaleImage(rough, w, h);
-    set->metallic  = grayscaleImage(std::vector<float>(size_t(w * h), pbr.metallic), w, h);
-    set->height    = grayscaleImage(heightMap, w, h);
-    set->ao        = grayscaleImage(ao, w, h);
+    set->roughness = grayscaleImage(rough, w, h).release();
+    set->metallic  = grayscaleImage(std::vector<float>(size_t(w * h), pbr.metallic), w, h).release();
+    set->height    = grayscaleImage(heightMap, w, h).release();
+    set->ao        = grayscaleImage(ao, w, h).release();
     return set;
 }
 

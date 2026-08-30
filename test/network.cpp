@@ -1,60 +1,121 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "event/Event.h"
-#include "network/Network.h"
-#include "network/TcpSocket.h"
-#include "network/UdpSocket.h"
-#include "network/HttpRequest.h"
-#include "network/Channel.h"
-#include "network/Session.h"
-#include "network/NetStream.h"
-#include "network/UdpLink.h"
-#include "network/NetRpc.h"
-#include "network/NetHost.h"
 #include "data/ByteData.h"
+#include "network/Channel.h"
+#include "network/HttpRequest.h"
+#include "network/NetHost.h"
+#include "network/NetRpc.h"
+#include "network/NetStream.h"
+#include "network/NetWorker.h"
+#include "network/Network.h"
+#include "network/Session.h"
+#include "network/TcpSocket.h"
+#include "network/UdpLink.h"
+#include "network/UdpSocket.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <thread>
 #include <chrono>
+#include <atomic>
 #include <cstring>
 #include <string>
 
-using eve::event::Event;
-using eve::event::Message;
-using eve::event::Variant;
+using eve::platform_event::Message;
+using eve::platform_event::PlatformEvent;
+using eve::platform_event::Variant;
 
 TEST_CASE("event.VariantMessage") {
-    auto* ev = eve::event::Event::create();
+    auto*                ev = eve::platform_event::PlatformEvent::create();
     std::vector<Variant> args;
     args.push_back(Variant::makeInt(200));
     args.push_back(Variant::makeString("ok"));
     args.push_back(Variant::makePtr(nullptr));
-    ev->push(new Message("httpresp", args));
-    Message* m = ev->poll();
-    REQUIRE(m != nullptr);
+    ev->push(std::make_unique<Message>("httpresp", args));
+    auto m = ev->pollOwned();
+    REQUIRE(m.get() != nullptr);
     CHECK(m->name == "httpresp");
     REQUIRE(m->args.size() == 3);
     CHECK(static_cast<int>(m->args[0].type) == static_cast<int>(Variant::Type::Int));
     CHECK(m->args[0].i == 200);
     CHECK(m->args[1].s == "ok");
-    delete m;
 }
 
 TEST_CASE("network.NetWorkerQueue") {
-    auto* net = eve::network::Network::create();
+    eve::network::NetWorker worker(nullptr);
     eve::network::NetCompletion c;
     c.type   = eve::network::NetEvType::Err;
     c.reason = "timeout";
-    net->post(std::move(c));
+    worker.post(std::move(c));
     std::vector<eve::network::NetCompletion> out;
-    net->drainForTest(out);
+    worker.drain(out);
     REQUIRE(out.size() == 1);
     CHECK(out[0].reason == "timeout");
 }
 
+TEST_CASE("network.NetWorker.stopFromJobDoesNotDeadlock") {
+    eve::network::NetWorker worker(nullptr);
+    std::atomic<bool> stopped{false};
+    worker.start();
+    worker.submit([&] {
+        worker.stop();
+        stopped = true;
+    });
+    for (int i = 0; i < 200 && !stopped; ++i)
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    CHECK(stopped.load());
+    worker.stop();
+}
+
+TEST_CASE("network.Channel.fragmentedAndCoalescedFrames") {
+    auto* net = eve::network::Network::create();
+    auto*                   ev  = eve::platform_event::PlatformEvent::create();
+    eve::network::TcpSocket socket(net);
+    eve::network::Channel channel(&socket);
+
+    channel.feed({0, 0});
+    channel.feed({0, 2, 'a'});
+    CHECK(!ev->pollOwned());
+    channel.feed({'b', 0, 0, 0, 1, 'c'});
+
+    auto first = ev->pollOwned();
+    auto second = ev->pollOwned();
+    REQUIRE(static_cast<bool>(first));
+    REQUIRE(static_cast<bool>(second));
+    CHECK(first->name == "chmsg");
+    CHECK(second->name == "chmsg");
+    REQUIRE(first->args.size() == 2);
+    REQUIRE(second->args.size() == 2);
+    auto* firstData = static_cast<eve::data::ByteData*>(first->args[1].p);
+    auto* secondData = static_cast<eve::data::ByteData*>(second->args[1].p);
+    REQUIRE(firstData != nullptr);
+    REQUIRE(secondData != nullptr);
+    CHECK(firstData->getSize() == 2);
+    CHECK(secondData->getSize() == 1);
+}
+
+TEST_CASE("network.Channel.rejectsOversizedFrameHeader") {
+    auto* net = eve::network::Network::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
+    while (ev->pollOwned()) {}
+    eve::network::TcpSocket socket(net);
+    eve::network::Channel channel(&socket);
+    channel.feed({0x01, 0x00, 0x00, 0x01});
+    net->pump();
+
+    bool sawClose = false;
+    bool sawError = false;
+    while (auto message = ev->pollOwned()) {
+        if (message->name == "chclose") sawClose = true;
+        if (message->name == "neterr") sawError = true;
+    }
+    CHECK(sawClose);
+    CHECK(sawError);
+}
+
 TEST_CASE("network.TcpEcho") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     REQUIRE(net != nullptr);
     REQUIRE(ev != nullptr);
 
@@ -69,11 +130,10 @@ TEST_CASE("network.TcpEcho") {
     eve::network::TcpSocket* peer = nullptr;
     for (int i = 0; i < 400 && (!clientOk || !peer); ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "netconn" && m->args.size() >= 2 && m->args[1].s == "ok") {
                 if (m->args[0].p == client) clientOk = true;
             }
-            delete m;
         }
         if (!peer) peer = server->accept();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -87,14 +147,12 @@ TEST_CASE("network.TcpEcho") {
     bool got = false;
     for (int i = 0; i < 400 && !got; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "netdata") {
                 got = true;
-                if (m->args.size() >= 2 && m->args[1].p) {
-                    delete static_cast<eve::data::ByteData*>(m->args[1].p);
-                }
+                REQUIRE(m->args.size() >= 2);
+                CHECK(m->args[1].ownsPointer());
             }
-            delete m;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -110,7 +168,7 @@ TEST_CASE("network.TcpEcho") {
 
 TEST_CASE("network.UdpSendTo") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto* ev  = eve::platform_event::PlatformEvent::create();
     auto* a = net->newUdp();
     auto* b = net->newUdp();
     REQUIRE(a->bind(39301));
@@ -121,13 +179,12 @@ TEST_CASE("network.UdpSendTo") {
     bool got = false;
     for (int i = 0; i < 400 && !got; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "netdata" && m->args.size() >= 1 && m->args[0].p == b) {
                 got = true;
-                if (m->args.size() >= 2 && m->args[1].p)
-                    delete static_cast<eve::data::ByteData*>(m->args[1].p);
+                REQUIRE(m->args.size() >= 2);
+                CHECK(m->args[1].ownsPointer());
             }
-            delete m;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -140,7 +197,7 @@ TEST_CASE("network.UdpSendTo") {
 
 TEST_CASE("network.HttpGetLocal") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto*          ev     = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39311;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -151,7 +208,7 @@ TEST_CASE("network.HttpGetLocal") {
     eve::network::TcpSocket* peer = nullptr;
     for (int i = 0; i < 400 && !peer; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) { delete m; }
+        while (ev->pollOwned()) {}
         peer = server->accept();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -166,14 +223,13 @@ TEST_CASE("network.HttpGetLocal") {
     int status = 0;
     for (int i = 0; i < 400 && !got; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "httpresp" && m->args.size() >= 2) {
                 got = true;
                 status = static_cast<int>(m->args[1].i);
-                if (m->args.size() >= 3 && m->args[2].p)
-                    delete static_cast<eve::data::ByteData*>(m->args[2].p);
+                REQUIRE(m->args.size() >= 3);
+                CHECK(m->args[2].ownsPointer());
             }
-            delete m;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -189,7 +245,7 @@ TEST_CASE("network.HttpGetLocal") {
 
 TEST_CASE("network.ChannelFrames") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto*          ev     = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39321;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -199,7 +255,7 @@ TEST_CASE("network.ChannelFrames") {
     eve::network::TcpSocket* peer = nullptr;
     for (int i = 0; i < 400 && !peer; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) { delete m; }
+        while (ev->pollOwned()) {}
         peer = server->accept();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -213,15 +269,14 @@ TEST_CASE("network.ChannelFrames") {
     int msgs = 0;
     for (int i = 0; i < 400 && msgs < 2; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "chmsg") {
                 ++msgs;
-                if (m->args.size() >= 2 && m->args[1].p)
-                    delete static_cast<eve::data::ByteData*>(m->args[1].p);
+                REQUIRE(m->args.size() >= 2);
+                CHECK(m->args[1].ownsPointer());
             }
             if (m->name == "netdata" && m->args.size() >= 2 && m->args[1].p)
-                delete static_cast<eve::data::ByteData*>(m->args[1].p);
-            delete m;
+                CHECK(m->args[1].ownsPointer());
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -250,9 +305,29 @@ TEST_CASE("network.Network.timeoutAndVerifySsl") {
     CHECK(net->getVerifySsl() == false);
 }
 
+TEST_CASE("network.Network.cppFactoriesReturnOwners") {
+    auto* net = eve::network::Network::create();
+    auto tcp = net->makeTcp();
+    auto udp = net->makeUdp();
+    auto request = net->makeHttp("GET", "http://127.0.0.1/");
+    auto session = net->makeSession();
+    auto writer = net->makeWriter();
+    auto reader = net->makeReader("bytes");
+    REQUIRE(static_cast<bool>(tcp));
+    REQUIRE(static_cast<bool>(udp));
+    REQUIRE(static_cast<bool>(request));
+    REQUIRE(static_cast<bool>(session));
+    REQUIRE(static_cast<bool>(writer));
+    REQUIRE(static_cast<bool>(reader));
+    CHECK(!net->makeChannel(nullptr));
+    CHECK(!net->makeUdpLink(nullptr));
+    CHECK(!net->makeRpc(nullptr));
+    REQUIRE(static_cast<bool>(net->makeHost()));
+}
+
 TEST_CASE("network.Tcp.connectedAndLocalPort") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto*          ev     = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39291;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -266,11 +341,10 @@ TEST_CASE("network.Tcp.connectedAndLocalPort") {
     eve::network::TcpSocket* peer = nullptr;
     for (int i = 0; i < 400 && (!clientOk || !peer); ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "netconn" && m->args.size() >= 2 && m->args[1].s == "ok") {
                 if (m->args[0].p == client) clientOk = true;
             }
-            delete m;
         }
         if (!peer) peer = server->accept();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -292,7 +366,7 @@ TEST_CASE("network.Tcp.connectedAndLocalPort") {
 
 TEST_CASE("network.Session.addGetRemoveCloseAll") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto*          ev     = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39331;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -302,7 +376,7 @@ TEST_CASE("network.Session.addGetRemoveCloseAll") {
     eve::network::TcpSocket* peer = nullptr;
     for (int i = 0; i < 400 && !peer; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) { delete m; }
+        while (ev->pollOwned()) {}
         peer = server->accept();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -335,7 +409,7 @@ TEST_CASE("network.Session.addGetRemoveCloseAll") {
 
 TEST_CASE("network.Http.setHeaderAndBody") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto*          ev     = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39341;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -349,7 +423,7 @@ TEST_CASE("network.Http.setHeaderAndBody") {
     eve::network::TcpSocket* peer = nullptr;
     for (int i = 0; i < 400 && !peer; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) { delete m; }
+        while (ev->pollOwned()) {}
         peer = server->accept();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -357,13 +431,11 @@ TEST_CASE("network.Http.setHeaderAndBody") {
 
     for (int i = 0; i < 400 && received.find("\r\n\r\n") == std::string::npos; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "netdata" && m->args.size() >= 2 && m->args[0].p == peer && m->args[1].p) {
                 auto* data = static_cast<eve::data::ByteData*>(m->args[1].p);
                 received.append(static_cast<char*>(data->getData()), data->getSize());
-                delete data;
             }
-            delete m;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -378,13 +450,12 @@ TEST_CASE("network.Http.setHeaderAndBody") {
     bool got = false;
     for (int i = 0; i < 400 && !got; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "httpresp") {
                 got = true;
-                if (m->args.size() >= 3 && m->args[2].p)
-                    delete static_cast<eve::data::ByteData*>(m->args[2].p);
+                REQUIRE(m->args.size() >= 3);
+                CHECK(m->args[2].ownsPointer());
             }
-            delete m;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -406,15 +477,14 @@ TEST_CASE("network.Http.httpsReturnsTlsWithoutSslBackend") {
     http->setVerifySsl(true);  // request-level override is stored / resolved in submit()
     REQUIRE(http->submit());
 
-    auto* ev = eve::event::Event::create();
+    auto* ev = eve::platform_event::PlatformEvent::create();
     REQUIRE(ev != nullptr);
     bool gotTls = false;
     for (int i = 0; i < 200 && !gotTls; ++i) {
         net->pump();
-        while (auto* msg = ev->poll()) {
+        while (auto msg = ev->pollOwned()) {
             if (msg->name == "neterr" && msg->args.size() >= 2 && msg->args[1].s == "tls")
                 gotTls = true;
-            delete msg;
         }
         if (!gotTls)
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -439,7 +509,7 @@ TEST_CASE("network.NetWriterReaderRoundtrip") {
     w.writeBool(false);
     w.writeString("hello");
     w.writeString(std::string("a\0b", 3));
-    const char raw[] = {0x00, 0x01, (char)0xFE, (char)0xFF};
+    const char raw[] = {0x00, 0x01, '\xFE', '\xFF'};
     w.writeBytes(raw, sizeof(raw));
 
     REQUIRE(w.size() > 0);
@@ -463,8 +533,8 @@ TEST_CASE("network.NetWriterReaderRoundtrip") {
     REQUIRE(b.size() == sizeof(raw));
     CHECK(b[0] == 0x00);
     CHECK(b[1] == 0x01);
-    CHECK(b[2] == (char)0xFE);
-    CHECK(b[3] == (char)0xFF);
+    CHECK(b[2] == '\xFE');
+    CHECK(b[3] == '\xFF');
     CHECK(r.remaining() == 0);
     CHECK(r.ok());
     CHECK(r.pos() == w.size());
@@ -495,7 +565,7 @@ TEST_CASE("network.NetReaderOverrunIsSticky") {
 
 TEST_CASE("network.TcpLargeSendFlushesFully") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto*          ev     = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39351;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -506,11 +576,10 @@ TEST_CASE("network.TcpLargeSendFlushesFully") {
     eve::network::TcpSocket* peer = nullptr;
     for (int i = 0; i < 400 && (!clientOk || !peer); ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "netconn" && m->args.size() >= 2 && m->args[1].s == "ok") {
                 if (m->args[0].p == client) clientOk = true;
             }
-            delete m;
         }
         if (!peer) peer = server->accept();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -529,7 +598,7 @@ TEST_CASE("network.TcpLargeSendFlushesFully") {
         for (int stall = 0; stall < 2000; ++stall) {
             if (client->pendingSendBytes() <= 128 * 1024) break;
             net->pump();
-            while (auto* m = ev->poll()) {
+            while (auto m = ev->pollOwned()) {
                 if (m->name == "netdata" && m->args.size() >= 2 && m->args[0].p == peer &&
                     m->args[1].p) {
                     auto* d = static_cast<eve::data::ByteData*>(m->args[1].p);
@@ -538,9 +607,7 @@ TEST_CASE("network.TcpLargeSendFlushesFully") {
                         if (p[j] != payload[got + j]) mismatch = true;
                     }
                     got += d->getSize();
-                    delete d;
                 }
-                delete m;
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
         }
@@ -550,7 +617,7 @@ TEST_CASE("network.TcpLargeSendFlushesFully") {
 
     for (int i = 0; i < 2000 && got < total && !mismatch; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "netdata" && m->args.size() >= 2 && m->args[0].p == peer &&
                 m->args[1].p) {
                 auto* d = static_cast<eve::data::ByteData*>(m->args[1].p);
@@ -559,9 +626,7 @@ TEST_CASE("network.TcpLargeSendFlushesFully") {
                     if (p[j] != payload[got + j]) mismatch = true;
                 }
                 got += d->getSize();
-                delete d;
             }
-            delete m;
         }
         if (got < total) std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -579,7 +644,7 @@ TEST_CASE("network.TcpLargeSendFlushesFully") {
 
 TEST_CASE("network.ChannelLargeMessageReassembles") {
     auto* net = eve::network::Network::create();
-    auto* ev  = eve::event::Event::create();
+    auto*          ev     = eve::platform_event::PlatformEvent::create();
     const uint16_t port = 39361;
     auto* server = net->newTcp();
     REQUIRE(server->listen(port));
@@ -589,7 +654,7 @@ TEST_CASE("network.ChannelLargeMessageReassembles") {
     eve::network::TcpSocket* peer = nullptr;
     for (int i = 0; i < 400 && !peer; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) { delete m; }
+        while (ev->pollOwned()) {}
         peer = server->accept();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -606,13 +671,11 @@ TEST_CASE("network.ChannelLargeMessageReassembles") {
     std::string got;
     for (int i = 0; i < 4000 && got.size() < bigSize; ++i) {
         net->pump();
-        while (auto* m = ev->poll()) {
+        while (auto m = ev->pollOwned()) {
             if (m->name == "chmsg" && m->args.size() >= 2 && m->args[1].p) {
                 auto* d = static_cast<eve::data::ByteData*>(m->args[1].p);
                 got.assign(static_cast<const char*>(d->getData()), d->getSize());
-                delete d;
             }
-            delete m;
         }
         if (got.size() < bigSize) std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }

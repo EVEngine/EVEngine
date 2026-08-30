@@ -80,16 +80,16 @@ int Inventory::transferSlot(Bag *from, int fromSlot, Bag *to, int quantity) {
     return InventorySystem::transferSlot(from, fromSlot, to, quantity);
 }
 
-bool Inventory::hasAcceptRule(const std::string &name) {
-    return InventorySystem::hasAcceptRule(name);
+bool Inventory::hasAcceptRule(const std::string &ruleName) {
+    return InventorySystem::hasAcceptRule(ruleName);
 }
 
-bool Inventory::hasCapacityPolicy(const std::string &name) {
-    return InventorySystem::hasCapacityPolicy(name);
+bool Inventory::hasCapacityPolicy(const std::string &policyName) {
+    return InventorySystem::hasCapacityPolicy(policyName);
 }
 
-bool Inventory::hasStackRule(const std::string &name) {
-    return InventorySystem::hasStackRule(name);
+bool Inventory::hasStackRule(const std::string &ruleName) {
+    return InventorySystem::hasStackRule(ruleName);
 }
 
 void Inventory::clearChangeEvents() { InventorySystem::clearEvents(); }

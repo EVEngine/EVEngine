@@ -13,16 +13,37 @@
 
 #include "common/Exception.h"
 #include "filesystem/FileData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
 #include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "stylize/Stylize.h"
+#include "stylize/StyleInstance.h"
+#include "stylize/StyleRecipe.h"
 #include "window/Window.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using eve::graphics::Canvas;
 using eve::graphics::Graphics;
@@ -36,7 +57,9 @@ using eve::graphics::Shader;
 using eve::graphics::Texture;
 using eve::image::ImageData;
 using eve::stylize::StyleChain;
+using eve::stylize::StyleInstance;
 using eve::stylize::StylePass;
+using eve::stylize::StyleRecipe;
 using eve::stylize::Stylize;
 using Colorf = ImageData::Colorf;
 
@@ -110,7 +133,7 @@ void resetScene3D() {
 
 void saveImageDataPng(ImageData *frame, const std::string &path) {
     REQUIRE(frame != nullptr);
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         frame->encode(medialoader::FormatHandler::ENCODED_PNG, "stylize.png", false);
     REQUIRE(png != nullptr);
@@ -185,7 +208,7 @@ ImageData *renderCylinderFrame(Graphics *gfx, Mesh *mesh, Texture *albedo, Shade
     CHECK(luma(mid) > 0.12f);
     CHECK(luma(mid) < 0.92f);
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     return frame;
@@ -216,23 +239,48 @@ TEST_CASE("stylize.styles.registry") {
     auto *mod = Stylize::create();
     REQUIRE(mod != nullptr);
     CHECK_EQ(mod->getName(), std::string("Stylize"));
-    CHECK_EQ(mod->getStyleCount(), 4);
+    CHECK_EQ(mod->getStyleCount(), 12);
     CHECK(mod->hasStyle("cartoon"));
     CHECK(mod->hasStyle("watercolor"));
     CHECK(mod->hasStyle("ink"));
     CHECK(mod->hasStyle("pixel"));
+    CHECK(mod->hasStyle("xray"));
+    CHECK(mod->hasStyle("rim"));
+    CHECK(mod->hasStyle("dissolve"));
+    CHECK(mod->hasStyle("hologram"));
+    CHECK(mod->hasStyle("snow"));
+    CHECK(mod->hasStyle("vignette"));
+    CHECK(mod->hasStyle("chromatic"));
+    CHECK(mod->hasStyle("grain"));
     CHECK(!mod->hasStyle("oil"));
     CHECK(mod->hasMeshStyle("cartoon"));
     CHECK(mod->hasMeshStyle("ink"));
     CHECK(!mod->hasMeshStyle("watercolor"));
     CHECK(!mod->hasMeshStyle("pixel"));
+    CHECK(mod->hasMeshStyle("xray"));
+    CHECK(mod->hasMeshStyle("rim"));
+    CHECK(mod->hasMeshStyle("dissolve"));
+    CHECK(mod->hasMeshStyle("hologram"));
+    CHECK(mod->hasMeshStyle("snow"));
+    CHECK(!mod->hasMeshStyle("vignette"));
+    CHECK(!mod->hasMeshStyle("chromatic"));
+    CHECK(!mod->hasMeshStyle("grain"));
 
     CHECK(mod->supports("cartoon", "post"));
     CHECK(mod->supports("cartoon", "mesh"));
     CHECK(mod->supports("watercolor", "cpu"));
     CHECK(!mod->supports("watercolor", "mesh"));
-    CHECK(mod->supports("ink", "gbuffer"));  // depth/normal via graphics.RenderControl
+    CHECK(!mod->supports("ink", "gbuffer"));  // current shader is color/Sobel only
+    CHECK(mod->supports("xray", "depth"));
+    CHECK(!mod->supports("xray", "post"));
+    CHECK(!mod->supports("xray", "cpu"));
     CHECK(!mod->supports("oil", "post"));
+
+    CHECK(mod->supports("rim", "mesh"));
+    CHECK(!mod->supports("rim", "post"));
+    CHECK(mod->supports("vignette", "post"));
+    CHECK(!mod->supports("vignette", "mesh"));
+    CHECK(!mod->supports("vignette", "cpu"));
 
     CHECK_GT(mod->getStyleParamCount("pixel"), 0);
     CHECK_EQ(mod->getStyleParamName("pixel", 0), std::string("pixelSize"));
@@ -279,6 +327,26 @@ TEST_CASE("stylize.processImage.cpuAllStyles") {
     CHECK(threw);
 }
 
+TEST_CASE("stylize.instance.parameterSchema") {
+    auto *mod = Stylize::create();
+    std::unique_ptr<StyleInstance> pixel(mod->newInstance("pixel"));
+    REQUIRE(pixel.get() != nullptr);
+    CHECK_EQ(pixel->getStyle(), std::string("pixel"));
+    CHECK_EQ(pixel->getStage(), std::string("afterTonemap"));
+    CHECK(pixel->requiresInput("color"));
+    CHECK(!pixel->requiresInput("depth"));
+    CHECK(pixel->hasParam("pixelSize"));
+    CHECK(!pixel->hasParam("texelW"));
+    CHECK_EQ(pixel->getFloat("pixelSize"), 5.f);
+
+    pixel->setFloat("pixelSize", 999.f);
+    CHECK_EQ(pixel->getFloat("pixelSize"), pixel->getParamMax("pixelSize"));
+    CHECK(pixel->isOverridden("pixelSize"));
+    pixel->reset("pixelSize");
+    CHECK(!pixel->isOverridden("pixelSize"));
+    CHECK_EQ(pixel->getFloat("pixelSize"), pixel->getParamDefault("pixelSize"));
+}
+
 TEST_CASE("stylize.processImage.inkIsDesaturated") {
     auto *mod = Stylize::create();
     std::unique_ptr<ImageData> src(makeGradient(48, 32));
@@ -315,7 +383,6 @@ TEST_CASE("stylize.api.passFromShaderAndChain") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 128;
     s.height = 96;
@@ -356,6 +423,19 @@ TEST_CASE("stylize.api.passFromShaderAndChain") {
     ::Color p1 = dest->getPixel(32, 24);
     CHECK_GT(p1.a, 0.5f);
 
+    std::unique_ptr<StyleInstance> watercolor(mod->newInstance("watercolor"));
+    std::unique_ptr<StyleInstance> pixel(mod->newInstance("pixel"));
+    std::unique_ptr<StyleRecipe> recipe(mod->newRecipe());
+    recipe->add(pixel.get());
+    recipe->add(watercolor.get());
+    recipe->compile(gfx);
+    CHECK(recipe->isCompiled());
+    CHECK_EQ(recipe->getStage(), std::string("afterTonemap"));
+    CHECK_EQ(recipe->getStyle(0)->getStyle(), std::string("watercolor"));
+    recipe->apply(gfx, tex, dest);
+    ::Color p2 = dest->getPixel(32, 24);
+    CHECK_GT(p2.a, 0.5f);
+
     delete chain;
     delete custom;
     delete a;
@@ -368,7 +448,6 @@ TEST_CASE("stylize.gpu.postPassAndMeshShader") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;
@@ -426,7 +505,6 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 512;
     s.height = 384;

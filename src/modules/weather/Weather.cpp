@@ -1,4 +1,5 @@
 #include "weather/Weather.h"
+#include "weather/shaders/WeatherWgsl.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
@@ -34,7 +35,7 @@ struct Lcg {
     float range(float a, float b) { return a + (b - a) * unit(); }
 };
 
-constexpr int kRainCount = 320;
+constexpr int kRainCount = 1600;
 constexpr int kSnowCount = 260;
 constexpr int kBoltCount = 4;
 
@@ -122,7 +123,15 @@ graphics::Mesh *buildFieldMesh(graphics::Graphics *gfx, Lcg &rng, int count, flo
         pos[b + 6] = ax; pos[b + 7] = ay; pos[b + 8] = az;
         pos[b + 9] = ax; pos[b + 10] = ay; pos[b + 11] = az;
 
-        nrm[b + 1] = nrm[b + 4] = nrm[b + 7] = nrm[b + 10] = 1.f;
+        // Pack per-particle variation in the otherwise unused normal.
+        const float lengthScale = rng.range(0.55f, 1.45f);
+        const float widthScale = rng.range(0.65f, 1.25f);
+        const float speedScale = rng.range(0.82f, 1.18f);
+        for (int j = 0; j < 4; ++j) {
+            nrm[b + j * 3 + 0] = lengthScale;
+            nrm[b + j * 3 + 1] = widthScale;
+            nrm[b + j * 3 + 2] = speedScale;
+        }
 
         // uv.x = horizontal offset, uv.y = vertical offset (in [0,1]).
         uv[t + 0] = -0.5f; uv[t + 1] = 0.f;
@@ -147,48 +156,58 @@ struct Pt {
     float x = 0, y = 0, z = 0;
 };
 
-// Build a jagged lightning bolt as a tapered quad strip plus short branches.
-graphics::Mesh *buildBoltMesh(graphics::Graphics *gfx, Lcg &rng, Pt top, Pt ground) {
-    std::vector<Pt> pts;
-    // Main trunk with recursive midpoint displacement.
-    const int segs = 24;
-    pts.push_back(top);
-    float y = top.y;
-    float stepY = (top.y - ground.y) / float(segs);
-    for (int i = 1; i < segs; ++i) {
-        y -= stepY;
-        float f = float(i) / float(segs);
-        float jitter = (1.f - f) * 0.9f;  // more violent near the top
-        Pt p;
-        p.x = ground.x + (top.x - ground.x) * (1.f - f) + rng.range(-jitter, jitter) * 1.2f;
-        p.y = y;
-        p.z = ground.z + (top.z - ground.z) * (1.f - f) + rng.range(-jitter, jitter) * 1.2f;
-        pts.push_back(p);
+void displacePath(std::vector<Pt> &path, Lcg &rng, float amount) {
+    std::vector<Pt> refined;
+    refined.reserve(path.size() * 2 - 1);
+    for (size_t i = 0; i + 1 < path.size(); ++i) {
+        const Pt &a = path[i];
+        const Pt &b = path[i + 1];
+        refined.push_back(a);
+        refined.push_back({(a.x + b.x) * 0.5f + rng.range(-amount, amount),
+                           (a.y + b.y) * 0.5f,
+                           (a.z + b.z) * 0.5f + rng.range(-amount, amount)});
     }
-    pts.push_back(ground);
+    refined.push_back(path.back());
+    path.swap(refined);
+}
 
-    // One branch from the upper third.
-    std::vector<Pt> branch;
-    int bStart = int(float(segs) * 0.35f);
-    branch.push_back(pts[bStart]);
-    Pt bp = pts[bStart];
-    for (int i = 1; i <= 8; ++i) {
-        float f = float(i) / 8.f;
-        bp.x += rng.range(-0.5f, 0.5f);
-        bp.y -= (pts[bStart].y - ground.y) * 0.12f;
-        bp.z += rng.range(-0.5f, 0.5f);
-        branch.push_back(bp);
+// Fractal midpoint displacement is the classic inexpensive lightning model.
+// Crossed tapered ribbons keep the channel visible from every camera angle.
+graphics::Mesh *buildBoltMesh(graphics::Graphics *gfx, Lcg &rng, Pt top, Pt ground) {
+    std::vector<Pt> pts{top, ground};
+    float displacement = 3.2f;
+    for (int level = 0; level < 5; ++level) {
+        displacePath(pts, rng, displacement);
+        displacement *= 0.48f;
+    }
+
+    std::vector<std::vector<Pt>> paths{pts};
+    const int branchStarts[] = {7, 12, 18, 23};
+    for (int start : branchStarts) {
+        if (start >= int(pts.size()) - 2) continue;
+        const Pt origin = pts[start];
+        const float side = (rng.unit() < 0.5f) ? -1.f : 1.f;
+        Pt tip{origin.x + side * rng.range(2.5f, 5.0f),
+               origin.y - rng.range(2.5f, 5.5f),
+               origin.z + rng.range(-3.5f, 3.5f)};
+        if (tip.y < 0.5f) tip.y = 0.5f;
+        std::vector<Pt> branch{origin, tip};
+        float branchDisp = 1.1f;
+        for (int level = 0; level < 3; ++level) {
+            displacePath(branch, rng, branchDisp);
+            branchDisp *= 0.45f;
+        }
+        paths.push_back(branch);
     }
 
     std::vector<Pt> all;
-    auto emitStrip = [&](const std::vector<Pt> &path, float wTop, float wBottom) {
+    std::vector<float> allUv;
+    auto emitStrip = [&](const std::vector<Pt> &path, float wTop, float wBottom, int plane) {
         const int n = int(path.size()) - 1;
         for (int i = 0; i < n; ++i) {
             Pt a = path[i], b = path[i + 1];
-            // Side vector (perpendicular to the segment in the XZ plane).
-            float dx = b.x - a.x, dz = b.z - a.z;
-            float len = std::sqrt(dx * dx + dz * dz) + 1e-4f;
-            float sx = -dz / len, sz = dx / len;
+            float sx = plane == 0 ? 1.f : 0.f;
+            float sz = plane == 0 ? 0.f : 1.f;
             float w = wBottom + (wTop - wBottom) * (float(i) / float(n));
             Pt p0 = {a.x + sx * w, a.y, a.z + sz * w};
             Pt p1 = {a.x - sx * w, a.y, a.z - sz * w};
@@ -198,12 +217,17 @@ graphics::Mesh *buildBoltMesh(graphics::Graphics *gfx, Lcg &rng, Pt top, Pt grou
             all.push_back(p1);
             all.push_back(p2);
             all.push_back(p3);
+            allUv.insert(allUv.end(), {-1.f, float(i) / n, 1.f, float(i) / n,
+                                       1.f, float(i + 1) / n, -1.f, float(i + 1) / n});
         }
     };
 
-    const float wMain = 0.07f;
-    emitStrip(pts, wMain, wMain * 0.15f);
-    emitStrip(branch, wMain * 0.8f, wMain * 0.15f);
+    const float wMain = 0.20f;
+    for (size_t p = 0; p < paths.size(); ++p) {
+        const float scale = p == 0 ? 1.f : 0.55f;
+        emitStrip(paths[p], wMain * scale, wMain * 0.10f * scale, 0);
+        emitStrip(paths[p], wMain * scale, wMain * 0.10f * scale, 1);
+    }
 
     const int vertCount = int(all.size());
     const int idxCount = vertCount / 4 * 6;
@@ -217,7 +241,8 @@ graphics::Mesh *buildBoltMesh(graphics::Graphics *gfx, Lcg &rng, Pt top, Pt grou
         pos[i * 3 + 1] = all[i].y;
         pos[i * 3 + 2] = all[i].z;
         nrm[i * 3 + 1] = 1.f;
-        uv[i * 2 + 1] = float(i / 4) * 0.25f;
+        uv[i * 2 + 0] = allUv[i * 2 + 0];
+        uv[i * 2 + 1] = allUv[i * 2 + 1];
     }
     for (int q = 0; q < vertCount / 4; ++q) {
         const uint32_t base = uint32_t(q * 4);
@@ -252,6 +277,7 @@ struct Weather::Impl {
     float flash = 0.f;
     float flashTimer = 0.f;
     float nextStrike = 4.f;
+    bool environmentEnabled = true;
 
     // mood
     float skyR = 0.45f, skyG = 0.53f, skyB = 0.62f;
@@ -338,13 +364,22 @@ void Weather::init(graphics::Graphics *gfx) {
     std::vector<uint32_t> wf(weather_frag_spv, weather_frag_spv + weather_frag_spv_count);
     std::vector<uint32_t> bv(bolt_vert_spv, bolt_vert_spv + bolt_vert_spv_count);
     std::vector<uint32_t> bf(bolt_frag_spv, bolt_frag_spv + bolt_frag_spv_count);
-    graphics::Shader *weatherVert = gfx->newMeshShaderFromSpv(wv, wf);
-    graphics::Shader *boltShader = gfx->newMeshShaderFromSpv(bv, bf);
+    graphics::Shader *weatherVert = nullptr;
+    graphics::Shader *boltShader = nullptr;
+    if (gfx->getBackendName() == "webgpu") {
+        weatherVert = gfx->newMeshShaderFromWgsl(shaders::kWeatherVertWgsl,
+                                                shaders::kWeatherFragWgsl);
+        boltShader = gfx->newMeshShaderFromWgsl(shaders::kBoltVertWgsl,
+                                               shaders::kBoltFragWgsl);
+    } else {
+        weatherVert = gfx->newMeshShaderFromSpv(wv, wf);
+        boltShader = gfx->newMeshShaderFromSpv(bv, bf);
+    }
     declareWeatherParams(weatherVert);
     declareWeatherParams(boltShader);
 
     // ---- rain ----
-    graphics::Mesh *rainMesh = buildFieldMesh(gfx, impl_->rng, kRainCount, 1.4f, 0.07f);
+    graphics::Mesh *rainMesh = buildFieldMesh(gfx, impl_->rng, kRainCount, 0.82f, 0.024f);
     impl_->rain = graphics::Renderable3D::create();
     impl_->rain->setMesh(rainMesh);
     impl_->rain->setTexture(rainTex);
@@ -353,7 +388,7 @@ void Weather::init(graphics::Graphics *gfx) {
     impl_->rainMat->setReceiveLight(false);
     impl_->rainMat->setReceiveShadow(false);
     impl_->rainMat->setCastShadow(false);
-    impl_->rainMat->setTint(0.8f, 0.9f, 1.0f, 1.0f);
+    impl_->rainMat->setTint(0.38f, 0.52f, 0.68f, 1.0f);
     impl_->rainMat->setShader(weatherVert);
     impl_->rain->setMaterial(impl_->rainMat);
     impl_->rain->setVisible(false);
@@ -458,6 +493,9 @@ float Weather::getFogColorB() const { return impl_->fogB; }
 void Weather::setFogDensity(float v) { impl_->fogDensity = v < 0.f ? 0.f : v; }
 float Weather::getFogDensity() const { return impl_->fogDensity; }
 
+void Weather::setEnvironmentEnabled(bool enabled) { impl_->environmentEnabled = enabled; }
+bool Weather::isEnvironmentEnabled() const { return impl_->environmentEnabled; }
+
 float Weather::getAmbientBrightness() const {
     return 0.35f + (1.f - impl_->intensityCur) * 0.55f;
 }
@@ -491,7 +529,7 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     impl_->rain->setVisible(rainOn && intensity > 0.01f);
     if (rainOn) {
         const float speed = 26.f;
-        pushWeatherParams(impl_->rainMat, time, windX, windZ, speed, 1.4f, 0.07f, intensity,
+        pushWeatherParams(impl_->rainMat, time, windX, windZ, speed, 0.82f, 0.024f, intensity,
                           fogR, fogG, fogB, fogD, 0.f);
     }
 
@@ -514,15 +552,16 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     if (impl_->activeBolt >= 0) {
         impl_->boltLife += dt;
         impl_->flashTimer -= dt;
-        // Flicker: rapid on/off at the start, then decay.
+        // Return-stroke profile: bright leader, dark gap, weaker second pulse.
         float f;
-        if (impl_->boltLife < 0.05f) {
-            f = 1.f;
-        } else if (impl_->boltLife < 0.20f) {
-            // Fast flicker.
-            f = 0.25f + 0.75f * std::fabs(std::sin(impl_->boltLife * 120.f));
+        if (impl_->boltLife < 0.055f) {
+            f = 1.f - impl_->boltLife * 4.f;
+        } else if (impl_->boltLife < 0.095f) {
+            f = 0.06f;
+        } else if (impl_->boltLife < 0.19f) {
+            f = 0.72f * (1.f - (impl_->boltLife - 0.095f) / 0.095f);
         } else {
-            f = std::max(0.f, 1.f - (impl_->boltLife - 0.20f) / 0.15f);
+            f = std::max(0.f, 0.22f * (1.f - (impl_->boltLife - 0.19f) / 0.31f));
         }
         impl_->flash = std::clamp(f, 0.f, 1.f);
 
@@ -531,7 +570,7 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
         pushWeatherParams(impl_->boltMats[bi], time, windX, windZ, 0.f, 0.f, 0.f, 1.f, fogR, fogG,
                           fogB, fogD, impl_->flash);
 
-        if (impl_->boltLife > 0.35f) {
+        if (impl_->boltLife > 0.50f) {
             impl_->bolts[bi]->setVisible(false);
             impl_->activeBolt = -1;
             impl_->flash = 0.f;
@@ -541,14 +580,18 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     }
 
     // Push ambient/sky mood onto the graphics state each frame.
-    if (gfx) {
+    if (gfx && impl_->environmentEnabled) {
         const float dark = 1.f - 0.65f * impl_->intensityCur;
-        gfx->setBackgroundColorRGBA(impl_->skyR * dark, impl_->skyG * dark,
-                                    impl_->skyB * dark, 1.f);
+        const float skyFlash = impl_->flash * 0.55f;
+        gfx->setBackgroundColorRGBA(
+            std::min(1.f, impl_->skyR * dark + skyFlash * 0.68f),
+            std::min(1.f, impl_->skyG * dark + skyFlash * 0.78f),
+            std::min(1.f, impl_->skyB * dark + skyFlash), 1.f);
+        const float flashLight = impl_->flash * 1.35f;
         gfx->setDirectionalLight(-0.4f, 0.75f, 0.5f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 1.0f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 0.95f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 0.88f);
+                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) + flashLight * 0.72f,
+                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 0.95f + flashLight * 0.84f,
+                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 0.88f + flashLight);
     }
 }
 
@@ -589,6 +632,8 @@ void Weather::expose(ssq::Class &cls) {
     cls.addFunc("getFogColorB", &Weather::getFogColorB);
     cls.addFunc("setFogDensity", &Weather::setFogDensity);
     cls.addFunc("getFogDensity", &Weather::getFogDensity);
+    cls.addFunc("setEnvironmentEnabled", &Weather::setEnvironmentEnabled);
+    cls.addFunc("isEnvironmentEnabled", &Weather::isEnvironmentEnabled);
     cls.addFunc("getAmbientBrightness", &Weather::getAmbientBrightness);
 }
 

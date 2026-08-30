@@ -10,34 +10,28 @@
 // Controls: 1 toggle outline, [ / ] thickness, C cycle color.
 
 // --- Outline configuration ------------------------------------------------
-if (!("outlineColor" in getroottable())) outlineColor <- [0.05, 0.04, 0.07];
-if (!("outlineWidth" in getroottable())) outlineWidth <- 1.6;
-if (!("outlineDepthThreshold" in getroottable())) outlineDepthThreshold <- 0.3;
-if (!("outlineDepthSensitivity" in getroottable())) outlineDepthSensitivity <- 0.0;
-if (!("outlineNormalThreshold" in getroottable())) outlineNormalThreshold <- 0.4;
-if (!("outlineSoftness" in getroottable())) outlineSoftness <- 0.2;
-if (!("outlineEnabled" in getroottable())) outlineEnabled <- true;
+persist outlineColor = [0.05, 0.04, 0.07]
+persist outlineWidth = 1.6
+persist outlineDepthThreshold = 0.3
+persist outlineDepthSensitivity = 0.0
+persist outlineNormalThreshold = 0.4
+persist outlineSoftness = 0.2
+persist outlineEnabled = true
 
-if (!("OUTLINE_COLORS" in getroottable()))
-    OUTLINE_COLORS <- [
+persist OUTLINE_COLORS = [
         [0.05, 0.04, 0.07],  // ink
         [0.97, 0.95, 0.90],  // paper
         [0.85, 0.10, 0.12],  // red
         [0.10, 0.35, 0.85],  // blue
-    ];
+    ]
 
 // --- Persistent handles (kept across soft reloads) -------------------------
-if (!("olCube" in getroottable())) olCube <- null;
-if (!("olCamera" in getroottable())) olCamera <- null;
-if (!("olYaw" in getroottable())) olYaw <- 0.0;
-if (!("olColorIdx" in getroottable())) olColorIdx <- 0;
-if (!("prevOlKeys" in getroottable())) prevOlKeys <- {};
-
+persist olCube = null
+persist olCamera = null
+persist olYaw = 0.0
+persist olColorIdx = 0
 function olPressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevOlKeys ? prevOlKeys[k] : false;
-    prevOlKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function applyOutlineConfig() {
@@ -80,9 +74,10 @@ if (olCube == null) {
 }
 
 applyOutlineConfig();
+gfx.setBackgroundColor(0.13, 0.14, 0.17, 1.0);
 
-function update(dt) {
-    olYaw += dt * 40.0;
+function eve_update(dt) {
+    olYaw += dt * 1.0;
     olCube.setYaw(olYaw);
 
     if (olPressed("1")) {
@@ -100,9 +95,9 @@ function update(dt) {
     }
 }
 
-function draw() {
-    gfx.clear(0.13, 0.14, 0.17, 1.0);
+function eve_render() {
+    gfx.clear();
     gfx.render3D();
-    gfx.drawSolidRect(20, 20, 260, 64, 0.94, 0.95, 0.90, 0.94);
-    gfx.drawSolidRect(24, 24, 8, 8, outlineColor[0], outlineColor[1], outlineColor[2], 1.0);
+    gfx.drawSolidRect(20.0, 20.0, 260.0, 64.0, 0.94, 0.95, 0.90, 0.94);
+    gfx.drawSolidRect(24.0, 24.0, 8.0, 8.0, outlineColor[0], outlineColor[1], outlineColor[2], 1.0);
 }

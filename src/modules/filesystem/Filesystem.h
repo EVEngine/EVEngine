@@ -3,10 +3,15 @@
 #include <string>
 #include <vector>
 
+#include "common/Capability.h"
+#include "common/Exception.h"
 #include "common/Module.h"
+#include "common/ServiceInterfaces.h"
 #include "common/config.h"
 #include "filesystem/File.h"
 #include "filesystem/FileData.h"
+
+#include <cstdint>
 
 #define EVENGINE_APPDATA_PREFIX ""
 #ifdef EVENGINE_WINDOWS
@@ -28,7 +33,7 @@
 
 namespace eve::filesystem {
 
-class Filesystem : public Module {
+class Filesystem : public Module, public eve::service::IFileSystem {
 public:
     Module_REG(Filesystem);
 
@@ -39,8 +44,35 @@ public:
         std::string type;  // file, directory, symlink, other
     };
 
-    Filesystem() {}
+    Filesystem() { eve::cap::provide<eve::service::IFileSystem>(this); }
     virtual ~Filesystem() {}
+
+    bool readFile(const std::string &path, std::vector<uint8_t> &out) override {
+        try {
+            FileData *fd = read(path);
+            if (!fd) return false;
+            const auto *data = static_cast<const uint8_t *>(fd->getData());
+            out.assign(data, data + fd->getSize());
+            delete fd;
+            return true;
+        } catch (const eve::Exception &) {
+            return false;
+        }
+    }
+
+    bool writeFile(const std::string &path, const void *data, size_t size) override {
+        try {
+            write(path, data, int64_t(size));
+            return true;
+        } catch (const eve::Exception &) {
+            return false;
+        }
+    }
+
+    bool fileExists(const std::string &path) override {
+        Info info;
+        return getInfo(path, info);
+    }
 
     virtual void init(const char* arg0) = 0;
 
@@ -60,7 +92,7 @@ public:
      * @param external Bool for whether
      * Android should use external file storage.
      **/
-    virtual void setAndroidSaveExternal(bool useExternal = false) { this->useExternal = useExternal; }
+    virtual void setAndroidSaveExternal(bool external = false) { this->useExternal = external; }
 
     /**
      * @brief Gets whether the Android save is external.
@@ -79,6 +111,8 @@ public:
     /**
      * @brief Sets the path to the game source.
      * This can only be set once.
+     * @return True on success; false when the source was already set or the
+     *         path does not exist (no exception is thrown for these).
      * @param source Path to a directory or a .love-file.
      **/
     virtual bool setSource(std::string source) = 0;
@@ -99,6 +133,11 @@ public:
      **/
     virtual std::string getSource() const = 0;
 
+    /**
+     * @brief Mounts an archive (path or in-memory Data) at a virtual mountpoint.
+     * @return True on success; false when the archive is missing or invalid
+     *         (no exception is thrown for these — check the return value).
+     **/
     virtual bool mount(std::string archive, std::string mountpoint, bool appendToPath = false)                 = 0;
     virtual bool mount(Data *data, std::string archivename, std::string mountpoint, bool appendToPath = false) = 0;
 
@@ -115,7 +154,9 @@ public:
     /** Unmounts a directory previously added via mountRealDirectory(). */
     virtual bool unmountRealDirectory(std::string realDir) = 0;
 
+    /** @brief Unmounts a previously mounted archive. @return True when unmounted. */
     virtual bool unmount(std::string archive) = 0;
+    /** @brief Unmounts a previously mounted in-memory archive. @return True when unmounted. */
     virtual bool unmount(Data *data)          = 0;
 
     /**
@@ -207,6 +248,21 @@ public:
     virtual void append(std::string filename, const void *data, int64_t size) const = 0;
 
     /**
+     * @brief Write a UTF-8 string to a file in the configured save directory.
+     * @param filename Relative save path.
+     * @param text UTF-8 text to write.
+     * @return True when the write succeeds.
+     */
+    bool writeText(const std::string &filename, const std::string &text) const;
+
+    /**
+     * @brief Read a UTF-8 string from the virtual filesystem.
+     * @param filename Relative virtual path.
+     * @return File contents, or an empty string when the file cannot be read.
+     */
+    std::string readText(const std::string &filename) const;
+
+    /**
      * @brief This "native" method returns a table of all
      * files in a given directory.
      **/
@@ -231,6 +287,17 @@ public:
      * @brief Allows a full (OS-dependent) path to be used with Filesystem::mount.
      **/
     virtual void allowMountingForPath(const std::string &path) = 0;
+
+    /**
+     * @brief Mount an external OS directory for read-only asset access.
+     *
+     * This convenience method authorizes the path and mounts it without changing
+     * the filesystem write directory. Files remain outside packaged game data.
+     * @param path Absolute OS directory to mount.
+     * @param mountpoint Virtual directory visible to game code.
+     * @return True when the mount succeeds.
+     */
+    bool mountExternalReadOnly(const std::string &path, const std::string &mountpoint);
 
     /**
      * @brief Gets whether the given full (OS-dependent) path is a directory.

@@ -7,7 +7,7 @@
 1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
 2. **2D 帧动画**：`SpriteSheet` + `SpriteClip` + `SpriteAnim`（sprite sheet / 图集格子）
 3. **Spine（region 子集）**：`.atlas` + skeleton JSON → `SpineAnim.collectDrawItems` 进 2D 队列
-4. **3D 骨骼动画播放**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
+4. **3D 骨骼动画播放与动画图**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、`AnimGraph`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
 5. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
 6. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
 7. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
@@ -48,6 +48,49 @@ player.play(walk);
 anim.update(dt);
 // 把 quad 挂到 Renderable2D.sprite.quad 即可换帧
 ```
+
+独立 PNG 序列可在运行时自动合并为共享图集，不需要先用外部工具合图；
+每帧会自动扩展 1 像素边缘，避免线性过滤、缩放和旋转时采样到相邻帧：
+
+```squirrel
+local sheet = anim.newSpriteSheetFromSequence(
+    gfx, "assets/frame_{n}.png", 1, 64, 8);
+local burst = anim.newSpriteClip("burst");
+burst.addRange(0, 63, 24.0); // inclusive range, 24 FPS
+
+local quad = gfx.newQuad(0, 0, 128, 128);
+local player = anim.newSpriteAnim();
+player.setSheet(sheet);
+player.bindQuad(quad);
+player.play(burst);          // player.playReverse(burst) 可倒放
+player.setSpeed(0.5);        // 支持负数；0 冻结时间
+```
+
+`consumeLooped()` / `consumeCompleted()` 用于每帧消费一次性事件，
+`getLoopCount()` 返回本次播放以来累计跨过的循环边界数。
+
+播放速度还可以由关键点曲线控制。曲线值与 `setSpeed()` 的基础倍率相乘，
+曲线时间独立推进，因此首个关键点为 0 也不会把播放永久卡住：
+
+```squirrel
+player.setSpeed(1.0);
+player.addSpeedCurveKey(0.0, 0.2);
+player.addSpeedCurveKey(1.2, 2.4);
+player.addSpeedCurveKey(2.6, 0.35);
+player.addSpeedCurveKey(4.0, 0.2);
+player.setSpeedCurveLoop(true);
+// clearSpeedCurve / resetSpeedCurve / getSpeedCurveValue
+```
+
+关键点之间采用线性插值；如需平滑 S 曲线，可用更多采样关键点逼近。
+也可调用 `setSpeedCurveInterpolation("linear"|"smooth"|"cubic")` 选择插值。
+
+序列加载器会按 alpha 自动裁掉透明边缘，保留每帧原始尺寸和偏移；
+`player.bindSprite(sprite)` 会同步这些布局信息，避免裁边动画抖动。相同加载参数会复用缓存图集，
+可用 `getSpriteSequenceCacheCount/Bytes` 查看数量与估算显存。
+
+Aseprite 与 TexturePacker 的 JSON Hash 格式可通过
+`newSpriteSheetFromAtlasJson(gfx, texturePath, jsonPath)` 导入；当前明确拒绝 rotated frame。
 
 ## 基本用法（Spine region）
 
@@ -93,6 +136,41 @@ sm.setFloat("speed", 1.0);
 sm.update(dt);
 local pose = sm.getPose();
 ```
+
+## 可组合 3D Animation Graph
+
+`AnimGraph` 用稳定整数句柄连接节点，支持共享子图单帧缓存、普通混合、
+additive、逐骨骼 mask 分层、one-shot，以及 1D/2D blend space。现有
+`AnimPlayer` 和 `AnimStateMachine` 保持兼容，适合简单控制器；复杂角色建议使用图。
+
+```squirrel
+local graph = anim.newGraph(sk);
+local idleNode = graph.addClip(idle);
+local walkNode = graph.addClip(walk);
+local runNode = graph.addClip(run);
+
+local locomotion = graph.addBlendSpace1D();
+graph.addBlendSpace1DPoint(locomotion, 0.0, idleNode);
+graph.addBlendSpace1DPoint(locomotion, 2.0, walkNode);
+graph.addBlendSpace1DPoint(locomotion, 6.0, runNode);
+graph.setPosition1D(locomotion, speed);
+
+local fireNode = graph.addClip(fire);
+local fireLayer = graph.addOneShot(locomotion, fireNode, 0.08, 0.12);
+graph.clearBoneMask(fireLayer);
+graph.setBoneMask(fireLayer, sk.findBone("Spine"), 1.0, true);
+graph.setRoot(fireLayer);
+graph.trigger(fireLayer);
+
+// eve_update:
+graph.update(dt);
+local pose = graph.getPose();
+```
+
+`addLayer(base, overlay, weight)` 默认 mask 全为 0，须显式设置参与骨骼；
+`addAdditive(base, delta, weight)` 默认作用于全身。Additive clip 应以 identity
+姿态为参考：位移为差值、旋转为差值四元数、缩放以 1 为基准。
+one-shot 的 shot 输入当前应是 clip 节点，用该 clip 的时长决定结束和淡出。
 
 ## 基本用法（Motion Matching）
 
@@ -177,9 +255,9 @@ local model = model3d.newModelDataFromFile("Idle.fbx");
 local sk = anim.newSkeletonFromModel(model);
 local idle = anim.newClipFromModel(model, sk, 0);
 
-// 或加载测试用紧凑 `.eva`（无网格关键帧，见 test/assets/mixamo/）：
-local sk2 = anim.newSkeletonFromEvaFile("test/assets/mixamo/Idle.eva");
-local idle2 = anim.newClipFromEvaFile("test/assets/mixamo/Idle.eva");
+// 或加载测试用紧凑 `.anim.txt`（无网格关键帧，见 test/assets/mixamo/）：
+local sk2 = anim.newSkeletonFromAnimationFixtureText("test/assets/mixamo/Idle.anim.txt");
+local idle2 = anim.newClipFromAnimationFixtureText("test/assets/mixamo/Idle.anim.txt");
 // Mixamo 原地跑可补平面根运动：
 run.applyPlanarRootMotion(sk.findBone("mixamorig:Hips"), 0, 300);
 ```
@@ -196,11 +274,44 @@ player.play(clip);
 player.update(dt);
 local pose = player.getPose();
 pose.computeWorld(sk);
-skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
+// 推荐：蒙皮（位置+法线）并原地写回渲染网格，每帧一行：
+skin.applyToMesh(gfx, mesh, pose); // mesh 与 skin 需同源（同一 ModelData/meshIndex）
+// 也可拆开用底层原语（与 AnimLattice 一致）：
+// skin.updateSkinnedPositions(pose);       // 脚本可读 getSkinnedPositionX/Y/Z(i)
+// skin.updateSkinnedNormals(pose);         // 用 fromModel 捕获的 bind 法线
+// gfx.updateMeshVertices(mesh, skin.getSkinnedPositions(), skin.getSkinnedNormals(),
+//                        [], skin.getVertexCount(), [], 0);
 // 也可交给粒子：emitter.setSkinSource(skin, pose) 从皮肤表面发射
 ```
 
+## 3D Root Motion 与 Notify
+
+`AnimClip.addEvent(time, name)` 在 3D clip 时间轴添加 gameplay notify；
+`AnimPlayer.consumeEvent()` 按跨过时间顺序逐个消费，循环边界不会丢事件。
+Player 还会从指定根骨骼提取本帧位移和旋转 delta，可交给角色控制器：
+
+```squirrel
+clip.addEvent(0.18, "footstep.left");
+player.setRootMotionBone(sk.findBone("Hips"));
+player.update(dt);
+controller.move(player.getRootMotionX(), player.getRootMotionY(),
+                player.getRootMotionZ());
+local eventName = player.consumeEvent();
+while (eventName != "") {
+    // dispatch gameplay/audio/VFX event
+    eventName = player.consumeEvent();
+}
+```
+
+Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位四元数
+`getRootMotionRotationX/Y/Z/W()`。调用 `setTime()` 是 seek，不会生成 motion delta
+或 notify，下一次 `update()` 从 seek 后时间继续计算。
+
 测试资源：`scripts/download_skinned_character.sh` 下载 Khronos **CesiumMan**（约 0.5 MB）到 `test/assets/skinned/`；CMake 选项 `EVENGINE_DOWNLOAD_SKINNED_CHARACTER`（默认 ON）会在构建 `unit_test` 时联网拉取。
+
+`model3d.createRenderable(gfx, model, meshIndex)` 建的网格可用
+`ent.getMesh()` 取回句柄交给 `applyToMesh`。蒙皮网格必须与 `AnimSkin` 同源，
+且上传时不要烘焙节点世界变换，否则回写的模型空间顶点会与网格对不上。
 
 ## 对象关系与调用时机
 
@@ -208,9 +319,10 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 - `SpriteSheet` 定义图集格子；`SpriteClip` 引用格子索引；`SpriteAnim` 推进时间并可 `bindQuad`。
 - `SpineAtlas` + `SpineSkeletonData` 为资源；`SpineSkeleton` 为运行时姿态；`SpineAnim` 采样动画并 `collectDrawItems`。
 - `AnimSkeleton` 定义骨骼层级与 bind pose；`AnimClip` 保存各骨 local TRS 关键帧。
-- `AnimPlayer` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
+- `AnimPlayer` / `AnimGraph` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
 - `AnimTrail`：每帧 `addPoint` / `sampleBone` 后 `update(dt)`，在 `eve_render` 调用 `draw(gfx)`。
 - Motion Matching：先 `MotionDatabase.bake()`，再周期性搜索 + 交叉淡入。
+- Motion Database 在 bake 时按通道计算均值/标准差并标准化；搜索使用当前最优代价提前终止候选计算，避免量纲较大的通道意外支配结果。
 - `ControlAnim` / `ControlPose`：每帧更新目标后调用各自的 `update(dt)`；积分器字符串为 `secondOrder` | `spring` | `pd`。
 
 ## 目标导向指南
@@ -266,21 +378,25 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
-- 2D 帧动画：`newSpriteSheet()`、`newSpriteClip()`、`newSpriteAnim()`、`getSpriteAnimCount()`
+- 2D 帧动画：`newSpriteSheet()`、`newSpriteSheetFromSequence()`、`newSpriteSheetFromAtlasJson()`、`newSpriteClip()`、`newSpriteAnim()`、`getSpriteAnimCount()`、`getSpriteSequenceCacheCount()`、`getSpriteSequenceCacheBytes()`、`clearSpriteSequenceCache()`
 - Spine：`newSpineAtlas()`、`newSpineAtlasFromFile()`、`newSpineAtlasFromText()`、`newSpineSkeletonData()`、`newSpineSkeletonDataFromFile()`、`newSpineSkeletonDataFromJson()`、`newSpineSkeleton()`、`newSpineAnim()`、`getSpineAnimCount()`
-- `SpriteSheet`：`addFrame()`、`setGrid()`、`clear()`、`getFrameCount()`、`findFrame()`、`getFrame*()`、`applyToQuad()`
-- `SpriteClip`：`setName()`、`getName()`、`setLoop()`、`addFrame()`、`addFrameByName()`、`getDuration()`、`frameAtTime()`
-- `SpriteAnim`：`setSheet()`、`play()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`bindQuad()`、`applyToQuad()`、`getSheetFrame()`、`update()`
+- `SpriteSheet`：`addFrame()`、`setGrid()`、`clear()`、`setTexture()`、`getTexture()`、`getFrameCount()`、`findFrame()`、`getFrameName()`、`getFrameX()`、`getFrameY()`、`getFrameWidth()`、`getFrameHeight()`、`getFrameSourceWidth()`、`getFrameSourceHeight()`、`getFrameOffsetX()`、`getFrameOffsetY()`、`applyToQuad()`
+- `SpriteClip`：`setName()`、`getName()`、`setLoop()`、`addFrame()`、`addFrameByName()`、`addRange()`、`setFPS()`、`getFPS()`、`addEvent()`、`getEvent()`、`getDuration()`、`frameAtTime()`
+- `SpriteAnim`：`setSheet()`、`play()`、`playReverse()`、`playOnce()`、`queue()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`addSpeedCurveKey()`、`clearSpeedCurve()`、`resetSpeedCurve()`、`setSpeedCurveLoop()`、`setSpeedCurveInterpolation()`、`getSpeedCurveValue()`、`setTime()`、`setFrame()`、`step()`、`setLoop()`、`bindQuad()`、`bindSprite()`、`applyToQuad()`、`getSheetFrame()`、`getLoopCount()`、`consumeLooped()`、`consumeCompleted()`、`consumeEvent()`、`update()`
 - `SpineAtlas`：`loadFromText()`、`loadFromFile()`、`getPage*()`、`findRegion()`、`getRegion*()`
 - `SpineSkeletonData`：`loadFromJson()`、`loadFromFile()`、`findBone()`、`findSlot()`、`findAnimation()`、`getAnimationDuration()`
 - `SpineSkeleton`：`setSkin()`、`setToSetupPose()`、`updateWorldTransform()`、`getBoneWorld*()`、`getSlotAttachmentName()`
 - `SpineAnim`：`setAtlas()`、`setPageTexture()`、`setPageTextureByName()`、`play()`、`setPosition()`、`setScale()`、`setFlipY()`、`apply()`、`update()`、`getDrawSlot*()`
-- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
+- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newGraph()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
-- `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
-- `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`getWorld*()`、`getWorldMatrixElement()`
-- `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`
-- `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`update()`
+- `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`compress()`、`retarget()`、`sample()`、`wrapTime()`。自定义时间轴可通过 `getTrackCount()`、`getPositionKeyCount()`、`getPositionKeyTime()`、`getPositionKeyX()`、`getPositionKeyY()`、`getPositionKeyZ()`、`getRotationKeyCount()`、`getRotationKeyTime()`、`getRotationKeyX()`、`getRotationKeyY()`、`getRotationKeyZ()`、`getRotationKeyW()`、`getScaleKeyCount()`、`getScaleKeyTime()`、`getScaleKeyX()`、`getScaleKeyY()`、`getScaleKeyZ()` 枚举关键帧，通过 `setPositionKey()`、`setRotationKey()`、`setScaleKey()`、`removePositionKey()`、`removeRotationKey()`、`removeScaleKey()` 和 `clearTrack()` 原位编辑；事件标记使用 `addEvent()`、`setEvent()`、`removeEvent()`、`getEventCount()`、`getEventTime()`、`getEventName()`、`getEventPayload()`；步态同步标记使用 `addSyncMarker()`、`setSyncMarker()`、`removeSyncMarker()`、`getSyncMarkerCount()`、`getSyncMarkerTime()`、`getSyncMarkerName()`。这些是 UI 无关的数据接口，项目可以组合成骨骼时间轴、Avatar 动作面板或游戏内动画工具，无需引擎内置固定窗口。
+- AnimRetargetProfile：用 `addBoneMapping()` / `clearBoneMappings()` 管理 Avatar 式骨骼映射；`setNormalizedNameMatching()` / `getNormalizedNameMatching()` 配置自动匹配；`setRootBones()`、`setAutoRootScale()`、`getAutoRootScale()`、`setRootTranslationScale()`、`getRootHorizontalScale()`、`getRootVerticalScale()`、`setUseSkeletonSpaceRotation()`、`getUseSkeletonSpaceRotation()` 配置重定向；通过 `getMatchedBoneCount()`、`getUnmatchedBoneCount()`、`getUnmatchedTargetBone()` 读取最近一次烘焙诊断；配合 `retargetWithProfile()` 使用。
+- `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`aimBone()`、`solveTwoBoneIK()`、`getWorld*()`、`getWorldMatrixElement()`
+- `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`updateMatrixPalette()`、`getMatrixPaletteElement()`、`bindGpuMesh()`、`updateGpuMesh()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
+- `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`getRootMotionX()`、`getRootMotionY()`、`getRootMotionZ()`、`getRootMotionRotationX()`、`getRootMotionRotationY()`、`getRootMotionRotationZ()`、`getRootMotionRotationW()`、`consumeEvent()`、`setUpdateRate()`、`getUpdateRate()`、`update()`；每次更新跨过的事件由 `getEventCount()`、`getEventName()`、`getEventPayload()` 读取，`clearEvents()` 可提前清空。
+- `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`getPose()`、`update()`
+- `AnimBoneMask`：由 `newBoneMask()` 创建；`setAll()`、`setBoneWeight()`、`setBoneWeightByName()`、`setBoneAndChildren()`、`getBoneWeight()`、`getBoneCount()` 定义逐骨权重。
+- `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `getBasePlayer()` 设置基础动画，`addLayer(name, player, mask, mode)` 添加 `override` 或 `additive` 层，其中 Additive 以骨架 bind pose 为参考姿势。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
@@ -292,6 +408,18 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
+- 3D clip 轨道使用二分查找采样，长动画不会随单轨关键帧数线性退化；Motion Database 应离线/加载时 bake，不要逐帧重建。
+- 远处角色可用 `AnimPlayer.setUpdateRate(hz)` 降低姿态求值频率（例如 15 Hz）；播放器会累积时间，达到间隔后一次推进，设为 `0` 恢复逐帧求值。姿态、Graph 中间结果以及 CPU 蒙皮矩阵均复用内部缓存，稳定播放不产生逐帧容器分配。
+- Graph、状态机或 Motion Matching 求值后，可对返回的 `AnimPose` 调用 `aimBone`（骨骼本地 +Z 朝向目标）或 `solveTwoBoneIK` 做世界空间后处理；两者都接受 `0..1` 权重并会更新 world pose。
+- GPU 蒙皮 shader 可调用 `AnimSkin.updateMatrixPalette(pose)` 后按骨骼读取 `getMatrixPaletteElement(bone, 0..15)` 上传调色板；顶点关节/权重由 `getVertexBone` / `getVertexWeight` 提供。CPU 路径复用同一调色板缓存。
+- 内建 GPU 蒙皮路径只需在 Mesh 创建后调用一次 `skin.bindGpuMesh(gfx, mesh)`，之后每帧在 `pose.computeWorld(skeleton)` 后调用 `skin.updateGpuMesh(mesh, pose)`；顶点保持 Bind Pose，Vulkan/WebGPU 顶点着色器读取四关节权重和最多 128 个骨骼矩阵完成变形，前向、阴影与 GBuffer 路径共享同一调色板。
+- 离线导入后可调用 `clip.compress(positionError, rotationErrorDegrees, scaleError)`，以逐轨道曲线误差为上限删除冗余关键帧；首尾关键帧、clip 属性和 gameplay notify 均保留。
+- 简单同构骨架可继续使用 `sourceClip.retarget(sourceSkeleton, targetSkeleton)`。它现在默认使用骨架空间 Bind Pose 校正，并支持忽略大小写、标点及 `mixamorig:` 等命名空间的骨名匹配；输出按 clip 的 sample rate 离线烘焙，可继续压缩、进入状态机或 Animation Graph。
+- 不同命名或体型应创建 AnimRetargetProfile 实例，用 `addBoneMapping(sourceName, targetName)` 建立 Avatar 式映射，`setRootBones(sourcePelvis, targetPelvis)` 指定 Retarget Root，随后调用 `sourceClip.retargetWithProfile(sourceSkeleton, targetSkeleton, profile)`。根位移默认按两副骨架的空间范围等比缩放，可用 `setAutoRootScale(false)` 或 `setRootTranslationScale(horizontal, vertical)` 调整；`getMatchedBoneCount()`、`getUnmatchedBoneCount()` 和 `getUnmatchedTargetBone(i)` 提供导入诊断。若需兼容旧的局部骨轴算法，可关闭 `setUseSkeletonSpaceRotation(false)`。
+- 批量角色求值使用 `AnimBatch`：通过 `anim.newBatch()` 创建，逐角色 `add(clip, skeleton, pose, time, lodLevel)`，最后 `evaluate(workerCount)`；另提供 `clear()`、`getCount()` 和 `getLastWorkerCount()`。`workerCount=0` 自动采用硬件并发度，任务以无锁原子索引分发，且拒绝同一 Pose 的并发写入。Pose 混合的平移/缩放在 x86/x64 使用 SSE 路径。
+- 骨骼 LOD 以 0 为最高细节。`skeleton.setBoneLodLimit(bone, highestLod)` 指定骨骼保留到哪一级，`skeleton.getBoneLodLimit(bone)` 可查询；`clip.sampleLod(...)` 和 `AnimBatch` 会让被裁剪轨道回退到目标 Bind Pose。根骨、碰撞骨和 IK 末端应保留较高 limit，手指与装饰骨通常只保留 LOD 0。
+- 程序化后处理使用 `anim.newConstraintStack(skeleton)`。`AnimConstraintStack` 按插入顺序执行 `addAim()`、`addTwoBoneIK()` 和 `addFootIK()`，通过 `apply(pose)` 一次求解；`clear()` 与 `getCount()` 管理队列。Foot IK 将髋-膝-足链种植到地面高度并按地面法线调整足部局部 +Z，可传 sole offset 与权重。
+- 步态同步使用 `anim.newSyncGroup()`。`AnimSyncGroup.addPlayer(player, phaseOffset)` 加入播放器，`setLeader()` / `getLeader()` 选择主时钟。若 leader 与 follower 都有至少两个顺序兼容的 Sync Marker，`update(dt)` 会保持在共同标记区间内的相对进度（例如 `left_plant → right_plant`），跨循环区间同样生效；否则自动回退到归一化时长同步。Clip 可用 `hasCompatibleSyncMarkers()` 检查兼容性，并用 `mapSyncTimeTo()` 单独映射时间；`getUsedMarkerSync()` 可诊断最近一次更新采用的路径，`getPhase()`、`getCount()`、`clear()` 用于调试与复用。Sync Marker 会随 EVA 导入导出和重定向 clip 一起保留。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/animation/`](../../../src/modules/animation/)

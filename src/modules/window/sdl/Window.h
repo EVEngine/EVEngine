@@ -2,7 +2,9 @@
 
 #include <SDL2/SDL.h>
 
+#include <cstdint>
 #include <string>
+#include <vector>
 
 #include "window/Window.h"
 
@@ -15,9 +17,7 @@ public:
     Window();
     ~Window();
 
-    void setGraphics(graphics::Graphics *graphics) override;
-
-    void setSize(int width, int height) override;
+    void setSize(int w, int h) override;
     int  getWidth() const override;
     int  getHeight() const override;
 
@@ -65,22 +65,20 @@ public:
     std::string             getDisplayName(int display) const override;
     std::string             getDisplayOrientation(int display) const override;
     std::vector<WindowSize> getFullscreenSizes(int display) const override;
-    void getDesktopDimensions(int display, int& width, int& height) const override;
+    void getDesktopDimensions(int display, int& outWidth, int& outHeight) const override;
 
-    bool showMessageBox(const std::string& title, const std::string& message,
+    bool showMessageBox(const std::string& caption, const std::string& message,
                         const std::string& type, bool attachToWindow) override;
     int  showMessageBoxData(const MessageBoxData& data) override;
     void requestAttention(bool continuous) override;
 
-    bool              setIcon(image::ImageData *image_data) override;
-    image::ImageData *getIcon() const override;
+    bool setIconRGBA(const uint8_t* rgba, int w, int h) override;
 
     /** @brief Used by event backend on resize to refresh drawable size / viewport. */
     void updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport);
 
 private:
     bool setFullscreenInternal(bool fullscreen, bool desktop_mode);
-    graphics::Graphics *graphics = nullptr;
 
     int width = 800, height = 600;
 
@@ -88,7 +86,9 @@ private:
 
     std::string title;
 
-    image::ImageData *icon = nullptr;
+    std::vector<uint8_t> iconRgba;
+    int                  iconWidth  = 0;
+    int                  iconHeight = 0;
 
     int windowWidth  = 800;
     int windowHeight = 600;

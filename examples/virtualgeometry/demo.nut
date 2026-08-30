@@ -7,13 +7,13 @@
 //
 // See docs/dev/VIRTUAL_GEOMETRY.md for the architecture.
 //
-// NOTE: the module is Vulkan-only. The RGBA produced by resolve() can be drawn
+// NOTE: Vulkan and WebGPU are supported. The RGBA produced by resolve() can be drawn
 // with the host's image path, e.g. wrap it in an eve::image::ImageData and pass
 // it to Graphics::newTextureFromImageData, then draw that texture as a quad.
 
 local vg = eve.VirtualGeometry();
 if (!vg.isAvailable()) {
-    print("VirtualGeometry: requires the Vulkan backend\n");
+    print("VirtualGeometry: requires an initialized Vulkan or WebGPU backend\n");
     return;
 }
 
@@ -34,7 +34,7 @@ local yaw = 0.0;
 // Called each frame from the host loop.
 function vg_step() {
     yaw += 0.012;
-    renderer.setCameraSimple(0.0, 0.0, camDist);
+    renderer.setCameraSimple(0.0, 0.0, camDist, 0.1, 100.0);
     renderer.setModelYaw(yaw);
 
     // GPU-driven culling + software rasterization into the visibility buffer.
@@ -46,6 +46,6 @@ function vg_step() {
         print("visible clusters=" + visible + " / " + renderer.getClusterCount()
               + " LODmax=" + renderer.getMaxLodLevel()
               + " view=" + renderer.getViewWidth() + "x" + renderer.getViewHeight()
-              + " rgbaBytes=" + rgba.getSize() + "\n");
+              + " rgbaBytes=" + (renderer.getViewWidth() * renderer.getViewHeight() * 4) + "\n");
     }
 }

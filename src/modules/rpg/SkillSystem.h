@@ -31,6 +31,9 @@ public:
     static bool knows(RPGActor *actor, const std::string &skillId);
     static bool forget(RPGActor *actor, const std::string &skillId);
 
+    /** @brief 技能的目标类型字符串（"" 表示未学会/未知）。 */
+    static std::string getTargetType(RPGActor *actor, const std::string &skillId);
+
     static float getCooldownRemaining(RPGActor *actor, const std::string &skillId);
     static void setCooldownRemaining(RPGActor *actor, const std::string &skillId, float seconds);
 

@@ -1,6 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Runtime.h"
+
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
@@ -736,7 +738,7 @@ TEST_CASE("devtools.dap.uncaughtErrorPausesAtThrowSite") {
     REQUIRE(scopes);
     int localsRef = -1;
     for (size_t i = 0; i < scopes->size(); ++i) {
-        auto s = scopes->getObject(i);
+        auto s = scopes->getObject(static_cast<unsigned int>(i));
         if (s->optValue<std::string>("name", "") == "Locals")
             localsRef = s->optValue<int>("variablesReference", -1);
     }
@@ -749,7 +751,7 @@ TEST_CASE("devtools.dap.uncaughtErrorPausesAtThrowSite") {
     REQUIRE(vars);
     bool foundX = false;
     for (size_t i = 0; i < vars->size(); ++i) {
-        auto vv = vars->getObject(i);
+        auto vv = vars->getObject(static_cast<unsigned int>(i));
         if (vv->optValue<std::string>("name", "") == "x" &&
             vv->optValue<std::string>("value", "").find("1") != std::string::npos)
             foundX = true;
@@ -996,7 +998,7 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     REQUIRE(scopes);
     int localsRef = -1;
     for (size_t i = 0; i < scopes->size(); ++i) {
-        auto s = scopes->getObject(i);
+        auto s = scopes->getObject(static_cast<unsigned int>(i));
         if (s->optValue<std::string>("name", "") == "Locals")
             localsRef = s->optValue<int>("variablesReference", -1);
     }
@@ -1010,7 +1012,7 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     REQUIRE(vars);
     bool foundO1 = false;
     for (size_t i = 0; i < vars->size(); ++i) {
-        auto vv = vars->getObject(i);
+        auto vv = vars->getObject(static_cast<unsigned int>(i));
         const std::string name = vv->optValue<std::string>("name", "");
         if (name == "o1" && vv->optValue<std::string>("value", "").find("99") !=
                                 std::string::npos)
@@ -1030,7 +1032,7 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     int tabRef = -1;
     int arrRef = -1;
     for (size_t i = 0; i < innerVars->size(); ++i) {
-        auto vv = innerVars->getObject(i);
+        auto vv = innerVars->getObject(static_cast<unsigned int>(i));
         const std::string name = vv->optValue<std::string>("name", "");
         if (name == "tab") tabRef = vv->optValue<int>("variablesReference", -1);
         if (name == "arr") arrRef = vv->optValue<int>("variablesReference", -1);
@@ -1052,7 +1054,7 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     REQUIRE(tabVars);
     bool foundX = false;
     for (size_t i = 0; i < tabVars->size(); ++i) {
-        auto vv = tabVars->getObject(i);
+        auto vv = tabVars->getObject(static_cast<unsigned int>(i));
         if (vv->optValue<std::string>("name", "") == "x" &&
             vv->optValue<std::string>("value", "").find("5") != std::string::npos)
             foundX = true;
@@ -1087,4 +1089,36 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     CHECK(scriptDone.load());
     CHECK(!dbg.isPaused());
     dap.stop();
+}
+
+TEST_CASE("devtools.dap.runtimeExecuteReportsThroughDevToolOnce") {
+    auto& dt = DevTool::instance();
+    dt.detach();
+    Debugger::instance().setBreakOnError(false);
+
+    // DevTool replaces the Runtime error hook; the failing script must still
+    // surface as an enriched ScriptException (no ssq null-runtimeException
+    // crash) and must be flagged as already reported so Run() does not
+    // slice/report the same error twice.
+    eve::Runtime runtime(1024, ssq::Libs::ALL);
+    dt.attach(runtime.vm(), /*sampleLocals=*/false);
+
+    bool caught = false;
+    try {
+        runtime.runSource("function inner() { throw \"kaboom\" }\ninner();\n", "dt-boom.nut");
+    } catch (const eve::ScriptException& error) {
+        caught = true;
+        CHECK(error.reported());
+        CHECK(error.hasLocation());
+        CHECK(error.line() > 0);
+        const std::string message = error.what();
+        CHECK(message.find("dt-boom.nut") != std::string::npos);
+        CHECK(message.find("kaboom") != std::string::npos);
+        CHECK(message.find("Stack:") != std::string::npos);
+        CHECK(!error.stackTrace().empty());
+        CHECK(error.stackTrace().find("inner") != std::string::npos);
+    }
+    CHECK(caught);
+    CHECK(!dt.lastReport().empty());
+    dt.detach();
 }

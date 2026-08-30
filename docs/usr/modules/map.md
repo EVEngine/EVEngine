@@ -26,7 +26,77 @@ map.render(gfx);
 
 ### 运行时修改瓦片
 
-先用地图坐标换算接口把世界位置转成格子，再 `setTile(x, y, gid)`；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。改瓦片后若已创建 Pathfinder，调用 `syncFromLayer()`。
+先用地图坐标换算接口把世界位置转成格子，再 `setTile(x, y, gid)`；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。
+
+`fillRect(x, y, width, height, gid)` 会裁剪到地图边界，并把整次区域修改发布为一个 revision。绑定到图层的 Pathfinder 与 Fov 会在下一次查询或 `compute()` 时根据 revision 自动同步；通常不再需要手动调用 `syncFromLayer()`。
+
+```squirrel
+layer.fillRect(8, 8, 16, 12, 4);
+print(layer.getRevision() + " chunks=" + layer.getNonEmptyChunkCount() +
+      "/" + layer.getChunkCount() + " size=" + layer.getChunkSize() + "\n");
+```
+
+地图内部以 32×32 chunk 建立空间索引。带 Camera2D 的正常 `map.render(gfx)` 会先按视口剔除 chunk；可通过 `map.getLastVisitedChunkCount()`、`map.getLastVisitedCellCount()` 和现有的可见瓦片统计检查本帧工作量。
+
+### TileSet v2 数据、动画与 terrain
+
+运行时可以逐帧建立动画，并为 GID 写入保留类型的自定义数据：
+
+```squirrel
+layer.clearTileAnimation(20);
+layer.addTileAnimationFrame(20, 21, 100);
+layer.addTileAnimationFrame(20, 22, 140);
+print(layer.getTileAnimationFrameCount(20) + "\n");
+
+layer.setTileDataString(20, "biome", "marsh");
+layer.setTileDataNumber(20, "damage", 2.5);
+layer.setTileDataBool(20, "wet", true);
+print(layer.getTileDataType(20, "damage") + " " +
+      layer.getTileDataString(20, "biome") + " " +
+      layer.getTileDataNumber(20, "damage") + " " +
+      layer.getTileDataBool(20, "wet") + "\n");
+```
+
+terrain rule 使用 8 位邻接掩码（从西北开始顺时针）。绘制一个 terrain 会重新解析目标及其一格邻域：
+
+```squirrel
+layer.clearTerrainRules();
+layer.setTerrainRule(30, 1, 0);       // 孤立草地
+layer.setTerrainRule(31, 1, 1 << 3);  // 东侧相连
+layer.paintTerrain(4, 4, 1);
+print(layer.getTerrain(4, 4) + "\n");
+```
+
+Tiled JSON 的 `animation`、typed `properties`、`wangsets` 与无限地图 `chunks` 可直接导入。地图可以引用多个外部 JSON `.tsj` 或 XML `.tsx` tileset；每个 atlas 按地图中的 `firstgid` 选择，图片路径相对 tileset 文件解析。外部 tileset 也会加入热重载依赖。无限地图当前会按已存在 chunk 的包围盒规范化为运行时图层，并把负 chunk 坐标折算进图层 origin。
+
+Tile properties 中的 `walkable`、`cost`、`enterMask`、`exitMask` 会进入统一导航资料。方向位为 `N=1, E=2, S=4, W=8`；寻路同时检查源格的 `exitMask` 和目标格的反向 `enterMask`。没有声明时四向均允许。这样悬崖边、单向台阶和墙口不需要再维护一份独立的 Pathfinder 阻挡表。
+
+### 组合项目自己的 2.5D 资产工作流
+
+独立 PNG、特殊 pivot 或不规则 atlas 不要求采用引擎内置成品导入器。项目工作流只需生成 `eve.tileset/1` manifest，运行时载入：
+
+```squirrel
+local layer = map.newLayer(32, 32, 150, 75);
+layer.applyConfig(@"{""orientation"":""isometric""}");
+layer.loadTilesetManifest("assets/tiles.tileset.json");
+```
+
+每个 GID 可声明 `region`、`pivot`、`sortBias`、`footprint`、`walkable`、`cost` 与项目自定义字段。规则 atlas GID 仍走原路径。参考阶段管线位于 `tools/tile-pipeline/`，可用项目 Python 插件替换任一步；详见 `docs/dev/可组合2.5D-TileSet资产管线.md`。
+
+逻辑格尺寸和渲染间距相互独立：
+
+```squirrel
+layer.setRenderSpacing(1.12, 1.12); // 相对逻辑 tile 尺寸
+layer.setCellGap(8.0, 4.0);         // 或直接指定世界像素间隔
+local gapX = layer.getCellGapX();
+local gapY = layer.getCellGapY();
+local spacingX = layer.getRenderSpacingX();
+local spacingY = layer.getRenderSpacingY();
+```
+
+间距同时用于正反坐标换算、拾取和深度排序，但不改变 GID、寻路邻接关系或移动成本。JSON 配置可使用 `"renderSpacing":[1.12,1.12]` 或 `"cellGap":[8,4]`。
+
+需要互相产生 2.5D 遮挡的地面、角色和建筑应使用相同的 `layer`，使统一队列按脚点深度排序。`layer` 是 HUD、前景遮罩等用途的硬排序屏障；同格内的细微顺序使用 TileSet `sortBias`。
 
 ### 单体寻路（A*）
 
@@ -114,6 +184,70 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 
 `resolveDualGridFilled(logic, display, filledGid)` 只把指定 GID 当作填充。逻辑层可继续用于碰撞 / 寻路；默认会 `setVisible(false)`。
 
+### 碰撞几何
+
+`publishCollision(layer)` 会把 `setTileMetadata(..., walkable=false)` 标记的正交瓦片贪心合并成世界坐标矩形，减少静态碰撞体数量；已注册的物理/项目适配器会通过 `ITileCollisionSink` 一次性收到替换后的几何。没有适配器时仍可读取矩形，自行创建物理夹具：
+
+`setTileNavigationProfile(gid, walkable, cost, enterMask, exitMask, opaque, semanticFlags)`
+是同行性、碰撞与视野遮挡的统一画像。`Pathfinder`/Flow Field 使用 walkable、cost 与四向
+enter/exit mask，`publishCollision` 使用不可通行状态或 Tiled tile object collision，`Fov`
+使用 opaque；三者随同一 tile revision 自动失效，避免分别维护“可走”和“墙体”两套事实。
+
+## 生产级自动贴图
+
+逻辑 terrain grid 是权威数据，GID 只是派生显示结果。先定义 family 与精确 8 邻域规则，再由
+point/rectangle/fill/erase 操作只重算 dirty region 外扩一格：
+
+```nut
+layer.defineAutotileFamily(1, "shore", 1337) // terrain | shore | wall | waterfall
+layer.setAutotileRule(101, 1, neighborMask, 1) // gid, terrain, exact mask, weight
+layer.paintTerrain(4, 3, 1)
+layer.paintTerrainRect(2, 2, 8, 5, 1)
+layer.fillTerrain(1)
+layer.eraseTerrainRect(5, 2, 2, 1)
+```
+
+同一 mask 可配置多个带权变体；选择由 family seed、terrain 与坐标确定，不依赖时间或容器遍历
+顺序。`wall` 解析四个正交邻居，`waterfall` 解析上下连续性，因此可以稳定表达墙顶/墙身/墙脚
+以及瀑布口/循环水体/水花脚；动画仍使用 `addTileAnimationFrame`。完整的无素材示例位于
+`examples/autotile-production`。
+
+## Tiled 与 RPG Maker MV/MZ
+
+Tiled JSON/TMJ 支持 embedded tileset、外部 TSJ/TSX、多 tileset、无限 chunk、嵌套 group、
+typed properties、animation、Wang connectivity、水平/垂直/对角 transform flags，以及 tile
+objectgroup 的矩形/多边形包围盒碰撞。外部引用相对 map/tileset 文件解析并参与 hot reload。
+导入失败会恢复 Config、Tiles、Tileset、Draw 与 Resource 的旧快照，不留下半更新状态。
+
+C++ 可直接导入 RPG Maker 工程，无需启动 RPG Maker：
+
+```cpp
+auto result = eve::map::importRpgMakerMap("data/Map001.json", "data/Tilesets.json", "RPG Maker MZ");
+if (!result) {
+    // inspect result.error() / diagnostic domain_code
+} else {
+    auto receipt = std::move(result).value();
+    auto *navigation = receipt.navigationLayer;
+}
+```
+
+适配器读取 A1-A5/B-E sheet、四个 tile plane 与 shadow plane，按 MV/MZ 官方 quarter-tile
+table 解码 A1 水面/瀑布动画、A2 地面、A3 屋顶/墙、A4 墙顶/墙身。`navigationLayer` 把
+passage、四方向 passage、star overlay、ladder、bush、counter、damage floor 与 terrain tag
+合成为单一隐藏画像；源文件不会被修改，`Resource.sourceEngine/sourceVersion` 会记录来源。
+
+```squirrel
+local count = map.publishCollision(layer);
+for (local i = 0; i < count; ++i) {
+    local x = map.getCollisionRectX(i);
+    local y = map.getCollisionRectY(i);
+    local w = map.getCollisionRectWidth(i);
+    local h = map.getCollisionRectHeight(i);
+}
+```
+
+当前自动合并只支持正交层；等距、交错和六角层返回 0，项目应使用多边形适配器，避免把菱形误近似成轴对齐矩形。
+
 ## 常见问题
 
 - GID 与图集编号混淆：0 为空，其余值遵循 tileset 映射；默认空瓦片不可走（`setBlockEmpty`）。
@@ -128,11 +262,13 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 
 - `applyConfig()`、`clear()`、`depthYAt()`、`fill()`、`getAutoReload()`、`getConfigPath()`、`getLayer()`、`getLayerCount()`
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
+- `getLastVisibleTileCount()`、`getLastCustomVisualCount()`、`getLastAtlasCount()`
+- `publishCollision()`、`getCollisionRectCount()`、`getCollisionRectX()`、`getCollisionRectY()`、`getCollisionRectWidth()`、`getCollisionRectHeight()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
 - `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`、`newFovVolume()`
 - `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
-- `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTint()`、`setVisible()`、`tileToWorldX()`
+- `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTileVisual()`、`setTileMetadata()`、`clearTileVisuals()`、`getTileVisualCount()`、`loadTilesetManifest()`、`setTint()`、`setVisible()`、`tileToWorldX()`
 - `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
 
 Pathfinder：`setTopology`、`getTopology`、`setDiagonal`、`blockGid`、`unblockGid`、`clearBlockedGids`、`setBlockEmpty`、`setBlocked`、`isWalkable`、`setCellCost`、`getCellCost`、`syncFromLayer`、`findPath`、`buildFlowField`、`followFlow`、`findGroupPath`、`invalidateCache`

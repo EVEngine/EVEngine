@@ -5,6 +5,7 @@
 #include "graphics/Shader.h"
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
+#include "graphics/shaders/HairWgsl.h"
 
 #include <array>
 #include <vector>
@@ -51,7 +52,9 @@ Shader *createShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("hair::createShader: null graphics");
     auto vert = copySpv(mesh3d_hair_vert_spv, mesh3d_hair_vert_spv_count);
     auto frag = copySpv(mesh3d_hair_frag_spv, mesh3d_hair_frag_spv_count);
-    Shader *sh = gfx->newHairShaderFromSpv(vert, frag);
+    Shader *sh = gfx->getBackendName() == "webgpu"
+                     ? gfx->newHairShaderFromWgsl({}, shaders::kHairFragWgsl)
+                     : gfx->newHairShaderFromSpv(vert, frag);
     if (!sh || !sh->gpuHandle)
         throw eve::Exception("hair::createShader: failed to create hair shader");
     bindDefaults(sh);

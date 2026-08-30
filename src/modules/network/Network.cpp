@@ -1,16 +1,16 @@
 #include "network/Network.h"
-#include "network/NetWorker.h"
-#include "network/TcpSocket.h"
-#include "network/UdpSocket.h"
-#include "network/HttpRequest.h"
+#include "data/ByteData.h"
 #include "network/Channel.h"
-#include "network/Session.h"
-#include "network/NetStream.h"
-#include "network/UdpLink.h"
+#include "network/HttpRequest.h"
 #include "network/NetHost.h"
 #include "network/NetRpc.h"
-#include "data/ByteData.h"
-#include "event/Event.h"
+#include "network/NetStream.h"
+#include "network/NetWorker.h"
+#include "network/Session.h"
+#include "network/TcpSocket.h"
+#include "network/UdpLink.h"
+#include "network/UdpSocket.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <Poco/Net/StreamSocket.h>
 #include <Poco/Net/ServerSocket.h>
@@ -23,23 +23,11 @@
 #include <algorithm>
 #include <chrono>
 #include <functional>
+#include <thread>
 
 namespace eve::network {
 
 namespace {
-
-void callScript1(const ssq::Object& obj, const std::string& s) {
-    if (obj.isEmpty()) return;
-    ssq::Function f = obj.toFunction();
-    if (f.isEmpty()) return;
-    HSQUIRRELVM raw = f.getHandle();
-    SQInteger top = sq_gettop(raw);
-    sq_pushobject(raw, f.getRaw());
-    sq_pushroottable(raw);
-    ssq::detail::pushValue(raw, s);
-    sq_call(raw, 2, SQFalse, SQTrue);
-    sq_settop(raw, top);
-}
 
 void callScript2(const ssq::Object& obj, int64_t a, const std::string& s) {
     if (obj.isEmpty()) return;
@@ -77,6 +65,7 @@ Module_IMPL(Network, new Network());
 Network::Network() {
     worker_ = std::make_unique<NetWorker>(this);
     worker_->start();
+    eve::cap::provide<eve::service::INetwork>(this);
 }
 
 Network::~Network() {
@@ -84,53 +73,83 @@ Network::~Network() {
     worker_.reset();
 }
 
-TcpSocket* Network::newTcp() {
-    return new TcpSocket(this);
-}
+std::unique_ptr<TcpSocket> Network::makeTcp() { return std::make_unique<TcpSocket>(this); }
+TcpSocket* Network::newTcp() { return makeTcp().release(); }
 
-UdpSocket* Network::newUdp() {
-    return new UdpSocket(this);
-}
+std::unique_ptr<UdpSocket> Network::makeUdp() { return std::make_unique<UdpSocket>(this); }
+UdpSocket* Network::newUdp() { return makeUdp().release(); }
 
+std::unique_ptr<HttpRequest> Network::makeHttp(std::string method, std::string url) {
+    return std::make_unique<HttpRequest>(this, std::move(method), std::move(url));
+}
 HttpRequest* Network::newHttp(std::string method, std::string url) {
-    return new HttpRequest(this, std::move(method), std::move(url));
+    return makeHttp(std::move(method), std::move(url)).release();
 }
 
-Channel* Network::newChannel(TcpSocket* socket) {
+bool Network::httpRequest(const std::string& method, const std::string& url,
+                          const std::string& body, int timeoutMs, int& status,
+                          std::string& responseBody) {
+    auto ownedRequest = makeHttp(method, url);
+    HttpRequest* req = ownedRequest.get();
+    if (!body.empty()) req->setBodyString(body);
+    req->setTimeout(timeoutMs > 0 ? timeoutMs : 10000);
+    if (!req->submit()) return false;
+
+    const auto deadline = std::chrono::steady_clock::now() +
+                          std::chrono::milliseconds(timeoutMs > 0 ? timeoutMs : 1);
+    while (std::chrono::steady_clock::now() < deadline) {
+        std::vector<NetCompletion> out;
+        drainCompletions(out);
+        for (const auto& c : out) {
+            if (c.handle != req) continue;
+            if (c.type == NetEvType::HttpResp) {
+                status = c.status;
+                if (c.bytes) responseBody.assign(c.bytes->begin(), c.bytes->end());
+                return true;
+            }
+            if (c.type == NetEvType::Err) return false;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    return false;
+}
+
+std::unique_ptr<Channel> Network::makeChannel(TcpSocket* socket) {
     if (!socket) return nullptr;
-    auto* ch = new Channel(socket);
-    bindChannel(socket, ch);
+    auto ch = std::make_unique<Channel>(socket);
+    bindChannel(socket, ch.get());
     return ch;
 }
+Channel* Network::newChannel(TcpSocket* socket) { return makeChannel(socket).release(); }
 
-Session* Network::newSession() {
-    return new Session();
-}
+std::unique_ptr<Session> Network::makeSession() { return std::make_unique<Session>(); }
+Session* Network::newSession() { return makeSession().release(); }
 
-NetWriter* Network::newWriter() {
-    return new NetWriter();
-}
+std::unique_ptr<NetWriter> Network::makeWriter() { return std::make_unique<NetWriter>(); }
+NetWriter* Network::newWriter() { return makeWriter().release(); }
 
-NetReader* Network::newReader(std::string bytes) {
-    auto* r = new NetReader();
-    r->setBytes(bytes);
+std::unique_ptr<NetReader> Network::makeReader(std::string bytes) {
+    auto r = std::make_unique<NetReader>();
+    r->setBytes(std::move(bytes));
     return r;
 }
+NetReader* Network::newReader(std::string bytes) { return makeReader(std::move(bytes)).release(); }
 
-UdpLink* Network::newUdpLink(UdpSocket* socket) {
+std::unique_ptr<UdpLink> Network::makeUdpLink(UdpSocket* socket) {
     if (!socket) return nullptr;
-    auto* link = new UdpLink(this, socket);
-    bindUdpLink(socket, link);
+    auto link = std::make_unique<UdpLink>(this, socket);
+    bindUdpLink(socket, link.get());
     return link;
 }
+UdpLink* Network::newUdpLink(UdpSocket* socket) { return makeUdpLink(socket).release(); }
 
-NetRpc* Network::newRpc(UdpLink* link) {
-    return link ? new NetRpc(link) : nullptr;
+std::unique_ptr<NetRpc> Network::makeRpc(UdpLink* link) {
+    return link ? std::make_unique<NetRpc>(link) : nullptr;
 }
+NetRpc* Network::newRpc(UdpLink* link) { return makeRpc(link).release(); }
 
-NetHost* Network::newHost() {
-    return new NetHost(this);
-}
+std::unique_ptr<NetHost> Network::makeHost() { return std::make_unique<NetHost>(this); }
+NetHost* Network::newHost() { return makeHost().release(); }
 
 void Network::bindUdpLink(UdpSocket* sock, UdpLink* link) {
     if (sock) udpLinks_[sock] = link;
@@ -165,43 +184,89 @@ bool Network::getVerifySsl() const {
 }
 
 void Network::post(NetCompletion c) {
+    ++completions_;
+    ++telemetryRevision_;
+    if (c.bytes && (c.type == NetEvType::Data || c.type == NetEvType::HttpResp))
+        receivedBytes_ += c.bytes->size();
+    if (c.type == NetEvType::Err) ++errors_;
+    if (c.type == NetEvType::Conn && c.reason == "ok") ++connections_;
     if (worker_) worker_->post(std::move(c));
 }
 
-void Network::drainForTest(std::vector<NetCompletion>& out) {
+void Network::recordSent(size_t bytes) {
+    sentBytes_ += bytes;
+    ++telemetryRevision_;
+}
+
+NetTelemetrySnapshot Network::telemetrySnapshot() const {
+    NetTelemetrySnapshot result;
+    result.revision = telemetryRevision_.load();
+    result.sentBytes = sentBytes_.load();
+    result.receivedBytes = receivedBytes_.load();
+    result.completions = completions_.load();
+    result.errors = errors_.load();
+    result.connections = connections_.load();
+    {
+        std::lock_guard<std::mutex> lock(watchMu_);
+        result.watchedTcp = watchedTcp_.size();
+        result.watchedUdp = watchedUdp_.size();
+        for (const auto* socket : watchedTcp_) if (socket) result.queuedTcpBytes += socket->pendingSendBytes();
+    }
+    {
+        std::lock_guard<std::mutex> lock(channelMu_);
+        result.channels = channels_.size();
+    }
+    return result;
+}
+
+void Network::resetTelemetry() {
+    sentBytes_ = receivedBytes_ = completions_ = errors_ = connections_ = 0;
+    ++telemetryRevision_;
+}
+
+void Network::drainCompletions(std::vector<NetCompletion>& out) {
     if (worker_) worker_->drain(out);
 }
 
 void Network::watchTcp(TcpSocket* sock) {
     std::lock_guard<std::mutex> lock(watchMu_);
-    if (std::find(watchedTcp_.begin(), watchedTcp_.end(), sock) == watchedTcp_.end())
+    if (std::find(watchedTcp_.begin(), watchedTcp_.end(), sock) == watchedTcp_.end()) {
         watchedTcp_.push_back(sock);
+        ++telemetryRevision_;
+    }
 }
 
 void Network::unwatchTcp(TcpSocket* sock) {
     std::lock_guard<std::mutex> lock(watchMu_);
+    const auto before=watchedTcp_.size();
     watchedTcp_.erase(std::remove(watchedTcp_.begin(), watchedTcp_.end(), sock), watchedTcp_.end());
+    if(before!=watchedTcp_.size())++telemetryRevision_;
 }
 
 void Network::watchUdp(UdpSocket* sock) {
     std::lock_guard<std::mutex> lock(watchMu_);
-    if (std::find(watchedUdp_.begin(), watchedUdp_.end(), sock) == watchedUdp_.end())
+    if (std::find(watchedUdp_.begin(), watchedUdp_.end(), sock) == watchedUdp_.end()) {
         watchedUdp_.push_back(sock);
+        ++telemetryRevision_;
+    }
 }
 
 void Network::unwatchUdp(UdpSocket* sock) {
     std::lock_guard<std::mutex> lock(watchMu_);
+    const auto before=watchedUdp_.size();
     watchedUdp_.erase(std::remove(watchedUdp_.begin(), watchedUdp_.end(), sock), watchedUdp_.end());
+    if(before!=watchedUdp_.size())++telemetryRevision_;
 }
 
 void Network::bindChannel(TcpSocket* sock, Channel* ch) {
     std::lock_guard<std::mutex> lock(channelMu_);
     channels_[sock] = ch;
+    ++telemetryRevision_;
 }
 
 void Network::unbindChannel(TcpSocket* sock) {
     std::lock_guard<std::mutex> lock(channelMu_);
-    channels_.erase(sock);
+    if(channels_.erase(sock))++telemetryRevision_;
 }
 
 Channel* Network::channelFor(TcpSocket* sock) const {
@@ -292,18 +357,18 @@ void Network::pollSockets() {
 }
 
 void Network::emitCompletion(const NetCompletion& c) {
-    auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
 
-    using eve::event::Variant;
-    using eve::event::Message;
+    using eve::platform_event::Message;
+    using eve::platform_event::Variant;
 
     std::vector<Variant> args;
     switch (c.type) {
     case NetEvType::Conn:
         args.push_back(Variant::makePtr(c.handle));
         args.push_back(Variant::makeString(c.reason.empty() ? "ok" : c.reason));
-        ev->push(new Message("netconn", args));
+        ev->push(std::make_unique<Message>("netconn", args));
         break;
     case NetEvType::Data: {
         Channel* ch = channelFor(static_cast<TcpSocket*>(c.handle));
@@ -315,9 +380,9 @@ void Network::emitCompletion(const NetCompletion& c) {
         if (c.bytes && !c.bytes->empty())
             bd = new eve::data::ByteData(c.bytes->data(), c.bytes->size());
         args.push_back(Variant::makePtr(c.handle));
-        args.push_back(Variant::makePtr(bd));
+        args.push_back(Variant::makeOwnedPtr(bd));
         args.push_back(Variant::makeString(c.peer));
-        ev->push(new Message("netdata", args));
+        ev->push(std::make_unique<Message>("netdata", args));
         break;
     }
     case NetEvType::Err: {
@@ -325,12 +390,12 @@ void Network::emitCompletion(const NetCompletion& c) {
         if (ch) {
             args.push_back(Variant::makePtr(ch));
             args.push_back(Variant::makeString(c.reason));
-            ev->push(new Message("chclose", args));
+            ev->push(std::make_unique<Message>("chclose", args));
         }
         args.clear();
         args.push_back(Variant::makePtr(c.handle));
         args.push_back(Variant::makeString(c.reason));
-        ev->push(new Message("neterr", args));
+        ev->push(std::make_unique<Message>("neterr", args));
         break;
     }
     case NetEvType::HttpResp: {
@@ -339,8 +404,8 @@ void Network::emitCompletion(const NetCompletion& c) {
             bd = new eve::data::ByteData(c.bytes->data(), c.bytes->size());
         args.push_back(Variant::makePtr(c.handle));
         args.push_back(Variant::makeInt(c.status));
-        args.push_back(Variant::makePtr(bd));
-        ev->push(new Message("httpresp", args));
+        args.push_back(Variant::makeOwnedPtr(bd));
+        ev->push(std::make_unique<Message>("httpresp", args));
         break;
     }
     case NetEvType::ChMsg: {
@@ -348,14 +413,14 @@ void Network::emitCompletion(const NetCompletion& c) {
         if (c.bytes && !c.bytes->empty())
             bd = new eve::data::ByteData(c.bytes->data(), c.bytes->size());
         args.push_back(Variant::makePtr(c.handle));
-        args.push_back(Variant::makePtr(bd));
-        ev->push(new Message("chmsg", args));
+        args.push_back(Variant::makeOwnedPtr(bd));
+        ev->push(std::make_unique<Message>("chmsg", args));
         break;
     }
     case NetEvType::ChClose:
         args.push_back(Variant::makePtr(c.handle));
         args.push_back(Variant::makeString(c.reason));
-        ev->push(new Message("chclose", args));
+        ev->push(std::make_unique<Message>("chclose", args));
         break;
     }
 }

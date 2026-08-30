@@ -16,6 +16,9 @@ namespace eve::building {
 class PlacementWorld;
 class Ghost;
 
+/** @brief Outcome of restoring an exact placement snapshot. */
+enum class PlacementRestoreStatus { Restored, Rejected };
+
 class PlacementSystem {
 public:
     using ValidateFn = std::function<bool(const PlacementWorld &world, const PlacementQuery &q,
@@ -38,6 +41,16 @@ public:
      */
     using SurfaceFn = std::function<bool(const PlacementWorld &world, float x, float y,
                                          PlacementHit *hit)>;
+
+    /**
+     * @brief Process singleton holding all PlacementSystem state.
+     *
+     * Rules / hooks / events / counters used to live in one function-local
+     * static per accessor, which made the state invisible, non-destructible
+     * and hard to reason about across hot-reload and tests. State now lives in
+     * this single instance's members; the static API below delegates to it.
+     */
+    static PlacementSystem &inst();
 
     static void registerValidateRule(const std::string &name, ValidateFn fn);
     static void unregisterValidateRule(const std::string &name);
@@ -103,6 +116,16 @@ public:
                               float worldY, float worldZ, float rotationDeg = 0.f);
     static int placeGhost(PlacementWorld *world, Ghost *ghost);
 
+    /**
+     * @brief Restore an exact persistent instance for editor undo or snapshot loading.
+     * @param world Destination placement world.
+     * @param placed Complete instance value with a positive unused instance id.
+     * @param reason Optional validation failure token.
+     * @return Restored when validation passed and the exact id/pose was restored; otherwise Rejected.
+     */
+    static PlacementRestoreStatus restoreExact(PlacementWorld *world, const PlacedBuilding &placed,
+                                                std::string *reason = nullptr);
+
     static bool removeBuilding(PlacementWorld *world, int instanceId);
     static bool moveBuilding(PlacementWorld *world, int instanceId, int cellX, int cellY,
                              float rotationDeg = -1.f);
@@ -138,6 +161,20 @@ private:
     static std::vector<BuildingChangeEvent> &eventQueue();
     static int &instanceCounter();
     static bool &builtinsReady();
+
+    PlacementSystem() = default;
+    ~PlacementSystem() = default;
+    PlacementSystem(const PlacementSystem &) = delete;
+    PlacementSystem &operator=(const PlacementSystem &) = delete;
+
+    std::unordered_map<std::string, ValidateFn> validateRules_;
+    std::unordered_map<std::string, SnapFn> snapRules_;
+    std::unordered_map<std::string, ChangeHook> changeHooks_;
+    std::unordered_map<std::string, SurfaceFn> surfaces_;
+    std::vector<BuildingChangeEvent> eventQueue_;
+    int instanceCounter_ = 0;
+    bool builtinsReady_ = false;
+    float planeSurfaceHeight_ = 0.f;
 };
 
 }  // namespace eve::building

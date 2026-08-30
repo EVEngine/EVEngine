@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include <cstdio>
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include <SDL2/SDL.h>
 #include <assimp/mesh.h>
@@ -10,12 +11,31 @@
 #include <cstdint>
 #include <vector>
 
+#include "filesystem/FileData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
 #include "graphics/Light.h"
+#include "graphics/Material.h"
 #include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ClipSpace.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "medialoader/image/FormatHandler.h"
@@ -26,6 +46,8 @@
 
 #include <filesystem>
 #include <fstream>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::graphics;
 
@@ -86,18 +108,6 @@ static const char kCubeObj[] =
 
 static float luma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
 
-static void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320, int h = 240) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 static Mesh *loadUvCube(Graphics *gfx) {
     medialoader::ModelLoader loader;
@@ -277,14 +287,95 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
     win->close();
 }
 
-TEST_CASE("RenderSystem3D.textureCheckerPixels") {
+TEST_CASE("RenderSystem3D.dynamicVertexRingTracksLatestUpdate") {
+    // P1-2 regression: updateMeshVertices now writes into a per-frame ring of
+    // host-visible vertex buffers instead of waiting on all in-flight frames.
+    // The draw path must bind the latest written copy — a stale slot (e.g. a
+    // copy from a few frames ago) would show the wrong side of this
+    // alternating quad.
     eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx);
     resetScene3D();
 
-    Mesh *mesh = loadUvCube(gfx);
-    auto *cam = Camera3D::createCamera();
+    const float           half    = 0.5f;
+    std::vector<float>    basePos = {-half, -half, 0.f, half, -half, 0.f, half, half, 0.f, -half, half, 0.f};
+    std::vector<float>    nrm     = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    std::vector<float>    uv      = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    std::vector<uint32_t> idx     = {0, 1, 2, 0, 2, 3};
+    Mesh                 *mesh    = gfx->newMeshFromArrays(basePos.data(), nrm.data(), uv.data(), 4, idx.data(), 6);
+    REQUIRE(mesh != nullptr);
+
+    auto *cam                    = Camera3D::createCamera();
+    cam->data()->eyeZ            = 3.f;
+    auto *ent                    = Renderable3D::create();
+    ent->meshRenderer()->mesh    = mesh;
+    ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
+    RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
+    gfx->setScreenReadbackEnabled(true);
+
+    const int W         = gfx->getWidth();
+    const int H         = gfx->getHeight();
+    auto      updatePos = [&](float side) {
+        std::vector<float> pos = basePos;
+        for (int v = 0; v < 4; ++v) pos[size_t(v) * 3u + 0u] += side * 0.8f;
+        // Indices are only supplied on the first update; later calls exercise
+        // the ring's CPU-index reuse path.
+        REQUIRE(gfx->updateMeshVertices(mesh, pos.data(), nrm.data(), uv.data(), 4, idx.data(), 6));
+    };
+    auto renderFrame = [&]() {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        gfx->present();
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+    };
+    auto brightestHalf = [&]() -> int {
+        // Horizontal scan at mid-height: 0 = brightest on left half, 1 = right.
+        float bestL = 0.f, bestR = 0.f;
+        for (int x = 0; x < W; ++x) {
+            const Color c = gfx->getPixel(x, H / 2);
+            const float l = luma(c);
+            if (x < W / 2)
+                bestL = std::max(bestL, l);
+            else
+                bestR = std::max(bestR, l);
+        }
+        return bestL > bestR ? 0 : 1;
+    };
+
+    // Alternate sides across many frames so the ring rotates several times;
+    // the drawn image must always reflect the update issued in that frame.
+    for (int i = 0; i < 24; ++i) {
+        updatePos((i % 2 == 0) ? -1.f : 1.f);
+        renderFrame();
+    }
+    // Settle on the right side and verify the latest update wins.
+    for (int i = 0; i < 4; ++i) {
+        updatePos(1.f);
+        renderFrame();
+    }
+    CHECK_EQ(brightestHalf(), 1);
+    // Settle on the left side: the ring must still serve the freshest copy.
+    for (int i = 0; i < 4; ++i) {
+        updatePos(-1.f);
+        renderFrame();
+    }
+    CHECK_EQ(brightestHalf(), 0);
+
+    win->close();
+}
+
+TEST_CASE("RenderSystem3D.textureCheckerPixels") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    Mesh *mesh        = loadUvCube(gfx);
+    auto *cam         = Camera3D::createCamera();
     cam->data()->eyeZ = 3.f;
 
     auto *ent = Renderable3D::create();
@@ -313,9 +404,11 @@ TEST_CASE("RenderSystem3D.textureCheckerPixels") {
     const int cx = gfx->getWidth() / 2;
     const int cy = gfx->getHeight() / 2;
     const int dx = std::max(16, gfx->getWidth() / 10);
-    // Sample left vs right of the projected front face (UV u≈0.25 vs u≈0.75).
-    Color a = gfx->getPixel(cx - dx, cy);
-    Color b = gfx->getPixel(cx + dx, cy);
+    // Sample inside a checker row rather than on its v=0.5 boundary, where
+    // backend-specific filtering can blend both cells to nearly the same gray.
+    const int sampleY = cy - dx / 2;
+    Color a = gfx->getPixel(cx - dx, sampleY);
+    Color b = gfx->getPixel(cx + dx, sampleY);
     // Lit PBR softens albedo contrast vs unlit; still require a clear left/right split.
     REQUIRE(std::abs(luma(a) - luma(b)) > 0.05f);
 
@@ -676,6 +769,24 @@ TEST_CASE("Camera3D.screenToRayPick") {
     CHECK(std::fabs(len - 1.f) < 1e-4f);
 }
 
+TEST_CASE("Camera3D.orthographicScreenRaysAreParallel") {
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 10.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setOrthographic(8.f);
+
+    cam->screenToRay(20.f, 60.f, 160.f, 120.f);
+    const float leftOrigin = cam->getScreenRayOriginX();
+    const float leftDirX = cam->getScreenRayDirX();
+    const float leftDirZ = cam->getScreenRayDirZ();
+    cam->screenToRay(140.f, 60.f, 160.f, 120.f);
+
+    CHECK(cam->getScreenRayOriginX() > leftOrigin + 1.f);
+    CHECK(std::fabs(cam->getScreenRayDirX() - leftDirX) < 1e-4f);
+    CHECK(std::fabs(cam->getScreenRayDirZ() - leftDirZ) < 1e-4f);
+    CHECK(cam->getScreenRayDirZ() < -0.99f);
+}
+
 // ---------------------------------------------------------------------------
 // GPU 验证：逐像素实体 ID mask（renderEntityIdMask）与通用纹理读回
 // （readTextureToImageData）。这两条路径支撑 capture_render_frame 的
@@ -738,7 +849,7 @@ TEST_CASE("RenderSystem3D.entityIdMaskPixels") {
     CHECK(sawBg);     // 背景为 (0,0,0,0)
 
     // 保存 ID mask PNG 供人工核对（可选）。
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData *png =
         img->encode(medialoader::FormatHandler::ENCODED_PNG, "entity_id_mask.png", false);
     if (png) {

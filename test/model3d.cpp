@@ -1,14 +1,37 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
+#include "common/Exception.h"
+#include "data/ByteData.h"
+#include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 #include "model3d/ModelRenderer.h"
-#include "data/ByteData.h"
-#include "filesystem/Filesystem.h"
-#include "common/Exception.h"
 
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
@@ -131,18 +154,6 @@ std::string makeUvOrientationGltf(const std::string &pngBase64) {
 
 float luma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 640, int h = 480) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 void resetScene3D() {
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {
@@ -196,7 +207,7 @@ Texture *loadAssimpDiffuseTexture(Graphics *gfx, const aiScene *scene, const aiM
     if (!p || !p[0])
         return nullptr;
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     // Embedded: "*0", "*1", ...
     if (p[0] == '*') {
@@ -284,7 +295,7 @@ Texture *loadTextureFile(Graphics *gfx, const char *relPathBesideTest) {
     auto fileBytes = readBinaryFile(pathBesideThisSource(relPathBesideTest));
     if (fileBytes.empty())
         return nullptr;
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     try {
         eve::data::ByteData bytes(fileBytes.data(), fileBytes.size());
         eve::image::ImageData *img = eve::image::Image::create()->newImageData(&bytes);
@@ -493,7 +504,6 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName,
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.05f);
 
-    eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *png =
@@ -562,6 +572,9 @@ TEST_CASE("model3d.newModelData.objFromMemory") {
     // `vn` lines, but never synthesizes UVs without `vt` lines.
     CHECK(md->hasNormals(0));
     CHECK(!md->hasTexCoords(0));
+    CHECK_EQ(md->getTexCoordChannelCount(0), 0);
+    CHECK_EQ(md->getVertexColorChannelCount(0), 0);
+    CHECK(!md->hasTangents(0));
     delete md;
 }
 
@@ -610,9 +623,53 @@ TEST_CASE("model3d.newModelDataFromFile.missingThrows") {
     CHECK(threw);
 }
 
+TEST_CASE("model3d.newModelDataFromFile.cached") {
+    const std::string objPath = pathBesideThisSource("sofa.obj");
+    REQUIRE(!readBinaryFile(objPath).empty());
+
+    std::string testDir = pathBesideThisSource("");
+    if (!testDir.empty() && (testDir.back() == '/' || testDir.back() == '\\'))
+        testDir.pop_back();
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_cache", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(testDir);
+    REQUIRE(fs->mount(testDir, "", false));
+
+    auto *mod = eve::model3d::Model3D::create();
+    eve::model3d::ModelData *a = mod->newModelDataFromFile("sofa.obj");
+    eve::model3d::ModelData *b = mod->newModelDataFromFile("sofa.obj");
+    REQUIRE(a != nullptr);
+    CHECK(a == b);  // identical requests share one decoded scene
+
+    eve::model3d::ModelLoadOptions opt;
+    opt.joinIdenticalVertices = false;
+    eve::model3d::ModelData *c = mod->newModelDataFromFile("sofa.obj", opt);
+    REQUIRE(c != nullptr);
+    CHECK(c != a);  // different decode options are a different cache entry
+
+    CHECK(fs->unmount(testDir));
+}
+
 TEST_CASE("model3d.Model3D.getName") {
     auto *mod = eve::model3d::Model3D::create();
     CHECK(mod->getName() == "Model3D");
+}
+
+TEST_CASE("model3d.evmodel.roundTrip") {
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_evmodel", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->write("source.obj", kCubeObj, sizeof(kCubeObj) - 1);
+
+    auto *mod = eve::model3d::Model3D::create();
+    REQUIRE(mod->bakeModel("source.obj", "cube.evmodel"));
+    auto *md = mod->newModelDataFromFile("cube.evmodel");
+    REQUIRE(md != nullptr);
+    CHECK(md->getMeshCount() >= 1);
+    CHECK(md->getFaceCount(0) > 0);
+    delete md;
 }
 
 TEST_CASE("model3d.newModelData.rock1Fbx") {
@@ -683,7 +740,6 @@ TEST_CASE("model3d.newModelDataFromFile.sofaObjMtl") {
     }
     CHECK(totalVerts > 0);
     CHECK(totalFaces > 0);
-    delete md;
 
     CHECK(fs->unmount(testDir));
 }
@@ -756,7 +812,6 @@ TEST_CASE("model3d.render.sofaObjMtl") {
     auto *md = mod->newModelDataFromFile("sofa.obj");
     REQUIRE(md != nullptr);
     renderModelSmoke(md, "model3d_sofa.png");
-    delete md;
 
     CHECK(fs->unmount(testDir));
 }
@@ -844,7 +899,6 @@ TEST_CASE("model3d.materialApi.gltf") {
     // Double-sided flag exists on glTF assets that set it; absence is fine here.
     CHECK(!md->getMaterialTwoSided(0));
 
-    delete md;
     CHECK(fs->unmount(dir));
 }
 
@@ -888,7 +942,6 @@ TEST_CASE("model3d.buildRenderable.objMtl") {
     CHECK(eve::model3d::buildRenderable(*gfx, nullptr, 0) == nullptr);
 
     win->close();
-    delete md;
     CHECK(fs->unmount(testDir));
 }
 
@@ -907,7 +960,7 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
             p[3] = 255;
         }
     }
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData pngImg(tw, th, "RGBA8", px.data(), false);
     eve::filesystem::FileData *png =
         pngImg.encode(eve::image::ImageData::FormatHandler::ENCODED_PNG, "gltf_uv.png", false);
@@ -922,6 +975,32 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
     auto *md = mod->newModelData(&data, ".gltf");
     REQUIRE(md != nullptr);
     REQUIRE(md->getMeshCount() >= 1);
+
+    const aiMesh *sourceMesh = md->getMesh(0);
+    REQUIRE(sourceMesh != nullptr);
+    REQUIRE(sourceMesh->mNumFaces > 0);
+    const aiFace &sourceFace = sourceMesh->mFaces[0];
+    REQUIRE(sourceFace.mNumIndices == 3);
+    const aiVector3D centroid =
+        (sourceMesh->mVertices[sourceFace.mIndices[0]] +
+         sourceMesh->mVertices[sourceFace.mIndices[1]] +
+         sourceMesh->mVertices[sourceFace.mIndices[2]]) / 3.f;
+    auto mapped = md->mapSurfacePointToUv(0, 0, centroid.x, centroid.y, centroid.z, 0);
+    REQUIRE(mapped.ok());
+    const auto surfaceUv = std::move(mapped).takeValue();
+    const float expectedU =
+        (sourceMesh->mTextureCoords[0][sourceFace.mIndices[0]].x +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[1]].x +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[2]].x) / 3.f;
+    const float expectedV =
+        (sourceMesh->mTextureCoords[0][sourceFace.mIndices[0]].y +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[1]].y +
+         sourceMesh->mTextureCoords[0][sourceFace.mIndices[2]].y) / 3.f;
+    CHECK(std::fabs(surfaceUv.u - expectedU) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.v - expectedV) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricA - 1.f / 3.f) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricB - 1.f / 3.f) < 1e-5f);
+    CHECK(std::fabs(surfaceUv.barycentricC - 1.f / 3.f) < 1e-5f);
 
     // Material API on the synthetic file: PBR factors + embedded texture.
     CHECK(md->getMaterialMetallicFactor(0) == 0.f);
@@ -985,7 +1064,6 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
     CHECK(top.r > top.b);  // red on top → not V-flipped
     CHECK(bot.b > bot.r);  // blue on bottom
 
-    eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *framePng =
@@ -1075,7 +1153,7 @@ TEST_CASE("model3d.render.cesiumManGltf") {
     const Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.05f);
 
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
     eve::filesystem::FileData *png =
@@ -1096,6 +1174,5 @@ TEST_CASE("model3d.render.cesiumManGltf") {
     delete frame;
 
     win->close();
-    delete md;
     CHECK(fs->unmount(dir));
 }

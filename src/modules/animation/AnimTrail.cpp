@@ -1,5 +1,7 @@
 #include "animation/AnimTrail.h"
+
 #include "animation/AnimPose.h"
+#include "animation/AnimationTime.h"
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
@@ -8,6 +10,9 @@
 #include <cmath>
 
 namespace eve::animation {
+
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 AnimTrail::AnimTrail(int capacity) {
     setCapacity(capacity);
@@ -135,7 +140,7 @@ void AnimTrail::pushPoint(float x, float y, float z) {
 
 void AnimTrail::clear() { points_.clear(); }
 
-void AnimTrail::update(float dt) {
+void AnimTrail::updateUnchecked(float dt) {
     if (dt < 0.f) dt = 0.f;
     for (Point &p : points_) p.age += dt;
     if (duration_ > 0.f) {
@@ -148,6 +153,24 @@ void AnimTrail::update(float dt) {
             }
         }
     }
+}
+
+eve::Result<void> AnimTrail::advance(const eve::SimulationStep &step) {
+    auto seconds = detail::secondsForStep(step, hasLastTick_, lastTick_, "AnimTrail");
+    if (!seconds) return eve::Result<void>::failure(seconds.status());
+    updateUnchecked(std::move(seconds).takeValue());
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void AnimTrail::update(float dt) {
+    auto step = detail::legacyStep(dt, hasLastTick_, lastTick_, "AnimTrail");
+    if (!step) {
+        step.ignore("legacy AnimTrail update");
+        return;
+    }
+    advance(std::move(step).takeValue()).ignore("legacy AnimTrail update");
 }
 
 void AnimTrail::requireIndex(int index) const {

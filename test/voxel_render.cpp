@@ -1,5 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
+
+#include "procgen/heightmap/TerrainSampler.h"
 
 #include <SDL2/SDL.h>
 
@@ -12,10 +15,30 @@
 #include <vector>
 
 #include "RenderImageAudit.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/ImageData.h"
 #include "voxel/Chunk.h"
 #include "voxel/CubeTypeRegistry.h"
@@ -31,6 +54,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::graphics;
 using namespace eve::voxel;
@@ -52,18 +77,6 @@ static int countNonBgSamples(Graphics *gfx, const Color &bg, float eps = 0.08f) 
     return n;
 }
 
-static void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320, int h = 240) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 static Texture *makeSolid(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b) {
     uint8_t px[4] = {r, g, b, 255};
@@ -161,6 +174,40 @@ static void renderVoxelFrame(Graphics *gfx, VoxelWorld *world, Texture *atlas, i
     gfx->setMesh3DCameraPos(eye);
     world->drawVisible(gfx, atlas, tilesPerRow);
     RenderSystem::render(*gfx);  // closes / presents via 2D path
+}
+
+static Color renderVoxelAoSample(Graphics *gfx, Texture *atlas, uint32_t ao) {
+    const uint32_t packed = PackedRect::pack(0, 0, 0, 4, 4, 1).bits;
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::vec3 eye(2.f, 8.f, 2.f);
+    const glm::mat4 view =
+        glm::lookAtRH(eye, glm::vec3(2.f, 0.f, 2.f), glm::vec3(0.f, 0.f, -1.f));
+    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(proj * view);
+        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 1, &ao);
+    }
+    RenderSystem::render(*gfx);
+    return gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+}
+
+/** @brief Vertex AO must shade identically on Vulkan and WebGPU voxel pipelines. */
+TEST_CASE("voxel.render.vertexAoDarkensPixels") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 300, 220);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+    Texture *atlas = makeSolid(gfx, 220, 220, 220);
+
+    const Color bright = renderVoxelAoSample(gfx, atlas, 0xFFu);
+    const Color dark = renderVoxelAoSample(gfx, atlas, 0x00u);
+    REQUIRE(luma(bright) > 0.25f);
+    REQUIRE(luma(dark) < luma(bright) * 0.6f);
 }
 
 // NOTE: Graphics is a process-wide singleton — reuse one window for these cases.

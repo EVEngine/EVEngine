@@ -13,19 +13,26 @@
 // 运行： make run/<platform>-debug GAME=examples/cardgame
 // ============================================================================
 
-if (!("card" in getroottable())) card <- null;
-if (!("playerCfg" in getroottable())) playerCfg <- null;
-if (!("enemyCfg" in getroottable())) enemyCfg <- null;
-if (!("mana" in getroottable())) mana <- 10;
-if (!("played" in getroottable())) played <- 0;
-if (!("discarded" in getroottable())) discarded <- 0;
-if (!("selected" in getroottable())) selected <- null;
-if (!("logLines" in getroottable())) logLines <- [];
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
+persist card = null
+persist playerCfg = null
+persist enemyCfg = null
+persist mana = 10
+persist played = 0
+persist discarded = 0
+persist deckRemaining = 0
+persist selected = null
+persist logLines = []
+persist uiBuilt = false
+persist artTextures = {}
 
-local defIds = ["flame.element", "frost.guard", "stone.golem", "jungle.drake",
-                "shadow.assassin", "iron.knight", "fireball", "healing.light", "time.warp"];
+local suits = ["Clovers", "Hearts", "Pikes", "Tiles"];
+local ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"];
+local defIds = [];
+foreach (suit in suits) {
+    foreach (rank in ranks) {
+        defIds.push(suit + "_" + rank);
+    }
+}
 
 function pushLog(text) {
     logLines.push(text);
@@ -34,40 +41,62 @@ function pushLog(text) {
 }
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
-// 注册卡牌类型定义（JSON）
+function readTextFile(path) {
+    local handle = file(path, "r");
+    if (handle == null) return null;
+    local content = handle.read();
+    handle.close();
+    return content;
+}
+
+function getCardTexture(defId) {
+    if (defId in artTextures) return artTextures[defId];
+    local path = "assets/playing-cards/" + defId + "_black.png";
+    local texture = gfx.newTextureFromFile(path);
+    artTextures.rawset(defId, texture);
+    return texture;
+}
+
+function renderPlayingCardFaces() {
+    card.capturePresentation();
+    local playerHand = card.findHand("player");
+    local enemyHand = card.findHand("enemy");
+    local enemyHidden = enemyHand != null && enemyHand.isFaceDown() && !enemyHand.isPeek();
+
+    for (local i = 0; i < card.getPresentationCount(); i += 1) {
+        local snap = card.getPresentation(i);
+        local instanceId = snap.getInstanceId();
+        local inPlayerHand = playerHand != null && playerHand.findCard(instanceId) != null;
+        local inEnemyHand = enemyHand != null && enemyHand.findCard(instanceId) != null;
+        if ((inPlayerHand || inEnemyHand) && snap.isFaceUp() && !(inEnemyHand && enemyHidden)) {
+            local scale = snap.getScale();
+            local shade = snap.isDisabled() ? 0.42 : 1.0;
+            gfx.drawTexturedRectRotated(getCardTexture(snap.getDefinitionId()),
+                snap.getX(), snap.getY(), snap.getW() * scale, snap.getH() * scale,
+                snap.getAngle(), shade, shade, shade, snap.getAlpha());
+        }
+    }
+}
+
+// 注册卡牌类型定义（JSON，从 data/cards.json 读取）
 function registerCards() {
-    card.registerCardsFromJson(@"[
-      {""id"":""flame.element"",""name"":""烈焰元素"",""kind"":""creature"",""cost"":2,""attack"":3,""health"":2,""tint"":[0.85,0.35,0.20]},
-      {""id"":""frost.guard"",""name"":""寒霜守卫"",""kind"":""creature"",""cost"":3,""attack"":2,""health"":5,""tint"":[0.35,0.65,0.85]},
-      {""id"":""stone.golem"",""name"":""石甲傀儡"",""kind"":""creature"",""cost"":4,""attack"":3,""health"":6,""tint"":[0.60,0.55,0.45]},
-      {""id"":""jungle.drake"",""name"":""丛林幼龙"",""kind"":""creature"",""cost"":3,""attack"":4,""health"":3,""tint"":[0.40,0.75,0.35]},
-      {""id"":""shadow.assassin"",""name"":""暗影刺客"",""kind"":""creature"",""cost"":2,""attack"":4,""health"":1,""tint"":[0.45,0.30,0.60]},
-      {""id"":""iron.knight"",""name"":""钢铁骑士"",""kind"":""creature"",""cost"":5,""attack"":4,""health"":5,""tint"":[0.55,0.62,0.70]},
-      {""id"":""fireball"",""name"":""火球术"",""kind"":""spell"",""cost"":3,""tint"":[0.95,0.55,0.25]},
-      {""id"":""healing.light"",""name"":""治愈之光"",""kind"":""spell"",""cost"":2,""tint"":[0.95,0.85,0.55]},
-      {""id"":""time.warp"",""name"":""时间扭曲"",""kind"":""spell"",""cost"":5,""tint"":[0.60,0.45,0.85]}
-    ]");
+    local json = readTextFile("data/cards.json");
+    if (json == null) {
+        print("cardgame: missing data/cards.json\n");
+        return;
+    }
+    card.registerCardsFromJson(json);
 }
 
-// 用定义填充牌库（24 张，混合生物与法术）
+// 用完整 52 张扑克牌定义填充牌库
 function fillDeck() {
     local deck = card.getDeck();
     deck.clear();
-    local n = 0;
-    while (n < 24) {
-        foreach (did in defIds) {
-            deck.push(card.newCard(did));
-            n += 1;
-            if (n >= 24) break;
-        }
-    }
+    foreach (did in defIds)
+        deck.push(card.newCard(did));
     deck.shuffle();
 }
 
@@ -79,9 +108,11 @@ function resetRun() {
     discarded = 0;
     selected = null;
     fillDeck();
+    deckRemaining = defIds.len();
     for (local i = 0; i < 4; i += 1) card.drawCard("player");
     for (local i = 0; i < 5; i += 1) card.drawCard("enemy");
-    pushLog("重置：洗牌并发牌。拖拽手牌到出牌区 / 弃牌区，或点按查看。");
+    deckRemaining -= 9;
+    pushLog("重置：洗好 52 张牌并发牌。拖拽手牌到出牌区 / 弃牌区，或点按查看。");
 }
 
 function buildPanel() {
@@ -102,10 +133,10 @@ function buildPanel() {
     ui.checkbox("悬浮时转正", playerCfg.getHoverRotation(), "hoverrotation");
     ui.text("操作", "h1");
     ui.button("抽一张牌 (1)", "draw");
-    ui.sameLine();
+    ui.sameLine("sl_draw");
     ui.button("重置 (R)", "reset");
     ui.button("偷看敌方 (2)", "peek");
-    ui.sameLine();
+    ui.sameLine("sl_peek");
     ui.button("洗牌", "shuffle");
     ui.text("", "hud");
     ui.text("", "log");
@@ -120,7 +151,9 @@ function buildPanel() {
 function syncHud() {
     if (!uiBuilt) return;
     ui.select("panel");
-    local info = "法力 " + mana + "   牌库 " + card.getDeck().count() +
+    local deck = card.getDeck();
+    local deckCount = (deck != null && ("count" in deck)) ? deck.count() : deckRemaining;
+    local info = "行动点 " + mana + "   牌库 " + deckCount +
         "   已出 " + played + "   弃掉 " + discarded;
     if (selected != null)
         info += "\n选中: " + selected.describe();
@@ -132,21 +165,26 @@ function syncHud() {
 }
 
 eve_init = function() {
-    gfx.setBackgroundColor(0.09, 0.11, 0.16, 1.0);
+    gfx.setBackgroundColor(0.025, 0.030, 0.040, 1.0);
     if (card == null) {
         card = eve.Card();
         registerCards();
 
         playerCfg = card.newConfig();
-        playerCfg.setHandX(config.width * 0.5);
-        playerCfg.setHandY(config.height - 80.0);
-        playerCfg.setDeckX(config.width * 0.5 - 330.0);
-        playerCfg.setDeckY(config.height - 100.0);
+        playerCfg.setCardW(112.0);
+        playerCfg.setCardH(159.0);
+        playerCfg.setSpacing(20.0);
+        playerCfg.setHandX(790.0);
+        playerCfg.setHandY(config.height - 76.0);
+        playerCfg.setDeckX(1160.0);
+        playerCfg.setDeckY(config.height - 108.0);
         card.setConfig(playerCfg);
 
         enemyCfg = card.newConfig();
-        enemyCfg.setHandX(config.width * 0.5);
-        enemyCfg.setHandY(80.0);
+        enemyCfg.setCardW(98.0);
+        enemyCfg.setCardH(139.0);
+        enemyCfg.setHandX(790.0);
+        enemyCfg.setHandY(82.0);
         enemyCfg.setArcHeight(28.0);
         enemyCfg.setSpacing(30.0);
 
@@ -161,16 +199,16 @@ eve_init = function() {
         eh.setInteractive(false);
 
         local hz = card.newZone("hand", "手牌区（松手归位）",
-            playerCfg.getHandX() - 340.0, playerCfg.getHandY() + 40.0, 680.0, 70.0);
-        hz.setColor(0.25, 0.60, 0.30); hz.setAlpha(0.14);
+            playerCfg.getHandX() - 355.0, playerCfg.getHandY() + 38.0, 710.0, 70.0);
+        hz.setColor(0.25, 0.72, 0.62); hz.setAlpha(0.11);
 
         local pz = card.newZone("play", "出牌区",
-            config.width * 0.5 - 240.0, config.height * 0.32, 480.0, 170.0);
-        pz.setColor(0.90, 0.55, 0.20); pz.setAlpha(0.14);
+            530.0, 270.0, 520.0, 170.0);
+        pz.setColor(0.94, 0.55, 0.34); pz.setAlpha(0.11);
 
         local dz = card.newZone("discard", "弃牌区",
-            config.width * 0.5 + 300.0, playerCfg.getHandY() + 40.0, 140.0, 70.0);
-        dz.setColor(0.55, 0.35, 0.30); dz.setAlpha(0.14);
+            1015.0, playerCfg.getHandY() + 38.0, 128.0, 70.0);
+        dz.setColor(0.78, 0.30, 0.34); dz.setAlpha(0.11);
 
         resetRun();
     }
@@ -183,11 +221,14 @@ eve_reload <- function() {
 };
 
 eve_update = function(dt) {
-    // 费用不足的牌自动置灰
+    // 行动点不足的牌自动置灰
     local ph = card.findHand("player");
-    for (local i = 0; i < ph.count(); i += 1) {
-        local c = ph.getCard(i);
-        c.setDisabled(c.getCost() > mana);
+    if (ph != null && ("count" in ph)) {
+        for (local i = 0; i < ph.count(); i += 1) {
+            local c = ph.getCard(i);
+            if (c != null && ("setDisabled" in c))
+                c.setDisabled(c.getCost() > mana);
+        }
     }
 
     // 面板按钮
@@ -195,7 +236,10 @@ eve_update = function(dt) {
         local c = ui.consumeClick();
         if (c == "") break;
         if (c == "panel/draw") {
-            if (card.drawCard("player") != null) pushLog("抽一张牌。");
+            if (card.drawCard("player") != null) {
+                deckRemaining -= 1;
+                pushLog("抽一张牌。");
+            }
             else pushLog("牌库空了。");
         } else if (c == "panel/reset") {
             resetRun();
@@ -242,7 +286,10 @@ eve_update = function(dt) {
 
     // 键盘快捷键
     if (keyPressed("1")) {
-        if (card.drawCard("player") != null) pushLog("抽一张牌。");
+        if (card.drawCard("player") != null) {
+            deckRemaining -= 1;
+            pushLog("抽一张牌。");
+        }
         else pushLog("牌库空了。");
     }
     if (keyPressed("2")) {
@@ -268,7 +315,7 @@ eve_update = function(dt) {
             if (c != null) {
                 if (zoneId == "play") {
                     if (c.getCost() > mana) {
-                        pushLog("法力不足，无法打出 " + c.getName() + "。");
+                        pushLog("行动点不足，无法打出 " + c.getName() + "。");
                     } else {
                         ph.removeCard(c);
                         c.setState("played");
@@ -299,7 +346,15 @@ eve_update = function(dt) {
 
 eve_render = function() {
     gfx.clear();
+    // Casino-style table that keeps the configuration panel visually separate.
+    gfx.drawSolidRect(330.0, 18.0, 932.0, 684.0, 0.08, 0.035, 0.055, 1.0);
+    gfx.drawSolidRect(340.0, 28.0, 912.0, 664.0, 0.48, 0.16, 0.22, 1.0);
+    gfx.drawSolidRect(352.0, 40.0, 888.0, 640.0, 0.035, 0.18, 0.19, 1.0);
+    gfx.drawSolidRect(364.0, 52.0, 864.0, 616.0, 0.045, 0.245, 0.25, 1.0);
+    gfx.drawSolidRect(378.0, 242.0, 836.0, 2.0, 0.94, 0.55, 0.34, 0.28);
+    gfx.drawSolidRect(378.0, 470.0, 836.0, 2.0, 0.94, 0.55, 0.34, 0.28);
     card.render(gfx);
+    renderPlayingCardFaces();
     card.renderDeck(gfx);
     ui.beginFrameAndRender();
 };

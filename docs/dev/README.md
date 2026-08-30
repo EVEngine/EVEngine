@@ -2,12 +2,17 @@
 
 本目录保存引擎的架构、模块设计、测试策略和实现计划，面向 EVEngine 本身的维护者与贡献者。
 
+> **如果你是游戏开发者而不是引擎开发者**：请从[官网发布页](https://github.com/EVEngine/EVEngine/releases)
+> 下载预编译 SDK 直接使用，**不需要编译引擎**；用户文档见[用户指南](../usr/README.md)与
+> [模块使用手册](../usr/MODULES.md)。本目录及下文“从源码构建”只对需要修改引擎的人有意义。
+
 ## 架构与工程约定
 
 - [发布流程](发布流程.md)（`main` / `dev` / `vX.X.X`，Pre-release 发版）
 - [整体架构](整体架构.md)
 - [模块设计与实现进度](模块设计.md)
 - [模块编排与裁剪架构](模块编排与裁剪架构.md)（实测依赖分层、协作接缝、按需裁剪；用户侧用法见[按需裁剪模块](../usr/TRIMMING.md)）
+- [EveScript 语言设计](EveScript语言设计.md)（统一 `.nut` 前端、脚本模块、类型、持久变量与异步 lowering）
 - [依赖项](依赖项.md)
 - [命令行设计](命令行设计.md)
 - [测试覆盖](测试覆盖.md)
@@ -31,6 +36,7 @@
 - [环境光遮蔽模块](环境光遮蔽模块设计.md)
 - [风格化渲染模块](风格化渲染模块设计.md)
 - [RPG 系统](RPG系统设计.md)
+- [RPG 任务系统](RPG任务系统设计.md)
 - [背包系统](背包系统设计.md)
 - [建筑放置系统](建筑放置系统设计.md)
 - [空间索引模块](空间索引模块设计.md)
@@ -48,6 +54,7 @@
   产物位于 `docs/api/html/`（已加入 `.gitignore`）。需要先安装 doxygen：
   Ubuntu/WSL `sudo apt install doxygen`、macOS `brew install doxygen`、Windows `choco install doxygen`。
   文档配置见 [`docs/Doxyfile.in`](../Doxyfile.in) 与 [`docs/CMakeLists.txt`](../CMakeLists.txt)，入口 `src/`、`Readme.md` 与 `docs/usr/`。
+  在线版由 GitHub Pages 持续发布：<https://evengine.github.io/EVEngine/>。
 
 - 运行时断言：引擎统一通过 zeroerr 的 `ASSERT` 系列宏做函数参数校验与内部不变量检查，
   入口见 [`src/engine/common/Assert.h`](../../src/engine/common/Assert.h)（`EV_PARAM_CHECK` / `EV_ASSERT`）。

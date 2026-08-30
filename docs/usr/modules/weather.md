@@ -50,6 +50,7 @@ gfx.render3D();
 | `setWindSpeed(v)` / `getWindSpeed()` | 风速（米/秒） |
 | `setWindDirection(deg)` | 风向（度），0 = +Z |
 | `setLightningEnabled(b)` | 风暴是否自动闪 |
+| `setEnvironmentEnabled(b)` / `isEnvironmentEnabled()` | 是否由 Weather 写入背景色和方向光；与 DayNight 联用时关闭，由 DayNight 统一合成天空和光照 |
 | `strike()` | 手动触发一道闪电 |
 | `getFlash()` | 当前闪光的 0..1，可用来驱动场景补光 |
 | `setSkyColor(r,g,b)` | 天空基调色（暴风雨时被暗化） |

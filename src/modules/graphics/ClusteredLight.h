@@ -40,6 +40,12 @@ struct ClusteredLightingUpload {
     std::vector<ClusteredLightGpu> lights;           // point lights only (world space)
     std::vector<ClusterTableEntry> clusterTable;     // size = kClusterCount
     std::vector<uint32_t> lightIndices;
+    /** @brief Number of input local lights rejected by the frame-wide 256-light budget. */
+    uint32_t truncatedLightCount = 0;
+    /** @brief Number of clusters whose candidate list exceeded the per-cluster budget. */
+    uint32_t overflowClusterCount = 0;
+    /** @brief Total cluster-to-light references removed by per-cluster truncation. */
+    uint32_t droppedLightReferenceCount = 0;
     bool active = false;
 };
 

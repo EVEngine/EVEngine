@@ -1,9 +1,14 @@
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/HexTerrain.h"
+#include "procgen/algorithms/PrototypeKit.h"
 #include "procgen/algorithms/RockMesh.h"
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
 #include "procgen/algorithms/BushMesh.h"
 #include "procgen/algorithms/LinearStructure.h"
+#include "procgen/algorithms/LSystemMesh.h"
+#include "procgen/urban/UrbanOutput.h"
+#include "procgen/algorithms/CastleMesh.h"
 
 #include <algorithm>
 #include <cmath>
@@ -444,7 +449,15 @@ MeshRecipeRegistry &MeshRecipeRegistry::instance() {
 }
 
 void MeshRecipeRegistry::registerRecipe(const std::string &id, MeshRecipeFn fn) {
-    recipes_[id] = std::move(fn);
+    RecipeDescriptor descriptor;
+    descriptor.id = id;
+    descriptor.displayName = id;
+    registerRecipe(std::move(descriptor), std::move(fn));
+}
+
+void MeshRecipeRegistry::registerRecipe(RecipeDescriptor descriptor, MeshRecipeFn fn) {
+    const std::string id = descriptor.id;
+    recipes_[id] = Entry{std::move(fn), std::move(descriptor)};
 }
 
 bool MeshRecipeRegistry::has(const std::string &id) const {
@@ -458,7 +471,19 @@ bool MeshRecipeRegistry::generate(const std::string &id, const Params &params, M
         error = "unknown mesh recipe '" + id + "'";
         return false;
     }
-    return it->second(params, out, error);
+    return it->second.fn(params, out, error);
+}
+
+const RecipeDescriptor *MeshRecipeRegistry::descriptor(const std::string &id) const {
+    const auto it = recipes_.find(id);
+    return it == recipes_.end() ? nullptr : &it->second.descriptor;
+}
+
+bool MeshRecipeRegistry::applyDefaults(const std::string &id, Params &params) const {
+    const RecipeDescriptor *schema = descriptor(id);
+    if (!schema) return false;
+    schema->applyDefaults(params);
+    return true;
 }
 
 std::vector<std::string> MeshRecipeRegistry::list() const {
@@ -471,13 +496,167 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
-    registerRecipe("mesh.marchingcubes", generateMarchingCubesMesh);
-    registerRecipe("mesh.rock", generateRockMesh);
-    registerRecipe("mesh.hexplanet", generateHexPlanetMesh);
-    registerRecipe("mesh.tree", generateTreeMesh);
-    registerRecipe("mesh.bush", generateBushMesh);
-    registerRecipe("mesh.skyscraper", generateSkyscraperMesh);
+    registerPrototypePieceRecipes(*this);
+    auto mesh = [](std::string id, std::string name) {
+        RecipeDescriptor schema{std::move(id), std::move(name), "Mesh", {}};
+        schema.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));
+        return schema;
+    };
+    auto addAdvanced = [](RecipeDescriptor &schema, ParamDescriptor param) {
+        param.advanced = true;
+        schema.params.push_back(std::move(param));
+    };
+    RecipeDescriptor marching = mesh("mesh.marchingcubes", "Marching Cubes");
+    marching.params.push_back(ParamDescriptor::choice("field", "Density Field", "sphere",
+                                                      {"sphere", "rock", "terrain", "torus", "noise"}));
+    marching.params.push_back(ParamDescriptor::integer("resolution", "Resolution", 24, 4, 256));
+    marching.params.push_back(ParamDescriptor::floating("isolevel", "Iso Level", 0.f, -2.f, 2.f, 0.01f));
+    marching.params.push_back(ParamDescriptor::floating("scale", "Noise Scale", 1.f, 0.01f, 128.f, 0.01f));
+    marching.params.push_back(ParamDescriptor::integer("octaves", "Octaves", 3, 1, 12));
+    addAdvanced(marching, ParamDescriptor::integer("nx", "X Resolution", 24, 2, 512));
+    addAdvanced(marching, ParamDescriptor::integer("ny", "Y Resolution", 24, 2, 512));
+    addAdvanced(marching, ParamDescriptor::integer("nz", "Z Resolution", 24, 2, 512));
+    addAdvanced(marching,
+                ParamDescriptor::floating("radius", "Field Radius", 0.7f, 0.01f, 10.f, 0.01f));
+    addAdvanced(marching, ParamDescriptor::floating("flattening", "Rock Flattening", 0.22f,
+                                                     0.f, 0.7f, 0.01f));
+    addAdvanced(marching, ParamDescriptor::floating("angularity", "Rock Angularity", 0.35f,
+                                                     0.f, 1.f, 0.01f));
+    addAdvanced(marching,
+                ParamDescriptor::floating("erosion", "Rock Erosion", 0.18f, 0.f, 0.45f, 0.01f));
+    addAdvanced(marching, ParamDescriptor::floating("majorRadius", "Torus Major Radius", 0.55f,
+                                                     0.01f, 10.f, 0.01f));
+    addAdvanced(marching, ParamDescriptor::floating("minorRadius", "Torus Minor Radius", 0.22f,
+                                                     0.01f, 10.f, 0.01f));
+    addAdvanced(marching, ParamDescriptor::floating("threshold", "Noise Threshold", 0.05f,
+                                                     -1.f, 1.f, 0.01f));
+    registerRecipe(std::move(marching), generateMarchingCubesMesh);
+
+    RecipeDescriptor rock = mesh("mesh.rock", "Rock");
+    rock.params.push_back(ParamDescriptor::choice("baseShape", "Base Shape", "mixed",
+                                                  {"mixed", "round", "flat", "tall", "angular"}));
+    rock.params.push_back(ParamDescriptor::integer("subdivisions", "Subdivisions", 3, 0, 6));
+    rock.params.push_back(ParamDescriptor::floating("radius", "Radius", 0.72f, 0.05f, 32.f, 0.01f));
+    rock.params.push_back(ParamDescriptor::floating("scale", "Scale", 2.4f, 0.25f, 64.f, 0.05f));
+    rock.params.push_back(ParamDescriptor::floating("variation", "Variation", 0.42f, 0.f, 1.f, 0.01f));
+    rock.params.push_back(ParamDescriptor::floating("angularity", "Angularity", 0.38f, 0.f, 1.f, 0.01f));
+    rock.params.push_back(ParamDescriptor::floating("erosion", "Erosion", 0.16f, 0.f, 0.45f, 0.01f));
+    addAdvanced(rock,
+                ParamDescriptor::floating("flattening", "Flattening", 0.22f, 0.f, 0.7f, 0.01f));
+    addAdvanced(rock, ParamDescriptor::integer("octaves", "Octaves", 4, 1, 8));
+    registerRecipe(std::move(rock), generateRockMesh);
+
+    RecipeDescriptor planet = mesh("mesh.hexplanet", "Hex Planet");
+    planet.params.push_back(ParamDescriptor::floating("radius", "Radius", 1.f, 0.01f, 1000.f, 0.01f));
+    planet.params.push_back(ParamDescriptor::integer("subdivisions", "Subdivisions", 2, 0, 7));
+    planet.params.push_back(ParamDescriptor::floating("tileInset", "Tile Inset", 0.06f, 0.f, 0.49f, 0.01f));
+    registerRecipe(std::move(planet), generateHexPlanetMesh);
+
+    RecipeDescriptor terrain = mesh("mesh.hexterrain", "Hex Terrain World");
+    terrain.params.push_back(ParamDescriptor::integer("width", "Width", 32, 2, 256));
+    terrain.params.push_back(ParamDescriptor::integer("height", "Height", 24, 2, 256));
+    terrain.params.push_back(ParamDescriptor::floating("radius", "Hex Radius", 1.f, 0.05f, 64.f, 0.05f));
+    terrain.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 1, 2147483647));
+    terrain.params.push_back(ParamDescriptor::floating("seaLevel", "Sea Level", 0.43f, 0.f, 1.f, 0.01f));
+    terrain.params.push_back(ParamDescriptor::floating("heightScale", "Height Scale", 4.f, 0.05f, 128.f, 0.05f));
+    terrain.params.push_back(ParamDescriptor::integer("riverCount", "River Count", 8, 0, 128));
+    terrain.params.push_back(ParamDescriptor::boolean("decorations", "Terrain Decorations", true));
+    terrain.params.push_back(ParamDescriptor::floating("vegetationDensity", "Vegetation Density", 1.f, 0.f, 2.f, 0.05f));
+    registerRecipe(std::move(terrain), generateHexTerrainMesh);
+
+    RecipeDescriptor tree = mesh("mesh.tree", "Tree");
+    tree.params.push_back(ParamDescriptor::choice("style", "Style", "lowpoly", {"lowpoly", "realistic"}));
+    tree.params.push_back(ParamDescriptor::choice("leafMode", "Leaf Mode", "cards", {"cards", "clusters", "none"}));
+    tree.params.push_back(ParamDescriptor::choice("branchAlgorithm", "Branch Algorithm", "weberPenn",
+                                                  {"weberPenn", "colonization"}));
+    tree.params.push_back(ParamDescriptor::floating("height", "Height", 6.f, 0.5f, 100.f, 0.1f));
+    tree.params.push_back(ParamDescriptor::floating("trunkRadius", "Trunk Radius", 0.33f, 0.02f, 10.f, 0.01f));
+    tree.params.push_back(ParamDescriptor::floating("crownRadius", "Crown Radius", 2.04f, 0.1f, 50.f, 0.05f));
+    tree.params.push_back(ParamDescriptor::floating("leafDensity", "Leaf Density", 0.65f, 0.f, 1.f, 0.01f));
+    tree.params.push_back(ParamDescriptor::integer("branchLevels", "Branch Levels", 2, 1, 5));
+    tree.params.push_back(ParamDescriptor::integer("branchCount", "Branch Count", 6, 2, 20));
+    addAdvanced(tree,
+                ParamDescriptor::floating("leafSize", "Leaf Size", 0.45f, 0.02f, 10.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("foliageStart", "Foliage Start", 0.35f,
+                                                 0.1f, 0.9f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::integer("radialSegments", "Radial Segments", 6, 3, 24));
+    addAdvanced(tree, ParamDescriptor::integer("curveSegments", "Curve Segments", 5, 2, 20));
+    addAdvanced(tree,
+                ParamDescriptor::floating("trunkCurve", "Trunk Curve", 0.1f, 0.f, 0.45f, 0.01f));
+    addAdvanced(tree,
+                ParamDescriptor::floating("curveBack", "Curve Back", 0.16f, -0.5f, 0.5f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("branchCurve", "Branch Curve", 0.13f, 0.f,
+                                                 0.5f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("branchAngle", "Branch Angle", 62.f, 5.f, 88.f,
+                                                 1.f));
+    addAdvanced(tree, ParamDescriptor::floating("branchAngleVariation", "Angle Variation", 12.f,
+                                                 0.f, 40.f, 1.f));
+    addAdvanced(tree, ParamDescriptor::floating("phyllotaxis", "Phyllotaxis", 137.5f, 0.f,
+                                                 360.f, 0.5f));
+    addAdvanced(tree,
+                ParamDescriptor::floating("tropism", "Tropism", 0.22f, -0.5f, 0.8f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("droop", "Droop", 0.18f, 0.f, 0.8f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("apicalDominance", "Apical Dominance", 0.62f,
+                                                 0.f, 1.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::integer("attractorCount", "Attractor Count", 80, 12, 1200));
+    addAdvanced(tree,
+                ParamDescriptor::integer("colonizationIterations", "Growth Iterations", 30, 4, 160));
+    addAdvanced(tree, ParamDescriptor::floating("influenceRadius", "Influence Radius", 2.2032f,
+                                                 0.05f, 100.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("killRadius", "Kill Radius", 0.2652f, 0.01f,
+                                                 100.f, 0.01f));
+    addAdvanced(tree,
+                ParamDescriptor::floating("growthStep", "Growth Step", 0.2856f, 0.01f, 100.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("branchInertia", "Branch Inertia", 1.2f, 0.f,
+                                                 4.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("maxTurnAngle", "Maximum Turn Angle", 22.f, 2.f,
+                                                 60.f, 1.f));
+    addAdvanced(tree, ParamDescriptor::floating("maxCumulativeAngle", "Maximum Crown Angle", 58.f,
+                                                 10.f, 85.f, 1.f));
+    addAdvanced(tree, ParamDescriptor::floating("branchLengthFalloff", "Length Falloff", 0.58f,
+                                                 0.f, 0.9f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("branchRadiusFalloff", "Radius Falloff", 0.5f,
+                                                 0.f, 0.9f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("lowerLeafCoverage", "Lower Leaf Coverage", 0.72f,
+                                                 0.f, 1.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("upperLeafCoverage", "Upper Leaf Coverage", 0.18f,
+                                                 0.f, 1.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::integer("maxChildren", "Maximum Children", 2, 1, 4));
+    registerRecipe(std::move(tree), generateTreeMesh);
+
+    RecipeDescriptor bush = mesh("mesh.bush", "Bush");
+    bush.params.push_back(ParamDescriptor::choice("style", "Style", "mound", {"mound", "upright", "wild"}));
+    bush.params.push_back(ParamDescriptor::choice("leafMode", "Leaf Mode", "mixed", {"mixed", "cards", "blobs"}));
+    bush.params.push_back(ParamDescriptor::floating("height", "Height", 1.4f, 0.3f, 30.f, 0.05f));
+    bush.params.push_back(ParamDescriptor::floating("width", "Width", 2.2f, 0.4f, 30.f, 0.05f));
+    bush.params.push_back(ParamDescriptor::integer("blobs", "Foliage Blobs", 9, 1, 40));
+    bush.params.push_back(ParamDescriptor::floating("leafDensity", "Leaf Density", 0.62f, 0.f, 1.f, 0.01f));
+    addAdvanced(bush, ParamDescriptor::integer("rings", "Rings", 3, 2, 10));
+    addAdvanced(bush, ParamDescriptor::integer("radialSegments", "Radial Segments", 7, 4, 24));
+    addAdvanced(bush,
+                ParamDescriptor::floating("leafSize", "Leaf Size", 0.224f, 0.02f, 10.f, 0.01f));
+    addAdvanced(bush, ParamDescriptor::integer("twigs", "Twigs", 4, 0, 16));
+    addAdvanced(bush,
+                ParamDescriptor::floating("twigLength", "Twig Length", 0.42f, 0.05f, 10.f, 0.01f));
+    registerRecipe(std::move(bush), generateBushMesh);
+
+    RecipeDescriptor tower = mesh("mesh.skyscraper", "Skyscraper");
+    tower.params.push_back(ParamDescriptor::integer("tiers", "Tiers", 5, 1, 24));
+    tower.params.push_back(ParamDescriptor::floating("baseWidth", "Base Width", 10.f, 0.5f, 500.f, 0.1f));
+    tower.params.push_back(ParamDescriptor::floating("baseDepth", "Base Depth", 10.f, 0.5f, 500.f, 0.1f));
+    tower.params.push_back(ParamDescriptor::floating("tierHeight", "Tier Height", 6.f, 0.5f, 100.f, 0.1f));
+    tower.params.push_back(ParamDescriptor::floating("setback", "Setback", 0.08f, 0.f, 0.6f, 0.01f));
+    tower.params.push_back(ParamDescriptor::integer("windowCols", "Window Columns", 6, 1, 24));
+    tower.params.push_back(ParamDescriptor::integer("windowRows", "Window Rows", 4, 1, 24));
+    addAdvanced(tower, ParamDescriptor::floating("windowDepth", "Window Depth", 0.04f, 0.f,
+                                                  10.f, 0.01f));
+    addAdvanced(tower, ParamDescriptor::floating("spireHeight", "Spire Height", 0.f, 0.f,
+                                                  1000.f, 0.1f));
+    registerRecipe(std::move(tower), generateSkyscraperMesh);
     registerLinearStructureRecipes(*this);
+    registerLSystemRecipes(*this);
+    urban::registerUrbanMeshRecipes(*this);
+    registerCastleMeshRecipe(*this);
     builtinsRegistered_ = true;
 }
 

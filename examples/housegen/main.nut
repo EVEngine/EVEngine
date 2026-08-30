@@ -1,6 +1,6 @@
 // Runtime API smoke example. Replace model paths in the JSON with converted CC0 GLB assets.
-if (!("housegen" in getroottable())) housegen <- null;
-if (!("layout" in getroottable())) layout <- null;
+persist housegen = null
+persist layout = null
 
 eve_init = function() {
     housegen = eve.HouseGen();
@@ -11,8 +11,9 @@ eve_init = function() {
       {""id"":""door"",""model"":""assets/door.glb"",""category"":""door""},
       {""id"":""roof"",""model"":""assets/roof.glb"",""category"":""roof""}
     ]";
-    if (!housegen.loadComponentsFromJson(kit)) {
-        print("house component error: " + housegen.lastError() + "\n");
+    local componentResult = housegen.loadComponentsFromJson(kit);
+    if (!componentResult.ok) {
+        print("house component error: " + componentResult.status.summary + "\n");
         return;
     }
     local request = housegen.newRequest();
@@ -20,8 +21,9 @@ eve_init = function() {
     request.setPlot(7, 6);
     request.setFloors(2);
     layout = housegen.newLayout();
-    if (!housegen.generate(request, layout))
-        print("house generation failed: " + housegen.lastError() + "\n");
+    local generationResult = housegen.generate(request, layout);
+    if (!generationResult.ok)
+        print("house generation failed: " + generationResult.status.summary + "\n");
     else
         print("generated " + layout.getInstanceCount() + " component instances\n" + layout.toJson() + "\n");
 };

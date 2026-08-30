@@ -281,28 +281,55 @@ bool generateLinearStructure(const std::string &kind, const Params &params, Mesh
 }
 
 void registerLinearStructureRecipes(MeshRecipeRegistry &registry) {
+    auto schema = [](std::string id, std::string name, float height, float depth,
+                     float thickness) {
+        RecipeDescriptor descriptor{std::move(id), std::move(name), "Structures", {}};
+        descriptor.params.push_back(
+            ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));
+        descriptor.params.push_back(
+            ParamDescriptor::integer("segments", "Segments", 6, 1, 256));
+        descriptor.params.push_back(
+            ParamDescriptor::floating("segLength", "Segment Length", 1.f, 0.1f, 100.f, 0.1f));
+        descriptor.params.push_back(
+            ParamDescriptor::floating("uvRepeat", "UV Repeat", 2.f, 0.f, 100.f, 0.1f));
+        descriptor.params.push_back(
+            ParamDescriptor::floating("height", "Height", height, 0.05f, 100.f, 0.05f));
+        descriptor.params.push_back(
+            ParamDescriptor::floating("depth", "Depth", depth, 0.02f, 100.f, 0.05f));
+        descriptor.params.push_back(ParamDescriptor::floating(
+            "thickness", "Thickness", thickness, 0.005f, 10.f, 0.005f));
+        descriptor.params.push_back(
+            ParamDescriptor::floating("scale", "Scale", 1.f, 0.01f, 100.f, 0.01f));
+        return descriptor;
+    };
     registry.registerRecipe(
-        "mesh.fence", [](const Params &p, MeshBuild &o, std::string &e) {
+        schema("mesh.fence", "Fence", 1.1f, 0.09f, 0.08f),
+        [](const Params &p, MeshBuild &o, std::string &e) {
             return generateLinearStructure("mesh.fence", p, o, e);
         });
     registry.registerRecipe(
-        "mesh.stonewall", [](const Params &p, MeshBuild &o, std::string &e) {
+        schema("mesh.stonewall", "Stone Wall", 1.f, 0.5f, 0.12f),
+        [](const Params &p, MeshBuild &o, std::string &e) {
             return generateLinearStructure("mesh.stonewall", p, o, e);
         });
     registry.registerRecipe(
-        "mesh.bridge", [](const Params &p, MeshBuild &o, std::string &e) {
+        schema("mesh.bridge", "Bridge", 1.2f, 2.4f, 0.12f),
+        [](const Params &p, MeshBuild &o, std::string &e) {
             return generateLinearStructure("mesh.bridge", p, o, e);
         });
     registry.registerRecipe(
-        "mesh.greatwall", [](const Params &p, MeshBuild &o, std::string &e) {
+        schema("mesh.greatwall", "Great Wall", 1.6f, 1.f, 0.18f),
+        [](const Params &p, MeshBuild &o, std::string &e) {
             return generateLinearStructure("mesh.greatwall", p, o, e);
         });
     registry.registerRecipe(
-        "mesh.hedge", [](const Params &p, MeshBuild &o, std::string &e) {
+        schema("mesh.hedge", "Hedge", 0.9f, 0.8f, 0.06f),
+        [](const Params &p, MeshBuild &o, std::string &e) {
             return generateLinearStructure("mesh.hedge", p, o, e);
         });
     registry.registerRecipe(
-        "mesh.chevaldefrise", [](const Params &p, MeshBuild &o, std::string &e) {
+        schema("mesh.chevaldefrise", "Cheval de Frise", 0.9f, 0.7f, 0.08f),
+        [](const Params &p, MeshBuild &o, std::string &e) {
             return generateLinearStructure("mesh.chevaldefrise", p, o, e);
         });
 }

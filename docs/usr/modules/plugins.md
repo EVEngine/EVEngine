@@ -16,6 +16,9 @@ print(plugins.isLoaded("plugins/gameplay.so") + "\n");
 
 `Plugins` 加载动态库；库导出的 `eve_plugin_init` 触发模块注册；随后脚本从 `eve` 创建新模块。插件二进制与宿主共享 C++ ABI。
 
+成功加载的插件会驻留到进程结束。引擎不会在运行期间卸载插件，因为 Squirrel
+类、闭包和原生模块实例可能仍引用动态库中的代码。
+
 ## 目标导向指南
 
 ### 加载平台匹配的插件
@@ -37,6 +40,8 @@ print(plugins.isLoaded("plugins/gameplay.so") + "\n");
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `getName()`、`isLoaded()`、`load()`、`unload()`
+
+`unload()` 是兼容保留接口，始终返回 `false`；需要更新插件代码时请重启进程。
 
 ## 使用要点
 

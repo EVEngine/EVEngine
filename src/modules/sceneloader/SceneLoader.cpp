@@ -1,23 +1,27 @@
 #include "sceneloader/SceneLoader.h"
 
-#include "scene/SceneHost.h"
-#include "scene/NodeDesc.h"
-#include "scene/TransformSystem.h"
-#include "model3d/Model3D.h"
-#include "model3d/ModelData.h"
+#include "animation/AnimClip.h"
+#include "animation/AnimImporter.h"
+#include "animation/AnimSkeleton.h"
+#include "common/ECS.h"
+#include "common/Resource.h"
+#include "common/SquirrelBinding.h"
+#include "data/ByteData.h"
+#include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
-#include "filesystem/Filesystem.h"
-#include "filesystem/FileData.h"
-#include "data/ByteData.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
-#include "animation/AnimImporter.h"
+#include "model3d/Model3D.h"
+#include "model3d/ModelData.h"
+#include "scene/NodeDesc.h"
+#include "scene/SceneHost.h"
+#include "scene/TransformSystem.h"
 #include "thread/ThreadPool.h"
-#include "common/ECS.h"
 
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
@@ -49,17 +53,29 @@
 namespace eve {
 namespace sceneloader {
 
+SceneLoader::DecodedScene::DecodedScene() = default;
+SceneLoader::DecodedScene::~DecodedScene() = default;
+SceneLoader::DecodedScene::DecodedScene(DecodedScene &&) noexcept = default;
+SceneLoader::DecodedScene &SceneLoader::DecodedScene::operator=(DecodedScene &&) noexcept = default;
+
 Module_IMPL(SceneLoader, new SceneLoader());
 
 SceneLoader::~SceneLoader() {
-    for (auto &kv : prewarmed_) delete kv.second.md;
-    for (auto &d : pending_) delete d.md;
+    // Decoded ModelData instances are owned by the unified resource cache
+    // (Model3D::newModelDataFromFile returns cache-shared resources), so no
+    // cleanup is needed here.
     clearTextures();
 }
 
 namespace {
 
 constexpr float kEps = 1e-5f;
+
+template <class T>
+T *borrowResult(eve::Result<T *> result) {
+    if (!result.ok()) return nullptr;
+    return result.value();
+}
 
 std::string normPath(const std::string &p) {
     std::string out;
@@ -114,6 +130,48 @@ std::string uniqueId(const std::string &base, std::unordered_map<std::string, in
     if (n > 0) id = b + "_" + std::to_string(n);
     ++n;
     return id;
+}
+
+bool startsWithInsensitive(const std::string &value, const char *prefix) {
+    const size_t n = std::char_traits<char>::length(prefix);
+    if (value.size() < n) return false;
+    for (size_t i = 0; i < n; ++i)
+        if (std::tolower(static_cast<unsigned char>(value[i])) !=
+            std::tolower(static_cast<unsigned char>(prefix[i])))
+            return false;
+    return true;
+}
+
+int lodFromName(const std::string &name) {
+    const size_t p = name.rfind("_LOD");
+    if (p == std::string::npos || p + 4 >= name.size()) return -1;
+    char *end = nullptr;
+    const long value = std::strtol(name.c_str() + p + 4, &end, 10);
+    return end == name.c_str() + p + 4 || value < 0 ? -1 : static_cast<int>(value);
+}
+
+LoadOptions presetOptions(const std::string &name) {
+    LoadOptions o;
+    if (name == "quality" || name == "balanced" || name.empty()) return o;
+    if (name == "mobile") {
+        o.importLights = false;
+        o.importCameras = false;
+        o.importAnimations = false;
+        return o;
+    }
+    if (name == "raw") {
+        o.generateNormalsIfMissing = false;
+        o.joinIdenticalVertices = false;
+        o.flipUVs = false;
+        o.improveCacheLocality = false;
+        o.sharedMeshes = false;
+        o.mipmaps = false;
+        o.importLights = false;
+        o.importCameras = false;
+        o.importAnimations = false;
+        return o;
+    }
+    throw eve::Exception("SceneLoader: unknown import preset '%s'", name.c_str());
 }
 
 // ---- texture helpers (embedded / VFS, cached by path) ----
@@ -179,8 +237,8 @@ graphics::Texture *resolveTexture(graphics::Graphics *gfx, const aiScene *scene,
     const char *p = path.C_Str();
     if (!p || !p[0]) return nullptr;
 
-    const SamplerSpec s = samplerFor(mat, type, wantMips);
-    eve::image::Image::create();
+    const SamplerSpec s           = samplerFor(mat, type, wantMips);
+    auto *const       imageModule = eve::image::Image::create();
 
     const std::string keySuffix =
         std::string(s.repeatU ? "|1" : "|0") + (s.repeatV ? "1" : "0") + "|" + s.filter + "|" +
@@ -200,7 +258,7 @@ graphics::Texture *resolveTexture(graphics::Graphics *gfx, const aiScene *scene,
         if (tex->mHeight == 0) {
             eve::data::ByteData bytes(tex->pcData, static_cast<size_t>(tex->mWidth));
             try {
-                eve::image::ImageData *img = eve::image::Image::create()->newImageData(&bytes);
+                eve::image::ImageData *img = imageModule->newImageData(&bytes);
                 t = gfx->newTextureWithSampler(img, s.repeatU, s.repeatV, s.mips, 8.f, s.filter,
                                                s.mipmap);
                 delete img;
@@ -249,7 +307,7 @@ graphics::Texture *resolveTexture(graphics::Graphics *gfx, const aiScene *scene,
         auto *fs = eve::filesystem::Filesystem::create();
         std::unique_ptr<eve::filesystem::FileData> fd(fs->read(p));
         if (fd && fd->getSize() > 0) {
-            eve::image::ImageData *img = eve::image::Image::create()->newImageData(fd.get());
+            eve::image::ImageData *img = imageModule->newImageData(fd.get());
             graphics::Texture *t = gfx->newTextureWithSampler(img, s.repeatU, s.repeatV, s.mips,
                                                               8.f, s.filter, s.mipmap);
             delete img;
@@ -266,7 +324,7 @@ graphics::Texture *resolveTexture(graphics::Graphics *gfx, const aiScene *scene,
 void collectCpuImages(const aiScene *scene, const MeshSlotMap &slots, bool wantMips,
                       SceneLoader::CpuImageMap &out) {
     if (!scene) return;
-    eve::image::Image::create();
+    auto *const         imageModule = eve::image::Image::create();
     const aiTextureType kTypes[4] = {aiTextureType_BASE_COLOR, aiTextureType_DIFFUSE,
                                      aiTextureType_NORMALS, aiTextureType_HEIGHT};
     for (const auto &kv : slots) {
@@ -287,8 +345,7 @@ void collectCpuImages(const aiScene *scene, const MeshSlotMap &slots, bool wantM
                     auto *fs = eve::filesystem::Filesystem::create();
                     std::unique_ptr<eve::filesystem::FileData> fd(fs->read(c));
                     if (!fd || fd->getSize() == 0) continue;
-                    eve::image::ImageData *img =
-                        eve::image::Image::create()->newImageData(fd.get());
+                    eve::image::ImageData *img = imageModule->newImageData(fd.get());
                     if (!img) continue;
                     if (img->getFormat() == "RGBA8") {
                         SceneLoader::CpuImage ci;
@@ -457,6 +514,18 @@ void buildNodeRecursive(const aiScene *scene, const aiNode *node, scene::NodeDes
     out.name = rawName;
     out.space = "3d";
     out.visible = true;
+    if (startsWithInsensitive(rawName, "SOCKET_")) out.tags.push_back("model-socket");
+    if (startsWithInsensitive(rawName, "UCX_") || startsWithInsensitive(rawName, "UBX_") ||
+        startsWithInsensitive(rawName, "USP_") || startsWithInsensitive(rawName, "UCP_")) {
+        out.tags.push_back("collision");
+        out.visible = false;
+    }
+    const int lod = lodFromName(rawName);
+    if (lod >= 0) {
+        out.tags.push_back("lod");
+        out.tags.push_back("lod:" + std::to_string(lod));
+        out.visible = lod == 0;
+    }
     decomposeNode(node->mTransformation, out.x, out.y, out.z, out.yaw, out.pitch, out.roll,
                   out.sx, out.sy, out.sz);
 
@@ -472,7 +541,8 @@ void buildNodeRecursive(const aiScene *scene, const aiNode *node, scene::NodeDes
         child.key = cid;
         child.name = std::string("mesh") + std::to_string(i);
         child.space = "3d";
-        child.visible = true;
+        child.visible = out.visible;
+        child.tags = out.tags;
         out.children.push_back(std::move(child));
 
         if (slots) {
@@ -719,6 +789,7 @@ bool SceneLoader::applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &n
         TextureCache unused;
         for (auto &n : nodes) {
             if (!n.links.empty()) continue;
+            if (std::find(n.tags.begin(), n.tags.end(), "collision") != n.tags.end()) continue;
             auto sit = slots->find(n.id);
             if (sit == slots->end() || sit->second.empty()) continue;
             graphics::Renderable3D *r = nullptr;
@@ -761,8 +832,9 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
                                 const CpuImageMap *predecoded) {
     if (!gfx) return;
     for (const auto &kv : slots) {
-        scene::SceneNode *n = host->findById(kv.first);
+        scene::SceneNode *n = borrowResult(host->findById(kv.first));
         if (!n || kv.second.empty()) continue;
+        if (std::find(n->tags.begin(), n->tags.end(), "collision") != n->tags.end()) continue;
         if (host->findLink(n, scene::findLinkKind("renderable3d"))) continue;
         const MeshSlot &slot = kv.second[0];
         graphics::Mesh *mesh = nullptr;
@@ -815,27 +887,57 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
 }
 
 bool SceneLoader::decode(const std::string &path, const LoadOptions &options, DecodedScene *out) {
+    const std::string key = normPath(path);
+    // The unified resource cache may hold a decode from an earlier load; a
+    // reload/diff must see the file as it is now, so refresh the cached entry
+    // before asking for it (no-op when nothing is cached yet).
+    eve::ResourceManager::getInstance().reload(path).ignore("scene reload");
+
     auto *mod3d = ModuleManager::getInstance<model3d::Model3D>("Model3D");
     if (!mod3d) mod3d = model3d::Model3D::create();
     model3d::ModelData *md = nullptr;
     try {
         md = mod3d->newModelDataFromFile(path, toModelOptions(options));
+    } catch (const std::exception &e) {
+        std::lock_guard<std::mutex> lock(pendingMu_);
+        lastErrors_[key] = e.what();
+        return false;
     } catch (...) {
+        std::lock_guard<std::mutex> lock(pendingMu_);
+        lastErrors_[key] = "unknown model decode error";
         return false;
     }
-    if (!md) return false;
+    if (!md) {
+        std::lock_guard<std::mutex> lock(pendingMu_);
+        lastErrors_[key] = "model decoder returned no scene";
+        return false;
+    }
+
+    std::vector<std::string> importWarnings;
+    for (int i = 0; i < md->getMeshCount(); ++i) {
+        if (!md->hasNormals(i))
+            importWarnings.push_back("mesh " + std::to_string(i) + " has no normals");
+        if (!md->hasTexCoords(i))
+            importWarnings.push_back("mesh " + std::to_string(i) + " has no UV0");
+    }
+    {
+        std::lock_guard<std::mutex> lock(pendingMu_);
+        lastErrors_.erase(key);
+        warnings_[key] = std::move(importWarnings);
+    }
 
     out->path = normPath(path);
     out->md = md;
     out->options = options;
-    out->root = buildNodeDesc(md->getScene(), &out->slots);
+    out->root = std::make_unique<scene::NodeDesc>(buildNodeDesc(md->getScene(), &out->slots));
     collectCpuImages(md->getScene(), out->slots, options.mipmaps, out->cpuImages);
     return true;
 }
 
 scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
-    scene::SceneHost *host = scene::SceneHost::createHost(d.path);
-    host->setTree(std::move(d.root));
+    scene::SceneHost *host = borrowResult(scene::SceneHost::createHost(d.path));
+    if (!host) return nullptr;
+    host->setTree(std::move(*d.root));
 
     graphics::Graphics *gfx = currentGraphics();
     if (!d.slots.empty()) fillSceneBounds(host, d.slots);
@@ -873,15 +975,14 @@ scene::SceneHost *SceneLoader::load(const std::string &path, bool linkRenderable
         return nullptr;
     }
     if (!linkRenderables) {
-        scene::SceneHost *host = scene::SceneHost::createHost(d.path);
-        host->setTree(std::move(d.root));
+        scene::SceneHost *host = borrowResult(scene::SceneHost::createHost(d.path));
+        if (!host) return nullptr;
+        host->setTree(std::move(*d.root));
         scene::TransformSystem::updateHost(host);
         scenes_[d.path] = Loaded{d.path, host, nullptr, options, {}, {}, nullptr, {}};
-        delete d.md;
         return host;
     }
     scene::SceneHost *host = mount(d);
-    delete d.md;
     return host;
 }
 
@@ -889,33 +990,48 @@ scene::SceneHost *SceneLoader::load(const std::string &path, const LoadOptions &
     return load(path, true, options);
 }
 
-bool SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOptions &options) {
+scene::SceneHost *SceneLoader::loadPreset(const std::string &path, const std::string &preset) {
+    return load(path, presetOptions(preset));
+}
+
+eve::Result<bool> SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOptions &options) {
     const std::string key = normPath(path);
     auto it = scenes_.find(key);
     if (it == scenes_.end()) {
-        load(path, options);
+        if (!load(path, options)) {
+            const std::string message = decodeErrorFor(path);
+            return eve::Result<bool>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, message.empty() ? "scene reload failed to load the scene" : message, key,
+                {}, "sceneloader.reload"));
+        }
         if (out) *out = SceneDiff{};
-        return true;
+        return eve::Result<bool>::success(true, eve::Status::success(eve::StatusCode::Applied));
     }
     Loaded &ld = it->second;
 
     DecodedScene d;
-    if (!decode(path, options, &d)) return false;
+    if (!decode(path, options, &d)) {
+        const std::string message = decodeErrorFor(path);
+        return eve::Result<bool>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, message.empty() ? "scene reload failed to decode the scene" : message, key, {},
+            "sceneloader.reload"));
+    }
 
-    SceneDiff diff = diffTree(ld.host, d.root);
+    SceneDiff diff = diffTree(ld.host, *d.root);
     if (out) *out = diff;
     if (!diff.empty()) {
-        applyTreeDiff(ld.host, d.root, diff, nullptr, nullptr);
+        applyTreeDiff(ld.host, *d.root, diff, nullptr, nullptr);
         MeshCache shared;
         linkMeshNodes(ld.host, d.slots, ld.gfx, options, textures_, shared, &d.cpuImages);
         scene::TransformSystem::updateHost(ld.host);
     }
-    delete d.md;
-    return !diff.empty();
+    if (diff.empty()) return eve::Result<bool>::success(false, eve::Status::success(eve::StatusCode::NoOp));
+    return eve::Result<bool>::success(true, eve::Status::success(eve::StatusCode::Applied));
 }
 
 SceneDiff SceneLoader::diff(const std::string &path) {
     const std::string key = normPath(path);
+    eve::ResourceManager::getInstance().reload(path).ignore("scene diff reload");  // fresh decode for diffing
     auto *mod3d = ModuleManager::getInstance<model3d::Model3D>("Model3D");
     if (!mod3d) mod3d = model3d::Model3D::create();
     model3d::ModelData *md = nullptr;
@@ -941,8 +1057,45 @@ SceneDiff SceneLoader::diff(const std::string &path) {
             };
         walk(newRoot, "");
     }
-    delete md;
     return d;
+}
+
+eve::Result<SceneInspection> SceneLoader::inspect(const std::string &path,
+                                                  const LoadOptions &options) {
+    DecodedScene decoded;
+    if (!decode(path, options, &decoded)) {
+        const std::string message = decodeErrorFor(path);
+        return eve::Result<SceneInspection>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed,
+            message.empty() ? "scene inspection failed to decode the source" : message,
+            normPath(path), {}, "sceneloader.inspect"));
+    }
+    SceneInspection result;
+    const auto mounted = scenes_.find(normPath(path));
+    if (mounted != scenes_.end() && mounted->second.host)
+        result.diff = diffTree(mounted->second.host, *decoded.root);
+    else {
+        std::function<void(const scene::NodeDesc&, const std::string&)> add =
+            [&](const scene::NodeDesc& node, const std::string& parent) {
+                result.diff.entries.push_back({SceneDiffEntry::Action::Add, node.id, parent});
+                ++result.diff.added;
+                for (const auto& child : node.children) add(child, node.id);
+            };
+        add(*decoded.root, "");
+    }
+    std::function<void(const scene::NodeDesc&)> collect = [&](const scene::NodeDesc& node) {
+        ++result.nodeCount;
+        if (decoded.slots.find(node.id) != decoded.slots.end()) ++result.meshNodeCount;
+        if (std::find(node.tags.begin(), node.tags.end(), "model-socket") != node.tags.end())
+            result.sockets.push_back(node.name);
+        if (std::find(node.tags.begin(), node.tags.end(), "collision") != node.tags.end())
+            result.collisions.push_back(node.name);
+        for (const auto& child : node.children) collect(child);
+    };
+    collect(*decoded.root);
+    const int count = warningCount(path);
+    for (int i = 0; i < count; ++i) result.warnings.push_back(warning(path, i));
+    return eve::Result<SceneInspection>::success(std::move(result));
 }
 
 scene::SceneHost *SceneLoader::host(const std::string &path) {
@@ -984,8 +1137,8 @@ bool SceneLoader::loadAsync(const std::string &path, const LoadOptions &options,
     const std::string key = normPath(path);
     {
         std::lock_guard<std::mutex> lock(pendingMu_);
-        for (const auto &p : pending_)
-            if (p.path == key) return false;
+        if (inFlight_.count(key)) return false;
+        inFlight_.insert(key);
     }
     if (!pool_) pool_ = std::make_shared<thread::ThreadPool>(2);
 
@@ -997,8 +1150,14 @@ bool SceneLoader::loadAsync(const std::string &path, const LoadOptions &options,
             d.done = done;
             self->pending_.push_back(std::move(d));
         }
+        std::lock_guard<std::mutex> lock(self->pendingMu_);
+        self->inFlight_.erase(key);
     });
     return true;
+}
+
+bool SceneLoader::loadAsyncPreset(const std::string &path, const std::string &preset) {
+    return loadAsync(path, presetOptions(preset));
 }
 
 int SceneLoader::pollAsync() {
@@ -1014,7 +1173,6 @@ int SceneLoader::pollAsync() {
             continue;
         }
         scene::SceneHost *h = mount(d);
-        delete d.md;
         if (d.done) d.done(h);
     }
     return static_cast<int>(ready.size());
@@ -1024,19 +1182,21 @@ bool SceneLoader::prewarmAsync(const std::string &path, const LoadOptions &optio
     const std::string key = normPath(path);
     {
         std::lock_guard<std::mutex> lock(pendingMu_);
-        if (prewarmed_.count(key)) return false;
-        for (const auto &p : pending_)
-            if (p.path == key) return false;
+        if (prewarmed_.count(key) || inFlight_.count(key)) return false;
+        inFlight_.insert(key);
     }
     if (!pool_) pool_ = std::make_shared<thread::ThreadPool>(2);
 
     auto self = this;
     pool_->submit([self, key, options]() {
         DecodedScene d;
-        if (!self->decode(key, options, &d)) return;
-        d.prewarmOnly = true;
+        if (self->decode(key, options, &d)) {
+            d.prewarmOnly = true;
+            std::lock_guard<std::mutex> lock(self->pendingMu_);
+            self->pending_.push_back(std::move(d));
+        }
         std::lock_guard<std::mutex> lock(self->pendingMu_);
-        self->pending_.push_back(std::move(d));
+        self->inFlight_.erase(key);
     });
     return true;
 }
@@ -1048,13 +1208,77 @@ bool SceneLoader::prewarmed(const std::string &path) const {
 void SceneLoader::clearPrewarm(const std::string &path) {
     auto it = prewarmed_.find(normPath(path));
     if (it == prewarmed_.end()) return;
-    delete it->second.md;
     prewarmed_.erase(it);
 }
 
 int SceneLoader::pendingAsyncCount() const {
     std::lock_guard<std::mutex> lock(pendingMu_);
-    return static_cast<int>(pending_.size());
+    return static_cast<int>(pending_.size() + inFlight_.size());
+}
+
+std::string SceneLoader::decodeErrorFor(const std::string &path) const {
+    std::lock_guard<std::mutex> lock(pendingMu_);
+    auto it = lastErrors_.find(normPath(path));
+    return it == lastErrors_.end() ? std::string{} : it->second;
+}
+
+int SceneLoader::warningCount(const std::string &path) const {
+    std::lock_guard<std::mutex> lock(pendingMu_);
+    auto it = warnings_.find(normPath(path));
+    return it == warnings_.end() ? 0 : static_cast<int>(it->second.size());
+}
+
+std::string SceneLoader::warning(const std::string &path, int index) const {
+    std::lock_guard<std::mutex> lock(pendingMu_);
+    auto it = warnings_.find(normPath(path));
+    if (it == warnings_.end() || index < 0 || static_cast<size_t>(index) >= it->second.size())
+        return {};
+    return it->second[static_cast<size_t>(index)];
+}
+
+bool SceneLoader::setLod(const std::string &path, int level) {
+    scene::SceneHost *h = host(path);
+    if (!h || level < 0) return false;
+    bool found = false;
+    auto tree = h->tree();
+    for (scene::SceneNode &node : tree->nodes) {
+        int nodeLod = -1;
+        for (const std::string &tag : node.tags)
+            if (tag.rfind("lod:", 0) == 0) nodeLod = std::atoi(tag.c_str() + 4);
+        if (nodeLod >= 0) {
+            node.visible = nodeLod == level;
+            found = found || node.visible;
+        }
+    }
+    return found;
+}
+
+int SceneLoader::socketCount(const std::string &path) const {
+    auto it = scenes_.find(normPath(path));
+    if (it == scenes_.end() || !it->second.host) return 0;
+    return static_cast<int>(it->second.host->findAllByTag("model-socket").size());
+}
+
+std::string SceneLoader::socketName(const std::string &path, int index) const {
+    auto it = scenes_.find(normPath(path));
+    if (it == scenes_.end() || !it->second.host || index < 0) return {};
+    auto sockets = it->second.host->findAllByTag("model-socket");
+    return static_cast<size_t>(index) < sockets.size() ? sockets[static_cast<size_t>(index)]->name
+                                                       : std::string{};
+}
+
+int SceneLoader::collisionCount(const std::string &path) const {
+    auto it = scenes_.find(normPath(path));
+    if (it == scenes_.end() || !it->second.host) return 0;
+    return static_cast<int>(it->second.host->findAllByTag("collision").size());
+}
+
+std::string SceneLoader::collisionName(const std::string &path, int index) const {
+    auto it = scenes_.find(normPath(path));
+    if (it == scenes_.end() || !it->second.host || index < 0) return {};
+    auto nodes = it->second.host->findAllByTag("collision");
+    return static_cast<size_t>(index) < nodes.size() ? nodes[static_cast<size_t>(index)]->name
+                                                     : std::string{};
 }
 
 // ---- imported scene extras ----
@@ -1110,17 +1334,48 @@ void SceneLoader::expose(ssq::Table &table) {
 
 void SceneLoader::expose(ssq::Class &cls) {
     cls.addFunc("getName", &SceneLoader::getName);
-    cls.addFunc("reloadChecked", &SceneLoader::reloadChecked);
+    cls.addFunc("load",
+                std::function<scene::SceneHost *(SceneLoader *, const std::string &)>(
+                    [](SceneLoader *sl, const std::string &path) -> scene::SceneHost * {
+                        return sl ? sl->load(path) : nullptr;
+                    }));
+    cls.addFunc("loadPreset", &SceneLoader::loadPreset);
+    cls.addFunc("host", &SceneLoader::host);
+    const HSQUIRRELVM vm = cls.getHandle();
+    cls.addFunc("reload", [vm](SceneLoader *value, const std::string &path) {
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                  "scene loader must not be null", "scene")),
+                [](bool changed) { return eve::Value::boolean(changed); });
+        return eve::script::projectResult(vm, value->reload(path),
+                                          [](bool changed) { return eve::Value::boolean(changed); });
+    });
     cls.addFunc("nodeCount", &SceneLoader::nodeCount);
     cls.addFunc("loaded", &SceneLoader::loaded);
     cls.addFunc("unload", &SceneLoader::unload);
     cls.addFunc("pollAsync", &SceneLoader::pollAsync);
+    cls.addFunc("loadAsync", &SceneLoader::loadAsyncDefault);
+    cls.addFunc("loadAsyncPreset", &SceneLoader::loadAsyncPreset);
     cls.addFunc("pendingAsyncCount", &SceneLoader::pendingAsyncCount);
     cls.addFunc("prewarmed", &SceneLoader::prewarmed);
     cls.addFunc("clearPrewarm", &SceneLoader::clearPrewarm);
+    cls.addFunc("prewarm", &SceneLoader::prewarm);
+    cls.addFunc("warningCount", &SceneLoader::warningCount);
+    cls.addFunc("warning", &SceneLoader::warning);
+    cls.addFunc("setLod", &SceneLoader::setLod);
+    cls.addFunc("socketCount", &SceneLoader::socketCount);
+    cls.addFunc("socketName", &SceneLoader::socketName);
+    cls.addFunc("collisionCount", &SceneLoader::collisionCount);
+    cls.addFunc("collisionName", &SceneLoader::collisionName);
     cls.addFunc("lightCount", &SceneLoader::lightCount);
     cls.addFunc("cameraCount", &SceneLoader::cameraCount);
     cls.addFunc("animationCount", &SceneLoader::animationCount);
+    cls.addFunc("light", &SceneLoader::light);
+    cls.addFunc("camera", &SceneLoader::camera);
+    cls.addFunc("skeleton", &SceneLoader::skeleton);
+    cls.addFunc("clip", &SceneLoader::clip);
 }
 
 }  // namespace sceneloader

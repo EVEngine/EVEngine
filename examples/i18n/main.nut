@@ -10,10 +10,10 @@
 // 运行：make run/macosx-debug GAME=examples/i18n
 // ============================================================================
 
-if (!("i18n" in getroottable())) i18n <- eve.I18n();
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("loaded" in getroottable())) loaded <- false;
+persist i18n = eve.I18n()
+persist uiReady = false
+persist prevKeys = {}
+persist loaded = false
 
 function edgePressed(key, down) {
     local was = (key in prevKeys) ? prevKeys[key] : false;

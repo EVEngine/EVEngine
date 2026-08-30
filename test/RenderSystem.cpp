@@ -9,14 +9,37 @@
 #include <cmath>
 
 #include "common/Exception.h"
+#include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/Batcher.h"
-#include "graphics/RenderSystem.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "medialoader/image/FormatHandler.h"
 #include "window/Window.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::graphics;
 
@@ -56,6 +79,67 @@ TEST_CASE("RenderSystem.drawsVisibleSpritesViaMocklessPath") {
         if (sp->visible) ++visible;
     }
     CHECK_GE(visible, 1);
+}
+
+TEST_CASE("RenderSystem.sprite2dPropertyApiReachesDrawItem") {
+    auto *sprite = Renderable2D::create();
+    sprite->setPosition(12.f, 34.f);
+    sprite->setSize(80.f, 60.f);
+    sprite->setScale(1.5f, 0.5f);
+    sprite->setRotation(27.f);
+    sprite->setLayer(7);
+    sprite->setBlend("additive");
+    sprite->setReceiveLight(false);
+    sprite->setAnchor(0.25f, 0.75f);
+    sprite->setFlip(true, false);
+
+    std::vector<DrawItem2D> items;
+    RenderSystem::collectSprites(items);
+    bool found = false;
+    for (const auto &item : items) {
+        if (std::fabs(item.x - 12.f) < 1e-5f && std::fabs(item.y - 34.f) < 1e-5f) {
+            found = true;
+            CHECK(std::fabs(item.w - 120.f) < 1e-5f);
+            CHECK(std::fabs(item.h - 30.f) < 1e-5f);
+            CHECK(std::fabs(item.rotation - 27.f) < 1e-5f);
+            CHECK_EQ(item.layer, 7);
+            CHECK_EQ(static_cast<int>(item.blend), static_cast<int>(BlendMode::Additive));
+            CHECK(!item.receiveLight);
+            CHECK(std::fabs(item.anchorX - 0.25f) < 1e-5f);
+            CHECK(std::fabs(item.anchorY - 0.75f) < 1e-5f);
+            CHECK(item.flipX);
+            CHECK(!item.flipY);
+        }
+    }
+    CHECK(found);
+    sprite->release();
+}
+
+TEST_CASE("DrawItem2D.equalVisualKeysPreserveSubmissionOrder") {
+    std::vector<DrawItem2D> items(3);
+    for (auto &item : items) {
+        item.layer = 4;
+        item.depthY = 20.f;
+    }
+    items[0].texture = reinterpret_cast<Texture *>(uintptr_t(0x300));
+    items[1].texture = reinterpret_cast<Texture *>(uintptr_t(0x100));
+    items[2].texture = reinterpret_cast<Texture *>(uintptr_t(0x200));
+    Texture *first = items[0].texture;
+    Texture *second = items[1].texture;
+    Texture *third = items[2].texture;
+    sortDrawItems2D(items);
+    CHECK(items[0].texture == first);
+    CHECK(items[1].texture == second);
+    CHECK(items[2].texture == third);
+}
+
+TEST_CASE("RenderSystem.spriteExtendedBlendModes") {
+    auto *sprite = Renderable2D::create();
+    sprite->setBlend("premultiplied");
+    CHECK(sprite->getBlend() == "premultiplied");
+    sprite->setBlend("multiply");
+    CHECK(sprite->getBlend() == "multiply");
+    sprite->release();
 }
 
 static std::vector<uint8_t> makeCheckerRGBA(int w, int h, int cell, uint8_t r0, uint8_t g0, uint8_t b0,
@@ -104,7 +188,6 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 480;
@@ -117,7 +200,7 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
     gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.22f, 1.0f));
 
     auto *fs = bootstrapFilesystemForSaveIO("evengine_gfx_smoke_clear");
-    eve::image::Image::create();
+    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     auto checkerPx = makeCheckerRGBA(64, 64, 8, 255, 220, 60, 40, 40, 180);
     eve::image::ImageData src(64, 64, "RGBA8");
@@ -196,7 +279,6 @@ TEST_CASE("GraphicsSmoke.newTextureFromFileThrowsOnMissing") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
@@ -205,7 +287,7 @@ TEST_CASE("GraphicsSmoke.newTextureFromFileThrowsOnMissing") {
 
     // No write-dir bootstrap: missing-file should throw from PhysFS open alone.
     // (Parallel GraphicsSmoke.clearAndPresentWindow used to race the same identity.)
-    eve::filesystem::Filesystem::create();
+    [[maybe_unused]] auto *const filesystemModule = eve::filesystem::Filesystem::create();
     bool threw = false;
     try {
         gfx->newTextureFromFile("definitely_missing_evengine_xyz.png");
@@ -223,7 +305,6 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 480;
@@ -301,7 +382,6 @@ TEST_CASE("Camera.panAndZoomAffectOffscreenPixels") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;

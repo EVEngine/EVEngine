@@ -1,21 +1,22 @@
-#include "physics/World.h"
+﻿#include "physics/World.h"
 #include "physics/Body.h"
 #include "physics/Fixture.h"
+#include "physics/SimulationBackend.h"
 
 #include "common/Exception.h"
-#include "event/Event.h"
-#include "graphics/Graphics.h"
-#include "graphics/Canvas.h"
+#include "common/Profile.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <Box2D/Box2D.h>
 
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <limits>
+#include <utility>
 
 namespace eve::physics {
 namespace {
-
 b2BodyType parseBodyType(const std::string &type) {
     if (type == "static") return b2_staticBody;
     if (type == "kinematic") return b2_kinematicBody;
@@ -35,6 +36,128 @@ Fixture *fixtureFromRaw(b2Fixture *f) {
     return f ? static_cast<Fixture *>(f->GetUserData()) : nullptr;
 }
 
+// Signed distance from a world point to a shape (meters). Negative when inside.
+// `normal` points from the shape toward the point (world space, unit length).
+bool shapePointDistance(const b2Shape *shape, const b2Transform &xf, const b2Vec2 &p,
+                        float &dist, b2Vec2 &normal) {
+    dist   = 0.f;
+    normal = b2Vec2(0.f, 1.f);
+    if (!shape) return false;
+
+    if (shape->GetType() == b2Shape::e_circle) {
+        const auto *circle = static_cast<const b2CircleShape *>(shape);
+        const b2Vec2 center = b2Mul(xf, circle->m_p);
+        const b2Vec2 d      = p - center;
+        const float  r      = circle->m_radius;
+        dist = b2Distance(p, center) - r;
+        const float len = d.Length();
+        if (len > 1e-6f) {
+            normal = (1.f / len) * d;
+        } else if (r > 0.f) {
+            normal = b2Vec2(0.f, 1.f);
+        }
+        return true;
+    }
+
+    if (shape->GetType() == b2Shape::e_polygon) {
+        const auto *poly = static_cast<const b2PolygonShape *>(shape);
+        const b2Vec2 local = b2MulT(xf, p);
+        const int n = poly->m_count;
+        if (n < 3) return false;
+
+        // Signed distance to each edge: positive outside for Box2D CCW polygons
+        // (m_normals point outward). Inside when every side <= 0.
+        float minSide  = std::numeric_limits<float>::max();
+        float bestEdge = std::numeric_limits<float>::max();
+        b2Vec2 bestN(0.f, 1.f);
+        b2Vec2 bestQ;
+        bool inside = true;
+        for (int i = 0; i < n; ++i) {
+            const b2Vec2 &a = poly->m_vertices[i];
+            const b2Vec2 &b = poly->m_vertices[(i + 1) % n];
+            const float side = b2Dot(local - a, poly->m_normals[i]);
+            if (side > 0.f) inside = false;
+            if (side < minSide) {
+                minSide = side;
+                bestN   = poly->m_normals[i];
+            }
+            // Closest point on the edge segment.
+            const b2Vec2 ab = b - a;
+            const float len2 = b2Dot(ab, ab);
+            float t = 0.f;
+            if (len2 > 1e-12f) t = b2Clamp(b2Dot(local - a, ab) / len2, 0.f, 1.f);
+            const b2Vec2 q = a + t * ab;
+            const float d2 = b2DistanceSquared(local, q);
+            if (d2 < bestEdge) {
+                bestEdge = d2;
+                bestQ    = q;
+            }
+        }
+        if (inside) {
+            dist   = minSide;  // negative penetration
+            normal = b2Mul(xf.q, bestN);
+        } else {
+            dist = std::sqrt(bestEdge);
+            const b2Vec2 delta = local - bestQ;
+            if (delta.LengthSquared() > 1e-8f) {
+                normal = b2Mul(xf.q, (1.f / delta.Length()) * delta);
+            } else {
+                normal = b2Mul(xf.q, bestN);
+            }
+        }
+        return true;
+    }
+
+    if (shape->GetType() == b2Shape::e_edge) {
+        const auto *edge = static_cast<const b2EdgeShape *>(shape);
+        const b2Vec2 a = b2Mul(xf, edge->m_vertex1);
+        const b2Vec2 b = b2Mul(xf, edge->m_vertex2);
+        const b2Vec2 ab = b - a;
+        const float len2 = b2Dot(ab, ab);
+        float t = 0.f;
+        if (len2 > 1e-12f) t = b2Clamp(b2Dot(p - a, ab) / len2, 0.f, 1.f);
+        const b2Vec2 q = a + t * ab;
+        const b2Vec2 delta = p - q;
+        dist = delta.Length();
+        if (dist > 1e-6f) {
+            normal = (1.f / dist) * delta;
+        } else if (len2 > 1e-12f) {
+            normal = (1.f / std::sqrt(len2)) * b2Vec2(-ab.y, ab.x);
+        }
+        return true;
+    }
+
+    if (shape->GetType() == b2Shape::e_chain) {
+        const auto *chain = static_cast<const b2ChainShape *>(shape);
+        float best = std::numeric_limits<float>::max();
+        b2Vec2 bestN(0.f, 1.f);
+        for (int i = 0; i + 1 < chain->m_count; ++i) {
+            const b2Vec2 a = b2Mul(xf, chain->m_vertices[i]);
+            const b2Vec2 b = b2Mul(xf, chain->m_vertices[i + 1]);
+            const b2Vec2 ab = b - a;
+            const float len2 = b2Dot(ab, ab);
+            float t = 0.f;
+            if (len2 > 1e-12f) t = b2Clamp(b2Dot(p - a, ab) / len2, 0.f, 1.f);
+            const b2Vec2 q = a + t * ab;
+            const b2Vec2 delta = p - q;
+            const float d = delta.Length();
+            if (d < best) {
+                best = d;
+                bestN = d > 1e-6f
+                            ? (1.f / d) * delta
+                            : (len2 > 1e-12f ? (1.f / std::sqrt(len2)) * b2Vec2(-ab.y, ab.x)
+                                             : b2Vec2(0.f, 1.f));
+            }
+        }
+        if (best < std::numeric_limits<float>::max()) {
+            dist   = best;
+            normal = bestN;
+            return true;
+        }
+    }
+    return false;
+}
+
 World::ContactEvent contactEventFrom(b2Contact *contact) {
     World::ContactEvent out;
     if (!contact) return out;
@@ -49,6 +172,24 @@ World::ContactEvent contactEventFrom(b2Contact *contact) {
         out.fixtureBTag = fb->getTag();
     }
     return out;
+}
+
+eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick currentTick) {
+    if (!std::isfinite(dt) || dt < 0.f) {
+        return eve::Result<eve::SimulationStep>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "World update dt must be finite and non-negative", "physics.world.update.dt"));
+    }
+    const float normalized = std::min(dt, 0.05f);
+    const auto  nextTick   = currentTick.incremented();
+    if (!nextTick) {
+        return eve::Result<eve::SimulationStep>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                   "World simulation tick cannot be incremented", "physics.world.simulationTick"));
+    }
+    auto duration = eve::Duration::fromSeconds(static_cast<double>(normalized));
+    if (!duration) return eve::Result<eve::SimulationStep>::failure(duration.status());
+    return eve::Result<eve::SimulationStep>::success({*nextTick, std::move(duration).takeValue()});
 }
 
 }  // namespace
@@ -70,86 +211,23 @@ private:
     World *world_;
 };
 
-class DebugDraw : public b2Draw {
-public:
-    DebugDraw() { SetFlags(e_shapeBit | e_jointBit | e_aabbBit); }
-
-    void begin(graphics::Graphics *gfx, float meter) {
-        gfx_   = gfx;
-        meter_ = meter;
-    }
-    void end() { gfx_ = nullptr; }
-
-    void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) override {
-        drawPoly(vertices, vertexCount, color, false);
-    }
-    void DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) override {
-        drawPoly(vertices, vertexCount, color, true);
-    }
-    void DrawCircle(const b2Vec2 &center, float32 radius, const b2Color &color) override {
-        drawCircle(center, radius, color, false);
-    }
-    void DrawSolidCircle(const b2Vec2 &center, float32 radius, const b2Vec2 & /*axis*/,
-                         const b2Color &color) override {
-        drawCircle(center, radius, color, true);
-    }
-    void DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color) override {
-        if (!gfx_) return;
-        float x1 = p1.x * meter_, y1 = p1.y * meter_;
-        float x2 = p2.x * meter_, y2 = p2.y * meter_;
-        float minx = std::min(x1, x2), miny = std::min(y1, y2);
-        float w = std::max(1.f, std::fabs(x2 - x1));
-        float h = std::max(1.f, std::fabs(y2 - y1));
-        gfx_->drawSolidRect(minx, miny, w, h, Color(color.r, color.g, color.b, color.a * 0.8f));
-    }
-    void DrawTransform(const b2Transform &xf) override {
-        DrawSegment(xf.p, xf.p + 0.5f * xf.q.GetXAxis(), b2Color(1, 0, 0));
-        DrawSegment(xf.p, xf.p + 0.5f * xf.q.GetYAxis(), b2Color(0, 1, 0));
-    }
-
-private:
-    void drawPoly(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color, bool solid) {
-        if (!gfx_ || vertexCount < 2) return;
-        for (int32 i = 0; i < vertexCount; ++i) {
-            const b2Vec2 &a = vertices[i];
-            const b2Vec2 &b = vertices[(i + 1) % vertexCount];
-            DrawSegment(a, b, color);
-        }
-        if (solid && vertexCount >= 3) {
-            float minx = vertices[0].x, maxx = vertices[0].x;
-            float miny = vertices[0].y, maxy = vertices[0].y;
-            for (int32 i = 1; i < vertexCount; ++i) {
-                minx = std::min(minx, vertices[i].x);
-                maxx = std::max(maxx, vertices[i].x);
-                miny = std::min(miny, vertices[i].y);
-                maxy = std::max(maxy, vertices[i].y);
-            }
-            gfx_->drawSolidRect(minx * meter_, miny * meter_, (maxx - minx) * meter_,
-                                (maxy - miny) * meter_,
-                                Color(color.r, color.g, color.b, color.a * 0.25f));
-        }
-    }
-    void drawCircle(const b2Vec2 &center, float32 radius, const b2Color &color, bool solid) {
-        if (!gfx_) return;
-        float px = (center.x - radius) * meter_;
-        float py = (center.y - radius) * meter_;
-        float d  = radius * 2.f * meter_;
-        float a  = solid ? color.a * 0.35f : color.a * 0.7f;
-        gfx_->drawSolidRect(px, py, d, d, Color(color.r, color.g, color.b, a));
-    }
-
-    graphics::Graphics *gfx_   = nullptr;
-    float               meter_ = 30.f;
-};
-
 World::World(float gravityX, float gravityY, bool sleep, float meter) : meter_(meter) {
     if (meter_ <= 0.f) meter_ = 30.f;
+    runtimeHandle_ = detail::allocatePhysicsWorldHandle();
     world_ = new b2World(b2Vec2(toMeters(gravityX), toMeters(gravityY)));
     world_->SetAllowSleeping(sleep);
     relay_ = new ContactRelay(this);
     world_->SetContactListener(relay_);
-    draw_ = new DebugDraw();
-    world_->SetDebugDraw(draw_);
+    auto selection = detail::selectSimulationBackend(SimulationBackendDomain::World2D,
+                                                     detail::makeBox2DSimulationBackend(world_), world_, true);
+    if (!selection) {
+        const eve::Status status = selection.status();
+        throw eve::Exception("World: cannot select a simulation backend: %s", status.describe().c_str());
+    }
+    backendSelectionStatus_ = selection.status();
+    auto selected           = std::move(selection).takeValue();
+    backendFallback_        = selected.usedFallback;
+    simulation_             = std::move(selected.backend);
 }
 
 World::~World() { destroy(); }
@@ -158,7 +236,7 @@ void World::destroy() {
     if (destroyed_) return;
     destroyed_ = true;
 
-    // Copy sets — Body/Fixture destructors erase from them.
+    // Copy sets 鈥?Body/Fixture destructors erase from them.
     std::vector<Body *> bodies(bodies_.begin(), bodies_.end());
     for (Body *b : bodies) {
         if (b) {
@@ -177,27 +255,105 @@ void World::destroy() {
     fixtures_.clear();
     clearContactEvents();
 
+    simulation_.reset();
+
     if (world_) {
         world_->SetContactListener(nullptr);
-        world_->SetDebugDraw(nullptr);
         delete world_;
         world_ = nullptr;
     }
     delete relay_;
     relay_ = nullptr;
-    delete draw_;
-    draw_ = nullptr;
+    runtimeHandle_ = PhysicsWorldHandle::invalid();
+}
+
+bool World::pointProbe(float x, float y, float radius, ClothContact *out) const {
+    if (out) *out = ClothContact{};
+    if (!isValid() || radius <= 0.f) return false;
+
+    const float rM = toMeters(radius);
+    const b2Vec2 centerM(toMeters(x), toMeters(y));
+
+    struct Probe : b2QueryCallback {
+        const World    *world = nullptr;
+        ClothContact   *best  = nullptr;
+        b2Vec2          center;
+        float           radiusM = 0.f;
+
+        bool ReportFixture(b2Fixture *fixture) override {
+            if (!fixture || fixture->IsSensor()) return true;
+            const b2Shape *shape = fixture->GetShape();
+            if (!shape) return true;
+            float dist;
+            b2Vec2 normal;
+            if (!shapePointDistance(shape, fixture->GetBody()->GetTransform(), center, dist,
+                                    normal)) {
+                return true;
+            }
+            const float depth = radiusM - dist;
+            if (depth > 0.f && depth > best->depth) {
+                best->hit   = true;
+                best->depth = world->toPixels(depth);
+                best->nx    = normal.x;
+                best->ny    = normal.y;
+                best->body  = static_cast<Body *>(fixture->GetBody()->GetUserData());
+            }
+            return true;
+        }
+    } probe;
+    probe.world   = this;
+    probe.best    = out;
+    probe.center  = centerM;
+    probe.radiusM = rM;
+
+    b2AABB aabb;
+    aabb.lowerBound = centerM - b2Vec2(rM, rM);
+    aabb.upperBound = centerM + b2Vec2(rM, rM);
+    world_->QueryAABB(&probe, aabb);
+    return out->hit;
 }
 
 void World::update(float dt) { updateFull(dt, 8, 3); }
 
 void World::updateFull(float dt, int velocityIterations, int positionIterations) {
-    if (!world_ || destroyed_) return;
-    if (dt < 0.f) dt = 0.f;
-    // Cap to avoid spiral-of-death on hitch frames.
-    if (dt > 0.05f) dt = 0.05f;
-    world_->Step(dt, velocityIterations, positionIterations);
+    EV_PROFILE_MODULE("physics", "World::update");
+    auto legacyStep = makeLegacyStep(dt, simulationTick_);
+    if (!legacyStep) {
+        legacyStep.ignore("legacy World::updateFull cannot return a structured error");
+        return;
+    }
+    auto result =
+        step(std::move(legacyStep).takeValue(), SimulationSettings{velocityIterations, positionIterations, 4});
+    result.ignore("legacy World::updateFull cannot return a structured result");
 }
+
+eve::Result<void> World::step(const eve::SimulationStep &stepValue, const SimulationSettings &settings) {
+    if (!isValid() || !simulation_) {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "Cannot step a destroyed or uninitialized physics world", "physics.world.step"));
+    }
+    auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
+    if (!valid) return valid;
+    auto result = simulation_->step(stepValue, settings);
+    if (!result) return result;
+    simulationTick_ = stepValue.tick;
+    return result;
+}
+
+SimulationObservation World::simulationObservation() const noexcept {
+    return simulation_ ? simulation_->observation() : SimulationObservation{};
+}
+
+SimulationBackendKind World::backendKind() const noexcept {
+    return simulation_ ? simulation_->kind() : SimulationBackendKind::Cpu;
+}
+
+SimulationDeterminism World::backendDeterminism() const noexcept {
+    return simulation_ ? simulation_->determinism() : SimulationDeterminism::ToleranceBounded;
+}
+
+eve::Status World::backendSelectionStatus() const { return backendSelectionStatus_; }
 
 void World::setGravity(float gx, float gy) {
     if (!world_) return;
@@ -225,6 +381,12 @@ float World::toPixels(float meters) const { return meters * meter_; }
 
 int World::nextBodyId() { return nextId_++; }
 
+PhysicsBodyHandle World::nextBodyRuntimeHandle() {
+    if (nextBodyHandleIndex_ == PhysicsBodyHandle::invalidIndex)
+        throw eve::Exception("World.newBody: process-local body handle space exhausted");
+    return PhysicsBodyHandle(nextBodyHandleIndex_++, 1u);
+}
+
 Body *World::newBody(const std::string &bodyType, float x, float y) {
     if (!world_ || destroyed_) throw eve::Exception("World.newBody: world destroyed");
 
@@ -232,11 +394,20 @@ Body *World::newBody(const std::string &bodyType, float x, float y) {
     def.type     = parseBodyType(bodyType);
     def.position = b2Vec2(toMeters(x), toMeters(y));
 
+    const PhysicsBodyHandle runtimeHandle = nextBodyRuntimeHandle();
     b2Body *raw = world_->CreateBody(&def);
-    Body   *body = new Body(this, raw, nextBodyId());
+    Body                   *body          = new Body(this, raw, nextBodyId(), runtimeHandle);
     raw->SetUserData(body);
     bodies_.insert(body);
     return body;
+}
+
+Body *World::findBody(PhysicsBodyHandle handle) const {
+    if (!isValid() || handle.isInvalid()) return nullptr;
+    for (Body *body : bodies_) {
+        if (body && body->isValid() && body->runtimeHandle() == handle) return body;
+    }
+    return nullptr;
 }
 
 void World::destroyBody(Body *body) {
@@ -288,11 +459,11 @@ void World::onBeginContact(b2Contact *contact) {
 
     beginContacts_.push_back(contactEventFrom(contact));
 
-    auto *ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto *ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
-    std::vector<eve::event::Variant> args = {eve::event::Variant::makeInt(a->getId()),
-                                             eve::event::Variant::makeInt(b->getId())};
-    ev->push(new eve::event::Message("begincontact", args));
+    std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(a->getId()),
+                                                      eve::platform_event::Variant::makeInt(b->getId())};
+    ev->push(new eve::platform_event::Message("begincontact", args));
 }
 
 void World::onEndContact(b2Contact *contact) {
@@ -305,11 +476,11 @@ void World::onEndContact(b2Contact *contact) {
 
     endContacts_.push_back(contactEventFrom(contact));
 
-    auto *ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto *ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
-    std::vector<eve::event::Variant> args = {eve::event::Variant::makeInt(a->getId()),
-                                             eve::event::Variant::makeInt(b->getId())};
-    ev->push(new eve::event::Message("endcontact", args));
+    std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(a->getId()),
+                                                      eve::platform_event::Variant::makeInt(b->getId())};
+    ev->push(new eve::platform_event::Message("endcontact", args));
 }
 
 void World::onPreSolve(b2Contact *contact, const b2Manifold * /*oldManifold*/) {
@@ -425,13 +596,6 @@ void World::clearContactEvents() {
     endContacts_.clear();
     impacts_.clear();
     preSolve_.clear();
-}
-
-void World::drawDebug(graphics::Graphics *gfx) {
-    if (!world_ || !draw_ || !gfx) return;
-    draw_->begin(gfx, meter_);
-    world_->DrawDebugData();
-    draw_->end();
 }
 
 int World::rayCast(float x1, float y1, float x2, float y2) {

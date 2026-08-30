@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <utility>
 
 namespace eve {
 namespace font {
@@ -90,6 +91,14 @@ FontData::~FontData() {
         FT_Done_Face(face);
         face = nullptr;
     }
+}
+
+void FontData::adopt(eve::Resource &replacement) {
+    auto &other = static_cast<FontData &>(replacement);
+    std::swap(bytes, other.bytes);
+    std::swap(face, other.face);
+    std::swap(pixelSize, other.pixelSize);
+    std::swap(glyphCache, other.glyphCache);
 }
 
 int FontData::getSize() const { return pixelSize; }

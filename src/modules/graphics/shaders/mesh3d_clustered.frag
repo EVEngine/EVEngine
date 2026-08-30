@@ -23,8 +23,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 ambient;     // rgb; w = metallic
     vec4 gridInfo;    // tilesX, tilesY, slices, pointCount
     vec4 clipInfo;    // near, far, screenW, screenH
-    vec4 texBomb;     // x = cellScale, y = strength (0=off), z = rotAmount, w unused
-    vec4 parallax;    // x = scale (0=off), y = minLayers, z = maxLayers, w unused
+    vec4 texBomb;     // xyz = cell bombing, w = SurfaceMode (0/1/2)
+    vec4 parallax;    // xyz = parallax, w = alphaCutoff
 } ubo;
 
 struct Light3D {
@@ -236,7 +236,10 @@ void main() {
                                ubo.parallax.y, ubo.parallax.z);
 
     vec4 base = textureCellBomb(albedoSampler, uv, bombScale, bombStrength, bombRot) * vTint;
-    if (base.a < 0.5)
+    if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w)
+        discard;
+    float alphaHash = fract(dot(floor(gl_FragCoord.xy), vec2(0.06711056, 0.00583715)));
+    if (ubo.texBomb.w > 2.5 && base.a < alphaHash)
         discard;
     vec3 albedo = base.rgb;
     float metallic = clamp(ubo.ambient.w, 0.0, 1.0);

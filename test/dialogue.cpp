@@ -3,8 +3,28 @@
 
 #include "avatar/Avatar.h"
 #include "dialogue/Dialogue.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "ui/UI.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
@@ -81,9 +101,9 @@ TEST_CASE("dialogue.charactersAndStage") {
     CHECK(dlg->hide("alice"));
     CHECK(!dlg->isShown("alice"));
 
+    dlg->reset();
     aliceAv->release();
     delete aliceAv;
-    dlg->reset();
 }
 
 TEST_CASE("dialogue.typewriterAndAdvance") {
@@ -204,7 +224,6 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 800;
     s.height = 480;
@@ -299,7 +318,7 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
             kids.push_back(text("[advance]", "hint"));
         }
 
-        ui->remountAs("dlg", window("Dialogue", kids, "root"));
+        REQUIRE(UIHost::resolve(ui->remountAs("dlg", window("Dialogue", kids, "root"))).has_value());
         ui->beginFrameAndRender();
         RenderSystem::render(*gfx);
         ui->dispatchEvents();
@@ -321,10 +340,10 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
     bob->setVisible(false);
     alice->sync();
     bob->sync();
+    dlg->reset();
     alice->release();
     bob->release();
     delete alice;
     delete bob;
-    dlg->reset();
     win->close();
 }

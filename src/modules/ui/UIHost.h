@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/BorrowedRef.h"
 #include "common/ECS.h"
 
 #include <cstdint>
@@ -8,6 +9,8 @@
 #include <vector>
 
 namespace eve::ui {
+
+using UIHostHandle = ecs::EntityHandle;
 
 /** @brief Widget node kinds understood by the UI renderer. */
 enum class NodeType : uint8_t {
@@ -30,6 +33,20 @@ enum class NodeType : uint8_t {
     Combo = 16,   // dropdown; options newline-separated in valueText, index in value
     ScrollList = 17,  // virtualized scrollable list (uniform itemHeight)
     Viewport = 18,  // embedded render target: offscreen Canvas shown + input routed
+    SearchField = 19,   // compact input with a search hint/icon
+    Switch = 20,        // modern boolean toggle
+    Badge = 21,         // compact status/category pill
+    Card = 22,          // bordered surface container
+    SectionHeader = 23, // non-collapsible editor section heading
+    MenuBar = 24,       // native ImGui window menu bar
+    Menu = 25,          // popup menu container
+    MenuItem = 26,      // selectable menu command
+    Toolbar = 27,       // horizontal editor command strip
+    Toolbox = 28,       // wrapping grid of editor tools
+    Sidebar = 29,       // vertical editor side panel
+    StatusBar = 30,     // compact horizontal status strip
+    SplitPane = 31,      // two resizable panes
+    NinePatchPanel = 32, // .9.png-backed stretchable content container
 };
 
 /** @brief Main-axis direction for Flex containers. */
@@ -47,6 +64,36 @@ enum class FlexJustify : uint8_t {
     SpaceAround = 4,
 };
 
+/** @brief Keyboard/gamepad focus policy for an interactive control. */
+enum class FocusMode : uint8_t { None = 0, Click = 1, All = 2 };
+
+/** @brief Logical focus movement understood by keyboard, gamepad and automation. */
+enum class FocusDirection : uint8_t { Next = 0, Previous, Left, Right, Up, Down };
+
+/** @brief Pointer event participation and propagation policy. */
+enum class MouseFilter : uint8_t { Stop = 0, Pass = 1, Ignore = 2 };
+
+/** @brief Built-in theme override inherited by a retained UI subtree. */
+enum class ThemePreset : uint8_t { Inherit = 0, Dark = 1, Light = 2 };
+
+/** @brief Platform-neutral accessibility role exposed by controls. */
+enum class AccessibilityRole : uint8_t {
+    Auto = 0,
+    Button,
+    Checkbox,
+    Slider,
+    Text,
+    TextInput,
+    List,
+    ListItem,
+    Menu,
+    MenuItem,
+    Progress,
+    Region,
+    Tab,
+    Window
+};
+
 /**
  * @brief Retained UI widget node (arena tree). Conceptual counterpart of
  * eve::scene::SceneNode; built declaratively from WidgetDesc.
@@ -57,9 +104,26 @@ struct UINode {
     std::string key;
     std::string text;       // label / title
     std::string valueText;  // InputText content
+    std::string tooltip;    // hover help; empty disables the tooltip
     bool visible = true;
+    bool enabled = true;
     bool checked = false;
     bool open = true;  // CollapsingHeader default-open hint
+    FocusMode focusMode = FocusMode::All;
+    MouseFilter mouseFilter = MouseFilter::Stop;
+    ThemePreset themePreset = ThemePreset::Inherit;
+    int tabIndex = 0;
+    std::string focusNext;
+    std::string focusPrevious;
+    std::string focusLeft;
+    std::string focusRight;
+    std::string focusUp;
+    std::string focusDown;
+    bool focusRequested = false;
+    bool focused = false;
+    AccessibilityRole accessibilityRole = AccessibilityRole::Auto;
+    std::string accessibilityName;
+    std::string accessibilityDescription;
     float value = 0.f;
     float minValue = 0.f;
     float maxValue = 1.f;
@@ -112,6 +176,7 @@ struct UINode {
     float gap = -1.f;  // <0 → theme ItemSpacing on that axis
     // Flex item props (any child inside Flex)
     float flexGrow = 0.f;
+    int parent = -1;
     int firstChild = -1;
     int nextSibling = -1;
     uint32_t handlerClick = 0;   // 1-based → Tree::clickHandlers
@@ -139,11 +204,13 @@ public:
         bool modal = false;
         bool overlay = false;  // no title bar / chrome (HUD-style)
         bool hasPos = false;
+        bool lockPos = true;       // false: initial position only; user may move/persist it
         float posX = 0.f;
         float posY = 0.f;
         float pivotX = 0.f;
         float pivotY = 0.f;
         bool hasSize = false;      // explicit window size
+        bool lockSize = true;      // false: initial size only; user may resize/persist it
         float sizeX = 0.f;
         float sizeY = 0.f;
         float percentW = 0.f;      // 0..1 of display width; overrides sizeX
@@ -151,8 +218,10 @@ public:
         float anchorX = 0.f;       // anchor in display (0..1); with hasPos, posX is offset
         float anchorY = 0.f;
         std::string name;
+        float overlayBgAlpha = 0.4f;
+        bool overlayFlush = false;  // remove outer WindowPadding for desktop chrome
         uint32_t ownerId = 0;
-        UIHost *entity = nullptr;
+        UIHostHandle entity{};
     };
 
     struct Tree {
@@ -168,7 +237,32 @@ public:
     COMPONENT(Meta, meta)
     COMPONENT(Tree, tree)
 
-    static UIHost *createHost(const std::string &name = "");
+    /**
+     * @brief Creates an ECS-owned UI host.
+     * @return A generation-checked handle; an empty handle means creation failed.
+     * @ownership The UI ECS world owns the host; callers must not delete it.
+     * @lifetime The handle is valid until ECS destruction or UI module teardown; resolve it at each use.
+     * @thread Call on the UI ECS thread.
+     * @reentrancy The factory invokes no external callbacks.
+     */
+    [[nodiscard]] static UIHostHandle createHost(const std::string &name = "");
+
+    /**
+     * @brief Resolves a UI host handle with ECS generation checking.
+     * @param handle Candidate host handle.
+     * @return A temporary borrowed host for the current UI operation, or null when stale.
+     * @ownership The UI ECS world owns the returned host; callers must not delete it.
+     * @lifetime Valid only until the next UI ECS structural mutation or world teardown.
+     * @thread Call on the UI ECS thread.
+     * @reentrancy Does not invoke callbacks; do not retain the returned pointer across frames.
+     */
+    [[nodiscard]] static eve::OptionalRef<UIHost> resolve(UIHostHandle handle) noexcept;
+
+    /**
+     * @brief Returns this host's generation-qualified ECS handle.
+     * @return A handle that becomes stale when this host is destroyed or replaced.
+     */
+    [[nodiscard]] UIHostHandle handle() const noexcept { return ecs::handle_of(this); }
 
     /** @brief Names the host. */
     void setName(const std::string &name);
@@ -190,6 +284,7 @@ public:
     /** @brief Widget state updates by node id. */
     void setTextById(const std::string &id, const std::string &text);
     void setVisibleById(const std::string &id, bool visible);
+    void setEnabledById(const std::string &id, bool enabled);
     void setCheckedById(const std::string &id, bool checked);
     void setValueById(const std::string &id, float value);
     void setValueTextById(const std::string &id, const std::string &value);
@@ -198,9 +293,34 @@ public:
     bool setToggleHandler(const std::string &id, std::function<void(bool)> fn);
     bool setValueHandler(const std::string &id, std::function<void(float)> fn);
     bool setTextHandler(const std::string &id, std::function<void(const std::string &)> fn);
-    /** @brief Looks up a node by id or reconciliation key. */
-    UINode *findById(const std::string &id);
-    UINode *findByKey(const std::string &key);
+    /**
+     * @brief Looks up a node by stable id without transferring ownership.
+     * @return Borrowed nullable node owned by this host's tree.
+     * @ownership UIHost owns the node tree; callers must not delete the result.
+     * @lifetime Valid until the next tree replacement/reconcile or host destruction.
+     * @thread Call on the UI thread owning this host.
+     * @reentrancy Do not retain across callbacks or tree mutation.
+     */
+    [[nodiscard]] eve::OptionalRef<UINode> findById(const std::string &id);
+    /**
+     * @brief Looks up a node by reconciliation key without transferring ownership.
+     * @return Borrowed nullable node owned by this host's tree.
+     * @ownership UIHost owns the node tree; callers must not delete the result.
+     * @lifetime Valid until the next tree replacement/reconcile or host destruction.
+     * @thread Call on the UI thread owning this host.
+     * @reentrancy Do not retain across callbacks or tree mutation.
+     */
+    [[nodiscard]] eve::OptionalRef<UINode> findByKey(const std::string &key);
+    /** @brief Request keyboard/gamepad focus for a control on the next frame. */
+    bool requestFocusById(const std::string &id);
+    /**
+     * @brief Move through explicit neighbors or deterministic tab order.
+     * @param direction Logical sequential or directional movement.
+     * @param wrap Whether sequential fallback wraps at the first/last control.
+     */
+    bool moveFocus(FocusDirection direction, bool wrap = true);
+    /** @brief Return the currently focused control id, or an empty string. */
+    std::string focusedId();
     /** @brief Marks the tree for a full rebuild on the next frame. */
     void markDirty() { tree()->dirty = true; }
 

@@ -147,7 +147,9 @@ bool HotReload::tryReload(std::string path) {
         // kind targets exactly one reloader and ignores the extension, so a
         // config file with an unexpected suffix can still be bound by hand.
         const bool wanted = (kind == "auto") ? r->handlesPath(norm) : (kind == r->reloadKind());
-        if (wanted && r->reload(norm)) any = true;
+        if (!wanted) return;
+        auto result = r->reload(norm);
+        if (result.ok() && result.value()) any = true;
     });
     return any;
 }
@@ -178,15 +180,27 @@ int HotReload::watchTree(std::string root) {
             continue;
         }
 
-        for (const auto &name : items) {
-            if (name.empty() || name == "." || name == "..") continue;
-            const std::string child = (dir == "." || dir.empty()) ? name : joinDir(dir, name);
+        for (const auto &item : items) {
+            if (item.empty() || item == "." || item == "..") continue;
+            const std::string child = (dir == "." || dir.empty()) ? item : joinDir(dir, item);
             Filesystem::Info info{};
             if (!fs->getInfo(child, info)) continue;
             if (info.type == "directory") stack.push_back(child);
         }
     }
     return added;
+}
+
+bool HotReload::watchNewDirectory(std::string path) {
+    auto *fs = Filesystem::create();
+    if (!fs) return false;
+    path = normalizePath(std::move(path));
+    if (path.empty()) return false;
+
+    Filesystem::Info info{};
+    if (!fs->getInfo(path, info) || info.type != "directory") return false;
+    watchTree(path);
+    return true;
 }
 
 // --- Remote hot reload (dev-server sync) ---
@@ -246,7 +260,7 @@ bool HotReload::fetchManifest(std::vector<RemoteFile> &out) {
         Poco::JSON::Array::Ptr arr = result.extract<Poco::JSON::Array::Ptr>();
         if (!arr) return false;
         for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o = arr->getObject(i);
+            Poco::JSON::Object::Ptr o = arr->getObject(static_cast<unsigned int>(i));
             if (!o) continue;
             RemoteFile f;
             f.path = o->optValue<std::string>("path", "");
@@ -283,7 +297,7 @@ std::map<std::string, std::pair<int64_t, int64_t>> HotReload::loadRecord() const
         Poco::JSON::Array::Ptr arr = result.extract<Poco::JSON::Array::Ptr>();
         if (!arr) return record;
         for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o = arr->getObject(i);
+            Poco::JSON::Object::Ptr o = arr->getObject(static_cast<unsigned int>(i));
             if (!o) continue;
             const std::string path = o->optValue<std::string>("path", "");
             if (path.empty()) continue;
@@ -457,6 +471,7 @@ void HotReload::expose(ssq::Class &cls) {
     cls.addFunc("unbind", &HotReload::unbind);
     cls.addFunc("tryReload", &HotReload::tryReload);
     cls.addFunc("watchTree", &HotReload::watchTree);
+    cls.addFunc("watchNewDirectory", &HotReload::watchNewDirectory);
     cls.addFunc("startRemoteSync", &HotReload::startRemoteSync);
     cls.addFunc("stopRemoteSync", &HotReload::stopRemoteSync);
     cls.addFunc("isRemoteSyncing", &HotReload::isRemoteSyncing);

@@ -1,13 +1,20 @@
 #pragma once
 
-#include "common/Module.h"
 #include "animation/Tween.h"
+#include "common/Module.h"
+#include "common/Time.h"
 
 #include <string>
+#include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::model3d {
 class ModelData;
+}
+
+namespace eve::graphics {
+class Graphics;
 }
 
 namespace eve::animation {
@@ -16,13 +23,20 @@ class AnimSkeleton;
 class AnimClip;
 class AnimPose;
 class AnimPlayer;
+class AnimGraph;
+class AnimBoneMask;
+class AnimLayerMixer;
 class AnimStateMachine;
 class MotionDatabase;
 class MotionMatcher;
 class ControlAnim;
 class ControlPose;
 class AnimSkin;
+class AnimLattice;
 class AnimTrail;
+class AnimBatch;
+class AnimConstraintStack;
+class AnimSyncGroup;
 class SpriteSheet;
 class SpriteClip;
 class SpriteAnim;
@@ -37,7 +51,9 @@ class SpineAnim;
  * procedural drivers + motion trails + per-frame pump.
  * Script: `anim <- eve.Animation();`
  *
- * Tweens / SpriteAnim / SpineAnim can be advanced via `anim.update(dt)`.
+ * Tweens / SpriteAnim / SpineAnim can be advanced via the scheduler-owned
+ * `anim.advance(SimulationStep)` API. The `update(float)` method remains a
+ * compatibility facade and explicitly consumes the checked Result.
  * Relative property changes use `Tween::setDelta` / `setDeltaAngle`.
  *
  * 2D: `SpriteSheet` + `SpriteClip` + `SpriteAnim`; Spine region subset via
@@ -60,8 +76,26 @@ public:
 
     /** @brief 2D sprite-sheet animation factories (script GC owns returned objects). */
     SpriteSheet *newSpriteSheet();
+    /**
+     * @brief Load numbered PNG files into a runtime atlas and return its frame table.
+     * Pattern must contain `{n}`, e.g. `fx/frame ({n}).png`. All frames must share
+     * dimensions and RGBA8 format. `columns <= 0` chooses a near-square atlas.
+     */
+    SpriteSheet *newSpriteSheetFromSequence(eve::graphics::Graphics *gfx,
+                                             const std::string &pattern, int first,
+                                             int last, int columns = 0);
+    /** @brief Import Aseprite/TexturePacker JSON frame metadata and its atlas texture. */
+    SpriteSheet *newSpriteSheetFromAtlasJson(eve::graphics::Graphics *gfx,
+                                              const std::string &texturePath,
+                                              const std::string &jsonPath);
     SpriteClip  *newSpriteClip(const std::string &name = "");
     SpriteAnim  *newSpriteAnim();
+    /** @brief Number of decoded runtime sequence atlases retained for reuse. */
+    int getSpriteSequenceCacheCount() const;
+    /** @brief Approximate RGBA8 bytes retained by cached sequence atlases. */
+    int getSpriteSequenceCacheBytes() const;
+    /** @brief Drop cache metadata; existing returned sheets/textures remain valid. */
+    void clearSpriteSequenceCache();
 
     /** @brief Spine (region attachment subset) factories. */
     SpineAtlas        *newSpineAtlas();
@@ -79,7 +113,19 @@ public:
     AnimSkeleton     *newSkeleton();
     AnimClip         *newClip(const std::string &name = "");
     AnimPose         *newPose(int boneCount = 0);
+    /** @brief Create a parallel batch clip evaluator. */
+    AnimBatch        *newBatch();
+    /** @brief Create an ordered procedural constraint stack. */
+    AnimConstraintStack *newConstraintStack(AnimSkeleton* skeleton);
+    /** @brief Create a normalized-time player synchronization group. */
+    AnimSyncGroup* newSyncGroup();
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
+    /** @brief Create a composable pose graph for the skeleton. */
+    AnimGraph        *newGraph(AnimSkeleton *skeleton);
+    /** @brief Create a zero-weight per-bone animation mask. */
+    AnimBoneMask* newBoneMask(AnimSkeleton* skeleton);
+    /** @brief Create an override/additive animation layer mixer. */
+    AnimLayerMixer*   newLayerMixer(AnimSkeleton* skeleton);
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);
@@ -93,14 +139,35 @@ public:
     ControlPose *newControlPose(AnimSkeleton *skeleton);
 
     /**
-     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact `.eva`
-     * fixtures (see AnimImporter).
+     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact
+     * `*.anim.txt` test fixtures (see AnimImporter).
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
     AnimClip     *newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
                                    int animIndex = 0);
-    AnimSkeleton *newSkeletonFromEvaFile(const std::string &path);
-    AnimClip     *newClipFromEvaFile(const std::string &path);
+    /**
+     * @brief Load a skeleton from an internal `*.anim.txt` test fixture.
+     * @param path Filesystem path read synchronously during this call.
+     * @return Newly allocated skeleton owned by the caller; never null on success.
+     * @ownership Owned; the caller must delete the returned skeleton.
+     * @lifetime Independent of this Animation module after construction.
+     * @throws Exception when the fixture is missing, malformed, or unsupported.
+     * @thread Main-thread animation API; no internal synchronization.
+     * @reentrancy Does not invoke user callbacks.
+     */
+    AnimSkeleton *newSkeletonFromAnimationFixtureText(const std::string &path);
+    /**
+     * @brief Load an animation clip from an internal `*.anim.txt` test fixture.
+     * @param path Filesystem path read synchronously during this call.
+     * @return Newly allocated clip owned by the caller; never null on success.
+     * @ownership Owned; the caller must delete the returned clip.
+     * @lifetime Independent of this Animation module after construction; registered hot-reload
+     *           tracking remains valid until the clip is destroyed.
+     * @throws Exception when the fixture is missing, malformed, or unsupported.
+     * @thread Main-thread animation API; no internal synchronization.
+     * @reentrancy Does not invoke user callbacks while loading.
+     */
+    AnimClip *newClipFromAnimationFixtureText(const std::string &path);
 
     /**
      * @brief CPU linear-blend skin binding for a skinned mesh on ModelData.
@@ -110,12 +177,30 @@ public:
                                AnimSkeleton *skeleton);
 
     /**
+     * @brief 3D lattice scale-deformer (晶格缩放变形). divX/divY/divZ are the
+     * control-point divisions (each >= 2). Control points are driven with
+     * setPointScale / setPointOffset; bound vertices deform via trilinear
+     * interpolation (see AnimLattice).
+     */
+    AnimLattice *newLattice(int divX = 2, int divY = 2, int divZ = 2);
+
+    /** @brief newLattice bound to meshIndex of model (Assimp vertices). */
+    AnimLattice *newLatticeFromModel(eve::model3d::ModelData *model, int meshIndex,
+                                     int divX = 2, int divY = 2, int divZ = 2);
+
+    /**
      * @brief Motion trail / afterimage (script GC owns returned object).
      * capacity: max retained samples (>= 2).
      */
     AnimTrail *newTrail(int capacity = 64);
 
     /** @brief Advance all registered tweens, sprite anims, and spine anims. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+
+    /** @brief Last scheduler tick consumed by the checked module pump. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+
+    /** @brief Legacy seconds facade; invalid input is explicitly consumed and ignored. */
     void update(float dt);
 
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
@@ -129,6 +214,7 @@ public:
     void clearAll();
 
 private:
+    std::unordered_map<std::string, std::unique_ptr<SpriteSheet>> spriteSequenceCache_;
     friend class Tween;
     friend class SpriteAnim;
     friend class SpineAnim;
@@ -143,6 +229,8 @@ private:
     std::vector<Tween *>      tweens_;
     std::vector<SpriteAnim *> spriteAnims_;
     std::vector<SpineAnim *>  spineAnims_;
+    eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
+    bool                      hasLastTick_ = false;
 };
 
 }  // namespace eve::animation

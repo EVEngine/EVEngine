@@ -1,0 +1,14 @@
+diff --git a/model/ModelLoader.cpp b/model/ModelLoader.cpp
+index beccd4e..604deb8 100644
+--- a/model/ModelLoader.cpp
++++ b/model/ModelLoader.cpp
+@@ -17,7 +17,7 @@ unsigned int ModelLoader::flagsFrom(const LoadOptions &opt) const {
+ 	unsigned int flags = 0;
+ 	if (opt.triangulate)
+ 		flags |= aiProcess_Triangulate;
+ 	if (opt.generateNormalsIfMissing)
+-		flags |= aiProcess_GenNormals;
++		flags |= aiProcess_GenSmoothNormals;
+ 	if (opt.joinIdenticalVertices)
+ 		flags |= aiProcess_JoinIdenticalVertices;
+ 	if (opt.flipUVs)

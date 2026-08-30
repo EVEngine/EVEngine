@@ -4,9 +4,12 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "PathBesideSource.h"
+#include "ProcgenGridTestSupport.h"
 #include "data/DataModule.h"
 #include "data/JsonDocument.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/Light.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/Inventory.h"
@@ -19,7 +22,6 @@
 #include "map/TileConfig.h"
 #include "map/TileLayer.h"
 #include "map/TileOrientation.h"
-#include "graphics/Light.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/Particles.h"
 #include "procgen/GeneratorRegistry.h"
@@ -47,13 +49,7 @@ using namespace eve::data;
 
 namespace {
 
-std::string hexDataDir() {
-    std::string here = __FILE__;
-    const auto slash = here.find_last_of("/\\");
-    const std::string testDir =
-        (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return testDir + "/../examples/hex-levels/data";
-}
+std::string hexDataDir() { return eve_test_path::pathBesideTestDir(__FILE__, "../examples/hex-levels/data"); }
 
 std::string readTextFile(const std::string &path) {
     std::ifstream in(path);
@@ -105,7 +101,7 @@ TEST_CASE("hex.data.catalog.loadsLevels") {
 
     int foundPipeline = 0;
     for (size_t i = 0; i < levels->size(); ++i) {
-        auto lv = levels->getObject(i);
+        auto lv = levels->getObject(static_cast<unsigned int>(i));
         REQUIRE(lv);
         CHECK(lv->has("id"));
         CHECK(lv->has("key"));
@@ -188,7 +184,7 @@ TEST_CASE("hex.data.lootTables.placeFromOffsets") {
     gen->setPaletteGid("hex_data", "floor", 2);
     gen->setPaletteGid("hex_data", "corridor", 2);
     gen->setPaletteGid("hex_data", "door", 3);
-    REQUIRE(gen->applyToLayer(&grid, "hex_data", layer));
+    eve::test_support::applyGridToLayer(*gen, grid, "hex_data", *layer);
 
     int spawnX = -1, spawnY = -1;
     for (int i = 0; i < grid.getObjectCount(); ++i) {
@@ -220,7 +216,7 @@ TEST_CASE("hex.data.lootTables.placeFromOffsets") {
     int placed = 0;
     int picked = 0;
     for (size_t i = 0; i < rich->size(); ++i) {
-        auto entry = rich->getObject(i);
+        auto entry = rich->getObject(static_cast<unsigned int>(i));
         const std::string itemId = entry->getValue<std::string>("itemId");
         const int qty = entry->has("qty") ? entry->getValue<int>("qty") : 1;
         auto off = entry->getArray("offset");
@@ -265,9 +261,9 @@ TEST_CASE("hex.data.seedsMatrix.smokeConnectivity") {
     int okRuns = 0;
     const size_t seedLimit = std::min<size_t>(6, seeds->size());
     for (size_t si = 0; si < seedLimit; ++si) {
-        const uint32_t seed = uint32_t(seeds->getElement<int>(si));
+        const uint32_t seed = uint32_t(seeds->getElement<int>(static_cast<unsigned int>(si)));
         for (size_t ai = 0; ai < algos->size(); ++ai) {
-            auto algoObj = algos->getObject(ai);
+            auto algoObj = algos->getObject(static_cast<unsigned int>(ai));
             const std::string algo = algoObj->getValue<std::string>("id");
             Params p;
             p.setSeed(seed);
@@ -473,7 +469,7 @@ TEST_CASE("hex.data.perception.casesFromJson") {
     fov->setDetectionMargin(0.f);
 
     for (size_t i = 0; i < cases->size(); ++i) {
-        auto c = cases->getObject(i);
+        auto c = cases->getObject(static_cast<unsigned int>(i));
         const float perception = float(c->getValue<double>("perception"));
         const float stealth = float(c->getValue<double>("stealth"));
         const bool expect = c->getValue<bool>("expectDetect");
@@ -488,7 +484,7 @@ TEST_CASE("hex.data.perception.casesFromJson") {
     }
 
     for (size_t i = 0; i < radiusCases->size(); ++i) {
-        auto c = radiusCases->getObject(i);
+        auto c = radiusCases->getObject(static_cast<unsigned int>(i));
         const int base = c->getValue<int>("baseRadius");
         const float perception = float(c->getValue<double>("perception"));
         const float scale = float(c->getValue<double>("scale"));
@@ -517,7 +513,7 @@ TEST_CASE("hex.data.catalog.driveLevelGeneration") {
 
     int generated = 0;
     for (size_t i = 0; i < levels->size(); ++i) {
-        auto lv = levels->getObject(i);
+        auto lv = levels->getObject(static_cast<unsigned int>(i));
         // Skip id 7 synthetic cost map (still dungeon.bsp — generate is fine).
         const uint32_t seed = uint32_t(lv->getValue<int>("seed"));
         const int w = lv->getValue<int>("width");
@@ -543,7 +539,7 @@ TEST_CASE("hex.data.catalog.driveLevelGeneration") {
         Grid2D grid;
         std::string err;
         REQUIRE(GeneratorRegistry::instance().generate(algo, p, grid, err));
-        REQUIRE(gen->applyToLayer(&grid, "hex_catalog", layer));
+        eve::test_support::applyGridToLayer(*gen, grid, "hex_catalog", *layer);
         CHECK(countWalkable(grid) >= 4);
 
         Pathfinder *pf = mapMod->newPathfinder(layer);
@@ -581,7 +577,7 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
     int booted = 0;
 
     for (size_t i = 0; i < levels->size(); ++i) {
-        auto lv = levels->getObject(i);
+        auto lv = levels->getObject(static_cast<unsigned int>(i));
         REQUIRE(lv);
         const int id = lv->getValue<int>("id");
         const std::string key = lv->getValue<std::string>("key");
@@ -626,7 +622,7 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
         Grid2D grid;
         std::string err;
         REQUIRE(GeneratorRegistry::instance().generate(algo, p, grid, err));
-        REQUIRE(gen->applyToLayer(&grid, "hex_boot", layer));
+        eve::test_support::applyGridToLayer(*gen, grid, "hex_boot", *layer);
         CHECK(countWalkable(grid) >= 1);
 
         Pathfinder *pf = mapMod->newPathfinder(layer);
@@ -722,7 +718,7 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
         CHECK(features->size() >= 1);
         bool hasHex = false;
         for (size_t fi = 0; fi < features->size(); ++fi) {
-            if (features->getElement<std::string>(fi) == "hex") hasHex = true;
+            if (features->getElement<std::string>(static_cast<unsigned int>(fi)) == "hex") hasHex = true;
         }
         CHECK(hasHex);
 
@@ -783,7 +779,7 @@ TEST_CASE("hex.data.catalog.newLevels16to30Present") {
     for (int id : want) {
         bool found = false;
         for (size_t i = 0; i < levels->size(); ++i)
-            if (levels->getObject(i)->getValue<int>("id") == id) found = true;
+            if (levels->getObject(static_cast<unsigned int>(i))->getValue<int>("id") == id) found = true;
         CHECK(found);
     }
 }
@@ -811,7 +807,7 @@ TEST_CASE("hex.data.lootTables.perceptionGates") {
     CHECK(fov->isVisible(4, 4));
 
     for (size_t i = 0; i < gates->size(); ++i) {
-        auto g = gates->getObject(i);
+        auto g = gates->getObject(static_cast<unsigned int>(i));
         const std::string itemId = g->getValue<std::string>("itemId");
         const float stealth = float(g->getValue<double>("stealth"));
         const bool needVis = g->getValue<bool>("requireVisible");
@@ -863,7 +859,7 @@ TEST_CASE("hex.data.lootTables.allTablesPlaceable") {
     gen->setPaletteGid("hex_loot_all", "floor", 2);
     gen->setPaletteGid("hex_loot_all", "corridor", 2);
     gen->setPaletteGid("hex_loot_all", "door", 3);
-    REQUIRE(gen->applyToLayer(&grid, "hex_loot_all", layer));
+    eve::test_support::applyGridToLayer(*gen, grid, "hex_loot_all", *layer);
 
     int spawnX = -1, spawnY = -1;
     for (int i = 0; i < grid.getObjectCount(); ++i) {
@@ -895,7 +891,7 @@ TEST_CASE("hex.data.lootTables.allTablesPlaceable") {
         Bag *bag = inv->newBag(32);
         int placed = 0;
         for (size_t i = 0; i < arr->size(); ++i) {
-            auto e = arr->getObject(i);
+            auto e = arr->getObject(static_cast<unsigned int>(i));
             const std::string itemId = e->getValue<std::string>("itemId");
             const int qty = e->has("qty") ? e->getValue<int>("qty") : 1;
             CHECK(ItemRegistry::find(itemId) != nullptr);
@@ -934,7 +930,7 @@ TEST_CASE("hex.data.catalog.enableFlagsConsistent") {
     int withFov = 0;
     int withLight = 0;
     for (size_t i = 0; i < levels->size(); ++i) {
-        auto lv = levels->getObject(i);
+        auto lv = levels->getObject(static_cast<unsigned int>(i));
         CHECK(lv->has("key"));
         CHECK(lv->has("seed"));
         CHECK(lv->has("lootTable"));
@@ -985,7 +981,7 @@ TEST_CASE("hex.data.seedsMatrix.pathToExitSample") {
     int ok = 0;
     const size_t limit = std::min<size_t>(8, seeds->size());
     for (size_t si = 0; si < limit; ++si) {
-        const uint32_t seed = uint32_t(seeds->getElement<int>(si));
+        const uint32_t seed = uint32_t(seeds->getElement<int>(static_cast<unsigned int>(si)));
         hideLayers();
         TileLayer *layer = mapMod->newLayer(24, 18, 64.f, 32.f);
         {
@@ -1001,7 +997,7 @@ TEST_CASE("hex.data.seedsMatrix.pathToExitSample") {
         Grid2D grid;
         std::string err;
         REQUIRE(GeneratorRegistry::instance().generate("dungeon.bsp", p, grid, err));
-        REQUIRE(gen->applyToLayer(&grid, "hex_seed_path", layer));
+        eve::test_support::applyGridToLayer(*gen, grid, "hex_seed_path", *layer);
 
         int spawnX = -1, spawnY = -1, exitX = -1, exitY = -1;
         for (int i = 0; i < grid.getObjectCount(); ++i) {
@@ -1159,7 +1155,7 @@ TEST_CASE("hex.data.particles.mistOnDungeon") {
     gen->setPaletteGid("hex_mist", "floor", 2);
     gen->setPaletteGid("hex_mist", "corridor", 2);
     gen->setPaletteGid("hex_mist", "door", 3);
-    REQUIRE(gen->applyToLayer(&grid, "hex_mist", layer));
+    eve::test_support::applyGridToLayer(*gen, grid, "hex_mist", *layer);
 
     auto *parts = Particles::create();
     ParticleEmitter *fog = parts->newEmitterFromFile("mist_fog.json");
@@ -1183,7 +1179,7 @@ TEST_CASE("hex.data.lootTables.itemIdsExistInItems") {
 
     std::vector<std::string> ids;
     for (size_t i = 0; i < items->size(); ++i) {
-        auto o = items->getObject(i);
+        auto o = items->getObject(static_cast<unsigned int>(i));
         ids.push_back(o->getValue<std::string>("id"));
     }
     CHECK(ids.size() >= 12);
@@ -1193,7 +1189,7 @@ TEST_CASE("hex.data.lootTables.itemIdsExistInItems") {
         auto arr = tables->getArray(name);
         REQUIRE(arr);
         for (size_t i = 0; i < arr->size(); ++i) {
-            const std::string itemId = arr->getObject(i)->getValue<std::string>("itemId");
+            const std::string itemId = arr->getObject(static_cast<unsigned int>(i))->getValue<std::string>("itemId");
             bool found = false;
             for (const auto &id : ids)
                 if (id == itemId) found = true;
@@ -1204,7 +1200,7 @@ TEST_CASE("hex.data.lootTables.itemIdsExistInItems") {
     auto gates = lootDoc->object()->getArray("perceptionGates");
     REQUIRE(gates);
     for (size_t i = 0; i < gates->size(); ++i) {
-        const std::string itemId = gates->getObject(i)->getValue<std::string>("itemId");
+        const std::string itemId = gates->getObject(static_cast<unsigned int>(i))->getValue<std::string>("itemId");
         bool found = false;
         for (const auto &id : ids)
             if (id == itemId) found = true;
@@ -1222,10 +1218,10 @@ TEST_CASE("hex.data.catalog.featureTagsCoverModules") {
     bool hasPath = false, hasFov = false, hasLight = false, hasParticles = false;
     bool hasInventory = false, hasFlow = false, hasCell = false, hasPerc = false;
     for (size_t i = 0; i < levels->size(); ++i) {
-        auto feats = levels->getObject(i)->getArray("features");
+        auto feats = levels->getObject(static_cast<unsigned int>(i))->getArray("features");
         REQUIRE(feats);
         for (size_t fi = 0; fi < feats->size(); ++fi) {
-            const std::string f = feats->getElement<std::string>(fi);
+            const std::string f = feats->getElement<std::string>(static_cast<unsigned int>(fi));
             if (f == "pathfinding") hasPath = true;
             if (f == "fov") hasFov = true;
             if (f == "lighting") hasLight = true;
@@ -1254,7 +1250,7 @@ TEST_CASE("hex.data.catalog.lootTableReferencesValid") {
     REQUIRE(levels);
     REQUIRE(tables);
     for (size_t i = 0; i < levels->size(); ++i) {
-        auto lv = levels->getObject(i);
+        auto lv = levels->getObject(static_cast<unsigned int>(i));
         REQUIRE(lv->has("lootTable"));
         const std::string name = lv->getValue<std::string>("lootTable");
         CHECK(tables->has(name));
@@ -1287,11 +1283,11 @@ TEST_CASE("hex.data.seedsMatrix.algorithmsRegistered") {
     REQUIRE(algos);
     GeneratorRegistry::instance().registerBuiltins();
     for (size_t i = 0; i < algos->size(); ++i) {
-        const std::string id = algos->getObject(i)->getValue<std::string>("id");
+        const std::string id = algos->getObject(static_cast<unsigned int>(i))->getValue<std::string>("id");
         Params p;
         p.setSeed(1);
         p.setSize(16, 12);
-        auto params = algos->getObject(i)->getObject("params");
+        auto params = algos->getObject(static_cast<unsigned int>(i))->getObject("params");
         if (params) {
             if (params->has("loops")) p.setInt("loops", params->getValue<int>("loops"));
             if (params->has("fill")) p.setFloat("fill", float(params->getValue<double>("fill")));
@@ -1360,7 +1356,7 @@ TEST_CASE("hex.data.items.categoriesAndTags") {
     REQUIRE(arr);
     int withTags = 0, withCategory = 0, withExtra = 0;
     for (size_t i = 0; i < arr->size(); ++i) {
-        auto o = arr->getObject(i);
+        auto o = arr->getObject(static_cast<unsigned int>(i));
         CHECK(o->has("id"));
         CHECK(o->has("displayName"));
         CHECK(o->has("maxStack"));
@@ -1388,7 +1384,7 @@ TEST_CASE("hex.data.perception.detectionMarginFromCases") {
 
     int flipped = 0;
     for (size_t i = 0; i < cases->size(); ++i) {
-        auto c = cases->getObject(i);
+        auto c = cases->getObject(static_cast<unsigned int>(i));
         const float perception = float(c->getValue<double>("perception"));
         const float stealth = float(c->getValue<double>("stealth"));
         const bool expectNoMargin = c->getValue<bool>("expectDetect");

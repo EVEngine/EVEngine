@@ -51,7 +51,9 @@ std::string Grid2D::getMeta(const std::string &key, const std::string &defaultVa
     return it == meta_.end() ? defaultValue : it->second;
 }
 
-void Grid2D::clearObjects() { objects_.clear(); }
+void Grid2D::clearObjects() {
+    objects_.clear();
+}
 
 void Grid2D::addObjectAt(const std::string &name, const std::string &type, float x, float y) {
     addObject(name, type, x, y, 0.f, 0.f, 0);
@@ -59,7 +61,7 @@ void Grid2D::addObjectAt(const std::string &name, const std::string &type, float
 
 void Grid2D::addObject(const std::string &name, const std::string &type, float x, float y,
                        float width, float height, int gid) {
-    map::MapObject o;
+    GridObject o;
     o.name   = name;
     o.type   = type;
     o.x      = x;
@@ -68,6 +70,15 @@ void Grid2D::addObject(const std::string &name, const std::string &type, float x
     o.height = height;
     o.gid    = uint32_t(gid < 0 ? 0 : gid);
     objects_.push_back(std::move(o));
+}
+
+void Grid2D::addAssetObject(const std::string &name, const std::string &role,
+                            const std::string &asset, float x, float y, float width, float height,
+                            float rotationDegrees, int flags) {
+    addObject(name, role, x, y, width, height, 0);
+    objects_.back().asset = asset;
+    objects_.back().rotationDegrees = rotationDegrees;
+    objects_.back().placementFlags = uint32_t(flags < 0 ? 0 : flags);
 }
 
 int Grid2D::getObjectCount() const { return int(objects_.size()); }
@@ -99,6 +110,18 @@ float Grid2D::getObjectHeight(int i) const {
 int Grid2D::getObjectGid(int i) const {
     if (i < 0 || i >= int(objects_.size())) return 0;
     return int(objects_[size_t(i)].gid);
+}
+std::string Grid2D::getObjectAsset(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return {};
+    return objects_[size_t(i)].asset;
+}
+float Grid2D::getObjectRotation(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return 0.f;
+    return objects_[size_t(i)].rotationDegrees;
+}
+int Grid2D::getObjectFlags(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return 0;
+    return int(objects_[size_t(i)].placementFlags);
 }
 
 }  // namespace eve::procgen
