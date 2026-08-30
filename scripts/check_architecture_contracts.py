@@ -168,6 +168,15 @@ def nonempty_list(value: Any) -> bool:
     return isinstance(value, list) and bool(value) and all(nonempty_string(item) for item in value)
 
 
+def catalogue_sort_key(entry: Mapping[str, Any]) -> tuple[int, str]:
+    """Return the canonical review order for one catalogue entry."""
+
+    rule = entry.get("rule")
+    rule_index = RULES.index(rule) if rule in RULES else len(RULES)
+    entry_id = entry.get("id")
+    return rule_index, entry_id if isinstance(entry_id, str) else ""
+
+
 def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
     """Validate the contract catalogue without inspecting source code."""
 
@@ -180,6 +189,15 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
     entries = metadata.get("entries")
     if not isinstance(entries, list):
         return errors + ["metadata entries must be an array"]
+
+    sortable_entries = [entry for entry in entries if isinstance(entry, Mapping)]
+    if len(sortable_entries) == len(entries) and sortable_entries != sorted(
+        sortable_entries, key=catalogue_sort_key
+    ):
+        errors.append(
+            "metadata entries must use canonical rule/id order; run "
+            "scripts/sort_architecture_contracts.py"
+        )
 
     seen: set[str] = set()
     covered: set[str] = set()
