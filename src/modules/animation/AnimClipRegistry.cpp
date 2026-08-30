@@ -36,20 +36,21 @@ void notifyReload(AnimClipRegistry::ReloadEvent event) {
     static_cast<void>(reloadObservers().notifyChecked([]() noexcept { ++reloadCallbackFailures(); }, event));
 }
 
-bool isEvaPath(const std::string& path) {
-    if (path.size() < 5) return false;
-    std::string ext = path.substr(path.size() - 4);
+bool isAnimationFixtureTextPath(const std::string& path) {
+    constexpr std::string_view suffix = ".anim.txt";
+    if (path.size() < suffix.size()) return false;
+    std::string ext = path.substr(path.size() - suffix.size());
     for (char& c : ext) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-    return ext == ".eva";
+    return ext == suffix;
 }
 
-/** @brief IAssetReloader: `.eva` changes refresh registered AnimClip instances. */
+/** @brief IAssetReloader: `*.anim.txt` fixture changes refresh registered AnimClip instances. */
 class AnimClipReloader : public eve::caps::IAssetReloader {
 public:
     const char* reloadKind() const override { return "animclip"; }
 
     bool handlesPath(const std::string& normPath) const override {
-        return isEvaPath(AnimClipRegistry::normalizePath(normPath));
+        return isAnimationFixtureTextPath(AnimClipRegistry::normalizePath(normPath));
     }
 
     eve::Result<bool> reload(const std::string& normPath) override {
@@ -111,7 +112,7 @@ eve::Result<int> AnimClipRegistry::reloadPath(const std::string& path) {
     AnimSkeleton* skeleton = nullptr;
     AnimClip*     fresh    = nullptr;
     try {
-        AnimImporter::importEvaFile(norm, &skeleton, &fresh);
+        AnimImporter::importAnimationFixtureTextFile(norm, &skeleton, &fresh);
     } catch (...) {
         delete skeleton;
         delete fresh;

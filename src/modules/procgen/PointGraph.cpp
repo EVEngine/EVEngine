@@ -50,6 +50,8 @@ const std::vector<OperationSpec>& operationSpecs() {
                           {"scaleY", "float", "1"}, {"scaleZ", "float", "1"}}},
         {"filter.float", 1, {{"attribute", "string", ""}, {"min", "float", "0"},
                              {"max", "float", "1"}, {"invert", "bool", "false"}}},
+        {"filter.slope", 1, {{"minDegrees", "float", "0"},
+                              {"maxDegrees", "float", "90"}}},
         {"filter.string", 1, {{"attribute", "string", ""}, {"value", "string", ""},
                               {"invert", "bool", "false"}}},
         {"attribute.set.float", 1, {{"attribute", "string", ""}, {"value", "float", "0"}}},
@@ -734,6 +736,11 @@ const PointSet* PointGraph::evaluate(const std::string& id,
             node.cache = filterPointStringAttribute(
                 *first, stringValue(node, "attribute"), stringValue(node, "value"),
                 intValue(node, "invert", 0) != 0);
+    } else if (node.operation == "filter.slope") {
+        if (!first) error_ = "filter.slope requires input: " + id;
+        else
+            node.cache = filterPointSlope(*first, floatValue(node, "minDegrees", 0.f),
+                                          floatValue(node, "maxDegrees", 90.f));
     } else if (node.operation == "attribute.set.float") {
         if (!first) error_ = "attribute.set.float requires input: " + id;
         else {

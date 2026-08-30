@@ -15,8 +15,8 @@ class AnimClip;
 /**
  * @brief Weak path→clip registry for animation hot reload.
  *
- * `Animation::newClipFromEvaFile` registers every clip it creates under its
- * source path. When that `.eva` file changes, the "animclip" IAssetReloader
+ * `Animation::newClipFromAnimationFixtureText` registers every clip it creates under its
+ * source path. When that `*.anim.txt` fixture changes, the "animclip" IAssetReloader
  * re-imports the source and adopts the fresh content into the registered
  * instances (AnimClip::adopt), so existing holders — state machines, scripts —
  * keep valid pointers and see updated content without re-binding.

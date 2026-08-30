@@ -355,18 +355,18 @@ AnimClip *Animation::newClipFromModel(eve::model3d::ModelData *model, AnimSkelet
     return AnimImporter::loadClipFromModel(model, skeleton, animIndex);
 }
 
-AnimSkeleton *Animation::newSkeletonFromEvaFile(const std::string &path) {
+AnimSkeleton *Animation::newSkeletonFromAnimationFixtureText(const std::string &path) {
     AnimSkeleton *sk = nullptr;
     AnimClip *clip   = nullptr;
-    AnimImporter::importEvaFile(path, &sk, &clip);
+    AnimImporter::importAnimationFixtureTextFile(path, &sk, &clip);
     delete clip;
     return sk;
 }
 
-AnimClip *Animation::newClipFromEvaFile(const std::string &path) {
+AnimClip *Animation::newClipFromAnimationFixtureText(const std::string &path) {
     AnimSkeleton *sk = nullptr;
     AnimClip *clip   = nullptr;
-    AnimImporter::importEvaFile(path, &sk, &clip);
+    AnimImporter::importAnimationFixtureTextFile(path, &sk, &clip);
     delete sk;
     if (clip) AnimClipRegistry::registerPath(path, clip);
     return clip;
@@ -1243,8 +1243,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newControlPose", &Animation::newControlPose);
     cls.addFunc("newSkeletonFromModel", &Animation::newSkeletonFromModel);
     cls.addFunc("newClipFromModel", &Animation::newClipFromModel);
-    cls.addFunc("newSkeletonFromEvaFile", &Animation::newSkeletonFromEvaFile);
-    cls.addFunc("newClipFromEvaFile", &Animation::newClipFromEvaFile);
+    cls.addFunc("newSkeletonFromAnimationFixtureText", &Animation::newSkeletonFromAnimationFixtureText);
+    cls.addFunc("newClipFromAnimationFixtureText", &Animation::newClipFromAnimationFixtureText);
     cls.addFunc("newSkinFromModel", &Animation::newSkinFromModel);
     cls.addFunc("newLattice", &Animation::newLattice);
     cls.addFunc("newLatticeFromModel", &Animation::newLatticeFromModel);

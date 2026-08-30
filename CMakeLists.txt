@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
+set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
+    "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
+
 set(EVENGINE_COMPILER_CACHE "AUTO" CACHE STRING
     "Compiler cache mode: AUTO detects sccache, SCCACHE requires it, OFF disables auto-detection")
 set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE OFF)
@@ -207,6 +210,8 @@ function(main)
     eve_resolve_modules()
 
     load_third_party()
+    load_asset_zstd()
+    load_asset_utf8proc()
     load_webgpu_backend()
     set_include()
     check_ipo()
@@ -464,6 +469,58 @@ function(main)
         eve_stage_timidity_share()
         include(${CMAKE_SOURCE_DIR}/cmake/install_sdk.cmake)
     endif()
+endfunction()
+
+# Zstd is part of the stable .evpack wire contract rather than the legacy
+# aggregate dependency checkout. Keep it independently pinned so prebuilt
+# third-party trees remain read-only and native/Web builds use the same codec.
+function(load_asset_zstd)
+    eve_module_enabled(asset _eve_has_asset)
+    if(NOT _eve_has_asset)
+        set(EVENGINE_ASSET_ZSTD_TARGET "" CACHE INTERNAL "Asset Zstd target" FORCE)
+        return()
+    endif()
+
+    include(FetchContent)
+    set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
+    set(ZSTD_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
+    set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+    set(ZSTD_BUILD_STATIC ON CACHE BOOL "" FORCE)
+    set(ZSTD_LEGACY_SUPPORT OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(evengine_zstd
+        URL https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz
+        URL_HASH SHA256=eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3
+        DOWNLOAD_EXTRACT_TIMESTAMP FALSE
+        SOURCE_SUBDIR build/cmake)
+    FetchContent_MakeAvailable(evengine_zstd)
+    if(TARGET deps)
+        add_dependencies(deps libzstd_static)
+    endif()
+    set(EVENGINE_ASSET_ZSTD_TARGET libzstd_static CACHE INTERNAL "Asset Zstd target" FORCE)
+endfunction()
+
+# Unicode NFC is part of the .eva path wire contract. Pin the Unicode table and
+# normalization algorithm so every host accepts exactly the same archive names.
+function(load_asset_utf8proc)
+    eve_module_enabled(asset _eve_has_asset)
+    if(NOT _eve_has_asset)
+        set(EVENGINE_ASSET_UTF8PROC_TARGET "" CACHE INTERNAL "Asset utf8proc target" FORCE)
+        return()
+    endif()
+
+    include(FetchContent)
+    set(BUILD_SHARED_LIBS OFF)
+    set(UTF8PROC_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(evengine_utf8proc
+        URL https://github.com/JuliaStrings/utf8proc/archive/refs/tags/v2.11.3.tar.gz
+        URL_HASH SHA256=abfed50b6d4da51345713661370290f4f4747263ee73dc90356299dfc7990c78
+        DOWNLOAD_EXTRACT_TIMESTAMP FALSE)
+    FetchContent_MakeAvailable(evengine_utf8proc)
+    if(TARGET deps)
+        add_dependencies(deps utf8proc)
+    endif()
+    set(EVENGINE_ASSET_UTF8PROC_TARGET utf8proc CACHE INTERNAL "Asset utf8proc target" FORCE)
 endfunction()
 
 
@@ -778,6 +835,15 @@ endfunction()
 macro(get_available_build)
     set(AVAILABLE_PLATFORM "")
 
+    # BUILD_PLATFORM predates FetchContent usage and is also owned by Dawn.
+    # Prefer the namespaced override when supplied so dependency configuration
+    # and automatic top-level reconfiguration cannot change EVEngine's target.
+    if(EVENGINE_BUILD_PLATFORM)
+        set(BUILD_PLATFORM "${EVENGINE_BUILD_PLATFORM}")
+        set(BUILD_PLATFORM "${EVENGINE_BUILD_PLATFORM}" CACHE STRING
+            "The EVEngine target build platform" FORCE)
+    endif()
+
     # Cross-compiling for Emscripten (web/WASM, browser WebGPU) must win over host detection.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         list(APPEND AVAILABLE_PLATFORM "webgpu")
@@ -856,23 +922,36 @@ macro(get_available_build)
     # the scan — ImGuiBackend.cpp is the EVUI implementation and gains a
     # webgpu branch instead.
     if(BUILD_PLATFORM STREQUAL "webgpu")
-        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "vulkan" CACHE INTERNAL "Backend subdirs excluded from webgpu builds")
+        set(_eve_excluded_backend_subdirs "vulkan")
+        set(_eve_backend_exclusion_help "Backend subdirs excluded from webgpu builds")
     else()
-        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "webgpu" CACHE INTERNAL "Backend subdirs excluded from native builds")
+        set(_eve_excluded_backend_subdirs "webgpu")
+        set(_eve_backend_exclusion_help "Backend subdirs excluded from native builds")
     endif()
+    # Keep both bindings synchronized. With CMP0126=NEW, updating a CACHE entry
+    # does not replace a same-named normal variable in the current scope, and
+    # create_module() reads the normal variable first.
+    set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "${_eve_excluded_backend_subdirs}")
+    set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "${_eve_excluded_backend_subdirs}"
+        CACHE INTERNAL "${_eve_backend_exclusion_help}" FORCE)
 
     # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
     # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
     # DataModule files that require Poco. Font/FreeType is supported on WASM.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        set(EVENGINE_EXCLUDED_MODULE_FILES
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp"
-            CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten")
+        set(_eve_excluded_module_files
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp")
+        set(_eve_module_exclusion_help
+            "Exact basenames excluded from module source scan on Emscripten")
     else()
-        set(EVENGINE_EXCLUDED_MODULE_FILES
-            "ImGuiHostPanels.cpp"
-            CACHE INTERNAL "Exact basenames excluded from module source scan")
+        set(_eve_excluded_module_files "ImGuiHostPanels.cpp")
+        set(_eve_module_exclusion_help "Exact basenames excluded from module source scan")
     endif()
+    set(EVENGINE_EXCLUDED_MODULE_FILES "${_eve_excluded_module_files}")
+    set(EVENGINE_EXCLUDED_MODULE_FILES "${_eve_excluded_module_files}"
+        CACHE INTERNAL "${_eve_module_exclusion_help}" FORCE)
+
+    message(STATUS "Backend source exclusions: ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS}")
 
     message("Available: ${AVAILABLE_PLATFORM}")
 

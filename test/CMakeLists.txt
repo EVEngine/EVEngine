@@ -41,6 +41,21 @@ file(GLOB all_test_cpp
   resource_uri.cpp
   result.cpp
   value.cpp
+  asset_cooker.cpp
+  asset_dependency.cpp
+  asset_diff.cpp
+  asset_eva_archive.cpp
+  asset_eva_manifest.cpp
+  asset_evpack.cpp
+  asset_graphics_loader.cpp
+  asset_import.cpp
+  asset_import_animation.cpp
+  asset_import_unity.cpp
+  asset_import_unreal.cpp
+  asset_migration.cpp
+  asset_package_store.cpp
+  asset_resource_reader.cpp
+  asset_runtime_definition.cpp
   state_value.cpp
   json.cpp
   filesystem.cpp
@@ -88,6 +103,7 @@ file(GLOB all_test_cpp
   UISystem.cpp
   UIBuilder.cpp
   editor_property_model.cpp
+  editor_eva_asset_projection.cpp
   editor_animation_clip.cpp
   editor_animation_graph.cpp
   editor_audio_effects.cpp

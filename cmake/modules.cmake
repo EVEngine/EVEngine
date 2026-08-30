@@ -11,7 +11,7 @@
 # switched off and its dependencies, its third-party libraries and its script
 # binding follow automatically.
 #
-#   -DEVENGINE_PROFILE=minimal|2d|3d|full|web|procgen-core-only|physics-core-only|headless|server
+#   -DEVENGINE_PROFILE=minimal|2d|3d|full|web|procgen-core-only|physics-core-only|asset-core-only|headless|server
 #                                                   pick a preset (default: full)
 #   -DEVENGINE_MODULE_<NAME>=ON|OFF              override one module
 #
@@ -94,7 +94,7 @@ function(eve_resolve_modules)
         set(EVENGINE_PROFILE "full")
     endif()
 
-    set(_valid full minimal 2d 3d web procgen-core-only physics-core-only headless server)
+    set(_valid full minimal 2d 3d web procgen-core-only physics-core-only asset-core-only headless server)
     if(NOT EVENGINE_PROFILE IN_LIST _valid)
         message(FATAL_ERROR "EVENGINE_PROFILE must be one of: ${_valid} (got: ${EVENGINE_PROFILE})")
     endif()
@@ -116,6 +116,11 @@ function(eve_resolve_modules)
         set(_hostless_profile TRUE)
         set(_profile_seed common event)
         set(EVENGINE_PROFILE_CORE_KIND physics CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "asset-core-only")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common data asset)
+        set(EVENGINE_PROFILE_CORE_KIND asset CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "headless")
         set(_hostless_profile TRUE)

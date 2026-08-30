@@ -81,6 +81,12 @@ eve_declare_module(NAME data LAYER 0 SCRIPT DataModule
 # Filesystem also exposes HotReload, the asset-reload dispatcher.
 eve_declare_module(NAME filesystem REQUIRED LIB EVFileSystem LAYER 0 SCRIPT Filesystem HotReload SLOT fs hot
                    THIRDPARTY physfs lz4 zlib poco sdl2)
+# Canonical source/runtime asset packages. Importer integrations remain in
+# higher modules; this layer owns only package admission, manifests and Cook IR.
+eve_declare_module(NAME asset LAYER 0
+                   DEPS data
+                   THIRDPARTY zlib
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME platform_event REQUIRED LAYER 0 SCRIPT PlatformEvent SLOT platform_event
                    THIRDPARTY sdl2)
 eve_declare_module(NAME timer REQUIRED LAYER 0 SCRIPT Timer SLOT timer
@@ -107,7 +113,7 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS action editing material_editing property_access scene_editing tags transaction
+                   DEPS action asset editing material_editing property_access scene_editing tags transaction
                    GROUP 3d web
                    OPTIONAL_DEPS animation audio avatar building camera crowd daynight definitions dialogue fluids graphics hd2d housegen image network orders particles physics physics_editing production procgen profiler map scene sceneloader schema snow social spritestack ui virtualgeometry voxel weather)
 # L0 -- foundation (continued)
@@ -200,6 +206,9 @@ eve_declare_module(NAME image LAYER 1 SCRIPT Image
                    DEPS filesystem
                    THIRDPARTY medialoader_image
                    GROUP minimal 2d 3d web)
+eve_declare_module(NAME asset_import LAYER 1
+                   DEPS asset data cmdline
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME i18n LAYER 1 SCRIPT I18n SLOT i18n
                    DEPS filesystem
                    GROUP 2d 3d web)
@@ -235,6 +244,10 @@ eve_declare_module(NAME material_editing LAYER 2
                    DEPS editing
                    GROUP 3d web)
 
+# Canonical runtime scene-template decoder; mounting remains an explicit Scene operation.
+eve_declare_module(NAME asset_scene LAYER 2
+                   DEPS asset scene
+                   GROUP 3d web)
 eve_declare_module(NAME keyboard LAYER 2 SCRIPT Keyboard SLOT keyboard
                    DEPS platform_event window
                    THIRDPARTY sdl2
@@ -270,6 +283,11 @@ eve_declare_module(NAME graphics REQUIRED LAYER 3 SCRIPT Graphics SLOT gfx
 # ---------------------------------------------------------------------------
 # L4 -- rendering extensions and simulation
 # ---------------------------------------------------------------------------
+
+# Typed bridge from admitted runtime packages into backend-owned GPU resources.
+eve_declare_module(NAME asset_graphics LAYER 4
+                   DEPS asset graphics
+                   GROUP minimal 2d 3d web)
 
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
                    DEPS platform_event graphics scene
@@ -402,6 +420,10 @@ eve_declare_module(NAME hd2d LIB EVHd2D LAYER 5 SCRIPT Hd2D SLOT hd2d
                    DEPS graphics map
                    GROUP 3d)
 # L6 -- orchestration
+# Runtime bridge from capability-selected packages into executable PointGraphs.
+eve_declare_module(NAME asset_procgen LAYER 6
+                   DEPS asset procgen
+                   GROUP 3d)
 eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
                    DEPS graphics procgen
                    GROUP 3d)
