@@ -113,6 +113,57 @@ void writeGpuDrivenInstance(GpuBuffer *buffer, int instanceIndex, ssq::Array mod
     buffer->uploadBytes(&instance, sizeof(instance), offset);
 }
 
+void setGpuDrivenEnabledScript(Gpgpu *gpgpu, bool enabled) {
+    (void)gpgpu;
+    if (auto *gfx = currentGraphics()) gfx->gpuDrivenSetEnabled(enabled);
+}
+
+bool isGpuDrivenEnabledScript(Gpgpu *gpgpu) {
+    (void)gpgpu;
+    auto *gfx = currentGraphics();
+    return gfx && gfx->gpuDrivenEnabled();
+}
+
+int gpuDrivenMeshRecordScript(Gpgpu *gpgpu, eve::graphics::Mesh *mesh) {
+    (void)gpgpu;
+    auto *gfx = currentGraphics();
+    return scriptGpuDrivenSlot(gfx ? gfx->gpuDrivenMeshRecord(mesh) : eve::graphics::kInvalidGpuDrivenSlot);
+}
+
+int gpuDrivenMaterialRecordScript(Gpgpu *gpgpu, eve::graphics::Material *material) {
+    (void)gpgpu;
+    auto *gfx = currentGraphics();
+    return scriptGpuDrivenSlot(gfx ? gfx->gpuDrivenMaterialRecord(material) : eve::graphics::kInvalidGpuDrivenSlot);
+}
+
+bool gpuDrivenMaterialUsableScript(Gpgpu *gpgpu, eve::graphics::Material *material) {
+    (void)gpgpu;
+    auto *gfx = currentGraphics();
+    return gfx && gfx->gpuDrivenMaterialUsable(material);
+}
+
+int getGpuDrivenInstanceStrideScript(Gpgpu *gpgpu) {
+    (void)gpgpu;
+    return sizeof(eve::graphics::GpuInstance);
+}
+
+int getGpuResidentOffsetAlignmentScript(Gpgpu *gpgpu) {
+    (void)gpgpu;
+    return eve::kGpuResidentStorageOffsetAlignment;
+}
+
+void writeGpuDrivenInstanceScript(Gpgpu *gpgpu, GpuBuffer *buffer, int instanceIndex, ssq::Array model, int meshId,
+                                  int materialId, int flags, int lodGroupId) {
+    (void)gpgpu;
+    writeGpuDrivenInstance(buffer, instanceIndex, model, meshId, materialId, flags, lodGroupId);
+}
+
+std::string submitResidentInstancesScript(Gpgpu *gpgpu, GpuBuffer *buffer, ssq::Array buckets, int instanceCount,
+                                          int offsetBytes) {
+    (void)gpgpu;
+    return submitResidentInstances(buffer, buckets, instanceCount, offsetBytes);
+}
+
 }  // namespace
 
 Module_IMPL(Gpgpu, new Gpgpu());
@@ -303,45 +354,15 @@ void Gpgpu::expose(ssq::Class &cls) {
     cls.addFunc("newBuffer", &Gpgpu::newBuffer);
     cls.addFunc("newSequence", &Gpgpu::newSequence);
     cls.addFunc("dispatch", &Gpgpu::dispatch);
-    cls.addFunc("setGpuDrivenEnabled", std::function<void(Gpgpu *, bool)>([](Gpgpu *, bool enabled) {
-                    if (auto *gfx = currentGraphics()) gfx->gpuDrivenSetEnabled(enabled);
-                }));
-    cls.addFunc("isGpuDrivenEnabled", std::function<bool(Gpgpu *)>([](Gpgpu *) {
-                    auto *gfx = currentGraphics();
-                    return gfx && gfx->gpuDrivenEnabled();
-                }));
-    cls.addFunc(
-        "gpuDrivenMeshRecord",
-        std::function<int(Gpgpu *, eve::graphics::Mesh *)>([](Gpgpu *, eve::graphics::Mesh *mesh) {
-            auto *gfx = currentGraphics();
-            return scriptGpuDrivenSlot(gfx ? gfx->gpuDrivenMeshRecord(mesh) : eve::graphics::kInvalidGpuDrivenSlot);
-        }));
-    cls.addFunc("gpuDrivenMaterialRecord",
-                std::function<int(Gpgpu *, eve::graphics::Material *)>([](Gpgpu *, eve::graphics::Material *material) {
-                    auto *gfx = currentGraphics();
-                    return scriptGpuDrivenSlot(gfx ? gfx->gpuDrivenMaterialRecord(material)
-                                                   : eve::graphics::kInvalidGpuDrivenSlot);
-                }));
-    cls.addFunc("gpuDrivenMaterialUsable",
-                std::function<bool(Gpgpu *, eve::graphics::Material *)>([](Gpgpu *, eve::graphics::Material *material) {
-                    auto *gfx = currentGraphics();
-                    return gfx && gfx->gpuDrivenMaterialUsable(material);
-                }));
-    cls.addFunc("getGpuDrivenInstanceStride",
-                std::function<int(Gpgpu *)>([](Gpgpu *) { return sizeof(eve::graphics::GpuInstance); }));
-    cls.addFunc("getGpuResidentOffsetAlignment",
-                std::function<int(Gpgpu *)>([](Gpgpu *) { return eve::kGpuResidentStorageOffsetAlignment; }));
-    cls.addFunc("writeGpuDrivenInstance",
-                std::function<void(Gpgpu *, GpuBuffer *, int, ssq::Array, int, int, int, int)>(
-                    [](Gpgpu *, GpuBuffer *buffer, int instanceIndex, ssq::Array model, int meshId, int materialId,
-                       int flags, int lodGroupId) {
-                        writeGpuDrivenInstance(buffer, instanceIndex, model, meshId, materialId, flags, lodGroupId);
-                    }));
-    cls.addFunc("submitResidentInstances",
-                std::function<std::string(Gpgpu *, GpuBuffer *, ssq::Array, int, int)>(
-                    [](Gpgpu *, GpuBuffer *buffer, ssq::Array buckets, int instanceCount, int offsetBytes) {
-                        return submitResidentInstances(buffer, buckets, instanceCount, offsetBytes);
-                    }));
+    cls.addFunc("setGpuDrivenEnabled", setGpuDrivenEnabledScript);
+    cls.addFunc("isGpuDrivenEnabled", isGpuDrivenEnabledScript);
+    cls.addFunc("gpuDrivenMeshRecord", gpuDrivenMeshRecordScript);
+    cls.addFunc("gpuDrivenMaterialRecord", gpuDrivenMaterialRecordScript);
+    cls.addFunc("gpuDrivenMaterialUsable", gpuDrivenMaterialUsableScript);
+    cls.addFunc("getGpuDrivenInstanceStride", getGpuDrivenInstanceStrideScript);
+    cls.addFunc("getGpuResidentOffsetAlignment", getGpuResidentOffsetAlignmentScript);
+    cls.addFunc("writeGpuDrivenInstance", writeGpuDrivenInstanceScript);
+    cls.addFunc("submitResidentInstances", submitResidentInstancesScript);
 }
 
 }  // namespace eve::gpgpu
