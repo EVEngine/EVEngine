@@ -46,7 +46,7 @@ EditorResult<DocumentSnapshot> DocumentService::open(DocumentKey key, std::strin
     document.snapshot.resourceUri       = std::move(resourceUri);
     document.snapshot.state             = DocumentState::Ready;
     EditorResult<StoredDocument> stored = store_->read(document.snapshot.resourceUri);
-    if (stored.accepted() && stored.value) {
+    if (stored.isAccepted() && stored.value) {
         document.content                  = stored.value->content;
         document.snapshot.revision.disk   = stored.value->revision;
         document.snapshot.revision.edit   = stored.value->revision;
@@ -101,7 +101,7 @@ EditorResult<DocumentSnapshot> DocumentService::executeSave(const SaveTicket& ti
         store_->compareAndSwap(document->second.snapshot.resourceUri, ticket.expectedDiskRevision,
                                ticket.expectedContentHash, pending->second.content);
     pendingSaves_.erase(pending);
-    if (!stored.accepted() || !stored.value) {
+    if (!stored.isAccepted() || !stored.value) {
         document->second.snapshot.state =
             stored.status == EditorStatus::Conflict ? DocumentState::Conflict : DocumentState::Failed;
         document->second.snapshot.diagnostics = stored.diagnostics;
@@ -150,7 +150,7 @@ EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const Document
     if (found == open_.end()) return error(EditorStatus::NotFound, "editor.document.not-open", "Document is not open");
 
     EditorResult<StoredDocument> stored = store_->read(found->second.snapshot.resourceUri);
-    if (!stored.accepted() || !stored.value) {
+    if (!stored.isAccepted() || !stored.value) {
         const bool expectedMissing = stored.status == EditorStatus::NotFound &&
                                      found->second.snapshot.revision.disk == 0 &&
                                      found->second.snapshot.diskContentHash.empty();

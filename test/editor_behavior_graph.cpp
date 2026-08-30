@@ -19,19 +19,19 @@ GraphNodeRecord node(const char* id, const char* type, bool input, bool output) 
 TEST_CASE("editor.behavior.graph_compiles_deterministic_tree") {
     GraphDocument graph;
     BehaviorGraphDomain domain;
-    CHECK(graph.createNode(node("root", "root", false, true)).accepted());
-    CHECK(graph.createNode(node("sequence", "sequence", true, true)).accepted());
-    CHECK(graph.createNode(node("condition", "condition", true, false)).accepted());
-    CHECK(graph.createNode(node("action", "action", true, false)).accepted());
+    CHECK(graph.createNode(node("root", "root", false, true)).isAccepted());
+    CHECK(graph.createNode(node("sequence", "sequence", true, true)).isAccepted());
+    CHECK(graph.createNode(node("condition", "condition", true, false)).isAccepted());
+    CHECK(graph.createNode(node("action", "action", true, false)).isAccepted());
     CHECK(graph.connect({StableId("e1"), GraphPinId("root.out"), GraphPinId("sequence.in")},
                         domain.canConnect(*graph.findPin(GraphPinId("root.out")),
-                                          *graph.findPin(GraphPinId("sequence.in")))).accepted());
+                                          *graph.findPin(GraphPinId("sequence.in")))).isAccepted());
     CHECK(graph.connect({StableId("e2"), GraphPinId("sequence.out"), GraphPinId("condition.in")},
                         domain.canConnect(*graph.findPin(GraphPinId("sequence.out")),
-                                          *graph.findPin(GraphPinId("condition.in")))).accepted());
+                                          *graph.findPin(GraphPinId("condition.in")))).isAccepted());
     CHECK(graph.connect({StableId("e3"), GraphPinId("sequence.out"), GraphPinId("action.in")},
                         domain.canConnect(*graph.findPin(GraphPinId("sequence.out")),
-                                          *graph.findPin(GraphPinId("action.in")))).accepted());
+                                          *graph.findPin(GraphPinId("action.in")))).isAccepted());
     auto compiled = domain.compile(graph.snapshot(domain.domain()));
     CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Applied));
     CHECK_EQ(compiled.root.value(), std::string("root"));

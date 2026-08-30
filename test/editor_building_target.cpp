@@ -59,7 +59,7 @@ TEST_CASE("editor.building.preview_reports_snap_footprint_and_occupancy") {
 
     auto place = target.makePlace(house(target.nextAvailableInstanceId(), 2, 3));
     REQUIRE(place.value);
-    REQUIRE(target.applyDomainOperation(*place.value).accepted());
+    REQUIRE(target.applyDomainOperation(*place.value).isAccepted());
     const auto occupied = target.preview("house", 21.0, 31.0, 0.0, 0.0);
     CHECK_EQ(static_cast<int>(occupied.status), static_cast<int>(EditorStatus::Rejected));
     REQUIRE(!occupied.diagnostics.empty());
@@ -76,25 +76,25 @@ TEST_CASE("editor.building.place_move_remove_are_exactly_reversible") {
     placed.garrisonRevision = 4;
     auto place = target.makePlace(placed);
     REQUIRE(place.value);
-    REQUIRE(target.applyDomainOperation(*place.value).accepted());
+    REQUIRE(target.applyDomainOperation(*place.value).isAccepted());
     REQUIRE(world.hasBuilding(77));
     CHECK_EQ(world.getBuildingProp(77, "skin"), "blue");
 
     auto move = target.makeMove(77, 6, 5, 179.0);
     REQUIRE(move.value);
-    REQUIRE(target.applyDomainOperation(*move.value).accepted());
+    REQUIRE(target.applyDomainOperation(*move.value).isAccepted());
     CHECK_EQ(world.getBuildingCellX(77), 6);
     CHECK_EQ(world.getBuildingCellY(77), 5);
     CHECK_EQ(world.getBuildingRotation(77), 180.f);
-    REQUIRE(target.applyDomainOperation(inverse(*move.value)).accepted());
+    REQUIRE(target.applyDomainOperation(inverse(*move.value)).isAccepted());
     CHECK_EQ(world.getBuildingCellX(77), 1);
     CHECK_EQ(world.getBuildingCellY(77), 1);
 
     auto remove = target.makeRemove(77);
     REQUIRE(remove.value);
-    REQUIRE(target.applyDomainOperation(*remove.value).accepted());
+    REQUIRE(target.applyDomainOperation(*remove.value).isAccepted());
     CHECK(!world.hasBuilding(77));
-    REQUIRE(target.applyDomainOperation(inverse(*remove.value)).accepted());
+    REQUIRE(target.applyDomainOperation(inverse(*remove.value)).isAccepted());
     REQUIRE(world.hasBuilding(77));
     const auto restored = target.instance(77);
     REQUIRE(restored.value);
@@ -110,13 +110,13 @@ TEST_CASE("editor.building.undo_restore_conflicts_instead_of_overwriting_occupan
     BuildingPlacementTarget target("conflict-world", &world);
     auto first = target.makePlace(house(10, 1, 1));
     REQUIRE(first.value);
-    REQUIRE(target.applyDomainOperation(*first.value).accepted());
+    REQUIRE(target.applyDomainOperation(*first.value).isAccepted());
     auto remove = target.makeRemove(10);
     REQUIRE(remove.value);
-    REQUIRE(target.applyDomainOperation(*remove.value).accepted());
+    REQUIRE(target.applyDomainOperation(*remove.value).isAccepted());
     auto replacement = target.makePlace(house(11, 1, 1));
     REQUIRE(replacement.value);
-    REQUIRE(target.applyDomainOperation(*replacement.value).accepted());
+    REQUIRE(target.applyDomainOperation(*replacement.value).isAccepted());
     const auto conflict = target.applyDomainOperation(inverse(*remove.value));
     CHECK_EQ(static_cast<int>(conflict.status), static_cast<int>(EditorStatus::Rejected));
     CHECK(!world.hasBuilding(10));
@@ -132,8 +132,8 @@ TEST_CASE("editor.building.snapshot_is_deterministic_and_complete") {
     auto second = target.makePlace(house(9, 4, 4));
     REQUIRE(first.value);
     REQUIRE(second.value);
-    REQUIRE(target.applyDomainOperation(*first.value).accepted());
-    REQUIRE(target.applyDomainOperation(*second.value).accepted());
+    REQUIRE(target.applyDomainOperation(*first.value).isAccepted());
+    REQUIRE(target.applyDomainOperation(*second.value).isAccepted());
     const EditorValue snapshot = target.snapshotValue();
     const auto* root = snapshot.getIf<EditorValue::Object>();
     REQUIRE(root);

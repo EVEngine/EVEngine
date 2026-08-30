@@ -34,11 +34,11 @@ EditorResult<TransactionReceipt> commitMaterial(MaterialDocumentTarget& target,
     specification.target = TargetId(target.targetId());
     specification.baseRevision = target.revision();
     auto begun = transactions.begin(std::move(specification));
-    if (!begun.accepted())
+    if (!begun.isAccepted())
         return EditorResult<TransactionReceipt>::error(begun.status, RuleId("test.material.begin"),
                                                        "Could not begin material transaction");
     auto appended = transactions.append(operation);
-    if (!appended.accepted()) {
+    if (!appended.isAccepted()) {
         [[maybe_unused]] const auto rolledBack = transactions.rollback();
         return EditorResult<TransactionReceipt>::error(appended.status, RuleId("test.material.append"),
                                                        "Could not append material operation");
@@ -73,12 +73,12 @@ TEST_CASE("editor.material.properties_are_validated_and_reversible") {
 
     auto change = target.makeSet(selection, PropertyPath("shading.metallic"), 0.8,
                                  PropertySetMode::Absolute);
-    REQUIRE(change.accepted());
-    REQUIRE(commitMaterial(target, transactions, *change.value, "material.metallic").accepted());
+    REQUIRE(change.isAccepted());
+    REQUIRE(commitMaterial(target, transactions, *change.value, "material.metallic").isAccepted());
     CHECK(target.read(selection, PropertyPath("shading.metallic")).value == EditorValue(0.8));
-    REQUIRE(transactions.undo().accepted());
+    REQUIRE(transactions.undo().isAccepted());
     CHECK(target.read(selection, PropertyPath("shading.metallic")).value == EditorValue(0.0));
-    REQUIRE(transactions.redo().accepted());
+    REQUIRE(transactions.redo().isAccepted());
     CHECK(target.read(selection, PropertyPath("shading.metallic")).value == EditorValue(0.8));
 }
 
@@ -93,13 +93,13 @@ TEST_CASE("editor.material.snapshot_roundtrip_and_cross_field_diagnostics") {
              {PropertyPath("surface.mode"), EditorValue("masked"), "material.surface"},
              {PropertyPath("textures.height"), EditorValue("asset://height.png"), "material.height"}}) {
         auto operation = source.makeSet(selection, path, value, PropertySetMode::Absolute);
-        REQUIRE(operation.accepted());
-        REQUIRE(commitMaterial(source, transactions, *operation.value, id).accepted());
+        REQUIRE(operation.isAccepted());
+        REQUIRE(commitMaterial(source, transactions, *operation.value, id).isAccepted());
     }
     CHECK_EQ(source.validate().size(), static_cast<std::size_t>(3));
 
     MaterialDocumentTarget restored("restored");
-    REQUIRE(restored.loadSnapshot(source.snapshotValue()).accepted());
+    REQUIRE(restored.loadSnapshot(source.snapshotValue()).isAccepted());
     const SelectionSnapshot restoredSelection = materialSelection(restored);
     CHECK(restored.read(restoredSelection, PropertyPath("shading.model")).value == EditorValue("custom"));
     CHECK(restored.read(restoredSelection, PropertyPath("textures.height")).value ==

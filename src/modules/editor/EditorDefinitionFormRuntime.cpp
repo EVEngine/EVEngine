@@ -122,7 +122,7 @@ EditorResult<DomainOperation> DefinitionSchemaFormTarget::makeSet(
         return formError(EditorStatus::Rejected, "editor.definition.form-read-only",
                          "Definition field is not directly editable");
     auto valid = validatePropertyValue(*descriptor, value);
-    if (!valid.accepted()) {
+    if (!valid.isAccepted()) {
         EditorResult<DomainOperation> result;
         result.status = valid.status; result.diagnostics = std::move(valid.diagnostics); return result;
     }

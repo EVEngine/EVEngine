@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Capability.h"
 #include "data/DataModule.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -24,15 +25,16 @@
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
 #include "map/DualGrid.h"
+#include "map/Fov.h"
 #include "map/Map.h"
 #include "map/MapObject.h"
+#include "map/Pathfinder.h"
+#include "map/TileCollision.h"
 #include "map/TileConfig.h"
 #include "map/TileLayer.h"
 #include "map/TileProjection.h"
 #include "map/TileSystem.h"
 #include "window/Window.h"
-#include "common/Capability.h"
-#include "map/TileCollision.h"
 
 #include <SDL2/SDL.h>
 #include <algorithm>
@@ -79,6 +81,24 @@ TEST_CASE("map.newLayer.ecsView") {
     CHECK_EQ(layer->getTileHeight(), 16.f);
     CHECK_EQ(mod->getLayerCount(), before + 1);
     CHECK(layer->config()->entity == layer);
+}
+
+TEST_CASE("map.navigationProfile.drivesPathCollisionAndFov") {
+    auto *mod   = Map::create();
+    auto *layer = mod->newLayer(3, 1, 16.f, 16.f);
+    layer->setTileNavigationProfile(7, false, 1.f, 0xff, 0xff, true, 0x20);
+    layer->setTile(1, 0, 7);
+
+    Pathfinder pathfinder(layer);
+    Path      *path = pathfinder.findPath(0, 0, 2, 0);
+    REQUIRE(path != nullptr);
+    CHECK_EQ(path->getLength(), 0);
+    delete path;
+
+    CHECK_EQ(mod->publishCollision(layer), 1);
+    Fov fov(layer);
+    fov.syncFromLayer();
+    CHECK(fov.isOpaque(1, 0));
 }
 
 TEST_CASE("map.layer.setGetTile") {
@@ -328,6 +348,194 @@ TEST_CASE("map.tileset.v2ManifestReadsTiledFields") {
     CHECK_EQ(layer->getTileDataString(1, "damage"), std::string("3.5"));
     layer->paintTerrain(0, 0, 2);
     CHECK_EQ(layer->getTile(0, 0), 1);
+}
+
+TEST_CASE("map.autotile.wallAndWaterfallResolveExactDirtyRegion") {
+    auto      *mod  = Map::create();
+    TileLayer *wall = mod->newLayer(3, 5, 16.f, 16.f);
+    wall->defineAutotileFamily(4, "wall", 17);
+    wall->setAutotileRule(40, 4, 1 << 5, 1);               // top: connected south
+    wall->setAutotileRule(41, 4, (1 << 1) | (1 << 5), 1);  // body
+    wall->setAutotileRule(42, 4, 1 << 1, 1);               // foot: connected north
+    const int before = wall->getRevision();
+    wall->paintTerrainRect(1, 1, 1, 3, 4);
+    CHECK_EQ(wall->getRevision(), before + 1);
+    CHECK_EQ(wall->getTile(1, 1), 40);
+    CHECK_EQ(wall->getTile(1, 2), 41);
+    CHECK_EQ(wall->getTile(1, 3), 42);
+
+    TileLayer *waterfall = mod->newLayer(1, 3, 16.f, 16.f);
+    waterfall->defineAutotileFamily(8, "waterfall", 23);
+    waterfall->setAutotileRule(80, 8, 1 << 5, 1);
+    waterfall->setAutotileRule(81, 8, (1 << 1) | (1 << 5), 1);
+    waterfall->setAutotileRule(82, 8, 1 << 1, 1);
+    waterfall->paintTerrainRect(0, 0, 1, 3, 8);
+    CHECK_EQ(waterfall->getTile(0, 0), 80);
+    CHECK_EQ(waterfall->getTile(0, 1), 81);
+    CHECK_EQ(waterfall->getTile(0, 2), 82);
+    waterfall->addTileAnimationFrame(81, 81, 120);
+    waterfall->addTileAnimationFrame(81, 83, 120);
+    CHECK_EQ(waterfall->getTileAnimationFrameCount(81), 2);
+}
+
+TEST_CASE("map.rpgmaker.importsPlanesPassageAndSemanticsTransactionally") {
+    const std::string dataDir  = std::string(EVENGINE_SOURCE_DIR) + "/test/data/rpgmaker/";
+    auto              imported = importRpgMakerMap(dataDir + "Map001.json", dataDir + "Tilesets.json", "RPG Maker MZ");
+    REQUIRE(imported.ok());
+    auto receipt = std::move(imported).value();
+    CHECK_EQ(receipt.sourceEngine, std::string("RPG Maker MZ"));
+    CHECK_EQ(receipt.tilesetId, 1);
+    REQUIRE(receipt.layers.size() == 4);
+    TileLayer *ground = receipt.layers.front();
+    CHECK_EQ(ground->getTile(0, 0), 1);
+    CHECK_EQ(ground->getTile(1, 0), 2);
+    CHECK_EQ(ground->resource()->sourceVersion, std::string("MV/MZ"));
+    REQUIRE(receipt.navigationLayer != nullptr);
+    Pathfinder pathfinder(receipt.navigationLayer);
+    CHECK(!pathfinder.isWalkable(0, 0));
+    CHECK(pathfinder.isWalkable(1, 0));
+    REQUIRE(ground->tileset()->atlases.size() >= 6);
+
+    auto failed = importRpgMakerMap(dataDir + "missing.json", dataDir + "Tilesets.json");
+    CHECK(!failed.ok());
+    REQUIRE(failed.error() != nullptr);
+    CHECK_EQ(failed.error()->source(), std::string("map.rpgmaker"));
+}
+
+TEST_CASE("map.rpgmaker.decodesA1A3A4QuarterTileTablesAndAnimation") {
+    const auto water = decodeRpgMakerTileVisual(2048);
+    REQUIRE(water.subtileFrames.size() == 4);
+    CHECK_EQ(water.subtileFrames[0].parts.size(), size_t(4));
+    CHECK_NE(water.subtileFrames[0].parts[0].x, water.subtileFrames[1].parts[0].x);
+
+    const auto waterfall = decodeRpgMakerTileVisual(2048 + 5 * 48);
+    REQUIRE(waterfall.subtileFrames.size() == 3);
+    CHECK_NE(waterfall.subtileFrames[0].parts[0].y, waterfall.subtileFrames[1].parts[0].y);
+
+    const auto roof = decodeRpgMakerTileVisual(4352);
+    REQUIRE(roof.subtileFrames.size() == 1);
+    CHECK_EQ(roof.subtileFrames[0].parts.size(), size_t(4));
+    const auto wall = decodeRpgMakerTileVisual(5888 + 8 * 48);
+    REQUIRE(wall.subtileFrames.size() == 1);
+    CHECK_EQ(wall.subtileFrames[0].parts.size(), size_t(4));
+}
+
+TEST_CASE("map.tileset.importsTiledWangConnectivity") {
+    auto       *mod   = Map::create();
+    TileLayer  *layer = mod->newLayer(2, 1, 16.f, 16.f);
+    const char *json  = R"({
+      "width":2,"height":1,"data":[0,0],
+      "tileset":{"firstgid":10,"columns":4,"tilewidth":16,"tileheight":16,
+        "wangsets":[{"name":"shore","wangtiles":[
+          {"tileid":2,"wangid":[0,0,1,0,0,0,0,0]},
+          {"tileid":3,"wangid":[0,0,0,0,0,0,1,0]}
+        ]}]}
+    })";
+    CHECK(layer->applyConfig(json));
+    REQUIRE(layer->tileset()->terrainRules.size() == 2);
+    CHECK_EQ(layer->tileset()->terrainRules[0].gid, 12);
+    CHECK_EQ(layer->tileset()->terrainRules[0].terrain, 1);
+    CHECK_EQ(layer->tileset()->terrainRules[0].neighborMask, 1 << 3);
+    CHECK_EQ(layer->tileset()->terrainRules[1].gid, 13);
+    CHECK_EQ(layer->tileset()->terrainRules[1].neighborMask, 1 << 7);
+    layer->setVisible(false);
+}
+
+TEST_CASE("map.tileset.loadsExternalTsjRelativeToMap") {
+    std::string       error;
+    const std::string dataDir = std::string(EVENGINE_SOURCE_DIR) + "/test/data/";
+    auto              layers  = loadMapFile(dataDir + "tiled_external_map.json", &error);
+    CHECK_EQ(error, std::string());
+    REQUIRE(layers.size() == 1);
+    TileLayer *layer = layers.front();
+    CHECK_EQ(layer->getTile(0, 0), 20);
+    CHECK_EQ(layer->getTile(1, 0), 30);
+    CHECK_EQ(layer->getTilesetFirstGid(), 20);
+    REQUIRE(layer->tileset()->atlases.size() == 2);
+    CHECK_EQ(layer->tileset()->atlases[1].firstGid, 30);
+    CHECK_EQ(layer->getTileDataType(20, "wet"), std::string("bool"));
+    CHECK_EQ(layer->getTileDataType(30, "walkable"), std::string("bool"));
+    REQUIRE(layer->tileset()->terrainRules.size() == 1);
+    CHECK_EQ(layer->tileset()->terrainRules[0].gid, 20);
+    CHECK_EQ(layer->tileset()->terrainRules[0].neighborMask, 1 << 3);
+    CHECK_EQ(layer->resource()->texturePath, dataDir + "shore-missing.png");
+    REQUIRE(layer->resource()->dependencyPaths.size() == 2);
+    CHECK_EQ(layer->resource()->dependencyPaths[0], dataDir + "shore.tsj");
+    CHECK_EQ(layer->resource()->dependencyPaths[1], dataDir + "walls.tsj");
+    Pathfinder pathfinder(layer);
+    CHECK(pathfinder.isWalkable(0, 0));
+    CHECK(!pathfinder.isWalkable(1, 0));
+    layer->setVisible(false);
+}
+
+TEST_CASE("map.tileset.loadsExternalTsxWithMetadataAnimationAndWang") {
+    std::string       error;
+    const std::string path   = std::string(EVENGINE_SOURCE_DIR) + "/test/data/tiled_external_tsx_map.json";
+    auto              layers = loadMapFile(path, &error);
+    CHECK_EQ(error, std::string());
+    REQUIRE(layers.size() == 1);
+    TileLayer *layer = layers.front();
+    CHECK_EQ(layer->getTile(0, 0), 40);
+    CHECK_EQ(layer->getTilesetFirstGid(), 40);
+    CHECK_EQ(layer->getTileAnimationFrameCount(40), 2);
+    CHECK_EQ(layer->getTileDataString(40, "terrainTag"), std::string("3"));
+    REQUIRE(layer->tileset()->terrainRules.size() == 1);
+    CHECK_EQ(layer->tileset()->terrainRules[0].gid, 40);
+    CHECK_EQ(layer->tileset()->terrainRules[0].neighborMask, 1 << 1);
+    Pathfinder pathfinder(layer);
+    CHECK(!pathfinder.isWalkable(0, 0));
+    Map map;
+    CHECK_EQ(map.publishCollision(layer), 1);
+    CHECK_EQ(map.getCollisionRectWidth(0), 8.f);
+    layer->setVisible(false);
+}
+
+TEST_CASE("map.tiled.flattensNestedGroupsWithInheritedPresentation") {
+    const std::string json = R"({
+      "width":2,"height":1,"tilewidth":16,"tileheight":16,
+      "layers":[{"type":"group","offsetx":7,"offsety":9,"opacity":0.5,
+        "layers":[{"type":"tilelayer","width":2,"height":1,"data":[1,0]}]}]
+    })";
+    std::string       error;
+    auto              layers = loadMapText(json, nullptr, &error);
+    CHECK_EQ(error, std::string());
+    REQUIRE(layers.size() == 1);
+    CHECK_EQ(layers[0]->getX(), 7.f);
+    CHECK_EQ(layers[0]->getY(), 9.f);
+    CHECK_EQ(layers[0]->draw()->tint.a, 0.5f);
+}
+
+TEST_CASE("map.import.failureRollsBackObservableLayerState") {
+    auto      *mod   = Map::create();
+    TileLayer *layer = mod->newLayer(2, 1, 16.f, 16.f);
+    layer->setTile(0, 0, 7);
+    const int   revision = layer->getRevision();
+    std::string error;
+    CHECK(!applyConfigText(layer, R"({"width":4,"height":4,"data":[1]})", &error));
+    CHECK(!error.empty());
+    CHECK_EQ(layer->getMapWidth(), 2);
+    CHECK_EQ(layer->getMapHeight(), 1);
+    CHECK_EQ(layer->getTile(0, 0), 7);
+    CHECK_EQ(layer->getRevision(), revision);
+}
+
+TEST_CASE("map.tiled.preservesAndRendersUnsignedFlipFlags") {
+    auto      *mod   = Map::create();
+    TileLayer *layer = mod->newLayer(2, 1, 16.f, 16.f);
+    layer->setLayer(999);
+    CHECK(layer->applyConfig(R"({"width":2,"height":1,"data":[2147483649,536870913]})"));
+    CHECK_EQ(tileGid(uint32_t(layer->getTile(0, 0))), uint32_t(1));
+    std::vector<eve::graphics::DrawItem2D> items;
+    TileRenderSystem::collect(items);
+    items.erase(std::remove_if(items.begin(), items.end(), [](const auto &item) { return item.layer != 999; }),
+                items.end());
+    REQUIRE(items.size() == 2);
+    const auto &horizontal = items[0];
+    const auto &diagonal   = items[1];
+    CHECK(horizontal.flipX);
+    CHECK_EQ(horizontal.rotation, 0.f);
+    CHECK_EQ(diagonal.rotation, 270.f);
+    CHECK(diagonal.flipX);
 }
 
 TEST_CASE("map.render.nullSafe") {

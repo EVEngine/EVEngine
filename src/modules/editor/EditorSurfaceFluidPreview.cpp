@@ -60,7 +60,7 @@ SurfaceFluidPreviewSnapshot SurfaceFluidPreviewService::build(
     fluids::SurfaceDropletSimulation simulation(&binding,{},&wetness);
     fluids::SurfaceFluidRenderParams renderParams; fluids::SurfaceWetnessParams wetnessParams;
     auto applied=SurfaceFluidRuntimeApplier().apply(target,&simulation,&renderParams,&wetnessParams);
-    if(!applied.accepted()){result.status=applied.status;result.diagnostics=std::move(applied.diagnostics);return result;}
+    if(!applied.isAccepted()){result.status=applied.status;result.diagnostics=std::move(applied.diagnostics);return result;}
     for(const auto& seed:request.seeds){
         if(!finite(seed.barycentric)||!finite(seed.velocity)||!std::isfinite(seed.volume)||seed.volume<=0.0||
            seed.triangle>=static_cast<std::uint32_t>(binding.triangleCount())||

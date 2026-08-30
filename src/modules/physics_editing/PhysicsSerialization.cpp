@@ -1,8 +1,8 @@
-#include "editor/EditorPhysicsTarget.h"
+#include "physics_editing/PhysicsTarget.h"
 
 #include <utility>
 
-namespace eve::editor {
+namespace eve::physics_editing {
 namespace {
 
 template <class T>
@@ -24,22 +24,22 @@ EditorValue PhysicsColliderTarget::snapshotValue() const {
     for (const auto& [path, value] : values_) properties[path] = value;
     EditorValue::Object root;
     root["schemaVersion"] = 1;
-    root["dimensions"] = dimensions_;
-    root["properties"] = EditorValue(std::move(properties));
+    root["dimensions"]    = dimensions_;
+    root["properties"]    = EditorValue(std::move(properties));
     return EditorValue(std::move(root));
 }
 
 EditorResult<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapshot) {
-    const EditorValue* versionValue = field(snapshot, "schemaVersion");
+    const EditorValue* versionValue    = field(snapshot, "schemaVersion");
     const EditorValue* dimensionsValue = field(snapshot, "dimensions");
     const EditorValue* propertiesValue = field(snapshot, "properties");
-    const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;
-    const auto* dimensions = dimensionsValue ? dimensionsValue->getIf<int64_t>() : nullptr;
-    const auto* properties = propertiesValue ? propertiesValue->getIf<EditorValue::Object>() : nullptr;
+    const auto*        version         = versionValue ? versionValue->getIf<int64_t>() : nullptr;
+    const auto*        dimensions      = dimensionsValue ? dimensionsValue->getIf<int64_t>() : nullptr;
+    const auto*        properties      = propertiesValue ? propertiesValue->getIf<EditorValue::Object>() : nullptr;
     if (!version || *version != 1 || !dimensions || *dimensions != dimensions_ || !properties)
         return snapshotError<void>(EditorStatus::Rejected, "editor.physics.snapshot-format",
                                    "Collider snapshot version or dimensionality is incompatible");
-    auto candidate = defaults();
+    auto                 candidate   = defaults();
     const PropertySchema schemaValue = colliderSchema();
     for (const auto& [path, value] : *properties) {
         auto descriptor = schemaValue.find(PropertyPath(path));
@@ -47,7 +47,7 @@ EditorResult<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapsh
             return snapshotError<void>(EditorStatus::Unsupported, "editor.physics.snapshot-property",
                                        "Collider snapshot contains unknown property: " + path);
         auto valid = validateAssignment(*descriptor, value);
-        if (!valid.accepted()) return valid;
+        if (!valid.isAccepted()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);
@@ -58,19 +58,20 @@ EditorResult<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapsh
 
 std::vector<EditorDiagnostic> PhysicsColliderTarget::validate() const {
     std::vector<EditorDiagnostic> diagnostics;
-    const auto text = [&](const char* path) -> std::string {
-        const auto found = values_.find(path);
+    const auto                    text = [&](const char* path) -> std::string {
+        const auto  found = values_.find(path);
         const auto* value = found == values_.end() ? nullptr : found->second.getIf<std::string>();
         return value ? *value : std::string{};
     };
     const auto number = [&](const char* path) -> double {
-        const auto found = values_.find(path);
+        const auto  found = values_.find(path);
         const auto* value = found == values_.end() ? nullptr : found->second.getIf<double>();
         return value ? *value : 0.0;
     };
     const std::string shape = text("shape.kind");
-    if ((shape == "convex-hull" || shape == "triangle-mesh" || shape == "height-field" ||
-         shape == "polygon" || shape == "chain") && text("shape.asset").empty())
+    if ((shape == "convex-hull" || shape == "triangle-mesh" || shape == "height-field" || shape == "polygon" ||
+         shape == "chain") &&
+        text("shape.asset").empty())
         diagnostics.push_back({RuleId("editor.physics.shape-asset-required"), DiagnosticSeverity::Error,
                                "Selected collider kind requires a shape asset"});
     if ((shape == "sphere" || shape == "circle" || shape == "capsule") && number("shape.radius") <= 0.0)
@@ -88,4 +89,4 @@ std::vector<EditorDiagnostic> PhysicsColliderTarget::validate() const {
     return diagnostics;
 }
 
-}  // namespace eve::editor
+}  // namespace eve::physics_editing

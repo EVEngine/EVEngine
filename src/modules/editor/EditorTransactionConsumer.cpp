@@ -226,7 +226,7 @@ public:
             return failure<void>(eve::DiagnosticCode::Failed, "editor authority participant has no authority",
                                  "editor.authority");
         auto plan = authority_->preflight(specification_, operations_);
-        if (!plan.accepted() || !plan.value) return convertEditorFailure<void>(plan, "editor authority preflight");
+        if (!plan.isAccepted() || !plan.value) return convertEditorFailure<void>(plan, "editor authority preflight");
         plan_  = std::move(*plan.value);
         phase_ = Phase::Prepared;
         return eve::Result<void>::success();
@@ -237,7 +237,7 @@ public:
             return failure<void>(eve::DiagnosticCode::PreconditionViolation,
                                  "editor authority participant is not prepared", "editor.authority.commit");
         auto result = authority_->commit(*plan_);
-        if (!result.accepted() || !result.value) return convertEditorFailure<void>(result, "editor authority commit");
+        if (!result.isAccepted() || !result.value) return convertEditorFailure<void>(result, "editor authority commit");
         receipt_ = std::move(*result.value);
         phase_   = Phase::Committed;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -258,7 +258,7 @@ public:
                                  "editor authority participant has no committed receipt",
                                  "editor.authority.compensate");
         auto result = authority_->compensate(*receipt_);
-        if (!result.accepted() || !result.value)
+        if (!result.isAccepted() || !result.value)
             return convertEditorFailure<void>(result, "editor authority compensation");
         // History keeps the original commit receipt.  This participant's
         // latest effect is the compensation receipt, whose afterRevision is
@@ -570,7 +570,7 @@ eve::Result<EditorDryRunReport> EditorTransactionConsumer::dryRun() const {
                                                "authority preflight requires an injected authority",
                                                "editor.authority");
         auto plan = impl_->authority->preflight(pending.specification, pending.operations);
-        if (!plan.accepted() || !plan.value)
+        if (!plan.isAccepted() || !plan.value)
             return convertEditorFailure<EditorDryRunReport>(plan, "editor authority preflight");
         report.authorityPlan = std::move(*plan.value);
     }

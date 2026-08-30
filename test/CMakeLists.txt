@@ -378,6 +378,7 @@ file(GLOB all_test_cpp
   editor.cpp
   editor_automation_v2.cpp
   editor_core_v2.cpp
+  editing_contracts.cpp
   editor_disk_asset_catalog_v2.cpp
   editor_disk_document_v2.cpp
   editor_document_asset_v2.cpp

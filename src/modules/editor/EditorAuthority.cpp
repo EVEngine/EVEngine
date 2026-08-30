@@ -71,15 +71,15 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan
     try {
         for (const DomainOperation& operation : plan.operations) {
             EditorResult<void> result = target_->applyDomainOperation(operation);
-            if (!result.accepted()) {
+            if (!result.isAccepted()) {
                 EditorResult<void> rollback = rollbackApplied(plan.operations, appliedCount);
-                receipt.state         = rollback.accepted() ? TransactionState::Rejected : TransactionState::Failed;
+                receipt.state         = rollback.isAccepted() ? TransactionState::Rejected : TransactionState::Failed;
                 receipt.afterRevision = target_->revision();
                 receipt.diagnostics   = std::move(result.diagnostics);
                 receipt.diagnostics.insert(receipt.diagnostics.end(), rollback.diagnostics.begin(),
                                            rollback.diagnostics.end());
                 EditorResult<TransactionReceipt> out;
-                out.status      = rollback.accepted() ? result.status : EditorStatus::Failed;
+                out.status      = rollback.isAccepted() ? result.status : EditorStatus::Failed;
                 out.value       = receipt;
                 out.diagnostics = receipt.diagnostics;
                 return out;
@@ -181,7 +181,7 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::compensate(const Transacti
             return failed(EditorStatus::Failed, "editor.authority.candidate-exception",
                           "Compensation candidate threw an unknown exception");
         }
-        if (!result.accepted()) {
+        if (!result.isAccepted()) {
             compensation.diagnostics   = std::move(result.diagnostics);
             return failed(result.status, "editor.authority.compensation-candidate-rejected",
                           "Compensation candidate rejected an inverse operation");
@@ -199,7 +199,7 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::compensate(const Transacti
         return failed(EditorStatus::Failed, "editor.authority.candidate-publish-exception",
                       "Could not publish compensation candidate");
     }
-    if (!published.accepted()) {
+    if (!published.isAccepted()) {
         compensation.diagnostics = std::move(published.diagnostics);
         return failed(published.status, "editor.authority.candidate-publish-rejected",
                       "Target rejected the compensation candidate");
@@ -228,7 +228,7 @@ EditorResult<void> LocalWorldAuthority::rollbackApplied(std::span<const DomainOp
             return EditorResult<void>::error(EditorStatus::Failed, RuleId("editor.authority.rollback-impossible"),
                                              "Applied operation has no inverse");
         EditorResult<void> result = target_->applyDomainOperation(inverseOf(operation));
-        if (!result.accepted()) return result;
+        if (!result.isAccepted()) return result;
     }
     return EditorResult<void>::applied();
 }

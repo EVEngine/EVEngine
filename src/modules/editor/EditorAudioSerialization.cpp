@@ -45,7 +45,7 @@ EditorResult<void> AudioSourceTarget::loadSnapshot(const EditorValue& snapshot) 
             return snapshotError<void>(EditorStatus::Unsupported, "editor.audio.snapshot-property",
                                        "Audio source snapshot contains unknown property: " + path);
         auto valid = validatePropertyValue(*descriptor, value);
-        if (!valid.accepted()) return valid;
+        if (!valid.isAccepted()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);

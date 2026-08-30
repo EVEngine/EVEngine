@@ -29,7 +29,7 @@ std::map<ObjectId, SceneObjectSnapshot> collect(const SceneTargetBase& target) {
         if (!object) continue;
         const auto* id = object->at("id").getIf<std::string>();
         auto snapshot = target.sceneObject(ObjectId(*id));
-        if (snapshot.accepted() && snapshot.value) result.emplace(snapshot.value->id, *snapshot.value);
+        if (snapshot.isAccepted() && snapshot.value) result.emplace(snapshot.value->id, *snapshot.value);
     }
     return result;
 }
@@ -82,7 +82,7 @@ SceneHostEditorTarget::SceneHostEditorTarget(std::string id, scene::SceneHost* h
         request.transform = {node.x, node.y, node.z, node.pitch, node.yaw, node.roll,
                              node.sx, node.sy, node.sz};
         auto operation = makeCreate(request);
-        if (operation.accepted() && operation.value)
+        if (operation.isAccepted() && operation.value)
             static_cast<void>(SceneTargetBase::applyDomainOperation(*operation.value));
     }
     clearDirtyRegion();
@@ -120,7 +120,7 @@ EditorResult<void> SceneHostEditorTarget::applyDomainOperation(const DomainOpera
         return liveError<void>(EditorStatus::Failed, "editor.scene.live-stage-failed",
                                "Could not stage live scene operation");
     EditorResult<void> applied = staged->SceneTargetBase::applyDomainOperation(operation);
-    if (!applied.accepted()) return applied;
+    if (!applied.isAccepted()) return applied;
     return commitDomainState(std::move(candidate));
 }
 
@@ -216,7 +216,7 @@ EditorResult<void> SceneHostEditorTarget::commitDomainState(
         return liveError<void>(EditorStatus::Conflict, "editor.scene.live-candidate-mismatch",
                                "Live scene candidate has an incompatible type");
     EditorResult<void> synchronized = synchronizeHost(*staged);
-    if (!synchronized.accepted()) return synchronized;
+    if (!synchronized.isAccepted()) return synchronized;
     return SceneTargetBase::commitDomainState(std::move(candidate));
 }
 

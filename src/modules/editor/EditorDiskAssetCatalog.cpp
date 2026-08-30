@@ -91,7 +91,7 @@ EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
         const auto*       metadata = parsed.value ? parsed.value->getIf<EditorValue::Object>() : nullptr;
         const AssetGuid   guid(metadata ? textMember(*metadata, "guid") : std::string{});
         const std::string type = metadata ? textMember(*metadata, "type") : std::string{};
-        if (!parsed.accepted() || !metadata || guid.empty() || type.empty()) {
+        if (!parsed.isAccepted() || !metadata || guid.empty() || type.empty()) {
             result.diagnostics.push_back({RuleId("editor.asset.sidecar-invalid"), DiagnosticSeverity::Error,
                                           "Invalid asset sidecar: " + iterator->path().generic_string()});
             continue;
@@ -119,7 +119,7 @@ EditorResult<DiskAssetScanResult> DiskAssetCatalog::scan() {
         record.sourceHash    = hash;
         record.schemaVersion = 1;
         auto published       = database_->publish(std::move(record));
-        if (!published.accepted()) {
+        if (!published.isAccepted()) {
             result.diagnostics.insert(result.diagnostics.end(), published.diagnostics.begin(),
                                       published.diagnostics.end());
             continue;

@@ -29,11 +29,11 @@ TEST_CASE("editor.crowd.agent_zone_path_operations_are_reversible") {
     CrowdDocumentTarget document("level-ai");
     auto path = document.makeSetPath(patrolPath());
     REQUIRE(path.value);
-    CHECK(document.applyDomainOperation(*path.value).accepted());
+    CHECK(document.applyDomainOperation(*path.value).isAccepted());
 
     auto agent = document.makeSetAgent(guard());
     REQUIRE(agent.value);
-    CHECK(document.applyDomainOperation(*agent.value).accepted());
+    CHECK(document.applyDomainOperation(*agent.value).isAccepted());
     CHECK_EQ(document.agents().size(), 1U);
     CHECK_EQ(document.paths().size(), 1U);
     CHECK_EQ(static_cast<int>(document.makeDeletePath(StableId("patrol")).status),
@@ -42,26 +42,26 @@ TEST_CASE("editor.crowd.agent_zone_path_operations_are_reversible") {
     DomainOperation undoAgent = *agent.value;
     undoAgent.type = agent.value->inverseType;
     undoAgent.payload = agent.value->inverse;
-    CHECK(document.applyDomainOperation(undoAgent).accepted());
+    CHECK(document.applyDomainOperation(undoAgent).isAccepted());
     CHECK(document.agents().empty());
-    CHECK(document.makeDeletePath(StableId("patrol")).accepted());
+    CHECK(document.makeDeletePath(StableId("patrol")).isAccepted());
 
     CrowdZoneRecord zone{StableId("gate"), "Gate", "sense",
                          {{{0.0, 0.0}}, {{3.0, 0.0}}, {{3.0, 2.0}}, {{0.0, 2.0}}}, 2.0, true};
     auto setZone = document.makeSetZone(zone);
     REQUIRE(setZone.value);
-    CHECK(document.applyDomainOperation(*setZone.value).accepted());
+    CHECK(document.applyDomainOperation(*setZone.value).isAccepted());
     CHECK_EQ(document.zones().front().points.size(), 4U);
 }
 
 TEST_CASE("editor.crowd.snapshot_and_overlay_are_revision_and_budget_safe") {
     CrowdDocumentTarget source("source");
     REQUIRE(source.makeSetPath(patrolPath()).value);
-    CHECK(source.applyDomainOperation(*source.makeSetPath(patrolPath()).value).accepted());
-    CHECK(source.applyDomainOperation(*source.makeSetAgent(guard()).value).accepted());
+    CHECK(source.applyDomainOperation(*source.makeSetPath(patrolPath()).value).isAccepted());
+    CHECK(source.applyDomainOperation(*source.makeSetAgent(guard()).value).isAccepted());
 
     CrowdDocumentTarget loaded("loaded");
-    CHECK(loaded.loadSnapshot(source.snapshotValue()).accepted());
+    CHECK(loaded.loadSnapshot(source.snapshotValue()).isAccepted());
     CHECK(loaded.validate().empty());
     auto overlay = loaded.overlay();
     CHECK_EQ(static_cast<int>(overlay.status), static_cast<int>(EditorStatus::Applied));
@@ -81,11 +81,11 @@ TEST_CASE("editor.crowd.snapshot_and_overlay_are_revision_and_budget_safe") {
 
 TEST_CASE("editor.crowd.document_applies_to_named_runtime_agents") {
     CrowdDocumentTarget document("runtime-source");
-    CHECK(document.applyDomainOperation(*document.makeSetPath(patrolPath()).value).accepted());
-    CHECK(document.applyDomainOperation(*document.makeSetAgent(guard()).value).accepted());
+    CHECK(document.applyDomainOperation(*document.makeSetPath(patrolPath()).value).isAccepted());
+    CHECK(document.applyDomainOperation(*document.makeSetAgent(guard()).value).isAccepted());
     eve::crowd::Crowd runtime;
     CrowdRuntimeApplier applier;
-    CHECK(applier.apply(document, &runtime).accepted());
+    CHECK(applier.apply(document, &runtime).isAccepted());
     CHECK_EQ(runtime.getAgentCount(), 1);
     CHECK(runtime.hasNamedAgent("guard"));
     const int index = runtime.getNamedAgentIndex("guard");

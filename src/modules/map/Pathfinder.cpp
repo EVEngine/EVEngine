@@ -153,6 +153,8 @@ struct Grid {
     bool staggerOdd = true;
     bool dirty = true;
     std::vector<float> cost;  // ≤0 => blocked
+    std::vector<uint8_t>         enterMask;
+    std::vector<uint8_t>         exitMask;
     std::unordered_set<uint32_t> blockedGids;
 
     int index(int x, int y) const { return y * width + x; }
@@ -162,6 +164,8 @@ struct Grid {
         width = w > 0 ? w : 0;
         height = h > 0 ? h : 0;
         cost.assign(size_t(width * height), 1.f);
+        enterMask.assign(size_t(width * height), 0xff);
+        exitMask.assign(size_t(width * height), 0xff);
         dirty = true;
     }
 
@@ -192,13 +196,30 @@ struct Grid {
         staggerOdd = cfg->staggerIndex == StaggerIndex::Odd;
         if (!topologyManual) applyAutoTopologyFromLayer();
 
+        const auto tileset = layer->tileset();
         const int n = width * height;
         for (int i = 0; i < n; ++i) {
             const uint32_t gid = (i < int(tiles->gids.size())) ? tileGid(tiles->gids[size_t(i)]) : 0u;
             bool blocked = false;
+            float          movementCost  = 1.f;
+            uint8_t        cellEnterMask = 0xff;
+            uint8_t        cellExitMask  = 0xff;
             if (blockEmpty && gid == 0u) blocked = true;
             if (blockedGids.count(gid)) blocked = true;
-            cost[size_t(i)] = blocked ? 0.f : 1.f;
+            if (gid != 0u) {
+                const auto visual = std::find_if(
+                    tileset->visuals.begin(), tileset->visuals.end(),
+                    [gid](const TileLayer::Tileset::Visual &candidate) { return candidate.gid == int(gid); });
+                if (visual != tileset->visuals.end()) {
+                    blocked       = blocked || !visual->walkable;
+                    movementCost  = std::max(0.001f, visual->cost);
+                    cellEnterMask = visual->enterMask;
+                    cellExitMask  = visual->exitMask;
+                }
+            }
+            cost[size_t(i)]      = blocked ? 0.f : movementCost;
+            enterMask[size_t(i)] = cellEnterMask;
+            exitMask[size_t(i)]  = cellExitMask;
         }
         layerRevision = tiles->revision;
         dirty = true;
@@ -271,15 +292,38 @@ struct Grid {
         return cost[size_t(index(x, y))];
     }
 
+    bool canTraverseCardinal(int x, int y, int nx, int ny) const {
+        if (!isWalkable(x, y) || !isWalkable(nx, ny)) return false;
+        uint8_t direction = 0;
+        uint8_t opposite  = 0;
+        if (nx == x && ny == y - 1) {
+            direction = 1;
+            opposite  = 4;
+        } else if (nx == x + 1 && ny == y) {
+            direction = 2;
+            opposite  = 8;
+        } else if (nx == x && ny == y + 1) {
+            direction = 4;
+            opposite  = 1;
+        } else if (nx == x - 1 && ny == y) {
+            direction = 8;
+            opposite  = 2;
+        } else {
+            return true;
+        }
+        return (exitMask[size_t(index(x, y))] & direction) != 0 && (enterMask[size_t(index(nx, ny))] & opposite) != 0;
+    }
+
     void forEachWalkableNeighbor(int x, int y, const NeighborFn &fn) const {
         if (!fn || !inBounds(x, y)) return;
         forEachNeighbor(topology, x, y, staggerAxisY, staggerOdd, [&](int nx, int ny, float moveCost) {
             if (!isWalkable(nx, ny)) return;
+            if (!canTraverseCardinal(x, y, nx, ny)) return;
             if (topology == Topology::Ortho8) {
                 const int dx = nx - x;
                 const int dy = ny - y;
                 if (dx != 0 && dy != 0) {
-                    if (!isWalkable(x + dx, y) || !isWalkable(x, y + dy)) return;
+                    if (!canTraverseCardinal(x, y, x + dx, y) || !canTraverseCardinal(x, y, x, y + dy)) return;
                 }
             }
             fn(nx, ny, moveCost * getCellCost(nx, ny));

@@ -72,7 +72,7 @@ EditorResult<RuntimeEditorPackage> RuntimeEditorPublisher::publish(const Runtime
         AssetGuid current = pending.front();
         pending.pop_front();
         if (!visited.emplace(current).second) continue;
-        if (!assets.find(current).accepted())
+        if (!assets.find(current).isAccepted())
             return manifestError("editor.runtime.asset-not-found", "Manifest asset is unavailable: " + current.value());
         package.assetClosure.push_back(current);
         for (const AssetDependency& dependency : assets.dependencies(current))

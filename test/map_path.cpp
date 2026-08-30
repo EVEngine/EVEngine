@@ -125,6 +125,54 @@ TEST_CASE("map.path.astar.unreachable") {
     delete pf;
 }
 
+TEST_CASE("map.path.layerMetadataIsNavigationAuthority") {
+    auto      *mod   = Map::create();
+    TileLayer *layer = mod->newLayer(3, 2, 8.f, 8.f);
+    layer->fill(2);
+    layer->setTile(1, 0, 9);
+    layer->setTileMetadata(9, 1, 1, false, 7.f);
+
+    Pathfinder *pf = mod->newPathfinder(layer);
+    REQUIRE(pf != nullptr);
+    CHECK(!pf->isWalkable(1, 0));
+
+    Path *detour = pf->findPath(0, 0, 2, 0);
+    REQUIRE(detour != nullptr);
+    CHECK(pathEndsAt(detour, 2, 0));
+    CHECK(detour->getLength() == 5);
+    delete detour;
+
+    // Metadata mutation publishes a layer revision, so an already-bound
+    // pathfinder observes the new canonical navigation state automatically.
+    layer->setTileMetadata(9, 1, 1, true, 7.f);
+    CHECK(pf->isWalkable(1, 0));
+    CHECK_EQ(pf->getCellCost(1, 0), 7.f);
+    delete pf;
+}
+
+TEST_CASE("map.path.directionalNavigationUsesTileProfiles") {
+    auto      *mod   = Map::create();
+    TileLayer *layer = mod->newLayer(3, 1, 8.f, 8.f);
+    REQUIRE(layer->applyConfig(R"({
+      "width":3,"height":1,"data":[2,5,2],
+      "tileset":{"firstgid":1,"columns":5,"tilewidth":8,"tileheight":8,
+        "tiles":[{"id":4,"properties":[
+          {"name":"exitMask","type":"int","value":2}
+        ]}]}
+    })"));
+
+    Pathfinder pathfinder(layer);
+    Path      *east = pathfinder.findPath(0, 0, 2, 0);
+    REQUIRE(east != nullptr);
+    CHECK(pathEndsAt(east, 2, 0));
+    delete east;
+
+    Path *west = pathfinder.findPath(2, 0, 0, 0);
+    REQUIRE(west != nullptr);
+    CHECK_EQ(west->getLength(), 0);
+    delete west;
+}
+
 TEST_CASE("map.path.astar.ortho8NoCornerCut") {
     auto *mod = Map::create();
     TileLayer *layer = mod->newLayer(3, 3, 8.f, 8.f);

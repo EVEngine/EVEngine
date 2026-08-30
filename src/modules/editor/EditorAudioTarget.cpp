@@ -60,7 +60,7 @@ EditorResult<void> AudioSourceTarget::applyDomainOperation(const DomainOperation
         return audioError<void>(EditorStatus::Unsupported, "editor.audio.property",
                                 "Unknown audio source property: " + *path);
     auto valid = validatePropertyValue(*descriptor, *value);
-    if (!valid.accepted()) return valid;
+    if (!valid.isAccepted()) return valid;
     values_[*path] = *value;
     ++revision_;
     dirty_.include(0, 0);
@@ -115,7 +115,7 @@ EditorResult<DomainOperation> AudioSourceTarget::makeSet(const SelectionSnapshot
         return audioError<DomainOperation>(EditorStatus::Unsupported, "editor.audio.property",
                                            "Unknown audio source property: " + path.value());
     auto valid = validatePropertyValue(*descriptor, value);
-    if (!valid.accepted()) {
+    if (!valid.isAccepted()) {
         EditorResult<DomainOperation> failed;
         failed.status = valid.status;
         failed.diagnostics = std::move(valid.diagnostics);

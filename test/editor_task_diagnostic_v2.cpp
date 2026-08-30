@@ -31,11 +31,11 @@ TEST_CASE("editor.v2.task_queue_is_queryable_and_cancellable") {
         result.status = EditorStatus::Cancelled;
         return result;
     });
-    REQUIRE(blocker.accepted());
+    REQUIRE(blocker.isAccepted());
     auto queued = tasks.submit("queued", [](const EditorTaskContext&) { return EditorTaskOutcome{}; });
-    REQUIRE(queued.accepted());
-    CHECK(tasks.cancel(*queued.value).accepted());
-    CHECK(tasks.cancel(*blocker.value).accepted());
+    REQUIRE(queued.isAccepted());
+    CHECK(tasks.cancel(*queued.value).isAccepted());
+    CHECK(tasks.cancel(*blocker.value).isAccepted());
     CHECK(tasks.waitIdle(2s));
     CHECK_EQ(static_cast<int>(tasks.snapshot(*queued.value).value->state),
              static_cast<int>(EditorTaskState::Cancelled));
@@ -48,15 +48,15 @@ TEST_CASE("editor.v2.material_compile_runs_on_background_task_service") {
     MaterialEditorService materials;
     MaterialGraphDomain   domain;
     GraphDocument         graph;
-    REQUIRE(graph.createNode(asyncOutputNode()).accepted());
+    REQUIRE(graph.createNode(asyncOutputNode()).isAccepted());
     const DocumentId document("document:async-material");
     auto             task = materials.compileAsync(document, graph.snapshot(domain.domain()), domain, tasks);
-    REQUIRE(task.accepted());
+    REQUIRE(task.isAccepted());
     CHECK(tasks.waitIdle(2s));
     auto result = materials.result(*task.value);
-    REQUIRE(result.accepted());
+    REQUIRE(result.isAccepted());
     CHECK_EQ(static_cast<int>(result.value->status), static_cast<int>(EditorStatus::Applied));
-    CHECK(materials.publishPreview(document, graph.revision(), *task.value).accepted());
+    CHECK(materials.publishPreview(document, graph.revision(), *task.value).isAccepted());
     CHECK(!materials.previewArtifact(document).empty());
 }
 
@@ -71,7 +71,7 @@ TEST_CASE("editor.v2.validation_and_diagnostics_are_extension_owned") {
                                                                             "Name is required"}};
                                   return std::vector<EditorDiagnostic>{};
                               })
-                .accepted());
+                .isAccepted());
     auto found = validation.validate({"", EditorValue()});
     CHECK_EQ(found.size(), static_cast<std::size_t>(1));
 

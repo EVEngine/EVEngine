@@ -193,7 +193,7 @@ EditorResult<void> DefinitionDocument::loadSnapshot(const EditorValue& snapshot)
         parsed.push_back({*path, *refType, *refId, *required});
     }
     DefinitionDocument candidate(*type, *id, static_cast<int>(*version));
-    if (!candidate.setJson(*json).accepted() || !candidate.setReferences(std::move(parsed)).accepted())
+    if (!candidate.setJson(*json).isAccepted() || !candidate.setReferences(std::move(parsed)).isAccepted())
         return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-snapshot",
                                      "Definition snapshot could not be applied");
     type_ = std::move(candidate.type_);

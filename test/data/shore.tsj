@@ -1,0 +1,21 @@
+{
+  "type": "tileset",
+  "version": "1.10",
+  "name": "shore",
+  "tilewidth": 16,
+  "tileheight": 16,
+  "tilecount": 2,
+  "columns": 2,
+  "image": "shore-missing.png",
+  "imagewidth": 32,
+  "imageheight": 16,
+  "tiles": [
+    {"id": 0, "properties": [{"name": "wet", "type": "bool", "value": true}]},
+    {"id": 1, "properties": [{"name": "walkable", "type": "bool", "value": false}]}
+  ],
+  "wangsets": [{
+    "name": "water-land",
+    "type": "mixed",
+    "wangtiles": [{"tileid": 0, "wangid": [0, 0, 1, 0, 0, 0, 0, 0]}]
+  }]
+}

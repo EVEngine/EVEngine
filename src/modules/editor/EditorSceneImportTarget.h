@@ -1,7 +1,7 @@
 #pragma once
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 #include <string>
 #include <vector>
 namespace eve::sceneloader { class SceneLoader; }
@@ -13,7 +13,7 @@ struct SceneImportValue {
     bool triangulate=true,generateNormals=true,joinVertices=true,flipUvs=true,improveCache=true;
     bool sharedMeshes=true,mipmaps=true,importLights=true,importCameras=false,importAnimations=true;
 };
-class SceneImportTarget final:public IEditableTargetV2,public IDomainOperationTarget,
+class SceneImportTarget final:public virtual IEditableTarget,public IDomainOperationTarget,
  public IDomainOperationTargetStaging,public IPropertyProvider{
 public:explicit SceneImportTarget(std::string id);const std::string&targetId()const override{return id_;}unsigned long long revision()const override{return revision_;}EditRegion dirtyRegion()const override{return dirty_;}void clearDirtyRegion()override{dirty_.clear();}TargetDescriptor describe()const override;void*queryCapability(const CapabilityId&)override;EditorResult<void>applyDomainOperation(const DomainOperation&)override;std::unique_ptr<IDomainOperationTarget>cloneDomainState()const override;EditorResult<void>commitDomainState(std::unique_ptr<IDomainOperationTarget>)override;eve::Result<eve::Revision>currentRevision(const SelectionSnapshot&)const override;PropertySchema schema(const SelectionSnapshot&)const override;PropertyReadResult read(const SelectionSnapshot&,const PropertyPath&)const override;EditorResult<DomainOperation>makeSet(const SelectionSnapshot&,const PropertyPath&,const EditorValue&,PropertySetMode)const override;EditorResult<DomainOperation>makeReset(const SelectionSnapshot&,const PropertyPath&)const override;const SceneImportValue&value()const{return value_;}std::vector<EditorDiagnostic>validate()const;EditorValue snapshotValue()const;EditorResult<void>loadSnapshot(const EditorValue&);
 private:bool matches(const SelectionSnapshot&)const;EditorValue contentValue()const;std::string id_;Revision revision_=1;EditRegion dirty_;SceneImportValue value_;};

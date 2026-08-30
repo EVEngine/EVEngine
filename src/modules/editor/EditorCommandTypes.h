@@ -1,20 +1,10 @@
 #pragma once
 
+#include "editing/EditingCommandTypes.h"
+
 namespace eve::editor {
 
-/** @brief Source that initiated an editor command. */
-enum class CommandSource {
-    Menu,
-    Shortcut,
-    Toolbar,
-    ContextMenu,
-    DragDrop,
-    Pointer,
-    InlineEdit,
-    Palette,
-    Script,
-    Automation,
-    Api
-};
+/** @brief Compatibility alias for the UI-independent authoring command source. */
+using CommandSource = eve::editing::CommandSource;
 
 }  // namespace eve::editor

@@ -205,7 +205,7 @@ TEST_CASE("kaykitCombatAssets.importRigClipsAndDriveActionEditorPreview") {
 
     eve::editor::ActionTimelineEditor editor("asset.kaykit.light-attack", timeline);
     eve::editor::EditorWorkspace      workspace("kaykit.combat", "KayKit Combat Action Editor");
-    REQUIRE(editor.configureWorkspace(workspace).accepted());
+    REQUIRE(editor.configureWorkspace(workspace).isAccepted());
     CHECK_EQ(workspace.getPanelCount(), 4);
     CHECK_EQ(workspace.getActivePanel(), "action.timeline");
 
@@ -213,16 +213,16 @@ TEST_CASE("kaykitCombatAssets.importRigClipsAndDriveActionEditorPreview") {
     REQUIRE(editor
                 .resizeState(id("kaykit-state:hitbox"), seconds(attack->getDuration() * 0.28),
                              seconds(attack->getDuration() * 0.64))
-                .accepted());
-    REQUIRE(editor.undo().accepted());
+                .isAccepted());
+    REQUIRE(editor.undo().isAccepted());
     CHECK_EQ(editor.target().timeline().tracks[0].states[0].start, originalHitStart);
 
     eve::animation::AnimClipRegistry::registerPath(timeline.animationUri, attack.get());
     eve::editor::AnimationRootMotionPreviewSource rootMotion;
     RecordingPreviewSink                          sink;
     eve::editor::ActionPreviewController          preview(editor, sink, &rootMotion);
-    REQUIRE(preview.setRootMotionSampleCount(16).accepted());
-    REQUIRE(preview.refresh().accepted());
+    REQUIRE(preview.setRootMotionSampleCount(16).isAccepted());
+    REQUIRE(preview.refresh().isAccepted());
     REQUIRE(sink.presented.has_value());
     CHECK(static_cast<int>(sink.presented->rootMotionState) ==
           static_cast<int>(eve::action::RootMotionPreviewState::Available));
@@ -230,7 +230,7 @@ TEST_CASE("kaykitCombatAssets.importRigClipsAndDriveActionEditorPreview") {
 
     editor.play();
     auto advanced = preview.update(timeline.duration);
-    REQUIRE(advanced.accepted());
+    REQUIRE(advanced.isAccepted());
     REQUIRE_EQ(*advanced.value, 10u);
     REQUIRE(sink.presented.has_value());
     REQUIRE_EQ(sink.presented->cues.size(), 10u);

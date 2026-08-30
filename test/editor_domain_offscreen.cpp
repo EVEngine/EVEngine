@@ -44,7 +44,7 @@ GraphDocumentData particleGraph() {
     GraphDocument document;
     for (const char* type : {"emission", "motion", "collision", "renderer", "output"}) {
         auto node = domain.makeNode(GraphNodeId(type), type); REQUIRE(node.value);
-        CHECK(document.createNode(*node.value).accepted());
+        CHECK(document.createNode(*node.value).isAccepted());
     }
     int sequence = 0;
     for (const auto& [from, to] : std::vector<std::pair<const char*, const char*>>{
@@ -53,7 +53,7 @@ GraphDocumentData particleGraph() {
         const auto* output = document.findPin(GraphPinId(from)); const auto* input = document.findPin(GraphPinId(to));
         REQUIRE(output); REQUIRE(input);
         CHECK(document.connect({StableId("edge-" + std::to_string(sequence++)), output->id, input->id},
-                               domain.canConnect(*output, *input)).accepted());
+                               domain.canConnect(*output, *input)).isAccepted());
     }
     return document.snapshot(domain.domain());
 }
@@ -67,7 +67,7 @@ TEST_CASE("editor.material.offscreen_adapter_produces_publishable_artifact") {
         [&](const MaterialPreviewRenderRequest& request,auto*,auto*) { CHECK(request.material.getIf<EditorValue::Object>() != nullptr);++draws;return EditorResult<void>::applied(); });
     MaterialDocumentTarget material("material"); MaterialPreviewService service;
     auto task=service.render(DocumentId("doc"),material,{},renderer); REQUIRE(task.value);
-    CHECK_EQ(draws,1); CHECK(service.publish(DocumentId("doc"),material.revision(),*task.value).accepted());
+    CHECK_EQ(draws,1); CHECK(service.publish(DocumentId("doc"),material.revision(),*task.value).isAccepted());
     CHECK(service.publishedArtifact(DocumentId("doc")).starts_with("preview://"));
 }
 
@@ -76,7 +76,7 @@ TEST_CASE("editor.ui.offscreen_renderer_rasterizes_visible_widget_boxes") {
     GraphicsOffscreenPreviewService offscreen(token,&backend,&backend);
     UiDocumentTarget document("hud"); UiLayoutValue layout;layout.width=80;layout.height=40;
     auto create=document.makeCreate({ObjectId("panel"),{},"panel","Panel",layout});REQUIRE(create.value);
-    CHECK(document.applyDomainOperation(*create.value).accepted());
+    CHECK(document.applyDomainOperation(*create.value).isAccepted());
     UiOffscreenPreviewRenderer renderer(&offscreen,&backend);
     auto artifact=renderer.render(document,320,200);REQUIRE(artifact.value);
     CHECK_EQ(backend.rectangles,1);CHECK_EQ(artifact.value->sourceRevision,document.revision());

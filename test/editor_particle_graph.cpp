@@ -29,11 +29,11 @@ GraphDocumentData particleGraph(ParticleGraphDomain& domain, int bufferSize = 10
     (*outputProperties)["bufferSize"] = bufferSize;
 
     GraphDocument graph;
-    REQUIRE(graph.createNode(*emission.value).accepted());
-    REQUIRE(graph.createNode(*motion.value).accepted());
-    REQUIRE(graph.createNode(*collision.value).accepted());
-    REQUIRE(graph.createNode(*renderer.value).accepted());
-    REQUIRE(graph.createNode(*output.value).accepted());
+    REQUIRE(graph.createNode(*emission.value).isAccepted());
+    REQUIRE(graph.createNode(*motion.value).isAccepted());
+    REQUIRE(graph.createNode(*collision.value).isAccepted());
+    REQUIRE(graph.createNode(*renderer.value).isAccepted());
+    REQUIRE(graph.createNode(*output.value).isAccepted());
     const std::vector<std::pair<const char*, const char*>> links = {
         {"emission.out", "motion.in"}, {"motion.out", "collision.in"},
         {"collision.out", "renderer.in"}, {"renderer.out", "output.in"}};
@@ -44,7 +44,7 @@ GraphDocumentData particleGraph(ParticleGraphDomain& domain, int bufferSize = 10
         REQUIRE(from);
         REQUIRE(to);
         REQUIRE(graph.connect({StableId("edge-" + std::to_string(index++)), from->id, to->id},
-                              domain.canConnect(*from, *to)).accepted());
+                              domain.canConnect(*from, *to)).isAccepted());
     }
     return graph.snapshot(domain.domain());
 }

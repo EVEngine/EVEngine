@@ -29,7 +29,8 @@ TargetDescriptor SceneTargetBase::describe() const {
     descriptor.type         = type_;
     descriptor.revision     = revision_;
     descriptor.capabilities = {ISceneHierarchyEditTarget::editorCapabilityId(),
-                               ITransformEditTarget::editorCapabilityId()};
+                               ITransformEditTarget::editingCapabilityId(),
+                               eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     if (componentPayloads_)
         descriptor.capabilities.push_back(ISceneComponentPayloadTarget::editorCapabilityId());
     return descriptor;
@@ -38,7 +39,9 @@ TargetDescriptor SceneTargetBase::describe() const {
 void* SceneTargetBase::queryCapability(const CapabilityId& capability) {
     if (capability == ISceneHierarchyEditTarget::editorCapabilityId())
         return static_cast<ISceneHierarchyEditTarget*>(this);
-    if (capability == ITransformEditTarget::editorCapabilityId()) return static_cast<ITransformEditTarget*>(this);
+    if (capability == ITransformEditTarget::editingCapabilityId()) return static_cast<ITransformEditTarget*>(this);
+    if (capability == eve::editing::IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<eve::editing::IEditingSnapshotProvider*>(this);
     if (componentPayloads_ && capability == ISceneComponentPayloadTarget::editorCapabilityId())
         return static_cast<ISceneComponentPayloadTarget*>(componentPayloads_);
     return nullptr;
@@ -50,7 +53,7 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
                                 "Scene operation targets another backend");
     if (operation.type == "scene.object.create.v1") {
         EditorResult<SceneObjectSnapshot> parsed = parseObject(operation.payload);
-        if (!parsed.accepted() || !parsed.value) {
+        if (!parsed.isAccepted() || !parsed.value) {
             EditorResult<void> result;
             result.status      = parsed.status;
             result.diagnostics = std::move(parsed.diagnostics);
@@ -66,7 +69,7 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
         objects_.emplace(object.id, object);
     } else if (operation.type == "scene.object.delete.v1") {
         EditorResult<SceneObjectSnapshot> parsed = parseObject(operation.payload);
-        if (!parsed.accepted() || !parsed.value) {
+        if (!parsed.isAccepted() || !parsed.value) {
             EditorResult<void> result;
             result.status      = parsed.status;
             result.diagnostics = std::move(parsed.diagnostics);
@@ -95,7 +98,7 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
             return sceneError<void>(EditorStatus::NotFound, "editor.scene.object-not-found",
                                     "Scene object does not exist");
         EditorResult<SceneTransformValue> parsed = parseTransform(*transform);
-        if (!parsed.accepted() || !parsed.value) {
+        if (!parsed.isAccepted() || !parsed.value) {
             EditorResult<void> result;
             result.status      = parsed.status;
             result.diagnostics = std::move(parsed.diagnostics);
@@ -117,7 +120,7 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
                 return sceneError<void>(EditorStatus::NotFound, "editor.scene.multi-transform-object",
                                         "Multi-transform entry references an invalid scene object");
             auto parsed = parseTransform(*transform);
-            if (!parsed.accepted() || !parsed.value)
+            if (!parsed.isAccepted() || !parsed.value)
                 return sceneError<void>(EditorStatus::Rejected, "editor.scene.multi-transform-value",
                                         "Multi-transform entry contains an invalid transform");
             updates.emplace_back(ObjectId(*id), *parsed.value);
@@ -303,7 +306,7 @@ EditorResult<DomainOperation> SceneTargetBase::makeReparent(const ObjectId& id, 
 
 EditorResult<SceneTransformValue> SceneTargetBase::readTransform(const ObjectId& id) const {
     auto object = sceneObject(id);
-    if (!object.accepted() || !object.value) {
+    if (!object.isAccepted() || !object.value) {
         EditorResult<SceneTransformValue> result;
         result.status      = object.status;
         result.diagnostics = std::move(object.diagnostics);
@@ -404,7 +407,7 @@ EditorResult<SceneObjectSnapshot> SceneTargetBase::parseObject(const EditorValue
         return sceneError<SceneObjectSnapshot>(EditorStatus::Rejected, "editor.scene.object-value",
                                                "Scene object payload is incomplete");
     EditorResult<SceneTransformValue> parsedTransform = parseTransform(*transform);
-    if (!parsedTransform.accepted() || !parsedTransform.value) {
+    if (!parsedTransform.isAccepted() || !parsedTransform.value) {
         EditorResult<SceneObjectSnapshot> result;
         result.status      = parsedTransform.status;
         result.diagnostics = std::move(parsedTransform.diagnostics);
@@ -423,7 +426,7 @@ EditorValue SceneTargetBase::objectValue(const SceneObjectSnapshot& object) {
     return EditorValue(std::move(value));
 }
 
-EditorResult<DomainOperation> ScenePlacementToolLogic::plan(IEditableTargetV2&              target,
+EditorResult<DomainOperation> ScenePlacementToolLogic::plan(IEditableTarget&              target,
                                                             const CreateSceneObjectRequest& request) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
         target.queryCapability(ISceneHierarchyEditTarget::editorCapabilityId()));
@@ -433,17 +436,17 @@ EditorResult<DomainOperation> ScenePlacementToolLogic::plan(IEditableTargetV2&  
     return hierarchy->makeCreate(request);
 }
 
-EditorResult<DomainOperation> SceneTransformToolLogic::plan(IEditableTargetV2& target, const ObjectId& object,
+EditorResult<DomainOperation> SceneTransformToolLogic::plan(IEditableTarget& target, const ObjectId& object,
                                                             const SceneTransformValue& transform) const {
     auto* transforms =
-        static_cast<ITransformEditTarget*>(target.queryCapability(ITransformEditTarget::editorCapabilityId()));
+        static_cast<ITransformEditTarget*>(target.queryCapability(ITransformEditTarget::editingCapabilityId()));
     if (!transforms)
         return sceneError<DomainOperation>(EditorStatus::Unsupported, "editor.scene.transform-unavailable",
                                            "Target does not expose transform editing");
     return transforms->makeSetTransform(object, transform);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTargetV2& target,
+EditorResult<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTarget& target,
                                                                   const ObjectId& object) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
         target.queryCapability(ISceneHierarchyEditTarget::editorCapabilityId()));
@@ -453,7 +456,7 @@ EditorResult<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTarge
     return hierarchy->makeDelete(object);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTargetV2& target,
+EditorResult<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTarget& target,
                                                                   const ObjectId& object,
                                                                   const std::string& name) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
@@ -464,7 +467,7 @@ EditorResult<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTarge
     return hierarchy->makeRename(object, name);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planReparent(IEditableTargetV2& target,
+EditorResult<DomainOperation> SceneHierarchyToolLogic::planReparent(IEditableTarget& target,
                                                                     const ObjectId& object,
                                                                     const ObjectId& parent) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
@@ -518,7 +521,7 @@ PropertyReadResult ScenePropertyProvider::read(const SelectionSnapshot& selectio
     for (const SelectionItem& item : selection.items) {
         if (item.target != TargetId(target_->targetId())) return {};
         auto transform = target_->readTransform(ObjectId(item.item.value()));
-        if (!transform.accepted() || !transform.value) return {PropertyReadState::Error, {}, transform.diagnostics};
+        if (!transform.isAccepted() || !transform.value) return {PropertyReadState::Error, {}, transform.diagnostics};
         EditorValue value = component(*transform.value);
         if (value.type() == EditorValue::Type::Null) return {};
         if (!common) common = value;
@@ -552,7 +555,7 @@ EditorResult<DomainOperation> ScenePropertyProvider::makeSet(const SelectionSnap
             return sceneError<DomainOperation>(EditorStatus::Rejected, "editor.scene.property-target",
                                                "Selection contains objects from another target");
         auto current = target_->readTransform(ObjectId(item.item.value()));
-        if (!current.accepted() || !current.value)
+        if (!current.isAccepted() || !current.value)
             return sceneError<DomainOperation>(EditorStatus::NotFound, "editor.scene.property-object",
                                                "Selected scene object does not exist");
         SceneTransformValue changed = *current.value;
