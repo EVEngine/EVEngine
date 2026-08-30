@@ -305,6 +305,7 @@ struct Fov::Impl {
         if (!layer) return;
         auto cfg = layer->config();
         auto tiles = layer->tiles();
+        auto tileset = layer->tileset();
         if (cfg->mapW != width || cfg->mapH != height || depth != 1) {
             resize(cfg->mapW, cfg->mapH, 1);
         }
@@ -315,6 +316,10 @@ struct Fov::Impl {
             bool isOpaque = false;
             if (blockEmpty && gid == 0u) isOpaque = true;
             if (opaqueGids.count(gid)) isOpaque = true;
+            const auto visual =
+                std::find_if(tileset->visuals.begin(), tileset->visuals.end(),
+                             [gid](const TileLayer::Tileset::Visual &candidate) { return candidate.gid == int(gid); });
+            if (visual != tileset->visuals.end()) isOpaque = isOpaque || visual->opaque;
             opaque[size_t(i)] = isOpaque ? 1u : 0u;
         }
         layerRevision = tiles->revision;

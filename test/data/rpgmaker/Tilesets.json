@@ -1,0 +1,10 @@
+[
+  null,
+  {
+    "id": 1,
+    "name": "Outside",
+    "mode": 1,
+    "tilesetNames": ["Water", "Ground", "Buildings", "Walls", "Outside_A5", "Outside_B", "", "", ""],
+    "flags": [0, 15, 432]
+  }
+]

@@ -1125,6 +1125,16 @@ function(check_third_party_project name repo)
         )
         set(_eve_tp_use_ninja TRUE)
         message(STATUS "third-party Emscripten toolchain: ${CMAKE_TOOLCHAIN_FILE}")
+    else()
+        # Native dependency builds must use the compiler selected by the parent.
+        # Otherwise ExternalProject starts a fresh configure and can silently pick
+        # a different system default (for example Clang while Linux CI uses GCC).
+        if(CMAKE_C_COMPILER)
+            list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
+        endif()
+        if(CMAKE_CXX_COMPILER)
+            list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
+        endif()
     endif()
 
     # --config is required for multi-config generators (VS); ignored by Ninja.
