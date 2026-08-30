@@ -40,7 +40,7 @@ game.reset <- function() {
 eve_init = function() {
     // `persist` preserves this root across hot reload; DevTools registration
     // additionally makes it part of explicit MCP snapshot capture/restore.
-    if (has_dev()) eve.dev.markStateRoot("gameState");
+    if ("dev" in eve) eve.dev.markStateRoot("gameState");
     gfx.setBackgroundColor(0.07, 0.08, 0.12, 1.0);
     ui.setTheme("dark");
     ui.beginBuild();
