@@ -1298,10 +1298,10 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (ASan+UBSan)
-        # The process-isolated 2903-case suite reached 2840/2903 at the old
-        # 40-minute limit. Keep a bounded guard while allowing the measured
+        # The process-isolated 3297-case suite reached 3220/3297 at the old
+        # 50-minute limit. Keep a bounded guard while allowing the measured
         # sanitizer overhead to finish on a hosted runner.
-        timeout-minutes: 50
+        timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
         run: |
