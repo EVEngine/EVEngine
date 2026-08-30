@@ -83,6 +83,16 @@ def main():
     # 1. Attach / status.
     status = c.tool("eve_status")
     print("[1] eve_status ->", status[:160])
+    development = json.loads(c.tool("eve_agent_session_start", {
+        "objective": "Verify the live game's state mutation and recovery loop",
+        "criteria": [
+            {"id": "state", "description": "The requested enemy HP mutation is observed"},
+            {"id": "recovery", "description": "Snapshot restore returns to the checkpoint"},
+            {"id": "visual", "description": "A rendered frame is captured", "required": False},
+        ],
+    }))
+    assert development.get("status") == "applied", development
+    development_session = development["sessionId"]
 
     # 2. Screenshot first, while the loop is still presenting frames.
     #    (Readback is enabled by the first call and lands on the next present,
@@ -102,36 +112,66 @@ def main():
     c.tool("eve_run_script", {"source": "game.reset();"})
 
     # 4. Read current enemy HP.
-    hp0 = float(json.loads(c.tool("eve_eval", {"expression": "game.enemy.hp"}))["value"])
+    hp0 = float(json.loads(c.tool("eve_eval", {"expression": "gameState.enemy.hp"}))["value"])
     print(f"[4] enemy.hp = {hp0}")
     assert hp0 == 80.0, f"expected fresh 80.0 after reset, got {hp0}"
+    c.tool("eve_agent_session_advance", {"sessionId": development_session, "phase": "modify"})
 
     # 5. Weaken the enemy.
     c.tool("eve_run_script", {"source": "game.setEnemyHp(20.0);"})
-    hp1 = float(json.loads(c.tool("eve_eval", {"expression": "game.enemy.hp"}))["value"])
+    hp1 = float(json.loads(c.tool("eve_eval", {"expression": "gameState.enemy.hp"}))["value"])
     print(f"[5] after setEnemyHp(20) -> {hp1}")
     assert hp1 == 20.0, f"expected 20.0, got {hp1}"
+    c.tool("eve_agent_session_advance", {"sessionId": development_session, "phase": "run"})
+    c.tool("eve_agent_session_advance", {"sessionId": development_session, "phase": "observe"})
 
     # 6. Checkpoint.
     snap = c.tool("eve_snapshot_capture")
+    if snap.startswith("error:"):
+        raise RuntimeError(f"snapshot capture failed: {snap}")
     print(f"[6] snapshot captured ({len(snap)} bytes)")
 
     # 7. Break the game state.
     c.tool("eve_run_script", {"source": "game.setEnemyHp(5.0);"})
-    hp_break = float(json.loads(c.tool("eve_eval", {"expression": "game.enemy.hp"}))["value"])
+    hp_break = float(json.loads(c.tool("eve_eval", {"expression": "gameState.enemy.hp"}))["value"])
     print(f"[7] broke state -> enemy.hp = {hp_break}")
     assert hp_break == 5.0, f"expected 5.0, got {hp_break}"
 
     # 8. Restore checkpoint.
-    c.tool("eve_snapshot_restore", {"json": snap})
-    hp2 = float(json.loads(c.tool("eve_eval", {"expression": "game.enemy.hp"}))["value"])
+    restored = c.tool("eve_snapshot_restore", {"json": snap})
+    if restored != "ok":
+        raise RuntimeError(f"snapshot restore failed: {restored}")
+    hp2 = float(json.loads(c.tool("eve_eval", {"expression": "gameState.enemy.hp"}))["value"])
     print(f"[8] after restore -> {hp2}")
     assert hp2 == hp1, f"expected {hp1} after restore, got {hp2}"
+
+    c.tool("eve_agent_session_advance", {"sessionId": development_session, "phase": "verify"})
+    evidence = [
+        ("state", "runtime-observation", "enemy.hp changed from 80 to 20", ""),
+        ("recovery", "checkpoint", "snapshot restore returned enemy.hp to 20", ""),
+    ]
+    if "error:" not in shot:
+        evidence.append(("visual", "screenshot", "live frame captured", "ai_game_agent.png"))
+    for criterion, kind, summary, artifact in evidence:
+        receipt = json.loads(c.tool("eve_agent_session_evidence", {
+            "sessionId": development_session,
+            "criterionId": criterion,
+            "kind": kind,
+            "status": "pass",
+            "summary": summary,
+            "artifact": artifact,
+        }))
+        assert receipt.get("status") == "applied", receipt
+    completed = json.loads(c.tool("eve_agent_session_complete", {
+        "sessionId": development_session,
+        "summary": "Live state mutation and checkpoint recovery verified",
+    }))
+    assert completed.get("phase") == "complete", completed
 
     # 9. Log to the AI panel, then hand the game back to the player.
     c.tool("eve_ai_note", {"text": "agent demo: read->mutate->verify->snapshot->restore PASS"})
     print("[9]", c.tool("eve_continue"))
-    print("\nPASS: full agent loop verified against the live game.")
+    print("\nPASS: evidence-gated Agent development session verified against the live game.")
     return 0
 
 

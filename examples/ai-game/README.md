@@ -16,9 +16,9 @@ make run/<platform>-debug GAME=examples/ai-game RUN_ARGS="--debug --mcp-port=752
 | 步骤 | 工具 | 参数 | 效果 |
 |---|---|---|---|
 | 附着 | `eve_status` | — | 确认端口 / 暂停状态 / callgraph |
-| 读状态 | `eve_eval` | `{"expression": "game.enemy.hp"}` | 返回当前敌人 HP |
+| 读状态 | `eve_eval` | `{"expression": "gameState.enemy.hp"}` | 返回当前敌人 HP |
 | 改状态 | `eve_run_script` | `{"source": "game.setEnemyHp(20.0);"}` | 把敌人削弱到 20 HP |
-| 验证 | `eve_eval` | `{"expression": "game.enemy.hp"}` | 确认已生效 |
+| 验证 | `eve_eval` | `{"expression": "gameState.enemy.hp"}` | 确认已生效 |
 | 看见画面 | `eve_screenshot` | `{"path": "ai_game.png"}` | 保存当前帧 PNG |
 | 设检查点 | `eve_snapshot_capture` | — | 返回脚本状态 JSON |
 | 搞坏再复位 | `eve_run_script` → `eve_snapshot_restore` | 上一步的 JSON | 状态回到检查点 |
@@ -26,6 +26,9 @@ make run/<platform>-debug GAME=examples/ai-game RUN_ARGS="--debug --mcp-port=752
 
 配合 `eve_render_describe`（视觉模型）与 `eve_error_slice`（错误切片），
 Agent 可以"看见"画面、定位问题、自动修复再验证——这是通用代码助手给不了的闭环。
+
+示例同时使用 `eve_agent_session_*` 把这些调用组织为版本化开发会话。开始时声明状态修改、快照恢复和
+视觉证据三项验收条件；只有 required 条件都有证据，且阶段已经走到 Verify，才允许 Complete。
 
 ## 一键复现（无需 LLM）
 
@@ -43,11 +46,12 @@ python examples/ai-game/agent_demo.py 7529
 
 ## 脚本里有什么
 
-`main.nut` 暴露一个纯数据的根表 `game`：
+`main.nut` 把纯数据权威根与命令 API 分开：
 
-- 可读：`game.tick` / `game.time` / `game.player.hp` / `game.enemy.hp` 等；
+- 可读：`gameState.tick` / `gameState.time` / `gameState.player.hp` / `gameState.enemy.hp` 等；
 - 可改：`game.setEnemyHp(v)` / `game.setPlayerHp(v)` / `game.reset()`；
-- 快照：整个根表状态可被 `eve_snapshot_*` 捕获与恢复。
+- 快照：`persist gameState` 负责热重载保留，`eve.dev.markStateRoot("gameState")` 把同一权威根显式纳入
+  `eve_snapshot_*` 捕获与恢复；两种生命周期不再被混为一谈。
 
 任何 Agent（Cursor / Claude / Codex）通过 `tools/eve-mcp` 桥或直接 TCP
 连接这个端口即可驾驶；热重载照常生效——Agent 改完 `main.nut` 保存，
