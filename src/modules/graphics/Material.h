@@ -163,6 +163,9 @@ struct ModelPart {
     std::string name;
     Mesh *mesh = nullptr;
     Material *material = nullptr;
+    /** @brief Optional per-instance transparent ordering override. */
+    int  sortPriority = 0;
+    bool hasSortPriority = false;
 };
 
 }  // namespace eve::graphics

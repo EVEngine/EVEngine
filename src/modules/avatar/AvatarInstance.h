@@ -9,6 +9,7 @@
 namespace eve::graphics {
 struct DrawItem2D;
 class Mesh;
+class Material;
 class Renderable2D;
 class Renderable3D;
 class Texture;
@@ -26,6 +27,10 @@ namespace eve::scene {
 class Scene;
 }
 
+namespace eve::inventory {
+class EquipmentSet;
+}
+
 namespace eve::animation {
 class AnimClip;
 class AnimPlayer;
@@ -38,6 +43,21 @@ class Tween;
 }
 
 namespace eve::avatar {
+
+/** @brief Outcome of changing or rebuilding the equipment appearance projection. */
+enum class EquipmentVisualChange {
+    Applied,
+    Unchanged,
+    Removed,
+    Rejected,
+};
+
+/** @brief Observable backend selected for a shared-pose skinned part. */
+enum class SkinnedPartUpdateMode {
+    Unavailable = 0,
+    Gpu         = 1,
+    Cpu         = 2,
+};
 
 /** @brief Optional Live2D runtime backend (Cubism etc.). Registered from C++ / plugins. */
 class ILive2DBackend {
@@ -184,6 +204,18 @@ public:
     bool bindAnimLayerMixer(animation::AnimLayerMixer* mixer);
     /** @brief Bind CPU skin data used to deform the avatar mesh from the active pose. */
     bool bindAnimSkin(animation::AnimSkin* skin);
+    /**
+     * @brief Bind an always-visible skinned mesh/material part to the shared Avatar pose.
+     * @return Applied, Unchanged, or Rejected when the slot/resources are invalid.
+     * @note Mesh, material, and skin are borrowed. Each mesh receives its own GPU skin palette.
+     */
+    EquipmentVisualChange bindSkinnedPart(int partIndex, const std::string& partName,
+                                          graphics::Mesh* mesh, graphics::Material* material,
+                                          animation::AnimSkin* skin);
+    /** @brief Remove a shared-pose skinned part and clear its material slot. */
+    EquipmentVisualChange unbindSkinnedPart(int partIndex);
+    /** @brief Return the latest GPU/CPU/unavailable update mode for a material slot. */
+    SkinnedPartUpdateMode getSkinnedPartUpdateMode(int partIndex) const;
     /** @brief Register a motion name for setMotion(); the clip is not owned. */
     bool registerMotion(const std::string& name, animation::AnimClip* clip);
     /** @brief Remove a registered motion without destroying its clip. */
@@ -251,6 +283,67 @@ public:
     bool linkSceneNode(scene::Scene* scene, const std::string& nodeId);
     /** @brief Return whether this avatar is currently scene-driven. */
     bool isSceneLinked() const { return sceneLinked_; }
+
+    // ---- equipment appearance projection ----
+    /**
+     * @brief Bind the authoritative equipment set whose visual projection this Avatar rebuilds.
+     * @param equipment Non-owned equipment state; it must outlive this binding and stay on the main thread.
+     * @return Applied after an immediate projection rebuild, or Removed when unbinding with nullptr.
+     * @note Avatar never mutates equipment. update()/sync() detects slot changes, including direct stack edits.
+     */
+    EquipmentVisualChange bindEquipment(inventory::EquipmentSet* equipment);
+    /** @brief Remove the equipment binding and hide all registered equipment visuals. */
+    EquipmentVisualChange unbindEquipment();
+    /**
+     * @brief Map an item to a 2D Avatar layer. Texture is borrowed and must remain valid while registered.
+     * @return Applied, Unchanged, or Rejected for invalid identifiers/non-image Avatars.
+     */
+    EquipmentVisualChange defineEquipmentVisual2D(const std::string& itemId,
+                                                   const std::string& equipmentSlot,
+                                                   const std::string& layerName,
+                                                   graphics::Texture* texture, int zIndex);
+    /**
+     * @brief Map an item to a borrowed 3D renderable, optionally following a humanoid semantic/bone.
+     * @return Applied, Unchanged, or Rejected for invalid identifiers/non-3D Avatars.
+     * @note An empty bone name makes a modular root part follow the Avatar transform; a non-empty name
+     * follows the evaluated skeleton pose. Avatar controls visibility/transform but never destroys the part.
+     */
+    EquipmentVisualChange defineEquipmentVisual3D(const std::string& itemId,
+                                                   const std::string& equipmentSlot,
+                                                   graphics::Renderable3D* renderable,
+                                                   const std::string& boneSemanticOrName,
+                                                   float ox = 0.f, float oy = 0.f, float oz = 0.f);
+    /**
+     * @brief Map wearable equipment to a skinned mesh/material part sharing the Avatar pose.
+     * @param partIndex Stable Renderable3D material slot; different active wearables must use different slots.
+     * @param skin Skin binding built for mesh against the same skeleton used by the Avatar animation source.
+     * @note The part is activated/deactivated by authoritative equipment state and wear-layer occlusion.
+     */
+    EquipmentVisualChange defineEquipmentSkinnedVisual3D(
+        const std::string& itemId, const std::string& equipmentSlot, int partIndex,
+        const std::string& partName, graphics::Mesh* mesh, graphics::Material* material,
+        animation::AnimSkin* skin);
+    /** @brief Define a named back-to-front wear layer and its optional semantic parent. */
+    EquipmentVisualChange defineEquipmentLayer(const std::string& name, int order,
+                                                const std::string& parent = {});
+    /** @brief Record that an equipped outer layer fully hides an inner layer. */
+    EquipmentVisualChange addEquipmentLayerOcclusion(const std::string& outerLayer,
+                                                      const std::string& innerLayer);
+    /** @brief Assign an item visual to a wear layer and a stable order inside that layer. */
+    EquipmentVisualChange setEquipmentVisualLayer(const std::string& itemId,
+                                                  const std::string& equipmentSlot,
+                                                  const std::string& wearLayer,
+                                                  int withinLayerOrder = 0);
+    /** @brief Rebuild visuals from the current authoritative slots when their signature changed. */
+    EquipmentVisualChange syncEquipmentAppearance();
+    /** @brief Return the currently projected item for a slot, or empty text when none is shown. */
+    std::string getEquipmentVisualItem(const std::string& equipmentSlot) const;
+    /** @brief Number of active visuals in canonical back-to-front render order. */
+    int getEquipmentRenderStackCount() const;
+    /** @brief Active item id at a render-stack index, or empty text. */
+    std::string getEquipmentRenderStackItem(int index) const;
+    /** @brief Wear-layer name at a render-stack index, or empty text. */
+    std::string getEquipmentRenderStackLayer(int index) const;
 
     // ---- animation tween binding ----
     /** @brief Drive x/y/sx/sy and matching parameters from a Tween each update(). */
@@ -333,6 +426,51 @@ private:
         float                   ox = 0.f, oy = 0.f, oz = 0.f;
     };
     std::vector<Attachment> attachments_;
+    struct SkinnedPart {
+        int                      partIndex = -1;
+        std::string              partName;
+        graphics::Mesh*          mesh     = nullptr;
+        graphics::Material*      material = nullptr;
+        animation::AnimSkin*     skin     = nullptr;
+        std::vector<float>       cpuPositions;
+        bool                     active = true;
+        SkinnedPartUpdateMode    updateMode = SkinnedPartUpdateMode::Unavailable;
+    };
+    std::vector<SkinnedPart> skinnedParts_;
+    struct EquipmentVisual {
+        std::string             itemId;
+        std::string             equipmentSlot;
+        std::string             layerName;
+        graphics::Texture*      texture    = nullptr;
+        graphics::Renderable3D* renderable = nullptr;
+        graphics::Mesh*         skinnedMesh     = nullptr;
+        graphics::Material*     skinnedMaterial = nullptr;
+        animation::AnimSkin*    skinnedSkin     = nullptr;
+        int                     partIndex       = -1;
+        std::vector<float>      cpuPositions;
+        SkinnedPartUpdateMode   updateMode = SkinnedPartUpdateMode::Unavailable;
+        std::string             boneName;
+        std::string             wearLayer;
+        int                     zIndex = 0;
+        int                     withinLayerOrder = 0;
+        float                   ox = 0.f, oy = 0.f, oz = 0.f;
+    };
+    inventory::EquipmentSet*                 equipment_ = nullptr;
+    std::vector<EquipmentVisual>             equipmentVisuals_;
+    std::unordered_map<std::string, std::string> projectedEquipment_;
+    std::string                              equipmentSignature_;
+    struct EquipmentLayer {
+        std::string              parent;
+        int                      order = 0;
+        std::vector<std::string> occludes;
+    };
+    struct EquipmentRenderEntry {
+        std::string itemId;
+        std::string wearLayer;
+        int         order = 0;
+    };
+    std::unordered_map<std::string, EquipmentLayer> equipmentLayers_;
+    std::vector<EquipmentRenderEntry>                equipmentRenderStack_;
     float                   lookAtX_ = 0.f, lookAtY_ = 0.f, lookAtZ_ = 1.f;
     float                   lookAtWeight_  = 1.f;
     bool                    lookAtEnabled_ = false;
@@ -354,9 +492,14 @@ private:
     animation::AnimPose* updateSkeletalAnimation(float dt);
     void                 updateRootMotion(animation::AnimPose* pose);
     void                 updateSkin(animation::AnimPose* pose);
+    SkinnedPartUpdateMode updateSkinnedMesh(animation::AnimSkin* skin, graphics::Mesh* mesh,
+                                            animation::AnimPose* pose,
+                                            std::vector<float>& cpuPositions);
     void                 updateAttachments(animation::AnimPose* pose);
     void                 applyLookAt(animation::AnimPose* pose);
     void                 updateExpressionTransition(float dt);
+    void                 hideEquipmentVisuals();
+    int                  equipmentLayerOrder(const std::string& name) const;
 
     bool released_ = false;
 };

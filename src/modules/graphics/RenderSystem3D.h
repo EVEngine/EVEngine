@@ -211,6 +211,12 @@ public:
      * index 0..kMaxParts-1. Passing nullptr mesh clears that slot and trims partCount.
      */
     void setPart(int index, const std::string &name, Mesh *mesh, Material *material);
+    /** @brief Override transparent sorting for one part without mutating its shared Material. */
+    void setPartSortPriority(int index, int priority);
+    /** @brief Clear a part's per-instance sort override and use its Material priority. */
+    void clearPartSortPriority(int index);
+    /** @brief Return the effective per-part or Material transparent sort priority. */
+    int getPartSortPriority(int index);
     void clearParts();
     int getPartCount();
     std::string getPartName(int index);

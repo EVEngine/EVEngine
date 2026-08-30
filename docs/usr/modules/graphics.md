@@ -99,6 +99,9 @@ mat.setRoughness(0.5);
 local r = Renderable3D.create();
 r.setMaterial(mat);                 // 整模
 // 或多部件：r.setPart(0, "body", bodyMesh, bodyMat);
+r.setPartSortPriority(0, 100);      // 每实例覆盖透明排序，不修改共享 Material
+r.clearPartSortPriority(0);         // 恢复使用 Material.getSortPriority()
+local effectiveOrder = r.getPartSortPriority(0);
 ```
 
 遮罩材质使用 `setSurfaceMode("masked")`、`setAlphaCutoff()` 和

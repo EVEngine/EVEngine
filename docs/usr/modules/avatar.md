@@ -31,6 +31,58 @@ av.applyExpression("shy");
 定义"表情 = 一组图层可见性"，`applyExpression` 切换；换装就是 `setLayerTexture`
 换纹理或 `setLayerColor` 换色。
 
+需要让装备栏自动驱动形象时，先为物品注册视觉定义，再绑定唯一权威的
+`EquipmentSet`。Avatar 的 `update()` / `sync()` 会检测槽位签名变化并重建投影：
+
+```squirrel
+local av = avatar.newImageAvatar();
+av.defineEquipmentVisual2D("armor.red", "body", "armor", redArmorTexture, 5);
+av.bindEquipment(equipment);
+// equipment.equipFromBag(...) 后，下一次 avatar.update/sync 自动显示 redArmorTexture。
+```
+
+3D 使用同一套槽位协议。空骨骼名表示跟随 Avatar 根变换的模块部件；填写
+`rightHand` 等 humanoid semantic 或真实骨名时作为骨骼附件跟随动画：
+
+```squirrel
+av3d.defineEquipmentVisual3D("sword.iron", "weapon", swordRenderable,
+                             "rightHand", 0.0, 0.0, 0.0);
+av3d.bindEquipment(equipment);
+```
+
+会随身体多个骨骼变形的衣服不要使用刚性附件，而应注册为共享 Pose 的 Skinned Part。
+身体、内衣、衬衣和外衣各自保留 Mesh 与 Material，但每帧读取同一个 Avatar Pose：
+
+```squirrel
+// 0 是身体的稳定材质槽；bodySkin 是针对 bodyMesh 和同一 Skeleton 创建的 AnimSkin。
+av3d.bindSkinnedPart(0, "body", bodyMesh, bodyMaterial, bodySkin);
+
+// 同一装备槽中的不同衬衣可以复用 partIndex=1；同时可见的不同槽不得占用同一 partIndex。
+av3d.defineEquipmentSkinnedVisual3D("shirt.linen", "shirt", 1, "shirt",
+                                    shirtMesh, shirtMaterial, shirtSkin);
+av3d.setEquipmentVisualLayer("shirt.linen", "shirt", "shirt", 0);
+```
+
+Skinned Part 优先走 GPU joint/weight stream 和每 Mesh 独立 matrix palette；后端无法建立
+GPU skinning stream 时会回退到 CPU 顶点蒙皮。`unbindSkinnedPart(partIndex)` 清除常驻
+部件及其材质槽。`getSkinnedPartUpdateMode(partIndex)` 返回 `0=Unavailable`、`1=Gpu`、
+`2=Cpu`，使降级和骨架/顶点不兼容可被编辑器与自动化观测。武器、帽子等刚性物件仍
+使用 `defineEquipmentVisual3D`。
+
+装备状态始终由 `EquipmentSet` 拥有；Avatar 只保存物品到视觉资源的定义和可重建
+投影，不会反向修改装备。纹理和 3D Renderable 均为 borrowed，解绑或销毁 Avatar
+不会销毁它们。2D 对应稳定 layer/attachment；3D 对应模块 root part 或共享动画 Pose
+上的骨骼附件。大量同屏角色可在游戏侧进一步把稳定组合缓存为合并网格/atlas。
+
+内置穿戴层级按由内到外排列：`body(0) → underwear(100) → shirt(200) →
+outerwear(300) → cape(400)`，武器为 `weapon(500)`。项目可用
+`defineEquipmentLayer(name, order, parent)` 增加裙装、护甲内衬、头发前后片等层；
+`setEquipmentVisualLayer(item, slot, layer, withinOrder)` 记录每个视觉所在层和层内顺序。
+正常透明贴图依靠顺序叠加；当外层完全覆盖内层时，再调用
+`addEquipmentLayerOcclusion("outerwear", "shirt")` 明确隐藏关系，避免无意义 overdraw
+和 3D 穿模。`getEquipmentRenderStack*` 返回当前实际可见的由内到外渲染栈，便于编辑器、
+存档证据和批处理系统检查层次关系。
+
 ### 接入对话口型与动作
 
 `dlg.bindAvatar("alice", av)` 后，`dlg.setExpression` / `dlg.setMotion` 会自动
@@ -104,6 +156,16 @@ alpha、additive 或 opaque。Avatar 同步只传播角色整体变换、显隐�
 - 场景：`linkSceneNode(scene, nodeId)` 把 Image Avatar 的透明变换锚点或 3D Avatar
   的 `Renderable3D` 链接到 Scene 当前 Host；`isSceneLinked()` 查询状态。Image
   图层会继承节点的平移、旋转、缩放和显隐；3D Avatar 链接后由 Scene 驱动世界变换。
+- 多部件蒙皮：`bindSkinnedPart` / `unbindSkinnedPart` 管理常驻身体部件；
+  `defineEquipmentSkinnedVisual3D` 注册随共享 Pose 变形的装备 Mesh/Material 槽。
+- 装备投影：`defineEquipmentVisual2D`、`defineEquipmentVisual3D`、
+  `defineEquipmentSkinnedVisual3D` 注册物品视觉，
+  `bindEquipment` / `unbindEquipment` 管理非拥有绑定，`syncEquipmentAppearance` 可强制
+  检查，`getEquipmentVisualItem(slot)` 查询当前投影。返回状态整数对应
+  `Applied=0`、`Unchanged=1`、`Removed=2`、`Rejected=3`。
+  `defineEquipmentLayer`、`addEquipmentLayerOcclusion`、`setEquipmentVisualLayer` 定义层级与
+  遮挡；`getEquipmentRenderStackCount`、`getEquipmentRenderStackItem`、
+  `getEquipmentRenderStackLayer` 查询最终稳定排序的可见栈。
 - 动画联动：`bindTween(tween)` / `unbindTween()` / `getBoundTween()`。
 
 ## 生命周期
