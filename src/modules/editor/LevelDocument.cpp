@@ -53,77 +53,87 @@ int LevelDocument::addObjectLayer(const std::string& name) {
     return int(layers_.size()) - 1;
 }
 
-bool LevelDocument::removeLayer(int i) {
-    if (!layer(i)) return false;
+LevelChange LevelDocument::removeLayer(int i) {
+    if (!layer(i)) return LevelChange::Unchanged;
     layers_.erase(layers_.begin() + i);
-    return true;
+    return LevelChange::Changed;
 }
 
-bool LevelDocument::moveLayer(int from, int to) {
-    if (!layer(from) || to < 0 || to >= int(layers_.size()) || from == to) return from == to && layer(from);
+LevelChange LevelDocument::moveLayer(int from, int to) {
+    if (!layer(from) || to < 0 || to >= int(layers_.size()) || from == to) return LevelChange::Unchanged;
     auto moving = std::move(layers_[from]);
     layers_.erase(layers_.begin() + from);
     layers_.insert(layers_.begin() + to, std::move(moving));
-    return true;
+    return LevelChange::Changed;
 }
 
-LevelLayer*       LevelDocument::layer(int i) { return i < 0 || i >= int(layers_.size()) ? nullptr : &layers_[i]; }
-const LevelLayer* LevelDocument::layer(int i) const {
-    return i < 0 || i >= int(layers_.size()) ? nullptr : &layers_[i];
+eve::OptionalRef<LevelLayer> LevelDocument::layer(int i) {
+    return i < 0 || i >= int(layers_.size()) ? eve::OptionalRef<LevelLayer>{}
+                                             : eve::OptionalRef<LevelLayer>{std::ref(layers_[i])};
+}
+eve::OptionalRef<const LevelLayer> LevelDocument::layer(int i) const {
+    return i < 0 || i >= int(layers_.size()) ? eve::OptionalRef<const LevelLayer>{}
+                                             : eve::OptionalRef<const LevelLayer>{std::cref(layers_[i])};
 }
 
 const std::string& LevelDocument::getLayerName(int i) const {
-    auto* l = layer(i);
+    auto l = layer(i);
     if (!l) throw Exception("LevelDocument: layer index out of bounds");
-    return l->name;
+    return l->get().name;
 }
 void LevelDocument::setLayerName(int i, const std::string& name) {
-    auto* l = layer(i);
+    auto l = layer(i);
     if (!l) throw Exception("LevelDocument: layer index out of bounds");
-    l->name = name;
+    l->get().name = name;
 }
 const std::string LevelDocument::getLayerKind(int i) const {
-    auto* l = layer(i);
+    auto l = layer(i);
     if (!l) return {};
-    return l->kind == LevelLayer::Kind::Tiles ? "tiles" : "objects";
+    return l->get().kind == LevelLayer::Kind::Tiles ? "tiles" : "objects";
 }
-TileBuffer* LevelDocument::getTileLayer(int i) {
-    auto* l = layer(i);
-    return l ? l->tiles.get() : nullptr;
+eve::OptionalRef<TileBuffer> LevelDocument::getTileLayer(int i) {
+    auto l = layer(i);
+    return l && l->get().tiles ? eve::OptionalRef<TileBuffer>{std::ref(*l->get().tiles)}
+                               : eve::OptionalRef<TileBuffer>{};
 }
-const TileBuffer* LevelDocument::getTileLayer(int i) const {
-    auto* l = layer(i);
-    return l ? l->tiles.get() : nullptr;
+eve::OptionalRef<const TileBuffer> LevelDocument::getTileLayer(int i) const {
+    auto l = layer(i);
+    return l && l->get().tiles ? eve::OptionalRef<const TileBuffer>{std::cref(*l->get().tiles)}
+                               : eve::OptionalRef<const TileBuffer>{};
 }
 
 int LevelDocument::addObject(int li, const std::string& type, float x, float y) {
-    auto* l = layer(li);
-    if (!l || l->kind != LevelLayer::Kind::Objects) return -1;
+    auto l = layer(li);
+    if (!l || l->get().kind != LevelLayer::Kind::Objects) return -1;
     LevelObject o;
     o.id   = nextId("object-");
     o.type = type;
     o.x    = x;
     o.y    = y;
-    l->objects.push_back(std::move(o));
-    return int(l->objects.size()) - 1;
+    l->get().objects.push_back(std::move(o));
+    return int(l->get().objects.size()) - 1;
 }
 int LevelDocument::getObjectCount(int li) const {
-    auto* l = layer(li);
-    return l ? int(l->objects.size()) : 0;
+    auto l = layer(li);
+    return l ? int(l->get().objects.size()) : 0;
 }
-LevelObject* LevelDocument::object(int li, int oi) {
-    auto* l = layer(li);
-    return !l || oi < 0 || oi >= int(l->objects.size()) ? nullptr : &l->objects[oi];
+eve::OptionalRef<LevelObject> LevelDocument::object(int li, int oi) {
+    auto l = layer(li);
+    return !l || oi < 0 || oi >= int(l->get().objects.size())
+               ? eve::OptionalRef<LevelObject>{}
+               : eve::OptionalRef<LevelObject>{std::ref(l->get().objects[oi])};
 }
-const LevelObject* LevelDocument::object(int li, int oi) const {
-    auto* l = layer(li);
-    return !l || oi < 0 || oi >= int(l->objects.size()) ? nullptr : &l->objects[oi];
+eve::OptionalRef<const LevelObject> LevelDocument::object(int li, int oi) const {
+    auto l = layer(li);
+    return !l || oi < 0 || oi >= int(l->get().objects.size())
+               ? eve::OptionalRef<const LevelObject>{}
+               : eve::OptionalRef<const LevelObject>{std::cref(l->get().objects[oi])};
 }
-bool LevelDocument::removeObject(int li, int oi) {
-    auto* l = layer(li);
-    if (!l || oi < 0 || oi >= int(l->objects.size())) return false;
-    l->objects.erase(l->objects.begin() + oi);
-    return true;
+LevelChange LevelDocument::removeObject(int li, int oi) {
+    auto l = layer(li);
+    if (!l || oi < 0 || oi >= int(l->get().objects.size())) return LevelChange::Unchanged;
+    l->get().objects.erase(l->get().objects.begin() + oi);
+    return LevelChange::Changed;
 }
 
 void        LevelDocument::setProperty(const std::string& key, const std::string& value) { properties_[key] = value; }

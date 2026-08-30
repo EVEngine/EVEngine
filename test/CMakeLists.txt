@@ -394,6 +394,7 @@ file(GLOB all_test_cpp
   spatial.cpp
   grid.cpp
   editor.cpp
+  editor_level.cpp
   editor_automation_v2.cpp
   editor_core_v2.cpp
   editing_contracts.cpp

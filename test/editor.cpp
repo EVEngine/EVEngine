@@ -15,8 +15,6 @@
 #include "editor/FieldTargets.h"
 #include "editor/FieldBrushTool.h"
 #include "editor/GizmoManager.h"
-#include "editor/LevelDocument.h"
-#include "editor/LevelFormat.h"
 #include "editor/TileBuffer.h"
 #ifdef EVENGINE_HAS_MAP
 #include "map/Map.h"
@@ -626,36 +624,4 @@ TEST_CASE("editor.factories") {
     CHECK(i.get() != nullptr);
     CHECK(d.get() != nullptr);
     CHECK(h.get() != nullptr);
-}
-
-TEST_CASE("editor.level.document_and_formats") {
-    LevelDocument level(4, 3, 16.f, 24.f);
-    level.setOrientation("hexagonal");
-    int ground = level.addTileLayer("Ground");
-    level.getTileLayer(ground)->setGid(2, 1, 17);
-    int actors = level.addObjectLayer("Actors");
-    int hero   = level.addObject(actors, "spawn", 32.f, 24.f);
-    REQUIRE(hero >= 0);
-    level.object(actors, hero)->name               = "Player";
-    level.object(actors, hero)->properties["team"] = "blue";
-    level.setProperty("music", "dungeon");
-
-    LevelFormatRegistry formats;
-    CHECK_EQ(formats.getFormatCount(), 2);
-    std::string error;
-    std::string native = formats.encode("eve.level", level, &error);
-    CHECK(error.empty());
-    CHECK_EQ(formats.detect("room.level.json", native), std::string("eve.level"));
-    auto roundtrip = formats.decode("eve.level", native, &error);
-    REQUIRE(roundtrip != nullptr);
-    CHECK_EQ(roundtrip->getOrientation(), std::string("hexagonal"));
-    CHECK_EQ(roundtrip->getTileLayer(0)->getGid(2, 1), 17);
-    CHECK_EQ(roundtrip->object(1, 0)->properties["team"], std::string("blue"));
-
-    std::string tiled = formats.encode("tiled.json", level, &error);
-    CHECK_EQ(formats.detect("room.tmj", tiled), std::string("tiled.json"));
-    auto imported = formats.decode("tiled.json", tiled, &error);
-    REQUIRE(imported != nullptr);
-    CHECK_EQ(imported->getLayerCount(), 2);
-    CHECK_EQ(imported->getTileLayer(0)->getGid(2, 1), 17);
 }

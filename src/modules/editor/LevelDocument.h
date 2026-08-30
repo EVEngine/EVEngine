@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/BorrowedRef.h"
 #include "editor/TileBuffer.h"
 
 #include <memory>
@@ -8,6 +9,9 @@
 #include <vector>
 
 namespace eve::editor {
+
+/** @brief Whether a requested level mutation changed authoritative document state. */
+enum class LevelChange { Changed, Unchanged };
 
 /** @brief One freely extensible object placed in a top-down level. */
 struct LevelObject {
@@ -55,24 +59,24 @@ public:
     void               setOrientation(const std::string& orientation);
     const std::string& getOrientation() const { return orientation_; }
 
-    int                addTileLayer(const std::string& name);
-    int                addObjectLayer(const std::string& name);
-    bool               removeLayer(int index);
-    bool               moveLayer(int from, int to);
-    int                getLayerCount() const { return static_cast<int>(layers_.size()); }
-    const std::string& getLayerName(int index) const;
-    void               setLayerName(int index, const std::string& name);
-    const std::string  getLayerKind(int index) const;
-    TileBuffer*        getTileLayer(int index);
-    const TileBuffer*  getTileLayer(int index) const;
-    LevelLayer*        layer(int index);
-    const LevelLayer*  layer(int index) const;
+    int                                              addTileLayer(const std::string& name);
+    int                                              addObjectLayer(const std::string& name);
+    [[nodiscard]] LevelChange                        removeLayer(int index);
+    [[nodiscard]] LevelChange                        moveLayer(int from, int to);
+    int                                              getLayerCount() const { return static_cast<int>(layers_.size()); }
+    const std::string&                               getLayerName(int index) const;
+    void                                             setLayerName(int index, const std::string& name);
+    const std::string                                getLayerKind(int index) const;
+    [[nodiscard]] eve::OptionalRef<TileBuffer>       getTileLayer(int index);
+    [[nodiscard]] eve::OptionalRef<const TileBuffer> getTileLayer(int index) const;
+    [[nodiscard]] eve::OptionalRef<LevelLayer>       layer(int index);
+    [[nodiscard]] eve::OptionalRef<const LevelLayer> layer(int index) const;
 
-    int                addObject(int layerIndex, const std::string& type, float x, float y);
-    int                getObjectCount(int layerIndex) const;
-    LevelObject*       object(int layerIndex, int objectIndex);
-    const LevelObject* object(int layerIndex, int objectIndex) const;
-    bool               removeObject(int layerIndex, int objectIndex);
+    int                                         addObject(int layerIndex, const std::string& type, float x, float y);
+    int                                         getObjectCount(int layerIndex) const;
+    [[nodiscard]] eve::OptionalRef<LevelObject> object(int layerIndex, int objectIndex);
+    [[nodiscard]] eve::OptionalRef<const LevelObject> object(int layerIndex, int objectIndex) const;
+    [[nodiscard]] LevelChange                         removeObject(int layerIndex, int objectIndex);
 
     void        setProperty(const std::string& key, const std::string& value);
     std::string getProperty(const std::string& key, const std::string& fallback = {}) const;

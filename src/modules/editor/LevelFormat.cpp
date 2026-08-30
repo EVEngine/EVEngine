@@ -58,22 +58,22 @@ public:
         auto d = eve::json::Document::parse(s);
         return d.valid() && d.root().getString("format") == "eve.level";
     }
-    std::unique_ptr<LevelDocument> read(const std::string& s, std::string& error) const override {
-        return readJson(s, error, false);
+    eve::Result<std::unique_ptr<LevelDocument>> read(const std::string& s) const override { return readJson(s, false); }
+    eve::Result<std::string>                    write(const LevelDocument& d) const override {
+        return eve::Result<std::string>::success(writeJson(d, false));
     }
-    bool write(const LevelDocument& d, std::string& text, std::string&) const override {
-        text = writeJson(d, false);
-        return true;
-    }
-    static std::unique_ptr<LevelDocument> readJson(const std::string& s, std::string& error, bool tiled) {
-        auto json = eve::json::Document::parse(s, &error);
-        if (!json.valid()) return {};
+    static eve::Result<std::unique_ptr<LevelDocument>> readJson(const std::string& s, bool tiled) {
+        std::string error;
+        auto        json = eve::json::Document::parse(s, &error);
+        if (!json.valid())
+            return eve::Result<std::unique_ptr<LevelDocument>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(error), {}, {}, "editor.level"));
         auto  r = json.root();
         int   w = r.getInt("width"), h = r.getInt("height");
         float tw = r.getFloat("tilewidth", 32), th = r.getFloat("tileheight", 32);
         if (w < 1 || h < 1) {
-            error = "map dimensions must be positive";
-            return {};
+            return eve::Result<std::unique_ptr<LevelDocument>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "map dimensions must be positive", {}, {}, "editor.level"));
         }
         auto out = std::make_unique<LevelDocument>(w, h, tw, th);
         out->setOrientation(r.getString("orientation", "orthogonal"));
@@ -84,12 +84,13 @@ public:
             std::string kind = v.getString("type");
             bool        obj  = kind == "objectgroup" || kind == "objects";
             int         li   = obj ? out->addObjectLayer(v.getString("name")) : out->addTileLayer(v.getString("name"));
-            auto*       l    = out->layer(li);
-            l->id            = tiled ? std::to_string(v.getInt("id", int(i + 1))) : v.getString("id", l->id);
-            l->visible       = v.getBool("visible", true);
-            l->opacity       = v.getFloat("opacity", 1);
-            l->offsetX       = v.getFloat("offsetx", 0);
-            l->offsetY       = v.getFloat("offsety", 0);
+            auto        layerRef = out->layer(li);
+            auto*       l        = &layerRef->get();
+            l->id                = tiled ? std::to_string(v.getInt("id", int(i + 1))) : v.getString("id", l->id);
+            l->visible           = v.getBool("visible", true);
+            l->opacity           = v.getFloat("opacity", 1);
+            l->offsetX           = v.getFloat("offsetx", 0);
+            l->offsetY           = v.getFloat("offsety", 0);
             readProperties(v.get("properties"), l->properties);
             if (obj) {
                 auto os = v.get("objects");
@@ -97,13 +98,14 @@ public:
                     auto q = os.at(j);
                     int  oi =
                         out->addObject(li, q.getString("type", q.getString("class")), q.getFloat("x"), q.getFloat("y"));
-                    auto* ob     = out->object(li, oi);
-                    ob->id       = std::to_string(q.getInt("id", int(j + 1)));
-                    ob->name     = q.getString("name");
-                    ob->width    = q.getFloat("width");
-                    ob->height   = q.getFloat("height");
-                    ob->rotation = q.getFloat("rotation");
-                    ob->visible  = q.getBool("visible", true);
+                    auto  objectRef = out->object(li, oi);
+                    auto* ob        = &objectRef->get();
+                    ob->id          = std::to_string(q.getInt("id", int(j + 1)));
+                    ob->name        = q.getString("name");
+                    ob->width       = q.getFloat("width");
+                    ob->height      = q.getFloat("height");
+                    ob->rotation    = q.getFloat("rotation");
+                    ob->visible     = q.getBool("visible", true);
                     readProperties(q.get("properties"), ob->properties);
                 }
             } else {
@@ -112,7 +114,7 @@ public:
                     l->tiles->setGid(int(n) % w, int(n) / w, data.at(n).asInt());
             }
         }
-        return out;
+        return eve::Result<std::unique_ptr<LevelDocument>>::success(std::move(out));
     }
     static std::string writeJson(const LevelDocument& d, bool tiled) {
         std::ostringstream o;
@@ -128,7 +130,8 @@ public:
         o << ",\n  \"layers\":[";
         for (int i = 0; i < d.getLayerCount(); ++i) {
             if (i) o << ',';
-            auto* l = d.layer(i);
+            const auto  layerRef = d.layer(i);
+            const auto* l        = &layerRef->get();
             o << "\n    {\"id\":" << (tiled ? std::to_string(i + 1) : quote(l->id)) << ",\"name\":" << quote(l->name)
               << ",\"type\":" << quote(l->kind == LevelLayer::Kind::Tiles ? "tilelayer" : "objectgroup")
               << ",\"visible\":" << (l->visible ? "true" : "false") << ",\"opacity\":" << l->opacity
@@ -170,36 +173,38 @@ public:
         auto d = eve::json::Document::parse(s);
         return d.valid() && d.root().getString("type") == "map";
     }
-    std::unique_ptr<LevelDocument> read(const std::string& s, std::string& e) const override {
-        return JsonLevelFormat::readJson(s, e, true);
+    eve::Result<std::unique_ptr<LevelDocument>> read(const std::string& s) const override {
+        return JsonLevelFormat::readJson(s, true);
     }
-    bool write(const LevelDocument& d, std::string& t, std::string&) const override {
-        t = JsonLevelFormat::writeJson(d, true);
-        return true;
+    eve::Result<std::string> write(const LevelDocument& d) const override {
+        return eve::Result<std::string>::success(JsonLevelFormat::writeJson(d, true));
     }
 };
 }  // namespace
 
 LevelFormatRegistry::LevelFormatRegistry() {
-    registerFormat(std::make_unique<JsonLevelFormat>());
-    registerFormat(std::make_unique<TiledFormat>());
+    registerFormat(std::make_unique<JsonLevelFormat>()).expect("register native level format");
+    registerFormat(std::make_unique<TiledFormat>()).expect("register Tiled level format");
 }
-void LevelFormatRegistry::registerFormat(std::unique_ptr<LevelFormat> f) {
-    if (!f) return;
+eve::Result<void> LevelFormatRegistry::registerFormat(std::unique_ptr<LevelFormat> f) {
+    if (!f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "level format must not be null", {}, {}, "editor.level"));
     for (auto& i : formats_)
         if (i->id() == f->id()) {
             i = std::move(f);
-            return;
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         }
     formats_.push_back(std::move(f));
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 std::string LevelFormatRegistry::getFormatId(int i) const {
     return i < 0 || i >= int(formats_.size()) ? std::string() : formats_[i]->id();
 }
-const LevelFormat* LevelFormatRegistry::find(const std::string& id) const {
+eve::OptionalRef<const LevelFormat> LevelFormatRegistry::find(const std::string& id) const {
     for (auto& i : formats_)
-        if (i->id() == id) return i.get();
-    return nullptr;
+        if (i->id() == id) return std::cref(*i);
+    return {};
 }
 std::string LevelFormatRegistry::detect(const std::string& p, const std::string& t) const {
     for (auto& i : formats_)
@@ -209,49 +214,47 @@ std::string LevelFormatRegistry::detect(const std::string& p, const std::string&
             if (p.size() >= e.size() && p.compare(p.size() - e.size(), e.size(), e) == 0) return i->id();
     return {};
 }
-std::unique_ptr<LevelDocument> LevelFormatRegistry::decode(const std::string& id, const std::string& t,
-                                                           std::string* err) const {
-    auto*       f = find(id);
-    std::string e;
-    if (!f) e = "unknown level format: " + id;
-    auto r = f ? f->read(t, e) : nullptr;
-    if (err) *err = e;
-    return r;
-}
-std::string LevelFormatRegistry::encode(const std::string& id, const LevelDocument& d, std::string* err) const {
-    auto*       f = find(id);
-    std::string e, t;
+eve::Result<std::unique_ptr<LevelDocument>> LevelFormatRegistry::decode(const std::string& id,
+                                                                        const std::string& t) const {
+    auto f = find(id);
     if (!f)
-        e = "unknown level format: " + id;
-    else
-        f->write(d, t, e);
-    if (err) *err = e;
-    return t;
+        return eve::Result<std::unique_ptr<LevelDocument>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "unknown level format: " + id, {}, {}, "editor.level"));
+    return f->get().read(t);
 }
-std::unique_ptr<LevelDocument> LevelFormatRegistry::load(const std::string& p, const std::string& id,
-                                                         std::string* err) const {
+eve::Result<std::string> LevelFormatRegistry::encode(const std::string& id, const LevelDocument& d) const {
+    auto f = find(id);
+    if (!f)
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "unknown level format: " + id, {}, {}, "editor.level"));
+    return f->get().write(d);
+}
+eve::Result<std::unique_ptr<LevelDocument>> LevelFormatRegistry::load(const std::string& p,
+                                                                      const std::string& id) const {
     std::ifstream f(p, std::ios::binary);
     if (!f) {
-        if (err) *err = "cannot open " + p;
-        return {};
+        return eve::Result<std::unique_ptr<LevelDocument>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "cannot open level", p, {}, "editor.level"));
     }
     std::ostringstream s;
     s << f.rdbuf();
     auto fmt = id.empty() ? detect(p, s.str()) : id;
-    return decode(fmt, s.str(), err);
+    return decode(fmt, s.str());
 }
-bool LevelFormatRegistry::save(const std::string& p, const LevelDocument& d, const std::string& id,
-                               std::string* err) const {
+eve::Result<void> LevelFormatRegistry::save(const std::string& p, const LevelDocument& d, const std::string& id) const {
     auto fmt = id.empty() ? detect(p, "") : id;
     if (fmt.empty()) fmt = "eve.level";
-    auto t = encode(fmt, d, err);
-    if (t.empty()) return false;
+    auto encoded = encode(fmt, d);
+    if (!encoded) return eve::Result<void>::failure(encoded.status());
     std::ofstream f(p, std::ios::binary);
     if (!f) {
-        if (err) *err = "cannot write " + p;
-        return false;
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot write level", p, {}, "editor.level"));
     }
-    f << t;
-    return bool(f);
+    f << encoded.value();
+    if (!f)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed while writing level", p, {}, "editor.level"));
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 }  // namespace eve::editor

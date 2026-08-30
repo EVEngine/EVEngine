@@ -39,8 +39,6 @@ class EditorToolbar;
 class EditorInspector;
 class EditorDock;
 class EditorHistory;
-class LevelDocument;
-class LevelFormatRegistry;
 class EditorSession;
 class EditorWorkspace;
 class TileBufferTarget;
@@ -90,10 +88,6 @@ public:
     EditorInspector* newInspector();
     EditorDock*      newDock();
     EditorHistory*   newHistory();
-    /** @brief Create a format-neutral top-down level document. */
-    LevelDocument* newLevel(int width, int height, float tileWidth, float tileHeight);
-    /** @brief Create a registry with native EVEngine and Tiled JSON formats. */
-    LevelFormatRegistry* newLevelFormats();
     /** @brief Create a host for interchangeable IEditorTool implementations. */
     EditorSession* newSession();
     /** @brief Create a UI-neutral composition model for a project-specific editor. */
@@ -204,9 +198,9 @@ public:
 #endif
 
 private:
-    EditorCommandService                       commandService_;
-    std::unique_ptr<EditorTargetCoordinator>   targets_;
-    std::unique_ptr<EditorAutomationProvider>  automation_;
+    EditorCommandService                      commandService_;
+    std::unique_ptr<EditorTargetCoordinator>  targets_;
+    std::unique_ptr<EditorAutomationProvider> automation_;
 };
 
 }  // namespace eve::editor
