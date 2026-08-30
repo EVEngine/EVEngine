@@ -254,7 +254,10 @@ jobs:
     name: Windows
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: windows-latest
-    timeout-minutes: 90
+    # The native Dawn parity lane performs a second MSVC build after the main
+    # Windows build and isolated unit-test pass. A cold PR cache can legitimately
+    # exceed 90 minutes while every stage is still making progress.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
