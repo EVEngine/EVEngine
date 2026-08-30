@@ -6,7 +6,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <map>
+#include <string>
 #include <utility>
 
 #include <glm/gtc/matrix_access.hpp>
@@ -29,6 +31,16 @@ wgpu::ShaderModule shaderModule(wgpu::Device device, const char *source) {
     desc.nextInChain = &wgsl.chain;
     return device.CreateShaderModule(
         reinterpret_cast<const wgpu::ShaderModuleDescriptor *>(&desc));
+}
+
+wgpu::ShaderModule shaderModule(wgpu::Device device, const std::string &source) {
+    WGPUShaderSourceWGSL wgsl{};
+    wgsl.chain.sType = WGPUSType_ShaderSourceWGSL;
+    wgsl.code.data   = source.data();
+    wgsl.code.length = source.size();
+    WGPUShaderModuleDescriptor desc{};
+    desc.nextInChain = &wgsl.chain;
+    return device.CreateShaderModule(reinterpret_cast<const wgpu::ShaderModuleDescriptor *>(&desc));
 }
 
 struct CullInput {
@@ -315,6 +327,57 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     return true;
 }
 
+GpuResidentSubmitStatus Graphics::gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) {
+    if (!gpuDrivenEnabled_ || !device || gpuDrivenComputePending_ || gpuDrivenDrawPending_)
+        return GpuResidentSubmitStatus::ResourceUnavailable;
+    if (batch.buffer.backend != GpuResidentBackend::WebGpu) return GpuResidentSubmitStatus::BackendMismatch;
+    if (batch.buffer.nativeHandle == 0 || batch.buffer.offsetBytes % kGpuResidentStorageOffsetAlignment != 0 ||
+        batch.buffer.strideBytes != sizeof(GpuInstance) || !batch.buckets || batch.bucketCount == 0 ||
+        batch.instanceCount == 0)
+        return GpuResidentSubmitStatus::InvalidArgument;
+    const uint64_t required = batch.buffer.offsetBytes + uint64_t(batch.instanceCount) * sizeof(GpuInstance);
+    if (required < batch.buffer.offsetBytes || required > batch.buffer.sizeBytes)
+        return GpuResidentSubmitStatus::InvalidArgument;
+
+    std::vector<GpuIndirectCommand> commands(batch.bucketCount);
+    std::vector<GpuDrivenBucket>    buckets(batch.bucketCount);
+    uint64_t                        coveredInstances = 0;
+    for (uint32_t i = 0; i < batch.bucketCount; ++i) {
+        const GpuResidentInstanceBucket &bucket = batch.buckets[i];
+        const uint64_t                   end    = uint64_t(bucket.firstInstance) + bucket.instanceCount;
+        if (bucket.instanceCount == 0 || bucket.firstInstance != coveredInstances || end > batch.instanceCount ||
+            bucket.meshId >= gpuDrivenMeshes_.size() || bucket.materialId >= gpuDrivenMaterials_.size())
+            return GpuResidentSubmitStatus::InvalidArgument;
+        Mesh     *mesh     = gpuDrivenMeshes_[bucket.meshId];
+        Material *material = gpuDrivenMaterials_[bucket.materialId];
+        if (!mesh || !mesh->gpuHandle || !gpuDrivenMaterialUsable(material))
+            return GpuResidentSubmitStatus::InvalidArgument;
+        auto *gpu        = static_cast<GpuMesh *>(mesh->gpuHandle);
+        commands[i]      = {gpu->indexCount, bucket.instanceCount, 0, 0, bucket.firstInstance};
+        buckets[i]       = {mesh, material, bucket.firstInstance, bucket.instanceCount};
+        coveredInstances = end;
+    }
+    if (coveredInstances != batch.instanceCount) return GpuResidentSubmitStatus::InvalidArgument;
+
+    ensureGpuDrivenResources(batch.instanceCount, batch.bucketCount);
+    if (!gpuDrivenResidentRenderPipeline_ || !gpuDrivenIndirectBuffer_)
+        return GpuResidentSubmitStatus::ResourceUnavailable;
+    queue.WriteBuffer(gpuDrivenIndirectBuffer_, 0, commands.data(), commands.size() * sizeof(GpuIndirectCommand));
+    WGPUBuffer rawBuffer{};
+    static_assert(sizeof(rawBuffer) <= sizeof(batch.buffer.nativeHandle));
+    std::memcpy(&rawBuffer, &batch.buffer.nativeHandle, sizeof(rawBuffer));
+    if (!rawBuffer) return GpuResidentSubmitStatus::ResourceUnavailable;
+    gpuDrivenBuckets_             = std::move(buckets);
+    gpuDrivenResidentBuffer_      = rawBuffer;
+    gpuDrivenResidentOffset_      = batch.buffer.offsetBytes;
+    gpuDrivenResidentSize_        = uint64_t(batch.instanceCount) * sizeof(GpuInstance);
+    gpuDrivenResidentDrawPending_ = true;
+    gpuDrivenDrawPending_         = true;
+    frameHad3DThisFrame           = true;
+    frameHad3D                    = true;
+    return GpuResidentSubmitStatus::Submitted;
+}
+
 void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketCount) {
     if (!gpuDrivenCullPipeline_) {
         WGPUBindGroupLayoutEntry computeEntries[6]{};
@@ -437,6 +500,18 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         target.format = sceneColorFormat;
         target.writeMask = WGPUColorWriteMask_All;
         wgpu::ShaderModule vertModule = shaderModule(device, kGpuDrivenVertWgsl);
+        std::string        residentVertSource = kGpuDrivenVertWgsl;
+        const std::string  modelsDecl = "@group(1) @binding(0) var<storage, read> visibleModels: array<mat4x4f>;";
+        const std::string  residentDecl =
+            "struct ResidentInstance { model: mat4x4f, meshId: u32, materialId: u32, "
+            "flags: u32, lodGroupId: u32 };\n"
+            "@group(1) @binding(0) var<storage, read> residentInstances: "
+            "array<ResidentInstance>;";
+        residentVertSource.replace(residentVertSource.find(modelsDecl), modelsDecl.size(), residentDecl);
+        const std::string modelRead = "let model = visibleModels[instanceIndex];";
+        residentVertSource.replace(residentVertSource.find(modelRead), modelRead.size(),
+                                   "let model = residentInstances[instanceIndex].model;");
+        wgpu::ShaderModule residentVertModule = shaderModule(device, residentVertSource);
         wgpu::ShaderModule fragModule = shaderModule(device, kMesh3DFragWgsl);
         WGPUFragmentState fs{};
         fs.module = fragModule.Get();
@@ -459,10 +534,19 @@ void Graphics::ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketC
         rpd.multisample.mask = 0xFFFFFFFFu;
         gpuDrivenRenderPipeline_ = device.CreateRenderPipeline(
             reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&rpd));
+        rpd.label         = label("eve_gpu_driven_resident_render");
+        rpd.vertex.module = residentVertModule.Get();
+        gpuDrivenResidentRenderPipeline_ =
+            device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&rpd));
         rpd.label = label("eve_gpu_driven_canvas");
+        rpd.vertex.module        = vertModule.Get();
         rpd.multisample.count = 1;
         gpuDrivenCanvasPipeline_ = device.CreateRenderPipeline(
             reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&rpd));
+        rpd.label         = label("eve_gpu_driven_resident_canvas");
+        rpd.vertex.module = residentVertModule.Get();
+        gpuDrivenResidentCanvasPipeline_ =
+            device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&rpd));
 
         WGPUBufferDescriptor pbd{};
         pbd.label = label("eve_gpu_driven_params");
@@ -829,10 +913,14 @@ void Graphics::recordGpuDrivenCompute(wgpu::CommandEncoder encoder) {
 }
 
 void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget) {
-    if (!gpuDrivenDrawPending_ || !gpuDrivenVisibleBuffer_) return;
+    if (!gpuDrivenDrawPending_ ||
+        (gpuDrivenResidentDrawPending_ ? !gpuDrivenResidentBuffer_ : !gpuDrivenVisibleBuffer_))
+        return;
     auto &arena = currentUboArena();
     ensureUboArena(arena, arena.used + gpuDrivenBuckets_.size() * 2048);
-    pass.SetPipeline(canvasTarget ? gpuDrivenCanvasPipeline_ : gpuDrivenRenderPipeline_);
+    pass.SetPipeline(gpuDrivenResidentDrawPending_
+                         ? (canvasTarget ? gpuDrivenResidentCanvasPipeline_ : gpuDrivenResidentRenderPipeline_)
+                         : (canvasTarget ? gpuDrivenCanvasPipeline_ : gpuDrivenRenderPipeline_));
     gpuDrivenLastIndirectDrawCount_ = 0;
 
     for (uint32_t i = 0; i < gpuDrivenBuckets_.size(); ++i) {
@@ -898,9 +986,11 @@ void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarg
         pass.SetBindGroup(0, bindGroup, 3, offsets);
         WGPUBindGroupEntry modelEntry{};
         modelEntry.binding = 0;
-        modelEntry.buffer = gpuDrivenVisibleBuffer_.Get();
-        modelEntry.offset = uint64_t(bucket.outputBase) * sizeof(glm::mat4);
-        modelEntry.size = uint64_t(bucket.inputCount) * sizeof(glm::mat4);
+        modelEntry.buffer  = gpuDrivenResidentDrawPending_ ? gpuDrivenResidentBuffer_ : gpuDrivenVisibleBuffer_.Get();
+        modelEntry.offset =
+            gpuDrivenResidentDrawPending_ ? gpuDrivenResidentOffset_ : uint64_t(bucket.outputBase) * sizeof(glm::mat4);
+        modelEntry.size =
+            gpuDrivenResidentDrawPending_ ? gpuDrivenResidentSize_ : uint64_t(bucket.inputCount) * sizeof(glm::mat4);
         WGPUBindGroupDescriptor modelDesc{};
         modelDesc.layout = gpuDrivenRenderSetLayout_.Get();
         modelDesc.entryCount = 1;
@@ -917,6 +1007,10 @@ void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarg
         ++gpuDrivenLastIndirectDrawCount_;
     }
     gpuDrivenDrawPending_ = false;
+    gpuDrivenResidentDrawPending_ = false;
+    gpuDrivenResidentBuffer_      = nullptr;
+    gpuDrivenResidentOffset_      = 0;
+    gpuDrivenResidentSize_        = 0;
     gpuDrivenBuckets_.clear();
 }
 

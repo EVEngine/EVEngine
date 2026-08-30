@@ -187,6 +187,7 @@ public:
     uint32_t gpuDrivenMaterialRecord(Material *material) override;
     bool gpuDrivenMaterialUsable(Material *material) override;
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    GpuResidentSubmitStatus gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) override;
     bool gpuDrivenCullEnabled() const override { return gpuDrivenEnabled_; }
     bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) override;
     void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
@@ -1012,6 +1013,8 @@ private:
     uint64_t gpuDrivenHzbCapacity_ = 0;
     wgpu::RenderPipeline gpuDrivenRenderPipeline_;
     wgpu::RenderPipeline gpuDrivenCanvasPipeline_;
+    wgpu::RenderPipeline         gpuDrivenResidentRenderPipeline_;
+    wgpu::RenderPipeline         gpuDrivenResidentCanvasPipeline_;
     wgpu::Buffer gpuDrivenParamsBuffer_;
     wgpu::Buffer gpuDrivenInputBuffer_;
     wgpu::Buffer gpuDrivenVisibleBuffer_;
@@ -1028,6 +1031,10 @@ private:
     uint32_t gpuDrivenLastBucketCount_ = 0;
     bool gpuDrivenComputePending_ = false;
     bool gpuDrivenDrawPending_ = false;
+    bool                         gpuDrivenResidentDrawPending_   = false;
+    WGPUBuffer                   gpuDrivenResidentBuffer_        = nullptr;
+    uint64_t                     gpuDrivenResidentOffset_        = 0;
+    uint64_t                     gpuDrivenResidentSize_          = 0;
     bool gpuDrivenVisPending_ = false;
     bool gpuDrivenResolvePending_ = false;
     wgpu::BindGroupLayout gpuDrivenVisSetLayout_;

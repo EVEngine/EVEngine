@@ -1075,6 +1075,83 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     return true;
 }
 
+GpuResidentSubmitStatus Graphics::gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) {
+    if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable() || !mesh3dGpuDrivenPipeline ||
+        bindlessSets_.empty() || !meshTableBuffer_.buffer)
+        return GpuResidentSubmitStatus::ResourceUnavailable;
+    if (batch.buffer.backend != GpuResidentBackend::Vulkan) return GpuResidentSubmitStatus::BackendMismatch;
+    if (batch.buffer.nativeHandle == 0 || batch.buffer.offsetBytes % kGpuResidentStorageOffsetAlignment != 0 ||
+        batch.buffer.strideBytes != sizeof(GpuInstance) || !batch.buckets || batch.bucketCount == 0 ||
+        batch.instanceCount == 0)
+        return GpuResidentSubmitStatus::InvalidArgument;
+    if (batch.instanceCount > kMaxGpuDrivenInstances || batch.bucketCount > kMaxGpuDrivenBuckets)
+        return GpuResidentSubmitStatus::CapacityExceeded;
+    const uint64_t required = batch.buffer.offsetBytes + uint64_t(batch.instanceCount) * sizeof(GpuInstance);
+    if (required < batch.buffer.offsetBytes || required > batch.buffer.sizeBytes)
+        return GpuResidentSubmitStatus::InvalidArgument;
+
+    std::vector<GpuIndirectCommand> commands(batch.bucketCount);
+    uint64_t                        coveredInstances = 0;
+    for (uint32_t i = 0; i < batch.bucketCount; ++i) {
+        const GpuResidentInstanceBucket &bucket = batch.buckets[i];
+        const uint64_t                   end    = uint64_t(bucket.firstInstance) + bucket.instanceCount;
+        if (bucket.instanceCount == 0 || bucket.firstInstance != coveredInstances || end > batch.instanceCount ||
+            bucket.meshId >= meshTableRecords_.size() || bucket.meshId >= meshRecordOwners_.size() ||
+            bucket.materialId >= materialTableRecords_.size() || !meshRecordOwners_[bucket.meshId])
+            return GpuResidentSubmitStatus::InvalidArgument;
+        const GpuMeshRecord &mesh = meshTableRecords_[bucket.meshId];
+        commands[i] = {mesh.indexCount, bucket.instanceCount, mesh.firstIndex, mesh.vertexBase, bucket.firstInstance};
+        coveredInstances = end;
+    }
+    if (coveredInstances != batch.instanceCount) return GpuResidentSubmitStatus::InvalidArgument;
+
+    auto             &arena        = currentFrameArena();
+    FrameArena::Alloc commandAlloc = arena.alloc(batch.bucketCount * sizeof(GpuIndirectCommand), 16);
+    if (!commandAlloc.mapped) return GpuResidentSubmitStatus::CapacityExceeded;
+    std::memcpy(commandAlloc.mapped, commands.data(), batch.bucketCount * sizeof(GpuIndirectCommand));
+
+    VkBuffer rawBuffer{};
+    static_assert(sizeof(rawBuffer) <= sizeof(batch.buffer.nativeHandle));
+    std::memcpy(&rawBuffer, &batch.buffer.nativeHandle, sizeof(rawBuffer));
+    vk::Buffer              residentBuffer(rawBuffer);
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless || !residentBuffer) return GpuResidentSubmitStatus::ResourceUnavailable;
+    vk::DescriptorBufferInfo instanceInfo{residentBuffer, batch.buffer.offsetBytes,
+                                          uint64_t(batch.instanceCount) * sizeof(GpuInstance)};
+    vk::WriteDescriptorSet   instanceWrite{};
+    instanceWrite.dstSet          = bindless;
+    instanceWrite.dstBinding      = 4;
+    instanceWrite.descriptorCount = 1;
+    instanceWrite.descriptorType  = vk::DescriptorType::eStorageBuffer;
+    instanceWrite.pBufferInfo     = &instanceInfo;
+    device->updateDescriptorSets(1, &instanceWrite, 0, nullptr);
+
+    const Graphics::GpuDrivenFrameSet0 frame = gpuDrivenFrameSet0();
+    if (!frame.set) return GpuResidentSubmitStatus::ResourceUnavailable;
+    if (gpuDrivenScenePassPending()) gpuDrivenOpenScenePass();
+    const uint32_t dynamicOffsets[2] = {frame.uboOffset, frame.shadowOffset};
+    auto          &cb                = currentPresentCb();
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 0, 1, &frame.set, 2,
+                          dynamicOffsets);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1, &bindless, 0, nullptr);
+
+    GpuMesh *boundMesh = nullptr;
+    for (uint32_t i = 0; i < batch.bucketCount; ++i) {
+        GpuMesh *mesh = meshRecordOwners_[batch.buckets[i].meshId];
+        if (mesh != boundMesh) {
+            const vk::DeviceSize vertexOffset = 0;
+            cb.bindVertexBuffers(0, 1, mesh->vertices, &vertexOffset);
+            cb.bindIndexBuffer(mesh->indices.buffer, 0, mesh->indexType);
+            boundMesh = mesh;
+        }
+        cb.drawIndexedIndirect(arena.buffer(), commandAlloc.offset + uint64_t(i) * sizeof(GpuIndirectCommand), 1,
+                               sizeof(GpuIndirectCommand));
+    }
+    lastGpuDrivenDrawCount_ = batch.bucketCount;
+    return GpuResidentSubmitStatus::Submitted;
+}
+
 // --- Stage 2: HZB + GPU cull ------------------------------------------------
 
 namespace {

@@ -41,6 +41,8 @@ void VulkanSequence::ensureReady() {
 
 void VulkanSequence::ensureCommandBuffer() {
     if (recording && commandBuffer) return;
+    if (status == SequenceStatus::Submitted)
+        throw Exception("Gpgpu.Sequence.begin: previous async submission is still pending");
     ensureReady();
     auto &device = vkg->getDevice();
     if (!fenceReady) {
@@ -51,16 +53,27 @@ void VulkanSequence::ensureCommandBuffer() {
     commandBuffer = device->allocateCommandBuffers(cbai)[0];
     commandBuffer.begin(vk::CommandBufferBeginInfo{});
     recording = true;
+    status      = SequenceStatus::Recording;
     stagingUsed = 0;
     usedShaders.clear();
 }
 
 void VulkanSequence::destroy() {
+    if (status == SequenceStatus::Submitted) {
+        try {
+            (void)vulkanSequenceWait(this);
+        } catch (...) {
+        }
+    }
     auto *dev = vkg ? &vkg->getDevice() : nullptr;
     if (dev && static_cast<VkDevice>(dev->instance)) {
         if (commandBuffer) {
             (*dev)->freeCommandBuffers(pool, commandBuffer);
             commandBuffer = vk::CommandBuffer{};
+        }
+        if (submittedCommandBuffer) {
+            (*dev)->freeCommandBuffers(pool, submittedCommandBuffer);
+            submittedCommandBuffer = vk::CommandBuffer{};
         }
         if (fenceReady) {
             (*dev)->destroyFence(fence, dev->allocation_callbacks);
@@ -69,6 +82,7 @@ void VulkanSequence::destroy() {
         }
     }
     recording = false;
+    status    = SequenceStatus::Idle;
     stagingPool.clear();
     vkg = nullptr;
     queue = vk::Queue{};
@@ -153,11 +167,11 @@ void vulkanSequenceRecordDispatch(VulkanSequence *seq, ComputeShader *shader,
     if (groupsZ <= 0) groupsZ = 1;
 
     auto &device = seq->vkg->getDevice();
-    vs->beginSequence();
     vs->flushDescriptors(device);
-    if (std::find(seq->usedShaders.begin(), seq->usedShaders.end(), vs) ==
-        seq->usedShaders.end())
+    if (std::find(seq->usedShaders.begin(), seq->usedShaders.end(), vs) == seq->usedShaders.end()) {
+        vs->beginSequence();
         seq->usedShaders.push_back(vs);
+    }
 
     seq->commandBuffer.bindPipeline(vk::PipelineBindPoint::eCompute, vs->pipeline_);
     if (vs->descriptorSet_) {
@@ -173,7 +187,13 @@ void vulkanSequenceRecordDispatch(VulkanSequence *seq, ComputeShader *shader,
 }
 
 void vulkanSequenceSubmit(VulkanSequence *seq) {
-    if (!seq) return;
+    const SequenceStatus submitted = vulkanSequenceSubmitAsync(seq);
+    if (submitted == SequenceStatus::Failed || vulkanSequenceWait(seq) != SequenceStatus::Complete)
+        throw Exception("Gpgpu.Sequence.submit: GPU submission failed");
+}
+
+SequenceStatus vulkanSequenceSubmitAsync(VulkanSequence *seq) {
+    if (!seq) return SequenceStatus::Failed;
     seq->ensureReady();
     if (!seq->recording || !seq->commandBuffer)
         throw Exception("Gpgpu.Sequence.submit: nothing recorded");
@@ -189,7 +209,15 @@ void vulkanSequenceSubmit(VulkanSequence *seq) {
     submit.commandBufferCount = 1;
     submit.pCommandBuffers = &cb;
     seq->queue.submit(submit, seq->fence);
-    (void)device->waitForFences(1, &seq->fence, VK_TRUE, UINT64_MAX);
+    seq->submittedCommandBuffer = cb;
+    seq->status                 = SequenceStatus::Submitted;
+    return seq->status;
+}
+
+namespace {
+
+SequenceStatus retireSubmission(VulkanSequence *seq, SequenceStatus terminal) {
+    auto &device = seq->vkg->getDevice();
     for (ComputeShader *shader : seq->usedShaders) {
         auto *vs = dynamic_cast<VulkanComputeShader *>(shader);
         if (vs) {
@@ -197,7 +225,32 @@ void vulkanSequenceSubmit(VulkanSequence *seq) {
             vs->releasePendingDescriptors(device);
         }
     }
-    device->freeCommandBuffers(seq->pool, cb);
+    seq->usedShaders.clear();
+    if (seq->submittedCommandBuffer) {
+        device->freeCommandBuffers(seq->pool, seq->submittedCommandBuffer);
+        seq->submittedCommandBuffer = vk::CommandBuffer{};
+    }
+    seq->status = terminal;
+    return terminal;
 }
+
+}  // namespace
+
+SequenceStatus vulkanSequencePoll(VulkanSequence *seq) {
+    if (!seq) return SequenceStatus::Failed;
+    if (seq->status != SequenceStatus::Submitted) return seq->status;
+    const vk::Result result = seq->vkg->getDevice()->getFenceStatus(seq->fence);
+    if (result == vk::Result::eNotReady) return SequenceStatus::Submitted;
+    return retireSubmission(seq, result == vk::Result::eSuccess ? SequenceStatus::Complete : SequenceStatus::Failed);
+}
+
+SequenceStatus vulkanSequenceWait(VulkanSequence *seq) {
+    if (!seq) return SequenceStatus::Failed;
+    if (seq->status != SequenceStatus::Submitted) return seq->status;
+    const vk::Result result = seq->vkg->getDevice()->waitForFences(1, &seq->fence, VK_TRUE, UINT64_MAX);
+    return retireSubmission(seq, result == vk::Result::eSuccess ? SequenceStatus::Complete : SequenceStatus::Failed);
+}
+
+SequenceStatus vulkanSequenceStatus(const VulkanSequence *seq) { return seq ? seq->status : SequenceStatus::Failed; }
 
 }  // namespace eve::gpgpu

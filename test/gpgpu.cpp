@@ -286,7 +286,31 @@ TEST_CASE("gpgpu.sequence.dispatchScale") {
     seq->recordUpload(in, src.data(), uint64_t(count) * sizeof(float));
     seq->recordDispatch(shader, groups, 1, 1);
     seq->recordDownload(out, staging, uint64_t(count) * sizeof(float));
-    seq->submit();
+    CHECK(int(seq->submitAsync()) == int(SequenceStatus::Submitted));
+    CHECK_EQ(seq->getStatusName(), std::string("submitted"));
+    bool rejectedPendingReuse = false;
+    try {
+        seq->begin();
+    } catch (const eve::Exception &) {
+        rejectedPendingReuse = true;
+    }
+    CHECK(rejectedPendingReuse);
+
+    // The same shader may be rebound and submitted by another Sequence while
+    // the first is pending; descriptor retirement waits for both submissions.
+    Sequence *overlap = mod->newSequence();
+    REQUIRE(overlap->isAvailable());
+    shader->bindBuffer(0, in);
+    shader->bindBuffer(1, in);
+    overlap->begin();
+    overlap->recordDispatch(shader, groups, 1, 1);
+    CHECK(int(overlap->submitAsync()) == int(SequenceStatus::Submitted));
+    const SequenceStatus observed = seq->poll();
+    const bool pendingOrComplete  = observed == SequenceStatus::Submitted || observed == SequenceStatus::Complete;
+    CHECK(pendingOrComplete);
+    CHECK(int(seq->wait()) == int(SequenceStatus::Complete));
+    CHECK(int(overlap->wait()) == int(SequenceStatus::Complete));
+    CHECK_EQ(seq->getStatusName(), std::string("complete"));
 
     std::vector<float> dst(size_t(count), 0.f);
     staging->downloadBytes(dst.data(), uint64_t(count) * sizeof(float));
@@ -295,6 +319,7 @@ TEST_CASE("gpgpu.sequence.dispatchScale") {
     CHECK(std::fabs(dst[count - 1] - float(count) * 2.f) < 1e-3f);
 
     delete seq;
+    delete overlap;
     delete shader;
     delete in;
     delete out;
@@ -636,19 +661,107 @@ TEST_CASE("gpgpu.shaderSystem.ecsMove") {
         return;
     }
 
-    const int nPos = packViewComponent<GpuNode, GpuNode::Position>(sys, 0);
-    const int nVel = packViewComponent<GpuNode, GpuNode::Velocity>(sys, 1);
+    EcsGpuWorkspace<GpuNode::Position> posWorkspace;
+    EcsGpuWorkspace<GpuNode::Velocity> velWorkspace;
+    posWorkspace.reserveEntities(1024);
+    const int nPos = packViewComponent<GpuNode, GpuNode::Position>(sys, 0, posWorkspace);
+    const int nVel = packViewComponent<GpuNode, GpuNode::Velocity>(sys, 1, velWorkspace);
     REQUIRE_EQ(nPos, nVel);
     REQUIRE_GE(nPos, 2);
 
     sys.dispatch(nPos, 0.5f);
 
-    unpackViewComponent<GpuNode, GpuNode::Position>(sys, 0, nPos);
+    unpackViewComponent<GpuNode, GpuNode::Position>(sys, 0, nPos, posWorkspace);
+    CHECK_GE(posWorkspace.entityCapacity(), size_t(1024));
+
+    CHECK_EQ(sys.getUploadCount(), uint64_t(2));
+    CHECK_EQ(sys.getDispatchCount(), uint64_t(1));
+    CHECK_EQ(sys.getDownloadCount(), uint64_t(1));
 
     CHECK(std::fabs(a->position()->x - 6.f) < 1e-3f);
     CHECK(std::fabs(a->position()->y - 12.f) < 1e-3f);
     CHECK(std::fabs(b->position()->x - (-2.5f)) < 1e-3f);
     CHECK(std::fabs(b->position()->y - 0.5f) < 1e-3f);
+
+    // A downstream system can consume the resident buffers in the same GPU
+    // command sequence without an intervening CPU download/upload.
+    ShaderSystem consumer;
+    consumer.setGpgpu(mod);
+    consumer.setShaderSource(backendKernel(kMoveKernel, kMoveKernelWgsl));
+    consumer.attachBuffer(0, sys.getBuffer(0));
+    consumer.attachBuffer(1, sys.getBuffer(1));
+    Sequence *sequence = mod->newSequence();
+    REQUIRE(sequence->isAvailable());
+    sequence->begin();
+    consumer.recordDispatch(sequence, nPos, 0.25f);
+    sequence->submit();
+    const std::vector<float> resident = consumer.download(0, nPos * 2);
+    CHECK(std::fabs(resident[0] - 8.5f) < 1e-3f);
+    CHECK(std::fabs(resident[1] - 17.f) < 1e-3f);
+    CHECK_EQ(consumer.getUploadCount(), uint64_t(0));
+    CHECK_EQ(consumer.getDispatchCount(), uint64_t(1));
+    CHECK_EQ(consumer.getDownloadCount(), uint64_t(1));
+    delete sequence;
+
+    // Patch only the first typed component record; the second resident record
+    // remains untouched and the same staging allocation is reused.
+    const int patchedCount = packViewComponentRange<GpuNode, GpuNode::Position>(sys, 0, 0, 1, posWorkspace);
+    CHECK_EQ(patchedCount, 1);
+    float patched[2] = {};
+    sys.downloadRange(0, patched, 2, 0);
+    CHECK(std::fabs(patched[0] - 6.f) < 1e-3f);
+    CHECK(std::fabs(patched[1] - 12.f) < 1e-3f);
+
+    sys.resetStatistics();
+    CHECK_EQ(sys.getUploadCount(), uint64_t(0));
+    CHECK_EQ(sys.getDispatchCount(), uint64_t(0));
+    CHECK_EQ(sys.getDownloadCount(), uint64_t(0));
+}
+
+TEST_CASE("gpgpu.shaderSystem.millionResidentBenchmark") {
+    if (!std::getenv("EVENGINE_ECS_MILLION_BENCHMARK") || !tryInitHeadlessGfx()) return;
+    constexpr int count   = 1000000;
+    constexpr int samples = 10;
+    auto         *mod     = Gpgpu::create();
+    REQUIRE(mod->isAvailable());
+
+    ShaderSystem sys;
+    sys.setGpgpu(mod);
+    sys.setShaderSource(backendKernel(kMoveKernel, kMoveKernelWgsl));
+    std::vector<float> positions(size_t(count) * 2, 0.f);
+    std::vector<float> velocities(size_t(count) * 2, 1.f);
+    sys.upload(0, positions);
+    sys.upload(1, velocities);
+
+    Sequence *sequence = mod->newSequence();
+    REQUIRE(sequence->isAvailable());
+    auto runResidentTick = [&] {
+        sequence->begin();
+        sys.recordDispatch(sequence, count, 0.016f);
+        sequence->submit();
+    };
+    for (int warmup = 0; warmup < 3; ++warmup) runResidentTick();
+
+    std::vector<double> timings;
+    timings.reserve(samples);
+    for (int sample = 0; sample < samples; ++sample) {
+        const auto started = std::chrono::steady_clock::now();
+        runResidentTick();
+        timings.push_back(
+            std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - started).count());
+    }
+    std::sort(timings.begin(), timings.end());
+    const double             p50    = timings[size_t(samples / 2)];
+    const double             p95    = timings[size_t(samples - 1)];
+    const std::vector<float> result = sys.download(0, 2);
+    CHECK(std::fabs(result[0] - 13.f * 0.016f) < 1e-3f);
+    CHECK_EQ(sys.getUploadCount(), uint64_t(2));
+    CHECK_EQ(sys.getDownloadCount(), uint64_t(1));
+    CHECK_EQ(sys.getDispatchCount(), uint64_t(13));
+    std::cout << "ECS_GPU_BENCHMARK_JSON={\"entities\":" << count << ",\"residentTicks\":13,\"samples\":" << samples
+              << ",\"p50Ms\":" << p50 << ",\"p95Ms\":" << p95
+              << ",\"steadyUploadBytes\":0,\"steadyDownloadBytes\":0}\n";
+    delete sequence;
 }
 
 TEST_CASE("gpgpu.buffer.bulkFloats") {
@@ -754,6 +867,31 @@ TEST_CASE_FIXTURE(EcsPackFixture, "gpgpu.ecsPack.roundTrip") {
     // entityCount caps the unpack; non-array / empty inputs are no-ops.
     CHECK_EQ(unpackScriptEntityFloats(ents, "Vec", fields, &buf, 0), 0);
     CHECK_EQ(unpackScriptEntityFloats(ents, "Vec", fields, &buf, 99), 2);
+}
+
+TEST_CASE_FIXTURE(EcsPackFixture, "gpgpu.ecsPack.contiguousRange") {
+    ssq::Object ents   = vm.callFunc(vm.findFunc("getEntities"), vm);
+    ssq::Object fields = vm.callFunc(vm.findFunc("getFields"), vm);
+    TestBuffer  buf(4 * int(sizeof(float)));
+    buf.floats = {-1.f, -1.f, -1.f, -1.f};
+
+    CHECK_EQ(packScriptEntityFloatsRange(ents, "Vec", fields, &buf, 1, 1), 1);
+    CHECK_EQ(buf.floats[0], -1.f);
+    CHECK_EQ(buf.floats[1], -1.f);
+    CHECK_EQ(buf.floats[2], 3.f);
+    CHECK_EQ(buf.floats[3], 4.f);
+
+    buf.floats[2] = 30.f;
+    buf.floats[3] = 40.f;
+    CHECK_EQ(unpackScriptEntityFloatsRange(ents, "Vec", fields, &buf, 1, 1), 1);
+    ssq::Object back = vm.callFunc(vm.findFunc("readBack"), vm, ents);
+    CHECK_EQ(readArrayFloat(vm, back, 0), 1.f);
+    CHECK_EQ(readArrayFloat(vm, back, 1), 2.f);
+    CHECK_EQ(readArrayFloat(vm, back, 2), 30.f);
+    CHECK_EQ(readArrayFloat(vm, back, 3), 40.f);
+
+    CHECK_EQ(packScriptEntityFloatsRange(ents, "Vec", fields, &buf, 9, 2), 0);
+    CHECK_EQ(unpackScriptEntityFloatsRange(ents, "Vec", fields, &buf, 9, 2), 0);
 }
 
 TEST_CASE_FIXTURE(EcsPackFixture, "gpgpu.ecsPack.errors") {

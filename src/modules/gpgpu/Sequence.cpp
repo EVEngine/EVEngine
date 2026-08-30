@@ -40,6 +40,11 @@ void Sequence::recordDispatch(ComputeShader *shader, int groupsX, int groupsY,
 
 void Sequence::submit() { webgpuSequenceSubmit(impl_->sequence); }
 
+SequenceStatus Sequence::submitAsync() { return webgpuSequenceSubmitAsync(impl_->sequence); }
+SequenceStatus Sequence::poll() { return webgpuSequencePoll(impl_->sequence); }
+SequenceStatus Sequence::wait() { return webgpuSequenceWait(impl_->sequence); }
+SequenceStatus Sequence::getStatus() const { return webgpuSequenceStatus(impl_->sequence); }
+
 }  // namespace eve::gpgpu
 
 #else
@@ -86,6 +91,26 @@ void Sequence::recordDispatch(ComputeShader *shader, int groupsX, int groupsY,
 
 void Sequence::submit() { vulkanSequenceSubmit(impl_->v); }
 
+SequenceStatus Sequence::submitAsync() { return vulkanSequenceSubmitAsync(impl_->v); }
+SequenceStatus Sequence::poll() { return vulkanSequencePoll(impl_->v); }
+SequenceStatus Sequence::wait() { return vulkanSequenceWait(impl_->v); }
+SequenceStatus Sequence::getStatus() const { return vulkanSequenceStatus(impl_->v); }
+
 }  // namespace eve::gpgpu
 
 #endif
+
+namespace eve::gpgpu {
+
+std::string Sequence::getStatusName() const {
+    switch (getStatus()) {
+        case SequenceStatus::Idle: return "idle";
+        case SequenceStatus::Recording: return "recording";
+        case SequenceStatus::Submitted: return "submitted";
+        case SequenceStatus::Complete: return "complete";
+        case SequenceStatus::Failed: return "failed";
+    }
+    return "failed";
+}
+
+}  // namespace eve::gpgpu

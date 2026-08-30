@@ -35,6 +35,96 @@ Compute shader 约定：
 
 C++ 侧可用 `gpgpu::ShaderSystem` + `gpgpu/EcsGpu.h` 的 `packViewComponent` / `unpackViewComponent` 对 `ECS.hpp` View 做同样的打包与调度。
 
+大批量、连续多帧仿真应让组件留在 GPU：
+
+```squirrel
+local sys = eve.ShaderSystem(Moveable, gpgpu, moveGlsl, 64)
+sys.bindFields(0, "pos", ["x", "y"], false, false)
+sys.bindFields(1, "vel", ["x", "y"], false, false)
+
+// 第一次 update 自动上传；稳态 update 只 dispatch。
+// CPU 修改组件后显式请求重新上传，需要 CPU 快照时显式请求一次回读。
+sys.requestUpload(1)
+sys.requestReadback(0)
+```
+
+`bindFields` 的第 4、5 个参数分别是 `uploadEachUpdate` 和该 binding 的 `readback` 策略。实体创建/销毁会自动触发重新打包。GPU-resident 期间 CPU 组件是旧投影，不应同时作为权威状态；需要 CPU/GPU 共享每帧状态时保留默认同步模式。可用 backend 的 `getUploadCount()` / `getDownloadCount()` / `getDispatchCount()` 与 `resetStatistics()` 审计实际传输次数。
+
+CPU 只修改连续的一段实体时，可用 `requestUploadRange(binding, first, count)`；只观察一段结果时用 `requestReadbackRange`。同一帧的重复范围请求会合并，实体结构 revision 改变时自动退化为安全的全量重打包。
+
+多个 system 可共享驻留数据并合并提交：
+
+```squirrel
+consumer.bindSharedFields(0, producer, 0, "pos", ["x", "y"])
+local seq = gpgpu.newSequence()
+seq.begin()
+local produced = producer.record(seq, dt)
+local consumed = consumer.record(seq, dt)
+seq.submit()
+producer.completeRecorded(produced)
+consumer.completeRecorded(consumed)
+```
+
+调用顺序是契约的一部分：producer 必须先 prepare/record；脚本 wrapper 会持有 producer，且每帧重新附着可能被扩容替换的 buffer。Sequence 在两个 dispatch 间插入 GPU memory barrier，但 `submit()` 当前仍等待整批完成。
+
+不需要立即读取 CPU 结果时可非阻塞提交：
+
+```squirrel
+local status = seq.submitAsync() // "submitted"
+// CPU 可继续处理不依赖这些 buffer 的工作
+status = seq.poll()              // "submitted" / "complete" / "failed"
+if (status == "submitted") status = seq.wait()
+```
+
+pending 期间引用的 shader/buffer 必须存活，且同一个 Sequence 不允许再次 `begin()`；完成或失败后才能复用。Vulkan 使用 fence，WebGPU 使用 `wgpuQueueOnSubmittedWorkDone` future。析构 pending Sequence 会等待，防止 callback 或 GPU command 访问已释放状态。
+
+需要显式布局和访问权时使用 typed schema：
+
+```squirrel
+sys.bindSchema(0, {
+    slot = "pos", fields = ["x", "y"], scalar = "f32", access = "read_write"
+})
+sys.bindSchema(1, {
+    slot = "result", fields = ["x"], scalar = "f32", access = "write"
+})
+print(sys.shaderDeclarations("glsl")) // 也支持 "wgsl"
+```
+
+`write` binding 由 shader 权威初始化，只分配容量，不做无意义的首次 CPU 上传；当前唯一标量类型是 `f32`，schema 暴露 `strideFloats`。不支持的类型或访问权在绑定时直接报错，而不是静默按 float 解释。
+
+C++ ECS 可复用 `EcsGpuWorkspace<Component>`，并用 `packViewComponentRange` / `unpackViewComponentRange` 更新已有 resident buffer 的连续区间，避免每帧临时 vector 分配。组件在编译期要求 trivially-copyable 且大小是 float 的整数倍。
+
+Squirrel 与 C++ 都能把标准 `graphics::GpuInstance`（80 bytes）直接交给渲染器，
+无需把实例流读回 CPU。脚本侧是正式的一等接口：
+
+```squirrel
+local meshId = gpgpu.gpuDrivenMeshRecord(mesh)
+local materialId = gpgpu.gpuDrivenMaterialRecord(material)
+local instances = gpgpu.newBuffer(gpgpu.getGpuDrivenInstanceStride(), "storage")
+local model = [1.0, 0.0, 0.0, 0.0,
+               0.0, 1.0, 0.0, 0.0,
+               0.0, 0.0, 1.0, 0.0,
+               0.0, 0.0, 0.0, 1.0]
+gpgpu.writeGpuDrivenInstance(instances, 0, model, meshId, materialId, 0, -1)
+local buckets = [{ firstInstance = 0, instanceCount = 1,
+                   meshId = meshId, materialId = materialId }]
+gpgpu.setGpuDrivenEnabled(true)
+gfx.begin3DFrame()
+local status = gpgpu.submitResidentInstances(instances, buckets, 1, 0)
+if (status != "submitted") throw "resident submit failed: " + status
+gfx.present()
+```
+
+`writeGpuDrivenInstance` 是便利的类型化上传接口；大批量对象应由 compute shader 直接输出
+同一布局。提交返回稳定状态字符串：`submitted`、`unsupported`、`invalid_argument`、
+`backend_mismatch`、`resource_unavailable` 或 `capacity_exceeded`。bucket 必须连续覆盖全部
+实例。buffer 必须活到本帧 GPU 命令完成，slice offset 按
+`getGpuResidentOffsetAlignment()`（当前 256 bytes）对齐。`eve.ShaderSystem` 也提供资源注册
+方法及 `submitResidentInstances(binding, buckets, count, offset)`，直接提交 resident binding。
+
+C++ 侧仍可把 `system.getBuffer(binding)->residentView()` 交给
+`Graphics::gpuDrivenSubmitResident()`。
+
 ## Sequence：把多次调度合并为一次 GPU 提交
 
 `eve.GpuSequence`（C++：`gpgpu::Sequence`）对标 Kompute 的 Sequence：在 Vulkan 与 WebGPU 上都把多个 buffer 拷贝和 compute dispatch 录制进**同一个 command buffer**，`submit()` 时一次提交、一次等待。对 AI 推理这类几十个 kernel 串行的负载，这能把几十次 record/submit/wait 往返压成一次。
@@ -91,9 +181,13 @@ local out = stagingBuffer.readFloat32s(count);
 
 - `begin()`、`bindBuffer()`、`clearBindings()`、`dispatch()`、`fillFloat32()`、`getBoundBuffer()`、`getFloat()`、`getName()`、`getSize()`
 - `getUsage()`、`isAvailable()`、`newBuffer()`、`newShader()`、`newShaderFromBytecode()`、`newShaderFromSpvFile()`、`readData()`、`readFloat32()`、`setFloat()`
-- `newSequence()`、`recordDispatch()`、`recordDownload()`、`recordUpload()`、`submit()`、`writeData()`、`writeFloat32()`、`packEcsFloats()`、`unpackEcsFloats()`
+- GPU-driven resident render：`setGpuDrivenEnabled()` / `isGpuDrivenEnabled()` / `gpuDrivenMeshRecord()` / `gpuDrivenMaterialRecord()` / `gpuDrivenMaterialUsable()` / `getGpuDrivenInstanceStride()` / `getGpuResidentOffsetAlignment()` / `writeGpuDrivenInstance()` / `submitResidentInstances()`
+- `newSequence()`、`recordDispatch()`、`recordDownload()`、`recordUpload()`、`submit()`、`submitAsync()`、`poll()`、`wait()`、`getStatus()`、`writeData()`、`writeFloat32()`、`packEcsFloats()`、`unpackEcsFloats()`、`packEcsFloatsRange()`、`unpackEcsFloatsRange()`
 - `eve.EcsShaderSystem`：`setGpgpu` / `setShaderSource` / `ensureBuffer` / `dispatch` / …
-- `eve.ShaderSystem`：`bindFields` / `setShaderSource` / `setReadback` / `update`
+- `eve.ShaderSystem`：`bindFields` / `setShaderSource` / `setReadback` / `update` / GPU-driven 资源注册与 `submitResidentInstances`
+- GPU 驻留控制：`setBindingUpload` / `setBindingReadback` / `requestUpload` / `requestReadback`、对应的 `*Range` 接口
+- GPU 链式系统：`bindSharedFields` / `record` / `completeRecorded`；native backend 提供 `attachBuffer` / `recordDispatch`
+- typed schema：`bindSchema` / `getBindingSchema` / `shaderDeclarations`
 
 ## 使用要点
 
