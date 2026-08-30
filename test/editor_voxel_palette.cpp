@@ -1,8 +1,9 @@
-#include "editor/EditorVoxelPaletteTarget.h"
+#include "voxel_editing/VoxelPaletteTarget.h"
 #include "voxel/CubeTypeRegistry.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-using namespace eve::editor;
+using namespace eve::voxel_editing;
+using namespace eve::editing;
 namespace{
 void apply(VoxelPaletteTarget&t,EditorResult<DomainOperation>op){REQUIRE(op.value);REQUIRE(t.applyDomainOperation(*op.value).isAccepted());}
 VoxelPaletteEntryValue cube(const std::string&id,bool directional=false){VoxelPaletteEntryValue v;v.id=ObjectId("editor-"+id);v.type.name=id;v.type.directional=directional;for(int i=0;i<6;++i)v.type.faceTex[i]=static_cast<std::uint8_t>(i+1);return v;}

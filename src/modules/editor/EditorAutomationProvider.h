@@ -10,11 +10,14 @@
 #include <string>
 #include <vector>
 
+namespace eve::material_editing {
+class IMaterialRuntimeSink;
+}
+
 namespace eve::editor {
 
 class EditorTargetCoordinator;
 class EditorCommandService;
-class IMaterialRuntimeSink;
 
 /** @brief MCP/DevTools adapter over command discovery and target coordination. */
 class EditorAutomationProvider final : public eve::IEditorAutomation {
@@ -48,7 +51,7 @@ private:
     EditorSession                 session_;
     std::vector<EditorDiagnostic> lastDiagnostics_;
     // Targets borrow their runtime sinks, so sinks must be destroyed after targets.
-    std::map<TargetId, std::unique_ptr<IMaterialRuntimeSink>> ownedMaterialSinks_;
+    std::map<TargetId, std::unique_ptr<material_editing::IMaterialRuntimeSink>> ownedMaterialSinks_;
     std::map<TargetId, std::unique_ptr<IEditableTarget>>      ownedTargets_;
     std::map<std::string, std::unique_ptr<ObservationSession>> observationSessions_;
     std::uint64_t                                              nextObservationSession_ = 1;

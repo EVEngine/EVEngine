@@ -1,11 +1,12 @@
-#include "editor/EditorAnimationClip.h"
+#include "animation_editing/AnimationClip.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::animation_editing;
+using namespace eve::editing;
 
 namespace {
 AnimationTransformKey key(const char* id, double time, double x) {

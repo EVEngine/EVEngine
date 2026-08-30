@@ -121,6 +121,17 @@ TEST_CASE("editor.physics.collider_snapshot_is_versioned_atomic_and_diagnostic")
              static_cast<int>(EditorStatus::Rejected));
     CHECK(wrongDimension.read(colliderSelection(wrongDimension), PropertyPath("shape.kind")).value ==
           EditorValue("box"));
+
+    EditorValue unknownVersion = source.snapshotValue();
+    auto* unknownRoot = unknownVersion.getIf<EditorValue::Object>();
+    REQUIRE(unknownRoot != nullptr);
+    unknownRoot->at("schemaVersion") = int64_t{2};
+    const Revision revisionBeforeRejectedMigration = restored.revision();
+    CHECK_EQ(static_cast<int>(restored.loadSnapshot(unknownVersion).status),
+             static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(restored.revision(), revisionBeforeRejectedMigration);
+    CHECK(restored.read(colliderSelection(restored), PropertyPath("shape.kind")).value ==
+          EditorValue("triangle-mesh"));
 }
 
 TEST_CASE("editor.physics.joint_exposes_body_anchor_limit_motor_and_break_authoring") {

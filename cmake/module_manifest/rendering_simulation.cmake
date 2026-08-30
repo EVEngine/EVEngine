@@ -2,6 +2,13 @@
 # L4 -- rendering extensions and simulation
 # ---------------------------------------------------------------------------
 
+eve_declare_module(NAME material_graphics_editing LAYER 4
+                   DEPS graphics material_editing
+                   GROUP 3d web)
+eve_declare_module(NAME graphics_editing LAYER 4
+                   DEPS editing graphics image
+                   GROUP 2d 3d web)
+
 # Typed bridge from admitted runtime packages into backend-owned GPU resources.
 eve_declare_module(NAME asset_graphics LAYER 4
                    DEPS asset graphics

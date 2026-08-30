@@ -1,9 +1,10 @@
-#include "editor/EditorBehaviorGraph.h"
+#include "npc_ai_editing/BehaviorGraph.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::npc_ai_editing;
+using namespace eve::editing;
 
 namespace {
 GraphNodeRecord node(const char* id, const char* type, bool input, bool output) {

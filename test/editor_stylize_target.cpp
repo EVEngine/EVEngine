@@ -1,10 +1,11 @@
-#include "editor/EditorStylizeTarget.h"
+#include "stylize_editing/StylizeTarget.h"
 
 #include "stylize/StyleInstance.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::stylize_editing;
+using namespace eve::editing;
 
 namespace {
 SelectionSnapshot select(const StylizeRecipeTarget&target,std::initializer_list<const char*>ids){SelectionSnapshot s;s.channel="stylize";for(const char*id:ids)s.items.push_back({SelectionDomain::Asset,TargetId(target.targetId()),StableId(id),"stylize.pass"});return s;}

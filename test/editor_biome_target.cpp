@@ -1,10 +1,11 @@
-#include "editor/EditorBiomeTarget.h"
+#include "biome_editing/BiomeTarget.h"
 #include "procgen/PointSet.h"
 #include "procgen/SpatialData.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 #include <map>
-using namespace eve::editor;
+using namespace eve::biome_editing;
+using namespace eve::editing;
 namespace {
 SelectionSnapshot select(const BiomeDocumentTarget& target, const ObjectId& id,
                          const std::string& type) {

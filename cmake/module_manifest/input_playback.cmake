@@ -3,10 +3,40 @@
 # ---------------------------------------------------------------------------
 
 eve_declare_module(NAME scene_editing LAYER 2
-                   DEPS editing
+                   DEPS editing scene
                    GROUP 3d web)
 eve_declare_module(NAME material_editing LAYER 2
                    DEPS editing
+                   GROUP 3d web)
+eve_declare_module(NAME audio_editing LAYER 2
+                   DEPS editing
+                   GROUP 3d web)
+eve_declare_module(NAME map_editing LAYER 2
+                   DEPS editing map
+                   GROUP 3d web)
+eve_declare_module(NAME input_editing LAYER 2
+                   DEPS editing
+                   GROUP 2d 3d web)
+eve_declare_module(NAME definitions_editing LAYER 2
+                   DEPS definitions editing schema
+                   GROUP 2d 3d web)
+eve_declare_module(NAME crowd_editing LAYER 2
+                   DEPS crowd editing
+                   GROUP 2d 3d web)
+eve_declare_module(NAME social_editing LAYER 2
+                   DEPS editing social
+                   GROUP 2d 3d web)
+eve_declare_module(NAME network_editing LAYER 2
+                   DEPS editing network
+                   GROUP 2d 3d web)
+eve_declare_module(NAME profiler_editing LAYER 2
+                   DEPS editing profiler
+                   GROUP 2d 3d web)
+eve_declare_module(NAME queue_editing LAYER 2
+                   DEPS editing orders production
+                   GROUP 2d 3d web)
+eve_declare_module(NAME npc_ai_editing LAYER 2
+                   DEPS editing npc_ai
                    GROUP 3d web)
 
 # Canonical runtime scene-template decoder; mounting remains an explicit Scene operation.

@@ -1,4 +1,4 @@
-#include "editor/EditorSceneTarget.h"
+#include "scene_editing/SceneTarget.h"
 
 #include "scene/NodeDesc.h"
 #include "scene/SceneHost.h"
@@ -8,7 +8,7 @@
 
 #include <utility>
 
-using namespace eve::editor;
+using namespace eve::scene_editing;
 
 namespace {
 

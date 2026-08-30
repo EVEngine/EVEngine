@@ -1,9 +1,10 @@
-#include "editor/EditorFluidTarget.h"
+#include "fluids_editing/FluidTarget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::fluids_editing;
+using namespace eve::editing;
 
 TEST_CASE("editor.fluids.settings_are_reversible_persistent_and_budgeted") {
     FluidSimulationTarget fluid("waterfall");

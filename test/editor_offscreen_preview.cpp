@@ -1,4 +1,4 @@
-#include "editor/EditorOffscreenPreview.h"
+#include "graphics_editing/OffscreenPreview.h"
 
 #include "graphics/Canvas.h"
 #include "graphics/ICanvasFactory.h"
@@ -10,7 +10,8 @@
 #include <memory>
 #include <stdexcept>
 
-using namespace eve::editor;
+using namespace eve::graphics_editing;
+using namespace eve::editing;
 
 namespace {
 class FakeCanvas final : public eve::graphics::Canvas {

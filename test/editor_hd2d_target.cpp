@@ -1,7 +1,8 @@
-#include "editor/EditorHd2dTarget.h"
+#include "hd2d_editing/Hd2dTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-using namespace eve::editor;
+using namespace eve::hd2d_editing;
+using namespace eve::editing;
 namespace{SelectionSnapshot select(const Hd2dDocumentTarget&t){SelectionSnapshot s;s.channel="hd2d";s.items.push_back({SelectionDomain::Asset,TargetId(t.targetId()),StableId(t.targetId()),"hd2d.asset"});return s;}void apply(Hd2dDocumentTarget&t,EditorResult<DomainOperation>op){REQUIRE(op.value);REQUIRE(t.applyDomainOperation(*op.value).isAccepted());}class MissingTexture final:public IHd2dTextureResolver{public:EditorResult<eve::graphics::Texture*>texture(const std::string&)const override{return EditorResult<eve::graphics::Texture*>::error(EditorStatus::NotFound,RuleId("test.texture"),"missing texture");}};}
 TEST_CASE("editor.hd2d.sprite_preset_is_reversible_and_scrubs_frames"){
  Hd2dDocumentTarget target("hero");const auto selection=select(target);apply(target,target.makeSet(selection,PropertyPath("asset.source"),"hero.png",PropertySetMode::Absolute));apply(target,target.makeSet(selection,PropertyPath("sprite.grid"),EditorValue::Array{4.0,2.0},PropertySetMode::Absolute));apply(target,target.makeSet(selection,PropertyPath("sprite.animation"),EditorValue::Array{2.0,5.0},PropertySetMode::Absolute));apply(target,target.makeSet(selection,PropertyPath("sprite.fps"),2.0,PropertySetMode::Absolute));Hd2dFramePreviewService preview;auto p=preview.evaluate(target,1);REQUIRE(p.value);CHECK_EQ(p.value->frame,4);CHECK_EQ(p.value->uv[0],0.f);CHECK_EQ(p.value->uv[1],.5f);

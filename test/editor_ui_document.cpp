@@ -1,11 +1,13 @@
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTransactionService.h"
-#include "editor/EditorUiDocumentTarget.h"
+#include "ui_editing/UiDocument.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::ui_editing;
+using namespace eve::editing;
+using eve::editor::LocalTransactionBackend;
 
 TEST_CASE("editor.ui.style_inspector_preview_pick_and_anchor_gizmo_are_revision_safe") {
     UiDocumentTarget document("hud");

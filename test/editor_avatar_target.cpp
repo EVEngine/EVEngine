@@ -1,10 +1,11 @@
-#include "editor/EditorAvatarTarget.h"
+#include "avatar_editing/AvatarTarget.h"
 
 #include "avatar/AvatarInstance.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::avatar_editing;
+using namespace eve::editing;
 
 namespace {
 void apply(AvatarDocumentTarget&target,EditorResult<DomainOperation>operation){REQUIRE(operation.value);REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());}

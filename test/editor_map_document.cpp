@@ -1,9 +1,10 @@
-#include "editor/EditorMapDocument.h"
+#include "map_editing/MapDocument.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::map_editing;
+using namespace eve::editing;
 
 namespace {
 class RoadSink final : public IMapRoadMeshSink {

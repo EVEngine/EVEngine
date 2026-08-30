@@ -1,9 +1,10 @@
-#include "editor/EditorVirtualGeometryTarget.h"
+#include "virtualgeometry_editing/VirtualGeometryTarget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::virtualgeometry_editing;
+using namespace eve::editing;
 
 namespace {
 SelectionSnapshot select(const VirtualGeometryDocumentTarget& target){SelectionSnapshot s;s.channel="virtualgeometry";s.items.push_back({SelectionDomain::Asset,TargetId(target.targetId()),StableId(target.targetId()),"virtualgeometry.import"});return s;}

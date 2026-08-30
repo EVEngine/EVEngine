@@ -1,10 +1,11 @@
-#include "editor/EditorCrowdDocument.h"
+#include "crowd_editing/CrowdDocument.h"
 
 #include "crowd/Crowd.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::crowd_editing;
+using namespace eve::editing;
 
 namespace {
 CrowdPathRecord patrolPath() {

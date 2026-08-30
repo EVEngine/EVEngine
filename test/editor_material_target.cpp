@@ -2,12 +2,14 @@
 #include "zeroerr/unittest.h"
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorMaterialTarget.h"
+#include "material_editing/MaterialTarget.h"
 #include "editor/EditorTransactionService.h"
 
 #include <tuple>
 
-using namespace eve::editor;
+using namespace eve::material_editing;
+using namespace eve::editing;
+using eve::editor::LocalTransactionBackend;
 
 namespace {
 

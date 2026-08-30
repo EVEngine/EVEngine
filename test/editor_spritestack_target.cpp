@@ -1,10 +1,11 @@
-#include "editor/EditorSpriteStackTarget.h"
+#include "spritestack_editing/SpriteStackTarget.h"
 
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::spritestack_editing;
+using namespace eve::editing;
 
 namespace {
 SelectionSnapshot select(const SpriteStackDocumentTarget& target){SelectionSnapshot s;s.channel="spritestack";s.items.push_back({SelectionDomain::Asset,TargetId(target.targetId()),StableId(target.targetId()),"spritestack.asset"});return s;}

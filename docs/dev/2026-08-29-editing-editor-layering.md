@@ -1,7 +1,7 @@
 # Editing 契约与领域编辑扩展分层设计
 
 日期：2026-08-29  
-状态：已确认设计，待分批实施
+状态：实施中；公共契约、领域卫星和纯运行时裁剪已落地，高层 facade 收敛与完整组合验证进行中
 
 ## 1. 决策
 
@@ -242,6 +242,44 @@ untrusted input
 - 只启用运行时领域、不启用 editing satellite 的裁剪构建；
 - 一个开发 editor host 和一个 runtime/in-game host 的组合路径。
 
+当前实现状态：
+
+- `IEditAuthority`、`LocalWorldAuthority` 和 `ReadOnlyAuthority` 已下沉到
+  `editing/EditingAuthority.h`；`editor/EditorAuthority.h` 仅保留类型兼容投影；
+- `physics_editing` 已拥有 collider/joint/publishing/runtime bridge；
+- `audio_editing` 已拥有 source/mixer/effect、waveform/import diagnostics、audition transport
+  和可选 live `audio::Source` bridge；
+- `scene_editing` 已拥有 hierarchy/TRS document、component payload registry 和原子 live
+  `SceneHost` publication bridge；`map_editing` 已拥有 layer/road/placement document、road
+  mesh publication 与 object import planning；
+- `editing` 已接管通用 typed graph document/domain contract，`EditorGraph` 仅保留兼容别名；
+- `editing` 已接管后台任务状态、取消、进度和结果快照契约，`EditorTaskService` 为兼容别名；
+- `animation_editing` 已接管 clip timeline、mask、retarget preview、snapshot、state graph 与可选
+  `AnimClip`/`AnimStateMachine` runtime builder；
+- `particles_editing` 已接管 emitter graph、确定性预算预览与可选 `ParticleEmitter` runtime builder；
+- `material_editing` 已接管 material graph、同步/异步编译和 revision-safe preview publication；
+- `material_editing` 已接管 material document/property、candidate-first live publication 与 graphics runtime sink；
+- `dialogue_editing`、`procgen_editing`、`npc_ai_editing` 已分别接管 conversation、PCG point、behavior graph domain；
+- `ui_editing` 已接管 UI hierarchy/layout/style/content document、snapshot、preview 与可选 `UIHost` publication；
+- `editor/EditorAudio*.h` 是有文档的 compatibility-only include，canonical 实现和源码
+  真源位于 `audio_editing`；新 consumer 应直接 include satellite；
+- audio provider 缺失与 publication failure 都返回结构化失败，并保持 authoring revision
+  不变；provider-present 成功路径发布完整 candidate 后才替换权威 document。
+- `definitions_editing`、`sceneloader_editing`、`building_editing`、`crowd_editing`、
+  `social_editing`、`localization_editing`、`network_editing`、`profiler_editing` 和
+  `queue_editing` 已接管原先位于 `editor` 的领域 document/target/runtime bridge；
+- `graphics_editing` 与 `particles_graphics_editing` 接管 offscreen readback 和粒子 presenter，
+  `domain_gizmo_editing` 接管跨领域 overlay 构建；Editor 头只投影兼容类型；
+- `editing::ExtensionProviderRegistry` 使用 generation-qualified handle 与 owning lease，覆盖
+  provider absent、拒绝卸载、卸载后 stale handle 以及旧 lease 的安全寿命；未知回调期间不持锁；
+- `audio_editing` 与 `physics_editing` 分别发布开放 factory capability，并共同运行同一套
+  candidate publication/rollback contract suite；开发 Session、`runtimeBuilder` 游戏内宿主和
+  automation 通过同一个 target coordinator 与 transaction history 完成组合验证；
+- `editing::IIntVolumeTarget` 与 `EditVolume` 是公共能力，`voxel_editing::VoxelWorldTarget`
+  是领域适配器，写入返回明确的 `FieldWriteStatus`。
+- map/voxel/heightmap target factory 与 heightmap brush 已归属各自 satellite；高度图 preview
+  mesh 的 Graphics bridge 位于 `procgen_graphics_editing`，`Editor` 只保留旧脚本兼容投影。
+
 ### Phase C：大领域迁移
 
 按 scene/map、animation/particles、graphics 内容、其余 specialist domain 分批迁移。每批只移动一组
@@ -277,6 +315,10 @@ git diff --check
 - `editor` 不再直接实现具体领域 target/runtime builder；
 - developer editor、游戏内建造和 automation 至少各有一条共享 transaction 路径证据；
 - 无新增 back-edge、allowlist、无元数据的 TODO/FALLBACK 或第二来源真相。
+
+`runtime-3d` 是第一条的规范裁剪证据：它继承 `3d` 的运行时领域集合，但显式排除
+`editor`、`editing` 和全部 `*_editing` satellite；profile resolver 会把任何经依赖闭包重新
+引入的编辑模块视为契约失败。
 
 ## 10. 明确不做
 

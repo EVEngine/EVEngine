@@ -77,7 +77,7 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS action asset editing material_editing property_access rx scene_editing tags transaction
+                   DEPS action animation_editing asset audio_editing avatar_editing biome_editing building_editing camera_editing crowd_editing decal_editing definitions_editing dialogue_editing domain_gizmo_editing editing fluids_editing graphics_editing hd2d_editing housegen_editing input_editing lighting_editing localization_editing map_editing material_editing network_editing npc_ai_editing particles_editing particles_graphics_editing procgen_editing procgen_graphics_editing profiler_editing property_access queue_editing rx scene_editing sceneloader_editing snow_editing social_editing spritestack_editing stylize_editing tags transaction ui_editing virtualgeometry_editing voxel_editing
                    GROUP 3d web
                    OPTIONAL_DEPS animation audio avatar building camera crowd daynight definitions dialogue fluids graphics hd2d housegen image network orders particles physics physics_editing production procgen profiler map scene sceneloader schema snow social spritestack ui virtualgeometry voxel weather)
 # L0 -- foundation (continued)

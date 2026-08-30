@@ -1,7 +1,8 @@
-#include "editor/EditorTextureRecipeTarget.h"
+#include "procgen_editing/TextureRecipeTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-using namespace eve::editor;
+using namespace eve::procgen_editing;
+using namespace eve::editing;
 namespace {
 SelectionSnapshot select(const TextureRecipeTarget& target) {
     SelectionSnapshot selection;

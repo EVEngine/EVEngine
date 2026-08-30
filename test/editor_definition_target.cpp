@@ -7,7 +7,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::definitions_editing;
+using namespace eve::editing;
 
 TEST_CASE("editor.definition.schema_form_exposes_field_metadata_and_reversible_edits") {
     DefinitionDocument document("weapon", "sword", 2);
@@ -66,7 +67,7 @@ TEST_CASE("editor.definition.snapshot_load_is_atomic") {
     DefinitionDocument restored("placeholder", "placeholder");
     REQUIRE(restored.loadSnapshot(snapshot).isAccepted());
     CHECK_EQ(restored.snapshotValue(), snapshot);
-    const Revision before = restored.revision();
+    const std::uint64_t before = restored.revision();
     EditorValue broken = snapshot;
     auto* object = broken.getIf<EditorValue::Object>();
     REQUIRE(object);

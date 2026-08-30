@@ -1,4 +1,4 @@
-#include "editor/EditorSurfaceFluidTarget.h"
+#include "fluids_editing/SurfaceFluidTarget.h"
 
 #include "fluids/SurfaceDropletSimulation.h"
 #include "fluids/SurfaceFluidRenderData.h"
@@ -7,7 +7,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::fluids_editing;
+using namespace eve::editing;
 
 namespace {
 SelectionSnapshot selection(const char* target) {

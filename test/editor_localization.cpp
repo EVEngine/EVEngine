@@ -1,9 +1,9 @@
-#include "editor/EditorLocalization.h"
+#include "localization_editing/LocalizationDocument.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::localization_editing;
 
 TEST_CASE("editor.localization_reports_completeness_placeholders_and_voice_metadata") {
     LocalizationDocument document;
