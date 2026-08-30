@@ -6,7 +6,6 @@
 #include "graphics/Texture.h"
 
 #include <algorithm>
-#include <bit>
 #include <cstdlib>
 #include <sstream>
 
@@ -231,16 +230,42 @@ bool TileLayer::getTileDataBool(int gid, const std::string &name) {
 }
 
 void TileLayer::setTerrainRule(int gid, int terrain, int neighborMask) {
-    if (gid <= 0 || terrain < 0) return;
-    auto &rules = tileset()->terrainRules;
-    auto it = std::find_if(rules.begin(), rules.end(), [=](const Tileset::TerrainRule &rule) {
-        return rule.terrain == terrain && rule.neighborMask == (neighborMask & 0xff);
-    });
-    if (it == rules.end()) rules.push_back({gid, terrain, neighborMask & 0xff});
-    else it->gid = gid;
+    setAutotileRule(gid, terrain, neighborMask, 1);
 }
 
-void TileLayer::clearTerrainRules() { tileset()->terrainRules.clear(); }
+void TileLayer::defineAutotileFamily(int terrain, const std::string &kind, int seed) {
+    if (terrain < 0) return;
+    const std::string normalized = (kind == "shore" || kind == "wall" || kind == "waterfall") ? kind : "terrain";
+    auto              ts         = tileset();
+    auto              it         = std::find_if(ts->terrainFamilies.begin(), ts->terrainFamilies.end(),
+                                                [terrain](const Tileset::TerrainFamily &family) { return family.terrain == terrain; });
+    if (it == ts->terrainFamilies.end())
+        ts->terrainFamilies.push_back({terrain, normalized, uint32_t(seed)});
+    else {
+        it->kind = normalized;
+        it->seed = uint32_t(seed);
+    }
+    ++tiles()->revision;
+}
+
+void TileLayer::setAutotileRule(int gid, int terrain, int neighborMask, int weight) {
+    if (gid <= 0 || terrain < 0) return;
+    auto &rules = tileset()->terrainRules;
+    auto  it    = std::find_if(rules.begin(), rules.end(), [=](const Tileset::TerrainRule &rule) {
+        return rule.gid == gid && rule.terrain == terrain && rule.neighborMask == (neighborMask & 0xff);
+    });
+    if (it == rules.end())
+        rules.push_back({gid, terrain, neighborMask & 0xff, std::max(1, weight)});
+    else
+        it->weight = std::max(1, weight);
+    ++tiles()->revision;
+}
+
+void TileLayer::clearTerrainRules() {
+    tileset()->terrainRules.clear();
+    tileset()->terrainFamilies.clear();
+    ++tiles()->revision;
+}
 
 int TileLayer::getTerrain(int x, int y) {
     auto c = config();
@@ -250,36 +275,110 @@ int TileLayer::getTerrain(int x, int y) {
     return index < t->terrainIds.size() ? t->terrainIds[index] : -1;
 }
 
+namespace {
+uint32_t autotileHash(uint32_t seed, int terrain, int x, int y) {
+    uint32_t value = seed ^ uint32_t(terrain) * 0x9e3779b9u;
+    value ^= uint32_t(x) * 0x85ebca6bu;
+    value ^= uint32_t(y) * 0xc2b2ae35u;
+    value ^= value >> 16;
+    value *= 0x7feb352du;
+    value ^= value >> 15;
+    return value;
+}
+
+void resolveTerrainRegion(TileLayer *layer, int x0, int y0, int x1, int y1) {
+    auto          c     = layer->config();
+    auto          t     = layer->tiles();
+    auto          ts    = layer->tileset();
+    constexpr int dx[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+    constexpr int dy[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+    for (int cy = std::max(0, y0); cy <= std::min(c->mapH - 1, y1); ++cy) {
+        for (int cx = std::max(0, x0); cx <= std::min(c->mapW - 1, x1); ++cx) {
+            const size_t cell    = size_t(cy * c->mapW + cx);
+            const int    terrain = cell < t->terrainIds.size() ? t->terrainIds[cell] : -1;
+            if (terrain < 0) {
+                t->gids[cell] = 0;
+                continue;
+            }
+            int mask = 0;
+            for (int i = 0; i < 8; ++i) {
+                const int nx = cx + dx[i], ny = cy + dy[i];
+                if (nx < 0 || ny < 0 || nx >= c->mapW || ny >= c->mapH) continue;
+                if (t->terrainIds[size_t(ny * c->mapW + nx)] == terrain) mask |= 1 << i;
+            }
+            uint32_t   seed         = 0;
+            int        relevantMask = 0xff;
+            const auto family       = std::find_if(
+                ts->terrainFamilies.begin(), ts->terrainFamilies.end(),
+                [terrain](const TileLayer::Tileset::TerrainFamily &candidate) { return candidate.terrain == terrain; });
+            if (family != ts->terrainFamilies.end()) {
+                seed = family->seed;
+                if (family->kind == "wall")
+                    relevantMask = 0xaa;
+                else if (family->kind == "waterfall")
+                    relevantMask = 0x22;
+            }
+            const int exactMask   = mask & relevantMask;
+            int       totalWeight = 0;
+            for (const auto &rule : ts->terrainRules)
+                if (rule.terrain == terrain && (rule.neighborMask & relevantMask) == exactMask)
+                    totalWeight += std::max(1, rule.weight);
+            if (totalWeight <= 0) continue;
+            int pick = int(autotileHash(seed, terrain, cx, cy) % uint32_t(totalWeight));
+            for (const auto &rule : ts->terrainRules) {
+                if (rule.terrain != terrain || (rule.neighborMask & relevantMask) != exactMask) continue;
+                pick -= std::max(1, rule.weight);
+                if (pick < 0) {
+                    t->gids[cell] = uint32_t(rule.gid);
+                    break;
+                }
+            }
+        }
+    }
+    layer->rebuildSpatialIndex();
+}
+}  // namespace
+
 void TileLayer::paintTerrain(int x, int y, int terrain) {
     auto c = config();
     auto t = tiles();
     if (x < 0 || y < 0 || x >= c->mapW || y >= c->mapH || terrain < 0) return;
     if (t->terrainIds.size() != t->gids.size()) t->terrainIds.assign(t->gids.size(), -1);
     t->terrainIds[size_t(y * c->mapW + x)] = terrain;
-    constexpr int dx[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
-    constexpr int dy[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
-    const int minX = std::max(0, x - 1), maxX = std::min(c->mapW - 1, x + 1);
-    const int minY = std::max(0, y - 1), maxY = std::min(c->mapH - 1, y + 1);
-    for (int cy = minY; cy <= maxY; ++cy) {
-        for (int cx = minX; cx <= maxX; ++cx) {
-            const int cellTerrain = getTerrain(cx, cy);
-            if (cellTerrain < 0) continue;
-            int mask = 0;
-            for (int i = 0; i < 8; ++i)
-                if (getTerrain(cx + dx[i], cy + dy[i]) == cellTerrain) mask |= 1 << i;
-            const Tileset::TerrainRule *best = nullptr;
-            int bestMismatch = 1000;
-            for (const auto &rule : tileset()->terrainRules) {
-                if (rule.terrain != cellTerrain) continue;
-                const int mismatch = std::popcount(unsigned(rule.neighborMask ^ mask));
-                if (mismatch < bestMismatch) {
-                    best = &rule;
-                    bestMismatch = mismatch;
-                }
-            }
-            if (best) setTile(cx, cy, best->gid);
-        }
-    }
+    resolveTerrainRegion(this, x - 1, y - 1, x + 1, y + 1);
+}
+
+void TileLayer::paintTerrainRect(int x, int y, int width, int height, int terrain) {
+    auto c = config();
+    auto t = tiles();
+    if (width <= 0 || height <= 0 || terrain < 0) return;
+    if (t->terrainIds.size() != t->gids.size()) t->terrainIds.assign(t->gids.size(), -1);
+    const int x0 = std::max(0, x), y0 = std::max(0, y);
+    const int x1 = std::min(c->mapW, x + width), y1 = std::min(c->mapH, y + height);
+    if (x0 >= x1 || y0 >= y1) return;
+    for (int cy = y0; cy < y1; ++cy)
+        for (int cx = x0; cx < x1; ++cx) t->terrainIds[size_t(cy * c->mapW + cx)] = terrain;
+    resolveTerrainRegion(this, x0 - 1, y0 - 1, x1, y1);
+}
+
+void TileLayer::fillTerrain(int terrain) {
+    if (terrain < 0) return;
+    auto t = tiles();
+    t->terrainIds.assign(t->gids.size(), terrain);
+    resolveTerrainRegion(this, 0, 0, config()->mapW - 1, config()->mapH - 1);
+}
+
+void TileLayer::eraseTerrainRect(int x, int y, int width, int height) {
+    auto c = config();
+    auto t = tiles();
+    if (width <= 0 || height <= 0) return;
+    if (t->terrainIds.size() != t->gids.size()) t->terrainIds.assign(t->gids.size(), -1);
+    const int x0 = std::max(0, x), y0 = std::max(0, y);
+    const int x1 = std::min(c->mapW, x + width), y1 = std::min(c->mapH, y + height);
+    if (x0 >= x1 || y0 >= y1) return;
+    for (int cy = y0; cy < y1; ++cy)
+        for (int cx = x0; cx < x1; ++cx) t->terrainIds[size_t(cy * c->mapW + cx)] = -1;
+    resolveTerrainRegion(this, x0 - 1, y0 - 1, x1, y1);
 }
 
 void TileLayer::setTileset(graphics::Texture *texture, int firstGid, int columns, int margin,
@@ -288,12 +387,16 @@ void TileLayer::setTileset(graphics::Texture *texture, int firstGid, int columns
     ts->visuals.clear();
     ts->animations.clear();
     ts->terrainRules.clear();
+    ts->terrainFamilies.clear();
     ts->customData.clear();
+    ts->atlases.clear();
     ts->texture = texture;
     ts->firstGid = firstGid > 0 ? firstGid : 1;
     ts->columns = columns > 0 ? columns : 1;
     ts->margin = margin > 0 ? margin : 0;
     ts->spacing = spacing > 0 ? spacing : 0;
+    ts->atlases.push_back(
+        {texture, ts->firstGid, ts->columns, ts->tileW, ts->tileH, ts->margin, ts->spacing, resource()->texturePath});
     if (texture) {
         // Default atlas tile size from Config when not set yet.
         if (ts->tileW <= 0) ts->tileW = int(config()->tileW);
@@ -305,6 +408,10 @@ void TileLayer::setTilesetTileSize(int tileW, int tileH) {
     auto ts = tileset();
     ts->tileW = tileW > 0 ? tileW : 1;
     ts->tileH = tileH > 0 ? tileH : 1;
+    if (!ts->atlases.empty()) {
+        ts->atlases.front().tileW = ts->tileW;
+        ts->atlases.front().tileH = ts->tileH;
+    }
 }
 
 void TileLayer::setCellGap(float gapX, float gapY) {
@@ -346,7 +453,10 @@ void TileLayer::setTileVisual(int gid, int x, int y, int width, int height, floa
     it->sortBias = sortBias;
 }
 
-void TileLayer::clearTileVisuals() { tileset()->visuals.clear(); }
+void TileLayer::clearTileVisuals() {
+    tileset()->visuals.clear();
+    ++tiles()->revision;
+}
 
 int TileLayer::getTileVisualCount() { return int(tileset()->visuals.size()); }
 
@@ -365,6 +475,27 @@ void TileLayer::setTileMetadata(int gid, int footprintW, int footprintH, bool wa
     it->footprintH = std::max(1, footprintH);
     it->walkable = walkable;
     it->cost = cost > 0.f ? cost : 1.f;
+    ++tiles()->revision;
+}
+
+void TileLayer::setTileNavigationProfile(int gid, bool walkable, float cost, int enterMask, int exitMask, bool opaque,
+                                         int semanticFlags) {
+    if (gid <= 0) return;
+    auto ts = tileset();
+    auto it = std::find_if(ts->visuals.begin(), ts->visuals.end(),
+                           [gid](const Tileset::Visual &visual) { return visual.gid == gid; });
+    if (it == ts->visuals.end()) {
+        ts->visuals.push_back({});
+        it      = ts->visuals.end() - 1;
+        it->gid = gid;
+    }
+    it->walkable      = walkable;
+    it->cost          = std::max(0.001f, cost);
+    it->enterMask     = uint8_t(enterMask & 0xff);
+    it->exitMask      = uint8_t(exitMask & 0xff);
+    it->opaque        = opaque;
+    it->semanticFlags = uint32_t(semanticFlags);
+    ++tiles()->revision;
 }
 
 bool TileLayer::loadTilesetManifest(const std::string &path) {
