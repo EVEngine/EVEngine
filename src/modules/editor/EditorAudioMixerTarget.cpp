@@ -37,7 +37,7 @@ EditorResult<void> AudioMixerTarget::applyDomainOperation(const DomainOperation&
         return mixerError<void>(EditorStatus::Rejected, "editor.audio.mixer-target",
                                 "Mixer operation targets another document");
     auto parsed = parseBus(operation.payload);
-    if (!parsed.accepted() || !parsed.value)
+    if (!parsed.isAccepted() || !parsed.value)
         return mixerError<void>(EditorStatus::Rejected, "editor.audio.mixer-payload",
                                 "Mixer operation contains an invalid bus");
     if (operation.type == "audio.bus.create.v1") {
@@ -210,7 +210,7 @@ EditorResult<void> AudioMixerTarget::loadSnapshot(const EditorValue& snapshot) {
     std::map<ObjectId, AudioBusSnapshot> candidate;
     for (const EditorValue& value : *buses) {
         auto parsed = parseBus(value);
-        if (!parsed.accepted() || !parsed.value ||
+        if (!parsed.isAccepted() || !parsed.value ||
             !candidate.emplace(parsed.value->id, *parsed.value).second)
             return mixerError<void>(EditorStatus::Rejected, "editor.audio.mixer-snapshot-bus",
                                     "Mixer snapshot contains an invalid or duplicate bus");

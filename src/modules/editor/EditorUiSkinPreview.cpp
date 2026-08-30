@@ -83,7 +83,7 @@ UiSkinDrawPlan UiSkinPreviewPlanner::build(const UiDocumentTarget& document,
         }
         if (!widget.text.empty()) {
             auto font = assets.font(widget.content.fontAsset);
-            if (widget.content.fontAsset.empty() || !font.accepted()) {
+            if (widget.content.fontAsset.empty() || !font.isAccepted()) {
                 result.diagnostics.push_back({RuleId("editor.ui.font-unresolved"), DiagnosticSeverity::Error,
                     "Could not resolve UI font: " + widget.content.fontAsset});
             } else {

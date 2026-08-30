@@ -45,7 +45,7 @@ TEST_CASE("editor.material.preview_uses_immutable_isolated_revisioned_request") 
     CHECK_EQ(renderer.last.documentRevision, renderedRevision);
     CHECK_EQ(renderer.last.settings.customMeshAsset, "asset://meshes/helmet.evm");
     REQUIRE(renderer.last.material.getIf<EditorValue::Object>());
-    REQUIRE(previews.publish(DocumentId("material-doc"), material.revision(), *task.value).accepted());
+    REQUIRE(previews.publish(DocumentId("material-doc"), material.revision(), *task.value).isAccepted());
     CHECK_EQ(previews.publishedArtifact(DocumentId("material-doc")), renderer.artifact);
 }
 
@@ -58,7 +58,7 @@ TEST_CASE("editor.material.preview_rejects_stale_or_failed_publication") {
     auto roughness = material.makeSet(selection(material), PropertyPath("shading.roughness"), 0.8,
                                       PropertySetMode::Absolute);
     REQUIRE(roughness.value);
-    REQUIRE(material.applyDomainOperation(*roughness.value).accepted());
+    REQUIRE(material.applyDomainOperation(*roughness.value).isAccepted());
     CHECK_EQ(static_cast<int>(previews.publish(DocumentId("doc"), material.revision(), *task.value).status),
              static_cast<int>(EditorStatus::Conflict));
     CHECK(previews.publishedArtifact(DocumentId("doc")).empty());

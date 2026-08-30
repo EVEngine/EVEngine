@@ -8,18 +8,18 @@ using namespace eve::editor;
 namespace {
 
 void applyAll(SceneTargetBase& scene, const std::vector<DomainOperation>& operations) {
-    for (const DomainOperation& operation : operations) REQUIRE(scene.applyDomainOperation(operation).accepted());
+    for (const DomainOperation& operation : operations) REQUIRE(scene.applyDomainOperation(operation).isAccepted());
 }
 
 SceneDocumentTarget sourceScene() {
     SceneDocumentTarget scene("source");
     auto root = scene.makeCreate({ObjectId("vehicle"), {}, "Vehicle", {1.0, 2.0, 3.0}});
     REQUIRE(root.value);
-    REQUIRE(scene.applyDomainOperation(*root.value).accepted());
+    REQUIRE(scene.applyDomainOperation(*root.value).isAccepted());
     auto wheel = scene.makeCreate({ObjectId("wheel"), ObjectId("vehicle"), "Wheel",
                                    {0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.8}});
     REQUIRE(wheel.value);
-    REQUIRE(scene.applyDomainOperation(*wheel.value).accepted());
+    REQUIRE(scene.applyDomainOperation(*wheel.value).isAccepted());
     return scene;
 }
 
@@ -35,7 +35,7 @@ TEST_CASE("editor.prefab.capture_and_instantiate_preserve_stable_mapping") {
     SceneDocumentTarget level("level");
     auto parent = level.makeCreate({ObjectId("garage"), {}, "Garage", {}});
     REQUIRE(parent.value);
-    REQUIRE(level.applyDomainOperation(*parent.value).accepted());
+    REQUIRE(level.applyDomainOperation(*parent.value).isAccepted());
     auto instance = prefabs.instantiate(*captured.value, "vehicle-01", ObjectId("garage"), level);
     REQUIRE(instance.value);
     CHECK_EQ(instance.value->sourceRevision, captured.value->revision);
@@ -61,11 +61,11 @@ TEST_CASE("editor.prefab_apply_and_revert_overrides_are_revisioned_and_reversibl
 
     auto rename = level.makeRename(ObjectId("instance/wheel"), "Big Wheel");
     REQUIRE(rename.value);
-    REQUIRE(level.applyDomainOperation(*rename.value).accepted());
+    REQUIRE(level.applyDomainOperation(*rename.value).isAccepted());
     SceneTransformValue changed{2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.5, 1.5, 1.5};
     auto transform = level.makeSetTransform(ObjectId("instance/wheel"), changed);
     REQUIRE(transform.value);
-    REQUIRE(level.applyDomainOperation(*transform.value).accepted());
+    REQUIRE(level.applyDomainOperation(*transform.value).isAccepted());
 
     auto badges = prefabs.inspectOverrides(*captured.value, "instance", {}, level);
     REQUIRE(badges.value);

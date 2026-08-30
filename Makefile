@@ -1,3 +1,24 @@
+# Windows GNU Make (Chocolatey Win32 port) defaults to cmd.exe. Point SHELL at
+# Git Bash so POSIX recipes work from PowerShell/cmd. Use bash.exe (not WSL's
+# System32\bash.exe). Prepend only Git\bin — Git\usr\bin has GNU link.exe and
+# would shadow MSVC's linker if it stays at the front of PATH.
+ifeq ($(OS),Windows_NT)
+	ifneq ($(wildcard C:/Program\ Files/Git/bin/bash.exe),)
+		export PATH := C:\Program Files\Git\bin;$(PATH)
+		SHELL := C:/Program Files/Git/bin/bash.exe
+	else ifneq ($(wildcard C:/Program\ Files\ \(x86\)/Git/bin/bash.exe),)
+		export PATH := C:\Program Files (x86)\Git\bin;$(PATH)
+		SHELL := C:/Program Files (x86)/Git/bin/bash.exe
+	else
+		$(error Git Bash not found (bin/bash.exe). Install Git for Windows from https://git-scm.com/download/win — this Makefile cannot run under cmd.exe.)
+	endif
+	.SHELLFLAGS := -c
+	# Win32 GNU Make CreateProcess()es recipes with no |&; even when SHELL is
+	# bash (mkdir.exe is not on PATH). Prefix simple POSIX commands with this.
+	SH = : &&
+endif
+SH ?=
+
 INSIDE_DOCKER=$(shell [ -f /.dockerenv ] && echo 1 || echo 0 )
 PWD = $(shell pwd)
 
@@ -214,8 +235,9 @@ init/submodules:
 
 # clangd: build/compile_commands.json -> host platform debug CDB
 link-compile-commands:
-	@mkdir -p build
-	ln -sfn $(PLATFORM)-debug/compile_commands.json build/compile_commands.json
+	@$(SH) mkdir -p build
+	@$(SH) ln -sfn $(PLATFORM)-debug/compile_commands.json build/compile_commands.json \
+		|| cp -f build/$(PLATFORM)-debug/compile_commands.json build/compile_commands.json
 
 # Host platform only.
 debug: build/$(PLATFORM)-debug
@@ -230,7 +252,9 @@ wsl/linux:
 	wsl --cd "$(CURDIR)" -- make build/linux
 
 # win32: Ninja/MSVC helpers（debug/release 都用 Ninja+cl，经 vcvars 定位任意 VS）
-WITH_MSVC = cmake\with-msvc.cmd
+# `: &&` forces the recipe through Git Bash. Windows GNU Make otherwise
+# CreateProcess()es a leading .cmd and mishandles flags like -j 32.
+WITH_MSVC = : && cmake/with-msvc.cmd
 # Override in CI, e.g. VS_GENERATOR="Visual Studio 17 2022"
 VS_GENERATOR ?= Visual Studio 18 2026
 # Extra cmake -D... flags (CI: CMAKE_EXTRA_ARGS=-DBUILD_TESTING=OFF)
@@ -260,8 +284,9 @@ ARCHITECTURE_BASE ?= HEAD
 
 # Reusable configure command lines: used both by the first-configure rules and
 # by the on-change reconfigure inside the build recipes below.
-WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=msvc-cl.cmd -DCMAKE_CXX_COMPILER=msvc-cl.cmd $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
-WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=msvc-cl.cmd -DCMAKE_CXX_COMPILER=msvc-cl.cmd $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
+MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
+WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
+WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
 LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
 LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .

@@ -18,7 +18,7 @@ EditorResult<void> MaterialPublishingTarget::applyDomainOperation(
     if (staging_) return document_.applyDomainOperation(operation);
     auto candidate = cloneDomainState();
     auto applied = candidate->applyDomainOperation(operation);
-    if (!applied.accepted()) return applied;
+    if (!applied.isAccepted()) return applied;
     return commitDomainState(std::move(candidate));
 }
 
@@ -40,7 +40,7 @@ EditorResult<void> MaterialPublishingTarget::commitDomainState(
                                      "editor.material.publishing-sink-missing",
                                      "Material publishing target requires a live runtime sink");
     EditorResult<void> published = sink_->publish(typed->document_);
-    if (!published.accepted()) return published;
+    if (!published.isAccepted()) return published;
     document_ = typed->document_;
     return EditorResult<void>::applied();
 }

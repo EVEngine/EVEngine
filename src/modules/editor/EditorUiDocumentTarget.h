@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <map>
 #include <string>
@@ -102,7 +102,7 @@ public:
 };
 
 /** @brief Serializable UI authoring document with hierarchy and inspector capabilities. */
-class UiDocumentTarget final : public IEditableTargetV2,
+class UiDocumentTarget final : public virtual IEditableTarget,
                                public IDomainOperationTarget,
                                public IDomainOperationTargetStaging,
                                public IUiDocumentEditTarget,

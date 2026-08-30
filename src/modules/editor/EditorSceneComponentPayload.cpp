@@ -92,7 +92,7 @@ SceneComponentPropertyBindings::translate(const SelectionSnapshot& selection) co
 EditorResult<IDomainOperationTarget*> SceneComponentPropertyBindings::payloadOperationTarget(
     const SelectionSnapshot& selection) const {
     auto translated = translate(selection);
-    if (!translated.accepted() || !translated.value) {
+    if (!translated.isAccepted() || !translated.value) {
         EditorResult<IDomainOperationTarget*> result;
         result.status = translated.status;
         result.diagnostics = std::move(translated.diagnostics);
@@ -113,7 +113,7 @@ std::vector<EditorDiagnostic> SceneComponentPropertyBindings::validateComponent(
 eve::Result<eve::Revision> SceneComponentPropertyBindings::currentRevision(
     const SelectionSnapshot& selection) const {
     auto translated = translate(selection);
-    if (!translated.accepted() || !translated.value)
+    if (!translated.isAccepted() || !translated.value)
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Scene component selection is not bound",
             "editor.scene.component-binding", {}, "editor.SceneComponentPropertyBindings"));
@@ -122,14 +122,14 @@ eve::Result<eve::Revision> SceneComponentPropertyBindings::currentRevision(
 
 PropertySchema SceneComponentPropertyBindings::schema(const SelectionSnapshot& selection) const {
     auto translated = translate(selection);
-    if (!translated.accepted() || !translated.value) return {};
+    if (!translated.isAccepted() || !translated.value) return {};
     return translated.value->first->properties->schema(translated.value->second);
 }
 
 PropertyReadResult SceneComponentPropertyBindings::read(const SelectionSnapshot& selection,
                                                          const PropertyPath& path) const {
     auto translated = translate(selection);
-    if (!translated.accepted() || !translated.value)
+    if (!translated.isAccepted() || !translated.value)
         return {PropertyReadState::Error, {}, std::move(translated.diagnostics)};
     return translated.value->first->properties->read(translated.value->second, path);
 }
@@ -138,7 +138,7 @@ EditorResult<DomainOperation> SceneComponentPropertyBindings::makeSet(
     const SelectionSnapshot& selection, const PropertyPath& path, const EditorValue& value,
     PropertySetMode mode) const {
     auto translated = translate(selection);
-    if (!translated.accepted() || !translated.value) {
+    if (!translated.isAccepted() || !translated.value) {
         EditorResult<DomainOperation> result;
         result.status = translated.status;
         result.diagnostics = std::move(translated.diagnostics);
@@ -150,7 +150,7 @@ EditorResult<DomainOperation> SceneComponentPropertyBindings::makeSet(
 EditorResult<DomainOperation> SceneComponentPropertyBindings::makeReset(
     const SelectionSnapshot& selection, const PropertyPath& path) const {
     auto translated = translate(selection);
-    if (!translated.accepted() || !translated.value) {
+    if (!translated.isAccepted() || !translated.value) {
         EditorResult<DomainOperation> result;
         result.status = translated.status;
         result.diagnostics = std::move(translated.diagnostics);
@@ -233,7 +233,7 @@ EditorResult<ISceneComponentPayloadProvider*> SceneComponentPayloadRegistry::res
 EditorResult<IPropertyProvider*> SceneComponentPayloadRegistry::propertyProvider(
     const SelectionSnapshot& selection) const {
     auto provider = resolve(selection);
-    if (!provider.accepted() || !provider.value) {
+    if (!provider.isAccepted() || !provider.value) {
         EditorResult<IPropertyProvider*> result;
         result.status = provider.status;
         result.diagnostics = std::move(provider.diagnostics);
@@ -245,7 +245,7 @@ EditorResult<IPropertyProvider*> SceneComponentPayloadRegistry::propertyProvider
 EditorResult<IDomainOperationTarget*> SceneComponentPayloadRegistry::operationTarget(
     const SelectionSnapshot& selection) const {
     auto provider = resolve(selection);
-    if (!provider.accepted() || !provider.value) {
+    if (!provider.isAccepted() || !provider.value) {
         EditorResult<IDomainOperationTarget*> result;
         result.status = provider.status;
         result.diagnostics = std::move(provider.diagnostics);

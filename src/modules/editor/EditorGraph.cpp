@@ -84,7 +84,7 @@ EditorResult<void> GraphDocument::setParameters(EditorValue parameters) {
     if (parameters.type() != EditorValue::Type::Object)
         return graphError<void>(EditorStatus::Rejected, "editor.graph.invalid-parameters",
                                 "Graph parameters must be an object");
-    if (!parameters.withinLimits(4, 4096, 256 * 1024))
+    if (!parameters.isWithinLimits(4, 4096, 256 * 1024))
         return graphError<void>(EditorStatus::Rejected, "editor.graph.parameters-too-large",
                                 "Graph parameters exceed editor document limits");
     parameters_ = std::move(parameters);
@@ -191,7 +191,7 @@ EditorResult<TaskId> MaterialEditorService::compileAsync(const DocumentId& docum
         context.reportProgress(1.0F);
         return outcome;
     });
-    if (!queued.accepted() || !queued.value) return queued;
+    if (!queued.isAccepted() || !queued.value) return queued;
     tasks_.emplace(*queued.value, Task{document, {}, &tasks});
     return queued;
 }
@@ -211,7 +211,7 @@ EditorResult<MaterialCompileResult> MaterialEditorService::result(const TaskId& 
                                                  "Material compile task does not exist");
     if (found->second.service) {
         const auto snapshot = found->second.service->snapshot(task);
-        if (!snapshot.accepted() || !snapshot.value)
+        if (!snapshot.isAccepted() || !snapshot.value)
             return graphError<MaterialCompileResult>(EditorStatus::NotFound, "editor.material.task-not-found",
                                                      "Material compile task does not exist");
         if (snapshot.value->state == EditorTaskState::Queued || snapshot.value->state == EditorTaskState::Running) {
@@ -256,7 +256,7 @@ EditorResult<void> MaterialEditorService::publishPreview(const DocumentId& docum
     if (compileResult.status == EditorStatus::Pending)
         return graphError<void>(EditorStatus::Conflict, "editor.material.compile-pending",
                                 "Material compile task has not completed");
-    if (!compileResult.accepted() || !compileResult.value)
+    if (!compileResult.isAccepted() || !compileResult.value)
         return graphError<void>(EditorStatus::Failed, "editor.material.compile-result-unavailable",
                                 "Material compile result is unavailable");
     const MaterialCompileResult& compiled = *compileResult.value;

@@ -2,7 +2,8 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
+#include "scene_editing/SceneEditingCommands.h"
 
 #include <map>
 #include <memory>
@@ -13,20 +14,8 @@ namespace eve::editor {
 
 class SceneComponentPayloadRegistry;
 
-/** @brief Serializable 3D transform used by scene editing capabilities. */
-struct SceneTransformValue {
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
-    double rotationX = 0.0;
-    double rotationY = 0.0;
-    double rotationZ = 0.0;
-    double scaleX = 1.0;
-    double scaleY = 1.0;
-    double scaleZ = 1.0;
-
-    auto operator<=>(const SceneTransformValue&) const = default;
-};
+using SceneTransformValue = eve::scene_editing::SceneTransformValue;
+using ITransformEditTarget = eve::scene_editing::ITransformEditTarget;
 
 /** @brief Immutable scene object snapshot returned across target boundaries. */
 struct SceneObjectSnapshot {
@@ -64,19 +53,6 @@ public:
     virtual EditorResult<DomainOperation> makeReparent(const ObjectId& id, const ObjectId& parent) const = 0;
 };
 
-/** @brief Stable transform capability implemented by document and runtime targets. */
-class ITransformEditTarget {
-public:
-    virtual ~ITransformEditTarget() = default;
-    /** @brief Stable capability identity used instead of cross-module RTTI. */
-    static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.transform"); }
-    /** @brief Read one immutable transform value. */
-    virtual EditorResult<SceneTransformValue> readTransform(const ObjectId& id) const = 0;
-    /** @brief Build a reversible transform operation without applying it. */
-    virtual EditorResult<DomainOperation> makeSetTransform(const ObjectId&            id,
-                                                           const SceneTransformValue& transform) const = 0;
-};
-
 /** @brief Safe metadata for one external component link on a live scene object. */
 struct SceneComponentLinkSnapshot {
     std::string kind;
@@ -101,9 +77,10 @@ public:
  * Concrete subclasses differ only in host-facing target type. The mutation
  * protocol and capabilities stay identical so tools contain no backend branch.
  */
-class SceneTargetBase : public IEditableTargetV2,
+class SceneTargetBase : public virtual IEditableTarget,
                         public IDomainOperationTarget,
                         public IDomainOperationTargetStaging,
+                        public eve::editing::IEditingSnapshotProvider,
                         public ISceneHierarchyEditTarget,
                         public ITransformEditTarget {
 public:
@@ -132,7 +109,7 @@ public:
     /** @brief Bind an optional non-owning registry used by component inspectors. */
     void bindComponentPayloads(SceneComponentPayloadRegistry* registry) { componentPayloads_ = registry; }
     /** @brief Capture deterministic scene content for document persistence. */
-    EditorValue snapshotValue() const;
+    EditorValue snapshotValue() const override;
 
 private:
     friend class ScenePropertyProvider;
@@ -200,19 +177,19 @@ private:
 class ScenePlacementToolLogic {
 public:
     /** @brief Query hierarchy capability and build a create operation. */
-    EditorResult<DomainOperation> plan(IEditableTargetV2& target, const CreateSceneObjectRequest& request) const;
+    EditorResult<DomainOperation> plan(IEditableTarget& target, const CreateSceneObjectRequest& request) const;
 };
 
 /** @brief Backend-neutral hierarchy editing logic for outliner-style tools. */
 class SceneHierarchyToolLogic {
 public:
     /** @brief Query hierarchy capability and build a leaf deletion operation. */
-    EditorResult<DomainOperation> planDelete(IEditableTargetV2& target, const ObjectId& object) const;
+    EditorResult<DomainOperation> planDelete(IEditableTarget& target, const ObjectId& object) const;
     /** @brief Query hierarchy capability and build a rename operation. */
-    EditorResult<DomainOperation> planRename(IEditableTargetV2& target, const ObjectId& object,
+    EditorResult<DomainOperation> planRename(IEditableTarget& target, const ObjectId& object,
                                              const std::string& name) const;
     /** @brief Query hierarchy capability and build a reparent operation. */
-    EditorResult<DomainOperation> planReparent(IEditableTargetV2& target, const ObjectId& object,
+    EditorResult<DomainOperation> planReparent(IEditableTarget& target, const ObjectId& object,
                                                const ObjectId& parent) const;
 };
 
@@ -220,7 +197,7 @@ public:
 class SceneTransformToolLogic {
 public:
     /** @brief Query transform capability and build a transform operation. */
-    EditorResult<DomainOperation> plan(IEditableTargetV2& target, const ObjectId& object,
+    EditorResult<DomainOperation> plan(IEditableTarget& target, const ObjectId& object,
                                        const SceneTransformValue& transform) const;
 };
 

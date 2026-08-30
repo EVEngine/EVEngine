@@ -165,14 +165,14 @@ bool EditorWorkspace::select(const std::string& channel, const std::string& doma
     if (additive) items = selection_.snapshot(channel).items;
     if (std::find(items.begin(), items.end(), selected) == items.end()) items.push_back(selected);
     const auto result = selection_.set(channel, std::move(items), selected);
-    if (!result.accepted()) return false;
+    if (!result.isAccepted()) return false;
     changed();
     return true;
 }
 
 bool EditorWorkspace::clearSelection(const std::string& channel) {
     const auto result = selection_.clear(channel);
-    if (!result.accepted()) return false;
+    if (!result.isAccepted()) return false;
     changed();
     return true;
 }
@@ -205,7 +205,7 @@ std::uint64_t EditorWorkspace::getSelectionSequence(const std::string& channel) 
 }
 
 bool EditorWorkspace::focus(const std::string& channel, const std::string& surface, const std::string& item) {
-    return focus_.focus(channel, StableId(surface), StableId(item)).accepted();
+    return focus_.focus(channel, StableId(surface), StableId(item)).isAccepted();
 }
 
 std::string EditorWorkspace::getFocusedSurface(const std::string& channel) const {

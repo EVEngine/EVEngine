@@ -25,14 +25,14 @@ public:
 TEST_CASE("editor.map.road_mesh_publication_and_object_import_are_revision_safe") {
     MapDocumentTarget map("city");
     auto roadLayer = map.makeCreateLayer({StableId("roads"), "Roads", "road", true, false, 1.0, 0});
-    REQUIRE(roadLayer.value); CHECK(map.applyDomainOperation(*roadLayer.value).accepted());
+    REQUIRE(roadLayer.value); CHECK(map.applyDomainOperation(*roadLayer.value).isAccepted());
     auto objectLayer = map.makeCreateLayer({StableId("objects"), "Objects", "object", true, false, 1.0, 1});
-    REQUIRE(objectLayer.value); CHECK(map.applyDomainOperation(*objectLayer.value).accepted());
+    REQUIRE(objectLayer.value); CHECK(map.applyDomainOperation(*objectLayer.value).isAccepted());
     MapRoadRecord road{StableId("main"), StableId("roads"), "Main", "asphalt", false,
         {{StableId("a"), 0.0, 0.0, 0.0, 4.0}, {StableId("b"), 10.0, 0.0, 0.0, 4.0}}};
-    auto setRoad = map.makeSetRoad(road); REQUIRE(setRoad.value); CHECK(map.applyDomainOperation(*setRoad.value).accepted());
+    auto setRoad = map.makeSetRoad(road); REQUIRE(setRoad.value); CHECK(map.applyDomainOperation(*setRoad.value).isAccepted());
     RoadSink sink; MapRoadMeshPublisher publisher;
-    CHECK(publisher.publish(map, StableId("main"), map.revision(), sink).accepted());
+    CHECK(publisher.publish(map, StableId("main"), map.revision(), sink).isAccepted());
     CHECK_EQ(sink.published.value(), "main"); CHECK_EQ(sink.publishedRevision, map.revision());
     CHECK_EQ(static_cast<int>(publisher.publish(map, StableId("main"), map.revision() - 1, sink).status),
              static_cast<int>(EditorStatus::Conflict));
@@ -42,7 +42,7 @@ TEST_CASE("editor.map.road_mesh_publication_and_object_import_are_revision_safe"
         {{"tree-01", "asset://tree", 2.0, 0.0, 3.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0}},
         "import/forest");
     CHECK_EQ(static_cast<int>(imported.status), static_cast<int>(EditorStatus::Applied));
-    REQUIRE_EQ(imported.operations.size(), 1U); CHECK(map.applyDomainOperation(imported.operations[0]).accepted());
+    REQUIRE_EQ(imported.operations.size(), 1U); CHECK(map.applyDomainOperation(imported.operations[0]).isAccepted());
     CHECK_EQ(map.mapPlacements()[0].id.value(), "import/forest/tree-01");
 }
 
@@ -58,7 +58,7 @@ DomainOperation inverse(const DomainOperation& source) {
 void createLayer(MapDocumentTarget& map, MapLayerRecord layer) {
     auto operation = map.makeCreateLayer(layer);
     REQUIRE(operation.value);
-    REQUIRE(map.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(map.applyDomainOperation(*operation.value).isAccepted());
 }
 
 MapRoadRecord road() {
@@ -84,14 +84,14 @@ TEST_CASE("editor.map.layers_are_ordered_reversible_and_protect_nonempty_content
     changed.visible = false;
     auto set = map.makeSetLayer(changed);
     REQUIRE(set.value);
-    REQUIRE(map.applyDomainOperation(*set.value).accepted());
+    REQUIRE(map.applyDomainOperation(*set.value).isAccepted());
     CHECK_EQ(map.mapLayers()[2].name, "Props");
-    REQUIRE(map.applyDomainOperation(inverse(*set.value)).accepted());
+    REQUIRE(map.applyDomainOperation(inverse(*set.value)).isAccepted());
     CHECK_EQ(map.mapLayers()[2].name, "Objects");
 
     auto addRoad = map.makeSetRoad(road());
     REQUIRE(addRoad.value);
-    REQUIRE(map.applyDomainOperation(*addRoad.value).accepted());
+    REQUIRE(map.applyDomainOperation(*addRoad.value).isAccepted());
     CHECK_EQ(static_cast<int>(map.makeDeleteLayer(StableId("roads")).status),
              static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(static_cast<int>(map.makeCreateLayer({StableId("duplicate-order"), "Duplicate", "tile",
@@ -105,7 +105,7 @@ TEST_CASE("editor.map.road_spline_and_placements_support_create_update_undo") {
     createLayer(map, {StableId("objects"), "Objects", "object", true, false, 1.0, 1});
     auto addRoad = map.makeSetRoad(road());
     REQUIRE(addRoad.value);
-    REQUIRE(map.applyDomainOperation(*addRoad.value).accepted());
+    REQUIRE(map.applyDomainOperation(*addRoad.value).isAccepted());
     CHECK_EQ(map.mapRoads()[0].points.size(), size_t{3});
     const auto preview = map.previewRoad(StableId("main-road"));
     CHECK_EQ(static_cast<int>(preview.status), static_cast<int>(EditorStatus::Applied));
@@ -122,18 +122,18 @@ TEST_CASE("editor.map.road_spline_and_placements_support_create_update_undo") {
     changed.closed = true;
     auto updateRoad = map.makeSetRoad(changed);
     REQUIRE(updateRoad.value);
-    REQUIRE(map.applyDomainOperation(*updateRoad.value).accepted());
+    REQUIRE(map.applyDomainOperation(*updateRoad.value).isAccepted());
     CHECK_EQ(map.mapRoads()[0].points[1].width, 8.0);
-    REQUIRE(map.applyDomainOperation(inverse(*updateRoad.value)).accepted());
+    REQUIRE(map.applyDomainOperation(inverse(*updateRoad.value)).isAccepted());
     CHECK_EQ(map.mapRoads()[0].points[1].width, 5.0);
 
     MapPlacementRecord tree{StableId("tree-1"), StableId("objects"), "asset://models/tree.evm",
                             4.0, 0.0, 8.0, 0.0, 30.0, 0.0, 1.0, 1.0, 1.0};
     auto place = map.makeSetPlacement(tree);
     REQUIRE(place.value);
-    REQUIRE(map.applyDomainOperation(*place.value).accepted());
+    REQUIRE(map.applyDomainOperation(*place.value).isAccepted());
     CHECK_EQ(map.mapPlacements()[0].asset, "asset://models/tree.evm");
-    REQUIRE(map.applyDomainOperation(inverse(*place.value)).accepted());
+    REQUIRE(map.applyDomainOperation(inverse(*place.value)).isAccepted());
     CHECK(map.mapPlacements().empty());
 }
 
@@ -147,11 +147,11 @@ TEST_CASE("editor.map.locked_layers_reject_content_edits_and_batch_staging_is_at
     REQUIRE(candidate);
     auto unlock = candidate->makeSetLayer({StableId("roads"), "Roads", "road", true, false, 1.0, 0});
     REQUIRE(unlock.value);
-    REQUIRE(candidate->applyDomainOperation(*unlock.value).accepted());
+    REQUIRE(candidate->applyDomainOperation(*unlock.value).isAccepted());
     auto addRoad = candidate->makeSetRoad(road());
     REQUIRE(addRoad.value);
-    REQUIRE(candidate->applyDomainOperation(*addRoad.value).accepted());
-    REQUIRE(map.commitDomainState(std::move(staged)).accepted());
+    REQUIRE(candidate->applyDomainOperation(*addRoad.value).isAccepted());
+    REQUIRE(map.commitDomainState(std::move(staged)).isAccepted());
     CHECK_EQ(map.mapRoads().size(), size_t{1});
 }
 
@@ -167,12 +167,12 @@ TEST_CASE("editor.map.snapshot_round_trip_and_geometry_diagnostics") {
     zero.points[2].z = zero.points[0].z;
     auto add = map.makeSetRoad(zero);
     REQUIRE(add.value);
-    REQUIRE(map.applyDomainOperation(*add.value).accepted());
+    REQUIRE(map.applyDomainOperation(*add.value).isAccepted());
     CHECK_EQ(map.validate().size(), size_t{2});
 
     const EditorValue snapshot = map.snapshotValue();
     MapDocumentTarget restored("snapshot-map");
-    REQUIRE(restored.loadSnapshot(snapshot).accepted());
+    REQUIRE(restored.loadSnapshot(snapshot).isAccepted());
     CHECK_EQ(restored.snapshotValue(), snapshot);
     const Revision before = restored.revision();
     EditorValue broken = snapshot;

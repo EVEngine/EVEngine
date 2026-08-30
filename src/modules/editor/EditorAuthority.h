@@ -1,5 +1,6 @@
 #pragma once
 
+#include "editing/EditingTargetOperations.h"
 #include "editor/EditorProtocol.h"
 #include "editor/EditorTarget.h"
 
@@ -9,44 +10,8 @@
 
 namespace eve::editor {
 
-/** @brief Target capability that applies serializable domain operations. */
-class IDomainOperationTarget : public virtual IEditableTarget {
-public:
-    ~IDomainOperationTarget() override = default;
-
-    /**
-     * @brief Apply one validated domain operation.
-     * @param operation Operation whose target must match this target.
-     * @return Applied on mutation, otherwise a structured rejection/failure.
-     */
-    virtual EditorResult<void> applyDomainOperation(const DomainOperation& operation) = 0;
-};
-
-/**
- * @brief Optional candidate/publish capability for atomic domain operations.
- *
- * A LocalWorldAuthority uses this capability for compensation. The clone is
- * fully detached from the authoritative target; all inverse operations are
- * applied and validated on it first. The publish operation must atomically
- * replace the target state and must leave the target unchanged when it
- * returns a failure. Implementations that cannot provide this contract must
- * omit the capability and receive an explicit Unsupported result.
- */
-class IDomainOperationTargetStaging {
-public:
-    virtual ~IDomainOperationTargetStaging() = default;
-
-    /** @brief Clone the complete domain target state into an owning candidate. */
-    [[nodiscard]] virtual std::unique_ptr<IDomainOperationTarget> cloneDomainState() const = 0;
-
-    /**
-     * @brief Atomically publish a previously validated candidate state.
-     * @param candidate Owning candidate consumed by the publish attempt.
-     * @return Applied when the candidate is installed, otherwise a failure
-     *         with the original target still unchanged.
-     */
-    [[nodiscard]] virtual EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) = 0;
-};
+using IDomainOperationTarget        = eve::editing::IDomainOperationTarget;
+using IDomainOperationTargetStaging = eve::editing::IDomainOperationTargetStaging;
 
 /** @brief Final validation and commit boundary for editor mutations. */
 class IEditAuthority {

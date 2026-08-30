@@ -8,7 +8,7 @@ using namespace eve::editor;
 namespace {
 void apply(CameraDocumentTarget& target, EditorResult<DomainOperation> operation) {
     REQUIRE(operation.value);
-    REQUIRE(target.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
 }
 SelectionSnapshot select(const CameraDocumentTarget& target, const char* id) {
     SelectionSnapshot selection;
@@ -28,13 +28,13 @@ TEST_CASE("editor.camera.rigs_are_property_editable_reversible_and_persistent") 
     apply(target, target.makeCreateRig(rig("hero", "orbit")));
     const auto selection = select(target, "hero");
     auto edit = target.makeSet(selection, PropertyPath("rig.fov"), 72.0, PropertySetMode::Absolute);
-    REQUIRE(edit.value); REQUIRE(target.applyDomainOperation(*edit.value).accepted());
+    REQUIRE(edit.value); REQUIRE(target.applyDomainOperation(*edit.value).isAccepted());
     CHECK_EQ(*target.read(selection, PropertyPath("rig.fov")).value.getIf<double>(), 72.0);
     DomainOperation undo = *edit.value; undo.payload = edit.value->inverse;
-    REQUIRE(target.applyDomainOperation(undo).accepted());
+    REQUIRE(target.applyDomainOperation(undo).isAccepted());
     CHECK_EQ(*target.read(selection, PropertyPath("rig.fov")).value.getIf<double>(), 60.0);
     CameraDocumentTarget restored("copy");
-    REQUIRE(restored.loadSnapshot(target.snapshotValue()).accepted());
+    REQUIRE(restored.loadSnapshot(target.snapshotValue()).isAccepted());
     CHECK_EQ(restored.rigs().front().id.value(), std::string("hero"));
 }
 
@@ -61,8 +61,8 @@ TEST_CASE("editor.camera.invalid_snapshot_and_runtime_generation_are_atomic") {
     auto* rigs=(*content)["rigs"].getIf<EditorValue::Array>(); auto* first=(*rigs)[0].getIf<EditorValue::Object>(); (*first)["fov"]=200.0;
     CHECK_EQ(static_cast<int>(target.loadSnapshot(invalid).status),static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(target.snapshotValue(),before);
-    CameraDocumentRuntime runtime; REQUIRE(runtime.publish(target,nullptr).accepted());
+    CameraDocumentRuntime runtime; REQUIRE(runtime.publish(target,nullptr).isAccepted());
     auto* generation=runtime.controller(); const auto revision=runtime.revision();
-    CameraDocumentTarget empty("empty"); REQUIRE(runtime.publish(empty,nullptr).accepted());
+    CameraDocumentTarget empty("empty"); REQUIRE(runtime.publish(empty,nullptr).isAccepted());
     CHECK(runtime.controller()!=generation); CHECK(runtime.revision()!=revision);
 }

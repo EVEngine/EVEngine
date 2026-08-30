@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <string>
 #include <vector>
@@ -41,7 +41,7 @@ struct FluidSimulationPreview {
 };
 
 /** @brief Reversible property document for fluid simulation authoring. */
-class FluidSimulationTarget final : public IEditableTargetV2,
+class FluidSimulationTarget final : public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IPropertyProvider {
 public:

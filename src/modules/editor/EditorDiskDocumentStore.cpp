@@ -78,7 +78,7 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::read(const std::string& re
                        "Document resource is not persisted: " + resourceUri);
     const std::string         json{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
     EditorResult<EditorValue> parsed = editorValueFromJson(json);
-    if (!parsed.accepted() || !parsed.value)
+    if (!parsed.isAccepted() || !parsed.value)
         return failure(EditorStatus::Failed, "editor.document.invalid-envelope", "Document JSON envelope is invalid");
 
     const EditorValue* content       = member(*parsed.value, "content");
@@ -105,7 +105,7 @@ EditorResult<StoredDocument> DiskAtomicDocumentStore::compareAndSwap(const std::
 
     StoredDocument               current;
     EditorResult<StoredDocument> existing = read(resourceUri);
-    if (existing.accepted() && existing.value)
+    if (existing.isAccepted() && existing.value)
         current = *existing.value;
     else if (existing.status != EditorStatus::NotFound)
         return existing;
@@ -179,7 +179,7 @@ EditorResult<StoredDocument> AutosaveService::writeDraft(const DocumentSnapshot&
     Revision                           revision = 0;
     std::string                        hash;
     const EditorResult<StoredDocument> existing = store_->read(uri);
-    if (existing.accepted() && existing.value) {
+    if (existing.isAccepted() && existing.value) {
         revision = existing.value->revision;
         hash     = existing.value->contentHash;
     } else if (existing.status != EditorStatus::NotFound) {
@@ -197,7 +197,7 @@ EditorResult<StoredDocument> AutosaveService::writeDraft(const DocumentSnapshot&
 EditorResult<AutosaveDraft> AutosaveService::readDraft(const DocumentId& document) const {
     if (!store_ || document.empty()) return draftFailure("editor.autosave.invalid", "Autosave store is required");
     const EditorResult<StoredDocument> stored = store_->read(draftUri(document));
-    if (!stored.accepted() || !stored.value) {
+    if (!stored.isAccepted() || !stored.value) {
         EditorResult<AutosaveDraft> result;
         result.status      = stored.status;
         result.diagnostics = stored.diagnostics;

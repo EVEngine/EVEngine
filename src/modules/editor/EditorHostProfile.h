@@ -1,5 +1,6 @@
 #pragma once
 
+#include "editing/EditingProtocol.h"
 #include "editor/EditorIds.h"
 
 #include <cstdint>
@@ -9,7 +10,7 @@
 namespace eve::editor {
 
 /** @brief Kind of presentation host running an editor session. */
-enum class HostKind { Developer, RuntimeBuilder, RuntimeAdmin, Automation };
+using HostKind = eve::editing::HostKind;
 
 /** @brief Coarse host features used to discover and gate editor extensions. */
 enum class HostFeature : uint64_t {

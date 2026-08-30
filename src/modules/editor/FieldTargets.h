@@ -29,7 +29,7 @@ public:
     int height() const override;
     bool containsCell(int x, int y) const override;
     int readInt(int x, int y) const override;
-    bool writeInt(int x, int y, int value) override;
+    FieldWriteStatus writeInt(int x, int y, int value) override;
     TileBuffer *buffer() const { return buffer_; }
 private:
     std::string id_;
@@ -51,7 +51,7 @@ public:
     int height() const override;
     bool containsCell(int x, int y) const override;
     int readInt(int x, int y) const override;
-    bool writeInt(int x, int y, int value) override;
+    FieldWriteStatus writeInt(int x, int y, int value) override;
     map::TileLayer *layer() const { return layer_; }
 private:
     std::string id_;

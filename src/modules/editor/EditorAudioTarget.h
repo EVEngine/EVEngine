@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 
 #include <map>
 #include <string>
@@ -11,7 +11,7 @@
 namespace eve::editor {
 
 /** @brief Serializable audio-source authoring target independent of OpenAL handles. */
-class AudioSourceTarget final : public IEditableTargetV2,
+class AudioSourceTarget final : public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IPropertyProvider {
@@ -111,7 +111,7 @@ struct AudioBusSnapshot {
 };
 
 /** @brief Serializable mixer-bus hierarchy, including master bus. */
-class AudioMixerTarget final : public IEditableTargetV2,
+class AudioMixerTarget final : public virtual IEditableTarget,
                                public IDomainOperationTarget,
                                public IDomainOperationTargetStaging {
 public:

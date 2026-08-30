@@ -103,8 +103,14 @@ int Map::publishCollision(TileLayer *layer) {
             const int gid = int(tileGid(tiles->gids[size_t(y * config->mapW + x)]));
             const auto it = std::find_if(tileset->visuals.begin(), tileset->visuals.end(),
                                          [gid](const auto &v) { return v.gid == gid; });
-            solid[size_t(y * config->mapW + x)] =
-                gid != 0 && it != tileset->visuals.end() && !it->walkable;
+            if (gid != 0 && it != tileset->visuals.end() && !it->collisionShapes.empty()) {
+                const float originX = config->originX + x * (config->tileW + config->cellGapX);
+                const float originY = config->originY + y * (config->tileH + config->cellGapY);
+                for (const auto &shape : it->collisionShapes)
+                    collisionRects_.push_back({originX + shape.x, originY + shape.y, shape.width, shape.height});
+            } else {
+                solid[size_t(y * config->mapW + x)] = gid != 0 && it != tileset->visuals.end() && !it->walkable;
+            }
         }
     }
     for (int y = 0; y < config->mapH; ++y) {
@@ -286,8 +292,13 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("getTileDataNumber", &TileLayer::getTileDataNumber);
     layer.addFunc("getTileDataBool", &TileLayer::getTileDataBool);
     layer.addFunc("setTerrainRule", &TileLayer::setTerrainRule);
+    layer.addFunc("defineAutotileFamily", &TileLayer::defineAutotileFamily);
+    layer.addFunc("setAutotileRule", &TileLayer::setAutotileRule);
     layer.addFunc("clearTerrainRules", &TileLayer::clearTerrainRules);
     layer.addFunc("paintTerrain", &TileLayer::paintTerrain);
+    layer.addFunc("paintTerrainRect", &TileLayer::paintTerrainRect);
+    layer.addFunc("fillTerrain", &TileLayer::fillTerrain);
+    layer.addFunc("eraseTerrainRect", &TileLayer::eraseTerrainRect);
     layer.addFunc("getTerrain", &TileLayer::getTerrain);
     layer.addFunc("setTileset", &TileLayer::setTileset);
     layer.addFunc("setTilesetTileSize", &TileLayer::setTilesetTileSize);
@@ -295,6 +306,7 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("clearTileVisuals", &TileLayer::clearTileVisuals);
     layer.addFunc("getTileVisualCount", &TileLayer::getTileVisualCount);
     layer.addFunc("setTileMetadata", &TileLayer::setTileMetadata);
+    layer.addFunc("setTileNavigationProfile", &TileLayer::setTileNavigationProfile);
     layer.addFunc("loadTilesetManifest", &TileLayer::loadTilesetManifest);
     layer.addFunc("getTilesetTexture", &TileLayer::getTilesetTexture);
     layer.addFunc("getTilesetFirstGid", &TileLayer::getTilesetFirstGid);

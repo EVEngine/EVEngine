@@ -120,7 +120,7 @@ EditorResult<DomainOperation> SurfaceFluidTarget::makeSet(const SelectionSnapsho
     if (!matches(s) || !d || m != PropertySetMode::Absolute)
         return fail<DomainOperation>(EditorStatus::Rejected, "editor.surface-fluid.set",
                                      "Surface fluid property requires a matching absolute edit");
-    auto checked=validatePropertyValue(*d,v);if(!checked.accepted()){EditorResult<DomainOperation> r;r.status=checked.status;r.diagnostics=std::move(checked.diagnostics);return r;}
+    auto checked=validatePropertyValue(*d,v);if(!checked.isAccepted()){EditorResult<DomainOperation> r;r.status=checked.status;r.diagnostics=std::move(checked.diagnostics);return r;}
     EditorValue candidate=settingsValue(settings_);(*candidate.getIf<EditorValue::Object>())[p.value()]=v;auto parsed=parse(candidate);if(!parsed.value)return fail<DomainOperation>(parsed.status,"editor.surface-fluid.invalid","Surface fluid property conflicts with other settings");
     DomainOperation op;op.type="surface-fluid.settings.replace.v1";op.inverseType=op.type;op.target=TargetId(id_);op.payload=settingsValue(*parsed.value);op.inverse=settingsValue(settings_);op.hasInverse=true;op.affectedProperties.push_back(p.value());op.mergeKey="surface-fluid:"+id_+":"+p.value();return EditorResult<DomainOperation>::applied(std::move(op));
 }

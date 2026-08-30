@@ -21,7 +21,7 @@ SelectionSnapshot selection(const LightingPropertyTargetBase& target) {
 void set(LightingPropertyTargetBase& target, const char* path, EditorValue value) {
     auto operation = target.makeSet(selection(target), PropertyPath(path), value, PropertySetMode::Absolute);
     REQUIRE(operation.value);
-    REQUIRE(target.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
 }
 
 }  // namespace
@@ -39,7 +39,7 @@ TEST_CASE("editor.lighting.light3d_properties_validate_snapshot_and_apply_runtim
     eve::graphics::Light3D* light = eve::graphics::Light3D::createLight();
     REQUIRE(light);
     Light3DRuntimeApplier applier;
-    REQUIRE(applier.apply(document, light).accepted());
+    REQUIRE(applier.apply(document, light).isAccepted());
     CHECK_EQ(light->getType(), "dir");
     CHECK_EQ(light->getDirY(), -1.f);
     CHECK_EQ(light->data()->intensity, 4.f);
@@ -48,7 +48,7 @@ TEST_CASE("editor.lighting.light3d_properties_validate_snapshot_and_apply_runtim
 
     const EditorValue snapshot = document.snapshotValue();
     Light3DDocumentTarget restored("restored-light");
-    REQUIRE(restored.loadSnapshot(snapshot).accepted());
+    REQUIRE(restored.loadSnapshot(snapshot).isAccepted());
     CHECK_EQ(restored.snapshotValue(), snapshot);
 }
 
@@ -73,7 +73,7 @@ TEST_CASE("editor.lighting.environment_applies_daynight_and_weather_modes") {
     set(daynightDocument, "environment.exposure", 1.8);
     eve::daynight::DayNight daynight;
     EnvironmentRuntimeApplier applier;
-    REQUIRE(applier.applyDayNight(daynightDocument, &daynight).accepted());
+    REQUIRE(applier.applyDayNight(daynightDocument, &daynight).isAccepted());
     CHECK_EQ(daynight.getTimeOfDay(), 18.5f);
     CHECK_EQ(daynight.getSpeed(), 2.f);
     CHECK_EQ(daynight.getTurbidity(), 6.f);
@@ -86,7 +86,7 @@ TEST_CASE("editor.lighting.environment_applies_daynight_and_weather_modes") {
     set(weatherDocument, "weather.wind-speed", 20.0);
     set(weatherDocument, "weather.lightning", true);
     eve::weather::Weather weather;
-    REQUIRE(applier.applyWeather(weatherDocument, &weather).accepted());
+    REQUIRE(applier.applyWeather(weatherDocument, &weather).isAccepted());
     CHECK_EQ(weather.getPreset(), "storm");
     CHECK_EQ(weather.getIntensity(), 0.9f);
     CHECK_EQ(weather.getWindSpeed(), 20.f);

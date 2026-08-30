@@ -164,7 +164,7 @@ EditorResult<void> ActionTimelineEditor::commit(action::ActionTimeline candidate
     transaction.baseRevision = target_.revision();
     transaction.mergeKey     = std::move(mergeKey);
     auto begun               = transactions_.begin(std::move(transaction));
-    if (!begun.accepted())
+    if (!begun.isAccepted())
         return editorError(begun.status, "editor.action.timeline.begin-failed", "Could not begin action edit");
 
     DomainOperation operation;
@@ -178,13 +178,13 @@ EditorResult<void> ActionTimelineEditor::commit(action::ActionTimeline candidate
     operation.affectedProperties.push_back("timeline");
     operation.mergeKey = operationMergeKey;
     auto appended      = transactions_.append(std::move(operation));
-    if (!appended.accepted()) {
+    if (!appended.isAccepted()) {
         auto discarded = transactions_.discard();
         (void)discarded;
         return appended;
     }
     auto committed = transactions_.commit();
-    if (!committed.accepted())
+    if (!committed.isAccepted())
         return editorError(committed.status, "editor.action.timeline.commit-failed", "Action edit was rejected");
     return EditorResult<void>::applied();
 }
@@ -446,7 +446,7 @@ EditorResult<std::size_t> ActionTimelineEditor::paste(Duration offset) {
     }
     const std::size_t count = pastedSelection.size();
     auto committed          = commit(std::move(candidate), "Paste action timeline items", "action.timeline.item.paste");
-    if (!committed.accepted())
+    if (!committed.isAccepted())
         return EditorResult<std::size_t>::error(committed.status, RuleId("editor.action.timeline.paste-failed"),
                                                 "Could not paste action timeline items");
     selection_ = std::move(pastedSelection);
@@ -468,7 +468,7 @@ EditorResult<void> ActionTimelineEditor::deleteSelection() {
         std::erase_if(track.states, [&](const auto& item) { return selection_.contains(item.id.format()); });
     }
     auto result = commit(std::move(candidate), "Delete action timeline selection", "action.timeline.item.delete");
-    if (result.accepted()) selection_.clear();
+    if (result.isAccepted()) selection_.clear();
     return result;
 }
 
@@ -487,7 +487,7 @@ EditorResult<void> ActionTimelineEditor::seek(Duration time) {
 
 EditorResult<std::size_t> ActionTimelineEditor::update(Duration delta) {
     auto plan = planPreview(delta);
-    if (!plan.accepted())
+    if (!plan.isAccepted())
         return EditorResult<std::size_t>::error(plan.status, RuleId("editor.action.timeline.preview-plan"),
                                                 "Could not prepare preview advance");
     if (plan.status == EditorStatus::NoOp) {

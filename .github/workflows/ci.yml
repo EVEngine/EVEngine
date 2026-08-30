@@ -254,10 +254,10 @@ jobs:
     name: Windows
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: windows-latest
-    # The native Dawn parity lane performs a second MSVC build after the main
-    # Windows build and isolated unit-test pass. A cold PR cache can legitimately
-    # exceed 90 minutes while every stage is still making progress.
-    timeout-minutes: 150
+    # This lane builds and tests both Vulkan and native Dawn configurations.
+    # A cold Windows runner needs more than 90 minutes for the two independent
+    # unit_test builds; keep the per-step limits below as the hang guards.
+    timeout-minutes: 180
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
@@ -386,7 +386,9 @@ jobs:
         shell: pwsh
         run: |
           cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
-            -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl `
+            -DCMAKE_BUILD_TYPE=Debug `
+            -DCMAKE_C_COMPILER="$PWD/cmake/msvc-cl.cmd" `
+            -DCMAKE_CXX_COMPILER="$PWD/cmake/msvc-cl.cmd" `
             -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
             -DEVENGINE_COMPILER_CACHE=SCCACHE `
             -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
@@ -394,7 +396,9 @@ jobs:
             -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
 
       - name: Build native Dawn parity lane
-        timeout-minutes: 40
+        # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
+        # 95% only when the former 40-minute guard fired on windows-latest.
+        timeout-minutes: 60
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -505,7 +509,10 @@ jobs:
     name: Android
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # A cold NDK build can consume almost the entire 45-minute build-step budget
+    # before Gradle packages the finished native library. Keep the step timeout
+    # below as the hang guard while leaving enough job budget for setup/cleanup.
+    timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
@@ -563,7 +570,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 45
+        timeout-minutes: 60
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \

@@ -163,7 +163,7 @@ EditorResult<AssetRecord> ImportCoordinator::publish(const ImportTicket& ticket,
         return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.product-errors",
                                        "Importer product contains error diagnostics");
     auto published = database_->publish(std::move(record), std::move(product.dependencies));
-    if (published.accepted()) generations_.erase(ticket.asset);
+    if (published.isAccepted()) generations_.erase(ticket.asset);
     return published;
 }
 

@@ -154,7 +154,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
                                      return eve::editor::EditorResult<eve::editor::EditorValue>::applied(
                                          eve::editor::EditorValue("executed"));
                                  })
-                .accepted());
+                .isAccepted());
 
     const int port = mcp.listen(0);
     REQUIRE(port > 0);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 
 #include <map>
 #include <memory>
@@ -94,7 +94,7 @@ public:
 };
 
 /** @brief UI-neutral animation clip document with reversible stable-id timeline edits. */
-class AnimationClipDocumentTarget final : public IEditableTargetV2,
+class AnimationClipDocumentTarget final : public virtual IEditableTarget,
                                           public IDomainOperationTarget,
                                           public IDomainOperationTargetStaging,
                                           public IAnimationClipEditTarget {

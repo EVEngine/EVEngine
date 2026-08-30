@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 
 #include <map>
 #include <memory>
@@ -26,7 +26,7 @@ struct SocialEdgeRecord {
 };
 
 /** @brief UI-neutral revisioned social graph authoring document. */
-class SocialDocumentTarget final : public IEditableTargetV2,
+class SocialDocumentTarget final : public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging {
 public:

@@ -185,8 +185,8 @@ TEST_CASE("editor.v2.property_presenters_share_schema_and_command_intent") {
         developerPresenter.editIntent(schema, selection, PropertyPath("transform.position"), desired);
     auto runtimeIntent =
         runtimePresenter.editIntent(schema, selection, PropertyPath("transform.position"), desired, runtime);
-    CHECK(developerIntent.accepted());
-    CHECK(runtimeIntent.accepted());
+    CHECK(developerIntent.isAccepted());
+    CHECK(runtimeIntent.isAccepted());
     CHECK(developerIntent.value->command == runtimeIntent.value->command);
     CHECK(developerIntent.value->payload == runtimeIntent.value->payload);
     CHECK(target.position() != desired);
@@ -224,7 +224,7 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                               EditorStatus::Rejected, RuleId("editor.property.path"), "Property path must be a string");
                       auto operation = provider.makeSet(selection, PropertyPath(*path), payload->at("value"),
                                                         PropertySetMode::Absolute);
-                      if (!operation.accepted()) {
+                      if (!operation.isAccepted()) {
                           EditorResult<CommandPlan> failed;
                           failed.status      = operation.status;
                           failed.diagnostics = std::move(operation.diagnostics);
@@ -241,19 +241,19 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                       specification.target       = plan.target;
                       specification.baseRevision = plan.baseRevision;
                       auto begun                 = backend.begin(std::move(specification));
-                      if (!begun.accepted())
+                      if (!begun.isAccepted())
                           return EditorResult<TransactionReceipt>::error(begun.status, RuleId("editor.property.begin"),
                                                                          "Could not begin property transaction");
                       for (const DomainOperation& operation : plan.operations) {
                           const auto appended = backend.append(operation);
-                          if (!appended.accepted())
+                          if (!appended.isAccepted())
                               return EditorResult<TransactionReceipt>::error(
                                   EditorStatus::Failed, RuleId("editor.property.append"),
                                   "Could not append the planned property operation");
                       }
                       return backend.commit();
                   })
-              .accepted());
+              .isAccepted());
 
     DeveloperPropertyPresenter developerPresenter;
     RuntimePropertyPresenter   gamePresenter;
@@ -265,8 +265,8 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
     auto        developerIntent =
         developerPresenter.editIntent(schema, selection, PropertyPath("transform.position"), firstPosition);
     auto developerPlan = developerSession.planCommand(developerIntent.value->command, developerIntent.value->payload);
-    CHECK(developerPlan.accepted());
-    CHECK(developerSession.executePlan(*developerPlan.value, developerIntent.value->payload).accepted());
+    CHECK(developerPlan.isAccepted());
+    CHECK(developerSession.executePlan(*developerPlan.value, developerIntent.value->payload).isAccepted());
     CHECK(target.position() == firstPosition);
 
     HostProfile runtime = HostProfile::runtimeBuilder();
@@ -279,8 +279,8 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
     auto        gameIntent =
         gamePresenter.editIntent(schema, selection, PropertyPath("transform.position"), secondPosition, runtime);
     auto gamePlan = gameSession.planCommand(gameIntent.value->command, gameIntent.value->payload);
-    CHECK(gamePlan.accepted());
-    CHECK(gameSession.executePlan(*gamePlan.value, gameIntent.value->payload).accepted());
+    CHECK(gamePlan.isAccepted());
+    CHECK(gameSession.executePlan(*gamePlan.value, gameIntent.value->payload).isAccepted());
     CHECK(target.position() == secondPosition);
     CHECK(backend.canUndo());
 }
@@ -291,7 +291,7 @@ TEST_CASE("editor.v2.property_schema_rejects_type_range_and_read_only") {
     property.type            = PropertyType::Float;
     property.numeric.minimum = 0.0;
     property.numeric.maximum = 10.0;
-    CHECK(validatePropertyValue(property, EditorValue(5.0)).accepted());
+    CHECK(validatePropertyValue(property, EditorValue(5.0)).isAccepted());
     CHECK_EQ(static_cast<int>(validatePropertyValue(property, EditorValue("fast")).status),
              static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(static_cast<int>(validatePropertyValue(property, EditorValue(12.0)).status),
@@ -324,12 +324,12 @@ TEST_CASE("editor.v2.property_model_uses_transaction_backend_for_commit_undo_and
     CHECK(backend.canUndo());
 
     auto undone = model.undo();
-    CHECK(undone.accepted());
+    CHECK(undone.isAccepted());
     CHECK(undone.value.has_value());
     CHECK(target.position() != desired);
 
     auto redone = model.redo();
-    CHECK(redone.accepted());
+    CHECK(redone.isAccepted());
     CHECK(redone.value.has_value());
     CHECK(target.position() == desired);
 }
@@ -345,19 +345,19 @@ TEST_CASE("editor.v2.property_model_explicit_transaction_previews_without_mutati
     const EditorValue         desired = EditorValue::Array{13.0, 14.0, 15.0};
 
     auto begun = model.beginTransaction("Set transform position");
-    CHECK(begun.accepted());
+    CHECK(begun.isAccepted());
     CHECK(begun.value.has_value());
     const auto staged = model.write("transform.position", toPresentationValue(desired));
     CHECK(staged.accepted);
     CHECK(target.position() != desired);
 
     auto previewed = model.previewTransaction();
-    CHECK(previewed.accepted());
+    CHECK(previewed.isAccepted());
     CHECK(previewed.value.has_value());
     CHECK(target.position() != desired);
 
     auto committed = model.commitTransaction();
-    CHECK(committed.accepted());
+    CHECK(committed.isAccepted());
     CHECK(committed.value.has_value());
     CHECK(target.position() == desired);
 }
@@ -378,7 +378,7 @@ TEST_CASE("editor.v2.property_model_failed_commit_keeps_target_unchanged_and_is_
     CHECK(backend.active());
 
     auto discarded = model.rollbackTransaction();
-    CHECK(discarded.accepted());
+    CHECK(discarded.isAccepted());
     CHECK(target.position() == before);
     CHECK(!backend.active());
 }
@@ -417,7 +417,7 @@ TEST_CASE("editor.v2.property_model_rejects_external_change_until_refresh_rebase
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(7));
 
     const auto refreshed = model.refresh();
-    CHECK(refreshed.accepted());
+    CHECK(refreshed.isAccepted());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(8));
     CHECK(model.read("transform.position") == std::optional<eve::Value>(toPresentationValue(external)));
 
@@ -436,20 +436,20 @@ TEST_CASE("editor.v2.property_model_external_change_conflict_preserves_failed_tr
                                     HostProfile::developer(), &backend);
 
     const auto begun = model.beginTransaction("stale property edit");
-    CHECK(begun.accepted());
+    CHECK(begun.isAccepted());
     const auto staged = model.write("transform.position", toPresentationValue(EditorValue::Array{30.0, 31.0, 32.0}));
     CHECK(staged.accepted);
     const EditorValue external = EditorValue::Array{40.0, 41.0, 42.0};
     target.externalSet(external);
 
     const auto failed = model.commitTransaction();
-    CHECK(!failed.accepted());
+    CHECK(!failed.isAccepted());
     CHECK_EQ(static_cast<int>(failed.status), static_cast<int>(EditorStatus::Conflict));
     CHECK(target.position() == external);
     CHECK(backend.active());
 
     const auto discarded = model.rollbackTransaction();
-    CHECK(discarded.accepted());
+    CHECK(discarded.isAccepted());
     CHECK(target.position() == external);
     CHECK(!backend.active());
     CHECK_EQ(model.targetRevision().value(), static_cast<std::uint64_t>(12));

@@ -20,9 +20,9 @@ TEST_CASE("editor.v2.disk_asset_sidecar_preserves_guid_across_move_and_poll") {
     }
     MemoryAssetDatabase database;
     DiskAssetCatalog    catalog(root, &database);
-    REQUIRE(catalog.writeSidecar("Trees/Oak.asset", AssetGuid("guid-oak"), "park.tree").accepted());
+    REQUIRE(catalog.writeSidecar("Trees/Oak.asset", AssetGuid("guid-oak"), "park.tree").isAccepted());
     auto first = catalog.scan();
-    REQUIRE(first.accepted());
+    REQUIRE(first.isAccepted());
     CHECK_EQ(first.value->indexed, static_cast<std::size_t>(1));
     CHECK_EQ(first.value->changed, static_cast<std::size_t>(1));
     CHECK_EQ(database.find(AssetGuid("guid-oak")).value->logicalUri, "content://Trees/Oak.asset");
@@ -32,7 +32,7 @@ TEST_CASE("editor.v2.disk_asset_sidecar_preserves_guid_across_move_and_poll") {
     std::filesystem::rename(root / "Content" / "Trees" / "Oak.asset.evmeta",
                             root / "Content" / "Plants" / "Oak.asset.evmeta");
     auto moved = catalog.poll();
-    REQUIRE(moved.accepted());
+    REQUIRE(moved.isAccepted());
     CHECK_EQ(moved.value->changed, static_cast<std::size_t>(1));
     CHECK_EQ(database.find(AssetGuid("guid-oak")).value->logicalUri, "content://Plants/Oak.asset");
 

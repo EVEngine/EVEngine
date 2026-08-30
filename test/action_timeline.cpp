@@ -99,7 +99,7 @@ TEST_CASE("actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget") {
     eve::editor::ActionTimelineEditor editor("asset.combat.light-attack", timelineFixture());
     eve::editor::EditorWorkspace      workspace("combat", "Combat Editor");
     auto                              configured = editor.configureWorkspace(workspace);
-    REQUIRE(configured.accepted());
+    REQUIRE(configured.isAccepted());
     CHECK_EQ(workspace.getPanelCount(), 4);
     CHECK_EQ(workspace.getActivePanel(), "action.timeline");
 
@@ -108,30 +108,30 @@ TEST_CASE("actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget") {
                                      eve::Duration::fromNanoseconds(40),
                                      {{"uri", "asset://vfx/sword-spark"}}};
     auto                      added = editor.addNotify(id("combat-track:gameplay"), effect);
-    REQUIRE(added.accepted());
+    REQUIRE(added.isAccepted());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 3u);
     CHECK(editor.canUndo());
 
     auto selected = editor.boxSelect(eve::Duration::fromNanoseconds(15), eve::Duration::fromNanoseconds(45));
-    REQUIRE(selected.accepted());
+    REQUIRE(selected.isAccepted());
     CHECK_EQ(*selected.value, 3u);
     auto copied = editor.copySelection();
-    REQUIRE(copied.accepted());
+    REQUIRE(copied.isAccepted());
     CHECK_EQ(*copied.value, 3u);
 
     auto undone = editor.undo();
-    REQUIRE(undone.accepted());
+    REQUIRE(undone.isAccepted());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
     CHECK(editor.canRedo());
     auto redone = editor.redo();
-    REQUIRE(redone.accepted());
+    REQUIRE(redone.isAccepted());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 3u);
 
     auto seek = editor.seek(eve::Duration::zero());
-    REQUIRE(seek.accepted());
+    REQUIRE(seek.isAccepted());
     editor.play();
     auto previewed = editor.update(eve::Duration::fromNanoseconds(20));
-    REQUIRE(previewed.accepted());
+    REQUIRE(previewed.isAccepted());
     CHECK_EQ(*previewed.value, 3u);
     CHECK_EQ(editor.previewEvents()[2].itemId, id("combat-notify:hit"));
 }

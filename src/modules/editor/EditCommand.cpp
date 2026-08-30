@@ -21,13 +21,13 @@ bool IntFieldEditCommand::record(int x, int y, int after) {
 bool IntFieldEditCommand::apply() {
     auto *field = target_ ? target_->query<IIntFieldTarget>() : nullptr;
     if (!field) return false;
-    for (const auto &change : changes_) field->writeInt(change.x, change.y, change.after);
+    for (const auto &change : changes_) (void)field->writeInt(change.x, change.y, change.after);
     return !changes_.empty();
 }
 void IntFieldEditCommand::revert() {
     auto *field = target_ ? target_->query<IIntFieldTarget>() : nullptr;
     if (!field) return;
-    for (auto it = changes_.rbegin(); it != changes_.rend(); ++it) field->writeInt(it->x, it->y, it->before);
+    for (auto it = changes_.rbegin(); it != changes_.rend(); ++it) (void)field->writeInt(it->x, it->y, it->before);
 }
 std::unique_ptr<IEditCommand> IntFieldEditCommand::clone() const {
     return std::make_unique<IntFieldEditCommand>(*this);

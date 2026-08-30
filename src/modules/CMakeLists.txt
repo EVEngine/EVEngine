@@ -80,15 +80,6 @@ if(NOT _has_weather_editor_bridge)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
-# editor/EditorPhysicsRuntime.cpp is the optional bridge creating actual
-# Box2D/Box3D primitive shapes from backend-neutral collider documents.
-eve_module_enabled(physics _has_physics_editor_bridge)
-if(NOT _has_physics_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorPhysicsRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
-endif()
-
 # editor/EditorAudioRuntime.cpp applies backend-neutral source documents to a
 # live OpenAL Source only when the audio module is enabled.
 eve_module_enabled(audio _has_audio_editor_bridge)

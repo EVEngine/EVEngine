@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 
 #include <map>
 #include <string>
@@ -61,7 +61,7 @@ struct BuildingPlacementPreview {
 };
 
 /** @brief Live PlacementWorld target with reversible place/move/remove operations. */
-class BuildingPlacementTarget final : public IEditableTargetV2, public IDomainOperationTarget {
+class BuildingPlacementTarget final : public virtual IEditableTarget, public IDomainOperationTarget {
 public:
     /** @brief Stable capability id for placement preview and mutation. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.building-placement"); }

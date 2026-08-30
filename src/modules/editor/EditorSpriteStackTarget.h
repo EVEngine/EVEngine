@@ -2,7 +2,7 @@
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorProperty.h"
-#include "editor/EditorTargetV2.h"
+#include "editing/EditableTarget.h"
 #include "spritestack/SpriteStack.h"
 
 #include <cstdint>
@@ -31,7 +31,7 @@ struct SpriteStackAssetValue {
 };
 
 /** @brief Revisioned SpriteStack bake preset with reusable Inspector metadata. */
-class SpriteStackDocumentTarget final : public IEditableTargetV2,
+class SpriteStackDocumentTarget final : public virtual IEditableTarget,
                                         public IDomainOperationTarget,
                                         public IDomainOperationTargetStaging,
                                         public IPropertyProvider {

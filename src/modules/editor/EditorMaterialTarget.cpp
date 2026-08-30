@@ -41,13 +41,16 @@ TargetDescriptor MaterialDocumentTarget::describe() const {
     result.id = TargetId(id_);
     result.type = "material-document";
     result.revision = revision_;
-    result.capabilities = {CapabilityId("eve.editor.target.material-properties")};
+    result.capabilities = {IPropertyProvider::editingCapabilityId(),
+                           eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     return result;
 }
 
 void* MaterialDocumentTarget::queryCapability(const CapabilityId& capability) {
-    if (capability == CapabilityId("eve.editor.target.material-properties"))
+    if (capability == IPropertyProvider::editingCapabilityId())
         return static_cast<IPropertyProvider*>(this);
+    if (capability == eve::editing::IEditingSnapshotProvider::editingCapabilityId())
+        return static_cast<eve::editing::IEditingSnapshotProvider*>(this);
     return nullptr;
 }
 
@@ -69,7 +72,7 @@ EditorResult<void> MaterialDocumentTarget::applyDomainOperation(const DomainOper
         return materialError<void>(EditorStatus::Unsupported, "editor.material.property-unsupported",
                                    "Unknown material property: " + *path);
     auto valid = validateAssignment(*descriptor, *value);
-    if (!valid.accepted()) return valid;
+    if (!valid.isAccepted()) return valid;
     values_[*path] = *value;
     ++revision_;
     dirty_.include(0, 0);
@@ -124,7 +127,7 @@ EditorResult<DomainOperation> MaterialDocumentTarget::makeSet(const SelectionSna
         return materialError<DomainOperation>(EditorStatus::Unsupported, "editor.material.property-unsupported",
                                               "Unknown material property: " + path.value());
     auto valid = validateAssignment(*descriptor, value);
-    if (!valid.accepted()) {
+    if (!valid.isAccepted()) {
         EditorResult<DomainOperation> failed;
         failed.status = valid.status;
         failed.diagnostics = std::move(valid.diagnostics);
@@ -185,7 +188,7 @@ EditorResult<void> MaterialDocumentTarget::loadSnapshot(const EditorValue& snaps
             return materialError<void>(EditorStatus::Unsupported, "editor.material.snapshot-property",
                                        "Material snapshot contains unknown property: " + path);
         auto valid = validateAssignment(*descriptor, value);
-        if (!valid.accepted()) return valid;
+        if (!valid.isAccepted()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);

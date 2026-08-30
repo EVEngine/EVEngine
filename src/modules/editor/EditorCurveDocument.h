@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditorAuthority.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 
 #include <array>
 #include <map>
@@ -53,7 +53,7 @@ public:
 };
 
 /** @brief UI-neutral reversible curve and gradient timeline document. */
-class EditorCurveDocument final : public IEditableTargetV2,
+class EditorCurveDocument final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public ICurveDocumentEditTarget {

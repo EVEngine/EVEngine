@@ -82,7 +82,7 @@ EditorResult<void> ProjectSettingsTarget::applyDomainOperation(const DomainOpera
     if (!setting || !value) return settingsError<void>(EditorStatus::Rejected,
         "editor.settings.payload", "Settings operation payload is incomplete");
     auto valid = validatePropertyValue(setting->property, *value);
-    if (!valid.accepted()) return valid;
+    if (!valid.isAccepted()) return valid;
     if (setting->sensitive) {
         const auto* reference = value->getIf<std::string>();
         if (!reference || !reference->starts_with("secret://"))
@@ -134,7 +134,7 @@ EditorResult<DomainOperation> ProjectSettingsTarget::makeSet(
         "editor.settings.property", "Unknown project setting: " + path.value());
     const EditorValue candidate = mode == PropertySetMode::Reset ? setting->property.defaultValue : value;
     auto valid = validatePropertyValue(setting->property, candidate);
-    if (!valid.accepted()) return settingsError<DomainOperation>(valid.status,
+    if (!valid.isAccepted()) return settingsError<DomainOperation>(valid.status,
         "editor.settings.value", "Project setting value is invalid");
     if (setting->sensitive) {
         const auto* reference = candidate.getIf<std::string>();
@@ -183,7 +183,7 @@ EditorResult<void> ProjectSettingsTarget::loadSnapshot(const EditorValue& snapsh
         if (!setting) return settingsError<void>(EditorStatus::Rejected,
             "editor.settings.unknown-snapshot-key", "Settings snapshot contains an unknown key");
         auto valid = validatePropertyValue(setting->property, value);
-        if (!valid.accepted()) return settingsError<void>(EditorStatus::Rejected,
+        if (!valid.isAccepted()) return settingsError<void>(EditorStatus::Rejected,
             "editor.settings.invalid-snapshot-value", "Settings snapshot contains an invalid value");
         if (setting->sensitive) {
             const auto* reference = value.getIf<std::string>();

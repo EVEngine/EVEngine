@@ -1,6 +1,7 @@
 #pragma once
 
 #include "editor/EditorProtocol.h"
+#include "editor/EditorPhysicsTarget.h"
 
 #include <array>
 #include <functional>
@@ -9,8 +10,6 @@
 
 namespace eve::editor {
 
-class PhysicsColliderTarget;
-class PhysicsJointTarget;
 class AudioSourceTarget;
 class Light3DDocumentTarget;
 

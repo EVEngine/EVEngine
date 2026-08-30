@@ -19,7 +19,7 @@ struct AudioEffectRecord {
 };
 
 /** @brief Revisioned reversible serial effect chain independent of an audio backend. */
-class AudioEffectChainTarget final : public IEditableTargetV2,
+class AudioEffectChainTarget final : public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging {
 public:

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/EditCommand.h"
-#include "editor/EditorTargetV2.h"
+#include "editor/EditorTarget.h"
 
 #include <memory>
 #include <string>
@@ -52,7 +52,7 @@ public:
 
 #ifdef EVENGINE_HAS_VOXEL
 /** @brief Non-owning adapter from a live voxel world to the generic volume protocol. */
-class VoxelWorldTarget final : public IEditableTargetV2, public IIntVolumeTarget {
+class VoxelWorldTarget final : public virtual IEditableTarget, public IIntVolumeTarget {
 public:
     /** @brief Create a non-owning editor adapter for a live voxel world. */
     VoxelWorldTarget(std::string id, voxel::VoxelWorld* world);

@@ -18,7 +18,7 @@ EditorResult<void> SimulationPreviewController::setFixedDelta(double seconds) {
 EditorResult<SimulationPreviewFrame> SimulationPreviewController::advance(
     IEditorSimulationBackend& backend, std::uint64_t tick) const {
     auto stepped = backend.step(tick, fixedDelta_);
-    if (!stepped.accepted())
+    if (!stepped.isAccepted())
         return EditorResult<SimulationPreviewFrame>::error(stepped.status,
             stepped.diagnostics.empty() ? RuleId("editor.simulation.step-failed") : stepped.diagnostics.front().rule,
             stepped.diagnostics.empty() ? "Simulation preview step failed" : stepped.diagnostics.front().message);
@@ -52,7 +52,7 @@ EditorResult<SimulationPreviewFrame> SimulationPreviewController::singleStep(
         return EditorResult<SimulationPreviewFrame>::error(EditorStatus::Unsupported,
             RuleId("editor.simulation.clone-unsupported"), "Simulation backend cannot create an isolated preview");
     auto result = advance(*previewBackend_, tick_ + 1);
-    if (result.accepted()) ++tick_;
+    if (result.isAccepted()) ++tick_;
     return result;
 }
 

@@ -67,7 +67,9 @@ layer.paintTerrain(4, 4, 1);
 print(layer.getTerrain(4, 4) + "\n");
 ```
 
-Tiled JSON 的 `animation`、typed `properties` 与无限地图 `chunks` 可直接导入。无限地图当前会按已存在 chunk 的包围盒规范化为运行时图层，并把负 chunk 坐标折算进图层 origin。
+Tiled JSON 的 `animation`、typed `properties`、`wangsets` 与无限地图 `chunks` 可直接导入。地图可以引用多个外部 JSON `.tsj` 或 XML `.tsx` tileset；每个 atlas 按地图中的 `firstgid` 选择，图片路径相对 tileset 文件解析。外部 tileset 也会加入热重载依赖。无限地图当前会按已存在 chunk 的包围盒规范化为运行时图层，并把负 chunk 坐标折算进图层 origin。
+
+Tile properties 中的 `walkable`、`cost`、`enterMask`、`exitMask` 会进入统一导航资料。方向位为 `N=1, E=2, S=4, W=8`；寻路同时检查源格的 `exitMask` 和目标格的反向 `enterMask`。没有声明时四向均允许。这样悬崖边、单向台阶和墙口不需要再维护一份独立的 Pathfinder 阻挡表。
 
 ### 组合项目自己的 2.5D 资产工作流
 
@@ -185,6 +187,54 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 ### 碰撞几何
 
 `publishCollision(layer)` 会把 `setTileMetadata(..., walkable=false)` 标记的正交瓦片贪心合并成世界坐标矩形，减少静态碰撞体数量；已注册的物理/项目适配器会通过 `ITileCollisionSink` 一次性收到替换后的几何。没有适配器时仍可读取矩形，自行创建物理夹具：
+
+`setTileNavigationProfile(gid, walkable, cost, enterMask, exitMask, opaque, semanticFlags)`
+是同行性、碰撞与视野遮挡的统一画像。`Pathfinder`/Flow Field 使用 walkable、cost 与四向
+enter/exit mask，`publishCollision` 使用不可通行状态或 Tiled tile object collision，`Fov`
+使用 opaque；三者随同一 tile revision 自动失效，避免分别维护“可走”和“墙体”两套事实。
+
+## 生产级自动贴图
+
+逻辑 terrain grid 是权威数据，GID 只是派生显示结果。先定义 family 与精确 8 邻域规则，再由
+point/rectangle/fill/erase 操作只重算 dirty region 外扩一格：
+
+```nut
+layer.defineAutotileFamily(1, "shore", 1337) // terrain | shore | wall | waterfall
+layer.setAutotileRule(101, 1, neighborMask, 1) // gid, terrain, exact mask, weight
+layer.paintTerrain(4, 3, 1)
+layer.paintTerrainRect(2, 2, 8, 5, 1)
+layer.fillTerrain(1)
+layer.eraseTerrainRect(5, 2, 2, 1)
+```
+
+同一 mask 可配置多个带权变体；选择由 family seed、terrain 与坐标确定，不依赖时间或容器遍历
+顺序。`wall` 解析四个正交邻居，`waterfall` 解析上下连续性，因此可以稳定表达墙顶/墙身/墙脚
+以及瀑布口/循环水体/水花脚；动画仍使用 `addTileAnimationFrame`。完整的无素材示例位于
+`examples/autotile-production`。
+
+## Tiled 与 RPG Maker MV/MZ
+
+Tiled JSON/TMJ 支持 embedded tileset、外部 TSJ/TSX、多 tileset、无限 chunk、嵌套 group、
+typed properties、animation、Wang connectivity、水平/垂直/对角 transform flags，以及 tile
+objectgroup 的矩形/多边形包围盒碰撞。外部引用相对 map/tileset 文件解析并参与 hot reload。
+导入失败会恢复 Config、Tiles、Tileset、Draw 与 Resource 的旧快照，不留下半更新状态。
+
+C++ 可直接导入 RPG Maker 工程，无需启动 RPG Maker：
+
+```cpp
+auto result = eve::map::importRpgMakerMap("data/Map001.json", "data/Tilesets.json", "RPG Maker MZ");
+if (!result) {
+    // inspect result.error() / diagnostic domain_code
+} else {
+    auto receipt = std::move(result).value();
+    auto *navigation = receipt.navigationLayer;
+}
+```
+
+适配器读取 A1-A5/B-E sheet、四个 tile plane 与 shadow plane，按 MV/MZ 官方 quarter-tile
+table 解码 A1 水面/瀑布动画、A2 地面、A3 屋顶/墙、A4 墙顶/墙身。`navigationLayer` 把
+passage、四方向 passage、star overlay、ladder、bush、counter、damage floor 与 terrain tag
+合成为单一隐藏画像；源文件不会被修改，`Resource.sourceEngine/sourceVersion` 会记录来源。
 
 ```squirrel
 local count = map.publishCollision(layer);

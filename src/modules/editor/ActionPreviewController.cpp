@@ -93,7 +93,7 @@ EditorResult<void> ActionPreviewController::seek(Duration time) {
         return previewError(EditorStatus::Rejected, "editor.action.preview.prepare",
                             diagnosticMessage(prepared.status(), "Preview host rejected the frame"));
     auto changed = editor_.seek(time);
-    if (!changed.accepted()) {
+    if (!changed.isAccepted()) {
         sink_.discardPrepared();
         return changed;
     }
@@ -104,7 +104,7 @@ EditorResult<void> ActionPreviewController::seek(Duration time) {
 
 EditorResult<std::size_t> ActionPreviewController::update(Duration delta) {
     auto plan = editor_.planPreview(delta);
-    if (!plan.accepted())
+    if (!plan.isAccepted())
         return previewErrorValue<std::size_t>(plan.status, "editor.action.preview.plan",
                                               "Could not prepare timeline preview advance");
     if (plan.status == EditorStatus::NoOp) {
@@ -123,7 +123,7 @@ EditorResult<std::size_t> ActionPreviewController::update(Duration delta) {
         return previewErrorValue<std::size_t>(EditorStatus::Rejected, "editor.action.preview.prepare",
                                               diagnosticMessage(prepared.status(), "Preview host rejected the frame"));
     auto advanced = editor_.applyPreviewPlan(std::move(*plan.value));
-    if (!advanced.accepted()) {
+    if (!advanced.isAccepted()) {
         sink_.discardPrepared();
         return advanced;
     }

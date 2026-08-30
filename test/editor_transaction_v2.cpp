@@ -98,10 +98,10 @@ TEST_CASE("editor.v2.authority_preflight_commit_and_compensate") {
     TransactionSpec        specification = transaction(target, "transaction.one");
 
     auto plan = authority.preflight(specification, std::span<const DomainOperation>(&operation, 1));
-    CHECK(plan.accepted());
+    CHECK(plan.isAccepted());
     CHECK_EQ(target.value(), 1);
     auto committed = authority.commit(*plan.value);
-    CHECK(committed.accepted());
+    CHECK(committed.isAccepted());
     CHECK_EQ(target.value(), 5);
     CHECK_EQ(committed.value->beforeRevision, static_cast<Revision>(0));
     CHECK_EQ(committed.value->afterRevision, static_cast<Revision>(1));
@@ -110,13 +110,13 @@ TEST_CASE("editor.v2.authority_preflight_commit_and_compensate") {
     const auto valueBeforeFailedCompensation    = target.value();
     const auto revisionBeforeFailedCompensation = target.revision();
     auto       failedCompensation               = authority.compensate(*committed.value);
-    CHECK(!failedCompensation.accepted());
+    CHECK(!failedCompensation.isAccepted());
     CHECK_EQ(target.value(), valueBeforeFailedCompensation);
     CHECK_EQ(target.revision(), revisionBeforeFailedCompensation);
 
     target.failCandidateCommit = false;
     auto compensated = authority.compensate(*committed.value);
-    CHECK(compensated.accepted());
+    CHECK(compensated.isAccepted());
     CHECK_EQ(target.value(), 1);
     CHECK_EQ(compensated.value->afterRevision, static_cast<Revision>(2));
 
@@ -133,14 +133,14 @@ TEST_CASE("editor.v2.authority_compensation_validates_full_inverse_on_candidate"
     };
 
     auto plan = authority.preflight(transaction(target, "transaction.candidate-failure"), operations);
-    CHECK(plan.accepted());
+    CHECK(plan.isAccepted());
     auto committed = authority.commit(*plan.value);
-    CHECK(committed.accepted());
+    CHECK(committed.isAccepted());
     CHECK_EQ(target.value(), 5);
     const auto revisionAfterCommit = target.revision();
 
     auto compensation = authority.compensate(*committed.value);
-    CHECK(!compensation.accepted());
+    CHECK(!compensation.isAccepted());
     CHECK_EQ(static_cast<int>(compensation.status), static_cast<int>(EditorStatus::Failed));
     CHECK_EQ(target.value(), 5);
     CHECK_EQ(target.revision(), revisionAfterCommit);
@@ -156,9 +156,9 @@ TEST_CASE("editor.v2.authority_rolls_back_partial_commit") {
     const DomainOperation operations[] = {first, failure};
 
     auto plan = authority.preflight(transaction(target, "transaction.rollback"), operations);
-    CHECK(plan.accepted());
+    CHECK(plan.isAccepted());
     auto result = authority.commit(*plan.value);
-    CHECK(!result.accepted());
+    CHECK(!result.isAccepted());
     CHECK_EQ(target.value(), 0);
     CHECK(result.value.has_value());
     CHECK_EQ(static_cast<int>(result.value->state), static_cast<int>(TransactionState::Rejected));
@@ -169,20 +169,20 @@ TEST_CASE("editor.v2.local_transaction_backend_undo_and_redo") {
     LocalWorldAuthority     authority(&target);
     LocalTransactionBackend backend(&authority);
 
-    CHECK(backend.begin(transaction(target, "transaction.history")).accepted());
-    CHECK(backend.append(setInteger(target, 0, 7)).accepted());
+    CHECK(backend.begin(transaction(target, "transaction.history")).isAccepted());
+    CHECK(backend.append(setInteger(target, 0, 7)).isAccepted());
     auto committed = backend.commit();
-    CHECK(committed.accepted());
+    CHECK(committed.isAccepted());
     CHECK_EQ(target.value(), 7);
     CHECK(backend.canUndo());
 
     auto undone = backend.undo();
-    CHECK(undone.accepted());
+    CHECK(undone.isAccepted());
     CHECK_EQ(target.value(), 0);
     CHECK(backend.canRedo());
 
     auto redone = backend.redo();
-    CHECK(redone.accepted());
+    CHECK(redone.isAccepted());
     CHECK_EQ(target.value(), 7);
 }
 
@@ -214,14 +214,14 @@ TEST_CASE("editor.v2.planned_command_is_dry_run_and_revision_safe") {
                       specification.target       = plan.target;
                       specification.baseRevision = plan.baseRevision;
                       auto begun                 = backend.begin(std::move(specification));
-                      if (!begun.accepted())
+                      if (!begun.isAccepted())
                           return EditorResult<TransactionReceipt>::error(begun.status, RuleId("test.command.begin"),
                                                                          "Could not begin transaction");
                       for (const DomainOperation& operation : plan.operations) {
                           auto appended = backend.append(operation);
-                          if (!appended.accepted()) {
+                          if (!appended.isAccepted()) {
                               auto rolledBack = backend.rollback();
-                              if (!rolledBack.accepted())
+                              if (!rolledBack.isAccepted())
                                   return EditorResult<TransactionReceipt>::error(rolledBack.status,
                                                                                  RuleId("test.command.rollback"),
                                                                                  "Could not roll back transaction");
@@ -231,7 +231,7 @@ TEST_CASE("editor.v2.planned_command_is_dry_run_and_revision_safe") {
                       }
                       return backend.commit();
                   })
-              .accepted());
+              .isAccepted());
 
     EditorSession session;
     session.setSessionId(SessionId("test-session"));
@@ -239,17 +239,17 @@ TEST_CASE("editor.v2.planned_command_is_dry_run_and_revision_safe") {
     session.bindTarget(&target);
 
     auto plan = session.planCommand(descriptor.id, EditorValue(11), CommandSource::Script, target.revision());
-    CHECK(plan.accepted());
+    CHECK(plan.isAccepted());
     CHECK_EQ(target.value(), 2);
     auto executed = session.executePlan(*plan.value, EditorValue(11), CommandSource::Script);
-    CHECK(executed.accepted());
+    CHECK(executed.isAccepted());
     CHECK_EQ(target.value(), 11);
     CHECK_EQ(static_cast<int>(executed.value->state), static_cast<int>(TransactionState::Committed));
 
     auto stalePlan = session.planCommand(descriptor.id, EditorValue(15));
-    CHECK(stalePlan.accepted());
+    CHECK(stalePlan.isAccepted());
     DomainOperation external = setInteger(target, 11, 12);
-    CHECK(target.applyDomainOperation(external).accepted());
+    CHECK(target.applyDomainOperation(external).isAccepted());
     auto stale = session.executePlan(*stalePlan.value, EditorValue(15));
     CHECK_EQ(static_cast<int>(stale.status), static_cast<int>(EditorStatus::Conflict));
     CHECK_EQ(target.value(), 12);

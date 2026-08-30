@@ -29,10 +29,10 @@ public:
 TEST_CASE("editor.audio.transport_wraps_custom_loop_and_rejects_stale_revision") {
     FakeAudioBackend backend;
     AudioAuditionTransport transport;
-    CHECK(transport.bind(StableId("voice"), 7, &backend).accepted());
+    CHECK(transport.bind(StableId("voice"), 7, &backend).isAccepted());
     CHECK(!backend.nativeLoop);
-    CHECK(transport.setLoop(7, true, 2.0, 4.0).accepted());
-    CHECK(transport.play(7).accepted());
+    CHECK(transport.setLoop(7, true, 2.0, 4.0).isAccepted());
+    CHECK(transport.play(7).isAccepted());
     CHECK_EQ(backend.position, 2.0);
     backend.position = 4.1;
     auto wrapped = transport.update(7);
@@ -46,13 +46,13 @@ TEST_CASE("editor.audio.transport_wraps_custom_loop_and_rejects_stale_revision")
 TEST_CASE("editor.audio.transport_validates_seek_loop_and_rebinding") {
     FakeAudioBackend first, second;
     AudioAuditionTransport transport;
-    CHECK(transport.bind(StableId("first"), 1, &first).accepted());
+    CHECK(transport.bind(StableId("first"), 1, &first).isAccepted());
     CHECK_EQ(static_cast<int>(transport.setLoop(1, true, 5.0, 2.0).status),
              static_cast<int>(EditorStatus::Rejected));
     CHECK_EQ(static_cast<int>(transport.seek(1, 11.0).status), static_cast<int>(EditorStatus::Rejected));
-    CHECK(transport.play(1).accepted());
-    CHECK(transport.pause(1).accepted());
-    CHECK(transport.bind(StableId("second"), 2, &second).accepted());
+    CHECK(transport.play(1).isAccepted());
+    CHECK(transport.pause(1).isAccepted());
+    CHECK(transport.bind(StableId("second"), 2, &second).isAccepted());
     CHECK_EQ(first.stops, 1);
     auto snapshot = transport.snapshot(2);
     REQUIRE(snapshot.value);
