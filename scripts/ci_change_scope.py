@@ -7,7 +7,8 @@ import argparse
 import subprocess
 from pathlib import Path
 
-SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu")
+BUILD_SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu")
+SCOPES = (*BUILD_SCOPES, "tools")
 ALL = frozenset(SCOPES)
 
 
@@ -21,14 +22,18 @@ def classify_path(path: str) -> set[str]:
         return {"macos"}
     if path.startswith(("web/", "platform/web", "cmake/webgpu")) or "webgpu" in path.lower():
         return {"webgpu"}
+    if path.startswith("tools/"):
+        return {"tools"}
+    if path.startswith(".github/"):
+        return set(ALL)
     if path.startswith(("src/", "test/", "external/", "third-party/")) or path in {
         "CMakeLists.txt",
         "Makefile",
-    } or path.startswith(("cmake/", ".github/")):
-        return set(ALL)
+    } or path.startswith("cmake/"):
+        return set(BUILD_SCOPES)
     if path.startswith("docs/") or ("/" not in path and path.lower().endswith(".md")):
         return set()
-    if path.startswith(("scripts/", "tools/")) and path.endswith((".py", ".json")):
+    if path.startswith("scripts/") and path.endswith((".py", ".json")):
         return set()
     # New top-level areas and unfamiliar build inputs are safer to build fully.
     return set(ALL)

@@ -71,6 +71,7 @@ jobs:
       asan: ${{ steps.scope.outputs.asan }}
       fuzz: ${{ steps.scope.outputs.fuzz }}
       webgpu: ${{ steps.scope.outputs.webgpu }}
+      tools: ${{ steps.scope.outputs.tools }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -92,38 +93,12 @@ jobs:
             python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
           fi
 
-  # Fast structural check: no build, no toolchain. Fails when a module gains an
-  # #include that points up the dependency layering (see
-  # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
-  # script and shrink as the capability registry lands.
-  format:
-    name: Formatting (clang-format)
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.ref || github.ref }}
-          fetch-depth: 0
-
-      - name: Install clang-format
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-format-18
-          sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
-
-      - name: Check changed lines are clang-format clean
-        run: bash .github/scripts/check-format.sh "${{ github.event.pull_request.base.sha || 'origin/dev' }}"
-
-  # Fast structural check: no build, no toolchain. Fails when a module gains an
-  # #include that points up the dependency layering (see
-  # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
-  # script and shrink as the capability registry lands.
-  layering:
-    name: Module layering
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+  # Fast source-only gate for formatting, module boundaries, architecture
+  # contracts and the Python scripts that make later CI results trustworthy.
+  source-quality:
+    name: Source quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -131,6 +106,16 @@ jobs:
         with:
           ref: ${{ inputs.ref || github.ref }}
           fetch-depth: 0
+
+      - name: Install source-quality tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-18
+          sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
+          python3 -m pip install --user --quiet pillow ruff
+
+      - name: Check changed lines are clang-format clean
+        run: bash .github/scripts/check-format.sh "${{ github.event.pull_request.base.sha || 'origin/dev' }}"
 
       - name: Check module dependency layering
         timeout-minutes: 5
@@ -161,48 +146,34 @@ jobs:
         timeout-minutes: 5
         run: python3 scripts/check_nodiscard.py
 
-      - name: Test release.py
-        timeout-minutes: 5
-        run: python3 -m unittest discover -s scripts/tests -p "test_release*.py" -v
-
       - name: Check release version consistency
         timeout-minutes: 5
         run: python3 scripts/release.py check-versions
 
-  quality-contracts:
-    name: Quality metadata and profile contracts
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        timeout-minutes: 10
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ inputs.ref || github.ref }}
-          fetch-depth: 0
-
       - name: Check bounded quality debt and profile matrix
         timeout-minutes: 5
         run: make check/quality
-
-      - name: Run quality metadata fixture tests
-        timeout-minutes: 5
-        run: python3 -m unittest scripts.tests.test_quality_metadata -v
 
       - name: Audit top-level architecture contracts and changed API shapes
         timeout-minutes: 5
         run: |
           python3 scripts/check_architecture_contracts.py \
             --base "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD^' }}"
-          python3 -m unittest scripts.tests.test_architecture_contracts -v
+      - name: Ruff lint CI and repository scripts
+        timeout-minutes: 5
+        run: python3 -m ruff check scripts
+
+      - name: Test CI and repository scripts
+        timeout-minutes: 10
+        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}
     # Pull requests already run the toolchain-free profile contract check in
-    # quality-contracts. Full configure/build/smoke coverage belongs to dev
+    # source-quality. Full configure/build/smoke coverage belongs to dev
     # pushes, scheduled/manual runs and release workflow calls.
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && github.event_name != 'pull_request' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     strategy:
@@ -242,8 +213,10 @@ jobs:
         timeout-minutes: 10
         run: make profile/smoke
 
-  python-tools:
-    name: Python tools
+  tool-tests:
+    name: Standalone Python tools
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.tools == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -257,13 +230,9 @@ jobs:
           python3 -m pip install --user --quiet \
             pytest pydantic requests numpy opencv-python-headless pillow ffmpy ruff
 
-      - name: Ruff lint (scripts + tools)
+      - name: Ruff lint standalone tools
         timeout-minutes: 5
-        run: python3 -m ruff check scripts tools
-
-      - name: Test Python scripts
-        timeout-minutes: 5
-        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+        run: python3 -m ruff check tools
 
       - name: Test asset-pipeline-agent
         timeout-minutes: 5
@@ -289,29 +258,10 @@ jobs:
         timeout-minutes: 5
         run: cd tools/vision-prefilter && python3 -m pytest -q test
 
-  preflight:
-    name: Preflight gate
-    if: ${{ always() }}
-    needs: [change-scope, format, layering, quality-contracts, python-tools]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    steps:
-      - name: Require all fast checks
-        env:
-          CHANGE_SCOPE: ${{ needs.change-scope.result }}
-          FORMAT: ${{ needs.format.result }}
-          LAYERING: ${{ needs.layering.result }}
-          QUALITY: ${{ needs.quality-contracts.result }}
-          PYTHON_TOOLS: ${{ needs.python-tools.result }}
-        run: |
-          for result in "$CHANGE_SCOPE" "$FORMAT" "$LAYERING" "$QUALITY" "$PYTHON_TOOLS"; do
-            [ "$result" = "success" ] || exit 1
-          done
-
   windows:
     name: Windows
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # This lane builds and tests both Vulkan and native Dawn configurations.
     # A cold Windows runner needs more than 90 minutes for the two independent
@@ -514,8 +464,8 @@ jobs:
 
   windows-release:
     name: Windows (Release)
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.windows == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     timeout-minutes: 60
     env:
@@ -583,8 +533,8 @@ jobs:
 
   android:
     name: Android
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # A cold NDK build can consume almost the entire 45-minute build-step budget
     # before Gradle packages the finished native library. Keep the step timeout
@@ -664,8 +614,8 @@ jobs:
 
   android-release:
     name: Android (Release)
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.android == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     timeout-minutes: 60
     env:
@@ -740,8 +690,8 @@ jobs:
 
   macos:
     name: macOS
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 120
     env:
@@ -839,8 +789,8 @@ jobs:
 
   macos-release:
     name: macOS (Release)
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.macos == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
     env:
@@ -901,8 +851,8 @@ jobs:
 
   ios:
     name: iOS
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.ios == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.ios == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -959,8 +909,8 @@ jobs:
 
   ios-release:
     name: iOS (Release)
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.ios == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.ios == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -1017,8 +967,8 @@ jobs:
 
   linux:
     name: Linux
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.linux == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -1177,8 +1127,8 @@ jobs:
 
   linux-release:
     name: Linux (Release)
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.linux == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -1263,8 +1213,8 @@ jobs:
 
   linux-asan:
     name: Linux (ASan+UBSan)
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
     # The build and test steps have independent bounded guards. Leave
     # enough job-level budget for both plus toolchain setup and cache reporting.
@@ -1361,8 +1311,8 @@ jobs:
     name: Linux (Coverage)
     # Coverage is a trend signal rather than a per-PR gate; run weekly and on
     # demand so it does not double CI minutes for every push.
-    needs: [preflight]
-    if: ${{ needs.preflight.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+    needs: [source-quality]
+    if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -1467,8 +1417,8 @@ jobs:
 
   linux-fuzz:
     name: Linux (zeroerr fuzz)
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.fuzz == 'true' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.fuzz == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -1532,8 +1482,8 @@ jobs:
 
   webgpu:
     name: WebGPU (WASM)
-    needs: [preflight, change-scope]
-    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     # Do not add sccache via EM_COMPILER_WRAPPER here: emsdk's Clang commands
