@@ -100,7 +100,7 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(
                                   stringBytes);
         if (!isValidUtf8(instance.prototype, Utf8NullPolicy::Reject))
             return failure<LoadedInstanceSet>(DiagnosticCode::ParseError,
-                                              "instance prototype is not valid UTF-8", 
+                                              "instance prototype is not valid UTF-8",
                                               std::to_string(index));
         cursor += stringBytes;
         for (float& value : instance.position) {
