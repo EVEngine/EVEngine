@@ -419,6 +419,8 @@ void Graphics::expose(ssq::Table& table) {
 
     auto ent = table.addClass<Renderable3D>(
         "Renderable3D", std::function<Renderable3D*()>([]() { return Renderable3D::create(); }), false);
+    ent.addFunc("getEntityId", &Renderable3D::getEntityId);
+    ent.addFunc("getEntityGeneration", &Renderable3D::getEntityGeneration);
     ent.addFunc("setPosition", &Renderable3D::setPosition);
     ent.addFunc("setRotation", &Renderable3D::setRotation);
     ent.addFunc("setYaw", &Renderable3D::setYaw);
@@ -441,6 +443,10 @@ void Graphics::expose(ssq::Table& table) {
     ent.addFunc("setHair", &Renderable3D::setHair);
     ent.addFunc("getHair", &Renderable3D::getHair);
     ent.addFunc("setTint", &Renderable3D::setTint);
+    ent.addFunc("getTintR", &Renderable3D::getTintR);
+    ent.addFunc("getTintG", &Renderable3D::getTintG);
+    ent.addFunc("getTintB", &Renderable3D::getTintB);
+    ent.addFunc("getRoughness", &Renderable3D::getRoughness);
     ent.addFunc("setMetallic", &Renderable3D::setMetallic);
     ent.addFunc("setRoughness", &Renderable3D::setRoughness);
     ent.addFunc("setTexCellBomb", &Renderable3D::setTexCellBomb);
@@ -1024,6 +1030,11 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
                 static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
+    cls.addFunc("updateTextureFromImageData", [](Graphics *self, Texture *texture,
+                                                  image::ImageData *data) {
+        auto updated = self->updateTextureFromImageData(texture, data);
+        if (!updated.ok()) throw eve::Exception("%s", updated.status().describe().c_str());
+    });
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTextureFromFileRepeated", &Graphics::newTextureFromFileRepeated);
     cls.addFunc("newTextureWithSampler", &Graphics::newTextureWithSampler);
@@ -1347,6 +1358,25 @@ Texture* Graphics::newTextureFromImageData(image::ImageData* data, const Texture
     if (!data) throw eve::Exception("newTextureFromImageData: null ImageData");
     if (data->getFormat() != "RGBA8") throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
     return newTexture(data->getWidth(), data->getHeight(), static_cast<const uint8_t*>(data->getData()), info);
+}
+
+eve::Result<void> Graphics::updateTextureFromImageData(Texture *texture,
+                                                        image::ImageData *data) {
+    if (!texture || !data)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "texture and ImageData must be non-null",
+            "graphics.updateTextureFromImageData"));
+    if (data->getFormat() != "RGBA8")
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "only RGBA8 ImageData is supported",
+            "graphics.updateTextureFromImageData.format"));
+    if (!updateTexture(texture, data->getWidth(), data->getHeight(),
+                       static_cast<const uint8_t *>(data->getData())))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed,
+            "texture is not owned by this backend, dimensions differ, or upload failed",
+            "graphics.updateTextureFromImageData"));
+    return eve::Result<void>::success();
 }
 
 Texture* Graphics::newTextureFromFileRepeated(const std::string& filename, bool repeatU, bool repeatV) {

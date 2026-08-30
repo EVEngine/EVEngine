@@ -27,6 +27,13 @@ class ArchitectureContractTests(unittest.TestCase):
         errors = contracts.validate_catalogue(reduced, today=date(2026, 8, 26))
         self.assertTrue(any("stale" in error for error in errors))
 
+    def test_noncanonical_catalogue_order_is_rejected(self):
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        reordered = copy.deepcopy(metadata)
+        reordered["entries"].reverse()
+        errors = contracts.validate_catalogue(reordered, today=date(2026, 8, 26))
+        self.assertTrue(any("canonical rule/id order" in error for error in errors))
+
     def test_valid_api_fixture_has_no_shape_findings(self):
         path = ROOT / "scripts/tests/fixtures_architecture_contracts/valid_api.h"
         lines = [

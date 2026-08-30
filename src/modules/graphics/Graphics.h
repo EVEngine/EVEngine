@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "common/Module.h"
+#include "common/Result.h"
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Canvas.h"
@@ -120,6 +121,17 @@ public:
                                      bool repeatV = false);
     /** @brief Upload RGBA8 ImageData with mipmaps / filter / anisotropy options. */
     Texture *newTextureFromImageData(image::ImageData *data, const TextureCreateInfo &info);
+
+    /**
+     * @brief Upload the current RGBA8 pixels of ImageData into an existing texture in place.
+     * @param texture Borrowed backend-owned texture; its pointer remains stable on success.
+     * @param data Borrowed CPU image; dimensions must match the texture.
+     * @return Success or a structured failure without changing ownership.
+     * @thread Render-thread affine.
+     * @reentrancy Does not invoke user callbacks.
+     */
+    [[nodiscard]] eve::Result<void> updateTextureFromImageData(Texture *texture,
+                                                               image::ImageData *data);
 
     /**
      * @brief Script-friendly texture create: filter = "linear"|"nearest", mipmap = "none"|"linear"|"nearest".

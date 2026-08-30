@@ -202,7 +202,11 @@ def _parse_contract(block: str) -> ModuleContract:
 
 
 def contracts() -> list[ModuleContract]:
-    return [_parse_contract(block) for block in _cmake_blocks(ROOT / "cmake" / "module_manifest.cmake")]
+    return [
+        _parse_contract(block)
+        for path in manifest.manifest_files()
+        for block in _cmake_blocks(path)
+    ]
 
 
 def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple[list[str], list[str]]:

@@ -24,9 +24,10 @@ import re
 import sys
 from collections import defaultdict
 
+import check_module_manifest
+
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES_DIR = os.path.join(REPO, "src", "modules")
-MANIFEST_FILE = os.path.join(REPO, "cmake", "module_manifest.cmake")
 
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s*[<"]([^">]+)[">]', re.M)
 SOURCE_EXT = (".cpp", ".cc", ".h", ".hpp")
@@ -44,12 +45,6 @@ SOURCE_EXT = (".cpp", ".cc", ".h", ".hpp")
 #     in graphics/ScenePicking.cpp (graphics -> scene is a legal downward edge).
 KNOWN_BACK_EDGES = set()
 
-# eve_declare_module(NAME <m> ... LAYER <n> ...) blocks in the module manifest.
-DECLARE_RE = re.compile(r"eve_declare_module\((.*?)\)", re.S)
-NAME_RE = re.compile(r"NAME\s+(\S+)")
-LAYER_RE = re.compile(r"LAYER\s+(-?\d+)")
-
-
 def declared_layers():
     """Return {module: declared LAYER} parsed from cmake/module_manifest.cmake.
 
@@ -57,14 +52,10 @@ def declared_layers():
     layers. The computed layers printed by the default report are derived from
     the include graph instead; this check exists to keep the two in step.
     """
-    with open(MANIFEST_FILE, encoding="utf-8") as handle:
-        text = handle.read()
     result = {}
-    for block in DECLARE_RE.findall(text):
-        name = NAME_RE.search(block)
-        layer = LAYER_RE.search(block)
-        if name and layer:
-            result[name.group(1)] = int(layer.group(1))
+    for declaration in check_module_manifest.parse_manifest():
+        if declaration.name and declaration.layer is not None:
+            result[declaration.name] = declaration.layer
     return result
 
 

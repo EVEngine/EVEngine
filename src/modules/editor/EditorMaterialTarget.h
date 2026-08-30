@@ -5,6 +5,7 @@
 #include "editing/EditableTarget.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -77,6 +78,13 @@ public:
     unsigned long long revision() const override { return document_.revision(); }
     EditRegion dirtyRegion() const override { return document_.dirtyRegion(); }
     void clearDirtyRegion() override { document_.clearDirtyRegion(); }
+    TargetDescriptor describe() const override;
+    /**
+     * @brief Forward property and snapshot capabilities from the authoring document.
+     * @ownership Borrowed from this target; callers must not delete the returned capability.
+     * @lifetime Valid until this target is destroyed or its document is replaced.
+     */
+    void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     [[nodiscard]] EditorResult<void> commitDomainState(
@@ -117,13 +125,13 @@ class Renderable3DMaterialRuntimeSink final : public IMaterialRuntimeSink {
 public:
     /** @brief Bind a live renderable and asset resolver; both must outlive the sink. */
     Renderable3DMaterialRuntimeSink(graphics::Renderable3D* renderable,
-                                    const IMaterialRuntimeAssetResolver* assets)
-        : renderable_(renderable), assets_(assets) {}
+                                    const IMaterialRuntimeAssetResolver* assets);
+    ~Renderable3DMaterialRuntimeSink() override;
     EditorResult<void> publish(const MaterialDocumentTarget& candidate) override;
 
 private:
-    graphics::Renderable3D* renderable_ = nullptr;
-    const IMaterialRuntimeAssetResolver* assets_ = nullptr;
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 };
 
 }  // namespace eve::editor

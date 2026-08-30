@@ -241,6 +241,10 @@ public:
     COMPONENT(MeshRenderer, meshRenderer)
 
     void setPosition(float x, float y, float z);
+    /** @brief Return the table-local entity id used with getEntityGeneration(). */
+    uint32_t getEntityId() const { return id; }
+    /** @brief Return the generation required to reject stale entity ids. */
+    uint32_t getEntityGeneration() const { return generation; }
     void setRotation(float yaw, float pitch, float roll);
     void setYaw(float yaw);
     float getYaw();
@@ -279,6 +283,14 @@ public:
     void setHair(bool hair);
     bool getHair();
     void setTint(float r, float g, float b, float a = 1.f);
+    /** @brief Return the field-backed material tint red channel. */
+    float getTintR() { return meshRenderer()->r; }
+    /** @brief Return the field-backed material tint green channel. */
+    float getTintG() { return meshRenderer()->g; }
+    /** @brief Return the field-backed material tint blue channel. */
+    float getTintB() { return meshRenderer()->b; }
+    /** @brief Return the field-backed material roughness. */
+    float getRoughness() { return meshRenderer()->roughness; }
     void setMetallic(float metallic);
     void setRoughness(float roughness);
     /**

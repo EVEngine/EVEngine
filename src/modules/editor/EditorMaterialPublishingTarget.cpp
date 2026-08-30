@@ -13,6 +13,16 @@ EditorResult<T> publishingError(EditorStatus status, const char* rule, std::stri
 MaterialPublishingTarget::MaterialPublishingTarget(std::string id, IMaterialRuntimeSink* sink)
     : document_(std::move(id)), sink_(sink) {}
 
+TargetDescriptor MaterialPublishingTarget::describe() const {
+    TargetDescriptor descriptor = document_.describe();
+    descriptor.type = "material-runtime";
+    return descriptor;
+}
+
+void* MaterialPublishingTarget::queryCapability(const CapabilityId& capability) {
+    return document_.queryCapability(capability);
+}
+
 EditorResult<void> MaterialPublishingTarget::applyDomainOperation(
     const DomainOperation& operation) {
     if (staging_) return document_.applyDomainOperation(operation);

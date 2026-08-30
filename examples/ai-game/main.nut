@@ -15,7 +15,7 @@
 // 一键复现：python examples/ai-game/agent_demo.py 7529
 // ============================================================================
 
-persist game = {
+persist gameState = {
         tick = 0
         time = 0.0
         hits = 0
@@ -25,18 +25,22 @@ persist game = {
         enemy  = { hp = 80.0,  maxHp = 80.0,  attack = 9.0 }
     }
 
-// --- Agent 可调用的脚本入口（MCP eve_run_script / eve_eval 均可触达） ---
-game.setEnemyHp <- function(v) { game.enemy.hp = v.tofloat(); };
-game.setPlayerHp <- function(v) { game.player.hp = v.tofloat(); };
+// --- Agent 可调用的脚本入口（命令与可序列化权威状态保持分离） ---
+game <- {};
+game.setEnemyHp <- function(v) { gameState.enemy.hp = v.tofloat(); };
+game.setPlayerHp <- function(v) { gameState.player.hp = v.tofloat(); };
 game.reset <- function() {
-    game.player.hp = game.player.maxHp;
-    game.enemy.hp = game.enemy.maxHp;
-    game.hits = 0;
-    game.plaTimer = 0.0;
-    game.eneTimer = 0.0;
+    gameState.player.hp = gameState.player.maxHp;
+    gameState.enemy.hp = gameState.enemy.maxHp;
+    gameState.hits = 0;
+    gameState.plaTimer = 0.0;
+    gameState.eneTimer = 0.0;
 };
 
 eve_init = function() {
+    // `persist` preserves this root across hot reload; DevTools registration
+    // additionally makes it part of explicit MCP snapshot capture/restore.
+    if ("dev" in eve) eve.dev.markStateRoot("gameState");
     gfx.setBackgroundColor(0.07, 0.08, 0.12, 1.0);
     ui.setTheme("dark");
     ui.beginBuild();
@@ -51,35 +55,35 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
-    game.tick += 1;
-    game.time += dt;
-    game.plaTimer += dt;
-    game.eneTimer += dt;
+    gameState.tick += 1;
+    gameState.time += dt;
+    gameState.plaTimer += dt;
+    gameState.eneTimer += dt;
 
-    if (game.player.hp > 0.0 && game.enemy.hp > 0.0) {
+    if (gameState.player.hp > 0.0 && gameState.enemy.hp > 0.0) {
         // 玩家自动攻击 + 缓慢回复。
-        if (game.plaTimer >= 0.8) {
-            game.plaTimer = 0.0;
-            game.enemy.hp -= game.player.attack;
-            game.hits += 1;
+        if (gameState.plaTimer >= 0.8) {
+            gameState.plaTimer = 0.0;
+            gameState.enemy.hp -= gameState.player.attack;
+            gameState.hits += 1;
         }
-        game.player.hp += 2.0 * dt;
-        if (game.player.hp > game.player.maxHp) game.player.hp = game.player.maxHp;
+        gameState.player.hp += 2.0 * dt;
+        if (gameState.player.hp > gameState.player.maxHp) gameState.player.hp = gameState.player.maxHp;
         // 敌人反击。
-        if (game.eneTimer >= 1.4) {
-            game.eneTimer = 0.0;
-            game.player.hp -= game.enemy.attack;
+        if (gameState.eneTimer >= 1.4) {
+            gameState.eneTimer = 0.0;
+            gameState.player.hp -= gameState.enemy.attack;
         }
     }
-    if (game.player.hp < 0.0) game.player.hp = 0.0;
-    if (game.enemy.hp < 0.0) game.enemy.hp = 0.0;
+    if (gameState.player.hp < 0.0) gameState.player.hp = 0.0;
+    if (gameState.enemy.hp < 0.0) gameState.enemy.hp = 0.0;
 
     ui.select("hud");
-    local state = format("tick=%d  time=%.1f  hits=%d", game.tick, game.time, game.hits);
+    local state = format("tick=%d  time=%.1f  hits=%d", gameState.tick, gameState.time, gameState.hits);
     local hpText = format("玩家 HP %.0f/%.0f   敌人 HP %.0f/%.0f",
-                          game.player.hp, game.player.maxHp, game.enemy.hp, game.enemy.maxHp);
+                          gameState.player.hp, gameState.player.maxHp, gameState.enemy.hp, gameState.enemy.maxHp);
     ui.setText("status", state + "\n" + hpText);
-    local hint = game.player.hp <= 0.0
+    local hint = gameState.player.hp <= 0.0
         ? "GAME OVER —— Agent 可用 eve_run_script: game.reset(); 重开"
         : "MCP: eve_eval / eve_run_script / eve_screenshot / eve_snapshot_*";
     ui.setText("hint", hint);
@@ -91,9 +95,9 @@ eve_render = function() {
     // 玩家（左，蓝色）与敌人（右，红色）血条。
     local pw = 300.0;
     gfx.drawSolidRect(60.0, 300.0, pw, 22.0, 0.18, 0.20, 0.26, 1.0);
-    gfx.drawSolidRect(60.0, 300.0, pw * (game.player.hp / game.player.maxHp), 22.0, 0.30, 0.65, 0.95, 1.0);
+    gfx.drawSolidRect(60.0, 300.0, pw * (gameState.player.hp / gameState.player.maxHp), 22.0, 0.30, 0.65, 0.95, 1.0);
     gfx.drawSolidRect(600.0, 300.0, pw, 22.0, 0.20, 0.16, 0.18, 1.0);
-    gfx.drawSolidRect(600.0, 300.0, pw * (game.enemy.hp / game.enemy.maxHp), 22.0, 0.90, 0.32, 0.30, 1.0);
+    gfx.drawSolidRect(600.0, 300.0, pw * (gameState.enemy.hp / gameState.enemy.maxHp), 22.0, 0.90, 0.32, 0.30, 1.0);
 
     gfx.drawSolidRect(140.0, 250.0, 70.0, 90.0, 0.28, 0.52, 0.85, 1.0);
     gfx.drawSolidRect(760.0, 250.0, 70.0, 90.0, 0.82, 0.28, 0.26, 1.0);

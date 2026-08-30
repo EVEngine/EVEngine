@@ -102,6 +102,7 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan
     receipt.afterRevision    = target_->revision();
     receipt.authorityReceipt = "local:" + std::to_string(++receiptSequence_);
     committed_.emplace(receipt.id, CommittedEntry{receipt, plan.operations});
+    commitOrder_.push_back(receipt.id);
     return EditorResult<TransactionReceipt>::applied(std::move(receipt));
 }
 
@@ -113,6 +114,9 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::compensate(const Transacti
     if (entry == committed_.end())
         return authorityError<TransactionReceipt>(EditorStatus::NotFound, "editor.authority.receipt-not-found",
                                                   "Committed transaction is not available for compensation");
+    if (commitOrder_.empty() || commitOrder_.back() != receipt.id)
+        return authorityError<TransactionReceipt>(EditorStatus::Conflict, "editor.authority.compensation-order",
+                                                  "Only the latest committed transaction can be compensated");
     for (const DomainOperation& operation : entry->second.operations) {
         if (!operation.hasInverse)
             return authorityError<TransactionReceipt>(EditorStatus::Unsupported,
@@ -208,6 +212,9 @@ EditorResult<TransactionReceipt> LocalWorldAuthority::compensate(const Transacti
     compensation.state            = TransactionState::Committed;
     compensation.afterRevision    = target_->revision();
     compensation.authorityReceipt = "local:" + std::to_string(receiptSequence_);
+    committed_.erase(entry);
+    commitOrder_.pop_back();
+    if (!commitOrder_.empty()) committed_.at(commitOrder_.back()).receipt.afterRevision = compensation.afterRevision;
     return EditorResult<TransactionReceipt>::applied(std::move(compensation));
 }
 

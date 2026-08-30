@@ -5,6 +5,9 @@ Squirrel ViewModel，引擎现场生成一个可交互的编辑器窗口**，并
 每个项目都能长出风格与功能完全不同的地形编辑器、材质编辑器、事件编辑器——
 不再受统一 IDE 样式约束。
 
+本示例也是标准 Agent Development Session 的 Editor 路径：objective 与验收条件先登记，随后按
+Discover → Modify → Run → Observe → Verify 推进，RX 收敛、undo/redo 和引擎截图作为独立证据后才能完成。
+
 ## 启动（TCP 模式）
 
 ```bash
@@ -17,8 +20,17 @@ eve mcp --port 7531 --root examples/ai-editor
 python examples/ai-editor/editor_demo.py 7531
 ```
 
-脚本会走完：附着 → 开窗 → 注册 ViewModel → 提交编辑器 JSON → 渲染数帧 →
-查询状态 → 截图 → 验证绑定 → 干净退出，全部通过后输出 `PASS`。
+脚本会走完：附着 → 开窗 → 注册 ViewModel → 提交编辑器 JSON → 创建运行中的
+`SceneHost` 和真实 `Renderable3D` → 让 Editor live target 借用二者 → 通过
+`eve_editor_observe_start/poll/close` 建立跨多次 Agent 调用的 RX 观察会话，再用
+`eve_editor_execute_observe` 的 `scene-node` observer 提交并观察命名 SceneHost，缺失节点会在写入前
+拒绝；同一工具的默认 `renderable3d` observer 在一次调用中关联 live Renderable3D 的
+`before/after`、Editor 事务回执与 target snapshot → 先用错误 generation 证明 stale handle 会在
+写入前拒绝且不改变运行时，再用当前 identity 自纠 → 先提交一个偏离目标的
+材质候选，由 Agent 从 RX 会话读取变更后的 `converged/maxError`，提交修正并重新观察至收敛；
+相同采样被 `distinctUntilChanged` 抑制，会话结束时显式关闭订阅 →
+用两次 undo/redo 回放候选与修正 → 把权威结果
+投影回 UI → 渲染绿色材质立方体并由引擎截图 → 关闭 target → 干净退出，全部通过后输出 `PASS`。
 
 > 说明：`eve mcp` 主机启动时会实例化全部模块（等价 load.nut 的绑定循环），
 > 因此 IEditorHost / IRenderCapture 等能力始终可用；本示例已在 Windows 上
@@ -34,8 +46,10 @@ python examples/ai-editor/editor_demo.py 7531
 } } }
 ```
 
-然后 Agent 用 `eve_host_editor_apply` / `eve_host_vm_register` /
-`eve_host_capture` 等工具现场生成并迭代编辑器（工具全表见
+然后 Agent 用 `eve_host_editor_apply` / `eve_editor_target_create` /
+`eve_editor_observe_start/poll/close` / `eve_editor_execute_observe` / `eve_editor_inspect` /
+`eve_host_capture` 等工具现场生成编辑器、
+修改引擎 live scene / Renderable3D 材质并从统一 runtime observer 验证结果（工具全表见
 [`docs/dev/AI与MCP支持.md`](../../docs/dev/AI与MCP支持.md)）。
 
 ## 保存即生效
@@ -55,5 +69,6 @@ MCP 连接和编辑器控件值会保留。若新脚本编译失败，旧 ViewMo
   按钮命令回调 `apply(editor, widget)`）。
 - `editor_demo.py`：标准库 TCP 客户端，展示完整驱动流程。
 
-> 说明：`terrain.vm.nut` 里的 `apply` 目前只做演示占位；真实项目在这里读写
-> 引擎数据（Heightmap / Material / Scene），几行脚本就能把示例变成真正可用的编辑器。
+`terrain.vm.nut` 的按钮回调仍只负责 UI 交互；权威 live SceneHost 修改由 Agent 通过统一
+Editor command/transaction 协议提交，避免 ViewModel 直接维护第二份场景状态。Editor
+关闭 target 时只销毁借用适配器和发布 sink，不销毁 ECS 拥有的 SceneHost/Renderable3D。
