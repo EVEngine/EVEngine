@@ -317,7 +317,7 @@ jobs:
       - name: Restore win32 third-party cache
         id: third-party-cache
         timeout-minutes: 15
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: build/third-party-binary/win32-debug
           key: third-party-v1-${{ runner.os }}-${{ runner.arch }}-win32-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake') }}
@@ -371,7 +371,7 @@ jobs:
           steps.third-party-cache.outputs.cache-hit != 'true' &&
           (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
         timeout-minutes: 15
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: build/third-party-binary/win32-debug
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
@@ -569,7 +569,7 @@ jobs:
 
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: temurin
           java-version: "17"
@@ -647,7 +647,7 @@ jobs:
 
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
         with:
           distribution: temurin
           java-version: "17"
@@ -1033,7 +1033,7 @@ jobs:
       - name: Restore linux third-party cache
         id: third-party-cache
         timeout-minutes: 15
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: build/third-party-binary/linux-debug
           key: third-party-v1-ubuntu-24.04-${{ runner.arch }}-linux-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake') }}
@@ -1083,7 +1083,7 @@ jobs:
           steps.third-party-cache.outputs.cache-hit != 'true' &&
           (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main')
         timeout-minutes: 15
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: build/third-party-binary/linux-debug
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
@@ -1528,7 +1528,7 @@ jobs:
       - name: Restore Emscripten SDK cache
         id: emsdk-cache
         timeout-minutes: 5
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: $HOME/emsdk
           key: emsdk-${{ runner.os }}-${{ runner.arch }}-latest
@@ -1595,7 +1595,7 @@ jobs:
         # never rewrite the cache, keeping churn/eviction of hot caches low.
         if: ${{ steps.emsdk-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/dev' }}
         timeout-minutes: 15
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: $HOME/emsdk
           key: ${{ steps.emsdk-cache.outputs.cache-primary-key }}
