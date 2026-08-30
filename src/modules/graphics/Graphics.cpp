@@ -406,6 +406,9 @@ void Graphics::expose(ssq::Table& table) {
     ent.addFunc("setMaterial", &Renderable3D::setMaterial);
     ent.addFunc("getMaterial", &Renderable3D::getMaterial);
     ent.addFunc("setPart", &Renderable3D::setPart);
+    ent.addFunc("setPartSortPriority", &Renderable3D::setPartSortPriority);
+    ent.addFunc("clearPartSortPriority", &Renderable3D::clearPartSortPriority);
+    ent.addFunc("getPartSortPriority", &Renderable3D::getPartSortPriority);
     ent.addFunc("clearParts", &Renderable3D::clearParts);
     ent.addFunc("getPartCount", &Renderable3D::getPartCount);
     ent.addFunc("getPartName", &Renderable3D::getPartName);

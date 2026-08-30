@@ -36,7 +36,7 @@ eve_declare_module(NAME tactics LAYER 5 SCRIPT Tactics SLOT tactics
                    DEPS action
                    GROUP 2d 3d web)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
-                   DEPS animation graphics model3d scene)
+                   DEPS animation graphics inventory model3d scene)
 # Deterministic climbing/parkour planning and capsule-constrained execution.
 eve_declare_module(NAME climbing LAYER 5 SCRIPT Climbing SLOT climbing
                    DEPS animation physics

@@ -5,6 +5,7 @@
 #include "animation/AnimLayerMixer.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimSkin.h"
 #include "animation/Animation.h"
 #include "animation/Tween.h"
 #include "avatar/Avatar.h"
@@ -13,8 +14,10 @@
 #include "common/ECS.h"
 #include "common/Module.h"
 #include "graphics/Mesh.h"
+#include "graphics/Material.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "inventory/Equipment.h"
 
 #include <cmath>
 #include <string>
@@ -222,6 +225,175 @@ TEST_CASE("avatar.vroid.pathAndTransform") {
     av->sync();
     CHECK(av->getRenderable3D() != nullptr);
 
+    av->release();
+    delete av;
+}
+
+TEST_CASE("avatar.equipment.2dProjectionTracksAuthoritativeSlots") {
+    Avatar* mod = Avatar::create();
+    AvatarInstance* av = mod->newImageAvatar();
+    eve::inventory::EquipmentSet equipment;
+    equipment.defineSlot("body");
+
+    CHECK_EQ(static_cast<int>(av->defineEquipmentVisual2D("armor.red", "body", "armor", nullptr, 5)),
+             static_cast<int>(EquipmentVisualChange::Applied));
+    CHECK_EQ(static_cast<int>(av->bindEquipment(&equipment)),
+             static_cast<int>(EquipmentVisualChange::Applied));
+    CHECK_EQ(av->getEquipmentVisualItem("body"), std::string{});
+
+    auto* stack = equipment.stackAt("body");
+    REQUIRE(stack != nullptr);
+    stack->itemId = "armor.red";
+    stack->quantity = 1;
+    av->update(0.f);
+    CHECK_EQ(av->getEquipmentVisualItem("body"), std::string("armor.red"));
+    REQUIRE(av->getLayerRenderable("armor") != nullptr);
+    CHECK(av->getLayerRenderable("armor")->getVisible());
+
+    stack->clear();
+    av->sync();
+    CHECK_EQ(av->getEquipmentVisualItem("body"), std::string{});
+    CHECK(!av->getLayerRenderable("armor")->getVisible());
+    av->release();
+    delete av;
+}
+
+TEST_CASE("avatar.equipment.3dProjectionSwapsRootAndBoneParts") {
+    Avatar* mod = Avatar::create();
+    AvatarInstance* av = mod->newVroidAvatar();
+    eve::inventory::EquipmentSet equipment;
+    equipment.defineSlot("weapon");
+    auto* sword = Renderable3D::create();
+    REQUIRE(sword != nullptr);
+
+    CHECK_EQ(static_cast<int>(av->defineEquipmentVisual3D(
+                 "sword.iron", "weapon", sword, "", 1.f, 2.f, 3.f)),
+             static_cast<int>(EquipmentVisualChange::Applied));
+    av->bindEquipment(&equipment);
+    auto* stack = equipment.stackAt("weapon");
+    REQUIRE(stack != nullptr);
+    stack->itemId = "sword.iron";
+    stack->quantity = 1;
+    av->setPosition3D(10.f, 20.f, 30.f);
+    av->sync();
+    CHECK_EQ(av->getEquipmentVisualItem("weapon"), std::string("sword.iron"));
+
+    stack->clear();
+    av->update(0.f);
+    CHECK_EQ(av->getEquipmentVisualItem("weapon"), std::string{});
+    av->release();
+    delete av;
+    ecs::DestroyEntity(sword);
+}
+
+TEST_CASE("avatar.equipment.skinnedPartsSharePoseAndRespectWearOcclusion") {
+    Avatar* mod = Avatar::create();
+    AvatarInstance* av = mod->newVroidAvatar();
+    eve::animation::AnimSkin bodySkin;
+    eve::animation::AnimSkin shirtSkin;
+    eve::animation::AnimSkin coatSkin;
+    Mesh bodyMesh;
+    Mesh shirtMesh;
+    Mesh coatMesh;
+    eve::graphics::Material bodyMaterial;
+    eve::graphics::Material shirtMaterial;
+    eve::graphics::Material coatMaterial;
+
+    CHECK_EQ(static_cast<int>(av->bindSkinnedPart(
+                 0, "body", &bodyMesh, &bodyMaterial, &bodySkin)),
+             static_cast<int>(EquipmentVisualChange::Applied));
+    REQUIRE(av->getRenderable3D() != nullptr);
+    CHECK_EQ(av->getRenderable3D()->getPartName(0), std::string("body"));
+    CHECK(av->getRenderable3D()->getPartMaterial(0) == &bodyMaterial);
+
+    CHECK_EQ(static_cast<int>(av->defineEquipmentSkinnedVisual3D(
+                 "linen.shirt", "shirt", 1, "shirt", &shirtMesh, &shirtMaterial,
+                 &shirtSkin)),
+             static_cast<int>(EquipmentVisualChange::Applied));
+    CHECK_EQ(static_cast<int>(av->defineEquipmentSkinnedVisual3D(
+                 "plate.coat", "outerwear", 2, "coat", &coatMesh, &coatMaterial,
+                 &coatSkin)),
+             static_cast<int>(EquipmentVisualChange::Applied));
+    av->setEquipmentVisualLayer("linen.shirt", "shirt", "shirt", 0);
+    av->setEquipmentVisualLayer("plate.coat", "outerwear", "outerwear", 0);
+
+    eve::inventory::EquipmentSet equipment;
+    equipment.defineSlot("shirt");
+    equipment.defineSlot("outerwear");
+    auto* shirt = equipment.stackAt("shirt");
+    auto* coat = equipment.stackAt("outerwear");
+    REQUIRE(shirt != nullptr);
+    REQUIRE(coat != nullptr);
+    shirt->itemId = "linen.shirt";
+    shirt->quantity = 1;
+    coat->itemId = "plate.coat";
+    coat->quantity = 1;
+    av->bindEquipment(&equipment);
+    CHECK_EQ(av->getRenderable3D()->getPartName(1), std::string("shirt"));
+    CHECK_EQ(av->getRenderable3D()->getPartName(2), std::string("coat"));
+    CHECK(av->getRenderable3D()->getPartMaterial(1) == &shirtMaterial);
+    CHECK(av->getRenderable3D()->getPartMaterial(2) == &coatMaterial);
+    CHECK_EQ(av->getRenderable3D()->getPartSortPriority(1), 200000);
+    CHECK_EQ(av->getRenderable3D()->getPartSortPriority(2), 300000);
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root", -1);
+    eve::animation::AnimPlayer player(&skeleton);
+    CHECK(av->bindAnimPlayer(&player));
+    av->update(0.f);
+    CHECK_EQ(static_cast<int>(av->getSkinnedPartUpdateMode(0)),
+             static_cast<int>(SkinnedPartUpdateMode::Unavailable));
+
+    CHECK_EQ(static_cast<int>(av->addEquipmentLayerOcclusion("outerwear", "shirt")),
+             static_cast<int>(EquipmentVisualChange::Applied));
+    CHECK(av->getRenderable3D()->getPartMesh(1) == nullptr);
+    CHECK(av->getRenderable3D()->getPartMesh(2) == &coatMesh);
+
+    coat->clear();
+    av->sync();
+    CHECK(av->getRenderable3D()->getPartMesh(1) == &shirtMesh);
+    CHECK(av->getRenderable3D()->getPartMesh(2) == nullptr);
+    CHECK_EQ(static_cast<int>(av->unbindSkinnedPart(0)),
+             static_cast<int>(EquipmentVisualChange::Removed));
+    CHECK(av->getRenderable3D()->getPartMesh(0) == nullptr);
+    av->release();
+    delete av;
+}
+
+TEST_CASE("avatar.equipment.layerHierarchyOrdersAndOccludesClothing") {
+    Avatar*         mod = Avatar::create();
+    AvatarInstance* av  = mod->newImageAvatar();
+    eve::inventory::EquipmentSet equipment;
+    equipment.defineSlot("underwear");
+    equipment.defineSlot("shirt");
+    equipment.defineSlot("outerwear");
+
+    av->defineEquipmentVisual2D("briefs", "underwear", "briefs", nullptr, 0);
+    av->defineEquipmentVisual2D("linen.shirt", "shirt", "shirt", nullptr, 0);
+    av->defineEquipmentVisual2D("plate.coat", "outerwear", "coat", nullptr, 0);
+    av->setEquipmentVisualLayer("briefs", "underwear", "underwear", 0);
+    av->setEquipmentVisualLayer("linen.shirt", "shirt", "shirt", 0);
+    av->setEquipmentVisualLayer("plate.coat", "outerwear", "outerwear", 0);
+
+    auto equip = [&](const std::string& slot, const std::string& item) {
+        auto* stack = equipment.stackAt(slot);
+        REQUIRE(stack != nullptr);
+        stack->itemId  = item;
+        stack->quantity = 1;
+    };
+    equip("underwear", "briefs");
+    equip("shirt", "linen.shirt");
+    equip("outerwear", "plate.coat");
+    av->bindEquipment(&equipment);
+    CHECK_EQ(av->getEquipmentRenderStackCount(), 3);
+    CHECK_EQ(av->getEquipmentRenderStackLayer(0), std::string("underwear"));
+    CHECK_EQ(av->getEquipmentRenderStackLayer(1), std::string("shirt"));
+    CHECK_EQ(av->getEquipmentRenderStackLayer(2), std::string("outerwear"));
+
+    CHECK_EQ(static_cast<int>(av->addEquipmentLayerOcclusion("outerwear", "shirt")),
+             static_cast<int>(EquipmentVisualChange::Applied));
+    CHECK_EQ(av->getEquipmentRenderStackCount(), 2);
+    CHECK(!av->getLayerRenderable("shirt")->getVisible());
+    CHECK_EQ(av->getEquipmentRenderStackItem(1), std::string("plate.coat"));
     av->release();
     delete av;
 }
