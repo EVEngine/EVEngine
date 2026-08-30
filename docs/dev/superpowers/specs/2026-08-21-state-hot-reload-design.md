@@ -205,8 +205,8 @@ class 实例迁移是兜底而非首选。状态根校验会拒绝携带闭包/c
 
 1. **资源侧：动画内容热更（PR2b，已实施）。** `AnimClip::adopt` 原地换内容；
    `AnimClipRegistry`（弱引用、path→clip，`~AnimClip` 自动注销）登记
-   `newClipFromEvaFile` 创建的每个 clip；animation 注册 `IAssetReloader`
-   （kind `"animclip"`，`.eva` 文件变化 → 重新导入 → adopt 进已登记实例）。
+   `newClipFromAnimationFixtureText` 创建的每个 clip；animation 注册 `IAssetReloader`
+   （kind `"animclip"`，`.anim.txt` 文件变化 → 重新导入 → adopt 进已登记实例）。
    持有 clip 指针的状态机/脚本永远指向有效对象，内容自动刷新。
    **所有权说明**：ssq 的 `addFunc` 返回值（`pushByPtr`）不设 release hook，
    脚本 GC 不会 `delete` AnimClip——因此无需把 AnimClip 改成引用计数对象，
@@ -223,7 +223,7 @@ class 实例迁移是兜底而非首选。状态根校验会拒绝携带闭包/c
 //          由重载会话降级到 resetToDefaults()（回到 entry）。
 ```
 
-这样状态机被脚本重建后能以"同一状态名、同一参数"继续播放；`.eva` 源文件变化时
+这样状态机被脚本重建后能以"同一状态名、同一参数"继续播放；`.anim.txt` 源文件变化时
 "animclip" reloader 通过 adopt 保持 clip 实例身份并刷新内容（与状态恢复正交）。
 
 ### 4.6 其他模块接入
@@ -295,7 +295,7 @@ Effect/Skill 已是 JSON 定义（`loadFromJson`），天然适合"定义重载 
 - `test/animation.cpp` 增补：状态机 capture/restore；clip 重载后指针身份稳定
   （adopt），状态名与参数不丢。
 - `test/animation_reload.cpp`（新）：`AnimClip::adopt` 原地换内容、注册表登记/
-  注销、`.eva` 文件重写后 reloadPath 刷新已登记实例、未知/损坏源为 no-op。
+  注销、`.anim.txt` 文件重写后 reloadPath 刷新已登记实例、未知/损坏源为 no-op。
 - `test/rpg_reload.cpp`（新）：施法 + 冷却 capture/restore 往返、reset 打断施法。
 - `test/card_reload.cpp`（新）：卡牌 phase 往返、瞬态拖拽丢弃、reset 回牌库。
 - `test/debugger.cpp` 增补：状态根含函数 / 类实例时 capture 拒绝并报错。

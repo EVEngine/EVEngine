@@ -255,9 +255,9 @@ local model = model3d.newModelDataFromFile("Idle.fbx");
 local sk = anim.newSkeletonFromModel(model);
 local idle = anim.newClipFromModel(model, sk, 0);
 
-// 或加载测试用紧凑 `.eva`（无网格关键帧，见 test/assets/mixamo/）：
-local sk2 = anim.newSkeletonFromEvaFile("test/assets/mixamo/Idle.eva");
-local idle2 = anim.newClipFromEvaFile("test/assets/mixamo/Idle.eva");
+// 或加载测试用紧凑 `.anim.txt`（无网格关键帧，见 test/assets/mixamo/）：
+local sk2 = anim.newSkeletonFromAnimationFixtureText("test/assets/mixamo/Idle.anim.txt");
+local idle2 = anim.newClipFromAnimationFixtureText("test/assets/mixamo/Idle.anim.txt");
 // Mixamo 原地跑可补平面根运动：
 run.applyPlanarRootMotion(sk.findBone("mixamorig:Hips"), 0, 300);
 ```

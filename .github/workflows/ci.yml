@@ -389,16 +389,32 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug `
             -DCMAKE_C_COMPILER="$PWD/cmake/msvc-cl.cmd" `
             -DCMAKE_CXX_COMPILER="$PWD/cmake/msvc-cl.cmd" `
-            -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
+            -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
             -DEVENGINE_COMPILER_CACHE=SCCACHE `
             -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
             -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF `
             -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
 
+      - name: Verify native Dawn platform selection
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          $config = Get-Content build/webgpu-native/src/engine/common/config.h -Raw
+          $sources = Get-Content build/webgpu-native/src/modules/graphics_src.txt -Raw
+          if ($config -notmatch '(?m)^#define EVENGINE_WEBGPU\s*$') {
+            throw 'native Dawn build lost EVENGINE_WEBGPU during configuration'
+          }
+          if ($sources -notmatch 'graphics[/\\]webgpu[/\\]' -or
+              $sources -match 'graphics[/\\]vulkan[/\\]') {
+            throw 'native Dawn graphics source list does not exclusively select webgpu'
+          }
+
       - name: Build native Dawn parity lane
         # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
-        # 95% only when the former 40-minute guard fired on windows-latest.
-        timeout-minutes: 60
+        # 95% only when the former 40-minute guard fired on windows-latest. The
+        # full test link reached 2,401/2,403 at 60 minutes as the module matrix
+        # grew, so retain a bounded 15-minute link/cache variance margin.
+        timeout-minutes: 75
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -445,7 +461,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: READ_ONLY
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -593,7 +609,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: READ_ONLY
       SCCACHE_DIRECT: "false"
     defaults:
       run:
@@ -721,11 +737,24 @@ jobs:
         run: |
           cmake -S . -B build/webgpu-macos -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
-            -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
+            -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
             -DEVENGINE_COMPILER_CACHE=SCCACHE \
             -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/macosx-debug" \
             -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
             -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+
+      - name: Verify native Dawn Metal platform selection
+        timeout-minutes: 5
+        run: |
+          grep -Eq '^#define EVENGINE_WEBGPU[[:space:]]*$' \
+            build/webgpu-macos/src/engine/common/config.h
+          grep -Eq 'graphics[/\\]webgpu[/\\]' \
+            build/webgpu-macos/src/modules/graphics_src.txt
+          if grep -Eq 'graphics[/\\]vulkan[/\\]' \
+            build/webgpu-macos/src/modules/graphics_src.txt; then
+            echo 'native Dawn graphics source list still contains Vulkan' >&2
+            exit 1
+          fi
 
       - name: Build native Dawn Metal lane
         timeout-minutes: 40
@@ -753,7 +782,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: READ_ONLY
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -1087,7 +1116,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-release
-      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_GHA_RW_MODE: READ_ONLY
       SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
@@ -1170,7 +1199,7 @@ jobs:
     runs-on: ubuntu-24.04
     # The build and test steps have independent bounded guards. Leave
     # enough job-level budget for both plus toolchain setup and cache reporting.
-    timeout-minutes: 110
+    timeout-minutes: 120
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1235,7 +1264,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug (ASan+UBSan)
-        timeout-minutes: 40
+        # A cold full-profile sanitizer build now takes just over 40 minutes
+        # after the asset pipeline modules and tests were added.
+        timeout-minutes: 55
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
