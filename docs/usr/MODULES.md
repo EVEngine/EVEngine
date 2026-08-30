@@ -49,6 +49,14 @@
 - [建筑可视化](modules/buildingfx.md)：把放置世界和鬼影同步为 2D/3D 视觉并绘制放置网格。
 - [程序化房屋](modules/housegen.md)：数据驱动的房屋生成（组件库 + 请求 → 布局 JSON）。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
+- [武器系统](modules/weapon.md)：数据驱动的武器、弹药池、挂点、瞄准、开火、装填与事件查询。
+- [载具系统](modules/vehicle.md)：载具定义、移动命令、座位和炮塔、伤害以及 2D/3D 物理接入。
+- [通用效果](modules/effects.md)：按主体管理可堆叠、可过期的效果及其结构化载荷与事件。
+- [原子状态补丁](modules/statepatch.md)：用带冲突检查的批次原子修改 JSON 状态，并支持脏键、事件和快照。
+- [通用命令队列](modules/orders.md)：确定性优先级命令、抢占、超时、载荷、生命周期事件和快照。
+- [社会关系图](modules/social.md)：所有权、控制权、角色指派和带权有向关系。
+- [生产队列](modules/production.md)：按 owner 分配并行槽位，确定性推进可暂停、恢复的生产任务。
+- [权限规则](modules/authority.md)：按 actor、scope 和 capability 仲裁有优先级、可过期的允许/拒绝规则。
 
 ## 表现与场景
 
