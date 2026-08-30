@@ -58,6 +58,40 @@ env:
   ANDROID_API: ${{ vars.ANDROID_API || '34' }}
 
 jobs:
+  change-scope:
+    name: Classify CI change scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      windows: ${{ steps.scope.outputs.windows }}
+      android: ${{ steps.scope.outputs.android }}
+      macos: ${{ steps.scope.outputs.macos }}
+      ios: ${{ steps.scope.outputs.ios }}
+      linux: ${{ steps.scope.outputs.linux }}
+      asan: ${{ steps.scope.outputs.asan }}
+      fuzz: ${{ steps.scope.outputs.fuzz }}
+      webgpu: ${{ steps.scope.outputs.webgpu }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Classify changed paths
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            python3 scripts/ci_change_scope.py \
+              --base "$BASE_SHA" --head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT"
+          else
+            python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
+          fi
+
   # Fast structural check: no build, no toolchain. Fails when a module gains an
   # #include that points up the dependency layering (see
   # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
@@ -167,7 +201,8 @@ jobs:
     # Pull requests already run the toolchain-free profile contract check in
     # quality-contracts. Full configure/build/smoke coverage belongs to dev
     # pushes, scheduled/manual runs and release workflow calls.
-    if: ${{ github.event_name != 'pull_request' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     strategy:
@@ -254,9 +289,29 @@ jobs:
         timeout-minutes: 5
         run: cd tools/vision-prefilter && python3 -m pytest -q test
 
+  preflight:
+    name: Preflight gate
+    if: ${{ always() }}
+    needs: [change-scope, format, layering, quality-contracts, python-tools]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require all fast checks
+        env:
+          CHANGE_SCOPE: ${{ needs.change-scope.result }}
+          FORMAT: ${{ needs.format.result }}
+          LAYERING: ${{ needs.layering.result }}
+          QUALITY: ${{ needs.quality-contracts.result }}
+          PYTHON_TOOLS: ${{ needs.python-tools.result }}
+        run: |
+          for result in "$CHANGE_SCOPE" "$FORMAT" "$LAYERING" "$QUALITY" "$PYTHON_TOOLS"; do
+            [ "$result" = "success" ] || exit 1
+          done
+
   windows:
     name: Windows
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # This lane builds and tests both Vulkan and native Dawn configurations.
     # A cold Windows runner needs more than 90 minutes for the two independent
@@ -459,7 +514,8 @@ jobs:
 
   windows-release:
     name: Windows (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.windows == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     timeout-minutes: 60
     env:
@@ -527,7 +583,8 @@ jobs:
 
   android:
     name: Android
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # A cold NDK build can consume almost the entire 45-minute build-step budget
     # before Gradle packages the finished native library. Keep the step timeout
@@ -607,7 +664,8 @@ jobs:
 
   android-release:
     name: Android (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.android == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     timeout-minutes: 60
     env:
@@ -682,7 +740,8 @@ jobs:
 
   macos:
     name: macOS
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 120
     env:
@@ -780,7 +839,8 @@ jobs:
 
   macos-release:
     name: macOS (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.macos == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
     env:
@@ -841,7 +901,8 @@ jobs:
 
   ios:
     name: iOS
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.ios == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -898,7 +959,8 @@ jobs:
 
   ios-release:
     name: iOS (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.ios == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -955,7 +1017,8 @@ jobs:
 
   linux:
     name: Linux
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.linux == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -1114,7 +1177,8 @@ jobs:
 
   linux-release:
     name: Linux (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.linux == 'true' && (inputs.build_type == 'release' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -1199,7 +1263,8 @@ jobs:
 
   linux-asan:
     name: Linux (ASan+UBSan)
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
     # The build and test steps have independent bounded guards. Leave
     # enough job-level budget for both plus toolchain setup and cache reporting.
@@ -1296,7 +1361,8 @@ jobs:
     name: Linux (Coverage)
     # Coverage is a trend signal rather than a per-PR gate; run weekly and on
     # demand so it does not double CI minutes for every push.
-    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [preflight]
+    if: ${{ needs.preflight.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -1401,6 +1467,8 @@ jobs:
 
   linux-fuzz:
     name: Linux (zeroerr fuzz)
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.fuzz == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -1464,6 +1532,8 @@ jobs:
 
   webgpu:
     name: WebGPU (WASM)
+    needs: [preflight, change-scope]
+    if: ${{ needs.preflight.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     # Do not add sccache via EM_COMPILER_WRAPPER here: emsdk's Clang commands
