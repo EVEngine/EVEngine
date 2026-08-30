@@ -1,5 +1,7 @@
 #include "material_editing/MaterialGraph.h"
 
+#include <algorithm>
+
 namespace eve::material_editing {
 namespace {
 
