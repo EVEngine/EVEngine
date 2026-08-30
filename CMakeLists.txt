@@ -910,9 +910,11 @@ macro(get_available_build)
     # the scan — ImGuiBackend.cpp is the EVUI implementation and gains a
     # webgpu branch instead.
     if(BUILD_PLATFORM STREQUAL "webgpu")
-        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "vulkan" CACHE INTERNAL "Backend subdirs excluded from webgpu builds")
+        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "vulkan" CACHE INTERNAL
+            "Backend subdirs excluded from webgpu builds" FORCE)
     else()
-        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "webgpu" CACHE INTERNAL "Backend subdirs excluded from native builds")
+        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "webgpu" CACHE INTERNAL
+            "Backend subdirs excluded from native builds" FORCE)
     endif()
 
     # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
@@ -921,11 +923,11 @@ macro(get_available_build)
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(EVENGINE_EXCLUDED_MODULE_FILES
             "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp"
-            CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten")
+            CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten" FORCE)
     else()
         set(EVENGINE_EXCLUDED_MODULE_FILES
             "ImGuiHostPanels.cpp"
-            CACHE INTERNAL "Exact basenames excluded from module source scan")
+            CACHE INTERNAL "Exact basenames excluded from module source scan" FORCE)
     endif()
 
     message("Available: ${AVAILABLE_PLATFORM}")

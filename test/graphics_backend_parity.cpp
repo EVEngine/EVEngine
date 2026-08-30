@@ -1,5 +1,6 @@
 #include "zeroerr/unittest.h"
 
+#include "common/config.h"
 #include "filesystem/FileData.h"
 #include "graphics/Canvas.h"
 #include "graphics/AlphaMask.h"
@@ -23,6 +24,14 @@
 using namespace eve::graphics;
 
 namespace {
+
+const char *expectedBackendName() {
+#ifdef EVENGINE_WEBGPU
+    return "webgpu";
+#else
+    return "vulkan";
+#endif
+}
 
 const uint8_t *pixel(const eve::image::ImageData &image, int x, int y) {
     const auto *bytes = static_cast<const uint8_t *>(image.getData());
@@ -94,8 +103,7 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     Graphics *gfx = headlessGraphics();
     REQUIRE(gfx != nullptr);
     const std::string backend = gfx->getBackendName();
-    const bool supportedBackend = backend == "vulkan" || backend == "webgpu";
-    REQUIRE(supportedBackend);
+    REQUIRE(backend == expectedBackendName());
 
     const uint8_t red[4] = {255, 0, 0, 255};
     const uint8_t green[4] = {0, 255, 0, 255};
@@ -392,6 +400,7 @@ TEST_CASE("graphics.backendParity.textureSamplingRepeatAndMipmaps") {
 TEST_CASE("graphics.backendParity.webgpuCustomShaderLifetime") {
     Graphics *gfx = headlessGraphics();
     REQUIRE(gfx != nullptr);
+    REQUIRE(gfx->getBackendName() == expectedBackendName());
     if (gfx->getBackendName() != "webgpu") {
         return;
     }
