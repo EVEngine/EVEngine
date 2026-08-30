@@ -67,6 +67,21 @@ void UIHost::setName(const std::string &name) { meta()->name = name; }
 
 const std::string &UIHost::getName() { return meta()->name; }
 
+void UIHost::setWorldAnchor(float x, float y, float z) {
+    auto anchor = worldAnchor();
+    anchor->enabled = true;
+    anchor->worldX = x;
+    anchor->worldY = y;
+    anchor->worldZ = z;
+}
+
+void UIHost::clearWorldAnchor() {
+    auto anchor = worldAnchor();
+    anchor->enabled = false;
+    anchor->state = WorldAnchorState::Disabled;
+    anchor->scale = 1.f;
+}
+
 void UIHost::setTree(WidgetDesc root) { applyTree(this, std::move(root)); }
 
 bool UIHost::setTreeReconcile(WidgetDesc root) { return applyTreeReconcile(this, std::move(root)); }

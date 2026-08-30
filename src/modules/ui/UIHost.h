@@ -76,6 +76,22 @@ enum class MouseFilter : uint8_t { Stop = 0, Pass = 1, Ignore = 2 };
 /** @brief Built-in theme override inherited by a retained UI subtree. */
 enum class ThemePreset : uint8_t { Inherit = 0, Dark = 1, Light = 2 };
 
+/** @brief Visibility result of projecting a world-space UI anchor. */
+enum class WorldAnchorState : uint8_t {
+    Disabled = 0,
+    Visible,
+    BehindCamera,
+    OutsideViewport,
+    NoCamera,
+    Crowded
+};
+
+/** @brief Policy used when a projected world-space anchor leaves the viewport. */
+enum class WorldAnchorEdgePolicy : uint8_t { Hide = 0, Clamp };
+
+/** @brief Deterministic screen-space overlap policy for projected world anchors. */
+enum class WorldAnchorOverlapPolicy : uint8_t { Allow = 0, Avoid };
+
 /** @brief Platform-neutral accessibility role exposed by controls. */
 enum class AccessibilityRole : uint8_t {
     Auto = 0,
@@ -239,8 +255,46 @@ public:
         std::vector<std::function<void(const std::string &)>> textHandlers;
     };
 
+    /**
+     * @brief Optional 3D-world projection for this UI host.
+     *
+     * The world position and policy are authoritative input owned by UIHost. The resolved
+     * screen position/state are transient derived data refreshed by UISystem on the render
+     * thread. The link is value-based: destroying a scene object does not leave a pointer;
+     * its owner must stop updating or disable this anchor. Camera removal is detected every
+     * frame and reported as NoCamera. Restore/hot reload rebuilds the link from worldPosition.
+     */
+    struct WorldAnchor {
+        bool enabled = false;
+        float worldX = 0.f;
+        float worldY = 0.f;
+        float worldZ = 0.f;
+        float offsetX = 0.f;
+        float offsetY = 0.f;
+        float safeMargin = 8.f;
+        WorldAnchorEdgePolicy edgePolicy = WorldAnchorEdgePolicy::Hide;
+        bool hideBehindCamera = true;
+        bool distanceScale = false;
+        float referenceDistance = 10.f;
+        float minScale = 0.65f;
+        float maxScale = 1.25f;
+        WorldAnchorOverlapPolicy overlapPolicy = WorldAnchorOverlapPolicy::Allow;
+        int overlapPriority = 0;
+        float overlapPadding = 4.f;
+        float maxDisplacement = 96.f;
+
+        WorldAnchorState state = WorldAnchorState::Disabled;
+        float screenX = 0.f;
+        float screenY = 0.f;
+        float depth = 0.f;
+        float scale = 1.f;
+        float displacementX = 0.f;
+        float displacementY = 0.f;
+    };
+
     COMPONENT(Meta, meta)
     COMPONENT(Tree, tree)
+    COMPONENT(WorldAnchor, worldAnchor)
 
     /**
      * @brief Creates an ECS-owned UI host.
@@ -333,6 +387,16 @@ public:
     void setVisible(bool v) { meta()->visible = v; }
     void setLayer(int layer) { meta()->layer = layer; }
     void setModal(bool modal) { meta()->modal = modal; }
+
+    /**
+     * @brief Enables projection of this host from a 3D world point.
+     * @param x World X coordinate.
+     * @param y World Y coordinate.
+     * @param z World Z coordinate.
+     */
+    void setWorldAnchor(float x, float y, float z);
+    /** @brief Disables 3D projection and returns the host to normal screen layout. */
+    void clearWorldAnchor();
 };
 
 }  // namespace eve::ui
