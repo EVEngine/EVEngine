@@ -31,6 +31,10 @@ DECLARATION_START = re.compile(r"^\s*eve_declare_module\s*\(")
 NAME_RE = re.compile(r"\bNAME\s+([A-Za-z0-9_.-]+)")
 LAYER_RE = re.compile(r"\bLAYER\s+(-?\d+)")
 SECTION_RE = re.compile(r"^\s*#\s*((?:L-?\d+\s*(?:/|,)\s*)*L-?\d+)\b")
+MANIFEST_INCLUDE_RE = re.compile(
+    r"^\s*include\(\$\{CMAKE_CURRENT_LIST_DIR\}/(module_manifest/[^)]+\.cmake)\)\s*$",
+    re.MULTILINE,
+)
 
 
 @dataclass(frozen=True)
@@ -81,34 +85,42 @@ def _balanced_block(lines: list[str], start: int) -> tuple[str, int]:
     return "".join(block), len(lines) - 1
 
 
+def manifest_files(path: Path = MANIFEST) -> list[Path]:
+    """Return the entrypoint and its ordered declaration fragments."""
+
+    text = path.read_text(encoding="utf-8")
+    return [path, *(path.parent / match for match in MANIFEST_INCLUDE_RE.findall(text))]
+
+
 def parse_manifest(path: Path = MANIFEST) -> list[Declaration]:
     """Parse declarations and the section marker active at each declaration."""
 
-    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
     declarations: list[Declaration] = []
-    section: tuple[int, ...] = ()
-    index = 0
-    while index < len(lines):
-        marker = _section_layers(lines[index])
-        if marker is not None:
-            section = marker
-        if DECLARATION_START.match(lines[index]):
-            block, end = _balanced_block(lines, index)
-            name = NAME_RE.search(block)
-            layer = LAYER_RE.search(block)
-            declarations.append(
-                Declaration(
-                    name=name.group(1) if name else "",
-                    layer=int(layer.group(1)) if layer else None,
-                    section_layers=section,
-                    line=index + 1,
-                    core=bool(re.search(r"\bCORE\b", block)),
-                    header_only=bool(re.search(r"\bHEADER_ONLY\b", block)),
+    for manifest_file in manifest_files(path):
+        lines = manifest_file.read_text(encoding="utf-8").splitlines(keepends=True)
+        section: tuple[int, ...] = ()
+        index = 0
+        while index < len(lines):
+            marker = _section_layers(lines[index])
+            if marker is not None:
+                section = marker
+            if DECLARATION_START.match(lines[index]):
+                block, end = _balanced_block(lines, index)
+                name = NAME_RE.search(block)
+                layer = LAYER_RE.search(block)
+                declarations.append(
+                    Declaration(
+                        name=name.group(1) if name else "",
+                        layer=int(layer.group(1)) if layer else None,
+                        section_layers=section,
+                        line=index + 1,
+                        core=bool(re.search(r"\bCORE\b", block)),
+                        header_only=bool(re.search(r"\bHEADER_ONLY\b", block)),
+                    )
                 )
-            )
-            index = end + 1
-            continue
-        index += 1
+                index = end + 1
+                continue
+            index += 1
     return declarations
 
 

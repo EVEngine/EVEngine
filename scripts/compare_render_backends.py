@@ -12,6 +12,10 @@ from pathlib import Path
 from PIL import Image
 
 
+class ArtifactContractError(ValueError):
+    """Raised when render-parity producers emitted incomplete artifact sets."""
+
+
 def srgb_to_linear(value: int) -> float:
     channel = value / 255.0
     if channel <= 0.04045:
@@ -65,23 +69,64 @@ def compare_scene(
     return failures
 
 
+def validate_artifact_contract(
+    reference_dir: Path, candidate_dir: Path
+) -> list[Path]:
+    """Validate that both backends emitted the same complete manifest/image set."""
+    reference_manifests = {path.name: path for path in reference_dir.glob("*.json")}
+    candidate_manifests = {path.name: path for path in candidate_dir.glob("*.json")}
+    if not reference_manifests:
+        raise ArtifactContractError(f"no manifests found in {reference_dir}")
+    if not candidate_manifests:
+        raise ArtifactContractError(f"no manifests found in {candidate_dir}")
+
+    errors: list[str] = []
+    missing = sorted(reference_manifests.keys() - candidate_manifests.keys())
+    unexpected = sorted(candidate_manifests.keys() - reference_manifests.keys())
+    if missing:
+        errors.append("candidate missing manifests: " + ", ".join(missing))
+    if unexpected:
+        errors.append("candidate has unexpected manifests: " + ", ".join(unexpected))
+
+    for backend, directory, manifests in (
+        ("reference", reference_dir, reference_manifests),
+        ("candidate", candidate_dir, candidate_manifests),
+    ):
+        for name, manifest_path in sorted(manifests.items()):
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                scene = manifest["scene"]
+            except (OSError, json.JSONDecodeError, KeyError) as error:
+                errors.append(f"{backend} manifest {name} is invalid: {error}")
+                continue
+            image_path = directory / f"{scene}.png"
+            if not image_path.is_file():
+                errors.append(
+                    f"{backend} manifest {name} is missing image {image_path.name}"
+                )
+
+    if errors:
+        raise ArtifactContractError("\n".join(errors))
+    return [reference_manifests[name] for name in sorted(reference_manifests)]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("reference", type=Path, help="Vulkan artifact directory")
     parser.add_argument("candidate", type=Path, help="WebGPU artifact directory")
     args = parser.parse_args()
 
-    manifests = sorted(args.reference.glob("*.json"))
-    if not manifests:
-        parser.error(f"no manifests found in {args.reference}")
+    try:
+        manifests = validate_artifact_contract(args.reference, args.candidate)
+    except ArtifactContractError as error:
+        print("ARTIFACT CONTRACT FAILURE:", file=sys.stderr)
+        print(error, file=sys.stderr)
+        return 2
     failures: list[str] = []
     for manifest in manifests:
-        candidate_manifest = args.candidate / manifest.name
-        if not candidate_manifest.exists():
-            failures.append(f"missing candidate manifest: {candidate_manifest.name}")
-            continue
         failures.extend(compare_scene(args.reference, args.candidate, manifest))
     if failures:
+        print("PIXEL PARITY FAILURE:", file=sys.stderr)
         print("\n".join(f"ERROR: {failure}" for failure in failures), file=sys.stderr)
         return 1
     return 0
