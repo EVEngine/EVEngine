@@ -237,6 +237,35 @@
       "phase": "input buffering in Input; candidate preparation and atomic selection in PrePhysics"
     },
     {
+      "id": "npc-ai-ecs-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/npc_ai/NpcAiECS.h",
+      "owner": "npc_ai::NpcAiWorld",
+      "issue": "EVENGINE-ARCH-NPC-AI-ECS",
+      "reason": "NPC AI ECS projection publishes its access contract and closes each view before authoritative world evaluation.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/npc_ai/NpcAiECS.h",
+        "src/modules/npc_ai/NpcAiECS.cpp",
+        "docs/dev/superpowers/specs/2026-08-30-npc-ai-framework.md"
+      ],
+      "tests": [
+        "test/npc_ai_ecs.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "NpcAiEcsSystem"
+      ],
+      "entity_scope": "live ECS entities carrying NpcAgentState and optionally NpcAiProjection",
+      "view": "generation-checked NpcAgentState view for preflight followed by a separate NpcAiProjection view after authoritative evaluation",
+      "read_set": "NpcAgentState link and NpcAiWorld generation state",
+      "write_set": "NpcAiProjection presentation cache only; NpcAiWorld remains the sole authoritative behavior-state owner",
+      "structural_changes": "none while views are open; agent creation and release are explicit caller-owned operations",
+      "events": "signals and transition trace remain in NpcAiWorld and are not dispatched while an ECS view is open",
+      "services": "borrowed owner-thread NpcAiWorld plus injected SimulationStep tick and dt",
+      "phase": "deterministic AI simulation phase after perception ingestion and before animation/presentation consumption"
+    },
+    {
       "id": "time-rng-policy",
       "rule": "time-rng",
       "scope": "src/**",

@@ -151,6 +151,11 @@ eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
 eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
                    DEPS spatial
                    GROUP minimal 2d 3d web)
+# Data-oriented NPC AI orchestration. Domain adapters provide navigation,
+# animation, combat and smart-object tasks without making the core depend on
+# those higher-level modules.
+eve_declare_module(NAME npc_ai LAYER 1
+                   GROUP minimal 2d 3d web)
 # Renderer- and ruleset-neutral gameplay action lifecycle. Domain adapters
 # (RPG Skill, Weapon Attack, Card Play, RTS Command) depend on this protocol;
 # the core depends on sensing/decision values but never on a gameplay domain.

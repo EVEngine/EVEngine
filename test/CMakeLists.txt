@@ -328,6 +328,10 @@ file(GLOB all_test_cpp
   attributes.cpp
   attributes_rpg_unification.cpp
   decision.cpp
+  npc_ai.cpp
+  npc_ai_ecs.cpp
+  npc_ai_navigation.cpp
+  npc_ai_smart_object.cpp
   condition.cpp
   rpg_skill_condition.cpp
   card_play_condition.cpp
