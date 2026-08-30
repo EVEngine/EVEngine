@@ -390,6 +390,8 @@ void Graphics::expose(ssq::Table& table) {
 
     auto ent = table.addClass<Renderable3D>(
         "Renderable3D", std::function<Renderable3D*()>([]() { return Renderable3D::create(); }), false);
+    ent.addFunc("getEntityId", &Renderable3D::getEntityId);
+    ent.addFunc("getEntityGeneration", &Renderable3D::getEntityGeneration);
     ent.addFunc("setPosition", &Renderable3D::setPosition);
     ent.addFunc("setRotation", &Renderable3D::setRotation);
     ent.addFunc("setYaw", &Renderable3D::setYaw);
@@ -412,6 +414,10 @@ void Graphics::expose(ssq::Table& table) {
     ent.addFunc("setHair", &Renderable3D::setHair);
     ent.addFunc("getHair", &Renderable3D::getHair);
     ent.addFunc("setTint", &Renderable3D::setTint);
+    ent.addFunc("getTintR", &Renderable3D::getTintR);
+    ent.addFunc("getTintG", &Renderable3D::getTintG);
+    ent.addFunc("getTintB", &Renderable3D::getTintB);
+    ent.addFunc("getRoughness", &Renderable3D::getRoughness);
     ent.addFunc("setMetallic", &Renderable3D::setMetallic);
     ent.addFunc("setRoughness", &Renderable3D::setRoughness);
     ent.addFunc("setTexCellBomb", &Renderable3D::setTexCellBomb);

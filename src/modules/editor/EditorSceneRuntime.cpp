@@ -114,6 +114,7 @@ EditorResult<std::vector<SceneComponentLinkSnapshot>> SceneHostEditorTarget::com
 }
 
 EditorResult<void> SceneHostEditorTarget::applyDomainOperation(const DomainOperation& operation) {
+    if (!host_) return SceneTargetBase::applyDomainOperation(operation);
     auto candidate = cloneDomainState();
     auto* staged = dynamic_cast<SceneHostEditorTarget*>(candidate.get());
     if (!staged)

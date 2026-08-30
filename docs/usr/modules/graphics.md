@@ -73,6 +73,12 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 
 几何 LOD：`Renderable3D.setMeshLod(index, mesh, switchDistance)`，`RenderSystem3D` 按相机距离选择网格。
 
+需要把运行对象交给 Editor/MCP 等跨帧工具时，同时读取
+`Renderable3D.getEntityId()` 与 `getEntityGeneration()`；两者共同构成临时 ECS handle，
+generation 用于拒绝实体销毁后被复用的旧 id。不要只长期保存 entity id。
+Agent 完成材质事务后，可用 `getTintR()`、`getTintG()`、`getTintB()` 与 `getRoughness()`
+独立核对字段材质的运行时状态。
+
 ### 材质（Material）与模型部件
 
 把着色方法（`pbr` / `unlit` / `hair` / `custom`）、贴图和 PBR 参数打成一个 `Material`，挂到整模或某个部件：
@@ -129,6 +135,16 @@ fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);
 - 每帧编译 shader 或上传纹理。
 - 2D/UI/3D 提交顺序错误导致覆盖。
 - 拾取时 `viewW/H` 与实际渲染 drawable 不一致，射线会偏。
+
+## Agent 运行时观察
+
+`eve_renderable3d_get` 使用完整 ECS `entityId` + `generation` 读取 live Renderable3D 的 transform、
+field-backed PBR 参数与资源占用标志；陈旧 identity 返回结构化 `stale`。
+`eve_editor_execute_observe` 的默认 `renderable3d` observer 在写入前验证同一 identity，再通过
+Editor 事务修改目标，并在一个响应中返回 live `before/after`、事务回执和 Editor snapshot。传入
+`expect` JSON 子集和可选 `tolerance` 后，引擎还会返回 `converged`、`maxError` 与不匹配字段路径，
+Agent 可直接决定是否继续纠正；无效期望会在写入前拒绝。同一协议还支持 `scene-node` observer，
+因此 Agent 不必为场景和渲染对象维护两套调用编排。
 
 ## API 快查
 

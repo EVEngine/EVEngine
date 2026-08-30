@@ -5,6 +5,7 @@
 #include "devtools/Immortal.hpp"
 
 #include "devtools/AiPanel.hpp"
+#include "devtools/AgentDevelopmentMcp.hpp"
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
@@ -44,6 +45,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 #include <filesystem>
 #include <sstream>
 #include <vector>
@@ -435,7 +437,259 @@ eve::IEditorHost*       mcpHost() { return eve::cap::query<eve::IEditorHost>(); 
 eve::IUIAutomation*     mcpUI() { return eve::cap::query<eve::IUIAutomation>(); }
 eve::IEditorAutomation* mcpEditor() { return eve::cap::query<eve::IEditorAutomation>(); }
 
+Poco::JSON::Object::Ptr renderableObservation(eve::IRenderCapture& capture, int entityId, int generation) {
+    Poco::JSON::Object::Ptr output = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    auto inspected = capture.inspectRenderable3D(static_cast<std::uint32_t>(entityId),
+                                                  static_cast<std::uint32_t>(generation));
+    if (!inspected) {
+        output->set("status", "stale");
+        output->set("entityId", entityId);
+        output->set("generation", generation);
+        output->set("error", inspected.status().describe());
+        return output;
+    }
+    const auto& info = inspected.value();
+    output->set("status", "ok");
+    output->set("entityId", info.entityId);
+    output->set("generation", info.generation);
+    Poco::JSON::Array::Ptr position = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+    position->add(info.x);
+    position->add(info.y);
+    position->add(info.z);
+    output->set("position", position);
+    Poco::JSON::Array::Ptr tint = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+    tint->add(info.tintR);
+    tint->add(info.tintG);
+    tint->add(info.tintB);
+    tint->add(info.tintA);
+    output->set("tint", tint);
+    output->set("metallic", info.metallic);
+    output->set("roughness", info.roughness);
+    output->set("parallaxScale", info.parallaxScale);
+    output->set("visible", info.visible);
+    output->set("receiveLight", info.receiveLight);
+    output->set("castShadow", info.castShadow);
+    output->set("receiveShadow", info.receiveShadow);
+    output->set("hasPackedMaterial", info.hasPackedMaterial);
+    output->set("hasTexture", info.hasTexture);
+    output->set("hasShader", info.hasShader);
+    return output;
+}
+
+Poco::JSON::Object::Ptr sceneNodeObservation(eve::ISceneQuery& scene, const std::string& host,
+                                             const std::string& node) {
+    Poco::JSON::Object::Ptr output = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    output->set("observer", "scene-node");
+    output->set("host", host.empty() ? scene.activeHost() : host);
+    output->set("node", node);
+    eve::SceneNodeInfo info;
+    const bool found = host.empty() ? scene.getNode(node, &info) : scene.getNodeIn(host, node, &info);
+    if (node.empty() || !found) {
+        output->set("status", "not-found");
+        output->set("error", "Scene node is missing from the observed host");
+        return output;
+    }
+    output->set("status", "ok");
+    output->set("id", info.id);
+    output->set("name", info.name);
+    output->set("path", info.path);
+    output->set("visible", info.visible);
+    output->set("x", info.x);
+    output->set("y", info.y);
+    output->set("z", info.z);
+    output->set("yaw", info.yaw);
+    output->set("pitch", info.pitch);
+    output->set("roll", info.roll);
+    output->set("sx", info.sx);
+    output->set("sy", info.sy);
+    output->set("sz", info.sz);
+    output->set("parent", info.parent);
+    Poco::JSON::Array::Ptr children = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+    for (const auto& child : info.children) children->add(child);
+    output->set("children", children);
+    return output;
+}
+
+Poco::JSON::Object::Ptr runtimeObservation(Poco::JSON::Object::Ptr args, std::string* error) {
+    const std::string observer = argString(args, "observer", "renderable3d");
+    if (observer == "renderable3d") {
+        auto* capture = mcpCapture();
+        if (!capture) {
+            if (error) *error = "graphics module not available";
+            return nullptr;
+        }
+        const int entityId = argInt(args, "entityId", -1);
+        const int generation = argInt(args, "generation", -1);
+        if (entityId < 0 || generation < 0) {
+            if (error) *error = "entityId and generation are required";
+            return nullptr;
+        }
+        auto output = renderableObservation(*capture, entityId, generation);
+        output->set("observer", observer);
+        return output;
+    }
+    if (observer == "scene-node") {
+        auto* scene = mcpScene();
+        if (!scene) {
+            if (error) *error = "scene module not available";
+            return nullptr;
+        }
+        return sceneNodeObservation(*scene, argString(args, "host"), argString(args, "node"));
+    }
+    if (error) *error = "unsupported observer: " + observer;
+    return nullptr;
+}
+
+struct ExpectationMatch {
+    bool valid = true;
+    double maxError = 0.0;
+    std::vector<std::string> mismatches;
+    std::string error;
+};
+
+bool isJsonObject(const Poco::Dynamic::Var& value) {
+    return value.type() == typeid(Poco::JSON::Object::Ptr);
+}
+
+bool isJsonArray(const Poco::Dynamic::Var& value) {
+    return value.type() == typeid(Poco::JSON::Array::Ptr);
+}
+
+void compareExpectation(const Poco::Dynamic::Var& actual, const Poco::Dynamic::Var& expected,
+                        const std::string& path, double tolerance, ExpectationMatch* match) {
+    if (!match || !match->valid) return;
+    if (isJsonObject(expected)) {
+        if (!isJsonObject(actual)) {
+            match->valid = false;
+            match->error = "Expected object at " + path;
+            return;
+        }
+        auto actualObject = actual.extract<Poco::JSON::Object::Ptr>();
+        auto expectedObject = expected.extract<Poco::JSON::Object::Ptr>();
+        for (const auto& item : *expectedObject) {
+            const std::string childPath = path.empty() ? item.first : path + "." + item.first;
+            if (!actualObject->has(item.first)) {
+                match->valid = false;
+                match->error = "Observed value has no field " + childPath;
+                return;
+            }
+            compareExpectation(actualObject->get(item.first), item.second, childPath, tolerance, match);
+        }
+        return;
+    }
+    if (isJsonArray(expected)) {
+        if (!isJsonArray(actual)) {
+            match->valid = false;
+            match->error = "Expected array at " + path;
+            return;
+        }
+        auto actualArray = actual.extract<Poco::JSON::Array::Ptr>();
+        auto expectedArray = expected.extract<Poco::JSON::Array::Ptr>();
+        if (actualArray->size() < expectedArray->size()) {
+            match->valid = false;
+            match->error = "Observed array is shorter than expectation at " + path;
+            return;
+        }
+        for (std::size_t index = 0; index < expectedArray->size(); ++index) {
+            compareExpectation(actualArray->get(static_cast<unsigned>(index)),
+                               expectedArray->get(static_cast<unsigned>(index)),
+                               path + "[" + std::to_string(index) + "]", tolerance, match);
+        }
+        return;
+    }
+    if (expected.isNumeric()) {
+        if (!actual.isNumeric()) {
+            match->valid = false;
+            match->error = "Expected numeric value at " + path;
+            return;
+        }
+        const double error = std::abs(actual.convert<double>() - expected.convert<double>());
+        match->maxError = std::max(match->maxError, error);
+        if (error > tolerance) match->mismatches.push_back(path);
+        return;
+    }
+    if (expected.isBoolean()) {
+        if (!actual.isBoolean()) {
+            match->valid = false;
+            match->error = "Expected boolean value at " + path;
+            return;
+        }
+        if (actual.convert<bool>() != expected.convert<bool>()) match->mismatches.push_back(path);
+        return;
+    }
+    if (expected.isString()) {
+        if (!actual.isString()) {
+            match->valid = false;
+            match->error = "Expected string value at " + path;
+            return;
+        }
+        if (actual.convert<std::string>() != expected.convert<std::string>()) match->mismatches.push_back(path);
+        return;
+    }
+    if (expected.isEmpty()) {
+        if (!actual.isEmpty()) match->mismatches.push_back(path);
+        return;
+    }
+    match->valid = false;
+    match->error = "Unsupported expectation value at " + path;
+}
+
+Poco::JSON::Object::Ptr expectationValue(const ExpectationMatch& match) {
+    Poco::JSON::Object::Ptr output = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    output->set("valid", match.valid);
+    output->set("converged", match.valid && match.mismatches.empty());
+    output->set("maxError", match.maxError);
+    Poco::JSON::Array::Ptr mismatches = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+    for (const auto& path : match.mismatches) mismatches->add(path);
+    output->set("mismatches", mismatches);
+    if (!match.error.empty()) output->set("error", match.error);
+    return output;
+}
+
+Poco::JSON::Object::Ptr observationEvent(Poco::JSON::Object::Ptr descriptor,
+                                         Poco::JSON::Object::Ptr observation,
+                                         std::string* error) {
+    Poco::JSON::Object::Ptr event = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    event->set("observation", observation);
+    if (!observation || observation->optValue<std::string>("status", "unavailable") != "ok") {
+        event->set("status", "observation-unavailable");
+        event->set("converged", false);
+        return event;
+    }
+    if (!descriptor || !descriptor->has("expect")) return event;
+
+    double tolerance = 0.001;
+    if (descriptor->has("tolerance")) {
+        try {
+            tolerance = descriptor->get("tolerance").convert<double>();
+        } catch (...) {
+            tolerance = -1.0;
+        }
+    }
+    if (!std::isfinite(tolerance) || tolerance < 0.0) {
+        if (error) *error = "tolerance must be a finite non-negative number";
+        return nullptr;
+    }
+    const Poco::Dynamic::Var expected = descriptor->get("expect");
+    if (!isJsonObject(expected)) {
+        if (error) *error = "expect must be a JSON object";
+        return nullptr;
+    }
+    ExpectationMatch match;
+    compareExpectation(Poco::Dynamic::Var(observation), expected, "", tolerance, &match);
+    if (!match.valid) {
+        if (error) *error = match.error;
+        return nullptr;
+    }
+    event->set("expectation", expectationValue(match));
+    event->set("converged", match.mismatches.empty());
+    event->set("maxError", match.maxError);
+    return event;
+}
+
 std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object::Ptr args) {
+    if (isAgentDevelopmentTool(name)) return callAgentDevelopmentTool(name, args);
+
     auto& dbg = Debugger::instance();
     auto& dap = DebugAdapter::instance();
 
@@ -460,13 +714,172 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
                            : std::string("error: editor module not available");
     };
     if (name == "eve_editor_commands") return editorInvoke("commands");
+    if (name == "eve_editor_target_create") return editorInvoke("target-create");
+    if (name == "eve_editor_target_close") return editorInvoke("target-close");
+    if (name == "eve_editor_inspect") return editorInvoke("inspect");
     if (name == "eve_editor_plan") return editorInvoke("plan");
     if (name == "eve_editor_commit") return editorInvoke("commit");
     if (name == "eve_editor_execute") return editorInvoke("execute");
+    if (name == "eve_editor_observe_start") {
+        auto* editor = mcpEditor();
+        if (!editor) return "error: editor module not available";
+        std::string error;
+        Poco::JSON::Object::Ptr observation = runtimeObservation(args, &error);
+        if (!observation) return "error: " + error;
+        if (observation->getValue<std::string>("status") != "ok")
+            return mcpStringify(Poco::Dynamic::Var(observation));
+        Poco::JSON::Object::Ptr event = observationEvent(args, observation, &error);
+        if (!event) {
+            Poco::JSON::Object::Ptr invalid = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+            invalid->set("status", "invalid-expectation");
+            invalid->set("error", error);
+            invalid->set("observation", observation);
+            return mcpStringify(Poco::Dynamic::Var(invalid));
+        }
+        Poco::JSON::Object::Ptr request = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        request->set("descriptor", args);
+        request->set("event", event);
+        return editor->invoke("observe-start", mcpStringify(Poco::Dynamic::Var(request)));
+    }
+    if (name == "eve_editor_observe_poll") {
+        auto* editor = mcpEditor();
+        if (!editor) return "error: editor module not available";
+        try {
+            Poco::JSON::Parser describeParser;
+            Poco::Dynamic::Var described = describeParser.parse(editor->invoke(
+                "observe-describe", mcpStringify(Poco::Dynamic::Var(args))));
+            auto describedObject = described.extract<Poco::JSON::Object::Ptr>();
+            if (!describedObject || describedObject->optValue<std::string>("status", "") != "applied")
+                return mcpStringify(described);
+            auto descriptor = describedObject->getObject("descriptor");
+            std::string error;
+            Poco::JSON::Object::Ptr observation = runtimeObservation(descriptor, &error);
+            if (!observation) {
+                observation = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+                observation->set("status", "unavailable");
+                observation->set("error", error);
+            }
+            Poco::JSON::Object::Ptr event = observationEvent(descriptor, observation, &error);
+            if (!event) {
+                event = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+                event->set("observation", observation);
+                event->set("status", "expectation-observation-failed");
+                event->set("error", error);
+            }
+            Poco::JSON::Object::Ptr publish = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+            publish->set("sessionId", argString(args, "sessionId"));
+            publish->set("event", event);
+            Poco::JSON::Parser publishParser;
+            Poco::Dynamic::Var published = publishParser.parse(editor->invoke(
+                "observe-publish", mcpStringify(Poco::Dynamic::Var(publish))));
+            auto publishedObject = published.extract<Poco::JSON::Object::Ptr>();
+            if (!publishedObject || publishedObject->optValue<std::string>("status", "") != "applied")
+                return mcpStringify(published);
+            return editor->invoke("observe-poll", mcpStringify(Poco::Dynamic::Var(args)));
+        } catch (const std::exception& exception) {
+            return std::string("error: could not poll observation session: ") + exception.what();
+        }
+    }
+    if (name == "eve_editor_observe_close") return editorInvoke("observe-close");
+    if (name == "eve_editor_execute_observe") {
+        auto* editor = mcpEditor();
+        if (!editor) return "error: editor module not available";
+        std::string error;
+        Poco::JSON::Object::Ptr before = runtimeObservation(args, &error);
+        if (!before) return "error: " + error;
+        if (before->getValue<std::string>("status") != "ok")
+            return mcpStringify(Poco::Dynamic::Var(before));
+
+        Poco::JSON::Object::Ptr output = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        output->set("before", before);
+        const bool hasExpectation = args && args->has("expect");
+        double tolerance = 0.001;
+        if (args && args->has("tolerance")) {
+            try {
+                tolerance = args->get("tolerance").convert<double>();
+            } catch (...) {
+                tolerance = -1.0;
+            }
+        }
+        if (!std::isfinite(tolerance) || tolerance < 0.0) {
+            output->set("status", "invalid-expectation");
+            output->set("error", "tolerance must be a finite non-negative number");
+            return mcpStringify(Poco::Dynamic::Var(output));
+        }
+        Poco::Dynamic::Var expected;
+        if (hasExpectation) {
+            expected = args->get("expect");
+            if (!isJsonObject(expected)) {
+                output->set("status", "invalid-expectation");
+                output->set("error", "expect must be a JSON object");
+                return mcpStringify(Poco::Dynamic::Var(output));
+            }
+            ExpectationMatch validation;
+            compareExpectation(Poco::Dynamic::Var(before), expected, "", tolerance, &validation);
+            if (!validation.valid) {
+                output->set("status", "invalid-expectation");
+                output->set("expectation", expectationValue(validation));
+                output->set("error", validation.error);
+                return mcpStringify(Poco::Dynamic::Var(output));
+            }
+        }
+        bool transactionAccepted = false;
+        try {
+            Poco::JSON::Parser parser;
+            Poco::Dynamic::Var transaction = parser.parse(editor->invoke("execute", mcpStringify(Poco::Dynamic::Var(args))));
+            output->set("transaction", transaction);
+            Poco::JSON::Object::Ptr transactionObject = transaction.extract<Poco::JSON::Object::Ptr>();
+            transactionAccepted = transactionObject && transactionObject->optValue<bool>("accepted", false);
+            output->set("status", transactionAccepted ? "observed" : "transaction-rejected");
+        } catch (const std::exception& exception) {
+            output->set("status", "failed");
+            output->set("error", std::string("Could not parse Editor transaction response: ") + exception.what());
+        }
+        error.clear();
+        Poco::JSON::Object::Ptr after = runtimeObservation(args, &error);
+        if (!after) {
+            after = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+            after->set("status", "unavailable");
+            after->set("error", error);
+        }
+        output->set("after", after);
+        if (transactionAccepted && after->getValue<std::string>("status") != "ok")
+            output->set("status", "runtime-observation-failed");
+        if (hasExpectation && after->getValue<std::string>("status") == "ok") {
+            ExpectationMatch match;
+            compareExpectation(Poco::Dynamic::Var(after), expected, "", tolerance, &match);
+            output->set("expectation", expectationValue(match));
+            output->set("converged", match.valid && match.mismatches.empty());
+            output->set("maxError", match.maxError);
+            if (!match.valid) {
+                output->set("status", "expectation-observation-failed");
+                output->set("error", match.error);
+            }
+        } else if (hasExpectation) {
+            output->set("converged", false);
+        }
+        try {
+            Poco::JSON::Parser parser;
+            Poco::Dynamic::Var editorState = parser.parse(editor->invoke("inspect", mcpStringify(Poco::Dynamic::Var(args))));
+            output->set("editor", editorState);
+        } catch (const std::exception& exception) {
+            output->set("editorError", std::string("Could not parse Editor observation: ") + exception.what());
+        }
+        return mcpStringify(Poco::Dynamic::Var(output));
+    }
     if (name == "eve_editor_cancel") return editorInvoke("cancel");
     if (name == "eve_editor_undo") return editorInvoke("undo");
     if (name == "eve_editor_redo") return editorInvoke("redo");
     if (name == "eve_editor_diagnostics") return editorInvoke("diagnostics");
+
+    if (name == "eve_renderable3d_get") {
+        auto* capture = mcpCapture();
+        if (!capture) return "error: graphics module not available";
+        const int entityId = argInt(args, "entityId", -1);
+        const int generation = argInt(args, "generation", -1);
+        if (entityId < 0 || generation < 0) return "error: entityId and generation are required";
+        return mcpStringify(Poco::Dynamic::Var(renderableObservation(*capture, entityId, generation)));
+    }
 
     // ============================= Scene / Entity =============================
     if (name == "eve_scene_status") {
@@ -1235,6 +1648,12 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_editor_commands\",\"description\":\"List editor commands allowed for automation in the active "
         "game/editor.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_editor_target_create\",\"description\":\"Create an Editor-owned document target or bind a live SceneHost/Renderable3D for Agent workflows.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"scene\",\"scene-host\",\"material\",\"material-renderable3d\"]},\"host\":{\"type\":\"string\"},\"object\":{\"type\":\"string\"},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0}},\"required\":[\"target\",\"type\"]}},"
+        "{\"name\":\"eve_editor_target_close\",\"description\":\"Unregister and destroy an Editor-owned automation target.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"}},\"required\":[\"target\"]}},"
+        "{\"name\":\"eve_editor_inspect\",\"description\":\"Inspect authoritative structured state for an editor target.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"}},\"required\":[\"target\"]}},"
         "{\"name\":\"eve_editor_plan\",\"description\":\"Validate and retain a side-effect-free editor command plan.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"command\":{\"type\":\"string\"},\"payload\":{},"
         "\"expectedRevision\":{\"type\":\"integer\"}},\"required\":[\"command\"]}},"
@@ -1245,6 +1664,15 @@ std::string handleToolsList(const std::string& idJson) {
         "transaction path as UI and scripts.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"command\":{\"type\":\"string\"},\"payload\":{}},"
         "\"required\":[\"command\"]}},"
+        "{\"name\":\"eve_editor_execute_observe\",\"description\":\"Execute one Editor transaction and return correlated before/after runtime observations plus the Editor target snapshot. An optional expect object declares the desired observed subset; tolerance controls numeric matching and the response reports converged, maxError, and mismatch paths. The observer is renderable3d by default; scene-node observes a node in an optional named host. Missing or stale subjects and invalid expectations are rejected before mutation.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"},\"command\":{\"type\":\"string\"},\"payload\":{},\"observer\":{\"type\":\"string\",\"enum\":[\"renderable3d\",\"scene-node\"]},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0},\"host\":{\"type\":\"string\"},\"node\":{\"type\":\"string\"},\"expect\":{\"type\":\"object\"},\"tolerance\":{\"type\":\"number\",\"minimum\":0}},"
+        "\"required\":[\"target\",\"command\"]}},"
+        "{\"name\":\"eve_editor_observe_start\",\"description\":\"Start an RX-backed runtime observation session. The initial sample is validated immediately; consecutive duplicate samples are suppressed until the session is closed.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"observer\":{\"type\":\"string\",\"enum\":[\"renderable3d\",\"scene-node\"]},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0},\"host\":{\"type\":\"string\"},\"node\":{\"type\":\"string\"},\"expect\":{\"type\":\"object\"},\"tolerance\":{\"type\":\"number\",\"minimum\":0}}}},"
+        "{\"name\":\"eve_editor_observe_poll\",\"description\":\"Sample and drain changed events from an RX-backed observation session.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"sessionId\":{\"type\":\"string\"}},\"required\":[\"sessionId\"]}},"
+        "{\"name\":\"eve_editor_observe_close\",\"description\":\"Explicitly cancel and remove an RX-backed observation session.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"sessionId\":{\"type\":\"string\"}},\"required\":[\"sessionId\"]}},"
         "{\"name\":\"eve_editor_cancel\",\"description\":\"Discard a retained editor command plan without side "
         "effects.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"planId\":{\"type\":\"string\"}},\"required\":["
@@ -1256,6 +1684,8 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_editor_diagnostics\",\"description\":\"Read structured diagnostics from the last editor "
         "automation operation.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_renderable3d_get\",\"description\":\"Read generation-qualified live Renderable3D transform and field-backed material state for Agent verification.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0}},\"required\":[\"entityId\",\"generation\"]}},"
         "{\"name\":\"eve_eval\",\"description\":\"Evaluate a Squirrel expression (local or roottable).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"expression\":{\"type\":\"string\"}},\"required\":["
         "\"expression\"]}},"
@@ -1486,11 +1916,14 @@ std::string handleToolsList(const std::string& idJson) {
         "reload diagnostic.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
         "{\"name\":\"eve_host_shutdown\",\"description\":\"Exit the headless MCP host process.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}",
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
         "]}"};
     static const std::string kToolsJson = [] {
         std::string out;
-        for (const char* p : kToolsParts) out += p;
+        for (std::size_t index = 0; index < std::size(kToolsParts); ++index) {
+            if (index + 1 == std::size(kToolsParts)) out += agentDevelopmentToolSchemas();
+            out += kToolsParts[index];
+        }
         return out;
     }();
     return makeResult(idJson, kToolsJson);

@@ -266,6 +266,45 @@ AI 通过 `eve_host_vm_register` 把 Squirrel 源编译进主机 VM 并注册为
 `eve_host_capture`、`eve_host_script`、`eve_host_resource_reload`、
 `eve_host_hot_reload_status`、`eve_host_shutdown`。
 
+Editor 事务工具包括 `eve_editor_commands`、`eve_editor_target_create`、
+`eve_editor_target_close`、`eve_editor_inspect`、`eve_editor_plan`、
+`eve_editor_commit`、`eve_editor_execute`、`eve_editor_execute_observe`、
+`eve_editor_observe_start/poll/close`、`eve_editor_cancel`、
+`eve_editor_undo`、`eve_editor_redo` 与 `eve_editor_diagnostics`。
+
+完整 Agent 游戏开发使用 `eve_agent_session_start/advance/evidence/status/complete/abort` 把工具调用组织为
+`Discover -> Modify -> Run -> Observe -> Verify`。会话在开始时声明验收条件，只有 required 条件均有
+passing evidence 才能完成；失败可显式进入 Recover 后回到 Modify/Run。协议、所有权和两条端到端路径见
+[`Agent游戏开发范式.md`](Agent游戏开发范式.md)。
+`eve_renderable3d_get` 用完整的 `entityId` + `generation` 返回 live Renderable3D 的位置、
+字段材质和渲染开关；旧 generation 返回 `status: stale`，Agent 应重新获取当前 identity，
+而不是继续向已复用的 entity id 提交事务。
+`eve_editor_target_create` 的 `type` 支持 `scene`、`material`、`scene-host` 和
+`material-renderable3d`；前两者创建由 Editor 持有的 document，`scene-host` 必须提供已有
+SceneHost 的 `host` 名称，`material-renderable3d` 必须提供运行中 Renderable3D 的
+`entityId` 与 `generation`。live target 只借用 ECS 对象，关闭 target 不会销毁 host 或
+renderable；实体被销毁、generation 不匹配、graphics/scene 模块被裁剪时会返回结构化
+`conflict` / `unsupported` / `not-found`。当前 live material 只接受没有 packed Material、
+贴图或自定义 shader 覆盖的字段材质，避免首次事务丢失无法从 Editor document 重建的资产引用。
+`eve_editor_execute_observe` 用显式 `observer` 选择运行时观察器：`renderable3d`（默认）使用
+完整 ECS identity，`scene-node` 使用节点 id 与可选命名 host。工具先验证 observer/provider，再经
+Editor 事务写入，并在一个响应中关联 live `before`、事务回执、Editor snapshot 和 live `after`。
+可选 `expect` 是对观察结果的递归 JSON 子集约束，`tolerance`（默认 `0.001`）控制数值误差；响应直接给出
+`converged`、`maxError` 与 `expectation.mismatches`。字段不存在、类型不兼容或非法容差会返回
+`invalid-expectation`，且不会执行 Editor 事务；合法但尚未命中的期望仍返回完整观察结果和
+`converged: false`。provider 缺失、generation 陈旧或场景节点不存在同样会在写入前拒绝，避免
+“提交成功但无法观察”的半闭环。`examples/ai-editor/editor_demo.py` 展示完整 Agent 收敛循环：提交候选 →
+读取引擎判定的 `converged/maxError` → 再次调用同一工具修正，并用多步 undo/redo 证明候选和修正都进入
+同一可回放事务历史。
+
+跨多次 Agent 调用需要持续观察时，先调用 `eve_editor_observe_start`。它立即验证 observer/provider、
+采样初值并返回 `sessionId + event`；`eve_editor_observe_poll` 在主线程重新采样 live runtime，经过 Editor
+持有的 RX `Subject + distinctUntilChanged` 后只返回变化事件；`eve_editor_observe_close` 显式 dispose
+订阅并释放会话。初值只在 start 响应返回，不会在第一次 poll 重放。provider 被裁剪、generation 变旧、
+节点消失等状态会作为 `observation-unavailable` 变化事件进入同一流，Agent 可据此停止写入或重新发现
+identity。当前 v1 是按需 poll 的确定性采样，不在后台线程调用脚本或引擎对象；Editor 是会话和订阅的
+唯一所有者，MCP 只负责 runtime 采样与 JSON 适配，避免出现第二份权威状态。
+
 首次 `editor_apply` 自动开默认窗口（1280×800）；`editor_save` 把 View + VM 源持久化到
 项目 `editors/<id>.editor.json` 与 `editors/<id>.vm.nut`，`eve mcp` 启动时自动恢复。
 
