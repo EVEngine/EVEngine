@@ -144,8 +144,14 @@ flowchart TB
 | 键盘/手柄焦点导航 | 显式邻居 + 稳定 tabIndex fallback + `moveFocus` | 已实现后端中立 API 与 ImGui 键盘桥 |
 
 当前对标的是可协作的基础框架，而不是宣称已有 Godot 的全部控件目录。Tree/TabContainer、
-富文本编辑、拖放/IME、平台无障碍桥和完整样式资源导入仍应作为后续独立能力建设，不能
+富文本编辑、IME、平台无障碍桥和完整样式资源导入仍应作为后续独立能力建设，不能
 重新塞回 Inspector 或 ImGui backend。
+
+Drag & Drop 首期只在 Windows、macOS、Linux 生效。retained 节点保存 payload type 与
+owning UTF-8 text，`UISystem` 在完成投递后发布 owning `UIDrop`；源/目标节点地址不进入
+跨帧状态。SDL `DROPFILE` 在事件泵释放平台缓冲前同步复制，并统一投影为 `type=file`。
+Android、iOS、Web/WASM 保留相同脚本 API，但 `dragDropSupport()` 明确返回
+`unsupported-platform`；测试会按当前目标平台验证对应的 supported/unsupported 契约。
 
 
 

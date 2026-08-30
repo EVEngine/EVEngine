@@ -43,6 +43,23 @@ struct UIChange {
     std::string kind;
 };
 
+/** @brief Origin of an owning desktop drag-and-drop payload snapshot. */
+enum class DragDropOrigin : uint8_t { Internal = 0, OperatingSystemFile };
+
+/** @brief Build-target availability of retained drag-and-drop. */
+enum class DragDropSupport : uint8_t { Supported = 0, UnsupportedPlatform };
+
+/** @brief One completed desktop drop with no borrowed node or platform pointers. */
+struct UIDrop {
+    DragDropOrigin origin = DragDropOrigin::Internal;
+    std::string sourceHostName;
+    std::string sourceNodeId;
+    std::string targetHostName;
+    std::string targetNodeId;
+    std::string payloadType;
+    std::string payloadText;
+};
+
 /** Per-frame UI statistics (P2-3 profiler counters). */
 struct UIStats {
     int hostCount = 0;
@@ -131,6 +148,18 @@ public:
 
     static std::vector<UIClick> &clickQueue();
     static std::vector<UIChange> &changeQueue();
+    /** @brief Returns retained drag-and-drop availability for this build target. */
+    [[nodiscard]] static DragDropSupport dragDropSupport() noexcept;
+    /**
+     * @brief Copies an OS file-drop path into UI-owned pending state.
+     * @param path UTF-8 path copied synchronously; the caller retains no lifetime obligation.
+     * @thread Call on the platform/UI thread.
+     */
+    static void enqueuePlatformFileDrop(const std::string &path);
+    /** @brief Returns the owning completed-drop queue. */
+    static std::vector<UIDrop> &dropQueue();
+    /** @brief Pops the oldest completed drop, or returns empty when none exists. */
+    [[nodiscard]] static std::optional<UIDrop> consumeDrop();
     /** @brief Pop next click as "name/node"; empty if none. */
     static std::string consumeClick();
     /** @brief Pop next click for a specific host; returns node id only (or ""). */
