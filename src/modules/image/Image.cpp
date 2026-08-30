@@ -245,6 +245,13 @@ void Image::expose(ssq::Table &table) {
 		if (!self) return;
 		self->setPixel(x, y, image::ImageData::Colorf{r, g, b, a});
 	});
+	img.addFunc("paintCircleUv", [](image::ImageData *self, float u, float v, float radius,
+	                                  float r, float g, float b, float a, bool wrapU, bool wrapV) {
+		if (!self) throw eve::Exception("ImageData.paintCircleUv: null image");
+		auto painted = self->paintCircleUv(u, v, radius, image::ImageData::Colorf{r, g, b, a}, wrapU, wrapV);
+		if (!painted.ok()) throw eve::Exception("%s", painted.status().describe().c_str());
+		return std::move(painted).takeValue().changedPixelCount;
+	});
 }
 
 void Image::expose(ssq::Class &cls) {

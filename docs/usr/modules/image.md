@@ -64,6 +64,10 @@ local tex = gfx.newTexture(image.newImageDataFromFile("Textures/hero.png"));
 用 `newEmptyImageData(w, h, "RGBA8")` 建画布，`setPixel(x, y, r, g, b, a)` 写入，`getPixelR/G/B/A` 读回；
 `clone()` 深拷贝，`paste(src, dx, dy, sx, sy, sw, sh)` 拷贝子区域，`rotate(...)` 旋转。注意像素坐标越界会抛异常。
 
+模型表面绘制可用 `paintCircleUv(u, v, radiusPixels, r, g, b, a, wrapU, wrapV)`：
+UV 原点按模型约定位于左下，函数会自动反转 V 到图像左上像素原点。`radiusPixels`
+以像素为单位，`wrapU` / `wrapV` 适用于需要穿过 UV 缝的画笔。返回实际改变的像素数。
+
 ## 常见问题
 
 - 把 `newImageData(data)` 与 `newEmptyImageData(w, h, format)` 混淆：前者解码编码数据，后者创建空白画布。
@@ -76,7 +80,8 @@ local tex = gfx.newTexture(image.newImageDataFromFile("Textures/hero.png"));
 - `Image`：`getName()`、`newImageData(data)`、`newImageDataFromFile(path)`、`newEmptyImageData(width, height, format)`、`isCompressed(data)`
 - `ImageData`：`getWidth()`、`getHeight()`、`getFormat()`、`getSize()`、`getPixelSize()`、`isSRGB()`、`inside(x, y)`、
   `clone()`、`paste(src, dx, dy, sx, sy, sw, sh)`、`rotate(radians, filter, expand)`、
-  `getPixelR(x, y)`、`getPixelG(x, y)`、`getPixelB(x, y)`、`getPixelA(x, y)`、`setPixel(x, y, r, g, b, a)`
+  `getPixelR(x, y)`、`getPixelG(x, y)`、`getPixelB(x, y)`、`getPixelA(x, y)`、`setPixel(x, y, r, g, b, a)`、
+  `paintCircleUv(u, v, radiusPixels, r, g, b, a, wrapU, wrapV)`
 
 ## 使用要点
 

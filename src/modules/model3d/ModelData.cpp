@@ -11,6 +11,7 @@
 #include <assimp/scene.h>
 #include <assimp/texture.h>
 
+#include <cmath>
 #include <cstdlib>
 #include <string>
 #include <utility>
@@ -143,6 +144,83 @@ float ModelData::getTexCoord(int meshIndex, int channel, int vertexIndex, int co
         throw eve::Exception("ModelData::getTexCoord: invalid mesh/channel/vertex/component");
     const aiVector3D &v = m->mTextureCoords[channel][vertexIndex];
     return component == 0 ? v.x : (component == 1 ? v.y : v.z);
+}
+
+float ModelData::getVertexPosition(int meshIndex, int vertexIndex, int component) const {
+    const aiMesh *mesh = meshAt(meshIndex);
+    if (!mesh || vertexIndex < 0 || static_cast<unsigned>(vertexIndex) >= mesh->mNumVertices ||
+        component < 0 || component > 2)
+        throw eve::Exception("ModelData::getVertexPosition: invalid mesh/vertex/component");
+    const aiVector3D &value = mesh->mVertices[vertexIndex];
+    return component == 0 ? value.x : (component == 1 ? value.y : value.z);
+}
+
+int ModelData::getFaceVertexIndex(int meshIndex, int triangleIndex, int corner) const {
+    const aiMesh *mesh = meshAt(meshIndex);
+    if (!mesh || triangleIndex < 0 || static_cast<unsigned>(triangleIndex) >= mesh->mNumFaces ||
+        corner < 0 || corner > 2 || mesh->mFaces[triangleIndex].mNumIndices != 3)
+        throw eve::Exception("ModelData::getFaceVertexIndex: invalid mesh/triangle/corner");
+    return static_cast<int>(mesh->mFaces[triangleIndex].mIndices[corner]);
+}
+
+eve::Result<SurfaceUv> ModelData::mapSurfacePointToUv(int meshIndex, int triangleIndex,
+                                                       float localX, float localY, float localZ,
+                                                       int channel) const {
+    const aiMesh *mesh = meshAt(meshIndex);
+    if (!mesh || triangleIndex < 0 || static_cast<unsigned>(triangleIndex) >= mesh->mNumFaces)
+        return eve::Result<SurfaceUv>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "invalid mesh or triangle index",
+            "model3d.surfaceUv"));
+    if (channel < 0 || channel >= AI_MAX_NUMBER_OF_TEXTURECOORDS ||
+        !mesh->HasTextureCoords(static_cast<unsigned>(channel)))
+        return eve::Result<SurfaceUv>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "requested UV channel is not present",
+            "model3d.surfaceUv.channel"));
+    const aiFace &face = mesh->mFaces[triangleIndex];
+    if (face.mNumIndices != 3)
+        return eve::Result<SurfaceUv>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "surface UV mapping requires triangulated faces",
+            "model3d.surfaceUv.triangle"));
+
+    const aiVector3D &a = mesh->mVertices[face.mIndices[0]];
+    const aiVector3D &b = mesh->mVertices[face.mIndices[1]];
+    const aiVector3D &c = mesh->mVertices[face.mIndices[2]];
+    const aiVector3D p(localX, localY, localZ);
+    const aiVector3D v0 = b - a;
+    const aiVector3D v1 = c - a;
+    const aiVector3D v2 = p - a;
+    const float d00 = v0 * v0;
+    const float d01 = v0 * v1;
+    const float d11 = v1 * v1;
+    const float d20 = v2 * v0;
+    const float d21 = v2 * v1;
+    const float denominator = d00 * d11 - d01 * d01;
+    if (!std::isfinite(denominator) || std::fabs(denominator) <= 1e-12f)
+        return eve::Result<SurfaceUv>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "triangle is degenerate",
+            "model3d.surfaceUv.triangle"));
+
+    const float wb = (d11 * d20 - d01 * d21) / denominator;
+    const float wc = (d00 * d21 - d01 * d20) / denominator;
+    const float wa = 1.f - wb - wc;
+    constexpr float tolerance = 1e-3f;
+    if (wa < -tolerance || wb < -tolerance || wc < -tolerance)
+        return eve::Result<SurfaceUv>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation,
+            "point is outside the requested triangle", "model3d.surfaceUv.point"));
+
+    const aiVector3D &ta = mesh->mTextureCoords[channel][face.mIndices[0]];
+    const aiVector3D &tb = mesh->mTextureCoords[channel][face.mIndices[1]];
+    const aiVector3D &tc = mesh->mTextureCoords[channel][face.mIndices[2]];
+    SurfaceUv result;
+    result.u = wa * ta.x + wb * tb.x + wc * tc.x;
+    result.v = wa * ta.y + wb * tb.y + wc * tc.y;
+    result.barycentricA = wa;
+    result.barycentricB = wb;
+    result.barycentricC = wc;
+    result.triangleIndex = triangleIndex;
+    result.uvChannel = channel;
+    return eve::Result<SurfaceUv>::success(result);
 }
 
 bool ModelData::hasTangents(int meshIndex) const {

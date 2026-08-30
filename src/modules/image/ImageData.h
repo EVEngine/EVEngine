@@ -3,6 +3,7 @@
 
 #include "common/Data.h"
 #include "common/Resource.h"
+#include "common/Result.h"
 
 #include "medialoader/image/pixelformat.h"
 #include "medialoader/image/floattypes.h"
@@ -18,6 +19,13 @@ class FileData;
 }
 namespace image
 {
+
+/** @brief Owning receipt for one UV-space raster paint operation. */
+struct UvPaintReceipt {
+	int centerX = 0;
+	int centerY = 0;
+	int changedPixelCount = 0;
+};
 
 /**
  * @brief Represents raw pixel data.
@@ -94,6 +102,22 @@ public:
 	 * @param p The color to use for the given location.
 	 **/
 	void setPixel(int x, int y, const Colorf &p);
+
+	/**
+	 * @brief Paint a filled circular brush centered at normalized UV coordinates.
+	 * @param u Horizontal normalized texture coordinate; wrapping is optional.
+	 * @param v Vertical normalized texture coordinate, converted to top-left image Y as (1-v).
+	 * @param radiusPixels Non-negative brush radius in pixels; zero paints one pixel.
+	 * @param color Replacement color.
+	 * @param wrapU Whether the brush wraps across the left/right seam.
+	 * @param wrapV Whether the brush wraps across the top/bottom seam.
+	 * @return Paint receipt or a structured failure; mutation occurs only after validation.
+	 * @thread Affine to this mutable ImageData; callers provide synchronization.
+	 * @reentrancy Does not invoke callbacks.
+	 */
+	[[nodiscard]] eve::Result<UvPaintReceipt> paintCircleUv(float u, float v, float radiusPixels,
+	                                                        const Colorf &color, bool wrapU = false,
+	                                                        bool wrapV = false);
 
 	/**
 	 * @brief Gets the pixel at location (x,y).
