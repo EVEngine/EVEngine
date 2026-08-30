@@ -350,6 +350,10 @@ function(main)
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
         message(STATUS "Emscripten/webgpu build: unit tests disabled")
+        # Poco's platform header still recognizes the legacy EMSCRIPTEN token,
+        # while current em++ defines __EMSCRIPTEN__. Keep the third-party
+        # architecture detection explicit for modules that consume Poco on web.
+        add_compile_definitions(EMSCRIPTEN)
         # Emdawnwebgpu port: provides <webgpu/webgpu.h> + <webgpu/webgpu_cpp.h>
         # and the browser WebGPU JS glue. Directory-scope so every module target
         # (EVGraphics, EVUI, EVGpgpu, eve_imgui, ...) gets it at compile + link.
