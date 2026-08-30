@@ -36,6 +36,11 @@ struct WidgetDesc {
     AccessibilityRole accessibilityRole = AccessibilityRole::Auto;
     std::string accessibilityName;
     std::string accessibilityDescription;
+    bool dragSource = false;
+    bool dropTarget = false;
+    std::string dragPayloadType;
+    std::string dragPayloadText;
+    std::string acceptedDropType;
     float value = 0.f;
     float minValue = 0.f;
     float maxValue = 1.f;
@@ -159,6 +164,19 @@ struct WidgetDesc {
         accessibilityRole = role;
         accessibilityName = std::move(name);
         accessibilityDescription = std::move(description);
+        return *this;
+    }
+    /** @brief Marks this widget as a desktop drag source with an owning text payload. */
+    WidgetDesc &withDragSource(std::string payloadType, std::string payloadText) {
+        dragSource = true;
+        dragPayloadType = std::move(payloadType);
+        dragPayloadText = std::move(payloadText);
+        return *this;
+    }
+    /** @brief Marks this widget as a desktop drop target for one type or "*". */
+    WidgetDesc &withDropTarget(std::string acceptedType) {
+        dropTarget = true;
+        acceptedDropType = std::move(acceptedType);
         return *this;
     }
     WidgetDesc &withChecked(bool v) {

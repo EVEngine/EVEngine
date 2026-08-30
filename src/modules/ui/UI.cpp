@@ -20,6 +20,7 @@
 #include "window/sdl/Window.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <SDL2/SDL_events.h>
 
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 #include <Poco/JSON/Array.h>
@@ -226,6 +227,9 @@ void UI::shutdownBackend() {
 }
 
 void UI::processEvent(const SDL_Event *event) {
+    if (event && UISystem::dragDropSupport() == DragDropSupport::Supported &&
+        event->type == SDL_DROPFILE && event->drop.file)
+        UISystem::enqueuePlatformFileDrop(event->drop.file);
     if (backend_) backend_->processEvent(event);
 }
 
@@ -764,6 +768,23 @@ void UI::setItemTooltip(const std::string &text) {
     parent.children.back().tooltip = text;
 }
 
+void UI::setItemDragSource(const std::string &payloadType, const std::string &payloadText) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    auto &item = parent.children.back();
+    item.dragSource = !payloadType.empty();
+    item.dragPayloadType = payloadType;
+    item.dragPayloadText = payloadText;
+}
+
+void UI::setItemDropTarget(const std::string &acceptedType) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    auto &item = parent.children.back();
+    item.dropTarget = !acceptedType.empty();
+    item.acceptedDropType = acceptedType;
+}
+
 void UI::setItemEnabled(bool enabled) {
     WidgetDesc &parent = currentParent();
     if (!parent.children.empty()) parent.children.back().enabled = enabled;
@@ -1163,6 +1184,34 @@ std::string UI::consumeClick() { return UISystem::consumeClick(); }
 
 std::string UI::consumeChange() { return UISystem::consumeChange(); }
 
+std::string UI::dragDropSupport() const {
+    return UISystem::dragDropSupport() == DragDropSupport::Supported
+               ? "supported"
+               : "unsupported-platform";
+}
+
+std::string UI::consumeDrop() {
+    auto drop = UISystem::consumeDrop();
+    if (!drop) return {};
+    lastDropType_ = std::move(drop->payloadType);
+    lastDropText_ = std::move(drop->payloadText);
+    lastDropSource_ = drop->sourceHostName.empty()
+                          ? std::string{}
+                          : drop->sourceHostName + "/" + drop->sourceNodeId;
+    lastDropOrigin_ = drop->origin == DragDropOrigin::OperatingSystemFile ? "os-file"
+                                                                          : "internal";
+    return drop->targetHostName.empty() ? drop->targetNodeId
+                                        : drop->targetHostName + "/" + drop->targetNodeId;
+}
+
+std::string UI::getDropType() const { return lastDropType_; }
+
+std::string UI::getDropText() const { return lastDropText_; }
+
+std::string UI::getDropSource() const { return lastDropSource_; }
+
+std::string UI::getDropOrigin() const { return lastDropOrigin_; }
+
 void UI::setThemeDark() { setThemeByName("dark"); }
 
 void UI::setThemeLight() { setThemeByName("light"); }
@@ -1415,6 +1464,15 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (!n.accessibilityName.empty()) o.set("accessibilityName", n.accessibilityName);
     if (!n.accessibilityDescription.empty())
         o.set("accessibilityDescription", n.accessibilityDescription);
+    if (n.dragSource) {
+        o.set("dragSource", true);
+        o.set("dragPayloadType", n.dragPayloadType);
+        o.set("dragPayloadText", n.dragPayloadText);
+    }
+    if (n.dropTarget) {
+        o.set("dropTarget", true);
+        o.set("acceptedDropType", n.acceptedDropType);
+    }
     if (n.checked) o.set("checked", true);
     if (!n.open) o.set("open", false);
     if (n.value != 0.f) o.set("value", n.value);
@@ -1501,6 +1559,14 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
     if (o.has("accessibilityDescription"))
         d.accessibilityDescription =
             o.getValue<std::string>("accessibilityDescription");
+    if (o.has("dragSource")) d.dragSource = o.getValue<bool>("dragSource");
+    if (o.has("dragPayloadType"))
+        d.dragPayloadType = o.getValue<std::string>("dragPayloadType");
+    if (o.has("dragPayloadText"))
+        d.dragPayloadText = o.getValue<std::string>("dragPayloadText");
+    if (o.has("dropTarget")) d.dropTarget = o.getValue<bool>("dropTarget");
+    if (o.has("acceptedDropType"))
+        d.acceptedDropType = o.getValue<std::string>("acceptedDropType");
     if (o.has("checked")) d.checked = o.getValue<bool>("checked");
     if (o.has("open")) d.open = o.getValue<bool>("open");
     if (o.has("value")) d.value = fnum(o.get("value"));
@@ -1904,6 +1970,8 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setItemPercent", &UI::setItemPercent);
     cls.addFunc("setItemAbsolute", &UI::setItemAbsolute);
     cls.addFunc("setItemTooltip", &UI::setItemTooltip);
+    cls.addFunc("setItemDragSource", &UI::setItemDragSource);
+    cls.addFunc("setItemDropTarget", &UI::setItemDropTarget);
     cls.addFunc("setItemEnabled", &UI::setItemEnabled);
     cls.addFunc("setItemFocusMode", &UI::setItemFocusMode);
     cls.addFunc("setItemMouseFilter", &UI::setItemMouseFilter);
@@ -1953,6 +2021,12 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("animateHostPos", &UI::animateHostPos);
     cls.addFunc("consumeClick", &UI::consumeClick);
     cls.addFunc("consumeChange", &UI::consumeChange);
+    cls.addFunc("dragDropSupport", &UI::dragDropSupport);
+    cls.addFunc("consumeDrop", &UI::consumeDrop);
+    cls.addFunc("getDropType", &UI::getDropType);
+    cls.addFunc("getDropText", &UI::getDropText);
+    cls.addFunc("getDropSource", &UI::getDropSource);
+    cls.addFunc("getDropOrigin", &UI::getDropOrigin);
     cls.addFunc("onClick", &UI::onClick);
     cls.addFunc("onChange", &UI::onChange);
 

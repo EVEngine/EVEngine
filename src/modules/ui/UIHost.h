@@ -124,6 +124,11 @@ struct UINode {
     AccessibilityRole accessibilityRole = AccessibilityRole::Auto;
     std::string accessibilityName;
     std::string accessibilityDescription;
+    bool dragSource = false;
+    bool dropTarget = false;
+    std::string dragPayloadType;
+    std::string dragPayloadText;
+    std::string acceptedDropType;
     float value = 0.f;
     float minValue = 0.f;
     float maxValue = 1.f;
