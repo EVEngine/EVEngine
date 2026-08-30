@@ -120,5 +120,13 @@ rx.pump(ev);
 - 默认回调在当前线程同步执行；跨线程需求先回到主线程再推送。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
+## 引擎内的 Editor 观察会话
+
+Editor automation 直接复用本模块的 C++ `Subject` 和 `distinctUntilChanged` 管线，实现 MCP
+`eve_editor_observe_start/poll/close`。Editor 持有会话、流和订阅，是生命周期唯一所有者；MCP 的
+poll 只在主线程采样 live runtime 并推送事件，不复制场景或材质权威状态。连续相同 JSON 事件不会
+重复交给 Agent，provider 丢失或 stale identity 则作为可观察的状态变化返回。使用方必须显式 close；
+target 或引擎对象仍按原所有权销毁，关闭观察会话不会销毁被观察对象。
+
 **源码：** [`src/modules/rx/`](../../../src/modules/rx/)
 **相关测试：** [`test/rx.cpp`](../../../test/rx.cpp)

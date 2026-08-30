@@ -54,6 +54,7 @@ private:
 
     IDomainOperationTarget*                                                              target_ = nullptr;
     std::unordered_map<TransactionId, CommittedEntry, StrongEditorIdHash<TransactionId>> committed_;
+    std::vector<TransactionId>                                                            commitOrder_;
     std::uint64_t                                                                        receiptSequence_ = 0;
 };
 

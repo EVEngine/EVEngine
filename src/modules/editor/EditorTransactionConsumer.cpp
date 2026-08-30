@@ -870,6 +870,8 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::redo() {
     history.specification                   = specification;
     if (authorityParticipant) history.authorityReceipt = authorityParticipant->receipt();
     impl_->undo.push_back(std::move(history));
+    if (!impl_->redo.empty() && authorityParticipant && authorityParticipant->receipt())
+        impl_->redo.back().specification.baseRevision = authorityParticipant->receipt()->afterRevision;
     const auto&             moved = impl_->undo.back();
     EditorTransactionRecord record;
     record.coordinator      = std::move(receipt);

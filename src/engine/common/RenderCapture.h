@@ -5,7 +5,9 @@
 // for the entity-id mask and visible-entity JSON).
 
 #include "common/Export.h"
+#include "common/Result.h"
 
+#include <cstdint>
 #include <string>
 
 namespace eve {
@@ -16,6 +18,17 @@ struct EVENGINE_API RenderStatusInfo {
     bool had3DThisFrame = false;
     bool readbackEnabled = false;
     std::string backend;
+};
+
+/** @brief Generation-qualified snapshot of one live field-backed Renderable3D. */
+struct EVENGINE_API Renderable3DInfo {
+    std::uint32_t entityId = 0;
+    std::uint32_t generation = 0;
+    float x = 0.f, y = 0.f, z = 0.f;
+    float tintR = 1.f, tintG = 1.f, tintB = 1.f, tintA = 1.f;
+    float metallic = 0.f, roughness = 0.45f, parallaxScale = 0.f;
+    bool visible = true, receiveLight = true, castShadow = true, receiveShadow = true;
+    bool hasPackedMaterial = false, hasTexture = false, hasShader = false;
 };
 
 /** @brief Frame capture + camera + visible-entity inspection (graphics). */
@@ -44,6 +57,15 @@ public:
                                        float pitchDeg, float fovYDeg) = 0;
     /** @brief Current camera pose as JSON (eye/target/fov/viewport). */
     virtual std::string cameraPoseJson() = 0;
+
+    /**
+     * @brief Inspect one live Renderable3D using its complete ECS identity.
+     * @return Owning value snapshot, or a structured stale-handle failure.
+     * @thread Engine-main-thread only.
+     * @reentrancy Does not invoke scripts or callbacks.
+     */
+    [[nodiscard]] virtual Result<Renderable3DInfo> inspectRenderable3D(
+        std::uint32_t entityId, std::uint32_t generation) = 0;
 
     /** @brief Visible-entity 3D snapshot JSON for the current camera. */
     virtual std::string visibleEntitiesJson(float fovYDeg, bool* ok) = 0;
