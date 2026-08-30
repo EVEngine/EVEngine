@@ -648,17 +648,8 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let aoUV = (in.fragCoord.xy * 0.5) / vec2f(textureDimensions(aoTex));
     let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
     color *= mix(1.0, ao, clamp(ubo.surface.z, 0.0, 1.0));
-    // Match the Vulkan tonemap.glsl: keep values below `white` linear so dim
-    // scenes stay readable, compress only the HDR remainder into (white, 1].
-    let white = 0.85;
-    let over = max(color - vec3f(white), vec3f(0.0));
-    color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
     color += emissive;
-    let nearZ = max(ubo.clipInfo.x, 1e-4);
-    let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
-    let viewZ = max(-in.vViewPos.z, 0.0);
-    let linearDepth = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    let outputAlpha = select(linearDepth, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
+    let outputAlpha = select(1.0, base.a, ubo.surface.x > 1.5 && ubo.surface.x < 2.5);
     return vec4f(color, outputAlpha);
 }
 )wgsl";
