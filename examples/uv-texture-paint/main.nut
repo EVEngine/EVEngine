@@ -32,7 +32,8 @@ eve_init = function() {
 
     model = model3d.newModelDataFromFile("paintable.obj");
     renderable = model3d.createRenderable(gfx, model, 0);
-    pixels = image.newEmptyImageData(512, 256, "RGBA8");
+    local imageModule = eve.Image();
+    pixels = imageModule.newEmptyImageData(512, 256, "RGBA8");
     for (local y = 0; y < 256; ++y)
         for (local x = 0; x < 512; ++x)
             pixels.setPixel(x, y, 0.12 + 0.18 * x / 511.0, 0.28, 0.55, 1.0);
