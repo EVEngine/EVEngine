@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
+set(EVENGINE_BUILD_PLATFORM "" CACHE STRING
+    "EVEngine target platform override; unlike legacy BUILD_PLATFORM this cannot collide with dependencies")
+
 set(EVENGINE_COMPILER_CACHE "AUTO" CACHE STRING
     "Compiler cache mode: AUTO detects sccache, SCCACHE requires it, OFF disables auto-detection")
 set_property(CACHE EVENGINE_COMPILER_CACHE PROPERTY STRINGS AUTO SCCACHE OFF)
@@ -832,6 +835,15 @@ endfunction()
 macro(get_available_build)
     set(AVAILABLE_PLATFORM "")
 
+    # BUILD_PLATFORM predates FetchContent usage and is also owned by Dawn.
+    # Prefer the namespaced override when supplied so dependency configuration
+    # and automatic top-level reconfiguration cannot change EVEngine's target.
+    if(EVENGINE_BUILD_PLATFORM)
+        set(BUILD_PLATFORM "${EVENGINE_BUILD_PLATFORM}")
+        set(BUILD_PLATFORM "${EVENGINE_BUILD_PLATFORM}" CACHE STRING
+            "The EVEngine target build platform" FORCE)
+    endif()
+
     # Cross-compiling for Emscripten (web/WASM, browser WebGPU) must win over host detection.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         list(APPEND AVAILABLE_PLATFORM "webgpu")
@@ -1461,11 +1473,6 @@ function(load_webgpu_backend)
     endif()
 
     message(STATUS "WebGPU (native): fetching Google Dawn")
-    # Dawn also owns a generic BUILD_PLATFORM cache entry. Preserve EVEngine's
-    # target before adding the dependency so Dawn's host value (for example
-    # win32) cannot change an automatic top-level CMake reconfigure back from
-    # webgpu to the native renderer.
-    set(_eve_selected_build_platform "${BUILD_PLATFORM}")
     include(FetchContent)
     set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -1496,12 +1503,6 @@ function(load_webgpu_backend)
         DOWNLOAD_EXTRACT_TIMESTAMP FALSE
     )
     FetchContent_MakeAvailable(dawn)
-
-    set(BUILD_PLATFORM "${_eve_selected_build_platform}")
-    set(BUILD_PLATFORM "${_eve_selected_build_platform}" CACHE STRING
-        "The EVEngine target build platform (${AVAILABLE_PLATFORM})" FORCE)
-    set(BUILD_PLATFORM "${_eve_selected_build_platform}" PARENT_SCOPE)
-    set_property(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
 
     if(TARGET dawn::webgpu_dawn)
         set(_eve_dawn_target dawn::webgpu_dawn)
