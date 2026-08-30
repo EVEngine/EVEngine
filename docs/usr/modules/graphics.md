@@ -76,7 +76,8 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 需要把运行对象交给 Editor/MCP 等跨帧工具时，同时读取
 `Renderable3D.getEntityId()` 与 `getEntityGeneration()`；两者共同构成临时 ECS handle，
 generation 用于拒绝实体销毁后被复用的旧 id。不要只长期保存 entity id。
-Agent 完成材质事务后，可用 `getTintR/G/B()` 与 `getRoughness()` 独立核对字段材质的运行时状态。
+Agent 完成材质事务后，可用 `getTintR()`、`getTintG()`、`getTintB()` 与 `getRoughness()`
+独立核对字段材质的运行时状态。
 
 ### 材质（Material）与模型部件
 
