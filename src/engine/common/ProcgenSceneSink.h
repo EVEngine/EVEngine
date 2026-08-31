@@ -56,6 +56,18 @@ public:
     /** @brief Create or reconcile all instances in a named batch. */
     virtual bool applyBatch(const std::string& batchId,
                             const std::vector<ProcgenInstanceDesc>& instances) = 0;
+    /**
+     * @brief Atomically replace a batch with a complete stable-identity snapshot at an explicit revision.
+     * @param batchId Non-empty batch identity.
+     * @param targetRevision Non-zero revision newer than the currently committed batch revision.
+     * @param instances Complete ordered target snapshot; every instance must have a unique non-zero source PointId.
+     * @return The committed target revision, or a structured stale/validation/provider failure.
+     * @thread Called synchronously on the scene-owning thread; implementations must not retain references.
+     * @reentrant Not reentrant for the same batch.
+     */
+    [[nodiscard]] virtual Result<uint64_t> replaceBatch(
+        const std::string& batchId, uint64_t targetRevision,
+        const std::vector<ProcgenInstanceDesc>& instances) = 0;
     /** @brief Remove the visible contents of a batch. */
     virtual bool removeBatch(const std::string& batchId) = 0;
     /**

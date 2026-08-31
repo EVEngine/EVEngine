@@ -215,6 +215,34 @@ public:
         return true;
     }
 
+    eve::Result<uint64_t> replaceBatch(const std::string& batchId, uint64_t targetRevision,
+                                       const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+        const uint64_t currentRevision = batchRevision(batchId);
+        if (batchId.empty() || targetRevision == 0)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument,
+                "procedural scene snapshot requires a batch id and non-zero target revision", "targetRevision"));
+        if (currentRevision >= targetRevision)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "procedural scene snapshot revision is stale", "targetRevision"));
+        std::unordered_set<std::string> instanceIds;
+        std::unordered_set<uint64_t>    pointIds;
+        instanceIds.reserve(instances.size());
+        pointIds.reserve(instances.size());
+        for (const auto& instance : instances) {
+            if (instance.id.empty() || instance.sourcePointId == 0 || !instanceIds.insert(instance.id).second ||
+                !pointIds.insert(instance.sourcePointId).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict,
+                    "procedural scene snapshot requires unique instance ids and source PointIds", "instances"));
+        }
+        if (!applyBatch(batchId, instances))
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "procedural scene provider rejected snapshot commit", "batchId"));
+        revisions_[batchId] = targetRevision;
+        return eve::Result<uint64_t>::success(targetRevision);
+    }
+
     eve::Result<uint64_t> applyDelta(const std::string& batchId,
                                      const eve::ProcgenInstanceDelta& delta) override {
         const auto current = revisions_.find(batchId);
@@ -309,11 +337,11 @@ public:
             target.push_back(found->second);
             staged.erase(found);
         }
-        if (!staged.empty() || !applyBatch(batchId, target))
-            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed, "procedural scene provider rejected delta commit", "batchId"));
-        revisions_[batchId] = delta.targetRevision;
-        return eve::Result<uint64_t>::success(delta.targetRevision);
+        if (!staged.empty())
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                       "procedural scene delta target order repeats an identity", "targetOrder"));
+        return replaceBatch(batchId, delta.targetRevision, target);
     }
 
     uint64_t batchRevision(const std::string& batchId) const override {

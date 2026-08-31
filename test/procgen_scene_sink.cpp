@@ -34,6 +34,17 @@ public:
         latest[batchId]  = stats;
         return true;
     }
+    eve::Result<uint64_t> replaceBatch(const std::string& batchId, uint64_t targetRevision,
+                                       const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+        if (targetRevision == 0 || batchRevision(batchId) >= targetRevision)
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "mock snapshot revision is stale"));
+        if (!applyBatch(batchId, instances))
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "mock snapshot commit failed"));
+        revisions[batchId] = targetRevision;
+        return eve::Result<uint64_t>::success(targetRevision);
+    }
     eve::Result<uint64_t> applyDelta(const std::string& batchId, const eve::ProcgenInstanceDelta& delta) override {
         const auto current = revisions.find(batchId);
         if (current == revisions.end() || current->second != delta.baseRevision)
@@ -214,6 +225,36 @@ TEST_CASE("procgen.sceneSink.projectsRuntimePointDeltaByStableIdentity") {
     CHECK_EQ(sink.lastDelta.removedPointIds[0], uint64_t(2002));
     CHECK_EQ(sink.lastDelta.targetPointOrder, delta.value().targetOrder);
 
+    auto recoveryResult = proc.newPointSetHandle();
+    REQUIRE(recoveryResult.ok());
+    const auto recoveryHandle = std::move(recoveryResult).takeValue();
+    auto       recoveryView   = proc.resolvePointSet(recoveryHandle);
+    REQUIRE(recoveryView.isBound());
+    for (std::size_t pointIndex = 0; pointIndex < target.points().size(); ++pointIndex)
+        recoveryView->appendPointFrom(target, pointIndex).expect("scene recovery snapshot");
+    auto recovered = proc.publishCellSnapshot("world", *request, recoveryHandle, 5, "asset", "stone");
+    REQUIRE(recovered.ok());
+    CHECK_EQ(recovered.value(), uint64_t(5));
+    CHECK_EQ(sink.batchRevision("world/L0/0/0"), uint64_t(5));
+    REQUIRE_EQ(sink.batches.at("world/L0/0/0").size(), std::size_t(2));
+    CHECK_EQ(sink.batches.at("world/L0/0/0")[0].id, std::string("tree-renamed"));
+    CHECK_EQ(sink.batches.at("world/L0/0/0")[1].sourcePointId, uint64_t(2003));
+    auto staleRecovery = proc.publishCellSnapshot("world", *request, recoveryHandle, 4, "asset", "stone");
+    CHECK(!staleRecovery.ok());
+    CHECK_EQ(sink.batchRevision("world/L0/0/0"), uint64_t(5));
+
+    auto invalidResult = proc.newPointSetHandle();
+    REQUIRE(invalidResult.ok());
+    const auto invalidHandle = std::move(invalidResult).takeValue();
+    auto       invalidView   = proc.resolvePointSet(invalidHandle);
+    REQUIRE(invalidView.isBound());
+    invalidView->add(0.f, 0.f, 0.f);
+    auto invalidSnapshot = proc.publishCellSnapshot("world", *request, invalidHandle, 6, "asset", "stone");
+    CHECK(!invalidSnapshot.ok());
+    CHECK_EQ(sink.batchRevision("world/L0/0/0"), uint64_t(5));
+
+    REQUIRE(proc.releasePointSet(invalidHandle).ok());
+    REQUIRE(proc.releasePointSet(recoveryHandle).ok());
     REQUIRE(proc.releasePointSet(pointsHandle).ok());
     eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
 }

@@ -336,11 +336,25 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     REQUIRE(host->findById("tree-renamed").ok());
     CHECK(approxEq(host->findById("tree-renamed").value()->x, 8.f));
 
+    std::vector<eve::ProcgenInstanceDesc> recoveredInstances;
+    flower.y = 6.f;
+    recoveredInstances.push_back(flower);
+    recoveredInstances.push_back(renamedTree);
+    auto recovered = sink->replaceBatch("biome/0/0", 6, recoveredInstances);
+    REQUIRE(recovered.ok());
+    CHECK_EQ(recovered.value(), uint64_t(6));
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(6));
+    CHECK(approxEq(host->findById("flower-3").value()->y, 6.f));
+    auto staleRecovery = sink->replaceBatch("biome/0/0", 5, instances);
+    CHECK(!staleRecovery.ok());
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(6));
+    CHECK(approxEq(host->findById("flower-3").value()->y, 6.f));
+
     delta.baseRevision = 1;
     delta.updated[0].x = 99.f;
     auto stale         = sink->applyDelta("biome/0/0", delta);
     CHECK(!stale.ok());
-    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(3));
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(6));
     CHECK(approxEq(host->findById("tree-renamed").value()->x, 8.f));
 
     CHECK(sink->removeBatch("biome/0/0"));

@@ -808,6 +808,30 @@ static eve::ProcgenInstanceDesc sceneInstanceDesc(const PointSet& points, size_t
     return instance;
 }
 
+static eve::Result<std::vector<eve::ProcgenInstanceDesc>> sceneInstanceDescs(const PointSet&    points,
+                                                                             const std::string& assetAttribute,
+                                                                             const std::string& defaultAsset,
+                                                                             bool               requireStablePointIds) {
+    std::vector<eve::ProcgenInstanceDesc> instances;
+    instances.reserve(points.points().size());
+    std::unordered_map<uint32_t, size_t> seedOccurrences;
+    std::unordered_set<std::string>      instanceIds;
+    std::unordered_set<uint64_t>         pointIds;
+    for (size_t pointIndex = 0; pointIndex < points.points().size(); ++pointIndex) {
+        auto instance = sceneInstanceDesc(points, pointIndex, assetAttribute, defaultAsset, seedOccurrences);
+        if (!instanceIds.insert(instance.id).second)
+            return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                       "procedural Scene snapshot contains a duplicate instance id", "instanceId"));
+        if (requireStablePointIds && (instance.sourcePointId == 0 || !pointIds.insert(instance.sourcePointId).second))
+            return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "procedural Scene snapshot requires unique non-zero source PointIds",
+                "pointId"));
+        instances.push_back(std::move(instance));
+    }
+    return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::success(std::move(instances));
+}
+
 eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenPointSetHandleRef points,
                                             const std::string& assetAttribute, const std::string& defaultAsset) {
     const auto view = resolvePointSet(points);
@@ -819,18 +843,9 @@ eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenP
     if (!sink)
         return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "publishInstances scene sink is unavailable");
 
-    std::vector<eve::ProcgenInstanceDesc> instances;
-    instances.reserve(view->points().size());
-    std::unordered_map<uint32_t, size_t> seedOccurrences;
-    std::unordered_set<std::string>      instanceIds;
-    for (size_t pointIndex = 0; pointIndex < view->points().size(); ++pointIndex) {
-        auto instance = sceneInstanceDesc(*view, pointIndex, assetAttribute, defaultAsset, seedOccurrences);
-        if (!instanceIds.insert(instance.id).second)
-            return procgenBindingFailure<void>(eve::DiagnosticCode::Conflict,
-                                               "publishInstances duplicate instance id: " + instance.id);
-        instances.push_back(std::move(instance));
-    }
-    if (!sink->applyBatch(batchId, instances))
+    auto instances = sceneInstanceDescs(*view, assetAttribute, defaultAsset, false);
+    if (!instances.ok()) return eve::Result<void>::failure(instances.status());
+    if (!sink->applyBatch(batchId, instances.value()))
         return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "publishInstances scene sink rejected batch");
     return eve::Result<void>::success();
 }
@@ -855,6 +870,26 @@ eve::Result<void> Procgen::publishCellInstances(const std::string& prefix, const
     const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
                                 std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
     return publishInstances(batchId, points, assetAttribute, defaultAsset);
+}
+
+eve::Result<uint64_t> Procgen::publishCellSnapshot(const std::string& prefix, const ProcgenCellRequest& request,
+                                                   ProcgenPointSetHandleRef points, uint64_t targetRevision,
+                                                   const std::string& assetAttribute, const std::string& defaultAsset) {
+    const auto view = resolvePointSet(points);
+    if (prefix.empty() || targetRevision == 0 || !view.isBound())
+        return procgenBindingFailure<uint64_t>(
+            !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
+            "publishCellSnapshot requires a prefix, live point set, and non-zero target revision",
+            "publishCellSnapshot");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "publishCellSnapshot scene sink is unavailable");
+    auto instances = sceneInstanceDescs(*view, assetAttribute, defaultAsset, true);
+    if (!instances.ok()) return eve::Result<uint64_t>::failure(instances.status());
+    const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
+                                std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
+    return sink->replaceBatch(batchId, targetRevision, instances.value());
 }
 
 eve::Result<uint64_t> Procgen::publishCellInstanceDelta(const std::string& prefix, const ProcgenCellRequest& request,
@@ -4070,6 +4105,27 @@ void Procgen::expose(ssq::Class &cls) {
             return eve::script::projectResult(
                 vm, value->publishCellInstances(prefix, *request, *pointsRef, assetAttribute, defaultAsset));
         });
+    cls.addFunc("publishCellSnapshot", [vm = cls.getHandle()](
+                                           Procgen* value, const std::string& prefix, ProcgenCellRequest* request,
+                                           PointSet* points, const std::string& revisionText,
+                                           const std::string& assetAttribute, const std::string& defaultAsset) {
+        const auto    pointsRef      = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+        std::uint64_t targetRevision = 0;
+        const auto [end, error] =
+            std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), targetRevision);
+        if (!value || !request || !pointsRef || error != std::errc{} ||
+            end != revisionText.data() + revisionText.size() || targetRevision == 0)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<std::uint64_t>(
+                    eve::DiagnosticCode::InvalidArgument,
+                    "publishCellSnapshot requires request, owned points, and a non-zero decimal target revision",
+                    "publishCellSnapshot"),
+                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+        return eve::script::projectResult(
+            vm, value->publishCellSnapshot(prefix, *request, *pointsRef, targetRevision, assetAttribute, defaultAsset),
+            [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+    });
     cls.addFunc("publishCellInstanceDelta", [vm = cls.getHandle()](
                                                 Procgen* value, const std::string& prefix, ProcgenCellRequest* request,
                                                 PointDelta* delta, const std::string& revisionText,

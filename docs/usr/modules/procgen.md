@@ -273,6 +273,12 @@ pitch/yaw/roll、平移和非均匀缩放。`remapDensity` 重映射密度，
 过期、PointId 缺失或重复、目标顺序不完整、实例 ID 冲突时返回失败 Result，原 Scene batch
 保持不变。增量路径要求所有参与点具有非零稳定 ID；旧数据应先完成 `migrateCellPointIds()`。
 
+Scene 漏掉一个或多个中间 revision 后，不应继续重放不完整的最后一个 delta。改用
+`publishCellSnapshot(prefix, request, points, targetRevision, assetAttribute, defaultAsset)` 将
+`getCellOutput()` 返回的完整有序快照原子发布到明确的 RuntimeGeneration revision。该入口允许
+从较旧 Scene revision 直接前进到较新的 cell revision，同时拒绝相同或更旧 revision；因此可用于
+provider 暂时失败后的追赶、存档恢复和 Scene 重建，而不会通过反复整批发布猜测 revision。
+
 空间数据构造器包括 `polygonVolume`、`textureMaskData` 和 `meshSurfaceData`。
 它们可继续传给统一的 spatial union/intersection/difference、采样、过滤和投射 API。
 `projectToWorld` 通过可选 `IProcgenWorldQuery` capability 做垂直世界表面查询；

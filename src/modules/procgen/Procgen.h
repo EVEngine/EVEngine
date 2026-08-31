@@ -293,6 +293,23 @@ public:
                                                          const std::string       &assetAttribute,
                                                          const std::string       &defaultAsset);
     /**
+     * @brief Replace a Scene cell batch from a complete RuntimeGeneration snapshot at an explicit revision.
+     * @param prefix Non-empty namespace used by publishCellInstances.
+     * @param request Cell coordinates used to derive the Scene batch identity.
+     * @param points Live owned point-set handle containing the complete ordered cell snapshot.
+     * @param targetRevision Non-zero committed RuntimeGeneration cell revision represented by points.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Scene batch target revision, or a structured stale/identity/provider failure.
+     * @thread Synchronous on the Scene-owning thread; no input references are retained.
+     * @reentrant Not reentrant for the same cell batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> publishCellSnapshot(const std::string& prefix,
+                                                            const ProcgenCellRequest& request,
+                                                            ProcgenPointSetHandleRef points, uint64_t targetRevision,
+                                                            const std::string& assetAttribute,
+                                                            const std::string& defaultAsset);
+    /**
      * @brief Project one committed point delta into an existing Scene cell batch atomically.
      * @param prefix Non-empty namespace used by publishCellInstances.
      * @param request Cell coordinates used to derive the Scene batch identity.
