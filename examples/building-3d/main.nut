@@ -179,14 +179,14 @@ eve_update = function(dt) {
         session.setMode("place");
         local id = session.execute();
         if (id <= 0)
-            print("放置失败: " + session.getReason() + "\n");
+            print("failed to place: " + session.getReason() + "\n");
     }
     if (mousePressed(2)) {
         session.setMode("remove");
         local id = session.execute();
         session.setMode("place");
         if (id <= 0)
-            print("此处无建筑\n");
+            print("no building here.\n");
     }
     fx.sync(world);
     fx.updateGhost(world, session.getGhost());

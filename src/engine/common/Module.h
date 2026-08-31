@@ -85,7 +85,13 @@ public:
      */
     [[nodiscard("plugin registration outcome must be checked")]] static eve::Result<void> finishPluginRegistration(
         bool commit);
-    /** @brief Exposes every registered module into the given runtime's root table. */
+    /**
+     * @brief Installs the `eve` table and defers native class method bindings.
+     *
+     * Result helpers and script ECS are bound immediately. Each module's
+     * `expose(ssq::Table&)` (class + methods + nested types) runs on the first
+     * script get of that class name, or of a nested class it owns.
+     */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.
     static void expose(ssq::VM& vm);
@@ -180,6 +186,8 @@ protected:
     std::vector<std::string> plugin_registration_added_;
     std::string plugin_registration_error_;
     Runtime* active_runtime_ = nullptr;
+
+    friend struct ModuleBindAccess;
 };
 
 struct EVENGINE_API ModuleRegister {

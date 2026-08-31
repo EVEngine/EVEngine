@@ -251,6 +251,8 @@ public:
     // canvas composite overloads below.
     using eve::graphics::Graphics::draw;
 
+    /** @brief Starts asynchronous VkInstance creation (overlaps later window init). */
+    Graphics();
     ~Graphics() override;
 
     // ---- GPU frame timing (eve::service::IGpuTimer) ----------------------

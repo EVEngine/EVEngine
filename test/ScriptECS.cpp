@@ -398,8 +398,8 @@ function testComponentDefaultsAndSlotsCached() {
 }
 
 function testGpuDrivenBindingSurface() {
-    if (!("Gpgpu" in eve)) return false
-    local gpu = eve.Gpgpu()
+    local gpu
+    try { gpu = eve.Gpgpu() } catch (e) { return false }
     local required = ["setGpuDrivenEnabled", "isGpuDrivenEnabled",
                       "gpuDrivenMeshRecord", "gpuDrivenMaterialRecord",
                       "gpuDrivenMaterialUsable", "getGpuDrivenInstanceStride",

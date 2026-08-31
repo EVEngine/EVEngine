@@ -99,18 +99,21 @@ config = {
 - 用 `optionalModules` 明确哪些功能需要运行时降级。
 
 `config.modules` 不能把已经从 SDK 裁掉的模块重新启用。实际可用模块仍由
-`cmake/module_manifest.cmake` 和构建 profile 决定。
+`cmake/module_manifest.cmake` 和构建 profile 决定。写出 `modules` 或
+`optionalModules` 后，启动只构造名单中的槽位（外加 `win` / `gfx` / `timer` /
+`platform_event` / `fs` / `hot`）。未列出的模块保持未实例化，`has_module()` 为 false。
 
 为了让 LSP 无需执行任意脚本，这两个字段必须是字符串数组字面量。未写这两个字段的旧项目保持
-当前行为。
+当前行为（构造构建里的全部模块）。
 
 ### 3.3 Lowering 后的等价原始表达
 
 `config.nut` 本身就是 Squirrel，不发生 lowering。ScriptCompiler 只读取其中的数组字面量，为
 LSP、打包器和提前诊断生成项目元数据，不参与模块实例化，也不负责启动期校验。
 
-运行时校验属于 `src/scripts/load.nut` 的加载职责：它在按照 `eve.moduleList` 实例化当前构建实际
-包含的模块之后、执行 `main.nut` 之前运行：
+运行时校验属于 `src/scripts/load.nut` 的加载职责：它按 `config.modules` /
+`optionalModules`（若写出）过滤 `eve.moduleList`，实例化选中的模块之后、执行 `main.nut`
+之前运行：
 
 ```squirrel
 if ("modules" in config) {
@@ -129,7 +132,7 @@ if (has_module("audio")) {
 }
 ```
 
-这段逻辑应直接加入 `load.nut`，并保持现有模块实例化顺序。这样编译器不依赖 Runtime 当前装载了
+这段逻辑应直接加入 `load.nut`，并保持 boot 槽位的实例化顺序。这样编译器不依赖 Runtime 当前装载了
 哪些模块，`load.nut` 也继续作为项目配置、模块实例和游戏入口之间唯一的启动编排层。
 
 ## 4. 脚本模块与 `import`

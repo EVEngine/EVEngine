@@ -11,4 +11,7 @@ config = {
     debug = true
     // Soft script/asset hot reload (directory watch)
     hotReload = true
+    // Instantiate only these script slots (plus boot: win/gfx/timer/fs/hot/…).
+    // Omit `modules` entirely to construct every module the SDK contains.
+    modules = ["physics", "particles"]
 };

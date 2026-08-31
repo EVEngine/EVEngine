@@ -170,7 +170,10 @@ void Graphics::createSwapchainAndPipeline() {
     swapchain.destroy();
     swapchain = swapRet;
 
-    depthImage = vkb::DepthStencilImage{device, swapchain.extent.width, swapchain.extent.height, depthFormat};
+    {
+        StartupStage stage("  vulkan: depth image");
+        depthImage = vkb::DepthStencilImage{device, swapchain.extent.width, swapchain.extent.height, depthFormat};
+    }
 
     if (!renderpass) {
         vkb::RenderPassBuilder rpBuilder{device};
@@ -1332,6 +1335,7 @@ int Graphics::clampMsaaSamples(int requested) const {
 
 void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                                         vk::SampleCountFlagBits samples) {
+    createMesh3DPipeline();
     const vk::RenderPass targetHandle = vk::RenderPass(target);
     if (targetHandle == scenePassPipelineTarget && samples == scenePassPipelineSamples) return;
     device->waitIdle();
@@ -1370,11 +1374,14 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                                       mesh3dGpuDrivenPipelineLayout, target, samples);
         createResolveVisPipeline(target, samples);
     }
-    mesh3dClusteredPipeline =
-        createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
-                                  embeddedSpirv(mesh3d_clustered_frag_spv),
-                                  mesh3dClusteredPipelineLayout, target, samples);
-    voxelRectPipeline = buildVoxelRectPipeline(target, samples);
+    if (mesh3dClusteredPipelineLayout) {
+        mesh3dClusteredPipeline =
+            createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
+                                      embeddedSpirv(mesh3d_clustered_frag_spv),
+                                      mesh3dClusteredPipelineLayout, target, samples);
+    }
+    if (voxelRectPipelineLayout)
+        voxelRectPipeline = buildVoxelRectPipeline(target, samples);
 
     for (auto &g : ownedGpuShaders) {
         if (!g->isMesh3D) continue;
@@ -1662,11 +1669,15 @@ void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {
 void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) {
     mesh3dClusteredActive = upload.active;
     mesh3dClustered = upload;
-    if (upload.active) uploadClusteredLighting(upload);
+    if (upload.active) {
+        createMesh3DClusteredPipeline();
+        uploadClusteredLighting(upload);
+    }
 }
 
 void Graphics::setMesh3DClusteredActive(bool active) {
     mesh3dClusteredActive = active;
+    if (active) createMesh3DClusteredPipeline();
 }
 
 void Graphics::ensureMesh3dStrides() {

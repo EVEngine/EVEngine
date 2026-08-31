@@ -41,4 +41,13 @@ void registerCppEntityView(size_t typeHash, CppEntityViewFn fn);
 using PostEcsHook = std::function<void(ssq::Table& table)>;
 void registerPostEcsHook(PostEcsHook fn);
 
+/**
+ * @brief Run post-ECS hooks that were registered after `exposeECS` already ran.
+ *
+ * Native module classes bind on first script access. A module may therefore
+ * register a hook (or depend on Entity already existing) after the initial
+ * `exposeECS` call; this flushes those pending hooks onto the live `eve` table.
+ */
+void flushPostEcsHooks(ssq::Table& table);
+
 }  // namespace eve

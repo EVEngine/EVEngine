@@ -6,7 +6,9 @@
 #include "common/ScriptModule.h"
 #include "common/config.h"
 #include "common/ECS.h"
+#include "common/BootWarmup.h"
 #include "common/CrashLog.h"
+#include "common/StartupTiming.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"
 #include "graphics/Light.h"
@@ -357,6 +359,9 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
                  std::string devServer) {
     std::fprintf(stderr, "[startup] Run() begins at process clock %.1f ms\n",
                  (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
+    // Overlap VkInstance creation with VM/script boot: the loader+ICD init is
+    // typically 100ms+ and does not need a window.
+    eve::boot::startVulkanInstanceWarmup();
     try {
         // Resolve the game directory. A packaged game ships a game.eve archive next to
         // the executable; we mount it into memory and run without extracting to disk.
@@ -425,7 +430,10 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         }
 
         Runtime runtime(2048, ssq::Libs::ALL);
-        runtime.initialize();
+        {
+            StartupStage stage("runtime: ModuleManager::expose");
+            runtime.initialize();
+        }
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();

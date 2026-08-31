@@ -1000,6 +1000,7 @@ bool Graphics::gpuDrivenMaterialUsable(Material *material) {
 
 bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
     if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable()) return false;
+    initGpuDrivenResources();
     if (!mesh3dGpuDrivenPipeline || bindlessSets_.empty() || !meshTableBuffer_.buffer) return false;
     if (!instances || instanceCount == 0) return false;
 
@@ -1076,8 +1077,10 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
 }
 
 GpuResidentSubmitStatus Graphics::gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) {
-    if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable() || !mesh3dGpuDrivenPipeline ||
-        bindlessSets_.empty() || !meshTableBuffer_.buffer)
+    if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable())
+        return GpuResidentSubmitStatus::ResourceUnavailable;
+    initGpuDrivenResources();
+    if (!mesh3dGpuDrivenPipeline || bindlessSets_.empty() || !meshTableBuffer_.buffer)
         return GpuResidentSubmitStatus::ResourceUnavailable;
     if (batch.buffer.backend != GpuResidentBackend::Vulkan) return GpuResidentSubmitStatus::BackendMismatch;
     if (batch.buffer.nativeHandle == 0 || batch.buffer.offsetBytes % kGpuResidentStorageOffsetAlignment != 0 ||
@@ -1189,6 +1192,7 @@ Graphics::GpuDrivenCullSlot &Graphics::currentGpuDrivenCullSlot() {
 
 void Graphics::ensureGpuDrivenCullResources(int width, int height) {
     if (!gpuDrivenCaps_.gpuDrivenCullAvailable() || width <= 0 || height <= 0) return;
+    if (!bindlessSetLayout_) return;
     if (gpuDrivenCullReady_ && gpuDrivenCullWidth == width && gpuDrivenCullHeight == height)
         return;
     destroyGpuDrivenCullResources();

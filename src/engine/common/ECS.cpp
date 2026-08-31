@@ -46,6 +46,16 @@ std::vector<std::function<void(ssq::Table&)>>& postEcsHooks() {
     return hooks;
 }
 
+bool& ecsScriptInjected() {
+    static bool injected = false;
+    return injected;
+}
+
+size_t& postEcsHooksFlushed() {
+    static size_t n = 0;
+    return n;
+}
+
 // ---------------------------------------------------------------------------
 // Class helpers
 // ---------------------------------------------------------------------------
@@ -837,14 +847,10 @@ void exposeECS(ssq::Table& table) {
 
     injectEcsScript(table);
 
-    // After script ECS classes exist: run module hooks (e.g. eve.SceneEntity).
-    for (auto &hook : postEcsHooks()) {
-        try {
-            hook(table);
-        } catch (...) {
-            // A failing module hook must not break VM exposure.
-        }
-    }
+    ecsScriptInjected() = true;
+    // A new VM re-runs every hook (SceneEntity class, …) against this table.
+    postEcsHooksFlushed() = 0;
+    flushPostEcsHooks(table);
 }
 
 void registerCppEntityView(size_t typeHash, CppEntityViewFn fn) {
@@ -853,6 +859,20 @@ void registerCppEntityView(size_t typeHash, CppEntityViewFn fn) {
 
 void registerPostEcsHook(PostEcsHook fn) {
     postEcsHooks().push_back(std::move(fn));
+}
+
+void flushPostEcsHooks(ssq::Table& table) {
+    if (!ecsScriptInjected()) return;
+    auto& hooks = postEcsHooks();
+    auto& n     = postEcsHooksFlushed();
+    while (n < hooks.size()) {
+        try {
+            hooks[n](table);
+        } catch (...) {
+            // A failing module hook must not break VM exposure.
+        }
+        ++n;
+    }
 }
 
 void exposeECSToVM(ssq::VM& vm) {

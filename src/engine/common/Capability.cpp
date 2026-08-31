@@ -1,3 +1,4 @@
+#include "common/BootWarmup.h"
 #include "common/Capability.h"
 
 #include <algorithm>
@@ -92,3 +93,18 @@ void* listenerAtRaw(const char* name, size_t index) {
 void clearAllRaw() { slots().clear(); }
 
 }  // namespace eve::cap::detail
+
+namespace eve::boot {
+namespace {
+
+void (*gVulkanWarmup)() = nullptr;
+
+}  // namespace
+
+void registerVulkanInstanceWarmup(void (*start)()) { gVulkanWarmup = start; }
+
+void startVulkanInstanceWarmup() {
+    if (gVulkanWarmup) gVulkanWarmup();
+}
+
+}  // namespace eve::boot

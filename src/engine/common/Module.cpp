@@ -5,9 +5,127 @@
 #include "common/SquirrelBinding.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <squirrel.h>
+
+#include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <exception>
+#include <string>
+#include <vector>
 
 namespace eve
 {
+
+struct ModuleBindAccess {
+    static auto& modules() { return ModuleManager::inst().registered_modules; }
+};
+
+namespace {
+
+bool eveRawHas(HSQUIRRELVM vm, SQInteger tableIdx, const char* key) {
+    sq_pushstring(vm, key, -1);
+    if (SQ_SUCCEEDED(sq_rawget(vm, tableIdx))) {
+        sq_pop(vm, 1);
+        return true;
+    }
+    return false;
+}
+
+ssq::Table eveTableFromStack(HSQUIRRELVM vm, SQInteger tableIdx) {
+    ssq::Object wrapped(vm);
+    sq_getstackobj(vm, tableIdx, &wrapped.getRaw());
+    sq_addref(vm, &wrapped.getRaw());
+    return ssq::Table(wrapped);
+}
+
+bool isPascalCaseName(const char* key) {
+    return key && key[0] >= 'A' && key[0] <= 'Z';
+}
+
+template <typename Info>
+void runExposer(Info& info, ssq::Table& table, const char* name) {
+    if (info.exposed || !info.exposer) {
+        info.exposed = true;
+        return;
+    }
+    info.exposed = true;
+    const auto t0 = std::chrono::steady_clock::now();
+    info.exposer(table);
+    const double ms =
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+    if (ms >= 20.0)
+        std::fprintf(stderr, "[startup] bind %s: %.1f ms\n", name ? name : "?", ms);
+    flushPostEcsHooks(table);
+}
+
+void bindNamedModule(const std::string& name, ssq::Table& table) {
+    auto& modules = ModuleBindAccess::modules();
+    auto it       = modules.find(name);
+    if (it == modules.end()) return;
+    runExposer(it->second, table, name.c_str());
+}
+
+void bindUntilKeyExists(HSQUIRRELVM vm, SQInteger tableIdx, const char* key, ssq::Table& table) {
+    if (eveRawHas(vm, tableIdx, key)) return;
+    auto& modules = ModuleBindAccess::modules();
+    std::vector<std::string> pending;
+    pending.reserve(modules.size());
+    for (auto& entry : modules) {
+        if (!entry.second.exposed && entry.second.exposer) pending.push_back(entry.first);
+    }
+    std::sort(pending.begin(), pending.end());
+    for (const std::string& name : pending) {
+        auto it = modules.find(name);
+        if (it == modules.end() || it->second.exposed) continue;
+        runExposer(it->second, table, name.c_str());
+        if (eveRawHas(vm, tableIdx, key)) return;
+    }
+}
+
+void bindOnDemand(HSQUIRRELVM vm, SQInteger tableIdx, const char* key) {
+    if (!key || eveRawHas(vm, tableIdx, key)) return;
+    ssq::Table table = eveTableFromStack(vm, tableIdx);
+    bindNamedModule(key, table);
+    if (eveRawHas(vm, tableIdx, key)) return;
+    // Nested types (WindowSettings, PlacementWorld, …) live on a parent
+    // module's exposer. Scan remaining PascalCase misses only — lowercase
+    // optional keys such as "dev" must not pull in every native class.
+    if (isPascalCaseName(key)) bindUntilKeyExists(vm, tableIdx, key, table);
+}
+
+SQInteger eveTableGet(HSQUIRRELVM vm) {
+    if (sq_gettop(vm) < 2 || sq_gettype(vm, 2) != OT_STRING)
+        return sq_throwerror(vm, _SC("the index doesn't exist"));
+    const SQChar* key = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, 2, &key)) || !key)
+        return sq_throwerror(vm, _SC("the index doesn't exist"));
+    const std::string name(key);
+    try {
+        bindOnDemand(vm, 1, name.c_str());
+    } catch (const std::exception& error) {
+        return sq_throwerror(vm, error.what());
+    }
+    sq_push(vm, 1);
+    sq_pushstring(vm, name.c_str(), static_cast<SQInteger>(name.size()));
+    if (SQ_FAILED(sq_rawget(vm, -2)))
+        return sq_throwerror(vm, _SC("the index doesn't exist"));
+    return 1;
+}
+
+void installLazyClassGet(ssq::Table& eveTable) {
+    HSQUIRRELVM vm = eveTable.getHandle();
+    sq_pushobject(vm, eveTable.getRaw());
+    sq_newtable(vm);
+    sq_pushstring(vm, _SC("_get"), -1);
+    sq_newclosure(vm, &eveTableGet, 0);
+    sq_newslot(vm, -3, SQFalse);
+    sq_setdelegate(vm, -2);
+    sq_pop(vm, 1);
+}
+
+}  // namespace
+
 
 
 ModuleManager& ModuleManager::inst() {
@@ -105,6 +223,8 @@ eve::Result<void> ModuleManager::finishPluginRegistration(bool commit) {
 }
 
 void ModuleManager::exposeVM(ssq::VM& vm) {
+    for (auto& entry : inst().registered_modules) entry.second.exposed = false;
+
     ssq::Table table;
     // Runtime::initialize() guarantees expose() runs once, so addTable never
     // sees an existing "eve" slot. Avoid find()+catch here: ASYNCIFY-wrapped
@@ -114,11 +234,8 @@ void ModuleManager::exposeVM(ssq::VM& vm) {
     // domain-module convenience. Expose it before module constructors run so
     // every checked binding observes the same `eve.result` helper.
     script::exposeResultBindings(table);
-    for (auto& D : inst().registered_modules) {
-        if (D.second.exposer) D.second.exposer(table);
-        D.second.exposed = true;
-    }
-    // After modules: script ECS owns eve.Component / Entity / System / view.
+    installLazyClassGet(table);
+    // Script ECS first so lazy module exposers can extend eve.Entity.
     exposeECS(table);
 }
 
@@ -157,6 +274,7 @@ int ModuleManager::expose_pending() {
                 continue;
             D.second.exposer(table);
             D.second.exposed = true;
+            flushPostEcsHooks(table);
             ++count;
         }
     } catch (...) {
