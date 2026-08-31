@@ -10,7 +10,7 @@
 using namespace eve::i18n;
 
 TEST_CASE("i18n.loadAndLookup") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     REQUIRE(i18n != nullptr);
     i18n->clear();
 
@@ -33,7 +33,7 @@ TEST_CASE("i18n.loadAndLookup") {
     CHECK(i18n->setLanguage("zh"));
     CHECK_EQ(i18n->getLanguage(), std::string("zh"));
     CHECK_EQ(i18n->get("menu.start"), std::string("\xe5\xbc\x80\xe5\xa7\x8b"));  // 开始
-    CHECK_EQ(i18n->get("menu.quit"), std::string("\xe9\x80\x80\xe5\x87\xba"));    // 退出
+    CHECK_EQ(i18n->get("menu.quit"), std::string("\xe9\x80\x80\xe5\x87\xba"));   // 退出
     CHECK(i18n->has("menu.start"));
     CHECK(!i18n->has("missing.key"));
 
@@ -42,7 +42,7 @@ TEST_CASE("i18n.loadAndLookup") {
 }
 
 TEST_CASE("i18n.defaultLanguageFallback") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     i18n->loadFromJson("en", R"({"only_en": "English"})");
     i18n->loadFromJson("fr", R"({"menu.start": "D\u00e9marrer"})");
@@ -59,7 +59,7 @@ TEST_CASE("i18n.defaultLanguageFallback") {
 }
 
 TEST_CASE("i18n.paramsInterpolation") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     i18n->loadFromJson("en", R"({
       "greeting": "Hello, {name}! You have {count} new messages.",
@@ -67,17 +67,15 @@ TEST_CASE("i18n.paramsInterpolation") {
     })");
 
     std::unordered_map<std::string, std::string> params = {{"name", "World"}, {"count", "3"}};
-    CHECK_EQ(i18n->getWithParams("greeting", params),
-             std::string("Hello, World! You have 3 new messages."));
+    CHECK_EQ(i18n->getWithParams("greeting", params), std::string("Hello, World! You have 3 new messages."));
     CHECK_EQ(i18n->getWithParams("plain", params), std::string("No placeholders here."));
 
     // Missing params leave the placeholder untouched.
-    CHECK_EQ(i18n->getWithParams("greeting", {}),
-             std::string("Hello, {name}! You have {count} new messages."));
+    CHECK_EQ(i18n->getWithParams("greeting", {}), std::string("Hello, {name}! You have {count} new messages."));
 }
 
 TEST_CASE("i18n.plurals") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     i18n->loadFromJson("en", R"({
       "items": { "one": "{n} item", "other": "{n} items" },
@@ -96,7 +94,7 @@ TEST_CASE("i18n.plurals") {
 }
 
 TEST_CASE("i18n.pluralRulesByLanguage") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
 
     // Russian three-form plural rules.
@@ -127,7 +125,7 @@ TEST_CASE("i18n.pluralRulesByLanguage") {
 }
 
 TEST_CASE("i18n.jsonNumbersAndEscapes") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     i18n->loadFromJson("en", R"({
       "pi": 3.14,
@@ -145,7 +143,7 @@ TEST_CASE("i18n.jsonNumbersAndEscapes") {
 }
 
 TEST_CASE("i18n.invalidJson") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     CHECK(!i18n->loadFromJson("en", "{ not valid json"));
     CHECK(!i18n->loadFromJson("en", R"(["root", "must", "be", "object"])"));
@@ -153,8 +151,84 @@ TEST_CASE("i18n.invalidJson") {
     CHECK_EQ(i18n->getLanguageCount(), 0);
 }
 
+TEST_CASE("i18n.strictBundleIsCompleteAtomicAndPlaceholderSafe") {
+    I18n* i18n = I18n::create();
+    REQUIRE(i18n != nullptr);
+    i18n->clear();
+
+    auto admitted = i18n->replaceBundleFromJson(R"({
+      "schema":"eve.i18n.bundle",
+      "version":1,
+      "defaultLocale":"en",
+      "locales":{
+        "en":{
+          "dialogue":{"welcome":"Welcome, {name}!"},
+          "items":{"one":"{n} item","other":"{n} items"}
+        },
+        "zh-CN":{
+          "dialogue":{"welcome":"欢迎，{name}！"},
+          "items":{"other":"{n} 件物品"}
+        }
+      }
+    })");
+    REQUIRE(admitted.ok());
+    CHECK_EQ(admitted.value(), 2);
+    CHECK_EQ(i18n->getDefaultLanguage(), std::string("en"));
+    CHECK_EQ(i18n->getLanguage(), std::string("en"));
+    CHECK_EQ(i18n->getKeyCount("en"), 2);
+    CHECK(i18n->hasInLanguage("zh-CN", "dialogue.welcome"));
+    auto covered = i18n->validateKeyCoverage("dialogue.welcome");
+    REQUIRE(covered.ok());
+    CHECK_EQ(covered.value(), 2);
+    CHECK(!i18n->validateKeyCoverage("dialogue.missing").ok());
+    CHECK(!i18n->validateKeyCoverage("dialogue..welcome").ok());
+    CHECK(!i18n->validateKeyCoverage("dialogue.").ok());
+    REQUIRE(i18n->setLanguage("zh-CN"));
+    CHECK_EQ(i18n->getWithParams("dialogue.welcome", {{"name", "Eve"}}), std::string("欢迎，Eve！"));
+
+    auto incomplete = i18n->replaceBundleFromJson(R"({
+      "schema":"eve.i18n.bundle","version":1,"defaultLocale":"en",
+      "locales":{"en":{"message":"Hello {name}"},"fr":{"message":"Bonjour"}}
+    })");
+    CHECK(!incomplete.ok());
+    CHECK_EQ(i18n->getLanguage(), std::string("zh-CN"));
+    CHECK_EQ(i18n->getLanguageCount(), 2);
+    CHECK(i18n->hasInLanguage("en", "dialogue.welcome"));
+
+    auto unknown = i18n->replaceBundleFromJson(R"({
+      "schema":"eve.i18n.bundle","version":1,"defaultLocale":"en","extra":true,
+      "locales":{"en":{"message":"Hello"}}
+    })");
+    CHECK(!unknown.ok());
+    CHECK_EQ(i18n->getLanguage(), std::string("zh-CN"));
+
+    auto malformedPlural = i18n->replaceBundleFromJson(R"({
+      "schema":"eve.i18n.bundle","version":1,"defaultLocale":"en",
+      "locales":{"en":{"items":{"one":"one item","label":"items"}}}
+    })");
+    CHECK(!malformedPlural.ok());
+    CHECK_EQ(i18n->getLanguageCount(), 2);
+}
+
+TEST_CASE("i18n.structuredLocaleOperationsPreservePublishedStateOnFailure") {
+    I18n* i18n = I18n::create();
+    REQUIRE(i18n != nullptr);
+    i18n->clear();
+    auto admitted = i18n->replaceLocaleFromJson("en", R"({"greeting":"Hello"})");
+    REQUIRE(admitted.ok());
+    auto selected = i18n->selectLanguage("en");
+    REQUIRE(selected.ok());
+
+    auto malformed = i18n->replaceLocaleFromJson("en", "{ broken");
+    CHECK(!malformed.ok());
+    CHECK_EQ(i18n->get("greeting"), std::string("Hello"));
+    auto missing = i18n->selectLanguage("fr");
+    CHECK(!missing.ok());
+    CHECK_EQ(i18n->getLanguage(), std::string("en"));
+}
+
 TEST_CASE("i18n.unloadAndClear") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     i18n->loadFromJson("en", R"({"a": "A"})");
     i18n->loadFromJson("de", R"({"a": "B"})");
@@ -169,7 +243,7 @@ TEST_CASE("i18n.unloadAndClear") {
 }
 
 TEST_CASE("i18n.languageEnumeration") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     i18n->loadFromJson("zh", R"({"a": "1"})");
     i18n->loadFromJson("en", R"({"a": "2"})");
@@ -183,11 +257,10 @@ TEST_CASE("i18n.languageEnumeration") {
 }
 
 TEST_CASE("i18n.pluralMoreLanguages") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     i18n->loadFromJson("fr", R"({"m": { "one": "un", "other": "plusieurs" }})");
-    i18n->loadFromJson("pl",
-                       R"({"m": { "one": "jeden", "few": "kilka", "many": "duzo" }})");
+    i18n->loadFromJson("pl", R"({"m": { "one": "jeden", "few": "kilka", "many": "duzo" }})");
     i18n->loadFromJson("cs", R"({"m": { "one": "jedna", "few": "par", "other": "hodne" }})");
     i18n->loadFromJson("zh-CN", R"({"m": { "one": "yi", "other": "duo" }})");
 
@@ -210,7 +283,7 @@ TEST_CASE("i18n.pluralMoreLanguages") {
 }
 
 TEST_CASE("i18n.autoReloadAndUpdateNoop") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     CHECK(i18n->isAutoReload());  // module default is on
     i18n->setAutoReload(false);
@@ -224,16 +297,16 @@ TEST_CASE("i18n.autoReloadAndUpdateNoop") {
 }
 
 TEST_CASE("i18n.loadFromFileRoundTripAndMissing") {
-    I18n *i18n = I18n::create();
+    I18n* i18n = I18n::create();
     i18n->clear();
     CHECK(!i18n->loadFromFile("en", ""));
     CHECK(!i18n->loadFromFile("en", "nope.json"));
     CHECK(!i18n->loadFromFile("", "nope.json"));
 
-    auto *fs = eve::filesystem::Filesystem::create();
+    auto* fs = eve::filesystem::Filesystem::create();
     REQUIRE(fs->setIdentity("ev_ut_i18n", true));
     REQUIRE(fs->setupWriteDirectory());
-    const char *json = R"({"hello": "world", "n": 42})";
+    const char* json = R"({"hello": "world", "n": 42})";
     fs->write("i18n_locale.json", json, std::strlen(json));
 
     CHECK(i18n->loadFromFile("en", "i18n_locale.json"));

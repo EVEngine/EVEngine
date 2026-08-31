@@ -24,6 +24,25 @@ map.render(gfx);
 
 把 JSON 和图集放在游戏目录，用 `newLayerFromFile(path)` 创建层；初始化后设置 origin、layer 和 visible。每帧 `map.update(dt)`，渲染时 `map.render(gfx)`。
 
+产品内容应使用 `loadFromFileWithObjectContract(path, contractJson)`。它先在候选区解析地图，再按
+`eve.map.object-contract` version 1 校验对象类型、唯一名称、自定义属性的必填性、类型、范围和枚举；
+只有全部通过才替换当前图层与对象缓存。返回值是结构化 Result（`ok/status/value`），失败时当前可玩
+场景保持不变。契约可以禁止未知对象类型和未知属性，从而在地图加载边界捕获拼写错误和不完整 portal：
+
+```squirrel
+local contract = readTextFile("data/world-object-contract.json");
+local loaded = map.loadFromFileWithObjectContract("maps/village.json", contract);
+if (!loaded.ok) print(loaded.status.summary + "\n");
+else {
+    local layer = map.getLayer(0);
+    // 构建寻路、碰撞和游戏对象投影
+}
+```
+
+契约属性规则支持 `kind: string|int|number|bool`、`required`、数值 `min/max` 与字符串 `enum`。
+对象几何必须为有限数，宽高不得为负；默认要求对象名称非空且唯一。契约只负责通用结构准入，诸如
+“朝向必须恰有一个非零分量”之类跨字段领域规则仍由项目在发布游戏状态前校验。
+
 ### 运行时修改瓦片
 
 先用地图坐标换算接口把世界位置转成格子，再 `setTile(x, y, gid)`；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。
@@ -262,6 +281,8 @@ for (local i = 0; i < count; ++i) {
 
 - `applyConfig()`、`clear()`、`depthYAt()`、`fill()`、`getAutoReload()`、`getConfigPath()`、`getLayer()`、`getLayerCount()`
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
+- `findObjectByName(name)`：返回第一个同名对象的临时索引；不存在返回 `-1`。
+- `findObjectAt(x, y, type)`：返回包含该点的第一个对象；空 `type` 接受任意类型，点对象要求坐标精确匹配，不存在返回 `-1`。
 - `getLastVisibleTileCount()`、`getLastCustomVisualCount()`、`getLastAtlasCount()`
 - `publishCollision()`、`getCollisionRectCount()`、`getCollisionRectX()`、`getCollisionRectY()`、`getCollisionRectWidth()`、`getCollisionRectHeight()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
@@ -282,6 +303,13 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
+- 对象索引只在当前对象缓存内有效；地图加载、热重载或 `setObjects` 后应按稳定名称重新查询，不能把索引写入存档。
+- Tiled object 的 `properties` 会按名称排序并投影为 owning UTF-8 文本，可用
+  `getObjectPropertyCount` / `getObjectPropertyName` / `hasObjectProperty` /
+  `getObjectProperty(index, name, fallback)` 查询。数值和布尔值由玩法边界按自己的 schema 再解析与校验；
+  热重载后同样必须重新按对象名查询，不能保存属性索引。
+- `newLayerFromFile` / `loadFromFile` 采用事务式场景替换：加载失败保留当前图层和对象缓存；
+  成功后清空并隐藏被替换图层，再发布新图层与对象缓存。这使传送门和场景切换不会因坏资源把当前场景清空。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 

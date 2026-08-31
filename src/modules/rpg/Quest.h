@@ -10,6 +10,8 @@
 
 #include "rpg/QuestTypes.h"
 
+#include "common/Result.h"
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -50,9 +52,25 @@ public:
     static void clear();
     static int count();
     static std::vector<std::string> ids();
+    /** @brief Return whether one exact stable quest id is registered. */
+    static bool contains(const std::string &id);
 
     /** @brief 从 JSON 数组/对象批量注册；缺 id、重复 objective id、环形 requires 的定义被拒绝。 */
     static int loadFromJson(const std::string &json, std::string *error = nullptr);
+
+    /**
+     * @brief Strictly validate and atomically replace every registered quest definition.
+     * @param json One quest object or an array containing the complete replacement catalogue.
+     * @return Number of committed definitions, or a structured diagnostic without registry mutation.
+     * @ownership The registry copies all parsed data and retains no view into @p json.
+     * @lifetime Committed definitions remain valid until the next registry mutation.
+     * @thread Call on the owning simulation/content thread; the process-local registry is not synchronized.
+     * @reentrancy Does not invoke callbacks. Existing Tracker instances must be rebuilt or explicitly synchronized
+     * after a successful replacement.
+     * @remarks Unlike loadFromJson(), this canonical authoring API rejects unknown policies, malformed fields,
+     * duplicate ids, missing prerequisites, and cyclic dependencies as one transaction.
+     */
+    [[nodiscard]] static eve::Result<int> replaceFromJsonStrict(const std::string &json);
 };
 
 }  // namespace eve::rpg

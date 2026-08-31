@@ -1,4 +1,5 @@
 #include "inventory/Inventory.h"
+#include "inventory/InventorySaveSession.h"
 #include "inventory/Item.h"
 #include "inventory/InventorySystem.h"
 
@@ -223,6 +224,25 @@ void Inventory::expose(ssq::Table &table) {
     eq.addFunc("equipFromBag", &EquipmentSet::equipFromBag);
     eq.addFunc("unequipToBag", &EquipmentSet::unequipToBag);
     eq.addFunc("clearSlot", &EquipmentSet::clearSlot);
+
+    auto saveSession = table.addClass<InventorySaveSession>(
+        "InventorySaveSession",
+        std::function<InventorySaveSession *()>([]() { return new InventorySaveSession(); }), true);
+    saveSession.addFunc("bind", [](InventorySaveSession *session, Bag *boundBag,
+                                   EquipmentSet *boundEquipment) -> int {
+        if (!session || !boundBag || !boundEquipment) return 0;
+        session->bind(*boundBag, *boundEquipment);
+        return 1;
+    });
+    saveSession.addFunc("snapshotJson", [](InventorySaveSession *session) -> std::string {
+        if (!session) return {};
+        auto result = session->snapshotJson();
+        return result.ok() ? std::move(result).takeValue() : std::string{};
+    });
+    saveSession.addFunc("restoreSnapshotJson",
+                        [](InventorySaveSession *session, const std::string &json) -> int {
+                            return session && session->restoreSnapshotJson(json).ok() ? 1 : 0;
+                        });
 }
 
 void Inventory::expose(ssq::Class &cls) {

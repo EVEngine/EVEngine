@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Result.h"
+
 /**
  * @file Battle.h
  * @brief 回合制战斗对象：参战者、行动顺序、目标选取、行动执行。
@@ -16,12 +18,16 @@
 namespace eve::rpg {
 
 class RPGActor;
+class BattleTacticsCatalogue;
 
 /** @brief 阵营是任意整数 id（0/1 仅为常见约定的便捷常量，可自定义更多阵营）。 */
 namespace BattleSide {
 inline constexpr int Party = 0;
 inline constexpr int Enemies = 1;
 }
+
+/** @brief Deterministic target-selection policies for queued battle actions. */
+enum class BattleTargetPolicy { Auto, Self, LowestHealthAlly, LowestHealthEnemy };
 
 /** @brief 一次战斗反馈事件。 */
 struct BattleEvent {
@@ -51,6 +57,24 @@ public:
     void addActor(RPGActor *actor, int side);
     /** @brief 为参战者设置本回合行动；target 为空由目标规则自动解析。 */
     void setAction(RPGActor *actor, const std::string &skillId, RPGActor *target = nullptr);
+    /**
+     * @brief Validate and queue exactly one action for a living participant this round.
+     * @return Applied, or a structured failure without mutating the pending action set.
+     * @remarks Explicit targets must be living participants on the legal side for the skill target type.
+     * @thread Call on the battle's owning simulation thread between rounds.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> setActionChecked(RPGActor *actor, const std::string &skillId,
+                                                     RPGActor *target = nullptr);
+    /**
+     * @brief Resolve a deterministic target policy and queue one checked action atomically.
+     * @return Applied, or a structured failure without changing the pending action set.
+     * @remarks Lowest-health ties preserve participant insertion order. Policy and skill target type
+     * must agree; Auto retains the normal target-type resolver.
+     */
+    [[nodiscard]] eve::Result<void> setActionByPolicyChecked(RPGActor *actor,
+                                                             const std::string &skillId,
+                                                             BattleTargetPolicy policy);
     /** @brief 未设行动的 AI 侧自动选一个随机已学技能（或普攻）打随机存活敌对目标。 */
     void autoEnemyActions();
     /** @brief 结算所有已设行动：先攻排序、清空待行动，回合数 +1。 */
@@ -126,6 +150,7 @@ private:
      * @lifetime Valid until the actor is destroyed; do not retain across rounds.
      */
     RPGActor *randomOpponent(int mySide);
+    RPGActor *lowestHealthTarget(int side, bool sameSide) const;
     int computeWinnerSide() const;
     void execute(PendingAction &pa, unsigned &seedCounter);
 
@@ -140,6 +165,7 @@ private:
     int winner_ = -1;
     int playerSide_ = BattleSide::Party;
     unsigned seedCounter_ = 1;
+    friend class BattleTacticsCatalogue;
 };
 
 }  // namespace eve::rpg
