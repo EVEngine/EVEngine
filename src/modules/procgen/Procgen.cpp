@@ -3047,6 +3047,20 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("setFrameTimeBudget", &RuntimeGeneration::setFrameTimeBudget);
     runtimeGeneration.addFunc("getFrameTimeBudget", &RuntimeGeneration::getFrameTimeBudget);
     runtimeGeneration.addFunc("beginFrame", &RuntimeGeneration::beginFrame);
+    runtimeGeneration.addFunc("setRefreshWorkBudget", &RuntimeGeneration::setRefreshWorkBudget);
+    runtimeGeneration.addFunc("getRefreshWorkBudget", &RuntimeGeneration::getRefreshWorkBudget);
+    runtimeGeneration.addFunc("isRefreshPending", &RuntimeGeneration::isRefreshPending);
+    runtimeGeneration.addFunc("getCommittedRefreshRevision", &RuntimeGeneration::getCommittedRefreshRevision);
+    runtimeGeneration.addFunc(
+        "continueGenerationRefresh", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value) {
+            return eve::script::projectResult(
+                vm,
+                value ? value->continueGenerationRefresh()
+                      : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                             "continueGenerationRefresh requires RuntimeGeneration",
+                                                             "runtimeGeneration"),
+                [](std::uint64_t processed) { return eve::Value(std::to_string(processed)); });
+        });
     runtimeGeneration.addFunc("updateSource", &RuntimeGeneration::updateSource);
     runtimeGeneration.addFunc("setGenerationSource", &RuntimeGeneration::setGenerationSource);
     runtimeGeneration.addFunc("removeGenerationSource", &RuntimeGeneration::removeGenerationSource);

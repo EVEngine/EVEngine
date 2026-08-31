@@ -41,6 +41,9 @@ void RuntimeGeneration::clear() {
     cleanupQueue_.clear();
     sources_.clear();
     sourceOrder_.clear();
+    refreshPlan_.reset();
+    sourceRevision_           = 0;
+    committedRefreshRevision_ = 0;
     generatingCount_          = 0;
     activeCellCount_          = 0;
     rejectedOutputCount_      = 0;
@@ -133,6 +136,20 @@ void RuntimeGeneration::beginFrame() {
                                    .count());
 }
 
+void RuntimeGeneration::setRefreshWorkBudget(int candidateCells) {
+    refreshWorkBudget_ = std::max(0, candidateCells);
+    if (refreshWorkBudget_ == 0 && refreshPlan_) advanceRefreshPlan(std::numeric_limits<uint64_t>::max());
+}
+int              RuntimeGeneration::getRefreshWorkBudget() const { return refreshWorkBudget_; }
+bool             RuntimeGeneration::isRefreshPending() const { return refreshPlan_.has_value(); }
+uint64_t         RuntimeGeneration::getCommittedRefreshRevision() const { return committedRefreshRevision_; }
+Result<uint64_t> RuntimeGeneration::continueGenerationRefresh() {
+    if (!refreshPlan_) return Result<uint64_t>::success(0);
+    const uint64_t budget =
+        refreshWorkBudget_ > 0 ? uint64_t(refreshWorkBudget_) : std::numeric_limits<uint64_t>::max();
+    return Result<uint64_t>::success(advanceRefreshPlan(budget));
+}
+
 void RuntimeGeneration::updateSource(float x, float z, float directionX, float directionZ) {
     setGenerationSource("primary", x, z, directionX, directionZ, 1.f);
 }
@@ -185,74 +202,123 @@ bool  RuntimeGeneration::isFrustumCullingEnabled() const { return frustumCulling
 float RuntimeGeneration::getFrustumHalfAngle() const { return frustumHalfAngle_; }
 float RuntimeGeneration::getFrustumBehindRadius() const { return frustumBehindRadius_; }
 
-void RuntimeGeneration::refreshGenerationSources() {
-    constexpr float degreesToRadians = 0.017453292519943295f;
-    const float     coneCosine = std::cos(frustumHalfAngle_ * degreesToRadians);
-    std::unordered_set<CellKey, CellKeyHash> desired;
-    for (auto& [key, cell] : cells_)
-        if (cell.state != State::Cleanup) cell.priority = std::numeric_limits<float>::max();
+void RuntimeGeneration::refreshGenerationSources() { requestGenerationRefresh(); }
 
-    for (const auto& sourceId : sourceOrder_) {
-        const auto& source = sources_.at(sourceId);
-        for (size_t levelIndex = 0; levelIndex < levels_.size(); ++levelIndex) {
-            const auto& level = levels_[levelIndex];
-            const float generationRadius = level.generationRadius * source.radiusScale;
-            const int minX = int(std::floor((source.x - generationRadius) / level.cellSize));
-            const int maxX = int(std::floor((source.x + generationRadius) / level.cellSize));
-            const int minZ = int(std::floor((source.z - generationRadius) / level.cellSize));
-            const int maxZ = int(std::floor((source.z + generationRadius) / level.cellSize));
-            for (int cellZ = minZ; cellZ <= maxZ; ++cellZ) {
-                for (int cellX = minX; cellX <= maxX; ++cellX) {
-                    const float centerX  = (float(cellX) + 0.5f) * level.cellSize;
-                    const float centerZ  = (float(cellZ) + 0.5f) * level.cellSize;
-                    const float dx       = centerX - source.x;
-                    const float dz       = centerZ - source.z;
-                    const float distance = std::sqrt(dx * dx + dz * dz);
-                    if (distance > generationRadius) continue;
-                    const bool hasDirection =
-                        source.directionX != 0.f || source.directionZ != 0.f;
-                    const float forward = distance > 0.f && hasDirection
-                                              ? (dx * source.directionX + dz * source.directionZ) /
-                                                    distance
-                                              : 1.f;
-                    if (frustumCulling_ && hasDirection && distance > frustumBehindRadius_ &&
-                        forward < coneCosine)
-                        continue;
-                    const CellKey key{int(levelIndex), cellX, cellZ};
-                    desired.insert(key);
-                    const float priority = distance / std::max(generationRadius, 0.0001f) -
-                                           directionWeight_ * forward;
-                    const auto existing = cells_.find(key);
-                    if (existing != cells_.end()) {
-                        if (existing->second.state == State::Cleanup) {
-                            if (existing->second.trimmed) continue;
-                            existing->second.ticket = ++nextTicket_;
-                            transitionCellState(existing->second,
-                                                existing->second.revision > 0 ? State::Active : State::Pending);
-                            existing->second.trimmed = false;
-                            cleanupQueue_.erase(
-                                std::remove(cleanupQueue_.begin(), cleanupQueue_.end(), key),
-                                cleanupQueue_.end());
-                            if (existing->second.state == State::Pending)
-                                generateQueue_.push_back(key);
-                        }
-                        existing->second.priority =
-                            std::min(existing->second.priority, priority);
-                        continue;
-                    }
-                    Cell cell;
-                    cell.priority = priority;
-                    cells_.emplace(key, cell);
-                    generateQueue_.push_back(key);
-                }
+void RuntimeGeneration::requestGenerationRefresh() {
+    ++sourceRevision_;
+    if (!refreshPlan_) startRefreshPlan();
+    const uint64_t budget =
+        refreshWorkBudget_ > 0 ? uint64_t(refreshWorkBudget_) : std::numeric_limits<uint64_t>::max();
+    advanceRefreshPlan(budget);
+}
+
+void RuntimeGeneration::startRefreshPlan() {
+    constexpr float degreesToRadians = 0.017453292519943295f;
+    RefreshPlan     plan;
+    plan.revision            = sourceRevision_;
+    plan.levels              = levels_;
+    plan.directionWeight     = directionWeight_;
+    plan.frustumHalfAngle    = frustumHalfAngle_;
+    plan.coneCosine          = std::cos(frustumHalfAngle_ * degreesToRadians);
+    plan.frustumBehindRadius = frustumBehindRadius_;
+    plan.frustumCulling      = frustumCulling_;
+    plan.sources.reserve(sourceOrder_.size());
+    for (const auto& sourceId : sourceOrder_) plan.sources.push_back(sources_.at(sourceId));
+    refreshPlan_ = std::move(plan);
+}
+
+uint64_t RuntimeGeneration::advanceRefreshPlan(uint64_t candidateBudget) {
+    uint64_t processed = 0;
+    while (refreshPlan_) {
+        auto& plan = *refreshPlan_;
+        if (plan.sourceIndex >= plan.sources.size() || plan.levels.empty()) {
+            const uint64_t committedRevision = plan.revision;
+            commitRefreshPlan(plan);
+            committedRefreshRevision_ = committedRevision;
+            refreshPlan_.reset();
+            if (committedRefreshRevision_ != sourceRevision_) {
+                startRefreshPlan();
+                continue;
+            }
+            break;
+        }
+        if (plan.levelIndex >= plan.levels.size()) {
+            ++plan.sourceIndex;
+            plan.levelIndex = 0;
+            plan.rangeReady = false;
+            continue;
+        }
+        if (processed >= candidateBudget) break;
+
+        const auto&  source              = plan.sources[plan.sourceIndex];
+        const size_t candidateLevelIndex = plan.levelIndex;
+        const auto&  level               = plan.levels[candidateLevelIndex];
+        const float  generationRadius    = level.generationRadius * source.radiusScale;
+        if (!plan.rangeReady) {
+            plan.minX       = int(std::floor((source.x - generationRadius) / level.cellSize));
+            plan.maxX       = int(std::floor((source.x + generationRadius) / level.cellSize));
+            plan.minZ       = int(std::floor((source.z - generationRadius) / level.cellSize));
+            plan.maxZ       = int(std::floor((source.z + generationRadius) / level.cellSize));
+            plan.cellX      = plan.minX;
+            plan.cellZ      = plan.minZ;
+            plan.rangeReady = true;
+        }
+        const int cellX = plan.cellX;
+        const int cellZ = plan.cellZ;
+        if (++plan.cellX > plan.maxX) {
+            plan.cellX = plan.minX;
+            if (++plan.cellZ > plan.maxZ) {
+                ++plan.levelIndex;
+                plan.rangeReady = false;
             }
         }
-    }
+        ++processed;
 
+        const float centerX  = (float(cellX) + 0.5f) * level.cellSize;
+        const float centerZ  = (float(cellZ) + 0.5f) * level.cellSize;
+        const float dx       = centerX - source.x;
+        const float dz       = centerZ - source.z;
+        const float distance = std::sqrt(dx * dx + dz * dz);
+        if (distance > generationRadius) continue;
+        const bool  hasDirection = source.directionX != 0.f || source.directionZ != 0.f;
+        const float forward =
+            distance > 0.f && hasDirection ? (dx * source.directionX + dz * source.directionZ) / distance : 1.f;
+        if (plan.frustumCulling && hasDirection && distance > plan.frustumBehindRadius && forward < plan.coneCosine)
+            continue;
+        const CellKey key{int(candidateLevelIndex), cellX, cellZ};
+        const float   priority       = distance / std::max(generationRadius, 0.0001f) - plan.directionWeight * forward;
+        const auto [found, inserted] = plan.desiredPriorities.emplace(key, priority);
+        if (!inserted) found->second = std::min(found->second, priority);
+    }
+    return processed;
+}
+
+void RuntimeGeneration::commitRefreshPlan(const RefreshPlan& plan) {
+    for (auto& [key, cell] : cells_)
+        if (cell.state != State::Cleanup) cell.priority = std::numeric_limits<float>::max();
+    for (const auto& [key, priority] : plan.desiredPriorities) {
+        const auto existing = cells_.find(key);
+        if (existing != cells_.end()) {
+            if (existing->second.state == State::Cleanup) {
+                if (existing->second.trimmed) continue;
+                existing->second.ticket = ++nextTicket_;
+                transitionCellState(existing->second, existing->second.revision > 0 ? State::Active : State::Pending);
+                existing->second.trimmed = false;
+                cleanupQueue_.erase(std::remove(cleanupQueue_.begin(), cleanupQueue_.end(), key), cleanupQueue_.end());
+                if (existing->second.state == State::Pending) generateQueue_.push_back(key);
+            }
+            existing->second.priority = std::min(existing->second.priority, priority);
+            continue;
+        }
+        Cell cell;
+        cell.priority = priority;
+        cells_.emplace(key, cell);
+        generateQueue_.push_back(key);
+    }
     for (auto& [key, cell] : cells_) {
         if (cell.state == State::Cleanup) continue;
         if ((cell.state == State::Pending || cell.state == State::Generating) &&
-            desired.find(key) == desired.end()) {
+            plan.desiredPriorities.find(key) == plan.desiredPriorities.end()) {
             if (cell.state == State::Generating) ++cancelledGenerationCount_;
             transitionCellState(cell, State::Cleanup);
             cell.trimmed = false;
@@ -260,10 +326,9 @@ void RuntimeGeneration::refreshGenerationSources() {
             cleanupQueue_.push_back(key);
             continue;
         }
-        const auto& level = levels_[size_t(key.level)];
+        const auto& level    = plan.levels[size_t(key.level)];
         bool retained = false;
-        for (const auto& sourceId : sourceOrder_) {
-            const auto& source = sources_.at(sourceId);
+        for (const auto& source : plan.sources) {
             if (distanceToCell(source.x, source.z, key.x, key.z, level.cellSize) <=
                 level.cleanupRadius * source.radiusScale) {
                 retained = true;
@@ -533,15 +598,15 @@ PointDelta* RuntimeGeneration::getCellDelta(int level, int x, int z) const {
 
 std::string RuntimeGeneration::debugReport() const {
     std::ostringstream out;
-    out << "levels=" << levels_.size() << " cells=" << cells_.size()
-        << " pending=" << generateQueue_.size() << " generating=" << getGeneratingCount()
-        << " active=" << getActiveCellCount() << " cleanup=" << cleanupQueue_.size()
-        << " failed=" << getFailedCellCount() << " maxActive=" << maxActiveCells_
-        << " residentPoints=" << getResidentPointCount()
-        << " maxResidentPoints=" << maxResidentPoints_
-        << " maxPointsPerCell=" << maxPointsPerCell_
-        << " rejectedOutputs=" << rejectedOutputCount_
-        << " cancelledGeneration=" << cancelledGenerationCount_;
+    out << "levels=" << levels_.size() << " cells=" << cells_.size() << " pending=" << generateQueue_.size()
+        << " generating=" << getGeneratingCount() << " active=" << getActiveCellCount()
+        << " cleanup=" << cleanupQueue_.size() << " failed=" << getFailedCellCount() << " maxActive=" << maxActiveCells_
+        << " residentPoints=" << getResidentPointCount() << " maxResidentPoints=" << maxResidentPoints_
+        << " maxPointsPerCell=" << maxPointsPerCell_ << " rejectedOutputs=" << rejectedOutputCount_
+        << " cancelledGeneration=" << cancelledGenerationCount_ << " refreshPending=" << (refreshPlan_ ? 1 : 0)
+        << " refreshRevision=" << sourceRevision_ << " committedRefreshRevision=" << committedRefreshRevision_
+        << " refreshBudget=" << refreshWorkBudget_
+        << " stagedDesired=" << (refreshPlan_ ? refreshPlan_->desiredPriorities.size() : 0);
     return out.str();
 }
 

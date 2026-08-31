@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <deque>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -97,6 +98,31 @@ public:
     float getFrameTimeBudget() const;
     /** @brief Start a new budget window before consuming generation requests. */
     void beginFrame();
+    /**
+     * @brief Limit source-refresh planning work performed by one call.
+     * @param candidateCells
+     * Bounding-grid candidates examined per call; zero preserves synchronous refresh.
+     *
+     * A positive budget
+     * stages desired cells without changing published queues until one complete source snapshot
+     * commits. Source
+     * changes arriving during a plan are coalesced into a later snapshot instead of restarting it.
+     */
+    void setRefreshWorkBudget(int candidateCells);
+    /** @brief Return the per-call source-refresh candidate budget, or zero when synchronous. */
+    int getRefreshWorkBudget() const;
+    /** @brief Return whether a staged source snapshot still needs planning work. */
+    bool isRefreshPending() const;
+    /** @brief Return the latest source revision atomically published into generation and cleanup queues. */
+    uint64_t getCommittedRefreshRevision() const;
+    /**
+     * @brief Advance a budgeted source refresh without changing the requested sources.
+     * @return Candidate
+     * cells examined in this call; query isRefreshPending to distinguish completion.
+     * @thread Call synchronously
+     * on the scheduler-owning thread.
+     */
+    [[nodiscard]] Result<uint64_t> continueGenerationRefresh();
 
     /**
      * @brief Recompute desired cells for a generation source.
@@ -229,9 +255,33 @@ private:
         float directionZ  = 0.f;
         float radiusScale = 1.f;
     };
+    struct RefreshPlan {
+        uint64_t                                        revision = 0;
+        std::vector<Level>                              levels;
+        std::vector<Source>                             sources;
+        std::unordered_map<CellKey, float, CellKeyHash> desiredPriorities;
+        float                                           directionWeight     = 0.f;
+        float                                           frustumHalfAngle    = 180.f;
+        float                                           coneCosine          = -1.f;
+        float                                           frustumBehindRadius = 0.f;
+        bool                                            frustumCulling      = false;
+        size_t                                          sourceIndex         = 0;
+        size_t                                          levelIndex          = 0;
+        int                                             minX                = 0;
+        int                                             maxX                = -1;
+        int                                             minZ                = 0;
+        int                                             maxZ                = -1;
+        int                                             cellX               = 0;
+        int                                             cellZ               = 0;
+        bool                                            rangeReady          = false;
+    };
 
     ProcgenCellRequest* makeRequest(const CellKey& key) const;
     void                       transitionCellState(Cell& cell, State nextState);
+    void                       requestGenerationRefresh();
+    void                       startRefreshPlan();
+    uint64_t                   advanceRefreshPlan(uint64_t candidateBudget);
+    void                       commitRefreshPlan(const RefreshPlan& plan);
     [[nodiscard]] Result<void> validateCleanups(const std::vector<const ProcgenCellRequest*>& requests) const;
     void                       eraseValidatedCleanups(const std::vector<const ProcgenCellRequest*>& requests);
     uint32_t            cellSeed(const CellKey& key) const;
@@ -248,6 +298,10 @@ private:
     int      maxGenerationRetries_ = 3;
     float    frameTimeBudgetMs_ = 0.f;
     uint64_t frameStartedNs_    = 0;
+    int                                            refreshWorkBudget_        = 0;
+    uint64_t                                       sourceRevision_           = 0;
+    uint64_t                                       committedRefreshRevision_ = 0;
+    std::optional<RefreshPlan>                     refreshPlan_;
     bool     frustumCulling_    = false;
     float    frustumHalfAngle_  = 60.f;
     float    frustumBehindRadius_ = 0.f;

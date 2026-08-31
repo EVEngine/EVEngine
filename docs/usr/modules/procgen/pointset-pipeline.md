@@ -163,9 +163,14 @@ runtime.setMaxResidentPoints(4000000); // hard PointSet cache budget
 runtime.setMaxGenerationRetries(3);
 runtime.setDirectionWeight(0.35);
 runtime.setFrameTimeBudget(3.0);
+runtime.setRefreshWorkBudget(2048); // source planning candidates per call; 0 is synchronous
 
 function updateRuntime(playerX, playerZ, forwardX, forwardZ) {
     runtime.updateSource(playerX, playerZ, forwardX, forwardZ);
+    if (runtime.isRefreshPending()) {
+        local advanced = runtime.continueGenerationRefresh();
+        if (!advanced.ok) throw advanced.error;
+    }
     runtime.beginFrame();
     for (local request = runtime.nextGenerate(); request != null;
          request = runtime.nextGenerate()) {
@@ -203,6 +208,14 @@ world seed、level、x、z 派生的独立 seed、revision 和 PointSet 输出�
 生成失败只按 `setMaxGenerationRetries` 有界重试，耗尽后进入 Failed 状态并从工作队列移除；
 修复资产或外部依赖后用 `retryFailedCells()` 显式恢复，避免确定性错误形成 retry storm。
 `getCellOutput` 返回缓存副本，`debugReport` 汇总 pending/generating/active/cleanup/failed。
+
+`setRefreshWorkBudget(candidateCells)` 单独限制 source/frustum 刷新每次检查的包围网格候选数；
+默认 0 保持同步兼容。正预算下，规划期间 `getPendingGenerateCount()` 等已发布队列保持不变，
+完整 source 快照扫描结束后才原子切换。每帧调用 `continueGenerationRefresh()` 推进剩余工作，
+返回本次检查数量；用 `isRefreshPending()` 判断完成。规划过程中到达的新 source 位置会合并为
+下一快照，而不是重启当前扫描，因此持续移动不会让刷新永久饥饿；
+`getCommittedRefreshRevision()` 可用于观察已发布快照进度。该预算只覆盖调度规划，不替代
+生成 worker 在昂贵阶段之间调用 `isRequestCurrent()`。
 需要跨会话或跨 World Partition 回访复用时，`serializeCell(level,x,z)` 输出版本化、属性键
 稳定排序的完整 Cell 缓存；`deserializeCell(definition)` 校验 world seed、level、数据上限和
 完整输入后原子恢复，同时使同 Cell 的旧异步 ticket 失效。实例覆写或图版本应由调用方纳入

@@ -596,6 +596,73 @@ TEST_CASE("procgen.runtimeGeneration.issuesLargeQueuesWithConstantTimeCounters")
     CHECK_EQ(runtime.getPendingCleanupCount(), pending);
 }
 
+TEST_CASE("procgen.runtimeGeneration.stagesBudgetedRefreshUntilAtomicCommit") {
+    RuntimeGeneration runtime(1702);
+    runtime.addLevel(10.f, 25.f, 1.5f);
+    runtime.setRefreshWorkBudget(3);
+    CHECK_EQ(runtime.getRefreshWorkBudget(), 3);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    CHECK(runtime.isRefreshPending());
+    CHECK_EQ(runtime.getCommittedRefreshRevision(), uint64_t(0));
+    CHECK_EQ(runtime.getPendingGenerateCount(), 0);
+
+    uint64_t processed = 0;
+    while (runtime.isRefreshPending()) {
+        auto advanced = runtime.continueGenerationRefresh();
+        REQUIRE(advanced.ok());
+        CHECK(advanced.value() <= uint64_t(3));
+        processed += advanced.value();
+    }
+    CHECK(processed > 3);
+    CHECK_EQ(runtime.getCommittedRefreshRevision(), uint64_t(1));
+    CHECK(runtime.getPendingGenerateCount() > 0);
+}
+
+TEST_CASE("procgen.runtimeGeneration.coalescesMovingSourcesWithoutRefreshStarvation") {
+    RuntimeGeneration runtime(1703);
+    runtime.addLevel(10.f, 6.f, 1.5f);
+    runtime.setRefreshWorkBudget(1);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    for (int index = 1; index <= 12; ++index) runtime.updateSource(float(index * 100 + 5), 5.f, 1.f, 0.f);
+    CHECK(runtime.getCommittedRefreshRevision() > uint64_t(0));
+    CHECK(runtime.isRefreshPending());
+
+    runtime.updateSource(1005.f, 5.f, 1.f, 0.f);
+    int steps = 0;
+    while (runtime.isRefreshPending() && steps++ < 64) REQUIRE(runtime.continueGenerationRefresh().ok());
+    REQUIRE(!runtime.isRefreshPending());
+    auto latest = ownRequest(runtime.nextGenerate());
+    REQUIRE(bool(latest));
+    CHECK(latest->getX() >= 99);
+}
+
+TEST_CASE("procgen.runtimeGeneration.squirrelAdvancesBudgetedRefresh") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local created = procgen.newRuntimeGeneration(1704);
+        if (created.ok) {
+            local runtime = created.value;
+            runtime.addLevel(10.0, 25.0, 1.5);
+            runtime.setRefreshWorkBudget(2);
+            runtime.updateSource(5.0, 5.0, 1.0, 0.0);
+            local total = 0;
+            while (runtime.isRefreshPending()) {
+                local advanced = runtime.continueGenerationRefresh();
+                if (!advanced.ok) break;
+                total += advanced.value.tointeger();
+            }
+            if (runtime.getRefreshWorkBudget() == 2 &&
+                runtime.getCommittedRefreshRevision() == 1 &&
+                runtime.getPendingGenerateCount() > 0 && total > 0)
+                result = "ok";
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}
+
 TEST_CASE("procgen.runtimeGeneration.trimsLowestPriorityCellsDeterministically") {
     Procgen proc;
     auto    runtime = requireRuntime(proc, 18);
