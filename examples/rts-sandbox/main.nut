@@ -227,16 +227,16 @@ eve_render=function(){
     }
     foreach(building in state.buildings){
         if(building.faction!=BLUE&&!fogVisible(building.x,building.y))continue;
-        local blue=building.faction==BLUE,size=building.definition=="building:command_center"?64.0:44.0;
+        local isBlue=building.faction==BLUE,size=building.definition=="building:command_center"?64.0:44.0;
         gfx.drawSolidRect(sx(building.x)-size*0.5,sy(building.y)-size*0.5,size,size,
-            blue?0.18:0.75,blue?0.48:0.20,blue?0.88:0.18,building.powered?1.0:0.35);
+            isBlue?0.18:0.75,isBlue?0.48:0.20,isBlue?0.88:0.18,building.powered?1.0:0.35);
     }
     foreach(unit in state.units){
         if(unit.garrisoned)continue;
         if(unit.faction!=BLUE&&!fogVisible(unit.x,unit.y))continue;
-        local blue=unit.faction==BLUE,worker=unit.definition=="unit:worker",size=worker?10.0:14.0;
+        local isBlue=unit.faction==BLUE,worker=unit.definition=="unit:worker",size=worker?10.0:14.0;
         gfx.drawSolidRect(sx(unit.x)-size*0.5,sy(unit.y)-size*0.5,size,size,
-            blue?0.25:0.92,blue?0.62:0.25,blue?0.96:0.18,1.0);
+            isBlue?0.25:0.92,isBlue?0.62:0.25,isBlue?0.96:0.18,1.0);
     }
     foreach(id in selected){local unit=unitBySubject(state,id);if(unit!=null)
         gfx.drawSolidRect(sx(unit.x)-9,sy(unit.y)+9,18,2,0.2,1.0,0.35,1.0);}
