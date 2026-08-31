@@ -42,6 +42,7 @@
 #endif
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
+#include "common/SquirrelBinding.h"
 #include "filesystem/Filesystem.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
@@ -236,6 +237,31 @@ RenderControl* Graphics::getRenderControl() {
 void Graphics::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Graphics::create, false);
     expose(cls);
+    const auto vm = table.getHandle();
+    cls.addFunc("replaceShaderFromGlsl",
+                [vm](Graphics* self, Shader* shader, const std::string& vertex,
+                     const std::string& fragment) {
+                    if (!self || !shader)
+                        return eve::script::projectResult(
+                            vm, Result<void>::failure(Diagnostic::error(
+                                    DiagnosticCode::InvalidArgument,
+                                    "graphics and shader must not be null", "shader", {},
+                                    "graphics.shader_reload.binding")));
+                    return eve::script::projectResult(
+                        vm, self->replaceShaderFromGlsl(*shader, vertex, fragment));
+                });
+    cls.addFunc("replaceShaderFromWgsl",
+                [vm](Graphics* self, Shader* shader, const std::string& vertex,
+                     const std::string& fragment) {
+                    if (!self || !shader)
+                        return eve::script::projectResult(
+                            vm, Result<void>::failure(Diagnostic::error(
+                                    DiagnosticCode::InvalidArgument,
+                                    "graphics and shader must not be null", "shader", {},
+                                    "graphics.shader_reload.binding")));
+                    return eve::script::projectResult(
+                        vm, self->replaceShaderFromWgsl(*shader, vertex, fragment));
+                });
 
     auto canvasCls =
         table.addClass<Canvas>("Canvas", std::function<Canvas*()>([]() -> Canvas* { return nullptr; }), true);
