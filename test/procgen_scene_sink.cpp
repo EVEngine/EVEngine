@@ -16,16 +16,17 @@ namespace {
 
 class MockProcgenSceneSink final : public eve::IProcgenSceneSink {
 public:
-    bool applyBatch(const std::string& batchId,
-                    const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+    bool applyBatch(const std::string& batchId, const std::vector<eve::ProcgenInstanceDesc>& instances) override {
         const auto previous = batches.find(batchId);
         std::unordered_map<std::string, bool> oldIds;
         if (previous != batches.end())
             for (const auto& instance : previous->second) oldIds[instance.id] = true;
         Stats stats;
         for (const auto& instance : instances) {
-            if (oldIds.erase(instance.id) != 0) ++stats.reused;
-            else ++stats.created;
+            if (oldIds.erase(instance.id) != 0)
+                ++stats.reused;
+            else
+                ++stats.created;
         }
         stats.removed = int(oldIds.size());
         batches[batchId] = instances;
@@ -108,8 +109,8 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     REQUIRE(reorderedView.isBound());
     reorderedView->add(-1.f, 0.f, 0.f);
     reorderedView->setPointSeed(0, 99);
-    reorderedView->points().push_back(pointsView->points()[0]);
-    reorderedView->points().push_back(pointsView->points()[1]);
+    std::move(reorderedView->appendPointFrom(*pointsView, 0)).expect("scene sink test point copy");
+    std::move(reorderedView->appendPointFrom(*pointsView, 1)).expect("scene sink test point copy");
     auto reorderedPublishResult = proc.publishInstances("forest/main", reorderedHandle, "asset", "granite");
     REQUIRE(reorderedPublishResult.ok());
     CHECK_EQ(proc.getPublishedCreatedCount("forest/main"), 1);

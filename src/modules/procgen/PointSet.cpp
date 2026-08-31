@@ -17,14 +17,11 @@ uint32_t mix32(uint32_t value) {
 
 float unitFloat(uint32_t seed) { return float(mix32(seed) >> 8u) * (1.f / 16777216.f); }
 
-float pointSegmentDistanceSquared(float px, float pz, const ProcgenPoint& a,
-                                  const ProcgenPoint& b) {
+float pointSegmentDistanceSquared(float px, float pz, const ProcgenPoint& a, const ProcgenPoint& b) {
     const float vx      = b.x - a.x;
     const float vz      = b.z - a.z;
     const float length2 = vx * vx + vz * vz;
-    const float t       = length2 > 0.f
-                              ? std::clamp(((px - a.x) * vx + (pz - a.z) * vz) / length2, 0.f, 1.f)
-                              : 0.f;
+    const float t       = length2 > 0.f ? std::clamp(((px - a.x) * vx + (pz - a.z) * vz) / length2, 0.f, 1.f) : 0.f;
     const float dx = px - (a.x + vx * t);
     const float dz = pz - (a.z + vz * t);
     return dx * dx + dz * dz;
@@ -35,8 +32,7 @@ bool pointInPolygon(float x, float z, const std::vector<ProcgenPoint>& polygon) 
     for (size_t i = 0, previous = polygon.size() - 1; i < polygon.size(); previous = i++) {
         const auto& a = polygon[i];
         const auto& b = polygon[previous];
-        const bool crosses = ((a.z > z) != (b.z > z)) &&
-                             (x < (b.x - a.x) * (z - a.z) / (b.z - a.z) + a.x);
+        const bool  crosses = ((a.z > z) != (b.z > z)) && (x < (b.x - a.x) * (z - a.z) / (b.z - a.z) + a.x);
         if (crosses) inside = !inside;
     }
     return inside;
@@ -46,15 +42,58 @@ bool pointInPolygon(float x, float z, const std::vector<ProcgenPoint>& polygon) 
 
 int  PointSet::getCount() const { return int(points_.size()); }
 bool PointSet::empty() const { return points_.empty(); }
-void PointSet::clear() { points_.clear(); }
+void PointSet::clear() {
+    points_.clear();
+    attributes_.clear();
+}
+
+void appendPointRow(PointSet& output, const PointSet& input, std::size_t index) {
+    std::move(output.appendPointFrom(input, index)).expect("PointSet operation requires compatible attribute schemas");
+}
+
+void PointSet::reserve(std::size_t count) { points_.reserve(count); }
+
+int PointSet::appendPoint(ProcgenPoint point) {
+    points_.push_back(std::move(point));
+    const std::size_t row = attributes_.appendRow();
+    EV_ASSERT(row + 1 == points_.size(), "PointSet point and attribute rows must remain aligned");
+    return int(row);
+}
+
+Result<int> PointSet::appendPointFrom(const PointSet& source, std::size_t sourceIndex) {
+    if (sourceIndex >= source.points_.size())
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "source point index is out of range", "sourceIndex"));
+    auto attributeRow = attributes_.appendRowFrom(source.attributes_, sourceIndex);
+    if (!attributeRow.ok()) return Result<int>::failure(attributeRow.status());
+    try {
+        points_.push_back(source.points_[sourceIndex]);
+    } catch (...) {
+        attributes_.resize(attributeRow.value());
+        throw;
+    }
+    EV_ASSERT(attributeRow.value() + 1 == points_.size(), "PointSet point and attribute rows must remain aligned");
+    return Result<int>::success(int(attributeRow.value()));
+}
+
+Result<void> PointSet::clearPointAttributes(std::size_t index) {
+    if (index >= points_.size())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
+    return attributes_.clearRow(index);
+}
+
+ProcgenPoint& PointSet::mutablePoint(std::size_t index) {
+    EV_PARAM_CHECK(index < points_.size(), "PointSet mutable point index is out of range");
+    return points_[index];
+}
 
 int PointSet::add(float x, float y, float z) {
     ProcgenPoint point;
     point.x = x;
     point.y = y;
     point.z = z;
-    points_.push_back(std::move(point));
-    return int(points_.size()) - 1;
+    return appendPoint(std::move(point));
 }
 
 ProcgenPoint* PointSet::pointAt(int index) {
@@ -154,8 +193,7 @@ float PointSet::getScaleZ(int index) const {
     return p ? p->scaleZ : 1.f;
 }
 
-void PointSet::setBounds(int index, float minX, float minY, float minZ, float maxX, float maxY,
-                         float maxZ) {
+void PointSet::setBounds(int index, float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
     if (auto* point = pointAt(index)) {
         point->boundsMinX = std::min(minX, maxX);
         point->boundsMinY = std::min(minY, maxY);
@@ -242,111 +280,120 @@ uint32_t PointSet::getPointSeed(int index) const {
     return p ? p->seed : 0u;
 }
 
+Result<void> PointSet::trySetFloatAttribute(int index, const std::string& name, float value) {
+    if (!pointAt(index))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
+    return attributes_.setFloat(size_t(index), name, value);
+}
+
 void PointSet::setFloatAttribute(int index, const std::string& name, float value) {
-    if (auto* point = pointAt(index); point && !name.empty()) point->floatAttributes[name] = value;
+    trySetFloatAttribute(index, name, value).ignore("compatibility PointSet float attribute setter");
 }
 
 float PointSet::getFloatAttribute(int index, const std::string& name, float fallback) const {
-    const auto* point = pointAt(index);
-    if (!point) return fallback;
-    const auto found = point->floatAttributes.find(name);
-    return found == point->floatAttributes.end() ? fallback : found->second;
+    const auto value = index >= 0 ? attributes_.getFloat(size_t(index), name) : std::nullopt;
+    return value.value_or(fallback);
 }
 
 bool PointSet::hasFloatAttribute(int index, const std::string& name) const {
-    const auto* point = pointAt(index);
-    return point && point->floatAttributes.find(name) != point->floatAttributes.end();
+    return index >= 0 && attributes_.getFloat(size_t(index), name).has_value();
+}
+
+Result<void> PointSet::trySetIntAttribute(int index, const std::string& name, std::int64_t value) {
+    if (!pointAt(index))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
+    return attributes_.setInt(size_t(index), name, value);
 }
 
 void PointSet::setIntAttribute(int index, const std::string& name, std::int64_t value) {
-    if (auto* point = pointAt(index); point && !name.empty()) point->intAttributes[name] = value;
+    trySetIntAttribute(index, name, value).ignore("compatibility PointSet integer attribute setter");
 }
 
-std::int64_t PointSet::getIntAttribute(int index, const std::string& name,
-                                       std::int64_t fallback) const {
-    const auto* point = pointAt(index);
-    if (!point) return fallback;
-    const auto found = point->intAttributes.find(name);
-    return found == point->intAttributes.end() ? fallback : found->second;
+std::int64_t PointSet::getIntAttribute(int index, const std::string& name, std::int64_t fallback) const {
+    const auto value = index >= 0 ? attributes_.getInt(size_t(index), name) : std::nullopt;
+    return value.value_or(fallback);
 }
 
 bool PointSet::hasIntAttribute(int index, const std::string& name) const {
-    const auto* point = pointAt(index);
-    return point && point->intAttributes.find(name) != point->intAttributes.end();
+    return index >= 0 && attributes_.getInt(size_t(index), name).has_value();
+}
+
+Result<void> PointSet::trySetBoolAttribute(int index, const std::string& name, bool value) {
+    if (!pointAt(index))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
+    return attributes_.setBool(size_t(index), name, value);
 }
 
 void PointSet::setBoolAttribute(int index, const std::string& name, bool value) {
-    if (auto* point = pointAt(index); point && !name.empty()) point->boolAttributes[name] = value;
+    trySetBoolAttribute(index, name, value).ignore("compatibility PointSet Boolean attribute setter");
 }
 
 bool PointSet::getBoolAttribute(int index, const std::string& name, bool fallback) const {
-    const auto* point = pointAt(index);
-    if (!point) return fallback;
-    const auto found = point->boolAttributes.find(name);
-    return found == point->boolAttributes.end() ? fallback : found->second;
+    const auto value = index >= 0 ? attributes_.getBool(size_t(index), name) : std::nullopt;
+    return value.value_or(fallback);
 }
 
 bool PointSet::hasBoolAttribute(int index, const std::string& name) const {
-    const auto* point = pointAt(index);
-    return point && point->boolAttributes.find(name) != point->boolAttributes.end();
+    return index >= 0 && attributes_.getBool(size_t(index), name).has_value();
+}
+
+Result<void> PointSet::trySetVectorAttribute(int index, const std::string& name, float x, float y, float z) {
+    if (!pointAt(index))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
+    return attributes_.setVector(size_t(index), name, {x, y, z});
 }
 
 void PointSet::setVectorAttribute(int index, const std::string& name, float x, float y, float z) {
-    if (auto* point = pointAt(index); point && !name.empty())
-        point->vectorAttributes[name] = {x, y, z};
+    trySetVectorAttribute(index, name, x, y, z).ignore("compatibility PointSet vector attribute setter");
 }
 
 float PointSet::getVectorAttributeX(int index, const std::string& name, float fallback) const {
-    const auto* point = pointAt(index);
-    if (!point) return fallback;
-    const auto found = point->vectorAttributes.find(name);
-    return found == point->vectorAttributes.end() ? fallback : found->second.x;
+    const auto value = index >= 0 ? attributes_.getVector(size_t(index), name) : std::nullopt;
+    return value ? value->x : fallback;
 }
 
 float PointSet::getVectorAttributeY(int index, const std::string& name, float fallback) const {
-    const auto* point = pointAt(index);
-    if (!point) return fallback;
-    const auto found = point->vectorAttributes.find(name);
-    return found == point->vectorAttributes.end() ? fallback : found->second.y;
+    const auto value = index >= 0 ? attributes_.getVector(size_t(index), name) : std::nullopt;
+    return value ? value->y : fallback;
 }
 
 float PointSet::getVectorAttributeZ(int index, const std::string& name, float fallback) const {
-    const auto* point = pointAt(index);
-    if (!point) return fallback;
-    const auto found = point->vectorAttributes.find(name);
-    return found == point->vectorAttributes.end() ? fallback : found->second.z;
+    const auto value = index >= 0 ? attributes_.getVector(size_t(index), name) : std::nullopt;
+    return value ? value->z : fallback;
 }
 
 bool PointSet::hasVectorAttribute(int index, const std::string& name) const {
-    const auto* point = pointAt(index);
-    return point && point->vectorAttributes.find(name) != point->vectorAttributes.end();
+    return index >= 0 && attributes_.getVector(size_t(index), name).has_value();
+}
+
+Result<void> PointSet::trySetStringAttribute(int index, const std::string& name, const std::string& value) {
+    if (!pointAt(index))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
+    return attributes_.setString(size_t(index), name, value);
 }
 
 void PointSet::setStringAttribute(int index, const std::string& name, const std::string& value) {
-    if (auto* point = pointAt(index); point && !name.empty()) point->stringAttributes[name] = value;
+    trySetStringAttribute(index, name, value).ignore("compatibility PointSet string attribute setter");
 }
 
 std::string PointSet::getStringAttribute(int index, const std::string& name, const std::string& fallback) const {
-    const auto* point = pointAt(index);
-    if (!point) return fallback;
-    const auto found = point->stringAttributes.find(name);
-    return found == point->stringAttributes.end() ? fallback : found->second;
+    const auto value = index >= 0 ? attributes_.getString(size_t(index), name) : std::nullopt;
+    return value ? std::string(*value) : fallback;
 }
 
 bool PointSet::hasStringAttribute(int index, const std::string& name) const {
-    const auto* point = pointAt(index);
-    return point && point->stringAttributes.find(name) != point->stringAttributes.end();
+    return index >= 0 && attributes_.getString(size_t(index), name).has_value();
 }
 
 std::string PointSet::getAttributeType(int index, const std::string& name) const {
-    const auto* point = pointAt(index);
-    if (!point) return {};
-    if (point->floatAttributes.contains(name)) return "float";
-    if (point->intAttributes.contains(name)) return "int";
-    if (point->boolAttributes.contains(name)) return "bool";
-    if (point->vectorAttributes.contains(name)) return "vector";
-    if (point->stringAttributes.contains(name)) return "string";
-    return {};
+    if (!pointAt(index) || !attributes_.has(size_t(index), name)) return {};
+    const auto type = attributes_.typeOf(name);
+    return type ? std::string(procgenAttributeTypeName(*type)) : std::string{};
 }
 
 uint32_t deriveSeed(uint32_t parent, const std::string& scope) {
@@ -363,7 +410,7 @@ PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, fl
     PointSet output;
     if (width <= 0 || depth <= 0 || spacing <= 0.f) return output;
     jitter = std::clamp(jitter, 0.f, 1.f);
-    output.points().reserve(size_t(width) * size_t(depth));
+    output.reserve(size_t(width) * size_t(depth));
     const float extent = spacing * jitter * 0.5f;
     for (int z = 0; z < depth; ++z) {
         for (int x = 0; x < width; ++x) {
@@ -372,7 +419,8 @@ PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, fl
             point.x    = float(x) * spacing + (unitFloat(pointSeed) * 2.f - 1.f) * extent;
             point.z    = float(z) * spacing + (unitFloat(pointSeed ^ 0xa511e9b3u) * 2.f - 1.f) * extent;
             point.seed = pointSeed ? pointSeed : 1u;
-            output.points().push_back(std::move(point));
+            const int appended = output.appendPoint(std::move(point));
+            (void)appended;
         }
     }
     return output;
@@ -400,7 +448,9 @@ PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, in
         gy = std::max(0, std::min(gy, gridH - 1));
         return gy * gridW + gx;
     };
-    const auto inBounds = [&](float x, float y) { return x >= 0.f && x <= float(width) && y >= 0.f && y <= float(depth); };
+    const auto inBounds = [&](float x, float y) {
+        return x >= 0.f && x <= float(width) && y >= 0.f && y <= float(depth);
+    };
     const auto tooClose = [&](float x, float y, float r2) {
         const int gx = std::max(0, std::min(int(x / cell), gridW - 1));
         const int gy = std::max(0, std::min(int(y / cell), gridH - 1));
@@ -447,7 +497,7 @@ PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, in
         if (!found) active.erase(active.begin() + pick);
     }
 
-    output.points().reserve(xs.size());
+    output.reserve(xs.size());
     for (size_t i = 0; i < xs.size(); ++i) {
         ProcgenPoint point;
         point.x    = xs[i];
@@ -455,7 +505,8 @@ PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, in
         point.z    = ys[i];
         point.seed = mix32(seed ^ uint32_t(i));
         if (point.seed == 0) point.seed = 1;
-        output.points().push_back(std::move(point));
+        const int appended = output.appendPoint(std::move(point));
+        (void)appended;
     }
     return output;
 }
@@ -463,29 +514,32 @@ PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, in
 PointSet filterPointHeight(const PointSet& input, float minHeight, float maxHeight) {
     PointSet output;
     if (minHeight > maxHeight) std::swap(minHeight, maxHeight);
-    for (const auto& point : input.points())
-        if (point.y >= minHeight && point.y <= maxHeight) output.points().push_back(point);
+    for (size_t index = 0; index < input.points().size(); ++index)
+        if (input.points()[index].y >= minHeight && input.points()[index].y <= maxHeight)
+            appendPointRow(output, input, index);
     return output;
 }
 
 PointSet filterPointDensity(const PointSet& input, float minDensity, float maxDensity) {
     PointSet output;
     if (minDensity > maxDensity) std::swap(minDensity, maxDensity);
-    for (const auto& point : input.points())
-        if (point.density >= minDensity && point.density <= maxDensity) output.points().push_back(point);
+    for (size_t index = 0; index < input.points().size(); ++index)
+        if (input.points()[index].density >= minDensity && input.points()[index].density <= maxDensity)
+            appendPointRow(output, input, index);
     return output;
 }
 
-PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX,
-                        float maxY, float maxZ, bool invert) {
+PointSet filterPointBox(const PointSet& input, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+                        bool invert) {
     if (minX > maxX) std::swap(minX, maxX);
     if (minY > maxY) std::swap(minY, maxY);
     if (minZ > maxZ) std::swap(minZ, maxZ);
     PointSet output;
-    for (const auto& point : input.points()) {
-        const bool inside = point.x >= minX && point.x <= maxX && point.y >= minY &&
-                            point.y <= maxY && point.z >= minZ && point.z <= maxZ;
-        if (inside != invert) output.points().push_back(point);
+    for (size_t index = 0; index < input.points().size(); ++index) {
+        const auto& point  = input.points()[index];
+        const bool  inside = point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY &&
+                             point.z >= minZ && point.z <= maxZ;
+        if (inside != invert) appendPointRow(output, input, index);
     }
     return output;
 }
@@ -496,12 +550,13 @@ PointSet filterPointSlope(const PointSet& input, float minDegrees, float maxDegr
     maxDegrees = std::clamp(maxDegrees, 0.f, 180.f);
     constexpr float radiansToDegrees = 57.29577951308232f;
     PointSet        output;
-    for (const auto& point : input.points()) {
-        const float length = std::sqrt(point.normalX * point.normalX + point.normalY * point.normalY +
-                                       point.normalZ * point.normalZ);
+    for (size_t index = 0; index < input.points().size(); ++index) {
+        const auto& point = input.points()[index];
+        const float length =
+            std::sqrt(point.normalX * point.normalX + point.normalY * point.normalY + point.normalZ * point.normalZ);
         const float up     = length > 0.f ? std::clamp(point.normalY / length, -1.f, 1.f) : 1.f;
         const float slope  = std::acos(up) * radiansToDegrees;
-        if (slope >= minDegrees && slope <= maxDegrees) output.points().push_back(point);
+        if (slope >= minDegrees && slope <= maxDegrees) appendPointRow(output, input, index);
     }
     return output;
 }
@@ -509,15 +564,16 @@ PointSet filterPointSlope(const PointSet& input, float minDegrees, float maxDegr
 PointSet filterPointsByPolygon(const PointSet& input, const PointSet& polygon, bool invert) {
     PointSet output;
     if (polygon.points().size() < 3) return output;
-    for (const auto& point : input.points()) {
+    for (size_t index = 0; index < input.points().size(); ++index) {
+        const auto& point  = input.points()[index];
         const bool inside = pointInPolygon(point.x, point.z, polygon.points());
-        if (inside != invert) output.points().push_back(point);
+        if (inside != invert) appendPointRow(output, input, index);
     }
     return output;
 }
 
-PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& controlPoints,
-                                      float minDistance, float maxDistance) {
+PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& controlPoints, float minDistance,
+                                      float maxDistance) {
     PointSet output;
     if (controlPoints.points().size() < 2) return output;
     if (minDistance > maxDistance) std::swap(minDistance, maxDistance);
@@ -525,14 +581,14 @@ PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& con
     maxDistance = std::max(0.f, maxDistance);
     const float minSquared = minDistance * minDistance;
     const float maxSquared = maxDistance * maxDistance;
-    for (const auto& point : input.points()) {
+    for (size_t index = 0; index < input.points().size(); ++index) {
+        const auto& point   = input.points()[index];
         float nearest = std::numeric_limits<float>::max();
         for (size_t i = 1; i < controlPoints.points().size(); ++i) {
-            nearest = std::min(nearest, pointSegmentDistanceSquared(
-                                            point.x, point.z, controlPoints.points()[i - 1],
+            nearest = std::min(nearest, pointSegmentDistanceSquared(point.x, point.z, controlPoints.points()[i - 1],
                                             controlPoints.points()[i]));
         }
-        if (nearest >= minSquared && nearest <= maxSquared) output.points().push_back(point);
+        if (nearest >= minSquared && nearest <= maxSquared) appendPointRow(output, input, index);
     }
     return output;
 }
@@ -540,10 +596,11 @@ PointSet filterPointsBySplineDistance(const PointSet& input, const PointSet& con
 PointSet excludePointRadius(const PointSet& input, float x, float z, float radius) {
     PointSet    output;
     const float radiusSquared = std::max(0.f, radius) * std::max(0.f, radius);
-    for (const auto& point : input.points()) {
+    for (size_t index = 0; index < input.points().size(); ++index) {
+        const auto& point = input.points()[index];
         const float dx = point.x - x;
         const float dz = point.z - z;
-        if (dx * dx + dz * dz > radiusSquared) output.points().push_back(point);
+        if (dx * dx + dz * dz > radiusSquared) appendPointRow(output, input, index);
     }
     return output;
 }
@@ -553,7 +610,7 @@ PointSet jitterPointPositions(const PointSet& input, uint32_t seed, float amount
     amountX         = std::max(0.f, amountX);
     amountZ         = std::max(0.f, amountZ);
     for (size_t i = 0; i < output.points().size(); ++i) {
-        auto&          point      = output.points()[i];
+        auto&          point      = output.mutablePoint(i);
         const uint32_t branchSeed = mix32(seed ^ point.seed ^ uint32_t(i));
         point.x += (unitFloat(branchSeed) * 2.f - 1.f) * amountX;
         point.z += (unitFloat(branchSeed ^ 0x63d83595u) * 2.f - 1.f) * amountZ;
@@ -565,7 +622,8 @@ PointSet selfPrunePoints(const PointSet& input, float radius) {
     if (radius <= 0.f) return input;
     PointSet    output;
     const float radiusSquared = radius * radius;
-    for (const auto& candidate : input.points()) {
+    for (size_t index = 0; index < input.points().size(); ++index) {
+        const auto& candidate = input.points()[index];
         bool keep = true;
         for (const auto& accepted : output.points()) {
             const float dx = candidate.x - accepted.x;
@@ -575,13 +633,12 @@ PointSet selfPrunePoints(const PointSet& input, float radius) {
                 break;
             }
         }
-        if (keep) output.points().push_back(candidate);
+        if (keep) appendPointRow(output, input, index);
     }
     return output;
 }
 
-PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed,
-                              float lateralJitter) {
+PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed, float lateralJitter) {
     PointSet output;
     if (controlPoints.points().size() < 2 || spacing <= 0.f) return output;
     lateralJitter = std::max(0.f, lateralJitter);
@@ -608,7 +665,8 @@ PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint
             point.z    = a.z + dz * t + nz * lateral;
             point.yaw  = yaw;
             point.seed = sampleSeed ? sampleSeed : 1u;
-            output.points().push_back(std::move(point));
+            const int appended = output.appendPoint(std::move(point));
+            (void)appended;
             ++sampleIndex;
             distanceToNext += spacing;
         }
@@ -619,9 +677,9 @@ PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint
 
 PointSet mergePointSets(const PointSet& first, const PointSet& second) {
     PointSet output;
-    output.points().reserve(first.points().size() + second.points().size());
-    output.points().insert(output.points().end(), first.points().begin(), first.points().end());
-    output.points().insert(output.points().end(), second.points().begin(), second.points().end());
+    output.reserve(first.points().size() + second.points().size());
+    for (size_t index = 0; index < first.points().size(); ++index) appendPointRow(output, first, index);
+    for (size_t index = 0; index < second.points().size(); ++index) appendPointRow(output, second, index);
     return output;
 }
 
@@ -632,13 +690,11 @@ bool samePointIdentity(const ProcgenPoint& a, const ProcgenPoint& b) {
 }
 
 bool containsPointIdentity(const std::vector<ProcgenPoint>& points, const ProcgenPoint& candidate) {
-    return std::any_of(points.begin(), points.end(), [&candidate](const ProcgenPoint& point) {
-        return samePointIdentity(point, candidate);
-    });
+    return std::any_of(points.begin(), points.end(),
+                       [&candidate](const ProcgenPoint& point) { return samePointIdentity(point, candidate); });
 }
 
-void rotateEuler(float& x, float& y, float& z, float pitchDegrees, float yawDegrees,
-                 float rollDegrees) {
+void rotateEuler(float& x, float& y, float& z, float pitchDegrees, float yawDegrees, float rollDegrees) {
     constexpr float degreesToRadians = 0.017453292519943295f;
     const float pitch = pitchDegrees * degreesToRadians;
     const float yaw = yawDegrees * degreesToRadians;
@@ -659,42 +715,41 @@ void rotateEuler(float& x, float& y, float& z, float pitchDegrees, float yawDegr
 
 PointSet unionPointSets(const PointSet& first, const PointSet& second) {
     PointSet result;
-    result.points().reserve(first.points().size() + second.points().size());
-    for (const auto& point : first.points())
-        if (!containsPointIdentity(result.points(), point)) result.points().push_back(point);
-    for (const auto& point : second.points())
-        if (!containsPointIdentity(result.points(), point)) result.points().push_back(point);
+    result.reserve(first.points().size() + second.points().size());
+    for (size_t index = 0; index < first.points().size(); ++index)
+        if (!containsPointIdentity(result.points(), first.points()[index])) appendPointRow(result, first, index);
+    for (size_t index = 0; index < second.points().size(); ++index)
+        if (!containsPointIdentity(result.points(), second.points()[index])) appendPointRow(result, second, index);
     return result;
 }
 
 PointSet intersectPointSets(const PointSet& first, const PointSet& second) {
     PointSet result;
-    result.points().reserve(std::min(first.points().size(), second.points().size()));
-    for (const auto& point : first.points())
-        if (containsPointIdentity(second.points(), point)) result.points().push_back(point);
+    result.reserve(std::min(first.points().size(), second.points().size()));
+    for (size_t index = 0; index < first.points().size(); ++index)
+        if (containsPointIdentity(second.points(), first.points()[index])) appendPointRow(result, first, index);
     return result;
 }
 
 PointSet differencePointSets(const PointSet& first, const PointSet& second) {
     PointSet result;
-    result.points().reserve(first.points().size());
-    for (const auto& point : first.points())
-        if (!containsPointIdentity(second.points(), point)) result.points().push_back(point);
+    result.reserve(first.points().size());
+    for (size_t index = 0; index < first.points().size(); ++index)
+        if (!containsPointIdentity(second.points(), first.points()[index])) appendPointRow(result, first, index);
     return result;
 }
 
-PointSet transformPointSet(const PointSet& input, float translateX, float translateY,
-                           float translateZ, float yawDegrees, float scaleX, float scaleY,
-                           float scaleZ) {
-    return transformPointSet3D(input, translateX, translateY, translateZ, 0.f, yawDegrees,
-                               0.f, scaleX, scaleY, scaleZ);
+PointSet transformPointSet(const PointSet& input, float translateX, float translateY, float translateZ,
+                           float yawDegrees, float scaleX, float scaleY, float scaleZ) {
+    return transformPointSet3D(input, translateX, translateY, translateZ, 0.f, yawDegrees, 0.f, scaleX, scaleY, scaleZ);
 }
 
-PointSet transformPointSet3D(const PointSet& input, float translateX, float translateY,
-                             float translateZ, float pitchDegrees, float yawDegrees,
-                             float rollDegrees, float scaleX, float scaleY, float scaleZ) {
+PointSet transformPointSet3D(const PointSet& input, float translateX, float translateY, float translateZ,
+                             float pitchDegrees, float yawDegrees, float rollDegrees, float scaleX, float scaleY,
+                             float scaleZ) {
     PointSet output = input;
-    for (auto& point : output.points()) {
+    for (size_t index = 0; index < output.points().size(); ++index) {
+        auto& point = output.mutablePoint(index);
         float x = point.x * scaleX;
         float y = point.y * scaleY;
         float z = point.z * scaleZ;
@@ -712,11 +767,9 @@ PointSet transformPointSet3D(const PointSet& input, float translateX, float tran
         point.normalX = point.normalX / (std::abs(scaleX) > 0.000001f ? scaleX : 1.f);
         point.normalY = point.normalY / (std::abs(scaleY) > 0.000001f ? scaleY : 1.f);
         point.normalZ = point.normalZ / (std::abs(scaleZ) > 0.000001f ? scaleZ : 1.f);
-        rotateEuler(point.normalX, point.normalY, point.normalZ, pitchDegrees, yawDegrees,
-                    rollDegrees);
-        const float normalLength = std::sqrt(point.normalX * point.normalX +
-                                             point.normalY * point.normalY +
-                                             point.normalZ * point.normalZ);
+        rotateEuler(point.normalX, point.normalY, point.normalZ, pitchDegrees, yawDegrees, rollDegrees);
+        const float normalLength =
+            std::sqrt(point.normalX * point.normalX + point.normalY * point.normalY + point.normalZ * point.normalZ);
         if (normalLength > 0.f) {
             point.normalX /= normalLength;
             point.normalY /= normalLength;
@@ -726,20 +779,20 @@ PointSet transformPointSet3D(const PointSet& input, float translateX, float tran
     return output;
 }
 
-PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets,
-                             bool inheritTargetAttributes) {
+PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets, bool inheritTargetAttributes) {
     constexpr float degreesToRadians = 0.017453292519943295f;
     PointSet result;
     if (!targets.points().empty() &&
-        source.points().size() >
-            std::numeric_limits<size_t>::max() / targets.points().size())
+        source.points().size() > std::numeric_limits<size_t>::max() / targets.points().size())
         return result;
-    result.points().reserve(source.points().size() * targets.points().size());
-    for (const auto& target : targets.points()) {
+    result.reserve(source.points().size() * targets.points().size());
+    for (size_t targetIndex = 0; targetIndex < targets.points().size(); ++targetIndex) {
+        const auto& target  = targets.points()[targetIndex];
         const float radians = target.yaw * degreesToRadians;
         const float cosine  = std::cos(radians);
         const float sine    = std::sin(radians);
-        for (const auto& sourcePoint : source.points()) {
+        for (size_t sourceIndex = 0; sourceIndex < source.points().size(); ++sourceIndex) {
+            const auto&  sourcePoint = source.points()[sourceIndex];
             ProcgenPoint copy = sourcePoint;
             const float localX = sourcePoint.x * target.scaleX;
             const float localY = sourcePoint.y * target.scaleY;
@@ -757,37 +810,85 @@ PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets,
             copy.scaleZ *= target.scaleZ;
             copy.density *= target.density;
             copy.seed = deriveSeed(target.seed, "copy:" + std::to_string(sourcePoint.seed));
+            const int resultIndex = result.appendPoint(std::move(copy));
             if (inheritTargetAttributes) {
-                auto sourceFloats = std::move(copy.floatAttributes);
-                auto sourceInts = std::move(copy.intAttributes);
-                auto sourceBools = std::move(copy.boolAttributes);
-                auto sourceVectors = std::move(copy.vectorAttributes);
-                auto sourceStrings = std::move(copy.stringAttributes);
-                copy.floatAttributes = target.floatAttributes;
-                copy.intAttributes = target.intAttributes;
-                copy.boolAttributes = target.boolAttributes;
-                copy.vectorAttributes = target.vectorAttributes;
-                copy.stringAttributes = target.stringAttributes;
-                for (auto& [name, value] : sourceFloats)
-                    copy.floatAttributes[name] = value;
-                for (auto& [name, value] : sourceInts) copy.intAttributes[name] = value;
-                for (auto& [name, value] : sourceBools) copy.boolAttributes[name] = value;
-                for (auto& [name, value] : sourceVectors)
-                    copy.vectorAttributes[name] = value;
-                for (auto& [name, value] : sourceStrings)
-                    copy.stringAttributes[name] = std::move(value);
+                for (size_t column = 0; column < targets.attributes().columnCount(); ++column) {
+                    const std::string name(targets.attributes().columnName(column));
+                    if (!targets.attributes().has(targetIndex, name)) continue;
+                    switch (*targets.attributes().typeOf(name)) {
+                        case ProcgenAttributeType::Float:
+                            result
+                                .trySetFloatAttribute(resultIndex, name,
+                                                      *targets.attributes().getFloat(targetIndex, name))
+                                .expect("copy target float attribute");
+                            break;
+                        case ProcgenAttributeType::Int:
+                            result
+                                .trySetIntAttribute(resultIndex, name, *targets.attributes().getInt(targetIndex, name))
+                                .expect("copy target integer attribute");
+                            break;
+                        case ProcgenAttributeType::Bool:
+                            result
+                                .trySetBoolAttribute(resultIndex, name,
+                                                     *targets.attributes().getBool(targetIndex, name))
+                                .expect("copy target Boolean attribute");
+                            break;
+                        case ProcgenAttributeType::Vector: {
+                            const auto value = *targets.attributes().getVector(targetIndex, name);
+                            result.trySetVectorAttribute(resultIndex, name, value.x, value.y, value.z)
+                                .expect("copy target vector attribute");
+                            break;
+                        }
+                        case ProcgenAttributeType::String:
+                            result
+                                .trySetStringAttribute(resultIndex, name,
+                                                       std::string(*targets.attributes().getString(targetIndex, name)))
+                                .expect("copy target string attribute");
+                            break;
+                    }
+                }
             }
-            result.points().push_back(std::move(copy));
+            for (size_t column = 0; column < source.attributes().columnCount(); ++column) {
+                const std::string name(source.attributes().columnName(column));
+                if (!source.attributes().has(sourceIndex, name)) continue;
+                switch (*source.attributes().typeOf(name)) {
+                    case ProcgenAttributeType::Float:
+                        result.trySetFloatAttribute(resultIndex, name, *source.attributes().getFloat(sourceIndex, name))
+                            .expect("copy source float attribute");
+                        break;
+                    case ProcgenAttributeType::Int:
+                        result.trySetIntAttribute(resultIndex, name, *source.attributes().getInt(sourceIndex, name))
+                            .expect("copy source integer attribute");
+                        break;
+                    case ProcgenAttributeType::Bool:
+                        result.trySetBoolAttribute(resultIndex, name, *source.attributes().getBool(sourceIndex, name))
+                            .expect("copy source Boolean attribute");
+                        break;
+                    case ProcgenAttributeType::Vector: {
+                        const auto value = *source.attributes().getVector(sourceIndex, name);
+                        result.trySetVectorAttribute(resultIndex, name, value.x, value.y, value.z)
+                            .expect("copy source vector attribute");
+                        break;
+                    }
+                    case ProcgenAttributeType::String:
+                        result
+                            .trySetStringAttribute(resultIndex, name,
+                                                   std::string(*source.attributes().getString(sourceIndex, name)))
+                            .expect("copy source string attribute");
+                        break;
+                }
+            }
         }
     }
     return result;
 }
 
-PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax,
-                           float outputMin, float outputMax, bool clampOutput) {
+PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax, float outputMin, float outputMax,
+                           bool clampOutput) {
     PointSet result = input;
     const float inputRange = inputMax - inputMin;
-    for (auto& point : result.points()) {
+    for (size_t index = 0; index < result.points().size(); ++index) {
+        auto& point      = result.mutablePoint(index);
         float normalized = (point.density - inputMin) / inputRange;
         if (clampOutput) normalized = std::clamp(normalized, 0.f, 1.f);
         point.density = outputMin + normalized * (outputMax - outputMin);
@@ -796,45 +897,49 @@ PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax
 }
 
 PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
-                                 const std::string& outputAttribute,
-                                 const std::string& operation, float operand,
+                                 const std::string& outputAttribute, const std::string& operation, float operand,
                                  float defaultValue) {
     PointSet result = input;
-    for (auto& point : result.points()) {
-        const auto found = point.floatAttributes.find(attribute);
-        const float value = found == point.floatAttributes.end() ? defaultValue : found->second;
+    for (size_t index = 0; index < result.points().size(); ++index) {
+        const float value  = result.getFloatAttribute(int(index), attribute, defaultValue);
         float output = value;
-        if (operation == "add") output += operand;
-        else if (operation == "subtract") output -= operand;
-        else if (operation == "multiply") output *= operand;
-        else if (operation == "divide") output /= operand;
-        else if (operation == "min") output = std::min(output, operand);
-        else if (operation == "max") output = std::max(output, operand);
-        point.floatAttributes[outputAttribute] = output;
+        if (operation == "add")
+            output += operand;
+        else if (operation == "subtract")
+            output -= operand;
+        else if (operation == "multiply")
+            output *= operand;
+        else if (operation == "divide")
+            output /= operand;
+        else if (operation == "min")
+            output = std::min(output, operand);
+        else if (operation == "max")
+            output = std::max(output, operand);
+        result.trySetFloatAttribute(int(index), outputAttribute, output)
+            .expect("mathPointFloatAttribute output schema");
     }
     return result;
 }
 
-PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue,
-                                   float maxValue, bool invert) {
+PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue, float maxValue,
+                                   bool invert) {
     if (minValue > maxValue) std::swap(minValue, maxValue);
     PointSet output;
-    for (const auto& point : input.points()) {
-        const auto found   = point.floatAttributes.find(name);
-        const bool matches = found != point.floatAttributes.end() && found->second >= minValue &&
-                             found->second <= maxValue;
-        if (matches != invert) output.points().push_back(point);
+    for (size_t index = 0; index < input.points().size(); ++index) {
+        const auto value   = input.attributes().getFloat(index, name);
+        const bool matches = value && *value >= minValue && *value <= maxValue;
+        if (matches != invert) appendPointRow(output, input, index);
     }
     return output;
 }
 
-PointSet filterPointStringAttribute(const PointSet& input, const std::string& name,
-                                    const std::string& value, bool invert) {
+PointSet filterPointStringAttribute(const PointSet& input, const std::string& name, const std::string& value,
+                                    bool invert) {
     PointSet output;
-    for (const auto& point : input.points()) {
-        const auto found   = point.stringAttributes.find(name);
-        const bool matches = found != point.stringAttributes.end() && found->second == value;
-        if (matches != invert) output.points().push_back(point);
+    for (size_t index = 0; index < input.points().size(); ++index) {
+        const auto found   = input.attributes().getString(index, name);
+        const bool matches = found && *found == value;
+        if (matches != invert) appendPointRow(output, input, index);
     }
     return output;
 }
@@ -846,7 +951,7 @@ PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplie
         const auto&    point      = input.points()[i];
         const uint32_t branchSeed = mix32(seed ^ point.seed ^ uint32_t(i));
         const float    chance     = std::clamp(point.density * multiplier, 0.f, 1.f);
-        if (unitFloat(branchSeed) < chance) output.points().push_back(point);
+        if (unitFloat(branchSeed) < chance) appendPointRow(output, input, i);
     }
     return output;
 }

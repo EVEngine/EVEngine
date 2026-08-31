@@ -13,15 +13,46 @@ namespace {
 
 bool pointSetsEqual(const PointSet& first, const PointSet& second) {
     if (first.getCount() != second.getCount()) return false;
+    if (first.attributes().columnCount() != second.attributes().columnCount()) return false;
     for (int index = 0; index < first.getCount(); ++index) {
         const ProcgenPoint& a = first.points()[size_t(index)];
         const ProcgenPoint& b = second.points()[size_t(index)];
-        if (a.x != b.x || a.y != b.y || a.z != b.z || a.normalX != b.normalX ||
-            a.normalY != b.normalY || a.normalZ != b.normalZ || a.yaw != b.yaw ||
-            a.scaleX != b.scaleX || a.scaleY != b.scaleY || a.scaleZ != b.scaleZ ||
-            a.density != b.density || a.seed != b.seed ||
-            a.floatAttributes != b.floatAttributes || a.stringAttributes != b.stringAttributes)
+        if (a.x != b.x || a.y != b.y || a.z != b.z || a.normalX != b.normalX || a.normalY != b.normalY ||
+            a.normalZ != b.normalZ || a.yaw != b.yaw || a.scaleX != b.scaleX || a.scaleY != b.scaleY ||
+            a.scaleZ != b.scaleZ || a.density != b.density || a.seed != b.seed)
             return false;
+        for (size_t column = 0; column < first.attributes().columnCount(); ++column) {
+            const std::string name(first.attributes().columnName(column));
+            if (first.attributes().typeOf(name) != second.attributes().typeOf(name) ||
+                first.getAttributeType(index, name) != second.getAttributeType(index, name))
+                return false;
+            switch (*first.attributes().typeOf(name)) {
+                case ProcgenAttributeType::Float:
+                    if (first.attributes().getFloat(index, name) != second.attributes().getFloat(index, name))
+                        return false;
+                    break;
+                case ProcgenAttributeType::Int:
+                    if (first.attributes().getInt(index, name) != second.attributes().getInt(index, name)) return false;
+                    break;
+                case ProcgenAttributeType::Bool:
+                    if (first.attributes().getBool(index, name) != second.attributes().getBool(index, name))
+                        return false;
+                    break;
+                case ProcgenAttributeType::String:
+                    if (first.getStringAttribute(index, name, {}) != second.getStringAttribute(index, name, {}))
+                        return false;
+                    break;
+                case ProcgenAttributeType::Vector: {
+                    const auto firstValue  = first.attributes().getVector(index, name);
+                    const auto secondValue = second.attributes().getVector(index, name);
+                    if (firstValue.has_value() != secondValue.has_value()) return false;
+                    if (firstValue && (firstValue->x != secondValue->x || firstValue->y != secondValue->y ||
+                                       firstValue->z != secondValue->z))
+                        return false;
+                    break;
+                }
+            }
+        }
     }
     return true;
 }

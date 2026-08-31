@@ -25,8 +25,7 @@ void BiomeRules::clear() {
     lastOutputCount_    = 0;
 }
 
-bool BiomeRules::addLayer(const std::string& name, SpatialData* spatial, int priority,
-                          float density) {
+bool BiomeRules::addLayer(const std::string& name, SpatialData* spatial, int priority, float density) {
     if (name.empty() || !spatial || hasLayer(name)) return false;
     BiomeLayerRule layer;
     layer.name     = name;
@@ -38,8 +37,8 @@ bool BiomeRules::addLayer(const std::string& name, SpatialData* spatial, int pri
 }
 
 bool BiomeRules::removeLayer(const std::string& name) {
-    const auto found = std::find_if(layers_.begin(), layers_.end(),
-                                    [&](const BiomeLayerRule& layer) { return layer.name == name; });
+    const auto found =
+        std::find_if(layers_.begin(), layers_.end(), [&](const BiomeLayerRule& layer) { return layer.name == name; });
     if (found == layers_.end()) return false;
     layers_.erase(found);
     return true;
@@ -59,8 +58,8 @@ float BiomeRules::getLayerDensity(const std::string& name) const {
     return layer ? layer->density : 0.f;
 }
 
-bool BiomeRules::addAsset(const std::string& layerName, const std::string& asset, float weight,
-                          float minScale, float maxScale, bool randomYaw) {
+bool BiomeRules::addAsset(const std::string& layerName, const std::string& asset, float weight, float minScale,
+                          float maxScale, bool randomYaw) {
     auto* layer = findLayer(layerName);
     if (!layer || asset.empty() || weight <= 0.f || minScale <= 0.f || maxScale <= 0.f) return false;
     if (minScale > maxScale) std::swap(minScale, maxScale);
@@ -74,8 +73,7 @@ int BiomeRules::getAssetCount(const std::string& layerName) const {
 }
 std::string BiomeRules::getAssetName(const std::string& layerName, int index) const {
     const auto* layer = findLayer(layerName);
-    return layer && index >= 0 && index < int(layer->assets.size())
-               ? layer->assets[size_t(index)].asset
+    return layer && index >= 0 && index < int(layer->assets.size()) ? layer->assets[size_t(index)].asset
                : std::string();
 }
 
@@ -101,7 +99,8 @@ PointSet* BiomeRules::generate(SpatialData* domain, float spacing, uint32_t seed
     PointSet candidates = domain->sample(spacing, seed, jitter);
     lastCandidateCount_ = candidates.getCount();
     PointSet output;
-    for (const auto& candidate : candidates.points()) {
+    for (size_t candidateIndex = 0; candidateIndex < candidates.points().size(); ++candidateIndex) {
+        const auto& candidate = candidates.points()[candidateIndex];
         bool excluded = false;
         for (const auto& exclusion : exclusions_) {
             if (exclusion->contains(candidate.x, candidate.y, candidate.z)) {
@@ -133,16 +132,16 @@ PointSet* BiomeRules::generate(SpatialData* domain, float spacing, uint32_t seed
         }
 
         ProcgenPoint point = candidate;
-        point.stringAttributes["biome"] = selected->name;
-        point.stringAttributes["asset"] = selectedAsset->asset;
         point.density = selected->density;
         const float scaleT = biomeUnit(densitySeed ^ 0x9e3779b9u);
-        const float scale  = selectedAsset->minScale +
-                            (selectedAsset->maxScale - selectedAsset->minScale) * scaleT;
+        const float scale  = selectedAsset->minScale + (selectedAsset->maxScale - selectedAsset->minScale) * scaleT;
         point.scaleX = point.scaleY = point.scaleZ = scale;
-        if (selectedAsset->randomYaw)
-            point.yaw = biomeUnit(densitySeed ^ 0xdeadbeefu) * 360.f;
-        output.points().push_back(std::move(point));
+        if (selectedAsset->randomYaw) point.yaw = biomeUnit(densitySeed ^ 0xdeadbeefu) * 360.f;
+        const int outputIndex =
+            std::move(output.appendPointFrom(candidates, candidateIndex)).expect("biome output attribute schema");
+        output.mutablePoint(size_t(outputIndex)) = std::move(point);
+        output.trySetStringAttribute(outputIndex, "biome", selected->name).expect("biome metadata schema");
+        output.trySetStringAttribute(outputIndex, "asset", selectedAsset->asset).expect("biome asset metadata schema");
     }
     lastOutputCount_ = output.getCount();
     return new PointSet(std::move(output));
@@ -151,20 +150,20 @@ PointSet* BiomeRules::generate(SpatialData* domain, float spacing, uint32_t seed
 std::string BiomeRules::getError() const { return error_; }
 std::string BiomeRules::debugReport() const {
     std::ostringstream out;
-    out << "layers=" << layers_.size() << " exclusions=" << exclusions_.size()
-        << " candidates=" << lastCandidateCount_ << " output=" << lastOutputCount_;
+    out << "layers=" << layers_.size() << " exclusions=" << exclusions_.size() << " candidates=" << lastCandidateCount_
+        << " output=" << lastOutputCount_;
     if (!error_.empty()) out << " error=" << error_;
     return out.str();
 }
 
 BiomeLayerRule* BiomeRules::findLayer(const std::string& name) {
-    const auto found = std::find_if(layers_.begin(), layers_.end(),
-                                    [&](const BiomeLayerRule& layer) { return layer.name == name; });
+    const auto found =
+        std::find_if(layers_.begin(), layers_.end(), [&](const BiomeLayerRule& layer) { return layer.name == name; });
     return found == layers_.end() ? nullptr : &*found;
 }
 const BiomeLayerRule* BiomeRules::findLayer(const std::string& name) const {
-    const auto found = std::find_if(layers_.begin(), layers_.end(),
-                                    [&](const BiomeLayerRule& layer) { return layer.name == name; });
+    const auto found =
+        std::find_if(layers_.begin(), layers_.end(), [&](const BiomeLayerRule& layer) { return layer.name == name; });
     return found == layers_.end() ? nullptr : &*found;
 }
 

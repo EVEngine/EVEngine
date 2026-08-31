@@ -449,11 +449,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     ProcgenCellRequest* equivalentRequest = equivalent.nextGenerate();
     REQUIRE(bool(equivalentRequest));
     PointSet equivalentPoints = points;
-    equivalentPoints.points()[0].floatAttributes.clear();
-    equivalentPoints.points()[0].intAttributes.clear();
-    equivalentPoints.points()[0].boolAttributes.clear();
-    equivalentPoints.points()[0].vectorAttributes.clear();
-    equivalentPoints.points()[0].stringAttributes.clear();
+    equivalentPoints.clearPointAttributes(0).expect("runtime generation test metadata reset");
     equivalentPoints.setFloatAttribute(0, "roughness", 0.4f);
     equivalentPoints.setFloatAttribute(0, "slope", 12.5f);
     equivalentPoints.setIntAttribute(0, "variant", 7);
