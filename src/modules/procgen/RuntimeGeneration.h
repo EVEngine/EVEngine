@@ -1,6 +1,6 @@
 #pragma once
 
-#include "procgen/PointSet.h"
+#include "procgen/PointDelta.h"
 
 #include <cstdint>
 #include <string>
@@ -143,6 +143,25 @@ public:
     bool      hasCell(int level, int x, int z) const;
     PointSet* getCellOutput(int level, int x, int z) const;
     uint64_t  getCellRevision(int level, int x, int z) const;
+    /**
+     * @brief Atomically replace an active cell through an identity-based delta.
+     * @param expectedRevision Exact active revision observed by the caller.
+     * @param output Complete desired snapshot whose points have unique non-zero ids.
+     * @return The committed revision, or a structured stale/schema/budget failure.
+     */
+    [[nodiscard]] Result<uint64_t> applyCellUpdate(int level, int x, int z, uint64_t expectedRevision,
+                                                   const PointSet& output);
+    /**
+     * @brief Assign deterministic identities to a legacy active cell atomically.
+     * @return The committed revision; no revision is consumed when validation fails.
+     */
+    [[nodiscard]] Result<uint64_t> migrateCellPointIds(int level, int x, int z, uint64_t expectedRevision);
+    /**
+     * @brief Return a caller-owned copy of the latest committed delta, or null when unavailable.
+     * @ownership Owned; the caller must delete the returned delta. Script bindings transfer ownership to the VM.
+     * @return A heap object owned by the caller; script bindings transfer ownership to the VM.
+     */
+    PointDelta* getCellDelta(int level, int x, int z) const;
     /** @brief Serialize one active cell cache entry in a deterministic versioned format. */
     std::string serializeCell(int level, int x, int z) const;
     /** @brief Atomically restore one cell produced by serializeCell for this world seed. */
@@ -175,6 +194,8 @@ private:
         int      failures = 0;
         bool     trimmed  = false;
         PointSet output;
+        PointDelta delta;
+        bool       hasDelta = false;
     };
     struct Source {
         float x           = 0.f;

@@ -196,6 +196,7 @@ TEST_CASE("procgen.generatedArtifact.denseSnapshotRoundTripsEveryPayloadAndRebui
     points.setSteepness(point, .65f);
     points.setDensity(point, .75f);
     points.setPointSeed(point, 123u);
+    points.trySetPointId(point, 18446744073709551614ull).expect("artifact snapshot point id");
     points.setFloatAttribute(point, "weight", 1.5f);
     points.setIntAttribute(point, "variant", 4);
     points.setBoolAttribute(point, "enabled", true);
@@ -284,6 +285,7 @@ TEST_CASE("procgen.generatedArtifact.denseSnapshotRoundTripsEveryPayloadAndRebui
     CHECK_EQ(restoredPoints.getBoundsMinY(0), -2.f);
     CHECK_EQ(restoredPoints.getColorA(0), .4f);
     CHECK_EQ(restoredPoints.getSteepness(0), .65f);
+    CHECK_EQ(restoredPoints.getPointId(0), 18446744073709551614ull);
     CHECK_EQ(restoredPoints.getIntAttribute(0, "variant", -1), 4);
     CHECK(restoredPoints.getBoolAttribute(0, "enabled", false));
     CHECK_EQ(restoredPoints.getVectorAttributeZ(0, "wind", -1.f), 7.f);

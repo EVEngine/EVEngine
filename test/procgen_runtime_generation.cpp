@@ -4,6 +4,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <simplesquirrel/simplesquirrel.hpp>
+
 #include <memory>
 #include <utility>
 
@@ -331,6 +333,138 @@ TEST_CASE("procgen.runtimeGeneration.enforcesPointMemoryBudgets") {
     CHECK(runtime->debugReport().find("residentPoints=1") != std::string::npos);
 }
 
+TEST_CASE("procgen.runtimeGeneration.appliesIdentityDeltaAtomically") {
+    Procgen proc;
+    auto    runtime = requireRuntime(proc, 930);
+    runtime->addLevel(10.f, 6.f, 1.5f);
+    runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+    auto generated = ownRequest(runtime->nextGenerate());
+    REQUIRE(bool(generated));
+    const int level = generated->getLevel();
+    const int x     = generated->getX();
+    const int z     = generated->getZ();
+
+    PointSet initial = sampleGridPoints(2, 2, 1.f, 11, 0.f);
+    CHECK(runtime->completeGeneration(generated.get(), &initial));
+    PointSet updated;
+    updated.appendPointFrom(initial, 2).expect("runtime delta reordered point");
+    updated.appendPointFrom(initial, 0).expect("runtime delta updated point");
+    updated.setPosition(1, 7.f, 2.f, -3.f);
+    ProcgenPoint added;
+    added.id   = derivePointId(991, 1);
+    added.seed = 88;
+    const int addedIndex = updated.appendPoint(added);
+    (void)addedIndex;
+
+    auto committed = runtime->applyCellUpdate(level, x, z, 1, updated);
+    REQUIRE(committed.ok());
+    CHECK_EQ(committed.value(), std::uint64_t(2));
+    CHECK_EQ(runtime->getCellRevision(level, x, z), std::uint64_t(2));
+    auto delta = std::unique_ptr<PointDelta>(runtime->getCellDelta(level, x, z));
+    REQUIRE(bool(delta));
+    CHECK_EQ(delta->added.getCount(), 1);
+    CHECK_EQ(delta->updated.getCount(), 1);
+    CHECK_EQ(delta->removed.size(), std::size_t(2));
+    auto stored = std::unique_ptr<PointSet>(runtime->getCellOutput(level, x, z));
+    REQUIRE(bool(stored));
+    auto expectedFingerprint = fingerprintPointSet(updated);
+    auto actualFingerprint   = fingerprintPointSet(*stored);
+    REQUIRE(expectedFingerprint.ok());
+    REQUIRE(actualFingerprint.ok());
+    CHECK_EQ(actualFingerprint.value(), expectedFingerprint.value());
+}
+
+TEST_CASE("procgen.runtimeGeneration.rejectsStaleAndOverBudgetDeltaWithoutMutation") {
+    Procgen proc;
+    auto    runtime = requireRuntime(proc, 931);
+    runtime->addLevel(10.f, 6.f, 1.5f);
+    runtime->setMaxPointsPerCell(2);
+    runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+    auto generated = ownRequest(runtime->nextGenerate());
+    REQUIRE(bool(generated));
+    const int level = generated->getLevel();
+    const int x     = generated->getX();
+    const int z     = generated->getZ();
+    PointSet initial = sampleGridPoints(2, 1, 1.f, 12, 0.f);
+    CHECK(runtime->completeGeneration(generated.get(), &initial));
+
+    PointSet changed = initial;
+    changed.setPosition(0, 4.f, 0.f, 0.f);
+    auto stale = runtime->applyCellUpdate(level, x, z, 9, changed);
+    CHECK(!stale.ok());
+    CHECK_EQ(runtime->getCellRevision(level, x, z), std::uint64_t(1));
+
+    ProcgenPoint extra;
+    extra.id = derivePointId(932, 1);
+    const int extraIndex = changed.appendPoint(extra);
+    (void)extraIndex;
+    auto overBudget = runtime->applyCellUpdate(level, x, z, 1, changed);
+    CHECK(!overBudget.ok());
+    CHECK_EQ(runtime->getCellRevision(level, x, z), std::uint64_t(1));
+    CHECK(!runtime->getCellDelta(level, x, z));
+    auto stored = std::unique_ptr<PointSet>(runtime->getCellOutput(level, x, z));
+    REQUIRE(bool(stored));
+    CHECK_EQ(stored->getX(0), initial.getX(0));
+}
+
+TEST_CASE("procgen.runtimeGeneration.migratesLegacyCellIdsBeforeIncrementalUpdates") {
+    Procgen proc;
+    auto    runtime = requireRuntime(proc, 933);
+    runtime->addLevel(10.f, 6.f, 1.5f);
+    runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+    auto generated = ownRequest(runtime->nextGenerate());
+    REQUIRE(bool(generated));
+    const int level = generated->getLevel();
+    const int x     = generated->getX();
+    const int z     = generated->getZ();
+    PointSet legacy;
+    legacy.add(1.f, 0.f, 2.f);
+    legacy.add(3.f, 0.f, 4.f);
+    CHECK(runtime->completeGeneration(generated.get(), &legacy));
+    auto rejected = runtime->applyCellUpdate(level, x, z, 1, legacy);
+    CHECK(!rejected.ok());
+
+    auto migrated = runtime->migrateCellPointIds(level, x, z, 1);
+    REQUIRE(migrated.ok());
+    CHECK_EQ(migrated.value(), std::uint64_t(2));
+    auto stored = std::unique_ptr<PointSet>(runtime->getCellOutput(level, x, z));
+    REQUIRE(bool(stored));
+    CHECK_NE(stored->getPointId(0), std::uint64_t(0));
+    CHECK_NE(stored->getPointId(1), std::uint64_t(0));
+    CHECK_NE(stored->getPointId(0), stored->getPointId(1));
+}
+
+TEST_CASE("procgen.runtimeGeneration.squirrelAppliesAndInspectsCellDelta") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local runtimeResult = procgen.newRuntimeGeneration(934);
+        local pointsResult = procgen.sampleGrid(2, 1, 1.0, 17, 0.0);
+        if (runtimeResult.ok && pointsResult.ok) {
+            local runtime = runtimeResult.value;
+            local points = pointsResult.value;
+            runtime.addLevel(10.0, 6.0, 1.5);
+            runtime.updateSource(5.0, 5.0, 1.0, 0.0);
+            local request = runtime.nextGenerate();
+            if (request != null && runtime.completeGeneration(request, points)) {
+                points.setPosition(0, 9.0, 2.0, -3.0);
+                local update = runtime.applyCellUpdate(
+                    request.getLevel(), request.getX(), request.getZ(), "1", points);
+                local delta = runtime.getCellDelta(request.getLevel(), request.getX(), request.getZ());
+                if (update.ok && update.value == "2" && delta != null &&
+                    delta.getAddedCount() == 0 && delta.getUpdatedCount() == 1 &&
+                    delta.getRemovedCount() == 0 && delta.getTargetCount() == 2 &&
+                    delta.getBaseFingerprint() != delta.getTargetFingerprint() &&
+                    delta.getUpdated().getPointId(0) == points.getPointId(0))
+                    result = "ok";
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}
+
 TEST_CASE("procgen.runtimeGeneration.breaksEqualPriorityTiesDeterministically") {
     Procgen proc;
     auto    first  = requireRuntime(proc, 17);
@@ -430,6 +564,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     points.setSteepness(point, 0.65f);
     points.setDensity(point, 0.75f);
     points.setPointSeed(point, 1234);
+    points.trySetPointId(point, 18446744073709551614ull).expect("runtime generation test point id");
     points.setFloatAttribute(point, "slope", 12.5f);
     points.setFloatAttribute(point, "roughness", 0.4f);
     points.setIntAttribute(point, "variant", 7);
@@ -442,7 +577,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     delete generated;
 
     const std::string persisted = source.serializeCell(level, x, z);
-    CHECK(persisted.find("EVPCG_CELL 2 404") == 0);
+    CHECK(persisted.find("EVPCG_CELL 3 404") == 0);
     RuntimeGeneration equivalent(404);
     equivalent.addLevel(10.f, 6.f, 1.5f);
     equivalent.updateSource(5.f, 5.f, 1.f, 0.f);
@@ -476,6 +611,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     CHECK_EQ(loaded->getBoundsMinY(0), -2.f);
     CHECK_EQ(loaded->getColorA(0), 0.4f);
     CHECK_EQ(loaded->getSteepness(0), 0.65f);
+    CHECK_EQ(loaded->getPointId(0), 18446744073709551614ull);
     CHECK_EQ(loaded->getFloatAttribute(0, "slope", -1.f), 12.5f);
     CHECK_EQ(loaded->getIntAttribute(0, "variant", -1), 7);
     CHECK(loaded->getBoolAttribute(0, "hero", false));
@@ -506,5 +642,17 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     CHECK_EQ(legacyPoints->getPitch(0), 0.f);
     CHECK_EQ(legacyPoints->getColorR(0), 1.f);
     CHECK_EQ(legacyPoints->getSteepness(0), 0.5f);
+    CHECK_EQ(legacyPoints->getPointId(0), uint64_t(0));
     delete legacyPoints;
+
+    RuntimeGeneration legacyV2Runtime(404);
+    legacyV2Runtime.addLevel(10.f, 6.f, 1.5f);
+    const std::string legacyV2 =
+        "EVPCG_CELL 2 404 0 0 0 1 10\nPOINTS 1\n"
+        "POINT 1 2 3 0 1 0 10 90 20 1 1 1 0.5 77 0 0 0 0 0 0 1 1 1 1 0.5\nEND\n";
+    CHECK(legacyV2Runtime.deserializeCell(legacyV2));
+    PointSet* legacyV2Points = legacyV2Runtime.getCellOutput(0, 0, 0);
+    REQUIRE(bool(legacyV2Points));
+    CHECK_EQ(legacyV2Points->getPointId(0), uint64_t(0));
+    delete legacyV2Points;
 }

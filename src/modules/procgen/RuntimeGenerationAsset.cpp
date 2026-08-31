@@ -13,7 +13,7 @@ std::string RuntimeGeneration::serializeCell(int level, int x, int z) const {
     if (found == cells_.end() || found->second.state != State::Active) return {};
     std::ostringstream out;
     out << std::setprecision(std::numeric_limits<float>::max_digits10);
-    out << "EVPCG_CELL 2 " << worldSeed_ << ' ' << level << ' ' << x << ' ' << z << ' ' << found->second.revision << ' '
+    out << "EVPCG_CELL 3 " << worldSeed_ << ' ' << level << ' ' << x << ' ' << z << ' ' << found->second.revision << ' '
         << levels_[size_t(level)].cellSize << '\n';
     out << "POINTS " << found->second.output.getCount() << '\n';
     const auto& points = found->second.output.points();
@@ -22,6 +22,7 @@ std::string RuntimeGeneration::serializeCell(int level, int x, int z) const {
         out << "POINT " << point.x << ' ' << point.y << ' ' << point.z << ' ' << point.normalX << ' ' << point.normalY
             << ' ' << point.normalZ << ' ' << point.pitch << ' ' << point.yaw << ' ' << point.roll << ' '
             << point.scaleX << ' ' << point.scaleY << ' ' << point.scaleZ << ' ' << point.density << ' ' << point.seed
+            << ' ' << point.id
             << ' ' << point.boundsMinX << ' ' << point.boundsMinY << ' ' << point.boundsMinZ << ' ' << point.boundsMaxX
             << ' ' << point.boundsMaxY << ' ' << point.boundsMaxZ << ' ' << point.colorR << ' ' << point.colorG << ' '
             << point.colorB << ' ' << point.colorA << ' ' << point.steepness << '\n';
@@ -73,7 +74,7 @@ bool RuntimeGeneration::deserializeCell(const std::string& definition) {
     uint64_t revision = 0;
     float cellSize = 0.f;
     if (!(input >> magic >> version >> seed >> key.level >> key.x >> key.z >> revision >> cellSize) ||
-        magic != "EVPCG_CELL" || (version != 1 && version != 2) || seed != worldSeed_ || revision == 0 ||
+        magic != "EVPCG_CELL" || (version != 1 && version != 2 && version != 3) || seed != worldSeed_ || revision == 0 ||
         key.level < 0 || key.level >= int(levels_.size()) || !std::isfinite(cellSize) ||
         cellSize != levels_[size_t(key.level)].cellSize)
         return false;
@@ -90,12 +91,16 @@ bool RuntimeGeneration::deserializeCell(const std::string& definition) {
             if (!(input >> point.x >> point.y >> point.z >> point.normalX >> point.normalY >> point.normalZ >>
                   point.yaw >> point.scaleX >> point.scaleY >> point.scaleZ >> point.density >> point.seed))
                 return false;
-        } else if (!(input >> point.x >> point.y >> point.z >> point.normalX >> point.normalY >> point.normalZ >>
-                     point.pitch >> point.yaw >> point.roll >> point.scaleX >> point.scaleY >> point.scaleZ >>
-                     point.density >> point.seed >> point.boundsMinX >> point.boundsMinY >> point.boundsMinZ >>
-                     point.boundsMaxX >> point.boundsMaxY >> point.boundsMaxZ >> point.colorR >> point.colorG >>
-                     point.colorB >> point.colorA >> point.steepness)) {
-            return false;
+        } else {
+            if (!(input >> point.x >> point.y >> point.z >> point.normalX >> point.normalY >> point.normalZ >>
+                  point.pitch >> point.yaw >> point.roll >> point.scaleX >> point.scaleY >> point.scaleZ >>
+                  point.density >> point.seed))
+                return false;
+            if (version == 3 && !(input >> point.id)) return false;
+            if (!(input >> point.boundsMinX >> point.boundsMinY >> point.boundsMinZ >> point.boundsMaxX >>
+                  point.boundsMaxY >> point.boundsMaxZ >> point.colorR >> point.colorG >> point.colorB >>
+                  point.colorA >> point.steepness))
+                return false;
         }
         if (!std::isfinite(point.x) || !std::isfinite(point.y) || !std::isfinite(point.z) ||
             !std::isfinite(point.normalX) || !std::isfinite(point.normalY) || !std::isfinite(point.normalZ) ||

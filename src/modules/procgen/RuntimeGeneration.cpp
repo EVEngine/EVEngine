@@ -375,6 +375,7 @@ bool RuntimeGeneration::completeGeneration(ProcgenCellRequest* request, PointSet
         return false;
     }
     found->second.output = *output;
+    found->second.hasDelta = false;
     found->second.failures = 0;
     ++found->second.revision;
     found->second.state = State::Active;
@@ -426,6 +427,67 @@ PointSet* RuntimeGeneration::getCellOutput(int level, int x, int z) const {
 uint64_t RuntimeGeneration::getCellRevision(int level, int x, int z) const {
     const auto found = cells_.find({level, x, z});
     return found == cells_.end() ? 0 : found->second.revision;
+}
+
+Result<uint64_t> RuntimeGeneration::applyCellUpdate(int level, int x, int z, uint64_t expectedRevision,
+                                                    const PointSet& output) {
+    const auto found = cells_.find({level, x, z});
+    if (found == cells_.end() || found->second.state != State::Active)
+        return Result<uint64_t>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "active runtime-generation cell was not found", "cell"));
+    if (expectedRevision == 0 || found->second.revision != expectedRevision)
+        return Result<uint64_t>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "runtime-generation cell revision is stale", "revision"));
+
+    auto delta = diffPointSets(found->second.output, output);
+    if (!delta.ok()) return Result<uint64_t>::failure(delta.status());
+    auto staged = applyPointDelta(found->second.output, delta.value());
+    if (!staged.ok()) return Result<uint64_t>::failure(staged.status());
+
+    const int outputPoints = staged.value().getCount();
+    const std::int64_t projectedResident = std::int64_t(getResidentPointCount()) - found->second.output.getCount() +
+                                           outputPoints;
+    if ((maxPointsPerCell_ > 0 && outputPoints > maxPointsPerCell_) ||
+        (maxResidentPoints_ > 0 && projectedResident > maxResidentPoints_)) {
+        ++rejectedOutputCount_;
+        return Result<uint64_t>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                              "runtime-generation cell update exceeds the configured point budget", "output"));
+    }
+
+    found->second.output   = std::move(staged).takeValue();
+    found->second.delta    = std::move(delta).takeValue();
+    found->second.hasDelta = true;
+    ++found->second.revision;
+    return Result<uint64_t>::success(found->second.revision);
+}
+
+Result<uint64_t> RuntimeGeneration::migrateCellPointIds(int level, int x, int z, uint64_t expectedRevision) {
+    const CellKey key{level, x, z};
+    const auto    found = cells_.find(key);
+    if (found == cells_.end() || found->second.state != State::Active)
+        return Result<uint64_t>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "active runtime-generation cell was not found", "cell"));
+    if (expectedRevision == 0 || found->second.revision != expectedRevision)
+        return Result<uint64_t>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "runtime-generation cell revision is stale", "revision"));
+
+    PointSet staged = found->second.output;
+    const std::uint64_t identityNamespace =
+        derivePointId((std::uint64_t(worldSeed_) << 32u) | cellSeed(key), found->second.revision);
+    auto assigned = staged.assignPointIds(identityNamespace);
+    if (!assigned.ok()) return Result<uint64_t>::failure(assigned.status());
+    found->second.output   = std::move(staged);
+    found->second.hasDelta = false;
+    ++found->second.revision;
+    return Result<uint64_t>::success(found->second.revision);
+}
+
+PointDelta* RuntimeGeneration::getCellDelta(int level, int x, int z) const {
+    const auto found = cells_.find({level, x, z});
+    return found != cells_.end() && found->second.state == State::Active && found->second.hasDelta
+               ? new PointDelta(found->second.delta)
+               : nullptr;
 }
 
 std::string RuntimeGeneration::debugReport() const {

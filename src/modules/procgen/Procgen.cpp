@@ -29,6 +29,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <any>
+#include <charconv>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -2673,6 +2674,16 @@ void Procgen::expose(ssq::Table &table) {
     points.addFunc("getDensity", &PointSet::getDensity);
     points.addFunc("setPointSeed", &PointSet::setPointSeed);
     points.addFunc("getPointSeed", &PointSet::getPointSeed);
+    points.addFunc("getPointId", [](PointSet* value, int index) { return std::to_string(value->getPointId(index)); });
+    points.addFunc("assignPointIds", [](PointSet* value, const std::string& namespaceText) {
+        std::uint64_t namespaceId = 0;
+        const auto [end, error] =
+            std::from_chars(namespaceText.data(), namespaceText.data() + namespaceText.size(), namespaceId);
+        if (error != std::errc{} || end != namespaceText.data() + namespaceText.size() || namespaceId == 0)
+            throw std::invalid_argument("assignPointIds: namespace must be a non-zero unsigned decimal string");
+        auto assigned = value->assignPointIds(namespaceId);
+        if (!assigned.ok()) throw std::invalid_argument("assignPointIds: point set contains duplicate identities");
+    });
     points.addFunc("setFloatAttribute", &PointSet::setFloatAttribute);
     points.addFunc("getFloatAttribute", &PointSet::getFloatAttribute);
     points.addFunc("hasFloatAttribute", &PointSet::hasFloatAttribute);
@@ -2729,6 +2740,29 @@ void Procgen::expose(ssq::Table &table) {
     spatial.addFunc("getMaxX", &SpatialData::getMaxX);
     spatial.addFunc("getMaxY", &SpatialData::getMaxY);
     spatial.addFunc("getMaxZ", &SpatialData::getMaxZ);
+
+    auto pointDelta = table.addClass<PointDelta>(
+        "ProcgenPointDelta", std::function<PointDelta*()>([]() -> PointDelta* { return nullptr; }), true);
+    pointDelta.addFunc("getAddedCount", [](PointDelta* value) { return value->added.getCount(); });
+    pointDelta.addFunc("getUpdatedCount", [](PointDelta* value) { return value->updated.getCount(); });
+    pointDelta.addFunc("getRemovedCount", [](PointDelta* value) { return int(value->removed.size()); });
+    pointDelta.addFunc("getTargetCount", [](PointDelta* value) { return int(value->targetOrder.size()); });
+    pointDelta.addFunc("getAdded", [](PointDelta* value) { return new PointSet(value->added); });
+    pointDelta.addFunc("getUpdated", [](PointDelta* value) { return new PointSet(value->updated); });
+    pointDelta.addFunc("getRemovedId", [](PointDelta* value, int index) {
+        if (index < 0 || std::size_t(index) >= value->removed.size())
+            throw std::out_of_range("getRemovedId: index is out of range");
+        return std::to_string(value->removed[std::size_t(index)]);
+    });
+    pointDelta.addFunc("getTargetId", [](PointDelta* value, int index) {
+        if (index < 0 || std::size_t(index) >= value->targetOrder.size())
+            throw std::out_of_range("getTargetId: index is out of range");
+        return std::to_string(value->targetOrder[std::size_t(index)]);
+    });
+    pointDelta.addFunc("getBaseFingerprint",
+                       [](PointDelta* value) { return std::to_string(value->baseFingerprint); });
+    pointDelta.addFunc("getTargetFingerprint",
+                       [](PointDelta* value) { return std::to_string(value->targetFingerprint); });
 
     auto cellRequest = table.addClass<ProcgenCellRequest>(
         "ProcgenCellRequest", std::function<ProcgenCellRequest*()>([]() -> ProcgenCellRequest* { return nullptr; }),
@@ -2795,6 +2829,39 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("hasCell", &RuntimeGeneration::hasCell);
     runtimeGeneration.addFunc("getCellOutput", &RuntimeGeneration::getCellOutput);
     runtimeGeneration.addFunc("getCellRevision", &RuntimeGeneration::getCellRevision);
+    runtimeGeneration.addFunc(
+        "applyCellUpdate", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value, int level, int x, int z,
+                                                                 const std::string& revisionText, PointSet* output) {
+            std::uint64_t revision = 0;
+            const auto [end, error] =
+                std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), revision);
+            if (!output || error != std::errc{} || end != revisionText.data() + revisionText.size() || revision == 0)
+                return eve::script::projectResult(
+                    vm, procgenBindingFailure<std::uint64_t>(
+                            eve::DiagnosticCode::InvalidArgument,
+                            "applyCellUpdate requires an output and a non-zero decimal revision", "revision"),
+                    [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+            return eve::script::projectResult(
+                vm, value->applyCellUpdate(level, x, z, revision, *output),
+                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+        });
+    runtimeGeneration.addFunc(
+        "migrateCellPointIds", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value, int level, int x, int z,
+                                                                     const std::string& revisionText) {
+            std::uint64_t revision = 0;
+            const auto [end, error] =
+                std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), revision);
+            if (error != std::errc{} || end != revisionText.data() + revisionText.size() || revision == 0)
+                return eve::script::projectResult(
+                    vm, procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                             "migrateCellPointIds requires a non-zero decimal revision",
+                                                             "revision"),
+                    [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+            return eve::script::projectResult(
+                vm, value->migrateCellPointIds(level, x, z, revision),
+                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+        });
+    runtimeGeneration.addFunc("getCellDelta", &RuntimeGeneration::getCellDelta);
     runtimeGeneration.addFunc("serializeCell", &RuntimeGeneration::serializeCell);
     runtimeGeneration.addFunc("deserializeCell", &RuntimeGeneration::deserializeCell);
     runtimeGeneration.addFunc("debugReport", &RuntimeGeneration::debugReport);

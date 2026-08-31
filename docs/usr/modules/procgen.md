@@ -238,6 +238,12 @@ roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材�
 `getColorR`、`getColorG`、`getColorB`、`getColorA`，以及归一化坡度
 `getSteepness`。
 
+每个新采样点都有稳定的非零身份。脚本使用 `getPointId(index)` 读取十进制字符串，
+避免 64 位身份在 Squirrel 数值转换中丢失精度。旧缓存或手工构造的点可能返回 `"0"`；
+可调用 `assignPointIds(namespace)`，其中 `namespace` 是非零十进制字符串，为缺失身份的点
+确定性补齐 ID。已有重复 ID 时操作会失败且不会部分修改集合。过滤和变换保留身份，
+`copyPoints` 为每个 source/target 组合派生新的稳定身份。
+
 点元数据支持 `setIntAttribute`、`getIntAttribute`、`hasIntAttribute`，
 `setBoolAttribute`、`getBoolAttribute`、`hasBoolAttribute`，以及
 `setVectorAttribute`、`getVectorAttributeX`、`getVectorAttributeY`、
@@ -248,6 +254,15 @@ roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材�
 `copyPoints` 按 target-major 顺序复制源点，`transformPoints3D` 应用完整
 pitch/yaw/roll、平移和非均匀缩放。`remapDensity` 重映射密度，
 `mathFloatAttribute` 对浮点元数据执行受检的标量运算。
+
+运行时 cell 热重载使用 `applyCellUpdate(level, x, z, revision, points)`；`revision`
+以非零十进制字符串传入，返回的 Result `value` 也是字符串。提交成功后可通过
+`getCellDelta()` 获取 `ProcgenPointDelta`，并用 `getAdded()`、`getUpdated()`、
+`getAddedCount()`、`getUpdatedCount()`、`getRemovedCount()`、`getRemovedId()`、
+`getTargetCount()`、`getTargetId()`、`getBaseFingerprint()` 和
+`getTargetFingerprint()` 驱动局部场景更新。旧 cell 可先调用
+`migrateCellPointIds()`；过期 revision、重复/缺失 ID、schema 冲突或点预算超限均返回
+失败 Result，且不会修改 cell 快照或递增 revision。
 
 空间数据构造器包括 `polygonVolume`、`textureMaskData` 和 `meshSurfaceData`。
 它们可继续传给统一的 spatial union/intersection/difference、采样、过滤和投射 API。

@@ -335,6 +335,7 @@ eve::Value encodePointSet(const PointSet &points) {
         encoded.emplace("scaleZ", eve::Value(point.scaleZ));
         encoded.emplace("density", eve::Value(point.density));
         encoded.emplace("seed", eve::Value(std::int64_t(point.seed)));
+        encoded.emplace("id", eve::Value(std::to_string(point.id)));
         encoded.emplace("boundsMinX", eve::Value(point.boundsMinX));
         encoded.emplace("boundsMinY", eve::Value(point.boundsMinY));
         encoded.emplace("boundsMinZ", eve::Value(point.boundsMinZ));
@@ -754,6 +755,7 @@ bool decodePayload(ArtifactType type, const eve::Value *encoded, ArtifactLeafPay
             const auto*                                             item = encodedPoint.getIf<eve::Value::Object>();
             ProcgenPoint                                            point;
             std::int64_t                                            seed = 0;
+            std::string                                             pointIdText;
             std::unordered_map<std::string, float>                  floatAttributes;
             std::unordered_map<std::string, std::int64_t>           intAttributes;
             std::unordered_map<std::string, bool>                   boolAttributes;
@@ -786,6 +788,12 @@ bool decodePayload(ArtifactType type, const eve::Value *encoded, ArtifactLeafPay
                 !decodeStringMap(stateMember(*item, "stringAttributes"), stringAttributes))
                 return false;
             point.seed = static_cast<std::uint32_t>(seed);
+            if (const eve::Value* encodedId = stateMember(*item, "id")) {
+                const auto* text = encodedId->getIf<std::string>();
+                if (!text) return false;
+                const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), point.id);
+                if (error != std::errc{} || end != text->data() + text->size()) return false;
+            }
             const int pointIndex = points.appendPoint(std::move(point));
             for (const auto& [name, value] : floatAttributes)
                 if (!points.trySetFloatAttribute(pointIndex, name, value).ok()) return false;
