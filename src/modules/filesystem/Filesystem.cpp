@@ -53,6 +53,11 @@ eve::Result<void> atomicWriteFailure(eve::DiagnosticCode code, std::string messa
         eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "filesystem.atomic-write"));
 }
 
+std::filesystem::path pathFromUtf8(std::string_view text) {
+    const auto *data = reinterpret_cast<const char8_t *>(text.data());
+    return std::filesystem::path(std::u8string_view(data, text.size()));
+}
+
 bool validRelativeSavePath(const std::filesystem::path &path) {
     if (path.empty() || path.is_absolute() || path.has_root_name() || path.has_root_directory()) return false;
     for (const auto &part : path) {
@@ -87,7 +92,7 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
                               "atomic save replacement is unavailable on the WebGPU filesystem", {});
 #else
     const std::string relativeText(filename);
-    const std::filesystem::path relative = std::filesystem::u8path(relativeText).lexically_normal();
+    const std::filesystem::path relative = pathFromUtf8(relativeText).lexically_normal();
     if (!validRelativeSavePath(relative))
         return atomicWriteFailure(eve::DiagnosticCode::InvalidArgument,
                                   "atomic save path must be relative and cannot traverse parents", relativeText);
@@ -95,7 +100,7 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
     if (saveDirectory.empty())
         return atomicWriteFailure(eve::DiagnosticCode::PreconditionViolation,
                                   "filesystem write directory is not configured", relativeText);
-    const std::filesystem::path base = std::filesystem::u8path(saveDirectory).lexically_normal();
+    const std::filesystem::path base = pathFromUtf8(saveDirectory).lexically_normal();
     const std::filesystem::path target = (base / relative).lexically_normal();
     if (target.parent_path().empty() || !std::filesystem::exists(target.parent_path()))
         return atomicWriteFailure(eve::DiagnosticCode::NotFound,
