@@ -797,6 +797,8 @@ eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenP
         const auto               explicitId = view->attributes().getString(pointIndex, "instanceId");
         if (explicitId && !explicitId->empty())
             instance.id = *explicitId;
+        else if (point.id != 0)
+            instance.id = "pcg-id-" + std::to_string(point.id);
         else
             instance.id = "pcg-" + std::to_string(point.seed) + "-" + std::to_string(seedOccurrences[point.seed]++);
         if (!instanceIds.insert(instance.id).second)

@@ -91,11 +91,13 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     auto       pointsView   = proc.resolvePointSet(pointsHandle);
     REQUIRE(pointsView.isBound());
     const int tree = pointsView->add(1.f, 2.f, 3.f);
+    REQUIRE(pointsView->trySetPointId(tree, 1001).ok());
     pointsView->setPointSeed(tree, 77);
     pointsView->setYaw(tree, 30.f);
     pointsView->setScale(tree, 2.f, 3.f, 4.f);
     pointsView->setStringAttribute(tree, "asset", "oak");
     const int rock = pointsView->add(8.f, 0.f, 9.f);
+    REQUIRE(pointsView->trySetPointId(rock, 1002).ok());
     pointsView->setPointSeed(rock, 88);
 
     auto publishedResult = proc.publishInstances("forest/main", pointsHandle, "asset", "granite");
@@ -105,13 +107,13 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     CHECK_EQ(proc.getPublishedReusedCount("forest/main"), 0);
     CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 0);
     const auto& published = sink.batches.at("forest/main");
-    CHECK_EQ(published[0].id, std::string("pcg-77-0"));
+    CHECK_EQ(published[0].id, std::string("pcg-id-1001"));
     CHECK_EQ(published[0].asset, std::string("oak"));
     CHECK_EQ(published[0].x, 1.f);
     CHECK_EQ(published[0].yaw, 30.f);
     CHECK_EQ(published[0].scaleZ, 4.f);
     CHECK_EQ(published[1].asset, std::string("granite"));
-    CHECK_EQ(published[1].id, std::string("pcg-88-0"));
+    CHECK_EQ(published[1].id, std::string("pcg-id-1002"));
 
     auto reorderedResult = proc.newPointSetHandle();
     REQUIRE(reorderedResult.ok());
@@ -128,8 +130,8 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     CHECK_EQ(proc.getPublishedReusedCount("forest/main"), 2);
     CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 0);
     const auto& reconciled = sink.batches.at("forest/main");
-    CHECK_EQ(reconciled[1].id, std::string("pcg-77-0"));
-    CHECK_EQ(reconciled[2].id, std::string("pcg-88-0"));
+    CHECK_EQ(reconciled[1].id, std::string("pcg-id-1001"));
+    CHECK_EQ(reconciled[2].id, std::string("pcg-id-1002"));
 
     reorderedView->setStringAttribute(0, "instanceId", "hero-tree");
     reorderedView->setStringAttribute(1, "instanceId", "hero-tree");
