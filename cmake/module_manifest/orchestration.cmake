@@ -58,7 +58,7 @@ eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
 # L5 -- RTS domain composition profile. Provider modules remain behind typed
 # links; these are the direct implementation dependencies of the profile.
 eve_declare_module(NAME rts LAYER 5 SCRIPT RTS SLOT rts
-                   DEPS action attributes effects orders production transaction
+                   DEPS action attributes combat crowd definitions economy effects map orders production sensing transaction weapon
                    GROUP 2d 3d)
 # L5 -- deterministic turn/grid tactics composition profile. Shared gameplay
 # providers are introduced by adapters as their implementation slices land;

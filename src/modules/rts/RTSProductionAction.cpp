@@ -276,7 +276,8 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(Building& buildin
                                                                resource::IResourceAccount& account,
                                                                resource::CostSpec cost, std::string product,
                                                                Duration duration, std::string productionKind,
-                                                               int priority, std::string transactionId) {
+                                                               int priority, std::string transactionId,
+                                                               std::vector<RTSProductionResourceReserve> resourceReserves) {
     const auto subject = building.identity()->subject;
     if (!subject.isValid())
         return failure<RTSBuildReceipt>(eve::DiagnosticCode::InvalidArgument,
@@ -298,6 +299,7 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(Building& buildin
     request.product              = std::move(product);
     request.duration             = std::move(duration);
     request.priority             = priority;
+    request.resourceReserves     = std::move(resourceReserves);
     request.transactionId        = std::move(transactionId);
     request.actionRequest.source = ecs::handle_of(&building);
     return build(std::move(request));
@@ -317,6 +319,24 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest r
     if (request.duration.nanoseconds() <= 0 || request.actionDelta.nanoseconds() < 0)
         return failure<RTSBuildReceipt>(eve::DiagnosticCode::InvalidArgument, "RTS build durations are invalid",
                                         "duration");
+
+    std::vector<resource::ResourceCost> protectedItems = request.cost.items();
+    for (const auto& reserve : request.resourceReserves) {
+        if (!reserve.resource.resource.isValid() || reserve.resource.amount.isZero())
+            return failure<RTSBuildReceipt>(eve::DiagnosticCode::InvalidArgument,
+                                            "RTS production reserve must contain a positive resource amount",
+                                            "resourceReserves");
+        if (request.priority < reserve.minimumPriority) protectedItems.push_back(reserve.resource);
+    }
+    auto protectedCost = resource::CostSpec::create(std::move(protectedItems));
+    if (!protectedCost) return eve::Result<RTSBuildReceipt>::failure(protectedCost.status());
+    auto protectedAffordability = request.account->canAfford(protectedCost.value());
+    if (!protectedAffordability)
+        return eve::Result<RTSBuildReceipt>::failure(protectedAffordability.status());
+    if (!protectedAffordability.value().isAffordable())
+        return failure<RTSBuildReceipt>(eve::DiagnosticCode::PreconditionViolation,
+                                        "RTS production would consume a protected resource reserve",
+                                        "resourceReserves");
 
     if (!request.actionDefinition.id.isValid()) {
         auto id = eve::LogicalId::fromParts("rts", "build." + request.product);
@@ -358,6 +378,95 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest r
     auto            receipt = std::move(committed).takeValue();
     RTSBuildReceipt result{std::move(receipt), order.orderId(), production.taskId(), action.executionId()};
     return eve::Result<RTSBuildReceipt>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<RTSCancelProductionReceipt> RTSProductionActionAdapter::cancel(
+    Building& building, resource::IResourceAccount& account, std::string productionTaskId,
+    std::string orderId, resource::CostSpec refund, std::string reason) {
+    auto* production = building.production()->values.queueForComposition();
+    auto* orders = building.orders()->values.queueForComposition();
+    if (production == nullptr || orders == nullptr)
+        return failure<RTSCancelProductionReceipt>(eve::DiagnosticCode::InvariantViolation,
+            "RTS building production components are not initialized", "building");
+    RTSCancelProductionRequest request;
+    request.production = production;
+    request.orders = orders;
+    request.account = &account;
+    request.refund = std::move(refund);
+    request.productionTaskId = std::move(productionTaskId);
+    request.orderId = std::move(orderId);
+    request.reason = std::move(reason);
+    return cancel(std::move(request));
+}
+
+eve::Result<RTSCancelProductionReceipt> RTSProductionActionAdapter::cancel(
+    RTSCancelProductionRequest request) {
+    if (request.production == nullptr || request.orders == nullptr || request.account == nullptr)
+        return failure<RTSCancelProductionReceipt>(eve::DiagnosticCode::InvalidArgument,
+            "RTS production cancellation requires production, orders and account ports", "request");
+    if (!request.refund.isValid() || request.productionTaskId.empty() || request.orderId.empty() ||
+        request.reason.empty())
+        return failure<RTSCancelProductionReceipt>(eve::DiagnosticCode::InvalidArgument,
+            "RTS production cancellation requires task, order, refund and reason", "request");
+
+    auto productionBefore = request.production->snapshot();
+    if (!productionBefore)
+        return eve::Result<RTSCancelProductionReceipt>::failure(productionBefore.status());
+    production::WorkQueue stagedProduction;
+    auto stagedRestore = stagedProduction.restore(productionBefore.value());
+    if (!stagedRestore)
+        return eve::Result<RTSCancelProductionReceipt>::failure(stagedRestore.status());
+    auto cancelledTask = stagedProduction.cancel(request.productionTaskId, request.reason);
+    if (!cancelledTask)
+        return eve::Result<RTSCancelProductionReceipt>::failure(cancelledTask.status());
+
+    orders::CommandQueue ordersBefore;
+    orders::CommandQueue stagedOrders;
+    try {
+        ordersBefore = *request.orders;
+        stagedOrders = ordersBefore;
+    } catch (const std::exception& exception) {
+        return failure<RTSCancelProductionReceipt>(eve::DiagnosticCode::Failed,
+            std::string("failed to stage RTS cancellation orders: ") + exception.what(), "orders");
+    }
+    auto cancelledOrder = stagedOrders.cancel(request.orderId, request.reason);
+    if (!cancelledOrder)
+        return eve::Result<RTSCancelProductionReceipt>::failure(cancelledOrder.status());
+    auto productionAfter = stagedProduction.snapshot();
+    if (!productionAfter)
+        return eve::Result<RTSCancelProductionReceipt>::failure(productionAfter.status());
+
+    auto publishedProduction = request.production->restore(productionAfter.value());
+    if (!publishedProduction)
+        return eve::Result<RTSCancelProductionReceipt>::failure(publishedProduction.status());
+    try {
+        *request.orders = stagedOrders;
+    } catch (const std::exception& exception) {
+        auto restored = request.production->restore(productionBefore.value());
+        restored.ignore("best-effort production cancellation rollback");
+        return failure<RTSCancelProductionReceipt>(eve::DiagnosticCode::Failed,
+            std::string("failed to publish RTS cancellation orders: ") + exception.what(), "orders");
+    }
+
+    auto credited = request.account->credit(request.refund);
+    if (!credited) {
+        auto restoredProduction = request.production->restore(productionBefore.value());
+        try {
+            *request.orders = ordersBefore;
+        } catch (...) {
+            return failure<RTSCancelProductionReceipt>(eve::DiagnosticCode::InvariantViolation,
+                "RTS cancellation refund failed and order rollback could not be restored", "orders");
+        }
+        if (!restoredProduction)
+            return failure<RTSCancelProductionReceipt>(eve::DiagnosticCode::InvariantViolation,
+                "RTS cancellation refund failed and production rollback could not be restored", "production");
+        return eve::Result<RTSCancelProductionReceipt>::failure(credited.status());
+    }
+
+    RTSCancelProductionReceipt result{std::move(credited).takeValue(),
+        std::move(request.productionTaskId), std::move(request.orderId)};
+    return eve::Result<RTSCancelProductionReceipt>::success(
+        std::move(result), eve::Status::success(eve::StatusCode::Applied));
 }
 
 }  // namespace eve::rts

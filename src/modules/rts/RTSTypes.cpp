@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <utility>
 
 namespace eve::rts {
@@ -39,10 +40,24 @@ std::optional<OrderKind> parseOrderKind(std::string_view kind) {
     if (kind == "attack") return OrderKind::Attack;
     if (kind == "build") return OrderKind::Build;
     if (kind == "gather") return OrderKind::Gather;
+    if (kind == "return_cargo") return OrderKind::ReturnCargo;
+    if (kind == "attack_move") return OrderKind::AttackMove;
+    if (kind == "stop") return OrderKind::Stop;
+    if (kind == "hold_position") return OrderKind::HoldPosition;
+    if (kind == "patrol") return OrderKind::Patrol;
+    if (kind == "repair") return OrderKind::Repair;
+    if (kind == "garrison") return OrderKind::Garrison;
+    if (kind == "board_transport") return OrderKind::BoardTransport;
+    if (kind == "capture") return OrderKind::Capture;
+    if (kind == "attack_ground") return OrderKind::AttackGround;
+    if (kind == "resupply") return OrderKind::Resupply;
+    if (kind == "escort") return OrderKind::Escort;
+    if (kind == "suppress_area") return OrderKind::SuppressArea;
+    if (kind == "supply_relay") return OrderKind::SupplyRelay;
     return std::nullopt;
 }
 
-Result<OrderRecord> projectOrder(const orders::Order& order) {
+Result<OrderRecord> projectOrder(const orders::Order& order, const CommandSpec* extended = nullptr) {
     const auto kind = parseOrderKind(order.kind);
     if (!kind) {
         return failure<OrderRecord>(DiagnosticCode::InvariantViolation, "generic order contains an unknown RTS kind",
@@ -65,6 +80,13 @@ Result<OrderRecord> projectOrder(const orders::Order& order) {
     result.target.y      = root.get("y").asFloat(0.0f);
     result.definitionId  = root.get("definition").asString();
     result.formationSlot = root.get("formationSlot").asInt(-1);
+    result.secondaryTarget.x = root.get("secondaryX").asFloat(0.0f);
+    result.secondaryTarget.y = root.get("secondaryY").asFloat(0.0f);
+    result.radius = root.get("radius").asFloat(0.0f);
+    result.append = root.get("append").asBool(false);
+    if (extended != nullptr) {
+        result.targetEntity   = extended->targetEntity;
+    }
     if (!finitePosition(result.target)) {
         return failure<OrderRecord>(DiagnosticCode::InvariantViolation,
                                     "generic order payload contains a non-finite target", "order.payload");
@@ -87,6 +109,18 @@ void touchUnitComponents(Unit& unit) {
     (void)unit.settlement();
     (void)unit.faction();
     (void)unit.motion();
+    (void)unit.navigation();
+    (void)unit.vision();
+    (void)unit.worker();
+    (void)unit.combat();
+    (void)unit.durability();
+    (void)unit.capture();
+    (void)unit.containment();
+    (void)unit.supply();
+    (void)unit.morale();
+    (void)unit.artillery();
+    (void)unit.tactics();
+    (void)unit.technology();
 }
 
 void touchBuildingComponents(Building& building) {
@@ -100,6 +134,24 @@ void touchBuildingComponents(Building& building) {
     (void)building.effects();
     (void)building.settlement();
     (void)building.faction();
+    (void)building.construction();
+    (void)building.integrity();
+    (void)building.capture();
+    (void)building.dropoff();
+    (void)building.rally();
+    (void)building.weapon();
+    (void)building.combat();
+    (void)building.garrison();
+    (void)building.supply();
+    (void)building.vision();
+    (void)building.technology();
+}
+
+void touchResourceNodeComponents(ResourceNode& node) {
+    (void)node.identity();
+    (void)node.position();
+    (void)node.stock();
+    (void)node.harvest();
 }
 
 void touchPlayerComponents(Player& player) {
@@ -118,9 +170,23 @@ void touchFactionComponents(Faction& faction) {
     (void)faction.social();
     (void)faction.members();
     (void)faction.eventStream();
+    (void)faction.strategy();
+    (void)faction.workforce();
+    (void)faction.productionPolicy();
+    (void)faction.intel();
+    (void)faction.technology();
 }
 
 }  // namespace
+
+const char* combatStanceName(CombatStance stance) noexcept {
+    switch (stance) {
+        case CombatStance::Passive: return "passive";
+        case CombatStance::Defensive: return "defensive";
+        case CombatStance::Aggressive: return "aggressive";
+    }
+    return "defensive";
+}
 
 const char* orderKindName(OrderKind kind) noexcept {
     switch (kind) {
@@ -128,23 +194,54 @@ const char* orderKindName(OrderKind kind) noexcept {
         case OrderKind::Attack: return "attack";
         case OrderKind::Build: return "build";
         case OrderKind::Gather: return "gather";
+        case OrderKind::ReturnCargo: return "return_cargo";
+        case OrderKind::AttackMove: return "attack_move";
+        case OrderKind::Stop: return "stop";
+        case OrderKind::HoldPosition: return "hold_position";
+        case OrderKind::Patrol: return "patrol";
+        case OrderKind::Repair: return "repair";
+        case OrderKind::Garrison: return "garrison";
+        case OrderKind::BoardTransport: return "board_transport";
+        case OrderKind::Capture: return "capture";
+        case OrderKind::AttackGround: return "attack_ground";
+        case OrderKind::Resupply: return "resupply";
+        case OrderKind::Escort: return "escort";
+        case OrderKind::SuppressArea: return "suppress_area";
+        case OrderKind::SupplyRelay: return "supply_relay";
     }
     return "unknown";
 }
 
 Result<void> CommandSpec::validate() const {
-    if (!finitePosition(target)) {
+    if (!finitePosition(target) || !finitePosition(secondaryTarget)) {
         return failure(DiagnosticCode::InvalidArgument, "RTS command target must contain finite coordinates", "target");
     }
     if (!std::isfinite(timeoutSeconds) || timeoutSeconds < 0.0) {
         return failure(DiagnosticCode::InvalidArgument, "RTS command timeout must be finite and non-negative",
                        "timeoutSeconds");
     }
+    if (!std::isfinite(radius) || radius < 0.0f)
+        return failure(DiagnosticCode::InvalidArgument, "RTS command radius must be finite and non-negative",
+                       "radius");
     switch (kind) {
         case OrderKind::Move:
         case OrderKind::Attack:
         case OrderKind::Build:
-        case OrderKind::Gather: return Result<void>::success(Status::success(StatusCode::Applied));
+        case OrderKind::Gather:
+        case OrderKind::ReturnCargo:
+        case OrderKind::AttackMove:
+        case OrderKind::Stop:
+        case OrderKind::HoldPosition:
+        case OrderKind::Patrol:
+        case OrderKind::Repair:
+        case OrderKind::Garrison:
+        case OrderKind::BoardTransport:
+        case OrderKind::Capture:
+        case OrderKind::AttackGround:
+        case OrderKind::Resupply:
+        case OrderKind::Escort:
+        case OrderKind::SuppressArea:
+        case OrderKind::SupplyRelay: return Result<void>::success(Status::success(StatusCode::Applied));
     }
     return failure(DiagnosticCode::InvalidArgument, "RTS command kind is invalid", "kind");
 }
@@ -263,6 +360,7 @@ Result<void> AttributeComponent::restore(const eve::attributes::AttributeProject
 
 struct OrderComponent::Impl {
     orders::CommandQueue queue;
+    std::map<std::string, CommandSpec> extended;
 };
 
 OrderComponent::OrderComponent() : impl_(std::make_unique<Impl>()) {}
@@ -292,6 +390,11 @@ Result<std::string> OrderComponent::enqueue(const CommandSpec& command, int form
     order->get().payload.setNumber("y", command.target.y);
     order->get().payload.setString("definition", command.definitionId);
     order->get().payload.setNumber("formationSlot", static_cast<double>(formationSlot));
+    order->get().payload.setNumber("secondaryX", command.secondaryTarget.x);
+    order->get().payload.setNumber("secondaryY", command.secondaryTarget.y);
+    order->get().payload.setNumber("radius", command.radius);
+    order->get().payload.setBool("append", command.append);
+    impl_->extended[id] = command;
     return Result<std::string>::success(id, Status::success(StatusCode::Applied));
 }
 
@@ -310,13 +413,21 @@ Result<std::string> OrderComponent::replace(const CommandSpec& command, int form
     order->get().payload.setNumber("y", command.target.y);
     order->get().payload.setString("definition", command.definitionId);
     order->get().payload.setNumber("formationSlot", static_cast<double>(formationSlot));
+    order->get().payload.setNumber("secondaryX", command.secondaryTarget.x);
+    order->get().payload.setNumber("secondaryY", command.secondaryTarget.y);
+    order->get().payload.setNumber("radius", command.radius);
+    order->get().payload.setBool("append", command.append);
+    impl_->extended.clear();
+    impl_->extended[id] = command;
     return Result<std::string>::success(id, Status::success(StatusCode::Applied));
 }
 
 Result<OrderRecord> OrderComponent::current() const {
     if (!impl_ || !impl_->queue.current())
         return failure<OrderRecord>(DiagnosticCode::NotFound, "RTS order queue is idle", "order");
-    return projectOrder(impl_->queue.current()->get());
+    const auto& order = impl_->queue.current()->get();
+    const auto  found = impl_->extended.find(order.id);
+    return projectOrder(order, found == impl_->extended.end() ? nullptr : &found->second);
 }
 
 Result<void> OrderComponent::complete(std::string_view orderId) {
@@ -325,6 +436,7 @@ Result<void> OrderComponent::complete(std::string_view orderId) {
         return failure(DiagnosticCode::NotFound, "RTS order id is not present", "orderId");
     if (!impl_->queue.complete(std::string(orderId)).ok())
         return failure(DiagnosticCode::Conflict, "RTS order is not active or is already terminal", "orderId");
+    impl_->extended.erase(std::string(orderId));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -335,6 +447,7 @@ Result<void> OrderComponent::fail(std::string_view orderId, std::string_view rea
         return failure(DiagnosticCode::NotFound, "RTS order id is not present", "orderId");
     if (!impl_->queue.fail(std::string(orderId), std::string(reason)).ok())
         return failure(DiagnosticCode::Conflict, "RTS order is not active", "orderId");
+    impl_->extended.erase(std::string(orderId));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -345,13 +458,62 @@ Result<void> OrderComponent::cancel(std::string_view orderId, std::string_view r
         return failure(DiagnosticCode::NotFound, "RTS order id is not present", "orderId");
     if (!impl_->queue.cancel(std::string(orderId), std::string(reason)).ok())
         return failure(DiagnosticCode::Conflict, "RTS order is already terminal", "orderId");
+    impl_->extended.erase(std::string(orderId));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 bool OrderComponent::empty() const noexcept { return !impl_ || !impl_->queue.current(); }
 
+void OrderComponent::clear() noexcept {
+    if (!impl_) return;
+    impl_->queue.clear();
+    impl_->extended.clear();
+}
+
 std::size_t OrderComponent::orderCount() const noexcept {
     return impl_ ? static_cast<std::size_t>(impl_->queue.orderCount()) : 0u;
+}
+
+Result<std::string> OrderComponent::snapshot() const {
+    if (!impl_) return failure<std::string>(DiagnosticCode::Failed, "RTS order component is unavailable", "orders");
+    return impl_->queue.snapshot();
+}
+
+Result<void> OrderComponent::restore(std::string_view json) {
+    if (!impl_) impl_ = std::make_unique<Impl>();
+    orders::CommandQueue candidate;
+    auto restored = candidate.restore(json);
+    if (!restored) return restored;
+    impl_->queue = std::move(candidate);
+    impl_->extended.clear();
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<OrderComponent::Snapshot> OrderComponent::snapshotState() const {
+    if (!impl_)
+        return failure<Snapshot>(DiagnosticCode::Failed, "RTS order component is unavailable", "orders");
+    auto json = impl_->queue.snapshot();
+    if (!json) return failureFrom<Snapshot>(json.status());
+    return Result<Snapshot>::success({std::move(json).takeValue(), impl_->extended},
+                                     Status::success(StatusCode::Applied));
+}
+
+Result<void> OrderComponent::restoreState(const Snapshot& snapshotValue) {
+    orders::CommandQueue queue;
+    auto restored = queue.restore(snapshotValue.queueJson);
+    if (!restored) return restored;
+    for (const auto& [id, command] : snapshotValue.extended) {
+        auto valid = command.validate();
+        if (!valid) return valid;
+        if (!queue.find(id))
+            return failure(DiagnosticCode::Conflict,
+                           "RTS order extension references an absent canonical queue record", "orders.extended");
+    }
+    auto candidate = std::make_unique<Impl>();
+    candidate->queue = std::move(queue);
+    candidate->extended = snapshotValue.extended;
+    impl_ = std::move(candidate);
+    return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 orders::CommandQueue* OrderComponent::queueForComposition() noexcept {
@@ -405,6 +567,55 @@ std::size_t ProductionComponent::taskCount() const noexcept {
     return impl_ ? static_cast<std::size_t>(impl_->queue.taskCount()) : 0u;
 }
 
+OptionalRef<production::ProductionTask> ProductionComponent::taskAt(int index) {
+    return impl_ ? impl_->queue.taskAt(index) : OptionalRef<production::ProductionTask>{};
+}
+
+OptionalRef<production::ProductionTask> ProductionComponent::find(std::string_view taskId) {
+    return impl_ ? impl_->queue.find(taskId) : OptionalRef<production::ProductionTask>{};
+}
+
+Result<void> ProductionComponent::pause(std::string_view taskId) {
+    if (!impl_) return failure<void>(DiagnosticCode::NotFound, "RTS production task was not found", "taskId");
+    return impl_->queue.pause(taskId);
+}
+
+Result<void> ProductionComponent::resume(std::string_view taskId) {
+    if (!impl_) return failure<void>(DiagnosticCode::NotFound, "RTS production task was not found", "taskId");
+    return impl_->queue.resume(taskId);
+}
+
+Result<void> ProductionComponent::cancel(std::string_view taskId, std::string_view reason) {
+    if (!impl_) return failure<void>(DiagnosticCode::NotFound, "RTS production task was not found", "taskId");
+    return impl_->queue.cancel(taskId, reason);
+}
+
+std::vector<production::ProductionTask> ProductionComponent::completed(std::string_view kind) const {
+    std::vector<production::ProductionTask> result;
+    if (!impl_ || kind.empty()) return result;
+    for (int index = 0; index < impl_->queue.taskCount(); ++index) {
+        const auto task = impl_->queue.taskAt(index);
+        if (task && task->get().kind == kind && task->get().state == production::TaskState::Completed)
+            result.push_back(task->get());
+    }
+    return result;
+}
+
+Result<std::string> ProductionComponent::snapshot() const {
+    if (!impl_)
+        return failure<std::string>(DiagnosticCode::Failed, "RTS production component is unavailable", "production");
+    return impl_->queue.snapshot();
+}
+
+Result<void> ProductionComponent::restore(std::string_view json) {
+    if (!impl_) impl_ = std::make_unique<Impl>();
+    production::WorkQueue candidate;
+    auto restored = candidate.restore(json);
+    if (!restored) return restored;
+    impl_->queue = std::move(candidate);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 production::WorkQueue* ProductionComponent::queueForComposition() noexcept {
     if (!impl_) impl_ = std::make_unique<Impl>();
     return &impl_->queue;
@@ -415,6 +626,9 @@ Unit* Unit::createUnit(SubjectRef subject, LogicalId definition) {
     unit->identity()->self    = ecs::handle_of(unit);
     unit->identity()->subject = subject;
     unit->definition()->id    = std::move(definition);
+    unit->durability()->state.subject = subject;
+    unit->durability()->state.health = 1.0;
+    unit->durability()->state.maxHealth = 1.0;
     touchUnitComponents(*unit);
     return unit;
 }
@@ -424,8 +638,19 @@ Building* Building::createBuilding(SubjectRef subject, LogicalId definition) {
     building->identity()->self    = ecs::handle_of(building);
     building->identity()->subject = subject;
     building->definition()->id    = std::move(definition);
+    building->integrity()->state.subject = subject;
+    building->integrity()->state.health = 1.0;
+    building->integrity()->state.maxHealth = 1.0;
     touchBuildingComponents(*building);
     return building;
+}
+
+ResourceNode* ResourceNode::createResourceNode(SubjectRef subject) {
+    ResourceNode* node        = ResourceNode::create();
+    node->identity()->self    = ecs::handle_of(node);
+    node->identity()->subject = subject;
+    touchResourceNodeComponents(*node);
+    return node;
 }
 
 Player* Player::createPlayer(SubjectRef subject) {
@@ -442,6 +667,18 @@ Faction* Faction::createFaction(SubjectRef subject) {
     faction->identity()->subject = subject;
     touchFactionComponents(*faction);
     return faction;
+}
+
+Match* Match::createMatch(SubjectRef subject) {
+    Match* match = Match::create();
+    if (match == nullptr) return nullptr;
+    match->identity()->self = ecs::handle_of(match);
+    match->identity()->subject = subject;
+    (void)match->rules();
+    (void)match->participants();
+    (void)match->state();
+    (void)match->events();
+    return match;
 }
 
 }  // namespace eve::rts

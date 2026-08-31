@@ -424,7 +424,9 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             }
         }
 
-        Runtime runtime(2048, ssq::Libs::ALL);
+        // Large composition profiles expose the complete engine module surface
+        // before compiling their script; retain headroom for those closures.
+        Runtime runtime(8192, ssq::Libs::ALL);
         runtime.initialize();
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         if (debug) {

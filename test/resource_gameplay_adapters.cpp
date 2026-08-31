@@ -372,3 +372,125 @@ TEST_CASE("resource.gameplay.rtsBuildUsesSharedActionOrdersProductionPayment") {
     CHECK_EQ(productionSnapshot(), productionBeforeActionFailure);
     CHECK_EQ(orders.orderCount(), ordersBeforeActionFailure);
 }
+
+TEST_CASE("resource.gameplay.rtsProductionCancellationRefundsAllResourcesAtomically") {
+    eve::economy::EconomyLedger ledger;
+    REQUIRE_EQ(ledger.credit("gold", 20), 20);
+    REQUIRE_EQ(ledger.credit("gas", 10), 10);
+    eve::rts::RTSEconomyAdapter economy(ledger);
+    eve::production::WorkQueue production;
+    eve::orders::CommandQueue orders;
+    eve::action::ActionRuntime action;
+    auto costResult = eve::resource::CostSpec::from({{"gold", 5}, {"gas", 3}});
+    REQUIRE(costResult.ok());
+    auto cost = std::move(costResult).takeValue();
+
+    eve::rts::RTSBuildRequest build;
+    build.production = &production;
+    build.orders = &orders;
+    build.action = &action;
+    build.account = &economy.account();
+    build.cost = cost;
+    build.owner = "faction:one";
+    build.productionKind = "unit";
+    build.product = "tank";
+    build.duration = eve::Duration::fromNanoseconds(1000000000);
+    auto built = eve::rts::RTSProductionActionAdapter::build(std::move(build));
+    REQUIRE(built.ok());
+    auto receipt = std::move(built).takeValue();
+    CHECK_EQ(ledger.get("gold"), 15);
+    CHECK_EQ(ledger.get("gas"), 7);
+
+    eve::rts::RTSCancelProductionRequest invalid;
+    invalid.production = &production;
+    invalid.orders = &orders;
+    invalid.account = &economy.account();
+    invalid.refund = cost;
+    invalid.productionTaskId = "missing-task";
+    invalid.orderId = receipt.orderId;
+    const auto productionBefore = production.snapshot().expect("production cancellation snapshot");
+    auto failed = eve::rts::RTSProductionActionAdapter::cancel(std::move(invalid));
+    CHECK(!failed.ok());
+    CHECK_EQ(production.snapshot().expect("unchanged production snapshot"), productionBefore);
+    CHECK_EQ(ledger.get("gold"), 15);
+    CHECK_EQ(ledger.get("gas"), 7);
+
+    eve::rts::RTSCancelProductionRequest cancel;
+    cancel.production = &production;
+    cancel.orders = &orders;
+    cancel.account = &economy.account();
+    cancel.refund = cost;
+    cancel.productionTaskId = receipt.productionTaskId;
+    cancel.orderId = receipt.orderId;
+    auto cancelled = eve::rts::RTSProductionActionAdapter::cancel(std::move(cancel));
+    REQUIRE(cancelled.ok());
+    CHECK_EQ(ledger.get("gold"), 20);
+    CHECK_EQ(ledger.get("gas"), 10);
+    auto task = production.find(receipt.productionTaskId);
+    auto order = orders.find(receipt.orderId);
+    REQUIRE(task.has_value());
+    REQUIRE(order.has_value());
+    CHECK_EQ(static_cast<int>(task->get().state),
+             static_cast<int>(eve::production::TaskState::Cancelled));
+    CHECK_EQ(static_cast<int>(order->get().state),
+             static_cast<int>(eve::orders::OrderState::Cancelled));
+}
+
+TEST_CASE("resource.gameplay.rtsProductionPriorityProtectsCanonicalResourceFloor") {
+    eve::economy::EconomyLedger ledger;
+    REQUIRE_EQ(ledger.credit("gold", 10), 10);
+    eve::rts::RTSEconomyAdapter economy(ledger);
+    eve::production::WorkQueue production;
+    eve::orders::CommandQueue orders;
+    eve::action::ActionRuntime action;
+    auto duration = eve::Duration::fromSeconds(1.0).expect("production duration");
+    const auto reserveCost = eve::resource::ResourceCost::create("gold", 6).expect("reserve cost");
+
+    const auto makeRequest = [&](int priority, std::string id) {
+        eve::rts::RTSBuildRequest request;
+        request.production = &production;
+        request.orders = &orders;
+        request.action = &action;
+        request.account = &economy.account();
+        request.cost = makeCost("gold", 5);
+        request.owner = "faction:one";
+        request.productionKind = "unit";
+        request.product = "soldier";
+        request.duration = duration;
+        request.priority = priority;
+        request.transactionId = std::move(id);
+        request.resourceReserves.push_back({reserveCost, 10});
+        return request;
+    };
+
+    auto low = eve::rts::RTSProductionActionAdapter::build(makeRequest(9, "rts.floor.low"));
+    CHECK(!low.ok());
+    CHECK_EQ(ledger.get("gold"), 10);
+    CHECK_EQ(production.taskCount(), 0);
+    CHECK_EQ(orders.orderCount(), 0);
+    CHECK_EQ(action.executionCount(), 0u);
+
+    auto high = eve::rts::RTSProductionActionAdapter::build(makeRequest(10, "rts.floor.high"));
+    REQUIRE(high.ok());
+    CHECK_EQ(ledger.get("gold"), 5);
+    CHECK_EQ(production.taskCount(), 1);
+}
+
+TEST_CASE("resource.gameplay.economySnapshotRestoresBalancesAndAccounting") {
+    eve::economy::EconomyLedger ledger;
+    REQUIRE_EQ(ledger.credit("gold", 50), 50);
+    REQUIRE(ledger.debit("gold", 12));
+    REQUIRE_EQ(ledger.credit("gas", 9), 9);
+    const auto saved = ledger.snapshot();
+
+    REQUIRE(ledger.debit("gold", 20));
+    REQUIRE_EQ(ledger.credit("gas", 4), 4);
+    ledger.restore(saved);
+
+    CHECK_EQ(ledger.get("gold"), 38);
+    CHECK_EQ(ledger.getIncome("gold"), 50);
+    CHECK_EQ(ledger.getExpense("gold"), 12);
+    CHECK_EQ(ledger.get("gas"), 9);
+    CHECK_EQ(ledger.getIncome("gas"), 9);
+    CHECK_EQ(ledger.getExpense("gas"), 0);
+}

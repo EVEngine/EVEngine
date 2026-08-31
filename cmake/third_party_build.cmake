@@ -295,6 +295,18 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-stable-type-hash.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Ninth patch: preserve an outer signature while nested binding discovery grows its storage.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/squirrel-nested-call-signature-lifetime.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Tenth patch: avoid an invalid fixed-point plus NEON64 mpg123 configuration on Apple Silicon.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-apple-fpu-detection.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which

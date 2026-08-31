@@ -241,6 +241,11 @@ public:
 
     /** @brief Last scheduler tick consumed by the checked time API. */
     [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+    /** @brief Restore the scheduler cursor after an owning world checkpoint rollback. @param tick Completed tick. */
+    void restoreSchedulerTick(eve::SimulationTick tick) noexcept {
+        lastTick_ = tick;
+        hasLastTick_ = tick.value() != 0;
+    }
 
 private:
     using Store = std::deque<std::unique_ptr<EffectInstance>>;

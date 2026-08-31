@@ -364,7 +364,7 @@ void Map::expose(ssq::Table &table) {
     pf.addFunc("setCellCost", &Pathfinder::setCellCost);
     pf.addFunc("getCellCost", &Pathfinder::getCellCost);
     pf.addFunc("syncFromLayer", &Pathfinder::syncFromLayer);
-    pf.addFunc("findPath", &Pathfinder::findPath);
+    pf.addFunc("findPath", static_cast<Path *(Pathfinder::*)(int, int, int, int)>(&Pathfinder::findPath));
     pf.addFunc("buildFlowField", &Pathfinder::buildFlowField);
     pf.addFunc("followFlow", &Pathfinder::followFlow);
     pf.addFunc("findGroupPath", &Pathfinder::findGroupPath);

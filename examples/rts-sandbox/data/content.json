@@ -1,0 +1,88 @@
+{
+  "weapons": [
+    {"id":"rifle","damageType":"normal","damage":8,"range":4.5,"cooldown":0.7,
+     "projectileSpeed":0,"splashRadius":0,"blockedByObstacles":true,"magazineSize":4,"reloadTime":2,
+     "falloffStart":3,"minimumDamageFactor":0.75,"preferredTargetTags":["biological"],"preferredTargetBonus":1.5},
+    {"id":"turret_cannon","damageType":"normal","damage":18,"range":6,"cooldown":0.9,
+     "projectileSpeed":10,"projectileArcHeight":2.5,"splashRadius":0.4,"splashMinimumDamageFactor":0.5,"friendlyFire":true,"suppression":30,"blockedByObstacles":true,"magazineSize":2,"reloadTime":3,"targets":"ground",
+     "falloffStart":3,"minimumDamageFactor":0.5,"accuracy":0.82,"scatterRadius":1.2,"preferredTargetTags":["armored"],"preferredTargetBonus":2},
+    {"id":"aa_missile","damageType":"anti_shield","damage":14,"range":7,"cooldown":0.8,
+     "projectileSpeed":12,"splashRadius":0.5,"splashMinimumDamageFactor":0.4,"suppression":20,"targets":"air","requiredTargetTags":["mechanical"],"preferredTargetTags":["armored"],"preferredTargetBonus":1.5,"accuracy":0.9,"scatterRadius":0.8}
+  ],
+  "units": [
+    {"id":"worker","role":"worker","armorType":"light","producer":"command_center",
+     "costResource":"minerals","cost":50,"buildTime":2,"supplyUsed":1,"health":60,
+     "speed":2.8,"radius":0.3,"attackDamage":3,"attackRange":1,"sightRange":6,"detectionRange":2.5,"targetPriority":1,"attackCooldown":1,"targetTags":["biological"]},
+    {"id":"engineer","role":"soldier","armorType":"light","health":55,"speed":3.2,"radius":0.3,
+     "attackDamage":0,"attackRange":0,"sightRange":6,"supplyUsed":1,"captureRate":1,"targetTags":["biological"]},
+    {"id":"marine","role":"soldier","armorType":"light","weaponType":"rifle","producer":"barracks",
+     "costResource":"minerals","cost":50,"buildTime":1.5,"supplyUsed":1,"health":80,
+     "speed":3.1,"radius":0.35,"attackDamage":8,"attackRange":4.5,"sightRange":7,"detectionRange":2.5,"targetPriority":2,"attackCooldown":0.7,"targetTags":["biological"],
+     "suppressionCapacity":100,"suppressionRecoveryRate":15,"suppressedSpeedFactor":0.65,"suppressedDamageFactor":0.75,
+     "suppressionRetreatEnabled":true,"suppressionRetreatThreshold":0.85,"suppressionRetreatDistance":5,
+     "veteranThreshold":100,"eliteThreshold":250,"veteranDamageFactor":1.15,"eliteDamageFactor":1.3,
+     "veteranHealthFactor":1.15,"eliteHealthFactor":1.3,
+     "requiresCommand":true,"commandCost":1,"commandPriority":5,"outOfCommandSpeedFactor":0.75,"outOfCommandDamageFactor":0.8,"reserveAmmoCapacity":36,"supplyPriority":2},
+    {"id":"apc","role":"soldier","armorType":"light","health":260,"speed":3.8,"radius":0.55,
+     "attackDamage":0,"attackRange":0,"sightRange":7,"radarRange":15,"supplyUsed":2,"transportCapacity":4,
+     "ammoSupplyCapacity":30,"ammoSupplyRange":3.5,"ammoSupplyRate":2,"ammoRelayEnabled":true,
+     "autoResupplyEnabled":true,"autoResupplyThreshold":0.5,
+     "moraleAuraRange":5,"moraleAuraSuppressionFactor":0.65,"moraleAuraRecoveryBonus":10,
+     "commandRange":7,"commandRelayRequiresUplink":true,"commandCapacity":6,"commandCost":2,"commandPriority":20,
+     "targetTags":["mechanical","armored"]},
+    {"id":"jammer","role":"soldier","armorType":"light","health":140,"speed":2.8,"radius":0.45,
+     "attackDamage":0,"attackRange":0,"sightRange":6,"jammingRange":5,"commandJammingRange":5.5,"supplyUsed":2,"targetTags":["mechanical"]},
+    {"id":"skyguard","role":"soldier","armorType":"light","weaponType":"aa_missile","health":110,
+     "speed":2.7,"radius":0.4,"attackRange":7,"sightRange":8,"supplyUsed":2,"firingHeight":1.6,"targetTags":["mechanical","armored"]},
+    {"id":"drone","role":"soldier","armorType":"light","targetDomain":"air","health":70,
+     "speed":4.2,"radius":0.3,"attackDamage":0,"attackRange":0,"sightRange":8,"supplyUsed":1,"targetPriority":3,"targetHeight":4.0,"targetTags":["mechanical"],
+     "shieldCapacity":30,"shieldRegenRate":5,"shieldRegenDelay":3}
+  ],
+  "buildings": [
+    {"id":"command_center","armorType":"structure","costResource":"minerals","cost":400,
+     "buildTime":5,"supplyProvided":12,"health":1200,"radius":1.4,"repairRate":35,"repairCostPerHealth":0.2,"sellRefundRatio":0.5,"dropoff":true,
+     "shieldCapacity":100,"shieldRegenRate":8,"shieldRegenDelay":4,"powerProvided":20,"buildInfluenceRadius":12,"commandRange":10,"commandCapacity":12,"capturable":true,"captureTime":6},
+    {"id":"barracks","armorType":"structure","prerequisite":"command_center",
+     "costResource":"minerals","cost":150,"buildTime":4,"health":900,"radius":1.1,"repairRate":30,"repairCostPerHealth":0.2,
+     "powerUsed":5,"powerPriority":50,"buildInfluenceRadius":6,"requiresBuildInfluence":true,"capturable":true,"captureTime":4},
+    {"id":"supply_depot","armorType":"structure","prerequisite":"command_center",
+     "costResource":"minerals","cost":100,"buildTime":3,"supplyProvided":8,"health":600,"radius":0.9,
+     "ammoSupplyCapacity":100,"ammoSupplyRange":5,"ammoSupplyRate":3,
+     "ammoProductionResource":"minerals","ammoProductionCost":0.25,"ammoProductionRate":2,"powerUsed":4,"powerPriority":60,
+     "buildInfluenceRadius":4,"requiresBuildInfluence":true},
+    {"id":"turret","armorType":"structure","weaponType":"turret_cannon","sightRange":7,
+     "prerequisite":"barracks","costResource":"minerals","cost":125,"buildTime":3,"health":650,"radius":0.8,
+     "garrisonCapacity":3,"garrisonDamageBonus":0.2,"targetPriority":3,
+     "turretTurnRate":120,"firingArc":8,"firingHeight":2.8,"targetHeight":1.5,"powerUsed":8,"powerPriority":100,
+     "requiresBuildInfluence":true},
+    {"id":"oil_derrick","armorType":"structure","health":500,"radius":0.8,"sightRange":4,
+     "capturable":true,"captureTime":3,"incomeResource":"minerals","incomeRate":5}
+  ],
+  "damageMultipliers": [
+    {"damageType":"normal","armorType":"light","multiplier":1.0},
+    {"damageType":"normal","armorType":"structure","multiplier":0.7},
+    {"damageType":"anti_shield","armorType":"shield","multiplier":1.5},
+    {"damageType":"anti_shield","armorType":"light","multiplier":0.75}
+  ],
+  "upgrades": [
+    {"id":"infantry_weapons_1","producer":"barracks","targetUnit":"marine",
+     "costResource":"minerals","cost":100,"researchTime":5,"attackMultiplier":1.25},
+    {"id":"mining_efficiency","producer":"command_center","targetUnit":"worker",
+     "costResource":"minerals","cost":100,"researchTime":5,"gatherMultiplier":1.5},
+    {"id":"frontline_shields","producer":"command_center","targetUnit":"drone","targetBuilding":"command_center",
+     "costResource":"minerals","cost":125,"researchTime":5,"shieldMultiplier":1.5,"shieldRegenMultiplier":1.25}
+  ],
+  "statusEffects": [
+    {"id":"stim","duration":4,"speedMultiplier":1.35,"damageMultiplier":1.25,
+     "incomingDamageMultiplier":1.15},
+    {"id":"regeneration","duration":6,"healingPerSecond":5}
+  ],
+  "abilities": [
+    {"id":"combat_stim","casterUnit":"marine","targetType":"ally","range":0.5,
+     "cooldown":8,"statusEffect":"stim"},
+    {"id":"frag_grenade","casterUnit":"marine","targetType":"point","range":6,"radius":1.8,
+     "cooldown":6,"damage":28,"damageType":"normal","castTime":0.6,"interruptOnDamage":true},
+    {"id":"suppressive_barrage","casterUnit":"marine","targetType":"point","range":6,"radius":1.5,
+     "cooldown":8,"damage":6,"damageType":"normal","castTime":1.0,"interruptOnDamage":true,"tickInterval":0.2}
+  ]
+}

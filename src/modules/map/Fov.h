@@ -23,6 +23,13 @@ namespace eve::map {
  */
 class Fov {
 public:
+    /** @brief Owning visibility-memory snapshot for the current grid/volume dimensions. */
+    struct Snapshot {
+        int width = 0;
+        int height = 0;
+        int depth = 1;
+        std::vector<uint8_t> states;
+    };
     Fov();
     explicit Fov(TileLayer *layer);
     explicit Fov(int width, int height);
@@ -119,6 +126,10 @@ public:
     std::string getState3(int x, int y, int z) const;
     void clearMemory();
     void resetVisibleOnly();
+    /** @brief Capture exact unknown/explored/visible cell states without revealers. */
+    [[nodiscard]] Snapshot snapshot() const;
+    /** @brief Restore exact cell states when dimensions and payload size match. */
+    [[nodiscard]] bool restore(const Snapshot &snapshot);
 
     float getMaskValue(int x, int y) const;
     int getMaskByte(int x, int y) const;
