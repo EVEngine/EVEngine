@@ -61,6 +61,8 @@ public:
      * @param entryPenalty Additional cost for entering a walkable cell. Negative
      *        values are clamped to zero; non-finite values reject that cell.
      * @return Caller-owned path, empty when no route satisfies the overlay.
+     * @ownership Ownership transfers to the caller, which must release the Path after its final synchronous use.
+     * @lifetime The returned Path remains valid until the caller releases it and does not borrow Pathfinder state.
      */
     Path *findPath(int sx, int sy, int gx, int gy,
                    const std::function<float(int, int)> &entryPenalty);

@@ -51,7 +51,11 @@ struct WorldPosition {
 /** @brief Automatic target-acquisition policy for an RTS unit. */
 enum class CombatStance : std::uint8_t { Passive, Defensive, Aggressive };
 
-/** @brief Return the stable lower-case spelling of a combat stance. */
+/**
+ * @brief Return the stable lower-case spelling of a combat stance.
+ * @ownership Returns a borrowed pointer to immutable static storage.
+ * @lifetime Valid for the process lifetime and safe to read from any thread.
+ */
 [[nodiscard]] const char* combatStanceName(CombatStance stance) noexcept;
 
 /** @brief Commands shared by movement, combat, construction and gathering. */
@@ -1051,7 +1055,12 @@ public:
     COMPONENT(Stock, stock)
     COMPONENT(Harvest, harvest)
 
-    /** @brief Create a resource node and initialize all composition components. */
+    /**
+     * @brief Create a resource node and initialize all composition components.
+     * @ownership The active ECS table owns the entity; the returned pointer is borrowed.
+     * @lifetime Valid until that entity is destroyed or its ECS table is cleared.
+     * @thread ECS owner thread only.
+     */
     [[nodiscard]] static ResourceNode* createResourceNode(SubjectRef subject = {});
 };
 
@@ -1273,7 +1282,12 @@ public:
     COMPONENT(State, state)
     COMPONENT(Events, events)
 
-    /** @brief Create a match and initialize every composition component. */
+    /**
+     * @brief Create a match and initialize every composition component.
+     * @ownership The active ECS table owns the entity; the returned pointer is borrowed.
+     * @lifetime Valid until that entity is destroyed or its ECS table is cleared.
+     * @thread ECS owner thread only.
+     */
     [[nodiscard]] static Match* createMatch(SubjectRef subject = {});
 };
 

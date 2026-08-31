@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Result.h"
 #include "map/TileLayer.h"
 
 #include <cstdint>
@@ -128,8 +129,8 @@ public:
     void resetVisibleOnly();
     /** @brief Capture exact unknown/explored/visible cell states without revealers. */
     [[nodiscard]] Snapshot snapshot() const;
-    /** @brief Restore exact cell states when dimensions and payload size match. */
-    [[nodiscard]] bool restore(const Snapshot &snapshot);
+    /** @brief Restore exact cell states atomically. @return Applied, or InvalidArgument for incompatible dimensions. */
+    [[nodiscard]] Result<void> restore(const Snapshot& snapshot);
 
     float getMaskValue(int x, int y) const;
     int getMaskByte(int x, int y) const;

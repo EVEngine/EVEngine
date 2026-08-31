@@ -211,7 +211,7 @@ TEST_CASE("map.fov.snapshotRestoresExactVisibilityMemory") {
 
     fov.clearMemory();
     CHECK(!fov.isExplored(2, 2));
-    REQUIRE(fov.restore(saved));
+    REQUIRE(fov.restore(saved).ok());
     CHECK(fov.isExplored(2, 2));
     CHECK(!fov.isVisible(2, 2));
     CHECK(fov.isVisible(5, 5));
@@ -219,7 +219,7 @@ TEST_CASE("map.fov.snapshotRestoresExactVisibilityMemory") {
 
     auto invalid = saved;
     invalid.width += 1;
-    CHECK(!fov.restore(invalid));
+    CHECK(!fov.restore(invalid).ok());
 }
 
 TEST_CASE("map.fov.layerOpaqueGid") {

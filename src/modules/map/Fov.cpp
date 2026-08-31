@@ -1249,9 +1249,11 @@ Fov::Snapshot Fov::snapshot() const {
     return result;
 }
 
-bool Fov::restore(const Snapshot &snapshotValue) {
+Result<void> Fov::restore(const Snapshot& snapshotValue) {
     if (snapshotValue.width != impl_->width || snapshotValue.height != impl_->height ||
-        snapshotValue.depth != impl_->depth || snapshotValue.states.size() != impl_->state.size()) return false;
+        snapshotValue.depth != impl_->depth || snapshotValue.states.size() != impl_->state.size())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Fov snapshot dimensions or payload size do not match", "snapshot"));
     for (std::size_t index = 0; index < snapshotValue.states.size(); ++index) {
         const auto value = snapshotValue.states[index];
         impl_->state[index] = value == 0 ? CellState::Unknown :
@@ -1261,7 +1263,7 @@ bool Fov::restore(const Snapshot &snapshotValue) {
     for (std::size_t index = 0; index < impl_->state.size(); ++index)
         if (impl_->state[index] == CellState::Visible) impl_->visibleList.push_back(static_cast<int>(index));
     impl_->dirty = true;
-    return true;
+    return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 float Fov::getMaskValue(int x, int y) const {

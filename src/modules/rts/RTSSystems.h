@@ -126,9 +126,9 @@ public:
 class FactionRelationSystem {
 public:
     /** @brief Return true when both live factions are identical or share a team in a common Match. */
-    [[nodiscard]] static bool allied(Faction* left, Faction* right) noexcept;
+    [[nodiscard]] static bool isAllied(Faction* left, Faction* right) noexcept;
     /** @brief Resolve generation-checked faction links through the same relationship policy. */
-    [[nodiscard]] static bool allied(const FactionLink& left, const FactionLink& right) noexcept;
+    [[nodiscard]] static bool isAllied(const FactionLink& left, const FactionLink& right) noexcept;
 };
 
 /** @brief Reads authoritative faction contact projections for command authorization. */
@@ -138,7 +138,7 @@ public:
      * @brief Return whether a stable subject is currently visible and detected.
      * Empty contact state preserves native integrations that do not install fog-of-war.
      */
-    [[nodiscard]] static bool targetable(Faction* viewer, SubjectRef subject) noexcept;
+    [[nodiscard]] static bool isTargetable(Faction* viewer, SubjectRef subject) noexcept;
 };
 
 /** @brief Return the phase-one RTS ECS contracts for tooling and review. */
@@ -303,7 +303,13 @@ public:
                                                    State& state, const FogProvider& provider);
     /** @brief Remove all revealers previously installed by this state. */
     static void clear(State& state) noexcept;
-    /** @brief Find a last-known contact by stable subject identity. */
+    /**
+     * @brief Find a last-known contact by stable subject identity.
+     * @return Borrowed contact, or nullptr when absent.
+     * @ownership The Faction owns the returned contact; callers must not release it.
+     * @lifetime Valid only until the faction's contact collection is mutated or the faction is destroyed.
+     * @thread Owner simulation thread only.
+     */
     [[nodiscard]] static const Faction::Intel::Contact* contact(const Faction& faction,
                                                                 SubjectRef subject) noexcept;
 };

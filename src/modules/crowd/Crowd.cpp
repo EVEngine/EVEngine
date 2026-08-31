@@ -653,10 +653,12 @@ int Crowd::getAgentData(int id) const {
     return impl_->datas[size_t(id)];
 }
 
-bool Crowd::setAgentAvoidancePriority(int id, int priority) {
-    if (!impl_->validId(id)) return false;
+Result<void> Crowd::setAgentAvoidancePriority(int id, int priority) {
+    if (!impl_->validId(id))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Crowd avoidance-priority agent slot was not found", "id"));
     impl_->avoidancePriorities[size_t(id)] = priority;
-    return true;
+    return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 int Crowd::getAgentAvoidancePriority(int id) const {
@@ -783,7 +785,8 @@ void Crowd::expose(ssq::Class &cls) {
     cls.addFunc("setAgentRadius", &Crowd::setAgentRadius);
     cls.addFunc("setAgentData", &Crowd::setAgentData);
     cls.addFunc("getAgentData", &Crowd::getAgentData);
-    cls.addFunc("setAgentAvoidancePriority", &Crowd::setAgentAvoidancePriority);
+    cls.addFunc("setAgentAvoidancePriority",
+                [](Crowd* crowd, int id, int priority) { return crowd->setAgentAvoidancePriority(id, priority).ok(); });
     cls.addFunc("getAgentAvoidancePriority", &Crowd::getAgentAvoidancePriority);
     cls.addFunc("setAgentPosition", &Crowd::setAgentPosition);
     cls.addFunc("getAgentState", &Crowd::getAgentState);

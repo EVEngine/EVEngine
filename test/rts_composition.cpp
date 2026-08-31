@@ -4791,8 +4791,8 @@ TEST_CASE("rts.matchTeamsDriveAbilityRelationsAndAutomaticCombatAlliances") {
     REQUIRE(eve::rts::MatchSystem::addParticipant(*match, *alpha, 1).ok());
     REQUIRE(eve::rts::MatchSystem::addParticipant(*match, *bravo, 1).ok());
     REQUIRE(eve::rts::MatchSystem::addParticipant(*match, *red, 2).ok());
-    CHECK(eve::rts::FactionRelationSystem::allied(alpha, bravo));
-    CHECK(!eve::rts::FactionRelationSystem::allied(alpha, red));
+    CHECK(eve::rts::FactionRelationSystem::isAllied(alpha, bravo));
+    CHECK(!eve::rts::FactionRelationSystem::isAllied(alpha, red));
 
     Unit* caster = Unit::createUnit(subject("00000000-0000-7000-8000-00000000d105"));
     Unit* teammate = Unit::createUnit(subject("00000000-0000-7000-8000-00000000d106"));
@@ -4868,7 +4868,7 @@ TEST_CASE("rts.matchTeamsDriveAbilityRelationsAndAutomaticCombatAlliances") {
     bind(*enemy, *red);
     enemy->motion()->x = 3.0f;
     alpha->intel()->enabled = true;
-    CHECK(!eve::rts::FactionIntelSystem::targetable(alpha, enemy->identity()->subject));
+    CHECK(!eve::rts::FactionIntelSystem::isTargetable(alpha, enemy->identity()->subject));
     alpha->intel()->contacts.push_back(
         {subject("ffffffff-ffff-7fff-bfff-ffffffffffff"), "remembered", {}, 0.0, false, false});
     alpha->intel()->contacts.push_back(

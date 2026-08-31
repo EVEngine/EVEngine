@@ -1043,10 +1043,9 @@ Result<FanOutReceipt> RTS::escortUnits(std::span<const SubjectRef> subjects,
         if (unit == nullptr)
             return failure<FanOutReceipt>(DiagnosticCode::NotFound,
                 "RTS escort unit identity was not found", "subjects[" + std::to_string(index) + "]");
-        if (unit == protectedEntity || !unit->durability()->alive ||
-            unit->containment()->container.isBound() || !FactionRelationSystem::allied(
-                dynamic_cast<Faction*>(unit->faction()->link.resolve()),
-                dynamic_cast<Faction*>(protectedFaction)))
+        if (unit == protectedEntity || !unit->durability()->alive || unit->containment()->container.isBound() ||
+            !FactionRelationSystem::isAllied(dynamic_cast<Faction*>(unit->faction()->link.resolve()),
+                                             dynamic_cast<Faction*>(protectedFaction)))
             return failure<FanOutReceipt>(DiagnosticCode::Conflict,
                 "RTS escort units must be live, deployed, friendly, and distinct from the target",
                 "subjects[" + std::to_string(index) + "]");
@@ -3068,7 +3067,10 @@ Result<void> RTS::restoreScriptCheckpoint(std::string_view name) {
             return failure<void>(DiagnosticCode::Conflict, "RTS checkpoint economy topology does not match", "economy");
         current->second->ledger.restore(snapshot);
     }
-    for (const auto& [key, snapshot] : checkpoint.fovs) (void)scriptRuntime_->fovs.at(key)->restore(snapshot);
+    for (const auto& [key, snapshot] : checkpoint.fovs) {
+        auto restored = scriptRuntime_->fovs.at(key)->restore(snapshot);
+        if (!restored) return restored;
+    }
     scriptRuntime_->pendingProductionSubjects = checkpoint.pendingProductionSubjects;
     scriptRuntime_->paidProduction = checkpoint.paidProduction;
     scriptRuntime_->paidConstruction = checkpoint.paidConstruction;

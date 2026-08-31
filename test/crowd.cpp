@@ -248,8 +248,8 @@ TEST_CASE("crowd.sim.exactOverlapUsesStableIdentityAndAvoidancePriority") {
         const int low = crowd.getNamedAgentIndex("low");
         REQUIRE(crowd.setAgentAction(high, "idle"));
         REQUIRE(crowd.setAgentAction(low, "idle"));
-        REQUIRE(crowd.setAgentAvoidancePriority(high, 10));
-        REQUIRE(crowd.setAgentAvoidancePriority(low, -10));
+        REQUIRE(crowd.setAgentAvoidancePriority(high, 10).ok());
+        REQUIRE(crowd.setAgentAvoidancePriority(low, -10).ok());
         crowd.step(0.1f);
         CHECK_EQ(crowd.getAgentAvoidancePriority(high), 10);
         CHECK_EQ(crowd.getAgentAvoidancePriority(low), -10);

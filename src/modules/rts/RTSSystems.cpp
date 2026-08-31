@@ -143,7 +143,7 @@ Unit* unitBySubject(SubjectRef subject) {
 
 bool hostileTo(Unit& source, const FactionLink& targetFaction) {
     return source.faction()->link.resolve() != nullptr && targetFaction.resolve() != nullptr &&
-           !FactionRelationSystem::allied(source.faction()->link, targetFaction);
+           !FactionRelationSystem::isAllied(source.faction()->link, targetFaction);
 }
 
 float visibleHostileThreatAt(Faction& viewer, WorldPosition point) {
@@ -166,8 +166,9 @@ float visibleHostileThreatAt(Faction& viewer, WorldPosition point) {
     for (auto it = units.begin(); it != units.end(); ++it) {
         auto [identity, motion, faction, weaponLink, durability, containment] = *it;
         if (!durability->alive || containment->container.isBound() ||
-            FactionRelationSystem::allied(dynamic_cast<Faction*>(faction->link.resolve()), &viewer) ||
-            !visible(identity->subject)) continue;
+            FactionRelationSystem::isAllied(dynamic_cast<Faction*>(faction->link.resolve()), &viewer) ||
+            !visible(identity->subject))
+            continue;
         auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
         const auto* definition = weaponEntity == nullptr ? nullptr : weaponEntity->definition()->def;
         if (definition != nullptr) threat += contribution(*definition, {motion->x, motion->y});
@@ -177,8 +178,9 @@ float visibleHostileThreatAt(Faction& viewer, WorldPosition point) {
     for (auto it = buildings.begin(); it != buildings.end(); ++it) {
         auto [identity, placement, faction, weaponLink, integrity, construction] = *it;
         if (!integrity->alive || construction->progress < 1.0f ||
-            FactionRelationSystem::allied(dynamic_cast<Faction*>(faction->link.resolve()), &viewer) ||
-            !visible(identity->subject)) continue;
+            FactionRelationSystem::isAllied(dynamic_cast<Faction*>(faction->link.resolve()), &viewer) ||
+            !visible(identity->subject))
+            continue;
         auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
         const auto* definition = weaponEntity == nullptr ? nullptr : weaponEntity->definition()->def;
         if (definition != nullptr)
@@ -255,7 +257,7 @@ Result<int> VeterancySystem::award(Unit& unit, float experience) {
     return Result<int>::success(veterancy->level - oldLevel, Status::success(StatusCode::Applied));
 }
 
-bool FactionRelationSystem::allied(Faction* left, Faction* right) noexcept {
+bool FactionRelationSystem::isAllied(Faction* left, Faction* right) noexcept {
     if (left == nullptr || right == nullptr) return false;
     if (left == right) return true;
     auto matches = ecs::View<Match, Match::Participants>();
@@ -274,11 +276,11 @@ bool FactionRelationSystem::allied(Faction* left, Faction* right) noexcept {
     return false;
 }
 
-bool FactionRelationSystem::allied(const FactionLink& left, const FactionLink& right) noexcept {
-    return allied(dynamic_cast<Faction*>(left.resolve()), dynamic_cast<Faction*>(right.resolve()));
+bool FactionRelationSystem::isAllied(const FactionLink& left, const FactionLink& right) noexcept {
+    return isAllied(dynamic_cast<Faction*>(left.resolve()), dynamic_cast<Faction*>(right.resolve()));
 }
 
-bool FactionIntelSystem::targetable(Faction* viewer, SubjectRef subject) noexcept {
+bool FactionIntelSystem::isTargetable(Faction* viewer, SubjectRef subject) noexcept {
     if (viewer == nullptr || !subject.isValid()) return false;
     const auto intel = viewer->intel();
     if (!intel->enabled) return true;
@@ -479,10 +481,9 @@ Result<void> BuildInfluenceSystem::validate(Faction& faction, WorldPosition posi
                                    Building::Infrastructure>();
         for (auto it = buildings.begin(); it != buildings.end(); ++it) {
             auto [source, owner, construction, integrity, infrastructure] = *it;
-            if (!source->placed || construction->progress < 1.0f || !integrity->alive ||
-                !infrastructure->powered || infrastructure->buildInfluenceRadius <= 0.0f ||
-                !FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(owner->link.resolve()), &faction))
+            if (!source->placed || construction->progress < 1.0f || !integrity->alive || !infrastructure->powered ||
+                infrastructure->buildInfluenceRadius <= 0.0f ||
+                !FactionRelationSystem::isAllied(dynamic_cast<Faction*>(owner->link.resolve()), &faction))
                 continue;
             const float dx = source->worldX - position.x;
             const float dy = source->worldY - position.y;
@@ -687,8 +688,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
                     protectedFaction = &protectedBuilding->faction()->link;
                 }
             }
-            if (protectedFaction == nullptr ||
-                !FactionRelationSystem::allied(*protectedFaction, faction->link)) {
+            if (protectedFaction == nullptr || !FactionRelationSystem::isAllied(*protectedFaction, faction->link)) {
                 auto failed = orders->values.fail(order->id, "escort target is invalid or hostile");
                 if (!failed) return failureFrom<std::size_t>(failed.status());
                 tactics->escortTarget = {};
@@ -818,9 +818,10 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
             float bestDistance = std::numeric_limits<float>::max();
             const auto faction = escort.unit->faction();
             const float range = escort.protectionRange;
-            auto consider = [&](Candidate& candidate, bool allowClaimed) {
+            auto        consider         = [&](Candidate& candidate, bool allowClaimed) {
                 if ((!allowClaimed && claimed.contains(candidate.key)) || candidate.faction == nullptr ||
-                    FactionRelationSystem::allied(*candidate.faction, faction->link)) return;
+                    FactionRelationSystem::isAllied(*candidate.faction, faction->link))
+                    return;
                 const float distance = distanceSquared(escort.center.x, escort.center.y,
                                                        candidate.position.x, candidate.position.y);
                 if (distance > range * range) return;
@@ -920,14 +921,16 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
         const bool splash = definition.projectile.speed > 0.0f && definition.projectile.aoe > 0.0f;
         for (Candidate& victim : candidates) {
             if ((!splash && !sameHandle(victim.handle, aim.handle)) || victim.faction == nullptr ||
-                (!definition.friendlyFire && FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(victim.faction->resolve()), dynamic_cast<Faction*>(ownFaction))) ||
+                (!definition.friendlyFire &&
+                 FactionRelationSystem::isAllied(dynamic_cast<Faction*>(victim.faction->resolve()),
+                                                                          dynamic_cast<Faction*>(ownFaction))) ||
                 (victim.airborne && !definition.targetsAir) || (!victim.airborne && !definition.targetsGround) ||
                 victim.tags == nullptr ||
                 std::any_of(definition.requiredTargetTags.begin(), definition.requiredTargetTags.end(),
-                    [&](const auto& tag) { return !victim.tags->contains(tag); }) ||
+                                                     [&](const auto& tag) { return !victim.tags->contains(tag); }) ||
                 std::any_of(definition.excludedTargetTags.begin(), definition.excludedTargetTags.end(),
-                    [&](const auto& tag) { return victim.tags->contains(tag); })) continue;
+                                                     [&](const auto& tag) { return victim.tags->contains(tag); }))
+                continue;
             double radial = 1.0;
             if (splash) {
                 const float distance = std::hypot(victim.position.x - aim.position.x,
@@ -984,7 +987,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
             float bestEffectiveness = -1.0f;
             for (Candidate& candidate : candidates) {
                 if (candidate.faction == nullptr ||
-                    FactionRelationSystem::allied(*candidate.faction, shooter->faction()->link) ||
+                    FactionRelationSystem::isAllied(*candidate.faction, shooter->faction()->link) ||
                     sameHandle(candidate.handle, shooter->identity()->self) ||
                     committed[candidate.key] >= candidate.health + candidate.shield)
                     continue;
@@ -1070,15 +1073,16 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
         float bestDistance = std::numeric_limits<float>::max();
         for (Candidate& candidate : candidates) {
             if (candidate.faction == nullptr ||
-                FactionRelationSystem::allied(*candidate.faction, building->faction()->link) ||
+                FactionRelationSystem::isAllied(*candidate.faction, building->faction()->link) ||
                 sameHandle(candidate.handle, building->identity()->self) ||
                 committed[candidate.key] >= candidate.health + candidate.shield ||
-                (candidate.airborne && !definition.targetsAir) ||
-                (!candidate.airborne && !definition.targetsGround) || candidate.tags == nullptr ||
+                (candidate.airborne && !definition.targetsAir) || (!candidate.airborne && !definition.targetsGround) ||
+                candidate.tags == nullptr ||
                 std::any_of(definition.requiredTargetTags.begin(), definition.requiredTargetTags.end(),
-                    [&](const auto& tag) { return !candidate.tags->contains(tag); }) ||
+                            [&](const auto& tag) { return !candidate.tags->contains(tag); }) ||
                 std::any_of(definition.excludedTargetTags.begin(), definition.excludedTargetTags.end(),
-                    [&](const auto& tag) { return candidate.tags->contains(tag); })) continue;
+                            [&](const auto& tag) { return candidate.tags->contains(tag); }))
+                continue;
             const float range = building->combat()->acquisitionRange > 0.0f
                                     ? building->combat()->acquisitionRange : definition.range;
             const float distance = distanceSquared(building->placement()->worldX,
@@ -1156,9 +1160,9 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
             const auto index = component[cursor];
             Building* current = defenses[index].building;
             for (std::size_t other = 0; other < defenses.size(); ++other) {
-                if (visited[other] || !FactionRelationSystem::allied(
-                        defenses[other].building->faction()->link,
-                        current->faction()->link)) continue;
+                if (visited[other] || !FactionRelationSystem::isAllied(defenses[other].building->faction()->link,
+                                                                       current->faction()->link))
+                    continue;
                 Building* candidate = defenses[other].building;
                 const float linkRange = std::max(current->combat()->airDefenseNetworkRange,
                                                  candidate->combat()->airDefenseNetworkRange);
@@ -1188,8 +1192,9 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
             float bestDistance = std::numeric_limits<float>::max();
             for (Candidate& candidate : candidates) {
                 if (!candidate.airborne || candidate.faction == nullptr ||
-                    FactionRelationSystem::allied(*candidate.faction, building->faction()->link) ||
-                    claimed.contains(candidate.key)) continue;
+                    FactionRelationSystem::isAllied(*candidate.faction, building->faction()->link) ||
+                    claimed.contains(candidate.key))
+                    continue;
                 const auto& definition = *defense.weapon;
                 if (candidate.tags == nullptr ||
                     std::any_of(definition.requiredTargetTags.begin(), definition.requiredTargetTags.end(),
@@ -1289,10 +1294,10 @@ Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductio
         for (auto targetIt = targets.begin(); targetIt != targets.end(); ++targetIt) {
             auto [targetIdentity, definition, owner, placement, integrity] = *targetIt;
             (void)placement;
-            if (!integrity->alive || FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(owner->link.resolve()), faction) ||
-                (strategy->targetBuildingDefinition.isValid() &&
-                 definition->id != strategy->targetBuildingDefinition)) continue;
+            if (!integrity->alive ||
+                FactionRelationSystem::isAllied(dynamic_cast<Faction*>(owner->link.resolve()), faction) ||
+                (strategy->targetBuildingDefinition.isValid() && definition->id != strategy->targetBuildingDefinition))
+                continue;
             auto* candidate = dynamic_cast<Building*>(ecs::try_get(targetIdentity->self));
             if (candidate != nullptr && (target == nullptr ||
                 candidate->identity()->self.id < target->identity()->self.id)) target = candidate;
@@ -1301,8 +1306,9 @@ Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductio
             for (auto targetIt = targets.begin(); targetIt != targets.end(); ++targetIt) {
                 auto [targetIdentity, definition, owner, placement, integrity] = *targetIt;
                 (void)definition; (void)placement;
-                if (!integrity->alive || FactionRelationSystem::allied(
-                        dynamic_cast<Faction*>(owner->link.resolve()), faction)) continue;
+                if (!integrity->alive ||
+                    FactionRelationSystem::isAllied(dynamic_cast<Faction*>(owner->link.resolve()), faction))
+                    continue;
                 auto* candidate = dynamic_cast<Building*>(ecs::try_get(targetIdentity->self));
                 if (candidate != nullptr && (target == nullptr ||
                     candidate->identity()->self.id < target->identity()->self.id)) target = candidate;
@@ -1984,7 +1990,8 @@ Result<std::size_t> CrowdMotionSystem::step(const SimulationStep& step, crowd::C
                                         "unit.crowd.link");
         crowd.setAgentPosition(agent, entry.motion->x, entry.motion->y);
         crowd.setAgentRadius(agent, entry.settings->radius);
-        crowd.setAgentAvoidancePriority(agent, entry.navigation->movementPriority);
+        auto priority = crowd.setAgentAvoidancePriority(agent, entry.navigation->movementPriority);
+        if (!priority) return failureFrom<std::size_t>(priority.status());
         const float speedFactor = entry.morale->active
                                       ? std::clamp(entry.morale->suppressedSpeedFactor, 0.0f, 1.0f) : 1.0f;
         const float commandFactor = entry.command->requiresCommand && !entry.command->inCommand
@@ -2415,8 +2422,8 @@ Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const Lifecy
             auto [unitIdentity, motion, orders, contribution, faction] = *unitIt;
             auto* unit = unitIdentity == nullptr ? nullptr : dynamic_cast<Unit*>(ecs::try_get(unitIdentity->self));
             if (unit == nullptr || !motion->arrived || contribution->rate <= 0.0f ||
-                faction->link.resolve() == nullptr ||
-                FactionRelationSystem::allied(faction->link, owner->link)) continue;
+                faction->link.resolve() == nullptr || FactionRelationSystem::isAllied(faction->link, owner->link))
+                continue;
             auto current = readCurrent(orders->values);
             if (!current) return failureFrom<std::size_t>(current.status());
             auto record = std::move(current).takeValue();
@@ -2630,8 +2637,7 @@ Result<std::size_t> ContainmentSystem::step() {
                 position = {building->placement()->worldX, building->placement()->worldY};
             }
         }
-        if (occupants == nullptr || owner == nullptr ||
-            !FactionRelationSystem::allied(*owner, faction->link) ||
+        if (occupants == nullptr || owner == nullptr || !FactionRelationSystem::isAllied(*owner, faction->link) ||
             occupants->size() >= capacity) {
             auto failed = orders->values.fail(record->id, "container is invalid, hostile, or full");
             if (!failed) return failureFrom<std::size_t>(failed.status());
@@ -2708,8 +2714,7 @@ Result<SupplyRendezvousSelection> SupplyRendezvousSystem::select(
                                                   "RTS supply rendezvous requires a finite prediction and grid",
                                                   "supply.rendezvous");
     auto* faction = dynamic_cast<Faction*>(supplier.faction()->link.resolve());
-    if (faction == nullptr || !FactionRelationSystem::allied(relay.faction()->link,
-                                                              supplier.faction()->link))
+    if (faction == nullptr || !FactionRelationSystem::isAllied(relay.faction()->link, supplier.faction()->link))
         return failure<SupplyRendezvousSelection>(DiagnosticCode::StaleHandle,
                                                   "RTS supply rendezvous requires a shared live faction",
                                                   "supply.faction");
@@ -2955,7 +2960,8 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         if (!order && supply->autoDispatch && supply->stock >= 1.0f) {
             for (const Recipient& candidate : recipients) {
                 if (candidate.unit == supplier ||
-                    !FactionRelationSystem::allied(candidate.unit->faction()->link, faction->link)) continue;
+                    !FactionRelationSystem::isAllied(candidate.unit->faction()->link, faction->link))
+                    continue;
                 const auto [liveCarried, liveCapacity] = ammunition(*candidate.unit);
                 const float liveRatio = liveCapacity <= 0 ? 1.0f
                                                           : static_cast<float>(liveCarried) / liveCapacity;
@@ -2994,10 +3000,10 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
             for (Unit* candidate : suppliers) {
                 if (candidate == supplier || !candidate->durability()->alive ||
                     candidate->containment()->container.isBound() || !candidate->supply()->relayEnabled ||
-                    candidate->supply()->capacity <= 0.0f ||
-                    candidate->supply()->capacity >= supply->capacity ||
+                    candidate->supply()->capacity <= 0.0f || candidate->supply()->capacity >= supply->capacity ||
                     candidate->supply()->stock >= candidate->supply()->capacity ||
-                    !FactionRelationSystem::allied(candidate->faction()->link, faction->link)) continue;
+                    !FactionRelationSystem::isAllied(candidate->faction()->link, faction->link))
+                    continue;
                 const float ratio = candidate->supply()->stock / candidate->supply()->capacity;
                 if (ratio > supply->autoThreshold) continue;
                 const float distance = distanceSquared(motion->x, motion->y,
@@ -3041,7 +3047,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         if (!order || (order->kind != OrderKind::Resupply && order->kind != OrderKind::SupplyRelay)) continue;
         auto* target = dynamic_cast<Unit*>(ecs::try_get(order->targetEntity));
         if (target == nullptr || !target->durability()->alive || target->containment()->container.isBound() ||
-            !FactionRelationSystem::allied(target->faction()->link, faction->link)) {
+            !FactionRelationSystem::isAllied(target->faction()->link, faction->link)) {
             auto failed = orders->values.fail(order->id, "supply target is invalid or hostile");
             if (!failed) return failureFrom<std::size_t>(failed.status());
             if (target != nullptr) {
@@ -3183,10 +3189,11 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         if (!integrity->alive || construction->progress < 1.0f || supply->stock < 1.0f || supply->range <= 0.0f ||
             supply->transferRate <= 0.0f) continue;
         for (Recipient& candidate : recipients) {
-            if (!FactionRelationSystem::allied(candidate.unit->faction()->link, faction->link) ||
+            if (!FactionRelationSystem::isAllied(candidate.unit->faction()->link, faction->link) ||
                 candidate.deficit <= 0 ||
                 distanceSquared(placement->worldX, placement->worldY, candidate.unit->motion()->x,
-                                candidate.unit->motion()->y) > supply->range * supply->range) continue;
+                                candidate.unit->motion()->y) > supply->range * supply->range)
+                continue;
             supply->transferProgress += supply->transferRate * static_cast<float>(step.delta.seconds());
             const int ready = std::min({static_cast<int>(std::floor(supply->transferProgress)),
                                         static_cast<int>(std::floor(supply->stock)), candidate.deficit});
@@ -3293,7 +3300,8 @@ Result<std::size_t> MoraleSystem::step(const SimulationStep& step, const Lifecyc
         for (auto sourceIt = sources.begin(); sourceIt != sources.end(); ++sourceIt) {
             auto [sourceMotion, sourceFaction, aura, sourceContainment, sourceDurability] = *sourceIt;
             if (!sourceDurability->alive || sourceContainment->container.isBound() || aura->auraRange <= 0.0f ||
-                !FactionRelationSystem::allied(sourceFaction->link, faction->link)) continue;
+                !FactionRelationSystem::isAllied(sourceFaction->link, faction->link))
+                continue;
             if (distanceSquared(motion->x, motion->y, sourceMotion->x, sourceMotion->y) <=
                 aura->auraRange * aura->auraRange)
                 recoveryBonus = std::max(recoveryBonus, aura->auraRecoveryBonus);
@@ -3381,8 +3389,8 @@ Result<std::size_t> CommandNetworkSystem::step() {
     auto isJammed = [&](ecs::Entity* faction, WorldPosition position) {
         return std::any_of(jammers.begin(), jammers.end(), [&](const Jammer& jammer) {
             return jammer.faction != nullptr && faction != nullptr &&
-                   !FactionRelationSystem::allied(dynamic_cast<Faction*>(jammer.faction),
-                                                   dynamic_cast<Faction*>(faction)) &&
+                   !FactionRelationSystem::isAllied(dynamic_cast<Faction*>(jammer.faction),
+                                                    dynamic_cast<Faction*>(faction)) &&
                    distanceSquared(position.x, position.y, jammer.position.x, jammer.position.y) <=
                        jammer.range * jammer.range;
         });
@@ -3465,9 +3473,10 @@ Result<std::size_t> CommandNetworkSystem::step() {
         float bestDistance = std::numeric_limits<float>::max();
         for (auto& source : active) {
             if (sameHandle(source.handle, unit.identity()->self) ||
-                !FactionRelationSystem::allied(dynamic_cast<Faction*>(source.faction),
-                                                dynamic_cast<Faction*>(unit.faction()->link.resolve())) ||
-                (source.capacity > 0 && *source.load + unit.command()->cost > source.capacity)) continue;
+                !FactionRelationSystem::isAllied(dynamic_cast<Faction*>(source.faction),
+                                                 dynamic_cast<Faction*>(unit.faction()->link.resolve())) ||
+                (source.capacity > 0 && *source.load + unit.command()->cost > source.capacity))
+                continue;
             const float candidate = distanceSquared(source.position.x, source.position.y,
                                                     unit.motion()->x, unit.motion()->y);
             if (candidate > source.range * source.range) continue;
@@ -3537,8 +3546,7 @@ Result<void> settleAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityHan
         if (state == nullptr || alive == nullptr || !*alive || !subject.isValid())
             return failure<void>(DiagnosticCode::InvalidArgument, "ability target is not a live RTS combat subject",
                                  "target");
-        const bool allied = faction != nullptr &&
-            FactionRelationSystem::allied(*faction, caster.faction()->link);
+        const bool allied = faction != nullptr && FactionRelationSystem::isAllied(*faction, caster.faction()->link);
         if ((spec.target == AbilityTarget::Enemy && allied) ||
             (spec.target == AbilityTarget::Ally && !allied) ||
             (spec.target == AbilityTarget::Self && entity != &caster))
@@ -3601,7 +3609,7 @@ Result<void> settleAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityHan
         if (entity == nullptr || entity == &caster) continue;
         FactionLink* faction = dynamic_cast<Unit*>(entity) ? &dynamic_cast<Unit*>(entity)->faction()->link
                                                            : &dynamic_cast<Building*>(entity)->faction()->link;
-        if (FactionRelationSystem::allied(*faction, caster.faction()->link)) continue;
+        if (FactionRelationSystem::isAllied(*faction, caster.faction()->link)) continue;
         auto result = affect(entity);
         if (!result) return result;
     }
@@ -3628,9 +3636,9 @@ Result<void> validateAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityH
         auto position = entityPosition(target);
         if (!position) return failure<void>(DiagnosticCode::StaleHandle, "ability target is stale", "target");
         destination = *position;
-        if (spec.target == AbilityTarget::Enemy && !FactionIntelSystem::targetable(
-                dynamic_cast<Faction*>(caster.faction()->link.resolve()),
-                stableSubject(ecs::try_get(target))))
+        if (spec.target == AbilityTarget::Enemy &&
+            !FactionIntelSystem::isTargetable(dynamic_cast<Faction*>(caster.faction()->link.resolve()),
+                                              stableSubject(ecs::try_get(target))))
             return failure<void>(DiagnosticCode::Conflict,
                                  "enemy ability target is not currently visible and detected", "target");
     }
@@ -3819,9 +3827,9 @@ Result<ArtilleryRelocationSelection> ArtilleryRelocationSystem::select(
         for (auto it = units.begin(); it != units.end(); ++it) {
             auto [identity, motion, faction, weaponLink, durability, containment] = *it;
             if (!durability->alive || containment->container.isBound() ||
-                FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(faction->link.resolve()), ownFaction) ||
-                !visibleToFaction(identity->subject)) continue;
+                FactionRelationSystem::isAllied(dynamic_cast<Faction*>(faction->link.resolve()), ownFaction) ||
+                !visibleToFaction(identity->subject))
+                continue;
             auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
             const auto* definition = weaponEntity == nullptr ? nullptr : weaponEntity->definition()->def;
             if (definition == nullptr || definition->range <= 0.0f) continue;
@@ -3834,9 +3842,9 @@ Result<ArtilleryRelocationSelection> ArtilleryRelocationSystem::select(
         for (auto it = buildings.begin(); it != buildings.end(); ++it) {
             auto [identity, placement, faction, weaponLink, integrity, construction] = *it;
             if (!integrity->alive || construction->progress < 1.0f ||
-                FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(faction->link.resolve()), ownFaction) ||
-                !visibleToFaction(identity->subject)) continue;
+                FactionRelationSystem::isAllied(dynamic_cast<Faction*>(faction->link.resolve()), ownFaction) ||
+                !visibleToFaction(identity->subject))
+                continue;
             auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
             const auto* definition = weaponEntity == nullptr ? nullptr : weaponEntity->definition()->def;
             if (definition == nullptr || definition->range <= 0.0f) continue;
@@ -3856,8 +3864,8 @@ Result<ArtilleryRelocationSelection> ArtilleryRelocationSystem::select(
             auto [identity, motion, faction, weaponLink, artillery, durability, containment] = *it;
             if (sameHandle(identity->self, unit.identity()->self) || !durability->alive ||
                 containment->container.isBound() ||
-                !FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(faction->link.resolve()), ownFaction)) continue;
+                !FactionRelationSystem::isAllied(dynamic_cast<Faction*>(faction->link.resolve()), ownFaction))
+                continue;
             auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
             const auto* definition = weaponEntity == nullptr ? nullptr : weaponEntity->definition()->def;
             if (definition == nullptr ||
@@ -3962,8 +3970,9 @@ Result<std::size_t> FireSupportSystem::request(Unit& requester, WorldPosition ce
         auto* unit = dynamic_cast<Unit*>(ecs::try_get(identity->self));
         auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
         if (unit == nullptr || unit == &requester || !durability->alive || containment->container.isBound() ||
-            morale->retreating || !FactionRelationSystem::allied(faction->link, requester.faction()->link) ||
-            weaponEntity == nullptr || weaponEntity->definition()->def == nullptr) continue;
+            morale->retreating || !FactionRelationSystem::isAllied(faction->link, requester.faction()->link) ||
+            weaponEntity == nullptr || weaponEntity->definition()->def == nullptr)
+            continue;
         const auto& definition = *weaponEntity->definition()->def;
         if (definition.projectile.speed <= 0.0f ||
             (definition.projectile.gravity <= 0.0f && artillery->deployTime <= 0.0f)) continue;
@@ -4072,9 +4081,10 @@ Result<std::size_t> FireSupportSystem::step(const SimulationStep& step) {
         const Exposure* best = nullptr;
         float bestDistance = std::numeric_limits<float>::max();
         for (const Exposure& exposure : exposures) {
-            if (exposure.faction == nullptr || FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(exposure.faction),
-                    dynamic_cast<Faction*>(faction->link.resolve()))) continue;
+            if (exposure.faction == nullptr ||
+                FactionRelationSystem::isAllied(dynamic_cast<Faction*>(exposure.faction),
+                                                dynamic_cast<Faction*>(faction->link.resolve())))
+                continue;
             auto* hostileUnit = dynamic_cast<Unit*>(ecs::try_get(exposure.handle));
             auto* hostileBuilding = dynamic_cast<Building*>(ecs::try_get(exposure.handle));
             const auto firedTick = hostileUnit != nullptr ? hostileUnit->artillery()->lastFireTick.value()
@@ -4347,15 +4357,15 @@ Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat
                 subject = building->identity()->subject; tags = &building->tags()->values;
             }
             if (state == nullptr || alive == nullptr || !*alive || faction == nullptr ||
-                (!payload.friendlyFire && FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(faction->resolve()),
-                    dynamic_cast<Faction*>(ecs::try_get(payload.faction)))) ||
-                !subject.isValid() || (airborne && !payload.targetsAir) ||
-                (!airborne && !payload.targetsGround) || tags == nullptr ||
+                (!payload.friendlyFire &&
+                 FactionRelationSystem::isAllied(dynamic_cast<Faction*>(faction->resolve()),
+                                                 dynamic_cast<Faction*>(ecs::try_get(payload.faction)))) ||
+                !subject.isValid() || (airborne && !payload.targetsAir) || (!airborne && !payload.targetsGround) ||
+                tags == nullptr ||
                 std::any_of(payload.requiredTargetTags.begin(), payload.requiredTargetTags.end(),
-                    [&](const auto& tag) { return !tags->contains(tag); }) ||
+                            [&](const auto& tag) { return !tags->contains(tag); }) ||
                 std::any_of(payload.excludedTargetTags.begin(), payload.excludedTargetTags.end(),
-                    [&](const auto& tag) { return tags->contains(tag); }))
+                            [&](const auto& tag) { return tags->contains(tag); }))
                 return Result<void>::success(Status::success(StatusCode::NoOp));
             combat::DamageRequest request;
             request.source = payload.source; request.target = subject; request.damageType = payload.damageType;
@@ -4543,8 +4553,9 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                             float sightRange, float detectionRange, bool enabled) {
             const float range = target.cloaked ? detectionRange : sightRange;
             const SubjectRef subject = stableSubject(ecs::try_get(handle));
-            if (!enabled || !FactionRelationSystem::allied(
-                    dynamic_cast<Faction*>(observerFaction), dynamic_cast<Faction*>(ownFaction)) ||
+            if (!enabled ||
+                !FactionRelationSystem::isAllied(dynamic_cast<Faction*>(observerFaction),
+                                                                     dynamic_cast<Faction*>(ownFaction)) ||
                 range <= 0.0f || !subject.isValid() ||
                 distanceSquared(position.x, position.y, target.position.x, target.position.y) > range * range)
                 return;
@@ -4771,8 +4782,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             });
             if (found == targets.end() || found->second.alive == nullptr || !*found->second.alive ||
                 found->second.faction == nullptr ||
-                (!definition.friendlyFire &&
-                 FactionRelationSystem::allied(*found->second.faction, faction->link)))
+                (!definition.friendlyFire && FactionRelationSystem::isAllied(*found->second.faction, faction->link)))
                 return nullptr;
             if ((found->second.airborne && !definition.targetsAir) ||
                 (!found->second.airborne && !definition.targetsGround)) return nullptr;
@@ -4788,8 +4798,9 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                 observedFireSpotter(faction->link.resolve(), found->second).table == nullptr)
                 return nullptr;
             if (!explicitAttack && distance > policy->acquisitionRange * policy->acquisitionRange) return nullptr;
-            if (explicitAttack && !FactionIntelSystem::targetable(
-                    dynamic_cast<Faction*>(faction->link.resolve()), found->second.subject)) return nullptr;
+            if (explicitAttack && !FactionIntelSystem::isTargetable(dynamic_cast<Faction*>(faction->link.resolve()),
+                                                                    found->second.subject))
+                return nullptr;
             if (applyLeash && policy->stance != CombatStance::Aggressive &&
                 policy->leashRange > 0.0f && policy->guardSet &&
                 distanceSquared(policy->guardX, policy->guardY, found->second.position.x,
@@ -4939,7 +4950,8 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                 for (auto allyIt = allies.begin(); allyIt != allies.end(); ++allyIt) {
                     auto [allyMotion, allyFaction, aura, allyContainment, allyDurability] = *allyIt;
                     if (!allyDurability->alive || allyContainment->container.isBound() || aura->auraRange <= 0.0f ||
-                        !FactionRelationSystem::allied(allyFaction->link, *target->faction)) continue;
+                        !FactionRelationSystem::isAllied(allyFaction->link, *target->faction))
+                        continue;
                     if (distanceSquared(target->position.x, target->position.y, allyMotion->x, allyMotion->y) <=
                         aura->auraRange * aura->auraRange)
                         auraFactor = std::min(auraFactor, std::clamp(aura->auraSuppressionFactor, 0.0f, 1.0f));
@@ -5022,9 +5034,9 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             });
             if (found == targets.end() || found->second.alive == nullptr || !*found->second.alive ||
                 found->second.faction == nullptr ||
-                (!definition.friendlyFire &&
-                 FactionRelationSystem::allied(*found->second.faction, faction->link)) ||
-                sameHandle(found->second.handle, identity->self)) return nullptr;
+                (!definition.friendlyFire && FactionRelationSystem::isAllied(*found->second.faction, faction->link)) ||
+                sameHandle(found->second.handle, identity->self))
+                return nullptr;
             if ((found->second.airborne && !definition.targetsAir) ||
                 (!found->second.airborne && !definition.targetsGround)) return nullptr;
             if (found->second.tags == nullptr ||
@@ -5032,8 +5044,9 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                     [&](const auto& tag) { return !found->second.tags->contains(tag); }) ||
                 std::any_of(definition.excludedTargetTags.begin(), definition.excludedTargetTags.end(),
                     [&](const auto& tag) { return found->second.tags->contains(tag); })) return nullptr;
-            if (explicitAttack && !FactionIntelSystem::targetable(
-                    dynamic_cast<Faction*>(faction->link.resolve()), found->second.subject)) return nullptr;
+            if (explicitAttack && !FactionIntelSystem::isTargetable(dynamic_cast<Faction*>(faction->link.resolve()),
+                                                                    found->second.subject))
+                return nullptr;
             return &found->second;
         };
         Target* target = resolveTarget(policy->target);
@@ -5419,7 +5432,7 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
             auto* transport = dynamic_cast<Unit*>(ecs::try_get(building->rally()->transport));
             if (transport != nullptr && transport->durability()->alive && transport->containment()->capacity > 0 &&
                 transport->containment()->occupants.size() < transport->containment()->capacity &&
-                FactionRelationSystem::allied(transport->faction()->link, building->faction()->link)) {
+                FactionRelationSystem::isAllied(transport->faction()->link, building->faction()->link)) {
                 auto link = ContainerLink::bind(transport->identity()->self);
                 if (!link) return failureFrom<std::size_t>(link.status());
                 unit->containment()->container = std::move(link).takeValue();
@@ -5449,7 +5462,7 @@ Result<std::size_t> ReinforcementSystem::step() {
         if (!rally->enabled || rally->transport.table == nullptr) continue;
         auto* transport = dynamic_cast<Unit*>(ecs::try_get(rally->transport));
         if (transport == nullptr || !transport->durability()->alive ||
-            !FactionRelationSystem::allied(transport->faction()->link, faction->link)) {
+            !FactionRelationSystem::isAllied(transport->faction()->link, faction->link)) {
             rally->transport = {};
             rally->transportActive = false;
             continue;

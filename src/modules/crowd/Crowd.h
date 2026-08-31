@@ -154,8 +154,9 @@ public:
     /** @brief 设置游戏自定义标记。 */
     bool setAgentData(int id, int data);
     int getAgentData(int id) const;
-    /** @brief Set overlap-resolution priority; higher values yield less. */
-    bool setAgentAvoidancePriority(int id, int priority);
+    /** @brief Set overlap-resolution priority; higher values yield less. @return Applied, or NotFound for an invalid
+     * slot. */
+    [[nodiscard]] Result<void> setAgentAvoidancePriority(int id, int priority);
     /** @brief Return overlap-resolution priority, or zero for an invalid id. */
     int getAgentAvoidancePriority(int id) const;
     /** @brief 直接放置单位。 */
