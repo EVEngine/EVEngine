@@ -15,6 +15,16 @@
 #endif
 
 namespace eve::platform_event::sdl {
+namespace {
+
+void releaseOwnedEventPayload(SDL_Event &event) {
+    if ((event.type == SDL_DROPFILE || event.type == SDL_DROPTEXT) && event.drop.file) {
+        SDL_free(event.drop.file);
+        event.drop.file = nullptr;
+    }
+}
+
+}  // namespace
 
 Event::Event() {
     if (SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
@@ -35,6 +45,7 @@ void Event::pump() {
     while (SDL_PollEvent(&e)) {
         Message *msg = convert(e);
         if (msg) push(msg);
+        releaseOwnedEventPayload(e);
         // Ownership stays in the queue until poll()/clear() — do not delete here.
     }
 
@@ -50,7 +61,9 @@ Message *Event::wait() {
         if (SDL_WaitEvent(&e) != 1) return nullptr;
         if (e.type == wakeEventType_) continue;
 
-        if (Message *message = convert(e)) return message;
+        Message *message = convert(e);
+        releaseOwnedEventPayload(e);
+        if (message) return message;
     }
 }
 
@@ -66,7 +79,7 @@ void Event::clear() {
     SDL_Event e;
 
     while (SDL_PollEvent(&e)) {
-        // Do nothing with 'e' ...
+        releaseOwnedEventPayload(e);
     }
 
     eve::platform_event::PlatformEvent::clear();

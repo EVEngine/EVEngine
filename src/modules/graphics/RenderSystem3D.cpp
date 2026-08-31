@@ -421,6 +421,28 @@ void Renderable3D::setPart(int index, const std::string &name, Mesh *mesh, Mater
     }
 }
 
+void Renderable3D::setPartSortPriority(int index, int priority) {
+    auto mr = meshRenderer();
+    if (index < 0 || index >= MeshRenderer::kMaxParts) return;
+    mr->parts[index].sortPriority    = priority;
+    mr->parts[index].hasSortPriority = true;
+}
+
+void Renderable3D::clearPartSortPriority(int index) {
+    auto mr = meshRenderer();
+    if (index < 0 || index >= MeshRenderer::kMaxParts) return;
+    mr->parts[index].sortPriority    = 0;
+    mr->parts[index].hasSortPriority = false;
+}
+
+int Renderable3D::getPartSortPriority(int index) {
+    auto mr = meshRenderer();
+    if (index < 0 || index >= mr->partCount) return 0;
+    const auto& part = mr->parts[index];
+    if (part.hasSortPriority) return part.sortPriority;
+    return part.material ? part.material->getSortPriority() : 0;
+}
+
 void Renderable3D::clearParts() {
     auto mr = meshRenderer();
     mr->partCount = 0;
@@ -852,7 +874,8 @@ void RenderSystem3D::render(Graphics &gfx) {
             const float       maxScale = std::max(std::abs(xf->sx), std::max(std::abs(xf->sy), std::abs(xf->sz)));
             const bool        shadowOk = mr->effectiveCastShadow();
 
-            auto pushPart = [&](Mesh *drawMesh, Material *mat, bool asHair, bool castsShadow) {
+            auto pushPart = [&](Mesh *drawMesh, Material *mat, bool asHair, bool castsShadow,
+                                const ModelPart* modelPart) {
                 if (!drawMesh) return;
                 CulledItem item;
                 item.mr       = mr;
@@ -870,7 +893,9 @@ void RenderSystem3D::render(Graphics &gfx) {
                 item.surfaceMode = mat ? mat->surfaceMode()
                                        : (asHair ? SurfaceMode::Transparent
                                                  : SurfaceMode::Opaque);
-                item.sortPriority = mat ? mat->getSortPriority() : 0;
+                item.sortPriority = modelPart && modelPart->hasSortPriority
+                                        ? modelPart->sortPriority
+                                        : (mat ? mat->getSortPriority() : 0);
                 item.xray     = mr->xrayHighlight;
                 if (drawMesh->hasBounds()) {
                     const glm::vec4 c4 =
@@ -899,11 +924,11 @@ void RenderSystem3D::render(Graphics &gfx) {
                     Material  *mat    = mr->parts[p].material ? mr->parts[p].material : mr->material;
                     const bool asHair = mat ? mat->isTransparentHair() : mr->isHair;
                     const bool casts  = shadowOk && !(mat && !mat->getCastShadow());
-                    pushPart(mr->parts[p].mesh, mat, asHair, casts);
+                    pushPart(mr->parts[p].mesh, mat, asHair, casts, &mr->parts[p]);
                 }
             } else {
                 Mesh *drawMesh = mr->meshForDistance(dist);
-                pushPart(drawMesh, mr->material, mr->effectiveHair(), shadowOk);
+                pushPart(drawMesh, mr->material, mr->effectiveHair(), shadowOk, nullptr);
             }
         }
     }

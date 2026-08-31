@@ -253,6 +253,17 @@ public:
     void setItemAbsolute(float anchorX, float anchorY, float x = 0.f, float y = 0.f);
     /** @brief Sets hover help on the most recently added item. */
     void setItemTooltip(const std::string &text);
+    /**
+     * @brief Marks the most recently added item as a desktop drag source.
+     * @param payloadType Stable application-defined type; "file" is reserved for OS files.
+     * @param payloadText Owning UTF-8 payload copied into retained state.
+     */
+    void setItemDragSource(const std::string &payloadType, const std::string &payloadText);
+    /**
+     * @brief Marks the most recently added item as a desktop drop target.
+     * @param acceptedType Exact payload type or "*" for any type.
+     */
+    void setItemDropTarget(const std::string &acceptedType);
     /** @brief Enables or disables the most recently added item. */
     void setItemEnabled(bool enabled);
     /** @brief Sets the last item's focus mode: "none", "click", or "all". */
@@ -362,6 +373,18 @@ public:
     std::string consumeClick();
     /** @brief Returns the id of the changed widget since the last frame (or ""). */
     std::string consumeChange();
+    /** @brief Returns "supported" on desktop builds and "unsupported-platform" elsewhere. */
+    std::string dragDropSupport() const;
+    /** @brief Pops one drop and returns its target as "host/node", or an empty string. */
+    std::string consumeDrop();
+    /** @brief Returns the payload type of the last successfully consumed drop. */
+    std::string getDropType() const;
+    /** @brief Returns the owning payload text of the last successfully consumed drop. */
+    std::string getDropText() const;
+    /** @brief Returns the source as "host/node", or empty for an OS file. */
+    std::string getDropSource() const;
+    /** @brief Returns "internal", "os-file", or an empty string. */
+    std::string getDropOrigin() const;
 
     /**
      * Script-side event callbacks (P0-3): register a closure on a node id of
@@ -538,6 +561,10 @@ private:
     std::vector<WidgetDesc> openStack_;
     WidgetDesc builtRoot_;
     bool hasBuiltRoot_ = false;
+    std::string lastDropType_;
+    std::string lastDropText_;
+    std::string lastDropSource_;
+    std::string lastDropOrigin_;
 
     struct ScriptHandler {
         ScriptHandler(std::string host, std::string node, std::string k, ssq::Function f)

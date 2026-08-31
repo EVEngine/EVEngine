@@ -1,4 +1,5 @@
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/CaveMesh.h"
 #include "procgen/algorithms/HexTerrain.h"
 #include "procgen/algorithms/PrototypeKit.h"
 #include "procgen/algorithms/RockMesh.h"
@@ -531,6 +532,8 @@ void MeshRecipeRegistry::registerBuiltins() {
     addAdvanced(marching, ParamDescriptor::floating("threshold", "Noise Threshold", 0.05f,
                                                      -1.f, 1.f, 0.01f));
     registerRecipe(std::move(marching), generateMarchingCubesMesh);
+
+    registerCaveMeshRecipe(*this);
 
     RecipeDescriptor rock = mesh("mesh.rock", "Rock");
     rock.params.push_back(ParamDescriptor::choice("baseShape", "Base Shape", "mixed",

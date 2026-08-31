@@ -17,6 +17,7 @@
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
+#include "inventory/Equipment.h"
 #include "model3d/ModelData.h"
 #include "scene/Scene.h"
 
@@ -55,6 +56,12 @@ bool parseBoolish(const std::string &v, bool &out) {
 }  // namespace
 
 AvatarInstance::AvatarInstance(std::string kind) : kind_(std::move(kind)) {
+    equipmentLayers_.emplace("body", EquipmentLayer{"", 0, {}});
+    equipmentLayers_.emplace("underwear", EquipmentLayer{"body", 100, {}});
+    equipmentLayers_.emplace("shirt", EquipmentLayer{"underwear", 200, {}});
+    equipmentLayers_.emplace("outerwear", EquipmentLayer{"shirt", 300, {}});
+    equipmentLayers_.emplace("cape", EquipmentLayer{"outerwear", 400, {}});
+    equipmentLayers_.emplace("weapon", EquipmentLayer{"body", 500, {}});
     if (auto *mod = ModuleManager::getInstance<Avatar>("Avatar"))
         mod->registerInstance(this);
 }
@@ -82,6 +89,11 @@ void AvatarInstance::release() {
     animSkeleton_     = nullptr;
     motions_.clear();
     attachments_.clear();
+    hideEquipmentVisuals();
+    equipment_ = nullptr;
+    equipmentVisuals_.clear();
+    skinnedParts_.clear();
+    projectedEquipment_.clear();
     skinnedPositions_.clear();
     if (sceneAnchor2d_) {
         ecs::DestroyEntity(sceneAnchor2d_);
@@ -126,6 +138,289 @@ void AvatarInstance::setScale(float sx, float sy) {
 void AvatarInstance::setVisible(bool visible) { visible_ = visible; }
 
 void AvatarInstance::setLayer(int layer) { layer_ = layer; }
+
+EquipmentVisualChange AvatarInstance::bindEquipment(inventory::EquipmentSet* equipment) {
+    if (!equipment) return unbindEquipment();
+    equipment_ = equipment;
+    equipmentSignature_.clear();
+    return syncEquipmentAppearance();
+}
+
+EquipmentVisualChange AvatarInstance::unbindEquipment() {
+    const bool hadBinding = equipment_ != nullptr || !projectedEquipment_.empty();
+    equipment_ = nullptr;
+    equipmentSignature_.clear();
+    projectedEquipment_.clear();
+    hideEquipmentVisuals();
+    return hadBinding ? EquipmentVisualChange::Removed : EquipmentVisualChange::Unchanged;
+}
+
+EquipmentVisualChange AvatarInstance::defineEquipmentVisual2D(
+    const std::string& itemId, const std::string& equipmentSlot, const std::string& layerName,
+    graphics::Texture* texture, int zIndex) {
+    if (kind_ != "image" || itemId.empty() || equipmentSlot.empty() || layerName.empty())
+        return EquipmentVisualChange::Rejected;
+    for (auto& visual : equipmentVisuals_) {
+        if (visual.itemId != itemId || visual.equipmentSlot != equipmentSlot) continue;
+        if (visual.layerName == layerName && visual.texture == texture && visual.zIndex == zIndex)
+            return EquipmentVisualChange::Unchanged;
+        visual.layerName = layerName;
+        visual.texture   = texture;
+        visual.zIndex    = zIndex;
+        equipmentSignature_.clear();
+        return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+    }
+    EquipmentVisual visual;
+    visual.itemId        = itemId;
+    visual.equipmentSlot = equipmentSlot;
+    visual.layerName     = layerName;
+    visual.texture       = texture;
+    visual.wearLayer     = equipmentSlot;
+    visual.zIndex        = zIndex;
+    equipmentVisuals_.push_back(std::move(visual));
+    equipmentSignature_.clear();
+    return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+}
+
+EquipmentVisualChange AvatarInstance::defineEquipmentVisual3D(
+    const std::string& itemId, const std::string& equipmentSlot,
+    graphics::Renderable3D* renderable, const std::string& boneSemanticOrName, float ox, float oy,
+    float oz) {
+    if (kind_ != "vroid" || itemId.empty() || equipmentSlot.empty() || !renderable)
+        return EquipmentVisualChange::Rejected;
+    for (auto& visual : equipmentVisuals_) {
+        if (visual.itemId != itemId || visual.equipmentSlot != equipmentSlot) continue;
+        if (visual.renderable == renderable && visual.boneName == boneSemanticOrName &&
+            visual.ox == ox && visual.oy == oy && visual.oz == oz)
+            return EquipmentVisualChange::Unchanged;
+        visual.renderable = renderable;
+        visual.boneName   = boneSemanticOrName;
+        visual.ox = ox;
+        visual.oy = oy;
+        visual.oz = oz;
+        equipmentSignature_.clear();
+        return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+    }
+    EquipmentVisual visual;
+    visual.itemId       = itemId;
+    visual.equipmentSlot = equipmentSlot;
+    visual.renderable   = renderable;
+    visual.boneName     = boneSemanticOrName;
+    visual.wearLayer    = equipmentSlot;
+    visual.ox = ox;
+    visual.oy = oy;
+    visual.oz = oz;
+    equipmentVisuals_.push_back(std::move(visual));
+    renderable->setVisible(false);
+    equipmentSignature_.clear();
+    return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+}
+
+EquipmentVisualChange AvatarInstance::defineEquipmentSkinnedVisual3D(
+    const std::string& itemId, const std::string& equipmentSlot, int partIndex,
+    const std::string& partName, graphics::Mesh* mesh, graphics::Material* material,
+    animation::AnimSkin* skin) {
+    if (kind_ != "vroid" || itemId.empty() || equipmentSlot.empty() || partName.empty() ||
+        !mesh || !skin || partIndex < 0 ||
+        partIndex >= graphics::Renderable3D::MeshRenderer::kMaxParts)
+        return EquipmentVisualChange::Rejected;
+    if (!renderable3d_) renderable3d_ = graphics::Renderable3D::create();
+    for (const auto& part : skinnedParts_) {
+        if (part.partIndex == partIndex) return EquipmentVisualChange::Rejected;
+    }
+    for (const auto& visual : equipmentVisuals_) {
+        if (visual.partIndex == partIndex && visual.equipmentSlot != equipmentSlot)
+            return EquipmentVisualChange::Rejected;
+    }
+    for (auto& visual : equipmentVisuals_) {
+        if (visual.itemId != itemId || visual.equipmentSlot != equipmentSlot) continue;
+        if (visual.partIndex == partIndex && visual.layerName == partName &&
+            visual.skinnedMesh == mesh && visual.skinnedMaterial == material &&
+            visual.skinnedSkin == skin)
+            return EquipmentVisualChange::Unchanged;
+        if (renderable3d_ && visual.partIndex >= 0) {
+            renderable3d_->setPart(visual.partIndex, visual.layerName, nullptr, nullptr);
+            renderable3d_->clearPartSortPriority(visual.partIndex);
+        }
+        if (visual.renderable) visual.renderable->setVisible(false);
+        if (!visual.boneName.empty()) detachAttachment("equipment:" + visual.equipmentSlot);
+        visual.partIndex       = partIndex;
+        visual.layerName       = partName;
+        visual.skinnedMesh     = mesh;
+        visual.skinnedMaterial = material;
+        visual.skinnedSkin     = skin;
+        visual.renderable      = nullptr;
+        visual.boneName.clear();
+        visual.cpuPositions.clear();
+        equipmentSignature_.clear();
+        return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+    }
+    EquipmentVisual visual;
+    visual.itemId         = itemId;
+    visual.equipmentSlot  = equipmentSlot;
+    visual.layerName      = partName;
+    visual.wearLayer      = equipmentSlot;
+    visual.partIndex      = partIndex;
+    visual.skinnedMesh     = mesh;
+    visual.skinnedMaterial = material;
+    visual.skinnedSkin     = skin;
+    equipmentVisuals_.push_back(std::move(visual));
+    equipmentSignature_.clear();
+    return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+}
+
+EquipmentVisualChange AvatarInstance::defineEquipmentLayer(const std::string& name, int order,
+                                                            const std::string& parent) {
+    if (name.empty() || name == parent || (!parent.empty() && !equipmentLayers_.count(parent)))
+        return EquipmentVisualChange::Rejected;
+    auto found = equipmentLayers_.find(name);
+    if (found != equipmentLayers_.end() && found->second.order == order &&
+        found->second.parent == parent)
+        return EquipmentVisualChange::Unchanged;
+    auto& layer  = equipmentLayers_[name];
+    layer.order  = order;
+    layer.parent = parent;
+    equipmentSignature_.clear();
+    return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+}
+
+EquipmentVisualChange AvatarInstance::addEquipmentLayerOcclusion(const std::string& outerLayer,
+                                                                  const std::string& innerLayer) {
+    const auto outer = equipmentLayers_.find(outerLayer);
+    const auto inner = equipmentLayers_.find(innerLayer);
+    if (outer == equipmentLayers_.end() || inner == equipmentLayers_.end() ||
+        outerLayer == innerLayer || outer->second.order <= inner->second.order)
+        return EquipmentVisualChange::Rejected;
+    auto& occludes = outer->second.occludes;
+    if (std::find(occludes.begin(), occludes.end(), innerLayer) != occludes.end())
+        return EquipmentVisualChange::Unchanged;
+    occludes.push_back(innerLayer);
+    equipmentSignature_.clear();
+    return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+}
+
+EquipmentVisualChange AvatarInstance::setEquipmentVisualLayer(
+    const std::string& itemId, const std::string& equipmentSlot, const std::string& wearLayer,
+    int withinLayerOrder) {
+    if (!equipmentLayers_.count(wearLayer)) return EquipmentVisualChange::Rejected;
+    for (auto& visual : equipmentVisuals_) {
+        if (visual.itemId != itemId || visual.equipmentSlot != equipmentSlot) continue;
+        if (visual.wearLayer == wearLayer && visual.withinLayerOrder == withinLayerOrder)
+            return EquipmentVisualChange::Unchanged;
+        visual.wearLayer        = wearLayer;
+        visual.withinLayerOrder = withinLayerOrder;
+        equipmentSignature_.clear();
+        return equipment_ ? syncEquipmentAppearance() : EquipmentVisualChange::Applied;
+    }
+    return EquipmentVisualChange::Rejected;
+}
+
+int AvatarInstance::equipmentLayerOrder(const std::string& name) const {
+    const auto found = equipmentLayers_.find(name);
+    return found == equipmentLayers_.end() ? 0 : found->second.order;
+}
+
+void AvatarInstance::hideEquipmentVisuals() {
+    for (auto& visual : equipmentVisuals_) {
+        visual.updateMode = SkinnedPartUpdateMode::Unavailable;
+        if (kind_ == "image" && !visual.layerName.empty()) {
+            if (Layer* layer = findLayer(visual.layerName)) setLayerVisible(layer->name, false);
+        }
+        if (visual.renderable) visual.renderable->setVisible(false);
+        if (visual.partIndex >= 0 && renderable3d_)
+            renderable3d_->setPart(visual.partIndex, visual.layerName, nullptr, nullptr);
+        if (visual.partIndex >= 0 && renderable3d_)
+            renderable3d_->clearPartSortPriority(visual.partIndex);
+        if (!visual.boneName.empty()) detachAttachment("equipment:" + visual.equipmentSlot);
+    }
+}
+
+EquipmentVisualChange AvatarInstance::syncEquipmentAppearance() {
+    if (!equipment_) return EquipmentVisualChange::Rejected;
+    std::string signature;
+    std::unordered_map<std::string, std::string> equipped;
+    for (int index = 0; index < equipment_->getSlotCount(); ++index) {
+        const std::string slot = equipment_->getSlotName(index);
+        const std::string item = equipment_->getSlotItemId(slot);
+        signature += slot + "=" + item + "#" + std::to_string(equipment_->getSlotInstanceId(slot)) + ";";
+        if (!item.empty()) equipped.emplace(slot, item);
+    }
+    if (signature == equipmentSignature_) return EquipmentVisualChange::Unchanged;
+
+    hideEquipmentVisuals();
+    projectedEquipment_.clear();
+    equipmentRenderStack_.clear();
+    std::vector<std::string> occludedLayers;
+    for (const auto& visual : equipmentVisuals_) {
+        const auto active = equipped.find(visual.equipmentSlot);
+        if (active == equipped.end() || active->second != visual.itemId) continue;
+        const auto layer = equipmentLayers_.find(visual.wearLayer);
+        if (layer == equipmentLayers_.end()) continue;
+        occludedLayers.insert(occludedLayers.end(), layer->second.occludes.begin(),
+                              layer->second.occludes.end());
+    }
+    for (auto& visual : equipmentVisuals_) {
+        const auto active = equipped.find(visual.equipmentSlot);
+        if (active == equipped.end() || active->second != visual.itemId) continue;
+        if (std::find(occludedLayers.begin(), occludedLayers.end(), visual.wearLayer) !=
+            occludedLayers.end())
+            continue;
+        const int renderOrder = equipmentLayerOrder(visual.wearLayer) * 1000 +
+                                visual.withinLayerOrder;
+        if (kind_ == "image" && !visual.layerName.empty()) {
+            if (!hasLayer(visual.layerName)) addLayer(visual.layerName, visual.texture, visual.zIndex);
+            setLayerTexture(visual.layerName, visual.texture);
+            setLayerZ(visual.layerName, renderOrder + visual.zIndex);
+            setLayerVisible(visual.layerName, true);
+        }
+        if (visual.renderable) {
+            visual.renderable->setVisible(visible_);
+            if (visual.boneName.empty()) {
+                visual.renderable->setPosition(x3_ + visual.ox, y3_ + visual.oy, z3_ + visual.oz);
+                visual.renderable->setRotation(yaw_, pitch_, roll_);
+                visual.renderable->setScale(sx3_, sy3_, sz3_);
+            } else {
+                attachToBone("equipment:" + visual.equipmentSlot, visual.boneName, visual.renderable,
+                             visual.ox, visual.oy, visual.oz);
+            }
+        }
+        if (visual.partIndex >= 0 && visual.skinnedMesh && renderable3d_) {
+            renderable3d_->setPart(visual.partIndex, visual.layerName, visual.skinnedMesh,
+                                   visual.skinnedMaterial);
+            renderable3d_->setPartSortPriority(visual.partIndex, renderOrder);
+        }
+        projectedEquipment_[visual.equipmentSlot] = visual.itemId;
+        equipmentRenderStack_.push_back({visual.itemId, visual.wearLayer, renderOrder});
+    }
+    std::stable_sort(equipmentRenderStack_.begin(), equipmentRenderStack_.end(),
+                     [](const EquipmentRenderEntry& a, const EquipmentRenderEntry& b) {
+                         if (a.order != b.order) return a.order < b.order;
+                         return a.itemId < b.itemId;
+                     });
+    equipmentSignature_ = std::move(signature);
+    return EquipmentVisualChange::Applied;
+}
+
+std::string AvatarInstance::getEquipmentVisualItem(const std::string& equipmentSlot) const {
+    const auto found = projectedEquipment_.find(equipmentSlot);
+    return found == projectedEquipment_.end() ? std::string{} : found->second;
+}
+
+int AvatarInstance::getEquipmentRenderStackCount() const {
+    return static_cast<int>(equipmentRenderStack_.size());
+}
+
+std::string AvatarInstance::getEquipmentRenderStackItem(int index) const {
+    return index < 0 || index >= static_cast<int>(equipmentRenderStack_.size())
+               ? std::string{}
+               : equipmentRenderStack_[static_cast<size_t>(index)].itemId;
+}
+
+std::string AvatarInstance::getEquipmentRenderStackLayer(int index) const {
+    return index < 0 || index >= static_cast<int>(equipmentRenderStack_.size())
+               ? std::string{}
+               : equipmentRenderStack_[static_cast<size_t>(index)].wearLayer;
+}
 
 void AvatarInstance::setExpression(const std::string &name) {
     expression_ = name;
@@ -213,6 +508,7 @@ std::string AvatarInstance::getParameterName(int index) const {
 }
 
 void AvatarInstance::update(float dt) {
+    if (equipment_) (void)syncEquipmentAppearance();
     applyTweenTracks();
     updateExpressionTransition(dt);
     if (kind_ == "live2d") {
@@ -257,6 +553,63 @@ bool AvatarInstance::bindAnimSkin(animation::AnimSkin* skin) {
     animSkin_ = skin;
     skinnedPositions_.clear();
     return skin != nullptr;
+}
+
+EquipmentVisualChange AvatarInstance::bindSkinnedPart(
+    int partIndex, const std::string& partName, graphics::Mesh* mesh,
+    graphics::Material* material, animation::AnimSkin* skin) {
+    if (kind_ != "vroid" || partIndex < 0 ||
+        partIndex >= graphics::Renderable3D::MeshRenderer::kMaxParts || partName.empty() ||
+        !mesh || !skin)
+        return EquipmentVisualChange::Rejected;
+    for (const auto& visual : equipmentVisuals_) {
+        if (visual.partIndex == partIndex) return EquipmentVisualChange::Rejected;
+    }
+    for (auto& part : skinnedParts_) {
+        if (part.partIndex != partIndex) continue;
+        if (part.partName == partName && part.mesh == mesh && part.material == material &&
+            part.skin == skin)
+            return EquipmentVisualChange::Unchanged;
+        part.partName = partName;
+        part.mesh = mesh;
+        part.material = material;
+        part.skin = skin;
+        part.cpuPositions.clear();
+        if (!renderable3d_) renderable3d_ = graphics::Renderable3D::create();
+        renderable3d_->setPart(partIndex, partName, mesh, material);
+        return EquipmentVisualChange::Applied;
+    }
+    SkinnedPart part;
+    part.partIndex = partIndex;
+    part.partName  = partName;
+    part.mesh      = mesh;
+    part.material  = material;
+    part.skin      = skin;
+    skinnedParts_.push_back(std::move(part));
+    if (!renderable3d_) renderable3d_ = graphics::Renderable3D::create();
+    renderable3d_->setPart(partIndex, partName, mesh, material);
+    return EquipmentVisualChange::Applied;
+}
+
+EquipmentVisualChange AvatarInstance::unbindSkinnedPart(int partIndex) {
+    const auto found = std::find_if(skinnedParts_.begin(), skinnedParts_.end(),
+                                    [&](const SkinnedPart& part) {
+                                        return part.partIndex == partIndex;
+                                    });
+    if (found == skinnedParts_.end()) return EquipmentVisualChange::Unchanged;
+    skinnedParts_.erase(found);
+    if (renderable3d_) renderable3d_->setPart(partIndex, {}, nullptr, nullptr);
+    return EquipmentVisualChange::Removed;
+}
+
+SkinnedPartUpdateMode AvatarInstance::getSkinnedPartUpdateMode(int partIndex) const {
+    for (const auto& part : skinnedParts_) {
+        if (part.partIndex == partIndex) return part.updateMode;
+    }
+    for (const auto& visual : equipmentVisuals_) {
+        if (visual.partIndex == partIndex) return visual.updateMode;
+    }
+    return SkinnedPartUpdateMode::Unavailable;
 }
 
 bool AvatarInstance::registerMotion(const std::string& name, animation::AnimClip* clip) {
@@ -463,12 +816,41 @@ void AvatarInstance::updateRootMotion(animation::AnimPose* pose) {
 }
 
 void AvatarInstance::updateSkin(animation::AnimPose* pose) {
-    if (!pose || !animSkin_ || !boundMesh_) return;
-    if (!animSkin_->skinPositionsTo(pose, skinnedPositions_)) return;
+    if (!pose) return;
+    if (animSkin_ && boundMesh_)
+        (void)updateSkinnedMesh(animSkin_, boundMesh_, pose, skinnedPositions_);
+    for (auto& part : skinnedParts_)
+        part.updateMode = updateSkinnedMesh(part.skin, part.mesh, pose, part.cpuPositions);
+    for (auto& visual : equipmentVisuals_) {
+        if (visual.partIndex < 0 || !visual.skinnedSkin || !visual.skinnedMesh) continue;
+        const auto active = projectedEquipment_.find(visual.equipmentSlot);
+        if (active == projectedEquipment_.end() || active->second != visual.itemId) continue;
+        visual.updateMode = updateSkinnedMesh(visual.skinnedSkin, visual.skinnedMesh, pose,
+                                              visual.cpuPositions);
+    }
+}
+
+SkinnedPartUpdateMode AvatarInstance::updateSkinnedMesh(animation::AnimSkin* skin,
+                                                        graphics::Mesh* mesh,
+                                                        animation::AnimPose* pose,
+                                                        std::vector<float>& cpuPositions) {
+    if (!skin || !mesh || !pose || mesh->getVertexCount() != skin->getVertexCount())
+        return SkinnedPartUpdateMode::Unavailable;
+    for (int bone = 0; bone < skin->getBoneCount(); ++bone) {
+        const int poseBone = skin->getSkeletonBone(bone);
+        if (poseBone < 0 || poseBone >= pose->getBoneCount())
+            return SkinnedPartUpdateMode::Unavailable;
+    }
     auto* gfx = ModuleManager::getInstance<graphics::Graphics>("Graphics");
-    if (!gfx) return;
-    gfx->updateMeshVertices(boundMesh_, skinnedPositions_.data(), nullptr, nullptr, animSkin_->getVertexCount(),
-                            nullptr, 0);
+    if (gfx && !mesh->hasGpuSkinning()) (void)skin->bindGpuMesh(gfx, mesh);
+    if (mesh->hasGpuSkinning() && skin->updateGpuMesh(mesh, pose))
+        return SkinnedPartUpdateMode::Gpu;
+    if (!gfx || !skin->skinPositionsTo(pose, cpuPositions))
+        return SkinnedPartUpdateMode::Unavailable;
+    return gfx->updateMeshVertices(mesh, cpuPositions.data(), nullptr, nullptr,
+                                   skin->getVertexCount(), nullptr, 0)
+               ? SkinnedPartUpdateMode::Cpu
+               : SkinnedPartUpdateMode::Unavailable;
 }
 
 void AvatarInstance::updateAttachments(animation::AnimPose* pose) {
@@ -587,6 +969,7 @@ bool AvatarInstance::linkSceneNode(scene::Scene* scene, const std::string& nodeI
 }
 
 void AvatarInstance::sync() {
+    if (equipment_) (void)syncEquipmentAppearance();
     if (kind_ == "image")
         syncImageLayers();
     else if (kind_ == "live2d") {
@@ -1012,6 +1395,16 @@ void AvatarInstance::syncVroid() {
         renderable3d_->setRotation(yaw_, pitch_, roll_);
         renderable3d_->setScale(sx3_ * sx_, sy3_ * sy_, sz3_);
         renderable3d_->setVisible(visible_);
+    }
+    for (auto& visual : equipmentVisuals_) {
+        const auto active = projectedEquipment_.find(visual.equipmentSlot);
+        if (!visual.renderable || !visual.boneName.empty() || active == projectedEquipment_.end() ||
+            active->second != visual.itemId)
+            continue;
+        visual.renderable->setPosition(x3_ + visual.ox, y3_ + visual.oy, z3_ + visual.oz);
+        visual.renderable->setRotation(yaw_, pitch_, roll_);
+        visual.renderable->setScale(sx3_ * sx_, sy3_ * sy_, sz3_);
+        visual.renderable->setVisible(visible_);
     }
     bakeMorphs();
 }

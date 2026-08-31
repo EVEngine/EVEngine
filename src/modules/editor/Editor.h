@@ -206,9 +206,9 @@ public:
 #endif
 
 private:
-    EditorCommandService                       commandService_;
-    std::unique_ptr<EditorTargetCoordinator>   targets_;
-    std::unique_ptr<EditorAutomationProvider>  automation_;
+    EditorCommandService                      commandService_;
+    std::unique_ptr<EditorTargetCoordinator>  targets_;
+    std::unique_ptr<EditorAutomationProvider> automation_;
 };
 
 }  // namespace eve::editor

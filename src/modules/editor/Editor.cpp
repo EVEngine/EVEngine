@@ -4,12 +4,12 @@
 #include "common/EditorAutomation.h"
 #include "editor/ActionTimelineScriptBindings.h"
 #include "editor/Brush.h"
-#include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorHistory.h"
 #include "editor/EditorInspector.h"
 #include "editor/EditorSession.h"
+#include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorToolbar.h"
 #include "editor/EditorVolumeTarget.h"
 #include "editor/EditorWorkspace.h"
@@ -415,7 +415,7 @@ void buildHeightmapArrays(const eve::procgen::Heightmap& hm, float cell, float h
 Editor::Editor()
     : targets_(std::make_unique<EditorTargetCoordinator>(commandService_)),
       automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
-    const auto sceneCommands = eve::scene_editing::registerEditingCommands(*targets_);
+    const auto sceneCommands    = eve::scene_editing::registerEditingCommands(*targets_);
     const auto materialCommands = eve::material_editing::registerEditingCommands(*targets_);
     if (!sceneCommands.isAccepted() || !materialCommands.isAccepted())
         throw std::runtime_error("Failed to register built-in domain editing commands");
@@ -424,9 +424,7 @@ Editor::Editor()
 
 Editor::~Editor() { eve::cap::revoke<eve::IEditorAutomation>(automation_.get()); }
 
-EditorResult<void> Editor::registerEditingTarget(IEditableTarget& target) {
-    return targets_->registerTarget(target);
-}
+EditorResult<void> Editor::registerEditingTarget(IEditableTarget& target) { return targets_->registerTarget(target); }
 
 EditorResult<void> Editor::unregisterEditingTarget(const TargetId& target) {
     auto result = targets_->unregisterTarget(target);
@@ -480,29 +478,21 @@ ScriptEditorTool* Editor::newScriptTool(const std::string& id, const std::string
     return new ScriptEditorTool(id, label);
 }
 
-ConstantBrushFalloff* Editor::newConstantBrushFalloff() { return new ConstantBrushFalloff(); }
-LinearBrushFalloff* Editor::newLinearBrushFalloff() { return new LinearBrushFalloff(); }
-SmoothBrushFalloff* Editor::newSmoothBrushFalloff() { return new SmoothBrushFalloff(); }
-CircleBrushKernel* Editor::newCircleBrushKernel() { return new CircleBrushKernel(); }
-BoxBrushKernel* Editor::newBoxBrushKernel() { return new BoxBrushKernel(); }
-PaintIntFieldOperation* Editor::newPaintIntFieldOperation(int value) {
-    return new PaintIntFieldOperation(value);
-}
-AddScalarFieldOperation* Editor::newAddScalarFieldOperation() {
-    return new AddScalarFieldOperation();
-}
-FieldBrushTool* Editor::newFieldBrushTool(const std::string& id, const std::string& label) {
+ConstantBrushFalloff*    Editor::newConstantBrushFalloff() { return new ConstantBrushFalloff(); }
+LinearBrushFalloff*      Editor::newLinearBrushFalloff() { return new LinearBrushFalloff(); }
+SmoothBrushFalloff*      Editor::newSmoothBrushFalloff() { return new SmoothBrushFalloff(); }
+CircleBrushKernel*       Editor::newCircleBrushKernel() { return new CircleBrushKernel(); }
+BoxBrushKernel*          Editor::newBoxBrushKernel() { return new BoxBrushKernel(); }
+PaintIntFieldOperation*  Editor::newPaintIntFieldOperation(int value) { return new PaintIntFieldOperation(value); }
+AddScalarFieldOperation* Editor::newAddScalarFieldOperation() { return new AddScalarFieldOperation(); }
+FieldBrushTool*          Editor::newFieldBrushTool(const std::string& id, const std::string& label) {
     return new FieldBrushTool(id, label, nullptr, nullptr);
 }
 
-SphereVolumeBrushKernel* Editor::newSphereVolumeBrushKernel() {
-    return new SphereVolumeBrushKernel();
-}
-BoxVolumeBrushKernel* Editor::newBoxVolumeBrushKernel() { return new BoxVolumeBrushKernel(); }
-PaintIntVolumeOperation* Editor::newPaintIntVolumeOperation(int value) {
-    return new PaintIntVolumeOperation(value);
-}
-VolumeBrushTool* Editor::newVolumeBrushTool(const std::string& id, const std::string& label) {
+SphereVolumeBrushKernel* Editor::newSphereVolumeBrushKernel() { return new SphereVolumeBrushKernel(); }
+BoxVolumeBrushKernel*    Editor::newBoxVolumeBrushKernel() { return new BoxVolumeBrushKernel(); }
+PaintIntVolumeOperation* Editor::newPaintIntVolumeOperation(int value) { return new PaintIntVolumeOperation(value); }
+VolumeBrushTool*         Editor::newVolumeBrushTool(const std::string& id, const std::string& label) {
     return new VolumeBrushTool(id, label);
 }
 
@@ -816,18 +806,17 @@ void Editor::expose(ssq::Table& table) {
         "ConstantBrushFalloff",
         std::function<ConstantBrushFalloff*()>([]() -> ConstantBrushFalloff* { return nullptr; }), true);
     auto linearFalloff = table.addClass<LinearBrushFalloff>(
-        "LinearBrushFalloff",
-        std::function<LinearBrushFalloff*()>([]() -> LinearBrushFalloff* { return nullptr; }), true);
+        "LinearBrushFalloff", std::function<LinearBrushFalloff*()>([]() -> LinearBrushFalloff* { return nullptr; }),
+        true);
     auto smoothFalloff = table.addClass<SmoothBrushFalloff>(
-        "SmoothBrushFalloff",
-        std::function<SmoothBrushFalloff*()>([]() -> SmoothBrushFalloff* { return nullptr; }), true);
+        "SmoothBrushFalloff", std::function<SmoothBrushFalloff*()>([]() -> SmoothBrushFalloff* { return nullptr; }),
+        true);
     (void)constantFalloff;
     (void)linearFalloff;
     (void)smoothFalloff;
 
     auto circleKernel = table.addClass<CircleBrushKernel>(
-        "CircleBrushKernel", std::function<CircleBrushKernel*()>([]() -> CircleBrushKernel* { return nullptr; }),
-        true);
+        "CircleBrushKernel", std::function<CircleBrushKernel*()>([]() -> CircleBrushKernel* { return nullptr; }), true);
     circleKernel.addFunc("setConstantFalloff", [](CircleBrushKernel* self, ConstantBrushFalloff* falloff) {
         if (self) self->setFalloff(falloff);
     });
@@ -882,10 +871,9 @@ void Editor::expose(ssq::Table& table) {
     auto sphereVolumeKernel = table.addClass<SphereVolumeBrushKernel>(
         "SphereVolumeBrushKernel",
         std::function<SphereVolumeBrushKernel*()>([]() -> SphereVolumeBrushKernel* { return nullptr; }), true);
-    sphereVolumeKernel.addFunc("setConstantFalloff",
-                               [](SphereVolumeBrushKernel* self, ConstantBrushFalloff* falloff) {
-                                   if (self) self->setFalloff(falloff);
-                               });
+    sphereVolumeKernel.addFunc("setConstantFalloff", [](SphereVolumeBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
     sphereVolumeKernel.addFunc("setLinearFalloff", [](SphereVolumeBrushKernel* self, LinearBrushFalloff* falloff) {
         if (self) self->setFalloff(falloff);
     });
@@ -972,8 +960,7 @@ void Editor::expose(ssq::Table& table) {
 #ifdef EVENGINE_HAS_VOXEL
     auto voxelTarget = table.addClass<VoxelWorldTarget>(
         "VoxelWorldTarget", std::function<VoxelWorldTarget*()>([]() -> VoxelWorldTarget* { return nullptr; }), true);
-    voxelTarget.addFunc("getTargetId",
-                        [](VoxelWorldTarget* self) { return self ? self->targetId() : std::string{}; });
+    voxelTarget.addFunc("getTargetId", [](VoxelWorldTarget* self) { return self ? self->targetId() : std::string{}; });
     voxelTarget.addFunc("getRevision", [](VoxelWorldTarget* self) {
         return self ? static_cast<int64_t>(self->revision()) : int64_t{0};
     });
@@ -992,12 +979,10 @@ void Editor::expose(ssq::Table& table) {
         "EditorSession", std::function<EditorSession*()>([]() -> EditorSession* { return nullptr; }), true);
     session.addFunc("addTool", std::function<bool(EditorSession*, ScriptEditorTool*)>(
                                    [](EditorSession* self, ScriptEditorTool* tool) { return self->addTool(tool); }));
-    session.addFunc("addFieldTool", [](EditorSession* self, FieldBrushTool* tool) {
-        return self && self->addTool(tool);
-    });
-    session.addFunc("addVolumeTool", [](EditorSession* self, VolumeBrushTool* tool) {
-        return self && self->addTool(tool);
-    });
+    session.addFunc("addFieldTool",
+                    [](EditorSession* self, FieldBrushTool* tool) { return self && self->addTool(tool); });
+    session.addFunc("addVolumeTool",
+                    [](EditorSession* self, VolumeBrushTool* tool) { return self && self->addTool(tool); });
     session.addFunc("bindTileBufferTarget", [](EditorSession* self, TileBufferTarget* target) {
         if (self) self->bindTarget(target);
     });
@@ -1114,26 +1099,25 @@ void Editor::expose(ssq::Table& table) {
                             return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
                                    (response.releasePointer ? 4 : 0);
                         }));
-    session.addFunc(
-        "dispatchPointer3D",
-        std::function<int(EditorSession*, int, int, int, float, float, float, float, float, float, float)>(
-            [](EditorSession* self, int phase, int pointerId, int button, float x, float y, float z, float dx,
-               float dy, float dz, float pressure) {
-                EditorPointerEvent event;
-                event.phase = static_cast<EditorPointerEvent::Phase>(phase);
-                event.pointerId = pointerId;
-                event.button = button;
-                event.x = x;
-                event.y = y;
-                event.z = z;
-                event.deltaX = dx;
-                event.deltaY = dy;
-                event.deltaZ = dz;
-                event.pressure = pressure;
-                const ToolResponse response = self->dispatchPointer(event);
-                return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
-                       (response.releasePointer ? 4 : 0);
-            }));
+    session.addFunc("dispatchPointer3D",
+                    std::function<int(EditorSession*, int, int, int, float, float, float, float, float, float, float)>(
+                        [](EditorSession* self, int phase, int pointerId, int button, float x, float y, float z,
+                           float dx, float dy, float dz, float pressure) {
+                            EditorPointerEvent event;
+                            event.phase                 = static_cast<EditorPointerEvent::Phase>(phase);
+                            event.pointerId             = pointerId;
+                            event.button                = button;
+                            event.x                     = x;
+                            event.y                     = y;
+                            event.z                     = z;
+                            event.deltaX                = dx;
+                            event.deltaY                = dy;
+                            event.deltaZ                = dz;
+                            event.pressure              = pressure;
+                            const ToolResponse response = self->dispatchPointer(event);
+                            return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
+                                   (response.releasePointer ? 4 : 0);
+                        }));
 
     auto workspace = table.addClass<EditorWorkspace>(
         "EditorWorkspace", std::function<EditorWorkspace*()>([]() -> EditorWorkspace* { return nullptr; }), true);
