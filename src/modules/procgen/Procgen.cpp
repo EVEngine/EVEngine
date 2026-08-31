@@ -776,6 +776,15 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::poissonDiskHandle(int width, int 
                             std::make_unique<PointSet>(poissonDiskPoints(width, depth, radius, seed, maxPoints)));
 }
 
+static std::string sceneInstanceId(const PointSet& points, size_t pointIndex,
+                                   std::unordered_map<uint32_t, size_t>& seedOccurrences) {
+    const auto& point      = points.points()[pointIndex];
+    const auto  explicitId = points.attributes().getString(pointIndex, "instanceId");
+    if (explicitId && !explicitId->empty()) return std::string(*explicitId);
+    if (point.id != 0) return "pcg-id-" + std::to_string(point.id);
+    return "pcg-" + std::to_string(point.seed) + "-" + std::to_string(seedOccurrences[point.seed]++);
+}
+
 eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenPointSetHandleRef points,
                                             const std::string& assetAttribute, const std::string& defaultAsset) {
     const auto view = resolvePointSet(points);
@@ -794,13 +803,7 @@ eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenP
     for (size_t pointIndex = 0; pointIndex < view->points().size(); ++pointIndex) {
         const auto&              point = view->points()[pointIndex];
         eve::ProcgenInstanceDesc instance;
-        const auto               explicitId = view->attributes().getString(pointIndex, "instanceId");
-        if (explicitId && !explicitId->empty())
-            instance.id = *explicitId;
-        else if (point.id != 0)
-            instance.id = "pcg-id-" + std::to_string(point.id);
-        else
-            instance.id = "pcg-" + std::to_string(point.seed) + "-" + std::to_string(seedOccurrences[point.seed]++);
+        instance.id = sceneInstanceId(*view, pointIndex, seedOccurrences);
         if (!instanceIds.insert(instance.id).second)
             return procgenBindingFailure<void>(eve::DiagnosticCode::Conflict,
                                                "publishInstances duplicate instance id: " + instance.id);
