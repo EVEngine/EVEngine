@@ -12,11 +12,11 @@
 #else
 #include "graphics/vulkan/Graphics.h"
 #endif
-#include "graphics/AmbientOcclusion.h"
 #include "graphics/AlphaMask.h"
+#include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/Font.h"
 #include "graphics/FogVolume.h"
+#include "graphics/Font.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
@@ -27,6 +27,7 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"

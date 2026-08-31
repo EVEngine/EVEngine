@@ -6,9 +6,12 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
+#include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/RenderControl.h"
+#include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/Texture.h"
 
 #include <algorithm>
 #include <cmath>

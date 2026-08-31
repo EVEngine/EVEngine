@@ -1,11 +1,9 @@
 #pragma once
 
-#include "graphics/Drawable.h"
-#include "graphics/Quad.h"
-#include "graphics/TextureSampler.h"
 #include <cstdint>
 #include <string>
-#include <vector>
+#include "graphics/Drawable.h"
+#include "graphics/TextureSampler.h"
 
 namespace eve::graphics {
 

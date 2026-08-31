@@ -6,6 +6,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 
 #include <cmath>
 

@@ -4,12 +4,13 @@
 #include "building/Ghost.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
-#include "grid/GridConfig.h"
 #include "common/ECS.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
+#include "grid/GridConfig.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 

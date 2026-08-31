@@ -6,6 +6,7 @@
 #include "filesystem/Filesystem.h"
 #include "graphics/IResourceFactory.h"
 #include "graphics/Material.h"
+#include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
 #include "image/Image.h"

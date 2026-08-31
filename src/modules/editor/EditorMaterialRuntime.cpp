@@ -1,6 +1,8 @@
 #include "editor/EditorMaterialTarget.h"
 
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
 
 namespace eve::editor {
 namespace {

@@ -2,6 +2,7 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>

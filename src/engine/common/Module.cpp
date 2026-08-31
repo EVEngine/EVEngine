@@ -22,6 +22,18 @@ Module* ModuleManager::find(const char* name) {
     return p->second.instance;
 }
 
+Module* ModuleManager::getInstanceRaw(const char* name) {
+    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
+    return inst().registered_modules[name].instance;
+}
+
+Module* ModuleManager::requireInstanceRaw(const char* name) {
+    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
+    auto& module = inst().registered_modules[name];
+    if (module.instance) return module.instance;
+    return module.creator();
+}
+
 void ModuleManager::insert(const char* name, Module* instance) {
     EV_PARAM_CHECK(name != nullptr, "module name must not be null");
     EV_PARAM_CHECK(instance != nullptr, "module instance must not be null");

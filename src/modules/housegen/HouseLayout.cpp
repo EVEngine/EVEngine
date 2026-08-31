@@ -1,9 +1,11 @@
 #include "housegen/HouseLayout.h"
 #include "housegen/HouseComponentLibrary.h"
 
-#include "graphics/Graphics.h"
-#include "graphics/RenderSystem3D.h"
 #include "data/ByteData.h"
+#include "graphics/Graphics.h"
+#include "graphics/Mesh.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "model3d/Model3D.h"

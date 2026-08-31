@@ -3,6 +3,9 @@
 #include "common/Assert.h"
 #include "common/Module.h"
 #include "common/ReflectScript.h"
+#include "common/ScriptCompiler.h"
+#include "common/ScriptError.h"
+#include "common/ScriptModule.h"
 
 #include <algorithm>
 #include <cstdlib>

@@ -4,8 +4,9 @@
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/Shader.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
 
 #include <cmath>
 #include <cstdint>

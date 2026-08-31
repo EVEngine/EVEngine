@@ -369,6 +369,21 @@ make build/win32-debug \
 See [module trimming](docs/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
 `full`, and per-module options.
 
+Inspect object-file growth and expensive public-header fanout after a local
+build with:
+
+```sh
+make stats/build                              # build/<host>-debug
+make stats/build BUILD_STATS_DIR=build/linux # another build tree
+```
+
+The report lists the largest `.o`/`.obj` files, high-impact directly included
+project headers, and template-bearing headers. It is an explicit target rather
+than part of every incremental build, so collecting diagnostics does not slow
+normal development builds. The current top-20 review and the rationale for
+dependencies that remain are recorded in
+[`docs/dev/高引用头文件编译成本审计.md`](docs/dev/高引用头文件编译成本审计.md).
+
 Output layout:
 
 | Target | Build dir | Notes |
