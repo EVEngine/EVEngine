@@ -69,12 +69,12 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
                 false, tex2DPipelineLayout);
         } else {
             candidate.mesh3dPipeline = createPipelineForShader(
-                &candidate, sceneColorFormat, true, true, candidate.isHair3D, false, false,
-                mesh3dPipelineLayout);
+                &candidate, static_cast<wgpu::TextureFormat>(sceneColorFormat), true, true,
+                candidate.isHair3D, false, false, mesh3dPipelineLayout);
             if (!candidate.isHair3D)
                 candidate.mesh3dXrayPipeline = createPipelineForShader(
-                    &candidate, sceneColorFormat, false, true, false, false, false,
-                    mesh3dPipelineLayout);
+                    &candidate, static_cast<wgpu::TextureFormat>(sceneColorFormat), false, true,
+                    false, false, false, mesh3dPipelineLayout);
         }
     } catch (const std::exception &error) {
         return reloadFailure(DiagnosticCode::Failed,
