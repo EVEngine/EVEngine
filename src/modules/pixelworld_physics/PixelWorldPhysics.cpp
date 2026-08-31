@@ -511,7 +511,7 @@ eve::Result<TerrainCollisionSyncReceipt> PixelTerrainCollisionCache::sync(
         const Impl::Coord coord{chunk.x, chunk.y};
         rebuildCoords.insert(coord);
         constexpr Impl::Coord neighbors[] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-        for (const auto [dx, dy] : neighbors) {
+        for (const auto& [dx, dy] : neighbors) {
             const Impl::Coord neighbor{chunk.x + dx, chunk.y + dy};
             if (impl_->bodies.contains(neighbor)) rebuildCoords.insert(neighbor);
         }
