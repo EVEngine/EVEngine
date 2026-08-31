@@ -322,6 +322,7 @@ public:
     uint32_t gpuDrivenReflectionProbeSlot(Texture *cubemap) override;
     /** @compatibility Implements the established GPU-driven boolean submission facade. */
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    GpuResidentSubmitStatus gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) override;
     /** @lifetime Returned texture is borrowed from the active scene targets. */
     Texture *getSceneLinearDepthTexture() override;
 

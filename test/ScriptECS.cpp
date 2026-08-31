@@ -247,6 +247,91 @@ function testShaderSystemClassExists() {
     return true
 }
 
+function testShaderSystemGpuResidentTransfers() {
+    class Pos extends eve.Component { x = 0.0 }
+    class Node extends eve.Entity { pos = Pos }
+    class FakeBackend {
+        dispatches = 0
+        records = 0
+        function ensureBuffer(binding, count) { return binding }
+        function getBuffer(binding) { return binding }
+        function dispatch(count, dt) { dispatches += 1 }
+        function recordDispatch(sequence, count, dt) { records += 1 }
+    }
+
+    local uploads = 0
+    local downloads = 0
+    local uploadRange = null
+    local downloadRange = null
+    eve.packEcsFloats <- function(ents, slot, fields, buf) { uploads += 1 }
+    eve.unpackEcsFloats <- function(ents, slot, fields, buf, count) { downloads += 1 }
+    eve.packEcsFloatsRange <- function(ents, slot, fields, buf, first, count) {
+        uploadRange = [first, count]
+    }
+    eve.unpackEcsFloatsRange <- function(ents, slot, fields, buf, first, count) {
+        downloadRange = [first, count]
+    }
+
+    local node = Node.create()
+    local second = Node.create()
+    local third = Node.create()
+    local sys = eve.ShaderSystem(Node)
+    sys._gpu = true
+    sys._backend = FakeBackend()
+    sys.bindFields(0, "pos", ["x"], false, false)
+
+    sys.update(0.016)
+    sys.update(0.016)
+    if (uploads != 1 || downloads != 0 || sys._backend.dispatches != 2) return false
+
+    sys.requestUpload(0).requestReadback(0)
+    sys.update(0.016)
+    if (uploads != 2 || downloads != 1) return false
+
+    sys.requestUploadRange(0, 1, 1).requestUploadRange(0, 2, 1)
+    sys.requestReadbackRange(0, 1, 2)
+    sys.update(0.016)
+    if (uploadRange == null || uploadRange[0] != 1 || uploadRange[1] != 2) return false
+    if (downloadRange == null || downloadRange[0] != 1 || downloadRange[1] != 2) return false
+    if (uploads != 2 || downloads != 1) return false
+
+    local batch = sys.record(true, 0.016)
+    sys.completeRecorded(batch)
+    if (sys._backend.records != 1) return false
+
+    // Typed write-only schemas allocate resident output without packing stale CPU data.
+    local outputSys = eve.ShaderSystem(Node)
+    outputSys._gpu = true
+    outputSys._backend = FakeBackend()
+    outputSys.bindSchema(0, { slot = "pos", fields = ["x"], scalar = "f32",
+                              access = "write" })
+    outputSys.update(0.016)
+    if (uploads != 2) return false
+    local schema = outputSys.getBindingSchema(0)
+    if (schema == null || schema.strideFloats != 1 || schema.access != "write") return false
+    if (outputSys.shaderDeclarations("glsl") !=
+        "layout(set = 0, binding = 0) writeonly buffer EcsBinding0 { float data[]; } ecs0;\n")
+        return false
+    if (outputSys.shaderDeclarations("wgsl") !=
+        "@group(0) @binding(0) var<storage, read_write> ecs0 : array<f32>;\n")
+        return false
+
+    local rejected = false
+    try { outputSys.bindSchema(1, { slot = "pos", fields = ["x"], scalar = "i32" }) }
+    catch (e) { rejected = true }
+    if (!rejected) return false
+
+    // A structural revision invalidates resident packing even at the same capacity.
+    local fourth = Node.create()
+    sys.update(0.016)
+    if (uploads != 3 || downloads != 1) return false
+    node.destroy()
+    second.destroy()
+    third.destroy()
+    fourth.destroy()
+    return true
+}
+
 function testViewCacheStableAndInvalidated() {
     class Pos extends eve.Component { x = 0.0 }
     class Node extends eve.Entity { pos = Pos }
@@ -311,6 +396,19 @@ function testComponentDefaultsAndSlotsCached() {
     b.destroy()
     return true
 }
+
+function testGpuDrivenBindingSurface() {
+    if (!("Gpgpu" in eve)) return false
+    local gpu = eve.Gpgpu()
+    local required = ["setGpuDrivenEnabled", "isGpuDrivenEnabled",
+                      "gpuDrivenMeshRecord", "gpuDrivenMaterialRecord",
+                      "gpuDrivenMaterialUsable", "getGpuDrivenInstanceStride",
+                      "getGpuResidentOffsetAlignment", "writeGpuDrivenInstance",
+                      "submitResidentInstances"]
+    foreach (name in required) if (!(name in gpu)) return false
+    return gpu.getGpuDrivenInstanceStride() == 80 &&
+           gpu.getGpuResidentOffsetAlignment() == 256
+}
 )SQ";
 
 UnitSciptTest(ScriptEcsTest, kScriptEcsContent);
@@ -351,6 +449,10 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemClassExists") {
     CHECK(vm.callFunc(vm.findFunc("testShaderSystemClassExists"), vm).toBool());
 }
 
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemGpuResidentTransfers") {
+    CHECK(vm.callFunc(vm.findFunc("testShaderSystemGpuResidentTransfers"), vm).toBool());
+}
+
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheStableAndInvalidated") {
     CHECK(vm.callFunc(vm.findFunc("testViewCacheStableAndInvalidated"), vm).toBool());
 }
@@ -361,4 +463,8 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheBaseClassIncludesSubclasses
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.componentDefaultsAndSlotsCached") {
     CHECK(vm.callFunc(vm.findFunc("testComponentDefaultsAndSlotsCached"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpuDrivenBindingSurface") {
+    CHECK(vm.callFunc(vm.findFunc("testGpuDrivenBindingSurface"), vm).toBool());
 }

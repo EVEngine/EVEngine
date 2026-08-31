@@ -2,6 +2,7 @@
 
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/GpuBuffer.h"
+#include "gpgpu/Sequence.h"
 
 #include <webgpu/webgpu_cpp.h>
 
@@ -62,6 +63,7 @@ public:
 
     void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset = 0) override;
     void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset = 0) const override;
+    GpuResidentBufferView residentView() const override;
 
     wgpu::Buffer buffer;
     uint64_t size_ = 0;
@@ -85,5 +87,9 @@ void webgpuSequenceRecordDownload(WebGpuSequence *sequence, GpuBuffer *src, GpuB
 void webgpuSequenceRecordDispatch(WebGpuSequence *sequence, ComputeShader *shader, int groupsX,
                                   int groupsY, int groupsZ);
 void webgpuSequenceSubmit(WebGpuSequence *sequence);
+SequenceStatus       webgpuSequenceSubmitAsync(WebGpuSequence *sequence);
+SequenceStatus       webgpuSequencePoll(WebGpuSequence *sequence);
+SequenceStatus       webgpuSequenceWait(WebGpuSequence *sequence);
+SequenceStatus       webgpuSequenceStatus(const WebGpuSequence *sequence);
 
 }  // namespace eve::gpgpu

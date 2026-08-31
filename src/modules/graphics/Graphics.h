@@ -261,6 +261,18 @@ public:
         return false;
     }
 
+    /**
+     * @brief Submit a GPU-authored, bucket-sorted GpuInstance buffer without CPU readback.
+     * @param batch Borrowed buffer view and O(bucket) draw metadata. The producer retains
+     * the native buffer until the current frame fence completes.
+     * @return Structured status; unsupported backends never perform a hidden CPU fallback.
+     * @thread Render/submission thread, while the 3D frame accepts opaque draws.
+     */
+    virtual GpuResidentSubmitStatus gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) {
+        (void)batch;
+        return GpuResidentSubmitStatus::Unsupported;
+    }
+
     // ---- GPU-driven rendering (stage 2): GPU cull seam ----
     // Backends without the compute cull chain return false / no-op; the
     // renderer then falls back to gpuDrivenSubmitOpaque (stage 1) or legacy.

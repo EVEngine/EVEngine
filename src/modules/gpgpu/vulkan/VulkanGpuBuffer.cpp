@@ -11,6 +11,17 @@
 
 namespace eve::gpgpu {
 
+GpuResidentBufferView VulkanGpuBuffer::residentView() const {
+    GpuResidentBufferView view;
+    if (!buffer_) return view;
+    const VkBuffer raw = static_cast<VkBuffer>(buffer_);
+    static_assert(sizeof(raw) <= sizeof(view.nativeHandle));
+    std::memcpy(&view.nativeHandle, &raw, sizeof(raw));
+    view.backend   = GpuResidentBackend::Vulkan;
+    view.sizeBytes = uint64_t(size_);
+    return view;
+}
+
 VulkanGpuBuffer::~VulkanGpuBuffer() {
     if (!device_ || !static_cast<VkDevice>(device_->instance)) return;
     if (buffer_) {

@@ -45,7 +45,7 @@ sys.bindFields(1, "vel", ["x", "y"])
 
 ## API 快查
 
-脚本 ECS 的主要接口由脚本基类提供：`Component` 声明数据、`Entity.create()` 创建实体、`System.entities()` 查询匹配实体；`ShaderSystem` 额外提供 `bindFields` / `setShaderSource` / `update`。参见可运行的 `examples/ecs/main.nut` 与 `examples/ecs/gpu_main.nut`。
+脚本 ECS 的主要接口由脚本基类提供：`Component` 声明数据、`Entity.create()` 创建实体、`System.entities()` 查询匹配实体；`ShaderSystem` 额外提供 `bindFields` / `setShaderSource` / `update`。大批量连续仿真可关闭逐帧上传和回读，通过 `requestUploadRange` / `requestReadbackRange` 增量同步；多个 GPU System 可用 `bindSharedFields` 和 `record` 共享驻留 buffer 并合并提交。参见可运行的 `examples/ecs/main.nut` 与 `examples/ecs/gpu_main.nut`。
 
 ## 使用要点
 

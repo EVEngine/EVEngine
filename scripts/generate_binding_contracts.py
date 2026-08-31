@@ -322,6 +322,9 @@ class SignatureIndex:
                 closing = matching(source, opening)
                 if closing is not None:
                     candidates.append((match.group(1).strip(), parse_parameters(source[opening + 1 : closing])))
+        candidates.sort(key=lambda item: (sum(parameter.name.startswith("arg") for parameter in item[1]),
+                                          -len(item[1]), item[0],
+                                          tuple((parameter.name, parameter.cpp_type) for parameter in item[1])))
         self.free_cache[name] = candidates[0] if candidates else None
         return self.free_cache[name]
 
@@ -563,6 +566,8 @@ def main() -> int:
     if (unresolved or placeholder_count) and not args.allow_unresolved:
         for item in unresolved[:50]:
             print(f"UNRESOLVED {item}")
+        for item in placeholders[:50]:
+            print(f"PLACEHOLDER {item}")
         return 1
     return 0
 

@@ -11,6 +11,7 @@
 #endif
 
 #include <algorithm>
+#include <atomic>
 #include <cstring>
 #include <variant>
 #include <vector>
@@ -273,6 +274,17 @@ void webgpuDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ
 
 WebGpuGpuBuffer::~WebGpuGpuBuffer() = default;
 
+GpuResidentBufferView WebGpuGpuBuffer::residentView() const {
+    GpuResidentBufferView view;
+    if (!buffer) return view;
+    const WGPUBuffer raw = buffer.Get();
+    static_assert(sizeof(raw) <= sizeof(view.nativeHandle));
+    std::memcpy(&view.nativeHandle, &raw, sizeof(raw));
+    view.backend   = GpuResidentBackend::WebGpu;
+    view.sizeBytes = size_;
+    return view;
+}
+
 void WebGpuGpuBuffer::uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset) {
     if (!buffer || !src || nbytes == 0) return;
     if (dstOffset + nbytes > size_)
@@ -357,15 +369,24 @@ public:
     };
     using Op = std::variant<Upload, Download, Dispatch>;
     std::vector<Op> ops;
+    std::atomic<SequenceStatus> status{SequenceStatus::Idle};
+    WGPUFuture                  completion{};
 };
 
 WebGpuSequence* webgpuSequenceCreate() { return new WebGpuSequence(); }
-void            webgpuSequenceDestroy(WebGpuSequence* sequence) { delete sequence; }
+void            webgpuSequenceDestroy(WebGpuSequence *sequence) {
+    if (!sequence) return;
+    if (sequence->status.load() == SequenceStatus::Submitted) (void)webgpuSequenceWait(sequence);
+    delete sequence;
+}
 bool            webgpuSequenceReady(WebGpuSequence* sequence) { return sequence && webgpuGpgpuReady(); }
 
 void webgpuSequenceBegin(WebGpuSequence* sequence) {
     if (!webgpuSequenceReady(sequence)) throw Exception("Gpgpu.Sequence: WebGPU is not ready");
+    if (sequence->status.load() == SequenceStatus::Submitted)
+        throw Exception("Gpgpu.Sequence.begin: previous async submission is still pending");
     sequence->ops.clear();
+    sequence->status.store(SequenceStatus::Recording);
 }
 
 void webgpuSequenceRecordUpload(WebGpuSequence* sequence, GpuBuffer* dst, const void* src, uint64_t nbytes,
@@ -411,8 +432,10 @@ void webgpuSequenceRecordDispatch(WebGpuSequence* sequence, ComputeShader* shade
     sequence->ops.emplace_back(std::move(op));
 }
 
-void webgpuSequenceSubmit(WebGpuSequence* sequence) {
+SequenceStatus webgpuSequenceSubmitAsync(WebGpuSequence *sequence) {
     if (!webgpuSequenceReady(sequence)) throw Exception("Gpgpu.Sequence.submit: WebGPU is not ready");
+    if (sequence->status.load() != SequenceStatus::Recording || sequence->ops.empty())
+        throw Exception("Gpgpu.Sequence.submit: nothing recorded");
     auto&                        device  = gpuDevice();
     auto&                        queue   = gpuQueue();
     wgpu::CommandEncoder         encoder = device.CreateCommandEncoder();
@@ -485,6 +508,60 @@ void webgpuSequenceSubmit(WebGpuSequence* sequence) {
 
     wgpu::CommandBuffer command = encoder.Finish();
     queue.Submit(1, &command);
+    sequence->status.store(SequenceStatus::Submitted);
+    WGPUQueueWorkDoneCallbackInfo callback{};
+#if defined(__EMSCRIPTEN__)
+    callback.mode = WGPUCallbackMode_AllowProcessEvents;
+#else
+    callback.mode = WGPUCallbackMode_WaitAnyOnly;
+#endif
+    callback.callback = [](WGPUQueueWorkDoneStatus status, WGPUStringView, void *userdata1, void *) {
+        auto *submitted = static_cast<WebGpuSequence *>(userdata1);
+        submitted->status.store(status == WGPUQueueWorkDoneStatus_Success ? SequenceStatus::Complete
+                                                                          : SequenceStatus::Failed);
+    };
+    callback.userdata1   = sequence;
+    sequence->completion = wgpuQueueOnSubmittedWorkDone(queue.Get(), callback);
+    return SequenceStatus::Submitted;
+}
+
+SequenceStatus webgpuSequencePoll(WebGpuSequence *sequence) {
+    if (!sequence) return SequenceStatus::Failed;
+    if (sequence->status.load() != SequenceStatus::Submitted) return sequence->status.load();
+#if defined(__EMSCRIPTEN__)
+    wgpuInstanceProcessEvents(gpuInstance().Get());
+#else
+    WGPUFutureWaitInfo waitInfo{};
+    waitInfo.future = sequence->completion;
+    (void)wgpuInstanceWaitAny(gpuInstance().Get(), 1, &waitInfo, 0);
+#endif
+    return sequence->status.load();
+}
+
+SequenceStatus webgpuSequenceWait(WebGpuSequence *sequence) {
+    if (!sequence) return SequenceStatus::Failed;
+    if (sequence->status.load() != SequenceStatus::Submitted) return sequence->status.load();
+#if defined(__EMSCRIPTEN__)
+    while (sequence->status.load() == SequenceStatus::Submitted) {
+        emscripten_sleep(0);
+        wgpuInstanceProcessEvents(gpuInstance().Get());
+    }
+#else
+    WGPUFutureWaitInfo waitInfo{};
+    waitInfo.future = sequence->completion;
+    (void)wgpuInstanceWaitAny(gpuInstance().Get(), 1, &waitInfo, UINT64_MAX);
+#endif
+    return sequence->status.load();
+}
+
+SequenceStatus webgpuSequenceStatus(const WebGpuSequence *sequence) {
+    return sequence ? sequence->status.load() : SequenceStatus::Failed;
+}
+
+void webgpuSequenceSubmit(WebGpuSequence *sequence) {
+    (void)webgpuSequenceSubmitAsync(sequence);
+    if (webgpuSequenceWait(sequence) != SequenceStatus::Complete)
+        throw Exception("Gpgpu.Sequence.submit: GPU submission failed");
 }
 
 }  // namespace eve::gpgpu
