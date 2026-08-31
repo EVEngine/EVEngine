@@ -177,7 +177,7 @@ bool RuntimeGeneration::deserializeCell(const std::string& definition) {
     generateQueue_.erase(std::remove(generateQueue_.begin(), generateQueue_.end(), key), generateQueue_.end());
     cleanupQueue_.erase(std::remove(cleanupQueue_.begin(), cleanupQueue_.end(), key), cleanupQueue_.end());
     Cell& cell = cells_[key];
-    cell.state = State::Active;
+    transitionCellState(cell, State::Active);
     cell.revision = revision;
     cell.ticket = ++nextTicket_;
     cell.failures = 0;

@@ -571,6 +571,31 @@ TEST_CASE("procgen.runtimeGeneration.breaksEqualPriorityTiesDeterministically") 
     }
 }
 
+TEST_CASE("procgen.runtimeGeneration.issuesLargeQueuesWithConstantTimeCounters") {
+    RuntimeGeneration runtime(1701);
+    runtime.addLevel(1.f, 64.f, 1.25f);
+    runtime.setMaxGenerating(20000);
+    runtime.updateSource(0.5f, 0.5f, 0.f, 0.f);
+    const int pending = runtime.getPendingGenerateCount();
+    REQUIRE(pending > 12000);
+
+    std::vector<std::unique_ptr<ProcgenCellRequest>> requests;
+    requests.reserve(size_t(pending));
+    while (auto request = ownRequest(runtime.nextGenerate())) requests.push_back(std::move(request));
+    CHECK_EQ(int(requests.size()), pending);
+    CHECK_EQ(runtime.getPendingGenerateCount(), 0);
+    CHECK_EQ(runtime.getGeneratingCount(), pending);
+
+    PointSet empty;
+    for (auto& request : requests) CHECK(runtime.completeGeneration(request.get(), &empty));
+    CHECK_EQ(runtime.getGeneratingCount(), 0);
+    CHECK_EQ(runtime.getActiveCellCount(), pending);
+
+    runtime.updateSource(10000.f, 10000.f, 0.f, 0.f);
+    CHECK_EQ(runtime.getActiveCellCount(), 0);
+    CHECK_EQ(runtime.getPendingCleanupCount(), pending);
+}
+
 TEST_CASE("procgen.runtimeGeneration.trimsLowestPriorityCellsDeterministically") {
     Procgen proc;
     auto    runtime = requireRuntime(proc, 18);

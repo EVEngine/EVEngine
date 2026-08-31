@@ -41,6 +41,8 @@ void RuntimeGeneration::clear() {
     cleanupQueue_.clear();
     sources_.clear();
     sourceOrder_.clear();
+    generatingCount_          = 0;
+    activeCellCount_          = 0;
     rejectedOutputCount_      = 0;
     cancelledGenerationCount_ = 0;
 }
@@ -108,7 +110,7 @@ int RuntimeGeneration::trimToResidentPoints(int target) {
         if (projectedResident <= uint64_t(target)) break;
         auto& cell = cells_.at(key);
         projectedResident -= uint64_t(cell.output.getCount());
-        cell.state = State::Cleanup;
+        transitionCellState(cell, State::Cleanup);
         cell.trimmed = true;
         cell.ticket = ++nextTicket_;
         cleanupQueue_.push_back(key);
@@ -225,8 +227,8 @@ void RuntimeGeneration::refreshGenerationSources() {
                         if (existing->second.state == State::Cleanup) {
                             if (existing->second.trimmed) continue;
                             existing->second.ticket = ++nextTicket_;
-                            existing->second.state = existing->second.revision > 0 ? State::Active
-                                                                                  : State::Pending;
+                            transitionCellState(existing->second,
+                                                existing->second.revision > 0 ? State::Active : State::Pending);
                             existing->second.trimmed = false;
                             cleanupQueue_.erase(
                                 std::remove(cleanupQueue_.begin(), cleanupQueue_.end(), key),
@@ -252,7 +254,7 @@ void RuntimeGeneration::refreshGenerationSources() {
         if ((cell.state == State::Pending || cell.state == State::Generating) &&
             desired.find(key) == desired.end()) {
             if (cell.state == State::Generating) ++cancelledGenerationCount_;
-            cell.state = State::Cleanup;
+            transitionCellState(cell, State::Cleanup);
             cell.trimmed = false;
             cell.ticket = ++nextTicket_;
             cleanupQueue_.push_back(key);
@@ -269,7 +271,7 @@ void RuntimeGeneration::refreshGenerationSources() {
             }
         }
         if (retained) continue;
-        cell.state = State::Cleanup;
+        transitionCellState(cell, State::Cleanup);
         cell.trimmed = false;
         cell.ticket = ++nextTicket_;
         cleanupQueue_.push_back(key);
@@ -301,16 +303,8 @@ void RuntimeGeneration::sortQueues() {
 }
 
 int RuntimeGeneration::getPendingGenerateCount() const { return int(generateQueue_.size()); }
-int RuntimeGeneration::getGeneratingCount() const {
-    return int(std::count_if(cells_.begin(), cells_.end(), [](const auto& entry) {
-        return entry.second.state == State::Generating;
-    }));
-}
-int RuntimeGeneration::getActiveCellCount() const {
-    return int(std::count_if(cells_.begin(), cells_.end(), [](const auto& entry) {
-        return entry.second.state == State::Active;
-    }));
-}
+int RuntimeGeneration::getGeneratingCount() const { return generatingCount_; }
+int RuntimeGeneration::getActiveCellCount() const { return activeCellCount_; }
 int RuntimeGeneration::getPendingCleanupCount() const { return int(cleanupQueue_.size()); }
 int RuntimeGeneration::getCancelledGenerationCount() const { return cancelledGenerationCount_; }
 int RuntimeGeneration::getFailedCellCount() const {
@@ -323,7 +317,7 @@ int RuntimeGeneration::retryFailedCells() {
     int count = 0;
     for (auto& [key, cell] : cells_) {
         if (cell.state != State::Failed) continue;
-        cell.state = State::Pending;
+        transitionCellState(cell, State::Pending);
         cell.failures = 0;
         cell.ticket = ++nextTicket_;
         generateQueue_.push_back(key);
@@ -343,23 +337,28 @@ ProcgenCellRequest* RuntimeGeneration::nextGenerate() {
                                          .count());
         if (float(now - frameStartedNs_) * 0.000001f >= frameTimeBudgetMs_) return nullptr;
     }
-    const CellKey key = generateQueue_.front();
-    generateQueue_.erase(generateQueue_.begin());
-    const auto found = cells_.find(key);
-    if (found == cells_.end() || found->second.state != State::Pending) return nextGenerate();
-    found->second.state = State::Generating;
-    found->second.ticket = ++nextTicket_;
-    return makeRequest(key);
+    while (!generateQueue_.empty()) {
+        const CellKey key = generateQueue_.front();
+        generateQueue_.pop_front();
+        const auto found = cells_.find(key);
+        if (found == cells_.end() || found->second.state != State::Pending) continue;
+        transitionCellState(found->second, State::Generating);
+        found->second.ticket = ++nextTicket_;
+        return makeRequest(key);
+    }
+    return nullptr;
 }
 
 ProcgenCellRequest* RuntimeGeneration::nextCleanup() {
-    if (cleanupQueue_.empty()) return nullptr;
-    const CellKey key = cleanupQueue_.front();
-    cleanupQueue_.erase(cleanupQueue_.begin());
-    const auto found = cells_.find(key);
-    if (found == cells_.end() || found->second.state != State::Cleanup) return nextCleanup();
-    found->second.ticket = ++nextTicket_;
-    return makeRequest(key);
+    while (!cleanupQueue_.empty()) {
+        const CellKey key = cleanupQueue_.front();
+        cleanupQueue_.pop_front();
+        const auto found = cells_.find(key);
+        if (found == cells_.end() || found->second.state != State::Cleanup) continue;
+        found->second.ticket = ++nextTicket_;
+        return makeRequest(key);
+    }
+    return nullptr;
 }
 
 bool RuntimeGeneration::isRequestCurrent(const ProcgenCellRequest* request) const {
@@ -390,7 +389,7 @@ bool RuntimeGeneration::completeGeneration(ProcgenCellRequest* request, PointSet
     found->second.hasDelta = false;
     found->second.failures = 0;
     ++found->second.revision;
-    found->second.state = State::Active;
+    transitionCellState(found->second, State::Active);
     return true;
 }
 
@@ -404,11 +403,11 @@ bool RuntimeGeneration::failGeneration(ProcgenCellRequest* request) {
     ++found->second.failures;
     found->second.ticket = ++nextTicket_;
     if (found->second.failures <= maxGenerationRetries_) {
-        found->second.state = State::Pending;
+        transitionCellState(found->second, State::Pending);
         generateQueue_.push_back(key);
         sortQueues();
     } else {
-        found->second.state = State::Failed;
+        transitionCellState(found->second, State::Failed);
     }
     return true;
 }
@@ -563,6 +562,15 @@ ProcgenCellRequest* RuntimeGeneration::makeRequest(const CellKey& key) const {
     request->ticket_  = found == cells_.end() ? 0 : found->second.ticket;
     request->cellSize_ = levels_[size_t(key.level)].cellSize;
     return request;
+}
+
+void RuntimeGeneration::transitionCellState(Cell& cell, State nextState) {
+    if (cell.state == nextState) return;
+    if (cell.state == State::Generating) --generatingCount_;
+    if (cell.state == State::Active) --activeCellCount_;
+    cell.state = nextState;
+    if (cell.state == State::Generating) ++generatingCount_;
+    if (cell.state == State::Active) ++activeCellCount_;
 }
 
 uint32_t RuntimeGeneration::cellSeed(const CellKey& key) const {

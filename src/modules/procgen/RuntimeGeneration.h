@@ -3,6 +3,7 @@
 #include "procgen/PointDelta.h"
 
 #include <cstdint>
+#include <deque>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -230,6 +231,7 @@ private:
     };
 
     ProcgenCellRequest* makeRequest(const CellKey& key) const;
+    void                       transitionCellState(Cell& cell, State nextState);
     [[nodiscard]] Result<void> validateCleanups(const std::vector<const ProcgenCellRequest*>& requests) const;
     void                       eraseValidatedCleanups(const std::vector<const ProcgenCellRequest*>& requests);
     uint32_t            cellSeed(const CellKey& key) const;
@@ -253,8 +255,10 @@ private:
     std::unordered_map<std::string, Source> sources_;
     std::vector<std::string> sourceOrder_;
     std::unordered_map<CellKey, Cell, CellKeyHash> cells_;
-    std::vector<CellKey> generateQueue_;
-    std::vector<CellKey> cleanupQueue_;
+    std::deque<CellKey>                            generateQueue_;
+    std::deque<CellKey>                            cleanupQueue_;
+    int                                            generatingCount_ = 0;
+    int                                            activeCellCount_ = 0;
     uint64_t             nextTicket_ = 0;
 };
 
