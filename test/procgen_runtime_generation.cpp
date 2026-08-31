@@ -222,15 +222,21 @@ TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncGenerationTickets") {
     auto stale = ownRequest(runtime->nextGenerate());
     REQUIRE(bool(stale));
     const uint64_t staleTicket = stale->getTicket();
+    CHECK(runtime->isRequestCurrent(stale.get()));
 
     runtime->updateSource(100.f, 100.f, 1.f, 0.f);
+    CHECK(!runtime->isRequestCurrent(stale.get()));
+    CHECK_EQ(runtime->getCancelledGenerationCount(), 1);
     runtime->updateSource(5.f, 5.f, 1.f, 0.f);
     auto current = ownRequest(runtime->nextGenerate());
     REQUIRE(bool(current));
+    CHECK(runtime->isRequestCurrent(current.get()));
     CHECK_NE(current->getTicket(), staleTicket);
     PointSet output;
     CHECK(!runtime->completeGeneration(stale.get(), &output));
     CHECK(runtime->completeGeneration(current.get(), &output));
+    CHECK(!runtime->isRequestCurrent(current.get()));
+    CHECK(runtime->debugReport().find("cancelledGeneration=1") != std::string::npos);
 }
 
 TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncCleanupTickets") {

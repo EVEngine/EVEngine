@@ -127,12 +127,21 @@ public:
     int                 getGeneratingCount() const;
     int                 getActiveCellCount() const;
     int                 getPendingCleanupCount() const;
+    /** @brief Return issued generation requests invalidated before completion. */
+    int                 getCancelledGenerationCount() const;
     /** @brief Return cells stopped after exhausting the generation retry policy. */
     int                 getFailedCellCount() const;
     /** @brief Reset and requeue all terminally failed cells still tracked by the scheduler. */
     int                 retryFailedCells();
     ProcgenCellRequest* nextGenerate();
     ProcgenCellRequest* nextCleanup();
+    /**
+     * @brief Test whether an issued generation or cleanup request still owns its scheduler ticket.
+     * @param request Borrowed immutable request; null is never current.
+     * @return True while the matching cell, state and ticket still accept work for this request.
+     * @thread Call on the scheduler-owning thread between cooperative generation stages.
+     */
+    bool isRequestCurrent(const ProcgenCellRequest* request) const;
     /** @brief Publish generated points for an issued request. */
     bool completeGeneration(ProcgenCellRequest* request, PointSet* output);
     /** @brief Return an issued request to the pending queue after failure or cancellation. */
@@ -216,6 +225,7 @@ private:
     int      maxPointsPerCell_      = 0;
     int      maxResidentPoints_     = 0;
     int      rejectedOutputCount_   = 0;
+    int      cancelledGenerationCount_ = 0;
     int      maxGenerationRetries_ = 3;
     float    frameTimeBudgetMs_ = 0.f;
     uint64_t frameStartedNs_    = 0;

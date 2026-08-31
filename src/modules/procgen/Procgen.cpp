@@ -2943,10 +2943,12 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("getGeneratingCount", &RuntimeGeneration::getGeneratingCount);
     runtimeGeneration.addFunc("getActiveCellCount", &RuntimeGeneration::getActiveCellCount);
     runtimeGeneration.addFunc("getPendingCleanupCount", &RuntimeGeneration::getPendingCleanupCount);
+    runtimeGeneration.addFunc("getCancelledGenerationCount", &RuntimeGeneration::getCancelledGenerationCount);
     runtimeGeneration.addFunc("getFailedCellCount", &RuntimeGeneration::getFailedCellCount);
     runtimeGeneration.addFunc("retryFailedCells", &RuntimeGeneration::retryFailedCells);
     runtimeGeneration.addFunc("nextGenerate", &RuntimeGeneration::nextGenerate);
     runtimeGeneration.addFunc("nextCleanup", &RuntimeGeneration::nextCleanup);
+    runtimeGeneration.addFunc("isRequestCurrent", &RuntimeGeneration::isRequestCurrent);
     runtimeGeneration.addFunc("completeGeneration", &RuntimeGeneration::completeGeneration);
     runtimeGeneration.addFunc("failGeneration", &RuntimeGeneration::failGeneration);
     runtimeGeneration.addFunc("completeCleanup", &RuntimeGeneration::completeCleanup);

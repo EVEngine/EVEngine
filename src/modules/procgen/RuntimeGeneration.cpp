@@ -41,7 +41,8 @@ void RuntimeGeneration::clear() {
     cleanupQueue_.clear();
     sources_.clear();
     sourceOrder_.clear();
-    rejectedOutputCount_ = 0;
+    rejectedOutputCount_      = 0;
+    cancelledGenerationCount_ = 0;
 }
 
 int RuntimeGeneration::addLevel(float cellSize, float generationRadius, float cleanupMultiplier) {
@@ -250,6 +251,7 @@ void RuntimeGeneration::refreshGenerationSources() {
         if (cell.state == State::Cleanup) continue;
         if ((cell.state == State::Pending || cell.state == State::Generating) &&
             desired.find(key) == desired.end()) {
+            if (cell.state == State::Generating) ++cancelledGenerationCount_;
             cell.state = State::Cleanup;
             cell.trimmed = false;
             cell.ticket = ++nextTicket_;
@@ -310,6 +312,7 @@ int RuntimeGeneration::getActiveCellCount() const {
     }));
 }
 int RuntimeGeneration::getPendingCleanupCount() const { return int(cleanupQueue_.size()); }
+int RuntimeGeneration::getCancelledGenerationCount() const { return cancelledGenerationCount_; }
 int RuntimeGeneration::getFailedCellCount() const {
     return int(std::count_if(cells_.begin(), cells_.end(), [](const auto& entry) {
         return entry.second.state == State::Failed;
@@ -357,6 +360,15 @@ ProcgenCellRequest* RuntimeGeneration::nextCleanup() {
     if (found == cells_.end() || found->second.state != State::Cleanup) return nextCleanup();
     found->second.ticket = ++nextTicket_;
     return makeRequest(key);
+}
+
+bool RuntimeGeneration::isRequestCurrent(const ProcgenCellRequest* request) const {
+    if (!request) return false;
+    const CellKey key{request->level_, request->x_, request->z_};
+    const auto    found = cells_.find(key);
+    if (found == cells_.end() || request->seed_ != cellSeed(key) || request->ticket_ != found->second.ticket)
+        return false;
+    return found->second.state == State::Generating || found->second.state == State::Cleanup;
 }
 
 bool RuntimeGeneration::completeGeneration(ProcgenCellRequest* request, PointSet* output) {
@@ -499,7 +511,8 @@ std::string RuntimeGeneration::debugReport() const {
         << " residentPoints=" << getResidentPointCount()
         << " maxResidentPoints=" << maxResidentPoints_
         << " maxPointsPerCell=" << maxPointsPerCell_
-        << " rejectedOutputs=" << rejectedOutputCount_;
+        << " rejectedOutputs=" << rejectedOutputCount_
+        << " cancelledGeneration=" << cancelledGenerationCount_;
     return out.str();
 }
 

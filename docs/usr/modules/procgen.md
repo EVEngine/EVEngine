@@ -286,6 +286,12 @@ provider 暂时失败后的追赶、存档恢复和 Scene 重建，而不会通�
 revision 反而更高则返回冲突，不会用旧 RuntimeGeneration 状态覆盖新场景。返回的成功值是已同步的
 十进制 revision，可用于日志和监控，不再要求脚本复制 revision 分支策略。
 
+异步或分阶段生成取得 `nextGenerate()` request 后，应在昂贵阶段之间调用
+`isRequestCurrent(request)`。视点、frustum 或 source 集合变化使 cell 不再需要时，scheduler 会立即
+换发 ticket；查询随即返回 false，worker 可停止后续噪声、网格或资产构建。即使 worker 未配合，最终
+`completeGeneration()` 仍会拒绝过时 ticket。`getCancelledGenerationCount()` 和 `debugReport()` 中的
+`cancelledGeneration` 用于观察这类被提前淘汰的在途工作。
+
 空间数据构造器包括 `polygonVolume`、`textureMaskData` 和 `meshSurfaceData`。
 它们可继续传给统一的 spatial union/intersection/difference、采样、过滤和投射 API。
 `projectToWorld` 通过可选 `IProcgenWorldQuery` capability 做垂直世界表面查询；
