@@ -285,12 +285,13 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     delta.updated.push_back(instances[0]);
     delta.removedPointIds.push_back(102);
     eve::ProcgenInstanceDesc flower;
-    flower.id    = "flower-3";
-    flower.asset = "lily";
-    flower.y     = 4.f;
+    flower.sourcePointId = 103;
+    flower.id            = "flower-3";
+    flower.asset         = "lily";
+    flower.y             = 4.f;
     delta.added.push_back(flower);
-    delta.targetOrder = {"flower-3", "tree-1"};
-    auto applied = sink->applyDelta("biome/0/0", delta);
+    delta.targetPointOrder = {103, 101};
+    auto applied           = sink->applyDelta("biome/0/0", delta);
     REQUIRE(applied.ok());
     CHECK_EQ(applied.value(), uint64_t(2));
     CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(2));
@@ -313,19 +314,34 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     unknownRemoval.baseRevision   = 2;
     unknownRemoval.targetRevision = 3;
     unknownRemoval.removedPointIds.push_back(999);
-    unknownRemoval.targetOrder = {"flower-3", "tree-1"};
-    auto unknown = sink->applyDelta("biome/0/0", unknownRemoval);
+    unknownRemoval.targetPointOrder = {103, 101};
+    auto unknown                    = sink->applyDelta("biome/0/0", unknownRemoval);
     CHECK(!unknown.ok());
     CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(2));
     CHECK_EQ(host->getNodeCount(), 3);
     CHECK(approxEq(host->findById("tree-1").value()->x, 7.f));
 
+    eve::ProcgenInstanceDelta renamed;
+    renamed.baseRevision   = 2;
+    renamed.targetRevision = 3;
+    auto renamedTree       = instances[0];
+    renamedTree.id         = "tree-renamed";
+    renamedTree.x          = 8.f;
+    renamed.updated.push_back(renamedTree);
+    renamed.targetPointOrder = {101, 103};
+    auto renamedResult       = sink->applyDelta("biome/0/0", renamed);
+    REQUIRE(renamedResult.ok());
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(3));
+    CHECK(!host->findById("tree-1").ok());
+    REQUIRE(host->findById("tree-renamed").ok());
+    CHECK(approxEq(host->findById("tree-renamed").value()->x, 8.f));
+
     delta.baseRevision = 1;
     delta.updated[0].x = 99.f;
-    auto stale = sink->applyDelta("biome/0/0", delta);
+    auto stale         = sink->applyDelta("biome/0/0", delta);
     CHECK(!stale.ok());
-    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(2));
-    CHECK(approxEq(host->findById("tree-1").value()->x, 7.f));
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(3));
+    CHECK(approxEq(host->findById("tree-renamed").value()->x, 8.f));
 
     CHECK(sink->removeBatch("biome/0/0"));
     CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 2);

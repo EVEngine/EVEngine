@@ -292,6 +292,23 @@ public:
                                                          ProcgenPointSetHandleRef points,
                                                          const std::string       &assetAttribute,
                                                          const std::string       &defaultAsset);
+    /**
+     * @brief Project one committed point delta into an existing Scene cell batch atomically.
+     * @param prefix Non-empty namespace used by publishCellInstances.
+     * @param request Cell coordinates used to derive the Scene batch identity.
+     * @param delta Identity delta produced by RuntimeGeneration for this cell revision.
+     * @param targetRevision Committed RuntimeGeneration cell revision represented by delta.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Scene batch target revision, or a structured provider/stale/identity failure.
+     * @thread Synchronous on the Scene-owning thread; no input references are retained.
+     * @reentrant Not reentrant for the same cell batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> publishCellInstanceDelta(const std::string&        prefix,
+                                                                 const ProcgenCellRequest& request,
+                                                                 const PointDelta& delta, uint64_t targetRevision,
+                                                                 const std::string& assetAttribute,
+                                                                 const std::string& defaultAsset);
     [[nodiscard]] eve::Result<void> removeCellInstances(const std::string &prefix, const ProcgenCellRequest &request);
     int                             getPublishedInstanceCount(const std::string &batchId) const;
     int                             getPublishedCreatedCount(const std::string &batchId) const;

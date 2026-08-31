@@ -34,9 +34,15 @@ public:
         latest[batchId]  = stats;
         return true;
     }
-    eve::Result<uint64_t> applyDelta(const std::string&, const eve::ProcgenInstanceDelta&) override {
-        return eve::Result<uint64_t>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "mock delta path is not configured"));
+    eve::Result<uint64_t> applyDelta(const std::string& batchId, const eve::ProcgenInstanceDelta& delta) override {
+        const auto current = revisions.find(batchId);
+        if (current == revisions.end() || current->second != delta.baseRevision)
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "mock delta revision is stale"));
+        lastDeltaBatch     = batchId;
+        lastDelta          = delta;
+        revisions[batchId] = delta.targetRevision;
+        return eve::Result<uint64_t>::success(delta.targetRevision);
     }
     uint64_t batchRevision(const std::string& batchId) const override {
         const auto found = revisions.find(batchId);
@@ -75,6 +81,8 @@ public:
     std::unordered_map<std::string, std::vector<eve::ProcgenInstanceDesc>> batches;
     std::unordered_map<std::string, uint64_t> revisions;
     std::unordered_map<std::string, Stats> latest;
+    std::string                                                            lastDeltaBatch;
+    eve::ProcgenInstanceDelta                                              lastDelta;
 };
 
 }  // namespace
@@ -147,6 +155,65 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     CHECK_EQ(proc.getPublishedInstanceCount("forest/main"), 0);
     CHECK_EQ(proc.getPublishedRemovedCount("forest/main"), 3);
     REQUIRE(proc.releasePointSet(reorderedHandle).ok());
+    REQUIRE(proc.releasePointSet(pointsHandle).ok());
+    eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
+}
+
+TEST_CASE("procgen.sceneSink.projectsRuntimePointDeltaByStableIdentity") {
+    eve::cap::detail::clearAllRaw();
+    MockProcgenSceneSink sink;
+    eve::cap::provide<eve::IProcgenSceneSink>(&sink);
+
+    Procgen proc;
+    auto    pointsResult = proc.newPointSetHandle();
+    REQUIRE(pointsResult.ok());
+    const auto pointsHandle = std::move(pointsResult).takeValue();
+    auto       pointsView   = proc.resolvePointSet(pointsHandle);
+    REQUIRE(pointsView.isBound());
+    const int tree = pointsView->add(1.f, 0.f, 2.f);
+    REQUIRE(pointsView->trySetPointId(tree, 2001).ok());
+    pointsView->setStringAttribute(tree, "instanceId", "tree-custom");
+    pointsView->setStringAttribute(tree, "asset", "oak");
+    const int rock = pointsView->add(3.f, 0.f, 4.f);
+    REQUIRE(pointsView->trySetPointId(rock, 2002).ok());
+
+    RuntimeGeneration runtime(77);
+    REQUIRE(runtime.addLevel(10.f, 6.f, 2.f) >= 0);
+    runtime.updateSource(1.f, 1.f, 1.f, 0.f);
+    std::unique_ptr<ProcgenCellRequest> request(runtime.nextGenerate());
+    REQUIRE(bool(request));
+    auto initialPublish = proc.publishCellInstances("world", *request, pointsHandle, "asset", "stone");
+    REQUIRE(initialPublish.ok());
+
+    PointSet  target;
+    const int targetTree = target.appendPointFrom(*pointsView, std::size_t(tree)).expect("scene delta target tree");
+    target.setPosition(targetTree, 9.f, 1.f, 2.f);
+    target.setStringAttribute(targetTree, "instanceId", "tree-renamed");
+    ProcgenPoint flower;
+    flower.id             = 2003;
+    flower.seed           = 33;
+    const int flowerIndex = target.appendPoint(flower);
+    target.setStringAttribute(flowerIndex, "asset", "lily");
+    auto delta = diffPointSets(*pointsView, target);
+    REQUIRE(delta.ok());
+
+    auto applied = proc.publishCellInstanceDelta("world", *request, delta.value(), 2, "asset", "stone");
+    REQUIRE(applied.ok());
+    CHECK_EQ(applied.value(), uint64_t(2));
+    CHECK_EQ(sink.lastDeltaBatch, std::string("world/L0/0/0"));
+    CHECK_EQ(sink.lastDelta.baseRevision, uint64_t(1));
+    CHECK_EQ(sink.lastDelta.targetRevision, uint64_t(2));
+    REQUIRE_EQ(sink.lastDelta.updated.size(), std::size_t(1));
+    CHECK_EQ(sink.lastDelta.updated[0].sourcePointId, uint64_t(2001));
+    CHECK_EQ(sink.lastDelta.updated[0].id, std::string("tree-renamed"));
+    CHECK_EQ(sink.lastDelta.updated[0].x, 9.f);
+    REQUIRE_EQ(sink.lastDelta.added.size(), std::size_t(1));
+    CHECK_EQ(sink.lastDelta.added[0].sourcePointId, uint64_t(2003));
+    CHECK_EQ(sink.lastDelta.added[0].asset, std::string("lily"));
+    REQUIRE_EQ(sink.lastDelta.removedPointIds.size(), std::size_t(1));
+    CHECK_EQ(sink.lastDelta.removedPointIds[0], uint64_t(2002));
+    CHECK_EQ(sink.lastDelta.targetPointOrder, delta.value().targetOrder);
+
     REQUIRE(proc.releasePointSet(pointsHandle).ok());
     eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
 }

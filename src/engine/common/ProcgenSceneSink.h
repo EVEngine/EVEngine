@@ -32,10 +32,13 @@ struct EVENGINE_API ProcgenInstanceDelta {
     std::vector<ProcgenInstanceDesc> added;
     std::vector<ProcgenInstanceDesc> updated;
     /** @brief Stable source PointIds removed from the target batch. */
-    std::vector<uint64_t>            removedPointIds;
+    std::vector<uint64_t> removedPointIds;
     /** @brief Compatibility removals addressed directly by Scene instance id. */
-    std::vector<std::string>         removed;
-    std::vector<std::string>         targetOrder;
+    std::vector<std::string> removed;
+    /** @brief Exact target order addressed by stable source PointId. */
+    std::vector<uint64_t> targetPointOrder;
+    /** @brief Compatibility target order addressed directly by Scene instance id. */
+    std::vector<std::string> targetOrder;
 };
 
 /**

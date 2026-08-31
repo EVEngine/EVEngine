@@ -785,6 +785,29 @@ static std::string sceneInstanceId(const PointSet& points, size_t pointIndex,
     return "pcg-" + std::to_string(point.seed) + "-" + std::to_string(seedOccurrences[point.seed]++);
 }
 
+static eve::ProcgenInstanceDesc sceneInstanceDesc(const PointSet& points, size_t pointIndex,
+                                                  const std::string& assetAttribute, const std::string& defaultAsset,
+                                                  std::unordered_map<uint32_t, size_t>& seedOccurrences) {
+    const auto&              point = points.points()[pointIndex];
+    eve::ProcgenInstanceDesc instance;
+    instance.sourcePointId = point.id;
+    instance.id            = sceneInstanceId(points, pointIndex, seedOccurrences);
+    instance.asset         = defaultAsset;
+    if (!assetAttribute.empty()) {
+        const auto found = points.attributes().getString(pointIndex, assetAttribute);
+        if (found) instance.asset = std::string(*found);
+    }
+    instance.x      = point.x;
+    instance.y      = point.y;
+    instance.z      = point.z;
+    instance.yaw    = point.yaw;
+    instance.scaleX = point.scaleX;
+    instance.scaleY = point.scaleY;
+    instance.scaleZ = point.scaleZ;
+    instance.seed   = point.seed;
+    return instance;
+}
+
 eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenPointSetHandleRef points,
                                             const std::string& assetAttribute, const std::string& defaultAsset) {
     const auto view = resolvePointSet(points);
@@ -801,26 +824,10 @@ eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenP
     std::unordered_map<uint32_t, size_t> seedOccurrences;
     std::unordered_set<std::string>      instanceIds;
     for (size_t pointIndex = 0; pointIndex < view->points().size(); ++pointIndex) {
-        const auto&              point = view->points()[pointIndex];
-        eve::ProcgenInstanceDesc instance;
-        instance.sourcePointId = point.id;
-        instance.id = sceneInstanceId(*view, pointIndex, seedOccurrences);
+        auto instance = sceneInstanceDesc(*view, pointIndex, assetAttribute, defaultAsset, seedOccurrences);
         if (!instanceIds.insert(instance.id).second)
             return procgenBindingFailure<void>(eve::DiagnosticCode::Conflict,
                                                "publishInstances duplicate instance id: " + instance.id);
-        instance.asset = defaultAsset;
-        if (!assetAttribute.empty()) {
-            const auto found = view->attributes().getString(pointIndex, assetAttribute);
-            if (found) instance.asset = *found;
-        }
-        instance.x      = point.x;
-        instance.y      = point.y;
-        instance.z      = point.z;
-        instance.yaw    = point.yaw;
-        instance.scaleX = point.scaleX;
-        instance.scaleY = point.scaleY;
-        instance.scaleZ = point.scaleZ;
-        instance.seed   = point.seed;
         instances.push_back(std::move(instance));
     }
     if (!sink->applyBatch(batchId, instances))
@@ -848,6 +855,43 @@ eve::Result<void> Procgen::publishCellInstances(const std::string& prefix, const
     const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
                                 std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
     return publishInstances(batchId, points, assetAttribute, defaultAsset);
+}
+
+eve::Result<uint64_t> Procgen::publishCellInstanceDelta(const std::string& prefix, const ProcgenCellRequest& request,
+                                                        const PointDelta& delta, uint64_t targetRevision,
+                                                        const std::string& assetAttribute,
+                                                        const std::string& defaultAsset) {
+    if (prefix.empty())
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                               "publishCellInstanceDelta requires a prefix", "prefix");
+    if (targetRevision < 2)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                               "publishCellInstanceDelta requires a target revision greater than one",
+                                               "targetRevision");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "publishCellInstanceDelta scene sink is unavailable");
+
+    eve::ProcgenInstanceDelta sceneDelta;
+    sceneDelta.baseRevision     = targetRevision - 1;
+    sceneDelta.targetRevision   = targetRevision;
+    sceneDelta.removedPointIds  = delta.removed;
+    sceneDelta.targetPointOrder = delta.targetOrder;
+    std::unordered_map<uint32_t, size_t> seedOccurrences;
+    sceneDelta.added.reserve(delta.added.points().size());
+    for (size_t pointIndex = 0; pointIndex < delta.added.points().size(); ++pointIndex)
+        sceneDelta.added.push_back(
+            sceneInstanceDesc(delta.added, pointIndex, assetAttribute, defaultAsset, seedOccurrences));
+    seedOccurrences.clear();
+    sceneDelta.updated.reserve(delta.updated.points().size());
+    for (size_t pointIndex = 0; pointIndex < delta.updated.points().size(); ++pointIndex)
+        sceneDelta.updated.push_back(
+            sceneInstanceDesc(delta.updated, pointIndex, assetAttribute, defaultAsset, seedOccurrences));
+
+    const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
+                                std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
+    return sink->applyDelta(batchId, sceneDelta);
 }
 
 eve::Result<void> Procgen::removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request) {
@@ -4026,6 +4070,26 @@ void Procgen::expose(ssq::Class &cls) {
             return eve::script::projectResult(
                 vm, value->publishCellInstances(prefix, *request, *pointsRef, assetAttribute, defaultAsset));
         });
+    cls.addFunc("publishCellInstanceDelta", [vm = cls.getHandle()](
+                                                Procgen* value, const std::string& prefix, ProcgenCellRequest* request,
+                                                PointDelta* delta, const std::string& revisionText,
+                                                const std::string& assetAttribute, const std::string& defaultAsset) {
+        std::uint64_t targetRevision = 0;
+        const auto [end, error] =
+            std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), targetRevision);
+        if (!value || !request || !delta || error != std::errc{} || end != revisionText.data() + revisionText.size() ||
+            targetRevision < 2)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<std::uint64_t>(
+                    eve::DiagnosticCode::InvalidArgument,
+                    "publishCellInstanceDelta requires request, delta, and a decimal target revision greater than one",
+                    "publishCellInstanceDelta"),
+                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+        return eve::script::projectResult(
+            vm, value->publishCellInstanceDelta(prefix, *request, *delta, targetRevision, assetAttribute, defaultAsset),
+            [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+    });
     cls.addFunc("removeCellInstances",
                 [vm = cls.getHandle()](Procgen* value, const std::string& prefix, ProcgenCellRequest* request) {
                     if (!value || !request)
