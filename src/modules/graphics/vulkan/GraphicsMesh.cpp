@@ -670,6 +670,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.parallax =
             glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
                       mesh3dAlphaCutoff);
+        ubo.virtualTexture = mesh3dVirtualTexture;
+        ubo.virtualAtlas = mesh3dVirtualAtlas;
         ubo.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
         ubo.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
         for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
@@ -730,6 +732,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.parallax =
         glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers,
                   mesh3dAlphaCutoff);
+    ubo.virtualTexture = mesh3dVirtualTexture;
+    ubo.virtualAtlas = mesh3dVirtualAtlas;
     for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
         if (i >= mesh3dReflectionProbes.count) continue;
         const auto &probe = mesh3dReflectionProbes.probes[i];

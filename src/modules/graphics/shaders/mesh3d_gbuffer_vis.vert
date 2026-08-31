@@ -28,6 +28,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 clipInfo;
     vec4 cloud;
     vec4 cloudWind;
+    vec4 virtualTexture;
+    vec4 virtualAtlas;
     vec4 bindlessEnv;
 } ubo;
 

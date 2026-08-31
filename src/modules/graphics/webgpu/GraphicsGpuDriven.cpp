@@ -287,6 +287,9 @@ uint32_t Graphics::gpuDrivenMaterialRecord(Material *material) {
 }
 
 bool Graphics::gpuDrivenMaterialUsable(Material *material) {
+    if (!material ||
+        material->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable)
+        return false;
     if (!material || material->surfaceMode() != SurfaceMode::Opaque ||
         material->effectiveShader() != nullptr || material->isTransparentHair())
         return false;

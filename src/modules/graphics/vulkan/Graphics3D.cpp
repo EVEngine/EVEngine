@@ -574,6 +574,18 @@ void Graphics::setMesh3DNormalTexture(Texture *normal) { mesh3dNormalTexture = n
 
 void Graphics::setMesh3DHeightTexture(Texture *heightTex) { mesh3dHeightTexture = heightTex; }
 
+void Graphics::setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
+                                       int atlasSlotsX, int atlasSlotsY,
+                                       float borderFraction) {
+    mesh3dVirtualTexture =
+        enabled ? glm::vec4(1.f, float(pageCountX), float(pageCountY), borderFraction)
+                : glm::vec4(0.f);
+    mesh3dVirtualAtlas =
+        enabled ? glm::vec4(float(atlasSlotsX), float(atlasSlotsY), 0.f, 0.f) : glm::vec4(0.f);
+    mesh3dFrameUbo.virtualTexture = mesh3dVirtualTexture;
+    mesh3dFrameUbo.virtualAtlas = mesh3dVirtualAtlas;
+}
+
 void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
 
 void Graphics::setMesh3DEnv(Texture *cube, float intensity) {

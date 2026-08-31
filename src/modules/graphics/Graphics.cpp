@@ -521,6 +521,20 @@ void Graphics::expose(ssq::Table& table) {
     material.addFunc("getNormalTexture", &Material::getNormalTexture);
     material.addFunc("setHeightTexture", &Material::setHeightTexture);
     material.addFunc("getHeightTexture", &Material::getHeightTexture);
+    material.addFunc("setVirtualTexture",
+                     [](Material *self, Texture *albedoAtlas, Texture *normalAtlas,
+                        Texture *pageTable, int pageCountX, int pageCountY, int atlasSlotsX,
+                        int atlasSlotsY, float borderFraction) {
+                         auto result = self->setVirtualTexture(
+                             albedoAtlas, normalAtlas, pageTable, pageCountX, pageCountY,
+                             atlasSlotsX, atlasSlotsY, borderFraction);
+                         if (!result.ok())
+                             throw eve::Exception("%s", result.status().describe().c_str());
+                     });
+    material.addFunc("clearVirtualTexture", &Material::clearVirtualTexture);
+    material.addFunc("usesVirtualTexture", [](Material *self) {
+        return self->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable;
+    });
     material.addFunc("setShader", &Material::setShader);
     material.addFunc("getShader", &Material::getShader);
     material.addFunc("setTint", &Material::setTint);

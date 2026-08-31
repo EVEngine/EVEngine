@@ -130,6 +130,8 @@ struct Mesh3DUBO {
     // z=time, w=unused; cloudWind.xy=wind velocity (world/s), z=coverage, w=detail.
     glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};
+    glm::vec4 virtualTexture{0.f}; // enabled, pageCountX, pageCountY, border/extent
+    glm::vec4 virtualAtlas{0.f};   // slotsX, slotsY
     // GPU-driven only: x = bindless env cubemap slot, y = envIntensity.
     // Appended after the legacy prefix so legacy shaders are unaffected.
     glm::vec4 bindlessEnv{0.f, 0.f, 0.f, 0.f};
@@ -163,6 +165,8 @@ struct Mesh3DClusteredUBO {
     glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f}; // x=cellScale, y=strength (0=off), z=rotAmount
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f}; // x=scale (0=off), y=minLayers, z=maxLayers
+    glm::vec4 virtualTexture{0.f};
+    glm::vec4 virtualAtlas{0.f};
     glm::vec4 envProbeCenter{0.f};
     glm::vec4 envProbeExtent{0.f};
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
@@ -487,6 +491,9 @@ public:
                                   int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
+    void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
+                                 int atlasSlotsX, int atlasSlotsY,
+                                 float borderFraction) override;
     void              setMesh3DSceneDepth(Texture *depth) override;
     void              setMesh3DMaterial(float metallic, float roughness) override;
     void              setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
@@ -932,6 +939,8 @@ private:
     float mesh3dParallaxScale = 0.f;
     float mesh3dParallaxMinLayers = 8.f;
     float mesh3dParallaxMaxLayers = 32.f;
+    glm::vec4 mesh3dVirtualTexture{0.f};
+    glm::vec4 mesh3dVirtualAtlas{0.f};
     Lighting3DPack mesh3dLighting{};
     ShadowUpload mesh3dShadows{};
     bool mesh3dShadowReceive = true;

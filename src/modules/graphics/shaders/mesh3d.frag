@@ -3,6 +3,7 @@
 #extension GL_GOOGLE_include_directive : enable
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
+#include "virtual_texture.glsl"
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -31,6 +32,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 clipInfo;          // x = near, y = far
     vec4 cloud;             // x = strength (0=off), y = world cell size, z = time, w unused
     vec4 cloudWind;         // xy = wind velocity (world/s), z = coverage, w = detail
+    vec4 virtualTexture;    // enabled, page counts xy, border / stored extent
+    vec4 virtualAtlas;      // physical slot counts xy
     vec4 bindlessEnv;       // reserved by the shared Mesh3D UBO layout
     vec4 envProbeCenter;
     vec4 envProbeExtent;
@@ -347,10 +350,16 @@ void main() {
     // frontFace/winding and flips floors dark when Assimp winding disagrees.
     if (dot(Ngeom, V) < 0.0)
         Ngeom = -Ngeom;
-    vec2 uv = parallaxMappedUV(heightSampler, vUV, Ngeom, vWorldPos, V, ubo.parallax.x,
-                               ubo.parallax.y, ubo.parallax.z);
+    vec2 uv = ubo.virtualTexture.x > 0.5
+                  ? vUV
+                  : parallaxMappedUV(heightSampler, vUV, Ngeom, vWorldPos, V,
+                                     ubo.parallax.x, ubo.parallax.y, ubo.parallax.z);
 
-    vec4 base = textureCellBomb(albedoSampler, uv, bombScale, bombStrength, bombRot) * vTint;
+    vec4 base = (ubo.virtualTexture.x > 0.5
+                     ? sampleVirtualTexture(albedoSampler, heightSampler, uv,
+                                            ubo.virtualTexture, ubo.virtualAtlas)
+                     : textureCellBomb(albedoSampler, uv, bombScale, bombStrength, bombRot)) *
+                vTint;
     if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w)
         discard;
     // Alpha hash is stable in screen space and avoids object-order artifacts.
@@ -364,7 +373,12 @@ void main() {
     int count = int(ubo.lightDirIntensity.w + 0.5);
 
     vec3 N = Ngeom;
-    vec3 nSample = textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot).xyz;
+    vec3 nSample =
+        (ubo.virtualTexture.x > 0.5
+             ? sampleVirtualTexture(normalSampler, heightSampler, uv, ubo.virtualTexture,
+                                    ubo.virtualAtlas)
+             : textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot))
+            .xyz;
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
 

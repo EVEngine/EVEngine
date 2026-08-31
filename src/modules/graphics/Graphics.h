@@ -878,6 +878,16 @@ public:
     virtual void setMesh3DHeightTexture(Texture *height) = 0;
 
     /**
+     * @brief Configure page-table sampling for the next mesh draw.
+     *
+     * When enabled, albedo/normal are physical atlases and height is the RGBA8 page table.
+     * Disabled preserves ordinary material sampling. Values are copied immediately.
+     */
+    virtual void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
+                                         int atlasSlotsX, int atlasSlotsY,
+                                         float borderFraction) = 0;
+
+    /**
      * @brief Optional scene hardware depth (G-buffer hwDepth, Vulkan NDC z) bound to
      * mesh3d shader binding 7. X-ray mesh shaders sample it to discard visible
      * (non-occluded) fragments. nullptr falls back to a placeholder.

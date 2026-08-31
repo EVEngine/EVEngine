@@ -26,6 +26,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 clipInfo; // near, far
     vec4 cloud;
     vec4 cloudWind;
+    vec4 virtualTexture;
+    vec4 virtualAtlas;
     vec4 bindlessEnv;
     vec4 envProbeCenter;
     vec4 envProbeExtent;
