@@ -46,7 +46,6 @@
 #include "common/Export.h"
 
 #include <cstddef>
-#include <utility>
 #include <vector>
 
 namespace eve::cap {

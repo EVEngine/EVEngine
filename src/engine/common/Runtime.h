@@ -1,9 +1,6 @@
 #pragma once
 
 #include "common/Export.h"
-#include "common/ScriptCompiler.h"
-#include "common/ScriptError.h"
-#include "common/ScriptModule.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -18,6 +15,12 @@
 #include <vector>
 
 namespace eve {
+
+namespace script {
+class ScriptCompiler;
+class ScriptModuleResolver;
+struct ScriptErrorContext;
+}  // namespace script
 
 /**
  * @brief Shortest round-trip float formatting (portable).

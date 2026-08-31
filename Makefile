@@ -126,7 +126,7 @@ GAME ?=
 	build/android-debug-test \
 	build/ios-debug-test \
 	build/ios-sim-debug-test \
-	wsl/linux wsl/linux-debug show-targets \
+	wsl/linux wsl/linux-debug show-targets stats/build \
 	debug release example devlab \
 	run run/win32 run/linux run/macosx \
 	run/win32-debug run/linux-debug run/macosx-debug \
@@ -242,6 +242,13 @@ link-compile-commands:
 # Host platform only.
 debug: build/$(PLATFORM)-debug
 	@$(MAKE) link-compile-commands
+
+# Local build-size and header-fanout report. This intentionally remains an
+# explicit developer target so normal incremental builds do not pay for a full
+# source/header scan. Override BUILD_DIR to inspect another configuration.
+BUILD_STATS_DIR ?= build/$(PLATFORM)-debug
+stats/build:
+	python3 scripts/analyze_build.py --source-dir . --build-dir "$(BUILD_STATS_DIR)"
 release: build/$(PLATFORM)
 
 # Windows host: build Linux targets inside WSL2 (same tree).

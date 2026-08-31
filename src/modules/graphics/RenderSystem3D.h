@@ -2,12 +2,10 @@
 
 #include "common/ECS.h"
 #include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
 #include "zeroerr/assert.h"
 
 #include <functional>
+#include <glm/mat4x4.hpp>
 #include <array>
 #include <cstdint>
 #include <string>
@@ -16,6 +14,9 @@ namespace eve::graphics {
 
 class Canvas;
 class Graphics;
+class Mesh;
+class Shader;
+class Texture;
 
 class Camera3D : public ecs::Entity {
 public:

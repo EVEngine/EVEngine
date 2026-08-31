@@ -2,7 +2,10 @@
 
 #include <assimp/matrix4x4.h>
 #include <cstdint>
-#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,12 +15,12 @@
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Canvas.h"
-#include "graphics/ICanvasFactory.h"
-#include "graphics/ICanvasTarget.h"
 #include "graphics/Color.h"
 #include "graphics/Font.h"
 #include "graphics/GpuDrivenTypes.h"
 #include "graphics/GpuParticles.h"
+#include "graphics/ICanvasFactory.h"
+#include "graphics/ICanvasTarget.h"
 #include "graphics/IGraphics2D.h"
 #include "graphics/IGraphics3D.h"
 #include "graphics/IPostFX.h"
