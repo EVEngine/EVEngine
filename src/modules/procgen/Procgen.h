@@ -372,6 +372,23 @@ public:
      */
     [[nodiscard]] eve::Result<uint64_t> removeCellInstancesAtomic(
         const std::string& prefix, const std::vector<const ProcgenCellRequest*>& requests);
+    /**
+     * @brief Atomically remove Scene batches and acknowledge their cleanup tickets across schedulers.
+     *
+     * @param prefix Non-empty namespace used to derive Scene batch identities.
+     * @param runtimes Scheduler owner
+     * paired by index with every request.
+     * @param requests Non-empty cleanup requests paired by index with
+     * runtimes.
+     * @return Number of removed cells, or a structured failure with Scene and every scheduler
+     * unchanged.
+     * @thread Synchronous on the shared Scene and scheduler owning thread; references are not
+     * retained.
+     * @reentrant Not reentrant for any participating Scene batch or RuntimeGeneration.
+     */
+    [[nodiscard]] eve::Result<uint64_t> completeCellCleanupAtomic(
+        const std::string& prefix, const std::vector<RuntimeGeneration*>& runtimes,
+        const std::vector<const ProcgenCellRequest*>& requests);
     int                             getPublishedInstanceCount(const std::string& batchId) const;
     int                             getPublishedCreatedCount(const std::string& batchId) const;
     int                             getPublishedReusedCount(const std::string &batchId) const;

@@ -191,6 +191,8 @@ public:
     std::string debugReport() const;
 
 private:
+    friend class Procgen;
+
     struct Level {
         float cellSize        = 1.f;
         float generationRadius = 1.f;
@@ -228,6 +230,8 @@ private:
     };
 
     ProcgenCellRequest* makeRequest(const CellKey& key) const;
+    [[nodiscard]] Result<void> validateCleanups(const std::vector<const ProcgenCellRequest*>& requests) const;
+    void                       eraseValidatedCleanups(const std::vector<const ProcgenCellRequest*>& requests);
     uint32_t            cellSeed(const CellKey& key) const;
     void                sortQueues();
 

@@ -88,6 +88,11 @@ public:
         return true;
     }
     eve::Result<uint64_t> removeBatches(const std::vector<std::string>& batchIds) override {
+        return removeBatchesCoordinated(batchIds, [] { return eve::Result<void>::success(); });
+    }
+    eve::Result<uint64_t> removeBatchesCoordinated(
+        const std::vector<std::string>&           batchIds,
+        const std::function<eve::Result<void>()>& commitPreparedOwner) override {
         if (failBatchTransaction)
             return eve::Result<uint64_t>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::Failed, "injected batch transaction failure"));
@@ -99,6 +104,11 @@ public:
                     eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "mock batch is unpublished"));
             nextRevisions.erase(batchId);
         }
+        if (!commitPreparedOwner)
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mock commit is missing"));
+        auto ownerCommit = commitPreparedOwner();
+        if (!ownerCommit.ok()) return eve::Result<uint64_t>::failure(ownerCommit.status());
         batches.swap(nextBatches);
         revisions.swap(nextRevisions);
         return eve::Result<uint64_t>::success(static_cast<uint64_t>(batchIds.size()));
@@ -424,6 +434,106 @@ TEST_CASE("procgen.sceneSink.synchronizesSeveralRuntimeCellsAtomically") {
     auto removed              = proc.removeCellInstancesAtomic("world", requests);
     REQUIRE(removed.ok());
     CHECK_EQ(removed.value(), uint64_t(2));
+    CHECK(sink.batches.empty());
+    eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
+}
+
+TEST_CASE("procgen.sceneSink.completesSceneAndRuntimeCleanupAtomically") {
+    eve::cap::detail::clearAllRaw();
+    MockProcgenSceneSink sink;
+    eve::cap::provide<eve::IProcgenSceneSink>(&sink);
+    Procgen proc;
+
+    RuntimeGeneration firstRuntime(31);
+    RuntimeGeneration secondRuntime(32);
+    REQUIRE(firstRuntime.addLevel(10.f, 6.f, 1.5f) >= 0);
+    REQUIRE(secondRuntime.addLevel(10.f, 6.f, 1.5f) >= 0);
+    firstRuntime.updateSource(1.f, 1.f, 1.f, 0.f);
+    secondRuntime.updateSource(21.f, 1.f, 1.f, 0.f);
+    auto firstGenerated  = std::unique_ptr<ProcgenCellRequest>(firstRuntime.nextGenerate());
+    auto secondGenerated = std::unique_ptr<ProcgenCellRequest>(secondRuntime.nextGenerate());
+    REQUIRE(bool(firstGenerated));
+    REQUIRE(bool(secondGenerated));
+    PointSet  firstPoints;
+    PointSet  secondPoints;
+    const int firstPoint  = firstPoints.add(1.f, 0.f, 1.f);
+    const int secondPoint = secondPoints.add(21.f, 0.f, 1.f);
+    REQUIRE(firstPoints.trySetPointId(firstPoint, 6001).ok());
+    REQUIRE(secondPoints.trySetPointId(secondPoint, 6002).ok());
+    REQUIRE(firstRuntime.completeGeneration(firstGenerated.get(), &firstPoints));
+    REQUIRE(secondRuntime.completeGeneration(secondGenerated.get(), &secondPoints));
+    std::vector<const RuntimeGeneration*>  publishRuntimes{&firstRuntime, &secondRuntime};
+    std::vector<const ProcgenCellRequest*> publishRequests{firstGenerated.get(), secondGenerated.get()};
+    REQUIRE(proc.synchronizeCellInstancesAtomic("cleanup", publishRuntimes, publishRequests, "asset", "stone").ok());
+
+    firstRuntime.updateSource(1000.f, 1000.f, 1.f, 0.f);
+    secondRuntime.updateSource(1000.f, 1000.f, 1.f, 0.f);
+    auto firstCleanup  = std::unique_ptr<ProcgenCellRequest>(firstRuntime.nextCleanup());
+    auto secondCleanup = std::unique_ptr<ProcgenCellRequest>(secondRuntime.nextCleanup());
+    REQUIRE(bool(firstCleanup));
+    REQUIRE(bool(secondCleanup));
+    std::vector<RuntimeGeneration*>        cleanupRuntimes{&firstRuntime, &secondRuntime};
+    std::vector<const ProcgenCellRequest*> cleanupRequests{firstCleanup.get(), secondCleanup.get()};
+
+    sink.failBatchTransaction = true;
+    auto sceneRejected        = proc.completeCellCleanupAtomic("cleanup", cleanupRuntimes, cleanupRequests);
+    REQUIRE(!sceneRejected.ok());
+    CHECK(firstRuntime.isRequestCurrent(firstCleanup.get()));
+    CHECK(secondRuntime.isRequestCurrent(secondCleanup.get()));
+    CHECK_EQ(sink.batches.size(), std::size_t(2));
+    sink.failBatchTransaction = false;
+
+    firstRuntime.updateSource(1.f, 1.f, 1.f, 0.f);
+    firstRuntime.updateSource(1000.f, 1000.f, 1.f, 0.f);
+    auto staleRejected = proc.completeCellCleanupAtomic("cleanup", cleanupRuntimes, cleanupRequests);
+    REQUIRE(!staleRejected.ok());
+    CHECK(secondRuntime.isRequestCurrent(secondCleanup.get()));
+    CHECK_EQ(sink.batches.size(), std::size_t(2));
+    firstCleanup = std::unique_ptr<ProcgenCellRequest>(firstRuntime.nextCleanup());
+    REQUIRE(bool(firstCleanup));
+    cleanupRequests[0] = firstCleanup.get();
+
+    auto completed = proc.completeCellCleanupAtomic("cleanup", cleanupRuntimes, cleanupRequests);
+    REQUIRE(completed.ok());
+    CHECK_EQ(completed.value(), uint64_t(2));
+    CHECK(!firstRuntime.isRequestCurrent(firstCleanup.get()));
+    CHECK(!secondRuntime.isRequestCurrent(secondCleanup.get()));
+    CHECK(sink.batches.empty());
+    CHECK_EQ(firstRuntime.getResidentPointCount(), 0);
+    CHECK_EQ(secondRuntime.getResidentPointCount(), 0);
+    eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
+}
+
+TEST_CASE("procgen.sceneSink.squirrelCompletesCoordinatedCleanup") {
+    eve::cap::detail::clearAllRaw();
+    MockProcgenSceneSink sink;
+    eve::cap::provide<eve::IProcgenSceneSink>(&sink);
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local runtimeResult = procgen.newRuntimeGeneration(33);
+        local pointsResult = procgen.sampleGrid(1, 1, 1.0, 34, 0.0);
+        if (runtimeResult.ok && pointsResult.ok) {
+            local runtime = runtimeResult.value;
+            runtime.addLevel(10.0, 6.0, 1.5);
+            runtime.updateSource(1.0, 1.0, 1.0, 0.0);
+            local generated = runtime.nextGenerate();
+            if (generated != null && runtime.completeGeneration(generated, pointsResult.value)) {
+                local published = procgen.synchronizeCellInstances(
+                    "script-cleanup", runtime, generated, "asset", "stone");
+                runtime.updateSource(1000.0, 1000.0, 1.0, 0.0);
+                local cleanup = runtime.nextCleanup();
+                local completed = procgen.completeCellCleanupAtomic(
+                    "script-cleanup", [runtime], [cleanup]);
+                if (published.ok && completed.ok && completed.value == "1" &&
+                    !runtime.isRequestCurrent(cleanup))
+                    result = "ok";
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
     CHECK(sink.batches.empty());
     eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
 }

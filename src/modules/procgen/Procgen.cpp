@@ -1049,6 +1049,53 @@ eve::Result<uint64_t> Procgen::removeCellInstancesAtomic(const std::string&     
     return sink->removeBatches(batchIds);
 }
 
+eve::Result<uint64_t> Procgen::completeCellCleanupAtomic(const std::string&                            prefix,
+                                                         const std::vector<RuntimeGeneration*>&        runtimes,
+                                                         const std::vector<const ProcgenCellRequest*>& requests) {
+    if (prefix.empty() || requests.empty() || runtimes.size() != requests.size())
+        return procgenBindingFailure<uint64_t>(
+            eve::DiagnosticCode::InvalidArgument,
+            "completeCellCleanupAtomic requires a prefix and equally sized runtime/request arrays", "requests");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "completeCellCleanupAtomic scene sink is unavailable");
+
+    struct RuntimeCleanupGroup {
+        RuntimeGeneration*                     runtime = nullptr;
+        std::vector<const ProcgenCellRequest*> requests;
+    };
+    std::vector<RuntimeCleanupGroup> groups;
+    std::vector<std::string>         batchIds;
+    groups.reserve(runtimes.size());
+    batchIds.reserve(requests.size());
+    for (size_t index = 0; index < requests.size(); ++index) {
+        auto* runtime = runtimes[index];
+        auto* request = requests[index];
+        if (!runtime || !request)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                   "completeCellCleanupAtomic contains a null runtime or request",
+                                                   "requests");
+        auto group = std::find_if(groups.begin(), groups.end(),
+                                  [runtime](const auto& candidate) { return candidate.runtime == runtime; });
+        if (group == groups.end()) {
+            groups.push_back({runtime, {}});
+            group = std::prev(groups.end());
+        }
+        group->requests.push_back(request);
+        batchIds.push_back(prefix + "/L" + std::to_string(request->getLevel()) + "/" + std::to_string(request->getX()) +
+                           "/" + std::to_string(request->getZ()));
+    }
+    for (const auto& group : groups) {
+        auto validated = group.runtime->validateCleanups(group.requests);
+        if (!validated.ok()) return eve::Result<uint64_t>::failure(validated.status());
+    }
+    return sink->removeBatchesCoordinated(batchIds, [&groups] {
+        for (auto& group : groups) group.runtime->eraseValidatedCleanups(group.requests);
+        return eve::Result<void>::success();
+    });
+}
+
 int Procgen::getPublishedInstanceCount(const std::string& batchId) const {
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     return sink && !batchId.empty() ? sink->instanceCount(batchId) : 0;
@@ -4329,6 +4376,23 @@ void Procgen::expose(ssq::Class &cls) {
             value ? value->removeCellInstancesAtomic(prefix, requests)
                   : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
                                                          "removeCellInstancesAtomic requires Procgen", "procgen"),
+            [](std::uint64_t removed) { return eve::Value(std::to_string(removed)); });
+    });
+    cls.addFunc("completeCellCleanupAtomic", [vm = cls.getHandle()](Procgen* value, const std::string& prefix,
+                                                                    ssq::Array runtimeArray, ssq::Array requestArray) {
+        std::vector<RuntimeGeneration*>        runtimes;
+        std::vector<const ProcgenCellRequest*> requests;
+        runtimes.reserve(runtimeArray.size());
+        requests.reserve(requestArray.size());
+        for (size_t index = 0; index < runtimeArray.size(); ++index)
+            runtimes.push_back(runtimeArray.get<RuntimeGeneration*>(index));
+        for (size_t index = 0; index < requestArray.size(); ++index)
+            requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
+        return eve::script::projectResult(
+            vm,
+            value ? value->completeCellCleanupAtomic(prefix, runtimes, requests)
+                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                         "completeCellCleanupAtomic requires Procgen", "procgen"),
             [](std::uint64_t removed) { return eve::Value(std::to_string(removed)); });
     });
     cls.addFunc("removeInstances", [vm = cls.getHandle()](Procgen* value, const std::string& batchId) {

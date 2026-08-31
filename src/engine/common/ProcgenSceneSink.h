@@ -4,6 +4,7 @@
 #include "common/Result.h"
 
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -96,6 +97,16 @@ public:
      * @reentrant Not reentrant. Callbacks run only after every batch is no longer visible or queryable.
      */
     [[nodiscard]] virtual Result<uint64_t> removeBatches(const std::vector<std::string>& batchIds) = 0;
+    /**
+     * @brief Remove several batches while coordinating one external authoritative commit.
+     * @param batchIds Non-empty unique identities of existing batches.
+     * @param commitPreparedOwner Called after Scene preparation and before Scene state becomes visible.
+     * @return Number of removed batches, or a structured failure with neither owner changed.
+     * @thread Called synchronously on the scene-owning thread; references are not retained.
+     * @reentrant The commit callback must not reenter Scene and must leave its owner unchanged on failure.
+     */
+    [[nodiscard]] virtual Result<uint64_t> removeBatchesCoordinated(
+        const std::vector<std::string>& batchIds, const std::function<Result<void>()>& commitPreparedOwner) = 0;
     /**
      * @brief Apply one prevalidated identity delta atomically to an existing batch.
      * @return The committed target revision, or a structured stale/validation/provider failure.

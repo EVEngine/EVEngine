@@ -426,6 +426,18 @@ TEST_CASE("Scene.procgenSink.replacesMultipleBatchesAtomically") {
     REQUIRE(!removalRejected.ok());
     CHECK_EQ(sink->instanceCount("tx/a"), 1);
     CHECK_EQ(sink->instanceCount("tx/b"), 1);
+    int  participantCalls    = 0;
+    auto participantRejected = sink->removeBatchesCoordinated({"tx/a", "tx/b"}, [&participantCalls] {
+        ++participantCalls;
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "injected owner commit rejection"));
+    });
+    REQUIRE(!participantRejected.ok());
+    CHECK_EQ(participantCalls, 1);
+    CHECK_EQ(sink->instanceCount("tx/a"), 1);
+    CHECK_EQ(sink->instanceCount("tx/b"), 1);
+    CHECK_EQ(hostA->getNodeCount(), 2);
+    CHECK_EQ(hostB->getNodeCount(), 2);
     auto removed = sink->removeBatches({"tx/a", "tx/b"});
     REQUIRE(removed.ok());
     CHECK_EQ(removed.value(), uint64_t(2));

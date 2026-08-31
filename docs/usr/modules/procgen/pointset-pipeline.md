@@ -255,6 +255,9 @@ Scene 为每个批次建立 `__pcg/<batchId>` Host，节点带 `pcg`、`pcg.inst
 runtime cleanup ticket；Scene 卸载失败时不得提前 `completeCleanup()`。
 同一 scheduler 的多个有效 ticket 应通过 `completeCleanupsAtomic(requests)` 一次确认；空数组、重复
 cell、stale ticket 或错误 scheduler 的 request 都会使整组保持原状。
+需要同时变更两个 owner 时使用 `completeCellCleanupAtomic(prefix, runtimes, requests)`：Scene 先准备
+全部 detached tree 和索引副本，在切换可见状态前提交所有已验证 runtime ticket，随后统一交换 Scene
+状态。生命周期回调只会观察到 runtime cell 与 Scene batch 都已消失的最终状态。
 
 完整组合见 `examples/pcg-biome`：大 Cell 放置乔木，小 Cell 放置草和岩石，Spline
 道路作为排除域，移动生成源会触发带迟滞的生成与清理。

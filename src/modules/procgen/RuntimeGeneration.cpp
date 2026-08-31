@@ -420,32 +420,38 @@ bool RuntimeGeneration::completeCleanup(ProcgenCellRequest* request) {
 }
 
 Result<uint64_t> RuntimeGeneration::completeCleanupsAtomic(const std::vector<const ProcgenCellRequest*>& requests) {
+    auto validated = validateCleanups(requests);
+    if (!validated.ok()) return Result<uint64_t>::failure(validated.status());
+    eraseValidatedCleanups(requests);
+    return Result<uint64_t>::success(static_cast<uint64_t>(requests.size()));
+}
+
+Result<void> RuntimeGeneration::validateCleanups(const std::vector<const ProcgenCellRequest*>& requests) const {
     if (requests.empty())
-        return Result<uint64_t>::failure(Diagnostic::error(
+        return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "cleanup transaction requires at least one request", "requests"));
 
-    std::vector<CellKey> keys;
-    keys.reserve(requests.size());
     std::unordered_set<CellKey, CellKeyHash> uniqueKeys;
     uniqueKeys.reserve(requests.size());
     for (const auto* request : requests) {
         if (!request)
-            return Result<uint64_t>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "cleanup transaction contains a null request", "requests"));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "cleanup transaction contains a null request", "requests"));
         const CellKey key{request->level_, request->x_, request->z_};
         if (!uniqueKeys.insert(key).second)
-            return Result<uint64_t>::failure(Diagnostic::error(
+            return Result<void>::failure(Diagnostic::error(
                 DiagnosticCode::Conflict, "cleanup transaction contains a duplicate cell", "requests"));
         const auto found = cells_.find(key);
         if (found == cells_.end() || found->second.state != State::Cleanup || request->seed_ != cellSeed(key) ||
             request->ticket_ != found->second.ticket)
-            return Result<uint64_t>::failure(Diagnostic::error(
-                DiagnosticCode::Conflict, "cleanup transaction contains a stale request", "requests"));
-        keys.push_back(key);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                           "cleanup transaction contains a stale request", "requests"));
     }
+    return Result<void>::success();
+}
 
-    for (const auto& key : keys) cells_.erase(key);
-    return Result<uint64_t>::success(static_cast<uint64_t>(keys.size()));
+void RuntimeGeneration::eraseValidatedCleanups(const std::vector<const ProcgenCellRequest*>& requests) {
+    for (const auto* request : requests) cells_.erase({request->level_, request->x_, request->z_});
 }
 
 bool RuntimeGeneration::hasCell(int level, int x, int z) const {

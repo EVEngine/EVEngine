@@ -489,6 +489,12 @@ public:
     }
 
     eve::Result<uint64_t> removeBatches(const std::vector<std::string>& batchIds) override {
+        return removeBatchesCoordinated(batchIds, [] { return eve::Result<void>::success(); });
+    }
+
+    eve::Result<uint64_t> removeBatchesCoordinated(
+        const std::vector<std::string>&           batchIds,
+        const std::function<eve::Result<void>()>& commitPreparedOwner) override {
         if (batchIds.empty())
             return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument,
@@ -541,6 +547,12 @@ public:
             nextRevisions.erase(removal.batchId);
             nextStats[removal.batchId] = removal.stats;
         }
+        if (!commitPreparedOwner)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "procedural scene removal transaction requires a commit",
+                "commitPreparedOwner"));
+        auto ownerCommit = commitPreparedOwner();
+        if (!ownerCommit.ok()) return eve::Result<uint64_t>::failure(ownerCommit.status());
         for (auto& removal : prepared) {
             *removal.host->tree() = std::move(removal.tree);
             removal.host->setVisible(false);
