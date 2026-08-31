@@ -111,6 +111,12 @@ local effectiveOrder = r.getPartSortPriority(0);
 `Texture.setAlphaConvention("straight" | "premultiplied")` 声明，并通过
 `Texture.getAlphaConvention()` 查询。
 
+虚拟纹理材质通过 `setVirtualTexture(albedoAtlas, normalAtlas, pageTable,
+pageCountX, pageCountY, borderFraction)` 显式启用 atlas/page-table 路径；
+`usesVirtualTexture()` 可查询当前模式，`clearVirtualTexture()` 恢复传统材质贴图路径。
+三个纹理对象必须至少存活到材质停止使用它们为止；
+参数校验失败时 `setVirtualTexture()` 会抛出包含诊断信息的脚本异常。
+
 ### 高级渲染与屏幕空间效果
 
 GBuffer、毛发、体积光、AO、GI 与抗锯齿集中在 [高级渲染与屏幕空间效果](graphics/rendering-effects.md)，避免各类渲染特性持续修改本概览。
