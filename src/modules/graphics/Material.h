@@ -5,6 +5,7 @@
 #include "graphics/Shader.h"
 #include "graphics/SurfaceMode.h"
 #include "graphics/Texture.h"
+#include "common/Result.h"
 
 #include <map>
 #include <string>
@@ -12,6 +13,9 @@
 namespace eve::graphics {
 
 class Graphics;
+
+/** @brief Selects conventional or atlas/page-table material sampling. */
+enum class MaterialVirtualTextureMode { Conventional, AtlasPageTable };
 
 /**
  * @brief Packages shading method + surface parameters into one attachable asset.
@@ -47,6 +51,30 @@ public:
 
     void setHeightTexture(Texture *texture) { height_ = texture; }
     Texture *getHeightTexture() const { return height_; }
+
+    /**
+     * @brief Opt this material into physical-atlas virtual-texture sampling.
+     * @param albedoAtlas Physical albedo pages; borrowed from Graphics.
+     * @param normalAtlas Physical tangent-space normal pages; borrowed from Graphics.
+     * @param pageTable RGBA8 virtual-to-physical page table; borrowed from Graphics.
+     * @param pageCountX Number of mip-zero virtual pages horizontally.
+     * @param pageCountY Number of mip-zero virtual pages vertically.
+     * @param atlasSlotsX Number of physical slots horizontally.
+     * @param atlasSlotsY Number of physical slots vertically.
+     * @param borderFraction Border texels divided by stored physical-page extent.
+     * @return Success, or a validation error without changing this material.
+     */
+    [[nodiscard]] eve::Result<void> setVirtualTexture(
+        Texture *albedoAtlas, Texture *normalAtlas, Texture *pageTable, int pageCountX,
+        int pageCountY, int atlasSlotsX, int atlasSlotsY, float borderFraction);
+
+    /** @brief Restore conventional albedo/normal/height interpretation. */
+    void clearVirtualTexture();
+    /** @brief Return the active virtual-texture sampling mode. */
+    MaterialVirtualTextureMode virtualTextureMode() const {
+        return virtualTextureEnabled_ ? MaterialVirtualTextureMode::AtlasPageTable
+                                      : MaterialVirtualTextureMode::Conventional;
+    }
 
     /** @brief Optional Mesh3D / hair Shader. nullptr → built-in path for the shading model. */
     void setShader(Shader *shader) { shader_ = shader; }
@@ -152,6 +180,12 @@ private:
     bool doubleSided_ = false;
     int sortPriority_ = 0;
     std::string alphaTechnique_ = "cutoff";
+    bool virtualTextureEnabled_ = false;
+    int virtualPageCountX_ = 0;
+    int virtualPageCountY_ = 0;
+    int virtualAtlasSlotsX_ = 0;
+    int virtualAtlasSlotsY_ = 0;
+    float virtualBorderFraction_ = 0.f;
     std::map<std::string, float> params_;
 };
 

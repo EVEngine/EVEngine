@@ -989,6 +989,9 @@ uint32_t Graphics::gpuDrivenMeshRecord(Mesh *mesh) {
 }
 
 bool Graphics::gpuDrivenMaterialUsable(Material *material) {
+    if (!material ||
+        material->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable)
+        return false;
     const uint32_t id = materialTableGetOrCreate(material);
     // Any material with a GPU table record is representable by the bindless
     // path; descriptor-array indexing handles arbitrary slots.

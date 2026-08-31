@@ -192,6 +192,8 @@ struct Frame {
     clipInfo: vec4f,
     cloud: vec4f,
     cloudWind: vec4f,
+    virtualTexture: vec4f,
+    virtualAtlas: vec4f,
     envProbeCenter: vec4f,
     envProbeExtent: vec4f,
     skinInfo: vec4f,
@@ -271,6 +273,8 @@ struct Frame {
     clipInfo: vec4f,
     cloud: vec4f,
     cloudWind: vec4f,
+    virtualTexture: vec4f,
+    virtualAtlas: vec4f,
 };
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
@@ -302,6 +306,29 @@ struct FSIn {
 @group(0) @binding(12) var decalAlbedoLayer: texture_2d<f32>;
 @group(0) @binding(13) var decalNormalLayer: texture_2d<f32>;
 @group(0) @binding(14) var decalParamsLayer: texture_2d<f32>;
+
+fn sampleVirtualTexture(atlas: texture_2d<f32>, sourceUv: vec2f,
+                        uvDx: vec2f, uvDy: vec2f) -> vec4f {
+    let uv = fract(sourceUv);
+    let pageCounts = max(ubo.virtualTexture.yz, vec2f(1.0));
+    let slots = max(ubo.virtualAtlas.xy, vec2f(1.0));
+    let virtualCoord = uv * pageCounts;
+    let pageLimit = vec2i(textureDimensions(heightSampler)) - vec2i(1);
+    let page = clamp(vec2i(floor(virtualCoord)), vec2i(0), pageLimit);
+    let entry = textureLoad(heightSampler, page, 0);
+    var payloadUv = uv;
+    var derivativePages = vec2f(1.0);
+    if (entry.b > 0.5) {
+        payloadUv = fract(virtualCoord);
+        derivativePages = pageCounts;
+    }
+    let slot = floor(entry.rg * slots);
+    let gutter = clamp(ubo.virtualTexture.w, 0.0, 0.499);
+    let physicalUv = (slot + mix(vec2f(gutter), vec2f(1.0 - gutter), payloadUv)) / slots;
+    let derivativeScale = derivativePages * (1.0 - 2.0 * gutter) / slots;
+    return textureSampleGrad(atlas, mainSamp, physicalUv,
+                             uvDx * derivativeScale, uvDy * derivativeScale);
+}
 
 const PI: f32 = 3.14159265359;
 
@@ -558,10 +585,18 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     var nGeom = normalize(in.vNormal);
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
-    let uv = parallaxMappedUV(in.vUV, nGeom, v, ubo.parallax.x,
+    var uv = in.vUV;
+    if (ubo.virtualTexture.x < 0.5) {
+        uv = parallaxMappedUV(in.vUV, nGeom, v, ubo.parallax.x,
                               ubo.parallax.y, ubo.parallax.z, worldDx, worldDy, uvDx, uvDy);
-    var base = textureCellBomb(albedoSampler, uv, ubo.texBomb.x, ubo.texBomb.y,
+    }
+    var base: vec4f;
+    if (ubo.virtualTexture.x > 0.5) {
+        base = sampleVirtualTexture(albedoSampler, uv, uvDx, uvDy) * in.vTint;
+    } else {
+        base = textureCellBomb(albedoSampler, uv, ubo.texBomb.x, ubo.texBomb.y,
                                ubo.texBomb.z, uvDx, uvDy) * in.vTint;
+    }
     if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
@@ -571,8 +606,13 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     var rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
     let count = i32(ubo.lightDir.w + 0.5);
-    let nSmp = textureCellBomb(normalSampler, uv, ubo.texBomb.x, ubo.texBomb.y,
+    var nSmp: vec3f;
+    if (ubo.virtualTexture.x > 0.5) {
+        nSmp = sampleVirtualTexture(normalSampler, uv, uvDx, uvDy).xyz;
+    } else {
+        nSmp = textureCellBomb(normalSampler, uv, ubo.texBomb.x, ubo.texBomb.y,
                                ubo.texBomb.z, uvDx, uvDy).xyz;
+    }
     var n = nGeom;
     if (length(nSmp - vec3f(0.5, 0.5, 1.0)) > 0.04) {
         n = applyNormalMap(n, nSmp, worldDx, worldDy, uvDx, uvDy);
@@ -675,6 +715,8 @@ struct Frame {
     texBomb: vec4f,
     parallax: vec4f,
     surface: vec4f,
+    virtualTexture: vec4f,
+    virtualAtlas: vec4f,
     envProbeCenter: vec4f,
     envProbeExtent: vec4f,
     reflectionProbeCenter: array<vec4f, 2>,
@@ -738,6 +780,8 @@ struct Frame {
     texBomb: vec4f,
     parallax: vec4f,
     surface: vec4f,
+    virtualTexture: vec4f,
+    virtualAtlas: vec4f,
 };
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
@@ -773,6 +817,29 @@ struct FSIn {
 @group(0) @binding(15) var decalAlbedoLayer: texture_2d<f32>;
 @group(0) @binding(16) var decalNormalLayer: texture_2d<f32>;
 @group(0) @binding(17) var decalParamsLayer: texture_2d<f32>;
+
+fn sampleClusteredVirtualTexture(atlas: texture_2d<f32>, sourceUv: vec2f,
+                                 uvDx: vec2f, uvDy: vec2f) -> vec4f {
+    let uv = fract(sourceUv);
+    let pageCounts = max(ubo.virtualTexture.yz, vec2f(1.0));
+    let slots = max(ubo.virtualAtlas.xy, vec2f(1.0));
+    let virtualCoord = uv * pageCounts;
+    let pageLimit = vec2i(textureDimensions(heightSampler)) - vec2i(1);
+    let page = clamp(vec2i(floor(virtualCoord)), vec2i(0), pageLimit);
+    let entry = textureLoad(heightSampler, page, 0);
+    var payloadUv = uv;
+    var derivativePages = vec2f(1.0);
+    if (entry.b > 0.5) {
+        payloadUv = fract(virtualCoord);
+        derivativePages = pageCounts;
+    }
+    let slot = floor(entry.rg * slots);
+    let gutter = clamp(ubo.virtualTexture.w, 0.0, 0.499);
+    let physicalUv = (slot + mix(vec2f(gutter), vec2f(1.0 - gutter), payloadUv)) / slots;
+    let derivativeScale = derivativePages * (1.0 - 2.0 * gutter) / slots;
+    return textureSampleGrad(atlas, mainSamp, physicalUv,
+                             uvDx * derivativeScale, uvDy * derivativeScale);
+}
 
 const PI: f32 = 3.14159265359;
 
@@ -902,10 +969,15 @@ fn clusterIndex(frag: vec2f, viewDepth: f32) -> u32 {
 }
 @fragment
 fn fs_main(in: FSIn) -> @location(0) vec4f {
+    let uvDx = dpdx(in.vUV);
+    let uvDy = dpdy(in.vUV);
     var nGeom = normalize(in.vNormal);
     let v = normalize(in.vCameraPos - in.vWorldPos);
     if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
     var base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
+    if (ubo.virtualTexture.x > 0.5) {
+        base = sampleClusteredVirtualTexture(albedoSampler, in.vUV, uvDx, uvDy) * in.vTint;
+    }
     if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
@@ -914,7 +986,10 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     var albedo = base.rgb;
     var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     var rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
-    let nSmp = textureSample(normalSampler, mainSamp, in.vUV).xyz;
+    var nSmp = textureSample(normalSampler, mainSamp, in.vUV).xyz;
+    if (ubo.virtualTexture.x > 0.5) {
+        nSmp = sampleClusteredVirtualTexture(normalSampler, in.vUV, uvDx, uvDy).xyz;
+    }
     var n = nGeom;
     if (length(nSmp - vec3f(0.5, 0.5, 1.0)) > 0.04) {
         n = normalize(nSmp * 2.0 - 1.0);

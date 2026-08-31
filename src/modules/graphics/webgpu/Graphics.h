@@ -52,6 +52,8 @@ struct Mesh3DUBO {
     glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f};   // x=near, y=far
     glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};        // x=strength(0=off), y=worldCell, z=time
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};  // xy=wind vel, z=coverage, w=detail
+    glm::vec4 virtualTexture{0.f}; // enabled, pageCountX, pageCountY, border/extent
+    glm::vec4 virtualAtlas{0.f};   // slotsX, slotsY
     glm::vec4 envProbeCenter{0.f};
     glm::vec4 envProbeExtent{0.f};
     glm::vec4 skinInfo{0.f};
@@ -59,7 +61,7 @@ struct Mesh3DUBO {
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
-static_assert(sizeof(Mesh3DUBO) == 8928, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 8960, "Mesh3DUBO layout must match the WGSL Frame block");
 
 struct MeshVertex {
     glm::vec3 pos;
@@ -97,12 +99,14 @@ struct Mesh3DClusteredUBO {
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f};       // x=cellScale, y=strength, z=rotAmount, w=AO
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f};     // x=scale, y=minLayers, z=maxLayers
     glm::vec4 surface{0.f, 0.5f, 0.f, 0.f};       // mode, alphaCutoff, ssao, reserved
+    glm::vec4 virtualTexture{0.f};
+    glm::vec4 virtualAtlas{0.f};
     glm::vec4 envProbeCenter{0.f};
     glm::vec4 envProbeExtent{0.f};
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
 };
-static_assert(sizeof(Mesh3DClusteredUBO) == 448,
+static_assert(sizeof(Mesh3DClusteredUBO) == 480,
               "Mesh3DClusteredUBO layout must match the WGSL clustered Frame block");
 
 /**
@@ -342,6 +346,9 @@ public:
                                 int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
+    void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
+                                 int atlasSlotsX, int atlasSlotsY,
+                                 float borderFraction) override;
     void     setMesh3DSceneDepth(Texture *depth) override;
     void     setMesh3DMaterial(float metallic, float roughness) override;
     void     setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
@@ -471,6 +478,10 @@ private:
     struct Mesh3dDraw {
         Mesh *mesh = nullptr;
         Texture *texture = nullptr;
+        Texture *normalTexture = nullptr;
+        Texture *heightTexture = nullptr;
+        glm::vec4 virtualTexture{0.f};
+        glm::vec4 virtualAtlas{0.f};
         glm::mat4 model{1.f};
         Color tint{1.f};
         Shader *shader = nullptr;
@@ -848,6 +859,8 @@ private:
     std::string mesh3dAlphaTechnique = "cutoff";
     float mesh3dTexBombScale = 4.f, mesh3dTexBombStrength = 0.f, mesh3dTexBombRot = 1.f;
     float mesh3dParallaxScale = 0.f, mesh3dParallaxMin = 8.f, mesh3dParallaxMax = 32.f;
+    glm::vec4 mesh3dVirtualTexture{0.f};
+    glm::vec4 mesh3dVirtualAtlas{0.f};
     float mesh3dSsaoIntensity = 1.f;
     glm::vec4 mesh3dCloud{0.f, 1.5f, 0.f, 0.f};
     glm::vec4 mesh3dCloudWind{4.f, 0.f, 0.55f, 0.5f};

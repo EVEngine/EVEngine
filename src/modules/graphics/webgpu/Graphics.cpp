@@ -3512,6 +3512,10 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     Mesh3dDraw d;
     d.mesh = mesh;
     d.texture = texture;
+    d.normalTexture = mesh3dNormalTexture;
+    d.heightTexture = mesh3dHeightTexture;
+    d.virtualTexture = mesh3dVirtualTexture;
+    d.virtualAtlas = mesh3dVirtualAtlas;
     d.model = model;
     d.tint = tint;
     d.shader = shader;
@@ -3527,6 +3531,16 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
 
 void Graphics::setMesh3DNormalTexture(Texture* normal) { mesh3dNormalTexture = normal; }
 void Graphics::setMesh3DHeightTexture(Texture *height) { mesh3dHeightTexture = height; }
+
+void Graphics::setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
+                                       int atlasSlotsX, int atlasSlotsY,
+                                       float borderFraction) {
+    mesh3dVirtualTexture =
+        enabled ? glm::vec4(1.f, float(pageCountX), float(pageCountY), borderFraction)
+                : glm::vec4(0.f);
+    mesh3dVirtualAtlas =
+        enabled ? glm::vec4(float(atlasSlotsX), float(atlasSlotsY), 0.f, 0.f) : glm::vec4(0.f);
+}
 void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
 void Graphics::setMesh3DMaterial(float metallic, float roughness) {
     mesh3dMetallic = metallic;
@@ -4179,6 +4193,8 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             cubo.texBomb =
                 glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
             cubo.parallax = glm::vec4(mesh3dParallaxScale, mesh3dParallaxMin, mesh3dParallaxMax, 0.f);
+            cubo.virtualTexture = d.virtualTexture;
+            cubo.virtualAtlas = d.virtualAtlas;
             float surfaceCode = float(int(d.surfaceMode));
             if (d.surfaceMode == SurfaceMode::Masked && d.alphaTechnique == "dither")
                 surfaceCode = 3.f;
@@ -4219,6 +4235,8 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
         ubo.parallax =
             glm::vec4(mesh3dParallaxScale, mesh3dParallaxMin, mesh3dParallaxMax, d.alphaCutoff);
+        ubo.virtualTexture = d.virtualTexture;
+        ubo.virtualAtlas = d.virtualAtlas;
         const float aoStrength =
             (renderControl_ && renderControl_->isEnabled("ao")) ? mesh3dSsaoIntensity : 0.f;
         ubo.surface = glm::vec4(surfaceCode, d.alphaCutoff, aoStrength, 0.f);
@@ -4298,9 +4316,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         pass.SetPipeline(pipe);
 
         GpuTexture *albedo = gpuForTexture(d.texture);
-        GpuTexture *normal = gpuForTexture(mesh3dNormalTexture);
+        GpuTexture *normal = gpuForTexture(d.normalTexture);
         GpuTexture *env = gpuForTexture(mesh3dEnvTexture);
-        GpuTexture *height = gpuForTexture(mesh3dHeightTexture);
+        GpuTexture *height = gpuForTexture(d.heightTexture);
         GpuTexture *depth = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
                                                     : flatDepthTexture3D;
         wgpu::BindGroup bg;
