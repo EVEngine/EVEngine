@@ -1281,6 +1281,48 @@ public:
                                       const std::string &fragWgsl) = 0;
 
     /**
+     * @brief Transactionally replace an existing shader with SPIR-V stages.
+     * @param shader Stable graphics-owned shader facade to update.
+     * @param vertSpv Vertex stage words; empty selects the backend default for the shader kind.
+     * @param fragSpv Fragment stage words; must contain valid SPIR-V.
+     * @return Success only after every replacement pipeline has been created and published.
+     * @throws Nothing. Backend and validation failures are returned as structured diagnostics.
+     * @note Main/render-thread only and not reentrant. On failure the shader, its uniforms, and all
+     *       renderable/material references remain bound to the last successfully published pipeline.
+     * @lifetime `shader` remains owned by this Graphics instance and keeps the same address.
+     */
+    [[nodiscard]] virtual Result<void> replaceShaderFromSpv(
+        Shader &shader, const std::vector<uint32_t> &vertSpv,
+        const std::vector<uint32_t> &fragSpv) = 0;
+
+    /**
+     * @brief Transactionally replace an existing shader with WGSL stages.
+     * @param shader Stable graphics-owned shader facade to update.
+     * @param vertWgsl Vertex source; empty selects the backend default for the shader kind.
+     * @param fragWgsl Fragment source; must not be empty.
+     * @return Success only after every replacement pipeline has been created and published.
+     * @throws Nothing. Backend and validation failures are returned as structured diagnostics.
+     * @note Main/render-thread only and not reentrant. Vulkan reports Unsupported without mutation.
+     * @lifetime `shader` remains owned by this Graphics instance and keeps the same address.
+     */
+    [[nodiscard]] virtual Result<void> replaceShaderFromWgsl(
+        Shader &shader, const std::string &vertWgsl, const std::string &fragWgsl) = 0;
+
+    /**
+     * @brief Compile GLSL and transactionally replace an existing shader.
+     * @param shader Stable graphics-owned shader facade to update.
+     * @param vertGlsl Vertex source; empty selects the backend default for the shader kind.
+     * @param fragGlsl Fragment source; must not be empty.
+     * @return Structured compile/pipeline result; failure preserves the last-good pipeline.
+     * @throws Nothing. Compiler output is carried by the returned diagnostic.
+     * @note Main/render-thread only and not reentrant. Runtime GLSL compilation is a Vulkan
+     *       development capability and may report Unsupported on a platform/backend.
+     * @lifetime `shader` remains owned by this Graphics instance and keeps the same address.
+     */
+    [[nodiscard]] virtual Result<void> replaceShaderFromGlsl(
+        Shader &shader, const std::string &vertGlsl, const std::string &fragGlsl) = 0;
+
+    /**
      * @brief Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo).
      * Empty vert → default mesh3d.vert. Owned by Graphics.
      */

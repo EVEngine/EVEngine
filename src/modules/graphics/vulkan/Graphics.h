@@ -448,6 +448,15 @@ public:
                                   const std::string &fragWgsl) override;
     Shader *newShaderFromWgsl(const std::string &vertWgsl,
                               const std::string &fragWgsl) override;
+    [[nodiscard]] Result<void> replaceShaderFromSpv(
+        Shader &shader, const std::vector<uint32_t> &vertSpv,
+        const std::vector<uint32_t> &fragSpv) override;
+    [[nodiscard]] Result<void> replaceShaderFromWgsl(
+        Shader &shader, const std::string &vertWgsl,
+        const std::string &fragWgsl) override;
+    [[nodiscard]] Result<void> replaceShaderFromGlsl(
+        Shader &shader, const std::string &vertGlsl,
+        const std::string &fragGlsl) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
