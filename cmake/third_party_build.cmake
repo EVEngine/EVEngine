@@ -222,6 +222,15 @@ function(check_third_party_project name repo)
         if(CMAKE_CXX_COMPILER)
             list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
         endif()
+        # GitHub's Windows image exports ccache as a default launcher.  A
+        # batch-file compiler wrapper cannot be spawned by ccache, so carry
+        # the parent cache-off choice into this independent dependency build.
+        if(WIN32 AND EVENGINE_COMPILER_CACHE STREQUAL "OFF")
+            list(APPEND _eve_tp_cmake_args
+                -DCMAKE_C_COMPILER_LAUNCHER=
+                -DCMAKE_CXX_COMPILER_LAUNCHER=
+            )
+        endif()
     endif()
 
     # --config is required for multi-config generators (VS); ignored by Ninja.
