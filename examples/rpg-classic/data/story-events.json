@@ -1,0 +1,36 @@
+{
+  "schema": "eve.rpg.story-events",
+  "version": 1,
+  "events": [
+    {
+      "id": "forest.arrival",
+      "repeatable": false,
+      "steps": [
+        {
+          "kind": "dialogue",
+          "reference": "story.forest.arrival",
+          "actorId": "",
+          "x": 0,
+          "y": 0,
+          "duration": 0
+        },
+        {
+          "kind": "wait",
+          "reference": "",
+          "actorId": "",
+          "x": 0,
+          "y": 0,
+          "duration": 0.35
+        },
+        {
+          "kind": "message",
+          "reference": "gameplayLog.story.recorded",
+          "actorId": "",
+          "x": 0,
+          "y": 0,
+          "duration": 0
+        }
+      ]
+    }
+  ]
+}
