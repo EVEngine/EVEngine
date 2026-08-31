@@ -1,9 +1,11 @@
 #include "procgen/PointSet.h"
 
 #include <algorithm>
+#include <bit>
 #include <cmath>
 #include <limits>
 #include <random>
+#include <unordered_set>
 
 namespace eve::procgen {
 namespace {
@@ -280,6 +282,48 @@ uint32_t PointSet::getPointSeed(int index) const {
     return p ? p->seed : 0u;
 }
 
+std::uint64_t PointSet::getPointId(int index) const {
+    const auto* point = pointAt(index);
+    return point ? point->id : 0;
+}
+
+Result<void> PointSet::trySetPointId(int index, std::uint64_t id) {
+    auto* point = pointAt(index);
+    if (!point)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
+    if (id == 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "point id must be non-zero", "id"));
+    for (std::size_t row = 0; row < points_.size(); ++row)
+        if (row != std::size_t(index) && points_[row].id == id)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "point id is already present", "id"));
+    point->id = id;
+    return Result<void>::success();
+}
+
+Result<void> PointSet::assignPointIds(std::uint64_t namespaceId) {
+    if (namespaceId == 0)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "point id namespace must be non-zero", "namespaceId"));
+    std::unordered_set<std::uint64_t> occupied;
+    occupied.reserve(points_.size());
+    for (const auto& point : points_)
+        if (point.id != 0 && !occupied.insert(point.id).second)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "point set contains duplicate ids", "points"));
+    PointSet staged = *this;
+    for (std::size_t row = 0; row < staged.points_.size(); ++row) {
+        if (staged.points_[row].id != 0) continue;
+        std::uint64_t candidate = derivePointId(namespaceId, row);
+        while (!occupied.insert(candidate).second) candidate = derivePointId(candidate, row + 1);
+        staged.points_[row].id = candidate;
+    }
+    *this = std::move(staged);
+    return Result<void>::success();
+}
+
 Result<void> PointSet::trySetFloatAttribute(int index, const std::string& name, float value) {
     if (!pointAt(index))
         return Result<void>::failure(
@@ -406,6 +450,17 @@ uint32_t deriveSeed(uint32_t parent, const std::string& scope) {
     return hash ? hash : 1u;
 }
 
+std::uint64_t derivePointId(std::uint64_t namespaceId, std::uint64_t ordinal) {
+    std::uint64_t value = namespaceId ^ (ordinal + 0x9e3779b97f4a7c15ull + (namespaceId << 6u) +
+                                         (namespaceId >> 2u));
+    value ^= value >> 30u;
+    value *= 0xbf58476d1ce4e5b9ull;
+    value ^= value >> 27u;
+    value *= 0x94d049bb133111ebull;
+    value ^= value >> 31u;
+    return value == 0 ? 1 : value;
+}
+
 PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, float jitter) {
     PointSet output;
     if (width <= 0 || depth <= 0 || spacing <= 0.f) return output;
@@ -419,6 +474,8 @@ PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, fl
             point.x    = float(x) * spacing + (unitFloat(pointSeed) * 2.f - 1.f) * extent;
             point.z    = float(z) * spacing + (unitFloat(pointSeed ^ 0xa511e9b3u) * 2.f - 1.f) * extent;
             point.seed = pointSeed ? pointSeed : 1u;
+            point.id   = derivePointId((std::uint64_t(seed) << 32u) | 0x47524944u,
+                                       std::uint64_t(z) * std::uint64_t(width) + std::uint64_t(x));
             const int appended = output.appendPoint(std::move(point));
             (void)appended;
         }
@@ -505,6 +562,7 @@ PointSet poissonDiskPoints(int width, int depth, float radius, uint32_t seed, in
         point.z    = ys[i];
         point.seed = mix32(seed ^ uint32_t(i));
         if (point.seed == 0) point.seed = 1;
+        point.id = derivePointId((std::uint64_t(seed) << 32u) | 0x504f4953u, i);
         const int appended = output.appendPoint(std::move(point));
         (void)appended;
     }
@@ -665,6 +723,7 @@ PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint
             point.z    = a.z + dz * t + nz * lateral;
             point.yaw  = yaw;
             point.seed = sampleSeed ? sampleSeed : 1u;
+            point.id   = derivePointId((std::uint64_t(seed) << 32u) | 0x504c494eu, sampleIndex);
             const int appended = output.appendPoint(std::move(point));
             (void)appended;
             ++sampleIndex;
@@ -685,13 +744,32 @@ PointSet mergePointSets(const PointSet& first, const PointSet& second) {
 
 namespace {
 
-bool samePointIdentity(const ProcgenPoint& a, const ProcgenPoint& b) {
-    return a.seed == b.seed && a.x == b.x && a.y == b.y && a.z == b.z;
-}
+struct PointIdentity {
+    std::uint64_t id   = 0;
+    std::uint32_t seed = 0;
+    float         x = 0.f, y = 0.f, z = 0.f;
 
-bool containsPointIdentity(const std::vector<ProcgenPoint>& points, const ProcgenPoint& candidate) {
-    return std::any_of(points.begin(), points.end(),
-                       [&candidate](const ProcgenPoint& point) { return samePointIdentity(point, candidate); });
+    bool operator==(const PointIdentity& other) const noexcept {
+        if (id != 0 || other.id != 0) return id != 0 && id == other.id;
+        return seed == other.seed && x == other.x && y == other.y && z == other.z;
+    }
+};
+
+struct PointIdentityHash {
+    std::size_t operator()(const PointIdentity& value) const noexcept {
+        if (value.id != 0) return std::hash<std::uint64_t>{}(value.id);
+        auto combine = [](std::size_t hash, std::uint32_t part) {
+            return hash ^ (std::size_t(part) + 0x9e3779b9u + (hash << 6u) + (hash >> 2u));
+        };
+        std::size_t hash = value.seed;
+        hash = combine(hash, value.x == 0.f ? 0u : std::bit_cast<std::uint32_t>(value.x));
+        hash = combine(hash, value.y == 0.f ? 0u : std::bit_cast<std::uint32_t>(value.y));
+        return combine(hash, value.z == 0.f ? 0u : std::bit_cast<std::uint32_t>(value.z));
+    }
+};
+
+PointIdentity identityOf(const ProcgenPoint& point) {
+    return {point.id, point.seed, point.x, point.y, point.z};
 }
 
 void rotateEuler(float& x, float& y, float& z, float pitchDegrees, float yawDegrees, float rollDegrees) {
@@ -715,27 +793,35 @@ void rotateEuler(float& x, float& y, float& z, float pitchDegrees, float yawDegr
 
 PointSet unionPointSets(const PointSet& first, const PointSet& second) {
     PointSet result;
+    std::unordered_set<PointIdentity, PointIdentityHash> identities;
+    identities.reserve(first.points().size() + second.points().size());
     result.reserve(first.points().size() + second.points().size());
     for (size_t index = 0; index < first.points().size(); ++index)
-        if (!containsPointIdentity(result.points(), first.points()[index])) appendPointRow(result, first, index);
+        if (identities.insert(identityOf(first.points()[index])).second) appendPointRow(result, first, index);
     for (size_t index = 0; index < second.points().size(); ++index)
-        if (!containsPointIdentity(result.points(), second.points()[index])) appendPointRow(result, second, index);
+        if (identities.insert(identityOf(second.points()[index])).second) appendPointRow(result, second, index);
     return result;
 }
 
 PointSet intersectPointSets(const PointSet& first, const PointSet& second) {
     PointSet result;
+    std::unordered_set<PointIdentity, PointIdentityHash> identities;
+    identities.reserve(second.points().size());
+    for (const auto& point : second.points()) identities.insert(identityOf(point));
     result.reserve(std::min(first.points().size(), second.points().size()));
     for (size_t index = 0; index < first.points().size(); ++index)
-        if (containsPointIdentity(second.points(), first.points()[index])) appendPointRow(result, first, index);
+        if (identities.contains(identityOf(first.points()[index]))) appendPointRow(result, first, index);
     return result;
 }
 
 PointSet differencePointSets(const PointSet& first, const PointSet& second) {
     PointSet result;
+    std::unordered_set<PointIdentity, PointIdentityHash> identities;
+    identities.reserve(second.points().size());
+    for (const auto& point : second.points()) identities.insert(identityOf(point));
     result.reserve(first.points().size());
     for (size_t index = 0; index < first.points().size(); ++index)
-        if (!containsPointIdentity(second.points(), first.points()[index])) appendPointRow(result, first, index);
+        if (!identities.contains(identityOf(first.points()[index]))) appendPointRow(result, first, index);
     return result;
 }
 
@@ -810,6 +896,9 @@ PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets, bo
             copy.scaleZ *= target.scaleZ;
             copy.density *= target.density;
             copy.seed = deriveSeed(target.seed, "copy:" + std::to_string(sourcePoint.seed));
+            const std::uint64_t targetIdentity = target.id != 0 ? target.id : std::uint64_t(target.seed);
+            const std::uint64_t sourceIdentity = sourcePoint.id != 0 ? sourcePoint.id : std::uint64_t(sourcePoint.seed);
+            copy.id = derivePointId(targetIdentity, sourceIdentity);
             const int resultIndex = result.appendPoint(std::move(copy));
             if (inheritTargetAttributes) {
                 for (size_t column = 0; column < targets.attributes().columnCount(); ++column) {

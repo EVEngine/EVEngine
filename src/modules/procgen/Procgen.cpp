@@ -29,6 +29,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <any>
+#include <charconv>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -775,6 +776,62 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::poissonDiskHandle(int width, int 
                             std::make_unique<PointSet>(poissonDiskPoints(width, depth, radius, seed, maxPoints)));
 }
 
+static std::string sceneInstanceId(const PointSet& points, size_t pointIndex,
+                                   std::unordered_map<uint32_t, size_t>& seedOccurrences) {
+    const auto& point      = points.points()[pointIndex];
+    const auto  explicitId = points.attributes().getString(pointIndex, "instanceId");
+    if (explicitId && !explicitId->empty()) return std::string(*explicitId);
+    if (point.id != 0) return "pcg-id-" + std::to_string(point.id);
+    return "pcg-" + std::to_string(point.seed) + "-" + std::to_string(seedOccurrences[point.seed]++);
+}
+
+static eve::ProcgenInstanceDesc sceneInstanceDesc(const PointSet& points, size_t pointIndex,
+                                                  const std::string& assetAttribute, const std::string& defaultAsset,
+                                                  std::unordered_map<uint32_t, size_t>& seedOccurrences) {
+    const auto&              point = points.points()[pointIndex];
+    eve::ProcgenInstanceDesc instance;
+    instance.sourcePointId = point.id;
+    instance.id            = sceneInstanceId(points, pointIndex, seedOccurrences);
+    instance.asset         = defaultAsset;
+    if (!assetAttribute.empty()) {
+        const auto found = points.attributes().getString(pointIndex, assetAttribute);
+        if (found) instance.asset = std::string(*found);
+    }
+    instance.x      = point.x;
+    instance.y      = point.y;
+    instance.z      = point.z;
+    instance.yaw    = point.yaw;
+    instance.scaleX = point.scaleX;
+    instance.scaleY = point.scaleY;
+    instance.scaleZ = point.scaleZ;
+    instance.seed   = point.seed;
+    return instance;
+}
+
+static eve::Result<std::vector<eve::ProcgenInstanceDesc>> sceneInstanceDescs(const PointSet&    points,
+                                                                             const std::string& assetAttribute,
+                                                                             const std::string& defaultAsset,
+                                                                             bool               requireStablePointIds) {
+    std::vector<eve::ProcgenInstanceDesc> instances;
+    instances.reserve(points.points().size());
+    std::unordered_map<uint32_t, size_t> seedOccurrences;
+    std::unordered_set<std::string>      instanceIds;
+    std::unordered_set<uint64_t>         pointIds;
+    for (size_t pointIndex = 0; pointIndex < points.points().size(); ++pointIndex) {
+        auto instance = sceneInstanceDesc(points, pointIndex, assetAttribute, defaultAsset, seedOccurrences);
+        if (!instanceIds.insert(instance.id).second)
+            return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                       "procedural Scene snapshot contains a duplicate instance id", "instanceId"));
+        if (requireStablePointIds && (instance.sourcePointId == 0 || !pointIds.insert(instance.sourcePointId).second))
+            return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "procedural Scene snapshot requires unique non-zero source PointIds",
+                "pointId"));
+        instances.push_back(std::move(instance));
+    }
+    return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::success(std::move(instances));
+}
+
 eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenPointSetHandleRef points,
                                             const std::string& assetAttribute, const std::string& defaultAsset) {
     const auto view = resolvePointSet(points);
@@ -786,37 +843,9 @@ eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenP
     if (!sink)
         return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "publishInstances scene sink is unavailable");
 
-    std::vector<eve::ProcgenInstanceDesc> instances;
-    instances.reserve(view->points().size());
-    std::unordered_map<uint32_t, size_t> seedOccurrences;
-    std::unordered_set<std::string>      instanceIds;
-    for (size_t pointIndex = 0; pointIndex < view->points().size(); ++pointIndex) {
-        const auto&              point = view->points()[pointIndex];
-        eve::ProcgenInstanceDesc instance;
-        const auto               explicitId = view->attributes().getString(pointIndex, "instanceId");
-        if (explicitId && !explicitId->empty())
-            instance.id = *explicitId;
-        else
-            instance.id = "pcg-" + std::to_string(point.seed) + "-" + std::to_string(seedOccurrences[point.seed]++);
-        if (!instanceIds.insert(instance.id).second)
-            return procgenBindingFailure<void>(eve::DiagnosticCode::Conflict,
-                                               "publishInstances duplicate instance id: " + instance.id);
-        instance.asset = defaultAsset;
-        if (!assetAttribute.empty()) {
-            const auto found = view->attributes().getString(pointIndex, assetAttribute);
-            if (found) instance.asset = *found;
-        }
-        instance.x      = point.x;
-        instance.y      = point.y;
-        instance.z      = point.z;
-        instance.yaw    = point.yaw;
-        instance.scaleX = point.scaleX;
-        instance.scaleY = point.scaleY;
-        instance.scaleZ = point.scaleZ;
-        instance.seed   = point.seed;
-        instances.push_back(std::move(instance));
-    }
-    if (!sink->applyBatch(batchId, instances))
+    auto instances = sceneInstanceDescs(*view, assetAttribute, defaultAsset, false);
+    if (!instances.ok()) return eve::Result<void>::failure(instances.status());
+    if (!sink->applyBatch(batchId, instances.value()))
         return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "publishInstances scene sink rejected batch");
     return eve::Result<void>::success();
 }
@@ -843,6 +872,152 @@ eve::Result<void> Procgen::publishCellInstances(const std::string& prefix, const
     return publishInstances(batchId, points, assetAttribute, defaultAsset);
 }
 
+eve::Result<uint64_t> Procgen::publishCellSnapshot(const std::string& prefix, const ProcgenCellRequest& request,
+                                                   ProcgenPointSetHandleRef points, uint64_t targetRevision,
+                                                   const std::string& assetAttribute, const std::string& defaultAsset) {
+    const auto view = resolvePointSet(points);
+    if (prefix.empty() || targetRevision == 0 || !view.isBound())
+        return procgenBindingFailure<uint64_t>(
+            !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
+            "publishCellSnapshot requires a prefix, live point set, and non-zero target revision",
+            "publishCellSnapshot");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "publishCellSnapshot scene sink is unavailable");
+    auto instances = sceneInstanceDescs(*view, assetAttribute, defaultAsset, true);
+    if (!instances.ok()) return eve::Result<uint64_t>::failure(instances.status());
+    const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
+                                std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
+    return sink->replaceBatch(batchId, targetRevision, instances.value());
+}
+
+eve::Result<uint64_t> Procgen::publishCellInstanceDelta(const std::string& prefix, const ProcgenCellRequest& request,
+                                                        const PointDelta& delta, uint64_t targetRevision,
+                                                        const std::string& assetAttribute,
+                                                        const std::string& defaultAsset) {
+    if (prefix.empty())
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                               "publishCellInstanceDelta requires a prefix", "prefix");
+    if (targetRevision < 2)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                               "publishCellInstanceDelta requires a target revision greater than one",
+                                               "targetRevision");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "publishCellInstanceDelta scene sink is unavailable");
+
+    eve::ProcgenInstanceDelta sceneDelta;
+    sceneDelta.baseRevision     = targetRevision - 1;
+    sceneDelta.targetRevision   = targetRevision;
+    sceneDelta.removedPointIds  = delta.removed;
+    sceneDelta.targetPointOrder = delta.targetOrder;
+    std::unordered_map<uint32_t, size_t> seedOccurrences;
+    sceneDelta.added.reserve(delta.added.points().size());
+    for (size_t pointIndex = 0; pointIndex < delta.added.points().size(); ++pointIndex)
+        sceneDelta.added.push_back(
+            sceneInstanceDesc(delta.added, pointIndex, assetAttribute, defaultAsset, seedOccurrences));
+    seedOccurrences.clear();
+    sceneDelta.updated.reserve(delta.updated.points().size());
+    for (size_t pointIndex = 0; pointIndex < delta.updated.points().size(); ++pointIndex)
+        sceneDelta.updated.push_back(
+            sceneInstanceDesc(delta.updated, pointIndex, assetAttribute, defaultAsset, seedOccurrences));
+
+    const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
+                                std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
+    return sink->applyDelta(batchId, sceneDelta);
+}
+
+eve::Result<uint64_t> Procgen::synchronizeCellInstances(const std::string& prefix, const RuntimeGeneration& runtime,
+                                                        const ProcgenCellRequest& request,
+                                                        const std::string&        assetAttribute,
+                                                        const std::string&        defaultAsset) {
+    if (prefix.empty())
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                               "synchronizeCellInstances requires a prefix", "prefix");
+    const int                 level          = request.getLevel();
+    const int                 x              = request.getX();
+    const int                 z              = request.getZ();
+    const uint64_t            targetRevision = runtime.getCellRevision(level, x, z);
+    std::unique_ptr<PointSet> snapshot(runtime.getCellOutput(level, x, z));
+    if (!snapshot || targetRevision == 0)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::NotFound,
+                                               "synchronizeCellInstances requires an active runtime cell", "cell");
+
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "synchronizeCellInstances scene sink is unavailable");
+    const std::string batchId =
+        prefix + "/L" + std::to_string(level) + "/" + std::to_string(x) + "/" + std::to_string(z);
+    const uint64_t sceneRevision = sink->batchRevision(batchId);
+    if (sceneRevision == targetRevision) return eve::Result<uint64_t>::success(targetRevision);
+    if (sceneRevision > targetRevision)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
+                                               "Scene cell revision is ahead of RuntimeGeneration", "revision");
+
+    if (sceneRevision + 1 == targetRevision) {
+        std::unique_ptr<PointDelta> delta(runtime.getCellDelta(level, x, z));
+        if (delta)
+            return publishCellInstanceDelta(prefix, request, *delta, targetRevision, assetAttribute, defaultAsset);
+    }
+
+    auto instances = sceneInstanceDescs(*snapshot, assetAttribute, defaultAsset, true);
+    if (!instances.ok()) return eve::Result<uint64_t>::failure(instances.status());
+    return sink->replaceBatch(batchId, targetRevision, instances.value());
+}
+
+eve::Result<uint64_t> Procgen::synchronizeCellInstancesAtomic(const std::string&                            prefix,
+                                                              const std::vector<const RuntimeGeneration*>&  runtimes,
+                                                              const std::vector<const ProcgenCellRequest*>& requests,
+                                                              const std::string& assetAttribute,
+                                                              const std::string& defaultAsset) {
+    if (prefix.empty() || runtimes.empty() || runtimes.size() != requests.size())
+        return procgenBindingFailure<uint64_t>(
+            eve::DiagnosticCode::InvalidArgument,
+            "synchronizeCellInstancesAtomic requires a prefix and equally sized non-empty runtime/request lists",
+            "cells");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "synchronizeCellInstancesAtomic scene sink is unavailable");
+
+    std::vector<eve::ProcgenBatchSnapshot> snapshots;
+    snapshots.reserve(requests.size());
+    std::unordered_set<std::string> batchIds;
+    for (size_t index = 0; index < requests.size(); ++index) {
+        const auto* runtime = runtimes[index];
+        const auto* request = requests[index];
+        if (!runtime || !request)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                   "synchronizeCellInstancesAtomic contains a null cell", "cells");
+        const int                 level          = request->getLevel();
+        const int                 x              = request->getX();
+        const int                 z              = request->getZ();
+        const uint64_t            targetRevision = runtime->getCellRevision(level, x, z);
+        std::unique_ptr<PointSet> output(runtime->getCellOutput(level, x, z));
+        if (!output || targetRevision == 0)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::NotFound,
+                                                   "synchronizeCellInstancesAtomic contains an inactive cell", "cells");
+        const std::string batchId =
+            prefix + "/L" + std::to_string(level) + "/" + std::to_string(x) + "/" + std::to_string(z);
+        if (!batchIds.insert(batchId).second)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
+                                                   "synchronizeCellInstancesAtomic repeats a cell", "cells");
+        const uint64_t sceneRevision = sink->batchRevision(batchId);
+        if (sceneRevision > targetRevision)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
+                                                   "Scene cell revision is ahead of RuntimeGeneration", "revision");
+        if (sceneRevision == targetRevision) continue;
+        auto instances = sceneInstanceDescs(*output, assetAttribute, defaultAsset, true);
+        if (!instances) return eve::Result<uint64_t>::failure(instances.status());
+        snapshots.push_back({batchId, targetRevision, std::move(instances).takeValue()});
+    }
+    if (snapshots.empty()) return eve::Result<uint64_t>::success(0);
+    return sink->replaceBatches(snapshots);
+}
+
 eve::Result<void> Procgen::removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request) {
     if (prefix.empty())
         return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
@@ -850,6 +1025,75 @@ eve::Result<void> Procgen::removeCellInstances(const std::string& prefix, const 
     const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
                                 std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
     return removeInstances(batchId);
+}
+
+eve::Result<uint64_t> Procgen::removeCellInstancesAtomic(const std::string&                            prefix,
+                                                         const std::vector<const ProcgenCellRequest*>& requests) {
+    if (prefix.empty() || requests.empty())
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                               "removeCellInstancesAtomic requires a prefix and cleanup requests",
+                                               "requests");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "removeCellInstancesAtomic scene sink is unavailable");
+    std::vector<std::string> batchIds;
+    batchIds.reserve(requests.size());
+    for (const auto* request : requests) {
+        if (!request)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                   "removeCellInstancesAtomic contains a null request", "requests");
+        batchIds.push_back(prefix + "/L" + std::to_string(request->getLevel()) + "/" + std::to_string(request->getX()) +
+                           "/" + std::to_string(request->getZ()));
+    }
+    return sink->removeBatches(batchIds);
+}
+
+eve::Result<uint64_t> Procgen::completeCellCleanupAtomic(const std::string&                            prefix,
+                                                         const std::vector<RuntimeGeneration*>&        runtimes,
+                                                         const std::vector<const ProcgenCellRequest*>& requests) {
+    if (prefix.empty() || requests.empty() || runtimes.size() != requests.size())
+        return procgenBindingFailure<uint64_t>(
+            eve::DiagnosticCode::InvalidArgument,
+            "completeCellCleanupAtomic requires a prefix and equally sized runtime/request arrays", "requests");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "completeCellCleanupAtomic scene sink is unavailable");
+
+    struct RuntimeCleanupGroup {
+        RuntimeGeneration*                     runtime = nullptr;
+        std::vector<const ProcgenCellRequest*> requests;
+    };
+    std::vector<RuntimeCleanupGroup> groups;
+    std::vector<std::string>         batchIds;
+    groups.reserve(runtimes.size());
+    batchIds.reserve(requests.size());
+    for (size_t index = 0; index < requests.size(); ++index) {
+        auto* runtime = runtimes[index];
+        auto* request = requests[index];
+        if (!runtime || !request)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                   "completeCellCleanupAtomic contains a null runtime or request",
+                                                   "requests");
+        auto group = std::find_if(groups.begin(), groups.end(),
+                                  [runtime](const auto& candidate) { return candidate.runtime == runtime; });
+        if (group == groups.end()) {
+            groups.push_back({runtime, {}});
+            group = std::prev(groups.end());
+        }
+        group->requests.push_back(request);
+        batchIds.push_back(prefix + "/L" + std::to_string(request->getLevel()) + "/" + std::to_string(request->getX()) +
+                           "/" + std::to_string(request->getZ()));
+    }
+    for (const auto& group : groups) {
+        auto validated = group.runtime->validateCleanups(group.requests);
+        if (!validated.ok()) return eve::Result<uint64_t>::failure(validated.status());
+    }
+    return sink->removeBatchesCoordinated(batchIds, [&groups] {
+        for (auto& group : groups) group.runtime->eraseValidatedCleanups(group.requests);
+        return eve::Result<void>::success();
+    });
 }
 
 int Procgen::getPublishedInstanceCount(const std::string& batchId) const {
@@ -2673,6 +2917,16 @@ void Procgen::expose(ssq::Table &table) {
     points.addFunc("getDensity", &PointSet::getDensity);
     points.addFunc("setPointSeed", &PointSet::setPointSeed);
     points.addFunc("getPointSeed", &PointSet::getPointSeed);
+    points.addFunc("getPointId", [](PointSet* value, int index) { return std::to_string(value->getPointId(index)); });
+    points.addFunc("assignPointIds", [](PointSet* value, const std::string& namespaceText) {
+        std::uint64_t namespaceId = 0;
+        const auto [end, error] =
+            std::from_chars(namespaceText.data(), namespaceText.data() + namespaceText.size(), namespaceId);
+        if (error != std::errc{} || end != namespaceText.data() + namespaceText.size() || namespaceId == 0)
+            throw std::invalid_argument("assignPointIds: namespace must be a non-zero unsigned decimal string");
+        auto assigned = value->assignPointIds(namespaceId);
+        if (!assigned.ok()) throw std::invalid_argument("assignPointIds: point set contains duplicate identities");
+    });
     points.addFunc("setFloatAttribute", &PointSet::setFloatAttribute);
     points.addFunc("getFloatAttribute", &PointSet::getFloatAttribute);
     points.addFunc("hasFloatAttribute", &PointSet::hasFloatAttribute);
@@ -2730,6 +2984,29 @@ void Procgen::expose(ssq::Table &table) {
     spatial.addFunc("getMaxY", &SpatialData::getMaxY);
     spatial.addFunc("getMaxZ", &SpatialData::getMaxZ);
 
+    auto pointDelta = table.addClass<PointDelta>(
+        "ProcgenPointDelta", std::function<PointDelta*()>([]() -> PointDelta* { return nullptr; }), true);
+    pointDelta.addFunc("getAddedCount", [](PointDelta* value) { return value->added.getCount(); });
+    pointDelta.addFunc("getUpdatedCount", [](PointDelta* value) { return value->updated.getCount(); });
+    pointDelta.addFunc("getRemovedCount", [](PointDelta* value) { return int(value->removed.size()); });
+    pointDelta.addFunc("getTargetCount", [](PointDelta* value) { return int(value->targetOrder.size()); });
+    pointDelta.addFunc("getAdded", [](PointDelta* value) { return new PointSet(value->added); });
+    pointDelta.addFunc("getUpdated", [](PointDelta* value) { return new PointSet(value->updated); });
+    pointDelta.addFunc("getRemovedId", [](PointDelta* value, int index) {
+        if (index < 0 || std::size_t(index) >= value->removed.size())
+            throw std::out_of_range("getRemovedId: index is out of range");
+        return std::to_string(value->removed[std::size_t(index)]);
+    });
+    pointDelta.addFunc("getTargetId", [](PointDelta* value, int index) {
+        if (index < 0 || std::size_t(index) >= value->targetOrder.size())
+            throw std::out_of_range("getTargetId: index is out of range");
+        return std::to_string(value->targetOrder[std::size_t(index)]);
+    });
+    pointDelta.addFunc("getBaseFingerprint",
+                       [](PointDelta* value) { return std::to_string(value->baseFingerprint); });
+    pointDelta.addFunc("getTargetFingerprint",
+                       [](PointDelta* value) { return std::to_string(value->targetFingerprint); });
+
     auto cellRequest = table.addClass<ProcgenCellRequest>(
         "ProcgenCellRequest", std::function<ProcgenCellRequest*()>([]() -> ProcgenCellRequest* { return nullptr; }),
         true);
@@ -2770,6 +3047,20 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("setFrameTimeBudget", &RuntimeGeneration::setFrameTimeBudget);
     runtimeGeneration.addFunc("getFrameTimeBudget", &RuntimeGeneration::getFrameTimeBudget);
     runtimeGeneration.addFunc("beginFrame", &RuntimeGeneration::beginFrame);
+    runtimeGeneration.addFunc("setRefreshWorkBudget", &RuntimeGeneration::setRefreshWorkBudget);
+    runtimeGeneration.addFunc("getRefreshWorkBudget", &RuntimeGeneration::getRefreshWorkBudget);
+    runtimeGeneration.addFunc("isRefreshPending", &RuntimeGeneration::isRefreshPending);
+    runtimeGeneration.addFunc("getCommittedRefreshRevision", &RuntimeGeneration::getCommittedRefreshRevision);
+    runtimeGeneration.addFunc(
+        "continueGenerationRefresh", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value) {
+            return eve::script::projectResult(
+                vm,
+                value ? value->continueGenerationRefresh()
+                      : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                             "continueGenerationRefresh requires RuntimeGeneration",
+                                                             "runtimeGeneration"),
+                [](std::uint64_t processed) { return eve::Value(std::to_string(processed)); });
+        });
     runtimeGeneration.addFunc("updateSource", &RuntimeGeneration::updateSource);
     runtimeGeneration.addFunc("setGenerationSource", &RuntimeGeneration::setGenerationSource);
     runtimeGeneration.addFunc("removeGenerationSource", &RuntimeGeneration::removeGenerationSource);
@@ -2785,16 +3076,65 @@ void Procgen::expose(ssq::Table &table) {
     runtimeGeneration.addFunc("getGeneratingCount", &RuntimeGeneration::getGeneratingCount);
     runtimeGeneration.addFunc("getActiveCellCount", &RuntimeGeneration::getActiveCellCount);
     runtimeGeneration.addFunc("getPendingCleanupCount", &RuntimeGeneration::getPendingCleanupCount);
+    runtimeGeneration.addFunc("getCancelledGenerationCount", &RuntimeGeneration::getCancelledGenerationCount);
     runtimeGeneration.addFunc("getFailedCellCount", &RuntimeGeneration::getFailedCellCount);
     runtimeGeneration.addFunc("retryFailedCells", &RuntimeGeneration::retryFailedCells);
     runtimeGeneration.addFunc("nextGenerate", &RuntimeGeneration::nextGenerate);
     runtimeGeneration.addFunc("nextCleanup", &RuntimeGeneration::nextCleanup);
+    runtimeGeneration.addFunc("isRequestCurrent", &RuntimeGeneration::isRequestCurrent);
     runtimeGeneration.addFunc("completeGeneration", &RuntimeGeneration::completeGeneration);
     runtimeGeneration.addFunc("failGeneration", &RuntimeGeneration::failGeneration);
     runtimeGeneration.addFunc("completeCleanup", &RuntimeGeneration::completeCleanup);
+    runtimeGeneration.addFunc("completeCleanupsAtomic", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value,
+                                                                                             ssq::Array requestArray) {
+        std::vector<const ProcgenCellRequest*> requests;
+        requests.reserve(requestArray.size());
+        for (size_t index = 0; index < requestArray.size(); ++index)
+            requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
+        return eve::script::projectResult(
+            vm,
+            value
+                ? value->completeCleanupsAtomic(requests)
+                : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                       "completeCleanupsAtomic requires RuntimeGeneration", "runtime"),
+            [](std::uint64_t completed) { return eve::Value(std::to_string(completed)); });
+    });
     runtimeGeneration.addFunc("hasCell", &RuntimeGeneration::hasCell);
     runtimeGeneration.addFunc("getCellOutput", &RuntimeGeneration::getCellOutput);
     runtimeGeneration.addFunc("getCellRevision", &RuntimeGeneration::getCellRevision);
+    runtimeGeneration.addFunc(
+        "applyCellUpdate", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value, int level, int x, int z,
+                                                                 const std::string& revisionText, PointSet* output) {
+            std::uint64_t revision = 0;
+            const auto [end, error] =
+                std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), revision);
+            if (!output || error != std::errc{} || end != revisionText.data() + revisionText.size() || revision == 0)
+                return eve::script::projectResult(
+                    vm, procgenBindingFailure<std::uint64_t>(
+                            eve::DiagnosticCode::InvalidArgument,
+                            "applyCellUpdate requires an output and a non-zero decimal revision", "revision"),
+                    [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+            return eve::script::projectResult(
+                vm, value->applyCellUpdate(level, x, z, revision, *output),
+                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+        });
+    runtimeGeneration.addFunc(
+        "migrateCellPointIds", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value, int level, int x, int z,
+                                                                     const std::string& revisionText) {
+            std::uint64_t revision = 0;
+            const auto [end, error] =
+                std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), revision);
+            if (error != std::errc{} || end != revisionText.data() + revisionText.size() || revision == 0)
+                return eve::script::projectResult(
+                    vm, procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                             "migrateCellPointIds requires a non-zero decimal revision",
+                                                             "revision"),
+                    [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+            return eve::script::projectResult(
+                vm, value->migrateCellPointIds(level, x, z, revision),
+                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+        });
+    runtimeGeneration.addFunc("getCellDelta", &RuntimeGeneration::getCellDelta);
     runtimeGeneration.addFunc("serializeCell", &RuntimeGeneration::serializeCell);
     runtimeGeneration.addFunc("deserializeCell", &RuntimeGeneration::deserializeCell);
     runtimeGeneration.addFunc("debugReport", &RuntimeGeneration::debugReport);
@@ -3953,6 +4293,84 @@ void Procgen::expose(ssq::Class &cls) {
             return eve::script::projectResult(
                 vm, value->publishCellInstances(prefix, *request, *pointsRef, assetAttribute, defaultAsset));
         });
+    cls.addFunc("publishCellSnapshot", [vm = cls.getHandle()](
+                                           Procgen* value, const std::string& prefix, ProcgenCellRequest* request,
+                                           PointSet* points, const std::string& revisionText,
+                                           const std::string& assetAttribute, const std::string& defaultAsset) {
+        const auto    pointsRef      = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+        std::uint64_t targetRevision = 0;
+        const auto [end, error] =
+            std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), targetRevision);
+        if (!value || !request || !pointsRef || error != std::errc{} ||
+            end != revisionText.data() + revisionText.size() || targetRevision == 0)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<std::uint64_t>(
+                    eve::DiagnosticCode::InvalidArgument,
+                    "publishCellSnapshot requires request, owned points, and a non-zero decimal target revision",
+                    "publishCellSnapshot"),
+                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+        return eve::script::projectResult(
+            vm, value->publishCellSnapshot(prefix, *request, *pointsRef, targetRevision, assetAttribute, defaultAsset),
+            [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+    });
+    cls.addFunc("publishCellInstanceDelta", [vm = cls.getHandle()](
+                                                Procgen* value, const std::string& prefix, ProcgenCellRequest* request,
+                                                PointDelta* delta, const std::string& revisionText,
+                                                const std::string& assetAttribute, const std::string& defaultAsset) {
+        std::uint64_t targetRevision = 0;
+        const auto [end, error] =
+            std::from_chars(revisionText.data(), revisionText.data() + revisionText.size(), targetRevision);
+        if (!value || !request || !delta || error != std::errc{} || end != revisionText.data() + revisionText.size() ||
+            targetRevision < 2)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<std::uint64_t>(
+                    eve::DiagnosticCode::InvalidArgument,
+                    "publishCellInstanceDelta requires request, delta, and a decimal target revision greater than one",
+                    "publishCellInstanceDelta"),
+                [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+        return eve::script::projectResult(
+            vm, value->publishCellInstanceDelta(prefix, *request, *delta, targetRevision, assetAttribute, defaultAsset),
+            [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+    });
+    cls.addFunc("synchronizeCellInstances",
+                [vm = cls.getHandle()](Procgen* value, const std::string& prefix, RuntimeGeneration* runtime,
+                                       ProcgenCellRequest* request, const std::string& assetAttribute,
+                                       const std::string& defaultAsset) {
+                    if (!value || !runtime || !request)
+                        return eve::script::projectResult(
+                            vm,
+                            procgenBindingFailure<std::uint64_t>(
+                                eve::DiagnosticCode::InvalidArgument,
+                                "synchronizeCellInstances requires runtime and request", "synchronizeCellInstances"),
+                            [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+                    return eve::script::projectResult(
+                        vm, value->synchronizeCellInstances(prefix, *runtime, *request, assetAttribute, defaultAsset),
+                        [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+                });
+    cls.addFunc("synchronizeCellInstancesAtomic", [vm = cls.getHandle()](Procgen* value, const std::string& prefix,
+                                                                         ssq::Array         runtimeArray,
+                                                                         ssq::Array         requestArray,
+                                                                         const std::string& assetAttribute,
+                                                                         const std::string& defaultAsset) {
+        std::vector<const RuntimeGeneration*>  runtimes;
+        std::vector<const ProcgenCellRequest*> requests;
+        if (runtimeArray.size() == requestArray.size()) {
+            runtimes.reserve(runtimeArray.size());
+            requests.reserve(requestArray.size());
+            for (size_t index = 0; index < runtimeArray.size(); ++index) {
+                runtimes.push_back(runtimeArray.get<RuntimeGeneration*>(index));
+                requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
+            }
+        }
+        return eve::script::projectResult(
+            vm,
+            value ? value->synchronizeCellInstancesAtomic(prefix, runtimes, requests, assetAttribute, defaultAsset)
+                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                         "synchronizeCellInstancesAtomic requires Procgen", "procgen"),
+            [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+    });
     cls.addFunc("removeCellInstances",
                 [vm = cls.getHandle()](Procgen* value, const std::string& prefix, ProcgenCellRequest* request) {
                     if (!value || !request)
@@ -3961,6 +4379,36 @@ void Procgen::expose(ssq::Class &cls) {
                                                             "removeCellInstances requires a request", "request"));
                     return eve::script::projectResult(vm, value->removeCellInstances(prefix, *request));
                 });
+    cls.addFunc("removeCellInstancesAtomic", [vm = cls.getHandle()](Procgen* value, const std::string& prefix,
+                                                                    ssq::Array requestArray) {
+        std::vector<const ProcgenCellRequest*> requests;
+        requests.reserve(requestArray.size());
+        for (size_t index = 0; index < requestArray.size(); ++index)
+            requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
+        return eve::script::projectResult(
+            vm,
+            value ? value->removeCellInstancesAtomic(prefix, requests)
+                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                         "removeCellInstancesAtomic requires Procgen", "procgen"),
+            [](std::uint64_t removed) { return eve::Value(std::to_string(removed)); });
+    });
+    cls.addFunc("completeCellCleanupAtomic", [vm = cls.getHandle()](Procgen* value, const std::string& prefix,
+                                                                    ssq::Array runtimeArray, ssq::Array requestArray) {
+        std::vector<RuntimeGeneration*>        runtimes;
+        std::vector<const ProcgenCellRequest*> requests;
+        runtimes.reserve(runtimeArray.size());
+        requests.reserve(requestArray.size());
+        for (size_t index = 0; index < runtimeArray.size(); ++index)
+            runtimes.push_back(runtimeArray.get<RuntimeGeneration*>(index));
+        for (size_t index = 0; index < requestArray.size(); ++index)
+            requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
+        return eve::script::projectResult(
+            vm,
+            value ? value->completeCellCleanupAtomic(prefix, runtimes, requests)
+                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                         "completeCellCleanupAtomic requires Procgen", "procgen"),
+            [](std::uint64_t removed) { return eve::Value(std::to_string(removed)); });
+    });
     cls.addFunc("removeInstances", [vm = cls.getHandle()](Procgen* value, const std::string& batchId) {
         if (!value)
             return eve::script::projectResult(

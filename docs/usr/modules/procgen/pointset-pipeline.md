@@ -163,9 +163,14 @@ runtime.setMaxResidentPoints(4000000); // hard PointSet cache budget
 runtime.setMaxGenerationRetries(3);
 runtime.setDirectionWeight(0.35);
 runtime.setFrameTimeBudget(3.0);
+runtime.setRefreshWorkBudget(2048); // source planning candidates per call; 0 is synchronous
 
 function updateRuntime(playerX, playerZ, forwardX, forwardZ) {
     runtime.updateSource(playerX, playerZ, forwardX, forwardZ);
+    if (runtime.isRefreshPending()) {
+        local advanced = runtime.continueGenerationRefresh();
+        if (!advanced.ok) throw advanced.error;
+    }
     runtime.beginFrame();
     for (local request = runtime.nextGenerate(); request != null;
          request = runtime.nextGenerate()) {
@@ -203,6 +208,14 @@ world seed、level、x、z 派生的独立 seed、revision 和 PointSet 输出�
 生成失败只按 `setMaxGenerationRetries` 有界重试，耗尽后进入 Failed 状态并从工作队列移除；
 修复资产或外部依赖后用 `retryFailedCells()` 显式恢复，避免确定性错误形成 retry storm。
 `getCellOutput` 返回缓存副本，`debugReport` 汇总 pending/generating/active/cleanup/failed。
+
+`setRefreshWorkBudget(candidateCells)` 单独限制 source/frustum 刷新每次检查的包围网格候选数；
+默认 0 保持同步兼容。正预算下，规划期间 `getPendingGenerateCount()` 等已发布队列保持不变，
+完整 source 快照扫描结束后才原子切换。每帧调用 `continueGenerationRefresh()` 推进剩余工作，
+返回本次检查数量；用 `isRefreshPending()` 判断完成。规划过程中到达的新 source 位置会合并为
+下一快照，而不是重启当前扫描，因此持续移动不会让刷新永久饥饿；
+`getCommittedRefreshRevision()` 可用于观察已发布快照进度。该预算只覆盖调度规划，不替代
+生成 worker 在昂贵阶段之间调用 `isRequestCurrent()`。
 需要跨会话或跨 World Partition 回访复用时，`serializeCell(level,x,z)` 输出版本化、属性键
 稳定排序的完整 Cell 缓存；`deserializeCell(definition)` 校验 world seed、level、数据上限和
 完整输入后原子恢复，同时使同 Cell 的旧异步 ticket 失效。实例覆写或图版本应由调用方纳入
@@ -245,6 +258,19 @@ Scene 为每个批次建立 `__pcg/<batchId>` Host，节点带 `pcg`、`pcg.inst
 避免把结构变化误当成整批资源重建。运行时 Cell 使用
 `publishCellInstances(prefix, request, points, ...)`
 和 `removeCellInstances(prefix, request)`，其批次 id 自动包含 level/x/z。
+
+流送边界同时更新多个 cell 时，`synchronizeCellInstancesAtomic(...)` 会把完整 cell
+快照组成单次 `replaceBatches` 事务。Scene provider 在提交前构建所有 detached tree 和
+元数据；任一 stale revision、重复 PointId、重复 batch 或 provider 错误都会使整组保持原状。
+该事务必须在 Scene owning thread 同步调用，回调不能观察到部分提交状态。
+对应的多 cell 卸载入口是 `removeCellInstancesAtomic(prefix, requests)`；它在所有 batch 都存在且
+身份唯一时统一隐藏并清除 Scene 内容，随后才触发生命周期回调。调用方应在其成功后完成每个
+runtime cleanup ticket；Scene 卸载失败时不得提前 `completeCleanup()`。
+同一 scheduler 的多个有效 ticket 应通过 `completeCleanupsAtomic(requests)` 一次确认；空数组、重复
+cell、stale ticket 或错误 scheduler 的 request 都会使整组保持原状。
+需要同时变更两个 owner 时使用 `completeCellCleanupAtomic(prefix, runtimes, requests)`：Scene 先准备
+全部 detached tree 和索引副本，在切换可见状态前提交所有已验证 runtime ticket，随后统一交换 Scene
+状态。生命周期回调只会观察到 runtime cell 与 Scene batch 都已消失的最终状态。
 
 完整组合见 `examples/pcg-biome`：大 Cell 放置乔木，小 Cell 放置草和岩石，Spline
 道路作为排除域，移动生成源会触发带迟滞的生成与清理。

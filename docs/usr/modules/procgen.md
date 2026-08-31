@@ -238,6 +238,12 @@ roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材�
 `getColorR`、`getColorG`、`getColorB`、`getColorA`，以及归一化坡度
 `getSteepness`。
 
+每个新采样点都有稳定的非零身份。脚本使用 `getPointId(index)` 读取十进制字符串，
+避免 64 位身份在 Squirrel 数值转换中丢失精度。旧缓存或手工构造的点可能返回 `"0"`；
+可调用 `assignPointIds(namespace)`，其中 `namespace` 是非零十进制字符串，为缺失身份的点
+确定性补齐 ID。已有重复 ID 时操作会失败且不会部分修改集合。过滤和变换保留身份，
+`copyPoints` 为每个 source/target 组合派生新的稳定身份。
+
 点元数据支持 `setIntAttribute`、`getIntAttribute`、`hasIntAttribute`，
 `setBoolAttribute`、`getBoolAttribute`、`hasBoolAttribute`，以及
 `setVectorAttribute`、`getVectorAttributeX`、`getVectorAttributeY`、
@@ -248,6 +254,63 @@ roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材�
 `copyPoints` 按 target-major 顺序复制源点，`transformPoints3D` 应用完整
 pitch/yaw/roll、平移和非均匀缩放。`remapDensity` 重映射密度，
 `mathFloatAttribute` 对浮点元数据执行受检的标量运算。
+
+运行时 cell 热重载使用 `applyCellUpdate(level, x, z, revision, points)`；`revision`
+以非零十进制字符串传入，返回的 Result `value` 也是字符串。提交成功后可通过
+`getCellDelta()` 获取 `ProcgenPointDelta`，并用 `getAdded()`、`getUpdated()`、
+`getAddedCount()`、`getUpdatedCount()`、`getRemovedCount()`、`getRemovedId()`、
+`getTargetCount()`、`getTargetId()`、`getBaseFingerprint()` 和
+`getTargetFingerprint()` 驱动局部场景更新。旧 cell 可先调用
+`migrateCellPointIds()`；过期 revision、重复/缺失 ID、schema 冲突或点预算超限均返回
+失败 Result，且不会修改 cell 快照或递增 revision。
+
+首次把 cell 发布到 Scene 时调用
+`publishCellInstances(prefix, request, points, assetAttribute, defaultAsset)`；Scene batch 从 revision 1
+开始。后续 `applyCellUpdate` 成功并取得 `getCellDelta()` 后，调用
+`publishCellInstanceDelta(prefix, request, delta, targetRevision, assetAttribute, defaultAsset)`，其中
+`targetRevision` 使用 `applyCellUpdate` 返回的十进制字符串。该调用按 PointId 原子处理新增、更新、
+删除和精确顺序；即使 `instanceId` 属性发生改名，也仍以 PointId 找到原实例。Scene revision
+过期、PointId 缺失或重复、目标顺序不完整、实例 ID 冲突时返回失败 Result，原 Scene batch
+保持不变。增量路径要求所有参与点具有非零稳定 ID；旧数据应先完成 `migrateCellPointIds()`。
+
+Scene 漏掉一个或多个中间 revision 后，不应继续重放不完整的最后一个 delta。改用
+`publishCellSnapshot(prefix, request, points, targetRevision, assetAttribute, defaultAsset)` 将
+`getCellOutput()` 返回的完整有序快照原子发布到明确的 RuntimeGeneration revision。该入口允许
+从较旧 Scene revision 直接前进到较新的 cell revision，同时拒绝相同或更旧 revision；因此可用于
+provider 暂时失败后的追赶、存档恢复和 Scene 重建，而不会通过反复整批发布猜测 revision。
+
+常规 streaming 循环优先调用
+`synchronizeCellInstances(prefix, runtime, request, assetAttribute, defaultAsset)`。它把
+`RuntimeGeneration` 视为 authoritative owner：Scene revision 已相同时幂等成功，恰好落后一个且存在
+最新 delta 时走增量，首次发布、漏掉多个 revision、迁移后没有 delta 时自动走完整快照；如果 Scene
+revision 反而更高则返回冲突，不会用旧 RuntimeGeneration 状态覆盖新场景。返回的成功值是已同步的
+十进制 revision，可用于日志和监控，不再要求脚本复制 revision 分支策略。
+
+相邻 cell 必须作为同一可见更新提交时，使用
+`synchronizeCellInstancesAtomic(prefix, runtimes, requests, assetAttribute, defaultAsset)`。
+`runtimes[i]` 与 `requests[i]` 一一对应；函数先从每个 `RuntimeGeneration` 取得当前完整快照，
+再通过 Scene capability 离线准备全部目标树。只有所有 cell 的 PointId、batch id 和 revision
+都通过校验后才统一提交。返回值是实际更新的 cell 数；返回失败时没有任何参与 batch 被修改。
+这一入口刻意使用脚本数组表达事务集合，不引入 UE 风格的公开 PCG 图 DSL。
+
+cleanup 边界同时退出多个 cell 时，先调用
+`completeCellCleanupAtomic(prefix, runtimes, requests)`。它先验证所有 Scene batch 和 scheduler ticket，
+再在 Scene 尚未切换可见状态的 prepare 窗口内一次提交各 RuntimeGeneration，最后以不可失败步骤
+切换 Scene 并发送生命周期回调。任一 Scene 准备、stale ticket、重复 cell、错误 scheduler 或 provider
+失败都会使 Scene 与全部 runtime 保持原状。`removeCellInstancesAtomic` 和
+`RuntimeGeneration.completeCleanupsAtomic` 仍可用于只管理单一 owner 的底层流程。
+
+大半径、多 level 或多个 source 不应让 `refreshGenerationSources()` 一次扫描完整覆盖区域。
+设置 `setRefreshWorkBudget(candidateCells)` 后，source 更新会启动稳定快照规划；脚本逐帧调用
+`continueGenerationRefresh()`，并用 `isRefreshPending()` 与 `getCommittedRefreshRevision()` 观察进度。
+规划完成前生成/清理队列保持旧快照，完成后统一切换；规划期间的新 source 更新合并到下一快照，
+不会不断重启当前工作。预算 0 保留原同步语义。
+
+异步或分阶段生成取得 `nextGenerate()` request 后，应在昂贵阶段之间调用
+`isRequestCurrent(request)`。视点、frustum 或 source 集合变化使 cell 不再需要时，scheduler 会立即
+换发 ticket；查询随即返回 false，worker 可停止后续噪声、网格或资产构建。即使 worker 未配合，最终
+`completeGeneration()` 仍会拒绝过时 ticket。`getCancelledGenerationCount()` 和 `debugReport()` 中的
+`cancelledGeneration` 用于观察这类被提前淘汰的在途工作。
 
 空间数据构造器包括 `polygonVolume`、`textureMaskData` 和 `meshSurfaceData`。
 它们可继续传给统一的 spatial union/intersection/difference、采样、过滤和投射 API。
@@ -1260,7 +1323,7 @@ local scatter = procgen.poissonDisk(100, 100, 2.5, 99, 500);  // 最多 500 点
 - L-system 引擎(`ProcgenLSystem`)：`addRule()`、`addRules()`、`clearRules()`、`derive()`、`getIterations()`、`getSeed()`、`setAngle()`、`setAxiom()`、`setBranchRadius()`、`setBranchRadiusFalloff()`、`setInitialHeading()`、`setIterations()`、`setLeafSize()`、`setLeafSymbols()`、`setStep()`、`setTropism()`；蓝噪声撒点：`poissonDisk()`。这些创建与转换入口返回统一 Result，其 `value` 是带所有权的代理。
 - `setTarget()`
 - Handle 生命周期：`ownership()`、`ownerEpoch()`、`isStale()`、`release()`；这些接口用于检查资源所属模块、拒绝过期引用并显式释放模块持有对象。
-- UE PCG 扩展：`clearCache()`、`clearGenerationSources()`、`clearParameterOverride()`、`disconnect()`、`exposeParameter()`、`getActiveCellCount()`、`getAssetCount()`、`getAssetName()`、`getCacheHitCount()`、`getCellRevision()`、`getComputeBufferReuseCount()`、`getComputeDispatchCount()`、`getComputeFallbackReason()`、`getComputeMinimumPoints()`、`getComputePeakBufferBytes()`、`getComputePolicy()`、`getComputeReadbackCount()`、`getComputeUploadCount()`、`getDirectionWeight()`、`getExclusionCount()`、`getExecutionCount()`、`getExecutionNodeBudget()`、`getFailedCellCount()`、`getFrameTimeBudget()`、`getFrustumBehindRadius()`、`getFrustumHalfAngle()`、`getGeneratingCount()`、`getGenerationSourceCount()`、`getGenerationSourceId()`、`getInputNode()`、`getLastFusedTransformCount()`、`getLayerCount()`、`getLayerDensity()`、`getLayerName()`、`getLayerPriority()`、`getLevelCellSize()`、`getLevelCleanupRadius()`、`getLevelCount()`、`getLevelGenerationRadius()`、`getMaxActiveCells()`、`getMaxGenerating()`、`getMaxGenerationRetries()`、`getMaxY()`、`getMetricBackend()`、`getMetricCount()`、`getMetricMilliseconds()`、`getMetricNodeId()`、`getMetricOutputCount()`、`getMinY()`、`getModuleCount()`、`getModuleSymbol()`、`getNodeCount()`、`getNodeId()`、`getNodeOperation()`、`getOperationInputCount()`、`getOperationParamCount()`、`getOperationParamDefault()`、`getOperationParamKey()`、`getOperationParamKind()`、`getParameterCount()`、`getParameterFloat()`、`getParameterInt()`、`getParameterKind()`、`getParameterName()`、`getParameterString()`、`getPendingCleanupCount()`、`getPendingGenerateCount()`、`getRevision()`、`getTicket()`、`getVariantAsset()`、`getVariantCount()`、`getVariantLength()`、`hasCell()`、`hasLayer()`、`hasModule()`、`hasNode()`、`hasParameterOverride()`、`intersectSpatial()`、`isFrustumCullingEnabled()`、`isMetricCacheHit()`、`pointData()`、`refreshGenerationSources()`、`removeLayer()`、`removeModule()`、`removeNode()`、`requestCancel()`、`resetCancellation()`、`retryFailedCells()`、`setComputeMinimumPoints()`、`setComputePolicy()`、`setExecutionNodeBudget()`、`setMaxActiveCells()`、`setMaxGenerationRetries()`、`setNodeString()`、`setParameterFloat()`、`setParameterInt()`、`setParameterString()`、`wasCancelled()`。
+- UE PCG 扩展：`clearCache()`、`clearGenerationSources()`、`clearParameterOverride()`、`continueGenerationRefresh()`、`disconnect()`、`exposeParameter()`、`getActiveCellCount()`、`getAssetCount()`、`getAssetName()`、`getCacheHitCount()`、`getCellRevision()`、`getCommittedRefreshRevision()`、`getComputeBufferReuseCount()`、`getComputeDispatchCount()`、`getComputeFallbackReason()`、`getComputeMinimumPoints()`、`getComputePeakBufferBytes()`、`getComputePolicy()`、`getComputeReadbackCount()`、`getComputeUploadCount()`、`getDirectionWeight()`、`getExclusionCount()`、`getExecutionCount()`、`getExecutionNodeBudget()`、`getFailedCellCount()`、`getFrameTimeBudget()`、`getFrustumBehindRadius()`、`getFrustumHalfAngle()`、`getGeneratingCount()`、`getGenerationSourceCount()`、`getGenerationSourceId()`、`getInputNode()`、`getLastFusedTransformCount()`、`getLayerCount()`、`getLayerDensity()`、`getLayerName()`、`getLayerPriority()`、`getLevelCellSize()`、`getLevelCleanupRadius()`、`getLevelCount()`、`getLevelGenerationRadius()`、`getMaxActiveCells()`、`getMaxGenerating()`、`getMaxGenerationRetries()`、`getMaxY()`、`getMetricBackend()`、`getMetricCount()`、`getMetricMilliseconds()`、`getMetricNodeId()`、`getMetricOutputCount()`、`getMinY()`、`getModuleCount()`、`getModuleSymbol()`、`getNodeCount()`、`getNodeId()`、`getNodeOperation()`、`getOperationInputCount()`、`getOperationParamCount()`、`getOperationParamDefault()`、`getOperationParamKey()`、`getOperationParamKind()`、`getParameterCount()`、`getParameterFloat()`、`getParameterInt()`、`getParameterKind()`、`getParameterName()`、`getParameterString()`、`getPendingCleanupCount()`、`getPendingGenerateCount()`、`getRefreshWorkBudget()`、`getRevision()`、`getTicket()`、`getVariantAsset()`、`getVariantCount()`、`getVariantLength()`、`hasCell()`、`hasLayer()`、`hasModule()`、`hasNode()`、`hasParameterOverride()`、`intersectSpatial()`、`isFrustumCullingEnabled()`、`isMetricCacheHit()`、`isRefreshPending()`、`pointData()`、`refreshGenerationSources()`、`removeLayer()`、`removeModule()`、`removeNode()`、`requestCancel()`、`resetCancellation()`、`retryFailedCells()`、`setComputeMinimumPoints()`、`setComputePolicy()`、`setExecutionNodeBudget()`、`setMaxActiveCells()`、`setMaxGenerationRetries()`、`setNodeString()`、`setParameterFloat()`、`setParameterInt()`、`setParameterString()`、`setRefreshWorkBudget()`、`wasCancelled()`。
 
 ## 使用要点
 

@@ -4,6 +4,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <simplesquirrel/simplesquirrel.hpp>
+
 #include <memory>
 #include <utility>
 
@@ -87,9 +89,9 @@ TEST_CASE("procgen.runtimeGeneration.partitionsAndPublishesCells") {
     runtime->setMaxGenerating(1);
     runtime->setFrameTimeBudget(2.f);
     CHECK_EQ(runtime->getFrameTimeBudget(), 2.f);
-    runtime->beginFrame();
     runtime->updateSource(5.f, 5.f, 1.f, 0.f);
     CHECK(runtime->getPendingGenerateCount() > 0);
+    runtime->beginFrame();
 
     auto request = ownRequest(runtime->nextGenerate());
     REQUIRE(bool(request));
@@ -220,15 +222,21 @@ TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncGenerationTickets") {
     auto stale = ownRequest(runtime->nextGenerate());
     REQUIRE(bool(stale));
     const uint64_t staleTicket = stale->getTicket();
+    CHECK(runtime->isRequestCurrent(stale.get()));
 
     runtime->updateSource(100.f, 100.f, 1.f, 0.f);
+    CHECK(!runtime->isRequestCurrent(stale.get()));
+    CHECK_EQ(runtime->getCancelledGenerationCount(), 1);
     runtime->updateSource(5.f, 5.f, 1.f, 0.f);
     auto current = ownRequest(runtime->nextGenerate());
     REQUIRE(bool(current));
+    CHECK(runtime->isRequestCurrent(current.get()));
     CHECK_NE(current->getTicket(), staleTicket);
     PointSet output;
     CHECK(!runtime->completeGeneration(stale.get(), &output));
     CHECK(runtime->completeGeneration(current.get(), &output));
+    CHECK(!runtime->isRequestCurrent(current.get()));
+    CHECK(runtime->debugReport().find("cancelledGeneration=1") != std::string::npos);
 }
 
 TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncCleanupTickets") {
@@ -246,11 +254,91 @@ TEST_CASE("procgen.runtimeGeneration.rejectsStaleAsyncCleanupTickets") {
     REQUIRE(bool(stale));
     runtime->updateSource(5.f, 5.f, 1.f, 0.f);
     runtime->updateSource(100.f, 100.f, 1.f, 0.f);
+    std::vector<const ProcgenCellRequest*> staleRequests{stale.get()};
+    auto                                   staleResult = runtime->completeCleanupsAtomic(staleRequests);
+    CHECK(!staleResult.ok());
     CHECK(!runtime->completeCleanup(stale.get()));
     auto current = ownRequest(runtime->nextCleanup());
     REQUIRE(bool(current));
     CHECK_NE(current->getTicket(), stale->getTicket());
     CHECK(runtime->completeCleanup(current.get()));
+}
+
+TEST_CASE("procgen.runtimeGeneration.completesCleanupTicketsAtomically") {
+    Procgen proc;
+    auto    runtime = requireRuntime(proc, 79);
+    runtime->addLevel(10.f, 16.f, 1.5f);
+    runtime->setMaxGenerating(8);
+    runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+
+    auto firstGenerated  = ownRequest(runtime->nextGenerate());
+    auto secondGenerated = ownRequest(runtime->nextGenerate());
+    REQUIRE(bool(firstGenerated));
+    REQUIRE(bool(secondGenerated));
+    PointSet output;
+    REQUIRE(runtime->completeGeneration(firstGenerated.get(), &output));
+    REQUIRE(runtime->completeGeneration(secondGenerated.get(), &output));
+    runtime->updateSource(1000.f, 1000.f, 1.f, 0.f);
+
+    auto firstCleanup  = ownRequest(runtime->nextCleanup());
+    auto secondCleanup = ownRequest(runtime->nextCleanup());
+    REQUIRE(bool(firstCleanup));
+    REQUIRE(bool(secondCleanup));
+    std::vector<const ProcgenCellRequest*> empty;
+    auto                                   emptyResult = runtime->completeCleanupsAtomic(empty);
+    REQUIRE(!emptyResult.ok());
+    CHECK(runtime->isRequestCurrent(firstCleanup.get()));
+    CHECK(runtime->isRequestCurrent(secondCleanup.get()));
+    std::vector<const ProcgenCellRequest*> duplicate{firstCleanup.get(), firstCleanup.get()};
+    auto                                   duplicateResult = runtime->completeCleanupsAtomic(duplicate);
+    REQUIRE(!duplicateResult.ok());
+    CHECK(runtime->isRequestCurrent(firstCleanup.get()));
+    CHECK(runtime->isRequestCurrent(secondCleanup.get()));
+
+    auto otherRuntime = requireRuntime(proc, 80);
+    otherRuntime->addLevel(10.f, 16.f, 1.5f);
+    std::vector<const ProcgenCellRequest*> wrongOwner{firstCleanup.get()};
+    auto                                   wrongOwnerResult = otherRuntime->completeCleanupsAtomic(wrongOwner);
+    REQUIRE(!wrongOwnerResult.ok());
+    CHECK(runtime->isRequestCurrent(firstCleanup.get()));
+
+    std::vector<const ProcgenCellRequest*> requests{firstCleanup.get(), secondCleanup.get()};
+    auto                                   completed = runtime->completeCleanupsAtomic(requests);
+    REQUIRE(completed.ok());
+    CHECK_EQ(completed.value(), uint64_t(2));
+    CHECK(!runtime->isRequestCurrent(firstCleanup.get()));
+    CHECK(!runtime->isRequestCurrent(secondCleanup.get()));
+}
+
+TEST_CASE("procgen.runtimeGeneration.squirrelCompletesCleanupTicketsAtomically") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local runtimeResult = procgen.newRuntimeGeneration(81);
+        local pointsResult = procgen.sampleGrid(1, 1, 1.0, 18, 0.0);
+        if (runtimeResult.ok && pointsResult.ok) {
+            local runtime = runtimeResult.value;
+            local points = pointsResult.value;
+            runtime.addLevel(10.0, 16.0, 1.5);
+            runtime.setMaxGenerating(8);
+            runtime.updateSource(5.0, 5.0, 1.0, 0.0);
+            local first = runtime.nextGenerate();
+            local second = runtime.nextGenerate();
+            if (first != null && second != null && runtime.completeGeneration(first, points) &&
+                runtime.completeGeneration(second, points)) {
+                runtime.updateSource(1000.0, 1000.0, 1.0, 0.0);
+                local firstCleanup = runtime.nextCleanup();
+                local secondCleanup = runtime.nextCleanup();
+                local completed = runtime.completeCleanupsAtomic([firstCleanup, secondCleanup]);
+                if (completed.ok && completed.value == "2" &&
+                    !runtime.isRequestCurrent(firstCleanup) && !runtime.isRequestCurrent(secondCleanup))
+                    result = "ok";
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
 TEST_CASE("procgen.runtimeGeneration.enforcesResidentCellReservations") {
@@ -331,6 +419,138 @@ TEST_CASE("procgen.runtimeGeneration.enforcesPointMemoryBudgets") {
     CHECK(runtime->debugReport().find("residentPoints=1") != std::string::npos);
 }
 
+TEST_CASE("procgen.runtimeGeneration.appliesIdentityDeltaAtomically") {
+    Procgen proc;
+    auto    runtime = requireRuntime(proc, 930);
+    runtime->addLevel(10.f, 6.f, 1.5f);
+    runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+    auto generated = ownRequest(runtime->nextGenerate());
+    REQUIRE(bool(generated));
+    const int level = generated->getLevel();
+    const int x     = generated->getX();
+    const int z     = generated->getZ();
+
+    PointSet initial = sampleGridPoints(2, 2, 1.f, 11, 0.f);
+    CHECK(runtime->completeGeneration(generated.get(), &initial));
+    PointSet updated;
+    updated.appendPointFrom(initial, 2).expect("runtime delta reordered point");
+    updated.appendPointFrom(initial, 0).expect("runtime delta updated point");
+    updated.setPosition(1, 7.f, 2.f, -3.f);
+    ProcgenPoint added;
+    added.id   = derivePointId(991, 1);
+    added.seed = 88;
+    const int addedIndex = updated.appendPoint(added);
+    (void)addedIndex;
+
+    auto committed = runtime->applyCellUpdate(level, x, z, 1, updated);
+    REQUIRE(committed.ok());
+    CHECK_EQ(committed.value(), std::uint64_t(2));
+    CHECK_EQ(runtime->getCellRevision(level, x, z), std::uint64_t(2));
+    auto delta = std::unique_ptr<PointDelta>(runtime->getCellDelta(level, x, z));
+    REQUIRE(bool(delta));
+    CHECK_EQ(delta->added.getCount(), 1);
+    CHECK_EQ(delta->updated.getCount(), 1);
+    CHECK_EQ(delta->removed.size(), std::size_t(2));
+    auto stored = std::unique_ptr<PointSet>(runtime->getCellOutput(level, x, z));
+    REQUIRE(bool(stored));
+    auto expectedFingerprint = fingerprintPointSet(updated);
+    auto actualFingerprint   = fingerprintPointSet(*stored);
+    REQUIRE(expectedFingerprint.ok());
+    REQUIRE(actualFingerprint.ok());
+    CHECK_EQ(actualFingerprint.value(), expectedFingerprint.value());
+}
+
+TEST_CASE("procgen.runtimeGeneration.rejectsStaleAndOverBudgetDeltaWithoutMutation") {
+    Procgen proc;
+    auto    runtime = requireRuntime(proc, 931);
+    runtime->addLevel(10.f, 6.f, 1.5f);
+    runtime->setMaxPointsPerCell(2);
+    runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+    auto generated = ownRequest(runtime->nextGenerate());
+    REQUIRE(bool(generated));
+    const int level = generated->getLevel();
+    const int x     = generated->getX();
+    const int z     = generated->getZ();
+    PointSet initial = sampleGridPoints(2, 1, 1.f, 12, 0.f);
+    CHECK(runtime->completeGeneration(generated.get(), &initial));
+
+    PointSet changed = initial;
+    changed.setPosition(0, 4.f, 0.f, 0.f);
+    auto stale = runtime->applyCellUpdate(level, x, z, 9, changed);
+    CHECK(!stale.ok());
+    CHECK_EQ(runtime->getCellRevision(level, x, z), std::uint64_t(1));
+
+    ProcgenPoint extra;
+    extra.id = derivePointId(932, 1);
+    const int extraIndex = changed.appendPoint(extra);
+    (void)extraIndex;
+    auto overBudget = runtime->applyCellUpdate(level, x, z, 1, changed);
+    CHECK(!overBudget.ok());
+    CHECK_EQ(runtime->getCellRevision(level, x, z), std::uint64_t(1));
+    CHECK(!runtime->getCellDelta(level, x, z));
+    auto stored = std::unique_ptr<PointSet>(runtime->getCellOutput(level, x, z));
+    REQUIRE(bool(stored));
+    CHECK_EQ(stored->getX(0), initial.getX(0));
+}
+
+TEST_CASE("procgen.runtimeGeneration.migratesLegacyCellIdsBeforeIncrementalUpdates") {
+    Procgen proc;
+    auto    runtime = requireRuntime(proc, 933);
+    runtime->addLevel(10.f, 6.f, 1.5f);
+    runtime->updateSource(5.f, 5.f, 1.f, 0.f);
+    auto generated = ownRequest(runtime->nextGenerate());
+    REQUIRE(bool(generated));
+    const int level = generated->getLevel();
+    const int x     = generated->getX();
+    const int z     = generated->getZ();
+    PointSet legacy;
+    legacy.add(1.f, 0.f, 2.f);
+    legacy.add(3.f, 0.f, 4.f);
+    CHECK(runtime->completeGeneration(generated.get(), &legacy));
+    auto rejected = runtime->applyCellUpdate(level, x, z, 1, legacy);
+    CHECK(!rejected.ok());
+
+    auto migrated = runtime->migrateCellPointIds(level, x, z, 1);
+    REQUIRE(migrated.ok());
+    CHECK_EQ(migrated.value(), std::uint64_t(2));
+    auto stored = std::unique_ptr<PointSet>(runtime->getCellOutput(level, x, z));
+    REQUIRE(bool(stored));
+    CHECK_NE(stored->getPointId(0), std::uint64_t(0));
+    CHECK_NE(stored->getPointId(1), std::uint64_t(0));
+    CHECK_NE(stored->getPointId(0), stored->getPointId(1));
+}
+
+TEST_CASE("procgen.runtimeGeneration.squirrelAppliesAndInspectsCellDelta") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local runtimeResult = procgen.newRuntimeGeneration(934);
+        local pointsResult = procgen.sampleGrid(2, 1, 1.0, 17, 0.0);
+        if (runtimeResult.ok && pointsResult.ok) {
+            local runtime = runtimeResult.value;
+            local points = pointsResult.value;
+            runtime.addLevel(10.0, 6.0, 1.5);
+            runtime.updateSource(5.0, 5.0, 1.0, 0.0);
+            local request = runtime.nextGenerate();
+            if (request != null && runtime.completeGeneration(request, points)) {
+                points.setPosition(0, 9.0, 2.0, -3.0);
+                local update = runtime.applyCellUpdate(
+                    request.getLevel(), request.getX(), request.getZ(), "1", points);
+                local delta = runtime.getCellDelta(request.getLevel(), request.getX(), request.getZ());
+                if (update.ok && update.value == "2" && delta != null &&
+                    delta.getAddedCount() == 0 && delta.getUpdatedCount() == 1 &&
+                    delta.getRemovedCount() == 0 && delta.getTargetCount() == 2 &&
+                    delta.getBaseFingerprint() != delta.getTargetFingerprint() &&
+                    delta.getUpdated().getPointId(0) == points.getPointId(0))
+                    result = "ok";
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}
+
 TEST_CASE("procgen.runtimeGeneration.breaksEqualPriorityTiesDeterministically") {
     Procgen proc;
     auto    first  = requireRuntime(proc, 17);
@@ -349,6 +569,98 @@ TEST_CASE("procgen.runtimeGeneration.breaksEqualPriorityTiesDeterministically") 
         CHECK_EQ(a->getX(), b->getX());
         CHECK_EQ(a->getZ(), b->getZ());
     }
+}
+
+TEST_CASE("procgen.runtimeGeneration.issuesLargeQueuesWithConstantTimeCounters") {
+    RuntimeGeneration runtime(1701);
+    runtime.addLevel(1.f, 64.f, 1.25f);
+    runtime.setMaxGenerating(20000);
+    runtime.updateSource(0.5f, 0.5f, 0.f, 0.f);
+    const int pending = runtime.getPendingGenerateCount();
+    REQUIRE(pending > 12000);
+
+    std::vector<std::unique_ptr<ProcgenCellRequest>> requests;
+    requests.reserve(size_t(pending));
+    while (auto request = ownRequest(runtime.nextGenerate())) requests.push_back(std::move(request));
+    CHECK_EQ(int(requests.size()), pending);
+    CHECK_EQ(runtime.getPendingGenerateCount(), 0);
+    CHECK_EQ(runtime.getGeneratingCount(), pending);
+
+    PointSet empty;
+    for (auto& request : requests) CHECK(runtime.completeGeneration(request.get(), &empty));
+    CHECK_EQ(runtime.getGeneratingCount(), 0);
+    CHECK_EQ(runtime.getActiveCellCount(), pending);
+
+    runtime.updateSource(10000.f, 10000.f, 0.f, 0.f);
+    CHECK_EQ(runtime.getActiveCellCount(), 0);
+    CHECK_EQ(runtime.getPendingCleanupCount(), pending);
+}
+
+TEST_CASE("procgen.runtimeGeneration.stagesBudgetedRefreshUntilAtomicCommit") {
+    RuntimeGeneration runtime(1702);
+    runtime.addLevel(10.f, 25.f, 1.5f);
+    runtime.setRefreshWorkBudget(3);
+    CHECK_EQ(runtime.getRefreshWorkBudget(), 3);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    CHECK(runtime.isRefreshPending());
+    CHECK_EQ(runtime.getCommittedRefreshRevision(), uint64_t(0));
+    CHECK_EQ(runtime.getPendingGenerateCount(), 0);
+
+    uint64_t processed = 0;
+    while (runtime.isRefreshPending()) {
+        auto advanced = runtime.continueGenerationRefresh();
+        REQUIRE(advanced.ok());
+        CHECK(advanced.value() <= uint64_t(3));
+        processed += advanced.value();
+    }
+    CHECK(processed > 3);
+    CHECK_EQ(runtime.getCommittedRefreshRevision(), uint64_t(1));
+    CHECK(runtime.getPendingGenerateCount() > 0);
+}
+
+TEST_CASE("procgen.runtimeGeneration.coalescesMovingSourcesWithoutRefreshStarvation") {
+    RuntimeGeneration runtime(1703);
+    runtime.addLevel(10.f, 6.f, 1.5f);
+    runtime.setRefreshWorkBudget(1);
+    runtime.updateSource(5.f, 5.f, 1.f, 0.f);
+    for (int index = 1; index <= 12; ++index) runtime.updateSource(float(index * 100 + 5), 5.f, 1.f, 0.f);
+    CHECK(runtime.getCommittedRefreshRevision() > uint64_t(0));
+    CHECK(runtime.isRefreshPending());
+
+    runtime.updateSource(1005.f, 5.f, 1.f, 0.f);
+    int steps = 0;
+    while (runtime.isRefreshPending() && steps++ < 64) REQUIRE(runtime.continueGenerationRefresh().ok());
+    REQUIRE(!runtime.isRefreshPending());
+    auto latest = ownRequest(runtime.nextGenerate());
+    REQUIRE(bool(latest));
+    CHECK(latest->getX() >= 99);
+}
+
+TEST_CASE("procgen.runtimeGeneration.squirrelAdvancesBudgetedRefresh") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local procgen = eve.Procgen();
+        local created = procgen.newRuntimeGeneration(1704);
+        if (created.ok) {
+            local runtime = created.value;
+            runtime.addLevel(10.0, 25.0, 1.5);
+            runtime.setRefreshWorkBudget(2);
+            runtime.updateSource(5.0, 5.0, 1.0, 0.0);
+            local total = 0;
+            while (runtime.isRefreshPending()) {
+                local advanced = runtime.continueGenerationRefresh();
+                if (!advanced.ok) break;
+                total += advanced.value.tointeger();
+            }
+            if (runtime.getRefreshWorkBudget() == 2 &&
+                runtime.getCommittedRefreshRevision() == 1 &&
+                runtime.getPendingGenerateCount() > 0 && total > 0)
+                result = "ok";
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
 TEST_CASE("procgen.runtimeGeneration.trimsLowestPriorityCellsDeterministically") {
@@ -430,6 +742,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     points.setSteepness(point, 0.65f);
     points.setDensity(point, 0.75f);
     points.setPointSeed(point, 1234);
+    points.trySetPointId(point, 18446744073709551614ull).expect("runtime generation test point id");
     points.setFloatAttribute(point, "slope", 12.5f);
     points.setFloatAttribute(point, "roughness", 0.4f);
     points.setIntAttribute(point, "variant", 7);
@@ -442,7 +755,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     delete generated;
 
     const std::string persisted = source.serializeCell(level, x, z);
-    CHECK(persisted.find("EVPCG_CELL 2 404") == 0);
+    CHECK(persisted.find("EVPCG_CELL 3 404") == 0);
     RuntimeGeneration equivalent(404);
     equivalent.addLevel(10.f, 6.f, 1.5f);
     equivalent.updateSource(5.f, 5.f, 1.f, 0.f);
@@ -476,6 +789,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     CHECK_EQ(loaded->getBoundsMinY(0), -2.f);
     CHECK_EQ(loaded->getColorA(0), 0.4f);
     CHECK_EQ(loaded->getSteepness(0), 0.65f);
+    CHECK_EQ(loaded->getPointId(0), 18446744073709551614ull);
     CHECK_EQ(loaded->getFloatAttribute(0, "slope", -1.f), 12.5f);
     CHECK_EQ(loaded->getIntAttribute(0, "variant", -1), 7);
     CHECK(loaded->getBoolAttribute(0, "hero", false));
@@ -506,5 +820,17 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
     CHECK_EQ(legacyPoints->getPitch(0), 0.f);
     CHECK_EQ(legacyPoints->getColorR(0), 1.f);
     CHECK_EQ(legacyPoints->getSteepness(0), 0.5f);
+    CHECK_EQ(legacyPoints->getPointId(0), uint64_t(0));
     delete legacyPoints;
+
+    RuntimeGeneration legacyV2Runtime(404);
+    legacyV2Runtime.addLevel(10.f, 6.f, 1.5f);
+    const std::string legacyV2 =
+        "EVPCG_CELL 2 404 0 0 0 1 10\nPOINTS 1\n"
+        "POINT 1 2 3 0 1 0 10 90 20 1 1 1 0.5 77 0 0 0 0 0 0 1 1 1 1 0.5\nEND\n";
+    CHECK(legacyV2Runtime.deserializeCell(legacyV2));
+    PointSet* legacyV2Points = legacyV2Runtime.getCellOutput(0, 0, 0);
+    REQUIRE(bool(legacyV2Points));
+    CHECK_EQ(legacyV2Points->getPointId(0), uint64_t(0));
+    delete legacyV2Points;
 }

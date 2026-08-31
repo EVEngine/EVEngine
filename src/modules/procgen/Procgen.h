@@ -292,9 +292,105 @@ public:
                                                          ProcgenPointSetHandleRef points,
                                                          const std::string       &assetAttribute,
                                                          const std::string       &defaultAsset);
-    [[nodiscard]] eve::Result<void> removeCellInstances(const std::string &prefix, const ProcgenCellRequest &request);
-    int                             getPublishedInstanceCount(const std::string &batchId) const;
-    int                             getPublishedCreatedCount(const std::string &batchId) const;
+    /**
+     * @brief Replace a Scene cell batch from a complete RuntimeGeneration snapshot at an explicit revision.
+     * @param prefix Non-empty namespace used by publishCellInstances.
+     * @param request Cell coordinates used to derive the Scene batch identity.
+     * @param points Live owned point-set handle containing the complete ordered cell snapshot.
+     * @param targetRevision Non-zero committed RuntimeGeneration cell revision represented by points.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Scene batch target revision, or a structured stale/identity/provider failure.
+     * @thread Synchronous on the Scene-owning thread; no input references are retained.
+     * @reentrant Not reentrant for the same cell batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> publishCellSnapshot(const std::string& prefix,
+                                                            const ProcgenCellRequest& request,
+                                                            ProcgenPointSetHandleRef points, uint64_t targetRevision,
+                                                            const std::string& assetAttribute,
+                                                            const std::string& defaultAsset);
+    /**
+     * @brief Project one committed point delta into an existing Scene cell batch atomically.
+     * @param prefix Non-empty namespace used by publishCellInstances.
+     * @param request Cell coordinates used to derive the Scene batch identity.
+     * @param delta Identity delta produced by RuntimeGeneration for this cell revision.
+     * @param targetRevision Committed RuntimeGeneration cell revision represented by delta.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Scene batch target revision, or a structured provider/stale/identity failure.
+     * @thread Synchronous on the Scene-owning thread; no input references are retained.
+     * @reentrant Not reentrant for the same cell batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> publishCellInstanceDelta(const std::string&        prefix,
+                                                                 const ProcgenCellRequest& request,
+                                                                 const PointDelta& delta, uint64_t targetRevision,
+                                                                 const std::string& assetAttribute,
+                                                                 const std::string& defaultAsset);
+    /**
+     * @brief Synchronize one active RuntimeGeneration cell to Scene using a delta or recovery snapshot.
+     * @param prefix Non-empty namespace used to derive the Scene batch identity.
+     * @param runtime Authoritative scheduler containing the active cell.
+     * @param request Cell coordinates identifying the runtime and Scene entries.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Synchronized revision; Scene-ahead state is a conflict.
+     * @thread Synchronous on the runtime and Scene owning thread.
+     * @reentrant Not reentrant for the same runtime cell or Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> synchronizeCellInstances(const std::string&        prefix,
+                                                                 const RuntimeGeneration&  runtime,
+                                                                 const ProcgenCellRequest& request,
+                                                                 const std::string&        assetAttribute,
+                                                                 const std::string&        defaultAsset);
+    /**
+     * @brief Synchronize several active runtime cells through one atomic Scene transaction.
+     * @param
+     * prefix Non-empty namespace used to derive Scene batch identities.
+     * @param runtimes Authoritative runtimes,
+     * one per request.
+     * @param requests Cell coordinate requests paired by index with runtimes.
+     * @param
+     * assetAttribute Optional string attribute selecting each instance asset.
+     * @param defaultAsset Asset used
+     * when the selected attribute is absent.
+     * @return Number of changed cell batches committed; zero means every
+     * cell was already current.
+     * @thread Synchronous on the runtime and Scene owning thread; references are not
+     * retained.
+     * @reentrant Not reentrant for any participating runtime cell or Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> synchronizeCellInstancesAtomic(
+        const std::string& prefix, const std::vector<const RuntimeGeneration*>& runtimes,
+        const std::vector<const ProcgenCellRequest*>& requests, const std::string& assetAttribute,
+        const std::string& defaultAsset);
+    [[nodiscard]] eve::Result<void> removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request);
+    /**
+     * @brief Atomically remove the Scene batches identified by several cleanup requests.
+     * @return Number of removed Scene batches; RuntimeGeneration cleanup tickets remain caller-owned.
+     * @thread Synchronous on the Scene owning thread; request references are not retained.
+     * @reentrant Not reentrant for any participating Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> removeCellInstancesAtomic(
+        const std::string& prefix, const std::vector<const ProcgenCellRequest*>& requests);
+    /**
+     * @brief Atomically remove Scene batches and acknowledge their cleanup tickets across schedulers.
+     *
+     * @param prefix Non-empty namespace used to derive Scene batch identities.
+     * @param runtimes Scheduler owner
+     * paired by index with every request.
+     * @param requests Non-empty cleanup requests paired by index with
+     * runtimes.
+     * @return Number of removed cells, or a structured failure with Scene and every scheduler
+     * unchanged.
+     * @thread Synchronous on the shared Scene and scheduler owning thread; references are not
+     * retained.
+     * @reentrant Not reentrant for any participating Scene batch or RuntimeGeneration.
+     */
+    [[nodiscard]] eve::Result<uint64_t> completeCellCleanupAtomic(
+        const std::string& prefix, const std::vector<RuntimeGeneration*>& runtimes,
+        const std::vector<const ProcgenCellRequest*>& requests);
+    int                             getPublishedInstanceCount(const std::string& batchId) const;
+    int                             getPublishedCreatedCount(const std::string& batchId) const;
     int                             getPublishedReusedCount(const std::string &batchId) const;
     int                             getPublishedRemovedCount(const std::string &batchId) const;
     uint32_t                        deriveSeed(uint32_t parent, const std::string &scope) const;

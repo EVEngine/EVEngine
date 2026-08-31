@@ -12,6 +12,9 @@ class Heightmap;
 
 /** @brief One deterministic sample used by script-first procedural pipelines. */
 struct ProcgenPoint {
+    /** @brief Stable non-zero identity; zero marks legacy or not-yet-assigned data. */
+    std::uint64_t id = 0;
+
     float x = 0.f;
     float y = 0.f;
     float z = 0.f;
@@ -127,6 +130,12 @@ public:
     float    getDensity(int index) const;
     void     setPointSeed(int index, uint32_t seed);
     uint32_t getPointSeed(int index) const;
+    /** @brief Return the stable point identity, or zero when it has not been assigned. */
+    std::uint64_t getPointId(int index) const;
+    /** @brief Assign a unique non-zero point identity without mutating on failure. */
+    [[nodiscard]] Result<void> trySetPointId(int index, std::uint64_t id);
+    /** @brief Fill zero identities deterministically and reject pre-existing duplicates. */
+    [[nodiscard]] Result<void> assignPointIds(std::uint64_t namespaceId);
 
     /** @brief Canonical checked float metadata write. */
     [[nodiscard]] Result<void> trySetFloatAttribute(int index, const std::string& name, float value);
@@ -188,6 +197,8 @@ private:
 
 /** @brief Stable label-based seed derivation; independent pipeline branches do not perturb each other. */
 uint32_t deriveSeed(uint32_t parent, const std::string& scope);
+/** @brief Deterministically derive a non-zero stable point identity. */
+std::uint64_t derivePointId(std::uint64_t namespaceId, std::uint64_t ordinal);
 
 PointSet sampleGridPoints(int width, int depth, float spacing, uint32_t seed, float jitter);
 /** @brief Bridson blue-noise (Poisson disk) samples in a width x depth area (XZ, y=0). */
@@ -208,11 +219,11 @@ PointSet projectPointsToHeightmap(const PointSet& input, const Heightmap& height
 PointSet samplePolylinePoints(const PointSet& controlPoints, float spacing, uint32_t seed, float lateralJitter);
 /** @brief Concatenate two attributed point collections while preserving order. */
 PointSet mergePointSets(const PointSet& first, const PointSet& second);
-/** @brief Stable union that keeps the first occurrence of equal position-and-seed identities. */
+/** @brief Stable union by non-zero point id, with legacy position-and-seed fallback. */
 PointSet unionPointSets(const PointSet& first, const PointSet& second);
-/** @brief Keep first-set points whose position-and-seed identity occurs in the second set. */
+/** @brief Keep first-set points whose stable or legacy identity occurs in the second set. */
 PointSet intersectPointSets(const PointSet& first, const PointSet& second);
-/** @brief Remove first-set points whose position-and-seed identity occurs in the second set. */
+/** @brief Remove first-set points whose stable or legacy identity occurs in the second set. */
 PointSet differencePointSets(const PointSet& first, const PointSet& second);
 /** @brief Apply translation, yaw rotation and non-uniform scale to points and their transforms. */
 PointSet transformPointSet(const PointSet& input, float translateX, float translateY, float translateZ,
