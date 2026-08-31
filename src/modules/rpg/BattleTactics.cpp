@@ -105,7 +105,7 @@ eve::Result<int> BattleTacticsCatalogue::replaceFromJsonStrict(const std::string
                 return failure<int>(eve::DiagnosticCode::NotFound,
                                     "skillId must be empty or reference a registered skill",
                                     rulePath + ".skillId");
-            BattleTargetPolicy parsedPolicy;
+            BattleTargetPolicy parsedPolicy = BattleTargetPolicy::Auto;
             if (!targetPolicy.isString() || !parsePolicy(targetPolicy.asString(), parsedPolicy))
                 return failure<int>(eve::DiagnosticCode::InvalidArgument,
                                     "targetPolicy is invalid", rulePath + ".targetPolicy");
