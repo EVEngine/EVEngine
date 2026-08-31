@@ -3,6 +3,29 @@
 #include "pixelworld/PixelWorldControl.h"
 #include "pixelworld/PixelMaterialCatalogCodec.h"
 
+#if defined(__EMSCRIPTEN__)
+
+namespace eve::pixelworld {
+namespace {
+
+class PixelWorldAutomation final : public eve::IPixelWorldAutomation {
+public:
+    std::string invoke(const std::string&, const std::string&) override {
+        return R"({"ok":false,"status":"Unsupported","error":"PixelWorld MCP automation is unavailable on the Web build"})";
+    }
+};
+
+PixelWorldAutomation automation;
+
+}  // namespace
+
+void registerPixelWorldAutomation() { eve::cap::provide<eve::IPixelWorldAutomation>(&automation); }
+void unregisterPixelWorldAutomation() { eve::cap::revoke<eve::IPixelWorldAutomation>(&automation); }
+
+}  // namespace eve::pixelworld
+
+#else
+
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
@@ -272,3 +295,5 @@ void registerPixelWorldAutomation() { eve::cap::provide<eve::IPixelWorldAutomati
 void unregisterPixelWorldAutomation() { eve::cap::revoke<eve::IPixelWorldAutomation>(&automation); }
 
 }  // namespace eve::pixelworld
+
+#endif  // defined(__EMSCRIPTEN__)

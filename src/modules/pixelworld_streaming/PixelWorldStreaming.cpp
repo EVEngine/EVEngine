@@ -49,7 +49,7 @@ eve::Result<PixelChunkStreamUpdate> PixelChunkStreamCursor::capture(
         }
     }
 
-    for (const Coord key : known_) {
+    for (const Coord& key : known_) {
         if (nextKnown.contains(key) || emitted.contains(key)) continue;
         ++update.chunksEvicted;
         if (fullResync || contains(interest, key)) continue;
