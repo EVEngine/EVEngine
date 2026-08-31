@@ -421,6 +421,18 @@ TEST_CASE("Scene.procgenSink.replacesMultipleBatchesAtomically") {
     CHECK_EQ(sink->batchRevision("tx/b"), uint64_t(2));
     CHECK(approxEq(hostA->findById("a1").value()->x, 10.f));
     CHECK(approxEq(hostB->findById("b1").value()->x, 20.f));
+
+    auto removalRejected = sink->removeBatches({"tx/a", "missing"});
+    REQUIRE(!removalRejected.ok());
+    CHECK_EQ(sink->instanceCount("tx/a"), 1);
+    CHECK_EQ(sink->instanceCount("tx/b"), 1);
+    auto removed = sink->removeBatches({"tx/a", "tx/b"});
+    REQUIRE(removed.ok());
+    CHECK_EQ(removed.value(), uint64_t(2));
+    CHECK_EQ(sink->instanceCount("tx/a"), 0);
+    CHECK_EQ(sink->instanceCount("tx/b"), 0);
+    CHECK_EQ(hostA->getNodeCount(), 1);
+    CHECK_EQ(hostB->getNodeCount(), 1);
 }
 
 TEST_CASE("Scene.link.syncRenderable3DWorld") {

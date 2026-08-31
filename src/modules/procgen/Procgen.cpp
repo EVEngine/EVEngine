@@ -1027,6 +1027,28 @@ eve::Result<void> Procgen::removeCellInstances(const std::string& prefix, const 
     return removeInstances(batchId);
 }
 
+eve::Result<uint64_t> Procgen::removeCellInstancesAtomic(const std::string&                            prefix,
+                                                         const std::vector<const ProcgenCellRequest*>& requests) {
+    if (prefix.empty() || requests.empty())
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                               "removeCellInstancesAtomic requires a prefix and cleanup requests",
+                                               "requests");
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "removeCellInstancesAtomic scene sink is unavailable");
+    std::vector<std::string> batchIds;
+    batchIds.reserve(requests.size());
+    for (const auto* request : requests) {
+        if (!request)
+            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                   "removeCellInstancesAtomic contains a null request", "requests");
+        batchIds.push_back(prefix + "/L" + std::to_string(request->getLevel()) + "/" + std::to_string(request->getX()) +
+                           "/" + std::to_string(request->getZ()));
+    }
+    return sink->removeBatches(batchIds);
+}
+
 int Procgen::getPublishedInstanceCount(const std::string& batchId) const {
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     return sink && !batchId.empty() ? sink->instanceCount(batchId) : 0;
@@ -4282,6 +4304,19 @@ void Procgen::expose(ssq::Class &cls) {
                                                             "removeCellInstances requires a request", "request"));
                     return eve::script::projectResult(vm, value->removeCellInstances(prefix, *request));
                 });
+    cls.addFunc("removeCellInstancesAtomic", [vm = cls.getHandle()](Procgen* value, const std::string& prefix,
+                                                                    ssq::Array requestArray) {
+        std::vector<const ProcgenCellRequest*> requests;
+        requests.reserve(requestArray.size());
+        for (size_t index = 0; index < requestArray.size(); ++index)
+            requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
+        return eve::script::projectResult(
+            vm,
+            value ? value->removeCellInstancesAtomic(prefix, requests)
+                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                                         "removeCellInstancesAtomic requires Procgen", "procgen"),
+            [](std::uint64_t removed) { return eve::Value(std::to_string(removed)); });
+    });
     cls.addFunc("removeInstances", [vm = cls.getHandle()](Procgen* value, const std::string& batchId) {
         if (!value)
             return eve::script::projectResult(

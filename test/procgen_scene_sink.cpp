@@ -87,6 +87,22 @@ public:
         revisions.erase(batchId);
         return true;
     }
+    eve::Result<uint64_t> removeBatches(const std::vector<std::string>& batchIds) override {
+        if (failBatchTransaction)
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "injected batch transaction failure"));
+        auto nextBatches   = batches;
+        auto nextRevisions = revisions;
+        for (const auto& batchId : batchIds) {
+            if (nextBatches.erase(batchId) != 1)
+                return eve::Result<uint64_t>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "mock batch is unpublished"));
+            nextRevisions.erase(batchId);
+        }
+        batches.swap(nextBatches);
+        revisions.swap(nextRevisions);
+        return eve::Result<uint64_t>::success(static_cast<uint64_t>(batchIds.size()));
+    }
     int instanceCount(const std::string& batchId) const override {
         const auto found = batches.find(batchId);
         return found == batches.end() ? 0 : int(found->second.size());
@@ -394,6 +410,21 @@ TEST_CASE("procgen.sceneSink.synchronizesSeveralRuntimeCellsAtomically") {
     REQUIRE(recovered.ok());
     CHECK_EQ(sink.batches.at("world/L0/0/0")[0].x, 5.f);
     CHECK_EQ(sink.batches.at("world/L0/2/0")[0].x, 25.f);
+
+    std::vector<const ProcgenCellRequest*> duplicateRequests{firstRequest.get(), firstRequest.get()};
+    auto duplicateRemoval = proc.removeCellInstancesAtomic("world", duplicateRequests);
+    REQUIRE(!duplicateRemoval.ok());
+    CHECK_EQ(sink.batches.size(), std::size_t(2));
+
+    sink.failBatchTransaction = true;
+    auto removalRejected      = proc.removeCellInstancesAtomic("world", requests);
+    REQUIRE(!removalRejected.ok());
+    CHECK_EQ(sink.batches.size(), std::size_t(2));
+    sink.failBatchTransaction = false;
+    auto removed              = proc.removeCellInstancesAtomic("world", requests);
+    REQUIRE(removed.ok());
+    CHECK_EQ(removed.value(), uint64_t(2));
+    CHECK(sink.batches.empty());
     eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
 }
 
@@ -423,5 +454,9 @@ TEST_CASE("procgen.sceneSink.reportsMissingProvider") {
     auto synchronizeResult = proc.synchronizeCellInstances("missing", runtime, *request, "asset", "tree");
     REQUIRE(!synchronizeResult.ok());
     CHECK(synchronizeResult.status().describe().find("unavailable") != std::string::npos);
+    std::vector<const ProcgenCellRequest*> removalRequests{request.get()};
+    auto                                   removeResult = proc.removeCellInstancesAtomic("missing", removalRequests);
+    REQUIRE(!removeResult.ok());
+    CHECK(removeResult.status().describe().find("unavailable") != std::string::npos);
     REQUIRE(proc.releasePointSet(pointsHandle).ok());
 }

@@ -364,6 +364,14 @@ public:
         const std::vector<const ProcgenCellRequest*>& requests, const std::string& assetAttribute,
         const std::string& defaultAsset);
     [[nodiscard]] eve::Result<void> removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request);
+    /**
+     * @brief Atomically remove the Scene batches identified by several cleanup requests.
+     * @return Number of removed Scene batches; RuntimeGeneration cleanup tickets remain caller-owned.
+     * @thread Synchronous on the Scene owning thread; request references are not retained.
+     * @reentrant Not reentrant for any participating Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> removeCellInstancesAtomic(
+        const std::string& prefix, const std::vector<const ProcgenCellRequest*>& requests);
     int                             getPublishedInstanceCount(const std::string& batchId) const;
     int                             getPublishedCreatedCount(const std::string& batchId) const;
     int                             getPublishedReusedCount(const std::string &batchId) const;

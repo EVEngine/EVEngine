@@ -293,6 +293,12 @@ revision 反而更高则返回冲突，不会用旧 RuntimeGeneration 状态覆�
 都通过校验后才统一提交。返回值是实际更新的 cell 数；返回失败时没有任何参与 batch 被修改。
 这一入口刻意使用脚本数组表达事务集合，不引入 UE 风格的公开 PCG 图 DSL。
 
+cleanup 边界同时退出多个 cell 时，先调用
+`removeCellInstancesAtomic(prefix, requests)` 原子移除所有 Scene batch；只有成功后才逐个调用各自
+`RuntimeGeneration.completeCleanup(request)`。失败时参与 batch 全部保持可见，cleanup ticket 也仍归
+调用方所有。该入口只承诺 Scene 可见状态的事务性，不把两个独立权威 owner 的顺序调用描述成
+跨模块两阶段事务。
+
 异步或分阶段生成取得 `nextGenerate()` request 后，应在昂贵阶段之间调用
 `isRequestCurrent(request)`。视点、frustum 或 source 集合变化使 cell 不再需要时，scheduler 会立即
 换发 ticket；查询随即返回 false，worker 可停止后续噪声、网格或资产构建。即使 worker 未配合，最终

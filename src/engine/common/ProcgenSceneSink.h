@@ -89,6 +89,14 @@ public:
     /** @brief Remove the visible contents of a batch. */
     virtual bool removeBatch(const std::string& batchId) = 0;
     /**
+     * @brief Atomically remove several published batches.
+     * @param batchIds Non-empty unique identities of existing batches.
+     * @return Number of removed batches, or a structured failure with no batch changed.
+     * @thread Called synchronously on the scene-owning thread; implementations must not retain references.
+     * @reentrant Not reentrant. Callbacks run only after every batch is no longer visible or queryable.
+     */
+    [[nodiscard]] virtual Result<uint64_t> removeBatches(const std::vector<std::string>& batchIds) = 0;
+    /**
      * @brief Apply one prevalidated identity delta atomically to an existing batch.
      * @return The committed target revision, or a structured stale/validation/provider failure.
      * @thread Called synchronously on the scene-owning thread; implementations must not retain references.

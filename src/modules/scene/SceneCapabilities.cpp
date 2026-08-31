@@ -488,6 +488,74 @@ public:
         return true;
     }
 
+    eve::Result<uint64_t> removeBatches(const std::vector<std::string>& batchIds) override {
+        if (batchIds.empty())
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument,
+                "procedural scene removal transaction requires at least one batch id", "batchIds"));
+        struct PreparedRemoval {
+            std::string              batchId;
+            SceneHost*               host = nullptr;
+            SceneHost::Tree          tree;
+            std::vector<std::string> removedIds;
+            Stats                    stats;
+        };
+        std::vector<PreparedRemoval> prepared;
+        prepared.reserve(batchIds.size());
+        std::unordered_set<std::string> uniqueBatchIds;
+        uniqueBatchIds.reserve(batchIds.size());
+        for (const auto& batchId : batchIds) {
+            const auto ids = ids_.find(batchId);
+            if (batchId.empty() || !uniqueBatchIds.insert(batchId).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict,
+                    "procedural scene removal transaction requires unique non-empty batch ids", "batchIds"));
+            SceneHost* host = hostByName(hostName(batchId));
+            if (ids == ids_.end() || !host)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::NotFound, "procedural scene removal transaction contains an unpublished batch",
+                    batchId));
+            PreparedRemoval removal;
+            removal.batchId = batchId;
+            removal.host    = host;
+            removal.removedIds.assign(ids->second.begin(), ids->second.end());
+            std::sort(removal.removedIds.begin(), removal.removedIds.end());
+            removal.stats.removed = int(ids->second.size());
+            auto tree             = SceneHost::buildDetachedTree(&*host->tree(), makeRoot(batchId, {}));
+            if (!tree) return eve::Result<uint64_t>::failure(tree.status());
+            removal.tree = std::move(tree).takeValue();
+            prepared.push_back(std::move(removal));
+        }
+
+        auto nextCounts    = counts_;
+        auto nextIds       = ids_;
+        auto nextInstances = instances_;
+        auto nextPointIds  = pointIds_;
+        auto nextRevisions = revisions_;
+        auto nextStats     = stats_;
+        for (const auto& removal : prepared) {
+            nextCounts.erase(removal.batchId);
+            nextIds.erase(removal.batchId);
+            nextInstances.erase(removal.batchId);
+            nextPointIds.erase(removal.batchId);
+            nextRevisions.erase(removal.batchId);
+            nextStats[removal.batchId] = removal.stats;
+        }
+        for (auto& removal : prepared) {
+            *removal.host->tree() = std::move(removal.tree);
+            removal.host->setVisible(false);
+        }
+        counts_.swap(nextCounts);
+        ids_.swap(nextIds);
+        instances_.swap(nextInstances);
+        pointIds_.swap(nextPointIds);
+        revisions_.swap(nextRevisions);
+        stats_.swap(nextStats);
+        for (const auto& removal : prepared)
+            for (const auto& id : removal.removedIds) removal.host->fireEvent("node_removed", id);
+        return eve::Result<uint64_t>::success(static_cast<uint64_t>(prepared.size()));
+    }
+
     int instanceCount(const std::string& batchId) const override {
         const auto found = counts_.find(batchId);
         return found == counts_.end() ? 0 : found->second;

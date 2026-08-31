@@ -250,6 +250,9 @@ Scene 为每个批次建立 `__pcg/<batchId>` Host，节点带 `pcg`、`pcg.inst
 快照组成单次 `replaceBatches` 事务。Scene provider 在提交前构建所有 detached tree 和
 元数据；任一 stale revision、重复 PointId、重复 batch 或 provider 错误都会使整组保持原状。
 该事务必须在 Scene owning thread 同步调用，回调不能观察到部分提交状态。
+对应的多 cell 卸载入口是 `removeCellInstancesAtomic(prefix, requests)`；它在所有 batch 都存在且
+身份唯一时统一隐藏并清除 Scene 内容，随后才触发生命周期回调。调用方应在其成功后完成每个
+runtime cleanup ticket；Scene 卸载失败时不得提前 `completeCleanup()`。
 
 完整组合见 `examples/pcg-biome`：大 Cell 放置乔木，小 Cell 放置草和岩石，Spline
 道路作为排除域，移动生成源会触发带迟滞的生成与清理。
