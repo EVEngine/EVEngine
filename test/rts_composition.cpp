@@ -4233,7 +4233,6 @@ TEST_CASE("rts.workforcePolicyAssignsNearestBuildersAndRepairersWhileKeepingRese
     Building* site = Building::createBuilding();
     const auto siteHandle = ecs::handle_of(site);
     Building* damaged = Building::createBuilding();
-    const auto damagedHandle = ecs::handle_of(damaged);
     site = dynamic_cast<Building*>(ecs::try_get(siteHandle));
     REQUIRE(site != nullptr);
     site->construction()->progress = 0.0f;
