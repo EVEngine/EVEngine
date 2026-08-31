@@ -213,15 +213,15 @@ eve_render=function(){
     for(local y=0;y<GRID_H;++y)for(local x=0;x<GRID_W;++x){
         local wall=(x==17&&y>=2&&y<20&&y!=6&&y!=16);
         local road=(y==10&&!wall);
-        if(wall)gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.18,0.20,0.22,1);
-        else if(road)gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.24,0.20,0.12,1);
-        else gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.09,0.16,0.12,1);
+        if(wall)gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.18,0.20,0.22,1.0);
+        else if(road)gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.24,0.20,0.12,1.0);
+        else gfx.drawSolidRect(sx(x),sy(y),CELL-1,CELL-1,0.09,0.16,0.12,1.0);
     }
     local state=requireResult(sim.inspectState(),"inspect");
     foreach(node in state.resourceNodes){
         local nx=floor(node.x+0.5).tointeger(),ny=floor(node.y+0.5).tointeger();
         if(requireResult(sim.scriptCellExplored(BLUE,nx,ny),"query resource fog"))
-            gfx.drawSolidRect(sx(node.x)-10,sy(node.y)-10,20,20,0.15,0.75,0.92,1);
+            gfx.drawSolidRect(sx(node.x)-10,sy(node.y)-10,20,20,0.15,0.75,0.92,1.0);
     }
     foreach(building in state.buildings){
         if(building.faction!=BLUE&&!fogVisible(building.x,building.y))continue;
@@ -234,10 +234,10 @@ eve_render=function(){
         if(unit.faction!=BLUE&&!fogVisible(unit.x,unit.y))continue;
         local blue=unit.faction==BLUE,worker=unit.definition=="unit:worker",size=worker?10.0:14.0;
         gfx.drawSolidRect(sx(unit.x)-size*0.5,sy(unit.y)-size*0.5,size,size,
-            blue?0.25:0.92,blue?0.62:0.25,blue?0.96:0.18,1);
+            blue?0.25:0.92,blue?0.62:0.25,blue?0.96:0.18,1.0);
     }
     foreach(id in selected){local unit=unitBySubject(state,id);if(unit!=null)
-        gfx.drawSolidRect(sx(unit.x)-9,sy(unit.y)+9,18,2,0.2,1,0.35,1);}
+        gfx.drawSolidRect(sx(unit.x)-9,sy(unit.y)+9,18,2,0.2,1.0,0.35,1.0);}
     for(local y=0;y<GRID_H;++y)for(local x=0;x<GRID_W;++x){
         local explored=requireResult(sim.scriptCellExplored(BLUE,x,y),"query explored");
         local visible=requireResult(sim.scriptCellVisible(BLUE,x,y),"query visible");
