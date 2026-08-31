@@ -231,6 +231,29 @@ roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材�
 
 空间运算、分区、发布、图资产、GPU compute、hot reload 与增量重建见 [PointSet 管线](procgen/pointset-pipeline.md)。
 
+### 脚本基础 API 索引
+
+`PointSet` 的生产语义包括局部包围盒 `getBoundsMinX`、`getBoundsMinY`、
+`getBoundsMinZ`、`getBoundsMaxX`、`getBoundsMaxY`、`getBoundsMaxZ`，线性色彩
+`getColorR`、`getColorG`、`getColorB`、`getColorA`，以及归一化坡度
+`getSteepness`。
+
+点元数据支持 `setIntAttribute`、`getIntAttribute`、`hasIntAttribute`，
+`setBoolAttribute`、`getBoolAttribute`、`hasBoolAttribute`，以及
+`setVectorAttribute`、`getVectorAttributeX`、`getVectorAttributeY`、
+`getVectorAttributeZ`、`hasVectorAttribute`；`getAttributeType` 返回
+`float`、`int`、`bool`、`vector`、`string` 或空字符串。
+
+点集合组合使用 `unionPoints`、`intersectPoints`、`differencePoints`；
+`copyPoints` 按 target-major 顺序复制源点，`transformPoints3D` 应用完整
+pitch/yaw/roll、平移和非均匀缩放。`remapDensity` 重映射密度，
+`mathFloatAttribute` 对浮点元数据执行受检的标量运算。
+
+空间数据构造器包括 `polygonVolume`、`textureMaskData` 和 `meshSurfaceData`。
+它们可继续传给统一的 spatial union/intersection/difference、采样、过滤和投射 API。
+`projectToWorld` 通过可选 `IProcgenWorldQuery` capability 做垂直世界表面查询；
+provider 缺失或执行失败返回失败 Result，正常未命中则遵循 `keepUnmatched`。
+
 ## 目标导向指南
 
 ### 生成可玩的地牢层
