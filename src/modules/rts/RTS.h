@@ -348,7 +348,7 @@ public:
     /** @brief Queue one data-defined unit through canonical production, action, and economy providers. */
     [[nodiscard]] Result<RTSBuildReceipt> queueScriptUnit(Building& producer, SubjectRef unitSubject,
                                                            LogicalId unitDefinition, int priority = 0);
-    /** @brief Queue a preferred reinforcement, deterministically trying the producer's fallback chain. */
+    /** @brief Queue a preferred reinforcement, deterministically trying its configured substitution chain. */
     [[nodiscard]] Result<ReinforcementRequestReceipt> queueScriptReinforcement(
         Building& producer, SubjectRef unitSubject, LogicalId preferredDefinition, int priority = 0);
     /** @brief Start one paid data-defined construction project assigned to a canonical worker order. */
@@ -380,7 +380,7 @@ public:
     /** @brief Set or clear one unit type's contention priority across a linked reinforcement group. */
     [[nodiscard]] Result<void> setReinforcementTypePriority(
         Building& producer, std::string unitType, int priority) const;
-    /** @brief Set or clear one acyclic preferred-to-fallback mapping across a linked group. */
+    /** @brief Set or clear one acyclic preferred-to-substitute mapping across a linked group. */
     [[nodiscard]] Result<void> setReinforcementFallback(
         Building& producer, std::string preferred, std::string fallback) const;
     /** @brief Configure delayed cancellation/refund while a reinforcement group remains capped. */

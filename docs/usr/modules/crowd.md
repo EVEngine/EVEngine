@@ -27,9 +27,12 @@ local state = crowd.getAgentState(slot);
 - 流场查询：`isFieldBuilt/getFieldWidth/getFieldHeight/getCellSize/getFieldOriginX`
   `/getFieldOriginY/isReachable`；编辑器可据此显示网格、目标可达性与地形覆盖范围。
 - 单位控制：`setAgentAction/setAgentTarget/clearAgentTarget/setAgentSpeed/setAgentAccel`
-  `/setAgentTurnRate/setAgentRadius/setAgentData/setAgentPosition/getAgentState`，以及
-  `getAgentAction/getAgentData/getPositions/getHeadings`。
-- `CrowdAgentState` 快照字段：`action`、`data`、`heading`、`speed`、`vx`、`vy`；
+  `/setAgentTurnRate/setAgentRadius/setAgentData/setAgentAvoidancePriority/setAgentPosition`
+  `/getAgentState`，以及 `getAgentAction/getAgentData/getAgentAvoidancePriority/getPositions`
+  `/getHeadings`。避让优先级越高，重叠解算时该单位让行越少；无效 slot 的 setter 返回
+  `false`，getter 返回 `0`。
+- `CrowdAgentState` 快照字段：`action`、`data`、`avoidancePriority`、`heading`、`speed`、
+  `vx`、`vy`；
   快照仅用于把模拟结果同步到 ECS、动画和渲染状态。
 - 容量与默认值：`setMaxAgents/getMaxAgents`、`setDefaultSpeed/setDefaultTurnRate`
   `/setDefaultRadius`、`setArriveRadius`。

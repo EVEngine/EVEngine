@@ -692,7 +692,7 @@ using ReinforcementCancel = std::function<Result<void>(Building&, std::string_vi
 /** @brief Game-owned transactional enqueue boundary used while resolving reinforcement fallbacks. */
 using ReinforcementEnqueue = std::function<Result<std::string>(Building&, std::string_view)>;
 
-/** @brief Result of resolving a preferred reinforcement through a deterministic fallback chain. */
+/** @brief Result of resolving a preferred reinforcement through a deterministic substitution chain. */
 struct ReinforcementRequestReceipt {
     std::string requestedProduct;
     std::string queuedProduct;
@@ -704,7 +704,7 @@ public:
     /** @brief Reconcile total/type caps and cross-factory type priorities before production advances. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step = {},
                                                    const ReinforcementCancel& cancel = {});
-    /** @brief Try a preferred product and its acyclic configured fallback chain through the injected enqueue port. */
+    /** @brief Try a preferred product and its acyclic substitution chain through the injected enqueue port. */
     [[nodiscard]] static Result<ReinforcementRequestReceipt> request(
         Building& building, std::string preferredProduct, const ReinforcementEnqueue& enqueue);
 };
