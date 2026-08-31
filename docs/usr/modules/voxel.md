@@ -74,6 +74,29 @@ world.drawVisible(gfx, atlasTex, 16);
 `streamAround` 返回本次新建 chunk 数（卸载数可用 `getChunkCount` 差值计算）。
 地形是确定性的：同一世界坐标 + 同一 seed 永远得到相同高度，跨 chunk 无缝衔接。
 
+### 使用烘焙 EVTR 地形
+
+需要侵蚀、河网和生态群落时，先由 Procgen 烘焙 `EVTR`，再交给体素世界。
+`streamAround` 会自动预取覆盖体素半径的地形资产块，资产高度优先于噪声回退：
+
+```squirrel
+local p = procgen.newParams();
+p.setSeed(42); p.setSize(512, 512);
+local hm = procgen.generateHeightmap(p);
+procgen.erodeTerrainHydraulic(hm, 60, 0.012, 0.08, 2.0, 0.18, 0.12);
+local layers = procgen.analyzeTerrain(hm, 0.025, 0.25, 0.65);
+local evtr = procgen.bakeTerrainAsset(hm, layers, 64);
+
+// storedHeight * 24 + 6 映射到体素世界 Y。
+world.loadTerrainAsset(evtr, 6.0, 24.0);
+// vegetation, sand, snow, alpine rock, river bed 的 atlas/type id。
+world.setTerrainAssetMaterials(1, 4, 5, 3, 6);
+world.streamAround(playerChunkX, playerChunkY, playerChunkZ, 4);
+```
+
+也可用 `streamTerrainAssetAround(worldX, worldZ, radius, maxLoads)` 手动设置每帧解码
+预算；返回本帧加载的资产块数。`getTerrainAssetResidentCount()` 返回当前解码缓存数。
+
 ## 射线拾取（放置/破坏/瞄准）
 
 ```squirrel
@@ -113,7 +136,10 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
   `unloadChunksOutside(cx,cy,cz,radiusChunks)`（卸载半径外的 chunk，返回卸载数）、
   `streamAround(cx,cy,cz,radiusChunks)`（自动补建+生成+卸载+重建，返回新建数）、
   `setTerrain(seed, top, sub, stone, base, amp, scale)`（快速配置）、
-  `setTerrainParam(key, value)`（细粒度配置，见下方参数表）/ `disableTerrain()`。
+  `setTerrainParam(key, value)`（细粒度配置，见下方参数表）、
+  `loadTerrainAsset(bytes, offset, scale)`、
+  `streamTerrainAssetAround(worldX,worldZ,radius,maxLoads)`、
+  `setTerrainAssetMaterials(vegetation,sand,snow,alpine,riverbed)` / `disableTerrain()`。
 - 渲染：`selectVisible(viewProj16, eyeX,eyeY,eyeZ, viewRange, faceCull)`、
   `drawVisible(gfx, atlasTex, tilesPerRow)`、`getVisibleBatchCount` / `getVisibleChunkCount` /
   `getVisibleRectCount`。

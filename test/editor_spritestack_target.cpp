@@ -1,14 +1,15 @@
-#include "editor/EditorSpriteStackTarget.h"
+#include "spritestack_editing/SpriteStackTarget.h"
 
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::spritestack_editing;
+using namespace eve::editing;
 
 namespace {
 SelectionSnapshot select(const SpriteStackDocumentTarget& target){SelectionSnapshot s;s.channel="spritestack";s.items.push_back({SelectionDomain::Asset,TargetId(target.targetId()),StableId(target.targetId()),"spritestack.asset"});return s;}
-void apply(SpriteStackDocumentTarget& target,EditorResult<DomainOperation> operation){REQUIRE(operation.value);REQUIRE(target.applyDomainOperation(*operation.value).accepted());}
+void apply(SpriteStackDocumentTarget& target,EditorResult<DomainOperation> operation){REQUIRE(operation.value);REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());}
 class MissingModelResolver final : public ISpriteStackModelResolver {
 public:
     EditorResult<eve::model3d::ModelData*> resolveModel(const std::string&) const override {return EditorResult<eve::model3d::ModelData*>::error(EditorStatus::NotFound,RuleId("test.model"),"missing model");}
@@ -17,8 +18,8 @@ public:
 
 TEST_CASE("editor.spritestack.preset_is_reversible_and_atomic") {
     SpriteStackDocumentTarget target("stack");const auto selection=select(target);
-    auto layers=target.makeSet(selection,PropertyPath("bake.layers"),int64_t{8},PropertySetMode::Absolute);REQUIRE(layers.value);REQUIRE(target.applyDomainOperation(*layers.value).accepted());CHECK_EQ(target.value().bake.layerCount,8);
-    DomainOperation undo=*layers.value;undo.payload=layers.value->inverse;REQUIRE(target.applyDomainOperation(undo).accepted());CHECK_EQ(target.value().bake.layerCount,16);
+    auto layers=target.makeSet(selection,PropertyPath("bake.layers"),int64_t{8},PropertySetMode::Absolute);REQUIRE(layers.value);REQUIRE(target.applyDomainOperation(*layers.value).isAccepted());CHECK_EQ(target.value().bake.layerCount,8);
+    DomainOperation undo=*layers.value;undo.payload=layers.value->inverse;REQUIRE(target.applyDomainOperation(undo).isAccepted());CHECK_EQ(target.value().bake.layerCount,16);
     const auto before=target.snapshotValue();EditorValue invalid=before;auto*root=invalid.getIf<EditorValue::Object>();auto*content=(*root)["content"].getIf<EditorValue::Object>();(*content)["width"]=int64_t{100000};
     CHECK_EQ(static_cast<int>(target.loadSnapshot(invalid).status),static_cast<int>(EditorStatus::Rejected));CHECK_EQ(target.snapshotValue(),before);
 }

@@ -67,12 +67,12 @@ Status statusFrom(const EditorResult<T>& result) {
 }
 
 ssq::Table project(HSQUIRRELVM vm, const EditorResult<void>& result) {
-    return script::projectStatusResult(vm, statusFrom(result), result.accepted(), false);
+    return script::projectStatusResult(vm, statusFrom(result), result.isAccepted(), false);
 }
 
 template <class T>
 ssq::Table project(HSQUIRRELVM vm, const EditorResult<T>& result, Value value) {
-    const bool hasValue = result.accepted() && result.value.has_value();
+    const bool hasValue = result.isAccepted() && result.value.has_value();
     return script::projectStatusResult(vm, statusFrom(result), hasValue, hasValue, value);
 }
 

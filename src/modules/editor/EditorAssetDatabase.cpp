@@ -46,6 +46,55 @@ EditorResult<AssetRecord> MemoryAssetDatabase::publish(AssetRecord record, std::
     return EditorResult<AssetRecord>::applied(std::move(record));
 }
 
+EditorResult<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
+    std::vector<AssetPublication> publications) {
+    if (publications.empty())
+        return assetError<std::vector<AssetRecord>>(EditorStatus::Rejected, "editor.asset.empty-publication",
+                                                    "An asset publication batch must not be empty");
+    auto stagedRecords      = records_;
+    auto stagedUris         = uriToGuid_;
+    auto stagedDependencies = dependencies_;
+    std::vector<AssetRecord> published;
+    std::unordered_map<AssetGuid, bool, StrongEditorIdHash<AssetGuid>> batchGuids;
+    published.reserve(publications.size());
+    for (AssetPublication& publication : publications) {
+        AssetRecord& record = publication.record;
+        if (record.guid.empty() || record.logicalUri.empty() || record.typeId.empty())
+            return assetError<std::vector<AssetRecord>>(EditorStatus::Rejected, "editor.asset.invalid-record",
+                                                        "Asset GUID, logical URI and type are required");
+        if (!batchGuids.emplace(record.guid, true).second)
+            return assetError<std::vector<AssetRecord>>(EditorStatus::Conflict,
+                                                        "editor.asset.duplicate-batch-guid",
+                                                        "An asset publication batch contains a duplicate GUID");
+        const auto uriOwner = stagedUris.find(record.logicalUri);
+        if (uriOwner != stagedUris.end() && uriOwner->second != record.guid)
+            return assetError<std::vector<AssetRecord>>(EditorStatus::Conflict, "editor.asset.uri-conflict",
+                                                        "Another asset already owns this logical URI");
+        for (const AssetDependency& dependency : publication.dependencies) {
+            if (dependency.from != record.guid || dependency.to.empty())
+                return assetError<std::vector<AssetRecord>>(EditorStatus::Rejected,
+                                                            "editor.asset.invalid-dependency",
+                                                            "Published dependencies must originate from the product asset");
+        }
+        record.status       = AssetStatus::Ready;
+        const auto existing = stagedRecords.find(record.guid);
+        if (existing != stagedRecords.end() && existing->second.logicalUri != record.logicalUri)
+            stagedUris.erase(existing->second.logicalUri);
+        stagedUris.insert_or_assign(record.logicalUri, record.guid);
+        stagedRecords.insert_or_assign(record.guid, record);
+        std::erase_if(stagedDependencies,
+                      [&](const AssetDependency& dependency) { return dependency.from == record.guid; });
+        stagedDependencies.insert(stagedDependencies.end(), publication.dependencies.begin(),
+                                  publication.dependencies.end());
+        published.push_back(std::move(record));
+    }
+    records_      = std::move(stagedRecords);
+    uriToGuid_    = std::move(stagedUris);
+    dependencies_ = std::move(stagedDependencies);
+    ++generation_;
+    return EditorResult<std::vector<AssetRecord>>::applied(std::move(published));
+}
+
 EditorResult<AssetRecord> MemoryAssetDatabase::find(const AssetGuid& guid) const {
     auto found = records_.find(guid);
     if (found == records_.end())
@@ -163,7 +212,7 @@ EditorResult<AssetRecord> ImportCoordinator::publish(const ImportTicket& ticket,
         return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.product-errors",
                                        "Importer product contains error diagnostics");
     auto published = database_->publish(std::move(record), std::move(product.dependencies));
-    if (published.accepted()) generations_.erase(ticket.asset);
+    if (published.isAccepted()) generations_.erase(ticket.asset);
     return published;
 }
 

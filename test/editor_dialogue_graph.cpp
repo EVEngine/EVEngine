@@ -1,11 +1,12 @@
-#include "editor/EditorDialogueGraph.h"
+#include "dialogue_editing/DialogueGraph.h"
 
 #include "dialogue/ConversationAuthoring.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::dialogue_editing;
+using namespace eve::editing;
 
 namespace {
 
@@ -26,17 +27,17 @@ GraphDocumentData conversationGraph(DialogueGraphDomain& domain) {
     (*lineProperties)["voice"] = "asset://voice/continue.ogg";
 
     GraphDocument graph;
-    REQUIRE(graph.createNode(*line.value).accepted());
-    REQUIRE(graph.createNode(*choice.value).accepted());
-    REQUIRE(graph.createNode(*route.value).accepted());
-    REQUIRE(graph.createNode(*end.value).accepted());
+    REQUIRE(graph.createNode(*line.value).isAccepted());
+    REQUIRE(graph.createNode(*choice.value).isAccepted());
+    REQUIRE(graph.createNode(*route.value).isAccepted());
+    REQUIRE(graph.createNode(*end.value).isAccepted());
     const auto connect = [&](const char* edge, const char* from, const char* to) {
         const auto* output = graph.findPin(GraphPinId(from));
         const auto* input = graph.findPin(GraphPinId(to));
         REQUIRE(output);
         REQUIRE(input);
         REQUIRE(graph.connect({StableId(edge), output->id, input->id},
-                              domain.canConnect(*output, *input)).accepted());
+                              domain.canConnect(*output, *input)).isAccepted());
     };
     connect("line-choice", "greeting.out", "answer.in");
     connect("choice-route", "answer.out", "answer.yes.in");
@@ -45,7 +46,7 @@ GraphDocumentData conversationGraph(DialogueGraphDomain& domain) {
     REQUIRE(graph.setParameters(EditorValue::Object{{"id", "intro"},
                                                      {"version", int64_t{2}},
                                                      {"entry", "greeting"},
-                                                     {"parameters", std::move(parameters)}}).accepted());
+                                                     {"parameters", std::move(parameters)}}).isAccepted());
     return graph.snapshot(domain.domain());
 }
 
@@ -88,7 +89,7 @@ TEST_CASE("editor.dialogue.graph_builds_real_conversation_document") {
     const GraphDocumentData graph = conversationGraph(domain);
     DialogueGraphRuntimeBuilder builder;
     auto built = builder.build(graph);
-    REQUIRE(built.accepted());
+    REQUIRE(built.isAccepted());
     REQUIRE(built.value);
     auto* document = *built.value;
     CHECK_EQ(document->getId(), "intro");

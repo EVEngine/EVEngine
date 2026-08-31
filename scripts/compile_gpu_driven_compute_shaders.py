@@ -52,10 +52,15 @@ def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
 def compile_one(src: Path) -> Path:
     out = Path(str(src) + ".spv")
     glslc = shutil.which("glslc")
-    if not glslc:
-        raise SystemExit("need glslc on PATH (Vulkan SDK)")
-    cmd = [glslc, "-fshader-stage=comp", f"-I{SHADER_DIR}", str(src), "-o", str(out),
-           "--target-env=vulkan1.2"]
+    glslang = shutil.which("glslangValidator")
+    if glslc:
+        cmd = [glslc, "-fshader-stage=comp", f"-I{SHADER_DIR}", str(src), "-o", str(out),
+               "--target-env=vulkan1.2"]
+    elif glslang:
+        cmd = [glslang, "-V", "-S", "comp", f"-I{SHADER_DIR}", "--target-env", "vulkan1.2",
+               str(src), "-o", str(out)]
+    else:
+        raise SystemExit("need glslc or glslangValidator on PATH (Vulkan SDK)")
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         raise SystemExit(f"compile failed for {src.name}:\n{r.stderr or r.stdout or '(no output)'}")

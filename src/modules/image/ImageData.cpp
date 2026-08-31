@@ -495,6 +495,40 @@ void ImageData::setPixel(int x, int y, const Colorf &c) {
     std::memcpy(data + ((y * width + x) * pixelsize), &tmp, pixelsize);
 }
 
+eve::Result<UvPaintReceipt> ImageData::paintCircleUv(float u, float v, float radiusPixels,
+                                                      const Colorf &color, bool wrapU,
+                                                      bool wrapV) {
+    if (!std::isfinite(u) || !std::isfinite(v) || !std::isfinite(radiusPixels) || radiusPixels < 0.f)
+        return eve::Result<UvPaintReceipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "UV and brush radius must be finite; radius must be non-negative", "image.paintCircleUv"));
+    const int w = getWidth(), h = getHeight();
+    if (w <= 0 || h <= 0)
+        return eve::Result<UvPaintReceipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "image has no pixels", "image.paintCircleUv"));
+    auto normalize = [](float value, bool wrap) {
+        if (!wrap) return std::clamp(value, 0.f, 1.f);
+        return value - std::floor(value);
+    };
+    const int cx = static_cast<int>(std::lround(normalize(u, wrapU) * float(w - 1)));
+    const int cy = static_cast<int>(std::lround((1.f - normalize(v, wrapV)) * float(h - 1)));
+    const int extent = static_cast<int>(std::ceil(radiusPixels));
+    const float radiusSquared = radiusPixels * radiusPixels;
+    UvPaintReceipt receipt{cx, cy, 0};
+    for (int oy = -extent; oy <= extent; ++oy) {
+        for (int ox = -extent; ox <= extent; ++ox) {
+            if (radiusPixels > 0.f && float(ox * ox + oy * oy) > radiusSquared) continue;
+            int x = cx + ox, y = cy + oy;
+            if (wrapU) x = (x % w + w) % w;
+            if (wrapV) y = (y % h + h) % h;
+            if (!inside(x, y)) continue;
+            setPixel(x, y, color);
+            ++receipt.changedPixelCount;
+        }
+    }
+    return eve::Result<UvPaintReceipt>::success(receipt);
+}
+
 void ImageData::getPixel(int x, int y, Colorf &c) const {
     if (!inside(x, y)) throw eve::Exception("Attempt to get out-of-range pixel!");
 

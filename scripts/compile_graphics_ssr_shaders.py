@@ -5,12 +5,13 @@ from __future__ import annotations
 
 import struct
 import subprocess
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 
-FRAGS = ["ssr.frag"]
+FRAGS = ["ssr.frag", "ssr_temporal.frag"]
 
 
 def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
@@ -37,15 +38,21 @@ def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
 
 
 def main() -> int:
+    glslc = shutil.which("glslc")
+    glslang = shutil.which("glslangValidator")
+    if not glslc and not glslang:
+        raise SystemExit("need glslc or glslangValidator on PATH (Vulkan SDK)")
     for name in FRAGS:
         src = SHADER_DIR / name
         if not src.is_file():
             raise SystemExit(f"missing {src}")
         out_spv = src.with_suffix(".spv")
-        r = subprocess.run(["glslc", "-fshader-stage=frag", str(src), "-o", str(out_spv)],
-                           capture_output=True, text=True)
+        command = ([glslc, "-fshader-stage=frag", str(src), "-o", str(out_spv)] if glslc else
+                   [glslang, "-V", "-S", "frag", "--target-env", "vulkan1.2", str(src),
+                    "-o", str(out_spv)])
+        r = subprocess.run(command, capture_output=True, text=True)
         if r.returncode != 0:
-            raise SystemExit(f"glslc failed for {name}:\n{r.stderr or r.stdout}")
+            raise SystemExit(f"shader compile failed for {name}:\n{r.stderr or r.stdout}")
         array = f"{src.stem}_frag_spv"
         spv_to_inc(out_spv, array, SHADER_DIR / f"{src.stem}_frag_spv.inc")
     return 0

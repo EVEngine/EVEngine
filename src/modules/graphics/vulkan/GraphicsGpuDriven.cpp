@@ -575,7 +575,7 @@ uint32_t Graphics::registerBindlessTextureCube(GpuTexture *tex) {
     bindlessFreeCube_.erase(bindlessFreeCube_.begin());
     bindlessCubemaps_[slot] = tex;
     tex->bindlessIndexCube = slot;
-    vk::DescriptorImageInfo img{tex->sampler, tex->cubeImage.imageView(),
+    vk::DescriptorImageInfo img{tex->sampler, tex->imageView(),
                                 vk::ImageLayout::eShaderReadOnlyOptimal};
     for (vk::DescriptorSet set : bindlessSets_) {
         vk::WriteDescriptorSet write{};
@@ -588,6 +588,13 @@ uint32_t Graphics::registerBindlessTextureCube(GpuTexture *tex) {
         device->updateDescriptorSets(1, &write, 0, nullptr);
     }
     return slot;
+}
+
+uint32_t Graphics::gpuDrivenReflectionProbeSlot(Texture *cubemap) {
+    if (!cubemap || !cubemap->gpuHandle) return kInvalidGpuDrivenSlot;
+    auto *gpu = static_cast<GpuTexture *>(cubemap->gpuHandle);
+    if (!gpu->isCube) return kInvalidGpuDrivenSlot;
+    return registerBindlessTextureCube(gpu);
 }
 
 void Graphics::unregisterBindlessTexture(GpuTexture *tex) {
@@ -982,6 +989,9 @@ uint32_t Graphics::gpuDrivenMeshRecord(Mesh *mesh) {
 }
 
 bool Graphics::gpuDrivenMaterialUsable(Material *material) {
+    if (!material ||
+        material->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable)
+        return false;
     const uint32_t id = materialTableGetOrCreate(material);
     // Any material with a GPU table record is representable by the bindless
     // path; descriptor-array indexing handles arbitrary slots.
@@ -1604,6 +1614,21 @@ Graphics::GpuDrivenFrameSet0 Graphics::gpuDrivenFrameSet0() {
     ubo.lightDir.w = float(lightCount);
     ubo.cameraPos.w = mesh3dRoughness;
     ubo.lightColor.w = mesh3dEnvIntensity;
+    const uint32_t envSlot = gpuEnv->bindlessIndexCube;
+    uint32_t probeSlots[ReflectionProbeUpload::kMaxProbes] = {kInvalidBindlessSlot,
+                                                              kInvalidBindlessSlot};
+    for (int i = 0; i < ReflectionProbeUpload::kMaxProbes; ++i) {
+        if (i >= mesh3dReflectionProbes.count) continue;
+        const auto &probe = mesh3dReflectionProbes.probes[i];
+        if (!probe.cubemap || !probe.cubemap->gpuHandle) continue;
+        auto *gpuProbe = static_cast<GpuTexture *>(probe.cubemap->gpuHandle);
+        if (!gpuProbe->isCube || gpuProbe->bindlessIndexCube == kInvalidBindlessSlot) continue;
+        probeSlots[i] = gpuProbe->bindlessIndexCube;
+        ubo.reflectionProbeCenter[i] = glm::vec4(probe.center, probe.intensity);
+        ubo.reflectionProbeExtent[i] = glm::vec4(probe.extent, probe.blendDistance);
+    }
+    ubo.bindlessEnv = glm::vec4(float(envSlot), mesh3dEnvIntensity,
+                                float(probeSlots[0]), float(probeSlots[1]));
     ubo.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), mesh3dMetallic);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     int dirI = -1;

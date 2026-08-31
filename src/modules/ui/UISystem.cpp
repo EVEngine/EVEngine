@@ -25,9 +25,79 @@ namespace {
 std::vector<UIEvent> g_pending;
 std::vector<UIClick> g_clicks;
 std::vector<UIChange> g_changes;
+std::vector<UIDrop> g_drops;
+std::vector<std::string> g_pendingFileDrops;
 UIBackend *g_backend = nullptr;
 UIStats g_stats;
 std::map<std::string, ViewportState> g_viewports;
+
+struct ActiveDragPayload {
+    uint64_t serial = 0;
+    std::string sourceHostName;
+    std::string sourceNodeId;
+    std::string payloadType;
+    std::string payloadText;
+};
+
+std::optional<ActiveDragPayload> g_activeDrag;
+uint64_t g_nextDragSerial = 1;
+
+bool acceptsDropType(const UINode &node, const std::string &type) {
+    return node.dropTarget && (node.acceptedDropType == "*" || node.acceptedDropType == type);
+}
+
+void renderDragDrop(UIHost *host, const UINode &node) {
+    if (UISystem::dragDropSupport() != DragDropSupport::Supported || !host ||
+        !node.enabled)
+        return;
+    const std::string hostName = host->meta()->name;
+    if (node.dragSource && !node.dragPayloadType.empty() && ImGui::BeginDragDropSource()) {
+        if (!g_activeDrag || g_activeDrag->sourceHostName != hostName ||
+            g_activeDrag->sourceNodeId != node.id ||
+            g_activeDrag->payloadType != node.dragPayloadType ||
+            g_activeDrag->payloadText != node.dragPayloadText) {
+            g_activeDrag = ActiveDragPayload{g_nextDragSerial++, hostName, node.id,
+                                             node.dragPayloadType, node.dragPayloadText};
+        }
+        const uint64_t serial = g_activeDrag->serial;
+        ImGui::SetDragDropPayload("EVE_UI_DND", &serial, sizeof(serial), ImGuiCond_Once);
+        ImGui::TextUnformatted(node.dragPayloadText.empty() ? node.dragPayloadType.c_str()
+                                                            : node.dragPayloadText.c_str());
+        ImGui::EndDragDropSource();
+    }
+
+    if (node.dropTarget && ImGui::BeginDragDropTarget()) {
+        const bool acceptsActive = g_activeDrag &&
+                                   acceptsDropType(node, g_activeDrag->payloadType);
+        if (const ImGuiPayload *payload =
+                acceptsActive ? ImGui::AcceptDragDropPayload("EVE_UI_DND") : nullptr) {
+            if (payload->IsDelivery() && payload->DataSize == int(sizeof(uint64_t)) &&
+                g_activeDrag) {
+                const uint64_t serial = *static_cast<const uint64_t *>(payload->Data);
+                if (serial == g_activeDrag->serial) {
+                    g_drops.push_back({DragDropOrigin::Internal,
+                                       g_activeDrag->sourceHostName,
+                                       g_activeDrag->sourceNodeId,
+                                       hostName,
+                                       node.id,
+                                       g_activeDrag->payloadType,
+                                       g_activeDrag->payloadText});
+                    g_activeDrag.reset();
+                }
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    if (!g_pendingFileDrops.empty() && acceptsDropType(node, "file") &&
+        ImGui::IsItemHovered()) {
+        for (auto &path : g_pendingFileDrops) {
+            g_drops.push_back({DragDropOrigin::OperatingSystemFile, "", "", hostName,
+                               node.id, "file", std::move(path)});
+        }
+        g_pendingFileDrops.clear();
+    }
+}
 
 std::string viewportKey(UIHost *host, const UINode &n) {
     const std::string hostName =
@@ -1125,6 +1195,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         ImGui::PopItemFlag();
     }
 
+    renderDragDrop(host, n);
     if (!n.tooltip.empty() && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
         ImGui::SetTooltip("%s", n.tooltip.c_str());
 
@@ -1142,6 +1213,28 @@ void walk(UIHost *host, UIHost::Tree *tree, int index) { walkSiblings(host, tree
 std::vector<UIEvent> &UISystem::pendingEvents() { return g_pending; }
 std::vector<UIClick> &UISystem::clickQueue() { return g_clicks; }
 std::vector<UIChange> &UISystem::changeQueue() { return g_changes; }
+std::vector<UIDrop> &UISystem::dropQueue() { return g_drops; }
+
+DragDropSupport UISystem::dragDropSupport() noexcept {
+#if (defined(_WIN32) || defined(__APPLE__) || defined(__linux__)) && \
+    !defined(__ANDROID__) && !defined(__EMSCRIPTEN__)
+    return DragDropSupport::Supported;
+#else
+    return DragDropSupport::UnsupportedPlatform;
+#endif
+}
+
+void UISystem::enqueuePlatformFileDrop(const std::string &path) {
+    if (dragDropSupport() == DragDropSupport::Supported && !path.empty())
+        g_pendingFileDrops.push_back(path);
+}
+
+std::optional<UIDrop> UISystem::consumeDrop() {
+    if (g_drops.empty()) return std::nullopt;
+    UIDrop result = std::move(g_drops.front());
+    g_drops.erase(g_drops.begin());
+    return result;
+}
 
 void                                             UISystem::setBackend(UIBackend &backend) { g_backend = &backend; }
 void                                             UISystem::clearBackend() noexcept { g_backend = nullptr; }

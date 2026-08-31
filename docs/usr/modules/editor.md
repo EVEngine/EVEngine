@@ -4,6 +4,11 @@
 
 引擎**不附带**完整 3D 场景编辑器或 2D 地图编辑器，而是提供组装自定义编辑器所需的构件。新的工具协议不在核心中枚举“瓦片笔刷、地形隆起、摆放单位”等工具类型；任何实现 `IEditorTool` 的代码都能进入同一个会话。
 
+> C++ 新代码应直接使用 `editing/*` 公共契约和对应的 `<domain>_editing/*` 卫星模块。
+> `editor/Editor*Target.h`、`Editor*Graph.h`、`Editor*Runtime.h` 仅是源兼容 facade；权威实现、
+> snapshot、validator、runtime publication 和 preview adapter 均由领域卫星拥有。发布用的
+> `runtime-3d` profile 不链接 `editor`、`editing` 或任何 editing 卫星。
+
 推荐把编辑器拆成五类可替换组件：
 
 | 协议 | 职责 |
@@ -218,6 +223,11 @@ custom shading 未指定 Shader、masked surface 未指定含 alpha 的 albedo�
 parallax scale 为零。实际 GPU `Texture*` / `Shader*` 的解析和预览场景由 graphics host 负责，
 文档本身只保存稳定资产引用。
 
+材质图的规范实现位于 `material_editing/MaterialGraph.h`，通用图和后台任务契约分别位于
+`editing/EditingGraph.h`、`editing/EditingTaskService.h`。`MaterialGraphDomain` 负责 typed-pin
+校验和确定性编译；`MaterialEditorService` 只允许成功且 revision 匹配的产物替换预览。
+`editor/EditorGraph.h` 与 `editor/EditorTaskService.h` 仅保留旧 include/namespace 兼容入口。
+
 ## 动画状态图（C++）
 
 `AnimationStateGraphDomain` 在通用 `GraphDocument` 上定义 `animation.state` 领域。State 节点
@@ -241,6 +251,10 @@ Clip resolver 把同一份快照构造成真正的 `animation::AnimStateMachine`
 结构化 `NotFound` 返回，编辑器模块不持有资源指针。
 
 ## UI 文档（C++）
+
+规范 API 位于 `ui_editing/UiDocument.h`，包含 hierarchy/layout/style/content authoring、版本化
+snapshot、确定性 preview/picking 和可选 `UIHost` publication；`editor/EditorUiDocumentTarget.h`
+只保留旧 include/namespace 兼容入口。
 
 `UiDocumentTarget` 是 retained UI 的可持久化创作模型。每个 Widget 使用稳定 ID，并保存父级、
 类型、名称、文本、visible/enabled，以及 position、size、anchor 和 pivot。内容皮肤还保存字体资产、
@@ -341,6 +355,9 @@ Clip 解码和 Source 创建仍由 audio/sound host 负责；Editor 文档不保
 原子检查重复 ID、缺失 Parent、路由循环以及未最终汇入 Master 的孤立树。
 
 ## Particle Graph（C++）
+
+规范 API 位于 `particles_editing/ParticleGraph.h`；`editor/EditorParticleGraph.h` 仅作为旧 include/namespace
+兼容入口。通用图文档契约位于 `editing/EditingGraph.h`。
 
 `ParticleGraphDomain` 在通用 `GraphDocument` 上定义 `particles.emitter` 领域。模块链从唯一的
 Emission 开始，经过可选 Motion/Collision，进入唯一 Renderer，最后终止于唯一 Output。
@@ -458,6 +475,13 @@ position/quaternion，并接受 selected bone、retarget mapping 与 mask。它�
 `MaterialPreviewRenderRequest`。每次请求带唯一 isolated scene ID，renderer host 不需要访问 live scene；
 只有成功且 revision 仍匹配的 artifact 才能 publish。自定义 mesh、分辨率、相机距离及材质交叉字段会在
 调用 renderer 前校验。
+
+`MaterialStudioController` 在这些底层契约上提供实时编辑会话。UI 在 slider、颜色选择器或资产槽开始交互时
+调用 `beginInteraction()`，把中间值传给 `updateInteraction()`，并用宿主的单调毫秒时间调用 `tick()`。
+中间值只进入 owned draft 和隔离预览；`commitInteraction()` 才把最终值作为一个事务发布，因此一次拖拽只
+生成一条 undo 记录。`cancelInteraction()` 不修改 live material。默认预览间隔约 33ms，也可通过
+`setPreviewRate()` 在 1–240 Hz 内调整。完整布局、状态、生命周期与失败契约见
+[`实时材质 Studio 设计`](../../dev/2026-08-31-realtime-material-studio.md)。
 
 `Light3DDocumentTarget` 和 `EnvironmentDocumentTarget` 实现标准 `IPropertyProvider`、可逆 operation、
 snapshot/load 与结构化诊断。Light 覆盖 type、position/direction、HDR color/intensity、radius、shadow
@@ -587,6 +611,19 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 运行时 borrowed pointer；它支持 owner/state/kind 筛选，并报告超时和非法进度。
 `SocialDocumentTarget` 对 ownership、control、assignment 和加权 relation 提供可逆编辑、
 原子快照与交叉引用校验，启用 `social` 时可发布到真实 `SocialGraph`。
+
+音频编辑的规范 C++ API 已拆到独立的 `audio_editing` 模块，使用
+`audio_editing/AudioTarget.h`、`audio_editing/AudioEffects.h`、
+`audio_editing/AudioWaveform.h`、`audio_editing/AudioImportDiagnostics.h` 和
+`audio_editing/AudioTransport.h`。原有 `editor/EditorAudio*.h` 仅作为兼容入口保留，
+新代码不应再通过 `editor` 获取音频编辑契约。
+
+Scene 和 Map 的规范 C++ authoring API 分别位于 `scene_editing/SceneTarget.h`、
+`scene_editing/SceneComponentPayload.h` 与 `map_editing/MapDocument.h`。对应的
+`editor/EditorScene*.h`、`editor/EditorMapDocument.h` 只用于源代码兼容。
+
+Animation clip 的规范 authoring API 位于 `animation_editing/AnimationClip.h`；
+`editor/EditorAnimationClip.h` 是兼容入口。
 
 音频资源可通过 `AudioAuditionTransport` 做 play/pause/stop/seek 和区间循环试听。
 所有操作都绑定资源 revision；检测到旧 revision 时会立即停止并解绑播放源，避免继续试听
@@ -738,3 +775,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 **源码：** [`src/modules/editor/`](../../../src/modules/editor/)  
 **设计文档：** [`docs/dev/编辑器模块设计.md`](../../dev/编辑器模块设计.md)  
 **相关测试：** [`test/editor.cpp`](../../../test/editor.cpp)
+
+### PR #287 新增绑定
+
+- 反射链、HDR 与探针相关 API：`getCenterX` `getCenterY`/`getCenterZ` `getColorB` `getColorG`/`getColorR` `getLineCount` `getLineEnd`/`getLineStart` `getStatusLabel` `newReflectionProbeVisualizer`/`setExtents`

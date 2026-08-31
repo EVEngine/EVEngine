@@ -1,51 +1,41 @@
 #!/usr/bin/env python3
-"""Verify every test/*.cpp on disk is registered in test/CMakeLists.txt.
+"""Verify the test suite retains automatic source discovery.
 
-The unit-test suite is listed explicitly in test/CMakeLists.txt (file(GLOB
-all_test_cpp ...) plus conditionals). A source file that lands in test/ but is
-missing from that list silently never compiles or runs, which is how
-test/hair.cpp and test/runtime.cpp rotted before this check existed.
-
-Usage:
-    python3 scripts/check_test_manifest.py   # exit 1 on drift
+Top-level test/*.cpp files are discovered by CMake with CONFIGURE_DEPENDS, like
+engine/module sources. This check prevents a regression to a central append-only
+list or a plain configure-time glob that misses files added after configuration.
 """
 
-import pathlib
 import re
 import sys
+from pathlib import Path
 
-REPO = pathlib.Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parent.parent
 TEST_DIR = REPO / "test"
 CMAKE_LIST = TEST_DIR / "CMakeLists.txt"
 
-ENTRY_RE = re.compile(r"^\s+([\w.-]+\.cpp)\s*$")
-APPEND_RE = re.compile(r"list\(APPEND\s+all_test_cpp\s+([\w./-]+\.cpp)\)")
+DISCOVERY_RE = re.compile(
+    r'file\(GLOB\s+all_test_cpp\s+CONFIGURE_DEPENDS\s+'
+    r'"\$\{CMAKE_CURRENT_SOURCE_DIR\}/\*\.cpp"\s*\)',
+    re.MULTILINE,
+)
+DEMO_EXCLUSION_RE = re.compile(
+    r'list\(REMOVE_ITEM\s+all_test_cpp\s+'
+    r'"\$\{CMAKE_CURRENT_SOURCE_DIR\}/demo\.cpp"\s*\)'
+)
+DEMO_APPEND_RE = re.compile(r"list\(APPEND\s+all_test_cpp\s+demo\.cpp\s*\)")
 
-# Test sources appended conditionally inside test/CMakeLists.txt.
-CONDITIONAL = {
-    "demo.cpp",  # only when EVENGINE_BUILD_DEMO=ON
-}
 
-
-def listed_sources() -> set[str]:
-    text = CMAKE_LIST.read_text(encoding="utf-8")
-    listed = set()
-    in_glob = False
-    for line in text.splitlines():
-        if "file(GLOB all_test_cpp" in line:
-            in_glob = True
-            continue
-        if in_glob:
-            if line.rstrip().endswith(")"):
-                in_glob = False
-                continue
-            m = ENTRY_RE.match(line)
-            if m:
-                listed.add(m.group(1))
-        m = APPEND_RE.search(line)
-        if m:
-            listed.add(pathlib.PurePosixPath(m.group(1)).name)
-    return listed
+def discovery_contract_errors(text: str) -> list[str]:
+    """Return errors when CMake no longer auto-discovers all test sources."""
+    errors: list[str] = []
+    if not DISCOVERY_RE.search(text):
+        errors.append("all_test_cpp must glob test/*.cpp with CONFIGURE_DEPENDS")
+    if not DEMO_EXCLUSION_RE.search(text):
+        errors.append("demo.cpp must be removed from the unconditional source set")
+    if not DEMO_APPEND_RE.search(text):
+        errors.append("demo.cpp must remain conditionally appended")
+    return errors
 
 
 def main() -> int:
@@ -53,24 +43,15 @@ def main() -> int:
         print(f"error: {CMAKE_LIST} not found", file=sys.stderr)
         return 1
 
-    on_disk = {p.name for p in TEST_DIR.glob("*.cpp")}
-    listed = listed_sources()
-    missing = sorted((on_disk - listed) - CONDITIONAL)
-    stale = sorted(listed - on_disk - CONDITIONAL)
+    errors = discovery_contract_errors(CMAKE_LIST.read_text(encoding="utf-8"))
+    if errors:
+        for error in errors:
+            print(f"error: {error}", file=sys.stderr)
+        return 1
 
-    if not missing and not stale:
-        print(f"test manifest OK: {len(listed)} sources listed, {len(on_disk)} on disk")
-        return 0
-
-    if missing:
-        print("error: test source files missing from test/CMakeLists.txt:", file=sys.stderr)
-        for name in missing:
-            print(f"  {name}", file=sys.stderr)
-    if stale:
-        print("error: entries in test/CMakeLists.txt with no source file:", file=sys.stderr)
-        for name in stale:
-            print(f"  {name}", file=sys.stderr)
-    return 1
+    count = sum(1 for _ in TEST_DIR.glob("*.cpp"))
+    print(f"test auto-discovery OK: CONFIGURE_DEPENDS covers {count} sources")
+    return 0
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ endif()
 eve_module_enabled(particles _has_particles_editor_bridge)
 if(NOT _has_particles_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorParticleGraphRuntime.cpp;EditorParticleOffscreenRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};ParticleGraphRuntime.cpp;ParticleOffscreenRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -27,7 +27,7 @@ endif()
 eve_module_enabled(crowd _has_crowd_editor_bridge)
 if(NOT _has_crowd_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorCrowdRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};CrowdRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -36,14 +36,14 @@ eve_module_enabled(orders _has_orders_editor_bridge)
 eve_module_enabled(production _has_production_editor_bridge)
 if(NOT _has_orders_editor_bridge OR NOT _has_production_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorQueueInspectorRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};QueueInspector.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(social _has_social_editor_bridge)
 if(NOT _has_social_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorSocialRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SocialRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -52,49 +52,40 @@ endif()
 eve_module_enabled(graphics _has_graphics_editor_bridge)
 if(NOT _has_graphics_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorLightingRuntime.cpp;EditorMaterialRuntime.cpp;EditorParticleOffscreenRuntime.cpp;EditorSurfaceFluidOffscreen.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};LightingRuntime.cpp;MaterialRuntime.cpp;ParticleOffscreenRuntime.cpp;EditorSurfaceFluidOffscreen.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 eve_module_enabled(image _has_image_editor_bridge)
 if(NOT _has_graphics_editor_bridge OR NOT _has_image_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorOffscreenPreviewRuntime.cpp;EditorMaterialOffscreen.cpp;EditorParticleOffscreen.cpp;EditorUiOffscreen.cpp;EditorSurfaceFluidOffscreen.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};OffscreenPreview.cpp;EditorMaterialOffscreen.cpp;ParticleOffscreen.cpp;EditorUiOffscreen.cpp;EditorSurfaceFluidOffscreen.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 eve_module_enabled(building _has_building_editor_bridge)
 if(NOT _has_building_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorBuildingRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};BuildingTarget.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 eve_module_enabled(daynight _has_daynight_editor_bridge)
 if(NOT _has_daynight_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorEnvironmentDayNightRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EnvironmentDayNightRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 eve_module_enabled(weather _has_weather_editor_bridge)
 if(NOT _has_weather_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorEnvironmentWeatherRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};EnvironmentWeatherRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
-# editor/EditorPhysicsRuntime.cpp is the optional bridge creating actual
-# Box2D/Box3D primitive shapes from backend-neutral collider documents.
-eve_module_enabled(physics _has_physics_editor_bridge)
-if(NOT _has_physics_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorPhysicsRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
-endif()
-
-# editor/EditorAudioRuntime.cpp applies backend-neutral source documents to a
+# audio_editing runtime bridges apply backend-neutral source documents to a
 # live OpenAL Source only when the audio module is enabled.
 eve_module_enabled(audio _has_audio_editor_bridge)
 if(NOT _has_audio_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorAudioRuntime.cpp;EditorAudioTransportRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};AudioRuntime.cpp;AudioTransportRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -114,21 +105,30 @@ endif()
 eve_module_enabled(procgen _has_procgen)
 if(NOT _has_procgen)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorPcgGraph.cpp;EditorBiomeTarget.cpp;EditorBiomeRuntime.cpp;EditorTextureRecipeTarget.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};PcgGraph.cpp;BiomeTarget.cpp;BiomeRuntime.cpp;HeightmapTarget.cpp;HeightmapMesh.cpp;TextureRecipeTarget.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+# Map authoring documents remain available without the runtime map provider;
+# these bridges are the only map_editing sources that require live map types.
+eve_module_enabled(map _has_map_editor_bridge)
+if(NOT _has_map_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};MapIntegration.cpp;TileLayerTarget.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(network _has_network_editor_bridge)
 if(NOT _has_network_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorNetworkTelemetryRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};NetworkTelemetryRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(sceneloader _has_sceneloader_editor_bridge)
 if(NOT _has_sceneloader_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorSceneImportRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SceneImportRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -137,7 +137,7 @@ endif()
 eve_module_enabled(animation _has_animation_editor_bridge)
 if(NOT _has_animation_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorAnimationGraphRuntime.cpp;EditorAnimationClipRuntime.cpp;EditorSkeletonOverlayRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};AnimationGraphRuntime.cpp;AnimationClipRuntime.cpp;SkeletonOverlayRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -146,21 +146,21 @@ endif()
 eve_module_enabled(ui _has_ui_editor_bridge)
 if(NOT _has_ui_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorUiRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};UiRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(decal _has_decal_editor_bridge)
 if(NOT _has_decal_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorDecalRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};DecalRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(stylize _has_stylize_editor_bridge)
 if(NOT _has_stylize_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorStylizeTarget.cpp;EditorStylizeRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};StylizeTarget.cpp;StylizeRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -169,35 +169,35 @@ endif()
 eve_module_enabled(camera _has_camera_editor_bridge)
 if(NOT _has_camera_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorCameraRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};CameraTarget.cpp;CameraRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(housegen _has_housegen_editor_bridge)
 if(NOT _has_housegen_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorHouseGenTarget.cpp;EditorHouseGenRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};HouseGenTarget.cpp;HouseGenRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(spritestack _has_spritestack_editor_bridge)
 if(NOT _has_spritestack_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorSpriteStackTarget.cpp;EditorSpriteStackRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SpriteStackTarget.cpp;SpriteStackRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(virtualgeometry _has_virtualgeometry_editor_bridge)
 if(NOT _has_virtualgeometry_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorVirtualGeometryTarget.cpp;EditorVirtualGeometryRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};VirtualGeometryTarget.cpp;VirtualGeometryRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(avatar _has_avatar_editor_bridge)
 if(NOT _has_avatar_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorAvatarTarget.cpp;EditorAvatarRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};AvatarTarget.cpp;AvatarRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -205,14 +205,21 @@ endif()
 eve_module_enabled(voxel _has_voxel_editor_bridge)
 if(NOT _has_voxel_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorVoxelPaletteTarget.cpp;EditorVoxelPaletteRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};VoxelPaletteTarget.cpp;VoxelPaletteRuntime.cpp;VoxelWorldTarget.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 eve_module_enabled(hd2d _has_hd2d_editor_bridge)
 if(NOT _has_hd2d_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorHd2dTarget.cpp;EditorHd2dRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};Hd2dTarget.cpp;Hd2dRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
+eve_module_enabled(snow _has_snow_editor_bridge)
+if(NOT _has_snow_editor_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SnowFieldTarget.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -221,7 +228,7 @@ endif()
 eve_module_enabled(schema _has_schema_editor_bridge)
 if(NOT _has_schema_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorDefinitionFormRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};DefinitionFormRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -230,7 +237,7 @@ endif()
 eve_module_enabled(fluids _has_fluids_editor_bridge)
 if(NOT _has_fluids_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorFluidRuntime.cpp;EditorSurfaceFluidRuntime.cpp;EditorSurfaceFluidPreview.cpp;EditorSurfaceFluidOffscreen.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};FluidRuntime.cpp;SurfaceFluidRuntime.cpp;EditorSurfaceFluidPreview.cpp;EditorSurfaceFluidOffscreen.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -239,23 +246,23 @@ endif()
 eve_module_enabled(dialogue _has_dialogue_editor_bridge)
 if(NOT _has_dialogue_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorDialogueGraphRuntime.cpp;EditorLocalizationRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};DialogueGraphRuntime.cpp;LocalizationRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
-# editor/EditorDefinitionRuntime.cpp publishes neutral definition documents to
+# definitions_editing/DefinitionRuntime.cpp publishes neutral definition documents to
 # DefinitionRegistry only when the definitions module is enabled.
 eve_module_enabled(definitions _has_definitions_editor_bridge)
 if(NOT _has_definitions_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorDefinitionRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};DefinitionRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
 # Voice audition needs both the dialogue voice service and a live audio Source.
 if(NOT _has_audio_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EditorLocalizationRuntime.cpp"
+      "${EVENGINE_EXCLUDED_MODULE_FILES};LocalizationRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -290,6 +297,11 @@ if(_has_data)
   # headers, so the source checkout is the authoritative header location.
   target_include_directories(EVData BEFORE PRIVATE
     ${CMAKE_SOURCE_DIR}/third-party)
+endif()
+
+eve_module_enabled(asset _has_asset)
+if(_has_asset)
+  target_link_libraries(EVAsset PRIVATE ${EVENGINE_ASSET_ZSTD_TARGET} ${EVENGINE_ASSET_UTF8PROC_TARGET})
 endif()
 
 eve_module_enabled(graphics _has_graphics)
@@ -501,6 +513,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
   # and all compatibility implementations unchanged.
   set(_eve_procgen_core_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/AttributeTable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratorRegistry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.cpp
@@ -511,6 +524,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ParamSchema.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Params.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointSet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointDelta.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ProcgenSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Semantic.cpp)
   set(_eve_procgen_core_boundary_files ${_eve_procgen_core_sources}

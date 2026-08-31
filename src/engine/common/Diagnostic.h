@@ -71,6 +71,8 @@ enum class DiagnosticCode : uint32_t {
     DialogueRouteNotFound = 19,
     /** @brief Mesh group sidecar data is inconsistent with its dense streams. */
     ProcgenGroupDataInvalid = 20,
+    /** @brief A stable reference resolved to a different canonical domain type. */
+    TypeMismatch = 21,
 };
 
 /**
@@ -184,6 +186,7 @@ private:
         case DiagnosticCode::DialogueConditionRejected: return "dialogue_condition_rejected";
         case DiagnosticCode::DialogueRouteNotFound: return "dialogue_route_not_found";
         case DiagnosticCode::ProcgenGroupDataInvalid: return "procgen_group_data_invalid";
+        case DiagnosticCode::TypeMismatch: return "type_mismatch";
     }
     return "unknown";
 }

@@ -31,7 +31,7 @@ make run/<platform>-debug GAME=examples/<name>
 |---|---|
 | [rpg](rpg/README.md) | RPG 五系统：属性 / 效果 / 状态 / 技能 / 结算（最小可玩动作 RPG） |
 | [inventory](inventory/README.md) | 背包：物品定义、主背包 / 任务栏 / 仓库、装备穿脱、跨包转移 |
-| [cardgame](cardgame/README.md) | 卡牌：扇形手牌、拖拽出牌、费用置灰、实时配置面板 |
+| [cardgame](cardgame/README.md) | 可玩的双人德州扑克：四轮下注、AI、七选五牌型、真实烧牌与 52 张 CC0 牌面 |
 | [dialogue](dialogue/README.md) | 对话 + Avatar：Squirrel generator 剧情、i18n 翻译表、分层立绘、程序化台词池（.dnut） |
 | [galgame](galgame/README.md) | 完整视觉小说《潮汐电台》：原创美术、分支结局、AUTO/SKIP/回想与存读档 |
 | [building](building/README.md) | 建筑放置：地形约束、道路邻接、鬼影预览、旋转拆除 |

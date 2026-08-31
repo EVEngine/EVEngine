@@ -1,15 +1,19 @@
 #include "graphics/RenderSystem3D.h"
+#include "graphics/DepthPyramid.h"
 #include "common/RenderTrace.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Shader.h"
+#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
 
@@ -26,6 +30,13 @@ namespace {
 std::vector<RenderSystem3D::GBufferExtraDrawer> g_gbufferDrawers;
 std::vector<RenderSystem3D::ShadowExtraDrawer> g_shadowDrawers;
 std::vector<RenderSystem3D::DecalExtraDrawer> g_decalDrawers;
+struct CaptureExtraDrawerEntry {
+    uint64_t token = 0;
+    uint32_t mask = 0;
+    RenderSystem3D::CaptureExtraDrawer drawer;
+};
+std::vector<CaptureExtraDrawerEntry> g_captureDrawers;
+uint64_t g_nextCaptureDrawerToken = 1;
 
 glm::vec3 gLightDir = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
 glm::vec3 gLightColor = glm::vec3(1.f);
@@ -187,6 +198,113 @@ void Camera3D::setEnvIntensity(float intensity) {
     data()->envIntensity = intensity < 0.f ? 0.f : intensity;
 }
 
+void Camera3D::setExposure(float ev) { data()->exposureEV = std::clamp(ev, -16.f, 16.f); }
+
+float Camera3D::getExposure() { return data()->exposureEV; }
+
+void Camera3D::setAutoExposure(bool enabled, float minEV, float maxEV) {
+    auto d = data();
+    d->autoExposure = enabled;
+    d->autoExposureMinEV = std::clamp(std::min(minEV, maxEV), -16.f, 16.f);
+    d->autoExposureMaxEV = std::clamp(std::max(minEV, maxEV), -16.f, 16.f);
+}
+
+bool Camera3D::isAutoExposure() { return data()->autoExposure; }
+
+void Camera3D::setBloom(float intensity, float threshold) {
+    auto d = data();
+    d->bloomIntensity = std::clamp(intensity, 0.f, 8.f);
+    d->bloomThreshold = std::clamp(threshold, 0.f, 16.f);
+}
+
+float Camera3D::getBloomIntensity() { return data()->bloomIntensity; }
+float Camera3D::getBloomThreshold() { return data()->bloomThreshold; }
+
+void Camera3D::setEnvProbe(float centerX, float centerY, float centerZ, float extentX,
+                           float extentY, float extentZ) {
+    data()->envProbeCenter = glm::vec3(centerX, centerY, centerZ);
+    data()->envProbeExtent = glm::max(glm::vec3(extentX, extentY, extentZ), glm::vec3(0.f));
+}
+
+void Camera3D::clearEnvProbe() { data()->envProbeExtent = glm::vec3(0.f); }
+
+bool Camera3D::hasEnvProbe() {
+    const glm::vec3 e = data()->envProbeExtent;
+    return e.x > 0.f && e.y > 0.f && e.z > 0.f;
+}
+float Camera3D::getEnvProbeCenterX() { return data()->envProbeCenter.x; }
+float Camera3D::getEnvProbeCenterY() { return data()->envProbeCenter.y; }
+float Camera3D::getEnvProbeCenterZ() { return data()->envProbeCenter.z; }
+float Camera3D::getEnvProbeExtentX() { return data()->envProbeExtent.x; }
+float Camera3D::getEnvProbeExtentY() { return data()->envProbeExtent.y; }
+float Camera3D::getEnvProbeExtentZ() { return data()->envProbeExtent.z; }
+
+void Camera3D::setReflectionProbe(int slot, Texture *cubemap, float centerX, float centerY,
+                                  float centerZ, float extentX, float extentY, float extentZ,
+                                  float intensity, float blendDistance, int priority) {
+    if (slot < 0 || slot >= Data::kMaxReflectionProbes) return;
+    auto &probe = data()->reflectionProbes[static_cast<size_t>(slot)];
+    probe.cubemap = cubemap;
+    probe.center = glm::vec3(centerX, centerY, centerZ);
+    probe.extent = glm::max(glm::vec3(extentX, extentY, extentZ), glm::vec3(0.f));
+    probe.intensity = std::max(intensity, 0.f);
+    probe.blendDistance = std::max(blendDistance, 0.f);
+    probe.priority = priority;
+    probe.enabled = cubemap && glm::all(glm::greaterThan(probe.extent, glm::vec3(0.f))) &&
+                    probe.intensity > 0.f;
+}
+
+void Camera3D::clearReflectionProbe(int slot) {
+    if (slot < 0 || slot >= Data::kMaxReflectionProbes) return;
+    data()->reflectionProbes[static_cast<size_t>(slot)] = {};
+}
+
+int Camera3D::getReflectionProbeCount() {
+    int count = 0;
+    for (const auto &probe : data()->reflectionProbes)
+        if (probe.enabled) ++count;
+    return count;
+}
+
+static ReflectionProbeUpload selectReflectionProbes(const Camera3D::Data &camera,
+                                                     const glm::vec3 &samplePosition) {
+    struct Candidate {
+        int slot = 0;
+        int priority = 0;
+        float distance2 = 0.f;
+    };
+    std::array<Candidate, Camera3D::Data::kMaxReflectionProbes> candidates{};
+    int candidateCount = 0;
+    for (int slot = 0; slot < Camera3D::Data::kMaxReflectionProbes; ++slot) {
+        const auto &probe = camera.reflectionProbes[static_cast<size_t>(slot)];
+        if (!probe.enabled || !probe.cubemap) continue;
+        const glm::vec3 outside = glm::max(glm::abs(samplePosition - probe.center) - probe.extent,
+                                           glm::vec3(0.f));
+        candidates[static_cast<size_t>(candidateCount++)] =
+            Candidate{slot, probe.priority, glm::dot(outside, outside)};
+    }
+    std::stable_sort(candidates.begin(), candidates.begin() + candidateCount,
+                     [](const Candidate &a, const Candidate &b) {
+                         if (a.priority != b.priority) return a.priority > b.priority;
+                         if (a.distance2 != b.distance2) return a.distance2 < b.distance2;
+                         return a.slot < b.slot;
+                     });
+
+    ReflectionProbeUpload upload;
+    upload.count = std::min(candidateCount, ReflectionProbeUpload::kMaxProbes);
+    for (int i = 0; i < upload.count; ++i) {
+        const auto &source = camera.reflectionProbes[static_cast<size_t>(candidates[i].slot)];
+        auto &target = upload.probes[i];
+        target.cubemap = source.cubemap;
+        target.center = source.center;
+        target.extent = source.extent;
+        target.intensity = source.intensity;
+        target.blendDistance = source.blendDistance;
+        target.priority = source.priority;
+    }
+    return upload;
+}
+
 void Camera3D::screenToRay(float screenX, float screenY, float viewW, float viewH) {
     auto d = data();
     d->screenRayOx = d->eyeX;
@@ -306,6 +424,28 @@ void Renderable3D::setPart(int index, const std::string &name, Mesh *mesh, Mater
     }
 }
 
+void Renderable3D::setPartSortPriority(int index, int priority) {
+    auto mr = meshRenderer();
+    if (index < 0 || index >= MeshRenderer::kMaxParts) return;
+    mr->parts[index].sortPriority    = priority;
+    mr->parts[index].hasSortPriority = true;
+}
+
+void Renderable3D::clearPartSortPriority(int index) {
+    auto mr = meshRenderer();
+    if (index < 0 || index >= MeshRenderer::kMaxParts) return;
+    mr->parts[index].sortPriority    = 0;
+    mr->parts[index].hasSortPriority = false;
+}
+
+int Renderable3D::getPartSortPriority(int index) {
+    auto mr = meshRenderer();
+    if (index < 0 || index >= mr->partCount) return 0;
+    const auto& part = mr->parts[index];
+    if (part.hasSortPriority) return part.sortPriority;
+    return part.material ? part.material->getSortPriority() : 0;
+}
+
 void Renderable3D::clearParts() {
     auto mr = meshRenderer();
     mr->partCount = 0;
@@ -381,6 +521,14 @@ float Renderable3D::getParallaxMaxLayers() { return meshRenderer()->parallaxMaxL
 
 void Renderable3D::setVisible(bool visible) { meshRenderer()->visible = visible; }
 
+void Renderable3D::setReflectionCaptureMask(int mask) {
+    meshRenderer()->reflectionCaptureMask = static_cast<uint32_t>(mask);
+}
+
+int Renderable3D::getReflectionCaptureMask() {
+    return static_cast<int>(meshRenderer()->reflectionCaptureMask);
+}
+
 void Renderable3D::setReceiveLight(bool receive) { meshRenderer()->receiveLight = receive; }
 
 void Renderable3D::setCastShadow(bool cast) { meshRenderer()->castShadow = cast; }
@@ -429,6 +577,25 @@ void RenderSystem3D::setDirectionalLight(float dx, float dy, float dz, float r, 
 void RenderSystem3D::addGBufferExtraDrawer(GBufferExtraDrawer drawer) {
     if (!drawer) return;
     g_gbufferDrawers.push_back(std::move(drawer));
+}
+
+uint64_t RenderSystem3D::addCaptureExtraDrawer(uint32_t reflectionCaptureMask,
+                                               CaptureExtraDrawer drawer) {
+    if (!drawer || reflectionCaptureMask == 0u) return 0;
+    const uint64_t token = g_nextCaptureDrawerToken++;
+    g_captureDrawers.push_back(
+        CaptureExtraDrawerEntry{token, reflectionCaptureMask, std::move(drawer)});
+    return token;
+}
+
+void RenderSystem3D::removeCaptureExtraDrawer(uint64_t token) {
+    if (token == 0) return;
+    g_captureDrawers.erase(
+        std::remove_if(g_captureDrawers.begin(), g_captureDrawers.end(),
+                       [token](const CaptureExtraDrawerEntry &entry) {
+                           return entry.token == token;
+                       }),
+        g_captureDrawers.end());
 }
 
 void RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
@@ -514,6 +681,7 @@ struct CameraView {
     glm::mat4               view{1.f};
     glm::mat4               proj{1.f};
     glm::mat4               viewProj{1.f};
+    glm::mat4               cullViewProj{1.f};
     FrustumPlanes           frustum;
     float                   fovRad = 1.f;
     Lighting3DPack          lighting{};
@@ -525,7 +693,8 @@ struct CameraView {
 
 CameraView buildCameraView(Camera3D::Data *cd, const std::vector<PackedLight3D> &packed, bool useClustered,
                            float aspect, const std::vector<ClusteredLightGpu> &clusteredPoints,
-                           const std::vector<ClusteredLightGpu> &clusteredDirs, Graphics &gfx) {
+                           const std::vector<ClusteredLightGpu> &clusteredDirs, Graphics &gfx,
+                           const glm::vec2 &jitterNdc) {
     CameraView cv;
     cv.data = cd;
     cv.eye  = glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ);
@@ -536,8 +705,11 @@ CameraView buildCameraView(Camera3D::Data *cd, const std::vector<PackedLight3D> 
     cv.proj     = cameraProjectionVulkanRH_ZO(cd->orthographic, cv.fovRad,
                                               cd->orthoHeight, aspect,
                                               cd->nearZ, cd->farZ);
+    cv.cullViewProj = cv.proj * cv.view;
+    cv.frustum  = extractFrustum(cv.cullViewProj);
+    cv.proj[2][0] += jitterNdc.x;
+    cv.proj[2][1] += jitterNdc.y;
     cv.viewProj = cv.proj * cv.view;
-    cv.frustum  = extractFrustum(cv.viewProj);
     cv.lighting = packLights3D(packed, cd);
     if (useClustered && !cd->orthographic) {
         cv.clustered      = buildClusteredLighting(clusteredPoints, clusteredDirs, cv.view, cd->nearZ, cd->farZ,
@@ -560,6 +732,7 @@ struct CulledItem {
     Shader                     *shader   = nullptr;  // effective mesh shader (material or legacy)
     glm::mat4                   model{1.f};
     glm::vec3                   worldC{0.f};          // world-space bounding-sphere center
+    glm::vec2                   temporalMotion{0.f};  // object-only previous-UV correction
     float                       worldR        = 0.f;  // world-space bounding-sphere radius (0 = unknown → unculled)
     float                       distSq        = 0.f;
     float                       projectedDepth = 0.f;
@@ -654,16 +827,31 @@ void RenderSystem3D::render(Graphics &gfx) {
     // The default camera is slot 0 so the G-buffer pass reuses its view.
     std::vector<CameraView> cams;
     cams.reserve(2);
+    glm::vec2 temporalJitter(0.f);
+    AntiAliasing *temporalAA = nullptr;
+    if (defaultCam && rc->isEnabled("taa")) {
+        auto cd = defaultCam->data();
+        temporalAA = gfx.pipelineAntiAliasing();
+        temporalAA->setTemporalCamera(glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ),
+                                      glm::vec3(cd->targetX, cd->targetY, cd->targetZ),
+                                      cd->fovYDeg);
+        temporalJitter = temporalAA->prepareTemporalJitter(gfx.getWidth(), gfx.getHeight());
+    }
     if (defaultCam) {
         cams.push_back(buildCameraView(defaultCam->data().operator->(), packed, useClustered, aspect, clusteredPoints,
-                                       clusteredDirs, gfx));
+                                       clusteredDirs, gfx, temporalJitter));
+        if (temporalAA) {
+            auto cd = defaultCam->data();
+            temporalAA->setTemporalViewProjection(cams.front().viewProj, cd->nearZ, cd->farZ);
+        }
     }
     auto findOrAddCam = [&](Camera3D *camEnt) -> int {
         Camera3D::Data *d = camEnt->data().operator->();
         for (size_t i = 0; i < cams.size(); ++i) {
             if (cams[i].data == d) return int(i);
         }
-        cams.push_back(buildCameraView(d, packed, useClustered, aspect, clusteredPoints, clusteredDirs, gfx));
+        cams.push_back(buildCameraView(d, packed, useClustered, aspect, clusteredPoints,
+                                       clusteredDirs, gfx, temporalJitter));
         return int(cams.size()) - 1;
     };
 
@@ -689,7 +877,8 @@ void RenderSystem3D::render(Graphics &gfx) {
             const float       maxScale = std::max(std::abs(xf->sx), std::max(std::abs(xf->sy), std::abs(xf->sz)));
             const bool        shadowOk = mr->effectiveCastShadow();
 
-            auto pushPart = [&](Mesh *drawMesh, Material *mat, bool asHair, bool castsShadow) {
+            auto pushPart = [&](Mesh *drawMesh, Material *mat, bool asHair, bool castsShadow,
+                                const ModelPart* modelPart) {
                 if (!drawMesh) return;
                 CulledItem item;
                 item.mr       = mr;
@@ -697,6 +886,8 @@ void RenderSystem3D::render(Graphics &gfx) {
                 item.material = mat;
                 item.shader   = mat ? mat->effectiveShader() : mr->shader;
                 item.model    = model;
+                if (temporalAA)
+                    item.temporalMotion = temporalAA->prepareTemporalObjectMotion(mr, model);
                 item.distSq   = distSq;
                 const glm::vec4 viewCenter = cv.view * glm::vec4(xf->x, xf->y, xf->z, 1.f);
                 item.projectedDepth = -viewCenter.z;
@@ -705,7 +896,9 @@ void RenderSystem3D::render(Graphics &gfx) {
                 item.surfaceMode = mat ? mat->surfaceMode()
                                        : (asHair ? SurfaceMode::Transparent
                                                  : SurfaceMode::Opaque);
-                item.sortPriority = mat ? mat->getSortPriority() : 0;
+                item.sortPriority = modelPart && modelPart->hasSortPriority
+                                        ? modelPart->sortPriority
+                                        : (mat ? mat->getSortPriority() : 0);
                 item.xray     = mr->xrayHighlight;
                 if (drawMesh->hasBounds()) {
                     const glm::vec4 c4 =
@@ -734,11 +927,11 @@ void RenderSystem3D::render(Graphics &gfx) {
                     Material  *mat    = mr->parts[p].material ? mr->parts[p].material : mr->material;
                     const bool asHair = mat ? mat->isTransparentHair() : mr->isHair;
                     const bool casts  = shadowOk && !(mat && !mat->getCastShadow());
-                    pushPart(mr->parts[p].mesh, mat, asHair, casts);
+                    pushPart(mr->parts[p].mesh, mat, asHair, casts, &mr->parts[p]);
                 }
             } else {
                 Mesh *drawMesh = mr->meshForDistance(dist);
-                pushPart(drawMesh, mr->material, mr->effectiveHair(), shadowOk);
+                pushPart(drawMesh, mr->material, mr->effectiveHair(), shadowOk, nullptr);
             }
         }
     }
@@ -785,13 +978,21 @@ void RenderSystem3D::render(Graphics &gfx) {
             const float tr  = item.material ? item.material->getTintR() : item.mr->r;
             const float tg  = item.material ? item.material->getTintG() : item.mr->g;
             const float tb  = item.material ? item.material->getTintB() : item.mr->b;
+            const float roughness =
+                item.material ? item.material->getRoughness() : item.mr->roughness;
+            const float metallic =
+                item.material ? item.material->getMetallic() : item.mr->metallic;
             eve::debug::rtDraw("drawMeshGBuffer", "gbuffer");
             if (item.surfaceMode == SurfaceMode::Masked)
                 gfx.drawMeshGBufferAlpha(item.mesh, cv.viewProj * item.model, item.model,
-                                         cv.data->nearZ, cv.data->farZ, alb, tr, tg, tb);
+                                         cv.data->nearZ, cv.data->farZ, alb, tr, tg, tb,
+                                         item.temporalMotion.x, item.temporalMotion.y, roughness,
+                                         metallic);
             else
                 gfx.drawMeshGBuffer(item.mesh, cv.viewProj * item.model, item.model,
-                                    cv.data->nearZ, cv.data->farZ, alb, tr, tg, tb);
+                                    cv.data->nearZ, cv.data->farZ, alb, tr, tg, tb,
+                                    item.temporalMotion.x, item.temporalMotion.y, roughness,
+                                    metallic);
         }
         // Extra G-buffer contributors (billboard/card geometry not in the ECS).
         for (const auto &drawer : g_gbufferDrawers) drawer(gfx, *cv.data, cv.viewProj, aspect);
@@ -826,6 +1027,13 @@ void RenderSystem3D::render(Graphics &gfx) {
         rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
     gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
 
+    if (defaultCam) {
+        auto cd = defaultCam->data();
+        gfx.setSceneExposure(std::exp2(cd->exposureEV));
+        gfx.setSceneAutoExposure(cd->autoExposure, cd->autoExposureMinEV,
+                                 cd->autoExposureMaxEV);
+        gfx.setSceneBloom(cd->bloomIntensity, cd->bloomThreshold);
+    }
     gfx.begin3DFrame();
     if (!gfx.had3DThisFrame()) return;
 
@@ -901,6 +1109,7 @@ void RenderSystem3D::render(Graphics &gfx) {
                 gfx.setMesh3DClip(cv.data->nearZ, cv.data->farZ);
                 gfx.setMesh3DCameraPos(cv.eye);
                 gfx.setMesh3DEnv(cv.data->envMap, cv.data->envIntensity);
+                gfx.setMesh3DEnvProbe(cv.data->envProbeCenter, cv.data->envProbeExtent);
                 curCam = item.camIdx;
             }
             if (clustered && cv.clusteredValid) {
@@ -924,6 +1133,11 @@ void RenderSystem3D::render(Graphics &gfx) {
             curLit       = lit;
             curClustered = clustered;
         }
+
+        // Local probes are spatial data. Select at the renderable bounds center
+        // so adjacent volumes do not leak the camera's nearest probe into every
+        // object in the frame.
+        gfx.setMesh3DReflectionProbes(selectReflectionProbes(*cv.data, item.worldC));
 
         const glm::mat4 &model = item.model;
         if (albedo) eve::debug::rtBind("texture", "albedo");
@@ -973,6 +1187,8 @@ void RenderSystem3D::render(Graphics &gfx) {
                 gfx.setMesh3DClip(cd->nearZ, cd->farZ);
                 gfx.setMesh3DCameraPos(cv.eye);
                 gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+                gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
+                gfx.setMesh3DReflectionProbes(ReflectionProbeUpload{});
                 ClusteredLightingUpload off{};
                 off.active = false;
                 gfx.setMesh3DClusteredLighting(off);
@@ -984,12 +1200,14 @@ void RenderSystem3D::render(Graphics &gfx) {
                 bool vgAny     = false;
                 const bool resolveWanted = gfx.gpuDrivenResolveWanted();
                 for (const CulledItem *it : opaque) {
+                    const ReflectionProbeUpload probes =
+                        selectReflectionProbes(*cd, it->worldC);
                     // Stage 3 VG: meshes with a virtual-geometry asset are culled /
                     // drawn through the cluster path, not the instance chain.
                     const uint32_t vgAsset =
                         resolveWanted ? gfx.gpuDrivenVgAssetId(it->mesh)
                                       : eve::graphics::kInvalidGpuDrivenSlot;
-                    if (vgAsset != eve::graphics::kInvalidGpuDrivenSlot) {
+                    if (vgAsset != eve::graphics::kInvalidGpuDrivenSlot && probes.count == 0) {
                         const uint32_t matId = gfx.gpuDrivenMaterialRecord(it->material);
                         if (matId == eve::graphics::kInvalidGpuDrivenSlot) {
                             recordsOk = false;
@@ -1002,6 +1220,21 @@ void RenderSystem3D::render(Graphics &gfx) {
                     inst.model      = it->model;
                     inst.meshId     = gfx.gpuDrivenMeshRecord(it->mesh);
                     inst.materialId = gfx.gpuDrivenMaterialRecord(it->material);
+                    inst.reflectionProbeSlots.z = uint32_t(probes.count);
+                    for (int probeIndex = 0; probeIndex < probes.count; ++probeIndex) {
+                        const auto &probe = probes.probes[probeIndex];
+                        const uint32_t slot = gfx.gpuDrivenReflectionProbeSlot(probe.cubemap);
+                        if (slot == eve::graphics::kInvalidGpuDrivenSlot) {
+                            recordsOk = false;
+                            break;
+                        }
+                        inst.reflectionProbeSlots[probeIndex] = slot;
+                        inst.reflectionProbeCenter[probeIndex] =
+                            glm::vec4(probe.center, probe.intensity);
+                        inst.reflectionProbeExtent[probeIndex] =
+                            glm::vec4(probe.extent, probe.blendDistance);
+                    }
+                    if (!recordsOk) break;
                     if (inst.meshId == eve::graphics::kInvalidGpuDrivenSlot ||
                         inst.materialId == eve::graphics::kInvalidGpuDrivenSlot) {
                         recordsOk = false;
@@ -1013,7 +1246,8 @@ void RenderSystem3D::render(Graphics &gfx) {
                     // Stage 2: GPU frustum/HZB cull + GPU-written indirect commands.
                     if (gfx.gpuDrivenCullEnabled() && !instances.empty() &&
                         gfx.gpuDrivenCullBegin(instances.data(), uint32_t(instances.size()))) {
-                        gfx.gpuDrivenCullEmit(cv.viewProj, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
+                        gfx.gpuDrivenCullEmit(cv.cullViewProj, eye, cd->fovYDeg, cd->nearZ,
+                                              cd->farZ);
                         if (gfx.gpuDrivenResolveWanted()) {
                             // Stage 3: opaque goes to the GBuffer vis pass, the
                             // scene color pass runs the fullscreen resolve.
@@ -1028,7 +1262,7 @@ void RenderSystem3D::render(Graphics &gfx) {
                     } else if (gfx.gpuDrivenCullEnabled() && instances.empty() && vgAny) {
                         // VG-only frame: no instance chain; the vis pass runs the
                         // VG cluster cull + draws + resolve.
-                        gfx.gpuDrivenVgComputeSection(cv.viewProj, eye, cd->fovYDeg, cd->nearZ,
+                        gfx.gpuDrivenVgComputeSection(cv.cullViewProj, eye, cd->fovYDeg, cd->nearZ,
                                                       cd->farZ);
                         gfx.gpuDrivenRecordVisPass();
                         gfx.gpuDrivenOpenScenePass();
@@ -1061,9 +1295,11 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
 
     const bool doAO = rc->isEnabled("ao");
-    // WebGPU has no SPIR-V AO shaders; the X-ray path (below) still reads the
-    // G-buffer depth directly.
-    if (doAO && gfx.supportsGBufferPost() && defaultCam && gfx.had3DThisFrame()) {
+    const bool doRTGI = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
+    const bool doSSR = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
+    bool aoApplied = false;
+    auto applyAO = [&]() {
+        if (!doAO || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
         GBuffer *gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
             auto cd = defaultCam->data();
@@ -1089,7 +1325,111 @@ void RenderSystem3D::render(Graphics &gfx) {
             // (curtains, planters) onto the floor as multiple swimming ghosts.
             // Mesh shaders still add hemispheric sky/ground + wrap fill.
         }
+        aoApplied = true;
+    };
+
+    const bool doReflectionLighting = doRTGI || doSSR;
+    if (doReflectionLighting && defaultCam && gfx.had3DThisFrame()) {
+        GBuffer *gb = rc->getGBuffer();
+        if (gb && gb->isValid()) {
+            Texture *sceneColor = gfx.getSceneColorTexture();
+            Texture *depth = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture()
+                                                               : gb->getHwDepthTexture();
+            if (sceneColor && depth) {
+                DepthPyramid *depthPyramid = gfx.pipelineDepthPyramid();
+                const std::string reflectionQuality = rc->getReflectionQuality();
+                const int depthBudget = reflectionQuality == "low" ? 4 :
+                                        reflectionQuality == "medium" ? 6 : 8;
+                Texture *depthAtlas = depthPyramid->build(depth, depthBudget);
+                const int depthLevels = depthPyramid->getLevelCount();
+                auto cd = defaultCam->data();
+                const float aspectSafe = aspect > 1e-4f ? aspect : 1.f;
+                const float dw =
+                    gfx.getCanvas() ? float(gfx.getCanvas()->getWidth()) : float(gfx.getWidth());
+                const float dh =
+                    gfx.getCanvas() ? float(gfx.getCanvas()->getHeight()) : float(gfx.getHeight());
+                auto bindCam = [&](auto *fx) {
+                    fx->setCamera(cd->eyeX, cd->eyeY, cd->eyeZ, cd->targetX, cd->targetY,
+                                  cd->targetZ, cd->upX, cd->upY, cd->upZ, cd->fovYDeg, aspectSafe,
+                                  cd->nearZ, cd->farZ);
+                    if (!cams.empty()) fx->setInvViewProj(glm::inverse(cams.front().viewProj));
+                };
+
+                Texture *rtgiTexture = nullptr;
+                Texture *ssrTexture = nullptr;
+
+                if (doRTGI) {
+                    GlobalIllumination *gi = gfx.pipelineGlobalIllumination();
+                    if (gi->getQuality() != rc->getReflectionQuality())
+                        gi->setQuality(rc->getReflectionQuality());
+                    gi->setWorldNormalTexture(gb->getNormalTexture());
+                    gi->setAlbedoTexture(gb->getAlbedoTexture());
+                    gi->setTemporalMotionTexture(gb->getDepthTexture());
+                    gi->setDepthPyramid(depthAtlas, depthLevels);
+                    bindCam(gi);
+                    Canvas *rtgiCanvas = gi->getWorkingCanvas();
+                    if (rtgiCanvas) {
+                        gi->applyFromSceneTo(&gfx, sceneColor, depth, rtgiCanvas);
+                        rtgiTexture = gi->getWorkingTexture();
+                    }
+                }
+
+                if (doSSR) {
+                    ScreenSpaceReflection *ssr = gfx.pipelineScreenSpaceReflection();
+                    if (ssr->getQuality() != rc->getReflectionQuality())
+                        ssr->setQuality(rc->getReflectionQuality());
+                    ssr->setEnabled(true);
+                    ssr->setTemporalMotionTexture(gb->getDepthTexture());
+                    ssr->setDepthPyramid(depthAtlas, depthLevels);
+                    bindCam(ssr);
+                    Canvas *reflCanvas = ssr->getReflectionCanvas();
+                    if (reflCanvas) {
+                        ssr->applyFromSceneTo(&gfx, sceneColor, depth, gb->getNormalTexture(),
+                                              gb->getAlbedoTexture(), reflCanvas);
+                        ssrTexture = ssr->getReflectionTexture();
+                    }
+                }
+
+                // All offscreen reflection work is complete. Queue AO and the
+                // reflection overlays only now, so a later setCanvas() cannot
+                // force an early swapchain present with pending overlays.
+                applyAO();
+                if (rtgiTexture || ssrTexture) {
+                    if (gfx.getBackendName() == "vulkan") {
+                        if (rtgiTexture)
+                            gfx.drawTexturedRectShaderUV(
+                                rtgiTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
+                        if (ssrTexture)
+                            gfx.drawTexturedRectShaderUV(
+                                ssrTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
+                    } else if (Canvas *composite =
+                                   gfx.pipelineReflectionComposite(int(dw), int(dh))) {
+                        // Register before setCanvas(): switching away from the scene target
+                        // closes its pass and queues the final resolve immediately.
+                        gfx.setFinalSceneTexture(composite->getTexture());
+                        Canvas *previous = gfx.getCanvas();
+                        gfx.setCanvas(composite);
+                        gfx.drawTexturedRectShaderUV(
+                            sceneColor, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                            Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Opaque);
+                        if (rtgiTexture)
+                            gfx.drawTexturedRectShaderUV(
+                                rtgiTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
+                        if (ssrTexture)
+                            gfx.drawTexturedRectShaderUV(
+                                ssrTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                Color(1.f, 1.f, 1.f, 1.f), false,
+                                BlendMode::Premultiplied);
+                        gfx.setCanvas(previous);
+                    }
+                }
+            }
+        }
     }
+    if (!aoApplied) applyAO();
 
     const bool doOutline = rc->isEnabled("outline");
     if (doOutline && defaultCam && gfx.had3DThisFrame()) {
@@ -1106,7 +1446,11 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
 }
 
-void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *camera) {
+void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *camera,
+                                    uint32_t reflectionCaptureMask, float lodDistanceScale,
+                                    bool includeTransparent, bool useClusteredLighting,
+                                    Texture *skyFaceTexture, Mesh *skyQuad,
+                                    float skyFaceTextureScale) {
     if (!target || !camera) return;
     auto cd = camera->data();
     const float aspect = target->getWidth() > 0
@@ -1128,81 +1472,187 @@ void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *cam
     gfx.setMesh3DClip(cd->nearZ, cd->farZ);
     gfx.setMesh3DCameraPos(eye);
     gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+    gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
+    gfx.setMesh3DReflectionProbes(selectReflectionProbes(*cd, eye));
+    gfx.setSceneExposure(std::exp2(cd->exposureEV));
+    gfx.setSceneAutoExposure(cd->autoExposure, cd->autoExposureMinEV,
+                             cd->autoExposureMaxEV);
+    gfx.setSceneBloom(cd->bloomIntensity, cd->bloomThreshold);
 
     // Lighting: real lights (if any) + camera ambient; shadows/clustered off.
     std::vector<PackedLight3D> packed;
     collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
     promoteDirectional(packed);
-    ClusteredLightingUpload noClustered{};
-    noClustered.active = false;
-    gfx.setMesh3DClusteredLighting(noClustered);
-    const Lighting3DPack sceneLighting = packLights3D(packed, cd.operator->());
-    gfx.setMesh3DLighting(sceneLighting);
+    bool clusteredCapture = false;
+    if (useClusteredLighting && packed.size() > size_t(Lighting3DPack::kMaxLights)) {
+        std::vector<ClusteredLightGpu> clusteredPoints;
+        std::vector<ClusteredLightGpu> clusteredDirections;
+        splitLights(packed, clusteredPoints, clusteredDirections);
+        if (clusteredDirections.empty()) {
+            ClusteredLightGpu direction{};
+            direction.posRadius = glm::vec4(gLightDir, 0.f);
+            direction.color = glm::vec4(gLightColor, 1.f);
+            clusteredDirections.push_back(direction);
+        }
+        ClusteredLightingUpload clustered = buildClusteredLighting(
+            clusteredPoints, clusteredDirections, viewM, cd->nearZ, cd->farZ,
+            target->getWidth(), target->getHeight(),
+            cd->fovYDeg * 0.017453292519943295f,
+            glm::vec4(cd->ambientR, cd->ambientG, cd->ambientB, 0.f));
+        clusteredCapture = clustered.active;
+        gfx.setMesh3DClusteredLighting(clustered);
+    } else {
+        ClusteredLightingUpload noClustered{};
+        noClustered.active = false;
+        gfx.setMesh3DClusteredLighting(noClustered);
+    }
+    gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
     ShadowUpload noShadow{};
     noShadow.active = false;
     gfx.setMesh3DShadows(noShadow);
 
+    if (skyFaceTexture && skyQuad) {
+        const float distance = std::max(cd->farZ * 0.999f, cd->nearZ * 2.f);
+        glm::mat4 skyModel = glm::inverse(viewM);
+        skyModel = glm::translate(skyModel, glm::vec3(0.f, 0.f, -distance));
+        skyModel = glm::scale(skyModel, glm::vec3(distance * aspect * 1.01f,
+                                                   distance * 1.01f, 1.f));
+        Lighting3DPack unlit{};
+        unlit.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+        gfx.setMesh3DClusteredActive(false);
+        gfx.setMesh3DLighting(unlit);
+        gfx.setMesh3DEnv(nullptr, 0.f);
+        gfx.setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, false, 0.5f);
+        gfx.setMesh3DMaterial(0.f, 1.f);
+        gfx.setMesh3DShadowReceive(false);
+        const float skyScale = std::max(skyFaceTextureScale, 0.f);
+        gfx.drawMeshShader(skyQuad, skyModel, skyFaceTexture,
+                           Color(skyScale, skyScale, skyScale, 1.f), nullptr);
+        gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+        gfx.setMesh3DClusteredActive(clusteredCapture);
+        gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+    }
+
+    const glm::mat4 captureViewProj = projM * viewM;
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {
+        const glm::mat4 captureView = glm::lookAtRH(
+            eye, glm::vec3(cd->targetX, cd->targetY, cd->targetZ),
+            glm::vec3(cd->upX, cd->upY, cd->upZ));
+        const glm::mat4 captureProjection = perspectiveVulkanRH_ZO(
+            cd->fovYDeg * 0.017453292519943295f, aspect, cd->nearZ, cd->farZ);
+        const FrustumPlanes captureFrustum = extractFrustum(captureProjection * captureView);
+        struct CanvasItem {
+            Renderable3D::MeshRenderer *mr = nullptr;
+            Mesh *mesh = nullptr;
+            Material *material = nullptr;
+            glm::mat4 model{1.f};
+            float distance2 = 0.f;
+            SurfaceMode surface = SurfaceMode::Opaque;
+            int sortPriority = 0;
+        };
+        std::vector<CanvasItem> canvasItems;
         auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [xf, mr] = *it;
-            if (!mr->visible) continue;
+            if (!mr->visible || (mr->reflectionCaptureMask & reflectionCaptureMask) == 0u)
+                continue;
             const glm::mat4 model = modelFromTransform(*xf);
-
-            auto drawPreviewMesh = [&](Mesh *mesh, Material *material) {
+            const float maxScale =
+                std::max(std::abs(xf->sx), std::max(std::abs(xf->sy), std::abs(xf->sz)));
+            const float dx = xf->x - eye.x;
+            const float dy = xf->y - eye.y;
+            const float dz = xf->z - eye.z;
+            const float distance2 = dx * dx + dy * dy + dz * dz;
+            auto append = [&](Mesh *mesh, Material *material, bool hair) {
                 if (!mesh) return;
-
-                Texture *albedo = mr->texture;
-                Color    tint(mr->r, mr->g, mr->b, mr->a);
-                Shader  *shader = mr->shader;
-                bool     lit    = mr->receiveLight;
-                if (material) {
-                    material->bind(gfx);
-                    albedo = material->getAlbedoTexture();
-                    tint   = Color(material->getTintR(), material->getTintG(),
-                                   material->getTintB(), material->getTintA());
-                    shader = material->effectiveShader();
-                    lit    = material->getReceiveLight();
-                } else {
-                    gfx.setMesh3DSurface(mr->isHair ? SurfaceMode::Transparent
-                                                    : SurfaceMode::Opaque,
-                                         BlendMode::Alpha, false, mr->isHair, 0.5f);
-                    gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
-                    gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength,
-                                             mr->texBombRot);
-                    gfx.setMesh3DNormalTexture(mr->normalTexture);
-                    gfx.setMesh3DHeightTexture(mr->heightTexture);
-                    gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers,
-                                          mr->parallaxMaxLayers);
+                if (mesh->hasBounds()) {
+                    const glm::vec4 worldCenter =
+                        model * glm::vec4(mesh->boundsCx, mesh->boundsCy, mesh->boundsCz, 1.f);
+                    if (!captureFrustum.sphereVisible(glm::vec3(worldCenter),
+                                                      mesh->boundsRadius * maxScale))
+                        return;
                 }
+                const SurfaceMode surface = material ? material->surfaceMode()
+                                                     : (hair ? SurfaceMode::Transparent
+                                                             : SurfaceMode::Opaque);
+                if (surface == SurfaceMode::Transparent && !includeTransparent) return;
+                const int sortPriority = material ? material->getSortPriority() : 0;
+                canvasItems.push_back(
+                    CanvasItem{mr, mesh, material, model, distance2, surface, sortPriority});
+            };
+            if (mr->usesParts()) {
+                for (int part = 0; part < mr->partCount; ++part) {
+                    Material *material =
+                        mr->parts[part].material ? mr->parts[part].material : mr->material;
+                    append(mr->parts[part].mesh, material,
+                           material ? material->isTransparentHair() : mr->isHair);
+                }
+            } else {
+                const float distance = std::sqrt(distance2) * std::max(lodDistanceScale, 0.01f);
+                append(mr->meshForDistance(distance), mr->material,
+                       mr->material ? mr->material->isTransparentHair() : mr->isHair);
+            }
+        }
 
-                // The preview intentionally omits shadow and clustered passes, but
-                // it must preserve the material's lighting contract.
-                gfx.setMesh3DClusteredActive(false);
-                gfx.setMesh3DShadowReceive(false);
+        std::stable_sort(canvasItems.begin(), canvasItems.end(),
+                         [](const CanvasItem &a, const CanvasItem &b) {
+                             const bool transparentA = a.surface == SurfaceMode::Transparent;
+                             const bool transparentB = b.surface == SurfaceMode::Transparent;
+                             if (transparentA != transparentB) return !transparentA;
+                             if (transparentA) {
+                                 if (a.sortPriority != b.sortPriority)
+                                     return a.sortPriority < b.sortPriority;
+                                 if (a.distance2 != b.distance2) return a.distance2 > b.distance2;
+                             }
+                             if (a.material != b.material) return a.material < b.material;
+                             return a.mesh < b.mesh;
+                         });
+
+        bool lightingEnabled = true;
+        for (const CanvasItem &item : canvasItems) {
+            Renderable3D::MeshRenderer *mr = item.mr;
+            Texture *albedo = mr->texture;
+            Color tint(mr->r, mr->g, mr->b, mr->a);
+            Shader *shader = mr->shader;
+            const bool lit = item.material ? item.material->getReceiveLight() : mr->receiveLight;
+            if (lit != lightingEnabled) {
                 if (lit) {
-                    gfx.setMesh3DLighting(sceneLighting);
+                    gfx.setMesh3DClusteredActive(clusteredCapture);
+                    gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
                 } else {
+                    gfx.setMesh3DClusteredActive(false);
                     Lighting3DPack unlit{};
-                    unlit.count   = 0;
                     unlit.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
                     gfx.setMesh3DLighting(unlit);
                 }
-
-                eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
-                gfx.drawMeshShader(mesh, model, albedo, tint, shader);
-            };
-
-            if (mr->usesParts()) {
-                for (int p = 0; p < mr->partCount; ++p) {
-                    Material *material =
-                        mr->parts[p].material ? mr->parts[p].material : mr->material;
-                    drawPreviewMesh(mr->parts[p].mesh, material);
-                }
-            } else {
-                drawPreviewMesh(mr->mesh, mr->material);
+                lightingEnabled = lit;
             }
+            if (item.material) {
+                item.material->bind(gfx);
+                albedo = item.material->getAlbedoTexture();
+                tint = Color(item.material->getTintR(), item.material->getTintG(),
+                             item.material->getTintB(), item.material->getTintA());
+                shader = item.material->effectiveShader();
+            } else {
+                gfx.setMesh3DSurface(item.surface, BlendMode::Alpha, false, mr->isHair, 0.5f);
+                gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
+                gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
+                gfx.setMesh3DNormalTexture(mr->normalTexture);
+                gfx.setMesh3DHeightTexture(mr->heightTexture);
+                gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers,
+                                      mr->parallaxMaxLayers);
+            }
+            gfx.setMesh3DShadowReceive(false);
+            eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
+            gfx.drawMeshShader(item.mesh, item.model, albedo, tint, shader);
         }
+    }
+
+    // Copy the list so a contributor may safely unregister itself while drawing.
+    const auto captureDrawers = g_captureDrawers;
+    for (const CaptureExtraDrawerEntry &entry : captureDrawers) {
+        if ((entry.mask & reflectionCaptureMask) == 0u || !entry.drawer) continue;
+        entry.drawer(gfx, *cd, captureViewProj, aspect, reflectionCaptureMask);
     }
 
     gfx.end3DFrameToCanvas();

@@ -1,7 +1,8 @@
-#include "editor/EditorTextureRecipeTarget.h"
+#include "procgen_editing/TextureRecipeTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-using namespace eve::editor;
+using namespace eve::procgen_editing;
+using namespace eve::editing;
 namespace {
 SelectionSnapshot select(const TextureRecipeTarget& target) {
     SelectionSnapshot selection;
@@ -12,7 +13,7 @@ SelectionSnapshot select(const TextureRecipeTarget& target) {
 }
 void apply(TextureRecipeTarget& target, EditorResult<DomainOperation> operation) {
     REQUIRE(operation.value);
-    REQUIRE(target.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());
 }
 }
 TEST_CASE("editor.texture_recipe.reflects_schema_and_reverses_parameters") {
@@ -24,11 +25,11 @@ TEST_CASE("editor.texture_recipe.reflects_schema_and_reverses_parameters") {
     auto width = target.makeSet(selection, PropertyPath("param.width"), int64_t{16},
                                 PropertySetMode::Absolute);
     REQUIRE(width.value);
-    REQUIRE(target.applyDomainOperation(*width.value).accepted());
+    REQUIRE(target.applyDomainOperation(*width.value).isAccepted());
     CHECK_EQ(*target.read(selection, PropertyPath("param.width")).value.getIf<int64_t>(), int64_t{16});
     DomainOperation undo = *width.value;
     undo.payload = width.value->inverse;
-    REQUIRE(target.applyDomainOperation(undo).accepted());
+    REQUIRE(target.applyDomainOperation(undo).isAccepted());
     CHECK_NE(*target.read(selection, PropertyPath("param.width")).value.getIf<int64_t>(), int64_t{16});
     CHECK_EQ(static_cast<int>(target.makeSet(selection, PropertyPath("param.width"), int64_t{5000},
                                              PropertySetMode::Absolute).status),

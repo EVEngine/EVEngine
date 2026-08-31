@@ -1,15 +1,16 @@
-#include "editor/EditorVoxelPaletteTarget.h"
+#include "voxel_editing/VoxelPaletteTarget.h"
 #include "voxel/CubeTypeRegistry.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-using namespace eve::editor;
+using namespace eve::voxel_editing;
+using namespace eve::editing;
 namespace{
-void apply(VoxelPaletteTarget&t,EditorResult<DomainOperation>op){REQUIRE(op.value);REQUIRE(t.applyDomainOperation(*op.value).accepted());}
+void apply(VoxelPaletteTarget&t,EditorResult<DomainOperation>op){REQUIRE(op.value);REQUIRE(t.applyDomainOperation(*op.value).isAccepted());}
 VoxelPaletteEntryValue cube(const std::string&id,bool directional=false){VoxelPaletteEntryValue v;v.id=ObjectId("editor-"+id);v.type.name=id;v.type.directional=directional;for(int i=0;i<6;++i)v.type.faceTex[i]=static_cast<std::uint8_t>(i+1);return v;}
 SelectionSnapshot select(const VoxelPaletteTarget&t,const char*id){SelectionSnapshot s;s.channel="voxel-palette";s.items.push_back({SelectionDomain::Asset,TargetId(t.targetId()),StableId(id),"voxel.cube-type"});return s;}
 }
 TEST_CASE("editor.voxel_palette.face_inspector_is_reversible_and_persistent"){
- VoxelPaletteTarget target("blocks");apply(target,target.makeCreate(cube("furnace",true)));const auto selection=select(target,"editor-furnace");EditorValue::Array faces{int64_t{9},int64_t{8},int64_t{7},int64_t{6},int64_t{5},int64_t{4}};auto edit=target.makeSet(selection,PropertyPath("cube.faces"),faces,PropertySetMode::Absolute);REQUIRE(edit.value);REQUIRE(target.applyDomainOperation(*edit.value).accepted());CHECK_EQ(int(target.entries().front().type.faceTex[0]),9);DomainOperation undo=*edit.value;undo.payload=edit.value->inverse;REQUIRE(target.applyDomainOperation(undo).accepted());CHECK_EQ(int(target.entries().front().type.faceTex[0]),1);VoxelPaletteTarget restored("copy");REQUIRE(restored.loadSnapshot(target.snapshotValue()).accepted());CHECK(restored.entries().front().type.directional);
+ VoxelPaletteTarget target("blocks");apply(target,target.makeCreate(cube("furnace",true)));const auto selection=select(target,"editor-furnace");EditorValue::Array faces{int64_t{9},int64_t{8},int64_t{7},int64_t{6},int64_t{5},int64_t{4}};auto edit=target.makeSet(selection,PropertyPath("cube.faces"),faces,PropertySetMode::Absolute);REQUIRE(edit.value);REQUIRE(target.applyDomainOperation(*edit.value).isAccepted());CHECK_EQ(int(target.entries().front().type.faceTex[0]),9);DomainOperation undo=*edit.value;undo.payload=edit.value->inverse;REQUIRE(target.applyDomainOperation(undo).isAccepted());CHECK_EQ(int(target.entries().front().type.faceTex[0]),1);VoxelPaletteTarget restored("copy");REQUIRE(restored.loadSnapshot(target.snapshotValue()).isAccepted());CHECK(restored.entries().front().type.directional);
 }
 TEST_CASE("editor.voxel_palette.enforces_variant_capacity_before_runtime"){
  VoxelPaletteTarget target("blocks");for(int i=0;i<63;++i)apply(target,target.makeCreate(cube("directional-"+std::to_string(i),true)));CHECK_EQ(static_cast<int>(target.makeCreate(cube("overflow",true)).status),static_cast<int>(EditorStatus::Rejected));apply(target,target.makeCreate(cube("single",false)));CHECK_EQ(target.entries().size(),static_cast<std::size_t>(64));

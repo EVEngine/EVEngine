@@ -4,6 +4,7 @@
 #include "data/ByteData.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/RenderSystem3D.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
@@ -671,7 +672,15 @@ namespace eve::graphics {
 
 GrassField::GrassField(Graphics *gfx) : gfx_(gfx) {
     if (!gfx_) throw eve::Exception("GrassField: null graphics");
+    captureDrawerToken_ = RenderSystem3D::addCaptureExtraDrawer(
+        0xffffffffu,
+        [this](Graphics &, const Camera3D::Data &, const glm::mat4 &, float, uint32_t mask) {
+            if (!reflectionCaptureEnabled_ || (reflectionCaptureMask_ & mask) == 0u) return;
+            draw(lastModel_);
+        });
 }
+
+GrassField::~GrassField() { RenderSystem3D::removeCaptureExtraDrawer(captureDrawerToken_); }
 
 void GrassField::bake(const float *posXYZ, const float *nrmXYZ, int vertexCount,
                       const uint32_t *indices, int indexCount, const BakeParams &params) {
@@ -764,6 +773,7 @@ void GrassField::setFrameDuration(float seconds) {
 void GrassField::draw() { draw(glm::mat4(1.f)); }
 
 void GrassField::draw(const glm::mat4 &model) {
+    lastModel_ = model;
     if (!gfx_ || !shader_ || !atlas_) return;
     const Color tint(1.f, 1.f, 1.f, 1.f);
     grass::setTime(shader_, time_);

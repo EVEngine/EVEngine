@@ -512,6 +512,14 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     std::memcpy(img->getData(), mapped, size_t(byteSize));
     device->unmapMemory(staging.memory);
     staging.release();
+    if (attachment == "depth") {
+        auto *pixels = static_cast<uint8_t *>(img->getData());
+        const size_t pixelCount = size_t(w) * size_t(h);
+        for (size_t i = 0; i < pixelCount; ++i) {
+            pixels[i * 4u + 1u] = pixels[i * 4u];
+            pixels[i * 4u + 2u] = pixels[i * 4u];
+        }
+    }
     return img;
 }
 
@@ -580,6 +588,19 @@ Canvas *Graphics::newCanvas(int w, int h) {
     return raw;
 }
 
+Canvas *Graphics::newHDRCanvas(int w, int h) {
+    ASSERT(initialized);
+    ASSERT_GT(w, 0);
+    ASSERT_GT(h, 0);
+    if (!initialized) throw Exception("newHDRCanvas: graphics not initialized");
+    if (w <= 0 || h <= 0) throw Exception("newHDRCanvas: invalid size");
+    ensureHdrOffscreenPipelines();
+    auto c = std::make_unique<OffscreenCanvas>(this, w, h, true);
+    Canvas *raw = c.get();
+    ownedCanvases.push_back(std::move(c));
+    return raw;
+}
+
 void Graphics::setCanvas(Canvas *canvas) {
     Canvas *next = canvas;
     if (next == static_cast<Canvas *>(this)) next = nullptr;
@@ -588,6 +609,10 @@ void Graphics::setCanvas(Canvas *canvas) {
     for (const auto &sb : solidBatches)
         if (!sb.batch.empty()) hasSolid = true;
     if (hasSolid || !texturedBatches.empty() || !litBatches.empty()) flushBatch();
+    if (next && sceneColorPassOpen) {
+        endSceneColorRenderPass();
+        queueSceneColorResolve();
+    }
     activeCanvas = next;
 }
 
@@ -634,7 +659,11 @@ void Graphics::noteSolidOverlay(uint32_t idx) {
 }
 
 void Graphics::noteTexturedOverlay(Texture *tex, uint32_t idx) {
-    if (tex && tex == getSceneColorTexture()) sceneColorComposited = true;
+    // Sampling scene color into an offscreen post-process target is not a
+    // swapchain composite.  Marking it as one suppresses the real final
+    // resolve and leaves the presented frame at its clear color.
+    if (!recordingEngine3D_ && !activeCanvas && tex && tex == getSceneColorTexture())
+        sceneColorComposited = true;
     auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
     if (!spans.empty() && spans.back().kind == OverlayKind::Textured && spans.back().index == idx)
         return;
@@ -794,21 +823,81 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
     noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
 }
 
-bool Graphics::drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
-                                                 float degrees, float u0, float v0, float u1, float v1,
-                                                 float strengthPixels, float opacity, bool rotatedUV) {
-    Texture* scene = getSceneColorTexture();
-    if (!frameHad3D || activeCanvas || !particleDistortionPipeline || !scene || !scene->gpuHandle || !displacement ||
-        !displacement->gpuHandle || strengthPixels <= 0.f || opacity <= 0.f)
-        return false;
+void Graphics::drawTexturedRectShaderDepthMotion(Texture *color, Texture *depth, Texture *motion,
+                                                 Shader *shader, float x, float y, float w,
+                                                 float h, const Color &tint) {
+    if (!color) {
+        drawSolidRect(x, y, w, h, tint);
+        return;
+    }
+    if (texturedBatches.empty() || texturedBatches.back().texture != color ||
+        texturedBatches.back().depth != depth || texturedBatches.back().motion != motion ||
+        texturedBatches.back().shader != shader) {
+        TexturedBatch batch{color, depth, shader, BlendMode::Opaque, Batcher{}};
+        batch.motion = motion;
+        texturedBatches.push_back(std::move(batch));
+    }
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
+void Graphics::drawTexturedRectShader4(Texture *color, Texture *depth, Texture *motion,
+                                       Texture *extra, Shader *shader, float x, float y, float w,
+                                       float h, const Color &tint) {
+    if (!color) {
+        drawSolidRect(x, y, w, h, tint);
+        return;
+    }
+    if (texturedBatches.empty() || texturedBatches.back().texture != color ||
+        texturedBatches.back().depth != depth || texturedBatches.back().motion != motion ||
+        texturedBatches.back().extra != extra || texturedBatches.back().shader != shader) {
+        TexturedBatch batch{color, depth, shader, BlendMode::Opaque, Batcher{}};
+        batch.motion = motion;
+        batch.extra = extra;
+        texturedBatches.push_back(std::move(batch));
+    }
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
+void Graphics::drawTexturedRectShader5(Texture *color, Texture *depth, Texture *motion,
+                                       Texture *extra, Texture *specular, Shader *shader, float x,
+                                       float y, float w, float h, const Color &tint) {
+    if (!color) {
+        drawSolidRect(x, y, w, h, tint);
+        return;
+    }
+    if (texturedBatches.empty() || texturedBatches.back().texture != color ||
+        texturedBatches.back().depth != depth || texturedBatches.back().motion != motion ||
+        texturedBatches.back().extra != extra || texturedBatches.back().specular != specular ||
+        texturedBatches.back().shader != shader) {
+        TexturedBatch batch{color, depth, shader, BlendMode::Opaque, Batcher{}};
+        batch.motion = motion;
+        batch.extra = extra;
+        batch.specular = specular;
+        texturedBatches.push_back(std::move(batch));
+    }
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
+    noteTexturedOverlay(color, uint32_t(texturedBatches.size() - 1));
+}
+
+Graphics::SceneColorDistortionStatus Graphics::drawSceneColorDistortionUVRotated(
+    Texture *displacement, float cx, float cy, float w, float h, float degrees, float u0, float v0,
+    float u1, float v1, float strengthPixels, float opacity, bool rotatedUV) {
+    Texture *scene = getSceneColorTexture();
+    if (!displacement || !scene || !scene->gpuHandle || !particleDistortionPipeline)
+        return SceneColorDistortionStatus::Unavailable;
 
     TexturedBatch batch{scene, displacement, nullptr, BlendMode::Alpha, Batcher{}};
     batch.effect = TexturedBatch::Effect::SceneColorDistortion;
-    batch.batch.addTexturedRectRotated(cx, cy, w, h, degrees, Color(strengthPixels, 0.f, 0.f, opacity), u0, v0, u1, v1,
-                                       rotatedUV);
+    batch.batch.addTexturedRectRotated(cx, cy, w, h, degrees,
+                                      Color(strengthPixels, 0.f, 0.f, opacity), u0, v0, u1, v1,
+                                      rotatedUV);
     texturedBatches.push_back(std::move(batch));
-    noteTexturedOverlay(displacement, uint32_t(texturedBatches.size() - 1));
-    return true;
+    // Distortion samples scene color but does not replace the base scene
+    // composite; keep the automatic scene resolve underneath this overlay.
+    noteTexturedOverlay(nullptr, uint32_t(texturedBatches.size() - 1));
+    return SceneColorDistortionStatus::Queued;
 }
 
 void Graphics::drawUiTextureRects(void *commandBuffer, const std::vector<UiTextureDraw> &draws) {
@@ -914,12 +1003,16 @@ vkb::BoundSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool
     return bound;
 }
 
-vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
+vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth, GpuTexture *motion,
+                                    GpuTexture *extra, GpuTexture *specular) {
     if (!color || !color->sampler) return {};
     vk::ImageView colorView = color->imageView();
     if (!colorView) return {};
     if (!depth || !depth->sampler || !depth->imageView()) depth = color;
-    LitSetKey key{color, depth};
+    if (!motion || !motion->sampler || !motion->imageView()) motion = color;
+    if (!extra || !extra->sampler || !extra->imageView()) extra = color;
+    if (!specular || !specular->sampler || !specular->imageView()) specular = color;
+    PostSetKey key{color, depth, motion, extra, specular};
     auto it = post2Sets.find(key);
     if (it != post2Sets.end()) return it->second;
 
@@ -932,6 +1025,12 @@ vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
         .image(vkb::SampledImage::forLaterSample(color->sampler, colorView))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(depth->sampler, depth->imageView()))
+        .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(motion->sampler, motion->imageView()))
+        .beginImages(3, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(extra->sampler, extra->imageView()))
+        .beginImages(4, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(specular->sampler, specular->imageView()))
         .update(device.instance);
     vkb::BoundSet bound = std::move(unbound).publish();
     post2Sets.emplace(key, bound);
@@ -960,8 +1059,9 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pi
         ndc.toNDC(viewW, viewH);
         std::vector<TexturedVertex> gpuVerts;
         gpuVerts.reserve(ndc.vertices().size());
-        for (const auto &v : ndc.vertices())
+        for (const auto &v : ndc.vertices()) {
             gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
+        }
 
         if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
         vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
@@ -994,9 +1094,13 @@ Shader *Graphics::newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     gpu->pipelineLayout = shaderPipelineLayout;
     gpu->swapchainPipeline =
         createTexturedStylePipeline(vert, fragSpv, renderpass, shaderPipelineLayout);
+    gpu->swapchainOpaquePipeline = createTexturedStylePipeline(
+        vert, fragSpv, renderpass, shaderPipelineLayout, BlendMode::Opaque);
     if (offscreenRenderPass) {
         gpu->offscreenPipeline =
             createTexturedStylePipeline(vert, fragSpv, offscreenRenderPass, shaderPipelineLayout);
+        gpu->offscreenOpaquePipeline = createTexturedStylePipeline(
+            vert, fragSpv, offscreenRenderPass, shaderPipelineLayout, BlendMode::Opaque);
     }
 
     auto sh = std::make_unique<Shader>();
@@ -1042,12 +1146,19 @@ Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     auto gpu = std::make_unique<GpuShader>();
     gpu->isMesh3D = true;
     gpu->pipelineLayout = mesh3dShaderPipelineLayout;
+    ensureOffscreen3DResources();
     gpu->mesh3dPipeline = createMesh3DStylePipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
                                                     activeScenePass(), activeSceneSamples());
     // Built here, not lazily in drawMeshShader: vkCreateGraphicsPipelines
     // during an open render pass crashes software ICDs (Lavapipe).
     gpu->mesh3dXrayPipeline = createMesh3DXrayPipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
                                                        activeScenePass(), activeSceneSamples());
+    gpu->mesh3dOffscreenPipeline = createMesh3DStylePipeline(
+        vert, fragSpv, mesh3dShaderPipelineLayout, offscreen3DRenderPass,
+        vk::SampleCountFlagBits::e1);
+    gpu->mesh3dHdrOffscreenPipeline = createMesh3DStylePipeline(
+        vert, fragSpv, mesh3dShaderPipelineLayout, hdrOffscreen3DRenderPass,
+        vk::SampleCountFlagBits::e1);
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
@@ -1079,8 +1190,15 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     gpu->isMesh3D = true;
     gpu->isHair3D = true;
     gpu->pipelineLayout = mesh3dShaderPipelineLayout;
+    ensureOffscreen3DResources();
     gpu->mesh3dPipeline = createMesh3DHairPipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
                                                    activeScenePass(), activeSceneSamples());
+    gpu->mesh3dOffscreenPipeline = createMesh3DHairPipeline(
+        vert, fragSpv, mesh3dShaderPipelineLayout, offscreen3DRenderPass,
+        vk::SampleCountFlagBits::e1);
+    gpu->mesh3dHdrOffscreenPipeline = createMesh3DHairPipeline(
+        vert, fragSpv, mesh3dShaderPipelineLayout, hdrOffscreen3DRenderPass,
+        vk::SampleCountFlagBits::e1);
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
@@ -1119,8 +1237,17 @@ bool Graphics::releaseShader(Shader *shader) {
     waitForSharedGpuResources();
     if (gpu->swapchainPipeline) device->destroyPipeline(gpu->swapchainPipeline);
     if (gpu->offscreenPipeline) device->destroyPipeline(gpu->offscreenPipeline);
+    if (gpu->swapchainOpaquePipeline) device->destroyPipeline(gpu->swapchainOpaquePipeline);
+    if (gpu->offscreenOpaquePipeline) device->destroyPipeline(gpu->offscreenOpaquePipeline);
+    if (gpu->hdrOffscreenPipeline) device->destroyPipeline(gpu->hdrOffscreenPipeline);
+    if (gpu->hdrOffscreenOpaquePipeline)
+        device->destroyPipeline(gpu->hdrOffscreenOpaquePipeline);
     if (gpu->mesh3dPipeline) device->destroyPipeline(gpu->mesh3dPipeline);
     if (gpu->mesh3dXrayPipeline) device->destroyPipeline(gpu->mesh3dXrayPipeline);
+    if (gpu->mesh3dOffscreenPipeline)
+        device->destroyPipeline(gpu->mesh3dOffscreenPipeline);
+    if (gpu->mesh3dHdrOffscreenPipeline)
+        device->destroyPipeline(gpu->mesh3dHdrOffscreenPipeline);
     shader->gpuHandle = nullptr;
     ownedGpuShaders.erase(gpuIt);
     // Transfer the CPU facade to the caller instead of destroying it.
@@ -1177,14 +1304,14 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
     // those frames before transitioning it back to a color attachment.
     waitForSharedGpuResources();
 
-    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
-                            [&](vk::CommandBuffer cb) {
+    auto recordOffscreen = [&](vk::CommandBuffer cb) {
                                 canvas->colorImage().setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
 
                                 vk::ClearValue cv{
                                     vk::ClearColorValue(std::array<float, 4>{cc.r, cc.g, cc.b, cc.a})};
                                 vk::RenderPassBeginInfo rpBegin{};
-                                rpBegin.renderPass = offscreenRenderPass;
+                                rpBegin.renderPass = canvas->isHDR() ? hdrOffscreenRenderPass
+                                                                    : offscreenRenderPass;
                                 rpBegin.framebuffer = canvas->framebuffer();
                                 rpBegin.renderArea.extent =
                                     vk::Extent2D{uint32_t(canvas->getWidth()), uint32_t(canvas->getHeight())};
@@ -1212,10 +1339,12 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                         case BlendMode::Multiply:
                                             return offscreenMultiplyTexPipeline;
                                         case BlendMode::Opaque:
-                                            return offscreenOpaqueTexPipeline;
+                                            return canvas->isHDR() ? hdrOffscreenOpaqueTexPipeline
+                                                                   : offscreenOpaqueTexPipeline;
                                         case BlendMode::Alpha:
                                         default:
-                                            return offscreenTexPipeline;
+                                            return canvas->isHDR() ? hdrOffscreenTexPipeline
+                                                                   : offscreenTexPipeline;
                                     }
                                 };
                                 auto offscreenSolidPipe = [&](BlendMode mode) -> vk::Pipeline {
@@ -1238,9 +1367,25 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
                                     auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
                                     vk::DescriptorSet texSet = gpu->descriptorSet;
-                                    if (tb.depth && tb.depth->gpuHandle) {
-                                        auto *depthGpu = static_cast<GpuTexture *>(tb.depth->gpuHandle);
-                                        if (vk::DescriptorSet combo = post2SetFor(gpu, depthGpu))
+                                    if ((tb.depth && tb.depth->gpuHandle) ||
+                                        (tb.motion && tb.motion->gpuHandle) ||
+                                        (tb.extra && tb.extra->gpuHandle)) {
+                                        auto *depthGpu = tb.depth
+                                                             ? static_cast<GpuTexture *>(tb.depth->gpuHandle)
+                                                             : nullptr;
+                                        auto *motionGpu = tb.motion
+                                                              ? static_cast<GpuTexture *>(tb.motion->gpuHandle)
+                                                              : nullptr;
+                                        auto *extraGpu = tb.extra
+                                                             ? static_cast<GpuTexture *>(tb.extra->gpuHandle)
+                                                             : nullptr;
+                                        auto *specularGpu =
+                                            tb.specular
+                                                ? static_cast<GpuTexture *>(tb.specular->gpuHandle)
+                                                : nullptr;
+                                        if (vk::DescriptorSet combo =
+                                                post2SetFor(gpu, depthGpu, motionGpu, extraGpu,
+                                                            specularGpu))
                                             texSet = combo;
                                     }
                                     Batcher ndc = tb.batch;
@@ -1255,11 +1400,24 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
                                     if (tb.shader && tb.shader->gpuHandle) {
-                                        ensureShaderOffscreenPipeline(tb.shader);
+                                        if (canvas->isHDR())
+                                            ensureShaderHdrOffscreenPipeline(tb.shader);
+                                        else
+                                            ensureShaderOffscreenPipeline(tb.shader);
                                         auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
-                                        if (!gs->offscreenPipeline) return;
+                                        vk::Pipeline alphaPipe = canvas->isHDR()
+                                                                     ? gs->hdrOffscreenPipeline
+                                                                     : gs->offscreenPipeline;
+                                        vk::Pipeline opaquePipe =
+                                            canvas->isHDR() ? gs->hdrOffscreenOpaquePipeline
+                                                            : gs->offscreenOpaquePipeline;
+                                        if (!alphaPipe) return;
+                                        vk::Pipeline customPipeline =
+                                            tb.blend == BlendMode::Opaque && opaquePipe
+                                                ? opaquePipe
+                                                : alphaPipe;
                                         cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                                        gs->offscreenPipeline);
+                                                        customPipeline);
                                         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                                               shaderPipelineLayout, 0, 1,
                                                               &texSet, 0, nullptr);
@@ -1343,7 +1501,13 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
 
                                 cb.endRenderPass();
                                 canvas->colorImage().endSampledLayout();
-                            });
+                            };
+    if (swapchainPassOpen && !sceneColorPassOpen && presentRecording) {
+        recordOffscreen(currentPresentCb());
+    } else {
+        vkb::executeImmediately(device.instance, uploadPool,
+                                device.getQueue(vkb::QueueType::graphics), recordOffscreen);
+    }
 }
 
 void Graphics::abortOpen3DFrame() {
@@ -1399,6 +1563,7 @@ void Graphics::flushToSwapchain() {
 
     const bool continue3D = swapchainPassOpen;
     const bool hadScenePass = sceneColorPassOpen;
+    const bool hasScenePath = hadScenePass || pendingSceneResolveSource != nullptr;
 
     if (hadScenePass) {
         endSceneColorRenderPass();
@@ -1418,18 +1583,19 @@ void Graphics::flushToSwapchain() {
         recordDeferredFrameGraph();
     }
 
-    // Resident particles record compute + compaction before any swapchain
-    // render pass, then consume the GPU-written indirect command below.
-    if (!(continue3D && !hadScenePass)) recordGpuParticleCompute(presentRecording.commandBuffer());
+    if (!(continue3D && !hasScenePath))
+        recordGpuParticleCompute(presentRecording.commandBuffer());
+
+    materializeSceneColorResolve();
 
     // Render the UI overlay (ImGui) into its own MSAA pass, resolved and
     // composited as the top-most fullscreen quad. Skipped only on the rare 3D
     // fallback path where the swapchain pass is already open from begin3DFrame.
-    if (presentOverlayFn_ && !(continue3D && !hadScenePass)) {
+    if (presentOverlayFn_ && !(continue3D && !hasScenePath)) {
         renderUiOverlayPass();
     }
 
-    if (hadScenePass || !continue3D) {
+    if (hasScenePath || !continue3D) {
         beginSwapchainColorPass();
         swapchainPassOpen = true;
     }
@@ -1442,7 +1608,7 @@ void Graphics::flushToSwapchain() {
     auto       gpuParticleDraws = std::move(gpuParticleDraws_);
     auto sceneResolve = std::move(pendingSceneResolve);
     auto uiResolve = std::move(pendingUiResolve);
-    const bool autoScene = hadScenePass && !sceneColorComposited;
+    const bool autoScene = sceneResolve.has_value() && !sceneColorComposited;
     Texture *sceneTex = getSceneColorTexture();
     clear2DBatches();
 
@@ -1487,13 +1653,23 @@ void Graphics::flushToSwapchain() {
         }
     };
 
-    auto drawTextured = [&](TexturedBatch &tb) {
+    auto drawTextured = [&](TexturedBatch &tb, bool toneMapScene = false) {
         if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
         auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
         vk::DescriptorSet texSet = gpu->descriptorSet;
-        if (tb.depth && tb.depth->gpuHandle) {
-            auto *depthGpu = static_cast<GpuTexture *>(tb.depth->gpuHandle);
-            if (vk::DescriptorSet combo = post2SetFor(gpu, depthGpu)) texSet = combo;
+        Texture *depthTexture = toneMapScene ? sceneTex : tb.depth;
+        if ((depthTexture && depthTexture->gpuHandle) || (tb.motion && tb.motion->gpuHandle) ||
+            (tb.extra && tb.extra->gpuHandle)) {
+            auto *depthGpu =
+                depthTexture ? static_cast<GpuTexture *>(depthTexture->gpuHandle) : nullptr;
+            auto *motionGpu =
+                tb.motion ? static_cast<GpuTexture *>(tb.motion->gpuHandle) : nullptr;
+            auto *extraGpu = tb.extra ? static_cast<GpuTexture *>(tb.extra->gpuHandle) : nullptr;
+            auto *specularGpu =
+                tb.specular ? static_cast<GpuTexture *>(tb.specular->gpuHandle) : nullptr;
+            if (vk::DescriptorSet combo =
+                    post2SetFor(gpu, depthGpu, motionGpu, extraGpu, specularGpu))
+                texSet = combo;
         }
         Batcher ndc = tb.batch;
         ndc.toNDC(width, height);
@@ -1512,14 +1688,18 @@ void Graphics::flushToSwapchain() {
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0, nullptr);
         } else if (tb.shader && tb.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->swapchainPipeline);
+            vk::Pipeline customPipeline =
+                tb.blend == BlendMode::Opaque && gs->swapchainOpaquePipeline
+                    ? gs->swapchainOpaquePipeline
+                    : gs->swapchainPipeline;
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, customPipeline);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,
                                   &texSet, 0, nullptr);
             cb.pushConstants(shaderPipelineLayout,
                              vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                              Shader::kPushConstantBytes, tb.shader->pushConstantData());
         } else {
-            vk::Pipeline pipe = swapchainTexPipe(tb.blend);
+            vk::Pipeline pipe = toneMapScene ? sceneTonemapPipeline : swapchainTexPipe(tb.blend);
             if (!pipe) return;
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
@@ -1584,11 +1764,11 @@ void Graphics::flushToSwapchain() {
     // Default: blit 3D fullscreen under script 2D. Scripts that call
     // drawScene3D / drawTexturedRect(getSceneColorTexture()) own the order.
     if (autoScene && sceneResolve) {
-        drawTextured(*sceneResolve);
+        drawTextured(*sceneResolve, true);
         drawEngine3D();
     }
 
-    if (spans.empty()) {
+    if (spans.empty() && engineSpans.empty()) {
         for (size_t i = 0; i < solid.size(); ++i) {
             if (!solid[i].batch.empty())
                 drawSolidSpan(uint32_t(i), 0, uint32_t(solid[i].batch.vertices().size()));

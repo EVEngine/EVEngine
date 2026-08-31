@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "data/ByteData.h"
+#include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "voxel/Chunk.h"
 #include "voxel/CubeTypeRegistry.h"
@@ -2308,6 +2309,48 @@ TEST_CASE("voxel.terrain.fill_columns") {
     highWorld.setTerrainParams(7, 1, 2, 3, 8.f, 14.f, 1.f / 32.f);
     highWorld.streamAround(0, 1, 0, 0);
     CHECK_EQ(highWorld.getChunk(0, 1, 0)->totalRectCount(), 0);
+}
+
+TEST_CASE("voxel.terrain.evtr_streams_height_and_biome_surface_materials") {
+    eve::procgen::Heightmap heightmap(32, 32);
+    std::fill(heightmap.data().begin(), heightmap.data().end(), 8.f);
+    eve::procgen::HydrologyMap hydrology;
+    hydrology.width = 32;
+    hydrology.height = 32;
+    hydrology.flowDirection.assign(32 * 32, -1);
+    hydrology.flowAccumulation.assign(32 * 32, 1.f);
+    hydrology.rivers.assign(32 * 32, 0);
+    eve::procgen::ClimateMap climate;
+    climate.width = 32;
+    climate.height = 32;
+    climate.temperature.assign(32 * 32, 0.6f);
+    climate.moisture.assign(32 * 32, 0.5f);
+    climate.biomes.assign(32 * 32, eve::procgen::Biome::Grassland);
+    for (int z = 0; z < 32; ++z) {
+        for (int x = 16; x < 32; ++x)
+            climate.biomes[size_t(z * 32 + x)] = eve::procgen::Biome::Desert;
+        climate.biomes[size_t(z * 32 + 8)] = eve::procgen::Biome::River;
+        hydrology.rivers[size_t(z * 32 + 8)] = 1;
+    }
+    std::vector<uint8_t> archive;
+    std::string error;
+    REQUIRE(eve::procgen::TerrainAsset::bake(heightmap, hydrology, climate, 8, archive, &error));
+    eve::data::ByteData bytes(archive.data(), archive.size());
+
+    VoxelWorld world;
+    REQUIRE(world.loadTerrainAsset(&bytes, 2.f, 1.f));
+    world.setTerrainAssetMaterials(11, 14, 15, 13, 16);
+    StreamStats streamed = world.streamAround(0, 0, 0, 0);
+    CHECK_EQ(streamed.created, 1);
+    CHECK(world.getTerrainAssetResidentCount() > 0);
+    CHECK_EQ(world.terrainHeightAt(5, 5), 10);
+    Chunk *chunk = world.getChunk(0, 0, 0);
+    REQUIRE(chunk != nullptr);
+    CHECK_EQ(int(chunk->get(5, 10, 5)), 11);   // grassland vegetation
+    CHECK_EQ(int(chunk->get(20, 10, 5)), 14);  // desert sand
+    CHECK_EQ(int(chunk->get(8, 10, 5)), 16);   // river bed
+    CHECK_EQ(int(chunk->get(5, 9, 5)), 2);     // existing subsurface contract
+    CHECK_EQ(int(chunk->get(5, 6, 5)), 3);     // existing stone contract
 }
 
 TEST_CASE("voxel.terrain.param_api_sand_band") {

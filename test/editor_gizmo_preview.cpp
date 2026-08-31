@@ -1,12 +1,13 @@
-#include "editor/EditorGizmoPreview.h"
+#include "domain_gizmo_editing/DomainGizmoPreview.h"
 
-#include "editor/EditorAudioTarget.h"
-#include "editor/EditorLightingTarget.h"
-#include "editor/EditorPhysicsTarget.h"
+#include "audio_editing/AudioTarget.h"
+#include "lighting_editing/LightingTarget.h"
+#include "physics_editing/PhysicsTarget.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::domain_gizmo_editing;
+using namespace eve::editing;
 
 namespace {
 SelectionSnapshot selection(const char* target) {
@@ -18,7 +19,7 @@ SelectionSnapshot selection(const char* target) {
 void set(IPropertyProvider& provider, IDomainOperationTarget& target,
          const SelectionSnapshot& selected, const char* path, EditorValue value) {
     auto operation = provider.makeSet(selected, PropertyPath(path), value, PropertySetMode::Absolute);
-    REQUIRE(operation.value); CHECK(target.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(operation.value); CHECK(target.applyDomainOperation(*operation.value).isAccepted());
 }
 }
 

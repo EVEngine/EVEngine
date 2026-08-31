@@ -1,17 +1,17 @@
-#include "editor/EditorLocalization.h"
+#include "localization_editing/LocalizationDocument.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::localization_editing;
 
 TEST_CASE("editor.localization_reports_completeness_placeholders_and_voice_metadata") {
     LocalizationDocument document;
-    REQUIRE(document.addRow("dialogue.greeting", "Hello {name}", "Opening line").accepted());
+    REQUIRE(document.addRow("dialogue.greeting", "Hello {name}", "Opening line").isAccepted());
     REQUIRE(document.setVariant("dialogue.greeting", "zh-CN",
-                                {"你好 {name}", "asset://voice/zh/greeting.ogg", "approved", 1.2}).accepted());
+                                {"你好 {name}", "asset://voice/zh/greeting.ogg", "approved", 1.2}).isAccepted());
     REQUIRE(document.setVariant("dialogue.greeting", "fr-FR",
-                                {"Bonjour", "", "missing", 0.0}).accepted());
+                                {"Bonjour", "", "missing", 0.0}).isAccepted());
     const LocalizationAnalysis analysis = document.analyze({"zh-CN", "fr-FR"}, true);
     CHECK_EQ(static_cast<int>(analysis.status), static_cast<int>(EditorStatus::Failed));
     CHECK_EQ(analysis.locales.size(), size_t{2});
@@ -23,12 +23,12 @@ TEST_CASE("editor.localization_reports_completeness_placeholders_and_voice_metad
 
 TEST_CASE("editor.localization_snapshot_round_trip_is_atomic_and_deterministic") {
     LocalizationDocument source;
-    REQUIRE(source.addRow("ui.quit", "Quit").accepted());
-    REQUIRE(source.setVariant("ui.quit", "zh-CN", {"退出", "", "", 0.0}).accepted());
+    REQUIRE(source.addRow("ui.quit", "Quit").isAccepted());
+    REQUIRE(source.setVariant("ui.quit", "zh-CN", {"退出", "", "", 0.0}).isAccepted());
     const EditorValue snapshot = source.snapshotValue();
 
     LocalizationDocument restored;
-    REQUIRE(restored.loadSnapshot(snapshot).accepted());
+    REQUIRE(restored.loadSnapshot(snapshot).isAccepted());
     CHECK_EQ(restored.snapshotValue(), snapshot);
     const Revision before = restored.revision();
     EditorValue broken = snapshot;
@@ -43,7 +43,7 @@ TEST_CASE("editor.localization_snapshot_round_trip_is_atomic_and_deterministic")
 
 TEST_CASE("editor.localization_rejects_duplicate_keys_and_invalid_voice_status") {
     LocalizationDocument document;
-    REQUIRE(document.addRow("line.one", "One").accepted());
+    REQUIRE(document.addRow("line.one", "One").isAccepted());
     CHECK_EQ(static_cast<int>(document.addRow("line.one", "Duplicate").status),
              static_cast<int>(EditorStatus::Conflict));
     CHECK_EQ(static_cast<int>(document.setVariant("line.one", "en-US", {"One", "", "done", 0.0}).status),

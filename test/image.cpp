@@ -89,6 +89,27 @@ TEST_CASE("image.setPixel.outOfRange") {
     CHECK(expectException([&] { data->getPixel(-1, 0); }));
 }
 
+TEST_CASE("image.paintCircleUv.mapsVAndWrapsSeams") {
+    auto* module = img();
+    std::unique_ptr<eve::image::ImageData> data(module->newImageData(8, 8));
+    const Colorf red{1.f, 0.f, 0.f, 1.f};
+    auto top = data->paintCircleUv(0.5f, 1.f, 0.f, red);
+    REQUIRE(top.ok());
+    const auto topReceipt = std::move(top).takeValue();
+    CHECK_EQ(topReceipt.centerY, 0);
+    CHECK_EQ(topReceipt.changedPixelCount, 1);
+    CHECK(data->getPixel(topReceipt.centerX, 0).r > 0.99f);
+
+    auto seam = data->paintCircleUv(0.f, 0.5f, 1.1f, red, true, false);
+    REQUIRE(seam.ok());
+    CHECK(std::move(seam).takeValue().changedPixelCount >= 4);
+    CHECK(data->getPixel(7, 4).r > 0.99f);
+
+    auto invalid = data->paintCircleUv(0.5f, 0.5f, -1.f, red);
+    CHECK(!invalid.ok());
+    CHECK_EQ(invalid.error()->code(), eve::DiagnosticCode::InvalidArgument);
+}
+
 TEST_CASE("image.invalidFormat") {
     auto* module = img();
     CHECK(!eve::image::ImageData::validPixelFormat("NOT_A_FORMAT"));

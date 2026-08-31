@@ -113,10 +113,11 @@ ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const g
         cascadeNdc[i] = std::max(std::max(0.f, bias), autoNdc);
         cascadeTexel[i] = texelWorld;
     }
-    out.ubo.splits = glm::vec4(splits[1], splits[2], splits[3], std::max(0.f, strength));
+    const float perceptualStrength = std::sqrt(std::clamp(strength, 0.f, 1.f));
+    out.ubo.splits = glm::vec4(splits[1], splits[2], splits[3], perceptualStrength);
     out.ubo.cascadeBias = glm::vec4(cascadeNdc[0], cascadeNdc[1], cascadeNdc[2], 0.f);
     out.ubo.cascadeTexel = glm::vec4(cascadeTexel[0], cascadeTexel[1], cascadeTexel[2], 0.f);
-    out.ubo.bias = glm::vec4(cascadeNdc[0], 1.f, 1.f, 0.f);
+    out.ubo.bias = glm::vec4(cascadeNdc[0], 1.f, 1.f, 0.02f);
     return out;
 }
 

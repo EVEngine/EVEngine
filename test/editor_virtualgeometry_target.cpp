@@ -1,13 +1,14 @@
-#include "editor/EditorVirtualGeometryTarget.h"
+#include "virtualgeometry_editing/VirtualGeometryTarget.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::virtualgeometry_editing;
+using namespace eve::editing;
 
 namespace {
 SelectionSnapshot select(const VirtualGeometryDocumentTarget& target){SelectionSnapshot s;s.channel="virtualgeometry";s.items.push_back({SelectionDomain::Asset,TargetId(target.targetId()),StableId(target.targetId()),"virtualgeometry.import"});return s;}
-void apply(VirtualGeometryDocumentTarget& target,EditorResult<DomainOperation> operation){REQUIRE(operation.value);REQUIRE(target.applyDomainOperation(*operation.value).accepted());}
+void apply(VirtualGeometryDocumentTarget& target,EditorResult<DomainOperation> operation){REQUIRE(operation.value);REQUIRE(target.applyDomainOperation(*operation.value).isAccepted());}
 class GridResolver final : public IVirtualGeometryMeshResolver {
 public:
     EditorResult<VirtualGeometryMeshData> resolve(const std::string& id) const override {
@@ -19,8 +20,8 @@ public:
 
 TEST_CASE("editor.virtualgeometry.import_preset_is_reversible_and_atomic") {
     VirtualGeometryDocumentTarget target("vg");const auto selection=select(target);
-    auto edit=target.makeSet(selection,PropertyPath("cluster.maxTriangles"),int64_t{64},PropertySetMode::Absolute);REQUIRE(edit.value);REQUIRE(target.applyDomainOperation(*edit.value).accepted());CHECK_EQ(target.value().builder.maxTrianglesPerCluster,64);
-    DomainOperation undo=*edit.value;undo.payload=edit.value->inverse;REQUIRE(target.applyDomainOperation(undo).accepted());CHECK_EQ(target.value().builder.maxTrianglesPerCluster,124);
+    auto edit=target.makeSet(selection,PropertyPath("cluster.maxTriangles"),int64_t{64},PropertySetMode::Absolute);REQUIRE(edit.value);REQUIRE(target.applyDomainOperation(*edit.value).isAccepted());CHECK_EQ(target.value().builder.maxTrianglesPerCluster,64);
+    DomainOperation undo=*edit.value;undo.payload=edit.value->inverse;REQUIRE(target.applyDomainOperation(undo).isAccepted());CHECK_EQ(target.value().builder.maxTrianglesPerCluster,124);
     const auto before=target.snapshotValue();EditorValue invalid=before;auto*root=invalid.getIf<EditorValue::Object>();auto*content=(*root)["content"].getIf<EditorValue::Object>();(*content)["mergeFactor"]=int64_t{20};CHECK_EQ(static_cast<int>(target.loadSnapshot(invalid).status),static_cast<int>(EditorStatus::Rejected));CHECK_EQ(target.snapshotValue(),before);
 }
 
@@ -31,5 +32,5 @@ TEST_CASE("editor.virtualgeometry.build_is_deterministic_and_emits_lod_cost_curv
 }
 
 TEST_CASE("editor.virtualgeometry.failed_rebuild_preserves_previous_generation") {
-    VirtualGeometryDocumentTarget target("vg");const auto selection=select(target);apply(target,target.makeSet(selection,PropertyPath("source.asset"),"grid",PropertySetMode::Absolute));GridResolver resolver;VirtualGeometryBuildRuntime runtime;REQUIRE(runtime.build(target,resolver).accepted());const auto*asset=runtime.asset();const auto revision=runtime.revision();apply(target,target.makeSet(selection,PropertyPath("source.asset"),"missing",PropertySetMode::Absolute));CHECK_EQ(static_cast<int>(runtime.build(target,resolver).status),static_cast<int>(EditorStatus::NotFound));CHECK(runtime.asset()==asset);CHECK_EQ(runtime.revision(),revision);
+    VirtualGeometryDocumentTarget target("vg");const auto selection=select(target);apply(target,target.makeSet(selection,PropertyPath("source.asset"),"grid",PropertySetMode::Absolute));GridResolver resolver;VirtualGeometryBuildRuntime runtime;REQUIRE(runtime.build(target,resolver).isAccepted());const auto*asset=runtime.asset();const auto revision=runtime.revision();apply(target,target.makeSet(selection,PropertyPath("source.asset"),"missing",PropertySetMode::Absolute));CHECK_EQ(static_cast<int>(runtime.build(target,resolver).status),static_cast<int>(EditorStatus::NotFound));CHECK(runtime.asset()==asset);CHECK_EQ(runtime.revision(),revision);
 }

@@ -40,6 +40,12 @@ struct AssetDependency {
     PropertyPath   sourceProperty;
 };
 
+/** @brief One owning record/dependency unit staged for an atomic index generation. */
+struct AssetPublication {
+    AssetRecord                  record;
+    std::vector<AssetDependency> dependencies;
+};
+
 /** @brief Deterministic filter used by headless and UI asset queries. */
 struct AssetQuery {
     std::vector<std::string>   typeIds;
@@ -63,6 +69,11 @@ class MemoryAssetDatabase {
 public:
     /** @brief Atomically publish one validated record and its dependencies. */
     EditorResult<AssetRecord> publish(AssetRecord record, std::vector<AssetDependency> dependencies = {});
+    /**
+     * @brief Validate and atomically publish an entire package projection as one index generation.
+     * @return Owning published records; rejection leaves records, URIs, dependencies and generation unchanged.
+     */
+    [[nodiscard]] EditorResult<std::vector<AssetRecord>> publishBatch(std::vector<AssetPublication> publications);
     /** @brief Find one asset by stable GUID. */
     EditorResult<AssetRecord> find(const AssetGuid& guid) const;
     /** @brief Find one asset by logical content URI. */

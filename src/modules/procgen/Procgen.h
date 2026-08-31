@@ -19,6 +19,8 @@
 #include "procgen/core/ProcgenCore.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
+#include "procgen/heightmap/TerrainPipeline.h"
+#include "procgen/heightmap/TerrainMesh.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 
@@ -32,11 +34,16 @@ namespace eve::graphics {
 class Graphics;
 class Texture;
 class Mesh;
+class Shader;
 }  // namespace eve::graphics
 
 namespace eve::image {
 class ImageData;
 }  // namespace eve::image
+
+namespace eve::data {
+class ByteData;
+}  // namespace eve::data
 
 namespace eve::procgen {
 struct PbrTextureSet;
@@ -181,10 +188,30 @@ public:
                                                                           uint32_t seed, int maxPoints);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> mergePointsHandle(ProcgenPointSetHandleRef first,
                                                                           ProcgenPointSetHandleRef second);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> unionPointsHandle(ProcgenPointSetHandleRef first,
+                                                                          ProcgenPointSetHandleRef second);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> intersectPointsHandle(ProcgenPointSetHandleRef first,
+                                                                              ProcgenPointSetHandleRef second);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> differencePointsHandle(ProcgenPointSetHandleRef first,
+                                                                               ProcgenPointSetHandleRef second);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> transformPointsHandle(ProcgenPointSetHandleRef input,
                                                                               float translateX, float translateY,
                                                                               float translateZ, float yawDegrees,
                                                                               float scaleX, float scaleY, float scaleZ);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> transformPoints3DHandle(
+        ProcgenPointSetHandleRef input, float translateX, float translateY, float translateZ,
+        float pitchDegrees, float yawDegrees, float rollDegrees, float scaleX, float scaleY,
+        float scaleZ);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> copyPointsHandle(
+        ProcgenPointSetHandleRef source, ProcgenPointSetHandleRef targets,
+        bool inheritTargetAttributes);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> remapDensityHandle(
+        ProcgenPointSetHandleRef input, float inputMin, float inputMax, float outputMin,
+        float outputMax, bool clampOutput);
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> mathFloatAttributeHandle(
+        ProcgenPointSetHandleRef input, const std::string& attribute,
+        const std::string& outputAttribute, const std::string& operation, float operand,
+        float defaultValue);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> filterFloatAttributeHandle(ProcgenPointSetHandleRef input,
                                                                                    const std::string       &name,
                                                                                    float minValue, float maxValue,
@@ -195,17 +222,28 @@ public:
                                                                                     bool                     invert);
     [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> densityCullHandle(ProcgenPointSetHandleRef input, uint32_t seed,
                                                                           float multiplier);
+    /** @brief Project points through the optional world-query capability. */
+    [[nodiscard]] eve::Result<ProcgenPointSetHandleRef> projectToWorldHandle(
+        ProcgenPointSetHandleRef input, float maxY, float minY, std::uint64_t maskBits,
+        bool keepUnmatched);
 
     // --- Spatial data and composable PCG domains ---
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> pointDataHandle(ProcgenPointSetHandleRef points);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> boxVolumeHandle(float minX, float minY, float minZ,
                                                                            float maxX, float maxY, float maxZ);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> sphereVolumeHandle(float x, float y, float z, float radius);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> polygonVolumeHandle(
+        ProcgenPointSetHandleRef controlPoints, float minY, float maxY);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> splineDataHandle(ProcgenPointSetHandleRef controlPoints,
                                                                             float                    radius);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> heightfieldDataHandle(ProcgenHeightmapHandleRef heightmap,
                                                                                  float originX, float originZ,
                                                                                  float cellSize, float heightScale);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> textureMaskDataHandle(
+        ProcgenHeightmapHandleRef values, float originX, float originZ, float cellSize,
+        float minValue, float maxValue, float minY, float maxY);
+    [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> meshSurfaceDataHandle(
+        ProcgenMeshBuildHandleRef mesh, float tolerance);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> unionSpatialHandle(ProcgenSpatialDataHandleRef left,
                                                                               ProcgenSpatialDataHandleRef right);
     [[nodiscard]] eve::Result<ProcgenSpatialDataHandleRef> intersectSpatialHandle(ProcgenSpatialDataHandleRef left,
@@ -254,9 +292,105 @@ public:
                                                          ProcgenPointSetHandleRef points,
                                                          const std::string       &assetAttribute,
                                                          const std::string       &defaultAsset);
-    [[nodiscard]] eve::Result<void> removeCellInstances(const std::string &prefix, const ProcgenCellRequest &request);
-    int                             getPublishedInstanceCount(const std::string &batchId) const;
-    int                             getPublishedCreatedCount(const std::string &batchId) const;
+    /**
+     * @brief Replace a Scene cell batch from a complete RuntimeGeneration snapshot at an explicit revision.
+     * @param prefix Non-empty namespace used by publishCellInstances.
+     * @param request Cell coordinates used to derive the Scene batch identity.
+     * @param points Live owned point-set handle containing the complete ordered cell snapshot.
+     * @param targetRevision Non-zero committed RuntimeGeneration cell revision represented by points.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Scene batch target revision, or a structured stale/identity/provider failure.
+     * @thread Synchronous on the Scene-owning thread; no input references are retained.
+     * @reentrant Not reentrant for the same cell batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> publishCellSnapshot(const std::string& prefix,
+                                                            const ProcgenCellRequest& request,
+                                                            ProcgenPointSetHandleRef points, uint64_t targetRevision,
+                                                            const std::string& assetAttribute,
+                                                            const std::string& defaultAsset);
+    /**
+     * @brief Project one committed point delta into an existing Scene cell batch atomically.
+     * @param prefix Non-empty namespace used by publishCellInstances.
+     * @param request Cell coordinates used to derive the Scene batch identity.
+     * @param delta Identity delta produced by RuntimeGeneration for this cell revision.
+     * @param targetRevision Committed RuntimeGeneration cell revision represented by delta.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Scene batch target revision, or a structured provider/stale/identity failure.
+     * @thread Synchronous on the Scene-owning thread; no input references are retained.
+     * @reentrant Not reentrant for the same cell batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> publishCellInstanceDelta(const std::string&        prefix,
+                                                                 const ProcgenCellRequest& request,
+                                                                 const PointDelta& delta, uint64_t targetRevision,
+                                                                 const std::string& assetAttribute,
+                                                                 const std::string& defaultAsset);
+    /**
+     * @brief Synchronize one active RuntimeGeneration cell to Scene using a delta or recovery snapshot.
+     * @param prefix Non-empty namespace used to derive the Scene batch identity.
+     * @param runtime Authoritative scheduler containing the active cell.
+     * @param request Cell coordinates identifying the runtime and Scene entries.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Synchronized revision; Scene-ahead state is a conflict.
+     * @thread Synchronous on the runtime and Scene owning thread.
+     * @reentrant Not reentrant for the same runtime cell or Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> synchronizeCellInstances(const std::string&        prefix,
+                                                                 const RuntimeGeneration&  runtime,
+                                                                 const ProcgenCellRequest& request,
+                                                                 const std::string&        assetAttribute,
+                                                                 const std::string&        defaultAsset);
+    /**
+     * @brief Synchronize several active runtime cells through one atomic Scene transaction.
+     * @param
+     * prefix Non-empty namespace used to derive Scene batch identities.
+     * @param runtimes Authoritative runtimes,
+     * one per request.
+     * @param requests Cell coordinate requests paired by index with runtimes.
+     * @param
+     * assetAttribute Optional string attribute selecting each instance asset.
+     * @param defaultAsset Asset used
+     * when the selected attribute is absent.
+     * @return Number of changed cell batches committed; zero means every
+     * cell was already current.
+     * @thread Synchronous on the runtime and Scene owning thread; references are not
+     * retained.
+     * @reentrant Not reentrant for any participating runtime cell or Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> synchronizeCellInstancesAtomic(
+        const std::string& prefix, const std::vector<const RuntimeGeneration*>& runtimes,
+        const std::vector<const ProcgenCellRequest*>& requests, const std::string& assetAttribute,
+        const std::string& defaultAsset);
+    [[nodiscard]] eve::Result<void> removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request);
+    /**
+     * @brief Atomically remove the Scene batches identified by several cleanup requests.
+     * @return Number of removed Scene batches; RuntimeGeneration cleanup tickets remain caller-owned.
+     * @thread Synchronous on the Scene owning thread; request references are not retained.
+     * @reentrant Not reentrant for any participating Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> removeCellInstancesAtomic(
+        const std::string& prefix, const std::vector<const ProcgenCellRequest*>& requests);
+    /**
+     * @brief Atomically remove Scene batches and acknowledge their cleanup tickets across schedulers.
+     *
+     * @param prefix Non-empty namespace used to derive Scene batch identities.
+     * @param runtimes Scheduler owner
+     * paired by index with every request.
+     * @param requests Non-empty cleanup requests paired by index with
+     * runtimes.
+     * @return Number of removed cells, or a structured failure with Scene and every scheduler
+     * unchanged.
+     * @thread Synchronous on the shared Scene and scheduler owning thread; references are not
+     * retained.
+     * @reentrant Not reentrant for any participating Scene batch or RuntimeGeneration.
+     */
+    [[nodiscard]] eve::Result<uint64_t> completeCellCleanupAtomic(
+        const std::string& prefix, const std::vector<RuntimeGeneration*>& runtimes,
+        const std::vector<const ProcgenCellRequest*>& requests);
+    int                             getPublishedInstanceCount(const std::string& batchId) const;
+    int                             getPublishedCreatedCount(const std::string& batchId) const;
     int                             getPublishedReusedCount(const std::string &batchId) const;
     int                             getPublishedRemovedCount(const std::string &batchId) const;
     uint32_t                        deriveSeed(uint32_t parent, const std::string &scope) const;
@@ -574,7 +708,79 @@ public:
     [[nodiscard]] eve::script::Borrowed<Heightmap>       resolveHeightmap(ProcgenHeightmapHandleRef) noexcept;
     [[nodiscard]] eve::Result<void>                      releaseHeightmap(ProcgenHeightmapHandleRef);
     [[nodiscard]] bool                                   isHeightmapStale(ProcgenHeightmapHandleRef) const noexcept;
-    /** @brief Build a sampler from params (seed/scale/octaves/…) and materialize it (caller owns). */
+    /** @brief Compatibility facade that classifies a heightmap into a semantic Grid2D. */
+    bool heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out);
+    /** @brief Compatibility facade that applies mass-conserving thermal erosion in place. */
+    bool erodeTerrainThermal(Heightmap *heightmap, int iterations, float talus, float strength);
+    /** @brief Compatibility facade that applies deterministic grid water/sediment erosion. */
+    bool erodeTerrainHydraulic(Heightmap *heightmap, int iterations, float rainfall,
+                               float evaporation, float capacity, float erosion,
+                               float deposition);
+    /** @brief Compatibility facade that cuts drainage-connected river valleys in place. */
+    bool erodeTerrainFluvial(Heightmap *heightmap, int iterations, float riverThreshold,
+                             float incision, float maxDepth, float bankWidth);
+    /** @brief Compatibility facade with independent incision and spill-sill limits. */
+    bool erodeTerrainFluvialAdvanced(Heightmap *heightmap, int iterations, float riverThreshold,
+                                     float incision, float maxDepth, float bankWidth,
+                                     float maxBreachDepth);
+    /** @brief Compatibility facade with explicit raster-to-physical scaling. */
+    bool erodeTerrainFluvialScaled(Heightmap *heightmap, int iterations, float riverThreshold,
+                                   float incision, float maxDepth, float bankWidth,
+                                   float maxBreachDepth, float coordinateScale);
+    /** @brief Compatibility facade for detailed erosion. @ownership Caller owns the result. */
+    TerrainErosionMap *erodeTerrainFluvialDetailed(
+        Heightmap *heightmap, int iterations, float riverThreshold, float incision,
+        float maxDepth, float bankWidth, float maxBreachDepth, float coordinateScale);
+    /** @brief Compatibility facade for terrain analysis. @ownership Caller owns the result. */
+    TerrainLayers *analyzeTerrain(Heightmap *heightmap, float riverThreshold, float seaLevel,
+                                  float latitude);
+    /** @brief Compatibility facade for scaled analysis. @ownership Caller owns the result. */
+    TerrainLayers *analyzeTerrainScaled(Heightmap *heightmap, float riverThreshold, float seaLevel,
+                                        float latitude, float coordinateScale);
+    /** @brief Compatibility facade for EVTR baking. @ownership Caller owns the result. */
+    data::ByteData *bakeTerrainAsset(Heightmap *heightmap, TerrainLayers *layers, int chunkSize);
+    /** @brief Compatibility facade for LOD chunks. @ownership Caller owns the result. */
+    TerrainMeshChunk *buildTerrainChunk(Heightmap *heightmap, TerrainLayers *layers,
+                                        int originX, int originY, int cellsX, int cellsY, int lod,
+                                        float cellSize, float heightScale, float skirtDepth);
+    /** @brief Select terrain LOD from measured screen-space geometric error. */
+    int selectTerrainLod(Heightmap *heightmap, int originX, int originY, int cellsX, int cellsY,
+                         int maxLod, float cellSize, float heightScale, float cameraDistance,
+                         float viewportHeight, float verticalFovDegrees, float targetPixelError);
+    /** @brief Compatibility upload facade. @lifetime Returned mesh is owned by Graphics. */
+    graphics::Mesh *generateTerrainChunkMesh(TerrainMeshChunk *chunk, graphics::Graphics *gfx);
+    /** @brief Compatibility river mesh facade. @lifetime Returned mesh is owned by Graphics. */
+    graphics::Mesh *generateTerrainRiverMesh(Heightmap *heightmap, TerrainLayers *layers,
+                                             graphics::Graphics *gfx, int originX, int originY,
+                                             int cellsX, int cellsY, float cellSize,
+                                             float heightScale, float minWidth, float maxWidth,
+                                             float heightOffset);
+    /** @brief Compatibility slope-banded river facade. @lifetime Returned mesh is owned by Graphics. */
+    graphics::Mesh *generateTerrainRiverMeshAdvanced(
+        Heightmap *heightmap, TerrainLayers *layers, graphics::Graphics *gfx,
+        int originX, int originY, int cellsX, int cellsY, float cellSize,
+        float heightScale, float minWidth, float maxWidth, float heightOffset,
+        float minSurfaceSlope, float maxSurfaceSlope);
+    /** @brief Compatibility lake mesh facade. @lifetime Returned mesh is owned by Graphics. */
+    graphics::Mesh *generateTerrainLakeMesh(Heightmap *heightmap, TerrainLayers *layers,
+                                            graphics::Graphics *gfx, int originX, int originY,
+                                            int cellsX, int cellsY, float cellSize,
+                                            float heightScale, float minimumDepth,
+                                            float heightOffset);
+    /** @brief Compatibility splat facade. @ownership Caller owns the returned image. */
+    image::ImageData *generateTerrainSplatMap(TerrainMeshChunk *chunk);
+    /** @brief Compatibility albedo facade. @ownership Caller owns the returned image. */
+    image::ImageData *generateTerrainAlbedoMap(TerrainMeshChunk *chunk);
+    /** @brief Compatibility erosion facade. @ownership Caller owns the returned image. */
+    image::ImageData *generateTerrainErosionMap(TerrainErosionMap *erosion, float exposure);
+    /** @brief Compatibility wear facade. @ownership Caller owns the returned image. */
+    image::ImageData *generateTerrainWearMap(TerrainErosionMap *erosion, float exposure);
+    /** @brief Compatibility deposition facade. @ownership Caller owns the returned image. */
+    image::ImageData *generateTerrainDepositionMap(TerrainErosionMap *erosion, float exposure);
+    /** @brief Compatibility material facade. @lifetime Returned shader is owned by Graphics. */
+    graphics::Shader *createTerrainMaterialShader(graphics::Graphics *gfx);
+    /** @brief Compatibility water facade. @lifetime Returned shader is owned by Graphics. */
+    graphics::Shader *createTerrainWaterShader(graphics::Graphics *gfx);
     [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> generateHeightmapHandle(ProcgenParamsHandleRef params);
     /** @brief Classify a heightmap into a module-owned grid using params bands. */
     [[nodiscard]] eve::Result<ProcgenGridHandleRef> heightmapToGrid(ProcgenHeightmapHandleRef heightmap,

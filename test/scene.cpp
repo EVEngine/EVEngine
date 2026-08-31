@@ -248,10 +248,12 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     REQUIRE(sink != nullptr);
 
     std::vector<eve::ProcgenInstanceDesc> instances(2);
+    instances[0].sourcePointId = 101;
     instances[0].id     = "tree-1";
     instances[0].asset  = "oak";
     instances[0].x      = 3.f;
     instances[0].scaleY = 2.f;
+    instances[1].sourcePointId = 102;
     instances[1].id     = "rock-2";
     instances[1].asset  = "granite";
     instances[1].z      = 8.f;
@@ -259,6 +261,7 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     CHECK_EQ(sink->instanceCount("biome/0/0"), 2);
     CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 2);
     CHECK_EQ(sink->lastReusedCount("biome/0/0"), 0);
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(1));
 
     auto hostResult = mod->findHost("__pcg/biome/0/0");
     REQUIRE(hostResult.ok());
@@ -275,26 +278,173 @@ TEST_CASE("Scene.procgenSink.reconcilesAndClearsBatchHosts") {
     auto *pooledRenderable = eve::graphics::Renderable3D::create();
     REQUIRE(host->linkRenderable3D("tree-1", pooledRenderable));
 
-    instances.resize(1);
-    instances[0].x = 7.f;
-    CHECK(sink->applyBatch("biome/0/0", instances));
-    CHECK_EQ(sink->instanceCount("biome/0/0"), 1);
-    CHECK_EQ(host->getNodeCount(), 2);
+    eve::ProcgenInstanceDelta delta;
+    delta.baseRevision   = 1;
+    delta.targetRevision = 2;
+    instances[0].x       = 7.f;
+    delta.updated.push_back(instances[0]);
+    delta.removedPointIds.push_back(102);
+    eve::ProcgenInstanceDesc flower;
+    flower.sourcePointId = 103;
+    flower.id            = "flower-3";
+    flower.asset         = "lily";
+    flower.y             = 4.f;
+    delta.added.push_back(flower);
+    delta.targetPointOrder = {103, 101};
+    auto applied           = sink->applyDelta("biome/0/0", delta);
+    REQUIRE(applied.ok());
+    CHECK_EQ(applied.value(), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(2));
+    CHECK_EQ(sink->instanceCount("biome/0/0"), 2);
+    CHECK_EQ(host->getNodeCount(), 3);
     auto updatedTreeResult = host->findById("tree-1");
     REQUIRE(updatedTreeResult.ok());
     CHECK(approxEq(updatedTreeResult.value()->x, 7.f));
     auto removedRockResult = host->findById("rock-2");
     CHECK(!removedRockResult.ok());
+    auto flowerResult = host->findById("flower-3");
+    REQUIRE(flowerResult.ok());
+    CHECK(approxEq(flowerResult.value()->y, 4.f));
     CHECK_EQ(host->linkCount("tree-1"), 1);
-    CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 0);
+    CHECK_EQ(sink->lastCreatedCount("biome/0/0"), 1);
     CHECK_EQ(sink->lastReusedCount("biome/0/0"), 1);
     CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
 
+    eve::ProcgenInstanceDelta unknownRemoval;
+    unknownRemoval.baseRevision   = 2;
+    unknownRemoval.targetRevision = 3;
+    unknownRemoval.removedPointIds.push_back(999);
+    unknownRemoval.targetPointOrder = {103, 101};
+    auto unknown                    = sink->applyDelta("biome/0/0", unknownRemoval);
+    CHECK(!unknown.ok());
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(2));
+    CHECK_EQ(host->getNodeCount(), 3);
+    CHECK(approxEq(host->findById("tree-1").value()->x, 7.f));
+
+    eve::ProcgenInstanceDelta renamed;
+    renamed.baseRevision   = 2;
+    renamed.targetRevision = 3;
+    auto renamedTree       = instances[0];
+    renamedTree.id         = "tree-renamed";
+    renamedTree.x          = 8.f;
+    renamed.updated.push_back(renamedTree);
+    renamed.targetPointOrder = {101, 103};
+    auto renamedResult       = sink->applyDelta("biome/0/0", renamed);
+    REQUIRE(renamedResult.ok());
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(3));
+    CHECK(!host->findById("tree-1").ok());
+    REQUIRE(host->findById("tree-renamed").ok());
+    CHECK(approxEq(host->findById("tree-renamed").value()->x, 8.f));
+
+    std::vector<eve::ProcgenInstanceDesc> recoveredInstances;
+    flower.y = 6.f;
+    recoveredInstances.push_back(flower);
+    recoveredInstances.push_back(renamedTree);
+    auto recovered = sink->replaceBatch("biome/0/0", 6, recoveredInstances);
+    REQUIRE(recovered.ok());
+    CHECK_EQ(recovered.value(), uint64_t(6));
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(6));
+    CHECK(approxEq(host->findById("flower-3").value()->y, 6.f));
+    auto staleRecovery = sink->replaceBatch("biome/0/0", 5, instances);
+    CHECK(!staleRecovery.ok());
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(6));
+    CHECK(approxEq(host->findById("flower-3").value()->y, 6.f));
+
+    delta.baseRevision = 1;
+    delta.updated[0].x = 99.f;
+    auto stale         = sink->applyDelta("biome/0/0", delta);
+    CHECK(!stale.ok());
+    CHECK_EQ(sink->batchRevision("biome/0/0"), uint64_t(6));
+    CHECK(approxEq(host->findById("tree-renamed").value()->x, 8.f));
+
     CHECK(sink->removeBatch("biome/0/0"));
-    CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 1);
+    CHECK_EQ(sink->lastRemovedCount("biome/0/0"), 2);
     ecs::DestroyEntity(pooledRenderable);
     CHECK_EQ(sink->instanceCount("biome/0/0"), 0);
     CHECK_EQ(host->getNodeCount(), 1);
+}
+
+TEST_CASE("Scene.procgenSink.replacesMultipleBatchesAtomically") {
+    Scene* mod  = Scene::create();
+    auto*  sink = eve::cap::query<eve::IProcgenSceneSink>();
+    REQUIRE(sink != nullptr);
+
+    eve::ProcgenInstanceDesc a1;
+    a1.id            = "a1";
+    a1.sourcePointId = 101;
+    a1.x             = 1.f;
+    eve::ProcgenInstanceDesc b1;
+    b1.id            = "b1";
+    b1.sourcePointId = 201;
+    b1.x             = 2.f;
+    REQUIRE(sink->replaceBatch("tx/a", 1, {a1}).ok());
+    REQUIRE(sink->replaceBatch("tx/b", 1, {b1}).ok());
+
+    auto a2 = a1;
+    a2.x    = 10.f;
+    auto b2 = b1;
+    b2.x    = 20.f;
+    std::vector<eve::ProcgenBatchSnapshot> transaction{
+        {"tx/a", 2, {a2}},
+        {"tx/b", 2, {b2}},
+    };
+    auto committed = sink->replaceBatches(transaction);
+    REQUIRE(committed.ok());
+    CHECK_EQ(committed.value(), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("tx/a"), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("tx/b"), uint64_t(2));
+
+    auto hostAResult = mod->findHost("__pcg/tx/a");
+    auto hostBResult = mod->findHost("__pcg/tx/b");
+    REQUIRE(hostAResult.ok());
+    REQUIRE(hostBResult.ok());
+    SceneHost* hostA = hostAResult.value();
+    SceneHost* hostB = hostBResult.value();
+    CHECK(approxEq(hostA->findById("a1").value()->x, 10.f));
+    CHECK(approxEq(hostB->findById("b1").value()->x, 20.f));
+    transaction[0].targetRevision = 3;
+    transaction[0].instances[0].x = 30.f;
+    transaction[1].targetRevision = 2;
+    transaction[1].instances[0].x = 40.f;
+    auto rejected                 = sink->replaceBatches(transaction);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(sink->batchRevision("tx/a"), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("tx/b"), uint64_t(2));
+    CHECK(approxEq(hostA->findById("a1").value()->x, 10.f));
+    CHECK(approxEq(hostB->findById("b1").value()->x, 20.f));
+
+    transaction[1].targetRevision = 3;
+    transaction[1].instances.push_back(transaction[1].instances.front());
+    auto invalid = sink->replaceBatches(transaction);
+    REQUIRE(!invalid.ok());
+    CHECK_EQ(sink->batchRevision("tx/a"), uint64_t(2));
+    CHECK_EQ(sink->batchRevision("tx/b"), uint64_t(2));
+    CHECK(approxEq(hostA->findById("a1").value()->x, 10.f));
+    CHECK(approxEq(hostB->findById("b1").value()->x, 20.f));
+
+    auto removalRejected = sink->removeBatches({"tx/a", "missing"});
+    REQUIRE(!removalRejected.ok());
+    CHECK_EQ(sink->instanceCount("tx/a"), 1);
+    CHECK_EQ(sink->instanceCount("tx/b"), 1);
+    int  participantCalls    = 0;
+    auto participantRejected = sink->removeBatchesCoordinated({"tx/a", "tx/b"}, [&participantCalls] {
+        ++participantCalls;
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "injected owner commit rejection"));
+    });
+    REQUIRE(!participantRejected.ok());
+    CHECK_EQ(participantCalls, 1);
+    CHECK_EQ(sink->instanceCount("tx/a"), 1);
+    CHECK_EQ(sink->instanceCount("tx/b"), 1);
+    CHECK_EQ(hostA->getNodeCount(), 2);
+    CHECK_EQ(hostB->getNodeCount(), 2);
+    auto removed = sink->removeBatches({"tx/a", "tx/b"});
+    REQUIRE(removed.ok());
+    CHECK_EQ(removed.value(), uint64_t(2));
+    CHECK_EQ(sink->instanceCount("tx/a"), 0);
+    CHECK_EQ(sink->instanceCount("tx/b"), 0);
+    CHECK_EQ(hostA->getNodeCount(), 1);
+    CHECK_EQ(hostB->getNodeCount(), 1);
 }
 
 TEST_CASE("Scene.link.syncRenderable3DWorld") {

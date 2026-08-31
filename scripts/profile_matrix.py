@@ -43,16 +43,24 @@ PROFILES = (
     "minimal",
     "2d",
     "3d",
+    "runtime-3d",
     "web",
     "procgen-core-only",
     "physics-core-only",
+    "asset-core-only",
     "headless",
     "server",
 )
-HOSTLESS = {"procgen-core-only", "physics-core-only", "headless", "server"}
+HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "headless", "server"}
+RUNTIME_ONLY = {"runtime-3d"}
+
+
+def is_editor_module(name: str) -> bool:
+    return name in {"editor", "editing"} or name.endswith("_editing")
 CORE_SEEDS = {
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),
+    "asset-core-only": ("common", "data", "asset"),
     "headless": ("common", "data", "platform_event", "timer"),
     "server": (
         "common",
@@ -200,7 +208,11 @@ def _parse_contract(block: str) -> ModuleContract:
 
 
 def contracts() -> list[ModuleContract]:
-    return [_parse_contract(block) for block in _cmake_blocks(ROOT / "cmake" / "module_manifest.cmake")]
+    return [
+        _parse_contract(block)
+        for path in manifest.manifest_files()
+        for block in _cmake_blocks(path)
+    ]
 
 
 def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple[list[str], list[str]]:
@@ -211,7 +223,10 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
     else:
         wanted = []
         for module in modules:
-            enabled = module.required or profile == "full" or profile in module.groups
+            selection_profile = "3d" if profile == "runtime-3d" else profile
+            enabled = module.required or profile == "full" or selection_profile in module.groups
+            if profile in RUNTIME_ONLY and is_editor_module(module.name):
+                enabled = False
             if enabled:
                 wanted.append(module.name)
 
@@ -256,6 +271,10 @@ def check_contracts() -> int:
             errors.append(str(error))
             continue
         enabled_set = set(enabled)
+        if profile in RUNTIME_ONLY:
+            leaked = sorted(name for name in enabled_set if is_editor_module(name))
+            if leaked:
+                errors.append(f"{profile}: runtime-only profile enables {', '.join(leaked)}")
         if profile in HOSTLESS:
             leaked = sorted(enabled_set & FORBIDDEN_HOSTLESS)
             if leaked:

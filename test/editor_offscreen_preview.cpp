@@ -1,4 +1,4 @@
-#include "editor/EditorOffscreenPreview.h"
+#include "graphics_editing/OffscreenPreview.h"
 
 #include "graphics/Canvas.h"
 #include "graphics/ICanvasFactory.h"
@@ -10,7 +10,8 @@
 #include <memory>
 #include <stdexcept>
 
-using namespace eve::editor;
+using namespace eve::graphics_editing;
+using namespace eve::editing;
 
 namespace {
 class FakeCanvas final : public eve::graphics::Canvas {
@@ -60,7 +61,7 @@ TEST_CASE("editor.preview.offscreen_artifacts_are_bounded_revision_safe_and_rele
     auto pixels = service.image(rendered.value->handle, 5); REQUIRE(pixels.value); REQUIRE(*pixels.value);
     CHECK_EQ((*pixels.value)->getWidth(), 64);
     CHECK_EQ(static_cast<int>(service.image(rendered.value->handle, 6).status), static_cast<int>(EditorStatus::Conflict));
-    CHECK(service.release(rendered.value->handle).accepted());
+    CHECK(service.release(rendered.value->handle).isAccepted());
     CHECK_EQ(static_cast<int>(service.image(rendered.value->handle, 5).status), static_cast<int>(EditorStatus::NotFound));
     CHECK_EQ(static_cast<int>(service.render({StableId("huge"), 1, 5000, 1},
         [](auto*, auto*) { return EditorResult<void>::applied(); }).status), static_cast<int>(EditorStatus::Rejected));

@@ -1,8 +1,10 @@
 #pragma once
 
-#include "procgen/PointSet.h"
+#include "procgen/PointDelta.h"
 
 #include <cstdint>
+#include <deque>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -96,6 +98,31 @@ public:
     float getFrameTimeBudget() const;
     /** @brief Start a new budget window before consuming generation requests. */
     void beginFrame();
+    /**
+     * @brief Limit source-refresh planning work performed by one call.
+     * @param candidateCells
+     * Bounding-grid candidates examined per call; zero preserves synchronous refresh.
+     *
+     * A positive budget
+     * stages desired cells without changing published queues until one complete source snapshot
+     * commits. Source
+     * changes arriving during a plan are coalesced into a later snapshot instead of restarting it.
+     */
+    void setRefreshWorkBudget(int candidateCells);
+    /** @brief Return the per-call source-refresh candidate budget, or zero when synchronous. */
+    int getRefreshWorkBudget() const;
+    /** @brief Return whether a staged source snapshot still needs planning work. */
+    bool isRefreshPending() const;
+    /** @brief Return the latest source revision atomically published into generation and cleanup queues. */
+    uint64_t getCommittedRefreshRevision() const;
+    /**
+     * @brief Advance a budgeted source refresh without changing the requested sources.
+     * @return Candidate
+     * cells examined in this call; query isRefreshPending to distinguish completion.
+     * @thread Call synchronously
+     * on the scheduler-owning thread.
+     */
+    [[nodiscard]] Result<uint64_t> continueGenerationRefresh();
 
     /**
      * @brief Recompute desired cells for a generation source.
@@ -127,22 +154,63 @@ public:
     int                 getGeneratingCount() const;
     int                 getActiveCellCount() const;
     int                 getPendingCleanupCount() const;
+    /** @brief Return issued generation requests invalidated before completion. */
+    int                 getCancelledGenerationCount() const;
     /** @brief Return cells stopped after exhausting the generation retry policy. */
     int                 getFailedCellCount() const;
     /** @brief Reset and requeue all terminally failed cells still tracked by the scheduler. */
     int                 retryFailedCells();
     ProcgenCellRequest* nextGenerate();
     ProcgenCellRequest* nextCleanup();
+    /**
+     * @brief Test whether an issued generation or cleanup request still owns its scheduler ticket.
+     * @param request Borrowed immutable request; null is never current.
+     * @return True while the matching cell, state and ticket still accept work for this request.
+     * @thread Call on the scheduler-owning thread between cooperative generation stages.
+     */
+    bool isRequestCurrent(const ProcgenCellRequest* request) const;
     /** @brief Publish generated points for an issued request. */
     bool completeGeneration(ProcgenCellRequest* request, PointSet* output);
     /** @brief Return an issued request to the pending queue after failure or cancellation. */
     bool failGeneration(ProcgenCellRequest* request);
     /** @brief Acknowledge cleanup after consumers have removed spawned content. */
     bool completeCleanup(ProcgenCellRequest* request);
+    /**
+     * @brief Atomically acknowledge several cleanup tickets owned by this scheduler.
+     * @param requests
+     * Non-empty unique cleanup requests.
+     * @return Number of erased cells, or a structured failure with no cell
+     * changed.
+     * @ownership Request references are borrowed only for this call and are not retained.
+     *
+     * @thread Call synchronously on the scheduler-owning thread.
+     * @reentrant Not reentrant for this
+     * RuntimeGeneration.
+     */
+    [[nodiscard]] Result<uint64_t> completeCleanupsAtomic(const std::vector<const ProcgenCellRequest*>& requests);
 
     bool      hasCell(int level, int x, int z) const;
     PointSet* getCellOutput(int level, int x, int z) const;
     uint64_t  getCellRevision(int level, int x, int z) const;
+    /**
+     * @brief Atomically replace an active cell through an identity-based delta.
+     * @param expectedRevision Exact active revision observed by the caller.
+     * @param output Complete desired snapshot whose points have unique non-zero ids.
+     * @return The committed revision, or a structured stale/schema/budget failure.
+     */
+    [[nodiscard]] Result<uint64_t> applyCellUpdate(int level, int x, int z, uint64_t expectedRevision,
+                                                   const PointSet& output);
+    /**
+     * @brief Assign deterministic identities to a legacy active cell atomically.
+     * @return The committed revision; no revision is consumed when validation fails.
+     */
+    [[nodiscard]] Result<uint64_t> migrateCellPointIds(int level, int x, int z, uint64_t expectedRevision);
+    /**
+     * @brief Return a caller-owned copy of the latest committed delta, or null when unavailable.
+     * @ownership Owned; the caller must delete the returned delta. Script bindings transfer ownership to the VM.
+     * @return A heap object owned by the caller; script bindings transfer ownership to the VM.
+     */
+    PointDelta* getCellDelta(int level, int x, int z) const;
     /** @brief Serialize one active cell cache entry in a deterministic versioned format. */
     std::string serializeCell(int level, int x, int z) const;
     /** @brief Atomically restore one cell produced by serializeCell for this world seed. */
@@ -150,6 +218,8 @@ public:
     std::string debugReport() const;
 
 private:
+    friend class Procgen;
+
     struct Level {
         float cellSize        = 1.f;
         float generationRadius = 1.f;
@@ -175,6 +245,8 @@ private:
         int      failures = 0;
         bool     trimmed  = false;
         PointSet output;
+        PointDelta delta;
+        bool       hasDelta = false;
     };
     struct Source {
         float x           = 0.f;
@@ -183,8 +255,35 @@ private:
         float directionZ  = 0.f;
         float radiusScale = 1.f;
     };
+    struct RefreshPlan {
+        uint64_t                                        revision = 0;
+        std::vector<Level>                              levels;
+        std::vector<Source>                             sources;
+        std::unordered_map<CellKey, float, CellKeyHash> desiredPriorities;
+        float                                           directionWeight     = 0.f;
+        float                                           frustumHalfAngle    = 180.f;
+        float                                           coneCosine          = -1.f;
+        float                                           frustumBehindRadius = 0.f;
+        bool                                            frustumCulling      = false;
+        size_t                                          sourceIndex         = 0;
+        size_t                                          levelIndex          = 0;
+        int                                             minX                = 0;
+        int                                             maxX                = -1;
+        int                                             minZ                = 0;
+        int                                             maxZ                = -1;
+        int                                             cellX               = 0;
+        int                                             cellZ               = 0;
+        bool                                            rangeReady          = false;
+    };
 
     ProcgenCellRequest* makeRequest(const CellKey& key) const;
+    void                       transitionCellState(Cell& cell, State nextState);
+    void                       requestGenerationRefresh();
+    void                       startRefreshPlan();
+    uint64_t                   advanceRefreshPlan(uint64_t candidateBudget);
+    void                       commitRefreshPlan(const RefreshPlan& plan);
+    [[nodiscard]] Result<void> validateCleanups(const std::vector<const ProcgenCellRequest*>& requests) const;
+    void                       eraseValidatedCleanups(const std::vector<const ProcgenCellRequest*>& requests);
     uint32_t            cellSeed(const CellKey& key) const;
     void                sortQueues();
 
@@ -195,9 +294,14 @@ private:
     int      maxPointsPerCell_      = 0;
     int      maxResidentPoints_     = 0;
     int      rejectedOutputCount_   = 0;
+    int      cancelledGenerationCount_ = 0;
     int      maxGenerationRetries_ = 3;
     float    frameTimeBudgetMs_ = 0.f;
     uint64_t frameStartedNs_    = 0;
+    int                                            refreshWorkBudget_        = 0;
+    uint64_t                                       sourceRevision_           = 0;
+    uint64_t                                       committedRefreshRevision_ = 0;
+    std::optional<RefreshPlan>                     refreshPlan_;
     bool     frustumCulling_    = false;
     float    frustumHalfAngle_  = 60.f;
     float    frustumBehindRadius_ = 0.f;
@@ -205,8 +309,10 @@ private:
     std::unordered_map<std::string, Source> sources_;
     std::vector<std::string> sourceOrder_;
     std::unordered_map<CellKey, Cell, CellKeyHash> cells_;
-    std::vector<CellKey> generateQueue_;
-    std::vector<CellKey> cleanupQueue_;
+    std::deque<CellKey>                            generateQueue_;
+    std::deque<CellKey>                            cleanupQueue_;
+    int                                            generatingCount_ = 0;
+    int                                            activeCellCount_ = 0;
     uint64_t             nextTicket_ = 0;
 };
 

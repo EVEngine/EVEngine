@@ -41,7 +41,7 @@ EditorResult<EditorValue> EditorSession::executeCommand(const CommandId& id, con
 
     EditorResult<EditorValue> result = commandService_->execute(id, commandContext, payload);
     if (ownsTransaction) {
-        if (result.accepted())
+        if (result.isAccepted())
             transactions_.commit();
         else
             transactions_.rollback();
@@ -101,7 +101,7 @@ EditorResult<TransactionReceipt> EditorSession::executeCommandReceipt(const Comm
     EditorResult<EditorValue> command = executeCommand(id, payload, source);
     receipt.afterRevision             = context_.target_ ? context_.target_->revision() : receipt.beforeRevision;
     receipt.diagnostics               = command.diagnostics;
-    receipt.state = command.accepted() ? TransactionState::Committed
+    receipt.state = command.isAccepted() ? TransactionState::Committed
                                        : (command.status == EditorStatus::Conflict ? TransactionState::Conflicted
                                                                                    : TransactionState::Rejected);
     EditorResult<TransactionReceipt> result;
@@ -118,7 +118,7 @@ std::vector<CommandDescriptor> EditorSession::availableCommands() const {
 EditorResult<PlanId> EditorSession::retainPlan(const CommandId& id, const EditorValue& payload, CommandSource source,
                                                std::optional<Revision> expectedRevision) {
     EditorResult<CommandPlan> planned = planCommand(id, payload, source, expectedRevision);
-    if (!planned.accepted() || !planned.value) {
+    if (!planned.isAccepted() || !planned.value) {
         EditorResult<PlanId> result;
         result.status      = planned.status;
         result.diagnostics = std::move(planned.diagnostics);
@@ -139,7 +139,7 @@ EditorResult<TransactionReceipt> EditorSession::executeRetainedPlan(const PlanId
         return EditorResult<TransactionReceipt>::error(EditorStatus::NotFound, RuleId("editor.command.plan-not-found"),
                                                        "Retained command plan was not found");
     EditorResult<TransactionReceipt> result = executePlan(found->plan, found->payload, source);
-    if (result.accepted()) retainedPlans_.erase(found);
+    if (result.isAccepted()) retainedPlans_.erase(found);
     return result;
 }
 
@@ -167,7 +167,7 @@ EditorResult<DocumentSnapshot> EditorSession::bindDocument(const DocumentId& doc
                                                       RuleId("editor.session.missing-document-service"),
                                                       "Editor session has no document service");
     EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(document);
-    if (!snapshot.accepted() || !snapshot.value) return snapshot;
+    if (!snapshot.isAccepted() || !snapshot.value) return snapshot;
     activeDocument_          = document;
     autosaveElapsed_         = 0.f;
     externalPollElapsed_     = 0.f;
@@ -197,14 +197,14 @@ EditorResult<DocumentSnapshot> EditorSession::saveDocument() {
                                                       RuleId("editor.session.no-active-document"),
                                                       "Editor session has no active document");
     EditorResult<SaveTicket> ticket = documentService_->requestSave(activeDocument_);
-    if (!ticket.accepted() || !ticket.value) {
+    if (!ticket.isAccepted() || !ticket.value) {
         EditorResult<DocumentSnapshot> result;
         result.status      = ticket.status;
         result.diagnostics = std::move(ticket.diagnostics);
         return result;
     }
     EditorResult<DocumentSnapshot> result = documentService_->executeSave(*ticket.value);
-    if (result.accepted() && result.value) {
+    if (result.isAccepted() && result.value) {
         autosaveElapsed_ = 0.f;
         if (!result.value->dirty()) lastAutosavedRevision_ = result.value->revision.edit;
     }
@@ -218,12 +218,12 @@ EditorResult<StoredDocument> EditorSession::autosaveDocument() {
                                                    "Editor session has no active autosave service");
     EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(activeDocument_);
     EditorResult<EditorValue>      content  = documentService_->content(activeDocument_);
-    if (!snapshot.accepted() || !snapshot.value || !content.accepted() || !content.value)
+    if (!snapshot.isAccepted() || !snapshot.value || !content.isAccepted() || !content.value)
         return EditorResult<StoredDocument>::error(EditorStatus::Failed,
                                                    RuleId("editor.session.autosave-snapshot-failed"),
                                                    "Active document could not be captured for autosave");
     EditorResult<StoredDocument> result = autosaveService_->writeDraft(*snapshot.value, *content.value);
-    if (result.accepted()) {
+    if (result.isAccepted()) {
         lastAutosavedRevision_ = snapshot.value->revision.edit;
         autosaveElapsed_       = 0.f;
     }
@@ -328,7 +328,7 @@ void EditorSession::update(float dt) {
     }
 
     EditorResult<DocumentSnapshot> snapshot = documentService_->snapshot(activeDocument_);
-    if (!snapshot.accepted() || !snapshot.value || !snapshot.value->dirty()) {
+    if (!snapshot.isAccepted() || !snapshot.value || !snapshot.value->dirty()) {
         autosaveElapsed_ = 0.f;
         return;
     }

@@ -644,7 +644,7 @@ void Volumetric::scatterTo(Graphics *gfx, Texture *occlusion, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     scatter(gfx, occlusion);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::applyFromScene(Graphics *gfx, Texture *scene) {
@@ -658,7 +658,7 @@ void Volumetric::applyFromSceneTo(Graphics *gfx, Texture *scene, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFromScene(gfx, scene);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::rayMarch(Graphics *gfx, Texture *linearDepth) {
@@ -672,7 +672,7 @@ void Volumetric::rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     rayMarch(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::applyFog(Graphics *gfx, Texture *linearDepth) {
@@ -686,7 +686,7 @@ void Volumetric::applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFog(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::renderClouds(Graphics *gfx, Texture *linearDepth) {
@@ -700,7 +700,7 @@ void Volumetric::renderCloudsTo(Graphics *gfx, Texture *linearDepth, Canvas *des
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     renderClouds(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 void Volumetric::configureFroxelGrid(int width, int height, int depth, float nearDistance,
@@ -782,7 +782,7 @@ void Volumetric::applyFroxelTo(Graphics *gfx, Texture *linearDepth, Canvas *dest
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyFroxel(gfx, linearDepth);
-    gfx->setCanvas(prev == gfx ? nullptr : prev);
+    gfx->setCanvas(prev);
 }
 
 Texture *Volumetric::newLinearDepthTexture(Graphics *gfx, int width, int height,

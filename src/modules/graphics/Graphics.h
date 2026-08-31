@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include "common/Module.h"
+#include "common/Result.h"
 #include "common/WindowSurfaceHost.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Canvas.h"
@@ -33,6 +34,9 @@ namespace eve::graphics {
 
 class AmbientOcclusion;
 class AntiAliasing;
+class Bloom;
+class Exposure;
+class DepthPyramid;
 class Camera3D;
 class Drawable;
 class GBuffer;
@@ -65,6 +69,8 @@ class Texture;
 class Volumetric;
 class Water;
 class Waterfall;
+class ReflectionProbeCapture;
+class ReflectionProbeRegistry;
 struct ClusteredLightingUpload;
 struct Lighting2DUBO;
 struct Lighting3DPack;
@@ -118,6 +124,17 @@ public:
                                      bool repeatV = false);
     /** @brief Upload RGBA8 ImageData with mipmaps / filter / anisotropy options. */
     Texture *newTextureFromImageData(image::ImageData *data, const TextureCreateInfo &info);
+
+    /**
+     * @brief Upload the current RGBA8 pixels of ImageData into an existing texture in place.
+     * @param texture Borrowed backend-owned texture; its pointer remains stable on success.
+     * @param data Borrowed CPU image; dimensions must match the texture.
+     * @return Success or a structured failure without changing ownership.
+     * @thread Render-thread affine.
+     * @reentrancy Does not invoke user callbacks.
+     */
+    [[nodiscard]] eve::Result<void> updateTextureFromImageData(Texture *texture,
+                                                               image::ImageData *data);
 
     /**
      * @brief Script-friendly texture create: filter = "linear"|"nearest", mipmap = "none"|"linear"|"nearest".
@@ -183,6 +200,12 @@ public:
         return false;
     }
 
+    /** @brief Return/register a bindless cubemap slot for a GPU-driven local probe. */
+    virtual uint32_t gpuDrivenReflectionProbeSlot(Texture *cubemap) {
+        (void)cubemap;
+        return kInvalidGpuDrivenSlot;
+    }
+
     // ---- GPU-resident 2D particles ---------------------------------------
 
     /** @brief True when this backend supports resident compute + indirect particle draws. */
@@ -203,9 +226,12 @@ public:
     /** @brief Clear resident state before the next submitted frame. */
     virtual void resetGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
 
-    /** @brief Queue one simulation/compaction step; spawn data is copied before return. */
-    virtual bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
-                                          const GpuParticleSpawn* spawns, std::uint32_t spawnCount) {
+    /** @brief Upload one simulation step and optional spawn commands.
+     * @compatibility Preserves the established GPU-particle boolean submission contract. */
+    virtual bool updateGpuParticleEmitter(GpuParticleHandle handle,
+                                          const GpuParticleUpdate& update,
+                                          const GpuParticleSpawn* spawns,
+                                          std::uint32_t spawnCount) {
         (void)handle;
         (void)update;
         (void)spawns;
@@ -391,9 +417,60 @@ public:
      */
     virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) = 0;
 
-    /** @brief Cubemap with mipmap / sampler options (IBL-friendly when generateMipmaps=true). */
+    /** @brief Cubemap with GGX specular mips and final diffuse-irradiance mip. */
     virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                                 const TextureCreateInfo &info) = 0;
+
+    /**
+     * @brief Allocate a linear RGBA16F six-layer staging cubemap for runtime capture.
+     * @return Graphics-owned texture, or nullptr when unsupported by the backend.
+     * @lifetime The returned texture remains valid until released by Graphics.
+     */
+    virtual Texture *newHDRCubemap(int faceSize) {
+        (void)faceSize;
+        return nullptr;
+    }
+
+    /**
+     * @brief Copy one RGBA16F Canvas into a staging cubemap base-level face.
+     * @return True when the GPU copy was submitted.
+     * @compatibility Preserves the established backend boolean submission contract.
+     */
+    virtual bool copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int face) {
+        (void)source;
+        (void)cubemap;
+        (void)face;
+        return false;
+    }
+
+    /**
+     * @brief Copy consecutive RGBA16F canvases into cubemap base-level faces.
+     *
+     * Backends may override this to encode all copies in one submission. The
+     * default preserves compatibility by dispatching the single-face API.
+     * @param sources Array of source canvases, one per destination face.
+     * @param faceCount Number of entries in sources; must be between 1 and 6.
+     * @param cubemap Destination HDR cubemap.
+     * @return True when every requested face copy was submitted.
+     * @compatibility Preserves the established backend boolean submission contract.
+     */
+    virtual bool copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
+                                          Texture *cubemap) {
+        if (!sources || faceCount < 1 || faceCount > 6) return false;
+        for (int face = 0; face < faceCount; ++face)
+            if (!copyHDRCanvasToCubemapFace(sources[face], cubemap, face)) return false;
+        return true;
+    }
+
+    /**
+     * @brief Generate GGX specular mips and final diffuse irradiance for an HDR cubemap.
+     * @compatibility Preserves the established backend boolean submission contract.
+     */
+    virtual bool filterHDRReflectionCubemap(Texture *cubemap, int sampleCount = 64) {
+        (void)cubemap;
+        (void)sampleCount;
+        return false;
+    }
 
     /** @brief Create texture from ImageData (RGBA8 required for now). */
     virtual Texture *newTexture(image::ImageData *data) = 0;
@@ -490,6 +567,23 @@ public:
                                              float x, float y, float w, float h,
                                              const Color &tint) = 0;
 
+    /** @brief Post draw with color, depth/history and motion/reactive textures. */
+    virtual void drawTexturedRectShaderDepthMotion(Texture *color, Texture *depth,
+                                                   Texture *motion, Shader *shader, float x,
+                                                   float y, float w, float h,
+                                                   const Color &tint) = 0;
+
+    /** @brief Post draw with four sampled textures at bindings 0, 1, 2 and 3. */
+    virtual void drawTexturedRectShader4(Texture *color, Texture *depth, Texture *motion,
+                                         Texture *extra, Shader *shader, float x, float y,
+                                         float w, float h, const Color &tint) = 0;
+
+    /** @brief Post draw with five sampled textures at bindings 0 through 4. */
+    virtual void drawTexturedRectShader5(Texture *color, Texture *depth, Texture *motion,
+                                         Texture *extra, Texture *specular, Shader *shader,
+                                         float x, float y, float w, float h,
+                                         const Color &tint) = 0;
+
     /**
      * @brief Refract the resolved 3D scene color through a displacement texture.
      *
@@ -498,10 +592,13 @@ public:
      * in alpha. Returns false when no
      * resolved scene color is available for the current frame.
      */
-    virtual bool drawSceneColorDistortionUVRotated(Texture* displacement, float cx, float cy, float w, float h,
-                                                   float degrees, float u0, float v0, float u1, float v1,
-                                                   float strengthPixels, float opacity, bool rotatedUV = false) {
-        return false;
+    enum class SceneColorDistortionStatus { Queued, Unavailable };
+
+    virtual SceneColorDistortionStatus drawSceneColorDistortionUVRotated(
+        Texture* displacement, float cx, float cy, float w, float h, float degrees, float u0,
+        float v0, float u1, float v1, float strengthPixels, float opacity,
+        bool rotatedUV = false) {
+        return SceneColorDistortionStatus::Unavailable;
     }
 
     /**
@@ -668,7 +765,9 @@ public:
     virtual void beginGBufferPass(int width, int height) = 0;
     virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                  float nearZ, float farZ, Texture *albedo = nullptr,
-                                 float tintR = 1.f, float tintG = 1.f, float tintB = 1.f) = 0;
+                                 float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                                 float motionX = 0.f, float motionY = 0.f,
+                                 float roughness = 0.45f, float metallic = 0.f) = 0;
     /**
      * @brief GBuffer fill with alpha-cutout discard (card/billboard geometry such as
      * sprite-stack slices): same outputs as drawMeshGBuffer, but transparent
@@ -678,7 +777,9 @@ public:
     virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                       float nearZ, float farZ, Texture *albedo = nullptr,
                                       float tintR = 1.f, float tintG = 1.f,
-                                      float tintB = 1.f) = 0;
+                                      float tintB = 1.f, float motionX = 0.f,
+                                      float motionY = 0.f, float roughness = 0.45f,
+                                      float metallic = 0.f) = 0;
     virtual void endGBufferPass() = 0;
 
     /**
@@ -699,6 +800,12 @@ public:
      */
     virtual void begin3DFrameToCanvas(Canvas *canvas) = 0;
     virtual void end3DFrameToCanvas() = 0;
+
+    /**
+     * @brief Return the GPU timestamp duration of the most recently completed
+     * offscreen 3D pass, in milliseconds. Zero means unavailable.
+     */
+    virtual float getLastOffscreen3DGpuDurationMs() const { return 0.f; }
 
     /** viewProj used by subsequent drawMesh (mvp = viewProj * model).
      *  Expect RH + ZO with Vulkan NDC Y (see perspectiveVulkanRH_ZO). */
@@ -772,6 +879,16 @@ public:
 
     /** @brief Optional height map for parallax (R channel; nullptr = flat / off). */
     virtual void setMesh3DHeightTexture(Texture *height) = 0;
+
+    /**
+     * @brief Configure page-table sampling for the next mesh draw.
+     *
+     * When enabled, albedo/normal are physical atlases and height is the RGBA8 page table.
+     * Disabled preserves ordinary material sampling. Values are copied immediately.
+     */
+    virtual void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
+                                         int atlasSlotsX, int atlasSlotsY,
+                                         float borderFraction) = 0;
 
     /**
      * @brief Optional scene hardware depth (G-buffer hwDepth, Vulkan NDC z) bound to
@@ -890,6 +1007,28 @@ public:
      * intensity is packed into Mesh3DUBO lightColor.w.
      */
     virtual void setMesh3DEnv(Texture *cube, float intensity) = 0;
+    /** @brief Box projection bounds for the active environment; zero extent disables it. */
+    virtual void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) = 0;
+    /** @brief Upload the two dominant local reflection probes for subsequent mesh draws. */
+    virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
+    /** @brief Set linear exposure multiplier used by the final scene tone-map resolve. */
+    virtual void setSceneExposure(float exposure) = 0;
+    /** @brief Current linear manual exposure multiplier. */
+    virtual float getSceneExposure() const = 0;
+    /** @brief Configure log-average scene auto exposure and its EV clamp range. */
+    virtual void setSceneAutoExposure(bool enabled, float minEV, float maxEV) = 0;
+    /** @brief Whether automatic exposure is active. */
+    virtual bool getSceneAutoExposure() const = 0;
+    /** @brief Minimum automatic exposure EV. */
+    virtual float getSceneAutoExposureMinEV() const = 0;
+    /** @brief Maximum automatic exposure EV. */
+    virtual float getSceneAutoExposureMaxEV() const = 0;
+    /** @brief Configure final HDR bloom intensity and linear threshold. */
+    virtual void setSceneBloom(float intensity, float threshold) = 0;
+    /** @brief Current final-scene bloom intensity. */
+    virtual float getSceneBloomIntensity() const = 0;
+    /** @brief Current linear HDR bloom threshold. */
+    virtual float getSceneBloomThreshold() const = 0;
 
     /** @brief Upload CSM constants for subsequent default mesh draws (active=false disables). */
     virtual void setMesh3DShadows(const ShadowUpload &upload) = 0;
@@ -1228,9 +1367,24 @@ public:
      * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
      */
     Water *newWater();
+    /** @brief Create an incremental six-face HDR reflection-probe capture.
+     * @ownership The caller owns the returned capture object. */
+    ReflectionProbeCapture *newReflectionProbeCapture();
+    /** @brief Create a scene-level automatic reflection-probe selector.
+     * @ownership The caller owns the returned registry. */
+    ReflectionProbeRegistry *newReflectionProbeRegistry();
 
     /** @brief Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;
+
+    /**
+     * @brief Create an engine-internal linear RGBA16F post-process target.
+     * @param width Pixel width.
+     * @param height Pixel height.
+     * @return Graphics-owned sampleable Canvas. Pixel readback is unsupported.
+     * @lifetime The returned canvas remains valid until released by Graphics.
+     */
+    virtual Canvas *newHDRCanvas(int width, int height) = 0;
 
     /** @brief nullptr or this → screen. Switching flushes pending draws to the previous target. */
     virtual void setCanvas(Canvas *canvas) = 0;
@@ -1275,9 +1429,35 @@ public:
      * @brief Pipeline-owned AO / GI / AA used by RenderSystem3D when features
      * "ao" / "gi" / "aa" are enabled. Created on first use; Graphics owns them.
      */
+    /** @lifetime Pipeline effect getters return Graphics-owned objects valid until shutdown. */
     AmbientOcclusion *pipelineAmbientOcclusion();
     GlobalIllumination *pipelineGlobalIllumination();
+    ScreenSpaceReflection *pipelineScreenSpaceReflection();
     AntiAliasing *pipelineAntiAliasing();
+    /** @brief Pipeline-owned linear-HDR bloom pyramid, created on first use.
+     * @lifetime Returned effect remains valid until Graphics shutdown. */
+    Bloom *pipelineBloom();
+    /** @brief Pipeline-owned GPU exposure metering and eye adaptation.
+     * @lifetime Returned effect remains valid until Graphics shutdown. */
+    Exposure *pipelineExposure();
+    /** @brief Pipeline-owned shared min/max depth hierarchy for screen-space effects.
+     * @lifetime Returned effect remains valid until Graphics shutdown. */
+    DepthPyramid *pipelineDepthPyramid();
+    /** @brief Build the shared linear-HDR AA, bloom, and exposure result for final ACES.
+     * @lifetime Returned texture is Graphics-owned and valid for the current target allocation. */
+    Texture *prepareFinalSceneTexture(Texture *scene, Texture *motion = nullptr);
+    /** @brief Return a reusable HDR target for composing screen-space lighting.
+     * @lifetime Returned canvas is Graphics-owned and valid for the current target allocation. */
+    Canvas *pipelineReflectionComposite(int width, int height);
+    /** @brief Override the HDR source consumed by the next backend scene resolve. */
+    void setFinalSceneTexture(Texture *texture) { finalSceneTexture_ = texture; }
+    /** @brief Consume and clear the per-frame HDR scene resolve override.
+     * @lifetime Returned texture is borrowed and retains its original owner's lifetime. */
+    Texture *takeFinalSceneTexture() {
+        Texture *texture = finalSceneTexture_;
+        finalSceneTexture_ = nullptr;
+        return texture;
+    }
     /** @brief Pipeline-owned Outline used by RenderSystem3D when the "outline" feature is on. */
     Outline *pipelineOutline();
 
@@ -1426,7 +1606,18 @@ protected:
     std::unique_ptr<RenderControl> renderControl_;
     std::unique_ptr<AmbientOcclusion> pipelineAO_;
     std::unique_ptr<GlobalIllumination> pipelineGI_;
+    std::unique_ptr<ScreenSpaceReflection> pipelineSSR_;
     std::unique_ptr<AntiAliasing> pipelineAA_;
+    std::unique_ptr<Bloom> pipelineBloom_;
+    std::unique_ptr<Exposure> pipelineExposure_;
+    std::unique_ptr<DepthPyramid> pipelineDepthPyramid_;
+    Canvas *spatialAAResolve_ = nullptr;
+    int spatialAAResolveWidth_ = 0;
+    int spatialAAResolveHeight_ = 0;
+    Canvas *reflectionComposite_ = nullptr;
+    int reflectionCompositeWidth_ = 0;
+    int reflectionCompositeHeight_ = 0;
+    Texture *finalSceneTexture_ = nullptr;
     std::unique_ptr<Outline> pipelineOutline_;
 
     /** @brief FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */

@@ -57,8 +57,11 @@ struct GpuInstance {
     uint32_t materialId = kInvalidGpuDrivenSlot;  // -> GpuMaterialRecord table
     uint32_t flags = 0;                           // bit0 castShadow, bit1 receiveShadow, bit2 castOcclusion
     uint32_t lodGroupId = kInvalidGpuDrivenSlot;  // stage 2
+    glm::uvec4 reflectionProbeSlots{kInvalidGpuDrivenSlot, kInvalidGpuDrivenSlot, 0u, 0u};
+    glm::vec4 reflectionProbeCenter[2]{};  // xyz = center, w = intensity
+    glm::vec4 reflectionProbeExtent[2]{};  // xyz = extent, w = blend distance
 };
-static_assert(sizeof(GpuInstance) == 80, "GpuInstance must be 80B (std430)");
+static_assert(sizeof(GpuInstance) == 160, "GpuInstance must be 160B (std430)");
 
 /// @brief Indirect draw command; layout identical to VkDrawIndexedIndirectCommand.
 struct GpuIndirectCommand {

@@ -2,7 +2,7 @@
 config = {
     width = 1280
     height = 720
-    title = "EVEngine 52 张扑克牌示例"
+    title = "EVEngine 德州扑克"
     debug = false
     hotReload = true
 };

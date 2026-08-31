@@ -1,4 +1,4 @@
-#include "editor/EditorAnimationGraph.h"
+#include "animation_editing/AnimationGraph.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
@@ -9,7 +9,8 @@
 
 #include <algorithm>
 
-using namespace eve::editor;
+using namespace eve::animation_editing;
+using namespace eve::editing;
 
 namespace {
 
@@ -29,10 +30,10 @@ GraphDocumentData basicGraph(AnimationStateGraphDomain& domain) {
     transitionProperties["threshold"] = 0.1;
     transition.value->properties = EditorValue(std::move(transitionProperties));
 
-    GraphDocument graph;
-    REQUIRE(graph.createNode(*idle.value).accepted());
-    REQUIRE(graph.createNode(*run.value).accepted());
-    REQUIRE(graph.createNode(*transition.value).accepted());
+    eve::editing::GraphDocument graph;
+    REQUIRE(graph.createNode(*idle.value).isAccepted());
+    REQUIRE(graph.createNode(*run.value).isAccepted());
+    REQUIRE(graph.createNode(*transition.value).isAccepted());
     const GraphPinRecord* idleOut = graph.findPin(GraphPinId("idle.out"));
     const GraphPinRecord* transitionIn = graph.findPin(GraphPinId("idle-to-run.in"));
     const GraphPinRecord* transitionOut = graph.findPin(GraphPinId("idle-to-run.out"));
@@ -42,12 +43,12 @@ GraphDocumentData basicGraph(AnimationStateGraphDomain& domain) {
     REQUIRE(transitionOut);
     REQUIRE(runIn);
     REQUIRE(graph.connect({StableId("edge-in"), idleOut->id, transitionIn->id},
-                          domain.canConnect(*idleOut, *transitionIn)).accepted());
+                          domain.canConnect(*idleOut, *transitionIn)).isAccepted());
     REQUIRE(graph.connect({StableId("edge-out"), transitionOut->id, runIn->id},
-                          domain.canConnect(*transitionOut, *runIn)).accepted());
+                          domain.canConnect(*transitionOut, *runIn)).isAccepted());
     EditorValue::Object parameters;
     parameters["entry"] = "idle";
-    REQUIRE(graph.setParameters(EditorValue(std::move(parameters))).accepted());
+    REQUIRE(graph.setParameters(EditorValue(std::move(parameters))).isAccepted());
     return graph.snapshot(domain.domain());
 }
 
@@ -130,7 +131,7 @@ TEST_CASE("editor.animation.state_graph_builds_real_runtime_state_machine") {
         if (asset == "asset://animations/run.eva") return &run;
         return static_cast<eve::animation::AnimClip*>(nullptr);
     });
-    REQUIRE(built.accepted());
+    REQUIRE(built.isAccepted());
     REQUIRE(built.value);
     CHECK_EQ((*built.value)->getStateCount(), 2);
     delete *built.value;

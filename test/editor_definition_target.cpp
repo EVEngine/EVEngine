@@ -7,11 +7,12 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-using namespace eve::editor;
+using namespace eve::definitions_editing;
+using namespace eve::editing;
 
 TEST_CASE("editor.definition.schema_form_exposes_field_metadata_and_reversible_edits") {
     DefinitionDocument document("weapon", "sword", 2);
-    REQUIRE(document.setJson("{\"damage\":10,\"rarity\":\"common\"}").accepted());
+    REQUIRE(document.setJson("{\"damage\":10,\"rarity\":\"common\"}").isAccepted());
     eve::schema::SchemaDefinition schema;
     schema.id = "weapon"; schema.version = 2;
     eve::schema::FieldDefinition damage;
@@ -27,11 +28,11 @@ TEST_CASE("editor.definition.schema_form_exposes_field_metadata_and_reversible_e
     CHECK_EQ(form.schema(selected).properties.size(), 2U);
     CHECK(form.validate().empty());
     auto operation = form.makeSet(selected, PropertyPath("damage"), 25.0, PropertySetMode::Absolute);
-    REQUIRE(operation.value); CHECK(document.applyDomainOperation(*operation.value).accepted());
+    REQUIRE(operation.value); CHECK(document.applyDomainOperation(*operation.value).isAccepted());
     const auto editedDamage = form.read(selected, PropertyPath("damage"));
     CHECK_EQ(*editedDamage.value.getIf<double>(), 25.0);
     DomainOperation undo = *operation.value; undo.payload = operation.value->inverse;
-    CHECK(document.applyDomainOperation(undo).accepted());
+    CHECK(document.applyDomainOperation(undo).isAccepted());
     const auto restoredDamage = form.read(selected, PropertyPath("damage"));
     CHECK_EQ(*restoredDamage.value.getIf<double>(), 10.0);
     CHECK_EQ(static_cast<int>(form.makeSet(selected, PropertyPath("rarity"), "invalid",
@@ -41,8 +42,8 @@ TEST_CASE("editor.definition.schema_form_exposes_field_metadata_and_reversible_e
 
 TEST_CASE("editor.definition.validates_schema_and_cross_references") {
     DefinitionDocument document("weapon", "iron_sword", 2);
-    REQUIRE(document.setJson(R"({"damage":12,"effect":"burn"})").accepted());
-    REQUIRE(document.setReferences({{"/effect", "effect", "burn", true}}).accepted());
+    REQUIRE(document.setJson(R"({"damage":12,"effect":"burn"})").isAccepted());
+    REQUIRE(document.setReferences({{"/effect", "effect", "burn", true}}).isAccepted());
     const auto valid = document.validate(
         [&](const std::string& type, int version, const std::string&) {
             CHECK_EQ(type, "weapon");
@@ -59,14 +60,14 @@ TEST_CASE("editor.definition.validates_schema_and_cross_references") {
 
 TEST_CASE("editor.definition.snapshot_load_is_atomic") {
     DefinitionDocument source("item", "potion");
-    REQUIRE(source.setJson(R"({"heal":10})").accepted());
-    REQUIRE(source.setReferences({{"/upgrade", "item", "greater_potion", false}}).accepted());
+    REQUIRE(source.setJson(R"({"heal":10})").isAccepted());
+    REQUIRE(source.setReferences({{"/upgrade", "item", "greater_potion", false}}).isAccepted());
     const EditorValue snapshot = source.snapshotValue();
 
     DefinitionDocument restored("placeholder", "placeholder");
-    REQUIRE(restored.loadSnapshot(snapshot).accepted());
+    REQUIRE(restored.loadSnapshot(snapshot).isAccepted());
     CHECK_EQ(restored.snapshotValue(), snapshot);
-    const Revision before = restored.revision();
+    const std::uint64_t before = restored.revision();
     EditorValue broken = snapshot;
     auto* object = broken.getIf<EditorValue::Object>();
     REQUIRE(object);
@@ -78,18 +79,18 @@ TEST_CASE("editor.definition.snapshot_load_is_atomic") {
 
 TEST_CASE("editor.definition.publishes_to_real_versioned_registry") {
     DefinitionDocument document("item", "potion");
-    REQUIRE(document.setJson(R"({"heal":10})").accepted());
+    REQUIRE(document.setJson(R"({"heal":10})").isAccepted());
     eve::definitions::DefinitionRegistry registry;
     DefinitionRuntimePublisher publisher;
-    REQUIRE(publisher.publish(document, &registry).accepted());
+    REQUIRE(publisher.publish(document, &registry).isAccepted());
     auto stored = registry.resolve("item", "potion");
     REQUIRE(stored.ok());
     CHECK_EQ(stored.value().get().json, R"({"heal":10})");
 
-    REQUIRE(document.setJson(R"({"heal":20})").accepted());
+    REQUIRE(document.setJson(R"({"heal":20})").isAccepted());
     CHECK_EQ(static_cast<int>(publisher.publish(document, &registry).status),
              static_cast<int>(EditorStatus::Rejected));
-    REQUIRE(publisher.publish(document, &registry, true).accepted());
+    REQUIRE(publisher.publish(document, &registry, true).isAccepted());
     stored = registry.resolve("item", "potion");
     REQUIRE(stored.ok());
     CHECK_EQ(stored.value().get().json, R"({"heal":20})");

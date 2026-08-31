@@ -2,6 +2,7 @@
 #include "avatar/Live2DNullBackend.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
+#include "inventory/Equipment.h"
 
 #include <algorithm>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -283,6 +284,19 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("bindAnimStateMachine", &AvatarInstance::bindAnimStateMachine);
     av.addFunc("bindAnimLayerMixer", &AvatarInstance::bindAnimLayerMixer);
     av.addFunc("bindAnimSkin", &AvatarInstance::bindAnimSkin);
+    av.addFunc("bindSkinnedPart",
+               [](AvatarInstance* a, int partIndex, const std::string& partName,
+                  graphics::Mesh* mesh, graphics::Material* material,
+                  animation::AnimSkin* skin) -> int {
+                   return static_cast<int>(
+                       a->bindSkinnedPart(partIndex, partName, mesh, material, skin));
+               });
+    av.addFunc("unbindSkinnedPart", [](AvatarInstance* a, int partIndex) -> int {
+        return static_cast<int>(a->unbindSkinnedPart(partIndex));
+    });
+    av.addFunc("getSkinnedPartUpdateMode", [](AvatarInstance* a, int partIndex) -> int {
+        return static_cast<int>(a->getSkinnedPartUpdateMode(partIndex));
+    });
     av.addFunc("registerMotion", &AvatarInstance::registerMotion);
     av.addFunc("unregisterMotion", &AvatarInstance::unregisterMotion);
     av.addFunc("getMotionCount", &AvatarInstance::getMotionCount);
@@ -310,6 +324,61 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("getAttachmentCount", &AvatarInstance::getAttachmentCount);
     av.addFunc("linkSceneNode", &AvatarInstance::linkSceneNode);
     av.addFunc("isSceneLinked", &AvatarInstance::isSceneLinked);
+    av.addFunc("bindEquipment", [](AvatarInstance* a, inventory::EquipmentSet* equipment) -> int {
+        return static_cast<int>(a->bindEquipment(equipment));
+    });
+    av.addFunc("unbindEquipment", [](AvatarInstance* a) -> int {
+        return static_cast<int>(a->unbindEquipment());
+    });
+    av.addFunc("syncEquipmentAppearance", [](AvatarInstance* a) -> int {
+        return static_cast<int>(a->syncEquipmentAppearance());
+    });
+    av.addFunc("getEquipmentVisualItem", &AvatarInstance::getEquipmentVisualItem);
+    av.addFunc("defineEquipmentLayer",
+               [](AvatarInstance* a, const std::string& name, int order,
+                  const std::string& parent) -> int {
+                   return static_cast<int>(a->defineEquipmentLayer(name, order, parent));
+               });
+    av.addFunc("addEquipmentLayerOcclusion",
+               [](AvatarInstance* a, const std::string& outerLayer,
+                  const std::string& innerLayer) -> int {
+                   return static_cast<int>(
+                       a->addEquipmentLayerOcclusion(outerLayer, innerLayer));
+               });
+    av.addFunc("setEquipmentVisualLayer",
+               [](AvatarInstance* a, const std::string& itemId,
+                  const std::string& equipmentSlot, const std::string& wearLayer,
+                  int withinLayerOrder) -> int {
+                   return static_cast<int>(a->setEquipmentVisualLayer(
+                       itemId, equipmentSlot, wearLayer, withinLayerOrder));
+               });
+    av.addFunc("getEquipmentRenderStackCount", &AvatarInstance::getEquipmentRenderStackCount);
+    av.addFunc("getEquipmentRenderStackItem", &AvatarInstance::getEquipmentRenderStackItem);
+    av.addFunc("getEquipmentRenderStackLayer", &AvatarInstance::getEquipmentRenderStackLayer);
+    av.addFunc("defineEquipmentVisual2D",
+               [](AvatarInstance* a, const std::string& itemId, const std::string& equipmentSlot,
+                  const std::string& layerName, ssq::Object textureObj, int zIndex) -> int {
+                   graphics::Texture* texture = textureObj.isNull()
+                                                    ? nullptr
+                                                    : textureObj.toPtrUnsafe<graphics::Texture*>();
+                   return static_cast<int>(a->defineEquipmentVisual2D(
+                       itemId, equipmentSlot, layerName, texture, zIndex));
+               });
+    av.addFunc("defineEquipmentVisual3D",
+               [](AvatarInstance* a, const std::string& itemId, const std::string& equipmentSlot,
+                  graphics::Renderable3D* renderable, const std::string& bone, float ox, float oy,
+                  float oz) -> int {
+                   return static_cast<int>(a->defineEquipmentVisual3D(
+                       itemId, equipmentSlot, renderable, bone, ox, oy, oz));
+               });
+    av.addFunc("defineEquipmentSkinnedVisual3D",
+               [](AvatarInstance* a, const std::string& itemId,
+                  const std::string& equipmentSlot, int partIndex,
+                  const std::string& partName, graphics::Mesh* mesh,
+                  graphics::Material* material, animation::AnimSkin* skin) -> int {
+                   return static_cast<int>(a->defineEquipmentSkinnedVisual3D(
+                       itemId, equipmentSlot, partIndex, partName, mesh, material, skin));
+               });
     av.addFunc("bindTween", &AvatarInstance::bindTween);
     av.addFunc("unbindTween", &AvatarInstance::unbindTween);
     av.addFunc("getBoundTween", &AvatarInstance::getBoundTween);

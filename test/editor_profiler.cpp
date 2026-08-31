@@ -1,9 +1,9 @@
-#include "editor/EditorProfiler.h"
+#include "profiler_editing/ProfilerModel.h"
 
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
 
-using namespace eve::editor;
+using namespace eve::profiler_editing;
 
 namespace {
 EditorProfilerFrame frame(std::uint64_t sequence, double cpuMs, double gpuMs) {

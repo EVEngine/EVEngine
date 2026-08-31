@@ -107,6 +107,16 @@ public:
         int root = -1;
     };
 
+    /**
+     * @brief Builds a detached replacement tree without mutating a host or firing callbacks.
+     * @param
+     * previous Optional previous tree whose links and lazy object ids are preserved by node id.
+     * @param root
+     * Declarative target root.
+     * @return Fully indexed replacement tree, or a validation failure.
+     */
+    [[nodiscard]] static eve::Result<Tree> buildDetachedTree(const Tree* previous, NodeDesc root);
+
     COMPONENT(Meta, meta)
     COMPONENT(Tree, tree)
 

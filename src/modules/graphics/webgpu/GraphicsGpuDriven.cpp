@@ -287,6 +287,9 @@ uint32_t Graphics::gpuDrivenMaterialRecord(Material *material) {
 }
 
 bool Graphics::gpuDrivenMaterialUsable(Material *material) {
+    if (!material ||
+        material->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable)
+        return false;
     if (!material || material->surfaceMode() != SurfaceMode::Opaque ||
         material->effectiveShader() != nullptr || material->isTransparentHair())
         return false;
@@ -864,6 +867,17 @@ void Graphics::flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarg
         ubo.clipInfo = glm::vec4(mesh3dNear, mesh3dFar, 0.f, 0.f);
         ubo.cloud = mesh3dCloud;
         ubo.cloudWind = mesh3dCloudWind;
+        ubo.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+        ubo.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+        for (int probeIndex = 0; probeIndex < ReflectionProbeUpload::kMaxProbes; ++probeIndex) {
+            if (probeIndex >= mesh3dReflectionProbes.count) continue;
+            const auto &probe = mesh3dReflectionProbes.probes[probeIndex];
+            GpuTexture *gpuProbe = gpuForTexture(probe.cubemap);
+            if (!gpuProbe || !gpuProbe->isCube) continue;
+            ubo.reflectionProbeCenter[probeIndex] = glm::vec4(probe.center, probe.intensity);
+            ubo.reflectionProbeExtent[probeIndex] =
+                glm::vec4(probe.extent, probe.blendDistance);
+        }
 
         const uint32_t frameOffset = arena.alloc(sizeof(Mesh3DUBO), 256);
         const uint32_t shadowOffset = arena.alloc(sizeof(ShadowUBO), 256);
