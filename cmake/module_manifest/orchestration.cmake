@@ -103,10 +103,12 @@ eve_declare_module(NAME fluids_editing LAYER 6
                    DEPS editing fluids
                    GROUP 3d web)
 eve_declare_module(NAME dialogue_editing LAYER 6
-                   DEPS dialogue editing
+                   DEPS editing
+                   OPTIONAL_DEPS dialogue
                    GROUP web)
 eve_declare_module(NAME localization_editing LAYER 6
-                   DEPS audio dialogue editing
+                   DEPS editing
+                   OPTIONAL_DEPS audio dialogue
                    GROUP 2d 3d web)
 eve_declare_module(NAME particles_editing LAYER 6
                    DEPS editing particles
