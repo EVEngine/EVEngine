@@ -52,8 +52,10 @@ function resetGame() {
     sim=eve.RTS(); selected=[]; accumulator=0.0; serial=1;
     requireResult(sim.loadScriptContent(readTextFile("data/content.json")),"load RTS content");
     requireResult(sim.configureScriptWorld(GRID_W,GRID_H,1.0,0.0,0.0),"configure RTS world");
-    requireResult(sim.newFaction(BLUE),"create blue faction");
-    requireResult(sim.newFaction(RED),"create red faction");
+    // Persist the facade's canonical identity instead of relying on the seed
+    // text after a reset. All subsequent facade calls share this owner key.
+    BLUE=requireResult(sim.newFaction(BLUE),"create blue faction");
+    RED=requireResult(sim.newFaction(RED),"create red faction");
     requireResult(sim.configureAutoConstruction(BLUE,true,2,2),"configure blue builders");
     requireResult(sim.configureAutoRepair(BLUE,true,2,2),"configure blue repairers");
     requireResult(sim.configureAutoConstruction(RED,true,2,2),"configure red builders");
@@ -221,7 +223,7 @@ eve_render=function(){
     foreach(node in state.resourceNodes){
         local nx=floor(node.x+0.5).tointeger(),ny=floor(node.y+0.5).tointeger();
         if(requireResult(sim.scriptCellExplored(BLUE,nx,ny),"query resource fog"))
-            gfx.drawSolidRect(sx(node.x)-10,sy(node.y)-10,20,20,0.15,0.75,0.92,1.0);
+            gfx.drawSolidRect(sx(node.x)-10.0,sy(node.y)-10.0,20.0,20.0,0.15,0.75,0.92,1.0);
     }
     foreach(building in state.buildings){
         if(building.faction!=BLUE&&!fogVisible(building.x,building.y))continue;
