@@ -326,9 +326,25 @@ public:
                                                                  const PointDelta& delta, uint64_t targetRevision,
                                                                  const std::string& assetAttribute,
                                                                  const std::string& defaultAsset);
-    [[nodiscard]] eve::Result<void> removeCellInstances(const std::string &prefix, const ProcgenCellRequest &request);
-    int                             getPublishedInstanceCount(const std::string &batchId) const;
-    int                             getPublishedCreatedCount(const std::string &batchId) const;
+    /**
+     * @brief Synchronize one active RuntimeGeneration cell to Scene using a delta or recovery snapshot.
+     * @param prefix Non-empty namespace used to derive the Scene batch identity.
+     * @param runtime Authoritative scheduler containing the active cell.
+     * @param request Cell coordinates identifying the runtime and Scene entries.
+     * @param assetAttribute Optional string attribute selecting the instance asset.
+     * @param defaultAsset Asset used when the selected attribute is absent.
+     * @return Synchronized revision; Scene-ahead state is a conflict.
+     * @thread Synchronous on the runtime and Scene owning thread.
+     * @reentrant Not reentrant for the same runtime cell or Scene batch.
+     */
+    [[nodiscard]] eve::Result<uint64_t> synchronizeCellInstances(const std::string&        prefix,
+                                                                 const RuntimeGeneration&  runtime,
+                                                                 const ProcgenCellRequest& request,
+                                                                 const std::string&        assetAttribute,
+                                                                 const std::string&        defaultAsset);
+    [[nodiscard]] eve::Result<void> removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request);
+    int                             getPublishedInstanceCount(const std::string& batchId) const;
+    int                             getPublishedCreatedCount(const std::string& batchId) const;
     int                             getPublishedReusedCount(const std::string &batchId) const;
     int                             getPublishedRemovedCount(const std::string &batchId) const;
     uint32_t                        deriveSeed(uint32_t parent, const std::string &scope) const;

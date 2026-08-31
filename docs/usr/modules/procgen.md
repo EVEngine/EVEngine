@@ -279,6 +279,13 @@ Scene 漏掉一个或多个中间 revision 后，不应继续重放不完整的�
 从较旧 Scene revision 直接前进到较新的 cell revision，同时拒绝相同或更旧 revision；因此可用于
 provider 暂时失败后的追赶、存档恢复和 Scene 重建，而不会通过反复整批发布猜测 revision。
 
+常规 streaming 循环优先调用
+`synchronizeCellInstances(prefix, runtime, request, assetAttribute, defaultAsset)`。它把
+`RuntimeGeneration` 视为 authoritative owner：Scene revision 已相同时幂等成功，恰好落后一个且存在
+最新 delta 时走增量，首次发布、漏掉多个 revision、迁移后没有 delta 时自动走完整快照；如果 Scene
+revision 反而更高则返回冲突，不会用旧 RuntimeGeneration 状态覆盖新场景。返回的成功值是已同步的
+十进制 revision，可用于日志和监控，不再要求脚本复制 revision 分支策略。
+
 空间数据构造器包括 `polygonVolume`、`textureMaskData` 和 `meshSurfaceData`。
 它们可继续传给统一的 spatial union/intersection/difference、采样、过滤和投射 API。
 `projectToWorld` 通过可选 `IProcgenWorldQuery` capability 做垂直世界表面查询；

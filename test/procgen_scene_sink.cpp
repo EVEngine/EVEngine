@@ -42,6 +42,7 @@ public:
         if (!applyBatch(batchId, instances))
             return eve::Result<uint64_t>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::Failed, "mock snapshot commit failed"));
+        ++replaceCalls;
         revisions[batchId] = targetRevision;
         return eve::Result<uint64_t>::success(targetRevision);
     }
@@ -52,6 +53,7 @@ public:
                 eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "mock delta revision is stale"));
         lastDeltaBatch     = batchId;
         lastDelta          = delta;
+        ++deltaCalls;
         revisions[batchId] = delta.targetRevision;
         return eve::Result<uint64_t>::success(delta.targetRevision);
     }
@@ -90,10 +92,12 @@ public:
         int removed = 0;
     };
     std::unordered_map<std::string, std::vector<eve::ProcgenInstanceDesc>> batches;
-    std::unordered_map<std::string, uint64_t> revisions;
-    std::unordered_map<std::string, Stats> latest;
+    std::unordered_map<std::string, uint64_t>                              revisions;
+    std::unordered_map<std::string, Stats>                                 latest;
     std::string                                                            lastDeltaBatch;
     eve::ProcgenInstanceDelta                                              lastDelta;
+    int                                                                    replaceCalls = 0;
+    int                                                                    deltaCalls   = 0;
 };
 
 }  // namespace
@@ -259,6 +263,65 @@ TEST_CASE("procgen.sceneSink.projectsRuntimePointDeltaByStableIdentity") {
     eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
 }
 
+TEST_CASE("procgen.sceneSink.synchronizesRuntimeRevisionWithDeltaAndSnapshotRecovery") {
+    eve::cap::detail::clearAllRaw();
+    MockProcgenSceneSink sink;
+    eve::cap::provide<eve::IProcgenSceneSink>(&sink);
+
+    Procgen           proc;
+    RuntimeGeneration runtime(91);
+    REQUIRE(runtime.addLevel(10.f, 6.f, 2.f) >= 0);
+    runtime.updateSource(1.f, 1.f, 1.f, 0.f);
+    std::unique_ptr<ProcgenCellRequest> request(runtime.nextGenerate());
+    REQUIRE(bool(request));
+
+    PointSet  initial;
+    const int tree = initial.add(1.f, 0.f, 2.f);
+    REQUIRE(initial.trySetPointId(tree, 3001).ok());
+    initial.setStringAttribute(tree, "asset", "oak");
+    REQUIRE(runtime.completeGeneration(request.get(), &initial));
+
+    auto first = proc.synchronizeCellInstances("stream", runtime, *request, "asset", "stone");
+    REQUIRE(first.ok());
+    CHECK_EQ(first.value(), uint64_t(1));
+    CHECK_EQ(sink.replaceCalls, 1);
+    CHECK_EQ(sink.deltaCalls, 0);
+    auto unchanged = proc.synchronizeCellInstances("stream", runtime, *request, "asset", "stone");
+    REQUIRE(unchanged.ok());
+    CHECK_EQ(sink.replaceCalls, 1);
+
+    PointSet revisionTwo = initial;
+    revisionTwo.setPosition(0, 4.f, 0.f, 2.f);
+    auto updated = runtime.applyCellUpdate(0, 0, 0, 1, revisionTwo);
+    REQUIRE(updated.ok());
+    auto incremental = proc.synchronizeCellInstances("stream", runtime, *request, "asset", "stone");
+    REQUIRE(incremental.ok());
+    CHECK_EQ(incremental.value(), uint64_t(2));
+    CHECK_EQ(sink.deltaCalls, 1);
+    CHECK_EQ(sink.replaceCalls, 1);
+
+    PointSet revisionThree = revisionTwo;
+    revisionThree.setPosition(0, 6.f, 0.f, 2.f);
+    REQUIRE(runtime.applyCellUpdate(0, 0, 0, 2, revisionThree).ok());
+    PointSet revisionFour = revisionThree;
+    revisionFour.setPosition(0, 8.f, 0.f, 2.f);
+    REQUIRE(runtime.applyCellUpdate(0, 0, 0, 3, revisionFour).ok());
+    auto recovered = proc.synchronizeCellInstances("stream", runtime, *request, "asset", "stone");
+    REQUIRE(recovered.ok());
+    CHECK_EQ(recovered.value(), uint64_t(4));
+    CHECK_EQ(sink.replaceCalls, 2);
+    CHECK_EQ(sink.deltaCalls, 1);
+    CHECK_EQ(sink.batches.at("stream/L0/0/0")[0].x, 8.f);
+
+    sink.revisions["stream/L0/0/0"] = 5;
+    auto sceneAhead                 = proc.synchronizeCellInstances("stream", runtime, *request, "asset", "stone");
+    CHECK(!sceneAhead.ok());
+    CHECK_EQ(sink.replaceCalls, 2);
+    CHECK_EQ(sink.deltaCalls, 1);
+
+    eve::cap::revoke<eve::IProcgenSceneSink>(&sink);
+}
+
 TEST_CASE("procgen.sceneSink.reportsMissingProvider") {
     eve::cap::detail::clearAllRaw();
     Procgen proc;
@@ -272,5 +335,18 @@ TEST_CASE("procgen.sceneSink.reportsMissingProvider") {
     auto publishResult = proc.publishInstances("missing", pointsHandle, "asset", "tree");
     REQUIRE(!publishResult.ok());
     CHECK(publishResult.status().describe().find("unavailable") != std::string::npos);
+
+    RuntimeGeneration runtime(12);
+    REQUIRE(runtime.addLevel(10.f, 6.f, 2.f) >= 0);
+    runtime.updateSource(1.f, 1.f, 1.f, 0.f);
+    std::unique_ptr<ProcgenCellRequest> request(runtime.nextGenerate());
+    REQUIRE(bool(request));
+    PointSet  generated;
+    const int point = generated.add(0.f, 0.f, 0.f);
+    REQUIRE(generated.trySetPointId(point, 4001).ok());
+    REQUIRE(runtime.completeGeneration(request.get(), &generated));
+    auto synchronizeResult = proc.synchronizeCellInstances("missing", runtime, *request, "asset", "tree");
+    REQUIRE(!synchronizeResult.ok());
+    CHECK(synchronizeResult.status().describe().find("unavailable") != std::string::npos);
     REQUIRE(proc.releasePointSet(pointsHandle).ok());
 }

@@ -929,6 +929,45 @@ eve::Result<uint64_t> Procgen::publishCellInstanceDelta(const std::string& prefi
     return sink->applyDelta(batchId, sceneDelta);
 }
 
+eve::Result<uint64_t> Procgen::synchronizeCellInstances(const std::string& prefix, const RuntimeGeneration& runtime,
+                                                        const ProcgenCellRequest& request,
+                                                        const std::string&        assetAttribute,
+                                                        const std::string&        defaultAsset) {
+    if (prefix.empty())
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
+                                               "synchronizeCellInstances requires a prefix", "prefix");
+    const int                 level          = request.getLevel();
+    const int                 x              = request.getX();
+    const int                 z              = request.getZ();
+    const uint64_t            targetRevision = runtime.getCellRevision(level, x, z);
+    std::unique_ptr<PointSet> snapshot(runtime.getCellOutput(level, x, z));
+    if (!snapshot || targetRevision == 0)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::NotFound,
+                                               "synchronizeCellInstances requires an active runtime cell", "cell");
+
+    auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
+    if (!sink)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
+                                               "synchronizeCellInstances scene sink is unavailable");
+    const std::string batchId =
+        prefix + "/L" + std::to_string(level) + "/" + std::to_string(x) + "/" + std::to_string(z);
+    const uint64_t sceneRevision = sink->batchRevision(batchId);
+    if (sceneRevision == targetRevision) return eve::Result<uint64_t>::success(targetRevision);
+    if (sceneRevision > targetRevision)
+        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
+                                               "Scene cell revision is ahead of RuntimeGeneration", "revision");
+
+    if (sceneRevision + 1 == targetRevision) {
+        std::unique_ptr<PointDelta> delta(runtime.getCellDelta(level, x, z));
+        if (delta)
+            return publishCellInstanceDelta(prefix, request, *delta, targetRevision, assetAttribute, defaultAsset);
+    }
+
+    auto instances = sceneInstanceDescs(*snapshot, assetAttribute, defaultAsset, true);
+    if (!instances.ok()) return eve::Result<uint64_t>::failure(instances.status());
+    return sink->replaceBatch(batchId, targetRevision, instances.value());
+}
+
 eve::Result<void> Procgen::removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request) {
     if (prefix.empty())
         return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
@@ -4146,6 +4185,21 @@ void Procgen::expose(ssq::Class &cls) {
             vm, value->publishCellInstanceDelta(prefix, *request, *delta, targetRevision, assetAttribute, defaultAsset),
             [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
     });
+    cls.addFunc("synchronizeCellInstances",
+                [vm = cls.getHandle()](Procgen* value, const std::string& prefix, RuntimeGeneration* runtime,
+                                       ProcgenCellRequest* request, const std::string& assetAttribute,
+                                       const std::string& defaultAsset) {
+                    if (!value || !runtime || !request)
+                        return eve::script::projectResult(
+                            vm,
+                            procgenBindingFailure<std::uint64_t>(
+                                eve::DiagnosticCode::InvalidArgument,
+                                "synchronizeCellInstances requires runtime and request", "synchronizeCellInstances"),
+                            [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+                    return eve::script::projectResult(
+                        vm, value->synchronizeCellInstances(prefix, *runtime, *request, assetAttribute, defaultAsset),
+                        [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
+                });
     cls.addFunc("removeCellInstances",
                 [vm = cls.getHandle()](Procgen* value, const std::string& prefix, ProcgenCellRequest* request) {
                     if (!value || !request)
