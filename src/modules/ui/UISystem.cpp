@@ -4,10 +4,13 @@
 #include "ui/Icons.h"
 #include "ui/Theme.h"
 #include "ui/UIBackend.h"
+#include "ui/WorldAnchorProjection.h"
 
 #include "common/Module.h"
 #include "common/Profile.h"
 #include "graphics/Graphics.h"
+#include "graphics/ClipSpace.h"
+#include "graphics/RenderSystem3D.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -97,6 +100,46 @@ void renderDragDrop(UIHost *host, const UINode &node) {
         }
         g_pendingFileDrops.clear();
     }
+}
+
+graphics::Camera3D *activeCamera() {
+    if (ecs::current()->getManager<graphics::Camera3D>() == nullptr) return nullptr;
+    auto cameras = ecs::View<graphics::Camera3D, graphics::Camera3D::Data>();
+    for (auto it = cameras.begin(); it != cameras.end(); ++it) {
+        auto [data] = *it;
+        if (data->active) return data->entity;
+    }
+    return nullptr;
+}
+
+bool updateWorldAnchor(UIHost &host, graphics::Camera3D *camera, float width, float height) {
+    auto anchor = host.worldAnchor();
+    if (!anchor->enabled) {
+        anchor->state = WorldAnchorState::Disabled;
+        return true;
+    }
+    if (!camera || width <= 0.f || height <= 0.f) {
+        anchor->state = WorldAnchorState::NoCamera;
+        return false;
+    }
+    const auto data = camera->data();
+    const glm::vec3 eye(data->eyeX, data->eyeY, data->eyeZ);
+    const glm::vec3 target(data->targetX, data->targetY, data->targetZ);
+    const glm::vec3 up(data->upX, data->upY, data->upZ);
+    const glm::mat4 view = glm::lookAtRH(eye, target, up);
+    const glm::mat4 projection = graphics::cameraProjectionVulkanRH_ZO(
+        data->orthographic, glm::radians(data->fovYDeg), data->orthoHeight,
+        width / height, data->nearZ, data->farZ);
+    const auto projected = projectWorldAnchor(*anchor, projection * view, data->eyeX,
+                                               data->eyeY, data->eyeZ, width, height);
+    anchor->state = projected.state;
+    anchor->screenX = projected.screenX;
+    anchor->screenY = projected.screenY;
+    anchor->depth = projected.depth;
+    anchor->scale = projected.scale;
+    anchor->displacementX = 0.f;
+    anchor->displacementY = 0.f;
+    return projected.render;
 }
 
 std::string viewportKey(UIHost *host, const UINode &n) {
@@ -491,7 +534,15 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             winH = host->meta()->percentH * ImGui::GetIO().DisplaySize.y;
         else if (host && host->meta()->hasSize)
             winH = host->meta()->sizeY;
-        if (host && host->meta()->hasPos) {
+        const auto worldAnchor = host ? host->worldAnchor() : nullptr;
+        if (worldAnchor->enabled) {
+            ImGui::SetNextWindowPos(ImVec2(worldAnchor->screenX, worldAnchor->screenY),
+                                    ImGuiCond_Always,
+                                    ImVec2(host->meta()->pivotX, host->meta()->pivotY));
+            flags |= ImGuiWindowFlags_NoMove;
+            if (!host->meta()->hasSize && winW <= 0.f && winH <= 0.f)
+                flags |= ImGuiWindowFlags_AlwaysAutoResize;
+        } else if (host && host->meta()->hasPos) {
             const ImVec2 display = ImGui::GetIO().DisplaySize;
             // SetNextWindowPos applies the pivot itself. Passing an already
             // pivot-adjusted top-left position shifts the window by its pivot
@@ -527,11 +578,15 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             ImGui::OpenPopup(title.c_str());
             if (ImGui::BeginPopupModal(title.c_str(), nullptr,
                                        ImGuiWindowFlags_AlwaysAutoResize | flags)) {
+                if (worldAnchor->enabled)
+                    ImGui::SetWindowFontScale(worldAnchor->scale);
                 if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
                 ImGui::EndPopup();
             }
         } else {
             ImGui::Begin(title.c_str(), nullptr, flags);
+            if (worldAnchor->enabled)
+                ImGui::SetWindowFontScale(worldAnchor->scale);
             if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
             ImGui::End();
         }
@@ -1318,37 +1373,90 @@ void UISystem::render() {
         UIHost *host;
         UIHost::Meta *meta;
         UIHost::Tree *tree;
+        bool render = true;
     };
     std::vector<Item> items;
 
+    graphics::Camera3D *camera = activeCamera();
+    const ImVec2 display = ImGui::GetIO().DisplaySize;
     auto view = ecs::View<UIHost, UIHost::Meta, UIHost::Tree>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [meta, tree] = *it;
         if (!meta->visible) continue;
         auto host = UIHost::resolve(meta->entity);
         if (!host) continue;
-        items.push_back(Item{&host->get(), meta, tree});
+        if (!updateWorldAnchor(host->get(), camera, display.x, display.y)) continue;
+        items.push_back(Item{&host->get(), meta, tree, true});
     }
 
     std::stable_sort(items.begin(), items.end(),
                      [](const Item &a, const Item &b) { return a.meta->layer < b.meta->layer; });
 
-    g_stats.hostCount = int(items.size());
     g_stats.nodeCount = 0;
     g_stats.measureMs = 0.0;
     g_stats.walkMs = 0.0;
     for (auto &item : items) {
         item.tree->dirty = false;
-        // Real measure pass: nested containers, text metrics, margins/min/max.
         const auto m0 = std::chrono::steady_clock::now();
         measureTree(*item.tree);
         const auto m1 = std::chrono::steady_clock::now();
         g_stats.nodeCount += int(item.tree->nodes.size());
-        if (item.tree->root >= 0) walk(item.host, item.tree, item.tree->root);
-        const auto m2 = std::chrono::steady_clock::now();
         g_stats.measureMs +=
             std::chrono::duration<double, std::milli>(m1 - m0).count();
-        g_stats.walkMs += std::chrono::duration<double, std::milli>(m2 - m1).count();
+    }
+
+    std::vector<WorldAnchorLayoutItem> anchorItems;
+    anchorItems.reserve(items.size());
+    const ImGuiStyle &style = ImGui::GetStyle();
+    for (std::size_t i = 0; i < items.size(); ++i) {
+        auto &item = items[i];
+        auto anchor = item.host->worldAnchor();
+        if (!anchor->enabled) continue;
+        float width = item.meta->hasSize ? item.meta->sizeX : 0.f;
+        float height = item.meta->hasSize ? item.meta->sizeY : 0.f;
+        if (item.meta->percentW > 0.f) width = item.meta->percentW * display.x;
+        if (item.meta->percentH > 0.f) height = item.meta->percentH * display.y;
+        if (item.tree->root >= 0) {
+            const auto &root = item.tree->nodes[std::size_t(item.tree->root)];
+            if (width <= 0.f) width = root.measuredW + style.WindowPadding.x * 2.f;
+            if (height <= 0.f) height = root.measuredH + style.WindowPadding.y * 2.f;
+        }
+        width *= anchor->scale;
+        height *= anchor->scale;
+        anchorItems.push_back({i,
+                               anchor->screenX,
+                               anchor->screenY,
+                               width,
+                               height,
+                               item.meta->pivotX,
+                               item.meta->pivotY,
+                               anchor->depth,
+                               anchor->safeMargin,
+                               anchor->overlapPadding,
+                               anchor->maxDisplacement,
+                               anchor->overlapPriority,
+                               anchor->overlapPolicy == WorldAnchorOverlapPolicy::Avoid});
+    }
+    for (const auto &resolved :
+         resolveWorldAnchorOverlaps(std::move(anchorItems), display.x, display.y)) {
+        auto &item = items[resolved.stableIndex];
+        auto anchor = item.host->worldAnchor();
+        anchor->screenX = resolved.screenX;
+        anchor->screenY = resolved.screenY;
+        anchor->displacementX = resolved.displacementX;
+        anchor->displacementY = resolved.displacementY;
+        item.render = resolved.render;
+        if (!resolved.render) anchor->state = WorldAnchorState::Crowded;
+    }
+
+    g_stats.hostCount = int(std::count_if(items.begin(), items.end(),
+                                         [](const Item &item) { return item.render; }));
+    for (auto &item : items) {
+        if (!item.render) continue;
+        const auto w0 = std::chrono::steady_clock::now();
+        if (item.tree->root >= 0) walk(item.host, item.tree, item.tree->root);
+        const auto w1 = std::chrono::steady_clock::now();
+        g_stats.walkMs += std::chrono::duration<double, std::milli>(w1 - w0).count();
     }
 }
 
