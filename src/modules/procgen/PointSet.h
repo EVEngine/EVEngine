@@ -133,23 +133,23 @@ public:
     bool        hasFloatAttribute(int index, const std::string& name) const;
     /** @brief Set one signed integer metadata value. */
     void setIntAttribute(int index, const std::string& name, std::int64_t value);
-    /** @brief Read signed integer metadata or return fallback when absent. */
+    /** @brief Read signed integer metadata or return the caller-provided default when absent. */
     std::int64_t getIntAttribute(int index, const std::string& name, std::int64_t fallback) const;
     /** @brief Test whether signed integer metadata exists. */
     bool hasIntAttribute(int index, const std::string& name) const;
     /** @brief Set one boolean metadata value. */
     void setBoolAttribute(int index, const std::string& name, bool value);
-    /** @brief Read boolean metadata or return fallback when absent. */
+    /** @brief Read boolean metadata or return the caller-provided default when absent. */
     bool getBoolAttribute(int index, const std::string& name, bool fallback) const;
     /** @brief Test whether boolean metadata exists. */
     bool hasBoolAttribute(int index, const std::string& name) const;
     /** @brief Set one three-component metadata value. */
     void setVectorAttribute(int index, const std::string& name, float x, float y, float z);
-    /** @brief Read the X component of vector metadata or return fallback when absent. */
+    /** @brief Read the X component of vector metadata or the caller-provided default. */
     float getVectorAttributeX(int index, const std::string& name, float fallback) const;
-    /** @brief Read the Y component of vector metadata or return fallback when absent. */
+    /** @brief Read the Y component of vector metadata or the caller-provided default. */
     float getVectorAttributeY(int index, const std::string& name, float fallback) const;
-    /** @brief Read the Z component of vector metadata or return fallback when absent. */
+    /** @brief Read the Z component of vector metadata or the caller-provided default. */
     float getVectorAttributeZ(int index, const std::string& name, float fallback) const;
     /** @brief Test whether vector metadata exists. */
     bool hasVectorAttribute(int index, const std::string& name) const;
