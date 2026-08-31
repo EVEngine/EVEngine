@@ -9,6 +9,8 @@
 
 namespace eve::procgen {
 
+class MeshBuild;
+
 /** @brief Axis-aligned bounds shared by all procedural spatial data types. */
 struct SpatialBounds {
     float minX = 0.f;
@@ -34,8 +36,11 @@ public:
         Points,
         Box,
         Sphere,
+        Polygon,
         Spline,
         Heightfield,
+        TextureMask,
+        MeshSurface,
         Union,
         Intersection,
         Difference
@@ -51,11 +56,19 @@ public:
                            float maxZ);
     /** @brief Create a spherical volume. A non-positive radius produces an empty domain. */
     static SpatialData sphere(float x, float y, float z, float radius);
+    /** @brief Create an XZ polygon prism between two world-space heights. */
+    static SpatialData polygon(const PointSet& controlPoints, float minY, float maxY);
     /** @brief Create a polyline domain with a radial influence width. */
     static SpatialData spline(const PointSet& controlPoints, float radius);
     /** @brief Create a sampled heightfield surface in world space. */
     static SpatialData heightfield(const Heightmap& heightmap, float originX, float originZ,
                                    float cellSize, float heightScale);
+    /** @brief Create an extruded spatial mask from scalar texture data. */
+    static SpatialData textureMask(const Heightmap& values, float originX, float originZ,
+                                   float cellSize, float minValue, float maxValue, float minY,
+                                   float maxY);
+    /** @brief Create a queryable triangle surface from CPU mesh data. */
+    static SpatialData meshSurface(const MeshBuild& mesh, float tolerance);
     /** @brief Create the union of two domains. */
     static SpatialData unite(const SpatialData& a, const SpatialData& b);
     /** @brief Create the intersection of two domains. */
@@ -99,10 +112,13 @@ private:
     float                        centerZ_ = 0.f;
     float                        radius_  = 0.f;
     std::shared_ptr<Heightmap>   heightmap_;
+    std::shared_ptr<MeshBuild>   mesh_;
     float                        originX_    = 0.f;
     float                        originZ_    = 0.f;
     float                        cellSize_   = 1.f;
     float                        heightScale_ = 1.f;
+    float                        minValue_     = 0.f;
+    float                        maxValue_     = 1.f;
     std::shared_ptr<SpatialData> left_;
     std::shared_ptr<SpatialData> right_;
 };

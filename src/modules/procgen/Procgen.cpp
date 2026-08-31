@@ -1,6 +1,7 @@
 #include "procgen/Procgen.h"
 
 #include "common/Capability.h"
+#include "common/ProcgenWorldQuery.h"
 #include "common/ProcgenSceneSink.h"
 #include "common/SquirrelBinding.h"
 #include "procgen/BiomeScript.h"
@@ -583,6 +584,39 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::mergePointsHandle(ProcgenPointSet
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(mergePointSets(*a, *b)));
 }
 
+eve::Result<ProcgenPointSetHandleRef> Procgen::unionPointsHandle(
+    ProcgenPointSetHandleRef first, ProcgenPointSetHandleRef second) {
+    auto a = resolvePointSet(first);
+    auto b = resolvePointSet(second);
+    if (!a.isBound() || !b.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "unionPoints requires live point sets", "points");
+    return ownProcgenObject(ownership_->points,
+                            std::make_unique<PointSet>(unionPointSets(*a, *b)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::intersectPointsHandle(
+    ProcgenPointSetHandleRef first, ProcgenPointSetHandleRef second) {
+    auto a = resolvePointSet(first);
+    auto b = resolvePointSet(second);
+    if (!a.isBound() || !b.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "intersectPoints requires live point sets", "points");
+    return ownProcgenObject(ownership_->points,
+                            std::make_unique<PointSet>(intersectPointSets(*a, *b)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::differencePointsHandle(
+    ProcgenPointSetHandleRef first, ProcgenPointSetHandleRef second) {
+    auto a = resolvePointSet(first);
+    auto b = resolvePointSet(second);
+    if (!a.isBound() || !b.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "differencePoints requires live point sets", "points");
+    return ownProcgenObject(ownership_->points,
+                            std::make_unique<PointSet>(differencePointSets(*a, *b)));
+}
+
 eve::Result<ProcgenPointSetHandleRef> Procgen::transformPointsHandle(ProcgenPointSetHandleRef input, float translateX,
                                                                      float translateY, float translateZ,
                                                                      float yawDegrees, float scaleX, float scaleY,
@@ -594,6 +628,74 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::transformPointsHandle(ProcgenPoin
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(transformPointSet(*view, translateX, translateY, translateZ,
                                                                          yawDegrees, scaleX, scaleY, scaleZ)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::transformPoints3DHandle(
+    ProcgenPointSetHandleRef input, float translateX, float translateY, float translateZ,
+    float pitchDegrees, float yawDegrees, float rollDegrees, float scaleX, float scaleY,
+    float scaleZ) {
+    auto view = resolvePointSet(input);
+    if (!view.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "transformPoints3D input handle is stale", "input");
+    return ownProcgenObject(
+        ownership_->points,
+        std::make_unique<PointSet>(transformPointSet3D(
+            *view, translateX, translateY, translateZ, pitchDegrees, yawDegrees, rollDegrees,
+            scaleX, scaleY, scaleZ)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::copyPointsHandle(
+    ProcgenPointSetHandleRef source, ProcgenPointSetHandleRef targets,
+    bool inheritTargetAttributes) {
+    auto sourceView = resolvePointSet(source);
+    auto targetView = resolvePointSet(targets);
+    if (!sourceView.isBound() || !targetView.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "copyPoints requires live point sets", "points");
+    return ownProcgenObject(
+        ownership_->points,
+        std::make_unique<PointSet>(copyPointsToTargets(*sourceView, *targetView,
+                                                        inheritTargetAttributes)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::remapDensityHandle(
+    ProcgenPointSetHandleRef input, float inputMin, float inputMax, float outputMin,
+    float outputMax, bool clampOutput) {
+    auto view = resolvePointSet(input);
+    if (!view.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "remapDensity point-set handle is stale", "points");
+    if (!std::isfinite(inputMin) || !std::isfinite(inputMax) || inputMin == inputMax ||
+        !std::isfinite(outputMin) || !std::isfinite(outputMax))
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::InvalidArgument, "remapDensity requires finite non-zero input range",
+            "inputRange");
+    return ownProcgenObject(
+        ownership_->points,
+        std::make_unique<PointSet>(remapPointDensity(*view, inputMin, inputMax, outputMin,
+                                                      outputMax, clampOutput)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::mathFloatAttributeHandle(
+    ProcgenPointSetHandleRef input, const std::string& attribute,
+    const std::string& outputAttribute, const std::string& operation, float operand,
+    float defaultValue) {
+    auto view = resolvePointSet(input);
+    if (!view.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "mathFloatAttribute point-set handle is stale", "points");
+    if (attribute.empty() || outputAttribute.empty() ||
+        (operation != "add" && operation != "subtract" && operation != "multiply" &&
+         operation != "divide" && operation != "min" && operation != "max") ||
+        (operation == "divide" && operand == 0.f))
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::InvalidArgument,
+            "mathFloatAttribute requires a supported operation and valid attributes", "operation");
+    return ownProcgenObject(
+        ownership_->points,
+        std::make_unique<PointSet>(mathPointFloatAttribute(
+            *view, attribute, outputAttribute, operation, operand, defaultValue)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::filterFloatAttributeHandle(ProcgenPointSetHandleRef input,
@@ -627,6 +729,48 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::densityCullHandle(ProcgenPointSet
         return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
                                                                "densityCull input handle is stale", "input");
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(densityCullPoints(*view, seed, multiplier)));
+}
+
+eve::Result<ProcgenPointSetHandleRef> Procgen::projectToWorldHandle(
+    ProcgenPointSetHandleRef input, float maxY, float minY, std::uint64_t maskBits,
+    bool keepUnmatched) {
+    auto points = resolvePointSet(input);
+    if (!points.isBound())
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::StaleHandle, "projectToWorld point-set handle is stale", "points");
+    if (!std::isfinite(maxY) || !std::isfinite(minY) || maxY < minY)
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::InvalidArgument, "projectToWorld requires finite maxY >= minY", "maxY");
+    auto* query = eve::cap::query<eve::IProcgenWorldQuery>();
+    if (!query)
+        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+            eve::DiagnosticCode::Unsupported,
+            "projectToWorld requires an IProcgenWorldQuery provider", "worldQuery");
+
+    PointSet output;
+    output.points().reserve(points->points().size());
+    for (const auto& source : points->points()) {
+        auto queryResult = query->projectDown(source.x, source.z, maxY, minY, maskBits);
+        if (!queryResult.ok())
+            return procgenBindingFailure<ProcgenPointSetHandleRef>(
+                eve::DiagnosticCode::Failed, "world-query provider failed to execute projection",
+                "worldQuery");
+        const auto& hit = queryResult.value();
+        if (!hit.hit) {
+            if (keepUnmatched) output.points().push_back(source);
+            continue;
+        }
+        ProcgenPoint projected = source;
+        projected.x = hit.x;
+        projected.y = hit.y;
+        projected.z = hit.z;
+        projected.normalX = hit.normalX;
+        projected.normalY = hit.normalY;
+        projected.normalZ = hit.normalZ;
+        projected.intAttributes["worldObjectId"] = hit.objectId;
+        output.points().push_back(std::move(projected));
+    }
+    return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(std::move(output)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::poissonDiskHandle(int width, int depth, float radius, uint32_t seed,
@@ -756,6 +900,18 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::sphereVolumeHandle(float x, fl
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::sphere(x, y, z, radius)));
 }
 
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::polygonVolumeHandle(
+    ProcgenPointSetHandleRef controlPoints, float minY, float maxY) {
+    auto points = resolvePointSet(controlPoints);
+    if (!points.isBound() || points->getCount() < 3 || !std::isfinite(minY) || !std::isfinite(maxY))
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            eve::DiagnosticCode::InvalidArgument,
+            "polygonVolume requires a live set with at least three points and finite heights",
+            "controlPoints");
+    return spatialData_.emplace(
+        std::make_unique<SpatialData>(SpatialData::polygon(*points, minY, maxY)));
+}
+
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::splineDataHandle(ProcgenPointSetHandleRef controlPoints,
                                                                    float                    radius) {
     auto view = resolvePointSet(controlPoints);
@@ -776,6 +932,29 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::heightfieldDataHandle(ProcgenH
             "heightfieldData requires a live non-empty heightmap and positive cell size", "heightmap");
     return spatialData_.emplace(
         std::make_unique<SpatialData>(SpatialData::heightfield(*view, originX, originZ, cellSize, heightScale)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::textureMaskDataHandle(
+    ProcgenHeightmapHandleRef values, float originX, float originZ, float cellSize,
+    float minValue, float maxValue, float minY, float maxY) {
+    auto view = resolveHeightmap(values);
+    if (!view.isBound() || view->getWidth() <= 0 || view->getHeight() <= 0 || cellSize <= 0.f)
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            eve::DiagnosticCode::InvalidArgument,
+            "textureMaskData requires a live non-empty scalar map and positive cell size", "values");
+    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::textureMask(
+        *view, originX, originZ, cellSize, minValue, maxValue, minY, maxY)));
+}
+
+eve::Result<ProcgenSpatialDataHandleRef> Procgen::meshSurfaceDataHandle(
+    ProcgenMeshBuildHandleRef mesh, float tolerance) {
+    auto view = resolveMeshBuild(mesh);
+    if (!view.isBound() || view->getVertexCount() < 3 || view->getIndexCount() < 3 || tolerance < 0.f)
+        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+            eve::DiagnosticCode::InvalidArgument,
+            "meshSurfaceData requires a live triangle mesh and non-negative tolerance", "mesh");
+    return spatialData_.emplace(
+        std::make_unique<SpatialData>(SpatialData::meshSurface(*view, tolerance)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::unionSpatialHandle(ProcgenSpatialDataHandleRef left,
@@ -2484,10 +2663,27 @@ void Procgen::expose(ssq::Table &table) {
     points.addFunc("getNormalZ", &PointSet::getNormalZ);
     points.addFunc("setYaw", &PointSet::setYaw);
     points.addFunc("getYaw", &PointSet::getYaw);
+    points.addFunc("setRotation", &PointSet::setRotation);
+    points.addFunc("getPitch", &PointSet::getPitch);
+    points.addFunc("getRoll", &PointSet::getRoll);
     points.addFunc("setScale", &PointSet::setScale);
     points.addFunc("getScaleX", &PointSet::getScaleX);
     points.addFunc("getScaleY", &PointSet::getScaleY);
     points.addFunc("getScaleZ", &PointSet::getScaleZ);
+    points.addFunc("setBounds", &PointSet::setBounds);
+    points.addFunc("getBoundsMinX", &PointSet::getBoundsMinX);
+    points.addFunc("getBoundsMinY", &PointSet::getBoundsMinY);
+    points.addFunc("getBoundsMinZ", &PointSet::getBoundsMinZ);
+    points.addFunc("getBoundsMaxX", &PointSet::getBoundsMaxX);
+    points.addFunc("getBoundsMaxY", &PointSet::getBoundsMaxY);
+    points.addFunc("getBoundsMaxZ", &PointSet::getBoundsMaxZ);
+    points.addFunc("setColor", &PointSet::setColor);
+    points.addFunc("getColorR", &PointSet::getColorR);
+    points.addFunc("getColorG", &PointSet::getColorG);
+    points.addFunc("getColorB", &PointSet::getColorB);
+    points.addFunc("getColorA", &PointSet::getColorA);
+    points.addFunc("setSteepness", &PointSet::setSteepness);
+    points.addFunc("getSteepness", &PointSet::getSteepness);
     points.addFunc("setDensity", &PointSet::setDensity);
     points.addFunc("getDensity", &PointSet::getDensity);
     points.addFunc("setPointSeed", &PointSet::setPointSeed);
@@ -2495,9 +2691,21 @@ void Procgen::expose(ssq::Table &table) {
     points.addFunc("setFloatAttribute", &PointSet::setFloatAttribute);
     points.addFunc("getFloatAttribute", &PointSet::getFloatAttribute);
     points.addFunc("hasFloatAttribute", &PointSet::hasFloatAttribute);
+    points.addFunc("setIntAttribute", &PointSet::setIntAttribute);
+    points.addFunc("getIntAttribute", &PointSet::getIntAttribute);
+    points.addFunc("hasIntAttribute", &PointSet::hasIntAttribute);
+    points.addFunc("setBoolAttribute", &PointSet::setBoolAttribute);
+    points.addFunc("getBoolAttribute", &PointSet::getBoolAttribute);
+    points.addFunc("hasBoolAttribute", &PointSet::hasBoolAttribute);
+    points.addFunc("setVectorAttribute", &PointSet::setVectorAttribute);
+    points.addFunc("getVectorAttributeX", &PointSet::getVectorAttributeX);
+    points.addFunc("getVectorAttributeY", &PointSet::getVectorAttributeY);
+    points.addFunc("getVectorAttributeZ", &PointSet::getVectorAttributeZ);
+    points.addFunc("hasVectorAttribute", &PointSet::hasVectorAttribute);
     points.addFunc("setStringAttribute", &PointSet::setStringAttribute);
     points.addFunc("getStringAttribute", &PointSet::getStringAttribute);
     points.addFunc("hasStringAttribute", &PointSet::hasStringAttribute);
+    points.addFunc("getAttributeType", &PointSet::getAttributeType);
 
 auto lsystem = table.addClass<LSystem>(
         "ProcgenLSystem", std::function<LSystem*()>([]() -> LSystem* { return nullptr; }), true);
@@ -3199,7 +3407,243 @@ void Procgen::expose(ssq::Class &cls) {
                                        ? owner->releasePointSet(ref)
                                        : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
                                                                      "Procgen module is no longer loaded", "pointSet");
-                        });
+                         });
+                 });
+    cls.addFunc("filterHeight",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "filterHeight requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(vm, value->filterHeightHandle(*reference, minimum, maximum));
+                });
+    cls.addFunc("filterDensity",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "filterDensity requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(vm, value->filterDensityHandle(*reference, minimum, maximum));
+                });
+    cls.addFunc("filterBox",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float minX, float minY, float minZ,
+                                       float maxX, float maxY, float maxZ) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "filterBox requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->filterBoxHandle(*reference, minX, minY, minZ, maxX, maxY, maxZ, false));
+                });
+    cls.addFunc("excludeBox",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float minX, float minY, float minZ,
+                                       float maxX, float maxY, float maxZ) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "excludeBox requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->filterBoxHandle(*reference, minX, minY, minZ, maxX, maxY, maxZ, true));
+                });
+    cls.addFunc("filterSlope",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "filterSlope requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(vm, value->filterSlopeHandle(*reference, minimum, maximum));
+                });
+    cls.addFunc("excludeRadius",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float x, float z, float radius) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "excludeRadius requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(vm, value->excludeRadiusHandle(*reference, x, z, radius));
+                });
+    cls.addFunc("jitterPoints",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, uint32_t seed, float amountX, float amountZ) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "jitterPoints requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(vm, value->jitterPointsHandle(*reference, seed, amountX, amountZ));
+                });
+    cls.addFunc("poissonDisk",
+                [vm = cls.getHandle()](Procgen* value, int width, int depth, float radius, uint32_t seed,
+                                       int maxPoints) {
+                    if (!value)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "poissonDisk requires Procgen",
+                                                                               "procgen"));
+                    return makeOwnedPointSetProxy(vm, value->poissonDiskHandle(width, depth, radius, seed, maxPoints));
+                });
+    cls.addFunc("mergePoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
+        const auto firstRef  = nativeProxyReference<ProcgenPointSetHandleRef>(first);
+        const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
+        if (!value || !firstRef || !secondRef)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                   "mergePoints requires owned point sets", "points"));
+        return makeOwnedPointSetProxy(vm, value->mergePointsHandle(*firstRef, *secondRef));
+    });
+    cls.addFunc("unionPoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
+        const auto firstRef = nativeProxyReference<ProcgenPointSetHandleRef>(first);
+        const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
+        if (!value || !firstRef || !secondRef)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                   "unionPoints requires owned point sets", "points"));
+        return makeOwnedPointSetProxy(vm, value->unionPointsHandle(*firstRef, *secondRef));
+    });
+    cls.addFunc("intersectPoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
+        const auto firstRef = nativeProxyReference<ProcgenPointSetHandleRef>(first);
+        const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
+        if (!value || !firstRef || !secondRef)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                   "intersectPoints requires owned point sets", "points"));
+        return makeOwnedPointSetProxy(vm, value->intersectPointsHandle(*firstRef, *secondRef));
+    });
+    cls.addFunc("differencePoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
+        const auto firstRef = nativeProxyReference<ProcgenPointSetHandleRef>(first);
+        const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
+        if (!value || !firstRef || !secondRef)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                   "differencePoints requires owned point sets", "points"));
+        return makeOwnedPointSetProxy(vm, value->differencePointsHandle(*firstRef, *secondRef));
+    });
+    cls.addFunc("transformPoints",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float x, float y, float z, float yaw,
+                                       float scaleX, float scaleY, float scaleZ) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "transformPoints requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->transformPointsHandle(*reference, x, y, z, yaw, scaleX, scaleY, scaleZ));
+                });
+    cls.addFunc("transformPoints3D",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float x, float y,
+                                       float z, float pitch, float yaw, float roll,
+                                       float scaleX, float scaleY, float scaleZ) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "transformPoints3D requires owned points", "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->transformPoints3DHandle(*reference, x, y, z, pitch, yaw, roll,
+                                                           scaleX, scaleY, scaleZ));
+                });
+    cls.addFunc("copyPoints",
+                [vm = cls.getHandle()](Procgen* value, PointSet* source, PointSet* targets,
+                                       bool inheritTargetAttributes) {
+                    const auto sourceRef = nativeProxyReference<ProcgenPointSetHandleRef>(source);
+                    const auto targetRef = nativeProxyReference<ProcgenPointSetHandleRef>(targets);
+                    if (!value || !sourceRef || !targetRef)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "copyPoints requires owned point sets", "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->copyPointsHandle(*sourceRef, *targetRef, inheritTargetAttributes));
+                });
+    cls.addFunc("remapDensity",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float inputMin,
+                                       float inputMax, float outputMin, float outputMax,
+                                       bool clampOutput) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "remapDensity requires owned points", "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->remapDensityHandle(*reference, inputMin, inputMax, outputMin,
+                                                      outputMax, clampOutput));
+                });
+    cls.addFunc("mathFloatAttribute",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input,
+                                       const std::string& attribute,
+                                       const std::string& outputAttribute,
+                                       const std::string& operation, float operand,
+                                       float defaultValue) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "mathFloatAttribute requires owned points", "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->mathFloatAttributeHandle(*reference, attribute, outputAttribute,
+                                                            operation, operand, defaultValue));
+                });
+    cls.addFunc("filterFloatAttribute",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, const std::string& name, float minimum,
+                                       float maximum, bool invert) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "filterFloatAttribute requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->filterFloatAttributeHandle(*reference, name, minimum, maximum, invert));
+                });
+    cls.addFunc("filterStringAttribute",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, const std::string& name,
+                                       const std::string& expected, bool invert) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "filterStringAttribute requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->filterStringAttributeHandle(*reference, name, expected, invert));
+                });
+    cls.addFunc("densityCull",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, uint32_t seed, float multiplier) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "densityCull requires owned points",
+                                                                               "points"));
+                    return makeOwnedPointSetProxy(vm, value->densityCullHandle(*reference, seed, multiplier));
+                });
+    cls.addFunc("projectToWorld",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, float maxY, float minY,
+                                       std::int64_t maskBits, bool keepUnmatched) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    if (!value || !reference || maskBits < 0)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "projectToWorld requires owned points and a non-negative mask", "points"));
+                    return makeOwnedPointSetProxy(
+                        vm, value->projectToWorldHandle(*reference, maxY, minY,
+                                                        static_cast<std::uint64_t>(maskBits), keepUnmatched));
                 });
     cls.addFunc("newTerrainSampler", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         auto* module = Procgen::create();
@@ -3417,6 +3861,130 @@ void Procgen::expose(ssq::Class &cls) {
                             false, false);
                     return makeOwnedSpatialProxy(vm, value->boxVolumeHandle(minX, minY, minZ, maxX, maxY, maxZ));
                 });
+    cls.addFunc("sphereVolume", [vm = cls.getHandle()](Procgen* value, float x, float y, float z, float radius) {
+        if (!value)
+            return makeOwnedSpatialProxy(
+                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                       "sphereVolume requires Procgen", "procgen"));
+        return makeOwnedSpatialProxy(vm, value->sphereVolumeHandle(x, y, z, radius));
+    });
+    cls.addFunc("polygonVolume",
+                [vm = cls.getHandle()](Procgen* value, PointSet* points, float minY, float maxY) {
+                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+                    if (!value || !reference)
+                        return makeOwnedSpatialProxy(
+                            vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "polygonVolume requires owned control points", "points"));
+                    return makeOwnedSpatialProxy(vm, value->polygonVolumeHandle(*reference, minY, maxY));
+                });
+    cls.addFunc("pointData", [vm = cls.getHandle()](Procgen* value, PointSet* points) {
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+        if (!value || !reference)
+            return makeOwnedSpatialProxy(
+                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                       "pointData requires owned points", "points"));
+        return makeOwnedSpatialProxy(vm, value->pointDataHandle(*reference));
+    });
+    cls.addFunc("heightfieldData",
+                [vm = cls.getHandle()](Procgen* value, Heightmap* heightmap, float originX, float originZ,
+                                       float cellSize, float heightScale) {
+                    const auto reference = nativeProxyReference<ProcgenHeightmapHandleRef>(heightmap);
+                    if (!value || !reference)
+                        return makeOwnedSpatialProxy(
+                            vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "heightfieldData requires an owned heightmap", "heightmap"));
+                    return makeOwnedSpatialProxy(
+                        vm, value->heightfieldDataHandle(*reference, originX, originZ, cellSize, heightScale));
+                });
+    cls.addFunc("textureMaskData",
+                [vm = cls.getHandle()](Procgen* value, Heightmap* values, float originX, float originZ,
+                                       float cellSize, float minValue, float maxValue, float minY,
+                                       float maxY) {
+                    const auto reference = nativeProxyReference<ProcgenHeightmapHandleRef>(values);
+                    if (!value || !reference)
+                        return makeOwnedSpatialProxy(
+                            vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "textureMaskData requires an owned scalar map", "values"));
+                    return makeOwnedSpatialProxy(
+                        vm, value->textureMaskDataHandle(*reference, originX, originZ, cellSize,
+                                                         minValue, maxValue, minY, maxY));
+                });
+    cls.addFunc("meshSurfaceData",
+                [vm = cls.getHandle()](Procgen* value, MeshBuild* mesh, float tolerance) {
+                    const auto reference = nativeProxyReference<ProcgenMeshBuildHandleRef>(mesh);
+                    if (!value || !reference)
+                        return makeOwnedSpatialProxy(
+                            vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "meshSurfaceData requires an owned mesh build", "mesh"));
+                    return makeOwnedSpatialProxy(vm, value->meshSurfaceDataHandle(*reference, tolerance));
+                });
+    cls.addFunc("unionSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
+        const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
+        const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
+        if (!value || !firstRef || !secondRef)
+            return makeOwnedSpatialProxy(
+                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                       "unionSpatial requires owned spatial data",
+                                                                       "spatial"));
+        return makeOwnedSpatialProxy(vm, value->unionSpatialHandle(*firstRef, *secondRef));
+    });
+    cls.addFunc("intersectSpatial",
+                [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
+                    const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
+                    const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
+                    if (!value || !firstRef || !secondRef)
+                        return makeOwnedSpatialProxy(
+                            vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "intersectSpatial requires owned spatial data", "spatial"));
+                    return makeOwnedSpatialProxy(vm, value->intersectSpatialHandle(*firstRef, *secondRef));
+                });
+    cls.addFunc("differenceSpatial",
+                [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
+                    const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
+                    const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
+                    if (!value || !firstRef || !secondRef)
+                        return makeOwnedSpatialProxy(
+                            vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "differenceSpatial requires owned spatial data", "spatial"));
+                    return makeOwnedSpatialProxy(vm, value->differenceSpatialHandle(*firstRef, *secondRef));
+                });
+    cls.addFunc("sampleSpatial",
+                [vm = cls.getHandle()](Procgen* value, SpatialData* spatial, float spacing, uint32_t seed,
+                                       float jitter) {
+                    const auto reference = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
+                    if (!value || !reference)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "sampleSpatial requires owned spatial data",
+                                                                               "spatial"));
+                    return makeOwnedPointSetProxy(vm, value->sampleSpatialHandle(*reference, spacing, seed, jitter));
+                });
+    cls.addFunc("filterSpatial",
+                [vm = cls.getHandle()](Procgen* value, PointSet* points, SpatialData* spatial, bool invert) {
+                    const auto pointsRef  = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+                    const auto spatialRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
+                    if (!value || !pointsRef || !spatialRef)
+                        return makeOwnedPointSetProxy(
+                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                               "filterSpatial requires owned inputs",
+                                                                               "input"));
+                    return makeOwnedPointSetProxy(vm, value->filterSpatialHandle(*pointsRef, *spatialRef, invert));
+                });
+    cls.addFunc("projectToSpatial", [vm = cls.getHandle()](Procgen* value, PointSet* points, SpatialData* spatial) {
+        const auto pointsRef  = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+        const auto spatialRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
+        if (!value || !pointsRef || !spatialRef)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                   "projectToSpatial requires owned inputs", "input"));
+        return makeOwnedPointSetProxy(vm, value->projectToSpatialHandle(*pointsRef, *spatialRef));
+    });
     cls.addFunc("splineData", [vm = cls.getHandle()](Procgen* value, PointSet* points, float radius) -> ssq::Table {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
         if (!value || !reference)

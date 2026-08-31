@@ -189,11 +189,17 @@ TEST_CASE("procgen.generatedArtifact.denseSnapshotRoundTripsEveryPayloadAndRebui
     PointSet  points;
     const int point = points.add(1.f, 2.f, 3.f);
     points.setNormal(point, .1f, .9f, .2f);
-    points.setYaw(point, .25f);
+    points.setRotation(point, .15f, .25f, .35f);
     points.setScale(point, 2.f, 3.f, 4.f);
+    points.setBounds(point, -1.f, -2.f, -3.f, 1.f, 2.f, 3.f);
+    points.setColor(point, .1f, .2f, .3f, .4f);
+    points.setSteepness(point, .65f);
     points.setDensity(point, .75f);
     points.setPointSeed(point, 123u);
     points.setFloatAttribute(point, "weight", 1.5f);
+    points.setIntAttribute(point, "variant", 4);
+    points.setBoolAttribute(point, "enabled", true);
+    points.setVectorAttribute(point, "wind", 5.f, 6.f, 7.f);
     points.setStringAttribute(point, "tag", "anchor");
     Bounds pointBounds;
     pointBounds.include(1.f, 2.f, 3.f);
@@ -270,4 +276,15 @@ TEST_CASE("procgen.generatedArtifact.denseSnapshotRoundTripsEveryPayloadAndRebui
     const auto* restoredMesh = restored.findPart(root.child("mesh"));
     REQUIRE(restoredMesh != nullptr);
     CHECK_EQ(std::get<MeshData>(restoredMesh->payload).groupNames(), std::vector<std::string>{"main"});
+    const auto* restoredPointsPart = restored.findPart(root.child("points"));
+    REQUIRE(restoredPointsPart != nullptr);
+    const auto& restoredPoints = std::get<PointSet>(restoredPointsPart->payload);
+    CHECK_EQ(restoredPoints.getPitch(0), .15f);
+    CHECK_EQ(restoredPoints.getRoll(0), .35f);
+    CHECK_EQ(restoredPoints.getBoundsMinY(0), -2.f);
+    CHECK_EQ(restoredPoints.getColorA(0), .4f);
+    CHECK_EQ(restoredPoints.getSteepness(0), .65f);
+    CHECK_EQ(restoredPoints.getIntAttribute(0, "variant", -1), 4);
+    CHECK(restoredPoints.getBoolAttribute(0, "enabled", false));
+    CHECK_EQ(restoredPoints.getVectorAttributeZ(0, "wind", -1.f), 7.f);
 }
