@@ -216,20 +216,22 @@ function(check_third_party_project name repo)
         # Native dependency builds must use the compiler selected by the parent.
         # Otherwise ExternalProject starts a fresh configure and can silently pick
         # a different system default (for example Clang while Linux CI uses GCC).
-        if(CMAKE_C_COMPILER)
-            list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
-        endif()
-        if(CMAKE_CXX_COMPILER)
-            list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
-        endif()
-        # GitHub's Windows image exports ccache as a default launcher.  A
-        # batch-file compiler wrapper cannot be spawned by ccache, so carry
-        # the parent cache-off choice into this independent dependency build.
         if(WIN32 AND EVENGINE_COMPILER_CACHE STREQUAL "OFF")
+            # GitHub's Windows image exports ccache as a default launcher.
+            # It cannot spawn a batch-file compiler wrapper, so dependency
+            # builds use the MSVC executable while the parent keeps its
+            # UTF-8 /showIncludes wrapper.
             list(APPEND _eve_tp_cmake_args
-                -DCMAKE_C_COMPILER_LAUNCHER=
-                -DCMAKE_CXX_COMPILER_LAUNCHER=
+                -DCMAKE_C_COMPILER=cl.exe
+                -DCMAKE_CXX_COMPILER=cl.exe
             )
+        else()
+            if(CMAKE_C_COMPILER)
+                list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
+            endif()
+            if(CMAKE_CXX_COMPILER)
+                list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
+            endif()
         endif()
     endif()
 
